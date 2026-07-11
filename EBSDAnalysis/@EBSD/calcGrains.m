@@ -96,7 +96,7 @@ phaseId(phaseId==0) = 1; % why this is needed?
 [I_FDext, I_FDint, Fext, Fint] = calcBoundary;
 
 if check_option(varargin,'removeQuadruplePoints')
-  qAdded = removeQuadruplePoints; 
+  [qAdded,qPairs] = removeQuadruplePoints;
 end
 
 % setup grains
@@ -238,10 +238,11 @@ end
   end
 
 
-  function qAdded = removeQuadruplePoints
+  function [qAdded,qPairs] = removeQuadruplePoints
 
     quadPoints = accumarray(reshape(Fext(full(any(I_FDext,2)),:),[],1),1) == 4;
     qAdded = 0;
+    qPairs = zeros(0,2);
 
     if ~any(quadPoints), return; end
       
@@ -315,11 +316,15 @@ end
              
     % if we have different grains - we need a new boundary
     newBd = full(sum(I_DG(iqD(:,1),:) .* I_DG(iqD(:,2),:),2)) == 0;
-      
+
     % add new edges
     Fext = [Fext; [quadPoints(newBd),newVid(newBd)]];
     qAdded = sum(newBd);
-    
+
+    % pixel pairs adjacent to each newly added boundary edge, in the same
+    % order as the rows appended to Fext / I_FDext above
+    qPairs = iqD(newBd,:);
+
     % new rows to I_FDext
     I_FDext = [I_FDext; ...
       sparse(repmat((1:qAdded).',1,2), iqD(newBd,:), 1, ...
@@ -331,30 +336,25 @@ end
   end
 
   function mergeQuadrupleGrains
-    
-    gB = grains.boundary; gB = gB(length(gB)+1-(1:qAdded));
-    toMerge = false(size(gB));
-       
-    for iPhase = ebsd.indexedPhasesId
-    
-      % restrict to the same phase
-      iBd = all(gB.phaseId == iPhase,2);
-    
-      if ~any(iBd), continue; end
-        
-      % check for misorientation angle % TODO
-      toMerge(iBd) = angle(gB(iBd).misorientation) < 5 * degree;
-    
-    end
-  
+
+    % a new boundary introduced by splitting a quadruple point is merged
+    % away exactly when the same grain boundary criterion that was used
+    % for the original segmentation would not consider it a boundary
+    connect = gbc.eval(ebsd,qPairs(:,1),qPairs(:,2));
+    toMerge = connect > 0;
+
+    gB = grains.boundary; gB = gB(end-qAdded+1:end);
+
     [grains, parentId] = merge(grains,gB(toMerge));
-  
+
     % update I_DG
     I_PC = sparse(1:length(parentId),parentId,1);
     I_DG = I_DG * I_PC;
-  
-    % update grain ids
-    [grainId,~] = find(I_DG.');
+
+    % update grain ids; matrix product (not find, which drops all-zero
+    % rows) so pixels with no assigned grain correctly stay 0, matching
+    % the original grainId computation above
+    grainId = full(I_DG * (1:size(I_DG,2)).');
   end
 
 end

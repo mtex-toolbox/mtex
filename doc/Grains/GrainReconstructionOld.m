@@ -58,13 +58,13 @@ grains = calcGrains(ebsd,'angle',10*degree)
 % To visualize the grains we can plot its boundaries by the command
 % <grainBoundary.plot.html |plot|>.
 
-% start overide mode
+% start override mode
 hold on
 
 % plot the boundary of all grains
 plot(grains.boundary,'linewidth',1.5)
 
-% stop overide mode
+% stop override mode
 hold off
 
 %% Filling notindexed holes
@@ -111,7 +111,7 @@ plot(grains(11300,6100).boundary,'linecolor','DarkGreen','linewidth',5,...
 plot(grains(12000,4000).boundary,'linecolor','DarkBlue','linewidth',5,...
   'DisplayName','grain B')
 
-% stop overide mode
+% stop override mode
 hold off
 
 %%
@@ -165,14 +165,14 @@ plot(grains,'lineWidth',2)
 
 %%
 % We see that that all the narrow not indexed regions have been assigned to
-% the surounding grains while the large regions have been left unindexed.
+% the surrounding grains while the large regions have been left unindexed.
 % Finally, the image with the raw EBSD data and on top the grain
 % boundaries.
 
 % plot the raw data
 plot(ebsd)
 
-% start overide mode
+% start override mode
 hold on
 
 % plot the boundary of all grains
@@ -184,7 +184,7 @@ plot(grains(11300,6100).boundary,'linecolor','DarkGreen','linewidth',4,...
 plot(grains(12000,4000).boundary,'linecolor','DarkBlue','linewidth',4,...
   'DisplayName','grain B')
 
-% stop overide mode
+% stop override mode
 hold off
 
 %% Non convex data sets

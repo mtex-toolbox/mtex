@@ -12,10 +12,14 @@
       "indirect": {
         "step_size_x": { "mode": "search_root", "value": "Step X"},
         "step_size_y": { "mode": "search_root", "value": "Step Y"},
-        "grid_size_x": { "mode": "search_root", "value": "nColumns"},
         "grid_size_y": { "mode": "search_root", "value": "nRows"},
-        "first": {"data": "y"}
+        "grid_size_x": { "mode": "search_root", "value": "nColumns"},
+        "first": {"data": "x"}
       }
+    },
+    "map_correction": {
+      "type": "rotation",
+      "data": [135, 180, 225]
     },
     "phase": {"mode": "search_root", "value": "Phase", "type": "default"},
     "rotation": {
@@ -32,7 +36,7 @@
       "key": { "mode": "search_root", "value": "Header/Phase" },
       "multiple": true,
       "default": {
-        "space_group": { "mode": "search_root", "value": "Symmetry", "type": "default" },
+        "space_group": { "mode": "search_root", "value": "Symmetry", "type": "TSLNumber" },
         "name": { "mode": "search_root", "value": "MaterialName"},
         "lattice": {
           "angle": {

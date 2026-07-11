@@ -43,12 +43,14 @@ classdef S2FunGrid < S2Fun
 
     function v = eval(S2F,nodes)
     
-      ind = ~isnan(nodes);
+      
 
-      [theta,rho] = polar(nodes(ind)); %#ok<POLAR>
+      [theta,rho] = polar(nodes); %#ok<POLAR>
+      
+      ind = ~isnan(theta);
 
-      i = 1+round(theta/(pi/(S2F.gSize(1)-1)));
-      j = 1+round(rho/(2*pi/(S2F.gSize(2)-1)));
+      i = 1+round(theta(ind)/(pi/(S2F.gSize(1)-1)));
+      j = 1+round(rho(ind)/(2*pi/(S2F.gSize(2)-1)));
 
       v = nan(numel(nodes),size(S2F));
       v(ind,:) = S2F.values(sub2ind(S2F.gSize,i,j),:);

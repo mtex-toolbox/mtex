@@ -25,6 +25,10 @@ function [c_book, conds, info] = ...
 %
 %    targetcond               default: mincond
 %
+% flags:
+%    condition_geometry       geometry may only activate a fraction of the
+%                             condition regularization that is actually needed
+%
 %
 % IMPORTANT ASSUMPTION:
 %   The first basis function is assumed to be the constant function.
@@ -120,18 +124,29 @@ mincond             = get_option(varargin, {'mincond','minCond','min_cond'}, 1e2
 maxcond             = get_option(varargin, {'maxcond','maxCond','max_cond'}, 1e4);
 basis_weights_scale = get_option(varargin, 'basis_weights_scale', 4, 'double');
 lambda_geom_rel     = get_option(varargin, 'lambda_geom_rel', 4, 'double');
+targetcond          = get_option(varargin, 'targetcond', mincond);
 
-% internal regularization parameters
-targetcond = mincond;
+% on SO(3), geometry is used only to strengthen condition regularization
+%   instead of adding a dimension-dependent ridge term of its own
+conditionGeometry = check_option(varargin, ...
+  {'condition_geometry', 'condition geometry', 'conditioned_geometry'});
+
+% make all scalar parameters usable at one central place
+mincond = max(real(mincond), 1 + 10*eps);
+maxcond = max(real(maxcond), mincond * (1 + 10*eps));
+targetcond = max(real(targetcond), 1 + 10*eps);
+basis_weights_scale = max(real(basis_weights_scale), 0);
+lambda_geom_rel = max(real(lambda_geom_rel), 0);
 
 % build unregularized Gram system
 B_book_transposed = permute(B_book, [2, 1, 3]);
 Gram_book = pagemtimes(B_book_transposed, B_book);
 Gram_book = (Gram_book + permute(Gram_book, [2, 1, 3])) / 2;
 rhs_book = pagemtimes(B_book_transposed, fw_book);
-clear fw_book B_book;
+clear B_book_transposed;
 
 % apply stronger penalty to higher polynomial degrees
+%   basis_weights_scale changes the degree selectivity, not the overall amount
 % the first coefficient is always unregularized to preserve constants
 basis_weights = basis_weights(:);
 basis_weights = max(real(basis_weights), 0);
@@ -154,83 +169,144 @@ diag_idx = pageDiagIndices(dim, N);
 
 % compute average eigenvalue scale of each page
 %   (after column normalization, this is analytically 1)
-%   (Eact Code: diagGram = reshape(real(Gram_book(diag_idx)), dim, N);
-%               meanEig = mean(diagGram, 1).';)
 meanEig = ones(N, 1);
 
-% compute condition numbers of the unregularized Gram matrix, if they are needed
-%   these are returned in info and are used for automatic parameter selection
-have_eigs = false;
-if nargout > 2
-  eigval = pageeig(Gram_book);
-  maxeig_unreg = reshape(max(real(eigval), [], 1), [], 1);
-  mineig_unreg = reshape(min(real(eigval), [], 1), [], 1);
-  mineig_unreg = max(mineig_unreg, 0);
-  mineig_safe = max(mineig_unreg, eigFloorRel .* max(maxeig_unreg, 1));
-  conds_unreg = maxeig_unreg ./ mineig_safe;
-  clear eigval;
+% compute eigenvalues and conditions of the unregularized Gram matrices
+%   these are needed both for diagnostics and for the regularization amount
+eigval = pageeig(Gram_book);
+maxeig_unreg = reshape(max(real(eigval), [], 1), [], 1);
+mineig_unreg = reshape(min(real(eigval), [], 1), [], 1);
+mineig_unreg = max(mineig_unreg, 0);
+clear eigval;
 
-  maxeig = maxeig_unreg;
-  mineig = mineig_unreg;
-  have_eigs = true;
-end
+mineig_safe = max(mineig_unreg, eigFloorRel .* max(maxeig_unreg, 1));
+conds_unreg = maxeig_unreg ./ mineig_safe;
 
-% compute regularization parameter from local geometry score of the neighbors
-%   (this must be computed outside of this solver from the actual coordinates of
-%    the neighbors)
+% local geometry score of the actual neighbors
 geometryScore = get_option(varargin, 'geometryScore', zeros(N, 1));
 geometryScore = geometryScore(:);
 geometryScore = min(max(real(geometryScore), 0), 1);
 
-% compute geometry regularization strength
-lambdaGeom = lambda_geom_rel .* geometryScore .* meanEig;
 
-% apply geometry regularization first
-%   this damps systems with bad local node geometry before condition regularization
-if any(lambdaGeom ~= 0)
-  diagOffsets = basis_weights * lambdaGeom.';
-  if (dim == 1)
-    Gram_book = Gram_book + reshape(diagOffsets, [1, 1, N]);
-  else
-    Gram_book(diag_idx) = Gram_book(diag_idx) + diagOffsets(:);
+% =======================================================
+% 2a - condition-aware geometry regularization for SO(3)
+% =======================================================
+if conditionGeometry
+  % smooth condition-based activation between mincond and maxcond
+  tCond = conditionTransition(conds_unreg, mincond, maxcond);
+
+  % smallest scalar ridge that would approximately obtain targetcond
+  %   for an isotropic penalty
+  lambdaNeeded = max(0, ...
+    (maxeig_unreg - targetcond .* mineig_unreg) ./ (targetcond - 1));
+
+  % geometry may activate part of the still missing condition regularization
+  %   but it cannot regularize a system for which lambdaNeeded is zero
+  geometryFraction = lambda_geom_rel .* geometryScore;
+  geometryFraction = min(max(geometryFraction, 0), 1);
+
+  lambdaCond = tCond .* lambdaNeeded;
+  lambdaGeom = (1 - tCond) .* geometryFraction .* lambdaNeeded;
+
+  % apply the geometry contribution first, for meaningful diagnostics
+  if any(lambdaGeom ~= 0)
+    diagOffsets = basis_weights * lambdaGeom.';
+    if (dim == 1)
+      Gram_book = Gram_book + reshape(diagOffsets, [1, 1, N]);
+    else
+      Gram_book(diag_idx) = Gram_book(diag_idx) + diagOffsets(:);
+    end
+
+    if nargout > 2
+      eigGeom = pageeig(Gram_book);
+      maxeigGeom = reshape(max(real(eigGeom), [], 1), [], 1);
+      mineigGeom = reshape(min(real(eigGeom), [], 1), [], 1);
+      mineigGeom = max(mineigGeom, 0);
+      clear eigGeom;
+
+      mineigGeomSafe = max(mineigGeom, eigFloorRel .* max(maxeigGeom, 1));
+      conds_geom = maxeigGeom ./ mineigGeomSafe;
+    end
+  elseif nargout > 2
+    conds_geom = conds_unreg;
   end
 
-  % eigenvalues from the unregularized system are not valid anymore
-  have_eigs = false;
+  % apply the ordinary condition contribution as a top-up
+  if any(lambdaCond ~= 0)
+    diagOffsets = basis_weights * lambdaCond.';
+    if (dim == 1)
+      Gram_book = Gram_book + reshape(diagOffsets, [1, 1, N]);
+    else
+      Gram_book(diag_idx) = Gram_book(diag_idx) + diagOffsets(:);
+    end
+  end
+
+
+% ==================================================
+% 2b - original independent geometry regularization
+% ==================================================
+else
+  % compute geometry regularization relative to the normalized Gram scale
+  lambdaGeom = lambda_geom_rel .* geometryScore .* meanEig;
+
+  % apply geometry regularization first
+  if any(lambdaGeom ~= 0)
+    diagOffsets = basis_weights * lambdaGeom.';
+    if (dim == 1)
+      Gram_book = Gram_book + reshape(diagOffsets, [1, 1, N]);
+    else
+      Gram_book(diag_idx) = Gram_book(diag_idx) + diagOffsets(:);
+    end
+  end
+
+  % eigenvalues after geometry regularization are used for the condition top-up
+  if any(lambdaGeom ~= 0)
+    eigGeom = pageeig(Gram_book);
+    maxeigGeom = reshape(max(real(eigGeom), [], 1), [], 1);
+    mineigGeom = reshape(min(real(eigGeom), [], 1), [], 1);
+    mineigGeom = max(mineigGeom, 0);
+    clear eigGeom;
+  else
+    maxeigGeom = maxeig_unreg;
+    mineigGeom = mineig_unreg;
+  end
+
+  mineigGeomSafe = max(mineigGeom, eigFloorRel .* max(maxeigGeom, 1));
+  conds_geom = maxeigGeom ./ mineigGeomSafe;
+
+  % compute remaining regularization from the geometry-regularized condition
+  tCond = conditionTransition(conds_geom, mincond, maxcond);
+  lambdaNeeded = max(0, ...
+    (maxeigGeom - targetcond .* mineigGeom) ./ (targetcond - 1));
+  lambdaCond = tCond .* lambdaNeeded;
+
+  if any(lambdaCond ~= 0)
+    diagOffsets = basis_weights * lambdaCond.';
+    if (dim == 1)
+      Gram_book = Gram_book + reshape(diagOffsets, [1, 1, N]);
+    else
+      Gram_book(diag_idx) = Gram_book(diag_idx) + diagOffsets(:);
+    end
+  end
 end
 
-% eigenvalues after geometry regularization
-%   these are used to compute the remaining condition-based regularization
-if ~have_eigs
-  eigval = pageeig(Gram_book);
-  maxeig = reshape(max(real(eigval), [], 1), [], 1);
-  mineig = reshape(min(real(eigval), [], 1), [], 1);
-  mineig = max(mineig, 0);
-  clear eigval;
+
+% solve inactive pages by the original least-squares formulation
+%   this makes regularize=true an exact no-op wherever both lambdas vanish
+active = (lambdaGeom + lambdaCond) > 0;
+numf = size(rhs_book, 2);
+c_scaled = zeros(dim, numf, N, 'like', rhs_book);
+
+if any(~active)
+  c_scaled(:,:,~active) = pagemldivide(B_book(:,:,~active), fw_book(:,:,~active));
+end
+if any(active)
+  c_scaled(:,:,active) = pagemldivide(Gram_book(:,:,active), rhs_book(:,:,active));
 end
 
-mineig_safe = max(mineig, eigFloorRel .* max(maxeig, 1));
-conds_geom = maxeig ./ mineig_safe;
-
-% compute remaining regularization parameter from condition of geometry-regularized Gram matrix
-targetcond = max(targetcond, 1 + 10*eps);
-t = (log10(conds_geom) - log10(mincond)) ./ (log10(maxcond) - log10(mincond));
-t = smoothstepC3(t);
-
-% compute lambda such that target condition is approximately obtained
-lambdaNeeded = max(0, (maxeig - targetcond .* mineig) ./ (targetcond - 1));
-
-% apply only the remaining condition-based regularization
-lambdaCond = t .* lambdaNeeded;
-
-% apply condition regularization as a top-up
-if any(lambdaCond ~= 0)
-  diagOffsets = basis_weights * lambdaCond.';
-  Gram_book(diag_idx) = Gram_book(diag_idx) + diagOffsets(:);
-end
-
-% solve for scaled coeffs, then 'unscale' to obtain the original coeffs
-c_book = pagemldivide(Gram_book, rhs_book) ./ s_book;
+% unscale to obtain coefficients of the original basis
+c_book = c_scaled ./ s_book;
+clear c_scaled rhs_book B_book fw_book s_book;
 
 % compute condition numbers, if they are needed for the output
 if nargout > 1
@@ -265,6 +341,14 @@ end
 function t = smoothstepC3(x)
   x = min(max(x, 0), 1);
   t = x.^4 .* (35 - 84*x + 70*x.^2 - 20*x.^3);
+end
+
+% smooth activation between two condition thresholds
+function t = conditionTransition(conds, mincond, maxcond)
+  logMincond = log10(mincond);
+  logMaxcond = max(log10(maxcond), logMincond + 10*eps);
+  x = (log10(conds) - logMincond) ./ (logMaxcond - logMincond);
+  t = smoothstepC3(x);
 end
 
 % compute linear indices of all pagewise diagonal entries

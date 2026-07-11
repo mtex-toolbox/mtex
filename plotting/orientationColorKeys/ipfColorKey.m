@@ -53,9 +53,40 @@ classdef ipfColorKey < orientationColorKey
     end
 
     function precompute(oM,varargin)
-      
+      % discretizes the direction -> color map on a grid so that
+      % subsequent color lookups (one per orientation to be colored) are
+      % cheap. This discretization step itself is expensive, but for the
+      % common case - an unmodified HSVDirectionKey - it depends only on
+      % the point group (there are only a few dozen of them), so it is
+      % cached to disk and reused across MATLAB sessions.
+
+      useCache = isCacheableColorKey(oM);
+
+      if useCache
+        cacheFile = colorKeyCacheFile(oM.CS1.id);
+        if exist(cacheFile,'file')
+          try
+            s = load(cacheFile,'fun');
+            oM.dirMap.dir2color = @(v) s.fun.eval(v);
+            return
+          catch
+            % cache file unreadable/corrupt - fall through and recompute
+          end
+        end
+      end
+
       fun = S2FunGrid(@(v) oM.dirMap.direction2color(v));
       oM.dirMap.dir2color = @(v) fun.eval(v);
+
+      if useCache
+        try
+          if ~exist(fileparts(cacheFile),'dir'), mkdir(fileparts(cacheFile)); end
+          save(cacheFile,'fun');
+        catch
+          % e.g. read-only filesystem - caching is a pure optimization
+        end
+      end
+
     end
 
     function rgb = orientation2color(oM,ori)
@@ -66,7 +97,7 @@ classdef ipfColorKey < orientationColorKey
       
       % compute crystal directions
       ori.CS = oM.CS1;
-      h = inv(ori) .* oM.inversePoleFigureDirection;
+      h = inv(ori) .* normalize(oM.inversePoleFigureDirection);
       
       % colorize fundamental region
       rgb = oM.Miller2Color(h);
@@ -86,5 +117,37 @@ classdef ipfColorKey < orientationColorKey
       %S2F = S2FunHarmonicSym.quadrature(@(h) oM.dirMap.direction2color(h),oM.CS1);
       
     end    
-  end  
+  end
+end
+
+function tf = isCacheableColorKey(oM)
+% the precomputed color grid only depends on the point group id - not on
+% lattice parameters, the inverse pole figure direction, or specimen
+% symmetry - PROVIDED the direction key is an unmodified HSVDirectionKey.
+% Three point groups (-1, -3, -4 / ids 2, 18, 26) do not have a
+% topologically correct, metric-independent colormap (HSVDirectionKey
+% itself warns about this), so they are excluded from the cache.
+
+tf = strcmp(class(oM.dirMap),'HSVDirectionKey') && ...
+  ~ismember(oM.CS1.id,[2,18,26]) && ...
+  isequal(oM.dirMap.colorStretching,1) && ...
+  isequal(oM.dirMap.grayValue,[0.2 0.5]) && ...
+  isequal(oM.dirMap.grayGradient,0.5) && ...
+  isequal(oM.dirMap.maxAngle,inf);
+
+if tf
+  ref = HSVDirectionKey(oM.CS1);
+  tf = norm(oM.dirMap.whiteCenter - ref.whiteCenter) < 1e-10;
+end
+
+end
+
+function file = colorKeyCacheFile(id)
+% cache lives under MATLAB's per-user preference directory, which is
+% guaranteed writable and persists across MATLAB sessions on the same
+% machine (unlike tempdir, which may be cleared on reboot)
+
+cacheDir = fullfile(prefdir,'mtex_cache','colorKeys');
+file = fullfile(cacheDir,['ipfColorKey_id' num2str(id) '_v1.mat']);
+
 end

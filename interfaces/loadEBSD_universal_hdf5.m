@@ -222,9 +222,9 @@ function out = position_indirect(raw_data)
   v_y = 0:step_y:(cells_y-1)*step_y;
   
   if first == 'x'
-    [x, y] = meshgrid(v_x, v_y);
+    [x, y] = ndgrid(v_x, v_y);
   elseif first == 'y'
-    [x, y] = meshgrid(v_y, v_x);
+    [x, y] = meshgrid(v_x, v_y);
   end
 
   out = vector3d(x(:), y(:), 0);
@@ -327,6 +327,37 @@ function out = space_group_default(raw_data)
     id = symmetry.extractPointId(clean);
   end
   out = symmetry.pointGroups(id).Inter;
+
+end
+
+function out = space_group_TSLNumber(raw_data)
+
+switch raw_data
+  case 1
+    out = "-1";
+  case 2
+    out = "2/m";
+  case 22
+    out = "mmm";
+  case 4
+    out = "4/m";
+  case 42
+    out = "4/mmm";
+  case 3
+    out = "-3";
+  case 32
+    out = "-3m";
+  case 6
+    out = "6/m";
+  case 62
+    out = "6/mmm";
+  case 23
+    out = "m-3";
+  case 43
+    out = "m-3m";
+  otherwise
+    out = "1";
+end
 
 end
 
@@ -463,6 +494,13 @@ function out = electron_image_default(raw_data)
 
 end
 
+function out = map_correction_rotation(raw_data)
+
+  out = rotation.byEuler(double(raw_data(:).')*degree);
+
+end
+
+
 function out = map_correction_default(raw_data)
 
   try
@@ -472,12 +510,9 @@ function out = map_correction_default(raw_data)
   end
 
   data = double(raw_data);
+  if any(data > 10), format = degree; end
 
-  if length(data) > 1
-    data = data';
-  end
-
-  out = rotation.byEuler(data*format);
+  out = rotation.byEuler(data(:).'*format);
 
 end
 

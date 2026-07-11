@@ -2,28 +2,40 @@ classdef scaleBar < handle
 % Inserts a scale bar on the current ebsd or grain map.
 %
 % Syntax
-%   hg = scaleBar(ebsd, scanunits)
+%   sB = scaleBar(mP, scanUnit)
+%   sB = scaleBar(mP, scanUnit, 'BackgroundColor', 'k', 'LineColor', 'w', ...
+%     'BackgroundAlpha', 0.6, 'Location', 'nw')
 %
 % Input
-%  ebsd      - an mtex ebsd or grain object
-%  scanunits - units of the xy coordinates of the ebsd scan (e.g., 'um')
-%
-% Output
-%  oval  - output value 
-%  ounit - output unit
+%  mP        - the @mapPlot the scale bar is attached to
+%  scanUnit  - units of the xy coordinates of the ebsd scan (e.g., 'um')
 %
 % Options
-%  BACKGROUNDCOLOR - background color (ColorSpec)
-%  BACKGROUNDALPHA - background transparency (scalar 0<=a<=1)
-
+%  BackgroundColor - background color (ColorSpec)
+%  BackgroundAlpha - background transparency (scalar 0<=a<=1)
+%  LineColor       - border and text color (ColorSpec)
+%  Length          - fixed scale bar length (in scanUnit units); if not
+%                     given (default) a nice round length close to 10% of
+%                     the map width is chosen automatically and kept up to
+%                     date as the map is zoomed or resized
+%  Location        - corner of the map the bar is drawn in:
+%                     'sw' (default), 'se', 'nw', 'ne'
 %
 % Example
 %  Use a scale bar on the aachen mtexdata.
 %
 %   mtexdata aachen
-%   plot(ebsd)
-%   scaleBar(ebsd,'um','BackgroundColor','k','LineColor','w', ...
-%                 'Border','off','BackgroundAlpha',0.6,'Location','nw')
+%   plot(ebsd,'BackgroundColor','k','LineColor','w', ...
+%                 'BackgroundAlpha',0.6,'Location','nw')
+%
+% Note
+%  The scale bar reads the plotting convention back from the axes camera
+%  via <plottingConvention.getView.html plottingConvention.getView> and
+%  realigns itself whenever the map is reoriented, e.g. via
+%  <plottingConvention.setView.html plottingConvention.setView> or one of
+%  <plotx2north.html plotx2north>, <plotzOutOfPlane.html plotzOutOfPlane>,
+%  etc. - this works no matter which @plottingConvention object was used to
+%  apply the view, since it never relies on a cached reference to it.
 %
 % Bugs/Issues
 %  [1] Using the hardware OpenGL renderer can sometimes cause the text not
@@ -39,14 +51,10 @@ classdef scaleBar < handle
 %
 % Authors
 %  Eric Payton, eric.payton@bam.de
-%  Philippe Pinard, pinard@gfe.rwth-aachen.de 
-%
-% Revision History
-%  2012.07.17 EJP - First version submitted for mtex commit. 
-%  2012.07.27 EJP - Added option for specifying scale bar lengths.
+%  Philippe Pinard, pinard@gfe.rwth-aachen.de
 
 properties (Hidden = true)
-  hgt %
+  hgt      % handle of the hgtransform grouping the scale bar graphics
 end
 
 properties
@@ -60,55 +68,69 @@ properties (SetObservable)
   backgroundAlpha = 0.6    % background transparency (scalar 0<=a<=1)
   scanUnit        = 'um'   % units of the xy coordinates of the ebsd scan (e.g., 'um')
   lineColor       = 'w'    % border color and text color (ColorSpec)
-  length          = NaN    % desired scale bar length 
-  % border          = 'off ' % controls whether the box has a border ('on', 'off')
-  % borderWidth     = 2      % width of border (scalar)
-  % location        = 'sw'   % location of the scale bar ('nw,'ne','sw','se', or [x,y] coordinate vector (len(vector)==2)
+  length          = NaN    % desired scale bar length
 end
 
+properties (SetObservable)
+  location = 'sw'          % corner of the map: 'sw', 'se', 'nw', 'ne'
+end
 
 properties (Dependent = true)
   visible
 end
 
-  
+
 methods
 
   function sB = scaleBar(mP,scanUnit,varargin)
-    
+
     sB.scanUnit = scanUnit;
     sB.hgt = hgtransform('parent',mP.ax);
-    sB.shadow = patch('parent',sB.hgt,'Faces',1,'Vertices',[NaN NaN NaN]);
+    sB.shadow = patch('parent',sB.hgt,'Faces',1,'Vertices',[NaN NaN NaN],'EdgeColor','none');
     sB.txt = text('parent',sB.hgt,'string','1mm','position',[NaN,NaN],...
       'Interpreter',getMTEXpref('textInterpreter'),'FontSize',getMTEXpref('FontSize'));
     sB.ruler = patch('parent',sB.hgt,'Faces',1,'Vertices',[NaN NaN NaN]);
-    
-    % set resize function
-    hax = handle(mP.ax);
-    try      
-      hListener(1) = handle.listener(hax, findprop(hax, 'Position'), ...
-        'PropertyPostSet',@(a,b) sB.update);
-      % save listener, otherwise  callback may die
-      setappdata(hax, 'updatePos', hListener);
-    catch
-      if ~isappdata(hax, 'updatePos')
-        hListener = addlistener(hax,'Position','PostSet',...
-          @(obj,events) sB.update);
-        setappdata(hax, 'updatePos', hListener);
-      end
-    end  
 
-    try
-      addlistener(sB,'length','PostSet', @(x,y) sB.update);
-      addlistener(sB,'scanUnit','PostSet', @(x,y) sB.update);
-      addlistener(sB,'lineColor','PostSet', @(x,y) sB.update);
-      addlistener(sB,'backgroundColor','PostSet', @(x,y) sB.update);
-      addlistener(sB,'backgroundAlpha','PostSet', @(x,y) sB.update);
-      %addlistener(sB,'location','PostSet', @(x,y) sB.update);
-      %addlistener(sB,'borderWidth','PostSet', @(x,y) sB.update);
-      %addlistener(sB,'border','PostSet', @(x,y) sB.update);
-    end
-    
+    % apply user options
+    sB.backgroundColor = get_option(varargin,'BackgroundColor',sB.backgroundColor);
+    sB.backgroundAlpha = get_option(varargin,'BackgroundAlpha',sB.backgroundAlpha);
+    sB.lineColor       = get_option(varargin,'LineColor',sB.lineColor);
+    sB.length          = get_option(varargin,'Length',sB.length);
+    sB.location        = get_option(varargin,'Location',sB.location);
+
+    % redraw whenever the axes is resized, zoomed/panned or reoriented
+    % (e.g. through plottingConvention.setView). Position alone is not a
+    % reliable proxy for a changed map width (e.g. 'axis equal' can keep
+    % Position fixed across a zoom, or change it without XLim/YLim
+    % changing), so XLim/YLim are watched explicitly.
+    hax = mP.ax;
+    hListener(1) = addlistener(hax,'Position',      'PostSet', @(~,~) sB.update);
+    hListener(2) = addlistener(hax,'CameraPosition','PostSet', @(~,~) sB.update);
+    hListener(3) = addlistener(hax,'CameraUpVector','PostSet', @(~,~) sB.update);
+    hListener(4) = addlistener(hax,'XLim',          'PostSet', @(~,~) sB.update);
+    hListener(5) = addlistener(hax,'YLim',          'PostSet', @(~,~) sB.update);
+
+    % Tie these axes-level listeners' lifetime directly to this scale
+    % bar's own graphics, rather than to garbage collection of the
+    % variable above: mapPlot.m clears the axes' appdata (via
+    % rmallappdata) *before* constructing the next scale bar, so a
+    % listener stored only in appdata can never be found and deleted by
+    % the following scale bar's constructor. An app that repeatedly
+    % cla's/replots the same axes (e.g. the import wizard) can then fire a
+    % CameraPosition/CameraUpVector change while the old, now-unreferenced
+    % listener is still alive (garbage collection is not immediate), which
+    % calls back into the already-deleted old scale bar and errors.
+    % Deleting the listeners the moment sB.hgt itself is destroyed (e.g.
+    % by cla) is immediate and needs no appdata bookkeeping at all.
+    addlistener(sB.hgt, 'ObjectBeingDestroyed', @(~,~) delete(hListener(isvalid(hListener))));
+
+    addlistener(sB,'length',          'PostSet', @(~,~) sB.update);
+    addlistener(sB,'scanUnit',        'PostSet', @(~,~) sB.update);
+    addlistener(sB,'lineColor',       'PostSet', @(~,~) sB.update);
+    addlistener(sB,'backgroundColor', 'PostSet', @(~,~) sB.update);
+    addlistener(sB,'backgroundAlpha', 'PostSet', @(~,~) sB.update);
+    addlistener(sB,'location',        'PostSet', @(~,~) sB.update);
+
   end
 
   function setOnTop(sB)
@@ -119,92 +141,198 @@ methods
       end
     end
   end
-  
-  
+
+
   function set.visible(sB,value)
     sB.hgt.Visible = value;
   end
-  
+
   function value = get.visible(sB)
     value = sB.hgt.Visible;
   end
-  
+
+  function set.location(sB,loc)
+    aliases = struct('sw','sw','se','se','nw','nw','ne','ne',...
+      'southwest','sw','southeast','se','northwest','nw','northeast','ne');
+    loc = lower(loc);
+    if ~isfield(aliases,loc)
+      error('mtex:scaleBar:location',...
+        'Unknown scale bar location "%s". Use one of sw, se, nw, ne.',loc);
+    end
+    sB.location = aliases.(loc);
+  end
+
   function update(sB)
-    
-    % get axes orientation
-    ax = get(sB.hgt,'parent');
-    [el,az] = view(ax);
-    xDir = mod((-1)^(az<0) * round(el / 90),4); % E-S-W-N is 0 1 2 3
-    yDir = mod(xDir - round(az / 90),4); % E-S-W-N is 0 1 2 3
-    
+
+    % belt-and-braces: a listener attached to the axes can outlive the
+    % scale bar it belonged to (see the constructor), so bail out rather
+    % than error if this instance's own graphics were already deleted
+    if isempty(sB.hgt) || ~isvalid(sB.hgt)
+      return
+    end
+
+    % the plotting convention currently active on the map - read back from
+    % the axes camera itself (not from a cached plottingConvention
+    % reference) so this stays correct even if setView was applied through
+    % a plottingConvention object other than the one the map was
+    % originally created with
+    ax = get(sB.hgt,'Parent');
+    pC = plottingConvention.getView(ax);
+
+    % determine which compass direction (E-S-W-N is 0-1-2-3) the data x-
+    % and y-axis are currently pointing to on screen - cheaper and more
+    % direct than the previous round trip through view(ax)'s azimuth /
+    % elevation, and it is always consistent with pC since it is derived
+    % from pC itself
+    xDir = compassDirection(vector3d.X,pC);
+    yDir = compassDirection(vector3d.Y,pC);
+
     % get extent
     dx = xlim(ax); dy = ylim(ax);
     if any(xDir == [1,2]), dx= fliplr(dx); end
     if any(yDir == [1,2]), dy= fliplr(dy); end
     if mod(xDir,2), [dx,dy] = deal(dy,dx); end
-        
+
     % Find the range in meters for later determination of magnitude
     % We do this so that we never display 10000 nm and always something like
     % 10 microns. Also, the correct choice of units will avoid decimals.
-    [sBLength, sBUnit, factor] = switchUnit(0.1*abs(diff(dx)), sB.scanUnit);
-    if strcmpi(sBUnit,'um'), sBUnit = '$\mu$m';end
-    
-    % we would like to have SBlength beeing a nice number
+    %
+    % In auto mode the nice length AND its unit both come from 10% of the
+    % current map width, so the bar rescales (both value and unit) as the
+    % map width changes through zooming/resizing/replotting instead of
+    % freezing at whatever was picked when the bar was first drawn. In
+    % fixed-length mode the unit is instead derived from sB.length itself,
+    % since that is a length given in scanUnit units, independent of
+    % whatever the map width currently happens to be.
     if isnan(sB.length)
+      [sBLength, sBUnit, factor] = switchUnit(0.1*abs(diff(dx)), sB.scanUnit);
       goodValues = [1 2 5 10 15 20 25 50 75 100 125 150 200 500 750]; % Possible values for scale bar length
       [~,ind] = min(abs(sBLength-goodValues));
-      sB.length = goodValues(ind);
+      barLength = goodValues(ind);
+    else
+      [barLength, sBUnit, factor] = switchUnit(sB.length, sB.scanUnit);
     end
-    rulerLength = sB.length * factor * sign(diff(dx));
+    if strcmpi(sBUnit,'um'), sBUnit = '$\mu$m';end
+    rulerLength = barLength * factor * sign(diff(dx));
 
-    % A gap around the bar of 1% of bar length looks nice
-    set(sB.txt,'position',[dx(1),dy(1)])
-    textHeight = get(sB.txt, 'Extent');
-    textHeight = min(textHeight(3:4)) * sign(diff(dy));
-    if isnan(textHeight), textHeight = (5+sB.txt.FontSize) *sign(diff(dy)); end
+    % Set the label and measure its footprint before laying out the box -
+    % the box (and hence the bar) must be sized for the label that is
+    % about to be shown, not the one left over from the previous redraw
+    labelStr = ['\rm{\textbf{' num2str(barLength) ' ' sBUnit '}}'];
+    set(sB.txt,'string',labelStr,'position',[dx(1),dy(1)])
+
+    % force pending layout/rendering to be flushed before measuring the
+    % text: right after an axes is first created (e.g. a uiaxes inside an
+    % App Designer grid layout that has not been sized yet), its pixel
+    % geometry may not be finalized, which throws off the pixel-to-data
+    % conversion behind Extent and can make the box come out far too tall
+    drawnow
+    extent = get(sB.txt, 'Extent');
+
+    % Extent(3:4) are the text's footprint along data-x/data-y - which one
+    % is the visually "wide" direction depends on whether the data axes
+    % are currently swapped on screen (same flag as used by cP below)
+    if mod(xDir,2)
+      textWidth = extent(4); textHeight = extent(3) * sign(diff(dy));
+    else
+      textWidth = extent(3); textHeight = extent(4) * sign(diff(dy));
+    end
+
+    % Fall back to a size proportional to the map's own current extent -
+    % rather than a fixed font-size-based guess, which would only look
+    % right at whatever zoom level its absolute size happens to match -
+    % whenever Extent could not be measured (NaN) or is implausible
+    % (larger than a generous fraction of the map itself). The latter can
+    % happen even after the drawnow above: e.g. a uiaxes inside a freshly
+    % built App Designer layout (as in the import wizard) is not always
+    % guaranteed to have settled on its final pixel geometry yet, which
+    % throws off the pixel-to-data scale behind Extent.
+    bogus = isnan(textHeight) || isnan(textWidth) || ...
+      abs(textHeight) > 0.4*abs(diff(dy)) || abs(textWidth) > 0.9*abs(diff(dx));
+    if bogus
+      textWidth = 0;
+      textHeight = 0.05 * abs(diff(dy)) * sign(diff(dy));
+    end
     gapY = textHeight/3;
     gapX = abs(gapY) * sign(diff(dx));
 
-    % Box position
-    boxWidth = rulerLength + 2.0 * gapX;
-    boxx = dx(1) + gapX;
-    boxy = dy(1) + gapY;
-    
+    % Box position - dx(1)/dy(1) is the screen bottom-left corner of the
+    % map, dx(2)/dy(2) the top-right corner, so the requested location
+    % just picks which edge(s) the box is anchored to
+    %
+    % The box (and with it the bar) is sized to fit whichever of the bar
+    % or the label is wider, so a short bar with a long label - which
+    % easily happens after zooming or reorienting the map - does not spill
+    % out of the background box
+    boxWidth  = (max(abs(rulerLength),textWidth) + 2*abs(gapX)) * sign(diff(dx));
+    boxHeight = 3*gapY + textHeight;
+
+    if any(strcmp(sB.location,{'sw','nw'}))
+      boxx = dx(1) + gapX;
+    else
+      boxx = dx(2) - gapX - boxWidth;
+    end
+
+    if any(strcmp(sB.location,{'sw','se'}))
+      boxy = dy(1) + gapY;
+    else
+      boxy = dy(2) - gapY - boxHeight;
+    end
+
     % Make bounding box. The z-coordinate is used to put the box under the
     % line.
     verts = [boxx, boxy;
-      boxx, boxy +  3*gapY + textHeight;
-      boxx + boxWidth, boxy + 3*gapY + textHeight;
+      boxx, boxy + boxHeight;
+      boxx + boxWidth, boxy + boxHeight;
       boxx + boxWidth, boxy];
     set(sB.shadow,'Vertices', cP(verts), ...
       'Faces', [1 2 3 4], ...
       'FaceColor', sB.backgroundColor , 'EdgeColor', 'none', ...
       'LineWidth', 1, 'FaceAlpha', sB.backgroundAlpha);
-    
-    % update text
-    set(sB.txt,'string',['\rm{\textbf{' num2str(sB.length) ' ' sBUnit '}}'],...
+
+    % update text (string and position were already set above to measure
+    % its extent)
+    set(sB.txt,...
       'HorizontalAlignment', 'Center',...
       'VerticalAlignment', 'baseline','color',sB.lineColor,...
       'Position', cP([boxx+boxWidth/2,boxy+3*gapY]));
 
     % Create line as a patch. The z-coordinate is used to layer the patch over
-    % top of the bounding box.
-    set(sB.ruler,'Vertices',cP([boxx+gapX, boxy+gapY; ...
-      boxx + gapX, boxy+2*gapY; ...
-      boxx + gapX + rulerLength, boxy + 2*gapY; ...
-      boxx + gapX + rulerLength, boxy + gapY]), ...
+    % top of the bounding box. The bar is centered within the box, so it
+    % stays centered under/above the label even when the label is wider
+    % than the bar itself.
+    rulerStart = boxx + (boxWidth - rulerLength)/2;
+    set(sB.ruler,'Vertices',cP([rulerStart, boxy+gapY; ...
+      rulerStart, boxy+2*gapY; ...
+      rulerStart + rulerLength, boxy + 2*gapY; ...
+      rulerStart + rulerLength, boxy + gapY]), ...
       'Faces',[1 2 3 4], 'FaceColor',sB.lineColor, 'FaceAlpha',1);
-        
+
     sB.setOnTop;
-    
+
     function pos = cP(pos)
       % interchange x and y if needed
-      if mod(xDir,2), pos(:,[1,2]) = pos(:,[2,1]); end      
+      if mod(xDir,2), pos(:,[1,2]) = pos(:,[2,1]); end
     end
-    
+
   end
-     
-end
-  
+
 end
 
+end
+
+function d = compassDirection(v,pC)
+% which compass direction a data direction v currently points to on
+% screen, given the plotting convention pC - E-S-W-N is 0-1-2-3
+
+if dot(v,pC.east) > 0.5
+  d = 0; % East
+elseif dot(v,pC.east) < -0.5
+  d = 2; % West
+elseif dot(v,pC.north) > 0.5
+  d = 3; % North
+else
+  d = 1; % South
+end
+
+end

@@ -13,8 +13,7 @@
 mtexdata small silent
 
 % compute grains
-grains = calcGrains(ebsd('indexed'),'removeQuadruplePoints');
-%grains = calcGrains(ebsd('indexed'));
+grains = calcGrains(ebsd,'removeQuadruplePoints','alpha',5);
 
 % smooth the grains a bit
 grains = smooth(grains,2);
@@ -73,10 +72,10 @@ hold off
 %
 % Triple points are not only a property of grains but also of grain
 % boundaries. Thus we may ask for all triple points that belong to
-% Fosterite - Forsterite boundaries with misorientation angle larger then
+% Forsterite - Forsterite boundaries with misorientation angle larger then
 % 60 degree
 
-% all Fosterite - Forsterite boundary segments
+% all Forsterite - Forsterite boundary segments
 gB_Fo = grains.boundary('Forsterite','Forsterite')
 
 % Fo - Fo segments with misorientation angle larger 60 degree

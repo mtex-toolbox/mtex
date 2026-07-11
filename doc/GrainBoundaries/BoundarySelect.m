@@ -14,7 +14,7 @@ mtexdata forsterite silent
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
 % and recompute grains
-[grains,ebsd] = calcGrains(ebsd,'minPixel',5);
+[grains,ebsd] = calcGrains(ebsd,'minPixel',5,'alpha',10);
 
 % smooth the grains a bit
 grains = smooth(grains,4);

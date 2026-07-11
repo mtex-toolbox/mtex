@@ -55,48 +55,40 @@ if ~check_option(varargin,'force')
   end
 end
 
-% start be defining a reference coordinate system
-% which uses the convention
-% * X || a
-% * Z || c*
+% start by defining a reference coordinate system
+% which uses the (default) convention
+% * X || a*
+% * Z || c
 switch pg.lattice
   case {'trigonal','hexagonal'}
-    abc = axisLength(:).' .* vector3d([1 -0.5 0],[0 sqrt(0.75) 0],[0 0 1]);
+    abc = axisLength(:).' .* vector3d([sqrt(0.75) 0 0],[-0.5 1 0],[0 0 1]);
 
   case {'orthorhombic','cubic'}
     abc = axisLength(:) .* vector3d.byXYZ(eye(3));
-    
+
   otherwise
 
     cangle = cos(angle);
-    sangle = sin(angle(3));
+    sangle = sin(angle(1));
     abc = axisLength(:).' .* vector3d(...
-      [1,cangle(3),cangle(2)],...
-      [0,sangle,(cangle(1) - cangle(2) * cangle(3))/sangle],...
-      [0,0,sqrt(1+2*prod(cangle) - sum(cangle.^2))/sangle]);
-    
+      [sqrt(1+2*prod(cangle) - sum(cangle.^2))/sangle,0,0],...
+      [(cangle(3) - cangle(1) * cangle(2))/sangle,sangle,0],...
+      [cangle(2),cangle(1),1]);
+
 end
 
 % extract alignment options
 % restrict to strings
 alignOpt = varargin(cellfun(@(s) ischar(s),varargin));
 
+% nothing to do - abc is already in the default X||a*, Z||c convention
 if isempty(alignOpt), return; end
 
 % compute a* b* c*
-switch pg.lattice
-  case {'trigonal','hexagonal'}
-    abcStar = vector3d([sqrt(0.75) 0 0],[0.5 1 0],[0 0 1]);
-
-  case {'orthorhombic','cubic'}
-    abcStar = abc;
-    
-  otherwise
-
-    abcStar = cross(abc([2 3 1]),abc([3 1 2]));
-
-end
-
+% (the direction of the reciprocal axes only depends on the physical
+% lattice, not on the coordinate frame abc happens to be expressed in,
+% so a single cross product formula works for all lattice types)
+abcStar = cross(abc([2 3 1]),abc([3 1 2]));
 
 % which arguments should be flipped
 flipthem = ~cellfun('isempty',regexpi(alignOpt,'\|\|[xyz]'));
@@ -107,8 +99,8 @@ alignOpt(flipthem) = cellfun(@(a) [a(end:-1:end-2) a(1:end-3)],alignOpt(flipthem
 % if nothing or only Y is specified set Z||c
 if ~any(cell2mat(regexpi(alignOpt,'z\|\|'))) && ...
     nnz(cell2mat(regexpi(alignOpt,'[xy]\|\|')))<=1
-  
-  p = '[xy]\|\|[abc]'; % check for something like x||a 
+
+  p = '[xy]\|\|[abc]'; % check for something like x||a
   if all(cellfun(@isempty,regexpi(alignOpt,['(?!' p '\*)' p])))
     alignOpt = [alignOpt,{'Z||c'}];
   else
@@ -122,19 +114,19 @@ alignment = cell(1,3);
 
 % extract alignment for each axis
 for ia = 1:3
-  
+
   al = regexpi(alignOpt,[axes(ia) '\|\|([abcdm]*\*?)'],'tokens');
   al = [al{:}];
-  alignment{ia} = char(al{:});    
-  
+  alignment{ia} = char(al{:});
+
 end
 
 % setup new x, y, z directions
 xyzNew = vector3d.zeros(1,3);
 for ia = 1:3
-  
+
   switch lower(alignment{ia})
- 
+
     case 'a'
       xyzNew(ia) = abc(1);
       if rem(ia,2) && isempty(alignment{4-ia}) && isempty(alignment{2})
@@ -165,7 +157,7 @@ for ia = 1:3
       xyzNew(ia) = sum(abc);
   end
 end
-  
+
 % set any missing axis as the cross product of the two others
 for ia = 1:3
   if norm(xyzNew(ia)) < 1e-6

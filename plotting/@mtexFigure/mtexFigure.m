@@ -94,6 +94,7 @@ classdef mtexFigure < handle
 
   properties (Access = protected)
     cBarShift
+    dcmListener % keeps the lazy data cursor listener alive
   end
   
   
@@ -154,14 +155,16 @@ classdef mtexFigure < handle
       varargin = delete_option(varargin,'position',1);
       optiondraw(mtexFig.parent,varargin{:});              
 
-      % set data cursor
+      % set data cursor - lazily. Actually creating MATLAB's
+      % DataCursorManager (via datacursormode(...)) is expensive and
+      % previously ran on every plot, even though it is only ever used if
+      % the user clicks the "Data Cursor" toolbar button. Instead we just
+      % watch for that activation and configure the cursor only then.
       if check_option(varargin,'datacursormode')
-        dcm_obj = datacursormode(mtexFig.parent);
-        set(dcm_obj,'SnapToDataVertex','off')
-        set(dcm_obj,'UpdateFcn',ensurecell(get_option(varargin,'datacursormode')));
-        if ~check_option(varargin,'3d')
-          datacursormode on;
-        end
+        updateFcn = ensurecell(get_option(varargin,'datacursormode'));
+        hManager = uigetmodemanager(mtexFig.parent);
+        mtexFig.dcmListener = addlistener(hManager,'CurrentMode','PostSet', ...
+          @(src,evt) setupDataCursor(mtexFig.parent,updateFcn));
       end
       
       set(mtexFig.parent,'DefaultAxesCreateFcn', @updateChildren);
@@ -278,5 +281,21 @@ classdef mtexFigure < handle
     end
     
   end
+end
+
+function setupDataCursor(fig,updateFcn)
+% called whenever the figure's current interaction mode changes; only
+% actually sets up the data cursor once the user switches to it
+
+hManager = uigetmodemanager(fig);
+if isempty(hManager.CurrentMode) || ...
+    ~strcmp(hManager.CurrentMode.Name,'Exploration.Datacursor')
+  return
+end
+
+dcm_obj = datacursormode(fig);
+set(dcm_obj,'SnapToDataVertex','off')
+set(dcm_obj,'UpdateFcn',updateFcn);
+
 end
 
