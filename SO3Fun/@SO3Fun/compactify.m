@@ -95,7 +95,7 @@ for i = 1:maxIter
     stepSize = 0.5*stepSize;
 
     % --- Local Termination ---
-    if stepSize < 1e-10
+    if stepSize < 1e-16
       error('Armijo failed.')
     end
   end
