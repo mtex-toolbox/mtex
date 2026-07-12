@@ -64,7 +64,8 @@ switch pg.lattice
     abc = axisLength(:).' .* vector3d([sqrt(0.75) 0 0],[-0.5 1 0],[0 0 1]);
 
   case {'orthorhombic','cubic'}
-    abc = axisLength(:) .* vector3d.byXYZ(eye(3));
+
+    abc = (axisLength(:) .* vector3d.byXYZ(eye(3))).';
 
   otherwise
 
