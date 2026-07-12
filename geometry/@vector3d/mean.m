@@ -67,9 +67,9 @@ else
     
   else
     
-    v.x = mean(v.x,varargin{:});
-    v.y = mean(v.y,varargin{:});
-    v.z = mean(v.z,varargin{:});
+    v.x = mean(v.x,varargin{:},'omitnan');
+    v.y = mean(v.y,varargin{:},'omitnan');
+    v.z = mean(v.z,varargin{:},'omitnan');
 
     v.opt = struct;
     v.isNormalized = false;
