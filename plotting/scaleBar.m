@@ -37,21 +37,7 @@ classdef scaleBar < handle
 %  etc. - this works no matter which @plottingConvention object was used to
 %  apply the view, since it never relies on a cached reference to it.
 %
-% Bugs/Issues
-%  [1] Using the hardware OpenGL renderer can sometimes cause the text not
-%  to appear on the scale bar. This can usually be fixed by adding the line
-%
-%   opengl software
-%
-%  _Before_ the call to scaleBar().
-%
-%  [2] The font and the bounding box do not scale with the figure window.
-%  Therefore, the desired figure window size needs to be set before the
-%  call to scaleBar().
-%
-% Authors
-%  Eric Payton, eric.payton@bam.de
-%  Philippe Pinard, pinard@gfe.rwth-aachen.de
+
 
 properties (Hidden = true)
   hgt      % handle of the hgtransform grouping the scale bar graphics
@@ -92,9 +78,9 @@ methods
     sB.ruler = patch('parent',sB.hgt,'Faces',1,'Vertices',[NaN NaN NaN]);
 
     % apply user options
-    sB.backgroundColor = get_option(varargin,'BackgroundColor',sB.backgroundColor);
-    sB.backgroundAlpha = get_option(varargin,'BackgroundAlpha',sB.backgroundAlpha);
-    sB.lineColor       = get_option(varargin,'LineColor',sB.lineColor);
+    sB.backgroundColor = get_option(varargin,'SBBackgroundColor',sB.backgroundColor);
+    sB.backgroundAlpha = get_option(varargin,'SBBackgroundAlpha',sB.backgroundAlpha);
+    sB.lineColor       = get_option(varargin,'SBLineColor',sB.lineColor);
     sB.length          = get_option(varargin,'Length',sB.length);
     sB.location        = get_option(varargin,'Location',sB.location);
 
