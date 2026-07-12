@@ -10,7 +10,6 @@ classdef S2FunBingham < S2Fun
   properties (SetAccess=protected)
     N = 1   % normalization constant
     antipodal = 1
-    cEllipse = []
   end
   
   
@@ -70,7 +69,7 @@ classdef S2FunBingham < S2Fun
   
   methods (Static = true)
     
-    BS2 = fit(v,varargin)
+    [BS2,ab,rot] = fit(v,varargin)
     BS2 = example(varargin)
     
   end

@@ -20,8 +20,8 @@
 % A simple example:
 Z = [-10 -4 0];
 a = rotation.rand(1) .* vector3d([xvector yvector zvector]);
-bs2 = S2FunBingham(Z,a);
-plot(bs2)
+bingFun = S2FunBingham(Z,a);
+plot(bingFun)
 
 %% Meaning of $Z$
 % $k1 = k2$ defines a rotational symmetric point maximum and $k2 = 0$
@@ -32,8 +32,8 @@ mtexFig = newMtexFigure('layout',[length(kappa) length(kappa)]);
 for k2 = kappa
   for k1 = kappa
     if k1 >= k2
-      bs = S2FunBingham([-k1 -k2 0]);
-      plot(bs,'colorRange',[0,25],'TR',[{'$\kappa_1 :$'} ; num2str(k1)],'BR',[{'$\kappa_2 :$'} ; num2str(k2)])
+      bFun = S2FunBingham([-k1 -k2 0]);
+      plot(bFun,'colorRange',[0,25],'TR',[{'$\kappa_1 :$'} ; num2str(k1)],'BR',[{'$\kappa_2 :$'} ; num2str(k2)])
 %       mtexTitle(['$\kappa_1 :$' num2str(k1)  '  ' '$\kappa_2 :$' num2str(k2)],'FontSize',14)
       nextAxis
     else
@@ -47,10 +47,10 @@ mtexFig.drawNow;
 %% Drawing a random sample of the Bingham distribution
 
 close
-v = bs2.discreteSample(50)
-plot(bs2)
+v = bingFun.discreteSample(50)
+plot(bingFun) 
 hold on
-plot(v,'MarkerFaceColor','k')
+plot(v,'MarkerEdgeColor','k','MarkerFaceColor','gray','MarkerFaceAlpha',0.5)
 hold off
 
 
@@ -60,30 +60,26 @@ hold off
 % best fitting Bingham distribution by
 
 % estimate a Bingham distribution
-bs = S2FunBingham.fit(v,'confElli',0.95)
+[bingFunEst,ab,rot] = S2FunBingham.fit(v)
 
 %%
 % Lets plot the fitted distribution with the data
 
-plot(bs)
+plot(bingFunEst)
 hold on
-plot(v,'MarkerFaceColor','Black')
+plot(v,'MarkerEdgeColor','k','MarkerFaceColor','gray','MarkerFaceAlpha',0.5)
 hold off
 
 %%
-% Under the assumption of sufficiently many and sufficiently concentrated
-% data we may also estimate a confidence ellipse for the mean direction
-% (default p = 0.95). The center of the ellipse is given by the largest
-% principle vector stored in |bs.a(3)|
+% The function <|S2FunBingham.fit, S2FunBingham.fit.html> provides two
+% additional output arguments |ab| and |rot|. Those describe the half axes
+% $a$ and $b$ and the orientation |rot| of the confidence ellipse of the
+% mean mean direction |bingFunEst.a(3)| of the estimated Bingham
+% distribution at the confidence level $p=0.95$. We may visualize this
+% confidence ellipse by the commands
 
-annotate(bs.a(3),'MarkerFaceColor','red','MarkerSize',10)
+% mark the mean direction
+annotate(bingFunEst.a(3),'MarkerFaceColor','red','MarkerSize',10)
 
-%%
-% The orientation of the ellipse is specified by all the principle vectors
-% |bs.a| and the a and b axes are computed by the command |cEllipse|
-
-mtexColorMap white2black
-
-% annotate the ellipse
-ellipse(bs.cEllipseRot,bs.cEllipse(1),bs.cEllipse(2), ...
-    'linewidth',2,'lineColor','r','linestyle','-.')
+% annotate the p=0.95 confidence ellipse
+ellipse(rot,ab(1),ab(2), 'linewidth',3,'lineColor','k')

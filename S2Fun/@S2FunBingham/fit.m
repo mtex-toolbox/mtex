@@ -1,24 +1,25 @@
-function BS2 = fit(v,varargin)
+function [BS2,ab,rot] = fit(v,varargin)
 % function to fit Bingham parameters
 %
 % Description
-% confidence ellipse for the mean direction based on Tanaka / 
+% confidence ellipse for the mean direction based on Tanaka /
 % asymptotic covariance of the maximum eigenvector
 % (1999) https://doi.org/10.1186/BF03351601
 %
 % Syntax
 %   BS2 = S2FunBingham.fit(v)
+%   [BS2, ab, rot] = S2FunBingham.fit(v,'p',0.95)
 %
 % Input
 %  v - vector3d
 %
 % Output
 %  BS2 - @S2FunBingham
-%
+%  ab  - semi axes length of the confidence ellipse (in radian)
+%  rot - orientation of the confidence ellipse, to be used with |ellipse|
 %
 % Options
-%  ConfElli - confidence level p (default at 0.95)
-%
+%  p - confidence level p of the ellipse computed (default at 0.95)
 %
 % Example
 %
@@ -29,13 +30,14 @@ function BS2 = fit(v,varargin)
 %     rotation.byAxisAngle(vector3d.X,rand(N,1)*2*pi) * vector3d.Y;
 %
 %   % fit a Bingham distribution
-%   S2F = S2FunBingham.fit(v)
+%   [S2F, ab, rot] = S2FunBingham.fit(v)
 %
 %   % visualization
 %   plot(S2F)
 %   mtexColorMap LaboTeX
 %   hold on
 %   plot(v,'Markercolor','k','MarkerSize',3)
+%   ellipse(rot,ab(1),ab(2))
 %   hold off
 %
 
@@ -49,13 +51,12 @@ Z =estimateZ(kappa);
 BS2 = S2FunBingham(Z, a);
 BS2.N = BS2.normalizationConst;
 
-% % 
-% % % add the estimate of confidence level, given as ellipse half
-% % % axes e.g.
-% % % plot(v)
-% % % ellipse(rotation.byMatrix(BS2.a.xyz'),BS2.cEllipse(1),BS2.cEllipse(2))
-p = get_option(varargin,'ConfElli',0.95);
+if nargout <= 1, return; end
 
+% estimate of confidence level, given as ellipse half axes, e.g.
+% plot(v)
+% ellipse(rot,ab(1),ab(2))
+p = get_option(varargin,'p',0.95);
 
 % compute
 N = length(v);
@@ -86,7 +87,7 @@ Sigma(2,1) = Sigma(1,2);
 % semi-axis lengths of the confidence ellipse (in radians).
 c = chi2inv(p,2);
 
-BS2.cEllipse = sqrt(c*diag(E)).';
+ab = sqrt(c*diag(E)).';
 
 % rotate the tangent-plane basis into the principal directions of the
 % covariance ellipse while keeping the mean direction (third eigenvector)
@@ -94,7 +95,7 @@ BS2.cEllipse = sqrt(c*diag(E)).';
 A = a.xyz; B = A;
 B(1:2,:) = V' * A(1:2,:);
 
-BS2.cEllipseRot = rotation.byMatrix(B');
+rot = rotation.byMatrix(B');
 
 
   function Z = estimateZ(kappa)
