@@ -51,7 +51,7 @@ plot(d,'MarkerSize',3,'upper')
 
 %%
 %Next, we compute the mean angular deviation for each group of grid points
-vd = mean(angle(mean(d),d));
+vd = mean(angle(mean(d),d),'omitmissing');
 % and plot those
 plot(d,repmat(vd,length(o),1)/degree,'MarkerSize',3)
 mtexColorbar('title','avergage pole dispersion')

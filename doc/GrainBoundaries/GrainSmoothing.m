@@ -59,7 +59,7 @@ histogram(grains_smooth.boundary('indexed').direction, ...
 
 iter = [1 5 10 25];
 color = copper(length(iter)+1);
-plot(grains.boundary,'linewidth',1,'linecolor','Fuchsia')
+plot(grains.boundary,'linewidth',1,'linecolor','Fuchsia','micronbar','off')
 d={};
 for i = 1:length(iter)
   grains_smooth = smooth(grains,iter(i));

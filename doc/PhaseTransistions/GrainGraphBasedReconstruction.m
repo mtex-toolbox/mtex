@@ -351,8 +351,8 @@ hold off
 % not reconstructed pixels. To this end we first run grain reconstruction
 % on the parent map
 
-[parentGrains, parentEBSD.grainId] = ...
-  calcGrains(parentEBSD('indexed'),'angle',3*degree,'minPixel',10);
+[parentGrains, parentEBSD] = ...
+  calcGrains(parentEBSD,'angle',3*degree,'minPixel',10);
 
 parentGrains = smooth(parentGrains,10);
 

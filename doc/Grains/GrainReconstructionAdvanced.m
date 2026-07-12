@@ -104,7 +104,7 @@ colorKey.oriRef = mean(ebsd.orientations);
 plot(ebsd,colorKey.orientation2color(ebsd.orientations))
 
 %%
-% We obeserve that the are no rapid changes in the orientation which would
+% We observe that the are no rapid changes in the orientation which would
 % allow for applying the threshold based algorithm. Setting the threshold
 % angle to a very small value would include many irrelevant or false regions.
 
@@ -135,8 +135,8 @@ hold off
 % slightly oversegmented.
 %
 
-grains_FMC = calcGrains(ebsd('indexed'),'FMC',3.8)
-grains = calcGrains(ebsd('indexed'))
+grains_FMC = calcGrains(ebsd,'FMC',3.8)
+grains = calcGrains(ebsd)
 
 % smooth grains to remove staircase effect
 grains_FMC = smooth(grains_FMC);
