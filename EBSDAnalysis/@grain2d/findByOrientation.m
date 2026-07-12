@@ -18,12 +18,11 @@ function grains = findByOrientation( grains,ori, epsilon )
 if nargin == 2, epsilon = 1*degree; end
 
 % restrict to the right phase
-if isa(ori,'orientation')
-  phaseId = cellfun(@(cs) isa(cs,'crystalSymmetry') & ori.CS == cs, grains.CSList);
-  grains = subSet(grains,ismember(grains.phaseId,find(phaseId)));
-end
+phaseId = find(grains.CSList == ori.CS);
+if isempty(phaseId), grains = []; return, end
+ind = grains.phaseId == phaseId;
 
 % find grains by their mean orientation
-ind = find(grains.meanOrientation,ori,epsilon).';
+ind(ind) = angle(ori,grains.prop.meanRotation(ind)) < epsilon;
 
-grains = subSet(grains,any(ind,2));
+grains = subSet(grains,ind);
