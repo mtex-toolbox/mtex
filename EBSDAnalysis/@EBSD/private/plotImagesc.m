@@ -72,6 +72,7 @@ else
   else
     A(img.sub) = 1;
   end
+  A(isnan(C)) = 0;
 
   holdState = ishold(ax); hold(ax,'on');
   h = imagesc(ax,img.x,img.y,C,'AlphaData',A);
