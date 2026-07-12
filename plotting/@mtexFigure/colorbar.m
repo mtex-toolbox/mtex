@@ -2,21 +2,33 @@ function h = colorbar(mtexFig,varargin)
 % colorbar
 
 if isempty(mtexFig.cBarAxis) % create some new colorbars
-    
+
+  % MATLAB resets the FontSizeMode of axes titles to "auto" as a side
+  % effect of adding a colorbar to any axis in the figure - remember any
+  % titles with an explicitly set FontSize so we can restore them below
+  titles = [mtexFig.children.Title];
+  isManualTitleSize = strcmp({titles.FontSizeMode},'manual');
+  manualTitleSize = [titles.FontSize];
+
   if (~mtexFig.keepAspectRatio || equalScale) ...
       && ~check_option(varargin,'multiple') % one new colorbar
-  
+
     mtexFig.cBarAxis = addColorbar(mtexFig.children(end),varargin{:});
-    
+
   else % many new colorbars
-    
+
     mtexFig.cBarAxis = gobjects(numel(mtexFig.children),1);
-    for i = 1:numel(mtexFig.children)      
+    for i = 1:numel(mtexFig.children)
       mtexFig.cBarAxis(i) = addColorbar(mtexFig.children(i),varargin{:});
     end
-    
-  end  
-  
+
+  end
+
+  % restore title font sizes that got reset by adding the colorbar(s)
+  for i = find(isManualTitleSize)
+    titles(i).FontSize = manualTitleSize(i);
+  end
+
   % adjust width of the colorbars
   pos = {mtexFig.cBarAxis.Position};
   for i = 1:numel(pos)
