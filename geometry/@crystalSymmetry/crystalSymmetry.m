@@ -90,7 +90,6 @@ classdef crystalSymmetry < symmetry & phaseItem
 %  47  icosahedral     Ih       -5-32/m   -5-32/m  532
 %
 
-
   properties
     axes = [xvector,yvector,zvector]; % coordinate system
     %mineral = ''                      % mineral name
@@ -105,6 +104,8 @@ classdef crystalSymmetry < symmetry & phaseItem
     aAxis       % a-axis
     bAxis       % b-axis
     cAxis       % c-axis
+    abg         % alpha, beta, gamma
+    abc         % a, b, c
     aAxisRec    % a*-axis reciprocal coordinate system
     bAxisRec    % b*-axis reciprocal coordinate system
     cAxisRec    % c*-axis reciprocal coordinate system
@@ -228,6 +229,14 @@ classdef crystalSymmetry < symmetry & phaseItem
     function c = get.cAxisRec(cs)
       c = cs.axesDual;
       c = Miller(c(3),cs);
+    end
+
+    function abg = get.abg(cs)
+      abg = angle(cs.axes([2,3,1]),cs.axes([3,1,2]));
+    end
+
+    function abc = get.abc(cs)
+      abc = norm(cs.axes);
     end
 
     function alpha = get.alpha(cs)

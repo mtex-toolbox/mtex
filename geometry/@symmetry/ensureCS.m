@@ -3,8 +3,8 @@ function obj = ensureCS(csNew,obj)
 
 csOld = obj.CS;
 
-% if equal, everythink is ok
-if csOld.Laue == csNew.Laue, return;end
+% if equal, everything is ok
+if eqTol(csOld,csNew), return; end
 
 % check for compatibility
 try
@@ -21,15 +21,17 @@ M = axesOld^(-1) * axesNew;
 MM = M'*M;%norm(MM - diag(diag(MM))) / norm(MM)
 if csNew.id == csOld.id && ...
     norm(MM - eye(3)) / norm(MM) < 1*10^-1
-  if norm(M - eye(3)) > 1e-4
+  if norm(M - eye(3)) > 1e-1
     disp(' ');
     disp('  The involved symmetries have different reference systems');
     disp(['  1: ' char(csOld,'verbose')]);
     disp(['  2: ' char(csNew,'verbose')]);
     disp('  I''m going to transform the data from the first one to the second one');
     disp(' ');
-  end
-  obj = obj.transformReferenceFrame(csNew);
+    obj = obj.transformReferenceFrame(csNew);
+  else
+    obj.CS = csNew;
+  end  
   return
 end
 
