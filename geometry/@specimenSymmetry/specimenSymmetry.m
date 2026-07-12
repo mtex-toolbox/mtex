@@ -60,6 +60,25 @@ methods
     disp([inputname(1) ' = ' char(s.lattice) ' ' doclink(s) ' ' docmethods(inputname(1))]);
     disp(' ');
   end
+
+  function out = eqTol(obj1,obj2)
+    % returns true if both have same symmetry elements and the same lattice
+      
+    out = obj1 == obj2 || ...
+      (isa(obj1,'specimenSymmetry') && ...
+      isa(obj2,'specimenSymmetry') && obj1.Laue.id == obj1.Laue.id);
+
+    end
+
+    function out = sim(obj1,obj2)
+      % symmetries are similar if they have same symmetry elements and
+      % lattice. It does not require does the axes alignments coincide
+      
+      out = obj1 == obj2 || ...
+        (isa(obj1,'specimenSymmetry') && ...
+        isa(obj2,'specimenSymmetry') && obj1.Laue.id == obj1.Laue.id);
+
+    end
   
 end
 

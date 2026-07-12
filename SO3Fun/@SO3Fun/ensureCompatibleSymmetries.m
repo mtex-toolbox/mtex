@@ -25,15 +25,12 @@ function ensureCompatibleSymmetries(SO3F1,varargin)
 %  msg - yields a error message if the symmetry do not match
 %
 % Options
-%  conv - be shure switched symmetries match
+%  conv - be sure switched symmetries match
 %
 
 
 if check_option(varargin,'antipodal')
-  if SO3F1.CS ~= SO3F1.SS
-    error('ODF can only be antipodal if both symmetries coincide!')
-  end
-  return
+  assert(SO3F1.CS == SO3F1.SS,'ODF can only be antipodal if both symmetries coincide!')
 end
 
 SO3F2 = varargin{1};
@@ -44,25 +41,23 @@ if isnumeric(SO3F1) || isnumeric(SO3F2) || ...
   return
 end
 
-
-
 % TODO: Currently only same symmetries are suitable.
 %       Possibly use LaueGroups or properGroups
 %       By changing that also update the code in SO3FunComposition.
 
 if isa(SO3F2,'S2Fun')
   % compare symmetries in case of convolution with S2Fun
-  assert(SO3F1.SLeft == SO3F2.s,...
+  assert(eqTol(SO3F1.SLeft,SO3F2.s),...
     'By convolution of a @SO3Fun with a @S2Fun the symmetries have to be compatible.');
   return
 end
 
 if check_option(varargin,'conv')
   % compare symmetries in case of convolution
-  em = SO3F1.SRight ~= SO3F2.SLeft;
+  em = ~eqtol(SO3F1.SRight, SO3F2.SLeft);
 else
   % compare all symmetrys in case of +, -, *, /, cat, subsasgn
-  em = (SO3F1.CS ~= SO3F2.CS) || (SO3F1.SS ~= SO3F2.SS);
+  em = ~eqTol(SO3F1.CS, SO3F2.CS) || ~eqTol(SO3F1.SS, SO3F2.SS);
 end
 
 
