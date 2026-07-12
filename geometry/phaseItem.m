@@ -22,8 +22,16 @@ classdef (Abstract) phaseItem < handle & matlab.mixin.Heterogeneous %& matlab.mi
     end
     
     function out = eqTol(obj1,obj2)
-      % returns to if both have same symmetry elements and the same lattice
-      
+      % returns true if both have the same Laue class, the same lattice
+      % and the same crystal reference frame alignment (within tolerance)
+      %
+      % Note: for arrays this exits as soon as any element pair matches by
+      % object identity, returning the raw identity-comparison array for
+      % all elements. Safe when aggregated with any(...) (the common "does
+      % X match anything in this list" pattern), but the returned array is
+      % not reliable per-index if a call mixes an identical pair with a
+      % merely-similar-but-not-identical one.
+
       out = obj1 == obj2;
 
       % if we found one -> this is sufficient for us
@@ -38,9 +46,17 @@ classdef (Abstract) phaseItem < handle & matlab.mixin.Heterogeneous %& matlab.mi
     end
 
     function out = sim(obj1,obj2)
-      % symmetries are similar if they have same symmetry elements and
-      % lattice. It does not require does the axes alignments coincide
-      
+      % symmetries are similar if they have the same Laue class and the
+      % same lattice. Unlike eqTol, this does not require the crystal
+      % reference frame alignments to coincide.
+      %
+      % Note: for arrays this exits as soon as any element pair matches by
+      % object identity, returning the raw identity-comparison array for
+      % all elements. Safe when aggregated with any(...) (the common "does
+      % X match anything in this list" pattern), but the returned array is
+      % not reliable per-index if a call mixes an identical pair with a
+      % merely-similar-but-not-identical one.
+
       out = obj1 == obj2;
 
       % if we found one -> this is sufficient for us
