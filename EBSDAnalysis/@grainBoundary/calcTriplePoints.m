@@ -1,10 +1,14 @@
-function tP = calcTriplePoints(gB)
+function tP = calcTriplePoints(gB,varargin)
 %
 % Input
 %  gB - @grainBoundary
+%
+% Output
+%  tP - @triplePointList
+%
 
 
-if 1
+if 1 % this the fast implementation
 
   % list of phaseIds ordered as grainIds
 grainId = gB.grainId;
@@ -30,8 +34,8 @@ vpos = zeros(nV,1); vpos(cand) = 1:numel(cand); % candidate vertex -> row
 r = []; c = [];
 for k = 1:2
   hit = vpos(F(:,k)) > 0;                        % faces whose k-th vertex is a candidate
-  r = [r; vpos(F(hit,k))];   %#ok<AGROW>
-  c = [c; find(hit)];        %#ok<AGROW>
+  r = [r; vpos(F(hit,k))];   
+  c = [c; find(hit)];        
 end
 I_VFc = sparse(r, c, 1, numel(cand), nF);
 
@@ -62,7 +66,7 @@ iV = reshape(iV(iV ~= repmat(itP.',size(iV,1),1)).',3,[]).';
 tP = triplePointList(itP,gB.allV,...
   tpGrainId,tPBoundaryId,tpPhaseId,iV,gB.phaseMap,gB.CSList);
 
-else
+else % this is the slow more understandable route
   
   % list of phaseIds ordered as grainIds
   grainId = gB.grainId;
