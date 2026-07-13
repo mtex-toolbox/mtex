@@ -158,7 +158,7 @@ methods
   
   function F = set.antipodal(F,value)
     if ~value, return; end
-    ensureCompatibleSymmetries(F,'antipodal');
+    assert(F.CS == F.SS,'ODF can only be antipodal if both symmetries coincide!')
     F = F.symmetrise('antipodal');
   end
   
