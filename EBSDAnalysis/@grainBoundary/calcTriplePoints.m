@@ -8,7 +8,7 @@ function tP = calcTriplePoints(gB,varargin)
 %
 
 
-if 1 % this the fast implementation
+if 1 % the fast implementation
 
   % list of phaseIds ordered as grainIds
 grainId = gB.grainId;
@@ -45,7 +45,10 @@ I_VGc = (I_VFc * gB.I_FG) == 2;
 
 % keep candidates that also touch exactly 3 grains
 isTP  = full(sum(I_VGc,2) == 3);
-itP   = cand(isTP);                             % triple-point vertex ids
+% itP must stay a column even when numel(cand)==1: MATLAB's scalar
+% logical indexing (cand(isTP) with both 1x1) collapses to 0x0 instead
+% of 0x1 when isTP is false, unlike the Nx1 case for any other N.
+itP   = reshape(cand(isTP),[],1);               % triple-point vertex ids
 I_VG  = I_VGc(isTP,:);                          % (#tp x nG) grain incidence
 I_VFt = I_VFc(isTP,:);                          % (#tp x nF) face incidence
 
