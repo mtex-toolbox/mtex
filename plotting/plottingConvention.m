@@ -146,6 +146,16 @@ classdef plottingConvention < matlab.mixin.Copyable
       
       else % map plot
 
+        % nothing to do if the camera already matches - this avoids firing
+        % the camera PostSet listeners (e.g. the scale bar's) for a no-op
+        % view change
+        try
+          if angle(plottingConvention.getView(ax).rot, pC.rot) < 1e-6
+            return
+          end
+        catch
+        end
+
         %ax.CameraPosition = ax.CameraTarget + 1000*pC.outOfScreen.xyz;
 
         ax.CameraUpVector = pC.north.xyz;
