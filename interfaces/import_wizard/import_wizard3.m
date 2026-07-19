@@ -152,12 +152,18 @@ classdef import_wizard3 < matlab.apps.AppBase
         'Padding', [4 4 4 4]);
 
       app.UpFolderButton = uibutton(app.FileBrowserLayout, 'push', ...
-        'Text', char(8593), ... % "↑"
+        'Text', char(8593), ... % "↑" fallback if the icon cannot be built
         'Tooltip', 'Up one folder', ...
         'FontWeight', 'bold', ...
         'ButtonPushedFcn', createCallbackFcn(app, @UpFolderButtonPushed, true));
       app.UpFolderButton.Layout.Row = 1;
       app.UpFolderButton.Layout.Column = 1;
+
+      upIcon = treeIconPath(app, 'up');
+      if ~isempty(upIcon)
+        app.UpFolderButton.Icon = upIcon;
+        app.UpFolderButton.Text = '';
+      end
 
       app.CurrentPathLabel = uilabel(app.FileBrowserLayout, ...
         'Text', '', ...
@@ -168,7 +174,7 @@ classdef import_wizard3 < matlab.apps.AppBase
 
       app.FileTree = uitree(app.FileBrowserLayout, ...
         'FontSize', app.FontSize - 1, ...
-        'SelectionChangedFcn', createCallbackFcn(app, @FileTreeSelectionChanged, true), ...
+        'ClickedFcn', createCallbackFcn(app, @FileTreeClicked, true), ...
         'NodeExpandedFcn', createCallbackFcn(app, @FileTreeNodeExpanded, true), ...
         'DoubleClickedFcn', createCallbackFcn(app, @FileTreeDoubleClicked, true));
       app.FileTree.Layout.Row = 2;
@@ -391,7 +397,11 @@ classdef import_wizard3 < matlab.apps.AppBase
       names = {listing.name};
       isHidden = startsWith(names, '.');
       listing = listing(~isHidden);
+      % subfolders first, files last, each group alphabetically (the
+      % second sort is stable, so the alphabetical order is preserved)
       [~, order] = sort(lower(string({listing.name})));
+      listing = listing(order);
+      [~, order] = sort(~[listing.isdir]);
       listing = listing(order);
 
       folderIcon = treeIconPath(app, 'folder');
@@ -418,25 +428,26 @@ classdef import_wizard3 < matlab.apps.AppBase
     end
 
     function pth = treeIconPath(~, kind)
-      % Lazily render and cache the 16x16 png icons for the file browser
-      % tree: an amber folder and a white page with a tiny colored phase
-      % map for EBSD data files. Returns '' if the icon cannot be built.
+      % Lazily render and cache the 16x16 png icons for the file browser:
+      % an amber folder, the same folder with an up arrow for the "up one
+      % folder" button and a white page with a tiny colored phase map for
+      % EBSD data files. Returns '' if the icon cannot be built.
       pth = char(fullfile(tempdir, ['mtex_wizard_icon_' kind '.png']));
       if isfile(pth), return; end
 
       try
         n = 16;
-        if strcmp(kind, 'folder')
+        if strcmp(kind, 'ebsd')
+          mask = false(n);
+          mask(2:15, 3:14) = true;  % page
+          fill = [1 1 1];
+          edge = [0.45 0.45 0.45];
+        else % folder / up
           mask = false(n);
           mask(6:14, 2:15) = true;  % body
           mask(4:6, 2:8) = true;    % tab
           fill = [0.99 0.80 0.30];
           edge = [0.75 0.55 0.12];
-        else
-          mask = false(n);
-          mask(2:15, 3:14) = true;  % page
-          fill = [1 1 1];
-          edge = [0.45 0.45 0.45];
         end
 
         % fill color inside, edge color on the one pixel wide outline
@@ -450,18 +461,31 @@ classdef import_wizard3 < matlab.apps.AppBase
           img(:,:,c) = ch;
         end
 
-        if ~strcmp(kind, 'folder')
-          % 2x2 pixel blocks resembling a small EBSD phase map
-          colors = [0.85 0.33 0.10; 0.00 0.45 0.74; 0.47 0.67 0.19; 0.93 0.69 0.13];
-          ci = 0;
-          for r = 5:2:11
-            ci = ci + 1; % shift the color cycle from row to row
-            for c = 5:2:11
-              ci = ci + 1;
-              col = colors(mod(ci-1, 4)+1, :);
-              img(r:r+1, c:c+1, :) = reshape(col, 1, 1, 3) .* ones(2,2,3);
+        switch kind
+          case 'ebsd'
+            % 2x2 pixel blocks resembling a small EBSD phase map
+            colors = [0.85 0.33 0.10; 0.00 0.45 0.74; 0.47 0.67 0.19; 0.93 0.69 0.13];
+            ci = 0;
+            for r = 5:2:11
+              ci = ci + 1; % shift the color cycle from row to row
+              for c = 5:2:11
+                ci = ci + 1;
+                col = colors(mod(ci-1, 4)+1, :);
+                img(r:r+1, c:c+1, :) = reshape(col, 1, 1, 3) .* ones(2,2,3);
+              end
             end
-          end
+          case 'up'
+            % white up arrow on the folder body
+            arrow = false(n);
+            arrow(7, 8:9) = true;     % tip
+            arrow(8, 7:10) = true;
+            arrow(9, 6:11) = true;    % head
+            arrow(10:13, 8:9) = true; % shaft
+            for c = 1:3
+              ch = img(:,:,c);
+              ch(arrow) = 1;
+              img(:,:,c) = ch;
+            end
         end
 
         imwrite(img, pth, 'Alpha', double(mask))
@@ -1113,17 +1137,21 @@ classdef import_wizard3 < matlab.apps.AppBase
   end
 
   methods (Access = private)
-    function FileTreeSelectionChanged(app, event)
-      % single click / cursor selection only opens the branch in place -
-      % descending into a folder requires a double click or Enter
-      node = event.SelectedNodes;
-      if ~isscalar(node) || isempty(node.NodeData)
+    function FileTreeClicked(app, event)
+      % a mouse click on a folder only opens its branch in place -
+      % descending into a folder requires a double click or Enter. Only
+      % genuine clicks land here, so moving the selection with the cursor
+      % keys does not open folders. Expand only branches that were never
+      % populated, otherwise a collapse via the chevron would be undone
+      % right away by this callback.
+      node = event.InteractionInformation.Node;
+      if ~isscalar(node) || isempty(node.NodeData) || ...
+          ~strcmp(node.NodeData.Type, 'Folder')
         return
       end
 
-      data = node.NodeData;
-      if strcmp(data.Type, 'Folder')
-        populateFolderNode(app, node, data.Path)
+      if ~isempty(node.Children) && isempty(node.Children(1).NodeData)
+        populateFolderNode(app, node, node.NodeData.Path)
         expand(node)
       end
     end
