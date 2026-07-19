@@ -1,6 +1,6 @@
 classdef import_wizard3 < matlab.apps.AppBase
-  % EBSD app variant with lazy analysis UI, checkbox tree plot selection,
-  % compact layout, and a single self-contained updatePlot routine.
+  % EBSD app variant with lazy analysis UI, one colorized tab per plot
+  % view, compact layout, and a single self-contained updatePlot routine.
 
   properties (Access = public)
     UIFigure                       matlab.ui.Figure
@@ -24,14 +24,12 @@ classdef import_wizard3 < matlab.apps.AppBase
 
 
     TabGroup                       matlab.ui.container.TabGroup
-    MapsTab                        matlab.ui.container.Tab
-    IPFTab                         matlab.ui.container.Tab
+    MapTabs                        matlab.ui.container.Tab       % phase map + one tab per property
+    MapAxes                        matlab.ui.control.UIAxes      % parallel to MapTabs
+    IPFTabs                        matlab.ui.container.Tab       % 1x3 array: IPF X / Y / Z
+    IPFAxes                        matlab.ui.control.UIAxes      % 1x3 array
     PFTab                          matlab.ui.container.Tab
     ImagesTab                      matlab.ui.container.Tab
-    MapsDropDown                   matlab.ui.control.DropDown
-    MapsAxes                       matlab.ui.control.UIAxes
-    IPFDirectionDropDown           matlab.ui.control.DropDown
-    IPFAxes                        matlab.ui.control.UIAxes
     PFMillerField                  matlab.ui.control.EditField   % 1x3 array
     PFAxes                         matlab.ui.control.UIAxes      % 1x3 array
     ImagesDropDown                 matlab.ui.control.DropDown
@@ -51,7 +49,8 @@ classdef import_wizard3 < matlab.apps.AppBase
     ebsd
     Color cell = {}
     AnalysisUICreated logical = false
-    LastSig struct = struct('Maps',"",'IPF',"",'PF',"",'Images',"")
+    LastSig struct = struct()   % per-tab render signatures, see invalidateAllSigs
+    MapNames cell = {}          % map view names parallel to MapTabs
     FontSize double = 14
     CurrentFolder string = ""
     LoadedFilePath string = "" % Keeps track of the path of the imported EBSD file
@@ -73,6 +72,15 @@ classdef import_wizard3 < matlab.apps.AppBase
       plottingConvention( zvector, -yvector)
       plottingConvention(-zvector, -yvector)], ...
       'VariableNames', {'Key', 'Label', 'how2plot'})
+
+    % tab label colors: one color per plot category so that map, IPF,
+    % pole figure and image tabs are distinguishable at a glance
+    TabColors = struct( ...
+      'Maps',     [0.00 0.35 0.68], ...
+      'IPF',      [0.13 0.55 0.20], ...
+      'PF',       [0.49 0.18 0.56], ...
+      'Images',   [0.85 0.33 0.10], ...
+      'Disabled', [0.60 0.60 0.60])
   end
 
   methods (Access = private)
@@ -83,6 +91,7 @@ classdef import_wizard3 < matlab.apps.AppBase
       app.UIFigure.Position = [100 100 1300 700];
       app.UIFigure.WindowState = 'maximized';
       app.UIFigure.Name = 'MTEX Import Wizard';
+      app.UIFigure.WindowKeyPressFcn = createCallbackFcn(app, @WizardKeyPress, true);
       try
         app.UIFigure.Theme = 'light';
       catch
@@ -107,7 +116,7 @@ classdef import_wizard3 < matlab.apps.AppBase
 
       app.LeftLayout = uigridlayout(app.LeftPanel, ...
         'ColumnWidth', {'1x'}, ...
-        'RowHeight', {270, 95, '1x', 210, 80}, ... 
+        'RowHeight', {270, 118, '1x', 210, 80}, ...
         'RowSpacing', 10, ...
         'Padding', [0 0 0 0]);
 
@@ -129,8 +138,9 @@ classdef import_wizard3 < matlab.apps.AppBase
     function createFileBrowser(app)
       % Compact inline file browser (top-left): a uitree showing folders
       % and EBSD files of the current directory, plus a back button and
-      % path label for navigation. Double-clicking a file imports it;
-      % single-clicking (selecting) a folder navigates into it.
+      % path label for navigation. Single-clicking a folder only expands
+      % its branch in place; double-clicking (or pressing Enter) descends
+      % into a folder or imports a file, Backspace navigates up.
       app.FileBrowserPanel = uipanel(app.LeftLayout, 'BorderType', 'line');
       app.FileBrowserPanel.Layout.Row = 1;
 
@@ -286,53 +296,29 @@ classdef import_wizard3 < matlab.apps.AppBase
     end
 
     function createTabs(app)
-      % The plot area is a tab group. Each tab owns its own axes so that no
-      % single axis is ever repurposed between a map, an IPF map, a pole
-      % figure and an image - which previously forced fragile cla/reset and
-      % appdata juggling and broke the scale bar lifecycle.
+      % The plot area is a tab group. Every view is its own tab owning its
+      % own axes so that no single axis is ever repurposed between a map,
+      % an IPF map, a pole figure and an image - which previously forced
+      % fragile cla/reset and appdata juggling and broke the scale bar
+      % lifecycle. Tab labels are colorized by category (maps, IPF, pole
+      % figures, images).
       app.TabGroup = uitabgroup(app.RightLayout, ...
         'SelectionChangedFcn', createCallbackFcn(app, @TabSelectionChanged, true));
       app.TabGroup.Layout.Row = 2;
-      
-      % --- Maps tab: phase map + property maps via a dropdown -------------
-      app.MapsTab = uitab(app.TabGroup, 'Title', 'Maps');
-      % 3 rows: label (22), dropdown (30), empty space (1x) to prevent stretching
-      gMaps = uigridlayout(app.MapsTab, ...
-        'ColumnWidth', {120, '1x'}, 'RowHeight', {22, 30, '1x'}, ...
-        'Padding', [6 6 6 6], 'RowSpacing', 6, 'ColumnSpacing', 12);
-      
-      lblM = uilabel(gMaps, 'Text', 'Map:', 'HorizontalAlignment', 'left', ...
-        'FontSize', app.FontSize);
-      lblM.Layout.Row = 1; lblM.Layout.Column = 1;
-      
-      app.MapsDropDown = uidropdown(gMaps, 'Items', {'Phase Map'}, ...
-        'FontSize', app.FontSize, ...
-        'ValueChangedFcn', createCallbackFcn(app, @MapsViewChanged, true));
-      app.MapsDropDown.Layout.Row = 2; app.MapsDropDown.Layout.Column = 1;
-      
-      app.MapsAxes = uiaxes(gMaps);
-      app.MapsAxes.Layout.Row = [1 3]; app.MapsAxes.Layout.Column = 2; % Uses full height
 
-      % --- IPF tab: X/Y/Z direction via a dropdown ------------------------
-      app.IPFTab = uitab(app.TabGroup, 'Title', 'IPF');
-      gIPF = uigridlayout(app.IPFTab, ...
-        'ColumnWidth', {120, '1x'}, 'RowHeight', {22, 30, '1x'}, ...
-        'Padding', [6 6 6 6], 'RowSpacing', 6, 'ColumnSpacing', 12);
-      
-      lblI = uilabel(gIPF, 'Text', 'Direction:', 'HorizontalAlignment', 'left', ...
-        'FontSize', app.FontSize);
-      lblI.Layout.Row = 1; lblI.Layout.Column = 1;
-      
-      app.IPFDirectionDropDown = uidropdown(gIPF, 'Items', {'X','Y','Z'}, ...
-        'Value', 'Z', 'FontSize', app.FontSize, ...
-        'ValueChangedFcn', createCallbackFcn(app, @IPFViewChanged, true));
-      app.IPFDirectionDropDown.Layout.Row = 2; app.IPFDirectionDropDown.Layout.Column = 1;
-      
-      app.IPFAxes = uiaxes(gIPF);
-      app.IPFAxes.Layout.Row = [1 3]; app.IPFAxes.Layout.Column = 2;
+      % --- map tabs: the phase map now, one tab per property at import ---
+      [app.MapTabs, app.MapAxes] = createPlotTab(app, 'Phase Map', app.TabColors.Maps);
+      app.MapNames = {'Phase Map'};
+
+      % --- IPF tabs: one tab per direction --------------------------------
+      dirs = {'IPF X', 'IPF Y', 'IPF Z'};
+      for i = 1:3
+        [app.IPFTabs(i), app.IPFAxes(i)] = createPlotTab(app, dirs{i}, app.TabColors.IPF);
+      end
 
       % --- Pole Figures tab: parallel axes, a Miller field above each -----
-      app.PFTab = uitab(app.TabGroup, 'Title', 'Pole Figures');
+      app.PFTab = uitab(app.TabGroup, 'Title', 'Pole Figures', ...
+        'ForegroundColor', app.TabColors.PF);
       gPF = uigridlayout(app.PFTab, ...
         'ColumnWidth', {'1x','1x','1x'}, 'RowHeight', {30, '1x'}, ...
         'Padding', [6 6 6 6], 'RowSpacing', 6, 'ColumnSpacing', 6);
@@ -348,7 +334,8 @@ classdef import_wizard3 < matlab.apps.AppBase
       end
       
       % --- Images tab: opt-images via a dropdown --------------------------
-      app.ImagesTab = uitab(app.TabGroup, 'Title', 'Images');
+      app.ImagesTab = uitab(app.TabGroup, 'Title', 'Images', ...
+        'ForegroundColor', app.TabColors.Images);
       gImg = uigridlayout(app.ImagesTab, ...
         'ColumnWidth', {120, '1x'}, 'RowHeight', {22, 30, '1x'}, ...
         'Padding', [6 6 6 6], 'RowSpacing', 6, 'ColumnSpacing', 12);
@@ -364,7 +351,16 @@ classdef import_wizard3 < matlab.apps.AppBase
       
       app.ImagesAxes = uiaxes(gImg);
       app.ImagesAxes.Layout.Row = [1 3]; app.ImagesAxes.Layout.Column = 2;
-end
+    end
+
+    function [tab, ax] = createPlotTab(app, tabTitle, color)
+      % a tab holding nothing but a single full-size axes
+      tab = uitab(app.TabGroup, 'Title', tabTitle, 'ForegroundColor', color);
+      g = uigridlayout(tab, 'ColumnWidth', {'1x'}, 'RowHeight', {'1x'}, ...
+        'Padding', [6 6 6 6]);
+      ax = uiaxes(g);
+      ax.Layout.Row = 1; ax.Layout.Column = 1;
+    end
 
     function navigateToFolder(app, folderPath)
       % Set folderPath as the new browser root and populate its children.
@@ -377,6 +373,12 @@ end
 
       delete(app.FileTree.Children)
       populateFolderNode(app, app.FileTree, app.CurrentFolder)
+
+      % keep keyboard focus on the tree so cursor navigation keeps working
+      try
+        if strcmp(app.UIFigure.Visible, 'on'), focus(app.FileTree); end
+      catch
+      end
     end
 
     function populateFolderNode(app, parentNode, folderPath)
@@ -392,6 +394,9 @@ end
       [~, order] = sort(lower(string({listing.name})));
       listing = listing(order);
 
+      folderIcon = treeIconPath(app, 'folder');
+      fileIcon = treeIconPath(app, 'ebsd');
+
       for k = 1:numel(listing)
         entry = listing(k);
         fullPath = fullfile(folderPath, entry.name);
@@ -400,13 +405,68 @@ end
           folderNode = uitreenode(parentNode, ...
             'Text', entry.name, ...
             'NodeData', struct('Type', 'Folder', 'Path', fullPath));
+          if ~isempty(folderIcon), folderNode.Icon = folderIcon; end
           % Dummy child so the node is expandable; replaced on expand.
           uitreenode(folderNode, 'Text', 'Loading...');
         elseif isEBSDFile(app, entry.name)
-          uitreenode(parentNode, ...
+          fileNode = uitreenode(parentNode, ...
             'Text', entry.name, ...
             'NodeData', struct('Type', 'File', 'Path', fullPath));
+          if ~isempty(fileIcon), fileNode.Icon = fileIcon; end
         end
+      end
+    end
+
+    function pth = treeIconPath(~, kind)
+      % Lazily render and cache the 16x16 png icons for the file browser
+      % tree: an amber folder and a white page with a tiny colored phase
+      % map for EBSD data files. Returns '' if the icon cannot be built.
+      pth = char(fullfile(tempdir, ['mtex_wizard_icon_' kind '.png']));
+      if isfile(pth), return; end
+
+      try
+        n = 16;
+        if strcmp(kind, 'folder')
+          mask = false(n);
+          mask(6:14, 2:15) = true;  % body
+          mask(4:6, 2:8) = true;    % tab
+          fill = [0.99 0.80 0.30];
+          edge = [0.75 0.55 0.12];
+        else
+          mask = false(n);
+          mask(2:15, 3:14) = true;  % page
+          fill = [1 1 1];
+          edge = [0.45 0.45 0.45];
+        end
+
+        % fill color inside, edge color on the one pixel wide outline
+        inner = mask & circshift(mask,[1 0]) & circshift(mask,[-1 0]) & ...
+          circshift(mask,[0 1]) & circshift(mask,[0 -1]);
+        img = ones(n, n, 3);
+        for c = 1:3
+          ch = img(:,:,c);
+          ch(mask) = edge(c);
+          ch(inner) = fill(c);
+          img(:,:,c) = ch;
+        end
+
+        if ~strcmp(kind, 'folder')
+          % 2x2 pixel blocks resembling a small EBSD phase map
+          colors = [0.85 0.33 0.10; 0.00 0.45 0.74; 0.47 0.67 0.19; 0.93 0.69 0.13];
+          ci = 0;
+          for r = 5:2:11
+            ci = ci + 1; % shift the color cycle from row to row
+            for c = 5:2:11
+              ci = ci + 1;
+              col = colors(mod(ci-1, 4)+1, :);
+              img(r:r+1, c:c+1, :) = reshape(col, 1, 1, 3) .* ones(2,2,3);
+            end
+          end
+        end
+
+        imwrite(img, pth, 'Alpha', double(mask))
+      catch
+        pth = '';
       end
     end
 
@@ -443,38 +503,50 @@ end
       app.LoadedFilePath = string(filePath); % Store file path for the script exporter
       updateCurrentDataInfo(app, fileName)
       app.ExportButton.Text = 'Import to workspace';
-      invalidateAllSigs(app)
       app.PFODFKey = "";
 
       syncCoordinateControls(app)
       populateViewSelectors(app)
       fillPhaseTable(app)
+      invalidateAllSigs(app)
 
       % default view: IPF Z of the (pre-selected) largest phase
-      app.IPFDirectionDropDown.Value = 'Z';
-      app.TabGroup.SelectedTab = app.IPFTab;
+      app.TabGroup.SelectedTab = app.IPFTabs(3);
 
       updatePlot(app, true)
     end
 
     function populateViewSelectors(app)
-      % Fill the Maps dropdown (phase map + property maps) and the Images
-      % dropdown (matrices found anywhere in ebsd.opt).
+      % (Re)create the map tabs (phase map + one tab per property) and
+      % fill the Images dropdown (matrices found anywhere in ebsd.opt).
+
+      % drop the property tabs of a previously loaded data set
+      delete(app.MapTabs(2:end))
+      app.MapTabs = app.MapTabs(1);
+      app.MapAxes = app.MapAxes(1);
+
       names = getPropertyNames(app);
-      app.MapsDropDown.Items = [{'Phase Map'}; names(:)];
-      app.MapsDropDown.Value = 'Phase Map';
+      app.MapNames = [{'Phase Map'}; names(:)];
+      for k = 2:numel(app.MapNames)
+        [app.MapTabs(k), app.MapAxes(k)] = ...
+          createPlotTab(app, app.MapNames{k}, app.TabColors.Maps);
+      end
+
+      % keep the tab order: maps first, then IPF, pole figures, images
+      app.TabGroup.Children = ...
+        [app.MapTabs(:); app.IPFTabs(:); app.PFTab; app.ImagesTab];
 
       [imgNames, imgPaths] = collectImageFields(app, app.ebsd.opt, {});
       app.ImagePaths = imgPaths;
       if isempty(imgNames)
         app.ImagesDropDown.Items = {'(none)'};
         app.ImagesDropDown.ItemsData = {};
-        app.ImagesTab.ForegroundColor = [0.6 0.6 0.6];
+        app.ImagesTab.ForegroundColor = app.TabColors.Disabled;
       else
         app.ImagesDropDown.Items = imgNames;
         app.ImagesDropDown.ItemsData = 1:numel(imgNames);
         app.ImagesDropDown.Value = 1;
-        app.ImagesTab.ForegroundColor = [0 0 0];
+        app.ImagesTab.ForegroundColor = app.TabColors.Images;
       end
     end
 
@@ -597,25 +669,32 @@ end
         return
       end
 
-      switch app.TabGroup.SelectedTab
-        case app.MapsTab,   plotMaps(app, force)
-        case app.IPFTab,    plotIPF(app, force)
-        case app.PFTab,     plotPoleFigures(app, force)
-        case app.ImagesTab, plotImages(app, force)
+      t = app.TabGroup.SelectedTab;
+      mapIdx = find(app.MapTabs == t, 1);
+      ipfIdx = find(app.IPFTabs == t, 1);
+      if ~isempty(mapIdx)
+        plotMaps(app, mapIdx, force)
+      elseif ~isempty(ipfIdx)
+        plotIPF(app, ipfIdx, force)
+      elseif t == app.PFTab
+        plotPoleFigures(app, force)
+      elseif t == app.ImagesTab
+        plotImages(app, force)
       end
     end
 
-    function plotMaps(app, force)
+    function plotMaps(app, mapIdx, force)
       enabledPhaseIds = find(app.PhaseTable.Data.Plot);
       applyCurrentCoordinateState(app)
       ebsd = app.ebsd(ismember(app.ebsd.phaseId, enabledPhaseIds));
 
-      sel = app.MapsDropDown.Value;
+      sel = app.MapNames{mapIdx};
       sig = strjoin(["maps", string(sel), phaseSig(app,enabledPhaseIds), coordSig(app)], '|');
-      if ~force && sig == app.LastSig.Maps, return; end
-      app.LastSig.Maps = sig;
+      if ~force && numel(app.LastSig.Maps) >= mapIdx && ...
+          sig == app.LastSig.Maps(mapIdx), return; end
+      app.LastSig.Maps(mapIdx) = sig;
 
-      ax = app.MapsAxes;
+      ax = app.MapAxes(mapIdx);
       resetAxes(app, ax)
       if isempty(ebsd)
         title(ax, 'No phase selected'); return
@@ -631,23 +710,24 @@ end
       setView(app.ebsd.how2plot, ax)
     end
 
-    function plotIPF(app, force)
+    function plotIPF(app, ipfIdx, force)
       enabledPhaseIds = find(app.PhaseTable.Data.Plot);
       applyCurrentCoordinateState(app)
       ebsd = app.ebsd(ismember(app.ebsd.phaseId, enabledPhaseIds));
 
-      dir = app.IPFDirectionDropDown.Value;
-      sig = strjoin(["ipf", string(dir), phaseSig(app,enabledPhaseIds), coordSig(app)], '|');
-      if ~force && sig == app.LastSig.IPF, return; end
-      app.LastSig.IPF = sig;
+      dirLabels = {'X','Y','Z'};
+      sig = strjoin(["ipf", string(dirLabels{ipfIdx}), phaseSig(app,enabledPhaseIds), coordSig(app)], '|');
+      if ~force && numel(app.LastSig.IPF) >= ipfIdx && ...
+          sig == app.LastSig.IPF(ipfIdx), return; end
+      app.LastSig.IPF(ipfIdx) = sig;
 
-      ax = app.IPFAxes;
+      ax = app.IPFAxes(ipfIdx);
       resetAxes(app, ax)
       if isempty(ebsd)
         title(ax, 'No phase selected'); return
       end
 
-      direction = directionVector(app, dir);
+      direction = directionVector(app, dirLabels{ipfIdx});
       
       for phaseId = enabledPhaseIds(:)'
         ebsdPhase = ebsd(ebsd.phaseId == phaseId);
@@ -774,7 +854,12 @@ end
     end
 
     function invalidateAllSigs(app)
-      app.LastSig = struct('Maps',"",'IPF',"",'PF',"",'Images',"");
+      sigs = struct();
+      sigs.Maps = repmat("", 1, max(1, numel(app.MapNames)));
+      sigs.IPF = ["" "" ""];
+      sigs.PF = "";
+      sigs.Images = "";
+      app.LastSig = sigs;
     end
 
     function applyCurrentCoordinateState(app)
@@ -892,59 +977,124 @@ end
     end
 
     function updateCurrentDataInfo(app, fileName)
-      app.CurrentData.Value = { ...
-        ['File: ' asChar(app, fileName)]; ...
-        ['Step size: ' 'x=' num2str(norm(app.ebsd.unitCell.x)) '  y=' num2str(norm(app.ebsd.unitCell.y))]; ...
-        ['Grid: ' gridTypeLabel(app)]; ...
-        ['Extent: ' ebsdValueText(app, 'extent')]};
-    end
-    
-    function text = ebsdValueText(app, propertyName)
+      % basic information about the loaded data set: file name, spatial
+      % extent in scan units, grid geometry in pixels and, when they can
+      % be determined, the vendor and the creation date
+      lines = {['File: ' asChar(app, fileName)]};
+
       try
-        text = formatDisplayValue(app, app.ebsd.(propertyName));
+        ext = app.ebsd.extent;
+        lines{end+1} = ['Coordinates: [' xnum2str(ext(1:2), 'delimiter', ',') ...
+          '] x [' xnum2str(ext(3:4), 'delimiter', ',') '] ' scanUnitLabel(app)];
       catch
-        text = '<unavailable>';
       end
+
+      try lines{end+1} = gridInfoLabel(app); catch, end
+
+      vendor = vendorLabel(app);
+      if ~isempty(vendor), lines{end+1} = ['Vendor: ' vendor]; end
+
+      created = creationDateLabel(app);
+      if ~isempty(created), lines{end+1} = ['Created: ' created]; end
+
+      app.CurrentData.Value = lines(:);
     end
-    
 
-    function text = gridTypeLabel(app)
-      text = 'unknown';
+    function u = scanUnitLabel(app)
+      u = 'um';
+      try u = char(app.ebsd.scanUnit); catch, end
+      if strcmpi(u, 'um'), u = 'µm'; end
+    end
 
-      try
-        n = size(app.ebsd.unitCell, 1);
-        if n == 4
-          text = 'square';
-        elseif n == 6
-          text = 'hex';
+    function txt = gridInfoLabel(app)
+      % e.g. 'Hex grid: 1000 x 500 pixel, dHex = 60 µm'
+      %   or 'Square grid: 1000 x 500 pixel, dx = 60 µm'
+      ebsd = app.ebsd;
+      u = scanUnitLabel(app);
+      [xmin, xmax, ymin, ymax] = extent(ebsd);
+
+      if size(ebsd.unitCell, 1) == 6 % hexagonal grid
+
+        dHex = max(norm(ebsd.unitCell)); % circumradius of the unit cell
+        if isa(ebsd, 'EBSDhex')
+          dx = ebsd.dx; dy = ebsd.dy;
+        elseif max(abs(ebsd.unitCell.x)) < max(abs(ebsd.unitCell.y))
+          % row alignment - flat hexagon sides facing left/right
+          dx = dHex * sqrt(3); dy = 1.5 * dHex;
+        else
+          dx = 1.5 * dHex; dy = dHex * sqrt(3);
         end
-        return
-      catch
+        prefix = 'Hex grid: ';
+        stepTxt = ['dHex = ' xnum2str(dHex) ' ' u];
+
+      else % square grid
+
+        dx = max(ebsd.unitCell.x) - min(ebsd.unitCell.x);
+        dy = max(ebsd.unitCell.y) - min(ebsd.unitCell.y);
+        prefix = 'Square grid: ';
+        if abs(dx - dy) < 1e-4 * max(dx, dy)
+          stepTxt = ['dx = ' xnum2str(dx) ' ' u];
+        else
+          stepTxt = ['dx = ' xnum2str(dx) ', dy = ' xnum2str(dy) ' ' u];
+        end
+
       end
 
-      try
-        if app.ebsd.isHex
-          text = 'hex';
-        end
-      catch
+      nx = round((xmax - xmin) / dx) + 1;
+      ny = round((ymax - ymin) / dy) + 1;
+      txt = [prefix int2str(nx) ' x ' int2str(ny) ' pixel, ' stepTxt];
+    end
+
+    function txt = vendorLabel(app)
+      % vendor from the file metadata if present, otherwise a guess based
+      % on the file format
+      txt = findMetaField(app, app.ebsd.opt, {'manufacturer', 'vendor'}, 3);
+      if ~isempty(txt), return, end
+
+      vendors = struct( ...
+        'ang', 'EDAX / TSL', 'osc', 'EDAX / TSL', 'tsl', 'EDAX / TSL', ...
+        'oh5', 'EDAX / TSL', 'ctf', 'Oxford Instruments', ...
+        'crc', 'Oxford Instruments', 'cpr', 'Oxford Instruments', ...
+        'hkl', 'Oxford Instruments', 'h5oina', 'Oxford Instruments', ...
+        'dream3d', 'DREAM.3D');
+      [~, ~, ext] = fileparts(char(app.LoadedFilePath));
+      ext = lower(erase(ext, '.'));
+      if isfield(vendors, ext), txt = vendors.(ext); end
+    end
+
+    function txt = creationDateLabel(app)
+      % acquisition date from the file metadata if present, otherwise the
+      % file system date
+      txt = findMetaField(app, app.ebsd.opt, {'date'}, 3);
+      if isempty(txt)
+        listing = dir(char(app.LoadedFilePath));
+        if isscalar(listing), txt = [listing.date ' (file date)']; end
       end
     end
 
-    function text = formatDisplayValue(app, value)
-      if isnumeric(value)
-        text = mat2str(value, 5);
-        return
+    function txt = findMetaField(app, s, patterns, depth)
+      % search struct s (recursively, up to the given depth) for a text
+      % field whose name contains one of the (lowercase) patterns
+      txt = '';
+      if ~isstruct(s) || ~isscalar(s), return, end
+
+      fields = fieldnames(s);
+      for k = 1:numel(fields)
+        if contains(lower(fields{k}), patterns)
+          value = s.(fields{k});
+          if ischar(value) || (isstring(value) && isscalar(value)) || isdatetime(value)
+            txt = strtrim(char(string(value)));
+            if ~isempty(txt), return, end
+          end
+        end
       end
 
-      if ischar(value) || isstring(value)
-        text = app.asChar(value);
-        return
-      end
-
-      try
-        text = app.asChar(value);
-      catch
-        text = '<unavailable>';
+      if depth <= 1, return, end
+      for k = 1:numel(fields)
+        if isstruct(s.(fields{k}))
+          txt = findMetaField(app, s.(fields{k}), patterns, depth - 1);
+          if ~isempty(txt), return, end
+        end
       end
     end
 
@@ -964,14 +1114,40 @@ end
 
   methods (Access = private)
     function FileTreeSelectionChanged(app, event)
+      % single click / cursor selection only opens the branch in place -
+      % descending into a folder requires a double click or Enter
       node = event.SelectedNodes;
-      if isempty(node) || isempty(node.NodeData)
+      if ~isscalar(node) || isempty(node.NodeData)
         return
       end
 
       data = node.NodeData;
       if strcmp(data.Type, 'Folder')
-        navigateToFolder(app, data.Path)
+        populateFolderNode(app, node, data.Path)
+        expand(node)
+      end
+    end
+
+    function WizardKeyPress(app, event)
+      % keyboard navigation for the file browser: arrow keys move the
+      % cursor natively, Enter opens the selected entry (import a file /
+      % descend into a folder), Backspace navigates one folder up
+      if ~isequal(app.UIFigure.CurrentObject, app.FileTree)
+        return
+      end
+
+      switch event.Key
+        case {'return', 'enter'}
+          node = app.FileTree.SelectedNodes;
+          if isscalar(node) && ~isempty(node.NodeData)
+            if strcmp(node.NodeData.Type, 'File')
+              importEBSDData(app, node.NodeData.Path)
+            else
+              navigateToFolder(app, node.NodeData.Path)
+            end
+          end
+        case 'backspace'
+          UpFolderButtonPushed(app, [])
       end
     end
 
@@ -1008,14 +1184,6 @@ end
 
     function TabSelectionChanged(app, ~)
       % lazy: only (re)draw the tab the user switched to
-      updatePlot(app)
-    end
-
-    function MapsViewChanged(app, ~)
-      updatePlot(app)
-    end
-
-    function IPFViewChanged(app, ~)
       updatePlot(app)
     end
 
@@ -1143,7 +1311,7 @@ end
       exportType = app.ExportScriptTypeDropDown.Value; 
       
       % 2. Read the template file from the MTEX directory safely
-      templatePath = fullfile('D:\Matlab\mtex\templates\import', ['load' exportType 'template.m']);
+      templatePath = fullfile(mtex_path, 'templates', 'import', ['load' exportType 'template.m']);
       if ~exist(templatePath, 'file')
         uialert(app.UIFigure, ['Template file not found: ' templatePath], 'Export Error');
         return;
