@@ -90,7 +90,7 @@ hold off
 %% An Example from Geoscience
 %
 % Data sets with many missing pixels most often appear when measuring
-% geological samples. The following data set of forsterite contains about
+% geological samples. The following data set of Forsterite contains about
 % 25 percent missing pixels. Lets start by importing the data and
 % reconstructing the grain structure.
 
