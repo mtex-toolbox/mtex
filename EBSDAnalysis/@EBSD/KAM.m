@@ -84,11 +84,7 @@ end
 threshold = get_option(varargin,'threshold',inf);
 
 % fast lookup table (i,j) -> ebsd index, 0 = no such lattice node
-ijMin = min(ij,[],1);
-ijSize = max(ij,[],1) - ijMin + 1;
-ij2slot = @(IJ) (IJ(:,1)-ijMin(1)) + (IJ(:,2)-ijMin(2))*ijSize(1) + 1;
-ij2ebsd = zeros(prod(ijSize),1);
-ij2ebsd(ij2slot(ij)) = 1:nE;
+[ij2ebsd,ij2slot,ijMin,ijSize] = latticeLookup(ij);
 
 hasGrainId = ebsd.hasGrainId;
 
@@ -129,7 +125,7 @@ for o = 1:size(offs,1)
   if hasGrainId
     gidN = nan(nE,1);
     gidN(valid) = ebsd.grainId(idx(valid));
-    omega(ebsd.grainId ~= gidN) = NaN;
+    omega(ebsd.grainId(:) ~= gidN) = NaN;
   end
 
   kam = fun(kam, omega * w(o));
