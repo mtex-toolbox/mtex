@@ -29,6 +29,7 @@ classdef import_wizard3 < matlab.apps.AppBase
     IPFTabs                        matlab.ui.container.Tab       % 1x3 array: IPF X / Y / Z
     IPFAxes                        matlab.ui.control.UIAxes      % 1x3 array
     PFTab                          matlab.ui.container.Tab
+    PFGrid                         matlab.ui.container.GridLayout
     ImagesTab                      matlab.ui.container.Tab
     PFMillerField                  matlab.ui.control.EditField   % 1x3 array
     PFAxes                         matlab.ui.control.UIAxes      % 1x3 array
@@ -57,6 +58,7 @@ classdef import_wizard3 < matlab.apps.AppBase
     ImagePaths cell = {}        % field-name paths parallel to ImagesDropDown items
     PFODF = []                  % cached ODF for the pole figure tab
     PFODFKey string = ""        % cache key describing what PFODF was computed from
+    PFODFCorr = []              % Euler correction the cached ODF refers to
   end
 
   properties (Constant, Access = private)
@@ -98,7 +100,7 @@ classdef import_wizard3 < matlab.apps.AppBase
       end
 
       app.EBSDDataAnalysisPanel = uipanel(app.UIFigure, ...
-        'Title', 'EBSD Data Analysis', ...
+        'Title', 'MTEX Import Wizard', ...
         'FontWeight', 'bold', ...
         'FontSize', 18, ...
         'Units', 'normalized', ...
@@ -325,20 +327,43 @@ classdef import_wizard3 < matlab.apps.AppBase
       % --- Pole Figures tab: parallel axes, a Miller field above each -----
       app.PFTab = uitab(app.TabGroup, 'Title', 'Pole Figures', ...
         'ForegroundColor', app.TabColors.PF);
+      % three rows: Miller fields, pole figure axes, filler. The axes row
+      % is capped to roughly the column width by PFTabSizeChanged so the
+      % square pole figures stay right below their Miller fields instead
+      % of floating in the middle of a tall axes.
       gPF = uigridlayout(app.PFTab, ...
-        'ColumnWidth', {'1x','1x','1x'}, 'RowHeight', {30, '1x'}, ...
-        'Padding', [6 6 6 6], 'RowSpacing', 6, 'ColumnSpacing', 6);
+        'ColumnWidth', {'1x','1x','1x'}, 'RowHeight', {26, '1x', 1}, ...
+        'Padding', [6 6 6 6], 'RowSpacing', 2, 'ColumnSpacing', 6);
+      app.PFGrid = gPF;
       defaults = {'(100)','(010)','(001)'};
       for i = 1:3
-        app.PFMillerField(i) = uieditfield(gPF, 'text', ...
+        % the Miller field sits centered right above its pole figure; the
+        % pencil marks it as editable
+        gField = uigridlayout(gPF, ...
+          'ColumnWidth', {'1x', 22, 110, '1x'}, 'RowHeight', {'1x'}, ...
+          'Padding', [0 0 0 0], 'ColumnSpacing', 4);
+        gField.Layout.Row = 1; gField.Layout.Column = i;
+
+        pencil = uilabel(gField, 'Text', char(9998), ... % "✎"
+          'HorizontalAlignment', 'right', 'FontSize', app.FontSize, ...
+          'Tooltip', 'Type Miller indices, e.g. (100)');
+        pencil.Layout.Row = 1; pencil.Layout.Column = 2;
+
+        app.PFMillerField(i) = uieditfield(gField, 'text', ...
           'Value', defaults{i}, 'HorizontalAlignment', 'center', ...
           'FontSize', app.FontSize, ...
+          'Tooltip', 'Type Miller indices, e.g. (100)', ...
           'ValueChangedFcn', createCallbackFcn(app, @PFMillerChanged, true));
-        app.PFMillerField(i).Layout.Row = 1; app.PFMillerField(i).Layout.Column = i;
+        app.PFMillerField(i).Layout.Row = 1; app.PFMillerField(i).Layout.Column = 3;
+
         app.PFAxes(i) = uiaxes(gPF);
         app.PFAxes(i).Layout.Row = 2; app.PFAxes(i).Layout.Column = i;
       end
-      
+
+      app.PFTab.AutoResizeChildren = 'off';
+      app.PFTab.SizeChangedFcn = createCallbackFcn(app, @PFTabSizeChanged, true);
+      PFTabSizeChanged(app, [])
+
       % --- Images tab: opt-images via a dropdown --------------------------
       app.ImagesTab = uitab(app.TabGroup, 'Title', 'Images', ...
         'ForegroundColor', app.TabColors.Images);
@@ -357,6 +382,16 @@ classdef import_wizard3 < matlab.apps.AppBase
       
       app.ImagesAxes = uiaxes(gImg);
       app.ImagesAxes.Layout.Row = [1 3]; app.ImagesAxes.Layout.Column = 2;
+
+      app.TabGroup.Children = tabOrder(app);
+    end
+
+    function order = tabOrder(app)
+      % display order of the tabs: phase map, IPF Z / Y / X, pole
+      % figures, property maps, images
+      ipf = app.IPFTabs([3 2 1]);
+      propMaps = app.MapTabs(2:end);
+      order = [app.MapTabs(1); ipf(:); app.PFTab; propMaps(:); app.ImagesTab];
     end
 
     function [tab, ax] = createPlotTab(app, tabTitle, color)
@@ -431,8 +466,9 @@ classdef import_wizard3 < matlab.apps.AppBase
       % Lazily render and cache the 16x16 png icons for the file browser:
       % an amber folder, the same folder with an up arrow for the "up one
       % folder" button and a white page with a tiny colored phase map for
-      % EBSD data files. Returns '' if the icon cannot be built.
-      pth = char(fullfile(tempdir, ['mtex_wizard_icon_' kind '.png']));
+      % EBSD data files. Returns '' if the icon cannot be built. The
+      % version suffix invalidates cached icons when the design changes.
+      pth = char(fullfile(tempdir, ['mtex_wizard_icon_' kind '_v2.png']));
       if isfile(pth), return; end
 
       try
@@ -475,7 +511,7 @@ classdef import_wizard3 < matlab.apps.AppBase
               end
             end
           case 'up'
-            % white up arrow on the folder body
+            % black up arrow on the folder body
             arrow = false(n);
             arrow(7, 8:9) = true;     % tip
             arrow(8, 7:10) = true;
@@ -483,7 +519,7 @@ classdef import_wizard3 < matlab.apps.AppBase
             arrow(10:13, 8:9) = true; % shaft
             for c = 1:3
               ch = img(:,:,c);
-              ch(arrow) = 1;
+              ch(arrow) = 0.1;
               img(:,:,c) = ch;
             end
         end
@@ -556,9 +592,7 @@ classdef import_wizard3 < matlab.apps.AppBase
           createPlotTab(app, app.MapNames{k}, app.TabColors.Maps);
       end
 
-      % keep the tab order: maps first, then IPF, pole figures, images
-      app.TabGroup.Children = ...
-        [app.MapTabs(:); app.IPFTabs(:); app.PFTab; app.ImagesTab];
+      app.TabGroup.Children = tabOrder(app);
 
       [imgNames, imgPaths] = collectImageFields(app, app.ebsd.opt, {});
       app.ImagePaths = imgPaths;
@@ -712,10 +746,15 @@ classdef import_wizard3 < matlab.apps.AppBase
       applyCurrentCoordinateState(app)
       ebsd = app.ebsd(ismember(app.ebsd.phaseId, enabledPhaseIds));
 
+      % the drawn content does not depend on the map coordinate system -
+      % when only that changed, realigning the view is all that is needed
       sel = app.MapNames{mapIdx};
-      sig = strjoin(["maps", string(sel), phaseSig(app,enabledPhaseIds), coordSig(app)], '|');
+      sig = strjoin(["maps", string(sel), phaseSig(app,enabledPhaseIds)], '|');
       if ~force && numel(app.LastSig.Maps) >= mapIdx && ...
-          sig == app.LastSig.Maps(mapIdx), return; end
+          sig == app.LastSig.Maps(mapIdx)
+        setView(app.ebsd.how2plot, app.MapAxes(mapIdx))
+        return
+      end
       app.LastSig.Maps(mapIdx) = sig;
 
       ax = app.MapAxes(mapIdx);
@@ -739,10 +778,16 @@ classdef import_wizard3 < matlab.apps.AppBase
       applyCurrentCoordinateState(app)
       ebsd = app.ebsd(ismember(app.ebsd.phaseId, enabledPhaseIds));
 
+      % the colors depend on the orientations and thus on the Euler
+      % correction; a pure map coordinate change only realigns the view
       dirLabels = {'X','Y','Z'};
-      sig = strjoin(["ipf", string(dirLabels{ipfIdx}), phaseSig(app,enabledPhaseIds), coordSig(app)], '|');
+      sig = strjoin(["ipf", string(dirLabels{ipfIdx}), ...
+        phaseSig(app,enabledPhaseIds), eulerSig(app)], '|');
       if ~force && numel(app.LastSig.IPF) >= ipfIdx && ...
-          sig == app.LastSig.IPF(ipfIdx), return; end
+          sig == app.LastSig.IPF(ipfIdx)
+        setView(app.ebsd.how2plot, app.IPFAxes(ipfIdx))
+        return
+      end
       app.LastSig.IPF(ipfIdx) = sig;
 
       ax = app.IPFAxes(ipfIdx);
@@ -771,8 +816,12 @@ classdef import_wizard3 < matlab.apps.AppBase
       enabledPhaseIds = find(app.PhaseTable.Data.Plot);
       applyCurrentCoordinateState(app)
 
+      % spherical axes cannot change their view after plotting, so a map
+      % coordinate change requires a replot - but only of the (cheap)
+      % pole figures, the cached ODF is reused
       millers = string({app.PFMillerField.Value});
-      sig = strjoin(["pf", strjoin(millers,';'), phaseSig(app,enabledPhaseIds), coordSig(app)], '|');
+      sig = strjoin(["pf", strjoin(millers,';'), phaseSig(app,enabledPhaseIds), ...
+        eulerSig(app), string(app.MapCoordinatesDropDown.ValueIndex)], '|');
       if ~force && sig == app.LastSig.PF, return; end
       app.LastSig.PF = sig;
 
@@ -786,12 +835,20 @@ classdef import_wizard3 < matlab.apps.AppBase
       end
       ebsdPhase = app.ebsd(app.ebsd.phaseId == pid);
 
-      % the ODF only depends on the phase and the coordinate state, not on
-      % the Miller indices, so compute it once and cache it across the axes
-      odfKey = strjoin(["odf", string(pid), coordSig(app)], '|');
+      % the ODF only depends on the phase and the Euler correction, not on
+      % the Miller indices or the map view, so compute it once and cache
+      % it. When only the Euler correction changed the orientations were
+      % merely rotated, so the cached ODF is rotated along instead of
+      % being recomputed.
+      corr = ebsdPhase.EulerCorrection;
+      odfKey = "odf|" + string(pid);
       if odfKey ~= app.PFODFKey || isempty(app.PFODF)
         app.PFODF = calcDensity(ebsdPhase.orientations);
         app.PFODFKey = odfKey;
+        app.PFODFCorr = corr;
+      elseif angle(corr * inv(app.PFODFCorr)) > 1e-10 %#ok<MINV>
+        app.PFODF = rotate(app.PFODF, corr * inv(app.PFODFCorr)); %#ok<MINV>
+        app.PFODFCorr = corr;
       end
       odf = app.PFODF;
 
@@ -805,8 +862,11 @@ classdef import_wizard3 < matlab.apps.AppBase
         catch
           title(ax, 'invalid Miller'); continue
         end
+        % pass the current plotting convention explicitly - the spherical
+        % projection would otherwise fall back to odf.SS.how2plot, which
+        % does not follow the map coordinate dropdown
         plotPDF(odf, h, 'parent', ax, 'contourf','upper','noTitle',...
-          'fontSize', 20,'TL','upper');
+          'fontSize', 20,'TL','upper', app.ebsd.how2plot);
 
         % plot obsolete Euler reference frame
         %rot = [app.CoordinateSystems.how2plot.rot];
@@ -859,9 +919,17 @@ classdef import_wizard3 < matlab.apps.AppBase
       if s == "", s = "none"; end
     end
 
-    function s = coordSig(app)
-      s = string(app.MapCoordinatesDropDown.ValueIndex) + "_" + ...
-          string(app.EulerCoordinatesDropDown.ValueIndex);
+    function s = eulerSig(app)
+      % signature of the Euler -> map correction. Built from the rotation
+      % itself (not the dropdown indices) so that a map coordinate change,
+      % which keeps the correction fixed and only relabels the Euler
+      % dropdown, does not invalidate orientation dependent plots.
+      try
+        [a, b, g] = Euler(app.ebsd.EulerCorrection);
+        s = strjoin(string(round([a b g]/degree, 3)), '_');
+      catch
+        s = "none";
+      end
     end
 
     function pid = dominantEnabledPhase(app, ids)
@@ -893,8 +961,15 @@ classdef import_wizard3 < matlab.apps.AppBase
       rot = [app.CoordinateSystems.how2plot.rot];
       eulerRot = rot(app.EulerCoordinatesDropDown.ValueIndex);
       mapRot = rot(app.MapCoordinatesDropDown.ValueIndex);
-      
-      app.ebsd.EulerCorrection = mapRot * inv(eulerRot); %#ok<MINV>
+
+      % assigning EulerCorrection rewrites all rotations, so skip the
+      % assignment when the correction did not actually change
+      newCorr = mapRot * inv(eulerRot); %#ok<MINV>
+      oldCorr = app.ebsd.EulerCorrection;
+      if ~isa(oldCorr, 'quaternion') || isempty(oldCorr) || ...
+          angle(newCorr * inv(oldCorr)) > 1e-10 %#ok<MINV>
+        app.ebsd.EulerCorrection = newCorr;
+      end
     end
 
     function syncCoordinateControls(app)
@@ -1215,6 +1290,20 @@ classdef import_wizard3 < matlab.apps.AppBase
       updatePlot(app)
     end
 
+    function PFTabSizeChanged(app, ~)
+      % cap the pole figure row at roughly the column width, so the
+      % square (axis equal tight) pole figures sit right below their
+      % Miller fields instead of being centered in a tall axes
+      try
+        pos = app.PFTab.Position;
+        pad = 6; colSpacing = 6; rowSpacing = 2; labelRow = 26;
+        colW = (pos(3) - 2*pad - 2*colSpacing) / 3;
+        availH = pos(4) - 2*pad - labelRow - 2*rowSpacing - 1;
+        app.PFGrid.RowHeight = {labelRow, max(100, min(ceil(1.1*colW), availH)), '1x'};
+      catch
+      end
+    end
+
     function PFMillerChanged(app, ~)
       updatePlot(app, true)
     end
@@ -1278,9 +1367,10 @@ classdef import_wizard3 < matlab.apps.AppBase
       catch
       end
 
-      invalidateAllSigs(app)
-      app.PFODFKey = "";
-      updatePlot(app, true)
+      % no invalidation: the Euler correction is kept fixed, so map and
+      % IPF content is unchanged - the plotters only realign the view via
+      % setView; only the pole figures replot (with the cached ODF)
+      updatePlot(app)
     end
 
     function setEulerCoordinate(app, ~)
@@ -1289,9 +1379,11 @@ classdef import_wizard3 < matlab.apps.AppBase
       end
 
       setCoordinateImage(app, app.EulerImage, app.EulerCoordinatesDropDown.ValueIndex)
-      invalidateAllSigs(app)
-      app.PFODFKey = "";
-      updatePlot(app, true)
+
+      % IPF maps and pole figures pick up the new Euler correction through
+      % their signatures (the cached ODF is rotated, not recomputed);
+      % phase and property maps are unaffected
+      updatePlot(app)
     end
 
     function ExportButtonPushed(app, ~)
