@@ -42,24 +42,38 @@ if isempty(dxy)
     return
   end
 
-  % second estimate of the grid resolution 
+  % second estimate of the grid resolution
   % works good for square grids that are not rotated
-  dxy2 = [mean(diff(uniquetol(xy(:,1),dxy(1)/100,'DataScale',1))),...
-    mean(diff(uniquetol(xy(:,2),dxy(end)/100,'DataScale',1)))];
+  xyEst = subSample(xy,10000);
+  dxy2 = [mean(diff(uniquetol(xyEst(:,1),dxy(1)/100,'DataScale',1))),...
+    mean(diff(uniquetol(xyEst(:,2),dxy(end)/100,'DataScale',1)))];
 
 else
 
   dxy2 = dxy;
 
-end  
+end
 
 % check for square grid
-if abs(dxy2(1) - dxy2(2))/min(dxy2) <  1e-3 && ...
-    abs((min(diff(uniquetol(xy(xy(:,1)==xy(2,1),2),'DataScale',1))) - dxy2(2))/dxy2(2)) < 0.01 && ...
-    abs((min(diff(uniquetol(xy(xy(:,2)==xy(2,2),1),'DataScale',1))) - dxy2(1))/dxy2(1)) < 0.01
+% (use a tolerance instead of exact == since coordinates may be rotated
+% or otherwise not bit-identical, and fall back gracefully instead of
+% crashing when fewer than two points share the reference coordinate)
+col = xy(abs(xy(:,1)-xy(2,1)) < dxy2(1)*1e-3, 2);
+row = xy(abs(xy(:,2)-xy(2,2)) < dxy2(2)*1e-3, 1);
+if numel(col) > 1 && numel(row) > 1 && ...
+    abs(dxy2(1) - dxy2(2))/min(dxy2) <  1e-3 && ...
+    abs((min(diff(uniquetol(col,'DataScale',1))) - dxy2(2))/dxy2(2)) < 0.01 && ...
+    abs((min(diff(uniquetol(row,'DataScale',1))) - dxy2(1))/dxy2(1)) < 0.01
   unitCell = regularPoly(4,dxy2,0);
   return
 end
+
+% maybe it is a grid after all, just rotated - try to detect the lattice
+% directly from nearest-neighbor statistics, which is much cheaper than
+% a full Voronoi decomposition. Falls through to Voronoi below if the
+% point set does not look like a clean lattice.
+unitCell = detectLattice(xy);
+if ~isempty(unitCell), return; end
 
 
 % if we are not sure we make a voronoi decomposition
@@ -70,7 +84,7 @@ xySmall = subSample(xy,10000);
 xySmall = uniquetol(xySmall,0.01/sqrt(size(xy,1)),'ByRows',true);
 
 try
-  % compute Voronoi decomposition
+  % compute Voronoi decomposition % TODO: replace by faster version !!
   [v, c] = voronoin(xySmall,{'Qz'});
   
   % compute the area of all Voronoi cells
@@ -154,6 +168,86 @@ enclosingAngle = complex(abs(real(enclosingAngle)),...
 
 isRegular = any(sides == [4 6]) && ... % norm(sideLength - mean(sideLength))*dxy < 1e-5 && ...
   norm(enclosingAngle - mean(enclosingAngle)) < 0.05*degree;
+
+
+% try to detect a (possibly rotated) square or hex point lattice from
+% nearest-neighbor statistics. Returns [] if xy does not look like a
+% clean lattice, in which case the caller should fall back to Voronoi.
+function unitCell = detectLattice(xy)
+
+unitCell = [];
+
+% work on a spatially contiguous (not globally random!) chunk of points
+% so the local neighbor structure of the lattice is preserved while the
+% KD-tree stays cheap to build and query
+q = subSample(xy,5000);
+if size(q,1) < 30, return; end
+
+% 7 nearest neighbors (including self)
+[idx,d] = knnsearch(q,q,'K',7);
+idx = idx(:,2:end); d = d(:,2:end);
+
+% keep only the true nearest shell (drop 2nd shell picked up for square,
+% whose diagonal neighbors sit at sqrt(2)*dxy =~ 1.41*dxy)
+med1 = median(d(:,1));
+keep = d < 1.25*med1;
+
+nq = size(q,1);
+ref = repmat((1:nq)',1,6);
+vx = q(idx(keep),1) - q(ref(keep),1);
+vy = q(idx(keep),2) - q(ref(keep),2);
+
+len = hypot(vx,vy);
+lenSpread = std(len)/median(len);
+
+% a translation vector v and its negation -v represent the same lattice
+% direction; doubling the angle maps {theta, theta+pi} onto the same
+% value on the full circle [0,2pi), which sidesteps having to special
+% case the wrap at theta=0/pi (same trick MTEX uses for antipodal axes)
+ang2 = mod(2*atan2(vy,vx), 2*pi);
+
+[a2s,ord] = sort(ang2);
+lenSorted = len(ord);
+n = numel(a2s);
+gaps = [diff(a2s); a2s(1) + 2*pi - a2s(end)];
+[~,cutAt] = max(gaps);
+rotAmount = mod(cutAt,n);
+% unwrap the circle at its largest gap so no true cluster straddles the
+% array boundary (the wrapped part needs +2*pi to stay monotonic)
+a2s = [a2s(rotAmount+1:n); a2s(1:rotAmount) + 2*pi];
+lenSorted = lenSorted([rotAmount+1:n, 1:rotAmount]);
+
+% now safe to cluster sequentially
+gap = [true; diff(a2s) > 0.2];
+clusterId = cumsum(gap);
+
+clustAng2 = accumarray(clusterId,a2s,[],@median);
+clustLen  = accumarray(clusterId,lenSorted,[],@median);
+clustCount = accumarray(clusterId,1);
+
+% drop tiny/spurious clusters (outliers, far shell)
+big = clustCount > 0.1*max(clustCount);
+clustAng2 = clustAng2(big); clustLen = clustLen(big);
+nClust = numel(clustAng2);
+
+clustAng = mod(clustAng2/2,pi); % back to a single-angle [0,pi) representative
+
+if nClust == 2
+  % candidate square lattice: two directions ~90 deg apart, equal length
+  dAng = mod(abs(diff(clustAng)),pi);
+  dAng = min(dAng, pi-dAng);
+  if abs(dAng - pi/2) < 0.08 && abs(diff(clustLen))/mean(clustLen) < 0.05 && lenSpread < 0.12
+    unitCell = regularPoly(4,mean(clustLen),clustAng(1));
+  end
+elseif nClust == 3
+  % candidate hex lattice: three directions 60 deg apart, equal length
+  a = sort(clustAng);
+  d1 = mod(a(2)-a(1),pi); d2 = mod(a(3)-a(2),pi); d3 = mod(a(1)-a(3)+pi,pi);
+  if all(abs([d1 d2 d3] - pi/3) < 0.08) && ...
+      (max(clustLen)-min(clustLen))/mean(clustLen) < 0.05 && lenSpread < 0.12
+    unitCell = regularPoly(6,mean(clustLen),a(1));
+  end
+end
 
 
 % find a square subset of about N points
