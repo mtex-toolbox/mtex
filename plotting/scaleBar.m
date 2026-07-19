@@ -41,6 +41,8 @@ classdef scaleBar < handle
 
 properties (Hidden = true)
   hgt      % handle of the hgtransform grouping the scale bar graphics
+  lastLayout = {}          % memo of the inputs of the last layout (see update)
+  updating logical = false % re-entrance guard for update
 end
 
 properties
@@ -89,8 +91,11 @@ methods
     % reliable proxy for a changed map width (e.g. 'axis equal' can keep
     % Position fixed across a zoom, or change it without XLim/YLim
     % changing), so XLim/YLim are watched explicitly.
+    % A Position change alters the axes' pixel geometry, which the label
+    % measurement depends on even when the data limits are unchanged - so
+    % it forces a fresh layout past the memo in update.
     hax = mP.ax;
-    hListener(1) = addlistener(hax,'Position',      'PostSet', @(~,~) sB.update);
+    hListener(1) = addlistener(hax,'Position',      'PostSet', @(~,~) sB.update(true));
     hListener(2) = addlistener(hax,'CameraPosition','PostSet', @(~,~) sB.update);
     hListener(3) = addlistener(hax,'CameraUpVector','PostSet', @(~,~) sB.update);
     hListener(4) = addlistener(hax,'XLim',          'PostSet', @(~,~) sB.update);
@@ -128,6 +133,10 @@ methods
     end
   end
 
+  function unlock(sB)
+    sB.updating = false;
+  end
+
 
   function set.visible(sB,value)
     sB.hgt.Visible = value;
@@ -148,7 +157,12 @@ methods
     sB.location = aliases.(loc);
   end
 
-  function update(sB)
+  function update(sB, forceLayout)
+
+    % forceLayout skips the memo below - used by the Position listener,
+    % since a changed pixel geometry invalidates the label measurement
+    % without any of the memoized inputs changing
+    if nargin < 2, forceLayout = false; end
 
     % belt-and-braces: a listener attached to the axes can outlive the
     % scale bar it belonged to (see the constructor), so bail out rather
@@ -156,6 +170,14 @@ methods
     if isempty(sB.hgt) || ~isvalid(sB.hgt)
       return
     end
+
+    % re-entrance guard: the drawnow further down flushes pending layout,
+    % which can fire the very listeners that call this method again
+    if sB.updating
+      return
+    end
+    sB.updating = true;
+    restoreGuard = onCleanup(@() sB.unlock); %#ok<NASGU>
 
     % the plotting convention currently active on the map - read back from
     % the axes camera itself (not from a cached plottingConvention
@@ -201,18 +223,35 @@ methods
     if strcmpi(sBUnit,'um'), sBUnit = '$\mu$m';end
     rulerLength = barLength * factor * sign(diff(dx));
 
+    labelStr = ['\rm{\textbf{' num2str(barLength) ' ' sBUnit '}}'];
+
+    % Skip the expensive re-layout - it includes a full drawnow to measure
+    % the label - when nothing the layout depends on has changed. The
+    % camera/limits listeners fire in bursts (a single setView triggers
+    % several PostSet events), so most calls end here. Pixel geometry
+    % changes are covered separately: the Position listener passes
+    % forceLayout, so no (layout-forcing) geometry probe is needed here.
+    key = {xDir, yDir, dx, dy, rulerLength, labelStr, sB.lineColor, ...
+      sB.backgroundColor, sB.backgroundAlpha, sB.location};
+    if ~forceLayout && isequal(key, sB.lastLayout)
+      sB.setOnTop % newly plotted content may still require restacking
+      return
+    end
+    sB.lastLayout = key;
+
     % Set the label and measure its footprint before laying out the box -
     % the box (and hence the bar) must be sized for the label that is
-    % about to be shown, not the one left over from the previous redraw
-    labelStr = ['\rm{\textbf{' num2str(barLength) ' ' sBUnit '}}'];
+    % about to be shown, not the one left over from the previous redraw.
+    %
+    % The extent is measured without flushing pending layout/rendering
+    % first: a drawnow here is extremely expensive on large maps (it
+    % synchronously renders everything pending, possibly several times per
+    % interaction). If the axes' pixel geometry is not settled yet (e.g. a
+    % uiaxes inside a freshly built App Designer layout), the measured
+    % extent is implausible and the fallback below kicks in; the final
+    % correct layout follows automatically once the geometry settles,
+    % because that fires the Position listener which forces a re-layout.
     set(sB.txt,'string',labelStr,'position',[dx(1),dy(1)])
-
-    % force pending layout/rendering to be flushed before measuring the
-    % text: right after an axes is first created (e.g. a uiaxes inside an
-    % App Designer grid layout that has not been sized yet), its pixel
-    % geometry may not be finalized, which throws off the pixel-to-data
-    % conversion behind Extent and can make the box come out far too tall
-    drawnow
     extent = get(sB.txt, 'Extent');
 
     % Extent(3:4) are the text's footprint along data-x/data-y - which one
@@ -228,11 +267,12 @@ methods
     % rather than a fixed font-size-based guess, which would only look
     % right at whatever zoom level its absolute size happens to match -
     % whenever Extent could not be measured (NaN) or is implausible
-    % (larger than a generous fraction of the map itself). The latter can
-    % happen even after the drawnow above: e.g. a uiaxes inside a freshly
-    % built App Designer layout (as in the import wizard) is not always
-    % guaranteed to have settled on its final pixel geometry yet, which
-    % throws off the pixel-to-data scale behind Extent.
+    % (larger than a generous fraction of the map itself). The latter
+    % happens when the axes has not settled on its final pixel geometry
+    % yet (e.g. a uiaxes inside a freshly built App Designer layout, as in
+    % the import wizard), which throws off the pixel-to-data scale behind
+    % Extent; see the comment above the measurement for why this is only
+    % transient.
     bogus = isnan(textHeight) || isnan(textWidth) || ...
       abs(textHeight) > 0.4*abs(diff(dy)) || abs(textWidth) > 0.9*abs(diff(dx));
     if bogus
