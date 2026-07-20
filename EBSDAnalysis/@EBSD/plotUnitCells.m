@@ -35,7 +35,9 @@ end
 if numel(unitCell)~=4 || check_option(varargin,'unitCell')
   backend = 'patch';
 elseif ~all(unitCell.z==0) || ...
-    min(angle(unitCell(2)-unitCell(1),[xvector,yvector]))>1e-2
+    min(angle(unitCell(2)-unitCell(1),[xvector,yvector],'antipodal'))>1e-2
+  % the unit cell edge may point along -x / -y, hence the antipodal angle;
+  % plotImagesc checks the exact eligibility itself and falls back to surf
   backend = 'surf';
 else
   backend = 'imagesc';
