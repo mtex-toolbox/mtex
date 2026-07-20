@@ -56,6 +56,9 @@ classdef import_wizard3 < matlab.apps.AppBase
     CurrentFolder string = ""
     LoadedFilePath string = "" % Keeps track of the path of the imported EBSD file
     ImagePaths cell = {}        % field-name paths parallel to ImagesDropDown items
+    IPFKeys cell = {}           % precomputed ipfColorKey per phase, shared
+                                % by the IPF X/Y/Z tabs (they only differ by
+                                % the inversePoleFigureDirection)
     PFODF = []                  % cached ODF for the pole figure tab
     PFODFKey string = ""        % cache key describing what PFODF was computed from
     PFODFCorr = []              % Euler correction the cached ODF refers to
@@ -564,6 +567,7 @@ classdef import_wizard3 < matlab.apps.AppBase
       updateCurrentDataInfo(app, fileName)
       app.ExportButton.Text = 'Import to workspace';
       app.PFODFKey = "";
+      app.IPFKeys = {};
 
       syncCoordinateControls(app)
       populateViewSelectors(app)
@@ -742,14 +746,14 @@ classdef import_wizard3 < matlab.apps.AppBase
     end
 
     function plotMaps(app, mapIdx, force)
-      enabledPhaseIds = find(app.PhaseTable.Data.Plot);
       applyCurrentCoordinateState(app)
-      ebsd = app.ebsd(ismember(app.ebsd.phaseId, enabledPhaseIds));
 
-      % the drawn content does not depend on the map coordinate system -
-      % when only that changed, realigning the view is all that is needed
+      % the maps always show the full data set - the phase selection in
+      % the phase table only applies to the IPF maps and the pole figures.
+      % The drawn content neither depends on the map coordinate system -
+      % when only that changed, realigning the view is all that is needed.
       sel = app.MapNames{mapIdx};
-      sig = strjoin(["maps", string(sel), phaseSig(app,enabledPhaseIds)], '|');
+      sig = strjoin(["maps", string(sel)], '|');
       if ~force && numel(app.LastSig.Maps) >= mapIdx && ...
           sig == app.LastSig.Maps(mapIdx)
         setView(app.ebsd.how2plot, app.MapAxes(mapIdx))
@@ -759,14 +763,11 @@ classdef import_wizard3 < matlab.apps.AppBase
 
       ax = app.MapAxes(mapIdx);
       resetAxes(app, ax)
-      if isempty(ebsd)
-        title(ax, 'No phase selected'); return
-      end
 
       if strcmp(sel, 'Phase Map')
-        plot(ebsd, 'parent', ax, 'wizard')
+        plot(app.ebsd, 'parent', ax, 'wizard')
       else
-        plot(ebsd, ebsd.(sel), 'parent', ax)
+        plot(app.ebsd, app.ebsd.(sel), 'parent', ax)
         mtexColorMap(ax, 'white2black');
         colorbar(ax)
       end
@@ -799,11 +800,14 @@ classdef import_wizard3 < matlab.apps.AppBase
       direction = directionVector(app, dirLabels{ipfIdx});
       
       for phaseId = enabledPhaseIds(:)'
+        % skip not indexed "phases" - they carry no orientations
+        if ~isa(ebsd.CSList(phaseId), 'symmetry'), continue; end
         ebsdPhase = ebsd(ebsd.phaseId == phaseId);
         if isempty(ebsdPhase), continue; end
-        ipfKey = ipfColorKey(ebsd.CSList(phaseId));
+        % one precomputed color key per phase - only the direction differs
+        % between the IPF tabs and switching it costs nothing
+        ipfKey = ipfKeyForPhase(app, phaseId);
         ipfKey.inversePoleFigureDirection = direction;
-        ipfKey.precompute;
         colors = ipfKey.orientation2color(ebsdPhase.orientations);
         plot(ebsdPhase, colors, 'parent', ax)
         hold(ax, 'on')
@@ -929,6 +933,21 @@ classdef import_wizard3 < matlab.apps.AppBase
         s = strjoin(string(round([a b g]/degree, 3)), '_');
       catch
         s = "none";
+      end
+    end
+
+    function key = ipfKeyForPhase(app, phaseId)
+      % lazily create and precompute one ipfColorKey per phase. The
+      % expensive precomputation depends only on the crystal symmetry, so
+      % the key is shared by the IPF X/Y/Z tabs - they merely set their
+      % inversePoleFigureDirection before use (ipfColorKey is a handle
+      % class, so mutating the direction on the cached key is fine).
+      if numel(app.IPFKeys) < phaseId || isempty(app.IPFKeys{phaseId})
+        key = ipfColorKey(app.ebsd.CSList(phaseId));
+        key.precompute;
+        app.IPFKeys{phaseId} = key;
+      else
+        key = app.IPFKeys{phaseId};
       end
     end
 
@@ -1322,8 +1341,10 @@ classdef import_wizard3 < matlab.apps.AppBase
 
       switch col
         case 1
-          invalidateAllSigs(app)
-          updatePlot(app, true)
+          % the phase selection only affects the IPF maps and the pole
+          % figures - their signatures include it, so a plain update
+          % suffices and the (phase independent) maps stay untouched
+          updatePlot(app)
 
         case 3
           updateMineralName(app, row, event.NewData)
