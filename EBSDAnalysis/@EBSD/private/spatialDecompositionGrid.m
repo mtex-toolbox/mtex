@@ -23,7 +23,9 @@ function out = spatialDecompositionGrid(ebsd,varargin)
 % Options
 %  alpha    - hole closing radius in multiples of dxy (default 1.5). Holes
 %             narrower than 2*alpha*dxy are filled and vanish; wider holes are
-%             preserved as measured (no growing into them).
+%             preserved as measured (no growing into them). Single-pixel-wide
+%             recesses (boundary notches, slit mouths) are always filled for
+%             alpha >= 1, matching the alpha shape.
 %
 % Output struct out with fields
 %  V        - nV x 2 Voronoi vertices
@@ -68,7 +70,7 @@ rClose  = alpha*dxy;                            % closing radius: fills holes of
 % placed there, and the outer grains come out open. So size the margin from
 % the closing reach in cells PLUS a fixed safety of 2 cells, independent of A.
 closeCells = ceil(rClose / min(vecnorm(A,2,1)));
-padding = closeCells + 3;   % closing reach + exterior band (1) + dummy ring (1) + safety (1)
+padding = closeCells + 4;   % closing reach + band (1) + pushed band (1) + dummy ring (1) + safety (1)
 szP     = ijsz + 2*padding;
 ij2slotP = @(IJ) (IJ(:,1)-ijmin(1)+padding) + (IJ(:,2)-ijmin(2)+padding)*szP(1) + 1;
 
@@ -86,6 +88,24 @@ inDisk  = sum(dxyDisk.^2,2) <= rClose^2;
 diskOffs = [di(inDisk) dj(inDisk)];             % <-- disk structuring element
 % imagesc(reshape(inDisk,size(di))), axis equal tight
 
+% add lateral companions next to the axis extremes of the disk. A recess cell
+% at a straight boundary survives the erosion only if the dilation covers the
+% disk extreme M*s above it (s = stencil direction, M = axis reach); that
+% coverage can only come from the recess' lateral neighbours t, which requires
+% M*s-t to be in the disk. Whenever alpha^2 - floor(alpha)^2 < 1 (worst case:
+% integer alpha) the sampled disk lacks exactly those points - the extreme is
+% a lone single-cell tip - and boundary recesses that the alpha shape would
+% close stay open, visible as bumps in the outer grain boundary. Adding the
+% companions never extends the axis reach, so wider holes are still preserved.
+comp = zeros(0,2);
+for s = 1:size(stencil,1)
+  Ms = floor(rClose / norm(stencil(s,:)*A'));
+  if Ms < 1, continue; end
+  t = stencil(~all(stencil == stencil(s,:) | stencil == -stencil(s,:), 2),:);
+  comp = [comp; Ms*stencil(s,:) - t]; %#ok<AGROW>
+end
+diskOffs = unique([diskOffs; comp],'rows');
+
 % morphological CLOSING of the indexed set by the disk:
 %   closedP = erode(dilate(isIndexedP)) , erosion done as the complement of the
 %   dilation of the complement (De Morgan). Fills holes/slits narrower than
@@ -96,6 +116,23 @@ closedP  = ~binaryDilate(~dilatedP, diskOffs, szP);      % 2D binary erosion
 closedP  = closedP | isIndexedP;
 % imagesc(reshape(dilatedP,szP)), axis equal tight
 % imagesc(reshape(closedP,szP)), axis equal tight
+
+% fill single-pixel concavities: a background cell with material on more than
+% half of its stencil directions is a 1-wide dead-end recess (boundary notch,
+% slit mouth). The alpha shape fills those for any alpha >= 1, but the sampled
+% disk closing misses them whenever alpha^2 - floor(alpha)^2 < 1: the SE then
+% has a lone single-cell tip at its axis extreme (0,+-floor(alpha)) that the
+% dilation from the recess' lateral neighbours cannot cover - worst for
+% integer alpha. Iterate because filling a slit mouth exposes the next cell;
+% wider holes and open channels (<= half the stencil material) stay untouched.
+if alpha >= 1
+  nMin = floor(size(stencil,1)/2) + 1;
+  while true
+    add = ~closedP & stencilCount(closedP, stencil, szP) >= nMin;
+    if ~any(add), break; end
+    closedP(add) = true;
+  end
+end
 
 % exteriorP = background connected to the padded border. This is a flood fill
 % (morphological reconstruction of the border marker under the mask ~closedP),
@@ -126,8 +163,39 @@ bigHoleP  = ~closedP & ~exteriorP;
 
 % one-cell exterior shell adjacent to the material
 extBandP  = binaryDilate(materialP, stencil, szP) & exteriorP;
+
+% a band cell whose only material contact is a filled (site-less) cell sits at
+% half the regular site-to-site distance across the boundary: its Voronoi cell
+% dips half a pixel into the filled recess (V-shaped bump in the outer
+% boundary). The same applies to band cells inside shallow recesses (1-deep
+% dents wider than the closing can bridge on the lattice): there the boundary
+% would follow the full pixel staircase although the alpha shape absorbs such
+% cells. Vacate both kinds of cells and push the band one cell further out;
+% the vacated cell must stay empty (no band, no dummy), then the boundary runs
+% straight across filled recesses and dips only half a pixel into shallow ones.
+siteCellsP = isIndexedP | bigHoleP;
+
+% shallow recess = material within the closing reach on BOTH sides along some
+% lattice direction (exterior channels of that width are already filled by the
+% closing, so this cannot glue separate map regions)
+recessP = false(prod(szP),1);
+hasDir  = false(prod(szP),size(stencil,1));
+for s = 1:size(stencil,1)
+  Ms = floor(rClose / norm(stencil(s,:)*A'));
+  hasDir(:,s) = binaryDilate(materialP, -(1:Ms)'*stencil(s,:), szP);
+end
+for s = 1:size(stencil,1)
+  [~,o] = ismember(-stencil(s,:),stencil,'rows');
+  if o > s, recessP = recessP | (hasDir(:,s) & hasDir(:,o)); end
+end
+
+vacatedP = extBandP & (~binaryDilate(siteCellsP, stencil, szP) | recessP);
+extBandP = extBandP & ~vacatedP;
+pushP    = binaryDilate(vacatedP, stencil, szP) & exteriorP & ~vacatedP & ~extBandP;
+extBandP = extBandP | pushP;
+
 % dummy ring one cell beyond the band (bounds the band cells)
-dummyP    = binaryDilate(materialP | extBandP, stencil, szP) & exteriorP & ~extBandP;
+dummyP    = binaryDilate(materialP | extBandP, stencil, szP) & exteriorP & ~extBandP & ~vacatedP;
 % imagesc(reshape(bigHoleP,szP)), axis equal tight
 % imagesc(reshape(extBandP,szP)), axis equal tight
 % imagesc(reshape(dummyP,szP)), axis equal tight
@@ -167,14 +235,39 @@ function m2 = binaryDilate(m, offs, szP)
 % structuring element `offs`, given as [di dj] axial (i,j) offsets. Consistent
 % with the flatten ij2slotP, i is the row (dim 1) and j is the column (dim 2),
 % so an offset's 1st component moves the row and its 2nd component the column.
-% Linearised: scatter every foreground cell to all offset positions.
-[rr,cc] = ind2sub(szP, find(m));
-m2 = false(prod(szP),1);
+%
+% Implemented as an OR of shifted submatrix slices of the 2D mask: cheaper
+% than scattering foreground index vectors, in particular for the (mostly
+% dense) masks this file works on, and free of find/ind2sub/sub2ind.
+M  = reshape(m, szP);
+M2 = false(szP);
+n1 = szP(1); n2 = szP(2);
 for o = 1:size(offs,1)
-  r = rr + offs(o,1);  c = cc + offs(o,2);      % i-step -> row, j-step -> col
-  ok = r>=1 & r<=szP(1) & c>=1 & c<=szP(2);
-  m2(sub2ind(szP, r(ok), c(ok))) = true;
+  di = offs(o,1); dj = offs(o,2);               % i-step -> row, j-step -> col
+  r = max(1,1+di):min(n1,n1+di);                % target rows with valid source
+  c = max(1,1+dj):min(n2,n2+dj);
+  if isempty(r) || isempty(c), continue; end
+  M2(r,c) = M2(r,c) | M(r-di, c-dj);
 end
+m2 = M2(:);
+end
+
+% ===========================================================================
+function cnt = stencilCount(m, offs, szP)
+% number of foreground cells of m (prod(szP) x 1 logical) among the stencil
+% neighbours of every raster cell. Same shifted-slice scheme as binaryDilate,
+% but accumulating a count instead of OR-ing.
+M   = reshape(m, szP);
+CNT = zeros(szP);
+n1 = szP(1); n2 = szP(2);
+for o = 1:size(offs,1)
+  di = offs(o,1); dj = offs(o,2);               % i-step -> row, j-step -> col
+  r = max(1,1+di):min(n1,n1+di);
+  c = max(1,1+dj):min(n2,n2+dj);
+  if isempty(r) || isempty(c), continue; end
+  CNT(r,c) = CNT(r,c) + M(r-di, c-dj);
+end
+cnt = CNT(:);
 end
 
 % ===========================================================================
@@ -192,7 +285,7 @@ srcE = []; dstE = [];
 for s = 1:size(stencil,1)
   r2 = rr + stencil(s,1);  c2 = cc + stencil(s,2);   % i-step -> row, j-step -> col
   ok = find(r2>=1 & r2<=szP(1) & c2>=1 & c2<=szP(2));
-  l2 = sub2ind(szP, r2(ok), c2(ok));
+  l2 = r2(ok) + (c2(ok)-1)*szP(1);   % sub2ind without its overhead
   isbg = bg(l2);
   srcE = [srcE; ok(isbg)];            %#ok<AGROW>  compact source indices
   dstE = [dstE; compact(l2(isbg))];   %#ok<AGROW>
