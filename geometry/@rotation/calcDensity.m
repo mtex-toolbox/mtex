@@ -43,6 +43,15 @@ function odf = calcDensity(ori,varargin)
 %  Bingham    - model bingham odf
 %  noFourier  - no Fourier method
 %
+% Description
+%
+% If the number of orientations is very large (more than about 10 *
+% bandwidth^3) the Fourier method rounds the orientations onto a regular
+% quadrature grid and computes the Fourier coefficients by a plain FFT
+% instead of the NFFT, see |SO3FunHarmonic.adjoint|. The rounding error is
+% at most half the grid spacing and hence negligible compared to the
+% kernel halfwidth. Use the flag |'exact'| to avoid any gridding.
+%
 % See also
 % orientation/calcFourierODF orientation/calcKernelODF orientation/calcBinghamODF ebsd_demo EBSD2odf EBSDSimulation_demo 
 

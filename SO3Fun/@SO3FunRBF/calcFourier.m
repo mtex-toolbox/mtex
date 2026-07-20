@@ -33,6 +33,18 @@ if symCenter && ~check_option(varargin,'noSymmetry')
 end
  
 varargin = delete_option(varargin,'weights',1);
+
+% For many center orientations round them onto a regular quadrature grid
+% and use the plain FFT based adjoint transform instead of the NFFT, see
+% SO3FunHarmonic.adjoint. The rounding error (at most half the grid
+% spacing, i.e. pi/(4L)) is negligible compared to the kernel halfwidth.
+% The FFT costs O(L^3 log L) independently of the number of orientations
+% while the NFFT scales linearly with it - the measured crossover is at
+% about 10*L^3 orientations.
+if length(ori) > 10*L^3 && ~check_option(varargin,'exact')
+  varargin = [varargin,{'gridded'}];
+end
+
 SO3FH = SO3FunHarmonic.adjoint(ori,c,varargin{:},'bandwidth',L);
 SO3FH = reshape(SO3FH,size(SO3F));
 
