@@ -777,7 +777,6 @@ classdef import_wizard3 < matlab.apps.AppBase
     function plotIPF(app, ipfIdx, force)
       enabledPhaseIds = find(app.PhaseTable.Data.Plot);
       applyCurrentCoordinateState(app)
-      ebsd = app.ebsd(ismember(app.ebsd.phaseId, enabledPhaseIds));
 
       % the colors depend on the orientations and thus on the Euler
       % correction; a pure map coordinate change only realigns the view
@@ -793,26 +792,32 @@ classdef import_wizard3 < matlab.apps.AppBase
 
       ax = app.IPFAxes(ipfIdx);
       resetAxes(app, ax)
-      if isempty(ebsd)
-        title(ax, 'No phase selected'); return
-      end
 
       direction = directionVector(app, dirLabels{ipfIdx});
-      
+
+      % compute the color of every pixel first, then plot the entire map
+      % in a single call - this avoids the expensive subsetting of the
+      % EBSD data into phases (EBSD/subsref copies all property arrays).
+      % Pixels of unselected phases keep NaN colors and are not drawn.
+      color = NaN(length(app.ebsd), 3);
       for phaseId = enabledPhaseIds(:)'
         % skip not indexed "phases" - they carry no orientations
-        if ~isa(ebsd.CSList(phaseId), 'symmetry'), continue; end
-        ebsdPhase = ebsd(ebsd.phaseId == phaseId);
-        if isempty(ebsdPhase), continue; end
+        if ~isa(app.ebsd.CSList(phaseId), 'symmetry'), continue; end
+        mask = app.ebsd.phaseId == phaseId;
+        if ~any(mask), continue; end
         % one precomputed color key per phase - only the direction differs
         % between the IPF tabs and switching it costs nothing
         ipfKey = ipfKeyForPhase(app, phaseId);
         ipfKey.inversePoleFigureDirection = direction;
-        colors = ipfKey.orientation2color(ebsdPhase.orientations);
-        plot(ebsdPhase, colors, 'parent', ax)
-        hold(ax, 'on')
+        ori = orientation(app.ebsd.rotations(mask), app.ebsd.CSList(phaseId));
+        color(mask,:) = ipfKey.orientation2color(ori);
       end
-      hold(ax, 'off')
+
+      if all(isnan(color(:)))
+        title(ax, 'No phase selected'); return
+      end
+
+      plot(app.ebsd, color, 'parent', ax)
       setView(app.ebsd.how2plot, ax)
     end
 
