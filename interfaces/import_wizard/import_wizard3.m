@@ -138,6 +138,12 @@ classdef import_wizard3 < matlab.apps.AppBase
       app.RightPanel.Layout.Column = 2;
 
       app.UIFigure.Visible = 'on';
+
+      % Build the analysis UI (tabs, axes, phase table, ...) right away:
+      % the first axes and the table pay a substantial one-time renderer
+      % boot cost, which this way happens asynchronously while the user
+      % is still browsing for a file - instead of delaying the first plot.
+      ensureAnalysisUI(app)
     end
 
     function createFileBrowser(app)
@@ -317,15 +323,21 @@ classdef import_wizard3 < matlab.apps.AppBase
         'SelectionChangedFcn', createCallbackFcn(app, @TabSelectionChanged, true));
       app.TabGroup.Layout.Row = 2;
 
+      % The tabs are created directly in their display order - the tab
+      % group is never reordered through its Children property, since
+      % that makes the renderer rebuild the whole group, which is slow
+      % and briefly blanks the currently visible plot.
+
       % --- map tabs: the phase map now, one tab per property at import ---
       [app.MapTabs, app.MapAxes] = createPlotTab(app, 'Phase Map', app.TabColors.Maps);
       app.MapNames = {'Phase Map'};
 
-      % --- IPF tabs: one tab per direction --------------------------------
-      dirs = {'IPF X', 'IPF Y', 'IPF Z'};
-      for i = 1:3
-        [app.IPFTabs(i), app.IPFAxes(i)] = createPlotTab(app, dirs{i}, app.TabColors.IPF);
-      end
+      % --- IPF tabs: one tab per direction, Z first -----------------------
+      [tz, az] = createPlotTab(app, 'IPF Z', app.TabColors.IPF);
+      [ty, ay] = createPlotTab(app, 'IPF Y', app.TabColors.IPF);
+      [tx, ax] = createPlotTab(app, 'IPF X', app.TabColors.IPF);
+      app.IPFTabs = [tx, ty, tz];   % index 1/2/3 = direction X/Y/Z
+      app.IPFAxes = [ax, ay, az];
 
       % --- Pole Figures tab: parallel axes, a Miller field above each -----
       app.PFTab = uitab(app.TabGroup, 'Title', 'Pole Figures', ...
@@ -368,33 +380,31 @@ classdef import_wizard3 < matlab.apps.AppBase
       PFTabSizeChanged(app, [])
 
       % --- Images tab: opt-images via a dropdown --------------------------
+      createImagesTab(app)
+    end
+
+    function createImagesTab(app)
+      % The images tab is always the last one. Since tabs can only be
+      % appended (see the comment in createTabs), it is recreated after
+      % the property map tabs of an imported data set have been appended,
+      % see populateMapTabs.
       app.ImagesTab = uitab(app.TabGroup, 'Title', 'Images', ...
         'ForegroundColor', app.TabColors.Images);
       gImg = uigridlayout(app.ImagesTab, ...
         'ColumnWidth', {120, '1x'}, 'RowHeight', {22, 30, '1x'}, ...
         'Padding', [6 6 6 6], 'RowSpacing', 6, 'ColumnSpacing', 12);
-      
+
       lblImg = uilabel(gImg, 'Text', 'Image:', 'HorizontalAlignment', 'left', ...
         'FontSize', app.FontSize);
       lblImg.Layout.Row = 1; lblImg.Layout.Column = 1;
-      
+
       app.ImagesDropDown = uidropdown(gImg, 'Items', {'(none)'}, ...
         'FontSize', app.FontSize, ...
         'ValueChangedFcn', createCallbackFcn(app, @ImagesViewChanged, true));
       app.ImagesDropDown.Layout.Row = 2; app.ImagesDropDown.Layout.Column = 1;
-      
+
       app.ImagesAxes = uiaxes(gImg);
       app.ImagesAxes.Layout.Row = [1 3]; app.ImagesAxes.Layout.Column = 2;
-
-      app.TabGroup.Children = tabOrder(app);
-    end
-
-    function order = tabOrder(app)
-      % display order of the tabs: phase map, IPF Z / Y / X, pole
-      % figures, property maps, images
-      ipf = app.IPFTabs([3 2 1]);
-      propMaps = app.MapTabs(2:end);
-      order = [app.MapTabs(1); ipf(:); app.PFTab; propMaps(:); app.ImagesTab];
     end
 
     function [tab, ax] = createPlotTab(app, tabTitle, color)
@@ -564,30 +574,40 @@ classdef import_wizard3 < matlab.apps.AppBase
 
       app.ebsd = ebsdData;
       app.LoadedFilePath = string(filePath); % Store file path for the script exporter
-      updateCurrentDataInfo(app, fileName)
-      app.ExportButton.Text = 'Import to workspace';
       app.PFODFKey = "";
       app.IPFKeys = {};
 
-      syncCoordinateControls(app)
-      populateViewSelectors(app)
-      fillPhaseTable(app)
+      % --- paint first: everything up to the flush below is the minimum
+      % required for the initial IPF Z view; the remaining setup happens
+      % afterwards, while the user is already looking at the map
       invalidateAllSigs(app)
+      syncCoordinateControls(app)  % plotIPF reads the coordinate dropdowns
+      fillPhaseTable(app)          % ... and the phase selection
 
       % default view: IPF Z of the (pre-selected) largest phase
       app.TabGroup.SelectedTab = app.IPFTabs(3);
-
       updatePlot(app, true)
+      drawnow                      % first paint
+
+      % --- deferred setup: only appends tabs / updates values, it never
+      % reorders the tab group (that would blank the visible plot) -------
+      updateCurrentDataInfo(app, fileName)
+      app.ExportButton.Text = 'Import to workspace';
+      populateMapTabs(app)
+      populateImagesSelector(app)
     end
 
-    function populateViewSelectors(app)
-      % (Re)create the map tabs (phase map + one tab per property) and
-      % fill the Images dropdown (matrices found anywhere in ebsd.opt).
+    function populateMapTabs(app)
+      % (Re)create the property map tabs, one per property of the imported
+      % data set. New tabs can only be appended, so to keep the images tab
+      % the last one it is recreated afterwards - existing tabs (and in
+      % particular the currently visible one) are never touched.
 
-      % drop the property tabs of a previously loaded data set
+      % drop the tabs of a previously loaded data set
       delete(app.MapTabs(2:end))
       app.MapTabs = app.MapTabs(1);
       app.MapAxes = app.MapAxes(1);
+      delete(app.ImagesTab)
 
       names = getPropertyNames(app);
       app.MapNames = [{'Phase Map'}; names(:)];
@@ -596,8 +616,16 @@ classdef import_wizard3 < matlab.apps.AppBase
           createPlotTab(app, app.MapNames{k}, app.TabColors.Maps);
       end
 
-      app.TabGroup.Children = tabOrder(app);
+      createImagesTab(app)
 
+      % resize the per-tab render signatures without invalidating the
+      % already drawn IPF Z plot
+      app.LastSig.Maps = repmat("", 1, max(1, numel(app.MapNames)));
+      app.LastSig.Images = "";
+    end
+
+    function populateImagesSelector(app)
+      % fill the Images dropdown (matrices found anywhere in ebsd.opt)
       [imgNames, imgPaths] = collectImageFields(app, app.ebsd.opt, {});
       app.ImagePaths = imgPaths;
       if isempty(imgNames)
