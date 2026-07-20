@@ -35,20 +35,15 @@ elseif find_type(varargin,'symmetry')
 end
 
 
-% compute Matthies Euler angle
-
+% the two rotation angles about the z-axis and the tilt
 at1 = atan2(qd,qa);
 at2 = atan2(qb,qc);
-
-alpha = at1 - at2;
 beta = 2*atan2(sqrt(qb.^2+qc.^2),sqrt(qa.^2+qd.^2));
-gamma = at1 + at2;
 
 ind = isnull(beta);
-alpha(ind) = 2*asin(max(-1,min(1,ssign(qa(ind)).*qd(ind))));
-gamma(ind) = 0;
 
-% transform to right convention
+% compute the first and third Euler angle explicitly for each convention -
+% full vector expressions, the few beta == 0 entries are overwritten below
 
 conventions = {'nfft','ZYZ','ABG','Matthies','Roe','Kocks','Bunge','ZXZ','Canova'};
 convention = get_flag(varargin,conventions,getMTEXpref('EulerAngleConvention'));
@@ -58,38 +53,41 @@ switch lower(convention)
   case {'matthies','nfft','zyz','abg'}
 
     labels = {'alpha','beta','gamma'};
+    alpha = mod(at1 - at2,2*pi);
+    gamma = mod(at1 + at2,2*pi);
 
   case 'roe'
 
     labels = {'Psi','Theta','Phi'};
+    alpha = mod(at1 - at2,2*pi);
+    gamma = mod(at1 + at2,2*pi);
 
   case {'bunge','zxz'}
 
     labels = {'phi1','Phi','phi2'};
-
-    ind = ~isnull(beta);
-    alpha(ind) = alpha(ind) + pi/2;
-    gamma(ind) = gamma(ind) + 3*pi/2;
-
+    alpha = mod((at1 - at2) + pi/2,2*pi);
+    gamma = mod((at1 + at2) + 3*pi/2,2*pi);
 
   case {'kocks'}
 
     labels = {'Psi','Theta','phi'};
-    ind = ~isnull(beta);
-    gamma(ind) = pi - gamma(ind);
-
+    alpha = mod(at1 - at2,2*pi);
+    gamma = mod(pi - (at1 + at2),2*pi);
 
   case {'canova'}
 
     labels = {'omega','Theta','phi'};
-    ind = ~isnull(beta);
-    alpha(ind) = pi/2 - alpha(ind);
-    gamma(ind) = 3*pi/2 - gamma(ind);
+    alpha = mod(pi/2 - (at1 - at2),2*pi);
+    gamma = mod(3*pi/2 - (at1 + at2),2*pi);
 
 end
 
-alpha = mod(alpha,2*pi);
-gamma = mod(gamma,2*pi);
+% beta == 0: the rotation is a pure rotation about the z-axis - it is
+% described by alpha alone, independently of the convention
+if any(ind(:))
+  alpha(ind) = mod(2*asin(max(-1,min(1,ssign(qa(ind)).*qd(ind)))),2*pi);
+  gamma(ind) = 0;
+end
 
 if nargout == 0
 
