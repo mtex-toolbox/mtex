@@ -118,32 +118,56 @@ else % phase plot
   l = legend(mP.ax,'-DynamicLegend','location','NorthEast');
   warning('on','MATLAB:legend:PlotEmpty');
 
-  for k=1:numel(ebsd.phaseMap)
-      
-    ind = ebsd.phaseId == k;
-    
-    if ~any(ind), continue; end
-    
-    if check_option(varargin,'grayScale')
-      color = 1 - (k-1)/(numel(ebsd.phaseMap)) * [1,1,1];
-    elseif check_option(varargin,{'color','faceColor'})
-      color = 'none';
-    else
-      color = ebsd.CSList(k).color;
-      if isnan(color), continue; end    
+  if check_option(varargin,{'color','faceColor'})
+
+    % a uniform user defined color - plot everything at once
+    h = plotUnitCells(ebsd, 'none', 'parent', mP.ax, varargin{:});
+
+  else
+
+    % Compute the color of every pixel first and plot the entire map in a
+    % single call - subsetting the EBSD data per phase is much more
+    % expensive, since EBSD/subsref copies all property arrays. Pixels of
+    % phases without a color keep NaN and are not drawn.
+    color = NaN(length(ebsd),3);
+    phaseColor = NaN(numel(ebsd.phaseMap),3);
+    for k = 1:numel(ebsd.phaseMap)
+
+      ind = ebsd.phaseId(:) == k;
+      if ~any(ind), continue; end
+
+      if check_option(varargin,'grayScale')
+        c = 1 - (k-1)/(numel(ebsd.phaseMap)) * [1,1,1];
+      else
+        c = ebsd.CSList(k).color;
+        if isnan(c), continue; end
+      end
+
+      color(ind,:) = repmat(c,nnz(ind),1);
+      phaseColor(k,:) = c;
+
     end
-    
-    if any(strcmp(ebsd.mineralList{k},l.String))
-      entry = {};
-    else
-      entry = {'DisplayName',ebsd.mineralList{k}};
+
+    h = plotUnitCells(ebsd, color, 'parent', mP.ax, varargin{:});
+
+    % keep the map object itself out of the legend - it would show up as
+    % a meaningless 'dataN' entry
+    try
+      set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
+    catch
     end
-    
-    h(k) = plotUnitCells(ebsd.subSet(ind), color,...
-      'parent', mP.ax,entry{:},varargin{:}); %#ok<AGROW>
-  
+
+    % the map is a single graphics object now, so the legend entries are
+    % carried by one invisible proxy patch per plotted phase
+    for k = reshape(find(~isnan(phaseColor(:,1))),1,[])
+      if any(strcmp(ebsd.mineralList{k},l.String)), continue; end
+      patch('parent',mP.ax,'XData',nan,'YData',nan, ...
+        'FaceColor',phaseColor(k,:),'EdgeColor','none', ...
+        'DisplayName',ebsd.mineralList{k});
+    end
+
   end
-  
+
   if ~check_option(varargin,'parent')
     set(gcf,'name','phase plot');
   end
