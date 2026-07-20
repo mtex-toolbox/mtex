@@ -27,6 +27,9 @@ function SO3F = adjoint(rot,values, varargin)
 % Flags
 %  'nfsoft'            - use (mostly slower) NFSOFT algorithm
 %  'directComputation' - direct evaluation of Fourier sums (no nfft)
+%  'gridded'           - round the rotations onto a regular Clenshaw Curtis
+%                        quadrature grid and use the plain FFT instead of
+%                        the NFFT (fast approximation for many rotations)
 %  'createPlan'        - NFFT3-Flags
 %  'keepPlan'          - NFFT3-Flags
 %  'deletePlan'        - NFFT3-Flags
@@ -84,7 +87,62 @@ else
   rot = orientation(rot,SRight,SLeft);
 end
 
-if isa(rot,'quadratureSO3Grid') 
+% ------ approximate adjoint by rounding onto a regular grid + FFT --------
+% For many rotations it is much cheaper to round them onto the nearest
+% nodes of a regular Clenshaw Curtis quadrature grid, accumulate their
+% values there and compute the adjoint transform by the plain FFT below
+% instead of the NFFT. The rounding error is at most half the grid spacing,
+% i.e. pi/(2N) in the second Euler angle.
+if check_option(varargin,'gridded') && ~isa(rot,'quadratureSO3Grid')
+
+  N = get_option(varargin,'bandwidth', getMTEXpref('maxSO3Bandwidth'));
+
+  % quadrature weights are just factors of the values
+  W = get_option(varargin,'weights',1);
+  values = W(:) .* values;
+
+  % Use a grid with trivial symmetries: the point measure given by the
+  % rotations has no grid symmetry to exploit (the symmetrisation of the
+  % result remains the task of the caller, as for the NFFT branch below).
+  % The grid is oversampled to reduce the rounding error - the transform
+  % is computed at bandwidth NG and truncated to N afterwards (by the
+  % 'bandwidth' option in the constructor). The cap bounds the memory
+  % of the FFT over the full Euler angle tensor.
+  NG = min(2*N, max(N,128));
+  SO3G = quadratureSO3Grid(NG,'ClenshawCurtis',crystalSymmetry,specimenSymmetry);
+
+  % accumulate the values at the nearest grid nodes
+  id = find(SO3G,rot(:));
+  id = id(:);
+  v = zeros(length(SO3G),len);
+  for k = 1:len
+    v(:,k) = accumarray(id,values(:,k),[length(SO3G) 1]);
+  end
+
+  % the FFT based adjoint multiplies by the quadrature weights of all
+  % duplicated full-grid entries - compensate for this so that exactly the
+  % accumulated point masses enter the transform
+  sumW = accumarray(SO3G.iuniqueGrid(:),SO3G.weights(:),[length(SO3G) 1]);
+  v = v ./ sumW;
+
+  % antipodal has to wait until the true symmetries are restored - on the
+  % trivial symmetry grid result it would fail (CS and SS do not coincide)
+  isAntipodal = check_option(varargin,'antipodal');
+  varargin = delete_option(varargin,'antipodal');
+  varargin = delete_option(varargin,'weights',1);
+  varargin = delete_option(varargin,'gridded');
+  SO3F = SO3FunHarmonic.adjoint(SO3G,v,varargin{:});
+
+  % restore the symmetries of the input rotations and project onto the
+  % symmetric subspace, as symmetriseWignerCoefficients does below
+  SO3F.CS = SRight; SO3F.SS = SLeft;
+  SO3F = symmetrise(SO3F);
+  SO3F.antipodal = isAntipodal;
+  SO3F = reshape(SO3F,sz(2:end));
+  return
+end
+
+if isa(rot,'quadratureSO3Grid')
   %  TODO: Multivariate quadratureSO3Grid
   N = rot.bandwidth;
   if strcmp(rot.scheme,'ClenshawCurtis')
