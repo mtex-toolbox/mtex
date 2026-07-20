@@ -144,6 +144,10 @@ classdef import_wizard3 < matlab.apps.AppBase
       % boot cost, which this way happens asynchronously while the user
       % is still browsing for a file - instead of delaying the first plot.
       ensureAnalysisUI(app)
+
+      % start with the keyboard focus on the file browser, so a file can
+      % be picked with the arrow keys and loaded with Enter right away
+      try focus(app.FileTree); catch, end
     end
 
     function createFileBrowser(app)
@@ -1286,8 +1290,15 @@ classdef import_wizard3 < matlab.apps.AppBase
     function WizardKeyPress(app, event)
       % keyboard navigation for the file browser: arrow keys move the
       % cursor natively, Enter opens the selected entry (import a file /
-      % descend into a folder), Backspace navigates one folder up
-      if ~isequal(app.UIFigure.CurrentObject, app.FileTree)
+      % descend into a folder), Backspace navigates one folder up.
+      %
+      % CurrentObject is the last *clicked* component - for pure keyboard
+      % navigation it is empty, so only block when the user demonstrably
+      % interacted with some other control last. (Text inputs never reach
+      % this callback anyway, they capture their keystrokes themselves.)
+      co = app.UIFigure.CurrentObject;
+      if ~(isempty(co) || isequal(co, app.UIFigure) || ...
+          isequal(co, app.FileTree) || isa(co, 'matlab.ui.container.TreeNode'))
         return
       end
 
