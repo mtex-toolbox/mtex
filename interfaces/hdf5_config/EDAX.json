@@ -33,7 +33,7 @@
     "how2plot": {
       "type": "by_id", 
       "id": { "load": {"value": "id"}},
-      "how2plot_data": {"data": [["x-south,y-east"],["x-south,y-east"],["x-east,y-south"],["x-east,y-south"]]}
+      "how2plot_data": {"data": [["x-east,y-south"],["x-east,y-south"],["x-east,y-south"],["x-east,y-south"]]}
       },
     "cs": {
       "type": "default",
