@@ -1,4 +1,4 @@
-function import_wizard( varargin )
+function import_wizard_old( varargin )
 
 
 if check_option(varargin,'EBSD')

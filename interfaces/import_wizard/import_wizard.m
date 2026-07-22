@@ -1,4 +1,4 @@
-classdef import_wizard3 < matlab.apps.AppBase
+classdef import_wizard < matlab.apps.AppBase
   % EBSD app variant with lazy analysis UI, one colorized tab per plot
   % view, compact layout, and a single self-contained updatePlot routine.
 
@@ -1853,7 +1853,7 @@ classdef import_wizard3 < matlab.apps.AppBase
     end
   end
   methods (Access = public)
-    function app = import_wizard3
+    function app = import_wizard
       runningApp = getRunningApp(app);
 
       if isempty(runningApp)
