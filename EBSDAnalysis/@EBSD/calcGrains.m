@@ -101,12 +101,12 @@ end
 
 % setup grains
 try
-  poly = calcPolygonsC(I_FDext * I_DG,Fext,V);
+  [poly,inclusionId] = calcPolygonsC(I_FDext * I_DG,Fext,V);
 catch
-  poly = calcPolygons(I_FDext * I_DG,Fext,V);
+  [poly,inclusionId] = calcPolygons(I_FDext * I_DG,Fext,V);
 end
 grains = grain2d( makeBoundary(Fext,I_FDext), ...
-  poly, [], ebsd.CSList, phaseId, ebsd.phaseMap, varargin{:});
+  poly, [], ebsd.CSList, phaseId, ebsd.phaseMap, varargin{:}, 'inclusionId', inclusionId);
 
 grains.numPixel = full(sum(I_DG,1)).';
 grains.innerBoundary = makeBoundary(Fint,I_FDint);

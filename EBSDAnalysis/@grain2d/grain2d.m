@@ -88,7 +88,15 @@ classdef grain2d < phaseList & dynProp
       if nargin == 0, return;end
 
       grains.poly = poly;
-      grains.inclusionId = cellfun(@(p) length(p) - find(p(2:end)==p(1),1),poly)-1;
+
+      % inclusionId - number of trailing vertices in poly not belonging to
+      % the main loop
+      if check_option(varargin,'inclusionId')
+        grains.inclusionId = reshape(get_option(varargin,'inclusionId'),size(poly));
+        varargin = delete_option(varargin,'inclusionId',1);
+      else
+        grains.inclusionId = cellfun(@(p) length(p) - find(p(2:end)==p(1),1),poly)-1;
+      end
 
       if check_option(varargin,'id')
         grains.id = reshape(get_option(varargin,'id'),size(poly));
