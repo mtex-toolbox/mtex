@@ -1,51 +1,48 @@
-function [ori,c] = compactify(f,varargin)
-% compute the compactification of an given function on the Rotation Group. That
-% means, we try to find a in some sense optimal set of orientations, that
-% describes the given density function reasonable well. This is similar to
-% the so called halftoning problem.
-%
-% Therefore, we solve a minimization problem by gradient descent method to
-% find a set of orientations, such that the corresponding worst case
-% quadrature error with respect to all rotational polynomials (SO3FunHarmonics) up to some
-% specified bandwidth is minimal.
+function [ori,c] = optimalSample(f,n,varargin)
+% optimal discrete sampling points of an orientation density function
+% 
+% Description
+% 
+% |optimalSample| behaves similarly as |discreteSample| with the
+% difference, that the sampling points are optimized to reproduce the input
+% density function as perfect as possible. The price you pay is time.
+% |optimalSample| computes the sampling points by solving a minimization
+% problem, which becomes harder the more points you want to generate.  
 %
 % For more details, see 
 % 
 % Gräf, Manuel; Potts, Daniel; Steidl, Gabriele (2012). Quadrature Errors, Discrepancies, and Their Relations to Halftoning on the Torus and the Sphere. SIAM Journal on Scientific Computing, 34(5), A2760–A2791. doi:10.1137/100814731
-% 
-%
 %
 % Syntax
-%   v = compactify(f)
-%   v = compactify(f,'points',v,'bandwidth',32)
-%   v = compactify(f,'points',5000,'maxIter',1000,'tol',0.05*degree)
+%   ori = compactify(f)
+%   ori = compactify(f,ori)
+%   ori = compactify(f,n,'bandwidth',32)
+%   ori = compactify(f,n,'maxIter',1000,'tol',0.05*degree)
 % 
 % Input
 %  f - @SO3Fun
+%  n - number of sampling points
 %  ori - @rotation (starting nodes)
 %
 % Output
 %  ori - @rotation
 %
 % Options
-%  points - specify number of output points (default = 100)
 %  bandwidth - harmonic degree to approximate (default = 32)
 %  maxIter - for gradient descent (default = 100)
 %  tol - for gradient descent (default = 0.01*degree)
 %  weights - weights of points
-%
 %
 
 % TODO: Symmetries and input is orientation
 % TODO: antipodal
 
 % get starting points
-M = get_option(varargin,'points',5000);
-if isa(M,'rotation')
-  ori = M;
+if isa(n,'rotation')
+  ori = n;
 else
-  %ori = equispacedSO3Grid(f.CS,f.SS,'points',M);
-  ori = discreteSample(f,M);
+  %ori = equispacedSO3Grid(f.CS,f.SS,'points',n);
+  ori = discreteSample(f,n);
 end
 M = numel(ori);
 ori = ori(:);
@@ -125,51 +122,35 @@ end
 
 function res = J(ori,c,f,psi,lambda,bw)
 
-  % adjoint NFSOFT
-  C = lambda * 1/(sqrt(8)*pi) * SO3FunHarmonic.adjointNFSOFT(ori,c,'bandwidth',bw);
-  % In case of symmetries: The output SO3FunHarmonic C has to be symmetrised, which is already internally done in the construction of the SO3FunHarmonic. 
+% adjoint NFSOFT
+C = lambda * 1/(sqrt(8)*pi) * SO3FunHarmonic.adjointNFSOFT(ori,c,'bandwidth',bw);
+% In case of symmetries: The output SO3FunHarmonic C has to be symmetrised, which is already internally done in the construction of the SO3FunHarmonic.
 
-  % convolute with Distance kernel
-  psi = (sqrt(8)*pi) * SO3Kernel( sqrt(2*(0:psi.bandwidth)+1).*sqrt(psi.A) );   % TODO: lambda_0 < 0 !!!!
-  C = conv(C - (sqrt(8)*pi)*f,psi);
-    
-  % l2-norm
-  res = norm(C).^2;
+% convolute with Distance kernel
+psi = (sqrt(8)*pi) * SO3Kernel( sqrt(2*(0:psi.bandwidth)+1).*sqrt(psi.A) );   % TODO: lambda_0 < 0 !!!!
+C = conv(C - (sqrt(8)*pi)*f,psi);
+
+% l2-norm
+res = norm(C).^2;
 end
 
 
 
 function tanV = grad_J(ori,c,f,psi,lambda,bw)
 
-  % adjoint NFSOFT
-  C = lambda * 1/(sqrt(8)*pi) * SO3FunHarmonic.adjointNFSOFT(ori,c,'bandwidth',bw);
-  % In case of symmetries: The output SO3FunHarmonic C has to be symmetrised, which is already internally done in the construction of the SO3FunHarmonic. 
+% adjoint NFSOFT
+C = lambda * 1/(sqrt(8)*pi) * SO3FunHarmonic.adjointNFSOFT(ori,c,'bandwidth',bw);
+% In case of symmetries: The output SO3FunHarmonic C has to be symmetrised, which is already internally done in the construction of the SO3FunHarmonic.
 
-  % convolute with Distance kernel
-  C = conv( C - (sqrt(8)*pi)*f , (8*pi^2) * psi);
+% convolute with Distance kernel
+C = conv( C - (sqrt(8)*pi)*f , (8*pi^2) * psi);
 
-  % evaluate rotational gradient on ori
-  tanV = 2*lambda*real( 1/(sqrt(8)*pi) * C.grad(ori) ).*c;
-  % In case of symmetries: The output SO3FunHarmonic C has to be symmetrised, which is already internally done in the construction of the SO3FunHarmonic. 
-  % The handling with the symmetries is slightly more difficult for the SO3VectorField-objects. 
+% evaluate rotational gradient on ori
+tanV = 2*lambda*real( 1/(sqrt(8)*pi) * C.grad(ori) ).*c;
+% In case of symmetries: The output SO3FunHarmonic C has to be symmetrised, which is already internally done in the construction of the SO3FunHarmonic.
+% The handling with the symmetries is slightly more difficult for the SO3VectorField-objects.
 
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 function Test
