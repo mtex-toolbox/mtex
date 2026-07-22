@@ -26,15 +26,18 @@ classdef import_wizard3 < matlab.apps.AppBase
 
     TabGroup                       matlab.ui.container.TabGroup
     MapTabs                        matlab.ui.container.Tab       % phase map + one tab per property
-    MapAxes                        matlab.ui.control.UIAxes      % parallel to MapTabs
+    MapAxes                        matlab.ui.control.UIAxes      % parallel to MapTabs; built lazily, see ensureTabAxesBuilt
+    MapAxesParent                  matlab.ui.container.GridLayout % holds MapAxes(1) once built
     IPFTabs                        matlab.ui.container.Tab       % 1x3 array: IPF X / Y / Z
-    IPFAxes                        matlab.ui.control.UIAxes      % 1x3 array
+    IPFAxes                        matlab.ui.control.UIAxes      % 1x3 array; built lazily, see ensureTabAxesBuilt
+    IPFAxesParent                  matlab.ui.container.GridLayout % 1x3 array, holds IPFAxes once built
     PFTab                          matlab.ui.container.Tab
     PFGrid                         matlab.ui.container.GridLayout
     ImagesTab                      matlab.ui.container.Tab
     PFMillerField                  matlab.ui.control.EditField   % 1x3 array
-    PFAxes                         matlab.ui.control.UIAxes      % 1x3 array
-    ImagesAxes                     matlab.ui.control.UIAxes
+    PFAxes                         matlab.ui.control.UIAxes      % 1x3 array; built lazily, see ensureTabAxesBuilt
+    ImagesAxes                     matlab.ui.control.UIAxes      % built lazily, see ensureTabAxesBuilt
+    ImagesAxesParent               matlab.ui.container.GridLayout % holds ImagesAxes once built
     OptTree                        matlab.ui.container.Tree      % browser for ebsd.opt, right of PhaseTable
 
     CoordinatePanel                matlab.ui.container.Panel
@@ -122,7 +125,7 @@ classdef import_wizard3 < matlab.apps.AppBase
 
       app.LeftLayout = uigridlayout(app.LeftPanel, ...
         'ColumnWidth', {'1x'}, ...
-        'RowHeight', {'1x', 118, 210, 80}, ...
+        'RowHeight', {'1x', 210, 80}, ...
         'RowSpacing', 10, ...
         'Padding', [0 0 0 0]);
 
@@ -216,9 +219,11 @@ classdef import_wizard3 < matlab.apps.AppBase
         return
       end
 
+      % RightLayout must exist before createCoordinateControls, since the
+      % coordinate panel is now placed as its 3rd column (see item 30)
+      createRightPanel(app)
       createCoordinateControls(app)
       createExportButtonsPanel(app) % Combined layout setup for both buttons
-      createRightPanel(app)
 
       app.AnalysisUICreated = true;
     end
@@ -226,15 +231,18 @@ classdef import_wizard3 < matlab.apps.AppBase
     function createCoordinateControls(app)
       labels = cellstr(app.CoordinateSystems.Label);
 
-      app.CoordinatePanel = uipanel(app.LeftLayout, ...
+      % top-right corner of the right panel: fixed width/height, alongside
+      % the phase table (fixed, left) and the opt tree (flexible, middle)
+      app.CoordinatePanel = uipanel(app.RightLayout, ...
         'Title', 'Coordinate systems', ...
         'FontWeight', 'bold', ...
         'FontSize', app.FontSize);
-      app.CoordinatePanel.Layout.Row = 3;
+      app.CoordinatePanel.Layout.Row = 1;
+      app.CoordinatePanel.Layout.Column = 3;
 
       app.CoordinateLayout = uigridlayout(app.CoordinatePanel, ...
         'ColumnWidth', {'1x', '1x'}, ...
-        'RowHeight', {22, 30, '1x'}, ...
+        'RowHeight', {22, 30, 120}, ...
         'ColumnSpacing', 8, ...
         'RowSpacing', 6, ...
         'Padding', [8 8 8 8]);
@@ -287,7 +295,7 @@ classdef import_wizard3 < matlab.apps.AppBase
         'Padding', [0 0 0 0], ...
         'RowSpacing', 8,...
         'ColumnSpacing', 10);
-      buttonGrid.Layout.Row = 4;
+      buttonGrid.Layout.Row = 3;
 
       app.ExportButton = uibutton(buttonGrid, 'push', ...
         'ButtonPushedFcn', createCallbackFcn(app, @ExportButtonPushed, true), ...
@@ -315,8 +323,12 @@ classdef import_wizard3 < matlab.apps.AppBase
     end
 
     function createRightPanel(app)
+      % row 1: PhaseTable (fixed, left - wide enough for its own column
+      % widths below, ~645px, plus a little slack), OptTree (flexible,
+      % middle), CoordinatePanel (fixed, right - added by
+      % createCoordinateControls); row 2: TabGroup spanning all 3 columns
       app.RightLayout = uigridlayout(app.RightPanel, ...
-        'ColumnWidth', {'2x','1x'}, ...
+        'ColumnWidth', {665,'1x',300}, ...
         'RowHeight', {230, '1x'}, ...
         'RowSpacing', 8, ...
         'ColumnSpacing', 8, ...
@@ -333,8 +345,9 @@ classdef import_wizard3 < matlab.apps.AppBase
       % columns: Plot, Phase, Mineral, Pixels, %, Symmetry, a, b, c, Color -
       % Plot/Color only ever hold a checkbox/swatch and Phase a small
       % integer, so they need far less room than the default equal split;
-      % Mineral gets extra room since it carries the longest text
-      app.PhaseTable.ColumnWidth = {45, 55, 135, 70, 55, 75, 55, 55, 55, 45};
+      % Mineral gets extra room since it carries the longest text; Color
+      % gets a little extra to fit its pencil marker (see fillPhaseTable)
+      app.PhaseTable.ColumnWidth = {45, 55, 135, 70, 55, 75, 55, 55, 55, 60};
 
       % browser for the full ebsd.opt structure - selecting an image-shaped
       % field shows it in the Images tab (see OptTreeSelectionChanged)
@@ -345,7 +358,7 @@ classdef import_wizard3 < matlab.apps.AppBase
       app.OptTree.Layout.Column = 2;
 
       createTabs(app)
-      app.TabGroup.Layout.Column = [1 2];
+      app.TabGroup.Layout.Column = [1 3];
     end
 
     function createTabs(app)
@@ -355,6 +368,13 @@ classdef import_wizard3 < matlab.apps.AppBase
       % fragile cla/reset and appdata juggling and broke the scale bar
       % lifecycle. Tab labels are colorized by category (maps, IPF, pole
       % figures, images).
+      %
+      % The tab CONTAINERS (uitab, their titles/colors, and any cheap
+      % uicontrols they hold, e.g. the PF tab's Miller fields) are all
+      % still built right here, eagerly - only the uiaxes inside each one
+      % (~0.88s apiece, measured) are deferred to ensureTabAxesBuilt, the
+      % first time that tab is actually shown (see updatePlot, which
+      % every tab switch - interactive or programmatic - funnels through).
       app.TabGroup = uitabgroup(app.RightLayout, ...
         'SelectionChangedFcn', createCallbackFcn(app, @TabSelectionChanged, true));
       app.TabGroup.Layout.Row = 2;
@@ -365,15 +385,15 @@ classdef import_wizard3 < matlab.apps.AppBase
       % and briefly blanks the currently visible plot.
 
       % --- map tabs: the phase map now, one tab per property at import ---
-      [app.MapTabs, app.MapAxes] = createPlotTab(app, 'Phase Map', app.TabColors.Maps);
+      [app.MapTabs, app.MapAxesParent] = createLazyPlotTab(app, 'Phase Map', app.TabColors.Maps);
       app.MapNames = {'Phase Map'};
 
       % --- IPF tabs: one tab per direction, Z first -----------------------
-      [tz, az] = createPlotTab(app, 'IPF Z', app.TabColors.IPF);
-      [ty, ay] = createPlotTab(app, 'IPF Y', app.TabColors.IPF);
-      [tx, ax] = createPlotTab(app, 'IPF X', app.TabColors.IPF);
+      [tz, gz] = createLazyPlotTab(app, 'IPF Z', app.TabColors.IPF);
+      [ty, gy] = createLazyPlotTab(app, 'IPF Y', app.TabColors.IPF);
+      [tx, gx] = createLazyPlotTab(app, 'IPF X', app.TabColors.IPF);
       app.IPFTabs = [tx, ty, tz];   % index 1/2/3 = direction X/Y/Z
-      app.IPFAxes = [ax, ay, az];
+      app.IPFAxesParent = [gx, gy, gz];
 
       % --- Pole Figures tab: parallel axes, a Miller field above each -----
       app.PFTab = uitab(app.TabGroup, 'Title', 'Pole Figures', ...
@@ -389,7 +409,9 @@ classdef import_wizard3 < matlab.apps.AppBase
       defaults = {'(100)','(010)','(001)'};
       for i = 1:3
         % the Miller field sits centered right above its pole figure; the
-        % pencil marks it as editable
+        % pencil marks it as editable - cheap uicontrols, built eagerly.
+        % The pole figure axes themselves are deferred, see
+        % ensureTabAxesBuilt
         gField = uigridlayout(gPF, ...
           'ColumnWidth', {'1x', 22, 110, '1x'}, 'RowHeight', {'1x'}, ...
           'Padding', [0 0 0 0], 'ColumnSpacing', 4);
@@ -406,9 +428,6 @@ classdef import_wizard3 < matlab.apps.AppBase
           'Tooltip', 'Type Miller indices, e.g. (100)', ...
           'ValueChangedFcn', createCallbackFcn(app, @PFMillerChanged, true));
         app.PFMillerField(i).Layout.Row = 1; app.PFMillerField(i).Layout.Column = 3;
-
-        app.PFAxes(i) = uiaxes(gPF);
-        app.PFAxes(i).Layout.Row = 2; app.PFAxes(i).Layout.Column = i;
       end
 
       app.PFTab.AutoResizeChildren = 'off';
@@ -425,24 +444,64 @@ classdef import_wizard3 < matlab.apps.AppBase
       % the property map tabs of an imported data set have been appended,
       % see populateMapTabs. Image selection happens via the OptTree
       % (right of PhaseTable, see createRightPanel/OptTreeSelectionChanged),
-      % so this tab is just the axes.
+      % so this tab is just the axes - built lazily, see ensureTabAxesBuilt.
       app.ImagesTab = uitab(app.TabGroup, 'Title', 'Images', ...
         'ForegroundColor', app.TabColors.Images);
-      gImg = uigridlayout(app.ImagesTab, ...
+      app.ImagesAxesParent = uigridlayout(app.ImagesTab, ...
         'ColumnWidth', {'1x'}, 'RowHeight', {'1x'}, ...
         'Padding', [6 6 6 6]);
+      % the old ImagesAxes (if any) was a child of the just-deleted
+      % previous ImagesTab and is no longer valid - clear the handle so
+      % ensureTabAxesBuilt correctly sees this as "not yet built" again
+      app.ImagesAxes = matlab.ui.control.UIAxes.empty;
+    end
 
-      app.ImagesAxes = uiaxes(gImg);
-      app.ImagesAxes.Layout.Row = 1; app.ImagesAxes.Layout.Column = 1;
+    function [tab, parentGrid] = createLazyPlotTab(app, tabTitle, color)
+      % a tab holding nothing but an (empty) full-size grid layout - the
+      % axes itself is built on demand, see ensureTabAxesBuilt
+      tab = uitab(app.TabGroup, 'Title', tabTitle, 'ForegroundColor', color);
+      parentGrid = uigridlayout(tab, 'ColumnWidth', {'1x'}, 'RowHeight', {'1x'}, ...
+        'Padding', [6 6 6 6]);
     end
 
     function [tab, ax] = createPlotTab(app, tabTitle, color)
-      % a tab holding nothing but a single full-size axes
+      % a tab holding nothing but a single full-size axes, built right
+      % away - used for the per-property map tabs (populateMapTabs),
+      % which only ever get created after a file is already loaded, not
+      % at app startup, so there is no startup cost to defer here
       tab = uitab(app.TabGroup, 'Title', tabTitle, 'ForegroundColor', color);
       g = uigridlayout(tab, 'ColumnWidth', {'1x'}, 'RowHeight', {'1x'}, ...
         'Padding', [6 6 6 6]);
       ax = uiaxes(g);
       ax.Layout.Row = 1; ax.Layout.Column = 1;
+    end
+
+    function ensureTabAxesBuilt(app, tab)
+      % axes are built lazily, the first time their tab is actually shown
+      % (~0.88s per axes, measured - see TODO item 29) - this is the
+      % single place that guarantees they exist before any plotting code
+      % touches them. Called at the top of updatePlot, which every tab
+      % switch funnels through: interactive (TabSelectionChanged) and
+      % programmatic (both call updatePlot right after setting
+      % TabGroup.SelectedTab, see importEBSDData/OptTreeSelectionChanged).
+      % Idempotent - already-built groups are left untouched.
+      if ~isempty(app.MapTabs) && tab == app.MapTabs(1) && isempty(app.MapAxes)
+        app.MapAxes = uiaxes(app.MapAxesParent);
+        app.MapAxes(1).Layout.Row = 1; app.MapAxes(1).Layout.Column = 1;
+      elseif ~isempty(app.IPFTabs) && any(tab == app.IPFTabs) && isempty(app.IPFAxes)
+        for i = 1:3
+          app.IPFAxes(i) = uiaxes(app.IPFAxesParent(i));
+          app.IPFAxes(i).Layout.Row = 1; app.IPFAxes(i).Layout.Column = 1;
+        end
+      elseif ~isempty(app.PFTab) && tab == app.PFTab && isempty(app.PFAxes)
+        for i = 1:3
+          app.PFAxes(i) = uiaxes(app.PFGrid);
+          app.PFAxes(i).Layout.Row = 2; app.PFAxes(i).Layout.Column = i;
+        end
+      elseif ~isempty(app.ImagesTab) && tab == app.ImagesTab && isempty(app.ImagesAxes)
+        app.ImagesAxes = uiaxes(app.ImagesAxesParent);
+        app.ImagesAxes.Layout.Row = 1; app.ImagesAxes.Layout.Column = 1;
+      end
     end
 
     function navigateToFolder(app, folderPath)
@@ -657,6 +716,12 @@ classdef import_wizard3 < matlab.apps.AppBase
       % the last one it is recreated afterwards - existing tabs (and in
       % particular the currently visible one) are never touched.
 
+      % the Phase Map tab (index 1) is the one lazily-built tab this
+      % function keeps around (see ensureTabAxesBuilt) - force it built
+      % now since the code below assumes app.MapAxes(1) already exists,
+      % regardless of whether the user has ever actually visited it
+      ensureTabAxesBuilt(app, app.MapTabs(1))
+
       % drop the tabs of a previously loaded data set
       delete(app.MapTabs(2:end))
       app.MapTabs = app.MapTabs(1);
@@ -738,8 +803,18 @@ classdef import_wizard3 < matlab.apps.AppBase
           txt = char(value);
         elseif (isnumeric(value) || islogical(value)) && isscalar(value)
           txt = num2str(value);
+        elseif (isnumeric(value) || islogical(value)) && isvector(value) && numel(value) <= 10
+          % small enough to just show the values - transpose a column
+          % vector to a row first so it reads left-to-right like the rest
+          % of the preview instead of stacking vertically
+          txt = num2str(value(:)');
         elseif isnumeric(value) || islogical(value)
-          txt = ['[' strjoin(string(size(value)),'x') ' ' class(value) ']'];
+          % sprintf (not '[...]' concatenation) - mixing char and string
+          % scalars inside '[...]' silently promotes everything to a
+          % string ARRAY (one element per operand) instead of
+          % concatenating into a single string, which uitreenode's Text
+          % then rejects
+          txt = sprintf('[%s %s]', strjoin(string(size(value)),'x'), class(value));
         else
           txt = class(value);
         end
@@ -766,8 +841,10 @@ classdef import_wizard3 < matlab.apps.AppBase
 
     function fillPhaseTable(app)
       removeStyle(app.PhaseTable)
-      % right-align every column except Plot (column 1, a checkbox)
-      addStyle(app.PhaseTable, uistyle('HorizontalAlignment', 'right'), 'column', 2:10)
+      % right-align every column except Plot (column 1, a checkbox) and
+      % Phase (column 2, a small id, centered instead)
+      addStyle(app.PhaseTable, uistyle('HorizontalAlignment', 'center'), 'column', 2)
+      addStyle(app.PhaseTable, uistyle('HorizontalAlignment', 'right'), 'column', 3:10)
 
       csList = app.ebsd.CSList;
       numPhases = accumarray(app.ebsd.phaseId,1,[length(csList),1]);
@@ -806,10 +883,16 @@ classdef import_wizard3 < matlab.apps.AppBase
       app.PhaseTable.Data = phaseTable;
 
       % mark editable columns in the header so users don't have to
-      % double-click every cell to find out what can be changed
+      % double-click every cell to find out what can be changed. This is
+      % not simply every ColumnEditable column: Plot (column 1) is a
+      % checkbox, self-evidently clickable, so it's excluded; Color
+      % (column 10) is edited by clicking the swatch to open a color
+      % picker (PhaseTableCellSelection), not through normal cell
+      % editing, so it's ColumnEditable=false but still needs the marker
       colNames = phaseTable.Properties.VariableNames;
       colNames{5} = '%'; % 'Percent' is not a valid display header choice
-      editableCols = find(app.PhaseTable.ColumnEditable);
+      editableCols = setdiff(find(app.PhaseTable.ColumnEditable), 1);
+      editableCols = union(editableCols, 10);
       colNames(editableCols) = cellfun(@(s) [s ' ' char(9998)], ...
         colNames(editableCols), 'UniformOutput', false);
       app.PhaseTable.ColumnName = colNames;
@@ -836,6 +919,7 @@ classdef import_wizard3 < matlab.apps.AppBase
       end
 
       t = app.TabGroup.SelectedTab;
+      ensureTabAxesBuilt(app, t)
       mapIdx = find(app.MapTabs == t, 1);
       ipfIdx = find(app.IPFTabs == t, 1);
       if ~isempty(mapIdx)
@@ -1202,12 +1286,9 @@ classdef import_wizard3 < matlab.apps.AppBase
 
     function updateCurrentDataInfo(app, fileName)
       % basic information about the loaded data set: file name, spatial
-      % extent in scan units, grid geometry in pixels and, when they can
-      % be determined, the vendor and the creation date - as a 2-column
-      % Property/Value table. gridInfoLabel returns one descriptive
-      % sentence (e.g. "Hex grid: 1000 x 500 pixel, dHex = 60 µm") that
-      % doesn't split into a clean label + value on its own, so it is kept
-      % whole as the "Grid" row's value rather than decomposed further.
+      % extent in scan units, grid type/dimensions, grid resolution and,
+      % when they can be determined, the vendor, file size and creation
+      % date - as a 2-column Property/Value table.
       rows = {'File', asChar(app, fileName)};
 
       try
@@ -1217,10 +1298,18 @@ classdef import_wizard3 < matlab.apps.AppBase
       catch
       end
 
-      try rows(end+1,:) = {'Grid', gridInfoLabel(app)}; catch, end
+      try
+        [gridLabel, dimsTxt, resolutionTxt] = gridInfo(app);
+        rows(end+1,:) = {gridLabel, dimsTxt};
+        rows(end+1,:) = {'Step Size', resolutionTxt};
+      catch
+      end
 
       vendor = vendorLabel(app);
       if ~isempty(vendor), rows(end+1,:) = {'Vendor', vendor}; end
+
+      fileSize = fileSizeLabel(app);
+      if ~isempty(fileSize), rows(end+1,:) = {'File size', fileSize}; end
 
       created = creationDateLabel(app);
       if ~isempty(created), rows(end+1,:) = {'Created', created}; end
@@ -1234,9 +1323,11 @@ classdef import_wizard3 < matlab.apps.AppBase
       if strcmpi(u, 'um'), u = 'µm'; end
     end
 
-    function txt = gridInfoLabel(app)
-      % e.g. 'Hex grid: 1000 x 500 pixel, dHex = 60 µm'
-      %   or 'Square grid: 1000 x 500 pixel, dx = 60 µm'
+    function [gridLabel, dimsTxt, resolutionTxt] = gridInfo(app)
+      % gridLabel: 'Square Grid' or 'Hex Grid' (used as the row's
+      % Property name); dimsTxt: e.g. '1000 x 500 pixel'; resolutionTxt
+      % (shown under "Step Size"): the plain step size value, no 'dx ='/
+      % 'dHex =' label - e.g. '60 µm' or '60 x 80 µm' when dx and dy differ
       ebsd = app.ebsd;
       u = scanUnitLabel(app);
       [xmin, xmax, ymin, ymax] = extent(ebsd);
@@ -1252,25 +1343,47 @@ classdef import_wizard3 < matlab.apps.AppBase
         else
           dx = 1.5 * dHex; dy = dHex * sqrt(3);
         end
-        prefix = 'Hex grid: ';
-        stepTxt = ['dHex = ' xnum2str(dHex) ' ' u];
+        gridLabel = 'Hex Grid';
+        resolutionTxt = [xnum2str(dHex) ' ' u];
 
       else % square grid
 
         dx = max(ebsd.unitCell.x) - min(ebsd.unitCell.x);
         dy = max(ebsd.unitCell.y) - min(ebsd.unitCell.y);
-        prefix = 'Square grid: ';
+        gridLabel = 'Square Grid';
         if abs(dx - dy) < 1e-4 * max(dx, dy)
-          stepTxt = ['dx = ' xnum2str(dx) ' ' u];
+          resolutionTxt = [xnum2str(dx) ' ' u];
         else
-          stepTxt = ['dx = ' xnum2str(dx) ', dy = ' xnum2str(dy) ' ' u];
+          resolutionTxt = [xnum2str(dx) ' x ' xnum2str(dy) ' ' u];
         end
 
       end
 
       nx = round((xmax - xmin) / dx) + 1;
       ny = round((ymax - ymin) / dy) + 1;
-      txt = [prefix int2str(nx) ' x ' int2str(ny) ' pixel, ' stepTxt];
+      dimsTxt = [int2str(nx) ' x ' int2str(ny) ' pixel'];
+    end
+
+    function txt = fileSizeLabel(app)
+      % human-readable file size (KB/MB/GB) of the loaded file
+      txt = '';
+      try
+        listing = dir(char(app.LoadedFilePath));
+        if ~isscalar(listing), return, end
+        bytes = listing.bytes;
+        units = {'bytes','KB','MB','GB','TB'};
+        idx = 1;
+        while bytes >= 1024 && idx < numel(units)
+          bytes = bytes / 1024;
+          idx = idx + 1;
+        end
+        if idx == 1
+          txt = sprintf('%d %s', bytes, units{idx});
+        else
+          txt = sprintf('%.1f %s', bytes, units{idx});
+        end
+      catch
+      end
     end
 
     function txt = vendorLabel(app)
@@ -1612,31 +1725,57 @@ classdef import_wizard3 < matlab.apps.AppBase
       for k = 1:numel(app.ebsd.CSList)
         cs = app.ebsd.CSList(k);
 
-        % Check if the phase is "notIndexed" (can be a char, a special object, or have the mineral name 'notIndexed')
-        isNotIndexed = ischar(cs) || ...
-                       (isprop(cs, 'mineral') && strcmpi(char(cs.mineral), 'notIndexed')) || ...
-                       (isfield(cs, 'mineral') && strcmpi(char(cs.mineral), 'notIndexed'));
+        % Check if the phase is "notIndexed" by class, not by mineral
+        % name - the mineral name is user-renameable (see item 25 below)
+        % and must not be what decides which branch runs.
+        isNotIndexed = ischar(cs) || isa(cs, 'notIndexed');
 
         if isNotIndexed
           % carry over the color set for this phase in the wizard's phase
-          % table (notIndexed(name,color), see geometry/notIndexed.m)
-          if isobject(cs) && isprop(cs, 'color') && numel(cs.color) == 3 && ~any(isnan(cs.color))
-            col = double(cs.color);
+          % table, and the mineral name only if it was actually renamed
+          % away from the default. notIndexed(name,color) is
+          % positional-only (see geometry/notIndexed.m), so a customized
+          % color still needs some name written out in front of it - only
+          % the fully-default case can drop the argument list entirely.
+          hasColor = isobject(cs) && isprop(cs, 'color') && numel(cs.color) == 3 && ~any(isnan(cs.color));
+          if isobject(cs) && isprop(cs,'mineral') && ~strcmpi(char(cs.mineral),'notIndexed')
+            nameArg = char(cs.mineral);
+          else
+            nameArg = 'notIndexed';
+          end
+          if strcmp(nameArg,'notIndexed') && ~hasColor
+            csLines{end+1} = '  notIndexed()'; %#ok<AGROW>
           else
             col = [1 1 1];
+            if hasColor, col = double(cs.color); end
+            csLines{end+1} = sprintf('  notIndexed(''%s'', [%.4f, %.4f, %.4f])', ...
+              nameArg, col(1), col(2), col(3)); %#ok<AGROW>
           end
-          csLines{end+1} = sprintf('  notIndexed(''notIndexed'', [%.4f, %.4f, %.4f])', ...
-            col(1), col(2), col(3)); %#ok<AGROW>
         else
           % Safe extraction with fallbacks to avoid crashes
           try
             pg = char(cs.pointGroup);
             abc = [norm(cs.aAxis), norm(cs.bAxis), norm(cs.cAxis)];
-            ang = [cs.alpha, cs.beta, cs.gamma] / degree;
             minName = char(cs.mineral);
 
-            csLines{end+1} = sprintf('  crystalSymmetry(''%s'', [%.4f, %.4f, %.4f], [%.1f, %.1f, %.1f], ''mineral'', ''%s'')', ...
-              pg, abc(1), abc(2), abc(3), ang(1), ang(2), ang(3), minName); %#ok<AGROW>
+            % cubic/orthorhombic/trigonal/tetragonal/hexagonal have their
+            % angles implied by the lattice type (crystalSymmetry defaults
+            % to lattice.defaultAngles when the angle argument is
+            % omitted, see geometry/latticeType.m) - only monoclinic and
+            % triclinic have angles that actually vary and must be
+            % written out explicitly
+            impliedAngles = ismember(cs.lattice, [latticeType.cubic, ...
+              latticeType.orthorhombic, latticeType.trigonal, ...
+              latticeType.tetragonal, latticeType.hexagonal]);
+
+            if impliedAngles
+              csLines{end+1} = sprintf('  crystalSymmetry(''%s'', [%.4f, %.4f, %.4f], ''mineral'', ''%s'')', ...
+                pg, abc(1), abc(2), abc(3), minName); %#ok<AGROW>
+            else
+              ang = [cs.alpha, cs.beta, cs.gamma] / degree;
+              csLines{end+1} = sprintf('  crystalSymmetry(''%s'', [%.4f, %.4f, %.4f], [%.1f, %.1f, %.1f], ''mineral'', ''%s'')', ...
+                pg, abc(1), abc(2), abc(3), ang(1), ang(2), ang(3), minName); %#ok<AGROW>
+            end
           catch
             % Fallback if it's an unrecognized or empty phase structure
             csLines{end+1} = '  notIndexed(''notIndexed'')'; %#ok<AGROW>
@@ -1649,11 +1788,29 @@ classdef import_wizard3 < matlab.apps.AppBase
       % Specimen Symmetry
       replaceMarkup('{specimen symmetry}', 'specimenSymmetry(''1'')');
 
+      function s = vectorLiteral(v)
+        % render a principal-direction vector3d as xvector/-xvector/... ,
+        % falling back to an explicit vector3d(...) for anything else
+        v = double(v(:))';
+        names = {'xvector', 'yvector', 'zvector'};
+        for k = 1:3
+          ev = zeros(1,3); ev(k) = 1;
+          if norm(v - ev) < 1e-6
+            s = names{k};
+            return
+          elseif norm(v + ev) < 1e-6
+            s = ['-' names{k}];
+            return
+          end
+        end
+        s = sprintf('vector3d(%s)', mat2str(v));
+      end
+
       % Plotting Convention
       mapIdx = app.MapCoordinatesDropDown.ValueIndex;
       mapObj = app.CoordinateSystems.how2plot(mapIdx);
-      replaceMarkup('{zAxisDirection}', sprintf('vector3d(%s)', mat2str(double(mapObj.outOfScreen))));
-      replaceMarkup('{xAxisDirection}', sprintf('vector3d(%s)', mat2str(double(mapObj.east))));
+      replaceMarkup('{zAxisDirection}', vectorLiteral(mapObj.outOfScreen));
+      replaceMarkup('{xAxisDirection}', vectorLiteral(mapObj.east));
 
       % File Paths & Names
       safePath = strrep(pathStr, "'", "''");
@@ -1667,27 +1824,25 @@ classdef import_wizard3 < matlab.apps.AppBase
       % through to the generic loader instead of e.g. loadEBSD_ctf)
       replaceMarkup('{options}', '', ',{options}');
 
-      % Z-Values
-      replaceMarkup('{Z-values}', '[]', 'Z = {Z-values};');
-      replaceMarkup('{Z}', '', ',{Z}');
+      % Euler Correction - passed as the EulerCorrection option of
+      % EBSD.load itself (see loadEBSDtemplate.m), not applied via a
+      % separate post-load rotate() call: EulerCorrection is a proper
+      % EBSD.load option (see EBSD/load.m and how mtexdata.m's built-in
+      % loaders use it), and rotate() after the fact is a different,
+      % non-equivalent mechanism. Written as rotation.map(...) so the
+      % script makes explicit which map axes get rotated onto which
+      % Euler axes, rather than an opaque set of Euler angles.
+      eulerIdx = app.EulerCoordinatesDropDown.ValueIndex;
+      eulerObj = app.CoordinateSystems.how2plot(eulerIdx);
+      replaceMarkup('{eulerCorrection}', sprintf('rotation.map(%s,%s,%s,%s)', ...
+        vectorLiteral(eulerObj.east), vectorLiteral(mapObj.east), ...
+        vectorLiteral(eulerObj.outOfScreen), vectorLiteral(mapObj.outOfScreen)));
 
-      % Euler Corrections (phi1, Phi, phi2)
-      % Euler Corrections (phi1, Phi, phi2) - passed as the EulerCorrection
-      % option of EBSD.load itself (see loadEBSDtemplate.m), not applied
-      % via a separate post-load rotate() call: EulerCorrection is a
-      % proper EBSD.load option (see EBSD/load.m and how mtexdata.m's
-      % built-in loaders use it), and rotate() after the fact is a
-      % different, non-equivalent mechanism.
-      try
-        [p1, p2, p3] = Euler(app.ebsd.EulerCorrection, 'ZXZ');
-        replaceMarkup('{phi1}', sprintf('%.4f*degree', p1/degree));
-        replaceMarkup('{Phi}',  sprintf('%.4f*degree', p2/degree));
-        replaceMarkup('{phi2}', sprintf('%.4f*degree', p3/degree));
-      catch
-        replaceMarkup('{phi1}', '0*degree');
-        replaceMarkup('{Phi}',  '0*degree');
-        replaceMarkup('{phi2}', '0*degree');
-      end
+      % Dominant Phase (for the sanity-check plot)
+      plotMask = logical(app.PhaseTable.Data.Plot);
+      domRow = find(plotMask, 1);
+      if isempty(domRow), domRow = 1; end
+      replaceMarkup('{dominantMineral}', char(app.PhaseTable.Data.Mineral(domRow)));
 
       % Corrections / Coefficients
       replaceMarkup('{corrections}', '', '{corrections}');
