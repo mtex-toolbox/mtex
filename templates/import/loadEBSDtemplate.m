@@ -26,11 +26,9 @@ Z = {Z-values};
 
 %% Import the Data
 
-% create an EBSD variable containing the data
-ebsd = EBSD.load(fname,CS,'interface',{interface},{Z},{options});
+% create an EBSD variable containing the data, correcting for the
+% orientation of the Euler angle reference frame relative to the map.
+% The interface (file format) is auto-detected from the file extension.
+ebsd = EBSD.load(fname,CS,{Z},{options}, ...
+  'EulerCorrection',rotation.byEuler({phi1},{Phi},{phi2}));
 ebsd.how2plot = pC;
-
-%% Correct Data
-
-rot = rotation.byEuler({phi1},{Phi},{phi2});
-ebsd = rotate(ebsd,rot,{rotationOption});

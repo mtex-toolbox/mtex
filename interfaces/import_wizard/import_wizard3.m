@@ -16,10 +16,11 @@ classdef import_wizard3 < matlab.apps.AppBase
     UpFolderButton                 matlab.ui.control.Button
     CurrentPathLabel               matlab.ui.control.Label
     FileTree                       matlab.ui.container.Tree
-    CurrentData                    matlab.ui.control.TextArea
+    ImportStatusLabel              matlab.ui.control.Label       % hint / loading status below the file tree
+    CurrentData                    matlab.ui.control.Table       % basic file info, 2-column label/value
     PhaseTable                     matlab.ui.control.Table
+    VariableNameField              matlab.ui.control.EditField   % variable name for "Import to variable"
     ExportButton                   matlab.ui.control.Button
-    ExportScriptTypeDropDown       matlab.ui.control.DropDown
     ExportScriptButton             matlab.ui.control.Button % Button for generating an MTEX script
 
 
@@ -33,8 +34,8 @@ classdef import_wizard3 < matlab.apps.AppBase
     ImagesTab                      matlab.ui.container.Tab
     PFMillerField                  matlab.ui.control.EditField   % 1x3 array
     PFAxes                         matlab.ui.control.UIAxes      % 1x3 array
-    ImagesDropDown                 matlab.ui.control.DropDown
     ImagesAxes                     matlab.ui.control.UIAxes
+    OptTree                        matlab.ui.container.Tree      % browser for ebsd.opt, right of PhaseTable
 
     CoordinatePanel                matlab.ui.container.Panel
     CoordinateLayout               matlab.ui.container.GridLayout
@@ -55,7 +56,7 @@ classdef import_wizard3 < matlab.apps.AppBase
     FontSize double = 14
     CurrentFolder string = ""
     LoadedFilePath string = "" % Keeps track of the path of the imported EBSD file
-    ImagePaths cell = {}        % field-name paths parallel to ImagesDropDown items
+    SelectedImagePath cell = {} % field-name path of the OptTree's selected image node
     IPFKeys cell = {}           % precomputed ipfColorKey per phase, shared
                                 % by the IPF X/Y/Z tabs (they only differ by
                                 % the inversePoleFigureDirection)
@@ -121,17 +122,22 @@ classdef import_wizard3 < matlab.apps.AppBase
 
       app.LeftLayout = uigridlayout(app.LeftPanel, ...
         'ColumnWidth', {'1x'}, ...
-        'RowHeight', {270, 118, '1x', 210, 80}, ...
+        'RowHeight', {'1x', 118, 210, 80}, ...
         'RowSpacing', 10, ...
         'Padding', [0 0 0 0]);
 
       createFileBrowser(app)
 
-      app.CurrentData = uitextarea(app.LeftLayout, ...
-        'Editable', 'off', ...
-        'FontSize', app.FontSize - 1, ...
-        'Value', {'No EBSD data loaded'});
+      % basic file info as a 2-column label/value table (see
+      % updateCurrentDataInfo) instead of free-form text lines
+      app.CurrentData = uitable(app.LeftLayout, ...
+        'ColumnName', {'Property','Value'}, ...
+        'RowName', {}, ...
+        'ColumnWidth', {90, '1x'}, ...
+        'FontSize', app.FontSize - 1);
       app.CurrentData.Layout.Row = 2;
+      app.CurrentData.Data = cell2table({'Status','No EBSD data loaded'}, ...
+        'VariableNames',{'Property','Value'});
 
       app.RightPanel = uipanel(app.MainLayout, 'BorderType', 'none');
       app.RightPanel.Layout.Row = 1;
@@ -161,7 +167,7 @@ classdef import_wizard3 < matlab.apps.AppBase
 
       app.FileBrowserLayout = uigridlayout(app.FileBrowserPanel, ...
         'ColumnWidth', {30, '1x'}, ...
-        'RowHeight', {24, '1x'}, ...
+        'RowHeight', {24, '1x', 22}, ...
         'ColumnSpacing', 4, ...
         'RowSpacing', 2, ...
         'Padding', [4 4 4 4]);
@@ -195,6 +201,13 @@ classdef import_wizard3 < matlab.apps.AppBase
       app.FileTree.Layout.Row = 2;
       app.FileTree.Layout.Column = [1 2];
 
+      app.ImportStatusLabel = uilabel(app.FileBrowserLayout, ...
+        'HorizontalAlignment', 'center', ...
+        'FontSize', app.FontSize - 2);
+      app.ImportStatusLabel.Layout.Row = 3;
+      app.ImportStatusLabel.Layout.Column = [1 2];
+      setImportStatus(app, 'idle')
+
       navigateToFolder(app, pwd)
     end
 
@@ -217,7 +230,7 @@ classdef import_wizard3 < matlab.apps.AppBase
         'Title', 'Coordinate systems', ...
         'FontWeight', 'bold', ...
         'FontSize', app.FontSize);
-      app.CoordinatePanel.Layout.Row = 4;
+      app.CoordinatePanel.Layout.Row = 3;
 
       app.CoordinateLayout = uigridlayout(app.CoordinatePanel, ...
         'ColumnWidth', {'1x', '1x'}, ...
@@ -263,7 +276,10 @@ classdef import_wizard3 < matlab.apps.AppBase
       app.EulerImage.Layout.Column = 2;
     end
 
-    % Replaces the single button setup with a 2-column grid layout for both actions
+    % Row 1: "Import to variable" + inline variable name field; row 2:
+    % "Generate import script" spanning the full width (no more type
+    % dropdown, see ExportScriptButtonPushed - this app only ever loads
+    % EBSD data)
     function createExportButtonsPanel(app)
       buttonGrid = uigridlayout(app.LeftLayout, ...
         'ColumnWidth', {'1x', '1x'}, ...
@@ -271,49 +287,65 @@ classdef import_wizard3 < matlab.apps.AppBase
         'Padding', [0 0 0 0], ...
         'RowSpacing', 8,...
         'ColumnSpacing', 10);
-      buttonGrid.Layout.Row = 5;
+      buttonGrid.Layout.Row = 4;
 
       app.ExportButton = uibutton(buttonGrid, 'push', ...
         'ButtonPushedFcn', createCallbackFcn(app, @ExportButtonPushed, true), ...
         'FontWeight', 'bold', ...
         'FontSize', app.FontSize, ...
-        'Text', 'Import to workspace');
+        'Text', 'Import to variable');
       app.ExportButton.Layout.Row = 1;
-      app.ExportButton.Layout.Column = [1 2];
+      app.ExportButton.Layout.Column = 1;
 
-      app.ExportScriptTypeDropDown = uidropdown(buttonGrid, ...
-        'Items', ["EBSD", "ODF", "PoleFigure", "tensor"], ...
-        'FontWeight', 'bold', ...
-        'FontSize', app.FontSize);
-      app.ExportScriptTypeDropDown.Layout.Row = 2;
-      app.ExportScriptTypeDropDown.Layout.Column = 1;
+      app.VariableNameField = uieditfield(buttonGrid, 'text', ...
+        'Value', 'ebsd', ...
+        'FontSize', app.FontSize, ...
+        'Tooltip', 'Variable name for "Import to variable"');
+      app.VariableNameField.Layout.Row = 1;
+      app.VariableNameField.Layout.Column = 2;
 
       app.ExportScriptButton = uibutton(buttonGrid, 'push', ...
         'ButtonPushedFcn', createCallbackFcn(app, @ExportScriptButtonPushed, true), ...
         'FontWeight', 'bold', ...
         'FontSize', app.FontSize, ...
-        'Text', 'Export to Script');
+        'Text', 'Generate import script');
       app.ExportScriptButton.Layout.Row = 2;
-      app.ExportScriptButton.Layout.Column = 2;
+      app.ExportScriptButton.Layout.Column = [1 2];
 
     end
 
     function createRightPanel(app)
       app.RightLayout = uigridlayout(app.RightPanel, ...
-        'ColumnWidth', {'1x'}, ...
+        'ColumnWidth', {'2x','1x'}, ...
         'RowHeight', {230, '1x'}, ...
         'RowSpacing', 8, ...
+        'ColumnSpacing', 8, ...
         'Padding', [0 0 0 0]);
 
       app.PhaseTable = uitable(app.RightLayout, ...
-        'ColumnEditable', [true false true false false false false false false], ...
+        'ColumnEditable', [true false true false false false false false false false], ...
         'RowName', {}, ...
         'CellEditCallback', createCallbackFcn(app, @PhaseTableCellEdit, true), ...
         'CellSelectionCallback', createCallbackFcn(app, @PhaseTableCellSelection, true), ...
         'FontSize', app.FontSize - 1);
       app.PhaseTable.Layout.Row = 1;
+      app.PhaseTable.Layout.Column = 1;
+      % columns: Plot, Phase, Mineral, Pixels, %, Symmetry, a, b, c, Color -
+      % Plot/Color only ever hold a checkbox/swatch and Phase a small
+      % integer, so they need far less room than the default equal split;
+      % Mineral gets extra room since it carries the longest text
+      app.PhaseTable.ColumnWidth = {45, 55, 135, 70, 55, 75, 55, 55, 55, 45};
+
+      % browser for the full ebsd.opt structure - selecting an image-shaped
+      % field shows it in the Images tab (see OptTreeSelectionChanged)
+      app.OptTree = uitree(app.RightLayout, ...
+        'FontSize', app.FontSize - 1, ...
+        'SelectionChangedFcn', createCallbackFcn(app, @OptTreeSelectionChanged, true));
+      app.OptTree.Layout.Row = 1;
+      app.OptTree.Layout.Column = 2;
 
       createTabs(app)
+      app.TabGroup.Layout.Column = [1 2];
     end
 
     function createTabs(app)
@@ -383,7 +415,7 @@ classdef import_wizard3 < matlab.apps.AppBase
       app.PFTab.SizeChangedFcn = createCallbackFcn(app, @PFTabSizeChanged, true);
       PFTabSizeChanged(app, [])
 
-      % --- Images tab: opt-images via a dropdown --------------------------
+      % --- Images tab: image selection happens in the OptTree now --------
       createImagesTab(app)
     end
 
@@ -391,24 +423,17 @@ classdef import_wizard3 < matlab.apps.AppBase
       % The images tab is always the last one. Since tabs can only be
       % appended (see the comment in createTabs), it is recreated after
       % the property map tabs of an imported data set have been appended,
-      % see populateMapTabs.
+      % see populateMapTabs. Image selection happens via the OptTree
+      % (right of PhaseTable, see createRightPanel/OptTreeSelectionChanged),
+      % so this tab is just the axes.
       app.ImagesTab = uitab(app.TabGroup, 'Title', 'Images', ...
         'ForegroundColor', app.TabColors.Images);
       gImg = uigridlayout(app.ImagesTab, ...
-        'ColumnWidth', {120, '1x'}, 'RowHeight', {22, 30, '1x'}, ...
-        'Padding', [6 6 6 6], 'RowSpacing', 6, 'ColumnSpacing', 12);
-
-      lblImg = uilabel(gImg, 'Text', 'Image:', 'HorizontalAlignment', 'left', ...
-        'FontSize', app.FontSize);
-      lblImg.Layout.Row = 1; lblImg.Layout.Column = 1;
-
-      app.ImagesDropDown = uidropdown(gImg, 'Items', {'(none)'}, ...
-        'FontSize', app.FontSize, ...
-        'ValueChangedFcn', createCallbackFcn(app, @ImagesViewChanged, true));
-      app.ImagesDropDown.Layout.Row = 2; app.ImagesDropDown.Layout.Column = 1;
+        'ColumnWidth', {'1x'}, 'RowHeight', {'1x'}, ...
+        'Padding', [6 6 6 6]);
 
       app.ImagesAxes = uiaxes(gImg);
-      app.ImagesAxes.Layout.Row = [1 3]; app.ImagesAxes.Layout.Column = 2;
+      app.ImagesAxes.Layout.Row = 1; app.ImagesAxes.Layout.Column = 1;
     end
 
     function [tab, ax] = createPlotTab(app, tabTitle, color)
@@ -557,22 +582,47 @@ classdef import_wizard3 < matlab.apps.AppBase
       tf = any(strcmpi(ext, extensions));
     end
 
+    function setImportStatus(app, mode, fileName)
+      % status label directly below the file tree: an idle hint that a
+      % file must be double-clicked (or Enter) to import it, replaced by a
+      % differently-colored "loading" message while importEBSDData runs -
+      % EBSD.load is synchronous, so without this the UI just appears to
+      % hang on a large file
+      arguments
+        app
+        mode (1,1) string
+        fileName (1,1) string = ""
+      end
+      switch mode
+        case 'loading'
+          app.ImportStatusLabel.Text = char("Loading " + fileName + " ...");
+          app.ImportStatusLabel.BackgroundColor = [1.00 0.92 0.70]; % amber - busy
+        otherwise % 'idle'
+          app.ImportStatusLabel.Text = 'Double-click a file (or select + Enter) to import';
+          app.ImportStatusLabel.BackgroundColor = [0.90 0.94 0.98]; % light blue - hint
+      end
+      drawnow % force the label to actually repaint before a blocking load
+    end
+
     function importEBSDData(app, filePath)
       filePath = char(filePath); % normalize string -> char so fileparts
                                   % and [fileName fileExt] behave predictably
+      [~, fName, fExt] = fileparts(filePath);
+      fileName = [fName fExt];
+
+      setImportStatus(app, 'loading', fileName)
       try
         ebsdData = EBSD.load(filePath, 'wizard');
       catch ME
+        setImportStatus(app, 'idle')
         uialert(app.UIFigure, ME.message, 'Could not load EBSD data')
         return
       end
+      setImportStatus(app, 'idle')
 
       if isempty(ebsdData)
         return
       end
-
-      [~, fileName, fileExt] = fileparts(filePath);
-      fileName = [fileName fileExt];
 
       ensureAnalysisUI(app)
 
@@ -596,7 +646,7 @@ classdef import_wizard3 < matlab.apps.AppBase
       % --- deferred setup: only appends tabs / updates values, it never
       % reorders the tab group (that would blank the visible plot) -------
       updateCurrentDataInfo(app, fileName)
-      app.ExportButton.Text = 'Import to workspace';
+      app.ExportButton.Text = 'Import to variable';
       populateMapTabs(app)
       populateImagesSelector(app)
     end
@@ -629,52 +679,72 @@ classdef import_wizard3 < matlab.apps.AppBase
     end
 
     function populateImagesSelector(app)
-      % fill the Images dropdown (matrices found anywhere in ebsd.opt)
-      [imgNames, imgPaths] = collectImageFields(app, app.ebsd.opt, {});
-      app.ImagePaths = imgPaths;
-      if isempty(imgNames)
-        app.ImagesDropDown.Items = {'(none)'};
-        app.ImagesDropDown.ItemsData = {};
-        app.ImagesTab.ForegroundColor = app.TabColors.Disabled;
-      else
-        app.ImagesDropDown.Items = imgNames;
-        app.ImagesDropDown.ItemsData = 1:numel(imgNames);
-        app.ImagesDropDown.Value = 1;
+      % (re)build the OptTree from ebsd.opt: one node per field, image-
+      % shaped fields (numeric matrix >= 100x100, same criterion the old
+      % dropdown used) are selectable and show up in the Images tab,
+      % struct fields recurse as branches, everything else is an
+      % informational leaf. The Images tab is dimmed if no image exists
+      % anywhere in the tree.
+      delete(app.OptTree.Children)
+      app.SelectedImagePath = {};
+      try
+        s = app.ebsd.opt;
+      catch
+        s = struct();
+      end
+      hasImage = false;
+      if isstruct(s) && isscalar(s)
+        hasImage = populateOptNode(app, app.OptTree, s, {});
+      end
+      if hasImage
         app.ImagesTab.ForegroundColor = app.TabColors.Images;
+      else
+        app.ImagesTab.ForegroundColor = app.TabColors.Disabled;
       end
     end
 
-    function [names, paths] = collectImageFields(app, s, prefix)
-      % Recursively walk struct s (e.g. ebsd.opt). Return a flat list of
-      % display names (nested fields joined with '.') and matching
-      % field-name path cells for every numeric matrix of at least 100x100.
-      names = {};
-      paths = {};
-
-      if ~isstruct(s) || ~isscalar(s)
-        return
-      end
-
+    function hasImage = populateOptNode(app, parentNode, s, pathPrefix)
+      % recursively add one tree node per field of struct s under
+      % parentNode; returns true if this subtree contains any image field
+      hasImage = false;
       fields = fieldnames(s);
       for k = 1:numel(fields)
         field = fields{k};
         value = s.(field);
-        thisPath = [prefix, {field}];
-        if isempty(prefix)
-          displayName = field;
-        else
-          displayName = [strjoin(prefix, '.') '.' field];
-        end
+        thisPath = [pathPrefix, {field}];
 
         if isnumeric(value) && ismatrix(value) && ...
             size(value,1) >= 100 && size(value,2) >= 100
-          names{end+1} = displayName;   %#ok<AGROW>
-          paths{end+1} = thisPath;       %#ok<AGROW>
+          node = uitreenode(parentNode, 'Text', field, ...
+            'NodeData', struct('Type','Image','Path',{thisPath}));
+          imgIcon = treeIconPath(app, 'ebsd');
+          if ~isempty(imgIcon), node.Icon = imgIcon; end
+          hasImage = true;
         elseif isstruct(value) && isscalar(value)
-          [childNames, childPaths] = collectImageFields(app, value, thisPath);
-          names = [names, childNames];   %#ok<AGROW>
-          paths = [paths, childPaths];   %#ok<AGROW>
+          node = uitreenode(parentNode, 'Text', field, 'NodeData', struct('Type','Folder'));
+          childHasImage = populateOptNode(app, node, value, thisPath);
+          hasImage = hasImage || childHasImage;
+        else
+          uitreenode(parentNode, 'Text', [field ': ' optValuePreview(app, value)], ...
+            'NodeData', struct('Type','Field'));
         end
+      end
+    end
+
+    function txt = optValuePreview(~, value)
+      % short, safe text preview of a non-image ebsd.opt field's value
+      try
+        if ischar(value) || (isstring(value) && isscalar(value))
+          txt = char(value);
+        elseif (isnumeric(value) || islogical(value)) && isscalar(value)
+          txt = num2str(value);
+        elseif isnumeric(value) || islogical(value)
+          txt = ['[' strjoin(string(size(value)),'x') ' ' class(value) ']'];
+        else
+          txt = class(value);
+        end
+      catch
+        txt = '';
       end
     end
 
@@ -696,22 +766,23 @@ classdef import_wizard3 < matlab.apps.AppBase
 
     function fillPhaseTable(app)
       removeStyle(app.PhaseTable)
-      addStyle(app.PhaseTable, uistyle('HorizontalAlignment', 'left'))
+      % right-align every column except Plot (column 1, a checkbox)
+      addStyle(app.PhaseTable, uistyle('HorizontalAlignment', 'right'), 'column', 2:10)
 
       csList = app.ebsd.CSList;
       numPhases = accumarray(app.ebsd.phaseId,1,[length(csList),1]);
-            
-      phaseTable = table('size',[0 9],...
-        'VariableTypes',{'logical','uint8','string','string','string','double','double','double','string'},...
-        'VariableNames',{'Plot'; 'Phase'; 'Mineral'; 'Pixel'; 'Symmetry'; 'a'; 'b'; 'c'; 'Color'});
+
+      phaseTable = table('size',[0 10],...
+        'VariableTypes',{'logical','uint8','string','double','double','string','double','double','double','string'},...
+        'VariableNames',{'Plot'; 'Phase'; 'Mineral'; 'Pixels'; 'Percent'; 'Symmetry'; 'a'; 'b'; 'c'; 'Color'});
 
       for pId = 1:length(numPhases)
-        
+
         cs = csList(pId);
         app.Color{pId} = cs.color;
         if isnan(app.Color{pId}), app.Color{pId} = [1 1 1]; end
         mineral = asChar(app, cs.mineral);
-        if isa(cs,'symmetry')          
+        if isa(cs,'symmetry')
           symmetry = asChar(app, cs.pointGroup);
           a = norm(cs.aAxis);
           b = norm(cs.bAxis);
@@ -721,10 +792,10 @@ classdef import_wizard3 < matlab.apps.AppBase
           symmetry = 'None';
           a = 0; b = 0; c = 0;
         end
-                
+
         phaseTable(pId, :) = {false, app.ebsd.phaseMap(pId), mineral, ...
-           [int2str(numPhases(pId)),' (' xnum2str(100*numPhases(pId)/sum(numPhases)) '%)'], ...
-           symmetry, a, b, c, ''};     
+           numPhases(pId), 100*numPhases(pId)/sum(numPhases), ...
+           symmetry, a, b, c, ''};
       end
 
       % pre select indexed phase with the most pixels
@@ -737,17 +808,18 @@ classdef import_wizard3 < matlab.apps.AppBase
       % mark editable columns in the header so users don't have to
       % double-click every cell to find out what can be changed
       colNames = phaseTable.Properties.VariableNames;
+      colNames{5} = '%'; % 'Percent' is not a valid display header choice
       editableCols = find(app.PhaseTable.ColumnEditable);
       colNames(editableCols) = cellfun(@(s) [s ' ' char(9998)], ...
         colNames(editableCols), 'UniformOutput', false);
       app.PhaseTable.ColumnName = colNames;
 
-      % colorize color column
+      % colorize color column (now column 10)
       for row = 1:length(csList)
         addStyle(app.PhaseTable, ...
-          uistyle('BackgroundColor', app.Color{row}), 'cell', [row 9])
+          uistyle('BackgroundColor', app.Color{row}), 'cell', [row 10])
       end
-      
+
     end
 
     function updatePlot(app, force)
@@ -923,22 +995,19 @@ classdef import_wizard3 < matlab.apps.AppBase
     end
 
     function plotImages(app, force)
-      if isempty(app.ImagePaths)
+      if isempty(app.SelectedImagePath)
         resetAxes(app, app.ImagesAxes)
-        title(app.ImagesAxes, 'No images in ebsd.opt')
+        title(app.ImagesAxes, 'Select an image in the tree to the right of the phase list')
         return
       end
 
-      idx = app.ImagesDropDown.Value;   % numeric index via ItemsData
-      if isempty(idx) || ~isnumeric(idx), idx = 1; end
-
-      sig = strjoin(["img", string(idx)], '|');
+      sig = strjoin(["img", strjoin(string(app.SelectedImagePath),'.')], '|');
       if ~force && sig == app.LastSig.Images, return; end
       app.LastSig.Images = sig;
 
       ax = app.ImagesAxes;
       resetAxes(app, ax)
-      image = resolveOptImage(app, app.ImagePaths{idx});
+      image = resolveOptImage(app, app.SelectedImagePath);
       if isempty(image)
         title(ax, 'Image not found'); return
       end
@@ -1134,25 +1203,29 @@ classdef import_wizard3 < matlab.apps.AppBase
     function updateCurrentDataInfo(app, fileName)
       % basic information about the loaded data set: file name, spatial
       % extent in scan units, grid geometry in pixels and, when they can
-      % be determined, the vendor and the creation date
-      lines = {['File: ' asChar(app, fileName)]};
+      % be determined, the vendor and the creation date - as a 2-column
+      % Property/Value table. gridInfoLabel returns one descriptive
+      % sentence (e.g. "Hex grid: 1000 x 500 pixel, dHex = 60 µm") that
+      % doesn't split into a clean label + value on its own, so it is kept
+      % whole as the "Grid" row's value rather than decomposed further.
+      rows = {'File', asChar(app, fileName)};
 
       try
         ext = app.ebsd.extent;
-        lines{end+1} = ['Coordinates: [' xnum2str(ext(1:2), 'delimiter', ',') ...
-          '] x [' xnum2str(ext(3:4), 'delimiter', ',') '] ' scanUnitLabel(app)];
+        rows(end+1,:) = {'Coordinates', ['[' xnum2str(ext(1:2), 'delimiter', ',') ...
+          '] x [' xnum2str(ext(3:4), 'delimiter', ',') '] ' scanUnitLabel(app)]};
       catch
       end
 
-      try lines{end+1} = gridInfoLabel(app); catch, end
+      try rows(end+1,:) = {'Grid', gridInfoLabel(app)}; catch, end
 
       vendor = vendorLabel(app);
-      if ~isempty(vendor), lines{end+1} = ['Vendor: ' vendor]; end
+      if ~isempty(vendor), rows(end+1,:) = {'Vendor', vendor}; end
 
       created = creationDateLabel(app);
-      if ~isempty(created), lines{end+1} = ['Created: ' created]; end
+      if ~isempty(created), rows(end+1,:) = {'Created', created}; end
 
-      app.CurrentData.Value = lines(:);
+      app.CurrentData.Data = cell2table(rows, 'VariableNames', {'Property','Value'});
     end
 
     function u = scanUnitLabel(app)
@@ -1292,13 +1365,19 @@ classdef import_wizard3 < matlab.apps.AppBase
       % cursor natively, Enter opens the selected entry (import a file /
       % descend into a folder), Backspace navigates one folder up.
       %
-      % CurrentObject is the last *clicked* component - for pure keyboard
-      % navigation it is empty, so only block when the user demonstrably
-      % interacted with some other control last. (Text inputs never reach
-      % this callback anyway, they capture their keystrokes themselves.)
+      % Block only when the keystroke is demonstrably meant for a
+      % text-entry control instead (which needs Enter/Backspace for
+      % itself) - not via an allowlist of "known good" CurrentObject
+      % values, which silently breaks the moment focus drifts anywhere
+      % else (importing a file, switching tabs, editing the phase table,
+      % the Import/Export buttons - the latter even steals focus to the
+      % Command Window/Workspace outright).
       co = app.UIFigure.CurrentObject;
-      if ~(isempty(co) || isequal(co, app.UIFigure) || ...
-          isequal(co, app.FileTree) || isa(co, 'matlab.ui.container.TreeNode'))
+      if isa(co, 'matlab.ui.control.EditField') || ...
+          isa(co, 'matlab.ui.control.NumericEditField') || ...
+          isa(co, 'matlab.ui.control.TextArea') || ...
+          isa(co, 'matlab.ui.control.DropDown') || ...
+          isa(co, 'matlab.ui.control.Table')
         return
       end
 
@@ -1371,8 +1450,14 @@ classdef import_wizard3 < matlab.apps.AppBase
       updatePlot(app, true)
     end
 
-    function ImagesViewChanged(app, ~)
-      updatePlot(app)
+    function OptTreeSelectionChanged(app, event)
+      node = event.SelectedNodes;
+      if ~isscalar(node) || isempty(node.NodeData) || ~strcmp(node.NodeData.Type,'Image')
+        return
+      end
+      app.SelectedImagePath = node.NodeData.Path;
+      app.TabGroup.SelectedTab = app.ImagesTab;
+      updatePlot(app, true)
     end
 
     function PhaseTableCellEdit(app, event)
@@ -1398,19 +1483,19 @@ classdef import_wizard3 < matlab.apps.AppBase
     end
 
     function PhaseTableCellSelection(app, event)
-      if isempty(event.Indices) || event.Indices(2) ~= 9
+      if isempty(event.Indices) || event.Indices(2) ~= 10
         return
       end
 
       row = event.Indices(1);
-      
+
       newColor = uisetcolor(app.Color{row}, 'Select phase color');
       if isequal(newColor, 0), return, end
 
       app.ebsd.CSList(row).color = newColor;
       app.Color{row} = newColor;
 
-      addStyle(app.PhaseTable, uistyle('BackgroundColor', newColor), 'cell', [row 9])
+      addStyle(app.PhaseTable, uistyle('BackgroundColor', newColor), 'cell', [row 10])
       invalidateAllSigs(app)
       updatePlot(app, true)
     end
@@ -1456,17 +1541,7 @@ classdef import_wizard3 < matlab.apps.AppBase
         return
       end
 
-      answer = inputdlg( ...    
-        'Variable name:', ...
-        'Import to workspace', ...
-        [1 50], ...
-        {'ebsd'});
-
-      if isempty(answer)
-        return % user cancelled
-      end
-
-      varName = strtrim(answer{1});
+      varName = strtrim(app.VariableNameField.Value);
       if isempty(varName) || ~isvarname(varName)
         uialert(app.UIFigure, ...
           sprintf('"%s" is not a valid MATLAB variable name.', varName), ...
@@ -1481,7 +1556,7 @@ classdef import_wizard3 < matlab.apps.AppBase
       disp(" ");
       evalin("base",varName);
       app.ExportButton.Text = ['Imported as ' varName '!'];
-      commandwindow
+      workspace
     end
 
     % Dynamically loads and populates MTEX import templates
@@ -1491,17 +1566,16 @@ classdef import_wizard3 < matlab.apps.AppBase
         return
       end
 
-      % 1. Determine the export type
-      % TODO let the user pick the type
-      exportType = app.ExportScriptTypeDropDown.Value; 
-      
+      % 1. Determine the export type - this app only ever loads EBSD data
+      exportType = 'EBSD';
+
       % 2. Read the template file from the MTEX directory safely
       templatePath = fullfile(mtex_path, 'templates', 'import', ['load' exportType 'template.m']);
       if ~exist(templatePath, 'file')
         uialert(app.UIFigure, ['Template file not found: ' templatePath], 'Export Error');
         return;
       end
-      
+
       try
         % fileread loads the whole text file into a string character vector safely
         str = fileread(templatePath);
@@ -1512,8 +1586,6 @@ classdef import_wizard3 < matlab.apps.AppBase
 
       % File and path preparations
       [pathStr, baseName, extStr] = fileparts(char(app.LoadedFilePath));
-      safeName = matlab.lang.makeValidName(string(baseName));
-      scriptFileName = char(safeName + ".m");
 
       %% --- Helper: MTEX-like markup replacement function ---
       function replaceMarkup(token, repVal, delLineMarkup)
@@ -1530,18 +1602,31 @@ classdef import_wizard3 < matlab.apps.AppBase
 
       %% 3. Dynamic Replacements based on App Data
       
-      % Crystal Symmetry
-      csLines = {'...'};
+      % Crystal Symmetry - one entry per phase, joined into a phaseItem
+      % array literal. crystalSymmetry and notIndexed share the common
+      % phaseItem base class, so they concatenate directly with '[ ]' -
+      % no cell array needed. (The previous version joined the entries
+      % without ever wrapping them in braces at all, producing e.g.
+      % "CS = crystalSymmetry(...), 'notIndexed', ;" - not valid MATLAB.)
+      csLines = {};
       for k = 1:numel(app.ebsd.CSList)
         cs = app.ebsd.CSList(k);
-        
+
         % Check if the phase is "notIndexed" (can be a char, a special object, or have the mineral name 'notIndexed')
         isNotIndexed = ischar(cs) || ...
                        (isprop(cs, 'mineral') && strcmpi(char(cs.mineral), 'notIndexed')) || ...
                        (isfield(cs, 'mineral') && strcmpi(char(cs.mineral), 'notIndexed'));
-                   
+
         if isNotIndexed
-          csLines{end+1} = '  ''notIndexed'', ...'; %#ok<AGROW>
+          % carry over the color set for this phase in the wizard's phase
+          % table (notIndexed(name,color), see geometry/notIndexed.m)
+          if isobject(cs) && isprop(cs, 'color') && numel(cs.color) == 3 && ~any(isnan(cs.color))
+            col = double(cs.color);
+          else
+            col = [1 1 1];
+          end
+          csLines{end+1} = sprintf('  notIndexed(''notIndexed'', [%.4f, %.4f, %.4f])', ...
+            col(1), col(2), col(3)); %#ok<AGROW>
         else
           % Safe extraction with fallbacks to avoid crashes
           try
@@ -1549,17 +1634,17 @@ classdef import_wizard3 < matlab.apps.AppBase
             abc = [norm(cs.aAxis), norm(cs.bAxis), norm(cs.cAxis)];
             ang = [cs.alpha, cs.beta, cs.gamma] / degree;
             minName = char(cs.mineral);
-            
-            csLines{end+1} = sprintf('  crystalSymmetry(''%s'', [%.4f, %.4f, %.4f], [%.1f, %.1f, %.1f], ''mineral'', ''%s''), ...', ...
+
+            csLines{end+1} = sprintf('  crystalSymmetry(''%s'', [%.4f, %.4f, %.4f], [%.1f, %.1f, %.1f], ''mineral'', ''%s'')', ...
               pg, abc(1), abc(2), abc(3), ang(1), ang(2), ang(3), minName); %#ok<AGROW>
           catch
             % Fallback if it's an unrecognized or empty phase structure
-            csLines{end+1} = '  ''notIndexed'', ...'; %#ok<AGROW>
+            csLines{end+1} = '  notIndexed(''notIndexed'')'; %#ok<AGROW>
           end
         end
       end
-      csLines{end+1} = '  ';
-      str = strrep(str, '{crystal symmetry}', strjoin(csLines, [char(10) '']));
+      csBlock = ['[' char(10) strjoin(csLines, [', ...' char(10)]) char(10) ']'];
+      str = strrep(str, '{crystal symmetry}', csBlock);
 
       % Specimen Symmetry
       replaceMarkup('{specimen symmetry}', 'specimenSymmetry(''1'')');
@@ -1576,8 +1661,10 @@ classdef import_wizard3 < matlab.apps.AppBase
       replaceMarkup('{path to files}', sprintf('''%s''', safePath));
       replaceMarkup('{file names}', sprintf('[pname filesep ''%s'']', safeFile));
 
-      % Interface and Options
-      replaceMarkup('{interface}', '''wizard''', ',{interface}');
+      % Options (the interface/file format is auto-detected from the file
+      % extension by EBSD.load - forcing 'wizard' here, as before, made
+      % EBSD.load's own dispatcher fail to recognize the format and fall
+      % through to the generic loader instead of e.g. loadEBSD_ctf)
       replaceMarkup('{options}', '', ',{options}');
 
       % Z-Values
@@ -1585,6 +1672,12 @@ classdef import_wizard3 < matlab.apps.AppBase
       replaceMarkup('{Z}', '', ',{Z}');
 
       % Euler Corrections (phi1, Phi, phi2)
+      % Euler Corrections (phi1, Phi, phi2) - passed as the EulerCorrection
+      % option of EBSD.load itself (see loadEBSDtemplate.m), not applied
+      % via a separate post-load rotate() call: EulerCorrection is a
+      % proper EBSD.load option (see EBSD/load.m and how mtexdata.m's
+      % built-in loaders use it), and rotate() after the fact is a
+      % different, non-equivalent mechanism.
       try
         [p1, p2, p3] = Euler(app.ebsd.EulerCorrection, 'ZXZ');
         replaceMarkup('{phi1}', sprintf('%.4f*degree', p1/degree));
@@ -1595,21 +1688,13 @@ classdef import_wizard3 < matlab.apps.AppBase
         replaceMarkup('{Phi}',  '0*degree');
         replaceMarkup('{phi2}', '0*degree');
       end
-      replaceMarkup('{rotationOption}', '', ',{rotationOption}');
-      
+
       % Corrections / Coefficients
       replaceMarkup('{corrections}', '', '{corrections}');
       replaceMarkup('c = {structural coefficients}', '', 'c = {structural coefficients}');
 
-      %% 4. Save and open script
-      fid = fopen(scriptFileName, 'wt'); % 'wt' explicitly opens in text mode for correct line endings
-      if fid ~= -1
-        fprintf(fid, '%s', str);
-        fclose(fid);
-        matlab.desktop.editor.openDocument(fullfile(pwd, scriptFileName));
-      else
-        matlab.desktop.editor.newDocument(str);
-      end
+      %% 4. Open the generated script in the editor - not saved to disk
+      matlab.desktop.editor.newDocument(str);
     end
   end
   methods (Access = public)
