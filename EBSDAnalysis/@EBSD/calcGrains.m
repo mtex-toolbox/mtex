@@ -215,13 +215,12 @@ end
     isPair = cellPair(:,2) > 0;
     isBg   = ~isPair & cellPair(:,1) > 0;
 
-    faceKey = zeros(nFaces,1);
-    faceKey(isPair) = pairKey(cellPair(isPair,1), cellPair(isPair,2));
+    faceKey = pairKey(cellPair(isPair,1), cellPair(isPair,2));
 
     isExt = isBg;
     isInt = false(nFaces,1);
-    isExt(isPair) = ismember(faceKey(isPair), keyExt);
-    isInt(isPair) = ismember(faceKey(isPair), keyInt);
+    isExt(isPair) = ismember(faceKey, keyExt);
+    isInt(isPair) = ismember(faceKey, keyInt);
 
     I_FDext = I_FDt(:,isExt).';
     I_FDint = I_FDt(:,isInt).';
