@@ -15,7 +15,7 @@
 % ODF data is to use the import wizard, which can be started either by
 % typing into the command line
 
-import_wizard('ODF')
+import_wizard_old('ODF')
 
 %% Interpolation
 

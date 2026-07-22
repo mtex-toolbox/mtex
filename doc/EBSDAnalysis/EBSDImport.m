@@ -32,11 +32,11 @@ plot(ebsd('Magnesium'),ebsd('Magnesium').orientations)
 %
 % In order to help the user to import EBSD data consistently to a fixed
 % specimen reference frame (which the user should know), MTEX provide the
-% <matlab:import_wizard('EBSD') import wizard> as a graphical user
+% <matlab:import_wizard import wizard> as a graphical user
 % interface. The |import_wizard| can be started either by typing into the
 % command line
 
-import_wizard('EBSD')
+import_wizard
 
 %%
 % EBSD Data files can be also imported via the <matlab:filebrowser file

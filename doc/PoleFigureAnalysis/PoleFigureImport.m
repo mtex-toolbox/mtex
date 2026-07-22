@@ -10,10 +10,10 @@
 %
 %% Importing pole figure data using the import wizard
 %
-% The <import_wizard.html import wizard> can be started either by typing
+% The <import_wizard_old.html import wizard> can be started either by typing
 % into the command line
 
-import_wizard
+import_wizard_old
 
 %%
 % or by using the start menu item *Start/Toolboxes/MTEX/Import Wizard*.
@@ -131,7 +131,7 @@ plot(pf)
 % files and generates a PoleFigure object you can integrate this method
 % into MTEX by copying it into the folder |MTEX/qta/interfaces|. Then it
 % will be automatically called by the methods <PoleFigure.load.html
-% PoleFigure.load> and import_wizard. Examples how to write such an
+% PoleFigure.load> and import_wizard_old. Examples how to write such an
 % interface can be found in the directory |MTEX/qta/interfaces|.
 %
 

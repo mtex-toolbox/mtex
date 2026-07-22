@@ -1,4 +1,4 @@
-**** import_wizzard3 ****
+**** import_wizard ****
 
 1. more beautiful file browser
  -> icons for directories and EBSD files -- DONE
@@ -416,7 +416,7 @@
 29. [profiled, DONE] app startup is slow (measured 22.4s wall
     clock in this environment) - fix: build tab content
     (axes) lazily on first selection instead of all upfront
- -> profiled via MATLAB's profiler around import_wizard3 construction.
+ -> profiled via MATLAB's profiler around import_wizard construction.
     Breakdown:
     - WebView/canvas-engine one-time bootstrap (HTMLCanvasPlugin,
       Channel.open, webwindow.*): ~5-8s - likely unavoidable MATLAB App

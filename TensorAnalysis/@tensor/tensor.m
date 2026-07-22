@@ -20,7 +20,7 @@ classdef tensor < dynOption
       %
       % *tensor* is the low level constructor for a |tensor| object.
       % For importing real world data you might want to use the
-      % *import_wizard*.
+      % *import_wizard_old*.
       %
       % Syntax
       %   T = tensor(M,CS,'name',name,'unit',unit,'propertyname',property)
