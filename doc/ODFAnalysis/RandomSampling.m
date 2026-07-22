@@ -17,10 +17,10 @@ mtexColorbar
 
 %% Computing Random Orientations
 %
-% In order to compute $4000$ random orientations from the ODF |fibre_odf|
+% In order to compute $500$ random orientations from the ODF |fibre_odf|
 % we use the command |<SO3Fun.discreteSample.html discreteSample>|.
 
-ori = fibre_odf.discreteSample(4000)
+ori = fibre_odf.discreteSample(500)
 
 % plot the orientations into the Bunge sections
 hold on
@@ -50,7 +50,7 @@ hold off
 % estimate ODF with the initial ODF.
 
 % estimate an ODF from the random orientations
-odf_rec = calcDensity(ori,'halfwidth',15*degree);
+odf_rec = calcDensity(ori,'halfwidth',20*degree);
 
 % plot the estimated ODF
 plot(odf_rec,'sections',6,'silent')
@@ -74,9 +74,13 @@ calcError(odf_rec,fibre_odf)
 % to be as representative for the ODF as possible. Lets verify this by
 % comparing the error with respect to the original model ODF.
 
-ori = fibre_odf.optimalSample(4000)
 
-odf_rec = calcDensity(ori,'halfwidth',15*degree);
+ori = fibre_odf.optimalSample(500)
+
+% Note that we can use here a much smaller halfwidth. If we would have used
+% this halfwidth with the random orientations the error would have been
+% even worse
+odf_rec = calcDensity(ori,'halfwidth',12*degree);
 
 calcError(odf_rec,fibre_odf)
 
