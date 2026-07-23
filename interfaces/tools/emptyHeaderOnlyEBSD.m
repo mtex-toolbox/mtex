@@ -9,6 +9,11 @@ function ebsd = emptyHeaderOnlyEBSD(CSList,header,varargin)
 %   ebsd = emptyHeaderOnlyEBSD(CSList,header)
 %   ebsd = emptyHeaderOnlyEBSD(CSList,header,'unitCell',unitCell)
 
+% CSList may still be a cell array (some interfaces, e.g. loadEBSD_h5's
+% multi-phase configs, fetch it that way); normalize it the same way
+% EBSD's own constructor does before treating it as an object array
+CSList = ensureCSArray(CSList);
+
 % mirror phaseList.init's behaviour of ensuring at least one notIndexed
 % phase is present, since that path is bypassed below
 if all([CSList.isIndexed])

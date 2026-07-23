@@ -6,11 +6,19 @@ function [ebsd] = loadEBSD_h5(fname, varargin)
 %   - One can modify the search codes
 %   - The data will be extracted using an algorithm fitted to the data
 %   - There are helper functions to convert data and build the EBSD object
+%
+% Options
+%  headerOnly - return only phase/header metadata, skip reading the
+%               (potentially large) per-pixel position/rotation/phase
+%               data and any other top-level category (e.g. electron
+%               images)
 
 % Selecting right config and load------------------------------------------
 
 if ~exist(fname, 'file'), error('File %s not found.', fname); end
 info_struct = h5info(fname);
+
+headerOnly = check_option(varargin, 'headerOnly');
 
 if check_option(varargin, 'debug')
   isDebug(get_option(varargin, 'debug'));
@@ -21,6 +29,7 @@ end
 folderPath = fullfile(mtex_path, 'interfaces', 'hdf5_config');
 fileList = dir(fullfile(folderPath, '*.json'));
 Conf = struct();
+manufacturer = "unknown"; % overwritten below if any config's key_path resolves
 
 % Check if a type is set --> if so use this type
 isManualType = check_option(varargin, 'type');
@@ -92,6 +101,28 @@ fprintf('%s\n', repmat('═', 1, 80));
 exclude = ["settings", "additions"];
 data = struct();
 
+if headerOnly
+  % only the phase/header metadata under "ebsd" is needed; skip any
+  % other top-level category (e.g. electron_image) and strip the
+  % expensive per-pixel sub-fields within "ebsd" itself, so they are
+  % never read at all
+  otherCats = setdiff(string(fieldnames(Conf)), ["ebsd", exclude]);
+  exclude = [exclude, reshape(otherCats, 1, [])];
+  % map_correction is a small lookup table, not per-pixel data, and
+  % EDAX's config caches a value under it that how2plot reuses - so it
+  % must stay, only the genuinely bulk per-pixel fields are stripped
+  bulkFields = intersect(fieldnames(Conf.ebsd), {'position','phase','rotation'});
+  Conf.ebsd = rmfield(Conf.ebsd, bulkFields);
+
+  % explicit marker for ebsd_default (uses the same inline-"data"
+  % convention as map_correction/how2plot's fixed lookup tables above) -
+  % deliberately NOT inferred from position/phase/rotation being absent,
+  % since a malformed file can legitimately fail to resolve those too,
+  % and that must still raise the normal "missing fields" error rather
+  % than silently produce an empty EBSD
+  Conf.ebsd.headerOnlyFlag = struct('data', true);
+end
+
 categories = fieldnames(Conf);
 try
   for i = 1:length(categories)
@@ -124,8 +155,8 @@ catch ME
     warning("Someting went wrong! Trying fallback: '%s'. The Error was: '%s'", Conf.settings.fallback, ME.message);
     
     % Restart with fallback version
-    ebsd = loadEBSD_h5(fname, 'type', Conf.settings.fallback, 'debug', isDebug());
-    return; 
+    ebsd = loadEBSD_h5(fname, 'type', Conf.settings.fallback, 'debug', isDebug(), 'headerOnly', headerOnly);
+    return;
   else 
     error('loadEBSD_h5 failed. No more Fallbacks available.\nError code: %s', ME.message);
   end
@@ -137,7 +168,7 @@ prop_data = struct();
 
 try
 
-  if isfield(Conf, 'additions')
+  if ~headerOnly && isfield(Conf, 'additions')
     if Conf.additions.type == "auto"
   
       opt_prop = struct("root", "/", "optional", true, "name", "prop", "level", 1);
@@ -418,6 +449,33 @@ end
 
 function out = ebsd_default(raw_data)
 
+  % Check if cs is set --> if not create simple (an optional "cs" whose
+  % key search comes up empty is present but [], not absent, hence the
+  % isempty check too)
+  if ~isfield(raw_data, 'cs') || isempty(raw_data.cs)
+    raw_data.cs = notIndexed;
+  end
+
+  header = struct();
+  if isfield(raw_data, 'header')
+    header = raw_data.header;
+  end
+
+  if isfield(raw_data, 'headerOnlyFlag') && raw_data.headerOnlyFlag
+    % loadEBSD_h5's 'headerOnly' option deliberately stripped
+    % position/phase/rotation from the config before this ran and set
+    % this flag explicitly - unlike inferring headerOnly from their
+    % absence, this can't be confused with a malformed file that
+    % legitimately fails to resolve those fields (which must still hit
+    % the "missing fields" error below, not silently produce an empty
+    % EBSD)
+    out = emptyHeaderOnlyEBSD(raw_data.cs, header);
+    if isfield(raw_data, 'map_correction')
+      out.EulerCorrection = raw_data.map_correction;
+    end
+    return
+  end
+
   if ~isfield(raw_data, 'position') || ~isfield(raw_data, 'phase') || ~isfield(raw_data, 'rotation')
     error(['EBSD data has not the correct fields! ' ...
       'Make sure you have a position, rotation, phase and field!'])
@@ -426,11 +484,6 @@ function out = ebsd_default(raw_data)
   if ~isequal(numel(raw_data.position), numel(raw_data.rotation), numel(raw_data.phase))
     error('Array dimension mismatch! position (%d), rotation (%d), and phase (%d) must have the exact same number of elements.', ...
           numel(raw_data.position), numel(raw_data.rotation), numel(raw_data.phase));
-  end
-
-  % Check if cs is set --> if not create simple
-  if ~isfield(raw_data, 'cs')
-    raw_data.cs = notIndexed;
   end
 
   prop = struct();
@@ -442,10 +495,7 @@ function out = ebsd_default(raw_data)
     ebsd.EulerCorrection = raw_data.map_correction;
   end
 
-  % if a header was created add
-  if isfield(raw_data, 'header')
-    ebsd.opt.Header = raw_data.header;
-  end
+  ebsd.opt.header = header;
 
   % if a how2plot is set add
   if isfield(raw_data, 'how2plot')
