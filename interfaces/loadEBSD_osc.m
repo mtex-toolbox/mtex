@@ -1,11 +1,17 @@
 function ebsd = loadEBSD_osc(fname,varargin)
 %
-
+% Options
+%  headerOnly - return only phase/header metadata, skip reading the data
 
 assertExtension(fname,'.osc');
 
 [CSdefault,header] = oscHeader(fname);
 CS = get_option(varargin,'CS',CSdefault);
+
+if check_option(varargin,'headerOnly')
+  ebsd = emptyHeaderOnlyEBSD(CS,header);
+  return
+end
 
 [data,Xstep,Ystep] = oscData( fname );
 

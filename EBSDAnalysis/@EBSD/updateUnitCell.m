@@ -6,7 +6,11 @@ if nargin == 1 || isempty(uc)
   uc = calcUnitCell(ebsd.pos.xyz); 
 end
 
-if ~isa(uc,'vector3d'), uc = vector3d(uc(:,1),uc(:,2),0); end
+if isempty(uc)
+  uc = vector3d;
+elseif ~isa(uc,'vector3d')
+  uc = vector3d(uc(:,1),uc(:,2),0);
+end
 
 ebsd.unitCell = uc;
 

@@ -9,8 +9,9 @@ function ebsd = loadEBSD_ang(fname,varargin)
 %  fname - file name
 %
 % Options
-%  EulerCorrection - 
+%  EulerCorrection -
 %  setting - see https://mtex-toolbox.github.io/EBSDReferenceFrame.html
+%  headerOnly - return only phase/header metadata, skip reading the data
 %
 
 assertExtension(fname,'.ang');
@@ -67,9 +68,18 @@ for i = 1:length(phasePos)
       end
   end
   cs(phase+1) = crystalSymmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:});
-  
+
 end
-   
+
+% capture all remaining header metadata (phase/symmetry data is excluded,
+% it is already captured by cs/CSList above)
+header = angHeaderStruct(hl(1:nh),phasePos);
+
+if check_option(varargin,'headerOnly')
+  ebsd = emptyHeaderOnlyEBSD(cs,header);
+  return
+end
+
 % mineral name to phase number conversion needed?
 parts = regexpsplit(hl{end-1},'\s*');
 parts(cellfun(@isempty,parts)) = [];
@@ -150,9 +160,7 @@ ColumnNames = get_option(varargin,'ColumnNames',ColumnNames(1:length(isnum)));
 ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
   'ColumnNames',ColumnNames,varargin{:},'header',nh,ReplaceExpr{:},'keepNaN');
 
-% capture all remaining header metadata (phase/symmetry data is excluded,
-% it is already captured by cs/CSList above)
-ebsd.opt.header = angHeaderStruct(hl(1:nh),phasePos);
+ebsd.opt.header = header;
 
 
 % Explicitly non-indexed phases appear to have 4*pi for all Euler angles

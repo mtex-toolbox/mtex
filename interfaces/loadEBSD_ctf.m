@@ -9,7 +9,8 @@ function ebsd = loadEBSD_ctf(fname,varargin)
 %  fname - file name
 %
 % Options
-%  EulerCorrection - @rotation that is used to correct the Euler angles 
+%  EulerCorrection - @rotation that is used to correct the Euler angles
+%  headerOnly - return only phase/header metadata, skip reading the data
 %
 
 assertExtension(fname,'.ctf');
@@ -54,7 +55,17 @@ for K = 1:nphase
   end
 
 end
-  
+
+% capture all remaining header metadata (phase/symmetry data is excluded,
+% it is already captured by cs/CSList above; the column-schema line right
+% after the phase table is excluded too, it is redundant with ColumnNames)
+header = ctfHeaderStruct(hl,phase_line);
+
+if check_option(varargin,'headerOnly')
+  ebsd = emptyHeaderOnlyEBSD(cs,header);
+  return
+end
+
 try
   ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','degree',...
     'ColumnNames',{'Phase' 'X' 'Y' 'Bands' 'Error' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC' 'BS'}, ...
@@ -65,10 +76,7 @@ catch
     'Columns',1:8,varargin{:});
 end
 
-% capture all remaining header metadata (phase/symmetry data is excluded,
-% it is already captured by cs/CSList above; the column-schema line right
-% after the phase table is excluded too, it is redundant with ColumnNames)
-ebsd.opt.header = ctfHeaderStruct(hl,phase_line);
+ebsd.opt.header = header;
 
 % x||a*, z||c
 

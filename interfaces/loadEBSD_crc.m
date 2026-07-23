@@ -3,19 +3,25 @@ function ebsd = loadEBSD_crc(fname,varargin)
 % 
 %
 % Options
-%  EulerCorrection - 
+%  EulerCorrection -
+%  headerOnly - return only phase/header metadata, skip reading the data
 
 assertExtension(fname,'.cpr','.crc');
-  
+
 [path,file] = fileparts(fname);
 cprFile = fullfile(path,[file '.cpr']);
 crcFile = fullfile(path,[file '.crc']);
-  
+
 cpr = localCPRParser(cprFile);
-  
+
 CS  = get_option(varargin,'CS',getCS(cpr));
 param = getJobParam(cpr);
-  
+
+if check_option(varargin,'headerOnly')
+  ebsd = emptyHeaderOnlyEBSD(CS,cpr,'unitCell',param.unitCell);
+  return
+end
+
 loader = localCRCLoader(crcFile,param);
   
 rot = loader.getRotations();
