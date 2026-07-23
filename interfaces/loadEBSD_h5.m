@@ -31,8 +31,6 @@ if numel(ginfo) > 0
 end
 
 assert(numel(ginfo) > 0);
-  
-if check_option(varargin,'check'), ebsd = EBSD; header = {}; return; end
 
 try
   for k = 1:numel(ginfo)

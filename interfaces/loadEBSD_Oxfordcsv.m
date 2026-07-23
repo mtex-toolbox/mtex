@@ -39,8 +39,6 @@ try
 
   % passive is default
   if iscell(activePassive), activePassive = activePassive{1}; end
-  
-  if check_option(varargin,'check'); return;end
 
   % extract column names
   colNames = textscan(colNames,'%s','delimiter',',');

@@ -49,8 +49,6 @@ catch %#ok<CTCH>
   error('MTEX:wrongInterface','Interface xxx does not fit file format!');
 end
 
-if check_option(varargin,'check'), return;end
-
 iphase = columns(strcmpi(columnNames,'phase'));
 columns = [angles,xy,columns];
 iphase = columns == iphase;

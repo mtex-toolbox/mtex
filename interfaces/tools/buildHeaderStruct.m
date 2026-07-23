@@ -23,13 +23,7 @@ for k = 1:numel(keys)
   fn = matlab.lang.makeValidName(strtrim(keys{k}));
   if isempty(fn), continue; end
 
-  value = strtrim(values{k});
-  numValue = str2double(value);
-  if ~isnan(numValue) && ~isempty(value)
-    value = numValue;
-  end
-
-  header.(fn) = value;
+  header.(fn) = coerceNumeric(strtrim(values{k}));
 
 end
 

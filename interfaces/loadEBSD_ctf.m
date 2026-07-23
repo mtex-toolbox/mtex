@@ -12,14 +12,14 @@ function ebsd = loadEBSD_ctf(fname,varargin)
 %  EulerCorrection - @rotation that is used to correct the Euler angles 
 %
 
+assertExtension(fname,'.ctf');
+
 % read file header
 hl = file2cell(fname,100);
-  
+
 % check that this is a channel text file
 if isempty(strfind(hl{1},'Channel Text File'))
-  error('MTEX:wrongInterface','Interface ctf does not fit file format!');
-elseif check_option(varargin,'check')
-  return
+  interfaceError(fname);
 end
    
 phase_line = find(contains(hl,'Phases'));
@@ -28,7 +28,7 @@ nphase = sscanf(hl{phase_line},'%s\t%u');
 nphase = nphase(end);
   
 % Crystallographic Parameters of all phases
-Laue = {'-1','2/m','mmm','4/m','4/mmm','-3','-3m','6/m','6/mmm','m3','m3m'};
+Laue = {'-1','2/m','mmm','4/m','4/mmm','-3','-3m','6/m','6/mmm','m-3','m-3m'};
   
 cs(1) = notIndexed;
 for K = 1:nphase
@@ -72,25 +72,8 @@ ebsd.opt.header = ctfHeaderStruct(hl,phase_line);
 
 % x||a*, z||c
 
-
 % change reference frame
-correction = get_option(varargin,'EulerCorrection',rotation.byEuler(pi,0,0));
-
-if ~check_option(varargin,'EulerCorrection') && ~check_option(varargin,'wizard') 
-
-  fprintf(2,wraptext(['\nWarning: .ctf files usually come with different ' ...
-    'coordinate systems for the Euler angles and the spatial coordinates. ' ...
-    'I assumed the relative alignment of these coordinate systems to be a ' ...
-    'rotation about the z-axis by 180 degree. You may want to verify this ' ...
-    'and specify the correct alignment explicitely by\n\n' ...
-    'ebsd = EBSD.load(fileName,''EulerCorrection'', rotation.byAxisAngle(zvector,180*degree))' ...
-    '\n\n' ...
-    'Click <a href="matlab:MTEXdoc(''EBSDReferenceFrame'')">here</a> for more information.'...
-    '\n']))
-
-end
-
-ebsd.EulerCorrection = correction;
+ebsd = applyEulerCorrectionFixed(ebsd,'.ctf',rotation.byEuler(pi,0,0),varargin{:});
 
 end
 

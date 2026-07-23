@@ -171,40 +171,7 @@ end
 ebsd.phaseMap(1) = notIndexedID;
 ebsd(ebsd.rotations.isnan | ebsd.prop.ci<0).phase = notIndexedID;
 
-if check_option(varargin,'wizard')
-  corSetting = 2; 
-else
-  corSetting = 0; 
-end
-corSetting = get_option(varargin,'setting',corSetting);
-
-if corSetting > 0 || check_option(varargin,'EulerCorrection')
-
-  % change reference frame
-  rotCorrection = [rotation.id,...
-    rotation.byAxisAngle(xvector+yvector,180*degree),... % setting 1
-    rotation.byAxisAngle(xvector-yvector,180*degree),... % setting 2
-    rotation.byAxisAngle(xvector,180*degree),...         % setting 3
-    rotation.byAxisAngle(yvector,180*degree)];           % setting 4
-
-  rot = get_option(varargin,'EulerCorrection',rotCorrection(corSetting+1));
-
-  % correct rotations
-  ebsd.EulerCorrection = rot;
-  
-else
-  
-  fprintf(2,wraptext(['\nWarning: .ang files usually come with different coordinate systems for the Euler angles ' ...
-    'and the spatial coordinates. The relative alignment of these coordinate ' ...
-    'systems files can be specified when exporting the data from your EBSD maschine ' ...
-    'and are labeled as setting 1 to setting 4. Please specifiy this setting ' ...
-    'when importing the data using the syntax\n\n' ...
-    'ebsd = EBSD.load(fileName,''setting'', 2)' ...
-    '\n\n' ...
-    'Click <a href="matlab:MTEXdoc(''EBSDReferenceFrame'')">here</a> for more information.'...
-    '\n']))
-
-end
+ebsd = applyEulerCorrectionTable(ebsd,'.ang',varargin{:});
 
 end
 
