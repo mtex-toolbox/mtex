@@ -164,7 +164,10 @@ classdef import_wizard < matlab.apps.AppBase
       % and EBSD files of the current directory, plus a back button and
       % path label for navigation. Single-clicking a folder only expands
       % its branch in place; double-clicking (or pressing Enter) descends
-      % into a folder or imports a file, Backspace navigates up.
+      % into a folder or imports a file, Backspace navigates up. Merely
+      % selecting a file (click or arrow keys, see SelectionChangedFcn)
+      % triggers a fast headerOnly preview into the file info table below,
+      % without touching the actually imported/plotted data set.
       app.FileBrowserPanel = uipanel(app.LeftLayout, 'BorderType', 'line');
       app.FileBrowserPanel.Layout.Row = 1;
 
@@ -200,7 +203,8 @@ classdef import_wizard < matlab.apps.AppBase
         'FontSize', app.FontSize - 1, ...
         'ClickedFcn', createCallbackFcn(app, @FileTreeClicked, true), ...
         'NodeExpandedFcn', createCallbackFcn(app, @FileTreeNodeExpanded, true), ...
-        'DoubleClickedFcn', createCallbackFcn(app, @FileTreeDoubleClicked, true));
+        'DoubleClickedFcn', createCallbackFcn(app, @FileTreeDoubleClicked, true), ...
+        'SelectionChangedFcn', createCallbackFcn(app, @FileTreeSelectionChanged, true));
       app.FileTree.Layout.Row = 2;
       app.FileTree.Layout.Column = [1 2];
 
@@ -704,7 +708,7 @@ classdef import_wizard < matlab.apps.AppBase
 
       % --- deferred setup: only appends tabs / updates values, it never
       % reorders the tab group (that would blank the visible plot) -------
-      updateCurrentDataInfo(app, fileName)
+      updateCurrentDataInfo(app, app.ebsd, filePath, false)
       app.ExportButton.Text = 'Import to variable';
       populateMapTabs(app)
       populateImagesSelector(app)
@@ -1284,52 +1288,65 @@ classdef import_wizard < matlab.apps.AppBase
       end
     end
 
-    function updateCurrentDataInfo(app, fileName)
-      % basic information about the loaded data set: file name, spatial
+    function updateCurrentDataInfo(app, ebsd, filePath, isPreview)
+      % basic information about the given data set: file name, spatial
       % extent in scan units, grid type/dimensions, grid resolution and,
       % when they can be determined, the vendor, file size and creation
       % date - as a 2-column Property/Value table.
-      rows = {'File', asChar(app, fileName)};
+      %
+      % ebsd may be a headerOnly preview (no positions/orientations) as
+      % well as a fully imported data set - isPreview only controls the
+      % Status row, everything else degrades gracefully via try/catch
+      % (e.g. "Coordinates" and grid dimensions need real pixel data and
+      % are simply omitted for a preview).
+      [~, fName, fExt] = fileparts(char(filePath));
+      fileName = [fName fExt];
+
+      if isPreview
+        rows = {'Status', 'Preview (not imported)'};
+      else
+        rows = {'Status', 'Imported'};
+      end
+      rows(end+1,:) = {'File', asChar(app, fileName)};
 
       try
-        ext = app.ebsd.extent;
+        ext = ebsd.extent;
         rows(end+1,:) = {'Coordinates', ['[' xnum2str(ext(1:2), 'delimiter', ',') ...
-          '] x [' xnum2str(ext(3:4), 'delimiter', ',') '] ' scanUnitLabel(app)]};
+          '] x [' xnum2str(ext(3:4), 'delimiter', ',') '] ' scanUnitLabel(app, ebsd)]};
       catch
       end
 
       try
-        [gridLabel, dimsTxt, resolutionTxt] = gridInfo(app);
+        [gridLabel, dimsTxt, resolutionTxt] = gridInfo(app, ebsd);
         rows(end+1,:) = {gridLabel, dimsTxt};
         rows(end+1,:) = {'Step Size', resolutionTxt};
       catch
       end
 
-      vendor = vendorLabel(app);
+      vendor = vendorLabel(app, ebsd, filePath);
       if ~isempty(vendor), rows(end+1,:) = {'Vendor', vendor}; end
 
-      fileSize = fileSizeLabel(app);
+      fileSize = fileSizeLabel(app, filePath);
       if ~isempty(fileSize), rows(end+1,:) = {'File size', fileSize}; end
 
-      created = creationDateLabel(app);
+      created = creationDateLabel(app, ebsd, filePath);
       if ~isempty(created), rows(end+1,:) = {'Created', created}; end
 
       app.CurrentData.Data = cell2table(rows, 'VariableNames', {'Property','Value'});
     end
 
-    function u = scanUnitLabel(app)
+    function u = scanUnitLabel(~, ebsd)
       u = 'um';
-      try u = char(app.ebsd.scanUnit); catch, end
+      try u = char(ebsd.scanUnit); catch, end
       if strcmpi(u, 'um'), u = 'µm'; end
     end
 
-    function [gridLabel, dimsTxt, resolutionTxt] = gridInfo(app)
+    function [gridLabel, dimsTxt, resolutionTxt] = gridInfo(app, ebsd)
       % gridLabel: 'Square Grid' or 'Hex Grid' (used as the row's
       % Property name); dimsTxt: e.g. '1000 x 500 pixel'; resolutionTxt
       % (shown under "Step Size"): the plain step size value, no 'dx ='/
       % 'dHex =' label - e.g. '60 µm' or '60 x 80 µm' when dx and dy differ
-      ebsd = app.ebsd;
-      u = scanUnitLabel(app);
+      u = scanUnitLabel(app, ebsd);
       [xmin, xmax, ymin, ymax] = extent(ebsd);
 
       if size(ebsd.unitCell, 1) == 6 % hexagonal grid
@@ -1364,11 +1381,11 @@ classdef import_wizard < matlab.apps.AppBase
       dimsTxt = [int2str(nx) ' x ' int2str(ny) ' pixel'];
     end
 
-    function txt = fileSizeLabel(app)
-      % human-readable file size (KB/MB/GB) of the loaded file
+    function txt = fileSizeLabel(~, filePath)
+      % human-readable file size (KB/MB/GB) of the given file
       txt = '';
       try
-        listing = dir(char(app.LoadedFilePath));
+        listing = dir(char(filePath));
         if ~isscalar(listing), return, end
         bytes = listing.bytes;
         units = {'bytes','KB','MB','GB','TB'};
@@ -1386,10 +1403,10 @@ classdef import_wizard < matlab.apps.AppBase
       end
     end
 
-    function txt = vendorLabel(app)
+    function txt = vendorLabel(app, ebsd, filePath)
       % vendor from the file metadata if present, otherwise a guess based
       % on the file format
-      txt = findMetaField(app, app.ebsd.opt, {'manufacturer', 'vendor'}, 3);
+      txt = findMetaField(app, ebsd.opt, {'manufacturer', 'vendor'}, 3);
       if ~isempty(txt), return, end
 
       vendors = struct( ...
@@ -1398,17 +1415,17 @@ classdef import_wizard < matlab.apps.AppBase
         'crc', 'Oxford Instruments', 'cpr', 'Oxford Instruments', ...
         'hkl', 'Oxford Instruments', 'h5oina', 'Oxford Instruments', ...
         'dream3d', 'DREAM.3D');
-      [~, ~, ext] = fileparts(char(app.LoadedFilePath));
+      [~, ~, ext] = fileparts(char(filePath));
       ext = lower(erase(ext, '.'));
       if isfield(vendors, ext), txt = vendors.(ext); end
     end
 
-    function txt = creationDateLabel(app)
+    function txt = creationDateLabel(app, ebsd, filePath)
       % acquisition date from the file metadata if present, otherwise the
       % file system date
-      txt = findMetaField(app, app.ebsd.opt, {'date'}, 3);
+      txt = findMetaField(app, ebsd.opt, {'date'}, 3);
       if isempty(txt)
-        listing = dir(char(app.LoadedFilePath));
+        listing = dir(char(filePath));
         if isscalar(listing), txt = [listing.date ' (file date)']; end
       end
     end
@@ -1522,6 +1539,43 @@ classdef import_wizard < matlab.apps.AppBase
         case 'Folder'
           navigateToFolder(app, data.Path)
       end
+    end
+
+    function FileTreeSelectionChanged(app, ~)
+      % fires on click AND arrow-key navigation, for both files and
+      % folders - only a genuine, recognized EBSD file triggers a preview
+      node = app.FileTree.SelectedNodes;
+      if ~isscalar(node) || isempty(node.NodeData) || ...
+          ~strcmp(node.NodeData.Type, 'File') || ...
+          ~isEBSDFile(app, node.NodeData.Path)
+        return
+      end
+      previewEBSDData(app, node.NodeData.Path)
+    end
+
+    function previewEBSDData(app, filePath)
+      % lightweight, non-intrusive preview: a headerOnly load feeds the
+      % file info table (app.CurrentData) without touching app.ebsd, so
+      % browsing around never disturbs the currently plotted data set.
+      % Failures are silent (no uialert) since this fires on every
+      % arrow-key move, not just a deliberate user action.
+      filePath = char(filePath);
+
+      % already the actually imported file - show its real info instead
+      % of a redundant, more limited "preview" of the same data
+      if strcmp(filePath, char(app.LoadedFilePath))
+        updateCurrentDataInfo(app, app.ebsd, filePath, false)
+        return
+      end
+
+      try
+        ebsdPreview = EBSD.load(filePath, 'wizard', 'headerOnly');
+      catch
+        % not a recognized/loadable format - leave the table as is
+        return
+      end
+
+      updateCurrentDataInfo(app, ebsdPreview, filePath, true)
     end
 
     function FileTreeNodeExpanded(app, event)
