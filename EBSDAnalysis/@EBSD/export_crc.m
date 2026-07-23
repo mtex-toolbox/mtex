@@ -292,8 +292,9 @@ function outebsd = regrid(inebsd,stepSize)
 % this step mitigates any rounding-off errors during subsequent gridding
 % operations
 outebsd = inebsd;
-outebsd.prop.x = stepSize.*floor(outebsd.prop.x./stepSize);
-outebsd.prop.y = stepSize.*floor(outebsd.prop.y./stepSize);
+newX = stepSize.*floor(outebsd.pos.x./stepSize);
+newY = stepSize.*floor(outebsd.pos.y./stepSize);
+outebsd.pos = vector3d(newX,newY,outebsd.pos.z);
 end
 
 
