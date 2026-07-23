@@ -68,7 +68,7 @@ end
 fname = char(fname);
 [~,~,interface] = fileparts(fname);
 interface = get_option(varargin,'interface',interface);
-interface = strrep(interface,'.','');
+interface = lower(strrep(interface,'.',''));
 
 options = {};
 

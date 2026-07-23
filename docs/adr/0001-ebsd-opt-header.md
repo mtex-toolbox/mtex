@@ -1,0 +1,12 @@
+# Store per-file metadata in `ebsd.opt.header`, kept in each vendor's native shape
+
+`loadEBSD_ang`, `loadEBSD_ctf`, `loadEBSD_crc`, and `loadEBSD_osc` each parse a file header but historically discarded most of it — only the handful of tokens needed to build `CSList` or correct Euler angles were kept, and `loadEBSD_crc` was the sole exception, stashing its whole parsed `.cpr` struct as `ebsd.opt.cprInfo` (used by `export_crc.m` for round-trip export). We decided to generalize that pattern: every EBSD import interface will capture its file's header metadata into `ebsd.opt.header`, extending `ebsd.opt`'s existing role as the scan-level (non-per-pixel) data bucket, as opposed to `ebsd.prop` which is strictly per-pixel and is what most existing `ebsd.opt`-adjacent code actually deals with.
+
+We chose **not** to normalize `header`'s shape across formats (e.g. a common `operator`/`sampleId`/`acquisitionDate` schema). Instead each interface keeps its own vendor-native structure: `.crc` keeps the full `cpr` struct verbatim (renamed from `cprInfo`); `.ang`/`.ctf` get a generic helper that flattens every singleton header line into one struct keyed by its own token name; `.osc`'s binary header yields hand-picked named fields for what's decodable, plus a `rawBytes` field holding whatever remains uninterpreted. This matches a precedent already in `loadEBSD_universal_hdf5.m`, which populates `opt.header` for most manufacturers by dumping the raw HDF5 "Header" group verbatim. A shared schema was rejected because vendor header layouts don't actually share a common vocabulary beyond a few overlapping concepts, and forcing one would mean either dropping vendor-specific fields or inventing brittle mappings for fields with no real cross-vendor equivalent. Phase/symmetry data is deliberately excluded from `header` in all formats since `CSList` already owns it.
+
+We also added a `headerOnly` boolean import option (all four interfaces) that short-circuits before the expensive per-pixel/binary read, returning an `EBSD` with empty `pos`/`rotations`/`phaseId` but populated `CSList`/`opt.header` — for fast metadata inspection on large scans without paying for the full data read.
+
+## Consequences
+
+- `ebsd.opt.cprInfo` is renamed to `ebsd.opt.header`; `export_crc.m` is updated to match. This is a breaking change for any external script reading `ebsd.opt.cprInfo` directly.
+- Code that wants a metadata field present across all formats (e.g. "operator name") cannot rely on a common `header` field name — it must handle each vendor's shape separately.

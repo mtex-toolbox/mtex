@@ -24,7 +24,7 @@ phases  = loader.getColumnData('phase');
 options = loader.getOptions('ignoreColumns',{'phase','x','y'});
   
 ebsd = EBSD(pos,rot,phases,CS,options,'unitCell',param.unitCell);
-ebsd.opt.cprInfo = cpr;
+ebsd.opt.header = cpr;
 
 % change reference frame
 correction = get_option(varargin,'EulerCorrection',rotation.byEuler(pi,0,0));

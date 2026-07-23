@@ -64,7 +64,12 @@ catch
     'ColumnNames',{'Phase' 'X' 'Y' 'Bands' 'Error' 'Euler 1' 'Euler 2' 'Euler 3'}, ...
     'Columns',1:8,varargin{:});
 end
-   
+
+% capture all remaining header metadata (phase/symmetry data is excluded,
+% it is already captured by cs/CSList above; the column-schema line right
+% after the phase table is excluded too, it is redundant with ColumnNames)
+ebsd.opt.header = ctfHeaderStruct(hl,phase_line);
+
 % x||a*, z||c
 
 
@@ -86,5 +91,39 @@ if ~check_option(varargin,'EulerCorrection') && ~check_option(varargin,'wizard')
 end
 
 ebsd.EulerCorrection = correction;
+
+end
+
+function header = ctfHeaderStruct(hl,phase_line)
+% flatten every general header line (before the phase table) into a
+% struct; lines may pack multiple key/value pairs separated by tabs
+
+keys = {}; values = {};
+for i = 1:phase_line
+  [k,v] = ctfSplitLine(hl{i});
+  keys = [keys,k]; %#ok<AGROW>
+  values = [values,v]; %#ok<AGROW>
+end
+
+header = buildHeaderStruct(keys,values);
+
+end
+
+function [keys,values] = ctfSplitLine(line)
+% split a tab-separated header line into key/value pairs
+%
+% Lines with an even number of tab-separated fields are read as
+% sequential key/value pairs (this also covers the common single-pair
+% case). Lines with an odd number of fields carry a leading free-text
+% note (dropped) followed by the key/value pairs.
+
+parts = regexpsplit(line,'\t');
+
+if mod(numel(parts),2) == 1
+  parts = parts(2:end);
+end
+
+keys = parts(1:2:end);
+values = parts(2:2:end);
 
 end

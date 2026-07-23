@@ -149,7 +149,12 @@ ColumnNames = get_option(varargin,'ColumnNames',ColumnNames(1:length(isnum)));
 % import the data
 ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
   'ColumnNames',ColumnNames,varargin{:},'header',nh,ReplaceExpr{:},'keepNaN');
-  
+
+% capture all remaining header metadata (phase/symmetry data is excluded,
+% it is already captured by cs/CSList above)
+ebsd.opt.header = angHeaderStruct(hl(1:nh),phasePos);
+
+
 % Explicitly non-indexed phases appear to have 4*pi for all Euler angles
 % which are filtered by loadHelper() already AND ci==-1.
 % Taking phase 0 for non indexed does not really work in the case of single
@@ -200,6 +205,50 @@ else
     '\n']))
 
 end
+
+end
+
+function header = angHeaderStruct(hl,phasePos)
+% flatten every non-phase-block header line into a struct
+%
+% hl       - cell array of header lines (# ...), truncated to the header
+% phasePos - line indices of "# Phase N" markers within hl
+
+phaseKeys = {'materialname','formula','info','symmetry','latticeconstants',...
+  'numberfamilies','hklfamilies','elasticconstants','categories','phase'};
+
+exclude = false(size(hl));
+
+for i = 1:numel(phasePos)
+  startIdx = phasePos(i);
+  if i < numel(phasePos)
+    stopIdx = phasePos(i+1)-1;
+  else
+    % no explicit end-of-phase-block marker exists; keep consuming lines
+    % as long as they belong to one of the known repeatable phase keys
+    stopIdx = startIdx;
+    for j = startIdx+1:numel(hl)
+      tok = regexp(hl{j},'^#\s*([^\s:]+)','tokens','once');
+      if isempty(tok) || any(cellfun(@(pk) strncmpi(tok{1},pk,length(pk)),phaseKeys))
+        stopIdx = j;
+      else
+        break;
+      end
+    end
+  end
+  exclude(startIdx:stopIdx) = true;
+end
+
+keys = {}; values = {};
+for i = 1:numel(hl)
+  if exclude(i), continue; end
+  tok = regexp(hl{i},'^#\s*([^\s:]+)\s*:?\s*(.*)$','tokens','once');
+  if isempty(tok), continue; end
+  keys{end+1} = tok{1}; %#ok<AGROW>
+  values{end+1} = tok{2}; %#ok<AGROW>
+end
+
+header = buildHeaderStruct(keys,values);
 
 end
 
