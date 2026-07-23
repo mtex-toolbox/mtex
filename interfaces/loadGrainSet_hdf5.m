@@ -1,7 +1,7 @@
 function grains = loadGrainSet_hdf5(fname)
 
 %% Read EBSD
-ebsd = loadEBSD_hdf5(fname);
+ebsd = loadEBSD_h5_mtexGrainSet(fname);
 
 %% Read comment
 comment = h5readatt(fname, '/grains', 'comment');

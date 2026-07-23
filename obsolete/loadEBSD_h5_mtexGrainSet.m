@@ -1,4 +1,9 @@
-function ebsd = loadEBSD_hdf5(fname,varargin)
+function ebsd = loadEBSD_h5_mtexGrainSet(fname,varargin)
+% read MTEX's own internal HDF5 EBSD schema
+%
+% This is not a vendor format - it is the read-side counterpart to
+% saveGrainSet_hdf5.m, used by loadGrainSet_hdf5.m to restore the EBSD
+% data belonging to a saved grain set.
 
 %% Read rotations
 as = h5read(fname, '/ebsd/rotations/a');

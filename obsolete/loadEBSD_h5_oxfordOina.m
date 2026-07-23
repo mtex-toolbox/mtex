@@ -1,6 +1,10 @@
-function [ebsd] = loadEBSD_h5oina(fname,varargin)
-% read HKL *.h5oina hdf5 file
+function [ebsd] = loadEBSD_h5_oxfordOina(fname,varargin)
+% read Oxford Instruments (HKL) *.h5oina hdf5 file
 % documented here: https://github.com/oinanoanalysis/h5oina/blob/master/H5OINAFile.md
+%
+% Superseded by loadEBSD_h5.m (formerly loadEBSD_universal_hdf5.m), a
+% config-file-driven multi-vendor HDF5 reader. Kept here for reference /
+% as a fallback for files it no longer handles.
 % note that Matlab < R2021b does not handle hdf5 v1.10 and one needs to use hdf5format_convert
 % (https://github.com/HDFGroup/hdf5) on the input file to prevent Matlab from fatally crashing
 %
