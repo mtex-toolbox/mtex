@@ -6,6 +6,9 @@ function [ij,A,stencil,dxy] = gridIndex(ebsd)
 % generation): scattered points, phase subsets and gridified maps alike are
 % snapped to the nearest lattice node.
 %
+% Thin wrapper around ebsd.lattice, kept for backward compatibility with
+% existing callers (EBSD/KAM, EBSD/curvature).
+%
 % Syntax
 %   ij = ebsd.gridIndex
 %   [ij,A,stencil,dxy] = ebsd.gridIndex
@@ -16,16 +19,14 @@ function [ij,A,stencil,dxy] = gridIndex(ebsd)
 %  stencil - neighbour stencil
 %  dxy     - cell size
 %
-% Note: the indices are RELATIVE to this data's own extent (origin =
-% min(pos)). A phase subset therefore gets its own origin; do not compare
-% indices across different subsets expecting a common frame.
+% Note: the indices are RELATIVE to this data's own extent. A phase subset
+% therefore gets its own origin; do not compare indices across different
+% subsets expecting a common frame.
 %
 % See also
-% EBSD/latticeBasis
+% EBSD/lattice EBSD/latticeBasis
 
-[A,stencil,dxy] = latticeBasis(ebsd.unitCell);
-
-pos = [ebsd.pos.x(:), ebsd.pos.y(:)];
-ij  = round((pos - min(pos,[],1)) / A.');   % nEbsd x 2
+g = ebsd.lattice;
+ij = g.ij; A = g.A; stencil = g.stencil; dxy = g.dxy;
 
 end

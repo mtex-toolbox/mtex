@@ -39,23 +39,17 @@ function out = spatialDecompositionGrid(ebsd,varargin)
 alpha = get_option(varargin,'alpha',3.1);
 
 % transform positions to ij grid
-[A,stencil,dxy] = latticeBasis(ebsd.unitCell);
+g = ebsd.lattice;
+A = g.A; stencil = g.stencil; dxy = g.dxy; ij = g.ij; origin = g.origin;
 epsilon = dxy/100;
 
-pos    = [ebsd.pos.x(:), ebsd.pos.y(:)];
-origin = min(pos,[],1);
-ij     = round((pos - origin) / A');          % axial indices, n x 2
-
+pos = [ebsd.pos.x(:), ebsd.pos.y(:)];
 nE       = size(pos,1);
 isIndexed = ebsd.isIndexed(:);
 
 % fast neighbour lookup
 % ij2ebsd(ij2slot([i j])) is the ebsd index / 0 if not contained in the map
-ijmin = min(ij,[],1);
-ijsz  = max(ij,[],1) - ijmin + 1;               % raster size in (i,j)
-ij2slot = @(IJ) (IJ(:,1)-ijmin(1)) + (IJ(:,2)-ijmin(2))*ijsz(1) + 1;
-ij2ebsd = zeros(prod(ijsz),1);
-ij2ebsd(ij2slot(ij)) = 1:nE;                    % 0 = empty cell
+[ij2ebsd,ij2slot,ijmin,ijsz] = latticeLookup(ij);
 
 % ---- alpha partition via morphological closing -----------------------------
 % Work on a padded raster of the (i,j) grid. All operations below are binary
