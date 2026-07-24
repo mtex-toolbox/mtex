@@ -1,8 +1,9 @@
-function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,gbc,varargin)
+function [A_Db,I_DG] = doSegmentation(I_FD,F,ebsd,gbc,varargin)
 % segments voronoi cells into grains
 %
 % Input
 %  I_FD - incidence matrix faces -> pixels
+%  F - vertex ids of the boundary segments
 %  ebsd - @EBSD
 %  gbc - @grainBoundaryCriterion
 %
@@ -42,7 +43,7 @@ A_Do = A_Do | A_Do.';
 A_Db = A_Db | A_Db.';
 
 if check_option(varargin,'completeBoundaries')
-  [A_Do,A_Db,componentId] = completeBoundaryGraph(A_Do,A_Db);
+  [A_Do,A_Db,componentId] = completeBoundaryGraph(A_Do,A_Db,I_FD,F);
 else
   componentId = connectedComponents(A_Do);
 end
