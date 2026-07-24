@@ -42,13 +42,11 @@ function cand = floodCandidates(ebsd,grainId)
 % geometrically. Already grain-bearing pixels keep their id. Phase-agnostic:
 % indexed and notIndexed grains flood alike.
 
-[Agrid,stencil] = latticeBasis(ebsd.unitCell);
-posE = [ebsd.pos.x(:), ebsd.pos.y(:)];
-ijE  = round((posE - min(posE,[],1)) / Agrid');
-nEb  = size(posE,1);
-ijmin = min(ijE,[],1);  ijsz = max(ijE,[],1) - ijmin + 1;
-slot  = @(IJ) (IJ(:,1)-ijmin(1)) + (IJ(:,2)-ijmin(2))*ijsz(1) + 1;
-cell2e = zeros(prod(ijsz),1); cell2e(slot(ijE)) = 1:nEb;
+g = ebsd.lattice;
+stencil = g.stencil;
+ijE = g.ij;
+nEb = size(ijE,1);
+[cell2e,slot,ijmin,ijsz] = latticeLookup(ijE);
 
 % grid neighbour edges; the stencil is symmetric so both directions appear
 P = []; Q = [];
