@@ -44,7 +44,8 @@ unix(['cp -R ' mtex_path ' ' rDir]);
 
 rmList = {'doc/makeDoc/tmp', 'myToken.txt', 'data/*.mat' '.git*' ...
   'data/EBSD/*' '.mailmap' 'gitTricks.md' 'makeRelease.m' ...
-  'mex/*.mex*'};
+  'mex/*.mex*' '.claude' 'docs/agents/matlab-bridge/.venv' ...
+  'docs/agents/matlab-bridge/session.*'};
 for rd = rmList 
   unix(['rm -rf ' rDir filesep char(rd)]); 
 end
