@@ -182,10 +182,16 @@ plot(ebsdGF,ebsdGF.orientations)
 % that grows with the row's y position, so the same nominally rectangular
 % map ends up narrower at one edge than at the other. MTEX reconstructs
 % the underlying grid indices of an <EBSD.EBSD.html |EBSD|> object robustly
-% under this kind of smooth, non-rigid distortion - which matters for
-% <EBSD.gridify.html |gridify|> above, but also for any operation that
-% needs the map's grid structure internally, such as
-% <EBSD.calcGrains.html |calcGrains|> or the |surf| plotting backend.
+% under this kind of smooth, non-rigid distortion, including on a phase
+% subset - which matters for <EBSD.gridify.html |gridify|> above, and for
+% plotting (the |surf| backend).
+%
+% Grid index recovery being robust does not, on its own, make grain
+% reconstruction robust to the same distortion: <EBSD.calcGrains.html
+% |calcGrains|> currently still places notIndexed holes and the map's
+% outer edge using a rigid (non-distortion-aware) reconstruction, a
+% separate, not yet fixed limitation documented in
+% EBSDAnalysis/@EBSD/private/spatialDecompositionGrid.m.
 %
 % We demonstrate this on a real map, rather than a small synthetic one,
 % since the failure mode this guards against only becomes visible once the
@@ -216,26 +222,19 @@ distort = @(pos) vector3d( ...
 
 ebsdDistorted = transform(ebsd, distort);
 
+plot(ebsdDistorted('Fo'),ebsdDistorted('Fo').orientations)
+
 %%
 % Even though every row has now shifted by a different amount, MTEX
-% recovers exactly the same grid indices as for the undistorted map
+% recovers exactly the same grid indices as for the undistorted map -
+% for the full map as well as for a subset of a single phase, where gaps
+% now occur within a scan line and not only between lines.
 
 isequal(ebsdDistorted.lattice.ij, ebsd.lattice.ij)
+isequal(ebsdDistorted('Fo').lattice.ij, ebsd('Fo').lattice.ij)
 
-%%
-% Applying the same transformation to the four corners of the map shows
-% the effect directly: the originally rectangular outline (blue) becomes a
-% trapezoid (red), narrower at the bottom than at the top.
 
-corners = vector3d([min(x) max(x) max(x) min(x) min(x)], ...
-                    [min(y) min(y) max(y) max(y) min(y)], 0);
-distortedCorners = distort(corners);
 
-plot(corners.x,corners.y,'b-o')
-hold on
-plot(distortedCorners.x,distortedCorners.y,'r-s')
-hold off
-axis equal
-legend('undistorted','trapezoidally distorted','location','southoutside')
+
 
 %#ok<*NASGU>

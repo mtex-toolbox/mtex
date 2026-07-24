@@ -24,6 +24,19 @@ function check_gridDistortionBenchmark(varargin)
 % not fixed - so indexing ij directly here would silently distort along
 % the wrong axis on a run where that choice comes out the other way.
 %
+% Also checked on a phase subset (ebsd('Forsterite') etc.), not just the
+% full map: selecting one phase out of several leaves gaps within a scan
+% line, not only between lines, which stresses a different part of
+% assignGridIndex.m than the full map alone can (see there) - and is
+% checked only up to a realistic distortion level, not the full range
+% above, per the limitation documented in assignGridIndex.m.
+%
+% This checks ONLY ebsd.lattice.ij recovery, not grain reconstruction:
+% calcGrains has a separate, not yet fixed limitation under distortion,
+% documented in EBSDAnalysis/@EBSD/private/spatialDecompositionGrid.m -
+% correct ij recovery is necessary for correct grain reconstruction but,
+% currently, not sufficient.
+%
 % Syntax
 %   check_gridDistortionBenchmark
 %
@@ -32,9 +45,20 @@ function check_gridDistortionBenchmark(varargin)
 
 ebsd = mtexdata('forsterite');
 
-ij0 = ebsd.lattice.ij;
 x = ebsd.pos.x; xCenter = (min(x) + max(x)) / 2;
 y = ebsd.pos.y; yCenter = (min(y) + max(y)) / 2; yHalf = (max(y) - min(y)) / 2;
+distort = @(trapFrac) @(pos) vector3d( ...
+  xCenter + (pos.x-xCenter) .* (1 + trapFrac*(pos.y-yCenter)/yHalf), ...
+  pos.y, pos.z);
+
+allOk = true;
+
+% --- full map: a complete, gap-free rectangle -----------------------
+fprintf('--- full map ---\n');
+fprintf('%-10s %10s\n', 'trapFrac', 'ij exact');
+fprintf('%s\n', repmat('-',1,22));
+
+ij0 = ebsd.lattice.ij;
 
 % trapFrac is the fractional x-scaling applied at the map's outermost rows
 % (e.g. 0.02 stretches/compresses the top and bottom row by 2%); 0.49 is
@@ -42,21 +66,30 @@ y = ebsd.pos.y; yCenter = (min(y) + max(y)) / 2; yHalf = (max(y) - min(y)) / 2;
 % reconstruction would become ambiguous.
 trapFracs = [0.0005 0.001 0.005 0.01 0.02 0.05 0.10 0.20 0.30 0.49];
 
-fprintf('%-10s %10s\n', 'trapFrac', 'ij exact');
-fprintf('%s\n', repmat('-',1,22));
-
-allOk = true;
 for k = 1:numel(trapFracs)
-  trapFrac = trapFracs(k);
-
-  ebsdT = transform(ebsd, @(pos) vector3d( ...
-    xCenter + (pos.x-xCenter) .* (1 + trapFrac*(pos.y-yCenter)/yHalf), ...
-    pos.y, pos.z));
-
+  ebsdT = transform(ebsd, distort(trapFracs(k)));
   ok = isequal(ebsdT.lattice.ij, ij0);
   allOk = allOk && ok;
+  fprintf('%-10.4f %10s\n', trapFracs(k), mark(ok));
+end
 
-  fprintf('%-10.4f %10s\n', trapFrac, mark(ok));
+% --- phase subsets: gaps within a line too, not just between lines ---
+subsetTrapFracs = [0.0005 0.001 0.005 0.01 0.02 0.05 0.10 0.20];
+for phase = {'Forsterite','Enstatite','Diopside'}
+
+  fprintf('\n--- %s subset ---\n', phase{1});
+  fprintf('%-10s %10s\n', 'trapFrac', 'ij exact');
+  fprintf('%s\n', repmat('-',1,22));
+
+  ebsdPh = ebsd(phase{1});
+  ijPh0 = ebsdPh.lattice.ij;
+
+  for k = 1:numel(subsetTrapFracs)
+    ebsdPhT = transform(ebsdPh, distort(subsetTrapFracs(k)));
+    ok = isequal(ebsdPhT.lattice.ij, ijPh0);
+    allOk = allOk && ok;
+    fprintf('%-10.4f %10s\n', subsetTrapFracs(k), mark(ok));
+  end
 end
 
 if ~allOk

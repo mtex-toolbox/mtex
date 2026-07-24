@@ -14,6 +14,25 @@ function out = spatialDecompositionGrid(ebsd,varargin)
 % two-pass scheme: decompose once, segment, cull undersized indexed grains by
 % marking their pixels notIndexed, then decompose again.
 %
+% Known limitation: cells2posId (see there) places every site that has no
+% real measurement - notIndexed holes, the exterior dummy ring bounding the
+% map edge, filled small gaps - at IJ*A' + origin, a single RIGID affine
+% reconstruction from the (already distortion-robust, see EBSD/lattice)
+% integer index. Real (indexed) sites use their true measured position
+% instead. Under a smooth but non-rigid distortion (e.g. a trapezoidal
+% stage drift, see EBSD/transform) those two disagree - the synthetic
+% position for a hole or edge cell is not where a genuinely measured pixel
+% at that index would actually be - shifting Voronoi boundaries near every
+% hole and the whole map edge and manufacturing spurious extra grains. This
+% reproduces even on a real, complete map (any notIndexed pixel is exactly
+% this situation) and is NOT limited to phase subsets. Confirmed via
+% grain2d/transform: calcGrains on a transformed EBSD map should agree with
+% transforming the grains reconstructed from the untransformed map, and
+% currently does not once any distortion and any hole/edge site are both
+% present. Not yet fixed - would need cells2posId to reconstruct synthetic
+% positions from a local (not rigid global) model, the way calcMesh
+% interpolates a local deformation field for exactly this reason.
+%
 % Syntax
 %   out = spatialDecompositionGrid(ebsd,'alpha',1.5)
 %
