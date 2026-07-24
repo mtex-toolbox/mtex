@@ -32,26 +32,35 @@ end
 
 % For surf we need an (m+1) x (n+1) grid of cell CORNERS: surf draws m x n
 % faces and colours face (i,j) with d(i,j), taking the colour from the face's
-% lower-index corner. We therefore extend the centre grid by one node and shift
-% it by half a cell so every face is centred on its pixel.
+% lower-index corner. Each corner is the local average of its (up to) four
+% neighbouring pixel centres, so every face is centred on its pixel.
 %
-% The grid steps are taken from the actual pixel positions rather than from the
-% unit-cell corner indices. The previous version used uC(4)-uC(1), uC(2)-uC(1)
-% and shifted by uC(1), which silently assumed a particular ordering of the
-% unit-cell corners; unit cells stored in a different corner order (as some
-% importers produce) then displaced the whole map by one pixel. Reading the
-% step from pos is ordering-independent and also tolerates slightly deformed
-% grids.
-if size(pos,2) >= 2, du = pos(1,2) - pos(1,1); else, du = uC(1)-uC(1); end
-if size(pos,1) >= 2, dv = pos(2,1) - pos(1,1); else, dv = uC(1)-uC(1); end
+% Corners are built from local neighbours only, not a single grid-wide step
+% vector: the centre grid is first padded by one row/column on every side via
+% local linear extrapolation (each padded value uses only its two nearest
+% neighbours), then every corner is the average of the four centres around
+% it. This is exact for a rigid grid (equivalent to the previous du/dv/2
+% shift) and, unlike a single global step, also tracks a locally varying
+% step - e.g. a distorted, non-rigid grid - since each corner only depends on
+% its immediate neighbourhood.
+if size(pos,1) >= 2
+  topPad = 2*pos(1,:) - pos(2,:);
+  botPad = 2*pos(end,:) - pos(end-1,:);
+else
+  topPad = pos(1,:); botPad = pos(1,:);
+end
+posPad = [topPad; pos; botPad];
 
-% extend by one node on the high side ...
-posExt = [pos, pos(:,end) + du];
-posExt = [posExt; posExt(end,:) + dv];
-% ... and shift back by half a cell so faces are centred on the pixels. The
-% half-cell offset is the pixel-centre-to-corner vector -(du+dv)/2, which is
-% independent of how the unit-cell corners happen to be ordered.
-posExt = posExt - (du + dv) ./ 2;
+if size(pos,2) >= 2
+  leftPad  = 2*posPad(:,1) - posPad(:,2);
+  rightPad = 2*posPad(:,end) - posPad(:,end-1);
+else
+  leftPad = posPad(:,1); rightPad = posPad(:,1);
+end
+posPad = [leftPad, posPad, rightPad];
+
+posExt = (posPad(1:end-1,1:end-1) + posPad(1:end-1,2:end) + ...
+          posPad(2:end,1:end-1)   + posPad(2:end,2:end)) / 4;
 
 % extent data
 dExt = [d,d(:,end,:)]; dExt = [dExt;dExt(end,:,:)];

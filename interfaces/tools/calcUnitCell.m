@@ -233,7 +233,17 @@ nClust = numel(clustAng2);
 clustAng = mod(clustAng2/2,pi); % back to a single-angle [0,pi) representative
 
 if nClust == 2
-  % candidate square lattice: two directions ~90 deg apart, equal length
+  % candidate square lattice: two directions ~90 deg apart, equal length.
+  % Sort by angle first (as the hex case below already does) rather than
+  % using cluster 1/2 as they come out of the earlier clustering: for a
+  % square lattice the two directions are exactly antipodal on the
+  % doubled-angle circle, so the "largest gap" used to unwrap that circle
+  % is a genuine tie broken only by floating-point noise in the input
+  % data - without this sort, which cluster ends up first (and so becomes
+  % a1 in EBSD/latticeBasis) is not reproducible from one run to the next,
+  % even for byte-identical input.
+  [clustAng,sortOrd] = sort(clustAng);
+  clustLen = clustLen(sortOrd);
   dAng = mod(abs(diff(clustAng)),pi);
   dAng = min(dAng, pi-dAng);
   if abs(dAng - pi/2) < 0.08 && abs(diff(clustLen))/mean(clustLen) < 0.05 && lenSpread < 0.12

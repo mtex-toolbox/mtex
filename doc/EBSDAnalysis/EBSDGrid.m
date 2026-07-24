@@ -174,4 +174,68 @@ ebsdGF = fill(ebsdG)
 
 plot(ebsdGF,ebsdGF.orientations)
 
+%% Robustness to Distorted (e.g. Trapezoidal) Grids
+%
+% Real EBSD stages sometimes drift smoothly during a scan rather than
+% rotating rigidly. A common signature is a trapezoidal distortion: each
+% scan row is stretched or compressed about the map centre by an amount
+% that grows with the row's y position, so the same nominally rectangular
+% map ends up narrower at one edge than at the other. MTEX reconstructs
+% the underlying grid indices of an <EBSD.EBSD.html |EBSD|> object robustly
+% under this kind of smooth, non-rigid distortion - which matters for
+% <EBSD.gridify.html |gridify|> above, but also for any operation that
+% needs the map's grid structure internally, such as
+% <EBSD.calcGrains.html |calcGrains|> or the |surf| plotting backend.
+%
+% We demonstrate this on a real map, rather than a small synthetic one,
+% since the failure mode this guards against only becomes visible once the
+% map is realistically wide - a small toy grid stays safe at distortion
+% levels that already break a real, wide map.
+
+mtexdata forsterite
+
+%%
+% The command <EBSD.transform.html |transform|> applies an arbitrary
+% function to the position of every pixel, leaving orientations and all
+% other properties untouched. Here we scale the x-position of every pixel
+% about the map's centre by an amount that grows linearly with y - a
+% trapezoidal stage drift of up to |trapFrac| at the top and bottom edges.
+% Note that the distortion is defined through the physical y position, not
+% through a column of <EBSD.lattice.html |ebsd.lattice.ij|> - which of its
+% two columns happens to correspond to rows vs columns depends on an
+% internal, unspecified choice of the lattice basis and is not something
+% to rely on.
+
+x = ebsd.pos.x; xCenter = (min(x)+max(x))/2;
+y = ebsd.pos.y; yCenter = (min(y)+max(y))/2; yHalf = (max(y)-min(y))/2;
+trapFrac = 0.05;
+
+distort = @(pos) vector3d( ...
+  xCenter + (pos.x-xCenter) .* (1 + trapFrac*(pos.y-yCenter)/yHalf), ...
+  pos.y, pos.z);
+
+ebsdDistorted = transform(ebsd, distort);
+
+%%
+% Even though every row has now shifted by a different amount, MTEX
+% recovers exactly the same grid indices as for the undistorted map
+
+isequal(ebsdDistorted.lattice.ij, ebsd.lattice.ij)
+
+%%
+% Applying the same transformation to the four corners of the map shows
+% the effect directly: the originally rectangular outline (blue) becomes a
+% trapezoid (red), narrower at the bottom than at the top.
+
+corners = vector3d([min(x) max(x) max(x) min(x) min(x)], ...
+                    [min(y) min(y) max(y) max(y) min(y)], 0);
+distortedCorners = distort(corners);
+
+plot(corners.x,corners.y,'b-o')
+hold on
+plot(distortedCorners.x,distortedCorners.y,'r-s')
+hold off
+axis equal
+legend('undistorted','trapezoidally distorted','location','southoutside')
+
 %#ok<*NASGU>
