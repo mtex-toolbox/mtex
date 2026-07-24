@@ -79,12 +79,26 @@ posIdx = double(pos(isIndexed,:));
 idealFit  = [ones(numel(Iidx),1), Iidx, Jidx] \ posIdx;
 idealFun  = @(IJ) [ones(size(IJ,1),1), double(IJ)] * idealFit;
 defXY     = posIdx - idealFun([Iidx, Jidx]);
-Fx = scatteredInterpolant(Iidx, Jidx, defXY(:,1), 'natural', 'nearest');
-Fy = scatteredInterpolant(Iidx, Jidx, defXY(:,2), 'natural', 'nearest');
-% reshape guards against scatteredInterpolant returning 0x0 (not 0x1) for
-% an empty query, which would otherwise break the '+' below
-reconstructPos = @(IJ) idealFun(IJ) + ...
-  [reshape(Fx(double(IJ(:,1)),double(IJ(:,2))),[],1), reshape(Fy(double(IJ(:,1)),double(IJ(:,2))),[],1)];
+
+% fast path: most EBSD grids are already (near-)rigid, so the ideal affine
+% grid alone reconstructs unmeasured positions accurately enough and the
+% deformation term below is negligible. Building it anyway is expensive -
+% two natural-neighbour scatteredInterpolant fits (each a Delaunay
+% triangulation over every indexed pixel) - so skip it whenever the affine
+% residual is small relative to the grid spacing, same check calcMesh uses
+% to decide whether its ideal grid is "sufficiently good". Only genuinely
+% distorted grids (e.g. smooth stage drift) fall through to the accurate,
+% slower route.
+if mean(vecnorm(defXY,2,2)) / dxy < 1e-2
+  reconstructPos = @(IJ) idealFun(IJ);
+else
+  Fx = scatteredInterpolant(Iidx, Jidx, defXY(:,1), 'natural', 'nearest');
+  Fy = scatteredInterpolant(Iidx, Jidx, defXY(:,2), 'natural', 'nearest');
+  % reshape guards against scatteredInterpolant returning 0x0 (not 0x1) for
+  % an empty query, which would otherwise break the '+' below
+  reconstructPos = @(IJ) idealFun(IJ) + ...
+    [reshape(Fx(double(IJ(:,1)),double(IJ(:,2))),[],1), reshape(Fy(double(IJ(:,1)),double(IJ(:,2))),[],1)];
+end
 
 % ---- alpha partition via morphological closing -----------------------------
 % Work on a padded raster of the (i,j) grid. All operations below are binary
