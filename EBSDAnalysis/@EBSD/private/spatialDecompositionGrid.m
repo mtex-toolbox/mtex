@@ -265,8 +265,26 @@ numReal = size(sitesIdx,1) + size(niPos,1);
 isNotIdx = [false(size(sitesIdx,1),1); true(size(niPos,1),1)];
 site2id  = [idxSiteEbsd; niId];
 
-% ---- Voronoi ---------------------------------------------------------------
-[V,F,I_FD] = jcvoronoi2_mex(double(XY),double(numReal), epsilon);
+% ---- Voronoi -----------------------------------------------------------
+% 'delaunayOnly' is internal-only (not a user-facing option): calcGrains'
+% minPixel sizing pass (minPixelMask.m) only ever needs the site-to-site
+% adjacency doSegmentation.m builds from I_FD, never the V/F geometry, so it
+% requests the cheaper Delaunay-adjacency-only mex here. The real second
+% decomposition pass (calcGrains.m) never sets this flag and keeps getting
+% full Voronoi geometry.
+%
+% Caveat: on an exactly regular/rigid grid, jcvoronoiDelaunayOnly_mex's
+% adjacency is a strict superset of jcvoronoi2_mex's - it can report a
+% spurious diagonal adjacency at an exactly-cocircular interior vertex that
+% the full Voronoi build correctly excludes (see check_jcvoronoiDelaunayOnly
+% and minPixelMask.m). Never a missing adjacency, so this is safe for a
+% sizing-only pass.
+if check_option(varargin,'delaunayOnly')
+  V = zeros(0,2); F = zeros(0,2);
+  I_FD = jcvoronoiDelaunayOnly_mex(double(XY),double(numReal), epsilon);
+else
+  [V,F,I_FD] = jcvoronoi2_mex(double(XY),double(numReal), epsilon);
+end
 
 out = struct('V',V,'F',F,'I_FD',I_FD, ...
              'isNotIdx',isNotIdx,'site2id',site2id,'ij',ij);

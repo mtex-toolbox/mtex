@@ -4,7 +4,7 @@ function I_FD = remapIFD(out,ebsd)
 % (empty-cell notIndexed sites) are dropped, leaving zero columns.
 
 has  = ~isnan(out.site2id);
-I_FD = sparse(size(out.F,1), length(ebsd));
+I_FD = sparse(size(out.I_FD,1), length(ebsd));
 I_FD(:, out.site2id(has)) = out.I_FD(:, has);
 
 end
