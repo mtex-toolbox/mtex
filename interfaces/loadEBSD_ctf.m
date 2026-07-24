@@ -61,19 +61,27 @@ end
 % after the phase table is excluded too, it is redundant with ColumnNames)
 header = ctfHeaderStruct(hl,phase_line);
 
+% hint the exact step size from the header, preferred over EBSD's own
+% position-based estimate (see EBSD/updateUnitCell)
+unitCellHint = {};
+if isfield(header,'XStep') && isfield(header,'YStep')
+  xs = header.XStep; ys = header.YStep;
+  unitCellHint = {'unitCellHint',vector3d([xs,xs,-xs,-xs]/2,[-ys,ys,ys,-ys]/2,0)};
+end
+
 if check_option(varargin,'headerOnly')
-  ebsd = emptyHeaderOnlyEBSD(cs,header);
+  ebsd = emptyHeaderOnlyEBSD(cs,header,unitCellHint{:});
   return
 end
 
 try
   ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','degree',...
     'ColumnNames',{'Phase' 'X' 'Y' 'Bands' 'Error' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC' 'BS'}, ...
-    'Columns',1:11,varargin{:});
+    'Columns',1:11,varargin{:},unitCellHint{:});
 catch
   ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','degree',...
     'ColumnNames',{'Phase' 'X' 'Y' 'Bands' 'Error' 'Euler 1' 'Euler 2' 'Euler 3'}, ...
-    'Columns',1:8,varargin{:});
+    'Columns',1:8,varargin{:},unitCellHint{:});
 end
 
 ebsd.opt.header = header;

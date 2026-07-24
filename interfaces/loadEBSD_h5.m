@@ -321,6 +321,17 @@ function out = rotation_euler_stack(raw_data)
   out = rotation.byEuler(phi1_2D(:)*format, Phi_2D(:)*format, phi2_2D(:)*format);
 end
 
+function out = unitCell_fromStep(raw_data)
+% build a rectangular unit cell hint from a vendor's own step-size
+% header fields (see EBSD/updateUnitCell) - calcUnitCell's position
+% estimate can be badly wrong for "direct" position vendors (X/Y read
+% straight from a per-pixel dataset, not built from step size), where
+% it has been observed to collapse to a meaningless placeholder value
+  xs = double(raw_data.step_size_x);
+  ys = double(raw_data.step_size_y);
+  out = vector3d([xs,xs,-xs,-xs]/2,[-ys,ys,ys,-ys]/2,0);
+end
+
 function out = cs_default(raw_data)
 
   if ~all(isfield(raw_data, {'space_group', 'lattice', 'name'}))
@@ -469,7 +480,11 @@ function out = ebsd_default(raw_data)
     % legitimately fails to resolve those fields (which must still hit
     % the "missing fields" error below, not silently produce an empty
     % EBSD)
-    out = emptyHeaderOnlyEBSD(raw_data.cs, header);
+    if isfield(raw_data, 'unitCell')
+      out = emptyHeaderOnlyEBSD(raw_data.cs, header, 'unitCellHint', raw_data.unitCell);
+    else
+      out = emptyHeaderOnlyEBSD(raw_data.cs, header);
+    end
     if isfield(raw_data, 'map_correction')
       out.EulerCorrection = raw_data.map_correction;
     end
@@ -488,7 +503,12 @@ function out = ebsd_default(raw_data)
 
   prop = struct();
 
-  ebsd = EBSD(raw_data.position, raw_data.rotation, raw_data.phase, raw_data.cs, prop);
+  unitCellHint = {};
+  if isfield(raw_data, 'unitCell')
+    unitCellHint = {'unitCellHint', raw_data.unitCell};
+  end
+
+  ebsd = EBSD(raw_data.position, raw_data.rotation, raw_data.phase, raw_data.cs, prop, unitCellHint{:});
 
   % if a correction is set add
   if isfield(raw_data, 'map_correction')

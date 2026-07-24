@@ -139,7 +139,8 @@ classdef EBSD < phaseList & dynProp & dynOption
       if any(isnan(ebsd.pos)), ebsd = ebsd.subSet(~isnan(ebsd.pos)); end
 
       % get unit cell
-      ebsd = ebsd.updateUnitCell(get_option(varargin,'unitCell'));
+      ebsd = ebsd.updateUnitCell(get_option(varargin,'unitCell'),...
+        'hint',get_option(varargin,'unitCellHint'));
             
       ebsd.N = perp(ebsd.unitCell);
 

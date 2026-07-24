@@ -75,8 +75,21 @@ end
 % it is already captured by cs/CSList above)
 header = angHeaderStruct(hl(1:nh),phasePos);
 
+% hint the exact step size from the header, preferred over EBSD's own
+% position-based estimate (see EBSD/updateUnitCell)
+unitCellHint = {};
+if isfield(header,'XSTEP') && isfield(header,'YSTEP')
+  xs = header.XSTEP; ys = header.YSTEP;
+  if isfield(header,'GRID') && strcmpi(header.GRID,'HexGrid')
+    headerCell = vector3d([-xs/2,-xs/2,0,xs/2,xs/2,0],[-ys/3,ys/3,2*ys/3,ys/3,-ys/3,-2*ys/3],0);
+  else
+    headerCell = vector3d([xs,xs,-xs,-xs]/2,[-ys,ys,ys,-ys]/2,0);
+  end
+  unitCellHint = {'unitCellHint',headerCell};
+end
+
 if check_option(varargin,'headerOnly')
-  ebsd = emptyHeaderOnlyEBSD(cs,header);
+  ebsd = emptyHeaderOnlyEBSD(cs,header,unitCellHint{:});
   return
 end
 
@@ -158,10 +171,9 @@ ColumnNames = get_option(varargin,'ColumnNames',ColumnNames(1:length(isnum)));
   
 % import the data
 ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
-  'ColumnNames',ColumnNames,varargin{:},'header',nh,ReplaceExpr{:},'keepNaN');
+  'ColumnNames',ColumnNames,varargin{:},'header',nh,ReplaceExpr{:},'keepNaN',unitCellHint{:});
 
 ebsd.opt.header = header;
-
 
 % Explicitly non-indexed phases appear to have 4*pi for all Euler angles
 % which are filtered by loadHelper() already AND ci==-1.

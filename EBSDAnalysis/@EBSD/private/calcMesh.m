@@ -35,6 +35,20 @@ p0 = pos(1) + min(I) * u + min(J)*v;
 I = I - min(I);
 J = J - min(J);
 
+% refine the lattice basis by fitting p0,u,v to the actual measured
+% positions via least squares against the rough integer indices. The
+% unit-cell-derived (u,v) is only a statistical estimate (calcUnitCell
+% fits it from local point statistics), and even a tiny mismatch against
+% the true per-pixel step compounds over hundreds of grid steps, which
+% can displace far-away points by a large fraction of a cell and corrupt
+% the mesh built below.
+designMatrix = [ones(numel(I),1), I, J];
+posXYZ = [pos.x(:), pos.y(:), pos.z(:)];
+fit = designMatrix \ posXYZ;
+p0 = vector3d(fit(1,1),fit(1,2),fit(1,3));
+u  = vector3d(fit(2,1),fit(2,2),fit(2,3));
+v  = vector3d(fit(3,1),fit(3,2),fit(3,3));
+
 % ideal grid
 nI = max(I)+1; nJ = max(J)+1;
 [ii,jj] = ndgrid(1:nI,1:nJ);
@@ -84,8 +98,14 @@ function [u,v] = latticeBasis(uC)
 % primitive lattice vectors from a Voronoi-type unit cell (square or hex)
 
 % candidate nearest-neighbour vectors = 2 * (edge midpoint - center)
+% uC(:) always linearizes to a column, but uC(idx) for a vector uC keeps
+% uC's own row/column orientation regardless of idx's shape - so both
+% sides are forced to a column explicitly, or a row/column mismatch here
+% silently broadcasts into an nCorner x nCorner matrix instead of the
+% intended elementwise result
 c0  = mean(uC);
-mid = (uC(:) + uC([2:end 1].')) ./ 2;     % edge midpoints (closed polygon)
+shifted = uC([2:end 1]);
+mid = (uC(:) + shifted(:)) ./ 2;     % edge midpoints (closed polygon)
 g   = 2 .* (mid - c0);
 
 % sort candidates by length, then pick the two shortest independent ones

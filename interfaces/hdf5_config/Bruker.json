@@ -43,6 +43,11 @@
     },
     "header": {
       "group": {"mode": "search_root", "value": "Header"}
+    },
+    "unitCell": {
+      "type": "fromStep",
+      "step_size_x": { "mode": "search_root", "value": "XSTEP" },
+      "step_size_y": { "mode": "search_root", "value": "YSTEP" }
     }
   },
   "additions": {
