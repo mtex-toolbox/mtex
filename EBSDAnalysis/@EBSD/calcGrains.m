@@ -38,6 +38,11 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 % Flags
 %  unitCell - omit Voronoi decomposition and treat a unitcell lattice
 %  qhull    - use qHull for the Voronoi decomposition
+%  delaunay - use a true circumradius-based alpha-complex (exact, not a
+%             raster approximation) instead of the default morphological
+%             closing to partition the spatial domain - see
+%             spatialDecompositionAlpha.m. Useful for large alpha, where
+%             the default's disk structuring element gets slow.
 %
 % References
 %
@@ -68,7 +73,11 @@ ebsd.phaseId(removed) = 1;
 % F - list of faces
 % D - cell array of cells
 % I_FD - incidence matrix faces to vertices
-out = spatialDecompositionGrid(ebsd,varargin{:});
+if check_option(varargin,'delaunay')
+  out = spatialDecompositionAlpha(ebsd,varargin{:});
+else
+  out = spatialDecompositionGrid(ebsd,varargin{:});
+end
 V = out.V;
 F = out.F;
 I_FD = remapIFD(out,ebsd);
