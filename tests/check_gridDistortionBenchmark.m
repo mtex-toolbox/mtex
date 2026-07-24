@@ -31,11 +31,11 @@ function check_gridDistortionBenchmark(varargin)
 % checked only up to a realistic distortion level, not the full range
 % above, per the limitation documented in assignGridIndex.m.
 %
-% This checks ONLY ebsd.lattice.ij recovery, not grain reconstruction:
-% calcGrains has a separate, not yet fixed limitation under distortion,
-% documented in EBSDAnalysis/@EBSD/private/spatialDecompositionGrid.m -
-% correct ij recovery is necessary for correct grain reconstruction but,
-% currently, not sufficient.
+% This checks ONLY ebsd.lattice.ij recovery, not grain reconstruction -
+% correct ij recovery is necessary for correct grain reconstruction but not
+% sufficient on its own; see check_calcGrainsTransform for the
+% grain-reconstruction-level regression test (spatialDecompositionGrid's
+% cells2posId helper).
 %
 % Syntax
 %   check_gridDistortionBenchmark
