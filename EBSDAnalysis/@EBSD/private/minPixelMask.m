@@ -44,7 +44,12 @@ if strcmpi(minPixelMethod,'grid')
 else
   out0  = spatialDecompositionGrid(ebsd,varargin{:},'delaunayOnly');
   I_FD0 = remapIFD(out0,ebsd);
-  [~,I_DG0] = doSegmentation(I_FD0,ebsd,gbc,varargin{:});
+
+  % Boundary completion can only split these preliminary grains. Keeping the
+  % unsplit sizes is conservative (it cannot over-cull) and avoids running
+  % the same expensive max-flow problems again during the sizing pass.
+  segmentationOptions = delete_option(varargin,'completeBoundaries');
+  [~,I_DG0] = doSegmentation(I_FD0,out0.F,ebsd,gbc,segmentationOptions{:});
   gid0 = full(I_DG0 * (1:size(I_DG0,2)).');       % grain id per pixel (0 = none)
 end
 
