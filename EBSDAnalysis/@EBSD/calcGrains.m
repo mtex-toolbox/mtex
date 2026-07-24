@@ -36,7 +36,8 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %  custom    - use a custom property for grain separation
 %
 % Flags
-%  completeBoundaries - enforce detected boundaries by local minimum cuts
+%  completeBoundaries - enforce detected boundaries by local minimum cuts;
+%    enclosed inner-boundary fragments shorter than three segments are ignored
 %  unitCell - omit Voronoi decomposition and treat a unitcell lattice
 %  qhull    - use qHull for the Voronoi decomposition
 %  delaunay - use a true circumradius-based alpha-complex (exact, not a
@@ -84,7 +85,7 @@ F = out.F;
 I_FD = remapIFD(out,ebsd);
 
 % determine which cells to connect
-[A_Db,I_DG] = doSegmentation(I_FD,ebsd,gbc,varargin{:});
+[A_Db,I_DG] = doSegmentation(I_FD,F,ebsd,gbc,varargin{:});
 % A_db - neighboring cells with (inner) grain boundary
 % I_DG - incidence matrix cells to grains
 
