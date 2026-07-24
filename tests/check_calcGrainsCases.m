@@ -134,6 +134,52 @@ if numel(ebsdQP2.grainId) ~= numel(ebsdQP2)
     numel(ebsdQP2.grainId), numel(ebsdQP2));
 end
 
+%% completeBoundaries: close a one-edge bridge between two grains
+%
+% The two halves differ by 10 degrees, except for one neighboring pair at
+% the interface with orientations 4 and 6 degrees. With a 5 degree
+% threshold this single pair connects both halves under the standard
+% connected-component definition. Boundary completion must cut the bridge
+% and turn the otherwise inner boundary into an external grain boundary.
+
+n = 10;
+mid = n/2;
+bridgeRow = n/2;
+oriLeft = orientation.id(cs);
+oriRight = orientation.byAxisAngle(zvector,10*degree,cs);
+
+rot = rotation.id(n,n);
+rot(:,1:mid) = oriLeft;
+rot(:,mid+1:end) = oriRight;
+rot(bridgeRow,mid) = orientation.byAxisAngle(zvector,4*degree,cs);
+rot(bridgeRow,mid+1) = orientation.byAxisAngle(zvector,6*degree,cs);
+
+ebsdBridge = EBSDsquare([],rot,ones(size(rot)),1,{cs},'dxy',[1 1]);
+gConnected = calcGrains(ebsdBridge,'threshold',thr);
+gCompleted = calcGrains(ebsdBridge,'threshold',thr,'completeBoundaries');
+
+if length(gConnected) ~= 1
+  error('bridge case: standard reconstruction should return one grain, got %d', ...
+    length(gConnected));
+end
+
+if length(gConnected.innerBoundary) == 0
+  error('bridge case: standard reconstruction did not expose the inner boundary');
+end
+
+if length(gCompleted) ~= 2
+  error('bridge case: boundary completion should return two grains, got %d', ...
+    length(gCompleted));
+end
+
+if length(gCompleted.innerBoundary) ~= 0
+  error('bridge case: completed reconstruction still contains inner boundaries');
+end
+
+if any(sort(gCompleted.numPixel) ~= [50;50])
+  error('bridge case: expected two grains with 50 pixels each');
+end
+
 disp('calcGrains cases: all checks passed');
 
 end
