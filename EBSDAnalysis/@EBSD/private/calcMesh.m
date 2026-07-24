@@ -24,10 +24,25 @@ function [mesh,ind,model] = calcMesh(pos,uC,varargin)
 % --- lattice basis from the unit cell --------------------------------
 [u,v] = latticeBasis(uC);
 
-% rough index assignment
-IJ = double([u;v]) \ double(pos(:) - pos(1));
-I = round(IJ(1,:)).';
-J = round(IJ(2,:)).';
+% --- rough index assignment -------------------------------------------
+% pos typically arrives in the file's raster scan order (row-major or
+% column-major), preserved even through logical subsetting (masking only
+% leaves gaps, it never reorders what remains). Assign (I,J) by rounding
+% each point's displacement from its immediate predecessor and
+% accumulating, rather than rounding the (potentially large) offset from
+% a single common origin in one shot: a smooth but non-affine distortion
+% (e.g. a trapezoidal stage drift) can put a far-away point more than
+% half a cell from any single global (u,v) fit, flipping a one-shot
+% round() to the wrong integer and colliding two points onto the same
+% cell, while the step between two adjacent measurements never carries
+% more than a tiny fraction of that drift and so always rounds correctly.
+[I,J] = stepwiseIndex(pos,u,v);
+if hasIndexCollision(I,J)
+  % pos is not in scan order at all (e.g. explicitly re-sorted) - fall
+  % back to a single global fit, which is still exact for a genuinely
+  % rigid grid regardless of point order
+  [I,J] = globalIndex(pos,u,v);
+end
 
 % refine origin from assigned indices
 p0 = pos(1) + min(I) * u + min(J)*v;
@@ -91,6 +106,34 @@ mesh(known) = pos;
 if nargout == 3
   model = makeModel(p0,u,v,nI,nJ,def(known));
 end
+end
+
+% =========================================================================
+function [I,J] = stepwiseIndex(pos,u,v)
+% (I,J) from rounding each point's step from its predecessor, accumulated
+
+pos = pos(:);
+d = pos(2:end) - pos(1:end-1);
+dIJ = double([u;v]) \ double(d);
+I = [0; cumsum(round(dIJ(1,:)).')];
+J = [0; cumsum(round(dIJ(2,:)).')];
+end
+
+% =========================================================================
+function [I,J] = globalIndex(pos,u,v)
+% (I,J) from rounding each point's offset from a single common origin
+
+IJ = double([u;v]) \ double(pos(:) - pos(1));
+I = round(IJ(1,:)).';
+J = round(IJ(2,:)).';
+end
+
+% =========================================================================
+function tf = hasIndexCollision(I,J)
+% true if two points were assigned the same (I,J) cell
+
+key = (I - min(I)) + (max(I) - min(I) + 1) * (J - min(J));
+tf = numel(unique(key)) < numel(I);
 end
 
 % =========================================================================
