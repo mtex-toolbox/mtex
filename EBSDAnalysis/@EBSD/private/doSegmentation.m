@@ -9,7 +9,6 @@ function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,gbc,varargin)
 % Output
 %  I_DG - incidence matrix pixels -> grains
 %  A_Db - adjacency matrix of grain boundaries
-%  A_Do - adjacency matrix inside grain connections
 %
 
 % get pairs of neighboring cells {D_l,D_r} in A_D
@@ -42,8 +41,14 @@ A_Do = A_Do | A_Do.';
 % adjacency of cells that have a common boundary
 A_Db = A_Db | A_Db.';
 
+if check_option(varargin,'completeBoundaries')
+  [A_Do,A_Db,componentId] = completeBoundaryGraph(A_Do,A_Db);
+else
+  componentId = connectedComponents(A_Do);
+end
+
 % compute I_DG connected components of A_Do
 % I_DG - incidence matrix cells to grains
-I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
+I_DG = sparse(1:length(ebsd),double(componentId),1);
 
 end
