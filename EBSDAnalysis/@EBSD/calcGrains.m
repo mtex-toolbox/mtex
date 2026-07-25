@@ -61,12 +61,36 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 % TODO: we have to rotate everything to xy plane to do the reconstruction
 
 % extract grain boundary criterion
-gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
+%
+% A criterion object passed in always wins. Otherwise 'fmc' selects the
+% fast multiscale clustering criterion, as this function's own help and
+% GrainReconstructionAdvanced have documented all along - without this the
+% documented call silently fell through to plain angle thresholding and
+% returned a different segmentation without saying so.
+if check_option(varargin,{'fmc','FMC'})
+  gbc = getClass(varargin,'grainBoundaryCriterion',gbcFMC(varargin{:}));
+else
+  gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
+end
 
 % first pass:
 % mark pixels that would become grains smaller than minPixel as notIndexed
-removed = minPixelMask(ebsd,gbc,varargin{:});
-ebsd.phaseId(removed) = 1;    
+%
+% Criteria that enforce minPixel themselves are handed the value instead
+% and this pass is skipped: it is a second full segmentation, which for a
+% global criterion such as gbcFMC means running the whole clustering twice
+% only to find that it has already dealt with the undersized regions.
+if gbc.handlesMinPixel
+
+  minPixel = get_option(varargin,'minPixel',[]);
+  if ~isempty(minPixel), gbc = gbc.setMinPixel(minPixel); end
+
+else
+
+  removed = minPixelMask(ebsd,gbc,varargin{:});
+  ebsd.phaseId(removed) = 1;
+
+end
 
 % second pass: Voronoi decomposition
 % V - list of vertices
