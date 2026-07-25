@@ -1,25 +1,165 @@
 %% MTEX Changelog
 %
-%% MTEX 6.2 xx/2026
+%% MTEX 7.0 xx/2026
+%
+% *One Step Grain Reconstruction*
+%
+% Grain reconstruction has been rewritten into a single call that covers
+% small grain removal, alpha shapes and gridded as well as arbitrarily
+% placed data. The second output is the EBSD data with |grainId| assigned -
+% pixels that do not belong to any grain, i.e. not indexed pixels or pixels
+% of grains removed by |'minPixel'|, are marked by |grainId == 0|.
+%
+%   [grains, ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',5,'alpha',3)
+%
+% All boundary criteria are now objects of type @grainBoundaryCriterion
+% (|gbcAngle|, |gbcSoft|, |gbcFMC|, |gbcVariants|, |gbcCustom|) which makes
+% it easy to segment by any per pixel property
+%
+%   gbc = gbcCustom(ebsd.bc,10); % segment by band contrast
+%   grains = calcGrains(ebsd,gbc)
 %
 % *Boundary Characteristic Distribution*
 %
+% The command <grainBoundary.calcGBND.html |calcGBND|> estimates the
+% distribution of grain boundary normals, either in specimen or in crystal
+% coordinates, and for 2d as well as for 3d data
+%
+%   gB = grains.boundary('Fo','Fo');
+%   gbnd = calcGBND(gB,ebsd('Fo'))                    % crystal coordinates
+%   gbnd = calcGBND(gB,ebsd('Fo'),'halfwidth',10*degree)
+%   gbcd = calcGBND(gB,grains('Fo'),moriRef)          % for a fixed misorientation
+%   gbnd = calcGBND(grains3.boundary)                 % 3d, specimen coordinates
+%
 % *Much Better EBSD Import*
 %
-% * new import wizard for EBSD data
-% * improved interface for h5 data
-% * faster import
+% * new <import_wizard.html import wizard> with file browser, live preview
+% and script export - simply type |import_wizard|
+% * all HDF5 flavours (Bruker, EDAX, Oxford, ThermoFisher, ...) are handled
+% by one json driven interface <loadEBSD_h5.html |loadEBSD_h5|>
+% * reference frame corrections are unified across |ang|, |ctf|, |crc| and
+% |h5| files and stored in |ebsd.EulerCorrection|
+% * file header metadata is kept in |ebsd.opt.header|, and can be read
+% without importing the data at all
+% * faster import, automatic column and degree/radiant detection
+%
+%   ebsd = EBSD.load('data.h5')                  % no format guessing needed
+%   ebsd = EBSD.load('data.ang','setting',2)     % EDAX reference frame setting 1-4
+%   ebsd = EBSD.load('data.ctf','EulerCorrection',rotation.byEuler(pi,0,0))
+%   ebsd = EBSD.load('data.h5','headerOnly')     % phases and header only
 %
 % *Much Faster Plotting of EBSD Maps*
 %
+% EBSD and grain maps are drawn through three backends - |surf|, |patch|
+% and |imagesc|. Non hexagonal data now defaults to |surf|, which is orders
+% of magnitude faster than plotting one unit cell per pixel. Inverse pole
+% figure colors are precomputed via spherical lookup tables.
+%
+%   plot(ebsd,ebsd.orientation)                      % fast, default
+%   plot(ebsd,ebsd.orientation,'backend','patch')
+%   plot(ebsd,ebsd.orientation,'exact')              % exact unit cells
+%
+% The scale bar has been rewritten. It follows the plotting convention,
+% rescales while zooming, and takes options
+%
+%   plot(ebsd,'Location','nw','BackgroundColor','k','LineColor','w','Length',50)
+%
+% *Moving Least Squares Approximation*
+%
+% The new classes @S2FunMLS and @SO3FunMLS approximate scattered data on
+% the sphere and in orientation space by moving least squares. They support
+% vector valued data, outlier detection, smoothly varying support radii and
+% Voronoi weights.
+%
+%   sF = S2FunMLS(nodes,values,'degree',3)
+%   SO3F = SO3FunMLS(ori,values,'delta',5*degree,'detectOutliers')
+%   sF = interp(nodes,values,'MLS')
+%
 % *Optimal Sampling*
+%
+% The command <SO3Fun.optimalSample.html |optimalSample|> (formerly
+% |compactify|) replaces random sampling by an almost perfectly equally
+% distributed set of orientations or directions representing a given
+% function
+%
+%   ori = optimalSample(odf,10000)
+%   v   = optimalSample(sF,1000,'bandwidth',32)
 %
 % *Clustering*
 %
+% <orientation.calcCluster.html |calcCluster|> uses by default the
+% <https://github.com/nla-group/classix CLASSIX> algorithm, which is much
+% faster than hierarchical clustering and needs no number of clusters
+%
+%   [c,center] = calcCluster(ori)
+%   [c,center] = calcCluster(v,'method','hierarchical','numCluster',5)
+%
+% *Pseudo Symmetry Correction*
+%
+% <cleanUpPseudoSym.html |cleanUpPseudoSym|> detects grains that have been
+% split by pseudo symmetric indexing - using the tortuosity of the
+% separating boundary - and reassigns the affected pixels
+%
+%   [ebsd,grains] = cleanUpPseudoSym(ebsd,grains,mori,'threshold',1.5)
+%
+% *Iterative ODF Estimation*
+%
+% <PoleFigure.calcODFIterative.html |calcODFIterative|> inverts pole figure
+% data by iteratively adjusting the kernel width, which is much more robust
+% for irregularly sampled data
+%
+%   odf = calcODFIterative(pf,'halfwidth',5*degree)
+%
+% *Two Dimensional Color Keys*
+%
+% @planarColorKey encodes two scalar properties at once, the first one as
+% hue, the second one as saturation
+%
+%   cK = planarColorKey(winter,'colorModel','white');
+%   rgb = cK.property2color(grains.longAxis,grains.aspectRatio);
+%   plot(grains,rgb), plot(cK,'labeled')
+%
+% *Syntax Changes*
+%
+% * |[grains, ebsd] = calcGrains(ebsd)| - the second output replaces the
+% previous |ebsd.grainId = ...| assignment and updates |grainId|,
+% |phaseId| and |orientation|
+% * |ebsd.CSList| is not a cell array anymore but an array of
+% @crystalSymmetry and @notIndexed objects. In particular a not indexed
+% phase can now carry a name and a color
+%
+%   ebsd.CSList(1) = notIndexed('amorphous',[0.5 0.5 0.5])
+%
+% * the constructors |quaternion|, |rotation| and |orientation| only accept
+% the syntax |quaternion(a,b,c,d)|, |orientation(a,b,c,d,CS,SS)|. Use the
+% named constructors instead
+%
+%   v = vector3d.byPolar(theta,rho)     % instead of vector3d('polar',...)
+%   ori = orientation.byMatrix(M,cs)
+%
+% * symmetries are compared on three levels - |cs1 == cs2| checks for the
+% same object, |eqTol(cs1,cs2)| for the same Laue group and axes, and
+% |sim(cs1,cs2)| for the same lattice with possibly different alignment of
+% x, y, z
+%
 % *Minor*
-% 
-% * pseudosymmetry cleanup
-% * planar color key
+%
+% * <grain2d.refineBoundary.html |refineBoundary(grains,delta)|> subdivides
+% boundary segments to a given segment length
+% * <grain2d.merge.html |merge(grains,...,'maxPixel')|> takes the mean
+% orientation of the largest grain involved instead of averaging
+% * <doEulerStep.html |doEulerStep(odf,vF,dt,'implicit')|> provides an
+% implicit Euler scheme for texture evolution
+% * new spherical Fourier transform based on the double Fourier sphere
+% method, |NFSFT| is the default, bandwidths beyond 1023 are supported
+% * new class @progressCounter for progress display, |gridify(ebsd,'unitCell',uc)|
+% interpolates data onto another grid, |crystalSymmetry.default| for fast
+% default symmetries
+% * low level exponential and logarithm maps |expRight|, |logRight| on SO(3)
+% and S2, arithmetic |+,-,.*,./| for @SO3Kernel and @S2Kernel, derivatives
+% of @S1Fun
+% * |colorcet| perceptually uniform color maps, the flag |'zero2white'| for
+% color ranges, transparency in all scatter plots
 % * use UTF8 to display (11̅0) instead of (1-10). Requires a suitable font
 % like Julia Monospace.
 %
