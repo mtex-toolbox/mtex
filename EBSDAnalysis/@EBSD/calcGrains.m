@@ -36,7 +36,7 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %  custom    - use a custom property for grain separation
 %
 % Flags
-%  completeBoundaries - enforce detected boundaries by local minimum cuts;
+%  completeBoundaries - extend detected boundaries to non-inner boundaries;
 %    enclosed inner-boundary fragments shorter than three segments are ignored
 %  unitCell - omit Voronoi decomposition and treat a unitcell lattice
 %  qhull    - use qHull for the Voronoi decomposition
