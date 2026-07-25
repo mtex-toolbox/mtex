@@ -236,6 +236,10 @@ if length(gNoise) ~= 2 || length(gNoise.innerBoundary) ~= 0
   error(['noise case: an enclosed three-segment boundary must be retained ' ...
     'and completed']);
 end
+if any(gNoise.numPixel == 1)
+  error(['noise case: boundary completion must extend to non-inner ' ...
+    'boundaries instead of closing a loop around the centre pixel']);
+end
 
 %% completeBoundaries: retain a short fragment that reaches the map boundary
 
