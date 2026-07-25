@@ -1,26 +1,27 @@
 function [A_Do,A_Db,componentId] = completeBoundaryGraph(A_Do,A_Db,I_FD,F)
-% extend inner boundaries by recursively applying local minimum cuts
+% extend inner boundaries to existing non-inner boundaries
 %
 % Input
-%  A_Do - weighted adjacency of connected pixels
+%  A_Do - logical adjacency of connected pixels
 %  A_Db - logical adjacency of pixel pairs marked as grain boundaries
 %  I_FD - incidence matrix faces -> pixels
 %  F    - vertex ids of the boundary segments
 %
 % Output
 %  A_Do        - connectivity after the additional cuts
-%  A_Db        - original and additionally introduced boundary edges
+%  A_Db        - retained and additionally introduced boundary edges
 %  componentId - connected component of every pixel
 %
-% A boundary edge is inner if its incident pixels are connected by an
-% alternative path in A_Do. For each affected component this function
-% repeatedly separates the endpoints of one such edge by a minimum cut.
-% Every cut strictly increases the number of components, and hence the
-% procedure terminates with no inner boundary edges.
+% The Voronoi segments form the planar dual of the pixel adjacency graph.
+% Retained inner-boundary segments are extended through this dual graph until
+% every free end reaches an existing non-inner boundary. An augmentation may
+% connect different boundary components, but never two ends of the same
+% component. Hence newly introduced segments cannot close into an isolated
+% loop around a pixel.
 %
-% The individual binary cuts are optimal with respect to the weights in
-% A_Do. The sequence of cuts is a greedy multicut approximation; it is not
-% a globally optimal solution of the multicut problem.
+% Every augmentation uses the smallest available number of new segments.
+% The sequence of shortest paths is greedy; it is not a globally optimal
+% Steiner forest.
 %
 % Isolated inner-boundary components with fewer than three segments are
 % ignored. They usually originate from individual noisy pixels. Segment
@@ -29,238 +30,331 @@ function [A_Do,A_Db,componentId] = completeBoundaryGraph(A_Do,A_Db,I_FD,F)
 
 n = size(A_Do,1);
 
-% A boundary is a hard separation constraint. This is relevant for soft or
-% low-angle criteria, for which an edge can currently occur in both graphs.
+% A detected boundary is initially a hard separation constraint. This is
+% relevant for soft criteria, for which an edge can occur in both graphs.
 A_Do = A_Do - A_Do .* A_Db;
-
-[bdI,bdJ] = find(triu(A_Db,1));
 componentId = connectedComponents(A_Do);
+componentColumn = componentId(:);
 
-if isempty(bdI), return; end
+topology = faceIncidence(I_FD);
+if isempty(topology.pair), return; end
 
-isInner = componentId(bdI) == componentId(bdJ);
+pairIndex = sub2ind(size(A_Db),topology.pair(:,1),topology.pair(:,2));
+isBoundary = full(A_Db(pairIndex)) ~= 0;
+isInner = isBoundary & ...
+  componentColumn(topology.pair(:,1)) == componentColumn(topology.pair(:,2));
 if ~any(isInner), return; end
 
-% Remove short, enclosed boundary fragments before running any max-flow.
-% Apart from suppressing pixel noise this is important for performance:
-% every ignored fragment avoids a potentially grain-sized flow problem.
-[ignoreI,ignoreJ] = shortIsolatedBoundaries(A_Db,componentId,I_FD,F);
-if ~isempty(ignoreI)
-  ignored = sparse([ignoreI;ignoreJ],[ignoreJ;ignoreI],true,n,n);
+% Suppress short enclosed fragments before constructing any shortest-path
+% problem. Ignored faces become ordinary within-grain connections.
+ignoreRow = shortIsolatedBoundaryRows(topology,F,isBoundary,isInner, ...
+  componentColumn);
+if ~isempty(ignoreRow)
+  ignoredPair = topology.pair(ignoreRow,:);
+  ignored = sparse([ignoredPair(:,1);ignoredPair(:,2)], ...
+    [ignoredPair(:,2);ignoredPair(:,1)],true,n,n);
   A_Db = A_Db - A_Db .* ignored;
-
-  % Treat an ignored fragment as ordinary within-grain connectivity. This
-  % is also the intended behaviour for a hard (zero-connectivity) criterion.
   A_Do = A_Do | ignored;
 
-  [bdI,bdJ] = find(triu(A_Db,1));
-  isInner = componentId(bdI) == componentId(bdJ);
+  isBoundary = full(A_Db(pairIndex)) ~= 0;
+  isInner = isBoundary & ...
+    componentColumn(topology.pair(:,1)) == componentColumn(topology.pair(:,2));
   if ~any(isInner), return; end
 end
 
-% Collect only the affected pixels in linear time. Sorting all component ids
-% used to be noticeable for multi-million-pixel maps.
-affectedId = unique(componentId(bdI(isInner)));
-affectedLookup = zeros(n,1,'uint32');
-affectedLookup(affectedId) = uint32(1:numel(affectedId));
-affectedPosition = affectedLookup(componentId(:));
-affectedPixel = find(affectedPosition);
-pixelGroups = accumarray(double(affectedPosition(affectedPixel)),affectedPixel, ...
-  [numel(affectedId),1],@(x) {x});
+addedFaceId = anchoredBoundaryFaces(A_Do,isBoundary,isInner, ...
+  componentColumn,topology,F);
 
-cutI = cell(numel(affectedId),1);
-cutJ = cell(numel(affectedId),1);
+if ~isempty(addedFaceId)
+  pairRowOfFace = zeros(size(F,1),1,'uint32');
+  pairRowOfFace(topology.pairFaceId) = uint32(1:size(topology.pair,1));
+  addedRow = double(pairRowOfFace(addedFaceId));
+  if any(addedRow == 0)
+    error('MTEX:calcGrains:boundaryCompletionFailed', ...
+      'A completed boundary contains a face without two incident pixels.');
+  end
 
-for k = 1:numel(affectedId)
-  pixels = pixelGroups{k};
-
-  A = A_Do(pixels,pixels);
-  B = A_Db(pixels,pixels);
-  [dI,dJ] = find(triu(B,1));
-
-  [localI,localJ] = completeComponent(A,dI,dJ);
-  cutI{k} = pixels(localI);
-  cutJ{k} = pixels(localJ);
-end
-
-cutI = vertcat(cutI{:});
-cutJ = vertcat(cutJ{:});
-
-if ~isempty(cutI)
-  added = sparse([cutI;cutJ],[cutJ;cutI],true,n,n);
+  addedPair = unique(sort(topology.pair(addedRow,:),2),'rows');
+  added = sparse([addedPair(:,1);addedPair(:,2)], ...
+    [addedPair(:,2);addedPair(:,1)],true,n,n);
   A_Do = A_Do - A_Do .* added;
   A_Db = A_Db | added;
-  componentId = connectedComponents(A_Do);
 end
 
+componentId = connectedComponents(A_Do);
+[bdI,bdJ] = find(triu(A_Db,1));
 if any(componentId(bdI) == componentId(bdJ))
   error('MTEX:calcGrains:boundaryCompletionFailed', ...
-    'Boundary completion left an inner grain-boundary constraint.');
+    ['Boundary completion could not anchor every retained inner boundary ' ...
+    'at non-inner boundaries.']);
 end
 
 end
 
 % -------------------------------------------------------------------------
-function [cutI,cutJ] = completeComponent(A,dI,dJ)
-% complete all boundary constraints within one initially connected component
+function topology = faceIncidence(I_FD)
+% extract paired and single-pixel faces from a sparse face incidence matrix
 
-n = size(A,1);
-numDemands = numel(dI);
-cutI = cell(numDemands,1);
-cutJ = cell(numDemands,1);
-numCuts = 0;
-
-% Each queue entry is already connected and contains only constraints whose
-% endpoints lie in that block. After a cut, only child blocks with unresolved
-% constraints are queued. Thus later max-flow and component computations run
-% on progressively smaller graphs rather than repeatedly on the original
-% grain.
-nodeQueue = cell(2*numDemands+1,1);
-demandQueue = cell(2*numDemands+1,1);
-nodeQueue{1} = (1:n).';
-demandQueue{1} = (1:numDemands).';
-head = 1;
-tail = 1;
-blockPosition = zeros(n,1);
-
-while head <= tail
-  nodes = nodeQueue{head};
-  demands = demandQueue{head};
-  head = head + 1;
-
-  numNodes = numel(nodes);
-  blockPosition(nodes) = 1:numNodes;
-  posI = blockPosition(dI(demands));
-  posJ = blockPosition(dJ(demands));
-  ABlock = A(nodes,nodes);
-
-  % Prefer a constraint whose endpoints are well connected to their
-  % surroundings. This reduces the tendency of an unconstrained s-t cut to
-  % isolate a single boundary pixel.
-  degree = full(sum(ABlock,2));
-  score = min(degree(posI),degree(posJ));
-  [~,iBest] = max(score);
-  source = posI(iBest);
-  target = posJ(iBest);
-
-  [edgeI,edgeJ,weight] = find(triu(ABlock,1));
-  G = graph(double(edgeI),double(edgeJ),double(weight),numNodes);
-  [~,~,sourceNodes] = maxflow(G,source,target);
-
-  sourceSide = false(numNodes,1);
-  sourceSide(sourceNodes) = true;
-  isCut = sourceSide(edgeI) ~= sourceSide(edgeJ);
-
-  if ~any(isCut)
-    error('MTEX:calcGrains:boundaryCompletionFailed', ...
-      'Could not separate an inner grain-boundary constraint.');
-  end
-
-  numCuts = numCuts + 1;
-  cutI{numCuts} = nodes(edgeI(isCut));
-  cutJ{numCuts} = nodes(edgeJ(isCut));
-
-  % Split only the two sides of this cut. The source side is normally
-  % connected already; connectedComponents also handles the rare case in
-  % which the other side contains several components.
-  for onSourceSide = [true false]
-    demandOnSide = sourceSide(posI) == onSourceSide & ...
-      sourceSide(posJ) == onSourceSide;
-    if ~any(demandOnSide), continue; end
-
-    childLocal = find(sourceSide == onSourceSide);
-    childComponent = connectedComponents(ABlock(childLocal,childLocal));
-
-    componentInBlock = zeros(numNodes,1);
-    componentInBlock(childLocal) = childComponent;
-    demandComponent = componentInBlock(posI(demandOnSide));
-    sameComponent = demandComponent == componentInBlock(posJ(demandOnSide));
-    if ~any(sameComponent), continue; end
-
-    childDemands = demands(demandOnSide);
-    childDemands = childDemands(sameComponent);
-    demandComponent = demandComponent(sameComponent);
-
-    componentIds = unique(demandComponent);
-    for iComponent = 1:numel(componentIds)
-      cId = componentIds(iComponent);
-      tail = tail + 1;
-      nodeQueue{tail} = nodes(childLocal(childComponent == cId));
-      demandQueue{tail} = childDemands(demandComponent == cId);
-    end
-  end
-end
-
-cutI = vertcat(cutI{1:numCuts});
-cutJ = vertcat(cutJ{1:numCuts});
-
-end
-
-% -------------------------------------------------------------------------
-function [ignoreI,ignoreJ] = shortIsolatedBoundaries(A_Db,componentId,I_FD,F)
-% find enclosed inner-boundary components with fewer than three segments
-
-ignoreI = zeros(0,1);
-ignoreJ = zeros(0,1);
-componentId = componentId(:);
-
-nFaces = size(I_FD,1);
-if nFaces == 0 || size(F,1) ~= nFaces || size(F,2) ~= 2, return; end
-
-% Extract paired and single-pixel faces directly from the sparse incidence
-% list. Avoiding a dense nFaces-by-2 array matters for large maps.
 I_FDt = I_FD.';
 [pixelId,faceId] = find(I_FDt);
-if isempty(faceId), return; end
+
+if isempty(faceId)
+  topology.pairFaceId = zeros(0,1);
+  topology.pair = zeros(0,2);
+  topology.singleFaceId = zeros(0,1);
+  topology.singlePixel = zeros(0,1);
+  return;
+end
 
 sameAsPrevious = [false; faceId(2:end) == faceId(1:end-1)];
 sameAsNext = [faceId(1:end-1) == faceId(2:end); false];
-pairFaceId = faceId(sameAsPrevious);
-pair = [pixelId(sameAsNext),pixelId(sameAsPrevious)];
-singleFaceId = faceId(~sameAsPrevious & ~sameAsNext);
 
-pairIndex = sub2ind(size(A_Db),pair(:,1),pair(:,2));
-isBoundary = full(A_Db(pairIndex)) ~= 0;
-isInner = isBoundary & ...
-  componentId(pair(:,1)) == componentId(pair(:,2));
-if ~any(isInner), return; end
+topology.pairFaceId = faceId(sameAsPrevious);
+topology.pair = [pixelId(sameAsNext),pixelId(sameAsPrevious)];
+isSingle = ~sameAsPrevious & ~sameAsNext;
+topology.singleFaceId = faceId(isSingle);
+topology.singlePixel = pixelId(isSingle);
 
-innerFaceId = pairFaceId(isInner);
+end
+
+% -------------------------------------------------------------------------
+function ignoreRow = shortIsolatedBoundaryRows(topology,F,isBoundary, ...
+  isInner,componentId)
+% find enclosed inner-boundary components with fewer than three segments
+
+innerRow = find(isInner);
+innerFaceId = topology.pairFaceId(innerRow);
 innerSegments = double(F(innerFaceId,:));
-if any(innerSegments(:) < 1), return; end
 
-% Boundary segments are connected exactly when their rows in F share a
-% Voronoi vertex. Only the (usually small) set of inner segments enters this
-% sparse product.
+if isempty(innerSegments) || any(innerSegments(:) < 1)
+  ignoreRow = zeros(0,1);
+  return;
+end
+
 numInner = numel(innerFaceId);
-numVertices = double(max(F(:)));
-I_VB = sparse(innerSegments(:),[(1:numInner).';(1:numInner).'], ...
-  true,numVertices,numInner);
+[~,~,innerVertexGroup] = unique(innerSegments(:));
+I_VB = sparse(innerVertexGroup,[(1:numInner).';(1:numInner).'], ...
+  true,max(innerVertexGroup),numInner);
 boundaryComponent = connectedComponents(I_VB.' * I_VB);
 boundaryComponent = boundaryComponent(:);
 
-% Existing inter-grain boundaries and the exterior of the measured map both
-% count as outer boundaries.
 isOuterPair = isBoundary & ...
-  componentId(pair(:,1)) ~= componentId(pair(:,2));
-outerFaceId = [singleFaceId;pairFaceId(isOuterPair)];
-
-outerVertex = false(numVertices,1);
+  componentId(topology.pair(:,1)) ~= componentId(topology.pair(:,2));
+outerFaceId = [topology.singleFaceId;topology.pairFaceId(isOuterPair)];
 outerSegments = double(F(outerFaceId,:));
-outerSegments = outerSegments(outerSegments > 0);
-outerVertex(outerSegments) = true;
-touchesOuter = any(outerVertex(innerSegments),2);
+outerVertex = unique(outerSegments(outerSegments > 0));
+touchesOuter = any(ismember(innerSegments,outerVertex),2);
 
 numComponents = max(boundaryComponent);
-componentSize = accumarray(boundaryComponent(:),1,[numComponents 1]);
-componentTouchesOuter = accumarray(boundaryComponent(:),touchesOuter, ...
+componentSize = accumarray(boundaryComponent,ones(size(boundaryComponent)), ...
+  [numComponents 1]);
+componentTouchesOuter = accumarray(boundaryComponent,touchesOuter, ...
   [numComponents 1],@(x) any(x),false);
 
 ignore = componentSize(boundaryComponent) < 3 & ...
   ~componentTouchesOuter(boundaryComponent);
-innerPairs = pair(isInner,:);
-ignoredPairs = unique(sort(innerPairs(ignore,:),2),'rows');
-ignoreI = ignoredPairs(:,1);
-ignoreJ = ignoredPairs(:,2);
+ignoreRow = innerRow(ignore);
+
+end
+
+% -------------------------------------------------------------------------
+function addedFaceId = anchoredBoundaryFaces(A_Do,isBoundary,isInner, ...
+  componentId,topology,F)
+% complete each affected grain in the dual boundary-segment graph
+
+pairIndex = sub2ind(size(A_Do),topology.pair(:,1),topology.pair(:,2));
+isConnected = full(A_Do(pairIndex)) ~= 0;
+pairComponent1 = componentId(topology.pair(:,1));
+pairComponent2 = componentId(topology.pair(:,2));
+
+affectedId = unique(pairComponent1(isInner));
+addedByComponent = cell(numel(affectedId),1);
+
+for iComponent = 1:numel(affectedId)
+  gId = affectedId(iComponent);
+
+  innerRow = find(isInner & pairComponent1 == gId);
+  innerFaceId = topology.pairFaceId(innerRow);
+
+  candidateRow = find(isConnected & pairComponent1 == gId & ...
+    pairComponent2 == gId);
+  candidateFaceId = topology.pairFaceId(candidateRow);
+
+  isOuterPair = isBoundary & ...
+    ((pairComponent1 == gId) ~= (pairComponent2 == gId));
+  isOuterSingle = componentId(topology.singlePixel) == gId;
+  outerFaceId = [topology.pairFaceId(isOuterPair); ...
+    topology.singleFaceId(isOuterSingle)];
+  outerVertex = unique(double(F(outerFaceId,:)));
+  outerVertex = outerVertex(outerVertex > 0);
+
+  addedByComponent{iComponent} = completeBoundaryNetwork(F,innerFaceId, ...
+    candidateFaceId,outerVertex);
+end
+
+addedFaceId = vertcat(addedByComponent{:});
+
+end
+
+% -------------------------------------------------------------------------
+function addedFaceId = completeBoundaryNetwork(F,boundaryFaceId, ...
+  candidateFaceId,outerVertex)
+% join every non-outer boundary endpoint to a different network or the outer
+
+originalFaceId = boundaryFaceId;
+addedFaceId = zeros(0,1);
+
+while true
+  [faceComponent,endPoint,endPointComponent,boundaryVertex, ...
+    boundaryVertexComponent] = boundaryNetworkInfo(F,boundaryFaceId);
+
+  isOuterEnd = ismember(endPoint,outerVertex);
+  freeEnd = endPoint(~isOuterEnd);
+  freeEndComponent = endPointComponent(~isOuterEnd);
+
+  if isempty(freeEnd)
+    numComponents = max(faceComponent);
+    numEnds = accumarray(endPointComponent,ones(size(endPointComponent)), ...
+      [numComponents 1]);
+    if any(numEnds == 0)
+      error('MTEX:calcGrains:boundaryCompletionLoop', ...
+        ['A retained inner boundary forms a closed loop that cannot be ' ...
+        'anchored without connecting the boundary to itself.']);
+    end
+    break;
+  end
+
+  bestLength = inf;
+  bestPathFace = zeros(0,1);
+
+  % Choose the globally shortest admissible next augmentation. Targets may
+  % be outer-boundary vertices or free ends of a different boundary network.
+  for iEnd = 1:numel(freeEnd)
+    source = freeEnd(iEnd);
+    sourceComponent = freeEndComponent(iEnd);
+    sourceBoundaryVertex = ...
+      boundaryVertex(boundaryVertexComponent == sourceComponent);
+
+    outerTarget = outerVertex(~ismember(outerVertex,sourceBoundaryVertex));
+    otherEndTarget = endPoint(endPointComponent ~= sourceComponent);
+    target = unique([outerTarget;otherEndTarget]);
+    if isempty(target), continue; end
+
+    [pathFaceId,pathLength] = shortestBoundaryPath(F,candidateFaceId, ...
+      source,target,boundaryVertex);
+
+    if pathLength < bestLength
+      bestLength = pathLength;
+      bestPathFace = pathFaceId;
+    end
+  end
+
+  if isempty(bestPathFace)
+    error('MTEX:calcGrains:boundaryCompletionFailed', ...
+      ['Could not extend a free inner-boundary end to a different boundary ' ...
+      'network or a non-inner boundary.']);
+  end
+
+  boundaryFaceId = [boundaryFaceId;bestPathFace];
+  addedFaceId = [addedFaceId;bestPathFace]; %#ok<AGROW>
+
+  used = ismember(candidateFaceId,bestPathFace);
+  candidateFaceId(used) = [];
+end
+
+% Every returned face is an actual addition, even if input data contained
+% duplicate segment ids.
+addedFaceId = setdiff(unique(addedFaceId),originalFaceId,'stable');
+
+end
+
+% -------------------------------------------------------------------------
+function [faceComponent,endPoint,endPointComponent,boundaryVertex, ...
+  boundaryVertexComponent] = boundaryNetworkInfo(F,boundaryFaceId)
+% components and free ends of the current boundary-segment network
+
+segments = double(F(boundaryFaceId,:));
+numFaces = numel(boundaryFaceId);
+[boundaryVertex,~,vertexGroup] = unique(segments(:));
+I_VB = sparse(vertexGroup,[(1:numFaces).';(1:numFaces).'], ...
+  true,numel(boundaryVertex),numFaces);
+faceComponent = connectedComponents(I_VB.' * I_VB);
+faceComponent = faceComponent(:);
+
+vertexDegree = accumarray(vertexGroup,1);
+boundaryVertexComponent = accumarray(vertexGroup, ...
+  [faceComponent;faceComponent],[],@max);
+
+isEnd = vertexDegree == 1;
+endPoint = boundaryVertex(isEnd);
+endPointComponent = boundaryVertexComponent(isEnd);
+
+end
+
+% -------------------------------------------------------------------------
+function [pathFaceId,pathLength] = shortestBoundaryPath(F,candidateFaceId, ...
+  source,target,boundaryVertex)
+% shortest candidate-face path from source to any admissible target
+
+pathFaceId = zeros(0,1);
+pathLength = inf;
+if isempty(candidateFaceId), return; end
+
+candidateSegments = double(F(candidateFaceId,:));
+[~,~,localId] = unique([candidateSegments(:,1);candidateSegments(:,2); ...
+  boundaryVertex(:);target(:);source]);
+numCandidate = size(candidateSegments,1);
+numBoundaryVertex = numel(boundaryVertex);
+numTarget = numel(target);
+
+localI = localId(1:numCandidate);
+localJ = localId(numCandidate+1:2*numCandidate);
+boundaryLocal = localId(2*numCandidate+1: ...
+  2*numCandidate+numBoundaryVertex);
+targetLocal = localId(2*numCandidate+numBoundaryVertex+1: ...
+  2*numCandidate+numBoundaryVertex+numTarget);
+sourceLocal = localId(end);
+
+blocked = false(max(localId),1);
+blocked(boundaryLocal) = true;
+blocked(sourceLocal) = false;
+blocked(targetLocal) = false;
+active = ~blocked(localI) & ~blocked(localJ);
+if ~any(active), return; end
+
+activeFaceId = candidateFaceId(active);
+localI = localI(active);
+localJ = localJ(active);
+
+% The local ids above avoid graph objects with millions of isolated vertices
+% when only one grain of a large EBSD map is affected.
+superTarget = max(localId) + 1;
+
+G = graph([localI;targetLocal],[localJ; ...
+  repmat(superTarget,numel(targetLocal),1)],[],superTarget);
+[pathLocal,pathLength] = shortestpath(G,sourceLocal,superTarget, ...
+  'Method','unweighted');
+if isempty(pathLocal) || ~isfinite(pathLength), return; end
+
+pathLocal(end) = []; % remove the artificial super-target
+pathLength = pathLength - 1;
+if numel(pathLocal) < 2
+  pathLength = inf;
+  return;
+end
+
+numLocalVertices = max(localId);
+edgeKey = double(min(localI,localJ)-1) * numLocalVertices + ...
+  double(max(localI,localJ));
+pathKey = double(min(pathLocal(1:end-1),pathLocal(2:end))-1) * ...
+  numLocalVertices + double(max(pathLocal(1:end-1),pathLocal(2:end)));
+[isCandidate,pathPosition] = ismember(pathKey,edgeKey);
+if ~all(isCandidate)
+  pathFaceId = zeros(0,1);
+  pathLength = inf;
+  return;
+end
+
+pathFaceId = activeFaceId(pathPosition);
 
 end
