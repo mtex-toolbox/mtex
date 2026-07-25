@@ -6,11 +6,15 @@ classdef gbcFMC < grainBoundaryCriterion
 % the adjacency from (i,j), runs FMC, and reports for each pair whether both
 % endpoints ended up in the same (non-zero) cluster.
 %
+% Each indexed phase is clustered separately, on its own pixels and with its
+% own symmetry, so a pair straddling a phase boundary is always a boundary.
+%
 % Syntax
 %
 %   criterion = gbcFMC(cmaha);
 %   criterion = gbcFMC('cmaha',3,'quatmax',5);
 %   grains = calcGrains(ebsd,'fmc',3.8);
+%   grains = calcGrains(ebsd,'fmc',3.8,'verbose');   % report the hierarchy
 %   out = criterion.eval(ebsd,i,j);
 %
 % Output
@@ -74,6 +78,10 @@ classdef gbcFMC < grainBoundaryCriterion
 %   maxDelta- misorientation above which an edge is CUT, degree (Inf)
 %   minPixel- regions below this size are absorbed into a neighbour (1)
 %
+% Flags
+%   verbose - report the coarsening hierarchy, see FMC_report. Off by
+%             default; the run itself says nothing.
+%
 % Measured on tests/EBSDGrainBenchmark, five map realisations per level,
 % against the same benchmark run on the pre-2026-07-25 implementation:
 %
@@ -107,12 +115,12 @@ classdef gbcFMC < grainBoundaryCriterion
 %     constants fixed in FMC_Coarsen rather than user options; quatmax is
 %     what to turn if the band is in the wrong place. On very clean data
 %     the floor is what does the work - see the measurements there.
-%   * on data/EBSD/EMSphinx.h5 (485k px, noise 0.11 degree) FMC returns
-%     about 2100 grains at cmaha 0.5, or about 1500 with minPixel 5. Small
-%     enclosed grains are what minPixel is for: it takes them from 252 to
-%     72. Lowering cmaha below about 0.5 does very little on this data,
-%     because what limits merging there is the outlier radius, not the
-%     rebias.
+%   * on mtexdata EMSphinx, the austenite phase alone (478k px, noise
+%     0.075 degree), FMC at cmaha 0.5 returns 1705 grains, or 1293 with
+%     minPixel 5 - which is what minPixel is for, since it takes the grains
+%     below 5 pixels from 393 to 1. Lowering cmaha below about 0.5 does
+%     little on this data (1204 grains at 0.25), because what limits merging
+%     there is the outlier radius, not the rebias.
 %   * boundary localisation degrades at low angle: at 1 degree only about
 %     38 % of the boundary lands on exactly the right pixel (mean offset
 %     1.0 px), while at 5 degree and above it is essentially exact.
@@ -216,8 +224,9 @@ properties
   % The cost is on the low angle boundaries, which is exactly what this
   % criterion exists to find: level 2 stops detecting all the 1 degree
   % boundaries. Real maps gain grains too - forsterite 2372 -> 2464,
-  % EMSphinx 2211 -> 2410. Worth it on twinned material, not in general,
-  % hence the default.
+  % EMSphinx 2211 -> 2410 (that pair with all phases in one graph, i.e.
+  % before doEvaluate split them). Worth it on twinned material, not in
+  % general, hence the default.
   %
   % Of what remains at 15 degree, most is not a failure at all: for 5 of
   % the 9 affected grains, cutting EVERY edge above 15 degree inside them
@@ -252,6 +261,13 @@ properties
   % capability this criterion exists for - use it when twins matter more.
   gammaW  = 10
 
+  % report the coarsening hierarchy - one line per scale, plus what the
+  % interpretation made of it - once the run has finished, see FMC_report.
+  % Off by default: calcGrains is silent for every other criterion, and a
+  % criterion that narrates itself is unusable inside anything that calls it
+  % repeatedly, e.g. a parameter sweep or the benchmark.
+  verbose = false
+
 end
 
 methods
@@ -268,6 +284,7 @@ methods
     obj.maxDelta= get_option(varargin,{'maxDelta'},obj.maxDelta,'double');
     obj.minPixel= get_option(varargin,{'minPixel'},obj.minPixel,'double');
     obj.alpha   = get_option(varargin,{'alpha'},  obj.alpha,  'double');
+    obj.verbose = check_option(varargin,'verbose');
   end
 
   function tf = handlesMinPixel(obj) %#ok<MANU>
@@ -287,10 +304,53 @@ methods (Access = protected)
 
   function out = doEvaluate(obj,ebsd,i,j)
 
-    q  = ebsd.rotations;
-    CS = ebsd.CSList(ebsd.indexedPhasesId(1));   % primary indexed phase
+    % One clustering per indexed phase, on the pixels of that phase alone.
+    %
+    % A phase boundary is a grain boundary whatever the orientations on
+    % either side happen to be, and the misorientation between them is not
+    % even defined - the two lie in different symmetry groups. gbcAngle has
+    % always compared within a phase for exactly that reason; FMC threw
+    % every pixel into one graph and read the whole map with the symmetry of
+    % the first indexed phase, so on a multi phase map it could grow one
+    % aggregate across a phase boundary.
+    %
+    % Clustering the phases separately, rather than merely cutting the
+    % edges between them, is what gets the symmetry right - and it costs
+    % nothing, since the phases partition the pixels.
 
-    A_D = sparse(double(i),double(j),true,length(q),length(q));
+    out   = zeros(size(i));
+    phase = ebsd.phaseId;
+
+    for p = ebsd.indexedPhasesId
+
+      pair = phase(i) == p & phase(j) == p;
+      if ~any(pair), continue; end
+
+      isP = phase == p;
+
+      % pixel id -> position within this phase
+      loc = zeros(length(ebsd),1);
+      loc(isP) = 1:nnz(isP);
+
+      ip = loc(i(pair));
+      jp = loc(j(pair));
+
+      label = obj.clusterPhase(ebsd,isP,ip,jp,ebsd.CSList(p));
+
+      out(pair) = double(label(ip) == label(jp) & label(ip) > 0);
+
+    end
+
+    out = reshape(out,size(i));
+  end
+
+  function label = clusterPhase(obj,ebsd,isP,i,j,CS)
+    % run FMC on the pixels isP of one phase, over the pair list (i,j)
+
+    q = ebsd.rotations(isP);
+    N = length(q);
+
+    A_D = sparse(double(i),double(j),true,N,N);
 
     fmc.CS = CS;
     fmc.O  = q;
@@ -299,9 +359,9 @@ methods (Access = protected)
     % deformed grain from a noisy one. Without usable coordinates the
     % linear model degenerates to the constant one, which is the old
     % behaviour, so this stays optional rather than being a requirement.
-    pos = [ebsd.x(:) ebsd.y(:)];
-    if numel(pos) ~= 2*length(q) || ~all(isfinite(pos(:)))
-      pos = zeros(length(q),2);
+    pos = [reshape(ebsd.x(isP),[],1) reshape(ebsd.y(isP),[],1)];
+    if numel(pos) ~= 2*N || ~all(isfinite(pos(:)))
+      pos = zeros(N,2);
     end
     fmc.pos = pos;
 
@@ -310,9 +370,9 @@ methods (Access = protected)
     % every pixel underneath an aggregate rather than to its handful of
     % direct members, and the gradient fitted from them. A single pixel has
     % no spread, so both start at zero.
-    fmc.M = zeros(length(q),10);
-    fmc.QvarTot = zeros(length(q),1);
-    fmc.G = zeros(length(q),6);
+    fmc.M = zeros(N,10);
+    fmc.QvarTot = zeros(N,1);
+    fmc.G = zeros(N,6);
 
     fmc.cmaha    = obj.cmaha;
     fmc.cmaha0   = obj.cmaha0;
@@ -323,11 +383,12 @@ methods (Access = protected)
     fmc.alpha    = obj.alpha;
     fmc.A_D      = A_D;
 
-    [AllPs,AllSals,numClusters,W0] = FMC_MTEX(fmc);
-    assignments = FMC_interpret(AllSals, numClusters, AllPs, A_D, obj.minPixel, W0);
+    [AllPs,AllSals,numClusters,W0,rep] = FMC_MTEX(fmc);
+    [assignments,rep2] = FMC_interpret(AllSals, numClusters, AllPs, A_D, obj.minPixel, W0);
 
-    out = double(assignments(i,1) == assignments(j,1) & assignments(i,1) > 0);
-    out = reshape(out,size(i));
+    if obj.verbose, FMC_report(obj,CS.mineral,numClusters,rep,rep2); end
+
+    label = assignments(:,1);
   end
 
 end

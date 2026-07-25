@@ -191,6 +191,11 @@ vc = fmc.v(Celements);
 %   EMSphinx     3281      2136      1882      1563   grains
 %   benchmark    0.9887    0.9887    0.9889    0.9667 (level 1 ARI)
 %
+% The EMSphinx column was measured with all three phases in one graph, i.e.
+% before doEvaluate started clustering each phase on its own; the numbers
+% shifted with that (1563 -> 1293 at the 5 degree floor), the ordering did
+% not.
+%
 % kappa = 4 was measured over five benchmark realisations per level, where
 % it beat 3, 6 and a fixed 5 degree radius (0.9875 +-0.0013 on level 1
 % against 0.969 +-0.017 for the fixed radius). Note that the benchmark's
@@ -353,8 +358,9 @@ Qvar = max(sse./n, sigma^2);
 % region that varies by 12 degree across itself.
 QvarTot = max(sseConst./n, sigma^2);
 
-vdisp(sprintf('  %d of %d aggregates carry a lattice gradient', ...
-  sum(useLin),nC));
+% reported by FMC_report, not printed here - one line per coarsening level
+% interleaved with the rest of the log is unreadable
+fmc.nLin = sum(useLin);
 
 % ------------------------------------------------------------- write back
 

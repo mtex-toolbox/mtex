@@ -1,4 +1,4 @@
-function assignments = FMC_interpret(AllSals, numClusters, AllPs, A_D, minPixel, W0)
+function [assignments,rep] = FMC_interpret(AllSals, numClusters, AllPs, A_D, minPixel, W0)
 % read a grain labelling off the FMC aggregation hierarchy
 %
 % FMC_Coarsen never commits a merge: it produces, for every scale s, a soft
@@ -47,9 +47,14 @@ function assignments = FMC_interpret(AllSals, numClusters, AllPs, A_D, minPixel,
 %
 % Output
 %  assignments - nPixel x 2, [label confidence], label 0 = unassigned
+%  rep         - what FMC_report prints: .readPerScale, the number of
+%                pixels read off at each scale, and .numStranded read off
+%                at none; .numRegions before and .numGrains after the
+%                undersized regions were absorbed, .numAbsorbed pixels
+%                moved doing so, .numUnassigned left over at the end
 %
 % See also
-% FMC_MTEX FMC_Coarsen gbcFMC
+% FMC_MTEX FMC_Coarsen FMC_report gbcFMC
 
 if nargin < 5 || isempty(minPixel), minPixel = 1; end
 
@@ -130,8 +135,13 @@ for s = 2:numS
   end
 end
 
-h = accumarray(max(scaleOfAgg(max(bestLab,1)),1),1,[numS 1]).';
-vdisp(['pixels read off at each scale: ' mat2str(h)]);
+% Assigned pixels only. There is no spare bin to put the others in: offset(2)
+% is 0, so global aggregate id 1 is a genuine scale 2 aggregate and folding
+% bestLab == 0 into it would report unassigned pixels as read off at scale 2.
+% They are counted on their own, as rep.numUnassigned below.
+sel = bestLab > 0;
+rep.readPerScale = accumarray(scaleOfAgg(bestLab(sel)),ones(nnz(sel),1),[numS 1]).';
+rep.numStranded  = nnz(~sel);
 
 % ----------------------------------------------- 2 merging nested choices
 
@@ -210,6 +220,8 @@ mx = max(max(W0));
 if ~(mx > 0), mx = 1; end
 levels = mx * [0.9 0.7 0.5 0.3 0.15 0.05 0];
 
+label0 = label;
+
 for lv = levels
   for round = 1:(2*thr + 20)
 
@@ -251,6 +263,11 @@ for lv = levels
     label(undersized) = taken;
   end
 end
+
+rep.numRegions    = numel(unique(label0(label0>0))) + nnz(label0 == 0);
+rep.numGrains     = numel(unique(label(label>0)))   + nnz(label == 0);
+rep.numAbsorbed   = nnz(label ~= label0);
+rep.numUnassigned = nnz(label == 0);
 
 assignments = [label bestP];
 

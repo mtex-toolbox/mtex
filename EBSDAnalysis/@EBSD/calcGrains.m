@@ -38,6 +38,8 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 % Flags
 %  unitCell - omit Voronoi decomposition and treat a unitcell lattice
 %  qhull    - use qHull for the Voronoi decomposition
+%  verbose  - report what the criterion did, if it has anything to say -
+%             currently only |'fmc'|, which prints its cluster hierarchy
 %  delaunay - use a true circumradius-based alpha-complex (exact, not a
 %             raster approximation) instead of the default morphological
 %             closing to partition the spatial domain - see

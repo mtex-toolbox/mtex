@@ -1,4 +1,17 @@
-function [AllPs,AllSals,numClusters,W0] = FMC_MTEX(fmc)
+function [AllPs,AllSals,numClusters,W0,rep] = FMC_MTEX(fmc)
+% build the FMC aggregation hierarchy
+%
+% Output
+%  AllPs       - cell, AllPs{s} membership of the scale s-1 aggregates in
+%                the scale s ones
+%  AllSals     - cell, AllSals{s} the saliency of every scale s aggregate
+%  numClusters - number of aggregates at each scale, numClusters(1) = pixels
+%  W0          - finest level pixel couplings, WITHOUT the maxDelta cut
+%  rep         - what FMC_report prints: .sigma and .nLin, the number of
+%                aggregates that adopted a lattice gradient at each scale
+%
+% See also
+% FMC_Coarsen FMC_interpret FMC_report gbcFMC
 
 % setup Wnext
 [i,j] = find(fmc.A_D);  % list of cells
@@ -42,7 +55,7 @@ else
   fmc.sigma = max(median(finiteDel)/sqrt(4*2.3659738843), 1e-3);
 end
 
-vdisp(sprintf('estimated per pixel noise: %.4g degree',fmc.sigma));
+rep.sigma = fmc.sigma;
 
 % largest disorientation the symmetry admits, in degree. Computed once
 % here: it is a symmetry group property, not a per level quantity, and
@@ -82,7 +95,6 @@ W0 = sparse(i, j, w, N, N);
 clear q del
 
 % RunFMC
-vdisp('starting RunFMC')
 fmc.W = fmc.W + fmc.W';
 % make adjecency matrix symmetric
 fmc.A_D = fmc.A_D | fmc.A_D';
@@ -118,19 +130,21 @@ fmc.sLevel = 1;
 %storage=[struct('Ps', speye(length(Wnext)))];
 fmc.P = speye(N);
 
+% number of aggregates that adopted a lattice gradient, per scale. Level 1
+% is the pixels themselves, which have no spread to fit anything to.
+rep.nLin = 0;
+
 while ~isequal(fmc.sizeW,fmc.sizeWnext)
-  
-  vdisp(['S-Level: ' int2str(fmc.sLevel)]);
-  vdisp(['Number of Clusters: ' int2str(numClusters(fmc.sLevel))]);
-  
+
   fmc = FMC_Coarsen(fmc);
-  
+
   fmc.sLevel = fmc.sLevel+1;
-  
+
   AllPs{fmc.sLevel}       = fmc.P;
   AllSals{fmc.sLevel}     = fmc.Sal;
   numClusters(fmc.sLevel) = size(fmc.W,1);
-  
+  rep.nLin(fmc.sLevel)    = fmc.nLin;
+
 end
 
 % AllSals stays a cell, one entry per scale: FMC_interpret compares
