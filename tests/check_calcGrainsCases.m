@@ -80,6 +80,39 @@ if length(grains0HexD) ~= 16
 end
 checkTransformCommutation2(ebsdHex, grains0HexD, thr, 'hex, delaunay, transformed', 'delaunay');
 
+%% gbcFMC: single precision rotations and coordinates
+%
+% regression test for gbcFMC dying on any map stored in SINGLE - which
+% mtexdata martensite is, as are the .ang/.ctf imports generally:
+%
+%   Error using sparse. Third input must be double or logical.
+%
+% quaternion/double only stacks the four components, it does not convert
+% them, so single propagated from ebsd.rotations through the neighbour
+% misorientations into the edge weights, and sparse() rejected them. Both
+% the orientation and the position path are forced to single here, since
+% each reaches a different consumer (sparse for the weights, accumarray for
+% the moment sums in part6InterpWeights).
+
+ebsdSgl = buildSquareBlockGrid(cs, 6, 4, ...
+  orientation.byAxisAngle(zvector,(1:16)*7*degree,cs));
+
+rSgl = ebsdSgl.rotations;
+ebsdSgl.rotations = rotation(quaternion( ...
+  single(rSgl.a),single(rSgl.b),single(rSgl.c),single(rSgl.d)));
+ebsdSgl.pos = vector3d(single(ebsdSgl.pos.x), ...
+  single(ebsdSgl.pos.y),single(ebsdSgl.pos.z));
+
+if ~isa(ebsdSgl.rotations.a,'single') || ~isa(ebsdSgl.x,'single')
+  error('single precision test map did not stay single - test is vacuous');
+end
+
+grainsSgl = calcGrains(ebsdSgl,gbcFMC(3),'minPixel',1);
+if length(grainsSgl) ~= 16
+  error('gbcFMC on a single precision map: expected 16 grains, got %d', ...
+    length(grainsSgl));
+end
+
 %% removeQuadruplePoints: a low angle threshold must not be overridden
 %
 % regression test for a bug in the private mergeQuadrupleGrains helper: it

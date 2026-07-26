@@ -33,7 +33,7 @@ function check_gridDistortionBenchmark(varargin)
 %
 % This checks ONLY ebsd.lattice.ij recovery, not grain reconstruction -
 % correct ij recovery is necessary for correct grain reconstruction but not
-% sufficient on its own; see check_calcGrainsTransform for the
+% sufficient on its own; see check_calcGrainsCases for the
 % grain-reconstruction-level regression test (spatialDecompositionGrid's
 % cells2posId helper).
 %
@@ -41,7 +41,7 @@ function check_gridDistortionBenchmark(varargin)
 %   check_gridDistortionBenchmark
 %
 % See also
-% EBSD/lattice EBSD/transform check_grainReconstructionBenchmark
+% EBSD/lattice EBSD/transform check_grainReconstructionBenchmark check_calcGrainsCases
 
 ebsd = mtexdata('forsterite');
 
