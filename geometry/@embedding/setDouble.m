@@ -270,3 +270,18 @@ G = diag(mult) + C.' * C;
 R = chol(G);
 d(:,idx) = d(:,idx) / R.';
 end
+
+function test %#ok<DEFNU>
+% setDouble() should exactly invert double(), i.e. e.M = double(e) should
+% reproduce e itself
+
+cs = crystalSymmetry('6/mmm');
+ori = orientation.rand(20,cs);
+
+e = embedding(ori);
+eRec = e;
+eRec.M = double(e);
+
+disp(max(norm(e - eRec)));
+
+end

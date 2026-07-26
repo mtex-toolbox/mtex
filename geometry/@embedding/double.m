@@ -235,3 +235,23 @@ G = diag(mult) + C.' * C;
 R = chol(G);
 d(:,idx) = d(:,idx) * R.';
 end
+
+function test %#ok<DEFNU>
+% double() should be an isometry: Euclidean distance between packed
+% vectors should equal the tensorial distance between the embeddings
+
+cs = crystalSymmetry('6/mmm');
+ori = orientation.rand(20,cs);
+
+e = embedding(ori);
+d = double(e);
+
+id1 = randi(20,50,1);
+id2 = randi(20,50,1);
+
+distTensor = norm(e(id1) - e(id2));
+distEuclid = sqrt(sum((d(id1,:) - d(id2,:)).^2,2));
+
+disp(max(abs(distTensor - distEuclid)));
+
+end
