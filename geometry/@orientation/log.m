@@ -43,14 +43,20 @@ end
 % extract data
 if nargin>1 && isa(varargin{1},'quaternion')
   ori_ref = varargin{1};
+  isRef = true;
 else
   ori_ref = orientation.id(ori.CS,ori.SS);
+  isRef = false;
 end
 tS = SO3TangentSpace.extract(varargin);
 
-
-
-if ori_ref ~= quaternion.id
+% subtract the reference orientation
+% Note: this may not be guarded by a test like "if ori_ref ~= quaternion.id".
+% For an array valued reference such a condition collapses into an all() over
+% all elements and, since ne is symmetry aware, a single reference orientation
+% that coincides with a symmetry element would silently drop the reference for
+% every element.
+if isRef
   if tS.isLeft
     orin = ori .* inv(ori_ref);
     % we should not change the reference frame of the reference orientation
