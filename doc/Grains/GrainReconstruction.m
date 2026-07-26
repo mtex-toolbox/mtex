@@ -206,7 +206,7 @@ hold off
 % Raising |cmaha| resolves the substructure within those grains - the
 % dislocation cells that carry the deformation.
 
-grains = calcGrains(ebsd,'fmc',3,'minPixel',10);
+grains = calcGrains(ebsd,'fmc',1.5,'minPixel',10);
 grains = smooth(grains,5);
 
 plot(ebsd,ebsd.orientations)
@@ -224,7 +224,7 @@ hold off
 mtexdata EMSphinx silent
 ebsd = ebsd('Iron fcc');
 
-grains = calcGrains(ebsd,'fmc',0.5,'minPixel',10)
+grains = calcGrains(ebsd,'fmc',1.5,'minPixel',10)
 grains = smooth(grains,5);
 
 plot(ebsd,ebsd.orientations)
