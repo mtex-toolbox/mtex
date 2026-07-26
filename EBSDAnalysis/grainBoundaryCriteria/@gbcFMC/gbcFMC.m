@@ -347,7 +347,17 @@ methods (Access = protected)
   function label = clusterPhase(obj,ebsd,isP,i,j,CS)
     % run FMC on the pixels isP of one phase, over the pair list (i,j)
 
+    % Cast to double once, here. Several interfaces store rotations and
+    % coordinates in SINGLE - mtexdata martensite does - and single spreads:
+    % quaternion/double only stacks the components, it does not convert them,
+    % so the misorientations, the edge weights and the moment sums all stay
+    % single. sparse() then rejects its value vector outright, which is where
+    % this used to die, and accumarray would be next. Converting at the entry
+    % is the only place the fix belongs; doing it per call site inside the
+    % coarsening leaves the next single-valued expression to be found by the
+    % next user.
     q = ebsd.rotations(isP);
+    q = quaternion(double(q.a),double(q.b),double(q.c),double(q.d));
     N = length(q);
 
     A_D = sparse(double(i),double(j),true,N,N);
@@ -359,7 +369,7 @@ methods (Access = protected)
     % deformed grain from a noisy one. Without usable coordinates the
     % linear model degenerates to the constant one, which is the old
     % behaviour, so this stays optional rather than being a requirement.
-    pos = [reshape(ebsd.x(isP),[],1) reshape(ebsd.y(isP),[],1)];
+    pos = double([reshape(ebsd.x(isP),[],1) reshape(ebsd.y(isP),[],1)]);
     if numel(pos) ~= 2*N || ~all(isfinite(pos(:)))
       pos = zeros(N,2);
     end
