@@ -291,18 +291,165 @@ end
 
 % and the grain shapes survive the round trip through grain2d
 gRef = refineBoundary(grains);
-assertOrdered(gRef.boundary,'refineBoundary');
+assertConsistent(gRef,grains,'refineBoundary');
 if max(abs(gRef.area - grains.area)) > 1e-3*max(abs(grains.area))
   error('refineBoundary changed the grain areas');
 end
 if length(gRef.triplePoints) ~= length(grains.triplePoints)
   error('refineBoundary changed the triple points');
 end
-if ~all(cellfun(@(p) p(1) == p(end),gRef.poly))
-  error('refineBoundary left an unclosed poly loop');
+
+%% 14. the grain2d wrappers keep the grains in sync with their boundary
+
+% coarsening the boundary moves the polygons too, so poly and inclusionId
+% have to be retraced - a grain2d whose poly still walks through dissolved
+% vertices reports an area that plot(grains.boundary) disagrees with
+
+gSim = simplifyBoundary(grains,sl);
+assertConsistent(gSim,grains,'simplifyBoundary');
+assertNotHanging(gSim,grains,'simplifyBoundary');
+
+% Douglas-Peucker keeps every dropped vertex within sl of the chord that
+% replaces it, so the area swept per grain is at most about sl*perimeter
+dA = abs(gSim.area - grains.area);
+if any(dA > 1.01*sl*grains.perimeter)
+  error('simplifyBoundary moved a grain area by more than eps*perimeter');
+end
+
+% the boundary really did get coarser, and the grains followed
+if length(gSim.boundary) >= length(grains.boundary)
+  error('simplifyBoundary did not coarsen the boundary');
+end
+if sum(cellfun(@numel,gSim.poly)) >= sum(cellfun(@numel,grains.poly))
+  error('simplifyBoundary coarsened the boundary but not the polygons');
+end
+
+% junctions are untouched, so the triple points are the same ones - and their
+% boundaryId has to point into the renumbered segment list
+if length(gSim.triplePoints) ~= length(grains.triplePoints)
+  error('simplifyBoundary changed the triple points');
+end
+if ~isequal(sort(gSim.triplePoints.id),sort(grains.triplePoints.id))
+  error('simplifyBoundary moved a triple point');
+end
+bId = gSim.triplePoints.boundaryId;
+if any(bId(:) < 0) || any(bId(:) > length(gSim.boundary))
+  error('simplifyBoundary left triplePoints.boundaryId pointing past the segment list');
+end
+
+% a tolerance far beyond the size of the smallest grains must still not
+% flatten one of them onto a line - a single pixel grain is bounded by two open
+% chains of two segments, and straightening both leaves the same diagonal twice
+for eps = [2*sl 5*sl 20*sl]
+  gBig = simplifyBoundary(grains,eps);
+  assertConsistent(gBig,grains,sprintf('simplifyBoundary(grains,%g*sl)',eps/sl));
+  if length(gBig) ~= length(grains)
+    error('simplifyBoundary changed the number of grains');
+  end
+end
+
+% reduceBoundary is the same contract, just a blunter rule
+gRed = reduceBoundary(grains,2);
+assertConsistent(gRed,grains,'reduceBoundary');
+assertNotHanging(gRed,grains,'reduceBoundary');
+if length(gRed.boundary) >= length(grains.boundary)
+  error('reduceBoundary did not coarsen the boundary');
+end
+
+% all three have to be correct on a subset, where grains.id is not 1:N and
+% boundary.I_FG therefore has columns that do not line up with poly
+iSub = 5:min(10,length(grains));
+gSub = grains(iSub);
+for f = {@(g) simplifyBoundary(g,sl), @(g) reduceBoundary(g,2), @refineBoundary}
+
+  gOut = f{1}(gSub);
+  name = func2str(f{1});
+
+  if numel(gOut.poly) ~= numel(iSub)
+    error('%s on a subset returned %d polygons for %d grains',...
+      name,numel(gOut.poly),numel(iSub));
+  end
+  assertConsistent(gOut,gSub,name);
+
+  % misaligned polygons show up as areas belonging to the wrong grains
+  if any(abs(gOut.area - gSub.area) > 1.01*sl*gSub.perimeter + 1e-9)
+    error('%s on a subset assigned the polygons to the wrong grains',name);
+  end
+
 end
 
 disp('check_boundaryChains passed');
+
+end
+
+% -------------------------------------------------------------------------
+function assertConsistent(grains,grains0,name)
+% everything a grain2d has to satisfy after its boundary was rewritten
+
+assertOrdered(grains.boundary,[name ' boundary']);
+assertOrdered(grains.innerBoundary,[name ' innerBoundary']);
+
+poly = grains.poly;
+
+if ~all(cellfun(@(p) p(1) == p(end),poly))
+  error('%s left an unclosed poly loop',name);
+end
+
+% three distinct vertices plus the repeated first one - fewer than that is a
+% loop that encloses no area, which is what a closed chain collapses to if a
+% coarsening step is allowed to reduce it to its two extreme vertices
+if any(cellfun(@numel,poly) < 4)
+  error('%s collapsed a poly loop to fewer than three vertices',name);
+end
+
+if ~all(grains.area > 0)
+  error('%s left %d grains with a non-positive area',name,nnz(grains.area<=0));
+end
+
+if any(cellfun(@(p) any(p < 1 | p > size(grains.allV,1)),poly))
+  error('%s left a poly index outside allV',name);
+end
+
+% every poly vertex has to be one the boundary still walks through
+onBnd = false(size(grains.allV,1),1);
+onBnd(grains.boundary.F(:)) = true;
+if ~all(cellfun(@(p) all(onBnd(p)),poly))
+  error('%s left poly walking through a vertex the boundary dropped',name);
+end
+
+% inclusionId counts the trailing entries of poly that belong to hole loops -
+% the constructor derives it this way, see grain2d/grain2d.m
+inclusionId = cellfun(@(p) numel(p) - find(p(2:end)==p(1),1),poly) - 1;
+if ~isequal(reshape(inclusionId,[],1),reshape(grains.inclusionId,[],1))
+  error('%s left inclusionId out of sync with poly',name);
+end
+
+end
+
+% -------------------------------------------------------------------------
+function assertNotHanging(grains,grains0,name)
+% a vertex shared by the two boundaries has to stay on both of them, or one is
+% left hanging off a vertex the other no longer visits. Only the coarsening
+% wrappers can satisfy this - refine keeps just the two junctions of a chain
+% and mints fresh ids for everything between them, so it drops every shared
+% vertex by construction.
+
+shared0 = intersect(grains0.boundary.F(:),grains0.innerBoundary.F(:));
+if isempty(shared0), return; end
+
+nV = size(grains.allV,1);
+
+onBnd = false(nV,1);
+onBnd(grains.boundary.F(:)) = true;
+if ~all(onBnd(shared0))
+  error('%s dropped a vertex the inner boundary still ends on',name);
+end
+
+onInner = false(nV,1);
+onInner(grains.innerBoundary.F(:)) = true;
+if ~all(onInner(shared0))
+  error('%s dropped an inner vertex the outer boundary still ends on',name);
+end
 
 end
 

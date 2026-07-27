@@ -1,9 +1,10 @@
-function gB = simplify(gB,epsilon)
+function gB = simplify(gB,varargin)
 % remove vertices that carry no shape information
 %
 % Syntax
 %   gB_s = simplify(gB)
 %   gB_s = simplify(gB,epsilon)
+%   gB_s = simplify(gB,epsilon,'protect',vertexIds)
 %
 % Description
 % Douglas-Peucker simplification applied to each chain separately. A vertex
@@ -16,6 +17,10 @@ function gB = simplify(gB,epsilon)
 % pixel grid it is what turns a staircase into the straight line it
 % approximates.
 %
+% A grain smaller than epsilon would lose every one of its vertices and
+% collapse onto a line. Those grains are left uncoarsened - epsilon says how
+% far the boundary may move, not that a grain may be deleted.
+%
 % Input
 %  gB      - @grainBoundary
 %  epsilon - tolerance in EBSD units (default: half the median segment length)
@@ -23,13 +28,20 @@ function gB = simplify(gB,epsilon)
 % Output
 %  gB_s - @grainBoundary
 %
+% Options
+%  protect - ids of vertices that must survive, on top of the junctions
+%
 % See also
-% grainBoundary/reduce grainBoundary/refine grain2d/smooth
+% grainBoundary/reduce grainBoundary/refine grain2d/simplifyBoundary grain2d/smooth
 
 nF = length(gB);
 if nF == 0, return; end
 
-if nargin == 1, epsilon = median(gB.segLength)/2; end
+if ~isempty(varargin) && isnumeric(varargin{1}) && isscalar(varargin{1})
+  epsilon = varargin{1};
+else
+  epsilon = median(gB.segLength)/2;
+end
 if epsilon <= 0, return; end
 
 xy = gB.allV.xyz;
@@ -58,6 +70,19 @@ for c = 1:numel(iStart)
     keep(iFar) = true;
     keep(1:iFar) = keep(1:iFar) | douglasPeucker(xy(v(1:iFar),:),epsilon);
     keep(iFar:end) = keep(iFar:end) | douglasPeucker(xy(v(iFar:end),:),epsilon);
+
+    % keep(1) and keep(end) are the same vertex, so this leaves only two
+    % distinct ones - a loop that encloses no area. A closed chain is the whole
+    % boundary of a grain, so give it a third vertex and keep it a polygon.
+    if nnz(keep) < 4
+      chord = xy(v(iFar),:) - xy(v(1),:);
+      rel = xy(v,:) - xy(v(1),:);
+      dOff = abs(rel(:,1)*chord(2) - rel(:,2)*chord(1));
+      dOff([1 iFar numel(v)]) = -1;
+      [dMax,iOff] = max(dOff);
+      if dMax > 0, keep(iOff) = true; end
+    end
+
   else
     keep = douglasPeucker(xy(v,:),epsilon);
   end
@@ -70,6 +95,27 @@ end
 % chain ends are junctions and are never dropped
 keepEnd(iEnd) = true;
 
+% a vertex where the neighbouring grains change is a corner of both grain
+% polygons even when only two segments meet there - and merging across it would
+% have to throw one of the two grainId pairs away. On a full map this coincides
+% with a junction, but not on a subset, where the segment between two grains
+% that are both outside the subset is gone and its triple point looks ordinary.
+keepEnd = keepEnd | isNeighborChange(gB);
+
+% a vertex may also be shared with another boundary object, which finds its
+% junctions from its own face list and so cannot see it - grain2d passes
+% those in, see grain2d/simplifyBoundary
+protect = get_option(varargin,'protect',[]);
+if ~isempty(protect)
+  isProtected = false(size(gB.allV,1),1);
+  isProtected(protect) = true;
+  keepEnd = keepEnd | isProtected(gB.F(:,2));
+end
+
+% a grain smaller than epsilon would lose every vertex and collapse onto a
+% line, so it is left uncoarsened instead
+keepEnd = keepGrainPolygons(gB,keepEnd);
+
 surv = find(keepEnd);
 if numel(surv) == nF, return; end
 
@@ -80,6 +126,10 @@ FNew = [gB.F(runStart,1), gB.F(surv,2)];
 gB = gB.subSet(surv);
 gB.F = FNew;
 gB = gB.order;
+
+% the surviving junctions are the same ones, but triplePointList.boundaryId
+% refers to segment ids and those were just renumbered
+gB.triplePoints = gB.calcTriplePoints;
 
 end
 

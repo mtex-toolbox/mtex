@@ -13,6 +13,12 @@ function grains = refineBoundary(grains,varargin)
 % that lets grain2d/smooth produce a genuinely smooth boundary rather than a
 % finer staircase.
 %
+% Only grains.boundary is resampled. Since refine keeps just the junctions at
+% both ends of a chain and mints fresh vertices in between, a vertex where the
+% inner boundary ends on the outer one does not survive - grains.innerBoundary
+% is left as it was and may hang off a vertex the outer boundary no longer
+% visits. Unlike simplifyBoundary and reduceBoundary, which protect it.
+%
 % Input
 %  grains - @grain2d
 %  delta  - new segment length (default: half the median segment length)
@@ -21,7 +27,7 @@ function grains = refineBoundary(grains,varargin)
 %  grains - @grain2d
 %
 % See also
-% grainBoundary/refine grainBoundary/simplify grain2d/smooth
+% grainBoundary/refine grain2d/simplifyBoundary grain2d/reduceBoundary grain2d/smooth
 
 if nargin > 1 && isnumeric(varargin{1})
   delta = varargin{1};
@@ -35,5 +41,4 @@ grains.boundary = refine(grains.boundary,delta);
 % just propagates the extended list to the inner boundary as well
 grains.allV = grains.boundary.allV;
 
-grains.poly = calcPolygonsC(grains.boundary.I_FG,grains.boundary.F,...
-  grains.allV,grains.N);
+grains = updatePoly(grains);
