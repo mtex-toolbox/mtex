@@ -31,85 +31,20 @@ function [gB,p] = order(gB,varargin)
 %  p  - the applied permutation, gB_ordered = gB_old.subSet(p)
 %
 % See also
-% grainBoundary/chainId grainBoundary/chainV grainBoundary/junctionId
+% chainOrder grainBoundary/chainId grainBoundary/chainV grainBoundary/junctionId
 
 F  = gB.F;
 nF = size(F,1);
 p  = (1:nF).';
 if nF < 2, return; end
 
-Fv = F(:);                      % half edge h indexes the entry Fv(h) of F
-nV = size(gB.allV,1);
-
-deg   = accumarray(Fv,1,[nV 1]);
-isJct = deg ~= 2;
-
-% -- pair up the two half edges meeting at every degree 2 vertex ----------
-% half edge h = k + (e-1)*nF reads "segment k entered at vertex F(k,e)"
-[~,hs] = sort(Fv);              % half edges grouped by vertex
-off    = [0; cumsum(deg)];      % vertex v owns hs(off(v)+1 : off(v)+deg(v))
-
-partner = zeros(2*nF,1);
-v2 = find(deg == 2);
-h1 = hs(off(v2)+1);
-h2 = hs(off(v2)+2);
-partner(h1) = h2;
-partner(h2) = h1;
-
-% -- label the chains ----------------------------------------------------
-k1  = mod(h1-1,nF)+1;
-k2  = mod(h2-1,nF)+1;
-cid = connectedComponents(sparse([k1;k2],[k2;k1],1,nF,nF));
-cid = cid(:);
+% -- decompose into chains and walk each of them -------------------------
+% cid      - chain id of every segment
+% pos      - its position along the walk, 0 based
+% firstEnd - the column of F the walk enters the segment at
+[cid,pos,firstEnd] = chainOrder(F,size(gB.allV,1));
 nCh = max(cid);
-
-% -- closed chains have no junction, so cut them at their lowest vertex ---
-hCid   = [cid;cid];
-isOpen = accumarray(cid,double(isJct(F(:,1)) | isJct(F(:,2))),[nCh 1],@max) > 0;
-if ~all(isOpen)
-  onClosed = ~isOpen(hCid);
-  vMin = accumarray(hCid(onClosed),Fv(onClosed),[nCh 1],@min,0);
-  cutV = vMin(~isOpen);
-  partner(hs(off(cutV)+1)) = 0;
-  partner(hs(off(cutV)+2)) = 0;
-end
-
-% -- walk: entering a segment at one end means leaving it at the other ----
-oth = [nF+1:2*nF, 1:nF].';
-nxt = partner(oth);             % 0 where the chain terminates
-
-% -- list ranking by pointer doubling: d(h) = segments left after h -------
-isEnd    = nxt == 0;
-f        = nxt;
-f(isEnd) = find(isEnd);         % terminal half edges point to themselves
-d        = double(~isEnd);
-while true
-  fNew = f(f);
-  if isequal(fNew,f), break; end
-  d = d + d(f);
-  f = fNew;
-end
-
-% -- one start half edge per chain ---------------------------------------
-% every open chain has two, one per direction; pick the lower for a
-% deterministic result
-startH = find(partner == 0);
-[~,iFirst] = unique(hCid(startH),'stable');
-startH = startH(iFirst);
-chStart = zeros(nCh,1);
-chStart(hCid(startH)) = startH;
-
-% f(h) is the terminal of h's walk and so tells which of the two directions
-% a half edge belongs to
-onWalk = f == f(chStart(hCid));
-
-seg  = repmat((1:nF).',2,1);
-eIdx = repelem([1;2],nF,1);
-
-pos = zeros(nF,1);
-pos(seg(onWalk)) = d(chStart(hCid(onWalk))) - d(onWalk);
-firstEnd = zeros(nF,1);
-firstEnd(seg(onWalk)) = eIdx(onWalk);
+len = accumarray(cid,1,[nCh 1]);   % segments per chain
 
 % -- fix the sense of each chain so that grainId(:,1) is on the left ------
 posLeft = get_option(varargin,'leftPos',[]);
@@ -118,13 +53,18 @@ if ~isempty(posLeft)
 
   rep = find(pos == 0);                   % first segment of every chain
   Fr  = F(rep,:);
-  Fr(firstEnd(rep) == 2,:) = fliplr(Fr(firstEnd(rep) == 2,:));
+  sw  = firstEnd(rep) == 2;
+  Fr(sw,:) = fliplr(Fr(sw,:));
 
-  dir = gB.allV(Fr(:,2)) - gB.allV(Fr(:,1));
-  w   = posLeft(rep) - 0.5*(gB.allV(Fr(:,1)) + gB.allV(Fr(:,2)));
+  % which side of the segment posLeft lies on. Only the segment's line
+  % matters, not where along it the reference point is measured from -
+  % cross(d,.) kills everything parallel to d - so this takes the start
+  % vertex rather than the midpoint and needs one endpoint less
+  V1 = gB.allV(Fr(:,1));
+  d  = gB.allV(Fr(:,2)) - V1;
 
   flipCh = false(nCh,1);
-  flipCh(cid(rep)) = dot(cross(dir,w),gB.N) < 0;
+  flipCh(cid(rep)) = dot(cross(d,posLeft(rep) - V1),gB.N) < 0;
 
 else
 
@@ -133,22 +73,35 @@ else
   % agrees, so this recovers the sense exactly and makes order idempotent -
   % which is what lets cat, subsasgn and loadobj re-establish the invariant
   % without scrambling the left/right convention.
-  flipCh = accumarray(cid,double(firstEnd == 1),[nCh 1]) < ...
-    0.5*accumarray(cid,1,[nCh 1]);
+  flipCh = accumarray(cid,double(firstEnd == 1),[nCh 1]) < 0.5*len;
 
 end
 
 ind = flipCh(cid);
 if any(ind)
-  chMax = accumarray(cid,pos,[nCh 1],@max);
-  pos(ind) = chMax(cid(ind)) - pos(ind);
+  pos(ind) = len(cid(ind)) - 1 - pos(ind);
   firstEnd(ind) = 3 - firstEnd(ind);
 end
 
 % -- apply ---------------------------------------------------------------
-[~,p] = sortrows([cid pos]);
+% cid is ascending in blocks and pos runs 0..len-1 within each, so the
+% destination row of every segment is known outright - no need to sort
+chOff = cumsum([0;len]);
+p(chOff(cid) + pos + 1) = (1:nF).';
+
 doFlip = firstEnd == 2;
 gB.F(doFlip,:) = fliplr(gB.F(doFlip,:));
+
+% subSet restricts the triple points to those still touched by a segment,
+% which for a permutation is every one of them - but it pays for the full
+% nV x nF I_VF incidence to find that out. Detach them across the subSet
+% instead; the placeholder struct is what carries allV and N.
+tP = gB.triplePoints;
+detach = isa(tP,'triplePointList') && ~isempty(tP);
+if detach, gB.triplePoints = struct('allV',tP.allV,'N',tP.N); end
+
 gB = gB.subSet(p);
+
+if detach, gB.triplePoints = tP; end
 
 end
