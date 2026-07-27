@@ -37,4 +37,7 @@ grains.innerBoundary = grainBoundary;
 % remove inclusions
 grains.inclusionId = zeros(size(grains.inclusionId));
 
+% F was rebuilt from scratch, so re-establish the walk order
+grains.boundary = grains.boundary.order;
+
 end

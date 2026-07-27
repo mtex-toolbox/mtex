@@ -1,82 +1,89 @@
 function kappa = curvature(gB,n)
-% curvature of a boundary segment
+% signed curvature of a boundary segment
 %
 % Syntax
 %   kappa = curvature(gB)
 %   kappa = curvature(gB,2)
 %
 % Description
+% The Menger curvature through the midpoints of a segment and its two
+% neighbours within the same chain, smoothed along the chain afterwards.
+%
+% The sign is meaningful: segments are stored in walk order with the grain
+% gB.grainId(:,1) on the left, so a positive curvature means the boundary
+% bulges into gB.grainId(:,2) and a negative one that it bulges into
+% gB.grainId(:,1).
+%
+% Segments at the end of an open chain have no neighbour on one side and
+% therefore no curvature - those are returned as NaN. A chain consisting of
+% a single segment is NaN throughout. Closed chains wrap around and are
+% defined everywhere.
 %
 % Input
 %  gB - @grainBoundary
-%   n - number of neighbors that are considered
+%   n - number of smoothing iterations along the chain (default 50)
 %
 % Output
-%  kappa - 1/fitting Radius in EBSD units
+%  kappa - 1/fitting radius in EBSD units
 %
+% See also
+% grainBoundary/chainId grainBoundary/arcLength
 
-% TODO: this can be done better, as the segments are now ordered
+if nargin == 1, n = 50; end
+
+nF = length(gB);
+kappa = nan(nF,1);
+if nF == 0, return; end
 
 mp = gB.midPoint.xy;
 
-% adjacent matrix segments - segments
-A_F = gB.A_F;
+% -- neighbours within the chain -----------------------------------------
+% walk order makes these k-1 and k+1, so no segment adjacency matrix is
+% needed at all
+iStart = find(gB.isChainStart);
+iEnd = find(gB.isChainEnd);
+isClosedChain = gB.isClosed(iStart);
 
-% consider only those with exactly two neighbors
-has2n = (full(sum(A_F)) == 2).';
+prev = (1:nF).' - 1;
+next = (1:nF).' + 1;
 
-% find for each segments the two neighboring segments
-% u - is a 2n list of segment ids neighboring 
-[u,~] = find(A_F(:,has2n));
+% a closed chain has no end - it wraps onto itself
+prev(iStart(isClosedChain)) = iEnd(isClosedChain);
+next(iEnd(isClosedChain)) = iStart(isClosedChain);
 
-% try to reorder them nicely
-u = reshape(u,2,[]).';
-switchLR = u(:,2)-u(:,1)>2;
-u(switchLR,:) = fliplr(u(switchLR,:)); 
+hasPrev = true(nF,1); hasPrev(iStart(~isClosedChain)) = false;
+hasNext = true(nF,1); hasNext(iEnd(~isClosedChain)) = false;
 
-% center midpoints
-mpC = mp(has2n,:);
+ok = hasPrev & hasNext;
+if ~any(ok), return; end
 
-% left and right midpoints
-mpL = mp(u(:,1),:);
-mpR = mp(u(:,2),:);
+% -- Menger curvature through the three midpoints ------------------------
+mpC = mp(ok,:);
+mpL = mp(prev(ok),:);
+mpR = mp(next(ok),:);
 
-% try to make the order compatible 
-% the sign of the curvature should correlate with the order of the vertices
-%distL = gB.allV(gB.F(has2n,1),:) - m
-%switchLR = 
-
-
-% compute curvature
-kappa = zeros(length(gB),1);
-
-%K = 2*abs((x2 - x1).*(y3 - y1) - (y2 - y1).*(x3 - x1)) ./ ...
-%  sqrt(((x2-x1).^2+(y2-y1).^2)*((x3-x1).^2+(y3-y1).^2)*((x3-x2).^2+(y3-y2).^2));
-
-kappa(has2n) = 2*(((mpC - mpL) .* fliplr(mpR - mpL)) * [1;-1]) ./ ...
+% the cross product of (C-L) and (R-L) is positive for a left turn, which is
+% a boundary curving away from the grain on its left
+kappa(ok) = 2*(((mpC - mpL) .* fliplr(mpR - mpL)) * [1;-1]) ./ ...
   sqrt(sum((mpC-mpL).^2,2) .* sum((mpR-mpL).^2,2) .* sum((mpC-mpR).^2,2));
 
-% if not ordered nicely, take only absolute value of the curvature
-if ~all(has2n) || nnz(switchLR)/length(switchLR)>0.8, kappa = abs(kappa); end
+% -- smooth along the chain ----------------------------------------------
+% clamping the neighbours at open chain ends keeps the smoothing inside its
+% own chain and stops the undefined ends from spreading
+if n > 0
 
-% do some smoothing to the curvature
-if nargin == 1, n = 50; end
+  p = prev; p(~hasPrev) = find(~hasPrev);
+  q = next; q(~hasNext) = find(~hasNext);
 
-hasLeft = has2n;
-hasLeft(has2n) = has2n(u(:,1));
+  k = kappa;
+  k(~ok) = 0;
 
-hasRight = has2n;
-hasRight(has2n) = has2n(u(:,2));
+  for i = 1:n
+    k = 0.25*k(p) + 0.5*k + 0.25*k(q);
+  end
 
-weights = 1;
+  kappa(ok) = k(ok);
 
-for k = 1:n
-
-  kappaR = kappa(u(hasRight(has2n),2));
-  kappa(hasLeft) = kappa(hasLeft) + weights * kappa(u(hasLeft(has2n),1));
-  kappa(hasRight) = kappa(hasRight) + weights * kappaR;
-  kappa(has2n) = kappa(has2n) ./ (1+weights*hasLeft(has2n)+weights*hasRight(has2n));
-  
 end
 
 end

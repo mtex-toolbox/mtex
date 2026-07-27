@@ -72,20 +72,22 @@ end
 
 function plotOrdered2(gB,varargin)
 
-% add a nan vertex at the end - patch should not close the faces
-V = [gB.allV.xyz; nan(1,3)];
+% Segments are stored in walk order, so each chain is a contiguous block of
+% rows and its polyline is simply its segments one after another. Emitting
+% both vertices of every segment keeps the line continuous - consecutive
+% segments repeat the shared vertex - while giving each segment its own pair
+% of entries to carry its own colour. A NaN after each chain breaks the line.
+nF = length(gB);
+isEnd = gB.isChainEnd;
+pos = 2*(1:nF).' - 1 + cumsum([0; double(isEnd(1:end-1))]);
 
-% extract the edges
-F = gB.F;
+xyz = gB.allV.xyz;
+XYZ = nan(2*nF + nnz(isEnd),3);
+XYZ(pos,:) = xyz(gB.F(:,1),:);
+XYZ(pos+1,:) = xyz(gB.F(:,2),:);
 
-% computed Euler cycles
-[EC,Fid] = EulerCycles2(F);
-
-x = NaN(length(EC),1); y = x;
-z = zeros(size(x));
-x(~isnan(EC)) = V(EC(~isnan(EC)),1);
-y(~isnan(EC)) = V(EC(~isnan(EC)),2);
-if size(V,2) == 3, z(~isnan(EC)) = V(EC(~isnan(EC)),3); end
+x = XYZ(:,1); y = XYZ(:,2); z = XYZ(:,3);
+z(isnan(z)) = 0; % x and y already break the line at the separators
 
 % color given by second argument
 if nargin > 1 && isnumeric(varargin{1}) && ...
@@ -93,40 +95,15 @@ if nargin > 1 && isnumeric(varargin{1}) && ...
 
   if size(varargin{1},1) ~= length(gB), varargin{1} = varargin{1}.'; end
   data = reshape(varargin{1},length(gB),[]);
-  
-  alpha = 0.01;
-  
-  % for colorizing the segments with different colors we have to make a lot
-  % of effort
-  % 1. in MATLAB colors are assigned to vertices not to edges
-  % 2. therefore we replace every vertex by two vertices 
-  x = repelem(x(:).',1,2).';
-  x(1) = []; x(end)=[];
-  xx = x;
-  x(2:2:end-1) = (1-alpha)*xx(2:2:end-1) + alpha*xx(1:2:end-2);
-  x(3:2:end-1) = (1-alpha)*xx(3:2:end-1) + alpha*xx(4:2:end);
-  x(end+1) = NaN;
 
-  y = repelem(y(:).',1,2).';
-  y(1) = []; y(end)=[];
-  yy = y;
-  y(2:2:end-1) = (1-alpha)*yy(2:2:end-1) + alpha*yy(1:2:end-2);
-  y(3:2:end-1) = (1-alpha)*yy(3:2:end-1) + alpha*yy(4:2:end);
-  y(end+1) = NaN;
-
-  z = repelem(z(:).',1,2).';
-  z(1) = []; z(end)=[];
-  zz = z;
-  z(2:2:end-1) = (1-alpha)*zz(2:2:end-1) + alpha*zz(1:2:end-2);
-  z(3:2:end-1) = (1-alpha)*zz(3:2:end-1) + alpha*zz(4:2:end);
-  z(end+1) = NaN;
-
-  % align the data
-  data = repelem(data(Fid(~isnan(Fid)),:),2,1);
-  color = nan(length(y),size(data,2));
-  color(~isnan(y),:) = data;
+  % MATLAB interpolates colours between vertices, but both entries of a
+  % segment get that segment's colour, so the interpolation is constant
+  % along it and no colour bleeds across a segment boundary
+  color = nan(numel(x),size(data,2));
+  color(pos,:) = data;
+  color(pos+1,:) = data;
   color = reshape(color,size(color,1),1,size(color,2));
-  
+
    % subdivion
   % for some reason it is important to subdivide it into parts
   p = gobjects(1,ceil(length(x)/1000));

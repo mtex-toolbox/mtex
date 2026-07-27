@@ -163,8 +163,11 @@ classdef grain2d < phaseList & dynProp
           inv(grains.prop.meanRotation(grainId(isNotBoundary,2))) ...
           .* grains.prop.meanRotation(grainId(isNotBoundary,1));
 
+        % F is taken straight from the poly loops, which calcPolygons winds
+        % positively, so the grain that contributed a segment is already on
+        % its left - see the leftOriented option
         grains.boundary = grainBoundary(V,F,grainId,grains.id,...
-          grains.phaseId,mori,grains.CSList,grains.phaseMap);
+          grains.phaseId,mori,grains.CSList,grains.phaseMap,[],'leftOriented');
         
       end
 

@@ -9,7 +9,7 @@ function grains = subSet(grains,ind, varargin)
 %  grains - @grain2d
 %
 % Options
-%  keepOrder - do not change order of the faces when restricting to a single grain
+%  keepOrder - deprecated, has no effect - faces are always in walk order
 %
 
 
@@ -52,26 +52,8 @@ grains.numPixel = grains.numPixel(ind);
 grains.boundary = subSet(grains.boundary,indBd);
 grains.innerBoundary = subSet(grains.innerBoundary,indinnerBd);
 
-% if we have only one grain - sort boundary segments
-if isscalar(grains) && ~check_option(varargin,'keepOrder')
-
-  FNew = [grains.poly{1}(1:end-1).',grains.poly{1}(2:end).'];
-  
-  % remove inclusions
-  if grains.inclusionId > 0
-    ie = sum(FNew == FNew(1),2)==1;
-    ie([1,end-grains.inclusionId]) = false;
-    FNew(ie,:) = [];
-  end
-
-  % sort minimum entry first
-  FNew = sort(FNew,2);
-    
-  % sort such the order of F follows the boundary
-  [~,ind1] = sortrows(grains.boundary.F);
-  [~,ind2] = sortrows(FNew);
-  inverseorder(ind2) = ind1;
-  
-  grains.boundary = grains.boundary(inverseorder);
-  
-end
+% boundary segments used to be sorted into walk order here, but only for a
+% single grain, which made grains(k).boundary ordered while grains.boundary
+% was not. Segments are now stored in walk order throughout and subSet
+% preserves it, so there is nothing left to do - and 'keepOrder' has no
+% effect any more.

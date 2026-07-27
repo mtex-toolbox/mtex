@@ -291,7 +291,10 @@ end
       inv(ebsd.rotations(ebsdInd(isNotBoundary,2))) ...
       .* ebsd.rotations(ebsdInd(isNotBoundary,1));
     
-    gB = grainBoundary(V,F,ebsdInd,grainId,ebsd.phaseId,mori,ebsd.CSList,ebsd.phaseMap,ebsd.id);
+    % ebsdPos lets the constructor orient every chain so that the grain in
+    % grainId(:,1) lies to the left of the walk direction
+    gB = grainBoundary(V,F,ebsdInd,grainId,ebsd.phaseId,mori,ebsd.CSList,...
+      ebsd.phaseMap,ebsd.id,'ebsdPos',ebsd.pos);
     gB.how2plot = ebsd.how2plot;
 
   end

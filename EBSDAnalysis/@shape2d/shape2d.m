@@ -45,8 +45,13 @@ classdef shape2d < grain2d
         F = [1:N;[2:N 1]].';
         grainId = [zeros(N,1),ones(N,1)];
         
+        % F is already the closed ring 1-2-3-...-N-1, so it satisfies the
+        % walk order invariant by construction and does not need ordering.
+        % It also must not be ordered: misrotation and ebsdId are passed as
+        % scalars here rather than one per face, so this boundary is not in
+        % lockstep and cannot survive a subSet.
         shape.boundary = grainBoundary(V,F,grainId,1,...
-          1,nan,shape.CSList,shape.phaseMap,1,'noTriplePoints');
+          1,nan,shape.CSList,shape.phaseMap,1,'noTriplePoints','noOrder');
         
       end
 
