@@ -276,10 +276,10 @@ end
 %% Calculate the ebsd map step size
 function stepSize = calcStepSize(inebsd)
 
-xx = [inebsd.unitCell.x;inebsd.unitCell.x(1)]; % repeat the 1st x co-ordinate to close the unit pixel shape
-yy = [inebsd.unitCell.y;inebsd.unitCell.y(1)]; % repeat the 1st y co-ordinate to close the unit pixel shape
+xx = [inebsd.unitCell.x(:);inebsd.unitCell.x(1)]; % repeat the 1st x co-ordinate to close the unit pixel shape
+yy = [inebsd.unitCell.y(:);inebsd.unitCell.y(1)]; % repeat the 1st y co-ordinate to close the unit pixel shape
 unitPixelArea = polyarea(xx,yy);
-if size(inebsd.unitCell,1) == 6 % hexGrid
+if length(inebsd.unitCell) == 6 % hexGrid
   stepSize = sqrt(unitPixelArea/sind(60));
 else % squareGrid
   stepSize = sqrt(unitPixelArea);

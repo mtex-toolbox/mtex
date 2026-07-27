@@ -37,7 +37,7 @@ function varargout = gridify(ebsd,varargin)
 % extract new unitCell
 unitCell = get_option(varargin,'unitCell',ebsd.unitCell);
 
-if size(unitCell,1) == 6
+if length(unitCell) == 6
   [varargout{1:nargout}] = hexify(ebsd,varargin{:});
 else
   [varargout{1:nargout}] = squarify(ebsd,varargin{:});

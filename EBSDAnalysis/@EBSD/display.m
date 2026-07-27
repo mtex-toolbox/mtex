@@ -64,7 +64,7 @@ disp(strong(" Normal vector") + ": (" + ...
   char(round(ebsd.N,'accuracy',5*degree)) + ")");
 
 if min(ebsd.size) > 1
-  if size(ebsd.unitCell,1) == 6
+  if length(ebsd.unitCell) == 6
     disp(strong(" Hex grid") + "     :" + size2str(ebsd));
   else
     disp(strong(" Square grid") + "  :" + size2str(ebsd));

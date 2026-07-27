@@ -58,7 +58,7 @@ function ebsd = erode(ebsd,count, varargin)
 if any(size(ebsd)==1), ebsd = ebsd.gridify; end
 
 % find the neighbors
-if size(ebsd.unitCell,1) == 6
+if length(ebsd.unitCell) == 6
   ind = hexNeighbors(size(ebsd));
 else
   ind = squareNeighbors2(size(ebsd));
