@@ -28,7 +28,7 @@ grains = smooth(grains,5);
 F = halfQuadraticFilter;
 ebsd = smooth(ebsd,F,grains,'fill');
 
-plot(ebsd('indexed'),ebsd('indexed').orientations)
+plot(ebsd,ebsd.orientations)
 hold on
 plot(grains.boundary,'lineWidth',2)
 hold off

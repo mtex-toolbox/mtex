@@ -54,8 +54,8 @@ kam = ebsd.KAM / degree;
 % lets plot it
 plot(ebsd,kam,'micronbar','off')
 setColorRange([0,15])
-mtexColorbar
 mtexColorMap LaboTeX
+mtexColorbar
 hold on
 plot(grains.boundary,'lineWidth',1.5)
 hold off
@@ -84,7 +84,7 @@ hold off
 % errors and is often very noisy. The noise can be  reduced by considering
 % higher order neighbors
 
-plot(ebsd,ebsd.KAM('threshold',2.5*degree,'order',5) ./ degree,'micronbar','off')
+plot(ebsd,ebsd.KAM('threshold',2.5*degree,'order',3) ./ degree,'micronbar','off')
 setColorRange([0,2])
 mtexColorbar
 mtexColorMap LaboTeX
