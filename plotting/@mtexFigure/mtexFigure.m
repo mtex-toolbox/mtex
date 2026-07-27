@@ -106,7 +106,10 @@ classdef mtexFigure < handle
       
       clf('reset');
       rmallappdata(gcf);
-      vis = get_option(varargin,'Visible','on');
+      % fall back to the MATLAB default rather than forcing 'on', so that
+      % setting DefaultFigureVisible to 'off' keeps mtex figures off screen
+      % too - used e.g. when publishing the documentation
+      vis = get_option(varargin,'Visible',get(0,'DefaultFigureVisible'));
       set(gcf,'Visible',vis);
 
       % set figure name
