@@ -124,12 +124,22 @@ classdef plottingConvention < matlab.mixin.Copyable
           ax.ThetaDir='counterclockwise';
         end
 
-      elseif ax.PlotBoxAspectRatioMode == "manual" % 3d plot
-        
+      elseif ax.PlotBoxAspectRatioMode == "manual" && ...
+          ax.CameraPositionMode == "manual" % 3d plot with a placed camera
+
+        % Note: this branch is only for axes whose camera has already been
+        % placed by hand (e.g. after rotate3d / zoom in a 3d plot), where the
+        % camera distance encodes the current zoom and has to be preserved.
+        % Setting CameraPosition/CameraTarget makes them 'manual', which
+        % makes MATLAB report ax.TightInset as [0 0 0 0] - the axes then
+        % looks like it needs no space for labels and mtexFigure crops them
+        % away. For an untouched camera the map branch below is used instead,
+        % which leaves the camera modes on 'auto' and keeps TightInset alive.
+
         %cameraDist = norm(ax.CameraPosition - ax.CameraTarget);
         %ax.CameraPosition = ax.CameraTarget + cameraDist*pC.outOfScreen.xyz;
         %ax.CameraUpVector = pC.north.xyz;
-        
+
         target = mean([ax.XLim; ax.YLim; ax.ZLim],2).';   % or your own target
         d = norm(ax.CameraPosition - ax.CameraTarget);    % preserve current distance
 
