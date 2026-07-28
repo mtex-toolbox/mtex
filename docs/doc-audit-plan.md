@@ -192,7 +192,59 @@ mouse click, so reproduce it by running the page rather than by picking a
 subset by hand. Most likely an index-remapping gap in `plotOrdered2` when the
 boundary's vertex/segment ids are no longer contiguous.
 
-## 9. Deferred (decided 2026-07-28: revisit much later)
+## 9. To decide: the sim / ensureCS lattice tolerance gap
+
+Two tolerances answer the same question — "are these two crystalSymmetries
+the same crystal?" — an order of magnitude apart:
+
+- `geometry/phaseItem.m:130` (`simPair`, used by `sim`, and by
+  `@EBSD/calcTensor.m:40` to match a tensor to a phase) requires the same
+  mineral name, the same Laue id, and
+  `all(abs(abc1-abc2)/max(abc1) < 1e-2)` → **1 %** on lattice parameters.
+- `geometry/@symmetry/ensureCS.m:22` transforms automatically when
+  `csNew.id == csOld.id && norm(MM-eye(3))/norm(MM) < 1e-1` → **10 %**, and
+  calls `transformReferenceFrame` itself.
+
+So `tensor/transformReferenceFrame` *is* invoked automatically — via
+`@tensor/rotate.m:18` calling `T.CS.ensureCS(R)` — but `calcTensor` errors out
+at its own `sim` pre-check before ever reaching it. Concretely: the Diopside
+tensor in `doc/Elasticity/CPOSeismicProperties.m` deviates 1.7 % in a and
+2.2 % in b from the measured Diopside phase of `mtexdata forsterite`, inside
+`ensureCS`'s tolerance and outside `sim`'s, so the page died with "Missing
+tensor for phase: Diopside".
+
+Aligning `simPair`'s lattice tolerance with `ensureCS`'s would fix that class
+of failure but changes phase-matching semantics everywhere `sim` is used —
+hence a decision, not a fix. Numerically the frame choice barely matters in
+that example: published cell + `transformReferenceFrame`, point group `'121'`
++ data lattice, and building the tensor directly with the data CS agree to
+0.008 % in the aggregate (C11 207.806 vs 207.822).
+
+## 10. To decide: checkMeanTensor's quadrature assert
+
+With the abstract-constructor blocker fixed (commit `f120d7f21`) the test runs
+and its rank 1, rank 2 and rank 3 Fourier asserts pass, but it stops at line
+84. That assert demands a mean deviation below 2e-3 from the rank 3
+`calcTensor(odf,T,'quadrature')`; measured values for that tensor are
+
+| halfwidth | Fourier | quadrature |
+|---|---|---|
+| 0.5° | 0.00039 | 0.0275 |
+| 1.0° | 0.0016 | 0.0083 |
+| 2.0° | 0.0063 | 0.0062 |
+| 4.0° | 0.0249 | 0.0248 |
+
+so no halfwidth makes the quadrature path meet the tolerance, while Fourier
+meets it at ≤1° (which is what line 64 uses). Either quadrature accuracy for
+sharp ODFs is the defect, or the tolerance was never calibrated for that path.
+Left failing rather than retuned.
+
+Note also that `tests/checkMeanTensor.m:133-154` is scratch code referencing
+variables that are never defined (`ebsd_corrected`, `C_Epidote`,
+`odf_Epidote`, `CS`, `SS`, `C_Glaucophane`); the test never reaches it today,
+but it would fail there too.
+
+## 11. Deferred (decided 2026-07-28: revisit much later)
 
 Verified as still present, deliberately not being worked on now. Recorded so
 they are not rediscovered from scratch.
