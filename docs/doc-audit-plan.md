@@ -177,20 +177,40 @@ report of three broken entries — `mapPlot`, `scaleBar`, `sphericalPlot` in
 `plotting_index.toc` — was a false positive; those are classdefs in
 `plotting/` whose reference pages do exist.)
 
-## 8. To fix: plotting a subset of grain boundaries
+## 8. Closed: plotting an empty grain boundary
 
-`doc/Grains/SelectingGrains.m:48` → `@grainBoundary/plot.m:49` → subfunction
-`plotOrdered2:82` → `tools/graph_tools/EulerCycles2.m:16`, "Sparse matrix
-sizes must be nonnegative integer scalars". Re-verified 2026-07-28 by running
-the page end to end.
+Originally reported as `EulerCycles2.m:16` "Sparse matrix sizes must be
+nonnegative integer scalars" via `doc/Grains/SelectingGrains.m:48`. The real
+condition was an **empty** boundary, not a subset one — `max(FF(:))` is `[]`
+for empty `F` and `sparse` rejects an empty size, while the `isempty(F)` guard
+sat three lines below the `sparse` call it was meant to protect.
 
-Plotting a *subset* of boundaries is a common operation, so this is worth
-fixing. Note it does not trigger for every subset: plotting
-`grains(1:n).boundary` for n in {1,2,5,20,100} and `grainSize>500` on
-forsterite all succeed. The page's failing subset comes from its simulated
-mouse click, so reproduce it by running the page rather than by picking a
-subset by hand. Most likely an index-remapping gap in `plotOrdered2` when the
-boundary's vertex/segment ids are no longer contiguous.
+Resolved by merging `feature/orderedBoundary` (commit `8309d0a79`), which
+rewrote `plotOrdered2` to use the stored walk order directly instead of
+rediscovering connectivity with an Euler cycle walk. **`EulerCycles2.m` now
+has no callers anywhere** and is dead code — a candidate for deletion.
+
+One follow-on remained after the merge and is fixed in `eef2e2820`: with
+nothing drawn, `h` is a 1x0 `GraphicsPlaceholder` and
+`h(1).Annotation.LegendInformation` in `@grainBoundary/plot.m` errored. Now
+guarded.
+
+Verified after the merge: 6 empty-boundary variants (ordered, smooth,
+DisplayName, colour data, simple, simple+colour) and 7 non-empty regression
+variants all pass; `check_mtex`, `check_calcGrainsCases`,
+`check_boundaryChains` and `check_chainOrder` pass; and
+`BoundaryProperties.m`, `TiltAndTwistBoundaries.m`, `TriplePoints.m`,
+`GrainReconstruction.m`, `BoundaryMisorientations.m` all run clean.
+
+**`SelectingGrains.m` is flaky, not broken.** It picks its grain with
+`simulateClick(9000,3500)`, which headless lands on a different grain each run
+(observed 22, 20, 15, 15, 15 — all clean) or misses entirely. When it misses,
+`grains([]).meanOrientation` carries a default triclinic CS matching no entry
+in `CSList`, so `@grain2d/findByOrientation.m:22` takes its
+`if isempty(phaseId), grains = []; return` branch and returns a raw double;
+line 73 then dies with "Dot indexing is not supported for variables of this
+type". That early return arguably should produce an empty `grain2d` rather
+than `[]` — separate, pre-existing, not caused by the merge.
 
 ## 9. To decide: the sim / ensureCS lattice tolerance gap
 
