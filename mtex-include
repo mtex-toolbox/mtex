@@ -29,7 +29,7 @@
 -I ${MTEX_DIR}/doc/Grains
 -I ${MTEX_DIR}/doc/Misorientations
 -I ${MTEX_DIR}/doc/ODFAnalysis
--I ${MTEX_DIR}/doc/PhaseTransistions
+-I ${MTEX_DIR}/doc/PhaseTransitions
 -I ${MTEX_DIR}/doc/Plasticity
 -I ${MTEX_DIR}/doc/Plotting
 -I ${MTEX_DIR}/doc/PoleFigureAnalysis
