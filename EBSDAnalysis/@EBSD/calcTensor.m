@@ -30,8 +30,11 @@ function varargout = calcTensor(ebsd,varargin)
 % See also
 % tensor/mean
 
-% maybe we need to average the density as well
+% maybe we need to average the density as well - only meaningful if every
+% indexed phase contributes one, as a missing density stays NaN and would
+% render the average NaN
 density = nan(size(ebsd));
+hasDensity = ~isempty(ebsd.indexedPhasesId);
 
 % cycle through indexed phases
 for p = ebsd.indexedPhasesId
@@ -45,7 +48,11 @@ for p = ebsd.indexedPhasesId
   end
   
   % extract density
-  if isfield(T.opt,'density'), density(ebsd.phaseId == p) = T.opt.density; end
+  if isfield(T.opt,'density')
+    density(ebsd.phaseId == p) = T.opt.density;
+  else
+    hasDensity = false;
+  end
 
   % rotate tensors
   TRot(ebsd.phaseId == p) = ...
@@ -59,9 +66,12 @@ TRot = TRot(ebsd.isIndexed);
 
 TRot.how2plot = ebsd.how2plot;
 
-% average density
-if isfield(T.opt,'density')
-  for k=1:nargout, varargout{k}.opt.density = mean(density); end
+% average density - only over the indexed pixels, as the density of the not
+% indexed ones is unknown (they keep the NaN they were initialised with) and
+% would otherwise render the average, and with it all derived quantities
+% like wave velocities, NaN
+if hasDensity
+  for k=1:nargout, varargout{k}.opt.density = mean(density(ebsd.isIndexed)); end
 end
 
 end
