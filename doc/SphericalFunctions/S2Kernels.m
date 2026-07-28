@@ -44,7 +44,7 @@ plot(psi,'linewidth',2,'symmetric')
 %
 % These Legendre coefficients are stored as the field |psi.A| and can be
 % easily visualized using the command <S2Kernel.plotSpektra.html
-% |plotSpectra|>.
+% |plotSpektra|>.
 
 plotSpektra(psi,'linewidth',2)
 
@@ -57,12 +57,12 @@ plotSpektra(psi,'linewidth',2)
 % <vector3d.calcDensity.html |calcDensity|>
 % * defocusing correction of XRD data
 % * estimation of the habit plane normal distribution using the command
-% <calcGBND.html |calcGBND|>
-% * definition of fibe ODFs using the command <fibreODF.html |fibreODF|>
+% <grainBoundary.calcGBND.html |calcGBND|>
+% * definition of fibre ODFs using the command <fibreODF.html |fibreODF|>
 %
 %
 %% The de la Vallee Poussin Kernel
-% The <S2Kernels.S2DeLaValleePoussinKernel.html spherical de la Vallee Poussin kernel>
+% The <S2DeLaValleePoussinKernel.html spherical de la Vallee Poussin kernel>
 % is defined by 
 % 
 % $$ K(t) = (1+\kappa)\,(\frac{1+t}{2})^{\kappa}$$ 
@@ -108,7 +108,7 @@ hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
 %% The Dirichlet Kernel
-% The <S2Kernels.S2DirichletKernel.html spherical Dirichlet or
+% The <S2DirichletKernel.html spherical Dirichlet or
 % Christoffel-Darboux kernel> is recommended for calculating physical
 % properties as the Legendre coefficients always have a value of one up to
 % the specified bandwidth:
@@ -136,7 +136,7 @@ hold off
 legend('bandwidth = 10','bandwidth = 5')
 
 %% The Bump kernel
-% The <S2Kernels.S2BumpKernel.html spherical bump kernel> is a radial
+% The <S2BumpKernel.html spherical bump kernel> is a radial
 % symmetric kernel function depending on the halfwidth $r\in (0,pi)$. The
 % function value is 0, if the angle is greater then the halfwidth $r$.
 % Otherwise it is 1.

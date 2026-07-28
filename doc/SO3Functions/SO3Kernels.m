@@ -39,8 +39,8 @@ psi = SO3Kernel([1;0;3;1])
 plot(psi)
 
 %%
-% We can define an <SO3Fun.html |SO3Fun|> from a kernel function $\psi$ at a specific
-% orientation $\bf R$ by using the class <SO3FunRBF.html |SO3FunRBF|>, i.e.
+% We can define an <SO3Fun.SO3Fun.html |SO3Fun|> from a kernel function $\psi$ at a specific
+% orientation $\bf R$ by using the class <SO3FunRBF.SO3FunRBF.html |SO3FunRBF|>, i.e.
 
 psi =SO3DeLaValleePoussinKernel('halfwidth',20*degree)
 SO3F = SO3FunRBF(orientation.rand,psi)
@@ -75,7 +75,7 @@ plot(psi)
 %
 
 %% The de La Vallee Poussin Kernel
-% The <SO3Kernels.SO3DeLaValleePoussinKernel.html de la Vallee Poussin kernel> on
+% The <SO3DeLaValleePoussinKernel.html de la Vallee Poussin kernel> on
 % $\mathcal{SO}(3)$ is defined by 
 % 
 % $$ K(t) = \frac{B(\frac32,\frac12)}{B(\frac32,\kappa+\frac12)}\,t^{2\kappa}$$ 
@@ -119,7 +119,7 @@ hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
 %% The Dirichlet Kernel
-% The <SO3Kernels.SO3DirichletKernel.html Dirichlet kernel> has the 
+% The <SO3DirichletKernel.html Dirichlet kernel> has the 
 % unique property of being a convergent finite series in Fourier coefficients 
 % with an integral of one. This kernel is recommended for calculating 
 % physical properties as the Fourier coefficients always have a value of one
@@ -151,7 +151,7 @@ hold off
 legend('bandwidth = 10','bandwidth = 5')
 
 %% The Abel Poisson Kernel
-% The <SO3Kernels.SO3AbelPoissonKernel.html Abel Poisson kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
+% The <SO3AbelPoissonKernel.html Abel Poisson kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
 % is a nonnegative function depending on a parameter $\kappa \in (0,1)$ and 
 % is defined by its Chebyshev series
 %
@@ -182,7 +182,7 @@ hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
 %% The von Mises Fisher Kernel
-% The <SO3Kernels.SO3vonMisesFisherKernel.html von Mises Fisher kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
+% The <SO3vonMisesFisherKernel.html von Mises Fisher kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
 % is a nonnegative function depending on a parameter $\kappa>0$ and 
 % is defined by its Chebyshev series
 %
@@ -225,7 +225,7 @@ hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
 %% The Gauss Weierstrass Kernel
-% The <SO3Kernels.SO3GaussWeierstrassKernel.html Gauss Weierstrass kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
+% The <SO3GaussWeierstrassKernel.html Gauss Weierstrass kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
 % is a nonnegative function depending on a parameter $\kappa>0$ and 
 % is defined by its Chebyshev series
 %
@@ -253,7 +253,7 @@ hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
 %% The Sobolev Kernel
-% The <SO3Kernels.SO3SobolevKernel.html Sobolev kernel> $\psi_{s}\in L^2(\mathcal{SO}(3))$ 
+% The <SO3SobolevKernel.html Sobolev kernel> $\psi_{s}\in L^2(\mathcal{SO}(3))$ 
 % is a radial symmetric kernel function depending on a parameter $s$ and 
 % is defined by its Chebyshev series
 %
@@ -281,7 +281,7 @@ hold off
 legend('s = 1','s = 1.2')
 
 %% The Laplace Kernel
-% The <SO3Kernels.SO3LaplaceKernel.html Laplace kernel> $\psi\in L^2(\mathcal{SO}(3))$ 
+% The <SO3LaplaceKernel.html Laplace kernel> $\psi\in L^2(\mathcal{SO}(3))$ 
 % is a radial symmetric kernel function which is defined by its Chebyshev series
 %
 % $$ \psi(t) = \sum\limits_{n=0}^{\infty} \frac{(2n+1)}{4\,n^2\,(2n+2)^2}
@@ -298,7 +298,7 @@ plot(psi)
 plotSpektra(psi)
 
 %% The Squared Singularity Kernel
-% The <SO3Kernels.SO3SquareSingularityKernel.html squared singularity kernel> 
+% The <SO3SquareSingularityKernel.html squared singularity kernel> 
 % $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$  is a nonnegative function 
 % depending on a parameter $\kappa\in(0,1)$ and is defined by its Chebyshev series
 %
@@ -336,7 +336,7 @@ hold off
 legend('\kappa = 0.2','\kappa = 0.3')
 
 %% The Bump kernel
-% The <SO3Kernels.SO3BumpKernel.html bump kernel> $\tilde\psi_r\in
+% The <SO3BumpKernel.html bump kernel> $\tilde\psi_r\in
 % L^2(\mathcal{SO}(3))$ is a radial symmetric kernel function depending on
 % a parameter $r\in (0,\pi)$. The function value is 0, if the angle is
 % greater then the halfwidth $r$. Otherwise it is has a constant value,
