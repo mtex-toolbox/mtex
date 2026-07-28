@@ -1,11 +1,11 @@
 function [c_book, conds, info] = ...
     solve_lsq_book_varsize(weights, basis_values, f_values, sizes,  varargin)
 
-% same as solve_lsq_book_constsize, but G does now have varibale size
+% same as solve_lsq_book_constsize, but G does now have variable size
 % overall we get N = numel(sizes) many least squares problem
 % portions of sizes(i) of each input belong to the same problem
 % this function returns the solution vectors and the condition numbers
-% one can also set flags and parameters for regularization and similiar things
+% one can also set flags and parameters for regularization and similar things
 
 % the computation is performed in batches, grouped by similar number of columns
 
@@ -158,7 +158,7 @@ function info = insertRegInfo(info, I, info_batch)
   end
 end
 
-% restrict pagewise geometryScore to the current batch, if it is given
+% restrict the pagewise domain-specific geometry score to the current batch
 function varargin = sliceGeometryScore(varargin, I)
   for k = 1 : numel(varargin)-1
     if ischar(varargin{k}) || isstring(varargin{k})
