@@ -134,7 +134,7 @@ plotIPDF(variants(beta2alpha,oriParent),vector3d.Z)
 %%
 % Sometimes one faces the inverse question, i.e., determine the |variantId|
 % from a parent and a child orientation or a pair of child orientations.
-% This can be done using the command <calcVariants.html |calcVariants|>
+% This can be done using the command <parentGrainReconstructor.calcVariants.html |calcVariants|>
 % which is discussed in detail in the section
 % <ParentGrainReconstruction.html parent grain reconstruction>.
 

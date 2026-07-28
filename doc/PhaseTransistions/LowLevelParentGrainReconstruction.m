@@ -115,7 +115,7 @@ hold off
 % The second  output argument gives the number of these votes
 % 
 % For all grains with at least 3 unique vote we now use the command
-% <variants.html |variants|> to compute the parent orientation
+% <orientation.variants.html |variants|> to compute the parent orientation
 % corresponding to the |parentId|. This parent orientations we assign as
 % new |meanOrientation| to our grains.
 
@@ -208,7 +208,7 @@ oriBeta = parentGrains( grainPairs(:,2) ).meanOrientation;
 % Similarly, as in the first step the command <calcParent.html
 % |calcParent|> returns a list of |parentId| that allows the convert the
 % child orientations into parent orientations using the command
-% <variants.html |variants|> and the fitting to the given parent
+% <orientation.variants.html |variants|> and the fitting to the given parent
 % orientation. Similarly, as for the triple point we select only those
 % alpha beta pairs such that the fit is below the threshold of 2.5 degree
 % and at the same time the second best fit is above 2.5 degree.
