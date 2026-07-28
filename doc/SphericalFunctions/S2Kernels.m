@@ -25,8 +25,7 @@ plot(psi,'linewidth',2,'symmetric')
 % * the Schulz defocusing kernel @SchulzDefocusingKernel
 % * the Dirichlet kernel @S2DirichletKernel
 % * the Bump kernel @S2BumpKernel
-% * the Abel Poussin kernel @S2AbelPoussinKernel.html de >
-% * the <S2AbelPoussinKernel.html vom Mises kernel>
+% * the restricted distance kernel @S2RestrictedDistanceKernel
 %
 %% Legendre coefficients
 %
