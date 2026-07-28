@@ -28,7 +28,7 @@ plot(ebsd, ebsd.orientations)
 %%
 % Computing an ODF from individual orientations is done by
 % <DensityEstimation.html kernel density estimation> using the command
-% <orientation.calcDensity.html |calcDensity|>.
+% <rotation.calcDensity.html |calcDensity|>.
 
 % extract the orientations
 ori = ebsd.orientations;

@@ -136,7 +136,7 @@ plotIPDF(variants(beta2alpha,oriParent),vector3d.Z)
 % from a parent and a child orientation or a pair of child orientations.
 % This can be done using the command <parentGrainReconstructor.calcVariants.html |calcVariants|>
 % which is discussed in detail in the section
-% <ParentGrainReconstruction.html parent grain reconstruction>.
+% <MaParentGrainReconstruction.html parent grain reconstruction>.
 
 %% Parent Variants
 %

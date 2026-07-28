@@ -233,14 +233,7 @@ classdef tensor < dynOption
       if ~isempty(cs), T.CS = cs; end
     end
     
-    function T = rand(varargin)
-      r = get_option(varargin,'rank',2);
-      varargin = delete_option(varargin,'rank',1);
-      [cs,varargin] = getClass(varargin,'symmetry');
-      d = [repmat(3,1,r),varargin{:},1];
-      T = tensor(rand(d),'rank',r);
-      if ~isempty(cs), T.CS = cs; end
-    end
+    T = rand(varargin);
 
   end
   

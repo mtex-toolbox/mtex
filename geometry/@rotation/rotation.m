@@ -95,21 +95,13 @@ classdef rotation < quaternion & dynOption
 
   methods (Static = true)
 
-    function r = nan(varargin)
-      r = rotation(quaternion.nan(varargin{:}));
-    end
+    r = nan(varargin);
 
-    function r = id(varargin)
-      r = rotation(quaternion.id(varargin{:}));
-    end
+    r = id(varargin);
 
-    function r = rand(varargin)
-      r = rotation(quaternion.rand(varargin{:}));
-    end
+    r = rand(varargin);
 
-    function r = inversion(varargin)
-      r = -rotation.id(varargin{:});
-    end
+    r = inversion(varargin);
 
     r = byMatrix(varargin);
 
@@ -118,6 +110,8 @@ classdef rotation < quaternion & dynOption
     r = byAxisAngle(varargin);
     
     r = byRodrigues(varargin);
+
+    r = byHomochoric(varargin);
 
     r = map(varargin);
     

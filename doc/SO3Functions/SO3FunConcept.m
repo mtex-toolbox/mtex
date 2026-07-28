@@ -33,7 +33,7 @@ SO3F = SO3FunHandle(@(ori) angle(ori) ./ degree, cs)
 %%
 % The entire information about the orientation dependent function is now
 % stored in the variable |SO3F|. In order to determine its value for a
-% specific orientation |ori| the function <SO3Fun.eval.html |eval(ori)|> is
+% specific orientation |ori| the function <SO3FunHandle.eval.html |eval(ori)|> is
 % used.
 
 ori = orientation.rand(cs)
@@ -60,7 +60,7 @@ mtexColorMap parula
 %%
 % as obviously, the function value is constant in each section. 
 % Many more methods for visualizing orientation dependent functions are
-% discussed <SO3FunVisualization.html here>. 
+% discussed <ODFPlot.html here>. 
 % 
 %% Computing with Orientation Dependent Functions
 %

@@ -52,7 +52,7 @@ plot(ebsd('Aus').orientations,'axisAngle')
 % assumed to be the result of deformations during high-speed collisions in
 % the asteroid belt. We can get this parent grain orientation by taking the
 % <orientation.mean.html |mean|> and compute the fit by the command
-% <orientation.std.html |std|>
+% <quaternion.std.html |std|>
 
 parenOri = mean(ebsd('Aus').orientations)
 

@@ -1,4 +1,5 @@
 RotationDefinition  Definition
+RotationRepresentations  Representations
 RotationImproper    Improper Rotations
 RotationOperations  Operations
 RotationPlotting    Plotting

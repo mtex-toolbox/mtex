@@ -43,7 +43,7 @@ mtexColorbar
 
 %%
 % and compute $10000$ random orientations representing this density function using the command
-% |<orientation.discreteSample.html discreteSample>|
+% |<SO3Fun.discreteSample.html discreteSample>|
 
 ori = odf.discreteSample(10000)
 

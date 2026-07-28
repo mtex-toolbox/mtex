@@ -43,7 +43,7 @@ plot(ebsd.orientations,'Euler')
 % visualizations are discussed in the section
 % <OrientationVisualization3d.html 3D Plots>. The orientation distribution
 % function is now the relative frequency of the above points per volume
-% element and can be computed by the command <orientation.calcDensity.html
+% element and can be computed by the command <rotation.calcDensity.html
 % |calcDensity|>. 
 
 odf = calcDensity(ebsd.orientations)

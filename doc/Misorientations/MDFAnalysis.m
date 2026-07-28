@@ -33,7 +33,7 @@ mori_boundary = grains.boundary('Fo','En').misorientation
 
 %%
 % and second compute the corresponding density function using the command
-% <orientation.calcDensity.html calcDensity>
+% <rotation.calcDensity.html calcDensity>
 
 mdf_boundary = calcDensity(mori_boundary,'halfwidth',5*degree)
 
@@ -138,7 +138,7 @@ plotAxisDistribution(mdf)
 %%
 % For computing the exact values see the commands
 % <SO3Fun.calcAxisDistribution.html calcAxisDistribution(mdf)> and
-% <orientation.calcAxisDistribution.html calcAxisDistribution(grains)>.
+% <SO3Fun.calcAxisDistribution.html calcAxisDistribution(grains)>.
 
 aD = calcDensity(axis(grains.boundary('fo','en').misorientation))
 
