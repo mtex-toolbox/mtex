@@ -16,6 +16,14 @@ function check_grainReconstructionBenchmark(varargin)
 % makes this useful as a running scratchpad for tracking speedups /
 % regressions while working on spatialDecomposition, jcvoronoi, etc.
 %
+% This is a manual/opt-in performance benchmark, not a routine correctness
+% check: loading the full-size reference datasets (and, where present, the
+% ~2.5M pixel steel1C_1 map) makes a single run take from several seconds
+% to over a minute. Run it deliberately after a feature/optimization is
+% finished, not as part of routine testing - see check_calcGrainsCases for
+% the fast (<1s), small-map correctness suite that covers grid type and
+% transform combinations.
+%
 % Syntax
 %   check_grainReconstructionBenchmark
 %   check_grainReconstructionBenchmark('update')

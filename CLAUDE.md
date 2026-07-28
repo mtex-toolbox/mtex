@@ -12,7 +12,20 @@ Run from the repo root (`/home/hielscher/mtex/master`) so MATLAB auto-executes t
 /opt/matlab-2024b/bin/matlab -batch "your_command_here"
 ```
 
-`-batch` runs headlessly (no desktop/menu) and exits after the command finishes. Startup (path setup + MTEX init) takes ~8-10s before your command runs.
+`-batch` runs headlessly (no desktop/menu) and exits after the command finishes. Startup (path setup + MTEX init) typically takes ~10-20s before your command runs, and can spike much higher (minutes) if another MATLAB instance (e.g. an interactive desktop session) is already running and contending for the same license/service-host processes.
+
+### Persistent session for iterative work
+
+Spawning a fresh `-batch` process pays the full startup cost every time, which adds up when running several `check_*.m`/test commands back-to-back in one task. `docs/agents/matlab-bridge/` provides a persistent, headless MATLAB session (driven via the Python MATLAB Engine API) that pays startup once and stays warm across many calls:
+
+```
+docs/agents/matlab-bridge/setup.sh          # one-time: provisions a Python 3.12 venv + MATLAB Engine API
+docs/agents/matlab-bridge/start_session.sh  # starts the shared session, waits for readiness
+docs/agents/matlab-bridge/.venv/bin/python docs/agents/matlab-bridge/matlab_run.py "your_command_here"
+docs/agents/matlab-bridge/stop_session.sh   # stop when done iterating
+```
+
+`matlab_run.py` mirrors `-batch` semantics (nonzero exit on MATLAB error, live stdout/stderr) and clears the base workspace before every call, but keeps the path/MTEX init warm. Caveats: adding *new* `.m` files or folders requires restarting the session (the path is fixed at startup — editing existing files is picked up immediately); the session holds an extra MATLAB license checkout for as long as it's alive, so stop it when not actively iterating. This is separate from and never interferes with the user's own interactive MATLAB desktop session.
 
 ## Code layout
 

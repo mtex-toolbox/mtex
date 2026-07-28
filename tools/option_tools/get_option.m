@@ -1,19 +1,21 @@
 function value = get_option(option_list,option,default,type)
 % extract option from option list
 %
-% In case the option occurs more than one time in the option list the first
-% value that meets the type condition is returned.
+% In case the option occurs more than one time in the option list the last
+% occurrence is used. If its value does not match |type| the default is
+% returned.
 %
 % Syntax
-%   value = get_option(option_list,option_name,default_option,option_type)
+%   value = get_option(option_list,option,default,type)
 %
 % Input
-%  option_list   - Cell Array
-%  option_name   - String
-%  option_default- default value
-%  option_type   - class name or list of class names
+%  option_list - cell array
+%  option      - option name, string or cell array of alias names
+%  default     - value returned if the option is not found
+%  type        - class name or cell array of class names
+%
 % Output
-%  value         - option value
+%  value       - option value
 %
 % See also
 % check_option set_option delete_option

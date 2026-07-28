@@ -11,9 +11,16 @@ function removed = minPixelMask(ebsd,gbc,varargin)
 % without culling (default), or use a cheaper grid neighbourhood.
 %
 % Sizing methods:
-%   'voronoi' (default) - full decomposition + segmentation, no culling. Grain
-%       sizes match the final grains exactly; never over-culls. Costs a second
-%       Voronoi pass.
+%   'voronoi' (default) - decomposition + segmentation, no culling, using the
+%       Delaunay-adjacency-only mex (jcvoronoiDelaunayOnly_mex, see
+%       spatialDecompositionGrid's 'delaunayOnly' flag) instead of the full
+%       Voronoi build: doSegmentation only ever needs site adjacency, never
+%       the V/F geometry. Grain sizes are never smaller than the final
+%       grains', so this never over-culls; on an exactly regular/rigid grid
+%       (every interior vertex exactly cocircular) it can very rarely
+%       under-cull a grain that touches a same-sized neighbour purely
+%       diagonally, since the Delaunay adjacency graph is a superset of the
+%       true Voronoi face adjacency there (see check_jcvoronoiDelaunayOnly).
 %   'grid' - connected components on the grid neighbourhood (stencil +
 %       diagonals) only. Cheaper, but may over-cull grains connected solely
 %       through bridged gaps.
@@ -35,7 +42,7 @@ minPixelMethod = get_option(varargin,'minPixelMethod','voronoi');
 if strcmpi(minPixelMethod,'grid')
   gid0 = gridComponents(ebsd,gbc,varargin{:});    % grain id per pixel, 0 = none
 else
-  out0  = spatialDecompositionGrid(ebsd,varargin{:});
+  out0  = spatialDecompositionGrid(ebsd,varargin{:},'delaunayOnly');
   I_FD0 = remapIFD(out0,ebsd);
   [~,I_DG0] = doSegmentation(I_FD0,ebsd,gbc,varargin{:});
   gid0 = full(I_DG0 * (1:size(I_DG0,2)).');       % grain id per pixel (0 = none)

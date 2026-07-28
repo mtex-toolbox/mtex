@@ -273,6 +273,34 @@ catch
           out.how2plot.east = xvector;
           out.how2plot.outOfScreen = zvector;
 
+        case 'emsphinx'
+
+          % An in situ deformed austenitic steel, indexed by spherical
+          % pattern matching with EMSphInx rather than by Hough transform,
+          % which is what makes it interesting here: 0.4 micron steps and
+          % an orientation noise of about 0.1 degree, an order of magnitude
+          % below a typical Hough indexed map. The subgrain structure of the
+          % deformed austenite is therefore resolved, which is what
+          % <gbcFMC.gbcFMC.html FMC> grain reconstruction is for.
+          %
+          % The file names none of its phases - EMSphInx writes the master
+          % pattern list into the header instead, and those were alpha iron,
+          % gamma iron and alpha cobalt. The cobalt is not a phase of the
+          % specimen but the third candidate the indexing was given; it
+          % collects the pixels neither iron phase fits, i.e. mostly the
+          % ones on grain boundaries.
+          out = EBSD.load(fName,'silent');
+
+          % phaseItem is a handle class, so naming them through a local
+          % copy of the list names the ones the EBSD object holds
+          CS = out.CSList;
+          CS(2).mineral = 'Iron bcc';
+          CS(3).mineral = 'Iron fcc';
+          CS(4).mineral = 'Cobalt';
+
+          out.how2plot.east = xvector;
+          out.how2plot.outOfScreen = zvector;
+
         case 'trueebsdwcco'
           
           load(fName,'out');

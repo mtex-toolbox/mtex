@@ -1,13 +1,24 @@
 function pos = find_option(option_list,option,type)
-% find the latest position of an option in an option_list
+% find the last position of an option in an option_list
+%
+% If |type| is given the position of the option *value*, i.e. the entry
+% following the option name, is returned - provided it exists and is of the
+% requested class. Use |type = []| to accept any class.
+%
+% Syntax
+%   pos = find_option(option_list,option)
+%   pos = find_option(option_list,option,type)
 %
 % Input
-%  option_list - Cell Array
-%  options     - String or Cell Array
-%  type        - list of allowed option classes
+%  option_list - cell array
+%  option      - option name, string or cell array of alias names
+%  type        - class name or cell array of class names
 %
 % Output
-%  pos         - position of the option, zero if not found
+%  pos         - position of the option / its value, zero if not found
+%
+% See also
+% get_option check_option set_option delete_option
 
 option_list = convertContainedStringsToChars(option_list);
 

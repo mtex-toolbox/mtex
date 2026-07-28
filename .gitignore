@@ -25,3 +25,7 @@ myScripts
 .mailmap
 gitTricks.md
 /extern/chebfun
+
+/docs/agents/matlab-bridge/.venv/
+/docs/agents/matlab-bridge/session.log
+/docs/agents/matlab-bridge/session.pid

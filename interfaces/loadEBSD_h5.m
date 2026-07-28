@@ -88,13 +88,15 @@ if check_option(varargin, 'ebsd_key')
 end
 
 % generate config info text
-fprintf('\n%s\n', repmat('═', 1, 80));
-fprintf('HDF5 CONFIGURATION LOADED\n');
-fprintf('├── Manufacturer : %s\n', Conf.settings.name);
-if isfield(Conf.settings, 'manufacturer_info')
-  wraptext(sprintf('    └── Info         : %s\n', Conf.settings.manufacturer_info.data));
+if ~check_option(varargin,'silent')
+  fprintf('\n%s\n', repmat('═', 1, 80));
+  fprintf('HDF5 CONFIGURATION LOADED\n');
+  fprintf('├── Manufacturer : %s\n', Conf.settings.name);
+  if isfield(Conf.settings, 'manufacturer_info')
+    wraptext(sprintf('    └── Info         : %s\n', Conf.settings.manufacturer_info.data));
+  end
+  fprintf('%s\n', repmat('═', 1, 80));
 end
-fprintf('%s\n', repmat('═', 1, 80));
 
 % Get absolute paths and load data-----------------------------------------
 

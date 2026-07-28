@@ -38,6 +38,13 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 % Flags
 %  unitCell - omit Voronoi decomposition and treat a unitcell lattice
 %  qhull    - use qHull for the Voronoi decomposition
+%  verbose  - report what the criterion did, if it has anything to say -
+%             currently only |'fmc'|, which prints its cluster hierarchy
+%  delaunay - use a true circumradius-based alpha-complex (exact, not a
+%             raster approximation) instead of the default morphological
+%             closing to partition the spatial domain - see
+%             spatialDecompositionAlpha.m. Useful for large alpha, where
+%             the default's disk structuring element gets slow.
 %
 % References
 %
@@ -56,19 +63,47 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 % TODO: we have to rotate everything to xy plane to do the reconstruction
 
 % extract grain boundary criterion
-gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
+%
+% A criterion object passed in always wins. Otherwise 'fmc' selects the
+% fast multiscale clustering criterion, as this function's own help and
+% GrainReconstructionAdvanced have documented all along - without this the
+% documented call silently fell through to plain angle thresholding and
+% returned a different segmentation without saying so.
+if check_option(varargin,{'fmc','FMC'})
+  gbc = getClass(varargin,'grainBoundaryCriterion',gbcFMC(varargin{:}));
+else
+  gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
+end
 
 % first pass:
 % mark pixels that would become grains smaller than minPixel as notIndexed
-removed = minPixelMask(ebsd,gbc,varargin{:});
-ebsd.phaseId(removed) = 1;    
+%
+% Criteria that enforce minPixel themselves are handed the value instead
+% and this pass is skipped: it is a second full segmentation, which for a
+% global criterion such as gbcFMC means running the whole clustering twice
+% only to find that it has already dealt with the undersized regions.
+if gbc.handlesMinPixel
+
+  minPixel = get_option(varargin,'minPixel',[]);
+  if ~isempty(minPixel), gbc = gbc.setMinPixel(minPixel); end
+
+else
+
+  removed = minPixelMask(ebsd,gbc,varargin{:});
+  ebsd.phaseId(removed) = 1;
+
+end
 
 % second pass: Voronoi decomposition
 % V - list of vertices
 % F - list of faces
 % D - cell array of cells
 % I_FD - incidence matrix faces to vertices
-out = spatialDecompositionGrid(ebsd,varargin{:});
+if check_option(varargin,'delaunay')
+  out = spatialDecompositionAlpha(ebsd,varargin{:});
+else
+  out = spatialDecompositionGrid(ebsd,varargin{:});
+end
 V = out.V;
 F = out.F;
 I_FD = remapIFD(out,ebsd);

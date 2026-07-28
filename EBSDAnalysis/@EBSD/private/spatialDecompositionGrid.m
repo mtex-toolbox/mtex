@@ -14,6 +14,18 @@ function out = spatialDecompositionGrid(ebsd,varargin)
 % two-pass scheme: decompose once, segment, cull undersized indexed grains by
 % marking their pixels notIndexed, then decompose again.
 %
+% cells2posId (see there) places every site that has no real measurement -
+% notIndexed holes, the exterior dummy ring bounding the map edge, filled
+% small gaps - via a local deformation model (see reconstructPos above),
+% not a single rigid affine ij*A' + origin: under a smooth but non-rigid
+% distortion (e.g. a trapezoidal stage drift, see EBSD/transform) a rigid
+% reconstruction disagrees with where a genuinely measured pixel at that
+% index would actually sit, shifting Voronoi boundaries near every hole and
+% the whole map edge and manufacturing spurious extra grains. Wherever a
+% real ebsd row exists at a hole's grid slot (e.g. a genuinely scanned but
+% notIndexed pixel), its true measured position is used directly instead of
+% any reconstruction - see cells2posId.
+%
 % Syntax
 %   out = spatialDecompositionGrid(ebsd,'alpha',1.5)
 %
@@ -39,23 +51,54 @@ function out = spatialDecompositionGrid(ebsd,varargin)
 alpha = get_option(varargin,'alpha',3.1);
 
 % transform positions to ij grid
-[A,stencil,dxy] = latticeBasis(ebsd.unitCell);
+g = ebsd.lattice;
+A = g.A; stencil = g.stencil; dxy = g.dxy; ij = g.ij;
 epsilon = dxy/100;
 
-pos    = [ebsd.pos.x(:), ebsd.pos.y(:)];
-origin = min(pos,[],1);
-ij     = round((pos - origin) / A');          % axial indices, n x 2
-
+pos = [ebsd.pos.x(:), ebsd.pos.y(:)];
 nE       = size(pos,1);
 isIndexed = ebsd.isIndexed(:);
 
 % fast neighbour lookup
 % ij2ebsd(ij2slot([i j])) is the ebsd index / 0 if not contained in the map
-ijmin = min(ij,[],1);
-ijsz  = max(ij,[],1) - ijmin + 1;               % raster size in (i,j)
-ij2slot = @(IJ) (IJ(:,1)-ijmin(1)) + (IJ(:,2)-ijmin(2))*ijsz(1) + 1;
-ij2ebsd = zeros(prod(ijsz),1);
-ij2ebsd(ij2slot(ij)) = 1:nE;                    % 0 = empty cell
+[ij2ebsd,ij2slot,ijmin,ijsz] = latticeLookup(ij);
+
+% local model to reconstruct the position of grid cells with no real
+% measurement (notIndexed holes, the dummy/band ring, filled small gaps).
+% A single rigid affine (ij*A' + a fixed origin) disagrees with the true
+% position under smooth non-rigid distortion (e.g. a trapezoidal stage
+% drift, see EBSD/transform) - it shifts Voronoi boundaries near every
+% hole/edge and manufactures spurious extra grains. Instead fit the ideal
+% affine lattice to the indexed pixels, then interpolate the *local*
+% deviation between real positions and that ideal grid in index space -
+% same technique as calcMesh - and evaluate it at cells with no data.
+% scatteredInterpolant requires double; ij/pos can come in as single
+% (e.g. real imported EBSD data)
+Iidx = double(ij(isIndexed,1)); Jidx = double(ij(isIndexed,2));
+posIdx = double(pos(isIndexed,:));
+idealFit  = [ones(numel(Iidx),1), Iidx, Jidx] \ posIdx;
+idealFun  = @(IJ) [ones(size(IJ,1),1), double(IJ)] * idealFit;
+defXY     = posIdx - idealFun([Iidx, Jidx]);
+
+% fast path: most EBSD grids are already (near-)rigid, so the ideal affine
+% grid alone reconstructs unmeasured positions accurately enough and the
+% deformation term below is negligible. Building it anyway is expensive -
+% two natural-neighbour scatteredInterpolant fits (each a Delaunay
+% triangulation over every indexed pixel) - so skip it whenever the affine
+% residual is small relative to the grid spacing, same check calcMesh uses
+% to decide whether its ideal grid is "sufficiently good". Only genuinely
+% distorted grids (e.g. smooth stage drift) fall through to the accurate,
+% slower route.
+if mean(vecnorm(defXY,2,2)) / dxy < 1e-2
+  reconstructPos = @(IJ) idealFun(IJ);
+else
+  Fx = scatteredInterpolant(Iidx, Jidx, defXY(:,1), 'natural', 'nearest');
+  Fy = scatteredInterpolant(Iidx, Jidx, defXY(:,2), 'natural', 'nearest');
+  % reshape guards against scatteredInterpolant returning 0x0 (not 0x1) for
+  % an empty query, which would otherwise break the '+' below
+  reconstructPos = @(IJ) idealFun(IJ) + ...
+    [reshape(Fx(double(IJ(:,1)),double(IJ(:,2))),[],1), reshape(Fy(double(IJ(:,1)),double(IJ(:,2))),[],1)];
+end
 
 % ---- alpha partition via morphological closing -----------------------------
 % Work on a padded raster of the (i,j) grid. All operations below are binary
@@ -208,12 +251,12 @@ sitesIdx    = pos(idxSiteEbsd,:);
 % notIndexed sites: interior large holes (recover ebsd id where a pixel
 % exists) plus the exterior band (never has an ebsd pixel -> NaN id, so it is
 % dropped from the grain list by remapIFD while still smoothing the boundary)
-[holePos, holeId] = cells2posId(bigHoleP, szP, padding, ijmin, ijsz, A, origin, ij2ebsd);
-[bandPos, ~     ] = cells2posId(extBandP, szP, padding, ijmin, ijsz, A, origin, ij2ebsd);
+[holePos, holeId] = cells2posId(bigHoleP, szP, padding, ijmin, ijsz, reconstructPos, ij2ebsd, pos);
+[bandPos, ~     ] = cells2posId(extBandP, szP, padding, ijmin, ijsz, reconstructPos, ij2ebsd, pos);
 niPos = [holePos; bandPos];
 niId  = [holeId ; nan(size(bandPos,1),1)];
 % dummy sites (outer shell) - never carry an id
-[dumPos, ~    ] = cells2posId(dummyP , szP, padding, ijmin, ijsz, A, origin, ij2ebsd);
+[dumPos, ~    ] = cells2posId(dummyP , szP, padding, ijmin, ijsz, reconstructPos, ij2ebsd, pos);
 
 % real (=grain) sites first: indexed then notIndexed; dummies last
 XY      = [sitesIdx; niPos; dumPos];
@@ -222,8 +265,26 @@ numReal = size(sitesIdx,1) + size(niPos,1);
 isNotIdx = [false(size(sitesIdx,1),1); true(size(niPos,1),1)];
 site2id  = [idxSiteEbsd; niId];
 
-% ---- Voronoi ---------------------------------------------------------------
-[V,F,I_FD] = jcvoronoi2_mex(double(XY),double(numReal), epsilon);
+% ---- Voronoi -----------------------------------------------------------
+% 'delaunayOnly' is internal-only (not a user-facing option): calcGrains'
+% minPixel sizing pass (minPixelMask.m) only ever needs the site-to-site
+% adjacency doSegmentation.m builds from I_FD, never the V/F geometry, so it
+% requests the cheaper Delaunay-adjacency-only mex here. The real second
+% decomposition pass (calcGrains.m) never sets this flag and keeps getting
+% full Voronoi geometry.
+%
+% Caveat: on an exactly regular/rigid grid, jcvoronoiDelaunayOnly_mex's
+% adjacency is a strict superset of jcvoronoi2_mex's - it can report a
+% spurious diagonal adjacency at an exactly-cocircular interior vertex that
+% the full Voronoi build correctly excludes (see check_jcvoronoiDelaunayOnly
+% and minPixelMask.m). Never a missing adjacency, so this is safe for a
+% sizing-only pass.
+if check_option(varargin,'delaunayOnly')
+  V = zeros(0,2); F = zeros(0,2);
+  I_FD = jcvoronoiDelaunayOnly_mex(double(XY),double(numReal), epsilon);
+else
+  [V,F,I_FD] = jcvoronoi2_mex(double(XY),double(numReal), epsilon);
+end
 
 out = struct('V',V,'F',F,'I_FD',I_FD, ...
              'isNotIdx',isNotIdx,'site2id',site2id,'ij',ij);
@@ -300,7 +361,7 @@ ext(bgLin(ismember(lab, extLabels))) = true;
 end
 
 % ===========================================================================
-function [POS, ID] = cells2posId(mask, szP, padding, ijmin, ijsz, A, origin, ij2ebsd)
+function [POS, ID] = cells2posId(mask, szP, padding, ijmin, ijsz, reconstructPos, ij2ebsd, pos)
 % physical positions and (if present) ebsd ids of the raster cells in `mask`
 %
 % The forward flatten ij2slotP puts i in dim 1 (rows) and j in dim 2 (cols):
@@ -310,7 +371,6 @@ function [POS, ID] = cells2posId(mask, szP, padding, ijmin, ijsz, A, origin, ij2
 % by one cell along an axis relative to the real sites.
 [rr,cc] = ind2sub(szP, find(mask));
 IJ  = [rr-1-padding+ijmin(1), cc-1-padding+ijmin(2)];
-POS = IJ*A' + origin;
 
 ID = nan(size(IJ,1),1);
 inRange = IJ(:,1)>=ijmin(1) & IJ(:,1)<=ijmin(1)+ijsz(1)-1 & ...
@@ -318,4 +378,12 @@ inRange = IJ(:,1)>=ijmin(1) & IJ(:,1)<=ijmin(1)+ijsz(1)-1 & ...
 slot = (IJ(:,1)-ijmin(1)) + (IJ(:,2)-ijmin(2))*ijsz(1) + 1;
 ID(inRange) = ij2ebsd(slot(inRange));
 ID(ID==0) = NaN;
+
+% wherever a real ebsd row sits at this grid slot (e.g. a genuinely
+% scanned but notIndexed pixel), its true measured position is exact -
+% use it directly; only reconstruct where no such row exists (dummy ring,
+% phase-subset gaps, filled small gaps)
+hasReal = ~isnan(ID);
+POS = reconstructPos(IJ);
+POS(hasReal,:) = pos(ID(hasReal),:);
 end

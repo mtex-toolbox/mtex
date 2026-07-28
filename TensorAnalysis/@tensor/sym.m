@@ -22,11 +22,9 @@ switch T.rank
   case 0 % nothing to do
   case 1 % nothing to do
   case 2 
-
-    % TODO: why not mean
-  
+ 
     if any(isnan(T.M(:)))
-      S.M = max(S.M, permute(S.M,[2 1 3:ndims(S.M)]),'includenan');
+      S.M = max(S.M, permute(S.M,[2 1 3:ndims(S.M)]),'omitnan');
     else
       S.M = 0.5 * (S.M + permute(S.M,[2 1 3:ndims(S.M)]));
     end

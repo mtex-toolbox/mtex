@@ -54,12 +54,14 @@ if check_option(varargin,'noWeld') && ~check_option(varargin,'unitCell')
 end
 
 % --- grid indexing (topological) --------------------------------------------
-% basis and integer (i,j) index of each pixel, computed on demand
+% basis and integer (i,j) index of each pixel, computed on demand. Robust to
+% smooth grid distortion (see assignGridIndex) rather than a one-shot round()
+% from a single common origin, which a deformed grid can flip to the wrong
+% integer for far-away points.
 A = latticeBasis(unitCell);            % 2 x 2, columns are the grid step vectors
 Ainv = inv(A);
-xy   = [pos.x(:).'; pos.y(:).'];
-ij   = Ainv * (xy - min(xy,[],2));     % 2 x N lattice coordinates
-ij   = round(ij).';                    % N x 2 integer grid index (deformation-free)
+xy = [pos.x(:), pos.y(:)];             % N x 2
+ij = assignGridIndex(xy,A);            % N x 2 integer grid index
 
 % corner offset in lattice units, scaled to integers: square -> m=2 (half
 % steps), hex -> m=3 (third steps). m is the smallest integer making all

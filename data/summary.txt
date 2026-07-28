@@ -22,6 +22,7 @@ martensite EBSD        martensite.cpr
 emsland    EBSD        Emsland_plessite_500x_15.ctf
 trueEbsdWCCo EBSD      trueEbsdWCCo.mat
 alphaBetaTitanium EBSD EDXLMDTi64.cpr
+EMSphinx   EBSD        EMSphinx.h5
 testgrains grain2d     testgrains.mat
 NeperGrain3d grain3d   ..
 dubnaODF   SO3Fun      ..
