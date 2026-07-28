@@ -360,12 +360,26 @@ classdef plottingConvention < matlab.mixin.Copyable
       up     = ax.CameraUpVector;
 
       outOfScreen = normalize(vector3d(camDir(1),camDir(2),camDir(3)));
-      north       = normalize(vector3d(up(1),up(2),up(3)));
+      up          = vector3d(up(1),up(2),up(3));
+
+      % MATLAB does not require CameraUpVector to be perpendicular to the
+      % viewing direction - what points north on screen is only the component
+      % of it orthogonal to outOfScreen. Projecting instead of taking the up
+      % vector as is also keeps this working while the camera is halfway
+      % through an update: setView assigns CameraPosition before
+      % CameraUpVector, and the CameraPosition PostSet listeners (e.g. the
+      % scale bar's) run in between, i.e. on a new camera direction paired
+      % with the still old up vector.
+      north = up - dot(up,outOfScreen) * outOfScreen;
 
       % rebuild the rotation consistent with the getters
       %   outOfScreen = rot * Z,  north = rot * Y
       pC = plottingConvention;
-      pC.rot = rotation.map(vector3d.Z,outOfScreen,vector3d.Y,north);
+      if norm(north) <= 1e-10 * norm(up) % up is along the viewing direction
+        pC.rot = rotation.map(vector3d.Z,outOfScreen); % no roll defined
+      else
+        pC.rot = rotation.map(vector3d.Z,outOfScreen,vector3d.Y,normalize(north));
+      end
     end
 
 
