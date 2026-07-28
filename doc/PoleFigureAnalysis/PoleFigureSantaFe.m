@@ -62,7 +62,7 @@ close all;
 % true ODF
 plotSpektra(SantaFe,'bandwidth',32,'linewidth',2)
 % keep plot for adding the next plots
-hold all
+hold on
 
 % With ghost correction:
 plotSpektra(rec,'bandwidth',32,'linewidth',2)

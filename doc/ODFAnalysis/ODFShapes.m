@@ -29,7 +29,7 @@ psi{8} = SO3SquareSingularityKernel(0.72);
 % the kernel on SO(3)
 close; 
 figure('position',[100,100,1000,450])
-hold all
+hold on
 for i = 1:numel(psi)
   plot(psi{i},'DisplayName',class(psi{i}));
 end
@@ -41,7 +41,7 @@ legend(gca,'show','Location','eastoutside')
 % one dimensional sections through the corresponding PDF
 
 close; figure('position',[100,100,1000,450])
-hold all
+hold on
 for i = 1:numel(psi)
   plot(psi{i}.radon,'symmetric','DisplayName',class(psi{i}),'linewidth',2);
 end
@@ -54,7 +54,7 @@ legend(gca,'show','Location','eastoutside')
 % the Fourier coefficients of the kernels
 
 close; figure('position',[100,100,500,450])
-hold all
+hold on
 for i = 1:numel(psi)
   plotSpektra(psi{i},'bandwidth',32,'linewidth',2,'DisplayName',class(psi{i}));
 end
