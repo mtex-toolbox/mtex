@@ -10,7 +10,7 @@
 % |@SO3FunHarmonic| and |@SO3FunRBF| that approximates $f$ reasonable well.
 %
 %%
-% This approximation process is similarly to <SO3FunApproximation.html 
+% This approximation process is similarly to <SO3FunApproximationTheory.html 
 % Approximating Orientation Dependent Functions from Discrete Data>.
 % where the given data are a set of orientations with function values.
 %

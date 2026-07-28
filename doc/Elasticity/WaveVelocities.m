@@ -22,7 +22,7 @@ C = stiffnessTensor.load(fname,cs)
 % symmetric, the polarization vectors are perpendicular to each other.
 
 % It is computed for a specific direction x by the
-% command <tensor.ChristoffelTensor.html ChristoffelTensor>.
+% command <stiffnessTensor.ChristoffelTensor.html ChristoffelTensor>.
 
 T = ChristoffelTensor(C,vector3d.X)
 

@@ -46,7 +46,7 @@ KS = orientation.KurdjumovSachs(csFCC,csBCC);
 % matrix of child orientations. Here we go with the second option and setup
 % this two column orientation matrix from the mean orientations of
 % neighboring grains which can be found using the command
-% <grain2d.neighbours.html |neighbours|>
+% <grain2d.neighbors.html |neighbours|>
 
 % get neighboring grain pairs
 grainPairs = grains.neighbors;
@@ -140,7 +140,7 @@ A = mclComponents(A,p);
 %%
 % Each connected component of the resulting adjacency matrix describes one
 % parent grain. Hence, we can use this adjacency matrix to merge child
-% grains into parent grains by the command <graind2d.merge.html |merge|>.
+% grains into parent grains by the command <grain2d.merge.html |merge|>.
 
 % merge grains according to the adjacency matrix A
 [parentGrains, parentId] = merge(grains,A);
@@ -370,7 +370,7 @@ A = mclComponents(A,p);
 %%
 % Each connected component of the resulting adjacency matrix describes one
 % parent grain. Hence, we can use this adjacency matrix to merge child
-% grains into parent grains by the command <graind2d.merge.html |merge|>.
+% grains into parent grains by the command <grain2d.merge.html |merge|>.
 
 % merge grains according to the adjacency matrix A
 [parentGrains, parentId] = merge(grains,A);

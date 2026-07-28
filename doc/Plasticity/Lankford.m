@@ -151,7 +151,7 @@ hold off
 %% define the hcp slip systems
 % Since Taylor theory is used to compute the Lankford parameter, multiple
 % slip systems and their corresponding critical resolved shear stresses
-% <slipSystem.index.html slip systems> can be employed.
+% <slipSystem.slipSystem.html slip systems> can be employed.
 
 sS = [slipSystem.basal(CS,1),...
   slipSystem.prismatic2A(CS,66),...

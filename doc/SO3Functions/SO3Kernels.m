@@ -139,7 +139,7 @@ plot(psi1)
 hold on
 plot(psi2)
 hold off
-legend('bandwidth = 5','bandwidth = 10')
+legend('bandwidth = 10','bandwidth = 5')
 
 %%
 % By looking at the fourier coefficients we see, that they are exactly 1.
@@ -148,7 +148,7 @@ plotSpektra(psi1)
 hold on
 plotSpektra(psi2)
 hold off
-legend('bandwidth = 5','bandwidth = 10')
+legend('bandwidth = 10','bandwidth = 5')
 
 %% The Abel Poisson Kernel
 % The <SO3Kernels.SO3AbelPoissonKernel.html Abel Poisson kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
@@ -362,7 +362,7 @@ plot(psi1)
 hold on
 plot(psi2)
 hold off
-legend('halfwidth = 30°','halwidth = 40°')
+legend('halfwidth = 30°','halfwidth = 40°')
 
 %%
 % We also take a look at the Fourier coefficients
@@ -371,5 +371,5 @@ plotSpektra(psi1)
 hold on
 plotSpektra(psi2)
 hold off
-legend('\kappa = 0.2','\kappa = 0.3')
+legend('halfwidth = 30°','halfwidth = 40°')
 

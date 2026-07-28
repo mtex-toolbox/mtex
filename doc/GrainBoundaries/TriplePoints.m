@@ -6,7 +6,7 @@
 % the property <triplePointList.triplePointList.html triplePoints> of the
 % grain list. When analyzing triple points it is a good idea to use the
 % option <QuadruplePoints.html |removeQuadruplePoints|> in
-% <ebsd.calcGrains.html |calcGrains|> to convert all quadruple points into
+% <EBSD.calcGrains.html |calcGrains|> to convert all quadruple points into
 % triple points.
 
 % import some EBSD data set

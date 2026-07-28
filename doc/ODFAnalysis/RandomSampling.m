@@ -1,7 +1,7 @@
 %% Random Sampling
 %
 %% 
-% Assume an arbitrary <ODFTheorie.html ODF> either from texture modeling
+% Assume an arbitrary <ODFTheory.html ODF> either from texture modeling
 % or recovered from XRD pole figure measurements a common problem is the
 % simulation of random individual orientations that are distributed
 % according the given ODF. This is helpful crucial in many application,

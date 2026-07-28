@@ -16,7 +16,7 @@
 % The most general representation is |SO3FunHarmonic|, i.e. every
 % orientation dependent function |S3F| can be transformed into a harmonic
 % series expansion using the syntax |SO3FunHarmonic(S3F)|. That
-% transformation is known as <Quadrature.html quadrature>. Furthermore,
+% transformation is known as <SO3FunQuadrature.html quadrature>. Furthermore,
 % many operations are only possible or significantly faster in the harmonic
 % representation.
 %

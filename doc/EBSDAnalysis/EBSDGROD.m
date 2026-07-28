@@ -63,7 +63,7 @@ hold off
 %
 % The grain orientation spread (GOS) is the averaged misorientation angle
 % of the grain reference orientation deviations of each grain. We may
-% compute this average by using the command <ebsd.grainMean.html
+% compute this average by using the command <EBSD.grainMean.html
 % |grainMean|>.
 
 GOS = grainMean(ebsd, grod.angle, grains);

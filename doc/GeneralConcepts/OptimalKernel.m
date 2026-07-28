@@ -56,7 +56,7 @@ psi  = calcKernel(ori)
 
 %%
 % This kernel can now be used to reconstruct the original ODF from the
-% sampled points using the command <DensityEsimation.html density
+% sampled points using the command <DensityEstimation.html density
 % estimation>
 
 odf_rec = calcDensity(ori,'kernel',psi)

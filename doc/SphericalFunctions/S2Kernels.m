@@ -43,7 +43,7 @@ plot(psi,'linewidth',2,'symmetric')
 % $$ \psi(t) = \sum\limits_{n=0}^{\infty} \hat\psi_n \, \mathcal P_{n}(t) $$
 %
 % These Legendre coefficients are stored as the field |psi.A| and can be
-% easily visualized using the command <S2Kernel.plotSpectra.html
+% easily visualized using the command <S2Kernel.plotSpektra.html
 % |plotSpectra|>.
 
 plotSpektra(psi,'linewidth',2)
@@ -124,7 +124,7 @@ plot(psi1,'linewidth',2,'symmetric')
 hold on
 plot(psi2,'linewidth',2,'symmetric')
 hold off
-legend('bandwidth = 5','bandwidth = 10')
+legend('bandwidth = 10','bandwidth = 5')
 
 %%
 % By looking at the Legendre coefficients we see, that they are exactly 1.
@@ -133,7 +133,7 @@ plotSpektra(psi1,'linewidth',2)
 hold on
 plotSpektra(psi2,'linewidth',2)
 hold off
-legend('bandwidth = 5','bandwidth = 10')
+legend('bandwidth = 10','bandwidth = 5')
 
 %% The Bump kernel
 % The <S2Kernels.S2BumpKernel.html spherical bump kernel> is a radial
@@ -152,7 +152,7 @@ plot(psi1,'linewidth',2,'symmetric')
 hold on
 plot(psi2,'linewidth',2,'symmetric')
 hold off
-legend('halfwidth = 30°','halwidth = 40°')
+legend('halfwidth = 30°','halfwidth = 50°')
 
 %%
 % We also take a look at the Fourier coefficients
@@ -161,4 +161,4 @@ plotSpektra(psi1,'linewidth',2)
 hold on
 plotSpektra(psi2,'linewidth',2)
 hold off
-legend('\kappa = 0.2','\kappa = 0.3')
+legend('halfwidth = 30°','halfwidth = 50°')

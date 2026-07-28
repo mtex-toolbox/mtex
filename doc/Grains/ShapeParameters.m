@@ -3,9 +3,9 @@
 %%
 % In this section we discuss basic geometric properties of grains. Due to
 % the huge amount of shape parameters we split them into different
-% categories: basic properties (this page), <EllipseBasedProperties.html
+% categories: basic properties (this page), <EllipseBasedParameters.html
 % properties based on fitted ellipses>, <HullBasedParameters.html convex
-% hull bases properties>, <ProjectionBasesParameters.html projection bases
+% hull bases properties>, <ProjectionBasedParameters.html projection bases
 % properties>. The table below summarizes the shape parameters discussed on
 % this page.
 %

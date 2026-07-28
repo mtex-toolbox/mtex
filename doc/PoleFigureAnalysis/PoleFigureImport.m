@@ -10,7 +10,7 @@
 %
 %% Importing pole figure data using the import wizard
 %
-% The <import_wizard_old.html import wizard> can be started either by typing
+% The <import_wizard.html import wizard> can be started either by typing
 % into the command line
 
 import_wizard_old

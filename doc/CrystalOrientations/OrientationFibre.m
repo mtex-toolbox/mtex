@@ -31,7 +31,7 @@ hold on
 plot(ori1,'DisplayName','CUBE','MarkerSize',12,'MarkerFaceColor','darkred','MarkerEdgeColor','k')
 plot(ori2,'DisplayName','GOSS','MarkerSize',12,'MarkerFaceColor','blue','MarkerEdgeColor','k')
 hold off
-legend
+legend('Location','northwest')
 
 %%
 % Alternatively, we may visualize the fibre also in axis angle space
