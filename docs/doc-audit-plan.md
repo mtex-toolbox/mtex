@@ -12,10 +12,11 @@ any other `.m` file publishes as `basename.html`. So flat class files such as
 `SO3BumpKernel.SO3BumpKernel.html`. Note also that the in-repo
 `doc/makeDoc/makeDoc.m` omits `SO3Fun` and `S1Fun` from its reference-folder
 list while `web/matlab/makeDoc.m` includes `SO3Fun` — the website has pages
-the local MATLAB help build does not (see item 5).
+the local MATLAB help build does not (see item 4).
 
-Status as of 2026-07-28: **49 dangling link instances / 45 distinct targets
-across 18 pages** (was 59/52/23 before the fixes below).
+Status as of 2026-07-28: **48 dangling link instances / 44 distinct targets
+across 17 pages** (was 59/52/23 before the fixes below). 18 of the 48 are
+inside `changelog.m`, i.e. archive material.
 
 ## Closed
 
@@ -36,7 +37,7 @@ across 18 pages** (was 59/52/23 before the fixes below).
   `S2Kernels.m` now has no dangling links.
 - **Deprecated `hold all`** (commit `65c7f5a42`) — 4 executable calls plus the
   2 prose passages recommending it.
-- **Misspelled `doc/PhaseTransistions/`** (commit `e0da26ef0`) — renamed; a
+- **Misspelled `doc/PhaseTransitions/`** (commit `e0da26ef0`) — renamed; a
   pure rename, published page names come from file basenames.
 - **`calcTensor` density residuals** (commit `0d51b358b`) — the `isfield` test
   ran against whichever `T` the phase loop ended with, and a density-less
@@ -89,7 +90,7 @@ doc prose — these are exactly the entry points a reader wants to click.
 | link | nearest existing page | note |
 |---|---|---|
 | `orientation.calcDensity` (×2 live) | `rotation.calcDensity` | `doc/Misorientations/MDFAnalysis.m:36`, `doc/Tutorials/ODFTutorial.m:31` |
-| `orientation.std` | `quaternion.std` | `doc/PhaseTransistions/MartensiteVariants.m:55` |
+| `orientation.std` | `quaternion.std` | `doc/PhaseTransitions/MartensiteVariants.m:55` |
 | `orientation.discreteSample` | `SO3Fun.discreteSample` | `doc/GeneralConcepts/OptimalKernel.m:46` |
 | `orientation.calcAxisDistribution` | `SO3Fun.calcAxisDistribution` | `doc/Misorientations/MDFAnalysis.m:141` |
 | `grainBoundary.length` | `grainBoundary.segLength` | `doc/GrainBoundaries/BoundaryProperties.m:126` — different name, check the prose still reads right |
@@ -101,7 +102,7 @@ the base class is the only link that can ever resolve. For the `grain3d`
 three, the page is documenting a 3D method that does not exist yet — pointing
 at the 2D one would be misleading, so these may belong with item 2 instead.
 
-## 2. Links to API that does not exist anywhere (8 instances)
+## 2. Links to API that does not exist anywhere (7 instances)
 
 Each needs a drop-the-link vs. implement-the-function decision.
 
@@ -114,7 +115,6 @@ Each needs a drop-the-link vs. implement-the-function decision.
 | `EBSD.export_cpr` | `doc/EBSDAnalysis/EBSDExport.m:6` | only `export_crc` / `export_ctf` exist |
 | `grain3d.equivalentSurface` | `doc/EBSD3Analysis/Grains3DProperties.m:10` | no such method |
 | `twinningSystem.twinningSystem` | `doc/CrystalOrientations/DefinitionAsCoordinateTransform.m:71` | no such class anywhere in MTEX |
-| `S2AbelPoussinKernel` | `doc/SphericalFunctions/S2Kernels.m:29` | part of item 4 below |
 
 ## 3. Referenced doc pages that were never written (5)
 
@@ -124,7 +124,7 @@ Each needs a drop-the-link vs. implement-the-function decision.
 | `IceSphericity` | `doc/Grains/ShapeParameters.m:18` |
 | `SO3FunVisualization` | `doc/SO3Functions/SO3FunConcept.m:63` |
 | `RotationRepresentations` | `doc/Rotations/RotationDefinition.m:16` |
-| `ParentGrainReconstruction` | `doc/PhaseTransistions/ParentChildVariants.m:139` |
+| `ParentGrainReconstruction` | `doc/PhaseTransitions/ParentChildVariants.m:139` |
 
 Each needs a decision on scope and a TOC slot before it can be written.
 
@@ -147,7 +147,7 @@ needs either content or removal from its TOC.
 `Misorientations/AngleDistributionFunction`,
 `Misorientations/AxisDistributionFunction`, `Grains/GrainExport`,
 `Tutorials/ImportFromVPSC`, `CrystalOrientations/OrientationExport`,
-`PhaseTransistions/PhaseTransitions`, `Plotting/PlottingExport`,
+`PhaseTransitions/PhaseTransitions`, `Plotting/PlottingExport`,
 `PoleFigureAnalysis/PoleFigureExport`, `GeneralConcepts/Properties`,
 `Rotations/RotationExport`, `Rotations/RotationImport`,
 `SphericalFunctions/S2FunRadon`, `Plasticity/SachsModel`,
