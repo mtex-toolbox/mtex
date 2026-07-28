@@ -93,11 +93,8 @@ classdef SO3FunMLS < SO3Fun
     mincond = [];         % start regularizing threshold of condition of the gram matrix
     basis_weights = [];   % regularization weights of basis coefficients,
                           %   should punish higher degrees (Sobolev-like)
-    basis_weights_scale = []; % basis_weights are in [0,1]. The solver applies
-                              %   1 + basis_weights_scale * basis_weights
-                              %   before normalizing the positive penalties
-    lambda_geom_rel = []; % relative strength of geometry regularization
-                          %   (1 applies geometryScore without additional scaling)
+    basis_weights_scale = []; % application strength of basis_weights
+    lambda_geom_rel = []; % geometry strength relative to the normalized Gram scale
 
     detectOutliers = false; % specify if we should search for outliers, and reduce their weight
     outlierDetectionRange = 10; % number of neighbors to take into account for outlier detection
@@ -404,21 +401,19 @@ classdef SO3FunMLS < SO3Fun
 
   % compute weights for basis functions for regularization of lsq systems
   %   (punish higher degrees, see tools/mathtools/solve_lsq_book_constsize.m)
-  % weights are between 0 (lowest degree) and 1 (highest degree)
-  % they get applied in tools/math_tools/solve_lsq_book_constsize.m
+  % positive weights are normalized to mean one and are applied in
+  % tools/math_tools/solve_lsq_book_constsize.m
   function basis_weights = compute_basis_weights(SO3F)
     degrees = (0 : SO3F.degree)';
     dimensions = (degrees + 1) .* (degrees + 2) / 2;
     basis_weights = repelem(degrees.^2, dimensions, 1);
 
-    % if the degree is odd and regularize, the 'constant part' (a-coordinate)
-    %   should also be regularized, because it is not truly constant
-    if mod(SO3F.degree, 2) == 1 && ~SO3F.tangent
-      basis_weights(1) = 0.05 * mean(basis_weights(basis_weights > 0));
-    end
+    % The first basis function plays the local constant role and is left
+    % unpenalized by the shared solver. For odd non-tangent degree it is only
+    % an approximate constant surrogate, as indicated by eval.m.
 
-    % scale to [0,1], so basis_weights_scale has a transparent meaning
-    m = max(basis_weights);
+    % normalize the positive degree weights to mean one
+    m = mean(nonzeros(basis_weights));
     if isempty(m) || ~isfinite(m) || (m == 0)
       basis_weights = zeros(size(basis_weights));
     else
@@ -433,9 +428,9 @@ classdef SO3FunMLS < SO3Fun
     end
     value = value(:);
     value = max(real(value), 0);
-    m = max(value);
-    if (m > 0)
-      value = value / m;
+    pos = value > 0;
+    if any(pos)
+      value(pos) = value(pos) / mean(value(pos));
     end
     SO3F.basis_weights = value;
   end
