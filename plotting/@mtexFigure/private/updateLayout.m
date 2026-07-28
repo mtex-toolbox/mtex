@@ -3,6 +3,22 @@ function updateLayout(mtexFig)
 
 if isempty(mtexFig.children), return;end
 
+% Pick up colorbars that were added behind mtexFigure's back: a plain
+% colorbar(...) call - rather than mtexColorbar / mtexFig.colorbar - leaves
+% mtexFig.cBarAxis empty. The layout below would then hand the axes the
+% whole figure again, and MATLAB, which keeps a colorbar glued to the
+% outside of its peer axes, follows along - pushing a 'southoutside' bar
+% clean off the bottom of the figure. Adopting it instead lets the regular
+% colorbar handling reserve a band for it and keep it positioned there.
+% This also drops handles of colorbars that have meanwhile been deleted.
+%
+% The tight inset has to be recomputed on any such change: it is what
+% reserves the band, and it is also where cBarShift - used by
+% resizeColorBar below - is determined.
+if adoptColorbars
+  [mtexFig.tightInset,mtexFig.figTightInset] = calcTightInset(mtexFig);
+end
+
 % store old units and perform all calculations in pixel
 old_units = get(mtexFig.parent,'Units');
 set(mtexFig.parent,'Units','pixels');
@@ -65,6 +81,67 @@ end
 % revert figure units
 set(mtexFig.parent,'Units',old_units);
 
+
+  function changed = adoptColorbars
+    % sync mtexFig.cBarAxis with the colorbars actually present - see above
+
+    cBar = findobj(mtexFig.parent,'Type','colorbar');
+
+    % order them like mtexFig.children, since the layout above pairs
+    % cBarAxis(i) with children(i). A single colorbar shared by several axes
+    % is peered to one of them and so is picked up here as well.
+    found = gobjects(0,1);
+    if ~isempty(cBar)
+      peer = gobjects(numel(cBar),1);
+      for k = 1:numel(cBar)
+        try peer(k) = cBar(k).Axes; catch, end %#ok<TRYNC>
+      end
+      for k = 1:numel(mtexFig.children)
+        found = [found; cBar(peer == mtexFig.children(k))]; %#ok<AGROW>
+      end
+    end
+
+    old = reshape(mtexFig.cBarAxis(:),[],1);
+
+    % the empty cases are spelled out separately: cBarAxis starts out as []
+    % (a double), so comparing it to a graphics array with == would throw
+    if isempty(old) || isempty(found)
+      changed = ~(isempty(old) && isempty(found));
+    else
+      % a stale handle - the colorbar was deleted meanwhile - counts as a
+      % change too, and has to be caught before == sees it
+      changed = numel(old) ~= numel(found) || ~all(isgraphics(old)) || ...
+        ~all(found == old);
+    end
+
+    if changed
+      % all colorbar geometry here - the reserved band in calcTightInset as
+      % well as resizeColorBar below - is computed in pixels, which is what
+      % mtexFig.colorbar creates its own colorbars in. A colorbar from a
+      % plain colorbar(...) call still uses normalized units, so bring it
+      % over first; this only changes the unit the position is expressed in,
+      % not where the bar currently sits.
+      if ~isempty(found)
+        set(found,'Units','pixels');
+
+        % give them the same thickness mtexFig.colorbar gives the colorbars
+        % it creates itself, so that a plain colorbar(...) does not end up
+        % looking chunkier than mtexColorbar. Has to happen before the tight
+        % inset is recomputed, since that sizes the reserved band from it.
+        for k = 1:numel(found)
+          pos = found(k).Position;
+          if pos(3) < pos(4)  % vertical bar
+            pos(3) = getMTEXpref('FontSize');
+          else                % horizontal bar
+            pos(4) = getMTEXpref('FontSize');
+          end
+          found(k).Position = pos;
+        end
+      end
+      mtexFig.cBarAxis = found;
+    end
+
+  end
 
   function resizeColorBar(cBar)
   
