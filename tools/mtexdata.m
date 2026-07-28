@@ -260,6 +260,7 @@ catch
           out = EBSD.load(fName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree));
           out('Ti (alpha)').CS = out('Ti (alpha)').CS.properGroup;
           out('Ti (beta)').CS = out('Ti (beta)').CS.properGroup;
+          out.how2plot = plottingConvention.ij;
 
         case 'martensite'
 

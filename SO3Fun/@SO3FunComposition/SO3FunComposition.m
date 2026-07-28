@@ -19,8 +19,6 @@ classdef SO3FunComposition < SO3Fun
 %   F2.CS = F1.CS;
 %   SO3F = F1+F2
 %
-%
-
   
 properties
   components = {}
