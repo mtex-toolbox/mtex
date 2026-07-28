@@ -49,6 +49,10 @@ v  = vector3d(fit(3,1),fit(3,2),fit(3,3));
 nI = max(I)+1; nJ = max(J)+1;
 [ii,jj] = ndgrid(1:nI,1:nJ);
 idealMesh = p0 + (ii-1) * u + (jj-1)*v;
+
+% p0,u,v are plain vector3d - restore the plotting convention of the input
+idealMesh.how2plot = pos.how2plot;
+
 if nargout == 1
   mesh = idealMesh;
   return;
