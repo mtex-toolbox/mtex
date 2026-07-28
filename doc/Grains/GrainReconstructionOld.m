@@ -159,7 +159,7 @@ toRemove = notIndexed(notIndexed.numPixel ./ notIndexed.boundarySize<0.8);
 ebsd(toRemove) = [];
 
 % and perform grain reconstruction with the reduces EBSD data set
-[grains,ebsd.grainId,ebsd.mis2mean] = calcGrains(ebsd);
+[grains,ebsd] = calcGrains(ebsd);
 
 plot(grains,'lineWidth',2)
 
@@ -209,7 +209,7 @@ plot(ebsdP,'micronBar','off')
 legend off
 
 % compute the grains
-grains = calcGrains(ebsdP('indexed'));
+grains = calcGrains(ebsdP,'minPixel',2,'alpha',2.1);
 
 % plot the grain boundary
 hold on
