@@ -29,10 +29,21 @@ EBSD3d / Grain3d
 * curvature, convex hull
 * grainBoundaryCharacter
 * characteristicShape
+* the property table in doc/EBSD3Analysis/Grains3DProperties.m already
+  advertises four methods that do not exist on grain3d - grain2d has all
+  four. The doc links are left dangling on purpose, as a reminder:
+  - grain3d.equivalentSurface   (perimeter of a circle with the same area)
+  - grain3d.shapeFactor         (perimeter / equivalent perimeter)
+  - grain3d.hasHole
+  - grain3d.isInclusion
 
 Major
 -----
 * twinning class -> which properties?                      (almost done - Phillip)
+ - doc/CrystalOrientations/DefinitionAsCoordinateTransform.m:71 already lists
+   "twinning systems" alongside slipSystem / dislocationSystem and links to a
+   twinningSystem class that does not exist yet; the link is left dangling on
+   purpose, as a reminder
 * discover orientation relationships
  - find matching planes and directions
 * improve EBSD h5 interface !!!
@@ -65,6 +76,16 @@ Docu
 
 Fixes
 -----
+* plotSection(mdf,'axisAngle') SEGFAULTS - hard crash, not a MATLAB error.
+  Needs both (a) differing left/right symmetry, i.e. a cross phase
+  misorientation, and (b) bandwidth >= 32. Reproduced on R2024b:
+     ebsd = mtexdata('forsterite'); grains = calcGrains(ebsd);
+     mdf = calcDensity(grains.boundary('Fo','En').misorientation,'halfwidth',5*degree);
+     mdf.bandwidth = 25;  plotSection(mdf,'axisAngle')   % fine
+     mdf.bandwidth = 32;  plotSection(mdf,'axisAngle')   % segmentation violation
+  Same phase (Fo->Fo, CS==SS) is fine at bandwidth 25, 32 and 48, so it is the
+  combination that matters. Found 2026-07-28 while merging the MDF doc pages;
+  the page now plots the axis angle sections of a same phase MDF instead.
 * histogram(grains.longAxis) should respect plottingConvention  !!!
 * Miller/line 
 * SO3FunRBF/rotate -> ask Thom for data 
@@ -180,3 +201,29 @@ plot(grains(grains.isBoundary))
 * calcGrains for variantId + parentGrainId
 * 
 
+
+Documentation - empty chapters
+------------------------------
+These pages are wired into a .toc and therefore publish as a visibly empty
+page. Each is a title and nothing else; the sidebar entry is the reminder.
+Found by the 2026-07-28 doc audit, see docs/doc-audit-plan.md item 5.
+
+* CrystalOrientations/SpecimenSymmetry            (done 2026-07-28)
+* CrystalOrientations/OrientationExport           (done 2026-07-28)
+* GeneralConcepts/Properties
+* Grains/GrainExport                              (carries a "please help to fill" marker)
+* Misorientations/AngleDistributionFunction
+* Misorientations/AxisDistributionFunction
+* Misorientations/Twinning
+* Plasticity/SachsModel
+* Plasticity/SlipTransmission                     (note: Plasticity/SlipTransmition.m,
+                                                   misspelled, has 52 lines of real
+                                                   content and is in no toc - see item 6)
+* Plasticity/TextureEvolution
+* Plotting/PlottingExport
+* PoleFigureAnalysis/PoleFigureExport
+* Rotations/RotationExport
+* Rotations/RotationImport
+* SphericalFunctions/S2FunRadon
+* Tutorials/ImportFromVPSC
+* Plasticity/TwinningTutorial                     (in no toc, kept as a placeholder)
