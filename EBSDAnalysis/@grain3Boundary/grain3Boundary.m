@@ -128,6 +128,16 @@ methods
     
   end
   
+  function gB3 = flipN(gB3,ind)
+    
+    if isnumeric(gB3.F)
+      gB3.F(ind,:) = fliplr(gB3.F(ind,:));
+    else
+      error('to be implemented')
+    end
+
+  end
+
   function N = get.N(gB3)
     
     if isnumeric(gB3.F)
