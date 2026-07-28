@@ -27,6 +27,36 @@ across 18 pages** (was 59/52/23 before the fixes below).
   across 7 pages: `SO3FunHarmonic`, `SO3FunRBF`×2, `variants`×2,
   `calcVariants`, `caliper`, `fibonacciS2Grid`, `strainTensor`,
   `plottingConvention`.
+- **`S2Kernels.m` intro list** (commit `1aff4c567`) — two bullets named
+  kernels that do not exist for S2 (Abel Poisson, von Mises), one of them
+  mangled markup that rendered literally; replaced by the restricted distance
+  kernel, which does exist and was missing. Note the audit's claim that
+  `@ClassName` is not link syntax was wrong: `globalReplacements.m` auto-links
+  it, and the published page shows the other four bullets resolving fine.
+  `S2Kernels.m` now has no dangling links.
+- **Deprecated `hold all`** (commit `65c7f5a42`) — 4 executable calls plus the
+  2 prose passages recommending it.
+- **Misspelled `doc/PhaseTransistions/`** (commit `e0da26ef0`) — renamed; a
+  pure rename, published page names come from file basenames.
+- **`calcTensor` density residuals** (commit `0d51b358b`) — the `isfield` test
+  ran against whichever `T` the phase loop ended with, and a density-less
+  tensor left NaNs in the average. Now a per-phase `hasDensity` flag; the
+  field is either a meaningful average or absent.
+- **`tests/checkMeanTensor.m`** (commit `f120d7f21`) — no longer calls the
+  abstract `symmetry` constructor. Runs now; still stops at its rank 3
+  quadrature assert, see item 9.
+- **Uncommitted 2026-07-28 execution fixes** (commit `b6da890ce`) —
+  `CPOSeismicProperties.m`, `GrainReconstructionAdvanced.m`,
+  `GrainReconstructionOld.m` were repaired during the sweep but never
+  committed.
+- **Plotting an empty grain boundary** — see item 7.
+- **`SelectingGrains.m` mouse click** (commit `c0eafd55c`) — `simulateClick`
+  needs input-injection permission from the window system and takes the page
+  down when that is refused or slow; it also places the click by converting
+  data coordinates to screen pixels, so the grain it hits depends on the build
+  machine. Click kept but guarded, with a fallback selecting the grain at the
+  same position. `EulerCycles2.m`, unreferenced since the merge, deleted in
+  `7dc118cb5`.
 
 ## 1. Links to real API that `makeDoc` gives no page (12 instances)
 
@@ -98,18 +128,7 @@ Each needs a drop-the-link vs. implement-the-function decision.
 
 Each needs a decision on scope and a TOC slot before it can be written.
 
-## 4. `S2Kernels.m` intro list is broken markup (lines 22-29)
-
-Four bullets use `@ClassName`, which is not MTEX link syntax and renders
-literally; line 28 is mangled (`@S2AbelPoussinKernel.html de >`); line 29 says
-"vom Mises" (typo for von) and links it to the same nonexistent target.
-Neither an Abel-Poisson nor a von Mises kernel exists for S2. The real set is
-`S2DeLaValleePoussinKernel`, `S2DirichletKernel`, `S2BumpKernel`,
-`S2RestrictedDistanceKernel`, `SchulzDefocusingKernel` — and
-`S2RestrictedDistanceKernel` is missing from the list. Needs the list
-rewritten, not a prefix fix.
-
-## 5. `doc/makeDoc/makeDoc.m` omits SO3Fun and S1Fun
+## 4. To decide: `doc/makeDoc/makeDoc.m` omits SO3Fun and S1Fun
 
 Its `mtexFunctionFiles` list covers `S2Fun`, `EBSDAnalysis`, `ODFAnalysis`,
 `PoleFigureAnalysis`, `TensorAnalysis`, `plotting`, `geometry`, `interfaces`,
@@ -119,7 +138,7 @@ no reference page for any `SO3Fun*` class, so every `SO3Fun.*.html` link is
 dead there while working on the website. Probably just needs the two folders
 added.
 
-## 6. Title-only stub pages (22)
+## 5. Title-only stub pages (22)
 
 Re-verified 2026-07-28. Seventeen are wired into a TOC, so they publish as an
 empty page; all are 15-65 bytes, i.e. a `%%` title and nothing else. Each
@@ -145,7 +164,7 @@ Not stubs, despite having no executable code — these are legitimate
 prose-only pages: `EBSDExport`, `EBSDInterfaceHDF5`, `Contribute2Doc`,
 `GeneralConceptsConfiguration`, `MisorientationGrainExchangeSym`.
 
-## 7. Orphan pages (16)
+## 6. Orphan pages (16)
 
 No TOC entry and no inbound link, so unreachable in the published docs. Ten
 have real content and need a decision each — give it a TOC slot, link it from
@@ -164,7 +183,7 @@ a related page, or delete it as superseded:
 | `Tutorials/BoundaryTutorial.m` | 8 |
 | `SphericalFunctions/S2FunQuadrature.m` | 3 |
 
-The remaining six are the stubs already listed in item 6.
+The remaining six are the stubs already listed in item 5.
 
 `Vectors/VectorDefinition.m` has a likely explanation: it is a newer, larger
 rewrite (1530 B, May 2025) of `Vectors/VectorsDefinition.m` (1115 B, Apr
@@ -177,7 +196,7 @@ report of three broken entries — `mapPlot`, `scaleBar`, `sphericalPlot` in
 `plotting_index.toc` — was a false positive; those are classdefs in
 `plotting/` whose reference pages do exist.)
 
-## 8. Closed: plotting an empty grain boundary
+## 7. Closed: plotting an empty grain boundary
 
 Originally reported as `EulerCycles2.m:16` "Sparse matrix sizes must be
 nonnegative integer scalars" via `doc/Grains/SelectingGrains.m:48`. The real
@@ -212,7 +231,7 @@ line 73 then dies with "Dot indexing is not supported for variables of this
 type". That early return arguably should produce an empty `grain2d` rather
 than `[]` — separate, pre-existing, not caused by the merge.
 
-## 9. To decide: the sim / ensureCS lattice tolerance gap
+## 8. To decide: the sim / ensureCS lattice tolerance gap
 
 Two tolerances answer the same question — "are these two crystalSymmetries
 the same crystal?" — an order of magnitude apart:
@@ -240,7 +259,7 @@ that example: published cell + `transformReferenceFrame`, point group `'121'`
 + data lattice, and building the tensor directly with the data CS agree to
 0.008 % in the aggregate (C11 207.806 vs 207.822).
 
-## 10. To decide: checkMeanTensor's quadrature assert
+## 9. To decide: checkMeanTensor's quadrature assert
 
 With the abstract-constructor blocker fixed (commit `f120d7f21`) the test runs
 and its rank 1, rank 2 and rank 3 Fourier asserts pass, but it stops at line
@@ -264,7 +283,7 @@ variables that are never defined (`ebsd_corrected`, `C_Epidote`,
 `odf_Epidote`, `CS`, `SS`, `C_Glaucophane`); the test never reaches it today,
 but it would fail there too.
 
-## 11. Deferred (decided 2026-07-28: revisit much later)
+## 10. Deferred (decided 2026-07-28: revisit much later)
 
 Verified as still present, deliberately not being worked on now. Recorded so
 they are not rediscovered from scratch.
