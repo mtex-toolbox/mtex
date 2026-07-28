@@ -177,27 +177,76 @@ report of three broken entries — `mapPlot`, `scaleBar`, `sphericalPlot` in
 `plotting_index.toc` — was a false positive; those are classdefs in
 `plotting/` whose reference pages do exist.)
 
-## 8. Other open items from the audit
+## 8. To fix: plotting a subset of grain boundaries
 
-Carried over verbatim; not yet re-verified in this session.
+`doc/Grains/SelectingGrains.m:48` → `@grainBoundary/plot.m:49` → subfunction
+`plotOrdered2:82` → `tools/graph_tools/EulerCycles2.m:16`, "Sparse matrix
+sizes must be nonnegative integer scalars". Re-verified 2026-07-28 by running
+the page end to end.
 
-- **30 TODO markers in 28 pages.** Two flag broken behaviour rather than
-  missing prose, and both pages execute without error, so the defect is in the
-  output: `SO3FunApproximationTheory.m:172` (Bingham approximation only works
-  without symmetry) and `SO3FunVectorField.m:209` (plotting).
-- **Minor**: deprecated `hold all` at `ODFShapes.m:32,44,57` and
-  `PoleFigureSantaFe.m:65`; `doc/ODFAnalysis/ODFImport.m:18` calls the
-  obsolete `import_wizard_old('ODF')`, which lives only in `obsolete/`; the
-  folder `doc/PhaseTransistions/` is misspelled (the page inside is not); 13
-  dead `code.google.com` links and a `t.co` shortener, all in `changelog.m`
-  (archive material, low value).
-- **18 of the 49 remaining dangling link instances are inside
-  `changelog.m`** — archive material listing functions that were removed or
-  renamed after the entry was written. Probably out of scope for link repair.
+Plotting a *subset* of boundaries is a common operation, so this is worth
+fixing. Note it does not trigger for every subset: plotting
+`grains(1:n).boundary` for n in {1,2,5,20,100} and `grainSize>500` on
+forsterite all succeed. The page's failing subset comes from its simulated
+mouse click, so reproduce it by running the page rather than by picking a
+subset by hand. Most likely an index-remapping gap in `plotOrdered2` when the
+boundary's vertex/segment ids are no longer contiguous.
 
-## 7. Code bugs exposed by the doc execution sweep
+## 9. Deferred (decided 2026-07-28: revisit much later)
 
-Tracked separately — these are MTEX defects, not documentation defects. See
-the four entries (latticeBasis / EBSDsquare.interp / EulerCycles2 /
-spatialMethod) in the session memory, plus `tests/checkMeanTensor.m:16`
-calling the now-abstract bare `symmetry` constructor.
+Verified as still present, deliberately not being worked on now. Recorded so
+they are not rediscovered from scratch.
+
+- **`interp(...,'bingham')` is wrong under symmetry.** It does not error, it
+  silently returns a bad fit. Relative error against the source ODF, from
+  `fibreODF(fibre.rand(cs))` sampled on `equispacedSO3Grid(cs)`:
+  `'1'` 0.0043, `'2'` 0.92, `'222'` 0.95, `'432'` 0.67. This is what
+  `doc/SO3Functions/SO3FunApproximationTheory.m:172` ("TODO: Dont work")
+  refers to; the page works around it by using `crystalSymmetry("1")`.
+- **`SO3FunVectorField.m:209`** — `quiver3` on an `SO3VectorFieldHandle`
+  allegedly plots something other than what `eval` returns. Not confirmed: the
+  page runs, and the arrow count is consistent with the small cubic
+  fundamental zone, so the complaint is about arrow directions and needs a
+  visual check.
+- **`latticeBasis.m:38` "Index exceeds array bounds"** via
+  `doc/EBSDAnalysis/EBSDGrid.m:141` → `EBSD/plot:93` → `EBSD/plotUnitCells:51`
+  → `plotSurf:15` → `calcMesh:29`. The unguarded `cand(1)` is only the
+  symptom. At the crash site the `EBSDsquare` carries a degenerate,
+  self-intersecting unit cell — the page asked for a unit square
+  (`0.5*vector3d([-1 -1 1 1],[-1 1 1 -1],0)`) but the stored cell is
+
+      V (centred)          trans                d = |cos| to a1
+       0.4167   3.4969      0.0000  -1.0760      1.0000
+      -0.4167  -4.5729     -0.8333  -8.0698      0.9947
+      -0.4167  -3.4969      0.0000   1.0760      1.0000
+       0.4167   4.5729      0.8333   8.0698      0.9947
+
+  so every candidate translation is near-parallel to `a1` and
+  `find(d<0.5)` is empty. Guarding the index would hide the real defect.
+  Only reachable because `@EBSDsquare/plotUnitCells.m` and
+  `@EBSDhex/plotUnitCells.m` are deleted in the working tree (in-flight
+  plotting refactor) — the deleted override dispatched straight to `plotSurf`
+  and never entered `latticeBasis`.
+- **`@EBSDsquare/interp.m:31`** — `doc/EBSDAnalysis/EBSDInter.m:32` does
+  `interp(ebsd,30.5,5.5)` on a gridified EBSD and dies in
+  `griddedInterpolant` with "Data is in MESHGRID format, NDGRID format is
+  required". The function wraps the call in try/catch with a transposed
+  fallback; both orientations fail. Committed, clean code.
+- **`SO3FunRBF/private/spatialMethod.m:37`** — `doc/PoleFigureAnalysis/
+  PoleFigureRefinement.m:21` calls `calcODFIterative(pf,'nothinning')` and
+  dies at `y = reshape(y,numel(nodes),[])` with "Product of known dimensions,
+  78, not divisible into total number of elements, 3", via
+  `calcODFIterative:92` → `SO3FunRBF/interpolate.m:105`. Committed, clean code.
+- **`import_wizard_old`** is called from four doc sites — `ODFImport.m:18`,
+  `PoleFigureImport.m:16` and `:134`, `PoleFigureTutorial.m:8` — but lives
+  only in `obsolete/`. Needs a product decision (point at a current wizard, or
+  rewrite those GUI sections around the load commands).
+- **26 prose TODO markers** ("extend this section", "explain in more detail")
+  across the doc pages; six of them sit on stub pages already listed in item
+  6. Authoring backlog.
+- **Dead external links**: 13 `code.google.com` in `changelog.m` (archive
+  material), and a `t.co` shortener on a live page,
+  `doc/Grains/HullBasedParameters.m:18`.
+- **18 of the 48 remaining dangling link instances are inside `changelog.m`**
+  — archive entries naming functions that were later removed or renamed.
+  Probably out of scope for link repair.
