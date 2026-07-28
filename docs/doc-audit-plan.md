@@ -119,18 +119,68 @@ no reference page for any `SO3Fun*` class, so every `SO3Fun.*.html` link is
 dead there while working on the website. Probably just needs the two folders
 added.
 
-## 6. Other open items from the audit
+## 6. Title-only stub pages (22)
+
+Re-verified 2026-07-28. Seventeen are wired into a TOC, so they publish as an
+empty page; all are 15-65 bytes, i.e. a `%%` title and nothing else. Each
+needs either content or removal from its TOC.
+
+`Misorientations/AngleDistributionFunction`,
+`Misorientations/AxisDistributionFunction`, `Grains/GrainExport`,
+`Tutorials/ImportFromVPSC`, `CrystalOrientations/OrientationExport`,
+`PhaseTransistions/PhaseTransitions`, `Plotting/PlottingExport`,
+`PoleFigureAnalysis/PoleFigureExport`, `GeneralConcepts/Properties`,
+`Rotations/RotationExport`, `Rotations/RotationImport`,
+`SphericalFunctions/S2FunRadon`, `Plasticity/SachsModel`,
+`Plasticity/SlipTransmission`, `CrystalOrientations/SpecimenSymmetry`,
+`Plasticity/TextureEvolution`, `Misorientations/Twinning`.
+
+Five further stubs are in no TOC and linked from nowhere, so they are pure
+dead weight and can simply be deleted: `ODFAnalysis/DiscretizationError`,
+`EBSDAnalysis/EBSDAxisAngleMaps`, `ODFAnalysis/ImportExportODFAnalysis`,
+`Plasticity/TwinningTutorial`, and the 0-byte
+`doc/VectorsRotations/RotationsOperations.m` (its whole folder looks stale).
+
+Not stubs, despite having no executable code — these are legitimate
+prose-only pages: `EBSDExport`, `EBSDInterfaceHDF5`, `Contribute2Doc`,
+`GeneralConceptsConfiguration`, `MisorientationGrainExchangeSym`.
+
+## 7. Orphan pages (16)
+
+No TOC entry and no inbound link, so unreachable in the published docs. Ten
+have real content and need a decision each — give it a TOC slot, link it from
+a related page, or delete it as superseded:
+
+| page | code lines |
+|---|---|
+| `Grains/GrainReconstructionOld.m` | 55 |
+| `Plasticity/SlipTransmition.m` | 52 (note the misspelling; `Plasticity/SlipTransmission.m` is the empty stub in item 6) |
+| `Grains/Grain_dispersion_axes.m` | 41 |
+| `GrainBoundaries/BoundaryMisorientations.m` | 35 |
+| `Misorientations/MDFAnalysis.m` | 23 |
+| `Plasticity/DislocationSystems.m` | 16 |
+| `Vectors/VectorDefinition.m` | 15 |
+| `Grains/Dream3dGrains.m` | 9 |
+| `Tutorials/BoundaryTutorial.m` | 8 |
+| `SphericalFunctions/S2FunQuadrature.m` | 3 |
+
+The remaining six are the stubs already listed in item 6.
+
+`Vectors/VectorDefinition.m` has a likely explanation: it is a newer, larger
+rewrite (1530 B, May 2025) of `Vectors/VectorsDefinition.m` (1115 B, Apr
+2024), and `Vectors.toc` still points at the older one. Probably just needs
+the TOC repointed and the stale file deleted — but confirm which text is
+wanted first.
+
+Checked and clean: all 31 `.toc` files resolve, 0 broken entries. (An earlier
+report of three broken entries — `mapPlot`, `scaleBar`, `sphericalPlot` in
+`plotting_index.toc` — was a false positive; those are classdefs in
+`plotting/` whose reference pages do exist.)
+
+## 8. Other open items from the audit
 
 Carried over verbatim; not yet re-verified in this session.
 
-- **24 empty content pages** (title only, no code); 17 are wired into a TOC so
-  they publish as empty. `doc/VectorsRotations/RotationsOperations.m` is a
-  0-byte file.
-- **16 orphan pages** — no TOC entry and no inbound link, so unreachable;
-  several are substantial (`Lankford.m`, `StrainAnalysis.m`, `MDFAnalysis.m`,
-  `BoundaryTutorial.m`, `DislocationSystems.m`, `QuadruplePoints.m`,
-  `S2FunQuadrature.m`, `EBSDAxisAngleMaps.m`, `Dream3dGrains.m`,
-  `SlipTransmition.m`).
 - **30 TODO markers in 28 pages.** Two flag broken behaviour rather than
   missing prose, and both pages execute without error, so the defect is in the
   output: `SO3FunApproximationTheory.m:172` (Bingham approximation only works
