@@ -1,6 +1,7 @@
 BoundarySelect             Select
 BoundaryPlots              Plot
 BoundaryProperties         Properties
+BoundaryMisorientations    Misorientations
 SubGrainBoundaries         Subgrain Boundaries
 TiltAndTwistBoundaries     Twist and Tilt
 CSLBoundaries              CSL

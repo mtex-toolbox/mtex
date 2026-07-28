@@ -1,5 +1,6 @@
 EBSDTutorial       EBSD
 GrainTutorial      Grains
+BoundaryTutorial   Grain Boundaries
 PoleFigureTutorial Pole Figure Data
 ODFTutorial        ODFs
 ImportFromVPSC

@@ -1,4 +1,4 @@
-VectorsDefinition  Definition
+VectorDefinition   Definition
 VectorsImport      Import
 VectorsExport      Export 
 VectorsOperations  Operations
