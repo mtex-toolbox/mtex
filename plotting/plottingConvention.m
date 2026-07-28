@@ -143,6 +143,8 @@ classdef plottingConvention < matlab.mixin.Copyable
         target = mean([ax.XLim; ax.YLim; ax.ZLim],2).';   % or your own target
         d = norm(ax.CameraPosition - ax.CameraTarget);    % preserve current distance
 
+        guard = plottingConvention.beginCameraUpdate(ax); %#ok<NASGU>
+
         ax.CameraTarget = target;
         ax.CameraPosition = target + d * pC.outOfScreen.xyz;
         ax.CameraUpVector = pC.north.xyz;
@@ -167,6 +169,8 @@ classdef plottingConvention < matlab.mixin.Copyable
         end
 
         %ax.CameraPosition = ax.CameraTarget + 1000*pC.outOfScreen.xyz;
+
+        guard = plottingConvention.beginCameraUpdate(ax); %#ok<NASGU>
 
         ax.CameraUpVector = pC.north.xyz;
         view(ax,pC.outOfScreen.xyz);
@@ -327,6 +331,55 @@ classdef plottingConvention < matlab.mixin.Copyable
       pC = plottingConvention(vector3d(-10,-5,2),vector3d(1,-2,0));
     end
    
+
+    function guard = beginCameraUpdate(ax)
+      % suppress camera notifications until the camera is consistent again
+      %
+      % The orientation of an axes is spread over several camera properties,
+      % but they can only be assigned one at a time and each assignment fires
+      % its own PostSet event. Listeners that read the orientation back (e.g.
+      % the scale bar, via <plottingConvention.getView>) would therefore first
+      % see an intermediate state - typically the new viewing direction still
+      % paired with the previous up vector - lay themselves out for it, and
+      % then immediately do it all again for the final state.
+      %
+      % Bracketing the assignments with this guard marks the axes as
+      % mid-update, which those listeners check and skip. Releasing the guard
+      % - by clearing the returned object, i.e. at the latest when the calling
+      % function returns, also on error - unmarks the axes and fires exactly
+      % one notification, on the finished camera.
+      %
+      % Syntax
+      %   guard = plottingConvention.beginCameraUpdate(ax);
+      %   ax.CameraPosition = ...; ax.CameraUpVector = ...;
+      %
+      % Input
+      %  ax - axes handle
+      %
+      % Output
+      %  guard - onCleanup object, keep alive for the duration of the update
+      %
+      % See also
+      % plottingConvention/setView scaleBar/update
+
+      setappdata(ax,'MTEXcameraUpdate',true);
+      guard = onCleanup(@() plottingConvention.endCameraUpdate(ax));
+    end
+
+    function endCameraUpdate(ax)
+      % counterpart of beginCameraUpdate - see there
+
+      if ~isgraphics(ax), return; end
+      if isappdata(ax,'MTEXcameraUpdate'), rmappdata(ax,'MTEXcameraUpdate'); end
+
+      % re-assigning an unchanged property still fires its PostSet event, so
+      % this delivers the single notification the listeners were kept from
+      % during the update - and unlike simply relying on the last assignment
+      % of the update itself, it also reaches them when that assignment did
+      % not actually change anything
+      up = ax.CameraUpVector;
+      ax.CameraUpVector = up;
+    end
 
     function pC = getView(ax)
       % reconstruct the plottingConvention from the current camera state
