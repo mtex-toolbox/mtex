@@ -53,7 +53,8 @@ end
 
 % if no DisplayName is set remove patch from legend
 if ~check_option(varargin,'DisplayName')
-  h(1).Annotation.LegendInformation.IconDisplayStyle = 'off';  
+  % h is empty if the boundary was empty and nothing has been drawn
+  if ~isempty(h), h(1).Annotation.LegendInformation.IconDisplayStyle = 'off'; end
 else
   legend('-DynamicLegend','location','NorthEast');
 end
