@@ -36,12 +36,30 @@ The relationship where one grain sits entirely inside another. Described from th
 _Avoid_: Treating "hole" and "inclusion" as independent facts that could occur without each other
 
 **Grain boundary**:
-A segment between two neighboring EBSD pixels belonging to different grains — the atomic edge from which grain outlines and triple points are derived.
+A segment between two neighboring EBSD pixels belonging to different grains — the atomic edge from which grain outlines and triple points are derived. Segments are stored in walk order (see Chain), so consecutive segments of the same chain share a vertex.
 _Avoid_: GB (as if it names a different concept), edge
 
 **Phase boundary**:
 Not a distinct entity — a grain boundary whose two neighboring grains happen to differ in phase. It's a way of querying/filtering grain boundaries, not a structurally different kind of thing.
 _Avoid_: Treating as its own class or type
+
+### Grain boundary chains
+
+**Chain**:
+A maximal run of grain boundary segments laid end to end, running from one junction to the next and never passing through one. Every segment belongs to exactly one chain, and the two grains a chain separates are the same along its whole length.
+_Avoid_: Segment (which is the atomic edge, not the run), boundary line, polyline
+
+**Junction**:
+A vertex where the number of meeting boundary segments is anything other than two — the places a chain is not allowed to run through. Purely a matter of how many segments meet, so it includes both the ends of the outer map border and the points where four segments cross.
+_Avoid_: Triple point (a junction need not be one, and vice versa), node, corner
+
+**Triple point**:
+A junction where exactly three segments meet *and* they separate three distinct real grains. A strict subset of the junctions: a vertex where three segments meet because one of them runs along the edge of the scanned area is a junction but not a triple point.
+_Avoid_: Using interchangeably with Junction
+
+**Closed chain**:
+A chain that ends where it began, so its vertices form a fillable loop. Usually this is the boundary of a grain enclosed entirely within one other grain (see Enclosure) and has no junction at all, in which case it has no natural first segment and one is chosen by convention; but a chain that leaves a junction and returns to that same junction is closed too.
+_Avoid_: Loop, cycle, ring; treating "closed" as the same thing as "junction-free"
 
 ### Parent grain reconstruction
 

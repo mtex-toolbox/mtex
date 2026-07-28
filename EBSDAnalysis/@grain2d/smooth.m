@@ -40,11 +40,15 @@ I_VF = [grains.boundary.I_VF,grains.innerBoundary.I_VF];
 A_V = I_VF * I_VF';
 t = size(A_V,1);
 
-% do not consider triple points
+% Do not move the junctions - the vertices where anything other than two
+% segments meet, counting the inner boundary too. diag(A_V) is that count.
+% The test used to be > 2, which missed the loose ends where a single
+% segment terminates; those are chain ends as well and have to stay put.
 if check_option(varargin,'moveTriplePoints')
   ignore = false(size(A_V,1),1);
 else
-  ignore = full(diag(A_V)) > 2;
+  vDegree = full(diag(A_V));
+  ignore = vDegree ~= 2 & vDegree > 0;
 end
 
 % ignore outer boundary

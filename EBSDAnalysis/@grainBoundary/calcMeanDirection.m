@@ -1,5 +1,5 @@
 function dir = calcMeanDirection(gB,n)
-% compute a smoothed direction that ignores staircasing 
+% compute a smoothed direction that ignores staircasing
 %
 % Syntax
 %   dir = calcMeanDirection(gB)
@@ -7,36 +7,55 @@ function dir = calcMeanDirection(gB,n)
 %
 % Description
 % This is very similar to direction with the only difference that it takes
-% the average over 2*n+1 directions
+% the direction across 2*n+1 segments instead of across a single one, which
+% averages out the staircasing of a pixel grid. The window runs along the
+% chain and is clamped at its ends, so it never smears across a junction.
 %
 % Input
 %  gB - @grainBoundary
-%  n  - number of neighboring vertices considered
+%  n  - number of neighboring segments considered on each side
 %
 % Output
 %  dir - @vector3d
 %
-
+% See also
+% grainBoundary/direction grainBoundary/chainId
 
 if nargin == 1, n = 1; end
 
-% adjacency matrix vertices - vertices
-I_VF = gB.I_VF; %#ok<*PROP>
-A_V = I_VF * I_VF.';
+nF = length(gB);
+if nF == 0, dir = vector3d; return; end
 
-% find for each vertex the neighboring vertices
-[u,v] = find(A_V^n);
+% -- the segments n steps back and forth along the chain -----------------
+% walk order makes this plain arithmetic on the row index
+iStart = find(gB.isChainStart);
+iEnd = find(gB.isChainEnd);
+isClosedChain = gB.isClosed(iStart);
+cId = gB.chainId;
 
-% X, Y values of the neighboring vertices
-X = sparse(u,v,gB.allV.x(v),size(A_V,1),size(A_V,1));
-Y = sparse(u,v,gB.allV.y(v),size(A_V,1),size(A_V,1));
+first = iStart(cId);            % first row of this segment's chain
+last = iEnd(cId);               % last row of it
+len = last - first + 1;
 
-% take the mean
-X = full(sum(X,2)) ./ sum(A_V ~= 0,2);
-Y = full(sum(Y,2)) ./ sum(A_V ~= 0,2);
+wraps = isClosedChain(cId);
 
-% compute the direction
-dir = normalize(vector3d(X(gB.F(:,1)) - X(gB.F(:,2)),...
-  Y(gB.F(:,1)) - Y(gB.F(:,2)), zeros(length(gB),1),'antipodal'));
-      
+% On a closed chain the window must stay strictly shorter than the chain. It
+% spans 2*n+1 segments, so 2*n+1 <= len-1 is needed: otherwise fwd lands on
+% or before back and the direction degenerates to a zero vector.
+nEff = repmat(n,nF,1);
+nEff(wraps) = max(0,min(n,floor((len(wraps)-2)/2)));
+
+back = (1:nF).' - nEff;
+fwd = (1:nF).' + nEff;
+
+% a closed chain wraps around, an open one is clamped at its ends
+back(wraps) = first(wraps) + mod(back(wraps) - first(wraps),len(wraps));
+fwd(wraps) = first(wraps) + mod(fwd(wraps) - first(wraps),len(wraps));
+back(~wraps) = max(back(~wraps),first(~wraps));
+fwd(~wraps) = min(fwd(~wraps),last(~wraps));
+
+% same orientation as gB.direction, which runs from the head to the tail
+dir = normalize(gB.allV(gB.F(back,1)) - gB.allV(gB.F(fwd,2)));
+dir.antipodal = true;
+
 end
