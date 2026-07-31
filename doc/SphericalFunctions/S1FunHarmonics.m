@@ -54,16 +54,16 @@ mtexTitle('Cartesian Plot')
 % Functions on the circle are $2\pi$-periodic functions. Hence they may be 
 % represented as weighted sums of sines and cosines (Fourier series).
 % In MTEX, we use the numerically more convenient representation in terms
-% of the complex exponentials $\mathrm e^{\mathrm i k\rho}$.
+% of the complex exponentials $\mathrm e^{-\mathrm i k\rho}$.
 % Hence, a function $f$ on the circle can be written as series of the form
 %
-% $$ f(\rho) = \sum_{k=-N}^N \hat f_k \, \mathrm e^{\mathrm ik\rho} $$
+% $$ f(\rho) = \sum_{k=-N}^N \hat f_k \, \mathrm e^{-\mathrm ik\rho} $$
 %
 % where $N$ is the bandwidth and $\hat f_k$ are the Fourier coefficients.
 % Here $\rho\in[0,2\pi)$ is the angle.
 % MTEX uses the coefficient convention
 %
-% $$\hat f_k = \frac{1}{2\pi} \int_0^{2\pi} f(\rho)\,\mathrm e^{-\mathrm i k\rho}\,\mathrm d\rho.$$
+% $$\hat f_k = \frac{1}{2\pi} \int_0^{2\pi} f(\rho)\,\mathrm e^{\mathrm i k\rho}\,\mathrm d\rho.$$
 %
 % Hence, the constant Fourier coefficient $\hat f_0$ describes the mean 
 % value of $f$.
