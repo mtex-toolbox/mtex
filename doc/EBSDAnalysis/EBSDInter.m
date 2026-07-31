@@ -32,7 +32,7 @@ x = 30.5; y = 5.5;
 e1 = interp(ebsd,x,y)
 
 %%
-% By default the command <EBSDSquare.interp.html |interp|> performs inverse
+% By default the command <EBSDsquare.interp.html |interp|> performs inverse
 % distance interpolation. This is different to 
 
 e2 = ebsd('xy',x,y)

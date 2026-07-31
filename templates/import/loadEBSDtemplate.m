@@ -7,7 +7,7 @@
 %% Specify Crystal and Specimen Symmetries
 
 % crystal symmetry
-CS = {crystal symmetry};
+csList = {crystal symmetry};
 
 % plotting convention
 pC = plottingConvention({zAxisDirection},{xAxisDirection});
@@ -20,17 +20,21 @@ pname = {path to files};
 % which files to be imported
 fname = {file names};
 
-%% Z-Values
+%% Correct for the Euler Angle Reference Frame
+%
+% rotates the map coordinate system's axes into the Euler coordinate
+% system's axes
 
-Z = {Z-values};
+EulerCorrection = {eulerCorrection};
 
 %% Import the Data
 
 % create an EBSD variable containing the data
-ebsd = EBSD.load(fname,CS,'interface',{interface},{Z},{options});
+% The interface (file format) is auto-detected from the file extension.
+ebsd = EBSD.load(fname,csList,{options}, ...
+  'EulerCorrection',EulerCorrection);
 ebsd.how2plot = pC;
 
-%% Correct Data
+%% Plot a First Sanity Check
 
-rot = rotation.byEuler({phi1},{Phi},{phi2});
-ebsd = rotate(ebsd,rot,{rotationOption});
+plot(ebsd('{dominantMineral}'),ebsd('{dominantMineral}').orientations)

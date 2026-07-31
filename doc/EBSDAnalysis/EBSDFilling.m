@@ -103,7 +103,7 @@ plot(ebsd('En'),ebsd('En').orientations)
 plot(ebsd('Di'),ebsd('Di').orientations)
 
 % compute and smooth grains 
-[grains,ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',3,'alpha',10);
+[grains,ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',3,'alpha',3);
 grains = smooth(grains,5);
 
 % plot the boundary of all grains

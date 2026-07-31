@@ -61,11 +61,11 @@ lw = 6;
 % consider on Fo-Fo boundaries
 gB = grains.boundary('Fo','Fo');
 
-% The following command reorders the boundary segments such that they are
-% connected. This has two advantages:
+% Boundary segments are stored in walk order, i.e. consecutive segments are
+% connected, and each run between two triple junctions forms a chain. This
+% has two advantages:
 % 1. the plots become more smooth
 % 2. you can consider every third line segment as we do in the next paragraph
-gB = gB.reorder;
 
 % visualize the misorientation angle
 % draw the boundary in black very thick 

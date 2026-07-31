@@ -63,10 +63,10 @@ methods
 
   function out = eqTol(obj1,obj2)
     % returns true if both have same symmetry elements and the same lattice
-      
+
     out = obj1 == obj2 || ...
       (isa(obj1,'specimenSymmetry') && ...
-      isa(obj2,'specimenSymmetry') && obj1.Laue.id == obj1.Laue.id);
+      isa(obj2,'specimenSymmetry') && obj1.Laue.id == obj2.Laue.id);
 
     end
 
@@ -76,10 +76,10 @@ methods
       
       out = obj1 == obj2 || ...
         (isa(obj1,'specimenSymmetry') && ...
-        isa(obj2,'specimenSymmetry') && obj1.Laue.id == obj1.Laue.id);
+        isa(obj2,'specimenSymmetry') && obj1.Laue.id == obj2.Laue.id);
 
     end
-  
+
 end
 
 methods (Static = true)

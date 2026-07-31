@@ -36,6 +36,11 @@ pC.makeDefault;
 % 'tiny', 'small', 'normal', 'large', 'huge'
 setMTEXpref('figSize','large');
 
+% the screen figure sizes are a fraction of, as [width height] in pixel
+% empty means the actual monitor - set this to make figure exports
+% independent of the screen they were rendered on
+setMTEXpref('screenSize',[]);
+
 % whether to show or not to show a micronbar on EBSD maps
 setMTEXpref('showMicronBar','on')
 

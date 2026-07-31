@@ -9,8 +9,9 @@ function ebsd = loadEBSD_ang(fname,varargin)
 %  fname - file name
 %
 % Options
-%  EulerCorrection - 
+%  EulerCorrection -
 %  setting - see https://mtex-toolbox.github.io/EBSDReferenceFrame.html
+%  headerOnly - return only phase/header metadata, skip reading the data
 %
 
 assertExtension(fname,'.ang');
@@ -67,9 +68,31 @@ for i = 1:length(phasePos)
       end
   end
   cs(phase+1) = crystalSymmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:});
-  
+
 end
-   
+
+% capture all remaining header metadata (phase/symmetry data is excluded,
+% it is already captured by cs/CSList above)
+header = angHeaderStruct(hl(1:nh),phasePos);
+
+% hint the exact step size from the header, preferred over EBSD's own
+% position-based estimate (see EBSD/updateUnitCell)
+unitCellHint = {};
+if isfield(header,'XSTEP') && isfield(header,'YSTEP')
+  xs = header.XSTEP; ys = header.YSTEP;
+  if isfield(header,'GRID') && strcmpi(header.GRID,'HexGrid')
+    headerCell = vector3d([-xs/2,-xs/2,0,xs/2,xs/2,0],[-ys/3,ys/3,2*ys/3,ys/3,-ys/3,-2*ys/3],0);
+  else
+    headerCell = vector3d([xs,xs,-xs,-xs]/2,[-ys,ys,ys,-ys]/2,0);
+  end
+  unitCellHint = {'unitCellHint',headerCell};
+end
+
+if check_option(varargin,'headerOnly')
+  ebsd = emptyHeaderOnlyEBSD(cs,header,unitCellHint{:});
+  return
+end
+
 % mineral name to phase number conversion needed?
 parts = regexpsplit(hl{end-1},'\s*');
 parts(cellfun(@isempty,parts)) = [];
@@ -148,8 +171,10 @@ ColumnNames = get_option(varargin,'ColumnNames',ColumnNames(1:length(isnum)));
   
 % import the data
 ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
-  'ColumnNames',ColumnNames,varargin{:},'header',nh,ReplaceExpr{:},'keepNaN');
-  
+  'ColumnNames',ColumnNames,varargin{:},'header',nh,ReplaceExpr{:},'keepNaN',unitCellHint{:});
+
+ebsd.opt.header = header;
+
 % Explicitly non-indexed phases appear to have 4*pi for all Euler angles
 % which are filtered by loadHelper() already AND ci==-1.
 % Taking phase 0 for non indexed does not really work in the case of single
@@ -166,40 +191,51 @@ end
 ebsd.phaseMap(1) = notIndexedID;
 ebsd(ebsd.rotations.isnan | ebsd.prop.ci<0).phase = notIndexedID;
 
-if check_option(varargin,'wizard')
-  corSetting = 2; 
-else
-  corSetting = 0; 
-end
-corSetting = get_option(varargin,'setting',corSetting);
-
-if corSetting > 0 || check_option(varargin,'EulerCorrection')
-
-  % change reference frame
-  rotCorrection = [rotation.id,...
-    rotation.byAxisAngle(xvector+yvector,180*degree),... % setting 1
-    rotation.byAxisAngle(xvector-yvector,180*degree),... % setting 2
-    rotation.byAxisAngle(xvector,180*degree),...         % setting 3
-    rotation.byAxisAngle(yvector,180*degree)];           % setting 4
-
-  rot = get_option(varargin,'EulerCorrection',rotCorrection(corSetting+1));
-
-  % correct rotations
-  ebsd.EulerCorrection = rot;
-  
-else
-  
-  fprintf(2,wraptext(['\nWarning: .ang files usually come with different coordinate systems for the Euler angles ' ...
-    'and the spatial coordinates. The relative alignment of these coordinate ' ...
-    'systems files can be specified when exporting the data from your EBSD maschine ' ...
-    'and are labeled as setting 1 to setting 4. Please specifiy this setting ' ...
-    'when importing the data using the syntax\n\n' ...
-    'ebsd = EBSD.load(fileName,''setting'', 2)' ...
-    '\n\n' ...
-    'Click <a href="matlab:MTEXdoc(''EBSDReferenceFrame'')">here</a> for more information.'...
-    '\n']))
+ebsd = applyEulerCorrectionTable(ebsd,'.ang',varargin{:});
 
 end
+
+function header = angHeaderStruct(hl,phasePos)
+% flatten every non-phase-block header line into a struct
+%
+% hl       - cell array of header lines (# ...), truncated to the header
+% phasePos - line indices of "# Phase N" markers within hl
+
+phaseKeys = {'materialname','formula','info','symmetry','latticeconstants',...
+  'numberfamilies','hklfamilies','elasticconstants','categories','phase'};
+
+exclude = false(size(hl));
+
+for i = 1:numel(phasePos)
+  startIdx = phasePos(i);
+  if i < numel(phasePos)
+    stopIdx = phasePos(i+1)-1;
+  else
+    % no explicit end-of-phase-block marker exists; keep consuming lines
+    % as long as they belong to one of the known repeatable phase keys
+    stopIdx = startIdx;
+    for j = startIdx+1:numel(hl)
+      tok = regexp(hl{j},'^#\s*([^\s:]+)','tokens','once');
+      if isempty(tok) || any(cellfun(@(pk) strncmpi(tok{1},pk,length(pk)),phaseKeys))
+        stopIdx = j;
+      else
+        break;
+      end
+    end
+  end
+  exclude(startIdx:stopIdx) = true;
+end
+
+keys = {}; values = {};
+for i = 1:numel(hl)
+  if exclude(i), continue; end
+  tok = regexp(hl{i},'^#\s*([^\s:]+)\s*:?\s*(.*)$','tokens','once');
+  if isempty(tok), continue; end
+  keys{end+1} = tok{1}; %#ok<AGROW>
+  values{end+1} = tok{2}; %#ok<AGROW>
+end
+
+header = buildHeaderStruct(keys,values);
 
 end
 

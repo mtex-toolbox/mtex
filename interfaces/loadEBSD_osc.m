@@ -1,10 +1,17 @@
 function ebsd = loadEBSD_osc(fname,varargin)
 %
-
+% Options
+%  headerOnly - return only phase/header metadata, skip reading the data
 
 assertExtension(fname,'.osc');
 
-CS = get_option(varargin,'CS',oscHeader(fname));
+[CSdefault,header] = oscHeader(fname);
+CS = get_option(varargin,'CS',CSdefault);
+
+if check_option(varargin,'headerOnly')
+  ebsd = emptyHeaderOnlyEBSD(CS,header);
+  return
+end
 
 [data,Xstep,Ystep] = oscData( fname );
 
@@ -48,41 +55,9 @@ pos = loader.getPos;
 rot = loader.getRotations;
 phase = loader.getColumnData('phase');
 ebsd = EBSD(pos,rot,phase,CS,loader.getOptions, 'unitCell',unitCell);
+ebsd.opt.header = header;
 
-if check_option(varargin,'wizard')
-  corSetting = 2; 
-else
-  corSetting = 0; 
-end
-corSetting = get_option(varargin,'setting',corSetting);
-
-if corSetting > 0 || check_option(varargin,'EulerCorrection')
-
-  % change reference frame
-  rotCorrection = [rotation.id,...
-    rotation.byAxisAngle(xvector+yvector,180*degree),... % setting 1
-    rotation.byAxisAngle(xvector-yvector,180*degree),... % setting 2
-    rotation.byAxisAngle(xvector,180*degree),...         % setting 3
-    rotation.byAxisAngle(yvector,180*degree)];           % setting 4
-
-  rot = get_option(varargin,'EulerCorrection',rotCorrection(corSetting+1));
-
-  % correct rotations
-  ebsd.EulerCorrection = rot;
-  
-else
-  
-  fprintf(2,wraptext(['\nWarning: .osc files usually come with different coordinate systems for the Euler angles ' ...
-    'and the spatial coordinates. The relative alignment of these coordinate ' ...
-    'systems files can be specified when exporting the data from your EBSD maschine ' ...
-    'and are labeled as setting 1 to setting 4. Please specifiy this setting ' ...
-    'when importing the data using the syntax\n\n' ...
-    'ebsd = EBSD.load(fileName,''setting'', 2)' ...
-    '\n\n' ...
-    'Click <a href="matlab:MTEXdoc(''EBSDReferenceFrame'')">here</a> for more information.'...
-    '\n']))
-
-end
+ebsd = applyEulerCorrectionTable(ebsd,'.osc',varargin{:});
 
 
 
@@ -244,7 +219,7 @@ end
 % original file was Decode_Header(OscFile, foutname)
 % I (florian) rewrote it a little.
 %
-function CS = oscHeader(file)
+function [CS,header] = oscHeader(file)
 % some remarksAdam Shiveley
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %So, the file is structured like this:
@@ -291,31 +266,34 @@ n  = d(7)
 %}
 
 
-% we down need the following in mtex
-%{
+% named fields decodable at fixed byte offsets; these offsets are
+% reverse-engineered and may not hold for every .osc file version, so
+% failure to decode any of them is not fatal
+header = struct();
+try
+  breaks    = find(data == 0);
+  nextBreak = @(x) breaks(find(breaks >= x,1,'first'));
+  readChars = @(pos) strtrim(char(data(pos:nextBreak(pos)-1)));
 
-breaks    = find(data == 0);
-nextBreak = @(x) breaks(find(breaks >= x,1,'first'));
-readChars = @(pos) char(data(pos:nextBreak(pos)-1));
+  %Let's locate if there is any info the user typed in
+  %There might be an issue here depending on how long the user types the
+  %comments.  Will need further testing to see if it breaks the hard-coded
+  %index locations of the SampleID, Operator, and ScanID
 
-%Let's locate if there is any info the user typed in
-%There might be an issue here depending on how long the user types the
-%comments.  Will need further testing to see if it breaks the hard-coded
-%index locations of the SampleID, Operator, and ScanID
+  header.info      = readChars(73);
+  header.operator  = readChars(1096);
+  header.Sample_ID = readChars(1351);
+  header.Scan_ID   = readChars(1606);
 
-options.info      = readChars(73);
-options.operator  = readChars(1096);
-options.Sample_ID = readChars(1351);
-options.Scan_ID   = readChars(1606);
-
-%This extracts the calibration info
-calibration = typecast(data(1861:1876)','single'); % single type
-%Here's the final calibration info
-x_star = calibration(1);
-y_star = calibration(2);
-z_star = calibration(3);
-working_distance = calibration(4);
-%}
+  %This extracts the calibration info
+  calibration = double(typecast(data(1861:1876)','single')); % single type
+  %Here's the final calibration info
+  header.x_star           = calibration(1);
+  header.y_star           = calibration(2);
+  header.z_star           = calibration(3);
+  header.working_distance = calibration(4);
+catch
+end
 
 headerStart  = hex2dec({'B9','0B','EF','FF','01','00','00','00'})';
 headerStop   = hex2dec({'B9','0B','EF','FF','02','00','00','00'})';
@@ -324,6 +302,11 @@ headerStart  = strfind(data,headerStart);
 headerStop   = strfind(data,headerStop)-1;
 
 headerBytes = data(headerStart+8:headerStop);
+
+% everything else in the header cannot be generically interpreted (no
+% self-describing labels like .ang/.ctf); keep the raw bytes so nothing
+% is silently discarded
+header.rawBytes = headerBytes;
 
 osc_phases = file2cell([mtex_path filesep 'interfaces' filesep 'osc_phases.txt']);
 nPhase=0;

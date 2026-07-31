@@ -22,7 +22,10 @@ ori =  orientation(axis2quat(SO3F.r,rho) .* axis2quat(orth(SO3F.r),theta) ...
   .* axis2quat(SO3F.r,angle) .* q0, SO3F.CS, SO3F.SS);
 
 % random symmetry elements
-ori = ori .* SO3F.CS.rot(randi(SO3F.CS.numSym,length(ori),1));
+% (indexing SO3F.CS.rot, a row vector, preserves its row orientation
+% regardless of the index shape - force a column here so the .* below
+% combines elementwise with ori instead of broadcasting to an N x N grid)
+ori = ori .* reshape(SO3F.CS.rot(randi(SO3F.CS.numSym,length(ori),1)),[],1);
 if SO3F.SS.numSym>1
-  ori = SO3F.SS.rot(randi(SO3F.SS.numSym,length(ori),1)) .* ori;
+  ori = reshape(SO3F.SS.rot(randi(SO3F.SS.numSym,length(ori),1)),[],1) .* ori;
 end

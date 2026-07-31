@@ -184,7 +184,7 @@ hold off
 % Converting a crystal direction which is represented by its coordinates
 % with respect to the crystal coordinate system $a$, $b$, $c$ into a
 % representation with respect to the associated Euclidean coordinate system
-% is done by the command <Miller.vector3d.html |vector3d|>.
+% is done by the command <vector3d.vector3d.html |vector3d|>.
 
 vector3d(d1)
 

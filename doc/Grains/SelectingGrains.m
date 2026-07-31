@@ -36,12 +36,24 @@ hold off
 
 selectInteractive(grains,'lineColor','gold')
 
-% this simulates a mouse click
-pause(1)
-simulateClick(9000,3500)
-pause(1)
+clear global indSelected
+global indSelected
 
-global indSelected;
+% this simulates a mouse click - it goes through java.awt.Robot, which needs
+% permission to inject input events and is refused on some systems, so fall
+% back to selecting the grain at the same position directly
+pause(1)
+try
+  simulateClick(9000,3500)
+  pause(1)
+catch
+  % permission to inject input events was refused
+end
+
+if isempty(indSelected)
+  indSelected = grains.id2ind(grains.findByLocation([9000 3500]));
+end
+
 grains(indSelected)
 
 hold on

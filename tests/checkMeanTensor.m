@@ -13,7 +13,7 @@ o = rotation.byEuler(150*degree,40*degree,35*degree);
 
 %% do the same by an ODF
 
-odf = unimodalODF(o,symmetry,symmetry,'halfwidth',1*degree);
+odf = unimodalODF(o,crystalSymmetry("1"),specimenSymmetry("1"),'halfwidth',1*degree);
 
 T_odf_f = calcTensor(odf,T,'Fourier');
 T_odf_q = calcTensor(odf,T,'quadrature');
@@ -35,7 +35,7 @@ o = rotation.byEuler(150*degree,40*degree,35*degree);
 
 %% do the same by an ODF
 
-odf = unimodalODF(o,symmetry,symmetry,'halfwidth',1*degree);
+odf = unimodalODF(o,crystalSymmetry("1"),specimenSymmetry("1"),'halfwidth',1*degree);
 
 
 T_odf = calcTensor(odf,T,'Fourier');
@@ -61,7 +61,7 @@ plot(rotate(T,o))
 
 %% do the same by an ODF
 
-odf = unimodalODF(o,symmetry,symmetry,'halfwidth',1*degree);
+odf = unimodalODF(o,crystalSymmetry("1"),specimenSymmetry("1"),'halfwidth',1*degree);
 
 
 T_odf = calcTensor(odf,T,'Fourier');
@@ -73,7 +73,7 @@ assert(mean(abs(reshape(matrix(T_odf-rotate(T,o)),[],1)))<2e-3,'Error checking t
 
 %% do the same by an ODF with quadrature
 
-odf = unimodalODF(o,symmetry,symmetry,'halfwidth',2*degree);
+odf = unimodalODF(o,crystalSymmetry("1"),specimenSymmetry("1"),'halfwidth',2*degree);
 
 
 T_odf_q = calcTensor(odf,T,'quadrature');
@@ -81,7 +81,20 @@ T_odf_q = calcTensor(odf,T,'quadrature');
 figure(3)
 plot(T_odf_q)
 
-assert(mean(abs(reshape(matrix(T_odf_q-rotate(T,o)),[],1)))<2e-3,'Error checking third rank tensor!')
+% Compare the quadrature path against the Fourier path, not against
+% rotate(T,o). At a halfwidth of 2 degrees both methods return 0.0062 away
+% from the single crystal tensor - that residual is the intrinsic difference
+% between an ODF average of finite width and a delta function, so no method
+% can meet a 2e-3 tolerance against rotate(T,o) here. What is worth testing
+% is that the two code paths agree, which they do to 6e-5.
+%
+% Note that the quadrature grid has a fixed default resolution of 2.5
+% degrees, so it does not resolve sharper ODFs: the same comparison at a
+% halfwidth of 1 degree is off by 8.1e-3.
+T_odf_f = calcTensor(odf,T,'Fourier');
+
+assert(mean(abs(reshape(matrix(T_odf_q-T_odf_f),[],1)))<1e-3, ...
+  'quadrature and Fourier disagree for the third rank tensor!')
 
 %% define a rank 4 tensor and rotate it
 
@@ -103,8 +116,8 @@ plot(rotate(T,o))
 
 %psi = SO3Kernel([1 0 0 0 0]);
 
-odf = unimodalODF(o,symmetry,symmetry,'halfwidth',0.1*degree);
-%odf = unimodalODF(o,symmetry,symmetry,psi);
+odf = unimodalODF(o,crystalSymmetry("1"),specimenSymmetry("1"),'halfwidth',0.1*degree);
+%odf = unimodalODF(o,crystalSymmetry("1"),specimenSymmetry("1"),psi);
 
 
 
@@ -126,29 +139,10 @@ assert(mean(abs(reshape(matrix(T_odf-rotate(T,o)),[],1)))<1e-3,'Error checking f
 
 %assert(mean(abs(reshape(matrix(T_odf-rotate(T,o)),[],1)))<1e-3,'Error checking fourth rank tensor!')
 
-%%
 
-%%
-
-s = 2.5;
-N = 10^7;
-Lo = 0:100;
-kappa = 5;
-A = (2*Lo+1) .* kappa.^2 ./ (kappa.^2 +  (2*Lo+1).^2 .* Lo.^(s+0.5) .* (Lo+1).^(s+0.5) ./N);
-psi = SO3Kernel(A);
-
-odf = calcODF(ebsd_corrected,C_Epidote,'kernel',psi,'phase',2)
-
-[C_Voigt, C_Reuss, C_Hill] =  calcTensor(odf_Epidote,C_Epidote)
-
-%%
-
-S3G = orientation('random',CS{1},SS,'points',10)
-
-psi = SO3DirichletKernel(4)
-
-%odf = unimodalODF(S3G,CS{1},SS,psi)
-odf = calcODF(S3G,'kernel',psi)
-
-calcTensor(S3G,C_Glaucophane)
-calcTensor(odf,C_Glaucophane)
+% Removed 2026-07-28: an abandoned scratch block used to follow here. It
+% referenced variables that are never defined in this file
+% (ebsd_corrected, C_Epidote, odf_Epidote, CS, SS, C_Glaucophane) and so
+% could only ever error. It was unreachable while the rank 3 quadrature
+% assert above still failed; fixing that assert exposed it. See git history
+% if the intent needs recovering.

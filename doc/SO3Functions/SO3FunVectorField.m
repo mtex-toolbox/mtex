@@ -174,7 +174,7 @@ plot(G.curl,'sigma')
 % The fact that the curl of a vector field is zero is actually equivalent
 % to the fact that the vector field is the gradient of some potential
 % field, which can be computed by the command
-% <SO3VectorField.antiderivate.html |antiderivative(g)|> and coincides
+% <SO3VectorField.antiderivative.html |antiderivative(g)|> and coincides
 % exactly with the original ODF |odf|.
 
 odf2 = G.antiderivative

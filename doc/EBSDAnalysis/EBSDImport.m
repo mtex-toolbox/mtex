@@ -32,11 +32,11 @@ plot(ebsd('Magnesium'),ebsd('Magnesium').orientations)
 %
 % In order to help the user to import EBSD data consistently to a fixed
 % specimen reference frame (which the user should know), MTEX provide the
-% <matlab:import_wizard('EBSD') import wizard> as a graphical user
+% <matlab:import_wizard import wizard> as a graphical user
 % interface. The |import_wizard| can be started either by typing into the
 % command line
 
-import_wizard('EBSD')
+import_wizard
 
 %%
 % EBSD Data files can be also imported via the <matlab:filebrowser file
@@ -92,13 +92,10 @@ plot(ebsd,ebsd.orientations)
 %
 % MTEX supports the following EBSD data formats:
 %
-% || <loadEBSD_ang.html     .ang> || EDAX ascii files.                  || <loadEBSD_ang.DRex     .DRex>  || single orientation files.         || 	           
-% || <loadEBSD_brukertxt.html .txt> || Bruker ascii files.              || <loadEBSD_h5.html     .h5, .hdf5> || Bruker, EDAX, Dream 3d binary files. || 
-% || <loadEBSD_crc.html     .crc> || Oxford binary files.               || <loadEBSD_osc.html     .osc>   || EDAX binary files.          || 		  
-% || <loadEBSD_csv.html     .csv> || Oxford single orientation files.   || <loadEBSD_Oxfordcsv.html .csv> || Oxford ascii files.        || 		  
-% || <loadEBSD_ctf.html     .ctf> || HKL single orientation files.      || <loadEBSD_generic.html .txt>   || ASCII files with Euler angles as columns. || 
-% || <loadEBSD_dream3d.html .txt> || Dream 3d single orientation files. || 
-%
+% || <loadEBSD_ang.html     .ang> || EDAX ascii files.                  || <loadEBSD_ang.DRex     .DRex>  || single orientation files.         ||
+% || <loadEBSD_crc.html     .crc> || Oxford binary files.               || <loadEBSD_osc.html     .osc>   || EDAX binary files.          ||
+% || <loadEBSD_ctf.html     .ctf> || HKL single orientation files.      || <loadEBSD_generic.html .txt>   || ASCII files with Euler angles as columns. ||
+% || <loadEBSD_h5.html     .h5, .hdf5, .oh5, .h5oina> || Bruker, EDAX, Oxford, ThermoFisher, EMsoft/EMsphinx binary files. ||
 %
 % If the data is recognized as an ASCII list of orientations, phase and spatial
 % coordinates in the form 

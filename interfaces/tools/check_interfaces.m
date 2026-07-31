@@ -12,7 +12,7 @@ interfaces = interfaces(ind);
 
 interface = {}; options = varargin;
 
-% ckeck for matching interfaces
+% check for matching interfaces
 w = warning;
 warning off all
 for i =1:length(interfaces)

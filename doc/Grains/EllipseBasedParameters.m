@@ -148,7 +148,7 @@ setView(ebsd.how2plot)
 % suitably represented by the direction normal to the shortest caliper of
 % the grains. This can particularly be the case for aligned rectangular
 % particles where the long axes often switch between the diagonals of the
-% particle. The <caliper.html |caliper|> or Feret of grains represents the
+% particle. The <grain2d.caliper.html |caliper|> or Feret of grains represents the
 % projection lengths of grains in relation to a projection direction. With
 % the option |'shortestPerp'|, the function returns the normal to the
 % projection direction with the shortest projection length of a grain. In

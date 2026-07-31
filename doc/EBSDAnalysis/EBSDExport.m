@@ -3,7 +3,7 @@
 %%
 % MTEX allows you to export EBSD data as <EBSD.export_h5.html h5>,
 % <EBSD.export_ctf.html ctf>, <EBSD.export_ang.html ang> or
-% <EBSD.export_cpr.html cpr/crc> files. The syntax is
+% <EBSD.export_crc.html cpr/crc> files. The syntax is
 %
 %   ebsd.export('myFile.ctf')
 %

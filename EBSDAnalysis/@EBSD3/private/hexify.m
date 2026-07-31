@@ -11,7 +11,7 @@ dHex = mean(norm(unitCell));
 
 % alignment of the hexagon
 % true mean vertices are pointing towards y direction
-isRowAlignment = diff(min(abs([unitCell.x unitCell.y]))) > 0;
+isRowAlignment = diff(min(abs([unitCell.x(:) unitCell.y(:)]))) > 0;
 
 prop = ebsd.prop;
 

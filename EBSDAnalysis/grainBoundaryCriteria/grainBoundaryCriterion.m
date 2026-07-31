@@ -32,6 +32,24 @@ methods
     out = obj.doEvaluate(ebsd,i,j);
   end
 
+  function tf = handlesMinPixel(obj) %#ok<MANU>
+    % Does this criterion enforce minPixel itself?
+    %
+    % calcGrains normally enforces minPixel with a whole extra
+    % segmentation pass, which finds the undersized grains and marks their
+    % pixels notIndexed. A criterion that already deals with undersized
+    % regions internally answers true, and that pass - a second complete
+    % evaluation of the criterion - is skipped.
+    tf = false;
+  end
+
+  function obj = setMinPixel(obj,minPixel) %#ok<INUSD>
+    % Hand minPixel to a criterion that answers true above.
+    %
+    % Does nothing by default, so a criterion only has to override this
+    % together with handlesMinPixel.
+  end
+
 end
 
 methods (Access = protected, Abstract)

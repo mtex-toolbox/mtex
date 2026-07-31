@@ -1,26 +1,14 @@
-function  gB = reorder(gB,varargin)
+function gB = reorder(gB,varargin)
 % nicely reorder grain boundaries
+%
+% Deprecated. Boundary segments are stored in walk order by default, so
+% there is nothing to reorder. Use grainBoundary/order to re-establish that
+% invariant after modifying F directly.
+%
+% See also
+% grainBoundary/order
 
-% compute tours through the adjecency matrix
-[idV,idE] = EulerTours(gB.A_V);
+warning(['gB.reorder is deprecated - boundary segments are already stored ' ...
+  'in walk order. Use gB.order if you need to re-establish it.']);
 
-% remove breaks
-id = isnan(idE);
-idE(id) = [];
-idV(id) = [];
-
-% reorder edges
-F = gB.F(idE,:);
-
-% and also all other properties
-gB.ebsdId = gB.ebsdId(idE,:);
-gB.grainId = gB.grainId(idE,:);
-gB.phaseId = gB.phaseId(idE,:);
-gB.misrotation = gB.misrotation(idE);
-
-% which needs to be flipped?
-flip = F(:,1) ~= idV(:); 
-
-% flip vertices
-F(flip,:) = fliplr(F(flip,:));
-gB.F = F;
+gB = gB.order(varargin{:});

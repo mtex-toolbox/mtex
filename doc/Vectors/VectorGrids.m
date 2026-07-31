@@ -4,7 +4,7 @@
 % MTEX supports a wide variety of spherical grids. Those include the
 % <regularS2Grid.html |regularS2Grid|>, the <equispacedS2Grid.html MTEX
 % equispaced grid>, the <HEALPixS2Grid.html HealPix grid> and the
-% <fibonacciS2Grid.html Fibonacci grid>. Lets define them with an
+% <fibonacciS2Grid.fibonacciS2Grid.html Fibonacci grid>. Lets define them with an
 % resolution of 7 degrees
 
 % the regular grid

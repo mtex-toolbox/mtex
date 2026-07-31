@@ -1,26 +1,29 @@
 function option_list = delete_option(option_list,options,nparams)
 % clear options in option list
 %
+% All occurrences of the options are removed, together with the |nparams|
+% entries following each option name.
+%
 % Syntax
-%   value = delete_option(option_list,{option1,option2,option3,...})
-%   value = delete_option(option_list,option,nparams)
+%   option_list = delete_option(option_list,{option1,option2,option3,...})
+%   option_list = delete_option(option_list,option,nparams)
 %
 % Input
 %  option_list - cell array
-%  option      - char or cell array
-%  nparams     - number of parameters (optional)
+%  options     - option name(s), string or cell array of names
+%  nparams     - number of values to delete along with the option name,
+%                default 0, either a scalar or one entry per option
 %
 % Output
-%  out_list      - Cell Array
+%  option_list - cell array
 %
 % See also
-% check_option get_option set_option
+% check_option get_option set_option find_option
 
 
 if nargin == 2, nparams = 0; end
-if length(options) > length(nparams)
-  nparams = repmat(nparams,size(options));
-end
+if ~iscell(options), options = {options}; end
+if isscalar(nparams), nparams = repmat(nparams,size(options)); end
 
 i = 1;
 while i<=length(option_list)
@@ -36,7 +39,7 @@ while i<=length(option_list)
   if ~isempty(pos)
    
     % delete specified number of parameters
-    option_list(i:i+nparams(pos)) = [];
+    option_list(i:min(i+nparams(pos),end)) = [];
     
   else
     i = i+1;

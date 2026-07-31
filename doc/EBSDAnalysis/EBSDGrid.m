@@ -174,4 +174,67 @@ ebsdGF = fill(ebsdG)
 
 plot(ebsdGF,ebsdGF.orientations)
 
+%% Robustness to Distorted (e.g. Trapezoidal) Grids
+%
+% Real EBSD stages sometimes drift smoothly during a scan rather than
+% rotating rigidly. A common signature is a trapezoidal distortion: each
+% scan row is stretched or compressed about the map centre by an amount
+% that grows with the row's y position, so the same nominally rectangular
+% map ends up narrower at one edge than at the other. MTEX reconstructs
+% the underlying grid indices of an <EBSD.EBSD.html |EBSD|> object robustly
+% under this kind of smooth, non-rigid distortion, including on a phase
+% subset - which matters for <EBSD.gridify.html |gridify|> above, and for
+% plotting (the |surf| backend).
+%
+% Grid index recovery being robust does not, on its own, make grain
+% reconstruction robust to the same distortion: <EBSD.calcGrains.html
+% |calcGrains|> currently still places notIndexed holes and the map's
+% outer edge using a rigid (non-distortion-aware) reconstruction, a
+% separate, not yet fixed limitation documented in
+% EBSDAnalysis/@EBSD/private/spatialDecompositionGrid.m.
+%
+% We demonstrate this on a real map, rather than a small synthetic one,
+% since the failure mode this guards against only becomes visible once the
+% map is realistically wide - a small toy grid stays safe at distortion
+% levels that already break a real, wide map.
+
+mtexdata forsterite
+
+%%
+% The command <EBSD.transform.html |transform|> applies an arbitrary
+% function to the position of every pixel, leaving orientations and all
+% other properties untouched. Here we scale the x-position of every pixel
+% about the map's centre by an amount that grows linearly with y - a
+% trapezoidal stage drift of up to |trapFrac| at the top and bottom edges.
+% Note that the distortion is defined through the physical y position, not
+% through a column of <EBSD.lattice.html |ebsd.lattice.ij|> - which of its
+% two columns happens to correspond to rows vs columns depends on an
+% internal, unspecified choice of the lattice basis and is not something
+% to rely on.
+
+x = ebsd.pos.x; xCenter = (min(x)+max(x))/2;
+y = ebsd.pos.y; yCenter = (min(y)+max(y))/2; yHalf = (max(y)-min(y))/2;
+trapFrac = 0.05;
+
+distort = @(pos) vector3d( ...
+  xCenter + (pos.x-xCenter) .* (1 + trapFrac*(pos.y-yCenter)/yHalf), ...
+  pos.y, pos.z);
+
+ebsdDistorted = transform(ebsd, distort);
+
+plot(ebsdDistorted('Fo'),ebsdDistorted('Fo').orientations)
+
+%%
+% Even though every row has now shifted by a different amount, MTEX
+% recovers exactly the same grid indices as for the undistorted map -
+% for the full map as well as for a subset of a single phase, where gaps
+% now occur within a scan line and not only between lines.
+
+isequal(ebsdDistorted.lattice.ij, ebsd.lattice.ij)
+isequal(ebsdDistorted('Fo').lattice.ij, ebsd('Fo').lattice.ij)
+
+
+
+
+
 %#ok<*NASGU>

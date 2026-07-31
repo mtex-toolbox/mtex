@@ -14,10 +14,10 @@ function [ori,c] = optimalSample(f,n,varargin)
 % Gräf, Manuel; Potts, Daniel; Steidl, Gabriele (2012). Quadrature Errors, Discrepancies, and Their Relations to Halftoning on the Torus and the Sphere. SIAM Journal on Scientific Computing, 34(5), A2760–A2791. doi:10.1137/100814731
 %
 % Syntax
-%   ori = compactify(f)
-%   ori = compactify(f,ori)
-%   ori = compactify(f,n,'bandwidth',32)
-%   ori = compactify(f,n,'maxIter',1000,'tol',0.05*degree)
+%   ori = optimalSample(f)
+%   ori = optimalSample(f,ori)
+%   ori = optimalSample(f,n,'bandwidth',32)
+%   ori = optimalSample(f,n,'maxIter',1000,'tol',0.05*degree)
 % 
 % Input
 %  f - @SO3Fun
@@ -60,7 +60,6 @@ tol = get_option(varargin,'tol',0.1*degree);
 
 % Define Restricted Distance Kernel
 psi = SO3RestrictedDistanceKernel(bw+1);
-
 
 % get integral (mean) weight lambda and the weights-vector for the points
 lambda = sum(f);

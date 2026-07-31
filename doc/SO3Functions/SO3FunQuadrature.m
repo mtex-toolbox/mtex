@@ -10,7 +10,7 @@
 % |@SO3FunHarmonic| and |@SO3FunRBF| that approximates $f$ reasonable well.
 %
 %%
-% This approximation process is similarly to <SO3FunApproximation.html 
+% This approximation process is similarly to <SO3FunApproximationTheory.html 
 % Approximating Orientation Dependent Functions from Discrete Data>.
 % where the given data are a set of orientations with function values.
 %
@@ -60,7 +60,7 @@ plot(odf,'sigma')
 % with one of this schemes, then we will get exactly this function back.
 %
 %%
-% In MTEX we use the command <SO3FunHarmonic.html |SO3FunHarmonic|> to expand
+% In MTEX we use the command <SO3FunHarmonic.SO3FunHarmonic.html |SO3FunHarmonic|> to expand
 % any |@SO3Fun| or |@function_handle| into an |@SO3FunHarmonic|.
 % 
 
@@ -181,7 +181,7 @@ calcError(E1,E2)
 % be applied if we try to approximate a density function.
 %
 %%
-% In MTEX we use the command <SO3FunRBF.html |SO3FunRBF|> to represent
+% In MTEX we use the command <SO3FunRBF.SO3FunRBF.html |SO3FunRBF|> to represent
 % any |@SO3Fun| or |@function_handle| by an |@SO3FunRBF|.
 % 
 % In the following we want to use this to transform a given 
@@ -268,7 +268,7 @@ calcError(SO3F,SO3F6)
 %
 %%
 % In MTEX we call this by adding the option |'harmonic'| to the
-% <SO3FunRBF.html |SO3FunRBF|>-command.
+% <SO3FunRBF.SO3FunRBF.html |SO3FunRBF|>-command.
 
 SO3F7 = SO3FunRBF(SO3F,'harmonic')
 plot(SO3F7,'sigma')

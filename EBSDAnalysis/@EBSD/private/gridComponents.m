@@ -5,18 +5,13 @@ function gid = gridComponents(ebsd,gbc,varargin)
 % blind to adjacencies that only exist across alpha-bridged gaps, so it may
 % over-cull.
 
-[A,stencil,~] = latticeBasis(ebsd.unitCell);
-pos    = [ebsd.pos.x(:), ebsd.pos.y(:)];
-origin = min(pos,[],1);
-ij     = round((pos - origin) / A');
-nE     = size(pos,1);
+g = ebsd.lattice;
+stencil = g.stencil;
+ij      = g.ij;
+nE      = size(ij,1);
 isIndexed = ebsd.isIndexed(:);
 
-ijmin = min(ij,[],1);
-ijsz  = max(ij,[],1) - ijmin + 1;
-ij2slot = @(IJ) (IJ(:,1)-ijmin(1)) + (IJ(:,2)-ijmin(2))*ijsz(1) + 1;
-ij2ebsd = zeros(prod(ijsz),1);
-ij2ebsd(ij2slot(ij)) = 1:nE;
+[ij2ebsd,ij2slot,ijmin,ijsz] = latticeLookup(ij);
 
 % neighbourhood = stencil plus the diagonals between consecutive axis steps
 % (for a 4-stencil this is the 8-neighbourhood; for hex, the 6 axial

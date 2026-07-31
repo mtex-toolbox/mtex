@@ -14,6 +14,8 @@ function abc  = calcAxis(id,axisLength,angle,varargin)
 %
 
 % get axis length
+axisLength = double(axisLength);
+angle = double(angle);
 if axisLength(3) == 0, axisLength(3) = max(axisLength);end
 if axisLength(3) == 0, axisLength(3) = 1;end
 

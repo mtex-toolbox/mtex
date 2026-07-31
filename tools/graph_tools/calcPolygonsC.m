@@ -1,8 +1,16 @@
-function poly = calcPolygonsC(I_FG,F,V,N)
+function [poly,inclusionId] = calcPolygonsC(I_FG,F,V,N)
 %
 % Input
-%  I_FG - 
-%  F - 
+%  I_FG -
+%  F -
+%
+% Output
+%  poly        - cell list of indices to V
+%  inclusionId - number of trailing vertices in poly{k} belonging to
+%                inclusion (hole) loops, i.e. numel(poly{k}) minus the
+%                length of the main (largest area) loop. Known for free
+%                here since every grain's cycles are traced individually
+%                below; see EBSDAnalysis/@grain2d/grain2d.m.
 
 % compute cycles
 [g, c, cP] = EulerCyclesC(I_FG,F,size(V,1));
@@ -21,11 +29,12 @@ else
   area = polySgnArea3(V(cP,:).xyz,N.xyz,c);
 end
 
-% convert to cell array 
+% convert to cell array
 poly = cell(size(I_FG,2),1);
+inclusionId = zeros(size(I_FG,2),1);
 for ig = 1:size(I_FG,2) % for all grains
-  
-  
+
+
   if g(ig+1)-g(ig) == 1 % only one cycle
     cStart = c(g(ig));
     cEnd = c(g(ig)+1)-1;
@@ -64,5 +73,6 @@ for ig = 1:size(I_FG,2) % for all grains
       end
     end
     poly{ig} = [localPoints{I}];
+    inclusionId(ig) = numel(poly{ig}) - numel(localPoints{I(1)});
   end
 end

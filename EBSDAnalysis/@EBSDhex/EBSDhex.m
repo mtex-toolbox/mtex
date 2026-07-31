@@ -199,49 +199,6 @@ classdef EBSDhex < EBSD
       
     end
     
-    function [x,y,z] = hex2cube(ebsd,row,col)
-      % convert offset coordinates into cube coordinates
-
-      % convert to row, col indices
-      if nargin == 2, [row,col] = ind2sub(size(ebsd),row); end
-      
-      %col = col - 1 + ebsd.offset * ~iseven(round(row));
-      col = col - 1;
-      row = row - 1 ;
-            
-      if ebsd.isRowAlignment
-        x = col - (row - ebsd.offset * ~iseven(round(row))) / 2;
-        z = row;
-      else
-        z = row - (col - ebsd.offset * ~iseven(round(col))) / 2;
-        x = col;
-      end
-      y = -x-z;
-      
-    end
-    
-    function [row,col] = cube2hex(ebsd,x,~,z)
-      % convert cube coordinates into offset coordinates
-      
-      if ebsd.isRowAlignment
-        col = 1 + x + (z - ebsd.offset * ~iseven(round(z))) / 2;
-        row = 1 + z;
-      else
-        col = 1 + x;
-        row = 1 + z + (x - ebsd.offset * ~iseven(round(x))) / 2;
-      end
-      
-      % ensure inside the box
-      isInside = row > 0 & col > 0 & row <= size(ebsd,1) & col <= size(ebsd,2);
-      row(~isInside) = NaN;
-      col(~isInside) = NaN;
-      
-      if nargout < 2
-        ind = ~isnan(row);
-        row(ind) = sub2ind(size(ebsd),row(ind),col(ind)); 
-      end
-      
-    end
 
     function ind = neighbors(ebsd,ind,k,radius)
 

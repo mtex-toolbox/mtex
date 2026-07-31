@@ -17,8 +17,8 @@ if isempty(javachk('desktop'))
   end
   disp([ s  ...
     ' (<a href="matlab:MTEXdoc">show documentation</a>)'])
-  disp('  <a href="matlab:import_wizard(''PoleFigure'')">Import pole figure data</a>')
-  disp('  <a href="matlab:import_wizard(''EBSD'')">Import EBSD data</a>')
+  disp('  <a href="matlab:import_wizard_old(''PoleFigure'')">Import pole figure data</a>')
+  disp('  <a href="matlab:import_wizard">Import EBSD data</a>')
   disp('  <a href="matlab:check_mex">Check Installation</a>')
   disp(' ');
   

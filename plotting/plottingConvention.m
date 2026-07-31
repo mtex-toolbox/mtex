@@ -124,14 +124,26 @@ classdef plottingConvention < matlab.mixin.Copyable
           ax.ThetaDir='counterclockwise';
         end
 
-      elseif ax.PlotBoxAspectRatioMode == "manual" % 3d plot
-        
+      elseif ax.PlotBoxAspectRatioMode == "manual" && ...
+          ax.CameraPositionMode == "manual" % 3d plot with a placed camera
+
+        % Note: this branch is only for axes whose camera has already been
+        % placed by hand (e.g. after rotate3d / zoom in a 3d plot), where the
+        % camera distance encodes the current zoom and has to be preserved.
+        % Setting CameraPosition/CameraTarget makes them 'manual', which
+        % makes MATLAB report ax.TightInset as [0 0 0 0] - the axes then
+        % looks like it needs no space for labels and mtexFigure crops them
+        % away. For an untouched camera the map branch below is used instead,
+        % which leaves the camera modes on 'auto' and keeps TightInset alive.
+
         %cameraDist = norm(ax.CameraPosition - ax.CameraTarget);
         %ax.CameraPosition = ax.CameraTarget + cameraDist*pC.outOfScreen.xyz;
         %ax.CameraUpVector = pC.north.xyz;
-        
+
         target = mean([ax.XLim; ax.YLim; ax.ZLim],2).';   % or your own target
         d = norm(ax.CameraPosition - ax.CameraTarget);    % preserve current distance
+
+        guard = plottingConvention.beginCameraUpdate(ax); %#ok<NASGU>
 
         ax.CameraTarget = target;
         ax.CameraPosition = target + d * pC.outOfScreen.xyz;
@@ -157,6 +169,8 @@ classdef plottingConvention < matlab.mixin.Copyable
         end
 
         %ax.CameraPosition = ax.CameraTarget + 1000*pC.outOfScreen.xyz;
+
+        guard = plottingConvention.beginCameraUpdate(ax); %#ok<NASGU>
 
         ax.CameraUpVector = pC.north.xyz;
         view(ax,pC.outOfScreen.xyz);
@@ -318,6 +332,55 @@ classdef plottingConvention < matlab.mixin.Copyable
     end
    
 
+    function guard = beginCameraUpdate(ax)
+      % suppress camera notifications until the camera is consistent again
+      %
+      % The orientation of an axes is spread over several camera properties,
+      % but they can only be assigned one at a time and each assignment fires
+      % its own PostSet event. Listeners that read the orientation back (e.g.
+      % the scale bar, via <plottingConvention.getView>) would therefore first
+      % see an intermediate state - typically the new viewing direction still
+      % paired with the previous up vector - lay themselves out for it, and
+      % then immediately do it all again for the final state.
+      %
+      % Bracketing the assignments with this guard marks the axes as
+      % mid-update, which those listeners check and skip. Releasing the guard
+      % - by clearing the returned object, i.e. at the latest when the calling
+      % function returns, also on error - unmarks the axes and fires exactly
+      % one notification, on the finished camera.
+      %
+      % Syntax
+      %   guard = plottingConvention.beginCameraUpdate(ax);
+      %   ax.CameraPosition = ...; ax.CameraUpVector = ...;
+      %
+      % Input
+      %  ax - axes handle
+      %
+      % Output
+      %  guard - onCleanup object, keep alive for the duration of the update
+      %
+      % See also
+      % plottingConvention/setView scaleBar/update
+
+      setappdata(ax,'MTEXcameraUpdate',true);
+      guard = onCleanup(@() plottingConvention.endCameraUpdate(ax));
+    end
+
+    function endCameraUpdate(ax)
+      % counterpart of beginCameraUpdate - see there
+
+      if ~isgraphics(ax), return; end
+      if isappdata(ax,'MTEXcameraUpdate'), rmappdata(ax,'MTEXcameraUpdate'); end
+
+      % re-assigning an unchanged property still fires its PostSet event, so
+      % this delivers the single notification the listeners were kept from
+      % during the update - and unlike simply relying on the last assignment
+      % of the update itself, it also reaches them when that assignment did
+      % not actually change anything
+      up = ax.CameraUpVector;
+      ax.CameraUpVector = up;
+    end
+
     function pC = getView(ax)
       % reconstruct the plottingConvention from the current camera state
       %
@@ -350,12 +413,26 @@ classdef plottingConvention < matlab.mixin.Copyable
       up     = ax.CameraUpVector;
 
       outOfScreen = normalize(vector3d(camDir(1),camDir(2),camDir(3)));
-      north       = normalize(vector3d(up(1),up(2),up(3)));
+      up          = vector3d(up(1),up(2),up(3));
+
+      % MATLAB does not require CameraUpVector to be perpendicular to the
+      % viewing direction - what points north on screen is only the component
+      % of it orthogonal to outOfScreen. Projecting instead of taking the up
+      % vector as is also keeps this working while the camera is halfway
+      % through an update: setView assigns CameraPosition before
+      % CameraUpVector, and the CameraPosition PostSet listeners (e.g. the
+      % scale bar's) run in between, i.e. on a new camera direction paired
+      % with the still old up vector.
+      north = up - dot(up,outOfScreen) * outOfScreen;
 
       % rebuild the rotation consistent with the getters
       %   outOfScreen = rot * Z,  north = rot * Y
       pC = plottingConvention;
-      pC.rot = rotation.map(vector3d.Z,outOfScreen,vector3d.Y,north);
+      if norm(north) <= 1e-10 * norm(up) % up is along the viewing direction
+        pC.rot = rotation.map(vector3d.Z,outOfScreen); % no roll defined
+      else
+        pC.rot = rotation.map(vector3d.Z,outOfScreen,vector3d.Y,normalize(north));
+      end
     end
 
 

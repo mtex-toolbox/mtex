@@ -16,16 +16,15 @@ classdef gbcCustom < grainBoundaryCriterion
 %   out = 0   grain boundary
 
 properties
-  custom = []          % per-pixel property (numeric, vector3d or quaternion)
-  delta  = 0.5
+  values = []   % per-pixel property (numeric, vector3d or quaternion)
+  threshold  = 0.5
 end
 
 methods
 
-  function obj = gbcCustom(varargin)
-    obj.custom = get_option(varargin,'custom',obj.custom);
-    obj.delta  = get_option(varargin,{'delta','threshold'},obj.delta);
-    if ~isscalar(obj.delta), obj.delta = 0.5; end
+  function obj = gbcCustom(values,threshold)
+    obj.values = values;
+    obj.threshold  = threshold;    
   end
 
 end
@@ -34,8 +33,8 @@ methods (Access = protected)
 
   function out = doEvaluate(obj,ebsd,i,j)
 
-    custom = obj.custom;
-    delta  = obj.delta;
+    custom = obj.values;
+    delta  = obj.threshold;
     if ~isscalar(delta), delta = 0.5; end
 
     if isa(custom,'vector3d') || isa(custom,'quaternion')

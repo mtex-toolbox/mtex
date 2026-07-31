@@ -25,8 +25,7 @@ plot(psi,'linewidth',2,'symmetric')
 % * the Schulz defocusing kernel @SchulzDefocusingKernel
 % * the Dirichlet kernel @S2DirichletKernel
 % * the Bump kernel @S2BumpKernel
-% * the Abel Poussin kernel @S2AbelPoussinKernel.html de >
-% * the <S2AbelPoussinKernel.html vom Mises kernel>
+% * the restricted distance kernel @S2RestrictedDistanceKernel
 %
 %% Fourier coefficients
 %
@@ -69,12 +68,12 @@ plotSpektra(psi,'linewidth',2)
 % <vector3d.calcDensity.html |calcDensity|>
 % * defocusing correction of XRD data
 % * estimation of the habit plane normal distribution using the command
-% <calcGBND.html |calcGBND|>
-% * definition of fibe ODFs using the command <fibreODF.html |fibreODF|>
+% <grainBoundary.calcGBND.html |calcGBND|>
+% * definition of fibre ODFs using the command <fibreODF.html |fibreODF|>
 %
 %
 %% The de la Vallee Poussin Kernel
-% The <S2Kernels.S2DeLaValleePoussinKernel.html spherical de la Vallee Poussin kernel>
+% The <S2DeLaValleePoussinKernel.html spherical de la Vallee Poussin kernel>
 % is defined by 
 % 
 % $$ K(t) = (1+\kappa)\,(\frac{1+t}{2})^{\kappa}$$ 
@@ -120,7 +119,7 @@ hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
 %% The Dirichlet Kernel
-% The <S2Kernels.S2DirichletKernel.html spherical Dirichlet or
+% The <S2DirichletKernel.html spherical Dirichlet or
 % Christoffel-Darboux kernel> is recommended for calculating physical
 % properties as the Fourier coefficients always have a value of one up to
 % the specified bandwidth:
@@ -136,7 +135,7 @@ plot(psi1,'linewidth',2,'symmetric')
 hold on
 plot(psi2,'linewidth',2,'symmetric')
 hold off
-legend('bandwidth = 5','bandwidth = 10')
+legend('bandwidth = 10','bandwidth = 5')
 
 %%
 % By looking at the Fourier coefficients we see, that they are exactly 1.
@@ -145,10 +144,10 @@ plotSpektra(psi1,'linewidth',2)
 hold on
 plotSpektra(psi2,'linewidth',2)
 hold off
-legend('bandwidth = 5','bandwidth = 10')
+legend('bandwidth = 10','bandwidth = 5')
 
 %% The Bump kernel
-% The <S2Kernels.S2BumpKernel.html spherical bump kernel> is a radial
+% The <S2BumpKernel.html spherical bump kernel> is a radial
 % symmetric kernel function depending on the halfwidth $r\in (0,pi)$. The
 % function value is 0, if the angle is greater then the halfwidth $r$.
 % Otherwise it is 1.
@@ -164,7 +163,7 @@ plot(psi1,'linewidth',2,'symmetric')
 hold on
 plot(psi2,'linewidth',2,'symmetric')
 hold off
-legend('halfwidth = 30°','halwidth = 40°')
+legend('halfwidth = 30°','halfwidth = 50°')
 
 %%
 % We also take a look at the Fourier coefficients
@@ -173,4 +172,4 @@ plotSpektra(psi1,'linewidth',2)
 hold on
 plotSpektra(psi2,'linewidth',2)
 hold off
-legend('\kappa = 0.2','\kappa = 0.3')
+legend('halfwidth = 30°','halfwidth = 50°')

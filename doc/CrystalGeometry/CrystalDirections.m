@@ -44,7 +44,7 @@ annotate([a,b,c],'label',{'a','b','c'},'backgroundcolor','w','textAboveMarker')
 % Note that for triclinic and monoclinic symmetries MTEX aligns spherical
 % projections of crystal directions such that the b-axis points towards
 % east and c* points out of the plane. This behavior can be changed by
-% altering the <plottingConvention.plottingConvention.html plotting
+% altering the <plottingConvention.html plotting
 % convention> stored in |cs.how2plot|. E.g. we might want to have the
 % a-axis to point to east
 

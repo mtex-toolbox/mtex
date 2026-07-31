@@ -1,3 +1,0 @@
-%% Axis Angle Maps
-%
-%%

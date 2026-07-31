@@ -28,7 +28,7 @@ grains = smooth(grains,5);
 F = halfQuadraticFilter;
 ebsd = smooth(ebsd,F,grains,'fill');
 
-plot(ebsd('indexed'),ebsd('indexed').orientations)
+plot(ebsd,ebsd.orientations)
 hold on
 plot(grains.boundary,'lineWidth',2)
 hold off
@@ -63,7 +63,7 @@ hold off
 %
 % The grain orientation spread (GOS) is the averaged misorientation angle
 % of the grain reference orientation deviations of each grain. We may
-% compute this average by using the command <ebsd.grainMean.html
+% compute this average by using the command <EBSD.grainMean.html
 % |grainMean|>.
 
 GOS = grainMean(ebsd, grod.angle, grains);

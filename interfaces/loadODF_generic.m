@@ -46,7 +46,7 @@ function [odf,opt] = loadODF_generic(fname,varargin)
 %      'Columns',[1,2,3,4])
 %
 % See also
-% import_wizard loadODF ODF_demo
+% import_wizard_old loadODF ODF_demo
 
 % get options
 ischeck = check_option(varargin,'check');

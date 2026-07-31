@@ -53,6 +53,25 @@
 using matlab::mex::ArgumentList;
 namespace md = matlab::data;
 
+// jc_voronoi (since the 2026-07-20 "unique vertex indices" release) already
+// recognizes *some* duplicate endpoints itself: edge.vertices[k] is set to a
+// shared index whenever this exact circle-event vertex was already stamped
+// onto a neighbouring edge (bit-exact match only, see jcv_circle_event).
+// weldIdOf caches that upstream index -> our welder's compacted id, so an
+// endpoint upstream already proved identical skips the eps hash-grid probe
+// entirely. Endpoints upstream couldn't resolve (JCV_INVALID_VERTEX, or the
+// first time an index is seen) fall through to jcvx_welder_add exactly as
+// before - this is a pure cache, it changes no eps-tolerance semantics.
+static inline int jcvx_welded_id(int upstreamIdx, const jcv_point& p,
+                                  std::vector<int>& weldIdOf, jcvx_welder& vw)
+{
+  if (upstreamIdx != JCV_INVALID_VERTEX && weldIdOf[(size_t)upstreamIdx] >= 0)
+    return weldIdOf[(size_t)upstreamIdx];
+  const int id = jcvx_welder_add(&vw, p.x, p.y);
+  if (upstreamIdx != JCV_INVALID_VERTEX) weldIdOf[(size_t)upstreamIdx] = id;
+  return id;
+}
+
 class MexFunction : public matlab::mex::Function {
 
   std::shared_ptr<matlab::engine::MATLABEngine> matlabPtr = getEngine();
@@ -146,6 +165,9 @@ public:
     jcvx_welder vw;
     jcvx_welder_init(&vw, 2 * nU, eps);
 
+    // cache from jc_voronoi's own (bit-exact) vertex index to our welder id
+    std::vector<int> weldIdOf((size_t)jcv_get_num_vertices(&diagram), -1);
+
     std::vector<int> ea, eb;               // vertex pair per kept edge (row)
     // incidences (unique-site, row) collected as two parallel arrays; deduped
     // later by a counting sort over sites (no comparison sort, no hash map).
@@ -153,17 +175,19 @@ public:
     ea.reserve((size_t)nU * 3); eb.reserve((size_t)nU * 3);
     incSite.reserve((size_t)nU * 6); incRow.reserve((size_t)nU * 6);
 
-    for (const jcv_edge* e = jcv_diagram_get_edges(&diagram); e;
-         e = jcv_diagram_get_next_edge(e)) {
+    jcv_edge_iter edgeIter;
+    jcv_edge e;
+    jcv_diagram_get_edges(&diagram, &edgeIter);
+    while (jcv_edge_next(&edgeIter, &e)) {
 
-      const jcv_site* s0 = e->sites[0];
-      const jcv_site* s1 = e->sites[1];
+      const jcv_site* s0 = e.sites[0];
+      const jcv_site* s1 = e.sites[1];
       const bool r0 = s0 && uniqueIsReal[(size_t)s0->index];
       const bool r1 = s1 && uniqueIsReal[(size_t)s1->index];
       if (!r0 && !r1) continue;                  // between dummies only
 
-      int v1 = jcvx_welder_add(&vw, e->pos[0].x, e->pos[0].y);
-      int v2 = jcvx_welder_add(&vw, e->pos[1].x, e->pos[1].y);
+      int v1 = jcvx_welded_id(e.vertices[0], e.pos[0], weldIdOf, vw);
+      int v2 = jcvx_welded_id(e.vertices[1], e.pos[1], weldIdOf, vw);
       if (v1 == v2) continue;                    // collapsed short edge
       if (v1 > v2) std::swap(v1, v2);
 

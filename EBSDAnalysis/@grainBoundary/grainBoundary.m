@@ -31,6 +31,16 @@ classdef grainBoundary < phaseList & dynProp
 %  A_V            - adjacency matrix vertices - vertices
 %  componentId    - connected component id
 %  componentSize  - number of segments that belong to the component
+%  chainId        - id of the chain a segment belongs to
+%  chainSize      - number of segments of that chain
+%  isChainStart   - segment is the first of its chain
+%  isChainEnd     - segment is the last of its chain
+%  isClosed       - the chain of this segment closes onto itself
+%  arcLength      - length along the chain up to the end of this segment
+%  chainLength    - total length of the chain this segment belongs to
+%  chainV         - vertex ids of all chains, separated by NaN
+%  isJunction     - vertex is a junction - indexes allV
+%  junctionId     - ids of the junction vertices
 %  x              - x coordinates of the vertices of the grains
 %  y              - y coordinates of the vertices of the grains    
 %  z              - z coordinates of the vertices of the grains    
@@ -61,6 +71,16 @@ classdef grainBoundary < phaseList & dynProp
     A_V            % adjacency matrix vertices - vertices
     componentId    % connected component id
     componentSize  % number of faces that form a segment
+    chainId        % id of the chain a segment belongs to
+    chainSize      % number of segments of that chain
+    isChainStart   % segment is the first of its chain
+    isChainEnd     % segment is the last of its chain
+    isClosed       % the chain of this segment closes onto itself
+    arcLength      % length along the chain up to the end of this segment
+    chainLength    % total length of the chain this segment belongs to
+    chainV         % vertex ids of all chains, separated by NaN
+    isJunction     % vertex is a junction - indexes allV
+    junctionId     % ids of the junction vertices
     x              % x coordinates of the vertices of the grains
     y              % y coordinates of the vertices of the grains
     z              % z coordinates of the vertices of the grains
@@ -96,7 +116,7 @@ classdef grainBoundary < phaseList & dynProp
       gB.phaseMap = phaseMap;
       gB.misrotation = mori;
       gB.ebsdId = ebsdInd;
-      if nargin == 9 % store ebsd_id instead of index
+      if nargin >= 9 && ~isempty(ebsdId) % store ebsd_id instead of index
         gB.ebsdId(ebsdInd>0) = ebsdId(ebsdInd(ebsdInd>0));
       end
 
@@ -115,6 +135,41 @@ classdef grainBoundary < phaseList & dynProp
         gB.ebsdId(doSort,:) = fliplr(gB.ebsdId(doSort,:));
         gB.grainId(doSort,:) = fliplr(gB.grainId(doSort,:));
         gB.misrotation(doSort) = inv(gB.misrotation(doSort));
+
+        % leftOriented says the caller built F such that the pre-sort first
+        % grain is already on its left - as grain2d does, since it derives F
+        % from the positively wound poly loops. Swapping the grain columns
+        % swaps left and right, so F has to follow.
+        if check_option(varargin,'leftOriented')
+          gB.F(doSort,:) = fliplr(gB.F(doSort,:));
+        end
+      end
+
+      % bring the segments into walk order - this has to happen before the
+      % triple points are computed, as those reference segment ids
+      if ~check_option(varargin,'noOrder')
+
+        % the left/right convention needs to know on which side of a segment
+        % the grain grainId(:,1) sits, which gB itself cannot tell
+        ebsdPos = get_option(varargin,'ebsdPos',[]);
+        if ~isempty(ebsdPos)
+
+          ebsdInd(doSort,:) = fliplr(ebsdInd(doSort,:));
+
+          mid = mean(V(F),2);
+          pos = mid;
+          isInner = ebsdInd(:,1) > 0;
+          pos(isInner) = ebsdPos(ebsdInd(isInner,1));
+
+          % along the outer border grainId(:,1) is 0 and has no pixel, so
+          % mirror the pixel of the other side through the segment midpoint
+          isOuter = ~isInner & ebsdInd(:,2) > 0;
+          pos(isOuter) = 2*mid(isOuter) - ebsdPos(ebsdInd(isOuter,2));
+
+          varargin = [varargin,{'leftPos',pos}];
+        end
+
+        gB = gB.order(varargin{:});
       end
 
       % compute triple points
@@ -139,10 +194,14 @@ classdef grainBoundary < phaseList & dynProp
   
       end
       
-      % remove duplicates
-      [~,ind] = unique(gB.F,'rows');      
+      % remove duplicates - F is no longer canonically sorted per row, since
+      % its column order now encodes the walk direction
+      [~,ind] = unique(sort(gB.F,2),'rows');
       gB = gB.subSet(ind);
-      
+
+      % concatenating tears the chains apart, so re-establish the invariant
+      gB = gB.order;
+
     end
     
     
@@ -248,6 +307,83 @@ classdef grainBoundary < phaseList & dynProp
       
     end
     
+    function isJct = get.isJunction(gB)
+      % a vertex where any number of segments other than two meet
+      deg = accumarray(gB.F(:),1,[size(gB.allV,1) 1]);
+      isJct = deg ~= 2 & deg > 0;
+    end
+
+    function id = get.junctionId(gB)
+      id = find(gB.isJunction);
+    end
+
+    function isStart = get.isChainStart(gB)
+
+      F = gB.F;
+      if size(F,1) == 0, isStart = false(0,1); return; end
+
+      % a chain continues only if the rows chain head to tail AND the shared
+      % vertex is not a junction - without the second test two different
+      % chains meeting at a junction would be welded into one
+      isJct = gB.isJunction;
+      isStart = [true; F(2:end,1) ~= F(1:end-1,2) | isJct(F(1:end-1,2))];
+
+    end
+
+    function isEnd = get.isChainEnd(gB)
+      isStart = gB.isChainStart;
+      isEnd = [isStart(2:end); ~isempty(isStart)];
+    end
+
+    function id = get.chainId(gB)
+      id = cumsum(double(gB.isChainStart));
+    end
+
+    function s = get.chainSize(gB)
+      id = gB.chainId;
+      s = accumarray(id,1);
+      s = s(id);
+    end
+
+    function cl = get.isClosed(gB)
+      F = gB.F;
+      iStart = find(gB.isChainStart);
+      iEnd = find(gB.isChainEnd);
+      cl = F(iEnd,2) == F(iStart,1);
+      cl = cl(gB.chainId);
+    end
+
+    function l = get.arcLength(gB)
+      sl = gB.segLength;
+      cs = cumsum(sl);
+      iStart = find(gB.isChainStart);
+      base = cs(iStart) - sl(iStart);
+      l = cs - base(gB.chainId);
+    end
+
+    function l = get.chainLength(gB)
+      l = gB.arcLength;
+      l = l(gB.isChainEnd);
+      l = l(gB.chainId);
+    end
+
+    function v = get.chainV(gB)
+
+      F = gB.F;
+      n = size(F,1);
+      if n == 0, v = zeros(0,1); return; end
+
+      % every segment contributes its start vertex, every chain end adds
+      % its end vertex and a NaN separator
+      isEnd = gB.isChainEnd;
+      ind = (1:n).' + cumsum([0; 2*double(isEnd(1:end-1))]);
+
+      v = nan(n + 2*nnz(isEnd),1);
+      v(ind) = F(:,1);
+      v(ind(isEnd)+1) = F(isEnd,2);
+
+    end
+
     function out = hasPhase(gB,phase1,phase2)
       
       if nargin == 2
@@ -339,7 +475,11 @@ classdef grainBoundary < phaseList & dynProp
         gB.triplePoints.allV = gB.prop.V;
         gB.prop = rmfield(gB.prop,'V');
       end
-      
+
+      % files written before segments were stored in walk order. order is
+      % idempotent, so this is safe on files that already satisfy it.
+      gB = gB.order;
+
     end
     
     

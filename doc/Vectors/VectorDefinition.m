@@ -11,7 +11,7 @@
 v = vector3d(1,2,3)
 
 %%
-% This gives a single vector with coordinates (1,1,0) with respect to the
+% This gives a single vector with coordinates (1,2,3) with respect to the
 % X, Y, Z coordinate system. Lets visualize this vector
 
 plot(v)

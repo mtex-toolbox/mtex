@@ -30,7 +30,7 @@ ori2 = project2FundamentalRegion(orientation.rand(100000,cs));
 % $\lVert \mathtt{tensor(ori_1)} - \mathtt{tensor(ori_2)} \rVert_2$ of the
 % corresponding rotational matrices and the Euclidean distance $ \lVert
 % \mathtt{R(ori_1)} - \mathtt{R(ori_2)} \rVert_2$ of the corresponding
-% <rotation.Rodrigues.html Rodrigues Frank vectors>.
+% <rotation.byRodrigues.html Rodrigues Frank vectors>.
 
 % compute the misorientation angles in degree
 omega = angle(ori1,ori2)./degree;

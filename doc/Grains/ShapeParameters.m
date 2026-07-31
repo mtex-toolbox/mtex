@@ -3,9 +3,9 @@
 %%
 % In this section we discuss basic geometric properties of grains. Due to
 % the huge amount of shape parameters we split them into different
-% categories: basic properties (this page), <EllipseBasedProperties.html
+% categories: basic properties (this page), <EllipseBasedParameters.html
 % properties based on fitted ellipses>, <HullBasedParameters.html convex
-% hull bases properties>, <ProjectionBasesParameters.html projection bases
+% hull bases properties>, <ProjectionBasedParameters.html projection bases
 % properties>. The table below summarizes the shape parameters discussed on
 % this page.
 %
@@ -15,7 +15,7 @@
 % || <grain2d.diameter.html |diameter|>  || diameter in µm || <grain2d.caliper.html |caliper|>  || caliper or Feret diameter ||
 % || <grain2d.equivalentPerimeter.html |equivalentPerimeter|>  || perimeter of a circle with the same area || <grain2d.equivalentRadius.html |equivalentRadius|>  || radius of a circle with the same area || 
 % || <grain2d.shapeFactor.html |shapeFactor|>  || perimeter / equivalent perimeter || <grain2d.isBoundary.html |isBoundary|>  || is it a boundary grain ||
-% || <IceSphericity.html |sphericity|>  || irregularity of grain boundary ||   ||  ||
+% || <ExIceSphericity.html |sphericity|>  || irregularity of grain boundary ||   ||  ||
 % || <grain2d.hasHole.html |hasHole|>  || has inclusions  || <grain2d.isInclusion.html |isInclusion|>  || is an inclusions  ||
 % || <grain2d.numNeighbors.html |numNeighbors|>  || number neighboring grains  || <triplePointList.triplePointList.html |triplePoints|>  || list of  triple points || 
 % || <grainBoundary.grainBoundary.html |boundary|>  || list of  boundary segments || <grainBoundary.grainBoundary.html |innerBoundary|>  || subgrain boundaries || 

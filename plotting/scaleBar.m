@@ -179,12 +179,21 @@ methods
     sB.updating = true;
     restoreGuard = onCleanup(@() sB.unlock); %#ok<NASGU>
 
+    ax = get(sB.hgt,'Parent');
+
+    % skip while the camera is only half updated: reorienting an axes takes
+    % several property assignments (see plottingConvention.beginCameraUpdate)
+    % and the ones in between describe a viewing direction paired with an up
+    % vector that does not belong to it. Laying the bar out for such a state
+    % is wasted work - a single notification follows once the camera is
+    % consistent again
+    if isappdata(ax,'MTEXcameraUpdate'), return; end
+
     % the plotting convention currently active on the map - read back from
     % the axes camera itself (not from a cached plottingConvention
     % reference) so this stays correct even if setView was applied through
     % a plottingConvention object other than the one the map was
     % originally created with
-    ax = get(sB.hgt,'Parent');
     pC = plottingConvention.getView(ax);
 
     % determine which compass direction (E-S-W-N is 0-1-2-3) the data x-

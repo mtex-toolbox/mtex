@@ -3,19 +3,25 @@ function ebsd = loadEBSD_crc(fname,varargin)
 % 
 %
 % Options
-%  EulerCorrection - 
+%  EulerCorrection -
+%  headerOnly - return only phase/header metadata, skip reading the data
 
-assertExt(fname,{'.cpr','.crc'})
-  
+assertExtension(fname,'.cpr','.crc');
+
 [path,file] = fileparts(fname);
 cprFile = fullfile(path,[file '.cpr']);
 crcFile = fullfile(path,[file '.crc']);
-  
+
 cpr = localCPRParser(cprFile);
-  
+
 CS  = get_option(varargin,'CS',getCS(cpr));
 param = getJobParam(cpr);
-  
+
+if check_option(varargin,'headerOnly')
+  ebsd = emptyHeaderOnlyEBSD(CS,cpr,'unitCell',param.unitCell);
+  return
+end
+
 loader = localCRCLoader(crcFile,param);
   
 rot = loader.getRotations();
@@ -24,26 +30,10 @@ phases  = loader.getColumnData('phase');
 options = loader.getOptions('ignoreColumns',{'phase','x','y'});
   
 ebsd = EBSD(pos,rot,phases,CS,options,'unitCell',param.unitCell);
-ebsd.opt.cprInfo = cpr;
+ebsd.opt.header = cpr;
 
 % change reference frame
-correction = get_option(varargin,'EulerCorrection',rotation.byEuler(pi,0,0));
-
-if ~check_option(varargin,'EulerCorrection') && ~check_option(varargin,'wizard') 
-
-  fprintf(2,wraptext(['\nWarning: .cpr files usually come with different ' ...
-    'coordinate systems for the Euler angles and the spatial coordinates. ' ...
-    'I assumed the relative alignment of these coordinate systems to be a ' ...
-    'rotation about the z-axis by 180 degree. You may want to verify this ' ...
-    'and specify the correct alignment explicitely by\n\n' ...
-    'ebsd = EBSD.load(fileName,''EulerCorrection'', rotation.byAxisAngle(zvector,180*degree))' ...
-    '\n\n' ...
-    'Click <a href="matlab:MTEXdoc(''EBSDReferenceFrame'')">here</a> for more information.'...
-    '\n']))
-
-end
-
-ebsd.EulerCorrection = correction;
+ebsd = applyEulerCorrectionFixed(ebsd,'.cpr',rotation.byEuler(pi,0,0),varargin{:});
 
 end
 
@@ -107,13 +97,7 @@ for k = 1:numel(str)
     
     field = lower(strrep(field,' ',''));
     value = deblank(value(2:end));
-    numericValue = str2double(value);
-    
-    if isnan(numericValue)
-      cpr.(Title).(field) = value;
-    else
-      cpr.(Title).(field) = numericValue;
-    end
+    cpr.(Title).(field) = coerceNumeric(value);
   end
 end
 

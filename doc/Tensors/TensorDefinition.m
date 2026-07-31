@@ -13,7 +13,7 @@
 % As soon as we consider more general forces and displacements they can not
 % be described anymore by scalar numbers $x$ and $y$ but vectors or
 % matrices are required. In its most general form the displacement is
-% describes by a <strainTensor.html strain matrix> $\sigma_{ij}$ and the
+% describes by a <strainTensor.strainTensor.html strain matrix> $\sigma_{ij}$ and the
 % force is described by a stiffness matrix $\varepsilon_{kl}$. In this setting
 % the linear relationship between the two matrices is described by the
 % <complianceTensor.complianceTensor.html compliance tensor> $\mathbf

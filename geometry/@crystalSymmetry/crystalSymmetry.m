@@ -144,7 +144,7 @@ classdef crystalSymmetry < symmetry & phaseItem
         [id, varargin] = symmetry.extractPointId(varargin{:});
       
         % get axes length (a b c)
-        if ~isempty(varargin) && isa(varargin{1},'double')
+        if ~isempty(varargin) && isnumeric(varargin{1})
           abc = varargin{1};
           varargin(1) = [];
         else
@@ -155,7 +155,7 @@ classdef crystalSymmetry < symmetry & phaseItem
         lattice = symmetry.pointGroups(id).lattice;
         angles = lattice.defaultAngles;
         
-        if ~isempty(varargin) && isa(varargin{1},'double')
+        if ~isempty(varargin) && isnumeric(varargin{1})
           angles = varargin{1};
           if any(angles>2*pi), angles = angles * degree; end
           varargin(1) = [];

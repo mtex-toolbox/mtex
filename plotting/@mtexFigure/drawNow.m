@@ -24,7 +24,7 @@ if check_option(varargin,'position')
   
 elseif check_option(varargin,'figSize') || mtexFig.figSizeFactor > 0 
   
-  screenExtent = get(0,'MonitorPositions');
+  screenExtent = getScreenExtent;
     
   mtexFig.keepAspectRatio = true;
   figSize = screenExtent(1,3:4) - [0,120]; % consider only the first monitor
@@ -73,7 +73,7 @@ if check_option(varargin,'figSize') ||...
   [mtexFig.ncols,mtexFig.nrows] = calcPartition(mtexFig,figSize);
   [mtexFig.axisWidth,mtexFig.axisHeight] = calcAxesSize(mtexFig,figSize);
 else
-  screenExtent = get(0,'MonitorPositions');
+  screenExtent = getScreenExtent;
 end
 
 % resize figure

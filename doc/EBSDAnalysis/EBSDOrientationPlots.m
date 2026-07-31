@@ -81,6 +81,6 @@ plotSection(grains('Fo').meanOrientation,log(grains('Fo').area),...
   'sigma','sections',9,'MarkerSize',10);
   
 %%
-% See also <PlotTypes_demo.html#5, Scatter plots> for more information
-% about scatter plot and <SphericalProjection_demo.html,spherical
+% See also <PlotTypes.html#5, Scatter plots> for more information
+% about scatter plot and <SphericalProjections.html,spherical
 % projections>  for more information on spherical projections.

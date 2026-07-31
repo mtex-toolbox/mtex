@@ -6,7 +6,7 @@
 %
 %% General Principle
 % In order to tell MATLAB to plot one plot right on the top of an older
-% plot one has to use the commands <matlab:doc('hold') hold all> and
+% plot one has to use the commands <matlab:doc('hold') hold on> and
 % <matlab:doc('hold') hold off>. Let's demonstrate this using a simple
 % example.
 

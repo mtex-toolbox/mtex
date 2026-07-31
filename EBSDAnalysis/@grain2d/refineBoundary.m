@@ -3,58 +3,42 @@ function grains = refineBoundary(grains,varargin)
 %
 % Syntax
 %
+%   grains = refineBoundary(grains)
 %   grains = refineBoundary(grains,segLength)
+%
+% Description
+% Resamples the grain boundaries at a constant spacing, so that the vertices
+% are spread evenly along each boundary instead of sitting on the corners of
+% the pixel grid. Junctions stay exactly where they are. This is the step
+% that lets grain2d/smooth produce a genuinely smooth boundary rather than a
+% finer staircase.
+%
+% Only grains.boundary is resampled. Since refine keeps just the junctions at
+% both ends of a chain and mints fresh vertices in between, a vertex where the
+% inner boundary ends on the outer one does not survive - grains.innerBoundary
+% is left as it was and may hang off a vertex the outer boundary no longer
+% visits. Unlike simplifyBoundary and reduceBoundary, which protect it.
 %
 % Input
 %  grains - @grain2d
-%  delta  - new segment length
+%  delta  - new segment length (default: half the median segment length)
 %
 % Output
 %  grains - @grain2d
 %
-
-sL = grains.boundary.segLength;
+% See also
+% grainBoundary/refine grain2d/simplifyBoundary grain2d/reduceBoundary grain2d/smooth
 
 if nargin > 1 && isnumeric(varargin{1})
   delta = varargin{1};
 else
-  delta = median(sL) / 2;
+  delta = median(grains.boundary.segLength) / 2;
 end
 
-% number of subdivisions
-numPoint = max(0,round(sL ./ delta - 1));
+grains.boundary = refine(grains.boundary,delta);
 
-F = grains.boundary.F;
+% refine appends the new vertices, so the existing ids stay valid - this
+% just propagates the extended list to the inner boundary as well
+grains.allV = grains.boundary.allV;
 
-% compute new vertices
-lambda = arrayfun(@(x) (1:x)./(x+1),numPoint,'UniformOutput',false);
-lambda = [lambda{:}].';
-
-% the interpolation matrix
-A = sparse(1:sum(numPoint),repelem(F(:,1),numPoint),lambda,sum(numPoint),numel(grains.allV)) + ...
-  sparse(1:sum(numPoint),repelem(F(:,2),numPoint),1-lambda,sum(numPoint),numel(grains.allV));
-newV = A * grains.allV;
-
-allV = [grains.allV; newV];
-
-% update F
-% duplicate faces which we are going to subdivide
-oldFid = repelem(1:size(F,1),numPoint+1);
-F = repelem(F,numPoint+1,1);
-
-hasAdded = arrayfun(@(x) [false,true(1,2*x),false], numPoint,'UniformOutput',false);
-hasAdded = [hasAdded{:}];
-
-F = F.';
-F(hasAdded) = numel(grains.allV) + repelem(1:numel(newV),2);
-F = F.';
-
-% update boundary properties
-grains.boundary.grainId = grains.boundary.grainId(oldFid,:);
-grains.boundary.ebsdId = grains.boundary.ebsdId(oldFid,:);
-grains.boundary.phaseId = grains.boundary.phaseId(oldFid,:);
-grains.boundary.misrotation = grains.boundary.misrotation(oldFid);
-grains.boundary.F = F;
-grains.allV = allV;
-
-grains.poly = calcPolygonsC(grains.boundary.I_FG,F,allV,grains.N);
+grains = updatePoly(grains);

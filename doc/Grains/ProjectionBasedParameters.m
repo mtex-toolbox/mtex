@@ -27,7 +27,7 @@ hold off
 
 %%
 % The most well known projection based parameter is the
-% <grain2d.diamter.html |diameter|> which refers to the longest distance
+% <grain2d.diameter.html |diameter|> which refers to the longest distance
 % between any two boundary points and is given in µm.
 
 grains(ind).diameter

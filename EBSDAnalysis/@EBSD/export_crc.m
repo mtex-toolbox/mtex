@@ -42,8 +42,8 @@ ebsd = regrid(ebsd,stepSize);
 
 %% Process *.cpr data
 % Define a structure containing the cpr data
-if isfield(ebsd.opt,'cprInfo') == 1
-  cprStruct = ebsd.opt.cprInfo;
+if isfield(ebsd.opt,'header') == 1
+  cprStruct = ebsd.opt.header;
   flagOIFormat = true;
 else
   % When the map is not originally an OI file format
@@ -276,10 +276,10 @@ end
 %% Calculate the ebsd map step size
 function stepSize = calcStepSize(inebsd)
 
-xx = [inebsd.unitCell(:,1);inebsd.unitCell(1,1)]; % repeat the 1st x co-ordinate to close the unit pixel shape
-yy = [inebsd.unitCell(:,2);inebsd.unitCell(1,2)]; % repeat the 1st y co-ordinate to close the unit pixel shape
+xx = [inebsd.unitCell.x(:);inebsd.unitCell.x(1)]; % repeat the 1st x co-ordinate to close the unit pixel shape
+yy = [inebsd.unitCell.y(:);inebsd.unitCell.y(1)]; % repeat the 1st y co-ordinate to close the unit pixel shape
 unitPixelArea = polyarea(xx,yy);
-if size(inebsd.unitCell,1) == 6 % hexGrid
+if length(inebsd.unitCell) == 6 % hexGrid
   stepSize = sqrt(unitPixelArea/sind(60));
 else % squareGrid
   stepSize = sqrt(unitPixelArea);
@@ -292,8 +292,9 @@ function outebsd = regrid(inebsd,stepSize)
 % this step mitigates any rounding-off errors during subsequent gridding
 % operations
 outebsd = inebsd;
-outebsd.prop.x = stepSize.*floor(outebsd.prop.x./stepSize);
-outebsd.prop.y = stepSize.*floor(outebsd.prop.y./stepSize);
+newX = stepSize.*floor(outebsd.pos.x./stepSize);
+newY = stepSize.*floor(outebsd.pos.y./stepSize);
+outebsd.pos = vector3d(newX,newY,outebsd.pos.z);
 end
 
 

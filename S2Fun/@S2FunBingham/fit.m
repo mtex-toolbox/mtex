@@ -43,7 +43,6 @@ function [BS2,ab,rot] = fit(v,varargin)
 
 [a,kappa] = eig3(v*v);
 
-
 % normalize eigenvalues to obtain the eigenvalues of the scatter matrix
 kappa = kappa./sum(kappa);
 

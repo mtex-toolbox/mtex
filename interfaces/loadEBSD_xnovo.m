@@ -6,20 +6,12 @@ function ebsd = loadEBSD_xnovo(fname,varargin)
 %
 % Output
 %  ebsd    - @EBSD
-%
-% Flags
-%  check         - internal
 
 map = get_option(varargin,'map','/LabDCT/','char');
 try
   h5info(fname,[map '/Data']);
 catch
   interfaceError(fname);
-end
-
-if check_option(varargin,'check')
-  ebsd = EBSD3;
-  return
 end
 
 CSList = loadSymmetry(fname,varargin{:});

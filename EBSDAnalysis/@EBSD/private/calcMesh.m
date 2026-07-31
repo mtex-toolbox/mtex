@@ -22,23 +22,37 @@ function [mesh,ind,model] = calcMesh(pos,uC,varargin)
 %
 
 % --- lattice basis from the unit cell --------------------------------
-[u,v] = latticeBasis(uC);
+% (i,j) index assignment is robust to smooth grid distortion (e.g. a
+% trapezoidal stage drift) - see assignGridIndex - and shared with
+% gridIndex/gridComponents/spatialDecompositionGrid/generateUnitCells,
+% which all place a pixel on the same virtual lattice this way.
+A = latticeBasis(uC);
+xy = [pos.x(:), pos.y(:)];
+IJ = assignGridIndex(xy,A);
+I = IJ(:,1); J = IJ(:,2);
 
-% rough index assignment
-IJ = double([u;v]) \ double(pos(:) - pos(1));
-I = round(IJ(1,:)).';
-J = round(IJ(2,:)).';
-
-% refine origin from assigned indices
-p0 = pos(1) + min(I) * u + min(J)*v;
-% shift indices to p0
-I = I - min(I);
-J = J - min(J);
+% refine the lattice basis by fitting p0,u,v to the actual measured
+% positions via least squares against the rough integer indices. The
+% unit-cell-derived (u,v) is only a statistical estimate (calcUnitCell
+% fits it from local point statistics), and even a tiny mismatch against
+% the true per-pixel step compounds over hundreds of grid steps, which
+% can displace far-away points by a large fraction of a cell and corrupt
+% the mesh built below.
+designMatrix = [ones(numel(I),1), I, J];
+posXYZ = [pos.x(:), pos.y(:), pos.z(:)];
+fit = designMatrix \ posXYZ;
+p0 = vector3d(fit(1,1),fit(1,2),fit(1,3));
+u  = vector3d(fit(2,1),fit(2,2),fit(2,3));
+v  = vector3d(fit(3,1),fit(3,2),fit(3,3));
 
 % ideal grid
 nI = max(I)+1; nJ = max(J)+1;
 [ii,jj] = ndgrid(1:nI,1:nJ);
 idealMesh = p0 + (ii-1) * u + (jj-1)*v;
+
+% p0,u,v are plain vector3d - restore the plotting convention of the input
+idealMesh.how2plot = pos.how2plot;
+
 if nargout == 1
   mesh = idealMesh;
   return;
@@ -76,34 +90,6 @@ mesh(known) = pos;
 % diagnostics
 if nargout == 3
   model = makeModel(p0,u,v,nI,nJ,def(known));
-end
-end
-
-% =========================================================================
-function [u,v] = latticeBasis(uC)
-% primitive lattice vectors from a Voronoi-type unit cell (square or hex)
-
-% candidate nearest-neighbour vectors = 2 * (edge midpoint - center)
-c0  = mean(uC);
-mid = (uC(:) + uC([2:end 1].')) ./ 2;     % edge midpoints (closed polygon)
-g   = 2 .* (mid - c0);
-
-% sort candidates by length, then pick the two shortest independent ones
-len = norm(g);
-[len,ord] = sort(len(:));
-g = g(ord);
-
-u = g(1);
-v = [];
-for k = 2:numel(g)
-  if norm(cross(u,g(k))) > 1e-6 * len(1) * len(k)
-    v = g(k);
-    break
-  end
-end
-if isempty(v)
-  error('calcMesh:degenerateCell', ...
-    'The unit cell does not define two independent lattice vectors.')
 end
 end
 

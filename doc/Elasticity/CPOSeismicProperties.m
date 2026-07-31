@@ -115,6 +115,27 @@ Cij =....
 % define the tensor
 C_cpx = stiffnessTensor(Cij,cs_Tensor_cpx,'density',rho_cpx);
 
+%% Adapting the tensor reference frame
+%
+% The crystal reference system a tensor was published in is in general not
+% the one of the measured phase - here the lattice parameters reported by
+% Isaak et al. differ from those of our Diopside phase by about two
+% percent. Whenever tensors and EBSD data are combined, MTEX has to
+% identify which tensor belongs to which phase, and it does so by comparing
+% Laue group and lattice parameters, accepting a deviation of at most one
+% percent. Our Diopside tensor would therefore not be recognized.
+%
+% The remedy is the command <tensor.transformReferenceFrame.html
+% |transformReferenceFrame|>, which rotates the tensor from the reference
+% frame it was defined in into the reference frame of the measured phase
+
+C_cpx = transformReferenceFrame(C_cpx,ebsd('Diopside').CS)
+
+%%
+% Note that this is only necessary for Diopside - the reference frames used
+% for the Forsterite and the Enstatite tensors are already close enough to
+% those of the corresponding phases.
+
 %% Single crystal seismic velocities
 %
 % The single crystal seismic velocities can be computed by the command

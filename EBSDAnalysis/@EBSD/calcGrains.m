@@ -38,6 +38,13 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 % Flags
 %  unitCell - omit Voronoi decomposition and treat a unitcell lattice
 %  qhull    - use qHull for the Voronoi decomposition
+%  verbose  - report what the criterion did, if it has anything to say -
+%             currently only |'fmc'|, which prints its cluster hierarchy
+%  delaunay - use a true circumradius-based alpha-complex (exact, not a
+%             raster approximation) instead of the default morphological
+%             closing to partition the spatial domain - see
+%             spatialDecompositionAlpha.m. Useful for large alpha, where
+%             the default's disk structuring element gets slow.
 %
 % References
 %
@@ -56,19 +63,47 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 % TODO: we have to rotate everything to xy plane to do the reconstruction
 
 % extract grain boundary criterion
-gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
+%
+% A criterion object passed in always wins. Otherwise 'fmc' selects the
+% fast multiscale clustering criterion, as this function's own help and
+% GrainReconstructionAdvanced have documented all along - without this the
+% documented call silently fell through to plain angle thresholding and
+% returned a different segmentation without saying so.
+if check_option(varargin,{'fmc','FMC'})
+  gbc = getClass(varargin,'grainBoundaryCriterion',gbcFMC(varargin{:}));
+else
+  gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
+end
 
 % first pass:
 % mark pixels that would become grains smaller than minPixel as notIndexed
-removed = minPixelMask(ebsd,gbc,varargin{:});
-ebsd.phaseId(removed) = 1;    
+%
+% Criteria that enforce minPixel themselves are handed the value instead
+% and this pass is skipped: it is a second full segmentation, which for a
+% global criterion such as gbcFMC means running the whole clustering twice
+% only to find that it has already dealt with the undersized regions.
+if gbc.handlesMinPixel
+
+  minPixel = get_option(varargin,'minPixel',[]);
+  if ~isempty(minPixel), gbc = gbc.setMinPixel(minPixel); end
+
+else
+
+  removed = minPixelMask(ebsd,gbc,varargin{:});
+  ebsd.phaseId(removed) = 1;
+
+end
 
 % second pass: Voronoi decomposition
 % V - list of vertices
 % F - list of faces
 % D - cell array of cells
 % I_FD - incidence matrix faces to vertices
-out = spatialDecompositionGrid(ebsd,varargin{:});
+if check_option(varargin,'delaunay')
+  out = spatialDecompositionAlpha(ebsd,varargin{:});
+else
+  out = spatialDecompositionGrid(ebsd,varargin{:});
+end
 V = out.V;
 F = out.F;
 I_FD = remapIFD(out,ebsd);
@@ -101,12 +136,12 @@ end
 
 % setup grains
 try
-  poly = calcPolygonsC(I_FDext * I_DG,Fext,V);
+  [poly,inclusionId] = calcPolygonsC(I_FDext * I_DG,Fext,V);
 catch
-  poly = calcPolygons(I_FDext * I_DG,Fext,V);
+  [poly,inclusionId] = calcPolygons(I_FDext * I_DG,Fext,V);
 end
 grains = grain2d( makeBoundary(Fext,I_FDext), ...
-  poly, [], ebsd.CSList, phaseId, ebsd.phaseMap, varargin{:});
+  poly, [], ebsd.CSList, phaseId, ebsd.phaseMap, varargin{:}, 'inclusionId', inclusionId);
 
 grains.numPixel = full(sum(I_DG,1)).';
 grains.innerBoundary = makeBoundary(Fint,I_FDint);
@@ -170,37 +205,61 @@ end
 
   function [I_FDext, I_FDint, Fext, Fint] = calcBoundary
     % distinguish between interior and exterior grain boundaries
-    
-    % cells that have a subgrain boundary, i.e. a boundary with a cell
-    % belonging to the same grain
-    sub = ((A_Db * I_DG) & I_DG)';                 % grains x cell
-    [i,j] = find( diag(any(sub,1))*double(A_Db) ); % all adjacent to those
-    sub = any(sub(:,i) & sub(:,j),1);              % pairs in a grain
-    
-    % split grain boundaries A_Db into interior and exterior
-    A_Db_int = sparse(i(sub),j(sub),1,size(I_DG,1),size(I_DG,1));
-    A_Db_ext = A_Db - A_Db_int;                    % adjacent over grain boundary
-    
-    % create incidence graphs
-    I_FDbg = diag( sum(I_FD,2)==1 ) * I_FD;
-    D_Fbg  = diag(any(I_FDbg,2));
-    
-    [ix,iy] = find(A_Db_ext);
-    D_Fext  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
-    
-    I_FDext = (D_Fext| D_Fbg)*I_FD;
-    
-    [ix,iy] = find(A_Db_int);
-    D_Fsub  = diag(sum(abs(I_FD(:,ix)) & abs(I_FD(:,iy)),2)>0);
-    I_FDint = D_Fsub*I_FD;
-    
-    % remove empty lines from I_FD, F, and V
-    isExt = full(any(I_FDext,2));
-    I_FDext = I_FDext.'; I_FDext = I_FDext(:,isExt).';
+    %
+    % A_Db already holds exactly the cell pairs the grain boundary
+    % criterion flagged as a boundary (see doSegmentation); it is split
+    % into
+    %  - A_Db_ext: the two cells ended up in different final grains
+    %              (a true grain boundary)
+    %  - A_Db_int: the two cells nevertheless ended up in the same final
+    %              grain (e.g. a low-angle "soft" pair, or one merged
+    %              away by removeQuadruplePoints) - a subgrain boundary
+    % which - unlike the previous A_Db*I_DG-based derivation - is read
+    % directly off the already-computed grainId, avoiding two sparse
+    % matrix products over all D cells.
+    D = size(I_DG,1);
+    nFaces = size(I_FD,1);
 
-    isInt = full(any(I_FDint,2));
-    I_FDint = I_FDint.'; I_FDint = I_FDint(:,isInt).';
-      
+    [ai,aj] = find(A_Db);
+    sameGrain = grainId(ai) == grainId(aj) & grainId(ai) ~= 0;
+
+    pairKey = @(a,b) double(a-1)*D + double(b);
+    keyInt = pairKey(ai(sameGrain), aj(sameGrain));
+    keyExt = pairKey(ai(~sameGrain), aj(~sameGrain));
+
+    % incident cell pair per face (0-padded in column 2 for faces with
+    % only one incident cell, i.e. the outer boundary of the map).
+    % I_FD can have all-zero rows (faces with no real-cell incidence at
+    % all, e.g. a Voronoi face entirely between dummy/exterior sites), so
+    % unlike makeBoundary's ebsdInd - built only from the already-trimmed
+    % I_FDext/I_FDint, where every row has >=1 entry - fId cannot be
+    % compressed into a running count; index by the true face id fId
+    % itself and disambiguate repeats (2nd cell of the same face) locally.
+    %
+    % I_FDt (I_FD transposed) is computed once and reused both for that
+    % extraction and for the final row-selection below: sparse row
+    % indexing (I_FD(mask,:)) is column-major-hostile and dominates this
+    % function's cost on large maps, same reason the previous
+    % implementation always transposed first too.
+    I_FDt = I_FD.';
+    [eId,fId] = find(I_FDt);
+    isSecond = [false; fId(2:end) == fId(1:end-1)];
+    cellPair = zeros(nFaces,2);
+    cellPair(sub2ind([nFaces,2], fId, 1 + isSecond)) = eId;
+
+    isPair = cellPair(:,2) > 0;
+    isBg   = ~isPair & cellPair(:,1) > 0;
+
+    faceKey = pairKey(cellPair(isPair,1), cellPair(isPair,2));
+
+    isExt = isBg;
+    isInt = false(nFaces,1);
+    isExt(isPair) = ismember(faceKey, keyExt);
+    isInt(isPair) = ismember(faceKey, keyInt);
+
+    I_FDext = I_FDt(:,isExt).';
+    I_FDint = I_FDt(:,isInt).';
+
     % remove vertices that are not needed anymore
     [inUse,~,F] = unique(F(isExt | isInt,:));
     V = V(inUse,:);
@@ -232,7 +291,10 @@ end
       inv(ebsd.rotations(ebsdInd(isNotBoundary,2))) ...
       .* ebsd.rotations(ebsdInd(isNotBoundary,1));
     
-    gB = grainBoundary(V,F,ebsdInd,grainId,ebsd.phaseId,mori,ebsd.CSList,ebsd.phaseMap,ebsd.id);
+    % ebsdPos lets the constructor orient every chain so that the grain in
+    % grainId(:,1) lies to the left of the walk direction
+    gB = grainBoundary(V,F,ebsdInd,grainId,ebsd.phaseId,mori,ebsd.CSList,...
+      ebsd.phaseMap,ebsd.id,'ebsdPos',ebsd.pos);
     gB.how2plot = ebsd.how2plot;
 
   end

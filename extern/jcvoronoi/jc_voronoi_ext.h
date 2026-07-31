@@ -201,6 +201,23 @@ static int jcvx_diagram_generate(int num_points, const jcv_point* points,
     free(uniq); /* jc_voronoi copies the points into its own memory */
     return nu;
 }
+
+/* same as jcvx_diagram_generate, but calls jcv_delauney_generate: skips
+ * Voronoi edge clipping/vertex finalization, only the Delauney adjacency
+ * (jcv_delauney_begin/next) is valid on the returned diagram. */
+static int jcvx_delauney_diagram_generate(int num_points, const jcv_point* points,
+                                          jcv_real site_eps,
+                                          const jcv_rect* rect,
+                                          const jcv_clipper* clipper,
+                                          jcv_diagram* diagram,
+                                          int* sitemap /* out, size num_points */)
+{
+    jcv_point* uniq = (jcv_point*)malloc(sizeof(jcv_point) * (size_t)num_points);
+    int nu = jcvx_dedup_points(num_points, points, site_eps, uniq, sitemap);
+    jcv_delauney_generate(nu, uniq, rect, clipper, diagram);
+    free(uniq); /* jc_voronoi copies the points into its own memory */
+    return nu;
+}
 #endif
 
 #endif /* JC_VORONOI_EXT_H */

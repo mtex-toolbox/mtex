@@ -13,7 +13,8 @@ function [vals, conds, info] = eval(SO3F, ori, varargin)
 %
 % Output
 %  vals  - values of the MLS approximation SO3F on ori
-%  conds - condition of the solved local least squares problems
+%  conds - condition of the complete normalized local Gram matrices after
+%            regularization
 %  info  - struct with additional regularization data
 
 

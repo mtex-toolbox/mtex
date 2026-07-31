@@ -1,20 +1,23 @@
 function option_list = set_option(option_list,option,varargin)
 % set option in option list
 %
+% Previous occurrences of the option are removed, i.e. the option is set
+% exactly once.
+%
 % Syntax
-%   value = set_option(option_list,option,value)
-%   value = set_option(option_list,{option1,option2,option3})
+%   option_list = set_option(option_list,option,value)
+%   option_list = set_option(option_list,{option1,option2,option3})
 %
 % Input
-%  option_list   - Cell Array
-%  option        - String
-%  value         - some type
+%  option_list - cell array
+%  option      - option name, string or cell array of names to be set
+%  value       - option value, any class, multiple values are allowed
 %
 % Output
-%  out_list      - Cell Array
+%  option_list - cell array
 %
 % See also
-% check_option get_option delete_option
+% check_option get_option find_option delete_option
 
 % delete previous options
 option_list = delete_option(option_list,option,length(varargin));
