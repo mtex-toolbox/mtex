@@ -49,7 +49,7 @@ plot(psi,'linewidth',2,'symmetric')
 % the radial symmetry of the |S2Kernel|. The others are zero.
 %
 % The Fourier coefficients of an |S2Kernel| can be
-% easily visualized using the command <S2Kernel.plotSpectra.html
+% easily visualized using the command <S2Kernel.plotSpektra.html
 % |plotSpectra|>.
 
 plotSpektra(psi,'linewidth',2)
