@@ -8,8 +8,8 @@
 %
 % $$ Y_m^l({\bf \xi}) = \sqrt{\frac{2m+1}{4\pi}} \, P_m^{|l|}(\cos\theta) \, \mathrm e^{\mathrm i l\rho} $$
 %
-% where $P_m^{|l|}\colon[-1,1]\to\mathbb R$, $m \in {\bf N_0}$, and $ l = -m, \ldots m$ denote the
-% associated Legendre-Polynomials defined by
+% where $P_m^{|l|}\colon[-1,1]\to\mathbb R$, $m \in {\bf N_0}$, and $ l = 0, \ldots, m$ denote the
+% associated Legendre functions defined by
 %
 % $$ P_m^l(x) = \sqrt{\frac{(m-l)!}{(m+l)!}} \, (1-x^2)^{l/2} \frac{d^l}{dx^l} P_m(x) $$
 %
@@ -46,7 +46,7 @@ Y.eval(v)
 %
 % $$ \| f \|_2 = \left(\int_{\mathrm{sphere}} \lvert f(\xi)\rvert^2 \,\mathrm d\xi\right)^{1/2} $$
 %
-% such that $ \| 1 \|_2^2 = 1$. Take a look on the section 
+% such that $ \| 1 \|_2^2 = 4\pi$. Take a look on the section 
 % <S2FunOperations.html#5 Integration of S2Fun's>.
 %
 % Using that definition the spherical harmonics in MTEX fulfill

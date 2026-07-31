@@ -1,9 +1,9 @@
-function value = sum(sF, varargin)
-% calculates the mean value for an univariate S2Fun or calculates the mean along a specified dimension fo a multimodal S2Fun
+function value = sum(sF)
+% calculates the integral for an univariate S2Fun
 %
 % Syntax
-%   value = mean(sF)
-%   sF = mean(sF, d)
+%   value = sum(sF)
+%   sF = sum(sF, d)
 %
 % Input
 %  sF - @S2FunHarmonic
@@ -13,12 +13,7 @@ function value = sum(sF, varargin)
 %  sF - S2FunHarmonic
 %  value - double
 %
-% Description
-%
-% If sF is a 3x3 S2Fun then
-% mean(sF) returns a 3x3 matrix with the mean values of each function
-% mean(sF, 1) returns a 1x3 S2Fun wich contains the pointwise means values along the first dimension
-%
+
  
 value = 4*pi*mean(sF);  
 

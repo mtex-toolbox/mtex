@@ -10,24 +10,19 @@
 % $n$ and orders $k,l \in \{-n,\dots,n\}$ is defined by
 %
 % $$ D_n^{k,l}({\bf R}) = \sqrt{2n+1} \, \mathrm e^{-\mathrm i k\gamma}
-% \mathrm d_n^{k,l}(\cos\beta) \,e^{-\mathrm i l\alpha} $$
+% \mathrm d_n^{k,l}(\beta) \,e^{-\mathrm i l\alpha} $$
 %
-% where $d_n^{k,l}$, denote the real valued Wigner-d functions, which are
-% defined in terms of Jacobi polynomial $P_s^{a,b}$  by
+% where $d_n^{k,l}\colon[0,\pi]\to\IR$, denote the real valued Wigner-d 
+% functions, which are defined in terms of Jacobi polynomial $P_s^{a,b}$ by
 % 
-% $$ d_n^{k,l}(x) = (-1)^{\nu} \binom{2n-s}{s+a}^{\frac12}
-% \binom{s+b}{b}^{-\frac12} \left(\frac{1-x}{2}\right)^{\frac{a}{2}}
-% \left(\frac{1+x}{2}\right)^{\frac{b}2} P_s^{a,b}(x)$$
+% $$ d_n^{k,l}(\beta) = (-1)^{\nu} \binom{2n-s}{s+a}^{\frac12}
+% \binom{s+b}{b}^{-\frac12} \left(\frac{\sin\beta}{2}\right)^{a}
+% \left(\frac{\cos\beta}{2}\right)^{b} P_s^{a,b}(\cos\beta)$$
 % 
 % using the constants $a =|k-l|$, $b =|k+l|$, $s = n - \max\{|k|,|l|\}$ and
 % 
 % $$ \nu = \begin{cases} \min\{0,k\}+\min\{0,l\} & \text{if } l \geq k,\\ 
 % \min\{0,k\}+\min\{0,l\} + k+l & \text{otherwise}. \end{cases}$$
-%
-% The differential representation of the Wigner-d functions reads as
-%
-% $$ d_n^{k,l}(x) = (-1)^{n-l+\min\{0,k\}+\min\{0,l\}} \frac1{2^n} \left( \frac{(n+l)!}{(n+k)!(n-k)!(n-l)!} \right)^{1/2}  
-%  (1-x)^{\frac{k-l}2} (1+x)^{-\frac{k+l}2} \frac{d^{n-l}}{dx^{n-l}}((1-x)^{n-k}(1+x)^{n+k})$$
 %
 % The above definition of the Wigner-D functions in MTEX is slightly
 % different to other well known definitions from literature, they are defined 
@@ -39,6 +34,7 @@
 %     * In the definition of $D_n^{k,l}$ the indices $k,l$ are changed in the $e^{i\cdot}$ functions.
 %     * $D_n^{k,l}$ are normalized by the constant $\sqrt{2n+1}$.
 %     * The sign of $d_n^{k,l}$ is multiplied with $\min\{0,k\}+\min\{0,l\}$.
+%     * The Wigner-d functions are parametrized by the second Euler angle $\beta$. Thus, MTEX's $d_n^{k,l}(\beta)$ corresponds to $d_n^{k,l}(x)$ with $x= \cos(\beta)$ in definitions that use $x$ as the argument.
 %
 % Common definitions can be found in
 %
@@ -111,13 +107,13 @@ norm(D)
 %% Symmetry properties of Wigner-d functions
 % 
 % The Wigner-d functions by construction fulfill a lot of symmetry 
-% properties. Some important are
+% properties. The most important properties are
 %  
-% $$ d_n^{k,l}(x) = d_n^{-k,-l}(x) = (-1)^{k+l}\, d_n^{l,k}(x) = (-1)^{k+l}\, d_n^{-l,-k}(x)$$
+% $$ d_n^{k,l}(\beta) = d_n^{-k,-l}(\beta) = (-1)^{k+l}\, d_n^{l,k}(\beta) = (-1)^{k+l}\, d_n^{-l,-k}(\beta) $$
 % 
-% $$ d_n^{k,l}(x) = (-1)^{n+k+l}\,d_n^{-k,l}(-x) = (-1)^{n+k+l}\,d_n^{k,-l}(-x) $$
+% $$ d_n^{k,l}(\beta) = (-1)^{n+k+l}\,d_n^{-k,l}(\pi-\beta) = (-1)^{n+k+l}\,d_n^{k,-l}(\pi-\beta) $$
 %
-% $$d_n^{k,l}(\cos\beta) = (-1)^{k+l}\,d_n^{k,l}(\cos(-\beta))$$
+% $$ d_n^{k,l}(\beta) = (-1)^{k+l}\,d_n^{k,l}(-\beta) $$
 %
 %
 

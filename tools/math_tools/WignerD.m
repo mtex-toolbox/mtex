@@ -13,7 +13,7 @@ function Psi = WignerD(ori,varargin)
 %
 % Input
 %  g - @quaternion / @rotation / @orientation / @symmetry
-%  beta - second Euler angle
+%  beta - second Euler angle in [0,pi]
 %
 % Output
 %  Dl - Wigner-D matrix D_l^(m,n) ($(2l+1) \times (2l+1)$)

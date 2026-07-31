@@ -1,13 +1,13 @@
 function ghat = symmetriseFourierCoefficients(ghat,input_flags,CS,SS,sym)
 % The wignerTrafomex function just computes
-% $$\hat{h}_{k,j,l} = \sum_{n = \max \{|k|,|j|,|l|\} }^N \sqrt{2n+1}\, \hat{f}_n^{k,l} \, d_n^{j,k}(0) \, d_n^{j,l}(0)$$
+% $$\hat{h}_{k,j,l} = \sum_{n = \max \{|k|,|j|,|l|\} }^N \sqrt{2n+1}\, \hat{f}_n^{k,l} \, d_n^{j,k}(\pi/2) \, d_n^{j,l}(\pi/2)$$
 % from the harmonic coefficients $\hat{f}_n^{k,l}$
 % and only for one of the (up to a sign) symmetric coefficients $\hat{h}_{k,j,l}$.
 %
 % Now we get the Fourier coefficients by 
 % $$\hat{g}_{k,j,l} = i^{k-l} \,\hat{h}_{k,j,l},$$
 % since the Wigner transform which computes the Fourier coefficients $\hat{g}_{k,j,l}$ reads as
-% $$\hat{g}_{k,j,l} = i^{k-l} \, \sum_{n = \max \{|k|,|j|,|l|\} }^N \sqrt{2n+1}\, \hat{f}_n^{k,l} \, d_n^{j,k}(0) \, d_n^{j,l}(0).$$
+% $$\hat{g}_{k,j,l} = i^{k-l} \, \sum_{n = \max \{|k|,|j|,|l|\} }^N \sqrt{2n+1}\, \hat{f}_n^{k,l} \, d_n^{j,k}(\pi/2) \, d_n^{j,l}(\pi/2).$$
 %
 % Moreover we have to use the symmetry properties
 %  * default symmetry property of Wigner-d functions $ghat_{k,j,l} = (-1)^{k+l} \, ghat_{k,-j,l}$

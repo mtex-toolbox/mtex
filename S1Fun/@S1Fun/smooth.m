@@ -6,7 +6,7 @@ function sF = smooth(sF,varargin)
 %  psi  - @S1Kernel (smoothing kernel)
 %
 % Options
-%  halfwidth - halfwidth of the de la Vallee Poussin kernel to be used for smoothing
+%  halfwidth - halfwidth of the de la Vallee Poussin kernel to be used for smoothing (default: 2.9*degree)
 %
 % Output
 %  sF - smoothed @S1Fun

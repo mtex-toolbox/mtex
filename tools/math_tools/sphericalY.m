@@ -3,7 +3,7 @@ function Y = sphericalY(l, v, varargin)
 %
 % Description
 % Y = sphericalY(l,vs) return a vector Y = (Y_l^-l,...,Y_l^l) of the
-% spherical harmonics of degree l using the Condon-Shortley phase convention
+% spherical harmonics of degree l 
 %
 % Syntax
 %   Y = sphericalY(l, v)

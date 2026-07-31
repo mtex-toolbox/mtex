@@ -6,7 +6,7 @@ function ghat = wignerTrafo(SO3F,varargin)
 % Therefore we just transform the harmonic coefficients
 % $\hat{f}_n^{k,l}$ into Fourier coefficients $\hat{g}_{k,j,l}$ by the
 % linear operator
-% $$\hat{g}_{k,j,l} = i^{k-l} \, \sum_{n = \max \{|k|,|j|,|l|\} }^N \sqrt{2n+1}\, \hat{f}_n^{k,l} \, d_n^{j,k}(0) \, d_n^{j,l}(0).$$
+% $$\hat{g}_{k,j,l} = i^{k-l} \, \sum_{n = \max \{|k|,|j|,|l|\} }^N \sqrt{2n+1}\, \hat{f}_n^{k,l} \, d_n^{j,k}(\pi/2) \, d_n^{j,l}(\pi/2).$$
 %
 % Normally the indices of the output Fourier array ghat(l,j,k) runs over 
 % k,j,l=-N,...,N.

@@ -1,38 +1,53 @@
 %% SO(3)-Kernel Functions
 %
 %%
-% Also take a look at the page <ODFShapes.html ODFShapes>.
+% Also take a look at the page <ODFShapes.html ODF Shapes>.
 %
-% We examine some radial symmetric kernel functions $\tilde \psi \colon \mathcal{SO}(3) \to \mathbb R$ 
-% on $\mathcal{SO}(3)$. For rotations ${\bf R} \in \mathcal{SO}(3)$ we write this
-% $\mathcal{SO}(3)$-kernels as functions of $t = \cos\frac{\omega ({\bf R})}2$ on 
-% the real numbers. Hence we write
+% An SO(3) kernel is a radially symmetric function
 %
-% $$ \psi(t) = \tilde\psi ({\bf R}). $$
+% $$\tilde\psi\colon\mathcal{SO}(3)\to\mathbb R.$$
 %
-% Moreover, we have $\psi \in L^2([-1,1],\sqrt{1-t^2}\mathrm{d}t)$ and we
-% describe these rotational kernel functions by there Chebyshev expansion
+% This means that the kernel depends only on the rotation angle
+% $\omega({\bf R})\in[0,\pi]$ of a rotation ${\bf R}$. Using
+% $t=\cos\frac{\omega({\bf R})}{2},$ we write
 %
-% $$ \psi(t) = \sum\limits_{n=0}^{\infty} \hat\psi_n \, \mathcal U_{2n}(t) $$
+% $$\tilde\psi({\bf R})=\psi(t).$$
 %
-% where $\mathcal U_{n}$ denotes the Chebyshev polynomials of second kind and degree
-% $n\in \mathbb N$.
+% In Fourier space, an SO3Kernel is described by one coefficient
+% $\hat\psi_n$ for each degree $n$.
+% These are the same coefficients that are used for representing 
+% |SO3FunHarmonic's| and they are called Fourier coefficients, Wigner-D 
+% coefficients, or C-coefficients. 
+% Note, that for general |SO3FunHarmonic's| we have $(2n+1)^2$  Fourier
+% coefficients for degree $n$. Here we have only one coefficient, due to
+% the radial symmetry of the |SO3Kernel|.
 %
-% The class |@SO3Kernel| is needed in MTEX to define the specific form of
-% unimodal ODFs. It has to be passed as an argument when calling the
-% methods <uniformODF.html uniformODF>.
-% Furthermore $\mathcal{SO}(3)$-Kernels are also used for computing an ODF 
-% from EBSD data.
+% In MTEX an |SO3Kernel| is represented in the (Chebyshev series) expansion
+%
+% $$\psi(t)=\sum_{n=0}^{\infty}(2n+1)\,\hat\psi_n\, \mathcal U_{2n}(t),$$
+%
+% where $\mathcal U_{2n}$ denotes the Chebyshev polynomial of the second
+% kind and degree $2n$. 
+% 
+% Exactly, as for |SO3FunHarmonic's|, the Fourier coefficients of a 
+% |SO3Kernel| can be displayed using |plotSpektra|.
 %
 %%
-% Within the class |@SO3Kernel| kernel functions are represented by
-% their Chebyshev coefficients, that are stored in the field |fun.A|. 
-% As an example lets define an $\mathcal{SO}(3)$ kernel function with
+% The class |@SO3Kernel| is needed in MTEX to define the specific form of
+% unimodal ODFs. It has to be passed as an argument when calling the
+% methods <uniformODF.html uniformODF> or <unimodalODF.html unimodalODF>.
+% Furthermore |SO3Kernel's| are also used for computing an ODF from EBSD data.
+%
+%%
+% Within the class |@SO3Kernel|, kernel functions are represented by
+% their Chebyshev coefficients $(2n+1)\,\hat\psi_n$, which are stored in 
+% the field |fun.A|. 
+% As an example lets define an |SO3Kernel| with
 % Chebyshev coefficients $a_0 = 1$, $a_1 = 0$, $a_2 = 3$ and $a_3 = 1$
 
 psi = SO3Kernel([1;0;3;1])
 %%
-% We plot this function by evaluation of its Chebychev series in 
+% We plot this function by evaluation of its Chebyshev series in 
 % $\cos(\frac{\omega}{2})$ for $\omega \in [-\pi,\pi]$.
 %
 
@@ -42,7 +57,7 @@ plot(psi)
 % We can define an <SO3Fun.html |SO3Fun|> from a kernel function $\psi$ at a specific
 % orientation $\bf R$ by using the class <SO3FunRBF.html |SO3FunRBF|>, i.e.
 
-psi =SO3DeLaValleePoussinKernel('halfwidth',20*degree)
+psi = SO3DeLaValleePoussinKernel('halfwidth',20*degree)
 SO3F = SO3FunRBF(orientation.rand,psi)
 plot(SO3F)
 
@@ -60,7 +75,7 @@ plot(SO3F)
 % * <SO3Kernels.html#24 Bump kernel>
 %
 %%
-% A specific $\mathcal{SO}(3)$ kernel function like the de la Vallee Poussin kernel
+% A specific |SO3Kernel| like the de la Vallee Poussin kernel
 % is specified by a half-width angle in orientation space ($\mathcal{SO}(3)$) 
 % or bandwidth in Fourier space, which is the maximum development in Fourier coefficients.
 
@@ -70,8 +85,8 @@ close all
 plot(psi)
 
 %%
-% In the following we want to look at some different types of 
-% $\mathcal{SO}(3)$ kernel functions.
+% In the following we want to look at the different types of |SO3Kernels| 
+% defined in MTEX.
 %
 
 %% The de La Vallee Poussin Kernel
@@ -305,7 +320,7 @@ plotSpektra(psi)
 % $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{\infty} \hat{f}_n(\kappa)
 % \, \mathcal U_{2n}(t). $$
 %
-% where the chebychev coefficients follows a 3-term recursion
+% where the Chebyshev coefficients follows a 3-term recursion
 %
 % $\hat{f}_0 = 1$
 %
@@ -351,7 +366,7 @@ legend('\kappa = 0.2','\kappa = 0.3')
 %
 % where $\mathbf{1}$ is the indicator function.
 %
-% The main problem of the bump kernel is that we need a lot of chebychev
+% The main problem of the bump kernel is that we need a lot of Chebyshev
 % coefficients to describe it. That possibly can result in high runtimes. 
 %
 

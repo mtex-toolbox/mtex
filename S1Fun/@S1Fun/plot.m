@@ -14,12 +14,16 @@ function h = plot(sF,varargin)
 % Input
 %  sF - @S1Fun
 %
+% Options
+%  'notPolar' - plot in cartesian coordinates for x in [0,2\pi]
+%
  
-if check_option(varargin,'notPolar')
+if check_option(varargin,{'notPolar','noPolar','cartesian'})
   M = 1e5;
   x = (0:M-1)/(M-1)*2*pi;
   y = sF.eval(x);
   h = plot(x,y);
+  if nargout == 0, clear h; end
   return
 end
 
