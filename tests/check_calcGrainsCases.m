@@ -167,6 +167,132 @@ if numel(ebsdQP2.grainId) ~= numel(ebsdQP2)
     numel(ebsdQP2.grainId), numel(ebsdQP2));
 end
 
+%% completeBoundaries: close a one-edge bridge between two grains
+%
+% The two halves differ by 10 degrees, except for one neighboring pair at
+% the interface with orientations 4 and 6 degrees. With a 5 degree
+% threshold this single pair connects both halves under the standard
+% connected-component definition. Boundary completion must cut the bridge
+% and turn the otherwise inner boundary into an external grain boundary.
+
+n = 10;
+mid = n/2;
+bridgeRow = n/2;
+oriLeft = orientation.id(cs);
+oriRight = orientation.byAxisAngle(zvector,10*degree,cs);
+
+rot = rotation.id(n,n);
+rot(:,1:mid) = oriLeft;
+rot(:,mid+1:end) = oriRight;
+rot(bridgeRow,mid) = orientation.byAxisAngle(zvector,4*degree,cs);
+rot(bridgeRow,mid+1) = orientation.byAxisAngle(zvector,6*degree,cs);
+
+ebsdBridge = EBSDsquare([],rot,ones(size(rot)),1,{cs},'dxy',[1 1]);
+gConnected = calcGrains(ebsdBridge,'threshold',thr);
+gCompleted = calcGrains(ebsdBridge,'threshold',thr,'completeBoundaries');
+
+if length(gConnected) ~= 1
+  error('bridge case: standard reconstruction should return one grain, got %d', ...
+    length(gConnected));
+end
+
+if length(gConnected.innerBoundary) == 0
+  error('bridge case: standard reconstruction did not expose the inner boundary');
+end
+
+if length(gCompleted) ~= 2
+  error('bridge case: boundary completion should return two grains, got %d', ...
+    length(gCompleted));
+end
+
+if length(gCompleted.innerBoundary) ~= 0
+  error('bridge case: completed reconstruction still contains inner boundaries');
+end
+
+if any(sort(gCompleted.numPixel) ~= [50;50])
+  error('bridge case: expected two grains with 50 pixels each');
+end
+
+%% completeBoundaries: ignore enclosed one- and two-segment fragments
+%
+% A 3 degree background, one 0 degree centre pixel and selected 6 degree
+% neighbours produce isolated >5 degree faces while every alternative
+% connection stays below the threshold. Enclosed components with one or two
+% segments are treated as pixel noise. Three segments are retained and must
+% be completed.
+
+nNoise = 7;
+c = (nNoise+1)/2;
+neighbours = [c,c+1; c-1,c; c,c-1];
+oriMid = orientation.byAxisAngle(zvector,3*degree,cs);
+oriHigh = orientation.byAxisAngle(zvector,6*degree,cs);
+
+for numSegments = 1:2
+  rotNoise = rotation.id(nNoise,nNoise);
+  rotNoise(:) = oriMid;
+  rotNoise(c,c) = orientation.id(cs);
+  for k = 1:numSegments
+    rotNoise(neighbours(k,1),neighbours(k,2)) = oriHigh;
+  end
+
+  ebsdNoise = EBSDsquare([],rotNoise,ones(size(rotNoise)),1,{cs},'dxy',[1 1]);
+  gNoiseRaw = calcGrains(ebsdNoise,'threshold',thr);
+  gNoise = calcGrains(ebsdNoise,'threshold',thr,'completeBoundaries');
+
+  if length(gNoiseRaw.innerBoundary) ~= numSegments
+    error('noise case: expected %d inner segments, got %d', ...
+      numSegments,length(gNoiseRaw.innerBoundary));
+  end
+  if length(gNoise) ~= 1 || length(gNoise.innerBoundary) ~= 0
+    error(['noise case: an enclosed %d-segment boundary fragment should ' ...
+      'be ignored without splitting the grain'],numSegments);
+  end
+end
+
+gNoiseMinPixel = calcGrains(ebsdNoise,'threshold',thr,'minPixel',2, ...
+  'completeBoundaries');
+if length(gNoiseMinPixel) ~= 1 || length(gNoiseMinPixel.innerBoundary) ~= 0
+  error(['noise case: the conservative minPixel sizing pass must preserve ' ...
+    'the ignored short boundary fragment']);
+end
+
+rotNoise = rotation.id(nNoise,nNoise);
+rotNoise(:) = oriMid;
+rotNoise(c,c) = orientation.id(cs);
+for k = 1:3
+  rotNoise(neighbours(k,1),neighbours(k,2)) = oriHigh;
+end
+
+ebsdNoise = EBSDsquare([],rotNoise,ones(size(rotNoise)),1,{cs},'dxy',[1 1]);
+gNoise = calcGrains(ebsdNoise,'threshold',thr,'completeBoundaries');
+if length(gNoise) ~= 2 || length(gNoise.innerBoundary) ~= 0
+  error(['noise case: an enclosed three-segment boundary must be retained ' ...
+    'and completed']);
+end
+if any(gNoise.numPixel == 1)
+  error(['noise case: boundary completion must extend to non-inner ' ...
+    'boundaries instead of closing a loop around the centre pixel']);
+end
+
+%% completeBoundaries: retain a short fragment that reaches the map boundary
+
+rotEdge = rotation.id(nNoise,nNoise);
+rotEdge(:) = oriMid;
+rotEdge(1,c) = orientation.id(cs);
+rotEdge(1,c+1) = oriHigh;
+
+ebsdEdge = EBSDsquare([],rotEdge,ones(size(rotEdge)),1,{cs},'dxy',[1 1]);
+gEdgeRaw = calcGrains(ebsdEdge,'threshold',thr);
+gEdge = calcGrains(ebsdEdge,'threshold',thr,'completeBoundaries');
+
+if length(gEdgeRaw.innerBoundary) ~= 1
+  error('edge case: expected one inner boundary segment');
+end
+if length(gEdge) ~= 2 || length(gEdge.innerBoundary) ~= 0
+  error(['edge case: a short inner boundary connected to the map boundary ' ...
+    'must be retained and completed']);
+end
+
 disp('calcGrains cases: all checks passed');
 
 end

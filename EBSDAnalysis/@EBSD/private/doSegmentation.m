@@ -1,15 +1,15 @@
-function [A_Db,I_DG] = doSegmentation(I_FD,ebsd,gbc,varargin)
+function [A_Db,I_DG] = doSegmentation(I_FD,F,ebsd,gbc,varargin)
 % segments voronoi cells into grains
 %
 % Input
 %  I_FD - incidence matrix faces -> pixels
+%  F - vertex ids of the boundary segments
 %  ebsd - @EBSD
 %  gbc - @grainBoundaryCriterion
 %
 % Output
 %  I_DG - incidence matrix pixels -> grains
 %  A_Db - adjacency matrix of grain boundaries
-%  A_Do - adjacency matrix inside grain connections
 %
 
 % get pairs of neighboring cells {D_l,D_r} in A_D
@@ -42,8 +42,14 @@ A_Do = A_Do | A_Do.';
 % adjacency of cells that have a common boundary
 A_Db = A_Db | A_Db.';
 
+if check_option(varargin,'completeBoundaries')
+  [A_Do,A_Db,componentId] = completeBoundaryGraph(A_Do,A_Db,I_FD,F);
+else
+  componentId = connectedComponents(A_Do);
+end
+
 % compute I_DG connected components of A_Do
 % I_DG - incidence matrix cells to grains
-I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
+I_DG = sparse(1:length(ebsd),double(componentId),1);
 
 end
