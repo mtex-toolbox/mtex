@@ -1,18 +1,23 @@
 {
+"_schemaVersion": "1.0.0",
+
+"_comment": "MTEX code suggestions for reading and writing the global MTEX preferences.",
+
 "getMTEXpref":
 {
     "inputs":
     [
-        {"name":"field", "kind":"flag", "type":"choices=fieldnames(getMTEXpref).'"}
-     ]
+      {"name":"pref", "kind":"ordered", "type":["char","choices=fieldnames(getMTEXpref).'"], "purpose":"preference name - omit to get the whole struct"},
+      {"name":"default", "kind":"ordered", "purpose":"value returned if the preference is not set"}
+    ]
 },
 
 "setMTEXpref":
 {
     "inputs":
     [
-        {"name":"field", "kind":"flag", "type":"choices=fieldnames(getMTEXpref).'"}
-     ]
+      {"name":"pref", "kind":"required", "type":["char","choices=fieldnames(getMTEXpref).'"], "purpose":"preference name"},
+      {"name":"value", "kind":"required", "purpose":"new value"}
+    ]
 }
-
 }

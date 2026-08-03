@@ -1,0 +1,285 @@
+{
+"_schemaVersion": "1.0.0",
+
+"_comment": "MTEX code suggestions for functions on the sphere - pole density functions, spherical harmonics, triangulated and RBF representations, plus the spherical vector and axis fields. Signatures for the S2Kernel constructors belong into S2Fun/S2KernelFunctions/.",
+
+"S2FunHarmonic":
+{
+    "inputs":
+    [
+      {"name":"fhat", "kind":"required", "type":[["numeric"],["S2Fun"]], "purpose":"spherical harmonic coefficients"},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">=0"]},
+      {"name":"antipodal", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"sF", "type":"S2FunHarmonic"}
+    ]
+},
+
+"S2FunHarmonic.approximate":
+{
+    "inputs":
+    [
+      {"name":"f", "kind":"required", "type":[["S2Fun"],["function_handle"]]},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"maximum spherical harmonic degree"}
+    ],
+    "outputs":
+    [
+      {"name":"sF", "type":"S2FunHarmonic"}
+    ]
+},
+
+"S2FunHarmonic.quadrature":
+{
+    "inputs":
+    [
+      {"name":"f", "kind":"required", "type":[["S2Fun"],["function_handle"],["vector3d"]], "purpose":"function or quadrature nodes"},
+      {"name":"values", "kind":"ordered", "type":["numeric"], "purpose":"function values at the nodes"},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"default 128"},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"], "purpose":"quadrature weights"}
+    ],
+    "outputs":
+    [
+      {"name":"sF", "type":"S2FunHarmonic"}
+    ]
+},
+
+"S2FunHarmonic.interpolate":
+{
+    "inputs":
+    [
+      {"name":"nodes", "kind":"required", "type":["vector3d"], "purpose":"grid on the sphere"},
+      {"name":"val", "kind":"required", "type":["numeric"], "purpose":"function values on the grid"},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
+      {"name":"weights", "kind":"namevalue", "type":[["numeric"],["char","choices={'equal','Voronoi'}"]], "purpose":"default Voronoi weights"},
+      {"name":"tol", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"lsqr termination tolerance"},
+      {"name":"maxit", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
+      {"name":"regularization", "kind":"namevalue", "type":["numeric","scalar",">=0"], "purpose":"0 switches regularization off"},
+      {"name":"SobolevIndex", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"default 2"}
+    ],
+    "outputs":
+    [
+      {"name":"sF", "type":"S2FunHarmonic"},
+      {"name":"lsqrParameters", "type":"double"}
+    ]
+},
+
+"S2FunTri":
+{
+    "inputs":
+    [
+      {"name":"nodes", "kind":"required", "type":[["vector3d"],["S2Triangulation"],["S2Fun"],["function_handle"]]},
+      {"name":"values", "kind":"ordered", "type":["numeric"], "purpose":"function values at the nodes"},
+      {"name":"s", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]], "purpose":"symmetry the nodes are symmetrised with"}
+    ],
+    "outputs":
+    [
+      {"name":"sF", "type":"S2FunTri"}
+    ]
+},
+
+"S2FunHandle":
+{
+    "inputs":
+    [
+      {"name":"fun", "kind":"required", "type":["function_handle"], "purpose":"function handle in vector3d"},
+      {"name":"antipodal", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"sF", "type":"S2FunHandle"}
+    ]
+},
+
+"S2FunRBF":
+{
+    "inputs":
+    [
+      {"name":"center", "kind":"required", "type":["vector3d"], "purpose":"center of the radial basis function"},
+      {"name":"psi", "kind":"ordered", "type":["S2Kernel"], "purpose":"default de la Vallee Poussin"},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"halfwidth of the default kernel"}
+    ]
+},
+
+"plot":
+{
+    "inputs":
+    [
+      {"name":"sF", "kind":"required", "type":[["S2Fun"],["S2VectorField"],["S2AxisField"]]},
+      {"name":"contours", "kind":"namevalue", "type":["numeric"], "purpose":"number or list of contour levels"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"LineColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"LineWidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"DisplayName", "kind":"namevalue", "type":["char"]},
+      {"name":"projection", "kind":"namevalue", "type":["char","choices={'earea','edist','plain','eangle','orthographic','gnomonic','3d'}"]},
+      {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
+      {"name":"parent", "kind":"namevalue", "type":["matlab.graphics.axis.Axes"]},
+      {"name":"drawing", "kind":"flag", "type":["char","choices={'contour','contourf','pcolor','surf','smooth','plot3d'}"]},
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
+      {"name":"antipodal", "kind":"flag"},
+      {"name":"noTitle", "kind":"flag"}
+    ]
+},
+
+"contourf":
+{
+    "inputs":
+    [
+      {"name":"sF", "kind":"required", "type":["S2Fun"]},
+      {"name":"contours", "kind":"namevalue", "type":["numeric"], "purpose":"number or list of contour levels"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"LineColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"LineWidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
+      {"name":"antipodal", "kind":"flag"}
+    ]
+},
+
+"contour":
+{
+    "inputs":
+    [
+      {"name":"sF", "kind":"required", "type":["S2Fun"]},
+      {"name":"contours", "kind":"namevalue", "type":["numeric"]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"LineColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"LineWidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]}
+    ]
+},
+
+"pcolor":
+{
+    "inputs":
+    [
+      {"name":"sF", "kind":"required", "type":["S2Fun"]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]}
+    ]
+},
+
+"surf":
+{
+    "inputs":
+    [
+      {"name":"sF", "kind":"required", "type":["S2Fun"]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"FaceAlpha", "kind":"namevalue", "type":["numeric","scalar",">=0","<=1"]},
+      {"name":"EdgeColor", "kind":"namevalue", "type":["choices=str2rgb"]}
+    ]
+},
+
+"plot3d":
+{
+    "inputs":
+    [
+      {"name":"sF", "kind":"required", "type":["S2Fun"]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"FaceAlpha", "kind":"namevalue", "type":["numeric","scalar",">=0","<=1"]},
+      {"name":"EdgeColor", "kind":"namevalue", "type":["choices=str2rgb"]}
+    ]
+},
+
+"plotSection":
+{
+    "inputs":
+    [
+      {"name":"sF", "kind":"required", "type":["S2Fun"]},
+      {"name":"N", "kind":"required", "type":["vector3d"], "purpose":"normal direction of the intersection plane"},
+      {"name":"theta", "kind":"ordered", "type":["numeric"], "purpose":"polar angle of the intersection plane"},
+      {"name":"rho", "kind":"ordered", "type":["numeric"], "purpose":"azimuth angles to be plotted"},
+      {"name":"LineColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"LineWidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"DisplayName", "kind":"namevalue", "type":["char"]}
+    ]
+},
+
+"quiver3":
+{
+    "inputs":
+    [
+      {"name":"sF", "kind":"required", "type":["S2Fun"]},
+      {"name":"sVF", "kind":"required", "type":[["S2VectorField"],["S2AxisField"],["vector3d"]]},
+      {"name":"Color", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"LineWidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"arrowSize", "kind":"namevalue", "type":["numeric","scalar",">=0"]},
+      {"name":"autoScaleFactor", "kind":"namevalue", "type":["numeric","scalar",">0"]}
+    ]
+},
+
+"smooth":
+{
+    "inputs":
+    [
+      {"name":"sF", "kind":"required", "type":["S2Fun"]},
+      {"name":"psi", "kind":"ordered", "type":["S2Kernel"], "purpose":"smoothing kernel"},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"]}
+    ]
+},
+
+"conv":
+{
+    "inputs":
+    [
+      {"name":"sF", "kind":"required", "type":["S2Fun"]},
+      {"name":"other", "kind":"required", "type":[["S2Fun"],["S2Kernel"]]},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]}
+    ]
+},
+
+"max":
+{
+    "inputs":
+    [
+      {"name":"sF", "kind":"required", "type":["S2Fun"]},
+      {"name":"other", "kind":"ordered", "type":[["S2Fun"],["numeric"]], "purpose":"second function or constant"},
+      {"name":"numLocal", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"number of peaks to return"},
+      {"name":"startingNodes", "kind":"namevalue", "type":["vector3d"]},
+      {"name":"tolerance", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"minimum distance between two peaks"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"minimum step size"},
+      {"name":"maxStepSize", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"kmax", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"number of iterations"},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]}
+    ],
+    "outputs":
+    [
+      {"name":"v", "type":"double"},
+      {"name":"pos", "type":"vector3d"}
+    ]
+},
+
+"discreteSample":
+{
+    "inputs":
+    [
+      {"name":"sF", "kind":"required", "type":["S2Fun"]},
+      {"name":"n", "kind":"required", "type":["numeric","scalar","integer",">0"], "purpose":"number of points"},
+      {"name":"compact", "kind":"flag", "purpose":"almost perfectly aligned sampling points"}
+    ],
+    "outputs":
+    [
+      {"name":"v", "type":"vector3d"}
+    ]
+},
+
+"volume":
+{
+    "inputs":
+    [
+      {"name":"sF", "kind":"required", "type":["S2Fun"]},
+      {"name":"center", "kind":"required", "type":["vector3d"]},
+      {"name":"radius", "kind":"required", "type":["numeric","scalar",">0"]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]}
+    ]
+},
+
+"mean":
+{
+    "inputs":
+    [
+      {"name":"sF", "kind":"required", "type":["S2Fun"]},
+      {"name":"d", "kind":"ordered", "type":["numeric","scalar","integer",">0"], "purpose":"dimension to average over"}
+    ]
+}
+}

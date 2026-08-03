@@ -1,9 +1,162 @@
 {
+"_schemaVersion": "1.0.0",
+
+"_comment": "MTEX code suggestions for the geometry helper functions - cif import, grids on the sphere and on SO(3), CSL misorientations.",
+
 "loadCIF":
 {
     "inputs":
     [
-        {"name":"filename1", "kind":"required",   "type":"choices=arrayfun(@(x) getfield(x,'name'),dir([mtexCifPath filesep '*.cif']),'uniformOutput',false)"}
-     ]
+      {"name":"fname", "kind":"required", "type":[["char","choices=arrayfun(@(x) getfield(x,'name'),dir([mtexCifPath filesep '*.cif']),'uniformOutput',false)"],["numeric","scalar"]], "purpose":"cif file or COD id for an online lookup"},
+      {"name":"mineral", "kind":"namevalue", "type":["char"]},
+      {"name":"color", "kind":"namevalue", "type":["choices=str2rgb"]}
+    ],
+    "outputs":
+    [
+      {"name":"cs", "type":"crystalSymmetry"}
+    ]
+},
+
+"loadPHL":
+{
+    "inputs":
+    [
+      {"name":"fname", "kind":"required", "type":["file=*.phl"]}
+    ]
+},
+
+"equispacedS2Grid":
+{
+    "inputs":
+    [
+      {"name":"points", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"number of points"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"center", "kind":"namevalue", "type":["vector3d"], "purpose":"default z-vector"},
+      {"name":"minRho", "kind":"namevalue", "type":["numeric","scalar"]},
+      {"name":"maxRho", "kind":"namevalue", "type":["numeric","scalar"]},
+      {"name":"minTheta", "kind":"namevalue", "type":["numeric","scalar"]},
+      {"name":"maxTheta", "kind":"namevalue", "type":["numeric","scalar"]},
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete','sphere','identified'}"]},
+      {"name":"antipodal", "kind":"flag"},
+      {"name":"restrict2MinMax", "kind":"flag"},
+      {"name":"no_center", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"S2G", "type":"vector3d"}
+    ]
+},
+
+"regularS2Grid":
+{
+    "inputs":
+    [
+      {"name":"points", "kind":"namevalue", "type":["numeric","vector"], "purpose":"[nrho ntheta]"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","vector"], "purpose":"polar and azimuthal resolution"},
+      {"name":"theta", "kind":"namevalue", "type":["numeric"]},
+      {"name":"rho", "kind":"namevalue", "type":["numeric"]},
+      {"name":"minRho", "kind":"namevalue", "type":["numeric","scalar"]},
+      {"name":"maxRho", "kind":"namevalue", "type":["numeric","scalar"]},
+      {"name":"minTheta", "kind":"namevalue", "type":["numeric","scalar"]},
+      {"name":"maxTheta", "kind":"namevalue", "type":["numeric","scalar"]},
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete','sphere','identified'}"]},
+      {"name":"antipodal", "kind":"flag"},
+      {"name":"restrict2MinMax", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"S2G", "type":"vector3d"}
+    ]
+},
+
+"plotS2Grid":
+{
+    "inputs":
+    [
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","vector"]},
+      {"name":"minRho", "kind":"namevalue", "type":["numeric","scalar"]},
+      {"name":"maxRho", "kind":"namevalue", "type":["numeric","scalar"]},
+      {"name":"minTheta", "kind":"namevalue", "type":["numeric","scalar"]},
+      {"name":"maxTheta", "kind":"namevalue", "type":["numeric","scalar"]},
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete','sphere','identified'}"]},
+      {"name":"antipodal", "kind":"flag"},
+      {"name":"restrict2MinMax", "kind":"flag"}
+    ]
+},
+
+"HEALPixS2Grid":
+{
+    "inputs":
+    [
+      {"name":"points", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
+      {"name":"antipodal", "kind":"flag"}
+    ]
+},
+
+"equispacedSO3Grid":
+{
+    "inputs":
+    [
+      {"name":"CS", "kind":"required", "type":["crystalSymmetry"]},
+      {"name":"SS", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]},
+      {"name":"points", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"approximate number of points"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"maxAngle", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"radius of the ball to be filled"},
+      {"name":"center", "kind":"namevalue", "type":["orientation"], "purpose":"center of the ball"}
+    ],
+    "outputs":
+    [
+      {"name":"S3G", "type":"SO3Grid"}
+    ]
+},
+
+"regularSO3Grid":
+{
+    "inputs":
+    [
+      {"name":"CS", "kind":"required", "type":["crystalSymmetry"]},
+      {"name":"SS", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]},
+      {"name":"points", "kind":"namevalue", "type":["numeric"], "purpose":"number of points"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"convention", "kind":"flag", "type":["char","choices={'ZYZ','ZXZ','Bunge','ABG'}"]}
+    ]
+},
+
+"localOrientationGrid":
+{
+    "inputs":
+    [
+      {"name":"CS", "kind":"required", "type":["crystalSymmetry"]},
+      {"name":"SS", "kind":"required", "type":[["specimenSymmetry"],["crystalSymmetry"]]},
+      {"name":"maxAngle", "kind":"required", "type":["numeric","scalar",">0"]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"points", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
+      {"name":"center", "kind":"namevalue", "type":["orientation"]}
+    ]
+},
+
+"CSL":
+{
+    "inputs":
+    [
+      {"name":"sigma", "kind":"required", "type":["numeric","scalar","integer",">0"], "purpose":"order of the coincidence site lattice"},
+      {"name":"CS", "kind":"required", "type":["crystalSymmetry"]},
+      {"name":"delta", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"search radius around angle or axis"},
+      {"name":"maxSigma", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]}
+    ],
+    "outputs":
+    [
+      {"name":"ori", "type":"orientation"}
+    ]
+},
+
+"allHKL":
+{
+    "inputs":
+    [
+      {"name":"maxIndex", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]}
+    ]
 }
 }

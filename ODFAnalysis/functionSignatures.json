@@ -1,0 +1,150 @@
+{
+"_schemaVersion": "1.0.0",
+
+"_comment": "MTEX code suggestions for the ODF model constructors and the texture derived material properties. The ODF class itself is obsolete since MTEX 5.9 - use SO3Fun (see SO3Fun/functionSignatures.json) and SO3Fun.load instead of ODF.load.",
+
+"unimodalODF":
+{
+    "inputs":
+    [
+      {"name":"mod", "kind":"required", "type":[["orientation"],["rotation"],["quaternion"]], "purpose":"modal orientation(s)"},
+      {"name":"CS", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"SS", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]},
+      {"name":"psi", "kind":"ordered", "type":["SO3Kernel"], "purpose":"kernel shape (default de la Vallee Poussin)"},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"halfwidth of the kernel (default 10 degree)"},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"], "purpose":"weight of each component"},
+      {"name":"nothinning", "kind":"flag", "purpose":"keep all nodes instead of thinning out small portions"}
+    ],
+    "outputs":
+    [
+      {"name":"odf", "type":"SO3Fun"}
+    ]
+},
+
+"fibreODF":
+{
+    "inputs":
+    [
+      {"name":"h", "kind":"required", "type":[["Miller"],["vector3d"],["fibre"]], "purpose":"crystal direction or fibre"},
+      {"name":"r", "kind":"ordered", "type":["vector3d"], "purpose":"specimen direction"},
+      {"name":"SS", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]},
+      {"name":"psi", "kind":"ordered", "type":["S2Kernel"], "purpose":"kernel shape (default de la Vallee Poussin)"},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"halfwidth of the kernel (default 10 degree)"},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"]}
+    ],
+    "outputs":
+    [
+      {"name":"odf", "type":"SO3Fun"}
+    ]
+},
+
+"uniformODF":
+{
+    "inputs":
+    [
+      {"name":"CS", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"SS", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]}
+    ],
+    "outputs":
+    [
+      {"name":"odf", "type":"SO3Fun"}
+    ]
+},
+
+"BinghamODF":
+{
+    "inputs":
+    [
+      {"name":"kappa", "kind":"required", "type":["numeric"], "purpose":"form parameter"},
+      {"name":"A", "kind":"ordered", "type":[["orientation"],["quaternion"],["fibre"],["numeric"]], "purpose":"principal orientation, fibre or orthogonal 4x4 matrix"},
+      {"name":"CS", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"SS", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]}
+    ],
+    "outputs":
+    [
+      {"name":"odf", "type":"SO3FunBingham"}
+    ]
+},
+
+"FourierODF":
+{
+    "inputs":
+    [
+      {"name":"C", "kind":"required", "type":[["numeric"],["SO3Fun"]], "purpose":"Fourier / C coefficients"},
+      {"name":"CS", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"SS", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">=0"]}
+    ],
+    "outputs":
+    [
+      {"name":"odf", "type":"SO3FunHarmonic"}
+    ]
+},
+
+"transformODF":
+{
+    "inputs":
+    [
+      {"name":"odfP", "kind":"required", "type":["SO3Fun"], "purpose":"parent ODF"},
+      {"name":"p2c", "kind":"required", "type":["orientation"], "purpose":"parent to child orientation relationship"},
+      {"name":"variantSelection", "kind":"namevalue", "type":["numeric"], "purpose":"variant weights or a single variant id"},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]}
+    ],
+    "outputs":
+    [
+      {"name":"odfC", "type":"SO3Fun"}
+    ]
+},
+
+"calcLankford":
+{
+    "inputs":
+    [
+      {"name":"ori", "kind":"required", "type":[["orientation"],["SO3Fun"]], "purpose":"orientations or ODF"},
+      {"name":"sS", "kind":"required", "type":["slipSystem"]},
+      {"name":"theta", "kind":"ordered", "type":["numeric"], "purpose":"tension direction w.r.t. RD (default 0:5:90 degree)"},
+      {"name":"RD", "kind":"ordered", "type":["vector3d"], "purpose":"rolling direction (default x)"},
+      {"name":"ND", "kind":"ordered", "type":["vector3d"], "purpose":"normal direction (default z)"},
+      {"name":"rho", "kind":"namevalue", "type":["numeric"], "purpose":"strain ratios (default linspace(0,1,11))"},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"], "purpose":"texture weights"},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"default 16"},
+      {"name":"verbose", "kind":"flag", "purpose":"show summary"}
+    ],
+    "outputs":
+    [
+      {"name":"R", "type":"double"},
+      {"name":"M", "type":"double"},
+      {"name":"minM", "type":"double"}
+    ]
+},
+
+"calcEaring":
+{
+    "inputs":
+    [
+      {"name":"ori", "kind":"required", "type":[["orientation"],["SO3Fun"],["grain2d"],["EBSD"]], "purpose":"orientations, ODF or grains"},
+      {"name":"sS", "kind":"required", "type":["slipSystem"]},
+      {"name":"prop", "kind":"ordered", "type":["struct"], "purpose":"cup drawing parameters"},
+      {"name":"discrete", "kind":"flag", "purpose":"use a discretised ODF"}
+    ],
+    "outputs":
+    [
+      {"name":"h", "type":"double"}
+    ]
+},
+
+"calcKearnsFactor":
+{
+    "inputs":
+    [
+      {"name":"pdf", "kind":"required", "type":[["SO3Fun"],["S2Fun"]], "purpose":"ODF or pole density function"},
+      {"name":"N", "kind":"ordered", "type":["vector3d"], "purpose":"normal direction (default z)"},
+      {"name":"h", "kind":"ordered", "type":["Miller"], "purpose":"crystal direction (default [0001])"},
+      {"name":"quadrature", "kind":"flag", "purpose":"slow quadrature based approach"}
+    ],
+    "outputs":
+    [
+      {"name":"k", "type":"double"}
+    ]
+}
+}

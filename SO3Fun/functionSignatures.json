@@ -1,0 +1,511 @@
+{
+"_schemaVersion": "1.0.0",
+
+"_comment": "MTEX code suggestions for functions on the rotation group - ODFs, MDFs and their representations (SO3FunHarmonic, SO3FunRBF, SO3FunCBF, SO3FunBingham, SO3FunHandle). Signatures for the SO3Kernel constructors belong into SO3Fun/SO3KernelFunctions/.",
+
+"SO3Fun.load":
+{
+    "inputs":
+    [
+      {"name":"fname", "kind":"required", "type":["file"]},
+      {"name":"CS", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"SS", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]},
+      {"name":"interface", "kind":"namevalue", "type":["char","choices={'generic','mtex','VPSC'}"]},
+      {"name":"comment", "kind":"namevalue", "type":["char"]}
+    ],
+    "outputs":
+    [
+      {"name":"SO3F", "type":"SO3Fun"}
+    ]
+},
+
+"SO3FunHarmonic":
+{
+    "inputs":
+    [
+      {"name":"fhat", "kind":"required", "type":[["numeric"],["SO3Fun"]], "purpose":"harmonic coefficients"},
+      {"name":"CS", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"SS", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">=0"]}
+    ],
+    "outputs":
+    [
+      {"name":"SO3F", "type":"SO3FunHarmonic"}
+    ]
+},
+
+"SO3FunHarmonic.approximate":
+{
+    "inputs":
+    [
+      {"name":"f", "kind":"required", "type":[["SO3Fun"],["function_handle"]]},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"maximal harmonic degree"}
+    ],
+    "outputs":
+    [
+      {"name":"SO3F", "type":"SO3FunHarmonic"}
+    ]
+},
+
+"SO3FunHarmonic.quadrature":
+{
+    "inputs":
+    [
+      {"name":"f", "kind":"required", "type":[["SO3Fun"],["function_handle"],["rotation"],["orientation"],["quadratureSO3Grid"]], "purpose":"function or quadrature nodes"},
+      {"name":"values", "kind":"ordered", "type":["numeric"], "purpose":"function values at the nodes"},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"maximal harmonic degree (default 64)"},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"], "purpose":"quadrature weights"},
+      {"name":"SO3Grid", "kind":"namevalue", "type":[["rotation"],["orientation"]], "purpose":"quadrature nodes"},
+      {"name":"quadratureScheme", "kind":"flag", "type":["char","choices={'ClenshawCurtis','GaussLegendre'}"]}
+    ],
+    "outputs":
+    [
+      {"name":"SO3F", "type":"SO3FunHarmonic"}
+    ]
+},
+
+"SO3FunHarmonic.interpolate":
+{
+    "inputs":
+    [
+      {"name":"nodes", "kind":"required", "type":[["rotation"],["orientation"]]},
+      {"name":"y", "kind":"required", "type":["numeric"], "purpose":"function values on the grid"},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
+      {"name":"weights", "kind":"namevalue", "type":[["char","choices={'equal','Voronoi'}"],["numeric"]]},
+      {"name":"tol", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"lsqr termination tolerance"},
+      {"name":"maxit", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
+      {"name":"regularization", "kind":"namevalue", "type":["numeric","scalar",">=0"], "purpose":"Sobolev regularization parameter (default 1e-4, 0 to switch off)"},
+      {"name":"SobolevIndex", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"default 2"},
+      {"name":"cutOffParameter", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"NFFT window cut off"}
+    ],
+    "outputs":
+    [
+      {"name":"SO3F", "type":"SO3FunHarmonic"},
+      {"name":"lsqrParameters", "type":"double"}
+    ]
+},
+
+"SO3FunRBF":
+{
+    "inputs":
+    [
+      {"name":"center", "kind":"required", "type":[["orientation"],["rotation"],["SO3Fun"]]},
+      {"name":"psi", "kind":"ordered", "type":["SO3Kernel"]},
+      {"name":"weights", "kind":"ordered", "type":["numeric"]},
+      {"name":"c0", "kind":"ordered", "type":["numeric","scalar"], "purpose":"portion of the uniform ODF"},
+      {"name":"kernel", "kind":"namevalue", "type":["SO3Kernel"]},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"harmonic", "kind":"flag", "purpose":"use the harmonic instead of the spatial method"}
+    ],
+    "outputs":
+    [
+      {"name":"SO3F", "type":"SO3FunRBF"}
+    ]
+},
+
+"SO3FunRBF.approximate":
+{
+    "inputs":
+    [
+      {"name":"f", "kind":"required", "type":[["SO3Fun"],["function_handle"]]},
+      {"name":"kernel", "kind":"namevalue", "type":["SO3Kernel"], "purpose":"kernel of the result"},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"SO3Grid", "kind":"namevalue", "type":[["rotation"],["orientation"]], "purpose":"centers of the result"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"approxresolution", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"resolution of the evaluation grid"},
+      {"name":"tol", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"maxit", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
+      {"name":"LSQRsolver", "kind":"flag", "type":["char","choices={'lsqr','mlsq','mlrl'}"]},
+      {"name":"harmonic", "kind":"flag"},
+      {"name":"density", "kind":"flag", "purpose":"force a positive function with mean 1"}
+    ],
+    "outputs":
+    [
+      {"name":"SO3F", "type":"SO3FunRBF"},
+      {"name":"lsqrIter", "type":"double"}
+    ]
+},
+
+"SO3FunRBF.interpolate":
+{
+    "inputs":
+    [
+      {"name":"nodes", "kind":"required", "type":[["rotation"],["orientation"],["SO3Grid"]]},
+      {"name":"y", "kind":"required", "type":["numeric"], "purpose":"function values on the grid"},
+      {"name":"kernel", "kind":"namevalue", "type":["SO3Kernel"]},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"SO3Grid", "kind":"namevalue", "type":[["rotation"],["orientation"]]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"tol", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"maxit", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
+      {"name":"LSQRsolver", "kind":"flag", "type":["char","choices={'lsqr','lsqnonneg','lsqlin','nnls','mlsq','mlrl'}"]},
+      {"name":"exact", "kind":"flag"},
+      {"name":"density", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"SO3F", "type":"SO3FunRBF"},
+      {"name":"lsqrIter", "type":"double"}
+    ]
+},
+
+"SO3FunCBF":
+{
+    "inputs":
+    [
+      {"name":"h", "kind":"required", "type":[["Miller"],["vector3d"],["fibre"]], "purpose":"crystal direction or fibre"},
+      {"name":"r", "kind":"ordered", "type":["vector3d"], "purpose":"specimen direction"},
+      {"name":"weights", "kind":"ordered", "type":["numeric"]},
+      {"name":"psi", "kind":"ordered", "type":["S2Kernel"]},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"]}
+    ],
+    "outputs":
+    [
+      {"name":"SO3F", "type":"SO3FunCBF"}
+    ]
+},
+
+"SO3FunBingham":
+{
+    "inputs":
+    [
+      {"name":"kappa", "kind":"required", "type":["numeric","vector","numel=4"], "purpose":"form parameters - use BinghamODF for the convenient constructor"},
+      {"name":"A", "kind":"required", "type":["orientation"], "purpose":"the four principal orientations"}
+    ],
+    "outputs":
+    [
+      {"name":"SO3F", "type":"SO3FunBingham"}
+    ]
+},
+
+"SO3FunBingham.approximate":
+{
+    "inputs":
+    [
+      {"name":"f", "kind":"required", "type":[["SO3Fun"],["function_handle"]]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]}
+    ],
+    "outputs":
+    [
+      {"name":"SO3F", "type":"SO3FunBingham"}
+    ]
+},
+
+"SO3FunHandle":
+{
+    "inputs":
+    [
+      {"name":"fun", "kind":"required", "type":["function_handle"], "purpose":"function handle in orientation"},
+      {"name":"CS", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"SS", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]},
+      {"name":"antipodal", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"SO3F", "type":"SO3FunHandle"}
+    ]
+},
+
+"plot":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"], "purpose":"ODF / MDF"},
+      {"name":"sections", "kind":"ordered", "type":[["ODFSections"],["fibre"]], "purpose":"section type or fibre"},
+      {"name":"contours", "kind":"namevalue", "type":["numeric"], "purpose":"number or list of contour levels"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
+      {"name":"parent", "kind":"namevalue", "type":["matlab.graphics.axis.Axes"]},
+      {"name":"sectionType", "kind":"flag", "type":["char","choices={'phi2','phi1','gamma','sigma','omega','axisAngle','rodrigues'}"]},
+      {"name":"drawing", "kind":"flag", "type":["char","choices={'smooth','contour','contourf','surf','contour3','surf3','slice3'}"]}
+    ]
+},
+
+"plotSection":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"sections", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"number of sections"},
+      {"name":"contours", "kind":"namevalue", "type":["numeric"]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"points", "kind":"namevalue", "type":[["numeric","scalar",">0"],["char","choices={'all'}"]]},
+      {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
+      {"name":"sectionType", "kind":"flag", "type":["char","choices={'phi2','phi1','gamma','sigma','omega','axisAngle'}"]},
+      {"name":"drawing", "kind":"flag", "type":["char","choices={'smooth','contour','contourf','contour3','surf3','slice3'}"]},
+      {"name":"all", "kind":"flag"}
+    ]
+},
+
+"plotPDF":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"h", "kind":"required", "type":[["Miller"],["cell"]], "purpose":"crystallographic directions"},
+      {"name":"superposition", "kind":"namevalue", "type":[["cell"],["numeric"]], "purpose":"structure coefficients"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"contours", "kind":"namevalue", "type":["numeric"]},
+      {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
+      {"name":"drawing", "kind":"flag", "type":["char","choices={'smooth','contour','contourf'}"]},
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
+      {"name":"antipodal", "kind":"flag"},
+      {"name":"noTitle", "kind":"flag"}
+    ]
+},
+
+"plotIPDF":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"r", "kind":"required", "type":["vector3d"], "purpose":"specimen directions"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"contours", "kind":"namevalue", "type":["numeric"]},
+      {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
+      {"name":"drawing", "kind":"flag", "type":["char","choices={'smooth','contour','contourf'}"]},
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
+      {"name":"antipodal", "kind":"flag"}
+    ]
+},
+
+"plotFibre":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"f", "kind":"required", "type":["fibre"]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"LineColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"LineWidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"DisplayName", "kind":"namevalue", "type":["char"]}
+    ]
+},
+
+"plotDiff":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"ref", "kind":"required", "type":[["SO3Fun"],["PoleFigure"]]},
+      {"name":"errorType", "kind":"flag", "type":["char","choices={'RP','L1','L2','L0'}"]}
+    ]
+},
+
+"calcPDF":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"h", "kind":"required", "type":[["Miller"],["vector3d"]], "purpose":"crystal directions - [] for an inverse pole density function"},
+      {"name":"r", "kind":"ordered", "type":["vector3d"], "purpose":"specimen directions"},
+      {"name":"superposition", "kind":"namevalue", "type":[["cell"],["numeric"]]},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
+      {"name":"antipodal", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"pdf", "type":"S2Fun"}
+    ]
+},
+
+"calcPoleFigure":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"h", "kind":"required", "type":[["Miller"],["vector3d"],["cell"]], "purpose":"crystallographic directions"},
+      {"name":"r", "kind":"ordered", "type":[["vector3d"],["cell"]], "purpose":"specimen directions"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"superposition", "kind":"namevalue", "type":[["cell"],["numeric"]]},
+      {"name":"antipodal", "kind":"flag"},
+      {"name":"complete", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"pf", "type":"PoleFigure"}
+    ]
+},
+
+"calcMDF":
+{
+    "inputs":
+    [
+      {"name":"SO3F1", "kind":"required", "type":["SO3Fun"]},
+      {"name":"SO3F2", "kind":"ordered", "type":["SO3Fun"]},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"default 32"}
+    ],
+    "outputs":
+    [
+      {"name":"mdf", "type":"SO3Fun"}
+    ]
+},
+
+"calcComponents":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"seed", "kind":"namevalue", "type":["orientation"], "purpose":"initial list of orientations"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"search grid resolution"},
+      {"name":"angle", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"maximum component width"},
+      {"name":"exact", "kind":"flag", "purpose":"keep very small modes"}
+    ],
+    "outputs":
+    [
+      {"name":"modes", "type":"orientation"},
+      {"name":"volume", "type":"double"},
+      {"name":"centerId", "type":"double"}
+    ]
+},
+
+"calcError":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"ref", "kind":"required", "type":[["SO3Fun"],["PoleFigure"]]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"errorType", "kind":"flag", "type":["char","choices={'RP','L1','L2','L0'}"]}
+    ]
+},
+
+"calcAxisDistribution":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"a", "kind":"ordered", "type":["vector3d"], "purpose":"rotational axes - omit to get an S2Fun"},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
+      {"name":"antipodal", "kind":"flag"}
+    ]
+},
+
+"calcAngleDistribution":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"omega", "kind":"ordered", "type":["numeric"], "purpose":"list of angles"},
+      {"name":"even", "kind":"flag", "purpose":"even portion only"}
+    ]
+},
+
+"volume":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"center", "kind":"required", "type":[["orientation"],["fibre"]]},
+      {"name":"radius", "kind":"required", "type":["numeric","scalar",">0"]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]}
+    ]
+},
+
+"fibreVolume":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"h", "kind":"required", "type":[["Miller"],["fibre"]]},
+      {"name":"r", "kind":"ordered", "type":["vector3d"]},
+      {"name":"radius", "kind":"ordered", "type":["numeric","scalar",">0"]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]}
+    ]
+},
+
+"max":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"other", "kind":"ordered", "type":[["SO3Fun"],["numeric"]], "purpose":"second function or constant"},
+      {"name":"numLocal", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"number of peaks to return"},
+      {"name":"startingNodes", "kind":"namevalue", "type":[["rotation"],["orientation"]]},
+      {"name":"tolerance", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"minimum distance between two peaks"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"minimum step size"},
+      {"name":"maxStepSize", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"kmax", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"number of iterations"},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]}
+    ],
+    "outputs":
+    [
+      {"name":"v", "type":"double"},
+      {"name":"pos", "type":"orientation"}
+    ]
+},
+
+"discreteSample":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"n", "kind":"required", "type":["numeric","scalar","integer",">0"], "purpose":"number of rotations"},
+      {"name":"compact", "kind":"flag", "purpose":"almost perfectly aligned sampling points"}
+    ],
+    "outputs":
+    [
+      {"name":"ori", "type":"orientation"}
+    ]
+},
+
+"smooth":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"psi", "kind":"ordered", "type":["SO3Kernel"], "purpose":"smoothing kernel"},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"]}
+    ]
+},
+
+"conv":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"other", "kind":"required", "type":[["SO3Fun"],["SO3Kernel"],["S2Fun"],["S2Kernel"]]},
+      {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]}
+    ]
+},
+
+"entropy":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]}
+    ]
+},
+
+"norm":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]}
+    ]
+},
+
+"quantile":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"p", "kind":"required", "type":["numeric"], "purpose":"upper quantile, negative for the lower quantile"}
+    ]
+},
+
+"export":
+{
+    "inputs":
+    [
+      {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
+      {"name":"fname", "kind":"required", "type":["char"]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"interface", "kind":"namevalue", "type":["char","choices={'generic','mtex','VPSC'}"]},
+      {"name":"weights", "kind":"flag", "purpose":"export the weights of the ODF components"},
+      {"name":"convention", "kind":"flag", "type":["char","choices={'ZYZ','ABG','ZXZ','Bunge'}"]}
+    ]
+}
+}

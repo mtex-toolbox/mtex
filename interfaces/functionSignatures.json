@@ -1,49 +1,256 @@
 {
-"loadEBSD":
+"_schemaVersion": "1.0.0",
+
+"_comment": "MTEX code suggestions for the import filters. The user facing entry points are EBSD.load, PoleFigure.load, orientation.load, vector3d.load and grain3d.load - the loadXXX_YYY functions below are the format specific filters they dispatch to. loadEBSD, loadPoleFigure, loadODF and loadOrientation are deprecated and live in obsolete/.",
+
+"loadEBSD_generic":
 {
     "inputs":
     [
-        {"name":"filename1", "kind":"required",   "type":"filepath"},
-        {"name":"type",      "kind":"positional", "type":"choices={'convertSpatial2EulerReferenceFrame', 'convertEuler2SpatialReferenceFrame'}"}
+      {"name":"fname", "kind":"required", "type":["file=*.txt,*.csv,*.dat"], "purpose":"text file"},
+      {"name":"CS", "kind":"namevalue", "type":[["crystalSymmetry"],["cell"]]},
+      {"name":"columnNames", "kind":"namevalue", "type":["cell"], "purpose":"mandatory are Euler 1, Euler 2, Euler 3"},
+      {"name":"columns", "kind":"namevalue", "type":["numeric","vector"]},
+      {"name":"delimiter", "kind":"namevalue", "type":["char"]},
+      {"name":"header", "kind":"namevalue", "type":["numeric","scalar",">=0"]},
+      {"name":"convention", "kind":"flag", "type":["char","choices={'Bunge','ABG','radians','passive','convertSpatial2EulerReferenceFrame','convertEuler2SpatialReferenceFrame'}"]}
+    ],
+    "outputs":
+    [
+      {"name":"ebsd", "type":"EBSD"}
     ]
 },
+
 "loadEBSD_ang":
 {
     "inputs":
     [
-        {"name":"filename1", "kind":"required",   "type":"filepath=*.ang"},
-        {"name":"type",      "kind":"positional", "type":"choices={'convertSpatial2EulerReferenceFrame', 'convertEuler2SpatialReferenceFrame'}"}
+      {"name":"fname", "kind":"required", "type":["file=*.ang"]},
+      {"name":"setting", "kind":"namevalue", "type":["numeric","scalar","integer",">=1","<=4"], "purpose":"see EBSDReferenceFrame"},
+      {"name":"EulerCorrection", "kind":"namevalue", "type":["rotation"]},
+      {"name":"convention", "kind":"flag", "type":["char","choices={'convertSpatial2EulerReferenceFrame','convertEuler2SpatialReferenceFrame'}"]},
+      {"name":"headerOnly", "kind":"flag", "purpose":"return only phase / header metadata"}
+    ],
+    "outputs":
+    [
+      {"name":"ebsd", "type":"EBSD"}
     ]
 },
+
 "loadEBSD_ctf":
 {
     "inputs":
     [
-        {"name":"filename1", "kind":"required",   "type":"filepath=*.ctf"},
-        {"name":"type",      "kind":"positional", "type":"choices={'convertSpatial2EulerReferenceFrame', 'convertEuler2SpatialReferenceFrame'}"}
+      {"name":"fname", "kind":"required", "type":["file=*.ctf"]},
+      {"name":"EulerCorrection", "kind":"namevalue", "type":["rotation"]},
+      {"name":"convention", "kind":"flag", "type":["char","choices={'convertSpatial2EulerReferenceFrame','convertEuler2SpatialReferenceFrame'}"]},
+      {"name":"headerOnly", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"ebsd", "type":"EBSD"}
     ]
 },
-"loadPoleFigure":
+
+"loadEBSD_crc":
 {
     "inputs":
     [
-        {"name":"filename1", "kind":"required",   "type":"filepath"},
-        {"name":"superposition", "kind":"namevalue", "type":"cell"}
+      {"name":"fname", "kind":"required", "type":["file=*.crc,*.cpr"]},
+      {"name":"EulerCorrection", "kind":"namevalue", "type":["rotation"]},
+      {"name":"headerOnly", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"ebsd", "type":"EBSD"}
     ]
 },
-"loadODF":
+
+"loadEBSD_osc":
 {
     "inputs":
     [
-        {"name":"filename1", "kind":"required",   "type":"filepath"},
-        {"name":"CS", "kind":"namevalue", "type":"crystalSymmetry"}
+      {"name":"fname", "kind":"required", "type":["file=*.osc"]},
+      {"name":"headerOnly", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"ebsd", "type":"EBSD"}
     ]
 },
-"loadOrientation":
+
+"loadEBSD_h5":
 {
     "inputs":
     [
-        {"name":"filename1", "kind":"required",   "type":"filepath"}
+      {"name":"fname", "kind":"required", "type":["file=*.h5,*.hdf5,*.h5oina,*.oh5,*.dream3d"]},
+      {"name":"CS", "kind":"namevalue", "type":[["crystalSymmetry"],["cell"]]},
+      {"name":"EulerCorrection", "kind":"namevalue", "type":["rotation"]},
+      {"name":"headerOnly", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"ebsd", "type":"EBSD"}
+    ]
+},
+
+"loadPoleFigure_generic":
+{
+    "inputs":
+    [
+      {"name":"fname", "kind":"required", "type":["file=*.txt,*.csv,*.dat"]},
+      {"name":"h", "kind":"ordered", "type":["Miller"], "purpose":"crystal direction"},
+      {"name":"CS", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"SS", "kind":"ordered", "type":["specimenSymmetry"]},
+      {"name":"columnNames", "kind":"namevalue", "type":["cell"], "purpose":"e.g. {'polar angle','azimuth','intensity'}"},
+      {"name":"columns", "kind":"namevalue", "type":["numeric","vector"]},
+      {"name":"delimiter", "kind":"namevalue", "type":["char"]},
+      {"name":"header", "kind":"namevalue", "type":["numeric","scalar",">=0"]},
+      {"name":"superposition", "kind":"namevalue", "type":[["cell"],["numeric"]]},
+      {"name":"radians", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"pf", "type":"PoleFigure"}
+    ]
+},
+
+"loadODF_generic":
+{
+    "inputs":
+    [
+      {"name":"fname", "kind":"required", "type":["file=*.txt,*.csv,*.dat"]},
+      {"name":"CS", "kind":"namevalue", "type":["crystalSymmetry"]},
+      {"name":"SS", "kind":"namevalue", "type":["specimenSymmetry"]},
+      {"name":"columnNames", "kind":"namevalue", "type":["cell"], "purpose":"mandatory are Euler 1, Euler 2, Euler 3"},
+      {"name":"columns", "kind":"namevalue", "type":["numeric","vector"]},
+      {"name":"delimiter", "kind":"namevalue", "type":["char"]},
+      {"name":"header", "kind":"namevalue", "type":["numeric","scalar",">=0"]},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"convention", "kind":"flag", "type":["char","choices={'Bunge','ZXZ','ABG','ZYZ','radians'}"]},
+      {"name":"method", "kind":"flag", "type":["char","choices={'interp','density'}"]}
+    ],
+    "outputs":
+    [
+      {"name":"odf", "type":"SO3Fun"}
+    ]
+},
+
+"loadODF_VPSC":
+{
+    "inputs":
+    [
+      {"name":"fname", "kind":"required", "type":["file=*.tex,*.txt,*.out"]},
+      {"name":"CS", "kind":"namevalue", "type":["crystalSymmetry"]},
+      {"name":"SS", "kind":"namevalue", "type":["specimenSymmetry"]},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"]}
+    ]
+},
+
+"loadOrientation_generic":
+{
+    "inputs":
+    [
+      {"name":"fname", "kind":"required", "type":["file=*.txt,*.csv,*.dat"]},
+      {"name":"CS", "kind":"namevalue", "type":["crystalSymmetry"]},
+      {"name":"SS", "kind":"namevalue", "type":["specimenSymmetry"]},
+      {"name":"columnNames", "kind":"namevalue", "type":["cell"], "purpose":"mandatory are Euler 1, Euler 2, Euler 3"},
+      {"name":"columns", "kind":"namevalue", "type":["numeric","vector"]},
+      {"name":"delimiter", "kind":"namevalue", "type":["char"]},
+      {"name":"header", "kind":"namevalue", "type":["numeric","scalar",">=0"]},
+      {"name":"convention", "kind":"flag", "type":["char","choices={'Bunge','ABG','radians','passive'}"]}
+    ],
+    "outputs":
+    [
+      {"name":"ori", "type":"orientation"},
+      {"name":"prop", "type":"struct"}
+    ]
+},
+
+"loadVector3d_generic":
+{
+    "inputs":
+    [
+      {"name":"fname", "kind":"required", "type":["file=*.txt,*.csv,*.dat"]},
+      {"name":"columnNames", "kind":"namevalue", "type":["cell"], "purpose":"e.g. {'x','y','z'} or {'polar angle','azimuth'}"},
+      {"name":"columns", "kind":"namevalue", "type":["numeric","vector"]},
+      {"name":"delimiter", "kind":"namevalue", "type":["char"]},
+      {"name":"header", "kind":"namevalue", "type":["numeric","scalar",">=0"]},
+      {"name":"radians", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"v", "type":"vector3d"}
+    ]
+},
+
+"loadTensor_generic":
+{
+    "inputs":
+    [
+      {"name":"fname", "kind":"required", "type":["file=*.txt,*.csv,*.dat"]},
+      {"name":"CS", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"name", "kind":"namevalue", "type":["char"], "purpose":"name of the tensor"},
+      {"name":"unit", "kind":"namevalue", "type":["char"]},
+      {"name":"delimiter", "kind":"namevalue", "type":["char"]},
+      {"name":"header", "kind":"namevalue", "type":["numeric","scalar",">=0"]},
+      {"name":"convention", "kind":"flag", "type":["char","choices={'Voigt','doubleConvention','singleConvention'}"]}
+    ],
+    "outputs":
+    [
+      {"name":"T", "type":"tensor"}
+    ]
+},
+
+"loadTensor_json":
+{
+    "inputs":
+    [
+      {"name":"fname", "kind":"required", "type":["file=*.json"]}
+    ]
+},
+
+"loadTensor_mpod":
+{
+    "inputs":
+    [
+      {"name":"fname", "kind":"required", "type":["file=*.mpod"]}
+    ]
+},
+
+"loadNeperTess":
+{
+    "inputs":
+    [
+      {"name":"fname", "kind":"required", "type":["file=*.tess"], "purpose":"Neper tessellation file"}
+    ]
+},
+
+"loadGrains_Dream3d":
+{
+    "inputs":
+    [
+      {"name":"fname", "kind":"required", "type":["file=*.dream3d"]}
+    ]
+},
+
+"loadOrientation_DRex":
+{
+    "inputs":
+    [
+      {"name":"fname", "kind":"required", "type":["file=*.txt,*.dat"]},
+      {"name":"CS", "kind":"namevalue", "type":["crystalSymmetry"]}
+    ]
+},
+
+"loadData":
+{
+    "inputs":
+    [
+      {"name":"fname", "kind":"required", "type":["file"]},
+      {"name":"type", "kind":"required", "type":["char","choices={'EBSD','PoleFigure','ODF','Orientation','Tensor','Vector3d'}"]},
+      {"name":"interface", "kind":"namevalue", "type":["char"], "purpose":"force a specific import filter"},
+      {"name":"comment", "kind":"namevalue", "type":["char"], "purpose":"comment associated with the data"}
     ]
 }
 }

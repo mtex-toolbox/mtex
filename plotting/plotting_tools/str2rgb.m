@@ -1,12 +1,14 @@
 function rgb = str2rgb(str)
 % convert str to rgb values
 
-if isstring(str), str = char(str); end
-
+% called without arguments this returns the list of known color names -
+% this is what the choices=str2rgb entries in functionSignatures.json use
 if nargin == 0
   rgb = ['none';'flat';colornames(getMTEXpref('colorPalette','CSS'))];
   return;
 end
+
+if isstring(str), str = char(str); end
 
 % replace shortcuts by long color names
 if ischar(str) && isscalar(str)

@@ -1,21 +1,126 @@
 {
+"_schemaVersion": "1.0.0",
+
+"_comment": "MTEX code suggestions for the generic figure tools - annotations, colorbars, colormaps and figure export.",
+
 "annotate":
 {
     "inputs":
     [
-        {"name":"obj", "kind":"required"},
-        {"name":"MarkerColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
-        {"name":"MarkerFaceColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
-        {"name":"MarkeEdgeColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
-        {"name":"label", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
-        {"name":"backgroundColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"}
+      {"name":"obj", "kind":"required", "type":[["vector3d"],["Miller"],["orientation"],["fibre"],["crystalShape"],["grain2d"],["grainBoundary"]], "purpose":"object to be added to all existing plots"},
+      {"name":"Marker", "kind":"namevalue", "type":["char","choices={'o','.','none','x','s','d','p','^','v','+','*'}"]},
+      {"name":"MarkerSize", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"MarkerColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"MarkerFaceColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"MarkerEdgeColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"label", "kind":"namevalue", "type":[["char"],["cell"],["string"]]},
+      {"name":"backgroundColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"LineColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"LineWidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"antipodal", "kind":"flag"}
     ]
 },
+
 "mtexColorMap":
 {
     "inputs":
     [
-        {"name":"map", "kind":"required",   "type":"choices=getColormaps"}
-     ]
+      {"name":"map", "kind":"required", "type":[["char","choices=getColormaps"],["numeric"]], "purpose":"colormap name or N x 3 matrix"}
+    ]
+},
+
+"mtexColorbar":
+{
+    "inputs":
+    [
+      {"name":"title", "kind":"namevalue", "type":["char"], "purpose":"colorbar label"},
+      {"name":"location", "kind":"namevalue", "type":["char","choices={'north','south','east','west','northoutside','southoutside','eastoutside','westoutside'}"]},
+      {"name":"FontSize", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"multiple", "kind":"flag", "purpose":"one colorbar per sub figure"},
+      {"name":"off", "kind":"flag"}
+    ]
+},
+
+"setColorRange":
+{
+    "inputs":
+    [
+      {"name":"range", "kind":"ordered", "type":[["numeric","vector","numel=2"],["char","choices={'equal','tight'}"]], "purpose":"[min max] or scaling mode"},
+      {"name":"figure", "kind":"namevalue", "type":["matlab.ui.Figure"], "purpose":"figures to be scaled"},
+      {"name":"scaling", "kind":"flag", "type":["char","choices={'log','linear','zero2white'}"]},
+      {"name":"scope", "kind":"flag", "type":["char","choices={'all','current'}"]}
+    ]
+},
+
+"newMtexFigure":
+{
+    "inputs":
+    [
+      {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
+      {"name":"layout", "kind":"namevalue", "type":["numeric","vector","numel=2"], "purpose":"[numberRows numberColumns]"},
+      {"name":"nrows", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
+      {"name":"ncols", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
+      {"name":"innerPlotSpacing", "kind":"namevalue", "type":["numeric","scalar",">=0"]},
+      {"name":"outerPlotSpacing", "kind":"namevalue", "type":["numeric","scalar",">=0"]},
+      {"name":"position", "kind":"namevalue", "type":["numeric","vector","numel=4"]},
+      {"name":"name", "kind":"namevalue", "type":["char"], "purpose":"figure title"}
+    ],
+    "outputs":
+    [
+      {"name":"mtexFig", "type":"mtexFigure"}
+    ]
+},
+
+"nextAxis":
+{
+    "inputs":
+    [
+      {"name":"row", "kind":"ordered", "type":["numeric","scalar","integer",">0"]},
+      {"name":"col", "kind":"ordered", "type":["numeric","scalar","integer",">0"]}
+    ]
+},
+
+"saveFigure":
+{
+    "inputs":
+    [
+      {"name":"fname", "kind":"required", "type":["file=*.pdf,*.eps,*.ps,*.png,*.jpg,*.tif,*.gif,*.bmp,*.svg"], "purpose":"format is taken from the extension"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"dpi for bitmap formats"},
+      {"name":"crop", "kind":"flag"}
+    ]
+},
+
+"str2rgb":
+{
+    "inputs":
+    [
+      {"name":"str", "kind":"required", "type":[["char"],["cell"],["string"],["numeric"]], "purpose":"color name or RGB triple"}
+    ]
+},
+
+"setCamera":
+{
+    "inputs":
+    [
+      {"name":"ax", "kind":"ordered", "type":["matlab.graphics.axis.Axes"]},
+      {"name":"xAxisDirection", "kind":"namevalue", "type":["char","choices={'east','north','west','south'}"]},
+      {"name":"zAxisDirection", "kind":"namevalue", "type":["char","choices={'intoPlane','outOfPlane'}"]},
+      {"name":"upVector", "kind":"namevalue", "type":["vector3d"]},
+      {"name":"pcolor", "kind":"namevalue", "type":["plottingConvention"]}
+    ]
+},
+
+"plotEllipse":
+{
+    "inputs":
+    [
+      {"name":"x", "kind":"required", "type":["numeric"], "purpose":"center x"},
+      {"name":"y", "kind":"required", "type":["numeric"], "purpose":"center y"},
+      {"name":"a", "kind":"required", "type":["numeric"], "purpose":"long axis"},
+      {"name":"b", "kind":"required", "type":["numeric"], "purpose":"short axis"},
+      {"name":"omega", "kind":"ordered", "type":["numeric"], "purpose":"rotation angle"},
+      {"name":"LineColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"LineWidth", "kind":"namevalue", "type":["numeric","scalar",">0"]}
+    ]
 }
 }

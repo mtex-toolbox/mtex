@@ -1,9 +1,206 @@
 {
+"_schemaVersion": "1.0.0",
+
+"_comment": "MTEX code suggestions for tensor construction, tensor averaging and elastic properties.",
+
 "stiffnessTensor.load":
 {
     "inputs":
     [
-        {"name":"filename1", "kind":"required", "type":"choices=arrayfun(@(x) getfield(x,'name'),dir([mtexDataPath filesep 'stiffnessTensor' filesep '*.json']),'uniformOutput',false)"}
-     ]
+      {"name":"fname", "kind":"required", "type":["file"], "purpose":"elastic constants file - see fullfile(mtexDataPath,'tensor')"},
+      {"name":"CS", "kind":"namevalue", "type":["crystalSymmetry"]},
+      {"name":"density", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"density in g/cm^3"}
+    ],
+    "outputs":
+    [
+      {"name":"C", "type":"stiffnessTensor"}
+    ]
+},
+
+"tensor":
+{
+    "inputs":
+    [
+      {"name":"M", "kind":"required", "type":["numeric"], "purpose":"matrix of tensor entries"},
+      {"name":"CS", "kind":"ordered", "type":[["crystalSymmetry"],["specimenSymmetry"]]},
+      {"name":"rank", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
+      {"name":"name", "kind":"namevalue", "type":["char"], "purpose":"name of the tensor"},
+      {"name":"unit", "kind":"namevalue", "type":["char"], "purpose":"physical unit of the entries"},
+      {"name":"density", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"convention", "kind":"flag", "type":["char","choices={'Voigt','doubleConvention','singleConvention'}"]}
+    ],
+    "outputs":
+    [
+      {"name":"T", "type":"tensor"}
+    ]
+},
+
+"stiffnessTensor":
+{
+    "inputs":
+    [
+      {"name":"M", "kind":"required", "type":[["numeric"],["tensor"]], "purpose":"6x6 Voigt matrix or tensor"},
+      {"name":"CS", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"density", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"density in g/cm^3"},
+      {"name":"unit", "kind":"namevalue", "type":["char"]}
+    ],
+    "outputs":
+    [
+      {"name":"C", "type":"stiffnessTensor"}
+    ]
+},
+
+"complianceTensor":
+{
+    "inputs":
+    [
+      {"name":"M", "kind":"required", "type":[["numeric"],["tensor"]]},
+      {"name":"CS", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"unit", "kind":"namevalue", "type":["char"]}
+    ]
+},
+
+"calcTensor":
+{
+    "inputs":
+    [
+      {"name":"odf", "kind":"required", "type":[["SO3Fun"],["orientation"],["EBSD"],["grain2d"]], "purpose":"ODF, orientations, EBSD or grains"},
+      {"name":"T", "kind":"required", "type":["tensor"], "purpose":"single crystal tensor - one per phase"},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"]},
+      {"name":"mean", "kind":"flag", "type":["char","choices={'Voigt','Reuss','Hill','geometric'}"]}
+    ],
+    "outputs":
+    [
+      {"name":"TVoigt", "type":"tensor"},
+      {"name":"TReuss", "type":"tensor"},
+      {"name":"THill", "type":"tensor"}
+    ]
+},
+
+"EinsteinSum":
+{
+    "inputs":
+    [
+      {"name":"T1", "kind":"required", "type":["tensor"]},
+      {"name":"dimT1", "kind":"required", "type":["numeric","vector"], "purpose":"negative indices are summed over"},
+      {"name":"T2", "kind":"ordered", "type":[["tensor"],["vector3d"]]},
+      {"name":"dimT2", "kind":"ordered", "type":["numeric","vector"]},
+      {"name":"name", "kind":"namevalue", "type":["char"]},
+      {"name":"unit", "kind":"namevalue", "type":["char"]}
+    ]
+},
+
+"dyad":
+{
+    "inputs":
+    [
+      {"name":"v", "kind":"required", "type":[["vector3d"],["Miller"]]},
+      {"name":"n", "kind":"ordered", "type":["numeric","scalar","integer",">0"], "purpose":"power of the dyadic product"}
+    ]
+},
+
+"SchmidTensor":
+{
+    "inputs":
+    [
+      {"name":"n", "kind":"required", "type":[["vector3d"],["Miller"]], "purpose":"slip or twinning plane normal"},
+      {"name":"b", "kind":"required", "type":[["vector3d"],["Miller"]], "purpose":"Burgers vector / shear direction"}
+    ]
+},
+
+"velocity":
+{
+    "inputs":
+    [
+      {"name":"C", "kind":"required", "type":["stiffnessTensor"], "purpose":"elastic stiffness in GPa"},
+      {"name":"x", "kind":"ordered", "type":["vector3d"], "purpose":"propagation directions"},
+      {"name":"rho", "kind":"ordered", "type":["numeric","scalar",">0"], "purpose":"density in g/cm^3"}
+    ],
+    "outputs":
+    [
+      {"name":"vp", "type":"double"},
+      {"name":"vs1", "type":"double"},
+      {"name":"vs2", "type":"double"},
+      {"name":"pp", "type":"vector3d"},
+      {"name":"ps1", "type":"vector3d"},
+      {"name":"ps2", "type":"vector3d"}
+    ]
+},
+
+"YoungsModulus":
+{
+    "inputs":
+    [
+      {"name":"C", "kind":"required", "type":["stiffnessTensor"]},
+      {"name":"x", "kind":"ordered", "type":["vector3d"], "purpose":"directions - omit for a S2Fun"}
+    ]
+},
+
+"PoissonRatio":
+{
+    "inputs":
+    [
+      {"name":"C", "kind":"required", "type":["stiffnessTensor"]},
+      {"name":"x", "kind":"ordered", "type":["vector3d"], "purpose":"tension direction"},
+      {"name":"y", "kind":"ordered", "type":["vector3d"], "purpose":"normal direction"}
+    ]
+},
+
+"shearModulus":
+{
+    "inputs":
+    [
+      {"name":"C", "kind":"required", "type":["stiffnessTensor"]},
+      {"name":"h", "kind":"ordered", "type":["vector3d"], "purpose":"shear plane normal"},
+      {"name":"u", "kind":"ordered", "type":["vector3d"], "purpose":"shear direction"}
+    ]
+},
+
+"linearCompressibility":
+{
+    "inputs":
+    [
+      {"name":"C", "kind":"required", "type":["stiffnessTensor"]},
+      {"name":"x", "kind":"ordered", "type":["vector3d"]}
+    ]
+},
+
+"bulkModulus":
+{
+    "inputs":
+    [
+      {"name":"C", "kind":"required", "type":["stiffnessTensor"]},
+      {"name":"mean", "kind":"flag", "type":["char","choices={'Voigt','Reuss','Hill'}"]}
+    ]
+},
+
+"rotate":
+{
+    "inputs":
+    [
+      {"name":"T", "kind":"required", "type":["tensor"]},
+      {"name":"rot", "kind":"required", "type":[["rotation"],["orientation"]]}
+    ]
+},
+
+"plot":
+{
+    "inputs":
+    [
+      {"name":"T", "kind":"required", "type":["tensor"]},
+      {"name":"contours", "kind":"namevalue", "type":["numeric"]},
+      {"name":"complete", "kind":"namevalue", "type":["char","choices={'on','off'}"]},
+      {"name":"drawing", "kind":"flag", "type":["char","choices={'3d','surf','contour','contourf','smooth'}"]},
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]}
+    ]
+},
+
+"plotSeismicVelocities":
+{
+    "inputs":
+    [
+      {"name":"C", "kind":"required", "type":["stiffnessTensor"]},
+      {"name":"rho", "kind":"ordered", "type":["numeric","scalar",">0"], "purpose":"density in g/cm^3"}
+    ]
 }
 }
