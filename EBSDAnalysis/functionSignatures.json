@@ -23,15 +23,6 @@
     ]
 },
 
-"EBSD.subsref":
-{
-    "inputs":
-    [
-      {"name":"ebsd", "kind":"required", "type":["EBSD"]},
-      {"name":"id", "kind":"namevalue", "type":["numeric"]}
-    ]
-},
-
 "grain2d.load":
 {
     "inputs":
