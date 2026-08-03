@@ -263,6 +263,67 @@ function out = position_indirect(raw_data)
   out = vector3d(x(:), y(:), 0);
 end
 
+function out = rotation_byMatrix(M, format)
+%MATRIXTOROTATION  Build a MTex rotation object from 3x3 orientation matrices.
+
+  if nargin < 1
+    error('matrixToRotation: no input given.');
+  end
+  if nargin < 2 || isempty(format)
+    format = 1;
+  end
+  if abs(format - 1) < 1e-9
+    format = 1;
+  elseif abs(format - pi/180) < 1e-6
+    format = pi/180;
+  else
+    error(['matrixToRotation: format must be 1 (radians) or pi/180 (degrees). ' ...
+           'Got %g.'], format);
+  end
+
+  % --- Normalize to 3x3xN ----------------------------------------------
+  M = ensure_3x3xN(M);
+
+  % --- Extract Bunge Euler angles --------------------------------------
+  %   g = R_z(phi1) * R_x(PHI) * R_z(phi2)
+  g33 = M(3,3,:);
+  g33 = max(min(g33, 1), -1);                 % numerical clamp
+  PHI  = acos(g33(:));
+  phi1 = atan2(M(3,1,:), -M(3,2,:));
+  phi2 = atan2(M(1,3,:),  M(2,3,:));
+
+  phi = [phi1(:), PHI(:), phi2(:)];           % N x 3
+
+  out = rotation.byEuler(phi * format);
+
+  function M3 = ensure_3x3xN(M)
+  %ENSURE_3X3XN  Coerce a 9xN, Nx9, 3x3 or 3x3xN array to 3x3xN.
+  if ndims(M) == 3 && size(M,1) == 3 && size(M,2) == 3
+    M3 = M;                                 % already 3x3xN
+    return
+  end
+  if ismatrix(M)
+    [h, w] = size(M);
+    if h == 3 && w == 3
+        M3 = reshape(M, 3, 3, 1);           % single matrix
+        return
+    end
+    if h == 9 && w > 1
+        % 9 x N: each COLUMN is one pixel's 9 values (column-major flat).
+        M3 = reshape(M, 3, 3, []);          % 9 -> 3x3 directly
+        return
+    end
+    if w == 9 && h > 1
+        % N x 9: each ROW is one pixel's 9 values (row-major flat).
+        M3 = permute(reshape(M', 3, 3, []), [2 1 3]);
+        return
+    end
+  end
+  error(['matrixToRotation: matrix must be 3x3, 3x3xN, 9xN or Nx9. ' ...
+         'Got size [%s].'], num2str(size(M)));
+  end
+end
+
 function out = rotation_euler(raw_data)
 
   fields = fieldnames(raw_data);
@@ -1110,12 +1171,20 @@ end
 function [raw_data, config_item] = fetch_from_cache(config_item, cache, options)
 % The data was read elsewhere before and stored in the cache
 
+  name = config_item.load.value;
+
   label = sprintf('├── %s', options.name);
-  pathLabel = sprintf('[Load from cache field: "%s"]', options.name);
+  pathLabel = sprintf('[Load from cache field: "%s"]', name);
   print_debug(label, pathLabel, options.level);
   
-  name = config_item.load.value;
-  raw_data = cache.(name);
+  parts = split(name, '.');
+  
+  data = cache;
+  for i = 1:numel(parts)
+      data = data.(parts{i});
+  end
+
+  raw_data = data;
 
 end
 

@@ -1,0 +1,54 @@
+{
+  "settings": {
+    "name": "EDAXH5",
+    "key_path": { "mode": "absolute", "value": "/Manufacturer"},
+    "manufacturer_keys": {"data": ".edaxh5"}
+  },
+  "ebsd": {
+    "type": "default",
+    "key": {"mode": "search_free", "value": "/EBSD"},
+    "ebsd_data": {"mode": "search_root", "value": "ANG/DATA/DATA", "safe": true},
+    "position": {
+      "type": "indirect",
+      "indirect": {
+        "step_size_x": { "mode": "search_free", "value": "/Sample/Step X"},
+        "step_size_y": { "mode": "search_free", "value": "/Sample/Step Y"},
+        "grid_size_y": { "mode": "search_free", "value": "/Sample/Number Of Rows"},
+        "grid_size_x": { "mode": "search_free", "value": "/Sample/Number Of Columns"}
+      }
+    },
+    "phase": {"load": {"value": "ebsd_data.Phase"}, "type": "default"},
+    "rotation": {"load": {"value": "ebsd_data.Orientations"}, "type": "byMatrix"},
+    "cs": {
+      "type": "default",
+      "key": { "mode": "search_root", "value": "Header/Phase" },
+      "multiple": true,
+      "default": {
+        "space_group": { "mode": "search_root", "value": "/Symmetry", "type": "default" },
+        "name": { "mode": "search_root", "value": "/Formula"},
+        "lattice": {
+          "angle": {
+            "type": "separate",
+            "lattice_alpha": { "mode": "search_root", "value": "Lattice Constant Alpha"},
+            "lattice_beta": { "mode": "search_root", "value": "Lattice Constant Beta"},
+            "lattice_gamma": { "mode": "search_root", "value": "Lattice Constant Gamma"}
+          },
+          "dim": {
+            "type": "separate",
+            "lattice_a": { "mode": "search_root", "value": "Lattice Constant A$"},
+            "lattice_b": { "mode": "search_root", "value": "Lattice Constant B$"},
+            "lattice_c": { "mode": "search_root", "value": "Lattice Constant C$"}
+          }
+        }
+      }
+    },
+    "header": {
+      "group": {"mode": "search_root", "value": "/ANG/HEADER"}
+    },
+    "unitCell": {
+      "type": "fromStep",
+        "step_size_x": { "mode": "search_free", "value": "/Sample/Step X"},
+        "step_size_y": { "mode": "search_free", "value": "/Sample/Step Y"}
+    }
+  }
+}
