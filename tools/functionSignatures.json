@@ -1,9 +1,15 @@
 {
+"_schemaVersion": "1.0.0",
+
+"_comment": "MTEX code suggestions for the sample data sets shipped with MTEX.",
+
 "mtexdata":
 {
     "inputs":
     [
-        {"name":"data", "kind":"flag",   "type":"choices=mtexdata"}
-     ]
+      {"name":"name", "kind":"ordered", "type":["char","choices=[mtexdata;{'all';'clear'}]"], "purpose":"name of the sample data set"},
+      {"name":"force", "kind":"flag", "purpose":"re-import even if a cached .mat file exists"},
+      {"name":"silent", "kind":"flag"}
+    ]
 }
 }

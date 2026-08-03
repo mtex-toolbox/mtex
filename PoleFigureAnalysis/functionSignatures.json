@@ -1,36 +1,195 @@
 {
+"_schemaVersion": "1.0.0",
+
+"_comment": "MTEX code suggestions for pole figure data and ODF reconstruction from pole figures.",
+
 "PoleFigure.load":
 {
     "inputs":
     [
-        {"name":"filename1", "kind":"required",   "type":"filepath"}
+      {"name":"fname", "kind":"required", "type":[["file"],["cell"]], "purpose":"file name or cell of file names"},
+      {"name":"h", "kind":"ordered", "type":[["Miller"],["cell"]], "purpose":"crystal directions"},
+      {"name":"CS", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"SS", "kind":"ordered", "type":["specimenSymmetry"]},
+      {"name":"superposition", "kind":"namevalue", "type":[["cell"],["numeric"]], "purpose":"structure coefficients of superposed pole figures"},
+      {"name":"background", "kind":"namevalue", "type":["numeric"]},
+      {"name":"interface", "kind":"namevalue", "type":["char"], "purpose":"force a specific import filter"},
+      {"name":"columnNames", "kind":"namevalue", "type":["cell"]},
+      {"name":"columns", "kind":"namevalue", "type":["numeric","vector"]}
+    ],
+    "outputs":
+    [
+      {"name":"pf", "type":"PoleFigure"}
     ]
 },
+
+"PoleFigure":
+{
+    "inputs":
+    [
+      {"name":"h", "kind":"required", "type":[["Miller"],["cell"]], "purpose":"crystal directions"},
+      {"name":"r", "kind":"required", "type":[["vector3d"],["cell"]], "purpose":"specimen directions"},
+      {"name":"intensities", "kind":"required", "type":[["numeric"],["cell"]], "purpose":"diffraction counts"},
+      {"name":"CS", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"SS", "kind":"ordered", "type":["specimenSymmetry"]},
+      {"name":"superposition", "kind":"namevalue", "type":[["cell"],["numeric"]]},
+      {"name":"background", "kind":"namevalue", "type":["numeric"]},
+      {"name":"antipodal", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"pf", "type":"PoleFigure"}
+    ]
+},
+
 "calcODF":
 {
     "inputs":
     [
-        {"name":"pf", "kind":"required",   "type":"PoleFigure"},
-        {"name":"halfwidth", "kind":"namevalue", "type":"double"},
-	{"name":"iterMax", "kind":"namevalue", "type":"double"},
-	{"name":"iterMin", "kind":"namevalue", "type":"double"},
-	{"name":"resolution", "kind":"namevalue", "type":"double"},
-        {"name":"kernel", "kind":"namevalue", "type":"kernel"},
-        {"name":"weights", "kind":"namevalue", "type":"double"},
-        {"name":"method", "kind":"flag", "type":"choices={'MLSM', 'WIMV', 'Bunge'}"},
-        {"name":"method2", "kind":"flag", "type":"choices={'zeroRange','noGhostCorrection'}"}
+      {"name":"pf", "kind":"required", "type":["PoleFigure"], "purpose":"pole figure data"},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"halfwidth of the ansatz functions"},
+      {"name":"kernel", "kind":"namevalue", "type":["SO3Kernel"], "purpose":"ansatz functions (default de la Vallee Poussin)"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"localization grid of the ansatz functions"},
+      {"name":"iterMax", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"maximum number of iterations (default 11)"},
+      {"name":"iterMin", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"minimum number of iterations (default 5)"},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"]},
+      {"name":"c0", "kind":"namevalue", "type":["numeric"], "purpose":"initial guess"},
+      {"name":"background", "kind":"namevalue", "type":["numeric","scalar"]},
+      {"name":"method", "kind":"flag", "type":["char","choices={'MLSM','WIMV','Bunge','FEM'}"]},
+      {"name":"zeroRange", "kind":"flag"},
+      {"name":"noGhostCorrection", "kind":"flag"},
+      {"name":"quadratureWeights", "kind":"flag"},
+      {"name":"ensure_descent", "kind":"flag"},
+      {"name":"force_iter_max", "kind":"flag"},
+      {"name":"silent", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"odf", "type":"SO3Fun"},
+      {"name":"alpha", "type":"double"}
     ]
 },
+
 "plot":
 {
     "inputs":
     [
-        {"name":"pf", "kind":"required",   "type":"PoleFigure"},
-        {"name":"minmax", "kind":"flag"},
-        {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices={'white', 'black','blue','green','red','flat','none'}"},
-        {"name":"MarkerSize", "kind":"namevalue", "type":"int8"},
-        {"name":"Marker", "kind":"namevalue", "type":"choices={'o', '.','none','x','s','d','p'}"},
-	{"name":"drawing", "kind":"flag", "type":"choices={'contour', 'contourf', 'smooth','scatter'}"}
+      {"name":"pf", "kind":"required", "type":["PoleFigure"]},
+      {"name":"contours", "kind":"namevalue", "type":["numeric"], "purpose":"number or list of contour levels"},
+      {"name":"Marker", "kind":"namevalue", "type":["char","choices={'o','.','none','x','s','d','p','^','v','+','*'}"]},
+      {"name":"MarkerSize", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"MarkerFaceColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"MarkerEdgeColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"projection", "kind":"namevalue", "type":["char","choices={'earea','edist','plain','eangle','orthographic','gnomonic','3d'}"]},
+      {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
+      {"name":"parent", "kind":"namevalue", "type":["matlab.graphics.axis.Axes"]},
+      {"name":"drawing", "kind":"flag", "type":["char","choices={'contour','contourf','smooth','scatter'}"]},
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
+      {"name":"minmax", "kind":"flag"},
+      {"name":"antipodal", "kind":"flag"}
+    ]
+},
+
+"plotDiff":
+{
+    "inputs":
+    [
+      {"name":"pf", "kind":"required", "type":["PoleFigure"]},
+      {"name":"ref", "kind":"required", "type":[["PoleFigure"],["SO3Fun"]], "purpose":"reference pole figure or ODF"},
+      {"name":"errorType", "kind":"flag", "type":["char","choices={'RP','l1','l2'}"]}
+    ]
+},
+
+"calcError":
+{
+    "inputs":
+    [
+      {"name":"pf", "kind":"required", "type":["PoleFigure"]},
+      {"name":"ref", "kind":"required", "type":[["PoleFigure"],["SO3Fun"]], "purpose":"reference pole figure or ODF"},
+      {"name":"errorType", "kind":"flag", "type":["char","choices={'RP','l1','l2'}"]}
+    ]
+},
+
+"calcPoleFigure":
+{
+    "inputs":
+    [
+      {"name":"pf", "kind":"required", "type":["PoleFigure"], "purpose":"measured pole figure defining the grid"},
+      {"name":"odf", "kind":"required", "type":["SO3Fun"]}
+    ],
+    "outputs":
+    [
+      {"name":"pf", "type":"PoleFigure"}
+    ]
+},
+
+"normalize":
+{
+    "inputs":
+    [
+      {"name":"pf", "kind":"required", "type":["PoleFigure"]},
+      {"name":"odf", "kind":"ordered", "type":["SO3Fun"]}
+    ]
+},
+
+"correct":
+{
+    "inputs":
+    [
+      {"name":"pf", "kind":"required", "type":["PoleFigure"]},
+      {"name":"background", "kind":"namevalue", "type":["PoleFigure"], "purpose":"background pole figure"},
+      {"name":"def", "kind":"namevalue", "type":["PoleFigure"], "purpose":"defocusing pole figure"},
+      {"name":"defbg", "kind":"namevalue", "type":["PoleFigure"], "purpose":"background of the defocusing pole figure"}
+    ]
+},
+
+"select":
+{
+    "inputs":
+    [
+      {"name":"pf", "kind":"required", "type":["PoleFigure"]},
+      {"name":"ind", "kind":"required", "type":[["numeric"],["logical"]], "purpose":"indices of the pole figures to select"}
+    ]
+},
+
+"scale":
+{
+    "inputs":
+    [
+      {"name":"pf", "kind":"required", "type":["PoleFigure"]},
+      {"name":"alpha", "kind":"required", "type":["numeric"], "purpose":"scaling factor"}
+    ]
+},
+
+"noisepf":
+{
+    "inputs":
+    [
+      {"name":"pf", "kind":"required", "type":["PoleFigure"]},
+      {"name":"alpha", "kind":"required", "type":["numeric","scalar"], "purpose":"uniform radiation"},
+      {"name":"bg", "kind":"ordered", "type":["numeric","scalar"], "purpose":"background radiation"},
+      {"name":"nonnegative", "kind":"flag"}
+    ]
+},
+
+"findOutlier":
+{
+    "inputs":
+    [
+      {"name":"pf", "kind":"required", "type":["PoleFigure"]},
+      {"name":"delta", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"factor", "kind":"namevalue", "type":["numeric","scalar",">0"]}
+    ]
+},
+
+"export":
+{
+    "inputs":
+    [
+      {"name":"pf", "kind":"required", "type":["PoleFigure"]},
+      {"name":"fname", "kind":"required", "type":["char"]},
+      {"name":"degree", "kind":"flag", "purpose":"theta / rho output in degree instead of radians"}
     ]
 }
 }

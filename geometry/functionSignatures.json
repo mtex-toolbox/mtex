@@ -1,33 +1,27 @@
 {
+"_schemaVersion": "1.0.0",
+
+"_comment": "MTEX code suggestions for the geometric core classes - vectors, Miller indices, rotations, orientations, symmetries and fibres.",
 
 "crystalSymmetry":
 {
     "inputs":
     [
-        {"name":"pointGroup", "kind":"required", "type":"choices={'1','211','121','112','222','3','321','312','4','422','6','622','23','432'}"},
-	{"name":"mineral", "kind":"namevalue", "type":"char"}
-     ]
-},
-
-"vector3d":
-{
-    "inputs":
+      {"name":"pointGroup", "kind":"ordered", "type":["char","choices=unique([{symmetry.pointGroups.Inter},{symmetry.pointGroups.Schoen},cellfun(@char,{symmetry.pointGroups.lattice},'UniformOutput',false)])"], "purpose":"International or Schoenflies symbol"},
+      {"name":"axes", "kind":"ordered", "type":["numeric","vector","numel=3"], "purpose":"[a b c] length of the crystallographic axes"},
+      {"name":"angles", "kind":"ordered", "type":["numeric","vector","numel=3"], "purpose":"[alpha beta gamma] between the axes"},
+      {"name":"mineral", "kind":"namevalue", "type":["char"], "purpose":"mineral name"},
+      {"name":"color", "kind":"namevalue", "type":["choices=str2rgb"], "purpose":"color used in EBSD phase plots"},
+      {"name":"density", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"LaueId", "kind":"namevalue", "type":["numeric","scalar","integer",">0","<=11"]},
+      {"name":"SpaceId", "kind":"namevalue", "type":["numeric","scalar","integer",">0","<=230"]},
+      {"name":"pointId", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
+      {"name":"rotAxes", "kind":"namevalue", "type":["rotation"]},
+      {"name":"alignment", "kind":"flag", "type":["char","choices={'X||a*, Z||c','X||a, Z||c*','X||b*, Z||c','X||b, Z||c*'}"], "purpose":"alignment of the Cartesian to the crystal coordinate system"}
+    ],
+    "outputs":
     [
-        {"name":"x", "kind":"ordered",   "type":"double"},
-        {"name":"y", "kind":"ordered",   "type":"double"},
-        {"name":"z", "kind":"ordered",   "type":"double"},
-        {"name":"antipodal_flag", "kind":"flag", "type":"choices={'antipodal'}"}
-    ]
-},
-
-
-"vector3d.load":
-{
-    "inputs":
-    [
-        {"name":"filename1", "kind":"required",   "type":"filepath"},
-        {"name":"columnNames", "kind":"namevalue", "type":"cell"},
-      	{"name":"columns", "kind":"namevalue", "type":"double"}
+      {"name":"cs", "type":"crystalSymmetry"}
     ]
 },
 
@@ -35,126 +29,501 @@
 {
     "inputs":
     [
-        {"name":"filename1", "kind":"required", "type":"choices=arrayfun(@(x) getfield(x,'name'),dir([mtexCifPath filesep '*.cif']),'uniformOutput',false)"}
-     ]
+      {"name":"fname", "kind":"required", "type":["char","choices=arrayfun(@(x) getfield(x,'name'),dir([mtexCifPath filesep '*.cif']),'uniformOutput',false)"], "purpose":"cif file"},
+      {"name":"mineral", "kind":"namevalue", "type":["char"]},
+      {"name":"color", "kind":"namevalue", "type":["choices=str2rgb"]}
+    ]
+},
+
+"specimenSymmetry":
+{
+    "inputs":
+    [
+      {"name":"pointGroup", "kind":"ordered", "type":["char","choices={'1','-1','triclinic','2','2/m','monoclinic','222','mmm','orthorhombic','4/mmm','6/mmm'}"], "purpose":"usually triclinic or orthorhombic"}
+    ],
+    "outputs":
+    [
+      {"name":"ss", "type":"specimenSymmetry"}
+    ]
+},
+
+"vector3d":
+{
+    "inputs":
+    [
+      {"name":"x", "kind":"ordered", "type":["numeric"]},
+      {"name":"y", "kind":"ordered", "type":["numeric"]},
+      {"name":"z", "kind":"ordered", "type":["numeric"]},
+      {"name":"antipodal", "kind":"flag", "type":["char","choices={'antipodal'}"]}
+    ],
+    "outputs":
+    [
+      {"name":"v", "type":"vector3d"}
+    ]
+},
+
+"vector3d.byPolar":
+{
+    "inputs":
+    [
+      {"name":"theta", "kind":"required", "type":["numeric"], "purpose":"polar angle"},
+      {"name":"rho", "kind":"required", "type":["numeric"], "purpose":"azimuth angle"},
+      {"name":"r", "kind":"ordered", "type":["numeric"], "purpose":"radius"},
+      {"name":"antipodal", "kind":"flag", "type":["char","choices={'antipodal'}"]}
+    ]
+},
+
+"vector3d.load":
+{
+    "inputs":
+    [
+      {"name":"fname", "kind":"required", "type":["file=*.txt,*.csv,*.dat"]},
+      {"name":"columnNames", "kind":"namevalue", "type":["cell"], "purpose":"e.g. {'x','y','z'} or {'polar angle','azimuth'}"},
+      {"name":"columns", "kind":"namevalue", "type":["numeric","vector"]},
+      {"name":"delimiter", "kind":"namevalue", "type":["char"]},
+      {"name":"header", "kind":"namevalue", "type":["numeric","scalar",">=0"]},
+      {"name":"radians", "kind":"flag"}
+    ]
+},
+
+"Miller":
+{
+    "inputs":
+    [
+      {"name":"h", "kind":"required", "type":[["numeric"],["char"],["cell"],["vector3d"]], "purpose":"index, '(hkl)' string or vector3d"},
+      {"name":"k", "kind":"ordered", "type":[["numeric"],["cell"]]},
+      {"name":"l", "kind":"ordered", "type":[["numeric"],["cell"]]},
+      {"name":"w", "kind":"ordered", "type":[["numeric"],["cell"]], "purpose":"fourth index for hkil / UVTW"},
+      {"name":"cs", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"dispStyle", "kind":"flag", "type":["char","choices={'hkl','uvw','hkil','UVTW'}"]},
+      {"name":"antipodal", "kind":"flag", "type":["char","choices={'antipodal'}"]}
+    ],
+    "outputs":
+    [
+      {"name":"m", "type":"Miller"}
+    ]
 },
 
 "orientation":
 {
     "inputs":
     [
-        {"name":"map", "kind":"namevalue", "type":"vector3d"},
-        {"name":"Euler", "kind":"namevalue", "type":"double"},
-        {"name":"axis", "kind":"namevalue", "type":"double"},
-        {"name":"angle", "kind":"namevalue", "type":"double"},
-        {"name":"matrix", "kind":"namevalue", "type":"double"},
-        {"name":"reflection", "kind":"namevalue", "type":"double"},
-        {"name":"mirroring", "kind":"namevalue", "type":"double"},
-        {"name":"inversion", "kind":"namevalue", "type":"double"},
-        {"name":"rodrigues", "kind":"namevalue", "type":"double"},
-        {"name":"antipodal", "kind":"flag", "type":"choices={'antipodal'}"}
+      {"name":"rot", "kind":"required", "type":[["rotation"],["quaternion"],["numeric"]]},
+      {"name":"cs", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"ss", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]},
+      {"name":"antipodal", "kind":"flag", "type":["char","choices={'antipodal'}"]}
+    ],
+    "outputs":
+    [
+      {"name":"ori", "type":"orientation"}
     ]
 },
+
+"orientation.byEuler":
+{
+    "inputs":
+    [
+      {"name":"phi1", "kind":"required", "type":["numeric"]},
+      {"name":"Phi", "kind":"required", "type":["numeric"]},
+      {"name":"phi2", "kind":"required", "type":["numeric"]},
+      {"name":"cs", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"ss", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]},
+      {"name":"convention", "kind":"flag", "type":["char","choices={'ZYZ','ZXZ','Bunge','ABG','nfft'}"]}
+    ]
+},
+
+"orientation.byAxisAngle":
+{
+    "inputs":
+    [
+      {"name":"v", "kind":"required", "type":["vector3d"], "purpose":"rotational axis"},
+      {"name":"omega", "kind":"required", "type":["numeric"], "purpose":"rotational angle"},
+      {"name":"cs", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"ss", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]}
+    ]
+},
+
+"orientation.byMatrix":
+{
+    "inputs":
+    [
+      {"name":"A", "kind":"required", "type":["numeric"], "purpose":"3x3xN rotation matrices"},
+      {"name":"cs", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"ss", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]}
+    ]
+},
+
+"orientation.byMiller":
+{
+    "inputs":
+    [
+      {"name":"hkl", "kind":"required", "type":["numeric","vector"]},
+      {"name":"uvw", "kind":"required", "type":["numeric","vector"]},
+      {"name":"cs", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"ss", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]}
+    ]
+},
+
+"orientation.byRodrigues":
+{
+    "inputs":
+    [
+      {"name":"v", "kind":"required", "type":[["vector3d"],["numeric"]]},
+      {"name":"cs", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"ss", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]}
+    ]
+},
+
+"orientation.map":
+{
+    "inputs":
+    [
+      {"name":"u1", "kind":"required", "type":["vector3d"]},
+      {"name":"v1", "kind":"required", "type":["vector3d"]},
+      {"name":"u2", "kind":"ordered", "type":["vector3d"]},
+      {"name":"v2", "kind":"ordered", "type":["vector3d"]},
+      {"name":"cs", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"ss", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]}
+    ]
+},
+
+"orientation.rand":
+{
+    "inputs":
+    [
+      {"name":"n", "kind":"ordered", "type":["numeric","scalar","integer",">0"]},
+      {"name":"cs", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"ss", "kind":"ordered", "type":[["specimenSymmetry"],["crystalSymmetry"]]}
+    ]
+},
+
+"orientation.load":
+{
+    "inputs":
+    [
+      {"name":"fname", "kind":"required", "type":["file=*.txt,*.csv,*.dat"]},
+      {"name":"cs", "kind":"ordered", "type":["crystalSymmetry"]},
+      {"name":"ss", "kind":"ordered", "type":["specimenSymmetry"]},
+      {"name":"columnNames", "kind":"namevalue", "type":["cell"], "purpose":"mandatory are Euler 1, Euler 2, Euler 3"},
+      {"name":"columns", "kind":"namevalue", "type":["numeric","vector"]},
+      {"name":"delimiter", "kind":"namevalue", "type":["char"]},
+      {"name":"header", "kind":"namevalue", "type":["numeric","scalar",">=0"]},
+      {"name":"convention", "kind":"flag", "type":["char","choices={'Bunge','ABG','radians','passive'}"]}
+    ]
+},
+
 "rotation":
 {
     "inputs":
     [
-        {"name":"map", "kind":"namevalue", "type":"vector3d"},
-        {"name":"Euler", "kind":"namevalue", "type":"double"},
-        {"name":"axis", "kind":"namevalue", "type":"double"},
-        {"name":"angle", "kind":"namevalue", "type":"double"},
-        {"name":"matrix", "kind":"namevalue", "type":"double"},
-        {"name":"reflection", "kind":"namevalue", "type":"double"},
-        {"name":"mirroring", "kind":"namevalue", "type":"double"},
-        {"name":"inversion", "kind":"namevalue", "type":"double"},
-        {"name":"rodrigues", "kind":"namevalue", "type":"double"},
-        {"name":"antipodal", "kind":"flag", "type":"choices={'antipodal'}"}
+      {"name":"q", "kind":"required", "type":[["quaternion"],["numeric"]]},
+      {"name":"antipodal", "kind":"flag", "type":["char","choices={'antipodal'}"]}
+    ],
+    "outputs":
+    [
+      {"name":"rot", "type":"rotation"}
     ]
 },
-"calcODF":
+
+"rotation.byEuler":
 {
     "inputs":
     [
-        {"name":"ori", "kind":"required",   "type":"orientation"},
-        {"name":"halfwidth", "kind":"namevalue", "type":"double"},
-        {"name":"kernel", "kind":"namevalue", "type":"kernel"},
-        {"name":"weights", "kind":"namevalue", "type":"double"},
-        {"name":"resolution", "kind":"namevalue", "type":"double"},
-        {"name":"order", "kind":"namevalue", "type":"double"},
-        {"name":"method", "kind":"flag", "type":"choices={'Fourier', 'Bingham', 'noFourier'}"},
-        {"name":"method2", "kind":"flag", "type":"choices={'exact'}"}
+      {"name":"phi1", "kind":"required", "type":["numeric"]},
+      {"name":"Phi", "kind":"required", "type":["numeric"]},
+      {"name":"phi2", "kind":"required", "type":["numeric"]},
+      {"name":"convention", "kind":"flag", "type":["char","choices={'ZYZ','ZXZ','Bunge','ABG','nfft'}"]}
     ]
 },
+
+"rotation.byAxisAngle":
+{
+    "inputs":
+    [
+      {"name":"v", "kind":"required", "type":["vector3d"], "purpose":"rotational axis"},
+      {"name":"omega", "kind":"required", "type":["numeric"], "purpose":"rotational angle"}
+    ]
+},
+
+"rotation.byMatrix":
+{
+    "inputs":
+    [
+      {"name":"A", "kind":"required", "type":["numeric"], "purpose":"3x3xN rotation matrices"}
+    ]
+},
+
+"rotation.map":
+{
+    "inputs":
+    [
+      {"name":"u1", "kind":"required", "type":["vector3d"]},
+      {"name":"v1", "kind":"required", "type":["vector3d"]},
+      {"name":"u2", "kind":"ordered", "type":["vector3d"]},
+      {"name":"v2", "kind":"ordered", "type":["vector3d"]}
+    ]
+},
+
+"fibre":
+{
+    "inputs":
+    [
+      {"name":"o1", "kind":"required", "type":[["orientation"],["Miller"],["vector3d"]], "purpose":"start orientation or crystal direction h"},
+      {"name":"o2", "kind":"required", "type":[["orientation"],["vector3d"]], "purpose":"end orientation or specimen direction r"},
+      {"name":"r", "kind":"ordered", "type":["vector3d"]},
+      {"name":"full", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"f", "type":"fibre"}
+    ]
+},
+
+"calcDensity":
+{
+    "inputs":
+    [
+      {"name":"ori", "kind":"required", "type":[["orientation"],["rotation"]], "purpose":"orientations"},
+      {"name":"S3G", "kind":"ordered", "type":["orientation"], "purpose":"evaluation grid"},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"halfwidth of the kernel (default 10 degree)"},
+      {"name":"kernel", "kind":"namevalue", "type":["SO3Kernel"], "purpose":"e.g. SO3DeLaValleePoussinKernel"},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"], "purpose":"weight of each orientation"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"order", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"harmonic degree"},
+      {"name":"method", "kind":"flag", "type":["char","choices={'Fourier','noFourier','Bingham','exact'}"]},
+      {"name":"silent", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"odf", "type":"SO3Fun"}
+    ]
+},
+
+"calcDensity":
+{
+    "inputs":
+    [
+      {"name":"v", "kind":"required", "type":["vector3d"], "purpose":"directions"},
+      {"name":"S2G", "kind":"ordered", "type":["vector3d"], "purpose":"evaluation grid"},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"halfwidth of the kernel (default 10 degree)"},
+      {"name":"kernel", "kind":"namevalue", "type":["S2Kernel"]},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"]},
+      {"name":"antipodal", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"sF", "type":"S2Fun"}
+    ]
+},
+
+"calcCluster":
+{
+    "inputs":
+    [
+      {"name":"ori", "kind":"required", "type":[["orientation"],["vector3d"]]},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"numCluster", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
+      {"name":"maxAngle", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"method", "kind":"namevalue", "type":["char","choices={'hierarchical','odf'}"]}
+    ]
+},
+
+"calcKernel":
+{
+    "inputs":
+    [
+      {"name":"ori", "kind":"required", "type":["orientation"]},
+      {"name":"method", "kind":"flag", "type":["char","choices={'RuleOfThumb','LSCV','KLCV','BCV'}"]}
+    ]
+},
+
 "plot":
 {
     "inputs":
     [
-        {"name":"ori", "kind":"required",   "type":"orientation"},
-        {"name":"antipodal", "kind":"flag", "type":"choices={'antipodal'}"},
-        {"name":"MarkerColor", "kind":"namevalue", "type":"choices=str2rgb"},
-        {"name":"MarkerFaceColor", "kind":"namevalue", "type":"choices=str2rgb"},
-        {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices=str2rgb"},
-        {"name":"MarkerEdgeAlpha", "kind":"namevalue", "type":"double"},
-        {"name":"MarkerFaceAlpha", "kind":"namevalue", "type":"double"},
-        {"name":"MarkerSize", "kind":"namevalue", "type":"int8"},
-        {"name":"Marker", "kind":"namevalue", "type":"choices={'o', '.','none','x','s','d','p'}"},
-        {"name":"label", "kind":"namevalue", "type":"string"},
-        {"name":"backgroundColor", "kind":"namevalue", "type":"choices=str2rgb"}
+      {"name":"v", "kind":"required", "type":[["vector3d"],["Miller"]], "purpose":"directions"},
+      {"name":"data", "kind":"ordered", "type":["numeric"], "purpose":"values or RGB colors"},
+      {"name":"Marker", "kind":"namevalue", "type":["char","choices={'o','.','none','x','s','d','p','^','v','+','*'}"]},
+      {"name":"MarkerSize", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"MarkerColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"MarkerFaceColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"MarkerEdgeColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"MarkerFaceAlpha", "kind":"namevalue", "type":["numeric","scalar",">=0","<=1"]},
+      {"name":"MarkerEdgeAlpha", "kind":"namevalue", "type":["numeric","scalar",">=0","<=1"]},
+      {"name":"label", "kind":"namevalue", "type":[["char"],["cell"],["string"]]},
+      {"name":"backgroundColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"DisplayName", "kind":"namevalue", "type":["char"]},
+      {"name":"contours", "kind":"namevalue", "type":["numeric"], "purpose":"number or list of contour levels"},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"kernel halfwidth used by 'smooth'"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"projection", "kind":"namevalue", "type":["char","choices={'earea','edist','plain','eangle','orthographic','gnomonic','3d'}"]},
+      {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
+      {"name":"parent", "kind":"namevalue", "type":["matlab.graphics.axis.Axes"]},
+      {"name":"drawing", "kind":"flag", "type":["char","choices={'smooth','contour','contourf','pcolor','scatter','line','surf'}"]},
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
+      {"name":"antipodal", "kind":"flag"},
+      {"name":"grid", "kind":"flag"},
+      {"name":"noTitle", "kind":"flag"}
     ]
 },
+
 "plot":
 {
     "inputs":
     [
-        {"name":"vec", "kind":"required", "type":"vector3d"},
-        {"name":"antipodal", "kind":"flag"},
-        {"name":"contourf", "kind":"flag"},
-        {"name":"MarkerColor", "kind":"namevalue", "type":"choices=str2rgb"},
-        {"name":"MarkerFaceColor", "kind":"namevalue", "type":"choices=str2rgb"},
-        {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices=str2rgb"},
-        {"name":"MarkerEdgeAlpha", "kind":"namevalue", "type":"double"},
-        {"name":"MarkerFaceAlpha", "kind":"namevalue", "type":"double"},
-        {"name":"MarkerSize", "kind":"namevalue", "type":"int8"},
-        {"name":"Marker", "kind":"namevalue", "type":"choices={'o', '.','none','x','s','d','p'}"},
-        {"name":"label", "kind":"namevalue", "type":"string"},
-        {"name":"backgroundColor", "kind":"namevalue", "type":"choices=str2rgb"},
-	      {"name":"grid", "kind":"flag"},
-	      {"name":"hemisphere", "kind":"flag", "type":"choices={'upper','lower'}"}
+      {"name":"ori", "kind":"required", "type":["orientation"], "purpose":"orientations"},
+      {"name":"data", "kind":"ordered", "type":["numeric"]},
+      {"name":"Marker", "kind":"namevalue", "type":["char","choices={'o','.','none','x','s','d','p','^','v','+','*'}"]},
+      {"name":"MarkerSize", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"MarkerColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"MarkerFaceColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"MarkerEdgeColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"MarkerFaceAlpha", "kind":"namevalue", "type":["numeric","scalar",">=0","<=1"]},
+      {"name":"MarkerEdgeAlpha", "kind":"namevalue", "type":["numeric","scalar",">=0","<=1"]},
+      {"name":"label", "kind":"namevalue", "type":[["char"],["cell"],["string"]]},
+      {"name":"backgroundColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"DisplayName", "kind":"namevalue", "type":["char"]},
+      {"name":"projection", "kind":"namevalue", "type":["char","choices={'axisAngle','Rodrigues','Euler','homochoric','quaternion','ipdf'}"]},
+      {"name":"antipodal", "kind":"flag"}
     ]
 },
+
 "plotPDF":
 {
     "inputs":
     [
-        {"name":"ori", "kind":"required",   "type":"orientation"},
-        {"name":"antipodal", "kind":"flag", "type":"choices={'antipodal'}"},
-        {"name":"MarkerColor", "kind":"namevalue", "type":"choices=str2rgb"},
-        {"name":"MarkerFaceColor", "kind":"namevalue", "type":"choices=str2rgb"},
-        {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices=str2rgb"},
-        {"name":"MarkerSize", "kind":"namevalue", "type":"int8"},
-        {"name":"MarkerEdgeAlpha", "kind":"namevalue", "type":"double"},
-        {"name":"MarkerFaceAlpha", "kind":"namevalue", "type":"double"},
-        {"name":"Marker", "kind":"namevalue", "type":"choices={'o', '.','none','x','s','d','p'}"},
-        {"name":"label", "kind":"namevalue", "type":"string"},
-        {"name":"backgroundColor", "kind":"namevalue", "type":"choices=str2rgb"}
+      {"name":"ori", "kind":"required", "type":[["orientation"],["SO3Fun"],["fibre"]], "purpose":"orientations, ODF or fibre"},
+      {"name":"h", "kind":"required", "type":["Miller"], "purpose":"crystal directions"},
+      {"name":"data", "kind":"ordered", "type":["numeric"]},
+      {"name":"points", "kind":"namevalue", "type":[["numeric","scalar",">0"],["char","choices={'all'}"]], "purpose":"number of points to be plotted"},
+      {"name":"superposition", "kind":"namevalue", "type":["cell"]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"contours", "kind":"namevalue", "type":["numeric"]},
+      {"name":"Marker", "kind":"namevalue", "type":["char","choices={'o','.','none','x','s','d','p','^','v','+','*'}"]},
+      {"name":"MarkerSize", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"MarkerColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"MarkerFaceColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"MarkerEdgeColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
+      {"name":"drawing", "kind":"flag", "type":["char","choices={'smooth','contour','contourf','scatter'}"]},
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
+      {"name":"antipodal", "kind":"flag"},
+      {"name":"noTitle", "kind":"flag"},
+      {"name":"noSymmetry", "kind":"flag"},
+      {"name":"filled", "kind":"flag"}
     ]
 },
+
 "plotIPDF":
 {
     "inputs":
     [
-        {"name":"ori", "kind":"required",   "type":"orientation"},
-        {"name":"antipodal", "kind":"flag", "type":"choices={'antipodal'}"},
-        {"name":"MarkerColor", "kind":"namevalue", "type":"choices=str2rgb"},
-        {"name":"MarkerFaceColor", "kind":"namevalue", "type":"choices=str2rgb"},
-        {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices=str2rgb"},
-        {"name":"MarkerSize", "kind":"namevalue", "type":"int8"},
-        {"name":"MarkerEdgeAlpha", "kind":"namevalue", "type":"double"},
-        {"name":"MarkerFaceAlpha", "kind":"namevalue", "type":"double"},
-        {"name":"Marker", "kind":"namevalue", "type":"choices={'o', '.','none','x','s','d','p'}"},
-        {"name":"label", "kind":"namevalue", "type":"string"},
-        {"name":"backgroundColor", "kind":"namevalue", "type":"choices=str2rgb"}
+      {"name":"ori", "kind":"required", "type":[["orientation"],["SO3Fun"],["fibre"]], "purpose":"orientations, ODF or fibre"},
+      {"name":"r", "kind":"required", "type":["vector3d"], "purpose":"specimen directions"},
+      {"name":"data", "kind":"ordered", "type":["numeric"]},
+      {"name":"points", "kind":"namevalue", "type":[["numeric","scalar",">0"],["char","choices={'all'}"]]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"contours", "kind":"namevalue", "type":["numeric"]},
+      {"name":"property", "kind":"namevalue", "type":["numeric"], "purpose":"user defined color coding"},
+      {"name":"Marker", "kind":"namevalue", "type":["char","choices={'o','.','none','x','s','d','p','^','v','+','*'}"]},
+      {"name":"MarkerSize", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"MarkerColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"MarkerFaceColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"MarkerEdgeColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
+      {"name":"drawing", "kind":"flag", "type":["char","choices={'smooth','contour','contourf','scatter'}"]},
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
+      {"name":"antipodal", "kind":"flag"},
+      {"name":"filled", "kind":"flag"}
+    ]
+},
+
+"plotSection":
+{
+    "inputs":
+    [
+      {"name":"ori", "kind":"required", "type":[["orientation"],["SO3Fun"],["fibre"]], "purpose":"orientations or ODF"},
+      {"name":"data", "kind":"ordered", "type":["numeric"]},
+      {"name":"sections", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"number of sections"},
+      {"name":"points", "kind":"namevalue", "type":[["numeric","scalar",">0"],["char","choices={'all'}"]]},
+      {"name":"contours", "kind":"namevalue", "type":["numeric"]},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
+      {"name":"sectionType", "kind":"flag", "type":["char","choices={'phi2','phi1','sigma','omega','axisAngle'}"]},
+      {"name":"drawing", "kind":"flag", "type":["char","choices={'smooth','contour','contourf','scatter'}"]},
+      {"name":"all", "kind":"flag"}
+    ]
+},
+
+"scatter":
+{
+    "inputs":
+    [
+      {"name":"v", "kind":"required", "type":[["vector3d"],["Miller"],["orientation"]]},
+      {"name":"data", "kind":"ordered", "type":["numeric"]},
+      {"name":"Marker", "kind":"namevalue", "type":["char","choices={'o','.','none','x','s','d','p','^','v','+','*'}"]},
+      {"name":"MarkerSize", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"MarkerColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"MarkerFaceColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"MarkerEdgeColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"label", "kind":"namevalue", "type":[["char"],["cell"],["string"]]},
+      {"name":"DisplayName", "kind":"namevalue", "type":["char"]},
+      {"name":"antipodal", "kind":"flag"},
+      {"name":"filled", "kind":"flag"}
+    ]
+},
+
+"contourf":
+{
+    "inputs":
+    [
+      {"name":"v", "kind":"required", "type":[["vector3d"],["Miller"]]},
+      {"name":"data", "kind":"ordered", "type":["numeric"]},
+      {"name":"contours", "kind":"namevalue", "type":["numeric"], "purpose":"number or list of contour levels"},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"LineColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"LineWidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"antipodal", "kind":"flag"}
+    ]
+},
+
+"quiver":
+{
+    "inputs":
+    [
+      {"name":"v", "kind":"required", "type":[["vector3d"],["Miller"],["orientation"]]},
+      {"name":"d", "kind":"required", "type":[["vector3d"],["Miller"]], "purpose":"directions to be plotted"},
+      {"name":"Color", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"LineWidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"MaxHeadSize", "kind":"namevalue", "type":["numeric","scalar",">=0"]},
+      {"name":"autoScaleFactor", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"arrowSize", "kind":"namevalue", "type":["numeric","scalar",">=0"]},
+      {"name":"antipodal", "kind":"flag"},
+      {"name":"centered", "kind":"flag"}
+    ]
+},
+
+"text":
+{
+    "inputs":
+    [
+      {"name":"v", "kind":"required", "type":[["vector3d"],["Miller"],["orientation"]]},
+      {"name":"str", "kind":"required", "type":[["char"],["cell"],["string"]]},
+      {"name":"Color", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"backgroundColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"FontSize", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"horizontalAlignment", "kind":"namevalue", "type":["char","choices={'left','center','right'}"]},
+      {"name":"verticalAlignment", "kind":"namevalue", "type":["char","choices={'top','cap','middle','baseline','bottom'}"]}
+    ]
+},
+
+"symmetrise":
+{
+    "inputs":
+    [
+      {"name":"obj", "kind":"required", "type":[["vector3d"],["Miller"],["orientation"],["tensor"]]},
+      {"name":"antipodal", "kind":"flag"},
+      {"name":"unique", "kind":"flag"}
     ]
 }
-
 }

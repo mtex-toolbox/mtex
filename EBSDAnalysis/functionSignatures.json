@@ -1,21 +1,37 @@
 {
+"_schemaVersion": "1.0.0",
+
+"_comment": "MTEX code suggestions for EBSD data, grains and grain boundaries. Overloaded functions are declared once per class - MATLAB picks the signature whose first input type matches.",
+
 "EBSD.load":
 {
     "inputs":
     [
-      {"name":"filename1", "kind":"required", "type": "file=*.ctf,*.ang,*.h5oina,*.h5,*.crc,*.osc,*.hdf5,*.oh5"},
-      {"name":"columnNames", "kind":"namevalue", "type":"cell"},
-      {"name":"columns", "kind":"namevalue", "type":"double"},
-      {"name":"interface", "kind":"namevalue", "type":"double"}
+      {"name":"fname", "kind":"required", "type":["file=*.ang,*.ctf,*.crc,*.cpr,*.osc,*.h5,*.hdf5,*.h5oina,*.oh5,*.dream3d,*.txt,*.csv,*.mat"], "purpose":"file name"},
+      {"name":"CS", "kind":"namevalue", "type":[["crystalSymmetry"],["cell"]], "purpose":"crystal symmetry / phase list"},
+      {"name":"interface", "kind":"namevalue", "type":["char","choices={'ang','ctf','crc','cpr','osc','h5','hdf5','h5oina','oh5','dream3d','generic'}"], "purpose":"force a specific import filter"},
+      {"name":"columnNames", "kind":"namevalue", "type":["cell"], "purpose":"names of the columns to import"},
+      {"name":"columns", "kind":"namevalue", "type":["numeric","vector"], "purpose":"positions of the columns to import"},
+      {"name":"header", "kind":"namevalue", "type":["numeric","scalar",">=0"], "purpose":"number of header lines"},
+      {"name":"delimiter", "kind":"namevalue", "type":["char"], "purpose":"delimiter between numbers"},
+      {"name":"EulerCorrection", "kind":"namevalue", "type":["rotation"], "purpose":"rotation applied to the Euler angles"},
+      {"name":"convention", "kind":"flag", "type":["char","choices={'Bunge','ABG','passive','radians','convertSpatial2EulerReferenceFrame','convertEuler2SpatialReferenceFrame'}"]}
+    ],
+    "outputs":
+    [
+      {"name":"ebsd", "type":"EBSD"}
     ]
 },
 
-"EBSD.subsref":
+"grain2d.load":
 {
     "inputs":
     [
-        {"name":"ebsd", "kind":"required",   "type":"EBSD"},
-	      {"name":"id", "kind":"namevalue", "type":"double"}
+      {"name":"fname", "kind":"required", "type":["file=*.tess"], "purpose":"Neper tessellation file"}
+    ],
+    "outputs":
+    [
+      {"name":"grains", "type":"grain2d"}
     ]
 },
 
@@ -23,7 +39,13 @@
 {
     "inputs":
     [
-      {"name":"filename1", "kind":"required",   "type":"filepath"}
+      {"name":"fname", "kind":"required", "type":["file=*.tess,*.dream3d"], "purpose":"Neper or DREAM.3D file"},
+      {"name":"CS", "kind":"namevalue", "type":[["crystalSymmetry"],["cell"]], "purpose":"crystal symmetry / phase list"},
+      {"name":"interface", "kind":"namevalue", "type":["char","choices={'neper','dream3d'}"]}
+    ],
+    "outputs":
+    [
+      {"name":"grains", "type":"grain3d"}
     ]
 },
 
@@ -31,66 +53,379 @@
 {
     "inputs":
     [
-      {"name":"ebsd", "kind":"required",   "type":"EBSD"},
-      {"name":"angle", "kind":"namevalue", "type":"double"},
-      {"name":"minPixel", "kind":"namevalue", "type":"double"},
-      {"name":"alpha", "kind":"namevalue", "type":"double"}
+      {"name":"ebsd", "kind":"required", "type":["EBSD"], "purpose":"EBSD data"},
+      {"name":"angle", "kind":"namevalue", "type":[["numeric"],["cell"]], "purpose":"misorientation angle indicating a grain boundary"},
+      {"name":"threshold", "kind":"namevalue", "type":[["numeric"],["cell"]], "purpose":"synonym for angle"},
+      {"name":"minPixel", "kind":"namevalue", "type":["numeric","scalar",">=0"], "purpose":"minimum number of pixels forming a grain"},
+      {"name":"alpha", "kind":"namevalue", "type":["numeric","scalar",">=0"], "purpose":"fill distance into not indexed regions"},
+      {"name":"custom", "kind":"namevalue", "type":["numeric"], "purpose":"custom property used for grain separation"},
+      {"name":"soft", "kind":"namevalue", "type":["numeric","vector"], "purpose":"[angle delta] soft threshold"},
+      {"name":"mcl", "kind":"namevalue", "type":["numeric","vector"], "purpose":"[inflationPower maxIt] Markovian clustering"},
+      {"name":"variants", "kind":"namevalue", "type":["numeric"], "purpose":"variant id per pixel"},
+      {"name":"boundary", "kind":"namevalue", "type":["char","choices={'tight','convexhull'}"]},
+      {"name":"method", "kind":"flag", "type":["char","choices={'fmc','mcl','unitCell','qhull','delaunay'}"], "purpose":"segmentation / decomposition method"},
+      {"name":"removeQuadruplePoints", "kind":"flag"},
+      {"name":"verbose", "kind":"flag"}
+    ],
+    "outputs":
+    [
+      {"name":"grains", "type":"grain2d"},
+      {"name":"ebsd", "type":"EBSD"}
     ]
 },
+
+"plot":
+{
+    "inputs":
+    [
+      {"name":"ebsd", "kind":"required", "type":["EBSD"], "purpose":"EBSD data"},
+      {"name":"color", "kind":"ordered", "type":[["numeric"],["orientation"],["crystalShape"]], "purpose":"property, RGB values or orientations"},
+      {"name":"FaceColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"FaceAlpha", "kind":"namevalue", "type":["numeric","scalar",">=0","<=1"]},
+      {"name":"EdgeColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"DisplayName", "kind":"namevalue", "type":["char"], "purpose":"legend entry"},
+      {"name":"region", "kind":"namevalue", "type":["numeric","vector","numel=4"], "purpose":"[xmin xmax ymin ymax]"},
+      {"name":"backend", "kind":"namevalue", "type":["char","choices={'surf','patch','imagesc'}"]},
+      {"name":"micronbar", "kind":"namevalue", "type":["char","choices={'on','off'}"]},
+      {"name":"coordinates", "kind":"namevalue", "type":["char","choices={'on','off'}"]},
+      {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
+      {"name":"parent", "kind":"namevalue", "type":["matlab.graphics.axis.Axes"]},
+      {"name":"style", "kind":"flag", "type":["char","choices={'points','exact','unitCell'}"]}
+    ]
+},
+
+"plot":
+{
+    "inputs":
+    [
+      {"name":"grains", "kind":"required", "type":["grain2d"], "purpose":"grains"},
+      {"name":"property", "kind":"ordered", "type":[["numeric"],["orientation"],["crystalShape"],["S2Fun"]], "purpose":"property, RGB values, orientations or crystal shape"},
+      {"name":"FaceColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"FaceAlpha", "kind":"namevalue", "type":["numeric","scalar",">=0","<=1"]},
+      {"name":"LineColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"LineWidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"LineStyle", "kind":"namevalue", "type":["char","choices={'-','--',':','-.','none'}"]},
+      {"name":"DisplayName", "kind":"namevalue", "type":["char"], "purpose":"legend entry"},
+      {"name":"region", "kind":"namevalue", "type":["numeric","vector","numel=4"], "purpose":"[xmin xmax ymin ymax]"},
+      {"name":"scale", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"scaling of crystal shapes / tensors"},
+      {"name":"micronbar", "kind":"namevalue", "type":["char","choices={'on','off'}"]},
+      {"name":"coordinates", "kind":"namevalue", "type":["char","choices={'on','off'}"]},
+      {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
+      {"name":"parent", "kind":"namevalue", "type":["matlab.graphics.axis.Axes"]},
+      {"name":"noBoundary", "kind":"flag"}
+    ]
+},
+
+"plot":
+{
+    "inputs":
+    [
+      {"name":"gB", "kind":"required", "type":["grainBoundary"], "purpose":"grain boundary"},
+      {"name":"property", "kind":"ordered", "type":["numeric"], "purpose":"property or RGB values"},
+      {"name":"LineColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"LineWidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"LineStyle", "kind":"namevalue", "type":["char","choices={'-','--',':','-.','none'}"]},
+      {"name":"EdgeAlpha", "kind":"namevalue", "type":["numeric"]},
+      {"name":"DisplayName", "kind":"namevalue", "type":["char"], "purpose":"legend entry"},
+      {"name":"region", "kind":"namevalue", "type":["numeric","vector","numel=4"], "purpose":"[xmin xmax ymin ymax]"},
+      {"name":"micronbar", "kind":"namevalue", "type":["char","choices={'on','off'}"]},
+      {"name":"coordinates", "kind":"namevalue", "type":["char","choices={'on','off'}"]},
+      {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
+      {"name":"parent", "kind":"namevalue", "type":["matlab.graphics.axis.Axes"]},
+      {"name":"smooth", "kind":"flag"}
+    ]
+},
+
+"plot":
+{
+    "inputs":
+    [
+      {"name":"tP", "kind":"required", "type":["triplePointList"], "purpose":"triple points"},
+      {"name":"property", "kind":"ordered", "type":["numeric"]},
+      {"name":"Marker", "kind":"namevalue", "type":["char","choices={'o','.','none','x','s','d','p','^','v'}"]},
+      {"name":"MarkerSize", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"MarkerFaceColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"MarkerEdgeColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"DisplayName", "kind":"namevalue", "type":["char"]}
+    ]
+},
+
+"plot":
+{
+    "inputs":
+    [
+      {"name":"grains", "kind":"required", "type":["grain3d"], "purpose":"3d grains"},
+      {"name":"property", "kind":"ordered", "type":[["numeric"],["orientation"]]},
+      {"name":"FaceAlpha", "kind":"namevalue", "type":["numeric","scalar",">=0","<=1"]},
+      {"name":"LineStyle", "kind":"namevalue", "type":["char","choices={'-','--',':','-.','none'}"]},
+      {"name":"LineWidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"DisplayName", "kind":"namevalue", "type":["char"]}
+    ]
+},
+
+"smooth":
+{
+    "inputs":
+    [
+      {"name":"ebsd", "kind":"required", "type":["EBSD"], "purpose":"EBSD data"},
+      {"name":"filter", "kind":"ordered", "type":["EBSDFilter"], "purpose":"e.g. halfQuadraticFilter, splineFilter"},
+      {"name":"grains", "kind":"ordered", "type":["grain2d"], "purpose":"do not fill across grain boundaries"},
+      {"name":"fill", "kind":"flag"},
+      {"name":"extrapolate", "kind":"flag"}
+    ]
+},
+
+"smooth":
+{
+    "inputs":
+    [
+      {"name":"grains", "kind":"required", "type":["grain2d"], "purpose":"grains"},
+      {"name":"iter", "kind":"ordered", "type":["numeric","scalar","integer",">0"], "purpose":"number of iterations (default 1)"},
+      {"name":"rate", "kind":"namevalue", "type":["numeric","scalar"], "purpose":"smoothing parameter lambda"},
+      {"name":"gauss", "kind":"namevalue", "type":["numeric","scalar"]},
+      {"name":"exp", "kind":"namevalue", "type":["numeric","scalar"]},
+      {"name":"umbrella", "kind":"namevalue", "type":["numeric","scalar"]},
+      {"name":"moveTriplePoints", "kind":"flag"},
+      {"name":"moveOuterBoundary", "kind":"flag"},
+      {"name":"order", "kind":"flag", "type":["char","choices={'second_order','S2'}"]}
+    ]
+},
+
+"fill":
+{
+    "inputs":
+    [
+      {"name":"ebsd", "kind":"required", "type":["EBSD"]},
+      {"name":"grains", "kind":"ordered", "type":["grain2d"], "purpose":"do not fill across grain boundaries"},
+      {"name":"extrapolate", "kind":"flag"}
+    ]
+},
+
+"gridify":
+{
+    "inputs":
+    [
+      {"name":"ebsd", "kind":"required", "type":["EBSD"]},
+      {"name":"unitCell", "kind":"namevalue", "type":["vector3d"], "purpose":"unit cell of the gridded map"},
+      {"name":"extent", "kind":"namevalue", "type":["numeric","vector","numel=4"], "purpose":"[xmin xmax ymin ymax]"}
+    ]
+},
+
+"reduce":
+{
+    "inputs":
+    [
+      {"name":"ebsd", "kind":"required", "type":["EBSD"]},
+      {"name":"factor", "kind":"ordered", "type":["numeric","scalar","integer",">0"], "purpose":"resampling factor (default 2)"}
+    ]
+},
+
+"KAM":
+{
+    "inputs":
+    [
+      {"name":"ebsd", "kind":"required", "type":["EBSD"]},
+      {"name":"order", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"neighbours up to graph distance n (default 1)"},
+      {"name":"radius", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"neighbours up to physical distance r"},
+      {"name":"threshold", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"ignore larger misorientation angles"},
+      {"name":"weights", "kind":"namevalue", "type":["function_handle"], "purpose":"psi(distance) weighting each neighbour"},
+      {"name":"max", "kind":"flag", "purpose":"maximum instead of mean"}
+    ]
+},
+
+"calcGROD":
+{
+    "inputs":
+    [
+      {"name":"ebsd", "kind":"required", "type":["EBSD"]},
+      {"name":"grains", "kind":"ordered", "type":["grain2d"]}
+    ]
+},
+
+"inpolygon":
+{
+    "inputs":
+    [
+      {"name":"ebsd", "kind":"required", "type":[["EBSD"],["grain2d"],["grainBoundary"]]},
+      {"name":"xy", "kind":"required", "type":["numeric"], "purpose":"[xmin ymin dx dy] or list of polygon vertices"}
+    ]
+},
+
 "rotate":
 {
     "inputs":
     [
-      {"name":"ebsd", "kind":"required",   "type":"EBSD"},
-      {"name":"rot", "kind":"required",   "type":"choices={'double','rotation'}"},
-      {"name":"method", "kind":"flag", "type":"choices={'keepXY', 'keepEuler'}"},
-      {"name":"center", "kind":"namevalue", "type":"double"}
+      {"name":"ebsd", "kind":"required", "type":[["EBSD"],["grain2d"],["grain3d"],["grainBoundary"],["triplePointList"]]},
+      {"name":"rot", "kind":"required", "type":[["rotation"],["numeric"]], "purpose":"rotation or angle"},
+      {"name":"center", "kind":"namevalue", "type":["vector3d"], "purpose":"center of rotation"},
+      {"name":"method", "kind":"flag", "type":["char","choices={'keepXY','keepEuler'}"]}
     ]
 },
-"plot":
+
+"merge":
 {
     "inputs":
     [
-        {"name":"boundary", "kind":"required",   "type":"grainBoundary"},
-        {"name":"lineColor", "kind":"namevalue", "type":"choices=str2rgb"},
-        {"name":"lineWidth", "kind":"namevalue", "type":"double"},
-        {"name":"MarkerEdgeColor", "kind":"namevalue", "type":"choices=str2rgb"},
-        {"name":"MarkerSize", "kind":"namevalue", "type":"int8"},
-        {"name":"micronbar", "kind":"namevalue", "type":"choices={'on', 'off'}"},
-	      {"name":"coordinates", "kind":"namevalue", "type":"choices={'on', 'off'}"},
-	      {"name":"figSize", "kind":"namevalue", "type":"choices={'tiny', 'small','large','huge'}"},
-        {"name":"label", "kind":"namevalue", "type":"string"},
-	      {"name":"DisplayName", "kind":"namevalue", "type":"char"},
-        {"name":"backgroundColor", "kind":"namevalue", "type":"choices=str2rgb"}
+      {"name":"grains", "kind":"required", "type":["grain2d"]},
+      {"name":"criterion", "kind":"ordered", "type":[["grainBoundary"],["triplePointList"],["numeric"],["logical"]], "purpose":"boundaries, merge matrix or list of grain id pairs"},
+      {"name":"threshold", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"maximum misorientation angle to be merged"},
+      {"name":"maxSize", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"maximum inclusion size in pixel"},
+      {"name":"maxArea", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"maxPixel", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"inclusions", "kind":"flag"},
+      {"name":"calcMeanOrientation", "kind":"flag"}
     ]
 },
-"plot":
+
+"calcTraces":
 {
     "inputs":
     [
-        {"name":"ebsd", "kind":"required",   "type":"EBSD"},
-        {"name":"FaceAlpha", "kind":"namevalue", "type":"double"},
-	      {"name":"DisplayName", "kind":"namevalue", "type":"char"},
-	      {"name":"micronbar", "kind":"namevalue", "type":"choices={'on', 'off'}"},
-	      {"name":"coordinates", "kind":"namevalue", "type":"choices={'on', 'off'}"},
-	      {"name":"figSize", "kind":"namevalue", "type":"choices={'tiny', 'small','large','huge'}"},
-	      {"name":"FaceColor", "kind":"namevalue", "type":"choices=str2rgb"},
-	      {"name":"DisplayName", "kind":"namevalue", "type":"char"},
-	      {"name":"unitCell", "kind":"flag"}
+      {"name":"grains", "kind":"required", "type":[["grain2d"],["EBSD"]]},
+      {"name":"clusterId", "kind":"ordered", "type":["numeric"], "purpose":"[grainId, variantId]"},
+      {"name":"minClusterSize", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"minimum numPixel (default 100)"},
+      {"name":"method", "kind":"flag", "type":["char","choices={'shape','calliper','hist'}"]}
     ]
 },
-"plot":
+
+"slice":
 {
     "inputs":
     [
-        {"name":"grains", "kind":"required",   "type":"grain2d"},
-        {"name":"lineColor", "kind":"namevalue", "type":"choices=str2rgb"},
-        {"name":"lineWidth", "kind":"namevalue", "type":"double"},
-        {"name":"FaceAlpha", "kind":"namevalue", "type":"double"},
-	      {"name":"micronbar", "kind":"namevalue", "type":"choices={'on', 'off'}"},
-	      {"name":"coordinates", "kind":"namevalue", "type":"choices={'on', 'off'}"},
-	      {"name":"figSize", "kind":"namevalue", "type":"choices={'tiny', 'small','large','huge'}"},
-	      {"name":"FaceColor", "kind":"namevalue", "type":"choices=str2rgb"}
+      {"name":"grains", "kind":"required", "type":["grain3d"]},
+      {"name":"N", "kind":"required", "type":[["vector3d"],["plane3d"]], "purpose":"plane normal or plane"},
+      {"name":"P0", "kind":"ordered", "type":["vector3d"], "purpose":"point within the plane"}
+    ]
+},
+
+"calcGBND":
+{
+    "inputs":
+    [
+      {"name":"gB", "kind":"required", "type":[["grainBoundary"],["grain3Boundary"]]},
+      {"name":"grains", "kind":"ordered", "type":[["grain2d"],["grain3d"]]},
+      {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"]},
+      {"name":"antipodal", "kind":"flag"}
+    ]
+},
+
+"parentGrainReconstructor":
+{
+    "inputs":
+    [
+      {"name":"ebsd", "kind":"required", "type":["EBSD"]},
+      {"name":"grains", "kind":"ordered", "type":["grain2d"]},
+      {"name":"p2c0", "kind":"ordered", "type":["orientation"], "purpose":"initial parent to child orientation relationship"}
+    ],
+    "outputs":
+    [
+      {"name":"job", "type":"parentGrainReconstructor"}
+    ]
+},
+
+"calcParent2Child":
+{
+    "inputs":
+    [
+      {"name":"job", "kind":"required", "type":["parentGrainReconstructor"]},
+      {"name":"quantile", "kind":"namevalue", "type":["numeric","scalar",">0","<=1"], "purpose":"default 0.9"},
+      {"name":"threshold", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"method", "kind":"flag", "type":["char","choices={'c2c','p2c','peakFitting'}"]}
+    ]
+},
+
+"calcGBVotes":
+{
+    "inputs":
+    [
+      {"name":"job", "kind":"required", "type":["parentGrainReconstructor"]},
+      {"name":"threshold", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"fitting angle between job.p2c and the boundary OR"},
+      {"name":"tolerance", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"range over which the probability increases (default 1.5 degree)"},
+      {"name":"numFit", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
+      {"name":"boundaries", "kind":"flag", "type":["char","choices={'p2c','c2c'}"]},
+      {"name":"bestFit", "kind":"flag"},
+      {"name":"reconsiderAll", "kind":"flag"}
+    ]
+},
+
+"calcTPVotes":
+{
+    "inputs":
+    [
+      {"name":"job", "kind":"required", "type":["parentGrainReconstructor"]},
+      {"name":"threshold", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"tolerance", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"minFit", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"minimum required fit of a triple point"},
+      {"name":"maxFit", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"maximum second best fit of a triple point"},
+      {"name":"numFit", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"default 2"}
+    ]
+},
+
+"calcParentFromVote":
+{
+    "inputs":
+    [
+      {"name":"job", "kind":"required", "type":["parentGrainReconstructor"]},
+      {"name":"minVotes", "kind":"namevalue", "type":["numeric","scalar",">=0"]},
+      {"name":"minProb", "kind":"namevalue", "type":["numeric","scalar",">=0","<=1"], "purpose":"minimum probability (default 0)"},
+      {"name":"minAlpha", "kind":"namevalue", "type":["numeric","scalar",">=0"]},
+      {"name":"minDelta", "kind":"namevalue", "type":["numeric","scalar",">=0"]}
+    ]
+},
+
+"calcVariantGraph":
+{
+    "inputs":
+    [
+      {"name":"job", "kind":"required", "type":["parentGrainReconstructor"]},
+      {"name":"threshold", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"misfit of probability 0.5 (default 2 degree)"},
+      {"name":"tolerance", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"boundaries", "kind":"flag", "type":["char","choices={'p2c','c2c'}"]},
+      {"name":"mergeSimilar", "kind":"flag"}
+    ]
+},
+
+"clusterVariantGraph":
+{
+    "inputs":
+    [
+      {"name":"job", "kind":"required", "type":["parentGrainReconstructor"]},
+      {"name":"inflationPower", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"default 1.05"},
+      {"name":"numIter", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"default 10"},
+      {"name":"cutOff", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"default 0.0001"},
+      {"name":"minCluster", "kind":"namevalue", "type":["numeric","scalar","integer",">0"], "purpose":"default 4"},
+      {"name":"withDiagonal", "kind":"flag"},
+      {"name":"keepGraph", "kind":"flag"},
+      {"name":"includeSimilar", "kind":"flag"},
+      {"name":"includeTwins", "kind":"flag"}
+    ]
+},
+
+"clusterGraph":
+{
+    "inputs":
+    [
+      {"name":"job", "kind":"required", "type":["parentGrainReconstructor"]},
+      {"name":"inflationPower", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"controls the cluster size (default 1.6)"}
+    ]
+},
+
+"mergeSimilar":
+{
+    "inputs":
+    [
+      {"name":"job", "kind":"required", "type":["parentGrainReconstructor"]},
+      {"name":"threshold", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"misorientation angle up to which grains are merged"}
+    ]
+},
+
+"mergeInclusions":
+{
+    "inputs":
+    [
+      {"name":"job", "kind":"required", "type":["parentGrainReconstructor"]},
+      {"name":"maxSize", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"maximum pixel size of an inclusion"}
     ]
 }
 }
