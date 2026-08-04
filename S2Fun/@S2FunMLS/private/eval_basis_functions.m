@@ -1,7 +1,6 @@
 function vals = eval_basis_functions(S2F, varargin)
 
-% decide which basis to use and call the corresponding eval function
-% eval on the nodes v or on the grid of S2F if v is not given in varargin
+% evaluate the selected basis on the supplied nodes, or on S2F.nodes
 if nargin == 1
   v = S2F.nodes;
 else
@@ -9,14 +8,13 @@ else
   varargin(1) = [];
 end
 
-% determine which basis to use and evaluate it on v
 if S2F.monomials
   if S2F.tangent
     varargin = set_option(varargin, 'tangent');
   end
   vals = eval_monomials_S2(v, S2F.degree, varargin{:});
 else
-  vals = eval_spherical_harmonics(v, S2F.degree, varargin);
+  vals = eval_spherical_harmonics(v, S2F.degree);
 end
 
 end

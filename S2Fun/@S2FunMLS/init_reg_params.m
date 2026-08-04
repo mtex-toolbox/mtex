@@ -1,168 +1,135 @@
 function S2F = init_reg_params(S2F, varargin)
-  % initialize regularization parameters from diagnostics on auxilliary grid
+% initialize the goal-oriented regularization parameters on a random grid
 
-  % make sure that the auxgrid exists
-  if isempty(S2F.auxgrid)
-    S2F = S2F.init_auxgrid;
-  end
-
-  % regularization will be turned on again at the very end of the function
+if S2F.degree == 0
   S2F.regularize = false;
+  return;
+end
 
-  if check_option(varargin, 'info')
-    reg_info = get_option(varargin, 'info');
-  else
-    [~, ~, reg_info] = S2F.eval(S2F.auxgrid);
+% Smooth delta and regularization deliberately use different grids.
+if S2F.use_smooth_delta && (S2F.delta == 0) && isempty(S2F.auxgrid)
+  S2F = S2F.init_auxgrid;
+end
+if isempty(S2F.reg_auxgrid)
+  S2F = S2F.init_reg_auxgrid;
+end
+
+if check_option(varargin, 'info')
+  reg_info = get_option(varargin, 'info');
+else
+  % Calibration depends only on nodes, basis, and weights. Use one function
+  % component so a multi-right-hand-side object does not make construction slower.
+  calibrationF = S2F;
+  if ~isscalar(calibrationF)
+    calibrationF = calibrationF.subSet(1);
   end
+  calibrationF.regularize = false;
+  [~, ~, reg_info] = calibrationF.eval(S2F.reg_auxgrid);
+end
 
-  % if force is true, also overwrite manually set parameters
-  force = check_option(varargin, {'force', 'overwrite'});
+force = check_option(varargin, {'force', 'overwrite'});
 
-  % fixed parameters for the automatic calibration
-  goodGeometryQuantile = .50; % use best half of geometries as reference
-  minLogWidth = .25;          % at least a quarter decade between min/max cond
-  minRobustSigma = .25;       % avoid too narrow condition interval
+% Record which values have actually been prescribed by the user. Assigning
+% mincond also updates targetcond for backward compatibility, so these flags
+% have to be stored before any parameter is changed below.
+setMincond = isempty(S2F.mincond) || force;
+setMaxcond = isempty(S2F.maxcond) || force;
+setTargetcond = isempty(S2F.targetcond) || force;
+manualTargetcond = S2F.targetcond;
 
-  % safety clamps
-  minCondFloor = 1e1;
-  minCondCeil  = 1e4;
-  maxCondCeil  = 1e6;
-  lambdaGeomFloor = .1;
-  lambdaGeomCeil  = 10;
-  basisScaleFloor = 1;
-  basisScaleCeil  = 10;
+amp = getField(reg_info, ...
+  {'centerAmplification', 'center_amplification'});
+amp = real(amp(:));
+amp = amp(isfinite(amp) & amp >= 1);
 
-  % diagnostic data
-  conds_unreg = getField(reg_info, 'conds_unreg');
-  geometryScore = getField(reg_info, 'geometryScore', zeros(size(conds_unreg)));
-  
-  % reshape and make sure the values are in the expected range
-  conds_unreg = real(conds_unreg(:));
-  geometryScore = real(geometryScore(:));
-  geometryScore = min(max(geometryScore, 0), 1);
+% The benchmark showed two clearly separated situations:
+%   - ordinary node sets have a healthy bulk and only exceptional bad tails;
+%   - globally unstable node sets already have large amplification in the
+%     upper part of the bulk and need both an earlier onset and a stronger
+%     final correction.
+% We therefore use only two fixed regimes and let one robust quantile choose
+% between them. This avoids fitting several thresholds to the calibration data.
+strongBulkThreshold = 1e2;
 
-  % remove unusable calibration values
-  I = isfinite(conds_unreg) & conds_unreg >= 1 & isfinite(geometryScore);
-  conds_unreg = conds_unreg(I);
-  geometryScore = geometryScore(I);
+% Mild regime: leave normal random and well-distributed neighborhoods nearly
+% untouched, but still regularize isolated catastrophic systems.
+mildOnsetAmp = 30;
+mildFullAmp = 1e3;
+mildTargetAmp = 30;
 
-  % work with logarithmic condition numbers
-  logcond = log10(conds_unreg);
+% Strong regime: if instability affects at least the upper fifth of the bulk,
+% start correcting earlier and reach the target on a shorter logarithmic scale.
+% The interval 10--300 is deliberately less aggressive than 10--100.
+strongOnsetAmp = 10;
+strongFullAmp = 300;
+strongTargetAmp = 10;
 
-  % use geometrically good systems as reference for condition thresholds
-  gCut = getQuantile(geometryScore, goodGeometryQuantile);
-  good = geometryScore <= gCut;
+if isempty(amp)
+  q80 = mildOnsetAmp;
+else
+  q80 = getQuantile(amp, .80);
+end
 
-  % if the filter is too strict, fall back to all calibration systems
-  minGood = min(100, max(10, round(.2 * numel(good))));
-  if nnz(good) < minGood
-    good = true(size(good));
-  end
-  logcondGood = logcond(good);
+if q80 >= strongBulkThreshold
+  mincond_auto = strongOnsetAmp;
+  maxcond_auto = strongFullAmp;
+  targetcond_auto = strongTargetAmp;
+else
+  mincond_auto = mildOnsetAmp;
+  maxcond_auto = mildFullAmp;
+  targetcond_auto = mildTargetAmp;
+end
 
-  % robust center and scale of the good-condition distribution
-  logMed = median(logcondGood);
-  logQ25 = getQuantile(logcondGood, .25);
-  logQ50 = getQuantile(logcondGood, .50);
-  logQ55 = getQuantile(logcondGood, .55);
-  logQ75 = getQuantile(logcondGood, .75);
-  logQ80 = getQuantile(logcondGood, .80);
-  logQ90 = getQuantile(logcondGood, .90);
-  logQ95 = getQuantile(logcondGood, .95);
+if setMincond
+  S2F.mincond = mincond_auto;
+end
+if setMaxcond
+  S2F.maxcond = maxcond_auto;
+end
+if setTargetcond
+  S2F.targetcond = targetcond_auto;
+else
+  % Restore an explicitly prescribed target if mincond was assigned above.
+  S2F.targetcond = manualTargetcond;
+end
 
-  robustSigma = (logQ75 - logQ25) / 1.349;
-  robustSigma = max(robustSigma, minRobustSigma);
+% Broad safety bounds are retained for manual choices. mincond is the onset,
+% maxcond is the full-activation threshold, and targetcond is the amplification
+% approached at full strength. The target may be lower than the onset.
+minLogGap = 1;
+maxLogGap = 4;
 
-  % choose start of condition regularization
-  %   this should stay close to the typical good-geometry condition scale
-  logMincond = max(logQ55, logMed + .25 * robustSigma);
+minAmpFloor = 1.1;
+minAmpCeil = 1e4;
+maxAmpFloor = 1e2;
+maxAmpCeil = 1e7;
 
-  % choose full condition regularization from the measured, but non-extreme tail
-  %   this avoids very large maxcond caused by a few pathological systems
-  logQ80All = getQuantile(logcond, .80);
-  logQ90All = getQuantile(logcond, .90);
-  logMaxcond = max([logQ90, logMed + 2.25 * robustSigma, logQ80All]);
+logMincond = log10(max(real(S2F.mincond), minAmpFloor));
+logMaxcond = log10(max(real(S2F.maxcond), minAmpFloor));
 
-  % allow wider transition intervals only if the aux-grid conditions vary a lot
-  condSpread = max(logQ90 - logQ50, 0);
-  allSpread = max(logQ90All - getQuantile(logcond, .50), 0);
-  spreadSeverity = max(condSpread, .5 * allSpread);
-  spreadSeverity = min(max((spreadSeverity - .5) / 1.5, 0), 1);
-  maxLogWidth = 1.75 + 1.25 * spreadSeverity;
+logMincond = min(max(logMincond, log10(minAmpFloor)), log10(minAmpCeil));
+logMaxcond = min(max(logMaxcond, log10(maxAmpFloor)), log10(maxAmpCeil));
+logMaxcond = max(logMaxcond, logMincond + minLogGap);
+logMaxcond = min(logMaxcond, logMincond + maxLogGap);
+logMaxcond = min(logMaxcond, log10(maxAmpCeil));
 
-  % avoid too narrow transition interval, but also avoid unreasonable maxcond
-  logMaxcond = max(logMaxcond, logMincond + minLogWidth);
-  logMaxcond = min(logMaxcond, logMincond + maxLogWidth);
+% Assigning mincond also updates targetcond. Preserve the independently chosen
+% target across the final normalization of the transition parameters.
+targetcond = S2F.targetcond;
+S2F.mincond = 10.^logMincond;
+S2F.maxcond = 10.^logMaxcond;
+S2F.targetcond = min(max(real(targetcond), minAmpFloor), S2F.mincond);
+S2F.regularize = true;
 
-  % safety clamps
-  logMincond = min(max(logMincond, log10(minCondFloor)), log10(minCondCeil));
-  logMaxcond = max(logMaxcond, logMincond + minLogWidth);
-  logMaxcond = min(logMaxcond, log10(maxCondCeil));
-
-  mincond_auto = 10.^logMincond;
-  maxcond_auto = 10.^logMaxcond;
-
-  % set mincond and maxcond, unless they were prescribed manually
-  if (isempty(S2F.mincond) || force), S2F.mincond = mincond_auto; end
-  if (isempty(S2F.maxcond) || force), S2F.maxcond = maxcond_auto; end
-
-  % compute geometry quantiles
-  g50 = getQuantile(geometryScore, .50);
-  g90 = getQuantile(geometryScore, .90);
-  g95 = getQuantile(geometryScore, .95);
-  g99 = getQuantile(geometryScore, .99);
-
-  % choose geometry regularization strength from geometry severity
-  %   lambda_geom_rel acts relative to the normalized Gram scale
-  geomSeverityLambda = max([g90, .9*g95, .8*g99]);
-  geomSeverityLambda = min(max(geomSeverityLambda, 0), 1);
-
-  % map severity to the empirical range:
-  %   severity 0   -> lambda_geom_rel = 1
-  %   severity .5  -> lambda_geom_rel = 10
-  %   severity 1   -> lambda_geom_rel = 100
-  lambda_geom_rel_auto = 10 .^ (2 * geomSeverityLambda);
-  lambda_geom_rel_auto = min(max(lambda_geom_rel_auto, lambdaGeomFloor), lambdaGeomCeil);
-
-  if isempty(S2F.lambda_geom_rel) || force
-    S2F.lambda_geom_rel = lambda_geom_rel_auto;
-  end
-
-  % choose degree-selectivity of the regularization
-  %   this should be moderate, since lambda_geom_rel controls the amount of
-  %   geometry regularization
-  condSeverity = max((condSpread - .75) / 2, 0);
-  condSeverity = min(condSeverity, 1);
-
-  geomSeverityBasis = max(g90, .6 * g95);
-  geomSeverityBasis = min(max(geomSeverityBasis, 0), 1);
-
-  basisSeverity = max(.85 * geomSeverityBasis, .5 * condSeverity);
-  basisSeverity = min(max(basisSeverity, 0), 1);
-
-  % map severity to [1,10]
-  %   not good, but not terrible geometries should usually give values around 3-4
-  basis_weights_scale_auto = 1 + 9 * basisSeverity.^1.50;
-  basis_weights_scale_auto = min(max(basis_weights_scale_auto, ...
-    basisScaleFloor), basisScaleCeil);
-
-  if isempty(S2F.basis_weights_scale) || force
-    S2F.basis_weights_scale = basis_weights_scale_auto;
-  end
-
-  % if we compute the reg params, actually enable regularization
-  S2F.regularize = true;
 end
 
 
-% additional functions
-
-% get field from struct, allowing several possible names
-function value = getField(S, names, default)
+% get a field from a struct, allowing several names
+function value = getField(S, names)
   if ischar(names) || isstring(names)
     names = cellstr(names);
   end
-  
+
   for k = 1 : numel(names)
     if isfield(S, names{k})
       value = S.(names{k});
@@ -170,14 +137,10 @@ function value = getField(S, names, default)
     end
   end
 
-  if nargin >= 3
-    value = default;
-  else
-    error('Required field is missing in regularization diagnostics.');
-  end
+  error('Required field is missing in regularization diagnostics.');
 end
 
-% compute quantiles
+% compute linearly interpolated quantiles without a toolbox dependency
 function q = getQuantile(x, p)
   x = sort(x(:));
   x = x(isfinite(x));
@@ -186,16 +149,13 @@ function q = getQuantile(x, p)
     q = NaN;
     return;
   end
-
-  n = numel(x);
-  if n == 1
+  if numel(x) == 1
     q = x;
     return;
   end
 
   p = min(max(p, 0), 1);
-  pos = 1 + (n - 1) * p;
-
+  pos = 1 + (numel(x) - 1) * p;
   lo = floor(pos);
   hi = ceil(pos);
 
@@ -203,6 +163,6 @@ function q = getQuantile(x, p)
     q = x(lo);
   else
     a = pos - lo;
-    q = (1 - a) * x(lo) + a * x(hi);
+    q = (1-a) * x(lo) + a * x(hi);
   end
 end
