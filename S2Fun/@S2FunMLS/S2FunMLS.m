@@ -256,9 +256,21 @@ classdef S2FunMLS < S2Fun
           S2F.w = @(t)(t <= 1);
         case 'cos'
           S2F.w = @(t)(((1+cos(pi*t))/2) .* (t <= 1));
-        case {'auto','c1hat'}
-          % This fixed kernel is considerably broader than the former
-          % degree-dependent Wendland variants, but still favors the center.
+        case 'auto'
+          % Degree-dependent localization:
+          % higher degrees use a narrower effective neighborhood.
+          alpha = max(1, 2 - (S2F.degree - 1) / 3);
+          beta = 1 + max(S2F.degree - 2, 0) / 3;
+
+          % Wendland C6 evaluated at t^alpha and subsequently raised to beta.
+          S2F.w = @(t)( ...
+            max(1 - t.^alpha, 0).^8 .* ...
+            (32*t.^(3*alpha) + 25*t.^(2*alpha) + ...
+            8*t.^alpha + 1) ...
+            ).^beta;
+
+        case 'c1hat'
+          % Fixed broad weight for explicit comparisons.
           S2F.w = @(t)(max(1-t.^2, 0).^2);
         case 'wendland'
           S2F.w = @(t)(max(1-t, 0).^4 .* (4*t+1));
