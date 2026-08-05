@@ -47,9 +47,11 @@
 % 
 % In EDAX software one can choose between several alignments between those
 % coordinate system. They are numbered 1 to 4, with setting 2 being the
-% most used. This setting can be specified directly when importing data
-% from EDAX software. Hence a typical command for importing data from an
-% .ang file would look like
+% most used. As the setting is not stored within the file MTEX assumes
+% setting 2 and reminds you about it when importing the data. If your data
+% was exported with a different alignment specify it explicitly, and use
+% |'setting',0| to switch the correction off. Hence a typical command for
+% importing data from an .ang file would look like
 
 ebsd = EBSD.load([mtexEBSDPath filesep 'olivineopticalmap.ang'],'setting',2)
 

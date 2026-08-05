@@ -1,27 +1,28 @@
 function ebsd = applyEulerCorrectionTable(ebsd,ext,varargin)
 % apply a 4-setting Euler / map reference frame correction
 %
-% Shared by EDAX-style formats (.ang, .osc) that expose the Euler <-> map
-% alignment as a "setting" 1 to 4, plus a fixed default under 'wizard'.
+% Shared by EDAX-style formats (.ang, .osc, .edaxh5) that expose the Euler
+% <-> map alignment as a "setting" 1 to 4. Since the setting is not stored
+% in the file, setting 2 is assumed and a note is printed - unless the user
+% states the alignment or the import wizard did it already.
 %
 % Syntax
 %   ebsd = applyEulerCorrectionTable(ebsd,ext,varargin{:})
 %
 % Input
 %  ebsd - @EBSD
-%  ext  - file extension used in the warning text, e.g. '.ang'
+%  ext  - file extension used in the note, e.g. '.ang'
 %
 % Options
-%  setting          - 0 (no correction, default) to 4
+%  setting          - 0 (no correction) to 4, default is 2
 %  EulerCorrection  - explicit correction rotation, overrides setting
-%  wizard           - defaults setting to 2 instead of 0
+%  wizard           - suppress the note about the assumed setting
 
-if check_option(varargin,'wizard')
-  corSetting = 2;
-else
-  corSetting = 0;
-end
-corSetting = get_option(varargin,'setting',corSetting);
+% setting 2 is by far the most common one and hence the default
+corSetting = get_option(varargin,'setting',2);
+
+% tell the user about it unless the alignment was specified explicitly
+isAssumed = ~check_option(varargin,{'setting','EulerCorrection','wizard'});
 
 if corSetting > 0 || check_option(varargin,'EulerCorrection')
 
@@ -37,15 +38,19 @@ if corSetting > 0 || check_option(varargin,'EulerCorrection')
   % correct rotations
   ebsd.EulerCorrection = rot;
 
-else
+end
 
-  fprintf(2,wraptext(sprintf(['\nWarning: %s files usually come with different coordinate systems for the Euler angles ' ...
-    'and the spatial coordinates. The relative alignment of these coordinate ' ...
-    'systems files can be specified when exporting the data from your EBSD maschine ' ...
-    'and are labeled as setting 1 to setting 4. Please specifiy this setting ' ...
-    'when importing the data using the syntax\n\n' ...
-    'ebsd = EBSD.load(fileName,''setting'', 2)' ...
+if isAssumed
+
+  fprintf(2,wraptext(sprintf(['\nNote: %s files come with different coordinate systems for the Euler angles ' ...
+    'and the spatial coordinates. Their relative alignment is chosen when exporting ' ...
+    'the data from your EBSD maschine and is labeled as setting 1 to setting 4. ' ...
+    'Since it is not stored in the file MTEX assumes the most common setting 2. ' ...
+    'If your data was exported with a different alignment specify it when ' ...
+    'importing the data using the syntax\n\n' ...
+    'ebsd = EBSD.load(fileName,''setting'', 3)' ...
     '\n\n' ...
+    'or switch the correction off by ''setting'', 0.\n\n' ...
     'Click <a href="matlab:MTEXdoc(''EBSDReferenceFrame'')">here</a> for more information.'...
     '\n'],ext)))
 
