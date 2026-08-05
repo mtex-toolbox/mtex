@@ -56,15 +56,18 @@ data = reshape(data,[],n);          % m × n uint8
 ndx  = cumsum([0 type]);
 
 nf = numel(type);
-d  = zeros(n, nf + 2*params.cells, 'single');   
+% double, not single - the file stores 4 byte floats, but single precision
+% Euler angles / coordinates propagate into ebsd.rotations and ebsd.pos and
+% break the nfft/nfsft mex interfaces, which insist on double input
+d  = zeros(n, nf + 2*params.cells);
 
 for j = 1:nf
   off = ndx(j);
   if type(j) == 4
-    b = data(off+1:off+4, :);            % 4 × n, kleines Temporary
-    d(:,j) = typecast(b(:), 'single');   % zusammenhängender Spaltenschreib
+    b = data(off+1:off+4, :);            % 4 x n, small temporary
+    d(:,j) = typecast(b(:), 'single');   % contiguous column write
   else
-    d(:,j) = single(data(off+1, :));
+    d(:,j) = data(off+1, :);
   end
 end
 
