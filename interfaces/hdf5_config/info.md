@@ -1,3 +1,11 @@
+# Writing a config
+
+Every entry below a block with `"multiple": true` - the phase list of `cs` -
+must match exactly **one** data set per phase. The number of phases is not
+taken from the file, it is implied by the number of matches, so a regex like
+`"Symmetry$|LGsymID"` that hits two data sets of the same phase silently
+doubles the phase list and shifts the phase ids of the map.
+
 # Bruker
 
 Euler vs. Map Coordinate system:
@@ -35,6 +43,13 @@ Crystal vs. Cartesian Coordinate systeme:
 /EBSD/Header/Cartesian Alignment -> almost MTEX syntax
 
 usually not MTEX default, i.e., x||a for trigonal and hexagonal
+
+If "Cartesian Alignment" is missing the config falls back to the option
+"EDAX", which is the very same convention the .ang / .osc interfaces use:
+x||a for triclinic, trigonal and hexagonal lattices, MTEX default otherwise
+(see geometry/@crystalSymmetry/private/calcAxis.m). The .edaxh5 and EMSphInx
+configs use "EDAX" unconditionally since those files do not state their
+alignment.
 
 
 # Oxford

@@ -8,6 +8,7 @@ function abc  = calcAxis(id,axisLength,angle,varargin)
 %
 % Options
 %  X||a, X||a*, Z||c - alignment of the cartesian coordinate system to the crystal coordinate system
+%  EDAX - use the alignment convention of EDAX / TSL / OIM
 %
 % Output
 %  abc - @vector3d
@@ -79,6 +80,9 @@ switch pg.lattice
       [cangle(2),cangle(1),1]);
 
 end
+
+% vendor specific alignment conventions
+varargin = expandVendorAlignment(pg,varargin);
 
 % extract alignment options
 % restrict to strings
@@ -183,4 +187,30 @@ abc = vector3d(M * double(abc));
 
 if check_option(varargin,'rotAxes')
   abc = get_option(varargin,'rotAxes') * abc;
+end
+
+end
+
+function opt = expandVendorAlignment(pg,opt)
+% replace a vendor name by the alignment options it stands for
+%
+% EDAX / TSL / OIM align x with the a axis for all lattices where a and a*
+% do not coincide within the a-b plane, i.e. triclinic, trigonal and
+% hexagonal. For all remaining lattices their convention is identical to
+% the MTEX default x || a*, z || c.
+
+vendor = {'EDAX','TSL','OIM'};
+if ~check_option(opt,vendor), return; end
+
+opt = delete_option(opt,vendor);
+
+% an explicitly given alignment always wins over the vendor default
+isChar = cellfun(@(s) ischar(s),opt);
+if any(~cellfun('isempty',regexpi(opt(isChar),'\|\|'))), return; end
+
+switch pg.lattice
+  case {'triclinic','trigonal','hexagonal'}
+    opt = [opt,{'X||a'}];
+end
+
 end

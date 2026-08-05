@@ -71,6 +71,37 @@
 %   ebsd = EBSD.load('data.ctf','EulerCorrection',rotation.byEuler(pi,0,0))
 %   ebsd = EBSD.load('data.h5','headerOnly')     % phases and header only
 %
+% *All EDAX Formats Give the Same Result*
+%
+% The formats |ang|, |osc|, |oh5| and |edaxh5| may all hold the very same
+% map, but were interpreted differently. They now agree on
+%
+% * the alignment between the Euler angle and the map reference frame.
+% Since the |setting| is not stored in the file, the most common setting 2
+% is assumed instead of leaving the Euler angles uncorrected. State your
+% own alignment by |'setting',1| to |'setting',4|, or switch the
+% correction off by |'setting',0|
+% * the crystal axes alignment used by EDAX, i.e. x parallel to a for
+% triclinic, trigonal and hexagonal lattices. It is available for any
+% crystal symmetry by the option |'EDAX'|
+% * the point group of the phases. EDAX states it only in newer files, e.g.
+% as |PointGroupID|, otherwise the symmetry code gives the Laue group.
+% Accordingly hexagonal phases are now imported as |6/mmm| and cubic ones
+% as |m-3m|, where the |ang| and |osc| interfaces used to say |622| and
+% |432|
+%
+%   ebsd = EBSD.load('data.edaxh5','setting',3)  % not the assumed setting 2
+%   ebsd = EBSD.load('data.osc','setting',0)     % no correction at all
+%   cs = crystalSymmetry('321',[4.9 4.9 5.4],'EDAX')   % x || a
+%
+% Bruker files describe their phases by a full crystal structure. Its
+% International Tables number and atomic basis are kept in |cs.opt.spaceId|
+% and |cs.opt.atoms|.
+%
+% Fixed along the way: |ang| files whose header contains a stray carriage
+% return - as written by some EDAX exports - silently lost their first data
+% point.
+%
 % *Much Faster Plotting of EBSD Maps*
 %
 % EBSD and grain maps are drawn through three backends - |surf|, |patch|
@@ -86,6 +117,28 @@
 % rescales while zooming, and takes options
 %
 %   plot(ebsd,'Location','nw','BackgroundColor','k','LineColor','w','Length',50)
+%
+% *x to the East and y to the South by Default*
+%
+% The default plotting convention is now
+% <plottingConvention.ij.html |plottingConvention.ij|> - x to east, y to
+% south and z into the screen. This is how SEM images are displayed and
+% what nearly every EBSD import states anyway. Pole figures are not
+% affected, spherical plots align themselves with the hemisphere they show.
+%
+% Data that is plotted the default way now refers to the one default
+% convention instead of an equivalent copy of it. Changing the default
+% therefore also applies to data that has been imported before
+%
+%   ebsd = EBSD.load('data.ang');
+%   plotx2north     % the map of ebsd is turned as well
+%
+% Note that the default has to be modified in place for this. Assigning to
+% |plottingConvention.default.east| installs a new default instead and
+% detaches all data referring to the old one
+%
+%   pC = plottingConvention.default; pC.east = yvector;   % turns all data
+%   plottingConvention.default.east = yvector;            % does not
 %
 % *Moving Least Squares Approximation*
 %

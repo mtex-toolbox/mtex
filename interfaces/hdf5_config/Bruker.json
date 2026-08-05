@@ -37,6 +37,8 @@
       "key": { "mode": "search_root", "value": "Phases" },
       "default": {
         "space_group": { "mode": "search_root", "value": "SpaceGroup", "type": "default" },
+        "space_group_id": { "mode": "search_root", "value": "/IT$", "fallback": []},
+        "atoms": { "group": {"mode": "search_root", "value": "AtomPositions$"}, "type": "default"},
         "name": { "mode": "search_root", "value": "Name"},
         "lattice": { "mode": "search_root", "value": "LatticeConstants", "type": "all_together"}
       }

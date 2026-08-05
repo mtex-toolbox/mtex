@@ -26,7 +26,7 @@
     "inputs":
     [
       {"name":"fname", "kind":"required", "type":["file=*.ang"]},
-      {"name":"setting", "kind":"namevalue", "type":["numeric","scalar","integer",">=1","<=4"], "purpose":"see EBSDReferenceFrame"},
+      {"name":"setting", "kind":"namevalue", "type":["numeric","scalar","integer",">=0","<=4"], "purpose":"Euler to map alignment, 0 switches the correction off, default 2"},
       {"name":"EulerCorrection", "kind":"namevalue", "type":["rotation"]},
       {"name":"convention", "kind":"flag", "type":["char","choices={'convertSpatial2EulerReferenceFrame','convertEuler2SpatialReferenceFrame'}"]},
       {"name":"headerOnly", "kind":"flag", "purpose":"return only phase / header metadata"}
