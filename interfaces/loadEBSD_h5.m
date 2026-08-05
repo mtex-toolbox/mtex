@@ -269,10 +269,19 @@ end
 
 ebsd = data.ebsd;
 
-% remember where the data came from and what else the file has to offer
+% remember where the data came from and what else the file has to offer -
+% the full path of the imported set, the short labels of all of them (what
+% the 'dataSet' option and the listing accept), and which of the two
+% versions of the data this is where a vendor stores both (see 'raw').
+% The import wizard offers all three as controls.
 if ~isempty(iSet)
   ebsd.opt.dataSet = dataSets(iSet).path;
-  if numel(dataSets) > 1, ebsd.opt.dataSets = [dataSets.path]; end
+  ebsd.opt.dataSets = [dataSets.label];
+end
+if isfield(Conf.settings, 'rawConfig')
+  ebsd.opt.dataType = "post processed";
+elseif isfield(Conf.settings, 'isRawConfig') && Conf.settings.isRawConfig.data
+  ebsd.opt.dataType = "raw";
 end
 
 % Euler <-> map reference frame -------------------------------------------

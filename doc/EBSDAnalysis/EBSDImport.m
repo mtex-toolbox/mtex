@@ -128,11 +128,15 @@ plot(ebsd,ebsd.orientations)
 %   ebsd = EBSD.load(fname,'dataSet',2)
 %   ebsd = EBSD.load(fname,'dataSet','OIM Map 7')
 %
-% The data set that has been imported is recorded in |ebsd.opt.dataSet|,
-% all of them in |ebsd.opt.dataSets|. In order to see what a file contains
-% without importing any data use
+% The data set that has been imported is recorded as its full HDF5 path in
+% |ebsd.opt.dataSet|, the short names of all of them in
+% |ebsd.opt.dataSets|. In order to see what a file contains without
+% importing any data use
 %
 %   ebsd = EBSD.load(fname,'headerOnly')
+%
+% The <import_wizard.html import wizard> offers the same choice as a drop
+% down list next to its file browser.
 %
 %% Raw and Post Processed Data
 %
@@ -152,7 +156,9 @@ plot(ebsd,ebsd.orientations)
 %   ebsd = EBSD.load(fname,'raw','dataSet',2)
 %
 % Files of all other vendors hold the recorded data only, so |'raw'| has no
-% effect on them.
+% effect on them. In the <import_wizard.html import wizard> the choice is
+% the "raw (as recorded)" check box below the file browser, which stays
+% disabled for files that store one version only.
 %
 %% Writing your own interface
 %

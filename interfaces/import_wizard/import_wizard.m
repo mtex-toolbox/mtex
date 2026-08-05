@@ -17,6 +17,9 @@ classdef import_wizard < matlab.apps.AppBase
     CurrentPathLabel               matlab.ui.control.Label
     FileTree                       matlab.ui.container.Tree
     ImportStatusLabel              matlab.ui.control.Label       % hint / loading status below the file tree
+    DataSetDropDownLabel           matlab.ui.control.Label
+    DataSetDropDown                matlab.ui.control.DropDown    % which data set of a multi map file to import
+    RawCheckBox                    matlab.ui.control.CheckBox    % recorded instead of post processed data
     CurrentData                    matlab.ui.control.Table       % basic file info, 2-column label/value
     PhaseTable                     matlab.ui.control.Table
     VariableNameField              matlab.ui.control.EditField   % variable name for "Import to variable"
@@ -59,6 +62,10 @@ classdef import_wizard < matlab.apps.AppBase
     FontSize double = 14
     CurrentFolder string = ""
     LoadedFilePath string = "" % Keeps track of the path of the imported EBSD file
+    PreviewFilePath string = "" % file the data set / raw controls describe -
+                                % the selected one, imported or only previewed
+    HasDataSets logical = false % previewed file holds more than one data set
+    HasRawVersion logical = false % ... and a recorded next to a processed one
     SelectedImagePath cell = {} % field-name path of the OptTree's selected image node
     IPFKeys cell = {}           % precomputed ipfColorKey per phase, shared
                                 % by the IPF X/Y/Z tabs (they only differ by
@@ -173,7 +180,7 @@ classdef import_wizard < matlab.apps.AppBase
 
       app.FileBrowserLayout = uigridlayout(app.FileBrowserPanel, ...
         'ColumnWidth', {30, '1x'}, ...
-        'RowHeight', {24, '1x', 22}, ...
+        'RowHeight', {24, '1x', 22, 52}, ...
         'ColumnSpacing', 4, ...
         'RowSpacing', 2, ...
         'Padding', [4 4 4 4]);
@@ -215,7 +222,50 @@ classdef import_wizard < matlab.apps.AppBase
       app.ImportStatusLabel.Layout.Column = [1 2];
       setImportStatus(app, 'idle')
 
+      createDataSetControls(app)
+
       navigateToFolder(app, pwd)
+    end
+
+    function createDataSetControls(app)
+      % What to import out of the selected file, right below the tree it
+      % is selected in: which data set of a project file holding several
+      % maps, and whether to take the data as recorded by the detector
+      % instead of the version cleaned up by the vendor software. Both are
+      % filled in from the headerOnly preview that already runs on
+      % selection (see syncDataSetControls) and stay disabled for files
+      % that offer no choice.
+      optGrid = uigridlayout(app.FileBrowserLayout, ...
+        'ColumnWidth', {60, '1x'}, ...
+        'RowHeight', {24, 22}, ...
+        'ColumnSpacing', 4, ...
+        'RowSpacing', 2, ...
+        'Padding', [0 0 0 0]);
+      optGrid.Layout.Row = 4;
+      optGrid.Layout.Column = [1 2];
+
+      app.DataSetDropDownLabel = uilabel(optGrid, ...
+        'Text', 'Data set', ...
+        'FontSize', app.FontSize - 2);
+      app.DataSetDropDownLabel.Layout.Row = 1;
+      app.DataSetDropDownLabel.Layout.Column = 1;
+
+      app.DataSetDropDown = uidropdown(optGrid, ...
+        'Items', {'-'}, ...
+        'Enable', 'off', ...
+        'FontSize', app.FontSize - 2, ...
+        'ValueChangedFcn', createCallbackFcn(app, @ImportOptionChanged, true));
+      app.DataSetDropDown.Layout.Row = 1;
+      app.DataSetDropDown.Layout.Column = 2;
+
+      app.RawCheckBox = uicheckbox(optGrid, ...
+        'Text', 'raw (as recorded)', ...
+        'Enable', 'off', ...
+        'FontSize', app.FontSize - 2, ...
+        'Tooltip', 'Import the data as recorded by the detector instead of the version cleaned up by the vendor software', ...
+        'ValueChangedFcn', createCallbackFcn(app, @ImportOptionChanged, true));
+      app.RawCheckBox.Layout.Row = 2;
+      app.RawCheckBox.Layout.Column = [1 2];
     end
 
     function ensureAnalysisUI(app)
@@ -667,6 +717,71 @@ classdef import_wizard < matlab.apps.AppBase
       drawnow % force the label to actually repaint before a blocking load
     end
 
+    function opts = importOptions(app)
+      % the data set / raw choices as EBSD.load options - only what the
+      % selected file actually offers, so they never reach a format that
+      % does not know them
+      opts = {};
+      if app.HasDataSets && app.DataSetDropDown.ValueIndex > 1
+        opts = [opts, {'dataSet', app.DataSetDropDown.ValueIndex}];
+      end
+      if app.HasRawVersion && app.RawCheckBox.Value
+        opts = [opts, {'raw'}];
+      end
+    end
+
+    function syncDataSetControls(app, ebsdData)
+      % Fill the two controls from what the (possibly headerOnly) import
+      % reported about the file. Setting .Value programmatically does not
+      % fire ValueChangedFcn, so this never triggers a re-import.
+      %
+      % Note the data set list depends on the raw flag - both versions of
+      % an Oxford map enumerate one entry per slice, in the same order, so
+      % the selected index survives a toggle and is what gets carried over.
+      sets = strings(1,0);
+      dataType = "";
+      % isa, not isprop: the latter answers per array element, i.e. once
+      % per pixel for an imported map, which no scalar test can consume
+      if isa(ebsdData, 'EBSD')
+        if isfield(ebsdData.opt, 'dataSets'), sets = string(ebsdData.opt.dataSets); end
+        if isfield(ebsdData.opt, 'dataType'), dataType = string(ebsdData.opt.dataType); end
+      end
+
+      app.HasDataSets = numel(sets) > 1;
+      idx = min(max(app.DataSetDropDown.ValueIndex, 1), max(numel(sets), 1));
+      % Items and a non-empty ItemsData must always have the same length,
+      % so the old ItemsData has to go before a list of a different length
+      % can be assigned
+      app.DataSetDropDown.ItemsData = [];
+      if isempty(sets)
+        app.DataSetDropDown.Items = {'-'};
+        app.DataSetDropDown.Tooltip = '';
+      else
+        app.DataSetDropDown.Items = cellstr(sets);
+        app.DataSetDropDown.ItemsData = 1:numel(sets);
+        app.DataSetDropDown.Value = idx;
+        app.DataSetDropDown.Tooltip = char(strjoin(compose("[%d] %s", (1:numel(sets))', sets(:)), newline));
+      end
+      app.DataSetDropDown.Enable = matlab.lang.OnOffSwitchState(app.HasDataSets);
+
+      app.HasRawVersion = dataType ~= "";
+      if app.HasRawVersion, app.RawCheckBox.Value = dataType == "raw"; end
+      app.RawCheckBox.Enable = matlab.lang.OnOffSwitchState(app.HasRawVersion);
+    end
+
+    function ImportOptionChanged(app, ~)
+      % A changed data set / raw flag has to be read back from the file:
+      % re-import when it is the imported one, otherwise refresh the
+      % preview - which is also what updates the data set list itself.
+      if app.PreviewFilePath == "", return, end
+
+      if app.PreviewFilePath == app.LoadedFilePath
+        importEBSDData(app, app.PreviewFilePath)
+      else
+        previewEBSDData(app, app.PreviewFilePath, true)
+      end
+    end
+
     function importEBSDData(app, filePath)
       filePath = char(filePath); % normalize string -> char so fileparts
                                   % and [fileName fileExt] behave predictably
@@ -674,8 +789,9 @@ classdef import_wizard < matlab.apps.AppBase
       fileName = [fName fExt];
 
       setImportStatus(app, 'loading', fileName)
+      opts = importOptions(app);
       try
-        ebsdData = EBSD.load(filePath, 'wizard');
+        ebsdData = EBSD.load(filePath, 'wizard', opts{:});
       catch ME
         setImportStatus(app, 'idle')
         uialert(app.UIFigure, ME.message, 'Could not load EBSD data')
@@ -691,8 +807,13 @@ classdef import_wizard < matlab.apps.AppBase
 
       app.ebsd = ebsdData;
       app.LoadedFilePath = string(filePath); % Store file path for the script exporter
+      app.PreviewFilePath = app.LoadedFilePath;
       app.PFODFKey = "";
       app.IPFKeys = {};
+
+      % what was actually imported - the data set list depends on the raw
+      % flag, so it is re-read from the result rather than kept as is
+      syncDataSetControls(app, ebsdData)
 
       % --- paint first: everything up to the flush below is the minimum
       % required for the initial IPF Z view; the remaining setup happens
@@ -1553,29 +1674,53 @@ classdef import_wizard < matlab.apps.AppBase
       previewEBSDData(app, node.NodeData.Path)
     end
 
-    function previewEBSDData(app, filePath)
+    function previewEBSDData(app, filePath, keepOptions)
       % lightweight, non-intrusive preview: a headerOnly load feeds the
-      % file info table (app.CurrentData) without touching app.ebsd, so
-      % browsing around never disturbs the currently plotted data set.
-      % Failures are silent (no uialert) since this fires on every
-      % arrow-key move, not just a deliberate user action.
+      % file info table (app.CurrentData) and the data set / raw controls
+      % without touching app.ebsd, so browsing around never disturbs the
+      % currently plotted data set - and the choice of what to import can
+      % be made before importing. Failures are silent (no uialert) since
+      % this fires on every arrow-key move, not just a deliberate user
+      % action.
+      %
+      % keepOptions - re-read the same file with the controls as they are
+      %   now (they were just changed), instead of starting from scratch
+      %   with another file's selection
+      arguments
+        app
+        filePath
+        keepOptions (1,1) logical = false
+      end
       filePath = char(filePath);
+
+      if ~keepOptions && ~strcmp(filePath, char(app.PreviewFilePath))
+        % another file: its data sets are its own, and whether it even has
+        % a processed version is unknown until it has been read
+        app.DataSetDropDown.ValueIndex = 1;
+        app.HasDataSets = false;
+        app.HasRawVersion = false;
+      end
+      app.PreviewFilePath = string(filePath);
 
       % already the actually imported file - show its real info instead
       % of a redundant, more limited "preview" of the same data
       if strcmp(filePath, char(app.LoadedFilePath))
         updateCurrentDataInfo(app, app.ebsd, filePath, false)
+        syncDataSetControls(app, app.ebsd)
         return
       end
 
+      opts = importOptions(app);
       try
-        ebsdPreview = EBSD.load(filePath, 'wizard', 'headerOnly');
+        ebsdPreview = EBSD.load(filePath, 'wizard', 'headerOnly', opts{:});
       catch
         % not a recognized/loadable format - leave the table as is
+        syncDataSetControls(app, [])
         return
       end
 
       updateCurrentDataInfo(app, ebsdPreview, filePath, true)
+      syncDataSetControls(app, ebsdPreview)
     end
 
     function FileTreeNodeExpanded(app, event)
@@ -1875,8 +2020,19 @@ classdef import_wizard < matlab.apps.AppBase
       % Options (the interface/file format is auto-detected from the file
       % extension by EBSD.load - forcing 'wizard' here, as before, made
       % EBSD.load's own dispatcher fail to recognize the format and fall
-      % through to the generic loader instead of e.g. loadEBSD_ctf)
-      replaceMarkup('{options}', '', ',{options}');
+      % through to the generic loader instead of e.g. loadEBSD_ctf).
+      % What does have to be written out is which data set of a multi map
+      % file was picked and whether the recorded instead of the post
+      % processed data was taken - without them the script would silently
+      % import something else than the wizard showed.
+      optList = {};
+      if app.HasDataSets && app.DataSetDropDown.ValueIndex > 1
+        optList{end+1} = sprintf('''dataSet'',%d', app.DataSetDropDown.ValueIndex);
+      end
+      if app.HasRawVersion && app.RawCheckBox.Value
+        optList{end+1} = '''raw''';
+      end
+      replaceMarkup('{options}', strjoin(optList, ','), ',{options}');
 
       % Euler Correction - passed as the EulerCorrection option of
       % EBSD.load itself (see loadEBSDtemplate.m), not applied via a
