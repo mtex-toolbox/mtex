@@ -27,11 +27,8 @@ setCamera(how2plot)
 %%
 % Unfortunately, the boundary face normals provided by Dream3d sometimes
 % come with no orientation. In this case we have MTEX to compute the
-% orientation of the faces using the command <grain3d.orientFaces
-% |orientFaces|>. This may take some time and requires the free and open
-% source GPTToolbox
-% https://de.mathworks.com/matlabcentral/fileexchange/49692-gptoolbox> to
-% be installed.
+% orientation of the faces using the command <grain3d.orientFaces.html
+% |orientFaces|>.
 
 grains = grains.orientFaces
 
