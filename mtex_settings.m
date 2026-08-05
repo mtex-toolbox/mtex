@@ -29,7 +29,9 @@ try set(0,'defaultPolarAxesFontSize',fontSize); end %#ok<TRYNC>
 setMTEXpref('UTF8Output',true)
 
 % default plotting of specimen coordinates
-pC = plottingConvention(zvector,xvector);
+% x to east, y to south, z into the screen - the convention of SEM images
+% and of most EBSD imports
+pC = plottingConvention.ij;
 pC.makeDefault;
 
 % default figure size, possible values are a factor between 0 and 1 or

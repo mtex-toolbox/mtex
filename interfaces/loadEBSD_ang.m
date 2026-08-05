@@ -183,7 +183,8 @@ ebsd(ebsd.rotations.isnan | ebsd.prop.ci<0).phase = notIndexedID;
 
 ebsd = applyEulerCorrectionTable(ebsd,'.ang',varargin{:});
 
-ebsd.how2plot = getClass(varargin,'plottingConvention',plottingConvention.ij);
+ebsd.how2plot = matchDefault(...
+  getClass(varargin,'plottingConvention',plottingConvention.ij));
 
 end
 

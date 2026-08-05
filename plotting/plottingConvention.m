@@ -6,8 +6,10 @@ classdef plottingConvention < matlab.mixin.Copyable
 %   pC = plottingConvention(outOfScreen,east)
 %   plot(ebsd,pC)
 %
-%   % changing the default plotting convention
-%   plottingConvention.default.east = yvector
+%   % changing the default plotting convention - note that the default has
+%   % to be modified in place, plottingConvention.default.east = yvector
+%   % would replace it and detach all data that refers to it
+%   pC = plottingConvention.default; pC.east = yvector;
 %
 %   % changing the plotting convention for a dataset
 %   % to be used in all future plotting commands
@@ -272,6 +274,29 @@ classdef plottingConvention < matlab.mixin.Copyable
       plottingConvention.default(pC);
     end
 
+    function out = isapprox(pC,pC2,tol)
+      % do two conventions describe the same alignment?
+
+      if nargin < 3, tol = 1e-6; end
+
+      out = isa(pC2,'plottingConvention') && ...
+        all(angle(pC.rot,pC2.rot) < tol);
+
+    end
+
+    function pC = matchDefault(pC)
+      % reuse the default convention if it describes the same alignment
+      %
+      % Data that is plotted the default way should refer to the one
+      % default instance instead of an equivalent copy of it. Changing
+      % <plottingConvention.default.html plottingConvention.default>, e.g.
+      % by |plotx2north|, then applies to this data as well.
+
+      pCd = plottingConvention.default;
+      if isapprox(pC,pCd), pC = pCd; end
+
+    end
+
     function plot(pC, varargin)
 
       ax = get_option(varargin,'parent');
@@ -447,7 +472,13 @@ classdef plottingConvention < matlab.mixin.Copyable
       %
       % pC = plottingConvention.ij;
       %
-      pC = plottingConvention(-vector3d.Z,vector3d.X);
+      % The rotation - 180 degree about x, i.e. z -> -z and y -> -y - is
+      % set directly instead of by plottingConvention(-vector3d.Z,
+      % vector3d.X). Since this is the default convention, @vector3d can
+      % not be used here: its class default how2plot asks for exactly this
+      % convention, which MATLAB rejects as a circular initialisation.
+      pC = plottingConvention;
+      pC.rot = rotation(quaternion(0,1,0,0));
     end
     
     function pC = edax(setting)

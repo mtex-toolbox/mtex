@@ -136,7 +136,9 @@ methods (Static = true)
         save =  ss;
       else
         if isempty(save)
-          save = specimenSymmetry(plottingConvention); 
+          % x to east, y to south, z into the screen - the convention of
+          % SEM images and of most EBSD imports
+          save = specimenSymmetry(plottingConvention.ij);
         end
         ss = save;
       end
