@@ -14,9 +14,11 @@ classdef S2FunGrid < S2Fun
     function S2F = S2FunGrid(values, varargin)
 
       if isnumeric(values)
+        % nTheta x nRho grid of scalars, or of vectors along the trailing
+        % dimensions - flattened the same way as the function handle branch
         s = size(values);
         S2F.gSize = s(1:2);
-        S2F.values = rehspape(values,[s(1)*s(2),s(3:end)]);
+        S2F.values = reshape(values,s(1)*s(2),[]);
 
       elseif isa(values,"function_handle")
         
