@@ -75,6 +75,8 @@ options = {};
 switch char(interface)
   case {'h5','h5oina','oh5','hdf5','dream3d'}
     ebsd = loadEBSD_h5(fname,varargin{:});
+  case {'edaxh5'}
+    ebsd = loadEBSD_h5(fname,'type','.edaxh5',varargin{:});
   case 'ang'
     ebsd = loadEBSD_ang(fname,varargin{:});
   case 'ctf'
