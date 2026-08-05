@@ -92,7 +92,7 @@ clear B_adj;
 
 % evaluation direction in normalized coefficient coordinates
 [g_book, centeredEvaluation] = getEvaluationVector( ...
-  varargin, dim, N, B_book, centeredEvaluation);
+  dim, N, B_book, centeredEvaluation, varargin);
 
 if centeredEvaluation
   [H_num, H_perp, numericalRidge, centerAmplification] = ...
@@ -114,7 +114,7 @@ if nargout > 1
 end
 
 % unregularized coefficient solve, but return the directional diagnostics used
-% by the automatic parameter calibration
+%   by the automatic parameter calibration
 if ~regularize
   c_book = pagemldivide(B_book, fw_book) ./ s_book;
   conds = conds_unreg;
@@ -131,22 +131,17 @@ end
 mincond = get_option(varargin, {'mincond','minCond','min_cond'}, 30);
 maxcond = get_option(varargin, {'maxcond','maxCond','max_cond'}, 1e3);
 targetcond = get_option(varargin, ...
-  {'targetcond','targetCond','target_cond', ...
-   'target amplification','targetamp'}, mincond);
-if isempty(mincond), mincond = 30; end
-if isempty(maxcond), maxcond = 1e3; end
-if isempty(targetcond), targetcond = mincond; end
+  {'targetcond','targetCond','target_cond', 'target amplification','targetamp'}, mincond);
 
 % The ideal target one cannot be reached with a finite nuisance-block scaling.
 % targetcond may be lower than mincond, which separates final correction
-% strength from the point where regularization begins.
+%   strength from the point where regularization begins.
 mincond = max(real(mincond), 1.1);
 maxcond = max(real(maxcond), 10 * mincond);
 targetcond = min(max(real(targetcond), 1.1), mincond);
 
 [shapeRegularization, centerAmplificationRegBound] = ...
-  shapeRegularizationAmount(centerAmplification, ...
-    mincond, maxcond, targetcond);
+  shapeRegularizationAmount(centerAmplification, mincond, maxcond, targetcond);
 
 H_reg = H_num + reshape(shapeRegularization, 1, 1, N) .* H_perp;
 H_reg = (H_reg + conj(permute(H_reg, [2, 1, 3]))) / 2;
@@ -157,12 +152,10 @@ numf = size(fw_book, 2);
 c_scaled = zeros(dim, numf, N, 'like', fw_book);
 
 if any(~active)
-  c_scaled(:,:,~active) = ...
-    pagemldivide(B_book(:,:,~active), fw_book(:,:,~active));
+  c_scaled(:,:,~active) = pagemldivide(B_book(:,:,~active), fw_book(:,:,~active));
 end
 if any(active)
-  c_scaled(:,:,active) = ...
-    pagemldivide(H_reg(:,:,active), rhs_book(:,:,active));
+  c_scaled(:,:,active) = pagemldivide(H_reg(:,:,active), rhs_book(:,:,active));
 end
 
 c_book = c_scaled ./ s_book;
@@ -170,14 +163,11 @@ clear c_scaled rhs_book B_book fw_book s_book H_num H_perp;
 
 if nargout > 1
   eigReg = pageeig(H_reg);
-  [conds, maxeig_reg, mineig_reg] = ...
-    conditionsFromEigenvalues(eigReg, eigFloorRel);
+  [conds, maxeig_reg, mineig_reg] = conditionsFromEigenvalues(eigReg, eigFloorRel);
 
   if nargout > 2
-    info = makeInfo(conds, conds_unreg, maxeig, mineig, ...
-      maxeig_reg, mineig_reg, centerAmplification, ...
-      centerAmplificationRegBound, numericalRidge, ...
-      shapeRegularization, active);
+    info = makeInfo(conds, conds_unreg, maxeig, mineig, maxeig_reg, mineig_reg, ...
+      centerAmplification, centerAmplificationRegBound, numericalRidge, shapeRegularization, active);
   end
 end
 
@@ -185,11 +175,10 @@ end
 
 
 % obtain basis evaluation vectors in a canonical dim x 1 x N layout
-function [g_book, centeredEvaluation] = getEvaluationVector( ...
-    varargin, dim, N, prototype, centeredEvaluation)
+function [g_book, centeredEvaluation] = getEvaluationVector(...
+    dim, N, prototype, centeredEvaluation, varargin)
 
-  g_book = get_option(varargin, ...
-    {'eval_vector', 'evaluation_vector', 'center_vector'}, []);
+  g_book = get_option(varargin, {'eval_vector', 'evaluation_vector', 'center_vector'}, []);
 
   if isempty(g_book)
     g_book = zeros(dim, 1, 1, 'like', prototype);
@@ -229,8 +218,7 @@ function [H_num, H_perp, lambda, chi] = ...
 
   % This high condition cap is a numerical safeguard, not the approximation
   % criterion. It acts only in the nonconstant coefficient space.
-  lambdaCond = max(0, ...
-    (muMax - kappaMax .* muMin) ./ (kappaMax - 1));
+  lambdaCond = max(0, (muMax - kappaMax .* muMin) ./ (kappaMax - 1));
   lambdaAbs = max(0, eigFloorRel .* max(muMax, 1) - muMin);
   lambda = max(lambdaCond, lambdaAbs);
 
