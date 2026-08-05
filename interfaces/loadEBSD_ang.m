@@ -50,24 +50,10 @@ for i = 1:length(phasePos)
   laue = readByToken(str,'# Symmetry');
   lattice = readByToken(str,'# LatticeConstants',[1 1 1 90 90 90]);
   
-  % setup crystal symmetry
-  options = {};
-  switch laue
-    case {'-3m' '32' '3' '62' '6'}
-      options = {'X||a'};
-    case '2'
-      options = {'X||a*'};
-    case '1'
-      options = {'X||a'};
-    case '20'
-      laue = '2';
-      options = {'y||b','z||c'};
-    otherwise
-      if lattice(6) ~= 90
-        options = {'X||a'};
-      end
-  end
-  cs(phase+1) = crystalSymmetry(laue,lattice(1:3)',lattice(4:6)'*degree,'mineral',mineral,options{:});
+  % setup crystal symmetry - the symmetry is stored as a TSL code and the
+  % crystal reference frame follows the EDAX convention
+  cs(phase+1) = crystalSymmetry(TSL2pointGroup(laue),lattice(1:3)',...
+    lattice(4:6)'*degree,'mineral',mineral,'EDAX');
 
 end
 
@@ -192,6 +178,8 @@ ebsd.phaseMap(1) = notIndexedID;
 ebsd(ebsd.rotations.isnan | ebsd.prop.ci<0).phase = notIndexedID;
 
 ebsd = applyEulerCorrectionTable(ebsd,'.ang',varargin{:});
+
+ebsd.how2plot = getClass(varargin,'plottingConvention',plottingConvention.ij);
 
 end
 

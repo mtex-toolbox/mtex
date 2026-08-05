@@ -332,42 +332,17 @@ CS = repmat(notIndexed,1,nPhase); %if nPhase is zero then interface catches the 
 
 for k = 1:nPhase
 
-  phaseBytes = headerBytes(PhaseStart:PhaseStart+288);
-
-  laueGroup = num2str(typecast(phaseBytes(257:260),'int32'));
+  phaseBytes = headerBytes(PhaseStart(k):PhaseStart(k)+288);
 
   cellBytes = phaseBytes(261:284);
   axLength  = double(typecast(cellBytes(1:12),'single'));
   axAngle   = double(typecast(cellBytes(13:end),'single'))*degree;
   numHKL    = typecast(phaseBytes(285:288),'int32');
 
+  % the symmetry is stored as a TSL code and the crystal reference frame
+  % follows the EDAX convention - same as for .ang files
+  laueGroup = TSL2pointGroup(typecast(phaseBytes(257:260),'int32'));
 
-  % maybe from ang convention? should ask the vendor ...
-  switch laueGroup
-    case {'126'}
-      laueGroup = '622';
-      options = {'X||a'};
-    case {'-3m' '32' '3' '62' '6'}
-      options = {'X||a'};
-    case '2'
-      options = {'X||a*'};
-      warning('MTEX:unsupportedSymmetry','symmetry not yet supported!')
-    case '1'
-      options = {'X||a'};
-    case '131'
-      laueGroup = '432';
-      options = {''};
-    case '20'
-      laueGroup = {'2'};
-      options = {'X||a'};
-    otherwise
-      if any(axAngle ~= pi/2)
-        options = {'X||a'};
-      else
-        options = {''};
-      end
-  end
-
-  CS(k) = crystalSymmetry(laueGroup,axLength,axAngle,'mineral',PhaseName{k},options{:});
+  CS(k) = crystalSymmetry(laueGroup,axLength,axAngle,'mineral',PhaseName{k},'EDAX');
 
 end

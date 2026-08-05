@@ -36,6 +36,13 @@ Crystal vs. Cartesian Coordinate systeme:
 
 usually not MTEX default, i.e., x||a for trigonal and hexagonal
 
+If "Cartesian Alignment" is missing the config falls back to the option
+"EDAX", which is the very same convention the .ang / .osc interfaces use:
+x||a for triclinic, trigonal and hexagonal lattices, MTEX default otherwise
+(see geometry/@crystalSymmetry/private/calcAxis.m). The .edaxh5 and EMSphInx
+configs use "EDAX" unconditionally since those files do not state their
+alignment.
+
 
 # Oxford
 

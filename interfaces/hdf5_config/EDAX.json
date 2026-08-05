@@ -40,7 +40,7 @@
       "key": { "mode": "search_root", "value": "Header/Phase" },
       "multiple": true,
       "default": {
-        "reference_frame": { "mode": "search_free", "value": "/EBSD/Header/Cartesian Alignment", "type": "default"},
+        "reference_frame": { "mode": "search_free", "value": "/EBSD/Header/Cartesian Alignment", "type": "default", "fallback": "EDAX"},
         "space_group": { "mode": "search_free", "value": "SpaceGroupNumber|Point Group", "type": "default" },
         "name": { "mode": "search_root", "value": "MaterialName"},
         "lattice": {

@@ -220,6 +220,20 @@ end
 
 ebsd = data.ebsd;
 
+% Euler <-> map reference frame -------------------------------------------
+% Normally the correction is stated in the file and has been picked up by
+% the config above. An explicitly given 'setting' / 'EulerCorrection' still
+% wins, and if an EDAX flavoured file did not state it at all (.edaxh5
+% writes -1 as coordinate system id) the user is asked for it, just as the
+% .ang and .osc interfaces do.
+[~,~,ext] = fileparts(fname);
+if check_option(varargin,{'setting','EulerCorrection'})
+  ebsd = applyEulerCorrectionTable(ebsd,ext,varargin{:});
+elseif startsWith(string(Conf.settings.name),"EDAX","IgnoreCase",true) && ...
+    ebsd.EulerCorrection.angle < 1e-6
+  ebsd = applyEulerCorrectionTable(ebsd,ext);
+end
+
 end
 
 %% Formating functions
@@ -263,41 +277,21 @@ function out = position_indirect(raw_data)
   out = vector3d(x(:), y(:), 0);
 end
 
-function out = rotation_byMatrix(M, format)
-%MATRIXTOROTATION  Build a MTex rotation object from 3x3 orientation matrices.
+function out = rotation_byMatrix(M)
+%ROTATION_BYMATRIX  Build a MTEX rotation from 3x3 orientation matrices.
 
   if nargin < 1
-    error('matrixToRotation: no input given.');
-  end
-  if nargin < 2 || isempty(format)
-    format = 1;
-  end
-  if abs(format - 1) < 1e-9
-    format = 1;
-  elseif abs(format - pi/180) < 1e-6
-    format = pi/180;
-  else
-    error(['matrixToRotation: format must be 1 (radians) or pi/180 (degrees). ' ...
-           'Got %g.'], format);
+    error('rotation_byMatrix: no input given.');
   end
 
-  % --- Normalize to 3x3xN ----------------------------------------------
-  M = ensure_3x3xN(M);
-
-  % --- Extract Bunge Euler angles --------------------------------------
-  %   g = R_z(phi1) * R_x(PHI) * R_z(phi2)
-  g33 = M(3,3,:);
-  g33 = max(min(g33, 1), -1);                 % numerical clamp
-  PHI  = acos(g33(:));
-  phi1 = atan2(M(3,1,:), -M(3,2,:));
-  phi2 = atan2(M(1,3,:),  M(2,3,:));
-
-  phi = [phi1(:), PHI(:), phi2(:)];           % N x 3
-
-  out = rotation.byEuler(phi * format);
+  out = reshape(rotation.byMatrix(ensure_3x3xN(double(M))),[],1);
 
   function M3 = ensure_3x3xN(M)
   %ENSURE_3X3XN  Coerce a 9xN, Nx9, 3x3 or 3x3xN array to 3x3xN.
+  %
+  % The 9 values of one pixel are stored column by column - this is the
+  % order EDAX writes its "Orientations" records in, verified against the
+  % Euler angles of the very same map exported as .ang.
   if ndims(M) == 3 && size(M,1) == 3 && size(M,2) == 3
     M3 = M;                                 % already 3x3xN
     return
@@ -309,17 +303,17 @@ function out = rotation_byMatrix(M, format)
         return
     end
     if h == 9 && w > 1
-        % 9 x N: each COLUMN is one pixel's 9 values (column-major flat).
-        M3 = reshape(M, 3, 3, []);          % 9 -> 3x3 directly
+        % 9 x N: each COLUMN is one pixel's 9 values
+        M3 = reshape(M, 3, 3, []);
         return
     end
     if w == 9 && h > 1
-        % N x 9: each ROW is one pixel's 9 values (row-major flat).
-        M3 = permute(reshape(M', 3, 3, []), [2 1 3]);
+        % N x 9: each ROW is one pixel's 9 values
+        M3 = reshape(M', 3, 3, []);
         return
     end
   end
-  error(['matrixToRotation: matrix must be 3x3, 3x3xN, 9xN or Nx9. ' ...
+  error(['rotation_byMatrix: matrix must be 3x3, 3x3xN, 9xN or Nx9. ' ...
          'Got size [%s].'], num2str(size(M)));
   end
 end
@@ -436,33 +430,10 @@ function out = space_group_default(raw_data)
 end
 
 function out = space_group_TSLNumber(raw_data)
+% EDAX / TSL store the symmetry as a numeric code, e.g. 43 for cubic 432 -
+% the very same codes as in the .ang / .osc header
 
-switch raw_data
-  case 1
-    out = "-1";
-  case 2
-    out = "2/m";
-  case 22
-    out = "mmm";
-  case 4
-    out = "4/m";
-  case 42
-    out = "4/mmm";
-  case 3
-    out = "-3";
-  case 32
-    out = "-3m";
-  case 6
-    out = "6/m";
-  case 62
-    out = "6/mmm";
-  case 23
-    out = "m-3";
-  case 43
-    out = "m-3m";
-  otherwise
-    out = "1";
-end
+  out = TSL2pointGroup(raw_data);
 
 end
 
@@ -662,10 +633,20 @@ function out = map_correction_by_id(raw_data)
     error("map_correction_default: " + ME.message);      
   end
 
-  id = int8(raw_data.id);
+  id = double(raw_data.id);
   data = raw_data.correct_data;
 
-  if length(data(id)) > 1
+  % some vendors do not always state the setting, e.g. EDAX writes -1 into
+  % .edaxh5 files - then there is nothing to correct here and loadEBSD_h5
+  % asks the user for the setting instead
+  if id < 1 || id > size(data,1)
+    out = rotation.id;
+    return
+  end
+
+  % either one row of Bunge angles per id or a single rotation angle
+  % about the y axis
+  if size(data,2) > 1
     out = rotation.byEuler(data(id,:)*format);
   else
     out = rotation.byAxisAngle(yvector, data(id)*format);
@@ -1192,17 +1173,31 @@ function [raw_data, config_item] = fetch_from_path(info_struct, config_item, opt
 % The config points at one (or several) absolute / regex paths in the
 % HDF5 file. The resolved path is stashed back on the config so that
 % downstream code (e.g. the additions auto-discovery) can introspect it.
+% A "fallback" value in the config is used whenever the path is missing -
+% this makes an entry optional and still gives it a defined value.
+  optional = options.optional || isfield(config_item, 'fallback');
+
   path = get_hdf5_path(info_struct, config_item, ...
     "root", options.root, ...
     "multiple", options.multiple, ...
-    "optional", options.optional);
+    "optional", optional);
   config_item.path = path;
 
-  if isempty(path)
+  % get_hdf5_path signals "not found" by an empty string, which isempty()
+  % does not detect for a string scalar
+  if ~iscell(path) && all(strlength(string(path)) == 0)
     label = sprintf('├── %s/', options.name);
-    pathLabel = sprintf('⤴ skip optional "%s" (path not found)\n', options.name);
+    if isfield(config_item, 'fallback')
+      pathLabel = sprintf('[Fallback value for "%s" (path not found)]', options.name);
+      raw_data = config_item.fallback;
+      % a "multiple" read hands a cell of values to the formatter - one
+      % fallback value stands for all of them
+      if options.multiple, raw_data = {raw_data}; end
+    else
+      pathLabel = sprintf('⤴ skip optional "%s" (path not found)\n', options.name);
+      raw_data = struct();
+    end
     print_debug(label, pathLabel, options.level);
-    raw_data = struct();
     return;
   end
 
