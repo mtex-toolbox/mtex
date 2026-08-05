@@ -29,7 +29,7 @@
  [fit, grainPairs] = calcGBFit(job,varargin{:});
  
  % turn into probability
- prob = 1 - 0.5 * (1 + erf(2*(fit - threshold)./tol));
+ prob = double(1 - 0.5 * (1 + erf(2*(fit - threshold)./tol)));
  
  % write into similarity matrix
  job.graph = sparse(grainPairs(:,1),grainPairs(:,2),prob,...
