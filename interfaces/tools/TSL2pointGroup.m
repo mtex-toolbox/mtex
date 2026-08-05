@@ -1,19 +1,24 @@
-function pointGroup = TSL2pointGroup(sym)
-% translate an EDAX / TSL symmetry code into a MTEX point group name
+function pointGroup = TSL2pointGroup(sym,pointGroup)
+% translate the symmetry entries of an EDAX / TSL file into a point group
 %
-% EDAX files (.ang, .osc, EDAX flavoured *.h5) do not store the point group
-% by name but as a numeric code which spells out the digits of the proper
-% rotation group, e.g. 43 for 432 and 62 for 622. The 11 codes below are
-% exactly the 11 proper rotation groups. Everything that is not part of the
-% table - in particular a symmetry given by its name - is passed through
-% unchanged so that it can be resolved by crystalSymmetry itself.
+% EDAX files describe the symmetry of a phase twice. The "Symmetry" code is
+% the one every EDAX format has, but it only distinguishes the 11 Laue
+% groups - it spells out the digits of the corresponding rotation group,
+% e.g. 43 for cubic and 62 for hexagonal. Newer files state in addition the
+% actual point group, either as the numeric id "PointGroupID" / "PGsymID"
+% or as a string like "Hexagonal (D6h) [6/mmm]".
+%
+% The point group is used whenever it is available and consistent with the
+% Laue group, otherwise the Laue group is returned.
 %
 % Syntax
 %   pointGroup = TSL2pointGroup(43)
-%   pointGroup = TSL2pointGroup('62')
+%   pointGroup = TSL2pointGroup(62,126)
+%   pointGroup = TSL2pointGroup(22,'Orthorhombic (D2h) [mmm]')
 %
 % Input
-%  sym - TSL symmetry code, numeric or char
+%  sym        - TSL symmetry code, numeric or char
+%  pointGroup - EDAX point group id (>= 100) or name, optional
 %
 % Output
 %  pointGroup - point group name as understood by @crystalSymmetry
@@ -21,28 +26,93 @@ function pointGroup = TSL2pointGroup(sym)
 % See also
 % loadEBSD_ang loadEBSD_osc loadEBSD_h5
 
-if iscell(sym), sym = sym{1}; end
-pointGroup = strtrim(char(string(sym)));
+laueGroup = TSL2laueGroup(sym);
 
-% the monoclinic code 2 is kept as '2' - crystalSymmetry decides from the
-% lattice angles whether this is 121, 112 or 211
-switch pointGroup
-  case '1',   pointGroup = '1';    % C1  triclinic
-  case '2',   pointGroup = '2';    % C2  monoclinic
-  case '20',  pointGroup = '2';    % C2  monoclinic
-  case '22',  pointGroup = '222';  % D2  orthorhombic
-  case '3',   pointGroup = '3';    % C3  trigonal
-  case '32',  pointGroup = '321';  % D3  trigonal
-  case '4',   pointGroup = '4';    % C4  tetragonal
-  case '42',  pointGroup = '422';  % D4  tetragonal
-  case '6',   pointGroup = '6';    % C6  hexagonal
-  case '62',  pointGroup = '622';  % D6  hexagonal
-  case '23',  pointGroup = '23';   % T   cubic
-  case '43',  pointGroup = '432';  % O   cubic
+if nargin == 1, pointGroup = laueGroup; return; end
 
-  % codes seen in .osc files only
-  case '126', pointGroup = '622';
-  case '131', pointGroup = '432';
+pointGroup = pointGroupName(pointGroup);
+
+% no point group stated - the Laue group is all we know
+if isempty(pointGroup), pointGroup = laueGroup; return; end
+
+% both should describe the same Laue class, if they do not the point group
+% was not understood and the Laue group is the safer choice
+try
+  idPG = symmetry.extractPointId(pointGroup);
+  idLaue = symmetry.extractPointId(laueGroup);
+  if symmetry.pointGroups(idPG).LaueId ~= symmetry.pointGroups(idLaue).LaueId
+    pointGroup = laueGroup;
+  end
+catch
+  pointGroup = laueGroup;
 end
+
+end
+
+function laueGroup = TSL2laueGroup(sym)
+% the 11 Laue groups behind the TSL symmetry codes
+
+if iscell(sym), sym = sym{1}; end
+laueGroup = strtrim(char(string(sym)));
+
+% for monoclinic crystalSymmetry decides from the lattice angles whether
+% 2/m means 12/m1, 112/m or 2/m11
+switch laueGroup
+  case '1',   laueGroup = '-1';     % triclinic
+  case {'2','20'}, laueGroup = '2/m';   % monoclinic
+  case '22',  laueGroup = 'mmm';    % orthorhombic
+  case '3',   laueGroup = '-3';     % trigonal
+  case '32',  laueGroup = '-3m';    % trigonal
+  case '4',   laueGroup = '4/m';    % tetragonal
+  case '42',  laueGroup = '4/mmm';  % tetragonal
+  case '6',   laueGroup = '6/m';    % hexagonal
+  case '62',  laueGroup = '6/mmm';  % hexagonal
+  case '23',  laueGroup = 'm-3';    % cubic
+  case '43',  laueGroup = 'm-3m';   % cubic
+  otherwise
+    % .osc files store the point group id in the very same field
+    pg = pointGroupName(laueGroup);
+    if ~isempty(pg), laueGroup = pg; end
+end
+
+end
+
+function name = pointGroupName(pointGroup)
+% the point group as an id, as an EDAX name or already as a plain name
+
+name = '';
+if isempty(pointGroup), return; end
+if iscell(pointGroup), pointGroup = pointGroup{1}; end
+pointGroup = strtrim(char(string(pointGroup)));
+
+% EDAX writes names like "Hexagonal (D6h) [6/mmm]"
+inBrackets = regexp(pointGroup,'\[([^\]]+)\]','tokens','once');
+if ~isempty(inBrackets), name = strtrim(inBrackets{1}); return; end
+
+% the numeric id counts the 32 point groups, starting with 100 for triclinic 1
+id = str2double(pointGroup);
+if ~isnan(id) && id >= 100 && id <= 100 + numel(pointGroupList) - 1
+  list = pointGroupList;
+  name = list{id - 99};
+  return
+end
+
+% anything else is passed on unchanged, crystalSymmetry may know it
+if isnan(id), name = pointGroup; end
+
+end
+
+function list = pointGroupList
+% the 32 crystallographic point groups in the order EDAX numbers them,
+% i.e. PointGroupID = 100 + position in this list - 1
+%
+% Verified for 126 -> 6/mmm and 131 -> m-3m against the SpaceGroupHall
+% entries of the very same phases.
+
+list = {'1','-1','2','m','2/m','222','mm2','mmm',...
+  '4','-4','4/m','422','4mm','-42m','4/mmm',...
+  '3','-3','32','3m','-3m',...
+  '6','-6','6/m','622','6mm','-62m','6/mmm',...
+  '23','m-3','432','-43m','m-3m'};
 
 end

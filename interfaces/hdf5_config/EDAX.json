@@ -41,7 +41,12 @@
       "multiple": true,
       "default": {
         "reference_frame": { "mode": "search_free", "value": "/EBSD/Header/Cartesian Alignment", "type": "default", "fallback": "EDAX"},
-        "space_group": { "mode": "search_free", "value": "SpaceGroupNumber|Point Group", "type": "default" },
+        "space_group": {
+          "type": "EDAX",
+          "laue_code": { "mode": "search_root", "value": "/Symmetry$"},
+          "point_group_id": { "mode": "search_root", "value": "/PGsymID$", "fallback": ""},
+          "point_group_name": { "mode": "search_root", "value": "/Point Group$", "fallback": ""}
+        },
         "name": { "mode": "search_root", "value": "MaterialName"},
         "lattice": {
           "angle": {

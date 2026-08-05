@@ -173,7 +173,8 @@ try
   if ~headerOnly && isfield(Conf, 'additions')
     if Conf.additions.type == "auto"
   
-      opt_prop = struct("root", "/", "optional", true, "name", "prop", "level", 1);
+      opt_prop = struct("root", "/", "optional", true, "name", "prop", ...
+        "level", 1, "multiple", false);
   
       prop_data = fetch_from_group(info_struct, Conf.additions, opt_prop);
   
@@ -413,15 +414,31 @@ function out = cs_default(raw_data)
       raw_data.name);
   end
 
+  % structural information beyond the point group. MTEX does not model
+  % translational symmetry, so keep it as stated by the vendor instead of
+  % dropping it
+  if isfield(raw_data,'space_group_id') && ~isempty(raw_data.space_group_id)
+    out.opt.spaceId = double(raw_data.space_group_id);
+  end
+  if isfield(raw_data,'atoms') && ~isempty(raw_data.atoms)
+    out.opt.atoms = raw_data.atoms;
+  end
+
 end
 
 function out = space_group_default(raw_data)
 
 
   if isnumeric(raw_data)
-    clean = double(raw_data);    
+    clean = double(raw_data);
     id = symmetry.extractPointId('spaceId', clean);
   else
+    % vendors state the group as a name, sometimes decorated like
+    % "Hexagonal (D6h) [6/mmm]" - then only the bracket is the group
+    raw_data = char(string(raw_data));
+    inBrackets = regexp(raw_data,'\[([^\]]+)\]','tokens','once');
+    if ~isempty(inBrackets), raw_data = inBrackets{1}; end
+
     clean = clean_string(raw_data);
     id = symmetry.extractPointId(clean);
   end
@@ -430,10 +447,45 @@ function out = space_group_default(raw_data)
 end
 
 function out = space_group_TSLNumber(raw_data)
-% EDAX / TSL store the symmetry as a numeric code, e.g. 43 for cubic 432 -
-% the very same codes as in the .ang / .osc header
+% EDAX / TSL store the symmetry as a numeric code, e.g. 43 for cubic -
+% the very same codes as in the .ang / .osc header. It only distinguishes
+% the 11 Laue groups.
 
   out = TSL2pointGroup(raw_data);
+
+end
+
+function out = space_group_EDAX(raw_data)
+% EDAX states the symmetry as the numeric TSL code, which gives the Laue
+% group only, and - in newer files - as the actual point group, either as
+% the id "PGsymID" / "PointGroupID" or as a name like
+% "Hexagonal (D6h) [6/mmm]". Both are read separately since one config
+% entry must never match more than one data set per phase.
+
+  pointGroup = [];
+  if isfield(raw_data,'point_group_id') && ~isempty(raw_data.point_group_id)
+    pointGroup = raw_data.point_group_id;
+  elseif isfield(raw_data,'point_group_name')
+    pointGroup = raw_data.point_group_name;
+  end
+
+  out = TSL2pointGroup(raw_data.laue_code,pointGroup);
+
+end
+
+function out = atoms_default(raw_data)
+% the atomic basis as stated by the vendor, one dataset per atom holding a
+% string like "Zr,3.333E-1,6.667E-1,2.5E-1,1,0" - kept as read since MTEX
+% has no model of the crystal structure to feed it into
+
+  out = {};
+  if ~isstruct(raw_data), return; end
+
+  % x1, x2, ... - the atoms in the order the vendor stored them
+  fn = sort(fieldnames(raw_data));
+  for i = 1:numel(fn)
+    out = [out, cellstr(string(raw_data.(fn{i})))']; %#ok<AGROW>
+  end
 
 end
 
@@ -1225,33 +1277,51 @@ end
 function raw_data = fetch_from_group(info_struct, config_item, options)
 % Reads every dataset under a matched group at once, using the cleaned
 % dataset name as the field name. Useful for header blobs and image
-% bundles (FSE/SE).
+% bundles (FSE/SE). Under "multiple" one struct per matching group is
+% returned, e.g. the atom positions of every phase.
   raw_data = struct();
 
   group_path = get_hdf5_path(info_struct, config_item.group, ...
     "root", options.root, ...
+    "multiple", options.multiple, ...
     "optional", options.optional);
   config_item.path = group_path;
 
-  if group_path == ""
+  if ~iscell(group_path) && all(strlength(string(group_path)) == 0)
     label = sprintf('├── %s/', options.name);
     pathLabel = sprintf('⤴ skip optional "%s" (group not found)\n', options.name);
     print_debug(label, pathLabel, options.level);
     return;
   end
 
-  group = locate_subtree(info_struct, group_path);
+  if ~iscell(group_path), group_path = {group_path}; end
 
-  label = sprintf('├── %s/', options.name);
-  pathLabel = sprintf('[Collect: %d Datasets] from %s', ...
-    length(group.Datasets), group_path);
-  print_debug(label, pathLabel, options.level);
+  raw_data = cell(1,numel(group_path));
+  for k = 1:numel(group_path)
 
-  for i = 1:length(group.Datasets)
-    raw_name  = string(group.Datasets(i).Name);
-    cleanName = clean_string(raw_name);
-    raw_data.(cleanName) = h5read(info_struct.Filename, group_path + "/" + raw_name);
+    group = locate_subtree(info_struct, group_path{k});
+
+    label = sprintf('├── %s/', options.name);
+    pathLabel = sprintf('[Collect: %d Datasets] from %s', ...
+      length(group.Datasets), group_path{k});
+    print_debug(label, pathLabel, options.level);
+
+    raw_data{k} = struct();
+    for i = 1:length(group.Datasets)
+      raw_name  = string(group.Datasets(i).Name);
+      cleanName = validFieldName(clean_string(raw_name));
+      raw_data{k}.(cleanName) = h5read(info_struct.Filename, group_path{k} + "/" + raw_name);
+    end
   end
+
+  if ~options.multiple, raw_data = raw_data{1}; end
+end
+
+function name = validFieldName(name)
+% dataset names may start with a digit, e.g. the atoms of a Bruker phase
+% are stored as AtomPositions/1, AtomPositions/2, ...
+  name = char(name);
+  if isempty(name) || ~isletter(name(1)), name = ['x' name]; end
 end
 
 function [raw_data, config_item] = fetch_from_subfields(info_struct, config_item, options)

@@ -50,11 +50,13 @@ for i = 1:length(phasePos)
   % load mineral data
   mineral = readByToken(str,'# MaterialName');
   laue = readByToken(str,'# Symmetry');
+  pointGroup = readByToken(str,'# PointGroupID');
   lattice = readByToken(str,'# LatticeConstants',[1 1 1 90 90 90]);
-  
-  % setup crystal symmetry - the symmetry is stored as a TSL code and the
-  % crystal reference frame follows the EDAX convention
-  cs(phase+1) = crystalSymmetry(TSL2pointGroup(laue),lattice(1:3)',...
+
+  % setup crystal symmetry - the symmetry is stored as a TSL code, newer
+  % files state the point group in addition, and the crystal reference
+  % frame follows the EDAX convention
+  cs(phase+1) = crystalSymmetry(TSL2pointGroup(laue,pointGroup),lattice(1:3)',...
     lattice(4:6)'*degree,'mineral',mineral,'EDAX');
 
 end

@@ -339,9 +339,11 @@ for k = 1:nPhase
   axAngle   = double(typecast(cellBytes(13:end),'single'))*degree;
   numHKL    = typecast(phaseBytes(285:288),'int32');
 
-  % the symmetry is stored as a TSL code and the crystal reference frame
-  % follows the EDAX convention - same as for .ang files
-  laueGroup = TSL2pointGroup(typecast(phaseBytes(257:260),'int32'));
+  % the crystal reference frame follows the EDAX convention - same as for
+  % .ang files. Depending on the version this field holds either the TSL
+  % symmetry code or the point group id, TSL2pointGroup takes both
+  symCode = typecast(phaseBytes(257:260),'int32');
+  laueGroup = TSL2pointGroup(symCode,symCode);
 
   CS(k) = crystalSymmetry(laueGroup,axLength,axAngle,'mineral',PhaseName{k},'EDAX');
 

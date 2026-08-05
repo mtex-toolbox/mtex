@@ -1,3 +1,11 @@
+# Writing a config
+
+Every entry below a block with `"multiple": true` - the phase list of `cs` -
+must match exactly **one** data set per phase. The number of phases is not
+taken from the file, it is implied by the number of matches, so a regex like
+`"Symmetry$|LGsymID"` that hits two data sets of the same phase silently
+doubles the phase list and shifts the phase ids of the map.
+
 # Bruker
 
 Euler vs. Map Coordinate system:
