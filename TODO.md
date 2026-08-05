@@ -29,10 +29,6 @@ EBSD3d / Grain3d
 * curvature, convex hull
 * grainBoundaryCharacter
 * characteristicShape
-* grain2d/display errors on grains coming out of grain3d.slice - line 63
-  calls length(grains.innerBoundary) and the empty innerBoundary has an
-  empty phaseId, so phaseList/size indexes phaseId(:,1) out of bounds. This
-  breaks doc/EBSD3Analysis/Grains3D.m at both of its slice calls.
 * grain3d.orientFaces does not detect cavities, i.e. a grain that completely
   encloses another one. The enclosing surface would have to be oriented
   inwards, instead each closed surface patch is oriented outwards. The case
