@@ -170,9 +170,11 @@ end
 % --------------------
 function result = MATLABverLessThan(verstr)
 
-MATLABver = ver('MATLAB');
+% note that we do not use ver('MATLAB') here, as it reads and parses the
+% Contents.m files of all installed toolboxes and hence takes about a second
+persistent toolboxParts
+if isempty(toolboxParts), toolboxParts = getParts(version); end
 
-toolboxParts = getParts(MATLABver(1).Version);
 verParts = getParts(verstr);
 
 result = (sign(toolboxParts - verParts) * [1; .1; .01]) < 0;
