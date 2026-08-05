@@ -9,7 +9,18 @@ figTightInset = mtexFig.outerPlotSpacing * [1,1,1,1];
 
 if isempty(mtexFig.children), return; end
 ax = mtexFig.children(1);
-    
+
+% a polar axes has none of the tick and label properties measured below, but
+% it does report a tight inset of its own
+if isa(ax,'matlab.graphics.axis.PolarAxes')
+  if isprop(ax,'TightInset')
+    unit = get(ax,'units'); set(ax,'units','pixel');
+    tightInset = get(ax,'TightInset');
+    set(ax,'units',unit);
+  end
+  return
+end
+
 if strcmpi(get(ax,'visible'),'off') || strcmpi(get(ax,'XColor'),'none')
   
   xtl = get(ax,'xTickLabel');

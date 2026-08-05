@@ -184,9 +184,7 @@ classdef mtexFigure < handle
         x = dbstack; 
         if any(strcmpi(x(2).name,{'colorbar','legend'})), return;end
         
-        mtexFig.children = ...
-        flipud(findobj(mtexFig.parent,'type','axes',...
-        '-not','tag','Colorbar','-and','-not','tag','legend')); 
+        mtexFig.children = flipud(getAllAxes(mtexFig.parent));
       end
       
       function deleteChildren(a,b)

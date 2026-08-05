@@ -69,6 +69,11 @@ for j = 1:length(sF)
     
   elseif check_option(varargin,'polarplot')
     h{j} = polarplot(omega,d(1:end-1,j));
+
+    % update mtexFig.children -> this does not work automatically for polar
+    % axes
+    mtexFig.children = flipud(getAllAxes(mtexFig.parent));
+    
   else
     x = d(:, j) .* S2.x;
     y = d(:, j) .* S2.y;
