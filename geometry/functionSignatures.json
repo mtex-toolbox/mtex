@@ -3,21 +3,41 @@
 
 "_comment": "MTEX code suggestions for the geometric core classes - vectors, Miller indices, rotations, orientations, symmetries and fibres.",
 
+"_comment2": "crystalSymmetry has two signatures: the group given by its symbol (always the first argument, never an alignment flag) or by a numerical id. The alignment of the Cartesian to the crystal coordinate system is given by one flag per Cartesian axis, e.g. crystalSymmetry('2/m',...,'X||a','Z||c*').",
+
 "crystalSymmetry":
 {
     "inputs":
     [
-      {"name":"pointGroup", "kind":"ordered", "type":["char","choices=unique([{symmetry.pointGroups.Inter},{symmetry.pointGroups.Schoen},cellfun(@char,{symmetry.pointGroups.lattice},'UniformOutput',false)])"], "purpose":"International or Schoenflies symbol"},
+      {"name":"pointGroup", "kind":"required", "type":["char","choices=unique([{symmetry.pointGroups.Inter},{symmetry.pointGroups.Schoen},[symmetry.pointGroups.altNames],cellfun(@char,{symmetry.pointGroups.lattice},'UniformOutput',false)])"], "purpose":"point group (International or Schoenflies) or space group symbol"},
       {"name":"axes", "kind":"ordered", "type":["numeric","vector","numel=3"], "purpose":"[a b c] length of the crystallographic axes"},
       {"name":"angles", "kind":"ordered", "type":["numeric","vector","numel=3"], "purpose":"[alpha beta gamma] between the axes"},
       {"name":"mineral", "kind":"namevalue", "type":["char"], "purpose":"mineral name"},
       {"name":"color", "kind":"namevalue", "type":["choices=str2rgb"], "purpose":"color used in EBSD phase plots"},
       {"name":"density", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"rotAxes", "kind":"namevalue", "type":["rotation"]},
+      {"name":"alignX", "kind":"flag", "type":["char","choices={'X||a','X||a*','X||b','X||b*','X||c','X||c*','X||m'}"], "purpose":"alignment of the Cartesian X axis"},
+      {"name":"alignY", "kind":"flag", "type":["char","choices={'Y||a','Y||a*','Y||b','Y||b*','Y||c','Y||c*','Y||m'}"], "purpose":"alignment of the Cartesian Y axis"},
+      {"name":"alignZ", "kind":"flag", "type":["char","choices={'Z||a','Z||a*','Z||b','Z||b*','Z||c','Z||c*','Z||m'}"], "purpose":"alignment of the Cartesian Z axis"},
+      {"name":"vendor", "kind":"flag", "type":["char","choices={'EDAX','TSL','OIM'}"], "purpose":"use the alignment convention of this vendor"}
+    ],
+    "outputs":
+    [
+      {"name":"cs", "type":"crystalSymmetry"}
+    ]
+},
+
+"crystalSymmetry":
+{
+    "inputs":
+    [
       {"name":"LaueId", "kind":"namevalue", "type":["numeric","scalar","integer",">0","<=11"]},
       {"name":"SpaceId", "kind":"namevalue", "type":["numeric","scalar","integer",">0","<=230"]},
       {"name":"pointId", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
-      {"name":"rotAxes", "kind":"namevalue", "type":["rotation"]},
-      {"name":"alignment", "kind":"flag", "type":["char","choices={'X||a*, Z||c','X||a, Z||c*','X||b*, Z||c','X||b, Z||c*'}"], "purpose":"alignment of the Cartesian to the crystal coordinate system"}
+      {"name":"mineral", "kind":"namevalue", "type":["char"], "purpose":"mineral name"},
+      {"name":"color", "kind":"namevalue", "type":["choices=str2rgb"], "purpose":"color used in EBSD phase plots"},
+      {"name":"density", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"rotAxes", "kind":"namevalue", "type":["rotation"]}
     ],
     "outputs":
     [
