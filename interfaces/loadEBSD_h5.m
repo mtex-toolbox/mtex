@@ -761,6 +761,9 @@ function how2plot = sethow2plot(input)
 
     how2plot.(direction) = vecObj;
   end
+
+  % stay with the default instance if this is the default alignment anyway
+  how2plot = matchDefault(how2plot);
 end
 
 function format = determineformate(raw_data)
