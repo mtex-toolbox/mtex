@@ -27,7 +27,7 @@ while true
   stop = find(buffer == newline);
 
   % a last line without a trailing line break
-  if atEOF && (isempty(stop) || stop(end) < numel(buffer))
+  if atEOF && ~isempty(buffer) && (isempty(stop) || stop(end) < numel(buffer))
     stop = [stop, numel(buffer)+1]; %#ok<AGROW>
   end
 
