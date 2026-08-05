@@ -134,6 +134,26 @@ plot(ebsd,ebsd.orientations)
 %
 %   ebsd = EBSD.load(fname,'headerOnly')
 %
+%% Raw and Post Processed Data
+%
+% Oxford |h5oina| files store the map twice - as recorded by the detector
+% and as cleaned up by the vendor software. MTEX imports the cleaned up
+% version, which is usually the one you want. Add |'raw'| for the other one
+%
+%   ebsd = EBSD.load(fname)          % post processed
+%   ebsd = EBSD.load(fname,'raw')    % as recorded
+%
+% The raw version comes with the full set of per pixel properties - band
+% contrast, band slope, pattern quality, the pattern centre, ... - while
+% the post processed one keeps only a few of them, but has its bad pixels
+% cleaned up and may carry a different specimen orientation. Both can be
+% combined with |'dataSet'|
+%
+%   ebsd = EBSD.load(fname,'raw','dataSet',2)
+%
+% Files of all other vendors hold the recorded data only, so |'raw'| has no
+% effect on them.
+%
 %% Writing your own interface
 %
 % In the rare case of an EBSD format that is not supported, the user can

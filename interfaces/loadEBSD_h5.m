@@ -8,6 +8,9 @@ function [ebsd] = loadEBSD_h5(fname, varargin)
 %   - There are helper functions to convert data and build the EBSD object
 %
 % Options
+%  raw        - import the data as recorded by the detector instead of the
+%               version cleaned up by the vendor software. Oxford files
+%               hold both, everybody else only the raw one
 %  dataSet    - which data set to import from a file that holds several
 %               of them, either as the number shown in the list printed
 %               on import, or as (part of) its name, e.g.
@@ -50,14 +53,8 @@ end
 for i = 1:length(fileList)
   if fileList(i).isdir, continue; end
   
-  fullFileName = fullfile(folderPath, fileList(i).name);
-  
-  try
-    cur_Conf = jsondecode(fileread(fullFileName));
-  catch ME
-    error('Error when loading "%s": %s', fullFileName, ME.message);
-  end
-  
+  cur_Conf = read_config(folderPath, fileList(i).name);
+
   config_keys = cur_Conf.settings.manufacturer_keys.data;
     
   if isManualType
@@ -81,6 +78,15 @@ end
 
 if isempty(fieldnames(Conf))
   error("No Manufacturer config found for: " + manufacturer);
+end
+
+% Oxford files hold the map twice: as recorded by the detector under
+% "EBSD" and as cleaned up by the vendor software under "Data Processing".
+% The two are described by two configs - 'raw' asks for the first one.
+% Vendors that store only one version have no rawConfig, and for them the
+% data imported is the unprocessed one anyway, so the option is a no-op.
+if check_option(varargin, 'raw') && ~isManualType && isfield(Conf.settings, 'rawConfig')
+  Conf = read_config(folderPath, Conf.settings.rawConfig.data + ".json");
 end
 
 % Check if user wants to use a different ebsd_key
@@ -122,7 +128,14 @@ if ~check_option(varargin,'silent')
   fprintf('HDF5 CONFIGURATION LOADED\n');
   fprintf('├── Manufacturer : %s\n', Conf.settings.name);
   if isfield(Conf.settings, 'manufacturer_info')
-    wraptext(sprintf('    └── Info         : %s\n', Conf.settings.manufacturer_info.data));
+    % disp adds the line break - a trailing one here would wrap into an
+    % empty paragraph and leave a blank line in the middle of the block
+    wraptext(sprintf('├── Info         : %s', Conf.settings.manufacturer_info.data));
+  end
+  % a config that has a raw counterpart holds the vendor's cleaned up
+  % version - say so, the option is hard to guess otherwise
+  if isfield(Conf.settings, 'rawConfig')
+    fprintf('├── Data         : post processed, use ''raw'' for the data as recorded\n');
   end
   % staying quiet about the other data sets would silently import one of
   % several maps - so say which one was taken whenever there is a choice
@@ -1017,6 +1030,18 @@ function final_path = get_hdf5_path(info_struct, config_item, options)
       end
       final_path = string(matches{1}.FullPath);
     end
+  end
+end
+
+function Conf = read_config(folderPath, name)
+% Read one of the vendor configs in interfaces/hdf5_config.
+
+  fullFileName = fullfile(folderPath, char(name));
+
+  try
+    Conf = jsondecode(fileread(fullFileName));
+  catch ME
+    error('Error when loading "%s": %s', fullFileName, ME.message);
   end
 end
 

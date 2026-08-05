@@ -71,6 +71,9 @@
 % imported, without a word
 % * the SEM / PRIAS images an EDAX map comes with are imported into
 % |ebsd.opt.electron_image|, just as the Oxford electron images already were
+% * Oxford files store the map as recorded and as cleaned up by the vendor
+% software. The cleaned up version is imported as before, the recorded one
+% by the new option |'raw'| - which used to require |'type','Oxford_EBSD'|
 % * faster import, automatic column and degree/radiant detection
 %
 %   ebsd = EBSD.load('data.h5')                  % no format guessing needed
@@ -79,6 +82,7 @@
 %   ebsd = EBSD.load('data.h5','headerOnly')     % phases, header and data sets
 %   ebsd = EBSD.load('data.h5','dataSet',2)      % the second map of the file
 %   ebsd = EBSD.load('data.h5','dataSet','Area 2')
+%   ebsd = EBSD.load('data.h5oina','raw')        % not the post processed data
 %
 % *All EDAX Formats Give the Same Result*
 %
