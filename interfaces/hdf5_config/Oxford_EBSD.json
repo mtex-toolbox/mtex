@@ -3,7 +3,8 @@
     "name": "Oxford_EBSD",
     "key_path": { "mode": "absolute", "value": "/Manufacturer"},
     "manufacturer_keys": {"data": "Oxford_EBSD"},
-    "manufacturer_info": {"data": "Reading Data from EBSD field!"} 
+    "manufacturer_info": {"data": "Reading Data from EBSD field!"},
+    "isRawConfig": {"data": true}
   },
   "ebsd": {
     "type": "default",
@@ -44,7 +45,7 @@
   },
   "additions": {
     "type": "auto",
-    "group": { "mode": "search_root", "value": "/1/EBSD/Data"}
+    "group": { "mode": "search_free", "value": "/EBSD/Data$"}
   },
   "electron_image": {
     "optional": true,

@@ -6,7 +6,7 @@
   },
   "ebsd": {
     "type": "default",
-    "key": {"mode": "search_root", "value": "/Scan 1"},
+    "key": {"mode": "search_root", "value": "^/Scan \\d+/EBSD$"},
     "position": {
       "type": "indirect",
       "indirect": {

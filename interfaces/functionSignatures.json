@@ -83,9 +83,11 @@
 {
     "inputs":
     [
-      {"name":"fname", "kind":"required", "type":["file=*.h5,*.hdf5,*.h5oina,*.oh5,*.dream3d"]},
+      {"name":"fname", "kind":"required", "type":["file=*.h5,*.hdf5,*.h5oina,*.oh5,*.edaxh5,*.dream3d"]},
       {"name":"CS", "kind":"namevalue", "type":[["crystalSymmetry"],["cell"]]},
       {"name":"EulerCorrection", "kind":"namevalue", "type":["rotation"]},
+      {"name":"dataSet", "kind":"namevalue", "type":[["numeric","scalar"],["char"]], "purpose":"which data set of the file to import"},
+      {"name":"raw", "kind":"flag", "purpose":"import the unprocessed data (Oxford)"},
       {"name":"headerOnly", "kind":"flag"}
     ],
     "outputs":

@@ -17,6 +17,10 @@ classdef import_wizard < matlab.apps.AppBase
     CurrentPathLabel               matlab.ui.control.Label
     FileTree                       matlab.ui.container.Tree
     ImportStatusLabel              matlab.ui.control.Label       % hint / loading status below the file tree
+    DataSetListLabel               matlab.ui.control.Label
+    DataSetList                    matlab.ui.control.ListBox     % everything the selected file offers to import:
+                                                                 % its data sets times the recorded / post
+                                                                 % processed versions. Selecting one imports it.
     CurrentData                    matlab.ui.control.Table       % basic file info, 2-column label/value
     PhaseTable                     matlab.ui.control.Table
     VariableNameField              matlab.ui.control.EditField   % variable name for "Import to variable"
@@ -59,6 +63,11 @@ classdef import_wizard < matlab.apps.AppBase
     FontSize double = 14
     CurrentFolder string = ""
     LoadedFilePath string = "" % Keeps track of the path of the imported EBSD file
+    PreviewFilePath string = "" % file the data set list describes - the
+                                % selected one, imported or only previewed
+    DataSetEntries struct = struct('label',{},'dataSet',{},'raw',{})
+                                % one entry per row of DataSetList: which
+                                % data set of the file and which version
     SelectedImagePath cell = {} % field-name path of the OptTree's selected image node
     IPFKeys cell = {}           % precomputed ipfColorKey per phase, shared
                                 % by the IPF X/Y/Z tabs (they only differ by
@@ -173,7 +182,7 @@ classdef import_wizard < matlab.apps.AppBase
 
       app.FileBrowserLayout = uigridlayout(app.FileBrowserPanel, ...
         'ColumnWidth', {30, '1x'}, ...
-        'RowHeight', {24, '1x', 22}, ...
+        'RowHeight', {24, '1x', 22, 18, 92}, ...
         'ColumnSpacing', 4, ...
         'RowSpacing', 2, ...
         'Padding', [4 4 4 4]);
@@ -215,7 +224,34 @@ classdef import_wizard < matlab.apps.AppBase
       app.ImportStatusLabel.Layout.Column = [1 2];
       setImportStatus(app, 'idle')
 
+      createDataSetControls(app)
+
       navigateToFolder(app, pwd)
+    end
+
+    function createDataSetControls(app)
+      % Everything the file selected in the tree above offers to import,
+      % as one list right below it: the data sets of a project file
+      % holding several maps, each once for every version the vendor
+      % stored - as recorded by the detector and as cleaned up by their
+      % software. The list is filled from the headerOnly preview that
+      % already runs on selection (see populateDataSetList) and picking a
+      % row imports it, no double-click needed.
+      app.DataSetListLabel = uilabel(app.FileBrowserLayout, ...
+        'Text', 'Data sets', ...
+        'FontWeight', 'bold', ...
+        'FontSize', app.FontSize - 2);
+      app.DataSetListLabel.Layout.Row = 4;
+      app.DataSetListLabel.Layout.Column = [1 2];
+
+      app.DataSetList = uilistbox(app.FileBrowserLayout, ...
+        'Items', {}, ...
+        'Enable', 'off', ...
+        'FontSize', app.FontSize - 2, ...
+        'Tooltip', 'Select what to import from the file above', ...
+        'ValueChangedFcn', createCallbackFcn(app, @DataSetListValueChanged, true));
+      app.DataSetList.Layout.Row = 5;
+      app.DataSetList.Layout.Column = [1 2];
     end
 
     function ensureAnalysisUI(app)
@@ -667,6 +703,117 @@ classdef import_wizard < matlab.apps.AppBase
       drawnow % force the label to actually repaint before a blocking load
     end
 
+    function opts = importOptions(app, entry)
+      % the selected list row as EBSD.load options - a file that offers no
+      % choice contributes none, so they never reach a format that does
+      % not know them
+      if nargin < 2, entry = selectedDataSet(app); end
+
+      opts = {};
+      if isempty(entry), return, end
+      if entry.dataSet > 1, opts = [opts, {'dataSet', entry.dataSet}]; end
+      if entry.raw, opts = [opts, {'raw'}]; end
+    end
+
+    function entry = selectedDataSet(app)
+      % the list row the user picked, empty when the file offers nothing
+      % to choose from
+      entry = [];
+      idx = app.DataSetList.ValueIndex;
+      if isempty(app.DataSetEntries) || isempty(idx) || idx < 1, return, end
+      entry = app.DataSetEntries(min(idx, numel(app.DataSetEntries)));
+    end
+
+    function populateDataSetList(app, filePath, ebsdPreview)
+      % Build the list of everything the file offers: its data sets, each
+      % once per version the vendor stored. Reading the header of the
+      % other version costs a second headerOnly load, which is what it
+      % takes to name both in one list.
+      %
+      % Rows are kept in file order and grouped by data set, so the two
+      % versions of the same map sit next to each other. Setting .Value
+      % programmatically does not fire ValueChangedFcn, so nothing here
+      % triggers an import.
+      entries = struct('label',{},'dataSet',{},'raw',{});
+
+      sets = dataSetNames(app, ebsdPreview);
+      dataType = "";
+      if isa(ebsdPreview,'EBSD') && isfield(ebsdPreview.opt,'dataType')
+        dataType = string(ebsdPreview.opt.dataType);
+      end
+
+      if isempty(sets)
+        % a format that holds a single, unnamed data set (.ang, .ctf, ...)
+        [~, fName, fExt] = fileparts(char(filePath));
+        entries(1) = struct('label', [fName fExt], 'dataSet', 1, 'raw', false);
+      elseif dataType == ""
+        for k = 1:numel(sets)
+          entries(end+1) = struct('label', char(sets(k)), 'dataSet', k, 'raw', false); %#ok<AGROW>
+        end
+      else
+        % both versions exist - the header of the other one names its sets
+        isRawPreview = dataType == "raw";
+        otherOpts = {};
+        if ~isRawPreview, otherOpts = {'raw'}; end
+        other = strings(1,0);
+        try
+          other = dataSetNames(app, EBSD.load(char(filePath), 'wizard', 'headerOnly', otherOpts{:}));
+        catch
+        end
+        if isRawPreview
+          [rawSets, procSets] = deal(sets, other);
+        else
+          [rawSets, procSets] = deal(other, sets);
+        end
+        for k = 1:max(numel(procSets), numel(rawSets))
+          if k <= numel(procSets)
+            entries(end+1) = struct('label', char(procSets(k) + "   (post processed)"), ...
+              'dataSet', k, 'raw', false); %#ok<AGROW>
+          end
+          if k <= numel(rawSets)
+            entries(end+1) = struct('label', char(rawSets(k) + "   (raw)"), ...
+              'dataSet', k, 'raw', true); %#ok<AGROW>
+          end
+        end
+      end
+
+      app.DataSetEntries = entries;
+      app.DataSetList.Items = {entries.label};
+      app.DataSetList.Enable = matlab.lang.OnOffSwitchState(~isempty(entries));
+      if ~isempty(entries)
+        app.DataSetList.ValueIndex = 1;
+      end
+    end
+
+    function sets = dataSetNames(~, ebsdData)
+      % the short data set names an import reported, if any. isa, not
+      % isprop: the latter answers per array element, i.e. once per pixel
+      % for an imported map, which no scalar test can consume
+      sets = strings(1,0);
+      if isa(ebsdData, 'EBSD') && isfield(ebsdData.opt, 'dataSets')
+        sets = string(ebsdData.opt.dataSets);
+      end
+    end
+
+    function markLoadedDataSet(app, ebsdData)
+      % move the list selection onto the row that was actually imported -
+      % it is the one whose options the import used
+      entry = selectedDataSet(app);
+      if isempty(entry) || ~isa(ebsdData,'EBSD') || ~isfield(ebsdData.opt,'dataSet')
+        return
+      end
+      isRaw = isfield(ebsdData.opt,'dataType') && string(ebsdData.opt.dataType) == "raw";
+      hit = find([app.DataSetEntries.dataSet] == entry.dataSet & ...
+                 [app.DataSetEntries.raw] == isRaw, 1);
+      if ~isempty(hit), app.DataSetList.ValueIndex = hit; end
+    end
+
+    function DataSetListValueChanged(app, ~)
+      % picking a row is the import - no double-click needed
+      if app.PreviewFilePath == "", return, end
+      importEBSDData(app, app.PreviewFilePath)
+    end
+
     function importEBSDData(app, filePath)
       filePath = char(filePath); % normalize string -> char so fileparts
                                   % and [fileName fileExt] behave predictably
@@ -674,8 +821,9 @@ classdef import_wizard < matlab.apps.AppBase
       fileName = [fName fExt];
 
       setImportStatus(app, 'loading', fileName)
+      opts = importOptions(app);
       try
-        ebsdData = EBSD.load(filePath, 'wizard');
+        ebsdData = EBSD.load(filePath, 'wizard', opts{:});
       catch ME
         setImportStatus(app, 'idle')
         uialert(app.UIFigure, ME.message, 'Could not load EBSD data')
@@ -691,8 +839,11 @@ classdef import_wizard < matlab.apps.AppBase
 
       app.ebsd = ebsdData;
       app.LoadedFilePath = string(filePath); % Store file path for the script exporter
+      app.PreviewFilePath = app.LoadedFilePath;
       app.PFODFKey = "";
       app.IPFKeys = {};
+
+      markLoadedDataSet(app, ebsdData)
 
       % --- paint first: everything up to the flush below is the minimum
       % required for the initial IPF Z view; the remaining setup happens
@@ -1555,16 +1706,22 @@ classdef import_wizard < matlab.apps.AppBase
 
     function previewEBSDData(app, filePath)
       % lightweight, non-intrusive preview: a headerOnly load feeds the
-      % file info table (app.CurrentData) without touching app.ebsd, so
-      % browsing around never disturbs the currently plotted data set.
-      % Failures are silent (no uialert) since this fires on every
-      % arrow-key move, not just a deliberate user action.
+      % file info table (app.CurrentData) and the list of what the file
+      % offers to import, without touching app.ebsd - so browsing around
+      % never disturbs the currently plotted data set. Failures are
+      % silent (no uialert) since this fires on every arrow-key move, not
+      % just a deliberate user action.
       filePath = char(filePath);
+      sameFile = strcmp(filePath, char(app.PreviewFilePath));
+      app.PreviewFilePath = string(filePath);
 
       % already the actually imported file - show its real info instead
-      % of a redundant, more limited "preview" of the same data
+      % of a redundant, more limited "preview" of the same data. Its list
+      % is up to date as well, so it is left alone (rebuilding it would
+      % drop the selection back onto the first row).
       if strcmp(filePath, char(app.LoadedFilePath))
         updateCurrentDataInfo(app, app.ebsd, filePath, false)
+        if ~sameFile, markLoadedDataSet(app, app.ebsd), end
         return
       end
 
@@ -1572,10 +1729,14 @@ classdef import_wizard < matlab.apps.AppBase
         ebsdPreview = EBSD.load(filePath, 'wizard', 'headerOnly');
       catch
         % not a recognized/loadable format - leave the table as is
+        app.DataSetEntries(:) = [];
+        app.DataSetList.Items = {};
+        app.DataSetList.Enable = 'off';
         return
       end
 
       updateCurrentDataInfo(app, ebsdPreview, filePath, true)
+      populateDataSetList(app, filePath, ebsdPreview)
     end
 
     function FileTreeNodeExpanded(app, event)
@@ -1875,8 +2036,20 @@ classdef import_wizard < matlab.apps.AppBase
       % Options (the interface/file format is auto-detected from the file
       % extension by EBSD.load - forcing 'wizard' here, as before, made
       % EBSD.load's own dispatcher fail to recognize the format and fall
-      % through to the generic loader instead of e.g. loadEBSD_ctf)
-      replaceMarkup('{options}', '', ',{options}');
+      % through to the generic loader instead of e.g. loadEBSD_ctf).
+      % What does have to be written out is which data set of a multi map
+      % file was picked and whether the recorded instead of the post
+      % processed data was taken - without them the script would silently
+      % import something else than the wizard showed.
+      optList = {};
+      entry = selectedDataSet(app);
+      if ~isempty(entry)
+        if entry.dataSet > 1
+          optList{end+1} = sprintf('''dataSet'',%d', entry.dataSet);
+        end
+        if entry.raw, optList{end+1} = '''raw'''; end
+      end
+      replaceMarkup('{options}', strjoin(optList, ','), ',{options}');
 
       % Euler Correction - passed as the EulerCorrection option of
       % EBSD.load itself (see loadEBSDtemplate.m), not applied via a
