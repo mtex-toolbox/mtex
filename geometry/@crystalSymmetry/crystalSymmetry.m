@@ -17,8 +17,10 @@ classdef crystalSymmetry < symmetry & phaseItem
 % Options
 %  X||a*, Z||c - default alignment of the cartesian coordinate system to the crystal coordinate system
 %  X||a, Z||c* - other alignments
-%  X||b*, Z||c - 
-%  X||b, Z||c* - 
+%  X||b*, Z||c -
+%  X||b, Z||c* -
+%  EDAX - the alignment convention used by EDAX / TSL / OIM, i.e. X||a for
+%    triclinic, trigonal and hexagonal lattices and the MTEX default otherwise
 %
 % Class Properties 
 %  id                           - point group id

@@ -19,13 +19,25 @@
     },
     "phase": {"load": {"value": "ebsd_data.Phase"}, "type": "default"},
     "rotation": {"load": {"value": "ebsd_data.Orientations"}, "type": "byMatrix"},
+    "map_correction": {
+      "type": "by_id",
+      "id" : {"mode": "search_free", "value": "/Sample/CoOrdinate System Id"},
+      "correct_data": { "data": [[225, 180, 135], [135, 180, 225], [270, 180, 90], [180, 180, 180]]},
+      "format": { "data": "degree"}
+    },
+    "how2plot": { "type": "default", "data": "x-east,y-south"},
     "cs": {
       "type": "default",
       "key": { "mode": "search_root", "value": "Header/Phase" },
       "multiple": true,
       "default": {
-        "space_group": { "mode": "search_root", "value": "/Symmetry", "type": "default" },
-        "name": { "mode": "search_root", "value": "/Formula"},
+        "reference_frame": { "data": "EDAX"},
+        "space_group": {
+          "type": "EDAX",
+          "laue_code": { "mode": "search_root", "value": "/Symmetry$"},
+          "point_group_name": { "mode": "search_root", "value": "/Point Group$", "fallback": ""}
+        },
+        "name": { "mode": "search_root", "value": "Material Name"},
         "lattice": {
           "angle": {
             "type": "separate",

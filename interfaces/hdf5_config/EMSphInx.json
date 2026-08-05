@@ -36,6 +36,7 @@
       "key": { "mode": "search_root", "value": "Header/Phase" },
       "multiple": true,
       "default": {
+        "reference_frame": { "data": "EDAX"},
         "space_group": { "mode": "search_root", "value": "Symmetry", "type": "TSLNumber" },
         "name": { "mode": "search_root", "value": "MaterialName"},
         "lattice": {
