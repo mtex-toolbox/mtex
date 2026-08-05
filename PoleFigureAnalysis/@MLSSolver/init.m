@@ -36,7 +36,7 @@ for i = 1:pf.numPF
   gh = solver.S3G * vertcat(h{:}); % S3G x SS x h
   
   solver.nfft_gh(i) = nfsftmex('init_advanced', bw, length(gh), 1);
-  nfsftmex('set_x', solver.nfft_gh(i), [gh.rho(:)'; gh.theta(:)']); % set vertices
+  nfsftmex('set_x', solver.nfft_gh(i), double([gh.rho(:)'; gh.theta(:)'])); % set vertices
   nfsftmex('precompute_x', solver.nfft_gh(i));
   
   % set up superposition coefficients
@@ -47,6 +47,6 @@ end
 for i = 1:pf.numPF
   r = solver.SS.properGroup * solver.pf.allR{i};
   solver.nfft_r(i) = nfsftmex('init_advanced', bw, length(r), 1);
-  nfsftmex('set_x', solver.nfft_r(i), [r.rho(:).'; r.theta(:).']); % set vertices
+  nfsftmex('set_x', solver.nfft_r(i), double([r.rho(:).'; r.theta(:).'])); % set vertices
   nfsftmex('precompute_x', solver.nfft_r(i));
 end

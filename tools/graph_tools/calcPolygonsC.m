@@ -12,8 +12,10 @@ function [poly,inclusionId] = calcPolygonsC(I_FG,F,V,N)
 %                here since every grain's cycles are traced individually
 %                below; see EBSDAnalysis/@grain2d/grain2d.m.
 
-% compute cycles
-[g, c, cP] = EulerCyclesC(I_FG,F,size(V,1));
+% compute cycles - EulerCyclesC reads I_FG with mxGetPr and F with
+% mxGetDoubles, so both have to be double (a sparse logical I_FG or single
+% precision F would crash the mex)
+[g, c, cP] = EulerCyclesC(double(I_FG),double(F),size(V,1));
 % g - each entry represents one grain, except for the last one. 
 %     For each grain, the first index of the cycles belonging to this grain is stored.
 %     The last element is the total number of cycles.

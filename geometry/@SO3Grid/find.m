@@ -57,8 +57,10 @@ else
     for is = 1:length(qss)
       for ic = 1:length(qcs)
 
+        % double as the mex functions below read their input with mxGetPr
         [xalpha,xbeta,xgamma] = Euler(qss(is) * transpose(q(:)*qcs(ic)),'ZYZ');
-  
+        xalpha = double(xalpha); xbeta = double(xbeta); xgamma = double(xgamma);
+
         [hind,hd] = SO3Grid_find(yalpha,ybeta,ygamma,sgamma,int32(igamma), ...
           int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma);
 
@@ -77,10 +79,12 @@ else
     for is = 1:length(qss)
       for ic = 1:length(qcs)
 
+        % double as the mex functions below read their input with mxGetPr
         [xalpha,xbeta,xgamma] = Euler(qss(is) * transpose(q(:)*qcs(ic)),'ZYZ');
-  
+        xalpha = double(xalpha); xbeta = double(xbeta); xgamma = double(xgamma);
+
         ind = ind | SO3Grid_find_region(yalpha,ybeta,ygamma,sgamma,int32(igamma), ...
-          int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma,epsilon);
+          int32(ialphabeta),palpha,pgamma, xalpha,xbeta,xgamma,double(epsilon));
             
       end
     end

@@ -31,7 +31,7 @@ if check_option(varargin,'epsilon') && ~check_option(varargin,{'full','all'})
   % extract SO3Grid
   [ybeta,yalpha,ialphabeta,palpha] = getdata(S3G.alphabeta);
   
-  ygamma = [S3G.gamma.points];
+  ygamma = double([S3G.gamma.points]);
   sgamma = [S3G.gamma.min];
   pgamma = S3G.gamma(1).period;
   igamma = cumsum([0,GridLength(S3G.gamma)]);
@@ -48,8 +48,10 @@ if check_option(varargin,'epsilon') && ~check_option(varargin,{'full','all'})
   % for finding the minimal beta angle
   qcs = quaternion(S3G.CS.rotation_special);
   
+  % double as the mex function below reads its input with mxGetPr
   [xalpha,xbeta,xgamma] = Euler( qss * quaternion(q) * qcs ,'ZYZ');
-  
+  xalpha = double(xalpha); xbeta = double(xbeta); xgamma = double(xgamma);
+
   ncs = length(qss)*length(qcs);
   cs = 0:length(q):ncs*length(q);
   
@@ -59,7 +61,7 @@ if check_option(varargin,'epsilon') && ~check_option(varargin,{'full','all'})
   
     dist = SO3Grid_dist_region(yalpha,ybeta,ygamma, ...
       sgamma, int32(igamma), int32(ialphabeta), palpha, pgamma, ...
-      xalpha(ndx), xbeta(ndx), xgamma(ndx), epsilon);
+      xalpha(ndx), xbeta(ndx), xgamma(ndx), double(epsilon));
       
     if nnz(dist) > 0, d = max(d,dist); end
     

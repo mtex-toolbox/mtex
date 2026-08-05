@@ -61,7 +61,7 @@ classdef S2FunBingham < S2Fun
     
     function N = normalizationConst(BS2)   % needs external mex
       %   calc normalization parameter
-      N = numericalSaddlepointWithDerivatives(sort(-BS2.Z(:))+1)*exp(1);
+      N = numericalSaddlepointWithDerivatives(double(sort(-BS2.Z(:))+1))*exp(1);
       N = N(3);
     end
     

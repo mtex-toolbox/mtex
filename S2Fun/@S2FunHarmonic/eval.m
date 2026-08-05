@@ -114,7 +114,7 @@ if isempty(plan)
   end
   
   % set rotations as nodes in plan
-  nfftmex('set_x',plan,tr);
+  nfftmex('set_x',plan,double(tr));
 
   % node-dependent precomputation
   nfftmex('precompute_psi',plan);
@@ -143,7 +143,7 @@ for k = 1:length(sF)
   % coefficient transform
   ghat = sphericalHarmonicTrafo(sF.subSet(k),flags,'bandwidth',N); % ghat ist genau gleich
   % set Fourier coefficients
-  nfftmex('set_f_hat',plan,ghat(:));
+  nfftmex('set_f_hat',plan,double(ghat(:)));
 
   if check_option(varargin,'direct')
     % direct Fourier transform

@@ -68,7 +68,7 @@ if cs.id==0 || ss.id==0
 end
 
 % Wigner transform
-ghat = wignerTrafomex(N,SO3F.fhat,flags,sym);
+ghat = wignerTrafomex(N,double(SO3F.fhat),flags,sym);
 % reconstruct symmetric coefficients
 ghat = symmetriseFourierCoefficients(ghat,flags,cs,ss,sym);
 

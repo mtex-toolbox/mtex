@@ -114,7 +114,7 @@ if isempty(plan)
   end
   
   % set rotations as nodes in plan
-  nfftmex('set_x',plan,abg);
+  nfftmex('set_x',plan,double(abg));
 
   % node-dependent precomputation
   nfftmex('precompute_psi',plan);
@@ -141,7 +141,7 @@ for k = 1:length(SO3F)
   ghat = wignerTrafo(SO3F.subSet(k),flags,'bandwidth',N);
 
   % set Fourier coefficients
-  nfftmex('set_f_hat',plan,ghat(:));
+  nfftmex('set_f_hat',plan,double(ghat(:)));
 
   if check_option(varargin,'direct')
     % direct Fourier transform

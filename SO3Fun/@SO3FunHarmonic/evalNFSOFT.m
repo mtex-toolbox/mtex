@@ -81,7 +81,7 @@ if isempty(plan)
   plan = nfsoftmex('init',L,length(rot),nfsoft_flags,nfft_flags,m,kappa,fftw_size);
 
   % set rotations in Euler angles (nodes)
-  nfsoftmex('set_x',plan,Euler(rot,'nfft').');
+  nfsoftmex('set_x',plan,double(Euler(rot,'nfft').'));
 
   % node-dependent precomputation
   nfsoftmex('precompute',plan);
@@ -97,7 +97,7 @@ f = zeros([length(rot) size(F)]);
 for k = 1:length(F)
 
   % set Fourier coefficients
-  nfsoftmex('set_f_hat',plan,reshape(F.fhat(1:Ldim,k),[],1));
+  nfsoftmex('set_f_hat',plan,double(reshape(F.fhat(1:Ldim,k),[],1)));
 
   % fast SO(3) fourier transform
   nfsoftmex('trafo',plan);

@@ -141,9 +141,9 @@ function res = J(v,c,f,psi,lambda,plan1)
 [theta,rho] = polar(v(:)); %#ok<POLAR>
 
 % adjoint NFSFT
-nfsftmex('set_x', plan1, [rho(:).'; theta(:).']);
+nfsftmex('set_x', plan1, double([rho(:).'; theta(:).']));
 % nfsftmex('precompute_x',plan1);
-nfsftmex('set_f',plan1,c);
+nfsftmex('set_f',plan1,double(c));
 nfsftmex('adjoint',plan1);
 chat = nfsftmex('get_f_hat_linear',plan1);
 C = lambda*S2FunHarmonic(chat);
@@ -164,9 +164,9 @@ function [tanV,tanC] = grad_J(v,c,f,psi,lambda,plan1,plan2)
 [theta,rho] = polar(v(:)); %#ok<POLAR>
 
 % adjoint NFSFT
-nfsftmex('set_x',plan1,[rho(:).'; theta(:).']);
+nfsftmex('set_x',plan1,double([rho(:).'; theta(:).']));
 % nfsftmex('precompute_x',plan1);
-nfsftmex('set_f',plan1,c);
+nfsftmex('set_f',plan1,double(c));
 nfsftmex('adjoint',plan1)
 chat = nfsftmex('get_f_hat_linear',plan1);
 C = lambda*S2FunHarmonic(chat);
@@ -180,10 +180,10 @@ g = C.grad;
 
 % compute NFSFT componentwise
 tanV = zeros(length(v),3);
-nfsftmex('set_x',plan2,[rho(:).'; theta(:).']);
+nfsftmex('set_x',plan2,double([rho(:).'; theta(:).']));
 % nfsftmex('precompute_x',plan2);
 for i = 1:3
-  nfsftmex('set_f_hat_linear',plan2,g.sF.fhat(:,i));
+  nfsftmex('set_f_hat_linear',plan2,double(g.sF.fhat(:,i)));
   nfsftmex('trafo',plan2);
   tanV(:,i) = nfsftmex('get_f',plan2);
 end

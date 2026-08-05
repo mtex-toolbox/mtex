@@ -131,7 +131,7 @@ if isempty(plan) && ~(isa(v,'quadratureS2Grid') && strcmp(v.scheme,'ClenshawCurt
   % set vector3d as nodes in plan
   [theta,rho] = polar(v(:));
   tr = [theta,rho].'./(2*pi);
-  nfftmex('set_x',plan,tr);
+  nfftmex('set_x',plan,double(tr));
 
   % node-dependent precomputation
   nfftmex('precompute_psi',plan);
@@ -174,7 +174,7 @@ else
 
   ghat = zeros((2*N+2)^2,len);
   for m=1:len
-    nfftmex('set_f', plan, W(:) .* y(:,m));
+    nfftmex('set_f', plan, double(W(:) .* y(:,m)));
     nfftmex('adjoint', plan);
     % adjoint Fourier transform
     ghat(:,m) = nfftmex('get_f_hat', plan);
@@ -207,7 +207,7 @@ end
 fhat = zeros((N+1)^2,len);
 flagsMEX = bin2dec(sprintf('%d',flip(flags)));
 for m = 1:len
-  fhat(:,m) = sphericalHarmonicTrafoAdjointmex(N,ghat(:,:,m),flagsMEX,[1,1]);
+  fhat(:,m) = sphericalHarmonicTrafoAdjointmex(N,double(ghat(:,:,m)),flagsMEX,[1,1]);
 end
 
 if flags(3)

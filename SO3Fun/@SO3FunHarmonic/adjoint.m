@@ -209,7 +209,7 @@ if isempty(plan) && ~(isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'Clensha
   plan = nfftmex('init_guru',{3,NN,NN,NN,length(rot),fftw_size,fftw_size,fftw_size,m,nfft_flags,fftw_flags});
 
   % set rotations as nodes in plan
-  nfftmex('set_x',plan,(Euler(rot(:),'nfft').')/(2*pi));
+  nfftmex('set_x',plan,double(Euler(rot(:),'nfft').')/(2*pi));
 
   % node-dependent precomputation
   nfftmex('precompute_psi',plan);
@@ -257,7 +257,7 @@ else
   % adjoint nfft
   ghat = zeros(8*(N+1)^3,len);
   for i=1:len
-    nfftmex('set_f', plan, W(:) .* values(:,i));
+    nfftmex('set_f', plan, double(W(:) .* values(:,i)));
     nfftmex('adjoint', plan);
     % adjoint Fourier transform
     ghat(:,i) = nfftmex('get_f_hat', plan);
@@ -293,7 +293,7 @@ end
 fhat = zeros(deg2dim(N+1),len);
 pC = progressCounter(len);
 for i=1:len
-  fhat(:,i) = wignerTrafoAdjointmex(N,ghat(:,:,:,i),flags,sym);
+  fhat(:,i) = wignerTrafoAdjointmex(N,double(ghat(:,:,:,i)),flags,sym);
   pC.show(i);
 end
 fhat = symmetriseWignerCoefficients(fhat,flags,SRight,SLeft,sym);
