@@ -33,7 +33,7 @@ varargin = delete_option(varargin,'range',1);
 % the one dimensional case
 if length(x) == numel(x)
 
-  [bandwidth,density,grid] = kde(x,2^14,range(1),range(2),varargin{:});
+  [bandwidth,density,grid] = kde1d(x,2^14,range(1),range(2),varargin{:});
   grid = {grid};
     
 else % the multidimensional case

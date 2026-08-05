@@ -93,7 +93,7 @@ else
   maxangle = max(angles);
 
   % perform kernel density estimation on the angles
-  [bandwidth,density,omega] = kde(angles,2^8,0,maxangle,'magicNumber',0.28); %#ok<ASGLU>
+  [bandwidth,density,omega] = kde1d(angles,2^8,0,maxangle,'magicNumber',0.28); %#ok<ASGLU>
 
   density = density ./ mean(density) * pi ./ maxangle;
   

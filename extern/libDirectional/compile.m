@@ -5,6 +5,10 @@
 %  and Information Integration (MFI 2014), Beijing, China, September 2014.
 %  see: https://github.com/libDirectional/libDirectional
 
+% Do not run this file directly - call mex_install instead. It runs this
+% script and then moves the binary into mex/, which is where MTEX expects
+% it. A binary left behind in this folder shadows the one in mex/, since
+% extern/ comes first on the MTEX search path.
 
 mex('-R2018a','numericalSaddlepointWithDerivatives.cpp')
 

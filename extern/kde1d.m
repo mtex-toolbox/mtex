@@ -1,5 +1,10 @@
-function [bandwidth,density,xmesh,cdf] = kde(data,n,MIN,MAX,varargin)
+function [bandwidth,density,xmesh,cdf] = kde1d(data,n,MIN,MAX,varargin)
 % Reliable and extremely fast kernel density estimator for one-dimensional data;
+%
+% Note: this function used to be called kde. It was renamed since MATLAB
+% introduced a built in kde with an incompatible syntax - do not rename it
+% back, as extern/ comes first on the MTEX search path and would shadow it.
+%
 %        Gaussian kernel is assumed and the bandwidth is chosen automatically;
 %        Unlike many other implementations, this one is immune to problems
 %        caused by multimodal densities with widely separated modes (see example). The
@@ -30,7 +35,7 @@ function [bandwidth,density,xmesh,cdf] = kde(data,n,MIN,MAX,varargin)
 %
 %  Example:
 %           data=[randn(100,1);randn(100,1)*2+35 ;randn(100,1)+55];
-%              kde(data,2^14,min(data)-5,max(data)+5);
+%              kde1d(data,2^14,min(data)-5,max(data)+5);
 
 data=data(:); %make data a column vector
 
