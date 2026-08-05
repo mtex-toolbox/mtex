@@ -44,7 +44,7 @@
   },
   "additions": {
     "type": "auto",
-    "group": { "mode": "search_root", "value": "/1/EBSD/Data"}
+    "group": { "mode": "search_free", "value": "/EBSD/Data$"}
   },
   "electron_image": {
     "optional": true,

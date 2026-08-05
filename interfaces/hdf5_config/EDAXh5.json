@@ -62,5 +62,17 @@
         "step_size_x": { "mode": "search_free", "value": "/Sample/Step X"},
         "step_size_y": { "mode": "search_free", "value": "/Sample/Step Y"}
     }
+  },
+  "electron_image": {
+    "optional": true,
+    "type": "default",
+    "key": { "mode": "search_root", "value": "/SEM-PRIAS Images$"},
+    "image_data": {
+      "type": "images",
+      "group": { "mode": "search_root", "value": "/DATA$"}
+    },
+    "header": {
+      "group": { "mode": "search_root", "value": "/HEADER$"}
+    }
   }
 }

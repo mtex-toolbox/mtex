@@ -111,6 +111,29 @@ plot(ebsd,ebsd.orientations)
 % an additional tool supports you to associated the columns with the
 % corresponding properties.
 %
+%% HDF5 Files With Several Data Sets
+%
+% HDF5 files are often project files holding more than one map - an EDAX
+% project stores its maps as |Area N/OIM Map N|, an Oxford project its
+% slices as |/1|, |/2|, ..., an EMSphInx file its scans as |Scan N|.
+% Whenever a file contains more than one, the import lists them and states
+% which one it took
+%
+%  ├── Data sets    : 2
+%  │   ▸ [1] Area 1/OIM Map 1/EBSD
+%  │     [2] Area 2/OIM Map 7/EBSD
+%
+% Pick another one by its number or by (part of) its name
+%
+%   ebsd = EBSD.load(fname,'dataSet',2)
+%   ebsd = EBSD.load(fname,'dataSet','OIM Map 7')
+%
+% The data set that has been imported is recorded in |ebsd.opt.dataSet|,
+% all of them in |ebsd.opt.dataSets|. In order to see what a file contains
+% without importing any data use
+%
+%   ebsd = EBSD.load(fname,'headerOnly')
+%
 %% Writing your own interface
 %
 % In the rare case of an EBSD format that is not supported, the user can

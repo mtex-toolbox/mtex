@@ -7,9 +7,10 @@
 {
     "inputs":
     [
-      {"name":"fname", "kind":"required", "type":["file=*.ang,*.ctf,*.crc,*.cpr,*.osc,*.h5,*.hdf5,*.h5oina,*.oh5,*.dream3d,*.txt,*.csv,*.mat"], "purpose":"file name"},
+      {"name":"fname", "kind":"required", "type":["file=*.ang,*.ctf,*.crc,*.cpr,*.osc,*.h5,*.hdf5,*.h5oina,*.oh5,*.edaxh5,*.dream3d,*.txt,*.csv,*.mat"], "purpose":"file name"},
       {"name":"CS", "kind":"namevalue", "type":[["crystalSymmetry"],["cell"]], "purpose":"crystal symmetry / phase list"},
-      {"name":"interface", "kind":"namevalue", "type":["char","choices={'ang','ctf','crc','cpr','osc','h5','hdf5','h5oina','oh5','dream3d','generic'}"], "purpose":"force a specific import filter"},
+      {"name":"interface", "kind":"namevalue", "type":["char","choices={'ang','ctf','crc','cpr','osc','h5','hdf5','h5oina','oh5','edaxh5','dream3d','generic'}"], "purpose":"force a specific import filter"},
+      {"name":"dataSet", "kind":"namevalue", "type":[["numeric","scalar"],["char"]], "purpose":"which data set of a HDF5 file to import"},
       {"name":"columnNames", "kind":"namevalue", "type":["cell"], "purpose":"names of the columns to import"},
       {"name":"columns", "kind":"namevalue", "type":["numeric","vector"], "purpose":"positions of the columns to import"},
       {"name":"header", "kind":"namevalue", "type":["numeric","scalar",">=0"], "purpose":"number of header lines"},

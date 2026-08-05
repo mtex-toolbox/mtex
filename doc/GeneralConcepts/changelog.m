@@ -64,12 +64,21 @@
 % |h5| files and stored in |ebsd.EulerCorrection|
 % * file header metadata is kept in |ebsd.opt.header|, and can be read
 % without importing the data at all
+% * a HDF5 file holding several maps - EDAX projects with several areas or
+% maps, Oxford projects with several slices, EMSphInx files with several
+% scans - lists them on import and lets you pick one by |'dataSet'|. Its
+% path is kept in |ebsd.opt.dataSet|. Previously only the first one was
+% imported, without a word
+% * the SEM / PRIAS images an EDAX map comes with are imported into
+% |ebsd.opt.electron_image|, just as the Oxford electron images already were
 % * faster import, automatic column and degree/radiant detection
 %
 %   ebsd = EBSD.load('data.h5')                  % no format guessing needed
 %   ebsd = EBSD.load('data.ang','setting',2)     % EDAX reference frame setting 1-4
 %   ebsd = EBSD.load('data.ctf','EulerCorrection',rotation.byEuler(pi,0,0))
-%   ebsd = EBSD.load('data.h5','headerOnly')     % phases and header only
+%   ebsd = EBSD.load('data.h5','headerOnly')     % phases, header and data sets
+%   ebsd = EBSD.load('data.h5','dataSet',2)      % the second map of the file
+%   ebsd = EBSD.load('data.h5','dataSet','Area 2')
 %
 % *All EDAX Formats Give the Same Result*
 %

@@ -8,10 +8,15 @@ function [ebsd] = loadEBSD_h5(fname, varargin)
 %   - There are helper functions to convert data and build the EBSD object
 %
 % Options
+%  dataSet    - which data set to import from a file that holds several
+%               of them, either as the number shown in the list printed
+%               on import, or as (part of) its name, e.g.
+%               EBSD.load(fname,'dataSet',2) or
+%               EBSD.load(fname,'dataSet','OIM Map 2')
 %  headerOnly - return only phase/header metadata, skip reading the
 %               (potentially large) per-pixel position/rotation/phase
 %               data and any other top-level category (e.g. electron
-%               images)
+%               images). Also lists the data sets the file contains.
 
 % Selecting right config and load------------------------------------------
 
@@ -19,6 +24,10 @@ if ~exist(fname, 'file'), error('File %s not found.', fname); end
 info_struct = h5info(fname);
 
 headerOnly = check_option(varargin, 'headerOnly');
+
+% a previous import may have left a data set selected - every lookup below
+% starts out unrestricted again
+dataSetScope('/');
 
 if check_option(varargin, 'debug')
   isDebug(get_option(varargin, 'debug'));
@@ -87,6 +96,26 @@ if check_option(varargin, 'ebsd_key')
   end
 end
 
+% Select the data set to import -------------------------------------------
+% Vendor files are project files: an EDAX .edaxh5 nests
+% <project>/<sample>/Area N/OIM Map N/EBSD, an Oxford .h5oina nests
+% /1, /2, ... - so the config's ebsd key alone may well be ambiguous.
+% Enumerate what the file holds and let the user pick one of them.
+
+dataSets = find_dataSets(info_struct, Conf);
+requested = get_option(varargin, 'dataSet', []);
+iSet = select_dataSet(dataSets, requested);
+
+if ~isempty(iSet)
+  if isfield(Conf.ebsd, 'key')
+    Conf.ebsd.key = struct('mode', 'absolute', 'value', dataSets(iSet).path);
+  end
+  % properties, header, images and the values a config reads next to the
+  % data set (step size, grid size, ...) have to come from the very same
+  % data set
+  dataSetScope(parent_path(dataSets(iSet).path));
+end
+
 % generate config info text
 if ~check_option(varargin,'silent')
   fprintf('\n%s\n', repmat('═', 1, 80));
@@ -94,6 +123,11 @@ if ~check_option(varargin,'silent')
   fprintf('├── Manufacturer : %s\n', Conf.settings.name);
   if isfield(Conf.settings, 'manufacturer_info')
     wraptext(sprintf('    └── Info         : %s\n', Conf.settings.manufacturer_info.data));
+  end
+  % staying quiet about the other data sets would silently import one of
+  % several maps - so say which one was taken whenever there is a choice
+  if ~isempty(iSet) && (headerOnly || (numel(dataSets) > 1 && isempty(requested)))
+    fprintf('%s', dataSets2str(dataSets, iSet));
   end
   fprintf('%s\n', repmat('═', 1, 80));
 end
@@ -157,7 +191,8 @@ catch ME
     warning("Someting went wrong! Trying fallback: '%s'. The Error was: '%s'", Conf.settings.fallback, ME.message);
     
     % Restart with fallback version
-    ebsd = loadEBSD_h5(fname, 'type', Conf.settings.fallback, 'debug', isDebug(), 'headerOnly', headerOnly);
+    ebsd = loadEBSD_h5(fname, 'type', Conf.settings.fallback, 'debug', isDebug(), ...
+      'headerOnly', headerOnly, 'dataSet', requested);
     return;
   else 
     error('loadEBSD_h5 failed. No more Fallbacks available.\nError code: %s', ME.message);
@@ -220,6 +255,12 @@ for i = 1:length(fields)
 end
 
 ebsd = data.ebsd;
+
+% remember where the data came from and what else the file has to offer
+if ~isempty(iSet)
+  ebsd.opt.dataSet = dataSets(iSet).path;
+  if numel(dataSets) > 1, ebsd.opt.dataSets = [dataSets.path]; end
+end
 
 % Euler <-> map reference frame -------------------------------------------
 % Normally the correction is stated in the file and has been picked up by
@@ -637,6 +678,22 @@ function out = image_data_default(raw_data)
   out = copy_reshaped(SE,  out, x_size, y_size);
 end
 
+function out = image_data_images(raw_data)
+% Every dataset of an image group as it is stored, e.g. the SEM / PRIAS
+% images EDAX keeps next to the EBSD data. Unlike image_data_default
+% these are already two dimensional and need no reshaping - only the
+% transpose from HDF5's column major layout to MTEX's row major images.
+
+  out = struct;
+
+  for n = fieldnames(raw_data)'
+    img = double(raw_data.(n{1}));
+    if ~isvector(img), img = img.'; end
+    out.(n{1}) = img;
+  end
+
+end
+
 function out = electron_image_default(raw_data)
 
   if ~isfield(raw_data, 'image_data') || ~isfield(raw_data, 'header')
@@ -856,6 +913,23 @@ function val = isDebug(setVal)
     val = debugState;
 end
 
+function val = dataSetScope(setVal)
+% helper function to set the HDF5 group all searches are confined to
+%
+% Once a data set has been selected (see find_dataSets) every lookup has
+% to stay inside it. Otherwise a file with several maps would happily
+% combine map 2's orientations with map 1's step size, since each search
+% restarts at the file root. "/" means "whole file" and is the state
+% before a data set has been picked.
+
+    persistent scope;
+    if nargin > 0
+        scope = normalize_root(char(setVal));
+    end
+    if isempty(scope), scope = '/'; end
+    val = scope;
+end
+
 %% Path resolution --------------------------------------------------------
 %
 % The functions in this section are the "config -> HDF5 path" bridge.
@@ -873,7 +947,7 @@ function final_path = get_hdf5_path(info_struct, config_item, options)
 %   The dispatch is driven by config_item.mode:
 %       "absolute"    : literal match of the full path
 %       "search_root" : regex over paths under options.root
-%       "search_free" : regex over all paths in the file
+%       "search_free" : regex over all paths of the selected data set
 %
 %   The h5info tree is flattened once per file and cached in a persistent
 %   variable. Subsequent calls in the same session hit the cache
@@ -903,14 +977,21 @@ function final_path = get_hdf5_path(info_struct, config_item, options)
   search_val = string(config_item.value);
   mode = string(config_item.mode);
 
+  % Searches are confined to the selected data set - "search_free" means
+  % "anywhere in the data set", and an entry that has not been anchored to
+  % a key group yet starts at the data set rather than at the file root.
+  scope = dataSetScope();
+  root = normalize_root(options.root);
+  if strcmp(root, '/'), root = scope; end
+
   % select mode and get matches
   switch mode
     case 'absolute'
       matches = find_absolute(items, search_val);
     case 'search_root'
-      matches = find_in_root(items, search_val, normalize_root(options.root));
+      matches = find_in_root(items, search_val, root);
     case 'search_free'
-      matches = find_free(items, search_val);
+      matches = find_in_root(items, search_val, scope);
     otherwise
       error('get_hdf5_path:badMode', ...
             'Unknown mode "%s". Use "absolute", "search_root", or "search_free".', mode);
@@ -939,6 +1020,198 @@ function final_path = get_hdf5_path(info_struct, config_item, options)
   end
 end
 
+function sets = find_dataSets(info_struct, Conf)
+%FIND_DATASETS  Enumerate the data sets an HDF5 file holds.
+%
+%   sets = find_dataSets(info_struct, Conf) returns a struct array with
+%   the fields
+%       path  - full HDF5 path of the data set
+%       label - the part of the path that distinguishes it from the others
+%
+%   Every map of a project file matches the config's ebsd key, so the
+%   matches of that key are the natural candidate list. Two things have to
+%   be sorted out first: a regex like "/EBSD" matches the data set group
+%   *and* everything below it, and a regex broad enough to catch every map
+%   also catches unrelated groups - Oxford's "EBSD Layered Image" for the
+%   key "EBSD". Hence the two filter steps below.
+%
+%   See also: select_dataSet, dataSetScope
+
+  % without a key the whole file is one data set
+  if ~isfield(Conf, 'ebsd') || ~isfield(Conf.ebsd, 'key')
+    sets = struct('path', "/", 'label', "/");
+    return
+  end
+
+  % a key that does not resolve at all is not this function's business to
+  % report - an empty list leaves the config untouched, so the category
+  % loop raises the proper error and the config fallback still kicks in
+  try
+    paths = get_hdf5_path(info_struct, Conf.ebsd.key, "multiple", true);
+  catch
+    sets = struct('path', {}, 'label', {});
+    return
+  end
+  if ~iscell(paths), paths = {paths}; end
+  paths = string(paths(:));
+
+  % keep only the topmost node of each chain of matches
+  keep = true(size(paths));
+  for i = 1:numel(paths)
+    for j = 1:numel(paths)
+      if i ~= j && keep(j) && ~strcmp(paths(i), paths(j)) && ...
+          path_starts_with(char(paths(i)), char(paths(j)))
+        keep(i) = false;
+        break
+      end
+    end
+  end
+  paths = paths(keep);
+
+  % keep only candidates under which the mandatory entries of the ebsd
+  % category actually resolve
+  req = required_keys(rmfield(Conf.ebsd, 'key'));
+  isSet = true(size(paths));
+  for i = 1:numel(paths)
+    for k = 1:numel(req)
+      try
+        get_hdf5_path(info_struct, req{k}, "root", paths(i));
+      catch
+        isSet(i) = false;
+        break
+      end
+    end
+  end
+  % if the config is too exotic for this check nothing is gained by
+  % discarding everything - fall back to the unvalidated list
+  if any(isSet), paths = paths(isSet); end
+
+  labels = short_labels(paths);
+  sets = struct('path', num2cell(paths), 'label', num2cell(labels));
+  sets = reshape(sets, 1, []);
+end
+
+function req = required_keys(node, optional, req)
+%REQUIRED_KEYS  Collect the config entries a data set must provide.
+%
+%   These are the non-optional entries searched relative to the data set
+%   root. "search_free" and "absolute" entries are deliberately skipped:
+%   they are anchored at the enclosing scope, not at the data set itself
+%   (e.g. EDAX reads the step size from a Sample group *next to* EBSD).
+
+  if nargin < 2, optional = false; end
+  if nargin < 3, req = {}; end
+  if ~isstruct(node) || isempty(fieldnames(node)), return; end
+
+  % optionality is inherited by the whole branch, as in readConf
+  if isfield(node, 'optional'), optional = optional || logical(node.optional); end
+  if optional, return; end
+
+  if isfield(node, 'mode') && isfield(node, 'value') && ...
+      ~isfield(node, 'fallback') && strcmpi(string(node.mode), "search_root")
+    req{end+1} = struct('mode', 'search_root', 'value', node.value);
+  end
+
+  for f = fieldnames(node)'
+    req = required_keys(node.(f{1}), optional, req);
+  end
+end
+
+function labels = short_labels(paths)
+% Strip the leading path segments all data sets share - what remains is
+% what tells them apart ("Area 1/OIM Map 1/EBSD" instead of the full
+% "/Kamila Ti/Ti c axis/Area 1/OIM Map 1/EBSD").
+
+  parts = arrayfun(@(p) split(p, "/"), paths, 'UniformOutput', false);
+
+  nCommon = 0;
+  if numel(paths) > 1
+    minLen = min(cellfun(@numel, parts));
+    while nCommon < minLen - 1 && ...
+        all(cellfun(@(p) strcmp(p(nCommon+1), parts{1}(nCommon+1)), parts))
+      nCommon = nCommon + 1;
+    end
+  end
+
+  labels = arrayfun(@(i) join(parts{i}(nCommon+1:end), "/"), (1:numel(paths))');
+end
+
+function iSet = select_dataSet(sets, requested)
+%SELECT_DATASET  Turn a 'dataSet' option value into an index into sets.
+%
+%   requested is either empty (take the first one), a number (the position
+%   in the list) or a string matching part of a data set's label or path,
+%   case insensitive. An empty sets means the config did not resolve at
+%   all - the resulting empty index leaves the import untouched.
+
+  if isempty(sets)
+    if ~isempty(requested)
+      error('loadEBSD_h5:badDataSet', ...
+        'This file does not contain any data set to select from.');
+    end
+    iSet = [];
+    return
+  end
+
+  if isempty(requested), iSet = 1; return; end
+
+  if isnumeric(requested)
+    if ~isscalar(requested) || requested ~= round(requested) || ...
+        requested < 1 || requested > numel(sets)
+      error('loadEBSD_h5:badDataSet', ...
+        'There is no data set number %s in this file.\n%s', ...
+        num2str(requested), dataSets2str(sets));
+    end
+    iSet = requested;
+    return
+  end
+
+  requested = string(requested);
+  hit = find(contains([sets.label], requested, 'IgnoreCase', true) | ...
+             contains([sets.path],  requested, 'IgnoreCase', true));
+
+  if isempty(hit)
+    error('loadEBSD_h5:badDataSet', ...
+      'There is no data set matching "%s" in this file.\n%s', ...
+      requested, dataSets2str(sets));
+  elseif ~isscalar(hit)
+    error('loadEBSD_h5:ambiguousDataSet', ...
+      '"%s" matches %d data sets - please be more specific.\n%s', ...
+      requested, numel(hit), dataSets2str(sets, hit));
+  end
+
+  iSet = hit;
+end
+
+function str = dataSets2str(sets, selected)
+% The data set list as it is printed on import and in error messages.
+
+  if nargin < 2, selected = []; end
+
+  if isscalar(sets)
+    str = sprintf('├── Data set     : %s\n', sets(1).path);
+    return
+  end
+
+  str = sprintf('├── Data sets    : %d\n', numel(sets));
+  for k = 1:numel(sets)
+    if ismember(k, selected)
+      marker = '▸';
+    else
+      marker = ' ';
+    end
+    str = [str sprintf('│   %s [%d] %s\n', marker, k, sets(k).label)]; %#ok<AGROW>
+  end
+  str = [str sprintf('└── Pick one by EBSD.load(fname,''dataSet'',%d) or ''dataSet'',''%s''\n', ...
+    numel(sets), sets(end).label)];
+end
+
+function p = parent_path(path)
+% The group containing the given path, '/' for a top level one.
+  p = regexprep(char(normalize_path(path)), '/[^/]*$', '');
+  if isempty(p), p = '/'; end
+end
+
 function matches = find_absolute(items, search_val)
 % Literal, case-sensitive path match.
   target = normalize_path(search_val);
@@ -958,16 +1231,6 @@ function matches = find_in_root(items, pattern, root_val)
     p = items{i}.FullPath;
     if ~path_starts_with(p, root_val), continue; end
     if ~isempty(regexpi(p, pattern, 'once'))
-      matches{end+1} = items{i};
-    end
-  end
-end
-
-function matches = find_free(items, pattern)
-% Regex match over the whole tree.
-  matches = {};
-  for i = 1:length(items)
-    if ~isempty(regexpi(items{i}.FullPath, pattern, 'once'))
       matches{end+1} = items{i};
     end
   end
