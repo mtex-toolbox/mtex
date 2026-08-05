@@ -57,11 +57,11 @@
 % *Much Better EBSD Import*
 %
 % * new <import_wizard.html import wizard> with file browser, live preview
-% and script export - simply type |import_wizard|. Which data set of a
-% multi map file and whether the recorded or the post processed data is
-% imported are picked right below its file browser, and end up in the
-% generated script. |.edaxh5| files are now offered by the file browser
-% as well
+% and script export - simply type |import_wizard|. Below its file browser
+% it lists everything the selected file offers - every data set of a multi
+% map file, once per stored version - and selecting a row imports it. The
+% choice ends up in the generated script. |.edaxh5| files are now offered
+% by the file browser as well
 % * all HDF5 flavours (Bruker, EDAX, Oxford, ThermoFisher, ...) are handled
 % by one json driven interface <loadEBSD_h5.html |loadEBSD_h5|>
 % * reference frame corrections are unified across |ang|, |ctf|, |crc| and
@@ -234,18 +234,6 @@
 % same object, |eqTol(cs1,cs2)| for the same Laue group and axes, and
 % |sim(cs1,cs2)| for the same lattice with possibly different alignment of
 % x, y, z
-%
-% *Faster Startup*
-%
-% Starting MTEX no longer initializes the MATLAB graphics system, which took
-% about six seconds in every MATLAB session, also in those that never
-% plotted anything. The preferences moved out of the application data of the
-% graphics root object into |mtexPrefStore|, and the graphics defaults MTEX
-% relies on - font size, marker size and color order - are applied by
-% |mtexGraphicsDefaults| when the first figure is created. Accordingly the
-% screen resolution dependent |getMTEXpref('FontSize')| is determined at
-% that moment rather than at startup. Set it in |mtex_settings| to pin it to
-% a fixed value.
 %
 % *Minor*
 %

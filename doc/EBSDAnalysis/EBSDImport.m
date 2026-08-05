@@ -135,8 +135,8 @@ plot(ebsd,ebsd.orientations)
 %
 %   ebsd = EBSD.load(fname,'headerOnly')
 %
-% The <import_wizard.html import wizard> offers the same choice as a drop
-% down list next to its file browser.
+% The <import_wizard.html import wizard> lists everything a file offers
+% below its file browser - selecting a row imports it.
 %
 %% Raw and Post Processed Data
 %
@@ -156,9 +156,10 @@ plot(ebsd,ebsd.orientations)
 %   ebsd = EBSD.load(fname,'raw','dataSet',2)
 %
 % Files of all other vendors hold the recorded data only, so |'raw'| has no
-% effect on them. In the <import_wizard.html import wizard> the choice is
-% the "raw (as recorded)" check box below the file browser, which stays
-% disabled for files that store one version only.
+% effect on them. The <import_wizard.html import wizard> lists both
+% versions of every data set below its file browser, tagged |(raw)| and
+% |(post processed)|, and files that store one version only simply get one
+% row per data set.
 %
 %% Writing your own interface
 %
