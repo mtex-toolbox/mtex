@@ -14,6 +14,10 @@ varargin = delete_option(varargin,{'normalize' 'plain'});
 
 if normalize, shape.allV = shape.allV / sqrt(abs(shape.area)); end
 
+% the plotting convention of the shape may be overwritten by an option
+pC = getClass(varargin,'plottingConvention',shape.how2plot);
+varargin(cellfun(@(x) isa(x,'plottingConvention'),varargin)) = [];
+
 h = polarplot(shape.theta,shape.rho,varargin{:});
 
 % get rid of lines and ticks
@@ -23,8 +27,7 @@ if plain
   h.Parent.RTick = [];
 end
 
-pC = getClass(varargin,'plottingConvention',plottingConvention.default);
-pC.setView;
+pC.setView(h(1).Parent);
 
 if nargout == 0, clear h; end
 
