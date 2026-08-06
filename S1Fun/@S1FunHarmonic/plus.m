@@ -15,17 +15,18 @@ function sF = plus(sF1,sF2)
 %
 
 
-if isnumeric(sF1) 
+if isnumeric(sF1)
   s = size(sF2);
   sF = sF2.subSet(':');
-  sF.fhat(1, :) = sF.fhat(1, :)+sF1(:).';
+  % the constant Fourier coefficient is in the middle as fhat runs from -N to N
+  sF.fhat(sF.bandwidth+1, :) = sF.fhat(sF.bandwidth+1, :)+sF1(:).';
   sF = reshape(sF, s);
   return
 end
 if isnumeric(sF2)
   s = size(sF1);
   sF = sF1.subSet(':');
-  sF.fhat(1, :) = sF.fhat(1, :)+sF2(:).';
+  sF.fhat(sF.bandwidth+1, :) = sF.fhat(sF.bandwidth+1, :)+sF2(:).';
   sF = reshape(sF, s);
   return
 end

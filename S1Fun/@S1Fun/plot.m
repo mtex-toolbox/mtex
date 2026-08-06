@@ -22,7 +22,8 @@ if check_option(varargin,{'notPolar','noPolar','cartesian'})
   M = 1e5;
   x = (0:M-1)/(M-1)*2*pi;
   y = sF.eval(x);
-  h = plot(x,y);
+  varargin = delete_option(varargin,{'notPolar','noPolar','cartesian'});
+  h = plot(x,y,varargin{:});
   if nargout == 0, clear h; end
   return
 end
