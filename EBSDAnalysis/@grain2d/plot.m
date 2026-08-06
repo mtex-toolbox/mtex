@@ -197,6 +197,9 @@ if check_option(varargin,'DisplayName')
   legend('-DynamicLegend','location','NorthEast');
 end
 
+% apply the plotting convention to the axis
+mP.how2plot.setView(mP.ax);
+
 % keep track of the extent of the graphics
 % this is needed for the zoom: TODO maybe this can be done better
 if isNew

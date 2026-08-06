@@ -21,8 +21,12 @@ function h = plot(tP,varargin)
 % <https://www.mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html patch properties>
 
 % create a new plot
+% ensure we do not plot perpendicular to the slice
+pC = tP.how2plot.copy;
+if isnull(dot(pC.outOfScreen,tP.N)), pC.outOfScreen = tP.N; end
+
 [mtexFig,isNew] = newMtexFigure(varargin{:});
-mP = newMapPlot('scanUnit','um','parent',mtexFig.gca,varargin{:},tP.allV.how2plot);
+mP = newMapPlot('scanUnit','um','parent',mtexFig.gca,varargin{:},pC);
 
 numTP = length(tP);
 
@@ -94,6 +98,9 @@ if check_option(varargin,'DisplayName') && exist('defColor','var')
   
   legend('-DynamicLegend','location','NorthEast');
 end
+
+% apply the plotting convention to the axis
+mP.how2plot.setView(mP.ax);
 
 try axis(mP.ax,'tight'); end
 mP.micronBar.setOnTop

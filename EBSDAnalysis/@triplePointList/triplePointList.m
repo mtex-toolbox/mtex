@@ -29,6 +29,7 @@ classdef triplePointList < phaseList & dynProp
     y              % y coordinates of the vertices of the grains
     angles         % boundary segment angles at the triple points
     V              % vertices x,y coordinates of the triple points
+    how2plot       % default plotting convention
   end
   
   methods
@@ -74,6 +75,14 @@ classdef triplePointList < phaseList & dynProp
       
     end
     
+    function pC = get.how2plot(tP)
+      pC = tP.allV.how2plot;
+    end
+
+    function tP = set.how2plot(tP,pC)
+      tP.allV.how2plot = pC;
+    end
+
     function v = get.V(tP)
       v = tP.allV(tP.id,:);
     end
