@@ -10,6 +10,9 @@ function [values,modes] = max(SO3F,varargin)
 %   SO3F = max(SO3F1, SO3F2) % maximum of two rotational functions
 %   SO3F = max(SO3F1, SO3F2, 'bandwidth', bw) % specify the new bandwidth
 %
+%   % global maximum of each component of a vector valued function
+%   [v,pos] = max(SO3Fmulti)
+%
 %   % compute the maximum of a vector valued function along dim
 %   SO3F = max(SO3Fmulti,[],dim)
 %
@@ -67,6 +70,13 @@ end
 
 % vector valued functions
 s = size(SO3F);
+
+% max(SO3F,[],dim) - the empty second argument is numeric, so this has to be
+% checked before the max(SO3F1,SO3F2) / max(SO3F,c) case below
+if nargin>2 && isempty(varargin{1}) && isnumeric(varargin{2})
+  values = max@SO3Fun(SO3F,varargin{:});
+  return
+end
 
 if nargin>1 && (isa(varargin{1},'SO3FunHarmonic') || isnumeric(varargin{1}))
   t = size(varargin{1});

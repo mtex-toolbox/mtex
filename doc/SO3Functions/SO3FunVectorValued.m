@@ -131,13 +131,22 @@ mean(SO3F4, 2)
 %%
 % *min/max*
 %
-% If the |min| or |max| command gets a vector valued |SO3FunHarmonic| the 
-% pointwise minimum or maximum is calculated along the first non-singleton 
-% dimension if not specified otherwise.
-% 
+% For vector valued functions the |min| and |max| commands come in two
+% flavours. Called with a single argument they compute the global minimum or
+% maximum of every component separately and return these values as a double
+% array.
+%
 % Therefore the function has to be real valued
 SO3F4.isReal = 1;
 min(SO3F4)
+
+%%
+% Passing a dimension by |min(SO3F,[],dim)| instead computes the pointwise
+% minimum along that dimension, which is again a vector valued
+% |SO3FunHarmonic|. Here |SO3F4| is of size 2x5, hence taking the pointwise
+% minimum along the first dimension leaves a 1x5 function.
+
+min(SO3F4,[],1)
 
 %%
 % *Remark on the matrix product*
@@ -153,7 +162,7 @@ SO3F1 .* SO3F4
 % Similarly to the univariate case we also can look at the Fourier
 % coefficients of vector valued functions.
 
-plotSpektra(SO3F3)
+plotSpektra(SO3F3,'linewidth',2)
 
 %%
 % The section plot and the 3d plot are performed only for the first
@@ -168,6 +177,6 @@ plot3d(SO3F3)
 %%
 % while the plot along a specific fibre includes all components.
 
-plotFibre(SO3F3,fibre.beta)
+plotFibre(SO3F3,fibre.beta,'linewidth',2)
 
 %#ok<*VUNUS>
