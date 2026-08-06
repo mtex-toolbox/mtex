@@ -87,6 +87,23 @@ else
   rot = orientation(rot,SRight,SLeft);
 end
 
+% Non finite nodes let the nfft library write outside of its buffers, which
+% corrupts the heap and crashes MATLAB. As a node can not be removed from an
+% nfft plan we keep it, but set its function value to zero here and replace
+% its coordinates below, such that it does not contribute to the transform.
+% The nodes of a quadratureSO3Grid are finite by construction and expanding
+% it into a plain orientation would be expensive, hence we skip the test.
+if isa(rot,'quadratureSO3Grid')
+  isBadNode = false;
+else
+  isBadNode = ~(isfinite(rot.a) & isfinite(rot.b) & isfinite(rot.c) & isfinite(rot.d));
+  isBadNode = isBadNode(:);
+  if any(isBadNode)
+    warning('There are non finite nodes. They are ignored.')
+    values(isBadNode,:) = 0;
+  end
+end
+
 % ------ approximate adjoint by rounding onto a regular grid + FFT --------
 % For many rotations it is much cheaper to round them onto the nearest
 % nodes of a regular Clenshaw Curtis quadrature grid, accumulate their
@@ -111,9 +128,15 @@ if check_option(varargin,'gridded') && ~isa(rot,'quadratureSO3Grid')
   NG = min(2*N, max(N,128));
   SO3G = quadratureSO3Grid(NG,'ClenshawCurtis',crystalSymmetry,specimenSymmetry);
 
-  % accumulate the values at the nearest grid nodes
-  id = find(SO3G,rot(:));
-  id = id(:);
+  % accumulate the values at the nearest grid nodes - a non finite node has
+  % no nearest node, but its value is zero, so any index will do
+  if any(isBadNode)
+    id = ones(length(rot),1);
+    id(~isBadNode) = find(SO3G,rot(~isBadNode));
+  else
+    id = find(SO3G,rot(:));
+    id = id(:);
+  end
   v = zeros(length(SO3G),len);
   for k = 1:len
     v(:,k) = accumarray(id,values(:,k),[length(SO3G) 1]);
@@ -209,7 +232,9 @@ if isempty(plan) && ~(isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'Clensha
   plan = nfftmex('init_guru',{3,NN,NN,NN,length(rot),fftw_size,fftw_size,fftw_size,m,nfft_flags,fftw_flags});
 
   % set rotations as nodes in plan
-  nfftmex('set_x',plan,double(Euler(rot(:),'nfft').')/(2*pi));
+  nodes = double(Euler(rot(:),'nfft').')/(2*pi);
+  nodes(:,isBadNode) = 0;
+  nfftmex('set_x',plan,nodes);
 
   % node-dependent precomputation
   nfftmex('precompute_psi',plan);
@@ -243,6 +268,7 @@ elseif check_option(varargin,'directComputation')
   
   % Do adjoint nsoft directly by evaluating the sum
   nodes = Euler(rot(:),'nfft').';
+  nodes(:,isBadNode) = 0;
   ghat = zeros(2*N+1,2*N+1,2*N+1,len);
 
   for m = 1:length(rot)
