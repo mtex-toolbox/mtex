@@ -31,10 +31,12 @@ if numel(SO3F)>1 && ~getMTEXpref('generatingHelpMode')
     'manually. In the following the first component is plotted.'])
   SO3F = SO3F.subSet(1);
 end
-if ~SO3F.isReal && ~getMTEXpref('generatingHelpMode')
-  warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
-    'In the following only the real part is plotted.'])
-  SO3F.isReal=1;
+if ~SO3F.isReal
+  if ~getMTEXpref('generatingHelpMode')
+    warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
+      'In the following only the real part is plotted.'])
+  end
+  SO3F.isReal = 1;
 end
 
 

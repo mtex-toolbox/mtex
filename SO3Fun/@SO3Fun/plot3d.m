@@ -1,10 +1,12 @@
 function plot3d(odf,varargin)
 % plots odf
 
-if ~odf.isReal && ~getMTEXpref('generatingHelpMode')
-  warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
-    'In the following only the real part is plotted.'])
-  odf.isReal=1;
+if ~odf.isReal
+  if ~getMTEXpref('generatingHelpMode')
+    warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
+      'In the following only the real part is plotted.'])
+  end
+  odf.isReal = 1;
 end
 
 if odf.antipodal, ap = {'antipodal'}; else, ap = {}; end
