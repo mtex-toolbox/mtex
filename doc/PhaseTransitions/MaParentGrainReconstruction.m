@@ -333,16 +333,9 @@ hold off
 % not reconstructed pixels. To this end we first run grain reconstruction
 % on the parent map
 
-[parentGrains, parentEBSD] = calcGrains(parentEBSD,'angle',3*degree);
+[parentGrains, parentEBSD] = calcGrains(parentEBSD,'angle',3*degree,'minPixel',10);
 
-% remove very small grains
-parentEBSD(parentGrains(parentGrains.numPixel<10)) = [];
-
-% redo grain reconstruction
-[parentGrains, parentEBSD] = calcGrains(parentEBSD,'angle',3*degree);
-parentGrains = smooth(parentGrains,10);
-
-plot(ebsd('indexed'),ebsd('indexed').orientations,'figSize','large')
+plot(ebsd,ebsd.orientations,'figSize','large')
 
 hold on
 plot(parentGrains.boundary,'lineWidth',2)
@@ -354,7 +347,7 @@ hold off
 
 % fill the holes
 F = halfQuadraticFilter;
-parentEBSD = smooth(parentEBSD('indexed'),F,'fill',parentGrains);
+parentEBSD = smooth(parentEBSD,F,'fill',parentGrains);
 
 % plot the parent map
 plot(parentEBSD('Iron fcc'),parentEBSD('Iron fcc').orientations,'figSize','large')

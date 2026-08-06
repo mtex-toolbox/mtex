@@ -322,7 +322,7 @@ parentGrains = smooth(parentGrains,5);
 
 F= halfQuadraticFilter;
 F.alpha = 0.1;
-parentEBSD = smooth(parentEBSD('indexed'),F,'fill',parentGrains);
+parentEBSD = smooth(parentEBSD,F,'fill',parentGrains);
 
 % plot the resulting beta phase
 plot(parentEBSD(betaName),ipfKey.orientation2color(parentEBSD(betaName).orientations),'figSize','large')

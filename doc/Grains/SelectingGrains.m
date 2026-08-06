@@ -11,9 +11,8 @@ mtexdata forsterite silent
 % restrict it to a subregion of interest.
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
-
 % reconstruct grains
-[grains, ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',5);
+[grains, ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',5,'alpha',6);
 
 % smooth them
 grains = smooth(grains,5);
