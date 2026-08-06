@@ -79,6 +79,12 @@ N = min(SO3F.bandwidth,get_option(varargin,'bandwidth',inf));
 % alpha, beta, gamma
 abg = Euler(rot,'nfft').'./(2*pi);
 
+% non finite nodes let the nfft library write outside of its buffers, which
+% corrupts the heap and crashes MATLAB. Hence we replace them by a valid
+% node and set the corresponding function values to NaN afterwards.
+isBadNode = any(~isfinite(abg),1);
+abg(:,isBadNode) = 0;
+
 % create plan
 if check_option(varargin,'keepPlan')
   plan = keepPlanNFFT;
@@ -167,6 +173,9 @@ if check_option(varargin,'keepPlan')
 else
   nfftmex('finalize',plan);
 end
+
+% restore the non finite nodes
+f(isBadNode,:) = NaN;
 
 % reshape output
 if isscalar(SO3F), f = reshape(f,s); end
