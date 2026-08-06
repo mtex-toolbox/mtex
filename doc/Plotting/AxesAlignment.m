@@ -62,9 +62,21 @@ plot(v2,'upper','label','v_2')
 annotate([xvector,yvector,zvector],'labeled','backgroundcolor','w')
 
 %%
+% A shortcut for defining a plotting convention is a string that tells for
+% each axis where it points to on screen
+
+pC3 = plottingConvention('y↑→x')
+
+%%
+% This shortcut may be used whenever a plotting convention is expected
+
+v3 = vector3d(1,1,1);
+v3.how2plot = 'x←↓y'
+
+%%
 % When initiating a new |@vector3d| MTEX uses |plottingConvention.default|
 % as default plotting convention. This default plotting convention can be
-% changed by
+% changed by |plottingConvention.default('y↑→x')| or by
 
 plotx2north
 plotzOutOfPlane

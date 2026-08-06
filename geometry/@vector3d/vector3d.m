@@ -163,6 +163,12 @@ classdef vector3d < dynOption
       end
     end
 
+    function v = set.how2plot(v,pC)
+      % accept a string like 'y↑→x' as a shortcut for the convention
+      if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
+      v.how2plot = pC;
+    end
+
     % ------- to be removed ------
     function pC = get.plottingConvention(v)
       pC = v.how2plot;

@@ -65,6 +65,12 @@ classdef symmetry < matlab.mixin.Copyable
     end
     
     
+    function set.how2plot(s,pC)
+      % accept a string like 'y↑→x' as a shortcut for the convention
+      if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
+      s.how2plot = pC;
+    end
+
     function pg = get.pointGroup(sym)
       if sym.id>0
         pg = symmetry.pointGroups(sym.id).Inter;

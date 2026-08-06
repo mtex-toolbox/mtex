@@ -1,0 +1,57 @@
+{
+"_schemaVersion": "1.0.0",
+
+"_comment": "MTEX code suggestions for the plotting classes.",
+
+"_comment2": "A plotting convention can be given by a string that tells for each axis where it points to on screen, e.g. 'y↑→x' means y points up and x to the right. Offered are the 8 axis aligned setups that are also offered by the import wizard.",
+
+"plottingConvention":
+{
+    "inputs":
+    [
+      {"name":"alignment", "kind":"required", "type":["char","choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"where the axes point to on screen"}
+    ],
+    "outputs":
+    [
+      {"name":"pC", "type":"plottingConvention"}
+    ]
+},
+
+"plottingConvention":
+{
+    "inputs":
+    [
+      {"name":"outOfScreen", "kind":"required", "type":["vector3d"], "purpose":"axis pointing out of the screen"},
+      {"name":"east", "kind":"ordered", "type":["vector3d"], "purpose":"axis pointing to the right"}
+    ],
+    "outputs":
+    [
+      {"name":"pC", "type":"plottingConvention"}
+    ]
+},
+
+"plottingConvention.default":
+{
+    "inputs":
+    [
+      {"name":"pC", "kind":"required", "type":[["plottingConvention"],["char","choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"]], "purpose":"the new default plotting convention"}
+    ],
+    "outputs":
+    [
+      {"name":"pC", "type":"plottingConvention"}
+    ]
+},
+
+"plottingConvention.edax":
+{
+    "inputs":
+    [
+      {"name":"setting", "kind":"required", "type":["numeric","scalar","integer",">=1","<=4"], "purpose":"EDAX reference frame setting"}
+    ],
+    "outputs":
+    [
+      {"name":"pC", "type":"plottingConvention"}
+    ]
+}
+
+}
