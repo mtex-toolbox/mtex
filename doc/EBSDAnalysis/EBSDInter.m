@@ -56,10 +56,18 @@ ebsdNewGrid = gridify(ebsd,'unitCell',uC)
 
 % plot the regridded EBSD data set
 plot(ebsdNewGrid('indexed'),ebsdNewGrid('indexed').orientations)
-xlim([0,50]); ylim([0,40])
+
+xlim(ebsd.extent(1:2)), ylim(ebsd.extent(3:4))
+
 %%
 % Note, that we have not rotated the EBSD data but only the grid. All
 % orientations as well as the position of all grains remains unchanged.
+%
+% The new grid is generated from the cell to cell translations of the given
+% unit cell, i.e. it is rotated by 45 degree as well. Since such a rotated
+% grid can not fill a rectangular matrix, the corners of |ebsdNewGrid| stick
+% out of the map and contain no data - this is why we have restricted the
+% plot above to the indexed measurements.
 %
 %%
 % Another example is the change from a square to an hexagonal grid or vice

@@ -20,7 +20,7 @@ grains = smooth(grains('indexed'),10,'moveTriplePoints');
 % plot all grains and highlight a specific one
 plot(grains)
 
-ind = 765;
+ind = 679;
 hold on
 plot(grains(ind).boundary,'lineWidth',5,'linecolor','blue')
 hold off
@@ -265,8 +265,8 @@ legend('Location','southoutside','Orientation','horizontal')
 
 plotopts = {'normalize','linewidth',2, 'plain'};
 
-shapeF = characteristicShape(grains.boundary('f','f'))
-plot(shapeF,plotopts{:})
+shapeF = characteristicShape(grains.boundary('Fo','Fo'))
+plot(shapeF,plotopts{:},'DisplayName','Fo-Fo')
 hold on
 shapeE = characteristicShape(grains.boundary('En','En'));
 plot(shapeE,plotopts{:},'DisplayName','En-En')

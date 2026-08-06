@@ -32,14 +32,16 @@ mdf_boundary = calcDensity(mori_boundary,'halfwidth',5*degree)
 
 %%
 % The misorientation distribution function can be processed as any other
-% ODF. E.g. we may compute the preferred misorientation
+% <SO3FunConcept.html orientation valued function>. E.g. we may compute the
+% preferred misorientation
 
 [v,mori] = max(mdf_boundary)
 
 %%
-% or plot the pole figure corresponding to the crystal axis (1,0,0)
+% or plot it in an axis angle section 
 
-plotPDF(mdf_boundary,Miller(1,0,0,ebsd('Fo').CS))
+plotSection(mdf_boundary,'axisAngle',90*degree)
+mtexColorbar
 
 %% The Uncorrelated Misorientation Distribution Function
 %
@@ -55,13 +57,14 @@ mdf_uncor = calcDensity(mori)
 % Obviously it is different from the boundary misorientation distribution
 % function.
 
-plotPDF(mdf_uncor,Miller(1,0,0,ebsd('Fo').CS))
+plotSection(mdf_uncor,'axisAngle',90*degree)
+mtexColorbar
 
 %% Computing the Uncorrelated MDF from two ODFs
 %
-% The uncorrelated MDF does not require the individual orientations at all -
-% it is fully determined by the two ODFs involved. Let us estimate them from
-% the same data set
+% The uncorrelated MDF does not require the individual orientations at all
+% - it is fully determined by the two ODFs involved. Let us estimate them
+% from the same data set
 
 odf_fo = calcDensity(ebsd('fo').orientations,'halfwidth',10*degree)
 odf_en = calcDensity(ebsd('en').orientations,'halfwidth',10*degree)
@@ -76,18 +79,14 @@ mdf = calcMDF(odf_en,odf_fo)
 % This misorientation distribution function should be similar to the
 % uncorrelated misorientation function computed directly from the EBSD data
 
-plotPDF(mdf,Miller(1,0,0,ebsd('Fo').CS))
+plotSection(mdf,'axisAngle',90*degree)
+mtexColorbar
 
 %%
 % Passing a single ODF to <SO3Fun.calcMDF.html |calcMDF|> gives the
 % uncorrelated misorientations within one phase
 
 mdf_fo = calcMDF(odf_fo)
-
-%%
-% Another common visualization are sections in axis angle coordinates
-
-plotSection(mdf_fo,'axisAngle')
 
 %% Angle Distribution
 %
@@ -111,7 +110,7 @@ plotAngleDistribution(mdf)
 hold on
 plotAngleDistribution(ebsd('fo').CS,ebsd('en').CS)
 hold off
-legend('uncorrelated MDF','uniform ODF')
+legend('uncorrelated MDF','uniform ODF','Location','best')
 
 %%
 % For computing the exact values see the commands

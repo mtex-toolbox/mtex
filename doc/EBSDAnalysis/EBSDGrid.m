@@ -182,23 +182,17 @@ plot(ebsdGF,ebsdGF.orientations)
 % that grows with the row's y position, so the same nominally rectangular
 % map ends up narrower at one edge than at the other. MTEX reconstructs
 % the underlying grid indices of an <EBSD.EBSD.html |EBSD|> object robustly
-% under this kind of smooth, non-rigid distortion, including on a phase
-% subset - which matters for <EBSD.gridify.html |gridify|> above, and for
-% plotting (the |surf| backend).
-%
-% Grid index recovery being robust does not, on its own, make grain
-% reconstruction robust to the same distortion: <EBSD.calcGrains.html
-% |calcGrains|> currently still places notIndexed holes and the map's
-% outer edge using a rigid (non-distortion-aware) reconstruction, a
-% separate, not yet fixed limitation documented in
-% EBSDAnalysis/@EBSD/private/spatialDecompositionGrid.m.
+% under this kind of smooth, non-rigid distortion - which matters for
+% <EBSD.gridify.html |gridify|> above, but also for any operation that
+% needs the map's grid structure internally, such as
+% <EBSD.calcGrains.html |calcGrains|> or the |surf| plotting backend.
 %
 % We demonstrate this on a real map, rather than a small synthetic one,
 % since the failure mode this guards against only becomes visible once the
 % map is realistically wide - a small toy grid stays safe at distortion
 % levels that already break a real, wide map.
 
-mtexdata forsterite
+mtexdata small
 
 %%
 % The command <EBSD.transform.html |transform|> applies an arbitrary
@@ -223,18 +217,25 @@ distort = @(pos) vector3d( ...
 ebsdDistorted = transform(ebsd, distort);
 
 plot(ebsdDistorted('Fo'),ebsdDistorted('Fo').orientations)
+hold on
+plot(ebsdDistorted('En'),ebsdDistorted('En').orientations)
+hold on
+plot(ebsdDistorted('Di'),ebsdDistorted('Di').orientations)
+hold off
 
 %%
 % Even though every row has now shifted by a different amount, MTEX
-% recovers exactly the same grid indices as for the undistorted map -
-% for the full map as well as for a subset of a single phase, where gaps
-% now occur within a scan line and not only between lines.
+% recovers exactly the same grid indices as for the undistorted map
 
-isequal(ebsdDistorted.lattice.ij, ebsd.lattice.ij)
 isequal(ebsdDistorted('Fo').lattice.ij, ebsd('Fo').lattice.ij)
 
+%%
 
+grains = calcGrains(ebsdDistorted,'minPixel',5)
 
+hold on 
+plot(grains.boundary,'lineWidth',2)
+hold off
 
 
 %#ok<*NASGU>

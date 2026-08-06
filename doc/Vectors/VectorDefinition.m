@@ -14,7 +14,10 @@ v = vector3d(1,2,3)
 % This gives a single vector with coordinates (1,2,3) with respect to the
 % X, Y, Z coordinate system. Lets visualize this vector
 
-plot(v)
+% use the plotting convention y↑→x
+pC = plottingConvention; pC.makeDefault;
+
+plot(v,'grid')
 annotate([vector3d.X,vector3d.Y,vector3d.Z],'label',{'X','Y','Z'},'backgroundcolor','w')
 
 %%
@@ -25,6 +28,9 @@ annotate([vector3d.X,vector3d.Y,vector3d.Z],'label',{'X','Y','Z'},'backgroundcol
 v.how2plot.outOfScreen = xvector;
 plot(v,'grid')
 annotate([vector3d.X,vector3d.Y,vector3d.Z],'label',{'X','Y','Z'},'backgroundcolor','w')
+
+% lets revert the plotting convention
+v.how2plot.outOfScreen = zvector;
 
 %%
 % One can easily access the coordinates of any vector by

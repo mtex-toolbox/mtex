@@ -1,110 +1,81 @@
 %% Cluster demo 
 %
-% This code demonstrates how clustering algorithms can be used to separate
-% sets of vectors, crystal directions or orientations into groups by
-% proximity.
+% Clustering allows to separate data, like orientations, directions, grain
+% shapes, ... into groups by proximity. While MTEX supports several
+% clustering algorithms, the currently best one is
+% <https://classix.readthedocs.io/en/stable/ classix>.
 %
+%% 
+% Lets start by clustering some directional data which we sample from our
+% smiley function
+
+S2F = S2Fun.smiley.^2;
+
+v = S2F.discreteSample(10000);
+
+scatter(v,'MarkerAlpha',0.2,'MarkerSize',2)
+
 %%
+
+[cInd,center] = calcCluster(v);
+
+plot(v,ind2color(cInd),'MarkerAlpha',0.2,'MarkerSize',2)
+
+annotate(center)
+
+%%
+% The output |cInd| is a list of integers that associates each data point
+% with its cluster. For fine tuning the classix clustering algorithm has
+% the options |'radius'| and |'minPoints'|.
+% 
+% Note that MTEX automatically adapts the algorithm in presence of
+% antipodals symmetry, i.e., the symmetrically equivalent points at the top
+% and the bottom of the smiley are assigned to the same cluster.
+
+v.antipodal = true;
+[cInd,center] = calcCluster(v);
+
+plot(v,ind2color(cInd),'MarkerAlpha',0.2,'MarkerSize',2)
+
+annotate(center)
+
+%%
+% Analogously to directions, we may also cluster orientations. In order to
+% demonstrate this we first draw a random sample from a model ODF
+% consisting of a fibre and a unimodal component.
+
 % define a cubic crystal symmetry
 cs  = crystalSymmetry('432');
 
 % define an ODF with two radial peaks
-ori = orientation.byEuler([10 40]*degree,[30 50]*degree,[50 70]*degree,cs)
-odf = unimodalODF(ori,'halfwidth',5*degree);
+odf = 0.7*fibreODF(fibre.gamma(cs),'halfwidth',10*degree) + ...
+  0.3*unimodalODF(orientation.byEuler(30*degree,10*degree,60*degree,cs))
 
-% view the odf 
-plotPDF(odf,Miller(1,0,0,odf.CS),'contour','linewidth',2);
-
-% generate 10k orientations from this randomly defined ODF function
-ori = odf.discreteSample(1000);
-
-% convert the orientations to vector3d
-r = ori.symmetrise * Miller(1,0,0,odf.CS);
+% simulate 10k orientations from the ODF
+ori = odf.discreteSample(10000);
 
 %%
-% assign each vector to one of twelve clusters and calculate the center
-% of each cluster
-[cId,center] = calcCluster(r,'numCluster',12);
+% Lets visualize the ODF and the random sampling
 
-% plot the clusters, sorted by color
-plot(r,ind2color(cId),'MarkerSize',4,'MarkerAlpha',0.02)
+% view the ODF 
+plotSection(odf,'contourf')
+mtexColorMap white2black
 
-% annotate all the cluster centers, on all figures.
-annotate(center,'add2all');
-
-%%
-% Note that the upper and lower hemisphere plots are versions of each
-% other, reflected horizontally plus vertically.  This means that the
-% underlying data has antipodal symmetry, contributing equally to both
-% hemispheres. Let's include that in the cluster sorting.
-%%
-% repeat the calculation after changing all the vector3d to be antipodal
-r.antipodal = true;
-
-% repeat the calculation assigning the vectors to clusters.  Due to the
-% increased symmetry there are only six clusters now.
-[cId,center] = calcCluster(r,'numCluster',6);
-
-% plot the vectors.  Note that we no longer get an upper and lower
-% hemisphere plot; the antipodal symmetry tells MTEX they are equivalent
-% and so one sufficient to represent the data.
-
-plot(r,ind2color(cId),'MarkerSize',4,'MarkerAlpha',0.01)
-
-% annotate the cluster centers.
-annotate(center,'add2all')
+% together with the random sample
+plot(ori,'add2all','MarkerSize',3,'MarkerAlpha',0.25,'all')
 
 %%
-% pick a vector3d, and use that to convert the 10k random orientations
-% previously generated into crystal directions.
+% We again use the classix method for for clustering the orientations. Note
+% that the algorithm separates the fibre from the unimodal
+% portion. In particular, it correctly assigns all symmetrically equivalent
+% orientations to the same cluster.
 
-h = ori \ vector3d(1,1,0);
+[cId,center] = calcCluster(ori,'method','classix');
 
-% assign the crystal directions to two clusters
-[cId,center] = calcCluster(h,'numCluster',2);
+plotSection(ori,ind2color(cId),'markerSize',3,'MarkerAlpha',0.25,'all')
 
-% plot the crystal symmetry data on appropriate fundamental sector
-plot(h.project2FundamentalRegion,ind2color(cId),'fundamentalSector',...
-  'MarkerSize',4,'MarkerAlpha',0.5)
+annotate(center)
 
-% annotate the cluster centers
-annotate(center,'add2all')
-
-%%
-% just as we calculated clusters for vectors and crystal directions, we're
-% now going to do so for orientations
-
-[cId,center] = calcCluster(ori,'numCluster',2,'method','hierarchical');
-
-% create a pole figure of the orientations colored by the cluster they
-% belong to.
-plotPDF(ori,ind2color(cId),Miller(1,0,0,cs),'all','MarkerSize',5,...
-  'MarkerAlpha',0.01)
-
-%%
-% If you have the statistics toolbox, you can make some calculations about
-% the spread of points assigned to each cluster.
-
-r = discreteSample(r,2000)
-
-% compute the full distance matrix between all combinations of vectors
-d = angle_outer(r,r);
-% convert all small values to zero to simplify later calculations
-d(d<0.01) = 0;
-%d = d(triu(true(size(d)),1));
-
-% use the statistic toolbox
-try
-  d = squareform(d);
-  z = linkage(d,'ward');
-    
-  %cId = cluster(z,'cutoff',30*degree);
-  cId = cluster(z,'maxclust',6);
-
-  plotCluster(r,cId,'MarkerSize',4,'MarkerAlpha',0.1)
-catch
-  warning('Statistics Toolbox not installed!')
-end
 
 %%
 

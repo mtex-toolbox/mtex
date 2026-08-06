@@ -163,7 +163,7 @@ tau = sSAll.SchmidFactor(rCenter);
 % display the slip system with the maximum Schmid factor
 hold on
 for k = 1:length(rCenter)
- text(rCenter(k),char(sSAll(id(k)),'latex'),'Interpreter','latex')
+ text(rCenter(k),char(sSAll(id(k)),'latex'),'Interpreter','latex','fontsize',10)
 end
 hold off
 
@@ -229,7 +229,7 @@ SF = sSLocal.SchmidFactor(sigma);
 
 % plot the maximum Schmid factor
 plot(grains,SFMax,'micronbar','off','linewidth',2)
-mtexColorbar location southoutside
+mtexColorbar southoutside
 
 %%
 % Next we want to visualize the active slip systems.
@@ -271,7 +271,7 @@ SF = sS.SchmidFactor(sigmaLocal);
 
 % plot the maximum Schmid factor
 plot(grains,SFMax)
-mtexColorbar
+mtexColorbar southoutside
 
 % take the active slip system and rotate it in specimen coordinates
 sSactive = grains.meanOrientation .* sS(active);

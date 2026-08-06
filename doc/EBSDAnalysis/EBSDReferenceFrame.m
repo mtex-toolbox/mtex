@@ -58,12 +58,18 @@ ebsd = EBSD.load([mtexEBSDPath filesep 'olivineopticalmap.ang'],'setting',2)
 plot(ebsd('olivine'),ebsd('olivine').orientations,'coordinates','on')
 
 %%
-% The plot does not yet fit the alignment of the map in the EDAX software
-% as it plots the x-axis be default to east and the z-axis into the plane.
-% This is only a plotting convention and can be set in MTEX by
+% The plot should already fit the alignment of the map in the EDAX software
+% as MTEX by default plots the x-axis to east and the y-axis to the south.
+% However, if the interpretation of the map a different alignment with
+% respect to the screen is more useful we can easily change this by
+% changing the @plottingConvention stored in |ebsd.how2plot|.
+ 
 
-ebsd.how2plot.east = xvector;
-ebsd.how2plot.outOfScreen = -zvector;
+% lets assume we want y pointing towards east
+ebsd.how2plot.east = yvector;
+
+% and z out of the plane
+ebsd.how2plot.outOfScreen = zvector;
 
 plot(ebsd('olivine'),ebsd('olivine').orientations,'coordinates','on')
 
@@ -100,10 +106,10 @@ plotPDF(ebsd('O').orientations,h,'contourf')
 % As pole figures display data relative to the specimen reference frame
 % MTEX automatically aligns them on the screen exactly as the spatial map
 % above, i.e., according to our last definition with x pointing towards
-% east and y to the south.
+% south and y to the east.
 %
 %% Change the map reference system
-% In order to manually change the map reference frame one may apply a
+% In order to change the map coordinates one may apply a
 % rotation to the map coordinates only. E.g. to flip the map left to right
 % while preserving the Euler angles one can do
 

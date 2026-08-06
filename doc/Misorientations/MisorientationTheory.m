@@ -32,16 +32,16 @@ CS = grains.CS; % extract crystal symmetry
 plot(grains,grains.meanOrientation,'micronbar','off')
 
 hold on
-plot(grains([43,52]).boundary,'edgecolor','w','linewidth',2)
+plot(grains([50,59]).boundary,'edgecolor','w','linewidth',2)
 hold off
 
-text(grains([43,52]),{'1','2'})
+text(grains([50,59]),{'1','2'})
 
 %%
 % After extracting the mean orientation of grain 43 and 52
 
-ori1 = grains(43).meanOrientation;
-ori2 = grains(52).meanOrientation;
+ori1 = grains(50).meanOrientation;
+ori2 = grains(59).meanOrientation;
 
 %%
 % we may compute the misorientation angle between both orientations by
@@ -114,7 +114,7 @@ mm = round(unique(mori*m.symmetrise,'noSymmetry'),'maxHKL',6);
 annotate(mm,'labeled','MarkerSize',5,'figSize','large','textBelowMarker')
 
 % show legend
-legend({},'location','SouthEast','FontSize',13,'Interpreter','latex');
+legend({},'location','NorthEast','FontSize',13,'Interpreter','latex');
 
 %%
 % we observe an almost perfect match for the lattice planes
