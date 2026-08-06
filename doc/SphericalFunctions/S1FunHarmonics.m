@@ -75,11 +75,16 @@ mtexTitle('Cartesian Plot')
 % As an example, the following Fourier coefficients describe the 
 % real-valued function $f(\rho)=1+\cos\rho+2\sin(2\rho)$.
 
-fhat = [-1i; 0.5; 1; 0.5; 1i];
+fhat = [-1i; 0.5; 4; 0.5; 1i];
 S1FH = S1FunHarmonic(fhat)
 
 clf
+subplot(1,2,1)
 plot(S1FH,'linewidth',2)
+mtexTitle('Polar Plot')
+subplot(1,2,2)
+plot(S1FH,'linewidth',2,'notPolar')
+mtexTitle('Cartesian Plot')
 
 %% 
 % *Fourier Expansion of an S1FunHandle*

@@ -20,7 +20,7 @@ grains = smooth(grains('indexed'),10,'moveTriplePoints');
 % plot all grains and highlight a specific one
 plot(grains)
 
-ind = 654;
+ind = 765;
 hold on
 plot(grains(ind).boundary,'lineWidth',5,'linecolor','blue')
 hold off
