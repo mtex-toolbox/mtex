@@ -45,7 +45,7 @@ beta2alpha = orientation.Burgers(ebsd(betaName).CS,ebsd(alphaName).CS)
 grains = smooth(grains,1,'moveTriplePoints');
 
 % plot all alpha pixels
-region = [299 401 -500 -440];
+region = [299 401 440 500];
 plot(ebsd(alphaName),ebsd(alphaName).orientations,...
   'region',region,'micronbar','off','figSize','large');
 
@@ -173,8 +173,11 @@ parentGrains = parentGrains.update;
 % set up a EBSD map for the parent phase
 parentEBSD = ebsd;
 
-% and store there the grainIds of the parent grains
-parentEBSD('indexed').grainId = parentId(ebsd('indexed').grainId);
+% and store there the grainIds of the parent grains - all pixels have to be
+% remapped, not only the indexed ones, since the not indexed pixels belong
+% to grains as well. The leading zero keeps pixels without a grain at 0.
+old2new = [0; parentId];
+parentEBSD.grainId = old2new(1 + ebsd.grainId);
 
 plot(parentGrains(betaName), ...
   ipfKey.orientation2color(parentGrains(betaName).meanOrientation),'figSize','large')
@@ -235,7 +238,8 @@ parentGrains = parentGrains.update;
 [parentGrains,parentId] = merge(parentGrains,'threshold',5*degree);
 
 % update grainId in the ebsd map
-parentEBSD('indexed').grainId = parentId(parentEBSD('indexed').grainId);
+old2new = [0; parentId];
+parentEBSD.grainId = old2new(1 + parentEBSD.grainId);
 
 % plot the result
 color = ipfKey.orientation2color(parentGrains(betaName).meanOrientation);
@@ -250,7 +254,7 @@ sum(hasVote)
 % alpha grains into the already reconstructed beta grain. This reduces the
 % amount of grains not yet reconstructed to
 
-sum(parentGrains('Ti (alpha').numPixel) ./ sum(parentGrains.numPixel)*100
+sum(parentGrains(alphaName).numPixel) ./ sum(parentGrains.numPixel)*100
 
 %%
 % percent. One way to proceed would be to repeat the steps of this section

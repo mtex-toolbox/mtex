@@ -48,8 +48,9 @@ KS = orientation.KurdjumovSachs(csFCC,csBCC);
 % neighboring grains which can be found using the command
 % <grain2d.neighbors.html |neighbours|>
 
-% get neighboring grain pairs
-grainPairs = grains.neighbors;
+% get neighboring grain pairs - only martensite grains take part in the
+% reconstruction, hence we exclude the not indexed grains right away
+grainPairs = neighbors(grains('Iron bcc'));
 
 % ignore pairs with misorientation angle smaller then 5 degree
 mori = grains(grainPairs).meanOrientation;
@@ -145,9 +146,13 @@ A = mclComponents(A,p);
 % merge grains according to the adjacency matrix A
 [parentGrains, parentId] = merge(grains,A);
 
-% ensure grainId in parentEBSD is set up correctly with parentGrains
+% ensure grainId in parentEBSD is set up correctly with parentGrains - every
+% pixel has to be remapped, not only the indexed ones, as the not indexed
+% pixels belong to grains as well. The leading zero keeps pixels without a
+% grain (grainId == 0) at zero.
 parentEBSD = ebsd;
-parentEBSD('indexed').grainId = parentId(ebsd('indexed').grainId);
+old2new = [0; parentId];
+parentEBSD.grainId = old2new(1 + ebsd.grainId);
 
 %%
 % Let's visualize the first result. Note, that at this stage it is not
@@ -166,20 +171,22 @@ hold off
 % |calcParent|>. Note, that we ensure that at least two child grains have
 % been merged and that the misfit is smaller than 5 degree.
 
-% the measured child orientations
-childOri = grains('Iron bcc').meanOrientation;
+% the measured child orientations and the parent grain each of them belongs to
+childGrains = grains('Iron bcc');
+childOri = childGrains.meanOrientation;
+childPId = parentId(grains.id2ind(childGrains.id));
 
 % the parent orientation we are going to compute
 parentOri = orientation.nan(max(parentId),1,fcc2bcc.CS);
 fit = inf(size(parentOri));
-weights = grains('Iron bcc').numPixel;
+weights = childGrains.numPixel;
 
 % loop through all parent grains
 pC = progressCounter(max(parentId));
 for k = 1:max(parentId)
-  if nnz(parentId==k) > 1
+  if nnz(childPId==k) > 1
     % compute the parent orientation from the child orientations
-    [parentOri(k),fit(k)] = calcParent(childOri(parentId==k), fcc2bcc,'weights',weights((parentId==k)));
+    [parentOri(k),fit(k)] = calcParent(childOri(childPId==k), fcc2bcc,'weights',weights(childPId==k));
   end
   pC.show(k);
 end
@@ -190,7 +197,8 @@ parentGrains = parentGrains.update;
 
 % merge grains with similar orientation
 [parentGrains, mergeId] = merge(parentGrains,'threshold',4*degree);
-parentEBSD('indexed').grainId = mergeId(parentEBSD('indexed').grainId);
+old2new = [0; mergeId];
+parentEBSD.grainId = old2new(1 + parentEBSD.grainId);
 
 %%
 % Let's plot the resulting parent orientations
@@ -206,11 +214,11 @@ plot(parentGrains('Iron fcc'),parentGrains('Iron fcc').meanOrientation)
 % (011) plane in martensite.
 
 % compute variantId and packetId
-[variantId,packetId] = calcVariantId(parentOri(parentId),childOri,fcc2bcc);
+[variantId,packetId] = calcVariantId(parentOri(childPId),childOri,fcc2bcc);
 
 % associate to each packet id a color and plot
 color = ind2color(packetId);
-plot(grains,color)
+plot(childGrains,color)
 
 hold on
 plot(parentGrains.boundary,'linewidth',3)
@@ -271,7 +279,7 @@ mtexColorbar
 % not reconstructed pixels. To this end we first run grain reconstruction
 % on the parent map
 
-[parentGrains, parentEBSD.grainId] = ...
+[parentGrains, parentEBSD] = ...
   calcGrains(parentEBSD('indexed'),'angle',3*degree,'minPixel',10);
 
 parentGrains = smooth(parentGrains,5);
@@ -319,7 +327,7 @@ hold off
 % command <calcParent.html |calcParent|>.
 
 % extract child orientations at triple junctions
-tP = grains.triplePoints;
+tP = grains.triplePoints('Iron bcc','Iron bcc','Iron bcc');
 tPori = grains(tP.grainId).meanOrientation;
 
 % compute the misfit to a common parent orientation
@@ -377,7 +385,8 @@ A = mclComponents(A,p);
 
 % ensure grainId in parentEBSD is set up correctly with parentGrains
 parentEBSD = ebsd;
-parentEBSD('indexed').grainId = parentId(ebsd('indexed').grainId);
+old2new = [0; parentId];
+parentEBSD.grainId = old2new(1 + ebsd.grainId);
 
 %%
 % Let's visualize the result. Afterwards, we can proceed analogously as for
