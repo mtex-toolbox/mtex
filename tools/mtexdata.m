@@ -124,7 +124,6 @@ catch
           out = calcODF(pf);
       end
     case 'PoleFigure'
-      pC = plottingConvention(zvector,xvector);
       switch name
         case 'dubna'
           CS = loadCIF('quartz');
@@ -143,7 +142,7 @@ catch
           out = PoleFigure.load(fName,h,'interface','rw1');
           out = rotate(out,90*degree);
       end
-      out.how2plot = pC;
+      out.how2plot = 'y↑→x';
     case 'EBSD'
       switch lower(name)
         
@@ -181,8 +180,7 @@ catch
           out = loadEBSD_generic(fName,'CS',CS, ...
             'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'});
           
-          out.how2plot.east = xvector;
-          out.how2plot.outOfScreen = zvector;
+          out.how2plot = 'y↑→x';
 
         case 'olivine'
 
@@ -194,22 +192,17 @@ catch
           rot = rotation.byEuler(0*degree,0*degree,90*degree);
           out = rotate(out,rot);
 
-          % plotting conventions
-          out.how2plot.east = xvector;
-          out.how2plot.outOfScreen = zvector;
+          out.how2plot = 'y↑→x';
           
         case 'twins'
           
-          pC = plottingConvention;
           out = EBSD.load(fName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree));
-          out.how2plot = pC;
+          out.how2plot = 'y↑→x';
 
         case 'copper'
           
           out = EBSD.load(fName,'setting',1);
-
-          out.how2plot.east = xvector;
-          out.how2plot.outOfScreen = zvector;
+          out.how2plot = 'y↑→x';
 
         case 'single'
 
@@ -245,19 +238,17 @@ catch
         case 'forsterite'
 
           out = EBSD.load(fName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree));
-          out.how2plot.east = xvector;
-          out.how2plot.outOfScreen = zvector;
+          out.how2plot = 'y↑→x';
 
         case 'small'
 
           out = EBSD.load(fName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree));
           out = out(out.inpolygon([33 4.5 3 3]*10^3));
-          out.how2plot.east = xvector;
-          out.how2plot.outOfScreen = zvector;
+          out.how2plot = 'y↑→x';
 
         case lower('alphaBetaTitanium')
 
-          out = EBSD.load(fName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree));
+          out = EBSD.load(fName,'EulerCorrection',rotation.byAxisAngle(xvector,0*degree));
           out('Ti (alpha)').CS = out('Ti (alpha)').CS.properGroup;
           out('Ti (beta)').CS = out('Ti (beta)').CS.properGroup;
           out.how2plot = plottingConvention.ij;
@@ -267,12 +258,12 @@ catch
           out = EBSD.load(fName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree));
           out('Iron bcc').CS = out('Iron bcc').CS.properGroup;
           out('Iron bcc').CSList(3) = out('Iron bcc').CSList(3).properGroup;
+          out.how2plot = 'y↑→x';
 
         case 'emsland'
 
           out = EBSD.load(fName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree));
-          out.how2plot.east = xvector;
-          out.how2plot.outOfScreen = zvector;
+          out.how2plot = 'y↑→x';
 
         case 'emsphinx'
 
@@ -299,8 +290,7 @@ catch
           CS(3).mineral = 'Iron fcc';
           CS(4).mineral = 'Cobalt';
 
-          out.how2plot.east = xvector;
-          out.how2plot.outOfScreen = zvector;
+          out.how2plot = 'y↑→x';
 
         case 'trueebsdwcco'
           
