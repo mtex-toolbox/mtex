@@ -2,221 +2,154 @@
 %
 %% MTEX 7.0 xx/2026
 %
-% *One Step Grain Reconstruction*
+% *Grain Reconstruction*
 %
-% Grain reconstruction has been rewritten into a single call that covers
-% small grain removal, alpha shapes and gridded as well as arbitrarily
-% placed data. The second output is the EBSD data with |grainId| assigned -
-% pixels that do not belong to any grain, i.e. not indexed pixels or pixels
-% of grains removed by |'minPixel'|, are marked by |grainId == 0|.
+% <ebsd.calcGrains.html |calcGrains|> covers small grain removal, alpha
+% shapes and gridded as well as arbitrarily placed data in a single call.
+% Its second output replaces the previous |ebsd.grainId = ...| assignment
+% and marks pixels belonging to no grain - not indexed or removed by
+% |'minPixel'| - by |grainId == 0|. All boundary criteria are objects of
+% type @grainBoundaryCriterion (|gbcAngle|, |gbcSoft|, |gbcFMC|,
+% |gbcVariants|, |gbcCustom|), so any per pixel property may be segmented
 %
 %   [grains, ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',5,'alpha',3)
+%   grains = calcGrains(ebsd,gbcCustom(ebsd.bc,10))  % segment by band contrast
 %
-% All boundary criteria are now objects of type @grainBoundaryCriterion
-% (|gbcAngle|, |gbcSoft|, |gbcFMC|, |gbcVariants|, |gbcCustom|) which makes
-% it easy to segment by any per pixel property
+% Fast multiscale clustering @gbcFMC - the criterion for deformed material
+% where no single threshold angle works - has been rewritten. It compares
+% the misorientation between two clusters against their own internal
+% orientation spread, reads every pixel at the scale where its cluster is
+% best separated, fits a lattice curvature wherever the data support it, so
+% that a bent grain is no longer mistaken for a scattered one, and clusters
+% each phase on its own. On a synthetic benchmark of deformed maps the
+% adjusted Rand index rose from 0.84 to 0.96 at a third of the runtime. Note
+% that |calcGrains(ebsd,'fmc',cmaha)| used to fall back to angle
+% thresholding without saying so. The new data set |mtexdata EMSphinx|
+% illustrates this in <GrainReconstruction.html Grain Reconstruction>
 %
-%   gbc = gbcCustom(ebsd.bc,10); % segment by band contrast
-%   grains = calcGrains(ebsd,gbc)
+%   grains = calcGrains(ebsd,'fmc',0.5,'minPixel',10,'verbose')
 %
-% *Grain Reconstruction in Deformed Microstructures*
+% Two new commands complete the picture
 %
-% Fast multiscale clustering, @gbcFMC, has been rewritten. It is the
-% criterion for material where no single threshold angle works, since it
-% compares the misorientation between two clusters of pixels against their
-% own internal orientation spread rather than against a fixed angle.
+% * <grainBoundary.calcGBND.html |calcGBND|> estimates the distribution of
+% grain boundary normals, in specimen or in crystal coordinates, for 2d as
+% well as for 3d data
+% * <cleanUpPseudoSym.html |cleanUpPseudoSym|> detects grains split by
+% pseudo symmetric indexing - by the tortuosity of the separating boundary -
+% and reassigns the affected pixels
 %
-%   grains = calcGrains(ebsd,'fmc',0.5,'minPixel',10)
-%   grains = calcGrains(ebsd,'fmc',0.5,'verbose')  % report the hierarchy
-%
-% Every pixel is now read off at the scale of the cluster hierarchy where
-% its cluster is best separated, a lattice curvature is fitted to a cluster
-% wherever the data support it, so that a bent grain is no longer mistaken
-% for a scattered one, and each phase is clustered on its own. On a
-% synthetic benchmark of deformed maps the adjusted Rand index rose from
-% 0.84 to 0.96 while the runtime fell by a factor of three. Note that
-% |calcGrains(ebsd,'fmc',cmaha)| used to fall back to angle thresholding
-% without saying so.
-%
-% The new sample data set |mtexdata EMSphinx| - a deformed austenitic steel
-% indexed by spherical pattern matching - illustrates this in
-% <GrainReconstruction.html Grain Reconstruction>.
-%
-% *Boundary Characteristic Distribution*
-%
-% The command <grainBoundary.calcGBND.html |calcGBND|> estimates the
-% distribution of grain boundary normals, either in specimen or in crystal
-% coordinates, and for 2d as well as for 3d data
-%
-%   gB = grains.boundary('Fo','Fo');
-%   gbnd = calcGBND(gB,ebsd('Fo'))                    % crystal coordinates
-%   gbnd = calcGBND(gB,ebsd('Fo'),'halfwidth',10*degree)
-%   gbcd = calcGBND(gB,grains('Fo'),moriRef)          % for a fixed misorientation
-%   gbnd = calcGBND(grains3.boundary)                 % 3d, specimen coordinates
+%   gbnd = calcGBND(grains.boundary('Fo','Fo'),ebsd('Fo'),'halfwidth',10*degree)
+%   gbcd = calcGBND(gB,grains('Fo'),moriRef)   % for a fixed misorientation
+%   gbnd = calcGBND(grains3.boundary)          % 3d, specimen coordinates
+%   [ebsd,grains] = cleanUpPseudoSym(ebsd,grains,mori,'threshold',1.5)
 %
 % *Much Better EBSD Import*
 %
-% * new <import_wizard.html import wizard> with file browser, live preview
-% and script export - simply type |import_wizard|. Below its file browser
-% it lists everything the selected file offers - every data set of a multi
-% map file, once per stored version - and selecting a row imports it. The
-% choice ends up in the generated script. |.edaxh5| files are now offered
-% by the file browser as well
 % * all HDF5 flavours (Bruker, EDAX, Oxford, ThermoFisher, ...) are handled
 % by one json driven interface <loadEBSD_h5.html |loadEBSD_h5|>
-% * reference frame corrections are unified across |ang|, |ctf|, |crc| and
-% |h5| files and stored in |ebsd.EulerCorrection|
-% * file header metadata is kept in |ebsd.opt.header|, and can be read
-% without importing the data at all
-% * a HDF5 file holding several maps - EDAX projects with several areas or
-% maps, Oxford projects with several slices, EMSphInx files with several
-% scans - lists them on import and lets you pick one by |'dataSet'|. Its
+% * the new <import_wizard.html import wizard> comes with file browser, live
+% preview and script export. It lists everything the selected file offers -
+% every data set of a multi map file, once per stored version
+% * a HDF5 file holding several maps - EDAX areas, Oxford slices, EMSphInx
+% scans - lists them on import and lets you pick one by |'dataSet'|, whose
 % path is kept in |ebsd.opt.dataSet|. Previously only the first one was
 % imported, without a word
+% * reference frame corrections are unified across |ang|, |ctf|, |crc| and
+% |h5| files and stored in |ebsd.EulerCorrection|
+% * file header metadata is kept in |ebsd.opt.header| and can be read
+% without importing the data at all
 % * the SEM / PRIAS images an EDAX map comes with are imported into
 % |ebsd.opt.electron_image|, just as the Oxford electron images already were
 % * Oxford files store the map as recorded and as cleaned up by the vendor
 % software. The cleaned up version is imported as before, the recorded one
-% by the new option |'raw'| - which used to require |'type','Oxford_EBSD'|
+% by the new option |'raw'|
 % * faster import, automatic column and degree/radiant detection
 %
 %   ebsd = EBSD.load('data.h5')                  % no format guessing needed
-%   ebsd = EBSD.load('data.ang','setting',2)     % EDAX reference frame setting 1-4
-%   ebsd = EBSD.load('data.ctf','EulerCorrection',rotation.byEuler(pi,0,0))
 %   ebsd = EBSD.load('data.h5','headerOnly')     % phases, header and data sets
-%   ebsd = EBSD.load('data.h5','dataSet',2)      % the second map of the file
-%   ebsd = EBSD.load('data.h5','dataSet','Area 2')
+%   ebsd = EBSD.load('data.h5','dataSet',2)      % or 'dataSet','Area 2'
 %   ebsd = EBSD.load('data.h5oina','raw')        % not the post processed data
-%
-% *All EDAX Formats Give the Same Result*
+%   ebsd = EBSD.load('data.ctf','EulerCorrection',rotation.byEuler(pi,0,0))
 %
 % The formats |ang|, |osc|, |oh5| and |edaxh5| may all hold the very same
 % map, but were interpreted differently. They now agree on
 %
-% * the alignment between the Euler angle and the map reference frame.
-% Since the |setting| is not stored in the file, the most common setting 2
-% is assumed instead of leaving the Euler angles uncorrected. State your
-% own alignment by |'setting',1| to |'setting',4|, or switch the
-% correction off by |'setting',0|
+% * the alignment between Euler angle and map reference frame. As the
+% |setting| is not stored in the file, the most common setting 2 is assumed
+% instead of leaving the Euler angles uncorrected. State your own by
+% |'setting',1| to |'setting',4|, or switch the correction off by
+% |'setting',0|
 % * the crystal axes alignment used by EDAX, i.e. x parallel to a for
-% triclinic, trigonal and hexagonal lattices. It is available for any
-% crystal symmetry by the option |'EDAX'|
-% * the point group of the phases. EDAX states it only in newer files, e.g.
-% as |PointGroupID|, otherwise the symmetry code gives the Laue group.
-% Accordingly hexagonal phases are now imported as |6/mmm| and cubic ones
-% as |m-3m|, where the |ang| and |osc| interfaces used to say |622| and
-% |432|
+% triclinic, trigonal and hexagonal lattices, now available for any crystal
+% symmetry by the option |'EDAX'|
+% * the point group of the phases - hexagonal phases are now imported as
+% |6/mmm| and cubic ones as |m-3m|, where |ang| and |osc| used to say |622|
+% and |432|
 %
 %   ebsd = EBSD.load('data.edaxh5','setting',3)  % not the assumed setting 2
-%   ebsd = EBSD.load('data.osc','setting',0)     % no correction at all
 %   cs = crystalSymmetry('321',[4.9 4.9 5.4],'EDAX')   % x || a
 %
-% Bruker files describe their phases by a full crystal structure. Its
-% International Tables number and atomic basis are kept in |cs.opt.spaceId|
-% and |cs.opt.atoms|.
-%
-% Fixed along the way: |ang| files whose header contains a stray carriage
-% return - as written by some EDAX exports - silently lost their first data
-% point.
+% Phases of Bruker files keep their International Tables number and atomic
+% basis in |cs.opt.spaceId| and |cs.opt.atoms|. Fixed along the way: |ang|
+% files whose header contains a stray carriage return - as written by some
+% EDAX exports - silently lost their first data point.
 %
 % *Much Faster Plotting of EBSD Maps*
 %
-% EBSD and grain maps are drawn through three backends - |surf|, |patch|
-% and |imagesc|. Non hexagonal data now defaults to |surf|, which is orders
-% of magnitude faster than plotting one unit cell per pixel. Inverse pole
-% figure colors are precomputed via spherical lookup tables.
+% EBSD and grain maps are drawn through three backends - |surf|, |patch| and
+% |imagesc|. Non hexagonal data now defaults to |surf|, which is orders of
+% magnitude faster than plotting one unit cell per pixel, and inverse pole
+% figure colors are precomputed via spherical lookup tables. The scale bar
+% has been rewritten as well - it follows the plotting convention, rescales
+% while zooming and takes options
 %
 %   plot(ebsd,ebsd.orientation)                      % fast, default
-%   plot(ebsd,ebsd.orientation,'backend','patch')
 %   plot(ebsd,ebsd.orientation,'exact')              % exact unit cells
-%
-% The scale bar has been rewritten. It follows the plotting convention,
-% rescales while zooming, and takes options
-%
 %   plot(ebsd,'Location','nw','BackgroundColor','k','LineColor','w','Length',50)
 %
 % *x to the East and y to the South by Default*
 %
-% The default plotting convention is now
-% <plottingConvention.ij.html |plottingConvention.ij|> - x to east, y to
-% south and z into the screen. This is how SEM images are displayed and
-% what nearly every EBSD import states anyway. Pole figures are not
-% affected, spherical plots align themselves with the hemisphere they show.
-%
-% Data that is plotted the default way now refers to the one default
-% convention instead of an equivalent copy of it. Changing the default
-% therefore also applies to data that has been imported before
-%
-%   ebsd = EBSD.load('data.ang');
-%   plotx2north     % the map of ebsd is turned as well
-%
-% Note that the default has to be modified in place for this. Assigning to
-% |plottingConvention.default.east| installs a new default instead and
-% detaches all data referring to the old one
+% The default plotting convention is now <plottingConvention.ij.html
+% |plottingConvention.ij|> - x to east, y to south and z into the screen -
+% as SEM images are displayed and nearly every EBSD import states anyway.
+% Pole figures are not affected, spherical plots align themselves with the
+% hemisphere they show. Data plotted the default way now refers to the one
+% default convention instead of a copy of it, hence changing the default
+% also turns data imported before. This requires modifying the default in
+% place - assigning to it installs a new default and detaches all data
+% referring to the old one
 %
 %   pC = plottingConvention.default; pC.east = yvector;   % turns all data
 %   plottingConvention.default.east = yvector;            % does not
 %
-% *Moving Least Squares Approximation*
+% *Approximation, Sampling and Clustering*
 %
-% The new classes @S2FunMLS and @SO3FunMLS approximate scattered data on
-% the sphere and in orientation space by moving least squares. They support
+% * the new classes @S2FunMLS and @SO3FunMLS approximate scattered data on
+% the sphere and in orientation space by moving least squares, supporting
 % vector valued data, outlier detection, smoothly varying support radii and
-% Voronoi weights.
-%
-%   sF = S2FunMLS(nodes,values,'degree',3)
-%   SO3F = SO3FunMLS(ori,values,'delta',5*degree,'detectOutliers')
-%   sF = interp(nodes,values,'MLS')
-%
-% *Optimal Sampling*
-%
-% The command <SO3Fun.optimalSample.html |optimalSample|> (formerly
-% |compactify|) replaces random sampling by an almost perfectly equally
-% distributed set of orientations or directions representing a given
-% function
-%
-%   ori = optimalSample(odf,10000)
-%   v   = optimalSample(sF,1000,'bandwidth',32)
-%
-% *Clustering*
-%
-% <orientation.calcCluster.html |calcCluster|> uses by default the
+% Voronoi weights
+% * <SO3Fun.optimalSample.html |optimalSample|> (formerly |compactify|)
+% replaces random sampling by an almost perfectly equally distributed set of
+% orientations or directions representing a given function
+% * <orientation.calcCluster.html |calcCluster|> uses by default the
 % <https://github.com/nla-group/classix CLASSIX> algorithm, which is much
 % faster than hierarchical clustering and needs no number of clusters
-%
-%   [c,center] = calcCluster(ori)
-%   [c,center] = calcCluster(v,'method','hierarchical','numCluster',5)
-%
-% *Pseudo Symmetry Correction*
-%
-% <cleanUpPseudoSym.html |cleanUpPseudoSym|> detects grains that have been
-% split by pseudo symmetric indexing - using the tortuosity of the
-% separating boundary - and reassigns the affected pixels
-%
-%   [ebsd,grains] = cleanUpPseudoSym(ebsd,grains,mori,'threshold',1.5)
-%
-% *Iterative ODF Estimation*
-%
-% <PoleFigure.calcODFIterative.html |calcODFIterative|> inverts pole figure
+% * <PoleFigure.calcODFIterative.html |calcODFIterative|> inverts pole figure
 % data by iteratively adjusting the kernel width, which is much more robust
 % for irregularly sampled data
-%
-%   odf = calcODFIterative(pf,'halfwidth',5*degree)
-%
-% *Two Dimensional Color Keys*
-%
-% @planarColorKey encodes two scalar properties at once, the first one as
+% * @planarColorKey encodes two scalar properties at once, the first one as
 % hue, the second one as saturation
 %
-%   cK = planarColorKey(winter,'colorModel','white');
-%   rgb = cK.property2color(grains.longAxis,grains.aspectRatio);
-%   plot(grains,rgb), plot(cK,'labeled')
+%   sF   = S2FunMLS(nodes,values,'degree',3)
+%   SO3F = SO3FunMLS(ori,values,'delta',5*degree,'detectOutliers')
+%   ori  = optimalSample(odf,10000)
+%   [c,center] = calcCluster(ori)
+%   odf  = calcODFIterative(pf,'halfwidth',5*degree)
+%   cK   = planarColorKey(winter,'colorModel','white');
+%   rgb  = cK.property2color(grains.longAxis,grains.aspectRatio);
 %
 % *Syntax Changes*
 %
-% * |[grains, ebsd] = calcGrains(ebsd)| - the second output replaces the
-% previous |ebsd.grainId = ...| assignment and updates |grainId|,
-% |phaseId| and |orientation|
 % * |ebsd.CSList| is not a cell array anymore but an array of
 % @crystalSymmetry and @notIndexed objects. In particular a not indexed
 % phase can now carry a name and a color
@@ -225,11 +158,8 @@
 %
 % * the constructors |quaternion|, |rotation| and |orientation| only accept
 % the syntax |quaternion(a,b,c,d)|, |orientation(a,b,c,d,CS,SS)|. Use the
-% named constructors instead
-%
-%   v = vector3d.byPolar(theta,rho)     % instead of vector3d('polar',...)
-%   ori = orientation.byMatrix(M,cs)
-%
+% named constructors |vector3d.byPolar(theta,rho)|,
+% |orientation.byMatrix(M,cs)|, ... instead
 % * symmetries are compared on three levels - |cs1 == cs2| checks for the
 % same object, |eqTol(cs1,cs2)| for the same Laue group and axes, and
 % |sim(cs1,cs2)| for the same lattice with possibly different alignment of
