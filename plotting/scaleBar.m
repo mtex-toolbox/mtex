@@ -8,6 +8,16 @@ classdef scaleBar < handle
 % the option |'refFrame','off'| or globally by
 % |setMTEXpref('showRefFrame','off')|.
 %
+% The scale bar reads the plotting convention back from the axes camera
+% via <plottingConvention.getView.html plottingConvention.getView> and
+% realigns itself whenever the map is reoriented, e.g. via
+% <plottingConvention.setView.html plottingConvention.setView> or one of
+% <plotx2north.html plotx2north>, <plotzOutOfPlane.html plotzOutOfPlane>,
+% etc. - this works no matter which @plottingConvention object was used to
+% apply the view, since it never relies on a cached reference to it. The
+% reference frame indicator is derived from that same convention, so it
+% always shows the alignment actually in effect.
+%
 % Syntax
 %   sB = scaleBar(mP, scanUnit)
 %   sB = scaleBar(mP, scanUnit, 'SBBackgroundColor', 'k', 'SBLineColor', 'w', ...
@@ -33,22 +43,11 @@ classdef scaleBar < handle
 %  SBRefFrameLabels  - cell of char, their labels (default {'x','y','z'})
 %
 % Example
-%  Use a scale bar on the aachen mtexdata.
 %
+%   % use a scale bar on the aachen mtexdata
 %   mtexdata aachen
 %   plot(ebsd,'SBBackgroundColor','k','SBLineColor','w', ...
-%                 'SBBackgroundAlpha',0.6,'Location','nw')
-%
-% Note
-%  The scale bar reads the plotting convention back from the axes camera
-%  via <plottingConvention.getView.html plottingConvention.getView> and
-%  realigns itself whenever the map is reoriented, e.g. via
-%  <plottingConvention.setView.html plottingConvention.setView> or one of
-%  <plotx2north.html plotx2north>, <plotzOutOfPlane.html plotzOutOfPlane>,
-%  etc. - this works no matter which @plottingConvention object was used to
-%  apply the view, since it never relies on a cached reference to it. The
-%  reference frame indicator is derived from that same convention, so it
-%  always shows the alignment actually in effect.
+%     'SBBackgroundAlpha',0.6,'Location','nw')
 %
 
 
