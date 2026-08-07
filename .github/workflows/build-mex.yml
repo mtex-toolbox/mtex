@@ -19,6 +19,11 @@ name: build mex
 # have to be kept in step by hand.
 on:
   workflow_dispatch:
+  # cutting a release is what puts the binaries where users can reach them:
+  # check_mex downloads them from the release assets, since an Actions
+  # artifact needs an authenticated API call and a user's MATLAB has no token
+  release:
+    types: [published]
   pull_request:
     paths:
       - '**.c'
@@ -50,6 +55,10 @@ jobs:
   build:
     name: ${{ matrix.ext }}
     runs-on: ${{ matrix.os }}
+
+    # needed by the release upload below; every other trigger only reads
+    permissions:
+      contents: write
 
     strategy:
       # one platform failing must not cancel the others - a missing binary on
@@ -106,6 +115,24 @@ jobs:
           path: mex/*.${{ matrix.ext }}
           if-no-files-found: error
           retention-days: 30
+
+      # Attached one file at a time, deliberately not as an archive: check_mex
+      # downloads them individually because Windows virus scanners object most
+      # to an archive full of unsigned native libraries, and one blocked
+      # archive would take every binary down with it.
+      #
+      # This uploads whatever mex/ holds for this platform, so the vendored
+      # NFFT binaries travel with the ones just built - check_mex needs both
+      # and should not have to fetch them from two different places.
+      - name: attach to the release
+        if: github.event_name == 'release'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" \
+            mex/*.${{ matrix.ext }} \
+            --clobber --repo "$GITHUB_REPOSITORY"
 
   collect:
     name: collect all platforms
