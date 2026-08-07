@@ -107,7 +107,7 @@
 %   plot(ebsd,ebsd.orientation,'exact')              % exact unit cells
 %   plot(ebsd,'Location','nw','SBBackgroundColor','k','SBLineColor','w','Length',50)
 %
-% *The Reference Frame is Shown on the Map*
+% *The Reference Frame is Shown on Maps and Sections*
 %
 % On top of the bar the same box now indicates how the specimen reference
 % frame is aligned on screen - an arrow for every axis with a component
@@ -119,6 +119,16 @@
 %
 %   plot(ebsd,ebsd.orientations,'refFrame','off')
 %   setMTEXpref('showRefFrame','off')
+%
+% @sigmaSections and @pfSections are annotated with the specimen directions
+% the way pole figures are - a section is a pole figure split up by the
+% omega angle, so it lives in the same reference frame. Both are
+% customized by the same |pfAnnotations| preference, misorientation
+% sections stay unannotated as their directions are crystal directions
+%
+%   pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y],{'RD','ND'},...
+%     'BackgroundColor','w','tag','axesLabels',varargin{:});
+%   setMTEXpref('pfAnnotations',pfAnnotations);
 %
 % *x to the East and y to the South by Default*
 %
