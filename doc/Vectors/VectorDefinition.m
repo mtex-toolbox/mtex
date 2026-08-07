@@ -1,5 +1,6 @@
 %% Defining Three Dimensional Vectors
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % Three dimensional vectors in the Euclidean space are represented by
 % variables of the class <vector3d.vector3d.html *vector3d*>.
@@ -13,9 +14,6 @@ v = vector3d(1,2,3)
 %%
 % This gives a single vector with coordinates (1,2,3) with respect to the
 % X, Y, Z coordinate system. Lets visualize this vector
-
-% use the plotting convention y↑→x
-pC = plottingConvention; pC.makeDefault;
 
 plot(v,'grid')
 annotate([vector3d.X,vector3d.Y,vector3d.Z],'label',{'X','Y','Z'},'backgroundcolor','w')

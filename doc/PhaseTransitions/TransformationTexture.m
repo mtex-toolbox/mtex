@@ -1,5 +1,6 @@
 %% Transformation Texture
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % During phase transformation or twinning the orientation of a crystal
 % rapidly flips from an initial state |oriA| into a transformed state

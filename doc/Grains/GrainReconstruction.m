@@ -14,8 +14,6 @@
 % In order to illustrate the grain reconstruction process we consider the
 % following sample data set
 
-close all
-
 % import the data
 mtexdata forsterite
 
@@ -23,7 +21,7 @@ mtexdata forsterite
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
 % make a phase plot
-plot(ebsd)
+plot(ebsd,'micronbar','off')
 
 %% Basic grain reconstruction
 %
@@ -65,7 +63,7 @@ grains
 hold on
 
 % plot the boundary of all grains
-plot(grains.boundary,'linewidth',1.5)
+plot(grains.boundary,'linewidth',1.5,'micronbar','off')
 
 % stop override mode
 hold off
@@ -80,7 +78,7 @@ hold off
 grains = smooth(grains,5);
 
 % display the result
-plot(ebsd)
+plot(ebsd,'micronbar','off')
 hold on
 plot(grains.boundary,'linewidth',1.5)
 hold off
@@ -97,7 +95,7 @@ ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 grains = smooth(grains,3);
 
 % plot the boundary of all grains
-plot(ebsd)
+plot(ebsd,'micronbar','off')
 hold on
 plot(grains.boundary,'linewidth',1.5)
 hold off
@@ -113,7 +111,7 @@ ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 [grains, ebsd] = calcGrains(ebsd,'alpha',0,'angle',10*degree);
 
 % plot the boundary of all grains
-plot(ebsd)
+plot(ebsd,'micronbar','off')
 hold on
 plot(grains.boundary,'linewidth',1.5)
 hold off

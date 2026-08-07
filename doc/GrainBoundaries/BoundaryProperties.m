@@ -95,7 +95,7 @@ gB_Mg = gB('Magnesium','Magnesium')
 %%
 % Then the misorientation angles can be plotted by
 
-plot(gB_Mg,gB_Mg.misorientation.angle./degree,'linewidth',4)
+plot(gB_Mg,gB_Mg.misorientation.angle./degree,'linewidth',4,'micronbar','off')
 mtexColorbar('title','misorientation angle (°)')
 
 %% Geometric properties
@@ -108,7 +108,7 @@ ori = ebsd('id',gB_Mg.ebsdId).orientations;
 axes = axis(ori(:,1),ori(:,2),'antipodal')
 
 % plot the angle between the misorientation axis and the boundary direction
-plot(gB_Mg,angle(gB_Mg.direction,axes),'linewidth',4)
+plot(gB_Mg,angle(gB_Mg.direction,axes),'linewidth',4,'micronbar','off')
 
 %%
 % We observe that the angle is quite oscillatory. This is because of the
@@ -117,7 +117,7 @@ plot(gB_Mg,angle(gB_Mg.direction,axes),'linewidth',4)
 % command <grainBoundary.calcMeanDirection.html |calcMeanDirection|>
 
 % plot the angle between the misorientation axis and the boundary direction
-plot(gB_Mg,angle(gB_Mg.calcMeanDirection(4),axes),'linewidth',4)
+plot(gB_Mg,angle(gB_Mg.calcMeanDirection(4),axes),'linewidth',4,'micronbar','off')
 
 %%
 % The *midPoint* property is useful when  TODO:
@@ -146,7 +146,7 @@ twinning = orientation.map(Miller(1,-1,0,1,CS),Miller(1,0,-1,-1,CS),...
 
 gBTwin = gB(gB.isTwinning(twinning));
 
-plot(grains,grains.meanOrientation,'faceAlpha',0.25)
+plot(grains,grains.meanOrientation,'faceAlpha',0.25,'micronbar','off')
 
 hold on
 plot(gBTwin,gBTwin.componentSize,'lineWidth',4)

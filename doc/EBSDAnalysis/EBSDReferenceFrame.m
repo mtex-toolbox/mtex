@@ -55,7 +55,7 @@
 
 ebsd = EBSD.load([mtexEBSDPath filesep 'olivineopticalmap.ang'],'setting',2)
 
-plot(ebsd('olivine'),ebsd('olivine').orientations,'coordinates','on')
+plot(ebsd('olivine'),ebsd('olivine').orientations)
 
 %%
 % The plot should already fit the alignment of the map in the EDAX software
@@ -64,14 +64,10 @@ plot(ebsd('olivine'),ebsd('olivine').orientations,'coordinates','on')
 % respect to the screen is more useful we can easily change this by
 % changing the @plottingConvention stored in |ebsd.how2plot|.
  
+% assume we want x pointing down and y pointing towards east
+ebsd.how2plot = 'x↓→y';
 
-% lets assume we want y pointing towards east
-ebsd.how2plot.east = yvector;
-
-% and z out of the plane
-ebsd.how2plot.outOfScreen = zvector;
-
-plot(ebsd('olivine'),ebsd('olivine').orientations,'coordinates','on')
+plot(ebsd('olivine'),ebsd('olivine').orientations)
 
 %%
 % Note that these options only alter the orientation of the EBSD map and
@@ -91,6 +87,7 @@ cS = crystalShape.olivine;
 largeGrains = grains(grains.numPixel>500)
 
 % and plot the crystal shapes
+plot(ebsd('olivine'),ebsd('olivine').orientations,'micronbar','off')
 hold on
 plot(largeGrains,cS,'colored')
 hold off
@@ -122,7 +119,7 @@ grains = calcGrains(ebsd_rot('indexed'));
 % select only large grains
 largeGrains = grains(grains.numPixel>500);
 
-plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'coordinates','on')
+plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'micronbar','off')
 
 % and plot the crystal shapes
 hold on
@@ -144,7 +141,7 @@ grains = calcGrains(ebsd_rot('indexed'));
 largeGrains = grains(grains.numPixel>500);
 
 
-plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'coordinates','on')
+plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'micronbar','off')
 
 % and plot the crystal shapes
 hold on
@@ -175,8 +172,7 @@ grains = calcGrains(ebsd_rot('indexed'));
 % select only large grains
 largeGrains = grains(grains.numPixel>500);
 
-
-plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'coordinates','on')
+plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'micronbar','off')
 
 % and plot the crystal shapes
 hold on

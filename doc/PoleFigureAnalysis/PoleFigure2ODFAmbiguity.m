@@ -20,6 +20,7 @@
 % example of two orthorhombic ODFs. The first ODF has three modes at the
 % positions
 
+plottingConvention.default('y↑→x');          
 cs = crystalSymmetry('mmm');
 
 orix = orientation.byAxisAngle(xvector,90*degree,cs);

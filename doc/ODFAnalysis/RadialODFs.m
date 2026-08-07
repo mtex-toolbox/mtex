@@ -1,10 +1,12 @@
 %% Radial Basis Functions on SO(3)
-%
+%%
+plottingConvention.default('y↑→x');
+%%
 % In MTEX we describe radial basis functions on the rotation group $SO(3)$
 % by the class |@SO3FunRBF|.
 %
 % This includes the following three types of ODFs.
-
+%
 %% The Uniform ODF
 %
 % The uniform ODF

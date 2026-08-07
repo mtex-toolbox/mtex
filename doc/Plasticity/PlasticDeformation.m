@@ -1,4 +1,9 @@
 %% Schmid Factor Analysis
+%%
+
+plottingConvention.default('y↑→x');
+
+%%
 % This script describes how to analyze Schmid factors.
 %
 % Let us assume a Nickel crystal

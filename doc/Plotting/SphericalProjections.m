@@ -1,5 +1,6 @@
 %% Spherical Projections
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % MTEX supports four types of spherical projection which are available for
 % all spherical plot, e.g. <SO3Fun.plotPDF.html polefigure plots>,
@@ -13,7 +14,6 @@
 
 cs = crystalSymmetry('321');
 odf = fibreODF(Miller(1,1,0,cs),zvector)
-
 
 %% Alignment of the Hemispheres
 %

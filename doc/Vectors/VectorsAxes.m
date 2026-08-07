@@ -1,5 +1,6 @@
 %% Axes and Antipodal Symmetry
-%
+%%
+plottingConvention.default('y↑→x');
 %% Directions vs. Axes
 %
 % In MTEX it is possible to consider three dimensional vectors either as

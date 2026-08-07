@@ -18,7 +18,7 @@
 mtexdata martensite 
 
 % grain reconstruction
-[grains,ebsd] = calcGrains(ebsd, 'angle', 3*degree,'minPixel',5);
+[grains,ebsd] = calcGrains(ebsd, 'angle', 3*degree,'minPixel',5,'alpha',6.1);
 grains = smooth(grains,5);
 
 % plot the data and the grain boundaries
@@ -186,7 +186,7 @@ mtexColorbar
 % to a too small cluster. This can be done by the command
 % <parentGrainReconstructor.revert.html |job.revert|> 
 
-job.revert(job.grains.fit > 5*degree | job.grains.clusterSize < 15)
+job.revert(job.grains.fit > 5*degree | job.grains.clusterSize < 10)
 
 plot(job.parentGrains,job.parentGrains.meanOrientation)
 

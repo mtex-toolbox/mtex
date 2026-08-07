@@ -9,6 +9,7 @@
 % space. The most popular type of such sections are the so called phi2
 % sections.
 
+plottingConvention.default('y↑→x');
 cs = crystalSymmetry('432')
 ss = specimenSymmetry('222')
 

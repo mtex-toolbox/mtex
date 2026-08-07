@@ -1,5 +1,6 @@
 %% Importing Vectors
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % Large lists of vectors can be imported from a text file by the command
 
