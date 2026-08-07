@@ -82,7 +82,9 @@ hold off
 gbnd1 = calcGBND(gB(cond),ebsd,'halfwidth',5*degree,'nonneg')
 gbnd2 = calcGBND(gB(~cond),ebsd,'halfwidth',5*degree,'nonneg')
 
-% the twinning plane, marked in the plot below
+% the twinning plane. These are plots of the full sphere, so we mark all
+% symmetrically equivalent variants - marking only (10-12) would single out
+% one of the six maxima for no reason
 tp = Miller(1,0,-1,2,CS,'hkil');
 
 % both are plotted with the same color range, otherwise the almost uniform
@@ -90,7 +92,7 @@ tp = Miller(1,0,-1,2,CS,'hkil');
 contourf(gbnd1,'colorrange',[0.5 1.5])
 mtexTitle('GBND for $\omega > 80^{\circ}$')
 mtexColorMap parula
-annotate(tp,'label','$\{10\bar{1}2\}$','backgroundColor','w')
+annotate(symmetrise(tp),'label','$\{10\bar{1}2\}$','backgroundColor','w')
 nextAxis
 contourf(gbnd2,'colorrange',[0.5 1.5])
 mtexTitle('GBND for $\omega < 80^{\circ}$')
@@ -125,8 +127,6 @@ moriRef = orientation.byAxisAngle(Miller(1,1,-2,0,CS,'uvtw'),86.3*degree,CS,CS);
 
 gbcd = calcGBND(gB,grains,moriRef,'halfwidth',5*degree,'nonneg')
 
-% in contrast to the plots above this is the full sphere and not the
-% fundamental sector, hence we mark all symmetrically equivalent variants
 plot(gbcd,'contourf')
 mtexTitle('GBCD for the tension twin')
 mtexColorMap parula
