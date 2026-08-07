@@ -10,10 +10,11 @@ function ebsd = loadEBSD_ang(fname,varargin)
 %
 % Options
 %  EulerCorrection -
-%  setting - alignment of the Euler angle and the map reference frame, 1 to
-%    4, 0 switches the correction off, default is 2, see
-%    https://mtex-toolbox.github.io/EBSDReferenceFrame.html
-%  headerOnly - return only phase/header metadata, skip reading the data
+%  setting         - alignment of the Euler angle and the map reference
+%                    frame, 1 to 4, 0 switches the correction off, default
+%                    is 2, see
+%                    https://mtex-toolbox.github.io/EBSDReferenceFrame.html
+%  headerOnly      - return only phase/header metadata, skip reading the data
 %
 
 assertExtension(fname,'.ang');
