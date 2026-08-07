@@ -25,12 +25,20 @@ how2plot = plottingConvention.default3D;
 setCamera(how2plot)
 
 %%
-% Unfortunately, the boundary face normals provided by Dream3d sometimes
-% come with no orientation. In this case we have MTEX to compute the
-% orientation of the faces using the command <grain3d.orientFaces.html
-% |orientFaces|>.
+% Dream3d stores the boundary faces with an arbitrary winding, i.e., the
+% normal computed from the vertex order points randomly into or out of the
+% grain. MTEX therefore runs <grain3d.orientFaces.html |orientFaces|> as
+% part of the import, so that face normals, grain volumes and
+% |boundary.grainId| are directly usable. Should you need the raw winding
+% as stored in the file, switch this off with
 
-grains = grains.orientFaces
+grainsRaw = grain3d.load(fname,'noOrientFaces');
+
+%%
+% Without oriented faces, more than half of the grains of this data set
+% come out with a negative volume, since their normals point inwards
+
+[nnz(grainsRaw.volume < 0), nnz(grains.volume < 0)]
 
 %%
 % Similarly as with two dimensional grains we can select individual grains

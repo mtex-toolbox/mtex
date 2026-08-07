@@ -6,11 +6,22 @@ function check_orientFaces
 % up to the volume of the cube.
 
 fname = fullfile(mtexDataPath,'EBSD','SmallIN100_MeshStats.dream3d');
+
+% the raw winding stored by Dream3d is arbitrary
+grainsRaw = grain3d.load(fname,'noOrientFaces');
+
+% grain3d.load orients the faces itself, so the result must already satisfy
+% every check below without an explicit call
 grains = grain3d.load(fname);
 
-I_GF0 = grains.I_GF;
-grains = grains.orientFaces;
+I_GF0 = grainsRaw.I_GF;
 I_GF = grains.I_GF;
+
+% the import really did something - otherwise the checks below would pass
+% trivially and stop testing anything
+if isequal(I_GF,I_GF0)
+  error('grain3d.load did not orient the faces on import')
+end
 
 % orientFaces may only change the signs, not the incidence itself
 if ~isequal(spones(I_GF),spones(I_GF0))
@@ -46,6 +57,14 @@ gId = zeros(size(I_GF,2),2);
 [a,b] = find(I_GF == -1); gId(b,2) = a;
 if ~isequal(gId,grains.boundary.grainId)
   error('boundary.grainId is not consistent with I_GF')
+end
+
+% orienting again must be a no-op - scripts written before grain3d.load did
+% this itself still call orientFaces explicitly after loading
+grains2 = grains.orientFaces;
+if ~isequal(grains2.I_GF,I_GF) || ...
+    ~isequal(grains2.boundary.grainId,grains.boundary.grainId)
+  error('orientFaces is not idempotent')
 end
 
 disp('check_orientFaces: ok')
