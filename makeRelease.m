@@ -1,7 +1,14 @@
 function makeRelease(ver)
 
-% ensure we are up to data
-system("git pull");
+% Every git command below belongs to the MTEX repository, so change into it
+% before the first one. This pull used to run in whatever folder MATLAB
+% happened to be in - usually not this one - where it would either rebase an
+% unrelated repository or, more often, stop on that repository's uncommitted
+% changes while makeRelease carried on regardless.
+cd(mtex_path)
+
+% ensure the tree is clean and up to date
+ensureClean
 
 if nargin == 0
   ver = input("Enter Name of Version (default=" + getMTEXpref('version') + "): ",'s');
@@ -20,9 +27,6 @@ elseif length(ver)<5
 else
   setMTEXpref("version",ver)
 end
-
-% change to mtex path
-cd(mtex_path)
 
 % store new version file
 fid = fopen("VERSION","w");
@@ -112,6 +116,27 @@ disp('Watch it with:  gh run list --workflow=build-mex.yml')
 disp('If a platform fails the release stays a draft - fix it and dispatch')
 disp('again, or publish by hand with:')
 disp(['  gh release edit ' ver ' --draft=false'])
+
+end
+
+% ===========================================================================
+function ensureClean
+% pull, and refuse to build a release out of a dirty working tree
+%
+% The zip is a copy of the working tree, so an uncommitted edit would be
+% shipped without ever having been pushed. Reporting that here beats finding
+% it in the released zip. Checked before the pull, because a dirty tree is
+% also what makes the pull itself fail under pull.rebase.
+
+[~,out] = system('git status --porcelain');
+if ~isempty(strtrim(out))
+  error('makeRelease:dirtyTree', ...
+    ['the MTEX working tree has uncommitted changes:\n\n%s\n' ...
+    'Commit or stash them before releasing - the release zip is a copy ' ...
+    'of this tree.'],out);
+end
+
+sh('git pull','updating the repository');
 
 end
 
