@@ -105,7 +105,20 @@
 %
 %   plot(ebsd,ebsd.orientation)                      % fast, default
 %   plot(ebsd,ebsd.orientation,'exact')              % exact unit cells
-%   plot(ebsd,'Location','nw','BackgroundColor','k','LineColor','w','Length',50)
+%   plot(ebsd,'Location','nw','SBBackgroundColor','k','SBLineColor','w','Length',50)
+%
+% *The Reference Frame is Shown on the Map*
+%
+% On top of the bar the same box now indicates how the specimen reference
+% frame is aligned on screen - an arrow for every axis with a component
+% within the screen plane, a circled dot or a circled cross for the axis
+% pointing out of or into the screen, exactly as in the string form of
+% @plottingConvention. Reorienting the map, e.g. by
+% <plottingConvention.setView.html |setView|>, turns the indicator along
+% with the data. Switch it off per plot or for the whole session by
+%
+%   plot(ebsd,ebsd.orientations,'refFrame','off')
+%   setMTEXpref('showRefFrame','off')
 %
 % *x to the East and y to the South by Default*
 %

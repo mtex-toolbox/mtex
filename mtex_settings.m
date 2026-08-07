@@ -49,6 +49,10 @@ setMTEXpref('showMicronBar','on')
 % whether to show or not to show a coordinates on EBSD maps
 setMTEXpref('showCoordinates','off')
 
+% whether to indicate the alignment of the specimen reference frame within
+% the micronbar of EBSD maps
+setMTEXpref('showRefFrame','on')
+
 % how to annotate pole figure plots
 % the following line add X and Y to the plot
 % you may want to replace this by 'RD' and 'ND'

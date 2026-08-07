@@ -86,6 +86,10 @@ classdef mapPlot < handle
         mP.micronBar.visible = vis;
       end
 
+      % ... which also indicates the alignment of the reference frame
+      mP.micronBar.refFrame = get_option(varargin,'refFrame',...
+        getMTEXpref('showRefFrame','on'));
+
     end
         
   end

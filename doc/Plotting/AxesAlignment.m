@@ -106,4 +106,29 @@ plotPDF(odf,pf.allH{1:4})
 pf.how2plot.makeDefault
 plottingConvention.default
 
+%% The Reference Frame on EBSD Maps
+% On an EBSD or grain map the alignment in use is indicated within the
+% scale bar. Every axis with a component within the screen plane becomes an
+% arrow, the axis along the viewing direction becomes a circled dot if it
+% points out of the screen and a circled cross if it points into it.
+
+mtexdata titanium
+
+ebsd.how2plot = 'y↑→x';
+plot(ebsd,ebsd.orientations,'figSize','small')
+
+%%
+% Changing the plotting convention turns the indicator along with the map
+
+ebsd.how2plot = 'x←↑y';
+plot(ebsd,ebsd.orientations,'figSize','small')
+
+%%
+% The indicator may be switched off for a single plot by the option
+% |'refFrame','off'| or for the entire session by
+% |setMTEXpref('showRefFrame','off')|
+
+ebsd.how2plot = 'y↑→x';
+plot(ebsd,ebsd.orientations,'refFrame','off','figSize','small')
+
 %%
