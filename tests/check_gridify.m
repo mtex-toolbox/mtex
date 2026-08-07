@@ -56,6 +56,7 @@ end
 
 checkLayout;
 checkResample;
+checkResampleRotated;
 
 disp('gridify: all checks passed');
 
@@ -122,5 +123,41 @@ assert(nnz(ebsdS.isIndexed) > 0.9 * length(ebsdS), ...
 f = figure('visible','off');
 plot(ebsdS('indexed'),ebsdS('indexed').orientations);
 close(f);
+
+end
+
+% =========================================================================
+function checkResampleRotated
+% a rotated unit cell gives a rotated - and still gap free - grid
+%
+% Regression: the new grid was built axis aligned from the BOUNDING BOX of
+% the unit cell instead of from its cell to cell translations. A unit cell
+% rotated by 45 degree was therefore placed at a spacing of its full
+% diagonal, so the cells only touched at their corners and half the map -
+% every second cell of a checkerboard - stayed empty.
+
+ebsd = EBSD(mtexdata('twins','silent')).gridify;
+
+uC = rotate(2*ebsd.unitCell,45*degree);
+ebsdR = ebsd.gridify('unitCell',uC);
+
+% the grid directions follow the unit cell, they are not axis aligned
+assert(abs(abs(dot(normalize(ebsdR.d1),yvector)) - cos(45*degree)) < 1e-6 && ...
+  abs(abs(dot(normalize(ebsdR.d2),xvector)) - cos(45*degree)) < 1e-6, ...
+  'check_gridify: a 45 degree rotated unit cell did not give a rotated grid');
+
+% neighbouring cells are one cell edge apart, not one bounding box apart
+dCell = norm(uC(1) - uC(2));
+assert(abs(norm(ebsdR.d1) - dCell) < 1e-6 * dCell && ...
+  abs(norm(ebsdR.d2) - dCell) < 1e-6 * dCell, ...
+  'check_gridify: the rotated grid has spacing %g / %g instead of %g',...
+  norm(ebsdR.d1),norm(ebsdR.d2),dCell);
+
+% hence the new cells cover the original map instead of only half of it
+areaNew = nnz(ebsdR.isIndexed) * polyArea(uC);
+areaOld = nnz(ebsd.isIndexed) * polyArea(ebsd.unitCell);
+assert(areaNew > 0.95 * areaOld, ...
+  'check_gridify: the rotated grid covers only %.0f%% of the map',...
+  100 * areaNew / areaOld);
 
 end

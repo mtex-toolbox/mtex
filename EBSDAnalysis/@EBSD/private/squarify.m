@@ -112,41 +112,48 @@ function [ebsdGrid,ind] = resample(ebsd,uC,varargin)
 % notably when switching from a hexagonal to a square grid. Hence the grid
 % is generated from the extent of the map and the data is interpolated onto
 % it, instead of trying to recover grid indices of the measured positions.
+%
+% The grid inherits the orientation of the unit cell, so for a unit cell
+% that is not axis aligned the grid does not fill the rectangular matrix it
+% is stored in - the corners stick out of the map and stay notIndexed.
 
 ext = get_option(varargin,'extent',ebsd.extent);
 
-% the step size of the new grid
-dxy = [range(uC.x), range(uC.y)];
-nGrid = 1 + max(0,round((ext([2 4]) - ext([1 3])) ./ dxy));
+% The new grid is the lattice the unit cell tiles the plane with, taken from
+% the unit cell itself and not from its bounding box: for a unit cell that is
+% not axis aligned - a rotated one, say - the bounding box is larger than the
+% actual cell to cell translation, so an axis aligned grid built from it
+% leaves gaps between the cells (for a 45 degree rotated square cell exactly
+% every second cell of a checkerboard). latticeBasis returns the translations
+% for any square, rectangular or rotated cell.
+A = latticeBasis(uC);
 
-x = linspace(ext(1),ext(2),nGrid(1));
-y = linspace(ext(3),ext(4),nGrid(2));
+% the four corners of the extent, referred to the lower left one
+corner = [ext([1 2 1 2]); ext([3 3 4 4])];
+IJ = A \ (corner - corner(:,1));
 
-% meshgrid is column major - transpose for the row major layout
-if check_option(varargin,'rowMajor')
-  pos = vector3d(x.' + 0*y, 0*x.' + y, 0, ebsd.how2plot);
-else
-  pos = vector3d(x + 0*y.', 0*x + y.', 0, ebsd.how2plot);
-end
+% index range such that the lattice covers the entire extent
+i = floor(min(IJ(1,:))):ceil(max(IJ(1,:)));
+j = floor(min(IJ(2,:))):ceil(max(IJ(2,:)));
+
+[ii,jj] = ndgrid(i,j);
+xy = A * [ii(:).'; jj(:).'] + corner(:,1);
+pos = reshape(vector3d(xy(1,:),xy(2,:),0,ebsd.how2plot),size(ii));
+
+% the closest grid point for every measured position
+IJm = round(A \ ([ebsd.pos.x(:), ebsd.pos.y(:)].' - corner(:,1)));
+im = min(max(IJm(1,:).' - i(1) + 1,1),numel(i));
+jm = min(max(IJm(2,:).' - j(1) + 1,1),numel(j));
+ind = sub2ind(size(pos),im,jm);
+
+% the lattice directions are those of the unit cell - bring them into the
+% requested row / column major layout
+[pos,ind] = orientGrid(pos,ind,varargin{:});
 
 % nearest neighbor interpolation onto the new grid
 ebsdI = ebsd.interp(pos);
 
 ebsdGrid = EBSDsquare(pos,reshape(ebsdI.rotations,size(pos)),ebsdI.phaseId(:),...
   ebsd.phaseMap,ebsd.CSList,'prop',ebsdI.prop,'opt',ebsd.opt,'unitCell',uC);
-
-if nargout < 2, return; end
-
-% the closest grid point for every measured position
-if isscalar(x), dx = 1; else, dx = x(2)-x(1); end
-if isscalar(y), dy = 1; else, dy = y(2)-y(1); end
-i = min(max(1 + round((ebsd.pos.x(:) - ext(1)) / dx),1),numel(x));
-j = min(max(1 + round((ebsd.pos.y(:) - ext(3)) / dy),1),numel(y));
-
-if check_option(varargin,'rowMajor')
-  ind = sub2ind(size(pos),i,j);
-else
-  ind = sub2ind(size(pos),j,i);
-end
 
 end
