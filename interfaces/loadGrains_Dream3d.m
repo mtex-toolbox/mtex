@@ -65,12 +65,18 @@ q = quaternion(abcd(activeGrains,1),abcd(activeGrains,2),...
   abcd(activeGrains,3),abcd(activeGrains,4));
 
 % import crystal symmetry - can we get some more information here?
+%
+% The list is indexed by the Dream3d CrystalStructure enum, which is ZERO
+% based: 0 Hexagonal_High, 1 Cubic_High, 2 Hexagonal_Low, 3 Cubic_Low,
+% 4 Triclinic, 5 Monoclinic, 6 Orthorhombic, 7 Tetragonal_Low,
+% 8 Tetragonal_High, 9 Trigonal_Low, 10 Trigonal_High. Anything else, in
+% particular 999 = UnknownCrystalStructure, stays notIndexed.
 dream3dCS = {'622','432','6','23','1','121','222','4','422','3','322','1'};
 crysm = h5read_multi(fname,crysmPath);
 csList = repmat(notIndexed,1,length(crysm));
 for k = 1:length(crysm)
-  if crysm(k) > 0 && crysm(k) <= length(dream3dCS)
-    csList(k) = crystalSymmetry(dream3dCS{crysm(k)},'mineral','unknown');
+  if crysm(k) >= 0 && crysm(k) < length(dream3dCS)
+    csList(k) = crystalSymmetry(dream3dCS{crysm(k)+1},'mineral','unknown');
   end
 end
 
