@@ -45,8 +45,5 @@ else % plot only one object
   else
     legend('-DynamicLegend','location','NorthEast');
   end
-  
-% set plot to mtex plotting settings
-setCamera default
 
 end
