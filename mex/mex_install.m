@@ -1,9 +1,20 @@
-function mex_install(varargin)
+function varargout = mex_install(varargin)
 % compiles all mex files for use with MTEX
 %
-% You need a mex Compiler for example MinGW64 for Windows 
+% You need a mex Compiler for example MinGW64 for Windows
 %         --> Home/AddOns/Get Add-Ons ...
 %
+% Syntax
+%   mex_install
+%   mex_install('force')
+%   src = mex_install('list')   % the sources that would be compiled
+%
+% Flags
+%  force - recompile even where the binary is newer than the source
+%  list  - do not compile, just return the source files as a cell array
+%
+% See also
+% check_mexComplete
 
 
 places = {'geometry/@S1Grid/private/S1Grid_',...
@@ -22,6 +33,14 @@ places = {'geometry/@S1Grid/private/S1Grid_',...
 % TODO: Check for mex-Compiler
 
 mexPath = [mtex_path filesep 'mex'];
+
+% report the sources instead of compiling them - check_mexComplete and the
+% build workflow ask for this rather than repeating the list above, which
+% would go stale the moment a mex is added
+if check_option(varargin,'list')
+  varargout{1} = listSources(places);
+  return
+end
 
 % compile all the files
 for p = 1:length(places)
@@ -57,4 +76,23 @@ for p = 1:length(places)
     end
   end
 end
+end
+
+% ===========================================================================
+function src = listSources(places)
+% the source files the loop above would compile, in the same order
+
+src = {};
+
+for p = 1:length(places)
+  files = dir([fullfile(mtex_path,places{p}),'*.c*']);
+  for f = 1:length(files)
+    if ~files(f).isdir
+      src{end+1} = fullfile(files(f).folder,files(f).name); %#ok<AGROW>
+    end
+  end
+end
+
+src = src(:);
+
 end
