@@ -82,5 +82,6 @@ v = v.setOption('plot',true,'resolution',res,'region',sR,'theta',theta,'rho',rho
 % and the theta region is not connected
 % thatswhy we have to check once again
 v(~sR.checkInside(v)) = nan;
+if ~check_option(varargin,'plain'), v.how2plot = pC; end
 
 end
