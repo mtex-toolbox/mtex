@@ -1,34 +1,40 @@
 function check_mex(varargin)
+% verify the mex binaries, downloading the ones that are missing
+%
+% Syntax
+%   check_mex
+%   check_mex('fast')   % return at once if the binaries are already there
+%
+% Description
+% The release zip ships no binaries (see makeRelease.m), so on a fresh
+% install this is what fetches them. They are downloaded one by one rather
+% than as an archive: an archive full of unsigned native libraries is what
+% Windows virus scanners object to most.
+%
+% The list is derived from mex_install rather than written out here, so that
+% adding a mex cannot leave this behind - which it had, by five files.
+%
+% See also
+% mex_install check_mexComplete
 
-mexFiles = ["insidepoly_dblengine" "insidepoly_sglengine" ...
-  "jcvoronoi_mex" ...
-  "EulerCyclesC"  ...
-  "S1Grid_find" "S1Grid_find_region" ...
-  "S2Grid_find" "S2Grid_find_region" ...
-  "SO3Grid_dist_region" "SO3Grid_find" "SO3Grid_find_region" ...  
-  "nfftmex" "fptmex" "nfsftmex" "nfsoftmex" ...
-  "wignerTrafoAdjointmex" "wignerTrafomex" ...
-  "numericalSaddlepointWithDerivatives" ...
-  "SHTextractormex"];
+% every mex MTEX compiles itself ...
+src = mex_install('list');
+mexFiles = strings(1,numel(src));
+for k = 1:numel(src)
+  [~,name] = fileparts(src{k});
+  mexFiles(k) = name;
+end
 
-places = {'extern/insidepoly/',...
-  'extern/jcvoronoi/',...
-  'tools/graph_tools/EulerCyclesC',...
-  'geometry/@S1Grid/private/',...
-  'geometry/@S2Grid/private/',...
-  'geometry/@SO3Grid/private/',...
-  'SO3Fun/@SO3FunHarmonic/private/wignerTrafo',...
-  '',...
-  'extern/libDirectional/numerical',...
-  'interfaces/'
-  };
-
-places = repelem(places,[2 1 1 2 2 3 4 2 1 1]);
+% ... plus the NFFT family, which is vendored precompiled and so is not in
+% mex_install's list, but still has to be present at runtime
+mexFiles = [mexFiles, "nfftmex", "fptmex", "nfsftmex", "nfsoftmex"];
 
 fName = fullfile(mtex_path, "mex",mexFiles{1} + "." + mexext);
 if check_option(varargin,'fast') && exist(fName,'file'), return, end
 
-hasC = logical([1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 ]);
+% functional tests are optional - a file without one is only checked for
+% being loadable
+checks = localCheckMap;
 
 res = false(size(mexFiles));
 
@@ -58,30 +64,27 @@ for k = 1:length(mexFiles)
   fName = fullfile(mtex_path, "mex",mexFile + "." + mexext);
 
   if ~exist(fName,'file')
-    
+
     fprintf(2," <strong>missing</strong>" + newline);
 
-    try
-      url = "https://raw.githubusercontent.com/mtex-toolbox/mtex/develop/mex/" ...
-        + mexFile + "." + mexext;
-
-      disp("  downloading data from  <a href=""" + url + """>" + url + "</a>")
-      disp("  and saving it to " + fName);
-    
-      websave(fName,url);
-
+    if downloadMex(mexFile,fName)
       fprintf(" checking: " + mexFile + "." + mexext);
-    catch
-
+    else
       fprintf(2," <strong>download failed</strong>" + newline);
-
       isMissing = true;
       continue
     end
   end
-      
+
   try
-    res(k) = feval("check_" + mexFile);
+    if isKey(checks,char(mexFile))
+      fcn = checks(char(mexFile));
+      res(k) = fcn();
+    else
+      % no functional test for this one - at least insist that MATLAB
+      % recognizes the file as a mex it can load
+      res(k) = exist(mexFile,'file') == 3;
+    end
   catch e
     err{k} = e;
   end
@@ -104,8 +107,7 @@ if isMissing
     "reason is that your antivirus program has prevented the download. " + ...
     "You have two options:" + newline + newline + ...
     " (a) Download the binaries manualy from" + newline + newline + ...
-    "<a href=""https://github.com/mtex-toolbox/mtex/tree/develop/mex"">" + ...
-    "https://github.com/mtex-toolbox/mtex/tree/develop/mex</a>" + ...
+    "<a href=""" + releasePage + """>" + releasePage + "</a>" + ...
    newline + newline + ...
    " and copy them to " + fullfile(mtex_path, "mex") + newline + newline + ...
    " (b) complile the binaries yourself using the command " + newline + newline + ...
@@ -142,6 +144,90 @@ end
 
 end
 
+% ===========================================================================
+function url = releasePage
+% where a user is sent to fetch the binaries by hand
+
+url = "https://github.com/mtex-toolbox/mtex/releases/tag/" + releaseTag;
+
+end
+
+% ===========================================================================
+function tag = releaseTag
+% the release this MTEX was cut from
+%
+% VERSION holds the tag verbatim (makeRelease.m writes it there), so no
+% translation is needed. A working copy that is not a release falls through
+% to the 'latest' URLs below.
+
+tag = string(getMTEXpref('version',''));
+if strlength(tag) == 0 || ~startsWith(tag,'mtex-'), tag = "latest"; end
+
+end
+
+% ===========================================================================
+function ok = downloadMex(mexFile,fName)
+% fetch one binary from GitHub
+%
+% Individual files, never an archive: an archive full of unsigned native
+% libraries is what Windows virus scanners object to most, and a single
+% blocked archive would take every binary down with it.
+%
+% Release assets are used rather than the raw file in the repository,
+% because a release asset is version matched - the raw URL always serves
+% whatever develop happens to hold, which need not match the installed MTEX
+% at all. The raw URL is kept as a last resort so that a working copy of
+% develop still finds its binaries.
+
+name = mexFile + "." + mexext;
+tag  = releaseTag;
+
+urls = "https://github.com/mtex-toolbox/mtex/releases/download/" + tag + "/" + name;
+if tag ~= "latest"
+  urls(end+1) = "https://github.com/mtex-toolbox/mtex/releases/latest/download/" + name;
+end
+urls(end+1) = "https://raw.githubusercontent.com/mtex-toolbox/mtex/develop/mex/" + name;
+
+ok = false;
+for url = urls
+
+  try
+    disp("  downloading from  <a href=""" + url + """>" + url + "</a>")
+    disp("  and saving it to " + fName);
+
+    websave(fName,url);
+    ok = true;
+    return
+
+  catch
+    % a release may legitimately carry no asset for this platform - try the
+    % next source rather than giving up on the file
+  end
+end
+
+end
+
+% ===========================================================================
+function map = localCheckMap
+% name -> functional test, for those files that have one
+%
+% Built from the local functions actually present, so that adding a
+% check_<mexFile> below is all it takes to have it run, and a file without
+% one does not error.
+
+fcns = localfunctions;
+map  = containers.Map('KeyType','char','ValueType','any');
+
+for k = 1:numel(fcns)
+  name = func2str(fcns{k});
+  if startsWith(name,'check_')
+    map(name(7:end)) = fcns{k};
+  end
+end
+
+end
+
+% ===========================================================================
 function out = check_insidepoly_dblengine
 
 poly = [0.2 0.2; 0.7 0; 0.8 0.6; 0 1];
@@ -188,6 +274,54 @@ gB = grains.boundary;
 [g, c, cP] = EulerCyclesC(gB.I_FG,gB.F,length(gB.allV));
 
 out = 1;
+
+end
+
+function out = check_chainOrderC
+
+% the compiled walk must agree with the MATLAB one, which is what makes the
+% two interchangeable - see chainOrder
+F = [1 2; 2 3; 3 4; 5 6; 6 7];
+
+[c1,p1,e1] = chainOrder(F,7);
+[c2,p2,e2] = chainOrder(F,7,'noMex');
+
+out = isequal(c1,c2) && isequal(p1,p2) && isequal(e1,e2);
+
+end
+
+function out = check_jcvoronoi2_mex
+
+% a unit square of sites framed by a ring of dummies
+[X,Y] = meshgrid(1:4,1:4);
+[Xd,Yd] = meshgrid(0:5,0:5);
+isReal = Xd(:)>=1 & Xd(:)<=4 & Yd(:)>=1 & Yd(:)<=4;
+XY = [[X(:) Y(:)]; [Xd(~isReal) Yd(~isReal)]];
+
+[V,F,I_FD] = jcvoronoi2_mex(XY,16,0.01);
+
+% every site must keep a cell, and every segment must have two endpoints
+out = size(V,2) == 2 && size(F,2) == 2 && size(I_FD,2) == 16 && ...
+  all(sum(I_FD,1) > 0) && all(F(:) >= 1 & F(:) <= size(V,1));
+
+end
+
+function out = check_jcvoronoiDelaunayOnly_mex
+
+[X,Y] = meshgrid(1:4,1:4);
+[Xd,Yd] = meshgrid(0:5,0:5);
+isReal = Xd(:)>=1 & Xd(:)<=4 & Yd(:)>=1 & Yd(:)<=4;
+XY = [[X(:) Y(:)]; [Xd(~isReal) Yd(~isReal)]];
+
+I_fast = jcvoronoiDelaunayOnly_mex(XY,16,0.01);
+[~,~,I_full] = jcvoronoi2_mex(XY,16,0.01);
+
+% the fast path may add adjacencies but must never miss one - see
+% check_jcvoronoiDelaunayOnly
+A_fast = triu((I_fast.'*I_fast)==1,1);
+A_full = triu((I_full.'*I_full)==1,1);
+
+out = ~any(A_full(:) & ~A_fast(:));
 
 end
 
