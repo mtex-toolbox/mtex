@@ -11,6 +11,11 @@
 #define JCV_FLOOR floor
 #define JCV_FLT_MAX 1.7976931348623157E+308
 
+// MATLAB's own MatlabDataArray/GetArrayType.hpp uses the fixed width integer
+// types without including <cstdint>, which GCC 13 and newer no longer supply
+// transitively. jcvoronoi2_mex.cpp includes it for the same reason.
+#include <cstdint>
+
 #include "mex.hpp"
 #include "mexAdapter.hpp"
 #include "jc_voronoi.h"
@@ -56,12 +61,16 @@ public:
         {
             if (delauney_edge.sites[0] && delauney_edge.sites[1])
             {
-                Vx.push_back(delauney_edge.edge->pos[0].x);
-                Vy.push_back(delauney_edge.edge->pos[0].y);
+                // jcv_delauney_edge.edge became a value when jc_voronoi.h was
+                // updated in 2024c2059; it used to be a pointer. Its pos[] are
+                // the endpoints of the Voronoi edge, which is what is wanted
+                // here - the delauney_edge's own pos[] are the site positions.
+                Vx.push_back(delauney_edge.edge.pos[0].x);
+                Vy.push_back(delauney_edge.edge.pos[0].y);
                 E1.push_back(Vx.size());
 
-                Vx.push_back(delauney_edge.edge->pos[1].x);
-                Vy.push_back(delauney_edge.edge->pos[1].y);
+                Vx.push_back(delauney_edge.edge.pos[1].x);
+                Vy.push_back(delauney_edge.edge.pos[1].y);
                 E2.push_back(Vx.size());
                               
                 I_ED1.push_back((int)E1.size());
