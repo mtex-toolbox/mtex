@@ -49,12 +49,18 @@ plot(gB(cond),'lineWidth',2,'lineColor','w')
 hold off
 
 %%
-% Using the command <grainBoundary.calcGBPD.html |calcGBPD|> we can now
-% compute the grain boundary plane distribution from a list of two
+% Using the command <grainBoundary.calcGBND.html |calcGBND|> we can now
+% compute the grain boundary normal distribution from a list of two
 % dimensional traces.
+%
+% Recovering a three dimensional distribution from planar sections is a
+% deconvolution, and without any constraint the result rings, i.e. it
+% oscillates around the true distribution and may even become negative.
+% The option |nonneg| enforces a nonnegative result, which is what we want
+% for a density.
 
-gbnd1 = calcGBPD(gB(cond),ebsd)
-gbnd2 = calcGBPD(gB(~cond),ebsd)
+gbnd1 = calcGBND(gB(cond),ebsd,'halfwidth',5*degree,'nonneg')
+gbnd2 = calcGBND(gB(~cond),ebsd,'halfwidth',5*degree,'nonneg')
 
 % the twinning plane, marked in the plot below
 tp = Miller(1,0,-1,2,CS,'hkil');
@@ -62,12 +68,12 @@ tp = Miller(1,0,-1,2,CS,'hkil');
 % both are plotted with the same color range, otherwise the almost uniform
 % distribution on the right hand side would be stretched to look structured
 contourf(gbnd1,'colorrange',[0.5 1.5])
-mtexTitle('GBPD for $\omega > 80^{\circ}$')
+mtexTitle('GBND for $\omega > 80^{\circ}$')
 mtexColorMap parula
 annotate(tp,'label','$\{10\bar{1}2\}$','backgroundColor','w')
 nextAxis
 contourf(gbnd2,'colorrange',[0.5 1.5])
-mtexTitle('GBPD for $\omega < 80^{\circ}$')
+mtexTitle('GBND for $\omega < 80^{\circ}$')
 mtexColorMap parula
 mtexColorbar
 
