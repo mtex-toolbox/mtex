@@ -35,9 +35,8 @@ function W = weightedBurgersVec(ebsd,varargin)
 % through crystalline materials>, J. Microscopy, 2009.
 %
 
-if ~(isa(ebsd,'EBSDsquare') | isa(ebsd,'EBSDhex'))
-    mtexError(['This function requires an input of type EBSSDsquare' newline ...
-               'run "ebsd=ebsd.gridify" first'])
+if ~(isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex'))
+  ebsd = ebsd.gridify;
 end
 
 if check_option(varargin,'gradient') % use the gradient method
