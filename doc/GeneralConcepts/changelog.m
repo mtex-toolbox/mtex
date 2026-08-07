@@ -87,7 +87,7 @@
 % and |432|
 %
 %   ebsd = EBSD.load('data.edaxh5','setting',3)  % not the assumed setting 2
-%   cs = crystalSymmetry('321',[4.9 4.9 5.4],'EDAX')   % x || a
+%   cs = crystalSymmetry('321',[4.9 4.9 5.4],'EDAX')   % x // a
 %
 % Phases of Bruker files keep their International Tables number and atomic
 % basis in |cs.opt.spaceId| and |cs.opt.atoms|. Fixed along the way: |ang|
