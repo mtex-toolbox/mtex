@@ -307,40 +307,6 @@ classdef plottingConvention < matlab.mixin.Copyable
 
     end
 
-    function plot(pC, varargin)
-
-      ax = get_option(varargin,'parent');
-      if isempty(ax), ax = gca; end
-
-      delta(1) = diff(ax.XLim);
-      delta(2) = diff(ax.YLim);
-      delta(3) = diff(ax.ZLim);
-      delta = get_option(varargin,'delta',median(delta)/20);
-
-      
-      ref = vector3d(700,60,0);
-
-      frame = get_option(varargin,'frame',vector3d.byXYZ(eye(3)));
-      frame = delta * frame.normalize;
-
-      labels = get_option(varargin,'labels',{'X','Y','Z'});
-
-      hold on
-      for k = 1:length(frame)
-        
-        u = frame(k);
-        if abs(dot(pC.outOfScreen,u))>delta*(1-1e-3), continue; end
-        
-        optiondraw(quiver3(ref.x,ref.y,ref.z,u.x,u.y,u.z,0,...
-          "filled",'LineWidth',1.5,'ShowArrowHead','on','Color','black','MaxHeadSize',3),varargin{:});
-
-        tpos = ref + 1.3*u;
-        text(tpos.x,tpos.y,tpos.z,labels{k},'FontSize',getMTEXpref('FontSize'))
-      end
-      hold off
-
-    end
-
   end
 
   methods (Static=true)
