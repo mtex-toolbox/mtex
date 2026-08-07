@@ -14,10 +14,30 @@
 % yet published.
 %
 %%
-% We start our demonstration by importing some Magnesium data and
-% reconstructing the grain structure. Magnesium deforms by tension twinning
-% on the $\{10\bar{1}2\}$ plane, which makes it a good example here - the
-% twin boundaries are coherent, i.e. they actually lie on that plane.
+% The command <grainBoundary.calcGBND.html |calcGBND|> computes three
+% closely related distributions, distinguished by what is passed to it
+%
+% * the *specimen GBND* - the distribution of the boundary normals in
+% specimen coordinates. It answers whether the boundaries prefer a
+% direction in the sample.
+% * the *crystal GBND* - the distribution of the boundary normals in
+% crystal coordinates. It answers which lattice planes the boundaries
+% prefer, i.e. the habit planes.
+% * the *GBCD* - the grain boundary character distribution, i.e. the
+% crystal GBND restricted to those boundaries that have one fixed
+% misorientation.
+%
+% From two dimensional data only the crystal GBND and the GBCD are
+% accessible, since a planar section reveals the boundary traces but not
+% the inclination of the boundary planes. The specimen GBND requires three
+% dimensional data and is discussed at the end of this section.
+%
+%% The crystal GBND from two dimensional EBSD data
+%
+% We start by importing some Magnesium data and reconstructing the grain
+% structure. Magnesium deforms by tension twinning on the $\{10\bar{1}2\}$
+% plane, which makes it a good example here - the twin boundaries are
+% coherent, i.e. they actually lie on that plane.
 
 mtexdata twins
 
@@ -49,9 +69,9 @@ plot(gB(cond),'lineWidth',2,'lineColor','w')
 hold off
 
 %%
-% Using the command <grainBoundary.calcGBND.html |calcGBND|> we can now
-% compute the grain boundary normal distribution from a list of two
-% dimensional traces.
+% Passing the grain boundaries together with the EBSD data to
+% <grainBoundary.calcGBND.html |calcGBND|> gives the crystal GBND, i.e. the
+% distribution of the boundary normals in crystal coordinates.
 %
 % Recovering a three dimensional distribution from planar sections is a
 % deconvolution, and without any constraint the result rings, i.e. it
@@ -92,3 +112,107 @@ mtexColorbar
 % everywhere
 
 [min(gbnd2),max(gbnd2)]
+
+%% The grain boundary character distribution (GBCD)
+%
+% Splitting the boundaries by misorientation angle as above is a crude
+% selection. Passing a misorientation as a third argument restricts the
+% computation to those boundaries whose misorientation is close to it and
+% aligns them accordingly. The result is the GBCD for that misorientation.
+
+% the ideal Magnesium tension twin
+moriRef = orientation.byAxisAngle(Miller(1,1,-2,0,CS,'uvtw'),86.3*degree,CS,CS);
+
+gbcd = calcGBND(gB,grains,moriRef,'halfwidth',5*degree,'nonneg')
+
+% in contrast to the plots above this is the full sphere and not the
+% fundamental sector, hence we mark all symmetrically equivalent variants
+plot(gbcd,'contourf')
+mtexTitle('GBCD for the tension twin')
+mtexColorMap parula
+annotate(symmetrise(tp),'label','$\{10\bar{1}2\}$','backgroundColor','w')
+mtexColorbar
+
+%%
+% Two of the six $\{10\bar{1}2\}$ variants carry the maxima - the specimen
+% was deformed, so not every twin variant is equally active. Accordingly
+% the maximum sits right on a twinning plane
+
+[value,pos] = max(gbcd);
+[value, min(angle(pos,symmetrise(tp)))./degree]
+
+%% Three dimensional data
+%
+% For three dimensional grains the boundary normals are known directly, so
+% no stereological reconstruction is required and all three distributions
+% become accessible. We use the Dream3d data set that is also discussed in
+% <Grains3D.html Three dimensional grains>.
+
+grains3 = grain3d.load(fullfile(mtexDataPath,'EBSD','SmallIN100_MeshStats.dream3d'));
+
+% the faces at the surface of the measured volume belong to one grain only
+gB3 = grains3.boundary;
+gB3 = gB3(all(gB3.grainId > 0,2))
+
+%%
+% Note that we have removed the faces at the surface of the specimen. Those
+% are not grain boundaries at all, but the six sides of the measured box.
+% They make up almost a quarter of the total face area and, being flat and
+% axis aligned, they would dominate the specimen GBND computed below.
+
+%% The specimen GBND
+%
+% Called with the boundary alone, |calcGBND| gives the distribution of the
+% boundary normals in specimen coordinates.
+
+gbndSpecimen = calcGBND(gB3)
+
+plot(gbndSpecimen,'contourf','upper')
+mtexTitle('specimen GBND')
+mtexColorMap parula
+mtexColorbar
+
+%% The crystal GBND
+%
+% Passing the grains in addition rotates every normal into the coordinate
+% system of its grain, which gives the crystal GBND.
+
+gbndCrystal = calcGBND(gB3,grains3)
+
+plot(gbndCrystal,'contourf')
+mtexTitle('crystal GBND')
+mtexColorMap parula
+mtexColorbar
+
+%%
+% For this data set the crystal GBND is almost uniform, i.e. taken over all
+% grain boundaries there is no preferred habit plane
+
+[min(gbndCrystal),max(gbndCrystal)]
+
+%% The GBCD in three dimensions
+%
+% This changes as soon as we restrict to a single misorientation. About a
+% quarter of the inner faces of this data set are $\Sigma 3$ twin
+% boundaries, and for those the boundary plane is a $\{111\}$ plane.
+
+cs3 = grains3.CSList(2);
+sigma3 = orientation.byAxisAngle(Miller(1,1,1,cs3),60*degree,cs3,cs3);
+
+gbcd3 = calcGBND(gB3,grains3,sigma3)
+
+plot(gbcd3,'contourf')
+mtexTitle('GBCD for $\Sigma 3$')
+mtexColorMap parula
+annotate(symmetrise(Miller(1,1,1,cs3)),'label','$\{111\}$','backgroundColor','w')
+mtexColorbar
+
+%%
+% Of the four $\{111\}$ variants only one is populated, namely the one that
+% is the rotational axis of the $\Sigma 3$ misorientation. These twins are
+% coherent, and the maximum coincides with that plane
+
+[value,pos] = max(gbcd3);
+[value, min(angle(pos,symmetrise(Miller(1,1,1,cs3))))./degree]
+
+%#ok<*NOPTS>
