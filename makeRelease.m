@@ -91,8 +91,18 @@ end
 % check_mex downloads them from the release assets on first start - and anyone
 % installing between "release visible" and "binaries attached" would get a
 % failed download and be told to compile them by hand.
-%doRelease = ['gh release create ' ver ' ' zipName ' -t "' getMTEXpref('version') '"'];
-doRelease = ['gh release create ' ver ' ' zipName ' --draft'];
+% The title and the notes have to be given here, not because the defaults are
+% wrong but because gh asks for anything it was not told. MATLAB's system
+% hands the child a terminal, so gh believes it can prompt - and then waits
+% forever for an answer that cannot be typed, with MATLAB hanging on it. That
+% is what the terminator window used to be for.
+%
+% --generate-notes fills the notes from the commits since the previous
+% release; the draft can be edited on GitHub before the workflow publishes it.
+% --verify-tag stops here if the tag never reached the remote, rather than
+% letting the workflow dispatch below fail with a less obvious message.
+doRelease = ['gh release create ' ver ' ' zipName ...
+  ' --draft --verify-tag --generate-notes --title "' ver '"'];
 if any(strfind(ver,'beta')), doRelease = [doRelease,' -p']; end
 
 disp('uploading release draft to GitHub ...')
@@ -161,7 +171,12 @@ oldNoColor = getenv('NO_COLOR');
 setenv('NO_COLOR','1');
 restoreNoColor = onCleanup(@() setenv('NO_COLOR',oldNoColor)); %#ok<NASGU>
 
-if system(cmd) ~= 0
+% Close stdin. MATLAB's system leaves a terminal attached to the child, so a
+% command that wants to ask something believes it can - and MATLAB then hangs
+% on a question nobody can answer. With stdin at end of file the question
+% fails instead, which is recoverable. Every command here is meant to be
+% non-interactive, so there is nothing to lose.
+if system([cmd ' < /dev/null']) ~= 0
   error('makeRelease:commandFailed','%s failed:\n\n  %s\n',what,cmd);
 end
 
