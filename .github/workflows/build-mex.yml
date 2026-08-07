@@ -18,12 +18,23 @@ name: build mex
 # GitHub Actions does not support YAML anchors, so the two path lists below
 # have to be kept in step by hand.
 on:
-  workflow_dispatch:
-  # cutting a release is what puts the binaries where users can reach them:
+  # Cutting a release is what puts the binaries where users can reach them:
   # check_mex downloads them from the release assets, since an Actions
-  # artifact needs an authenticated API call and a user's MATLAB has no token
-  release:
-    types: [published]
+  # artifact needs an authenticated API call and a user's MATLAB has no token.
+  #
+  # makeRelease.m leaves the release a draft and then dispatches this with the
+  # tag, so that the release only becomes visible once every platform's
+  # binaries are attached to it - otherwise anyone installing in the minutes
+  # between the two would get a failed download.
+  #
+  # Deliberately not "on: release". A draft fires no release event at all, and
+  # the publish step below would fire one, starting a second full build.
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Draft release to attach the binaries to, then publish (empty = only build)'
+        required: false
+        default: ''
   pull_request:
     paths:
       - '**.c'
@@ -125,14 +136,36 @@ jobs:
       # NFFT binaries travel with the ones just built - check_mex needs both
       # and should not have to fetch them from two different places.
       - name: attach to the release
-        if: github.event_name == 'release'
+        if: github.event.inputs.release_tag != ''
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" \
+          gh release upload "${{ github.event.inputs.release_tag }}" \
             mex/*.${{ matrix.ext }} \
             --clobber --repo "$GITHUB_REPOSITORY"
+
+  # Only once every platform has attached its binaries does the release stop
+  # being a draft. No "if: always()" here on purpose: if one platform failed,
+  # the release stays a draft and nothing is served half built - publish it by
+  # hand once you have decided the missing platform is acceptable.
+  publish:
+    name: publish the release
+    needs: build
+    if: github.event.inputs.release_tag != ''
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: publish
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release edit "${{ github.event.inputs.release_tag }}" \
+            --draft=false --repo "$GITHUB_REPOSITORY"
 
   collect:
     name: collect all platforms

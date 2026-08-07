@@ -73,13 +73,37 @@ disp('Authenticate at Github ...')
 unix('terminator -e "gh auth login"');
 % gh auth login
 
+% The release is created as a DRAFT and stays invisible until the build mex
+% workflow has attached the binaries for all four platforms and published it.
+% That ordering matters: the zip ships no mex files (see rmList above), so
+% check_mex downloads them from the release assets on first start - and anyone
+% installing between "release visible" and "binaries attached" would get a
+% failed download and be told to compile them by hand.
 %doRelease = ['gh release create ' ver ' ' zipName ' -t "' getMTEXpref('version') '"'];
-doRelease = ['gh release create ' ver ' ' zipName];
+doRelease = ['gh release create ' ver ' ' zipName ' --draft'];
 if any(strfind(ver,'beta')), doRelease = [doRelease,' -p']; end
 
-disp('uploading release to GitHub ...')
+disp('uploading release draft to GitHub ...')
 disp('')
 disp(doRelease)
 unix(['terminator -e "' doRelease '"']);
+
+% Hand over to CI, which builds the mex files for every platform, uploads them
+% onto this draft and only then publishes it. Dispatched explicitly rather
+% than triggered by the release, because a draft fires no release event.
+buildMex = ['gh workflow run build-mex.yml --ref ' ver ...
+  ' -f release_tag=' ver];
+
+disp('starting the mex build on GitHub ...')
+disp('')
+disp(buildMex)
+unix(['terminator -e "' buildMex '"']);
+
+disp(' ')
+disp('The release is a DRAFT until the mex build has finished.')
+disp('Watch it with:  gh run list --workflow=build-mex.yml')
+disp('If a platform fails the release stays a draft - fix it and dispatch')
+disp('again, or publish by hand with:')
+disp(['  gh release edit ' ver ' --draft=false'])
 
 end
