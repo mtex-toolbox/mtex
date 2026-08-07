@@ -14,14 +14,18 @@
 % yet published.
 %
 %%
-% We start our demonstration by importing some EBSD data and reconstructing
-% the grain structure.
+% We start our demonstration by importing some Magnesium data and
+% reconstructing the grain structure. Magnesium deforms by tension twinning
+% on the $\{10\bar{1}2\}$ plane, which makes it a good example here - the
+% twin boundaries are coherent, i.e. they actually lie on that plane.
 
-mtexdata csl
+mtexdata twins
 
-[grains,ebsd] = calcGrains(ebsd);
+[grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',3);
 
 grains = smooth(grains,10)
+
+CS = grains.CS;
 
 plot(ebsd,ebsd.orientations)
 hold on
@@ -30,12 +34,13 @@ hold off
 
 %% Misorientation angle at grain boundaries
 % Next we separate the grain boundaries according to the misorientation
-% angle. More precisely, we distinguish those grain boundaries with
-% misorientation angle larger then 57 degree and those with a smaller
-% misorientation angle.
+% angle. The tension twins of Magnesium show up as a sharp peak at 86.3
+% degree, so we distinguish those grain boundaries with a misorientation
+% angle larger then 80 degree and those with a smaller misorientation
+% angle.
 
 gB = grains.boundary('indexed');
-cond = gB.misorientation.angle > 57 * degree;
+cond = gB.misorientation.angle > 80 * degree;
 
 plot(ebsd,ebsd.orientations)
 hold on
@@ -51,16 +56,33 @@ hold off
 gbnd1 = calcGBPD(gB(cond),ebsd)
 gbnd2 = calcGBPD(gB(~cond),ebsd)
 
-contourf(gbnd1)%,'colorrange',[0.8 1.5])
-mtexTitle('GBPD for $\omega > 57^{\circ}$')
+% the twinning plane, marked in the plot below
+tp = Miller(1,0,-1,2,CS,'hkil');
+
+% both are plotted with the same color range, otherwise the almost uniform
+% distribution on the right hand side would be stretched to look structured
+contourf(gbnd1,'colorrange',[0.5 1.5])
+mtexTitle('GBPD for $\omega > 80^{\circ}$')
 mtexColorMap parula
+annotate(tp,'label','$\{10\bar{1}2\}$','backgroundColor','w')
 nextAxis
-contourf(gbnd2)%,'colorrange',[0.8 1.5])
-mtexTitle('GBPD for $\omega < 57^{\circ}$')
+contourf(gbnd2,'colorrange',[0.5 1.5])
+mtexTitle('GBPD for $\omega < 80^{\circ}$')
 mtexColorMap parula
-mtexColorbar 
+mtexColorbar
 
 %%
-% We observe that for a twinning grain boundaries the boundary plane is
-% mostly parallel to the (111) plane, while for all other grain boundaries
-% no preferred boundary plane exists.
+% We observe that for the twinning grain boundaries the boundary plane is
+% mostly parallel to the $\{10\bar{1}2\}$ twinning plane, while for all
+% other grain boundaries no preferred boundary plane exists. Indeed, the
+% maximum of the left hand side distribution is only a few degrees away
+% from $\{10\bar{1}2\}$
+
+[value,pos] = max(gbnd1);
+[value, min(angle(pos,symmetrise(tp)))./degree]
+
+%%
+% while the distribution of all remaining boundaries stays close to one
+% everywhere
+
+[min(gbnd2),max(gbnd2)]
