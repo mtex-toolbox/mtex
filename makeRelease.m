@@ -69,9 +69,17 @@ disp('compressing release ...')
 zip(zipName,rDir);
 
 
-disp('Authenticate at Github ...')
-unix('terminator -e "gh auth login"');
-% gh auth login
+% gh stores its token in the system keyring, so a login normally already
+% exists and running one on every release was pointless. Only its absence
+% needs an interactive terminal - the one thing that cannot be done from
+% MATLAB - so ask for it rather than depending on a particular terminal
+% emulator being installed and behaving.
+disp('checking the GitHub authentication ...')
+if system('gh auth status > /dev/null 2>&1') ~= 0
+  error('makeRelease:notAuthenticated', ...
+    ['not logged in at GitHub.\n\nRun\n\n  gh auth login\n\n' ...
+    'in a terminal and start makeRelease again.']);
+end
 
 % The release is created as a DRAFT and stays invisible until the build mex
 % workflow has attached the binaries for all four platforms and published it.
@@ -84,20 +92,19 @@ doRelease = ['gh release create ' ver ' ' zipName ' --draft'];
 if any(strfind(ver,'beta')), doRelease = [doRelease,' -p']; end
 
 disp('uploading release draft to GitHub ...')
-disp('')
-disp(doRelease)
-unix(['terminator -e "' doRelease '"']);
+sh(doRelease,'creating the release draft');
 
 % Hand over to CI, which builds the mex files for every platform, uploads them
 % onto this draft and only then publishes it. Dispatched explicitly rather
 % than triggered by the release, because a draft fires no release event.
+%
+% This needs the tag to be on the remote already, which the git push above
+% did - if that silently failed, this is where it surfaces.
 buildMex = ['gh workflow run build-mex.yml --ref ' ver ...
   ' -f release_tag=' ver];
 
 disp('starting the mex build on GitHub ...')
-disp('')
-disp(buildMex)
-unix(['terminator -e "' buildMex '"']);
+sh(buildMex,'dispatching the mex build');
 
 disp(' ')
 disp('The release is a DRAFT until the mex build has finished.')
@@ -105,5 +112,32 @@ disp('Watch it with:  gh run list --workflow=build-mex.yml')
 disp('If a platform fails the release stays a draft - fix it and dispatch')
 disp('again, or publish by hand with:')
 disp(['  gh release edit ' ver ' --draft=false'])
+
+end
+
+% ===========================================================================
+function sh(cmd,what)
+% run a shell command, keep its output visible, and stop if it fails
+%
+% Replaces the terminator calls this used to make. Spawning a terminal
+% emulator was unreliable in two ways: it depends on that one emulator being
+% installed, and the window takes the exit code away with it, so a release
+% that failed to upload looked exactly like one that succeeded.
+%
+% MATLAB streams a command's output to the command window as long as only the
+% status is requested, so the progress of a long upload stays visible.
+
+disp(['  ' cmd])
+
+% gh paints its output with ANSI escapes and asks the terminal for its
+% background colour to pick a theme; in the command window both arrive as
+% unreadable noise around the text that matters.
+oldNoColor = getenv('NO_COLOR');
+setenv('NO_COLOR','1');
+restoreNoColor = onCleanup(@() setenv('NO_COLOR',oldNoColor)); %#ok<NASGU>
+
+if system(cmd) ~= 0
+  error('makeRelease:commandFailed','%s failed:\n\n  %s\n',what,cmd);
+end
 
 end
