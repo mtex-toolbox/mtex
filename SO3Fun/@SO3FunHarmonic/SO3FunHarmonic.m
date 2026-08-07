@@ -46,11 +46,17 @@ methods
     
     if nargin == 0, return;end
     
-    % convert arbitrary SO3Fun to SO3FunHarmonic
+    % a function handle becomes an SO3FunHandle and is then converted like
+    % any other SO3Fun - this must not be an elseif of the chain below, or
+    % the object just built skips the conversion and is stored as if it were
+    % a coefficient vector
     if isa(fhat,'function_handle')
       [SRight,SLeft] = extractSym(varargin);
       fhat = SO3FunHandle(fhat,SRight,SLeft);
-    elseif isa(fhat,'SO3FunHarmonic')
+    end
+
+    % convert arbitrary SO3Fun to SO3FunHarmonic
+    if isa(fhat,'SO3FunHarmonic')
       SO3F = fhat;
       return
     elseif isa(fhat,'SO3Fun')
