@@ -45,6 +45,7 @@ on:
       - 'mex/mex_install.m'
       - 'tests/check_mexComplete.m'
       - '.github/scripts/buildMex.m'
+      - '.github/actions/build-mex/action.yml'
       - '.github/workflows/build-mex.yml'
   push:
     branches: [develop, master]
@@ -57,17 +58,21 @@ on:
       - 'mex/mex_install.m'
       - 'tests/check_mexComplete.m'
       - '.github/scripts/buildMex.m'
+      - '.github/actions/build-mex/action.yml'
       - '.github/workflows/build-mex.yml'
 
 permissions:
   contents: read
 
 jobs:
+  # The three platforms whose runners schedule promptly. These gate the
+  # release: it is published only once all of them have attached their
+  # binaries.
   build:
     name: ${{ matrix.ext }}
     runs-on: ${{ matrix.os }}
 
-    # needed by the release upload below; every other trigger only reads
+    # needed by the release upload; every other trigger only reads
     permissions:
       contents: write
 
@@ -88,11 +93,6 @@ jobs:
           - os: windows-latest
             ext: mexw64
             products: MATLAB_Support_for_MinGW-w64_C/C++/Fortran_Compiler
-          # Intel macOS. GitHub is retiring these runners; when that lands,
-          # either drop mexmaci64 here or move it to a self hosted Intel Mac.
-          - os: macos-13
-            ext: mexmaci64
-            products: ''
           # Apple silicon
           - os: macos-14
             ext: mexmaca64
@@ -101,53 +101,44 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # The release fixes the oldest MATLAB the binaries load in: a mex built
-      # by R2024b does not load in anything older. Lower it if MTEX has to
-      # keep supporting an older release; R2023b is the floor for a native
-      # Apple silicon build.
-      - name: set up MATLAB
-        uses: matlab-actions/setup-matlab@v2
+      - uses: ./.github/actions/build-mex
         with:
-          release: R2024b
+          ext: ${{ matrix.ext }}
           products: ${{ matrix.products }}
+          release_tag: ${{ github.event.inputs.release_tag }}
+          github_token: ${{ github.token }}
 
-      - name: build
-        uses: matlab-actions/run-command@v2
+  # Intel macOS, kept off the release critical path.
+  #
+  # Measured 2026-08-07: macos-13 jobs sat queued for 39 minutes and then over
+  # an hour and a half without ever starting, while the other three finished in
+  # 2 to 7 minutes. GitHub is retiring these runners. Gating the release on
+  # this would leave every release a draft for hours, so it runs as its own
+  # best effort job: if it completes it attaches mexmaci64 to the release like
+  # any other platform, and if it does not, the release still goes out.
+  #
+  # When it stops being schedulable altogether, either delete this job or point
+  # runs-on at a self hosted Intel Mac.
+  intel-mac:
+    name: mexmaci64 (best effort)
+    runs-on: macos-13
+    continue-on-error: true
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/build-mex
         with:
-          # buildMex.m clears this platform's binaries first and ends in
-          # check_mexComplete, which fails the job if anything did not
-          # compile - mex_install itself only prints compile errors
-          command: run(fullfile('.github','scripts','buildMex.m'))
+          ext: mexmaci64
+          release_tag: ${{ github.event.inputs.release_tag }}
+          github_token: ${{ github.token }}
 
-      - name: upload
-        uses: actions/upload-artifact@v4
-        with:
-          name: mex-${{ matrix.ext }}
-          path: mex/*.${{ matrix.ext }}
-          if-no-files-found: error
-          retention-days: 30
-
-      # Attached one file at a time, deliberately not as an archive: check_mex
-      # downloads them individually because Windows virus scanners object most
-      # to an archive full of unsigned native libraries, and one blocked
-      # archive would take every binary down with it.
-      #
-      # This uploads whatever mex/ holds for this platform, so the vendored
-      # NFFT binaries travel with the ones just built - check_mex needs both
-      # and should not have to fetch them from two different places.
-      - name: attach to the release
-        if: github.event.inputs.release_tag != ''
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release upload "${{ github.event.inputs.release_tag }}" \
-            mex/*.${{ matrix.ext }} \
-            --clobber --repo "$GITHUB_REPOSITORY"
-
-  # Only once every platform has attached its binaries does the release stop
-  # being a draft. No "if: always()" here on purpose: if one platform failed,
-  # the release stays a draft and nothing is served half built - publish it by
+  # Only once every gating platform has attached its binaries does the release
+  # stop being a draft. No "if: always()" on purpose: if one of them failed,
+  # the release stays a draft rather than going out half built - publish it by
   # hand once you have decided the missing platform is acceptable.
   publish:
     name: publish the release
@@ -169,7 +160,7 @@ jobs:
 
   collect:
     name: collect all platforms
-    needs: build
+    needs: [build, intel-mac]
     # runs even when a platform failed, so the binaries that did build are
     # still downloadable in one piece
     if: always()
