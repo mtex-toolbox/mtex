@@ -49,7 +49,7 @@ end
 % initialize spherical plot
 sP = newSphericalPlot(v,varargin{:},'hold');
 h = [];
-interpreter = getMTEXpref('textInterpreter');
+interpreter = get_option(varargin,'interpreter',getMTEXpref('textInterpreter'));
 fs = getMTEXpref('FontSize');
 varargin = delete_option(varargin,'parent',1);
 
@@ -90,8 +90,18 @@ for j = 1:numel(sP)
     s = strings{i};
     if ~ischar(s) && ~isstring(s), s = char(s,interpreter);end
 
-    if strcmpi(interpreter,'LaTeX') && ~isempty(regexp(s,'[\\\^_]','ONCE'))
-      s = ['$' s '$']; %#ok<AGROW>
+    % A string enclosed in $..$ is LaTeX math - Miller/char(m,'LaTeX')
+    % returns exactly that, and so do hand written labels. The tex
+    % interpreter has no math mode, hence it would print the dollars and
+    % every backslash literally, so render those with LaTeX no matter what
+    % textInterpreter says. They must not be wrapped a second time either.
+    if isMathMode(s)
+      sInterpreter = 'LaTeX';
+    else
+      sInterpreter = interpreter;
+      if strcmpi(interpreter,'LaTeX') && ~isempty(regexp(s,'[\\\^_]','ONCE'))
+        s = ['$' s '$']; %#ok<AGROW>
+      end
     end
 
     if check_option(varargin,'addMarkerSpacing')
@@ -109,7 +119,7 @@ for j = 1:numel(sP)
       tag = {};
     end
     
-    h = [h,optiondraw(text(x(i),y(i),s,'interpreter',interpreter,...
+    h = [h,optiondraw(text(x(i),y(i),s,'interpreter',sInterpreter,...
       'HorizontalAlignment','center','VerticalAlignment','middle',...
       tag{:},'margin',0.001,'parent',sP(j).ax),'FontSize',fs,varargin{2:end})]; %#ok<AGROW>
     
@@ -127,6 +137,15 @@ for j = 1:numel(sP)
 end
 
 if nargout == 0, clear h;end
+
+end
+
+% -------------------------------------------------------------------------
+function tf = isMathMode(s)
+% true if s is enclosed in $..$, i.e. it is LaTeX math already
+
+s = strtrim(char(s));
+tf = numel(s) >= 2 && s(1) == '$' && s(end) == '$';
 
 end
 
