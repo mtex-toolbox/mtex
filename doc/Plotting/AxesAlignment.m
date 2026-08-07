@@ -115,13 +115,13 @@ plottingConvention.default
 mtexdata titanium
 
 ebsd.how2plot = 'y↑→x';
-plot(ebsd,ebsd.orientations,'figSize','small')
+plot(ebsd,ebsd.orientations,'refFrame','on','figSize','small')
 
 %%
 % Changing the plotting convention turns the indicator along with the map
 
 ebsd.how2plot = 'x←↑y';
-plot(ebsd,ebsd.orientations,'figSize','small')
+plot(ebsd,ebsd.orientations,'refFrame','on','figSize','small')
 
 %%
 % The indicator may be switched off for a single plot by the option
