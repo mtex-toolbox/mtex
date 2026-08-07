@@ -51,12 +51,12 @@ hold off
 gbnd1 = calcGBPD(gB(cond),ebsd)
 gbnd2 = calcGBPD(gB(~cond),ebsd)
 
-contourf(gbnd1,'colorrange',[0.8 1.5])
-mtexTitle('GBPD for misorientation angle $> 57^{\circ}$')
+contourf(gbnd1)%,'colorrange',[0.8 1.5])
+mtexTitle('GBPD for $\omega > 57^{\circ}$')
 mtexColorMap parula
 nextAxis
-contourf(gbnd2,'colorrange',[0.8 1.5])
-mtexTitle('GBPD for misorientation angle $< 57^{\circ}$')
+contourf(gbnd2)%,'colorrange',[0.8 1.5])
+mtexTitle('GBPD for $\omega < 57^{\circ}$')
 mtexColorMap parula
 mtexColorbar 
 

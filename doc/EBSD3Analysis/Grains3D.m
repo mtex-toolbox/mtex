@@ -133,21 +133,20 @@ plot(grains(isInter),grains(isInter).meanOrientation,'faceAlpha',0.6,'linewidth'
 %plotEllipsoid(grains(isInter).centroid,a,b,c,'faceAlpha',0.5)
 hold off
 
-%setCamera(plottingConvention.default3D)
+setCamera(plottingConvention.default3D)
 
 %% Plot the normal directions of a single grain
 %
 % The following code shows how to visualize the face normals
 
-grains = grains(1)
-
 % multiplication with I_GF flips the boundary normals to point out of the
 % grain
-dir = full(grains.I_GF(1,:)).' .* grains.boundary.N 
+id = 3;
+dir = full(grains(id).I_GF(1,:)).' .* grains(id).boundary.N 
 
-plot(grains)
+plot(grains(id))
 hold on
-quiver(grains.boundary,dir)
+quiver(grains(id).boundary,dir)
 hold off
 
 %#ok<*NOPTS>
