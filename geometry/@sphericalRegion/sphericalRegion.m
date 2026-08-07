@@ -88,9 +88,28 @@ classdef sphericalRegion
         sR.alpha = [sR.alpha,0,0];
       end
       
-      if check_option(varargin,{'complete','3d'}), sR = sphericalRegion; end
-      if check_option(varargin,'upper'), sR = sR.restrict2Upper; end
-      if check_option(varargin,'lower'), sR = sR.restrict2Lower; end
+      % 'complete' replaces the region by the entire sphere - but it has to
+      % keep the reference frame alignment of the region it replaces,
+      % otherwise a plain sphericalRegion is left behind which carries the
+      % global default convention
+      if check_option(varargin,{'complete','3d'})
+        h2p = sR.how2plot;
+        sR = sphericalRegion;
+        sR.how2plot = h2p;
+      end
+
+      % which hemisphere is the upper one depends on the convention the
+      % region is given in - resolving this against the global default
+      % instead would silently pick the opposite hemisphere for any data
+      % plotted in a different one, e.g. anything in a crystal reference
+      % frame (z out of the screen) while the default is
+      % plottingConvention.ij (z into the screen). The plot region is
+      % determined the very same way in newSphericalPlot/getPlotRegion, and
+      % the two have to agree - where they do not, the grid and the region
+      % it is drawn in overlap in the equator only
+      pC = getClass(varargin,'plottingConvention',sR.how2plot);
+      if check_option(varargin,'upper'), sR = sR.restrict2Upper(pC); end
+      if check_option(varargin,'lower'), sR = sR.restrict2Lower(pC); end
       
     end
             
