@@ -92,7 +92,7 @@ tp = Miller(1,0,-1,2,CS,'hkil');
 contourf(gbnd1,'colorrange',[0.5 1.5])
 mtexTitle('GBND for $\omega > 80^{\circ}$')
 mtexColorMap parula
-annotate(symmetrise(tp),'label','$\{10\bar{1}2\}$','backgroundColor','w')
+annotate(symmetrise(tp),'labeled','backgroundColor','w')
 nextAxis
 contourf(gbnd2,'colorrange',[0.5 1.5])
 mtexTitle('GBND for $\omega < 80^{\circ}$')
@@ -130,7 +130,7 @@ gbcd = calcGBND(gB,grains,moriRef,'halfwidth',5*degree,'nonneg')
 plot(gbcd,'contourf')
 mtexTitle('GBCD for the tension twin')
 mtexColorMap parula
-annotate(symmetrise(tp),'label','$\{10\bar{1}2\}$','backgroundColor','w')
+annotate(symmetrise(tp),'labeled','backgroundColor','w')
 mtexColorbar
 
 %%
@@ -204,7 +204,7 @@ gbcd3 = calcGBND(gB3,grains3,sigma3)
 plot(gbcd3,'contourf')
 mtexTitle('GBCD for $\Sigma 3$')
 mtexColorMap parula
-annotate(symmetrise(Miller(1,1,1,cs3)),'label','$\{111\}$','backgroundColor','w')
+annotate(symmetrise(Miller(1,1,1,cs3)),'labeled','backgroundColor','w')
 mtexColorbar
 
 %%
