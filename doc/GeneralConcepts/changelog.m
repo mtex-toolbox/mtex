@@ -448,9 +448,9 @@
 % * new function <grain2d.calcTraces.html |calcTraces(grains)|> and
 % <EBSD.calcTraces.html |calcTraces(ebsd)|> to compute habit plane traces
 % from families of grains or EBSD data.
-% * new function <calcGBND.html |calcGBND(traces,ori)|> to compute the
-% grain boundary normal distribution from a list of habit plane traces and
-% the corresponding grain orientations.
+% * new function <grainBoundary.calcGBND.html |calcGBND(traces,ori)|> to
+% compute the grain boundary normal distribution from a list of habit plane
+% traces and the corresponding grain orientations.
 % * new function <grainBoundary.characteristicShape.html
 % |characteristicShape(gB)|> to compute the characteristic shape from lists
 % of grain boundaries
