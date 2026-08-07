@@ -1,0 +1,137 @@
+name: build mex
+
+# Builds the mex files MTEX compiles from its own sources on every platform
+# MTEX ships binaries for, so that they no longer have to be produced by hand
+# on whichever machine a developer happens to own. The binaries are uploaded
+# as artifacts; committing them back into mex/ stays a deliberate manual step.
+#
+# Not built here: the NFFT family (nfftmex, nfsftmex, nfsoftmex, fptmex and
+# the lib* on macOS). Those come precompiled from the NFFT project, need
+# autotools and FFTW rather than a plain mex call, and change essentially
+# never - they are vendored artifacts, not part of this build.
+#
+# Licensing: matlab-actions/setup-matlab licenses MATLAB automatically for
+# public repositories on GitHub hosted runners. A private repository, or a
+# self hosted runner, needs a MathWorks batch licensing token supplied to the
+# action instead.
+
+# GitHub Actions does not support YAML anchors, so the two path lists below
+# have to be kept in step by hand.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '**.c'
+      - '**.cc'
+      - '**.cpp'
+      - '**.h'
+      - '**.hpp'
+      - 'mex/mex_install.m'
+      - 'tests/check_mexComplete.m'
+      - '.github/scripts/buildMex.m'
+      - '.github/workflows/build-mex.yml'
+  push:
+    branches: [develop, master]
+    paths:
+      - '**.c'
+      - '**.cc'
+      - '**.cpp'
+      - '**.h'
+      - '**.hpp'
+      - 'mex/mex_install.m'
+      - 'tests/check_mexComplete.m'
+      - '.github/scripts/buildMex.m'
+      - '.github/workflows/build-mex.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.ext }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      # one platform failing must not cancel the others - a missing binary on
+      # one target is exactly the situation this workflow exists to surface
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            ext: mexa64
+          - os: windows-latest
+            ext: mexw64
+          # Intel macOS. GitHub is retiring these runners; when that lands,
+          # either drop mexmaci64 here or move it to a self hosted Intel Mac.
+          - os: macos-13
+            ext: mexmaci64
+          # Apple silicon
+          - os: macos-14
+            ext: mexmaca64
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # The release fixes the oldest MATLAB the binaries load in: a mex built
+      # by R2024b does not load in anything older. Lower it if MTEX has to
+      # keep supporting an older release; R2023b is the floor for a native
+      # Apple silicon build.
+      - name: set up MATLAB
+        uses: matlab-actions/setup-matlab@v2
+        with:
+          release: R2024b
+
+      - name: build
+        uses: matlab-actions/run-command@v2
+        with:
+          # buildMex.m clears this platform's binaries first and ends in
+          # check_mexComplete, which fails the job if anything did not
+          # compile - mex_install itself only prints compile errors
+          command: run(fullfile('.github','scripts','buildMex.m'))
+
+      - name: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: mex-${{ matrix.ext }}
+          path: mex/*.${{ matrix.ext }}
+          if-no-files-found: error
+          retention-days: 30
+
+  collect:
+    name: collect all platforms
+    needs: build
+    # runs even when a platform failed, so the binaries that did build are
+    # still downloadable in one piece
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: mex-*
+          merge-multiple: true
+          path: mex
+
+      - name: summarize
+        shell: bash
+        run: |
+          {
+            echo '## mex binaries built'
+            echo
+            echo '| file | mexa64 | mexw64 | mexmaca64 | mexmaci64 |'
+            echo '|---|---|---|---|---|'
+            for name in $(ls mex | sed 's/\.mex[a-z0-9]*$//' | sort -u); do
+              row="| \`$name\` |"
+              for ext in mexa64 mexw64 mexmaca64 mexmaci64; do
+                if [ -f "mex/$name.$ext" ]; then row="$row yes |"; else row="$row — |"; fi
+              done
+              echo "$row"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mex-all-platforms
+          path: mex
+          if-no-files-found: error
+          retention-days: 30
