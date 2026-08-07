@@ -17,6 +17,11 @@ function h = histogram(grains,varargin)
 %  n      - number of bin edges, default is 15, (number of bins is n-1)
 %  bins   - vector of bin edges
 %
+% Options
+%  areaWeighted - 
+%  volumeWeighted - 
+%  numberWeighted - 
+%
 % Output
 %  h - handle to the histogram graphics object
 %
