@@ -1,4 +1,4 @@
-function grains = smoothBoundary(grains,iter,varargin)
+function [grains,F] = smoothBoundary(grains,iter,varargin)
 % turn the pixel staircase of a grain boundary into a smooth curve
 %
 % Syntax
@@ -7,6 +7,9 @@ function grains = smoothBoundary(grains,iter,varargin)
 %   grains = smoothBoundary(grains,iter)
 %   grains = smoothBoundary(grains,iter,'noSimplify','noRefine')
 %   grains = smoothBoundary(grains,iter,'simplify',epsilon,'refine',delta)
+%
+%   grains = smoothBoundary(grains,taubinFilter)
+%   grains = smoothBoundary(grains,curvatureFilter('smoothingLength',3))
 %
 % Description
 % EBSD data is measured on a regular grid, so a grain boundary comes out of
@@ -22,7 +25,22 @@ function grains = smoothBoundary(grains,iter,varargin)
 % # <grain2d.refineBoundary.html |refineBoundary|> resamples what is left at
 % equal arc length |delta|, which gives the smoothing evenly spaced degrees of
 % freedom that are no longer tied to the grid
-% # constrained Laplacian smoothing, |iter| times
+% # the smoothing itself, by default a constrained Laplacian applied |iter|
+% times
+%
+% Which algorithm performs the last step is decided by a
+% <boundaryFilter.boundaryFilter.html |boundaryFilter|>
+%
+% * <laplaceFilter.laplaceFilter.html |laplaceFilter|> - the default, repeated
+% local averaging. Shrinks, and its knob is an iteration count rather than a
+% length
+% * <taubinFilter.taubinFilter.html |taubinFilter|> - follows every smoothing
+% pass by a slightly larger unshrinking pass, so the area is given back
+% * <curvatureFilter.curvatureFilter.html |curvatureFilter|> - one sparse
+% solve instead of an iteration, stated as a smoothing *length* and therefore
+% independent both of the iteration count and of the step size of the map
+% * <huberFilter.huberFilter.html |huberFilter|> - the same, but with an
+% l^1/l^2 penalty that keeps a genuinely faceted boundary faceted
 %
 % Both tolerances are derived from the median segment length *before* the
 % first step - afterwards the median is the length of the straightened runs,
@@ -48,9 +66,11 @@ function grains = smoothBoundary(grains,iter,varargin)
 % Input
 %  grains - @grain2d
 %  iter   - number of smoothing iterations (default: 1)
+%  F      - @boundaryFilter, the smoothing algorithm to use
 %
 % Output
 %  grains - @grain2d
+%  F      - @boundaryFilter that was used
 %
 % Options
 %  simplify          - Douglas-Peucker tolerance (default: d/sqrt(2))
@@ -59,6 +79,10 @@ function grains = smoothBoundary(grains,iter,varargin)
 %  noRefine          - do not resample the boundary
 %  moveTriplePoints  - do not exclude triple/quadruple points from smoothing
 %  moveOuterBoundary - do not exclude outer boundary from smoothing
+%
+% The remaining options configure the default laplaceFilter and have no
+% meaning for the other filters
+%
 %  second_order, S2  - second order smoothing
 %  rate              - default smoothing kernel
 %  gauss             - Gaussian smoothing kernel
@@ -67,6 +91,7 @@ function grains = smoothBoundary(grains,iter,varargin)
 %
 % See also
 % grain2d/simplifyBoundary grain2d/refineBoundary grain2d/reduceBoundary
+% boundaryFilter laplaceFilter taubinFilter curvatureFilter huberFilter
 
 % an option may take the place of iter, as in smoothBoundary(grains,'noRefine').
 % This has to happen before the tilt branch below, which passes iter on
@@ -82,7 +107,7 @@ if nargin < 2 || isempty(iter), iter = 1; end
 if angle(grains.N,zvector,'antipodal') > 1e-10
 
   [grains,rot] = rotate2Plane(grains);
-  grains = smoothBoundary(grains,iter,varargin{:});
+  [grains,F] = smoothBoundary(grains,iter,varargin{:});
   grains = inv(rot) * grains; %#ok<MINV>
   return
 
@@ -109,7 +134,6 @@ I_VF = [grains.boundary.I_VF,grains.innerBoundary.I_VF];
 
 % compute vertices adjacency matrix
 A_V = I_VF * I_VF';
-t = size(A_V,1);
 
 % Do not move the junctions - the vertices where anything other than two
 % segments meet, counting the inner boundary too. diag(A_V) is that count.
@@ -127,46 +151,20 @@ if ~check_option(varargin,'moveOuterBoundary')
   ignore(grains.boundary.F(any(grains.boundary.grainId==0,2),:)) = true;
 end
 
-if check_option(varargin,{'second order','second_order','S','S2'})
-  A_V = logical(A_V + A_V*A_V);
-  A_V = A_V - diag(diag(A_V));
-end
+% a vertex no segment uses has nothing to be smoothed against
+ignore = ignore | full(diag(A_V)) == 0;
 
-weight = get_flag(varargin,{'gauss','expotential','exp','umbrella','rate'},'rate');
-lambda = get_option(varargin,weight,.5);
+% which algorithm does the smoothing - the iteration count and the kernel
+% options are how a laplaceFilter used to be spelled out
+F = getClass(varargin,'boundaryFilter',[]);
+if isempty(F), F = laplaceFilter(iter,varargin{:}); end
+
+% the spacing the vertices are sampled at, which is what turns a smoothing
+% length into a regularization weight
+h = median(grains.boundary.segLength);
 
 V = grains.allV.xyz;
-isNotZero = ~all(~isfinite(V) | V == 0,2) & ~ignore;
 
-for l=1:iter
-  if ~strcmpi(weight,'rate')
-    [i,j] = find(A_V);
-    d = sqrt(sum((V(i,:)-V(j,:)).^2,2)); % distance
-    switch weight
-      case 'umbrella'
-        w = 1./(d);
-        w(d==0) = 1;
-      case 'gauss'
-        w = exp(-(d./lambda).^2);
-      case {'expotential','exp'}
-        w = lambda*exp(-lambda*d);
-    end
-
-    A_V = sparse(i,j,w,t,t);
-  end
-
-  % take the mean over the neighbors
-  Vt = A_V * V;
-
-  m = sum(A_V,2);
-
-  dV = V(isNotZero,:)-bsxfun(@rdivide,Vt(isNotZero,:),m(isNotZero,:));
-
-  isZero = any(~isfinite(dV),2);
-  dV(isZero,:) = 0;
-
-  V(isNotZero,:) = V(isNotZero,:) - lambda*dV;
-
-end
+V = F.smooth(V,A_V,ignore,h);
 
 grains.allV = vector3d.byXYZ(V,grains.how2plot);

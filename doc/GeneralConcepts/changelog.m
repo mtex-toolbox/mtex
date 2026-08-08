@@ -99,6 +99,27 @@
 % change the number of segments, so where |gB.ebsdId| is read per segment they
 % have to be switched off.
 %
+% Which algorithm performs the smoothing is now a choice, made by passing a
+% @boundaryFilter - the same pattern as the @EBSDFilter that |smooth(ebsd,F)|
+% takes
+%
+%   grains = smoothBoundary(grains,taubinFilter)
+%   grains = smoothBoundary(grains,curvatureFilter('smoothingLength',3))
+%
+% * <laplaceFilter.laplaceFilter.html |laplaceFilter|> is the default and what
+% |smoothBoundary(grains,5)| still selects, unchanged
+% * <taubinFilter.taubinFilter.html |taubinFilter|> follows every smoothing
+% pass by a slightly larger unshrinking one. A Laplacian shrinks without bound
+% - on forsterite 25 iterations cost the average grain 2.8% of its area and the
+% worst affected one 72% - where Taubin gives it back
+% * <curvatureFilter.curvatureFilter.html |curvatureFilter|> replaces the
+% iteration by a single sparse solve, so there is no iteration count at all.
+% Its knob is a *length*, the wavelength damped to half amplitude, and so means
+% the same thing whatever step size the map was measured at
+% * <huberFilter.huberFilter.html |huberFilter|> penalizes curvature by an
+% l^1/l^2 Huber function rather than a square, which keeps a genuinely faceted
+% boundary faceted instead of rounding its corners off
+%
 % *Much Better EBSD Import*
 %
 % * all HDF5 flavours (Bruker, EDAX, Oxford, ThermoFisher, ...) are handled

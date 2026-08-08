@@ -161,6 +161,27 @@ assertOrdered(gm.boundary,'merge');
 assertOrdered(smoothBoundary(grains,3).boundary,'smoothBoundary');
 assertOrdered(smoothBoundary(grains,3,'noSimplify','noRefine').boundary,...
   'smoothBoundary(noSimplify,noRefine)');
+
+% every backend has to leave the boundary walkable, and none of them may move
+% a junction or change the segment list - they only move vertices
+for F = {laplaceFilter(3),taubinFilter(3),curvatureFilter,huberFilter}
+
+  name = class(F{1});
+  gS = smoothBoundary(grains,F{1});
+
+  assertOrdered(gS.boundary,name);
+
+  if ~isequal(gS.boundary.F,smoothBoundary(grains,0).boundary.F)
+    error('%s changed the segment list, it should only move vertices',name);
+  end
+
+  isJunction = full(diag(gS.boundary.I_VF*gS.boundary.I_VF.')) > 2;
+  moved = norm(gS.allV - smoothBoundary(grains,0).allV) > 1e-10;
+  if any(moved & isJunction)
+    error('%s moved a junction',name);
+  end
+
+end
 assertOrdered(refineBoundary(grains).boundary,'refineBoundary');
 assertOrdered(hull(grains).boundary,'hull');
 assertOrdered(flip(gB),'flip');

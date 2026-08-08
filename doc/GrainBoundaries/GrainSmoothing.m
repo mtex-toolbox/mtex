@@ -8,7 +8,11 @@
 % quantized to a few values, and its curvature is meaningless.
 %
 % <grain2d.smoothBoundary.html |smoothBoundary|> repairs this in three steps.
-% Let us look at them one at a time, on a few grains of the csl data set.
+% Let us look at them one at a time, on a few grains of the csl data set. Which
+% algorithm performs the third of them is a separate choice, discussed under
+% <GrainSmoothing.html#9 Choosing the algorithm> further down - if you only
+% read one line of it, note that the default shrinks your grains and
+% |taubinFilter| does not.
 
 mtexdata csl
 [grains, ebsd] = ebsd.calcGrains('minPixel',3);
@@ -152,6 +156,87 @@ axis([313 353 140 156])
 grains_coarse = smoothBoundary(grains,5,'simplify',d/sqrt(2),'refine',2*d);
 
 length(grains_coarse.boundary)
+
+%% Choosing the algorithm
+% Which algorithm performs the third step is decided by a
+% <boundaryFilter.boundaryFilter.html |boundaryFilter|>. They fall into two
+% groups. |laplaceFilter| and |taubinFilter| apply a local averaging step a
+% fixed number of times, so how far they smooth depends on how densely the
+% boundary is sampled. |curvatureFilter| and |huberFilter| instead define the
+% smooth boundary as the solution of a minimization problem, stated in terms
+% of a *length*, which does not change when the same sample is measured on a
+% finer grid.
+
+gL = smoothBoundary(grains,5);                  % laplaceFilter, the default
+gT = smoothBoundary(grains,taubinFilter(5));
+gC = smoothBoundary(grains,curvatureFilter('smoothingLength',8*d));
+gH = smoothBoundary(grains,huberFilter('smoothingLength',8*d));
+
+plot(grains.boundary,'linewidth',3,'linecolor','LightGray','micronbar','off')
+hold on
+plot(gL.boundary,'linewidth',2,'linecolor','Fuchsia')
+plot(gT.boundary,'linewidth',2,'linecolor','DodgerBlue')
+plot(gC.boundary,'linewidth',2,'linecolor','Orange')
+plot(gH.boundary,'linewidth',2,'linecolor','ForestGreen')
+hold off
+axis([313 353 140 156])
+
+%% The Laplace filter
+% <laplaceFilter.laplaceFilter.html |laplaceFilter|> replaces every vertex by
+% a weighted mean of itself and its neighbours, |iter| times. It is the
+% default and what |smoothBoundary(grains,5)| selects.
+%
+% It has one structural weakness: a Laplacian is a low pass filter with gain
+% below one everywhere, so it shrinks. Every iteration pulls a convex region
+% inwards, without bound. On the forsterite data set the grains lose on
+% average 0.3% of their area after 5 iterations and 2.8% after 25 - and the
+% worst affected grain loses 72%.
+
+%% The Taubin filter
+% <taubinFilter.taubinFilter.html |taubinFilter|> follows every smoothing pass
+% by a slightly larger *unshrinking* pass with a negative step, so the gain
+% over the pair returns to about one at low frequencies. The shape is smoothed
+% and the area is given back: the same 25 iterations that cost the Laplacian
+% 2.8% of the average grain area cost Taubin nothing - the mean drift is |+0.9%|
+% and the worst grain loses 13% rather than 72%.
+
+%% The curvature filter
+% <curvatureFilter.curvatureFilter.html |curvatureFilter|> is the first of the
+% variational filters. It minimizes
+%
+%   |V - V0|^2 + alpha * |L V|^2
+%
+% in a single sparse solve - there is no iteration count at all, the result
+% depends only on |alpha|. And |alpha| is not stated directly but through
+% |smoothingLength|, the wavelength that is damped to half amplitude. Detail
+% finer than it is removed, detail coarser survives, and because it is a
+% length it means the same thing whatever step size the map was measured at.
+
+F = curvatureFilter;
+F.smoothingLength = 8*d;
+gC = smoothBoundary(grains,F);
+
+plot(grains.boundary,'linewidth',3,'linecolor','LightGray','micronbar','off')
+hold on
+plot(gC.boundary,'linewidth',2,'linecolor','Orange')
+hold off
+axis([313 353 140 156])
+
+%% The Huber filter
+% <huberFilter.huberFilter.html |huberFilter|> penalizes the same curvature,
+% but with a Huber function instead of a square: quadratic below a threshold,
+% linear above it. A least squares penalty spreads a large deviation over many
+% vertices and so rounds a corner off, whereas an l^1 penalty concentrates it
+% in as few vertices as possible and leaves the corner standing. So gentle
+% undulations are smoothed exactly as by |curvatureFilter| while a genuinely
+% faceted boundary keeps its facets.
+%
+% Be aware of the trade this makes. On a map whose boundaries are really
+% straight or really smooth, the corners it protects are the leftovers of the
+% pixel grid, and it is then the *worst* of the four - on a synthetic Voronoi
+% map, where every boundary is exactly straight, it doubles the scatter of the
+% boundary directions compared to |curvatureFilter|. Reach for it when the
+% material is faceted, not by default.
 
 %% Triple points
 % <grain2d.smoothBoundary.html |smoothBoundary|> keeps the triple junctions
