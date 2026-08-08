@@ -62,7 +62,6 @@ classdef grain2d < phaseList & dynProp
     x                % x coordinates of the vertices of the grains
     y                % y coordinates of the vertices of the grains
     triplePoints     % triple points
-    grainSize        % depreciated for numPixel
   end
   
   properties (Dependent = true, Access = protected)
@@ -186,16 +185,6 @@ classdef grain2d < phaseList & dynProp
 
     end
     
-    function n = get.grainSize(grains)
-      warning('grains.grainSize is depreciated. Please use grains.numPixel instead');
-      n = grains.numPixel;
-    end
-
-    function grains = set.grainSize(grains,n)
-      warning('grains.grainSize is depreciated. Please use grains.numPixel instead');
-      grains.numPixel = n;
-    end
-
     function V = get.allV(grains)
       V = grains.boundary.allV;
     end

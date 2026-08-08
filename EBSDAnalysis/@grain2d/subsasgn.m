@@ -43,7 +43,13 @@ switch s(1).type
     end
     
   otherwise
-        
+
+    % grainSize has been renamed to numPixel, see grain2d/subsref
+    if strcmp(s(1).type,'.') && strcmp(s(1).subs,'grainSize')
+      warning('grains.grainSize is depreciated. Please use grains.numPixel instead');
+      s(1).subs = 'numPixel';
+    end
+
     if grains.isProperty(s(1).subs) % otherwise a property
       
       grains = subsasgn@dynProp(grains,s,b);

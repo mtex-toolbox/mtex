@@ -73,6 +73,14 @@ if strcmp(s(1).type,'()') || strcmp(s(1).type,'{}')
   end
 end
 
+% grainSize has been renamed to numPixel. it is deliberately not a property
+% any more, so that .mat files written by MTEX 5.11 and earlier are passed as
+% a struct to grain2d.loadobj instead of silently triggering this warning
+if strcmp(s(1).type,'.') && strcmp(s(1).subs,'grainSize')
+  warning('grains.grainSize is depreciated. Please use grains.numPixel instead');
+  s(1).subs = 'numPixel';
+end
+
 % maybe reference to a dynamic property
 if isProperty(grains,s(1).subs)
   
