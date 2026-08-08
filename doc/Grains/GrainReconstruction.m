@@ -35,9 +35,10 @@ plot(ebsd,'micronbar','off')
 % surrounding grains but keep large notindexed regions
 %
 % The extent to which unindexed pixels are assigned is controlled by the
-% parameter |'alpha'|. Roughly speaking this parameter is the radius of the
-% smallest unindexed region that will not be entirely assigned to
-% surrounding grains. The default of this value is |alpha = 2.2|.
+% parameter |'alpha'|. Roughly speaking this parameter is the radius, in
+% pixels, of the smallest unindexed region that will not be entirely
+% assigned to surrounding grains. The default of this value is
+% |alpha = 3.1|.
 %
 % The second parameter |'angle'| involved in grain reconstruction is the
 % threshold misorientation angle indicating a grain boundary. By default,
@@ -91,7 +92,7 @@ hold off
 mtexdata forsterite silent
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
-[grains, ebsd] = calcGrains(ebsd,'alpha',3.1,'angle',10*degree,'minPixel',3);
+[grains, ebsd] = calcGrains(ebsd,'alpha',6,'angle',10*degree,'minPixel',3);
 grains = smoothBoundary(grains,3);
 
 % plot the boundary of all grains
@@ -229,6 +230,18 @@ plot(ebsd,ebsd.orientations)
 hold on
 plot(grains.boundary)
 hold off
+
+%% More ways to reconstruct grains
+%
+% The threshold angle and fast multiscale clustering are two of several
+% criteria by which |calcGrains| may separate neighbouring pixels, and all
+% of them are interchangeable objects. How to choose between them, how to
+% segment by a property other than the orientation, and how to write a
+% criterion of your own is the subject of
+% <GrainReconstructionAdvanced.html Advanced Grain Reconstruction>. A
+% second way of turning a criterion into grains, by clustering the map
+% instead of taking connected components, is described in
+% <GrainReconstructionMCL.html Markovian Clustering>.
 
  
 

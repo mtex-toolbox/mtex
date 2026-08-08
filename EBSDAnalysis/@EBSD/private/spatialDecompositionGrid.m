@@ -33,7 +33,7 @@ function out = spatialDecompositionGrid(ebsd,varargin)
 %  ebsd - gridified @EBSDsquare / @EBSDhex
 %
 % Options
-%  alpha    - hole closing radius in multiples of dxy (default 1.5). Holes
+%  alpha    - hole closing radius in multiples of dxy (default 3.1). Holes
 %             narrower than 2*alpha*dxy are filled and vanish; wider holes are
 %             preserved as measured (no growing into them). Single-pixel-wide
 %             recesses (boundary notches, slit mouths) are always filled for
