@@ -63,7 +63,7 @@ pdf = calcDensity(cAxes)
 % |@S2FunHarmonic|> which we may plot as any other spherical function, see
 % <S2FunPlotting.html Plotting Spherical Functions>
 
-plot(pdf,'upper')
+plot(pdf,'complete')
 mtexColorbar
 
 %%
@@ -71,7 +71,7 @@ mtexColorbar
 % the density function. Lets plot the density function and the raw data on
 % top of each other
 
-contourf(pdf,'upper')
+contourf(pdf)
 mtexColorMap LaboTeX
 
 hold on

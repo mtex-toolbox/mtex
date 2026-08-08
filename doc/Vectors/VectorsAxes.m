@@ -119,4 +119,3 @@ plotIPDF(odf,yvector)
 %%
 plotIPDF(odf,yvector,'antipodal')
 
-
