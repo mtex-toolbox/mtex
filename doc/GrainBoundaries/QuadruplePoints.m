@@ -35,7 +35,7 @@ grains = merge(grains,gB(end),'calcMeanOrientation')
 
 %%
 
-grains = smooth(grains,1,'moveTriplePoints')
+grains = smoothBoundary(grains,1,'moveTriplePoints')
 
 %%
 

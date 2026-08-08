@@ -30,7 +30,7 @@ plot(ebsd,ipfKey.orientation2color(ebsd.orientations),'micronBar','off','figSize
 [grains,ebsd] = calcGrains(ebsd,'angle',2.5*degree,'minPixel',6);
 
 % smooth grain boundaries
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 hold on
 plot(grains.boundary,'linewidth',2)

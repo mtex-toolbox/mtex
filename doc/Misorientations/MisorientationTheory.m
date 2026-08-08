@@ -22,7 +22,7 @@ ebsd('M').CS = ebsd('M').CS.properGroup;
 
 % compute grains
 grains = calcGrains(ebsd,'threshold',5*degree,'minPixel',5);
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 CS = grains.CS; % extract crystal symmetry
 
 %%

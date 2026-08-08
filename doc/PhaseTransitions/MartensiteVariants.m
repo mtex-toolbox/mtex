@@ -23,7 +23,7 @@ cs_aus = ebsd('Aus').CS;
 
 % recover grains
 [grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',2);
-grains = smooth(grains,4);
+grains = smoothBoundary(grains,4);
 
 %%
 % The following lines plot bcc according to the crystallographic

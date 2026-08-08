@@ -158,7 +158,30 @@ gBfo = grains.boundary('Forsterite','Forsterite');
 gm = merge(grains,gBfo(angle(gBfo.misorientation) < 15*degree));
 assertOrdered(gm.boundary,'merge');
 
-assertOrdered(smooth(grains,3).boundary,'smooth');
+assertOrdered(smoothBoundary(grains,3).boundary,'smoothBoundary');
+assertOrdered(smoothBoundary(grains,3,'noSimplify','noRefine').boundary,...
+  'smoothBoundary(noSimplify,noRefine)');
+
+% every backend has to leave the boundary walkable, and none of them may move
+% a junction or change the segment list - they only move vertices
+for F = {laplaceFilter(3),taubinFilter(3),curvatureFilter,huberFilter}
+
+  name = class(F{1});
+  gS = smoothBoundary(grains,F{1});
+
+  assertOrdered(gS.boundary,name);
+
+  if ~isequal(gS.boundary.F,smoothBoundary(grains,0).boundary.F)
+    error('%s changed the segment list, it should only move vertices',name);
+  end
+
+  isJunction = full(diag(gS.boundary.I_VF*gS.boundary.I_VF.')) > 2;
+  moved = norm(gS.allV - smoothBoundary(grains,0).allV) > 1e-10;
+  if any(moved & isJunction)
+    error('%s moved a junction',name);
+  end
+
+end
 assertOrdered(refineBoundary(grains).boundary,'refineBoundary');
 assertOrdered(hull(grains).boundary,'hull');
 assertOrdered(flip(gB),'flip');
@@ -292,6 +315,7 @@ end
 % and the grain shapes survive the round trip through grain2d
 gRef = refineBoundary(grains);
 assertConsistent(gRef,grains,'refineBoundary');
+assertNotHanging(gRef,grains,'refineBoundary');
 if max(abs(gRef.area - grains.area)) > 1e-3*max(abs(grains.area))
   error('refineBoundary changed the grain areas');
 end
@@ -429,10 +453,10 @@ end
 % -------------------------------------------------------------------------
 function assertNotHanging(grains,grains0,name)
 % a vertex shared by the two boundaries has to stay on both of them, or one is
-% left hanging off a vertex the other no longer visits. Only the coarsening
-% wrappers can satisfy this - refine keeps just the two junctions of a chain
-% and mints fresh ids for everything between them, so it drops every shared
-% vertex by construction.
+% left hanging off a vertex the other no longer visits. All three wrappers pass
+% those vertices down as 'protect' - refine has to cut its chains there, since
+% it otherwise keeps only the two junctions of a chain and mints fresh ids for
+% everything between them.
 
 shared0 = intersect(grains0.boundary.F(:),grains0.innerBoundary.F(:));
 if isempty(shared0), return; end

@@ -16,7 +16,7 @@ mtexdata small silent
 grains = calcGrains(ebsd,'removeQuadruplePoints','alpha',5);
 
 % smooth the grains a bit
-grains = smooth(grains,2);
+grains = smoothBoundary(grains,2);
 
 % plot the grains
 plot(grains);

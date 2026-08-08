@@ -38,7 +38,7 @@ ebsd = ebsd('indexed');
 [grains, ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',5);
 
 % smooth them
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 % plot the orientation data of the Forsterite phase
 plot(ebsd('fo'),ebsd('fo').orientations)
@@ -171,7 +171,7 @@ mtexdata forsterite silent
 grains = calcGrains(ebsd);
 
 % smooth them
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 close all
 scatter(grains.equivalentRadius,grains.perimeter)

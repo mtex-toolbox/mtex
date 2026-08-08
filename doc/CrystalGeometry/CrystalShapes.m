@@ -79,7 +79,7 @@ drawNow(gcm,'final')
 
 % compute some grains
 grains = calcGrains(ebsd);
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 % and plot them
 cKey = ipfColorKey(grains);

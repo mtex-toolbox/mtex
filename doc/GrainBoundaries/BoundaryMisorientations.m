@@ -42,8 +42,9 @@ min_points = 10;
 % restrict to indexed only points
 [grains,ebsd] = calcGrains(ebsd,'angle',seg_angle*degree,'minPixel',min_points);
 
-% smooth grains
-grains = smooth(grains,4);
+% smooth grains - ebsdId is read per segment further down, so keep every
+% segment between the pair of pixels it was measured from
+grains = smoothBoundary(grains,4,'noSimplify','noRefine');
 
 % plot the data
 % Note, only the forsterite grains are colored. Grains with different

@@ -15,7 +15,7 @@ CS = ebsd.CS;
 % reconstruct grains
 [grains, ebsd] = calcGrains(ebsd,'angle',5*degree);
 
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 % plot the grains
 plot(grains,grains.meanOrientation)

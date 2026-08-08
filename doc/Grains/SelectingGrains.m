@@ -15,7 +15,7 @@ ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 [grains, ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',5,'alpha',6);
 
 % smooth them
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 % plot the orientation data of the Forsterite phase
 plot(ebsd('fo'),ebsd('fo').orientations)

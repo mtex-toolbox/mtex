@@ -72,10 +72,10 @@ hold off
 % 
 % Due to the gridded nature of the EBSD measurement the reconstructed grain
 % boundaries often suffer from the staircase effect. This can be reduced by
-% smoothing the grain boundaries using the command <grain2d.smooth.html
+% smoothing the grain boundaries using the command <grain2d.smoothBoundary.html
 % |smooth|>
 
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 % display the result
 plot(ebsd,'micronbar','off')
@@ -92,7 +92,7 @@ mtexdata forsterite silent
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
 [grains, ebsd] = calcGrains(ebsd,'alpha',3.1,'angle',10*degree,'minPixel',3);
-grains = smooth(grains,3);
+grains = smoothBoundary(grains,3);
 
 % plot the boundary of all grains
 plot(ebsd,'micronbar','off')
@@ -155,7 +155,7 @@ plot(ebsd,ebsd.orientations)
 % boundary below the threshold is missed - and there are many, since
 % deformation creates them.
 
-grains = smooth(calcGrains(ebsd,'angle',10*degree,'minPixel',10),5);
+grains = smoothBoundary(calcGrains(ebsd,'angle',10*degree,'minPixel',10),5);
 
 plot(ebsd,ebsd.orientations)
 hold on
@@ -168,7 +168,7 @@ hold off
 % inside the grains, and the boundaries it draws there are contour lines of
 % a smooth orientation field rather than anything physical.
 
-grains = smooth(calcGrains(ebsd,'angle',0.5*degree,'minPixel',10),5);
+grains = smoothBoundary(calcGrains(ebsd,'angle',0.5*degree,'minPixel',10),5);
 
 plot(ebsd,ebsd.orientations)
 hold on
@@ -190,7 +190,7 @@ hold off
 % aggregates - larger values separate more strictly and return more grains.
 
 grains = calcGrains(ebsd,'fmc',0.5,'minPixel',10);
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 plot(ebsd,ebsd.orientations)
 hold on
@@ -205,7 +205,7 @@ hold off
 % dislocation cells that carry the deformation.
 
 grains = calcGrains(ebsd,'fmc',1.5,'minPixel',10);
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 plot(ebsd,ebsd.orientations)
 hold on
@@ -223,7 +223,7 @@ mtexdata EMSphinx silent
 ebsd = ebsd('Iron fcc');
 
 grains = calcGrains(ebsd,'fmc',1.5,'minPixel',10)
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 plot(ebsd,ebsd.orientations)
 hold on

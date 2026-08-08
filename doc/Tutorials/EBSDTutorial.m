@@ -75,7 +75,7 @@ plot(ebsd('Forsterite'),ebsd('Forsterite').orientations,'micronbar','off')
 grains = calcGrains(ebsd,'theshold',10*degree,'minPixel',5)
 
 % smooth the grains to avoid the staircase effect
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 %%
 % This creates a variable |grains| of type @grain2d which contains the

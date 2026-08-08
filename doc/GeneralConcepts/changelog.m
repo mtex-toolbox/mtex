@@ -43,6 +43,88 @@
 %   gbnd = calcGBND(grains3.boundary)          % 3d, specimen coordinates
 %   [ebsd,grains] = cleanUpPseudoSym(ebsd,grains,mori,'threshold',1.5)
 %
+% *Grain Boundaries in Walk Order*
+%
+% The segments of a @grainBoundary are not an unordered list anymore. They
+% are sorted into chains - maximal runs of segments joined at vertices where
+% exactly two segments meet - so that consecutive segments share a vertex.
+% Any other vertex is a junction and terminates a chain. Each chain occupies
+% a contiguous block of rows and is oriented such that the grain in
+% |gB.grainId(:,1)| lies to the left of the walk direction
+%
+%   gB = grains.boundary
+%   gB.chainId, gB.chainSize, gB.isChainStart, gB.isChainEnd, gB.isClosed
+%   gB.arcLength, gB.chainLength   % length along and of the chain
+%   gB.chainV                      % vertex ids, chains separated by NaN
+%
+% This is what allows to coarsen or to refine a boundary as a curve instead
+% of as a bag of segments
+%
+% * <grain2d.simplifyBoundary.html |simplifyBoundary(grains,epsilon)|> drops
+% every vertex whose removal moves the boundary by less than |epsilon| -
+% Douglas Peucker applied to each chain - so a straight run collapses into a
+% single segment while a corner is kept. On a pixel grid this is what turns
+% the staircase into the straight line it approximates
+% * <grain2d.reduceBoundary.html |reduceBoundary(grains,n)|> is the blunt
+% alternative, keeping every n-th vertex regardless of shape
+% * <grain2d.refineBoundary.html |refineBoundary(grains,delta)|> resamples
+% each chain at equal arc length. Subdividing the segments, as it used to do,
+% preserved the staircase of the pixel grid and only made it finer -
+% resampling is what gives the smoothing degrees of freedom that are not tied
+% to the grid
+% * <grain2d.isOuterBoundary.html |isOuterBoundary(grains)|> tells which
+% grains border the map, which is no longer obvious once an alpha shape has
+% traced the outline
+%
+% All of them keep the junctions exactly where they are, so which grains
+% touch, and where, is unchanged, and a grain too small for the tolerance is
+% left uncoarsened rather than collapsed onto a line.
+%
+% What used to be |smooth(grains)| is called
+% <grain2d.smoothBoundary.html |smoothBoundary(grains)|> now - |smooth| on an
+% @EBSD means something entirely different, it denoises orientations - and it
+% performs all three steps by default: simplify, refine, and only then the
+% Laplacian smoothing that it used to do on its own
+%
+%   grains = smoothBoundary(grains,5)
+%   grains = smoothBoundary(grains,5,'noSimplify','noRefine')   % as before
+%
+% The old name still works and still does the old thing - |smooth| forwards
+% with both of the new steps switched off, so a script written against it keeps
+% the numbers it had rather than silently getting different grain areas and a
+% different number of boundary segments. It warns, and points here.
+%
+% Neither of the first two steps is cosmetic. A pixel staircase is never
+% further than |d/sqrt(2)| from the straight line it approximates, |d| being
+% the pixel spacing, so that is the tolerance which removes the grid and
+% nothing else. And simplifying without resampling afterwards leaves a curve
+% as a handful of long chords, which the smoothing then cuts the corners off -
+% a circle of 15 pixel radius loses 14% of its area over 25 iterations,
+% against 0.4% for all three steps together. Note that the first two steps
+% change the number of segments, so where |gB.ebsdId| is read per segment they
+% have to be switched off.
+%
+% Which algorithm performs the smoothing is now a choice, made by passing a
+% @boundaryFilter - the same pattern as the @EBSDFilter that |smooth(ebsd,F)|
+% takes
+%
+%   grains = smoothBoundary(grains,taubinFilter)
+%   grains = smoothBoundary(grains,curvatureFilter('smoothingLength',3))
+%
+% * <laplaceFilter.laplaceFilter.html |laplaceFilter|> is the default and what
+% |smoothBoundary(grains,5)| still selects, unchanged
+% * <taubinFilter.taubinFilter.html |taubinFilter|> follows every smoothing
+% pass by a slightly larger unshrinking one. A Laplacian shrinks without bound
+% - on forsterite 25 iterations cost the average grain 2.8% of its area and the
+% worst affected one 72% - where Taubin gives it back
+% * <curvatureFilter.curvatureFilter.html |curvatureFilter|> replaces the
+% iteration by a single sparse solve, so there is no iteration count at all.
+% Its knob is a *length*, the wavelength damped to half amplitude, and so means
+% the same thing whatever step size the map was measured at
+% * <huberFilter.huberFilter.html |huberFilter|> penalizes curvature by an
+% l^1/l^2 Huber function rather than a square, which keeps a genuinely faceted
+% boundary faceted instead of rounding its corners off
+%
 % *Much Better EBSD Import*
 %
 % * all HDF5 flavours (Bruker, EDAX, Oxford, ThermoFisher, ...) are handled
@@ -171,6 +253,33 @@
 %   cK   = planarColorKey(winter,'colorModel','white');
 %   rgb  = cK.property2color(grains.longAxis,grains.aspectRatio);
 %
+% *Rotations, Tangent Spaces and Vector Valued Functions*
+%
+% Two new pages describe the geometry MTEX is built upon.
+% <RotationRepresentations.html Rotation Representations> compares the ways
+% of writing a rotation as a single three dimensional vector - Rodrigues,
+% homochoric and cubochoric - and which of them fills which region of space
+% and preserves volume. <RotationTangentSpace.html The Tangent Space>
+% explains the left and the right representation of a tangent vector, i.e.
+% of a direction in which a rotation may be varied. A @SO3TangentVector now
+% stores the rotation it is attached to along with the symmetries, so
+% switching between both representations does not require passing the
+% orientation along anymore. For @SO3VectorFieldHarmonic the switch is
+% performed directly on the harmonic coefficients
+%
+%   rot = rotation.byHomochoric(v)
+%   t = odf.grad(ori); right(t)   % t knows ori, no second argument needed
+%
+% What used to be called a multivariate function is now called a
+% <SO3FunVectorValued.html vector valued> function. Arrays of them are
+% handled like any other MATLAB array - |cat|, |reshape|, |permute|,
+% |squeeze|, |transpose|, indexing and assignment - which worked for
+% @SO3FunHarmonic only and now works for @SO3FunHandle and @SO3FunRBF as
+% well. @SO3VectorField comes with the arithmetic |+,-,.*,./| together with
+% |dot| and |normSquare|, and a @SO3FunRBF draws its pole figures, inverse
+% pole figures and sections directly instead of through a harmonic
+% approximation.
+%
 % *Syntax Changes*
 %
 % * |ebsd.CSList| is not a cell array anymore but an array of
@@ -182,16 +291,52 @@
 % * the constructors |quaternion|, |rotation| and |orientation| only accept
 % the syntax |quaternion(a,b,c,d)|, |orientation(a,b,c,d,CS,SS)|. Use the
 % named constructors |vector3d.byPolar(theta,rho)|,
-% |orientation.byMatrix(M,cs)|, ... instead
+% |orientation.byMatrix(M,cs)|, ... instead. Newly available are
+% |rotation.byHomochoric|, |rotation.id|, |rotation.nan|, |rotation.rand|
+% and |rotation.inversion|
 % * symmetries are compared on three levels - |cs1 == cs2| checks for the
 % same object, |eqTol(cs1,cs2)| for the same Laue group and axes, and
 % |sim(cs1,cs2)| for the same lattice with possibly different alignment of
 % x, y, z
+% * the spherical Bingham distribution |BinghamS2| has been renamed
+% @S2FunBingham and is fitted by |S2FunBingham.fit(v)|
+% * |gB.V| returns the two end points of every boundary segment, the plain
+% list of all vertices is |gB.allV|
+% * |calcGBPD| has been superseded by <grainBoundary.calcGBND.html
+% |calcGBND|>
+% * a @plottingConvention may be stated as a string, each axis followed or
+% preceded by the direction it points to on screen
+%
+%   pC = plottingConvention('y↑→x')   % also 'x←↑y', 'z⊙→x', ASCII 'y^->x'
+%
+% * six EBSD interfaces have been retired to |obsolete/| - |loadEBSD_ACOM|,
+% |loadEBSD_sor|, |loadEBSD_csv| and |loadEBSD_Oxfordcsv| as they were
+% unused, |loadEBSD_hdf5| and |loadEBSD_h5oina| as they are covered by
+% <loadEBSD_h5.html |loadEBSD_h5|>
+% * |extern/kde| is called |kde1d| now as it used to shadow the |kde| of
+% recent MATLAB versions
 %
 % *Minor*
 %
-% * <grain2d.refineBoundary.html |refineBoundary(grains,delta)|> subdivides
-% boundary segments to a given segment length
+% * <EBSD.transform.html |transform(ebsd,fun)|> and |transform(grains,fun)|
+% apply an arbitrary, not necessarily rigid, map to every position - to
+% simulate an instrument distortion or to reproject a map
+% * |ebsd.lattice| is the one place that turns |ebsd.unitCell| and
+% |ebsd.pos| into a lattice basis and a per pixel integer index,
+% |ebsd.fixPos| repairs coordinates suffering from rounding, |gridify| takes
+% |'rowMajor'| and |'columnMajor'|, and a hexagonal grid is addressed in cube
+% coordinates by |hex2cube| and |cube2hex|
+% * <orientation.find.html |find|> on @orientation, @quaternion and
+% @vector3d returns the closest point, the k closest points or all points
+% within an epsilon neighborhood, together with their distances
+% * |sqrt|, |smooth| and |invRadon| on @S2Fun, the new class @S2FunGrid, and
+% every @S2Fun carries a symmetry, hence a |CS|, a |SS| and a |how2plot|
+% * screw dislocations of a @dislocationSystem have proper Burgers vector
+% lengths for hexagonal lattices
+% * the mex files are compiled for every platform on our continuous
+% integration and attached to the release, |check_mex| downloads them from
+% there and grain reconstruction falls back to a MATLAB Voronoi wherever a
+% mex file is missing
 % * <grain2d.merge.html |merge(grains,...,'maxPixel')|> takes the mean
 % orientation of the largest grain involved instead of averaging
 % * <doEulerStep.html |doEulerStep(odf,vF,dt,'implicit')|> provides an
@@ -688,7 +833,7 @@
 %
 % * new function <EBSD.interp.html |ebsd.interp|> to interpolate EBSD maps
 % at arbitrary x,y coordinates, <EBSDInter.html example>
-% * <grain2d.smooth.html |smooth(grains)|> keeps now triple points and outer
+% * <grain2d.smoothBoundary.html |smoothBoundary(grains)|> keeps now triple points and outer
 % boundary fixed by default
 % * the field |grains.triplePoints.angles| returns the angles between the
 % boundaries at the triple points
