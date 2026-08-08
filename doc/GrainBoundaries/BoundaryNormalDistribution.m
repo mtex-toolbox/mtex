@@ -43,7 +43,11 @@ mtexdata twins
 
 [grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',3);
 
-grains = smoothBoundary(grains,10)
+% calcGBND looks the orientations on either side of a segment up through
+% gB.ebsdId, which only means something as long as every segment still runs
+% between one pair of pixels - so smooth the vertex positions but leave the
+% segment list alone
+grains = smoothBoundary(grains,10,'noSimplify','noRefine')
 
 CS = grains.CS;
 

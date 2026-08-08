@@ -12,9 +12,16 @@ function gbnd = calcGBND(gB,ebsd,varargin)
 %   % use a specific halfwidth
 %   gbnd = calcGBND(gB,ebsd,'halfwidth',10*degree)
 %
+% Given an @EBSD the orientations on either side of a segment are looked up
+% through |gB.ebsdId|, which is only meaningful while every segment still runs
+% between one specific pair of pixels. <grain2d.smoothBoundary.html
+% |smoothBoundary|> breaks that by default - it merges and resamples segments -
+% so smooth with |'noSimplify','noRefine'| before calling this, or pass the
+% @grain2d instead and work from the grain mean orientations.
+%
 % Input
 %  gB   - @grainBoundary
-%  ebsd - @EBSD 
+%  ebsd - @EBSD
 %  grains - @grain2d
 %  mori - mis@orientation or orientation relationship
 %  odf  - @SO3Fun used for texture correction
