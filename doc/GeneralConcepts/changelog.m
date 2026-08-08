@@ -89,6 +89,11 @@
 %   grains = smoothBoundary(grains,5)
 %   grains = smoothBoundary(grains,5,'noSimplify','noRefine')   % as before
 %
+% The old name still works and still does the old thing - |smooth| forwards
+% with both of the new steps switched off, so a script written against it keeps
+% the numbers it had rather than silently getting different grain areas and a
+% different number of boundary segments. It warns, and points here.
+%
 % Neither of the first two steps is cosmetic. A pixel staircase is never
 % further than |d/sqrt(2)| from the straight line it approximates, |d| being
 % the pixel spacing, so that is the tolerance which removes the grid and
