@@ -8,6 +8,8 @@ function check_scaleBar
 % * a direction along the viewing axis gets the circled symbol, all others
 %   an arrow
 % * 'refFrame','off' reproduces the geometry of a bar without indicator
+% * the bar stays in front of content with a z extent, e.g. crystal shapes
+%   plotted on top of the map
 %
 
 oldVis = get(0,'DefaultFigureVisible');
@@ -164,6 +166,37 @@ if hOn <= hOff || wOn < wOff - 1e-6*wOff
   error('check_scaleBar: the indicator did not make the box grow (%gx%g vs %gx%g)',...
     wOn, hOn, wOff, hOff);
 end
+% A flat map has to stay a two dimensional, child order drawn axes. Giving
+% the bar a z coordinate here would switch SortMethod to 'depth' and with it
+% the rendering of the entire map - among other things the translucent
+% background box would then be composited over the bar and the arrows
+if ~strcmp(get(gca,'SortMethod'),'childorder') || ...
+    size(sB.shadow.Vertices,2) > 2 || ~isempty(sB.rfSymbol.ZData)
+  error('check_scaleBar: a flat map was turned into a depth sorted 3d axes');
+end
+close all
+
+% Content plotted on top of the map that reaches out of the map plane -
+% crystal shapes are the typical case - gives the axes a z extent, and
+% MATLAB then sorts the axes children by depth. The whole bar has to follow
+% into the plane closest to the camera, otherwise it ends up buried under
+% that content no matter where it sits in the child list
+ebsd.how2plot = 'y↓→x';
+grains = calcGrains(ebsd,'threshold',10*degree);
+biggest = grains(grains.numPixel == max(grains.numPixel));
+plot(ebsd);
+hold on
+plot(biggest, crystalShape(Miller({1,0,0},{0,1,0},{0,0,1},biggest.CS)))
+hold off
+drawnow
+ax = gca;
+sB = getappdata(ax,'mapPlot').micronBar;
+
+% an axes showing nothing but a flat map keeps the default z limits [-1 1]
+if diff(zlim(ax)) <= 2
+  error('check_scaleBar: the crystal shape did not give the axes a z extent');
+end
+planes(sB, ax, 'with crystal shapes')
 close all
 
 disp('check_scaleBar: ok')
@@ -171,6 +204,36 @@ disp('check_scaleBar: ok')
 end
 
 % ------------------------------------------------------------------------
+
+function planes(sB, ax, what)
+% Once the axes is depth sorted the bar has to be drawn in the plane closest
+% to the camera, so that content with a z extent cannot bury it, and its
+% translucent background just behind that plane - coplanar with the rest
+% MATLAB composites the transparent box over the opaque bar and arrows and
+% dims them.
+
+dz = zlim(ax);
+toCam = ax.CameraPosition(3) - ax.CameraTarget(3);
+zNear = dz(1 + (toCam > 0));
+
+labels = vertcat(sB.rfLabels.Position);
+z = [sB.ruler.Vertices(:,3); sB.rfArrows.Vertices(:,3); sB.rfSymbol.ZData(:); ...
+  sB.txt.Position(3); labels(:,3)];
+z(isnan(z)) = [];
+
+if any(abs(z - zNear) > 1e-9*abs(diff(dz)))
+  error(['check_scaleBar: %s - the bar is drawn at z = %g..%g instead of ' ...
+    'the near plane z = %g'], what, min(z), max(z), zNear);
+end
+
+zBox = unique(sB.shadow.Vertices(:,3));
+behind = (zNear - zBox) * sign(toCam);
+if ~isscalar(zBox) || behind <= 0 || behind > 0.01*abs(diff(dz))
+  error(['check_scaleBar: %s - the background box is not just behind the ' ...
+    'bar (box at z = %g, bar at z = %g)'], what, zBox(1), zNear);
+end
+
+end
 
 function o = commonRoot(sB)
 % the origin the indicator is drawn around - the center of the circled

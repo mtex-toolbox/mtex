@@ -37,10 +37,11 @@ classdef scaleBar < handle
 %                       date as the map is zoomed or resized
 %  Location          - corner of the map the bar is drawn in:
 %                       'sw' (default), 'se', 'nw', 'ne'
-%  SBRefFrame        - 'on' (default) / 'off' - show the reference frame
-%  SBRefFrameDirs    - @vector3d, the directions to indicate
+%  refFrame          - 'on' / 'off' - show the reference frame, defaults to
+%                       the |showRefFrame| preference
+%  refFrameDirs      - @vector3d, the directions to indicate
 %                       (default xvector, yvector, zvector)
-%  SBRefFrameLabels  - cell of char, their labels (default {'x','y','z'})
+%  refFrameLabels    - cell of char, their labels (default {'x','y','z'})
 %
 % Example
 %
@@ -54,6 +55,7 @@ classdef scaleBar < handle
 properties (Hidden = true)
   hgt      % handle of the hgtransform grouping the scale bar graphics
   lastLayout = {}          % memo of the inputs of the last layout (see update)
+  lastZ = NaN              % the plane the bar was last laid out in (see update)
   updating logical = false % re-entrance guard for update
 end
 
@@ -126,15 +128,19 @@ methods
     sB.lineColor       = get_option(varargin,'SBLineColor',sB.lineColor);
     sB.length          = get_option(varargin,'Length',sB.length);
     sB.location        = get_option(varargin,'Location',sB.location);
-    sB.refFrameDirs    = get_option(varargin,'SBRefFrameDirs',sB.refFrameDirs);
-    sB.refFrameLabels  = get_option(varargin,'SBRefFrameLabels',sB.refFrameLabels);
-    sB.refFrame        = get_option(varargin,'SBRefFrame',sB.refFrame);
+    sB.refFrameDirs    = get_option(varargin,'refFrameDirs',sB.refFrameDirs);
+    sB.refFrameLabels  = get_option(varargin,'refFrameLabels',sB.refFrameLabels);
+    sB.refFrame        = get_option(varargin,'refFrame',...
+      getMTEXpref('showRefFrame','on'));
 
     % redraw whenever the axes is resized, zoomed/panned or reoriented
     % (e.g. through plottingConvention.setView). Position alone is not a
     % reliable proxy for a changed map width (e.g. 'axis equal' can keep
     % Position fixed across a zoom, or change it without XLim/YLim
-    % changing), so XLim/YLim are watched explicitly.
+    % changing), so XLim/YLim are watched explicitly. ZLim matters as well,
+    % since the bar is laid out in the plane closest to the camera (see
+    % update) - note though that this only covers limits that are set
+    % explicitly, see setOnTop for the rest.
     % A Position change alters the axes' pixel geometry, which the label
     % measurement depends on even when the data limits are unchanged - so
     % it forces a fresh layout past the memo in update.
@@ -144,6 +150,7 @@ methods
     hListener(3) = addlistener(hax,'CameraUpVector','PostSet', @(~,~) sB.update);
     hListener(4) = addlistener(hax,'XLim',          'PostSet', @(~,~) sB.update);
     hListener(5) = addlistener(hax,'YLim',          'PostSet', @(~,~) sB.update);
+    hListener(6) = addlistener(hax,'ZLim',          'PostSet', @(~,~) sB.update);
 
     % Tie these axes-level listeners' lifetime directly to this scale
     % bar's own graphics, rather than to garbage collection of the
@@ -172,12 +179,31 @@ methods
   end
 
   function setOnTop(sB)
+    % Bring the bar in front of everything else in the axes. The child
+    % order settles ties between coplanar objects, the plane the bar is
+    % drawn in settles the rest (see update) - both have to be redone
+    % whenever something was plotted on top of the map.
+    %
+    % Call this after adding content to a map that is already there, MTEX
+    % does so in EBSD/plot and grain2d/plot. It is not automatic: MATLAB
+    % recomputing the z limits because new content appeared fires no
+    % listener the bar could hook into (ZLim/PostSet only reacts to limits
+    % that are set explicitly), so the only alternative would be to
+    % recheck on every single redraw.
+
     try
       c = sB.hgt.Parent.Children;
       if ~isempty(c) && c(1) ~= sB.hgt
         uistack(sB.hgt,'top')
       end
     end
+
+    % during update the bar has just been laid out for the current plane,
+    % and calling back into it would recurse
+    if sB.updating || isempty(sB.hgt) || ~isvalid(sB.hgt), return; end
+    [z, zBack] = barPlanes(get(sB.hgt,'Parent'));
+    if ~isequal([z, zBack], sB.lastZ), sB.update; end
+
   end
 
   function unlock(sB)
@@ -284,6 +310,19 @@ methods
     if any(yDir == [1,2]), dy= fliplr(dy); end
     if mod(xDir,2), [dx,dy] = deal(dy,dx); end
 
+    % The bar is an annotation and must never be hidden by the map content.
+    % As long as the axes draws in child order, bringing the bar to the
+    % front of that list (setOnTop) is all it takes. Once something with a
+    % z extent is drawn on top of the map - the crystal shapes of
+    % grain2d/plot, say - MATLAB sorts by depth instead, uistack stops
+    % meaning anything, and the bar has to lay itself out in the plane
+    % closest to the camera to stay visible. It cannot be moved any further
+    % to the front than that: the axes clips everything to its own z limits,
+    % and switching clipping off for the bar does not help either, since the
+    % renderer's own near plane then cuts it away. See barPlanes.
+    [zBar, zBack] = barPlanes(ax);
+    sB.lastZ = [zBar, zBack];
+
     % Find the range in meters for later determination of magnitude
     % We do this so that we never display 10000 nm and always something like
     % 10 microns. Also, the correct choice of units will avoid decimals.
@@ -317,7 +356,7 @@ methods
     % rfScreen has to be part of the key as well: reorienting the map by
     % less than a quarter turn changes the indicator without changing
     % xDir/yDir, so the four compass directions alone would memoize it away
-    key = {xDir, yDir, dx, dy, rulerLength, labelStr, sB.lineColor, ...
+    key = {xDir, yDir, dx, dy, zBar, zBack, rulerLength, labelStr, sB.lineColor, ...
       sB.backgroundColor, sB.backgroundAlpha, sB.location, ...
       rfScreen, sB.refFrameLabels};
     if ~forceLayout && isequal(key, sB.lastLayout)
@@ -338,7 +377,7 @@ methods
     % extent is implausible and the fallback below kicks in; the final
     % correct layout follows automatically once the geometry settles,
     % because that fires the Position listener which forces a re-layout.
-    set(sB.txt,'string',labelStr,'position',[dx(1),dy(1)])
+    set(sB.txt,'string',labelStr,'position',cP([dx(1),dy(1)]))
     extent = get(sB.txt, 'Extent');
 
     % Extent(3:4) are the text's footprint along data-x/data-y - which one
@@ -420,13 +459,13 @@ methods
       boxy = dy(2) - gapY - boxHeight;
     end
 
-    % Make bounding box. The z-coordinate is used to put the box under the
-    % line.
+    % Make bounding box. It goes into the plane behind the bar, which is
+    % what puts it underneath everything else drawn here - see nearPlane.
     verts = [boxx, boxy;
       boxx, boxy + boxHeight;
       boxx + boxWidth, boxy + boxHeight;
       boxx + boxWidth, boxy];
-    set(sB.shadow,'Vertices', cP(verts), ...
+    set(sB.shadow,'Vertices', cP(verts,zBack), ...
       'Faces', [1 2 3 4], ...
       'FaceColor', sB.backgroundColor , 'EdgeColor', 'none', ...
       'LineWidth', 1, 'FaceAlpha', sB.backgroundAlpha);
@@ -438,10 +477,9 @@ methods
       'VerticalAlignment', 'baseline','color',sB.lineColor,...
       'Position', cP([boxx+boxWidth/2,boxy+3*gapY]));
 
-    % Create line as a patch. The z-coordinate is used to layer the patch over
-    % top of the bounding box. The bar is centered within the box, so it
-    % stays centered under/above the label even when the label is wider
-    % than the bar itself.
+    % Create line as a patch, in the plane in front of the bounding box.
+    % The bar is centered within the box, so it stays centered under/above
+    % the label even when the label is wider than the bar itself.
     rulerStart = boxx + (boxWidth - rulerLength)/2;
     set(sB.ruler,'Vertices',cP([rulerStart, boxy+gapY; ...
       rulerStart, boxy+2*gapY; ...
@@ -462,9 +500,9 @@ methods
         'FaceColor',sB.lineColor,'EdgeColor','none','FaceAlpha',1);
 
       symXY = mapRF(rfLine);
-      if isempty(symXY), symXY = [NaN NaN]; end
+      if isempty(symXY), symXY = NaN(1,size(symXY,2)); end
       set(sB.rfSymbol,'XData',symXY(:,1),'YData',symXY(:,2),...
-        'Color',sB.lineColor);
+        'ZData',symXY(:,3:end),'Color',sB.lineColor);
 
       labXY = mapRF(rfLabPos);
       for k = 1:numel(sB.rfLabels)
@@ -478,16 +516,20 @@ methods
       end
 
     else
-      set(sB.rfArrows,'Faces',1,'Vertices',[NaN NaN]);
-      set(sB.rfSymbol,'XData',NaN,'YData',NaN);
+      set(sB.rfArrows,'Faces',1,'Vertices',cP([NaN NaN]));
+      set(sB.rfSymbol,'XData',NaN,'YData',NaN,'ZData',zBar);
       set(sB.rfLabels,'String','','Position',[NaN,NaN]);
     end
 
     sB.setOnTop;
 
-    function pos = cP(pos)
-      % interchange x and y if needed
+    function pos = cP(pos,z)
+      % interchange x and y if needed and, in a depth sorted axes, lift into
+      % the plane of the bar - or into the one just behind it, for the
+      % translucent background
       if mod(xDir,2), pos(:,[1,2]) = pos(:,[2,1]); end
+      if nargin < 2, z = zBar; end
+      if ~isempty(z), pos(:,3) = z; end
     end
 
     function pos = mapRF(pos)
@@ -613,6 +655,47 @@ end
 P = [V; L; labPos - labHalf; labPos + labHalf; 0 0];
 P(any(isnan(P),2),:) = [];
 bbox = [min(P(:,1)), max(P(:,1)), min(P(:,2)), max(P(:,2))];
+
+end
+
+function [z, zBack] = barPlanes(ax)
+% The planes the scale bar is laid out in - both empty as long as the axes
+% draws in child order, which is the case for a plain flat map.
+%
+% Then the bar needs no z coordinate at all: MATLAB draws the children in
+% order, so the background box, created first, ends up behind the bar and
+% the arrows all by itself. Giving the bar a z coordinate in that situation
+% would do active harm - it makes the axes three dimensional, MATLAB
+% switches SortMethod from 'childorder' to 'depth', and from then on the
+% whole map is rendered by depth. Among other things the box, being
+% transparent, is then composited over the opaque bar and arrows lying at
+% the same depth and dims them.
+%
+% Once the axes really is depth sorted - because something with a z extent
+% was plotted on top of the map, crystal shapes say - child order no longer
+% decides anything and the bar has to place itself in depth:
+%
+%  z     - the end of the z axis closest to the camera, so that nothing can
+%          be drawn in front of the bar. Read from the camera rather than
+%          from the plotting convention, since it is the camera that
+%          decides the depth order.
+%  zBack - just behind it, for the translucent background box, which has to
+%          be separated from the opaque graphics it sits behind for the
+%          reason above. One thousandth of the z range is enough for the
+%          depth buffer to tell the two planes apart, and little enough
+%          that nothing else fits in between.
+
+if strcmp(ax.SortMethod,'childorder')
+  z = []; zBack = [];
+  return
+end
+
+dz = zlim(ax);
+if ax.CameraPosition(3) > ax.CameraTarget(3)
+  z = dz(2); zBack = z - 1e-3*diff(dz);
+else
+  z = dz(1); zBack = z + 1e-3*diff(dz);
+end
 
 end
 

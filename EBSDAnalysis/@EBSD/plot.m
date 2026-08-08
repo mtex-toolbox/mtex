@@ -30,10 +30,16 @@ function [h,mP] = plot(ebsd,varargin)
 %
 % Options
 %  micronbar   - 'on'/'off'
+%  refFrame    - 'on'/'off' - indicate the alignment of the specimen
+%                 reference frame inside the scale bar box, see
+%                 <scaleBar.html scaleBar>
+%  refFrameDirs   - @vector3d, the directions to indicate
+%                    (default xvector, yvector, zvector)
+%  refFrameLabels - cell of char, their labels (default {'x','y','z'})
 %  backend     - surf, patch, imagesc
 %  DisplayName - add a legend entry
 %  region      - [xmin, xmax, ymin, ymax] plotting region
-%  
+%
 % Flags
 %  points   - plot dots instead of unitcells
 %  exact    - plot exact unitcells, even for large maps
@@ -191,9 +197,11 @@ if nargout==0, clear h; end
 
 if isNew && ~isstruct(mtexFig)
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
-else
-  mP.micronBar.setOnTop  
 end
+
+% crystal shapes stick out of the map plane, which makes MATLAB sort the
+% axes children by depth - tell the scale bar to move in front of them
+mP.micronBar.setOnTop
 
 if ~isstruct(mtexFig)  && isscalar(mtexFig.children)
   mtexFig.keepAspectRatio = false; 

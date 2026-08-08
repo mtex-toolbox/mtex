@@ -55,7 +55,7 @@
 
 ebsd = EBSD.load([mtexEBSDPath filesep 'olivineopticalmap.ang'],'setting',2)
 
-plot(ebsd('olivine'),ebsd('olivine').orientations)
+plot(ebsd('olivine'),ebsd('olivine').orientations,'refFrame','on')
 
 %%
 % The plot should already fit the alignment of the map in the EDAX software
@@ -67,7 +67,7 @@ plot(ebsd('olivine'),ebsd('olivine').orientations)
 % assume we want x pointing down and y pointing towards east
 ebsd.how2plot = 'x↓→y';
 
-plot(ebsd('olivine'),ebsd('olivine').orientations)
+plot(ebsd('olivine'),ebsd('olivine').orientations,'refFrame','on')
 
 %%
 % Note that these options only alter the orientation of the EBSD map and
@@ -87,7 +87,7 @@ cS = crystalShape.olivine;
 largeGrains = grains(grains.numPixel>500)
 
 % and plot the crystal shapes
-plot(ebsd('olivine'),ebsd('olivine').orientations,'micronbar','off')
+plot(ebsd('olivine'),ebsd('olivine').orientations,'refFrame','on','location','se')
 hold on
 plot(largeGrains,cS,'colored')
 hold off
@@ -119,7 +119,10 @@ grains = calcGrains(ebsd_rot('indexed'));
 % select only large grains
 largeGrains = grains(grains.numPixel>500);
 
-plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'micronbar','off')
+% the crystal shapes are drawn on top of the map - put the reference frame
+% box into a corner where none of them covers it
+plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,...
+  'refFrame','on','Location','ne')
 
 % and plot the crystal shapes
 hold on
@@ -141,7 +144,8 @@ grains = calcGrains(ebsd_rot('indexed'));
 largeGrains = grains(grains.numPixel>500);
 
 
-plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'micronbar','off')
+plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,...
+  'refFrame','on','Location','se')
 
 % and plot the crystal shapes
 hold on
@@ -172,7 +176,8 @@ grains = calcGrains(ebsd_rot('indexed'));
 % select only large grains
 largeGrains = grains(grains.numPixel>500);
 
-plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'micronbar','off')
+plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,...
+  'refFrame','on','Location','se')
 
 % and plot the crystal shapes
 hold on

@@ -22,6 +22,12 @@ function [h,mP] = plot(grains,varargin)
 %  region      - [xmin, xmax, ymin, ymax] of the plotting region 
 %  scale       - scaling of crystal shapes and tensorial properties (0.3)
 %  micronBar   - 'on' / 'off'
+%  refFrame    - 'on' / 'off' - indicate the alignment of the specimen
+%                 reference frame inside the scale bar box, see
+%                 <scaleBar.html scaleBar>
+%  refFrameDirs   - @vector3d, the directions to indicate
+%                    (default xvector, yvector, zvector)
+%  refFrameLabels - cell of char, their labels (default {'x','y','z'})
 %
 % See also
 % EBSD/plot grainBoundary/plot
@@ -213,6 +219,11 @@ if isNew
   
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
+
+% crystal shapes and tensorial properties stick out of the map plane, which
+% makes MATLAB sort the axes children by depth - tell the scale bar to move
+% in front of them
+mP.micronBar.setOnTop
 
 % allow change of aspect ratio only for single figures
 if ~isstruct(mtexFig)
