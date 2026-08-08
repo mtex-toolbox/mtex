@@ -150,7 +150,14 @@ nC = fmc.sizeWnext;
 
 [ii,jj,pp] = find(fmc.P);
 t = pp > .05 & ii ~= Celements(jj);
-i = ii(t); j = jj(t); p = pp(t);
+
+% Forced to columns. find on a 1x1 sparse returns 0x0 empties, and 0x0 is
+% not a valid subs argument for accumarray below ("at least one column"),
+% while 0x1 is. The last coarsening level can be a single node whose only
+% pair is dropped by t, and mtexdata single reached exactly that.
+i = ii(t); i = i(:);
+j = jj(t); j = j(:);
+p = pp(t); p = p(:);
 
 O  = fmc.O(i);
 Oc = fmc.O(Celements);

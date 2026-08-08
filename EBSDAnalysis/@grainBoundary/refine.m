@@ -90,7 +90,12 @@ Lc = [0; cumsum(L)];
 % difference of two large numbers. round(total/delta) sits exactly on a tie
 % whenever a piece is a whole number of samples long, which on a regular grid
 % is most of them, so the last bits of total decide how many samples it gets.
-pieceOf = repelem((1:nCh).',iEnd-iStart+1);
+% Every repelem below is forced to a column. With a single piece both its
+% arguments are scalars, and repelem of two scalars returns a ROW - which
+% makes accumarray reject its arguments here, and turns the kOf subtraction
+% below into an outer difference. A boundary that is one single piece is
+% ordinary: an isolated grain, or a small inner boundary.
+pieceOf = reshape(repelem((1:nCh).',iEnd-iStart+1),[],1);
 total = accumarray(pieceOf,L,[nCh 1]);
 
 % how many segments to split each piece into
@@ -99,9 +104,9 @@ M = sum(m);
 
 % expand the pieces into the new segment list: cOf is the piece a new segment
 % belongs to, kOf its one based position within that piece
-cOf = repelem((1:nCh).',m);
+cOf = reshape(repelem((1:nCh).',m),[],1);
 mOf = m(cOf);
-kOf = (1:M).' - repelem([0; cumsum(m(1:end-1))],m);
+kOf = (1:M).' - reshape(repelem([0; cumsum(m(1:end-1))],m),[],1);
 
 % the samples, in the same global arc coordinate. The midpoint is the mean of
 % the two ends rather than (k-1/2)/m - the same number in exact arithmetic, but
