@@ -22,7 +22,7 @@ function [c,a,b] = fitEllipse(grains,varargin)
 %
 % mtexdata csl
 % grains = calcGrains(ebsd)
-% grains = smooth(grains,10)
+% grains = smoothBoundary(grains,10)
 % plot(ebsd('indexed'),ebsd('indexed').orientations,'micronbar','off')
 % hold on
 % plot(grains.boundary,'lineWidth',2)

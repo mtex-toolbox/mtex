@@ -1,21 +1,29 @@
-function gB = refine(gB,delta)
+function gB = refine(gB,varargin)
 % resample each chain at a constant spacing along its length
 %
 % Syntax
 %   gB_r = refine(gB)
 %   gB_r = refine(gB,delta)
+%   gB_r = refine(gB,delta,'protect',vertexIds)
 %
 % Description
-% Places new vertices at equal arc length along each chain, between its two
-% junctions, which stay exactly where they are. The new vertices lie on the
-% old boundary, so this changes nothing about its shape - it only changes
-% how it is sampled.
+% Places new vertices at equal arc length along each chain, between the
+% vertices that have to survive, which stay exactly where they are. The new
+% vertices lie on the old boundary, so this changes nothing about its shape -
+% it only changes how it is sampled.
 %
-% This is what makes a subsequent grain2d/smooth work properly. Subdividing
-% each segment, as grain2d/refineBoundary used to do on its own, preserves
-% the staircase of the pixel grid and only makes it finer. Resampling at
-% equal arc length instead gives the smoothing evenly spaced degrees of
-% freedom that are not tied to the grid.
+% A chain is cut into pieces that are resampled independently at every vertex
+% that may not move: its two junctions, a vertex where the neighbouring grains
+% change, and anything passed in as 'protect'. A chain resampled in one piece
+% visits none of the ones in between, which leaves the inner boundary hanging
+% off a vertex the outer walk no longer reaches, and lets a segment carry the
+% grainId pair of its neighbour.
+%
+% This is what makes a subsequent grain2d/smoothBoundary work properly.
+% Subdividing each segment, as grain2d/refineBoundary used to do on its own,
+% preserves the staircase of the pixel grid and only makes it finer.
+% Resampling at equal arc length instead gives the smoothing evenly spaced
+% degrees of freedom that are not tied to the grid.
 %
 % grainId and phaseId are constant along a chain and carry over exactly.
 % ebsdId and misrotation belong to a specific pair of pixels, which a
@@ -24,25 +32,49 @@ function gB = refine(gB,delta)
 %
 % Input
 %  gB    - @grainBoundary
-%  delta - target segment length (default: the median segment length)
+%  delta - target segment length (default: half the median segment length -
+%          a sample every median length may cut a corner per sample where the
+%          segments are not all of the same length, half of it follows the
+%          original polyline closely)
 %
 % Output
 %  gB_r - @grainBoundary
 %
+% Options
+%  protect - ids of vertices that must survive, on top of the junctions
+%
 % See also
-% grainBoundary/simplify grain2d/refineBoundary grain2d/smooth
+% grainBoundary/simplify grainBoundary/reduce grain2d/refineBoundary grain2d/smoothBoundary
 
 nF = length(gB);
 if nF == 0, return; end
 
-if nargin == 1, delta = median(gB.segLength); end
+if ~isempty(varargin) && isnumeric(varargin{1}) && isscalar(varargin{1})
+  delta = varargin{1};
+else
+  delta = median(gB.segLength) / 2;
+end
 if delta <= 0, return; end
 
 xyz = gB.allV.xyz;
 nV0 = size(xyz,1);
 
-iStart = find(gB.isChainStart);
-iEnd = find(gB.isChainEnd);
+% resample between the vertices that may not move, not merely between the two
+% junctions of a chain - a vertex where the neighbouring grains change is a
+% corner of both grain polygons, and grain2d passes in the ones shared with the
+% inner boundary, which finds its junctions from its own face list and so
+% cannot see them (see grain2d/refineBoundary)
+isEnd = gB.isChainEnd | isNeighborChange(gB);
+
+protect = get_option(varargin,'protect',[]);
+if ~isempty(protect)
+  isProtected = false(size(gB.allV,1),1);
+  isProtected(protect) = true;
+  isEnd = isEnd | isProtected(gB.F(:,2));
+end
+
+iEnd = find(isEnd);
+iStart = [1; iEnd(1:end-1)+1];
 nCh = numel(iStart);
 
 newF = cell(nCh,1);
