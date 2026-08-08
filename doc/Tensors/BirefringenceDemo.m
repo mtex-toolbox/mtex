@@ -15,7 +15,7 @@ mtexdata olivine
 [grains,ebsd] = calcGrains(ebsd,'minPixel',5);
 
 % some data denoising
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 F = halfQuadraticFilter;
 ebsd = smooth(ebsd('indexed'),F,'fill',grains);

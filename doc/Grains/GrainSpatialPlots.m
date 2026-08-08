@@ -182,7 +182,7 @@ mtexdata csl
 
 % compute and plot grains
 [grains,ebsd] = calcGrains(ebsd,'minPixel',5);
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 plot(grains,grains.meanOrientation,'micronbar','off','figSize','large','region',[50 300 100 250])
 
 % next we want to visualize the direction of the 100 axis

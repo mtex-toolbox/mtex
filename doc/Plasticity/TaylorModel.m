@@ -95,7 +95,7 @@ mtexdata csl
 
 % compute grains
 grains = calcGrains(ebsd,'minPixel',3);
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 %%
 % and apply the Taylor model to each grain of our data set

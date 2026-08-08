@@ -26,8 +26,9 @@ mtexdata forsterite silent
 % compute subgrain boundaries with 1 degree threshold angle
 [grains,ebsd] = calcGrains(ebsd,'threshold',[1*degree, 15*degree],'minPixel',5);
 
-% lets smooth the grain boundaries a bit
-grains = smooth(grains,5);
+% lets smooth the grain boundaries a bit - ebsdId is read per segment further
+% down, so keep every segment between the pair of pixels it was measured from
+grains = smoothBoundary(grains,5,'noSimplify','noRefine');
 
 % set up the ipf coloring
 cKey = ipfColorKey(ebsd('fo').CS.properGroup);

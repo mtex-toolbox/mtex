@@ -22,7 +22,7 @@ mtexdata ferrite silent
 [grains,ebsd] = calcGrains(ebsd,'threshold',[1*degree, 10*degree],'minPixel',3);
 
 % smooth grain boundaries
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 % denoise the orientations
 F = halfQuadraticFilter;

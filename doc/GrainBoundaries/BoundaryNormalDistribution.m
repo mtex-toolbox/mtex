@@ -43,7 +43,7 @@ mtexdata twins
 
 [grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',3);
 
-grains = smooth(grains,10)
+grains = smoothBoundary(grains,10)
 
 CS = grains.CS;
 

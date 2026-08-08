@@ -24,7 +24,7 @@ mtexdata twins
 [grains,ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',5);
 
 % smooth grain boundaries
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 % consider only indexed data
 ebsd = ebsd('indexed');

@@ -282,7 +282,7 @@ mtexColorbar
 [parentGrains, parentEBSD] = ...
   calcGrains(parentEBSD('indexed'),'angle',3*degree,'minPixel',10);
 
-parentGrains = smooth(parentGrains,5);
+parentGrains = smoothBoundary(parentGrains,5);
 
 plot(ebsd('indexed'),ebsd('indexed').orientations,'figSize','large')
 

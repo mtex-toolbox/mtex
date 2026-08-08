@@ -16,8 +16,9 @@ ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 % reconstruct grains
 [grains,ebsd] = calcGrains(ebsd,'minPixel',5,'alpha',10);
 
-% smooth the grains a bit
-grains = smooth(grains,4)
+% smooth the grains a bit - ebsdId is read per segment further down, so keep
+% every segment between the pair of pixels it was measured from
+grains = smoothBoundary(grains,4,'noSimplify','noRefine')
 
 %%
 % The grain boundary segments of a list of grains are stored within the
@@ -182,7 +183,7 @@ mtexdata csl
 
 % grain segmentation and smoothing
 [grains,ebsd] = calcGrains(ebsd);
-grains = smooth(grains,2);
+grains = smoothBoundary(grains,2);
 gB = grains.boundary('iron','iron');
 
 % and plot image quality + orientation

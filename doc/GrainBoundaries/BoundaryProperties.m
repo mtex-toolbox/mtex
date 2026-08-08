@@ -12,8 +12,10 @@ ebsd.prop = rmfield(ebsd.prop,{'error','bands'});
 % detect grains
 [grains,ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',3);
 
-% smooth them
-grains = grains.smooth(5);
+% smooth them - this page reads ebsdId per segment, which only means something
+% as long as every segment still runs between one pair of pixels, so the
+% coarsening and resampling steps are switched off
+grains = grains.smoothBoundary(5,'noSimplify','noRefine');
 
 % visualize the grains
 plot(grains,grains.meanOrientation)

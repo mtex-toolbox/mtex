@@ -142,7 +142,7 @@ grains_FMC = calcGrains(ebsd,'FMC',3.8)
 grains = calcGrains(ebsd)
 
 % smooth grains to remove staircase effect
-grains_FMC = smooth(grains_FMC);
+grains_FMC = smoothBoundary(grains_FMC);
 
 %%
 % We observe how this method nicely splits the measurements into clusters
@@ -168,7 +168,7 @@ ebsd = smooth(ebsd,F)
 
 grains = calcGrains(ebsd,'mcl',[1.24 50],'soft',[0.2 0.3]*degree)
 
-grains = smooth(grains,5)
+grains = smoothBoundary(grains,5)
 
 plot(ebsd,colorKey.orientation2color(ebsd.orientations))
 

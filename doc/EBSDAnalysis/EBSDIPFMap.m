@@ -28,7 +28,7 @@ plot(cS,'colored')
 [grains,ebsd] = calcGrains(ebsd,'minPixel',5);
 
 % 2. smooth the grain boundaries a bit
-grains = smooth(grains,10);
+grains = smoothBoundary(grains,10);
 
 % 3. plot the grain boundaries
 plot(grains.boundary,'lineWidth',1.5,'micronbar','off')

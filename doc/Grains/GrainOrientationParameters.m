@@ -15,7 +15,7 @@ mtexdata ferrite silent
 % compute grains
 [grains, ebsd] = calcGrains(ebsd,'threshold',7.5*degree,'minPixel',5);
 ebsd = ebsd.project2FundamentalRegion;
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 % plot the data
 plot(ebsd, ebsd.orientations)

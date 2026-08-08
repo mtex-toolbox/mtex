@@ -15,7 +15,7 @@ mtexdata forsterite silent
 % reconstruct grains, discard boundary grains and smooth them
 [grains, ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',5);
 grains(grains.isBoundary) = [];
-grains = smooth(grains('indexed'),10,'moveTriplePoints');
+grains = smoothBoundary(grains('indexed'),10,'moveTriplePoints');
 
 % plot all grains and highlight a specific one
 plot(grains)
@@ -91,7 +91,7 @@ mtexColorbar('title','c_{max} - c_{min}')
 
 % load some test grains
 testgrains = mtexdata('testgrains');
-testgrains = smooth(testgrains([6 8]),10);
+testgrains = smoothBoundary(testgrains([6 8]),10);
 
 % compute the longest caliper and the caliper perpendicular to the shortest
 cMax = testgrains.caliper('longest');
