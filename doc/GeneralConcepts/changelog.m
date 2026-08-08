@@ -202,15 +202,28 @@
 %   plot(ebsd,ebsd.orientations,'refFrame','off')
 %   setMTEXpref('showRefFrame','off')
 %
-% @sigmaSections and @pfSections are annotated with the specimen directions
-% the way pole figures are - a section is a pole figure split up by the
-% omega angle, so it lives in the same reference frame. Both are
-% customized by the same |pfAnnotations| preference, misorientation
-% sections stay unannotated as their directions are crystal directions
+% *Every Spherical Plot Shows its Reference Frame*
+%
+% What used to be reserved to pole figures now happens on every spherical
+% plot that is not given in crystal coordinates - the axes of the reference
+% frame are annotated with X, Y, Z. This includes @vector3d and @S2Fun
+% plots, @sigmaSections and @pfSections, spherical densities as returned by
+% <grainBoundary.calcGBND.html |calcGBND|> or
+% <vector3d.calcDensity.html |calcDensity|>, and @specimenSymmetry. Plots
+% in crystal coordinates - @Miller, inverse pole figures, @ipfSections,
+% color keys, single crystal tensors - keep their Miller indices at the
+% vertices of the fundamental sector instead.
+%
+% All of them are customized by the same |pfAnnotations| preference that
+% pole figures always used
 %
 %   pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y],{'RD','ND'},...
 %     'BackgroundColor','w','tag','axesLabels',varargin{:});
 %   setMTEXpref('pfAnnotations',pfAnnotations);
+%
+% and suppressed for a single plot by the flag |noLabel|
+%
+%   plot(vector3d.rand(100),'noLabel')
 %
 % *x to the East and y to the South by Default*
 %

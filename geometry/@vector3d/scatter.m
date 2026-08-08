@@ -227,7 +227,10 @@ for i = 1:numel(sP)
       'addMarkerSpacing',varargin{:},'doNotDraw');
     localResizeScatterCallback([],[],sP(i).ax);
   end
-  
+
+  % bring the axes labels in front of the markers
+  sP(i).doLabelsInFront;
+
 end
 
 % with opengl markers with thick boundary look ugly

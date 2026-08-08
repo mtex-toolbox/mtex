@@ -22,10 +22,11 @@ v1.how2plot
 %%
 % The property |how2plot| is a handle class of type |@plottingConvention|
 % and tells MTEX how to align the corresponding coordinate system on
-% screen.
+% screen. Every spherical plot that is not in crystal coordinates is
+% annotated with the axes of the reference frame, such that the alignment
+% can be read off the plot directly.
 
 plot(v1,'label','v_1','figSize','small')
-annotate([xvector,yvector,zvector],'labeled','backgroundcolor','w')
 
 %%
 % We can change it by setting |north|, |east| or |outOfScreen| to other
@@ -33,7 +34,6 @@ annotate([xvector,yvector,zvector],'labeled','backgroundcolor','w')
 
 v1.how2plot.outOfScreen = yvector
 plot(v1,'label','v_1','figSize','small')
-annotate([xvector,yvector,zvector],'labeled','backgroundcolor','w')
 
 %%
 % Note that |@plottingConvention| is a handle class, i.e. changing
@@ -42,7 +42,6 @@ annotate([xvector,yvector,zvector],'labeled','backgroundcolor','w')
 v2.how2plot
 
 plot(v2,'label','v_2','figSize','small')
-annotate([xvector,yvector,zvector],'labeled','backgroundcolor','w')
 
 %%
 % In order to have different plotting axes alignments within one MTEX
@@ -56,10 +55,8 @@ v2.how2plot = pC2;
 
 % plot v1 and v2 in separate plots
 plot(v1,'upper','label','v_1')
-annotate([xvector,yvector,zvector],'labeled','backgroundcolor','w')
 nextAxis
 plot(v2,'upper','label','v_2')
-annotate([xvector,yvector,zvector],'labeled','backgroundcolor','w')
 
 %%
 % A shortcut for defining a plotting convention is a string that tells for
@@ -80,7 +77,26 @@ v3.how2plot = 'x←↓y'
 
 plotx2north
 plotzOutOfPlane
-plot([xvector,yvector,zvector],'upper','labeled','backgroundcolor','w')
+plot(v1,'upper','label','v_1')
+
+%%
+% The labels of the reference frame are taken from the |pfAnnotations|
+% preference, which allows to replace |X|, |Y|, |Z| by the rolling
+% directions or to switch them off for the entire session
+
+storepfA = getMTEXpref('pfAnnotations');
+
+pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y,vector3d.Z],...
+  {'RD','TD','ND'},'BackgroundColor','w','tag','axesLabels',varargin{:});
+setMTEXpref('pfAnnotations',pfAnnotations);
+
+plot(v1,'upper','label','v_1')
+
+%%
+% For a single plot the flag |noLabel| does the same
+
+setMTEXpref('pfAnnotations',storepfA);
+plot(v1,'upper','label','v_1','noLabel')
 
 %%
 % When importing data those might be associated with a plotting convention

@@ -109,7 +109,13 @@ classdef pfSections < ODFSections
     function h = plotSection(oS,ax,sec,v,data,varargin)
 
       % plot data
-      h = plot(v,data{:},oS.sR,'TR',[int2str(oS.omega(sec)./degree),'^\circ'],...
+      % a section is a pole figure of h1, split up by the omega angle,
+      % hence it lives in the reference frame of SS - passing it makes the
+      % plot annotate itself with the specimen directions the way pole
+      % figures do. For misorientations SS is a crystal symmetry, the
+      % sections then show crystal directions and are labelled by their
+      % Miller indices instead
+      h = plot(v,data{:},oS.sR,oS.SS,'TR',[int2str(oS.omega(sec)./degree),'^\circ'],...
         'parent',ax,varargin{:},'doNotDraw');
 
       if ~check_option(varargin,'noGrid')
@@ -119,19 +125,6 @@ classdef pfSections < ODFSections
         vF = oS.vectorField(r,oS.omega(sec));
         h(end+1) = quiver(r,vF,'parent',ax,'doNotDraw','color',0.7*[1 1 1],'HitTest','off');
         if ~wasHold, hold(ax,'off'); end
-      end
-
-      % annotate the specimen directions, exactly as pole figures do - a
-      % section is a pole figure of h1, split up by the omega angle, hence
-      % it lives in the same reference frame. The annotations are not added
-      % to the handles returned above since they are no data.
-      %
-      % For misorientations the second symmetry is a crystal symmetry, the
-      % sections then show crystal directions and X / Y / Z would be
-      % meaningless - the same distinction plotPDF makes
-      if ~isa(oS.SS,'crystalSymmetry')
-        pfAnnotations = getMTEXpref('pfAnnotations');
-        pfAnnotations('parent',ax,'doNotDraw');
       end
 
     end

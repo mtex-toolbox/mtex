@@ -7,7 +7,8 @@ classdef sphericalPlot < handle
     bounds   %
     grid     %
     ticks    %
-    labels   %
+    labels     % Miller indices at the vertices of the spherical region
+    axesLabels % X / Y / Z of the reference frame
     ax       % axis
     parent   % the figure that contains the spherical plot
     TL       %
@@ -74,7 +75,8 @@ classdef sphericalPlot < handle
         % plot grid, labels, ..
         try sP.plotPolarGrid(varargin{:});end
         sP.plotLabels(CS,varargin{:});
-        
+        sP.plotAxesLabels(CS,varargin{:});
+
         %sP.updateBounds;
 
         ax.XTick = []; ax.YTick = [];
@@ -181,6 +183,21 @@ classdef sphericalPlot < handle
       sR = sP.proj.sR;
     end   
     
+    function doLabelsInFront(sP)
+      % the labels are created together with the axis, i.e. before any
+      % data, and would hence be covered by it - move them back to the
+      % front. Data that is drawn as a filled area brings the entire grid
+      % in front instead, see doGridInFront
+
+      h = [sP.axesLabels(:); sP.labels(:)];
+      h = h(isgraphics(h));
+      if isempty(h), return; end
+
+      childs = allchild(sP.ax);
+      sP.ax.Children = [h; childs(~ismember(childs,h))];
+
+    end
+
     function doGridInFront(sP)
       
       if ~isempty(sP.grid)
@@ -325,6 +342,27 @@ classdef sphericalPlot < handle
       sP.labels = [sP.labels,scatter(h,'MarkerFaceColor','k',...
         'labeled','Marker','none',...
         'backgroundcolor','w','autoAlignText','parent',sP.ax,'doNotDraw')];
+
+    end
+
+    function plotAxesLabels(sP,CS,varargin)
+      % annotate the directions of the reference frame the way pole figures
+      % do - X / Y / Z by default, the pfAnnotations preference lets the
+      % user replace them by RD / TD / ND or switch them off entirely
+      %
+      % A crystal symmetry in the argument list marks the plot as living in
+      % crystal coordinates, there X / Y / Z would be meaningless and
+      % plotLabels writes the Miller indices of the sector vertices instead
+
+      if check_option(varargin,'noLabel') || ~isempty(CS), return; end
+
+      pfAnnotations = getMTEXpref('pfAnnotations');
+      h = pfAnnotations('parent',sP.ax,'doNotDraw');
+
+      % the preference is user defined, it may return anything
+      if ~isempty(h) && all(isgraphics(h(:)))
+        sP.axesLabels = [sP.axesLabels(:); h(:)];
+      end
 
     end
   end

@@ -84,6 +84,7 @@ for j = 1:numel(sP)
   % finalize the plot
   % add annotations
   sP(j).plotAnnotate(varargin{:})
+  sP(j).doLabelsInFront;
   sP(j).ax.NextPlot = holdState;
 end
 

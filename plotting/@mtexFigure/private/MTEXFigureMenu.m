@@ -151,8 +151,9 @@ for a = 1:numel(ax)
         set(la,'visible',onoff);
         
         sP = getappdata(ax(a),'sphericalPlot');
-        if ~isempty(sP) && ~isempty(sP.labels)
-          set(sP.labels,'visible',onoff);          
+        if ~isempty(sP)
+          if ~isempty(sP.labels), set(sP.labels,'visible',onoff); end
+          if ~isempty(sP.axesLabels), set(sP.axesLabels,'visible',onoff); end
         end
         
       case 'ticks'

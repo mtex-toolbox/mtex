@@ -90,15 +90,8 @@ argin_check([h{:}],{'Miller'});
 for i = 1:length(h), h{i} = ori.CS.ensureCS(h{i}); end
 
 if isNew
-  if isa(ori.SS,'specimenSymmetry')
-    pfAnnotations = getMTEXpref('pfAnnotations');
-  else
-    pfAnnotations = @(varargin) 1;
-  end
   mtexFig.parent.Name = "Pole figures of """ + ...
     get_option(varargin,'FigureTitle',inputname(1)) + """";
-else
-  pfAnnotations = @(varargin) 1;
 end
 
 
@@ -144,23 +137,22 @@ for i = 1:length(h)
     opt = [opt,'upper']; %#ok<AGROW>
   end
 
+  % for a misorientation SS is a crystal symmetry, r are then crystal
+  % directions - passing it lets the plot annotate itself accordingly
   if isa(data,'orientation')
     d = repmat(data,[1 numSym(ori.SS)*length(sh) 1]) .* sh(:).';
     [g,cax] = quiver(r, d(:)-r, ...
-      ori.SS.fundamentalSector(varargin{:}),'doNotDraw',opt{:});
+      ori.SS.fundamentalSector(varargin{:}),ori.SS,'doNotDraw',opt{:});
   elseif isa(data,'vector3d')
     [g,cax] = quiver(r,repmat(data,[1 numSym(ori.SS)*length(sh) 1]),...
-      ori.SS.fundamentalSector(varargin{:}),'doNotDraw',opt{:});
+      ori.SS.fundamentalSector(varargin{:}),ori.SS,'doNotDraw',opt{:});
   else
     [g,cax] = r.plot(repmat(data,[1 numSym(ori.SS)*length(sh) 1]),...
-      ori.SS.fundamentalSector(varargin{:}),'doNotDraw',opt{:});
+      ori.SS.fundamentalSector(varargin{:}),ori.SS,'doNotDraw',opt{:});
   end
 
   if ~check_option(varargin,'noTitle'), mtexTitle(cax(1),char(h{i},'LaTeX')); end
 
-  % plot annotations
-  pfAnnotations('parent',cax,'doNotDraw','add2all');
-  
   set(cax,'tag','pdf');
   setAllAppdata(cax,'SS',ori.SS,'h',h{i});
 
