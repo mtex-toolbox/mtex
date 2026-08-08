@@ -65,9 +65,8 @@ permissions:
   contents: read
 
 jobs:
-  # The three platforms whose runners schedule promptly. These gate the
-  # release: it is published only once all of them have attached their
-  # binaries.
+  # All four platforms gate the release: it is published only once every one of
+  # them has attached its binaries.
   build:
     name: ${{ matrix.ext }}
     runs-on: ${{ matrix.os }}
@@ -97,6 +96,21 @@ jobs:
           - os: macos-14
             ext: mexmaca64
             products: ''
+          # Intel macOS. Not macos-13: that label has left GitHub's runner
+          # images, so a job asking for it is never scheduled at all - it
+          # queued for over an hour and a half twice before this was found.
+          # macos-15-intel is a real x86_64 host, is available on the free
+          # plan, and builds in about the same time as the Windows runner.
+          #
+          # Two things will end this: MathWorks has said R2025b is the last
+          # release supporting Intel Macs, and GitHub keeps retiring the Intel
+          # images. If the runner goes first, MATLAB R2023a - the last release
+          # with no Apple silicon build - installs on an Apple silicon runner
+          # under Rosetta 2 and produces mexmaci64 there; verified 2026-08-08,
+          # see the probe/intel-mac branch history.
+          - os: macos-15-intel
+            ext: mexmaci64
+            products: ''
 
     steps:
       - uses: actions/checkout@v4
@@ -108,35 +122,7 @@ jobs:
           release_tag: ${{ github.event.inputs.release_tag }}
           github_token: ${{ github.token }}
 
-  # Intel macOS, kept off the release critical path.
-  #
-  # Measured 2026-08-07: macos-13 jobs sat queued for 39 minutes and then over
-  # an hour and a half without ever starting, while the other three finished in
-  # 2 to 7 minutes. GitHub is retiring these runners. Gating the release on
-  # this would leave every release a draft for hours, so it runs as its own
-  # best effort job: if it completes it attaches mexmaci64 to the release like
-  # any other platform, and if it does not, the release still goes out.
-  #
-  # When it stops being schedulable altogether, either delete this job or point
-  # runs-on at a self hosted Intel Mac.
-  intel-mac:
-    name: mexmaci64 (best effort)
-    runs-on: macos-13
-    continue-on-error: true
-
-    permissions:
-      contents: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: ./.github/actions/build-mex
-        with:
-          ext: mexmaci64
-          release_tag: ${{ github.event.inputs.release_tag }}
-          github_token: ${{ github.token }}
-
-  # Only once every gating platform has attached its binaries does the release
+  # Only once every platform has attached its binaries does the release
   # stop being a draft. No "if: always()" on purpose: if one of them failed,
   # the release stays a draft rather than going out half built - publish it by
   # hand once you have decided the missing platform is acceptable.
@@ -160,7 +146,7 @@ jobs:
 
   collect:
     name: collect all platforms
-    needs: [build, intel-mac]
+    needs: build
     # runs even when a platform failed, so the binaries that did build are
     # still downloadable in one piece
     if: always()
