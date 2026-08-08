@@ -37,7 +37,9 @@ axis([313 353 140 156])
 % The staircase is gone and the boundary is much shorter, but note how few
 % vertices are left - essentially only the corners survived.
 
-[length(grains.boundary), length(grains_simple.boundary)]
+fprintf(['simplifying at a tolerance of %.2f %s takes the boundary' ...
+  ' from %d segments to %d\n'], d/sqrt(2), grains.scanUnit, ...
+  length(grains.boundary), length(grains_simple.boundary))
 
 %% Step 2: putting the sample points back
 % Smoothing the result of step 1 directly would be a mistake. A curved
@@ -51,7 +53,9 @@ axis([313 353 140 156])
 
 grains_refined = refineBoundary(grains_simple,d);
 
-[length(grains_simple.boundary), length(grains_refined.boundary)]
+fprintf('resampling at %.2f %s puts them back: %d segments to %d\n', ...
+  d, grains.scanUnit, length(grains_simple.boundary), ...
+  length(grains_refined.boundary))
 
 %% Step 3: smoothing
 % Only now does the actual smoothing happen. Junctions stay where they are
@@ -73,7 +77,8 @@ axis([313 353 140 156])
 
 grains_coarse = smoothBoundary(grains,5,'simplify',d/sqrt(2),'refine',2*d);
 
-length(grains_coarse.boundary)
+fprintf('resampling at %.2f %s instead leaves %d segments\n', ...
+  2*d, grains.scanUnit, length(grains_coarse.boundary))
 
 %% Choosing the algorithm
 % Which algorithm performs the third step is decided by a
@@ -111,9 +116,13 @@ A0 = A0(big);
 aL5  = smoothBoundary(grains,5).area;  aL5 = aL5(big);
 aL25 = smoothBoundary(grains,25).area; aL25 = aL25(big);
 
-% mean and worst change of the grain area, in percent
-[100*mean((aL5-A0)./A0),  100*min((aL5-A0)./A0); ...
- 100*mean((aL25-A0)./A0), 100*min((aL25-A0)./A0)]
+fprintf('grain area, laplaceFilter\n')
+fprintf(['   5 iterations %+6.2f%% on average,' ...
+  ' %+6.1f%% for the worst grain\n'], ...
+  100*mean((aL5-A0)./A0), 100*min((aL5-A0)./A0))
+fprintf(['  25 iterations %+6.2f%% on average,' ...
+  ' %+6.1f%% for the worst grain\n'], ...
+  100*mean((aL25-A0)./A0), 100*min((aL25-A0)./A0))
 
 %%
 % The averaging includes a vertex with the weight of its own degree, which is
@@ -132,8 +141,13 @@ aL25 = smoothBoundary(grains,25).area; aL25 = aL25(big);
 aT5  = smoothBoundary(grains,taubinFilter(5)).area;  aT5 = aT5(big);
 aT25 = smoothBoundary(grains,taubinFilter(25)).area; aT25 = aT25(big);
 
-[100*mean((aT5-A0)./A0),  100*min((aT5-A0)./A0); ...
- 100*mean((aT25-A0)./A0), 100*min((aT25-A0)./A0)]
+fprintf('grain area, taubinFilter\n')
+fprintf(['   5 iterations %+6.2f%% on average,' ...
+  ' %+6.1f%% for the worst grain\n'], ...
+  100*mean((aT5-A0)./A0), 100*min((aT5-A0)./A0))
+fprintf(['  25 iterations %+6.2f%% on average,' ...
+  ' %+6.1f%% for the worst grain\n'], ...
+  100*mean((aT25-A0)./A0), 100*min((aT25-A0)./A0))
 
 %%
 % The mean stays put instead of marching downwards. On a small grain the
@@ -177,7 +191,10 @@ F.smoothingLength = 8*d;
 
 aC = smoothBoundary(grains,F).area; aC = aC(big);
 
-[100*mean((aC-A0)./A0), 100*min((aC-A0)./A0)]
+fprintf('grain area, curvatureFilter at a smoothing length of %.1f %s\n', ...
+  8*d, grains.scanUnit)
+fprintf('  %+6.2f%% on average, %+6.1f%% for the worst grain\n', ...
+  100*mean((aC-A0)./A0), 100*min((aC-A0)./A0))
 
 %% The Huber filter
 % <huberFilter.huberFilter.html |huberFilter|> penalizes the same curvature,
@@ -208,7 +225,9 @@ G.smoothingLength = 8*d;
 
 aH = smoothBoundary(grains,G).area; aH = aH(big);
 
-[100*mean((aH-A0)./A0), 100*min((aH-A0)./A0)]
+fprintf('grain area, huberFilter at the same smoothing length\n')
+fprintf('  %+6.2f%% on average, %+6.1f%% for the worst grain\n', ...
+  100*mean((aH-A0)./A0), 100*min((aH-A0)./A0))
 
 %%
 % Be aware of the trade this makes. On a map whose boundaries are really

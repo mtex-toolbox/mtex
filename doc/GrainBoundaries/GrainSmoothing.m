@@ -37,8 +37,12 @@ axis([313 353 140 156])
 % The staircase overestimates the length of a boundary running at 45 degree by
 % |sqrt(2)|, so the total boundary length drops by something of that order
 
-[sum(grains.boundary('indexed').segLength), ...
- sum(grainsSmooth.boundary('indexed').segLength)]
+lenRaw    = sum(grains.boundary('indexed').segLength);
+lenSmooth = sum(grainsSmooth.boundary('indexed').segLength);
+
+fprintf(['total boundary length: %.0f %s measured, %.0f %s smoothed' ...
+  ' - %.0f%% shorter\n'], lenRaw, grains.scanUnit, lenSmooth, ...
+  grains.scanUnit, 100*(1-lenSmooth/lenRaw))
 
 %%
 % and the distribution of boundary directions stops being a pair of spikes at
@@ -91,14 +95,17 @@ A0 = A0(big);
 aL = smoothBoundary(grains,25).area;               aL = aL(big);
 aT = smoothBoundary(grains,taubinFilter(25)).area; aT = aT(big);
 
-% mean and worst change of grain area over 25 iterations, in percent
-[100*mean((aL-A0)./A0), 100*min((aL-A0)./A0); ...
- 100*mean((aT-A0)./A0), 100*min((aT-A0)./A0)]
+fprintf('grain area after 25 iterations\n')
+fprintf(['  laplaceFilter (default) %+6.2f%% on average,' ...
+  ' %+6.1f%% for the worst grain\n'], ...
+  100*mean((aL-A0)./A0), 100*min((aL-A0)./A0))
+fprintf(['  taubinFilter            %+6.2f%% on average,' ...
+  ' %+6.1f%% for the worst grain\n'], ...
+  100*mean((aT-A0)./A0), 100*min((aT-A0)./A0))
 
 %%
-% The first row is the default, the second is Taubin. On a small grain the
-% difference is visible - the Laplacian in magenta cuts inside the measured
-% staircase, Taubin in blue follows it.
+% On a small grain the difference is visible - the Laplacian in magenta cuts
+% inside the measured staircase, Taubin in blue follows it.
 
 A = grains.area;
 [~,id] = min(abs(A - 30));
@@ -143,12 +150,13 @@ axis([313 353 140 156])
 
 grainsPlain = smoothBoundary(grains,5,'noSimplify','noRefine');
 
-[length(grains.boundary), length(grainsSmooth.boundary), ...
- length(grainsPlain.boundary)]
+fprintf(['boundary segments: %d measured, %d after smoothing, ' ...
+  '%d with both steps off\n'], length(grains.boundary), ...
+  length(grainsSmooth.boundary), length(grainsPlain.boundary))
 
 %%
-% The measured boundary, the smoothed one, and the one smoothed with both
-% steps off - only the last keeps one segment per pixel edge.
+% Only the last keeps one segment per pixel edge, and therefore one valid
+% |ebsdId| pair per segment.
 
 %% Triple points
 % Triple and quadruple points are held fixed, so which grains touch, and
