@@ -12,7 +12,7 @@
 % orientations. To illustrate the difference lets consider the following
 % EBSD data set and reconstruct its grains.
 
-mtexdata forsterite
+mtexdata forsterite silent
 
 grains = calcGrains(ebsd)
 

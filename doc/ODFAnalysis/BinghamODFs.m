@@ -1,5 +1,6 @@
 %% Bingham Distribution
-%
+%%
+plottingConvention.default('y↑→x');
 %% Theory
 %
 % The Bingham distribution has the density function

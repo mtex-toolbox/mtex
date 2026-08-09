@@ -1,5 +1,6 @@
 %% Color Mapping
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % A central issue when interpreting plots is to have a consistent color
 % coding among all plots. In MTEX this can be achieved in two ways. If the

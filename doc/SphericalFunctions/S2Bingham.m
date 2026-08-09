@@ -1,5 +1,6 @@
 %% The Spherical Bingham Distribution
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % The Bingham distribution on the sphere is an antipodal symmetric
 % distribution (Bingham, 1974) with a probability density function given by
@@ -33,8 +34,8 @@ for k2 = kappa
   for k1 = kappa
     if k1 >= k2
       bFun = S2FunBingham([-k1 -k2 0]);
-      plot(bFun,'colorRange',[0,25],'TR',[{'$\kappa_1 :$'} ; num2str(k1)],'BR',[{'$\kappa_2 :$'} ; num2str(k2)])
-%       mtexTitle(['$\kappa_1 :$' num2str(k1)  '  ' '$\kappa_2 :$' num2str(k2)],'FontSize',14)
+      plot(bFun,'colorRange',[0,25],'noLabel')
+       mtexTitle(['$\kappa_1=$' num2str(k1)  '  ' '$\kappa_2=$' num2str(k2)],'FontSize',12)
       nextAxis
     else
       nextAxis

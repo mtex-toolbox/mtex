@@ -1,5 +1,6 @@
 %% On Screen Coordinate System Alignment 
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % In this section we discuss how MTEX aligns coordinate systems on the
 % screen and how to change it. In MTEX it is possible to mix different
@@ -47,8 +48,8 @@ plot(v2,'label','v_2','figSize','small')
 % In order to have different plotting axes alignments within one MTEX
 % session we have to define a new |@plottingConvention| by
 
-% instantiate a new plotting convention and sets it up
-pC2 = plottingConvention; pC2.north = yvector
+% instantiate a new plotting convention
+pC2 = plottingConvention('y↑→x')
 
 % assign this plottingConvention to v2
 v2.how2plot = pC2;
@@ -59,24 +60,11 @@ nextAxis
 plot(v2,'upper','label','v_2')
 
 %%
-% A shortcut for defining a plotting convention is a string that tells for
-% each axis where it points to on screen
-
-pC3 = plottingConvention('y↑→x')
-
-%%
-% This shortcut may be used whenever a plotting convention is expected
-
-v3 = vector3d(1,1,1);
-v3.how2plot = 'x←↓y'
-
-%%
 % When initiating a new |@vector3d| MTEX uses |plottingConvention.default|
 % as default plotting convention. This default plotting convention can be
 % changed by |plottingConvention.default('y↑→x')| or by
 
-plotx2north
-plotzOutOfPlane
+plottingConvention.default('y←↑x')
 plot(v1,'upper','label','v_1')
 
 %%

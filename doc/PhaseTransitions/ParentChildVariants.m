@@ -1,5 +1,6 @@
 %% Parent Child Variants
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % The crystallographic structure of most materials is depended on external
 % conditions as temperature and pressure. When the external conditions
