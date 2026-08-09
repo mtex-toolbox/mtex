@@ -36,7 +36,10 @@ if strcmp(s(1).type,'()') && ...
   if isempty(ind)
     ori = orientation;
   else
-    ori = orientation(grains3.prop.meanRotation(ind),grains3.CSList(phId));
+    % this shortcut bypasses get.meanOrientation, so it has to attach the
+    % plotting convention itself - see specimenSymmetryFor
+    ori = orientation(grains3.prop.meanRotation(ind),grains3.CSList(phId),...
+      specimenSymmetryFor(grains3.how2plot));
   end
     
   if numel(s)>2

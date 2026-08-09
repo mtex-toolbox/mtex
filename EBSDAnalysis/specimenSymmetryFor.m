@@ -21,13 +21,13 @@ function ss = specimenSymmetryFor(pC)
 %  ss - @specimenSymmetry
 %
 % See also
-% EBSD/subsref plottingConvention/matchDefault
+% EBSD/subsref grain2d/subsref plottingConvention/matchDefault
 
 ss = specimenSymmetry.default;
 
 % handle identity, not isapprox - the point is that ori.SS.how2plot and
-% ebsd.how2plot stay the same object, so that modifying the convention in
-% place keeps applying to both
+% ebsd.how2plot / grains.how2plot stay the same object, so that modifying
+% the convention in place keeps applying to both
 if isempty(pC) || ss.how2plot == pC, return; end
 
 ss = specimenSymmetry(pC);
