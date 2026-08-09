@@ -31,7 +31,10 @@ if strcmp(s(1).type,'()') && ...
   ind = subsind(ebsd,s(1).subs);
   phaseId = checkSinglePhase(ebsd,ebsd.phaseId(ind(:)));
 
-  ori = orientation(ebsd.rotations(ind),ebsd.CSList(phaseId));
+  % this shortcut bypasses get.orientations, so it has to attach the
+  % plotting convention itself - see specimenSymmetryFor
+  ori = orientation(ebsd.rotations(ind),ebsd.CSList(phaseId),...
+    specimenSymmetryFor(ebsd.how2plot));
 
   if numel(s)>2
     [varargout{1:nargout}] = builtin('subsref',ori,s(3:end));

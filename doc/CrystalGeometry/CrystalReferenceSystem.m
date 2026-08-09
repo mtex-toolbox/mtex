@@ -1,5 +1,6 @@
 %% The Crystal Reference System
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % Commonly the crystal coordinate system is defined by the crystallographic
 % axes $\vec a$, $\vec b$, $\vec c$, The length |[a,b,c]| and the angles

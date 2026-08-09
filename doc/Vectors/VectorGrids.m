@@ -26,7 +26,7 @@ names = {'regular','equispaced','HealPix','Fibonaci'};
 % Plotting them indicates that there are quite some differences, especially
 % close to the poles.
 
-plot(grid{1},'upper','layout',[2,2])
+plot(grid{1},'upper','layout',[1 4])
 mtexTitle(names{1})
 
 for k = 2:4

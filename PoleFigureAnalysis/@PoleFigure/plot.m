@@ -19,8 +19,7 @@ function plot(pf,varargin)
 % vector3d/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo 
 
-[mtexFig,isNew] = newMtexFigure(varargin{:}); 
-pfAnnotations = getMTEXpref('pfAnnotations');
+[mtexFig,isNew] = newMtexFigure(varargin{:});
 
 if nargin > 1 && isnumeric(varargin{1})
   data = mat2cell(varargin{1}(:),cellfun('prodofsize',pf.allI));
@@ -37,8 +36,7 @@ for i = 1:length(pf.allH)
   [g,cax] = pf.allR{i}.plot(data{i},...
     'dynamicMarkerSize','parent',mtexFig.gca,'doNotDraw',varargin{:});
   mtexTitle(mtexFig.gca,char(pf.allH{i},'LaTeX'));
-  pfAnnotations('parent',mtexFig.gca);
-  
+
   set(cax,'tag','pdf');
   setAllAppdata(cax,'SS',pf.SS,'h',pf.allH{i});
 

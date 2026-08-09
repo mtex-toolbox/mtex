@@ -1,5 +1,6 @@
 %% Visualizing ODFs
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % Since an orientation density function (ODF) is a function on the three
 % dimensional, non Euclidean orientation space its proper visualization is

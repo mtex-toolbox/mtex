@@ -41,8 +41,10 @@ runs:
         products: ${{ inputs.products }}
 
     # buildMex.m clears this platform's binaries first and ends in
-    # check_mexComplete, which fails the job if anything did not compile -
-    # mex_install itself only prints compile errors
+    # check_mexComplete, which fails the job if anything did not compile.
+    # mex_install now raises on a failed source as well, so the job stops at
+    # the build rather than at the check - the hole check stays as the net
+    # for a source that produces no binary without reporting an error
     - name: build
       uses: matlab-actions/run-command@v2
       with:

@@ -1,5 +1,6 @@
 %% Combined Plots
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % Explains how to combine several plots, e.g. plotting on the
 % top of an inverse pole figure some important crystal directions.

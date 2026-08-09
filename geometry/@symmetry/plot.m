@@ -22,7 +22,9 @@ omega = round(rot.angle./degree);
 uaxis(uaxis.z < 0) = -uaxis(uaxis.z < 0);
 
 % initialize plot
-sP = newSphericalPlot(zvector,'upper',varargin{:},s.how2plot,'complete');
+% passing s marks a crystal symmetry plot as living in crystal coordinates,
+% such that it is not annotated with the X / Y / Z of the reference frame
+sP = newSphericalPlot(zvector,'upper',varargin{:},s,s.how2plot,'complete');
 
 % scale symbol size according to bounds
 d = max(sP(1).bounds(3:4) - sP(1).bounds(1:2));
