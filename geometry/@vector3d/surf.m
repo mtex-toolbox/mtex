@@ -30,13 +30,13 @@ for j = 1:numel(sP)
   data = reshape(submatrix(cdata,ind),[size(x) 3]);
   
   % otherwise surf would change current axes settings
-  hold(sP(j).ax,'on')
-  
+  hG = holdOn(sP(j).ax); %#ok<NASGU>
+
   % plot surface  
   h(j) = surf(x,y,zeros(size(x)),real(data),'parent',sP(j).ax,...
     'edgeColor','none'); %#ok<AGROW>
-      
-  hold(sP(j).ax,'off')
+
+  clear hG
   
   % set styles
   varargin = delete_option(varargin,'parent',1);

@@ -147,10 +147,10 @@ classdef orientationPlot < handle
             'Marker',Marker,...
             'parent',oP.ax);
         else
-          holdState = oP.ax.NextPlot; oP.ax.NextPlot = 'add';
+          hG = holdOn(oP.ax); %#ok<NASGU>
           h = scatter3(x(:),y(:),z(:),MarkerSize.^2,data,'filled',...
             'MarkerEdgeColor','flat','Marker',Marker,'parent',oP.ax,alphaArgs{:});
-          oP.ax.NextPlot = holdState;
+          clear hG
         end
 
       else
@@ -173,11 +173,11 @@ classdef orientationPlot < handle
             'Marker',Marker,...
             'parent',oP.ax);
         else
-          holdState = oP.ax.NextPlot; oP.ax.NextPlot = 'add';
+          hG = holdOn(oP.ax); %#ok<NASGU>
           h = scatter3(x(:),y(:),z(:),MarkerSize.^2,...
             'MarkerFaceColor',MFC,'MarkerEdgeColor',MEC,'Marker',Marker,...
             'parent',oP.ax,alphaArgs{:});
-          oP.ax.NextPlot = holdState;
+          clear hG
         end
 
         optiondraw(h,varargin{:});

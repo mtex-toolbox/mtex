@@ -23,12 +23,11 @@ options = [{'symmetrised','labeled','MarkerEdgeColor','k','grid','doNotDraw',...
 if ~check_option(varargin,'complete'), options = [options,{'upper'}]; end
 
 % plot them
-washold = getHoldState(mtexFig.gca);
-hold(mtexFig.gca,'all')
+hG = holdOn(mtexFig.gca); %#ok<NASGU>
 for i = 1:length(m)
   m(i).scatter(options{:});
 end
-hold(mtexFig.gca,washold)
+clear hG
 
 
 % postprocess figure

@@ -75,13 +75,12 @@ else
   opt = {};
 end
 
-holdState = ishold(ax);
-hold(ax,"on")
+hG = holdOn(ax); %#ok<NASGU>
 
 h = optiondraw(surf(posExt.x,posExt.y,posExt.z,dExt(:,:,:),'parent',ax,...
   'EdgeColor','none',opt{:}),varargin{:});
 
-if ~holdState, hold(ax,"off"); end
+clear hG
 
 if ~check_option(varargin,'DisplayName')
   h.Annotation.LegendInformation.IconDisplayStyle = 'off';

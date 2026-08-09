@@ -34,9 +34,10 @@ if check_option(varargin,'add2all')
   
   for i = 1:length(ax)
     if strcmpi(get(ax,'PlotBoxAspectRatioMode'),'manual') % check for 3d plot
-      hold(ax(i),'on');
+      hG = holdOn(ax(i)); %#ok<NASGU>
       arrow3d(v,varargin{:},'parent',ax(i));
       text3(v,varargin{:},'parent',ax(i));
+      clear hG
     else
       text(v,varargin{:},'parent',ax(i));
     end

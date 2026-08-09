@@ -21,9 +21,9 @@ id_handle = zeros(size(id)); % id to the graphical selections
 
 datacursormode off
 
+ax = gca;
 set(gcf,'WindowButtonDownFcn',{@spatialSelection});
 
-hold on
 boundaryStyle = [{'lineWidth',4,'lineColor','w'},extract_argoption(varargin,{'linewidth','linecolor'})];
 
 %waitfor(gcf)
@@ -41,7 +41,9 @@ boundaryStyle = [{'lineWidth',4,'lineColor','w'},extract_argoption(varargin,{'li
     if id(localId)
       delete(id_handle(localId));
     else
+      hG = holdOn(ax); %#ok<NASGU>
       id_handle(localId) = plot(grains.subSet(localId).boundary,boundaryStyle{:});
+      clear hG
       disp(['Grain selected: ' xnum2str(localId)])
     end
     id(localId) = ~id(localId);

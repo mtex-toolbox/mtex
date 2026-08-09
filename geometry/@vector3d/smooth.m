@@ -80,8 +80,7 @@ for j = 1:numel(sP)
 
   % ----------------- draw contours ------------------------------
 
-  washold = ishold(sP(j).ax);
-  hold(sP(j).ax,'on')
+  hG = holdOn(sP(j).ax); %#ok<NASGU>
 
   % project data
   [x,y] = project(sP(j).proj,S2G,'noAntipodal');
@@ -91,9 +90,9 @@ for j = 1:numel(sP)
 
   % plot contours
   h = [h,betterContourf(sP(j).ax,x,y,data,contours,varargin{:})]; %#ok<AGROW>
-  
-  if ~washold, hold(sP(j).ax,'off'); end
-  
+
+  clear hG
+
   % --------------- finalize the plot ---------------------------
 
   % adjust clim according to colorRange

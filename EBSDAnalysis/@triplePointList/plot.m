@@ -89,13 +89,13 @@ h.Annotation.LegendInformation.IconDisplayStyle = 'off';
 % since the legend entry for patch object is not nice we draw an
 % invisible scatter dot just for legend
 if check_option(varargin,'DisplayName') && exist('defColor','var')
-  holdState = mP.ax.NextPlot;
-  mP.ax.NextPlot = 'add';
+  hG = holdOn(mP.ax); %#ok<NASGU>
   optiondraw(scatter(0,0,'parent',mP.ax,'visible','off',...
     'MarkerFaceColor',h.MarkerFaceColor,...
     'MarkerEdgeColor',h.MarkerEdgeColor),varargin{:});
-  mP.ax.NextPlot = holdState;
-  
+  clear hG
+
+
   legend('-DynamicLegend','location','NorthEast');
 end
 

@@ -63,14 +63,17 @@ if isNew || ~isappdata(mtexFig.currentAxes,'sphericalPlot')
     proj = getProjection(sR,how2plot,varargin{:});
   end
   
-  holdState = getHoldState(mtexFig.gca);
-  
+  % the axes created below have to start out in the same hold state as the
+  % current one - this is a baseline, not a temporary hold, so it must
+  % survive this function
+  srcAx = mtexFig.gca;
+
   for i = 1:numel(proj)
-    
+
     % create a new axis
     if i>1, mtexFig.nextAxis; end
-    hold(mtexFig.gca,holdState);
-    
+    copyHoldState(srcAx,mtexFig.gca);
+
     % display upper/lower if needed
     if numel(proj)>1          
       if ~proj(i).isUpper

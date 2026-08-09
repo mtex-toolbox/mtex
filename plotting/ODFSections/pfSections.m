@@ -119,12 +119,11 @@ classdef pfSections < ODFSections
         'parent',ax,varargin{:},'doNotDraw');
 
       if ~check_option(varargin,'noGrid')
-        wasHold = ishold(ax);
-        hold(ax,'on');
+        hG = holdOn(ax); %#ok<NASGU>
         r = equispacedS2Grid(oS.sR,'resolution',15*degree);
         vF = oS.vectorField(r,oS.omega(sec));
         h(end+1) = quiver(r,vF,'parent',ax,'doNotDraw','color',0.7*[1 1 1],'HitTest','off');
-        if ~wasHold, hold(ax,'off'); end
+        clear hG
       end
 
     end

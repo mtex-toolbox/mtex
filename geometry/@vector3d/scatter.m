@@ -149,12 +149,11 @@ for i = 1:numel(sP)
 
     else
 
-      ish = ishold(sP(i).ax);
-      if ~ish, hold(sP(i).ax); end
+      hG = holdOn(sP(i).ax); %#ok<NASGU>
       h(i) = optiondraw(scatter(x(:),y(:),sizeData,cdata,'filled',...
         'MarkerEdgeColor','flat','parent',sP(i).ax,...
         alphaArgs{:},dynamicArgs{:}),varargin{:});
-      if ~ish, hold(sP(i).ax); end
+      clear hG
 
     end
 
@@ -193,22 +192,20 @@ for i = 1:numel(sP)
       % invisible line just for the legend
       if check_option(varargin,'DisplayName')
 
-        holdState = sP(i).ax.NextPlot;
-        sP(i).ax.NextPlot = "add";
+        hG = holdOn(sP(i).ax); %#ok<NASGU>
         line([NaN NaN],[NaN NaN],'color',str2rgb(get_option(varargin,'edgecolor')),...
           'parent',sP(i).ax,'DisplayName',get_option(varargin,'DisplayName'),...
           'linewidth',h(1).LineWidth);
-        sP(i).ax.NextPlot = holdState;
+        clear hG
       end
 
     else
 
-      holdState = sP(i).ax.NextPlot;
-      sP(i).ax.NextPlot = "add";
+      hG = holdOn(sP(i).ax); %#ok<NASGU>
       h(i) = optiondraw(scatter(x(:),y(:),sizeData,'parent',sP(i).ax,...
         'MarkerFaceColor',mfc,'MarkerEdgeColor',mec,...
         alphaArgs{:},dynamicArgs{:}),varargin{:});
-      sP(i).ax.NextPlot = holdState;
+      clear hG
 
       % scatter objects have a proper legend entry - show it only if a
       % DisplayName was requested
