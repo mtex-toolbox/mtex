@@ -91,6 +91,7 @@ if nargin >= 2 && isa(varargin{1},'orientation')
     % given by either of the following two lines
     %ax = times(o1, r(col), 1) .* axis(pMori);
     a = times(o2, l(row), 1) .* axis(pMori);
+    a.how2plot = o2.SS.how2plot;
         
   end
 

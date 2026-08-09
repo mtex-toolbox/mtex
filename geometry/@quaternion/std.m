@@ -21,4 +21,4 @@ function sigma = std(q,varargin)
 
 qm = mean(q,varargin{:});
 
-sigma = sqrt(mean(angle(qm,q).^2));
+sigma = sqrt(mean(angle(qm,q).^2,'omitmissing'));

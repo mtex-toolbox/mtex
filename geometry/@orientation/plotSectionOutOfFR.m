@@ -47,9 +47,9 @@ for i=2:length(v)
 end
 
 % plot the points
-hold on
+hG = holdOn(gca); %#ok<NASGU>
 scatter(v,varargin{:},'ignoreFRBoundaries')
-hold off
+clear hG
 
 % Add space at the boundaries
 ax = gca();

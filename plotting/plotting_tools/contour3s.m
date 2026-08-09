@@ -159,10 +159,10 @@ if isappdata(gcbo,'slicingz')
   delete(getappdata(gcbo,'slicingz'));
 end
 
-hold on,
+hG = holdOn(gca); %#ok<NASGU>
 h = slice(x,y,z,Z,xd,yd,zd);
 set(h,'EdgeColor','none');
-hold off
+clear hG
 
 setappdata(gcbo,'slicingz',h);  
 
@@ -178,10 +178,10 @@ if isappdata(gcbo,'slicingy')
   delete(getappdata(gcbo,'slicingy'));
 end
 
-hold on,
+hG = holdOn(gca); %#ok<NASGU>
 h = slice(x,y,z,Z,xd,yd,zd);
 set(h,'EdgeColor','none');
-hold off
+clear hG
 
 setappdata(gcbo,'slicingy',h);  
 
@@ -199,10 +199,10 @@ if isappdata(gcbo,'slicingx')
   delete(getappdata(gcbo,'slicingx'));
 end
 
-hold on,
+hG = holdOn(gca); %#ok<NASGU>
 h = slice(x,y,z,Z,xd,yd,zd);
 set(h,'EdgeColor','none');
-hold off
+clear hG
 
 setappdata(gcbo,'slicingx',h);  
 

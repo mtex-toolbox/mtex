@@ -8,7 +8,7 @@ function h = plot(oR,varargin)
 lwMinor = get_option(varargin,'lineWidthMinor',0.5);
 if oR.antipodal, varargin = ['antipodal',varargin]; end
 oP = newOrientationPlot(oR.CS1,oR.CS2,'axisAngle','noBoundary',varargin{:});
-hold on
+hG = holdOn(oP.ax); %#ok<NASGU>
 color = get_option(varargin,{'color','boundaryColor'},[0 0 0]);
 
 % find the sector
@@ -79,7 +79,7 @@ else
   h4 = plot(f,'color',color,'linewidth',lw,'noBoundaryCheck','parent',oP.ax);
 end
 
-hold off
+clear hG
 
 h = [h1,h2,h3,h4];
 for i = 1:length(h)

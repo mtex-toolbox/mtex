@@ -11,8 +11,9 @@ end
 x = 0.99*x;
 y = 0.99*y;
 z = 0.99*z;
+hG = holdOn(ax); %#ok<NASGU>
+
 surface(x,y,z,'FaceColor', 'w','EdgeColor','none','parent',ax,'handlevisibility','off')
-hold(ax,'on')
 
 dth = 15*degree;
 th = -pi/2+dth:dth:pi/2-dth;

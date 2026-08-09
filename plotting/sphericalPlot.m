@@ -43,9 +43,9 @@ classdef sphericalPlot < handle
       sP.dispMinMax = check_option(varargin,'minmax');
       setAllAppdata(ax,'sphericalPlot',sP);
       
-      % store hold status
-      washold = getHoldState(ax);
-        
+      % the boundary, the grid and all the labels have to accumulate into ax
+      hG = holdOn(ax); %#ok<NASGU>
+
       CS = getClass(varargin,'crystalSymmetry',[]);
       
       if isa(sP.proj,'plainProjection')
@@ -94,8 +94,7 @@ classdef sphericalPlot < handle
 
       plotAnnotate(sP,varargin{:});
 
-      % revert old hold status
-      hold(ax,washold);
+      clear hG
 
     end
 

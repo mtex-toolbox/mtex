@@ -22,16 +22,16 @@ line(pl)
 
 if check_option(varargin,'labeled') && size(sT.T,1)<500
   id = 1:size(sT.T,1);
-  hold on
+  hG = holdOn(gca); %#ok<NASGU>
   text(sT.midPoints,cellfun(@int2str,vec2cell(id),'UniformOutput',false));
-  hold off
+  clear hG
 end
 
 if check_option(varargin,'labelV') && size(sT.T,1)<500
   id = 1:length(sT.vertices);
-  hold on
+  hG = holdOn(gca); %#ok<NASGU>
   text(sT.vertices,cellfun(@int2str,vec2cell(id),'UniformOutput',false),'color','red');
-  hold off
+  clear hG
 end
 
 

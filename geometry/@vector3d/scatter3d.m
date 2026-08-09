@@ -15,8 +15,12 @@ else
   ax = gca;
 end
 
+% everything below has to accumulate into ax - the sphere, the markers and
+% the grid lines - so hold it for the entire function
+[hG,washeld] = holdOn(ax); %#ok<ASGLU>
+
 % plot a inner sphere that is not translucent
-if ~ishold(ax) || isempty(ax.Children)
+if ~washeld || isempty(ax.Children)
   cla(ax)
   plotEmptySphere(ax);
 end
@@ -66,8 +70,6 @@ set(ax,'XDir','rev','YDir','rev',...
 
 pC = getClass(varargin,'plottingConvention',plottingConvention.default);
 pC.setView(ax);
-
-hold(ax,'off')
 
 if nargout == 0, clear h;end
 

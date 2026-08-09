@@ -10,7 +10,7 @@ disp('Click right to finish your selection.')
 
 poly = [];
 button = 1;
-hold on
+hG = holdOn(gca); %#ok<NASGU>
 
 h = line('xdata',[],'ydata',[],'Color','k','MarkerFaceColor','k','MarkerEdgeColor',...
   'w','MarkerSize',10,'LineWidth',2,'Marker','s');
@@ -28,5 +28,5 @@ end
 poly(end+1,:) = poly(1,:);
 set(h,'XData',poly(:,1),'YData',poly(:,2));
 
-hold off
+clear hG
 

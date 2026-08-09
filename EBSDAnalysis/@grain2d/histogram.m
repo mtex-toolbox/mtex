@@ -50,6 +50,7 @@ if ~exist('bins','var'), bins = linspace(0,max(prop)+eps,nbins); end
 
 % loop through all phases
 h = gobjects(1,numel(grains.indexedPhasesId));
+hG = [];
 for k = 1:numel(grains.indexedPhasesId)
  
   id = grains.indexedPhasesId(k);
@@ -68,10 +69,13 @@ for k = 1:numel(grains.indexedPhasesId)
   if h(k).DisplayStyle == "stairs"
     h(k).EdgeColor = grains.CSList(id).color;
   end
-  hold on
-  
+
+  % the first histogram replaces the axes content the way any MATLAB plot
+  % does, all further phases have to accumulate on top of it
+  if isempty(hG), hG = holdOn(gca); end
+
 end
-hold off
+clear hG
 
 % labels and title
 if all(prop == area)

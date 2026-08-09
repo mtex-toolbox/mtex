@@ -88,7 +88,7 @@ mtexTitle('Vp (km/s)','doNotDraw',titleOpt{:})
 AVp = 200*(maxVp-minVp)./(maxVp+minVp);
 
 % mark maximum with black square and minimum with white circle
-hold on
+hG = holdOn(gca); %#ok<NASGU>
 if check_option(varargin,'symmetriseMinMax')
   plot(maxVpPos.symmetrise,blackMarker{:})
   plot(minVpPos.symmetrise,whiteMarker{:})
@@ -96,7 +96,7 @@ else
   plot(maxVpPos(1),blackMarker{:})
   plot(minVpPos(1),whiteMarker{:})    
 end
-hold off
+clear hG
 
 % subTitle
 xlabel(['Vp Anisotropy = ',num2str(AVp,'%6.1f')],titleOpt{:})
@@ -120,7 +120,7 @@ mtexTitle('S-wave anisotropy (%)','doNotDraw',titleOpt{:})
 xlabel(['Max Vs Anisotropy = ',num2str(maxAVs,'%6.1f')],titleOpt{:})
 
 % mark maximum with black square and minimum with white circle
-hold on
+hG = holdOn(gca); %#ok<NASGU>
 if check_option(varargin,'symmetriseMinMax')
   plot(maxAVsPos.symmetrise,blackMarker{:})
   plot(minAVsPos.symmetrise,whiteMarker{:})
@@ -128,7 +128,7 @@ else
   plot(maxAVsPos(1),blackMarker{:})
   plot(minAVsPos(1),whiteMarker{:})
 end
-hold off
+clear hG
 
 %**************************************************************************
 % 3 Vs1 : Plot Vs1 velocities (km/s) with polarization
@@ -146,11 +146,10 @@ AVs1=200*(maxS1-minS1)./(maxS1+minS1);
 
 xlabel(['Vs1 Anisotropy = ',num2str(AVs1,'%6.1f')],titleOpt{:}) 
 
-hold on
+hG = holdOn(gca); %#ok<NASGU>
 plot(ps1,'linewidth',2,'color','black')
 
 % mark maximum with black square and minimum with white circle
-hold on
 if check_option(varargin,'symmetriseMinMax')
    plot(maxS1pos.symmetrise,blackMarker{:})
    plot(minS1pos.symmetrise,whiteMarker{:})
@@ -158,7 +157,7 @@ else
    plot(maxS1pos(1),blackMarker{:})
    plot(minS1pos(1),whiteMarker{:})
 end
-hold off
+clear hG
 
 %**************************************************************************
 % 4 Vs2 : Plot Vs2 velocities (km/s)
@@ -175,11 +174,10 @@ mtexTitle('Vs2 (km/s)','doNotDraw',titleOpt{:})
 AVs2=200*(maxS2-minS2)./(maxS2+minS2);
 xlabel(['Vs2 Anisotropy = ',num2str(AVs2,'%6.1f')],titleOpt{:})
 
-hold on
+hG = holdOn(gca); %#ok<NASGU>
 plot(ps2,'linewidth',2,'color','black')
 
 % mark maximum with black square and minimum with white circle
-hold on
 if check_option(varargin,'symmetriseMinMax')
   plot(maxS2pos.symmetrise,blackMarker{:})
   plot(minS2pos.symmetrise,whiteMarker{:})
@@ -188,7 +186,7 @@ else
   plot(minS2pos(1),whiteMarker{:})
 end
 
-hold off
+clear hG
 %**************************************************************************
 % 5 Vp/Vs1 : Plot Vp/Vs1 ratio (no units)
 %**************************************************************************
@@ -207,7 +205,7 @@ AVpVs1=200*(maxVpVs1-minVpVs1)./(maxVpVs1+minVpVs1);
 xlabel(['Vp/Vs1 Anisotropy = ',num2str(AVpVs1,'%6.1f')],titleOpt{:})
 
 % mark maximum with black square and minimum with white circle
-hold on
+hG = holdOn(gca); %#ok<NASGU>
 if check_option(varargin,'symmetriseMinMax')
   plot(maxVpVs1Pos.symmetrise,blackMarker{:})
   plot(minVpVs1Pos.symmetrise,whiteMarker{:})
@@ -215,7 +213,7 @@ else
   plot(maxVpVs1Pos(1),blackMarker{:})
   plot(minVpVs1Pos(1),whiteMarker{:})
 end
-hold off
+clear hG
 %**************************************************************************
 % 6 Vp/Vs2 : Plot Vp/Vs2 ratio (no units)
 %**************************************************************************
@@ -234,7 +232,7 @@ AVpVs2=200*(maxVpVs2-minVpVs2)./(maxVpVs2+minVpVs2);
 xlabel(['Vp/Vs2 Anisotropy = ',num2str(AVpVs2,'%6.1f')],titleOpt{:})
 
 % mark maximum with black square and minimum with white circle
-hold on
+hG = holdOn(gca); %#ok<NASGU>
 if check_option(varargin,'symmetriseMinMax')
   plot(maxVpVs2Pos.symmetrise,blackMarker{:})
   plot(minVpVs2Pos.symmetrise,whiteMarker{:})
@@ -242,7 +240,7 @@ else
   plot(maxVpVs2Pos(1),blackMarker{:})
   plot(minVpVs2Pos(1),whiteMarker{:})
 end
-hold off
+clear hG
 %**************************************************************************
 % add colorbars and colormap to all plots
 %**************************************************************************

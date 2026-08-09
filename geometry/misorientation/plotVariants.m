@@ -24,10 +24,10 @@ plotPDF(vars,ind2color(1:length(vars)),hChild,...
   'antipodal','MarkerEdgeColor','black',varargin{:});
   
 % plot unique variants with label
-hold on
+hG = holdOn(gca); %#ok<NASGU>
 plotPDF(vars,'label',1:length(vars),'nosymmetry', ...
   'MarkerFaceColor','none','MarkerEdgeColor','none','add2all',varargin{:});
-  hold off
+clear hG
 
 % change figure name
 set(gcf,'Name',strcat('child variants pole figure'),'NumberTitle','on');

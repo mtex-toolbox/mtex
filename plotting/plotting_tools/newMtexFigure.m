@@ -98,11 +98,10 @@ else % use an existing figure
   % get existing mtexFigure
   mtexFig = getappdata(gcf,'mtexFig');
   
-  holdState = getHoldState;
-  % distribute hold state over all axes
-  for i=1:numel(mtexFig.children)
-    hold(mtexFig.children(i),holdState);
-  end
+  % distribute the hold state of the current axes over all of them - this is
+  % the baseline for the plot that is about to happen, hence a plain copy and
+  % not a holdOn guard
+  copyHoldState(gca,mtexFig.children);
   
   % set current axis
   if check_option(varargin,'parent')

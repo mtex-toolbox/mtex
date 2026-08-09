@@ -30,7 +30,7 @@ sP = newSphericalPlot(zvector,'upper',varargin{:},s,s.how2plot,'complete');
 d = max(sP(1).bounds(3:4) - sP(1).bounds(1:2));
 symbolSize = 0.15*get_option(varargin,'symbolSize',d/3);
 
-hold on
+hG = holdOn(sP(1).ax); %#ok<NASGU>
 
 % plot mirror planes
 mir = Improper & rot.angle>pi-1e-4;
@@ -89,7 +89,7 @@ for ax = mtexFig.children(:).'
 end
 mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 
-hold off
+clear hG
 
 end
 

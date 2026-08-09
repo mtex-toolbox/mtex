@@ -91,16 +91,16 @@ if nargin>1 && isnumeric(varargin{1})
     
     % plot polygons
     h = gobjects(max(property));
+    hG = holdOn(mP.ax); %#ok<NASGU>
     for k = 1:max(property)
       h{k} = plotFaces(grains.poly(property==k), grains.allV, ind2color(k),...
         'parent', mP.ax,varargin{:},'DisplayName',legendNames{k});
-      
+
       % reactivate legend information
       h{k}.Annotation.LegendInformation.IconDisplayStyle = 'on';
-      
-      hold on
+
     end
-    hold off
+    clear hG
   
   else % % plot polygons
 
@@ -193,10 +193,10 @@ end
 
 % we have to plot grain boundary individually
 if plotBoundary
-  hold on
+  hG = holdOn(mP.ax); %#ok<NASGU>
   hh = plot(grains.boundary,varargin{:});
-  hh(1).Annotation.LegendInformation.IconDisplayStyle = 'off';  
-  hold off
+  hh(1).Annotation.LegendInformation.IconDisplayStyle = 'off';
+  clear hG
 end
   
 if check_option(varargin,'DisplayName') 
@@ -280,9 +280,9 @@ end
 % remember new selection
 idSelected(localId) = ~idSelected(localId);
 if idSelected(localId)
-  hold on
+  hG = holdOn(gca); %#ok<NASGU>
   handleSelected{localId} = plot(grain.boundary,'lineColor','w','linewidth',4);
-  hold off
+  clear hG
 end
 
 txt{1} = ['grainId = '  num2str(unique(grain.id))];
