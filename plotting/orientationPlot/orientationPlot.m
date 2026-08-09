@@ -118,9 +118,13 @@ classdef orientationPlot < handle
       MarkerSize = get_option(varargin,'MarkerSize',getMTEXpref('markerSize'));
       Marker = get_option(varargin,'Marker','o');
 
-      % transparency - Matlab implements MarkerFaceAlpha / MarkerEdgeAlpha
-      % only for scatter objects, hence transparent markers can not be drawn
-      % as patches
+      % markers are drawn as scatter objects - only those support
+      % MarkerFaceAlpha / MarkerEdgeAlpha and they are at least as fast as
+      % patches. Lines (option 'edgecolor') remain patches since a scatter
+      % object can not connect its points.
+      isLine = check_option(varargin,'edgecolor');
+
+      % marker transparency
       if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
         alphaArgs = {...
           'MarkerFaceAlpha',get_option(varargin,{'MarkerAlpha','MarkerFaceAlpha'},1),...
@@ -132,7 +136,7 @@ classdef orientationPlot < handle
       % colorize according to data
       if ~isempty(data)
 
-        if isempty(alphaArgs)
+        if isLine
           h = patch(x(:),y(:),z(:),1,...
             'facevertexcdata',data,...
             'markerfacecolor','flat',...
@@ -159,7 +163,7 @@ classdef orientationPlot < handle
         if check_option(varargin,'filled'), MFC = MEC; else, MFC = 'none'; end
         MFC = str2rgb(get_option(varargin,{'MarkerFaceColor','MarkerColor'},MFC));
   
-        if isempty(alphaArgs)
+        if isLine
           h = patch(x(:),y(:),z(:),1,...
             'FaceColor','none',...
             'EdgeColor','none',...
@@ -178,18 +182,10 @@ classdef orientationPlot < handle
 
         optiondraw(h,varargin{:});
         
-        if ~check_option(varargin,'edgecolor')
+        % scatter objects have a proper legend entry - show it only if a
+        % DisplayName was requested
+        if ~isLine && ~check_option(varargin,'DisplayName')
           set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
-        
-          % since the legend entry for patch object is not nice we draw an
-          % invisible scatter dot just for legend
-          if check_option(varargin,'DisplayName')
-            holdState = get(oP.ax,'nextPlot');
-            set(oP.ax,'nextPlot','add');
-            optiondraw(scatter([],[],'parent',oP.ax,'MarkerFaceColor',MFC,...
-              'MarkerEdgeColor',MEC),varargin{:});
-            set(oP.ax,'nextPlot',holdState);
-          end
         end
 
       end

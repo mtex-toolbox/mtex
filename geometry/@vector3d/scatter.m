@@ -79,9 +79,13 @@ for i = 1:numel(sP)
   
   patchArgs = [patchArgs,{'MarkerSize',MarkerSize}]; %#ok<AGROW>
 
-  % transparency - Matlab implements MarkerFaceAlpha / MarkerEdgeAlpha only
-  % for scatter objects, hence transparent markers can not be drawn as
-  % patches
+  % markers are drawn as scatter objects - only those support
+  % MarkerFaceAlpha / MarkerEdgeAlpha and they are at least as fast as
+  % patches. Lines (option 'edgecolor', see vector3d/line) remain patches
+  % since a scatter object can not connect its points.
+  isLine = check_option(varargin,'edgecolor');
+
+  % marker transparency
   if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
     alphaArgs = {...
       'MarkerFaceAlpha',get_option(varargin,{'MarkerAlpha','MarkerFaceAlpha'},1),...
@@ -89,7 +93,6 @@ for i = 1:numel(sP)
   else
     alphaArgs = {};
   end
-  useScatter = numel(MarkerSize) > 1 || ~isempty(alphaArgs);
 
   % scatter objects specify the marker size as an area
   if numel(MarkerSize) > 1
@@ -137,7 +140,14 @@ for i = 1:numel(sP)
       cdata = reshape(cdata,[],3);
     end
 
-    if useScatter
+    if isLine % draw a patch
+
+      h(i) = optiondraw(patch(patchArgs{:},...
+        'facevertexcdata',cdata,...
+        'markerfacecolor','flat',...
+        'markeredgecolor','flat'),varargin{2:end});
+
+    else
 
       ish = ishold(sP(i).ax);
       if ~ish, hold(sP(i).ax); end
@@ -146,18 +156,9 @@ for i = 1:numel(sP)
         alphaArgs{:},dynamicArgs{:}),varargin{:});
       if ~ish, hold(sP(i).ax); end
 
-
-      h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
-
-    else % draw patches
-
-      h(i) = optiondraw(patch(patchArgs{:},...
-        'facevertexcdata',cdata,...
-        'markerfacecolor','flat',...
-        'markeredgecolor','flat'),varargin{2:end});
-      h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
-
     end
+
+    h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
       
   else % --------- colorcoding according to nextStyle -----------------
     
@@ -179,8 +180,28 @@ for i = 1:numel(sP)
             
     end
   
-    % draw patches
-    if useScatter
+    if isLine % draw a patch
+
+      h(i) = optiondraw(patch(patchArgs{:},...
+        'MarkerFaceColor',mfc,...
+        'MarkerEdgeColor',mec),varargin{:});
+
+      % remove from legend
+      h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
+
+      % since the legend entry for a patch object is not nice we draw an
+      % invisible line just for the legend
+      if check_option(varargin,'DisplayName')
+
+        holdState = sP(i).ax.NextPlot;
+        sP(i).ax.NextPlot = "add";
+        line([NaN NaN],[NaN NaN],'color',str2rgb(get_option(varargin,'edgecolor')),...
+          'parent',sP(i).ax,'DisplayName',get_option(varargin,'DisplayName'),...
+          'linewidth',h(1).LineWidth);
+        sP(i).ax.NextPlot = holdState;
+      end
+
+    else
 
       holdState = sP(i).ax.NextPlot;
       sP(i).ax.NextPlot = "add";
@@ -189,32 +210,12 @@ for i = 1:numel(sP)
         alphaArgs{:},dynamicArgs{:}),varargin{:});
       sP(i).ax.NextPlot = holdState;
 
-    else
-       
-      h(i) = optiondraw(patch(patchArgs{:},...
-        'MarkerFaceColor',mfc,...
-        'MarkerEdgeColor',mec),varargin{:});
-      
-      % remove from legend
-
-      h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
-
-      % since the legend entry for patch object is not nice we draw an
-      % invisible scatter dot just for legend
-      if check_option(varargin,'DisplayName')
-        
-        holdState = sP(i).ax.NextPlot;
-        sP(i).ax.NextPlot = "add";
-        if check_option(varargin,'edgecolor')
-          line([NaN NaN],[NaN NaN],'color',str2rgb(get_option(varargin,'edgecolor')),...
-          'parent',sP(i).ax,'DisplayName',get_option(varargin,'DisplayName'),...
-          'linewidth',h(1).LineWidth);
-        else
-          optiondraw(scatter([],[],'parent',sP(i).ax,'MarkerFaceColor',mfc,...
-            'MarkerEdgeColor',mec),varargin{:});
-        end
-        sP(i).ax.NextPlot = holdState;
+      % scatter objects have a proper legend entry - show it only if a
+      % DisplayName was requested
+      if ~check_option(varargin,'DisplayName')
+        h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
       end
+
     end
   end
 
