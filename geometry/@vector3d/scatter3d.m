@@ -54,25 +54,10 @@ h = optiondraw(scatter3(v.x(:),v.y(:),v.z(:),MarkerSize.^2,data{:},'filled','par
 
 % add transparency if required
 if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
-  
-  faceAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerFaceAlpha'},1));
-  edgeAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerEdgeAlpha'},1));
-        
-  % we have to wait until the markers have been drawn
-  mh = [];
-  while isempty(mh)
-    pause(0.01);
-    mh = [h.MarkerHandle];
-  end
-                
-  for j = 1:length(mh)
-    mh(j).FaceColorData(4,:) = faceAlpha; %#ok<AGROW>
-    mh(j).FaceColorType = 'truecoloralpha'; %#ok<AGROW>
-    
-    mh(j).EdgeColorData(4,:) = edgeAlpha; %#ok<AGROW>
-    mh(j).EdgeColorType = 'truecoloralpha'; %#ok<AGROW>
-  end
-  
+
+  set(h,'MarkerFaceAlpha',get_option(varargin,{'MarkerAlpha','MarkerFaceAlpha'},1),...
+    'MarkerEdgeAlpha',get_option(varargin,{'MarkerAlpha','MarkerEdgeAlpha'},1));
+
 end
 
 axis(ax,'equal','vis3d','off');

@@ -79,12 +79,33 @@ for i = 1:numel(sP)
   
   patchArgs = [patchArgs,{'MarkerSize',MarkerSize}]; %#ok<AGROW>
 
+  % transparency - Matlab implements MarkerFaceAlpha / MarkerEdgeAlpha only
+  % for scatter objects, hence transparent markers can not be drawn as
+  % patches
+  if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
+    alphaArgs = {...
+      'MarkerFaceAlpha',get_option(varargin,{'MarkerAlpha','MarkerFaceAlpha'},1),...
+      'MarkerEdgeAlpha',get_option(varargin,{'MarkerAlpha','MarkerEdgeAlpha'},1)};
+  else
+    alphaArgs = {};
+  end
+  useScatter = numel(MarkerSize) > 1 || ~isempty(alphaArgs);
+
+  % scatter objects specify the marker size as an area
+  if numel(MarkerSize) > 1
+    sizeData = MarkerSize(:);
+  else
+    sizeData = MarkerSize.^2;
+  end
+
   % dynamic marker-size
+  dynamicArgs = {};
   if ~check_option(varargin,'MarkerSize') && ...
       (check_option(varargin,'dynamicMarkerSize') || length(v)>20)
-    patchArgs = [patchArgs {'tag','dynamicMarkerSize','UserData',MarkerSize}]; %#ok<AGROW>
+    dynamicArgs = {'tag','dynamicMarkerSize','UserData',MarkerSize};
+    patchArgs = [patchArgs dynamicArgs]; %#ok<AGROW>
   end
-    
+
   % ------------- color-coding according to the first argument ----------------
   if ~isempty(varargin) && isa(varargin{1},'crystalShape')
     
@@ -116,26 +137,26 @@ for i = 1:numel(sP)
       cdata = reshape(cdata,[],3);
     end
 
-    if numel(MarkerSize) > 1
-      
+    if useScatter
+
       ish = ishold(sP(i).ax);
       if ~ish, hold(sP(i).ax); end
-      h(i) = optiondraw(scatter(x(:),y(:),MarkerSize(:),cdata,'filled',...
-        'parent',sP(i).ax),varargin{:});
+      h(i) = optiondraw(scatter(x(:),y(:),sizeData,cdata,'filled',...
+        'MarkerEdgeColor','flat','parent',sP(i).ax,...
+        alphaArgs{:},dynamicArgs{:}),varargin{:});
       if ~ish, hold(sP(i).ax); end
-      
+
 
       h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
-            
+
     else % draw patches
-    
+
       h(i) = optiondraw(patch(patchArgs{:},...
         'facevertexcdata',cdata,...
         'markerfacecolor','flat',...
         'markeredgecolor','flat'),varargin{2:end});
       h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
 
-      addTransparency2Patch(h(i),varargin{:});
     end
       
   else % --------- colorcoding according to nextStyle -----------------
@@ -159,14 +180,15 @@ for i = 1:numel(sP)
     end
   
     % draw patches
-    if numel(MarkerSize) > 1
-      
+    if useScatter
+
       holdState = sP(i).ax.NextPlot;
       sP(i).ax.NextPlot = "add";
-      h(i) = optiondraw(scatter(x(:),y(:),MarkerSize(:),'parent',sP(i).ax,...
-        'MarkerFaceColor',mfc,'MarkerEdgeColor',mec),varargin{:});
+      h(i) = optiondraw(scatter(x(:),y(:),sizeData,'parent',sP(i).ax,...
+        'MarkerFaceColor',mfc,'MarkerEdgeColor',mec,...
+        alphaArgs{:},dynamicArgs{:}),varargin{:});
       sP(i).ax.NextPlot = holdState;
-    
+
     else
        
       h(i) = optiondraw(patch(patchArgs{:},...
@@ -174,11 +196,9 @@ for i = 1:numel(sP)
         'MarkerEdgeColor',mec),varargin{:});
       
       % remove from legend
-      
-      h(i).Annotation.LegendInformation.IconDisplayStyle = "off";      
 
-      addTransparency2Patch(h(i),varargin{:});
-      
+      h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
+
       % since the legend entry for patch object is not nice we draw an
       % invisible scatter dot just for legend
       if check_option(varargin,'DisplayName')
@@ -199,22 +219,20 @@ for i = 1:numel(sP)
   end
 
   % set resize function for dynamic marker sizes
-  if ~check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
-    try
-      hax = handle(sP(i).ax);
-      hListener(1) = handle.listener(hax, findprop(hax, 'Position'), ...
-        'PropertyPostSet', {@localResizeScatterCallback,sP(i).ax});
-      % save listener, otherwise  callback may die
+  try
+    hax = handle(sP(i).ax);
+    hListener(1) = handle.listener(hax, findprop(hax, 'Position'), ...
+      'PropertyPostSet', {@localResizeScatterCallback,sP(i).ax});
+    % save listener, otherwise  callback may die
+    setAllAppdata(hax, 'dynamicMarkerSizeListener', hListener);
+  catch
+    if ~isappdata(hax, 'dynamicMarkerSizeListener')
+      hListener = addlistener(hax,'Position','PostSet',...
+        @(obj,events) localResizeScatterCallback(obj,events,sP(i).ax));
+      %      localResizeScatterCallback([],[],sP(i).ax);
       setAllAppdata(hax, 'dynamicMarkerSizeListener', hListener);
-    catch
-      if ~isappdata(hax, 'dynamicMarkerSizeListener')
-        hListener = addlistener(hax,'Position','PostSet',...
-          @(obj,events) localResizeScatterCallback(obj,events,sP(i).ax));
-        %      localResizeScatterCallback([],[],sP(i).ax);
-        setAllAppdata(hax, 'dynamicMarkerSizeListener', hListener);
-      end
-      %disp('some Error!');
     end
+    %disp('some Error!');
   end
 
   % plot labels
@@ -233,8 +251,10 @@ for i = 1:numel(sP)
 
 end
 
-% with opengl markers with thick boundary look ugly
-if get_option(varargin,'linewidth',0) > 3 && ~check_option(varargin,'edgecolor')
+% with opengl markers with thick boundary look ugly - however, the painters
+% renderer does not support transparency at all
+if get_option(varargin,'linewidth',0) > 3 && ~check_option(varargin,'edgecolor') && ...
+    ~check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
   set(gcf,'Renderer','painters');
 end
 
@@ -258,15 +278,14 @@ function localResizeScatterCallback(~,~,hax)
 
 hax = handle(hax);
 
-% get markerSize
+% get markerSize - patches store it as a diameter, scatter objects as an area
 markerSize = get(findobj(hax,'type','patch'),'MarkerSize');
-if isempty(markerSize)
-  markerSize = 0;
-elseif iscell(markerSize)
-  markerSize = [markerSize{:}];
-end
+if iscell(markerSize), markerSize = [markerSize{:}]; end
 
-markerSize = max(markerSize);
+sizeData = get(findobj(hax,'type','scatter'),'SizeData');
+if iscell(sizeData), sizeData = [sizeData{:}]; end
+
+markerSize = max([0,markerSize(:).',sqrt(sizeData(:)).']);
 
 % correct text positions
 t = findobj(hax,'Tag','setBelowMarker');
@@ -294,11 +313,17 @@ maxSize = getMTEXpref('markerSize');
 
 for i = 1:length(u)
   d = u(i).UserData;
-  o = u(i).MarkerSize;
   %n = l/350 * d;
   n = min(l/250 * d,maxSize);
-  if abs((o-n)/o) > 0.05, u(i).MarkerSize = n; end
-  
+
+  if isgraphics(u(i),'scatter') % marker size is an area here
+    o = sqrt(u(i).SizeData(1));
+    if abs((o-n)/o) > 0.05, u(i).SizeData = n.^2; end
+  else
+    o = u(i).MarkerSize;
+    if abs((o-n)/o) > 0.05, u(i).MarkerSize = n; end
+  end
+
 end
 
 p.Units = oldUnit;
@@ -324,30 +349,4 @@ for it = 1:length(t)
   
 end
 
-end
-
-function addTransparency2Patch(h,varargin)
-
-% add transparency if required
-if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
-  
-  faceAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerFaceAlpha'},1));
-  edgeAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerEdgeAlpha'},1));
-  
-  % we have to wait until the markers have been drawn
-  mh = [];
-  while isempty(mh)
-    pause(0.01);
-    mh = [h.MarkerHandle];
-  end
-  
-  for j = 1:length(mh)
-    mh(j).FaceColorData(4,:) = faceAlpha; %#ok<AGROW>
-    mh(j).FaceColorType = 'truecoloralpha'; %#ok<AGROW>
-    
-    mh(j).EdgeColorData(4,:) = edgeAlpha; %#ok<AGROW>
-    mh(j).EdgeColorType = 'truecoloralpha'; %#ok<AGROW>
-  end
-  
-end
 end
