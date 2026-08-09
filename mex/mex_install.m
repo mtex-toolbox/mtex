@@ -13,6 +13,12 @@ function varargout = mex_install(varargin)
 %  force - recompile even where the binary is newer than the source
 %  list  - do not compile, just return the source files as a cell array
 %
+% Description
+% Compiling continues past a source that fails, so that one broken file
+% does not hide the state of all the others, but the failures are collected
+% and raised as an error at the end - a run that built nothing must not look
+% like a run that built everything.
+%
 % See also
 % check_mexComplete
 
@@ -43,6 +49,7 @@ if check_option(varargin,'list')
 end
 
 % compile all the files
+failed = {};
 for p = 1:length(places)
   files = dir([fullfile(mtex_path,places{p}),'*.c*']);
   for f = 1:length(files)
@@ -66,8 +73,17 @@ for p = 1:length(places)
           else
             mex('-R2018a','-outdir',mexPath,cFile);
           end
-        catch
-          if ~contains(lasterr,'is not a MEX file.'), disp(lasterr); end %#ok<LERR>
+        catch ME
+          % a source that compiles but carries no mexFunction entry is not
+          % a failure - it only exists to be included by one of the real
+          % mex sources. Everything else is reported and remembered: a
+          % build that quietly skipped half its files used to be
+          % indistinguishable from a clean one.
+          if ~contains(ME.message,'is not a MEX file.')
+            failed{end+1} = files(f).name; %#ok<AGROW>
+            fprintf(2,'   %s failed to compile:\n',files(f).name);
+            fprintf(2,'   %s\n',ME.message);
+          end
         end
       else
         disp([' * <a href="matlab:edit ' cFile '">' ...
@@ -76,6 +92,13 @@ for p = 1:length(places)
     end
   end
 end
+
+if ~isempty(failed)
+  error('MTEX:mex_install',['%d of %d mex files did not compile:\n  %s\n\n' ...
+    'The compiler messages are above.'],numel(failed),numel(listSources(places)),...
+    strjoin(failed,newline+"  "));
+end
+
 end
 
 % ===========================================================================
