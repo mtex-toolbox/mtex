@@ -56,8 +56,13 @@ methods
   end
 
   function display(s)
+    % the plotting convention is shown the same way as for the data
+    % classes that carry one - see e.g. @EBSD/display - since for a
+    % specimen symmetry it is the only thing besides the point group
+    % that distinguishes one instance from another
     disp(' ');
-    disp([inputname(1) ' = ' char(s.lattice) ' ' doclink(s) ' ' docmethods(inputname(1))]);
+    disp([inputname(1) ' = ' char(s.lattice) ' ' doclink(s) ...
+      ' (' char(s.how2plot,'compact') ') ' docmethods(inputname(1))]);
     disp(' ');
   end
 
