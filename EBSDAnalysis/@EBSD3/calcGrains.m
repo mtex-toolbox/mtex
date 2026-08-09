@@ -3,7 +3,7 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %
 % Syntax
 %
-%   [grains, ebsd.grainId] = calcGrains(ebsd,'angle',10*degree)
+%   [grains, ebsd] = calcGrains(ebsd,'angle',10*degree)
 %
 %   % reconstruction low and high angle grain boundaries
 %   lagb = 2*degree;
@@ -33,8 +33,8 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %  ebsd   - @EBSD
 %
 % Output
-%  grains       - @grain2d
-%  ebsd.grainId - grainId of each pixel
+%  grains - @grain2d
+%  ebsd   - @EBSD with additional property grainId
 %
 % Options
 %  threshold, angle - array of threshold angles per phase of mis/disorientation in radians

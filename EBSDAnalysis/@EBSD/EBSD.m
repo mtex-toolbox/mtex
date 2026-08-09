@@ -226,11 +226,42 @@ classdef EBSD < phaseList & dynProp & dynOption
     
     function ebsd = set.grainId(ebsd,grainId)
 
+      % the second output of calcGrains used to be the list of grainIds and
+      % is now the EBSD variable itself. Hence the old syntax
+      %
+      %   [grains,ebsd.grainId] = calcGrains(ebsd('indexed'))
+      %
+      % ends up here with an EBSD variable. Translate it into the
+      % corresponding list of grainIds - pixels missing from the returned
+      % data, e.g. since calcGrains was called on ebsd('indexed') only,
+      % keep grainId == 0 and become notIndexed, exactly as before.
       if isa(grainId,'EBSD')
-        error("The syntax \n\n  [grains,ebsd.grainId] = calcGrains(ebsd)\n\n" + ...
-          "has been replaced by the syntax\n\n" + ...
-          "[grains,ebsd] = calcGrains(ebsd)\n\n ",1);
-      elseif numel(grainId) == length(ebsd)
+
+        warning('MTEX:calcGrains:oldSyntax',['The syntax\n\n' ...
+          '  [grains,ebsd.grainId] = calcGrains(ebsd)\n\n' ...
+          'has been replaced by\n\n  [grains,ebsd] = calcGrains(ebsd)\n\n' ...
+          'It still works, but is deprecated. Switch this warning off by\n\n'...
+          '  warning(''off'',''MTEX:calcGrains:oldSyntax'')\n']);
+
+        ebsdNew = grainId;
+
+        if ~ebsdNew.hasGrainId
+          error('The assigned EBSD variable does not contain any grainId.')
+        end
+
+        [isKnown,pos] = ismember(ebsd.id(:),ebsdNew.id(:));
+
+        if ~any(isKnown)
+          error(['The assigned EBSD variable does not contain any of the ' ...
+            'pixels of the EBSD variable it is assigned to.'])
+        end
+
+        grainId = zeros(size(ebsd.id));
+        grainId(isKnown) = ebsdNew.grainId(pos(isKnown));
+
+      end
+
+      if numel(grainId) == length(ebsd)
         ebsd.prop.grainId = reshape(grainId,size(ebsd.id));
       elseif numel(grainId) == nnz(ebsd.isIndexed)
         ebsd.prop.grainId = zeros(size(ebsd));
