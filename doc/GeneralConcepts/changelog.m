@@ -2,18 +2,112 @@
 %
 %% MTEX 7.0 xx/2026 - New Features
 %
+% This is the first release that uses AI. This allowed us to implement many
+% long lasting ideas.  
+%
 % *Grain Reconstruction*
 %
-% <ebsd.calcGrains.html |calcGrains|> covers small grain removal, alpha
-% shapes and gridded as well as arbitrarily placed data in a single call. Its
-% second output replaces the previous |ebsd.grainId = ...| assignment and
-% marks pixels belonging to no grain - not indexed or removed by |'minPixel'|
-% - by |grainId == 0|. All boundary criteria are objects of type
+% Grain reconstruction has been entirely rewritten to give better results, be
+% faster and be more easy to control. The general syntax is now
+%
+%   [grains, ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',5,'alpha',3.1)
+%
+% and allows for three simple parameters to tune the reconstruction
+%
+% * the misorientation threshold - |'angle'|
+% * the minimum number of pixels a grain must contain - |'minPixel'|
+% * the amount non / misindexed regions are reassigned to surrounding grains - |'alpha'|
+%
+% This is explained in detail in <GrainReconstruction.html here> and
+% <GrainReconstructionAdvanced.html here>. For highly deformed materials we
+% greatly improved the <GrainReconstructionMCL.html Fast Multiscale
+% Clustering method>.
+%
+% We have now also a method to <TODO.html clean up pseudo symmetries in
+% EBSD maps> using the command
+%
+%   [ebsd,grains] = cleanUpPseudoSym(ebsd,grains,mori,'threshold',1.5)
+%
+% Along with grain reconstruction we also greatly improved grain boundary
+% smoothing which is now done with the command
+%
+%   grains = smoothBoundary(grains)
+%
+% The command <grain2d.smoothBoundary.html |smoothBoundary|> allows for
+% several backends which are explained in detail <TODO.html here>.
+%
+%
+% *Much Better EBSD Import*
+%
+% Eventually we now have a full functional import wizard for EBSD maps that
+% allows to scroll through your data files, adjust reference system
+% alignment by inspecting ipf maps and pole figures. We put a lot of effort
+% in getting all the different conventions right for all the formats on the
+% market, i.e. from Bruker, EDAX, Oxford, and ThermoFisher. In this process
+% we changed the default plotting convention to |y↓→x|, i.e. the current
+% standard among all vendors. This default can be easily changed by 
+%
+%   ebsd.how2plot = 'y↑→x';
+%   
+% Additionally, we now support multiple data sets per file and allow to
+% import all additional scans that might be present in your file.
+%
+% *Much Faster Plotting of EBSD Maps*
+%
+% Plotting EBSD and grain maps is now orders of magnitude faster. It supports 
+% multiple backends that allow for fast plotting of hexagonal or strongly
+% deformed pixel layouts. The micronbar has been largely improved to
+% include also a small pictogram of the reference system.
+% 
+% *Approximation, Sampling and Clustering*
+%
+% * the new classes @S2FunMLS and @SO3FunMLS approximate scattered data on the
+% sphere and in orientation space by moving least squares
+% * <SO3Fun.optimalSample.html |optimalSample|> (formerly |compactify|)
+% replaces random sampling by an almost perfectly equally distributed set of
+% orientations or directions representing a given function
+% * <orientation.calcCluster.html |calcCluster|> uses by default the
+% <https://github.com/nla-group/classix CLASSIX> algorithm, which is much
+% faster than hierarchical clustering and needs no number of clusters
+% * <PoleFigure.calcODFIterative.html |calcODFIterative|> inverts pole figure
+% data by iteratively adjusting the kernel width, which is much more robust
+% for irregularly sampled data
+% * @planarColorKey encodes two scalar properties at once, the first one as
+% hue, the second one as saturation
+%
+%   sF   = S2FunMLS(nodes,values,'degree',3)
+%   ori  = optimalSample(odf,10000)
+%   [c,center] = calcCluster(ori)
+%   odf  = calcODFIterative(pf,'halfwidth',5*degree)
+%
+% *Rotations, Tangent Spaces and Vector Valued Functions*
+%
+% Two new pages describe the geometry MTEX is built upon.
+% <RotationRepresentations.html Rotation Representations> compares Rodrigues,
+% homochoric and cubochoric vectors and <RotationTangentSpace.html The Tangent
+% Space> the left and the right representation of a tangent vector. A
+% @SO3TangentVector now stores the rotation it is attached to, so switching
+% between both representations needs no orientation passed along
+%
+%   t = odf.grad(ori); right(t)   % t knows ori, no second argument needed
+%
+% What used to be a multivariate function is now a <SO3FunVectorValued.html
+% vector valued> function and arrays of them are handled like any other MATLAB
+% array.
+%
+%% MTEX 7.0 xx/2026 - Technical Changes
+%
+% *Grain Reconstruction*
+%
+% <ebsd.calcGrains.html |calcGrains|> covers small grain removal, alpha shapes
+% and gridded as well as arbitrarily placed data in a single call. Its second
+% output replaces the previous |ebsd.grainId = ...| assignment and marks
+% pixels belonging to no grain - not indexed or removed by |'minPixel'| - by
+% |grainId == 0|. All boundary criteria are objects of type
 % @grainBoundaryCriterion (|gbcAngle|, |gbcSoft|, |gbcFMC|, |gbcVariants|,
 % |gbcCustom|), so any per pixel property may be segmented and every phase may
 % get a threshold of its own
 %
-%   [grains, ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',5,'alpha',3)
 %   grains = calcGrains(ebsd,'angle',{10*degree,15*degree}) % one per phase
 %   grains = calcGrains(ebsd,gbcCustom(ebsd.bc,10))  % segment by band contrast
 %   grains = calcGrains(ebsd,'soft')                 % a soft threshold
@@ -106,17 +200,18 @@
 % boundary faceted. <GrainSmoothingAdvanced.html Advanced Grain Smoothing>
 % compares them.
 %
-% *Much Better EBSD Import*
+% *EBSD Import*
 %
-% All HDF5 flavours (Bruker, EDAX, Oxford, ThermoFisher, ...) are handled by
-% one json driven interface <loadEBSD_h5.html |loadEBSD_h5|>, and the new
-% <import_wizard.html import wizard> comes with file browser, live preview and
-% script export
+% All HDF5 flavours are handled by one json driven interface
+% <loadEBSD_h5.html |loadEBSD_h5|>, so no format has to be guessed and a new
+% vendor is a matter of a json description rather than of a new interface.
+% The <matlab:import_wizard import wizard> is started by |import_wizard| and
+% exports the import as a script
 %
 %   ebsd = EBSD.load('data.h5')                  % no format guessing needed
-%   ebsd = EBSD.load('data.h5','headerOnly')     % phases, header and data sets
 %   ebsd = EBSD.load('data.h5','dataSet',2)      % or 'dataSet','Area 2'
 %   ebsd = EBSD.load('data.h5oina','raw')        % not the post processed data
+%   ebsd = EBSD.load('data.h5','headerOnly')     % phases, header and data sets
 %   ebsd = EBSD.load('data.ctf','EulerCorrection',rotation.byEuler(pi,0,0))
 %
 % * a file holding several maps - EDAX areas, Oxford slices, EMSphInx scans -
@@ -153,25 +248,31 @@
 % files whose header contains a stray carriage return - as written by some
 % EDAX exports - silently lost their first data point.
 %
-% *Much Faster Plotting of EBSD Maps*
+% *Plotting EBSD Maps*
 %
-% EBSD and grain maps are drawn through three backends - |surf|, |patch| and
-% |imagesc|. Non hexagonal data now defaults to |surf|, which is orders of
-% magnitude faster than plotting one unit cell per pixel, and inverse pole
-% figure colors are precomputed via spherical lookup tables. The scale bar has
-% been rewritten as well - it follows the plotting convention, rescales while
-% zooming and takes options
+% EBSD and grain maps are drawn through three backends - |imagesc|, |surf| and
+% |patch|. An axis aligned square grid goes to |imagesc|, any other square
+% grid to |surf|, a hexagonal grid to |patch|, and inverse pole figure colors
+% are precomputed via spherical lookup tables. Only |patch| draws one unit
+% cell per pixel, which is what made large maps slow, so the routing may be
+% overruled by |'backend'| and the exact unit cells are still available by
+% |'exact'|
 %
-%   plot(ebsd,ebsd.orientation)                      % fast, default
-%   plot(ebsd,ebsd.orientation,'exact')              % exact unit cells
+%   plot(ebsd,ebsd.orientations)                 % fast, the new default
+%   plot(ebsd,ebsd.orientations,'exact')         % exact unit cells, as before
+%   plot(ebsd,ebsd.orientations,'backend','patch')
+%
+% The micron bar has been rewritten as a @scaleBar object - it follows the
+% plotting convention, rescales while zooming and takes options
+%
 %   plot(ebsd,'Location','nw','SBBackgroundColor','k','SBLineColor','w','Length',50)
 %
-% *Every Plot Shows its Reference Frame*
+% *Reference Frame Annotations*
 %
-% On top of the scale bar a box indicates how the specimen reference frame is
+% On top of the micron bar a box indicates how the specimen reference frame is
 % aligned on screen - an arrow for every axis with a component in the screen
 % plane, a circled dot or cross for the one pointing out of or into it,
-% exactly as in the string form of @plottingConvention - and follows the data
+% exactly as in the string form of @plottingConvention. It follows the data
 % when the map is reoriented, e.g. by <plottingConvention.setView.html
 % |setView|>.
 %
@@ -194,72 +295,49 @@
 %   plot(ebsd,ebsd.orientations,'refFrame','off')
 %   setMTEXpref('showRefFrame','off')
 %
-% *x to the East and y to the South by Default*
+% *The Default Plotting Convention*
 %
-% The default plotting convention is now <plottingConvention.ij.html
+% The new default |y↓→x| is <plottingConvention.ij.html
 % |plottingConvention.ij|> - x to east, y to south and z into the screen - as
 % SEM images are displayed and nearly every EBSD import states anyway. Pole
 % figures are not affected, spherical plots align themselves with the
-% hemisphere they show. Data plotted the default way now refers to the one
-% default convention instead of a copy of it, hence changing the default also
-% turns data imported before. This requires modifying the default in place -
-% assigning to it installs a new default and detaches all data referring to
-% the old one
+% hemisphere they show. A @plottingConvention is stated as a string, each axis
+% followed or preceded by the direction it points to on screen
+%
+%   ebsd.how2plot = 'y↑→x'            % also 'x←↑y', 'z⊙→x', ASCII 'y^->x'
+%
+% Data plotted the default way now refers to the one default convention
+% instead of a copy of it, hence changing the default also turns data imported
+% before. Since @plottingConvention is a handle class this requires modifying
+% the default in place - assigning to it installs a new default and detaches
+% all data still referring to the old one
 %
 %   pC = plottingConvention.default; pC.east = yvector;   % turns all data
 %   plottingConvention.default.east = yvector;            % does not
+%   plottingConvention.default('y↑→x')                    % a new default
 %
 % *Approximation, Sampling and Clustering*
 %
-% * the new classes @S2FunMLS and @SO3FunMLS approximate scattered data on the
-% sphere and in orientation space by moving least squares, supporting vector
-% valued data, outlier detection, smoothly varying support radii and Voronoi
-% weights
-% * <SO3Fun.optimalSample.html |optimalSample|> (formerly |compactify|)
-% replaces random sampling by an almost perfectly equally distributed set of
-% orientations or directions representing a given function
-% * <orientation.calcCluster.html |calcCluster|> uses by default the
-% <https://github.com/nla-group/classix CLASSIX> algorithm, which is much
-% faster than hierarchical clustering and needs no number of clusters
-% * <PoleFigure.calcODFIterative.html |calcODFIterative|> inverts pole figure
-% data by iteratively adjusting the kernel width, which is much more robust
-% for irregularly sampled data
-% * @planarColorKey encodes two scalar properties at once, the first one as
-% hue, the second one as saturation
+% Moving least squares approximation supports vector valued data, outlier
+% detection, smoothly varying support radii and Voronoi weights, and
+% @planarColorKey turns any pair of scalar properties into a color
 %
-%   sF   = S2FunMLS(nodes,values,'degree',3)
 %   SO3F = SO3FunMLS(ori,values,'delta',5*degree,'detectOutliers')
-%   ori  = optimalSample(odf,10000)
-%   [c,center] = calcCluster(ori)
-%   odf  = calcODFIterative(pf,'halfwidth',5*degree)
 %   cK   = planarColorKey(winter,'colorModel','white');
 %   rgb  = cK.property2color(grains.longAxis,grains.aspectRatio);
 %
-% *Rotations, Tangent Spaces and Vector Valued Functions*
+% *Tangent Spaces and Vector Valued Functions*
 %
-% Two new pages describe the geometry MTEX is built upon.
-% <RotationRepresentations.html Rotation Representations> compares Rodrigues,
-% homochoric and cubochoric vectors - which region of space each fills and
-% whether it preserves volume - and <RotationTangentSpace.html The Tangent
-% Space> the left and the right representation of a tangent vector. A
-% @SO3TangentVector now stores the rotation it is attached to along with the
-% symmetries, so switching between both representations needs no orientation
-% passed along, and for @SO3VectorFieldHarmonic the switch is performed
-% directly on the harmonic coefficients
-%
-%   rot = rotation.byHomochoric(v)
-%   t = odf.grad(ori); right(t)   % t knows ori, no second argument needed
-%
-% What used to be a multivariate function is now a <SO3FunVectorValued.html
-% vector valued> function. Arrays of them are handled like any other MATLAB
-% array - |cat|, |reshape|, |permute|, |squeeze|, |transpose|, indexing and
-% assignment - which worked for @SO3FunHarmonic only and now works for
-% @SO3FunHandle and @SO3FunRBF as well. @SO3VectorField comes with the
-% arithmetic |+,-,.*,./| together with |dot| and |normSquare|, and a
-% @SO3FunRBF draws its pole figures, inverse pole figures and sections
-% directly instead of through a harmonic approximation.
-%
-%% MTEX 7.0 xx/2026 - Technical Changes
+% A @SO3TangentVector stores the symmetries along with the rotation it is
+% attached to, and for @SO3VectorFieldHarmonic the switch between the left and
+% the right representation is performed directly on the harmonic
+% coefficients. Arrays of vector valued functions support |cat|, |reshape|,
+% |permute|, |squeeze|, |transpose|, indexing and assignment - which worked
+% for @SO3FunHarmonic only and now works for @SO3FunHandle and @SO3FunRBF as
+% well. @SO3VectorField comes with the arithmetic |+,-,.*,./| together with
+% |dot| and |normSquare|, and a @SO3FunRBF draws its pole figures, inverse
+% pole figures and sections directly instead of through a harmonic
+% approximation.
 %
 % *Syntax Changes*
 %
@@ -281,10 +359,6 @@
 % y, z
 % * |gB.V| returns the two end points of every boundary segment, the plain
 % list of all vertices is |gB.allV|
-% * a @plottingConvention may be stated as a string, each axis followed or
-% preceded by the direction it points to on screen
-%
-%   pC = plottingConvention('y↑→x')   % also 'x←↑y', 'z⊙→x', ASCII 'y^->x'
 %
 % *Renamed and Removed*
 %
