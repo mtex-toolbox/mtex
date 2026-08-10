@@ -153,6 +153,7 @@ The multi-release work. Everything here is bigger than one branch.
 | E11 | `@EBSDsquare/interp` dies in `griddedInterpolant` with "Data is in MESHGRID format" on a gridified map; both orientations of the try/catch fallback fail | 2 | 0 | bug | — | docs/doc-audit-plan.md item 10 |
 | E12 | `latticeBasis:38` "Index exceeds array bounds" — the real defect is a degenerate, self-intersecting unit cell reaching it, not the unguarded index | 2 | 1 | bug | — | [→](#e12) |
 | E13 | `gridify` transposes the map at a 45° grid rotation — the layout tie-break is decided by float noise | 1 | 0 | bug | — | [→](#e13) |
+| E14 | `gridify` cannot place a rotated hexagonal grid — now refused rather than silently overwriting 5% of the map | 2 | 1 | planned | — | [→](#e14) |
 
 ---
 
@@ -581,6 +582,54 @@ an axis are gone — a known linear field is recovered exactly on 30 and 45
 degree rotated, sheared and hex geometries. The hex version also turned out
 to be wrong by `sqrt(3)` in one tensor column and is fixed. `interp` is
 still open, phase 5 of that project.
+
+### E14
+`@EBSD/private/hexify.m` places each measurement by rounding its raw x/y
+against hard coded `sqrt(3)` and `3/2` factors taken off `ebsd.extent`, so
+it only describes a hex lattice aligned with the axes. On a rotated one
+several measurements round onto the same cell and
+`phaseId(newId) = ebsd.phaseId` keeps whichever comes last:
+
+| map | rotation | collisions |
+|---|---|---|
+| titanium (8100 px) | 20° | 421 (5.2%) |
+| titanium | 45° | 621 (7.7%) |
+| ferrite (63045 px) | 20° | 3407 (5.4%) |
+| ferrite | 45° | 4858 (7.7%) |
+
+Measured 2026-08-10. As of that date hexify **refuses** such a grid with
+`MTEX:hexify:notAxisAligned` rather than losing the data, and points at the
+workaround, `ebsd.gridify('unitCell',uC)` with a square cell, which is
+verified to work on a rotated hex map. The square path has no such
+restriction - `squarify` goes through `calcMesh`/`latticeBasis` and is
+rotation and distortion tolerant.
+
+**To actually support it**, hexify has to be rebuilt on `ebsd.lattice` the
+way squarify is: take the axial index `ij`, map it to the staggered
+(row,col) layout, and take positions from `latticeModel` so measured nodes
+stay exact instead of being replaced by theoretical ones.
+
+The open design question is the axial to offset convention, and it is not a
+detail: `@EBSDhex/cube2hex.m` and `hex2cube.m` encode a specific one keyed
+on `isRowAlignment` and `offset`,
+
+```matlab
+col = 1 + x + (z - ebsd.offset * ~iseven(round(z))) / 2;   % row aligned
+row = 1 + z;
+```
+
+and every stored `@EBSDhex` depends on it. `latticeBasis` returns a1 at the
+smallest polar angle in [0,180) and a2 at +60°, which for a pointy top cell
+puts a1 along +x but for a flat top one puts it at 30° - so picking the row
+direction from the lattice alone would re-lay-out existing flat top maps.
+Either the choice has to reproduce today's layout for the axis aligned
+cases, or the layout change has to be deliberate and versioned.
+
+Blocks the `@EBSDhex` half of the "@EBSD self-sufficient" project (phase 6):
+`dHex` + `isRowAlignment` cannot express a rotated grid at all, so they have
+to become dependent on a general `unitCell` at the same time, and the
+constructor has to stop overwriting the unit cell with an axis aligned
+hexagon (`EBSDhex.m:47`).
 
 ### E13
 `@EBSD/private/squarify.m`'s `orientGrid` decides which lattice direction

@@ -63,6 +63,7 @@ checkSubGrid;
 checkFillGridFree;
 checkInterp;
 checkPos2Ind;
+checkHexRotatedRefused;
 
 disp('gridify: all checks passed');
 
@@ -454,5 +455,43 @@ for k = 1:size(cases,1)
     cases{k,1});
 
 end
+
+end
+
+% =========================================================================
+function checkHexRotatedRefused
+% a rotated hex grid is refused, not silently overwritten (TODO.md E14)
+%
+% hexify rounds raw x/y against hard coded sqrt(3) and 3/2 factors, so it
+% only describes an axis aligned hex lattice. Rotated, several measurements
+% round onto one cell and the last one wins - 5.2% of titanium at 20 degree.
+
+e0 = EBSD(mtexdata('titanium','silent'));
+
+% axis aligned still works, and loses nothing
+[g,newId] = e0.gridify;
+assert(isa(g,'EBSDhex') && numel(unique(newId)) == numel(newId), ...
+  'check_gridify: an axis aligned hex map no longer gridifies cleanly');
+
+% rotated is refused, by identifier rather than by message text
+for w = [20 45]
+  eR = rotate(e0,w*degree,'keepEuler');
+  ok = false;
+  try
+    eR.gridify;
+  catch ME
+    ok = strcmp(ME.identifier,'MTEX:hexify:notAxisAligned');
+  end
+  assert(ok, ...
+    ['check_gridify: a hex map rotated by %d degree was not refused - ' ...
+    'it silently overwrites measurements that share a cell'], w);
+end
+
+% and the workaround the error message names really works
+eR = rotate(e0,20*degree,'keepEuler');
+uC = eR.dPos/2 * vector3d([-1 1 1 -1],[-1 -1 1 1],0);
+gS = eR.gridify('unitCell',uC);
+assert(isa(gS,'EBSDsquare'), ...
+  'check_gridify: resampling a rotated hex map onto a square cell failed');
 
 end

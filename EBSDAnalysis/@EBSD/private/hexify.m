@@ -68,7 +68,25 @@ if ~check_option(varargin,'nearest')
   end
 
   newId = sub2ind([nRows+1 nCols+1],row,col);
-  
+
+  % Every measurement must land on its own cell. The rounding above works in
+  % raw x/y against hard coded sqrt(3) and 3/2 factors, so it only describes
+  % a hex lattice that is aligned with the axes; on a rotated one it maps
+  % several measurements onto one cell and the scatter below then silently
+  % keeps whichever came last - 421 of 8100 pixels on titanium rotated by 20
+  % degree, 3407 of 63000 on ferrite. Refuse instead of losing data.
+  nCollide = numel(newId) - numel(unique(newId));
+  if nCollide > 0
+    error('MTEX:hexify:notAxisAligned', ...
+      ['This hexagonal grid is not aligned with the x/y axes, and gridify ' ...
+      'cannot place it: %d of %d measurements (%.1f%%) would share a grid ' ...
+      'cell and be overwritten.\n\nRotated hexagonal grids are not ' ...
+      'supported yet - see TODO.md E14. A square grid has no such ' ...
+      'restriction, so ebsd.gridify(''unitCell'',uC) with a square unit ' ...
+      'cell is the way to grid this map today.'], ...
+      nCollide, numel(newId), 100*nCollide/numel(newId));
+  end
+
   % set phaseId to notIndexed at all empty grid points
   phaseId = nan(size(x));
   phaseId(newId) = ebsd.phaseId;
