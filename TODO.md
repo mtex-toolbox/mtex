@@ -149,7 +149,7 @@ The multi-release work. Everything here is bigger than one branch.
 | E7 | Edge-preserving bilateral filter | 1 | 1 | idea | — | #346 |
 | E8 | Texture strength index computed directly from EBSD data | 1 | 1 | idea | — | — |
 | E9 | `orientation` ↔ property mapping | 1 | 1 | idea | — | — |
-| E10 | `EBSD3.xy2ind`, `EBSDsquare/gradientX`, `gradientY`, `interp` need a review — several disagree with their gridded counterparts | 2 | 1 | planned | — | [→](#e10) |
+| E10 | `EBSD3.xy2ind` and `EBSDsquare/interp` need a review — `gradientX`/`gradientY` are done | 2 | 1 | planned | — | [→](#e10) |
 | E11 | `@EBSDsquare/interp` dies in `griddedInterpolant` with "Data is in MESHGRID format" on a gridified map; both orientations of the try/catch fallback fail | 2 | 0 | bug | — | docs/doc-audit-plan.md item 10 |
 | E12 | `latticeBasis:38` "Index exceeds array bounds" — the real defect is a degenerate, self-intersecting unit cell reaching it, not the unguarded index | 2 | 1 | bug | — | [→](#e12) |
 | E13 | `gridify` transposes the map at a 45° grid rotation — the layout tie-break is decided by float noise | 1 | 0 | bug | — | [→](#e13) |
@@ -575,9 +575,12 @@ Kept verbatim from the old file as the list to review together:
 both were deleted 2026-08-10 as dead code. Nothing called them —
 `spatialDecompositionAlpha` builds its own dummy ring in index space.
 
-`gradientX`/`gradientY` and `interp` are addressed by the "@EBSD
-self-sufficient" project (phases 2 and 5), which moves them onto
-`ebsd.lattice` and removes the `error('Todo')` for rotated grids.
+`gradientX`/`gradientY` are **done**: they now live on `@EBSD`, are computed
+on `ebsd.lattice`, and the three `error('Todo')` for grids not aligned with
+an axis are gone — a known linear field is recovered exactly on 30 and 45
+degree rotated, sheared and hex geometries. The hex version also turned out
+to be wrong by `sqrt(3)` in one tensor column and is fixed. `interp` is
+still open, phase 5 of that project.
 
 ### E13
 `@EBSD/private/squarify.m`'s `orientGrid` decides which lattice direction

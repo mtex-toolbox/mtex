@@ -7,10 +7,18 @@ function varargout = gridify(ebsd,varargin)
 % are set to NaN. Having the EBSD data in matrix form has several
 % advantages:
 %
-% * required for <OrientationGradient.html gradient>,
-% <EBSDsquare.curvature.html curvature> and <GND> computation
+% * the data can be handed to image processing and registration tools as a
+%   matrix, and ebsd(i,j) addresses a scan position
 % * much faster visualization of big maps
 % * much faster computation of the kernel average misorientation
+%
+% It is no longer required for <OrientationGradient.html gradient>,
+% <EBSD.curvature.html curvature>, <EBSD.calcGND.html GND> or the gradient
+% method of <EBSD.weightedBurgersVec.html weightedBurgersVec> - those are
+% computed on the virtual lattice (see <EBSD.lattice.html lattice>) and work
+% on a plain @EBSD, on a phase subset, and on rotated or sheared grids. The
+% integral method of weightedBurgersVec and <EBSD.smooth.html denoising> are
+% raster algorithms and still gridify internally.
 %
 % Syntax
 %   [ebsdGrid,newId] = gridify(ebsd)

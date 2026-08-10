@@ -77,8 +77,12 @@ hold off
 % Starting point of any GND computation is the curvature tensor, which is a
 % rank two tensor that is defined for every pixel in the EBSD map by the
 % directional derivatives in x, y and z direction.
+%
+% The curvature is computed on the virtual lattice and does not require a
+% grid - |curvature(ebsd('indexed'))| would work just as well. We gridify
+% anyway, so that the tensor comes back in the shape of the map and can be
+% addressed by pixel coordinates, as shown just below.
 
-% consider only the Fe(alpha) phase 
 ebsd = ebsd('indexed').gridify;
 
 % compute the curvature tensor
