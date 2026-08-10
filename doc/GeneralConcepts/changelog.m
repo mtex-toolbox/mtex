@@ -23,8 +23,8 @@
 % greatly improved the <GrainReconstructionMCL.html Fast Multiscale
 % Clustering method>.
 %
-% We have now also a method to <TODO.html clean up pseudo symmetries in
-% EBSD maps> using the command
+% We have now also a method to <EBSDPseudoSymmetry.html clean up pseudo
+% symmetries in EBSD maps> using the command
 %
 %   [ebsd,grains] = cleanUpPseudoSym(ebsd,grains,mori,'threshold',1.5)
 %
