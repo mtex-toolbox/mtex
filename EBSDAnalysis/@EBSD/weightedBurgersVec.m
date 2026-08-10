@@ -35,7 +35,7 @@ function W = weightedBurgersVec(ebsd,varargin)
 % through crystalline materials>, J. Microscopy, 2009.
 %
 
-if ~(isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex'))
+if ~isa(ebsd,'EBSDgrid')
   ebsd = ebsd.gridify;
 end
 

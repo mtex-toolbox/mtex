@@ -1,6 +1,10 @@
-classdef EBSDsquare < EBSD
+classdef EBSDsquare < EBSDgrid
   % EBSD data on a rectangular grid. In contrast to arbitrary EBSD data the
   % values are stored in a matrix.
+  %
+  % pos(i,j) is affine in (i,j) here - the grid may be rotated or sheared,
+  % but the step between adjacent entries is the same everywhere, which is
+  % what separates this from @EBSDhex.
   
   properties (Dependent = true)
     gradient1 % orientation gradient in dimension 1

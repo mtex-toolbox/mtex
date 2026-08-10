@@ -34,7 +34,7 @@ point2 = point2(1,1:2);
 
 rec = [min(point1,point2), abs(point1-point2)];
 id = inpolygon(ebsd,rec);
-if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')
+if isa(ebsd,'EBSDgrid')
   ebsd = ebsd.subSet(id);
   ebsd = ebsd.gridify;
 else

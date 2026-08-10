@@ -1,4 +1,4 @@
-classdef EBSDhex < EBSD
+classdef EBSDhex < EBSDgrid
   % EBSD data on a hexagonal grid. In contrast to arbitrary EBSD data the
   % values are stored in a matrix.
   

@@ -16,7 +16,7 @@ function ebsd = fill(ebsd,varargin)
 % TODO: this will not work for maps not in the xy plane
 
 
-if ~(isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')), ebsd = ebsd.gridify; end
+if ~isa(ebsd,'EBSDgrid'), ebsd = ebsd.gridify; end
 
 % the values to be filled
 nanId = isnan(ebsd.rotations);
