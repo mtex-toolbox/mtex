@@ -143,6 +143,42 @@ specimen of known orientation, see `quartz_orientation_calibration
 every value seen so far is 0 or pi, which are their own inverses.
 `Header/Detector Orientation Euler` (CS3 -> microscope) plays no role in this.
 
+## The traditional Oxford formats, ctf and crc/cpr
+
+Not hdf5, but the same vendor and the same question, and the conclusions
+differ - so they are recorded here next to the h5oina reasoning rather than
+being rediscovered.
+
+`.ctf` states `AcqE1/2/3` and `.cpr` an `[Acquisition Surface]` section with
+`Euler1/2/3`, both in degree. These are one and the same quantity: the
+`EDXLMDTi64_alpha` map is exported both ways and carries `-90, 0, 0` in each.
+It is also the same quantity as h5oina's `Specimen Orientation Euler`, i.e.
+the acquisition surface CS1 against the user's own CS0, which is exactly the
+field that is *not* read for h5oina. So neither loader applies it - doing so
+would reintroduce in `.ctf` and `.crc` the very problem removed from the
+Oxford config. Since MTEX 7 the value is reported when it is not zero, so a
+user at least learns that the acquisition was not set up the way the assumed
+180 degree takes for granted; the note is suppressed for `'wizard'`, for an
+explicit `'EulerCorrection'` and under `generatingHelpMode`. It is not rare -
+non zero in 4 of the 11 `.ctf` and 3 of the 4 `.cpr` files at hand, and
+`niessen/TRWIP_HR_1CC.cpr` puts its `-90` on the *second* angle, so it is not
+a constant either.
+
+Two reasons not to simply mirror the h5oina fix here:
+
+* a `.ctf` header states *"Euler angles refer to Sample Coordinate system
+  (CS0)!"*. If that is literal the export has already applied the acquisition
+  surface orientation and `AcqE` is a record of what was done, so applying it
+  again would double count.
+* neither format appears to state anything like `Scanning Rotation Angle`.
+  The `.ctf` header carries `TiltAngle` and `TiltAxis` but nothing for the
+  beam view against camera view turn, which would mean the hardcoded 180
+  degree there is unavoidable rather than lazy.
+
+Deciding this needs a `.ctf` with a non zero `AcqE` together with the h5oina
+of the same map. `oli_test` has `AcqE = 0` and cannot distinguish the cases;
+`EDXLMDTi64_alpha` has `-90` but no h5oina twin.
+
 Crystal vs. Cartesian Coordinate systeme:
 ??? seems to be default MTEX convention x||a* z||c
 

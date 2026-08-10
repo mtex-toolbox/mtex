@@ -32,8 +32,16 @@ options = loader.getOptions('ignoreColumns',{'phase','x','y'});
 ebsd = EBSD(pos,rot,phases,CS,options,'unitCell',param.unitCell);
 ebsd.opt.header = cpr;
 
-% change reference frame
-ebsd = applyEulerCorrectionFixed(ebsd,'.cpr',rotation.byEuler(pi,0,0),varargin{:});
+% change reference frame - [Acquisition Surface] is the acquisition surface
+% orientation, reported but not applied, see applyEulerCorrectionFixed
+acq = [];
+if isfield(cpr,'acquisitionsurface') && ...
+    all(isfield(cpr.acquisitionsurface,{'euler1','euler2','euler3'}))
+  acq = [cpr.acquisitionsurface.euler1, cpr.acquisitionsurface.euler2, ...
+    cpr.acquisitionsurface.euler3];
+end
+ebsd = applyEulerCorrectionFixed(ebsd,'.cpr',rotation.byEuler(pi,0,0),...
+  varargin{:},'acquisitionEuler',acq);
 
 end
 
