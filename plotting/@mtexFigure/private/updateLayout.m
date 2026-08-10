@@ -15,7 +15,12 @@ if isempty(mtexFig.children), return;end
 % The tight inset has to be recomputed on any such change: it is what
 % reserves the band, and it is also where cBarShift - used by
 % resizeColorBar below - is determined.
-if adoptColorbars
+%
+% The same applies to a legend asked to sit outside the axes, see
+% adoptLegend.
+changed = adoptColorbars;
+changed = adoptLegend(mtexFig) || changed;
+if changed
   [mtexFig.tightInset,mtexFig.figTightInset] = calcTightInset(mtexFig);
 end
 
@@ -77,7 +82,40 @@ if isscalar(mtexFig.cBarAxis) && i>1
   end
   set(mtexFig.cBarAxis,'position',pos);
 end
-  
+
+% position the legend within the band calcTightInset has reserved for it -
+% at mtexFig.legendSpacing from the axes and centered along the other
+% direction
+if ~isempty(mtexFig.legendAxis) && all(isgraphics(mtexFig.legendAxis))
+
+  set(mtexFig.legendAxis,'Units','pixels');
+  pos = get(mtexFig.legendAxis,'Position');
+
+  % bounding box of all axes
+  box = cell2mat(get(mtexFig.children(:),{'Position'}));
+  ll = min(box(:,1:2),[],1);
+  box = [ll, max(box(:,1:2)+box(:,3:4),[],1) - ll];
+
+  switch mtexFig.legendSide
+    case 'east'
+      pos(1) = box(1) + box(3) + mtexFig.legendSpacing;
+      pos(2) = box(2) + (box(4) - pos(4))/2;
+    case 'west'
+      pos(1) = box(1) - mtexFig.legendSpacing - pos(3);
+      pos(2) = box(2) + (box(4) - pos(4))/2;
+    case 'north'
+      pos(1) = box(1) + (box(3) - pos(3))/2;
+      pos(2) = box(2) + box(4) + mtexFig.legendSpacing;
+    case 'south'
+      pos(1) = box(1) + (box(3) - pos(3))/2;
+      pos(2) = box(2) - mtexFig.legendSpacing - pos(4);
+  end
+
+  % assigning a position switches the legend to manual placement, which is
+  % what keeps MATLAB from resizing the axes underneath us
+  set(mtexFig.legendAxis,'Position',pos);
+end
+
 % revert figure units
 set(mtexFig.parent,'Units',old_units);
 

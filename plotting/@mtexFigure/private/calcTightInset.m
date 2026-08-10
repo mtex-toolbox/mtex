@@ -100,6 +100,27 @@ end
    end
  end
  
+ % consider a legend placed outside the axes - reserve a band of its size
+ % plus the requested spacing, so that the legend does not eat into the
+ % space given to the axes. It is positioned within that band in
+ % updateLayout.
+ if ~isempty(mtexFig.legendAxis) && all(isgraphics(mtexFig.legendAxis))
+
+   set(mtexFig.legendAxis,'Units','pixels');
+   pos = get(mtexFig.legendAxis,'Position');
+
+   switch mtexFig.legendSide
+     case 'east'
+       figTightInset(3) = figTightInset(3) + pos(3) + mtexFig.legendSpacing;
+     case 'west'
+       figTightInset(1) = figTightInset(1) + pos(3) + mtexFig.legendSpacing;
+     case 'north'
+       figTightInset(4) = figTightInset(4) + pos(4) + mtexFig.legendSpacing;
+     case 'south'
+       figTightInset(2) = figTightInset(2) + pos(4) + mtexFig.legendSpacing;
+   end
+ end
+
  % consider sgtitle
  h = findobj(gcf,'Type','subplottext');
  if ~isempty(h)

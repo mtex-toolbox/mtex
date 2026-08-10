@@ -11,10 +11,13 @@ classdef mtexFigure < handle
 %
 %
 % Class Properties
-%  parent            - handle of the parent figure    
+%  parent            - handle of the parent figure
 %  children          - handles to all axes
 %  cBarAxis          - handles to all colorbar axes
-%  innerPlotSpacing  - 
+%  legendAxis        - handle of a legend placed outside the axes
+%  legendSide        - side the legend is placed at
+%  legendSpacing     - spacing between the axes and the legend
+%  innerPlotSpacing  -
 %  keepAspectRatio   - 
 %  nrows = 1         - number of rows
 %  ncols = 1         - number of columns
@@ -66,11 +69,14 @@ classdef mtexFigure < handle
 %
 
   properties
-    parent            % the parent figure    
+    parent            % the parent figure
     children          % the axes
     cBarAxis          % the colorbar axes
+    legendAxis        % the legend, if it is placed outside the axes
+    legendSide = 'east' % side the legend is placed at
+    legendSpacing     % spacing between the axes and the legend
     innerPlotSpacing  %
-    keepAspectRatio   % 
+    keepAspectRatio   %
     nrows = 1         % number of rows
     ncols = 1         % number of columns
     axisWidth         % width of an individual axis
@@ -127,6 +133,8 @@ classdef mtexFigure < handle
         getMTEXpref('outerPlotSpacing'));
       mtexFig.innerPlotSpacing = get_option(varargin,'innerPlotSpacing',...
         getMTEXpref('innerPlotSpacing'));
+      mtexFig.legendSpacing = get_option(varargin,'legendSpacing',...
+        getMTEXpref('legendSpacing',mtexFig.innerPlotSpacing));
       mtexFig.keepAspectRatio = get_option(varargin,'keepAspectRatio',true);
       
       colrow = get_option(varargin,'layout',[1 1]);

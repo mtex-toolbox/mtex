@@ -409,6 +409,13 @@
 %
 % *Under the Hood*
 %
+% * a legend placed outside the axes is laid out by @mtexFigure, not by
+% MATLAB, which used to leave its distance to the plot depending on how many
+% times the figure had been resized. The distance is |'legendSpacing'|, e.g.
+% |plot(cS,'colored','legendSpacing',30)|, or |setMTEXpref('legendSpacing',30)|
+% * an axes is shaped like the shadow its plot box casts on the screen, so
+% that a @crystalShape no longer sits in a much too wide axes
+%
 % * markers are drawn as scatter objects throughout, which is faster than the
 % patches used before and keeps marker transparency on |print| and
 % |exportgraphics|, where it used to be lost in every file format. Lines, i.e.
