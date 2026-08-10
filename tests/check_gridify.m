@@ -96,19 +96,31 @@ end
 
 % =========================================================================
 function checkMapShapedInput
-% gridify works on an EBSD whose pos was handed over map shaped (r x c)
+% an EBSD built from map shaped (r x c) input is flat and gridifies
 %
-% Regression: calcMesh compared an explicitly flattened ideal grid against
-% pos in whatever shape the caller had passed. With a map shaped pos that
-% subtraction is (N x 1) minus (r x c), which used to hang forever in
-% vector3d/plus and errors since then - although nothing in the algorithm
-% cares how the caller shaped its input.
+% Regression, two layers. The constructor flattened phaseId and id but
+% stored pos and rotations exactly as handed over, so the object looked
+% valid while size(ebsd) - which is size(ebsd.id) - contradicted the data
+% it held. It then detonated inside gridify, where calcMesh compared an
+% explicitly flattened ideal grid against pos in the callers shape: an
+% (N x 1) minus (r x c) subtraction, which used to hang forever in
+% vector3d/plus. A map shaped @EBSD is what @EBSDsquare / @EBSDhex are
+% for, so the constructor normalizes to a flat list.
 
 sz = 20; d = 0.3;
 [Y,X] = ndgrid((0:sz-1)*d,(0:sz-1)*d);
 
 ebsd = EBSD(vector3d(X,Y,zeros(sz)), rotation.rand(sz,sz), ones(sz,sz), ...
   {crystalSymmetry('m-3m')}, struct('bc',rand(sz,sz)));
+
+s = size(ebsd);
+assert(isequal(s,[sz^2 1]), ...
+  'check_gridify: a map shaped input gives an EBSD of size %s',mat2str(s));
+assert(isequal(size(ebsd.pos),s) && isequal(size(ebsd.rotations),s) && ...
+  isequal(size(ebsd.phaseId),s) && isequal(size(ebsd.bc),s), ...
+  'check_gridify: the constructor stores pos %s, rotations %s, phaseId %s, bc %s next to an id of %s',...
+  mat2str(size(ebsd.pos)),mat2str(size(ebsd.rotations)),...
+  mat2str(size(ebsd.phaseId)),mat2str(size(ebsd.bc)),mat2str(s));
 
 [ebsdGrid,newId] = ebsd.gridify;
 
@@ -118,6 +130,15 @@ assert(numel(ebsdGrid) == sz^2, ...
 
 assert(max(norm(ebsdGrid.pos(newId) - ebsd.pos(:))) < 1e-10 * d, ...
   'check_gridify: a map shaped pos does not survive gridify');
+
+% a genuine N x k property is not a map and keeps its columns
+N = 50; fse = rand(N,5);
+ebsd = EBSD(vector3d((0:N-1).'*d,zeros(N,1),zeros(N,1)), rotation.rand(N,1), ...
+  ones(N,1), {crystalSymmetry('m-3m')}, struct('fse',fse));
+
+assert(isequal(ebsd.fse,fse), ...
+  'check_gridify: a multi column property was flattened to %s',...
+  mat2str(size(ebsd.fse)));
 
 end
 

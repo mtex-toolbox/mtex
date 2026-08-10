@@ -116,23 +116,39 @@ classdef EBSD < phaseList & dynProp & dynOption
           pos = vector3d(pos(:,1),pos(:,2),0);
         end
       end
-      ebsd.pos = pos;
+      % an @EBSD is a flat list of measurements - size(ebsd) is size(ebsd.id)
+      % and id is a column below, as is phaseId. Map shaped (r x c) data is
+      % what the grid classes @EBSDsquare / @EBSDhex are for, so normalize
+      % the input here rather than storing pos and rotations in a shape that
+      % contradicts id, phaseId and size(ebsd) - an object that looks valid
+      % but breaks much later, e.g. inside gridify.
+      sPos = size(pos);
+      ebsd.pos = pos(:);
 
       CSList = ensureCSArray(CSList);
-      
+
       if class(rot) ~= "rotation", rot = rotation(rot); end
-      ebsd.rotations = rot;
+      ebsd.rotations = rot(:);
       if check_option(varargin,'phaseMap')
-        ebsd.phaseId = phases;
+        ebsd.phaseId = phases(:);
         ebsd.CSList = CSList;
         ebsd.phaseMap = get_option(varargin,'phaseMap');
       else
         ebsd = ebsd.init(phases,CSList);
       end
-      
+
       ebsd.id = (1:numel(phases)).';
-            
-      % extract additional properties
+
+      % extract additional properties - a property handed over in the shape
+      % of pos is flattened along with it, while a genuine N x k property
+      % (e.g. multi channel image data) keeps its columns
+      if isstruct(prop)
+        for fn = fieldnames(prop).'
+          if isequal(size(prop.(char(fn))),sPos)
+            prop.(char(fn)) = prop.(char(fn))(:);
+          end
+        end
+      end
       ebsd.prop = prop;
 
       % remove nan positions
