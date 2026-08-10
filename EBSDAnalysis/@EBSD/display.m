@@ -57,9 +57,18 @@ else
   disp(char(dynProp(ebsd.prop)));
 end
 disp(strong(" Scan unit") + " : " + ebsd.scanUnit);
-ext = ebsd.extent;
-disp(strong(" X x Y x Z") + " : [" + xnum2str(ext(1:2),'delimiter',', ') + "] x [" + ...
-  xnum2str(ext(3:4),'delimiter',', ') + "] x [" + xnum2str(ext(5:6),'delimiter',', ') + "]");
+
+% an EBSD may hold measurements and yet no positions - a damaged file, or
+% one written by a version that stored them elsewhere. extent is empty
+% then, so ext(1:2) would throw and the display would be the thing that
+% breaks on the very object one is trying to look at
+if isempty(ebsd.pos)
+  disp(strong(" X x Y x Z") + " : none, this EBSD has no positions");
+else
+  ext = ebsd.extent;
+  disp(strong(" X x Y x Z") + " : [" + xnum2str(ext(1:2),'delimiter',', ') + "] x [" + ...
+    xnum2str(ext(3:4),'delimiter',', ') + "] x [" + xnum2str(ext(5:6),'delimiter',', ') + "]");
+end
 disp(strong(" Normal vector") + ": (" + ...
   char(round(ebsd.N,'accuracy',5*degree)) + ")");
 
