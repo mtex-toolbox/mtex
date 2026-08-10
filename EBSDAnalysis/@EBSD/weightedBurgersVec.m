@@ -35,10 +35,6 @@ function W = weightedBurgersVec(ebsd,varargin)
 % through crystalline materials>, J. Microscopy, 2009.
 %
 
-if ~isa(ebsd,'EBSDgrid')
-  ebsd = ebsd.gridify;
-end
-
 if check_option(varargin,'gradient') % use the gradient method
   
   % the incomplete curvature tensor
@@ -52,6 +48,11 @@ if check_option(varargin,'gradient') % use the gradient method
   W = reshape(W,size(ebsd));
   
 else % use the integral method
+
+  % the integral method is a 2d raster algorithm - filter2/ordfilt2 over a
+  % window shape - so it still needs the matrix form. The gradient branch
+  % above no longer does.
+  if ~isa(ebsd,'EBSDgrid'), ebsd = ebsd.gridify; end
 
   % ensure orientations 
   ebsd = ebsd.project2FundamentalRegion;

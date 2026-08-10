@@ -9,9 +9,6 @@ classdef EBSDsquare < EBSDgrid
   properties (Dependent = true)
     gradient1 % orientation gradient in dimension 1
     gradient2 % orientation gradient in dimension 2
-    gradientX % orientation gradient in x
-    gradientY % orientation gradient in y
-    gradientZ % orientation gradient in z
     d1, d2    % @vector3d, directions of the two grid dimensions 
   end
   
@@ -131,47 +128,6 @@ classdef EBSDsquare < EBSDgrid
       
     end
 
-    function gX = get.gradientX(ebsd)
-      % gradient in X direction in specimen coordinates
-      if abs(dot(normalize(ebsd.d1),xvector)) > 1-1e-6
-        gX = ebsd.gradient1 * sign(dot(ebsd.d1,xvector));
-      elseif abs(dot(normalize(ebsd.d2),xvector)) > 1-1e-6
-        gX = ebsd.gradient2 * sign(dot(ebsd.d2,xvector));
-      elseif abs(dot(ebsd.N,xvector)) < 1e-6
-        error('Todo')
-      else
-        gX = vector3d.nan(size(ebsd));
-      end      
-    end
-
-    function gY = get.gradientY(ebsd)
-      % gradient in Y direction in specimen coordinates
-
-      if abs(dot(normalize(ebsd.d1),yvector)) > 1-1e-6
-        gY = ebsd.gradient1 * sign(dot(ebsd.d1,yvector));
-      elseif abs(dot(normalize(ebsd.d2),yvector)) > 1-1e-6
-        gY = ebsd.gradient2 * sign(dot(ebsd.d2,yvector));
-      elseif abs(dot(ebsd.N,yvector)) < 1e-6
-        error('Todo')
-      else
-        gY = vector3d.nan(size(ebsd));
-      end
-    end
-
-    function gY = get.gradientZ(ebsd)
-      % gradient in Z direction in specimen coordinates
-
-      if abs(dot(normalize(ebsd.d1),zvector)) > 1-1e-6
-        gY = ebsd.gradient1 * sign(dot(ebsd.d1,zvector));
-      elseif abs(dot(normalize(ebsd.d2),zvector)) > 1-1e-6
-        gY = ebsd.gradient2 * sign(dot(ebsd.d2,zvector));
-      elseif abs(dot(ebsd.N,zvector)) < 1e-6
-        error('Todo')
-      else
-        gY = vector3d.nan(size(ebsd));
-      end
-    end
-   
     % some testing code - gradient can be either in specimen coordinates or
     % in crystal coordinates 
     % 

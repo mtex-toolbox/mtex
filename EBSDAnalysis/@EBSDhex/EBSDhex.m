@@ -14,8 +14,6 @@ classdef EBSDhex < EBSDgrid
   
   properties (Dependent = true)    
     offset          % +/- 1  dependent on whether the second line is shifted in or our
-    gradientX       % orientation gradient in x
-    gradientY       % orientation gradient in y
     dx
     dy
   end
@@ -92,114 +90,6 @@ classdef EBSDhex < EBSDgrid
     end
     
     
-    function gX = get.gradientX(ebsd)
-      % gives the gradient in X direction with respect to specimen
-      % coordinate system
-      
-      % extract orientations
-      ori = ebsd.orientations;
-            
-      if ebsd.isRowAlignment
-        ori_right = ori(:,[2:end end-1]);
-        gX = log(ori_right,ori,SO3TangentSpace.leftVector) ./ ebsd.dHex;
-        gX(:,end) = - gX(:,end);
-      
-        % ignore grain boundaries if possible
-        try
-          gX(ebsd.grainId ~= ebsd.grainId(:,[2:end end-1])) = NaN;
-        end
-      else
-      
-        [r,c] = ndgrid(1:size(ebsd,1),1:size(ebsd,2));
-        
-        % one right
-        c = c + 1;
-        
-        % go in oposite direction at the right boundary
-        c(c>size(ebsd,2)) = c(c>size(ebsd,2))-2;
-        
-        % one up
-        r = r - xor(ebsd.offset == 1, ~iseven(c));
-                
-        % compute gradient 1
-        ind1 = sub2ind(size(ebsd), max(r,1), c);
-        gX1 = log(ori(ind1),ori,SO3TangentSpace.leftVector);
-        
-        if ebsd.hasGrainId
-          gX1(ebsd.grainId ~= ebsd.grainId(ind1)) = NaN;
-        end
-        
-        % compute gradient 2
-        ind2 = sub2ind(size(ebsd), min(r+1,size(ebsd,1)), c);
-        gX2 = log(ori(ind2),ori,SO3TangentSpace.leftVector);
-        
-        if ebsd.hasGrainId
-          gX2(ebsd.grainId ~= ebsd.grainId(ind2)) = NaN;
-        end
-                
-        gX = mean(cat(3,gX1,gX2),3,'omitnan') ./ ebsd.dx;
-        
-        gX(end,:) = - gX(end,:);
-        
-        
-      end
-      
-    end
-    
-    function gY = get.gradientY(ebsd)
-      % gives the gradient in Y direction with respect to specimen
-      % coordinate system
-      
-      % extract orientations
-      ori = ebsd.orientations;
-      
-      if ebsd.isRowAlignment
-
-        [r,c] = ndgrid(1:size(ebsd,1),1:size(ebsd,2));
-        
-        % one up
-        r = r+1;
-        
-        % go in oposite direction at the upper boundary
-        r(r>size(ebsd,1)) = r(r>size(ebsd,1))-2;
-        
-        % one left
-        c = c - xor(ebsd.offset == 1, ~iseven(r));
-                
-        % compute gradient 1
-        ind1 = sub2ind(size(ebsd), r, max(1,c));
-        gY1 = log(ori(ind1),ori,SO3TangentSpace.leftVector);
-        
-        if ebsd.hasGrainId
-          gY1(ebsd.grainId ~= ebsd.grainId(ind1)) = NaN;
-        end
-        
-        % compute gradient 2
-        ind2 = sub2ind(size(ebsd), r, min(size(ebsd,2),c+1));
-        gY2 = log(ori(ind2),ori,SO3TangentSpace.leftVector);
-        
-        if ebsd.hasGrainId
-          gY2(ebsd.grainId ~= ebsd.grainId(ind2)) = NaN;
-        end
-                
-        gY = mean(cat(3,gY1,gY2),3,'omitnan') ./ ebsd.dy;
-        
-        gY(end,:) = - gY(end,:);
-                    
-      else
-        ori_up = ori([2:end end-1],:);
-        gY = log(ori_up,ori, SO3TangentSpace.leftVector) ./ ebsd.dy;
-        gY(end,:) = - gY(end,:);
-        
-        % ignore grain boundaries if possible
-        try
-          gY(ebsd.grainId ~= ebsd.grainId([2:end end-1],:)) = NaN;
-        end
-      end
-      
-    end
-    
-
     function ind = neighbors(ebsd,ind,k,radius)
 
       if nargin == 3, radius = 1; end
