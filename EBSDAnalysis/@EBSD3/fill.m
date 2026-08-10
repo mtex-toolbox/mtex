@@ -13,7 +13,7 @@ function ebsd = fill(ebsd,varargin)
 %  extrapolate - extrapolate up the the outer boundaries
 %
 
-if ~(isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')), ebsd = ebsd.gridify; end
+if ~isa(ebsd,'EBSD3square'), ebsd = ebsd.gridify; end
 
 % the values to be filled
 nanId = isnan(ebsd.phaseId);

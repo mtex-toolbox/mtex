@@ -14,11 +14,13 @@ if islogical(ind)
   xMin = find(any(ind,1),1,"first");
   xMax = find(any(ind,1),1,"last");
 else
-  [x,y] = ind2sub(ebsd,ind);
-  yMin = min(y(:));
-  yMax = max(y(:));
-  xMin = min(x(:));
-  xMax = max(x(:));
+  % ind2sub returns the ROW first - the logical branch above derives
+  % yMin/yMax from any(ind,2), i.e. also rows, so keep the two consistent
+  [r,c] = ind2sub(ebsd,ind);
+  yMin = min(r(:));
+  yMax = max(r(:));
+  xMin = min(c(:));
+  xMax = max(c(:));
 end
 
 mask = false(size(ebsd));

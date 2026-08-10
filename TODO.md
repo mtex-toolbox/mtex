@@ -149,7 +149,7 @@ The multi-release work. Everything here is bigger than one branch.
 | E7 | Edge-preserving bilateral filter | 1 | 1 | idea | — | #346 |
 | E8 | Texture strength index computed directly from EBSD data | 1 | 1 | idea | — | — |
 | E9 | `orientation` ↔ property mapping | 1 | 1 | idea | — | — |
-| E10 | `EBSD3.xy2ind`, `EBSDsquare/gradientX`, `gradientY`, `gridBoundary`, `interp` need a review — several disagree with their gridded counterparts | 2 | 1 | planned | — | [→](#e10) |
+| E10 | `EBSD3.xy2ind`, `EBSDsquare/gradientX`, `gradientY`, `interp` need a review — several disagree with their gridded counterparts | 2 | 1 | planned | — | [→](#e10) |
 | E11 | `@EBSDsquare/interp` dies in `griddedInterpolant` with "Data is in MESHGRID format" on a gridified map; both orientations of the try/catch fallback fail | 2 | 0 | bug | — | docs/doc-audit-plan.md item 10 |
 | E12 | `latticeBasis:38` "Index exceeds array bounds" — the real defect is a degenerate, self-intersecting unit cell reaching it, not the unguarded index | 2 | 1 | bug | — | [→](#e12) |
 
@@ -568,8 +568,15 @@ support itself is finished.
 ### E10
 Kept verbatim from the old file as the list to review together:
 `EBSD3.xy2ind`, `EBSDsquare/gradientX`, `EBSDsquare/gradientY`,
-`EBSDsquare/gridBoundary`, `EBSDsquare/interp`. See P14 for the reproduction
-that motivated it.
+`EBSDsquare/interp`. See P14 for the reproduction that motivated it.
+
+`EBSDsquare/gridBoundary` and `EBSDhex/gridBoundary` were also on this list;
+both were deleted 2026-08-10 as dead code. Nothing called them —
+`spatialDecompositionAlpha` builds its own dummy ring in index space.
+
+`gradientX`/`gradientY` and `interp` are addressed by the "@EBSD
+self-sufficient" project (phases 2 and 5), which moves them onto
+`ebsd.lattice` and removes the `error('Todo')` for rotated grids.
 
 ### E12
 `doc/EBSDAnalysis/EBSDGrid.m:141` → `EBSD/plot:93` → `plotUnitCells:51` →

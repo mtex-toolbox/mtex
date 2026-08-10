@@ -168,22 +168,6 @@ classdef EBSDsquare < EBSD
       end
     end
    
-    function h = gridBoundary(ebsd)
-      % this is used by the alpha shape algorithm
-      % which assumes that we are in the xy plane
-
-      ext = ebsd.extent;
-      delta = ebsd.dPos;
-      x = ext(1):delta:ext(2);
-      y = ext(3)-delta:delta:ext(4)+delta;
-
-      h= [
-        repmat(ext(1)-delta, numel(y),1), y.' ; ...
-        x.', repmat(ext(3)-delta, numel(x), 1) ; ...
-        x.', repmat(ext(4)+delta, numel(x), 1) ; ...
-        repmat(ext(2)+delta, numel(y),1), y.'];
-    end
-
     % some testing code - gradient can be either in specimen coordinates or
     % in crystal coordinates 
     % 

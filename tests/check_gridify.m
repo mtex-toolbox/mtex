@@ -59,8 +59,49 @@ checkMapShapedInput;
 checkDistortedGrid;
 checkResample;
 checkResampleRotated;
+checkSubGrid;
 
 disp('gridify: all checks passed');
+
+end
+
+% =========================================================================
+function checkSubGrid
+% subGrid crops to the same rectangle whether ind is logical or numeric
+%
+% Regression: the numeric branch did [x,y] = ind2sub(ebsd,ind), but
+% ind2sub returns the ROW first, so x held rows and y held columns while
+% the mask was indexed mask(yMin:yMax, xMin:xMax) - i.e. transposed. A
+% square map hides this, so the test deliberately uses a non-square one.
+
+ebsd = EBSD(mtexdata('twins','silent')).gridify;
+
+assert(size(ebsd,1) ~= size(ebsd,2), ...
+  'check_gridify: checkSubGrid needs a non square map to be meaningful');
+
+% a rectangle strictly inside the map, deliberately not square and placed
+% off centre so a transposition cannot coincidentally give the same answer
+rows = 10:40; cols = 55:70;
+mask = false(size(ebsd));
+mask(rows,cols) = true;
+
+eLog = ebsd.subGrid(mask);
+eNum = ebsd.subGrid(find(mask)); %#ok<FNDSB> - the numeric branch is the point
+
+assert(all(size(eLog) == [numel(rows) numel(cols)]), ...
+  'check_gridify: subGrid(logical) returned a %s block, expected %d x %d', ...
+  xnum2str(size(eLog)),numel(rows),numel(cols));
+
+assert(all(size(eNum) == size(eLog)), ...
+  'check_gridify: subGrid(numeric) returned a %s block, subGrid(logical) a %s one', ...
+  xnum2str(size(eNum)),xnum2str(size(eLog)));
+
+assert(isequaln(eNum.id,eLog.id) && isequaln(eNum.rotations.a,eLog.rotations.a), ...
+  'check_gridify: subGrid(numeric) and subGrid(logical) select different data');
+
+% and the block really is the requested one
+assert(isequaln(eLog.id,ebsd.id(rows,cols)), ...
+  'check_gridify: subGrid cropped to the wrong rectangle');
 
 end
 

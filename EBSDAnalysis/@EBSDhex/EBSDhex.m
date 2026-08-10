@@ -259,22 +259,6 @@ classdef EBSDhex < EBSD
       
     end
 
-    function h = gridBoundary(ebsd)
-
-      dH = ebsd.dHex; ext = ebsd.extent;
-      ext = ext(1:4) + 2*dH*[-1,1,-1,1];
-      x = ext(1):dH:ext(2);
-      y = ext(3):dH:ext(4);
-
-      h= [
-        repmat(ext(1), numel(y),1), y.' ; ...
-        x.', repmat(ext(3), numel(x), 1) ; ...
-        x.', repmat(ext(4), numel(x), 1) ; ...
-        repmat(ext(2), numel(y),1), y.'];
-      
-    end
-       
-    
     % some testing code - gradient can be either in specimen coordinates or
     % in crystal coordinates 
     % 
