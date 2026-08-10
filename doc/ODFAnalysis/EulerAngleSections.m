@@ -1,7 +1,17 @@
 %% Euler Angle Sections
+%%
+plottingConvention.default("y↑→x");
+%%
 %
-%% TODO: Please help extending this section
+% An ODF is a function on a three dimensional space and cannot be drawn
+% directly. The classical way around this is to cut orientation space into
+% a stack of two dimensional slices at constant Euler angle and to plot
+% those side by side. This page shows the section types MTEX offers and
+% what determines the region each of them covers.
 %
+% As an example we use a model ODF composed of two texture components and a
+% fibre.
+
 
 cs = crystalSymmetry.load('Al-Aluminum.cif')
 
@@ -42,12 +52,37 @@ plot(f,'linewidth',2,'add2all')
 % Beside the standard phi2 sections MTEX supports also sections according
 % to all other Euler angles.
 %
-% * phi2 (default)
-% * phi1
-% * gamma (Matthies Euler angles)
-% * sigma (alpha+gamma)
+% * |'phi2'| (default) and |'phi1'|, the first and third Bunge angle
+% * |'Phi'|, the second Bunge angle
+% * |'gamma'| and |'alpha'|, the Matthies Euler angles
+% * |'sigma'|, i.e. $\alpha + \gamma$
+%
+% The last one is special: along a $\sigma$ section the crystal direction
+% that points into the specimen $\vec z$ direction stays fixed, so the
+% sections are inverse pole figures of $\vec z$ and no orientation is torn
+% apart by the sectioning.
 
-plotSection(odf)
+plotSection(odf,'sigma')
+
+%%
+% The $\varphi_1$ sections put the specimen direction of a fixed crystal
+% direction in the plane instead
+
+plotSection(odf,'phi1','sections',9,'layout',[3 3],'silent')
+
+%%
+% and the $\gamma$ sections of the Matthies convention are
+
+plotSection(odf,'gamma','sections',9,'layout',[3 3],'silent')
+
+%%
+% All of them accept the same options as the default sections - the number
+% of sections, an explicit list of angles, the layout, and any of the
+% <PlotTypes.html plot types>. The underlying classes are
+% <phi1Sections.html |phi1Sections|>, <phi2Sections.html |phi2Sections|>,
+% <sigmaSections.html |sigmaSections|>, <gammaSections.html
+% |gammaSections|> and their siblings, and they can also be constructed
+% explicitly if a section geometry is to be reused across several plots.
 
 %%
 % By default this command represents the ODF in the Bunge Euler angle space

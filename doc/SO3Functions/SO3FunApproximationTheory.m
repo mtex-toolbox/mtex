@@ -166,10 +166,12 @@ meanValue = mean(SO3F)
 
 %% Approximation using the Bingham distribution
 %
-% Approximation with the Bingham distribution currently works only with no
-% symmetry. 
-%
-% TODO: Dont work
+% Approximation with the Bingham distribution currently works only for
+% trivial symmetry. Under a nontrivial crystal symmetry |interp| with the
+% flag |'bingham'| does not error, it silently returns a poor fit - the
+% relative error against the source ODF was measured as 0.004 for |'1'|,
+% but 0.92 for |'2'|, 0.95 for |'222'| and 0.67 for |'432'|. For that
+% reason the example below uses |crystalSymmetry("1")|.
 
 % simulate nodes and values from an odf
 rng(0)

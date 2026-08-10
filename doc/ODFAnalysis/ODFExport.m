@@ -83,11 +83,33 @@ export(model_odf,fname,'Bunge','interface','mtex')
 
 %%  Export to VPSC format
 %
-% TODO!!!
+% <https://public.lanl.gov/lebenso/ VPSC> and other crystal plasticity
+% codes do not read an ODF but a list of weighted orientations. The VPSC
+% interface therefore draws a discrete sample from the ODF and writes it in
+% the VPSC texture format - a three line header, the number of points, and
+% then one row of Bunge Euler angles plus a weight per orientation.
+%
+% Note that the interface has to be selected explicitly. Writing
+% |export(odf,fname,'VPSC')| is *not* enough - |'VPSC'| would be read as an
+% unknown flag and the generic interface used instead.
 
 fname = fullfile(tempdir, 'odfvpsc.txt');
 
-export(model_odf,fname,'VPSC')
+export(model_odf,fname,'interface','VPSC','points',5000)
+
+%%
+% Let us look at the beginning of the resulting file
+
+fid = fopen(fname);
+for k = 1:6, disp(fgetl(fid)); end
+fclose(fid);
+
+%%
+% The number of orientations is controlled by the option |'points'|, which
+% defaults to 10000. The counterpart, reading such a file back, is
+% described in <VPSCImport.html Import from VPSC>.
+
+delete(fname)
 
 
 

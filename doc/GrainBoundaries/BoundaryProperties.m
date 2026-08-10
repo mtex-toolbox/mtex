@@ -122,7 +122,28 @@ plot(gB_Mg,angle(gB_Mg.direction,axes),'linewidth',4,'micronbar','off')
 plot(gB_Mg,angle(gB_Mg.calcMeanDirection(4),axes),'linewidth',4,'micronbar','off')
 
 %%
-% The *midPoint* property is useful when  TODO:
+% The *midPoint* property gives the position of each segment as a
+% <vector3d.vector3d.html vector3d>. It is what one needs whenever
+% something has to be drawn at, or selected by, the location of a segment -
+% the misorientation axes above, for instance, are best shown as arrows
+% sitting on their segments
+
+plot(grains,grains.meanOrientation,'faceAlpha',0.3,'micronbar','off')
+hold on
+quiver(gB_Mg,axes,'color','black','autoScaleFactor',0.4)
+hold off
+
+%%
+% and it is equally the natural handle for a spatial selection
+
+pos = gB_Mg.midPoint;
+isTop = pos.y > 40;
+
+plot(grains,'faceAlpha',0.3,'micronbar','off')
+hold on
+plot(gB_Mg(isTop),'linewidth',3,'lineColor','red')
+plot(gB_Mg(~isTop),'linewidth',3,'lineColor','blue')
+hold off
 
 %%
 % While the command <grainBoundary.length.html |length(gB_Mg)|> gives the

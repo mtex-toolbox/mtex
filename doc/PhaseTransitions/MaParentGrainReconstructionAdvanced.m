@@ -130,7 +130,7 @@ prob = 1 - 0.5 * (1 + erf(2*(fit - threshold)./tol));
 A = sparse(grainPairs(:,1),grainPairs(:,2),prob,length(grains),length(grains));
 
 %%
-% we can split it into clusters using the command <calcCluster.html
+% we can split it into clusters using the command <mclComponents.html
 % |calcCluster|> which implements the <https://micans.org/mcl Markovian
 % clustering algorithm>. Here an important parameter is the so called
 % inflation power, which controls the size of the clusters. 

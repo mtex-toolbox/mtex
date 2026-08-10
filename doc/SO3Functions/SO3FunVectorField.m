@@ -206,7 +206,10 @@ VF = SO3VectorFieldHandle(f,cs,cs)
 round(VF.eval(orientation.byAxisAngle(vector3d(1,2,3),10*degree)))
 
 %%
-% But plotting does not -- TODO!!!
+% Note that the arrow directions in the plot below have not been verified
+% against the values returned by |eval| - the arrow count is consistent
+% with the small cubic fundamental zone, but whether |quiver3| orients them
+% correctly for an |SO3VectorFieldHandle| is an open question.
 
 % plot it
 quiver3(VF,'axisAngle','resolution',7.5*degree,'color','black','linewidth',2)

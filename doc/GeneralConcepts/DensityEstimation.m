@@ -276,7 +276,7 @@ hold off
 % and the standard deviation. On spheres and in orientation space, the
 % analogous functions to the Gaussian are the Bingham distributions. The
 % estimation of Bingham parameters from directional and rotational data is
-% explained in the sections <S2FunBingham.html The Spherical Bingham
+% explained in the sections <S2Bingham.html The Spherical Bingham
 % Distribution> and <BinghamODFs.html The Rotational Bingham Distribution>.
 %
 %% Density Estimation with Weights

@@ -122,7 +122,15 @@ hold off
 % in high rate deformed zirconium with electron backscatter diffraction>,
 % 2018.
 %
-% TODO: explain this at some new documentation page
+% The idea is that a low angle boundary formed by a single slip system has
+% its misorientation axis fixed by the geometry of that system - a pure
+% tilt wall about an axis lying in the slip plane and perpendicular to the
+% Burgers vector, a pure twist wall about the slip plane normal. Clusters
+% in the plot above can therefore be matched against the candidate slip
+% systems of the phase, which is how the reference identifies which systems
+% were active. The <SlipSystems.html slip system> and
+% <DislocationSystems.html dislocation system> chapters describe how to set
+% those candidates up in MTEX.
 %
 %% The Misorientation Axis in Specimen Coordinates
 % 

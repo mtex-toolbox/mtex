@@ -82,7 +82,7 @@ fprintf('resampling at %.2f %s instead leaves %d segments\n', ...
 
 %% Choosing the algorithm
 % Which algorithm performs the third step is decided by a
-% <boundaryFilter.boundaryFilter.html |boundaryFilter|>. They fall into two
+% <boundaryFilter.html |boundaryFilter|>. They fall into two
 % groups. |laplaceFilter| and |taubinFilter| apply a local averaging step a
 % fixed number of times, so how far they smooth depends on how densely the
 % boundary is sampled. |curvatureFilter| and |huberFilter| instead define the
@@ -105,7 +105,7 @@ big = A0 > 10*d^2;
 A0 = A0(big);
 
 %% The Laplace filter
-% <laplaceFilter.laplaceFilter.html |laplaceFilter|> replaces every vertex by
+% <laplaceFilter.html |laplaceFilter|> replaces every vertex by
 % a weighted mean of itself and its neighbours, |iter| times. It is the
 % default.
 %
@@ -133,7 +133,7 @@ fprintf(['  25 iterations %+6.2f%% on average,' ...
 % the distance between neighbours.
 
 %% The Taubin filter
-% <taubinFilter.taubinFilter.html |taubinFilter|> follows every smoothing pass
+% <taubinFilter.html |taubinFilter|> follows every smoothing pass
 % by a slightly larger *unshrinking* pass with a negative step |mu|, so that
 % the gain over the pair is |(1-lambda*k)(1-mu*k)|, which is about one over
 % the low frequencies. The shape is smoothed and the area is given back.
@@ -167,7 +167,7 @@ hold off
 axis([c.x-12 c.x+12 c.y-12 c.y+12])
 
 %% The curvature filter
-% <curvatureFilter.curvatureFilter.html |curvatureFilter|> is the first of the
+% <curvatureFilter.html |curvatureFilter|> is the first of the
 % variational filters. It minimizes
 %
 %   |V - V0|^2 + alpha * |L V|^2
@@ -197,7 +197,7 @@ fprintf('  %+6.2f%% on average, %+6.1f%% for the worst grain\n', ...
   100*mean((aC-A0)./A0), 100*min((aC-A0)./A0))
 
 %% The Huber filter
-% <huberFilter.huberFilter.html |huberFilter|> penalizes the same curvature,
+% <huberFilter.html |huberFilter|> penalizes the same curvature,
 % but with a Huber function instead of a square: quadratic below a threshold,
 % linear above it. A least squares penalty spreads a large deviation over many
 % vertices and so rounds a corner off, whereas an |l^1| penalty concentrates

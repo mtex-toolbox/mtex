@@ -20,7 +20,7 @@ cS = crystalShape.hex(ebsd.CS)
 
 % and plot it
 close all
-plot(cS,'faceAlpha',0.2)
+plot(cS,'faceAlpha',0.2,'figSize','small')
 drawNow(gcm,'final')
 
 %% 
@@ -32,14 +32,14 @@ cS.V
 %%
 % Using the commands <crystalShape.plotInnerFace.html |plotInnerFace|>,
 % <crystalShape.plotInnerDirection.html |plotInnerDirection|>,
-% <crystalShape.plotSlipSystem.html |plot(cS,sS)|> and <arrow3d.html
+% <crystalShape.plotSlipSystem.html |plot(cS,sS)|> and <vector3d.arrow3d.html
 % |arrow3d|> we may plot internal lattice planes, directions or slip
 % systems into the crystal shape
 
 sS = [slipSystem.pyramidal2CA(ebsd.CS), ...
   slipSystem.pyramidalA(ebsd.CS)]
 
-plot(cS,'faceAlpha',0.2)
+plot(cS,'faceAlpha',0.2,'figSize','small')
 hold on
 plot(cS,sS(2),'faceColor','blue')
 plot(cS,sS(1),'faceColor','red')
@@ -52,7 +52,7 @@ drawNow(gcm,'final')
 % can be used to visualize crystal orientations in EBSD maps
 
 % plot an EBSD map
-clf % clear current figure
+close all
 plot(ebsd,ebsd.orientations)
 
 hold on
@@ -181,7 +181,7 @@ x2 = Miller({5,1,-6,1},cs); % right positive Trapezohedron
 N = [m,r,z];
 cS = crystalShape(N)
 
-plot(cS)
+plot(cS,'figSize','small')
 
 %%
 % i.e. we see only  the positive and negative rhododendrons, but the
@@ -192,7 +192,7 @@ plot(cS)
 N = [2*m,r,z];
 
 cS = crystalShape(N);
-plot(cS,'colored')
+plot(cS,'colored','figSize','small')
 
 %%
 % Next in a typical Quartz crystal the negative rhododendron is a bit smaller
@@ -202,7 +202,7 @@ plot(cS,'colored')
 N = [2*m,r,0.9*z];
 
 cS = crystalShape(N);
-plot(cS,'colored')
+plot(cS,'colored','figSize','small')
 
 %%
 % Finally, we add the tridiagonal bipyramid and the positive Trapezohedron
@@ -211,7 +211,7 @@ plot(cS,'colored')
 N = [2*m,r,0.9*z,0.7*s1,0.3*x1];
 
 cS = crystalShape(N);
-plot(cS,'colored')
+plot(cS,'colored','figSize','small')
 
 
 %% Defining complicated crystals more simple
@@ -229,7 +229,7 @@ N = [m,r,z,s2,x2];
 habitus = 1;
 extension = [1 1 1];
 cS = crystalShape(N,habitus,extension);
-plot(cS,'colored')
+plot(cS,'colored','figSize','small')
 
 
 %%
@@ -239,7 +239,7 @@ plot(cS,'colored')
 
 extension = [1 1.2 1.1];
 cS = crystalShape(N,habitus,extension);
-plot(cS,'colored')
+plot(cS,'colored','figSize','small')
 
 %%
 % Next the habitus parameter describes how close faces with mixed hkl are
@@ -248,20 +248,20 @@ plot(cS,'colored')
 
 habitus = 1.1;
 cS = crystalShape(N,habitus,extension);
-plot(cS,'colored'), snapnow
+plot(cS,'colored','figSize','small'), snapnow
 
 habitus = 1.2;
 cS = crystalShape(N,habitus,extension);
-plot(cS,'colored'), snapnow
+plot(cS,'colored','figSize','small'), snapnow
 
 habitus = 1.3;
 cS = crystalShape(N,habitus,extension);
-plot(cS,'colored')
+plot(cS,'colored','figSize','small')
 
 %% Select faces
 % A specific face of the crystal shape may be selected by its normal vector
 
-plot(cS)
+plot(cS,'figSize','small')
 hold on
 plot(cS(Miller(0,-1,1,0,cs)),'FaceColor','DarkRed') 
 hold off
@@ -271,16 +271,16 @@ camzoom(0.7)
 
 %% Gallery of hardcoded crystal shapes
 
-plot(crystalShape.olivine,'colored')
+plot(crystalShape.olivine,'colored','figSize','small')
 
 %%
 
-plot(crystalShape.garnet,'colored')
+plot(crystalShape.garnet,'colored','figSize','small')
 
 %%
 
-plot(crystalShape.topaz,'colored')
+plot(crystalShape.topaz,'colored','figSize','small')
 
 %%
 
-plot(crystalShape.plagioclase,'colored')
+plot(crystalShape.plagioclase,'colored','figSize','small')
