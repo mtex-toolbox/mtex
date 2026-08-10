@@ -41,7 +41,8 @@ classdef S2FunMLS < S2Fun
   %  regularize - use goal-oriented regularization of the local systems
   %  mincond    - center-amplification threshold where regularization starts
   %  maxcond    - center-amplification threshold where full correction is used
-  %  targetcond - center amplification approached at full correction
+  %  targetcond - inverse-amplification bound at full correction;
+  %               one is the minimum-norm constant-preserving limit
   %    (The property names are retained for compatibility. They no longer refer
   %     to the ordinary condition number of the Gram matrix.)
   %
@@ -79,7 +80,7 @@ classdef S2FunMLS < S2Fun
     regularize = true;    % use goal-oriented regularization?
     mincond = [];         % start threshold for normalized center amplification
     maxcond = [];         % full threshold for normalized center amplification
-    targetcond = [];      % amplification approached at full regularization
+    targetcond = [];      % full-strength target; one is the limiting minimum
 
     detectOutliers = false; % reduce the weight of detected outliers?
     outlierDetectionRange = 10;
