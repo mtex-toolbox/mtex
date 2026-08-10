@@ -61,6 +61,7 @@ checkResample;
 checkResampleRotated;
 checkSubGrid;
 checkFillGridFree;
+checkInterp;
 
 disp('gridify: all checks passed');
 
@@ -367,5 +368,51 @@ assert(all(d < 1e-9), ...
 [~,back] = ismembertol([gone.x gone.y],[filled.pos.x filled.pos.y],1e-9,'ByRows',true);
 assert(~any(isnan(filled.rotations(back))), ...
   'check_gridify: fill restored the removed pixels but left them unfilled');
+
+end
+
+% =========================================================================
+function checkInterp
+% interp is grid free, keeps every query point, and returns a flat list
+%
+% The @EBSDsquare and @EBSDhex overrides are gone - the square one used
+% griddedInterpolant, which needs an axis aligned rigid grid and threw
+% "Grid arrays must have NDGRID structure" on a rotated map.
+
+ebsd = EBSD(mtexdata('twins','silent'));
+x = linspace(5,40,20); y = linspace(5,30,20);
+
+% row vector query: the result must be a flat list of 20, not a 1 x 20
+% pos against a 20 x 1 id, which reported length 1
+r = interp(ebsd,x,y);
+assert(length(r) == 20 && all(size(r.pos) == [20 1]) && all(size(r.phaseId) == [20 1]), ...
+  ['check_gridify: interp(ebsd,x,y) with row vectors returned an ' ...
+  'inconsistent object - length %d, pos %s, phaseId %s'], ...
+  length(r), mat2str(size(r.pos)), mat2str(size(r.phaseId)));
+
+% and it agrees with the column/vector3d spelling
+r2 = interp(ebsd,vector3d(x(:),y(:),0));
+assert(isequaln(r.rotations.a,r2.rotations.a), ...
+  'check_gridify: interp disagrees between the row vector and vector3d call');
+
+% a rotated grid: the deleted square override could not do this at all
+eR = rotate(ebsd,30*degree,'keepEuler').gridify;
+q = eR.pos(round(numel(eR.pos)*[0.3 0.5 0.7]));
+a = eR.interp(q);
+assert(length(a) == 3 && all(a.isIndexed), ...
+  'check_gridify: interp failed on a rotated grid');
+
+% every query point survives, including where the source is a gridified map
+% whose notIndexed padding carries a NaN phaseId
+eG = EBSD(mtexdata('ferrite','silent')).gridify;
+pos = vector3d(rand(120,200)*100,rand(120,200)*100,0);
+ei = eG.interp(pos);
+assert(length(ei) == numel(pos), ...
+  ['check_gridify: interp returned %d of %d query points - a gridded ' ...
+  'source has NaN phaseId at its padding, and those rows must not be dropped'], ...
+  length(ei), numel(pos));
+assert(strcmp(class(ei),'EBSD'), ...
+  'check_gridify: interp returned a %s, but a query at arbitrary positions is a list', ...
+  class(ei));
 
 end
