@@ -18,8 +18,15 @@ function ebsdNew = interp(ebsd, newPos, varargin)
 % Options
 %  method - 'invDist', 'nearest'
 %
+% Description
+% A query point takes the data of the measurement it is nearest to, as long
+% as it lies within that measurement's pixel - i.e. no further away than the
+% circumradius of ebsd.unitCell. Everything else comes back notIndexed. The
+% criterion is purely local, so it makes no assumption about the grid and
+% works on a plain list, on a rotated or sheared grid and on a hexagonal one.
+%
 % See also
-%  
+% EBSD/gridify EBSD/fill EBSD/lattice
 
 if ~isa(newPos,'vector3d'), newPos = vector3d(newPos,varargin{1},0); end
 
@@ -40,20 +47,43 @@ ebsdNew.id = (1:length(newPos)).';
 pos = ebsd.rot2Plane .* ebsd.pos;
 newPos = ebsd.rot2Plane .* newPos;
 
-% setup interpolation method
-F = scatteredInterpolant;
-% (:) so that a gridded source works too - ebsd.pos is a matrix there, and
-% scatteredInterpolant wants numpoints-by-ndim
-F.Points = [pos.x(:),pos.y(:)];
-F.Method = 'nearest';
-F.ExtrapolationMethod = 'none';
+% nearest measurement for every query point, and how far away it is.
+%
+% NOT scatteredInterpolant with an ExtrapolationMethod of 'none': that
+% decides "inside the map" by the convex hull of the source points, and a
+% query sitting exactly ON that hull - which is what every border pixel does
+% as soon as a map is resampled onto itself, e.g. by private/squarify - is
+% put on either side of the test by floating point alone. Interpolating the
+% forsterite map at its own positions lost 899 of its 245952 measurements
+% that way, in a ragged pattern along the border, where the griddedInterpolant
+% this replaced lost none. Being nearest to a pixel and lying inside it is a
+% purely local criterion with no such edge, and knnsearch delivers it about
+% twice as fast as scatteredInterpolant builds its triangulation.
+%
+% (:) so that a gridded source works too - ebsd.pos is a matrix there
+[idNearest,dist] = knnsearch([pos.x(:),pos.y(:)],[newPos.x,newPos.y]);
 
-F.Values = (1:numel(ebsd.id)).';
-idNearest = F(newPos.x,newPos.y);
-isIndexed = ~isnan(idNearest);
+% the circumradius of the unit cell: the largest distance from a pixel
+% centre to a point still covered by that pixel, for a square, hexagonal or
+% rotated cell alike. Slightly generous at the cell corners - the exact test
+% would be point-in-polygon per cell - which errs towards keeping data
+% rather than dropping it, the failure that mattered here.
+r = max(norm(ebsd.unitCell));
+if isempty(r) || ~(r > 0)
+  % no usable unit cell, so nothing says how far a pixel reaches and the
+  % nearest measurement is the best available answer. NaN lands here too:
+  % calcUnitCell returns a NaN unit cell for a single scan line, where
+  % uniquetol on the constant coordinate leaves one value and the mean step
+  % along it comes out NaN
+  r = inf;
+end
+
+isIndexed = dist <= r * (1 + 1e-10);
 idNearest = idNearest(isIndexed);
 
-ebsdNew.phaseId = zeros(size(newPos));
+% notIndexed, not 0 - phaseId 0 indexes neither CSList nor phaseMap. Only
+% the gridded branch below used to be rescued from it, by the constructor
+ebsdNew.phaseId = ones(size(newPos));
 ebsdNew.rotations = rotation.nan(size(newPos));
 
 ebsdNew.phaseId(isIndexed) = reshape(ebsd.phaseId(idNearest),[],1);
@@ -61,13 +91,36 @@ ebsdNew.rotations(isIndexed) = ebsd.rotations(idNearest);
 
 % copy properties
 for fn = fieldnames(ebsd.prop).'
-  
-  if isnumeric(ebsd.prop.(char(fn))) || islogical(ebsd.prop.(char(fn)))
-    ebsdNew.prop.(char(fn)) = nan(size(newPos));
+
+  p = ebsd.prop.(char(fn));
+
+  % a multi channel property holds one ROW per measurement and k channels,
+  % so it is indexed by row and keeps its columns - same test as dynProp's
+  % isMultiColumn. On a gridded source an ordinary property is the (r x c)
+  % matrix of the map, which length(ebsd) does not match, so it lands in the
+  % else branch and idNearest indexes it linearly, as before
+  if size(p,2) > 1 && size(p,1) == length(ebsd)
+
+    if isnumeric(p) || islogical(p)
+      q = nan(length(newPos),size(p,2));
+    else
+      q = p.nan(length(newPos),size(p,2));
+    end
+    q(isIndexed,:) = p(idNearest,:);
+
   else
-    ebsdNew.prop.(char(fn)) = ebsd.prop.(char(fn)).nan(size(newPos));
+
+    if isnumeric(p) || islogical(p)
+      q = nan(size(newPos));
+    else
+      q = p.nan(size(newPos));
+    end
+    q(isIndexed) = p(idNearest);
+
   end
-  ebsdNew.prop.(char(fn))(isIndexed) = ebsd.prop.(char(fn))(idNearest);
+
+  ebsdNew.prop.(char(fn)) = q;
+
 end
 
 % Interpolating at arbitrary positions yields a LIST, whatever the source
