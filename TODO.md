@@ -152,6 +152,7 @@ The multi-release work. Everything here is bigger than one branch.
 | E10 | `EBSD3.xy2ind`, `EBSDsquare/gradientX`, `gradientY`, `interp` need a review — several disagree with their gridded counterparts | 2 | 1 | planned | — | [→](#e10) |
 | E11 | `@EBSDsquare/interp` dies in `griddedInterpolant` with "Data is in MESHGRID format" on a gridified map; both orientations of the try/catch fallback fail | 2 | 0 | bug | — | docs/doc-audit-plan.md item 10 |
 | E12 | `latticeBasis:38` "Index exceeds array bounds" — the real defect is a degenerate, self-intersecting unit cell reaching it, not the unguarded index | 2 | 1 | bug | — | [→](#e12) |
+| E13 | `gridify` transposes the map at a 45° grid rotation — the layout tie-break is decided by float noise | 1 | 0 | bug | — | [→](#e13) |
 
 ---
 
@@ -577,6 +578,41 @@ both were deleted 2026-08-10 as dead code. Nothing called them —
 `gradientX`/`gradientY` and `interp` are addressed by the "@EBSD
 self-sufficient" project (phases 2 and 5), which moves them onto
 `ebsd.lattice` and removes the `error('Todo')` for rotated grids.
+
+### E13
+`@EBSD/private/squarify.m`'s `orientGrid` decides which lattice direction
+becomes matrix dimension 1 with
+
+```matlab
+horizontal = @(d) abs(dot(d,xvector)) - abs(dot(d,yvector));
+isXFirst   = horizontal(d1) > horizontal(d2);
+```
+
+At a 45° grid rotation both directions are equally horizontal, so both sides
+are 0 and the comparison is settled by rounding noise. Reproduced 2026-08-10
+on `twins`, rotating positions only:
+
+| rotation | `size(ebsd.gridify)` |
+|---|---|
+| 44.999999999° | 137 x 167 |
+| 45.000000000° | 167 x 137 |
+| 45.000000001° | 167 x 137 |
+
+A 1e-9 degree difference transposes the whole map. Both layouts hold the same
+data, so nothing is computed wrongly, but the same physical map can gridify
+to transposed layouts across imports — which defeats the point of the grid
+classes, whose reason to exist is handing a stable matrix to image
+registration tools.
+
+The sign normalisation just below (`dot(d1,ref(1)) < 0`) has the same problem at
+the same configuration.
+
+Fix by stating the tie-break instead of leaving it to the noise, and note
+that `check_gridify`'s `checkResampleRotated` already exercises a 45° rotated
+unit cell. Deliberately not bundled into the @EBSDgrid / latticeModel work:
+it touches the path every gridify takes, so it wants its own change and its
+own test. Phase 2 of the @EBSD project (the lattice-native gradient) needs
+the same basis pinned down and is the natural place to do it.
 
 ### E12
 `doc/EBSDAnalysis/EBSDGrid.m:141` → `EBSD/plot:93` → `plotUnitCells:51` →
