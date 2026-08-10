@@ -25,8 +25,10 @@ else
 end
 
 if ~contains(test_fun,'chat')
-  lambda = sort(lambda,'descend');
-  kappa  = sort(kappa,'descend');
+  % the test functions below index lambda and kappa row wise, so make sure
+  % they are column vectors - mean(ori) returns them as rows
+  lambda = sort(lambda(:),'descend');
+  kappa  = sort(kappa(:),'descend');
 else
   if ~issorted(lambda(4:-1:1))
     warning('assure lambda 1 > lambda 2 .. > lambda 4, as well as corresonding chat');
