@@ -65,7 +65,7 @@ classdef import_wizard < matlab.apps.AppBase
     LoadedFilePath string = "" % Keeps track of the path of the imported EBSD file
     PreviewFilePath string = "" % file the data set list describes - the
                                 % selected one, imported or only previewed
-    DataSetEntries struct = struct('label',{},'dataSet',{},'raw',{})
+    DataSetEntries struct = struct('label',{},'dataSet',{})
                                 % one entry per row of DataSetList: which
                                 % data set of the file and which version
     SelectedImagePath cell = {} % field-name path of the OptTree's selected image node
@@ -712,7 +712,6 @@ classdef import_wizard < matlab.apps.AppBase
       opts = {};
       if isempty(entry), return, end
       if entry.dataSet > 1, opts = [opts, {'dataSet', entry.dataSet}]; end
-      if entry.raw, opts = [opts, {'raw'}]; end
     end
 
     function entry = selectedDataSet(app)
@@ -725,55 +724,25 @@ classdef import_wizard < matlab.apps.AppBase
     end
 
     function populateDataSetList(app, filePath, ebsdPreview)
-      % Build the list of everything the file offers: its data sets, each
-      % once per version the vendor stored. Reading the header of the
-      % other version costs a second headerOnly load, which is what it
-      % takes to name both in one list.
+      % Build the list of everything the file offers. A vendor that stores
+      % a map more than once - Oxford writes it as recorded under "EBSD"
+      % and as cleaned up under "Data Processing" - reports each version
+      % as a data set of its own, so one enumeration names them all.
       %
-      % Rows are kept in file order and grouped by data set, so the two
-      % versions of the same map sit next to each other. Setting .Value
-      % programmatically does not fire ValueChangedFcn, so nothing here
-      % triggers an import.
-      entries = struct('label',{},'dataSet',{},'raw',{});
+      % Rows are kept in the order the import reported them, which is the
+      % order the config prefers. Setting .Value programmatically does not
+      % fire ValueChangedFcn, so nothing here triggers an import.
+      entries = struct('label',{},'dataSet',{});
 
       sets = dataSetNames(app, ebsdPreview);
-      dataType = "";
-      if isa(ebsdPreview,'EBSD') && isfield(ebsdPreview.opt,'dataType')
-        dataType = string(ebsdPreview.opt.dataType);
-      end
 
       if isempty(sets)
         % a format that holds a single, unnamed data set (.ang, .ctf, ...)
         [~, fName, fExt] = fileparts(char(filePath));
-        entries(1) = struct('label', [fName fExt], 'dataSet', 1, 'raw', false);
-      elseif dataType == ""
-        for k = 1:numel(sets)
-          entries(end+1) = struct('label', char(sets(k)), 'dataSet', k, 'raw', false); %#ok<AGROW>
-        end
+        entries(1) = struct('label', [fName fExt], 'dataSet', 1);
       else
-        % both versions exist - the header of the other one names its sets
-        isRawPreview = dataType == "raw";
-        otherOpts = {};
-        if ~isRawPreview, otherOpts = {'raw'}; end
-        other = strings(1,0);
-        try
-          other = dataSetNames(app, EBSD.load(char(filePath), 'wizard', 'headerOnly', otherOpts{:}));
-        catch
-        end
-        if isRawPreview
-          [rawSets, procSets] = deal(sets, other);
-        else
-          [rawSets, procSets] = deal(other, sets);
-        end
-        for k = 1:max(numel(procSets), numel(rawSets))
-          if k <= numel(procSets)
-            entries(end+1) = struct('label', char(procSets(k) + "   (post processed)"), ...
-              'dataSet', k, 'raw', false); %#ok<AGROW>
-          end
-          if k <= numel(rawSets)
-            entries(end+1) = struct('label', char(rawSets(k) + "   (raw)"), ...
-              'dataSet', k, 'raw', true); %#ok<AGROW>
-          end
+        for k = 1:numel(sets)
+          entries(end+1) = struct('label', char(sets(k)), 'dataSet', k); %#ok<AGROW>
         end
       end
 
@@ -802,9 +771,7 @@ classdef import_wizard < matlab.apps.AppBase
       if isempty(entry) || ~isa(ebsdData,'EBSD') || ~isfield(ebsdData.opt,'dataSet')
         return
       end
-      isRaw = isfield(ebsdData.opt,'dataType') && string(ebsdData.opt.dataType) == "raw";
-      hit = find([app.DataSetEntries.dataSet] == entry.dataSet & ...
-                 [app.DataSetEntries.raw] == isRaw, 1);
+      hit = find([app.DataSetEntries.dataSet] == entry.dataSet, 1);
       if ~isempty(hit), app.DataSetList.ValueIndex = hit; end
     end
 
@@ -2047,7 +2014,6 @@ classdef import_wizard < matlab.apps.AppBase
         if entry.dataSet > 1
           optList{end+1} = sprintf('''dataSet'',%d', entry.dataSet);
         end
-        if entry.raw, optList{end+1} = '''raw'''; end
       end
       replaceMarkup('{options}', strjoin(optList, ','), ',{options}');
 

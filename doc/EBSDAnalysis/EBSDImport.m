@@ -140,26 +140,22 @@ plot(ebsd,ebsd.orientations)
 %
 %% Raw and Post Processed Data
 %
-% Oxford |h5oina| files store the map twice - as recorded by the detector
-% and as cleaned up by the vendor software. MTEX imports the cleaned up
-% version, which is usually the one you want. Add |'raw'| for the other one
+% An Oxford |h5oina| file may store the map twice - as recorded by the
+% detector under |EBSD| and as cleaned up by the vendor software under
+% |Data Processing|. Both are simply data sets of that file, so they are
+% listed and picked exactly like the maps above, the cleaned up one first
 %
-%   ebsd = EBSD.load(fname)          % post processed
-%   ebsd = EBSD.load(fname,'raw')    % as recorded
+%   ebsd = EBSD.load(fname)                        % post processed
+%   ebsd = EBSD.load(fname,'dataSet','EBSD')       % as recorded
 %
-% The raw version comes with the full set of per pixel properties - band
-% contrast, band slope, pattern quality, the pattern centre, ... - while
-% the post processed one keeps only a few of them, but has its bad pixels
-% cleaned up and may carry a different specimen orientation. Both can be
-% combined with |'dataSet'|
+% The recorded version comes with the full set of per pixel properties -
+% band contrast, band slope, pattern quality, the pattern centre, ... -
+% while the cleaned up one keeps only a few of them, but has its bad pixels
+% cleaned up. Both refer to the same reference frame, so orientations may be
+% compared between them directly.
 %
-%   ebsd = EBSD.load(fname,'raw','dataSet',2)
-%
-% Files of all other vendors hold the recorded data only, so |'raw'| has no
-% effect on them. The <import_wizard.html import wizard> lists both
-% versions of every data set below its file browser, tagged |(raw)| and
-% |(post processed)|, and files that store one version only simply get one
-% row per data set.
+% A file that was never processed holds the recorded version alone and
+% simply lists one data set per map.
 %
 %% Writing your own interface
 %

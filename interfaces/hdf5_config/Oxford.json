@@ -1,15 +1,13 @@
 {
   "settings": {
-    "name": "Oxford_Default",
+    "name": "Oxford",
     "key_path": { "mode": "absolute", "value": "/Manufacturer"},
     "manufacturer_keys": {"data": ["Oxford", "Oxford Instruments"]},
-    "manufacturer_info": {"data": "The Data was read from the DataProcessing field as default."},
-    "fallback": "Oxford_EBSD",
-    "rawConfig": {"data": "Oxford_EBSD"}
+    "manufacturer_info": {"data": "A map may be stored twice - as recorded by the detector under 'EBSD' and as cleaned up by the vendor software under 'Data Processing'. Both are offered as data sets, the cleaned up one first."}
   },
   "ebsd": {
     "type": "default",
-    "key": {"mode": "search_root", "value":"Data Processing"},
+    "key": {"mode": "search_root", "value": "/Data Processing$|/EBSD$"},
     "position": {
       "type": "indirect",
       "indirect": {
@@ -20,19 +18,20 @@
         "first": {"data": "x"}
       }
     },
-    "phase": {"mode": "search_root", "value": "/Data/Phase", "type": "default"},
+    "phase": {"mode": "search_set", "value": "^/Data/Phase$", "type": "default"},
     "rotation": {
       "type": "euler",
       "euler": {
         "format": { "data": "radian"},
-        "phi": { "mode": "search_root", "value": "Euler"}
+        "phi": { "mode": "search_set", "value": "^/Data/Euler$"}
       }
     },
-    "map_correction": {"type": "default", "mode": "search_root", "value": "/Specimen Orientation Euler"}, 
+    "map_correction": {"type": "scanRotation", "mode": "search_free", "value": "/EBSD/Header/Scanning Rotation Angle$", "fallback": 0},
     "cs": {
       "type": "default",
-      "key": { "mode": "search_root", "value": "Phases" },
+      "key": { "mode": "search_set", "value": "^/Header/Phases$" },
       "multiple": true,
+      "optional": true,
       "default": {
         "reference_frame": { "data": "X||a*, Z||c"},
         "space_group": { "mode": "search_root", "value": "Space Group", "type": "default" },
@@ -44,12 +43,13 @@
       }
     },
     "header": {
-      "group": {"mode": "search_root", "value": "/Header"}
+      "group": {"mode": "search_set", "value": "^/Header$"}
     }
   },
   "additions": {
     "type": "auto",
-    "group": { "mode": "search_free", "value": "/Data Processing/Data$"}
+    "group": { "mode": "search_set", "value": "^/Data$"},
+    "exclude": {"data": ["^X$", "^Y$"]}
   },
   "electron_image": {
     "key" : { "mode": "search_root", "value": "Electron Image" },
@@ -58,8 +58,8 @@
     "image_data": {
       "type": "default",
       "default": {
-        "FSE": { "group": {"mode": "search_root", "value": "/FSE"}},
-        "SE": { "group": {"mode": "search_root", "value": "/SE"}},
+        "FSE": { "optional": true, "group": {"mode": "search_root", "value": "/FSE"}},
+        "SE": { "optional": true, "group": {"mode": "search_root", "value": "/SE"}},
         "x_size": {"mode": "search_root", "value": "X Cells"},
         "y_size": {"mode": "search_root", "value": "Y Cells"}
       }

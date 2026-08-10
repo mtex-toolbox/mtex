@@ -210,7 +210,7 @@
 %
 %   ebsd = EBSD.load('data.h5')                  % no format guessing needed
 %   ebsd = EBSD.load('data.h5','dataSet',2)      % or 'dataSet','Area 2'
-%   ebsd = EBSD.load('data.h5oina','raw')        % not the post processed data
+%   ebsd = EBSD.load('data.h5oina','dataSet','EBSD') % not the post processed data
 %   ebsd = EBSD.load('data.h5','headerOnly')     % phases, header and data sets
 %   ebsd = EBSD.load('data.ctf','EulerCorrection',rotation.byEuler(pi,0,0))
 %
@@ -218,11 +218,17 @@
 % lists them on import and lets you pick one by |'dataSet'|, whose path is
 % kept in |ebsd.opt.dataSet|. Previously only the first one was imported,
 % without a word
-% * Oxford files store the map as recorded and as cleaned up by the vendor
-% software - the cleaned up one is imported as before, the recorded one by the
-% new option |'raw'|
+% * Oxford files may store the map as recorded and as cleaned up by the vendor
+% software - both are offered as data sets of that file, the cleaned up one is
+% imported by default and the recorded one by |'dataSet','EBSD'|
 % * reference frame corrections are unified across |ang|, |ctf|, |crc| and
 % |h5| files and stored in |ebsd.EulerCorrection|
+% * Oxford |h5oina| files state the misalignment between the map and the Euler
+% angle reference frame - AZtec shows the map in beam view but the orientations
+% in camera view - as |Scanning Rotation Angle|. MTEX now reads it instead of
+% assuming it, as it still has to for |ctf| and |crc|. Orientations imported
+% from |h5oina| change by that angle, usually 180 degree, and now agree with
+% the same map imported from a |ctf|
 % * the file header is kept in |ebsd.opt.header| and readable by
 % |'headerOnly'| without importing the data at all, the SEM / PRIAS images an
 % EDAX map comes with in |ebsd.opt.electron_image|, as the Oxford electron
