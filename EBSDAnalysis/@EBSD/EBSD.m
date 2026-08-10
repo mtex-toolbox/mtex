@@ -99,8 +99,13 @@ classdef EBSD < phaseList & dynProp & dynOption
         ebsd.unitCell = pos.unitCell;
         ebsd.scanUnit = pos.scanUnit;
         ebsd.A_D = pos.A_D;
+        % same rule as the general constructor below: a map shaped property
+        % is flattened along with pos, while a genuine N x k one (multi
+        % channel image data) keeps its columns
         for fn = fieldnames(pos.prop)'
-          ebsd.prop.(char(fn))= pos.prop.(char(fn))(:);
+          p = pos.prop.(char(fn));
+          if ~(size(p,2) > 1 && size(p,1) == length(pos)), p = p(:); end
+          ebsd.prop.(char(fn)) = p;
         end
         ebsd.opt = pos.opt;
 
