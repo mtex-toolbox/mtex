@@ -49,10 +49,18 @@ if check_option(varargin,'gradient') % use the gradient method
   
 else % use the integral method
 
-  % the integral method is a 2d raster algorithm - filter2/ordfilt2 over a
-  % window shape - so it still needs the matrix form. The gradient branch
-  % above no longer does.
-  if ~isa(ebsd,'EBSDgrid'), ebsd = ebsd.gridify; end
+  % A 2d raster algorithm - filter2/ordfilt2 over a window shape - so it
+  % still needs the matrix form, unlike the gradient branch above. onGrid
+  % supplies it and maps the result back, so a plain @EBSD gets a W shaped
+  % like itself rather than like the grid it was gridified onto.
+  W = onGrid(ebsd,@(eG) wbvIntegral(eG,varargin{:}));
+
+end
+
+end
+
+% =========================================================================
+function W = wbvIntegral(ebsd,varargin)
 
   % ensure orientations 
   ebsd = ebsd.project2FundamentalRegion;
@@ -83,7 +91,5 @@ else % use the integral method
   %normalize to area
   d = min(norm(ebsd.unitCell(1) - ebsd.unitCell(2:end)));
   W = W/(4 * wS^2 * d);
-
-end
 
 end

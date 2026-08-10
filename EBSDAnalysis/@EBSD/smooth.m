@@ -43,8 +43,17 @@ function [ebsd,filter] = smooth(ebsd,varargin)
 %   plot(largeGrains(1).boundary,'linewidth',2)
 %   hold off
 
-% make a grided ebsd data set
-ebsd = ebsd.gridify(varargin{:});
+% The filters are image algorithms - they work on a matrix of orientations -
+% so the data has to be gridded for the duration. onGrid does that and hands
+% the result back in the caller's own class, instead of everyone who calls
+% smooth silently receiving an @EBSDsquare.
+[ebsd,filter] = onGrid(ebsd,@(eG) doSmooth(eG,varargin{:}), ...
+  'grid',varargin,varargin{:});
+
+end
+
+% =========================================================================
+function [ebsd,filter] = doSmooth(ebsd,varargin)
 
 % set ebsd.quality to zero for all not indexed data
 if isfield(ebsd.prop,'quality')
@@ -136,8 +145,7 @@ ebsd.rotations = rot;
 % set nan rotations to not indexed
 ebsd.phaseId(isnan(rot(:))) = 1;
 
-% remove nan data used to generate the grid
-if ~check_option(varargin,'keepGrid')
-  ebsd = ebsd.subSet(~isnan(ebsd.phaseId));
-end
+% the notIndexed padding, and the decision of what class to hand back,
+% are onGrid's job now
 
+end
