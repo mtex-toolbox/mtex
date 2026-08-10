@@ -62,6 +62,7 @@ checkResampleRotated;
 checkSubGrid;
 checkFillGridFree;
 checkInterp;
+checkPos2Ind;
 
 disp('gridify: all checks passed');
 
@@ -414,5 +415,44 @@ assert(length(ei) == numel(pos), ...
 assert(strcmp(class(ei),'EBSD'), ...
   'check_gridify: interp returned a %s, but a query at arbitrary positions is a list', ...
   class(ei));
+
+end
+
+% =========================================================================
+function checkPos2Ind
+% pos2ind inverts the grid basis, so a sheared grid works too
+%
+% It used to project onto d1 and d2 separately, which inverts the basis
+% only if they are perpendicular. Rotation keeps them perpendicular, shear
+% does not - the old code answered (5,8) for the cell at (3,7).
+
+ebsd = EBSD(mtexdata('twins','silent'));
+
+cases = {'axis aligned', ebsd; ...
+  'rotated 30', rotate(ebsd,30*degree,'keepEuler'); ...
+  'sheared',    transform(ebsd,@(p) vector3d(p.x+0.35*p.y,p.y,p.z))};
+
+for k = 1:size(cases,1)
+
+  g = cases{k,2}.gridify;
+
+  for t = [3 7; 20 40; 100 150].'
+    [i,j] = g.pos2ind(g.pos(t(1),t(2)));
+    assert(i == t(1) && j == t(2), ...
+      ['check_gridify: pos2ind on a %s grid put the cell at (%d,%d) ' ...
+      'at (%d,%d)'], cases{k,1}, t(1), t(2), i, j);
+  end
+
+  % a vector of queries, and the single output linear index form
+  q = [g.pos(3,7) g.pos(20,40)];
+  [i,j] = g.pos2ind(q);
+  assert(isequal(i(:).',[3 20]) && isequal(j(:).',[7 40]), ...
+    'check_gridify: pos2ind on a %s grid broke for a vector of queries', cases{k,1});
+
+  assert(g.pos2ind(g.pos(5,9)) == sub2ind(size(g),5,9), ...
+    'check_gridify: pos2ind single output disagrees with sub2ind on a %s grid', ...
+    cases{k,1});
+
+end
 
 end
