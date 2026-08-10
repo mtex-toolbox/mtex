@@ -141,5 +141,39 @@ plotIPDF(variants(beta2alpha,oriParent),vector3d.Z)
 
 %% Parent Variants
 %
-% TODO
+% Everything so far went from the parent to the child. The opposite
+% direction works the same way - given a child orientation, which parent
+% orientations could it have come from? This is answered by
+% <orientation.variants.html |variants|> with the flag |'parent'|.
+
+% we go back to the exact Burgers orientation relationship
+b2a = orientation.Burgers(csBeta,csAlpha);
+
+% and pick one single child orientation
+oriChildSingle = variants(b2a,oriParent,1);
+
+oriParents = variants(b2a,oriChildSingle,'parent')
+
+%%
+% Note that there are fewer parent variants than child variants - six
+% against the twelve we found above. The two counts need not agree; they
+% are governed by the orders of the two point groups involved.
+%
+% One of the six is of course the orientation we started from
+
+min(angle(oriParents,oriParent)) ./ degree
+
+%%
+% The same set is obtained through
+% <orientation.parents.html |parents|>, which returns the orientation
+% relationship variants rather than the orientations themselves
+
+unique(oriChildSingle * b2a.parents)
+
+%%
+% Which of the possible parents is the correct one cannot be decided from a
+% single child orientation - it needs the neighbouring child grains, which
+% is exactly what
+% <MaParentGrainReconstruction.html parent grain reconstruction> does.
+
 %#ok<*MINV>

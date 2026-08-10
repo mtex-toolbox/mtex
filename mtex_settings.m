@@ -67,6 +67,10 @@ setMTEXpref('pfAnnotations',pfAnnotations);
 setMTEXpref('outerPlotSpacing',10);
 % setMTEXpref('innerPlotSpacing',10);
 
+% default spacing between a plot and a legend besides it
+% (defaults to innerPlotSpacing)
+% setMTEXpref('legendSpacing',10);
+
 % possible methods for Voronoi tessellation: matlab, qhull, jcvoronoi
 setMTEXpref('voronoiMethod','jcvoronoi');
 

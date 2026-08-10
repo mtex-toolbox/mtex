@@ -75,14 +75,14 @@ axis([313 353 140 156])
 
 %% Which algorithm - the short version
 % The smoothing step itself can be done in several ways, and the choice is
-% made by passing a <boundaryFilter.boundaryFilter.html |boundaryFilter|>. For
+% made by passing a <boundaryFilter.html |boundaryFilter|>. For
 % practical work there are two that matter.
 %
 % *Use the default* if the smoothed boundary is for plotting, or for measuring
 % directions and lengths. It is a Laplacian, it is fast, and it is what
 % |smoothBoundary(grains,5)| selects without being asked.
 %
-% *Use <taubinFilter.taubinFilter.html |taubinFilter|> if grain areas or shape
+% *Use <taubinFilter.html |taubinFilter|> if grain areas or shape
 % parameters matter.* A Laplacian shrinks - every iteration pulls a convex
 % region inwards and nothing bounds how far. Taubin follows each smoothing
 % pass by a slightly larger unshrinking one, which stops the drift.
@@ -121,7 +121,7 @@ axis([c.x-12 c.x+12 c.y-12 c.y+12])
 
 %%
 % There is a third option worth knowing about.
-% <curvatureFilter.curvatureFilter.html |curvatureFilter|> replaces the
+% <curvatureFilter.html |curvatureFilter|> replaces the
 % iteration count by a *length* - the wavelength that gets damped to half
 % amplitude. Detail finer than it is removed, detail coarser survives. Since
 % it is a length it means the same thing whatever step size the map was
@@ -137,7 +137,7 @@ hold off
 axis([313 353 140 156])
 
 %%
-% <huberFilter.huberFilter.html |huberFilter|> exists for faceted materials -
+% <huberFilter.html |huberFilter|> exists for faceted materials -
 % it keeps genuine corners sharp instead of rounding them off. It is not a
 % good default, see <GrainSmoothingAdvanced.html Smoothing Algorithms>.
 

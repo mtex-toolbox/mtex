@@ -65,7 +65,7 @@ mtexTitle('norm of the WBV')
 % In order to visualize the direction of the WBV in specimen coordinates,
 % we can use a directional color key.
 
-cK = HSVDirectionKey;
+cK = HSVDirectionKey(wbv);
 plot(ebsd,cK.direction2color(wbv),'FaceAlpha',wbv.norm/0.22)
 mtexTitle('direction of the WBV in specimen coordinates')
 
@@ -170,7 +170,7 @@ mtexColorbar
 
 wbv = weightedBurgersVec(ebsd,'gradient');
 
-cK = HSVDirectionKey(specimenSymmetry('1'));
+cK = HSVDirectionKey(wbv);
 plot(ebsd,cK.direction2color(wbv),'FaceAlpha',wbv.norm/0.2)
 mtexTitle('WBV direction / gradient' )
 

@@ -3,7 +3,7 @@
 %
 %% Basic Settings
 % display pole figure plots with RD on top and ND west
-plotzOutOfPlane, plotx2north
+plottingConvention.default("y←↑x");
 
 % store old annotation style
 storepfA = getMTEXpref('pfAnnotations');
@@ -140,43 +140,11 @@ plot(sSGrains.b)
 text([xvector,yvector,zvector],'labeled','BackGroundcolor','w')
 
 %% Texture evolution during rolling
-
-% define some random orientations
-rng(0)
-ori = orientation.rand(1e5,grains.CS);
-
-% 30 percent plane strain
-q = 0;
-epsilon = 0.3 * strainTensor(diag([1 -q -(1-q)]));
-
-numIter = 100;
-
-% compute the Taylor factors and the orientation gradients
-[~,~,spin] = calcTaylor(epsilon ./ numIter, sS.symmetrise);
-
-pC = progressCounter(numIter);
-for sas = 1:numIter
-
-  % compute the Taylor factors and the orientation gradients
-  W = spinTensor(spin.eval(ori).').';
-
-  % rotate the individual orientations
-  ori = ori .* orientation(-W);
-  pC.show(sas);
-
-end
-
-%%
-
-% plot the resulting pole figures
-
-% set new annotation style to display RD and ND
-pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y,vector3d.Z],{'RD','TD','ND'},...
-  'BackgroundColor','w','tag','axesLabels',varargin{:});
-setMTEXpref('pfAnnotations',pfAnnotations);
-
-plotPDF(ori,Miller({0,0,1},{1,1,1},grains.CS),'contourf')
-mtexColorbar
+%
+% Iterating the Taylor spin over small strain increments turns this into a
+% simulation of how the texture of a whole polycrystal develops during
+% deformation. This is the subject of its own chapter,
+% <TextureEvolution.html Texture Evolution>.
 
 %% restore MTEX preferences
 

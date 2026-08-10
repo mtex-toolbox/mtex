@@ -2,7 +2,10 @@ EBSDOverview
 EBSD_index              EBSD
 EBSDsquare_index        EBSDsquare
 EBSDhex_index           EBSDhex
+EBSD3_index             EBSD3
 grain2d_index           grain2d 
 grainBoundary_index     grainBoundary 
+grain3d_index           grain3d
+grain3Boundary_index    grain3Boundary
 triplePointList_index   triplePointList
 parentGrainReconstructor_index parentGrainReconstructor

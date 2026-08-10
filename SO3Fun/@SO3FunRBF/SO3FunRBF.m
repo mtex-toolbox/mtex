@@ -195,16 +195,19 @@ methods
   function varargout = subsref(SO3F,s)
     switch s(1).type
       case '()'
-        ss = size(SO3F);
-        SO3F.c0 = subsref(SO3F.c0,s(1));
-        
-        if isscalar(s(1).subs)
-          s(1).subs = [':' s(1).subs];
-          SO3F.weights = subsref(SO3F.weights,s(1));
-        else
-          SO3F.weights = full(SO3F.weights(:,sub2ind(ss, s(1).subs{:})));
+        % the weights carry the size of SO3F in the dimensions 2:end, hence
+        % we may reuse the subscripts - shifted by one dimension. This also
+        % keeps ':' and logical subscripts working, in contrast to sub2ind.
+        sw = s(1); sw.subs = [':' sw.subs];
+
+        % sparse matrices do not accept more than two subscripts
+        if issparse(SO3F.weights) && numel(sw.subs) > 2
+          SO3F.weights = full(SO3F.weights);
         end
-        
+
+        SO3F.c0 = subsref(SO3F.c0,s(1));
+        SO3F.weights = subsref(SO3F.weights,sw);
+
         if numel(s)>1
           [varargout{1:nargout}] = builtin('subsref',SO3F,s(2:end));
         else

@@ -42,7 +42,11 @@ if (v.antipodal || w.antipodal)
 end
 
 if (nargin == 2)
-  epsilon_or_k = 1; 
+  epsilon_or_k = 1;
+else
+  % k is documented as int32 - cast it, integer types do not survive the
+  % arithmetic done on k in @orientation/find
+  epsilon_or_k = double(epsilon_or_k);
 end
 
 % k given ==> find k nearest neighbors
