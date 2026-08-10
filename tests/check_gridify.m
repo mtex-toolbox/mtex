@@ -65,6 +65,7 @@ checkInterp;
 checkPos2Ind;
 checkHexRotatedRefused;
 checkHexDerivedGeometry;
+checkExportAng;
 
 disp('gridify: all checks passed');
 
@@ -542,6 +543,46 @@ for w = [20 45 90 120 200]
     && r.offset == g.offset, ...
     ['check_gridify: rotating by %d degree changed the derived geometry - ' ...
     'dHex %.4f, isRowAlignment %d, offset %+d'], w, r.dHex, r.isRowAlignment, r.offset);
+end
+
+end
+
+% =========================================================================
+function checkExportAng
+% ang export needs a grid aligned with x and y, and says so if it is not
+%
+% The header carries one XSTEP along x and one YSTEP along y. A rotated
+% grid has a step along neither, and now that both grid classes can hold
+% one, writing its two lattice spacings into those fields would describe a
+% grid the file does not have.
+
+f = [tempname '.ang'];
+clean = onCleanup(@() delete(f));
+
+for nameC = {'twins','titanium'}
+
+  name = nameC{1};
+  e0 = EBSD(mtexdata(name,'silent'));
+
+  % axis aligned exports, and the steps land in the header. Square used to
+  % die here: @EBSDsquare has had no dx/dy since 859b62af0.
+  evalc('export_ang(e0,f)');
+  h = fileread(f);
+  xs = regexp(h,'XSTEP: ([0-9.]+)','tokens','once');
+  ys = regexp(h,'YSTEP: ([0-9.]+)','tokens','once');
+  assert(~isempty(xs) && ~isempty(ys) && str2double(xs{1}) > 0 && str2double(ys{1}) > 0, ...
+    'check_gridify: export_ang wrote no usable XSTEP/YSTEP for %s', name);
+
+  % rotated is refused, by identifier
+  eR = rotate(e0,20*degree,'keepEuler');
+  ok = false;
+  try
+    evalc('export_ang(eR,f)');
+  catch ME
+    ok = strcmp(ME.identifier,'MTEX:export_ang:notAxisAligned');
+  end
+  assert(ok, 'check_gridify: export_ang did not refuse a rotated %s map', name);
+
 end
 
 end

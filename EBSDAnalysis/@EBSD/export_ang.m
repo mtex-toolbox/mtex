@@ -47,6 +47,13 @@ end
 % get gridified version of ebsd map
 ebsdGrid = ebsd.gridify;
 
+% The .ang header states XSTEP and YSTEP, one spacing along x and one along
+% y. Those exist only while the grid is aligned with those axes - a rotated
+% map has a step along neither, and writing its two lattice spacings into
+% those fields would claim a grid the file does not describe. Since @EBSDhex
+% and @EBSDsquare can both carry a rotated grid now, say so instead.
+[xStep,yStep] = gridSteps(ebsdGrid);
+
 % Open ang file
 scrPrnt('Step','Opening file for writing');
 filePh = fopen(fName,'w'); %Open new ang file for writing
@@ -88,8 +95,8 @@ if length(ebsd.unitCell)==6 %hex Grid
 else
   fprintf(filePh,'# %s: %s\n','GRID','SqrGrid');
 end
-fprintf(filePh,'# %s: %.6f\n','XSTEP',round(ebsdGrid.dx,roundOff));
-fprintf(filePh,'# %s: %.6f\n','YSTEP',round(ebsdGrid.dy,roundOff));
+fprintf(filePh,'# %s: %.6f\n','XSTEP',round(xStep,roundOff));
+fprintf(filePh,'# %s: %.6f\n','YSTEP',round(yStep,roundOff));
 if length(ebsd.unitCell)==6 %hex Grid
   fprintf(filePh,'# %s: %.0f\n','NCOLS_ODD',ebsdGrid.size(2)-1);
   fprintf(filePh,'# %s: %.0f\n','NCOLS_EVEN',ebsdGrid.size(2)-2);
@@ -223,4 +230,45 @@ switch mode
     titleStr = varargin{1};
     fprintf(['    - ',titleStr,'\n']);
 end
+end
+
+% *** Function gridSteps - the spacings along x and y, or refuse
+function [xStep,yStep] = gridSteps(g)
+
+if isa(g,'EBSDhex')
+  % the hex row step is at 60 degree even on an unrotated map, so the test
+  % has to be on the dense direction and the one across it, not on the raw
+  % matrix steps. The cross vector spans two lines, hence the halving.
+  if g.isRowAlignment
+    u = g.pos(1,2) - g.pos(1,1);  v = (g.pos(3,1) - g.pos(1,1)) ./ 2;
+  else
+    u = g.pos(2,1) - g.pos(1,1);  v = (g.pos(1,3) - g.pos(1,1)) ./ 2;
+  end
+else
+  u = g.pos(1,2) - g.pos(1,1);  v = g.pos(2,1) - g.pos(1,1);
+end
+
+onAxis = @(d) max(abs(dot(normalize(d),[xvector yvector]))) > 1 - 1e-6;
+
+if ~(onAxis(u) && onAxis(v))
+  error('MTEX:export_ang:notAxisAligned', ...
+    ['This grid is rotated with respect to the x/y axes (its spacings run '...
+    'along %.1f and %.1f degree), and the ang format has no way to say so: '...
+    'its header carries one XSTEP along x and one YSTEP along y.\n\n'...
+    'Rotate the map back before exporting, e.g.\n'...
+    '  ebsd = rotate(ebsd,-omega);\n'...
+    'or export a format that stores the positions themselves.'], ...
+    atan2(u.y,u.x)/degree, atan2(v.y,v.x)/degree);
+end
+
+% which of the two runs along x. Read off the grid rather than taken from
+% ebsdGrid.dx/dy - @EBSDsquare has had no dx/dy since 859b62af0, so ang
+% export of a square map died in the header with "Unrecognized method,
+% property, or field 'dx'".
+if abs(dot(normalize(u),xvector)) > 1 - 1e-6
+  xStep = norm(u); yStep = norm(v);
+else
+  xStep = norm(v); yStep = norm(u);
+end
+
 end

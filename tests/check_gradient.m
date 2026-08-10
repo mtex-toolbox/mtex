@@ -20,6 +20,7 @@ checkLinearField;
 checkBitIdenticalToSquare;
 checkEdgeAndHoles;
 checkLeastSquaresOnLinear;
+checkShapeFollowsInput;
 
 disp('gradient: all checks passed');
 
@@ -217,5 +218,40 @@ function inner = interiorMask(ebsd)
 ij = ebsd.lattice.ij;
 lo = min(ij,[],1) + 2; hi = max(ij,[],1) - 2;
 inner = all(ij >= lo & ij <= hi, 2);
+
+end
+
+% =========================================================================
+function checkShapeFollowsInput
+% gradientX/Y/Z come back in the shape of the data they were given
+%
+% A gridded map must give a map shaped gradient, and with it a map shaped
+% curvature tensor, so kappa(2,3) addresses the pixel in row 2, column 3 -
+% which is what the matrix based @EBSDsquare/gradientX allowed and what
+% doc/Plasticity/GND.m demonstrates. The lattice version returns a column
+% naturally, so it has to reshape.
+
+e = EBSD(mtexdata('twins','silent'));
+eG = e.gridify;
+
+assert(isequal(size(eG.gradientX),size(eG)), ...
+  'check_gradient: gridded gradientX is %s, expected the map shape %s', mat2str(size(eG.gradientX)), mat2str(size(eG)));
+
+k = eG.curvature;
+assert(isequal(size(k),size(eG)), ...
+  'check_gradient: gridded curvature is %s, expected the map shape %s', mat2str(size(k)), mat2str(size(eG)));
+
+% and it is addressable by pixel
+k23 = k(2,3); %#ok<NASGU>
+
+% a plain list stays a list, and the values do not depend on either
+ep = EBSD(eG);
+assert(isequal(size(ep.gradientX),[length(ep) 1]), ...
+  'check_gradient: a plain EBSD gave a gradientX of %s, expected a column', mat2str(size(ep.gradientX)));
+
+a = k.M(:); b = ep.curvature.M(:);
+f = isfinite(a) & isfinite(b);
+assert(max(abs(a(f)-b(f))) == 0, ...
+  'check_gradient: gridded and plain curvature differ by %g', max(abs(a(f)-b(f))));
 
 end

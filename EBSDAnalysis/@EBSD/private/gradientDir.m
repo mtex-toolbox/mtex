@@ -58,4 +58,9 @@ if isa(g,'SO3TangentVector')
   gW = SO3TangentVector(gW, rot(:,1), g.tangentSpace);
 end
 
+% in the shape of the data, so a gridded map gives a map shaped gradient and
+% with it a map shaped curvature tensor - kappa(2,3) then addresses the pixel
+% in row 2, column 3, as the matrix based @EBSDsquare/gradientX used to allow
+gW = reshape(gW,size(ebsd));
+
 end
