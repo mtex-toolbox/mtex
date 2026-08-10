@@ -20,6 +20,7 @@ function [c_book, conds, info] = ...
 %   maxcond            center amplification where full correction is used
 %   targetcond         inverse-amplification bound reached at full correction
 %   basis_degrees      degree assigned to every basis column
+%   degree_laplace_shift shift in ell*(ell+shift); 1 on S2, 2 on S3
 %   eval_vector        basis values at the evaluation point (dim x 1 x N)
 %   numerical_cond_max condition cap for the nuisance block (default 1e10)
 %
@@ -40,9 +41,13 @@ centeredEvaluation = check_option(varargin, ...
 colNormTol = 1e-14;
 eigFloorRel = 1e-14;
 
-% Degree weights are proportional to [l(l+1)]^s. The smallest positive degree
+% Degree weights are proportional to [ell(ell+shift)]^s. The smallest positive
 % weight is normalized to one; s = 1 gives a moderate first hierarchy.
 degreeExponent = 1;
+degreeLaplaceShift = get_option(varargin, ...
+  {'degree_laplace_shift', 'degree laplace shift'}, 1, 'double');
+if isempty(degreeLaplaceShift), degreeLaplaceShift = 1; end
+degreeLaplaceShift = max(real(degreeLaplaceShift), 0);
 numericalCondMax = get_option(varargin, ...
   {'numerical_cond_max', 'numerical cond max'}, 1e10, 'double');
 if isempty(numericalCondMax), numericalCondMax = 1e10; end
@@ -171,7 +176,7 @@ basisDegrees = get_option(varargin, ...
   {'basis_degrees', 'basis degrees', 'basisdegrees'}, []);
 if centeredEvaluation && dim > 1 && ~isempty(basisDegrees)
   degreeMultipliers = makeDegreeMultipliers( ...
-    basisDegrees, dim, degreeExponent);
+    basisDegrees, dim, degreeExponent, degreeLaplaceShift);
 
   [H_reg, shapeRegularization, centerAmplificationRegBound] = ...
     applyDegreeWeightedScaling(H_reg, C0_book, b_book, a_book, ...
@@ -350,7 +355,8 @@ end
 
 
 % build increasing degree multipliers for the nuisance coordinates
-function multipliers = makeDegreeMultipliers(basisDegrees, dim, exponent)
+function multipliers = makeDegreeMultipliers( ...
+    basisDegrees, dim, exponent, laplaceShift)
 
   basisDegrees = real(basisDegrees(:));
   if numel(basisDegrees) ~= dim
@@ -361,7 +367,7 @@ function multipliers = makeDegreeMultipliers(basisDegrees, dim, exponent)
   end
 
   degrees = max(basisDegrees(2:end), 0);
-  laplaceWeights = degrees .* (degrees + 1);
+  laplaceWeights = degrees .* (degrees + laplaceShift);
   positive = laplaceWeights > 0;
 
   multipliers = ones(dim-1, 1);

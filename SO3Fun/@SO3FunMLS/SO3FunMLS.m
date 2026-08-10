@@ -43,15 +43,12 @@ classdef SO3FunMLS < SO3Fun
   %          - run 'help rangesearch' for available options
   %  s       - symmetry of the nodes
   %
-  %  regularize    - use regularization for solving the lsq-systems
-  %  maxcond       - max regularization threshold of condition of the gram matrix
-  %  mincond       - start regularizing threshold of condition of the gram matrix
-  %  basis_weights -  regularization weights of basis coefficients,
-  %                    should punish higher degrees (Sobolev-like)
-  %  basis_weights_scale - degree-selectivity of the regularization weights;
-  %                          values around 1 give a moderate preference for lower degrees
-  %  lambda_geom_rel - relative strength of geometric regularization;
-  %                    for a value of 1, geometryScore is used without additional scaling
+  %  regularize - use goal-oriented regularization of the local systems
+  %  mincond    - center-amplification threshold where regularization starts
+  %  maxcond    - center-amplification threshold where full correction is used
+  %  targetcond - inverse-amplification bound reached at full correction
+  %    (The names are retained for compatibility; they do not denote the
+  %     ordinary condition number of the Gram matrix.)
   %
   %  outlierDetectionRange - specify how many neighbors are taken into account
   %
@@ -88,13 +85,10 @@ classdef SO3FunMLS < SO3Fun
     centered    = true;   % center the basis function evaluation around the identity?
     tangent     = false;  % if monomials, use monomials on the tangent space?
 
-    regularize;           % regularize?
-    maxcond = [];         % condition threshold of Gram matrix that triggers maximal regularization
-    mincond = [];         % start regularizing threshold of condition of the gram matrix
-    basis_weights = [];   % regularization weights of basis coefficients,
-                          %   should punish higher degrees (Sobolev-like)
-    basis_weights_scale = []; % application strength of basis_weights
-    lambda_geom_rel = []; % geometry strength relative to the normalized Gram scale
+    regularize = true;    % use goal-oriented regularization?
+    mincond = [];         % onset threshold for normalized center amplification
+    maxcond = [];         % full-activation threshold
+    targetcond = [];      % full-strength inverse-amplification target
 
     detectOutliers = false; % specify if we should search for outliers, and reduce their weight
     outlierDetectionRange = 10; % number of neighbors to take into account for outlier detection
@@ -176,12 +170,22 @@ classdef SO3FunMLS < SO3Fun
       end
       SO3F.values = values;
 
-      % regularization flag and parameters
-      SO3F.regularize = get_option(varargin, {'regularize','regularization'}, true, 'logical');
-      SO3F.mincond = get_option(varargin, {'mincond', 'min cond', 'min_cond'}, []);
-      SO3F.maxcond = get_option(varargin, {'maxcond', 'max cond', 'max_cond'}, []);
-      SO3F.lambda_geom_rel = get_option(varargin, {'lambda_geom_rel', 'lambda geom rel'}, []);
-      SO3F.basis_weights_scale = get_option(varargin, {'basis_weights_scale', 'basis weights scale'}, []);
+      % regularization flag and center-amplification parameters
+      SO3F.regularize = get_option(varargin, ...
+        {'regularize','regularization'}, true, 'logical');
+      SO3F.mincond = get_option(varargin, ...
+        {'mincond', 'min cond', 'min_cond', 'min amplification'}, []);
+      SO3F.maxcond = get_option(varargin, ...
+        {'maxcond', 'max cond', 'max_cond', 'max amplification'}, []);
+
+      targetcond = get_option(varargin, ...
+        {'targetcond', 'target cond', 'target_cond', ...
+         'target amplification', 'targetamp'}, []);
+      if ~isempty(targetcond)
+        SO3F.targetcond = targetcond;
+      elseif isempty(SO3F.mincond)
+        SO3F.targetcond = [];
+      end
 
       % set degree, (maximal) oversampling factor, support radius delta
       SO3F.degree = get_option(varargin, {'degree', 'deg'}, 4, 'double');
@@ -228,50 +232,70 @@ classdef SO3FunMLS < SO3Fun
       SO3F.subsample = check_option(varargin, {'subsampling', 'subsample'});
       if SO3F.subsample, SO3F.centered = true; end
 
+      if SO3F.regularize && SO3F.centered && ...
+          mod(SO3F.degree, 2) == 1 && ~SO3F.tangent && ...
+          ~getMTEXpref('generatingHelpMode')
+        warning(['For odd non-tangent ansatz spaces the first basis function is ' ...
+          'only a local constant surrogate. Exact constant preservation is not ' ...
+          'available. Tangent monomials are usually preferable.']);
+      end
+
       SO3F.use_smooth_delta = get_option(varargin, {'use_smooth_delta', ...
         'use smooth delta', 'smooth_delta', 'smooth delta'}, true);
 
-      % regularization parameters
-      SO3F.basis_weights = get_option(varargin, {'basis_weights', 'basisweights', ...
-        'basis weights'}, SO3F.compute_basis_weights, 'double');
-
-      % create auxilliary grid if it is needed
+      % The auxiliary grid is used for smooth delta and, when necessary, for
+      % automatic regularization calibration.
       needs_auto_regularization = SO3F.regularize && ...
         (isempty(SO3F.mincond) || isempty(SO3F.maxcond) || ...
-         isempty(SO3F.basis_weights_scale) || isempty(SO3F.lambda_geom_rel));
-      if SO3F.use_smooth_delta || needs_auto_regularization
+         isempty(SO3F.targetcond));
+
+      if (SO3F.use_smooth_delta && SO3F.delta == 0) || ...
+          needs_auto_regularization
         SO3F = SO3F.init_auxgrid;
       end
-
-      % initialize missing regularization parameters from auxilliary grid
       if needs_auto_regularization
-        SO3F = SO3F.init_reg_params();
+        SO3F = SO3F.init_reg_params;
       end
     end
 
     function SO3F = set.w(SO3F, weightfun)
-      if (isa(weightfun, 'function_handle'))
+      if isa(weightfun, 'function_handle')
         SO3F.w = weightfun;
-      else
-        switch weightfun
-          case 'hat';         SO3F.w = @(t)(max(1-t, 0));
-          case 'squared hat'; SO3F.w = @(t)(max(1-t, 0).^2);
-          case 'indicator';   SO3F.w = @(t)(t <= 1);
-          case 'const';       SO3F.w = @(t)(t <= 1);
-          case 'cos';         SO3F.w = @(t)((1+cos(pi*t))/2);
-          case 'C1hat';       SO3F.w = @(t)((1-t.^2).^2);
-          case 'wendland';    SO3F.w = @(t)(max(1-t, 0).^4 .* (4*t+1));
-          case 'wendlandC6';  SO3F.w = @(t)((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1));
-          case 'wendlandsquared';   SO3F.w = @(t)((max(1-t, 0).^4 .* (4*t+1)) .^2);
-          case 'wendlandC6squared'; SO3F.w = @(t)(((max(1-t,0).^8) .* (32*t.^3 + 25*t.^2 + 8*t + 1)) .^2);
-          otherwise % adapted version w(t .^ alpha) .^ beta of wendlandC6
-            alpha = sym(max(1, 2 - (SO3F.degree - 1) / 3));
-            beta  = sym(1 + max(SO3F.degree - 2, 0) / 3);
-            wstr = sprintf(['@(t)(max(1-t.^(%s),0).^8 .* ' ...
-              '(32*t.^(%s) + 25*t.^(%s) + 8*t.^(%s) + 1)).^(%s)'], ...
-              char(alpha), char(3*alpha), char(2*alpha), char(alpha), char(beta));
-            SO3F.w = str2func(wstr);
-        end
+        return;
+      end
+
+      switch lower(char(weightfun))
+        case 'hat'
+          SO3F.w = @(t)(max(1-t, 0));
+        case 'squared hat'
+          SO3F.w = @(t)(max(1-t, 0).^2);
+        case {'indicator','const'}
+          SO3F.w = @(t)(t <= 1);
+        case 'cos'
+          SO3F.w = @(t)(((1+cos(pi*t))/2) .* (t <= 1));
+        case 'c1hat'
+          SO3F.w = @(t)(max(1-t.^2, 0).^2);
+        case 'wendland'
+          SO3F.w = @(t)(max(1-t, 0).^4 .* (4*t+1));
+        case 'wendlandc6'
+          SO3F.w = @(t)(max(1-t,0).^8 .* ...
+            (32*t.^3 + 25*t.^2 + 8*t + 1));
+        case 'wendlandsquared'
+          SO3F.w = @(t)((max(1-t, 0).^4 .* (4*t+1)).^2);
+        case 'wendlandc6squared'
+          SO3F.w = @(t)((max(1-t,0).^8 .* ...
+            (32*t.^3 + 25*t.^2 + 8*t + 1)).^2);
+        case 'auto'
+          % Degree-dependent localization, identical to S2FunMLS.
+          alpha = max(1, 2 - (SO3F.degree - 1) / 3);
+          beta = 1 + max(SO3F.degree - 2, 0) / 3;
+          SO3F.w = @(t)( ...
+            max(1 - t.^alpha, 0).^8 .* ...
+            (32*t.^(3*alpha) + 25*t.^(2*alpha) + ...
+            8*t.^alpha + 1) ...
+            ).^beta;
+        otherwise
+          error('Unknown MLS weight function.');
       end
     end
 
@@ -384,14 +408,18 @@ classdef SO3FunMLS < SO3Fun
     nn = ceil(SO3F.dim * SO3F.oF);
   end
 
+  % Assigning mincond also updates the target for backward compatibility.
+  % Set targetcond afterwards when onset and target should differ.
+  function SO3F = set.mincond(SO3F, value)
+    SO3F.mincond = value;
+    SO3F.targetcond = value;
+  end
+
   function SO3F = set.degree(SO3F, deg)
     first_call = isempty(SO3F.degree);
     SO3F.degree = deg;
-    if (SO3F.degree == 0)
+    if SO3F.degree == 0
       SO3F.regularize = false;
-    end
-    if SO3F.regularize
-      SO3F.basis_weights = SO3F.compute_basis_weights;
     end
     SO3F.w = 'auto';
     if ~first_call && ~isempty(SO3F.auxgrid)
@@ -399,50 +427,15 @@ classdef SO3FunMLS < SO3Fun
     end
   end
 
-  % compute weights for basis functions for regularization of lsq systems
-  %   (punish higher degrees, see tools/mathtools/solve_lsq_book_constsize.m)
-  % positive weights are normalized to mean one and are applied in
-  % tools/math_tools/solve_lsq_book_constsize.m
-  function basis_weights = compute_basis_weights(SO3F)
-    degrees = (0 : SO3F.degree)';
-    dimensions = (degrees + 1) .* (degrees + 2) / 2;
-    basis_weights = repelem(degrees.^2, dimensions, 1);
-
-    % The first basis function plays the local constant role and is left
-    % unpenalized by the shared solver. For odd non-tangent degree it is only
-    % an approximate constant surrogate, as indicated by eval.m.
-
-    % normalize the positive degree weights to mean one
-    m = mean(nonzeros(basis_weights));
-    if isempty(m) || ~isfinite(m) || (m == 0)
-      basis_weights = zeros(size(basis_weights));
-    else
-      basis_weights = basis_weights / m;
-    end
-  end
-
-  function SO3F = set.basis_weights(SO3F, value)
-    if (numel(value) ~= SO3F.dim)
-      error(['The number of elements in the basis_weights must match' ...
-        'the dimension of the ansatz space.']);
-    end
-    value = value(:);
-    value = max(real(value), 0);
-    pos = value > 0;
-    if any(pos)
-      value(pos) = value(pos) / mean(value(pos));
-    end
-    SO3F.basis_weights = value;
-  end
-
-  % print reg parameters and diagnostic if desired
+  % print the calibrated goal-oriented regularization parameters
   function reg_params = show_reg_params(SO3F)
     reg_params = struct;
     reg_params.mincond = SO3F.mincond;
     reg_params.maxcond = SO3F.maxcond;
-    reg_params.lambda_geom_rel = SO3F.lambda_geom_rel;
-    reg_params.basis_weights_scale = SO3F.basis_weights_scale;
-    reg_params.basis_weights = SO3F.basis_weights;
+    reg_params.targetcond = SO3F.targetcond;
+    reg_params.numericalCondMax = 1e10;
+    reg_params.degreeExponent = 1;
+    reg_params.degreeLaplaceShift = 2;
   end
 
 
@@ -466,9 +459,8 @@ classdef SO3FunMLS < SO3Fun
   function [nAux, info] = estimate_auxgrid_points(SO3F)
     N = numel(SO3F.nodes);
 
-    % use the same slightly enlarged neighbor count as update_auxgrid_dn
-    nfind = max(round(1.3 * SO3F.nn), SO3F.nn + 10);
-    nfind = min(nfind, N - 1);
+    % Resolve the actual SO3F.nn-th-neighbor distance field.
+    nfind = min(SO3F.nn, N - 1);
 
     % probe at data nodes, since densely sampled regions require the finest
     %   auxiliary grid resolution
@@ -492,9 +484,9 @@ classdef SO3FunMLS < SO3Fun
     domainFraction = symmetryFactor * ballFraction;
     domainFraction = min(max(domainFraction, realmin), 1);
 
-    % the degree-zero helper MLS uses oF = 5; one additional point gives a
-    %   small safety margin in the densest relevant regions
-    targetAuxNeighbors = 6;
+    % The degree-zero helper MLS uses oF = 20. Resolve roughly that many
+    % auxiliary nodes inside the smallest robust data-support volume.
+    targetAuxNeighbors = 20;
     nAux = ceil(targetAuxNeighbors / domainFraction);
 
     % round up for reproducible grid sizes and apply practical bounds
@@ -513,9 +505,7 @@ classdef SO3FunMLS < SO3Fun
   function SO3F = update_auxgrid_dn(SO3F)
     if isempty(SO3F.auxgrid), return; end
 
-    % slight overshoot later ensures that mostly n neighbors are found
-    nfind = max(round(1.3 * SO3F.nn), SO3F.nn + 10);
-    nfind = min(nfind, numel(SO3F.nodes));
+    nfind = min(SO3F.nn, numel(SO3F.nodes));
     [~, dn] = SO3F.nodes.find(SO3F.auxgrid, nfind, ...
       'searcher', SO3F.searcher);
     SO3F.auxgrid.opt.dn = dn(:,end);
