@@ -148,14 +148,18 @@ classdef orientationPlot < handle
             'parent',oP.ax);
         else
           hG = holdOn(oP.ax); %#ok<NASGU>
+          coi = oP.ax.ColorOrderIndex;
           h = scatter3(x(:),y(:),z(:),MarkerSize.^2,data,'filled',...
             'MarkerEdgeColor','flat','Marker',Marker,'parent',oP.ax,alphaArgs{:});
+          oP.ax.ColorOrderIndex = coi; % the color comes from the data
           clear hG
         end
 
       else
         % colorize with a specified color
-        if ~check_option(varargin,{'MarkerColor','MarkerFaceColor','data','MarkerEdgeColor','EdgeColor'})
+        ownColor = check_option(varargin,...
+          {'MarkerColor','MarkerFaceColor','data','MarkerEdgeColor','EdgeColor'});
+        if ~ownColor
           [~,c] = nextstyle(gca,true,true,~ishold(gca));
           varargin = [{'MarkerEdgeColor',c},varargin];
         end
@@ -174,9 +178,18 @@ classdef orientationPlot < handle
             'parent',oP.ax);
         else
           hG = holdOn(oP.ax); %#ok<NASGU>
+          coi = oP.ax.ColorOrderIndex;
           h = scatter3(x(:),y(:),z(:),MarkerSize.^2,...
             'MarkerFaceColor',MFC,'MarkerEdgeColor',MEC,'Marker',Marker,...
             'parent',oP.ax,alphaArgs{:});
+
+          % hold puts the axes into the color cycling mode, where every
+          % object created takes the next color and does not give it back.
+          % A marker drawn in a color of its own must not consume one -
+          % otherwise plot(R,'MarkerColor','red') leaves the quiver that
+          % follows the second color. Only a color taken from the color
+          % order above is meant to be consumed.
+          if ownColor, oP.ax.ColorOrderIndex = coi; end
           clear hG
         end
 

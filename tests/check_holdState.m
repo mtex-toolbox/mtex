@@ -179,6 +179,38 @@ for k = 1:size(cases,1)
   composes(cases{k,1},cases{k,2});
 end
 
+% -------------------------------------------------------- 11 the color order
+% hold puts an axes into the color cycling mode, so a plot that holds only
+% internally would consume a color of the caller - doc/Rotations/
+% RotationTangentSpace.m draws a marker in an explicit color and expects the
+% quiver that follows to get the first color of the color order
+close all
+R = rotation.byAxisAngle(xvector,20*degree);
+plot(R,'axisAngle','MarkerColor','red')
+ax = gca;
+if ax.ColorOrderIndex ~= 1
+  error('check_holdState: plot(R) consumed %d color(s) of the caller',...
+    ax.ColorOrderIndex - 1);
+end
+hold on
+h = quiver3(SO3TangentVector(spinTensor(0.2*vector3d(1,2,3)),R));
+hold off
+if max(abs(h.Color(:).' - ax.ColorOrder(1,:))) > 1e-6
+  error('check_holdState: the quiver got %s instead of the first color %s',...
+    mat2str(h.Color,3),mat2str(ax.ColorOrder(1,:),3));
+end
+
+% when the caller holds, the advance is intended and has to be kept
+close all
+ax = freshAxes; hold(ax,'on');
+p1 = plot(ax,1:3,1:3);
+p2 = plot(ax,1:3,2:4);
+if max(abs(p1.Color - ax.ColorOrder(1,:))) > 1e-6 || ...
+    max(abs(p2.Color - ax.ColorOrder(2,:))) > 1e-6
+  error('check_holdState: a held axes does not cycle its colors any more');
+end
+close all
+
 disp('check_holdState: ok')
 
 end

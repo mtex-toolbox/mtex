@@ -150,9 +150,11 @@ for i = 1:numel(sP)
     else
 
       hG = holdOn(sP(i).ax); %#ok<NASGU>
+      coi = sP(i).ax.ColorOrderIndex;
       h(i) = optiondraw(scatter(x(:),y(:),sizeData,cdata,'filled',...
         'MarkerEdgeColor','flat','parent',sP(i).ax,...
         alphaArgs{:},dynamicArgs{:}),varargin{:});
+      sP(i).ax.ColorOrderIndex = coi; % the color comes from the data
       clear hG
 
     end
@@ -171,12 +173,13 @@ for i = 1:numel(sP)
     end
     mec = str2rgb(get_option(varargin,'MarkerEdgeColor',mec));
       
-    if isempty(mfc) || isempty(mec)  % cycle through colors
+    ownColor = ~isempty(mfc) && ~isempty(mec);
+    if ~ownColor  % cycle through colors
       [ls,nextColor] = nextstyle(sP(i).ax,true,true,~ishold(sP(i).ax)); %#ok<ASGLU>
-      
+
       if isempty(mfc), mfc = nextColor; end
       if isempty(mec), mec = nextColor; end
-            
+
     end
   
     if isLine % draw a patch
@@ -202,9 +205,16 @@ for i = 1:numel(sP)
     else
 
       hG = holdOn(sP(i).ax); %#ok<NASGU>
+      coi = sP(i).ax.ColorOrderIndex;
       h(i) = optiondraw(scatter(x(:),y(:),sizeData,'parent',sP(i).ax,...
         'MarkerFaceColor',mfc,'MarkerEdgeColor',mec,...
         alphaArgs{:},dynamicArgs{:}),varargin{:});
+
+      % hold puts the axes into the color cycling mode, where every object
+      % created takes the next color and does not give it back. A marker
+      % drawn in a color of its own must not consume one - only a color
+      % taken from the color order above is meant to be consumed.
+      if ownColor, sP(i).ax.ColorOrderIndex = coi; end
       clear hG
 
       % scatter objects have a proper legend entry - show it only if a
