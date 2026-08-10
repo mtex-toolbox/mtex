@@ -18,7 +18,10 @@ function out = spatialDecompositionAlpha(ebsd,varargin)
 % This file is intentionally self-contained (does not call into
 % spatialDecompositionGrid.m or share its local subfunctions - MATLAB
 % local functions aren't callable across files) and duplicates the
-% generic lattice/padding/site-assembly scaffolding it needs.
+% generic lattice/padding/site-assembly scaffolding it needs. The one
+% exception is the deformation aware position reconstruction, which both
+% files now take from private/latticeModel.m - a private function IS
+% callable from both, unlike a local one.
 %
 % Syntax
 %   out = spatialDecompositionAlpha(ebsd,'alpha',2.2)
@@ -58,22 +61,8 @@ isIndexed = ebsd.isIndexed(:);
 [ij2ebsd,~,ijmin,ijsz] = latticeLookup(ij);
 
 % local model to reconstruct the position of grid cells with no real
-% measurement - see spatialDecompositionGrid.m for the rationale
-% (duplicated here rather than shared; see this file's header)
-Iidx = double(ij(isIndexed,1)); Jidx = double(ij(isIndexed,2));
-posIdx = double(pos(isIndexed,:));
-idealFit  = [ones(numel(Iidx),1), Iidx, Jidx] \ posIdx;
-idealFun  = @(IJ) [ones(size(IJ,1),1), double(IJ)] * idealFit;
-defXY     = posIdx - idealFun([Iidx, Jidx]);
-
-if mean(vecnorm(defXY,2,2)) / dxy < 1e-2
-  reconstructPos = @(IJ) idealFun(IJ);
-else
-  Fx = scatteredInterpolant(Iidx, Jidx, defXY(:,1), 'natural', 'nearest');
-  Fy = scatteredInterpolant(Iidx, Jidx, defXY(:,2), 'natural', 'nearest');
-  reconstructPos = @(IJ) idealFun(IJ) + ...
-    [reshape(Fx(double(IJ(:,1)),double(IJ(:,2))),[],1), reshape(Fy(double(IJ(:,1)),double(IJ(:,2))),[],1)];
-end
+% measurement - no longer duplicated from spatialDecompositionGrid.m
+[reconstructPos,idealFun] = latticeModel(pos,ij,isIndexed,dxy);
 
 % ---- alpha partition via a true circumradius alpha-complex -----------------
 rAlpha = alpha*dxy;
