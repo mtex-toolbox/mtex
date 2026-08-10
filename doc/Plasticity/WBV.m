@@ -31,12 +31,7 @@
 % We start by importing the same data as for the <GND.html GND example>.
 
 % import the EBSD data
-% mtexdata single
-CS = crystalSymmetry('Fm3m',[4.04958 4.04958 4.04958],'mineral','Al');
-ebsd = EBSD.load([mtexDataPath filesep 'EBSD' filesep 'single_grain_aluminum.txt'],...
-    'CS', CS,'RADIANS','ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y'},...
-    'Columns', [1 2 3 4 5]);
-
+mtexdata single
 
 %%
 % We reconstruct grains because later on, we do not want to compute the WBV
@@ -44,11 +39,12 @@ ebsd = EBSD.load([mtexDataPath filesep 'EBSD' filesep 'single_grain_aluminum.txt
 
 [grains,ebsd] = calcGrains(ebsd,'angle',2.5*degree,'minPixel',6);
 
-% denoise the data
 % we will use the noisy data later on
 ebsdN = ebsd.gridify;
+
+% denoise the data
 F = halfQuadraticFilter;
-ebsd = smooth(ebsd('indexed'),F,'fill',grains);
+ebsd = smooth(ebsd,F,'fill',grains);
 
 %% Computing the WBV
 % The function expects the EBSD data set to be <EBSD.gridify.html
@@ -88,6 +84,7 @@ plot(ebsd,cK.direction2color(wbv),'FaceAlpha',wbv.norm/0.22)
 hold on
 quiver(ebsd(cond),wbv(cond),'color','k','autoScaleFactor', 2, 'antipodal');
 hold off
+mtexTitle('direction of the WBV in specimen coordinates')
 
 %%
 % If we are simply interested in the distributions of WBV, we can plot them

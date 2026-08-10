@@ -15,6 +15,7 @@ function varargout = gridify(ebsd,varargin)
 % Syntax
 %   [ebsdGrid,newId] = gridify(ebsd)
 %   [ebsdGrid,newId] = gridify(ebsd,'unitCell',unitCell)
+%   [ebsdGrid,newId] = gridify(ebsd,'rowMajor')
 %
 % Input
 %  ebsd - an @EBSD data set with a non regular grid
@@ -27,6 +28,18 @@ function varargout = gridify(ebsd,varargin)
 %  extent - extend of gridded map
 %  unitCell - unit cell of the gridded map
 %
+% Flags
+%  columnMajor - one scan row per matrix row, i.e. size(ebsd) = [numRows numCols] (default)
+%  rowMajor    - the transposed layout, i.e. size(ebsd) = [numCols numRows]
+%
+% Description of the layout
+% In the default column major layout the first dimension of the resulting
+% matrix is the grid direction closest to y and the second one the grid
+% direction closest to x, both oriented such that the coordinates increase.
+% Accordingly |ebsd(i,j)| is the j-th pixel of the i-th scan row and
+% |ebsd(1,1)| is the corner with the smallest coordinates. Hexagonal grids
+% are always stored this way, the flags apply to square grids only.
+%
 % Example
 %
 %   mtexdata twins
@@ -38,6 +51,12 @@ function varargout = gridify(ebsd,varargin)
 unitCell = get_option(varargin,'unitCell',ebsd.unitCell);
 
 if length(unitCell) == 6
+  % a hexagonal grid encodes the alternating offset of its lines in the
+  % matrix layout, hence there is no choice to be made here
+  if check_option(varargin,'rowMajor')
+    warning('MTEX:gridify:rowMajor',...
+      'A hexagonal grid is always stored column major - ignoring the flag ''rowMajor''.');
+  end
   [varargout{1:nargout}] = hexify(ebsd,varargin{:});
 else
   [varargout{1:nargout}] = squarify(ebsd,varargin{:});

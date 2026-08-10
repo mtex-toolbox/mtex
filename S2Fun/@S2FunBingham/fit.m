@@ -113,7 +113,7 @@ rot = rotation.byMatrix(B');
       d = size(Z,1);
       
       % normalization constant
-      A = numericalSaddlepointWithDerivatives(sort(-Z)+1)*exp(1);
+      A = numericalSaddlepointWithDerivatives(double(sort(-Z)+1))*exp(1);
       A = A(3);
       
       % derivative of normalization constant
@@ -121,7 +121,7 @@ rot = rotation.byMatrix(B');
       dim = size(Z,1);
       for i=1:dim
         mZ = Z([1:i i i:dim]);
-        T = numericalSaddlepointWithDerivatives(sort(-mZ)+1)*exp(1)/(2*pi);
+        T = numericalSaddlepointWithDerivatives(double(sort(-mZ)+1))*exp(1)/(2*pi);
         B(i) = T(3);
       end
       

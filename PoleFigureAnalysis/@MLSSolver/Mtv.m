@@ -19,7 +19,7 @@ else % extend specimen symmetry
 end
 
 % compute Fourier coefficients
-nfsftmex('set_f', solver.nfft_r(ind), I_ext);
+nfsftmex('set_f', solver.nfft_r(ind), double(I_ext));
 nfsftmex('adjoint', solver.nfft_r(ind));
 fhat = nfsftmex('get_f_hat_linear', solver.nfft_r(ind));
 
@@ -27,7 +27,7 @@ fhat = nfsftmex('get_f_hat_linear', solver.nfft_r(ind));
 fhat = 4*pi*fhat .* solver.A;
 
 % evaluate Fourier series at pole figure points g h_i
-nfsftmex('set_f_hat_linear', solver.nfft_gh(ind), fhat);
+nfsftmex('set_f_hat_linear', solver.nfft_gh(ind), double(fhat));
 nfsftmex('trafo', solver.nfft_gh(ind));
 d = real(nfsftmex('get_f', solver.nfft_gh(ind)));
 d = reshape(d,length(solver.c),[]) * solver.refl{ind}.';

@@ -33,6 +33,10 @@ if sF.antipodal, varargin = [varargin,'antipodal']; end
 
 S2Proj = makeSphericalProjection(varargin{:},sF.how2plot);
 
+% a crystal symmetry marks the plot as living in crystal coordinates, such
+% that it is not annotated with the X / Y / Z of the reference frame
+if isa(sF.CS,'crystalSymmetry'), symArg = {sF.CS}; else, symArg = {}; end
+
 % generate a grid where the function will be plotted
 plotNodes = ensurecell(S2Proj.makeGrid(varargin{:}));
 
@@ -47,7 +51,7 @@ end
 
 if check_option(varargin,'rgb')
   
-  [h,ax] = plot(plotNodes{1},values{1},'surf','hold',varargin{:});
+  [h,ax] = plot(plotNodes{1},values{1},'surf','hold',symArg{:},varargin{:});
 
 else
   h = gobjects(length(S2Proj),length(sF));
@@ -70,7 +74,7 @@ else
       
       % plot the function values
       [h(ul,j),ax(ul,j)] = plot(plotNodes{ul},values{ul}(:,j),ulLabel{:},...
-        'pcolor','hold','colorRange',cR,S2Proj(ul),varargin{:});
+        'pcolor','hold','colorRange',cR,S2Proj(ul),symArg{:},varargin{:});
       
     end
   end

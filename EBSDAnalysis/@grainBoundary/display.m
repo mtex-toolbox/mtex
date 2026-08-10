@@ -2,7 +2,7 @@ function display(gB,varargin)
 % standard output
 %
 
-displayClass(gB,inputname(1));
+displayClass(gB,inputname(1),'moreInfo',char(gB.how2plot,'compact'));
 
 % empty grain boundary set 
 if isempty(gB)

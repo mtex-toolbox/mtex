@@ -46,7 +46,7 @@ if isempty(plan)
   nfsftmex('precompute', bw, 1000, 1, 0);
   plan = nfsftmex('init_advanced', sF.bandwidth, length(v), 1);
   [theta,rho] = polar(v);
-  nfsftmex('set_x', plan, [rho'; theta']); % set vertices
+  nfsftmex('set_x', plan, double([rho'; theta'])); % set vertices
 end
 if check_option(varargin,'createPlan')
   keepPlan = plan;
@@ -56,7 +56,7 @@ end
 
 % nfsft
 for j = 1:length(sF)
-  nfsftmex('set_f_hat_linear', plan, sF.fhat(:,j)); % set fourier coefficients
+  nfsftmex('set_f_hat_linear', plan, double(sF.fhat(:,j))); % set fourier coefficients
   nfsftmex('trafo', plan);
   f(:,j) = reshape(nfsftmex('get_f', plan),[],1);
 end

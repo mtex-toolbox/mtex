@@ -21,7 +21,7 @@ mtexdata ferrite
 [grains,ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',5);
 
 % smooth grain boundaries
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 % plot the orientation map
 plot(ebsd,ebsd.orientations)
@@ -50,7 +50,7 @@ plot(ebsdSub,ebsdSub.orientations)
 % reconstruct the grain structure
 [grainsSub,ebsdSub] = calcGrains(ebsdSub,'angle',10*degree,'minPixel',2,'alpha',5);
 
-grainsSub = smooth(grainsSub,5);
+grainsSub = smoothBoundary(grainsSub,5);
 
 hold on
 plot(grainsSub.boundary,'linewidth',1.5)
@@ -104,7 +104,7 @@ plot(ebsd('Di'),ebsd('Di').orientations)
 
 % compute and smooth grains 
 [grains,ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',3,'alpha',3);
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 % plot the boundary of all grains
 plot(grains.boundary,'linewidth',2)

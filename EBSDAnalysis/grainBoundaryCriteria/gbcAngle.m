@@ -7,6 +7,12 @@ classdef gbcAngle < grainBoundaryCriterion
 %   criterion = gbcAngle(10*degree);
 %   criterion = gbcAngle('threshold',10*degree);
 %
+%   % a high and a low angle threshold
+%   criterion = gbcAngle([10*degree 2*degree]);
+%
+%   % one threshold per phase, in the order of ebsd.CSList
+%   criterion = gbcAngle({10*degree, 15*degree, [10 2]*degree});
+%
 %   out = criterion.evaluate(ebsd,i,j);
 %
 % Output
@@ -23,16 +29,33 @@ end
 methods
 
   function obj = gbcAngle(varargin)
-    if nargin == 1 && isnumeric(varargin{1})
+    if nargin == 1 && (isnumeric(varargin{1}) || iscell(varargin{1}))
       obj.threshold = varargin{1};
     elseif check_option(varargin,{'angle','threshold'})
       obj.threshold = get_option(varargin,{'angle','threshold'},obj.threshold);
-    end    
+    end
   end
 
 end
 
 methods (Access = protected)
+
+  function t = phaseThreshold(obj,p,numPhases)
+    % the threshold to apply to phase p
+    %
+    % A cell threshold is one entry per phase, in the order of ebsd.CSList.
+    % Anything else is a single threshold shared by all phases.
+
+    t = obj.threshold;
+    if ~iscell(t), return; end
+
+    assert(numel(t) == numPhases, ...
+      ['The number of thresholds does not match the number of phases. ' ...
+      'Give one threshold per entry of ebsd.CSList, i.e. %d in total, ' ...
+      'or a single threshold for all phases.'],numPhases);
+
+    t = t{p};
+  end
 
   function out = doEvaluate(obj,ebsd,i,j)
           
@@ -55,7 +78,7 @@ methods (Access = protected)
       % check for the grain boundary criterion
       if cs.isIndexed
         d = max(abs(dot_outer(mori(ind),cs.properGroup.rot)),[],2);
-        out(ind) = mean(d > cos(obj.threshold/2),2);
+        out(ind) = mean(d > cos(obj.phaseThreshold(p,numel(ebsd.phaseMap))/2),2);
       else
         out(ind) = 1;        
       end

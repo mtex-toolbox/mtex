@@ -26,7 +26,7 @@ mtexdata ferrite silent
 [grains,ebsd] = calcGrains(ebsd,'threshold',[1*degree, 10*degree],'minPixel',5);
 
 % lets smooth the grain boundaries a bit
-grains = smooth(grains,5)
+grains = smoothBoundary(grains,5)
 
 %%
 % We observe that we have 12314 high-angle boundary segments and 28501

@@ -52,6 +52,9 @@ end
 % do plot
 h = optiondraw(patch(pObj),varargin{:});
 
+% apply the plotting convention to the axis
+mP.how2plot.setView(mP.ax);
+
 pause(0.1)
 
 fcw

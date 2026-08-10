@@ -14,10 +14,12 @@ function h = quiver3(SO3VF,varargin)
 %
 
 % only plot the real part of SO3VF
-if ~SO3VF.isReal && ~getMTEXpref('generatingHelpMode')
-  warning(['Imaginary part of complex valued SO3VectorFields is ignored. ' ...
-    'In the following only the real part is plotted.'])
-  SO3VF.isReal=1;
+if ~SO3VF.isReal
+  if ~getMTEXpref('generatingHelpMode')
+    warning(['Imaginary part of complex valued SO3VectorFields is ignored. ' ...
+      'In the following only the real part is plotted.'])
+  end
+  SO3VF.isReal = 1;
 end
 
 % generate a new 3d projection of the orientation space
@@ -42,12 +44,12 @@ end
 % project tangential vectors to 3d space
 [x2,y2,z2] = oP.project(exp(vec/10000,S3G,SO3VF.tangentSpace));
 
-wasHold = ishold(gca); hold(gca,'on');
+hG = holdOn(gca); %#ok<NASGU>
 
 % scale to the correct length
 h = optiondraw(quiver3(x1,y1,z1,x2-x1,y2-y1,z2-z1),varargin{:});
 
-if ~wasHold, hold(gca,'off'); end
+clear hG
 
 if nargout == 0, clear h; end
 

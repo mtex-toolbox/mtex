@@ -25,6 +25,7 @@
 %
 % Here we additionally assume that our function values are noisy.
 
+plottingConvention.default('y↑→x');
 fname = fullfile(mtexDataPath, 'orientation', 'dubna.csv');
 [ori, S] = orientation.load(fname,'columnNames',{'phi1','Phi','phi2','values'});
 

@@ -1,5 +1,6 @@
 %% Plot Types
-%
+%%
+plottingConvention.default('y↑→x');
 %% A Sample ODFs
 %
 % Let us first define a model ODF to be plotted later on.

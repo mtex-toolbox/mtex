@@ -1,5 +1,6 @@
 %% Optimal Kernel Selection
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % In the section <DensityEstimation.html density estimation> we have seen
 % that the correct choice of the kernel halfwidth is essential for creating

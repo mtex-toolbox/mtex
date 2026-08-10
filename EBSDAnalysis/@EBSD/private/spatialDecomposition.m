@@ -25,7 +25,7 @@ if check_option(varargin,'unitCell')
   
 elseif check_option(varargin,'quick')
   
-  [~,~,~,~,I_ED1,I_ED2] = jcvoronoi_mex(X);
+  [~,~,~,~,I_ED1,I_ED2] = jcvoronoi_mex(double(X));
     
   V = []; F = [];
   I_FD = sparse(I_ED1,I_ED2,1);
@@ -40,7 +40,7 @@ else
   switch lower(method)
     case 'jcvoronoi'
   
-      [Vx,Vy,E1,E2,I_ED1,I_ED2] = jcvoronoi_mex([X;dummyCoordinates]);
+      [Vx,Vy,E1,E2,I_ED1,I_ED2] = jcvoronoi_mex(double([X;dummyCoordinates]));
     
       V=[Vx,Vy];
       E=[E1,E2];

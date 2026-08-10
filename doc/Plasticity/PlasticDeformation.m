@@ -1,4 +1,9 @@
 %% Schmid Factor Analysis
+%%
+
+plottingConvention.default('y↑→x');
+
+%%
 % This script describes how to analyze Schmid factors.
 %
 % Let us assume a Nickel crystal
@@ -163,7 +168,7 @@ mtexdata csl
 ebsd = ebsd(ebsd.inpolygon([0,0,200,50]))
 
 grains = calcGrains(ebsd);
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 plot(ebsd,ebsd.orientations,'micronbar','off')
 hold on

@@ -24,10 +24,12 @@ function varargout = plot(odf,varargin)
 % See also
 % SO3Fun/plotSection SO3Fun/plot3d SO3Fun/plotFibre
 
-if ~odf.isReal && ~getMTEXpref('generatingHelpMode')
-  warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
-    'In the following only the real part is plotted.'])
-  odf.isReal=1;
+if ~odf.isReal
+  if ~getMTEXpref('generatingHelpMode')
+    warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
+      'In the following only the real part is plotted.'])
+  end
+  odf.isReal = 1;
 end
 
 if nargin > 1 && isa(varargin{1},'fibre')

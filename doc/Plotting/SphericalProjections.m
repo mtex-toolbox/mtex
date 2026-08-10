@@ -1,5 +1,6 @@
 %% Spherical Projections
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % MTEX supports four types of spherical projection which are available for
 % all spherical plot, e.g. <SO3Fun.plotPDF.html polefigure plots>,
@@ -13,7 +14,6 @@
 
 cs = crystalSymmetry('321');
 odf = fibreODF(Miller(1,1,0,cs),zvector)
-
 
 %% Alignment of the Hemispheres
 %
@@ -50,9 +50,7 @@ mtexColorbar
 % @plottingConvention. One can specify any vector to point out of the
 % screen or east, north, west or south.
 
-how2plot = plottingConvention;
-how2plot.north = zvector;
-how2plot.outOfScreen = xvector;
+how2plot = plottingConvention('z↑→y')
 
 plotPDF(odf,Miller(1,0,0,cs),'antipodal',how2plot)
 
@@ -101,11 +99,11 @@ mtexColorMap white2black
 % MTEX also offers a three-dimensional plot of pole figures which even
 % might be rotated freely in space
 
-howt2plot = plottingConvention;
-howt2plot.north = zvector;
-howt2plot.outOfScreen = vector3d(-2,-1,0);
+how2plot = plottingConvention;
+how2plot.north = zvector;
+how2plot.outOfScreen = vector3d(-2,-1,0);
 
 close all
-plotPDF(odf,Miller(1,1,0,odf.CS),'3d',howt2plot)
-setCamera(howt2plot)
+plotPDF(odf,Miller(1,1,0,odf.CS),'3d',how2plot)
+how2plot.setView
 mtexColorMap parula

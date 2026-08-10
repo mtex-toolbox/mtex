@@ -1,5 +1,6 @@
 %% Harmonic Representation of Spherical Functions
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % Similarly as periodic functions may be represented as weighted sums of
 % sines and cosines a spherical function $f$ can be written as series of

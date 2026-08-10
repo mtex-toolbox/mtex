@@ -31,7 +31,9 @@ catch
   F = griddedInterpolant(ebsd.pos.x',ebsd.pos.y',ebsd.id',"nearest","none");
 end
 
-idNew = F(newPos.x,newPos.y);
+% query with plain lists - passing the coordinate matrices makes
+% griddedInterpolant guess a grid format and warn about it
+idNew = F(newPos.x(:),newPos.y(:));
 isIndexed = ~isnan(idNew);
 idNew = idNew(isIndexed);
 rot = rotation.nan(sizeNew);

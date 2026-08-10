@@ -15,12 +15,12 @@ mtexdata forsterite silent
 % reconstruct grains, discard boundary grains and smooth them
 [grains, ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',5);
 grains(grains.isBoundary) = [];
-grains = smooth(grains('indexed'),10,'moveTriplePoints');
+grains = smoothBoundary(grains('indexed'),10,'moveTriplePoints');
 
 % plot all grains and highlight a specific one
 plot(grains)
 
-ind = 654;
+ind = 679;
 hold on
 plot(grains(ind).boundary,'lineWidth',5,'linecolor','blue')
 hold off
@@ -91,7 +91,7 @@ mtexColorbar('title','c_{max} - c_{min}')
 
 % load some test grains
 testgrains = mtexdata('testgrains');
-testgrains = smooth(testgrains([6 8]),10);
+testgrains = smoothBoundary(testgrains([6 8]),10);
 
 % compute the longest caliper and the caliper perpendicular to the shortest
 cMax = testgrains.caliper('longest');
@@ -265,8 +265,8 @@ legend('Location','southoutside','Orientation','horizontal')
 
 plotopts = {'normalize','linewidth',2, 'plain'};
 
-shapeF = characteristicShape(grains.boundary('f','f'))
-plot(shapeF,plotopts{:})
+shapeF = characteristicShape(grains.boundary('Fo','Fo'))
+plot(shapeF,plotopts{:},'DisplayName','Fo-Fo')
 hold on
 shapeE = characteristicShape(grains.boundary('En','En'));
 plot(shapeE,plotopts{:},'DisplayName','En-En')

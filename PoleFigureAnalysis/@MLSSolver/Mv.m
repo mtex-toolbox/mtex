@@ -9,7 +9,7 @@ function I = Mv(solver,c,i)
 
 % compute Fourier coefficients
 c_ext = c(:) * solver.refl{i};
-nfsftmex('set_f', solver.nfft_gh(i), c_ext(:));
+nfsftmex('set_f', solver.nfft_gh(i), double(c_ext(:)));
 nfsftmex('adjoint', solver.nfft_gh(i));
 fhat = nfsftmex('get_f_hat_linear', solver.nfft_gh(i));
 
@@ -17,7 +17,7 @@ fhat = nfsftmex('get_f_hat_linear', solver.nfft_gh(i));
 fhat = 4*pi * fhat .* solver.A;
 
 % evaluate Fourier series at pole figure points r
-nfsftmex('set_f_hat_linear', solver.nfft_r(i), fhat);
+nfsftmex('set_f_hat_linear', solver.nfft_r(i), double(fhat));
 nfsftmex('trafo', solver.nfft_r(i));
 I = real(nfsftmex('get_f', solver.nfft_r(i)));
 

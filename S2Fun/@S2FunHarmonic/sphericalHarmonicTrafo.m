@@ -54,7 +54,7 @@ end
 
 % spherical harmonic transform
 flagsMEX = bin2dec(sprintf('%d',flip(flags)));
-ghat = sphericalHarmonicTrafomex(N,S2F.fhat,flagsMEX,[1,1]);
+ghat = sphericalHarmonicTrafomex(N,double(S2F.fhat),flagsMEX,[1,1]);
 
 
 % determine shift along 1st dimension

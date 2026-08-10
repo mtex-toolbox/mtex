@@ -31,7 +31,7 @@ if check_option(varargin,'nfsft') && l > 0
   nfsftmex('precompute',l,1000,0,0);
   plan = nfsftmex('init_advanced',l,1,1);
 
-  nfsftmex('set_x',plan,[rho;theta]);
+  nfsftmex('set_x',plan,double([rho;theta]));
     
   % Set Fourier coefficients.
   nfsftmex('set_f',plan,1);

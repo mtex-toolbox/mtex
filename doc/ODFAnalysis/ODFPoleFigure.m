@@ -30,7 +30,7 @@ setMTEXpref('defaultColorMap',LaboTeXColorMap);
 % Plotting some pole figures of an <SO3Fun.SO3Fun.html ODF> is straight forward
 % using the <SO3Fun.plotPDF.html plotPDF> command. The only mandatory
 % arguments are the ODF to be plotted and the <Miller.Miller.html Miller
-% indice> of the crystal directions you want to have pole figures for
+% indices> of the crystal directions you want to have pole figures for
 
 plotPDF(odf,Miller({1,0,-1,0},{0,0,0,1},{1,1,-2,1},cs))
 
@@ -73,7 +73,7 @@ odf.calcPDF(Miller(1,0,0,cs),xvector)
 f = fibre(Miller(1,0,0,odf.CS),yvector);
 
 close all
-plotFibre(odf,f)
+plotFibre(odf,f,'LineWidth',2)
 
 %%
 % Finally, lets set back the default colormap.

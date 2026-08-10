@@ -55,17 +55,19 @@
 
 ebsd = EBSD.load([mtexEBSDPath filesep 'olivineopticalmap.ang'],'setting',2)
 
-plot(ebsd('olivine'),ebsd('olivine').orientations,'coordinates','on')
+plot(ebsd('olivine'),ebsd('olivine').orientations,'refFrame','on')
 
 %%
-% The plot does not yet fit the alignment of the map in the EDAX software
-% as it plots the x-axis be default to east and the z-axis into the plane.
-% This is only a plotting convention and can be set in MTEX by
+% The plot should already fit the alignment of the map in the EDAX software
+% as MTEX by default plots the x-axis to east and the y-axis to the south.
+% However, if the interpretation of the map a different alignment with
+% respect to the screen is more useful we can easily change this by
+% changing the @plottingConvention stored in |ebsd.how2plot|.
+ 
+% assume we want x pointing down and y pointing towards east
+ebsd.how2plot = 'x↓→y';
 
-ebsd.how2plot.east = xvector;
-ebsd.how2plot.outOfScreen = -zvector;
-
-plot(ebsd('olivine'),ebsd('olivine').orientations,'coordinates','on')
+plot(ebsd('olivine'),ebsd('olivine').orientations,'refFrame','on')
 
 %%
 % Note that these options only alter the orientation of the EBSD map and
@@ -85,6 +87,7 @@ cS = crystalShape.olivine;
 largeGrains = grains(grains.numPixel>500)
 
 % and plot the crystal shapes
+plot(ebsd('olivine'),ebsd('olivine').orientations,'refFrame','on','location','se')
 hold on
 plot(largeGrains,cS,'colored')
 hold off
@@ -100,10 +103,10 @@ plotPDF(ebsd('O').orientations,h,'contourf')
 % As pole figures display data relative to the specimen reference frame
 % MTEX automatically aligns them on the screen exactly as the spatial map
 % above, i.e., according to our last definition with x pointing towards
-% east and y to the south.
+% south and y to the east.
 %
 %% Change the map reference system
-% In order to manually change the map reference frame one may apply a
+% In order to change the map coordinates one may apply a
 % rotation to the map coordinates only. E.g. to flip the map left to right
 % while preserving the Euler angles one can do
 
@@ -116,7 +119,10 @@ grains = calcGrains(ebsd_rot('indexed'));
 % select only large grains
 largeGrains = grains(grains.numPixel>500);
 
-plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'coordinates','on')
+% the crystal shapes are drawn on top of the map - put the reference frame
+% box into a corner where none of them covers it
+plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,...
+  'refFrame','on','Location','ne')
 
 % and plot the crystal shapes
 hold on
@@ -138,7 +144,8 @@ grains = calcGrains(ebsd_rot('indexed'));
 largeGrains = grains(grains.numPixel>500);
 
 
-plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'coordinates','on')
+plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,...
+  'refFrame','on','Location','se')
 
 % and plot the crystal shapes
 hold on
@@ -169,8 +176,8 @@ grains = calcGrains(ebsd_rot('indexed'));
 % select only large grains
 largeGrains = grains(grains.numPixel>500);
 
-
-plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,'coordinates','on')
+plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations,...
+  'refFrame','on','Location','se')
 
 % and plot the crystal shapes
 hold on

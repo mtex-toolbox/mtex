@@ -38,10 +38,9 @@ if all(isnull(norm(v)-1)), v = v.*1.05; end
 
 h = optiondraw(quiver3(v.x,v.y,v.z,d.x,d.y,d.z,options{:}),varargin{:});
 if d.antipodal
-  washold = getHoldState(gca);
-  hold on
+  hG = holdOn(gca); %#ok<NASGU>
   h = [h,optiondraw(quiver3(v.x,v.y,v.z,-d.x,-d.y,-d.z,options{:}),varargin{:})];
-  hold(gca,washold); 
+  clear hG
 end
   
 % finalize the plot

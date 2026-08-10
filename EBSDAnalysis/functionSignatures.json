@@ -7,9 +7,11 @@
 {
     "inputs":
     [
-      {"name":"fname", "kind":"required", "type":["file=*.ang,*.ctf,*.crc,*.cpr,*.osc,*.h5,*.hdf5,*.h5oina,*.oh5,*.dream3d,*.txt,*.csv,*.mat"], "purpose":"file name"},
+      {"name":"fname", "kind":"required", "type":["file=*.ang,*.ctf,*.crc,*.cpr,*.osc,*.h5,*.hdf5,*.h5oina,*.oh5,*.edaxh5,*.dream3d,*.txt,*.csv,*.mat"], "purpose":"file name"},
       {"name":"CS", "kind":"namevalue", "type":[["crystalSymmetry"],["cell"]], "purpose":"crystal symmetry / phase list"},
-      {"name":"interface", "kind":"namevalue", "type":["char","choices={'ang','ctf','crc','cpr','osc','h5','hdf5','h5oina','oh5','dream3d','generic'}"], "purpose":"force a specific import filter"},
+      {"name":"interface", "kind":"namevalue", "type":["char","choices={'ang','ctf','crc','cpr','osc','h5','hdf5','h5oina','oh5','edaxh5','dream3d','generic'}"], "purpose":"force a specific import filter"},
+      {"name":"dataSet", "kind":"namevalue", "type":[["numeric","scalar"],["char"]], "purpose":"which data set of a HDF5 file to import"},
+      {"name":"raw", "kind":"flag", "purpose":"import the unprocessed data (Oxford h5oina)"},
       {"name":"columnNames", "kind":"namevalue", "type":["cell"], "purpose":"names of the columns to import"},
       {"name":"columns", "kind":"namevalue", "type":["numeric","vector"], "purpose":"positions of the columns to import"},
       {"name":"header", "kind":"namevalue", "type":["numeric","scalar",">=0"], "purpose":"number of header lines"},
@@ -41,7 +43,8 @@
     [
       {"name":"fname", "kind":"required", "type":["file=*.tess,*.dream3d"], "purpose":"Neper or DREAM.3D file"},
       {"name":"CS", "kind":"namevalue", "type":[["crystalSymmetry"],["cell"]], "purpose":"crystal symmetry / phase list"},
-      {"name":"interface", "kind":"namevalue", "type":["char","choices={'neper','dream3d'}"]}
+      {"name":"interface", "kind":"namevalue", "type":["char","choices={'neper','dream3d'}"]},
+      {"name":"noOrientFaces", "kind":"flag", "type":["choices={'noOrientFaces'}"], "purpose":"dream3d: keep the face winding stored in the file"}
     ],
     "outputs":
     [
@@ -87,6 +90,9 @@
       {"name":"region", "kind":"namevalue", "type":["numeric","vector","numel=4"], "purpose":"[xmin xmax ymin ymax]"},
       {"name":"backend", "kind":"namevalue", "type":["char","choices={'surf','patch','imagesc'}"]},
       {"name":"micronbar", "kind":"namevalue", "type":["char","choices={'on','off'}"]},
+      {"name":"refFrame", "kind":"namevalue", "type":["char","choices={'on','off'}"], "purpose":"indicate the alignment of the reference frame"},
+      {"name":"refFrameDirs", "kind":"namevalue", "type":["vector3d"], "purpose":"directions indicated by the reference frame"},
+      {"name":"refFrameLabels", "kind":"namevalue", "type":["cell"], "purpose":"labels of the reference frame directions"},
       {"name":"coordinates", "kind":"namevalue", "type":["char","choices={'on','off'}"]},
       {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
       {"name":"parent", "kind":"namevalue", "type":["matlab.graphics.axis.Axes"]},
@@ -109,6 +115,9 @@
       {"name":"region", "kind":"namevalue", "type":["numeric","vector","numel=4"], "purpose":"[xmin xmax ymin ymax]"},
       {"name":"scale", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"scaling of crystal shapes / tensors"},
       {"name":"micronbar", "kind":"namevalue", "type":["char","choices={'on','off'}"]},
+      {"name":"refFrame", "kind":"namevalue", "type":["char","choices={'on','off'}"], "purpose":"indicate the alignment of the reference frame"},
+      {"name":"refFrameDirs", "kind":"namevalue", "type":["vector3d"], "purpose":"directions indicated by the reference frame"},
+      {"name":"refFrameLabels", "kind":"namevalue", "type":["cell"], "purpose":"labels of the reference frame directions"},
       {"name":"coordinates", "kind":"namevalue", "type":["char","choices={'on','off'}"]},
       {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
       {"name":"parent", "kind":"namevalue", "type":["matlab.graphics.axis.Axes"]},

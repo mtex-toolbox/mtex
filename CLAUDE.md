@@ -39,7 +39,7 @@ Class-per-folder convention: `@ClassName/` holds a class's methods as separate `
 - `plotting/` — all figure/plot code (see `plotting/CLAUDE.md`)
 - `interfaces/` — file format import/export (see `interfaces/CLAUDE.md`)
 - `doc/` — published example scripts (also the source for the online documentation)
-- `extern/` — vendored third-party code (matGeom, jsonlab, NFFT, etc.)
+- `extern/` — vendored third-party code (jsonlab, NFFT, jcvoronoi, etc.)
 - `mex/` — compiled MEX binaries (checked in; not rebuilt by default)
 - `obsolete/`, `old/`, `compatibility/` — deprecated functions kept only as thin wrappers/shims for backward compatibility (they warn/error and forward to the current API); don't use them as a reference for current coding patterns
 
@@ -51,7 +51,7 @@ Class-per-folder convention: `@ClassName/` holds a class's methods as separate `
 /opt/matlab-2024b/bin/matlab -batch "check_mtex"
 ```
 
-There's no single "run all tests" entry point in `tests/` (unlike `extern/matGeom/tests/runAllTests.m`, which only covers the vendored matGeom code).
+There's no single "run all tests" entry point in `tests/` — run the `check_*` scripts you need by name.
 
 ## Architecture
 

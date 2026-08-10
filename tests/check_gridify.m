@@ -45,8 +45,119 @@ for k = 1:size(cases,1)
     max(norm(ebsdGrid.pos(:) - ebsdGrid2.pos(:))) < 1e-10, ...
     'check_gridify: %s is not stable under a second gridify',name);
 
+  % column major layout: one scan row per matrix row, coordinates increasing
+  assert(range(ebsdGrid.pos(1,:).y) < 1e-6 * ebsd.dPos, ...
+    'check_gridify: %s does not have a constant y along the first matrix row',name);
+  assert(ebsdGrid.pos(end,1).y > ebsdGrid.pos(1,1).y && ...
+    ebsdGrid.pos(1,end).x > ebsdGrid.pos(1,1).x, ...
+    'check_gridify: %s is not oriented towards increasing coordinates',name);
+
 end
 
+checkLayout;
+checkResample;
+checkResampleRotated;
+
 disp('gridify: all checks passed');
+
+end
+
+% =========================================================================
+function checkLayout
+% the rowMajor layout is the transpose of the default columnMajor one
+
+ebsd = EBSD(mtexdata('twins','silent'));
+
+eC = ebsd.gridify;
+eR = ebsd.gridify('rowMajor');
+
+assert(all(size(eC) == fliplr(size(eR))), ...
+  'check_gridify: rowMajor is not the transpose of columnMajor');
+
+assert(abs(dot(normalize(eC.d1),yvector)-1) < 1e-6 && ...
+  abs(dot(normalize(eC.d2),xvector)-1) < 1e-6, ...
+  'check_gridify: columnMajor does not run along +y, +x');
+
+assert(abs(dot(normalize(eR.d1),xvector)-1) < 1e-6 && ...
+  abs(dot(normalize(eR.d2),yvector)-1) < 1e-6, ...
+  'check_gridify: rowMajor does not run along +x, +y');
+
+assert(isequaln(eC.rotations.a, eR.rotations.a.') && ...
+  isequaln(reshape(eC.phaseId,size(eC)), reshape(eR.phaseId,size(eR)).'), ...
+  'check_gridify: rowMajor and columnMajor do not hold the same data');
+
+% the explicit flag agrees with the default
+assert(all(size(ebsd.gridify('columnMajor')) == size(eC)), ...
+  'check_gridify: columnMajor is not the default layout');
+
+end
+
+% =========================================================================
+function checkResample
+% a custom unit cell resamples the map onto a grid of exactly that cell
+
+ebsd = EBSD(mtexdata('copper','silent'));
+
+uC = 2.5 * vector3d([-1 -1 1 1].',[-1 1 1 -1].',0);
+ebsdS = ebsd.gridify('unitCell',uC);
+
+assert(isa(ebsdS,'EBSDsquare'), ...
+  'check_gridify: a square unit cell did not produce an EBSDsquare');
+
+assert(max(norm(ebsdS.unitCell(:) - uC(:))) < 1e-6 * norm(uC(1)), ...
+  'check_gridify: the resampled map does not carry the requested unit cell');
+
+% the new grid covers the old map without extending it
+ext = ebsd.extent; extS = ebsdS.extent;
+assert(all(abs(extS(1:4) - ext(1:4)) <= ebsd.dPos), ...
+  'check_gridify: the resampled grid extent [%s] does not match [%s]',...
+  xnum2str(extS(1:4)),xnum2str(ext(1:4)));
+
+% the resampled map is not empty - nearest neighbor interpolation assigns
+% every grid point inside the map
+assert(nnz(ebsdS.isIndexed) > 0.9 * length(ebsdS), ...
+  'check_gridify: only %d of %d resampled pixels are indexed',...
+  nnz(ebsdS.isIndexed),length(ebsdS));
+
+% and it is plottable - a degenerate unit cell would break latticeBasis
+f = figure('visible','off');
+plot(ebsdS('indexed'),ebsdS('indexed').orientations);
+close(f);
+
+end
+
+% =========================================================================
+function checkResampleRotated
+% a rotated unit cell gives a rotated - and still gap free - grid
+%
+% Regression: the new grid was built axis aligned from the BOUNDING BOX of
+% the unit cell instead of from its cell to cell translations. A unit cell
+% rotated by 45 degree was therefore placed at a spacing of its full
+% diagonal, so the cells only touched at their corners and half the map -
+% every second cell of a checkerboard - stayed empty.
+
+ebsd = EBSD(mtexdata('twins','silent')).gridify;
+
+uC = rotate(2*ebsd.unitCell,45*degree);
+ebsdR = ebsd.gridify('unitCell',uC);
+
+% the grid directions follow the unit cell, they are not axis aligned
+assert(abs(abs(dot(normalize(ebsdR.d1),yvector)) - cos(45*degree)) < 1e-6 && ...
+  abs(abs(dot(normalize(ebsdR.d2),xvector)) - cos(45*degree)) < 1e-6, ...
+  'check_gridify: a 45 degree rotated unit cell did not give a rotated grid');
+
+% neighbouring cells are one cell edge apart, not one bounding box apart
+dCell = norm(uC(1) - uC(2));
+assert(abs(norm(ebsdR.d1) - dCell) < 1e-6 * dCell && ...
+  abs(norm(ebsdR.d2) - dCell) < 1e-6 * dCell, ...
+  'check_gridify: the rotated grid has spacing %g / %g instead of %g',...
+  norm(ebsdR.d1),norm(ebsdR.d2),dCell);
+
+% hence the new cells cover the original map instead of only half of it
+areaNew = nnz(ebsdR.isIndexed) * polyArea(uC);
+areaOld = nnz(ebsd.isIndexed) * polyArea(ebsd.unitCell);
+assert(areaNew > 0.95 * areaOld, ...
+  'check_gridify: the rotated grid covers only %.0f%% of the map',...
+  100 * areaNew / areaOld);
 
 end

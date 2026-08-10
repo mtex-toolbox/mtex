@@ -5,8 +5,7 @@ if check_option(varargin,'doNotDraw'), return;end
 set(mtexFig.children,'units','pixel');
 
 % update children to be only the axes of mtexFig
-mtexFig.children = flipud(findobj(mtexFig.parent,'type','axes',...
-  '-not','tag','Colorbar','-and','-not','tag','legend'));
+mtexFig.children = flipud(getAllAxes(mtexFig.parent));
 
 % this seems to be necessary to get tight inset right
 if ~check_option(varargin,'keepAxisSize') 

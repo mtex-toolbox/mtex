@@ -12,7 +12,7 @@
 mtexdata testgrains silent
 
 % select and smooth a few interesting grains
-grains = smooth(grains('id',[2 3 9 11 15 16 18 23 31 33 38 40]),10);
+grains = smoothBoundary(grains('id',[2 3 9 11 15 16 18 23 31 33 38 40]),10);
 
 %%
 % Therefore, we first extract all boundary segments and colorize them
@@ -62,7 +62,7 @@ drawNow(gcm,'figSize',getMTEXpref('figSize'))
 % import data and reconstruct grains
 mtexdata titanium silent
 [grains,ebsd] = calcGrains(ebsd);
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 % plot an ipf map
 plot(ebsd('indexed'),ebsd('indexed').orientations)

@@ -25,7 +25,8 @@ function gbnd = calcGBND(gB3,varargin)
 %  gbnd - @S2Fun
 %
 % Options
-%  halfwidth - halfwidth used for density estimation
+%  halfwidth   - halfwidth used for density estimation
+%  conditional - compute the conditional GBCD
 %
 
 grains = getClass(varargin,'grain3d');
@@ -73,6 +74,9 @@ if ~isempty(moriRef) && ~isempty(grains)
   end
   gbnd.CS = moriRef.CS;
 
+  if check_option(varargin,'total')
+    gbnd = gbnd * (sum(weights)/sum(gB3.area)/length(weights));
+  end
   
 elseif ~isempty(grains) % the crystal GBND
   

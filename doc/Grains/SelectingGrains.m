@@ -11,12 +11,11 @@ mtexdata forsterite silent
 % restrict it to a subregion of interest.
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
-
 % reconstruct grains
-[grains, ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',5);
+[grains, ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',5,'alpha',6);
 
 % smooth them
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 % plot the orientation data of the Forsterite phase
 plot(ebsd('fo'),ebsd('fo').orientations)
@@ -39,23 +38,14 @@ selectInteractive(grains,'lineColor','gold')
 clear global indSelected
 global indSelected
 
-% this simulates a mouse click - it goes through java.awt.Robot, which needs
-% permission to inject input events and is refused on some systems, so fall
-% back to selecting the grain at the same position directly
-pause(1)
-try
-  simulateClick(9000,3500)
-  pause(1)
-catch
-  % permission to inject input events was refused
-end
+%%
+% As soon as you clicked a grain the global variable indSelected contains
+% the index of the selected grain. Since we can not click when creating
+% this help we set indSelected explicitly.
 
-if isempty(indSelected)
-  indSelected = grains.id2ind(grains.findByLocation([9000 3500]));
-end
+indSelected = grains(9000,3500).id;
 
 grains(indSelected)
-
 hold on
 plot(grains(indSelected).boundary,'lineWidth',4,'lineColor','gold')
 hold off

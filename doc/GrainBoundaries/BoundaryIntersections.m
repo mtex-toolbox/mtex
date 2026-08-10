@@ -13,7 +13,7 @@ mtexdata twins silent
 [grains,ebsd] = calcGrains(ebsd);
 
 % smooth them
-grains = grains.smooth;
+grains = grains.smoothBoundary;
 
 % visualize the grains
 plot(grains,grains.meanOrientation)

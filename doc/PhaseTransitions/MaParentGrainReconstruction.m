@@ -17,7 +17,7 @@ mtexdata martensite
 
 % grain reconstruction
 [grains,ebsd] = calcGrains(ebsd, 'angle', 3*degree, 'minPixel',2);
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 % plot the data and the grain boundaries
 plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
@@ -240,7 +240,7 @@ color = ind2color(job.transformedGrains.packetId);
 plot(job.transformedGrains,color,'faceAlpha',0.5)
 
 hold on
-parentGrains = smooth(job.parentGrains,10);
+parentGrains = smoothBoundary(job.parentGrains,10);
 plot(parentGrains.boundary,'linewidth',3)
 
 % outline a specific parent grain
@@ -333,16 +333,9 @@ hold off
 % not reconstructed pixels. To this end we first run grain reconstruction
 % on the parent map
 
-[parentGrains, parentEBSD] = calcGrains(parentEBSD,'angle',3*degree);
+[parentGrains, parentEBSD] = calcGrains(parentEBSD,'angle',3*degree,'minPixel',10);
 
-% remove very small grains
-parentEBSD(parentGrains(parentGrains.numPixel<10)) = [];
-
-% redo grain reconstruction
-[parentGrains, parentEBSD] = calcGrains(parentEBSD,'angle',3*degree);
-parentGrains = smooth(parentGrains,10);
-
-plot(ebsd('indexed'),ebsd('indexed').orientations,'figSize','large')
+plot(ebsd,ebsd.orientations,'figSize','large')
 
 hold on
 plot(parentGrains.boundary,'lineWidth',2)
@@ -354,7 +347,7 @@ hold off
 
 % fill the holes
 F = halfQuadraticFilter;
-parentEBSD = smooth(parentEBSD('indexed'),F,'fill',parentGrains);
+parentEBSD = smooth(parentEBSD,F,'fill',parentGrains);
 
 % plot the parent map
 plot(parentEBSD('Iron fcc'),parentEBSD('Iron fcc').orientations,'figSize','large')

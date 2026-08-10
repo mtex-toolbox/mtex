@@ -48,7 +48,11 @@ methods
 
     % set crystal symmetries
     if ~isempty(args), o.CS = varargin{args(1)}; end
-    if length(args) > 1, o.SS = varargin{args(2)}; end
+    if length(args) > 1
+      o.SS = varargin{args(2)}; 
+    else
+      o.SS = specimenSymmetry.default;
+    end
     
     varargin(args) = [];
 

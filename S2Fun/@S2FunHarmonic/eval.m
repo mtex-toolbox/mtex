@@ -76,6 +76,12 @@ N = min(sF.bandwidth,get_option(varargin,'bandwidth',inf));
 [theta,rho] = polar(v);
 tr = [theta,rho].'./(2*pi);
 
+% non finite nodes let the nfft library write outside of its buffers, which
+% corrupts the heap and crashes MATLAB. Hence we replace them by a valid
+% node and set the corresponding function values to NaN afterwards.
+isBadNode = any(~isfinite(tr),1);
+tr(:,isBadNode) = 0;
+
 % create plan
 if check_option(varargin,'keepPlan')
   plan = keepPlanNFFT;
@@ -114,7 +120,7 @@ if isempty(plan)
   end
   
   % set rotations as nodes in plan
-  nfftmex('set_x',plan,tr);
+  nfftmex('set_x',plan,double(tr));
 
   % node-dependent precomputation
   nfftmex('precompute_psi',plan);
@@ -143,7 +149,7 @@ for k = 1:length(sF)
   % coefficient transform
   ghat = sphericalHarmonicTrafo(sF.subSet(k),flags,'bandwidth',N); % ghat ist genau gleich
   % set Fourier coefficients
-  nfftmex('set_f_hat',plan,ghat(:));
+  nfftmex('set_f_hat',plan,double(ghat(:)));
 
   if check_option(varargin,'direct')
     % direct Fourier transform
@@ -169,6 +175,9 @@ if check_option(varargin,'keepPlan')
 else
   nfftmex('finalize',plan);
 end
+
+% restore the non finite nodes
+f(isBadNode,:) = NaN;
 
 end
 

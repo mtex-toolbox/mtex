@@ -102,7 +102,8 @@ else
 %  if length(z) > numel(omega)/length(CS)/10, w = full(w); end
       
       [y,x] = find(omega>cos(epsilon));
-      dummy = sparse(y,x,psi.eval(omega(sub2ind(size(w),y,x))),length(q1),length(q2));
+      % double as sparse does not accept single precision values
+      dummy = sparse(y,x,double(psi.eval(omega(sub2ind(size(w),y,x)))),length(q1),length(q2));
       
       w = w + dummy;          
       

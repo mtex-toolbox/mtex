@@ -39,7 +39,7 @@ nF = size(F,1);
 if isempty(hasMex), hasMex = exist('chainOrderC','file') == 3; end
 
 if hasMex && ~check_option(varargin,'noMex')
-  [cid,pos,firstEnd] = chainOrderC(F,nV);
+  [cid,pos,firstEnd] = chainOrderC(double(F),double(nV));
   return
 end
 

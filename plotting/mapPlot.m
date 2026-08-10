@@ -76,7 +76,8 @@ classdef mapPlot < handle
         zlabel(ax,'z','visible','off')
       end
       
-      % add a micron bar
+      % add a micron bar - which also indicates the alignment of the
+      % reference frame, see the 'refFrame' option of @scaleBar
       mP.micronBar = scaleBar(mP,get_option(varargin,'scanUnit','um'),varargin{:});
       onOff = {'off','on'};            
       vis = get_option(varargin,'micronbar',getMTEXpref('showMicronBar'));

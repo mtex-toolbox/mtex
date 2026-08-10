@@ -23,7 +23,12 @@ function gB = simplify(gB,varargin)
 %
 % Input
 %  gB      - @grainBoundary
-%  epsilon - tolerance in EBSD units (default: half the median segment length)
+%  epsilon - tolerance in EBSD units (default: the median segment length over
+%            sqrt(2) - a staircase on a grid of spacing d is never further
+%            than d/sqrt(2) from the straight line it approximates, the worst
+%            case being a boundary at 45 degree, so that is the tolerance
+%            which removes the grid and nothing else. At d/2 a 45 degree
+%            staircase does not collapse)
 %
 % Output
 %  gB_s - @grainBoundary
@@ -32,7 +37,7 @@ function gB = simplify(gB,varargin)
 %  protect - ids of vertices that must survive, on top of the junctions
 %
 % See also
-% grainBoundary/reduce grainBoundary/refine grain2d/simplifyBoundary grain2d/smooth
+% grainBoundary/reduce grainBoundary/refine grain2d/simplifyBoundary grain2d/smoothBoundary
 
 nF = length(gB);
 if nF == 0, return; end
@@ -40,7 +45,7 @@ if nF == 0, return; end
 if ~isempty(varargin) && isnumeric(varargin{1}) && isscalar(varargin{1})
   epsilon = varargin{1};
 else
-  epsilon = median(gB.segLength)/2;
+  epsilon = median(gB.segLength) / sqrt(2);
 end
 if epsilon <= 0, return; end
 

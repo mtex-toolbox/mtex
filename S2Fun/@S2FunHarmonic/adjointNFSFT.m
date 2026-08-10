@@ -126,7 +126,7 @@ if isempty(plan)
   nfsftmex('precompute', bw, 1000, 1, 0);
   plan = nfsftmex('init_advanced', bw, numel(nodes), 1);
   [theta,rho] = polar(nodes(:)); %#ok<POLAR>
-  nfsftmex('set_x', plan, [rho(:).'; theta(:).']); % set vertices
+  nfsftmex('set_x', plan, double([rho(:).'; theta(:).'])); % set vertices
 end
 
 if check_option(varargin,'createPlan')
@@ -135,7 +135,7 @@ if check_option(varargin,'createPlan')
 end
 
 % adjoint nfsft
-nfsftmex('set_f', plan, W(:) .* values(:));
+nfsftmex('set_f', plan, double(W(:) .* values(:)));
 nfsftmex('adjoint', plan);
 sF.fhat = nfsftmex('get_f_hat_linear', plan);
 sF.bandwidth = min([bw,sF.bandwidth]);

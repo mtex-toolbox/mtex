@@ -33,7 +33,7 @@ function out = spatialDecompositionGrid(ebsd,varargin)
 %  ebsd - gridified @EBSDsquare / @EBSDhex
 %
 % Options
-%  alpha    - hole closing radius in multiples of dxy (default 1.5). Holes
+%  alpha    - hole closing radius in multiples of dxy (default 3.1). Holes
 %             narrower than 2*alpha*dxy are filled and vanish; wider holes are
 %             preserved as measured (no growing into them). Single-pixel-wide
 %             recesses (boundary notches, slit mouths) are always filled for
@@ -281,9 +281,9 @@ site2id  = [idxSiteEbsd; niId];
 % sizing-only pass.
 if check_option(varargin,'delaunayOnly')
   V = zeros(0,2); F = zeros(0,2);
-  I_FD = jcvoronoiDelaunayOnly_mex(double(XY),double(numReal), epsilon);
+  I_FD = jcvoronoiDelaunayOnly(double(XY),double(numReal), double(epsilon));
 else
-  [V,F,I_FD] = jcvoronoi2_mex(double(XY),double(numReal), epsilon);
+  [V,F,I_FD] = jcvoronoi2(double(XY),double(numReal), double(epsilon));
 end
 
 out = struct('V',V,'F',F,'I_FD',I_FD, ...

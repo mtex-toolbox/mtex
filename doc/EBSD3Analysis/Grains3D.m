@@ -25,15 +25,20 @@ how2plot = plottingConvention.default3D;
 setCamera(how2plot)
 
 %%
-% Unfortunately, the boundary face normals provided by Dream3d sometimes
-% come with no orientation. In this case we have MTEX to compute the
-% orientation of the faces using the command <grain3d.orientFaces
-% |orientFaces|>. This may take some time and requires the free and open
-% source GPTToolbox
-% https://de.mathworks.com/matlabcentral/fileexchange/49692-gptoolbox> to
-% be installed.
+% Dream3d stores the boundary faces with an arbitrary winding, i.e., the
+% normal computed from the vertex order points randomly into or out of the
+% grain. MTEX therefore runs <grain3d.orientFaces.html |orientFaces|> as
+% part of the import, so that face normals, grain volumes and
+% |boundary.grainId| are directly usable. Should you need the raw winding
+% as stored in the file, switch this off with
 
-grains = grains.orientFaces
+grainsRaw = grain3d.load(fname,'noOrientFaces');
+
+%%
+% Without oriented faces, more than half of the grains of this data set
+% come out with a negative volume, since their normals point inwards
+
+[nnz(grainsRaw.volume < 0), nnz(grains.volume < 0)]
 
 %%
 % Similarly as with two dimensional grains we can select individual grains
@@ -128,21 +133,20 @@ plot(grains(isInter),grains(isInter).meanOrientation,'faceAlpha',0.6,'linewidth'
 %plotEllipsoid(grains(isInter).centroid,a,b,c,'faceAlpha',0.5)
 hold off
 
-%setCamera(plottingConvention.default3D)
+setCamera(plottingConvention.default3D)
 
 %% Plot the normal directions of a single grain
 %
 % The following code shows how to visualize the face normals
 
-grains = grains(1)
-
 % multiplication with I_GF flips the boundary normals to point out of the
 % grain
-dir = full(grains.I_GF(1,:)).' .* grains.boundary.N 
+id = 3;
+dir = full(grains(id).I_GF(1,:)).' .* grains(id).boundary.N 
 
-plot(grains)
+plot(grains(id))
 hold on
-quiver(grains.boundary,dir)
+quiver(grains(id).boundary,dir)
 hold off
 
 %#ok<*NOPTS>

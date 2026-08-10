@@ -114,7 +114,7 @@ if isempty(plan)
   plan = nfsoftmex('init',N,length(nodes),nfsoft_flags,nfft_flags,4,1000,2*ceil(1.5*N));
   
   % set rotations in Euler angles (nodes)
-  nfsoftmex('set_x',plan,Euler(nodes(:),'nfft').');
+  nfsoftmex('set_x',plan,double(Euler(nodes(:),'nfft').'));
   
   % node-dependent precomputation
   nfsoftmex('precompute',plan);
@@ -128,7 +128,7 @@ if check_option(varargin,'createPlan')
 end
 
 % adjoint nfsoft
-nfsoftmex('set_f', plan, W(:) .* values(:));
+nfsoftmex('set_f', plan, double(W(:) .* values(:)));
 nfsoftmex('adjoint', plan);
 % get fourier coefficients from plan and normalize
 fhat = nfsoftmex('get_f_hat', plan)*(sqrt(8)*pi);

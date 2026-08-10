@@ -24,10 +24,12 @@ function plotPDF(SO3F,h,varargin)
 % S2Grid/plot annotate savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
 % SphericalProjection_demo
 
-if ~SO3F.isReal && ~getMTEXpref('generatingHelpMode')
-  warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
-    'In the following only the real part is plotted.'])
-  SO3F.isReal=1;
+if ~SO3F.isReal
+  if ~getMTEXpref('generatingHelpMode')
+    warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
+      'In the following only the real part is plotted.'])
+  end
+  SO3F.isReal = 1;
 end
 
 
@@ -40,12 +42,6 @@ end
 
 % ensure h is a cell array
 if ~iscell(h), h = mat2cell(h,1,cellfun(@length,c)); end
-
-if isa(SO3F.SS,'crystalSymmetry')  
-  pfAnnotations = @(varargin) [];
-else
-  pfAnnotations = getMTEXpref('pfAnnotations');
-end
 
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
@@ -66,14 +62,15 @@ for i = 1:length(h)
   pdf = radon(SO3F,h{i},[],varargin{:}).' * c{i}.';
     
   % plot the pole density function
-  [~,cax] = plot(pdf,'smooth','doNotDraw','ensureNonNeg',varargin{:});
-    
+  % for a misorientation SS is a crystal symmetry, the pole density
+  % function is then given in crystal directions - passing it lets the plot
+  % annotate itself accordingly
+  [~,cax] = plot(pdf,'smooth','doNotDraw','ensureNonNeg',SO3F.SS,varargin{:});
+
   if ~check_option(varargin,'noTitle')
     mtexTitle(cax(1),char(h{i},'LaTeX'));
   end
   
-  % plot annotations
-  pfAnnotations('parent',cax,'doNotDraw','add2all','noAntipodal',varargin{:});
   [cax.Tag] = deal('pdf');
   setAllAppdata(cax,'h',h{i},'SS',SO3F.SS);
 

@@ -29,6 +29,10 @@ EBSD3d / Grain3d
 * curvature, convex hull
 * grainBoundaryCharacter
 * characteristicShape
+* grain3d.orientFaces does not detect cavities, i.e. a grain that completely
+  encloses another one. The enclosing surface would have to be oriented
+  inwards, instead each closed surface patch is oriented outwards. The case
+  is detected and warned about, see tests/check_orientFaces.m.
 * the property table in doc/EBSD3Analysis/Grains3DProperties.m already
   advertises four methods that do not exist on grain3d - grain2d has all
   four. The doc links are left dangling on purpose, as a reminder:
@@ -89,6 +93,43 @@ Fixes
 * histogram(grains.longAxis) should respect plottingConvention  !!!
 * Miller/line 
 * SO3FunRBF/rotate -> ask Thom for data 
+* radon(odf,h,'bandwidth',64) crashes instead of setting the bandwidth. The
+  signature is radon(SO3F,h,r,varargin), so the third positional argument
+  binds 'bandwidth' as r and the char array reaches dot_outer as "Dot
+  indexing is not supported for variables of this type". Options currently
+  have to be passed as radon(odf,h,[],'bandwidth',64). Affects every radon
+  implementation (@SO3Fun, @SO3FunRBF, @SO3FunCBF, @SO3FunBingham,
+  @SO3FunHarmonic, @SO3FunComposition) - either detect an option string in
+  position 3 and shift it into varargin, or drop r from the positional API.
+* SO3FunComposition/radon only sums the component transforms; it has no
+  final antipodal check of its own, unlike @SO3Fun/radon.m and
+  @SO3FunRBF/radon.m ('antipodal' option, CS.isLaue, h.antipodal). varargin
+  is forwarded to the components, so it works as long as every component
+  type implements that logic itself - there is no safety net if one does
+  not. This was the situation for @SO3FunCBF until 2026-08-06.
+
+Testing
+-------
+* compact test suites for S2Fun and SO3Fun: no plotting, 60 s max each.
+  Model them on tests/check_S1Fun.m - a function with assertions that fails
+  loudly, not a cell script that prints numbers nobody reads.
+  Current state (measured 2026-08-06 on R2024b):
+  - S2Fun is only tests/check_S2FunMLS.m, a cell script taking 69.9 s, of
+    which roughly 80% is figure rendering. One default resolution plot of an
+    S2FunMLS costs 8.9 s against 0.9 s to build it and 1.9 s to evaluate it
+    at 1e4 nodes; the same plot at 'resolution',5*degree costs 0.9 s. About
+    15 plot calls in total. Node counts are not the bottleneck, plots are.
+  - 3 of its 12 cells already error out. The 'subsample' flag dies in
+    S2Fun/@S2FunMLS/private/find_optimal_subset.m:56 - the guard
+    str2double(version(1:2)) < 25 assumes the linprog "optimstatus" bug
+    starts at R2025a, but it already hits R2024b (24.2), so the
+    interior-point-legacy workaround is never selected. Note that fixing
+    this makes the suite slower, since 'subsample' runs a linprog per node.
+    The last two cells fail with "Index exceeds array bounds", not yet
+    diagnosed.
+  - SO3Fun is scattered over tests/check_SO3Fun*.m and tests/SO3FunTests/,
+    which is a mix of check scripts and scratch files (problems.m,
+    testing.m, Newapproximation.m). Not yet timed.
 
 
 

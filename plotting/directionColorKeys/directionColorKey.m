@@ -68,7 +68,7 @@ classdef directionColorKey < handle
       % annotate crystal directions
       if check_option(varargin,'3d')
         if ~check_option(varargin,'noLabel')
-          hold on
+          hG = holdOn(gca); %#ok<NASGU>
           
           if isa(dM.sym,'crystalSymmetry')
             axes = normalize(Miller({1,0,0},{0,1,0},{0,0,1},dM.sym,'uvw'));
@@ -84,7 +84,7 @@ classdef directionColorKey < handle
           text3(axes(2),labels{2},'verticalAlignment','cap','horizontalAlignment','left')
           text3(axes(3),labels{3},'verticalAlignment','bottom')
 
-          hold off
+          clear hG
         end
         if isNew, fcw; end                
       end

@@ -1,5 +1,6 @@
 %% Spherical Approximation and Interpolation
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % On this page, we want to cover the topic of function approximation from
 % discrete values on the sphere. To simulate this, we have stored some

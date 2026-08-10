@@ -59,6 +59,9 @@ else
   legend('-DynamicLegend','location','NorthEast');
 end
 
+% apply the plotting convention to the axis
+mP.how2plot.setView(mP.ax);
+
 if isNew, try axis(mP.ax,'tight'); end, end
 mP.micronBar.setOnTop
 

@@ -41,8 +41,8 @@ methods
 
 
   function f = eval(S2F,v)
-    f = S2F.fun(v+0.000001*xvector);
-
+    
+    f = S2F.fun(v);
     f = reshape(f,numel(v),[]);
 
   end

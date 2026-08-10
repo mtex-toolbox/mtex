@@ -4,7 +4,8 @@
     "key_path": { "mode": "absolute", "value": "/Manufacturer"},
     "manufacturer_keys": {"data": ["Oxford", "Oxford Instruments"]},
     "manufacturer_info": {"data": "The Data was read from the DataProcessing field as default."},
-    "fallback": "Oxford_EBSD" 
+    "fallback": "Oxford_EBSD",
+    "rawConfig": {"data": "Oxford_EBSD"}
   },
   "ebsd": {
     "type": "default",
@@ -12,10 +13,10 @@
     "position": {
       "type": "indirect",
       "indirect": {
-        "step_size_x": { "mode": "absolute", "value": "/1/EBSD/Header/X Step"},
-        "step_size_y": { "mode": "absolute", "value": "/1/EBSD/Header/Y Step"},
-        "grid_size_x": { "mode": "absolute", "value": "/1/EBSD/Header/X Cells"},
-        "grid_size_y": { "mode": "absolute", "value": "/1/EBSD/Header/Y Cells"},
+        "step_size_x": { "mode": "search_free", "value": "/EBSD/Header/X Step$"},
+        "step_size_y": { "mode": "search_free", "value": "/EBSD/Header/Y Step$"},
+        "grid_size_x": { "mode": "search_free", "value": "/EBSD/Header/X Cells$"},
+        "grid_size_y": { "mode": "search_free", "value": "/EBSD/Header/Y Cells$"},
         "first": {"data": "x"}
       }
     },
@@ -48,7 +49,7 @@
   },
   "additions": {
     "type": "auto",
-    "group": { "mode": "absolute", "value": "/1/Data Processing/Data"}
+    "group": { "mode": "search_free", "value": "/Data Processing/Data$"}
   },
   "electron_image": {
     "key" : { "mode": "search_root", "value": "Electron Image" },

@@ -1,5 +1,6 @@
 %% Sigma Sections
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % Although $\varphi_2$ sections are most common to represent orientation
 % distribution functions they heavily suffer from geometrical distortions

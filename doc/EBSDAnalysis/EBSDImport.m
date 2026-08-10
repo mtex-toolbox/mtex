@@ -111,6 +111,56 @@ plot(ebsd,ebsd.orientations)
 % an additional tool supports you to associated the columns with the
 % corresponding properties.
 %
+%% HDF5 Files With Several Data Sets
+%
+% HDF5 files are often project files holding more than one map - an EDAX
+% project stores its maps as |Area N/OIM Map N|, an Oxford project its
+% slices as |/1|, |/2|, ..., an EMSphInx file its scans as |Scan N|.
+% Whenever a file contains more than one, the import lists them and states
+% which one it took
+%
+%  ├── Data sets    : 2
+%  │   ▸ [1] Area 1/OIM Map 1/EBSD
+%  │     [2] Area 2/OIM Map 7/EBSD
+%
+% Pick another one by its number or by (part of) its name
+%
+%   ebsd = EBSD.load(fname,'dataSet',2)
+%   ebsd = EBSD.load(fname,'dataSet','OIM Map 7')
+%
+% The data set that has been imported is recorded as its full HDF5 path in
+% |ebsd.opt.dataSet|, the short names of all of them in
+% |ebsd.opt.dataSets|. In order to see what a file contains without
+% importing any data use
+%
+%   ebsd = EBSD.load(fname,'headerOnly')
+%
+% The <import_wizard.html import wizard> lists everything a file offers
+% below its file browser - selecting a row imports it.
+%
+%% Raw and Post Processed Data
+%
+% Oxford |h5oina| files store the map twice - as recorded by the detector
+% and as cleaned up by the vendor software. MTEX imports the cleaned up
+% version, which is usually the one you want. Add |'raw'| for the other one
+%
+%   ebsd = EBSD.load(fname)          % post processed
+%   ebsd = EBSD.load(fname,'raw')    % as recorded
+%
+% The raw version comes with the full set of per pixel properties - band
+% contrast, band slope, pattern quality, the pattern centre, ... - while
+% the post processed one keeps only a few of them, but has its bad pixels
+% cleaned up and may carry a different specimen orientation. Both can be
+% combined with |'dataSet'|
+%
+%   ebsd = EBSD.load(fname,'raw','dataSet',2)
+%
+% Files of all other vendors hold the recorded data only, so |'raw'| has no
+% effect on them. The <import_wizard.html import wizard> lists both
+% versions of every data set below its file browser, tagged |(raw)| and
+% |(post processed)|, and files that store one version only simply get one
+% row per data set.
+%
 %% Writing your own interface
 %
 % In the rare case of an EBSD format that is not supported, the user can

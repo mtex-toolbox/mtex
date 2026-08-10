@@ -1,5 +1,6 @@
 %% Approximating Orientation Dependent Functions from Discrete Data
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % On this page we consider the problem of determining a smooth orientation
 % dependent function $f(\mathtt{ori})$ given a list of orientations
@@ -59,7 +60,6 @@ plotSection(ori, S.values,'all','sigma');
 
 SO3F = interp(ori,S.values,'harmonic')
 plot(SO3F,'sigma')
-
 
 %%
 % Note that |SO3FunHarmonic.interpolate| does not aim at replicating the

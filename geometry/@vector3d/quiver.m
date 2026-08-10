@@ -39,11 +39,11 @@ else
 end
 
 h = gobjects(1,length(sP));
+washeld = true;
 for j = 1:numel(sP)
 
-  holdState = sP(j).ax.NextPlot;
-  sP(j).ax.NextPlot = "add";
-  
+  [hG,washeld] = holdOn(sP(j).ax); %#ok<ASGLU>
+
   % project data
   [x0,y0] = project(sP(j).proj,normalize(v),'noAntipodal',varargin{:});
   if check_option(varargin,'centered') || mhs == 0
@@ -84,10 +84,11 @@ for j = 1:numel(sP)
   % finalize the plot
   % add annotations
   sP(j).plotAnnotate(varargin{:})
-  sP(j).ax.NextPlot = holdState;
+  sP(j).doLabelsInFront;
+  clear hG
 end
 
-if any(strcmpi(holdState,{'replaceChildren','replace'})) && isappdata(sP(1).parent,'mtexFig')
+if ~washeld && isappdata(sP(1).parent,'mtexFig')
   mtexFig = getappdata(sP(1).parent,'mtexFig');
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end

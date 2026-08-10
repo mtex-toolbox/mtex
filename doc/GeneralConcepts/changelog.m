@@ -1,243 +1,354 @@
 %% MTEX Changelog
 %
-%% MTEX 7.0 xx/2026
+%% MTEX 7.0 xx/2026 - New Features
 %
-% *One Step Grain Reconstruction*
+% *Grain Reconstruction*
 %
-% Grain reconstruction has been rewritten into a single call that covers
-% small grain removal, alpha shapes and gridded as well as arbitrarily
-% placed data. The second output is the EBSD data with |grainId| assigned -
-% pixels that do not belong to any grain, i.e. not indexed pixels or pixels
-% of grains removed by |'minPixel'|, are marked by |grainId == 0|.
+% <ebsd.calcGrains.html |calcGrains|> covers small grain removal, alpha
+% shapes and gridded as well as arbitrarily placed data in a single call. Its
+% second output replaces the previous |ebsd.grainId = ...| assignment and
+% marks pixels belonging to no grain - not indexed or removed by |'minPixel'|
+% - by |grainId == 0|. All boundary criteria are objects of type
+% @grainBoundaryCriterion (|gbcAngle|, |gbcSoft|, |gbcFMC|, |gbcVariants|,
+% |gbcCustom|), so any per pixel property may be segmented and every phase may
+% get a threshold of its own
 %
 %   [grains, ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',5,'alpha',3)
+%   grains = calcGrains(ebsd,'angle',{10*degree,15*degree}) % one per phase
+%   grains = calcGrains(ebsd,gbcCustom(ebsd.bc,10))  % segment by band contrast
+%   grains = calcGrains(ebsd,'soft')                 % a soft threshold
 %
-% All boundary criteria are now objects of type @grainBoundaryCriterion
-% (|gbcAngle|, |gbcSoft|, |gbcFMC|, |gbcVariants|, |gbcCustom|) which makes
-% it easy to segment by any per pixel property
+% Fast multiscale clustering @gbcFMC - the criterion for deformed material
+% where no single threshold angle works - has been rewritten. It judges two
+% clusters by their misorientation against their own internal spread, fits a
+% lattice curvature so that a bent grain is not mistaken for a scattered one,
+% and clusters each phase separately, which lifts the adjusted Rand index on a
+% benchmark of deformed maps from 0.84 to 0.96 at a third of the runtime. Note
+% that |calcGrains(ebsd,'fmc',cmaha)| used to fall back to angle thresholding
+% without saying so
 %
-%   gbc = gbcCustom(ebsd.bc,10); % segment by band contrast
-%   grains = calcGrains(ebsd,gbc)
+%   grains = calcGrains(ebsd,'fmc',0.5,'minPixel',10,'verbose')
 %
-% *Grain Reconstruction in Deformed Microstructures*
-%
-% Fast multiscale clustering, @gbcFMC, has been rewritten. It is the
-% criterion for material where no single threshold angle works, since it
-% compares the misorientation between two clusters of pixels against their
-% own internal orientation spread rather than against a fixed angle.
-%
-%   grains = calcGrains(ebsd,'fmc',0.5,'minPixel',10)
-%   grains = calcGrains(ebsd,'fmc',0.5,'verbose')  % report the hierarchy
-%
-% Every pixel is now read off at the scale of the cluster hierarchy where
-% its cluster is best separated, a lattice curvature is fitted to a cluster
-% wherever the data support it, so that a bent grain is no longer mistaken
-% for a scattered one, and each phase is clustered on its own. On a
-% synthetic benchmark of deformed maps the adjusted Rand index rose from
-% 0.84 to 0.96 while the runtime fell by a factor of three. Note that
-% |calcGrains(ebsd,'fmc',cmaha)| used to fall back to angle thresholding
-% without saying so.
-%
-% The new sample data set |mtexdata EMSphinx| - a deformed austenitic steel
-% indexed by spherical pattern matching - illustrates this in
+% The new data set |mtexdata EMSphinx| illustrates this in
 % <GrainReconstruction.html Grain Reconstruction>.
+% <GrainReconstructionAdvanced.html Advanced Grain Reconstruction> shows how
+% to write a criterion of your own, <GrainReconstructionMCL.html Markovian
+% Clustering> the second way of turning one into grains. Two new commands
+% complete the picture
 %
-% *Boundary Characteristic Distribution*
+% * <grainBoundary.calcGBND.html |calcGBND|> estimates the distribution of
+% grain boundary normals, in specimen or in crystal coordinates, 2d and 3d
+% * <cleanUpPseudoSym.html |cleanUpPseudoSym|> detects grains split by pseudo
+% symmetric indexing - by the tortuosity of the separating boundary - and
+% reassigns the affected pixels
 %
-% The command <grainBoundary.calcGBND.html |calcGBND|> estimates the
-% distribution of grain boundary normals, either in specimen or in crystal
-% coordinates, and for 2d as well as for 3d data
+%   gbnd = calcGBND(grains.boundary('Fo','Fo'),ebsd('Fo'),'halfwidth',10*degree)
+%   gbcd = calcGBND(gB,grains('Fo'),moriRef)   % for a fixed misorientation
+%   gbnd = calcGBND(grains3.boundary)          % 3d, specimen coordinates
+%   [ebsd,grains] = cleanUpPseudoSym(ebsd,grains,mori,'threshold',1.5)
 %
-%   gB = grains.boundary('Fo','Fo');
-%   gbnd = calcGBND(gB,ebsd('Fo'))                    % crystal coordinates
-%   gbnd = calcGBND(gB,ebsd('Fo'),'halfwidth',10*degree)
-%   gbcd = calcGBND(gB,grains('Fo'),moriRef)          % for a fixed misorientation
-%   gbnd = calcGBND(grains3.boundary)                 % 3d, specimen coordinates
+% *Grain Boundaries in Walk Order*
+%
+% The segments of a @grainBoundary are not an unordered list anymore. They are
+% sorted into chains - maximal runs of segments joined at vertices where
+% exactly two segments meet - so that consecutive segments share a vertex. Any
+% other vertex is a junction and terminates a chain. Each chain occupies a
+% contiguous block of rows and is oriented such that the grain in
+% |gB.grainId(:,1)| lies to the left of the walk direction
+%
+%   gB = grains.boundary
+%   gB.chainId, gB.chainSize, gB.isChainStart, gB.isChainEnd, gB.isClosed
+%   gB.arcLength, gB.chainLength   % length along and of the chain
+%   gB.chainV                      % vertex ids, chains separated by NaN
+%
+% This is what allows to coarsen or to refine a boundary as a curve instead of
+% as a bag of segments. All of the following keep the junctions exactly where
+% they are, so which grains touch, and where, is unchanged
+%
+% * <grain2d.simplifyBoundary.html |simplifyBoundary(grains,epsilon)|> drops
+% every vertex whose removal moves the boundary by less than |epsilon| -
+% Douglas Peucker on each chain - which turns the pixel staircase into the
+% straight line it approximates
+% * <grain2d.reduceBoundary.html |reduceBoundary(grains,n)|> is the blunt
+% alternative, keeping every n-th vertex regardless of shape
+% * <grain2d.refineBoundary.html |refineBoundary(grains,delta)|> resamples
+% each chain at equal arc length instead of subdividing its segments, which
+% only made the staircase finer
+% * <grain2d.isOuterBoundary.html |isOuterBoundary(grains)|> tells which
+% grains border the map, no longer obvious once an alpha shape has traced it
+%
+% What used to be |smooth(grains)| is called
+% <grain2d.smoothBoundary.html |smoothBoundary(grains)|> now - |smooth| on an
+% @EBSD denoises orientations, something entirely different - and it performs
+% all three steps by default: simplify at |d/sqrt(2)|, |d| the pixel spacing,
+% which removes the grid and nothing else, refine, and only then the Laplacian
+% smoothing it used to do on its own, which without the first two cuts the
+% corners off a curve
+%
+%   grains = smoothBoundary(grains,5)
+%   grains = smoothBoundary(grains,5,'noSimplify','noRefine')   % as before
+%
+% The old name still works and still does the old thing, so a script written
+% against it keeps its grain areas and its segment count. Since the first two
+% steps change the number of segments, switch them off wherever |gB.ebsdId| is
+% read per segment.
+%
+% Which algorithm smooths is a choice now, made by passing a @boundaryFilter -
+% the same pattern as the @EBSDFilter of |smooth(ebsd,F)|
+%
+%   grains = smoothBoundary(grains,taubinFilter)
+%   grains = smoothBoundary(grains,curvatureFilter('smoothingLength',3))
+%
+% |laplaceFilter| is the default and unchanged, |taubinFilter| unshrinks after
+% every pass where a Laplacian shrinks without bound, |curvatureFilter|
+% replaces the iteration by a single sparse solve whose knob is a *length*
+% rather than an iteration count, and |huberFilter| keeps a genuinely faceted
+% boundary faceted. <GrainSmoothingAdvanced.html Advanced Grain Smoothing>
+% compares them.
 %
 % *Much Better EBSD Import*
 %
-% * new <import_wizard.html import wizard> with file browser, live preview
-% and script export - simply type |import_wizard|
-% * all HDF5 flavours (Bruker, EDAX, Oxford, ThermoFisher, ...) are handled
-% by one json driven interface <loadEBSD_h5.html |loadEBSD_h5|>
-% * reference frame corrections are unified across |ang|, |ctf|, |crc| and
-% |h5| files and stored in |ebsd.EulerCorrection|
-% * file header metadata is kept in |ebsd.opt.header|, and can be read
-% without importing the data at all
-% * faster import, automatic column and degree/radiant detection
+% All HDF5 flavours (Bruker, EDAX, Oxford, ThermoFisher, ...) are handled by
+% one json driven interface <loadEBSD_h5.html |loadEBSD_h5|>, and the new
+% <import_wizard.html import wizard> comes with file browser, live preview and
+% script export
 %
 %   ebsd = EBSD.load('data.h5')                  % no format guessing needed
-%   ebsd = EBSD.load('data.ang','setting',2)     % EDAX reference frame setting 1-4
+%   ebsd = EBSD.load('data.h5','headerOnly')     % phases, header and data sets
+%   ebsd = EBSD.load('data.h5','dataSet',2)      % or 'dataSet','Area 2'
+%   ebsd = EBSD.load('data.h5oina','raw')        % not the post processed data
 %   ebsd = EBSD.load('data.ctf','EulerCorrection',rotation.byEuler(pi,0,0))
-%   ebsd = EBSD.load('data.h5','headerOnly')     % phases and header only
 %
-% *All EDAX Formats Give the Same Result*
+% * a file holding several maps - EDAX areas, Oxford slices, EMSphInx scans -
+% lists them on import and lets you pick one by |'dataSet'|, whose path is
+% kept in |ebsd.opt.dataSet|. Previously only the first one was imported,
+% without a word
+% * Oxford files store the map as recorded and as cleaned up by the vendor
+% software - the cleaned up one is imported as before, the recorded one by the
+% new option |'raw'|
+% * reference frame corrections are unified across |ang|, |ctf|, |crc| and
+% |h5| files and stored in |ebsd.EulerCorrection|
+% * the file header is kept in |ebsd.opt.header| and readable by
+% |'headerOnly'| without importing the data at all, the SEM / PRIAS images an
+% EDAX map comes with in |ebsd.opt.electron_image|, as the Oxford electron
+% images already were
+% * faster import, automatic column and degree/radiant detection
 %
-% The formats |ang|, |osc|, |oh5| and |edaxh5| may all hold the very same
-% map, but were interpreted differently. They now agree on
-%
-% * the alignment between the Euler angle and the map reference frame.
-% Since the |setting| is not stored in the file, the most common setting 2
-% is assumed instead of leaving the Euler angles uncorrected. State your
-% own alignment by |'setting',1| to |'setting',4|, or switch the
-% correction off by |'setting',0|
-% * the crystal axes alignment used by EDAX, i.e. x parallel to a for
-% triclinic, trigonal and hexagonal lattices. It is available for any
-% crystal symmetry by the option |'EDAX'|
-% * the point group of the phases. EDAX states it only in newer files, e.g.
-% as |PointGroupID|, otherwise the symmetry code gives the Laue group.
-% Accordingly hexagonal phases are now imported as |6/mmm| and cubic ones
-% as |m-3m|, where the |ang| and |osc| interfaces used to say |622| and
-% |432|
+% The formats |ang|, |osc|, |oh5| and |edaxh5| may all hold the very same map,
+% but were interpreted differently. They now agree on the alignment between
+% Euler angle and map reference frame, on the crystal axes alignment used by
+% EDAX - x parallel to a for triclinic, trigonal and hexagonal lattices, now
+% available for any symmetry by the option |'EDAX'| - and on the point group
+% of the phases, where |ang| and |osc| used to report the Laue group |622|
+% instead of |6/mmm| and |432| instead of |m-3m|. As the |setting| is not
+% stored in the file, the most common setting 2 is assumed instead of leaving
+% the Euler angles uncorrected - state one of |'setting',1| to |'setting',4|
+% yourself, or switch the correction off by |'setting',0|
 %
 %   ebsd = EBSD.load('data.edaxh5','setting',3)  % not the assumed setting 2
-%   ebsd = EBSD.load('data.osc','setting',0)     % no correction at all
-%   cs = crystalSymmetry('321',[4.9 4.9 5.4],'EDAX')   % x || a
+%   cs = crystalSymmetry('321',[4.9 4.9 5.4],'EDAX')   % x // a
 %
-% Bruker files describe their phases by a full crystal structure. Its
-% International Tables number and atomic basis are kept in |cs.opt.spaceId|
-% and |cs.opt.atoms|.
-%
-% Fixed along the way: |ang| files whose header contains a stray carriage
-% return - as written by some EDAX exports - silently lost their first data
-% point.
+% Phases of Bruker files keep their International Tables number and atomic
+% basis in |cs.opt.spaceId| and |cs.opt.atoms|. Fixed along the way: |ang|
+% files whose header contains a stray carriage return - as written by some
+% EDAX exports - silently lost their first data point.
 %
 % *Much Faster Plotting of EBSD Maps*
 %
-% EBSD and grain maps are drawn through three backends - |surf|, |patch|
-% and |imagesc|. Non hexagonal data now defaults to |surf|, which is orders
-% of magnitude faster than plotting one unit cell per pixel. Inverse pole
-% figure colors are precomputed via spherical lookup tables.
+% EBSD and grain maps are drawn through three backends - |surf|, |patch| and
+% |imagesc|. Non hexagonal data now defaults to |surf|, which is orders of
+% magnitude faster than plotting one unit cell per pixel, and inverse pole
+% figure colors are precomputed via spherical lookup tables. The scale bar has
+% been rewritten as well - it follows the plotting convention, rescales while
+% zooming and takes options
 %
 %   plot(ebsd,ebsd.orientation)                      % fast, default
-%   plot(ebsd,ebsd.orientation,'backend','patch')
 %   plot(ebsd,ebsd.orientation,'exact')              % exact unit cells
+%   plot(ebsd,'Location','nw','SBBackgroundColor','k','SBLineColor','w','Length',50)
 %
-% The scale bar has been rewritten. It follows the plotting convention,
-% rescales while zooming, and takes options
+% *Every Plot Shows its Reference Frame*
 %
-%   plot(ebsd,'Location','nw','BackgroundColor','k','LineColor','w','Length',50)
+% On top of the scale bar a box indicates how the specimen reference frame is
+% aligned on screen - an arrow for every axis with a component in the screen
+% plane, a circled dot or cross for the one pointing out of or into it,
+% exactly as in the string form of @plottingConvention - and follows the data
+% when the map is reoriented, e.g. by <plottingConvention.setView.html
+% |setView|>.
+%
+% What used to be reserved to pole figures now happens on every spherical plot
+% that is not given in crystal coordinates as well - the axes of the reference
+% frame are annotated with X, Y, Z. This includes @vector3d and @S2Fun plots,
+% @sigmaSections and @pfSections, spherical densities as returned by
+% <grainBoundary.calcGBND.html |calcGBND|> or <vector3d.calcDensity.html
+% |calcDensity|>, and @specimenSymmetry. Plots in crystal coordinates -
+% @Miller, inverse pole figures, @ipfSections, color keys, single crystal
+% tensors - keep their Miller indices at the vertices of the fundamental
+% sector instead. Both are customized by the same |pfAnnotations| preference
+% that pole figures always used, and switched off per plot or for the session
+%
+%   pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y],{'RD','ND'},...
+%     'BackgroundColor','w','tag','axesLabels',varargin{:});
+%   setMTEXpref('pfAnnotations',pfAnnotations);
+%
+%   plot(vector3d.rand(100),'noLabel')
+%   plot(ebsd,ebsd.orientations,'refFrame','off')
+%   setMTEXpref('showRefFrame','off')
 %
 % *x to the East and y to the South by Default*
 %
-% The default plotting convention is now
-% <plottingConvention.ij.html |plottingConvention.ij|> - x to east, y to
-% south and z into the screen. This is how SEM images are displayed and
-% what nearly every EBSD import states anyway. Pole figures are not
-% affected, spherical plots align themselves with the hemisphere they show.
-%
-% Data that is plotted the default way now refers to the one default
-% convention instead of an equivalent copy of it. Changing the default
-% therefore also applies to data that has been imported before
-%
-%   ebsd = EBSD.load('data.ang');
-%   plotx2north     % the map of ebsd is turned as well
-%
-% Note that the default has to be modified in place for this. Assigning to
-% |plottingConvention.default.east| installs a new default instead and
-% detaches all data referring to the old one
+% The default plotting convention is now <plottingConvention.ij.html
+% |plottingConvention.ij|> - x to east, y to south and z into the screen - as
+% SEM images are displayed and nearly every EBSD import states anyway. Pole
+% figures are not affected, spherical plots align themselves with the
+% hemisphere they show. Data plotted the default way now refers to the one
+% default convention instead of a copy of it, hence changing the default also
+% turns data imported before. This requires modifying the default in place -
+% assigning to it installs a new default and detaches all data referring to
+% the old one
 %
 %   pC = plottingConvention.default; pC.east = yvector;   % turns all data
 %   plottingConvention.default.east = yvector;            % does not
 %
-% *Moving Least Squares Approximation*
+% *Approximation, Sampling and Clustering*
 %
-% The new classes @S2FunMLS and @SO3FunMLS approximate scattered data on
-% the sphere and in orientation space by moving least squares. They support
-% vector valued data, outlier detection, smoothly varying support radii and
-% Voronoi weights.
-%
-%   sF = S2FunMLS(nodes,values,'degree',3)
-%   SO3F = SO3FunMLS(ori,values,'delta',5*degree,'detectOutliers')
-%   sF = interp(nodes,values,'MLS')
-%
-% *Optimal Sampling*
-%
-% The command <SO3Fun.optimalSample.html |optimalSample|> (formerly
-% |compactify|) replaces random sampling by an almost perfectly equally
-% distributed set of orientations or directions representing a given
-% function
-%
-%   ori = optimalSample(odf,10000)
-%   v   = optimalSample(sF,1000,'bandwidth',32)
-%
-% *Clustering*
-%
-% <orientation.calcCluster.html |calcCluster|> uses by default the
+% * the new classes @S2FunMLS and @SO3FunMLS approximate scattered data on the
+% sphere and in orientation space by moving least squares, supporting vector
+% valued data, outlier detection, smoothly varying support radii and Voronoi
+% weights
+% * <SO3Fun.optimalSample.html |optimalSample|> (formerly |compactify|)
+% replaces random sampling by an almost perfectly equally distributed set of
+% orientations or directions representing a given function
+% * <orientation.calcCluster.html |calcCluster|> uses by default the
 % <https://github.com/nla-group/classix CLASSIX> algorithm, which is much
 % faster than hierarchical clustering and needs no number of clusters
-%
-%   [c,center] = calcCluster(ori)
-%   [c,center] = calcCluster(v,'method','hierarchical','numCluster',5)
-%
-% *Pseudo Symmetry Correction*
-%
-% <cleanUpPseudoSym.html |cleanUpPseudoSym|> detects grains that have been
-% split by pseudo symmetric indexing - using the tortuosity of the
-% separating boundary - and reassigns the affected pixels
-%
-%   [ebsd,grains] = cleanUpPseudoSym(ebsd,grains,mori,'threshold',1.5)
-%
-% *Iterative ODF Estimation*
-%
-% <PoleFigure.calcODFIterative.html |calcODFIterative|> inverts pole figure
+% * <PoleFigure.calcODFIterative.html |calcODFIterative|> inverts pole figure
 % data by iteratively adjusting the kernel width, which is much more robust
 % for irregularly sampled data
-%
-%   odf = calcODFIterative(pf,'halfwidth',5*degree)
-%
-% *Two Dimensional Color Keys*
-%
-% @planarColorKey encodes two scalar properties at once, the first one as
+% * @planarColorKey encodes two scalar properties at once, the first one as
 % hue, the second one as saturation
 %
-%   cK = planarColorKey(winter,'colorModel','white');
-%   rgb = cK.property2color(grains.longAxis,grains.aspectRatio);
-%   plot(grains,rgb), plot(cK,'labeled')
+%   sF   = S2FunMLS(nodes,values,'degree',3)
+%   SO3F = SO3FunMLS(ori,values,'delta',5*degree,'detectOutliers')
+%   ori  = optimalSample(odf,10000)
+%   [c,center] = calcCluster(ori)
+%   odf  = calcODFIterative(pf,'halfwidth',5*degree)
+%   cK   = planarColorKey(winter,'colorModel','white');
+%   rgb  = cK.property2color(grains.longAxis,grains.aspectRatio);
+%
+% *Rotations, Tangent Spaces and Vector Valued Functions*
+%
+% Two new pages describe the geometry MTEX is built upon.
+% <RotationRepresentations.html Rotation Representations> compares Rodrigues,
+% homochoric and cubochoric vectors - which region of space each fills and
+% whether it preserves volume - and <RotationTangentSpace.html The Tangent
+% Space> the left and the right representation of a tangent vector. A
+% @SO3TangentVector now stores the rotation it is attached to along with the
+% symmetries, so switching between both representations needs no orientation
+% passed along, and for @SO3VectorFieldHarmonic the switch is performed
+% directly on the harmonic coefficients
+%
+%   rot = rotation.byHomochoric(v)
+%   t = odf.grad(ori); right(t)   % t knows ori, no second argument needed
+%
+% What used to be a multivariate function is now a <SO3FunVectorValued.html
+% vector valued> function. Arrays of them are handled like any other MATLAB
+% array - |cat|, |reshape|, |permute|, |squeeze|, |transpose|, indexing and
+% assignment - which worked for @SO3FunHarmonic only and now works for
+% @SO3FunHandle and @SO3FunRBF as well. @SO3VectorField comes with the
+% arithmetic |+,-,.*,./| together with |dot| and |normSquare|, and a
+% @SO3FunRBF draws its pole figures, inverse pole figures and sections
+% directly instead of through a harmonic approximation.
+%
+%% MTEX 7.0 xx/2026 - Technical Changes
 %
 % *Syntax Changes*
 %
-% * |[grains, ebsd] = calcGrains(ebsd)| - the second output replaces the
-% previous |ebsd.grainId = ...| assignment and updates |grainId|,
-% |phaseId| and |orientation|
-% * |ebsd.CSList| is not a cell array anymore but an array of
-% @crystalSymmetry and @notIndexed objects. In particular a not indexed
-% phase can now carry a name and a color
+% * |ebsd.CSList| is not a cell array anymore but an array of @crystalSymmetry
+% and @notIndexed objects. In particular a not indexed phase can now carry a
+% name and a color
 %
 %   ebsd.CSList(1) = notIndexed('amorphous',[0.5 0.5 0.5])
 %
 % * the constructors |quaternion|, |rotation| and |orientation| only accept
 % the syntax |quaternion(a,b,c,d)|, |orientation(a,b,c,d,CS,SS)|. Use the
-% named constructors instead
+% named constructors |vector3d.byPolar(theta,rho)|,
+% |orientation.byMatrix(M,cs)|, ... instead. Newly available are
+% |rotation.byHomochoric|, |rotation.id|, |rotation.nan|, |rotation.rand| and
+% |rotation.inversion|
+% * symmetries are compared on three levels - |cs1 == cs2| checks for the same
+% object, |eqTol(cs1,cs2)| for the same Laue group and axes, and
+% |sim(cs1,cs2)| for the same lattice with possibly different alignment of x,
+% y, z
+% * |gB.V| returns the two end points of every boundary segment, the plain
+% list of all vertices is |gB.allV|
+% * a @plottingConvention may be stated as a string, each axis followed or
+% preceded by the direction it points to on screen
 %
-%   v = vector3d.byPolar(theta,rho)     % instead of vector3d('polar',...)
-%   ori = orientation.byMatrix(M,cs)
+%   pC = plottingConvention('y↑→x')   % also 'x←↑y', 'z⊙→x', ASCII 'y^->x'
 %
-% * symmetries are compared on three levels - |cs1 == cs2| checks for the
-% same object, |eqTol(cs1,cs2)| for the same Laue group and axes, and
-% |sim(cs1,cs2)| for the same lattice with possibly different alignment of
-% x, y, z
+% *Renamed and Removed*
 %
-% *Minor*
+% * |smooth(grains)| is <grain2d.smoothBoundary.html |smoothBoundary(grains)|>
+% now, the old name forwards to the old behaviour and warns
+% * the spherical Bingham distribution |BinghamS2| has been renamed
+% @S2FunBingham and is fitted by |S2FunBingham.fit(v)|
+% * |calcGBPD| has been superseded by <grainBoundary.calcGBND.html |calcGBND|>
+% * six EBSD interfaces have been retired to |obsolete/| - |loadEBSD_ACOM|,
+% |loadEBSD_sor|, |loadEBSD_csv| and |loadEBSD_Oxfordcsv| as they were unused,
+% |loadEBSD_hdf5| and |loadEBSD_h5oina| as they are covered by
+% <loadEBSD_h5.html |loadEBSD_h5|>
+% * |extern/kde| is called |kde1d| now as it used to shadow the |kde| of
+% recent MATLAB versions
 %
-% * <grain2d.refineBoundary.html |refineBoundary(grains,delta)|> subdivides
-% boundary segments to a given segment length
+% *Minor Additions*
+%
+% * <EBSD.transform.html |transform(ebsd,fun)|> and |transform(grains,fun)|
+% apply an arbitrary, not necessarily rigid, map to every position - to
+% simulate an instrument distortion or to reproject a map
+% * |ebsd.lattice| is the one place that turns |ebsd.unitCell| and |ebsd.pos|
+% into a lattice basis and a per pixel integer index, |ebsd.fixPos| repairs
+% coordinates suffering from rounding, |gridify| takes |'rowMajor'| and
+% |'columnMajor'| as well as |'unitCell'| to interpolate onto another grid,
+% and a hexagonal grid is addressed in cube coordinates by |hex2cube| and
+% |cube2hex|
+% * <orientation.find.html |find|> on @orientation, @quaternion and @vector3d
+% returns the closest point, the k closest points or all points within an
+% epsilon neighborhood, together with their distances
+% * |sqrt|, |smooth| and |invRadon| on @S2Fun, the new class @S2FunGrid, and
+% every @S2Fun carries a symmetry, hence a |CS|, a |SS| and a |how2plot|
+% * screw dislocations of a @dislocationSystem have proper Burgers vector
+% lengths for hexagonal lattices
 % * <grain2d.merge.html |merge(grains,...,'maxPixel')|> takes the mean
 % orientation of the largest grain involved instead of averaging
 % * <doEulerStep.html |doEulerStep(odf,vF,dt,'implicit')|> provides an
 % implicit Euler scheme for texture evolution
-% * new spherical Fourier transform based on the double Fourier sphere
-% method, |NFSFT| is the default, bandwidths beyond 1023 are supported
-% * new class @progressCounter for progress display, |gridify(ebsd,'unitCell',uc)|
-% interpolates data onto another grid, |crystalSymmetry.default| for fast
-% default symmetries
+% * new spherical Fourier transform based on the double Fourier sphere method,
+% |NFSFT| is the default, bandwidths beyond 1023 are supported
 % * low level exponential and logarithm maps |expRight|, |logRight| on SO(3)
-% and S2, arithmetic |+,-,.*,./| for @SO3Kernel and @S2Kernel, derivatives
-% of @S1Fun
-% * |colorcet| perceptually uniform color maps, the flag |'zero2white'| for
-% color ranges, transparency in all scatter plots
-% * use UTF8 to display (11̅0) instead of (1-10). Requires a suitable font
-% like Julia Monospace.
+% and S2, arithmetic |+,-,.*,./| for @SO3Kernel and @S2Kernel, derivatives of
+% @S1Fun
+% * new class @progressCounter for progress display, |crystalSymmetry.default|
+% for fast default symmetries, |colorcet| perceptually uniform color maps and
+% the flag |'zero2white'| for color ranges
+% * use UTF8 to display (11̅0) instead of (1-10). Requires a suitable font like
+% Julia Monospace.
+%
+% *Under the Hood*
+%
+% * markers are drawn as scatter objects throughout, which is faster than the
+% patches used before and keeps marker transparency on |print| and
+% |exportgraphics|, where it used to be lost in every file format. Lines, i.e.
+% the option |'edgecolor'|, remain patches
+% * the mex files are compiled for every platform on our continuous
+% integration and attached to the release, |check_mex| downloads them from
+% there and grain reconstruction falls back to a MATLAB Voronoi wherever a mex
+% file is missing. |mex_install| reports which source failed to compile rather
+% than failing quietly
+% * |.mat| files written by MTEX 5.11 load again - the vertex list of a
+% @triplePointList and the |CSList| of a @grainBoundary came back unusable
+% * |ebsd('phaseName').orientations| carries the plotting convention of the
+% map, and a @specimenSymmetry displays the convention it holds -
+% |specimenSymmetry.default| is where the session wide default lives
 %
 %% MTEX 6.1 10/2025
 %
@@ -478,9 +589,9 @@
 % * new function <grain2d.calcTraces.html |calcTraces(grains)|> and
 % <EBSD.calcTraces.html |calcTraces(ebsd)|> to compute habit plane traces
 % from families of grains or EBSD data.
-% * new function <calcGBND.html |calcGBND(traces,ori)|> to compute the
-% grain boundary normal distribution from a list of habit plane traces and
-% the corresponding grain orientations.
+% * new function <grainBoundary.calcGBND.html |calcGBND(traces,ori)|> to
+% compute the grain boundary normal distribution from a list of habit plane
+% traces and the corresponding grain orientations.
 % * new function <grainBoundary.characteristicShape.html
 % |characteristicShape(gB)|> to compute the characteristic shape from lists
 % of grain boundaries
@@ -718,7 +829,7 @@
 %
 % * new function <EBSD.interp.html |ebsd.interp|> to interpolate EBSD maps
 % at arbitrary x,y coordinates, <EBSDInter.html example>
-% * <grain2d.smooth.html |smooth(grains)|> keeps now triple points and outer
+% * <grain2d.smoothBoundary.html |smoothBoundary(grains)|> keeps now triple points and outer
 % boundary fixed by default
 % * the field |grains.triplePoints.angles| returns the angles between the
 % boundaries at the triple points

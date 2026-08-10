@@ -28,8 +28,11 @@ prho = S2G.rhoGrid(1).max;
 rhomin = S2G.rhoGrid(1).min;
 
 yrho = yrho - rhomin;
+% the mex functions below read their input with mxGetPr, i.e. they require
+% double and would silently misinterpret single precision coordinates
 [xtheta,xrho] = polar(v);
-xrho = xrho - rhomin;
+xtheta = double(xtheta);
+xrho = double(xrho) - rhomin;
 
 % find closest points
 if nargin == 2
@@ -51,7 +54,7 @@ if nargin == 2
 else
 
   ind = S2Grid_find_region(ytheta,int32(iytheta),...
-    yrho,prho,xtheta,xrho,varargin{1});
+    yrho,prho,xtheta,xrho,double(varargin{1}));
 
   if S2G.antipodal
     ind = ind(:,1:size(v,1)) | ind(:,size(v,1) + 1:end);

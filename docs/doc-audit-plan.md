@@ -733,11 +733,18 @@ they are not rediscovered from scratch.
   `griddedInterpolant` with "Data is in MESHGRID format, NDGRID format is
   required". The function wraps the call in try/catch with a transposed
   fallback; both orientations fail. Committed, clean code.
-- **`SO3FunRBF/private/spatialMethod.m:37`** — `doc/PoleFigureAnalysis/
+- ~~**`SO3FunRBF/private/spatialMethod.m:37`** — `doc/PoleFigureAnalysis/
   PoleFigureRefinement.m:21` calls `calcODFIterative(pf,'nothinning')` and
   dies at `y = reshape(y,numel(nodes),[])` with "Product of known dimensions,
   78, not divisible into total number of elements, 3", via
-  `calcODFIterative:92` → `SO3FunRBF/interpolate.m:105`. Committed, clean code.
+  `calcODFIterative:92` → `SO3FunRBF/interpolate.m:105`.~~ **Fixed
+  2026-08-06** in `SO3FunRBF/interpolate.m`: the values arrive shaped like the
+  evaluation grid (`SO3Fun/eval` returns `size(nodes)`, e.g. 3 x 26 for an
+  `equispacedSO3Grid`), so `for index = 1:size(y,2)` sliced columns of the
+  grid instead of function components. `interpolate` now flattens `y` to
+  `numel(nodes) x []` first. `PoleFigureRefinement.m` runs end to end and
+  `calcODFIterative` beats plain `calcODF` on dubna (RP 0.17-0.32 vs
+  0.26-0.44) with the grid growing 78 -> 205 -> 1170 -> 4605 -> 19848.
 - **`import_wizard_old`** is called from four doc sites — `ODFImport.m:18`,
   `PoleFigureImport.m:16` and `:134`, `PoleFigureTutorial.m:8` — but lives
   only in `obsolete/`. Needs a product decision (point at a current wizard, or

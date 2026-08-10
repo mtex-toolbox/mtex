@@ -56,7 +56,7 @@ job.p2c = beta2alpha
 
 %% Compute parent orientations from triple junctions
 %
-% In present datas set we have very little and unreliable parent
+% In present data set we have very little and unreliable parent
 % measurements. Therefore, we use triple junctions as germ cells for the
 % parent parent grains. In a first step we identify triple junctions that
 % have misorientations that are compatible with a common parent orientation
@@ -194,6 +194,6 @@ hold off
 plot(ebsd('Ti (Alpha)'),ebsd('Ti (Alpha)').orientations,'figSize','large')
 
 hold on
-parentGrains = smooth(job.grains,5);
+parentGrains = smoothBoundary(job.grains,5);
 plot(parentGrains.boundary,'lineWidth',3)
 hold off

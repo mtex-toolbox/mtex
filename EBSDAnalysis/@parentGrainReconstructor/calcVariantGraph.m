@@ -63,7 +63,7 @@ if ~isempty(job.parentGrains) && (check_option(varargin,'p2p') || noOpt)
   [grainPairs, oriParent] = getP2PPairs(job,'index',varargin{:});
   
   % compute fit
-  fit = angle(oriParent(:,1), oriParent(:,2));
+  fit = double(angle(oriParent(:,1), oriParent(:,2)));
   prob = 1 - 0.5 * (1 + erf(2*(fit - threshold)./tol));
   ind = prob > 0.1;
   
@@ -135,7 +135,7 @@ if check_option(varargin,'C2C') || noOpt
     end
   end
 
-  job.graph = max(job.graph, sparse(i, j , p, nVG, nVG));
+  job.graph = max(job.graph, sparse(i, j , double(p), nVG, nVG));
 
 end
  

@@ -1,9 +1,12 @@
-function  grains = loadGrains_Dream3d(fname)
+function  grains = loadGrains_Dream3d(fname,varargin)
 % loadGrains_Dream3d is a method to load 3d grain data from dream3d
 %
 % Syntax
-%   grains = grain3d.load('filepath/filename.dream3d','interface','dream3d)
+%   grains = grain3d.load('filepath/filename.dream3d','interface','dream3d')
 %   grains = loadGrains_Dream3d('filepath/filename.dream3d')
+%
+%   % keep the face winding exactly as stored in the file
+%   grains = grain3d.load('filepath/filename.dream3d','noOrientFaces')
 %
 % Input
 %  fname     - filename
@@ -11,8 +14,20 @@ function  grains = loadGrains_Dream3d(fname)
 % Output
 %  grain3d - @grain3d
 %
+% Options
+%  noOrientFaces - do not orient the boundary faces after import
+%
+% Description
+%
+% Dream3d does not store the boundary faces of a grain with a consistent
+% winding, i.e., the normals computed from the vertex order point randomly
+% into or out of the grain. The faces are therefore oriented on import with
+% <grain3d.orientFaces.html |orientFaces|>, so that face normals, grain
+% volumes and |boundary.grainId| are meaningful right away. Pass the option
+% |'noOrientFaces'| to get the raw winding as stored in the file.
+%
 % See also
-% grain3d.load loadNeperTess
+% grain3d.load grain3d/orientFaces loadNeperTess
 
 % Hard coded data paths 
 % (for FileVersion '8.0')
@@ -50,12 +65,18 @@ q = quaternion(abcd(activeGrains,1),abcd(activeGrains,2),...
   abcd(activeGrains,3),abcd(activeGrains,4));
 
 % import crystal symmetry - can we get some more information here?
+%
+% The list is indexed by the Dream3d CrystalStructure enum, which is ZERO
+% based: 0 Hexagonal_High, 1 Cubic_High, 2 Hexagonal_Low, 3 Cubic_Low,
+% 4 Triclinic, 5 Monoclinic, 6 Orthorhombic, 7 Tetragonal_Low,
+% 8 Tetragonal_High, 9 Trigonal_Low, 10 Trigonal_High. Anything else, in
+% particular 999 = UnknownCrystalStructure, stays notIndexed.
 dream3dCS = {'622','432','6','23','1','121','222','4','422','3','322','1'};
 crysm = h5read_multi(fname,crysmPath);
 csList = repmat(notIndexed,1,length(crysm));
 for k = 1:length(crysm)
-  if crysm(k) > 0 && crysm(k) <= length(dream3dCS)
-    csList(k) = crystalSymmetry(dream3dCS{crysm(k)},'mineral','unknown');
+  if crysm(k) >= 0 && crysm(k) < length(dream3dCS)
+    csList(k) = crystalSymmetry(dream3dCS{crysm(k)+1},'mineral','unknown');
   end
 end
 
@@ -85,8 +106,11 @@ I_CF = sparse(cIds,fIds,Ndir,max(grainIds(:)),length(grainIds));
   
 grains = grain3d(V,poly,I_CF,q,csList,phaseList);
 
-warning(['Grains imported from Dream3d may not have set there normals consistently. ' ...
-  'Please run <a href="matlab:grains=grains.orientFaces">grains=grains.orientFaces</a>']);
+% the winding of the stored faces is arbitrary, so the signs in I_CF above
+% carry no geometric meaning yet - resolve them into genuine in/out normals
+if ~check_option(varargin,'noOrientFaces')
+  grains = grains.orientFaces;
+end
 
 end
 

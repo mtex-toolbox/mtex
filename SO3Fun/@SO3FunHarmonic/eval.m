@@ -79,6 +79,12 @@ N = min(SO3F.bandwidth,get_option(varargin,'bandwidth',inf));
 % alpha, beta, gamma
 abg = Euler(rot,'nfft').'./(2*pi);
 
+% non finite nodes let the nfft library write outside of its buffers, which
+% corrupts the heap and crashes MATLAB. Hence we replace them by a valid
+% node and set the corresponding function values to NaN afterwards.
+isBadNode = any(~isfinite(abg),1);
+abg(:,isBadNode) = 0;
+
 % create plan
 if check_option(varargin,'keepPlan')
   plan = keepPlanNFFT;
@@ -114,7 +120,7 @@ if isempty(plan)
   end
   
   % set rotations as nodes in plan
-  nfftmex('set_x',plan,abg);
+  nfftmex('set_x',plan,double(abg));
 
   % node-dependent precomputation
   nfftmex('precompute_psi',plan);
@@ -141,7 +147,7 @@ for k = 1:length(SO3F)
   ghat = wignerTrafo(SO3F.subSet(k),flags,'bandwidth',N);
 
   % set Fourier coefficients
-  nfftmex('set_f_hat',plan,ghat(:));
+  nfftmex('set_f_hat',plan,double(ghat(:)));
 
   if check_option(varargin,'direct')
     % direct Fourier transform
@@ -167,6 +173,9 @@ if check_option(varargin,'keepPlan')
 else
   nfftmex('finalize',plan);
 end
+
+% restore the non finite nodes
+f(isBadNode,:) = NaN;
 
 % reshape output
 if isscalar(SO3F), f = reshape(f,s); end

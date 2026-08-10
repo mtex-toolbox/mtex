@@ -279,7 +279,15 @@ classdef phaseList
     end
     
     function varargout = size(pL,varargin)
-      [varargout{1:nargout}] = size(pL.phaseId(:,1),varargin{:});
+      % a phase list is always a column vector - note that phaseId itself
+      % may have two columns, e.g. for boundaries which store the phases on
+      % both sides. For an empty phase list phaseId is 0 x 0, hence indexing
+      % its first column would fail.
+      if isempty(pL.phaseId)
+        [varargout{1:nargout}] = size(zeros(0,1),varargin{:});
+      else
+        [varargout{1:nargout}] = size(pL.phaseId(:,1),varargin{:});
+      end
     end
     
     function out = numel(pL)

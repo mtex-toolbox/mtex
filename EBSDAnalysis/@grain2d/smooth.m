@@ -1,101 +1,24 @@
-function grains = smooth(grains,iter,varargin)
+function grains = smooth(grains,varargin)
 % constraint laplacian smoothing of grain boundaries
 %
-% Input
-%  grains - @grain2d
-%  iter   - number of iterations (default: 1)
+% Deprecated. Renamed to grain2d/smoothBoundary. Note that EBSD/smooth means
+% something else entirely - it denoises orientations, not geometry.
 %
-% Output
-%  grains - @grain2d
+% smoothBoundary does more than smooth ever did: it removes the pixel
+% staircase with simplifyBoundary and resamples with refineBoundary before
+% smoothing at all. Those two steps change the number of boundary segments and
+% move the grain areas, so a script written against smooth would silently get
+% different numbers out. It is therefore forwarded with both of them switched
+% off, which is exactly what smooth used to compute.
 %
-% Options
-%  moveTriplePoints  - do not exclude triple/quadruple points from smoothing
-%  moveOuterBoundary - do not exclude outer boundary from smoothing 
-%  second_order, S2  - second order smoothing
-%  rate              - default smoothing kernel  
-%  gauss             - Gaussian smoothing kernel  
-%  exp               - exponential smoothing kernel  
-%  umbrella          - umbrella smoothing kernel   
+% Call <grain2d.smoothBoundary.html |smoothBoundary|> directly to get the full
+% three steps, and to choose the smoothing algorithm.
 %
-% Description 
-% Note: when grains were segmented using alphaShapes, all grains next to holes
-% have outer boundary!
+% See also
+% grain2d/smoothBoundary grain2d/simplifyBoundary grain2d/refineBoundary
 
-if abs(dot(grains.N,zvector)) ~= 1
+warning(['grains.smooth has been renamed to grains.smoothBoundary, which ' ...
+  'additionally removes the pixel staircase before smoothing it. You are ' ...
+  'getting the old behaviour - see the help of grain2d/smooth.']);
 
-  [grains,rot] = rotate2Plane(grains);
-  grains = smooth(grains);
-  grains = inv(rot) * grains; %#ok<MINV>
-  return
-
-end
-
-
-if nargin < 2 || isempty(iter), iter = 1; end
-
-% compute incidence matrix vertices - faces
-I_VF = [grains.boundary.I_VF,grains.innerBoundary.I_VF];
-
-% compute vertices adjacency matrix
-A_V = I_VF * I_VF';
-t = size(A_V,1);
-
-% Do not move the junctions - the vertices where anything other than two
-% segments meet, counting the inner boundary too. diag(A_V) is that count.
-% The test used to be > 2, which missed the loose ends where a single
-% segment terminates; those are chain ends as well and have to stay put.
-if check_option(varargin,'moveTriplePoints')
-  ignore = false(size(A_V,1),1);
-else
-  vDegree = full(diag(A_V));
-  ignore = vDegree ~= 2 & vDegree > 0;
-end
-
-% ignore outer boundary
-if ~check_option(varargin,'moveOuterBoundary')
-  ignore(grains.boundary.F(any(grains.boundary.grainId==0,2),:)) = true;
-end
-
-if check_option(varargin,{'second order','second_order','S','S2'})
-  A_V = logical(A_V + A_V*A_V);
-  A_V = A_V - diag(diag(A_V));
-end
-
-weight = get_flag(varargin,{'gauss','expotential','exp','umbrella','rate'},'rate');
-lambda = get_option(varargin,weight,.5);
-
-V = grains.allV.xyz;
-isNotZero = ~all(~isfinite(V) | V == 0,2) & ~ignore;
-
-for l=1:iter
-  if ~strcmpi(weight,'rate')
-    [i,j] = find(A_V);
-    d = sqrt(sum((V(i,:)-V(j,:)).^2,2)); % distance
-    switch weight
-      case 'umbrella'
-        w = 1./(d);
-        w(d==0) = 1;
-      case 'gauss'
-        w = exp(-(d./lambda).^2);
-      case {'expotential','exp'}
-        w = lambda*exp(-lambda*d);
-    end
-    
-    A_V = sparse(i,j,w,t,t);
-  end
-
-  % take the mean over the neighbors
-  Vt = A_V * V;
-  
-  m = sum(A_V,2);
-  
-  dV = V(isNotZero,:)-bsxfun(@rdivide,Vt(isNotZero,:),m(isNotZero,:));
-  
-  isZero = any(~isfinite(dV),2);
-  dV(isZero,:) = 0;
-  
-  V(isNotZero,:) = V(isNotZero,:) - lambda*dV;
-  
-end
-
-grains.allV = vector3d.byXYZ(V,grains.how2plot);
+grains = grains.smoothBoundary(varargin{:},'noSimplify','noRefine');

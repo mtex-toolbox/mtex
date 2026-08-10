@@ -11,19 +11,28 @@ function [width,height] = calcAxesSize(mtexFig,figSize,nc,nr,varargin)
 
 if nargin <= 2, nc = mtexFig.ncols; nr = mtexFig.nrows; end
 
-% compute axes length ratio
-axesSize = mtexFig.children(1).PlotBoxAspectRatio;
+if isa(mtexFig.children(1),'matlab.graphics.axis.PolarAxes')
 
-[~,dUp] = max(abs(mtexFig.children(1).CameraUpVector));
-height = axesSize(dUp);
-axesSize(dUp) = 0;
+  % polar axes are circular and have no camera to derive a ratio from
+  axesRatio = 1;
 
-% camera direction
-cd = mtexFig.children(1).CameraPosition - mtexFig.children(1).CameraTarget;
-axesSize(find(cd == max(abs(cd)),1)) = 0;
-width = max(axesSize);
+else
 
-axesRatio = height/width;
+  % compute axes length ratio
+  axesSize = mtexFig.children(1).PlotBoxAspectRatio;
+
+  [~,dUp] = max(abs(mtexFig.children(1).CameraUpVector));
+  height = axesSize(dUp);
+  axesSize(dUp) = 0;
+
+  % camera direction
+  cd = mtexFig.children(1).CameraPosition - mtexFig.children(1).CameraTarget;
+  axesSize(find(cd == max(abs(cd)),1)) = 0;
+  width = max(axesSize);
+
+  axesRatio = height/width;
+
+end
 
 width = (figSize(1)-(nc-1)*mtexFig.innerPlotSpacing - nc*sum(mtexFig.tightInset([1,3])))/nc;
 height = (figSize(2)-(nr-1)*mtexFig.innerPlotSpacing - nr*sum(mtexFig.tightInset([2,4])))/nr;

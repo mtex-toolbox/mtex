@@ -134,6 +134,7 @@ plot(grains.boundary('indexed'),...
 
 setCamera(plottingConvention.default3D)
 colorbar('location','southoutside')
+%
 
 %%
 

@@ -11,7 +11,7 @@ mtexdata csl
 [grains,ebsd] = calcGrains(ebsd);
 
 % grain smoothing
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 % plot the result
 plot(grains,grains.meanOrientation)

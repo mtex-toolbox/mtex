@@ -158,7 +158,7 @@ isNotIdx = [false(size(sitesIdx,1),1); true(size(niPos,1),1)];
 site2id  = [idxSiteEbsd; niId];
 
 % ---- Voronoi -----------------------------------------------------------
-[V,F,I_FD] = jcvoronoi2_mex(double(XY),double(numReal), epsilon);
+[V,F,I_FD] = jcvoronoi2(double(XY),double(numReal), double(epsilon));
 
 out = struct('V',V,'F',F,'I_FD',I_FD, ...
              'isNotIdx',isNotIdx,'site2id',site2id,'ij',ij);
@@ -208,7 +208,7 @@ ringIJ = [ ...
 bnd = idealFun(unique(ringIJ,'rows'));
 
 XYa = [idxPos; bnd];
-[Va,Fa,I_FDa] = jcvoronoi2_mex(double(XYa), double(nIdx), epsilon);
+[Va,Fa,I_FDa] = jcvoronoi2(double(XYa), double(nIdx), double(epsilon));
 
 nnzPerEdge = full(sum(I_FDa,2));
 pureEdge   = nnzPerEdge == 2;             % real-real edges (no dummy site)

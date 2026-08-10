@@ -18,10 +18,16 @@ function l = legendre0(N,x)
 %
 % Example
 %   x = -1:0.2:1
-%   legendre0(10,x)
-%   for k=0:10
-%     LegendreP(k,x)
+%   l = legendre0(10,x)
+%
+%   % compare with MATLABs legendre, whose first row is the Legendre
+%   % polynomial of degree k
+%   err = 0;
+%   for k = 0:10
+%     P = legendre(k,x);
+%     err = max(err,max(abs(P(1,:) - l(k+1,:))));
 %   end
+%   err
 %
 
 x = x(:).';

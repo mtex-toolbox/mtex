@@ -7,7 +7,7 @@ function display(tP,varargin)
 % #ids | mineralLeft | mineralRight
 % ---------------------------------
 
-displayClass(tP,inputname(1));
+displayClass(tP,inputname(1),'moreInfo',char(tP.how2plot,'compact'));
 
 % empty grain boundary set 
 if isempty(tP)

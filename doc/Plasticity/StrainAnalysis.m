@@ -12,7 +12,7 @@ mtexdata csl
 [grains, ebsd] = calcGrains(ebsd);
 
 % make them a bit nicer
-grains = smooth(grains);
+grains = smoothBoundary(grains);
 
 % extract inner phase grain boundaries
 gB = grains.boundary('indexed');

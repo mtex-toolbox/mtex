@@ -55,6 +55,7 @@ if check_option(varargin,'colored')
   varargin = delete_option(varargin,'colored');
   
   h = [];
+  hG = holdOn(gca); %#ok<NASGU>
   for i = 1:length(cS.N)
     if isa(dirKey,'directionColorKey')
       color = dirKey.direction2color(cS.N(i));
@@ -63,10 +64,9 @@ if check_option(varargin,'colored')
     end
     h = [h,plot(cS.subSet(cS.N(i).symmetrise),'faceColor',color,'DisplayName',...
       char(round(cS.N(i)),'LaTex'),'doNotDraw',varargin{:})]; %#ok<AGROW>
-    hold on
   end
-  
-  hold off
+
+  clear hG
   
   if nargout == 0, clear h; end
   

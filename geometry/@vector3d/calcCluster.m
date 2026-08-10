@@ -21,6 +21,7 @@ function [cId,center] = calcCluster(v,varargin)
 % Example 
 %
 %   %generate vector data of up to 5 clusters
+%   plottingConvention.default('y↑→x');
 %   vin = vector3d.rand(5);
 %   sF2 = calcDensity(vin,'halfwidth',10*degree);
 %   v   = sF2.discreteSample(800);

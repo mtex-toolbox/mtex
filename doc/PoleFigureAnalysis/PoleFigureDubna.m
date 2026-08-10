@@ -4,6 +4,8 @@
 % This example demonstrates the most important MTEX tools for analysing
 % Pole Figure Data.
 
+plottingConvention.default('y↑→x');
+
 % specify crystal and specimen symmetry
 CS = crystalSymmetry('-3m',[4.9 4.9 5.4]);
 
@@ -35,8 +37,8 @@ mtexColorbar
 % variable can be extracted by
 
 I = pf.intensities; % intensities
-h = pf.h;            % Miller indice
-r = pf.r;            % specimen directions
+h = pf.h;           % Miller indices
+r = pf.r;           % specimen directions
 
 %%
 % *Basic Statistics*

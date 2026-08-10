@@ -1,7 +1,14 @@
 function makeRelease(ver)
 
-% ensure we are up to data
-system("git pull");
+% Every git command below belongs to the MTEX repository, so change into it
+% before the first one. This pull used to run in whatever folder MATLAB
+% happened to be in - usually not this one - where it would either rebase an
+% unrelated repository or, more often, stop on that repository's uncommitted
+% changes while makeRelease carried on regardless.
+cd(mtex_path)
+
+% ensure the tree is clean and up to date
+ensureClean
 
 if nargin == 0
   ver = input("Enter Name of Version (default=" + getMTEXpref('version') + "): ",'s');
@@ -20,9 +27,6 @@ elseif length(ver)<5
 else
   setMTEXpref("version",ver)
 end
-
-% change to mtex path
-cd(mtex_path)
 
 % store new version file
 fid = fopen("VERSION","w");
@@ -69,17 +73,111 @@ disp('compressing release ...')
 zip(zipName,rDir);
 
 
-disp('Authenticate at Github ...')
-unix('terminator -e "gh auth login"');
-% gh auth login
+% gh stores its token in the system keyring, so a login normally already
+% exists and running one on every release was pointless. Only its absence
+% needs an interactive terminal - the one thing that cannot be done from
+% MATLAB - so ask for it rather than depending on a particular terminal
+% emulator being installed and behaving.
+disp('checking the GitHub authentication ...')
+if system('gh auth status > /dev/null 2>&1') ~= 0
+  error('makeRelease:notAuthenticated', ...
+    ['not logged in at GitHub.\n\nRun\n\n  gh auth login\n\n' ...
+    'in a terminal and start makeRelease again.']);
+end
 
-%doRelease = ['gh release create ' ver ' ' zipName ' -t "' getMTEXpref('version') '"'];
-doRelease = ['gh release create ' ver ' ' zipName];
+% The release is created as a DRAFT and stays invisible until the build mex
+% workflow has attached the binaries for all four platforms and published it.
+% That ordering matters: the zip ships no mex files (see rmList above), so
+% check_mex downloads them from the release assets on first start - and anyone
+% installing between "release visible" and "binaries attached" would get a
+% failed download and be told to compile them by hand.
+% The title and the notes have to be given here, not because the defaults are
+% wrong but because gh asks for anything it was not told. MATLAB's system
+% hands the child a terminal, so gh believes it can prompt - and then waits
+% forever for an answer that cannot be typed, with MATLAB hanging on it. That
+% is what the terminator window used to be for.
+%
+% --generate-notes fills the notes from the commits since the previous
+% release; the draft can be edited on GitHub before the workflow publishes it.
+% --verify-tag stops here if the tag never reached the remote, rather than
+% letting the workflow dispatch below fail with a less obvious message.
+doRelease = ['gh release create ' ver ' ' zipName ...
+  ' --draft --verify-tag --generate-notes --title "' ver '"'];
 if any(strfind(ver,'beta')), doRelease = [doRelease,' -p']; end
 
-disp('uploading release to GitHub ...')
-disp('')
-disp(doRelease)
-unix(['terminator -e "' doRelease '"']);
+disp('uploading release draft to GitHub ...')
+sh(doRelease,'creating the release draft');
+
+% Hand over to CI, which builds the mex files for every platform, uploads them
+% onto this draft and only then publishes it. Dispatched explicitly rather
+% than triggered by the release, because a draft fires no release event.
+%
+% This needs the tag to be on the remote already, which the git push above
+% did - if that silently failed, this is where it surfaces.
+buildMex = ['gh workflow run build-mex.yml --ref ' ver ...
+  ' -f release_tag=' ver];
+
+disp('starting the mex build on GitHub ...')
+sh(buildMex,'dispatching the mex build');
+
+disp(' ')
+disp('The release is a DRAFT until the mex build has finished.')
+disp('Watch it with:  gh run list --workflow=build-mex.yml')
+disp('If a platform fails the release stays a draft - fix it and dispatch')
+disp('again, or publish by hand with:')
+disp(['  gh release edit ' ver ' --draft=false'])
+
+end
+
+% ===========================================================================
+function ensureClean
+% pull, and refuse to build a release out of a dirty working tree
+%
+% The zip is a copy of the working tree, so an uncommitted edit would be
+% shipped without ever having been pushed. Reporting that here beats finding
+% it in the released zip. Checked before the pull, because a dirty tree is
+% also what makes the pull itself fail under pull.rebase.
+
+[~,out] = system('git status --porcelain');
+if ~isempty(strtrim(out))
+  error('makeRelease:dirtyTree', ...
+    ['the MTEX working tree has uncommitted changes:\n\n%s\n' ...
+    'Commit or stash them before releasing - the release zip is a copy ' ...
+    'of this tree.'],out);
+end
+
+sh('git pull','updating the repository');
+
+end
+
+% ===========================================================================
+function sh(cmd,what)
+% run a shell command, keep its output visible, and stop if it fails
+%
+% Replaces the terminator calls this used to make. Spawning a terminal
+% emulator was unreliable in two ways: it depends on that one emulator being
+% installed, and the window takes the exit code away with it, so a release
+% that failed to upload looked exactly like one that succeeded.
+%
+% MATLAB streams a command's output to the command window as long as only the
+% status is requested, so the progress of a long upload stays visible.
+
+disp(['  ' cmd])
+
+% gh paints its output with ANSI escapes and asks the terminal for its
+% background colour to pick a theme; in the command window both arrive as
+% unreadable noise around the text that matters.
+oldNoColor = getenv('NO_COLOR');
+setenv('NO_COLOR','1');
+restoreNoColor = onCleanup(@() setenv('NO_COLOR',oldNoColor)); %#ok<NASGU>
+
+% Close stdin. MATLAB's system leaves a terminal attached to the child, so a
+% command that wants to ask something believes it can - and MATLAB then hangs
+% on a question nobody can answer. With stdin at end of file the question
+% fails instead, which is recoverable. Every command here is meant to be
+% non-interactive, so there is nothing to lose.
+if system([cmd ' < /dev/null']) ~= 0
+  error('makeRelease:commandFailed','%s failed:\n\n  %s\n',what,cmd);
+end
 
 end

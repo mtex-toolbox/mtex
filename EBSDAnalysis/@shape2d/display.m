@@ -1,7 +1,7 @@
 function  display(shape,varargin)
 % standard output
 
-displayClass(shape,inputname(1));
+displayClass(shape,inputname(1),'moreInfo',char(shape.how2plot,'compact'));
 
 disp(' ')
 

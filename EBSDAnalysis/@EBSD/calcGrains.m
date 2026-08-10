@@ -31,13 +31,12 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %  angle    - misorientation angle that indicates a grain boundary
 %  minPixel - minimum number of pixels that form a grain
 %  alpha    - fill distances into not indexed regions
+%  soft     - [angle delta] soft threshold instead of a hard one
 %  fmc       - fast multiscale clustering method
 %  mcl       - Markovian clustering algorithm
 %  custom    - use a custom property for grain separation
 %
 % Flags
-%  unitCell - omit Voronoi decomposition and treat a unitcell lattice
-%  qhull    - use qHull for the Voronoi decomposition
 %  verbose  - report what the criterion did, if it has anything to say -
 %             currently only |'fmc'|, which prints its cluster hierarchy
 %  delaunay - use a true circumradius-based alpha-complex (exact, not a
@@ -58,7 +57,7 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %   Ultramicroscopy, 2013, 133:16-25>.
 %
 % See also
-% GrainReconstruction GrainReconstructionAdvanced
+% GrainReconstruction GrainReconstructionAdvanced GrainReconstructionMCL
 
 % TODO: we have to rotate everything to xy plane to do the reconstruction
 
@@ -71,6 +70,8 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 % returned a different segmentation without saying so.
 if check_option(varargin,{'fmc','FMC'})
   gbc = getClass(varargin,'grainBoundaryCriterion',gbcFMC(varargin{:}));
+elseif check_option(varargin,'soft')
+  gbc = getClass(varargin,'grainBoundaryCriterion',gbcSoft(varargin{:}));
 else
   gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
 end

@@ -68,8 +68,8 @@ classdef EBSDsquare < EBSD
     end
 
     function [varargout] = gridify(ebsd,varargin)
-      % nothing to do :)
-      if ~check_option(varargin,'unitCell')
+      % nothing to do :) unless a different unit cell or layout is requested
+      if ~check_option(varargin,{'unitCell','rowMajor','columnMajor'})
         varargout{1} = ebsd;
         varargout{2} = (1:length(ebsd)).';
       else

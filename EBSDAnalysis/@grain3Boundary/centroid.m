@@ -7,9 +7,6 @@ if isnumeric(gB3.F)
 
 else
 
-  % for testing the code of matgeom - we are much faster
-  % c = vector3d(meshFaceCentroids(gB3.allV.xyz, gB3.F))';
-  
   % duplicate vertices according to their occurrence in the face
   F = gB3.F.';
   V = gB3.allV([F{:}]);

@@ -15,8 +15,10 @@ function ind = find(S1G,x,epsilon)
 
 if S1G(1).periodic, p = S1G.max - S1G.min; else, p = 0; end
 
+% the mex functions below read their input with mxGetPr, i.e. they require
+% double and would silently misinterpret single precision input
 if nargin == 2
-  ind = S1Grid_find(S1G.points(:),S1G.min,p,x);
-else  
-  ind = S1Grid_find_region(S1G.points(:),S1G.min,p,x,epsilon);
+  ind = S1Grid_find(double(S1G.points(:)),double(S1G.min),double(p),double(x));
+else
+  ind = S1Grid_find_region(double(S1G.points(:)),double(S1G.min),double(p),double(x),double(epsilon));
 end

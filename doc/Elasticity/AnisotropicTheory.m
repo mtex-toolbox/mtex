@@ -1,5 +1,6 @@
 %% Anisotropic Elasticity
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % The linear theory of elasticity in anisotropic materials is essentially
 % based on the fourth order stiffness tensor |C|. Such a tensor is

@@ -108,7 +108,8 @@ classdef mtexFigure < handle
       rmallappdata(gcf);
       % fall back to the MATLAB default rather than forcing 'on', so that
       % setting DefaultFigureVisible to 'off' keeps mtex figures off screen
-      % too - used e.g. when publishing the documentation
+      % too (note that publishing needs them visible - MATLAB's publish
+      % snapshots no figure whose Visible is 'off')
       vis = get_option(varargin,'Visible',get(0,'DefaultFigureVisible'));
       set(gcf,'Visible',vis);
 
@@ -184,9 +185,7 @@ classdef mtexFigure < handle
         x = dbstack; 
         if any(strcmpi(x(2).name,{'colorbar','legend'})), return;end
         
-        mtexFig.children = ...
-        flipud(findobj(mtexFig.parent,'type','axes',...
-        '-not','tag','Colorbar','-and','-not','tag','legend')); 
+        mtexFig.children = flipud(getAllAxes(mtexFig.parent));
       end
       
       function deleteChildren(a,b)

@@ -25,10 +25,12 @@ function plotSection(F,varargin)
 % See also
 % saveFigure Plotting
 
-if ~F.isReal && ~getMTEXpref('generatingHelpMode')
-  warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
-    'In the following only the real part is plotted.'])
-  F.isReal=1;
+if ~F.isReal
+  if ~getMTEXpref('generatingHelpMode')
+    warning(['Imaginary part of complex valued SO3Fun''s is ignored. ' ...
+      'In the following only the real part is plotted.'])
+  end
+  F.isReal = 1;
 end
 
 
