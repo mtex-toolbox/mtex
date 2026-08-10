@@ -5,46 +5,53 @@ function ref = grainReconstructionReference()
 % not hand-edit. Regenerate only after independently verifying the new
 % numbers are correct, not merely "the test now passes".
 
+% Regenerated 2026-08-10 after the G38 fix (see TODO.md). The numbers below
+% are the first ones since 24 Jul that are not carrying a defect:
+% mergeQuadrupleGrains had been merging the wrong boundary segments since
+% 13d90f5f5, destroying real grain boundary (100 segments, 4529.8, on
+% forsterite). forsterite and copper return to their long-standing values.
+%
+% steel1C_1.nGrainsQP moved 99857 -> 99843 for a separate and intended
+% reason: the hole/dummy-cell position commits (23f4566e1, fac9b9e8c) changed
+% reconstructed vertex positions, and with them which vertices have exactly
+% four incident edges. Verified by measuring the pre-bug commit 13d90f5f5^,
+% which already gives 99843.
+%
+% totalLenQP is new. It exists because nGrainsQP was previously the only
+% probe of the removeQuadruplePoints path, and a bare count cannot tell a
+% quadruple-point tie-break from destroyed geometry - which is exactly how
+% G38 hid for two weeks and through the previous regeneration of this file.
+% It equals totalLen on forsterite and copper but not on steel1C_1: merge
+% also drops boundary between two grains it joins that touch elsewhere, which
+% needs a large map to occur. That -55.4 is long-standing and correct.
+%
+% This metric has a history of moving on its own. forsterite.nGrainsQP was
+% 2932, then 2933, then found to flip between 2933 and 2931 across sessions
+% with byte-identical code - root caused to a tie-break in calcUnitCell's
+% detectLattice and fixed. Treat a drift here as suspect, but read
+% totalLen/totalLenQP before concluding anything from the counts alone.
+
 ref = struct();
 
-ref.forsterite.nGrains   = 3100;
-% nGrainsQP was 2932, then 2933 (see git log for those two changes), then
-% found to be flipping between 2933 and 2931 across separate MATLAB
-% sessions with byte-identical code and data - not just across real
-% changes. Root cause: interfaces/tools/calcUnitCell.m's detectLattice
-% picked a square lattice's two (exactly antipodal, on the doubled-angle
-% circle) neighbour directions in whichever order an unwrap-at-the-largest
-% -gap tie-break happened to settle on, which floating-point noise in a
-% multi-threaded reduction can flip run to run; that order feeds into
-% EBSD/latticeBasis's a1/a2 and from there into calcMesh's vertex
-% reconstruction, moving an already-fragile quadruple-point tie. Fixed by
-% sorting the two candidate directions before picking one (as the
-% hex-lattice branch just below already did) so the choice no longer
-% depends on the tie-break. 2931 is now reproducible across repeated fresh
-% sessions (totalLen/meanArea unchanged to 4+ significant figures).
-ref.forsterite.nGrainsQP = 2931;
-ref.forsterite.totalLen  = 2109862.5882302704;
-ref.forsterite.meanArea  = 196661.7753931300;
-ref.forsterite.time      = 1.3761;
+ref.forsterite.nGrains    = 3100;
+ref.forsterite.nGrainsQP  = 2931;
+ref.forsterite.totalLen   = 2109862.5882302765;
+ref.forsterite.totalLenQP = 2109862.5882302765;
+ref.forsterite.meanArea   = 196661.7753931304;
+ref.forsterite.time       = 0.5919;
 
-ref.copper.nGrains   = 755;
-ref.copper.nGrainsQP = 755;
-ref.copper.totalLen  = 37299.7177800885;
-ref.copper.meanArea  = 462.1479172895;
-ref.copper.time      = 0.1638;
+ref.copper.nGrains    = 755;
+ref.copper.nGrainsQP  = 755;
+ref.copper.totalLen   = 37299.7178983177;
+ref.copper.totalLenQP = 37299.7178983177;
+ref.copper.meanArea   = 462.1479171713;
+ref.copper.time       = 0.0719;
 
-ref.steel1C_1.nGrains   = 104814;
-% nGrainsQP was 99862 before assignGridIndex.m was made robust to smooth
-% (e.g. trapezoidal) grid distortion (see git log) - same category of
-% change as the EBSD/lattice consolidation noted above: float rounding
-% noise in reconstructed vertex positions flips another already-fragile
-% quadruple-point tie (totalLen/meanArea unchanged to 4+ significant
-% figures). Unaffected by the calcUnitCell.m detectLattice tie-break fix
-% noted for forsterite above - reproducible at 99857 both before and after
-% that fix. Accepted as a benign tie-break, not re-verified independently.
-ref.steel1C_1.nGrainsQP = 99857;
-ref.steel1C_1.totalLen  = 156035.7019482671;
-ref.steel1C_1.meanArea  = 0.5428519276;
-ref.steel1C_1.time      = 19.6069;
+ref.steel1C_1.nGrains    = 104814;
+ref.steel1C_1.nGrainsQP  = 99843;
+ref.steel1C_1.totalLen   = 156035.7019482653;
+ref.steel1C_1.totalLenQP = 155980.2966759323;
+ref.steel1C_1.meanArea   = 0.5428519276;
+ref.steel1C_1.time       = 8.9355;
 
 end

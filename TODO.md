@@ -110,7 +110,7 @@ The multi-release work. Everything here is bigger than one branch.
 | G35 | Formula reference error in the GND documentation | 2 | 0 | bug | — | #1346 |
 | G36 | Weighted Burgers vector: error estimation | 1 | 1 | idea | — | #2064 |
 | G37 | Overlay a grain map with the active slip system | 1 | 0 | idea | — | — |
-| G38 | `removeQuadruplePoints` destroyed real grain boundary — **fixed**; only the stale reference is left to regenerate | 2 | 0 | wip | — | [→](#g38) |
+| G38 | `removeQuadruplePoints` destroyed real grain boundary — fixed, reference regenerated, benchmark green | 2 | 0 | done | — | [→](#g38) |
 | G39 | Analytic Voronoi decomposition for gap-free regular grids — 43 % of `calcGrains` runtime is Fortune's sweep | 1 | 1 | paused | — | br/analytic-voronoi-grid, [→](#g39) |
 | G40 | Speed up the segmentation criterion `gbcAngle.doEvaluate` — 0.71 s of `doSegmentation`'s 1.47 s | 1 | 1 | paused | — | [→](#g39) |
 
@@ -528,10 +528,9 @@ change reconstructed vertex positions and hence which vertices have exactly
 four incident edges. Two independent changes had stacked: 99857 → 99843
 (intended) and 99843 → 99818 (the bug, now fixed).
 
-**Remaining action:** regenerate the reference so it records 99843 for
-steel plus the new `totalLenQP` column, after Ralf confirms the 14-grain
-step from the hole/dummy-cell work is accepted. Everything else already
-matches.
+**Closed 2026-08-10.** Reference regenerated with Ralf's go-ahead: steel now
+records 99843, and every dataset carries `totalLenQP`. All three match; the
+benchmark is green for the first time since 24 Jul.
 
 Note the reference file's own history: `forsterite.nGrainsQP` has flipped
 three times, once purely session to session with byte-identical code, and
