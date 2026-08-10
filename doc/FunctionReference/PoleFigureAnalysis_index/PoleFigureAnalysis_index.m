@@ -1,4 +1,4 @@
-%% The Class PoleFigure
+%% Pole Figure Analysis
 %
 %%
 %

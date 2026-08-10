@@ -1,4 +1,4 @@
-%% tensors
+%% refractiveIndexTensor
 %
-%% PLEASE HELP AND ADD CONTENT HERE
+%%
 %
