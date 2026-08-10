@@ -24,6 +24,10 @@ function [ind,d] = find(v,w,epsilon_or_k,varargin)
 
 if nargin==2, epsilon_or_k=1; end
 
+% k is documented as int32 - cast it, as integer types do not survive the
+% arithmetic below
+epsilon_or_k = double(epsilon_or_k);
+
 v = reshape(v, [], 1);
 w = reshape(w, [], 1);
 
