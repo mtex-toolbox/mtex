@@ -64,6 +64,7 @@ checkFillGridFree;
 checkInterp;
 checkPos2Ind;
 checkHexRotatedRefused;
+checkHexDerivedGeometry;
 
 disp('gridify: all checks passed');
 
@@ -493,5 +494,46 @@ uC = eR.dPos/2 * vector3d([-1 1 1 -1],[-1 -1 1 1],0);
 gS = eR.gridify('unitCell',uC);
 assert(isa(gS,'EBSDsquare'), ...
   'check_gridify: resampling a rotated hex map onto a square cell failed');
+
+end
+
+% =========================================================================
+function checkHexDerivedGeometry
+% @EBSDhex derives its geometry from unitCell/pos instead of storing it
+%
+% dHex + isRowAlignment used to be stored, which could express exactly two
+% orientations - 0 and 30 degree - so a rotated hex grid was not
+% representable at all. They are read off the unit cell and the positions
+% now, which also makes them survive a rotation.
+
+g = EBSD(mtexdata('titanium','silent')).gridify;
+
+% the derived values reproduce what the stored ones used to be
+assert(abs(g.dHex - mean(norm(g.unitCell))) < 1e-12, ...
+  'check_gridify: dHex is not the unit cell circumradius');
+assert(g.isRowAlignment == true && g.offset == 1, ...
+  'check_gridify: titanium should be row aligned with offset +1');
+assert(abs(g.dx - sqrt(3)*g.dHex) < 1e-9 && abs(g.dy - 1.5*g.dHex) < 1e-9, ...
+  'check_gridify: dx/dy do not reproduce the row aligned spacings');
+
+% a flat top grid is recognised the other way round
+e = EBSDhex([],rotation.nan(8,9),ones(72,1),1,{crystalSymmetry},1,0);
+assert(e.isRowAlignment == false, ...
+  'check_gridify: a flat top grid was read as row aligned');
+assert(abs(e.dx - 1.5*e.dHex) < 1e-9 && abs(e.dy - sqrt(3)*e.dHex) < 1e-9, ...
+  'check_gridify: dx/dy are not swapped for a flat top grid');
+
+% and rotating the map does not disturb any of them. The old offset was
+% sign(pos.x(2,1)-pos.x(1,1)), which flips from 45 degree on and inverts
+% the whole staggered addressing.
+for w = [20 45 90 120 200]
+  r = rotate(g,w*degree);
+  assert(isa(r,'EBSDhex') && length(r.unitCell) == 6, ...
+    'check_gridify: rotating a hex map by %d degree broke the unit cell', w);
+  assert(abs(r.dHex - g.dHex) < 1e-9 && r.isRowAlignment == g.isRowAlignment ...
+    && r.offset == g.offset, ...
+    ['check_gridify: rotating by %d degree changed the derived geometry - ' ...
+    'dHex %.4f, isRowAlignment %d, offset %+d'], w, r.dHex, r.isRowAlignment, r.offset);
+end
 
 end
