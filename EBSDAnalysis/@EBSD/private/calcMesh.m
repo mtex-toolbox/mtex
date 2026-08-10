@@ -27,6 +27,11 @@ function [mesh,ind,model] = calcMesh(pos,uC,varargin)
 % gridIndex/gridComponents/spatialDecompositionGrid/generateUnitCells,
 % which all place a pixel on the same virtual lattice this way.
 A = latticeBasis(uC);
+
+% the caller may hand over pos in any shape, e.g. map shaped (r x c) - the
+% lattice fit and all the indexing below operate on a flat list of points
+pos = pos(:);
+
 xy = [pos.x(:), pos.y(:)];
 IJ = assignGridIndex(xy,A);
 I = IJ(:,1); J = IJ(:,2);
@@ -60,11 +65,12 @@ end
 
 ind = sub2ind([nI,nJ],I+1,J+1);
 % maybe the ideal grid is sufficiently good
-if mean(norm(reshape(idealMesh(ind),[],1) - pos)) / mean(norm(uC)) < 1e-2
+res = idealMesh(ind) - pos;
+if mean(norm(res)) / mean(norm(uC)) < 1e-2
   mesh = idealMesh;
   mesh(ind) = pos;
   if nargout == 3
-    model = makeModel(p0,u,v,nI,nJ,reshape(idealMesh(ind),[],1) - pos);
+    model = makeModel(p0,u,v,nI,nJ,res);
   end
   return
 end
@@ -85,8 +91,9 @@ Fz = scatteredInterpolant(Ik,Jk,def.z(known),'natural','nearest');
 defFull = vector3d(Fx(ii,jj),Fy(ii,jj),Fz(ii,jj));
 % reconstruct full mesh
 mesh = idealMesh + defFull;
-% keep observed nodes exact
-mesh(known) = pos;
+% keep observed nodes exact - index by ind, not by the mask known: the mask
+% assigns in ascending linear order, while pos is in the callers order
+mesh(ind) = pos;
 % diagnostics
 if nargout == 3
   model = makeModel(p0,u,v,nI,nJ,def(known));

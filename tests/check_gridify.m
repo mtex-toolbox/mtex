@@ -55,6 +55,8 @@ for k = 1:size(cases,1)
 end
 
 checkLayout;
+checkMapShapedInput;
+checkDistortedGrid;
 checkResample;
 checkResampleRotated;
 
@@ -89,6 +91,61 @@ assert(isequaln(eC.rotations.a, eR.rotations.a.') && ...
 % the explicit flag agrees with the default
 assert(all(size(ebsd.gridify('columnMajor')) == size(eC)), ...
   'check_gridify: columnMajor is not the default layout');
+
+end
+
+% =========================================================================
+function checkMapShapedInput
+% gridify works on an EBSD whose pos was handed over map shaped (r x c)
+%
+% Regression: calcMesh compared an explicitly flattened ideal grid against
+% pos in whatever shape the caller had passed. With a map shaped pos that
+% subtraction is (N x 1) minus (r x c), which used to hang forever in
+% vector3d/plus and errors since then - although nothing in the algorithm
+% cares how the caller shaped its input.
+
+sz = 20; d = 0.3;
+[Y,X] = ndgrid((0:sz-1)*d,(0:sz-1)*d);
+
+ebsd = EBSD(vector3d(X,Y,zeros(sz)), rotation.rand(sz,sz), ones(sz,sz), ...
+  {crystalSymmetry('m-3m')}, struct('bc',rand(sz,sz)));
+
+[ebsdGrid,newId] = ebsd.gridify;
+
+assert(numel(ebsdGrid) == sz^2, ...
+  'check_gridify: a map shaped pos gridified to %d instead of %d points',...
+  numel(ebsdGrid),sz^2);
+
+assert(max(norm(ebsdGrid.pos(newId) - ebsd.pos(:))) < 1e-10 * d, ...
+  'check_gridify: a map shaped pos does not survive gridify');
+
+end
+
+% =========================================================================
+function checkDistortedGrid
+% a distorted map keeps every measurement at its measured position
+%
+% A distortion beyond calcMesh's 1e-2 tolerance takes its second branch,
+% which interpolates the deformation field and then restores the observed
+% nodes. Regression: that restore assigned through the logical mask of
+% known nodes, which fills in ascending linear index order, while pos comes
+% in the callers order - so on any map whose scan order is not the mesh's
+% column major order the positions ended up permuted (by up to a full map
+% width on twins). The ideal-grid branch every undistorted map takes never
+% reaches this line.
+
+ebsd = EBSD(mtexdata('twins','silent'));
+
+% trapezoidal stage drift: scale x per scan row about the map centre
+p = ebsd.pos;
+xC = (min(p.x) + max(p.x))/2;
+yC = (min(p.y) + max(p.y))/2; yHalf = (max(p.y) - min(p.y))/2;
+ebsd.pos = vector3d(xC + (p.x-xC).*(1 + 0.05*(p.y-yC)/yHalf), p.y, p.z);
+
+[ebsdGrid,newId] = ebsd.gridify;
+
+assert(max(norm(ebsdGrid.pos(newId) - ebsd.pos)) < 1e-10 * ebsd.dPos, ...
+  'check_gridify: a distorted map does not keep its measured positions');
 
 end
 
