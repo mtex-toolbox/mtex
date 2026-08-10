@@ -59,6 +59,37 @@ norm(g1.div - g2.div)
 norm(g1.div - h1.div)
 norm(g1.div - g1.div('check'))
 
+%% Test rotate
+
+% rotating a vector field has to commute with taking the gradient, i.e.
+%   grad(rotate(f,q)) == rotate(grad(f),q)
+% for a rotation from the left as well as from the right and for both intern
+% tangent space representations
+
+fr = SO3FunHarmonic(SO3Fun.dubna); fr.bandwidth = 8; fr.CS = cs; fr = fr.symmetrise;
+q = rotation.byAxisAngle(vector3d(1,2,3),37*degree);
+r = orientation.rand(5,1,cs,specimenSymmetry);
+
+% the vector fields, once with left and once with right intern tangent space
+GL = fr.grad;
+GR = right(GL,'internTangentSpace');
+
+% the correct results
+refL = left(rotate(fr,q).grad.eval(r));
+refR = left(rotate(fr,q,'right').grad.eval(r));
+
+% rotation from the left (specimen)
+max(norm(vector3d(refL) - vector3d(left(rotate(GL,q).eval(r)))))
+max(norm(vector3d(refL) - vector3d(left(rotate(GR,q).eval(r)))))
+max(norm(vector3d(refL) - vector3d(left(rotate(SO3VectorFieldHandle(GL),q).eval(r)))))
+max(norm(vector3d(refL) - vector3d(left(rotate(SO3VectorFieldHandle(GR),q).eval(r)))))
+
+% rotation from the right (crystal)
+max(norm(vector3d(refR) - vector3d(left(rotate(GL,q,'right').eval(r)))))
+max(norm(vector3d(refR) - vector3d(left(rotate(GR,q,'right').eval(r)))))
+max(norm(vector3d(refR) - vector3d(left(rotate(SO3VectorFieldHandle(GL),q,'right').eval(r)))))
+max(norm(vector3d(refR) - vector3d(left(rotate(SO3VectorFieldHandle(GR),q,'right').eval(r)))))
+
 %% Test curl
 
 g = SO3VectorFieldHarmonic(SO3FunHarmonic.example.*[1,2,3]);
