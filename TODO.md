@@ -110,7 +110,7 @@ The multi-release work. Everything here is bigger than one branch.
 | G35 | Formula reference error in the GND documentation | 2 | 0 | bug | — | #1346 |
 | G36 | Weighted Burgers vector: error estimation | 1 | 1 | idea | — | #2064 |
 | G37 | Overlay a grain map with the active slip system | 1 | 0 | idea | — | — |
-| G38 | `grainReconstructionBenchmark` disagrees with its stored reference — 99868 vs 99857 grains on steel1C_1 | 2 | 0 | paused | — | [→](#g38) |
+| G38 | `removeQuadruplePoints` destroyed real grain boundary — **fixed**; a residual 99843 vs 99857 on steel1C_1 still to classify | 2 | 0 | wip | — | br/quadruplePointMerge, [→](#g38) |
 | G39 | Analytic Voronoi decomposition for gap-free regular grids — 43 % of `calcGrains` runtime is Fortune's sweep | 1 | 1 | paused | — | br/analytic-voronoi-grid, [→](#g39) |
 | G40 | Speed up the segmentation criterion `gbcAngle.doEvaluate` — 0.71 s of `doSegmentation`'s 1.47 s | 1 | 1 | paused | — | [→](#g39) |
 
@@ -465,14 +465,69 @@ distance and on rings. The noise-floor documentation (C14) and Ulrich Faul's
 noise-estimation work (S3) belong with it.
 
 ### G38
-As of 2026-07-24 `check_grainReconstructionBenchmark` fails two of three
-cases against the checked-in reference: `copper` differs by ~1e-6 (harmless
-float drift), but `steel1C_1` differs in `removeQuadruplePoints` grain count,
-99868 vs 99857 — a real topology difference. Most likely from the
-hole/dummy-cell position reconstruction commits (`23f4566e1`, `8ab07ae9d`,
-`588f71202`). **Do not** run `check_grainReconstructionBenchmark('update')`
-to make it pass until the topology change near holes has been confirmed as
-intended.
+Investigated 2026-08-10. It was a real bug, not a stale reference, and not
+where the earlier note guessed. **Fixed** in `br/quadruplePointMerge`
+(`48c70823c`).
+
+**Root cause.** `removeQuadruplePoints` splits a vertex where four grains
+meet into two triple points: it appends a duplicate of the vertex, rewrites
+two of the four edges onto it, and adds a segment joining the two. The
+duplicate sits at the same coordinates, so that segment has zero length.
+`mergeQuadrupleGrains` then merges away those of them the segmentation
+criterion would not have called a boundary — but it identified them
+*positionally*, as `gB(end-qAdded+1:end)`, relying on them having been
+appended last. `13d90f5f5` (ordered boundary segments) made the
+`grainBoundary` constructor sort every segment into chain walk order; its
+own message lists "only stored positional indices" as breaking. So the
+merge consumed unrelated, **real** segments: on forsterite 100 of them,
+carrying 4529.8 of grain boundary, 0.21% of the map, while the grain count
+moved only 2931 → 2926. Fixed by identifying them by vertex pair, which
+survives the reordering, plus an assert — the old code had no way to notice
+it was addressing the wrong rows.
+
+**Why nothing caught it.** The benchmark records `totalLen`/`meanArea` for
+the plain reconstruction only, so `nGrainsQP` was the sole probe of this
+path, and a bare count cannot separate a tie-break from destroyed geometry.
+It now records the QP boundary length too.
+
+**Corrections to the earlier note**, all measured: the suspected commits
+(`23f4566e1`, `8ab07ae9d`, `588f71202` — the hole/dummy-cell work) are *not*
+the cause; `588f71202` is where the reference was written and reproduces it
+exactly (forsterite QP 2931). Its numbers were stale throughout — steel is
+99818 at HEAD, not 99868; `copper` passes; `forsterite` was failing too and
+went unmentioned. Bisected on forsterite (0.74 s, no need for the 157 MB
+map) in an isolated worktree seeded with the same cached `forsterite.mat`
+the reference used, so the loader could not confound it.
+
+**Still open — the residual on steel1C_1.** The fix recovers 25 of the 39
+grains, 99818 → 99843 against a reference of 99857, and the map still shows
+a 55.4 (0.0355%) QP boundary-length loss that forsterite and copper do not.
+Two candidates, not yet separated:
+
+1. Not a bug. `@grain2d/merge.m:204-205` drops *every* segment whose two
+   sides end up in the same merged grain, not only those passed in `gB`. So
+   a quadruple-point merge joining two grains that also touch along a real
+   boundary elsewhere legitimately removes it. Reachable on ~100k grains,
+   evidently never on the three small maps — in which case the invariant is
+   not universal and both the new benchmark check and
+   `check_removeQuadruplePoints` are over-generalised from small data and
+   need scoping back.
+2. A second, independent defect specific to this map — plausibly the
+   hole/dummy-cell position work after all, which does legitimately move
+   which vertices have exactly four incident edges.
+
+The decisive measurement is steel's QP length at `13d90f5f5^`: the same
+−55.4 means (1), zero loss means (2). That run was still in flight when this
+was written.
+
+Note the reference file's own history: `forsterite.nGrainsQP` has flipped
+three times, once purely session to session with byte-identical code, and
+`steel1C_1.nGrainsQP` once, recorded as "accepted as a benign tie-break, not
+re-verified independently". This metric has always been the fragile one —
+which is exactly why it needed the geometry alongside it.
+
+**Do not** run `check_grainReconstructionBenchmark('update')` until the
+steel residual is classified.
 
 ### G39
 Profiled on `$HOME/mtex/data/1C_1.ctf` (2.5 M pixels) 2026-07-22.
