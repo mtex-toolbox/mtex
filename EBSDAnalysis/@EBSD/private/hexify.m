@@ -1,152 +1,150 @@
 function [ebsdGrid,newId] = hexify(ebsd,varargin)
+% place hexagonally measured EBSD data into a staggered matrix
+%
+% The counterpart of squarify, and like it built on the virtual lattice: the
+% (row,col) of a measurement comes from its integer lattice index, not from
+% rounding its raw x/y against the axes. That is what lets a rotated grid
+% work - the previous version divided by hard coded sqrt(3) and 3/2 factors
+% taken off ebsd.extent, so on a rotated map several measurements rounded
+% onto one cell and were silently overwritten (5.2% of titanium at 20
+% degree, see TODO.md E14).
+%
+% The layout is the usual staggered one: with u the dense lattice direction
+% and v the one 60 degree from it, a cell at axial index (i,j) sits at
+%
+%   row = j + 1,   col = i + floor(j/2) + 1
+%
+% which is exactly the offset convention @EBSDhex/cube2hex implements, so
+% hex2cube/cube2hex keep working against the result.
 
 % allow to run again even if already EBSDhex
-ebsd=EBSD(ebsd);
+ebsd = EBSD(ebsd);
 
 % extract new unitCell
 unitCell = get_option(varargin,'unitCell',ebsd.unitCell);
 
-% size of a hexagon
-dHex = mean(norm(unitCell));
-
-% alignment of the hexagon
-% true mean vertices are pointing towards y direction
-isRowAlignment = diff(min(abs([unitCell.x(:) unitCell.y(:)]))) > 0;
-
 prop = ebsd.prop;
 
-% number of rows and columns and offset
-% 1 means second row / column has positive offset
-% -1 means second row / column has negative offset
-ext = ebsd.extent;
+% --- the lattice ---------------------------------------------------------
+[u,v] = hexBasis(unitCell);
+A = [u(:), v(:)];
 
-if isRowAlignment
-  
-  % find point with smallest x value
-  [~,i] = min(ebsd.pos.x);
-  
-  % and determine whether this is an even or odd column
-  offset = 2*iseven(round((ebsd.pos.y(i) - ext(3)) / (3/2*dHex)))-1;
-  
-  nRows = round((ext(4)-ext(3))/ (3/2*dHex));
-  nCols = ceil((ext(2)-ext(1)) / (sqrt(3)*dHex)-0.75);
-  
-else
-  
-  % find point with smallest y value
-  [~,i] = min(ebsd.pos.y);
-  
-  % and determine whether this is an even or odd column
-  offset = 2*iseven(round((ebsd.pos.x(i) - ext(1)) / (3/2*dHex)))-1;
-  
-  nCols = round((ext(2)-ext(1))/ (3/2*dHex));
-  nRows = ceil((ext(4)-ext(3)) / (sqrt(3)*dHex)-0.75);
-   
-end
-  
-% set up indices - columns run first
-[col,row] = meshgrid(0:nCols,0:nRows);
+pos2d = [ebsd.pos.x(:), ebsd.pos.y(:)];
+ij = assignGridIndex(pos2d,A);
+i0 = ij(:,1); j0 = ij(:,2);          % both >= 0
 
-% set up coordinates - theoretical values
-if isRowAlignment
-  x = ext(1) + dHex * sqrt(3) * (col + offset * 0.5 * mod(row,2) + 0.5*(offset<0));
-  y = ext(3) + dHex * 3/2 * row;
-else
-  x = ext(1) + dHex * 3/2 * col;  
-  y = ext(3) + dHex * sqrt(3) * (row + offset * 0.5 * mod(col,2) + 0.5*(offset<0));
-end
+% axial -> staggered offset coordinates
+c0   = i0 + floor(j0/2);
+cMin = min(c0);
 
+row = j0 + 1;
+col = c0 - cMin + 1;
+
+sGrid = [max(row), max(col)];
+newId = sub2ind(sGrid,row,col);
+
+% the index map is a bijection by construction, so this cannot fire - it is
+% here because the failure it replaces was silent for years
+assert(numel(unique(newId)) == numel(newId), ...
+  'MTEX:hexify:collision', ...
+  'hexify placed %d measurements on a shared cell', ...
+  numel(newId) - numel(unique(newId)));
+
+% --- positions of every cell of the rectangle ----------------------------
+% deformation aware, and the measured nodes are put back exactly afterwards,
+% so nothing is replaced by a theoretical coordinate
+isIndexed = ebsd.isIndexed(:);
+if ~any(isIndexed), isIndexed = true(size(pos2d,1),1); end
+reconstructPos = latticeModel(pos2d,ij,isIndexed,mean(vecnorm(A,2,1)));
+
+[allRow,allCol] = ndgrid(1:sGrid(1),1:sGrid(2));
+allJ = allRow(:) - 1;
+allI = allCol(:) - 1 + cMin - floor(allJ/2);
+xy   = reconstructPos([allI, allJ]);
+
+pos = reshape(vector3d(xy(:,1),xy(:,2),0,ebsd.how2plot),sGrid);
+pos(newId) = ebsd.pos;
+
+% --- scatter the data ----------------------------------------------------
 if ~check_option(varargin,'nearest')
-  
-  % round x,y values stored in ebsd to row / col coordinates
-  if isRowAlignment
-    row = 1+round((ebsd.pos.y-ext(3)) / (3/2*dHex));
-    col = 1+round((ebsd.pos.x-ext(1)) / (sqrt(3)*dHex) - 0.5*(offset * iseven(row)+(offset<0)));
-  else
-    col = 1+round((ebsd.pos.x-ext(1)) / (3/2*dHex));
-    row = 1+round((ebsd.pos.y-ext(3)) / (sqrt(3)*dHex) - 0.5*(offset * iseven(col)+(offset<0)));
-  end
 
-  newId = sub2ind([nRows+1 nCols+1],row,col);
-
-  % Every measurement must land on its own cell. The rounding above works in
-  % raw x/y against hard coded sqrt(3) and 3/2 factors, so it only describes
-  % a hex lattice that is aligned with the axes; on a rotated one it maps
-  % several measurements onto one cell and the scatter below then silently
-  % keeps whichever came last - 421 of 8100 pixels on titanium rotated by 20
-  % degree, 3407 of 63000 on ferrite. Refuse instead of losing data.
-  nCollide = numel(newId) - numel(unique(newId));
-  if nCollide > 0
-    error('MTEX:hexify:notAxisAligned', ...
-      ['This hexagonal grid is not aligned with the x/y axes, and gridify ' ...
-      'cannot place it: %d of %d measurements (%.1f%%) would share a grid ' ...
-      'cell and be overwritten.\n\nRotated hexagonal grids are not ' ...
-      'supported yet - see TODO.md E14. A square grid has no such ' ...
-      'restriction, so ebsd.gridify(''unitCell'',uC) with a square unit ' ...
-      'cell is the way to grid this map today.'], ...
-      nCollide, numel(newId), 100*nCollide/numel(newId));
-  end
-
-  % set phaseId to notIndexed at all empty grid points
-  phaseId = nan(size(x));
+  phaseId = nan(sGrid);
   phaseId(newId) = ebsd.phaseId;
-  
-  % update rotations
-  rot = rotation.nan(size(x));
+
+  rot = rotation.nan(sGrid);
   rot(newId) = ebsd.rotations;
 
-  % update all other properties
   for fn = fieldnames(ebsd.prop).'
     if isnumeric(prop.(char(fn))) || islogical(prop.(char(fn)))
-      prop.(char(fn)) = nan(size(x));
+      prop.(char(fn)) = nan(sGrid);
     else
-      prop.(char(fn)) = prop.(char(fn)).nan(size(x));
+      prop.(char(fn)) = prop.(char(fn)).nan(sGrid);
     end
     prop.(char(fn))(newId) = ebsd.prop.(char(fn));
   end
-  
-  % store old id
-  prop.oldId = nan(size(x));
+
+  prop.oldId = nan(sGrid);
   prop.oldId(newId) = ebsd.id;
-  
+
 else
-  
-  %general nearest neighbor interpolation
-  newId = griddata(ebsd.pos.x,ebsd.pos.y,...
-    reshape(ebsd.id,[numel(ebsd.id),1]),x,y,'nearest');
-  
-  %enforce no interpolation to points further than 1 unitcell
-  [~,DistTmp] = knnsearch([ebsd.pos.x,ebsd.pos.y],[x(:),y(:)],'K',1,'Distance','euclidean');
-  dist=reshape(DistTmp,size(x));
-  toIgnore=dist>=dHex;
-  
-  % set phaseId to notIndexed at all empty grid points
-  phaseId = nan(size(x));
-  phaseId(~toIgnore) = ebsd.phaseId(newId(~toIgnore));
-  
-  % update rotations
-  rot = rotation.nan(size(x));
-  rot(~toIgnore) = ebsd.rotations(newId(~toIgnore));
-  
-  % update all other properties
+
+  % general nearest neighbour interpolation onto the same cells
+  nearId = griddata(ebsd.pos.x(:),ebsd.pos.y(:), ...
+    reshape(ebsd.id,[numel(ebsd.id),1]),pos.x,pos.y,'nearest');
+
+  % no interpolation further than one unit cell
+  [~,dist] = knnsearch(pos2d,[pos.x(:),pos.y(:)],'K',1,'Distance','euclidean');
+  toIgnore = reshape(dist,sGrid) >= mean(norm(unitCell));
+
+  phaseId = nan(sGrid);
+  phaseId(~toIgnore) = ebsd.phaseId(nearId(~toIgnore));
+
+  rot = rotation.nan(sGrid);
+  rot(~toIgnore) = ebsd.rotations(nearId(~toIgnore));
+
   for fn = fieldnames(ebsd.prop).'
     if isnumeric(prop.(char(fn))) || islogical(prop.(char(fn)))
-      prop.(char(fn)) = nan(size(x));
+      prop.(char(fn)) = nan(sGrid);
     else
-      prop.(char(fn)) = prop.(char(fn)).nan(size(x));
+      prop.(char(fn)) = prop.(char(fn)).nan(sGrid);
     end
-    prop.(char(fn))(~toIgnore) = ebsd.prop.(char(fn))(newId(~toIgnore));
+    prop.(char(fn))(~toIgnore) = ebsd.prop.(char(fn))(nearId(~toIgnore));
   end
-  
+
 end
 
-ebsdGrid = EBSDhex(vector3d(x,y,0,ebsd.how2plot), rot, phaseId(:), ...
-  ebsd.phaseMap,ebsd.CSList,dHex,isRowAlignment,'options',prop,'opt',ebsd.opt);
+% the measured unit cell is handed over, so a rotated one survives - the
+% constructor used to replace it with an axis aligned hexagon
+ebsdGrid = EBSDhex(pos, rot, phaseId(:), ebsd.phaseMap, ebsd.CSList, ...
+  [], [], 'unitCell', unitCell, 'options', prop, 'opt', ebsd.opt);
 
-% go with the old unitcell if it is very close to the new one to avoid
-% rounding errors
-if max(min(norm(ebsdGrid.unitCell(:) - unitCell(:).'))) / dHex < 1e-4
-  ebsdGrid.unitCell = unitCell;
 end
+
+% =========================================================================
+function [u,v] = hexBasis(uC)
+% the dense lattice direction and the one 60 degree from it
+%
+% Taken from the unit cell rather than from latticeBasis so that the choice
+% is pinned here: latticeBasis returns whichever of the six translations has
+% the smallest angle modulo 180 degree, which for the bundled hex data is
+% the one pointing at 180 degree, and the sign would then decide the layout.
+% u is the translation closest to +x, which for an axis aligned pointy top
+% cell is the 0 degree one and so reproduces the layout these maps already
+% have; on a rotated map it rotates with the lattice, which is the point.
+
+V = [uC.x(:), uC.y(:)];
+V = V - mean(V,1);
+
+mids  = 0.5 * (V + V([2:end 1],:));
+trans = 2 * mids;                       % 6 x 2, one per shared edge
+
+ang = atan2(trans(:,2),trans(:,1));
+
+[~,iu] = min(abs(mod(ang + pi, 2*pi) - pi));
+u = trans(iu,:);
+
+dv = mod(ang - ang(iu) - pi/3 + pi, 2*pi) - pi;
+[~,iv] = min(abs(dv));
+v = trans(iv,:);
 
 end

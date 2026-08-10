@@ -461,39 +461,42 @@ end
 
 % =========================================================================
 function checkHexRotatedRefused
-% a rotated hex grid is refused, not silently overwritten (TODO.md E14)
+% a rotated hex grid gridifies losslessly (TODO.md E14)
 %
-% hexify rounds raw x/y against hard coded sqrt(3) and 3/2 factors, so it
-% only describes an axis aligned hex lattice. Rotated, several measurements
-% round onto one cell and the last one wins - 5.2% of titanium at 20 degree.
+% hexify used to round raw x/y against hard coded sqrt(3) and 3/2 factors,
+% so a rotated map put several measurements on one cell and the last one
+% won - 421 of 8100 on titanium at 20 degree, 3407 of 63045 on ferrite. It
+% places cells by their lattice index now.
 
-e0 = EBSD(mtexdata('titanium','silent'));
+for nameC = {'titanium','ferrite'}
 
-% axis aligned still works, and loses nothing
-[g,newId] = e0.gridify;
-assert(isa(g,'EBSDhex') && numel(unique(newId)) == numel(newId), ...
-  'check_gridify: an axis aligned hex map no longer gridifies cleanly');
+  name = nameC{1};
+  e0 = EBSD(mtexdata(name,'silent'));
 
-% rotated is refused, by identifier rather than by message text
-for w = [20 45]
-  eR = rotate(e0,w*degree,'keepEuler');
-  ok = false;
-  try
-    eR.gridify;
-  catch ME
-    ok = strcmp(ME.identifier,'MTEX:hexify:notAxisAligned');
+  for w = [0 20 45]
+
+    e = rotate(e0,w*degree,'keepEuler');
+    [g,newId] = e.gridify;
+
+    assert(isa(g,'EBSDhex'), ...
+      'check_gridify: %s rotated %d deg gridified to %s, expected EBSDhex', name, w, class(g));
+
+    assert(numel(unique(newId)) == numel(newId), ...
+      ['check_gridify: %s rotated %d deg put %d of %d measurements on a ' ...
+      'shared cell - they are silently overwritten'], name, w, numel(newId)-numel(unique(newId)), numel(newId));
+
+    % and the measured positions are kept exactly, not replaced by
+    % theoretical ones - the old hexify moved them by up to 0.02
+    assert(max(norm(e.pos - g.pos(newId))) == 0, ...
+      'check_gridify: %s rotated %d deg moved the measured positions by %g', name, w, max(norm(e.pos - g.pos(newId))));
+
+    % every measurement is still there and unchanged
+    r0 = e.rotations; r1 = g.rotations(newId);
+    assert(isequaln([r0.a r0.b r0.c r0.d],[r1.a r1.b r1.c r1.d]), ...
+      'check_gridify: %s rotated %d deg altered the orientations', name, w);
+
   end
-  assert(ok, ...
-    ['check_gridify: a hex map rotated by %d degree was not refused - ' ...
-    'it silently overwrites measurements that share a cell'], w);
 end
-
-% and the workaround the error message names really works
-eR = rotate(e0,20*degree,'keepEuler');
-uC = eR.dPos/2 * vector3d([-1 1 1 -1],[-1 -1 1 1],0);
-gS = eR.gridify('unitCell',uC);
-assert(isa(gS,'EBSDsquare'), ...
-  'check_gridify: resampling a rotated hex map onto a square cell failed');
 
 end
 
@@ -513,14 +516,19 @@ assert(abs(g.dHex - mean(norm(g.unitCell))) < 1e-12, ...
   'check_gridify: dHex is not the unit cell circumradius');
 assert(g.isRowAlignment == true && g.offset == 1, ...
   'check_gridify: titanium should be row aligned with offset +1');
-assert(abs(g.dx - sqrt(3)*g.dHex) < 1e-9 && abs(g.dy - 1.5*g.dHex) < 1e-9, ...
+% relative, not exact: dx/dy are measured off pos now, while dHex comes from
+% the unit cell, which calcUnitCell fits statistically - on titanium the
+% measured column step is 12.000000 against sqrt(3)*dHex = 11.999824. Being
+% the measured spacing is the point; the ideal relation only has to hold to
+% the accuracy of that fit.
+assert(abs(g.dx - sqrt(3)*g.dHex) < 1e-3*g.dx && abs(g.dy - 1.5*g.dHex) < 1e-3*g.dy, ...
   'check_gridify: dx/dy do not reproduce the row aligned spacings');
 
 % a flat top grid is recognised the other way round
 e = EBSDhex([],rotation.nan(8,9),ones(72,1),1,{crystalSymmetry},1,0);
 assert(e.isRowAlignment == false, ...
   'check_gridify: a flat top grid was read as row aligned');
-assert(abs(e.dx - 1.5*e.dHex) < 1e-9 && abs(e.dy - sqrt(3)*e.dHex) < 1e-9, ...
+assert(abs(e.dx - 1.5*e.dHex) < 1e-3*e.dx && abs(e.dy - sqrt(3)*e.dHex) < 1e-3*e.dy, ...
   'check_gridify: dx/dy are not swapped for a flat top grid');
 
 % and rotating the map does not disturb any of them. The old offset was
