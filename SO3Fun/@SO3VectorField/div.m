@@ -29,10 +29,15 @@ delta = get_option(varargin,'delta',0.05*degree);
 
 deltaRot = rotation.byAxisAngle([xvector,yvector,zvector],delta/2);
 
+% the perturbed rotations have to be a plain list of rotations - a grid class
+% like quadratureSO3Grid survives the multiplication and would be evaluated on
+% its own nodes, silently ignoring the perturbation
+pRot = rotation(rot);
+
 if SO3VF.tangentSpace.isRight
-  f = reshape(SO3VF.eval([rot*inv(deltaRot),rot*deltaRot]),length(rot),[]);
+  f = reshape(SO3VF.eval([pRot*inv(deltaRot),pRot*deltaRot]),length(rot),[]);
 else
-  f = reshape(SO3VF.eval([inv(deltaRot).*rot,deltaRot.*rot]),length(rot),[]);
+  f = reshape(SO3VF.eval([inv(deltaRot).*pRot,deltaRot.*pRot]),length(rot),[]);
 end
 
 

@@ -31,7 +31,7 @@ end
 
 
 if check_option(varargin,'right')
-  SO3VF.fun = @(r) SO3VF.fun(r* inv(q));
+  SO3VF.fun = @(r) SO3VF.fun(r .* inv(q));
 else
-  SO3VF.fun = @(r) SO3VF.fun(inv(q) * r);
+  SO3VF.fun = @(r) SO3VF.fun(inv(q) .* r);
 end
