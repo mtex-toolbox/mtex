@@ -53,9 +53,9 @@ cases = benchmarkCases();
 results = struct();
 allOk = true;
 
-fprintf('%-12s %8s %8s %14s %14s %10s %10s\n', ...
-  'dataset','#grains','#QPgrain','totalLen','meanArea','time(s)','vs. ref');
-fprintf('%s\n', repmat('-',1,86));
+fprintf('%-12s %8s %8s %14s %14s %14s %10s %10s\n', ...
+  'dataset','#grains','#QPgrain','totalLen','totalLenQP','meanArea','time(s)','vs. ref');
+fprintf('%s\n', repmat('-',1,101));
 
 for k = 1:numel(cases)
   c = cases{k};
@@ -81,6 +81,11 @@ for k = 1:numel(cases)
   m.nGrainsQP = length(grainsQP);
   m.totalLen  = sum(grains.boundary.segLength);
   m.meanArea  = mean(grains.area);
+  % the QP variant's own geometry. Without it nGrainsQP is the only probe of
+  % the removeQuadruplePoints path - a bare integer with nothing to say
+  % whether a drift is a tie-break shuffling grains between counts or real
+  % boundary being destroyed. That is exactly how G38 stayed invisible.
+  m.totalLenQP = sum(grainsQP.boundary.segLength);
   m.time      = median(t);
   results.(c.name) = m;
 
@@ -89,8 +94,21 @@ for k = 1:numel(cases)
   else
     speedTxt = '(no ref)';
   end
-  fprintf('%-12s %8d %8d %14.4f %14.4f %10.4f %10s\n', ...
-    c.name, m.nGrains, m.nGrainsQP, m.totalLen, m.meanArea, m.time, speedTxt);
+  fprintf('%-12s %8d %8d %14.4f %14.4f %14.4f %10.4f %10s\n', ...
+    c.name, m.nGrains, m.nGrainsQP, m.totalLen, m.totalLenQP, m.meanArea, ...
+    m.time, speedTxt);
+
+  % exact, not a tolerance: removeQuadruplePoints splits a quadruple point by
+  % duplicating its vertex, so every segment it adds has zero length and
+  % merging them away cannot change the total. Any difference is real
+  % boundary being destroyed - see tests/check_removeQuadruplePoints.
+  if m.totalLenQP ~= m.totalLen
+    fprintf(['  [%s] FAIL: removeQuadruplePoints changed the total boundary ' ...
+      'length by %.6g (%.4f%%) - it can only merge away zero length ' ...
+      'segments\n'], c.name, m.totalLenQP - m.totalLen, ...
+      100*(m.totalLenQP - m.totalLen)/m.totalLen);
+    allOk = false;
+  end
 
   if ~doUpdate && isfield(ref,c.name)
     allOk = compareToReference(c.name, m, ref.(c.name)) && allOk;
@@ -136,11 +154,12 @@ for k = 1:numel(names)
   n = names{k};
   m = results.(n);
   fprintf(fid, '\n');
-  fprintf(fid, 'ref.%s.nGrains   = %d;\n',    n, m.nGrains);
-  fprintf(fid, 'ref.%s.nGrainsQP = %d;\n',    n, m.nGrainsQP);
-  fprintf(fid, 'ref.%s.totalLen  = %.10f;\n', n, m.totalLen);
-  fprintf(fid, 'ref.%s.meanArea  = %.10f;\n', n, m.meanArea);
-  fprintf(fid, 'ref.%s.time      = %.4f;\n',  n, m.time);
+  fprintf(fid, 'ref.%s.nGrains    = %d;\n',    n, m.nGrains);
+  fprintf(fid, 'ref.%s.nGrainsQP  = %d;\n',    n, m.nGrainsQP);
+  fprintf(fid, 'ref.%s.totalLen   = %.10f;\n', n, m.totalLen);
+  fprintf(fid, 'ref.%s.totalLenQP = %.10f;\n', n, m.totalLenQP);
+  fprintf(fid, 'ref.%s.meanArea   = %.10f;\n', n, m.meanArea);
+  fprintf(fid, 'ref.%s.time       = %.4f;\n',  n, m.time);
 end
 
 fprintf(fid, '\nend\n');
@@ -169,6 +188,13 @@ end
 if abs(m.meanArea - r.meanArea) > tol * max(1,abs(r.meanArea))
   fprintf('  [%s] FAIL: mean grain area %.6f vs. reference %.6f\n', ...
     name, m.meanArea, r.meanArea);
+  ok = false;
+end
+% only present in references written after the QP geometry was added
+if isfield(r,'totalLenQP') && ...
+    abs(m.totalLenQP - r.totalLenQP) > tol * max(1,abs(r.totalLenQP))
+  fprintf('  [%s] FAIL: QP total boundary length %.6f vs. reference %.6f\n', ...
+    name, m.totalLenQP, r.totalLenQP);
   ok = false;
 end
 
