@@ -386,7 +386,7 @@ classdef EBSD < phaseList & dynProp & dynOption
       
       % transform to class if not yet done
       if isa(s,'EBSD')
-        ebsd = s; 
+        ebsd = s;
       else
         if width(s.id) == 1
           ebsd = EBSD;
@@ -403,18 +403,44 @@ classdef EBSD < phaseList & dynProp & dynOption
         ebsd.rotations = s.rotations;
         ebsd.phaseId = s.phaseId;
         ebsd.CSList = s.CSList;
-        ebsd.prop = s.prop;      
+        ebsd.prop = s.prop;
         ebsd.scanUnit = s.scanUnit;
         ebsd.phaseMap = s.phaseMap;
         ebsd.unitCell = s.unitCell;
+
+        % everything else the file still carries - not copying pos here is
+        % what made an old file arrive empty even when it had saved one
+        if isfield(s,'pos') && isa(s.pos,'vector3d'), ebsd.pos = s.pos; end
+        if isfield(s,'N') && isa(s.N,'vector3d'), ebsd.N = s.N; end
+        if isfield(s,'A_D'), ebsd.A_D = s.A_D; end
       end
-      
+
       % ensure pos is set correctly
       if isfield(ebsd.prop,'x') && isempty(ebsd.pos)
         ebsd.pos = vector3d(s.prop.x,s.prop.y,0);
         ebsd.prop = rmfield(ebsd.prop,{'x','y'});
       end
-            
+
+      % rebuild pos from the grid spacing of the @EBSDsquare era that stored
+      % dx / dy and no pos at all - 859b62af0 replaced them by the pos
+      % derived d1 / d2. Matlab cannot assign the vanished dx / dy, which is
+      % exactly why it hands such a file over as a struct, so the spacing is
+      % still here. This repeats the formula that constructor used, hence it
+      % recovers the very positions that MTEX version worked with - up to
+      % the origin, which that representation did not store either.
+      if isempty(ebsd.pos) && isstruct(s) && ...
+          all(isfield(s,{'dx','dy'})) && ~isempty(s.dx)
+
+        [col,row] = meshgrid(1:size(ebsd.id,2),1:size(ebsd.id,1));
+        ebsd.pos = vector3d((col-1) * s.dx,(row-1) * s.dy,0);
+
+        warning('MTEX:EBSD:loadobj:posFromStep',...
+          ['This file was saved by an MTEX version that stored the grid '...
+          'spacing (dx = %g, dy = %g) instead of the pixel positions. '...
+          'ebsd.pos was rebuilt from it, with the origin placed at (0,0).'],...
+          s.dx,s.dy);
+      end
+
       % ensure unitCell is vector3d
       if ~isa(ebsd.unitCell,'vector3d')
         ebsd.unitCell = vector3d(ebsd.unitCell(:,1),ebsd.unitCell(:,2),0);
