@@ -458,6 +458,21 @@ for k = 1:size(cases,1)
 
 end
 
+% hex too: its pos2ind used a fixed axial matrix in raw x/y, which is the
+% inverse basis of an axis aligned lattice only
+gh = EBSD(mtexdata('titanium','silent')).gridify;
+for w = [0 20 45]
+  gr = rotate(gh,w*degree);
+  for t = [3 7; 20 40; 50 60].'
+    [r,c] = gr.pos2ind(gr.pos(t(1),t(2)));
+    assert(r == t(1) && c == t(2), ...
+      ['check_gridify: hex pos2ind rotated %d degree put the cell at ' ...
+      '(%d,%d) at (%d,%d)'], w, t(1), t(2), r, c);
+  end
+  assert(gr.pos2ind(gr.pos(5,9)) == sub2ind(size(gr),5,9), ...
+    'check_gridify: hex pos2ind single output disagrees with sub2ind at %d degree', w);
+end
+
 end
 
 % =========================================================================
