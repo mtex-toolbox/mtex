@@ -60,6 +60,7 @@ checkDistortedGrid;
 checkResample;
 checkResampleRotated;
 checkSubGrid;
+checkFillGridFree;
 
 disp('gridify: all checks passed');
 
@@ -278,5 +279,93 @@ areaOld = nnz(ebsd.isIndexed) * polyArea(ebsd.unitCell);
 assert(areaNew > 0.95 * areaOld, ...
   'check_gridify: the rotated grid covers only %.0f%% of the map',...
   100 * areaNew / areaOld);
+
+end
+
+% =========================================================================
+function checkFillGridFree
+% fill no longer turns a plain @EBSD into an @EBSDsquare
+%
+% The pixels to fill have to exist before they can be filled, which is what
+% the unconditional gridify was for. addLatticeSites materialises the
+% empty sites on the virtual lattice instead, so the class survives.
+
+for nameC = {'twins','titanium'}
+
+  name = nameC{1};
+  ebsd = EBSD(mtexdata(name,'silent'));
+  e = ebsd('indexed');
+
+  fp = fill(e);              % lattice route
+  fg = fill(e,'gridify');    % the old behaviour, kept as an opt-out
+
+  assert(strcmp(class(fp),'EBSD'), ...
+    'check_gridify: %s - fill returned a %s, expected the input class EBSD', ...
+    name, class(fp));
+  assert(isa(fg,'EBSDgrid'), ...
+    'check_gridify: %s - fill(...,''gridify'') no longer returns a grid class', name);
+
+  % the measurements themselves are untouched, and stay in their rows
+  assert(length(fp) >= length(e), 'check_gridify: %s - fill lost pixels', name);
+  assert(max(norm(fp.pos(1:length(e)) - e.pos)) < 1e-10, ...
+    'check_gridify: %s - fill moved the measured positions', name);
+  r0 = e.rotations; r1 = fp.rotations(1:length(e));
+  assert(isequaln([r0.a r0.b r0.c r0.d],[r1.a r1.b r1.c r1.d]), ...
+    'check_gridify: %s - fill altered the measured orientations', name);
+
+  % every site it created is a site gridify creates too - never one outside
+  % the scanned area. With a tolerance rather than exactly, since gridify
+  % regularises positions slightly (the main loop of this file allows
+  % 0.05*dPos for that).
+  %
+  % The converse does NOT hold: gridify pads the map out to a rectangle,
+  % which on a hex grid adds corner cells that are not hex lattice sites at
+  % all - 48 of them on titanium, a gap free scan where there is nothing to
+  % fill and the lattice route correctly adds nothing.
+  A = [fp.pos.x(:) fp.pos.y(:)];
+  B = [fg.pos.x(:) fg.pos.y(:)];
+  % note the argument order: pdist2(X,Y,'Smallest',1) gives one distance per
+  % point of Y, so this is "for each site I made, how far is the nearest
+  % gridify site" - the other order asks the converse, which is false by
+  % design (gridify's rectangle padding has no counterpart here)
+  dNear = pdist2(B,A,'euclidean','Smallest',1).';
+  nOutside = nnz(dNear > 0.1*e.dPos);
+  assert(nOutside == 0, ...
+    ['check_gridify: %s - the lattice route created %d sites that gridify ' ...
+    'does not have (max distance %.3g, step %.3g)'], ...
+    name, nOutside, max(dNear), e.dPos);
+
+end
+
+% and a hole really does get filled
+ebsd = EBSD(mtexdata('twins','silent'));
+e = ebsd('indexed');
+% chosen by lattice position, not by scan order: a run of consecutive scan
+% indices straddles a row end, and a removed pixel at the map border sits on
+% the convex hull, where fill's 'none' extrapolation legitimately returns NaN
+ij = e.lattice.ij;
+interior = find(all(ij > min(ij,[],1)+3 & ij < max(ij,[],1)-3, 2));
+drop = interior(round(linspace(1,numel(interior),10)));
+
+keep = true(length(e),1); keep(drop) = false;
+holed = e.subSet(keep);
+
+gone = e.pos(~keep);
+filled = fill(holed);
+
+assert(length(filled) > length(holed), ...
+  'check_gridify: fill did not materialise the removed pixels');
+
+% the removed pixels are back, at their old positions, and carry data.
+% Note fill does not promise to fill EVERYTHING: scatteredInterpolant with
+% the default 'none' extrapolation returns NaN outside the convex hull, so a
+% few sites on the border stay empty unless 'extrapolate' is given.
+d = pdist2([filled.pos.x filled.pos.y],[gone.x gone.y],'euclidean','Smallest',1);
+assert(all(d < 1e-9), ...
+  'check_gridify: fill did not restore %d of the removed pixels', nnz(d >= 1e-9));
+
+[~,back] = ismembertol([gone.x gone.y],[filled.pos.x filled.pos.y],1e-9,'ByRows',true);
+assert(~any(isnan(filled.rotations(back))), ...
+  'check_gridify: fill restored the removed pixels but left them unfilled');
 
 end
