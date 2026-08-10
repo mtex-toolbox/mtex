@@ -7,11 +7,20 @@ function check_removeQuadruplePoints
 % length. mergeQuadrupleGrains then merges away those of them that the
 % segmentation criterion would not have considered a boundary.
 %
-% So merging can only ever remove zero length segments. Stated on the
+% So merging normally removes only zero length segments. Stated on the
 % segment lengths that is exact and order free:
 %
 %   sort of the non zero segment lengths is identical with and without
 %   removeQuadruplePoints
+%
+% NOT universal, which is why this test names three specific maps rather than
+% asserting it everywhere: merge drops every segment whose two sides end up in
+% the same grain (@grain2d/merge:204), so where a quadruple point merge joins
+% two grains that ALSO touch along a real boundary elsewhere, that boundary is
+% removed too - correctly. That needs enough grains to occur; steel1C_1 loses
+% 55.4 that way, identically before and after the fix below, while forsterite,
+% titanium and twins never hit the case. Do not extend this check to a large
+% map without accounting for it.
 %
 % It has to be phrased geometrically rather than on gB.F, because
 % removeQuadruplePoints also RENUMBERS vertices: the two edges it detaches

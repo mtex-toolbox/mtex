@@ -110,7 +110,7 @@ The multi-release work. Everything here is bigger than one branch.
 | G35 | Formula reference error in the GND documentation | 2 | 0 | bug | — | #1346 |
 | G36 | Weighted Burgers vector: error estimation | 1 | 1 | idea | — | #2064 |
 | G37 | Overlay a grain map with the active slip system | 1 | 0 | idea | — | — |
-| G38 | `removeQuadruplePoints` destroyed real grain boundary — **fixed**; a residual 99843 vs 99857 on steel1C_1 still to classify | 2 | 0 | wip | — | br/quadruplePointMerge, [→](#g38) |
+| G38 | `removeQuadruplePoints` destroyed real grain boundary — **fixed**; only the stale reference is left to regenerate | 2 | 0 | wip | — | [→](#g38) |
 | G39 | Analytic Voronoi decomposition for gap-free regular grids — 43 % of `calcGrains` runtime is Fortune's sweep | 1 | 1 | paused | — | br/analytic-voronoi-grid, [→](#g39) |
 | G40 | Speed up the segmentation criterion `gbcAngle.doEvaluate` — 0.71 s of `doSegmentation`'s 1.47 s | 1 | 1 | paused | — | [→](#g39) |
 
@@ -499,26 +499,39 @@ went unmentioned. Bisected on forsterite (0.74 s, no need for the 157 MB
 map) in an isolated worktree seeded with the same cached `forsterite.mat`
 the reference used, so the loader could not confound it.
 
-**Still open — the residual on steel1C_1.** The fix recovers 25 of the 39
-grains, 99818 → 99843 against a reference of 99857, and the map still shows
-a 55.4 (0.0355%) QP boundary-length loss that forsterite and copper do not.
-Two candidates, not yet separated:
+**The residual on steel1C_1 — resolved, not a second bug.** Measured at
+`13d90f5f5^` against a cached copy of the map:
 
-1. Not a bug. `@grain2d/merge.m:204-205` drops *every* segment whose two
-   sides end up in the same merged grain, not only those passed in `gB`. So
-   a quadruple-point merge joining two grains that also touch along a real
-   boundary elsewhere legitimately removes it. Reachable on ~100k grains,
-   evidently never on the three small maps — in which case the invariant is
-   not universal and both the new benchmark check and
-   `check_removeQuadruplePoints` are over-generalised from small data and
-   need scoping back.
-2. A second, independent defect specific to this map — plausibly the
-   hole/dummy-cell position work after all, which does legitimately move
-   which vertices have exactly four incident edges.
+| | nGrains | nGrainsQP | totalLen | totalLenQP |
+|---|---|---|---|---|
+| `13d90f5f5^` pre-bug | 104814 | 99843 | 156035.7019482653 | 155980.2966759322 |
+| `develop` fixed | 104814 | 99843 | 156035.7019 | 155980.2967 |
 
-The decisive measurement is steel's QP length at `13d90f5f5^`: the same
-−55.4 means (1), zero loss means (2). That run was still in flight when this
-was written.
+Identical, so the fix restores steel exactly as it restores forsterite, and
+the 55.4 loss is long-standing correct behaviour: `@grain2d/merge.m:204-205`
+drops *every* segment whose two sides end up in the same merged grain, not
+only those passed in `gB`, so a quadruple-point merge joining two grains that
+also touch along a real boundary elsewhere removes that boundary too. It
+needs enough grains to occur — never on forsterite, titanium or twins.
+
+Consequently the "QP length equals plain length" check added alongside the
+fix was over-generalised from small maps: the benchmark now reports
+`totalLenQP` and leaves the pass/fail to the stored reference, and
+`check_removeQuadruplePoints` documents that its invariant is scoped to the
+three maps it names.
+
+**The reference's 99857 is itself stale**, and the earlier note was half
+right about why. `588f71202` wrote it on 24 Jul; `13d90f5f5^` on 27 Jul
+already gives 99843. So the hole/dummy-cell commits (`23f4566e1`,
+`fac9b9e8c`) did move steel by 14 grains — intended, since they legitimately
+change reconstructed vertex positions and hence which vertices have exactly
+four incident edges. Two independent changes had stacked: 99857 → 99843
+(intended) and 99843 → 99818 (the bug, now fixed).
+
+**Remaining action:** regenerate the reference so it records 99843 for
+steel plus the new `totalLenQP` column, after Ralf confirms the 14-grain
+step from the hole/dummy-cell work is accepted. Everything else already
+matches.
 
 Note the reference file's own history: `forsterite.nGrainsQP` has flipped
 three times, once purely session to session with byte-identical code, and
