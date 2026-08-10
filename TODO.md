@@ -351,12 +351,12 @@ copy; only what is still open is summarised here.
 
 | # | Item | U | Sz | Status | Owner | Refs |
 |---|------|:-:|:--:|--------|-------|------|
-| C1 | **14 empty chapters** — each publishes as a visible title-and-nothing page | 3 | 2 | planned | — | [→](#c-empty) |
-| C2 | 26 prose TODO markers across the doc pages ("extend this section", "explain in more detail"); six sit on stub pages | 1 | 1 | planned | — | docs/doc-audit-plan.md item 10 |
-| C3 | Four content orphans with no TOC slot: `Dream3dGrains`, `S2FunQuadrature`, `MisorientationGrainExchangeSym`, `changelog` | 1 | 0 | decide | — | docs/doc-audit-plan.md item 6 |
-| C4 | Two stale `*DeLaValleePoussin_index` pages and a `directionPlots_index` with no source behind it | 1 | 0 | bug | — | docs/doc-audit-plan.md item 4 |
+| C1 | **3 empty chapters left** — `Misorientations/Twinning`, `Plasticity/SachsModel`, `Plasticity/TwinningTutorial`; the other eleven were written or dropped on 2026-08-10 | 2 | 1 | planned | — | [→](#c-empty) |
+| C2 | 4 prose TODO markers left, all genuine open questions rather than authoring gaps | 1 | 1 | decide | — | [→](#c-todo) |
+| C3 | Four content orphans with no TOC slot: `Dream3dGrains`, `S2FunQuadrature`, `MisorientationGrainExchangeSym`, `changelog` (plus the prose-only `Contribute2Doc`) | 1 | 0 | decide | — | docs/doc-audit-plan.md item 6 |
+| C4 | ~~Two stale `*DeLaValleePoussin_index` pages and a `directionPlots_index`~~ deleted 2026-08-10, together with 24 copy-pasted index page titles and the 12 `PLEASE HELP` headings | — | — | done | — | docs/doc-audit-plan.md |
 | C5 | Dead external links: 13 `code.google.com` in `changelog.m`, a `t.co` shortener on `Grains/HullBasedParameters.m:18` | 1 | 0 | planned | — | — |
-| C6 | 18 of the remaining dangling links are inside `changelog.m` — archive material, probably out of scope | 0 | 0 | decide | — | — |
+| C6 | 26 of the 28 remaining dangling links are inside `changelog.m` — archive material, probably out of scope. The two live ones are `twinningSystem` and `EBSDGradient`, both deliberate | 0 | 0 | decide | — | — |
 | C7 | Document the weighted Burgers vector | 1 | 1 | planned | — | — |
 | C8 | Document transformation textures | 1 | 1 | planned | — | — |
 | C9 | `calcCluster` / `calcComponents` / `max` documentation still uses the "hikers" phrasing | 1 | 0 | planned | — | — |
@@ -366,6 +366,12 @@ copy; only what is still open is summarised here.
 | C13 | Upload the Kikuchi `.mat` data | 1 | 0 | idea | — | — |
 | C14 | Document the noise-level estimation behind the KAM options | 1 | 0 | planned | — | see G33 |
 | C15 | Check that `"options"` works everywhere `'options'` does | 1 | 0 | wip | — | — |
+| C16 | `bingham_test` runs again after a row/column fix, but its output convention is unverified — do not document until checked | 1 | 0 | decide | — | [→](#c16) |
+| C17 | `calcDensity` on an **empty** orientation list dies with "Too many input arguments" — `calcKernelODF.m:41` calls the obsolete `ODF(cs,ss)` shim | 2 | 0 | bug | — | — |
+| C18 | `calcPoleFigure(odf,pf.allH,pf.allR)` throws for superposed pole figures unless `'superposition',pf.c` is passed | 2 | 0 | bug | — | [→](#c18) |
+| C19 | `stiffnessTensor.rand` returns a plain rank 2 `tensor`, so subclass methods are missing — the static `@tensor/rand.m` hardcodes the base class | 2 | 1 | bug | — | [→](#c19) |
+| C20 | `export(odf,fname,'VPSC')` silently writes a *generic* file; the interface must be given as `'interface','VPSC'` | 2 | 0 | bug | — | — |
+| C21 | A new property needs `ebsd.prop.name = ...`; `ebsd.name = ...` errors, and no length check is done on the value | 1 | 0 | decide | — | — |
 
 ---
 
@@ -638,9 +644,24 @@ numbers nobody reads. Note that fixing T3 makes the suite slower, since
 `'subsample'` runs a `linprog` per node.
 
 ### C-empty
-Fourteen chapters are wired into a `.toc` and therefore publish as a visibly
-empty page — a title and nothing else. The sidebar entry is the reminder.
-Found by the 2026-07-28 doc audit, `docs/doc-audit-plan.md` item 5.
+Of the fourteen empty chapters found by the 2026-07-28 doc audit
+(`docs/doc-audit-plan.md` item 5), three remain:
+
+- `Misorientations/Twinning` — excluded from the 2026-08-10 pass by request
+- `Plasticity/SachsModel` — kept as a stub by decision; there is no Sachs
+  implementation in the source and `SingleSlipModel.m` covers the same physics
+- `Plasticity/TwinningTutorial` — in no toc, kept as a placeholder
+
+Written on 2026-08-10: `GeneralConcepts/Properties`, `Grains/GrainExport`,
+`Misorientations/AngleDistributionFunction`,
+`Misorientations/AxisDistributionFunction`, `Plasticity/TextureEvolution`,
+`Plotting/PlottingExport`, `PoleFigureAnalysis/PoleFigureExport`,
+`SphericalFunctions/S2FunRadon`. Deleted as duplicates of pages that already
+had the content: `Rotations/RotationImport`, `Rotations/RotationExport`,
+`Tutorials/ImportFromVPSC`. `Plasticity/SlipTransmission` had already been
+filled from the misspelled `SlipTransmition.m`.
+
+The historical list follows.
 
 - `GeneralConcepts/Properties`
 - `Grains/GrainExport` — carries a "please help to fill" marker
@@ -661,6 +682,61 @@ Found by the 2026-07-28 doc audit, `docs/doc-audit-plan.md` item 5.
 Plus `Plasticity/TwinningTutorial`, in no toc, kept as a placeholder.
 
 ---
+
+### C-todo
+The four prose `TODO` markers left in `doc/` on 2026-08-10. Each is a question
+about the data, not a gap in the writing, so they were left in place rather
+than papered over.
+
+- `GrainBoundaries/TiltAndTwistBoundaries.m:91` — "we find two preferred
+  misorientation axes, (001) and (071), can this be interpreted?"
+- `Grains/GrainOrientationParameters.m:281` — a commented out Bingham test on
+  a single grain, see also C16
+- `Grains/EllipseBasedParameters.m:253` — "get deviation from an ellipse etc",
+  i.e. a goodness of fit measure for the fitted ellipse that does not exist yet
+- `Grains/Grain_dispersion_axes.m:108` — use the eigenvalues of `fibre.fit` to
+  quantify how fibre like a grain is
+
+### C16
+`geometry/@orientation/bingham_test.m` indexed `lambda` and `kappa` as columns
+while `mean(ori)` hands them back as rows, so every call threw "Index in
+position 1 exceeds array bounds". Fixed 2026-08-10 by flattening with `(:)`.
+
+It now runs, but the numbers have not been validated. On 5000 orientations
+drawn from `BinghamODF([10 10 10 0],...)` the three tests return 1.0000, 1.0000
+and 0.8157, and `T = 1-gammainc(p/2,v/2,'upper')` is the chi-squared CDF rather
+than a p-value, so it is unclear which way round to read it. No callers outside
+`templates/EBSD_bingham_tests.m`. `doc/ODFAnalysis/BinghamODFs.m` therefore
+mentions the function but does not demonstrate it.
+
+### C18
+`SO3Fun/@SO3Fun/calcPoleFigure.m:66` reshapes the result of `calcPDF` to
+`size(r{ip})`. The default structure coefficients are built as one per pole
+figure, `repcell(1,1,length(h))`, so when a cell entry of `h` holds several
+Miller indices — a superposed pole figure — `calcPDF` returns one value per
+Miller index and the reshape fails.
+
+Reproduce with `mtexdata dubna`, whose third pole figure superposes
+$(10\bar11)$ and $(01\bar11)$:
+
+    pf = ...; odf = calcODF(pf,'silent');
+    calcPoleFigure(odf,pf.allH,pf.allR)                          % throws
+    calcPoleFigure(odf,pf.allH,pf.allR,'superposition',pf.c)     % works
+
+### C19
+`TensorAnalysis/@tensor/rand.m` ends with `T = tensor(rand(d),'rank',r)`. A
+MATLAB static method cannot see which subclass it was invoked on, so
+`stiffnessTensor.rand` returns a plain rank 2 `tensor` and every
+`stiffnessTensor` method is then missing:
+
+    C = stiffnessTensor.rand;
+    C.PoissonRatio(vector3d.Z)   % Unrecognized method ... for class 'tensor'
+
+`doc/Tensors/TensorVisualisation.m` used to open with exactly this and was
+plotting a random rank 2 tensor under a rank 4 formula; it now loads the
+Olivine stiffness tensor instead. The same applies to `tensor.eye`,
+`tensor.zeros`, `tensor.ones` and `tensor.nan`. A fix means a one line `rand.m`
+in each `@*Tensor` folder, or a class aware factory.
 
 ## Unmerged branches
 
