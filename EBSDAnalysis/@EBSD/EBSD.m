@@ -391,9 +391,9 @@ classdef EBSD < phaseList & dynProp & dynOption
         if width(s.id) == 1
           ebsd = EBSD;
         elseif length(s.unitCell) == 6
+          % dHex / isRowAlignment are derived from unitCell and pos now, so
+          % there is nothing to restore - both are set further down
           ebsd = EBSDhex;
-          ebsd.isRowAlignment = s.isRowAlignment;
-          ebsd.dHex = s.dHex;
         else
           ebsd = EBSDsquare;
         end

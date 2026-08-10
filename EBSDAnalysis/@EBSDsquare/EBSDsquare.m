@@ -1,13 +1,14 @@
-classdef EBSDsquare < EBSD
+classdef EBSDsquare < EBSDgrid
   % EBSD data on a rectangular grid. In contrast to arbitrary EBSD data the
   % values are stored in a matrix.
+  %
+  % pos(i,j) is affine in (i,j) here - the grid may be rotated or sheared,
+  % but the step between adjacent entries is the same everywhere, which is
+  % what separates this from @EBSDhex.
   
   properties (Dependent = true)
     gradient1 % orientation gradient in dimension 1
     gradient2 % orientation gradient in dimension 2
-    gradientX % orientation gradient in x
-    gradientY % orientation gradient in y
-    gradientZ % orientation gradient in z
     d1, d2    % @vector3d, directions of the two grid dimensions 
   end
   
@@ -125,63 +126,6 @@ classdef EBSDsquare < EBSD
         g2(ebsd.prop.grainId ~= ebsd.prop.grainId(:,[2:end end-1])) = NaN;
       end
       
-    end
-
-    function gX = get.gradientX(ebsd)
-      % gradient in X direction in specimen coordinates
-      if abs(dot(normalize(ebsd.d1),xvector)) > 1-1e-6
-        gX = ebsd.gradient1 * sign(dot(ebsd.d1,xvector));
-      elseif abs(dot(normalize(ebsd.d2),xvector)) > 1-1e-6
-        gX = ebsd.gradient2 * sign(dot(ebsd.d2,xvector));
-      elseif abs(dot(ebsd.N,xvector)) < 1e-6
-        error('Todo')
-      else
-        gX = vector3d.nan(size(ebsd));
-      end      
-    end
-
-    function gY = get.gradientY(ebsd)
-      % gradient in Y direction in specimen coordinates
-
-      if abs(dot(normalize(ebsd.d1),yvector)) > 1-1e-6
-        gY = ebsd.gradient1 * sign(dot(ebsd.d1,yvector));
-      elseif abs(dot(normalize(ebsd.d2),yvector)) > 1-1e-6
-        gY = ebsd.gradient2 * sign(dot(ebsd.d2,yvector));
-      elseif abs(dot(ebsd.N,yvector)) < 1e-6
-        error('Todo')
-      else
-        gY = vector3d.nan(size(ebsd));
-      end
-    end
-
-    function gY = get.gradientZ(ebsd)
-      % gradient in Z direction in specimen coordinates
-
-      if abs(dot(normalize(ebsd.d1),zvector)) > 1-1e-6
-        gY = ebsd.gradient1 * sign(dot(ebsd.d1,zvector));
-      elseif abs(dot(normalize(ebsd.d2),zvector)) > 1-1e-6
-        gY = ebsd.gradient2 * sign(dot(ebsd.d2,zvector));
-      elseif abs(dot(ebsd.N,zvector)) < 1e-6
-        error('Todo')
-      else
-        gY = vector3d.nan(size(ebsd));
-      end
-    end
-   
-    function h = gridBoundary(ebsd)
-      % this is used by the alpha shape algorithm
-      % which assumes that we are in the xy plane
-
-      ext = ebsd.extent;
-      delta = ebsd.dPos;
-      x = ext(1):delta:ext(2);
-      y = ext(3)-delta:delta:ext(4)+delta;
-
-      h= [
-        repmat(ext(1)-delta, numel(y),1), y.' ; ...
-        x.', repmat(ext(3)-delta, numel(x), 1) ; ...
-        x.', repmat(ext(4)+delta, numel(x), 1) ; ...
-        repmat(ext(2)+delta, numel(y),1), y.'];
     end
 
     % some testing code - gradient can be either in specimen coordinates or

@@ -1,5 +1,5 @@
 %% Geometrically Necessary Dislocations
-% 
+%
 %%
 % This example sheet describes how to estimate dislocation densities
 % following the reference paper
@@ -55,7 +55,7 @@ hold on
 plot(grains.boundary,'linewidth',2)
 hold off
 
-%% 
+%%
 % We observe that the data are quite noisy. As noisy orientation data lead
 % to overestimating the GND density we first have to denoise the
 % orientation data.
@@ -73,22 +73,51 @@ hold on
 plot(grains.boundary,'linewidth',2)
 hold off
 
+%% The GND density in one command
+% Everything below is done for you by <EBSD.calcGND.html |calcGND|>, which
+% takes the EBSD data and a set of
+% <dislocationSystem.dislocationSystem.html dislocation systems> and returns
+% the total dislocation energy per pixel together with the density of each
+% individual system.
+
+ebsd = ebsd('indexed');
+
+% the dislocation systems of a body centered cubic material, with the
+% energies of edge and screw dislocations set as discussed further below
+dS = dislocationSystem.bcc(ebsd.CS);
+dS(dS.isEdge).u = 1;
+dS(dS.isScrew).u = 1 - 0.3;
+
+[gnd,rho] = calcGND(ebsd,dS);
+
+close all
+plot(ebsd,gnd,'micronbar','off')
+mtexColorMap('hot')
+mtexColorbar
+set(gca,'ColorScale','log');
+set(gca,'CLim',[1e11 5e14]);
+
+hold on
+plot(grains.boundary,'linewidth',2)
+hold off
+
+%%
+% Note that no <EBSD.gridify.html |gridify|> was necessary. The orientation
+% gradient, and with it everything on this page, is computed on the virtual
+% lattice MTEX derives from the unit cell, so it works on a plain @EBSD, on
+% a subset of one phase, and on grids that are rotated or sheared with
+% respect to the x and y axes.
+%
+% The remainder of this page walks through what |calcGND| does internally.
+
 %% The incomplete curvature tensor
 % Starting point of any GND computation is the curvature tensor, which is a
 % rank two tensor that is defined for every pixel in the EBSD map by the
 % directional derivatives in x, y and z direction.
 
-% consider only the Fe(alpha) phase 
-ebsd = ebsd('indexed').gridify;
-
-% compute the curvature tensor
 kappa = ebsd.curvature
 
-% one can index the curvature tensors in the same way as the EBSD data.
-% E.g. the curvature in pixel (2,3) is
-kappa(2,3)
-
-%% The components of the curvature tensor
+%%
 % As expected the curvature tensor is NaN in the third column as this
 % column corresponds to the directional derivative in z-direction which is
 % usually unknown for 2d-EBSD maps.
@@ -100,7 +129,7 @@ kappa12 = kappa{1,2};
 size(kappa12)
 
 %%
-% which results in a variable of the same size as our EBSD map. This allows
+% which results in a variable of the same size as our EBSD data. This allows
 % us to visualize the different components of the curvature tensor
 
 newMtexFigure('nrows',3,'ncols',3);
@@ -108,11 +137,11 @@ newMtexFigure('nrows',3,'ncols',3);
 % cycle through all components of the tensor
 for i = 1:3
   for j = 1:3
-    
+
     nextAxis(i,j)
     plot(ebsd,kappa{i,j},'micronBar','off')
     hold on; plot(grains.boundary,'linewidth',2); hold off
-    
+
   end
 end
 
@@ -120,9 +149,19 @@ end
 setColorRange([-0.005,0.005])
 drawNow(gcm,'figSize','large')
 
+%%
+% If you prefer to address the curvature by pixel coordinates rather than by
+% a linear index, <EBSD.gridify.html |gridify|> the map first. The tensor
+% then comes back in the shape of the map, and |kappa(2,3)| is the curvature
+% of the pixel in row 2, column 3.
+
+kappaGrid = ebsd.gridify.curvature;
+
+kappaGrid(2,3)
+
 %% The incomplete dislocation density tensor
 % According to Kroener the curvature tensor is directly related to the
-% dislocation density tensor. 
+% dislocation density tensor.
 
 alpha = kappa.dislocationDensity
 
@@ -130,7 +169,7 @@ alpha = kappa.dislocationDensity
 % which has the same unit as the curvature tensor and is incomplete as well
 % as we can see when looking at a particular one.
 
-alpha(2,3)
+alpha(2)
 
 %% Crystallographic Dislocations
 % The central idea of Pantleon is that the dislocation density tensor is
@@ -166,14 +205,14 @@ a = norm(ebsd.CS.aAxis);
 % $$ U_{\mathrm{edge}} = \frac{1}{(1-\nu)} U_{\mathrm{screw}} $$
 %
 % where
-% 
+%
 % * |G| is the shear modulus
 % * |b| is the length of the Burgers vector
 % * |nu| is the Poisson ratio
 % * |R|
 % * |r|
 %
-% In this example we assume 
+% In this example we assume
 % $$ U_{\mathrm{edge}} = 1 $$
 % $$ U_{\mathrm{screw}} = 1-\nu $$
 
@@ -186,12 +225,12 @@ dS(dS.isEdge).u = 1;
 dS(dS.isScrew).u = 1 - 0.3;
 
 %%
-% Question to everybody: what is the best way to set the energy? I found
-% different formulas
-%
-% E = 1 - poisson ratio
-% E = c * G * |b|^2,  - G - Schubmodul / Shear Modulus Energy per (unit length)^2
-%
+% There is no single accepted way of setting these energies. Formulae in use
+% include |U = 1 - nu| as above, and |U = c * G * |b|^2| with |G| the shear
+% modulus, i.e. an energy per unit length squared. Which one is appropriate
+% depends on the model you are comparing against, so |u| is left for you to
+% set rather than being fixed by MTEX.
+
 %%
 % A single dislocation causes a deformation that can be represented by
 % the rank one tensor
@@ -222,7 +261,7 @@ dSRot = ebsd.orientations * dS
 % with the dislocation systems yields the incomplete dislocation density
 % tensors derived from the curvature, i.e.,
 
-% the restored dislocation density tensors 
+% the restored dislocation density tensors
 alpha = sum(dSRot.tensor .* rho,2);
 
 % we have to set the unit manually since it is not stored in rho
@@ -237,7 +276,7 @@ kappa(2).dislocationDensity
 %%
 % we may also restore the complete curvature tensor with
 
-kappa = alpha.curvature 
+kappa = alpha.curvature
 
 %%
 % and plot it as we did before
@@ -259,20 +298,21 @@ setColorRange([-0.005,0.005])
 drawNow(gcm,'figSize','large');
 
 
-%% The total dislocation energy 
+%% The total dislocation energy
 % The unit of the densities |h| in our example is 1/um * 1/au where 1/um
 % comes from the unit of the curvature tensor an 1/au from the unit of the
 % Burgers vector. In order to transform |h| to SI units, i.e., 1/m^2 we
 % have to multiply it with 10^16. This is exactly the values returned as
 % the second output |factor| by the function
 % <curvatureTensor.fitDislocationSystems.html |fitDislocationSystems|>.
-  
+
 factor
 
-%% 
+%%
 % Multiplying the densities |rho| with this factor and the individual
 % energies of the the dislocation systems we end up with the total
-% dislocation energy. Lets plot this at a logarithmic scale
+% dislocation energy, which is what |calcGND| returned at the top of this
+% page. Lets plot it at a logarithmic scale
 
 close all
 plot(ebsd,factor*sum(abs(rho .* dSRot.u),2),'micronbar','off')

@@ -52,6 +52,55 @@
 % Additionally, we now support multiple data sets per file and allow to
 % import all additional scans that might be present in your file.
 %
+% *EBSD Analysis No Longer Needs a Grid*
+%
+% Computations that used to require <EBSD.gridify.html |gridify|> now work
+% on any @EBSD - a plain list, a phase subset, or a gridded map alike. This
+% concerns the <OrientationGradient.html orientation gradient> and
+% everything built on it: <EBSD.curvature.html |curvature|>,
+% <EBSD.calcGND.html |calcGND|> and the gradient method of
+% <EBSD.weightedBurgersVec.html |weightedBurgersVec|>.
+%
+%   kappa = curvature(ebsd)      % no ebsd.gridify needed
+%   gnd   = calcGND(ebsd,dS)
+%
+% They are computed on the virtual lattice MTEX derives from the unit cell,
+% so they also work for grids that are rotated or sheared with respect to
+% the x/y axes, which the previous matrix based implementation could not do
+% at all - |ebsd.gradientX| raised an error unless a grid direction happened
+% to lie along an axis. |calcGND| additionally exists for hexagonal grids
+% now; there simply was no hexagonal implementation before.
+%
+% <EBSD.fill.html |fill|>, <EBSD.smooth.html |smooth|>,
+% <EBSD.interp.html |interp|> and |weightedBurgersVec| keep the class and
+% shape they were given. Previously |fill| and |smooth| turned a plain
+% @EBSD into an @EBSDsquare, and |weightedBurgersVec| returned a result
+% shaped like the grid rather than like the input.
+%
+% Both grid classes now also accept a *rotated* grid. @EBSDhex in particular
+% no longer stores |dHex| and |isRowAlignment| - those could express only two
+% orientations - but derives them, together with |offset|, |dx| and |dy|,
+% from the unit cell and the pixel positions.
+%
+% *Corrections worth knowing*
+%
+% * |gradientX| on a row aligned hexagonal grid divided by |dHex| where the
+% neighbour distance is |sqrt(3)*dHex|, so hexagonal |curvature|, |calcGND|
+% and the gradient based |weightedBurgersVec| were wrong by a factor 1.732
+% in one column of the tensor. Values on hexagonal maps change accordingly;
+% square grids are unaffected.
+% * |gridify| of a rotated hexagonal map silently placed several
+% measurements on the same cell and kept only the last - 5.2% of a titanium
+% map rotated by 20 degree. It now places cells by their lattice index and
+% keeps the measured positions exactly.
+% * |calcGrains(...,'removeQuadruplePoints')| merged the wrong boundary
+% segments and destroyed real grain boundary - 0.21% of a forsterite map.
+% * |export_ang| of a square grid failed in the header with an unrecognized
+% |dx|. It works again, and refuses a rotated grid, whose spacings the ang
+% format cannot express.
+% * |interp(ebsd,x,y)| with row vectors returned an object whose |length|
+% reported 1, and dropped query points when the source was a gridded map.
+%
 % *Much Faster Plotting of EBSD Maps*
 %
 % Plotting EBSD and grain maps is now orders of magnitude faster. It supports 

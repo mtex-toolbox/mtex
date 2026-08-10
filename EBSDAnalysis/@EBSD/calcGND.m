@@ -11,7 +11,7 @@ function [gnd,rho] = calcGND(ebsd,dS,varargin)
 %   gnd = calcGND(ebsd,dS)
 %
 % Input
-%  ebsd - @EBSDsquare
+%  ebsd - @EBSD, gridded or not
 %  dS   - @dislocationSystem 
 %
 % Output
@@ -21,8 +21,9 @@ function [gnd,rho] = calcGND(ebsd,dS,varargin)
 % See also
 % GND_demo
 
-% compute curvature tensors
-kappa = ebsd.curvature;
+% compute curvature tensors - lattice native, so this works on a plain
+% @EBSD as well as on a gridded one, and on hex, which never had a calcGND
+kappa = ebsd.curvature(varargin{:});
 
 % rotate dislocation systems according into specimen coordinates
 dSRot = ebsd.orientations * dS;

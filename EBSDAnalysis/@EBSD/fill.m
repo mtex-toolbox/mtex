@@ -11,12 +11,25 @@ function ebsd = fill(ebsd,varargin)
 %
 % Options
 %  extrapolate - extrapolate up the the outer boundaries
+%  gridify     - return a gridded map, as this used to do unconditionally
 %
+% Description
+% The pixels to fill have to exist before they can be filled, which is what
+% gridify used to be for - at the cost of turning a plain @EBSD into an
+% @EBSDsquare. addLatticeSites materialises exactly the same set of sites on
+% the virtual lattice instead, so the input's class is kept. Pass 'gridify'
+% for the old behaviour.
 
 % TODO: this will not work for maps not in the xy plane
 
 
-if ~(isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')), ebsd = ebsd.gridify; end
+if ~isa(ebsd,'EBSDgrid')
+  if check_option(varargin,'gridify')
+    ebsd = ebsd.gridify;
+  else
+    ebsd = addLatticeSites(ebsd);
+  end
+end
 
 % the values to be filled
 nanId = isnan(ebsd.rotations);

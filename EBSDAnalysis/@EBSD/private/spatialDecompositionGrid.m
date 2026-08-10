@@ -64,41 +64,8 @@ isIndexed = ebsd.isIndexed(:);
 [ij2ebsd,ij2slot,ijmin,ijsz] = latticeLookup(ij);
 
 % local model to reconstruct the position of grid cells with no real
-% measurement (notIndexed holes, the dummy/band ring, filled small gaps).
-% A single rigid affine (ij*A' + a fixed origin) disagrees with the true
-% position under smooth non-rigid distortion (e.g. a trapezoidal stage
-% drift, see EBSD/transform) - it shifts Voronoi boundaries near every
-% hole/edge and manufactures spurious extra grains. Instead fit the ideal
-% affine lattice to the indexed pixels, then interpolate the *local*
-% deviation between real positions and that ideal grid in index space -
-% same technique as calcMesh - and evaluate it at cells with no data.
-% scatteredInterpolant requires double; ij/pos can come in as single
-% (e.g. real imported EBSD data)
-Iidx = double(ij(isIndexed,1)); Jidx = double(ij(isIndexed,2));
-posIdx = double(pos(isIndexed,:));
-idealFit  = [ones(numel(Iidx),1), Iidx, Jidx] \ posIdx;
-idealFun  = @(IJ) [ones(size(IJ,1),1), double(IJ)] * idealFit;
-defXY     = posIdx - idealFun([Iidx, Jidx]);
-
-% fast path: most EBSD grids are already (near-)rigid, so the ideal affine
-% grid alone reconstructs unmeasured positions accurately enough and the
-% deformation term below is negligible. Building it anyway is expensive -
-% two natural-neighbour scatteredInterpolant fits (each a Delaunay
-% triangulation over every indexed pixel) - so skip it whenever the affine
-% residual is small relative to the grid spacing, same check calcMesh uses
-% to decide whether its ideal grid is "sufficiently good". Only genuinely
-% distorted grids (e.g. smooth stage drift) fall through to the accurate,
-% slower route.
-if mean(vecnorm(defXY,2,2)) / dxy < 1e-2
-  reconstructPos = @(IJ) idealFun(IJ);
-else
-  Fx = scatteredInterpolant(Iidx, Jidx, defXY(:,1), 'natural', 'nearest');
-  Fy = scatteredInterpolant(Iidx, Jidx, defXY(:,2), 'natural', 'nearest');
-  % reshape guards against scatteredInterpolant returning 0x0 (not 0x1) for
-  % an empty query, which would otherwise break the '+' below
-  reconstructPos = @(IJ) idealFun(IJ) + ...
-    [reshape(Fx(double(IJ(:,1)),double(IJ(:,2))),[],1), reshape(Fy(double(IJ(:,1)),double(IJ(:,2))),[],1)];
-end
+% measurement (notIndexed holes, the dummy/band ring, filled small gaps)
+reconstructPos = latticeModel(pos,ij,isIndexed,dxy);
 
 % ---- alpha partition via morphological closing -----------------------------
 % Work on a padded raster of the (i,j) grid. All operations below are binary

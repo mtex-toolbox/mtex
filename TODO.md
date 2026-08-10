@@ -149,9 +149,11 @@ The multi-release work. Everything here is bigger than one branch.
 | E7 | Edge-preserving bilateral filter | 1 | 1 | idea | — | #346 |
 | E8 | Texture strength index computed directly from EBSD data | 1 | 1 | idea | — | — |
 | E9 | `orientation` ↔ property mapping | 1 | 1 | idea | — | — |
-| E10 | `EBSD3.xy2ind`, `EBSDsquare/gradientX`, `gradientY`, `gridBoundary`, `interp` need a review — several disagree with their gridded counterparts | 2 | 1 | planned | — | [→](#e10) |
+| E10 | `EBSD3.xy2ind` and `EBSDsquare/interp` need a review — `gradientX`/`gradientY` are done | 2 | 1 | planned | — | [→](#e10) |
 | E11 | `@EBSDsquare/interp` dies in `griddedInterpolant` with "Data is in MESHGRID format" on a gridified map; both orientations of the try/catch fallback fail | 2 | 0 | bug | — | docs/doc-audit-plan.md item 10 |
 | E12 | `latticeBasis:38` "Index exceeds array bounds" — the real defect is a degenerate, self-intersecting unit cell reaching it, not the unguarded index | 2 | 1 | bug | — | [→](#e12) |
+| E13 | `gridify` transposes the map at a 45° grid rotation — the layout tie-break is decided by float noise | 1 | 0 | bug | — | [→](#e13) |
+| E14 | `gridify` cannot place a rotated hexagonal grid — **fixed**, hexify is lattice based and @EBSDhex stores no geometry | 2 | 1 | done | — | [→](#e14) |
 
 ---
 
@@ -568,8 +570,102 @@ support itself is finished.
 ### E10
 Kept verbatim from the old file as the list to review together:
 `EBSD3.xy2ind`, `EBSDsquare/gradientX`, `EBSDsquare/gradientY`,
-`EBSDsquare/gridBoundary`, `EBSDsquare/interp`. See P14 for the reproduction
-that motivated it.
+`EBSDsquare/interp`. See P14 for the reproduction that motivated it.
+
+`EBSDsquare/gridBoundary` and `EBSDhex/gridBoundary` were also on this list;
+both were deleted 2026-08-10 as dead code. Nothing called them —
+`spatialDecompositionAlpha` builds its own dummy ring in index space.
+
+`gradientX`/`gradientY` are **done**: they now live on `@EBSD`, are computed
+on `ebsd.lattice`, and the three `error('Todo')` for grids not aligned with
+an axis are gone — a known linear field is recovered exactly on 30 and 45
+degree rotated, sheared and hex geometries. The hex version also turned out
+to be wrong by `sqrt(3)` in one tensor column and is fixed. `interp` is
+still open, phase 5 of that project.
+
+### E14
+`@EBSD/private/hexify.m` placed each measurement by rounding its raw x/y
+against hard coded `sqrt(3)` and `3/2` factors taken off `ebsd.extent`, so
+it only described a hex lattice aligned with the axes. Rotated, several
+measurements rounded onto one cell and `phaseId(newId) = ebsd.phaseId` kept
+whichever came last — silently:
+
+| map | 20° | 45° |
+|---|---|---|
+| titanium (8100 px) | 421 lost (5.2%) | 621 (7.7%) |
+| ferrite (63045 px) | 3407 lost (5.4%) | 4858 (7.7%) |
+
+**Fixed 2026-08-11**, in two steps.
+
+First the representation. `@EBSDhex` stored `dHex` + `isRowAlignment`, which
+between them express exactly two orientations, so a rotated grid was not
+representable at all — the state space was too small to hold the answer.
+Both, plus `offset`, `dx` and `dy`, are dependent on `unitCell`/`pos` now,
+and the constructor keeps a supplied `unitCell` instead of overwriting it
+with an axis aligned hexagon. `isRowAlignment` turned out not to be needed
+as state: it says which matrix index carries the parity stagger, and that is
+visible in `pos` — one direction's step is constant, the other alternates
+between two translations 60° apart. Reading it off `pos` is a statement
+about the lattice, not the axes, so it survives any rotation. The old
+`offset = sign(pos.x(2,1)-pos.x(1,1))` flipped from 45° on and inverted the
+whole staggered addressing.
+
+Then `hexify` itself, now built on the lattice like `squarify`: with `u` the
+dense lattice direction and `v` the one 60° from it, a cell at axial index
+`(i,j)` sits at `row = j+1`, `col = i + floor(j/2) + 1` — exactly the offset
+convention `cube2hex` already implements, so `hex2cube`/`cube2hex` keep
+working. Positions come from `latticeModel` and the measured nodes are put
+back exactly.
+
+Result: 0 collisions at 0°, 20° and 45° on both maps, and the measured
+positions are now preserved *exactly* — the old code moved them by up to
+0.02 because it rebuilt them from theoretical coordinates. Unrotated layouts
+are unchanged (titanium 97×84, ferrite 270×234), and the grain
+reconstruction benchmark still matches on all three datasets.
+
+One consequence worth knowing: `dx`/`dy` are the measured spacings now, not
+`sqrt(3)*dHex` and `1.5*dHex` by construction. On titanium the measured
+column step is 12.000000 against `sqrt(3)*dHex` = 11.999824, because
+`calcUnitCell` fits the cell statistically.
+
+Still open, and not blocking: `export_ang` writes XSTEP/YSTEP from `dx`/`dy`,
+and a rotated grid has no scalar step along x or y. That call site has to
+refuse or export the unrotated spacing.
+
+### E13
+`@EBSD/private/squarify.m`'s `orientGrid` decides which lattice direction
+becomes matrix dimension 1 with
+
+```matlab
+horizontal = @(d) abs(dot(d,xvector)) - abs(dot(d,yvector));
+isXFirst   = horizontal(d1) > horizontal(d2);
+```
+
+At a 45° grid rotation both directions are equally horizontal, so both sides
+are 0 and the comparison is settled by rounding noise. Reproduced 2026-08-10
+on `twins`, rotating positions only:
+
+| rotation | `size(ebsd.gridify)` |
+|---|---|
+| 44.999999999° | 137 x 167 |
+| 45.000000000° | 167 x 137 |
+| 45.000000001° | 167 x 137 |
+
+A 1e-9 degree difference transposes the whole map. Both layouts hold the same
+data, so nothing is computed wrongly, but the same physical map can gridify
+to transposed layouts across imports — which defeats the point of the grid
+classes, whose reason to exist is handing a stable matrix to image
+registration tools.
+
+The sign normalisation just below (`dot(d1,ref(1)) < 0`) has the same problem at
+the same configuration.
+
+Fix by stating the tie-break instead of leaving it to the noise, and note
+that `check_gridify`'s `checkResampleRotated` already exercises a 45° rotated
+unit cell. Deliberately not bundled into the @EBSDgrid / latticeModel work:
+it touches the path every gridify takes, so it wants its own change and its
+own test. Phase 2 of the @EBSD project (the lattice-native gradient) needs
+the same basis pinned down and is the natural place to do it.
 
 ### E12
 `doc/EBSDAnalysis/EBSDGrid.m:141` → `EBSD/plot:93` → `plotUnitCells:51` →
