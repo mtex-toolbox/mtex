@@ -81,15 +81,18 @@ checkK(v,w,dRef,3,'misorientation 321',tol);
 checkEps(v,w,dRef,15*degree,'misorientation 321',tol);
 
 % --- antipodal misorientations -------------------------------------------
-% Note: angle() ignores the antipodal flag, so it cannot serve as the
-% reference here - build the antipodal distance min(d(w,v),d(w,inv(v)))
-% explicitly instead.
 v.antipodal = true;
 w.antipodal = true;
+dRef = angle(w,v.');
+
+% angle honours the flag - cross check it against the explicit grain
+% exchange distance min(d(w,v),d(w,inv(v))), which is what it should be
 vi = inv(v); vi.CS = v.CS; vi.SS = v.SS; vi.antipodal = false;
 v0 = v; v0.antipodal = false;
 w0 = w; w0.antipodal = false;
-dRef = min(angle(w0,v0.'),angle(w0,vi.'));
+assert(max(abs(dRef - min(angle(w0,v0.'),angle(w0,vi.'))),[],'all') < 1e-10,...
+  'angle ignores the antipodal flag')
+
 checkK(v,w,dRef,3,'antipodal 321',tol);
 checkEps(v,w,dRef,15*degree,'antipodal 321',tol);
 

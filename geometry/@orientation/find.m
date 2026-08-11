@@ -193,13 +193,10 @@ if floor(epsilon_or_k) == epsilon_or_k
   [ind,d] = collapseK(ind,d,epsilon_or_k);
 
   % rows that did not yield k distinct points - fall back to brute force.
-  % Note that angle() ignores the antipodal flag, so the inversion has to be
-  % taken into account explicitly here as well.
+  % angle() takes the antipodal flag of v into account by itself.
   bad = any(~isfinite(d),2);
   if any(bad)
-    dRef = angle(w.subSet(bad),v.');
-    if v.antipodal, dRef = min(dRef,angle(w.subSet(bad),vi.')); end
-    [d(bad,:),ind(bad,:)] = mink(dRef,epsilon_or_k,2);
+    [d(bad,:),ind(bad,:)] = mink(angle(w.subSet(bad),v.'),epsilon_or_k,2);
   end
 
 else

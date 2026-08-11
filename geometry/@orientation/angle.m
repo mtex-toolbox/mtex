@@ -17,6 +17,13 @@ function omega = angle(o1,varargin)
 %  noSym1, noSym2 - do ignore only left or right symmetry
 %  max        - return the maximum rotational angle from all symmetrically equivalent
 %
+% Description
+% For misorientations with grain exchange symmetry, i.e. |o1.antipodal| or
+% |o2.antipodal| is true, the two argument syntax returns the smaller of the
+% distances to |o2| and to |inv(o2)|. There is no 'antipodal' option, the
+% flag is taken from the arguments. The single argument syntax is not
+% affected, as |angle(o) == angle(inv(o))| anyway.
+%
 
 if nargin >= 2 && isa(varargin{1},'quaternion')
 
