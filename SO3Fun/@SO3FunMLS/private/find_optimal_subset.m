@@ -47,19 +47,7 @@ end
 
 
 % set linprog options to suppress output
-ver = version;
-ver = str2double(ver(1:2));
-% we want to use primal-dual simplex, since it is faster
-% but in matlab >= R2025a it throws the error "Unrecognized field name "optimstatus" 
-% due to some internal bug in linprog
-if (ver < 25)
-  options = optimoptions('linprog','Display','none'); 
-else
-  % very robust
-  options = optimoptions('linprog', 'Display','none', 'Algorithm','interior-point-legacy');
-  warning(['linprog was set to use interior-point-legacy instead of primal-dual-simplex, ' ...
-    'since the latter throws an error.']);
-end
+options = linprogOptions;
 
 c = SO3F.eval_basis_functions(orientation.id);
 
@@ -135,5 +123,44 @@ if (is_logical == true)
   opt_sub_ind = sparse(row_idx, opt_sub_ind, true, N, grid_size, N*dim);
 end
 
+
+end
+
+
+% -------------------------------------------------------------------------
+function options = linprogOptions
+% linprog options that actually return the Lagrange multipliers
+%
+% The simplex algorithms are the faster ones, but they do not always
+% populate lambda - on R2024b and R2025a every simplex variant fails with
+% "Unrecognized field name optimstatus" or an internal error as soon as the
+% fifth output is requested. This used to be gated on the MATLAB version,
+% which got the affected range wrong. Ask the solver instead: run one
+% trivial program with the preferred options and fall back only if that
+% fails. The answer is remembered, so the probe runs once per session.
+
+persistent cached
+
+if ~isempty(cached), options = cached; return, end
+
+options = optimoptions('linprog','Display','none');
+
+try
+  % a two variable program whose solution is a vertex, so the multipliers
+  % are non trivial and the simplex path is really exercised
+  ws = warning('off','all');
+  [~,~,~,~,~] = linprog([-1;-1],[1 0;0 1;1 1],[1;1;1.5],[],[],[],[],options);
+  warning(ws);
+catch
+  warning(ws);
+  options = optimoptions('linprog','Display','none',...
+    'Algorithm','interior-point-legacy');
+  warning('MTEX:linprog:algorithm',...
+    ['linprog was set to use interior-point-legacy, since the simplex ' ...
+    'algorithms of this MATLAB release do not return the Lagrange ' ...
+    'multipliers the optimal subset selection needs.']);
+end
+
+cached = options;
 
 end
