@@ -19,8 +19,8 @@ if isnumeric(sF1)
   sF.values = sF1 <= sF2.values;
   return
 elseif isnumeric(sF2)
-  sF = sF2;
-  sF.values = sF1 <= sF2.values;
+  sF = sF1;
+  sF.values = sF1.values <= sF2;
   return
 end
 
