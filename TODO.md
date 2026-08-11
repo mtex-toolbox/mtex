@@ -14,6 +14,10 @@ Rows that carry a real reproduction, a measurement or a decision to be made
 link to [Details](#details) at the bottom. Nothing was dropped for brevity;
 items believed finished were removed only when the code confirms it.
 
+Updated 2026-08-11: T3, C17 and C20 fixed, E11 and D13 found to be already
+done, O1 and O2 could not be reproduced. Two new rows, O28 and T7, come out
+of that pass.
+
 ## Legend
 
 **U — urgency**
@@ -132,7 +136,7 @@ The multi-release work. Everything here is bigger than one branch.
 | D10 | `grains.volume` is slow when called from `grain3d/display` | 1 | 0 | bug | — | #2092 |
 | D11 | 3D orientation analysis crashes | 2 | 1 | triage | — | #2377 |
 | D12 | `loadEBSD_dream3d` and `loadEBSD_xnovo` are not functional yet — blocked on 3D support itself | 1 | 1 | blocked | — | [→](#d12) |
-| D13 | The 3D classes are absent from the function-reference sidebar: `EBSD3_index`, `grain3d_index`, `grain3Boundary_index` | 1 | 0 | bug | — | docs/doc-audit-plan.md item 4 |
+| D13 | The 3D classes were absent from the function-reference sidebar — **done** in the 2026-08-10 pass, all three are in `doc/FunctionReference/EBSDAnalysis/EBSDAnalysis_index.toc` (checked 2026-08-11) | 1 | 0 | done | — | docs/doc-audit-plan.md item 4 |
 
 ---
 
@@ -149,8 +153,8 @@ The multi-release work. Everything here is bigger than one branch.
 | E7 | Edge-preserving bilateral filter | 1 | 1 | idea | — | #346 |
 | E8 | Texture strength index computed directly from EBSD data | 1 | 1 | idea | — | — |
 | E9 | `orientation` ↔ property mapping | 1 | 1 | idea | — | — |
-| E10 | `EBSD3.xy2ind` and `EBSDsquare/interp` need a review — `gradientX`/`gradientY` are done | 2 | 1 | planned | — | [→](#e10) |
-| E11 | `@EBSDsquare/interp` dies in `griddedInterpolant` with "Data is in MESHGRID format" on a gridified map; both orientations of the try/catch fallback fail | 2 | 0 | bug | — | docs/doc-audit-plan.md item 10 |
+| E10 | `EBSD3.xy2ind` needs a review — `gradientX`/`gradientY` are done, and the `EBSDsquare/interp` half of this row is obsolete with E11 | 2 | 1 | planned | — | [→](#e10) |
+| E11 | `@EBSDsquare/interp` died in `griddedInterpolant` with "Data is in MESHGRID format" — **gone**, the `@EBSD` merge deleted that file and `@EBSD/interp` makes no grid assumption (checked 2026-08-11) | 2 | 0 | done | — | docs/doc-audit-plan.md item 10 |
 | E12 | `latticeBasis:38` "Index exceeds array bounds" — the real defect is a degenerate, self-intersecting unit cell reaching it, not the unguarded index | 2 | 1 | bug | — | [→](#e12) |
 | E13 | `gridify` transposes the map at a 45° grid rotation — the layout tie-break is decided by float noise | 1 | 0 | bug | — | [→](#e13) |
 | E14 | `gridify` cannot place a rotated hexagonal grid — **fixed**, hexify is lattice based and @EBSDhex stores no geometry | 2 | 1 | done | — | [→](#e14) |
@@ -197,8 +201,8 @@ copy; only what is still open is summarised here.
 
 | # | Item | U | Sz | Status | Owner | Refs |
 |---|------|:-:|:--:|--------|-------|------|
-| O1 | `orientation/find` with the documented `int32` k errors — "Integers can only be raised to positive integral powers" | 2 | 0 | bug | — | #2580 |
-| O2 | `SO3FunRBF` colon indexing: `B(1,:)` errors with "Out of range subscript" | 2 | 0 | bug | — | #2579 |
+| O1 | `orientation/find` with the documented `int32` k errors — **could not reproduce** on 2026-08-11, `find(v,w,int32(3))` works; needs the reporter's exact call before closing | 2 | 0 | triage | — | #2580 |
+| O2 | `SO3FunRBF` colon indexing: `B(1,:)` errors with "Out of range subscript" — **could not reproduce** on 2026-08-11; needs the reporter's exact object before closing | 2 | 0 | triage | — | #2579 |
 | O3 | Wrong misorientation angle when an orientation lies outside the fundamental region | 3 | 1 | bug | — | #2162 |
 | O4 | `misorientation` volume gives different results by route | 2 | 1 | bug | — | #445 |
 | O5 | Euler angles of random orientations are inconsistent with the crystal symmetry | 2 | 1 | triage | — | #1597 |
@@ -224,6 +228,7 @@ copy; only what is still open is summarised here.
 | O25 | `Miller/line` | 1 | 0 | planned | — | br/mixedMiller |
 | O26 | `circle(ori,radius)` should work in pole figures and ODF sections | 1 | 0 | idea | — | — |
 | O27 | 17 class-qualified doc links dangle, eleven of which name API that exists nowhere | 2 | 1 | planned | — | docs/doc-audit-plan.md item 2e |
+| O28 | `SO3FunMLS` needs the Symbolic Math Toolbox — `SO3FunMLS.m:319` calls `syms`, so the whole class is unavailable, and untestable, without that licence | 2 | 1 | bug | — | [→](#o28) |
 
 ---
 
@@ -342,10 +347,11 @@ copy; only what is still open is summarised here.
 |---|------|:-:|:--:|--------|-------|------|
 | T1 | Compact S2Fun test suite: no plotting, 60 s ceiling, assertions that fail loudly — modelled on `tests/check_S1Fun.m` | 2 | 1 | planned | — | [→](#t1) |
 | T2 | Same for SO3Fun, which is scattered over `tests/check_SO3Fun*.m` and `tests/SO3FunTests/` mixed with scratch files | 2 | 1 | planned | — | [→](#t1) |
-| T3 | `find_optimal_subset.m:56` gates the linprog workaround on `version < 25`, but the bug already hits R2024b, so `'subsample'` dies | 2 | 0 | bug | — | [→](#t1) |
+| T3 | `'subsample'` died because the linprog workaround was gated on `version < 25` — **fixed 2026-08-11**, the options are now chosen by probing the solver, and every simplex variant fails on R2024b too | 2 | 0 | done | — | [→](#t3) |
 | T4 | Two `check_S2FunMLS.m` cells fail with "Index exceeds array bounds", not yet diagnosed | 1 | 0 | bug | — | [→](#t1) |
 | T5 | `tests/checkMeanTensor.m` stops at a rank-3 quadrature assert that cannot pass at any halfwidth; left failing deliberately | 1 | 1 | decide | — | docs/doc-audit-plan.md item 9 |
 | T6 | `tests/check_ebsd.m` fails on develop; `checkIpfColorCoding` blocks on a `pause`, so it cannot run headless | 2 | 0 | bug | — | — |
+| T7 | `find_optimal_subset.m` exists twice, in `S2Fun/@S2FunMLS/private` and `SO3Fun/@SO3FunMLS/private`, differing only in argument names — every fix has to be applied twice | 1 | 0 | planned | — | [→](#t3) |
 
 ---
 
@@ -369,10 +375,10 @@ copy; only what is still open is summarised here.
 | C14 | Document the noise-level estimation behind the KAM options | 1 | 0 | planned | — | see G33 |
 | C15 | Check that `"options"` works everywhere `'options'` does | 1 | 0 | wip | — | — |
 | C16 | `bingham_test` runs again after a row/column fix, but its output convention is unverified — do not document until checked | 1 | 0 | decide | — | [→](#c16) |
-| C17 | `calcDensity` on an **empty** orientation list dies with "Too many input arguments" — `calcKernelODF.m:41` calls the obsolete `ODF(cs,ss)` shim | 2 | 0 | bug | — | — |
+| C17 | `calcDensity` on an **empty** orientation list died in the obsolete `ODF(cs,ss)` shim — **fixed 2026-08-11**, an empty and an all `NaN` list both give the uniform ODF | 2 | 0 | done | — | — |
 | C18 | `calcPoleFigure(odf,pf.allH,pf.allR)` throws for superposed pole figures unless `'superposition',pf.c` is passed | 2 | 0 | bug | — | [→](#c18) |
 | C19 | `stiffnessTensor.rand` returns a plain rank 2 `tensor`, so subclass methods are missing — the static `@tensor/rand.m` hardcodes the base class | 2 | 1 | bug | — | [→](#c19) |
-| C20 | `export(odf,fname,'VPSC')` silently writes a *generic* file; the interface must be given as `'interface','VPSC'` | 2 | 0 | bug | — | — |
+| C20 | `export(odf,fname,'VPSC')` silently wrote a *generic* file — **fixed 2026-08-11**, the interface is taken as a bare flag as well and an unknown one is named | 2 | 0 | done | — | — |
 | C21 | A new property needs `ebsd.prop.name = ...`; `ebsd.name = ...` errors, and no length check is done on the value | 1 | 0 | decide | — | — |
 
 ---
@@ -803,8 +809,37 @@ SO3Fun is scattered over `tests/check_SO3Fun*.m` and `tests/SO3FunTests/`,
 which mixes check scripts with scratch files (`problems.m`, `testing.m`,
 `Newapproximation.m`); not yet timed. Model both on `tests/check_S1Fun.m` — a
 function with assertions that fails loudly, not a cell script that prints
-numbers nobody reads. Note that fixing T3 makes the suite slower, since
+numbers nobody reads. Note that T3 being fixed makes the suite slower, since
 `'subsample'` runs a `linprog` per node.
+
+### T3
+**Fixed 2026-08-11.** The recorded diagnosis was wrong in its key claim: the
+problem does not start at R2025a. Measured on R2024b, where the default
+`linprog` algorithm is already `dual-simplex-highs`, asking for the fifth
+output (the Lagrange multipliers, which the optimal subset selection needs)
+fails for every simplex variant — `dual-simplex`, `dual-simplex-highs` and the
+default with "Unrecognized field name optimstatus", `dual-simplex-legacy` with
+an internal error `-1000@-1000`. Only `interior-point` and
+`interior-point-legacy` return them. So `'subsample'` was dead on the release
+MTEX is developed against, not only on the one after it.
+
+Version sniffing being what got this wrong, it is gone: one trivial two
+variable program is solved with the preferred options and the fallback is
+taken only if that throws, cached in a `persistent` so it costs a single solve
+per session. Covered by `tests/check_MLSSubsample.m`, which asserts the
+approximation is usable rather than merely constructible.
+
+The SO3 side carries the same helper but could not be tested — see O28. The
+duplication itself is T7: `find_optimal_subset.m` exists twice, differing only
+in argument names, so this fix had to be applied twice.
+
+### O28
+`SO3Fun/@SO3FunMLS/SO3FunMLS.m:319` calls `syms phi`, i.e. the class needs the
+Symbolic Math Toolbox. On a machine without that licence every
+`SO3FunMLS(...)` call dies with "Undefined function 'syms' for input arguments
+of type 'char'", which is also why the SO3 half of T3 could not be verified.
+Found 2026-08-11. Either replace the symbolic step with a numeric one, or
+declare the dependency and fail with a message that names the toolbox.
 
 ### C-empty
 Of the fourteen empty chapters found by the 2026-07-28 doc audit
