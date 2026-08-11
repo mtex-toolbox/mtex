@@ -1016,7 +1016,7 @@
 % *Much Better and Faster Halfquadratic Filter* 
 %
 % Denoising of EBSD data using the
-% <https://mtex-toolbox.github.io/EBSDDenoising.html#10
+% <https://mtex-toolbox.github.io/EBSDDenoising.html
 % |halfQuadraticFilter|> is now about 10 times faster, handles outliers
 % much better and runs native on hexagonal grids.
 %
