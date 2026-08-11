@@ -72,23 +72,32 @@ mtexColorbar
 %%
 % The sharp maximum at [100] confirms our expectation. Accordingly we
 % define the pseudo symmetry as the rotation about [100] by 60 degree.
-% Modulo the true symmetry |mmm| the rotations by 60 and by 120 degree are
-% two different operations - the latter being the inverse of the former -
-% and both may occur in the map. Hence we pass both of them.
 
 cs = ebsd('Fo').CS;
-psSym = orientation.byAxisAngle(Miller(1,0,0,cs,'uvw'),[60 120]*degree)
+psSym = orientation.byAxisAngle(Miller(1,0,0,cs,'uvw'),60*degree)
 
 %%
-% Note that the pseudo symmetry is a misorientation, i.e., it has the same
-% crystal symmetry on both sides. This is required by
+% Modulo the true symmetry |mmm| the rotations by 60 and by 120 degree are
+% two different operations - the latter being the inverse of the former -
+% and both occur in the map, since the indexing may have picked either
+% solution. It is nevertheless enough to pass one of them. A measurement is
+% a fixed representative of an orientation, so the alternative solution is
+% not simply |ori * psSym| but |ori * s * psSym| for some symmetry element
+% |s|, and <cleanUpPseudoSym.html |cleanUpPseudoSym|> generates all these
+% operators itself. Passing 60 degree, 120 degree or both gives the same
+% result.
+%
+% Note also that the pseudo symmetry is a misorientation, i.e., it has the
+% same crystal symmetry on both sides. This is required by
 % <cleanUpPseudoSym.html |cleanUpPseudoSym|> and at the same time tells the
 % command which phase it should correct.
 %
 %% Pseudo Symmetric Grain Boundaries
 %
-% Let us select all boundary segments whose misorientation is one of the
-% pseudo symmetries and have a closer look at one of the affected regions.
+% Let us select all boundary segments whose misorientation is the pseudo
+% symmetry and have a closer look at one of the affected regions. A grain
+% boundary has no direction - its misorientation carries the grain exchange
+% symmetry - so this catches the segments of both solutions at once.
 
 gB = grains.boundary('Fo','Fo');
 gB = gB(any(angle(gB.misorientation,psSym) < 2*degree,2))

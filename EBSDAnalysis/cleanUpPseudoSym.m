@@ -19,10 +19,17 @@ function [ebsd,grainsM,numChanged] = cleanUpPseudoSym(ebsd,grains,mori,varargin)
 %   [ebsd, grainsM, numChanged] = cleanUpPseudoSym(ebsd, grains, mori)
 %   [ebsd, grainsM, numChanged] = cleanUpPseudoSym(ebsd, grains, mori, 'threshold', 1.5)
 %
+% It is enough to pass one representative of each pseudo symmetry. A
+% measurement is a fixed representative of an orientation, so the alternative
+% indexing solution is |ori * s * mori| for some symmetry element |s| and not
+% simply |ori * mori|. All these operators are generated internally, which is
+% why passing a pseudo symmetry or its inverse or any symmetrically
+% equivalent misorientation gives the same result.
+%
 % Input
 %   ebsd   - @EBSD object, with grainId set by @EBSD.calcGrains
 %   grains - @grain2d object
-%   mori   - @rotation or @orientation (array of pseudo-symmetries, same CS and SS)
+%   mori   - @orientation (array of pseudo-symmetries, same CS and SS)
 %
 % Options
 %   'delta'     - Tolerance for boundary misorientation angle to match pseudo-symmetry (default: 2*degree)
@@ -40,7 +47,7 @@ function [ebsd,grainsM,numChanged] = cleanUpPseudoSym(ebsd,grains,mori,varargin)
 %   [grains,ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',5);
 %
 %   % the pseudo hexagonal oxygen sublattice of olivine
-%   psSym = orientation.byAxisAngle(Miller(1,0,0,ebsd('Fo').CS,'uvw'),[60 120]*degree);
+%   psSym = orientation.byAxisAngle(Miller(1,0,0,ebsd('Fo').CS,'uvw'),60*degree);
 %
 %   [ebsd,grains] = cleanUpPseudoSym(ebsd,grains,psSym)
 %
@@ -48,6 +55,11 @@ function [ebsd,grainsM,numChanged] = cleanUpPseudoSym(ebsd,grains,mori,varargin)
 % EBSDPseudoSymmetry grain2d.merge
 
 % 0. Validate Inputs
+if ~isa(mori,'orientation')
+    error('cleanUpPseudoSym:NoOrientation', ...
+          'The pseudo-symmetry must be an orientation - it is the crystal symmetry attached to it that tells the command which phase to correct.');
+end
+
 if mori.CS ~= mori.SS
     error('cleanUpPseudoSym:PhaseMismatch', ...
           'Pseudo-symmetry misorientation must have identical crystal and specimen symmetry (mori.CS == mori.SS).');
@@ -98,27 +110,22 @@ cond = tortuosity > maxT & gB.componentSize > 4;
 ind = ebsd.grainId > 0;
 ebsd.grainId(ind) = parentId(grains.id2ind(ebsd.grainId(ind)));
 
-% update EBSD orientations
-if check_option(varargin,'check')
-  
-  for k = newInd
-  
-    ind = find(ebsd.grainId == grainsM.id(k));
-    
-    ori = orientation(ebsd.rotations(ind),mori.CS);
+% the operators that turn a measurement into the alternative indexing
+% solution. Note that the boundaries above are detected as misorientation
+% classes, which is why the direction of the boundary does not matter there,
+% while the correction below multiplies a fixed representative from the
+% right - so the list has to be completed first, see the local function.
+psOps = completeOperators(mori);
 
-    swap = angle(ori,grainsM.meanOrientation(k) * inv(mori)) ...
-      < angle(ori,grainsM.meanOrientation(k));
-  
-    ori(swap) = ori(swap) * mori;
-    ebsd.rotations(ind) = ori;
-  end
+if isempty(psOps)
+  warning('cleanUpPseudoSym:TrueSymmetry', ...
+    'The given pseudo-symmetry is a true symmetry of the crystal, there is nothing to correct.');
   return
 end
 
-% array of all possible operators: [identity, mori_1, mori_2, ...]
-id_op = orientation.id(mori.CS,mori.CS); 
-all_ops = [id_op, transpose(mori(:))];
+% array of all possible operators: [identity, psOps_1, psOps_2, ...]
+id_op = orientation.id(mori.CS,mori.CS);
+all_ops = [id_op, psOps];
 
 % identify ebsd points belonging to the newly merged grains AND the target phase
 updated_grain_ids = grainsM.id(newInd);
@@ -146,14 +153,64 @@ if ~isempty(valid_pts)
   numChanged = sum(best_op_idx > 1);
   
   % apply the best operator (skip index 1 since it is the identity)
-  for m = 1:length(mori)
+  for m = 1:length(psOps)
       swap = (best_op_idx == m + 1);
       if any(swap)
-          ori(swap) = ori(swap) * mori(m);
+          ori(swap) = ori(swap) * psOps(m);
       end
   end
   
   % update EBSD orientations
   ebsd(valid_pts).orientations = ori;
 end
+end
+
+% -------------------------------------------------------------------------
+function ops = completeOperators(mori)
+% all distinct operators that turn a measurement into the alternative
+% indexing solution
+%
+% A measurement is a fixed representative ori of an orientation. The
+% alternative solution is ori * s * mori for some symmetry element s, not
+% simply ori * mori - these are different orientations, since only the
+% symmetry acting from the right is divided out again. Accordingly the
+% complete operator list is the set CS * mori, reduced modulo multiplication
+% by CS from the right, as two operators that differ by such a factor act
+% identically on every measurement.
+%
+% For the pseudo hexagonal oxygen sublattice of olivine, mmm and 60 degree
+% about [100], this returns two operators - the 60 degree rotations about
+% [100] and about [-100], the latter being what one would write as 120
+% degree about [100]. Passing either of them, or both, gives the same list.
+
+tol = 1e-4;   % rad, only ever compares against an exact coincidence
+
+rot = mori.CS.properGroup.rot;
+rot = rot(:);
+
+% all representatives of the misorientation, as right multipliers
+ops = reshape(rot * reshape(mori,1,[]),1,[]);
+
+keep = false(1,length(ops));
+for k = 1:length(ops)
+
+  % the operators acting exactly like this candidate
+  coset = rotation(ops.subSet(k)) * rot.';
+
+  % an operator that is a symmetry itself corrects nothing
+  if min(angle(coset,rotation.id)) < tol, continue; end
+
+  % neither does one that is already in the list
+  if any(keep) && ...
+      min(angle_outer(coset(:),rotation(ops.subSet(keep))),[],'all') < tol
+    continue
+  end
+
+  keep(k) = true;
+
+end
+
+ops = ops.subSet(keep);
+ops = reshape(ops,1,[]);
+
 end
