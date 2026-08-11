@@ -63,7 +63,7 @@ hold off
 % define the denoising filter
 F = halfQuadraticFilter;
 
-ebsd = smooth(ebsd('indexed'),F,'fill',grains);
+ebsd = smooth(ebsd,F,'fill',grains);
 
 % plot the denoised data
 ipfKey.oriRef = grains(ebsd('indexed').grainId).meanOrientation;
@@ -79,8 +79,6 @@ hold off
 % <dislocationSystem.dislocationSystem.html dislocation systems> and returns
 % the total dislocation energy per pixel together with the density of each
 % individual system.
-
-ebsd = ebsd('indexed');
 
 % the dislocation systems of a body centered cubic material, with the
 % energies of edge and screw dislocations set as discussed further below
@@ -102,20 +100,16 @@ plot(grains.boundary,'linewidth',2)
 hold off
 
 %%
-% Note that no <EBSD.gridify.html |gridify|> was necessary. The orientation
-% gradient, and with it everything on this page, is computed on the virtual
-% lattice MTEX derives from the unit cell, so it works on a plain @EBSD, on
-% a subset of one phase, and on grids that are rotated or sheared with
-% respect to the x and y axes.
-%
 % The remainder of this page walks through what |calcGND| does internally.
-
+%
 %% The incomplete curvature tensor
 % Starting point of any GND computation is the curvature tensor, which is a
 % rank two tensor that is defined for every pixel in the EBSD map by the
 % directional derivatives in x, y and z direction.
 
 kappa = ebsd.curvature
+
+kappa(32)
 
 %%
 % As expected the curvature tensor is NaN in the third column as this
