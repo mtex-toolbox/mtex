@@ -279,6 +279,7 @@ function info = initRegInfo(N)
   info.centerAmplificationRegBound = NaN(N, 1);
   info.numericalRidge = NaN(N, 1);
   info.shapeRegularization = NaN(N, 1);
+  info.geometryScore = NaN(N, 1);
   info.regularizationActive = false(N, 1);
   info.deltaFallback = false(N, 1);
   info.candidateLimit = false(N, 1);

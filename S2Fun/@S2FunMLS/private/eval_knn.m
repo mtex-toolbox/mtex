@@ -47,6 +47,12 @@ if ~S2F.centered
   end
 
   g_book = reshape(eval_basis_functions(S2F, v).', S2F.dim, 1, N);
+
+  % the geometry score describes the local node cloud in the tangent frame, so
+  % the diagnostic needs local coordinates even for a non-centered basis
+  if wantInfo
+    [xloc, yloc] = local_coordinates_S2(v, v_id, S2F.nodes, grid_id);
+  end
 else
   [xloc, yloc, zloc] = ...
     local_coordinates_S2(v, v_id, S2F.nodes, grid_id);
@@ -62,7 +68,8 @@ else
 end
 
 G_book = permute(reshape(G, S2F.dim, nn, N), [2, 1, 3]);
-clear G v_id xloc yloc zloc;
+clear G v_id zloc;
+if ~wantInfo, clear xloc yloc; end
 
 % compact local weights
 if S2F.use_smooth_delta
@@ -115,8 +122,16 @@ if S2F.detectOutliers
   weights = weights .* exp(-oI);
 end
 
-W_book = permute(max(real(weights), 0), [2, 3, 1]);
-clear weights dist deltas vor_weights;
+weights = max(real(weights), 0);
+W_book = permute(weights, [2, 3, 1]);
+
+% local geometry of the weighted neighborhoods, as it enters the local systems
+if wantInfo
+  geometryScore = local_geometry_score( ...
+    reshape(xloc, nn, N), reshape(yloc, nn, N), weights.');
+end
+
+clear weights dist deltas vor_weights xloc yloc;
 
 % local function values
 grid_vals = reshape(S2F.values(:), numel(S2F.nodes), numel(S2F));
@@ -142,6 +157,7 @@ if wantInfo
     solve_lsq_book_constsize(W_book, G_book, f_book, solve_args{:});
   info.deltaFallback = deltaFallback;
   info.candidateLimit = candidateLimit;
+  info.geometryScore = geometryScore;
 elseif wantConds
   [c_book, conds] = ...
     solve_lsq_book_constsize(W_book, G_book, f_book, solve_args{:});

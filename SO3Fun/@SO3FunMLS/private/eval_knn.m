@@ -52,9 +52,21 @@ if ~SO3F.centered
 
   g_book = reshape(eval_basis_functions(SO3F, ori).', ...
     SO3F.dim, 1, N);
+
+  % the geometry score describes the local node cloud in the tangent space, so
+  % the diagnostic needs local coordinates even for a non-centered basis
+  if wantInfo
+    [~, ~, bloc, cloc, dloc] = ...
+      local_coordinates_SO3(ori, ori_id, SO3F.nodes, grid_id);
+  end
 else
-  [rotneighbors, aloc] = ...
-    local_coordinates_SO3(ori, ori_id, SO3F.nodes, grid_id);
+  if wantInfo
+    [rotneighbors, aloc, bloc, cloc, dloc] = ...
+      local_coordinates_SO3(ori, ori_id, SO3F.nodes, grid_id);
+  else
+    [rotneighbors, aloc] = ...
+      local_coordinates_SO3(ori, ori_id, SO3F.nodes, grid_id);
+  end
 
   G = eval_basis_functions(SO3F, rotneighbors).';
 
@@ -69,6 +81,7 @@ end
 
 G_book = permute(reshape(G, SO3F.dim, nn, N), [2, 1, 3]);
 clear G ori_id aloc rotneighbors projected;
+if ~wantInfo, clear bloc cloc dloc; end
 
 
 % compute compact local weights
@@ -123,8 +136,17 @@ if SO3F.detectOutliers
   weights = weights .* exp(-oI);
 end
 
-W_book = permute(max(real(weights), 0), [2, 3, 1]);
-clear weights dist deltas vor_weights oI;
+weights = max(real(weights), 0);
+W_book = permute(weights, [2, 3, 1]);
+
+% local geometry of the weighted neighborhoods, as it enters the local systems
+if wantInfo
+  geometryScore = local_geometry_score_SO3( ...
+    reshape(bloc, nn, N), reshape(cloc, nn, N), reshape(dloc, nn, N), ...
+    weights.');
+end
+
+clear weights dist deltas vor_weights oI bloc cloc dloc;
 
 
 % set up local function values
@@ -153,6 +175,7 @@ if wantInfo
     solve_lsq_book_constsize(W_book, G_book, f_book, solve_args{:});
   info.deltaFallback = deltaFallback;
   info.candidateLimit = candidateLimit;
+  info.geometryScore = geometryScore;
 elseif wantConds
   [c_book, conds] = ...
     solve_lsq_book_constsize(W_book, G_book, f_book, solve_args{:});

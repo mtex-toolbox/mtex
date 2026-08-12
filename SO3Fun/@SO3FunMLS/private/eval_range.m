@@ -124,9 +124,21 @@ if ~SO3F.centered
 
   basis_in_ori = eval_basis_functions(SO3F, ori);
   eval_vector = permute(basis_in_ori, [2, 3, 1]);
+
+  % the geometry score describes the local node cloud in the tangent space, so
+  % the diagnostic needs local coordinates even for a non-centered basis
+  if wantInfo
+    [~, ~, bloc, cloc, dloc] = ...
+      local_coordinates_SO3(ori, ori_id, SO3F.nodes, grid_id);
+  end
 else
-  [rotneighbors, aloc] = ...
-    local_coordinates_SO3(ori, ori_id, SO3F.nodes, grid_id);
+  if wantInfo
+    [rotneighbors, aloc, bloc, cloc, dloc] = ...
+      local_coordinates_SO3(ori, ori_id, SO3F.nodes, grid_id);
+  else
+    [rotneighbors, aloc] = ...
+      local_coordinates_SO3(ori, ori_id, SO3F.nodes, grid_id);
+  end
 
   G = eval_basis_functions(SO3F, rotneighbors);
   clear rotneighbors;
@@ -180,6 +192,9 @@ solve_args = [solve_args, varargin];
 if wantInfo
   [c_book, conds(J_idx), info_batch] = ...
     solve_lsq_book_varsize(weights, G, f, nn, solve_args{:});
+  % local geometry of the weighted neighborhoods, as it enters the local systems
+  info_batch.geometryScore = ...
+    local_geometry_score_SO3(bloc, cloc, dloc, weights, nn);
   info = insertRegInfo(info, J_idx, info_batch);
 elseif wantConds
   [c_book, conds(J_idx)] = ...
@@ -229,6 +244,7 @@ function info = initRegInfo(N)
   info.centerAmplificationRegBound = NaN(N, 1);
   info.numericalRidge = NaN(N, 1);
   info.shapeRegularization = NaN(N, 1);
+  info.geometryScore = NaN(N, 1);
   info.regularizationActive = false(N, 1);
   info.deltaFallback = false(N, 1);
   info.candidateLimit = false(N, 1);
