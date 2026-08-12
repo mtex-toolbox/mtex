@@ -183,7 +183,11 @@ end
 if det(M) < 0, M(2,:) = -M(2,:);end
 
 % now compute the new a, b, c axes
-abc = vector3d(M * double(abc));
+% double(v) is 3 x N with the vectors in its COLUMNS, and for the three
+% axes that is 3 x 3 - a shape the constructor cannot read unambiguously.
+% Slice it explicitly rather than let it guess (and warn).
+xyz = M * double(abc);
+abc = vector3d(xyz(1,:),xyz(2,:),xyz(3,:));
 
 if check_option(varargin,'rotAxes')
   abc = get_option(varargin,'rotAxes') * abc;

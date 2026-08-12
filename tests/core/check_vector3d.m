@@ -18,6 +18,7 @@ function check_vector3d
 checkThreeArgumentShapes;
 checkMatrixShapes;
 checkAmbiguousAndInvalid;
+checkNoInternalAmbiguity;
 
 disp('check_vector3d: passed');
 
@@ -77,6 +78,44 @@ end
 assert(isequal(size(vector3d(zeros(0,3))),[0 1]), ...
   'vector3d of a 0 x 3 matrix is %s, expected [0 1]', ...
   mat2str(size(vector3d(zeros(0,3)))));
+
+end
+
+% =========================================================================
+function checkNoInternalAmbiguity
+% MTEX's own code must never reach the 3 x 3 warning
+%
+% The three crystal axes are a 3 x 3 matrix, so calcAxis built one on every
+% crystalSymmetry construction and the warning fired on one of the hottest
+% paths in the toolbox - harmless, since the column reading it wanted is the
+% one it got, but noisy on every single call. An ordinary test run does not
+% catch that, because a warning does not fail anything; only promoting it
+% does. Kept here rather than left to a manual sweep.
+
+state = warning('error','MTEX:vector3d:ambiguousMatrix'); %#ok<CTPCT>
+cleanup = onCleanup(@() warning(state)); %#ok<NASGU>
+
+% The 'mineral' option is what routes through calcAxis's alignment branch,
+% and that is the branch that built the 3 x 3. Without it the branch is not
+% taken, so a bare crystalSymmetry(pg) does NOT catch the regression - which
+% is exactly how it escaped the first time. Every real script passes it.
+cases = {{'432','mineral','Austenite'}, {'m-3m','mineral','X'}, ...
+  {'321','mineral','Quartz'}, {'622','mineral','X'}, {'2/m','mineral','X'}, ...
+  {'1',[1 2 3],[80 90 100]*degree,'mineral','X'}};
+
+for k = 1:numel(cases)
+  try
+    cs = crystalSymmetry(cases{k}{:});
+    v = cs.aAxis + cs.bAxis + cs.cAxis; %#ok<NASGU>
+  catch ME
+    if strcmp(ME.identifier,'MTEX:vector3d:ambiguousMatrix')
+      error(['check_vector3d: crystalSymmetry(''%s'',...) reaches the 3 x 3 '...
+        'ambiguity warning - slice the matrix explicitly at that call site '...
+        'instead of letting the constructor guess'], cases{k}{1});
+    end
+    rethrow(ME);
+  end
+end
 
 end
 
