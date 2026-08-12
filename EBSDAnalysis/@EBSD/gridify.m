@@ -55,6 +55,35 @@ function varargout = gridify(ebsd,varargin)
 % |ebsd(1,1)| is the corner with the smallest coordinates. Hexagonal grids
 % are always stored this way, the flags apply to square grids only.
 %
+% The layout is a property of the MAP, not of the file: it is the same
+% whichever corner the acquisition started from and whichever direction it
+% scanned in.
+%
+% Gridding therefore REORDERS the measurements
+% |gridify| does not preserve the order the measurements arrive in, and
+% cannot: the layout above fixes the first matrix dimension to y, while a
+% .ctf or .ang is written with x varying fastest, so MATLAB's column major
+% linear indexing runs down the map where the file runs across it. The two
+% coincide only for a file that happens to scan y fastest. |newId| is the
+% translation - |ebsdGrid.pos(newId) == ebsd.pos| - and |ebsdGrid.oldId|
+% carries the original ids.
+%
+% Of the sample files shipped with MTEX, none keeps its order under the
+% default layout and seven of eleven keep it under |'rowMajor'|; the rest
+% cannot be matched by either flag, because they scan x descending
+% (Emsland_plessite) or are hexagonal. Reordering is thus the normal case,
+% and |'rowMajor'| is a layout choice, not a way to preserve the input
+% order.
+%
+% This is safe for reconstruction: |calcGrains| is invariant under the order
+% of its input - shuffling forsterite's 187467 indexed measurements at
+% random reproduces the grain count and the multiset of boundary segment
+% lengths exactly, with the total length moving by 2 ulp from summation
+% order alone. Anything that does depend on the order is a defect in that
+% code rather than a reason to reshape the grid; see
+% <EBSD.latticeBasis.html latticeBasis>, which used to derive a mirrored
+% lattice basis from the reordered unit cell.
+%
 % Example
 %
 %   mtexdata twins
