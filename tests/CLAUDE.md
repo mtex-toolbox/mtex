@@ -86,6 +86,8 @@ over budget, trim from outside these before trimming inside them.
 | `chainOrder` mex vs MATLAB | `core/check_chainOrder` |
 | Voronoi / Delaunay backends | `core/check_jcvoronoi` |
 | pseudo symmetry cleanup | `core/check_cleanUpPseudoSym` |
+| grain boundary smoothing | `core/check_boundaryChains` (order/topology) + `core/check_gbnd` (the ebsdId seam) |
+| grain boundary normal distribution | `core/check_gbnd` |
 | quadruple point merging | `slow/check_removeQuadruplePoints` |
 | 3d grains, face orientation | `slow/check_orientFaces` |
 | convolution, all type pairs | `core/check_convolution` |
