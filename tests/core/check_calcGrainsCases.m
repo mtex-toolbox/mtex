@@ -209,6 +209,71 @@ ebsdMPhex.rotations(iMP) = o2;
 checkMinPixel(calcGrains(ebsdMPhex,'threshold',thr,'minPixel',2), 2, 1, ...
   'hex, single stray pixel');
 
+%% gridify padding must segment exactly like notIndexed pixels
+%
+% The two ways of saying "nothing was measured here" have to give the same
+% grains. A scan whose file simply omits those positions gets them back
+% from gridify as lattice sites with phaseId = NaN; a scan that records
+% them as unindexed has them present with phaseId = 1. spatialDecomposition
+% Grid's help states the two are treated identically - they were not.
+%
+% Every grain boundary criterion selects its pixels with a test of the form
+% phaseId(i) == p, and NaN compares false against every phase, so the pad
+% cells matched no phase, scored 0 (= high angle boundary) against each of
+% their neighbours, and each came out as its own single-pixel grain. On
+% forsterite with a solid 5841 cell hole that was 5842 notIndexed grains
+% instead of 6. Only the notIndexed count moved - the indexed grains were
+% identical either way - which is why it stayed invisible for so long, and
+% why this asserts on the notIndexed grains specifically.
+%
+% Fixed in grainBoundaryCriterion/eval, which normalises NaN to phase 1 for
+% every criterion and every caller at once.
+
+ebsdPadBase = buildSquareBlockGrid(cs, 6, 4, ...
+  orientation.byAxisAngle(zvector,(1:16)*7*degree,cs));
+
+hole = false(size(ebsdPadBase));
+hole(10:16,6:14) = true;             % spans four orientation blocks
+
+% (A) the hole as missing measurements: drop those rows, then let gridify
+%     pad the lattice sites back in with phaseId = NaN
+ebsdPadA = gridify(ebsdPadBase(~hole));
+
+% (B) the same cells, present but marked notIndexed
+ebsdPadB = ebsdPadBase;
+ebsdPadB.phaseId(hole) = 1;
+
+% without real padding this test asserts nothing
+nPad = nnz(isnan(ebsdPadA.phaseId));
+if nPad ~= nnz(hole)
+  error(['gridify padding test is vacuous: %d cells carry a NaN phaseId, ' ...
+    'expected the %d cells of the hole'], nPad, nnz(hole));
+end
+
+gPadA = calcGrains(ebsdPadA,'threshold',thr);
+gPadB = calcGrains(ebsdPadB,'threshold',thr);
+
+niA = sort(gPadA(~gPadA.isIndexed).numPixel);
+niB = sort(gPadB(~gPadB.isIndexed).numPixel);
+
+if numel(niA) ~= numel(niB) || ~isequal(niA(:),niB(:))
+  error(['a hole made of gridify padding segmented into %d notIndexed ' ...
+    'grains, the same hole marked notIndexed into %d - the padding is ' ...
+    'not being treated as notIndexed (largest %d vs %d pixels)'], ...
+    numel(niA), numel(niB), max([niA(:);0]), max([niB(:);0]));
+end
+
+if nnz(gPadA.isIndexed) ~= nnz(gPadB.isIndexed)
+  error('the two hole representations gave %d and %d indexed grains', ...
+    nnz(gPadA.isIndexed), nnz(gPadB.isIndexed));
+end
+
+% the symptom was one grain per pad cell, so pin that the padding merged
+if numel(niA) >= nPad
+  error(['the %d pad cells produced %d notIndexed grains - contiguous ' ...
+    'padding is being split into single-pixel grains'], nPad, numel(niA));
+end
+
 disp('calcGrains cases: all checks passed');
 
 end
