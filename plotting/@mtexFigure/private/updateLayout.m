@@ -62,23 +62,36 @@ end
 
 if isscalar(mtexFig.cBarAxis) && i>1
   pos = get(mtexFig.cBarAxis,'position');
-  
+
+  % bounding box of all axes, used to place a bar on the side the raster
+  % does not grow from - the east and south formulas below are expressed in
+  % the raster geometry and are left as they are
+  box = cell2mat(get(mtexFig.children(:),{'Position'}));
+
   if pos(4)>pos(3) %Vertical bar
-    
+
     pos(4) = mtexFig.nrows * mtexFig.axisHeight + ...
       (mtexFig.nrows-1) * (mtexFig.innerPlotSpacing + sum(mtexFig.tightInset([2,4]))) - ...
       (mtexFig.cBarAxis.Ruler.Exponent~=0)*2*mtexFig.cBarAxis.FontSize;
     pos(2) = axisPos(2)+1;
-    pos(1) = mtexFig.ncols*(mtexFig.axisWidth + mtexFig.innerPlotSpacing + ...
-      sum(mtexFig.tightInset([1,3]))) + mtexFig.outerPlotSpacing;
-    
+    if strcmp(mtexFig.cBarSide,'west')
+      pos(1) = min(box(:,1)) - pos(3) - mtexFig.cBarShift;
+    else
+      pos(1) = mtexFig.ncols*(mtexFig.axisWidth + mtexFig.innerPlotSpacing + ...
+        sum(mtexFig.tightInset([1,3]))) + mtexFig.outerPlotSpacing;
+    end
+
   else  %Horizontal bar
-    
+
     pos(3)=mtexFig.ncols*(mtexFig.axisWidth) + ...
       (mtexFig.ncols-1) * (mtexFig.innerPlotSpacing + sum(mtexFig.tightInset([1,3]))); %c_bar width
-    pos(2) = mtexFig.outerPlotSpacing + 2*pos(4);%axisPos(2) - 2*pos(4);
+    if strcmp(mtexFig.cBarSide,'north')
+      pos(2) = max(box(:,2)+box(:,4)) + mtexFig.cBarShift;
+    else
+      pos(2) = mtexFig.outerPlotSpacing + 2*pos(4);%axisPos(2) - 2*pos(4);
+    end
     pos(1) = mtexFig.outerPlotSpacing + mtexFig.tightInset(1); %c_bar left
-    
+
   end
   set(mtexFig.cBarAxis,'position',pos);
 end
@@ -160,6 +173,13 @@ set(mtexFig.parent,'Units',old_units);
       % over first; this only changes the unit the position is expressed in,
       % not where the bar currently sits.
       if ~isempty(found)
+
+        % take the side from the colorbar itself, before the Position
+        % assignments below switch its Location to 'manual'
+        if endsWith(found(1).Location,'outside')
+          mtexFig.cBarSide = extractBefore(found(1).Location,'outside');
+        end
+
         set(found,'Units','pixels');
 
         % give them the same thickness mtexFig.colorbar gives the colorbars
@@ -182,18 +202,26 @@ set(mtexFig.parent,'Units',old_units);
   end
 
   function resizeColorBar(cBar)
-  
+
     pos = get(cBar,'position');
+
+    % the orientation decides which pair of sides is possible, cBarSide
+    % which of the two - a 'northoutside' bar is horizontal and belongs
+    % above the axes, not below it
     if pos(4) > pos(3) % vertical
-      set(cBar,'position',...
-        [axisPos(1)+mtexFig.axisWidth+10,...
-        axisPos(2)+1,...
-        pos(3),mtexFig.axisHeight-1]);
+      if strcmp(mtexFig.cBarSide,'west')
+        x = axisPos(1) - 10 - pos(3);
+      else
+        x = axisPos(1) + mtexFig.axisWidth + 10;
+      end
+      set(cBar,'position',[x,axisPos(2)+1,pos(3),mtexFig.axisHeight-1]);
     else % horizonal
-      set(cBar,'position',...
-        [axisPos(1),...
-        axisPos(2)-mtexFig.tightInset(2) + mtexFig.cBarShift,...
-        mtexFig.axisWidth-1,pos(4)]);
+      if strcmp(mtexFig.cBarSide,'north')
+        y = axisPos(2) + mtexFig.axisHeight + mtexFig.cBarShift;
+      else
+        y = axisPos(2) - mtexFig.tightInset(2) + mtexFig.cBarShift;
+      end
+      set(cBar,'position',[axisPos(1),y,mtexFig.axisWidth-1,pos(4)]);
     end
   end
   

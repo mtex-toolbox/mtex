@@ -14,6 +14,7 @@ classdef mtexFigure < handle
 %  parent            - handle of the parent figure
 %  children          - handles to all axes
 %  cBarAxis          - handles to all colorbar axes
+%  cBarSide          - side the colorbar is placed at
 %  legendAxis        - handle of a legend placed outside the axes
 %  legendSide        - side the legend is placed at
 %  legendSpacing     - spacing between the axes and the legend
@@ -72,6 +73,7 @@ classdef mtexFigure < handle
     parent            % the parent figure
     children          % the axes
     cBarAxis          % the colorbar axes
+    cBarSide = 'east' % side the colorbar is placed at
     legendAxis        % the legend, if it is placed outside the axes
     legendSide = 'east' % side the legend is placed at
     legendSpacing     % spacing between the axes and the legend

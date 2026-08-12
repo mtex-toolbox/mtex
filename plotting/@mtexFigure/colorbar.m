@@ -68,7 +68,17 @@ if nargout == 1, h = mtexFig.cBarAxis; end
       'northoutside','westoutside'})];
     h = optiondraw(colorbar('peer',peer,location{end},'units','pixel',...
       'FontSize',fs),varargin{:});
-    
+
+    % remember which side was asked for - the layout has to reserve the band
+    % there and put the bar back there on every resize. Read it off the
+    % colorbar rather than off location{end}, so that the 'location' option
+    % form, which optiondraw applies above, is picked up as well. This has to
+    % happen before anything assigns a Position, which switches Location to
+    % 'manual'.
+    if endsWith(h.Location,'outside')
+      mtexFig.cBarSide = extractBefore(h.Location,'outside');
+    end
+
     if check_option(varargin,'title')
       h.Label.String = get_option(varargin,'title');
     end
