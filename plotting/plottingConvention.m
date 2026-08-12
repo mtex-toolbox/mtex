@@ -120,14 +120,25 @@ classdef plottingConvention < matlab.mixin.Copyable
 
       elseif isa(ax,'matlab.graphics.axis.PolarAxes')
         
-        switch round(angle(pC.east,xvector,zvector)/degree)
+        % ThetaZeroLocation says where theta = 0 is DRAWN, and theta is the
+        % azimuth measured from the x axis of the data, so this is the
+        % screen angle of xvector itself: how far it sits from east,
+        % measured towards north. The angle from east to x about z that was
+        % taken here instead runs the other way round, which is the same for
+        % 0 and 180 degree but swaps top and bottom - so of the four axis
+        % aligned conventions only 'x↑→y' came out wrong, by exactly 180
+        % degree. Rounded to the quadrant MATLAB offers; a convention no
+        % axis is aligned with has no exact answer here.
+        onScreen = atan2(dot(xvector,pC.north,'noAntipodal'), ...
+          dot(xvector,pC.east,'noAntipodal'));
+        switch mod(round(onScreen/(90*degree)),4)
           case 0
             ax.ThetaZeroLocation='right';
-          case 90
+          case 1
             ax.ThetaZeroLocation='top';
-          case 180
+          case 2
             ax.ThetaZeroLocation='left';
-          case 270
+          case 3
             ax.ThetaZeroLocation='bottom';
         end
         if pC.outOfScreen.z<0

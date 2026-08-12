@@ -91,8 +91,8 @@ The multi-release work. Everything here is bigger than one branch.
 | G5 | `minPixel` culling can isolate a pixel from its true grain, producing a malformed single-pixel grain | 2 | 1 | bug | — | #2574 |
 | G6 | `minPixel` is ignored when alpha shapes are used — **fixed 2026-08-12** in `8a3f98703`: neither alpha-specific nor an outright ignore, but a systematic under-cull on every square map, since the Delaunay-only sizing pass runs 8-connected where the segmentation is 4-connected | 2 | 0 | done | — | #2513 |
 | G7 | `calcGrains(EBSD(ebsd))` and `calcGrains(ebsd.gridify)` disagree — different grains from the same data | 3 | 1 | bug | — | #2295, [→](#p14) |
-| G8 | `calcGrains` errors after `interp` | 2 | 0 | bug | — | #1870 |
-| G9 | `calcPolygonsC` produces negative areas | 2 | 0 | bug | — | #2076 |
+| G8 | `calcGrains` errors after `interp` — **not reproducible** on a synthetic map after the `interp` rewrite (2026-08-12: interp to half the step, 14641 points, 89 grains, no error); the reporter's own 50x50 map is attached to the issue and has not been tried | 2 | 0 | triage | — | #1870, [→](#g8) |
+| G9 | `calcPolygonsC` produces negative areas — **not reproducible**, 0 non-positive areas before and after a `minPixel` pass (checked 2026-08-12); reported as intermittent and no data was ever supplied | 2 | 0 | triage | — | #2076 |
 | G10 | `grains(1).poly` and `grains(1).boundary` have incompatible sizes — on a synthetic map `poly` has 17 vertices for 16 segments, i.e. a closed ring, which may be the whole report; needs the reporter's case (checked 2026-08-12) | 2 | 0 | triage | — | #1555 |
 | G11 | `neighbors` returns wrong results | 1 | 0 | triage | — | #865 |
 | G12 | `grainMean` behaves differently since 6.0 beta3 | 1 | 0 | triage | — | #2090 |
@@ -289,7 +289,7 @@ copy; only what is still open is summarised here.
 | L1 | The scale bar moves depending on the plotting convention — **already fixed** by the scaleBar rework that reads the convention back from the camera; measured 2026-08-12 across four conventions x four `Location` corners and the reporter's own preference pair, and pinned in `check_scaleBar` | 2 | 0 | done | — | #2576, [→](#l1) |
 | L2 | Sigma sections ignore the plotting convention — **they do not**; measured 2026-08-12, the section follows `odf.SS.how2plot`. What the report actually shows is that data keeps the convention it captured at construction, so changing the default afterwards does not reach it — that is L4 | 2 | 0 | done | — | #2093, [→](#l2) |
 | L2b | `setMTEXpref` had three preferences `getMTEXpref` could not read back — **fixed 2026-08-12**, `xyzPlotting`, `xAxisDirection` and `zAxisDirection` are held by the plotting convention, not by the appdata group | 2 | 0 | done | — | [→](#l2) |
-| L3 | `histogram(grains.longAxis)` ignores the plotting convention | 2 | 0 | bug | — | — |
+| L3 | `histogram(grains.longAxis)` ignores the plotting convention — **fixed 2026-08-12**; it does follow it, but `setView`'s polaraxes branch measured the angle the wrong way round, so `x↑→y` came out rotated by exactly 180° | 2 | 0 | done | — | [→](#l3) |
 | L4 | General plotting-convention oddities; `setMTEXpref('xAxisDirection',...)` has no effect | 3 | 1 | bug | — | #2014, #2096 |
 | L5 | Crystal shapes do not follow the EBSD data when it is rotated or the convention changes | 2 | 1 | bug | — | #1952 |
 | L6 | Colour keys in specimen coordinates should respect the plotting convention — better, `colorKey(what2color)` should take what it needs from the object | 2 | 1 | planned | — | [→](#l6) |
@@ -299,7 +299,7 @@ copy; only what is still open is summarised here.
 | L10 | `plot(ebsd,ebsd.orientation,'ipfDirection',xvector)` should work | 1 | 0 | idea | — | — |
 | L11 | The IPF colour key disk cache is keyed only by point-group id, so it silently serves a stale table when the crystal frame changes — **fixed** in `3767b60b9`/`556c0b469`: the cache is in memory and keyed by a digest of the sector geometry and white centre, and `removeObsoleteCacheFiles` deletes what earlier versions left in `prefdir` | 3 | 0 | done | — | [→](#l11) |
 | L12 | Colorbar at `'northoutside'` was placed below — **fixed 2026-08-12**; `'westoutside'` was equally broken. The side is kept in `mtexFig.cBarSide` and honoured by `calcTightInset`/`updateLayout` | 1 | 0 | done | — | #1744 |
-| L13 | ODF subplots get different colormaps | 1 | 0 | bug | — | #1732 |
+| L13 | ODF subplots get different colormaps — **not a defect**: `mtexColorMap(ax,...)` on a single axes handle gives distinct colormaps, while the bare form deliberately covers every axes of the figure. `mtexColorMap` had no help at all, which is the actual gap; written 2026-08-12 | 1 | 0 | done | — | #1732 |
 | L14 | `colorrange` misbehaves | 1 | 0 | triage | — | #1608 |
 | L15 | ODFs plot differently than expected | 1 | 0 | triage | — | #320 |
 | L16 | Plotting a circle glitches | 1 | 0 | bug | — | #330 |
@@ -730,6 +730,44 @@ count — `size(gB)` reads the segment list and does not see the expansion.
 Also pins that the lattice index range is unchanged by a far shift, which is
 where #1722 actually goes wrong.
 
+### L3
+`vector3d/histogram` does hand the convention to
+`plottingConvention/setView`, whose polaraxes branch sets
+`ThetaZeroLocation` and `ThetaDir`. It took
+
+```matlab
+round(angle(pC.east,xvector,zvector)/degree)
+```
+
+i.e. the angle *from east to x*, while `ThetaZeroLocation` asks where
+`theta = 0` — the x axis of the data — is *drawn*, which is the angle the
+other way round, `atan2(<x,north>,<x,east>)`. The two agree at 0 and 180
+degree and swap top and bottom, so three of the four axis aligned
+conventions looked right and only `x↑→y` was wrong — by exactly 180 degree.
+
+Measured as the on screen angle of a tight cluster of directions, resolving
+`ThetaZeroLocation` and `ThetaDir` back into an angle (it is their
+combination that decides what the reader sees):
+
+| convention | x lands / wanted | y lands / wanted |
+|---|---|---|
+| `y↑→x` | 0.6 / 0 | 90.7 / 90 |
+| `y↓→x` | 0.3 / 0 | 270.7 / 270 |
+| `x←↑y` | 180.0 / 180 | 90.4 / 90 |
+| `x↑→y` | **270.0 / 90** | **180.2 / 360** |
+
+New owner `tests/plotting/check_polarHistogram.m`.
+
+### G8
+Not reproducible as of 2026-08-12: interpolating `small` onto half its step
+with a `meshgrid` and running `calcGrains` gives 89 grains from 14641 points
+with no error. `@EBSD/interp` was rewritten since the report (see `bugs.md`
+item 7 — `scatteredInterpolant` replaced by a local nearest-within-the-cell
+test), and the reported "Index exceeds the number of array elements" is the
+shape of failure that rewrite removed. The reporter's own 50x50 cutout is
+attached to the issue as `no5_02um.zip` and has **not** been tried; that is
+what would close this rather than leave it in triage.
+
 ### L2
 Measured 2026-08-12 with an asymmetric `unimodalODF`, reading the peak
 position off the first section's contour:
@@ -799,9 +837,13 @@ warns (`MTEX:vector3d:ambiguousMatrix`) and is read column wise, i.e.
 unchanged; a matrix that is neither errors with `MTEX:vector3d:wrongSize`
 instead of being transposed into shape.
 
-Blast radius in tree is nil: every single-argument `vector3d(...)` call in
-the toolbox is either a copy constructor on a `vector3d`/`Miller`/`S2Grid`
-subclass or passes a `1 x 3`, which is a scalar under either reading.
+Blast radius in tree is one call site, not nil as the commit message says —
+that audit grepped for a single *identifier* argument and so missed
+bracketed ones. `@grain2d/checkInside` builds `[xy zeros(n,1)]`, a genuine
+`n x 3`. The orientation change is harmless there (`in` is assigned into a
+column slice either way), but for exactly **three** query points that matrix
+is also `3 x 3` and would now warn, so the call was moved to
+`vector3d.byXYZ`, which reads rows unconditionally.
 
 New owner `tests/core/check_vector3d.m` — there was none for the class the
 whole geometry chain is built on.

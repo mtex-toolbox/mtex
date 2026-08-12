@@ -117,6 +117,7 @@ over budget, trim from outside these before trimming inside them.
 | `setMTEXpref`/`getMTEXpref` round trip | `core/check_mtexPref` |
 | `mtexFigure` layout, colorbar placement | `plotting/check_colorbarLocation` |
 | micron bar, reference frame indicator | `plotting/check_scaleBar` |
+| polar histogram of directions, `setView` on a polaraxes | `plotting/check_polarHistogram` |
 | spherical axes labels | `plotting/check_sphericalAxesLabels` |
 | color scale options | `plotting/check_logColorScale` |
 | plots leave hold state untouched | `plotting/check_holdStatePlots` |
