@@ -557,8 +557,8 @@ gives `alphaBetaTitanium` at 1.5 degree **0** negative areas and 0 open walks
 (was 117), 46230 grains, and only **1** negative area after
 `smoothBoundary(...,5)` against **16** for the branch-cut pairing with the same
 fix. The pairing can be decided per quadruple point after all, and doing so also
-all but removes the smoothing induced breakage. Deciding whether to bring it
-back is open - see [→](#g9-followup).
+all but removes the smoothing induced breakage. **Both commits are back in the
+tree** - see [→](#g9-followup).
 
 Guarded: `check_calcGrainsCases` has a `checkClosedBoundary` helper asserting
 that every vertex a grain's boundary uses is met by an even number of that
@@ -567,14 +567,34 @@ see an open walk - plus a 4x4 fixture with holes that fails on the unfixed tree.
 The benchmark now pins `negAreaQP` at 0/0/0.
 
 ### G9-followup
-Bring back `b2ca13189` + `14463616f` (deterministic pairing at a quadruple
-point) now that the ring breakage they were blamed for is gone? It removes an
-order dependence that is real - shuffling `twins` moves the grain count - and
-cuts smoothing induced negative areas from 16 to 1 on `alphaBetaTitanium`. The
-cost is that the QP grain counts move a long way (`alphaBetaTitanium` 52398 ->
-46230, and per that commit `forsterite` 2931 -> 2897, `steel1C_1` 99843 ->
-97907), so the benchmark reference has to be regenerated on a decision about
-the numbers, not to make a test green.
+**Done 2026-08-12:** `b2ca13189` + `14463616f` (deterministic pairing at a
+quadruple point) are back, on top of the #2590 fix that removes the reason they
+were reverted. What they buy: `removeQuadruplePoints` is no longer a function of
+the order the measurements arrived in - shuffling `twins` used to move it
+between 110 and 108 grains, and a gridified map disagreed with the same map as a
+list - and smoothing induced negative areas on `alphaBetaTitanium` at 1.5 degree
+drop from 16 to 1.
+
+What they cost, all in the QP columns and all verified as the intended
+direction: a matching diagonal is now found at every quadruple point instead of
+roughly half of them, so more merge. `nGrainsQP` 2931 -> 2905 (forsterite),
+99875 -> 97856 (`steel1C_1`), `alphaBetaTitanium` at 1.5 degree 52398 -> 46230;
+copper has no mergeable quadruple point and does not move. `nGrains`,
+`totalLen` and `meanArea` are unchanged on all three benchmark datasets, i.e.
+the plain reconstruction is untouched. `steel1C_1.totalLenQP` goes -55.4 to
+-76.3 against `totalLen`, which is the documented "merge also drops boundary
+between two grains it joins that touch elsewhere" at a larger merge count;
+`check_removeQuadruplePoints` still passes, and it asserts the non zero segment
+lengths are identical with and without the option. Benchmark reference
+regenerated.
+
+Still open, and older than any of this: `sum(grains.area)` under
+`removeQuadruplePoints` exceeds the plain sum by up to 0.08% (martensite at 10
+degree, 85855.5 -> 85927.0), and it grows with the number of merges. Present
+before the #2590 fix and before the pairing change, so it is neither's doing -
+a merged grain that touches itself at a quadruple point apparently gets a
+polygon slightly larger than the union of its parts. Worth a look, since every
+per grain area on such a grain is wrong by that much.
 
 ### G33
 Two related requests: default filter masks whose size follows the grid

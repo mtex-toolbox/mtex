@@ -41,23 +41,48 @@ function ref = grainReconstructionReference()
 %
 % Two further commits, b2ca13189 and 14463616f, made the pairing at a
 % quadruple point deterministic instead of letting atan2's branch cut decide
-% it, and moved these columns much further (forsterite 2905, steel1C_1
-% 97856). They were REVERTED in 4f351d38e: the choice cannot be made per
-% quadruple point without breaking ring closure, and produced up to 117
-% grains of negative area on alphaBetaTitanium. So the warning below stands
-% in full - this metric can still move on its own, because which of the two
-% pairings is taken still depends on floating point noise in a vertex
-% position. Reproduction of the breakage, for whoever picks it up:
-% plot(smoothBoundary(grains,5)(40037)) on alphaBetaTitanium.
+% it, and moved these columns much further. They were reverted in 4f351d38e
+% because they appeared to break ring closure - up to 117 grains of negative
+% area on alphaBetaTitanium - and then brought back, see the 2026-08-12
+% entry below.
 %
 % negAreaQP counts grain polygons that enclose a NEGATIVE area, i.e. rings
 % traced inside out. It was 0 everywhere except steel1C_1, which had 2 of
 % 99875, and is now 0 there too: #2590 was root caused to the vertex rewrite
 % in removeQuadruplePoints losing one of two writes to an edge shared by two
-% neighbouring quadruple points, and fixed. Only this field moved -
-% nGrainsQP and totalLenQP came out bit identical on steel1C_1, because the
-% fix changes which vertex a segment attaches to and the duplicate sits at
-% the same coordinates.
+% neighbouring quadruple points, and fixed. That fix alone moved nothing
+% else - nGrainsQP and totalLenQP came out bit identical on steel1C_1,
+% because it only changes which vertex a segment attaches to and the
+% duplicate sits at the same coordinates.
+%
+% Regenerated again 2026-08-12, after b2ca13189 + 14463616f were brought
+% BACK on top of that fix: the 117 negative area grains that got them
+% reverted were the #2590 bug, not the pairing. The deterministic pairing
+% merely moved the shared edge of two neighbouring quadruple points into the
+% relocation slot where the lost write bit. With the fix under it,
+% alphaBetaTitanium at 1.5 degree has 0 negative areas and 0 grains whose
+% boundary walk does not close, against 117 before, and 1 negative area
+% after smoothBoundary(...,5) where the branch cut pairing has 16.
+%
+% So the QP columns move, and this time it is the reconstruction that
+% changed, deliberately: the pairing now offers the criterion the diagonal
+% it connects most instead of whichever one atan2's branch cut presented
+% first, so a matching diagonal is found every time rather than roughly half
+% the time, and more quadruple points merge. nGrainsQP 2931 -> 2905
+% (forsterite) and 99875 -> 97856 (steel1C_1); copper has no mergeable
+% quadruple point and does not move at all. nGrains, totalLen and meanArea
+% are unchanged on all three, i.e. the plain reconstruction is untouched.
+%
+% steel1C_1.totalLenQP goes 155980.6048791179 -> 155959.3580926838, i.e. the
+% long-standing -55.4 against totalLen becomes -76.3. That is the same
+% documented effect at a larger count: merge drops boundary between two
+% grains it joins that also touch elsewhere. Nothing real is lost on the
+% maps where that cannot happen - check_removeQuadruplePoints still passes,
+% and it asserts the multiset of non zero segment lengths is IDENTICAL with
+% and without the option on forsterite, titanium and twins.
+% forsterite.totalLenQP moves in its last digit only (...2765 -> ...2760),
+% which is summation order, nine orders of magnitude inside that test's
+% tolerance.
 %
 % This metric has a history of moving on its own. forsterite.nGrainsQP was
 % 2932, then 2933, then found to flip between 2933 and 2931 across sessions
@@ -68,12 +93,12 @@ function ref = grainReconstructionReference()
 ref = struct();
 
 ref.forsterite.nGrains    = 3100;
-ref.forsterite.nGrainsQP  = 2931;
+ref.forsterite.nGrainsQP  = 2905;
 ref.forsterite.totalLen   = 2109862.5882302765;
-ref.forsterite.totalLenQP = 2109862.5882302765;
+ref.forsterite.totalLenQP = 2109862.5882302760;
 ref.forsterite.meanArea   = 196661.7753931304;
 ref.forsterite.negAreaQP  = 0;
-ref.forsterite.time       = 0.5609;
+ref.forsterite.time       = 0.9971;
 
 ref.copper.nGrains    = 755;
 ref.copper.nGrainsQP  = 755;
@@ -81,14 +106,14 @@ ref.copper.totalLen   = 37299.7178983177;
 ref.copper.totalLenQP = 37299.7178983177;
 ref.copper.meanArea   = 462.1479171713;
 ref.copper.negAreaQP  = 0;
-ref.copper.time       = 0.0733;
+ref.copper.time       = 0.1296;
 
 ref.steel1C_1.nGrains    = 104814;
-ref.steel1C_1.nGrainsQP  = 99875;
+ref.steel1C_1.nGrainsQP  = 97856;
 ref.steel1C_1.totalLen   = 156035.7019482664;
-ref.steel1C_1.totalLenQP = 155980.6048791179;
+ref.steel1C_1.totalLenQP = 155959.3580926838;
 ref.steel1C_1.meanArea   = 0.5428519276;
 ref.steel1C_1.negAreaQP  = 0;
-ref.steel1C_1.time       = 8.8119;
+ref.steel1C_1.time       = 17.5747;
 
 end
