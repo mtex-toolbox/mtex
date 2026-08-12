@@ -1,5 +1,10 @@
 function check_S1Fun
-% check basic arithmetic and plotting options of S1Fun
+% check basic arithmetic of S1Fun
+%
+% The plotting option half of this file is plotting/check_S1FunPlot.
+%
+% See also
+% S1FunHarmonic check_S1FunPlot
 
 f = S1FunHandle(@(x) cos(2*x) + 0.5*sin(x) + 0.3);
 F = S1FunHarmonic(f);
@@ -24,20 +29,6 @@ assertAlmostEqual(eval(G,x),ref*[1 2] + [1 2],'sF + a is wrong for vector valued
 
 % constant function, i.e. bandwidth 0
 assertAlmostEqual(eval(S1FunHarmonic(2) + 5,x),7,'sF + a is wrong for bandwidth 0')
-
-%% plotting options
-
-set(0,'DefaultFigureVisible','off');
-
-h = plot(F,'linewidth',2,'notPolar');
-lw = h.LineWidth;
-h = plot(F,'linewidth',3,'color','r');
-lwPolar = h.LineWidth;
-close all
-set(0,'DefaultFigureVisible','on');
-
-if lw ~= 2, error('plot(sF,''notPolar'') ignores the plotting options'); end
-if lwPolar ~= 3, error('plot(sF) ignores the plotting options'); end
 
 disp('check_S1Fun: everything ok!')
 

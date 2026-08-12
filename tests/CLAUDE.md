@@ -87,17 +87,18 @@ over budget, trim from outside these before trimming inside them.
 | kernel halfwidth | `core/check_kernelHalfwidth` |
 | ODF gradients | `core/check_odfGrad` |
 | Clebsch–Gordan coefficients | `core/check_clebschGordan` |
-| Wigner D | `core/check_WignerD` |
+| Wigner D | `slow/check_WignerD` (known failure, #2582) |
 | `calcDensity` edge cases | `core/check_calcDensityEmpty` |
 | S2 kernel normalization | `core/check_S2KernelNormalization` |
-| `S1Fun` | `core/check_S1Fun` |
-| MLS subsampling | `core/check_MLSSubsample` |
+| `S1Fun` arithmetic | `core/check_S1Fun` |
+| `S1Fun/plot` options | `plotting/check_S1FunPlot` |
+| MLS subsampling | `slow/check_MLSSubsample` |
 | `radon` options | `core/check_radonOptions` |
 | RBF approximation | `slow/check_SO3FunRBFApproximation` |
 | `calcPoleFigure` superposition | `core/check_calcPoleFigureSuperposition` |
 | pole figure → ODF inversion | `slow/check_poleFigureInversion` |
 | tensor factories | `core/check_tensorFactories` |
-| `calcTensor` averaging | `core/checkMeanTensor` |
+| `calcTensor` averaging | `slow/checkMeanTensor` |
 | ODF export interfaces | `core/check_odfExport` |
 | `holdOn`/`holdRelease` semantics | `core/check_holdGuard` |
 | `mtexFigure` layout, colorbar placement | `plotting/check_colorbarLocation` |
