@@ -351,10 +351,12 @@ end
     % criterion says its two pixels belong together, and that is how two
     % diagonally opposite grains that match get joined THROUGH the
     % quadruple point. So the pairing has to offer the criterion the pair
-    % most likely to match: take the one it connects most. Where it is
+    % most likely to match: take the one it connects most, and where it is
     % indifferent - which is common, it answers on three levels only - the
-    % pixel positions decide, so the outcome still cannot depend on the
-    % order the measurements arrived in.
+    % one with the smaller misorientation angle, i.e. join what matches
+    % better. Only if that is undecided too do the pixel positions break
+    % the tie. All three read the measurements, so the outcome cannot
+    % depend on the order they arrived in.
     s = size(iqF);
     pairOf = @(o) I_FDext(iqF(sub2ind(s,(1:s(1)).',o(:,1))),:) .* ...
                   I_FDext(iqF(sub2ind(s,(1:s(1)).',o(:,4))),:) + ...
@@ -373,10 +375,12 @@ end
 
     both = okA & okB;
     if any(both)
-      [cA,keyA] = qpRank(iqDA,both);
-      [cB,keyB] = qpRank(iqDB,both);
-      % higher criterion value first, then the canonical position key
-      useB(both) = cB(both) > cA(both) | (cB(both) == cA(both) & keyB(both) < keyA(both));
+      [cA,omA,keyA] = qpRank(iqDA,both);
+      [cB,omB,keyB] = qpRank(iqDB,both);
+      % criterion first, then the smaller misorientation angle, then the
+      % canonical position key
+      useB(both) = cB(both) > cA(both) | (cB(both) == cA(both) & ...
+        (omB(both) < omA(both) | (omB(both) == omA(both) & keyB(both) < keyA(both))));
     end
 
     qOrder(useB,:) = orderB(useB,:);
@@ -438,39 +442,62 @@ end
       
   end
 
-  function [c,key] = qpRank(M,mask)
+  function [c,omega,key] = qpRank(M,mask)
     % rank one candidate pairing of a quadruple point
     %
     % Every row of M selects the two pixels that pairing would separate.
-    % Returns, for the rows in mask,
+    % Returns, for the rows in mask, three keys compared in this order:
     %
-    %  c   - the grain boundary criterion on that pixel pair. The pairing
-    %        with the LARGER value offers the pair the criterion connects
-    %        most, i.e. the one mergeQuadrupleGrains can actually join.
-    %  key - a tie break that depends only on where the pixels are: the y
-    %        coordinate of the lexicographically first of the two. The two
-    %        candidate pairings are the two diagonals of the same four
-    %        pixels, so they share a centroid and cannot be told apart by a
-    %        sum - but they do differ in the sign of their slope, which is
-    %        exactly what this reads off. Positions are data, not
-    %        bookkeeping, so unlike the pixel ids they do not move when the
-    %        measurements are given in another order.
+    %  c     - the grain boundary criterion on that pixel pair. The pairing
+    %          with the LARGER value offers the pair the criterion connects
+    %          most, i.e. the one mergeQuadrupleGrains can actually join.
+    %  omega - the misorientation angle of the pair, SMALLER first. The
+    %          criterion answers on three levels only, so it is indifferent
+    %          at most quadruple points; the angle it is derived from
+    %          separates them further and in the same direction - join the
+    %          pair that matches better, which yields fewer and larger
+    %          grains. Inf where no angle is defined (a notIndexed pixel,
+    %          or two different phases), so those never win.
+    %  key   - a last tie break that depends only on where the pixels are:
+    %          the y coordinate of the lexicographically first of the two.
+    %          The two candidate pairings are the two diagonals of the same
+    %          four pixels, so they share a centroid and cannot be told
+    %          apart by a sum - but they do differ in the sign of their
+    %          slope, which is exactly what this reads off.
+    %
+    % All three are properties of the measurements. None of them moves when
+    % the same measurements are handed over in a different order, which is
+    % the whole point - see the header of the pairing code above.
 
-    c   = inf(size(M,1),1);
-    key = inf(size(M,1),1);
+    c     = -inf(size(M,1),1);
+    omega =  inf(size(M,1),1);
+    key   =  inf(size(M,1),1);
     if ~any(mask), return; end
 
-    [d,~] = find(M(mask,:).');
-    d = reshape(d,2,[]).';
+    [qpD,~] = find(M(mask,:).');
+    qpD = reshape(qpD,2,[]).';
 
-    c(mask) = gbc.eval(ebsd,d(:,1),d(:,2));
+    c(mask) = gbc.eval(ebsd,qpD(:,1),qpD(:,2));
 
-    p1 = [ebsd.pos(d(:,1)).x(:), ebsd.pos(d(:,1)).y(:)];
-    p2 = [ebsd.pos(d(:,2)).x(:), ebsd.pos(d(:,2)).y(:)];
-    second = p2(:,1) < p1(:,1) | (p2(:,1) == p1(:,1) & p2(:,2) < p1(:,2));
-    kk = p1(:,2);
-    kk(second) = p2(second,2);
-    key(mask) = kk;
+    % misorientation angle, where one is defined at all
+    qpOm  = inf(size(qpD,1),1);
+    qpPhase = ebsd.phaseId;
+    qpSame = qpPhase(qpD(:,1)) == qpPhase(qpD(:,2)) & ~isnan(qpPhase(qpD(:,1)));
+    for qpP = reshape(unique(qpPhase(qpD(qpSame,1))),1,[])
+      qpCS = ebsd.CSList(qpP);
+      if ~isa(qpCS,'symmetry') || ~qpCS.isIndexed, continue; end
+      qpSel = qpSame & qpPhase(qpD(:,1)) == qpP;
+      qpOm(qpSel) = angle(orientation(ebsd.rotations(qpD(qpSel,1)),qpCS), ...
+                      orientation(ebsd.rotations(qpD(qpSel,2)),qpCS));
+    end
+    omega(mask) = qpOm;
+
+    qpP1 = [ebsd.pos(qpD(:,1)).x(:), ebsd.pos(qpD(:,1)).y(:)];
+    qpP2 = [ebsd.pos(qpD(:,2)).x(:), ebsd.pos(qpD(:,2)).y(:)];
+    qpSecond = qpP2(:,1) < qpP1(:,1) | (qpP2(:,1) == qpP1(:,1) & qpP2(:,2) < qpP1(:,2));
+    qpKey = qpP1(:,2);
+    qpKey(qpSecond) = qpP2(qpSecond,2);
+    key(mask) = qpKey;
 
   end
 
