@@ -1,4 +1,8 @@
 function checkMeanTensor
+% NB the figure()/plot() calls that used to sit between these sections were
+% removed: every assertion here is on matrix(...) norms, so they added no
+% coverage, and they opened figures 1 to 3 unguarded and never closed them -
+% clobbering those figures in an interactive session and leaving them behind.
 
 
 %% define a rank 1 tensor and rotate it
@@ -56,8 +60,6 @@ T = tensor(Md);
 o = rotation.byEuler(150*degree,40*degree,35*degree);
 
 %rotate(T,o)
-figure(1)
-plot(rotate(T,o))
 
 %% do the same by an ODF
 
@@ -66,8 +68,6 @@ odf = unimodalODF(o,crystalSymmetry("1"),specimenSymmetry("1"),'halfwidth',1*deg
 
 T_odf = calcTensor(odf,T,'Fourier');
 
-figure(2)
-plot(T_odf)
 
 assert(mean(abs(reshape(matrix(T_odf-rotate(T,o)),[],1)))<2e-3,'Error checking third rank tensor!')
 
@@ -78,8 +78,6 @@ odf = unimodalODF(o,crystalSymmetry("1"),specimenSymmetry("1"),'halfwidth',2*deg
 
 T_odf_q = calcTensor(odf,T,'quadrature');
 
-figure(3)
-plot(T_odf_q)
 
 % Compare the quadrature path against the Fourier path, not against
 % rotate(T,o). At a halfwidth of 2 degrees both methods return 0.0062 away
@@ -108,8 +106,6 @@ T = tensor(M);
 o = rotation.byEuler(0*degree,50*degree,0*degree);
 
 rotate(T,o)
-figure(1)
-plot(rotate(T,o))
 
 %% do the same by an ODF
 
@@ -123,8 +119,6 @@ odf = unimodalODF(o,crystalSymmetry("1"),specimenSymmetry("1"),'halfwidth',0.1*d
 
 T_odf = calcTensor(odf,T,'Fourier')
 
-figure(2)
-plot(T_odf)
 
 assert(mean(abs(reshape(matrix(T_odf-rotate(T,o)),[],1)))<1e-3,'Error checking fourth rank tensor!')
 

@@ -1,6 +1,9 @@
 function check_SO3FunRBFApproximation
 
-warning('off','mlsq:itermax')
+% restored by onCleanup, so that a failing assertion below does not leave
+% the warning switched off for the rest of the session
+oldWarn = warning('off','mlsq:itermax');
+restoreWarn = onCleanup(@() warning(oldWarn)); %#ok<NASGU>
 
 %% Approximate SO3FunRBF - spatial method - mlsq
 
@@ -98,7 +101,7 @@ assert(err < 0.05,'SO3FunRBFApproximation:Dubna:SO3G:Noisy',...
 
 disp('SO3FunRBFApproximation: ok')
 
-warning('on','mlsq:itermax')
+
 
 
 end

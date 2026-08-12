@@ -7,6 +7,16 @@ function check_orientFaces
 
 fname = fullfile(mtexDataPath,'EBSD','SmallIN100_MeshStats.dream3d');
 
+% skip rather than hard fail when the file is absent: it is a 176 MB LFS
+% asset and is read twice here, so a clone without LFS pulled would
+% otherwise fail with an unrelated HDF5 error. Mirrors the steel map skip in
+% check_grainReconstructionBenchmark.
+if ~isfile(fname)
+  fprintf(['check_orientFaces: %s is not present, skipping.\n' ...
+    '  It is an LFS asset - run "git lfs pull" to fetch it.\n'], fname);
+  return
+end
+
 % the raw winding stored by Dream3d is arbitrary
 grainsRaw = grain3d.load(fname,'noOrientFaces');
 
