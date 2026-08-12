@@ -4,6 +4,7 @@ function check_mex(varargin)
 % Syntax
 %   check_mex
 %   check_mex('fast')   % return at once if the binaries are already there
+%   check_mex('strict') % raise if any check failed, instead of printing
 %
 % Description
 % The release zip ships no binaries (see makeRelease.m), so on a fresh
@@ -141,6 +142,16 @@ else
 
 end
 
+% with 'strict' the verdict is raised rather than only printed, which is what
+% lets a test suite gate on it - see check_mexFunctions. Without it the
+% behaviour is unchanged, so startup_mtex's check_mex('fast') is unaffected.
+if check_option(varargin,'strict')
+  bad = cellstr(mexFiles(~res));
+  if isMissing || ~isempty(bad)
+    error('check_mex:failed','%d of %d mex checks failed: %s', ...
+      numel(bad), numel(mexFiles), strjoin(bad,', '));
+  end
+end
 
 end
 
@@ -230,25 +241,55 @@ end
 % ===========================================================================
 function out = check_insidepoly_dblengine
 
-poly = [0.2 0.2; 0.7 0; 0.8 0.6; 0 1];
+% a non convex star, so that a naive convex test would fail, and enough
+% points that the comparison means something
+[poly,x,y] = insidepolyCase;
 
-x = rand(10,1);
-y = rand(10,1);
-
-out = all(insidepoly(x,y,poly(:,1),poly(:,2)) == ...
+out = all(logical(insidepoly(x,y,poly(:,1),poly(:,2))) == ...
   inpolygon(x,y,poly(:,1),poly(:,2)));
 
 end
 
 function out = check_insidepoly_sglengine
 
-poly = single([0.2 0.2; 0.7 0; 0.8 0.6; 0 1]);
+[poly,x,y] = insidepolyCase;
 
-x = rand(10,1,'single');
-y = rand(10,1,'single');
+ref = inpolygon(x,y,poly(:,1),poly(:,2));
+got = insidepoly(single(x),single(y),single(poly(:,1)),single(poly(:,2)));
 
-out = all(insidepoly(x,y,poly(:,1),poly(:,2)) == ...
-  inpolygon(x,y,poly(:,1),poly(:,2)));
+% a point within a whisker of an edge may legitimately fall the other way in
+% single precision, so those are excluded rather than demanded
+safe = pointToPolyDistance(x,y,poly) > 1e-4;
+
+out = all(logical(got(safe)) == ref(safe));
+
+end
+
+function [poly,x,y] = insidepolyCase
+% one non convex polygon and one point cloud, shared by both engines
+
+rng(0)
+t = linspace(0,2*pi,13).';
+poly = [cos(t).*(1+0.5*cos(5*t)), sin(t).*(1+0.5*cos(5*t))];
+
+x = rand(2000,1)*4 - 2;
+y = rand(2000,1)*4 - 2;
+
+end
+
+function d = pointToPolyDistance(x,y,poly)
+% shortest distance from each point to the polygon outline
+
+P1 = poly(1:end-1,:);
+P2 = poly(2:end,:);
+
+d = inf(numel(x),1);
+for k = 1:size(P1,1)
+  a = P1(k,:); b = P2(k,:);
+  ab = b - a;
+  t = max(0,min(1, ((x-a(1))*ab(1) + (y-a(2))*ab(2)) / (ab*ab.') ));
+  d = min(d, hypot(x - (a(1)+t*ab(1)), y - (a(2)+t*ab(2))));
+end
 
 end
 
@@ -266,14 +307,25 @@ end
 
 function out = check_EulerCyclesC
 
-ebsd = mtexdata('small');
+ebsd = mtexdata('small','silent');
 grains = calcGrains(ebsd('indexed')); %#ok<*NASGU>
 
 gB = grains.boundary;
+nV = length(gB.allV);
 
-[g, c, cP] = EulerCyclesC(gB.I_FG,gB.F,length(gB.allV));
+[g, c, cP] = EulerCyclesC(gB.I_FG,gB.F,nV);
 
-out = 1;
+% g and c are offset arrays into c and cP - a nested CSR - so they have to
+% close on the arrays they index, be monotone, and every cycle has to be a
+% closed walk over vertices that exist
+out = c(end) == numel(cP)+1 && g(end) == numel(c) && ...
+  all(diff(g) >= 0) && all(diff(c) >= 0) && ...
+  all(cP >= 1 & cP <= nV) && numel(c) > 1;
+
+for k = 1:numel(c)-1
+  idx = c(k):c(k+1)-1;
+  out = out && numel(idx) >= 4 && cP(idx(1)) == cP(idx(end));
+end
 
 end
 
@@ -388,84 +440,95 @@ end
 
 function out = check_S1Grid_find
 
-x = S1Grid([1,2,3,4,9],0,10);
+pts = [1,2,3,4,9];
+x = S1Grid(pts,0,10);
 out = find(x,3.2) == 3;
 
-x = S1Grid([1,2,3,4,9,9.8],0,10,'periodic');
+% periodic: 0.1 is nearest to 9.8 only if the wrap is honoured
+xp = S1Grid([pts 9.8],0,10,'periodic');
+out = out && find(xp,0.1) == 6;
 
-out = out && find(x,0.1) == 6;
+% and against brute force across the range
+q = linspace(0.5,9.5,200);
+for k = 1:numel(q)
+  [~,ref] = min(abs(pts - q(k)));
+  out = out && find(x,q(k)) == ref;
+end
 
 end
 
 function out = check_S1Grid_find_region
 
-out = 1;
+% returns a sparse logical MASK over the grid points, not a list of indices
+pts = [1,2,3,4,9];
+x = S1Grid(pts,0,10);
 
-x = S1Grid([1,2,3,4,9],0,10);
-find(x,4,5);
-
-x = S1Grid([1,2,3,4,9,9.8],0,10,'periodic');
-
-find(x,4,5);
-
-x = S1Grid(0:39990,0,40000,'periodic');
-y = linspace(0,39000,3000);
-
-
-for i = 1:100, ind = find(x,y,50); end
-
-for i = 1:1
-  for j = 1:length(y)
-    find(x,y(j),50);
-  end
+% 2.6 rather than a round 2.5, where a grid point sits exactly on the radius
+% and whether it counts is a strict/non strict question
+eps1 = 2.6;
+out = true;
+q = linspace(0.5,9.5,40);
+for k = 1:numel(q)
+  ref = find(abs(pts - q(k)) < eps1);
+  got = find(full(logical(find(x,q(k),eps1))));
+  out = out && isequal(got(:).',ref(:).');
 end
 
+xp = S1Grid([pts 9.8],0,10,'periodic');
+find(xp,4,5);
 
 end
 
 
 function out = check_S2Grid_find
 
-x = equispacedS2Grid('points',5000);
-y = vector3d(equispacedS2Grid('points',100));
+x  = equispacedS2Grid('points',500);
+xv = vector3d(x);
+y  = vector3d.rand(40);
 
-tic
-for i = 1:length(y)
-  find(x,y(i));
-end
-t1 = toc;
+got = find(x,y);
 
-tic
-for i = 1:100
-  find(x,y);
-end
-t2 = toc;
+% compared through the dot_outer matrix: angle() broadcasts a column against
+% a column into an outer product, so the elementwise reading would silently
+% become 40x40
+D = dot_outer(xv,y);
+best = max(D,[],1);
+lin = sub2ind(size(D),double(got(:)).',1:numel(y));
 
-out = 1;
+% S2Grid_find is not exact - it searches the nearest ring of constant theta
+% and then within it, and near a cell boundary settles on a neighbour: 4 of
+% 200 queries on a 510 point grid, overshooting by at most 0.84 degree with a
+% 9.0 degree spacing. A fifth of the spacing tolerates that and would still
+% catch a binary returning the wrong point.
+spacing = sqrt(4*pi/numel(xv));
+extra = acos(min(1,D(lin))) - acos(min(1,best));
+
+out = numel(got) == numel(y) && max(extra) < 0.2*spacing;
 
 end
 
 function out = check_S2Grid_find_region
 
-%x = equispacedS2Grid('points',5000);
-%plot(subGrid(x,find(x,xvector,10*degree)));
+x  = equispacedS2Grid('points',500);
+xv = vector3d(x);
+y  = vector3d.rand(20);
 
-x = equispacedS2Grid('points',5000);
-y = vector3d(equispacedS2Grid('points',100));
+% like the S1 version this returns a sparse logical MASK over the grid
+eps1 = 0.35;
+out = true;
+for k = 1:numel(y)
 
-tic
-for i = 1:length(y)
-  find(x,y(i),0.5);
+  got = find(full(logical(find(x,y(k),eps1))));
+  d = angle(xv,y(k));
+
+  % the boundary of the radius is a strict/non strict question, so only the
+  % clearly inside and clearly outside points are demanded
+  inside  = find(d < eps1 - 1e-6);
+  outside = find(d > eps1 + 1e-6);
+
+  out = out && ~isempty(inside) && all(ismember(inside,got)) && ...
+    ~any(ismember(outside,got));
 end
-t1 = toc;
-
-tic
-for i = 1:100
-  find(x,y,0.5);
-end
-t2 = toc;
-
-out = 1;
 
 end
 
