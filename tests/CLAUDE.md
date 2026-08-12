@@ -76,7 +76,8 @@ over budget, trim from outside these before trimming inside them.
 | `Miller`, crystal directions, hkl↔uvw | `core/check_Miller` |
 | **every mex binary's functional behaviour** | `core/check_mexFunctions` |
 | mex build completeness | `check_mexComplete` (root) |
-| **EBSD import**, all interfaces | `core/check_ebsdImport` |
+| **EBSD import**, text formats (.ctf, .ang) | `core/check_ebsdImport` |
+| **EBSD import**, HDF5 and multi-scan files | `slow/check_ebsdImportH5` |
 | `EBSD` object: construction, `display`, `loadobj`, `interp` | `core/check_ebsd` |
 | EBSD grid geometry, `unitCell`/`lattice.ij`, `dynProp` | `core/check_ebsdGrid` |
 | `EBSD/gradient`, KAM | `core/check_gradient` |

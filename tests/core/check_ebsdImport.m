@@ -20,8 +20,12 @@ function check_ebsdImport
 % against the file contents. If one of them changes, the question to answer
 % is which of the two is right - not to update the number.
 %
+% HDF5 is not covered here - it is a separate interface with its own
+% multi-scan selection, and its sample file is 50 MB, so it lives in
+% slow/check_ebsdImportH5.
+%
 % See also
-% EBSD.load loadEBSD_ctf loadEBSD_ang
+% EBSD.load loadEBSD_ctf loadEBSD_ang check_ebsdImportH5
 
 checkSquareCtf;
 checkHexCtf;
