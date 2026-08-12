@@ -331,23 +331,59 @@ end
     % sort the angles
     [~,qOrder] = sort(qOmega,2);
       
-    % find common pixels for pairs of edges - first we try 1/4 and 2/3
+    % Pair the four edges. The four, taken in angular order, can be joined
+    % as (1,4)+(2,3) or as (1,2)+(3,4); the two pairings pick out the two
+    % DIAGONALS of the four pixels meeting here, and the pairing decides
+    % which diagonal the new boundary separates.
+    %
+    % Which pairing the sorted order presented first used to decide it, and
+    % that is not a property of the map. On a square grid the four edges
+    % leave the vertex along +-x and +-y, so one of them sits exactly on
+    % atan2's branch cut at +-pi: a change of 1e-14 in the vertex position -
+    % all it takes to give the same map in a different measurement order -
+    % flips that edge between +pi and -pi, rotates the sorted order by one
+    % and swaps the pairing. Shuffling twins moved the result between 110
+    % and 108 grains that way, and gridify's reordering did the same.
+    %
+    % The geometry cannot break the tie: at a square quadruple point all
+    % four angular gaps are exactly pi/2. The orientations can.
+    % mergeQuadrupleGrains removes the new boundary again whenever the
+    % criterion says its two pixels belong together, and that is how two
+    % diagonally opposite grains that match get joined THROUGH the
+    % quadruple point. So the pairing has to offer the criterion the pair
+    % most likely to match: take the one it connects most. Where it is
+    % indifferent - which is common, it answers on three levels only - the
+    % pixel positions decide, so the outcome still cannot depend on the
+    % order the measurements arrived in.
     s = size(iqF);
-    orderSub = @(i) sub2ind(s,(1:s(1)).',qOrder(:,i));
-            
-    iqD = I_FDext(iqF(orderSub(1)),:) .* I_FDext(iqF(orderSub(4)),:) + ...
-      I_FDext(iqF(orderSub(2)),:) .* I_FDext(iqF(orderSub(3)),:);
-      
-    % if not both have one common pixel
-    switchOrder = full(sum(iqD,2))~= 2;
-        
-    % switch to 3/4 and 1/2
-    qOrder(switchOrder,:) = qOrder(switchOrder,[4 1 2 3]);
-    orderSub = @(i) sub2ind(s,(1:s(1)).',qOrder(:,i));
-        
-    iqD = I_FDext(iqF(orderSub(1)),:) .* I_FDext(iqF(orderSub(4)),:) + ...
-      I_FDext(iqF(orderSub(2)),:) .* I_FDext(iqF(orderSub(3)),:);
-      
+    pairOf = @(o) I_FDext(iqF(sub2ind(s,(1:s(1)).',o(:,1))),:) .* ...
+                  I_FDext(iqF(sub2ind(s,(1:s(1)).',o(:,4))),:) + ...
+                  I_FDext(iqF(sub2ind(s,(1:s(1)).',o(:,2))),:) .* ...
+                  I_FDext(iqF(sub2ind(s,(1:s(1)).',o(:,3))),:);
+
+    orderA = qOrder;
+    orderB = qOrder(:,[4 1 2 3]);
+    iqDA = pairOf(orderA);
+    iqDB = pairOf(orderB);
+
+    okA = full(sum(iqDA,2)) == 2;
+    okB = full(sum(iqDB,2)) == 2;
+
+    useB = ~okA & okB;
+
+    both = okA & okB;
+    if any(both)
+      [cA,keyA] = qpRank(iqDA,both);
+      [cB,keyB] = qpRank(iqDB,both);
+      % higher criterion value first, then the canonical position key
+      useB(both) = cB(both) > cA(both) | (cB(both) == cA(both) & keyB(both) < keyA(both));
+    end
+
+    qOrder(useB,:) = orderB(useB,:);
+    iqD = iqDA;
+    iqD(useB,:) = iqDB(useB,:);
+
+
     % some we will not be able to remove
     ignore = full(sum(iqD,2)) ~= 2;
     iqD(ignore,:) = [];
@@ -400,6 +436,42 @@ end
     % new empty rows to I_FDint
     %I_FDint = [I_FDint; sparse(qAdded,size(I_FDint,2))];
       
+  end
+
+  function [c,key] = qpRank(M,mask)
+    % rank one candidate pairing of a quadruple point
+    %
+    % Every row of M selects the two pixels that pairing would separate.
+    % Returns, for the rows in mask,
+    %
+    %  c   - the grain boundary criterion on that pixel pair. The pairing
+    %        with the LARGER value offers the pair the criterion connects
+    %        most, i.e. the one mergeQuadrupleGrains can actually join.
+    %  key - a tie break that depends only on where the pixels are: the y
+    %        coordinate of the lexicographically first of the two. The two
+    %        candidate pairings are the two diagonals of the same four
+    %        pixels, so they share a centroid and cannot be told apart by a
+    %        sum - but they do differ in the sign of their slope, which is
+    %        exactly what this reads off. Positions are data, not
+    %        bookkeeping, so unlike the pixel ids they do not move when the
+    %        measurements are given in another order.
+
+    c   = inf(size(M,1),1);
+    key = inf(size(M,1),1);
+    if ~any(mask), return; end
+
+    [d,~] = find(M(mask,:).');
+    d = reshape(d,2,[]).';
+
+    c(mask) = gbc.eval(ebsd,d(:,1),d(:,2));
+
+    p1 = [ebsd.pos(d(:,1)).x(:), ebsd.pos(d(:,1)).y(:)];
+    p2 = [ebsd.pos(d(:,2)).x(:), ebsd.pos(d(:,2)).y(:)];
+    second = p2(:,1) < p1(:,1) | (p2(:,1) == p1(:,1) & p2(:,2) < p1(:,2));
+    kk = p1(:,2);
+    kk(second) = p2(second,2);
+    key(mask) = kk;
+
   end
 
   function mergeQuadrupleGrains

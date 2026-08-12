@@ -209,6 +209,69 @@ ebsdMPhex.rotations(iMP) = o2;
 checkMinPixel(calcGrains(ebsdMPhex,'threshold',thr,'minPixel',2), 2, 1, ...
   'hex, single stray pixel');
 
+%% removeQuadruplePoints must not depend on the order of the measurements
+%
+% Reconstruction is a function of the measurements, not of the sequence they
+% were written down in - shuffling the input has to give the same grains.
+% Plain calcGrains always did; removeQuadruplePoints did not.
+%
+% At a quadruple point the four incident boundary edges are paired, and the
+% two possible pairings pick out the two DIAGONALS of the four pixels
+% meeting there. The pairing was taken from the position of the edges in
+% the angular sort, and on a square grid the edges leave the vertex along
+% +-x and +-y - so one of them sits exactly on atan2's branch cut at +-pi.
+% 1e-14 of noise in the Voronoi vertex, which is all a different
+% measurement order produces, flipped that edge between +pi and -pi,
+% rotated the sorted order by one and swapped the pairing. On twins that
+% was 110 grains against 108, and it is also what made a gridified map
+% disagree with the same map as a list (gridify reorders - see
+% EBSD/gridify).
+%
+% The tie cannot be broken geometrically: all four angular gaps are exactly
+% pi/2. It is broken by the criterion, and where that is indifferent by the
+% pixel positions - both properties of the data, neither of the order.
+
+% a 4 x 4 block layout tiling the same four orientations the merge test
+% above uses, so that every interior quadruple point has one diagonal pair
+% within the threshold and there are many of them to disagree about
+oq = [orientation.id(cs), ...
+      orientation.byAxisAngle(xvector,90*degree,cs), ...
+      orientation.byAxisAngle(yvector,90*degree,cs), ...
+      orientation.byAxisAngle(zvector,1*degree,cs)];
+[rr,cc] = ndgrid(1:4,1:4);
+qpIdx = 1 + (mod(rr,2)==0) + 2*(mod(cc,2)==0);   % o1 and o4 sit diagonally
+
+ebsdQP3 = buildSquareBlockGrid(cs, 6, 4, oq(qpIdx(:)), [0.3 0.3]);
+
+qpIn = EBSD(ebsdQP3('indexed'));
+rng(42);
+qpShuf = qpIn(randperm(length(qpIn)));
+
+gQPa = calcGrains(qpIn,  'threshold',thr,'removeQuadruplePoints');
+gQPb = calcGrains(qpShuf,'threshold',thr,'removeQuadruplePoints');
+
+% the test is vacuous unless the option actually does something here
+gQPplain = calcGrains(qpIn,'threshold',thr);
+if length(gQPa) == length(gQPplain)
+  error(['removeQuadruplePoints changed nothing on this map (%d grains ' ...
+    'either way), so the order invariance below is not being tested'], ...
+    length(gQPa));
+end
+
+if length(gQPa) ~= length(gQPb)
+  error(['removeQuadruplePoints depends on the order of the measurements: ' ...
+    '%d grains as built, %d after shuffling the same pixels'], ...
+    length(gQPa), length(gQPb));
+end
+
+% and the boundary itself, not just how many grains came out
+La = sort(gQPa.boundary.segLength);
+Lb = sort(gQPb.boundary.segLength);
+if numel(La) ~= numel(Lb) || norm(La(:)-Lb(:),inf) > 1e-9*max(1,max(La))
+  error(['removeQuadruplePoints gave a different boundary after shuffling ' ...
+    'the measurements (%d segments vs %d)'], numel(La), numel(Lb));
+end
+
 %% gridify padding must segment exactly like notIndexed pixels
 %
 % The two ways of saying "nothing was measured here" have to give the same
@@ -279,10 +342,17 @@ disp('calcGrains cases: all checks passed');
 end
 
 % ===========================================================================
-function ebsd = buildSquareBlockGrid(cs, blk, nb, oris)
+function ebsd = buildSquareBlockGrid(cs, blk, nb, oris, dxy)
 % nb x nb grid of blk x blk pixel blocks on a square lattice, one
 % orientation per block, with a few notIndexed holes and a cropped corner
 % to also exercise the exterior dummy ring / map edge
+%
+% dxy defaults to [1 1]. A step that is not a round binary fraction - 0.3,
+% say - makes the pixel and vertex coordinates inexact, which is what the
+% quadruple point order invariance case needs: the branch cut it used to
+% trip over is only reachable when the coordinates carry rounding.
+
+if nargin < 5, dxy = [1 1]; end
 
 n = nb*blk;
 blockId = kron(reshape(1:nb^2,nb,nb),ones(blk));
@@ -298,7 +368,7 @@ phaseId(15,20) = 1;
 phaseId(22,10) = 1;
 phaseId(1:3,1:3) = 1; % crop a corner -> exercises the map edge / dummy ring
 
-ebsd = EBSDsquare([],rot,phaseId,[0 1],{'notIndexed',cs},'dxy',[1 1]);
+ebsd = EBSDsquare([],rot,phaseId,[0 1],{'notIndexed',cs},'dxy',dxy);
 
 end
 
