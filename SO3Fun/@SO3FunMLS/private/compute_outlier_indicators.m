@@ -17,7 +17,9 @@ function oI = compute_outlier_indicators(SO3F)
 
   for j = 1 : numel(SO3F)
     % gather neighbor values as N-by-k matrix
-    vals = grid_vals(id,j);
+    % NOTE: linear indexing of a column with the N-by-k index array returns a
+    %   single column, so the neighborhood layout has to be restored
+    vals = reshape(grid_vals(id,j), size(id));
 
     % local median value of neighborhood, for each node as center (N x 1)
     m = median(vals, 2);
