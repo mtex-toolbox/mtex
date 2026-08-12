@@ -46,10 +46,6 @@ function SO3F = quadrature(f, varargin)
 % SO3FunHarmonic/adjoint SO3FunHarmonic/approximate SO3FunHarmonic
 
 
-% Tests
-% check_SO3FunHarmonicQuadrature
-
-
 % --------------------- (1) Input is (nodes,values) -----------------------
 
 if isa(f,'rotation')

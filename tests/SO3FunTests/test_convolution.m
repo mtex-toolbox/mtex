@@ -1,3 +1,21 @@
+% NOT CONVERTED YET - this file asserts nothing and is not collected by
+% runTests (it is at tests/ root, not in a tier folder).
+%
+% One of the conversions planned in the tests/ refactor. It covers 12
+% convolution type pairs and already computes both sides of each comparison
+% next to one another, so converting it is mostly a matter of replacing each
+% pair of bare expressions with an assert.
+%
+% Two things to expect. Its last block is annotated "problems with
+% symmetries" by its author, and that is the same SO3Fun symmetry handling
+% recorded in https://github.com/mtex-toolbox/mtex/issues/2585 - convolution
+% of two SO3FunRBFs with mismatched symmetry is literally item 1 there. And
+% it is expensive: three SO3FunHarmonic(rand(1e5,1)) constructions, i.e.
+% bandwidth ~45, and a 0.5 degree S2 grid of about 165000 points, so a
+% converted version needs its sizes cut before it can sit in core.
+%
+% Owner once converted: core/check_convolution, per tests/CLAUDE.md.
+
 %% S2Kernels
 
 rng('default')
