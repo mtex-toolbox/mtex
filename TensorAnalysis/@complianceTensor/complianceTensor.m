@@ -21,10 +21,15 @@ classdef complianceTensor < tensor
     end
     
     function C = eye(varargin)
-      
+
       C = complianceTensor(tensor.eye(varargin{:},'rank',4));
-      
+
     end
-    
+
+    % see the note in @stiffnessTensor - a static method cannot tell which
+    % subclass it was called on, and zeros, ones and nan have no meaningful
+    % counterpart here either
+    C = rand(varargin);
+
   end
 end
