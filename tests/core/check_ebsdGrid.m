@@ -17,6 +17,7 @@ function check_ebsdGrid
 
 checkTransform;
 checkUnitCellProperty;
+checkGridShapes;
 checkMultiColumnProps;
 
 disp('check_ebsdGrid: passed');
@@ -294,6 +295,47 @@ function ebsd = makeMap(sz,d)
 
 ebsd = EBSD(vector3d(X(:),Y(:),zeros(numel(X),1)), rotation.rand(numel(X),1), ...
   ones(numel(X),1), {crystalSymmetry('m-3m')}, struct('bc',rand(numel(X),1)));
+
+end
+
+% =========================================================================
+function checkGridShapes
+% every per pixel view of a gridded map is the (r x c) matrix of the map
+%
+% Regression (#2128): phase came back as an (r*c) x 1 list while id,
+% rotations, pos, isIndexed and every prop were the matrix, so the one
+% property a sliding window analysis indexes by (row,col) was the one that
+% could not be. phaseId itself is the storage and stays a column - as it
+% already did when isIndexed was given the same reshape - so the assertion
+% is about what the user reads off the object, not about how it is held.
+
+d = 0.3; sz = 12;
+ebsd = makeMap(sz,d);
+grid = ebsd.gridify;
+
+assert(isequal(size(grid),[sz sz]), ...
+  'check_ebsdGrid: the fixture did not gridify to %d x %d but to %s', ...
+  sz,sz,mat2str(size(grid)));
+
+for fn = {'id','phase','isIndexed','rotations','pos','bc'}
+  v = grid.(char(fn));
+  assert(isequal(size(v),size(grid)), ...
+    'check_ebsdGrid: %s of a gridded map is %s, expected the map shape %s', ...
+    char(fn), mat2str(size(v)), mat2str(size(grid)));
+end
+
+% an ungridded map is a flat list, and phase must not be reshaped there
+assert(isequal(size(ebsd.phase),size(ebsd)), ...
+  'check_ebsdGrid: phase of a plain list is %s, expected %s', ...
+  mat2str(size(ebsd.phase)), mat2str(size(ebsd)));
+
+% a grainBoundary carries a phase on each side - n x 2 against an n x 1
+% object, so it is the one per entry view that must keep its columns
+grains = calcGrains(ebsd,'threshold',5*degree);
+gB = grains.boundary;
+assert(isequal(size(gB.phase),size(gB.phaseId)) && size(gB.phase,2) == 2, ...
+  'check_ebsdGrid: grainBoundary phase is %s, expected the n x 2 of phaseId %s', ...
+  mat2str(size(gB.phase)), mat2str(size(gB.phaseId)));
 
 end
 

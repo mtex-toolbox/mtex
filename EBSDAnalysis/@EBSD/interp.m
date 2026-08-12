@@ -71,10 +71,9 @@ newPos = ebsd.rot2Plane .* newPos;
 r = max(norm(ebsd.unitCell));
 if isempty(r) || ~(r > 0)
   % no usable unit cell, so nothing says how far a pixel reaches and the
-  % nearest measurement is the best available answer. NaN lands here too:
-  % calcUnitCell returns a NaN unit cell for a single scan line, where
-  % uniquetol on the constant coordinate leaves one value and the mean step
-  % along it comes out NaN
+  % nearest measurement is the best available answer. NaN lands here too -
+  % calcUnitCell no longer produces one for a single scan line, but a cell
+  % can still be handed in from anywhere
   r = inf;
 end
 

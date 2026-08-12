@@ -12,6 +12,13 @@ function varargout = gridify(ebsd,varargin)
 % * much faster visualization of big maps
 % * much faster computation of the kernel average misorientation
 %
+% Note that the result therefore holds at least as many points as the input,
+% and more whenever the input is missing scan positions - after |ebsd(...)|
+% has selected a phase or a region, say. Those positions come back as
+% notIndexed so that the map is a full rectangle, which is why
+% |numel(gridify(ebsd))| may exceed |length(ebsd)|. For a complete map the
+% two are equal.
+%
 % It is no longer required for <OrientationGradient.html gradient>,
 % <EBSD.curvature.html curvature>, <EBSD.calcGND.html GND> or the gradient
 % method of <EBSD.weightedBurgersVec.html weightedBurgersVec> - those are

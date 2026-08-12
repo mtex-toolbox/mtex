@@ -89,7 +89,7 @@ The multi-release work. Everything here is bigger than one branch.
 | G3 | `smooth` should work on gridded data and return gridded data; what to fill and what not decided by `grainId`, not by the caller | 2 | 1 | planned | — | — |
 | G4 | Faster `EBSD/smooth` — not per grain | 1 | 1 | idea | — | — |
 | G5 | `minPixel` culling can isolate a pixel from its true grain, producing a malformed single-pixel grain | 2 | 1 | bug | — | #2574 |
-| G6 | `minPixel` is ignored when alpha shapes are used | 2 | 0 | bug | — | #2513 |
+| G6 | `minPixel` is ignored when alpha shapes are used — **fixed 2026-08-12** in `8a3f98703`: neither alpha-specific nor an outright ignore, but a systematic under-cull on every square map, since the Delaunay-only sizing pass runs 8-connected where the segmentation is 4-connected | 2 | 0 | done | — | #2513 |
 | G7 | `calcGrains(EBSD(ebsd))` and `calcGrains(ebsd.gridify)` disagree — different grains from the same data | 3 | 1 | bug | — | #2295, [→](#p14) |
 | G8 | `calcGrains` errors after `interp` | 2 | 0 | bug | — | #1870 |
 | G9 | `calcPolygonsC` produces negative areas | 2 | 0 | bug | — | #2076 |
@@ -153,8 +153,8 @@ The multi-release work. Everything here is bigger than one branch.
 |---|------|:-:|:--:|--------|-------|------|
 | E1 | `ebsd.unitCell = calcUnitCell(xy)` stored a raw double — **fixed 2026-08-12** with a `set.unitCell` on `@EBSD` that converts, and `calcUnitCell` no longer returns a NaN cell for a single scan line | 2 | 0 | done | — | #2531, [→](#e1) |
 | E2 | `calcUnitCell` breaks when the map's xy is far from the origin — **not `calcUnitCell`**, it is exact to 1e5 units out; the reproduction's `ebsd + [x y]` was the defect, see E15 | 2 | 0 | done | — | #1722, [→](#e2) |
-| E3 | `gridify` and the ungridded EBSD report different point counts | 2 | 0 | bug | — | #2167 |
-| E4 | Indexing a gridified EBSD returns a different size than in 5.10.2 | 2 | 0 | bug | — | #2128 |
+| E3 | `gridify` and the ungridded EBSD report different point counts — **not a defect**, `gridify` re-inserts the scan positions the input is missing; a complete map keeps its count exactly (checked 2026-08-12) | 2 | 0 | done | — | #2167, [→](#e3) |
+| E4 | `ebsd.gridify.phase` came back as a list while everything else on the object was the map — **fixed 2026-08-12**, the `phase` getter now takes the object's shape the way `isIndexed` already did | 2 | 0 | done | — | #2128, [→](#e4) |
 | E5 | Rotating/cropping an EBSD map leaves an artifact | 2 | 1 | triage | — | #471 |
 | E6 | `EBSD/cat` should be able to remove overlapping data | 1 | 1 | idea | — | #362 |
 | E7 | Edge-preserving bilateral filter | 1 | 1 | idea | — | #346 |
@@ -296,7 +296,7 @@ copy; only what is still open is summarised here.
 | L8 | IPDF plots arrows incorrectly | 2 | 0 | bug | — | #2072 |
 | L9 | `ipfKey.inversePoleFigureDirection` should probably be `outOfPlane` | 1 | 0 | decide | — | — |
 | L10 | `plot(ebsd,ebsd.orientation,'ipfDirection',xvector)` should work | 1 | 0 | idea | — | — |
-| L11 | The IPF colour key disk cache is keyed only by point-group id, so it silently serves a stale table when the crystal frame changes | 3 | 0 | bug | — | [→](#l11) |
+| L11 | The IPF colour key disk cache is keyed only by point-group id, so it silently serves a stale table when the crystal frame changes — **fixed** in `3767b60b9`/`556c0b469`: the cache is in memory and keyed by a digest of the sector geometry and white centre, and `removeObsoleteCacheFiles` deletes what earlier versions left in `prefdir` | 3 | 0 | done | — | [→](#l11) |
 | L12 | Colorbar at `'northoutside'` was placed below — **fixed 2026-08-12**; `'westoutside'` was equally broken. The side is kept in `mtexFig.cBarSide` and honoured by `calcTightInset`/`updateLayout` | 1 | 0 | done | — | #1744 |
 | L13 | ODF subplots get different colormaps | 1 | 0 | bug | — | #1732 |
 | L14 | `colorrange` misbehaves | 1 | 0 | triage | — | #1608 |
@@ -728,6 +728,31 @@ positions and on the shape of the coordinate arrays, not just on the point
 count — `size(gB)` reads the segment list and does not see the expansion.
 Also pins that the lattice index range is unchanged by a far shift, which is
 where #1722 actually goes wrong.
+
+### E4
+Measured on gridified forsterite, `336 x 732`: `id`, `rotations`, `pos`,
+`isIndexed`, `mad` and `bc` all came back `[336 732]`, `phase` and `phaseId`
+came back `[245952 1]`. So `phase` was the single per-pixel view a sliding
+window analysis indexes by `(row,col)` that could not be — which is what
+#2128 reports as "different size outputs between 5.10.2 and 5.11.2".
+
+`phaseId` is the storage and stays a column: `phaseList/length`, `numel` and
+`end` all read `size(phaseId,1)` and `@EBSD` overrides only `size`, so
+reshaping the property itself would make `numel(grid)` 336 rather than
+245952. The fix is on the dependent `get.phase`, which now reshapes to
+`size(pL)` exactly as `get.isIndexed` in the same file already did. Guarded
+on `numel(phase) == prod(size(pL))`, because a `@grainBoundary` stores a
+phase on each side — an `n x 2` `phaseId` against an `n x 1` object — and has
+to keep its columns.
+
+### E3
+Not a defect. On forsterite: the complete map is `length(ebsd) = 245952` and
+`numel(ebsd.gridify) = 245952`, unchanged. The counts differ only when the
+input has holes — `ebsd('indexed')` is 187467 points and gridifies to 245952
+— which is what `gridify` is for: it re-inserts the missing scan positions as
+notIndexed so the map is a full rectangle. Same for a map that has been
+through `interp`. Worth a sentence in the `gridify` help rather than a code
+change.
 
 ### E1
 `calcUnitCell` returns an `n x 2` list of coordinates while `ebsd.unitCell`
