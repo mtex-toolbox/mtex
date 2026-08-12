@@ -18,6 +18,9 @@ Updated 2026-08-11: T3, C17 and C20 fixed, E11 and D13 found to be already
 done, O1 and O2 could not be reproduced. Two new rows, O28 and T7, come out
 of that pass.
 
+Updated 2026-08-12: O12, C19, F5 and L12 fixed, each with a check script.
+G10 could not be confirmed as a defect.
+
 ## Legend
 
 **U — urgency**
@@ -86,7 +89,7 @@ The multi-release work. Everything here is bigger than one branch.
 | G7 | `calcGrains(EBSD(ebsd))` and `calcGrains(ebsd.gridify)` disagree — different grains from the same data | 3 | 1 | bug | — | #2295, [→](#p14) |
 | G8 | `calcGrains` errors after `interp` | 2 | 0 | bug | — | #1870 |
 | G9 | `calcPolygonsC` produces negative areas | 2 | 0 | bug | — | #2076 |
-| G10 | `grains(1).poly` and `grains(1).boundary` have incompatible sizes | 2 | 0 | bug | — | #1555 |
+| G10 | `grains(1).poly` and `grains(1).boundary` have incompatible sizes — on a synthetic map `poly` has 17 vertices for 16 segments, i.e. a closed ring, which may be the whole report; needs the reporter's case (checked 2026-08-12) | 2 | 0 | triage | — | #1555 |
 | G11 | `neighbors` returns wrong results | 1 | 0 | triage | — | #865 |
 | G12 | `grainMean` behaves differently since 6.0 beta3 | 1 | 0 | triage | — | #2090 |
 | G13 | FMC segmentation fails | 1 | 1 | triage | — | #539, [→](#g13) |
@@ -212,7 +215,7 @@ copy; only what is still open is summarised here.
 | O9 | `SO3FunComposition/radon` has no antipodal check of its own; it works only as long as every component type implements one | 1 | 0 | bug | — | [→](#o8) |
 | O10 | `interp(...,'bingham')` is silently wrong under symmetry — relative error 0.92 for `'2'`, 0.95 for `'222'`, 0.67 for `'432'` | 1 | 1 | paused | — | [→](#o10) |
 | O11 | `SO3FunRBF/rotate` is wrong — needs Thom's data to reproduce | 1 | 1 | blocked | — | — |
-| O12 | `S2BumpKernel` is not normalized: `A(1) = 0.0076`, so `calcDensity` with it returns mean 0.0076 instead of 1 | 2 | 0 | bug | — | [→](#o12) |
+| O12 | `S2BumpKernel` was not normalized, `A(1) = 0.0076` — **fixed 2026-08-12**, `eval` divides by the relative area of the cap, so `A(1) = 1` and `calcDensity` has mean 1 | 2 | 0 | done | — | [→](#o12) |
 | O13 | `SO3Fun/eval` with a mismatched symmetry should complain, not silently proceed | 1 | 0 | idea | — | — |
 | O14 | `fibre/fit`: the global search is 2–25 s per fit and has a fast path only for trivial symmetry; the log/exp Gauss–Newton core is solid, fast global candidate scoring is the open problem | 1 | 2 | paused | — | [→](#o14) |
 | O15 | `S1Fun` should possibly store a normal direction and a zero direction | 1 | 0 | decide | — | — |
@@ -240,7 +243,7 @@ copy; only what is still open is summarised here.
 | F2 | `calcODF` / `plotPDF` produce different results than 5.11.1 | 2 | 1 | triage | — | #2285, #2148 |
 | F3 | `calcDensity` crashes MATLAB when producing a pole figure | 3 | 1 | crash | — | #1464, #580 |
 | F4 | `plotSection(mdf,'axisAngle')` segfaults — needs differing left/right symmetry and bandwidth ≥ 32 | 3 | 1 | crash | — | [→](#f4) |
-| F5 | `'logarithmic'` is ignored by `plotPDF` | 2 | 0 | bug | — | #1691 |
+| F5 | `'logarithmic'` was ignored by `plotPDF` — **fixed 2026-08-12**, `@vector3d/smooth` tested only for the short spelling `'log'` | 2 | 0 | done | — | #1691 |
 | F6 | Filled contours extend past the edge of the pole figure | 1 | 0 | bug | — | #707 |
 | F7 | `plotSection` glitch for m-3 | 1 | 0 | triage | — | #209 |
 | F8 | Better visualization of an OR in pole figures | 1 | 1 | idea | — | — |
@@ -289,7 +292,7 @@ copy; only what is still open is summarised here.
 | L9 | `ipfKey.inversePoleFigureDirection` should probably be `outOfPlane` | 1 | 0 | decide | — | — |
 | L10 | `plot(ebsd,ebsd.orientation,'ipfDirection',xvector)` should work | 1 | 0 | idea | — | — |
 | L11 | The IPF colour key disk cache is keyed only by point-group id, so it silently serves a stale table when the crystal frame changes | 3 | 0 | bug | — | [→](#l11) |
-| L12 | Colorbar at `'northoutside'` is placed below | 1 | 0 | bug | — | #1744 |
+| L12 | Colorbar at `'northoutside'` was placed below — **fixed 2026-08-12**; `'westoutside'` was equally broken. The side is kept in `mtexFig.cBarSide` and honoured by `calcTightInset`/`updateLayout` | 1 | 0 | done | — | #1744 |
 | L13 | ODF subplots get different colormaps | 1 | 0 | bug | — | #1732 |
 | L14 | `colorrange` misbehaves | 1 | 0 | triage | — | #1608 |
 | L15 | ODFs plot differently than expected | 1 | 0 | triage | — | #320 |
@@ -377,7 +380,7 @@ copy; only what is still open is summarised here.
 | C16 | `bingham_test` runs again after a row/column fix, but its output convention is unverified — do not document until checked | 1 | 0 | decide | — | [→](#c16) |
 | C17 | `calcDensity` on an **empty** orientation list died in the obsolete `ODF(cs,ss)` shim — **fixed 2026-08-11**, an empty and an all `NaN` list both give the uniform ODF | 2 | 0 | done | — | — |
 | C18 | `calcPoleFigure(odf,pf.allH,pf.allR)` throws for superposed pole figures unless `'superposition',pf.c` is passed | 2 | 0 | bug | — | [→](#c18) |
-| C19 | `stiffnessTensor.rand` returns a plain rank 2 `tensor`, so subclass methods are missing — the static `@tensor/rand.m` hardcodes the base class | 2 | 1 | bug | — | [→](#c19) |
+| C19 | `stiffnessTensor.rand` returned a plain rank 2 `tensor` — **fixed 2026-08-12** with a `rand.m` on both rank 4 classes that draws a Gram matrix, since a random *array* is not a stiffness tensor; no `zeros`/`ones`/`nan` for the same reason | 2 | 1 | done | — | [→](#c19) |
 | C20 | `export(odf,fname,'VPSC')` silently wrote a *generic* file — **fixed 2026-08-11**, the interface is taken as a bare flag as well and an unknown one is named | 2 | 0 | done | — | — |
 | C21 | A new property needs `ebsd.prop.name = ...`; `ebsd.name = ...` errors, and no length check is done on the value | 1 | 0 | decide | — | — |
 
@@ -922,19 +925,22 @@ $(10\bar11)$ and $(01\bar11)$:
     calcPoleFigure(odf,pf.allH,pf.allR,'superposition',pf.c)     % works
 
 ### C19
-`TensorAnalysis/@tensor/rand.m` ends with `T = tensor(rand(d),'rank',r)`. A
-MATLAB static method cannot see which subclass it was invoked on, so
-`stiffnessTensor.rand` returns a plain rank 2 `tensor` and every
-`stiffnessTensor` method is then missing:
+**Fixed 2026-08-12, but not as this row described it.** Wrapping `tensor.rand`
+in the subclass constructor - the way `eye` is already restated on both rank 4
+classes - is wrong: a tensor of independent random entries is neither
+symmetric nor positive definite, so the constructor's own checks fire and
+every call warns twice. `@stiffnessTensor/rand.m` and
+`@complianceTensor/rand.m` therefore draw a random Gram matrix `A*A'` in Voigt
+notation, shifted away from singularity, which has both properties by
+construction.
 
-    C = stiffnessTensor.rand;
-    C.PoissonRatio(vector3d.Z)   % Unrecognized method ... for class 'tensor'
-
-`doc/Tensors/TensorVisualisation.m` used to open with exactly this and was
-plotting a random rank 2 tensor under a rank 4 formula; it now loads the
-Olivine stiffness tensor instead. The same applies to `tensor.eye`,
-`tensor.zeros`, `tensor.ones` and `tensor.nan`. A fix means a one line `rand.m`
-in each `@*Tensor` folder, or a class aware factory.
+For the same reason there are deliberately **no** `zeros`, `ones` or `nan`
+counterparts - none of them is a stiffness tensor. `check_tensorFactories`
+asserts they still resolve to the base class, so that adding them means
+thinking about the invariant first. The rank 2 subclasses were left alone:
+their inherited factories at least give the right rank, and a random
+`spinTensor` or `strainTensor` raises the same question about the symmetry
+each of them requires.
 
 ## Unmerged branches
 
