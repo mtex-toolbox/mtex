@@ -331,63 +331,23 @@ end
     % sort the angles
     [~,qOrder] = sort(qOmega,2);
       
-    % Pair the four edges. The four, taken in angular order, can be joined
-    % as (1,4)+(2,3) or as (1,2)+(3,4); the two pairings pick out the two
-    % DIAGONALS of the four pixels meeting here, and the pairing decides
-    % which diagonal the new boundary separates.
-    %
-    % Which pairing the sorted order presented first used to decide it, and
-    % that is not a property of the map. On a square grid the four edges
-    % leave the vertex along +-x and +-y, so one of them sits exactly on
-    % atan2's branch cut at +-pi: a change of 1e-14 in the vertex position -
-    % all it takes to give the same map in a different measurement order -
-    % flips that edge between +pi and -pi, rotates the sorted order by one
-    % and swaps the pairing. Shuffling twins moved the result between 110
-    % and 108 grains that way, and gridify's reordering did the same.
-    %
-    % The geometry cannot break the tie: at a square quadruple point all
-    % four angular gaps are exactly pi/2. The orientations can.
-    % mergeQuadrupleGrains removes the new boundary again whenever the
-    % criterion says its two pixels belong together, and that is how two
-    % diagonally opposite grains that match get joined THROUGH the
-    % quadruple point. So the pairing has to offer the criterion the pair
-    % most likely to match: take the one it connects most, and where it is
-    % indifferent - which is common, it answers on three levels only - the
-    % one with the smaller misorientation angle, i.e. join what matches
-    % better. Only if that is undecided too do the pixel positions break
-    % the tie. All three read the measurements, so the outcome cannot
-    % depend on the order they arrived in.
+    % find common pixels for pairs of edges - first we try 1/4 and 2/3
     s = size(iqF);
-    pairOf = @(o) I_FDext(iqF(sub2ind(s,(1:s(1)).',o(:,1))),:) .* ...
-                  I_FDext(iqF(sub2ind(s,(1:s(1)).',o(:,4))),:) + ...
-                  I_FDext(iqF(sub2ind(s,(1:s(1)).',o(:,2))),:) .* ...
-                  I_FDext(iqF(sub2ind(s,(1:s(1)).',o(:,3))),:);
-
-    orderA = qOrder;
-    orderB = qOrder(:,[4 1 2 3]);
-    iqDA = pairOf(orderA);
-    iqDB = pairOf(orderB);
-
-    okA = full(sum(iqDA,2)) == 2;
-    okB = full(sum(iqDB,2)) == 2;
-
-    useB = ~okA & okB;
-
-    both = okA & okB;
-    if any(both)
-      [cA,omA,keyA] = qpRank(iqDA,both);
-      [cB,omB,keyB] = qpRank(iqDB,both);
-      % criterion first, then the smaller misorientation angle, then the
-      % canonical position key
-      useB(both) = cB(both) > cA(both) | (cB(both) == cA(both) & ...
-        (omB(both) < omA(both) | (omB(both) == omA(both) & keyB(both) < keyA(both))));
-    end
-
-    qOrder(useB,:) = orderB(useB,:);
-    iqD = iqDA;
-    iqD(useB,:) = iqDB(useB,:);
-
-
+    orderSub = @(i) sub2ind(s,(1:s(1)).',qOrder(:,i));
+            
+    iqD = I_FDext(iqF(orderSub(1)),:) .* I_FDext(iqF(orderSub(4)),:) + ...
+      I_FDext(iqF(orderSub(2)),:) .* I_FDext(iqF(orderSub(3)),:);
+      
+    % if not both have one common pixel
+    switchOrder = full(sum(iqD,2))~= 2;
+        
+    % switch to 3/4 and 1/2
+    qOrder(switchOrder,:) = qOrder(switchOrder,[4 1 2 3]);
+    orderSub = @(i) sub2ind(s,(1:s(1)).',qOrder(:,i));
+        
+    iqD = I_FDext(iqF(orderSub(1)),:) .* I_FDext(iqF(orderSub(4)),:) + ...
+      I_FDext(iqF(orderSub(2)),:) .* I_FDext(iqF(orderSub(3)),:);
+      
     % some we will not be able to remove
     ignore = full(sum(iqD,2)) ~= 2;
     iqD(ignore,:) = [];
@@ -440,65 +400,6 @@ end
     % new empty rows to I_FDint
     %I_FDint = [I_FDint; sparse(qAdded,size(I_FDint,2))];
       
-  end
-
-  function [c,omega,key] = qpRank(M,mask)
-    % rank one candidate pairing of a quadruple point
-    %
-    % Every row of M selects the two pixels that pairing would separate.
-    % Returns, for the rows in mask, three keys compared in this order:
-    %
-    %  c     - the grain boundary criterion on that pixel pair. The pairing
-    %          with the LARGER value offers the pair the criterion connects
-    %          most, i.e. the one mergeQuadrupleGrains can actually join.
-    %  omega - the misorientation angle of the pair, SMALLER first. The
-    %          criterion answers on three levels only, so it is indifferent
-    %          at most quadruple points; the angle it is derived from
-    %          separates them further and in the same direction - join the
-    %          pair that matches better, which yields fewer and larger
-    %          grains. Inf where no angle is defined (a notIndexed pixel,
-    %          or two different phases), so those never win.
-    %  key   - a last tie break that depends only on where the pixels are:
-    %          the y coordinate of the lexicographically first of the two.
-    %          The two candidate pairings are the two diagonals of the same
-    %          four pixels, so they share a centroid and cannot be told
-    %          apart by a sum - but they do differ in the sign of their
-    %          slope, which is exactly what this reads off.
-    %
-    % All three are properties of the measurements. None of them moves when
-    % the same measurements are handed over in a different order, which is
-    % the whole point - see the header of the pairing code above.
-
-    c     = -inf(size(M,1),1);
-    omega =  inf(size(M,1),1);
-    key   =  inf(size(M,1),1);
-    if ~any(mask), return; end
-
-    [qpD,~] = find(M(mask,:).');
-    qpD = reshape(qpD,2,[]).';
-
-    c(mask) = gbc.eval(ebsd,qpD(:,1),qpD(:,2));
-
-    % misorientation angle, where one is defined at all
-    qpOm  = inf(size(qpD,1),1);
-    qpPhase = ebsd.phaseId;
-    qpSame = qpPhase(qpD(:,1)) == qpPhase(qpD(:,2)) & ~isnan(qpPhase(qpD(:,1)));
-    for qpP = reshape(unique(qpPhase(qpD(qpSame,1))),1,[])
-      qpCS = ebsd.CSList(qpP);
-      if ~isa(qpCS,'symmetry') || ~qpCS.isIndexed, continue; end
-      qpSel = qpSame & qpPhase(qpD(:,1)) == qpP;
-      qpOm(qpSel) = angle(orientation(ebsd.rotations(qpD(qpSel,1)),qpCS), ...
-                      orientation(ebsd.rotations(qpD(qpSel,2)),qpCS));
-    end
-    omega(mask) = qpOm;
-
-    qpP1 = [ebsd.pos(qpD(:,1)).x(:), ebsd.pos(qpD(:,1)).y(:)];
-    qpP2 = [ebsd.pos(qpD(:,2)).x(:), ebsd.pos(qpD(:,2)).y(:)];
-    qpSecond = qpP2(:,1) < qpP1(:,1) | (qpP2(:,1) == qpP1(:,1) & qpP2(:,2) < qpP1(:,2));
-    qpKey = qpP1(:,2);
-    qpKey(qpSecond) = qpP2(qpSecond,2);
-    key(mask) = qpKey;
-
   end
 
   function mergeQuadrupleGrains
