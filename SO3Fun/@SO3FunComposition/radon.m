@@ -22,4 +22,14 @@ for i = 2:length(odf.components)
   out = out + radon(odf.components{i},h,varargin{:});
 end
 
+% the sum is antipodal only if every single component said so - do not rely
+% on that, but decide it here as @SO3Fun/radon does
+if isa(out,'S2FunHarmonic')
+  r = getClass(varargin,'vector3d');
+  if check_option(varargin,'antipodal') || odf.CS.isLaue || ...
+      (~isempty(h) && h.antipodal) || (~isempty(r) && r.antipodal)
+    out.antipodal = true;
+  end
+end
+
 end

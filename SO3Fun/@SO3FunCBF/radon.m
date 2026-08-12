@@ -16,7 +16,12 @@ function Z = radon(SO3F,h,r,varargin)
 %  v    - double
 %
 
-if nargin<3, r = []; end
+% an option in the position of r belongs to varargin
+if nargin<3
+  r = [];
+elseif ischar(r) || isstring(r)
+  varargin = [{r},varargin]; r = [];
+end
 
 if length(h)>1 && length(r)>1
   error('The length of h or r has to be smaller than 1.')
