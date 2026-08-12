@@ -1,5 +1,19 @@
-function check_jcvoronoi2Fallback
-% the MATLAB fallback in jcvoronoi2.m must agree with jcvoronoi2_mex
+function check_jcvoronoi
+% the Voronoi / Delaunay backends calcGrains segments on must agree
+%
+% Three claims, over one shared set of point configurations:
+%
+%   (1) jcvoronoi2.m's pure MATLAB fallback agrees with jcvoronoi2_mex
+%   (2) jcvoronoiDelaunayOnly's fallback returns an adjacency superset
+%   (3) jcvoronoiDelaunayOnly_mex's adjacency is a superset of jcvoronoi2_mex's
+%
+% (1) and (2) were check_jcvoronoi2Fallback, (3) was
+% check_jcvoronoiDelaunayOnly. They are merged because the two files carried
+% squareGridCase, hexGridCase and randomCloudCase as verbatim copies of each
+% other, and because both are about the same question: whether the cheaper
+% backend can stand in for the full Voronoi build without changing grains.
+%
+% ---------------------------------------------------------------- claim (1)
 %
 % MTEX ships no jcvoronoi2_mex for every platform, and calcGrains calls it on
 % its main gridded path (spatialDecompositionGrid.m) as well as for the alpha
@@ -24,23 +38,97 @@ function check_jcvoronoi2Fallback
 %     that neither the row order nor the direction of a segment matters
 %   * no measurement point left without a segment
 %
+% ---------------------------------------------------------------- claim (3)
+%
+% jcvoronoiDelaunayOnly_mex's site adjacency must always be a SUPERSET of
+% jcvoronoi2_mex's on identical input - never missing a true adjacency, only
+% possibly adding spurious ones.
+%
+% calcGrains' minPixel sizing pass (minPixelMask.m) uses
+% jcvoronoiDelaunayOnly_mex as a cheaper drop-in for the full jcvoronoi2_mex
+% Voronoi build, since doSegmentation.m only ever needs the site adjacency
+% A_D = I_FD'*I_FD==1, never the V/F Voronoi geometry.
+%
+% The two are NOT exactly equal in general: on an exactly regular grid, every
+% interior vertex has 4 exactly cocircular sites (the classic square grid
+% Delaunay ambiguity). jc_voronoi's sweep arbitrarily keeps one diagonal as a
+% Delaunay edge there, even though the true Voronoi cells for those two
+% diagonal sites only touch at a single point - a zero length shared edge,
+% which jcvoronoi2_mex correctly drops via vertex welding. jcv_delauney_generate
+% exposes no vertex or edge length information, so there is no cheap way to
+% filter this from the fast path alone.
+%
+% That is safe for minPixelMask.m: extra adjacency only makes computed grain
+% sizes equal or LARGER than the true ones, never smaller, so the 'voronoi'
+% sizing method still never over-culls a grain below minPixel. The random
+% cloud case has no such degeneracy and is held to exact equality, so a
+% genuine implementation bug still fails loudly.
+%
 % See also
-% check_jcvoronoiDelaunayOnly jcvoronoi2
+% jcvoronoi2 jcvoronoiDelaunayOnly
 
 if exist('jcvoronoi2_mex','file') ~= 3
   error(['jcvoronoi2_mex is not compiled for ' mexext ...
     ' - there is nothing to compare the fallback against. Run mex_install.']);
 end
 
+% the DelaunayOnly binary is guarded separately: claims (1) and (2) are still
+% worth running without it, and the original check_jcvoronoiDelaunayOnly had
+% no guard at all, so on an un-mexed platform it died with an undefined
+% function error instead of a readable message
+hasDelaunayMex = exist('jcvoronoiDelaunayOnly_mex','file') == 3;
+
+% -- (1) MATLAB fallback vs mex -------------------------------------------
 compareCase(squareGridCase(8,8), 'square grid + dummy ring');
 compareCase(hexGridCase(8,8),    'hex grid + dummy ring');
 compareCase(randomCloudCase(60), 'random point cloud');
 compareCase(duplicateCase(40),   'random cloud with duplicated sites');
 
+% -- (2) DelaunayOnly fallback is a superset ------------------------------
 checkDelaunayOnly(squareGridCase(8,8), 'square grid + dummy ring');
 checkDelaunayOnly(randomCloudCase(60), 'random point cloud');
 
-disp('jcvoronoi2: the MATLAB fallback agrees with jcvoronoi2_mex on all cases');
+% -- (3) DelaunayOnly mex is a superset of the full mex -------------------
+if hasDelaunayMex
+  compareDelaunayMex(squareGridCase(8,8), 'square grid + dummy ring', false);
+  compareDelaunayMex(hexGridCase(8,8),    'hex grid + dummy ring',    false);
+  compareDelaunayMex(randomCloudCase(60), 'random point cloud',       true);
+else
+  fprintf(['  jcvoronoiDelaunayOnly_mex is not compiled for ' mexext ...
+    ' - skipping the mex superset check\n']);
+end
+
+disp('check_jcvoronoi: the Voronoi backends agree on all cases');
+
+end
+
+% ===========================================================================
+function compareDelaunayMex(c, label, requireExact)
+% jcvoronoiDelaunayOnly_mex against the full jcvoronoi2_mex
+
+epsTol = c.spacing/100;
+
+[~,~,I_FD_full] = jcvoronoi2_mex(c.XY, c.numReal, epsTol);
+I_FD_fast       = jcvoronoiDelaunayOnly_mex(c.XY, c.numReal, epsTol);
+
+A_full = triu((I_FD_full.'*I_FD_full)==1, 1);
+A_fast = triu((I_FD_fast.'*I_FD_fast)==1, 1);
+
+nMissing = nnz(A_full & ~A_fast);
+if nMissing > 0
+  error(['jcvoronoiDelaunayOnly_mex is missing %d true adjacency pair(s) that ' ...
+    'jcvoronoi2_mex reports on %s - this would let minPixelMask.m under-size ' ...
+    'a grain and wrongly cull it'], nMissing, label);
+end
+
+nExtra = nnz(A_fast & ~A_full);
+if requireExact && nExtra > 0
+  error(['jcvoronoiDelaunayOnly_mex reports %d spurious adjacency pair(s) on ' ...
+    '%s, which has no exact cocircular degeneracy to explain them - likely a ' ...
+    'real bug, not the known regular grid diagonal artifact'], nExtra, label);
+elseif nExtra > 0
+  fprintf('  %-38s %d spurious (expected, regular grid diagonal artifact)\n', label, nExtra);
+end
 
 end
 
