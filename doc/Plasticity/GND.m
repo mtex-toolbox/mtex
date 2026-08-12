@@ -203,8 +203,8 @@ a = norm(ebsd.CS.aAxis);
 % * |G| is the shear modulus
 % * |b| is the length of the Burgers vector
 % * |nu| is the Poisson ratio
-% * |R|
-% * |r|
+% * |R| is the outer cut off radius
+% * |r_0| is the radius of the dislocation core
 %
 % In this example we assume
 % $$ U_{\mathrm{edge}} = 1 $$
@@ -216,7 +216,7 @@ nu = 0.3;
 dS(dS.isEdge).u = 1;
 
 % energy of the screw dislocations
-dS(dS.isScrew).u = 1 - 0.3;
+dS(dS.isScrew).u = 1 - nu;
 
 %%
 % There is no single accepted way of setting these energies. Formulae in use
