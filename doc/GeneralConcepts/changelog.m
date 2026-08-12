@@ -130,7 +130,9 @@
 % Voronoi weights
 % * <SO3Fun.optimalSample.html |optimalSample|> (formerly |compactify|)
 % replaces random sampling by an almost perfectly equally distributed set of
-% orientations or directions representing a given function
+% orientations or directions representing a given function. Asking for a
+% second output optimizes the weights of the sampling points as well, which
+% needs considerably fewer points for the same accuracy
 % * <orientation.calcCluster.html |calcCluster|> uses by default the
 % <https://github.com/nla-group/classix CLASSIX> algorithm, which is much
 % faster than hierarchical clustering and needs no number of clusters
@@ -143,6 +145,7 @@
 %   sF   = S2FunMLS(nodes,values,'degree',3)
 %   SO3F = SO3FunMLS(ori,values,'delta',5*degree,'detectOutliers')
 %   ori  = optimalSample(odf,10000)
+%   [ori,c] = optimalSample(odf,500)   % optimize the weights, too
 %   [c,center] = calcCluster(ori)
 %   odf  = calcODFIterative(pf,'halfwidth',5*degree)
 %   cK   = planarColorKey(winter,'colorModel','white');
