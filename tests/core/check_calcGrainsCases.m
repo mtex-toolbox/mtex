@@ -167,6 +167,48 @@ if numel(ebsdQP2.grainId) ~= numel(ebsdQP2)
     numel(ebsdQP2.grainId), numel(ebsdQP2));
 end
 
+%% minPixel: a diagonal-only neighbour must not save an undersized grain
+%
+% regression test for #2513. The minPixel filter is a two pass scheme:
+% minPixelMask sizes the grains once, marks the undersized ones notIndexed,
+% and calcGrains then decomposes again. That sizing pass used the cheaper
+% Delaunay-adjacency-only Voronoi build unconditionally, whose adjacency is
+% a superset of the true Voronoi face adjacency wherever an interior vertex
+% is exactly cocircular - which on a SQUARE lattice is every single one, so
+% the whole map got sized 8-connected while the final segmentation is
+% 4-connected. A pixel joined to a same-orientation grain only diagonally
+% was therefore sized as part of it and survived a cull it should not have.
+% Not a rare degeneracy: it left 393 of 3115 grains below minPixel on
+% martensite and 655 of 3803 on emsland. A triangular (hex) lattice has no
+% cocircular degeneracy, so the fast path is exact there and is kept.
+%
+% Both maps below are fully indexed, one stray pixel apart, so a survivor
+% shows up directly as an indexed grain smaller than minPixel.
+
+o2 = orientation.byAxisAngle(zvector,30*degree,cs);
+
+% square: 2x2 block of o2, plus ONE stray o2 pixel touching that block only
+% diagonally. In the final 4-connected segmentation the stray is its own
+% grain of one pixel, so minPixel = 2 must remove it.
+nMP = 8;
+rotMPsq = rotation.id(nMP,nMP);
+rotMPsq(1:2,1:2) = o2;
+rotMPsq(3,3)     = o2;
+ebsdMPsq = EBSDsquare([],rotMPsq,2*ones(nMP,nMP),[0 1],{'notIndexed',cs},'dxy',[1 1]);
+
+checkMinPixel(calcGrains(ebsdMPsq,'threshold',thr,'minPixel',2), 2, 2, ...
+  'square, stray pixel diagonal to a same-orientation block');
+
+% hex: same shape of test on the grid that keeps the fast path, so an
+% inverted gate or a broken hex path fails here rather than silently.
+ebsdMPhex = buildHexBlockGrid(cs, nMP, 1, orientation.id(cs));
+cMP = vector3d(mean(ebsdMPhex.pos.x(:)), mean(ebsdMPhex.pos.y(:)), 0);
+[~,iMP] = min(norm(ebsdMPhex.pos(:) - cMP));   % innermost pixel, 6 neighbours
+ebsdMPhex.rotations(iMP) = o2;
+
+checkMinPixel(calcGrains(ebsdMPhex,'threshold',thr,'minPixel',2), 2, 1, ...
+  'hex, single stray pixel');
+
 disp('calcGrains cases: all checks passed');
 
 end
@@ -217,6 +259,28 @@ end
 pos = vector3d(x(:),y(:),zeros(numel(x),1));
 ebsd = EBSD(pos, rot(:), ones(numel(x),1), {cs}, struct());
 ebsd = ebsd.gridify;
+
+end
+
+% ===========================================================================
+function checkMinPixel(grains, minPixel, nExpected, label)
+% no indexed grain may be left below minPixel, and the map must end up with
+% the expected number of indexed grains (a cull that removed too much would
+% otherwise pass the size assertion trivially)
+
+g = grains(grains.isIndexed);
+
+tooSmall = g.numPixel < minPixel;
+if any(tooSmall)
+  error(['minPixel (%s): %d indexed grain(s) below minPixel = %d survived ' ...
+    'the cull, of sizes %s'], label, nnz(tooSmall), minPixel, ...
+    mat2str(sort(g.numPixel(tooSmall)).'));
+end
+
+if length(g) ~= nExpected
+  error('minPixel (%s): expected %d indexed grains, got %d', ...
+    label, nExpected, length(g));
+end
 
 end
 
