@@ -249,7 +249,7 @@ copy; only what is still open is summarised here.
 | F3 | `calcDensity` crashes MATLAB when producing a pole figure | 3 | 1 | crash | — | #1464, #580 |
 | F4 | `plotSection(mdf,'axisAngle')` segfaults — needs differing left/right symmetry and bandwidth ≥ 32 | 3 | 1 | crash | — | [→](#f4) |
 | F5 | `'logarithmic'` was ignored by `plotPDF` — **fixed 2026-08-12**, `@vector3d/smooth` tested only for the short spelling `'log'` | 2 | 0 | done | — | #1691 |
-| F6 | Filled contours extend past the edge of the pole figure | 1 | 0 | bug | — | #707 |
+| F6 | Filled contours extend past the edge of the pole figure — **reproduced and half diagnosed 2026-08-12**; the `'cutOutside'` guard is inert, for two independent reasons, and the second needs a decision on how far a partial pole figure may be extrapolated | 1 | 0 | decide | — | #707, [→](#f6) |
 | F7 | `plotSection` glitch for m-3 | 1 | 0 | triage | — | #209 |
 | F8 | Better visualization of an OR in pole figures | 1 | 1 | idea | — | — |
 | F9 | Sigma-section coloured pole figure; marker size in sigma sections | 1 | 0 | idea | — | — |
@@ -729,6 +729,50 @@ positions and on the shape of the coordinate arrays, not just on the point
 count — `size(gB)` reads the segment list and does not see the expansion.
 Also pins that the lattice index range is unchanged by a far shift, which is
 where #1722 actually goes wrong.
+
+### F6
+Reproduced 2026-08-12. A `Miller(1,1,1)` pole figure of a cubic ODF sampled
+only to a polar angle of 60 degree, plotted with `'contourf'`: of the 22021
+plotting grid nodes inside the hemisphere, **6498 lie beyond the measured
+region and every one of them is given a value**. At 45 degree it is 10108 of
+10108. A fully measured hemisphere has 0, so the padding itself is not the
+problem — the values really are smeared out to the edge.
+
+`@vector3d/smooth.m:52` already asks for the remedy, `interp(...,
+'cutOutside', ...)`, and `@vector3d/interp.m` implements it. It is inert for
+two independent reasons:
+
+1. **The test is written along the wrong dimension.** It was
+   `M(all(so(:,1:4)>delta),:) = NaN`, and `all` over an `n x 4` matrix
+   without a dimension reduces down the COLUMNS, so it produced a `1 x 4`
+   row that then indexed rows 1 to 4 of `M`. The per query point test never
+   happened. Fixed to `all(...,2)`, which is unambiguously what the line
+   means — but it changes nothing observable on its own, because of:
+
+2. **`delta` is calibrated on a statistic the outliers pollute.**
+   `delta = 4*quantile(minO,0.5)`, where `minO` is each *query* point's
+   distance to the nearest datum — a set dominated by the very nodes the
+   cut is meant to catch. Measured: **0 of 8507** nodes exceed it. A
+   threshold derived from the data's own spacing, `v.resolution` (already
+   computed a few lines above as `res`), is the obvious candidate.
+
+Ralf's call on 2026-08-12 was to take the threshold from the data spacing,
+`delta = k * v.resolution`. **Tried and reverted**, because the measurement
+does not support any constant: on the 60 degree case, with
+`v.resolution = 5.01` degree correctly reported, `k = 2` and `k = 4` blank
+**all 8507** plotting nodes and `k = 6` still blanks 8401 of them. The
+reason is that `angle_outer(vi,v)` reports a *median* nearest-data distance
+of 75 degree and a maximum of 120 degree between an upper hemisphere query
+grid and data covering the upper 60 degree cap — which is geometrically
+impossible, since every query point within the cap has data within one
+spacing of it. So the distances that both the old heuristic and any new one
+are built on are not what they appear to be, and that is what has to be
+understood first. Only the `all(...,2)` dimension fix was kept; it is a
+no-op while delta stays as it is.
+
+Note also that a symmetric pole figure legitimately constrains directions
+outside the measured range, so once the cut works it has to be applied to
+the *symmetrised* directions, not the raw ones.
 
 ### L8
 `extern/arrow.m` measures its head in **pixels** — `Length` is documented as
