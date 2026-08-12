@@ -1,16 +1,18 @@
-function h = round(h,varargin)
+function [h,err] = round(h,varargin)
 % tries to round miller indizes to greatest common divisor
 %
 % Syntax
 %   h = round(h)
 %   h = round(h,'maxHKL',5)
 %   h = round(h,'uvw')
+%   [h,err] = round(h)
 %
 % Input
 %  h - @Miller
 %
 % Output
 %  h - @Miller
+%  err - angle between the original and the rounded Miller indices
 %
 % Options
 %  maxHKL - maximum value of Miller indices
@@ -25,8 +27,9 @@ function h = round(h,varargin)
 %
 
 % ignore xyz case
-if h.dispStyle == MillerConvention.xyz, return; end
+if h.dispStyle == MillerConvention.xyz, err = zeros(size(h)); return; end
 
+hOld = h;
 sh = size(h);
 
 % round with respect to the convention given as an option - remember the
@@ -67,3 +70,7 @@ h.coordinates = round(h.coordinates);
 h.dispStyle = dispStyle;
 
 h = reshape(h,sh);
+
+% the deviation caused by rounding - with respect to the rounded indices
+% themselves, hence ignoring symmetrically equivalent directions
+if nargout == 2, err = angle(hOld,h,'noSymmetry'); end
