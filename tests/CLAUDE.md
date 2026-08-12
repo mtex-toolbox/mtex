@@ -10,7 +10,14 @@ tier, so adding a file is all it takes to register it.
 | `plotting/` | tests whose assertion is about a graphics object | opt-in, not budgeted |
 | `lib/` | fixtures and generators, not tests | never collected |
 
-`check_mtex`, `check_mex` and `check_mexComplete` stay at `tests/` root. `check_mtex` runs the
+A file at `tests/` root is deliberately **not** collected by `runTests`. That is where a test
+goes when it cannot currently pass — `check_WignerD` (blocked on #2582) — or has not been
+converted yet — `check_SO3TangentVectors_and_VectorFields` (blocked on #2587) and
+`SO3FunTests/test_convolution`. Each carries a header saying so. A tier is meant to go green,
+so a test that is known to fail does not belong in one; parking it here keeps it and its
+assertion alive without making the tier meaningless.
+
+`check_mtex`, `check_mex` and `check_mexComplete` also stay at `tests/` root. `check_mtex` runs the
 core tier. `check_mex` is an installer called from `startup_mtex.m` on every start, not a test.
 `check_mexComplete` is the build gate referenced by `.github/workflows/build-mex.yml`.
 
@@ -87,7 +94,7 @@ over budget, trim from outside these before trimming inside them.
 | kernel halfwidth | `core/check_kernelHalfwidth` |
 | ODF gradients | `core/check_odfGrad` |
 | Clebsch–Gordan coefficients | `core/check_clebschGordan` |
-| Wigner D | `slow/check_WignerD` (known failure, #2582) |
+| Wigner D | `check_WignerD` at tests/ root — **known failure, #2582**, so not in a tier |
 | `calcDensity` edge cases | `core/check_calcDensityEmpty` |
 | S2 kernel normalization | `core/check_S2KernelNormalization` |
 | `S1Fun` arithmetic | `core/check_S1Fun` |
