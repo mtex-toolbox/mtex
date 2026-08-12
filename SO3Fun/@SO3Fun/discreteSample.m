@@ -15,8 +15,8 @@ function rot = discreteSample(SO3F,n,varargin)
 %  compact - generate almost perfectly aligned sampling points
 %
 
-if check_option(varargin,{'compact','compactify'})
-  rot = compactify(SO3F,'points',n,varargin{:});
+if check_option(varargin,{'compact','compactify','optimal'})
+  rot = optimalSample(SO3F,n,varargin{:});
   return
 end
 

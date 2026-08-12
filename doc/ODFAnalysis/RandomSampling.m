@@ -84,6 +84,20 @@ odf_rec = calcDensity(ori,'halfwidth',12*degree);
 
 calcError(odf_rec,fibre_odf)
 
+%%
+% By default all sampled orientations carry the same weight. Asking
+% |optimalSample| for a second output
+%
+%   [ori,c] = odf.optimalSample(500)
+%
+% optimizes the weights alongside the orientations, i.e. the ODF is
+% represented by a weighted sum of point masses. Since this adds one degree of
+% freedom per orientation, fewer orientations are needed for the same
+% accuracy. The weights are volume fractions and are passed on directly by
+% |calcDensity(ori,'weights',c)|. Whether they pay off depends on the
+% halfwidth you intend to use - see <SO3Fun.optimalSample.html
+% |optimalSample|> for the details.
+
 %% Exporting Random Orientations
 %
 % In order to make use of the sampled orientations you probably want to

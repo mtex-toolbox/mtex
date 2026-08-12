@@ -16,8 +16,8 @@ function v = discreteSample(S2F,n,varargin)
 %  compact - generate almost perfectly aligned sampling points
 %
 
-if check_option(varargin,'compact')
-  v = compactify(S2F,'points',n,varargin{:});
+if check_option(varargin,{'compact','compactify','optimal'})
+  v = optimalSample(S2F,n,varargin{:});
   return
 end
 
