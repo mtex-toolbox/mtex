@@ -92,7 +92,7 @@ The multi-release work. Everything here is bigger than one branch.
 | G6 | `minPixel` is ignored when alpha shapes are used — **fixed 2026-08-12** in `8a3f98703`: neither alpha-specific nor an outright ignore, but a systematic under-cull on every square map, since the Delaunay-only sizing pass runs 8-connected where the segmentation is 4-connected | 2 | 0 | done | — | #2513 |
 | G7 | `calcGrains(EBSD(ebsd))` and `calcGrains(ebsd.gridify)` disagree — **fixed 2026-08-12** in `6f95f63b1`: `gridify` pads empty lattice sites with `phaseId = NaN`, which compares false against every phase, so every criterion scored a pad cell 0 against its neighbours and each became its own single-pixel grain. Normalised in `grainBoundaryCriterion/eval`. Indexed grains were never affected | 3 | 0 | done | — | #2295, [→](#p14) |
 | G8 | `calcGrains` errors after `interp` — **not reproducible** on a synthetic map after the `interp` rewrite (2026-08-12: interp to half the step, 14641 points, 89 grains, no error); the reporter's own 50x50 map is attached to the issue and has not been tried | 2 | 0 | triage | — | #1870, [→](#g8) |
-| G9 | Grain polygons that enclose a **negative** area, i.e. rings traced inside out — **reproduced 2026-08-12** via `'removeQuadruplePoints'` rather than the `minPixel` route of the original report: 2 of 99875 grains on `steel1C_1`, 0 for a plain reconstruction on all three benchmark datasets, unchanged at `059ff152a`. Not the mex: forcing the MATLAB `calcPolygons` on the same input gives 6 against `calcPolygonsC`'s 2, so both tracers are handed a boundary graph that does not close. Guarded by `negAreaQP` in the benchmark and a synthetic case in `check_calcGrainsCases`; suspected same root as G38-style quadruple point splitting, see [→](#g9) | 2 | 2 | bug | — | #2590, #2076, [→](#g9) |
+| G9 | Grain polygons that enclose a **negative** area, i.e. rings traced inside out — **fixed 2026-08-12**: the vertex rewrite in `removeQuadruplePoints` was row wise, so an edge shared by two neighbouring quadruple points lost one of its two writes and the grain whose corner was cut there was left with an open boundary walk. Not the mex, not the `atan2` branch cut. `steel1C_1` 2 → 0, open walks on forsterite/martensite/epidote/mylonite 2/2/2/6 → 0, see [→](#g9) | 2 | 2 | done | — | #2590, #2076, [→](#g9) |
 | G10 | `grains(1).poly` and `grains(1).boundary` have incompatible sizes — on a synthetic map `poly` has 17 vertices for 16 segments, i.e. a closed ring, which may be the whole report; needs the reporter's case (checked 2026-08-12) | 2 | 0 | triage | — | #1555 |
 | G11 | `neighbors` returns wrong results | 1 | 0 | triage | — | #865 |
 | G12 | `grainMean` behaves differently since 6.0 beta3 | 1 | 0 | triage | — | #2090 |
@@ -519,18 +519,62 @@ handed a boundary graph that does not close and merely disagree about how to
 fail on it. Not `minPixel` either - `'removeQuadruplePoints'` alone is enough -
 and not new, the count is unchanged at `059ff152a`.
 
-Suspected root: `removeQuadruplePoints` splits a quadruple point by
-duplicating the vertex and attaching two of the four incident edges to the
-copy, and which two is read off an angular sort of `atan2(dx,dy)`. On a square
-grid one edge lies exactly on that function's branch cut at +-pi, so 1e-14 in a
-vertex position flips it and swaps the pairing. Deciding the pairing from the
-data instead made the breakage far worse - up to 117 negative-area grains on
-`alphaBetaTitanium` - which says the choice cannot be made per quadruple point:
-a grain whose boundary runs through two of them needs both splits to agree.
-That attempt is reverted (`4f351d38e`); read it before trying again.
+**Root caused and fixed 2026-08-12, and it is not the branch cut.** Splitting a
+quadruple point rewrites the shared vertex of two of its four edges to a
+duplicate, and that rewrite was row wise over all quadruple points at once:
 
-Guarded meanwhile: `check_calcGrainsCases` asserts no negative area and closed
-rings on a dense synthetic map, and the benchmark pins `negAreaQP` at 0/0/2.
+```matlab
+Ftmp = Fext(iqF(orderSub(1)),:).';
+Ftmp(Ftmp == quadPoints.') = newVid;
+Fext(iqF(orderSub(1)),:) = Ftmp.';    % repeated row -> only the last write survives
+```
+
+Two quadruple points that are neighbours share the edge between them, so that
+edge is in the relocation list of both, and MATLAB keeps only the last write for
+a repeated row. One rewrite is silently lost: the edge keeps the original vertex
+where it should have taken the duplicate, the quadruple point ends up with three
+of its four edges and the duplicate with one, and the grain whose corner was cut
+there has an **open path** instead of a closed ring. `EulerCycles` closes every
+walk it returns by repeating the first vertex, so the breakage never surfaces as
+an error - it surfaces as a polygon that is not the grain. Fixed by assigning
+element wise (`sub2ind`); the two writes to a shared edge touch its two
+different endpoints, so nothing collides.
+
+Measured, same data cache, `threshold` 5 degree, grains with an open boundary
+walk before -> after: forsterite 2 -> 0, martensite 2 -> 0 (and its one negative
+area -> 0), epidote 2 -> 0, mylonite 6 -> 0, `steel1C_1` 2 negative areas -> 0
+with `nGrainsQP` and `totalLenQP` bit identical. The count of collisions
+predicts it exactly - one collision breaks two grains.
+
+On an ideal square grid the collision cannot happen: the shared edge points +x
+at one quadruple point and -x at the other, and the angular sort puts those in
+different relocation slots. It takes an irregular neighbourhood - a hole, a map
+border - which is why real maps show it only a few times each.
+
+Consequence for the reverted pairing work: **the conclusion in `4f351d38e` is an
+artifact of this bug.** Re-applying `b2ca13189` + `14463616f` on top of the fix
+gives `alphaBetaTitanium` at 1.5 degree **0** negative areas and 0 open walks
+(was 117), 46230 grains, and only **1** negative area after
+`smoothBoundary(...,5)` against **16** for the branch-cut pairing with the same
+fix. The pairing can be decided per quadruple point after all, and doing so also
+all but removes the smoothing induced breakage. Deciding whether to bring it
+back is open - see [→](#g9-followup).
+
+Guarded: `check_calcGrainsCases` has a `checkClosedBoundary` helper asserting
+that every vertex a grain's boundary uses is met by an even number of that
+grain's segments - the sharp form, since testing `poly(1) == poly(end)` cannot
+see an open walk - plus a 4x4 fixture with holes that fails on the unfixed tree.
+The benchmark now pins `negAreaQP` at 0/0/0.
+
+### G9-followup
+Bring back `b2ca13189` + `14463616f` (deterministic pairing at a quadruple
+point) now that the ring breakage they were blamed for is gone? It removes an
+order dependence that is real - shuffling `twins` moves the grain count - and
+cuts smoothing induced negative areas from 16 to 1 on `alphaBetaTitanium`. The
+cost is that the QP grain counts move a long way (`alphaBetaTitanium` 52398 ->
+46230, and per that commit `forsterite` 2931 -> 2897, `steel1C_1` 99843 ->
+97907), so the benchmark reference has to be regenerated on a decision about
+the numbers, not to make a test green.
 
 ### G33
 Two related requests: default filter masks whose size follows the grid

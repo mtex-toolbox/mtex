@@ -51,12 +51,13 @@ function ref = grainReconstructionReference()
 % plot(smoothBoundary(grains,5)(40037)) on alphaBetaTitanium.
 %
 % negAreaQP counts grain polygons that enclose a NEGATIVE area, i.e. rings
-% traced inside out. It is 0 everywhere except steel1C_1, which has 2 of
-% 99875 - a pre-existing defect of removeQuadruplePoints, measured unchanged
-% at 059ff152a, not something the work around it introduced. It is pinned
-% rather than asserted to zero so that the benchmark stays readable while
-% still catching a regression; a plain reconstruction is asserted to have
-% none at all, on every dataset.
+% traced inside out. It was 0 everywhere except steel1C_1, which had 2 of
+% 99875, and is now 0 there too: #2590 was root caused to the vertex rewrite
+% in removeQuadruplePoints losing one of two writes to an edge shared by two
+% neighbouring quadruple points, and fixed. Only this field moved -
+% nGrainsQP and totalLenQP came out bit identical on steel1C_1, because the
+% fix changes which vertex a segment attaches to and the duplicate sits at
+% the same coordinates.
 %
 % This metric has a history of moving on its own. forsterite.nGrainsQP was
 % 2932, then 2933, then found to flip between 2933 and 2931 across sessions
@@ -87,7 +88,7 @@ ref.steel1C_1.nGrainsQP  = 99875;
 ref.steel1C_1.totalLen   = 156035.7019482664;
 ref.steel1C_1.totalLenQP = 155980.6048791179;
 ref.steel1C_1.meanArea   = 0.5428519276;
-ref.steel1C_1.negAreaQP  = 2;
+ref.steel1C_1.negAreaQP  = 0;
 ref.steel1C_1.time       = 8.8119;
 
 end

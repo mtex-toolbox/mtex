@@ -363,13 +363,30 @@ end
     V = [V;V(quadPoints,:)];
   
     % include new vertex into face list, i.e. replace quadpoint -> newVid
-    Ftmp = Fext(iqF(orderSub(1)),:).';
-    Ftmp(Ftmp == quadPoints.') = newVid;
-    Fext(iqF(orderSub(1)),:) = Ftmp.';
-  
-    Ftmp = Fext(iqF(orderSub(2)),:).';
-    Ftmp(Ftmp == quadPoints.') = newVid;
-    Fext(iqF(orderSub(2)),:) = Ftmp.';
+    % for the two edges that move to the copy
+    %
+    % This has to be an element-wise assignment, not a row-wise one: two
+    % adjacent quadruple points share the edge between them, and that edge
+    % is then in the relocation list of both. A row-wise
+    % Fext(rows,:) = ... silently keeps only the last write for a repeated
+    % row, so one of the two vertices was never replaced - the edge kept the
+    % original vertex where it should have taken the copy. The quadruple
+    % point then ends up with three of its four edges instead of two, the
+    % copy with one, and the boundary of the grain whose corner was cut
+    % there is an open path rather than a closed ring. Every downstream
+    % tracer (calcPolygonsC and calcPolygons alike) then returns a polygon
+    % that is not the grain, typically with a negative area, see #2590.
+    %
+    % Assigning by linear index is safe because the two writes to a shared
+    % edge touch its two *different* endpoints, and quadPoints are distinct,
+    % so no element is ever written twice. The reshape is for the single
+    % quadruple point case, where iqF is a row and linear indexing into it
+    % would inherit that shape.
+    relF  = reshape(iqF([orderSub(1);orderSub(2)]),[],1); % edges that move
+    relQP = repmat(quadPoints,2,1);           % vertex they have to give up
+    relV  = repmat(newVid,2,1);               % vertex they take instead
+    relCol = 1 + (Fext(relF,2) == relQP);
+    Fext(sub2ind(size(Fext),relF,relCol)) = relV;
         
     %F(iqF(orderSub(1)),:) = [qV(orderSub(1)),newVid];
     %F(iqF(orderSub(2)),:) = [newVid,qV(orderSub(2))];

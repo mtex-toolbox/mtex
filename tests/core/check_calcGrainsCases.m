@@ -167,6 +167,51 @@ if numel(ebsdQP2.grainId) ~= numel(ebsdQP2)
     numel(ebsdQP2.grainId), numel(ebsdQP2));
 end
 
+%% removeQuadruplePoints: two quadruple points sharing an edge
+%
+% regression test for #2590. Splitting a quadruple point detaches two of its
+% four edges and rewrites their shared vertex to a duplicate at the same
+% coordinates. That rewrite was done row wise, Fext(rows,:) = ..., over all
+% quadruple points at once - and two quadruple points that are neighbours
+% share the edge between them, so that edge is in the relocation list of
+% both. A repeated row in a MATLAB assignment silently keeps only the last
+% write, so one of the two rewrites was lost: the edge kept the original
+% vertex where it should have taken the duplicate. The quadruple point then
+% carries three of its four edges instead of two, the duplicate carries one,
+% and the boundary of the grain whose corner was cut there is an open path
+% rather than a closed ring - which no tracer can turn into a polygon.
+%
+% On an ideal square grid the two never collide: the edge shared by two
+% horizontally adjacent quadruple points points +x at one and -x at the
+% other, and the angular sort puts those in different relocation slots. It
+% takes an irregular neighbourhood - a hole, a map border - for the sort to
+% land both in the same slot, which is why this needs a map with missing
+% pixels and why real maps show it only a few times each (one collision on
+% forsterite, martensite and epidote, three on mylonite, two negative area
+% grains on the 2.5M pixel steel map of the benchmark).
+%
+% Every pixel is its own grain here, so every interior grid corner is a
+% quadruple point. The hole pattern is the smallest one found that makes the
+% collision fire.
+
+csQP3 = crystalSymmetry('m-3m','mineral','test');
+[xQP,yQP] = meshgrid(0:3,0:3);
+keepQP = logical([1 1 1 1; 0 1 1 1; 1 1 1 0; 0 1 1 1]);
+oriQP3 = orientation.byEuler((1:16).'*11*degree,0,0,csQP3);
+
+ebsdQP3 = gridify(EBSD(vector3d(xQP(keepQP),yQP(keepQP),0), oriQP3(keepQP), ...
+  ones(nnz(keepQP),1), {csQP3}, struct()));
+
+gQP3 = calcGrains(ebsdQP3,'threshold',qpThr,'removeQuadruplePoints');
+
+if length(gQP3) ~= nnz(keepQP)
+  error(['expected one grain per pixel on the quadruple point map, got %d ' ...
+    'for %d pixels - the fixture no longer exercises the case'], ...
+    length(gQP3), nnz(keepQP));
+end
+
+checkClosedBoundary(gQP3,'removeQuadruplePoints on adjacent quadruple points');
+
 %% minPixel: a diagonal-only neighbour must not save an undersized grain
 %
 % regression test for #2513. The minPixel filter is a two pass scheme:
@@ -261,6 +306,9 @@ for optRing = {{}, {'removeQuadruplePoints'}}
     error('%s: %d grain polygons are not closed rings (first is grain %d)', ...
       what, numel(notClosed), notClosed(1));
   end
+
+  % the statement above is weaker than it reads - see checkClosedBoundary
+  checkClosedBoundary(gRing,what);
 
 end
 
@@ -400,6 +448,42 @@ end
 if length(g) ~= nExpected
   error('minPixel (%s): expected %d indexed grains, got %d', ...
     label, nExpected, length(g));
+end
+
+end
+
+% ===========================================================================
+function checkClosedBoundary(grains, label)
+% every grain's boundary has to be a disjoint union of closed rings, i.e.
+% every vertex it uses is met by an even number of the grain's own segments
+%
+% This is the sharp form of "the polygon closed". Testing grains.poly for
+% p(1) == p(end) is not: EulerCycles closes every walk it returns by
+% repeating the first vertex, so an open path is reported as a closed ring
+% with one made-up segment in it. The degree statement cannot be faked that
+% way, and it is what the tracers actually require of their input.
+
+gB = grains.boundary;
+
+% (grain, vertex) incidences of every boundary segment, both sides, both ends
+gId = [gB.grainId(:,1);gB.grainId(:,1);gB.grainId(:,2);gB.grainId(:,2)];
+vId = [gB.F(:,1);gB.F(:,2);gB.F(:,1);gB.F(:,2)];
+keep = gId > 0;
+
+deg = sparse(gId(keep),vId(keep),1);
+odd = mod(deg,2) ~= 0 & deg ~= 0;
+
+if any(odd(:))
+  [gInd,vInd] = find(odd);
+  error(['%s: %d grain(s) have a boundary that does not close - grain %d ' ...
+    'meets vertex %d with an odd number of segments'], ...
+    label, numel(unique(gInd)), grains.id(gInd(1)), vInd(1));
+end
+
+nNeg = nnz(grains.area < 0);
+if nNeg > 0
+  error('%s: %d of %d grain polygons enclose a negative area', ...
+    label, nNeg, length(grains));
 end
 
 end
