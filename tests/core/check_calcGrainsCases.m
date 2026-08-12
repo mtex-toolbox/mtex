@@ -209,6 +209,61 @@ ebsdMPhex.rotations(iMP) = o2;
 checkMinPixel(calcGrains(ebsdMPhex,'threshold',thr,'minPixel',2), 2, 1, ...
   'hex, single stray pixel');
 
+%% every grain polygon must be a closed ring enclosing a positive area
+%
+% The cheapest statement of "the reconstruction is topologically sound", and
+% the one the suite was missing. A grain's polygon is a ring traced so that
+% the interior lies to one side; if it comes out with NEGATIVE area the ring
+% was traced inside out, which means the boundary graph did not close and
+% everything downstream - area, equivalent radius, smoothBoundary, plotting -
+% is reading a polygon that is not the grain.
+%
+% It is not hypothetical. An attempt at making the pairing at a quadruple
+% point deterministic (b2ca13189, 14463616f, reverted in 4f351d38e) produced
+% up to 117 such grains on alphaBetaTitanium, and none of the tests here
+% noticed: they assert grain COUNTS, and a broken ring does not change the
+% count. It surfaced only when a grain was plotted by hand.
+%
+% The regime that exposes it is a dense one - many small grains, so quadruple
+% points everywhere - not the block maps above, which have too few. Per pixel
+% random orientations on a 30 x 30 grid give ~900 grains and reproduce it in
+% under a second. The step is 0.3 rather than 1 for the same reason as the
+% gridify padding case below: with integer coordinates atan2 lands exactly on
+% its branch cut every time and the ambiguity never arises.
+
+csRing = crystalSymmetry('432','mineral','test');
+rng(3);
+ebsdRing = EBSDsquare([],rotation.rand(30,30),2*ones(30,30),[0 1], ...
+  {'notIndexed',csRing},'dxy',[0.3 0.3]);
+
+for optRing = {{}, {'removeQuadruplePoints'}}
+
+  what = 'calcGrains';
+  if ~isempty(optRing{1}), what = 'calcGrains + removeQuadruplePoints'; end
+
+  gRing = calcGrains(ebsdRing,'threshold',thr,optRing{1}{:});
+
+  if length(gRing) < 100
+    error('%s: expected a densely fragmented map, got %d grains - the test is not exercising quadruple points', ...
+      what, length(gRing));
+  end
+
+  nNeg = nnz(gRing.area < 0);
+  if nNeg > 0
+    error(['%s: %d of %d grain polygons enclose a negative area, i.e. the ' ...
+      'ring is traced inside out (smallest %.6f)'], ...
+      what, nNeg, length(gRing), min(gRing.area));
+  end
+
+  % and the rings have to be closed
+  notClosed = find(cellfun(@(p) p(1) ~= p(end), gRing.poly));
+  if ~isempty(notClosed)
+    error('%s: %d grain polygons are not closed rings (first is grain %d)', ...
+      what, numel(notClosed), notClosed(1));
+  end
+
+end
+
 %% gridify padding must segment exactly like notIndexed pixels
 %
 % The two ways of saying "nothing was measured here" have to give the same

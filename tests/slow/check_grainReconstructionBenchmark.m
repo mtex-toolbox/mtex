@@ -76,7 +76,27 @@ for k = 1:numel(cases)
   end
   grainsQP = calcGrains(ebsdI,'removeQuadruplePoints');
 
+  % A ring traced inside out encloses a negative area, and none of the
+  % metrics below would notice - they are counts and sums. It is tracked
+  % here, on real maps, because that is where it bit: an attempt at making
+  % the quadruple point pairing deterministic (reverted in 4f351d38e) left
+  % 117 such grains on alphaBetaTitanium while every count still looked
+  % plausible. core/check_calcGrainsCases carries the synthetic version.
+  %
+  % Plain reconstruction must have none, on any dataset, and that is
+  % asserted outright. The removeQuadruplePoints path is only COMPARED with
+  % the reference, because it does not currently have none: steel1C_1 has 2
+  % of 99875, unchanged since before this was looked at (measured at
+  % 059ff152a). Asserting zero there would leave the benchmark permanently
+  % red on a known defect, which is the state in which nobody reads it -
+  % pinning the count catches a regression from 2 to 117 just as well.
+  assert(nnz(grains.area < 0) == 0, 'MTEX:grainBenchmark:negativeArea', ...
+    ['%s: %d of %d grain polygons from a plain reconstruction enclose a ' ...
+    'negative area - the boundary ring did not close'], ...
+    c.name, nnz(grains.area < 0), length(grains));
+
   m = struct();
+  m.negAreaQP = nnz(grainsQP.area < 0);
   m.nGrains   = length(grains);
   m.nGrainsQP = length(grainsQP);
   m.totalLen  = sum(grains.boundary.segLength);
@@ -167,6 +187,7 @@ for k = 1:numel(names)
   fprintf(fid, 'ref.%s.totalLen   = %.10f;\n', n, m.totalLen);
   fprintf(fid, 'ref.%s.totalLenQP = %.10f;\n', n, m.totalLenQP);
   fprintf(fid, 'ref.%s.meanArea   = %.10f;\n', n, m.meanArea);
+  fprintf(fid, 'ref.%s.negAreaQP  = %d;\n',    n, m.negAreaQP);
   fprintf(fid, 'ref.%s.time       = %.4f;\n',  n, m.time);
 end
 
@@ -198,6 +219,13 @@ if abs(m.meanArea - r.meanArea) > tol * max(1,abs(r.meanArea))
     name, m.meanArea, r.meanArea);
   ok = false;
 end
+% only present in references written after the negative area probe was added
+if isfield(r,'negAreaQP') && m.negAreaQP ~= r.negAreaQP
+  fprintf('  [%s] FAIL: %d grain polygons of negative area under removeQuadruplePoints, reference %d\n', ...
+    name, m.negAreaQP, r.negAreaQP);
+  ok = false;
+end
+
 % only present in references written after the QP geometry was added
 if isfield(r,'totalLenQP') && ...
     abs(m.totalLenQP - r.totalLenQP) > tol * max(1,abs(r.totalLenQP))

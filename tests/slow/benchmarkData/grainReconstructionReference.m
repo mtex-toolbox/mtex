@@ -50,6 +50,14 @@ function ref = grainReconstructionReference()
 % position. Reproduction of the breakage, for whoever picks it up:
 % plot(smoothBoundary(grains,5)(40037)) on alphaBetaTitanium.
 %
+% negAreaQP counts grain polygons that enclose a NEGATIVE area, i.e. rings
+% traced inside out. It is 0 everywhere except steel1C_1, which has 2 of
+% 99875 - a pre-existing defect of removeQuadruplePoints, measured unchanged
+% at 059ff152a, not something the work around it introduced. It is pinned
+% rather than asserted to zero so that the benchmark stays readable while
+% still catching a regression; a plain reconstruction is asserted to have
+% none at all, on every dataset.
+%
 % This metric has a history of moving on its own. forsterite.nGrainsQP was
 % 2932, then 2933, then found to flip between 2933 and 2931 across sessions
 % with byte-identical code - root caused to a tie-break in calcUnitCell's
@@ -63,6 +71,7 @@ ref.forsterite.nGrainsQP  = 2931;
 ref.forsterite.totalLen   = 2109862.5882302765;
 ref.forsterite.totalLenQP = 2109862.5882302765;
 ref.forsterite.meanArea   = 196661.7753931304;
+ref.forsterite.negAreaQP  = 0;
 ref.forsterite.time       = 0.5609;
 
 ref.copper.nGrains    = 755;
@@ -70,6 +79,7 @@ ref.copper.nGrainsQP  = 755;
 ref.copper.totalLen   = 37299.7178983177;
 ref.copper.totalLenQP = 37299.7178983177;
 ref.copper.meanArea   = 462.1479171713;
+ref.copper.negAreaQP  = 0;
 ref.copper.time       = 0.0733;
 
 ref.steel1C_1.nGrains    = 104814;
@@ -77,6 +87,7 @@ ref.steel1C_1.nGrainsQP  = 99875;
 ref.steel1C_1.totalLen   = 156035.7019482664;
 ref.steel1C_1.totalLenQP = 155980.6048791179;
 ref.steel1C_1.meanArea   = 0.5428519276;
+ref.steel1C_1.negAreaQP  = 2;
 ref.steel1C_1.time       = 8.8119;
 
 end
