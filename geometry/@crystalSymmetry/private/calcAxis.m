@@ -66,8 +66,11 @@ switch pg.lattice
   case {'trigonal','hexagonal'}
     abc = axisLength(:).' .* vector3d([sqrt(0.75) 0 0],[-0.5 1 0],[0 0 1]);
 
-  case {'orthorhombic','cubic'}
+  case {'orthorhombic','tetragonal','cubic'}
 
+    % all angles are 90 degree, so the axes are simply the scaled
+    % coordinate axes - tetragonal used to take the general formula below,
+    % which gives the same numbers up to rounding noise
     abc = (axisLength(:) .* vector3d.byXYZ(eye(3))).';
 
   otherwise
@@ -84,49 +87,68 @@ end
 % vendor specific alignment conventions
 varargin = expandVendorAlignment(pg,varargin);
 
-% extract alignment options
-% restrict to strings
-alignOpt = varargin(cellfun(@(s) ischar(s),varargin));
+% Only the strings that actually name an alignment. 'mineral','Quartz' and
+% 'color','red' are strings too, and used to reach the machinery below,
+% which then found no axis to align, quietly added Z||c and multiplied by
+% the identity - so every crystalSymmetry carrying a name paid for the full
+% alignment computation and got the reference frame back.
+alignOpt = varargin(cellfun(@(s) ischar(s) || isstring(s),varargin));
+alignOpt = alignOpt(cellfun(@(s) contains(s,'||'),alignOpt));
 
 % nothing to do - abc is already in the default X||a*, Z||c convention
-if isempty(alignOpt), return; end
+if ~isempty(alignOpt)
+  abc = alignAxes(pg,axisLength,abc,alignOpt);
+end
+
+if check_option(varargin,'rotAxes')
+  abc = get_option(varargin,'rotAxes') * abc;
+end
+
+end
+
+% =========================================================================
+function abc = alignAxes(pg,axisLength,abc,alignOpt)
+% express the axes in the reference frame the alignment options ask for
+%
+% abc arrives in the MTEX default, X||a* and Z||c.
+
+alignment = parseAlignment(alignOpt);
+
+% ---- the two standard setups ------------------------------------------
+% Essentially every call in practice asks for one of these, and for them
+% the axes are simply written down - no reciprocal lattice, no
+% transformation matrix, no rounding noise. Anything else falls through to
+% the general construction below.
+if isStandardSetup(alignment)
+  switch pg.lattice
+
+    case {'orthorhombic','tetragonal','cubic'}
+      % the axes are mutually orthogonal, hence a*||a, b*||b and c*||c, so
+      % naming either of a pair asks for the very same frame - the
+      % reference one
+      return
+
+    case {'trigonal','hexagonal'}
+      if strcmpi(alignment{1},'a')
+        % X||a, the EDAX / TSL setup: the reference frame turned by 30
+        % degree about c, so that a rather than a* falls on x
+        abc = axisLength(:).' .* vector3d([1 -0.5 0],[0 sqrt(0.75) 0],[0 0 1]);
+      end
+      % X||a* is the reference frame itself
+      return
+
+  end
+end
+
+% ---- the general construction -----------------------------------------
+% monoclinic and triclinic, and any alignment naming b, m, d or an axis out
+% of its usual place
 
 % compute a* b* c*
 % (the direction of the reciprocal axes only depends on the physical
 % lattice, not on the coordinate frame abc happens to be expressed in,
 % so a single cross product formula works for all lattice types)
 abcStar = cross(abc([2 3 1]),abc([3 1 2]));
-
-% which arguments should be flipped
-flipthem = ~cellfun('isempty',regexpi(alignOpt,'\|\|[xyz]'));
-
-% now flip them
-alignOpt(flipthem) = cellfun(@(a) [a(end:-1:end-2) a(1:end-3)],alignOpt(flipthem),'UniformOutput',false);
-
-% if nothing or only Y is specified set Z||c
-if ~any(cell2mat(regexpi(alignOpt,'z\|\|'))) && ...
-    nnz(cell2mat(regexpi(alignOpt,'[xy]\|\|')))<=1
-
-  p = '[xy]\|\|[abc]'; % check for something like x||a
-  if all(cellfun(@isempty,regexpi(alignOpt,['(?!' p '\*)' p])))
-    alignOpt = [alignOpt,{'Z||c'}];
-  else
-    alignOpt = [alignOpt,{'Z||c*'}];
-  end
-end
-
-% extract alignment for x, y, z directions
-axes = ['X','Y','Z'];
-alignment = cell(1,3);
-
-% extract alignment for each axis
-for ia = 1:3
-
-  al = regexpi(alignOpt,[axes(ia) '\|\|([abcdm]*\*?)'],'tokens');
-  al = [al{:}];
-  alignment{ia} = char(al{:});
-
-end
 
 % setup new x, y, z directions
 xyzNew = vector3d.zeros(1,3);
@@ -189,12 +211,56 @@ if det(M) < 0, M(2,:) = -M(2,:);end
 xyz = M * double(abc);
 abc = vector3d(xyz(1,:),xyz(2,:),xyz(3,:));
 
-if check_option(varargin,'rotAxes')
-  abc = get_option(varargin,'rotAxes') * abc;
+end
+
+% =========================================================================
+function alignment = parseAlignment(alignOpt)
+% canonicalise the alignment options into what x, y and z are aligned with
+%
+% Output is a 1 x 3 cell of 'a','b','c','a*','b*','c*','m','d' or '', one
+% per Cartesian axis.
+
+% an option may be written either way round, x||a or a||x
+flipthem = ~cellfun('isempty',regexpi(alignOpt,'\|\|[xyz]'));
+alignOpt(flipthem) = cellfun(@(a) [a(end:-1:end-2) a(1:end-3)], ...
+  alignOpt(flipthem),'UniformOutput',false);
+
+% if nothing or only Y is specified set Z||c
+if ~any(cell2mat(regexpi(alignOpt,'z\|\|'))) && ...
+    nnz(cell2mat(regexpi(alignOpt,'[xy]\|\|')))<=1
+
+  p = '[xy]\|\|[abc]'; % check for something like x||a
+  if all(cellfun(@isempty,regexpi(alignOpt,['(?!' p '\*)' p])))
+    alignOpt = [alignOpt,{'Z||c'}];
+  else
+    alignOpt = [alignOpt,{'Z||c*'}];
+  end
+end
+
+axes = ['X','Y','Z'];
+alignment = cell(1,3);
+for ia = 1:3
+  al = regexpi(alignOpt,[axes(ia) '\|\|([abcdm]*\*?)'],'tokens');
+  al = [al{:}]; %#ok<AGROW>
+  alignment{ia} = char(al{:});
 end
 
 end
 
+% =========================================================================
+function tf = isStandardSetup(alignment)
+% x on a or a*, z on c or c*, y left to follow from them
+%
+% For a lattice whose axes are mutually orthogonal these four combinations
+% all describe the same frame, and for a hexagonal or trigonal one they
+% describe the only two frames anybody uses.
+
+tf = any(strcmpi(alignment{1},{'a','a*'})) && isempty(alignment{2}) && ...
+  any(strcmpi(alignment{3},{'c','c*'}));
+
+end
+
+% =========================================================================
 function opt = expandVendorAlignment(pg,opt)
 % replace a vendor name by the alignment options it stands for
 %

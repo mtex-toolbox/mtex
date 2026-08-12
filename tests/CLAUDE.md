@@ -74,6 +74,7 @@ over budget, trim from outside these before trimming inside them.
 | orientation embedding | `core/check_embedding` |
 | symmetry comparison, `eqTol`/`sim` | `core/check_symmetryCompare` |
 | `vector3d` construction and shape contract | `core/check_vector3d` |
+| crystal axes, `X\|\|a` / `X\|\|a*` alignment, EDAX frame | `core/check_crystalAxes` |
 | `Miller`, crystal directions, hkl↔uvw | `core/check_Miller` |
 | **every mex binary's functional behaviour** | `core/check_mexFunctions` |
 | mex build completeness | `check_mexComplete` (root) |
