@@ -49,16 +49,16 @@ end
 
 % -------------------------------------------------------------------------
 function checkOptionInPositionOfR(name,SO3F,h)
-% radon(SO3F,h,'bandwidth',32) has to do what radon(SO3F,h,[],'bandwidth',32)
+% radon(SO3F,h,'bandwidth',16) has to do what radon(SO3F,h,[],'bandwidth',16)
 % does, not throw
 
 try
-  S2F = radon(SO3F,h,'bandwidth',32);
+  S2F = radon(SO3F,h,'bandwidth',16);
 catch e
-  error('check_radonOptions: radon(%s,h,''bandwidth'',32) throws: %s',name,e.message)
+  error('check_radonOptions: radon(%s,h,''bandwidth'',16) throws: %s',name,e.message)
 end
 
-ref = radon(SO3F,h,[],'bandwidth',32);
+ref = radon(SO3F,h,[],'bandwidth',16);
 
 assert(strcmp(class(S2F),class(ref)), ...
   'check_radonOptions: %s returns a %s with the option shifted and a %s without', ...
@@ -108,7 +108,7 @@ assert(csLaue.isLaue,'check_radonOptions: m-3m is expected to be a Laue group')
 
 odf = 0.5*unimodalODF(orientation.rand(csLaue)) + 0.5*fibreODF(fibre.rand(csLaue));
 
-S2F = radon(odf,Miller(1,0,0,csLaue),'bandwidth',32);
+S2F = radon(odf,Miller(1,0,0,csLaue),'bandwidth',16);
 assert(S2F.antipodal, ...
   'check_radonOptions: the radon transform of a composition over a Laue group is not antipodal')
 
@@ -118,7 +118,7 @@ assert(~cs.isLaue,'check_radonOptions: this check needs a group that is not Laue
 odf = 0.5*unimodalODF(orientation.rand(cs)) + 0.5*fibreODF(fibre.rand(cs));
 
 h.antipodal = true;
-S2F = radon(odf,h,'bandwidth',32);
+S2F = radon(odf,h,'bandwidth',16);
 assert(S2F.antipodal, ...
   'check_radonOptions: an antipodal h does not make the composition radon transform antipodal')
 

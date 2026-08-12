@@ -21,7 +21,10 @@ function check_find
 rng(0)
 tol = 1e-9;
 
-N = 300;  M = 10;
+% N drives the brute force angle(w,v.') below, which is what this test
+% costs; the coverage lives in the six symmetry cases, not in the sample
+% count, so N is kept only large enough for k = 7 to be a real question
+N = 120;  M = 10;
 
 % cs, ss, label - the last column names the fold branch that is exercised
 cases = { ...
@@ -47,8 +50,15 @@ for i = 1:size(cases,1)
   checkK(v,w,dRef,3,lbl,tol);
   checkK(v,w,dRef,7,lbl,tol);
   checkClosest(v,w,dRef,lbl,tol);
-  checkEps(v,w,dRef,10*degree,lbl,tol);
-  checkEps(v,w,dRef,25*degree,lbl,tol);
+
+  % the epsilon radius is taken from the observed distances rather than
+  % fixed: 10 degree catches nothing under a trivial symmetry and nearly
+  % everything under 432, so a fixed radius quietly makes checkEps vacuous
+  % for some of the cases. It did - the empty case only stayed hidden
+  % because N happened to be large enough to land one pair inside.
+  ds = sort(dRef(:));
+  checkEps(v,w,dRef,radiusAt(ds,0.02),lbl,tol);
+  checkEps(v,w,dRef,radiusAt(ds,0.20),lbl,tol);
 
 end
 
@@ -198,8 +208,26 @@ assert(~any(ind(mustNot)),'%s, eps: a point outside the radius was reported',lbl
 
 % d must carry the MINIMUM distance - summing duplicates would be larger
 I = logical(ind);
+
+% a radius that catches nothing makes every check below vacuous - max of an
+% empty selection is [], and assert([]) throws rather than passing, which is
+% how this was found
+assert(any(I(:)), ...
+  '%s, eps = %.2f degree: nothing is inside the radius, the check proves nothing', ...
+  lbl, epsilon/degree)
+
 assert(max(abs(full(d(I)) - dRef(I))) < tol,...
   '%s, eps: the distances are wrong - summed instead of minimised?',lbl)
 assert(nnz(d) <= nnz(ind),'%s, eps: d must be 0 wherever ind is 0',lbl)
+
+end
+
+% -------------------------------------------------------------------------
+function e = radiusAt(ds,frac)
+% a radius strictly between two observed distances, so that no pair sits
+% exactly on the boundary of the strict comparison inside find
+
+k = max(1,min(numel(ds)-1,round(frac*numel(ds))));
+e = (ds(k) + ds(k+1))/2;
 
 end
