@@ -19,7 +19,9 @@ done, O1 and O2 could not be reproduced. Two new rows, O28 and T7, come out
 of that pass.
 
 Updated 2026-08-12: O12, C19, F5 and L12 fixed, each with a check script.
-G10 could not be confirmed as a defect.
+G10 could not be confirmed as a defect. A second pass the same day fixed O8,
+O9, C18 and G35; O8 turned out to have a second half, two implementations
+ignoring `'bandwidth'` once it reached them.
 
 ## Legend
 
@@ -114,7 +116,7 @@ The multi-release work. Everything here is bigger than one branch.
 | G32 | Variant selection in transformation texture | 1 | 1 | idea | — | — |
 | G33 | KAM: default filter masks that respect the grid resolution; option to compute per distance and on rings | 2 | 1 | planned | — | [→](#g33) |
 | G34 | GND computation should solve the fit only approximately | 1 | 1 | idea | — | #1923 |
-| G35 | Formula reference error in the GND documentation | 2 | 0 | bug | — | #1346 |
+| G35 | Formula reference error in the GND documentation — **fixed 2026-08-12**; `GND.m` had been corrected already, `DislocationSystems.m` still carried `U_edge = (1-nu) U_screw` instead of `U_screw/(1-nu)`, plus the open ends around it | 2 | 0 | done | — | #1346 |
 | G36 | Weighted Burgers vector: error estimation | 1 | 1 | idea | — | #2064 |
 | G37 | Overlay a grain map with the active slip system | 1 | 0 | idea | — | — |
 | G38 | `removeQuadruplePoints` destroyed real grain boundary — fixed, reference regenerated, benchmark green | 2 | 0 | done | — | [→](#g38) |
@@ -211,8 +213,8 @@ copy; only what is still open is summarised here.
 | O5 | Euler angles of random orientations are inconsistent with the crystal symmetry | 2 | 1 | triage | — | #1597 |
 | O6 | `vector3d` constructor is inconsistent across input shapes | 2 | 0 | bug | — | #2145 |
 | O7 | `calcComponents` gives strange results or crashes when `'angle'` is passed | 2 | 1 | bug | — | #1840 |
-| O8 | `radon(odf,h,'bandwidth',64)` crashes — the option binds to the positional `r` | 2 | 0 | bug | — | [→](#o8) |
-| O9 | `SO3FunComposition/radon` has no antipodal check of its own; it works only as long as every component type implements one | 1 | 0 | bug | — | [→](#o8) |
+| O8 | `radon(odf,h,'bandwidth',64)` crashed — the option bound to the positional `r` — **fixed 2026-08-12**, an option string in position 3 is shifted into `varargin` in all five implementations; `@SO3FunRBF` and `@SO3FunBingham` additionally ignored `'bandwidth'` once it arrived | 2 | 0 | done | — | [→](#o8) |
+| O9 | `SO3FunComposition/radon` had no antipodal check of its own — **fixed 2026-08-12**, it now decides the flag itself instead of inheriting whatever its components set | 1 | 0 | done | — | [→](#o8) |
 | O10 | `interp(...,'bingham')` is silently wrong under symmetry — relative error 0.92 for `'2'`, 0.95 for `'222'`, 0.67 for `'432'` | 1 | 1 | paused | — | [→](#o10) |
 | O11 | `SO3FunRBF/rotate` is wrong — needs Thom's data to reproduce | 1 | 1 | blocked | — | — |
 | O12 | `S2BumpKernel` was not normalized, `A(1) = 0.0076` — **fixed 2026-08-12**, `eval` divides by the relative area of the cap, so `A(1) = 1` and `calcDensity` has mean 1 | 2 | 0 | done | — | [→](#o12) |
@@ -379,7 +381,7 @@ copy; only what is still open is summarised here.
 | C15 | Check that `"options"` works everywhere `'options'` does | 1 | 0 | wip | — | — |
 | C16 | `bingham_test` runs again after a row/column fix, but its output convention is unverified — do not document until checked | 1 | 0 | decide | — | [→](#c16) |
 | C17 | `calcDensity` on an **empty** orientation list died in the obsolete `ODF(cs,ss)` shim — **fixed 2026-08-11**, an empty and an all `NaN` list both give the uniform ODF | 2 | 0 | done | — | — |
-| C18 | `calcPoleFigure(odf,pf.allH,pf.allR)` throws for superposed pole figures unless `'superposition',pf.c` is passed | 2 | 0 | bug | — | [→](#c18) |
+| C18 | `calcPoleFigure(odf,pf.allH,pf.allR)` threw for superposed pole figures unless `'superposition',pf.c` was passed — **fixed 2026-08-12**, the default is one coefficient per crystal direction, all equal, so a superposed pole figure is the mean of its components | 2 | 0 | done | — | [→](#c18) |
 | C19 | `stiffnessTensor.rand` returned a plain rank 2 `tensor` — **fixed 2026-08-12** with a `rand.m` on both rank 4 classes that draws a Gram matrix, since a random *array* is not a stiffness tensor; no `zeros`/`ones`/`nan` for the same reason | 2 | 1 | done | — | [→](#c19) |
 | C20 | `export(odf,fname,'VPSC')` silently wrote a *generic* file — **fixed 2026-08-11**, the interface is taken as a bare flag as well and an unknown one is named | 2 | 0 | done | — | — |
 | C21 | A new property needs `ebsd.prop.name = ...`; `ebsd.name = ...` errors, and no length check is done on the value | 1 | 0 | decide | — | — |
@@ -700,19 +702,45 @@ Either point those pages at the current wizard, or rewrite their GUI sections
 around the plain load commands. Product decision, not a code fix.
 
 ### O8
-`radon`'s signature is `radon(SO3F,h,r,varargin)`, so a third positional
-option string binds to `r` and reaches `dot_outer` as "Dot indexing is not
-supported for variables of this type". Workaround today is
-`radon(odf,h,[],'bandwidth',64)`. Affects every implementation: `@SO3Fun`,
-`@SO3FunRBF`, `@SO3FunCBF`, `@SO3FunBingham`, `@SO3FunHarmonic`,
-`@SO3FunComposition`. Fix either by detecting an option string in position 3
-and shifting it into `varargin`, or by dropping `r` from the positional API.
+**Fixed 2026-08-12.** `radon`'s signature is `radon(SO3F,h,r,varargin)`, so a
+third positional option string bound to `r` and reached `dot_outer` as "Dot
+indexing is not supported for variables of this type"; the workaround was
+`radon(odf,h,[],'bandwidth',64)`. Of the two proposed fixes the first was
+taken — an option string in position 3 is shifted into `varargin` — because
+dropping `r` from the positional API would break `radon(SO3F,h,r)`, which is
+the documented way to get plain doubles and is used across `plotPDF`,
+`calcPDF` and `calcPoleFigure`. The shift sits at the very top of each file,
+before anything reads `r`: `@SO3FunHarmonic` tests `r.antipodal` at line 22,
+well before its own `if nargin<3` at line 30.
 
-Separately, `@SO3FunComposition/radon` only sums the component transforms and
-has no final antipodal check of its own, unlike `@SO3Fun/radon.m` and
-`@SO3FunRBF/radon.m`. `varargin` is forwarded, so it works as long as every
-component type implements that logic — there is no safety net if one does
-not, which was exactly the situation for `@SO3FunCBF` until 2026-08-06.
+Five implementations carry it — `@SO3Fun`, `@SO3FunRBF`, `@SO3FunCBF`,
+`@SO3FunBingham`, `@SO3FunHarmonic`. `@SO3FunComposition` never needed it,
+its signature is `radon(odf,h,varargin)`.
+
+**Two of them then ignored the option they had just been handed**, which the
+row did not say:
+
+- `@SO3FunRBF/radon` passed `SO3F.psi.bandwidth` to both quadratures
+  literally, so `'bandwidth'` had no effect at all. It now caps the request
+  at the kernel bandwidth the way `@SO3FunHarmonic/radon` caps at its own —
+  a larger request cannot be answered with information that is not there, a
+  smaller one is an honest truncation.
+- `@SO3FunBingham/radon` forwarded `varargin` into the inner function handle
+  but not to `S2FunHarmonicSym.quadrature` itself, so the bandwidth of the
+  result was the quadrature default.
+
+`@SO3FunComposition/radon` (O9) only summed the component transforms and had
+no final antipodal check of its own, unlike `@SO3Fun/radon.m` and
+`@SO3FunRBF/radon.m`. `varargin` is forwarded, so it worked as long as every
+component type implemented that logic — no safety net if one does not, which
+was exactly the situation for `@SO3FunCBF` until 2026-08-06. It now decides
+the flag itself, from `'antipodal'`, `CS.isLaue`, `h.antipodal` and
+`r.antipodal`, as `@SO3Fun/radon` does.
+
+Verification: `tests/check_radonOptions.m` — every implementation, the
+shifted option against the explicit `[]` form, the positional syntaxes that
+have to keep working, and the composition antipodal flag over a Laue group
+and over an antipodal `h`. Fails on the unfixed tree.
 
 ### O10
 Does not error, silently returns a bad fit. Relative error against the source
@@ -911,18 +939,36 @@ than a p-value, so it is unclear which way round to read it. No callers outside
 mentions the function but does not demonstrate it.
 
 ### C18
-`SO3Fun/@SO3Fun/calcPoleFigure.m:66` reshapes the result of `calcPDF` to
-`size(r{ip})`. The default structure coefficients are built as one per pole
-figure, `repcell(1,1,length(h))`, so when a cell entry of `h` holds several
-Miller indices — a superposed pole figure — `calcPDF` returns one value per
-Miller index and the reshape fails.
+**Fixed 2026-08-12.** `SO3Fun/@SO3Fun/calcPoleFigure.m:66` reshapes the result
+of `calcPDF` to `size(r{ip})`. The default structure coefficients were built
+as one per pole figure, `repcell(1,1,length(h))`, so when a cell entry of `h`
+held several Miller indices — a superposed pole figure — `calcPDF` returned
+one value per Miller index and the reshape failed.
 
-Reproduce with `mtexdata dubna`, whose third pole figure superposes
+Reproduced with `mtexdata dubna`, whose third pole figure superposes
 $(10\bar11)$ and $(01\bar11)$:
 
     pf = ...; odf = calcODF(pf,'silent');
-    calcPoleFigure(odf,pf.allH,pf.allR)                          % throws
-    calcPoleFigure(odf,pf.allH,pf.allR,'superposition',pf.c)     % works
+    calcPoleFigure(odf,pf.allH,pf.allR)                          % threw
+    calcPoleFigure(odf,pf.allH,pf.allR,'superposition',pf.c)     % worked
+
+The default is now one coefficient per crystal direction, all equal, i.e.
+the superposed pole figure is the *mean* of its components and so is again a
+pole density with mean one — the same thing the non-superposed case returns.
+Equal *ones* would have been the other reading, but that scales a superposed
+pole figure by the number of contributing directions and nothing downstream
+expects that. Explicit coefficients are still taken as they are, unnormalized:
+`pf.c` for dubna is `[0.52 1.23]`, which does not sum to one, and measured
+structure coefficients are not the place for MTEX to impose a convention.
+
+Note that `calcPDF` itself is left alone. With a scalar `'superposition'` and
+several Miller indices it returns one pole density per index rather than
+their sum, which is what `plotPDF` relies on.
+
+Verification: `tests/check_calcPoleFigureSuperposition.m` — the default is
+the mean, explicit coefficients are honoured exactly, a plain pole figure is
+unchanged, and the reported dubna call returns 7 pole figures of the right
+shape. Fails on the unfixed tree.
 
 ### C19
 **Fixed 2026-08-12, but not as this row described it.** Wrapping `tensor.rand`
