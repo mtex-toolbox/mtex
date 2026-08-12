@@ -11,7 +11,7 @@ function setColorRange(varargin)
 %  figurelist - list of figure where the plots should be scaled  
 %
 % Options
-%  log         - scale plots logarithmic
+%  log, logarithmic - scale plots logarithmic
 %  linear      - scale plots linear
 %  equal       - scale plots to the same range
 %  tight       - scale plots individually
@@ -41,7 +41,10 @@ end
 
 if isempty(mtexFig.children), return; end
 
-if check_option(varargin,'log')
+% both spellings, as in optionplot - plotPDF and the other plot commands
+% pass their options straight through to here, and the documented flag on
+% those is 'logarithmic'
+if check_option(varargin,{'logarithmic','log'})
   set(mtexFig.children,'ColorScale','log');
 elseif check_option(varargin,'linear')
   set(mtexFig.children,'ColorScale','linear')
