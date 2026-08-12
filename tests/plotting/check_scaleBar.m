@@ -120,6 +120,55 @@ if ~all(abs(limBar - limNoBar) <= 1e-9*max(abs(limNoBar)))
 end
 close all
 
+% Where the bar itself sits, which nothing above pins - the cases so far are
+% all about the reference frame indicator inside it. Reported as #2576: the
+% bar moved out of the corner and turned with the map as soon as the
+% plotting convention was changed, e.g. by xAxisDirection west. The bar is
+% laid out in data coordinates while the convention is applied through the
+% axes camera, so "bottom left" has to be decided on SCREEN, projecting onto
+% the convention's east / north - the axes XDir / YDir stay 'normal'
+% throughout and say nothing about it.
+for conv = {'y↑→x','y↓→x','x←↑y','x↑→y'}
+
+  ebsd.how2plot = conv{1};
+
+  for loc = {'sw','se','nw','ne'}
+
+    plot(ebsd,'Location',loc{1});
+    drawnow
+    ax = gca;
+    sB = getappdata(ax,'mapPlot').micronBar;
+    pC = plottingConvention.getView(ax);
+
+    xl = xlim(ax); yl = ylim(ax);
+    off = vector3d(mean(sB.shadow.XData) - mean(xl), ...
+      mean(sB.shadow.YData) - mean(yl), 0);
+    east  = dot(off,pC.east, 'noAntipodal') / (0.5*diff(xl));
+    north = dot(off,pC.north,'noAntipodal') / (0.5*diff(yl));
+
+    wanted = [2*startsWith(loc{1},'n')-1, 2*endsWith(loc{1},'e')-1];
+    if sign(north) ~= wanted(1) || sign(east) ~= wanted(2)
+      error(['check_scaleBar: %s, ''Location'',''%s'' - the bar sits at ' ...
+        'east %+.2f north %+.2f on screen, i.e. in the wrong corner'], ...
+        conv{1}, loc{1}, east, north);
+    end
+
+    % and it reads left to right on screen whatever the map does, rather
+    % than turning with it - the label stays upright either way
+    V = sB.ruler.Vertices;
+    [~,~,W] = svd(V - mean(V,1),0);
+    along = vector3d(W(1,1),W(2,1),0);
+    if abs(dot(along,pC.east,'noAntipodal')) < cos(5*degree) || sB.txt.Rotation ~= 0
+      error(['check_scaleBar: %s - the bar runs at east %+.2f north %+.2f ' ...
+        'on screen with the label rotated %g degree'], conv{1}, ...
+        dot(along,pC.east,'noAntipodal'), dot(along,pC.north,'noAntipodal'), ...
+        sB.txt.Rotation);
+    end
+
+    close all
+  end
+end
+
 % a view no axis is aligned with: all three directions become arrows and
 % there is no circled symbol at all
 pC = plottingConvention; pC.outOfScreen = vector3d(0.4,0.3,1);

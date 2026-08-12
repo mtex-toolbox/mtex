@@ -286,8 +286,9 @@ copy; only what is still open is summarised here.
 
 | # | Item | U | Sz | Status | Owner | Refs |
 |---|------|:-:|:--:|--------|-------|------|
-| L1 | The scale bar moves depending on the plotting convention | 2 | 0 | bug | — | #2576 |
-| L2 | Sigma sections ignore the plotting convention | 2 | 0 | bug | — | #2093 |
+| L1 | The scale bar moves depending on the plotting convention — **already fixed** by the scaleBar rework that reads the convention back from the camera; measured 2026-08-12 across four conventions x four `Location` corners and the reporter's own preference pair, and pinned in `check_scaleBar` | 2 | 0 | done | — | #2576, [→](#l1) |
+| L2 | Sigma sections ignore the plotting convention — **they do not**; measured 2026-08-12, the section follows `odf.SS.how2plot`. What the report actually shows is that data keeps the convention it captured at construction, so changing the default afterwards does not reach it — that is L4 | 2 | 0 | done | — | #2093, [→](#l2) |
+| L2b | `setMTEXpref` had three preferences `getMTEXpref` could not read back — **fixed 2026-08-12**, `xyzPlotting`, `xAxisDirection` and `zAxisDirection` are held by the plotting convention, not by the appdata group | 2 | 0 | done | — | [→](#l2) |
 | L3 | `histogram(grains.longAxis)` ignores the plotting convention | 2 | 0 | bug | — | — |
 | L4 | General plotting-convention oddities; `setMTEXpref('xAxisDirection',...)` has no effect | 3 | 1 | bug | — | #2014, #2096 |
 | L5 | Crystal shapes do not follow the EBSD data when it is rotated or the convention changes | 2 | 1 | bug | — | #1952 |
@@ -728,6 +729,60 @@ positions and on the shape of the coordinate arrays, not just on the point
 count — `size(gB)` reads the segment list and does not see the expansion.
 Also pins that the lattice index range is unchanged by a far shift, which is
 where #1722 actually goes wrong.
+
+### L2
+Measured 2026-08-12 with an asymmetric `unimodalODF`, reading the peak
+position off the first section's contour:
+
+| what was changed | peak |
+|---|---|
+| `odf.SS.how2plot` out of screen | (+0.5913, +1.0242) |
+| `odf.SS.how2plot` into screen | (-0.5913, +1.0242) |
+
+So `plotSection(odf,'sigma')` **does** follow the convention — `pfSections`
+passes `oS.SS.how2plot` into both `plotS2Grid` and the reference field.
+
+What #2093 really runs into is that the convention is captured when the data
+is constructed, not read at plot time: the report builds `odf` once and then
+changes the preference, and `orientation.byEuler(...,cs)` had already taken
+`specimenSymmetry.default` as it stood. `plottingConvention.matchDefault`
+exists precisely so that data plotted the default way keeps referring to the
+one default instance and does follow later changes, but data given an
+explicit convention does not. That propagation question is L4, not a sigma
+section defect. It is made harder to reason about by `plottingConvention`
+being a handle class, so the report's `xyzPlot.intoScreen = zvector` mutates
+the very object anything holding it already refers to — see
+`plottingconvention-eq-and-default-frame` in the agent memory.
+
+Found while measuring it, and fixed: `setMTEXpref` translates
+`xyzPlotting`, `xAxisDirection` and `zAxisDirection` into a call on the
+plotting convention instead of storing them in the appdata group, and
+`getMTEXpref` knew nothing about that - it looked them up in the group,
+found nothing and returned `[]` while the setting was in effect.
+`getMTEXpref('xyzPlotting')` returned a `double`. All three read back now; a
+convention no axis is aligned with reports `''` for the two axis directions,
+since there is no such setting to name. New owner
+`tests/core/check_mtexPref.m`.
+
+### L1
+Measured 2026-08-12 on `small`, projecting the bar's box centre onto the
+convention's `east`/`north` (the axes `XDir`/`YDir` stay `normal` for every
+convention — the view is applied through the camera, so a data space
+measurement says nothing about where the bar appears):
+
+| convention | east | north | corner |
+|---|---|---|---|
+| `y↑→x` | -0.87 | -0.83 | south west |
+| `y↓→x` | -0.87 | -0.83 | south west |
+| `x←↑y` | -0.87 | -0.83 | south west |
+| `x↑→y` | -0.87 | -0.83 | south west |
+| `xAxisDirection` west + `zAxisDirection` outOfPlane | -0.87 | -0.83 | south west |
+
+The last row is #2576's own reproduction. The ruler also runs along screen
+east (dot 1.00) with the label unrotated in all four, and `'Location'`
+reaches all four corners correctly. So the report is answered by the
+rework in which the bar reads the convention back from the axes camera; it
+was never given a regression test, which it now has.
 
 ### O6
 Measured before the change: `vector3d(3 x N)` → `1 x N`, `vector3d(N x 3)` →

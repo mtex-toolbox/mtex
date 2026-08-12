@@ -114,6 +114,7 @@ over budget, trim from outside these before trimming inside them.
 | `calcTensor` averaging | `slow/check_meanTensor` |
 | ODF export interfaces | `core/check_odfExport` |
 | `holdOn`/`holdRelease` semantics | `core/check_holdGuard` |
+| `setMTEXpref`/`getMTEXpref` round trip | `core/check_mtexPref` |
 | `mtexFigure` layout, colorbar placement | `plotting/check_colorbarLocation` |
 | micron bar, reference frame indicator | `plotting/check_scaleBar` |
 | spherical axes labels | `plotting/check_sphericalAxesLabels` |
