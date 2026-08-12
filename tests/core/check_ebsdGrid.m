@@ -19,6 +19,7 @@ checkTransform;
 checkUnitCellProperty;
 checkGridShapes;
 checkMultiColumnProps;
+checkLatticeBasisCanonical;
 
 disp('check_ebsdGrid: passed');
 
@@ -501,6 +502,81 @@ assert(isequal(size(e.fs),[2*length(ebsd) size(ebsd.fs,2)]), ...
 
 assert(isequal(e.fs,[ebsd.fs;ebsd.fs]) && isequal(e.im,[ebsd.im;ebsd.im]), ...
   'check_dynProp: concatenation does not stack the multi channel properties');
+
+end
+
+% =========================================================================
+function checkLatticeBasisCanonical
+% latticeBasis must read the lattice off the CELL, not off the order its
+% corners happen to be listed in
+%
+% The corner order is not an invariant of a unit cell: the importers hand
+% out one order and squarify sorts the corners by angle before gridding,
+% which on a square cell also reverses the winding. latticeBasis used to
+% take a1 = trans(1,:) and a2 = the first orthogonal entry, so the same
+% 50 x 50 square gave A = [50 0; 0 50] one way and A = [-50 0; 0 50] the
+% other - a MIRRORED, left handed (i,j) frame. That propagated through
+% assignGridIndex into the spatial decomposition and changed the
+% reconstruction from identical measurements: on forsterite 2931 grains and
+% a total boundary length of 2109862.588230 against 2936 and 2109862.726874.
+%
+% So: every way of writing down the same cell must give one basis, and it
+% must be right handed.
+
+d = 50;
+sq = vector3d([d d -d -d],[-d d d -d],0)/2;   % as the importers give it
+
+variants = {'as given', sq};
+variants(end+1,:) = {'reversed winding', sq(end:-1:1)};
+for s = 1:3
+  variants(end+1,:) = {sprintf('rotated start by %d',s), sq([1+s:4 1:s])}; %#ok<AGROW>
+end
+% the order squarify itself produces
+omega = angle(sq,vector3d(-1,-1,0),zvector);
+[~,a] = sort(omega);
+variants(end+1,:) = {'squarify order', sq(a)};
+
+[Aref,stRef,dRef] = latticeBasis(variants{1,2});
+
+assert(det(Aref) > 0, ...
+  'check_ebsdGrid: latticeBasis gave a left handed basis, det = %g', det(Aref))
+
+for k = 1:size(variants,1)
+
+  [A,st,dxy] = latticeBasis(variants{k,2});
+
+  assert(isequal(size(A),[2 2]) && norm(A - Aref,'fro') < 1e-9*d, ...
+    ['check_ebsdGrid: latticeBasis depends on the corner order - the same ' ...
+    'square cell written "%s" gave A = %s, expected %s'], ...
+    variants{k,1}, mat2str(A(:).',6), mat2str(Aref(:).',6))
+
+  assert(det(A) > 0, ...
+    'check_ebsdGrid: latticeBasis gave a left handed basis for "%s", det = %g', ...
+    variants{k,1}, det(A))
+
+  assert(isequal(st,stRef) && abs(dxy-dRef) < 1e-9*d, ...
+    'check_ebsdGrid: latticeBasis stencil/spacing changed with the corner order for "%s"', ...
+    variants{k,1})
+
+end
+
+% a rotated cell must be just as insensitive - the basis rotates with it,
+% but not with how its corners are written down
+rot = rotation.byAxisAngle(zvector,20*degree);
+sqR = rot * sq;
+Arot = latticeBasis(sqR);
+assert(det(Arot) > 0, ...
+  'check_ebsdGrid: latticeBasis gave a left handed basis on a rotated cell')
+assert(norm(latticeBasis(sqR(end:-1:1)) - Arot,'fro') < 1e-9*d, ...
+  'check_ebsdGrid: latticeBasis on a rotated cell depends on the winding')
+
+% and the hexagonal branch, which picks its basis by angle already
+hx = vector3d(cos((0:5)*60*degree),sin((0:5)*60*degree),0)*d;
+Ahex = latticeBasis(hx);
+assert(det(Ahex) > 0, ...
+  'check_ebsdGrid: latticeBasis gave a left handed basis on a hex cell')
+assert(norm(latticeBasis(hx(end:-1:1)) - Ahex,'fro') < 1e-9*d, ...
+  'check_ebsdGrid: latticeBasis on a hex cell depends on the winding')
 
 end
 
