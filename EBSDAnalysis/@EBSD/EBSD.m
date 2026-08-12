@@ -341,6 +341,23 @@ classdef EBSD < phaseList & dynProp & dynOption
             
     end
            
+    function ebsd = set.unitCell(ebsd,uC)
+      % calcUnitCell returns the cell as an n x 2 list of coordinates while
+      % the property is a vector3d, so the documented way of recomputing a
+      % cell, ebsd.unitCell = calcUnitCell(xy), used to store a raw double
+      % that every reader of the property then tripped over. Convert here
+      % rather than at each call site.
+      if isnumeric(uC)
+        if isempty(uC)
+          uC = vector3d;
+        else
+          if size(uC,2) < 3, uC(:,3) = 0; end
+          uC = vector3d(uC(:,1),uC(:,2),uC(:,3));
+        end
+      end
+      ebsd.unitCell = uC;
+    end
+
     function d = get.dPos(ebsd)
       d = min(norm(ebsd.unitCell(1) - ebsd.unitCell(2:end)));
     end

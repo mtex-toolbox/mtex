@@ -21,7 +21,9 @@ of that pass.
 Updated 2026-08-12: O12, C19, F5 and L12 fixed, each with a check script.
 G10 could not be confirmed as a defect. A second pass the same day fixed O8,
 O9, C18 and G35; O8 turned out to have a second half, two implementations
-ignoring `'bandwidth'` once it reached them.
+ignoring `'bandwidth'` once it reached them. A third pass closed E1 and E2 —
+neither was the `calcUnitCell` bug it was filed as; the real defect is the
+new E15, a shift that expands the vertex list instead of translating it.
 
 ## Legend
 
@@ -149,8 +151,8 @@ The multi-release work. Everything here is bigger than one branch.
 
 | # | Item | U | Sz | Status | Owner | Refs |
 |---|------|:-:|:--:|--------|-------|------|
-| E1 | `calcUnitCell` bug in `interfaces/tools` | 2 | 0 | bug | — | #2531 |
-| E2 | `calcUnitCell` breaks when the map's xy is far from the origin | 2 | 0 | bug | — | #1722 |
+| E1 | `ebsd.unitCell = calcUnitCell(xy)` stored a raw double — **fixed 2026-08-12** with a `set.unitCell` on `@EBSD` that converts, and `calcUnitCell` no longer returns a NaN cell for a single scan line | 2 | 0 | done | — | #2531, [→](#e1) |
+| E2 | `calcUnitCell` breaks when the map's xy is far from the origin — **not `calcUnitCell`**, it is exact to 1e5 units out; the reproduction's `ebsd + [x y]` was the defect, see E15 | 2 | 0 | done | — | #1722, [→](#e2) |
 | E3 | `gridify` and the ungridded EBSD report different point counts | 2 | 0 | bug | — | #2167 |
 | E4 | Indexing a gridified EBSD returns a different size than in 5.10.2 | 2 | 0 | bug | — | #2128 |
 | E5 | Rotating/cropping an EBSD map leaves an artifact | 2 | 1 | triage | — | #471 |
@@ -163,6 +165,7 @@ The multi-release work. Everything here is bigger than one branch.
 | E12 | `latticeBasis:38` "Index exceeds array bounds" — the real defect is a degenerate, self-intersecting unit cell reaching it, not the unguarded index | 2 | 1 | bug | — | [→](#e12) |
 | E13 | `gridify` transposes the map at a 45° grid rotation — the layout tie-break is decided by float noise | 1 | 0 | bug | — | [→](#e13) |
 | E14 | `gridify` cannot place a rotated hexagonal grid — **fixed**, hexify is lattice based and @EBSDhex stores no geometry | 2 | 1 | done | — | [→](#e14) |
+| E15 | Shifting a `grainBoundary` / `triplePointList` silently expanded its vertex list instead of translating it — **fixed 2026-08-12**; the obsolete `obj + [x,y]` form, which expands the same way, is now rejected and gone from the docs | 3 | 0 | done | — | [→](#e15) |
 
 ---
 
@@ -688,6 +691,60 @@ asked for a unit square, so every candidate translation is near-parallel to
 defect. Only reachable because the `@EBSDsquare/plotUnitCells.m` and
 `@EBSDhex/plotUnitCells.m` overrides were deleted — they dispatched straight
 to `plotSurf` and never entered `latticeBasis`.
+
+### E15
+`@grainBoundary/plus` and `@triplePointList/plus` shifted their vertices with
+
+```matlab
+if isa(xy,'vector3d'), xy = [xy.x,xy.y]; end
+gB.allV = gB.allV + repmat(xy,size(gB.allV,1),1);
+```
+
+written when `allV` / `V` were an `n x 2` double. They are a `vector3d` now,
+and `vector3d + numeric` adds the numeric to *each* of `x`, `y`, `z`
+separately — so an `n x 2` matrix against the `n x 1` coordinate arrays
+implicitly expands them to `n x 2`. `gB + vector3d(10,0,0)` on `twins` came
+back with `allV` of size `[3723 2]` and an x range of `9.85 .. -0.15` where
+the input spanned `49.95 .. 59.95`. No error, at any point.
+
+The obsolete numeric form, `obj + [100,0]`, expands identically (a `1 x 2`
+row) and hit `@EBSD` as well. That is what issue **#1722** actually
+reproduces: `ebsd + [-3500 10]` on `single` returned a map with twice the
+measurements, spread over a 3500 unit range in all three coordinates, and
+`gridify` of it then asked for a 35201 x 35201 lattice — 30 GB, i.e. the
+machine, not a `calcUnitCell` bug. `calcUnitCell` itself returns the exact
+0.1 x 0.1 cell at shifts of 10, 100, 1000, 3500 and 1e5 units; the
+`'DataScale',1` now passed to `uniquetol` is what fixed the originally
+reported cause.
+
+Fixed by shifting the `vector3d` directly in all four classes and rejecting
+anything else with `MTEX:shift:invalidShift`, and by removing `obj + [x,y]`
+from the `plus`/`minus` docstrings of `@EBSD`, `@grain2d`, `@grainBoundary`
+and `@triplePointList`. `@triplePointList/plus` also tested `isa(v,
+'triplPointList')` — misspelled, so the operands were never swapped.
+
+Verification: `tests/core/check_spatialShift.m`, which asserts on the
+positions and on the shape of the coordinate arrays, not just on the point
+count — `size(gB)` reads the segment list and does not see the expansion.
+Also pins that the lattice index range is unchanged by a far shift, which is
+where #1722 actually goes wrong.
+
+### E1
+`calcUnitCell` returns an `n x 2` list of coordinates while `ebsd.unitCell`
+is a `vector3d`, so the documented recompute `ebsd.unitCell =
+calcUnitCell(xy)` stored a raw double that every later reader of the property
+tripped over, far from the assignment. The conversion existed in exactly one
+place, `EBSD.loadobj`, and in the local `setUnitCell` of `updateUnitCell`;
+it is now a `set.unitCell` on `@EBSD`, so the property cannot hold a double
+whichever route wrote it.
+
+Found on the way, from `bugs.md`: `calcUnitCell` returned a cell with a **NaN
+side** for a single scan line. The coordinate that does not vary leaves
+`uniquetol` a single value, so `mean(diff(...))` is NaN and `regularPoly`
+propagates it. Reached by ordinary code — `check_ebsdGrid`'s own
+`makeMultiPropMap` fixture is a single line and was carrying a NaN unit cell
+the whole time. Now the spacing is taken from the direction the line does
+extend in.
 
 ### I9
 `loadEBSD_ctf.m` already reads its header separately from the bulk data, so

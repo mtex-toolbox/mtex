@@ -1,9 +1,10 @@
 function check_ebsdGrid
 % checks on EBSD grid geometry and on multi channel properties
 %
-% Owns two things that both live on the grid: that unitCell stays consistent
+% Owns three things that all live on the grid: that unitCell stays consistent
 % with pos under a transformation, so lattice.ij keeps indexing the right
-% pixel, and that an N x k property survives indexing and assignment.
+% pixel, that the unitCell property itself accepts what calcUnitCell hands
+% back, and that an N x k property survives indexing and assignment.
 %
 % Merged from check_ebsdTransform and check_dynProp, two of the files that
 % one bug-fixing session in August 2026 produced one-per-bug. Both cases are
@@ -15,9 +16,59 @@ function check_ebsdGrid
 % EBSD/transform EBSD/lattice dynProp
 
 checkTransform;
+checkUnitCellProperty;
 checkMultiColumnProps;
 
 disp('check_ebsdGrid: passed');
+
+end
+
+% =========================================================================
+function checkUnitCellProperty
+% calcUnitCell's output has to be usable as ebsd.unitCell, and has to be
+% finite even for a degenerate map
+%
+% Two regressions, both silent. calcUnitCell returns an n x 2 list of
+% coordinates while the property is a vector3d, so the documented recompute
+% ebsd.unitCell = calcUnitCell(xy) stored a raw double (#2531) that every
+% later reader of the property - plot, lattice, calcGrains - then tripped
+% over, far from the assignment. And on a single scan line the coordinate
+% that does not vary leaves uniquetol a single value, so mean(diff(.)) is
+% NaN and the cell came out with a NaN side, which then propagates into
+% anything derived from it.
+
+d = 0.3; ebsd = makeMap(12,d);
+
+% the double form is accepted and converted
+uC = calcUnitCell(ebsd.pos.xyz);
+assert(isnumeric(uC),'check_ebsdGrid: calcUnitCell no longer returns a double');
+
+ebsd.unitCell = uC;
+assert(isa(ebsd.unitCell,'vector3d'), ...
+  'check_ebsdGrid: assigning calcUnitCell''s output left unitCell a %s', ...
+  class(ebsd.unitCell));
+assert(max(abs([ebsd.unitCell.x - uC(:,1), ebsd.unitCell.y - uC(:,2)]),[],'all') == 0 ...
+  && all(ebsd.unitCell.z == 0), ...
+  'check_ebsdGrid: the converted unit cell does not hold calcUnitCell''s coordinates');
+
+% and the object stays usable, i.e. the lattice can still be derived
+assert(isequal(size(ebsd.lattice.ij),[length(ebsd) 2]), ...
+  'check_ebsdGrid: lattice fails on a unit cell assigned as a double');
+
+% a single scan line - the y coordinate never varies
+n = 24;
+line = EBSD(vector3d((0:n-1).'*d,zeros(n,1),zeros(n,1)), rotation.rand(n,1), ...
+  ones(n,1), {crystalSymmetry('m-3m')}, struct());
+
+uCLine = calcUnitCell([line.pos.x(:), line.pos.y(:)]);
+assert(all(isfinite(uCLine),'all'), ...
+  'check_ebsdGrid: calcUnitCell on a single scan line returned %s', mat2str(uCLine,4));
+assert(abs(range(uCLine(:,1)) - d) < 1e-12 && abs(range(uCLine(:,2)) - d) < 1e-12, ...
+  'check_ebsdGrid: the single scan line cell is %g x %g, expected %g x %g', ...
+  range(uCLine(:,1)),range(uCLine(:,2)),d,d);
+
+assert(all(isfinite(line.unitCell.xyz),'all'), ...
+  'check_ebsdGrid: the constructor stored a non finite unit cell for a single scan line');
 
 end
 
