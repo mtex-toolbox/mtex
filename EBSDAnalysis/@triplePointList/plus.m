@@ -1,19 +1,27 @@
-function tP = plus(tP,xy)
+function tP = plus(tP,v)
 % shift triple points in x/y direction
 %
 % Syntax
 %
 %   % shift in x direction
-%   tP = gB + [100,0] 
+%   tP = tP + vector3d(100,200,0)
 %
 % Input
 %  tP - @triplePointList
-%  xy - x and y coordinates of the shift
+%  v  - @vector3d, coordinates of the shift
 %
 % Output
 %  tP - @triplePointList
 
-if isa(xy,'triplPointList'), [xy,tP] = deal(tP,xy); end
-if isa(xy,'vector3d'), xy = [xy.x,xy.y]; end
+if isa(v,'triplePointList'), [v,tP] = deal(tP,v); end
 
-tP.V = tP.V + repmat(xy,size(tP.V,1),1);
+% V is a vector3d - it used to be an n x 2 double, which is what the old
+% [v.x,v.y] / repmat route here was written for. Against a vector3d that
+% route implicitly expands the coordinate arrays into n x 2 and silently
+% returns a nonsensical object instead of a translation.
+if ~isa(v,'vector3d')
+  error('MTEX:shift:invalidShift',...
+    'Triple points can only be shifted by a vector3d.');
+end
+
+tP.V = tP.V + v;

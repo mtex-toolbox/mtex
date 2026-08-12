@@ -1,16 +1,16 @@
-function ebsd = minus(ebsd,xy)
+function ebsd = minus(ebsd,v)
 % shift ebsd in x/y direction
 %
 % Syntax
 %
 %   % shift in x direction
-%   ebsd = ebsd + [100,0] 
+%   ebsd = ebsd - 100*vector3d.X
 %
 % Input
 %  ebsd - @EBSD
-%  xy - x and y coordinates of the shift
+%  v - @vector3d shift
 %
 % Output
 %  ebsd - @EBSD
 
-ebsd = ebsd + (-xy);
+ebsd = ebsd + (-v);

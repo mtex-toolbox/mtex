@@ -1,16 +1,16 @@
-function tP = minus(tP,xy)
+function tP = minus(tP,v)
 % shift triple points in x/y direction
 %
 % Syntax
 %
 %   % shift in x direction
-%   tP = gB + [100,0] 
+%   tP = tP - vector3d(100,200,0)
 %
 % Input
 %  tP - @triplePointList
-%  xy - x and y coordinates of the shift
+%  v  - @vector3d, coordinates of the shift
 %
 % Output
 %  tP - @triplePointList
 
-tP = tP + (-xy);
+tP = tP + (-v);

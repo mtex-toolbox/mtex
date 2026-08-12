@@ -1,16 +1,16 @@
-function grains = minus(grains,xy)
+function grains = minus(grains,shift)
 % shift grains in x/y direction
 %
 % Syntax
 %
 %   % shift in x direction
-%   grains = grains - [100,0] 
+%   grains = grains - vector3d(100,200,0)
 %
 % Input
 %  grains- @grain2d
-%  xy - x and y coordinates of the shift
+%  shift - @vector3d, coordinates of the shift
 %
 % Output
 %  grains - @grain2d
 
-grains = grains + (-xy);
+grains = grains + (-shift);

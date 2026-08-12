@@ -80,6 +80,7 @@ over budget, trim from outside these before trimming inside them.
 | **EBSD import**, HDF5 and multi-scan files | `slow/check_ebsdImportH5` |
 | `EBSD` object: construction, `display`, `loadobj`, `interp` | `core/check_ebsd` |
 | EBSD grid geometry, `unitCell`/`lattice.ij`, `dynProp` | `core/check_ebsdGrid` |
+| spatial shift (`plus`/`minus`) of EBSD, grains, boundaries, triple points | `core/check_spatialShift` |
 | `EBSD/gradient`, KAM | `core/check_gradient` |
 | `gridify` on real data | `slow/check_gridify` |
 | `calcGrains` | `core/check_calcGrainsCases` |
