@@ -214,7 +214,7 @@ copy; only what is still open is summarised here.
 | O3 | Wrong misorientation angle when an orientation lies outside the fundamental region | 3 | 1 | bug | — | #2162 |
 | O4 | `misorientation` volume gives different results by route | 2 | 1 | bug | — | #445 |
 | O5 | Euler angles of random orientations are inconsistent with the crystal symmetry | 2 | 1 | triage | — | #1597 |
-| O6 | `vector3d` constructor is inconsistent across input shapes | 2 | 0 | bug | — | #2145 |
+| O6 | `vector3d` constructor is inconsistent across input shapes — **fixed 2026-08-12**, Ralf's call: an `N x 3` matrix now gives an `N x 1` list, `3 x N` still gives `1 x N`, `3 x 3` warns and is read column wise | 2 | 0 | done | — | #2145, [→](#o6) |
 | O7 | `calcComponents` gives strange results or crashes when `'angle'` is passed | 2 | 1 | bug | — | #1840 |
 | O8 | `radon(odf,h,'bandwidth',64)` crashed — the option bound to the positional `r` — **fixed 2026-08-12**, an option string in position 3 is shifted into `varargin` in all five implementations; `@SO3FunRBF` and `@SO3FunBingham` additionally ignored `'bandwidth'` once it arrived | 2 | 0 | done | — | [→](#o8) |
 | O9 | `SO3FunComposition/radon` had no antipodal check of its own — **fixed 2026-08-12**, it now decides the flag itself instead of inheriting whatever its components set | 1 | 0 | done | — | [→](#o8) |
@@ -728,6 +728,28 @@ positions and on the shape of the coordinate arrays, not just on the point
 count — `size(gB)` reads the segment list and does not see the expansion.
 Also pins that the lattice index range is unchanged by a far shift, which is
 where #1722 actually goes wrong.
+
+### O6
+Measured before the change: `vector3d(3 x N)` → `1 x N`, `vector3d(N x 3)` →
+`1 x N` (anything not already `3 x N` was transposed into it),
+`vector3d(3 x 3)` → `1 x 3`, while `vector3d.byXYZ(N x 3)` → `N x 1`. So the
+bare constructor accepted an `N x 3` matrix and returned the right
+coordinates in the wrong orientation, silently, and disagreed with `byXYZ`
+on the same input.
+
+The contract now is that a matrix keeps the row / column correspondence of
+the three argument form: `3 x N` is one vector per column and gives a row,
+`N x 3` is one per row and gives a column. `3 x 3` satisfies both, so it
+warns (`MTEX:vector3d:ambiguousMatrix`) and is read column wise, i.e.
+unchanged; a matrix that is neither errors with `MTEX:vector3d:wrongSize`
+instead of being transposed into shape.
+
+Blast radius in tree is nil: every single-argument `vector3d(...)` call in
+the toolbox is either a copy constructor on a `vector3d`/`Miller`/`S2Grid`
+subclass or passes a `1 x 3`, which is a scalar under either reading.
+
+New owner `tests/core/check_vector3d.m` — there was none for the class the
+whole geometry chain is built on.
 
 ### E4
 Measured on gridified forsterite, `336 x 732`: `id`, `rotations`, `pos`,

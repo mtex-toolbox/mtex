@@ -7,10 +7,13 @@ classdef vector3d < dynOption
 % Syntax
 %   v = vector3d(x,y,z)
 %   v = vector3d(x,y,z,'antipodal')
+%   v = vector3d(xyz)
 %   v = vector3d.byPolar(theta,rho)
 %
 % Input
 %  x,y,z - cart. coordinates
+%  xyz   - 3 x N matrix (one vector per column, gives a 1 x N list) or
+%          N x 3 matrix (one vector per row, gives an N x 1 list)
 %
 % Output
 %  v - @vector3d
@@ -83,14 +86,45 @@ classdef vector3d < dynOption
           xyz = varargin{1};
 
           if numel(xyz) == 2
+
             v.x = xyz(1);
             v.y = xyz(2);
             v.z = 0;
+
+          elseif isempty(xyz) && size(xyz,2) ~= 3
+
+            v.x = []; v.y = []; v.z = [];
+
           else
-            if size(xyz,1) ~= 3, xyz = xyz.'; end
-            v.x = xyz(1,:);
-            v.y = xyz(2,:);
-            v.z = xyz(3,:);
+
+            % a matrix of coordinates keeps the row / column correspondence
+            % of the three argument form: a 3 x N matrix holds one vector
+            % per column and gives a 1 x N list, an N x 3 matrix holds one
+            % per row and gives an N x 1 list - the same reading byXYZ uses.
+            % Previously anything that was not 3 x N was transposed into it,
+            % so an N x 3 matrix came back as a ROW of N vectors (#2145).
+            if size(xyz,1) == 3 && size(xyz,2) == 3
+              % satisfies both readings and nothing in the data says which
+              warning('MTEX:vector3d:ambiguousMatrix',...
+                ['A 3 x 3 matrix of coordinates is ambiguous - it is read '...
+                'as three vectors given by its COLUMNS. Use '...
+                'vector3d.byXYZ(xyz) to read it by rows instead.']);
+            end
+
+            if size(xyz,1) == 3
+              v.x = xyz(1,:);
+              v.y = xyz(2,:);
+              v.z = xyz(3,:);
+            elseif size(xyz,2) == 3
+              v.x = xyz(:,1);
+              v.y = xyz(:,2);
+              v.z = xyz(:,3);
+            else
+              error('MTEX:vector3d:wrongSize',...
+                ['A vector3d is built from a 3 x N or an N x 3 matrix of '...
+                'coordinates, not from a %s one.'],mat2str(size(xyz)));
+            end
+
           end
           v.how2plot = plottingConvention.default;
         else
