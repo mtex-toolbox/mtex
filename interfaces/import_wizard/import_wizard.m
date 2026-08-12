@@ -969,7 +969,7 @@ classdef import_wizard < matlab.apps.AppBase
       addStyle(app.PhaseTable, uistyle('HorizontalAlignment', 'right'), 'column', 3:10)
 
       csList = app.ebsd.CSList;
-      numPhases = accumarray(app.ebsd.phaseId,1,[length(csList),1]);
+      numPhases = phaseCounts(app);
 
       phaseTable = table('size',[0 10],...
         'VariableTypes',{'logical','uint8','string','double','double','string','double','double','double','string'},...
@@ -1263,11 +1263,25 @@ classdef import_wizard < matlab.apps.AppBase
       end
     end
 
+    function counts = phaseCounts(app)
+      % measurements per phase, as a numel(CSList) x 1 column
+      %
+      % Gridded data (@EBSDsquare / @EBSDhex) carries phaseId = NaN at the
+      % lattice sites that hold no measurement - see EBSD/private/squarify.
+      % Those are padding rather than pixels, and accumarray rejects them
+      % outright ("First input must contain positive integer subscripts").
+      % Dropping them makes the counts, and every percentage derived from
+      % them, identical to what the same scan reports as a plain list.
+      phaseId = app.ebsd.phaseId;
+      counts = accumarray(phaseId(~isnan(phaseId)), 1, ...
+        [numel(app.ebsd.CSList) 1]);
+    end
+
     function pid = dominantEnabledPhase(app, ids)
       % indexed phase with the most pixels among the enabled ones, or []
       pid = [];
       best = -1;
-      counts = accumarray(app.ebsd.phaseId, 1, [numel(app.ebsd.CSList) 1]);
+      counts = phaseCounts(app);
       for k = ids(:)'
         if k >= 1 && k <= numel(app.ebsd.CSList) && ...
             isa(app.ebsd.CSList(k), 'symmetry') && counts(k) > best

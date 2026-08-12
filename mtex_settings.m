@@ -191,6 +191,15 @@ setMTEXpref('mosek',false)
 
 setMTEXpref('insidepoly',true)
 
+%% Put imported EBSD data on its grid
+% EBSD.load returns @EBSDsquare / @EBSDhex instead of a plain list whenever
+% the measurements sit on one lattice, which saves every later plot from
+% rebuilding that lattice. Data that would lose measurements by being
+% gridded is never gridded, whatever this is set to. Set to false to always
+% import a plain list; EBSD.load(...,'noGrid') does the same per call.
+
+setMTEXpref('gridifyOnImport',true)
+
 %% Turn off Grain Selector
 % turning off the grain selector allows faster plotting
 

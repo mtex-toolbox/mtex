@@ -32,6 +32,7 @@ checkHexCtf;
 checkMultiPhaseCtf;
 checkAng;
 checkGridDispatch;
+checkGridOnImport;
 
 disp('check_ebsdImport: passed');
 
@@ -110,6 +111,9 @@ end
 % "one per cell, none lost beyond the collisions" rather than a magic
 % constant - if it ever drops below 565, measurements are being lost for
 % some other reason.
+%
+% Those collisions are also why EBSD.load refuses to grid this file at all;
+% checkGridOnImport pins that.
 g = gridify(e);
 assert(isequal(size(g),[64 73]), ...
   'check_ebsdImport: eclogite.ctf gridified to %s, expected [64 73]', mat2str(size(g)))
@@ -170,7 +174,82 @@ end
 end
 
 % =========================================================================
+function checkGridOnImport
+% EBSD.load grids what it can, and refuses to grid what it cannot
+%
+% The refusal is the part that matters. gridify writes measurements into a
+% raster keyed by lattice cell, and squarify scatters with phaseId(ind) =
+% ..., so two measurements in one cell leave only the last - silently.
+% eclogite.ctf is exactly that case: 613 indexed measurements occupy 565
+% cells, so gridding it on import would throw away 48 of them. Nothing may
+% be lost by merely opening a file, so load falls back to the plain list.
+
+cases = {'testdata_sqr.ctf','EBSDsquare',[30 30]; ...
+         'testdata_hex.ctf','EBSDhex',   [30 30]; ...
+         'ACOM.ang',        'EBSDsquare',[15 15]};
+
+for k = 1:size(cases,1)
+
+  g = load1raw(cases{k,1});
+
+  assert(isa(g,cases{k,2}), ...
+    'check_ebsdImport: %s imported as a %s, expected a %s', ...
+    cases{k,1}, class(g), cases{k,2})
+
+  assert(isequal(size(g),cases{k,3}), ...
+    'check_ebsdImport: %s imported at %s, expected %s', ...
+    cases{k,1}, mat2str(size(g)), mat2str(cases{k,3}))
+
+  % gridding may not lose or invent a measurement
+  e = load1(cases{k,1});
+  assert(nnz(g.isIndexed) == nnz(e.isIndexed), ...
+    'check_ebsdImport: %s has %d indexed pixels gridded but %d as a list', ...
+    cases{k,1}, nnz(g.isIndexed), nnz(e.isIndexed))
+
+  % 'noGrid' has to be honoured, otherwise there is no way back out
+  assert(~isa(e,'EBSDgrid'), ...
+    'check_ebsdImport: %s ignored ''noGrid'' and returned a %s', ...
+    cases{k,1}, class(e))
+
+end
+
+% eclogite is not on one lattice, so it must come back as a plain list with
+% every measurement intact, and it must say so rather than fail quietly
+lastwarn('');
+g = load1raw('eclogite.ctf');
+[~,warnId] = lastwarn;
+
+assert(~isa(g,'EBSDgrid'), ...
+  'check_ebsdImport: eclogite.ctf was gridded on import (as %s) although %d of its 613 indexed measurements share a lattice cell', ...
+  class(g), 613 - 565)
+
+assert(nnz(g.isIndexed) == 613, ...
+  'check_ebsdImport: eclogite.ctf kept %d indexed measurements on import, expected all 613', ...
+  nnz(g.isIndexed))
+
+assert(strcmp(warnId,'MTEX:load:notOnGrid'), ...
+  'check_ebsdImport: eclogite.ctf fell back to a list but warned ''%s'', expected MTEX:load:notOnGrid', ...
+  warnId)
+
+end
+
+% =========================================================================
 function e = load1(name)
+% load one of the committed sample files, quietly, as a plain list
+%
+% 'noGrid' on purpose: EBSD.load now puts data on its grid by default, and
+% gridify reorders the measurements into its own layout (dim 1 along y,
+% dim 2 along x, both increasing - see EBSD/gridify). Every expectRow below
+% pins a row by linear index to catch a row the IMPORTER dropped or shifted,
+% which is only meaningful against the importer's own order. The default,
+% gridded result is pinned separately in checkGridOnImport.
+
+e = load1raw(name,'noGrid');
+
+end
+
+% =========================================================================
+function e = load1raw(name,varargin)
 % load one of the committed sample files, quietly
 
 f = fullfile(mtexDataPath,'EBSD',name);
@@ -179,7 +258,7 @@ assert(isfile(f), ...
   'check_ebsdImport: the sample file %s is missing from the repository', f)
 
 % the importer prints a reference frame notice for .ang files
-evalc('e = EBSD.load(f,''silent'');');
+evalc('e = EBSD.load(f,''silent'',varargin{:});');
 
 end
 
