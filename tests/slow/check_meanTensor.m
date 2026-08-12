@@ -1,4 +1,4 @@
-function checkMeanTensor
+function check_meanTensor
 % NB the figure()/plot() calls that used to sit between these sections were
 % removed: every assertion here is on matrix(...) norms, so they added no
 % coverage, and they opened figures 1 to 3 unguarded and never closed them -

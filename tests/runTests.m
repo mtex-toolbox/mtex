@@ -87,6 +87,20 @@ for k = 1:numel(runList)
     names{end+1} = n; %#ok<AGROW>
     tierOf{end+1} = runList{k}; %#ok<AGROW>
   end
+
+  % a tier folder must contain nothing BUT tests. Without this an .m file
+  % whose name does not start with check_ sits in the folder looking like a
+  % test and is silently never run - which is exactly what checkMeanTensor
+  % did, since it matches check* but not check_*.
+  all = dir(fullfile(folder,'*.m'));
+  stray = setdiff({all.name},{files.name});
+  if ~isempty(stray)
+    error('runTests:strayFile', ...
+      ['%s contains %s, which does not match check_*.m and would never ' ...
+       'be run. Rename it to check_<thing>.m, or move it to tests/lib if ' ...
+       'it is a fixture rather than a test.'], ...
+      runList{k}, strjoin(stray,', '));
+  end
 end
 
 if isempty(names)

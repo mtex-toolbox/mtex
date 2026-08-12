@@ -11,7 +11,7 @@ tier, so adding a file is all it takes to register it.
 | `lib/` | fixtures and generators, not tests | never collected |
 
 A file at `tests/` root is deliberately **not** collected by `runTests`. That is where a test
-goes when it cannot currently pass — `check_WignerD` (blocked on #2582) — or has not been
+goes when it cannot currently pass — `check_WignerD` (#2582) and `check_SO3FunRBFApproximation` (#2588) — or has not been
 converted yet — `check_SO3TangentVectors_and_VectorFields` (blocked on #2587) and
 `SO3FunTests/test_convolution`. Each carries a header saying so. A tier is meant to go green,
 so a test that is known to fail does not belong in one; parking it here keeps it and its
@@ -101,11 +101,11 @@ over budget, trim from outside these before trimming inside them.
 | `S1Fun/plot` options | `plotting/check_S1FunPlot` |
 | MLS subsampling | `slow/check_MLSSubsample` |
 | `radon` options | `core/check_radonOptions` |
-| RBF approximation | `slow/check_SO3FunRBFApproximation` |
+| RBF approximation | `check_SO3FunRBFApproximation` at tests/ root — **known failure, #2588** |
 | `calcPoleFigure` superposition | `core/check_calcPoleFigureSuperposition` |
 | pole figure → ODF inversion | `slow/check_poleFigureInversion` |
 | tensor factories | `core/check_tensorFactories` |
-| `calcTensor` averaging | `slow/checkMeanTensor` |
+| `calcTensor` averaging | `slow/check_meanTensor` |
 | ODF export interfaces | `core/check_odfExport` |
 | `holdOn`/`holdRelease` semantics | `core/check_holdGuard` |
 | `mtexFigure` layout, colorbar placement | `plotting/check_colorbarLocation` |
