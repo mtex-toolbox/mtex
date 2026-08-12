@@ -46,8 +46,8 @@ function check_jcvoronoi
 %
 % calcGrains' minPixel sizing pass (minPixelMask.m) uses
 % jcvoronoiDelaunayOnly_mex as a cheaper drop-in for the full jcvoronoi2_mex
-% Voronoi build, since doSegmentation.m only ever needs the site adjacency
-% A_D = I_FD'*I_FD==1, never the V/F Voronoi geometry.
+% Voronoi build on HEX grids, since doSegmentation.m only ever needs the site
+% adjacency A_D = I_FD'*I_FD==1, never the V/F Voronoi geometry.
 %
 % The two are NOT exactly equal in general: on an exactly regular grid, every
 % interior vertex has 4 exactly cocircular sites (the classic square grid
@@ -58,10 +58,15 @@ function check_jcvoronoi
 % exposes no vertex or edge length information, so there is no cheap way to
 % filter this from the fast path alone.
 %
-% That is safe for minPixelMask.m: extra adjacency only makes computed grain
-% sizes equal or LARGER than the true ones, never smaller, so the 'voronoi'
-% sizing method still never over-culls a grain below minPixel. The random
-% cloud case has no such degeneracy and is held to exact equality, so a
+% The direction of that error is what matters: extra adjacency only makes
+% computed grain sizes equal or LARGER than the true ones, never smaller, so
+% the 'voronoi' sizing method can only ever under-cull, never over-cull. On a
+% square grid it under-culls systematically - every interior vertex is
+% degenerate, so the whole map is sized 8-connected while the final
+% segmentation is 4-connected - which is why minPixelMask.m now restricts the
+% fast path to hex, where a triangular lattice has no cocircular degeneracy
+% at all (#2513, regression case in check_calcGrainsCases). The random cloud
+% case has no such degeneracy either and is held to exact equality, so a
 % genuine implementation bug still fails loudly.
 %
 % See also
@@ -191,7 +196,7 @@ function checkDelaunayOnly(c, label)
 % the wiring really delivers the full adjacency. It deliberately does not
 % compare against the mex: on a regular grid the mex is strictly larger, as
 % jcv_delauney_generate keeps one diagonal of every cocircular quad that the
-% full build drops as a zero length edge (see check_jcvoronoiDelaunayOnly).
+% full build drops as a zero length edge (see claim (3) above).
 
 epsTol = c.spacing/100;
 
