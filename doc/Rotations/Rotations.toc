@@ -3,8 +3,8 @@ RotationRepresentations  Representations
 RotationImproper    Improper Rotations
 RotationOperations  Operations
 RotationPlotting    Plotting
-RotationImport      Import
-RotationExport      Export 
+OrientationImport   Import
+OrientationExport   Export
 RotationFibre       Fibres
 RotationTangentSpace     Tangent Spaces and Tangent Vectors on the Rotation Group
 RotationSpinTensor  Spin Tensor

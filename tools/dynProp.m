@@ -61,7 +61,7 @@ classdef dynProp
 
       fn = fieldnames(dp.prop);
       for i = 1:numel(fn)
-        if size(dp.prop.(fn{i}),2)>1 && length(dp) == size(dp.prop.(fn{i}),1)
+        if isMultiColumn(dp,dp.prop.(fn{i}))
           dp.prop.(fn{i}) = dp.prop.(fn{i})(ind,:);
         else
           dp.prop.(fn{i}) = dp.prop.(fn{i})(ind);
@@ -77,11 +77,12 @@ classdef dynProp
         case '()'
   
           fn = fieldnames(dp.prop);
-              
+
           for i = 1:numel(fn)
-            dp.prop.(fn{i}) = subsref(dp.prop.(fn{i}),s(1));
+            dp.prop.(fn{i}) = subsref(dp.prop.(fn{i}),...
+              rowSubs(dp,s(1),dp.prop.(fn{i})));
           end
-                
+
           if numel(s)>1
             [varargout{1:nargout}] = subsref(dp,s(2:end));
           else
@@ -108,26 +109,36 @@ classdef dynProp
           if numel(s)>1, value =  subsasgn(subsref(dp,s(1)),s(2:end),value); end
                          
           if isempty(value)
-          
+
             fn = fieldnames(dp.prop);
             for i = 1:numel(fn)
-              dp.prop.(fn{i}) = subsasgn(dp.prop.(fn{i}),s(1),[]);
+              dp.prop.(fn{i}) = subsasgn(dp.prop.(fn{i}),...
+                rowSubs(dp,s(1),dp.prop.(fn{i})),[]);
             end
-            
+
           else
-            
+
             fn = fieldnames(value.prop);
             for i = 1:numel(fn)
-              if ~isfield(dp.prop,fn{i}), dp.prop.(fn{i})= zeros(size(dp));end
 
-              if size(dp.prop.(fn{i}),2)>1 && length(dp) == size(dp.prop.(fn{i}),1)
-                s.subs = [s.subs, ':'];
+              v = value.prop.(fn{i});
+
+              if ~isfield(dp.prop,fn{i})
+                % a property the target does not carry yet. Size the
+                % placeholder from the incoming value, so an N x k one
+                % still fits
+                if isMultiColumn(value,v)
+                  dp.prop.(fn{i}) = zeros(length(dp),size(v,2));
+                else
+                  dp.prop.(fn{i}) = zeros(size(dp));
+                end
               end
-              
-              dp.prop.(fn{i}) = subsasgn(dp.prop.(fn{i}),s(1),value.prop.(fn{i}));
-              
+
+              dp.prop.(fn{i}) = subsasgn(dp.prop.(fn{i}),...
+                rowSubs(dp,s(1),dp.prop.(fn{i})),v);
+
             end
-            
+
           end
         case '.'
           if isfield(dp.prop,s(1).subs)
@@ -221,9 +232,41 @@ classdef dynProp
       disp([' size: ' size2str(dp.prop.(fn{1}))])
       
       disp(char(dp))
-            
+
     end
-    
+
   end
-  
+
+end
+
+% =========================================================================
+function tf = isMultiColumn(dp,value)
+% is value a multi channel property, i.e. one column per channel?
+%
+% An N x k property (a 5 channel forescatter image, say) holds one ROW per
+% object, so indexing has to address the rows and take every column along -
+% plain linear indexing would flatten it. An ordinary property holds one
+% entry per object and is indexed as it comes.
+%
+% length(dp) is the number of objects, not a matrix dimension: for the
+% classes that matter here it resolves to phaseList/length, which returns
+% size(phaseId,1) and so stays the pixel count even for a grid class whose
+% properties are stored as the (r x c) matrix of the map. That is what keeps
+% a square map's ordinary (r x c) property from being mistaken for r
+% channels of r objects.
+
+tf = size(value,2) > 1 && length(dp) == size(value,1);
+
+end
+
+% =========================================================================
+function s = rowSubs(dp,s,value)
+% the subscript to index value with, given a subscript meant for the objects
+%
+% Built fresh from the caller's subscript for every property rather than
+% appended to a shared one - accumulating into s adds a second ':' as soon
+% as a second property is N x k.
+
+if isMultiColumn(dp,value), s.subs = [s.subs, ':']; end
+
 end

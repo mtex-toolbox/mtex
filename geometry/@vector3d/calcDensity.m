@@ -31,6 +31,10 @@ hw = get_option(varargin,'halfwidth',10*degree);
 psi = get_option(varargin,'kernel',S2DeLaValleePoussinKernel('halfwidth',hw));
 
 % ignore nans
+w = get_option(varargin,'weights');
+if ~isempty(w)
+  varargin = set_option(varargin,'weights',w(~isnan(v)));
+end
 v = subSet(v,~isnan(v));
 
 sF = 4*pi * S2FunHarmonic.quadrature(v,ones(size(v)),varargin{:});

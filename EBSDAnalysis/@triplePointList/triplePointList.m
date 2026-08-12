@@ -185,11 +185,18 @@ classdef triplePointList < phaseList & dynProp
         tP = s; 
       end
 
-      if size(tP.allV,2)==2 && all(all(tP.allV.x == tP.allV.y))
+      % up to MTEX 5.11 the vertices were stored as an n x 2 matrix
+      if isnumeric(tP.allV)
+        V = tP.allV;
+        tP.allV = vector3d(V(:,1),V(:,2),zeros(size(V,1),1));
+      elseif size(tP.allV,2)==2 && all(all(tP.allV.x == tP.allV.y))
         tP.allV.x = tP.allV.x(:,1);
         tP.allV.y = tP.allV.y(:,2);
         tP.allV.z = zeros(size(tP.allV.y));
       end
+
+      % up to MTEX 5.11 the symmetries were stored as a cell array
+      tP.CSList = ensureCSArray(tP.CSList);
 
     end
 

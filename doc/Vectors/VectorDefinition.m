@@ -1,5 +1,6 @@
 %% Defining Three Dimensional Vectors
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % Three dimensional vectors in the Euclidean space are represented by
 % variables of the class <vector3d.vector3d.html *vector3d*>.
@@ -14,11 +15,7 @@ v = vector3d(1,2,3)
 % This gives a single vector with coordinates (1,2,3) with respect to the
 % X, Y, Z coordinate system. Lets visualize this vector
 
-% use the plotting convention y↑→x
-pC = plottingConvention; pC.makeDefault;
-
 plot(v,'grid')
-annotate([vector3d.X,vector3d.Y,vector3d.Z],'label',{'X','Y','Z'},'backgroundcolor','w')
 
 %%
 % Note that the alignment of the X, Y, Z axes is only a plotting
@@ -27,7 +24,6 @@ annotate([vector3d.X,vector3d.Y,vector3d.Z],'label',{'X','Y','Z'},'backgroundcol
 
 v.how2plot.outOfScreen = xvector;
 plot(v,'grid')
-annotate([vector3d.X,vector3d.Y,vector3d.Z],'label',{'X','Y','Z'},'backgroundcolor','w')
 
 % lets revert the plotting convention
 v.how2plot.outOfScreen = zvector;
@@ -53,7 +49,6 @@ azimuth_angle = 45*degree;
 v = vector3d.byPolar(polar_angle,azimuth_angle)
 
 plot(v,'grid')
-annotate([vector3d.X,vector3d.Y,vector3d.Z],'label',{'X','Y','Z'},'backgroundcolor','w')
 
 %%
 % Analogously as for the Cartesian coordinates we can access and change

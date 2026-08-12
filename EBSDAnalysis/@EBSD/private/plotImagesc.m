@@ -54,7 +54,7 @@ if nCh == 3
   % per-cell NaN test: reduce over the colour channel (dim 3), not columns
   A(any(isnan(C),3)) = 0;
 
-  holdState = ishold(ax); hold(ax,'on');
+  hG = holdOn(ax); %#ok<NASGU>
   h = image(ax,'XData',img.x,'YData',img.y,'CData',C,...
     'AlphaData',A,'AlphaDataMapping','none');
 else
@@ -74,12 +74,12 @@ else
   end
   A(isnan(C)) = 0;
 
-  holdState = ishold(ax); hold(ax,'on');
+  hG = holdOn(ax); %#ok<NASGU>
   h = imagesc(ax,img.x,img.y,C,'AlphaData',A);
   set(h,'AlphaDataMapping','none');
 end
 
-if ~holdState, hold(ax,'off'); end
+clear hG
 
 h = optiondraw(h,varargin{:});
 
@@ -95,10 +95,10 @@ if ~isempty(name)
   else
     swatch = [0 0 0];
   end
-  wasHeld = ishold(ax); hold(ax,'on');
+  hG = holdOn(ax); %#ok<NASGU>
   patch('parent',ax,'XData',nan,'YData',nan,...
     'FaceColor',swatch,'EdgeColor','none','DisplayName',name);
-  if ~wasHeld, hold(ax,'off'); end
+  clear hG
 end
 
 end

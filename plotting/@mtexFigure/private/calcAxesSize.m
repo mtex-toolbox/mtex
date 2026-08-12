@@ -18,19 +18,41 @@ if isa(mtexFig.children(1),'matlab.graphics.axis.PolarAxes')
 
 else
 
-  % compute axes length ratio
-  axesSize = mtexFig.children(1).PlotBoxAspectRatio;
+  % the axes should have the shape of what the plot box covers on the
+  % screen: project its corners along the viewing direction and take the
+  % extent of the shadow. For a 2d view this is just the plot box itself,
+  % for a 3d view it is what keeps the axes from being much wider than the
+  % object drawn in it.
+  ax = mtexFig.children(1);
+  axesSize = ax.PlotBoxAspectRatio;
 
-  [~,dUp] = max(abs(mtexFig.children(1).CameraUpVector));
-  height = axesSize(dUp);
-  axesSize(dUp) = 0;
+  % the camera is given in data coordinates - divide by the data aspect
+  % ratio to get plot box coordinates, which is what is seen on screen
+  camDir = (ax.CameraPosition - ax.CameraTarget) ./ ax.DataAspectRatio;
+  camUp = ax.CameraUpVector ./ ax.DataAspectRatio;
+  camRight = cross(camDir,camUp);
 
-  % camera direction
-  cd = mtexFig.children(1).CameraPosition - mtexFig.children(1).CameraTarget;
-  axesSize(find(cd == max(abs(cd)),1)) = 0;
-  width = max(axesSize);
+  if norm(camRight) < 1e-10 % camera looks along its own up vector
 
-  axesRatio = height/width;
+    axesRatio = 1;
+
+  else
+
+    camDir = camDir ./ norm(camDir);
+    camRight = camRight ./ norm(camRight);
+    camUp = cross(camRight,camDir);
+
+    % the corners of the plot box
+    [x,y,z] = ndgrid([0,1],[0,1],[0,1]);
+    corner = [x(:),y(:),z(:)] .* axesSize;
+
+    shadow = corner * [camRight(:),camUp(:)];
+    shadow = max(shadow,[],1) - min(shadow,[],1);
+    width = shadow(1); height = shadow(2);
+
+    axesRatio = height/width;
+
+  end
 
 end
 

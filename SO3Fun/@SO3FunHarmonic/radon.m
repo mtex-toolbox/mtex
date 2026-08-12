@@ -16,6 +16,13 @@ function S2F = radon(SO3F,h,r,varargin)
 %  v    - double
 %
 
+% an option in the position of r belongs to varargin
+if nargin<3
+  r = [];
+elseif ischar(r) || isstring(r)
+  varargin = [{r},varargin]; r = [];
+end
+
 % use only even Fourier coefficients?
 even = check_option(varargin,'antipodal') || SO3F.CS.isLaue || ...
   (nargin > 1 && ~isempty(h) && h.antipodal) || ...
@@ -27,7 +34,6 @@ L = get_option(varargin,'bandwidth',SO3F.bandwidth);
 L = min(L,SO3F.bandwidth);
 
 % S2Fun in h or r?
-if nargin<3, r = []; end
 if isempty(r)
   isPF = true;
 elseif isempty(h)

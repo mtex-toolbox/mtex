@@ -20,8 +20,14 @@ if ~isscalar(SO3F)
   SO3F = SO3F(1);
 end
 
+% an option in the position of r belongs to varargin
+if nargin<3
+  r = [];
+elseif ischar(r) || isstring(r)
+  varargin = [{r},varargin]; r = [];
+end
+
 % S2Fun in h or r?
-if nargin<3, r = []; end
 
 if isempty(r)
   isPF = true;
@@ -35,7 +41,11 @@ end
 isAntipodal = check_option(varargin,'antipodal') || SO3F.CS.isLaue || ...
   (nargin > 1 && ~isempty(h) && h.antipodal) || ...
   (nargin > 2 && ~isempty(r) && r.antipodal);
- 
+
+% bandwidth - the kernel carries no information beyond psi.bandwidth, so a
+% larger request can only be answered with what there is, as in
+% @SO3FunHarmonic/radon
+bw = min(get_option(varargin,'bandwidth',SO3F.psi.bandwidth),SO3F.psi.bandwidth);
 
 if isPF % pole figure
 
@@ -46,7 +56,7 @@ if isPF % pole figure
     
     S2F(k) = S2FunHarmonicSym.quadrature(SO3F.center*sh,...
       repmat(full(SO3F.weights(:)),1,length(sh)),SO3F.SS,...
-      'symmetrise','bandwidth',SO3F.psi.bandwidth) ./ length(sh); %#ok<AGROW>
+      'symmetrise','bandwidth',bw) ./ length(sh); %#ok<AGROW>
     
   end
   
@@ -57,7 +67,7 @@ else % inverse pole figure
     sr = symmetrise(r(k),SO3F.SS,'unique');
     S2F(k) = S2FunHarmonicSym.quadrature(inv(SO3F.center)*sr,...
       repmat(SO3F.weights(:),1,length(sr)),SO3F.CS,...
-      'symmetrise','bandwidth',SO3F.psi.bandwidth) ./ length(sr); %#ok<AGROW>
+      'symmetrise','bandwidth',bw) ./ length(sr); %#ok<AGROW>
   end
   
 end

@@ -26,7 +26,7 @@ mtexdata ferrite silent
 [grains,ebsd] = calcGrains(ebsd,'threshold',[1*degree, 10*degree],'minPixel',5);
 
 % lets smooth the grain boundaries a bit
-grains = smooth(grains,5)
+grains = smoothBoundary(grains,5)
 
 %%
 % We observe that we have 12314 high-angle boundary segments and 28501
@@ -96,9 +96,9 @@ mtexColorbar
 %
 % Sometimes one would like to distinguish between large connected networks
 % of low-angle boundaries and singular disconnected segments. This can be
-% done using the command <grainBoundary.componentSize.html
-% |componentSize|>. This command return for each segment the total number
-% of segments it is connected with. In the following figure we use this to
+% done using the property |componentSize|. It returns for each segment the
+% total number of segments it is connected with. In the following figure we
+% use this to
 % plot all low-angle grain boundary networks with more then 50 segments in
 % blue and all remaining segments in red.
 

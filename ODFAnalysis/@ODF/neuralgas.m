@@ -93,6 +93,7 @@ S2G = S2Grid(vector3d(W'));
 
 if verb 
   plotPDF(odf,h,'upper');
-  hold on, 
+  hG = holdOn(gca); %#ok<NASGU>
   plot(S2G);
+  clear hG
 end

@@ -15,7 +15,7 @@ function  [x,y,segLength] = intersect(gB,xy1,xy2,varargin)
 % Example
 %   mtexdata small
 %   grains = calcGrains(ebsd,'minPixel',3)
-%   grains = smooth(grains,4)
+%   grains = smoothBoundary(grains,4)
 %   plot(grains.boundary,'micronbar','off')
 %   % define some line
 %   xy1 = [33500,4500]; % starting point

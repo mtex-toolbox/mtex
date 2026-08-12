@@ -1,5 +1,6 @@
 %% Annotations
-%
+%%
+plottingConvention.default('y↑→x');
 %% Colorbars
 %
 % Unlike the common MATLAB command |colorbar| the MTEX command

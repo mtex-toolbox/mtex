@@ -1,5 +1,6 @@
 %% Vector Operations
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % In MTEX, one can calculate with three dimensional directions as with
 % ordinary numbers, i.e. we can use the predefined vectors  <xvector.html

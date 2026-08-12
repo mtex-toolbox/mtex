@@ -22,6 +22,9 @@ function [ind,d] = find(v,w,epsilon_or_k,varargin)
 
 % TODO: knnsearch() and rangesearch() needs Statistical Toolbox
 
+% k is documented as int32 - cast it, integer types do not survive the
+% arithmetic done on k here and in @orientation/find
+if nargin>2, epsilon_or_k = double(epsilon_or_k); end
 
 if isa(w,'fibre')
   d = angle(w,v.subSet(:));

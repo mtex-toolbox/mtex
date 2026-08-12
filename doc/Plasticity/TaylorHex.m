@@ -27,6 +27,9 @@ odf = fibreODF(cs.cAxis, vector3d.Z);
 
 h = Miller({0,0,0,1},{1,0,-1,0},{1,0,-1,1},cs);
 
+% the pfAnnotations preference is a global setting - store it such that we
+% can restore it at the end of this page
+storepfA = getMTEXpref('pfAnnotations');
 pfAnnotations = @(varargin) text([-vector3d.X,vector3d.Y],{'Tension','TD'},...
   'BackgroundColor','w','tag','axesLabels',varargin{:});
 setMTEXpref('pfAnnotations',pfAnnotations);
@@ -130,5 +133,10 @@ set(gca, 'YScale', 'log','XTickLabel', {'RT' '250 °C'})
 legend({'Basal slip','Prismatic slip','Pyramidal slip','Comp. Twin'},...
     'Location','eastoutside')
 legend('boxoff')
+
+%%
+% finally we restore the pole figure annotations we changed above
+
+setMTEXpref('pfAnnotations',storepfA);
 
 %%

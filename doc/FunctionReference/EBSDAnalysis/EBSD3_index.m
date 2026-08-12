@@ -1,4 +1,4 @@
-%% The Class EBSD
+%% The Class EBSD3
 %
 %%
 %

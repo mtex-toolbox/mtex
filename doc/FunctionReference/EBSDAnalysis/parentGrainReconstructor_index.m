@@ -1,4 +1,4 @@
-%% The Class EBSDsquare
+%% parentGrainReconstructor
 %
 %%
 %

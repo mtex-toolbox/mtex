@@ -45,13 +45,26 @@ Class-per-folder convention: `@ClassName/` holds a class's methods as separate `
 
 ## Tests
 
-`tests/` contains standalone `check_*.m` (and a few `test_*.m`, e.g. under `tests/SO3FunTests/`) scripts — not a `matlab.unittest` suite. Each is a function that runs a computation and either calls `error(...)` on failure or prints a success message. Run one by name:
+`tests/` contains standalone `check_*.m` functions — not a `matlab.unittest` suite. Each runs a computation and calls `error(...)`/`assert(...)` on failure. They are sorted into tiers, and `runTests` runs a tier:
 
 ```
-/opt/matlab-2024b/bin/matlab -batch "check_mtex"
+/opt/matlab-2024b/bin/matlab -batch "runTests"            # core, the fast suite
+/opt/matlab-2024b/bin/matlab -batch "runTests('slow')"
+/opt/matlab-2024b/bin/matlab -batch "check_mtex"          # same as runTests
 ```
 
-There's no single "run all tests" entry point in `tests/` — run the `check_*` scripts you need by name.
+| tier | what is in it |
+| --- | --- |
+| `tests/core/` | the computational core on synthetic or tiny data — **held to 60 s for the whole tier**, so it can be run before every commit |
+| `tests/slow/` | real datasets and benchmarks, minutes |
+| `tests/plotting/` | tests whose assertion is about a graphics object |
+| `tests/lib/` | fixtures and generators, never collected as tests |
+
+Every `check_*.m` in a tier folder is a test of that tier — there is no list to register with. `runTests` runs each in its own try/catch, resets figures/RNG/warning state between them, prints a pass/fail table with timings, and raises at the end so `-batch` exits nonzero.
+
+`check_mex` and `check_mexComplete` stay at `tests/` root and are not tests: the first is an installer called from `startup_mtex.m` on every start, the second is the build gate used by `.github/workflows/build-mex.yml`.
+
+**Read `tests/CLAUDE.md` before adding a test.** It records which file owns which subsystem, when a bug earns a new file at all, and which tier to run when — the folder reached 84 files by adding roughly one per bug, and about a third of them asserted nothing.
 
 ## Architecture
 

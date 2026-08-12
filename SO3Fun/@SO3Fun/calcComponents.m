@@ -81,18 +81,22 @@ for k = 1:maxIter
   omega(ind,:) = omega(ind,:) ./ 2;
   
   %nnz(id>1)
+  % update cluster
+  if ~all(id == 1) || k==1
+
+    % join orientations if possible
+    [~,~,id2] = unique(modes,'tolerance',tol);
+
+    ind = maxVote(id2,v_max);
+    modes = modes(ind);
+    omega = omega(ind,:);
+    v_max = v_max(ind,:);
+
+    centerId = id2(centerId);
+    if maxAngle == inf, weights = accumarray(id2,weights); end
+  end
+
   if all(id == 1), break; end
-
-  % join orientations if possible
-  [~,~,id2] = unique(modes,'tolerance',tol);
-
-  ind = maxVote(id2,v_max);
-  modes = modes(ind);
-  omega = omega(ind,:);
-  v_max = v_max(ind,:);
-
-  centerId = id2(centerId);
-  if maxAngle == inf, weights = accumarray(id2,weights); end
 
   pC.show(k)
 

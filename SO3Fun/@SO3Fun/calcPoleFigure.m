@@ -58,7 +58,10 @@ else
 end
 
 % ----- structure coefficients -------------
-c = ensurecell(get_option(varargin,'superposition',repcell(1,1,length(h))));
+% by default all crystal directions of a superposed pole figure contribute
+% with the same weight, so that the result is again a pole density
+defaultC = cellfun(@(hh) ones(1,length(hh))./length(hh),h,'UniformOutput',false);
+c = ensurecell(get_option(varargin,'superposition',defaultC));
 
 % ----- intensities --------------------------
 for ip = 1:length(h)

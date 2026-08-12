@@ -1,5 +1,5 @@
 function SO3F = inv(SO3F)      
-% Define the inverse function $g$ of an SO3FunRBF $f$ by $g(R^{-1}) = f(R)$
+% Define the inverse function $g$ of an SO3FunMLS $f$ by $g(R^{-1}) = f(R)$
 % for all rotations $R\in SO(3)$.
 %
 % Syntax

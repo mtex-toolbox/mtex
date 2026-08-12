@@ -472,9 +472,14 @@ classdef grainBoundary < phaseList & dynProp
       end
 
       if isfield(gB.prop,'V')
-        gB.triplePoints.allV = gB.prop.V;
+        V = gB.prop.V;
+        if isnumeric(V), V = vector3d(V(:,1),V(:,2),zeros(size(V,1),1)); end
+        gB.triplePoints.allV = V;
         gB.prop = rmfield(gB.prop,'V');
       end
+
+      % up to MTEX 5.11 the symmetries were stored as a cell array
+      gB.CSList = ensureCSArray(gB.CSList);
 
       % files written before segments were stored in walk order. order is
       % idempotent, so this is safe on files that already satisfy it.

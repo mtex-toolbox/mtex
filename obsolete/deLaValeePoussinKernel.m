@@ -1,5 +1,12 @@
-classdef deLaValeePoussinKernel
-  
+classdef deLaValeePoussinKernel < SO3DeLaValleePoussinKernel
+% obsolete, use SO3DeLaValleePoussinKernel instead
+%
+% A constructor may not return an object of another class, so this shim
+% inherits from SO3DeLaValleePoussinKernel instead of forwarding to it the
+% way the other obsolete shims do. It stays a class - rather than becoming
+% a plain function - so that loadobj below keeps rescuing kernels stored in
+% old mat files.
+
 methods (Hidden = true)
 
   function psi = deLaValeePoussinKernel(varargin)
@@ -7,7 +14,7 @@ methods (Hidden = true)
     warning(['The syntax "deLaValeePoussinKernel" is obsolete. ' ...
       'Please use "SO3DeLaValleePoussinKernel" instead.'])
 
-    psi = SO3DeLaValleePoussinKernel(varargin{:});
+    psi = psi@SO3DeLaValleePoussinKernel(varargin{:});
 
   end
 end

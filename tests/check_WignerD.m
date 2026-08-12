@@ -1,5 +1,21 @@
 function check_WignerD
 % check WignerD conformity with NSOFT/SO3FunHarmonic
+%
+% KNOWN FAILURE, see https://github.com/mtex-toolbox/mtex/issues/2582
+%
+% This test asserts that WignerD(ori,'kernel',psi) and
+% calcFourier(SO3FunRBF(ori,psi,1)) agree up to the L2 normalization. They
+% do not: they differ by exactly the kernel coefficients psi.A, i.e.
+% calcFourier applies the kernel weights and WignerD does not, although psi
+% was handed to it. The two also disagree on the returned bandwidth - 366145
+% coefficients (degree 64) against 10660 (degree 19) - and it is that length
+% mismatch which throws first, as "Arrays have incompatible sizes".
+%
+% Kept, in slow/, rather than deleted: the identity it checks is the right
+% one and this is the only coverage of WignerD against the harmonic
+% transform. It goes back to core/ once #2582 is resolved. The '+1' below is
+% part of the same knot - it makes no difference any more, since calcFourier
+% truncates at the kernel's own bandwidth whatever it is asked for.
 
 check_unimodal('-1','-1',50)
 check_unimodal('-3m','-1',70)

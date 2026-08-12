@@ -88,8 +88,14 @@ ebsd.opt.header = header;
 
 % x||a*, z||c
 
-% change reference frame
-ebsd = applyEulerCorrectionFixed(ebsd,'.ctf',rotation.byEuler(pi,0,0),varargin{:});
+% change reference frame - AcqE1/2/3 is the acquisition surface orientation,
+% reported but not applied, see applyEulerCorrectionFixed
+acq = [];
+if all(isfield(header,{'AcqE1','AcqE2','AcqE3'}))
+  acq = [header.AcqE1, header.AcqE2, header.AcqE3];
+end
+ebsd = applyEulerCorrectionFixed(ebsd,'.ctf',rotation.byEuler(pi,0,0),...
+  varargin{:},'acquisitionEuler',acq);
 
 end
 

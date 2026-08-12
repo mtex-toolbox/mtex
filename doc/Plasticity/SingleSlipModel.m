@@ -23,6 +23,7 @@
 %% 
 % In this example we consider Olivine with has orthorhombic symmetry
 
+plottingConvention.default('y↑→x');
 csOli = crystalSymmetry('222',[4.779 10.277 5.995],'mineral','olivine');
 csOrtho = crystalSymmetry('222',[18.384, 8.878, 5.226],'mineral','orthopyroxene');
 

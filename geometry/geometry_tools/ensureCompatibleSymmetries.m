@@ -33,7 +33,7 @@ function ensureCompatibleSymmetries(obj1,varargin)
 
 % check necessary symmetry condition for antipodal
 if check_option(varargin,'antipodal')
-  if obj1.CS ~= obj1.SS
+  if ~eqTol(obj1.CS,obj1.SS)
     error('ODF can only be antipodal if both symmetries coincide!')
   end
   return
@@ -53,14 +53,14 @@ end
 
 % compare symmetries in case of convolution of SO3Fun with S2Fun
 if isa(obj1,'SO3Fun') && isa(obj2,'S2Fun')
-  if (isa(obj2,'S2FunHarmonicSym') && (obj1.SLeft ~= obj2.s)) || (~isa(obj2,'S2FunHarmonicSym') && (obj1.SLeft ~= specimenSymmetry))
+  if (isa(obj2,'S2FunHarmonicSym') && ~eqTol(obj1.SLeft,obj2.s)) || (~isa(obj2,'S2FunHarmonicSym') && ~eqTol(obj1.SLeft,specimenSymmetry))
     error('When convoluting @SO3Fun''s the symmetries have to be compatible.')
   end
   return
 end
 
 % compare symmetries in case of convolution of SO3Funs
-if check_option(varargin,'conv') && obj1.SRight ~= obj2.SLeft
+if check_option(varargin,'conv') && ~eqTol(obj1.SRight,obj2.SLeft)
   error('When convoluting @SO3Fun''s the symmetries have to be compatible.')
 end
 
@@ -80,7 +80,7 @@ end
 %       Possibly use LaueGroups or properGroups
 %       By changing that also update the code in SO3FunComposition.
 
-em = (obj1.CS ~= obj2.CS) || (obj1.SS ~= obj2.SS);
+em = ~eqTol(obj1.CS,obj2.CS) || ~eqTol(obj1.SS,obj2.SS);
 if em
   error(s)
 end

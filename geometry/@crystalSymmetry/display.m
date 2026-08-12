@@ -32,7 +32,7 @@ if cs.id>0
     propV{end} = regexprep(propV{end}, '-([A-Za-z0-9])', ['$1' ov]);
   end
 else
-  propV{end+1} = 'unkwown';
+  propV{end+1} = 'unknown';
 end
 
 % add symmetry

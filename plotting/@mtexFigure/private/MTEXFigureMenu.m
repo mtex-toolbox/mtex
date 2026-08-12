@@ -66,6 +66,8 @@ uimenu(an,'label','Labels','checked',isVisible('labels'),'callback',{@setVisible
 uimenu(an,'label','Coordinates','checked',isVisible('ticks'),'callback',{@setVisible,'ticks'});
 uimenu(an,'label','Grid','checked','off','callback',{@setVisible,'grid'});
 uimenu(an,'label','Micronbar','checked','on','callback',{@setVisible,'micronBar'});
+uimenu(an,'label','Reference Frame','checked',getMTEXpref('showRefFrame','on'),...
+  'callback',{@setVisible,'refFrame'});
 
 
 
@@ -134,9 +136,14 @@ for a = 1:numel(ax)
         end
       
       case 'micronBar'
-        
+
         mP  = getappdata(ax(a),'mapPlot');
         if ~isempty(mP), mP.micronBar.visible = onoff;end
+
+      case 'refFrame'
+
+        mP  = getappdata(ax(a),'mapPlot');
+        if ~isempty(mP), mP.micronBar.refFrame = onoff;end
       
       case 'labels'
         la = [get(ax(a),'xlabel');get(ax(a),'ylabel');...
@@ -144,8 +151,9 @@ for a = 1:numel(ax)
         set(la,'visible',onoff);
         
         sP = getappdata(ax(a),'sphericalPlot');
-        if ~isempty(sP) && ~isempty(sP.labels)
-          set(sP.labels,'visible',onoff);          
+        if ~isempty(sP)
+          if ~isempty(sP.labels), set(sP.labels,'visible',onoff); end
+          if ~isempty(sP.axesLabels), set(sP.axesLabels,'visible',onoff); end
         end
         
       case 'ticks'

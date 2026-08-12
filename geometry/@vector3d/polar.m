@@ -28,10 +28,17 @@ else
   rho = atan2(v.y,v.x);
   rho = rho + (rho<0)*2*pi;
 
+  % the cosine has to be clamped: rotating a normalized vector, or dividing
+  % by a norm computed from the very same coordinates, may land a hair
+  % outside [-1,1] - acos then returns a complex angle with an imaginary
+  % part of about 1e-8, which is small enough to survive unnoticed through
+  % any arithmetic downstream and only surfaces much later, e.g. as
+  % "Complex values are not supported" out of image() when an interpolated
+  % ipf color is handed to a map plot
   if v.isNormalized
-    theta = acos(v.z);
+    theta = acos(max(-1,min(1,v.z)));
   else
-    theta = acos(v.z./r);
+    theta = acos(max(-1,min(1,v.z./r)));
   end
 end
 

@@ -90,16 +90,52 @@ end
      end
    end
    mtexFig.cBarShift = tiPos(pos>0) + fs / 2;
-   
+
    pos(pos>0) = pos(pos>0) + mtexFig.cBarShift + fs / 2;
-    
+
+   % reserve the band on the side the colorbar was asked for - pos(1) is the
+   % thickness of a vertical bar, pos(2) that of a horizontal one, the other
+   % having been zeroed above
+   band = zeros(1,4); % [left bottom right top]
+   switch mtexFig.cBarSide
+     case 'west'
+       band(1) = pos(1);
+     case 'north'
+       band(4) = pos(2);
+     case 'south'
+       band(2) = pos(2);
+     otherwise % east
+       band(3) = pos(1);
+   end
+
    if numel(mtexFig.cBarAxis) == numel(mtexFig.children)
-     tightInset = tightInset + [0,pos(2),pos(1),0];
+     tightInset = tightInset + band;
    else
-     figTightInset = figTightInset + [0,pos(2),pos(1),0];
+     figTightInset = figTightInset + band;
    end
  end
  
+ % consider a legend placed outside the axes - reserve a band of its size
+ % plus the requested spacing, so that the legend does not eat into the
+ % space given to the axes. It is positioned within that band in
+ % updateLayout.
+ if ~isempty(mtexFig.legendAxis) && all(isgraphics(mtexFig.legendAxis))
+
+   set(mtexFig.legendAxis,'Units','pixels');
+   pos = get(mtexFig.legendAxis,'Position');
+
+   switch mtexFig.legendSide
+     case 'east'
+       figTightInset(3) = figTightInset(3) + pos(3) + mtexFig.legendSpacing;
+     case 'west'
+       figTightInset(1) = figTightInset(1) + pos(3) + mtexFig.legendSpacing;
+     case 'north'
+       figTightInset(4) = figTightInset(4) + pos(4) + mtexFig.legendSpacing;
+     case 'south'
+       figTightInset(2) = figTightInset(2) + pos(4) + mtexFig.legendSpacing;
+   end
+ end
+
  % consider sgtitle
  h = findobj(gcf,'Type','subplottext');
  if ~isempty(h)

@@ -36,7 +36,7 @@ plotSquareNeighbours; nextAxis(1,2); plotHexNeighbours
 mtexdata ferrite
 
 [grains,ebsd] = calcGrains(ebsd,'minPixel',8);
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 plot(ebsd('indexed'),ebsd('indexed').orientations)
 hold on

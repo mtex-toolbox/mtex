@@ -7,7 +7,9 @@ TiltAndTwistBoundaries     Twist and Tilt
 CSLBoundaries              CSL
 BoundaryCurvature          Curvature
 GrainSmoothing             Smoothing
+GrainSmoothingAdvanced     Smoothing Algorithms
 TwinningBoundaries         Twinning
 TriplePoints               Triple Points
+QuadruplePoints            Quadruple Points
 BoundaryIntersections      Intersections
 BoundaryNormalDistribution Distribution

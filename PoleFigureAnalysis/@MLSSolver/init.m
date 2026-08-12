@@ -27,11 +27,19 @@ solver.free_nfft;
 for i = 1:pf.numPF
   
   % TODO: consider the case of no antipodal symmetry
-  for j = 1:length(pf.allH{i})
+  %
+  % h and l are rebuilt for every pole figure. Reusing them would leave the
+  % entries of a previous, longer superposition in place once a pole figure
+  % with fewer crystal directions comes along, which both mixes in its
+  % directions and skews the superposition coefficients below.
+  nh = length(pf.allH{i});
+  h = cell(1,nh);
+  l = zeros(1,nh);
+  for j = 1:nh
     h{j} = unique(symmetrise(pf.allH{i}(j)),'noSymmetry','antipodal');
     l(j) = length(h{j});
   end
-    
+
   % compute points in the pole figure
   gh = solver.S3G * vertcat(h{:}); % S3G x SS x h
   

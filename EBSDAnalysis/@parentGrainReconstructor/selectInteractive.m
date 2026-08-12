@@ -49,9 +49,9 @@ if isempty(localId), return; end
 grain = job.grains(localId);
 
 % mark grains
-hold on
+hG = holdOn(ax); %#ok<NASGU>
 handleSelected = plot(grain.boundary,'lineColor','w','linewidth',4);
-hold off
+clear hG
 setappdata(ax,'handleSelected',handleSelected);
 
 votesFit = job.calcGBVotes(grain.id,'bestFit','reconsiderAll');
@@ -95,9 +95,9 @@ function setOri(~,~,job,id,pOri,color,ax)
 job.grains(id).meanOrientation = pOri;
 job.grains.update;
 
-hold(ax,'on')
+hG = holdOn(ax); %#ok<NASGU>
 plot(job.grains(id),color,'parent',ax);
-hold(ax,'off')
+clear hG
 
 end
 

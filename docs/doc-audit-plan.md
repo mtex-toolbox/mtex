@@ -25,32 +25,144 @@ does not prove a missing target — always re-check against the source tree.
 
 ## What is still open
 
-Items 1-9 are closed. What remains:
+Items 1-10 and the 2026-08-10 pass below are closed except for:
 
-- **Item 2e** — the largest open batch. A sweep of *all* class-qualified links
-  found 17 dangling targets that were never in this plan, eleven of which exist
-  nowhere in the source. The headline count below was never re-derived.
-- **Item 10** — deferred by decision on 2026-07-28, revisit much later.
-- **Four sidebar orphans** from item 4: `EBSD3_index`, `grain3d_index`,
-  `grain3Boundary_index` (the 3D classes are absent from the function reference
-  sidebar), plus two stale `*DeLaValleePoussin_index` pages and a
-  `directionPlots_index` with no source behind it.
-- **Fourteen empty chapters** from item 5, now tracked in `TODO.md`.
+- **Item 10** — deferred by decision on 2026-07-28, revisit much later. One of
+  its entries (`SO3FunRBF/interpolate`) was fixed on 2026-08-06; the rest
+  stand, minus the two whose *prose* was reworded on 2026-08-10 so the pages no
+  longer read as unfinished (`interp(...,'bingham')` and the
+  `SO3FunVectorField` quiver plot — the underlying questions are unchanged).
+- **Twinning**, excluded by request on 2026-08-10: the `twinningSystem`
+  dangling link, the empty `Misorientations/Twinning` chapter and the
+  `Plasticity/TwinningTutorial` placeholder.
+- **`EBSDGradient`**, still deliberately dangling — the page should be written
+  against the non gridded gradient API that is in progress.
+- **Four open questions** that no amount of editing can answer, left in place
+  as `TODO` markers and listed in `TODO.md` C2: the (001)/(071) axes in
+  `TiltAndTwistBoundaries.m`, the commented out Bingham test in
+  `GrainOrientationParameters.m`, "deviation from an ellipse" in
+  `EllipseBasedParameters.m`, and the "fibryness" measure in
+  `Grain_dispersion_axes.m`.
+- **`Plasticity/SachsModel`**, kept as an empty stub by decision on
+  2026-08-10 even though `SingleSlipModel.m` covers the same physics.
 - **Four content orphans** from item 6: `Dream3dGrains`, `S2FunQuadrature`,
-  `MisorientationGrainExchangeSym`, `changelog`.
-- Two code defects found on the way and recorded rather than fixed: the
-  `plotSection(mdf,'axisAngle')` **segfault** (item 6, in `TODO.md`) and the
-  `specimenSymmetry.sim` self-comparison typo (item 8).
+  `MisorientationGrainExchangeSym`, `changelog`. `Contribute2Doc` is a fifth,
+  prose only and reachable from the website.
+- The `plotSection(mdf,'axisAngle')` **segfault** (item 6, in `TODO.md`) and
+  the dead external links of `TODO.md` C5, including the `t.co` shortener on
+  `HullBasedParameters.m:18`, which could not be resolved from this machine.
 
-**The dangling-link count below is stale and should not be quoted.** Item 1
-alone resolved 15 instances and item 2 several more, but the original
-sub-counts never added up — item 1 claimed 12 instances while its two tables
-listed 17, and targets such as `EBSDhex.cube2hex` and `orientation.goss` were
-never in the tally at all. Re-run the check before quoting a number.
+**Link status after the 2026-08-10 pass: 28 dangling instances, 26 of them
+inside `changelog.m`.** The two live ones are `twinningSystem` and
+`EBSDGradient`, both listed above. Re-derive with the recipe at the top of this
+file rather than quoting older counts, which never added up.
 
-Original status, 2026-07-28: 48 dangling link instances / 44 distinct targets
-across 17 pages (was 59/52/23 before the first round of fixes). 18 of the 48
-were inside `changelog.m`, i.e. archive material.
+## 2026-08-10 pass
+
+A second sweep of the whole of `doc/`, driven by "scan doc/ for open ends and
+fix those, except twinning systems". It closes items 2e and the sidebar orphans
+of item 4, and most of the empty chapters of item 5.
+
+**Links.** 19 live dangling instances resolved. Nine were smoothing filters
+written as `taubinFilter.taubinFilter.html`; they live in
+`EBSDAnalysis/BoundarySmoothing/`, not in an `@` folder, so the class prefix is
+wrong — the same trap as `planarColorKey` in item 4. The rest:
+`arrow3d`→`vector3d.arrow3d`, `S2FunBingham`→`S2Bingham` (the link wanted the
+*doc page*, not the class), `calcCluster`→`mclComponents` (which is what the
+code on that page actually calls), and `grainBoundary.componentSize`, an inline
+dependent property that can never have a page, so the markup was dropped. The
+four `grain3d.{equivalentSurface,shapeFactor,hasHole,isInclusion}` links in
+`Grains3DProperties.m` pointed at methods that do not exist; by decision the
+methods were *not* implemented and the table now lists them, together with
+`caliper`, `equivalentRadius`, `equivalentPerimeter` and `isBoundary`, as
+having no 3D counterpart yet. A `curvature` row on `grain3Boundary` went the
+same way.
+
+**Navigation.** Three 3D index pages (`EBSD3_index`, `grain3d_index`,
+`grain3Boundary_index`) were wired into `EBSDAnalysis_index.toc`; all three
+carried copy-pasted titles naming the 2D class. The two stale
+`*DeLaValleePoussin_index` pages and `directionPlots_index` were deleted rather
+than renamed — none was in a `.toc`, all had wrong titles, and no sibling
+kernel has an index page.
+
+The `PLEASE HELP AND ADD CONTENT HERE` heading was stripped from twelve
+`TensorAnalysis/*_index.m` pages, where it published as a visible `<h2>`. While
+there, 24 index page titles that were copy-paste duplicates were corrected —
+eight `tools/*` pages all read "Statistics", four tensor pages read "Stress
+Tensors", `parentGrainReconstructor_index` read "The Class EBSDsquare". The
+`.toc` typo "Phase Transistion Analysis" was fixed.
+
+**Duplicate pages removed.** `Plasticity/PlasticDeformation.m` and
+`Plasticity/StrainAnalysis.m` were orphaned older variants of `SchmidtFactor.m`
+and `SlipTransmission.m`, both already in the TOC and both longer; deleted.
+`Rotations/RotationImport.m`, `Rotations/RotationExport.m` and
+`Tutorials/ImportFromVPSC.m` were empty stubs duplicating
+`CrystalOrientations/OrientationImport`, `OrientationExport` and
+`Plasticity/VPSCImport`; deleted and their TOC entries repointed. The
+"Texture evolution during rolling" section of `TaylorModel.m` moved into the
+new `TextureEvolution` chapter. `Plasticity/Lankford.m` got a TOC slot.
+
+**Chapters written** — eight, each run headlessly before committing:
+`GeneralConcepts/Properties`, `Grains/GrainExport`,
+`Misorientations/AngleDistributionFunction`,
+`Misorientations/AxisDistributionFunction`, `Plasticity/TextureEvolution`,
+`Plotting/PlottingExport`, `PoleFigureAnalysis/PoleFigureExport`,
+`SphericalFunctions/S2FunRadon`. `GrainBoundaries/QuadruplePoints.m`, until now
+an untitled scratch script in no TOC, was turned into a page and wired in — it
+is the only documentation of `calcGrains(...,'removeQuadruplePoints')`.
+
+**Prose TODO markers**: 15 of 19 resolved (the four open questions above are
+the remainder). The substantial ones were the shear modulus definition in
+`AnisotropicTheory.m`, the default `X||a*, Z||c` alignment in
+`SymmetryAlignment.m`, the `'interp'` versus `'density'` distinction and the
+halfwidth in `ODFImport.m`, the VPSC section of `ODFExport.m`, the other Euler
+section types in `EulerAngleSections.m`, a non-ODF example in
+`SO3FunHarmonicRepresentation.m`, and full rewrites of `FundamentalSector.m`,
+`TensorVisualisation.m` and `FibreODFs.m`.
+
+### Code defects found on the way
+
+Two were fixed because a doc page could not otherwise call a documented syntax:
+
+- **`geometry/@symmetry/calcAxisDistribution.m:21`** did
+  `if isa(varargin{1},'symmetry')` with no emptiness guard, so
+  `calcAxisDistribution(cs)` — the second syntax in the function's own help —
+  always threw "Index exceeds array bounds". Guarded.
+- **`geometry/@orientation/bingham_test.m`** indexed `lambda` and `kappa` as
+  columns (`kappa(2:4,:)`) while `mean(ori)` returns them as rows, so every
+  call threw. Now flattened with `(:)`. **The function runs again but its
+  output convention is unverified** — on data drawn from a spherical Bingham it
+  returns 1.0 for the spherical test, which does not obviously match either
+  reading of the statistic. It has no callers outside `templates/`. Do not
+  document it until someone checks the sign convention.
+
+Five more were measured and left alone:
+
+- **`calcDensity` on an empty orientation list** dies with "Too many input
+  arguments". `geometry/@orientation/calcKernelODF.m:41` handles the empty case
+  with `odf = ODF(ori.CS,ori.SS)`, and `ODF` is an obsolete shim that no longer
+  takes those arguments.
+- **`calcPoleFigure(odf,pf.allH,pf.allR)`** — the obvious way to recompute a
+  measured set of pole figures — throws "Number of elements must not change"
+  whenever one entry of `allH` holds several Miller indices, i.e. for superposed
+  pole figures. The default structure coefficients are one per *pole figure*,
+  not one per Miller index. Workaround, used in `PoleFigureExport.m`: pass
+  `'superposition',pf.c` explicitly.
+- **`stiffnessTensor.rand` returns a plain `tensor` of rank 2.** The static
+  `TensorAnalysis/@tensor/rand.m` hardcodes `T = tensor(...)`, and MATLAB gives
+  a static method no way to learn which subclass it was called on. So
+  `C = stiffnessTensor.rand; C.PoissonRatio(...)` fails with "Unrecognized
+  method". The old `TensorVisualisation.m` used exactly this and was silently
+  plotting a random rank 2 tensor while claiming to show a rank 4 one. A real
+  fix needs a one line `rand.m` in each subclass.
+- **`export(odf,fname,'VPSC')` silently writes a generic file.** `SO3Fun/export`
+  reads the format from `get_option(varargin,'interface','generic')`, so a bare
+  `'VPSC'` flag is ignored. `ODFExport.m` had this call under a `TODO!!!`
+  marker; it now uses `'interface','VPSC'` and says why.
+- **A new property needs `ebsd.prop.name = ...`, not `ebsd.name = ...`**, and
+  no length check is performed — a too short property is accepted and only
+  fails later on indexing. Both are documented in the new `Properties` chapter
+  rather than changed.
 
 ## Closed
 

@@ -1,5 +1,6 @@
 %% Operations on Spherical Functions
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % Spherical functions offers a wide range of analysis methods. You can
 % perform almost arbitrary computations with them: add, multiply, detect

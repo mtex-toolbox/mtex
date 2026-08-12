@@ -1,5 +1,6 @@
 %% Specimen Symmetry
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % While <CrystalSymmetries.html crystal symmetry> is a property of the
 % crystal lattice, specimen symmetry is a property of the *process* that

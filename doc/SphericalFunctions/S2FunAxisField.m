@@ -1,4 +1,7 @@
 %% S2AxisFieldHarmonic
+%%
+plottingConvention.default('y↑→x');
+%%
 %
 % The class @S2AxisFieldharmonic handles axis fields on the sphere, i.e.
 % spherical functions 
@@ -40,7 +43,7 @@ plot(sAF1)
 % handle which takes <vector3d.vector3d.html |vector3d|> as an argument and
 % returns antipodal <vector3d.vector3d.html |vector3d|>:
 
-f = @(v) vector3d(v.x, v.y, 0*v.x, 'antipodal');
+f = @(v) vector3d(-v.y, v.x, 0*v.x, 'antipodal');
 
 %% 
 % Now you can call the quadrature command to get |sAF2| of type
@@ -49,6 +52,5 @@ f = @(v) vector3d(v.x, v.y, 0*v.x, 'antipodal');
 sAF2 = S2AxisFieldHarmonic(@(v) f(v))
 % sAF2 = S2AxisFieldHarmonic.quadrature(@(v) f(v))
 
-clf;
-quiver3(sAF2);
+quiver(sAF2);
 

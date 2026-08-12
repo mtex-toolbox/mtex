@@ -4,6 +4,7 @@ function grains = load(filepath,varargin)
   % Syntax
   %   grains = grain3d.load('filepath/filename.tess','CS',CSList)
   %   grains = grain3d.load('filepath/filename.dream3d')
+  %   grains = grain3d.load('filepath/filename.dream3d','noOrientFaces')
   %
   % Input
   %  fname     - filename
@@ -12,8 +13,17 @@ function grains = load(filepath,varargin)
   % Output
   %  grain3d - @grain3d
   %
+  % Options
+  %  noOrientFaces - dream3d only: keep the face winding as stored in the file
+  %
+  % Description
+  %
+  % Dream3d stores the boundary faces with an arbitrary winding, so the
+  % faces are oriented on import with <grain3d.orientFaces.html
+  % |orientFaces|>. See <loadGrains_Dream3d.html |loadGrains_Dream3d|>.
+  %
   % See also
-  % loadNeperTess loadGrains_Dream3d grain2d.load
+  % loadNeperTess loadGrains_Dream3d grain3d/orientFaces grain2d.load
 
   interface = get_option(varargin,'interface');
   

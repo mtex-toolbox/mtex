@@ -35,11 +35,6 @@ function W = weightedBurgersVec(ebsd,varargin)
 % through crystalline materials>, J. Microscopy, 2009.
 %
 
-if ~(isa(ebsd,'EBSDsquare') | isa(ebsd,'EBSDhex'))
-    mtexError(['This function requires an input of type EBSSDsquare' newline ...
-               'run "ebsd=ebsd.gridify" first'])
-end
-
 if check_option(varargin,'gradient') % use the gradient method
   
   % the incomplete curvature tensor
@@ -53,6 +48,19 @@ if check_option(varargin,'gradient') % use the gradient method
   W = reshape(W,size(ebsd));
   
 else % use the integral method
+
+  % A 2d raster algorithm - filter2/ordfilt2 over a window shape - so it
+  % still needs the matrix form, unlike the gradient branch above. onGrid
+  % supplies it and maps the result back, so a plain @EBSD gets a W shaped
+  % like itself rather than like the grid it was gridified onto.
+  W = onGrid(ebsd,@(eG) wbvIntegral(eG,varargin{:}));
+
+end
+
+end
+
+% =========================================================================
+function W = wbvIntegral(ebsd,varargin)
 
   % ensure orientations 
   ebsd = ebsd.project2FundamentalRegion;
@@ -83,7 +91,5 @@ else % use the integral method
   %normalize to area
   d = min(norm(ebsd.unitCell(1) - ebsd.unitCell(2:end)));
   W = W/(4 * wS^2 * d);
-
-end
 
 end

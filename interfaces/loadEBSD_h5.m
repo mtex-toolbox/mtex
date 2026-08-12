@@ -8,14 +8,16 @@ function [ebsd] = loadEBSD_h5(fname, varargin)
 %   - There are helper functions to convert data and build the EBSD object
 %
 % Options
-%  raw        - import the data as recorded by the detector instead of the
-%               version cleaned up by the vendor software. Oxford files
-%               hold both, everybody else only the raw one
 %  dataSet    - which data set to import from a file that holds several
 %               of them, either as the number shown in the list printed
 %               on import, or as (part of) its name, e.g.
 %               EBSD.load(fname,'dataSet',2) or
-%               EBSD.load(fname,'dataSet','OIM Map 2')
+%               EBSD.load(fname,'dataSet','OIM Map 2'). Oxford files may
+%               hold a map twice, as recorded by the detector under
+%               "EBSD" and as cleaned up by the vendor software under
+%               "Data Processing" - both are offered as data sets and the
+%               cleaned up one is imported unless the other one is asked
+%               for, EBSD.load(fname,'dataSet','EBSD')
 %  headerOnly - return only phase/header metadata, skip reading the
 %               (potentially large) per-pixel position/rotation/phase
 %               data and any other top-level category (e.g. electron
@@ -31,6 +33,7 @@ headerOnly = check_option(varargin, 'headerOnly');
 % a previous import may have left a data set selected - every lookup below
 % starts out unrestricted again
 dataSetScope('/');
+dataSetPath('/');
 
 if check_option(varargin, 'debug')
   isDebug(get_option(varargin, 'debug'));
@@ -80,15 +83,6 @@ if isempty(fieldnames(Conf))
   error("No Manufacturer config found for: " + manufacturer);
 end
 
-% Oxford files hold the map twice: as recorded by the detector under
-% "EBSD" and as cleaned up by the vendor software under "Data Processing".
-% The two are described by two configs - 'raw' asks for the first one.
-% Vendors that store only one version have no rawConfig, and for them the
-% data imported is the unprocessed one anyway, so the option is a no-op.
-if check_option(varargin, 'raw') && ~isManualType && isfield(Conf.settings, 'rawConfig')
-  Conf = read_config(folderPath, Conf.settings.rawConfig.data + ".json");
-end
-
 % Check if user wants to use a different ebsd_key
 if check_option(varargin, 'ebsd_key')
   try
@@ -120,6 +114,7 @@ if ~isempty(iSet)
   % data set (step size, grid size, ...) have to come from the very same
   % data set
   dataSetScope(parent_path(dataSets(iSet).path));
+  dataSetPath(dataSets(iSet).path);
 end
 
 % generate config info text
@@ -131,11 +126,6 @@ if ~check_option(varargin,'silent')
     % disp adds the line break - a trailing one here would wrap into an
     % empty paragraph and leave a blank line in the middle of the block
     wraptext(sprintf('├── Info         : %s', Conf.settings.manufacturer_info.data));
-  end
-  % a config that has a raw counterpart holds the vendor's cleaned up
-  % version - say so, the option is hard to guess otherwise
-  if isfield(Conf.settings, 'rawConfig')
-    fprintf('├── Data         : post processed, use ''raw'' for the data as recorded\n');
   end
   % staying quiet about the other data sets would silently import one of
   % several maps - so say which one was taken whenever there is a choice
@@ -173,43 +163,22 @@ if headerOnly
 end
 
 categories = fieldnames(Conf);
-try
-  for i = 1:length(categories)
-  
-    cat = categories{i};
-    if ismember(cat, exclude), continue; end
-  
-    vprintf(isDebug(), '\n 🔷 [%s]\n', upper(string(cat)));
-    vprintf(isDebug(), ' %s\n', repmat('─', 1, 80));
-  
-    [data.(cat), Conf.(cat)] = readConf( ...
-      info_struct, ...
-      Conf.(cat), ...
-      "name", cat);
-  
-    vprintf(isDebug(), ' %s\n', repmat('─', 1, 80));
-    vprintf(isDebug(), '  [OK] %s successfully initialized\n', string(cat));
-  
-  end
-catch ME
-  disp(ME.getReport)
-  % Check which type is currently loaded
-  current_type = '';
-  if check_option(varargin, 'type')
-    current_type = get_option(varargin, 'type');
-  end
+for i = 1:length(categories)
 
-  % Only try fallback if one exists and is different from the current 
-  if isfield(Conf.settings, 'fallback') && ~strcmpi(current_type, Conf.settings.fallback)
-    warning("Someting went wrong! Trying fallback: '%s'. The Error was: '%s'", Conf.settings.fallback, ME.message);
-    
-    % Restart with fallback version
-    ebsd = loadEBSD_h5(fname, 'type', Conf.settings.fallback, 'debug', isDebug(), ...
-      'headerOnly', headerOnly, 'dataSet', requested);
-    return;
-  else 
-    error('loadEBSD_h5 failed. No more Fallbacks available.\nError code: %s', ME.message);
-  end
+  cat = categories{i};
+  if ismember(cat, exclude), continue; end
+
+  vprintf(isDebug(), '\n 🔷 [%s]\n', upper(string(cat)));
+  vprintf(isDebug(), ' %s\n', repmat('─', 1, 80));
+
+  [data.(cat), Conf.(cat)] = readConf( ...
+    info_struct, ...
+    Conf.(cat), ...
+    "name", cat);
+
+  vprintf(isDebug(), ' %s\n', repmat('─', 1, 80));
+  vprintf(isDebug(), '  [OK] %s successfully initialized\n', string(cat));
+
 end
 
 % Construct prop-----------------------------------------------------------
@@ -244,6 +213,22 @@ try
           prop_data = rmfield(prop_data, cur_field);
         end
       end
+
+      % The loop above drops whatever the config consumes by path. That
+      % does not cover a data set the config reads *around*: an "indirect"
+      % position is built from the step size in the header, so the per
+      % pixel X / Y next to the data are never named by a path and would
+      % come back as properties duplicating ebsd.pos. A config lists those
+      % as regular expressions over the property names.
+      if isfield(Conf.additions, 'exclude')
+        patterns = cellstr(string(Conf.additions.exclude.data));
+        prop_fields = fieldnames(prop_data);
+        drop = false(size(prop_fields));
+        for i = 1:numel(patterns)
+          drop = drop | ~cellfun(@isempty, regexpi(prop_fields, patterns{i}, 'once'));
+        end
+        prop_data = rmfield(prop_data, prop_fields(drop));
+      end
     else
       warning("Still to do when additions is not auto...")
     end
@@ -270,18 +255,12 @@ end
 ebsd = data.ebsd;
 
 % remember where the data came from and what else the file has to offer -
-% the full path of the imported set, the short labels of all of them (what
-% the 'dataSet' option and the listing accept), and which of the two
-% versions of the data this is where a vendor stores both (see 'raw').
-% The import wizard offers all three as controls.
+% the full path of the imported set and the short labels of all of them,
+% which is what the 'dataSet' option and the listing accept. The import
+% wizard offers both as controls.
 if ~isempty(iSet)
   ebsd.opt.dataSet = dataSets(iSet).path;
   ebsd.opt.dataSets = [dataSets.label];
-end
-if isfield(Conf.settings, 'rawConfig')
-  ebsd.opt.dataType = "post processed";
-elseif isfield(Conf.settings, 'isRawConfig') && Conf.settings.isRawConfig.data
-  ebsd.opt.dataType = "raw";
 end
 
 % Euler <-> map reference frame -------------------------------------------
@@ -677,9 +656,13 @@ end
 
 function out = image_data_default(raw_data)
 
-  if ~isfield(raw_data, 'FSE') || ~isfield(raw_data, 'SE') || ~isfield(raw_data, 'x_size') || ~isfield(raw_data, 'y_size')
+  % a vendor stores whichever detectors were actually recorded - an Oxford
+  % map may well come with the forescatter images alone and no secondary
+  % electron one - so any one of the image groups is enough
+  if ~isfield(raw_data, 'x_size') || ~isfield(raw_data, 'y_size') || ...
+      (~isfield(raw_data, 'FSE') && ~isfield(raw_data, 'SE'))
     error(['image_data default has not the correct fields! ' ...
-      'Make sure you have a FSE, SE, x_size and y_size field!'])
+      'Make sure you have a x_size, a y_size and a FSE or SE field!'])
   end
 
   out = struct;
@@ -687,17 +670,18 @@ function out = image_data_default(raw_data)
   x_size = double(raw_data.x_size);
   y_size = double(raw_data.y_size);
 
-  FSE = raw_data.FSE;
-  SE = raw_data.SE;
-
   function dst = copy_reshaped(src, dst, x, y)
     for n = fieldnames(src)'
       dst.(n{1}) = double(permute(reshape(src.(n{1})(:),[x,y]),[2 1]));
     end
   end
 
-  out = copy_reshaped(FSE, out, x_size, y_size);
-  out = copy_reshaped(SE,  out, x_size, y_size);
+  if isfield(raw_data, 'FSE')
+    out = copy_reshaped(raw_data.FSE, out, x_size, y_size);
+  end
+  if isfield(raw_data, 'SE')
+    out = copy_reshaped(raw_data.SE, out, x_size, y_size);
+  end
 end
 
 function out = image_data_images(raw_data)
@@ -748,6 +732,33 @@ function out = map_correction_default(raw_data)
   if any(data > 10), format = degree; end
 
   out = rotation.byEuler(data(:).'*format);
+
+end
+
+function out = map_correction_scanRotation(raw_data)
+% A single angle about the surface normal.
+%
+% Oxford's "Scanning Rotation Angle" - the angle between the specimen tilt
+% axis and the scanning tilt axis - is the turn between the frame the map
+% is written in and the frame the Euler angles refer to, the long known
+% AZtec "map in beam view, orientations in camera view" mismatch. Unlike
+% the .ctf and .crc interfaces, which have to assume 180 degree, the value
+% is stated in the file.
+
+  try
+    format = determineformate(raw_data);
+  catch ME
+    error("map_correction_scanRotation: " + ME.message);
+  end
+
+  data = double(raw_data);
+  data = data(1);
+
+  % the format states NaN for "unknown" - correcting by a guess is exactly
+  % what the stated value is there to avoid, so leave the data alone
+  if isnan(data), data = 0; end
+
+  out = rotation.byAxisAngle(zvector, data*format);
 
 end
 
@@ -952,6 +963,25 @@ function val = dataSetScope(setVal)
     val = scope;
 end
 
+function val = dataSetPath(setVal)
+% helper function to set the HDF5 group of the selected data set itself
+%
+% dataSetScope is the group *containing* the data set, since a config
+% regularly reads values stored next to it - EDAX keeps the step size in a
+% Sample group beside EBSD, Oxford states it in the EBSD header even for
+% the processed version. That is too wide whenever an entry has to name
+% the picked data set and nothing else: an Oxford file offers the very
+% same map under "EBSD" and under "Data Processing", and both sit in the
+% same enclosing group. "search_set" resolves against this path instead.
+
+    persistent setPath;
+    if nargin > 0
+        setPath = normalize_root(char(setVal));
+    end
+    if isempty(setPath), setPath = '/'; end
+    val = setPath;
+end
+
 %% Path resolution --------------------------------------------------------
 %
 % The functions in this section are the "config -> HDF5 path" bridge.
@@ -970,6 +1000,9 @@ function final_path = get_hdf5_path(info_struct, config_item, options)
 %       "absolute"    : literal match of the full path
 %       "search_root" : regex over paths under options.root
 %       "search_free" : regex over all paths of the selected data set
+%       "search_set"  : regex over the paths *below the data set itself*,
+%                       matched against the path relative to it - the only
+%                       mode that tells two data sets in one group apart
 %
 %   The h5info tree is flattened once per file and cached in a persistent
 %   variable. Subsequent calls in the same session hit the cache
@@ -978,6 +1011,7 @@ function final_path = get_hdf5_path(info_struct, config_item, options)
     info_struct struct
     config_item struct
     options.root     string  = "/"
+    options.set      string  = ""
     options.multiple logical = false
     options.optional logical = false
   end
@@ -1006,6 +1040,11 @@ function final_path = get_hdf5_path(info_struct, config_item, options)
   root = normalize_root(options.root);
   if strcmp(root, '/'), root = scope; end
 
+  % find_dataSets validates a candidate before it has been picked, so it
+  % states the data set explicitly instead of going through dataSetPath
+  setPath = char(options.set);
+  if isempty(setPath), setPath = dataSetPath(); else, setPath = normalize_root(setPath); end
+
   % select mode and get matches
   switch mode
     case 'absolute'
@@ -1014,9 +1053,12 @@ function final_path = get_hdf5_path(info_struct, config_item, options)
       matches = find_in_root(items, search_val, root);
     case 'search_free'
       matches = find_in_root(items, search_val, scope);
+    case 'search_set'
+      matches = find_in_set(items, search_val, setPath);
     otherwise
       error('get_hdf5_path:badMode', ...
-            'Unknown mode "%s". Use "absolute", "search_root", or "search_free".', mode);
+            ['Unknown mode "%s". Use "absolute", "search_root", ' ...
+             '"search_free" or "search_set".'], mode);
   end
 
   % evaluate matches --> build output final_path
@@ -1109,7 +1151,7 @@ function sets = find_dataSets(info_struct, Conf)
   for i = 1:numel(paths)
     for k = 1:numel(req)
       try
-        get_hdf5_path(info_struct, req{k}, "root", paths(i));
+        get_hdf5_path(info_struct, req{k}, "root", paths(i), "set", paths(i));
       catch
         isSet(i) = false;
         break
@@ -1120,18 +1162,55 @@ function sets = find_dataSets(info_struct, Conf)
   % discarding everything - fall back to the unvalidated list
   if any(isSet), paths = paths(isSet); end
 
+  % a key may name several variants of one map - Oxford stores it as
+  % recorded under "EBSD" and as cleaned up under "Data Processing". Which
+  % of them an import takes by default must not depend on the order the
+  % vendor happened to write the groups in, so the order of the
+  % alternatives in the key decides it. sort is stable, hence file order
+  % still orders the sets that matched the same alternative.
+  [~, ord] = sort(alternative_rank(paths, Conf.ebsd.key));
+  paths = paths(ord);
+
   labels = short_labels(paths);
   sets = struct('path', num2cell(paths), 'label', num2cell(labels));
   sets = reshape(sets, 1, []);
+end
+
+function rank = alternative_rank(paths, key)
+%ALTERNATIVE_RANK  Which alternative of a key's regex each path matched.
+%
+%   The value of a key like "/Data Processing$|/EBSD$" is read as a
+%   preference list: rank 1 for a path matching the first alternative,
+%   rank 2 for the second and so on. Paths that match none - which the
+%   caller's own regex makes impossible, but a hand written 'ebsd_key'
+%   does not - sort last, keeping their file order.
+
+  rank = ones(numel(paths), 1);
+  if ~isfield(key, 'value') || ~isfield(key, 'mode'), return; end
+  if strcmpi(string(key.mode), "absolute"), return; end
+
+  alts = split(string(key.value), "|");
+  if isscalar(alts), return; end
+
+  rank = (numel(alts) + 1) * ones(numel(paths), 1);
+  for i = 1:numel(paths)
+    for a = 1:numel(alts)
+      if ~isempty(regexpi(char(paths(i)), char(alts(a)), 'once'))
+        rank(i) = a;
+        break
+      end
+    end
+  end
 end
 
 function req = required_keys(node, optional, req)
 %REQUIRED_KEYS  Collect the config entries a data set must provide.
 %
 %   These are the non-optional entries searched relative to the data set
-%   root. "search_free" and "absolute" entries are deliberately skipped:
-%   they are anchored at the enclosing scope, not at the data set itself
-%   (e.g. EDAX reads the step size from a Sample group *next to* EBSD).
+%   root, i.e. the "search_root" and "search_set" ones. "search_free" and
+%   "absolute" entries are deliberately skipped: they are anchored at the
+%   enclosing scope, not at the data set itself (e.g. EDAX reads the step
+%   size from a Sample group *next to* EBSD).
 
   if nargin < 2, optional = false; end
   if nargin < 3, req = {}; end
@@ -1141,9 +1220,9 @@ function req = required_keys(node, optional, req)
   if isfield(node, 'optional'), optional = optional || logical(node.optional); end
   if optional, return; end
 
-  if isfield(node, 'mode') && isfield(node, 'value') && ...
-      ~isfield(node, 'fallback') && strcmpi(string(node.mode), "search_root")
-    req{end+1} = struct('mode', 'search_root', 'value', node.value);
+  if isfield(node, 'mode') && isfield(node, 'value') && ~isfield(node, 'fallback') && ...
+      any(strcmpi(string(node.mode), ["search_root", "search_set"]))
+    req{end+1} = struct('mode', node.mode, 'value', node.value);
   end
 
   for f = fieldnames(node)'
@@ -1265,6 +1344,29 @@ function matches = find_in_root(items, pattern, root_val)
     p = items{i}.FullPath;
     if ~path_starts_with(p, root_val), continue; end
     if ~isempty(regexpi(p, pattern, 'once'))
+      matches{end+1} = items{i};
+    end
+  end
+end
+
+function matches = find_in_set(items, pattern, setPath)
+% Regex match below setPath, applied to the path *relative* to it.
+%
+% Relative matching is what lets a config anchor an entry exactly, e.g.
+% "^/Header$" for the header of the data set and not for the header of
+% every analysis stored inside it. Anchoring against the absolute path is
+% not an option, since the config cannot know which data set was picked.
+  matches = {};
+  for i = 1:length(items)
+    p = items{i}.FullPath;
+    if ~path_starts_with(p, setPath), continue; end
+    if strcmp(setPath, '/')
+      rel = p;
+    else
+      rel = p(length(setPath)+1:end);
+    end
+    if isempty(rel), continue; end
+    if ~isempty(regexpi(rel, pattern, 'once'))
       matches{end+1} = items{i};
     end
   end

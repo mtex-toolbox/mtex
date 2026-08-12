@@ -16,18 +16,31 @@ function Z = radon(SO3F,h,r,varargin)
 %  v    - double
 %
 
-if nargin<3, r = []; end
+% an option in the position of r belongs to varargin
+if nargin<3
+  r = [];
+elseif ischar(r) || isstring(r)
+  varargin = [{r},varargin]; r = [];
+end
 
 if length(h)>1 && length(r)>1
   error('The length of h or r has to be smaller than 1.')
 end
 
 if isempty(h)
-  Z = S2FunHarmonicSym.quadrature(@(v) radon(SO3F,v,r,varargin{:}),SO3F.CS);
+  % as a function of the crystal direction the inverse pole figure is even
+  % whenever -r is symmetrically equivalent to r
+  ap = isAntipodal(r,SO3F.SS,varargin{:});
+  Z = S2FunHarmonicSym.quadrature(@(v) radon(SO3F,v,r,varargin{:}),...
+    SO3F.CS,varargin{:},ap{:});
   return
 end
 if isempty(r)
-  Z = S2FunHarmonicSym.quadrature(@(v) radon(SO3F,h,v,varargin{:}),SO3F.SS);
+  % as a function of the specimen direction the pole figure is even
+  % whenever -h is symmetrically equivalent to h
+  ap = isAntipodal(h,SO3F.CS,varargin{:});
+  Z = S2FunHarmonicSym.quadrature(@(v) radon(SO3F,h,v,varargin{:}),...
+    SO3F.SS,varargin{:},ap{:});
   return
 end
 
@@ -53,6 +66,22 @@ for k = 1:length(SO3F.h)
       Z = Z + SO3F.weights(k) * psi.eval(dh.') / length(sh);
     end
   end
+end
+
+end
+
+function ap = isAntipodal(v,sym,varargin)
+% The Radon transform is an even function of the free variable whenever -v
+% is symmetrically equivalent to v. Note that angle(v,-v) takes the
+% symmetry of a Miller index into account, i.e. it returns 0 for the c-axis
+% of a trigonal crystal symmetry. Without this the tiny quadrature error
+% below leaves the result just short of being recognized as antipodal.
+
+if check_option(varargin,'antipodal') || sym.isLaue || v.antipodal || ...
+    all(angle(v,-v) < 1e-3)
+  ap = {'antipodal'};
+else
+  ap = {};
 end
 
 end

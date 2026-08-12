@@ -14,8 +14,6 @@
 % In order to illustrate the grain reconstruction process we consider the
 % following sample data set
 
-close all
-
 % import the data
 mtexdata forsterite
 
@@ -23,7 +21,7 @@ mtexdata forsterite
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
 % make a phase plot
-plot(ebsd)
+plot(ebsd,'micronbar','off')
 
 %% Basic grain reconstruction
 %
@@ -37,9 +35,10 @@ plot(ebsd)
 % surrounding grains but keep large notindexed regions
 %
 % The extent to which unindexed pixels are assigned is controlled by the
-% parameter |'alpha'|. Roughly speaking this parameter is the radius of the
-% smallest unindexed region that will not be entirely assigned to
-% surrounding grains. The default of this value is |alpha = 2.2|.
+% parameter |'alpha'|. Roughly speaking this parameter is the radius, in
+% pixels, of the smallest unindexed region that will not be entirely
+% assigned to surrounding grains. The default of this value is
+% |alpha = 3.1|.
 %
 % The second parameter |'angle'| involved in grain reconstruction is the
 % threshold misorientation angle indicating a grain boundary. By default,
@@ -65,7 +64,7 @@ grains
 hold on
 
 % plot the boundary of all grains
-plot(grains.boundary,'linewidth',1.5)
+plot(grains.boundary,'linewidth',1.5,'micronbar','off')
 
 % stop override mode
 hold off
@@ -74,13 +73,13 @@ hold off
 % 
 % Due to the gridded nature of the EBSD measurement the reconstructed grain
 % boundaries often suffer from the staircase effect. This can be reduced by
-% smoothing the grain boundaries using the command <grain2d.smooth.html
+% smoothing the grain boundaries using the command <grain2d.smoothBoundary.html
 % |smooth|>
 
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 % display the result
-plot(ebsd)
+plot(ebsd,'micronbar','off')
 hold on
 plot(grains.boundary,'linewidth',1.5)
 hold off
@@ -93,11 +92,11 @@ hold off
 mtexdata forsterite silent
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
-[grains, ebsd] = calcGrains(ebsd,'alpha',3.1,'angle',10*degree,'minPixel',3);
-grains = smooth(grains,3);
+[grains, ebsd] = calcGrains(ebsd,'alpha',6,'angle',10*degree,'minPixel',3);
+grains = smoothBoundary(grains,3);
 
 % plot the boundary of all grains
-plot(ebsd)
+plot(ebsd,'micronbar','off')
 hold on
 plot(grains.boundary,'linewidth',1.5)
 hold off
@@ -113,7 +112,7 @@ ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 [grains, ebsd] = calcGrains(ebsd,'alpha',0,'angle',10*degree);
 
 % plot the boundary of all grains
-plot(ebsd)
+plot(ebsd,'micronbar','off')
 hold on
 plot(grains.boundary,'linewidth',1.5)
 hold off
@@ -157,7 +156,7 @@ plot(ebsd,ebsd.orientations)
 % boundary below the threshold is missed - and there are many, since
 % deformation creates them.
 
-grains = smooth(calcGrains(ebsd,'angle',10*degree,'minPixel',10),5);
+grains = smoothBoundary(calcGrains(ebsd,'angle',10*degree,'minPixel',10),5);
 
 plot(ebsd,ebsd.orientations)
 hold on
@@ -170,7 +169,7 @@ hold off
 % inside the grains, and the boundaries it draws there are contour lines of
 % a smooth orientation field rather than anything physical.
 
-grains = smooth(calcGrains(ebsd,'angle',0.5*degree,'minPixel',10),5);
+grains = smoothBoundary(calcGrains(ebsd,'angle',0.5*degree,'minPixel',10),5);
 
 plot(ebsd,ebsd.orientations)
 hold on
@@ -192,7 +191,7 @@ hold off
 % aggregates - larger values separate more strictly and return more grains.
 
 grains = calcGrains(ebsd,'fmc',0.5,'minPixel',10);
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 plot(ebsd,ebsd.orientations)
 hold on
@@ -207,7 +206,7 @@ hold off
 % dislocation cells that carry the deformation.
 
 grains = calcGrains(ebsd,'fmc',1.5,'minPixel',10);
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 plot(ebsd,ebsd.orientations)
 hold on
@@ -225,12 +224,24 @@ mtexdata EMSphinx silent
 ebsd = ebsd('Iron fcc');
 
 grains = calcGrains(ebsd,'fmc',1.5,'minPixel',10)
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 plot(ebsd,ebsd.orientations)
 hold on
 plot(grains.boundary)
 hold off
+
+%% More ways to reconstruct grains
+%
+% The threshold angle and fast multiscale clustering are two of several
+% criteria by which |calcGrains| may separate neighbouring pixels, and all
+% of them are interchangeable objects. How to choose between them, how to
+% segment by a property other than the orientation, and how to write a
+% criterion of your own is the subject of
+% <GrainReconstructionAdvanced.html Advanced Grain Reconstruction>. A
+% second way of turning a criterion into grains, by clustering the map
+% instead of taking connected components, is described in
+% <GrainReconstructionMCL.html Markovian Clustering>.
 
  
 

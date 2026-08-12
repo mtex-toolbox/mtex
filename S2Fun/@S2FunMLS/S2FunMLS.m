@@ -28,11 +28,15 @@ classdef S2FunMLS < S2Fun
   %  tangent   - use monomials on the tangent plane (requires centered = true)
   %    (NOTE: centered and tangent automatically enable the monomial basis)
   %
-  %  w       - @function_handle (weight function)
-  %          - predefined choices include 'C1hat' (default), 'const', 'cos',
-  %            'hat', 'indicator', 'squared hat', 'wendland', and 'wendlandC6'
+  %  weight  - @function_handle (weight function)
+  %          - predefined choices are 'auto' (default, a degree-dependent
+  %            Wendland C6 variant), 'C1hat', 'const', 'cos', 'hat',
+  %            'indicator', 'squared hat', 'wendland', 'wendlandC6',
+  %            'wendlandSquared', and 'wendlandC6Squared'
   %  use_smooth_delta - use a smooth local support radius with about S2F.nn
   %                     neighbors at each center
+  %  candidateFactor  - KNN candidates fetched per center as a multiple of nn
+  %                     (default 2, only used with use_smooth_delta)
   %  use_vor_weights  - multiply the local weights by Voronoi areas
   %
   %  distance - metric for neighbor search (default: 'euclidean')
@@ -41,7 +45,8 @@ classdef S2FunMLS < S2Fun
   %  regularize - use goal-oriented regularization of the local systems
   %  mincond    - center-amplification threshold where regularization starts
   %  maxcond    - center-amplification threshold where full correction is used
-  %  targetcond - center amplification approached at full correction
+  %  targetcond - inverse-amplification bound at full correction;
+  %               one is the minimum-norm constant-preserving limit
   %    (The property names are retained for compatibility. They no longer refer
   %     to the ordinary condition number of the Gram matrix.)
   %
@@ -66,6 +71,7 @@ classdef S2FunMLS < S2Fun
     delta       = [];     % support radius; zero activates KNN search
 
     use_smooth_delta = true; % use a smooth local support radius
+    candidateFactor = 2;  % KNN candidates per center as a multiple of nn
 
     w           = [];     % compactly supported weight function
     distance    = 'euclidean'; % metric for neighbor search
@@ -79,7 +85,7 @@ classdef S2FunMLS < S2Fun
     regularize = true;    % use goal-oriented regularization?
     mincond = [];         % start threshold for normalized center amplification
     maxcond = [];         % full threshold for normalized center amplification
-    targetcond = [];      % amplification approached at full regularization
+    targetcond = [];      % full-strength target; one is the limiting minimum
 
     detectOutliers = false; % reduce the weight of detected outliers?
     outlierDetectionRange = 10;
@@ -224,6 +230,12 @@ classdef S2FunMLS < S2Fun
       S2F.use_smooth_delta = get_option(varargin, {'use_smooth_delta', ...
         'use smooth delta', 'smooth_delta', 'smooth delta'}, true);
 
+      % A smooth support radius is not tied to the neighbor ranking, so more
+      % than nn candidates have to be fetched per center.
+      S2F.candidateFactor = get_option(varargin, {'candidateFactor', ...
+        'candidatefactor', 'candidate factor', 'candidate_factor'}, ...
+        2, 'double');
+
       % The two auxiliary grids have different jobs. Smooth delta uses a dense
       % equispaced grid; regularization calibration uses a much smaller random grid.
       needs_auto_regularization = S2F.regularize && ...
@@ -355,6 +367,15 @@ classdef S2FunMLS < S2Fun
       end
     end
 
+    function S2F = set.candidateFactor(S2F, value)
+      if (value < 1)
+        warning(['The candidate buffer cannot be smaller than the ' ...
+          'neighborhood and has been set to 1.']);
+        value = 1;
+      end
+      S2F.candidateFactor = value;
+    end
+
     function nn = get.nn(S2F)
       nn = ceil(S2F.dim * S2F.oF);
     end
@@ -475,7 +496,6 @@ classdef S2FunMLS < S2Fun
   end
 
   methods (Static = true)
-    S2F = interpolate(varargin);
     S2F = approximate(f, varargin);
     S2F = example(varargin)
   end

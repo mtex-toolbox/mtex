@@ -11,7 +11,7 @@ mtexdata twins
 [grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',3);
 
 % smooth them
-grains = grains.smooth(5);
+grains = grains.smoothBoundary(5);
 
 % visualize the grains
 plot(grains,grains.meanOrientation)

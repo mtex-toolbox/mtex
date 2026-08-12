@@ -26,15 +26,24 @@ classdef SO3FunSBF < SO3Fun
   methods
     
     function SO3F = SO3FunSBF(sS,E)
-                      
+
       if nargin == 0, return;end
-      
+
       % get slip system
       SO3F.sS = sS;
       SO3F.E = E;
-            
+
     end
-    
+
+    function SO3F = set.E(SO3F,E)
+      SO3F.E = E;
+
+      % the strain tensor lives in the specimen reference frame - take the
+      % plotting convention from there, but do not write it into SLeft
+      % afterwards: @symmetry is a handle class, see specimenSymmetryFor
+      if isa(E,'tensor'), SO3F.SLeft = specimenSymmetryFor(E.how2plot); end
+    end
+
     function SO3F = set.SRight(SO3F,CS)
       SO3F.sS.CS = CS;
     end

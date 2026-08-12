@@ -1,8 +1,11 @@
 classdef S2BumpKernel < S2Kernel
 % The spherical Bump kernel is a radial symmetric kernel function depending
-% on the halfwidth $r\in (0,pi)$. 
-% The function value is 0, if the angle is greater then the halfwidth $r$. 
-% Otherwise it is 1.
+% on the halfwidth $r\in (0,pi)$.
+% The function value is 0, if the angle is greater then the halfwidth $r$.
+% Otherwise it is the reciprocal $\frac{2}{1-\cos r}$ of the relative area
+% of the spherical cap, so that the kernel is a density: it has mean value
+% one over the sphere and its first Legendre coefficient is |A(1) = 1|,
+% as for every other kernel in this folder.
 %
 % Syntax
 %   psi = S2BumpKernel(10*degree)
@@ -47,8 +50,12 @@ classdef S2BumpKernel < S2Kernel
     function value = eval(psi,t)
       % evaluate the kernel function at nodes x
 
-      value  = double(t > cos(psi.halfwidth));
-      
+      % the indicator of the cap, divided by the relative area of that cap
+      % so that the mean value over the sphere is one. calcFourier above
+      % evaluates the kernel, so the Legendre coefficients pick this up and
+      % A(1) comes out as one without any further scaling
+      value  = double(t > cos(psi.halfwidth)) ./ ((1-cos(psi.halfwidth))/2);
+
     end
     
   end

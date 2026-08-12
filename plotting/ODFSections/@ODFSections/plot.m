@@ -22,11 +22,10 @@ function plot(oS,varargin)
 add2all = check_option(varargin,'add2all') || ...
   (numSections(oS)>1 && length(mtexFig.children)>1);
 
-if ~isNew && add2all 
-  wasHold = ishold;
-  for axx = mtexFig.children.'  
-    hold(axx,'on');
-  end
+if ~isNew && add2all
+  % every section has to accumulate - released again when this function
+  % returns, including on the early return below
+  hG = holdOn(mtexFig.children); %#ok<NASGU>
   mtexFig.currentId = 1;
 end
 varargin = delete_option(varargin,'add2all');
@@ -152,12 +151,13 @@ uimenu(hcmenu, 'Label', 'Mark equivalent orientations', 'Callback', @markEquival
 set(dcm,'UIContextMenu',hcmenu)
 
 set(dcm,'UpdateFcn',@tooltip)
-   
-if ~isNew && add2all && ~wasHold 
-  for axx = mtexFig.children.'
-    hold(axx,'off');
-  end
-end
+
+% this function hands out handles to its nested functions as figure
+% callbacks, which keeps its workspace - and with it the guard - alive for
+% as long as the figure lives, so release it explicitly
+clear hG
+
+
 
 %end
 

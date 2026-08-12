@@ -23,6 +23,29 @@ if check_option(varargin,'noSymmetry')
   return
 end
 
+% grain exchange symmetry: a misorientation and its inverse describe the same
+% boundary, hence the distance is the smaller of the two. Only some of the
+% branches below symmetrise an operand, so the flag cannot be left to
+% symmetrise the way it is in dot_outer.
+if (isa(o1,'orientation') && o1.antipodal) || (isa(o2,'orientation') && o2.antipodal)
+
+  % the inverse of the second operand - inv swaps crystal and specimen
+  % symmetry, grain exchange does not
+  o2i = inv(o2);
+  if isa(o2,'orientation')
+    [o2i.CS,o2i.SS] = deal(o2.CS,o2.SS);
+    o2i.antipodal = false;
+    o2.antipodal = false;
+  end
+
+  % switch off the flag, otherwise the recursion does not terminate
+  if isa(o1,'orientation'), o1.antipodal = false; end
+
+  d = max(dot(o1,o2,varargin{:}),dot(o1,o2i,varargin{:}));
+  return
+
+end
+
 % extract symmetries
 if isa(o1,'orientation')
 

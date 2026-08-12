@@ -17,9 +17,6 @@
 
 import_wizard_old('ODF')
 
-%% Interpolation
-
-
 %%
 % The import wizard provides a gui to import data of almost all ASCII
 % data formats and allows to save the imported data as an ODF variable to
@@ -33,10 +30,6 @@ cs = crystalSymmetry('cubic');
 % the file name
 fname = [mtexDataPath '/ODF/odf.txt'];
 
-% TODO: write about halfwidth and the missing 1-1 relationship between ODF
-% and single orientations.
-% the resolution used for the reconstruction of the ODF
-
 % load the data
 odf = SO3Fun.load(fname,'CS',cs,'Bunge',...
   'ColumnNames',{'Euler 1','Euler 2','Euler 3','weights'});
@@ -44,15 +37,51 @@ odf = SO3Fun.load(fname,'CS',cs,'Bunge',...
 % plot data
 plot(odf,'sections',6,'silent')
 
+
+
+%% What the weights mean
+%
+% ASCII files store an ODF as a table of orientations and weights. That
+% table is *not* a complete description of a function - it fixes the ODF at
+% finitely many points and says nothing in between. Worse, the weight
+% column is ambiguous. It may either
+%
+% # give the value of the ODF at that orientation, or
+% # give the volume of a bell shaped component centered there.
+%
+% MTEX therefore has to be told which of the two is meant, and the answer
+% changes the resulting ODF.
+%
+%% Interpolation
+%
+% Reading the weights as function values is requested by the flag
+% |'interp'|, which is also the default. MTEX then fits a radial basis
+% function ODF that reproduces the given values at the given orientations.
+
+odfInterp = SO3Fun.load(fname,'CS',cs,'Bunge','interp',...
+  'ColumnNames',{'Euler 1','Euler 2','Euler 3','weights'});
+
+[norm(odfInterp)^2, max(odfInterp)]
+
 %% Density Estimation
+%
+% Reading them as component volumes is requested by |'density'|. This is
+% <DensityEstimation.html kernel density estimation> and it needs a second
+% piece of information that the file does not contain - the halfwidth of
+% the bell shaped kernel placed at each orientation.
 
-
+for hw = [5 10 20]*degree
+  odfDens = SO3Fun.load(fname,'CS',cs,'Bunge','density','halfwidth',hw,...
+    'ColumnNames',{'Euler 1','Euler 2','Euler 3','weights'});
+  fprintf('halfwidth %2d degree : texture index %.3f, maximum %.2f\n',...
+    round(hw./degree), norm(odfDens)^2, max(odfDens));
+end
 
 %%
-% So far ODFs may only exported from and imported into ASCII files that
-% consists of a table of orientations and weights. The orientations may
-% be given either as Euler angles or as quaternions. The weight may either
-% represent the value of the ODF at this specific orientation or it may
-% represent the volume of a bell shaped function centered at this
-% orientation.
+% The halfwidth is a genuine free parameter - a wide kernel smears the
+% texture out and a narrow one leaves the individual components standing.
+% There is no value that can be recovered from the file, so it has to come
+% from knowledge about how the data were produced. The section
+% <OptimalKernel.html Optimal Kernel Selection> discusses how to choose it
+% when the file holds a discrete sample of orientations.
 %

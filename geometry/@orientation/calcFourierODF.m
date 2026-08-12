@@ -34,10 +34,8 @@ function odf = calcFourierODF(ori,varargin)
 % See also
 % ebsd_demo EBSD2odf EBSDSimulation_demo EBSD/load EBSD/calcKernel kernel/kernel
 
-% maybe there is nothing to do
-if isempty(ori), odf = ODF; return, end
-
-% construct an exact kernel ODF
+% construct an exact kernel ODF - this is also where an empty list, or one
+% of nothing but nan orientations, becomes the uniform ODF
 odf = calcKernelODF(ori,varargin{:},'exact');
 
 % get bandwidth

@@ -9,10 +9,10 @@
 mtexdata testgrains silent
 
 % select and smooth a few interesting grains
-grains = smooth(grains('id',[2 3 9 11 15 16 18 23 31 33 38 40]),3);
+grains = smoothBoundary(grains('id',[2 3 9 11 15 16 18 23 31 33 38 40]),3);
 
 %%
-% <grain2d.smooth.html Smoothing> of grains is necessary since otherwise
+% <grain2d.smoothBoundary.html Smoothing> of grains is necessary since otherwise
 % many grain segments are either vertical or horizontal (for a square grid)
 % and perimeters rather measure the "cityblock" distance. See also
 % <https://t.co/1vQ3SR8noy?amp=1> for examples. Note, that for very small

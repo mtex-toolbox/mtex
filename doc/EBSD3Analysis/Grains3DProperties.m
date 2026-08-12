@@ -6,14 +6,16 @@
 %
 % || |numPixel| || number of pixels per grain || <grain3d.volume.html |volume|> || volume in µm³ || 
 % || |numFaces| || number boundary elements per grain || <grain3d.surface.html |surface|>  || surface area in µm² || 
-% || <grain3d.diameter.html |diameter|>  || diameter in µm || |caliper|  || not yet implemented ||
-% || <grain3d.equivalentSurface.html |equivalentSurface|>  || perimeter of a circle with the same area || <grain2d.equivalentRadius.html |equivalentRadius|>  || radius of a circle with the same area || 
-% || <grain3d.shapeFactor.html |shapeFactor|>  || perimeter / equivalent perimeter || <grain2d.isBoundary.html |isBoundary|>  || is it a boundary grain ||
-% || <grain3d.hasHole.html |hasHole|>  || TODO  || <grain3d.isInclusion.html |isInclusion|>  || TODO  ||
+% || <grain3d.diameter.html |diameter|>  || diameter in µm || <grain3d.principalComponents.html |principalComponents|>  || the principal axes ||
 % || <grain3d.numNeighbors.html |numNeighbors|>  || number neighboring grains  || <grain3Boundary.grain3Boundary.html |boundary|>  || list of  boundary faces ||
-% || |grains.V| || vertices || <grain3d.centroid.html |centroid|>  || the geometric center || 
+% || |grains.V| || vertices || <grain3d.centroid.html |centroid|>  || the geometric center ||
 %
-%% 
+% A couple of shape parameters that <grain2d.grain2d.html |grain2d|>
+% provides have no three dimensional counterpart yet, namely |caliper|,
+% |equivalentRadius|, |equivalentPerimeter|, |shapeFactor|, |isBoundary|,
+% |hasHole| and |isInclusion|.
+%
+%%
 % We start our discussion by importing some sample data set of three
 % dimensional grains
 
@@ -115,8 +117,8 @@ hold off
 %
 % || |area| || area in µm² || |N| || normal direction ||
 % || |diameter| || diameter in µm || |perimeter| || perimeter in µm ||
-% || |curvature|  || TODO || 
-% || |grainId| || neighboring grain ids || |misorientation| || misorientation || 
+% || |centroid| || the geometric center || |grainId| || neighboring grain ids ||
+% || |misorientation| || misorientation across the face || || ||
 %
 % Let us first visualize the grain boundary normals
 
@@ -134,6 +136,7 @@ plot(grains.boundary('indexed'),...
 
 setCamera(plottingConvention.default3D)
 colorbar('location','southoutside')
+%
 
 %%
 

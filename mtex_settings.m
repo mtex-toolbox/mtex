@@ -49,6 +49,10 @@ setMTEXpref('showMicronBar','on')
 % whether to show or not to show a coordinates on EBSD maps
 setMTEXpref('showCoordinates','off')
 
+% whether to indicate the alignment of the specimen reference frame within
+% the micronbar of EBSD maps
+setMTEXpref('showRefFrame','on')
+
 % how to annotate pole figure plots
 % the following line add X and Y to the plot
 % you may want to replace this by 'RD' and 'ND'
@@ -62,6 +66,10 @@ setMTEXpref('pfAnnotations',pfAnnotations);
 % default spacing between multiple plots
 setMTEXpref('outerPlotSpacing',10);
 % setMTEXpref('innerPlotSpacing',10);
+
+% default spacing between a plot and a legend besides it
+% (defaults to innerPlotSpacing)
+% setMTEXpref('legendSpacing',10);
 
 % possible methods for Voronoi tessellation: matlab, qhull, jcvoronoi
 setMTEXpref('voronoiMethod','jcvoronoi');

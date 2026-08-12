@@ -47,8 +47,11 @@ F = halfQuadraticFilter;
 ebsd = smooth(ebsd,F,'fill',grains);
 
 %% Computing the WBV
-% The function expects the EBSD data set to be <EBSD.gridify.html
-% gridified>.
+% The default integral method is a moving window over the map, so it needs
+% the data in matrix form and gridifies internally if it is not. Doing it
+% explicitly here keeps |ebsd| and the results in the same shape for the
+% plots below. The |'gradient'| method used at the end of this page has no
+% such requirement - see there.
 
 ebsd = ebsd.gridify;
 wbv = weightedBurgersVec(ebsd)
@@ -65,7 +68,7 @@ mtexTitle('norm of the WBV')
 % In order to visualize the direction of the WBV in specimen coordinates,
 % we can use a directional color key.
 
-cK = HSVDirectionKey;
+cK = HSVDirectionKey(wbv);
 plot(ebsd,cK.direction2color(wbv),'FaceAlpha',wbv.norm/0.22)
 mtexTitle('direction of the WBV in specimen coordinates')
 
@@ -166,11 +169,14 @@ mtexColorbar
 % sharper, because there is less scatter in the WBV over larger areas.
 %%
 % Finally, we look at the weighted Burgers vector computed using the
-% gradient method and the denoised data.
+% gradient method and the denoised data. Unlike the integral method above,
+% this one is computed on the virtual lattice and needs no grid at all - it
+% works on a plain @EBSD, on a phase subset, and on rotated or sheared
+% grids. |ebsd| happens to be gridified here, which changes nothing.
 
 wbv = weightedBurgersVec(ebsd,'gradient');
 
-cK = HSVDirectionKey(specimenSymmetry('1'));
+cK = HSVDirectionKey(wbv);
 plot(ebsd,cK.direction2color(wbv),'FaceAlpha',wbv.norm/0.2)
 mtexTitle('WBV direction / gradient' )
 

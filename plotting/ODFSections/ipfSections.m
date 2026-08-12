@@ -93,11 +93,11 @@ classdef ipfSections < ODFSections
         'parent',ax,varargin{:},'doNotDraw');
 
       if ~check_option(varargin,'noGrid')
-        hold on
+        hG = holdOn(ax); %#ok<NASGU>
         S2G = equispacedS2Grid(oS.sR,'resolution',7.5*degree);
         vF = oS.vectorField(S2G,oS.omega(sec));
         h(end+1) = quiver(S2G,vF,'parent',ax,'doNotDraw','color',0.7*[1 1 1],'HitTest','off');
-        hold off
+        clear hG
       end
     end
     

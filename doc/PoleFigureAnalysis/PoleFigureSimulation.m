@@ -5,6 +5,7 @@
 % pole figure to ODF reconstruction routines. Let us start with a model ODF
 % given as the superposition of 6 components.
 
+plottingConvention.default('y↑→x');
 cs = crystalSymmetry('orthorhombic');
 mod1 = orientation.byAxisAngle(xvector,45*degree,cs);
 mod2 = orientation.byAxisAngle(yvector,65*degree,cs);

@@ -80,8 +80,7 @@ for j = 1:numel(sP)
 
   % ----------------- draw contours ------------------------------
 
-  washold = ishold(sP(j).ax);
-  hold(sP(j).ax,'on')
+  hG = holdOn(sP(j).ax); %#ok<NASGU>
 
   % project data
   [x,y] = project(sP(j).proj,S2G,'noAntipodal');
@@ -91,16 +90,20 @@ for j = 1:numel(sP)
 
   % plot contours
   h = [h,betterContourf(sP(j).ax,x,y,data,contours,varargin{:})]; %#ok<AGROW>
-  
-  if ~washold, hold(sP(j).ax,'off'); end
-  
+
+  clear hG
+
   % --------------- finalize the plot ---------------------------
 
   % adjust clim according to colorRange
   if ~any(isnan(colorRange)) && diff(colorRange)>0
     clim(sP(j).ax,colorRange); 
   end
-  if check_option(varargin,'log'), sP(j).ax.ColorScale = 'log'; end
+  % both spellings, as in optionplot and setColorRange - the flag documented
+  % on plotPDF, plotIPDF and plotSection is the long one
+  if check_option(varargin,{'logarithmic','log'})
+    sP(j).ax.ColorScale = 'log';
+  end
 
   % colormap
   if ~strcmpi(get_option(varargin,'fill'),'off')

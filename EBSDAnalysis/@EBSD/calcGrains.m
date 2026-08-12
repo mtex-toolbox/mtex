@@ -31,13 +31,12 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %  angle    - misorientation angle that indicates a grain boundary
 %  minPixel - minimum number of pixels that form a grain
 %  alpha    - fill distances into not indexed regions
+%  soft     - [angle delta] soft threshold instead of a hard one
 %  fmc       - fast multiscale clustering method
 %  mcl       - Markovian clustering algorithm
 %  custom    - use a custom property for grain separation
 %
 % Flags
-%  unitCell - omit Voronoi decomposition and treat a unitcell lattice
-%  qhull    - use qHull for the Voronoi decomposition
 %  verbose  - report what the criterion did, if it has anything to say -
 %             currently only |'fmc'|, which prints its cluster hierarchy
 %  delaunay - use a true circumradius-based alpha-complex (exact, not a
@@ -58,7 +57,7 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %   Ultramicroscopy, 2013, 133:16-25>.
 %
 % See also
-% GrainReconstruction GrainReconstructionAdvanced
+% GrainReconstruction GrainReconstructionAdvanced GrainReconstructionMCL
 
 % TODO: we have to rotate everything to xy plane to do the reconstruction
 
@@ -71,6 +70,8 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 % returned a different segmentation without saying so.
 if check_option(varargin,{'fmc','FMC'})
   gbc = getClass(varargin,'grainBoundaryCriterion',gbcFMC(varargin{:}));
+elseif check_option(varargin,'soft')
+  gbc = getClass(varargin,'grainBoundaryCriterion',gbcSoft(varargin{:}));
 else
   gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
 end
@@ -131,7 +132,7 @@ phaseId(phaseId==0) = 1; % why this is needed?
 [I_FDext, I_FDint, Fext, Fint] = calcBoundary;
 
 if check_option(varargin,'removeQuadruplePoints')
-  [qAdded,qPairs] = removeQuadruplePoints;
+  [qAdded,qPairs,qF] = removeQuadruplePoints;
 end
 
 % setup grains
@@ -300,11 +301,12 @@ end
   end
 
 
-  function [qAdded,qPairs] = removeQuadruplePoints
+  function [qAdded,qPairs,qF] = removeQuadruplePoints
 
     quadPoints = accumarray(reshape(Fext(full(any(I_FDext,2)),:),[],1),1) == 4;
     qAdded = 0;
     qPairs = zeros(0,2);
+    qF = zeros(0,2);
 
     if ~any(quadPoints), return; end
       
@@ -380,7 +382,10 @@ end
     newBd = full(sum(I_DG(iqD(:,1),:) .* I_DG(iqD(:,2),:),2)) == 0;
 
     % add new edges
-    Fext = [Fext; [quadPoints(newBd),newVid(newBd)]];
+    % qF identifies them by their vertex pair, which survives any later
+    % reordering of the segments - see mergeQuadrupleGrains
+    qF = [quadPoints(newBd),newVid(newBd)];
+    Fext = [Fext; qF];
     qAdded = sum(newBd);
 
     % pixel pairs adjacent to each newly added boundary edge, in the same
@@ -405,9 +410,23 @@ end
     connect = gbc.eval(ebsd,qPairs(:,1),qPairs(:,2));
     toMerge = connect > 0;
 
-    gB = grains.boundary; gB = gB(end-qAdded+1:end);
+    % Find the added segments by their vertex pair, not by row position.
+    % removeQuadruplePoints appends them to the end of Fext, but the
+    % grainBoundary constructor sorts every segment into chain walk order,
+    % so gB(end-qAdded+1:end) stopped selecting them - it merged whichever
+    % segments happened to land last instead, destroying real boundary.
+    % The constructor permutes rows and may flip the two columns of a row,
+    % but never renumbers vertices, so a sorted vertex pair identifies a
+    % segment uniquely and reordering cannot break it.
+    gB = grains.boundary;
+    [found,loc] = ismember(sort(qF,2),sort(gB.F,2),'rows');
 
-    [grains, parentId] = merge(grains,gB(toMerge));
+    assert(all(found),'MTEX:calcGrains:quadruplePoint',...
+      ['%d of %d segments added by removeQuadruplePoints were not found ' ...
+      'in the grain boundary - the merge step cannot identify them'], ...
+      nnz(~found),numel(found));
+
+    [grains, parentId] = merge(grains,gB(loc(toMerge)));
 
     % update I_DG
     I_PC = sparse(1:length(parentId),parentId,1);

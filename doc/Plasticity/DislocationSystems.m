@@ -87,21 +87,19 @@ a = norm(cs.aAxis);
 %
 % $$ U_{\mathrm{screw}} = \frac{Gb^2}{4\pi} \ln \frac{R}{r_0} $$
 %
-% $$ U_{\mathrm{edge}} = (1-\nu) U_{\mathrm{screw}} $$
+% $$ U_{\mathrm{edge}} = \frac{1}{(1-\nu)} U_{\mathrm{screw}} $$
 %
 % where
-% 
-% * |G| is 
+%
+% * |G| is the shear modulus
 % * |b| is the length of the Burgers vector
 % * |nu| is the Poisson ratio
-% * |R|
-% * |r|
+% * |R| is the outer cut off radius
+% * |r_0| is the radius of the dislocation core
 %
-% In this example we assume 
-% 
-% R = 
-% r_0 = 
-% U = norm(dS.b).^2
+% In this example we assume
+% $$ U_{\mathrm{edge}} = 1 $$
+% $$ U_{\mathrm{screw}} = 1-\nu $$
 
 nu = 0.3;
 
@@ -109,12 +107,13 @@ nu = 0.3;
 dS(dS.isEdge).u = 1;
 
 % energy of the screw dislocations
-dS(dS.isScrew).u = 1 - 0.3;
+dS(dS.isScrew).u = 1 - nu;
 
-% Question to everybody: what is the best way to set the energy? I found
-% different formulae
-%
-% E = 1 - poisson ratio
-% E = c * G * |b|^2,  - G - Schubmodul / Shear Modulus Energy per (unit length)^2
+%%
+% There is no single accepted way of setting these energies. Formulae in use
+% include |U = 1 - nu| as above, and |U = c * G * |b|^2| with |G| the shear
+% modulus, i.e. an energy per unit length squared. Which one is appropriate
+% depends on the model you are comparing against, so |u| is left for you to
+% set rather than being fixed by MTEX.
 
 %#ok<*NASGU>

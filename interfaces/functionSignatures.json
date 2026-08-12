@@ -232,7 +232,8 @@
 {
     "inputs":
     [
-      {"name":"fname", "kind":"required", "type":["file=*.dream3d"]}
+      {"name":"fname", "kind":"required", "type":["file=*.dream3d"]},
+      {"name":"noOrientFaces", "kind":"flag", "type":["choices={'noOrientFaces'}"], "purpose":"keep the face winding stored in the file"}
     ]
 },
 

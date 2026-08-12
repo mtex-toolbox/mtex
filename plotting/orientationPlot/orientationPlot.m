@@ -115,21 +115,51 @@ classdef orientationPlot < handle
         end
       end
 
+      MarkerSize = get_option(varargin,'MarkerSize',getMTEXpref('markerSize'));
+      Marker = get_option(varargin,'Marker','o');
+
+      % markers are drawn as scatter objects - only those support
+      % MarkerFaceAlpha / MarkerEdgeAlpha and they are at least as fast as
+      % patches. Lines (option 'edgecolor') remain patches since a scatter
+      % object can not connect its points.
+      isLine = check_option(varargin,'edgecolor');
+
+      % marker transparency
+      if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
+        alphaArgs = {...
+          'MarkerFaceAlpha',get_option(varargin,{'MarkerAlpha','MarkerFaceAlpha'},1),...
+          'MarkerEdgeAlpha',get_option(varargin,{'MarkerAlpha','MarkerEdgeAlpha'},1)};
+      else
+        alphaArgs = {};
+      end
+
       % colorize according to data
       if ~isempty(data)
-        h = patch(x(:),y(:),z(:),1,...
-          'facevertexcdata',data,...
-          'markerfacecolor','flat',...
-          'markeredgecolor','flat',...
-          'FaceColor','none',...
-          'EdgeColor','none',...
-          'MarkerSize',get_option(varargin,'MarkerSize',getMTEXpref('markerSize')),...
-          'Marker',get_option(varargin,'Marker','o'),...
-          'parent',oP.ax);
+
+        if isLine
+          h = patch(x(:),y(:),z(:),1,...
+            'facevertexcdata',data,...
+            'markerfacecolor','flat',...
+            'markeredgecolor','flat',...
+            'FaceColor','none',...
+            'EdgeColor','none',...
+            'MarkerSize',MarkerSize,...
+            'Marker',Marker,...
+            'parent',oP.ax);
+        else
+          hG = holdOn(oP.ax); %#ok<NASGU>
+          coi = oP.ax.ColorOrderIndex;
+          h = scatter3(x(:),y(:),z(:),MarkerSize.^2,data,'filled',...
+            'MarkerEdgeColor','flat','Marker',Marker,'parent',oP.ax,alphaArgs{:});
+          oP.ax.ColorOrderIndex = coi; % the color comes from the data
+          clear hG
+        end
 
       else
         % colorize with a specified color
-        if ~check_option(varargin,{'MarkerColor','MarkerFaceColor','data','MarkerEdgeColor','EdgeColor'})
+        ownColor = check_option(varargin,...
+          {'MarkerColor','MarkerFaceColor','data','MarkerEdgeColor','EdgeColor'});
+        if ~ownColor
           [~,c] = nextstyle(gca,true,true,~ishold(gca));
           varargin = [{'MarkerEdgeColor',c},varargin];
         end
@@ -137,53 +167,40 @@ classdef orientationPlot < handle
         if check_option(varargin,'filled'), MFC = MEC; else, MFC = 'none'; end
         MFC = str2rgb(get_option(varargin,{'MarkerFaceColor','MarkerColor'},MFC));
   
-        h = patch(x(:),y(:),z(:),1,...
-          'FaceColor','none',...
-          'EdgeColor','none',...
-          'MarkerFaceColor',MFC,...
-          'MarkerEdgeColor',MEC,...
-          'MarkerSize',get_option(varargin,'MarkerSize',getMTEXpref('markerSize')),...
-          'Marker',get_option(varargin,'Marker','o'),...
-          'parent',oP.ax);
-  
-        optiondraw(h,varargin{:});
-        
-        if ~check_option(varargin,'edgecolor')
-          set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
-        
-          % since the legend entry for patch object is not nice we draw an
-          % invisible scatter dot just for legend
-          if check_option(varargin,'DisplayName')
-            holdState = get(oP.ax,'nextPlot');
-            set(oP.ax,'nextPlot','add');
-            optiondraw(scatter([],[],'parent',oP.ax,'MarkerFaceColor',MFC,...
-              'MarkerEdgeColor',MEC),varargin{:});
-            set(oP.ax,'nextPlot',holdState);
-          end
+        if isLine
+          h = patch(x(:),y(:),z(:),1,...
+            'FaceColor','none',...
+            'EdgeColor','none',...
+            'MarkerFaceColor',MFC,...
+            'MarkerEdgeColor',MEC,...
+            'MarkerSize',MarkerSize,...
+            'Marker',Marker,...
+            'parent',oP.ax);
+        else
+          hG = holdOn(oP.ax); %#ok<NASGU>
+          coi = oP.ax.ColorOrderIndex;
+          h = scatter3(x(:),y(:),z(:),MarkerSize.^2,...
+            'MarkerFaceColor',MFC,'MarkerEdgeColor',MEC,'Marker',Marker,...
+            'parent',oP.ax,alphaArgs{:});
+
+          % hold puts the axes into the color cycling mode, where every
+          % object created takes the next color and does not give it back.
+          % A marker drawn in a color of its own must not consume one -
+          % otherwise plot(R,'MarkerColor','red') leaves the quiver that
+          % follows the second color. Only a color taken from the color
+          % order above is meant to be consumed.
+          if ownColor, oP.ax.ColorOrderIndex = coi; end
+          clear hG
         end
 
-        % add transparency if required
-        if check_option(varargin,{'MarkerAlpha','MarkerFaceAlpha','MarkerEdgeAlpha'})
+        optiondraw(h,varargin{:});
         
-          faceAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerFaceAlpha'},1));
-          edgeAlpha = round(255*get_option(varargin,{'MarkerAlpha','MarkerEdgeAlpha'},1));
-        
-          % we have to wait until the marks have been drawn
-          mh = [];
-          while isempty(mh)
-            pause(0.01);
-            mh = [h.MarkerHandle];
-          end
-                
-          for j = 1:length(mh)
-            mh(j).FaceColorData(4,:) = faceAlpha; %#ok<AGROW>
-            mh(j).FaceColorType = 'truecoloralpha'; %#ok<AGROW>
-            
-            mh(j).EdgeColorData(4,:) = edgeAlpha; %#ok<AGROW>
-            mh(j).EdgeColorType = 'truecoloralpha'; %#ok<AGROW>
-          end
+        % scatter objects have a proper legend entry - show it only if a
+        % DisplayName was requested
+        if ~isLine && ~check_option(varargin,'DisplayName')
+          set(get(get(h,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
         end
-        
+
       end
 
       if nargout == 0, clear h;end

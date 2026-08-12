@@ -26,7 +26,7 @@ theta = linspace(0,pi,20);
 [theta,rho] = meshgrid(theta,rho);
 
 
-holdSate = ishold;
+hG = holdOn(gca); %#ok<NASGU>
 
 h = gobjects(size(center));
 for k = 1:length(center)
@@ -44,10 +44,9 @@ for k = 1:length(center)
   h(k) = optiondraw(surf(v.x,v.y,v.z,'FaceColor',str2rgb(localColor),...
     'EdgeAlpha',0.25), varargin{:});
   h(k).Annotation.LegendInformation.IconDisplayStyle = 'off';
-  hold on;
 
 end
-hold(holdSate);
+clear hG
 
 axis equal tight
 fcw

@@ -19,10 +19,10 @@ mtexdata forsterite silent
 
 grains(grains.isBoundary) = [];
 
-grains = smooth(grains('indexed'),10,'moveTriplePoints');
+grains = smoothBoundary(grains('indexed'),10,'moveTriplePoints');
 
 % plot the grains
-plot(grains,'micronbar','off','lineWidth',2)
+plot(grains,'lineWidth',2)
 
 %% Fit Ellipses
 %

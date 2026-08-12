@@ -106,7 +106,7 @@ hold off
 % key let us first separate the EBSD into grains.
 
 [grains,ebsd] = calcGrains(ebsd,'angle',1.5*degree,'minPixel',3);
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 %%
 % In order to apply the @axisAngleColorKey we need to specify the crystal

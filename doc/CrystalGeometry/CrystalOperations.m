@@ -1,6 +1,10 @@
 %% Operations on Crystal Directions
 %
 %%
+
+plottingConvention.default('y↑→x');
+
+%%
 % In this section we discuss basic operations with lattice directions and
 % lattice planes. Lets start by importing and plotting a simulated Quartz
 % Kikuchi pattern

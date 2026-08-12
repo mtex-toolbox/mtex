@@ -20,6 +20,16 @@ function [pf,varargin] = loadPoleFigure_generic(fname,varargin)
 %
 % Input
 %  fname - file name (text files only)
+%  h     - @Miller crystal direction (optional)
+%
+% Description
+%
+% Without |h| the crystal direction is guessed from the file name, which
+% only works if the file is named after its reflection. A name that carries
+% any other number, e.g. a measurement id as in |110F-Creuz426sym.sum|, may
+% be read as a superposition of several crystal directions and give a pole
+% figure that cannot be inverted. Pass the direction whenever the file name
+% is not purely the reflection.
 %
 % Options
 %  ColumnNames       - content of the columns to be imported
@@ -34,9 +44,18 @@ function [pf,varargin] = loadPoleFigure_generic(fname,varargin)
 %        'ColumnNames',{'polar angle','azimuth angle','intensity'},...
 %        'Columns',[1 2 3])
 %
+%   % state the crystal direction instead of guessing it from the file name
+%   pf = loadPoleFigure_generic(fname,Miller(1,1,0,cs),'HEADER',21,'degree',...
+%        'ColumnNames',{'polar angle','azimuth angle','intensity'},...
+%        'Columns',[1 2 3])
+%
 % See also
 % ImportPoleFigureData loadPoleFigure
 
+% an explicitly given crystal direction wins over the guess from the file
+% name. Take it out of the list as well - Miller is a vector3d, and the
+% specimen directions below are detected by class.
+[h,varargin] = getClass(varargin,'Miller');
 
 % load data
 [d,varargin,header,columns] = load_generic(fname,varargin{:});
@@ -72,8 +91,8 @@ if size(d,2)>15 || ...
   end
   
   % crystal direction
-  h = string2Miller(fname);
-  
+  if isempty(h), h = string2Miller(fname); end
+
   pf = PoleFigure(h,r,d,crystalSymmetry('cubic'));
   
   return
@@ -103,7 +122,7 @@ opt    = loader.getOptions('ignoreColumns','Intensity');
 assert(numel(I)>=5,'To few data points'); %???
 
 % crystal direction
-h = string2Miller(fname);
+if isempty(h), h = string2Miller(fname); end
 
 pf = PoleFigure(h,r,I,'options',opt,varargin{:});
 

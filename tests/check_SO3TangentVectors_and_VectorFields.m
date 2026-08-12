@@ -1,3 +1,21 @@
+% NOT CONVERTED YET - this file asserts nothing and is not collected by
+% runTests (it is at tests/ root, not in a tier folder).
+%
+% It is the last of the conversions planned in the tests/ refactor and it is
+% BLOCKED: line 60, norm(g1.div - g1.div('check')), throws
+% "Index in position 2 exceeds array bounds" - see
+% https://github.com/mtex-toolbox/mtex/issues/2587. Because every check here
+% is a bare norm(...) printed for a human, the file has been dying there
+% silently, so everything after line 60 - the five quadrature variants,
+% interpolate, and the whole SO3VectorFieldRBF section - has never run.
+%
+% Measured values of the sections that DO run, for whoever converts this:
+% the left/right/constructor and eval checks come out exactly 0, the four
+% curl norms all come out 1.1419e-09, and the two div comparisons give 0 and
+% 5.5e-14. So the tolerances are there to be had; the blocker is #2587.
+%
+% Owner once converted: core/check_SO3TangentVectors, per tests/CLAUDE.md.
+
 clear
 
 

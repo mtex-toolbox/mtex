@@ -42,9 +42,9 @@ end
 
 % test
 % mtexdata forsterite
-% [grains,ebsd.grainId] =ebsd.calcGrains;
+% [grains,ebsd] = ebsd.calcGrains;
 % ebsd(grains(grains.numPixel<50))=[];
-% [grains,ebsd.grainId] =ebsd.calcGrains;
+% [grains,ebsd] = ebsd.calcGrains;
 % outerBoundary_id = any(grains.boundary.grainId==0,2);
 % grain_id = grains.boundary(outerBoundary_id).grainId;
 % grain_id(grain_id==0) = [];

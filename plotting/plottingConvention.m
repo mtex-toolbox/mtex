@@ -6,6 +6,13 @@ classdef plottingConvention < matlab.mixin.Copyable
 %   pC = plottingConvention(outOfScreen,east)
 %   plot(ebsd,pC)
 %
+%   % specify a custom plotting convention by a string - each axis is
+%   % followed or preceded by the direction it points to on screen
+%   pC = plottingConvention('y↑→x')  % y points up, x points to the right
+%   pC = plottingConvention('x←↑y')  % x points to the left, y points up
+%   pC = plottingConvention('z⊙→x')  % z points out of screen, x right
+%   pC = plottingConvention('y^->x') % same as 'y↑→x', ASCII arrows
+%
 %   % changing the default plotting convention - note that the default has
 %   % to be modified in place, plottingConvention.default.east = yvector
 %   % would replace it and detach all data that refers to it
@@ -16,8 +23,9 @@ classdef plottingConvention < matlab.mixin.Copyable
 %   ebsd.how2plot = pC
 %
 % Input
-%  outOfScreen - @vector3d 
+%  outOfScreen - @vector3d
 %  east        - @vector3d
+%  str         - char, e.g. 'y↑→x', see <plottingConvention.plottingConvention.html the syntax above>
 %
 % Output
 %  pC - @plottingConvention
@@ -45,7 +53,9 @@ classdef plottingConvention < matlab.mixin.Copyable
 
     function pC = plottingConvention(outOfScreen,east)
 
-      if nargin == 1
+      if nargin == 1 && (ischar(outOfScreen) || isstring(outOfScreen))
+        pC.rot = str2rot(outOfScreen);
+      elseif nargin == 1
         pC.rot = rotation.map(zvector,outOfScreen);
       elseif nargin == 2
         pC.rot = rotation.map(zvector,outOfScreen,xvector,east);
@@ -297,40 +307,6 @@ classdef plottingConvention < matlab.mixin.Copyable
 
     end
 
-    function plot(pC, varargin)
-
-      ax = get_option(varargin,'parent');
-      if isempty(ax), ax = gca; end
-
-      delta(1) = diff(ax.XLim);
-      delta(2) = diff(ax.YLim);
-      delta(3) = diff(ax.ZLim);
-      delta = get_option(varargin,'delta',median(delta)/20);
-
-      
-      ref = vector3d(700,60,0);
-
-      frame = get_option(varargin,'frame',vector3d.byXYZ(eye(3)));
-      frame = delta * frame.normalize;
-
-      labels = get_option(varargin,'labels',{'X','Y','Z'});
-
-      hold on
-      for k = 1:length(frame)
-        
-        u = frame(k);
-        if abs(dot(pC.outOfScreen,u))>delta*(1-1e-3), continue; end
-        
-        optiondraw(quiver3(ref.x,ref.y,ref.z,u.x,u.y,u.z,0,...
-          "filled",'LineWidth',1.5,'ShowArrowHead','on','Color','black','MaxHeadSize',3),varargin{:});
-
-        tpos = ref + 1.3*u;
-        text(tpos.x,tpos.y,tpos.z,labels{k},'FontSize',getMTEXpref('FontSize'))
-      end
-      hold off
-
-    end
-
   end
 
   methods (Static=true)
@@ -342,8 +318,16 @@ classdef plottingConvention < matlab.mixin.Copyable
     end
     
     function pC = default(pC)
-      
+      % get or set the default plotting convention
+      %
+      % Syntax
+      %   pC = plottingConvention.default      % the current default
+      %   plottingConvention.default(pC)       % make pC the default
+      %   plottingConvention.default('y↑→x')   % same by a string
+      %
+
       if nargin == 1 % new default
+        if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
         ss = specimenSymmetry(pC);
         ss.makeDefault;
       else
@@ -513,6 +497,100 @@ classdef plottingConvention < matlab.mixin.Copyable
     end
 
   end
+
+end
+
+function rot = str2rot(str)
+% translate a string like 'y↑→x' into the corresponding rotation
+%
+% The string consists of axis names x,y,z and arrows describing where these
+% axes point to on screen - this is exactly the format printed by
+% <plottingConvention.char>. Each arrow belongs to the axis next to it, no
+% matter whether it comes before or after it, i.e. 'y↑→x', 'y↑x→' and
+% '↑y→x' all describe the same convention. Two axes are needed to fix the
+% alignment, a single one leaves the remaining rotation about it undefined
+% and is completed by the smallest possible rotation.
+
+str = char(str);
+
+% ASCII replacements for the arrows - note that <- has to be resolved
+% before the remaining minus signs are read as sign changes
+str = strrep(str,'->','→');
+str = strrep(str,'<-','←');
+str = strrep(str,'^','↑');
+str = strrep(str,'v','↓');
+str = strrep(str,'V','↓');
+str(isspace(str)) = [];
+
+xyz = 'xyz';
+refDir = [vector3d.X, vector3d.Y, vector3d.Z];
+
+arrows = '←→↑↓⊗⊙';
+screenDir = [-vector3d.X, vector3d.X, vector3d.Y, -vector3d.Y, ...
+  -vector3d.Z, vector3d.Z];
+
+% split the string into axis and screen direction tokens
+isAxis = false(size(str)); vec = vector3d.nan(size(str)); s = 1; n = 0;
+for k = 1:length(str)
+
+  if str(k) == '-', s = -s; continue; end
+
+  ind = find(str(k) == xyz);
+  if ~isempty(ind)
+    n = n+1; isAxis(n) = true; vec(n) = s * refDir(ind); s = 1;
+    continue
+  end
+
+  ind = find(str(k) == arrows);
+  if isempty(ind)
+    error('MTEX:plottingConvention',['Can not interpret ''%s'' as a plotting ' ...
+      'convention - unknown symbol ''%s''. Use axis names x,y,z and the ' ...
+      'arrows ←→↑↓⊗⊙ (or <- -> ^ v), e.g. ''y↑→x''.'],str,str(k));
+  end
+  n = n+1; isAxis(n) = false; vec(n) = screenDir(ind);
+
+end
+isAxis = isAxis(1:n); vec = vec(1:n);
+
+% pair each axis with the arrow next to it
+pair = zeros(0,2); open = 0;
+for k = 1:n
+  if open == 0
+    open = k;
+  elseif isAxis(open) ~= isAxis(k)
+    pair(end+1,:) = [open,k]; open = 0; %#ok<AGROW>
+  else % two axes or two arrows in a row - nothing to pair them with
+    open = -1; break
+  end
+end
+
+if open ~= 0 || isempty(pair)
+  error('MTEX:plottingConvention',['Can not interpret ''%s'' as a plotting ' ...
+    'convention - every axis needs an arrow next to it, e.g. ''y↑→x''.'],str);
+end
+if size(pair,1) > 2
+  error('MTEX:plottingConvention',['Can not interpret ''%s'' as a plotting ' ...
+    'convention - at most two axes may be specified.'],str);
+end
+
+% sort each pair into (screen direction, reference direction)
+sD = vector3d.nan(1,size(pair,1)); rD = sD;
+for k = 1:size(pair,1)
+  ind = pair(k,:);
+  if isAxis(ind(1)), ind = fliplr(ind); end
+  sD(k) = vec(ind(1)); rD(k) = vec(ind(2));
+end
+
+if length(sD) == 1
+  rot = rotation.map(sD,rD);
+else
+  if abs(dot(sD(1),sD(2))) > 1e-6 || abs(dot(rD(1),rD(2))) > 1e-6
+    error('MTEX:plottingConvention',['Can not interpret ''%s'' as a plotting ' ...
+      'convention - the two axes as well as the two screen directions have ' ...
+      'to be perpendicular to each other.'],str);
+  end
+  rot = rotation.map(sD(1),rD(1),sD(2),rD(2));
+end
 
 end
 

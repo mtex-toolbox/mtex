@@ -42,7 +42,7 @@ beta2alpha = orientation.Burgers(ebsd(betaName).CS,ebsd(alphaName).CS)
 
 % reconstruct grains
 [grains,ebsd] = calcGrains(ebsd,'threshold',1.5*degree,'removeQuadruplePoints');
-grains = smooth(grains,1,'moveTriplePoints');
+grains = smoothBoundary(grains,1,'moveTriplePoints');
 
 % plot all alpha pixels
 region = [299 401 440 500];
@@ -317,7 +317,7 @@ plot(parentEBSD(betaName),ipfKey.orientation2color(parentEBSD(betaName).orientat
 [parentGrains,parentEBSD] = calcGrains(parentEBSD,'angle',5*degree,'minPixel',15);
 
 % smooth the grains a bit
-parentGrains = smooth(parentGrains,5);
+parentGrains = smoothBoundary(parentGrains,5);
 
 %%
 % Finally, we denoise the remaining beta orientations and at the same time

@@ -22,6 +22,12 @@ function [h,mP] = plot(grains,varargin)
 %  region      - [xmin, xmax, ymin, ymax] of the plotting region 
 %  scale       - scaling of crystal shapes and tensorial properties (0.3)
 %  micronBar   - 'on' / 'off'
+%  refFrame    - 'on' / 'off' - indicate the alignment of the specimen
+%                 reference frame inside the scale bar box, see
+%                 <scaleBar.html scaleBar>
+%  refFrameDirs   - @vector3d, the directions to indicate
+%                    (default xvector, yvector, zvector)
+%  refFrameLabels - cell of char, their labels (default {'x','y','z'})
 %
 % See also
 % EBSD/plot grainBoundary/plot
@@ -85,16 +91,16 @@ if nargin>1 && isnumeric(varargin{1})
     
     % plot polygons
     h = gobjects(max(property));
+    hG = holdOn(mP.ax); %#ok<NASGU>
     for k = 1:max(property)
       h{k} = plotFaces(grains.poly(property==k), grains.allV, ind2color(k),...
         'parent', mP.ax,varargin{:},'DisplayName',legendNames{k});
-      
+
       % reactivate legend information
       h{k}.Annotation.LegendInformation.IconDisplayStyle = 'on';
-      
-      hold on
+
     end
-    hold off
+    clear hG
   
   else % % plot polygons
 
@@ -187,10 +193,10 @@ end
 
 % we have to plot grain boundary individually
 if plotBoundary
-  hold on
+  hG = holdOn(mP.ax); %#ok<NASGU>
   hh = plot(grains.boundary,varargin{:});
-  hh(1).Annotation.LegendInformation.IconDisplayStyle = 'off';  
-  hold off
+  hh(1).Annotation.LegendInformation.IconDisplayStyle = 'off';
+  clear hG
 end
   
 if check_option(varargin,'DisplayName') 
@@ -213,6 +219,11 @@ if isNew
   
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
+
+% crystal shapes and tensorial properties stick out of the map plane, which
+% makes MATLAB sort the axes children by depth - tell the scale bar to move
+% in front of them
+mP.micronBar.setOnTop
 
 % allow change of aspect ratio only for single figures
 if ~isstruct(mtexFig)
@@ -269,9 +280,9 @@ end
 % remember new selection
 idSelected(localId) = ~idSelected(localId);
 if idSelected(localId)
-  hold on
+  hG = holdOn(gca); %#ok<NASGU>
   handleSelected{localId} = plot(grain.boundary,'lineColor','w','linewidth',4);
-  hold off
+  clear hG
 end
 
 txt{1} = ['grainId = '  num2str(unique(grain.id))];

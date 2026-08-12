@@ -19,6 +19,34 @@ if check_option(varargin,'noSymmetry')
   return
 end
 
+% grain exchange symmetry: a misorientation and its inverse describe the same
+% boundary. Below, only the operand that ends up being symmetrised carries
+% its flag into symmetrise, and which one that is depends on the input
+% lengths - so the inversion is taken care of here, once, for all branches.
+if (isa(o1,'orientation') && o1.antipodal) || (isa(o2,'orientation') && o2.antipodal)
+
+  % the inverse of the second operand - inv swaps crystal and specimen
+  % symmetry, grain exchange does not
+  o2i = inv(o2);
+  if isa(o2,'orientation')
+    [o2i.CS,o2i.SS] = deal(o2.CS,o2.SS);
+    o2i.antipodal = false;
+    o2.antipodal = false;
+  end
+
+  % switch off the flag, otherwise the recursion does not terminate
+  if isa(o1,'orientation'), o1.antipodal = false; end
+
+  if check_option(varargin,'all')
+    % the equivalent orientations include the inverted ones
+    d = cat(3,dot_outer(o1,o2,varargin{:}),dot_outer(o1,o2i,varargin{:}));
+  else
+    d = max(dot_outer(o1,o2,varargin{:}),dot_outer(o1,o2i,varargin{:}));
+  end
+  return
+
+end
+
 % get symmetries and ensure both arguments are at least rotations
 if isa(o1,'orientation')
   if isa(o2,'orientation') && o1.CS.Laue ~= o2.CS.Laue

@@ -39,7 +39,7 @@ prop = ['    polynomial degree: ', num2str(S2F.degree), ...
       '\n    weight function: ', char(S2F.w)];
 
 if S2F.use_vor_weights, prop=[prop,'\n    Voronoi-weights: true']; end
-if S2F.use_smooth_delta, prop=[prop,'\n    smoohted delta(x): true']; end
+if S2F.use_smooth_delta, prop=[prop,'\n    smoothed delta(x): true']; end
 if S2F.centered, prop=[prop,'\n    centered: true']; end
 if S2F.tangent, prop = [prop,'\n    tangent: true']; end
 if S2F.regularize, prop = [prop,'\n    regularize: true']; end

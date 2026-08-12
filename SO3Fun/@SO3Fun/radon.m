@@ -15,8 +15,14 @@ function S2F = radon(SO3F,h,r,varargin)
 %  S2F - @S2FunHarmonic
 %
 
+% an option in the position of r belongs to varargin
+if nargin<3
+  r = [];
+elseif ischar(r) || isstring(r)
+  varargin = [{r},varargin]; r = [];
+end
+
 % S2Fun in h or r?
-if nargin<3, r = []; end
 
 if isempty(r)
   isPF = true;

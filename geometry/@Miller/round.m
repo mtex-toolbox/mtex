@@ -1,24 +1,41 @@
-function h = round(h,varargin)
+function [h,err] = round(h,varargin)
 % tries to round miller indizes to greatest common divisor
 %
 % Syntax
 %   h = round(h)
 %   h = round(h,'maxHKL',5)
+%   h = round(h,'uvw')
+%   [h,err] = round(h)
 %
 % Input
 %  h - @Miller
 %
 % Output
 %  h - @Miller
+%  err - angle between the original and the rounded Miller indices
 %
 % Options
 %  maxHKL - maximum value of Miller indices
+%  hkl, hkil, uvw, UVTW - convention to round with respect to, by default
+%    the display convention of h is used
+%
+% Description
+% For trigonal and hexagonal lattices the three and the four index notation
+% are not integer at the same time, e.g. UVTW = (1,3,-4,8) corresponds to
+% uvw = (5,7,8)/3. Which of them is rounded is decided by the convention
+% option.
 %
 
 % ignore xyz case
-if h.dispStyle == MillerConvention.xyz, return; end
+if h.dispStyle == MillerConvention.xyz, err = zeros(size(h)); return; end
 
+hOld = h;
 sh = size(h);
+
+% round with respect to the convention given as an option - remember the
+% display convention as setting the coordinates below overwrites it
+dispStyle = h.dispStyle;
+h.dispStyle = get_flag(varargin,{'hkl','hkil','uvw','UVTW'},dispStyle);
 
 mOld = h.coordinates;
 
@@ -49,4 +66,11 @@ h = h .* multiplier;
 % now round
 h.coordinates = round(h.coordinates);
 
+% restore the display convention
+h.dispStyle = dispStyle;
+
 h = reshape(h,sh);
+
+% the deviation caused by rounding - with respect to the rounded indices
+% themselves, hence ignoring symmetrically equivalent directions
+if nargout == 2, err = angle(hOld,h,'noSymmetry'); end

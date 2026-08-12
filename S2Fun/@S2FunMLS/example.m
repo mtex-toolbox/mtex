@@ -1,5 +1,5 @@
 function sF = example(varargin)
-% Construct example for an S2FunTri.
+% Construct an example for an S2FunMLS.
 
       odf = SantaFe;
       v = equispacedS2Grid('points',1000);

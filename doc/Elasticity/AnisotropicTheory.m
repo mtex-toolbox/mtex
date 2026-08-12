@@ -1,5 +1,6 @@
 %% Anisotropic Elasticity
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 % The linear theory of elasticity in anisotropic materials is essentially
 % based on the fourth order stiffness tensor |C|. Such a tensor is
@@ -118,7 +119,15 @@ axis off
 mtexColorbar
 
 %% Shear Modulus
-% The shear modulus is TODO
+% The shear modulus $G$ relates a shear stress to the resulting shear
+% strain. It depends on two directions - the normal $\vec h$ of the shear
+% plane and the shear direction $\vec u$ within that plane - and is given
+% in terms of the compliance tensor $S = C^{-1}$ by
+%
+% $$ G = \frac{1}{4\, S_{ijkl}\, h_i u_j h_k u_l}. $$
+%
+% Passing both directions to
+% <stiffnessTensor.shearModulus.html |shearModulus|> gives a number
 
 % shear plane
 n = Miller(0,0,1,cs);
@@ -129,6 +138,10 @@ d = Miller(1,0,0,cs);
 G = C.shearModulus(n,d)
 
 %%
+% Omitting the shear direction leaves a spherical function which, like the
+% Poisson ratio above, is only meaningful within the shear plane. Hence it
+% is again plotted as a section - here for three different shear planes.
+
 newMtexFigure('layout',[1,3])
 
 % shear plane

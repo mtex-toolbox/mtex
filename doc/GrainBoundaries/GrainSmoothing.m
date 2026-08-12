@@ -1,118 +1,166 @@
 %% Grain Boundary Smoothing
 %
 %%
-% EBSD data is usually acquired on a regular grid. Hence, even over a finite
-% number of grid points, all possible grain boundary directions can not be 
-% uniquely represented.  One way of overcoming this problem - and also
-% allowing to compute grid-independent curvatures and grain boundary
-% directions - is the interpolation of grain boundary coordinates using 
-% <grain2d.smooth.html |grains.smooth|>.
+% EBSD data is measured on a regular grid, so a grain boundary comes out of
+% <EBSD.calcGrains.html |calcGrains|> as a staircase of pixel edges. Every
+% segment runs along one of the grid axes, whatever direction the boundary
+% actually has - which means the boundary is too long, its direction is
+% quantized to a few values, and its curvature is meaningless.
 %
-% Proper smoothing has an influence on measures such as total grain
-% boundary length, grain boundary curvature, triple point angles or grain
-% boundary directions among others.
-% 
-% While we used <grain2d.smooth.html |grains.smooth|> before, here we will
-% illustrate the different options.
- 
+% <grain2d.smoothBoundary.html |smoothBoundary|> repairs this.
+
 mtexdata csl
 [grains, ebsd] = ebsd.calcGrains('minPixel',3);
- 
-% the data was acquired on a regular grid;
-plot(ebsd,ebsd.orientations,'micronbar','off')
+
+grainsSmooth = smoothBoundary(grains,5);
+
+plot(grainsSmooth,grainsSmooth.meanOrientation,'micronbar','off')
+
+%%
+% This page is about using it. How it works, and the full list of algorithms
+% it can use, is in <GrainSmoothingAdvanced.html Smoothing Algorithms>.
+
+%% What it does
+% Three things, in this order: the staircase is removed, the boundary is
+% resampled at even spacing, and only then is it smoothed. The first two are
+% not cosmetic - smoothing a staircase directly just makes a finer staircase.
+%
+% Seen on a few grains, against the measured boundary in grey:
+
+plot(grains.boundary,'linewidth',4,'linecolor','LightGray','micronbar','off')
 hold on
-plot(grains.boundary('indexed'),'linewidth',5,'linecolor','YellowGreen')
+plot(grainsSmooth.boundary,'linewidth',2,'linecolor','Fuchsia')
 hold off
 axis([313 353 140 156])
 
+%%
+% The staircase overestimates the length of a boundary running at 45 degree by
+% |sqrt(2)|, so the total boundary length drops by something of that order
+
+lenRaw    = sum(grains.boundary('indexed').segLength);
+lenSmooth = sum(grainsSmooth.boundary('indexed').segLength);
+
+fprintf(['total boundary length: %.0f %s measured, %.0f %s smoothed' ...
+  ' - %.0f%% shorter\n'], lenRaw, grains.scanUnit, lenSmooth, ...
+  grains.scanUnit, 100*(1-lenSmooth/lenRaw))
 
 %%
-% With the default parameters we have the following result
+% and the distribution of boundary directions stops being a pair of spikes at
+% 0 and 90 degree
 
-% smooth the grains with default parameters
-grains_smooth = smooth(grains);
- 
-hold on
-plot(grains_smooth.boundary('indexed'),'linewidth',2)
-hold off
+figure
+subplot(1,2,1)
+histogram(grains.boundary('indexed').direction, ...
+  'weights',grains.boundary('indexed').segLength,180)
+subplot(1,2,2)
+histogram(grainsSmooth.boundary('indexed').direction, ...
+  'weights',grainsSmooth.boundary('indexed').segLength,180)
 
- 
-%%
-% The grain boundary boundaries look now a little bit more smooth and the
-% total grain boundary length is reasonable reduced.
- 
-sum(grains.boundary('indexed').segLength)
-sum(grains_smooth.boundary('indexed').segLength)
- 
-%%
-% However, if we look at the frequency distribution of grain boundary
-% segments, we find that some angle are over-represented which is due to
-% the fact that without any additional input argument, <grain2d.smooth.html
-% |grains.smooth|> performs just a single iteration
-
-histogram(grains_smooth.boundary('indexed').direction, ...
-  'weights',grains_smooth.boundary('indexed').segLength,180)
-
-%% Effect of smoothing iterations
-% If we specify a larger number of iterations, we can see that the scatting
-% around 0 and 90 degree decreases.
+%% How much to smooth
+% The second argument is the number of smoothing iterations. More of it means
+% a smoother boundary, and the scatter around the grid directions keeps
+% falling - but see the warning about shrinkage below before turning it up.
 
 iter = [1 5 10 25];
 color = copper(length(iter)+1);
-plot(grains.boundary,'linewidth',1,'linecolor','Fuchsia','micronbar','off')
-d={};
+
+plot(grains.boundary,'linewidth',1,'linecolor','LightGray','micronbar','off')
 for i = 1:length(iter)
-  grains_smooth = smooth(grains,iter(i));
   hold on
-  plot(grains_smooth.boundary('i','i'),'linewidth',2,'linecolor',color(i,:))
-  d{i} = grains_smooth.boundary('i','i').direction;
+  plot(smoothBoundary(grains,iter(i)).boundary('i','i'), ...
+    'linewidth',2,'linecolor',color(i,:))
 end
 hold off
 axis([313 353 140 156])
 
-%%
-% We can compare the histogram of the grain boundary directions of the
-% entire map.
-
-figure
-for i=1:length(d)
-  subplot(2,2,i)
-  histogram(d{i}, 'weights',norm(d{i}),180)
-end
-
-%%
-% Note that we are still stuck with many segments at 0 and 90 degree
-% positions which is due to the boundaries in question being too short for
-% the sample size to deviate from the grid.
+%% Which algorithm - the short version
+% The smoothing step itself can be done in several ways, and the choice is
+% made by passing a <boundaryFilter.html |boundaryFilter|>. For
+% practical work there are two that matter.
 %
-% <grain2d.smooth.html |grains.smooth|> usually keeps the triple junction
-% positions locked. However, sometimes it is necessary (todo) to allow
-% triple junctions to move.
- 
-plot(grains.boundary,'linewidth',1,'linecolor','Fuchsia')
-for i = 1:length(iter)
-  grains_smooth = smooth(grains,iter(i),'moveTriplePoints');
-  hold on
-  plot(grains_smooth.boundary('i','i'),'linewidth',2,'linecolor',color(i,:))
-  d{i} = grains_smooth.boundary('i','i').direction;
-end
+% *Use the default* if the smoothed boundary is for plotting, or for measuring
+% directions and lengths. It is a Laplacian, it is fast, and it is what
+% |smoothBoundary(grains,5)| selects without being asked.
+%
+% *Use <taubinFilter.html |taubinFilter|> if grain areas or shape
+% parameters matter.* A Laplacian shrinks - every iteration pulls a convex
+% region inwards and nothing bounds how far. Taubin follows each smoothing
+% pass by a slightly larger unshrinking one, which stops the drift.
+
+ref = smoothBoundary(grains,0);      % simplified and resampled, not smoothed
+A0 = ref.area;
+big = A0 > 10*median(grains.boundary.segLength)^2;
+A0 = A0(big);
+
+aL = smoothBoundary(grains,25).area;               aL = aL(big);
+aT = smoothBoundary(grains,taubinFilter(25)).area; aT = aT(big);
+
+fprintf('grain area after 25 iterations\n')
+fprintf(['  laplaceFilter (default) %+6.2f%% on average,' ...
+  ' %+6.1f%% for the worst grain\n'], ...
+  100*mean((aL-A0)./A0), 100*min((aL-A0)./A0))
+fprintf(['  taubinFilter            %+6.2f%% on average,' ...
+  ' %+6.1f%% for the worst grain\n'], ...
+  100*mean((aT-A0)./A0), 100*min((aT-A0)./A0))
+
+%%
+% On a small grain the difference is visible - the Laplacian in magenta cuts
+% inside the measured staircase, Taubin in blue follows it.
+
+A = grains.area;
+[~,id] = min(abs(A - 30));
+c = grains(id).centroid;
+
+plot(grains.boundary,'linewidth',4,'linecolor','LightGray','micronbar','off')
+hold on
+plot(smoothBoundary(grains,25).boundary,'linewidth',2.5,'linecolor','Fuchsia')
+plot(smoothBoundary(grains,taubinFilter(25)).boundary, ...
+  'linewidth',2.5,'linecolor','DodgerBlue')
+hold off
+axis([c.x-12 c.x+12 c.y-12 c.y+12])
+
+%%
+% There is a third option worth knowing about.
+% <curvatureFilter.html |curvatureFilter|> replaces the
+% iteration count by a *length* - the wavelength that gets damped to half
+% amplitude. Detail finer than it is removed, detail coarser survives. Since
+% it is a length it means the same thing whatever step size the map was
+% measured at, so results stay comparable between scans.
+
+F = curvatureFilter;
+F.smoothingLength = 4;      % in the units of the map, here um
+
+plot(grains.boundary,'linewidth',4,'linecolor','LightGray','micronbar','off')
+hold on
+plot(smoothBoundary(grains,F).boundary,'linewidth',2.5,'linecolor','Orange')
 hold off
 axis([313 353 140 156])
 
 %%
-% Comparing the grain boundary direction histograms shows that we
-% suppressed the gridding effect even a little more.
+% <huberFilter.html |huberFilter|> exists for faceted materials -
+% it keeps genuine corners sharp instead of rounding them off. It is not a
+% good default, see <GrainSmoothingAdvanced.html Smoothing Algorithms>.
 
-figure
-for i=1:length(d)
-   subplot(2,2,i)
-   histogram(d{i}, 'weights',norm(d{i}),180)
-end
+%% When to switch the first two steps off
+% Removing the staircase and resampling change the number of boundary
+% segments, and a resampled segment no longer runs between one specific pair
+% of pixels. So wherever |gB.ebsdId| is read per segment - to look up the
+% orientations on either side of a boundary, for instance - both steps have to
+% be off
+
+grainsPlain = smoothBoundary(grains,5,'noSimplify','noRefine');
+
+fprintf(['boundary segments: %d measured, %d after smoothing, ' ...
+  '%d with both steps off\n'], length(grains.boundary), ...
+  length(grainsSmooth.boundary), length(grainsPlain.boundary))
 
 %%
-% Be careful since this allows small grains to shrink with increasing
-% number of smoothing iterations
-%
-% Todo: different smoothing algorithms and 2nd order 
+% Only the last keeps one segment per pixel edge, and therefore one valid
+% |ebsdId| pair per segment.
+
+%% Triple points
+% Triple and quadruple points are held fixed, so which grains touch, and
+% where, never changes. Pass |'moveTriplePoints'| to let them move as well.
+% Be careful with it: it is what allows a small grain to shrink away.
 
  %#ok<*SAGROW>

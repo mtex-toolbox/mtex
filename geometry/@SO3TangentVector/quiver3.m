@@ -33,12 +33,12 @@ end
 % project tangential vectors to 3d space
 [x2,y2,z2] = oP.project(exp(tV));
 
-wasHold = ishold(gca); hold(gca,'on');
+hG = holdOn(gca); %#ok<NASGU>
 
 % scale to the correct length
 h = optiondraw(quiver3(x1,y1,z1,x2-x1,y2-y1,z2-z1),varargin{:});
 
-if ~wasHold, hold(gca,'off'); end
+clear hG
 
 if nargout == 0, clear h; end
 

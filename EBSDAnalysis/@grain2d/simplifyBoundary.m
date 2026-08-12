@@ -20,13 +20,15 @@ function grains = simplifyBoundary(grains,varargin)
 %
 % Input
 %  grains  - @grain2d
-%  epsilon - tolerance in EBSD units (default: half the median segment length)
+%  epsilon - tolerance in EBSD units (default: the median segment length over
+%            sqrt(2), which is exactly how far a staircase can stray from the
+%            straight line it approximates)
 %
 % Output
 %  grains - @grain2d
 %
 % See also
-% grainBoundary/simplify grain2d/reduceBoundary grain2d/refineBoundary grain2d/smooth
+% grainBoundary/simplify grain2d/reduceBoundary grain2d/refineBoundary grain2d/smoothBoundary
 
 % both boundaries have to be coarsened before either of them may drop a
 % vertex the other one still uses, so collect the shared vertices first

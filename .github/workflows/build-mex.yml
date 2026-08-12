@@ -1,0 +1,184 @@
+name: build mex
+
+# Builds the mex files MTEX compiles from its own sources on every platform
+# MTEX ships binaries for, so that they no longer have to be produced by hand
+# on whichever machine a developer happens to own. The binaries are uploaded
+# as artifacts; committing them back into mex/ stays a deliberate manual step.
+#
+# Not built here: the NFFT family (nfftmex, nfsftmex, nfsoftmex, fptmex and
+# the lib* on macOS). Those come precompiled from the NFFT project, need
+# autotools and FFTW rather than a plain mex call, and change essentially
+# never - they are vendored artifacts, not part of this build.
+#
+# Licensing: matlab-actions/setup-matlab licenses MATLAB automatically for
+# public repositories on GitHub hosted runners. A private repository, or a
+# self hosted runner, needs a MathWorks batch licensing token supplied to the
+# action instead.
+
+# GitHub Actions does not support YAML anchors, so the two path lists below
+# have to be kept in step by hand.
+on:
+  # Cutting a release is what puts the binaries where users can reach them:
+  # check_mex downloads them from the release assets, since an Actions
+  # artifact needs an authenticated API call and a user's MATLAB has no token.
+  #
+  # makeRelease.m leaves the release a draft and then dispatches this with the
+  # tag, so that the release only becomes visible once every platform's
+  # binaries are attached to it - otherwise anyone installing in the minutes
+  # between the two would get a failed download.
+  #
+  # Deliberately not "on: release". A draft fires no release event at all, and
+  # the publish step below would fire one, starting a second full build.
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Draft release to attach the binaries to, then publish (empty = only build)'
+        required: false
+        default: ''
+  pull_request:
+    paths:
+      - '**.c'
+      - '**.cc'
+      - '**.cpp'
+      - '**.h'
+      - '**.hpp'
+      - 'mex/mex_install.m'
+      - 'tests/check_mexComplete.m'
+      - '.github/scripts/buildMex.m'
+      - '.github/actions/build-mex/action.yml'
+      - '.github/workflows/build-mex.yml'
+  push:
+    branches: [develop, master]
+    paths:
+      - '**.c'
+      - '**.cc'
+      - '**.cpp'
+      - '**.h'
+      - '**.hpp'
+      - 'mex/mex_install.m'
+      - 'tests/check_mexComplete.m'
+      - '.github/scripts/buildMex.m'
+      - '.github/actions/build-mex/action.yml'
+      - '.github/workflows/build-mex.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  # All four platforms gate the release: it is published only once every one of
+  # them has attached its binaries.
+  build:
+    name: ${{ matrix.ext }}
+    runs-on: ${{ matrix.os }}
+
+    # needed by the release upload; every other trigger only reads
+    permissions:
+      contents: write
+
+    strategy:
+      # one platform failing must not cancel the others - a missing binary on
+      # one target is exactly the situation this workflow exists to surface
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            ext: mexa64
+            products: ''
+          # MATLAB does not detect the Visual Studio that ships on the Windows
+          # runner - the first run failed all 20 files with "Supported compiler
+          # not detected" - so MinGW is installed alongside it. The product
+          # name is the mpm spelling and is release specific; for R2024b it
+          # covers Fortran too.
+          - os: windows-latest
+            ext: mexw64
+            products: MATLAB_Support_for_MinGW-w64_C/C++/Fortran_Compiler
+          # Apple silicon
+          - os: macos-14
+            ext: mexmaca64
+            products: ''
+          # Intel macOS. Not macos-13: that label has left GitHub's runner
+          # images, so a job asking for it is never scheduled at all - it
+          # queued for over an hour and a half twice before this was found.
+          # macos-15-intel is a real x86_64 host, is available on the free
+          # plan, and builds in about the same time as the Windows runner.
+          #
+          # Two things will end this: MathWorks has said R2025b is the last
+          # release supporting Intel Macs, and GitHub keeps retiring the Intel
+          # images. If the runner goes first, MATLAB R2023a - the last release
+          # with no Apple silicon build - installs on an Apple silicon runner
+          # under Rosetta 2 and produces mexmaci64 there; verified 2026-08-08,
+          # see the probe/intel-mac branch history.
+          - os: macos-15-intel
+            ext: mexmaci64
+            products: ''
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/build-mex
+        with:
+          ext: ${{ matrix.ext }}
+          products: ${{ matrix.products }}
+          release_tag: ${{ github.event.inputs.release_tag }}
+          github_token: ${{ github.token }}
+
+  # Only once every platform has attached its binaries does the release
+  # stop being a draft. No "if: always()" on purpose: if one of them failed,
+  # the release stays a draft rather than going out half built - publish it by
+  # hand once you have decided the missing platform is acceptable.
+  publish:
+    name: publish the release
+    needs: build
+    if: github.event.inputs.release_tag != ''
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: publish
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release edit "${{ github.event.inputs.release_tag }}" \
+            --draft=false --repo "$GITHUB_REPOSITORY"
+
+  collect:
+    name: collect all platforms
+    needs: build
+    # runs even when a platform failed, so the binaries that did build are
+    # still downloadable in one piece
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: mex-*
+          merge-multiple: true
+          path: mex
+
+      - name: summarize
+        shell: bash
+        run: |
+          {
+            echo '## mex binaries built'
+            echo
+            echo '| file | mexa64 | mexw64 | mexmaca64 | mexmaci64 |'
+            echo '|---|---|---|---|---|'
+            for name in $(ls mex | sed 's/\.mex[a-z0-9]*$//' | sort -u); do
+              row="| \`$name\` |"
+              for ext in mexa64 mexw64 mexmaca64 mexmaci64; do
+                if [ -f "mex/$name.$ext" ]; then row="$row yes |"; else row="$row — |"; fi
+              done
+              echo "$row"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mex-all-platforms
+          path: mex
+          if-no-files-found: error
+          retention-days: 30

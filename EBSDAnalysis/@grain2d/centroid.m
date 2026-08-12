@@ -69,6 +69,8 @@ else % the same algorithm in 2d
 
 end
 
+c.how2plot = grains.how2plot;
+
 end
 
 % some test code

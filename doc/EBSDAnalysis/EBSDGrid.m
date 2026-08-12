@@ -11,9 +11,15 @@
 %
 % On the other hand, there are certain functions that are only available or
 % much faster for gridded data. Those functions include <EBSDPlotting.html
-% plotting>, <EBSDGradient.html gradient computation> and
-% <EBSDDenoising.html denoising>. The key command to make MTEX aware of
-% EBSD data on a hexagonal or square grid is <EBSD.gridify.html |gridify|>.
+% plotting> and <EBSDDenoising.html denoising>, and gridded data can be
+% handed to image processing and registration tools directly, as a matrix.
+% The key command to make MTEX aware of EBSD data on a hexagonal or square
+% grid is <EBSD.gridify.html |gridify|>.
+%
+% <EBSDGradient.html Gradient computation> used to be on that list and is
+% not any more: it, and everything built on it, is computed on the virtual
+% lattice that <EBSD.lattice.html |lattice|> derives from the unit cell, so
+% it works on arbitrarily aligned data like almost everything else.
 %
 % In order to explain the corresponding concept in more detail lets import
 % some sample data.
@@ -64,9 +70,11 @@ ebsdMg = ebsd('Magnesium').gridify
 plot(ebsdMg(50:100,5:100),ebsdMg(50:100,5:100).orientations)
 
 %% The Gradient
-% Data on a square or hexagonal grid has the additional advantage to allow
-% the computation of the orientations gradient, the incomplete Nye tensor,
-% as well the weighted Burgers vector.
+% The orientation gradient, the incomplete Nye tensor and the weighted
+% Burgers vector are computed on the virtual lattice and therefore do not
+% require a grid - |EBSD(ebsdMg).gradientX| gives the same answer as the
+% gridded form below. A grid does not hurt either, so we simply continue
+% with the map we already have.
 
 gradX = ebsdMg.gradientX;
 

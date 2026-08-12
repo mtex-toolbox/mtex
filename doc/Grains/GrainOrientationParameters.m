@@ -15,7 +15,7 @@ mtexdata ferrite silent
 % compute grains
 [grains, ebsd] = calcGrains(ebsd,'threshold',7.5*degree,'minPixel',5);
 ebsd = ebsd.project2FundamentalRegion;
-grains = smooth(grains,5);
+grains = smoothBoundary(grains,5);
 
 % plot the data
 plot(ebsd, ebsd.orientations)
@@ -45,7 +45,7 @@ ori = ebsd(grainSel).orientations
 % |grain.meanOrientation| which has been filled with the mean orientations
 % during grain reconstruction.
 
-plot(grains, grains.meanOrientation)
+plot(grains, grains.meanOrientation,'micronbar','off')
 
 %% Misorientation to the grain mean orientation
 %
@@ -79,7 +79,7 @@ mis2mean = calcGROD(ebsd, grains)
 GOS = ebsd.grainMean(mis2mean.angle, grains);
 
 % plot it
-plot(grains, GOS ./ degree)
+plot(grains, GOS ./ degree,'micronbar','off')
 mtexColorbar('title','GOS in degree')
 
 %%
@@ -96,7 +96,7 @@ mtexColorbar('title','GOS in degree')
 MGOS = ebsd.grainMean(mis2mean.angle, grains, @max);
 
 % plot it
-plot(grains, MGOS ./ degree)
+plot(grains, MGOS ./ degree,'micronbar','off')
 mtexColorbar('title','MGOS in degree')
 
 %% Grain average misorientation (GAM)
@@ -109,7 +109,7 @@ mtexColorbar('title','MGOS in degree')
 
 gam = ebsd.grainMean(ebsd.KAM, grains);
 
-plot(grains,gam./degree)
+plot(grains,gam./degree,'micronbar','off')
 mtexColorbar('title','GAM in degree')
 setColorRange([0,3])
 
@@ -157,7 +157,8 @@ f.h
 % We can see that the dispersion of directions is minimal for those
 % parallel to |f.r| respectively |f.h|. 
 hold on
-plot(ebsd(grainSel).orientations.*f.h,'MarkerSize',2,'all','MarkerFaceColor','k','antipodal')
+plot(ebsd(grainSel).orientations.*f.h,'MarkerSize',2,'all',...
+  'MarkerFaceColor','k','antipodal','micronbar','off')
 hold off
 %%
 % The second output argument |lambda| are the eigenvalues of the
@@ -196,15 +197,15 @@ end
 % clearly see how the fit is related to the third largest eigenvalue
 % $\lambda_2$.
 
-plot(grainsLarge,lambda(:,3))
+plot(grainsLarge,lambda(:,3),'micronbar','off')
 mtexTitle('$\lambda_3$')
 
 nextAxis(1,2)
-plot(grainsLarge,lambda(:,2))
+plot(grainsLarge,lambda(:,2),'micronbar','off')
 mtexTitle('$\lambda_2$')
 
 nextAxis(1,3)
-plot(grainsLarge,fit./degree)
+plot(grainsLarge,fit./degree,'micronbar','off')
 mtexTitle('fit')
 
 %%
@@ -233,7 +234,7 @@ hold off
 color = cKey.direction2color(GAX_C);
 
 % plot the colored grains
-plot(grainsLarge, color)
+plot(grainsLarge, color,'micronbar','off')
 
 %% 
 % *The crystal dispersion axes in specimen coordinates*
@@ -245,11 +246,11 @@ plot(grainsLarge, color)
 % entirely gray if in the plane and get divided into black and white to
 % indicate which end points out of the plane and which into the plane.
 
-plot(grains, GOS./degree)
+plot(grains, GOS./degree,'micronbar','off')
 mtexColorbar('title','GOS in degree')
 
 hold on
-plot(grainsLarge, GAX_S)
+plot(grainsLarge, GAX_S,'micronbar','off')
 hold off
 
 %%

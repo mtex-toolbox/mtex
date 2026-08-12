@@ -193,7 +193,7 @@ classdef crystalShape
 
       % compute grains
       grains = calcGrains(ebsd);
-      grains = smooth(grains,4);
+      grains = smoothBoundary(grains,4);
 
       % plot the grain boundary
       plot(grains.boundary,'micronbar','off','figSize','large')

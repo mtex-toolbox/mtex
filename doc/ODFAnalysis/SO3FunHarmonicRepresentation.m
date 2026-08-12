@@ -95,7 +95,50 @@ plot(odf,'sections',6,'silent','sigma')
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 
 
-%% TODO: Add some non ODF example for an SO3Fun
+%% Harmonic representation of a general SO3Fun
 %
-%
+% Nothing in the harmonic representation requires the function to be an
+% ODF. Any function on the rotation group can be expanded, and the
+% expansion is computed by <SO3FunHarmonic.quadrature.html |quadrature|>.
+% As an example we take the misorientation angle to a fixed orientation,
+% which is a perfectly ordinary function on SO(3) but is neither
+% non negative nor normalized.
+
+cs = crystalSymmetry('432');
+oriRef = orientation.byEuler(30*degree,50*degree,10*degree,cs);
+
+f = SO3FunHandle(@(ori) angle(ori,oriRef)./degree,cs)
+
+%%
+% Its harmonic approximation of bandwidth 32 is
+
+fHarm = SO3FunHarmonic.quadrature(f,'bandwidth',32)
+
+%%
+% and it reproduces the original function reasonably well away from the
+% cusp at |oriRef|
+
+rng(0)
+ori = orientation.rand(1000,cs);
+
+max(abs(f.eval(ori) - fHarm.eval(ori)))
+
+%%
+% The reason for the sizeable error is visible in the decay of the Fourier
+% coefficients - the function is continuous but not differentiable at
+% |oriRef| and at the boundary of the fundamental region, so its
+% coefficients decay only slowly and truncation is felt everywhere.
+
+close all
+plotSpektra(fHarm)
+
+%%
+% This is the general rule stated above, seen from the other side: the
+% smoother the function, the faster its Fourier coefficients decay and the
+% lower the bandwidth needed to represent it.
+
+plotSection(fHarm,'sigma')
+mtexColorbar('title','misorientation angle in degree')
+
+%#ok<*NOPTS>
 

@@ -19,7 +19,7 @@ function dmn = Wigner_d_recursion(varargin)
 %         or cell-array of all Wigner-d matrices up to harmonic degree L
 %
 % Example
-%   Wigner_d_recursion(WignerD(pi/2,4),Wigner_D(pi/2,3),pi/2)
+%   Wigner_d_recursion(WignerD(pi/2,4),WignerD(pi/2,3),pi/2)
 %   Wigner_d_recursion(pi/2,64)
 %
 

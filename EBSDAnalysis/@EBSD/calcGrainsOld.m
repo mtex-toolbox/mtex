@@ -79,7 +79,7 @@ if minPixel > 1
 
     % if we are later going to use the alphaShape algorithm we should 
     % temporarily remove not indexed pixels here
-    if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')      
+    if isa(ebsd,'EBSDgrid')      
       toRemove = ~ebsd.isIndexed(:);
     else
       toRemove = false(numel(pos),1);
@@ -111,7 +111,7 @@ end
 
 % subdivide the domain into cells according to the measurement locations,
 % i.e. by Voronoi tessellation or unit cell
-if isa(ebsd,'EBSDsquare') || isa(ebsd,'EBSDhex')
+if isa(ebsd,'EBSDgrid')
   [V,F,I_FD] = spatialDecompositionAlpha(ebsd,varargin{:});
 else
   [V,F,I_FD] = spatialDecomposition([pos.x(:), pos.y(:)],ebsd.unitCell,varargin{:});

@@ -109,17 +109,23 @@ classdef pfSections < ODFSections
     function h = plotSection(oS,ax,sec,v,data,varargin)
 
       % plot data
-      h = plot(v,data{:},oS.sR,'TR',[int2str(oS.omega(sec)./degree),'^\circ'],...
+      % a section is a pole figure of h1, split up by the omega angle,
+      % hence it lives in the reference frame of SS - passing it makes the
+      % plot annotate itself with the specimen directions the way pole
+      % figures do. For misorientations SS is a crystal symmetry, the
+      % sections then show crystal directions and are labelled by their
+      % Miller indices instead
+      h = plot(v,data{:},oS.sR,oS.SS,'TR',[int2str(oS.omega(sec)./degree),'^\circ'],...
         'parent',ax,varargin{:},'doNotDraw');
 
       if ~check_option(varargin,'noGrid')
-        wasHold = ishold(ax);
-        hold(ax,'on');
+        hG = holdOn(ax); %#ok<NASGU>
         r = equispacedS2Grid(oS.sR,'resolution',15*degree);
         vF = oS.vectorField(r,oS.omega(sec));
         h(end+1) = quiver(r,vF,'parent',ax,'doNotDraw','color',0.7*[1 1 1],'HitTest','off');
-        if ~wasHold, hold(ax,'off'); end
+        clear hG
       end
+
     end
     
     function h = quiverSection(oS,ax,sec,v,data,varargin)

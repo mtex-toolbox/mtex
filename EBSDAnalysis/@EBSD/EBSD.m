@@ -99,8 +99,13 @@ classdef EBSD < phaseList & dynProp & dynOption
         ebsd.unitCell = pos.unitCell;
         ebsd.scanUnit = pos.scanUnit;
         ebsd.A_D = pos.A_D;
+        % same rule as the general constructor below: a map shaped property
+        % is flattened along with pos, while a genuine N x k one (multi
+        % channel image data) keeps its columns
         for fn = fieldnames(pos.prop)'
-          ebsd.prop.(char(fn))= pos.prop.(char(fn))(:);
+          p = pos.prop.(char(fn));
+          if ~(size(p,2) > 1 && size(p,1) == length(pos)), p = p(:); end
+          ebsd.prop.(char(fn)) = p;
         end
         ebsd.opt = pos.opt;
 
@@ -116,23 +121,39 @@ classdef EBSD < phaseList & dynProp & dynOption
           pos = vector3d(pos(:,1),pos(:,2),0);
         end
       end
-      ebsd.pos = pos;
+      % an @EBSD is a flat list of measurements - size(ebsd) is size(ebsd.id)
+      % and id is a column below, as is phaseId. Map shaped (r x c) data is
+      % what the grid classes @EBSDsquare / @EBSDhex are for, so normalize
+      % the input here rather than storing pos and rotations in a shape that
+      % contradicts id, phaseId and size(ebsd) - an object that looks valid
+      % but breaks much later, e.g. inside gridify.
+      sPos = size(pos);
+      ebsd.pos = pos(:);
 
       CSList = ensureCSArray(CSList);
-      
+
       if class(rot) ~= "rotation", rot = rotation(rot); end
-      ebsd.rotations = rot;
+      ebsd.rotations = rot(:);
       if check_option(varargin,'phaseMap')
-        ebsd.phaseId = phases;
+        ebsd.phaseId = phases(:);
         ebsd.CSList = CSList;
         ebsd.phaseMap = get_option(varargin,'phaseMap');
       else
         ebsd = ebsd.init(phases,CSList);
       end
-      
+
       ebsd.id = (1:numel(phases)).';
-            
-      % extract additional properties
+
+      % extract additional properties - a property handed over in the shape
+      % of pos is flattened along with it, while a genuine N x k property
+      % (e.g. multi channel image data) keeps its columns
+      if isstruct(prop)
+        for fn = fieldnames(prop).'
+          if isequal(size(prop.(char(fn))),sPos)
+            prop.(char(fn)) = prop.(char(fn))(:);
+          end
+        end
+      end
       ebsd.prop = prop;
 
       % remove nan positions
@@ -226,11 +247,42 @@ classdef EBSD < phaseList & dynProp & dynOption
     
     function ebsd = set.grainId(ebsd,grainId)
 
+      % the second output of calcGrains used to be the list of grainIds and
+      % is now the EBSD variable itself. Hence the old syntax
+      %
+      %   [grains,ebsd.grainId] = calcGrains(ebsd('indexed'))
+      %
+      % ends up here with an EBSD variable. Translate it into the
+      % corresponding list of grainIds - pixels missing from the returned
+      % data, e.g. since calcGrains was called on ebsd('indexed') only,
+      % keep grainId == 0 and become notIndexed, exactly as before.
       if isa(grainId,'EBSD')
-        error("The syntax \n\n  [grains,ebsd.grainId] = calcGrains(ebsd)\n\n" + ...
-          "has been replaced by the syntax\n\n" + ...
-          "[grains,ebsd] = calcGrains(ebsd)\n\n ",1);
-      elseif numel(grainId) == length(ebsd)
+
+        warning('MTEX:calcGrains:oldSyntax',['The syntax\n\n' ...
+          '  [grains,ebsd.grainId] = calcGrains(ebsd)\n\n' ...
+          'has been replaced by\n\n  [grains,ebsd] = calcGrains(ebsd)\n\n' ...
+          'It still works, but is deprecated. Switch this warning off by\n\n'...
+          '  warning(''off'',''MTEX:calcGrains:oldSyntax'')\n']);
+
+        ebsdNew = grainId;
+
+        if ~ebsdNew.hasGrainId
+          error('The assigned EBSD variable does not contain any grainId.')
+        end
+
+        [isKnown,pos] = ismember(ebsd.id(:),ebsdNew.id(:));
+
+        if ~any(isKnown)
+          error(['The assigned EBSD variable does not contain any of the ' ...
+            'pixels of the EBSD variable it is assigned to.'])
+        end
+
+        grainId = zeros(size(ebsd.id));
+        grainId(isKnown) = ebsdNew.grainId(pos(isKnown));
+
+      end
+
+      if numel(grainId) == length(ebsd)
         ebsd.prop.grainId = reshape(grainId,size(ebsd.id));
       elseif numel(grainId) == nnz(ebsd.isIndexed)
         ebsd.prop.grainId = zeros(size(ebsd));
@@ -265,9 +317,9 @@ classdef EBSD < phaseList & dynProp & dynOption
       if isempty(ebsd)
         ori = orientation;
       else
-        ori = orientation(ebsd.rotations,ebsd.CS);
-        ori.SS.how2plot = ebsd.how2plot;
-        
+        ori = orientation(ebsd.rotations,ebsd.CS,...
+          specimenSymmetryFor(ebsd.how2plot));
+
         % set not indexed orientations to nan
         if ~all(ebsd.isIndexed(:)), ori(~ebsd.isIndexed) = NaN; end
         
@@ -339,14 +391,14 @@ classdef EBSD < phaseList & dynProp & dynOption
       
       % transform to class if not yet done
       if isa(s,'EBSD')
-        ebsd = s; 
+        ebsd = s;
       else
         if width(s.id) == 1
           ebsd = EBSD;
         elseif length(s.unitCell) == 6
+          % dHex / isRowAlignment are derived from unitCell and pos now, so
+          % there is nothing to restore - both are set further down
           ebsd = EBSDhex;
-          ebsd.isRowAlignment = s.isRowAlignment;
-          ebsd.dHex = s.dHex;
         else
           ebsd = EBSDsquare;
         end
@@ -356,18 +408,44 @@ classdef EBSD < phaseList & dynProp & dynOption
         ebsd.rotations = s.rotations;
         ebsd.phaseId = s.phaseId;
         ebsd.CSList = s.CSList;
-        ebsd.prop = s.prop;      
+        ebsd.prop = s.prop;
         ebsd.scanUnit = s.scanUnit;
         ebsd.phaseMap = s.phaseMap;
         ebsd.unitCell = s.unitCell;
+
+        % everything else the file still carries - not copying pos here is
+        % what made an old file arrive empty even when it had saved one
+        if isfield(s,'pos') && isa(s.pos,'vector3d'), ebsd.pos = s.pos; end
+        if isfield(s,'N') && isa(s.N,'vector3d'), ebsd.N = s.N; end
+        if isfield(s,'A_D'), ebsd.A_D = s.A_D; end
       end
-      
+
       % ensure pos is set correctly
       if isfield(ebsd.prop,'x') && isempty(ebsd.pos)
         ebsd.pos = vector3d(s.prop.x,s.prop.y,0);
         ebsd.prop = rmfield(ebsd.prop,{'x','y'});
       end
-            
+
+      % rebuild pos from the grid spacing of the @EBSDsquare era that stored
+      % dx / dy and no pos at all - 859b62af0 replaced them by the pos
+      % derived d1 / d2. Matlab cannot assign the vanished dx / dy, which is
+      % exactly why it hands such a file over as a struct, so the spacing is
+      % still here. This repeats the formula that constructor used, hence it
+      % recovers the very positions that MTEX version worked with - up to
+      % the origin, which that representation did not store either.
+      if isempty(ebsd.pos) && isstruct(s) && ...
+          all(isfield(s,{'dx','dy'})) && ~isempty(s.dx)
+
+        [col,row] = meshgrid(1:size(ebsd.id,2),1:size(ebsd.id,1));
+        ebsd.pos = vector3d((col-1) * s.dx,(row-1) * s.dy,0);
+
+        warning('MTEX:EBSD:loadobj:posFromStep',...
+          ['This file was saved by an MTEX version that stored the grid '...
+          'spacing (dx = %g, dy = %g) instead of the pixel positions. '...
+          'ebsd.pos was rebuilt from it, with the origin placed at (0,0).'],...
+          s.dx,s.dy);
+      end
+
       % ensure unitCell is vector3d
       if ~isa(ebsd.unitCell,'vector3d')
         ebsd.unitCell = vector3d(ebsd.unitCell(:,1),ebsd.unitCell(:,2),0);

@@ -1,5 +1,6 @@
 %% The Piezoelectricity Tensor
-%
+%%
+plottingConvention.default('y↑→x');
 %% 
 % In this chapter we discuss how to compute and visualize piezoellectirc
 % properties. At first, let us import some piezoelectric contents for a

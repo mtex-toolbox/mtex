@@ -1,5 +1,6 @@
 %% Bingham Distribution
-%
+%%
+plottingConvention.default('y↑→x');
 %% Theory
 %
 % The Bingham distribution has the density function
@@ -77,7 +78,9 @@ plotPDF(odf,h,'antipodal','silent')
 %%
 % We observe an almost perfect fit between the original fibre ODF and the
 % Bingham distribution estimated from only 2000 randomly drawn
-% orientations.
+% orientations. Internally the estimate is read off the orientation tensor
+% of the data - |odf.A| is its matrix of eigenvectors and |odf.kappa| holds
+% the shape parameters associated with them.
 %
 %% Specific Bingham distributions
 %
@@ -119,111 +122,27 @@ odf = BinghamODF([10,10,10],quaternion.eye,cs)
 plot(odf,'sections',6,'silent','sigma');
 
 
-%% TODO
-% 
-% where |U| is the orthogonal matrix of eigenvectors of the orientation
-% tensor and |kappa| the shape parameters associated with the |U|.
+%% Reading the estimated parameters
 %
-% next, we test the different cases of the distribution on rejection
+% Whichever way the parameters were obtained, |odf.A| holds the four
+% principal axes as orientations and |odf.kappa| the shape parameters
+% belonging to them - |A| is the matrix of eigenvectors of the orientation
+% tensor of the data and |kappa| is derived from its eigenvalues.
 
-%T_spherical = bingham_test(ori_spherical,'spherical','approximated');
-%T_oblate    = bingham_test(ori_spherical,'prolate',  'approximated');
-%T_prolate   = bingham_test(ori_spherical,'oblate',   'approximated');
+odf = BinghamODF([100 90 80 0],orientation.eye(cs));
 
-%t = [T_spherical T_oblate T_prolate]
-
-%%
-% The spherical test case failed to reject for some level of
-% significance, hence we would dismiss the hypothesis prolate and oblate.
-
-%df_spherical = BinghamODF(kappa,U,cs)
+odf.A
 
 %%
-%
 
-%plotPDF(odf_spherical,h,'antipodal','silent')
-
-%% Prolate case and fiber distribution
-% The prolate case corresponds to a fiber.
-
-%odf_prolate = fibreODF(fibre.rand(cs),'halfwidth',20*degree)
-
-%plotPDF(odf_prolate,h,'upper','silent')
+odf.kappa.'
 
 %%
-% As before, we generate some random orientations from a model odf. The
-% shape in an axis/angle scatter plot reminds of a cigar
+% The classification into the bipolar, circular and spherical case listed
+% at the top of this page is stated for the parameters in this order. Note
+% that it applies to the distribution on the quaternion sphere - once a
+% nontrivial crystal symmetry is imposed, the estimated parameters describe
+% the symmetrised distribution and the three cases are no longer cleanly
+% separated by the sums $k_1+k_4$ and $k_2+k_3$.
 
-%ori_prolate = discreteSample(odf_prolate,10000);
-
-%plot(ori_prolate,'axisAngle')
-
-%%
-% We estimate the parameters of the Bingham distribution
-
-%odf = calcBinghamODF(ori_prolate)
-
-%plotPDF(odf,h,'upper','silent')
-
-
-%%
-% and test on the three cases
-
-%T_spherical = bingham_test(ori_prolate,'spherical','approximated');
-%T_oblate    = bingham_test(ori_prolate,'prolate',  'approximated');
-%T_prolate   = bingham_test(ori_prolate,'oblate',   'approximated');
-
-%t = [T_spherical T_oblate T_prolate]
-
-%%
-% The test clearly rejects the spherical and prolate case, but not the
-% prolate. We construct the Bingham distribution from the parameters, it
-% might show some skewness
-
-%odf_prolate = BinghamODF(kappa,U,cs)
-
-%plotPDF(odf_prolate,h,'antipodal','silent')
-
-%% Oblate case
-% The oblate case of the Bingham distribution has no direct counterpart in
-% terms of texture components, thus we can construct it straightforward
-
-%odf_oblate = BinghamODF([50 50 50 0],quaternion.eye,cs)
-
-%plotPDF(odf_oblate,h,'antipodal','silent')
-
-  %%
-% The oblate cases in axis/angle space remind on a disk 
-
-%ori_oblate = discreteSample(odf_oblate,10000);
-%close all
-%scatter(ori_oblate,'axisAngle')
-
-%%
-% We estimate the parameters again
-
-%odf = calcBinghamODF(ori_oblate)
-
-%plotPDF(odf,h,'antipodal')
-
-%%
-% and do the tests
-
-%T_spherical = bingham_test(ori_oblate,'spherical','approximated');
-%T_oblate    = bingham_test(ori_oblate,'prolate',  'approximated');
-%T_prolate   = bingham_test(ori_oblate,'oblate',   'approximated');
-
-%t = [T_spherical T_oblate T_prolate]
-
-%%
-% the spherical and oblate case are clearly rejected, the prolate case
-% failed to reject for some level of significance
-
-%odf_oblate = BinghamODF(kappa, U,cs)
-
-%%
-%
-
-%plotPDF(odf_oblate,h,'antipodal','silent')
-
-
+%#ok<*NOPTS>

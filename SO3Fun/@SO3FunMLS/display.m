@@ -24,11 +24,8 @@ if (SO3F.delta == 0)
 else
   knn_or_delta_string = 'range-search';
 end
-if SO3F.monomials
-  basis_string = 'monomials';
-else
-  basis_string = 'spherical harmonics';
-end
+% the monomial basis is the only one implemented on SO(3)
+basis_string = 'monomials';
 
 
 % MLS properties

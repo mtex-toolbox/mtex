@@ -37,9 +37,6 @@ function odf = calcKernelODF(ori,varargin)
 % See also
 % ebsd_demo EBSD2odf EBSDSimulation_demo EBSD/load EBSD/calcKernel kernel/kernel
 
-% maybe there is nothing to do
-if isempty(ori), odf = ODF(ori.CS,ori.SS); return, end
-
 % extract weights
 if check_option(varargin,'weights')
   weights = get_option(varargin,'weights');
@@ -51,6 +48,11 @@ end
 % remove nan orientations and weights
 weights = weights(~isnan(ori));
 ori = subSet(ori,~isnan(ori));
+
+% nothing left to estimate from - an empty list and a list of nothing but
+% nan orientations both end up here, and the least informative density is
+% the uniform one
+if isempty(ori), odf = uniformODF(ori.CS,ori.SS); return, end
 
 % normalize weights
 weights = weights ./ sum(weights(:));

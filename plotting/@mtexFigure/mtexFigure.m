@@ -11,10 +11,14 @@ classdef mtexFigure < handle
 %
 %
 % Class Properties
-%  parent            - handle of the parent figure    
+%  parent            - handle of the parent figure
 %  children          - handles to all axes
 %  cBarAxis          - handles to all colorbar axes
-%  innerPlotSpacing  - 
+%  cBarSide          - side the colorbar is placed at
+%  legendAxis        - handle of a legend placed outside the axes
+%  legendSide        - side the legend is placed at
+%  legendSpacing     - spacing between the axes and the legend
+%  innerPlotSpacing  -
 %  keepAspectRatio   - 
 %  nrows = 1         - number of rows
 %  ncols = 1         - number of columns
@@ -66,11 +70,15 @@ classdef mtexFigure < handle
 %
 
   properties
-    parent            % the parent figure    
+    parent            % the parent figure
     children          % the axes
     cBarAxis          % the colorbar axes
+    cBarSide = 'east' % side the colorbar is placed at
+    legendAxis        % the legend, if it is placed outside the axes
+    legendSide = 'east' % side the legend is placed at
+    legendSpacing     % spacing between the axes and the legend
     innerPlotSpacing  %
-    keepAspectRatio   % 
+    keepAspectRatio   %
     nrows = 1         % number of rows
     ncols = 1         % number of columns
     axisWidth         % width of an individual axis
@@ -108,7 +116,8 @@ classdef mtexFigure < handle
       rmallappdata(gcf);
       % fall back to the MATLAB default rather than forcing 'on', so that
       % setting DefaultFigureVisible to 'off' keeps mtex figures off screen
-      % too - used e.g. when publishing the documentation
+      % too (note that publishing needs them visible - MATLAB's publish
+      % snapshots no figure whose Visible is 'off')
       vis = get_option(varargin,'Visible',get(0,'DefaultFigureVisible'));
       set(gcf,'Visible',vis);
 
@@ -126,6 +135,8 @@ classdef mtexFigure < handle
         getMTEXpref('outerPlotSpacing'));
       mtexFig.innerPlotSpacing = get_option(varargin,'innerPlotSpacing',...
         getMTEXpref('innerPlotSpacing'));
+      mtexFig.legendSpacing = get_option(varargin,'legendSpacing',...
+        getMTEXpref('legendSpacing',mtexFig.innerPlotSpacing));
       mtexFig.keepAspectRatio = get_option(varargin,'keepAspectRatio',true);
       
       colrow = get_option(varargin,'layout',[1 1]);

@@ -40,7 +40,10 @@ if strcmp(s(1).type,'()') && ...
   if isempty(ind)
     ori = orientation;
   else
-    ori = orientation(grains.prop.meanRotation(ind),grains.CSList(phId));
+    % this shortcut bypasses get.meanOrientation, so it has to attach the
+    % plotting convention itself - see specimenSymmetryFor
+    ori = orientation(grains.prop.meanRotation(ind),grains.CSList(phId),...
+      specimenSymmetryFor(grains.how2plot));
   end
     
   if numel(s)>2
@@ -71,6 +74,14 @@ if strcmp(s(1).type,'()') || strcmp(s(1).type,'{}')
     varargout{1} = grains;
     return
   end
+end
+
+% grainSize has been renamed to numPixel. it is deliberately not a property
+% any more, so that .mat files written by MTEX 5.11 and earlier are passed as
+% a struct to grain2d.loadobj instead of silently triggering this warning
+if strcmp(s(1).type,'.') && strcmp(s(1).subs,'grainSize')
+  warning('grains.grainSize is depreciated. Please use grains.numPixel instead');
+  s(1).subs = 'numPixel';
 end
 
 % maybe reference to a dynamic property

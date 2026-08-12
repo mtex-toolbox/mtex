@@ -28,6 +28,8 @@ function h = plot(cS,varargin)
 %
 % Options
 %  PatchProperty - <https://mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html all matlab patch properties>
+%  legendSpacing - distance in pixel between the plot and the legend drawn
+%                  by the option |colored| (default: innerPlotSpacing)
 %
 % Example
 %   % define and plot a crystal shape
@@ -55,6 +57,7 @@ if check_option(varargin,'colored')
   varargin = delete_option(varargin,'colored');
   
   h = [];
+  hG = holdOn(gca); %#ok<NASGU>
   for i = 1:length(cS.N)
     if isa(dirKey,'directionColorKey')
       color = dirKey.direction2color(cS.N(i));
@@ -63,21 +66,20 @@ if check_option(varargin,'colored')
     end
     h = [h,plot(cS.subSet(cS.N(i).symmetrise),'faceColor',color,'DisplayName',...
       char(round(cS.N(i)),'LaTex'),'doNotDraw',varargin{:})]; %#ok<AGROW>
-    hold on
-  end
-  
-  hold off
-  
-  if nargout == 0, clear h; end
-  
-  if isNew && ~check_option(varargin,'doNotDraw')
-    %drawNow(mtexFig,varargin{:});
-    view(3)
-    axis('equal','vis3d','off');  
-    fcw   
   end
 
+  clear hG
+
+  if nargout == 0, clear h; end
+
+  % the legend has to exist before the layout is computed - mtexFigure
+  % reserves the space it needs and positions it 'legendSpacing' pixels
+  % beside the axes
   legend({},'interpreter','LaTeX','location','eastoutside')
+
+  if isNew && ~check_option(varargin,'doNotDraw')
+    layoutCrystal(mtexFig,varargin{:});
+  end
 
   return
 end
@@ -133,13 +135,41 @@ h = optiondraw(patch('Faces',cS.F,'Vertices',cS.V.xyz,'edgeColor','k',...
   'parent',get_option(varargin,'parent',mtexFig.gca)),varargin{:});
 
 if isNew && ~check_option(varargin,'doNotDraw')
-  drawNow(mtexFig,varargin{:}); 
-  axis('equal','vis3d','off');
-  fcw
-  view(3)
+  layoutCrystal(mtexFig,varargin{:});
 end
 
 if nargout == 0, clear h; end
+
+end
+
+% ------------------------------------------------------------------------
+
+function layoutCrystal(mtexFig,varargin)
+% set the camera, lay the figure out and fit the crystal into the axes
+%
+% The order matters twice here:
+%
+% * the camera has to be frozen before the layout - an axes with an
+% automatic camera reports a tight inset which would offset the crystal
+% within the figure
+% * the frozen view angle, on the other hand, still fits the crystal into
+% the axes size from before the layout - so let MATLAB fit it once more
+% afterwards and freeze it again
+
+ax = mtexFig.gca;
+
+view(ax,3)
+axis(ax,'equal','vis3d','off');
+
+drawNow(mtexFig,'figSize',getMTEXpref('figSize'),varargin{:});
+
+set(ax,'CameraViewAngleMode','auto');
+drawnow
+axis(ax,'vis3d');
+
+% the figure control widget stores the camera it should reset to - hence
+% only now
+fcw
 
 end
 

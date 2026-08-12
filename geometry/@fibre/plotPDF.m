@@ -44,11 +44,8 @@ argin_check([h{:}],{'Miller'});
 for i = 1:length(h), h{i} = f.CS.ensureCS(h{i}); end
 
 if isNew
-  pfAnnotations = getMTEXpref('pfAnnotations');
   mtexFig.parent.Name = ...
     ['Pole figures of "',get_option(varargin,'FigureTitle',inputname(1)),'"'];
-else
-  pfAnnotations = @(varargin) 1;
 end
 
 % plot
@@ -59,14 +56,13 @@ for i = 1:length(h)
   % compute specimen directions
   r = f.orientation * h{i};
 
-  [~,cax] = r.line('fundamentalRegion','parent',mtexFig.gca,'doNotDraw',varargin{:});
+  % for a misorientation fibre SS is a crystal symmetry, r are then crystal
+  % directions - passing it lets the plot annotate itself accordingly
+  [~,cax] = r.line('fundamentalRegion','parent',mtexFig.gca,f.SS,'doNotDraw',varargin{:});
   if ~check_option(varargin,'noTitle')
     mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
   end
 
-  if isa(f.SS,'specimenSymmetry')
-    pfAnnotations('parent',mtexFig.gca,'doNotDraw');
-  end
   [cax.Tag] = deal('pdf');
   setAllAppdata(cax,'h',h{i},'SS',f.SS);
 end

@@ -1,35 +1,35 @@
-classdef EBSDhex < EBSD
+classdef EBSDhex < EBSDgrid
   % EBSD data on a hexagonal grid. In contrast to arbitrary EBSD data the
   % values are stored in a matrix.
   
-  % properties with as many rows as data
-  properties
+  % No stored geometry. dHex + isRowAlignment could only ever express two
+  % orientations, 0 and 30 degree, which is why a rotated hex grid was
+  % unrepresentable; unitCell and pos hold the geometry instead, exactly as
+  % @EBSDsquare does, and everything below is read off them.
+  properties (Dependent = true)
+    dHex            % circumradius of the hexagonal unit cell
+    isRowAlignment  % true if the matrix ROWS carry the parity stagger
+    offset          % +/-1, which parity the first staggered line has
+    dx              % spacing along the dense direction
+    dy              % spacing across it
   end
-  
-  % general properties
-  properties
-    dHex
-    isRowAlignment
-  end
-  
-  properties (Dependent = true)    
-    offset          % +/- 1  dependent on whether the second line is shifted in or our
-    gradientX       % orientation gradient in x
-    gradientY       % orientation gradient in y
-    dx
-    dy
-  end
-  
+
   methods
       
     function ebsd = EBSDhex(pos,rot,phaseId,phaseMap,CSList,dHex,isRowAlignment,varargin)
       % generate a hexagonal EBSD object
       %
-      % Syntax 
-      %   EBSDhex(rot,phases,CSList,dHex,isRowAlignment,)
-      
-      if nargin == 0, return; end            
-      
+      % Syntax
+      %   EBSDhex(pos,rot,phaseId,phaseMap,CSList,'unitCell',uC)
+      %   EBSDhex(pos,rot,phaseId,phaseMap,CSList,dHex,isRowAlignment)
+      %
+      % The unit cell is the geometry. dHex and isRowAlignment are still
+      % accepted, and describe an axis aligned cell of that size; pass
+      % unitCell instead to keep a measured one, which is the only way
+      % to describe a rotated or sheared grid.
+
+      if nargin == 0, return; end
+
       sGrid = size(rot);
       ebsd.pos = pos;
       ebsd.rotations = rotation(rot);
@@ -37,269 +37,157 @@ classdef EBSDhex < EBSD
       ebsd.phaseMap = phaseMap;
       ebsd.CSList = ensureCSArray(CSList);
       ebsd.id = reshape(1:prod(sGrid),sGrid);
-            
+
       % extract additional properties
       ebsd.prop = get_option(varargin,'options',struct);
       ebsd.opt = get_option(varargin,'opt',struct);
-                  
-      % set up unit cell
-      ebsd.dHex = dHex;
-      ebsd.isRowAlignment = isRowAlignment;
-      
-      omega = (0:60:300)*degree + 30*isRowAlignment*degree;
-      ebsd.unitCell = dHex * vector3d(cos(omega.'), sin(omega.'),0);
-      
-      if isempty(pos)
-        [cols,rows] = meshgrid(1:size(rot,2),1:size(rot,1));
 
-        if ebsd.isRowAlignment
-          x = (cols-1+0.5*iseven(rows)) * ebsd.dx;
-          y = (rows-1) * ebsd.dy;
+      % set up the unit cell - a supplied one is kept as it is, which is
+      % what lets a rotated grid survive. Previously it was always
+      % overwritten by an axis aligned hexagon built from dHex.
+      if check_option(varargin,'unitCell')
+        ebsd.unitCell = get_option(varargin,'unitCell',[]);
+      else
+        omega = (0:60:300)*degree + 30*isRowAlignment*degree;
+        ebsd.unitCell = dHex * vector3d(cos(omega(:)), sin(omega(:)),0);
+      end
+
+      if isempty(pos)
+        % built from the ARGUMENTS, not from the dependent getters below -
+        % those read pos, which does not exist yet
+        [cols,rows] = meshgrid(1:size(rot,2),1:size(rot,1));
+        if isRowAlignment
+          x = (cols-1+0.5*iseven(rows)) * dHex * sqrt(3);
+          y = (rows-1) * 1.5 * dHex;
         else
-          x = (cols-1) * ebsd.dx;
-          y = (rows-1+0.5*iseven(cols)) * ebsd.dy;
+          x = (cols-1) * 1.5 * dHex;
+          y = (rows-1+0.5*iseven(cols)) * dHex * sqrt(3);
         end
         ebsd.pos = vector3d(x,y,0);
       end
-      
+
     end
-           
+
     % --------------------------------------------------------------
-    
-    
+
+    function d = get.dHex(ebsd)
+      d = mean(norm(ebsd.unitCell));
+    end
+
+    function tf = get.isRowAlignment(ebsd)
+      tf = hexLayout(ebsd).isRowAlignment;
+    end
+
     function of = get.offset(ebsd)
-      if ebsd.isRowAlignment
-        of = sign(ebsd.pos.x(2,1) - ebsd.pos.x(1,1));
-      else
-        of = sign(ebsd.pos.y(1,2) - ebsd.pos.y(1,1));
-      end
+      of = hexLayout(ebsd).offset;
     end
-    
-    function dx = get.dx(ebsd)
-      if ebsd.isRowAlignment
-        dx = ebsd.dHex * sqrt(3);
-      else
-        dx = 1.5 * ebsd.dHex;
-      end
-    end
-    
-    function dy = get.dy(ebsd)
-      if ebsd.isRowAlignment
-        dy = 1.5 * ebsd.dHex;
-      else
-        dy = ebsd.dHex * sqrt(3);
-      end
-    end
-    
-    
-    function gX = get.gradientX(ebsd)
-      % gives the gradient in X direction with respect to specimen
-      % coordinate system
-      
-      % extract orientations
-      ori = ebsd.orientations;
-            
-      if ebsd.isRowAlignment
-        ori_right = ori(:,[2:end end-1]);
-        gX = log(ori_right,ori,SO3TangentSpace.leftVector) ./ ebsd.dHex;
-        gX(:,end) = - gX(:,end);
-      
-        % ignore grain boundaries if possible
-        try
-          gX(ebsd.grainId ~= ebsd.grainId(:,[2:end end-1])) = NaN;
-        end
-      else
-      
-        [r,c] = ndgrid(1:size(ebsd,1),1:size(ebsd,2));
-        
-        % one right
-        c = c + 1;
-        
-        % go in oposite direction at the right boundary
-        c(c>size(ebsd,2)) = c(c>size(ebsd,2))-2;
-        
-        % one up
-        r = r - xor(ebsd.offset == 1, ~iseven(c));
-                
-        % compute gradient 1
-        ind1 = sub2ind(size(ebsd), max(r,1), c);
-        gX1 = log(ori(ind1),ori,SO3TangentSpace.leftVector);
-        
-        if ebsd.hasGrainId
-          gX1(ebsd.grainId ~= ebsd.grainId(ind1)) = NaN;
-        end
-        
-        % compute gradient 2
-        ind2 = sub2ind(size(ebsd), min(r+1,size(ebsd,1)), c);
-        gX2 = log(ori(ind2),ori,SO3TangentSpace.leftVector);
-        
-        if ebsd.hasGrainId
-          gX2(ebsd.grainId ~= ebsd.grainId(ind2)) = NaN;
-        end
-                
-        gX = mean(cat(3,gX1,gX2),3,'omitnan') ./ ebsd.dx;
-        
-        gX(end,:) = - gX(end,:);
-        
-        
-      end
-      
-    end
-    
-    function gY = get.gradientY(ebsd)
-      % gives the gradient in Y direction with respect to specimen
-      % coordinate system
-      
-      % extract orientations
-      ori = ebsd.orientations;
-      
-      if ebsd.isRowAlignment
 
-        [r,c] = ndgrid(1:size(ebsd,1),1:size(ebsd,2));
-        
-        % one up
-        r = r+1;
-        
-        % go in oposite direction at the upper boundary
-        r(r>size(ebsd,1)) = r(r>size(ebsd,1))-2;
-        
-        % one left
-        c = c - xor(ebsd.offset == 1, ~iseven(r));
-                
-        % compute gradient 1
-        ind1 = sub2ind(size(ebsd), r, max(1,c));
-        gY1 = log(ori(ind1),ori,SO3TangentSpace.leftVector);
-        
-        if ebsd.hasGrainId
-          gY1(ebsd.grainId ~= ebsd.grainId(ind1)) = NaN;
-        end
-        
-        % compute gradient 2
-        ind2 = sub2ind(size(ebsd), r, min(size(ebsd,2),c+1));
-        gY2 = log(ori(ind2),ori,SO3TangentSpace.leftVector);
-        
-        if ebsd.hasGrainId
-          gY2(ebsd.grainId ~= ebsd.grainId(ind2)) = NaN;
-        end
-                
-        gY = mean(cat(3,gY1,gY2),3,'omitnan') ./ ebsd.dy;
-        
-        gY(end,:) = - gY(end,:);
-                    
-      else
-        ori_up = ori([2:end end-1],:);
-        gY = log(ori_up,ori, SO3TangentSpace.leftVector) ./ ebsd.dy;
-        gY(end,:) = - gY(end,:);
-        
-        % ignore grain boundaries if possible
-        try
-          gY(ebsd.grainId ~= ebsd.grainId([2:end end-1],:)) = NaN;
-        end
+    function d = get.dx(ebsd)
+      L = hexLayout(ebsd);
+      if L.isRowAlignment, d = L.dense; else, d = L.cross; end
+    end
+
+    function d = get.dy(ebsd)
+      L = hexLayout(ebsd);
+      if L.isRowAlignment, d = L.cross; else, d = L.dense; end
+    end
+
+    function L = hexLayout(ebsd)
+      % read the staggered layout off pos, so it holds at any rotation
+      %
+      % A hex matrix has one dense direction, whose step is the same
+      % everywhere, and one staggered direction, whose step alternates
+      % between two lattice translations 60 degree apart. Which matrix index
+      % is which IS the meaning of isRowAlignment, and it is visible
+      % directly: on titanium the column steps run 0 0 0 0 degree while the
+      % row steps run 60 120 60 120; on a flat top grid it is the other way
+      % round. Asking pos rather than assuming an axis makes every answer
+      % here survive a rotation, which the old sign(pos.x(2,1)-pos.x(1,1))
+      % did not.
+
+      L = struct('isRowAlignment',true,'offset',1,'dense',NaN,'cross',NaN);
+      if size(ebsd,1) < 3 || size(ebsd,2) < 3
+        % too small to see an alternation - fall back to the unit cell,
+        % which pins the orientation for the axis aligned cases
+        uC = ebsd.unitCell;
+        L.isRowAlignment = diff(min(abs([uC.x(:) uC.y(:)]))) > 0;
+        L.dense = ebsd.dHex * sqrt(3);
+        L.cross = 1.5 * ebsd.dHex;
+        return
       end
-      
-    end
-    
 
-    function ind = neighbors(ebsd,ind,k,radius)
+      rowStep1 = ebsd.pos(2,1) - ebsd.pos(1,1);
+      rowStep2 = ebsd.pos(3,1) - ebsd.pos(2,1);
+      colStep1 = ebsd.pos(1,2) - ebsd.pos(1,1);
+      colStep2 = ebsd.pos(1,3) - ebsd.pos(1,2);
 
-      if nargin == 3, radius = 1; end
-      
-      dnx = [0  1  1  0 -1 -1  0  1]; cnx = cumsum(dnx);
-      dny = [0 -1  0  1  1  0 -1 -1]; cny = cumsum(dny);
-      dnz = [0  0 -1 -1  0  1  1  0]; cnz = cumsum(dnz);
-      
-      i = 1 + floor(k / radius); j = k - radius * (i-1);
-      
-      [x,y,z] = hex2cube(ebsd,ind);
-      
-      x = x - radius + radius * cnx(i) + j*dnx(i+1);
-      y = y          + radius * cny(i) + j*dny(i+1);
-      z = z + radius + radius * cnz(i) + j*dnz(i+1);
-      
-      ind = cube2hex(ebsd,x,y,z);
-      
+      tol = 1e-6 * ebsd.dHex;
+      L.isRowAlignment = norm(rowStep1 - rowStep2) > tol;
+
+      if L.isRowAlignment
+        dense = colStep1;  stag = rowStep1;
+        L.cross = norm(ebsd.pos(3,1) - ebsd.pos(1,1)) / 2;
+      else
+        dense = rowStep1;  stag = colStep1;
+        L.cross = norm(ebsd.pos(1,3) - ebsd.pos(1,1)) / 2;
+      end
+      L.dense = norm(dense);
+
+      % the parity: which way the first staggered line leans, measured
+      % along the dense direction rather than along x or y
+      L.offset = sign(dot(stag,normalize(dense)));
+      if L.offset == 0, L.offset = 1; end
+
     end
-    
-    
+
     function [row,col] = pos2ind(ebsd,x,y)
-      % nearest neighbor search
-      
-      x = x - ebsd.pos.x(1);
-      y = y - ebsd.pos.y(1);
-      
-      % convert to axial coordinates
-      if ebsd.isRowAlignment        
-        q = (sqrt(3)/3 * x - 1./3 * y) / ebsd.dHex;
-        r = (                2./3 * y) / ebsd.dHex;
-      else        
-        q = ( 2./3 * x                ) / ebsd.dHex;
-        r = (-1./3 * x + sqrt(3)/3 * y) / ebsd.dHex;        
-      end
-      
-      % convert to cube coordinates
-      cx = q; cz = r; cy = -cx - cz;
-      
-      % round in cube coordinates
+      % nearest cell of the grid for a given position
+      %
+      % Syntax
+      %   ind = pos2ind(ebsd,pos)
+      %   [row,col] = pos2ind(ebsd,x,y)
+
+      if nargin == 3, x = vector3d(x,y,0); end
+
+      % Invert the grid basis instead of applying a fixed axial matrix in
+      % raw x/y. The old form divided by dHex after multiplying by hard
+      % coded sqrt(3)/3 and 1/3 factors, which is the inverse basis of an
+      % AXIS ALIGNED hex lattice only - there was no rotation to feed it.
+      % The two matrix step directions describe the lattice whatever its
+      % orientation, and they are exactly the pair cube2hex expects: the
+      % coefficient along the column direction is the cube x, the one along
+      % the row direction the cube z.
+      p0 = ebsd.pos(1,1);
+      cd = ebsd.pos(1,2) - p0;
+      rd = ebsd.pos(2,1) - p0;
+
+      A = [cd.x, rd.x; cd.y, rd.y];
+      d = x - p0;
+      xz = A \ [d.x(:).'; d.y(:).'];
+
+      % round in cube coordinates, which picks the nearest hexagon rather
+      % than the nearest cell of the parallelogram the basis spans
+      cx = xz(1,:); cz = xz(2,:); cy = -cx - cz;
+
       rx = round(cx); ry = round(cy); rz = round(cz);
       dx = abs(cx-rx); dy = abs(cy-ry); dz = abs(cz-rz);
-      
+
       ind1 = dx>dy & dx>dz;
       ind2 = dy > dz;
       rx(ind1) = -ry(ind1) - rz(ind1); %#ok<*PROPLC>
       ry(~ind1 & ind2) = -rx(~ind1 & ind2) - rz(~ind1 & ind2);
       rz(~ind1 & ~ind2) = -rx(~ind1 & ~ind2) - ry(~ind1 & ~ind2);
-      
+
       % convert to offset coordinates
-      [row,col] = ebsd.cube2hex(rx,ry,rz);
-      
+      [row,col] = ebsd.cube2hex(reshape(rx,size(d)),reshape(ry,size(d)),reshape(rz,size(d)));
+
       if nargout < 2
         ind = ~isnan(row);
         row(ind) = sub2ind(size(ebsd),row(ind),col(ind));
       end
-      
+
     end
 
-    function h = gridBoundary(ebsd)
-
-      dH = ebsd.dHex; ext = ebsd.extent;
-      ext = ext(1:4) + 2*dH*[-1,1,-1,1];
-      x = ext(1):dH:ext(2);
-      y = ext(3):dH:ext(4);
-
-      h= [
-        repmat(ext(1), numel(y),1), y.' ; ...
-        x.', repmat(ext(3), numel(x), 1) ; ...
-        x.', repmat(ext(4), numel(x), 1) ; ...
-        repmat(ext(2), numel(y),1), y.'];
-      
-    end
-       
-    
-    % some testing code - gradient can be either in specimen coordinates or
-    % in crystal coordinates 
-    % 
-    % cs = crystalSymmetry('321')
-    % ori1 = orientation.rand(cs)
-    % ori2 = orientation.rand(cs)
-    %
-    % the following output should be constant
-    % gO = log(ori1,ori2.symmetrise, SO3TangentSpace.leftVector) % true for this
-    % gO = log(ori1.symmetrise,ori2, SO3TangentSpace.leftVector) % true for this
-    
   end
   
-  methods (Static = true)
-    
-    function checkCube2Hex
-      [r,c] = ndgrid(1:10,1:10);
-      
-      ebsd = EBSDhex;
-      
-      [x,y,z] = ebsd.hex2cube(r,c);
-      [r2,c2] = ebsd.cube2hex(x,y,z);
-      
-      max((r-r2).^2 + (c-c2).^2)
-    end
-    
-  end
 end

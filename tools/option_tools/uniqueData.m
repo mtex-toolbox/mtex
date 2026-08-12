@@ -1,5 +1,7 @@
 function [nodes,values] = uniqueData(nodes, values, varargin)
 
+if isa(nodes,'S2Grid'), return; end
+
 numNodes = numel(nodes);
 values = reshape(values, numNodes, []);
 

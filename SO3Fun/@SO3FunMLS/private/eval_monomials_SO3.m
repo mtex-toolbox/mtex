@@ -7,9 +7,6 @@ function vals = eval_monomials_SO3(ori, deg, varargin)
   %   equals the maximal degree (mod 2)
 
   tangent = check_option(varargin, 'tangent');
-  if ~tangent && numel(varargin) == 1 && islogical(varargin{1})
-    tangent = varargin{1};
-  end
 
   a = ori.a(:);
   b = ori.b(:);
