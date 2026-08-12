@@ -4,6 +4,7 @@ function h = round(h,varargin)
 % Syntax
 %   h = round(h)
 %   h = round(h,'maxHKL',5)
+%   h = round(h,'uvw')
 %
 % Input
 %  h - @Miller
@@ -13,12 +14,25 @@ function h = round(h,varargin)
 %
 % Options
 %  maxHKL - maximum value of Miller indices
+%  hkl, hkil, uvw, UVTW - convention to round with respect to, by default
+%    the display convention of h is used
+%
+% Description
+% For trigonal and hexagonal lattices the three and the four index notation
+% are not integer at the same time, e.g. UVTW = (1,3,-4,8) corresponds to
+% uvw = (5,7,8)/3. Which of them is rounded is decided by the convention
+% option.
 %
 
 % ignore xyz case
 if h.dispStyle == MillerConvention.xyz, return; end
 
 sh = size(h);
+
+% round with respect to the convention given as an option - remember the
+% display convention as setting the coordinates below overwrites it
+dispStyle = h.dispStyle;
+h.dispStyle = get_flag(varargin,{'hkl','hkil','uvw','UVTW'},dispStyle);
 
 mOld = h.coordinates;
 
@@ -48,5 +62,8 @@ h = h .* multiplier;
 
 % now round
 h.coordinates = round(h.coordinates);
+
+% restore the display convention
+h.dispStyle = dispStyle;
 
 h = reshape(h,sh);
