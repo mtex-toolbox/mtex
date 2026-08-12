@@ -294,7 +294,7 @@ copy; only what is still open is summarised here.
 | L5 | Crystal shapes do not follow the EBSD data when it is rotated or the convention changes | 2 | 1 | bug | — | #1952 |
 | L6 | Colour keys in specimen coordinates should respect the plotting convention — better, `colorKey(what2color)` should take what it needs from the object | 2 | 1 | planned | — | [→](#l6) |
 | L7 | `directionColorKey` bug | 1 | 0 | triage | — | #2515 |
-| L8 | IPDF plots arrows incorrectly | 2 | 0 | bug | — | #2072 |
+| L8 | IPDF plots arrows incorrectly — **fixed 2026-08-12**, `arrow` sizes its head in pixels regardless of the segment, so on the short segments arrows are meant for the head was longer than the arrow; now capped at 0.4 of the segment | 2 | 0 | done | — | #2072, [→](#l8) |
 | L9 | `ipfKey.inversePoleFigureDirection` should probably be `outOfPlane` | 1 | 0 | decide | — | — |
 | L10 | `plot(ebsd,ebsd.orientation,'ipfDirection',xvector)` should work | 1 | 0 | idea | — | — |
 | L11 | The IPF colour key disk cache is keyed only by point-group id, so it silently serves a stale table when the crystal frame changes — **fixed** in `3767b60b9`/`556c0b469`: the cache is in memory and keyed by a digest of the sector geometry and white centre, and `removeObsoleteCacheFiles` deletes what earlier versions left in `prefdir` | 3 | 0 | done | — | [→](#l11) |
@@ -729,6 +729,39 @@ positions and on the shape of the coordinate arrays, not just on the point
 count — `size(gB)` reads the segment list and does not see the expansion.
 Also pins that the lattice index range is unchanged by a far shift, which is
 where #1722 actually goes wrong.
+
+### L8
+`extern/arrow.m` measures its head in **pixels** — `Length` is documented as
+"length of the arrowhead in pixels" and defaults to 16 — and takes no notice
+of how long the segment is. Chaining arrows through a series of nearby
+orientations, which is what the option is for, gives segments only a few
+pixels long, so the head is longer than the whole arrow and sticks out past
+its tip.
+
+Measured on the pair from the report, whose two points are **0.0096** apart
+in the plot:
+
+| head length | patch extent |
+|---|---|
+| default (16 px) | **0.0279** |
+| 6 px | 0.0105 |
+| 2 px | 0.0096 |
+| 0 px (bare shaft) | 0.0096 |
+
+So the drawn patch was nearly three times the arrow it represents. That also
+explains the reporter's own finding that zooming in about 6x fixes it and
+less zoom fixes it partially — zoom changes exactly this ratio, since the
+head is constant in pixels while the segment grows.
+
+`@vector3d/scatter`'s arrow branch now caps the head at `0.4 *` the segment
+length in pixels when the caller did not ask for a `'length'`, so a segment
+long enough to carry the full 16 pixels is drawn exactly as before and a
+short one keeps its head inside itself. An explicit `'length'` still wins.
+
+Owning test `tests/plotting/check_arrowPlot.m`, which takes `'length',0` —
+the bare shaft — as the reference segment rather than trying to recover the
+two measurements from the markers, since those also carry the sector
+corners.
 
 ### L3
 `vector3d/histogram` does hand the convention to
