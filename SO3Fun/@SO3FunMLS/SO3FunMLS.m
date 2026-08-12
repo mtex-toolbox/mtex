@@ -439,7 +439,6 @@ classdef SO3FunMLS < SO3Fun
     if SO3F.degree == 0
       SO3F.regularize = false;
     end
-    SO3F.w = 'auto';
     if ~first_call && ~isempty(SO3F.auxgrid)
       SO3F = SO3F.update_auxgrid_dn;
     end
