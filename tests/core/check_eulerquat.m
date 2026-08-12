@@ -1,41 +1,158 @@
-%% check SO3Grid/subGrid
+function check_eulerquat
+% every rotation representation must round trip back to the same rotation
 %
-% compare subGrid function with the maxAngle option to SO3Grid
+% Replaces a file that had rotted twice over: it built its sample with
+% SO3Grid(100000,symmetry,symmetry), a constructor form that no longer
+% exists, and everything after line 22 was unreachable behind a bare return,
+% including the whole matrix branch. What survived tested one conversion,
+% Euler in the Bunge convention, against a mean threshold of 0.999 - which a
+% systematically wrong conversion of a small fraction of the sample would
+% have passed.
 %
+% The representations are all the ones @rotation can be built from, except
+% homochoric, which has its own file (check_homochoric). Each is checked
+% elementwise, not on average.
+%
+% q and -q are the same rotation, so nothing is compared componentwise.
+% Comparison is by |dot| rather than by angle(): angle = 2*acos(|dot|) loses
+% half its significant digits next to dot == 1, so a round trip that is exact
+% to the last bit still measures as about 3e-8 rad and no honest angle
+% tolerance can tell it from a real error of that size.
+%
+% See also
+% quaternion/Euler rotation/byEuler quaternion/matrix rotation/byMatrix
+% quaternion/Rodrigues rotation/byRodrigues check_homochoric
 
-q = quaternion(SO3Grid(100000,symmetry,symmetry));
+rng(0)
 
-q = [q,-q];
+N = 2000;
 
-[alpha,beta,gamma] = Euler(q,'Bunge');
+% the tolerance is on 1 - |dot|, not on an angle - see assertSame
+tol = 1e-13;
 
-qq = rotation.byEuler(alpha,beta,gamma,'Bunge');
+% a general sample plus the awkward ones: identity, and rotations at and
+% near beta == 0, where the Bunge convention is degenerate (gimbal lock -
+% only alpha + gamma is determined)
+r = [rotation.rand(N); ...
+  rotation.id; ...
+  rotation.byEuler(30*degree,0,50*degree,'Bunge'); ...
+  rotation.byEuler(30*degree,1e-8,50*degree,'Bunge'); ...
+  rotation.byEuler(30*degree,pi,50*degree,'Bunge'); ...
+  rotation.byAxisAngle(xvector,pi)];
 
-e  = abs(dot(q,qq));
-if mean(e) < 0.999
-  hist(e);
-  error('Error in euler - quaternion conversion');
-else
-  disp('Euler <-> quaternion conversion is ok!')
+checkEuler(r,tol);
+checkMatrix(r,tol);
+checkAxisAngle(r,tol);
+checkRodrigues(r,tol);
+checkImproper(tol);
+
+disp('check_eulerquat: passed')
+
 end
 
-return
+% =========================================================================
+function checkEuler(r,tol)
+% every Euler convention MTEX offers
 
-e = 0;
-for i = 1:length(q)
+for conv = {'Bunge','ABG','Matthies','Roe','Kocks','Canova'}
 
-  q1 = q(i);
-  q2 = mat2quat(matrix(q(i)));
-  e(i) = abs(dot(q2,q1));
+  rr = r;
+
+  % KNOWN FAILURE, see https://github.com/mtex-toolbox/mtex/issues/2583
+  % Kocks and Canova do not round trip when the second angle is exactly 0 -
+  % byEuler(0,0,0,'Kocks') is a 180 degree rotation about z rather than the
+  % identity, which is what psi -> pi - psi applied in one direction only
+  % looks like. They are the two conventions that redefine the third angle;
+  % the four that do not are exact. beta = 1e-8 already works, so it is the
+  % exact-zero branch and not a conditioning problem. Those samples are
+  % dropped rather than the tolerance loosened, so this goes back to the
+  % full sample as soon as #2583 is fixed.
+  if any(strcmp(conv{1},{'Kocks','Canova'}))
+    [~,bB,~] = Euler(rr,'Bunge');
+    rr = rr(bB > 1e-12);
+  end
+
+  [a,b,c] = Euler(rr,conv{1});
+  back = rotation.byEuler(a,b,c,conv{1});
+
+  assertSame(rr,back,tol,sprintf('the %s Euler',conv{1}))
 
 end
 
-qq = mat2quat(matrix(q));
-e  = abs(dot(q,qq));
+end
 
-if mean(e) < 0.9
-  hist(abs(e));
-  error('Error in matrix - quaternion conversion');
-else
-  disp('matrix <-> quaternion conversion is ok!')
+% =========================================================================
+function checkMatrix(r,tol)
+
+M = matrix(r);
+back = rotation.byMatrix(M);
+
+assertSame(r,back,tol,'the matrix')
+
+% and the matrices really are rotation matrices
+for k = 1:20:size(M,3)
+  assert(max(abs(M(:,:,k)*M(:,:,k).' - eye(3)),[],'all') < 1e-12, ...
+    'check_eulerquat: matrix() returned a non orthogonal matrix at %d',k)
+end
+
+end
+
+% =========================================================================
+function checkAxisAngle(r,tol)
+
+back = rotation.byAxisAngle(axis(r),angle(r));
+
+assertSame(r,back,tol,'the axis/angle')
+
+end
+
+% =========================================================================
+function checkRodrigues(r,tol)
+% the Rodrigues vector runs to infinity at 180 degree, so those are excluded
+% rather than pretended to work
+
+keep = angle(r) < pi - 1e-3;
+rr = r(keep);
+
+back = rotation.byRodrigues(Rodrigues(rr));
+
+assertSame(rr,back,tol,'the Rodrigues')
+
+assert(nnz(keep) > 0.9*length(r), ...
+  'check_eulerquat: too much of the sample was excluded from the Rodrigues check')
+
+end
+
+% =========================================================================
+function checkImproper(tol)
+% an improper rotation has to survive the matrix round trip as improper -
+% the sign of the determinant is not carried by the quaternion itself
+
+r = rotation.inversion * rotation.rand(200);
+assert(all(r.isImproper), 'check_eulerquat: the sample is not improper')
+
+back = rotation.byMatrix(matrix(r));
+
+assert(all(back.isImproper), ...
+  'check_eulerquat: the matrix round trip lost the improper flag')
+
+assertSame(r,back,tol,'the improper matrix')
+
+end
+
+% =========================================================================
+function assertSame(r,back,tol,what)
+% compare two rotations by 1 - |dot|
+%
+% |dot| because q and -q are the same rotation, and not angle() because
+% 2*acos of something within eps of 1 is only accurate to about sqrt(eps):
+% measured that way an exact Euler round trip already looks like a 6e-8 rad
+% error, which is where this file's first tolerance went wrong.
+
+dev = 1 - abs(dot(r(:),back(:)));
+
+assert(max(dev) < tol, ...
+  'check_eulerquat: %s round trip deviates by %.3g in 1 - |dot| (tolerance %.3g)', ...
+  what, max(dev), tol)
+
 end
