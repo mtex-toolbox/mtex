@@ -59,7 +59,6 @@ inv_ori = inv(ori);
 if (num_threads == 1)
   for i = 1 : N
     n = ns(i); 
-    % b = ones(2*n, 1);
     dists = angle(SO3F.nodes.subSet(ind(i,:)), ori.subSet(i));
     maxdist = max(dists);
     weights = SO3F.w(dists ./ (maxdist * 1.1));
@@ -89,7 +88,6 @@ if (num_threads == 1)
 else
   parfor(i = 1 : N, num_threads)
     n = ns(i);
-    % b = ones(2*n, 1);
     dists = angle(SO3F.nodes.subSet(ind(i,:)), ori.subSet(i));
     maxdist = max(dists);
     weights = SO3F.w(dists ./ (maxdist * 1.1));

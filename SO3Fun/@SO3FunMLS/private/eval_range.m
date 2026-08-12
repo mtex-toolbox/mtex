@@ -125,7 +125,7 @@ if ~SO3F.centered
   basis_in_ori = eval_basis_functions(SO3F, ori);
   eval_vector = permute(basis_in_ori, [2, 3, 1]);
 else
-  [aloc, ~, ~, ~, rotneighbors] = ...
+  [rotneighbors, aloc] = ...
     local_coordinates_SO3(ori, ori_id, SO3F.nodes, grid_id);
 
   G = eval_basis_functions(SO3F, rotneighbors);

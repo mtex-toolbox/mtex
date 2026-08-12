@@ -1,12 +1,10 @@
 function oI = compute_outlier_indicators(S2F)
 
 % Input:
-%   nodes  - @vector3d array of nodes
-%   values - array of same dimensions as nodes, containing the values
-%   k      - number of nearest neighbors (integer) for KNN
+%   S2F    - @S2FunMLS; nodes, values and outlierDetectionRange are used
 %
 % Output:
-%   v      - N x 1 vector of outlier indicators
+%   oI     - N x 1 vector of outlier indicators, one per node
 
 % find k nearest neighbors (returns N-by-k index array)
 k = S2F.outlierDetectionRange;

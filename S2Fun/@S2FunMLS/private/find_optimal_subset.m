@@ -60,7 +60,6 @@ rots = rotation.map(v, vector3d.Z);
 if (num_threads == 1)
   for i = 1 : N
     n = ns(i); 
-    % b = ones(2*n, 1);
     dists = angle(S2F.nodes.subSet(ind(i,:)), v.subSet(i));
     maxdist = max(dists);
     weights = S2F.w(dists ./ (maxdist * 1.1));
@@ -90,7 +89,6 @@ if (num_threads == 1)
 else
   parfor(i = 1 : N, num_threads)
     n = ns(i);
-    % b = ones(2*n, 1);
     dists = angle(S2F.nodes.subSet(ind(i,:)), v.subSet(i));
     maxdist = max(dists);
     weights = S2F.w(dists ./ (maxdist * 1.1));

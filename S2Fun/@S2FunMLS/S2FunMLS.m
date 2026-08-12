@@ -28,9 +28,11 @@ classdef S2FunMLS < S2Fun
   %  tangent   - use monomials on the tangent plane (requires centered = true)
   %    (NOTE: centered and tangent automatically enable the monomial basis)
   %
-  %  w       - @function_handle (weight function)
-  %          - predefined choices include 'C1hat' (default), 'const', 'cos',
-  %            'hat', 'indicator', 'squared hat', 'wendland', and 'wendlandC6'
+  %  weight  - @function_handle (weight function)
+  %          - predefined choices are 'auto' (default, a degree-dependent
+  %            Wendland C6 variant), 'C1hat', 'const', 'cos', 'hat',
+  %            'indicator', 'squared hat', 'wendland', 'wendlandC6',
+  %            'wendlandSquared', and 'wendlandC6Squared'
   %  use_smooth_delta - use a smooth local support radius with about S2F.nn
   %                     neighbors at each center
   %  candidateFactor  - KNN candidates fetched per center as a multiple of nn
@@ -494,7 +496,6 @@ classdef S2FunMLS < S2Fun
   end
 
   methods (Static = true)
-    S2F = interpolate(varargin);
     S2F = approximate(f, varargin);
     S2F = example(varargin)
   end

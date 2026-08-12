@@ -21,19 +21,19 @@ classdef SO3FunMLS < SO3Fun
   %              dimension of the ansatz space, times this factor
   %  oF_max  - maximum oversampling factor in case of range search. At most the
   %              closest SO3F.dim * SO3F.oF_max neighbors will be used.
-  %  delta   - support radius of the weight function
-  %              when searching for outliers
+  %  delta   - support radius of the weight function; delta = 0 uses KNN
   %
-  %  monomials- use monomial basis if true, otherwise use spherical harmonics
+  %  monomials- ignored; the monomial basis is the only one implemented on SO(3)
+  %              (the option exists for interface parity with S2FunMLS)
   %  centered - evaluate the basis functions only around the identity, if true
   %  tangent  - use monomials on the tangent space (only if centered == true)
   %              (in this case the a-coordinate of the neighbors is ignored)
-  %    (NOTE: 'centered' and 'tangent' trigger the monomial-option to be true)
   %
-  %  w       - @function_handle (weight function)
+  %  weight  - @function_handle (weight function)
   %          - predefined weight function can be chosen via the following strings:
+  %             'auto' (default, a degree-dependent Wendland C6 variant),
   %             'C1hat', 'const', 'cos', 'hat', 'indicator', 'squared hat',
-  %             'wendland' (default)
+  %             'wendland', 'wendlandC6', 'wendlandSquared', 'wendlandC6Squared'
   %  use_smooth_delta - make the support radius delta(x) a smooth function with
   %                     close to SO3F.nn neighbors at each center
   %  candidateFactor -  KNN candidates fetched per center as a multiple of nn
@@ -123,7 +123,7 @@ classdef SO3FunMLS < SO3Fun
 
       if nargin == 0, return; end
 
-      % convert arbitrary SO3Fun to SO3FunHarmonic
+      % convert arbitrary SO3Fun to SO3FunMLS
       if isa(nodes,'function_handle') || isa(nodes,'SO3Fun')
         if nargin == 1, values=[]; end
         SO3F = SO3FunMLS.approximate(nodes,values,varargin{:});

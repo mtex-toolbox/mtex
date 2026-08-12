@@ -1,12 +1,11 @@
 function oI = compute_outlier_indicators(SO3F)
 
   % Input:
-  %   nodes  - @orientation array of nodes
-  %   values - array of same dimensions as nodes, containing the values
-  %   k      - number of nearest neighbors (integer) for KNN
+  %   SO3F   - @SO3FunMLS; nodes, values and outlierDetectionRange are used
   %
   % Output:
-  %   oI     - N x numel(SO3F) matrix of outlier indicators
+  %   oI     - N x numel(SO3F) matrix of outlier indicators,
+  %            one column per function component
 
   % find k nearest neighbors (returns N-by-k index array)
   k = SO3F.outlierDetectionRange;
