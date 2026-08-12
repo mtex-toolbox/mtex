@@ -25,41 +25,43 @@ function ref = grainReconstructionReference()
 % also drops boundary between two grains it joins that touch elsewhere, which
 % needs a large map to occur. That -55.4 is long-standing and correct.
 %
-% Regenerated 2026-08-12. Only the removeQuadruplePoints columns moved -
-% forsterite.nGrainsQP 2931 -> 2905, steel1C_1.nGrainsQP 99843 -> 97856 and
-% totalLenQP 155980.2966759323 -> 155959.3580926837. nGrains and totalLen are
-% unchanged on all three datasets except in their last digits, which is
-% summation order (2 ulp on forsterite, 1 on steel1C_1), so the plain
-% reconstruction is untouched.
+% Regenerated 2026-08-12. Only steel1C_1's removeQuadruplePoints columns
+% moved: nGrainsQP 99843 -> 99875 and totalLenQP 155980.2966759323 ->
+% 155980.6048791179. forsterite and copper are back at their long-standing
+% values, and nGrains/totalLen are unchanged everywhere.
 %
-% Two intended changes cause it. b2ca13189: the pairing of the four edges at
-% a quadruple point was decided by their position in an angular sort, and on
-% a square grid one edge sits exactly on atan2's branch cut at +-pi, so 1e-14
-% in a vertex position flipped it between +pi and -pi and swapped which
-% diagonal got the new boundary. It is now decided by the grain boundary
-% criterion. 14463616f: where the criterion is indifferent - it answers on
-% three levels only - the smaller misorientation angle decides, i.e. join
-% what matches better.
+% The cause is a5bc0f427, latticeBasis. It used to read the lattice basis
+% off the ORDER the unit cell's corners happen to be listed in, so the same
+% square gave A = [50 0; 0 50] as loaded and A = [-50 0; 0 50] after
+% gridify - a mirrored, left handed (i,j) frame - and the decomposition
+% changed with it. The basis is now taken from the directions of the cell to
+% cell translations and normalised right handed. That is also what brought
+% forsterite back from 2929 to 2931 and totalLen from 2109862.726874 to
+% 2109862.588230, i.e. back onto this file's own numbers.
 %
-% This supersedes the warning below about the metric moving on its own. It no
-% longer can: the result is invariant under the order of the measurements
-% (shuffling forsterite's 187467 indexed pixels reproduces grain count and
-% the sorted segment lengths), and forsterite as a plain list, gridified
-% column major and gridified row major now all give 3100 / 2905 /
-% 2109862.588230. Before, those three disagreed, which is how a regenerated
-% mtexdata cache could silently move this file's numbers.
+% Two further commits, b2ca13189 and 14463616f, made the pairing at a
+% quadruple point deterministic instead of letting atan2's branch cut decide
+% it, and moved these columns much further (forsterite 2905, steel1C_1
+% 97856). They were REVERTED in 4f351d38e: the choice cannot be made per
+% quadruple point without breaking ring closure, and produced up to 117
+% grains of negative area on alphaBetaTitanium. So the warning below stands
+% in full - this metric can still move on its own, because which of the two
+% pairings is taken still depends on floating point noise in a vertex
+% position. Reproduction of the breakage, for whoever picks it up:
+% plot(smoothBoundary(grains,5)(40037)) on alphaBetaTitanium.
 %
-% The history that warning records: forsterite.nGrainsQP was 2932, then 2933,
-% then found to flip between 2933 and 2931 across sessions with byte-identical
-% code - root caused to a tie-break in calcUnitCell's detectLattice and fixed.
-% Read totalLen/totalLenQP before concluding anything from the counts alone.
+% This metric has a history of moving on its own. forsterite.nGrainsQP was
+% 2932, then 2933, then found to flip between 2933 and 2931 across sessions
+% with byte-identical code - root caused to a tie-break in calcUnitCell's
+% detectLattice and fixed. Treat a drift here as suspect, but read
+% totalLen/totalLenQP before concluding anything from the counts alone.
 
 ref = struct();
 
 ref.forsterite.nGrains    = 3100;
-ref.forsterite.nGrainsQP  = 2905;
+ref.forsterite.nGrainsQP  = 2931;
 ref.forsterite.totalLen   = 2109862.5882302765;
-ref.forsterite.totalLenQP = 2109862.5882302760;
+ref.forsterite.totalLenQP = 2109862.5882302765;
 ref.forsterite.meanArea   = 196661.7753931304;
 ref.forsterite.time       = 0.5609;
 
@@ -71,9 +73,9 @@ ref.copper.meanArea   = 462.1479171713;
 ref.copper.time       = 0.0733;
 
 ref.steel1C_1.nGrains    = 104814;
-ref.steel1C_1.nGrainsQP  = 97856;
+ref.steel1C_1.nGrainsQP  = 99875;
 ref.steel1C_1.totalLen   = 156035.7019482664;
-ref.steel1C_1.totalLenQP = 155959.3580926837;
+ref.steel1C_1.totalLenQP = 155980.6048791179;
 ref.steel1C_1.meanArea   = 0.5428519276;
 ref.steel1C_1.time       = 8.8119;
 
