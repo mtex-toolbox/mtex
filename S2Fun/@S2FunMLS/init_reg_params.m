@@ -21,7 +21,8 @@ else
     calibrationF = calibrationF.subSet(1);
   end
   calibrationF.regularize = false;
-  [~, ~, reg_info] = calibrationF.eval(S2F.reg_auxgrid);
+  % the fourth output keeps the calibration pass from emitting warnings
+  [~, ~, reg_info, ~] = calibrationF.eval(S2F.reg_auxgrid);
 end
 
 force = check_option(varargin, {'force', 'overwrite'});

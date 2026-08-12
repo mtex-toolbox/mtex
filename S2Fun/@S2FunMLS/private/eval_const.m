@@ -7,13 +7,14 @@ v = v(:);
 N = numel(v);
 numf = numel(S2F);
 supportMargin = 1.10;
+candidateTol = 1e-4;
 warnings = initWarnings;
 
 grid_vals = reshape(S2F.values(:), numel(S2F.nodes), numf);
 
 % KNN mode
 if (S2F.delta == 0)
-  nn = S2F.nn * (1 + S2F.use_smooth_delta);
+  nn = candidate_count_S2(S2F);
   [ind, dist] = S2F.nodes.find(v, nn, varargin{:});
 
   if S2F.use_smooth_delta
@@ -34,7 +35,12 @@ if (S2F.delta == 0)
     positiveCount = sum(weights > 0, 2);
     warnings.smoothTooFew = any(deltaFallback | ...
       (positiveCount < S2F.dim));
-    warnings.smoothAllCandidates = any(positiveCount == nn);
+
+    % Only a candidate whose weight is numerically relevant can truncate the
+    % intended compact support; see eval_knn.
+    warnings.smoothAllCandidates = any(~S2F.subsample & ...
+      (positiveCount == nn) & ...
+      (min(weights, [], 2) > candidateTol * max(weights, [], 2)));
   else
     deltas = supportMargin * max(dist, [], 2);
     weights = S2F.w(dist ./ max(real(deltas), realmin));

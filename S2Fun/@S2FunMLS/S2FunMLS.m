@@ -33,6 +33,8 @@ classdef S2FunMLS < S2Fun
   %            'hat', 'indicator', 'squared hat', 'wendland', and 'wendlandC6'
   %  use_smooth_delta - use a smooth local support radius with about S2F.nn
   %                     neighbors at each center
+  %  candidateFactor  - KNN candidates fetched per center as a multiple of nn
+  %                     (default 2, only used with use_smooth_delta)
   %  use_vor_weights  - multiply the local weights by Voronoi areas
   %
   %  distance - metric for neighbor search (default: 'euclidean')
@@ -67,6 +69,7 @@ classdef S2FunMLS < S2Fun
     delta       = [];     % support radius; zero activates KNN search
 
     use_smooth_delta = true; % use a smooth local support radius
+    candidateFactor = 2;  % KNN candidates per center as a multiple of nn
 
     w           = [];     % compactly supported weight function
     distance    = 'euclidean'; % metric for neighbor search
@@ -225,6 +228,12 @@ classdef S2FunMLS < S2Fun
       S2F.use_smooth_delta = get_option(varargin, {'use_smooth_delta', ...
         'use smooth delta', 'smooth_delta', 'smooth delta'}, true);
 
+      % A smooth support radius is not tied to the neighbor ranking, so more
+      % than nn candidates have to be fetched per center.
+      S2F.candidateFactor = get_option(varargin, {'candidateFactor', ...
+        'candidatefactor', 'candidate factor', 'candidate_factor'}, ...
+        2, 'double');
+
       % The two auxiliary grids have different jobs. Smooth delta uses a dense
       % equispaced grid; regularization calibration uses a much smaller random grid.
       needs_auto_regularization = S2F.regularize && ...
@@ -354,6 +363,15 @@ classdef S2FunMLS < S2Fun
       if ~first_call && ~isempty(S2F.auxgrid)
         S2F = S2F.update_auxgrid_dn;
       end
+    end
+
+    function S2F = set.candidateFactor(S2F, value)
+      if (value < 1)
+        warning(['The candidate buffer cannot be smaller than the ' ...
+          'neighborhood and has been set to 1.']);
+        value = 1;
+      end
+      S2F.candidateFactor = value;
     end
 
     function nn = get.nn(S2F)

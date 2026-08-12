@@ -36,6 +36,8 @@ classdef SO3FunMLS < SO3Fun
   %             'wendland' (default)
   %  use_smooth_delta - make the support radius delta(x) a smooth function with
   %                     close to SO3F.nn neighbors at each center
+  %  candidateFactor -  KNN candidates fetched per center as a multiple of nn
+  %                     (default 2, only used with use_smooth_delta)
   %  use_vor_weights -  additionally multiply w(x,x_i) by the Voronoi Volumne of
   %                     x_i, as in 'Stable Moving Least Squares Approximation'
   %
@@ -75,6 +77,7 @@ classdef SO3FunMLS < SO3Fun
     delta       = [];     % support radius of the weight function
 
     use_smooth_delta = true; % delta(x) is smooth, with close to SO3F.nn neighbors everywhere
+    candidateFactor = 2;  % KNN candidates per center as a multiple of nn
 
     w           = [];     % e.g. Wendland weight function
     distance    = 'euclidean'; % specify metric for neighbor search
@@ -243,6 +246,12 @@ classdef SO3FunMLS < SO3Fun
       SO3F.use_smooth_delta = get_option(varargin, {'use_smooth_delta', ...
         'use smooth delta', 'smooth_delta', 'smooth delta'}, true);
 
+      % A smooth support radius is not tied to the neighbor ranking, so more
+      % than nn candidates have to be fetched per center.
+      SO3F.candidateFactor = get_option(varargin, {'candidateFactor', ...
+        'candidatefactor', 'candidate factor', 'candidate_factor'}, ...
+        2, 'double');
+
       % The auxiliary grid is used for smooth delta and, when necessary, for
       % automatic regularization calibration.
       needs_auto_regularization = SO3F.regularize && ...
@@ -401,6 +410,15 @@ classdef SO3FunMLS < SO3Fun
     if ~first_call && ~isempty(SO3F.auxgrid)
       SO3F = SO3F.update_auxgrid_dn;
     end
+  end
+
+  function SO3F = set.candidateFactor(SO3F, value)
+    if (value < 1)
+      warning(['The candidate buffer cannot be smaller than the ' ...
+        'neighborhood and has been set to 1.']);
+      value = 1;
+    end
+    SO3F.candidateFactor = value;
   end
 
   % make sure nn is an integer value

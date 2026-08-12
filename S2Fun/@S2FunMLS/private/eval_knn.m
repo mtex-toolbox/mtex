@@ -6,13 +6,14 @@ function [vals, warnings, conds, info] = eval_knn(S2F, v, varargin)
 v = v(:);
 N = numel(v);
 supportMargin = 1.10;
+candidateTol = 1e-4;
 wantConds = nargout > 2;
 wantInfo = nargout > 3;
 warnings = initWarnings;
 
 % Smooth support radii need a candidate buffer because many candidates should
 % lie outside the final compact support.
-nn = S2F.nn * (1 + S2F.use_smooth_delta);
+nn = candidate_count_S2(S2F);
 nn_total = nn * N;
 
 [ind, dist] = S2F.nodes.find(v, nn, varargin{:});
@@ -91,8 +92,12 @@ if S2F.use_smooth_delta
     (positiveCount < S2F.dim));
 
   % If every fetched candidate has positive weight, the artificial KNN cutoff
-  % may truncate the intended compact support.
-  candidateLimit = ~S2F.subsample & (positiveCount == nn);
+  % may truncate the intended compact support. Only a candidate that still
+  % carries a numerically relevant weight actually contributes to the local
+  % system; smooth weight functions have decayed to rounding level at the
+  % support boundary, where dropping a node changes nothing.
+  candidateLimit = ~S2F.subsample & (positiveCount == nn) & ...
+    (min(weights, [], 2) > candidateTol * max(weights, [], 2));
   warnings.smoothAllCandidates = any(candidateLimit);
 else
   deltas = supportMargin * max(dist, [], 2);

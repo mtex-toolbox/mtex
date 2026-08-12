@@ -7,6 +7,7 @@ ori = ori(:);
 N = numel(ori);
 numf = numel(SO3F);
 supportMargin = 1.10;
+candidateTol = 1e-4;
 warnings = initWarnings;
 
 grid_vals = reshape(SO3F.values(:), numel(SO3F.nodes), numf);
@@ -18,7 +19,7 @@ end
 
 % KNN mode
 if (SO3F.delta == 0)
-  nn = SO3F.nn * (1 + SO3F.use_smooth_delta);
+  nn = candidate_count_SO3(SO3F);
   [ind, dist] = SO3F.nodes.find(ori, nn, varargin{:}, ...
     'searcher', SO3F.searcher);
 
@@ -40,7 +41,12 @@ if (SO3F.delta == 0)
     positiveCount = sum(weights > 0, 2);
     warnings.smoothTooFew = any(deltaFallback | ...
       (positiveCount < SO3F.dim));
-    warnings.smoothAllCandidates = any(positiveCount == nn);
+
+    % Only a candidate whose weight is numerically relevant can truncate the
+    % intended compact support; see eval_knn.
+    warnings.smoothAllCandidates = any(~SO3F.subsample & ...
+      (positiveCount == nn) & ...
+      (min(weights, [], 2) > candidateTol * max(weights, [], 2)));
   else
     deltas = supportMargin * max(dist, [], 2);
     weights = SO3F.w(dist ./ max(real(deltas), realmin));
