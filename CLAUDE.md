@@ -4,15 +4,23 @@ MTEX is an open-source MATLAB toolbox for crystallographic texture analysis (EBS
 
 ## Running MATLAB
 
-Use `/opt/matlab-2024b/bin/matlab`, not the `matlab` on `$PATH` (that resolves to a newer MATLAB R2025b install which segfaults in headless/`-batch` mode on this machine — a licensing-library crash unrelated to MTEX).
-
-Run from the repo root (`/home/hielscher/mtex/master`) so MATLAB auto-executes the `startup.m` in the current directory, which calls `startup_mtex` and adds all MTEX subfolders to the path:
+Run MATLAB **from the repo root**, so it auto-executes the `startup.m` in the current directory, which calls `startup_mtex` and adds all MTEX subfolders to the path:
 
 ```
-/opt/matlab-2024b/bin/matlab -batch "your_command_here"
+matlab -batch "your_command_here"
 ```
 
-`-batch` runs headlessly (no desktop/menu) and exits after the command finishes. Startup (path setup + MTEX init) typically takes ~10-20s before your command runs, and can spike much higher (minutes) if another MATLAB instance (e.g. an interactive desktop session) is already running and contending for the same license/service-host processes.
+`-batch` runs headlessly (no desktop/menu) and exits after the command finishes. Startup (path setup + MTEX init) typically takes ~10-20s before your command runs, and can spike much higher (minutes) if another MATLAB instance (e.g. an interactive desktop session) is already running and contending for the same CPU, RAM and service-host processes.
+
+> **Which MATLAB to invoke is developer-local.** Install locations, which releases are activated on a given machine, container setups and measured timings differ for everyone, so they do not belong in this file. Put them in an untracked `CLAUDE.local.md` at the repo root (gitignored). If `matlab` on `$PATH` is not the interpreter you want, set `MATLAB_ROOT` (see the bridge scripts below) rather than hardcoding a path here.
+
+MTEX requires the **Statistics and Machine Learning Toolbox**: parts of the EBSD/grain code call `knnsearch`, and on an install without it six core tests fail with `Undefined function 'knnsearch'` (`check_calcGrainsCases`, `check_ebsd`, `check_ebsdImport`, `check_find`, `check_gradient`, `check_jcvoronoi`). A partial install therefore looks like six real regressions — check `ver('stats')` before believing them.
+
+### Known MATLAB release defects
+
+**R2024b — teardown hang.** After a large `calcGrains`/`jcvoronoi2` workload, and after a full `runTests`, MATLAB prints `free(): chunks in smallbin corrupted` at exit and then hangs in teardown with all results already computed, so a `-batch` run looks like a slow computation rather than a finished one. R2024a and R2026a are clean on the same input; see issue #2589. Guard `-batch` jobs with `timeout`, read a hang *after* the last line of output as this rather than as slow code, and prefer the persistent session below, where it does not occur at all.
+
+**MEX and libstdc++.** The committed `mex/*.mexa64` are built against a newer libstdc++ than some MATLAB releases bundle, and fail to load with `GLIBCXX_3.4.32 not found` on those (typically inside a container, where the system GCC runtime does not win). Rebuilding is the fix, but note `mex_install` compiles **in place** and will overwrite the checked-in binaries — build out-of-tree into a scratch directory and `addpath(...,'-begin')` instead.
 
 ### Persistent session for iterative work
 
@@ -26,6 +34,10 @@ docs/agents/matlab-bridge/stop_session.sh   # stop when done iterating
 ```
 
 `matlab_run.py` mirrors `-batch` semantics (nonzero exit on MATLAB error, live stdout/stderr) and clears the base workspace before every call, but keeps the path/MTEX init warm. Caveats: adding *new* `.m` files or folders requires restarting the session (the path is fixed at startup — editing existing files is picked up immediately); the session holds an extra MATLAB license checkout for as long as it's alive, so stop it when not actively iterating. This is separate from and never interferes with the user's own interactive MATLAB desktop session.
+
+Both scripts take the MATLAB install from `MATLAB_ROOT` (falling back to a default), so point that at your own install rather than editing them.
+
+The bridge is the default way to run MATLAB here, not merely a convenience: compute time is identical to `-batch`, but startup is paid once instead of per call, and the R2024b teardown hang above cannot strand a run, because the session never exits. On one measured machine a full `runTests` took the same ~110 s of compute either way, but 300 s of wall time under `-batch` (hung in teardown) against 112 s through the bridge, with subsequent calls costing a few seconds instead of a fresh startup.
 
 ## Code layout
 
@@ -48,9 +60,9 @@ Class-per-folder convention: `@ClassName/` holds a class's methods as separate `
 `tests/` contains standalone `check_*.m` functions — not a `matlab.unittest` suite. Each runs a computation and calls `error(...)`/`assert(...)` on failure. They are sorted into tiers, and `runTests` runs a tier:
 
 ```
-/opt/matlab-2024b/bin/matlab -batch "runTests"            # core, the fast suite
-/opt/matlab-2024b/bin/matlab -batch "runTests('slow')"
-/opt/matlab-2024b/bin/matlab -batch "check_mtex"          # same as runTests
+matlab -batch "runTests"            # core, the fast suite
+matlab -batch "runTests('slow')"
+matlab -batch "check_mtex"          # same as runTests
 ```
 
 | tier | what is in it |

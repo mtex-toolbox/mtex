@@ -7,7 +7,9 @@ set -uo pipefail
 
 BRIDGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$BRIDGE_DIR/../../.." && pwd)"
-MATLAB_BIN="/opt/matlab-2024b/bin/matlab"
+# Override for your own install: MATLAB_ROOT=/opt/matlab-R20XXx ./start_session.sh
+MATLAB_ROOT="${MATLAB_ROOT:-/opt/matlab-2024b}"
+MATLAB_BIN="$MATLAB_ROOT/bin/matlab"
 SESSION_NAME="mtexcc"
 PID_FILE="$BRIDGE_DIR/session.pid"
 LOG_FILE="$BRIDGE_DIR/session.log"
