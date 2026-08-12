@@ -76,7 +76,7 @@ The multi-release work. Everything here is bigger than one branch.
 | P11 | **EBSD simulation** — forward-model a map from an ODF plus a microstructure | 0 | 2 | idea | — | — |
 | P12 | **Texture heterogeneity / local ODF estimation** | 0 | 2 | idea | — | — |
 | P13 | **Single-precision storage** throughout, to halve memory on large maps | 1 | 2 | idea | — | #2466 |
-| P14 | **`gridify` by default** — make the gridded EBSD the normal representation, not an opt-in | 2 | 2 | decide | — | #2295, #2167, #2128, [→](#p14) |
+| P14 | **`gridify` by default** — **implemented 2026-08-12** in `0fcb33a32`: `EBSD.load` grids whenever that loses no measurement, opt out with `'noGrid'` or `setMTEXpref('gridifyOnImport',false)`. G7 closed with it. Documentation still owed, see C0 | 2 | 1 | done | — | #2295, #2167, #2128, [→](#p14) |
 
 ---
 
@@ -90,9 +90,9 @@ The multi-release work. Everything here is bigger than one branch.
 | G4 | Faster `EBSD/smooth` — not per grain | 1 | 1 | idea | — | — |
 | G5 | `minPixel` culling can isolate a pixel from its true grain, producing a malformed single-pixel grain | 2 | 1 | bug | — | #2574 |
 | G6 | `minPixel` is ignored when alpha shapes are used — **fixed 2026-08-12** in `8a3f98703`: neither alpha-specific nor an outright ignore, but a systematic under-cull on every square map, since the Delaunay-only sizing pass runs 8-connected where the segmentation is 4-connected | 2 | 0 | done | — | #2513 |
-| G7 | `calcGrains(EBSD(ebsd))` and `calcGrains(ebsd.gridify)` disagree — different grains from the same data | 3 | 1 | bug | — | #2295, [→](#p14) |
+| G7 | `calcGrains(EBSD(ebsd))` and `calcGrains(ebsd.gridify)` disagree — **fixed 2026-08-12** in `6f95f63b1`: `gridify` pads empty lattice sites with `phaseId = NaN`, which compares false against every phase, so every criterion scored a pad cell 0 against its neighbours and each became its own single-pixel grain. Normalised in `grainBoundaryCriterion/eval`. Indexed grains were never affected | 3 | 0 | done | — | #2295, [→](#p14) |
 | G8 | `calcGrains` errors after `interp` — **not reproducible** on a synthetic map after the `interp` rewrite (2026-08-12: interp to half the step, 14641 points, 89 grains, no error); the reporter's own 50x50 map is attached to the issue and has not been tried | 2 | 0 | triage | — | #1870, [→](#g8) |
-| G9 | `calcPolygonsC` produces negative areas — **not reproducible**, 0 non-positive areas before and after a `minPixel` pass (checked 2026-08-12); reported as intermittent and no data was ever supplied | 2 | 0 | triage | — | #2076 |
+| G9 | Grain polygons that enclose a **negative** area, i.e. rings traced inside out — **reproduced 2026-08-12** via `'removeQuadruplePoints'` rather than the `minPixel` route of the original report: 2 of 99875 grains on `steel1C_1`, 0 for a plain reconstruction on all three benchmark datasets, unchanged at `059ff152a`. Not the mex: forcing the MATLAB `calcPolygons` on the same input gives 6 against `calcPolygonsC`'s 2, so both tracers are handed a boundary graph that does not close. Guarded by `negAreaQP` in the benchmark and a synthetic case in `check_calcGrainsCases`; suspected same root as G38-style quadruple point splitting, see [→](#g9) | 2 | 2 | bug | — | #2590, #2076, [→](#g9) |
 | G10 | `grains(1).poly` and `grains(1).boundary` have incompatible sizes — on a synthetic map `poly` has 17 vertices for 16 segments, i.e. a closed ring, which may be the whole report; needs the reporter's case (checked 2026-08-12) | 2 | 0 | triage | — | #1555 |
 | G11 | `neighbors` returns wrong results | 1 | 0 | triage | — | #865 |
 | G12 | `grainMean` behaves differently since 6.0 beta3 | 1 | 0 | triage | — | #2090 |
@@ -368,6 +368,7 @@ copy; only what is still open is summarised here.
 
 | # | Item | U | Sz | Status | Owner | Refs |
 |---|------|:-:|:--:|--------|-------|------|
+| C0 | **Document `gridify` by default** — `EBSD.load` now returns `@EBSDsquare`/`@EBSDhex` whenever that loses no measurement (`0fcb33a32`), so the pages that describe an import as giving a plain list, and anything that tells the reader to call `gridify` first, are out of date. Also needs the `'noGrid'` flag and the `gridifyOnImport` preference written down, and the note that gridding REORDERS the measurements (`636db51d9`) carried into the user-facing docs rather than only `gridify`'s help | 2 | 2 | planned | — | [→](#p14) |
 | C1 | **3 empty chapters left** — `Misorientations/Twinning`, `Plasticity/SachsModel`, `Plasticity/TwinningTutorial`; the other eleven were written or dropped on 2026-08-10 | 2 | 1 | planned | — | [→](#c-empty) |
 | C2 | 4 prose TODO markers left, all genuine open questions rather than authoring gaps | 1 | 1 | decide | — | [→](#c-todo) |
 | C3 | Four content orphans with no TOC slot: `Dream3dGrains`, `S2FunQuadrature`, `MisorientationGrainExchangeSym`, `changelog` (plus the prose-only `Contribute2Doc`) | 1 | 0 | decide | — | docs/doc-audit-plan.md item 6 |
@@ -469,11 +470,67 @@ Making gridded the default representation would remove the class of problem
 rather than the individual symptoms, but it is a breaking change and needs a
 decision first.
 
+**Decided and implemented 2026-08-12.** `EBSD.load` now grids the data
+whenever that is lossless, and refuses when it is not: the raster is bounded
+before it is built (a stray position asked for a 35201 x 35201 lattice),
+`gridify` runs inside a `try`, and the result is kept only if no indexed
+measurement was dropped. `eclogite.ctf` fails that last test - 613 indexed
+measurements over 565 lattice cells - and comes back as a plain list with a
+`MTEX:load:notOnGrid` warning. Opt out per call with `'noGrid'`, globally
+with `setMTEXpref('gridifyOnImport',false)`.
+
+G7 was fixed on the way and separately (`6f95f63b1`): the two representations
+disagreed because `gridify` pads empty lattice sites with `phaseId = NaN`,
+which compares false against every phase, so every criterion scored a pad
+cell 0 against its neighbours and each became its own single-pixel grain - a
+solid 5841 cell hole gave 5842 notIndexed grains instead of 6. Normalised in
+`grainBoundaryCriterion/eval`. The indexed grain count was never affected,
+which is why it stayed hidden.
+
+Note the reproduction above no longer distinguishes anything: after
+`a5bc0f427` a plain list, a column major and a row major gridded map all give
+3100 / 2905 / 2109862.588230 on forsterite. What remains is that gridding
+REORDERS the measurements and cannot avoid it - the layout fixes dim 1 to y
+while a .ctf runs x fastest - documented in `gridify`'s help. `calcGrains` is
+invariant under that; `removeQuadruplePoints` is not, see G9.
+
 ### G13
 Note that FMC was rewritten on 2026-07-25 — saliency was dead code and
 `quatmax` was chaotic; level-3 ARI went 0.84 → 0.95 at 2.7× the speed. #539
 predates that rewrite and has not been re-checked against it. Re-verify
 before spending time on it.
+
+### G9
+Reproduced 2026-08-12, by a different route than the original report:
+
+```matlab
+ebsd = EBSD.load('1C_1.ctf'); i = ebsd('indexed');
+nnz(calcGrains(i).area < 0)                            % 0 of 104814
+nnz(calcGrains(i,'removeQuadruplePoints').area < 0)    % 2 of 99875
+```
+
+`nnz(grains.area < 0)` is the detector; a negative area means the ring was
+traced inside out, and `area`, `equivalentRadius`, `smoothBoundary` and every
+plot then read a polygon that is not the grain.
+
+Not the mex, contrary to #2076: forcing the MATLAB `calcPolygons` on the same
+input gives **6** where `calcPolygonsC` gives **2**, so both tracers are being
+handed a boundary graph that does not close and merely disagree about how to
+fail on it. Not `minPixel` either - `'removeQuadruplePoints'` alone is enough -
+and not new, the count is unchanged at `059ff152a`.
+
+Suspected root: `removeQuadruplePoints` splits a quadruple point by
+duplicating the vertex and attaching two of the four incident edges to the
+copy, and which two is read off an angular sort of `atan2(dx,dy)`. On a square
+grid one edge lies exactly on that function's branch cut at +-pi, so 1e-14 in a
+vertex position flips it and swaps the pairing. Deciding the pairing from the
+data instead made the breakage far worse - up to 117 negative-area grains on
+`alphaBetaTitanium` - which says the choice cannot be made per quadruple point:
+a grain whose boundary runs through two of them needs both splits to agree.
+That attempt is reverted (`4f351d38e`); read it before trying again.
+
+Guarded meanwhile: `check_calcGrainsCases` asserts no negative area and closed
+rings on a dense synthetic map, and the benchmark pins `negAreaQP` at 0/0/2.
 
 ### G33
 Two related requests: default filter masks whose size follows the grid
