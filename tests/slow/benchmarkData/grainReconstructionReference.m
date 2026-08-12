@@ -25,33 +25,56 @@ function ref = grainReconstructionReference()
 % also drops boundary between two grains it joins that touch elsewhere, which
 % needs a large map to occur. That -55.4 is long-standing and correct.
 %
-% This metric has a history of moving on its own. forsterite.nGrainsQP was
-% 2932, then 2933, then found to flip between 2933 and 2931 across sessions
-% with byte-identical code - root caused to a tie-break in calcUnitCell's
-% detectLattice and fixed. Treat a drift here as suspect, but read
-% totalLen/totalLenQP before concluding anything from the counts alone.
+% Regenerated 2026-08-12. Only the removeQuadruplePoints columns moved -
+% forsterite.nGrainsQP 2931 -> 2905, steel1C_1.nGrainsQP 99843 -> 97856 and
+% totalLenQP 155980.2966759323 -> 155959.3580926837. nGrains and totalLen are
+% unchanged on all three datasets except in their last digits, which is
+% summation order (2 ulp on forsterite, 1 on steel1C_1), so the plain
+% reconstruction is untouched.
+%
+% Two intended changes cause it. b2ca13189: the pairing of the four edges at
+% a quadruple point was decided by their position in an angular sort, and on
+% a square grid one edge sits exactly on atan2's branch cut at +-pi, so 1e-14
+% in a vertex position flipped it between +pi and -pi and swapped which
+% diagonal got the new boundary. It is now decided by the grain boundary
+% criterion. 14463616f: where the criterion is indifferent - it answers on
+% three levels only - the smaller misorientation angle decides, i.e. join
+% what matches better.
+%
+% This supersedes the warning below about the metric moving on its own. It no
+% longer can: the result is invariant under the order of the measurements
+% (shuffling forsterite's 187467 indexed pixels reproduces grain count and
+% the sorted segment lengths), and forsterite as a plain list, gridified
+% column major and gridified row major now all give 3100 / 2905 /
+% 2109862.588230. Before, those three disagreed, which is how a regenerated
+% mtexdata cache could silently move this file's numbers.
+%
+% The history that warning records: forsterite.nGrainsQP was 2932, then 2933,
+% then found to flip between 2933 and 2931 across sessions with byte-identical
+% code - root caused to a tie-break in calcUnitCell's detectLattice and fixed.
+% Read totalLen/totalLenQP before concluding anything from the counts alone.
 
 ref = struct();
 
 ref.forsterite.nGrains    = 3100;
-ref.forsterite.nGrainsQP  = 2931;
+ref.forsterite.nGrainsQP  = 2905;
 ref.forsterite.totalLen   = 2109862.5882302765;
-ref.forsterite.totalLenQP = 2109862.5882302765;
+ref.forsterite.totalLenQP = 2109862.5882302760;
 ref.forsterite.meanArea   = 196661.7753931304;
-ref.forsterite.time       = 0.5919;
+ref.forsterite.time       = 0.5609;
 
 ref.copper.nGrains    = 755;
 ref.copper.nGrainsQP  = 755;
 ref.copper.totalLen   = 37299.7178983177;
 ref.copper.totalLenQP = 37299.7178983177;
 ref.copper.meanArea   = 462.1479171713;
-ref.copper.time       = 0.0719;
+ref.copper.time       = 0.0733;
 
 ref.steel1C_1.nGrains    = 104814;
-ref.steel1C_1.nGrainsQP  = 99843;
-ref.steel1C_1.totalLen   = 156035.7019482653;
-ref.steel1C_1.totalLenQP = 155980.2966759323;
+ref.steel1C_1.nGrainsQP  = 97856;
+ref.steel1C_1.totalLen   = 156035.7019482664;
+ref.steel1C_1.totalLenQP = 155959.3580926837;
 ref.steel1C_1.meanArea   = 0.5428519276;
-ref.steel1C_1.time       = 8.9355;
+ref.steel1C_1.time       = 8.8119;
 
 end
