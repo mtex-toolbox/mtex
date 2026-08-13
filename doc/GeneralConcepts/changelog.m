@@ -76,6 +76,16 @@
 % longer line k of the file. The original ids are kept in |ebsd.oldId|. See
 % <EBSDGrid.html Square and Hex Grids>.
 %
+% One syntax had to go for this: |ebsd(x,y)| used to be the measurement
+% closest to the coordinate |(x,y)| on a list, while on a gridded map the
+% very same expression is the pixel in row |x| and column |y|. Since almost
+% every file now arrives gridded, that silent difference would decide itself
+% by the data rather than by the script, so |ebsd(x,y)| is an error now. Ask
+% for the coordinate by name
+%
+%   ebsd('xy',x,y)   % the measurement closest to (x,y), grid or list
+%   ebsd(i,j)        % the pixel in row i and column j, gridded map only
+%
 % *EBSD Analysis No Longer Needs a Grid*
 %
 % Computations that used to require <EBSD.gridify.html |gridify|> now work

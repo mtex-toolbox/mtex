@@ -56,6 +56,18 @@ plot(ebsd('id',ebsd.id(16:18)),'edgeColor','red','facecolor','none','linewidth',
 legend off
 hold off
 
+%%
+% A pixel may also be addressed by where it sits in the map, using the
+% option |'xy'|
+
+ebsd('xy',44.5,1)
+
+%%
+% Note that |ebsd(x,y)| does NOT do this - it is an error. On a gridded map
+% the very same expression is the pixel in row x and column y, see below, so
+% one and the same line would mean two different pixels depending on whether
+% the map happens to be stored as a matrix or as a list. |'xy'| means the
+% same in both cases.
 
 %% Square Grids
 %
