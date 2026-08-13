@@ -123,6 +123,7 @@ over budget, trim from outside these before trimming inside them.
 | spherical axes labels | `plotting/check_sphericalAxesLabels` |
 | color scale options | `plotting/check_logColorScale` |
 | plots leave hold state untouched | `plotting/check_holdStatePlots` |
+| EBSD map plot backends (patch/imagesc/surf), per-pixel shape contract | `plotting/check_ebsdMapBackends` |
 
 ## Fixtures
 
