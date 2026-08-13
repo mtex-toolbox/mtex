@@ -113,7 +113,9 @@ end
 % if different color are given - separate them
 [c,~,id] = unique(c,'rows');
 
-if length(id) == length(dir)
+byColor = length(id) == length(dir);
+
+if byColor
 
   varargin = delete_option(varargin,'color',1);
 
@@ -121,32 +123,38 @@ if length(id) == length(dir)
   for i = 1:size(c,1)
     h(i) = optiondraw(quiver3(pos.x(id == i),pos.y(id == i),pos.z(id == i),...
       dir.x(id == i),dir.y(id == i),dir.z(id == i)),varargin{:},'color',c(i,:));  %#ok<AGROW>
-
-    if doMarker, centerMarker(posC(id == i),c(i,:),varargin{:}); end
   end
   clear hG
 
 else
   h = optiondraw(quiver3(pos.x,pos.y,pos.z,dir.x,dir.y,dir.z),varargin{:});
-
-  % note that line() adds to the axes irrespective of the hold state
-  if doMarker, centerMarker(posC,h.Color,varargin{:}); end
 end
 
-% The heads come last: their upper bound is given in points on the screen,
-% which is known only once the arrows have set the axis limits.
-if doHead
+% The heads and the markers are decorations of the arrows drawn above, so
+% they must not take a color of their own: line() advances the color order
+% of the axes even when it is given an explicit color, which would leave the
+% next plot with the wrong one - the two quiver calls at the end of
+% doc/Plasticity/SchmidtFactor.m came out blue and green instead of blue and
+% red. Note that line() also draws irrespective of the hold state.
+ax = gca; colorIndex = ax.ColorOrderIndex;
 
-  headLen = headLength(gca,dir,oS,frac,varargin{:});
+% the heads come last of all: their upper bound is given in points on the
+% screen, which is known only once the arrows have set the axis limits
+if doHead, headLen = headLength(ax,dir,oS,frac,varargin{:}); end
 
-  if length(id) == length(dir)
-    for i = 1:size(c,1)
+if byColor
+  for i = 1:size(c,1)
+    if doMarker, centerMarker(posC(id == i),c(i,:),varargin{:}); end
+    if doHead
       arrowHead(pos(id == i),dir(id == i),oS,headLen(id == i),c(i,:),varargin{:});
     end
-  else
-    arrowHead(pos,dir,oS,headLen,h.Color,varargin{:});
   end
+else
+  if doMarker, centerMarker(posC,h.Color,varargin{:}); end
+  if doHead, arrowHead(pos,dir,oS,headLen,h.Color,varargin{:}); end
 end
+
+ax.ColorOrderIndex = colorIndex;
 
 if nargout == 0, clear h; end
 

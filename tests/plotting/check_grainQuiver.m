@@ -158,6 +158,42 @@ h = quiver(grains,dir,'noScaling');
 X = [h.XData(:) h.YData(:) h.ZData(:)];
 assert(all(norm(vector3d.byXYZ(X) - pos) < 1e-10),'noScaling must not shift');
 
+%% the decorations do not consume a color of the axes
+
+% line() takes the next color of the axes color order even when it is given
+% an explicit one, so the markers and the heads used to advance it by two
+% per call: the two quiver commands at the end of doc/Plasticity/
+% SchmidtFactor.m came out blue and green instead of blue and red
+
+close all
+ax = gca; hold on
+co = ax.ColorOrder;
+
+h1 = quiver(grains,dirT);
+assert(ax.ColorOrderIndex == 2, ...
+  'one quiver must consume exactly one color, it consumed %d',ax.ColorOrderIndex-1);
+
+h2 = quiver(grains,dirT);
+assert(ax.ColorOrderIndex == 3, ...
+  'the second quiver must consume exactly one color, it consumed %d',ax.ColorOrderIndex-2);
+
+assert(max(abs(h1.Color - co(1,:))) < 1e-6, ...
+  'the first quiver got %s instead of the first color %s',...
+  mat2str(h1.Color,3),mat2str(co(1,:),3));
+assert(max(abs(h2.Color - co(2,:))) < 1e-6, ...
+  'the second quiver got %s instead of the second color %s',...
+  mat2str(h2.Color,3),mat2str(co(2,:),3));
+
+% and the decorations take the color of the arrows they belong to
+hM = findobj(ax,'tag','grainCenter'); hH = findobj(ax,'tag','arrowHead');
+assert(numel(hM)==2 && numel(hH)==2,'expected a marker and a head per quiver');
+assert(isequal(sortrows(round(vertcat(hM.MarkerFaceColor),6)), ...
+  sortrows(round([h1.Color;h2.Color],6))), ...
+  'the markers do not have the colors of their arrows');
+assert(isequal(sortrows(round(vertcat(hH.Color),6)), ...
+  sortrows(round([h1.Color;h2.Color],6))), ...
+  'the heads do not have the colors of their arrows');
+
 %% all of it follows the plotting convention, not the z axis
 
 assert(angle(N,-zvector) < 1e-10,...
@@ -174,6 +210,7 @@ assert(all(norm(vector3d.byXYZ(X(3:4,:)) - pos(3:4)) < 1e-10),...
   'inverted convention: the arrows that now point out of the screen must start at the centroid');
 
 close all
+disp('check_grainQuiver: passed');
 
 end
 
