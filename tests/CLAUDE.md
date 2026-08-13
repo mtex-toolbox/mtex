@@ -121,6 +121,7 @@ over budget, trim from outside these before trimming inside them.
 | polar histogram of directions, `setView` on a polaraxes | `plotting/check_polarHistogram` |
 | `'arrow'` option of `vector3d/scatter` (e.g. `plotIPDF`) | `plotting/check_arrowPlot` |
 | `grain2d/quiver` - arrow anchoring, center markers, head size | `plotting/check_grainQuiver` |
+| overlays on a map (crystal shapes, S2Fun) sit on the viewer's side | `plotting/check_mapOverlays` |
 | spherical axes labels | `plotting/check_sphericalAxesLabels` |
 | color scale options | `plotting/check_logColorScale` |
 | plots leave hold state untouched | `plotting/check_holdStatePlots` |

@@ -101,7 +101,16 @@ if nargin>1 && isnumeric(varargin{1})
 elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   cS = varargin{1};
-  pos = ebsd.pos + cS.diameter * ebsd.N;
+
+  % Lift the shapes off the map TOWARDS THE VIEWER. ebsd.N is the normal of
+  % the map and may point either way - with the default convention, which
+  % has z pointing into the screen, it points away, and the shapes were
+  % drawn behind the map where the depth sorting hides them.
+  % grain2d/plot corrects the sign the same way.
+  s = sign(dot(ebsd.N,mP.how2plot.outOfScreen,'noAntipodal'));
+  if s == 0, s = 1; end % the map is seen edge on - either side will do
+
+  pos = ebsd.pos + s * cS.diameter * ebsd.N;
   plot(pos.x,pos.y,pos.z,ebsd.orientations * cS,varargin{2:end});
   
 else % phase plot
