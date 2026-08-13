@@ -39,21 +39,53 @@ ori = ori(:);
 r = repelem(SO3F.r.normalize,l);
 w = repelem(SO3F.weights./l,l);
 
-g = vector3d.zeros(size(ori));
-
 tS = SO3TangentSpace.extract(varargin{:});
 
-if tS.isRight
-  for i = 1:length(h)
-    g = g + w(i) * SO3F.psi.grad(dot(ori*h(i),r(i),'noSymmetry'),'polynomial') .* ...
-        cross(h(i),inv(ori) * r(i));
+% eval averages over the proper specimen symmetry as well as over the
+% crystal symmetry - see the SS.properGroup factor in @SO3FunCBF/eval - so
+% the gradient has to do the same. Leaving it out made the analytic gradient
+% disagree with its own finite difference by a relative 5 for any non
+% trivial specimen symmetry while agreeing to 2e-7 for SS = '1', which is
+% what #2586 reported.
+%
+% For one symmetry element s the summand is F(s*ori), so by
+% s*exp(t*v) = exp(t*(s*v))*s the two tangent spaces pick it up differently:
+% the left (specimen) gradient of F(s*ori) is s^-1 times the left gradient
+% of F at s*ori, while the right (crystal) gradient is just the right
+% gradient of F at s*ori. Hence the inv(sRot) on the left branch only.
+
+ssRot = rotation(SO3F.SS.properGroup);
+
+g = vector3d.zeros(size(ori));
+
+for k = 1:length(ssRot)
+
+  sRot = ssRot(k);
+
+  % rotation * vector3d lays the result out as nRot x nVec, so a single
+  % symmetry element turns the column ori into a row - reshape it back, or
+  % the accumulation below silently expands into a matrix
+  sOri = reshape(sRot * ori,size(ori));
+  gk = vector3d.zeros(size(ori));
+
+  if tS.isRight
+    for i = 1:length(h)
+      gk = gk + w(i) * SO3F.psi.grad(dot(sOri*h(i),r(i),'noSymmetry'),'polynomial') .* ...
+          cross(h(i),inv(sOri) * r(i));
+    end
+  else
+    for i = 1:length(h)
+      gk = gk + w(i) * SO3F.psi.grad(dot(h(i),inv(sOri) * r(i),'noSymmetry'),'polynomial') .* ...
+          cross(sOri*h(i),r(i));
+    end
+    gk = reshape(inv(sRot) * gk,size(ori));
   end
-else
-  for i = 1:length(h)
-    g = g + w(i) * SO3F.psi.grad(dot(h(i),inv(ori) * r(i),'noSymmetry'),'polynomial') .* ...
-        cross(ori*h(i),r(i));
-  end
+
+  g = g + gk;
+
 end
+
+g = g ./ length(ssRot);
 
 g = SO3TangentVector(g,ori,tS,SO3F.CS,SO3F.SS);
 g = reshape(g,s);
