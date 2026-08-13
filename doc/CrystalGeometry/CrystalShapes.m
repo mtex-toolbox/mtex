@@ -59,10 +59,9 @@ hold on
 scaling = 100; % scale the crystal shape to have a nice size
 
 % plot at position (500,500) the orientation of the corresponding crystal.
-% Note the 'xy' - it asks for the measurement at that POSITION in the map.
-% A plain ebsd(500,500) would mean the same thing on a list of pixels, but
-% row 500 column 500 on a gridded map, which is what an import gives you.
-plot(500,500,50, ebsd('xy',500,500).orientations * cS * scaling,...
+% we have to choose z = -50 such that the crystal shape becomes visible
+% above the map
+plot(500,500,-50, ebsd('xy',500,500).orientations * cS * scaling,...
   'faceAlpha',0.5,'linewidth',2)
 hold off
 drawNow(gcm,'final')

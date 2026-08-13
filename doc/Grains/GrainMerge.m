@@ -153,9 +153,9 @@ plot(mergedGrains,mergedGrains.GOS  ./ degree)
 % command will not give the right result
 
 close all
-plot(mergedGrains(16).boundary,'linewidth',2)
+plot(mergedGrains(22).boundary,'linewidth',2)
 hold on
-plot(ebsd(mergedGrains(16)),ebsd(mergedGrains(16)).orientations)
+plot(ebsd(mergedGrains(22)),ebsd(mergedGrains(22)).orientations)
 hold off
 
 %%
@@ -171,8 +171,8 @@ ebsd_merged('indexed').grainId = parentId(grains.id2ind(ebsd('indexed').grainId)
 %%
 % Now the variable |ebsd_merged| can be indexed by the merged grains, i.e.
 
-plot(ebsd_merged(mergedGrains(16)),ebsd_merged(mergedGrains(16)).orientations)
+plot(ebsd_merged(mergedGrains(22)),ebsd_merged(mergedGrains(22)).orientations)
 hold on
-plot(mergedGrains(16).boundary,'linewidth',2)
+plot(mergedGrains(22).boundary,'linewidth',3)
 hold off
 

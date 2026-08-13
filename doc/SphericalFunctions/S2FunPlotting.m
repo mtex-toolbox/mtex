@@ -33,8 +33,8 @@ contourf(sF1,'upper');
 plot3d(sF1);
 
 how2plot = plottingConvention;
-how2plot.north = xvector;
-how2plot.outOfScreen = vector3d(0,1,2);
+how2plot.north = yvector;
+how2plot.outOfScreen = vector3d(1,0,2);
 setCamera(how2plot)
 
 

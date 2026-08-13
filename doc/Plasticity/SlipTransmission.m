@@ -58,7 +58,7 @@ hold on
 quiver(grains,sSGrain.b,'displayName','slip direction','project2plane')
 hold off
 
-legend show
+legend Location northeast
 
 %%
 % We may also analyze the distribution of the slip directions in a pole
@@ -100,7 +100,7 @@ hold on
 quiver(grains,sSGrain.b,'displayName','slip direction','project2plane')
 hold off
 
-legend show
+legend Location northeast
 
 %% Compatibility of slip systems
 %
@@ -126,6 +126,8 @@ quiver(grains,sSGrain.trace,'displayName','slip plane')
 hold on
 quiver(grains,sSGrain.b,'displayName','slip direction','project2plane')
 hold off
+
+legend Location northeast
 
 %% Plot m' in misorientation space
 % Since m' depends on the misorientation only why may plot it directly in

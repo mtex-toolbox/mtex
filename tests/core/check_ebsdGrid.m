@@ -21,6 +21,7 @@ checkGridShapes;
 checkMultiColumnProps;
 checkLatticeBasisCanonical;
 checkLatticeIndexOrderInvariance;
+checkPaddedExtent;
 
 disp('check_ebsdGrid: passed');
 
@@ -669,5 +670,73 @@ ebsd = EBSD(vector3d(pos(:,1),pos(:,2),zeros(n,1)), rotation.rand(n,1), ...
   ones(n,1), {crystalSymmetry('m-3m')}, struct());
 
 ij = ebsd.lattice.ij;
+
+end
+
+% =========================================================================
+function checkPaddedExtent
+% extent is the bound of the MEASUREMENTS, not of the raster they sit in
+%
+% gridify completes a map into a rectangular raster of lattice cells. When
+% the lattice is rotated against the map axes - mtexdata sharp is the real
+% case, its scan rows are (2,0) apart with every row shifted by (-0.5,-0.5)
+% against the one above - a rectangular measured region is a diamond in
+% lattice indices, so closing the raster pads far outside the measurements:
+% 56% of the cells there, and a bounding box three times too large in y.
+% extent used to take the min/max over those padding cells as well, which
+% left every consumer of it (the axis limits of a map plot, grain2d
+% isBoundary) working on a map much larger than the one that was measured.
+
+ebsd = makeRotatedLatticeMap;
+ebsdG = ebsd.gridify;
+
+% the case only bites when the raster really is padded well beyond the data
+nPad = nnz(isnan(ebsdG.phaseId));
+assert(nPad > 0.2*numel(ebsdG), ...
+  'check_ebsdGrid: expected a strongly padded raster, got %d of %d cells', ...
+  nPad, numel(ebsdG));
+
+pos = ebsdG.pos;
+raster = [min(pos.x(:)) max(pos.x(:)) min(pos.y(:)) max(pos.y(:))];
+
+ext = ebsd.extent;
+assert(isequal(ebsdG.extent, ext), ...
+  'check_ebsdGrid: gridify changed the extent from %s to %s', ...
+  mat2str(ext(1:4),4), mat2str(ebsdG.extent(1:4),4));
+
+assert(raster(1) < ext(1) && raster(2) > ext(2) && ...
+  raster(3) < ext(3) && raster(4) > ext(4), ...
+  'check_ebsdGrid: the padded raster %s should surround the extent %s', ...
+  mat2str(raster,4), mat2str(ext(1:4),4));
+
+% and it is exactly the bound of the cells that carry a measurement
+isPad = isnan(ebsdG.phaseId);
+measured = [min(pos.x(~isPad)) max(pos.x(~isPad)) ...
+  min(pos.y(~isPad)) max(pos.y(~isPad))];
+assert(max(abs(ext(1:4) - measured)) < 1e-10, ...
+  'check_ebsdGrid: extent %s is not the bound of the measurements %s', ...
+  mat2str(ext(1:4),4), mat2str(measured,4));
+
+end
+
+% =========================================================================
+function ebsd = makeRotatedLatticeMap
+% a map on a lattice rotated against the map axes, as in mtexdata sharp
+%
+% Rows 2 apart in x, each row shifted by (-0.5,-0.5) against the one above,
+% and cut to a rectangle in x and y. The shortest lattice vectors are then
+% (0.5,0.5) and (1,-1), i.e. calcUnitCell returns a cell rotated against the
+% map axes, and the rectangle is a diamond in lattice indices.
+
+nRow = 12; xMax = 10;
+
+x = []; y = [];
+for j = 0:nRow-1
+  xj = mod(-0.5*j,2):2:xMax;
+  x = [x, xj]; y = [y, -0.5*j*ones(size(xj))]; %#ok<AGROW>
+end
+
+ebsd = EBSD(vector3d(x(:),y(:),0), rotation.rand(numel(x),1), ...
+  ones(numel(x),1), {'notIndexed',crystalSymmetry('m-3m')}, struct());
 
 end

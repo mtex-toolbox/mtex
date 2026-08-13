@@ -17,7 +17,7 @@ csBCC = ebsd.CSList(2); % austenite bcc:
 csFCC = ebsd.CSList(3); % martensite fcc:
 
 % grain reconstruction
-[grains,ebsd] = calcGrains(ebsd,'angle',3*degree,'minPixel',5);
+[grains,ebsd] = calcGrains(ebsd,'angle',3*degree,'minPixel',2,'removeQuadruplePoints');
 
 % plot the data and the grain boundaries
 plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')

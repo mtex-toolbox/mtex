@@ -135,9 +135,10 @@ elseif nargin>1 && (isa(varargin{1},'S2Fun') || isa(varargin{1},'ipfColorKey'))
   if isa(S2F,'ipfColorKey'), S2F = S2Fun(S2F); end
   if length(S2F)==3, varargin = ['rgb',varargin]; end
   
-  % position in the map
+  % position in the map - towards the viewer, as for the crystal shapes above
   scaling = sqrt(grains.area);
-  shift = grains.centroid + 2*scaling *grains.N;
+  shift = grains.centroid + ...
+    2*scaling * grains.N * sign(dot(grains.N,pC.outOfScreen));
   
   for k = 1:length(grains)
 

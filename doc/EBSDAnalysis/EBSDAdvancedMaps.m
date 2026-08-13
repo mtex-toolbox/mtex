@@ -49,7 +49,7 @@ csFo = ebsd('Forsterite').CS;
 % The oldest way to colorize orientations is to simply map the three Euler
 % angles into the RGB values. This can be done by
 
-colorKey = BungeColorKey(csFo);
+colorKey = BungeColorKey(ebsd('Fo'));
 
 plot(ebsd('fo'),colorKey.orientation2color(ebsd('fo').orientations))
 

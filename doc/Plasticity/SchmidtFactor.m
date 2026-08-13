@@ -302,8 +302,8 @@ mtexColorbar southoutside
 sSGrains = grains.meanOrientation .* sS(bMaxId) ;
 hold on
 bVec = sSGrains.b; bVec.z = 0;
-quiver ( grains , bVec)
 quiver ( grains , sSGrains.trace)
+quiver ( grains , bVec)
 hold off
 
 %#ok<*ASGLU>

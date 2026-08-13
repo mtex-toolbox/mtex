@@ -24,19 +24,19 @@ plot(grains,grains.meanOrientation)
 % Central for the analysis of grain to grain relationships is the function 
 % <grain2d.neighbors.html |grains.neighbours|>. It return a list of pairs
 % of neighboring grain ids. Each row of the list contains the ids of two
-% neighboring grains. In the following lines choose the row number 170 and
+% neighboring grains. In the following lines choose the row number 188 and
 % outline the corresponding grains
 
 pairs = grains('indexed').neighbors;
 
 hold on
-plot(grains(pairs(170,:)).boundary,'LineWidth',4,'linecolor','b')
+plot(grains(pairs(188,:)).boundary,'LineWidth',4,'linecolor','b')
 hold off
 
 %%
 % In order to compute the misorientation between these two grains we can do
 
-mori = inv(grains(pairs(170,1)).meanOrientation) * grains(pairs(170,2)).meanOrientation
+mori = inv(grains(pairs(188,1)).meanOrientation) * grains(pairs(188,2)).meanOrientation
 
 %%
 % This can be generalized to compute the misorientations between
@@ -76,17 +76,17 @@ isTwinning = angle(mori,twinning) < 3*degree;
 % least one grain should by part of |grains|. This can be accomplished by
 % the option |'full'|.
 
-% get all pairs containing grain 83
-pairs = grains(83).neighbors('full');
+% get all pairs containing grain 92
+pairs = grains(92).neighbors('full');
 
 % remove center grain 83 from this list
-pairs(pairs == 83) = [];
+pairs(pairs == 92) = [];
 
 plot(grains,grains.meanOrientation,'micronbar','off')
 hold on
-plot(grains(pairs).boundary,'lineColor','blue','lineWidth',3)
+plot(grains(pairs),'FaceColor','black','FaceAlpha',0.5)
 hold on
-plot(grains(83).boundary,'lineColor','red','lineWidth',3)
+plot(grains(92).boundary,'lineColor','white','lineWidth',3)
 hold off
 
 %#ok<*NASGU> 
