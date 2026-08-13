@@ -255,8 +255,11 @@ hold off
 % orientations of each pixel in our original EBSD map. To this end we first
 % find pixels that now belong to an austenite grain.
 
-% consider only martensite pixels that now belong to austenite grains
-isNowFCC = parentGrains.phaseId(max(1,parentEBSD.grainId)) == 3 & parentEBSD.phaseId == 2;
+% consider only martensite pixels that now belong to austenite grains. The
+% (:) matter: on a gridded map every per pixel property has the shape of the
+% map, but phaseId is the storage and stays a column, so combining the two
+% without flattening compares an (r x c) against an (r*c x 1)
+isNowFCC = parentGrains.phaseId(max(1,parentEBSD.grainId(:))) == 3 & parentEBSD.phaseId(:) == 2;
 
 % compute parent orientation
 [parentEBSD(isNowFCC).orientations, fit] = calcParent(ebsd(isNowFCC).orientations,...

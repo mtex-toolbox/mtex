@@ -144,14 +144,18 @@ setColorRange([-0.005,0.005])
 drawNow(gcm,'figSize','large')
 
 %%
-% If you prefer to address the curvature by pixel coordinates rather than by
-% a linear index, <EBSD.gridify.html |gridify|> the map first. The tensor
-% then comes back in the shape of the map, and |kappa(2,3)| is the curvature
-% of the pixel in row 2, column 3.
+% Our map is stored as a matrix - which is how it was imported, see
+% <EBSDGrid.html Square and Hex Grids> - so the curvature tensor comes back
+% in the shape of the map and may be addressed by pixel coordinates rather
+% than by a linear index. |kappa(2,3)| is the curvature of the pixel in row
+% 2, column 3.
 
-kappaGrid = ebsd.gridify.curvature;
+kappa(2,3)
 
-kappaGrid(2,3)
+%%
+% For a map that is kept as a plain list of pixels the curvature is a list
+% as well; <EBSD.gridify.html |gridify|> the map first if you want the
+% matrix form.
 
 %% The incomplete dislocation density tensor
 % According to Kroener the curvature tensor is directly related to the

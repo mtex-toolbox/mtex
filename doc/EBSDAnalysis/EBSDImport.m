@@ -20,6 +20,36 @@ plot(ebsd('Magnesium'),ebsd('Magnesium').orientations)
 % e.g., <GrainReconstruction.html grain reconstruction>, <EBSD2ODF.html ODF
 % reconstruction>, <EBSDMisorientation misorientation analysis>, etc.
 %
+%% Imported Data Comes on Its Grid
+%
+% Note that the variable above is not a plain @EBSD but an @EBSDsquare.
+% Almost every scan is a complete raster on a square or a hexagonal grid,
+% and <EBSD.load.html |EBSD.load|> keeps it that way: the measurements are
+% stored as a matrix, so that |ebsd(i,j)| addresses a scan position and
+% plotting and denoising do not have to reconstruct the raster first. The
+% details are described in <EBSDGrid.html Square and Hex Grids>.
+%
+% Data that would lose measurements by being gridded - because two of them
+% fall into the same lattice cell, or because the positions are too
+% irregular to span a raster at all - is never gridded. Such a file is
+% imported as a plain list of pixels and states why
+%
+%   Warning: 48 of 613 indexed measurements share a lattice cell with
+%   another one, so gridding them would drop those measurements. Keeping the
+%   data as a list [...]
+%
+% You may also ask for a plain list explicitly, for a single import
+%
+%   ebsd = EBSD.load(fname,'noGrid')
+%
+% or for the whole session
+%
+%   setMTEXpref('gridifyOnImport',false)
+%
+% Neither is needed for the analysis - all MTEX functions accept both
+% representations - and you can convert at any time with |EBSD(ebsd)| and
+% <EBSD.gridify.html |gridify|>.
+%
 %% Importing EBSD data using the import wizard
 %
 % In many cases however, importing EBSD data is not that straightforward as

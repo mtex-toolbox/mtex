@@ -19,21 +19,18 @@ ebsd = ebsd.project2FundamentalRegion(grains);
 plot(ebsd,ebsd.orientations)
 
 %%
-% In most cases it is useful to gridify the data before doing
-% interpolation.
-
-ebsd = ebsd.gridify
-
-%%
-% Now we can use the command <EBSD.interp.html |interp|> to interpolate the
-% orientation at arbitrary coordinates |x| and |y|.
+% The command <EBSD.interp.html |interp|> interpolates the orientation at
+% arbitrary coordinates |x| and |y|. It does not require the data to be on
+% a grid - a plain @EBSD, a phase subset and a rotated or sheared map work
+% just as well - but our map is an @EBSDsquare anyway, since that is how it
+% was imported, see <EBSDGrid.html Square and Hex Grids>.
 
 x = 30.5; y = 5.5;
 e1 = interp(ebsd,x,y)
 
 %%
-% By default the command <EBSDsquare.interp.html |interp|> performs inverse
-% distance interpolation. This is different to 
+% By default the command <EBSD.interp.html |interp|> performs inverse
+% distance interpolation. This is different to
 
 e2 = ebsd('xy',x,y)
 
@@ -76,7 +73,6 @@ xlim(ebsd.extent(1:2)), ylim(ebsd.extent(3:4))
 % to demonstrate this functionality we start by EBSD data on a hex grid
 
 mtexdata ferrite silent
-ebsd = ebsd.gridify;
 plot(ebsd(1:50,1:100),ebsd(1:50,1:100).orientations)
 
 %%

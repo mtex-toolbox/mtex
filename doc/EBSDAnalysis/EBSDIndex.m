@@ -8,10 +8,13 @@
 mtexdata twins
 
 %%
-% and restricting it to very small rectangular subset
+% The imported map is an @EBSDsquare, i.e. it is already stored as a matrix
+% - see <EBSDGrid.html Square and Hex Grids>. Restricting it to a very small
+% rectangular subset gives back a plain list of pixels, since the selection
+% is in general not a rectangle
 
 poly = [44 0 4 2];
-ebsd = ebsd(inpolygon(ebsd,poly));
+ebsd = ebsd(inpolygon(ebsd,poly))
 
 plot(ebsd,ebsd.orientations,'micronbar','off','edgecolor','k','backend','patch')
 
@@ -30,29 +33,34 @@ legend off
 hold off
 
 %%
-% Whether lines or columns run first is not related to MTEX but inherits
-% from the ordering of the imported EBSD data. Since, we have restricted
-% our large EBSD map to the small subset the indices of restricted data
-% does not coincide with the indices of the imported data anymore. However,
-% the original indices are still stored in |ebsd.id|. Lets visualize those
+% Whether lines or columns run first is inherited from the order of the
+% data the subset was taken from. Here that is the gridded map, whose linear
+% index runs down a matrix column, i.e. along y - which is why the numbers
+% above count downwards rather than across. Had the map been imported as a
+% plain list, they would follow the order of the lines in the file instead.
+%
+% Since we have restricted our large EBSD map to the small subset, the
+% indices of the restricted data do not coincide with the indices of the
+% imported data anymore. However, the original indices are still stored in
+% |ebsd.id|. Lets visualize those
 
 plot(ebsd,ebsd.orientations,'micronbar','off','edgecolor','k','backend','patch')
 text(ebsd,ebsd.id)
 
 %%
 % In order to select EBSD data according to their original |id| use the
-% option |'id'|, i.e.,
+% option |'id'|, i.e., the three pixels highlighted above are
 
 hold on
-plot(ebsd('id',316:318),'edgeColor','red','facecolor','none','linewidth',4,'backend','patch')
+plot(ebsd('id',ebsd.id(16:18)),'edgeColor','red','facecolor','none','linewidth',4,'backend','patch')
 legend off
 hold off
 
 
 %% Square Grids
-% 
-% In the cases of gridded data it is often useful to convert them into a
-% matrix form.
+%
+% Our subset is a list, but the pixels in it do sit on a grid, so we may put
+% it back into matrix form with <EBSD.gridify.html |gridify|>.
 
 ebsd = ebsd.gridify;
 
@@ -73,25 +81,27 @@ hold off
 
 %%
 % Note that the <EBSD.gridify.html |gridify|> command changes the order of
-% measurements. They are now sorted such that rows runs first and columns
+% measurements. They are now sorted such that rows run first and columns
 % second, as this is the default convention how Matlab indexes matrices.
+% This is unavoidable and the reason why an imported map is put on its grid
+% right away - see <EBSDGrid.html Square and Hex Grids>.
 
 plot(ebsd,ebsd.orientations,'micronbar','off','edgeColor','black','backend','patch')
 text(ebsd,1:length(ebsd))
 
 
 %% Hexagonal Grid
-% 
-% The command <EBSD.gridify.html |gridify|> may also be applied to EBSD
-% data measured on a hexagonal grid.
+%
+% Everything above applies to EBSD data measured on a hexagonal grid as
+% well. Such data is imported as an @EBSDhex, i.e. it already is in matrix
+% form
 
 mtexdata titanium silent
 
-ebsd = ebsd.gridify
+ebsd
 
 %%
-% This rearranges the measurements in a matrix form which can be indexed
-% similarly as in the square case. 
+% and can be indexed similarly as in the square case.
 
 ebsd = ebsd(10:16,68:79);
 

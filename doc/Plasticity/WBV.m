@@ -40,7 +40,7 @@ mtexdata single
 [grains,ebsd] = calcGrains(ebsd,'angle',2.5*degree,'minPixel',6);
 
 % we will use the noisy data later on
-ebsdN = ebsd.gridify;
+ebsdN = ebsd;
 
 % denoise the data
 F = halfQuadraticFilter;
@@ -48,12 +48,11 @@ ebsd = smooth(ebsd,F,'fill',grains);
 
 %% Computing the WBV
 % The default integral method is a moving window over the map, so it needs
-% the data in matrix form and gridifies internally if it is not. Doing it
-% explicitly here keeps |ebsd| and the results in the same shape for the
-% plots below. The |'gradient'| method used at the end of this page has no
-% such requirement - see there.
+% the data in matrix form. Our map already is - that is how it was imported,
+% see <EBSDGrid.html Square and Hex Grids> - and for a map that is not,
+% <EBSD.gridify.html |gridify|> is called internally. The |'gradient'|
+% method used at the end of this page has no such requirement, see there.
 
-ebsd = ebsd.gridify;
 wbv = weightedBurgersVec(ebsd)
 
 %%

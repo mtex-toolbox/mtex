@@ -76,7 +76,7 @@ The multi-release work. Everything here is bigger than one branch.
 | P11 | **EBSD simulation** — forward-model a map from an ODF plus a microstructure | 0 | 2 | idea | — | — |
 | P12 | **Texture heterogeneity / local ODF estimation** | 0 | 2 | idea | — | — |
 | P13 | **Single-precision storage** throughout, to halve memory on large maps | 1 | 2 | idea | — | #2466 |
-| P14 | **`gridify` by default** — **implemented 2026-08-12** in `0fcb33a32`: `EBSD.load` grids whenever that loses no measurement, opt out with `'noGrid'` or `setMTEXpref('gridifyOnImport',false)`. G7 closed with it. Documentation still owed, see C0 | 2 | 1 | done | — | #2295, #2167, #2128, [→](#p14) |
+| P14 | **`gridify` by default** — **implemented 2026-08-12** in `0fcb33a32`: `EBSD.load` grids whenever that loses no measurement, opt out with `'noGrid'` or `setMTEXpref('gridifyOnImport',false)`. G7 closed with it. Documentation rewritten 2026-08-13, see C0 | 2 | 0 | done | — | #2295, #2167, #2128, [→](#p14) |
 
 ---
 
@@ -124,6 +124,7 @@ The multi-release work. Everything here is bigger than one branch.
 | G38 | `removeQuadruplePoints` destroyed real grain boundary — fixed, reference regenerated, benchmark green | 2 | 0 | done | — | [→](#g38) |
 | G39 | Analytic Voronoi decomposition for gap-free regular grids — 43 % of `calcGrains` runtime is Fortune's sweep | 1 | 1 | paused | — | br/analytic-voronoi-grid, [→](#g39) |
 | G40 | Speed up the segmentation criterion `gbcAngle.doEvaluate` — 0.71 s of `doSegmentation`'s 1.47 s | 1 | 1 | paused | — | [→](#g39) |
+| G41 | `assignGridIndex` was order dependent on a distorted map — **fixed 2026-08-13**: the walk trusted the outer component of a step outright, so a line change carried a whole line's worth of accumulated drift into it. The outer step is now measured against a drift model, the mirror of the inner one. Grid order goes from exact at 0.05% distortion to exact at 10%; file order and every undistorted map are bit identical | 3 | 0 | done | — | [→](#g41) |
 
 ---
 
@@ -368,7 +369,9 @@ copy; only what is still open is summarised here.
 
 | # | Item | U | Sz | Status | Owner | Refs |
 |---|------|:-:|:--:|--------|-------|------|
-| C0 | **Document `gridify` by default** — `EBSD.load` now returns `@EBSDsquare`/`@EBSDhex` whenever that loses no measurement (`0fcb33a32`), so the pages that describe an import as giving a plain list, and anything that tells the reader to call `gridify` first, are out of date. Also needs the `'noGrid'` flag and the `gridifyOnImport` preference written down, and the note that gridding REORDERS the measurements (`636db51d9`) carried into the user-facing docs rather than only `gridify`'s help | 2 | 2 | planned | — | [→](#p14) |
+| C0b | **Four pages broken by gridify-on-import, fixed 2026-08-13** — `CrystalShapes` (the `ebsd(x,y)` meaning flip), `ODFTheory` (`reduce(ebsd,4)` on a hex grid), `LowLevelParentGrainReconstruction` and `MaParentGrainReconstructionAdvanced` (`phaseId` column vs map-shaped `grainId`). Two were code defects, not page defects, see [→](#c0b) | 3 | 0 | done | — | [→](#c0) |
+| C0c | **Decide: should `ebsd.phaseId` be map shaped on a grid?** — it is the one per-pixel view that stays a column while `id`, `rotations`, `pos`, `isIndexed`, `phase` and every prop are the (r x c) map (#2128, pinned by `check_ebsdGrid/checkGridShapes`). Any user expression mixing `phaseId` with a prop therefore errors, which is what broke both parent-reconstruction pages. Now that an import returns a grid by default this is the common case, not the exotic one | 2 | 2 | decide | — | [→](#c0b) |
+| C0 | **Document `gridify` by default** — **done 2026-08-13.** `EBSDGrid.m` rewritten around the imported map already being a grid, with the `'noGrid'` flag, the `gridifyOnImport` preference, the `MTEX:load:notOnGrid` case (eclogite) and the reordering note; a matching section in `EBSDImport.m`; stale claims fixed in `EBSDIndex.m`, `EBSDInter.m`, `Plasticity/GND.m`, `Plasticity/WBV.m`; changelog entry added. Every touched page was executed. Two defects found on the way, see [→](#c0) | 2 | 0 | done | — | [→](#p14) |
 | C1 | **3 empty chapters left** — `Misorientations/Twinning`, `Plasticity/SachsModel`, `Plasticity/TwinningTutorial`; the other eleven were written or dropped on 2026-08-10 | 2 | 1 | planned | — | [→](#c-empty) |
 | C2 | 4 prose TODO markers left, all genuine open questions rather than authoring gaps | 1 | 1 | decide | — | [→](#c-todo) |
 | C3 | Four content orphans with no TOC slot: `Dream3dGrains`, `S2FunQuadrature`, `MisorientationGrainExchangeSym`, `changelog` (plus the prose-only `Contribute2Doc`) | 1 | 0 | decide | — | docs/doc-audit-plan.md item 6 |
@@ -493,6 +496,76 @@ Note the reproduction above no longer distinguishes anything: after
 REORDERS the measurements and cannot avoid it - the layout fixes dim 1 to y
 while a .ctf runs x fastest - documented in `gridify`'s help. `calcGrains` is
 invariant under that; `removeQuadruplePoints` is not, see G9.
+
+### G41
+Found 2026-08-13 while rewriting the gridify documentation. The two objects
+below hold the *same set* of positions and derive the *same* lattice basis
+`[0.3 0; 0 0.3]`; they differ only in the order of the list.
+
+```matlab
+fn = [mtexDataPath filesep 'EBSD' filesep 'twins.ctf'];
+a = EBSD(mtexdata('twins','silent'));          % grid order, i.e. after gridify
+b = EBSD.load(fn,'noGrid', ...
+      'EulerCorrection',rotation.byAxisAngle(xvector,180*degree)); % file order
+
+% same 5% trapezoidal drift on both, then look at the recovered indices
+%   file order : I 0..166, J 0..136, 22879 unique cells of 22879   correct
+%   grid order : I 0..174, J 0..136, 22593 unique cells of 22879   286 collide
+```
+
+The consequence is silent: `gridify` writes the measurements with
+`mesh(ind) = pos`, so each of the 286 collisions loses one of its two
+measurements and the surviving one sits a full step (0.3 µm) away from where
+it was measured. `calcMesh`'s deformation branch is not at fault — it was
+already fixed for order dependence, and it is handed the wrong `ind`.
+
+Only *distorted* maps are affected; an undistorted one takes the ideal-grid
+branch and is exact in either order. That is why nothing caught it before:
+`check_gridify/checkDistortedGrid` is the only test that distorts a real map,
+and until `EBSD.load` started gridding, `mtexdata('twins')` handed it the file
+order, which happens to be the order that works.
+
+Not caused by the gridify-on-import work, only exposed by it. The collision is
+invisible precisely because a repeated index keeps the last write.
+
+**Fixed 2026-08-13.** `stepwiseIndex` trusted the outer component of every step
+outright. That is fine while the distortion runs along the *inner* direction —
+which is measured cell by cell and was already drift-corrected — but a line
+change undoes a whole line of inner travel in one step, so any drift the outer
+coordinate picked up along that line rides along with it. The outer step now
+gets the mirror of the inner treatment: the sub-cell part of the outer component
+of every trusted single-cell step is the drift per inner cell, fitted across the
+map by the same regression, and subtracted in proportion to the inner distance a
+step actually covers. That corrects a multi-cell gap *within* a line as well as a
+line change, with no need to tell them apart.
+
+Two traps found while building it:
+
+- the drift must be read off `outerRaw - round(outerRaw)`, never off `outerRaw`.
+  A hexagonal map walked along its staggered direction moves a whole outer cell
+  on every second step, so the raw components alternate 0 and -1; taken at face
+  value that reads as half a cell of drift per inner cell on a *rigid* lattice,
+  and multiplied by a line length it shattered the hex fixture in
+  `check_calcGrainsCases` into 389 grains instead of 16.
+- the regressor cannot be the accumulated outer index, which is exactly what a
+  mis-rounded line change corrupts. It is now the outer coordinate read straight
+  off the positions.
+
+Measured on forsterite, highest trapezoidal drift at which `lattice.ij` is still
+exact — full map / Forsterite / Enstatite / Diopside:
+
+| order | before | after |
+| --- | --- | --- |
+| grid (y fastest) | 0.0005 / — / — / — | **0.10 / 0.05 / 0.02 / 0.02** |
+| file (x fastest) | 0.49 / 0.20 / 0.20 / 0.20 | unchanged |
+
+Grid order stays the weaker of the two by construction — a distortion along the
+outer direction is modelled rather than measured — but 2% is still far beyond a
+realistic stage drift. `check_gridDistortionBenchmark` now runs both orders and
+pins the table above; it also had to stop reducing `ebsd.pos.x` without `(:)`,
+since forsterite arrives map shaped now. `lattice.ij` is bit identical on all
+seven bundled real maps in both orders, so grain reconstruction does not move and
+no reference needed regenerating.
 
 ### G13
 Note that FMC was rewritten on 2026-07-25 — saliency was dead code and
@@ -1270,6 +1343,69 @@ Symbolic Math Toolbox. On a machine without that licence every
 of type 'char'", which is also why the SO3 half of T3 could not be verified.
 Found 2026-08-11. Either replace the symbolic step with a numeric one, or
 declare the dependency and fail with a message that names the toolbox.
+
+### C0
+Done 2026-08-13. Beyond the gridify-by-default material itself, running the
+pages turned up three things worth recording.
+
+**The `mtexdata` `.mat` caches mask the whole feature.** `tools/mtexdata.m`
+loads `data/<name>.mat` in preference to the source file, so on a machine
+that has run MTEX before, `mtexdata twins` keeps returning the pre-branch
+plain list and every rewritten page describes something the reader does not
+see. The caches are gitignored derived data, so nothing in the repo records
+the staleness. Regenerated here with `mtexdata(name,'force')`; a released
+7.0 should either version the cache or drop it for EBSD sets.
+
+**`loadEBSD_*` called directly bypasses the gridding.** The hook lives in
+`EBSD.load`, so `mtexdata csl` and `mtexdata mylonite`, which call
+`loadEBSD_generic` directly, still come back as plain lists while every other
+sample set is gridded. Not wrong, but an inconsistency a user will notice.
+
+**Two latent defects, neither reached by a doc page as written.**
+`vector3d.byXYZ` on an *empty* matrix with other than three columns throws
+"Coordinates have different size": the scalar `0` for z is repmat'd to
+`1 x 1` while x and y stay `0 x 1`. `grain2d/checkInside` walks into it,
+because for an @EBSD query it builds an `n x 3` and then appends a fourth
+zero column at line 88 — which also silently discards z on every call. The
+reachable symptom is `fill(ebsd,grains)` erroring whenever nothing is left to
+fill: resampling copper onto a 2.5 µm square cell leaves 137 unfilled cells,
+all outside the hull, so the query set is empty. Both are older than the
+gridify work.
+
+### C0b
+Reported by Ralf against the rewritten docs, 2026-08-13. Four pages, three
+distinct causes, two of which are code and not documentation.
+
+**`ebsd(x,y)` silently changes meaning.** `@EBSD/subsind` reads two numeric
+subscripts as a *position* and calls `findByLocation`; `@EBSDgrid/subsind`
+reads them as *(row,column)*. `CrystalShapes.m` asked for the orientation at
+(500,500) µm and got row 500 of a 97 row map, i.e. an out of range error.
+The page now says `ebsd('xy',500,500)`, which selects the same pixel the list
+form used to. **The dangerous case is not this one**: on a map with enough
+rows and columns the positional form does not error, it silently returns a
+different pixel. Every script written against pre-gridify MTEX that indexes
+by position is exposed. Worth deciding whether the grid class should keep
+overloading the same syntax at all.
+
+**`@EBSDhex/reduce` took no factor** — it was written on the staggered matrix
+subscripts and could only ever express `fak = 2`, so `reduce(ebsd,4)` in
+`ODFTheory.m` raised "Too many input arguments" as soon as titanium started
+arriving as an @EBSDhex. Deleted; `@EBSD/reduce` now selects on the lattice
+index (`all(mod(ij,fak)==0,2)`) and scales the unit cell, which covers square
+and hex, list and grid, rotated grids, and any factor in one implementation.
+The list and the grid form now also agree pixel for pixel, which they did not
+before: titanium/copper/ferrite/forsterite/twins at factors 2, 3 and 4 all
+match exactly.
+
+**`phaseId` is a column while every other per pixel view is the map.** Both
+parent-reconstruction pages do
+
+```matlab
+parentGrains.phaseId(max(1,parentEBSD.grainId)) == x & parentEBSD.phaseId == y
+```
+
+which on a gridded map is an `(r x c)` against an `(r*c x 1)`. Flattened with
+`(:)` in both pages, but the asymmetry itself is the real issue - see C0c.
 
 ### C-empty
 Of the fourteen empty chapters found by the 2026-07-28 doc audit
