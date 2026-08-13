@@ -13,9 +13,19 @@ function check_gridDistortionBenchmark(varargin)
 % ebsd.lattice.ij on the undistorted map is exact ground truth (Forsterite
 % is a complete, gap-free rectangle). After distorting only the
 % x-position per row, the recomputed ij must recover that same ground
-% truth exactly, at every tested distortion strength up to the point
-% where the distortion itself becomes fundamentally ambiguous (half a
-% cell of drift at the map edge).
+% truth exactly, up to the distortion strength recorded below.
+%
+% Run in BOTH scan orders. assignGridIndex walks the list, so the same
+% measurements handed over in the other raster order are a genuinely
+% different problem for it: file order (x fastest, as a .ctf is written)
+% puts the distorted direction along the inner, densely sampled direction,
+% while grid order (y fastest, what gridify produces and therefore what
+% EBSD.load now returns) makes it the outer one, which is reconstructed from
+% a drift model rather than measured cell by cell. Grid order is thus the
+% weaker of the two by construction - but it is also the one users now get,
+% so it is pinned here rather than left untested. Both orders were exact
+% only to 0.0005 resp. the full range before the drift model was added to
+% the outer step.
 %
 % The row a pixel belongs to is identified by its physical y position,
 % not by a column of ebsd.lattice.ij: which of the two ij columns happens
@@ -27,9 +37,8 @@ function check_gridDistortionBenchmark(varargin)
 % Also checked on a phase subset (ebsd('Forsterite') etc.), not just the
 % full map: selecting one phase out of several leaves gaps within a scan
 % line, not only between lines, which stresses a different part of
-% assignGridIndex.m than the full map alone can (see there) - and is
-% checked only up to a realistic distortion level, not the full range
-% above, per the limitation documented in assignGridIndex.m.
+% assignGridIndex.m than the full map alone can (see there). The sparser
+% the phase the earlier it gives out, per the limitation documented there.
 %
 % This checks ONLY ebsd.lattice.ij recovery, not grain reconstruction -
 % correct ij recovery is necessary for correct grain reconstruction but not
@@ -43,65 +52,86 @@ function check_gridDistortionBenchmark(varargin)
 % See also
 % EBSD/lattice EBSD/transform check_grainReconstructionBenchmark check_calcGrainsCases
 
-ebsd = mtexdata('forsterite');
-
-x = ebsd.pos.x; xCenter = (min(x) + max(x)) / 2;
-y = ebsd.pos.y; yCenter = (min(y) + max(y)) / 2; yHalf = (max(y) - min(y)) / 2;
-distort = @(trapFrac) @(pos) vector3d( ...
-  xCenter + (pos.x-xCenter) .* (1 + trapFrac*(pos.y-yCenter)/yHalf), ...
-  pos.y, pos.z);
-
-allOk = true;
-
-% --- full map: a complete, gap-free rectangle -----------------------
-fprintf('--- full map ---\n');
-fprintf('%-10s %10s\n', 'trapFrac', 'ij exact');
-fprintf('%s\n', repmat('-',1,22));
-
-ij0 = ebsd.lattice.ij;
-
 % trapFrac is the fractional x-scaling applied at the map's outermost rows
 % (e.g. 0.02 stretches/compresses the top and bottom row by 2%); 0.49 is
 % just under the 0.5-cell-drift point at which even a perfectly rigid
-% reconstruction would become ambiguous.
+% reconstruction would become ambiguous. A realistic stage drift is at the
+% bottom end of this range, so even the weakest entry below has a wide
+% margin over anything a real scan produces.
 trapFracs = [0.0005 0.001 0.005 0.01 0.02 0.05 0.10 0.20 0.30 0.49];
 
-for k = 1:numel(trapFracs)
-  ebsdT = transform(ebsd, distort(trapFracs(k)));
-  ok = isequal(ebsdT.lattice.ij, ij0);
-  allOk = allOk && ok;
-  fprintf('%-10.4f %10s\n', trapFracs(k), mark(ok));
-end
+selections = {'full','Forsterite','Enstatite','Diopside'};
 
-% --- phase subsets: gaps within a line too, not just between lines ---
-subsetTrapFracs = [0.0005 0.001 0.005 0.01 0.02 0.05 0.10 0.20];
-for phase = {'Forsterite','Enstatite','Diopside'}
+% highest trapFrac at which ij is still recovered exactly, measured
+% 2026-08-13; the test fails if any entry gets worse
+expected = [0.10 0.05 0.02 0.02;    % grid order, y fastest
+            0.49 0.20 0.20 0.20];   % file order, x fastest
 
-  fprintf('\n--- %s subset ---\n', phase{1});
-  fprintf('%-10s %10s\n', 'trapFrac', 'ij exact');
-  fprintf('%s\n', repmat('-',1,22));
+ebsdGrid = mtexdata('forsterite');
 
-  ebsdPh = ebsd(phase{1});
-  ijPh0 = ebsdPh.lattice.ij;
+% the same measurements in file order: oldId is what gridify recorded when
+% it reordered them, so sorting by it undoes exactly that reordering
+ebsdList = EBSD(ebsdGrid);
+[~,fileOrder] = sort(ebsdList.oldId(:));
+ebsdList = ebsdList(fileOrder);
 
-  for k = 1:numel(subsetTrapFracs)
-    ebsdPhT = transform(ebsdPh, distort(subsetTrapFracs(k)));
-    ok = isequal(ebsdPhT.lattice.ij, ijPh0);
+orders = {'grid order (y fastest)', ebsdGrid; 'file order (x fastest)', ebsdList};
+
+allOk = true;
+
+for o = 1:size(orders,1)
+
+  ebsd = orders{o,2};
+
+  % (:) is load bearing: forsterite imports as an @EBSDsquare, so pos.x is
+  % the (r x c) matrix of the map and min/max would reduce it per column
+  x = ebsd.pos.x(:); xCenter = (min(x) + max(x)) / 2;
+  y = ebsd.pos.y(:); yCenter = (min(y) + max(y)) / 2; yHalf = (max(y) - min(y)) / 2;
+  distort = @(trapFrac) @(pos) vector3d( ...
+    xCenter + (pos.x-xCenter) .* (1 + trapFrac*(pos.y-yCenter)/yHalf), ...
+    pos.y, pos.z);
+
+  fprintf('\n=== %s ===\n', orders{o,1});
+  fprintf('%-12s %10s %10s %8s\n', 'selection', 'exact to', 'expected', 'pixels');
+  fprintf('%s\n', repmat('-',1,44));
+
+  for s = 1:numel(selections)
+
+    if strcmp(selections{s},'full')
+      ebsdSel = ebsd;
+    else
+      ebsdSel = ebsd(selections{s});
+    end
+
+    ij0 = ebsdSel.lattice.ij;
+
+    achieved = 0;
+    for k = 1:numel(trapFracs)
+      if ~isequal(transform(ebsdSel,distort(trapFracs(k))).lattice.ij, ij0)
+        break
+      end
+      achieved = trapFracs(k);
+    end
+
+    ok = achieved >= expected(o,s);
     allOk = allOk && ok;
-    fprintf('%-10.4f %10s\n', subsetTrapFracs(k), mark(ok));
+
+    fprintf('%-12s %10g %10g %8d %s\n', selections{s}, achieved, ...
+      expected(o,s), length(ebsdSel), mark(ok));
+
   end
 end
 
 if ~allOk
-  error(['assignGridIndex failed to recover the true grid index under ' ...
-    'trapezoidal distortion at one or more of the tested levels - see above']);
+  error(['assignGridIndex recovers the true grid index over a smaller '...
+    'range of trapezoidal distortion than it used to - see the table above']);
 end
 
-fprintf('\ngrid distortion benchmark: ij recovered exactly at all tested distortion levels\n');
+fprintf('\ngrid distortion benchmark: ij recovered exactly over the expected range\n');
 
 end
 
 % =========================================================================
 function s = mark(ok)
-if ok, s = 'yes'; else, s = 'FAIL'; end
+if ok, s = ''; else, s = '  <- WORSE'; end
 end

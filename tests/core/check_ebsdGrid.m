@@ -20,6 +20,7 @@ checkUnitCellProperty;
 checkGridShapes;
 checkMultiColumnProps;
 checkLatticeBasisCanonical;
+checkLatticeIndexOrderInvariance;
 
 disp('check_ebsdGrid: passed');
 
@@ -596,5 +597,77 @@ ebsd = EBSD(vector3d((0:n-1).'*d,zeros(n,1),zeros(n,1)), rotation.rand(n,1), ...
 
 assert(isequal(size(ebsd.fs),[n 5]) && isequal(size(ebsd.im),[n 3]), ...
   'check_dynProp: the constructor already flattened the multi channel properties');
+
+end
+
+% =========================================================================
+function checkLatticeIndexOrderInvariance
+% the same measurements in a different list order get the same lattice index
+%
+% assignGridIndex walks the list and rounds each step, which needs the list
+% in raster order but must not care WHICH raster order. It did: the walk
+% trusted the outer component of a step outright, and a line change undoes a
+% whole line's worth of inner travel in one step, so any drift the outer
+% coordinate picked up along that line came along with it. Reading the map
+% down its columns makes the distorted direction the outer one and the jump
+% back to the next column then rounded to anything but the +1 it is.
+%
+% Silent, and only on a distorted map: the indices collide, gridify writes
+% the colliding measurements onto one cell with mesh(ind) = pos, so one of
+% each pair is dropped and the survivor sits a full step away from where it
+% was measured. Exposed by EBSD.load gridding on import, which is what put
+% real maps into column major order for the first time.
+%
+% The map has to be wide enough for the drift over one line to exceed half a
+% cell - trapFrac * (line length) here, i.e. about 2 cells at these numbers.
+% A small toy grid stays correct at a distortion that already breaks this one.
+
+n1 = 29; n2 = 41; d = 0.3; trapFrac = 0.05;
+
+[Y,X] = ndgrid((0:n1-1)*d,(0:n2-1)*d);
+
+% trapezoidal stage drift: scale x about the map centre by an amount growing
+% linearly with y, i.e. the distortion runs along x
+xCenter = (min(X(:))+max(X(:)))/2;
+yCenter = (min(Y(:))+max(Y(:)))/2; yHalf = (max(Y(:))-min(Y(:)))/2;
+X = xCenter + (X-xCenter) .* (1 + trapFrac*(Y-yCenter)/yHalf);
+
+% the same points in the two raster orders: column major (y fastest, what
+% gridify produces) and row major (x fastest, what a .ctf is written in)
+posCol = [X(:) Y(:)];
+perm = reshape(1:numel(X),n1,n2).';
+posRow = posCol(perm(:),:);
+
+ijCol = latticeIndexOf(posCol);
+ijRow = latticeIndexOf(posRow);
+
+for c = {ijCol,'column major'; ijRow,'row major'}.'
+  ij = c{1}; label = c{2};
+  assert(size(unique(ij,'rows'),1) == size(ij,1), ...
+    ['check_ebsdGrid: %s order puts %d of %d measurements on a lattice cell '...
+    'another one already holds'], label, ...
+    size(ij,1) - size(unique(ij,'rows'),1), size(ij,1));
+  assert(isequal(sort(max(ij,[],1)),sort([n1 n2]-1)), ...
+    'check_ebsdGrid: %s order spans a %s lattice, expected %s', ...
+    label, mat2str(max(ij,[],1)+1), mat2str(sort([n1 n2])));
+end
+
+% and the two agree measurement by measurement, up to which lattice
+% direction ended up first
+same = isequal(ijCol(perm(:),:),ijRow) || isequal(ijCol(perm(:),[2 1]),ijRow);
+assert(same, ...
+  'check_ebsdGrid: the two raster orders give different lattice indices');
+
+end
+
+% =========================================================================
+function ij = latticeIndexOf(pos)
+% lattice index of a plain list of xy coordinates
+
+n = size(pos,1);
+ebsd = EBSD(vector3d(pos(:,1),pos(:,2),zeros(n,1)), rotation.rand(n,1), ...
+  ones(n,1), {crystalSymmetry('m-3m')}, struct());
+
+ij = ebsd.lattice.ij;
 
 end
