@@ -4,6 +4,14 @@ function h = plotSurf(pos,d,uC,varargin)
 % Accepts a flat pos/d (one entry per pixel) and builds the grid itself via
 % calcMesh, so it can be called directly with ebsd.pos like the other backends.
 % If pos is already a 2-D grid it is used as is.
+%
+% Option 'isCell' marks the cells that carry a measurement. The surface has
+% to cover the full lattice raster, but a gridded map is padded out to that
+% raster - see EBSD/extent - and on a lattice rotated against the map axes
+% the padding reaches far beyond the measurements. Those cells are painted
+% NaN and are invisible, yet axis tight still followed them, leaving the map
+% a small island in a much larger axis. Their corners are therefore dropped
+% below. Without the option every cell counts.
 
 ax = get_option(varargin,'parent');
 if isempty(ax), ax=gca; end
@@ -11,8 +19,15 @@ if isempty(ax), ax=gca; end
 alpha = get_option(varargin,'faceAlpha');
 
 % build the (m x n) grid of pixel positions from a flat list
+isCell = get_option(varargin,'isCell',[]);
+
 if size(pos,2) == 1 || isvector(pos)
   [mesh,ind] = calcMesh(pos,uC,varargin{:});
+
+  % the mesh is the raster completed around the points we were given, so
+  % the cells that carry a measurement are exactly the ones it filled
+  isCell = false(size(mesh)); isCell(ind) = true;
+
   d = reshape(d,size(d,1),[]);
   dMesh = nan([numel(mesh),size(d,2)]);
   if size(d,1) == 1
@@ -61,6 +76,21 @@ posPad = [leftPad, posPad, rightPad];
 
 posExt = (posPad(1:end-1,1:end-1) + posPad(1:end-1,2:end) + ...
           posPad(2:end,1:end-1)   + posPad(2:end,2:end)) / 4;
+
+% keep only the corners that a measured cell touches, so that the padding
+% of a gridded map does not enter the axis limits. Every corner of a drawn
+% face survives, hence nothing visible is lost - the faces that lose a
+% corner are the ones painted NaN anyway.
+if ~isempty(isCell) && ~all(isCell(:))
+
+  keep = false(size(pos)+2);
+  keep(2:end-1,2:end-1) = reshape(isCell,size(pos));
+  keep = keep(1:end-1,1:end-1) | keep(1:end-1,2:end) | ...
+    keep(2:end,1:end-1) | keep(2:end,2:end);
+
+  posExt.x(~keep) = NaN; posExt.y(~keep) = NaN; posExt.z(~keep) = NaN;
+
+end
 
 % extent data
 dExt = [d,d(:,end,:)]; dExt = [dExt;dExt(end,:,:)];

@@ -188,10 +188,21 @@ mP.how2plot.setView(mP.ax);
 
 try axis(mP.ax,'tight'); end %#ok<TRYNC>
 %set(mP.ax,'zlim',[0,1.1]);
-mP.extent(1) = min(mP.extent(1),min(ebsd.pos.x(:)));
-mP.extent(2) = max(mP.extent(2),max(ebsd.pos.x(:)));
-mP.extent(3) = min(mP.extent(3),min(ebsd.pos.y(:)));
-mP.extent(4) = max(mP.extent(4),max(ebsd.pos.y(:)));
+
+% the map is drawn as a cell around every measured position
+ext = ebsd.extent;
+uC = ebsd.unitCell;
+if isempty(uC), dx = [0 0]; dy = [0 0]; else
+  dx = [min(uC.x(:)) max(uC.x(:))]; dy = [min(uC.y(:)) max(uC.y(:))];
+end
+
+% note that ebsd.extent leaves out the padding a gridded map is completed
+% with - the axis limits keep it out through the backends, which do not let
+% a cell without a measurement count, see EBSD/private/plotSurf
+mP.extent(1) = min(mP.extent(1),ext(1) + dx(1));
+mP.extent(2) = max(mP.extent(2),ext(2) + dx(2));
+mP.extent(3) = min(mP.extent(3),ext(3) + dy(1));
+mP.extent(4) = max(mP.extent(4),ext(4) + dy(2));
 
 if nargout==0, clear h; end
 
