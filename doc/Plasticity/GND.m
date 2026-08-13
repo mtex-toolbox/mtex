@@ -8,23 +8,14 @@
 % geometrically necessary dislocation content by conventional electron
 % back-scattering diffraction, Scripta Materialia, 2008>
 %
+%%
 % Lets start by importing orientation data from 2 percent uniaxial deformed
-% steel DC06 and visualize those data in an ipf map.
+% steel DC06 and reconstructing the grain structure while removing all
+% grains with less than 6 pixels
 
 % import the EBSD data
 ebsd = EBSD.load([mtexDataPath filesep 'EBSD' filesep 'DC06_2uniax.ang'],'setting',2);
 ebsd.how2plot = "y←↑x";
-
-% define the color key
-ipfKey = ipfHSVKey(ebsd);
-ipfKey.inversePoleFigureDirection = yvector;
-
-% and plot the orientation data
-plot(ebsd,ipfKey.orientation2color(ebsd.orientations),'micronBar','off','figSize','medium')
-
-%%
-% In the next step we reconstruct grains, remove all grains with less then
-% 6 pixels and smooth the grain boundaries.
 
 % reconstruct grains
 [grains,ebsd] = calcGrains(ebsd,'angle',2.5*degree,'minPixel',6);
@@ -32,6 +23,14 @@ plot(ebsd,ipfKey.orientation2color(ebsd.orientations),'micronBar','off','figSize
 % smooth grain boundaries
 grains = smoothBoundary(grains,5);
 
+% define the color key
+ipfKey = ipfHSVKey(ebsd);
+ipfKey.inversePoleFigureDirection = yvector;
+
+% plot the orientation data
+plot(ebsd,ipfKey.orientation2color(ebsd.orientations),'refFrame','on','figSize','medium')
+
+% and on top of it the grain boundaries
 hold on
 plot(grains.boundary,'linewidth',2)
 hold off
