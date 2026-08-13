@@ -36,6 +36,7 @@ tol = 1e-13;
 r = [rotation.rand(N); ...
   rotation.id; ...
   rotation.byEuler(30*degree,0,50*degree,'Bunge'); ...
+  rotation.byEuler(200*degree,0,100*degree,'Bunge'); ...
   rotation.byEuler(30*degree,1e-8,50*degree,'Bunge'); ...
   rotation.byEuler(30*degree,pi,50*degree,'Bunge'); ...
   rotation.byAxisAngle(xvector,pi)];
@@ -56,26 +57,16 @@ function checkEuler(r,tol)
 
 for conv = {'Bunge','ABG','Matthies','Roe','Kocks','Canova'}
 
-  rr = r;
-
-  % KNOWN FAILURE, see https://github.com/mtex-toolbox/mtex/issues/2583
-  % Kocks and Canova do not round trip when the second angle is exactly 0 -
-  % byEuler(0,0,0,'Kocks') is a 180 degree rotation about z rather than the
-  % identity, which is what psi -> pi - psi applied in one direction only
-  % looks like. They are the two conventions that redefine the third angle;
-  % the four that do not are exact. beta = 1e-8 already works, so it is the
-  % exact-zero branch and not a conditioning problem. Those samples are
-  % dropped rather than the tolerance loosened, so this goes back to the
-  % full sample as soon as #2583 is fixed.
-  if any(strcmp(conv{1},{'Kocks','Canova'}))
-    [~,bB,~] = Euler(rr,'Bunge');
-    rr = rr(bB > 1e-12);
-  end
-
-  [a,b,c] = Euler(rr,conv{1});
+  % the second angle exactly 0 is the degenerate case: only the sum of the
+  % first and the third angle is determined, and Euler puts all of it into
+  % the first one. Kocks and Canova are the conventions that redefine the
+  % third angle, so that sum is not simply alpha + gamma for them and both
+  % used to come back rotated - see #2583. beta = 1e-8 always worked, so
+  % the exact-zero branch is what this covers.
+  [a,b,c] = Euler(r,conv{1});
   back = rotation.byEuler(a,b,c,conv{1});
 
-  assertSame(rr,back,tol,sprintf('the %s Euler',conv{1}))
+  assertSame(r,back,tol,sprintf('the %s Euler',conv{1}))
 
 end
 
