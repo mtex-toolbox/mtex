@@ -451,6 +451,14 @@
 % y, z
 % * |gB.V| returns the two end points of every boundary segment, the plain
 % list of all vertices is |gB.allV|
+% * |multiplicity| now returns the number of symmetrically equivalent
+% directions, fibres or misorientations - the multiplicity as the term is used
+% crystallographically, e.g. |multiplicity(Miller(1,0,0,cs))| is 6 in |m-3m|
+% and not 8. It used to return the reciprocal quantity, the number of symmetry
+% operations fixing the input, which contradicted its own help line. The two
+% multiply to the order of the group, so the old value is
+% |numSym(cs) ./ multiplicity(m)|. This affects @Miller, @orientation and
+% @fibre alike
 %
 % *Renamed and Removed*
 %
