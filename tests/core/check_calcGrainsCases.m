@@ -444,7 +444,61 @@ if numel(niA) >= nPad
     'padding is being split into single-pixel grains'], nPad, numel(niA));
 end
 
+checkInsideEmptyQuery(cs, thr);
+
 disp('calcGrains cases: all checks passed');
+
+end
+
+% ===========================================================================
+function checkInsideEmptyQuery(cs, thr)
+% grain2d/checkInside must accept an empty set of query points
+%
+% It built its query as vector3d.byXYZ([xy zeros(size(xy,1),1)]), i.e. it
+% appended a zero column - to an n x 3 in the EBSD branch, which took byXYZ
+% into its non-three-column path and dropped z, and which for an EMPTY query
+% threw "Coordinates have different size" because the scalar z there could
+% not be repmat-ed to a 0 x 1. EBSD/fill hits this by an entirely ordinary
+% route: it collects the pixels it could interpolate, and hands checkInside
+% whatever that is - including nothing, on a map with nothing to fill.
+%
+% Built here as a gapless map, unlike the shared fixture: calcGrains absorbs
+% isolated notIndexed pixels and leaves them indexed with a NaN orientation,
+% i.e. as something fill does have work to do on.
+
+n = 12;
+blockId = kron(reshape(1:4,2,2),ones(n/2));
+rot = rotation.id(n,n);
+oris = orientation.byAxisAngle(zvector,(1:4)*20*degree,cs);
+for k = 1:4, rot(blockId==k) = oris(k); end
+
+ebsd = EBSDsquare([],rot,2*ones(n,n),[0 1],{'notIndexed',cs},'dxy',[1 1]);
+
+% fill needs the grainId, hence the two output reconstruction
+[grains, ebsd] = calcGrains(ebsd,'threshold',thr);
+
+isInside = checkInside(grains, zeros(0,2));
+if ~isequal(size(isInside),[0 length(grains)])
+  error('checkInside of an empty query gave %s, expected [0 %d]', ...
+    mat2str(size(isInside)), length(grains));
+end
+
+isInside = checkInside(grains, ebsd.subSet([]));
+if ~isequal(size(isInside),[0 length(grains)])
+  error('checkInside of an empty EBSD gave %s, expected [0 %d]', ...
+    mat2str(size(isInside)), length(grains));
+end
+
+% the reachable symptom: nothing left to fill
+nNaN = nnz(isnan(ebsd.rotations));
+if nNaN > 0
+  error('fill test is vacuous: the map already has %d pixels to fill', nNaN);
+end
+filled = fill(ebsd, grains);
+if length(filled) ~= length(ebsd)
+  error('fill of a complete map changed its length from %d to %d', ...
+    length(ebsd), length(filled));
+end
 
 end
 

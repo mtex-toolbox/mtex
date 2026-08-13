@@ -81,11 +81,13 @@ Vy = grains.allV.y;
 incl = grains.inclusionId;
 
 % make sure xy is vector3d
-% byXYZ, not vector3d(...): the matrix built here is n x 3 and for exactly
-% three query points that is also 3 x N, which the constructor cannot tell
-% apart and warns about. byXYZ reads rows unconditionally, which is what is
-% meant here.
-if ~isa(xy,'vector3d'), xy = vector3d.byXYZ([xy zeros(size(xy,1),1)]); end
+% byXYZ, not vector3d(...): the query is a list of coordinates given one per
+% ROW, and for exactly three of them an n x 3 is also a 3 x N, which the
+% constructor cannot tell apart and warns about. byXYZ reads rows
+% unconditionally, which is what is meant here, and supplies z = 0 itself
+% when only x and y are given - the caller must not append a zero column,
+% since the EBSD branch above already hands over an n x 3.
+if ~isa(xy,'vector3d'), xy = vector3d.byXYZ(xy); end
 
 % use internal or external inpolygon engine?
 inpolyEngine = getMTEXpref('insidepoly');

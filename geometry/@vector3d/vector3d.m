@@ -293,10 +293,28 @@ classdef vector3d < dynOption
     [v,interface,options] = load(fname,varargin)
 
     function v = byXYZ(d,varargin)
+      % read a matrix of coordinates by ROWS - one vector per row
+      %
+      % Syntax
+      %   v = vector3d.byXYZ([x(:) y(:) z(:)])
+      %   v = vector3d.byXYZ([x(:) y(:)])       % z = 0
+      %
       if size(d,2) == 3
         v = vector3d(d(:,1),d(:,2),d(:,3),varargin{:});
+      elseif size(d,2) == 2
+        % zeros(n,1) and not the scalar 0: the constructor repairs a scalar
+        % coordinate by repmat-ing it to the size of the others, and for an
+        % EMPTY d there is no non singular size to repmat to - a scalar z
+        % then stays 1 x 1 against a 0 x 1 x and y and the constructor
+        % errors with "Coordinates have different size"
+        v = vector3d(d(:,1),d(:,2),zeros(size(d,1),1),varargin{:});
       else
-        v = vector3d(d(:,1),d(:,2),0,varargin{:});
+        % anything else used to silently keep columns 1 and 2 and drop the
+        % rest, which is how an n x 4 built by a caller that had already
+        % appended a z column lost that column without a word
+        error('MTEX:vector3d:wrongSize',...
+          ['vector3d.byXYZ reads one vector per row, so it takes an N x 3 '...
+          'or an N x 2 matrix of coordinates, not a %s one.'],mat2str(size(d)));
       end
     end
 

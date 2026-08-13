@@ -19,6 +19,7 @@ checkThreeArgumentShapes;
 checkMatrixShapes;
 checkAmbiguousAndInvalid;
 checkNoInternalAmbiguity;
+checkByXYZ;
 
 disp('check_vector3d: passed');
 
@@ -144,6 +145,52 @@ try
 catch ME
   assert(strcmp(ME.identifier,'MTEX:vector3d:wrongSize'), ...
     'a 4 x 5 matrix raised %s instead of MTEX:vector3d:wrongSize', ME.identifier);
+end
+
+end
+
+% =========================================================================
+function checkByXYZ
+% byXYZ takes N x 3 and N x 2, including empty, and rejects the rest
+%
+% The N x 2 branch used to pass the SCALAR 0 as the z coordinate and rely on
+% the constructor repmat-ing it to the size of x and y. For an empty input
+% there is no non singular size to repmat to, so z stayed 1 x 1 against a
+% 0 x 1 x and y and the constructor threw "Coordinates have different size".
+% grain2d/checkInside walked into it - it appended a zero column to a query
+% that was already n x 3, so every call took the non-three-column branch,
+% and an empty query set (fill with nothing left to fill) then errored.
+% The appended column also silently discarded z on every other call, which
+% is what the rejection below is for.
+
+for n = [0 1 5]
+
+  v = vector3d.byXYZ(zeros(n,2));
+  assert(isequal(size(v),[n 1]), ...
+    'byXYZ of a %d x 2 gave %s, expected [%d 1]', n, mat2str(size(v)), n);
+  assert(all(v.z(:) == 0), 'byXYZ of a %d x 2 did not set z to zero', n);
+
+  v = vector3d.byXYZ(zeros(n,3));
+  assert(isequal(size(v),[n 1]), ...
+    'byXYZ of a %d x 3 gave %s, expected [%d 1]', n, mat2str(size(v)), n);
+
+end
+
+% z is read, not dropped
+v = vector3d.byXYZ([1 2 3; 4 5 6]);
+assert(isequal(v.z(:).',[3 6]), 'byXYZ dropped the z column');
+
+% anything else is a call site error, not a silent truncation to x and y
+for d = {zeros(0,4), rand(3,4), rand(5,1)}
+  try
+    vector3d.byXYZ(d{1});
+    error('check_vector3d:noError', ...
+      'byXYZ accepted a %s matrix', mat2str(size(d{1})));
+  catch ME
+    assert(strcmp(ME.identifier,'MTEX:vector3d:wrongSize'), ...
+      'byXYZ of a %s matrix raised %s instead of MTEX:vector3d:wrongSize', ...
+      mat2str(size(d{1})), ME.identifier);
+  end
 end
 
 end
