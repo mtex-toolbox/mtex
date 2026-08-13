@@ -72,8 +72,9 @@ hold on
 % plot grain boundaries
 plot(grains.boundary,'linewidth',4)
 
-% colorize the grain boundaries of grain 42 according to curvature
-plot(grains(42).boundary,grains(42).boundary.curvature(5),'linewidth',6)
+% colorize the grain boundaries of the grain at position 596,466 according
+% to curvature
+plot(grains(596,466).boundary,grains(596,466).boundary.curvature(5),'linewidth',6)
 hold off
 mtexColorMap('blue2red')
 setColorRange(0.1*[-1,1])

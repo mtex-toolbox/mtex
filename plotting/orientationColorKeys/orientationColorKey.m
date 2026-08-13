@@ -21,6 +21,7 @@ classdef orientationColorKey < handle
       if nargin == 0, return; end
       if isa(ebsd,'EBSD') || isa(ebsd,'grain2d')
         oCK.CS1 = ebsd.CS;
+        oCK.CS2 = specimenSymmetryFor(ebsd.how2plot);
       elseif isa(ebsd,'orientation')
         oCK.CS1 = ebsd.CS;
         oCK.CS2 = ebsd.SS;

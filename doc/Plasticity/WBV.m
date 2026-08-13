@@ -59,7 +59,7 @@ wbv = weightedBurgersVec(ebsd)
 % The WBV is returned in specimen coordinates as a list of @vector3d. We
 % can inspect its magnitude (in 1/scanunit) and direction.
 
-plot(ebsd,wbv.norm)
+plot(ebsd,wbv.norm,'refFrame','on')
 mtexColorbar
 mtexTitle('norm of the WBV')
 

@@ -16,7 +16,7 @@
 mtexdata martensite
 
 % grain reconstruction
-[grains,ebsd] = calcGrains(ebsd, 'angle', 3*degree, 'minPixel',2);
+[grains,ebsd] = calcGrains(ebsd, 'angle', 3*degree, 'minPixel',2,'removeQuadruplePoints');
 grains = smoothBoundary(grains,5);
 
 % plot the data and the grain boundaries

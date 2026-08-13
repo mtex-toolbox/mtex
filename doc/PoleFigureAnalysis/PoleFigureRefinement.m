@@ -12,7 +12,7 @@ calcError(pf,odf_naive)
 %%
 % visual inspection
 
-odf_naive.plot(pf.allH,'sigma')
+plotPDF(odf_naive,pf.allH)
 
 %%
 % another form to regularize the inversion problem is to iteratively
@@ -25,7 +25,7 @@ calcError(pf,odf_iter)
 %%
 % visual inspection
 
-odf_iter.plot(pf.allH)
+plotPDF(odf_iter,pf.allH)
 
 %%
 % volume portion that is differently distributed between the two methods
@@ -59,7 +59,8 @@ h = [ ...
   Miller(1,1,0,cs), ...
   ];
 
-figure, odf_true.plotPDF(h)
+figure
+plotPDF(odf_true,h)
 
 %% Initial measure grid
 

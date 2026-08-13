@@ -8,7 +8,7 @@ if nargin == 0 || ~isa(varargin{1},'vector3d')
   end
 
   f.SS = specimenSymmetry;
-  f.how2plot = plottingConvention(zvector,-yvector);
+  f.how2plot = plottingConvention("y↑→x");
   
   return;
 end
@@ -28,13 +28,11 @@ h_0 = [0.7; 0.96; 0.96; 0.93; 0.93; 0.93; 0.93; 0.93; 0.96];
 c_0 = [0.5; -0.5; -0.5; -0.25; -0.25; -0.25; -0.25; -0.25; 0.4];
 
 centers = vector3d.byPolar(x_0(:, 1), x_0(:, 2));
-if strcmpi(getMTEXpref('xAxisDirection'),'east')
-  centers = rotate(centers,90*degree);
-end
+centers = rotate(centers,90*degree);
 
 % TODO: upper line can be replaced by lower line with Matlab 2017
-fh = @(v) (sum(repmat(c_0,1,length(v)) .* f_r(dot(repmat(v,length(centers),1), repmat(centers,1,length(v))), repmat(h_0,1,length(v))), 1))';
-%fh = @(v) (sum(c_0.*f_r(dot(v, centers), h_0), 1))';
+%fh = @(v) (sum(repmat(c_0,1,length(v)) .* f_r(dot(repmat(v,length(centers),1), repmat(centers,1,length(v))), repmat(h_0,1,length(v))), 1))';
+fh = @(v) (sum(c_0.*f_r(dot(v, centers), h_0), 1))';
 
 f = fh(v);
 

@@ -35,7 +35,7 @@ beta2alpha = orientation.Burgers(ebsd('Ti (beta)').CS,ebsd('Ti (alpha)').CS)
 % need to compute the initial child grains from out EBSD data set.
 
 % reconstruct grains
-[grains,ebsd] = calcGrains(ebsd,'threshold',1.5*degree);
+[grains,ebsd] = calcGrains(ebsd,'threshold',1.5*degree,'removeQuadruplePoints');
 
 %%
 % We choose a very small threshold of 1.5 degree for the identification of
