@@ -154,6 +154,8 @@ function checkNamedSpecimenFrames
 sF = specimenFrame.rolling;
 assert(strcmp(sF.name,'rolling') && isequal(sF.axesNames,{'RD','TD','ND'}), ...
   'check_referenceFrame: specimenFrame.rolling is wrong');
+assert(strcmp(conventionChar(sF),'RD↑→TD'), ...
+  'check_referenceFrame: the rolling frame does not plot RD north, TD east');
 
 ss = specimenSymmetry('222');
 assert(isa(ss.frame,'specimenFrame') && strcmp(ss.frame.name,'measurement'), ...
@@ -214,6 +216,24 @@ assert(specimenSymmetry.default.how2plot == pC2 && specimenSymmetry.default.id =
   'check_referenceFrame: the default symmetry does not follow the frame');
 assert(ssF.how2plot == pC, ...
   'check_referenceFrame: replacing the default touched a forked frame');
+
+% any specimen frame can take over the session default
+fr0 = specimenFrame.default;
+restoreFrame = onCleanup(@() makeDefault(fr0));
+
+specimenFrame.rolling.makeDefault;
+assert(specimenFrame.default == specimenFrame.rolling, ...
+  'check_referenceFrame: makeDefault did not repoint the default frame');
+assert(plottingConvention.default == specimenFrame.rolling.how2plot, ...
+  'check_referenceFrame: plottingConvention.default does not follow the new default frame');
+assert(specimenSymmetry.default.frame == specimenFrame.rolling, ...
+  'check_referenceFrame: specimenSymmetry.default does not follow the new default frame');
+ssR = specimenSymmetry;
+assert(ssR.frame == specimenFrame.rolling, ...
+  'check_referenceFrame: a fresh specimenSymmetry does not attach the new default frame');
+
+makeDefault(fr0);
+clear restoreFrame
 
 end
 

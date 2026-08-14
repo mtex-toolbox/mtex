@@ -188,6 +188,10 @@ methods (Static = true)
           % specimenFrame.default seeds with plottingConvention.ij
           save = specimenSymmetry;
         end
+        % the singleton always holds the session default frame - another
+        % frame may have taken over via specimenFrame/makeDefault
+        fr = specimenFrame.default;
+        if save.frame ~= fr, save.frame = fr; end
         ss = save;
       end
     end

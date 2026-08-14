@@ -158,12 +158,15 @@ classdef referenceFrame < matlab.mixin.Copyable
 
       if isa(fr,'crystalFrame')
         c = char(fr);
-      elseif isa(fr,'referenceFrame')
-        c = conventionChar(fr,pC);
-        if isempty(c), c = char(pC,'compact'); end
-      else
-        c = char(pC,'compact');
+        return
+      elseif ~isa(fr,'referenceFrame')
+        % frame-free data resolves against the session default frame at
+        % render time, so its labels apply here too
+        fr = specimenFrame.default;
       end
+
+      c = conventionChar(fr,pC);
+      if isempty(c), c = char(pC,'compact'); end
 
     end
 

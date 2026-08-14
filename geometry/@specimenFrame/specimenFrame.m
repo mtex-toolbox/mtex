@@ -16,6 +16,7 @@ classdef specimenFrame < referenceFrame
 %   sF = specimenFrame.rolling
 %   sF = specimenFrame.geological
 %   sF = specimenFrame.default              % supplies the default convention
+%   specimenFrame.rolling.makeDefault       % the session plots RD north
 %
 %   % a fresh frame, name first, optionally with axes names and convention
 %   sF = specimenFrame('rolling','axesNames',{'RD','TD','ND'},how2plot)
@@ -39,6 +40,18 @@ classdef specimenFrame < referenceFrame
       sF = sF@referenceFrame(varargin{:});
     end
 
+    function makeDefault(sF)
+      % make this frame the session default
+      %
+      % plottingConvention.default, specimenSymmetry.default and every
+      % frame-free or default-framed object follow it from now on
+      %
+      % Syntax
+      %   specimenFrame.rolling.makeDefault
+
+      specimenFrame.default(sF);
+    end
+
   end
 
   methods (Static = true)
@@ -49,8 +62,11 @@ classdef specimenFrame < referenceFrame
     end
 
     function sF = rolling
-      % rolling direction, transverse direction, normal direction
+      % rolling direction, transverse direction, normal direction,
+      % seeded with the typical rolling convention - RD to the north,
+      % TD to the right
       sF = specimenFrame.named('rolling',{'RD','TD','ND'});
+      if isempty(sF.how2plot), sF.how2plot = plottingConvention('x↑→y'); end
     end
 
     function sF = geological
@@ -59,15 +75,34 @@ classdef specimenFrame < referenceFrame
       sF = specimenFrame.named('geological',{'N','E','D'});
     end
 
-    function sF = default
-      % the frame that supplies the session default plotting convention
+    function sF = default(sF)
+      % get or set the frame that supplies the session default
       %
       % plottingConvention.default reads and writes through this frame,
-      % and specimenSymmetry.default's singleton holds it. Seeded with
-      % plottingConvention.ij - x to east, y to south, z into the screen,
-      % the convention of SEM images and of most EBSD imports.
-      sF = specimenFrame.measurement;
-      if isempty(sF.how2plot), sF.how2plot = plottingConvention.ij; end
+      % and specimenSymmetry.default's singleton holds it. Initially it
+      % is the measurement frame, seeded with plottingConvention.ij - x
+      % to east, y to south, z into the screen, the convention of SEM
+      % images and of most EBSD imports. Any specimen frame can take
+      % over via <specimenFrame.makeDefault.html |makeDefault|>, e.g.
+      %
+      %   specimenFrame.rolling.makeDefault
+      %
+      % Syntax
+      %   sF = specimenFrame.default     % the current default frame
+      %   specimenFrame.default(sF)      % make sF the default frame
+
+      persistent def
+
+      if nargin == 1
+        assert(isa(sF,'specimenFrame'), ...
+          'Only a specimenFrame can supply the session default.');
+        def = sF;
+      else
+        if isempty(def), def = specimenFrame.measurement; end
+        % the default frame always carries a convention
+        if isempty(def.how2plot), def.how2plot = plottingConvention.ij; end
+        sF = def;
+      end
     end
 
   end
