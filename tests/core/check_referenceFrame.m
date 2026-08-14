@@ -12,6 +12,7 @@ checkTransitionEquivalence;
 checkAxisRepairHeuristic;
 checkDelegation;
 checkNamedSpecimenFrames;
+checkRegisterDefaults;
 checkSaveLoadRoundTrip;
 checkEnsureCS;
 
@@ -107,7 +108,7 @@ end
 function checkNamedSpecimenFrames
 
 sF = specimenFrame.rolling;
-assert(strcmp(sF.name,'rolling') && isequal(sF.axisLabels,{'RD','TD','ND'}), ...
+assert(strcmp(sF.name,'rolling') && isequal(sF.axesNames,{'RD','TD','ND'}), ...
   'check_referenceFrame: specimenFrame.rolling is wrong');
 
 ss = specimenSymmetry('222');
@@ -116,10 +117,59 @@ assert(isa(ss.frame,'specimenFrame') && strcmp(ss.frame.name,'measurement'), ...
 assert(isa(ss.how2plot,'plottingConvention'), ...
   'check_referenceFrame: the specimen frame does not supply a convention');
 
-% two frames of the same kind are distinct handles - interning is the
-% (future) register's job, and identity must not accidentally alias
-assert(specimenFrame.rolling ~= specimenFrame.rolling, ...
-  'check_referenceFrame: specimenFrame factories return a shared handle');
+% the factories return the one session instance from the register ...
+assert(specimenFrame.rolling == specimenFrame.rolling, ...
+  'check_referenceFrame: specimenFrame.rolling is not interned');
+assert(referenceFrame.byName('rolling') == sF, ...
+  'check_referenceFrame: referenceFrame.byName does not find the rolling frame');
+assert(isempty(referenceFrame.byName('no-such-frame')), ...
+  'check_referenceFrame: byName invents frames');
+
+% ... while the constructor always makes a fresh, unregistered one
+assert(specimenFrame('rolling') ~= specimenFrame.rolling, ...
+  'check_referenceFrame: the constructor must not return the registered instance');
+
+end
+
+% -------------------------------------------------------------------------
+function checkRegisterDefaults
+% the default convention is carried by the registered default frame;
+% specimenSymmetry.default's singleton holds that same frame
+
+fr = specimenFrame.default;
+assert(fr == specimenFrame.measurement, ...
+  'check_referenceFrame: the default frame is not the measurement frame');
+assert(plottingConvention.default == fr.how2plot, ...
+  'check_referenceFrame: plottingConvention.default does not read through the frame');
+assert(specimenSymmetry.default.frame == fr, ...
+  'check_referenceFrame: specimenSymmetry.default does not hold the default frame');
+
+% a fresh symmetry with the default convention attaches the session frame,
+% one with its own convention gets a fork
+assert(specimenSymmetry('222').frame == fr, ...
+  'check_referenceFrame: a default-conventioned symmetry does not reuse the session frame');
+
+pC = plottingConvention('z↑→x');
+ssF = specimenSymmetry(pC);
+assert(ssF.frame ~= fr && ssF.how2plot == pC, ...
+  'check_referenceFrame: a custom convention must fork the frame');
+assert(fr.how2plot ~= pC, ...
+  'check_referenceFrame: the constructor wrote a custom convention through the session frame');
+
+% setting a new default replaces the frame's convention: the singleton
+% symmetry follows, the point group survives, a forked frame keeps its own
+pC0 = plottingConvention.default;
+restoreDefault = onCleanup(@() plottingConvention.default(pC0));
+
+pC2 = plottingConvention('y↑→x');
+id0 = specimenSymmetry.default.id;
+plottingConvention.default(pC2);
+assert(plottingConvention.default == pC2, ...
+  'check_referenceFrame: plottingConvention.default(pC2) did not take');
+assert(specimenSymmetry.default.how2plot == pC2 && specimenSymmetry.default.id == id0, ...
+  'check_referenceFrame: the default symmetry does not follow the frame');
+assert(ssF.how2plot == pC, ...
+  'check_referenceFrame: replacing the default touched a forked frame');
 
 end
 
@@ -143,6 +193,21 @@ assert(strcmp(char(S.cs.how2plot),char(cs.how2plot)), ...
 assert(isa(S.ss.frame,'specimenFrame') && ...
   strcmp(char(S.ss.how2plot),char(ss.how2plot)), ...
   'check_referenceFrame: specimenSymmetry did not survive save/load');
+
+% loadobj re-interns: a default-conventioned symmetry comes back holding
+% the session frame, one with its own convention keeps its fork
+assert(S.ss.frame == specimenFrame.default, ...
+  'check_referenceFrame: loadobj did not re-intern the default frame');
+
+pCF = plottingConvention('z↑→x');
+ssF = specimenSymmetry(pCF);
+fname = [tempname '.mat'];
+save(fname,'ssF');
+S = load(fname);
+delete(fname);
+assert(S.ssF.frame ~= specimenFrame.default && ...
+  isapprox(S.ssF.how2plot,pCF), ...
+  'check_referenceFrame: loadobj re-interned a forked frame');
 
 end
 

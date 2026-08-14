@@ -347,7 +347,15 @@ classdef vector3d < dynOption
       % this overloaded method ensures compatibility with older MTEX
       % versions
 
-      if isempty(v.how2plot), v.how2plot = plottingConvention.default; end
+      if isempty(v.how2plot)
+        v.how2plot = plottingConvention.default;
+      else
+        % re-intern: a deserialized convention equal to the session
+        % default becomes the default handle again, so the in-place
+        % default workflow (plotx2east) reaches loaded data too - the
+        % same rule matchDefault applies on import
+        v.how2plot = matchDefault(v.how2plot);
+      end
 
     end
     

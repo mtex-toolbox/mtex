@@ -336,14 +336,19 @@ classdef plottingConvention < matlab.mixin.Copyable
       %   plottingConvention.default(pC)       % make pC the default
       %   plottingConvention.default('y↑→x')   % same by a string
       %
+      % The default is carried by the registered default specimen frame -
+      % see <specimenFrame.default.html specimenFrame.default>. Setting a
+      % new default replaces the convention of that frame; symmetries and
+      % data holding the frame follow, data holding the old convention
+      % handle keeps it (as before). The point group of
+      % specimenSymmetry.default is untouched.
 
       if nargin == 1 % new default
         if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
-        ss = specimenSymmetry(pC);
-        ss.makeDefault;
+        fr = specimenFrame.default;
+        fr.how2plot = pC;
       else
-        ss = specimenSymmetry.default;
-        pC = ss.how2plot;
+        pC = specimenFrame.default.how2plot;
       end
     end
     

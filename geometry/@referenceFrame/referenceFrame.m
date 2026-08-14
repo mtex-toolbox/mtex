@@ -101,4 +101,42 @@ classdef referenceFrame < matlab.mixin.Copyable
 
   end
 
+  methods (Static = true)
+
+    function rf = byName(name,rf)
+      % the register: look up or store the session instance of a named frame
+      %
+      % The register holds one canonical instance per name; the named
+      % factories (specimenFrame.measurement, .rolling, ...) construct on
+      % first use and store here, so every later call returns the same
+      % handle. Forks made by data-level setters are deliberately not
+      % registered - the register owns the entity, the forks are private.
+      %
+      % Syntax
+      %   rf = referenceFrame.byName('rolling')  % lookup, [] when unknown
+      %   referenceFrame.byName('rolling',rf)    % store rf under the name
+      %
+      % Input
+      %  name - char
+      %  rf   - @referenceFrame
+      %
+      % See also
+      % specimenFrame/measurement specimenFrame/default
+
+      persistent store
+      if isempty(store), store = containers.Map; end
+
+      name = char(name);
+      if nargin == 2
+        store(name) = rf;
+      elseif store.isKey(name)
+        rf = store(name);
+      else
+        rf = [];
+      end
+
+    end
+
+  end
+
 end

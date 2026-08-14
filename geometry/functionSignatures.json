@@ -97,9 +97,9 @@
 {
     "inputs":
     [
-      {"name":"basis", "kind":"ordered", "type":["vector3d"], "purpose":"the three basis vectors"},
-      {"name":"name", "kind":"namevalue", "type":["char"], "purpose":"identity of the frame"},
-      {"name":"axisLabels", "kind":"namevalue", "type":["cell"], "purpose":"names of the three axes"}
+      {"name":"name", "kind":"ordered", "type":["char"], "purpose":"identity of the frame"},
+      {"name":"axesNames", "kind":"namevalue", "type":["cell"], "purpose":"names of the three axes"},
+      {"name":"how2plot", "kind":"ordered", "type":["plottingConvention"], "purpose":"default plotting convention"}
     ],
     "outputs":
     [

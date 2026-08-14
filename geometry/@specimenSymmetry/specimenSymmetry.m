@@ -44,11 +44,12 @@ methods
 
     s = s@symmetry(id,rot);
 
-    % the frame supplies the plotting convention; deliberately keeping the
-    % handle that was passed in (possibly the session default), so that
-    % mutating the convention in place keeps reaching this symmetry
-    s.frame = specimenFrame.measurement;
-    s.frame.how2plot = how2plot;
+    % reuse the registered session frame when the requested convention is
+    % exactly the one it carries - handle identity, so that mutating the
+    % default in place (plotx2east) keeps reaching this symmetry; fork an
+    % unregistered frame otherwise - never write a caller's convention
+    % through the shared session frame
+    s.frame = specimenSymmetry.frameFor(how2plot);
 
     if s.id > 16
       warning(s.pointGroup + " is not a suitable specimen symmetry!")
@@ -112,15 +113,25 @@ methods (Static = true)
         end
       end
 
-      % a pre-frame object restored how2plot into the override slot - mint
-      % the frame and move the convention onto it
-      if isempty(s.frame), s.frame = specimenFrame.measurement; end
-      if isempty(s.frame.how2plot)
-        if isa(s.how2plotPrivate,'plottingConvention')
-          s.frame.how2plot = s.how2plotPrivate;
-          s.how2plotPrivate = [];
-        else
-          s.frame.how2plot = plottingConvention.default;
+      % a pre-frame object restored how2plot into the override slot; a
+      % modern object arrives with its own deserialized frame. Either way
+      % re-intern against the register: attach the session frame when the
+      % convention agrees with it (matchDefault re-aliases an
+      % equal-by-value one first), fork otherwise - never write a loaded
+      % convention through the shared session frame.
+      if isempty(s.frame)
+        pC = s.how2plotPrivate;
+        s.how2plotPrivate = [];
+        if isempty(pC), pC = plottingConvention.default; end
+        s.frame = specimenSymmetry.frameFor(matchDefault(pC));
+      elseif isempty(s.frame.how2plot)
+        % the deserialized frame is this object's own handle - safe
+        s.frame.how2plot = plottingConvention.default;
+      else
+        fr = referenceFrame.byName(s.frame.name);
+        if isa(fr,'specimenFrame') && isAligned(s.frame,fr) && ...
+            isapprox(s.frame.how2plot,fr.how2plot)
+          s.frame = fr;
         end
       end
 
@@ -149,23 +160,42 @@ methods (Static = true)
     cs = specimenSymmetry(rot,id{:},axes);
       
     if isfield(s,'opt'), cs.opt = s.opt; end
-    % onto the frame, not into the override - the frame supplies the default
     if isfield(s,'how2plot') && isa(s.how2plot,'plottingConvention')
-      cs.frame.how2plot = s.how2plot;
+      % reuse-or-fork - the frame the constructor attached may be the
+      % shared session frame, so never write the loaded convention there
+      cs.frame = specimenSymmetry.frameFor(matchDefault(s.how2plot));
     end
             
   end
 
 
+  function fr = frameFor(pC)
+    % the registered session frame when pC is exactly the convention it
+    % carries (handle identity), an unregistered fork otherwise
+    fr = specimenFrame.default;
+    if pC ~= fr.how2plot
+      fr = specimenFrame('measurement');
+      fr.how2plot = pC;
+    end
+  end
+
   function ss = default(ss)
       persistent save
       if nargin == 1
-        save =  ss;
+        % make ss the default: it adopts the registered default frame,
+        % which in turn adopts ss's convention - so the default stays one
+        % named entity (specimenFrame.default) whatever the point group
+        fr = specimenFrame.default;
+        pC = ss.how2plot;
+        if ~isempty(pC) && pC ~= fr.how2plot, fr.how2plot = pC; end
+        ss.frame = fr;
+        ss.how2plotPrivate = [];
+        save = ss;
       else
         if isempty(save)
-          % x to east, y to south, z into the screen - the convention of
-          % SEM images and of most EBSD imports
-          save = specimenSymmetry(plottingConvention.ij);
+          % the constructor attaches the registered default frame, which
+          % specimenFrame.default seeds with plottingConvention.ij
+          save = specimenSymmetry;
         end
         ss = save;
       end
