@@ -18,6 +18,7 @@ checkDataFrameMembership;
 checkMillerFrame;
 checkS2FunFrame;
 checkTwoFrames;
+checkRotateFrameFit;
 checkSaveLoadRoundTrip;
 checkEnsureCS;
 
@@ -448,6 +449,61 @@ catch e
 end
 assert(failed, ...
   'check_referenceFrame: assigning a frame to an SO3Fun must error');
+
+end
+
+% -------------------------------------------------------------------------
+function checkRotateFrameFit
+% rotating with an orientation requires only fitting frames, not equal
+% symmetries, and the result carries the specimen FRAME of the
+% orientation, never its specimen symmetry
+
+cs = crystalSymmetry('m-3m',[4.05 4.05 4.05],'mineral','Al');
+ss = specimenSymmetry('222');   % a non trivial specimen symmetry
+ori = orientation.rand(cs,ss);
+
+% a tensor of a DIFFERENT point group in the same frame rotates fine now
+csLow = crystalSymmetry('mmm',[4.05 4.05 4.05]);
+T = tensor(diag([1 2 3]),'rank',2,csLow);
+Tr = rotate(T,ori);
+assert(isa(Tr.CS,'specimenSymmetry') && Tr.CS.id == 1, ...
+  'check_referenceFrame: a rotated tensor must carry only a trivial specimen symmetry');
+assert(Tr.CS.frame == ss.frame, ...
+  'check_referenceFrame: a rotated tensor must carry the specimen frame');
+
+% a trivial specimen symmetry is kept as it is - the common case
+Tr0 = rotate(T,orientation.rand(cs));
+assert(Tr0.CS.frame == specimenFrame.default, ...
+  'check_referenceFrame: the trivial case must keep the session frame');
+
+% genuinely incompatible frames error
+Thex = T;
+Thex.CS = crystalSymmetry('6/mmm',[3 3 5]);
+try
+  rotate(Thex,ori);
+  failed = false;
+catch e
+  failed = strcmp(e.identifier,'MTEX:orientation:frameMismatch');
+end
+assert(failed, ...
+  'check_referenceFrame: rotating across incompatible frames must error');
+
+% a compatible but differently aligned frame is absorbed into the
+% rotation - the result equals transforming the data first
+csA = crystalSymmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||a*');
+csB = crystalSymmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||b','X||a*');
+oriB = orientation.rand(csB);
+m = Miller(1,2,3,csA);
+evalc('r1 = rotate(m,oriB);'); % evalc swallows the transformation notice
+r2 = rotate(transformReferenceFrame(m,csB),oriB);
+assert(all(norm(r1 - r2) < 1e-8), ...
+  'check_referenceFrame: the absorbed frame transition disagrees with transformReferenceFrame');
+
+% slipSystem rotates componentwise through Miller and inherits the rules
+sS = slipSystem.fcc(cs);
+sSr = rotate(sS,orientation.rand(cs));
+assert(~isa(sSr.b,'Miller') && sSr.b.frame == specimenFrame.default, ...
+  'check_referenceFrame: a rotated slip system must land in the specimen frame');
 
 end
 

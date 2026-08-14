@@ -12,6 +12,18 @@ function sF = rotate_outer(sF, rot)
 %  sF - @S2FunHandle
 %
 
-sF.fun = @(v) sF.fun(inv(rot)*v);
+% the orientation has to act on the frame the function is expressed in -
+% the symmetries need not agree, only the frames have to fit
+if isa(rot,"orientation"), rot = fitFrame(rot,sF.frame); end
+
+fun = sF.fun;
+sF.fun = @(v) fun(inv(rot)*v);
+
+% rotating with an orientation changes the reference frame - the result
+% adopts the specimen frame; a plain rotation keeps the current frame
+if isa(rot,"orientation")
+  sF.framePrivate = rot.SS.frame;
+  sF.how2plotPrivate = rot.SS.how2plotPrivate;
+end
 
 end

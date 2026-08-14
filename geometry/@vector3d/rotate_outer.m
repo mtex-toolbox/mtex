@@ -16,6 +16,10 @@ function v = rotate_outer(v,q,varargin)
 
 if isnumeric(q), q = axis2quat(zvector,q);end
 
+% an orientation has to act on the frame the data is expressed in - the
+% symmetries need not agree, only the frames have to fit
+if isa(q,'orientation'), q = fitFrame(q,v.frame); end
+
 % bring the coefficient into the right shape
 [a,b,c,d] = double(q); a = a(:); b = b(:); c = c(:); d = d(:);
 [x,y,z] = double(v); x = x(:).'; y = y(:).'; z = z(:).';

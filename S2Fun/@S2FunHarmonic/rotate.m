@@ -12,11 +12,9 @@ function sF = rotate(sF, rot)
 %  sF - @S2FunHarmonic
 %
 
-% check for matching reference frames - only a function that claims a
-% frame can genuinely mismatch the orientation's crystal frame
-if isa(rot,"orientation") && ~isempty(sF.frame) && sF.frame ~= rot.CS.frame
- warning('possible reference frame mismatch');
-end
+% the orientation has to act on the frame the function is expressed in -
+% the symmetries need not agree, only the frames have to fit
+if isa(rot,"orientation"), rot = fitFrame(rot,sF.frame); end
 
 if sF.bandwidth ~= 0
   f = @(v) sF.eval(rotate(v, inv(rot)));

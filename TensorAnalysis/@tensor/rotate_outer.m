@@ -13,10 +13,21 @@ function T = rotate_outer(T,R,varargin)
 %  T - rotated @tensor
 %
 
-% ensure that the rotations have the right reference frame
+% the orientation has to act on the frame the tensor is expressed in -
+% the symmetries need not agree, only the frames have to fit
 if isa(R,'orientation') && nargin == 2
-  R = T.CS.ensureCS(R);
-  T.CS = R.SS;
+  R = fitFrame(R,T.CS.frame);
+
+  % the rotated tensor lives in the specimen frame of the orientation,
+  % but it does not possess the specimen SYMMETRY - only the reference
+  % frame is taken over
+  if R.SS.id == 1
+    T.CS = R.SS;
+  else
+    ss = specimenSymmetry;
+    ss.frame = R.SS.frame;
+    T.CS = ss;
+  end
 end
 
 % convert rotation to 3 x 3 matrix - (3 x 3 x N) for many rotation

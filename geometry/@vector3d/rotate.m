@@ -20,6 +20,10 @@ function v = rotate(v,q,varargin)
 
 if isnumeric(q), q = axis2quat(zvector,q);end
 
+% an orientation has to act on the frame the data is expressed in - the
+% symmetries need not agree, only the frames have to fit
+if isa(q,'orientation'), q = fitFrame(q,v.frame); end
+
 wasNormalized = v.isNormalized;
 
 if ~isa(q,'rotation')
