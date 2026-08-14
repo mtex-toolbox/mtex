@@ -51,7 +51,10 @@ if isa(psi,'S2Fun')
     fhat = [fhat;A(:)]; %#ok<AGROW>
   end
   
-  sF = SO3FunHarmonic(fhat,sF.s,sF2.s,varargin{:});
+  % an SO3Fun needs two symmetries - a plain S2Fun contributes none
+  s1 = getSym(sF);  if isempty(s1), s1 = specimenSymmetry.default; end
+  s2 = getSym(sF2); if isempty(s2), s2 = specimenSymmetry.default; end
+  sF = SO3FunHarmonic(fhat,s1,s2,varargin{:});
     
   return
 end

@@ -11,6 +11,6 @@ function sF = log(sF, varargin)
 %  sF - @S2FunHandle
 %
 
-sF = S2FunHandle(@(v) log(sF.eval(v)), sF.s);
+sF = S2FunHandle(@(v) log(sF.eval(v)), sF.frame);
 
 end

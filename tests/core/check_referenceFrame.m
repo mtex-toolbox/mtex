@@ -16,6 +16,7 @@ checkNamedSpecimenFrames;
 checkRegisterDefaults;
 checkDataFrameMembership;
 checkMillerFrame;
+checkS2FunFrame;
 checkSaveLoadRoundTrip;
 checkEnsureCS;
 
@@ -346,6 +347,46 @@ delete(fname);
 assert(S.m3.frame == S.m3.CS.frame && ...
   norm(squeeze(double(S.m3)) - squeeze(double(m3))) < 1e-10, ...
   'check_referenceFrame: Miller did not survive save/load');
+
+end
+
+% -------------------------------------------------------------------------
+function checkS2FunFrame
+% a plain S2Fun carries only a reference frame; the symmetry lives on
+% S2FunHarmonicSym alone, which exposes its symmetry's frame
+
+cs = crystalSymmetry('m-3m');
+sF = S2FunHarmonic.quadrature(@(v) v.x.^2);
+sFs = S2FunHarmonicSym(sF,cs);
+
+assert(sFs.frame == cs.frame && sFs.CS == cs, ...
+  'check_referenceFrame: a symmetrised S2Fun does not expose its symmetry''s frame');
+
+try
+  sFs.frame = specimenFrame.rolling;
+  failed = false;
+catch e
+  failed = strcmp(e.identifier,'MTEX:S2Fun:fixedFrame');
+end
+assert(failed, ...
+  'check_referenceFrame: assigning a frame to a symmetrised S2Fun must error');
+
+% arithmetic keeps the frame
+sFa = 2*sFs + 1;
+assert(sFa.frame == cs.frame, ...
+  'check_referenceFrame: S2Fun arithmetic dropped the crystal frame');
+
+% rotating with an orientation moves the function into the specimen
+% frame and strips the symmetry
+r = rotate(sFs,orientation.rand(cs,specimenSymmetry.default));
+assert(~isa(r,'S2FunHarmonicSym') && r.frame == specimenFrame.default, ...
+  'check_referenceFrame: rotating by an orientation must land in the specimen frame');
+
+% casting a symmetrised function to a plain harmonic keeps the crystal
+% frame, and with it the convention
+p = S2FunHarmonic(sFs);
+assert(p.frame == cs.frame && p.how2plot == cs.how2plot, ...
+  'check_referenceFrame: the cast to S2FunHarmonic lost the crystal frame');
 
 end
 

@@ -66,7 +66,7 @@ values = f.eval(S2G);
 
 % ----------------------- (3) Do adjoint NSOFT ----------------------------
 
-sF = S2FunHarmonic.adjoint(S2G,values,f.s,varargin{:});
+sF = S2FunHarmonic.adjoint(S2G,values,f.frame,varargin{:});
 sF.bandwidth = bw;
 
 % if antipodal consider only even coefficients

@@ -1,62 +1,93 @@
 classdef S2Fun
 % an abstract class representing functions on the sphere
 %
-% 
+% A spherical function carries the referenceFrame it is expressed in -
+% empty means frame-free, resolved against the session default at render
+% time. Symmetry is deliberately not part of this class: only
+% @S2FunHarmonicSym represents a symmetrised function and holds a
+% symmetry, whose frame it exposes here.
+%
 % See also
 % S2FunHarmonic S2FunBingham S2FunTri
 
 properties (Abstract = true)
-  s % symmetry / reference system
   isReal
 end
 
-properties (Dependent = true)
-  CS, SS   % crystal / specimen symmetry - both refer to s
-  how2plot % plotting convention
-end
-
 properties (Hidden = true)
-  % the plotting convention of this function, empty means follow the one of
-  % s - see get.how2plot
+  % the referenceFrame this function is expressed in; empty = frame-free.
+  % The public view is the dependent property frame, which resolves
+  % through getFrame/setFrame so that S2FunHarmonicSym can couple its
+  % frame to the one of its symmetry
+  framePrivate = []
+  % the plotting convention of this function, empty means follow the one
+  % of frame, or the session default - see get.how2plot
   how2plotPrivate = []
 end
 
-   
+properties (Dependent = true)
+  frame    % the referenceFrame this function is expressed in
+  how2plot % plotting convention
+end
+
+
 methods (Abstract = true)
   f = eval(sF,v,varargin)
 end
 
 methods
-  
+
   function pC = get.how2plot(sF)
-    % a function that was not given a convention of its own follows its
-    % reference system, so setting s.how2plot keeps working as before
+    % an own convention wins, then the frame's, then the session default
     pC = sF.how2plotPrivate;
-    if isempty(pC), pC = sF.s.how2plot; end
+    if isempty(pC) && ~isempty(sF.frame), pC = sF.frame.how2plot; end
+    if isempty(pC), pC = plottingConvention.default; end
   end
 
   function sF = set.how2plot(sF,pC)
-    % stored on the function, never on sF.s: symmetry is a handle class and
-    % the class default of s is one single specimenSymmetry shared by every
-    % S2Fun, so writing the convention through s changed the plotting frame
-    % of unrelated functions
-    %
     % accept a string like 'y↑→x' as a shortcut, as symmetry does
     if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
+
+    if ~isempty(pC) && pC == plottingConvention.default
+      % a convention equal to the session default means membership in
+      % the default frame - see vector3d/set.how2plot; on a class whose
+      % frame is fixed (S2FunHarmonicSym) it stays an own convention
+      try
+        sF = setFrame(sF,specimenFrame.default);
+        sF.how2plotPrivate = [];
+        return
+      catch
+      end
+    end
+
     sF.how2plotPrivate = pC;
   end
 
-  function CS = get.CS(sF)
-    CS = sF.s;
+  function fr = get.frame(sF)
+    fr = getFrame(sF);
   end
-  function SS = get.SS(sF)
-    SS = sF.s;
+
+  function sF = set.frame(sF,fr)
+    sF = setFrame(sF,fr);
   end
-  function sF = set.CS(sF,CS)
-    sF.s = CS;
+
+  function fr = getFrame(sF)
+    % overloaded by S2FunHarmonicSym, whose frame is the one of its
+    % symmetry
+    fr = sF.framePrivate;
   end
-  function sF = set.SS(sF,SS)
-    sF.s = SS;
+
+  function sF = setFrame(sF,fr)
+    % overloaded by S2FunHarmonicSym, where assigning a frame is an error
+    assert(isempty(fr) || isa(fr,'referenceFrame'), ...
+      'The frame of an S2Fun has to be a referenceFrame or empty.');
+    sF.framePrivate = fr;
+  end
+
+  function s = getSym(sF) %#ok<MANU>
+    % the symmetry of a symmetrised function, empty for everything else -
+    % overloaded by S2FunHarmonicSym
+    s = [];
   end
 
   function n = numel(sF)
@@ -70,16 +101,16 @@ methods
     %
 
     if isnumeric(sF1)
-      
-      sF = S2FunHandle(@(v) sF1 .^ eval(sF2, v), sF2.s);
-  
+
+      sF = S2FunHandle(@(v) sF1 .^ eval(sF2, v), sF2.frame);
+
     elseif isnumeric(sF2)
 
-      sF = S2FunHandle(@(v) eval(sF1, v) .^ sF2, sF1.s);
+      sF = S2FunHandle(@(v) eval(sF1, v) .^ sF2, sF1.frame);
 
     else
 
-      sF = S2FunHandle(@(v) eval(sF1, v) .^ eval(sF2, v), sF2.s);
+      sF = S2FunHandle(@(v) eval(sF1, v) .^ eval(sF2, v), sF2.frame);
 
     end
 
@@ -89,10 +120,20 @@ methods
 
 
  methods (Static = true)
-  
+
    s2F = smiley(varargin)
    s2F = unimodal(v,varargin)
-    
+
+   function fr = extractFrame(varargin)
+     % the frame named by the arguments: a referenceFrame wins, a
+     % symmetry contributes its frame, otherwise empty (frame-free)
+     fr = getClass(varargin,'referenceFrame');
+     if isempty(fr)
+       sym = getClass(varargin,'symmetry');
+       if ~isempty(sym), fr = sym.frame; end
+     end
+   end
+
  end
 
 end

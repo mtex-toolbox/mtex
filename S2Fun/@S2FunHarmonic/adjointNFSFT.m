@@ -56,11 +56,11 @@ if keepPlan
 else
   sF = S2FunHarmonic([],varargin{:});
 
-  % get plotting convention
+  % get plotting convention - the nodes' one, unless a symmetry or frame
+  % was given explicitly, whose convention then wins via sF.frame
   how2plot = getClass(varargin,'plottingConvention',nodes.how2plot);
-  if sF.s.how2plot ~= how2plot && isempty(getClass(varargin,'symmetry'))
-    % the convention now lives on the function, so there is no need to swap
-    % in a fresh symmetry just to avoid writing through the shared default
+  if isempty(getClass(varargin,'symmetry')) && ...
+      isempty(getClass(varargin,'referenceFrame')) && sF.how2plot ~= how2plot
     sF.how2plot = how2plot;
   end
 end

@@ -49,8 +49,11 @@ if check_option(varargin,'killPlan')
   return
 end
 
-% get plotting convention
+% get plotting convention - the nodes' one, unless a symmetry or frame
+% was given explicitly, whose convention then wins via sF.frame
 how2plot = getClass(varargin,'plottingConvention',v.how2plot);
+applyConvention = isempty(getClass(varargin,'symmetry')) && ...
+  isempty(getClass(varargin,'referenceFrame'));
 
 % multivariate case
 y = reshape(y,length(v),[]);
@@ -90,12 +93,12 @@ end
 
 if isempty(v)
   sF = S2FunHarmonic(0);
-  sF.how2plot = how2plot;
+  if applyConvention, sF.how2plot = how2plot; end
   return
 end
 if N==0
   sF = S2FunHarmonic(mean(y)*sqrt(4*pi));
-  sF.how2plot = how2plot;
+  if applyConvention, sF.how2plot = how2plot; end
   return
 end
 
@@ -230,6 +233,6 @@ end
 
 sF = S2FunHarmonic(fhat,varargin{:});
 sF = reshape(sF,sz(2:end));
-sF.how2plot = how2plot;
+if applyConvention, sF.how2plot = how2plot; end
 
 end

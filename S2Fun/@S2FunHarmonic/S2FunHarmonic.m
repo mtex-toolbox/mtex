@@ -3,7 +3,6 @@ classdef S2FunHarmonic < S2Fun
 
 properties
   fhat = []; % harmonic coefficients
-  s = specimenSymmetry.default % symmetry
 end
 
 properties (Dependent=true)
@@ -19,22 +18,25 @@ methods
     
     if nargin == 0, return; end
 
-    % convert arbitrary S2Fun or S2Kernel to S2FunHarmonic 
+    % convert arbitrary S2Fun or S2Kernel to S2FunHarmonic
     if isa(fhat,'S2FunHarmonic')
 
       sF.fhat = fhat.fhat;
-      sF.s = fhat.s;
-      sF = truncate(sF);     
+      % the resolved frame, so casting a symmetrised function to a plain
+      % harmonic one keeps its crystal frame and with it the convention
+      sF.framePrivate = fhat.frame;
+      sF.how2plotPrivate = fhat.how2plotPrivate;
+      sF = truncate(sF);
 
-    elseif isa(fhat, 'S2FunMLS') 
+    elseif isa(fhat, 'S2FunMLS')
 
       f_hat = calcFourier(fhat, varargin{:});
       sF.fhat = f_hat;
-      sF.s = fhat.s;
+      sF.framePrivate = fhat.frame;
 
-    elseif isa(fhat,'S2Fun') || isa(fhat,'function_handle') 
+    elseif isa(fhat,'S2Fun') || isa(fhat,'function_handle')
 
-      sF = S2FunHarmonic.quadrature(fhat, varargin{:});      
+      sF = S2FunHarmonic.quadrature(fhat, varargin{:});
 
     elseif isa(fhat,'S2Kernel')
 
@@ -42,19 +44,19 @@ methods
       bw = psi.bandwidth;
       sF.fhat = zeros((bw+1)^2,1);
       for l = 0:bw
-        sF.fhat(l^2+1+l) = 2*sqrt(pi)./sqrt(2*l+1)*psi.A(l+1); 
+        sF.fhat(l^2+1+l) = 2*sqrt(pi)./sqrt(2*l+1)*psi.A(l+1);
       end
-      sF.s = getClass(varargin,'symmetry',specimenSymmetry.default);
+      sF.framePrivate = S2Fun.extractFrame(varargin{:});
 
     else % construct S2FunHarmonic from Fourier coefficients
-    
+
       s = size(fhat);
       bandwidth = ceil(sqrt(s(1))-1); % Make entries to the next polynomial degree
       sF.fhat = [fhat; zeros([(bandwidth+1)^2-size(fhat, 1), s(2:end)])];
-    
+
       sF.antipodal = check_option(varargin,'antipodal');
-    
-      sF.s = getClass(varargin,'symmetry',sF.s);
+
+      sF.framePrivate = S2Fun.extractFrame(varargin{:});
 
       % truncate zeros
       %sF = sF.truncate;
@@ -136,13 +138,29 @@ methods (Static = true)
   sF = example(varargin);
   
 
-  function sF = loadobj(sF)
+  function sF = loadobj(s)
     % called by Matlab when an object is loaded from an .mat file
     % this overloaded method ensures compatibility with older MTEX
     % versions
 
-    if isempty(sF.s), sF.s = specimenSymmetry.default; end
-                  
+    if isa(s,'S2FunHarmonic')
+      sF = s;
+      if ~isempty(sF.framePrivate)
+        sF.framePrivate = referenceFrame.reintern(sF.framePrivate);
+      end
+      return
+    end
+
+    % a pre-frame file arrives as a struct because the property s is
+    % gone - rebuild and take the frame from the stored symmetry
+    sF = S2FunHarmonic(s.fhat);
+    if isfield(s,'how2plotPrivate'), sF.how2plotPrivate = s.how2plotPrivate; end
+    if isfield(s,'framePrivate') && ~isempty(s.framePrivate)
+      sF.framePrivate = referenceFrame.reintern(s.framePrivate);
+    elseif isfield(s,'s') && isa(s.s,'symmetry')
+      sF.framePrivate = s.s.frame;
+    end
+
   end
 
 end

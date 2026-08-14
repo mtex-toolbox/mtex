@@ -20,7 +20,9 @@ function [sFs,psi] = symmetrise(sF, varargin)
 %  psi - @S2Kernel
 
 if (nargin==1 || ~isa(varargin{1},'vector3d')) && isempty(getClass(varargin,'symmetry'))
-  sFs = sF.symmetrise(sF.s);
+  sym = getSym(sF);
+  if isempty(sym), sym = specimenSymmetry.default; end
+  sFs = sF.symmetrise(sym);
   return
 end
 

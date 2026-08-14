@@ -78,8 +78,11 @@ nG = calcGBND(gB,grains);
 assert(isa(nE,'S2FunHarmonic'), ...
   'check_gbnd: calcGBND returned a %s, expected an S2FunHarmonic', class(nE))
 
-assert(isa(nE.CS,'crystalSymmetry'), ...
-  'check_gbnd: the result carries no crystalSymmetry')
+% since ADR 0003 a plain S2Fun carries a reference frame instead of a
+% symmetry - the GBND is deliberately not symmetrised, but it lives in
+% the crystal frame
+assert(isa(nE.frame,'crystalFrame'), ...
+  'check_gbnd: the result carries no crystal frame')
 
 checkMeanIsOne(nE,'from EBSD');
 checkMeanIsOne(nG,'from grain2d');

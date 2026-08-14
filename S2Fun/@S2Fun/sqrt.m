@@ -13,6 +13,6 @@ function sF = sqrt(sF, varargin)
 %  bandwidth - minimal degree of the spherical harmonic
 %
 
-sF = S2FunHandle(@(v) sqrt(sF.eval(v)),sF.s);
+sF = S2FunHandle(@(v) sqrt(sF.eval(v)),sF.frame);
 
 end

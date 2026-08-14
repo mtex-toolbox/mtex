@@ -15,7 +15,7 @@ function sF = rdivide(sF1, sF2)
 %
 
 if isnumeric(sF1)
-  sF = S2FunHandle(@(v) sF1./ sF2.eval(v),sF2.s);
+  sF = S2FunHandle(@(v) sF1./ sF2.eval(v),sF2.frame);
   return
 end
 

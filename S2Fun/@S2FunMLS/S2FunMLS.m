@@ -76,7 +76,10 @@ classdef S2FunMLS < S2Fun
     w           = [];     % compactly supported weight function
     distance    = 'euclidean'; % metric for neighbor search
 
-    s = specimenSymmetry.default; % symmetry
+    % the symmetry used by the approximation machinery (grids, bandwidth
+    % choice) - not frame data; the frame this function is expressed in
+    % is s.frame, see getFrame below
+    s = specimenSymmetry.default;
 
     monomials   = true;   % use monomial basis?
     centered    = true;   % use local coordinates centered at evaluation point?
@@ -108,6 +111,20 @@ classdef S2FunMLS < S2Fun
   end
 
   methods
+
+    function fr = getFrame(S2F)
+      % the frame of an MLS function is the frame of its symmetry
+      if isempty(S2F.s)
+        fr = S2F.framePrivate;
+      else
+        fr = S2F.s.frame;
+      end
+    end
+
+    function s = getSym(S2F)
+      s = S2F.s;
+    end
+
     % initialize a spherical function
     function S2F = S2FunMLS(nodes, values, varargin)
 

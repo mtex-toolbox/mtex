@@ -22,7 +22,7 @@ function value = mean(sF, varargin)
  
 if nargin > 1 && isnumeric(varargin{1})
   
-  value = S2FunHandle(@(v) mean(sF.eval(v),varargin{1}),sF.s);
+  value = S2FunHandle(@(v) mean(sF.eval(v),varargin{1}),sF.frame);
 
 else
 

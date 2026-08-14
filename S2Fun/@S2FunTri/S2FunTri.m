@@ -4,7 +4,6 @@ classdef S2FunTri < S2Fun
   properties
     tri          % S2Triangulation
     values = []  % function values
-    s = specimenSymmetry.default
     antipodal = false
     isReal = true
   end
@@ -39,8 +38,12 @@ classdef S2FunTri < S2Fun
       end
       
       sF.values = reshape(values,numel(sF.vertices),[]);
-      
-      sF.how2plot = nodes.how2plot;
+
+      % the frame and the private convention of the vertices, not the
+      % resolved ones - that would pin a merely inherited default
+      v = sF.tri.vertices;
+      sF.framePrivate = v.frame;
+      sF.how2plotPrivate = v.how2plotPrivate;
 
     end
     
@@ -56,7 +59,7 @@ classdef S2FunTri < S2Fun
 
     function display(sF,varargin)
 
-      displayClass(sF,inputname(1),'moreInfo',char(sF.s,'compact'),varargin{:});
+      displayClass(sF,inputname(1),'moreInfo',char(sF.how2plot,'compact'),varargin{:});
 
       if length(sF) > 1, disp(['  size: ' size2str(sF)]); end
 

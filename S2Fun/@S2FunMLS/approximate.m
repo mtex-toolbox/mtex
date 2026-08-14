@@ -28,7 +28,7 @@ end
 S2G = getClass(varargin, 'vector3d');
 if isempty(S2G)
   res = get_option(varargin, 'resolution', 5*degree);
-  S2G = vector3d(equispacedS2Grid(f.CS, f.SS, 'resolution', res));
+  S2G = vector3d(equispacedS2Grid(f.s, f.s, 'resolution', res));
 end
 
 % compute values

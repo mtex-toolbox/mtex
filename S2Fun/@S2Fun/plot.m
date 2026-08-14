@@ -21,8 +21,9 @@ end
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
-if isa(sF.CS,'crystalSymmetry')
-  tooltipFormat = sF.CS.lattice.hklForm;
+cs = getSym(sF); % nonempty only for a symmetrised function
+if isa(cs,'crystalSymmetry')
+  tooltipFormat = cs.lattice.hklForm;
 else
   tooltipFormat = 'xyz';
 end
@@ -35,7 +36,7 @@ S2Proj = makeSphericalProjection(varargin{:},sF.how2plot);
 
 % a crystal symmetry marks the plot as living in crystal coordinates, such
 % that it is not annotated with the X / Y / Z of the reference frame
-if isa(sF.CS,'crystalSymmetry'), symArg = {sF.CS}; else, symArg = {}; end
+if isa(cs,'crystalSymmetry'), symArg = {cs}; else, symArg = {}; end
 
 % generate a grid where the function will be plotted
 plotNodes = ensurecell(S2Proj.makeGrid(varargin{:}));
@@ -100,7 +101,7 @@ if nargout == 0, clear h; end
           ['y    : ' xnum2str(r_local.y,'precision',3)];...
           ['z    : ' xnum2str(r_local.z,'precision',3)]};
       case {"uvw", "hkl","UVTW","hkil"}
-        r_local = Miller(r_local,sF.CS);
+        r_local = Miller(r_local,cs);
         r_local.dispStyle = tooltipFormat;
         
         txt = [xnum2str(value) ' at ' char(round(r_local))];
