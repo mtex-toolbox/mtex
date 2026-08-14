@@ -14,6 +14,7 @@ checkDelegation;
 checkNamedSpecimenFrames;
 checkRegisterDefaults;
 checkDataFrameMembership;
+checkMillerFrame;
 checkSaveLoadRoundTrip;
 checkEnsureCS;
 
@@ -245,6 +246,67 @@ ebsd.frame = specimenFrame.rolling;
 assert(ebsd.frame == specimenFrame.rolling && ...
   ebsd.pos.frame == specimenFrame.rolling, ...
   'check_referenceFrame: ebsd.frame does not delegate to pos');
+
+end
+
+% -------------------------------------------------------------------------
+function checkMillerFrame
+% a Miller must have a frame, and it is the crystal frame of its
+% symmetry - resolved live, never stored, so it cannot go stale
+
+cs = crystalSymmetry('321',[3 3 5],'X||a');
+m = Miller(1,0,0,cs);
+assert(m.frame == cs.frame, ...
+  'check_referenceFrame: the frame of a Miller is not its crystal frame');
+assert(m.how2plot == cs.how2plot, ...
+  'check_referenceFrame: a Miller does not plot in its crystal convention');
+
+% replacing the symmetry moves the frame with it - both ways it happens
+cs2 = crystalSymmetry('321',[3 3 5],'Y||a');
+m2 = transformReferenceFrame(m,cs2);
+assert(m2.frame == cs2.frame, ...
+  'check_referenceFrame: transformReferenceFrame left a stale frame');
+m.CS = cs2;
+assert(m.frame == cs2.frame, ...
+  'check_referenceFrame: setting CS left a stale frame');
+
+% an own convention still wins over the crystal frame's ...
+pC = plottingConvention('z↑→x');
+m.how2plot = pC;
+assert(m.how2plot == pC && cs2.how2plot ~= pC, ...
+  'check_referenceFrame: the Miller override leaked into the symmetry');
+
+% ... and assigning the session default becomes an override too - the
+% frame of a Miller is fixed, membership in the specimen frame is not
+% available for it
+m.how2plot = plottingConvention.default;
+assert(m.frame == cs2.frame && m.how2plot == plottingConvention.default, ...
+  'check_referenceFrame: assigning the default must not detach a Miller from its frame');
+
+% assigning a frame directly is refused
+try
+  m.frame = specimenFrame.rolling;
+  failed = false;
+catch e
+  failed = strcmp(e.identifier,'MTEX:Miller:fixedFrame');
+end
+assert(failed, ...
+  'check_referenceFrame: assigning a frame to a Miller must error');
+
+% casting to vector3d drops the crystal frame
+v = vector3d(Miller(1,0,0,cs));
+assert(isempty(v.frame), ...
+  'check_referenceFrame: vector3d(m) must drop the crystal frame');
+
+% save / load keeps the coupling
+fname = [tempname '.mat'];
+m3 = Miller(1,2,3,cs);
+save(fname,'m3');
+S = load(fname);
+delete(fname);
+assert(S.m3.frame == S.m3.CS.frame && ...
+  norm(squeeze(double(S.m3)) - squeeze(double(m3))) < 1e-10, ...
+  'check_referenceFrame: Miller did not survive save/load');
 
 end
 

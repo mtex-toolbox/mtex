@@ -45,10 +45,15 @@ classdef vector3d < dynOption
     z = []; % z coordinate
     antipodal = false;
     isNormalized = false;
-    frame = [] % the referenceFrame this vector is expressed in; empty = frame-free
   end
 
   properties (Hidden = true)
+    % the referenceFrame this vector is expressed in; empty = frame-free.
+    % Do not read/write directly outside loadobj and the copy constructor
+    % - the public view is the dependent property frame, which resolves
+    % through getFrame/setFrame so that Miller can couple its frame to
+    % the one of its crystal symmetry
+    framePrivate = []
     % the plotting convention of this vector, empty means follow the one
     % of frame, or the session default - see get.how2plot
     how2plotPrivate = []
@@ -58,6 +63,7 @@ classdef vector3d < dynOption
     theta   % polar angle
     rho     % azimuth angle
     resolution % mean distance between the points on the sphere
+    frame    % the referenceFrame this vector is expressed in
     how2plot % plotting convention
     plottingConvention
   end
@@ -87,9 +93,11 @@ classdef vector3d < dynOption
           v.antipodal = varargin{1}.antipodal;
           v.isNormalized = varargin{1}.isNormalized;
           v.opt = varargin{1}.opt;
-          % the private slot, not the resolved convention - copying the
-          % resolved one would pin a merely inherited frame or default
-          v.frame = varargin{1}.frame;
+          % the private slots, not the resolved values - copying the
+          % resolved ones would pin a merely inherited frame or default;
+          % casting a Miller to vector3d deliberately drops the crystal
+          % frame (its private slot is empty)
+          v.framePrivate = varargin{1}.framePrivate;
           v.how2plotPrivate = varargin{1}.how2plotPrivate;
           return
           
@@ -226,20 +234,39 @@ classdef vector3d < dynOption
       if ~isempty(pC) && pC == plottingConvention.default
         % a convention equal to the session default means membership in
         % the default frame - the data then follows whatever plotx2east
-        % or plottingConvention.default(pC) later make the default
-        v.frame = specimenFrame.default;
-        v.how2plotPrivate = [];
-      else
-        % any other convention is this vector's own - stored on the
-        % vector, never written through a frame handle
-        v.how2plotPrivate = pC;
+        % or plottingConvention.default(pC) later make the default; on a
+        % class whose frame is fixed (Miller) it stays an own convention
+        try
+          v = setFrame(v,specimenFrame.default);
+          v.how2plotPrivate = [];
+          return
+        catch
+        end
       end
+
+      % any other convention is this vector's own - stored on the
+      % vector, never written through a frame handle
+      v.how2plotPrivate = pC;
+    end
+
+    function fr = get.frame(v)
+      fr = getFrame(v);
     end
 
     function v = set.frame(v,fr)
+      v = setFrame(v,fr);
+    end
+
+    function fr = getFrame(v)
+      % overloaded by Miller, whose frame is the one of its symmetry
+      fr = v.framePrivate;
+    end
+
+    function v = setFrame(v,fr)
+      % overloaded by Miller, where assigning a frame is an error
       assert(isempty(fr) || isa(fr,'referenceFrame'), ...
         'The frame of a vector3d has to be a referenceFrame or empty.');
-      v.frame = fr;
+      v.framePrivate = fr;
     end
 
     % ------- to be removed ------
@@ -398,7 +425,10 @@ classdef vector3d < dynOption
       end
 
       % a modern object arrives with a deserialized frame - re-intern it
-      if ~isempty(v.frame), v.frame = referenceFrame.reintern(v.frame); end
+      % (the private slot: a Miller resolves its frame from its symmetry)
+      if ~isempty(v.framePrivate)
+        v.framePrivate = referenceFrame.reintern(v.framePrivate);
+      end
 
     end
     

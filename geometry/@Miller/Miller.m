@@ -185,6 +185,23 @@ classdef Miller < vector3d
       end      
     end
     
+    function fr = getFrame(m)
+      % the frame of a Miller is the crystal frame of its symmetry -
+      % resolved live, so it can never go stale when CS is replaced
+      % (e.g. by transformReferenceFrame)
+      if isempty(m.CSprivate)
+        fr = m.framePrivate; % degenerate machinery state without a CS
+      else
+        fr = m.CSprivate.frame;
+      end
+    end
+
+    function m = setFrame(m,fr) %#ok<INUSD>
+      error('MTEX:Miller:fixedFrame',...
+        ['The frame of a Miller is the crystal frame of its crystal ' ...
+        'symmetry - assign m.CS instead.']);
+    end
+
     function l = get.lattice(m)
       l = m.CS.lattice;
     end
