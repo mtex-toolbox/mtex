@@ -44,7 +44,6 @@ if ( nargin > 1 ) && ( isa(varargin{1}, 'S2Fun') )
     value = S2FunHarmonic.quadrature(f);
   end
   value.frame = sF.frame;
-  value.how2plotPrivate = sF.how2plotPrivate;
 
 % pointwise minimum of spherical harmonics
 elseif ( nargin > 1 ) && ~isempty(varargin{1}) && ( isa(varargin{1}, 'double') )
@@ -56,7 +55,6 @@ elseif ( nargin > 1 ) && ~isempty(varargin{1}) && ( isa(varargin{1}, 'double') )
     value = S2FunHarmonic.quadrature(f);
   end
   value.frame = sF.frame;
-  value.how2plotPrivate = sF.how2plotPrivate;
 
 elseif (nargin > 1) && isempty(varargin{1}) % third input is dimension
   
@@ -141,7 +139,6 @@ else % detect local or global minima
     % a back reference from crystalFrame to its point group or a Miller
     % that can live on a bare crystal frame.
     pos.frame = sF.frame;
-    pos.how2plotPrivate = sF.how2plotPrivate;
   end
 
 end

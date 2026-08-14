@@ -305,14 +305,9 @@ classdef crystalSymmetry < symmetry & phaseItem
           cs.color = str2rgb(cs.color);
         end
 
-        % a pre-frame object restored axes/how2plot through the dependent
-        % setters: axes minted a frame, how2plot landed in the override
-        % slot - move it onto the frame so the frame supplies the default
+        % a pre-frame object restored axes and how2plot through the
+        % dependent setters, which minted and forked the frame
         if isempty(cs.frame), cs.frame = crystalFrame([xvector,yvector,zvector]); end
-        if isempty(cs.frame.how2plot) && isa(cs.how2plotPrivate,'plottingConvention')
-          cs.frame.how2plot = cs.how2plotPrivate;
-          cs.how2plotPrivate = [];
-        end
         cs.frame.name = cs.mineral;
 
         if isa(cs.how2plot,'plottingConvention'), return; end

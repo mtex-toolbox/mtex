@@ -66,7 +66,8 @@ if generateFun == 1
   vs1 = S2FunHarmonicSym.quadrature(x,vs1,S.CS,'bandwidth',M,'weights',W,'antipodal');
   vs2 = S2FunHarmonicSym.quadrature(x,vs2,S.CS,'bandwidth',M,'weights',W,'antipodal');
 
-  vp.how2plot = S.how2plot; vs1.how2plot = S.how2plot; vs2.how2plot = S.how2plot;
+  vp.framePrivate = S.framePrivate; vs1.framePrivate = S.framePrivate;
+  vs2.framePrivate = S.framePrivate;
 
   pp = S2AxisFieldHarmonic.quadrature(x,pp,'bandwidth',M,'weights',W,'antipodal');
   ps1 = S2AxisFieldHarmonic.quadrature(x,ps1,'bandwidth',M,'weights',W,'antipodal');
@@ -76,7 +77,8 @@ elseif generateFun == 2
   vs1 = S2FunTri(vp.tri,vs1.');
   vs2 = S2FunTri(vp.tri,vs2.');
 
-  vp.how2plot = S.how2plot; vs1.how2plot = S.how2plot; vs2.how2plot = S.how2plot;
+  vp.framePrivate = S.framePrivate; vs1.framePrivate = S.framePrivate;
+  vs2.framePrivate = S.framePrivate;
 
   pp = S2AxisFieldTri(vp.tri,pp.');
   ps1 = S2AxisFieldTri(vp.tri,ps1.');

@@ -148,6 +148,10 @@ grains.numPixel = full(sum(I_DG,1)).';
 grains.innerBoundary = makeBoundary(Fint,I_FDint);
 grains.scanUnit = ebsd.scanUnit;
 
+% the grains live in the very same reference frame as the map - the
+% vertices were computed as bare coordinates and know nothing about it
+grains.frame = ebsd.pos.frame;
+
 % merge quadruple grains
 if check_option(varargin,'removeQuadruplePoints') && qAdded > 0
   mergeQuadrupleGrains;

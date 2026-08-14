@@ -22,7 +22,6 @@ BS2.a = rot.*BS2.a;
 % adopts the specimen frame; a plain rotation keeps the current frame
 if isa(rot,'orientation')
   BS2.framePrivate = rot.SS.frame;
-  BS2.how2plotPrivate = rot.SS.how2plotPrivate;
 end
 
 end

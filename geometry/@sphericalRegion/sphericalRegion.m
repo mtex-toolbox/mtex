@@ -94,12 +94,11 @@ classdef sphericalRegion
       % otherwise a plain sphericalRegion is left behind which carries the
       % global default convention
       if check_option(varargin,{'complete','3d'})
-        % carry the frame and the private convention, not the resolved
-        % one - restoring the resolved convention would pin a merely
-        % inherited frame or default onto the fresh region
-        fr = sR.frame; pC = sR.N.how2plotPrivate;
+        % carry the frame - restoring a resolved convention instead
+        % would pin a merely inherited default onto the fresh region
+        fr = sR.frame;
         sR = sphericalRegion;
-        sR.frame = fr; sR.N.how2plotPrivate = pC;
+        sR.frame = fr;
       end
 
       % which hemisphere is the upper one depends on the convention the

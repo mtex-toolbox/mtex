@@ -113,17 +113,13 @@ methods (Static = true)
         end
       end
 
-      % a pre-frame object restored how2plot into the override slot; a
-      % modern object arrives with its own deserialized frame. Either way
-      % re-intern against the register: attach the session frame when the
-      % convention agrees with it (matchDefault re-aliases an
-      % equal-by-value one first), fork otherwise - never write a loaded
-      % convention through the shared session frame.
+      % a pre-frame object restored how2plot through the setter, which
+      % forked it into a frame; a modern object arrives with its own
+      % deserialized frame. Either way re-intern against the register -
+      % the loaded convention applies to the whole session, see
+      % referenceFrame/reintern.
       if isempty(s.frame)
-        pC = s.how2plotPrivate;
-        s.how2plotPrivate = [];
-        if isempty(pC), pC = plottingConvention.default; end
-        s.frame = specimenSymmetry.frameFor(matchDefault(pC));
+        s.frame = specimenFrame.default;
       elseif isempty(s.frame.how2plot)
         % the deserialized frame is this object's own handle - safe
         s.frame.how2plot = plottingConvention.default;
@@ -185,7 +181,6 @@ methods (Static = true)
         pC = ss.how2plot;
         if ~isempty(pC) && pC ~= fr.how2plot, fr.how2plot = pC; end
         ss.frame = fr;
-        ss.how2plotPrivate = [];
         save = ss;
       else
         if isempty(save)

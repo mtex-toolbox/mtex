@@ -142,7 +142,7 @@ classdef referenceFrame < matlab.mixin.Copyable
 
     end
 
-    function c = headerChar(fr,pC,own)
+    function c = headerChar(fr,pC)
       % the string data class displays show: the frame together with the
       % plotting convention the data is drawn in
       %
@@ -150,17 +150,13 @@ classdef referenceFrame < matlab.mixin.Copyable
       % convention of a crystal frame is derived from its axes and adds
       % nothing. For a specimen frame the convention appears in the
       % frame's axes names ('TD←RD↑'); frame-free data shows the plain
-      % convention. An own convention override of the data (own
-      % nonempty) wins and is shown plainly.
+      % convention.
       %
       % Input
-      %  fr  - @referenceFrame or []
-      %  pC  - @plottingConvention, the resolved convention of the data
-      %  own - the data's private convention slot, [] when it follows fr
+      %  fr - @referenceFrame or []
+      %  pC - @plottingConvention, the resolved convention of the data
 
-      if nargin > 2 && ~isempty(own)
-        c = char(pC,'compact');
-      elseif isa(fr,'crystalFrame')
+      if isa(fr,'crystalFrame')
         c = char(fr);
       elseif isa(fr,'referenceFrame')
         c = conventionChar(fr,pC);
@@ -174,8 +170,13 @@ classdef referenceFrame < matlab.mixin.Copyable
     function rf = reintern(rf)
       % swap a deserialized frame for the registered instance of its name
       % when the two agree by value - so separately saved datasets share
-      % one frame handle again after loading; a frame that differs (e.g.
-      % saved under another default convention) is kept as it is
+      % one frame handle again after loading. A frame with a different
+      % convention keeps its own fork: applying a loaded convention to
+      % the whole session is the business of the CONTAINER (EBSD,
+      % PoleFigure) whose positions state the intent - the individual
+      % vectors of a file carry incidental conventions of the saving
+      % session, and letting each of them repoint the register would make
+      % the outcome depend on the load order within the file.
       %
       % See also
       % referenceFrame/byName specimenSymmetry/loadobj vector3d/loadobj

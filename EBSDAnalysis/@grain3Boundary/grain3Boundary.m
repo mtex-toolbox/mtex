@@ -171,7 +171,10 @@ methods
       % compute normal directions
       N = normalize(cross(VV(faceEnds-1),VV(faceEnds)));
     end
-    
+
+    % the normals live in the very same frame as the vertices
+    N.frame = gB3.allV.frame;
+
   end
   
   function I_FG = get.I_FG(gB3)

@@ -25,7 +25,6 @@ methods
       % the resolved frame, so casting a symmetrised function to a plain
       % harmonic one keeps its crystal frame and with it the convention
       sF.framePrivate = fhat.frame;
-      sF.how2plotPrivate = fhat.how2plotPrivate;
       sF = truncate(sF);
 
     elseif isa(fhat, 'S2FunMLS')
@@ -152,13 +151,16 @@ methods (Static = true)
     end
 
     % a pre-frame file arrives as a struct because the property s is
-    % gone - rebuild and take the frame from the stored symmetry
+    % gone - rebuild and take the frame from the stored symmetry or a
+    % stored convention (only frames carry conventions now)
     sF = S2FunHarmonic(s.fhat);
-    if isfield(s,'how2plotPrivate'), sF.how2plotPrivate = s.how2plotPrivate; end
     if isfield(s,'framePrivate') && ~isempty(s.framePrivate)
       sF.framePrivate = referenceFrame.reintern(s.framePrivate);
     elseif isfield(s,'s') && isa(s.s,'symmetry')
       sF.framePrivate = s.s.frame;
+    elseif isfield(s,'how2plotPrivate') && ~isempty(s.how2plotPrivate)
+      sF.how2plot = s.how2plotPrivate;
+      sF.framePrivate = referenceFrame.reintern(sF.framePrivate);
     end
 
   end

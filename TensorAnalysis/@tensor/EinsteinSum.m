@@ -97,9 +97,9 @@ elseif strcmp(class(T),'tensor') || check_option(varargin(iv:end),'keepClass') %
 else
   % this branch builds a fresh tensor rather than reusing T, so carry the
   % plotting convention over explicitly - it lives on the tensor, not on CS
-  pC = T.how2plotPrivate;
+  pC = T.framePrivate;
   T = tensor(M1,T.CS,'noCheck','rank',rOut,varargin{iv:end});
-  T.how2plotPrivate = pC;
+  T.framePrivate = pC;
 end
 
 end

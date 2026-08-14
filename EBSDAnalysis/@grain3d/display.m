@@ -2,7 +2,7 @@ function  display(grains,varargin)
 % standard output
 
 displayClass(grains,inputname(1),'moreInfo',...
-  referenceFrame.headerChar(grains.frame,grains.how2plot,grains.allV.how2plotPrivate));
+  referenceFrame.headerChar(grains.frame,grains.how2plot));
 
 disp(' ')
 %disp(char(dynOption(grains)));

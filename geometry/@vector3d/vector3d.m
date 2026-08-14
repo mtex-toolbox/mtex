@@ -52,11 +52,9 @@ classdef vector3d < dynOption
     % Do not read/write directly outside loadobj and the copy constructor
     % - the public view is the dependent property frame, which resolves
     % through getFrame/setFrame so that Miller can couple its frame to
-    % the one of its crystal symmetry
+    % the one of its crystal symmetry. Only frames carry plotting
+    % conventions - there is no per object convention slot.
     framePrivate = []
-    % the plotting convention of this vector, empty means follow the one
-    % of frame, or the session default - see get.how2plot
-    how2plotPrivate = []
   end
 
   properties (Dependent = true)
@@ -93,12 +91,11 @@ classdef vector3d < dynOption
           v.antipodal = varargin{1}.antipodal;
           v.isNormalized = varargin{1}.isNormalized;
           v.opt = varargin{1}.opt;
-          % the private slots, not the resolved values - copying the
-          % resolved ones would pin a merely inherited frame or default;
+          % the private slot, not the resolved frame - copying the
+          % resolved one would pin a merely inherited frame or default;
           % casting a Miller to vector3d deliberately drops the crystal
           % frame (its private slot is empty)
           v.framePrivate = varargin{1}.framePrivate;
-          v.how2plotPrivate = varargin{1}.how2plotPrivate;
           return
           
         elseif isa(varargin{1},'float')
@@ -219,11 +216,11 @@ classdef vector3d < dynOption
     end
 
     function pC = get.how2plot(v)
-      % an own convention wins, then the frame's, then the session default
-      % - resolved live, so frame-free data follows whatever the default
-      % becomes
-      pC = v.how2plotPrivate;
-      if isempty(pC) && ~isempty(v.frame), pC = v.frame.how2plot; end
+      % the convention of the frame, or the session default - resolved
+      % live, so frame-free data follows whatever the default becomes;
+      % only frames carry conventions
+      pC = [];
+      if ~isempty(v.frame), pC = v.frame.how2plot; end
       if isempty(pC), pC = plottingConvention.default; end
     end
 
@@ -231,22 +228,16 @@ classdef vector3d < dynOption
       % accept a string like 'y↑→x' as a shortcut for the convention
       if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
 
-      if ~isempty(pC) && pC == plottingConvention.default
-        % a convention equal to the session default means membership in
-        % the default frame - the data then follows whatever plotx2east
-        % or plottingConvention.default(pC) later make the default; on a
-        % class whose frame is fixed (Miller) it stays an own convention
-        try
-          v = setFrame(v,specimenFrame.default);
-          v.how2plotPrivate = [];
-          return
-        catch
-        end
+      if isempty(pC)
+        % no convention claim - back to frame-free
+        v = setFrame(v,[]);
+      else
+        % only frames carry conventions: the session frame when pC is
+        % the convention it carries, an unregistered fork otherwise -
+        % never written through a shared frame handle. On a class whose
+        % frame is fixed (Miller) this errors - assign the symmetry.
+        v = setFrame(v,specimenSymmetry.frameFor(pC));
       end
-
-      % any other convention is this vector's own - stored on the
-      % vector, never written through a frame handle
-      v.how2plotPrivate = pC;
     end
 
     function fr = get.frame(v)
@@ -413,19 +404,12 @@ classdef vector3d < dynOption
       % this overloaded method ensures compatibility with older MTEX
       % versions
 
-      % a pre-frame object restored its convention into the override
-      % slot - re-route it through the setter after matchDefault: equal
-      % to the session default becomes membership in the default frame,
-      % anything else stays this vector's own convention, empty stays
-      % frame-free
-      pC = v.how2plotPrivate;
-      if ~isempty(pC)
-        v.how2plotPrivate = [];
-        v.how2plot = matchDefault(pC);
-      end
-
-      % a modern object arrives with a deserialized frame - re-intern it
-      % (the private slot: a Miller resolves its frame from its symmetry)
+      % a deserialized frame is re-interned against the register - the
+      % convention the loaded data was saved with applies to the whole
+      % session, see referenceFrame/reintern. A pre-frame object arrives
+      % here with the frame its saved convention was forked into by
+      % set.how2plot during loading. (The private slot: a Miller
+      % resolves its frame from its symmetry.)
       if ~isempty(v.framePrivate)
         v.framePrivate = referenceFrame.reintern(v.framePrivate);
       end

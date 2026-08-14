@@ -62,7 +62,6 @@ if isa(q,'orientation')
     % rotating with an orientation changes the reference frame - see
     % vector3d/rotate
     v.frame = q.SS.frame;
-    v.how2plotPrivate = q.SS.how2plotPrivate;
 
   end
 

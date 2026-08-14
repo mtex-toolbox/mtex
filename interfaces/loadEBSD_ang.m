@@ -184,8 +184,11 @@ ebsd(ebsd.rotations.isnan | ebsd.prop.ci<0).phase = notIndexedID;
 
 ebsd = applyEulerCorrectionTable(ebsd,'.ang',varargin{:});
 
-ebsd.how2plot = matchDefault(...
-  getClass(varargin,'plottingConvention',plottingConvention.ij));
+% the convention the data wants to be plotted in applies to the whole
+% session - the default frame adopts it and the data joins that frame
+fr = specimenFrame.default;
+fr.how2plot = getClass(varargin,'plottingConvention',plottingConvention.ij);
+ebsd.frame = fr;
 
 end
 

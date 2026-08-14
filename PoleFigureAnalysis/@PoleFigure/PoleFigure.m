@@ -220,6 +220,22 @@ classdef PoleFigure < dynProp & dynOption
   
   methods (Static = true)
     [pf,interface,options] = load(fname,varargin)
+
+    function pf = loadobj(pf)
+      % called by Matlab when an object is loaded from an .mat file
+      %
+      % the convention the pole figure was saved with applies to the
+      % whole session - see EBSD/loadobj; the specimen directions state
+      % the intent, the individual vectors of the file carry incidental
+      % conventions of the saving session
+      if isa(pf,'PoleFigure') && ~isempty(pf.allR) && ...
+          isa(pf.allR{1}.frame,'specimenFrame') && ~isempty(pf.allR{1}.frame.how2plot)
+        fr = specimenFrame.default;
+        pC = pf.allR{1}.frame.how2plot;
+        if fr.how2plot ~= pC, fr.how2plot = pC; end
+        pf.frame = fr;
+      end
+    end
   end
   
 end

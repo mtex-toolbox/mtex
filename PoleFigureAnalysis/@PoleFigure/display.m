@@ -3,7 +3,7 @@ function display(pf,varargin)
 
 % the specimen frame together with the convention; a non trivial
 % specimen symmetry keeps its point group
-info = referenceFrame.headerChar(pf.frame,pf.how2plot,pf.allR{1}.how2plotPrivate);
+info = referenceFrame.headerChar(pf.frame,pf.how2plot);
 if pf.SS.id > 1, info = [info ' (' pf.SS.pointGroup ')']; end
 displayClass(pf,inputname(1),'moreInfo',info,varargin{:});
 

@@ -8,14 +8,15 @@ classdef tensor < dynOption
   end
 
   properties (Hidden = true)
-    % the plotting convention of this tensor, empty means follow the one of
-    % CS - see get.how2plot
-    how2plotPrivate = []
+    % the referenceFrame of this tensor, empty means follow the one of CS
+    % - see get.frame; only frames carry plotting conventions
+    framePrivate = []
   end
 
   properties (Dependent = true)
     isSymmetric
     isSkewSymmetric
+    frame    % the referenceFrame this tensor is expressed in
     how2plot % plotting convention
   end
 
@@ -57,9 +58,9 @@ classdef tensor < dynOption
           T.doubleConvention = M.doubleConvention;
         end
         T.opt = M.opt;
-        % the convention lives on the tensor, so it has to be copied over -
-        % it no longer rides along on CS
-        T.how2plotPrivate = M.how2plotPrivate;
+        % an own frame lives on the tensor, so it has to be copied over -
+        % it does not ride along on CS
+        T.framePrivate = M.framePrivate;
 
         % extract additional properties
         varargin = delete_option(varargin,'doubleConvention');
@@ -172,24 +173,37 @@ classdef tensor < dynOption
       end     
     end
 
+    function fr = get.frame(T)
+      % a tensor that was not given a frame of its own follows its
+      % reference system, so setting the frame of CS keeps working
+      fr = T.framePrivate;
+      if isempty(fr), fr = T.CS.frame; end
+    end
+
+    function T = set.frame(T,fr)
+      assert(isempty(fr) || isa(fr,'referenceFrame'), ...
+        'The frame of a tensor has to be a referenceFrame or empty.');
+      T.framePrivate = fr;
+    end
+
     function pC = get.how2plot(T)
-      % a tensor that was not given a convention of its own follows its
-      % reference system, so setting CS.how2plot keeps working as before
-      pC = T.how2plotPrivate;
-      if isempty(pC), pC = T.CS.how2plot; end
+      % only frames carry conventions - the tensor's own frame wins, then
+      % the one of its reference system
+      pC = [];
+      if ~isempty(T.frame), pC = T.frame.how2plot; end
+      if isempty(pC), pC = plottingConvention.default; end
     end
 
     function T = set.how2plot(T,pC)
-      % stored on the tensor, never on T.CS: symmetry is a handle class and
-      % the class default of CS is one single specimenSymmetry shared by
-      % every tensor, so writing the convention through CS changed the
-      % plotting frame of unrelated tensors. Copying CS instead is not an
-      % option either - crystalSymmetry inherits a sealed handle-identity eq
-      % from phaseItem, so a copy stops comparing equal to what was passed in.
-      %
-      % accept a string like 'y↑→x' as a shortcut, as symmetry does
+      % stored as an own frame on the tensor, never written through T.CS
+      % or its frame - both are shared handles (the leak family of ADR
+      % 0003); accept a string like 'y↑→x' as a shortcut, as symmetry does
       if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
-      T.how2plotPrivate = pC;
+      if isempty(pC)
+        T.framePrivate = [];
+      else
+        T.framePrivate = specimenSymmetry.frameFor(pC);
+      end
     end
 
     function x = x(t)

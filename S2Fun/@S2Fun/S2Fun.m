@@ -18,11 +18,9 @@ properties (Hidden = true)
   % the referenceFrame this function is expressed in; empty = frame-free.
   % The public view is the dependent property frame, which resolves
   % through getFrame/setFrame so that S2FunHarmonicSym can couple its
-  % frame to the one of its symmetry
+  % frame to the one of its symmetry. Only frames carry plotting
+  % conventions - there is no per object convention slot.
   framePrivate = []
-  % the plotting convention of this function, empty means follow the one
-  % of frame, or the session default - see get.how2plot
-  how2plotPrivate = []
 end
 
 properties (Dependent = true)
@@ -38,9 +36,10 @@ end
 methods
 
   function pC = get.how2plot(sF)
-    % an own convention wins, then the frame's, then the session default
-    pC = sF.how2plotPrivate;
-    if isempty(pC) && ~isempty(sF.frame), pC = sF.frame.how2plot; end
+    % the convention of the frame, or the session default - only frames
+    % carry conventions
+    pC = [];
+    if ~isempty(sF.frame), pC = sF.frame.how2plot; end
     if isempty(pC), pC = plottingConvention.default; end
   end
 
@@ -48,19 +47,16 @@ methods
     % accept a string like 'y↑→x' as a shortcut, as symmetry does
     if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
 
-    if ~isempty(pC) && pC == plottingConvention.default
-      % a convention equal to the session default means membership in
-      % the default frame - see vector3d/set.how2plot; on a class whose
-      % frame is fixed (S2FunHarmonicSym) it stays an own convention
-      try
-        sF = setFrame(sF,specimenFrame.default);
-        sF.how2plotPrivate = [];
-        return
-      catch
-      end
+    if isempty(pC)
+      % no convention claim - back to frame-free
+      sF = setFrame(sF,[]);
+    else
+      % only frames carry conventions: the session frame when pC is the
+      % convention it carries, an unregistered fork otherwise. On a
+      % class whose frame is fixed (S2FunHarmonicSym) this errors -
+      % assign the symmetry sF.s instead.
+      sF = setFrame(sF,specimenSymmetry.frameFor(pC));
     end
-
-    sF.how2plotPrivate = pC;
   end
 
   function fr = get.frame(sF)

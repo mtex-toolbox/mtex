@@ -645,9 +645,12 @@ function out = ebsd_default(raw_data)
 
   ebsd.opt.header = header;
 
-  % if a how2plot is set add
+  % if a how2plot is set, it applies to the whole session - the default
+  % frame adopts it and the data joins that frame
   if isfield(raw_data, 'how2plot')
-    ebsd.how2plot = raw_data.how2plot;
+    fr = specimenFrame.default;
+    fr.how2plot = raw_data.how2plot;
+    ebsd.frame = fr;
   end
 
   out = ebsd;
@@ -852,8 +855,6 @@ function how2plot = sethow2plot(input)
     how2plot.(direction) = vecObj;
   end
 
-  % stay with the default instance if this is the default alignment anyway
-  how2plot = matchDefault(how2plot);
 end
 
 function format = determineformate(raw_data)

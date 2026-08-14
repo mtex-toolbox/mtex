@@ -23,7 +23,6 @@ sF.fun = @(v) fun(inv(rot)*v);
 % adopts the specimen frame; a plain rotation keeps the current frame
 if isa(rot,"orientation")
   sF.framePrivate = rot.SS.frame;
-  sF.how2plotPrivate = rot.SS.how2plotPrivate;
 end
 
 end

@@ -166,6 +166,10 @@ classdef EBSD < phaseList & dynProp & dynOption
             
       ebsd.N = perp(ebsd.unitCell);
 
+      % unitCell and N live in the very same frame as the positions
+      ebsd.unitCell.frame = ebsd.pos.frame;
+      ebsd.N.frame = ebsd.pos.frame;
+
       % orientations of not indexed pixels should be nan
       ebsd.rotations(~ebsd.isIndexed) = nan;
 
@@ -385,6 +389,9 @@ classdef EBSD < phaseList & dynProp & dynOption
 
     function ebsd = set.how2plot(ebsd,pC)
       ebsd.pos.how2plot = pC;
+      % unitCell and N live in the very same frame as the positions
+      ebsd.unitCell.frame = ebsd.pos.frame;
+      ebsd.N.frame = ebsd.pos.frame;
     end
 
     function fr = get.frame(ebsd)
@@ -392,7 +399,10 @@ classdef EBSD < phaseList & dynProp & dynOption
     end
 
     function ebsd = set.frame(ebsd,fr)
+      % unitCell and N live in the very same frame as the positions
       ebsd.pos.frame = fr;
+      ebsd.unitCell.frame = fr;
+      ebsd.N.frame = fr;
     end
 
     function rot = get.EulerCorrection(ebsd)
@@ -479,7 +489,19 @@ classdef EBSD < phaseList & dynProp & dynOption
 
       % ensure CSList is vector
       ebsd.CSList = ensureCSArray(ebsd.CSList);
-      
+
+      % the convention the map was saved with applies to the whole
+      % session - the default frame adopts it and the data joins that
+      % frame. Only the container decides this: the individual vectors
+      % of the file carry incidental conventions of the saving session.
+      if ~isempty(ebsd.pos) && isa(ebsd.pos.frame,'specimenFrame') && ...
+          ~isempty(ebsd.pos.frame.how2plot)
+        fr = specimenFrame.default;
+        pC = ebsd.pos.frame.how2plot;
+        if fr.how2plot ~= pC, fr.how2plot = pC; end
+        ebsd.frame = fr;
+      end
+
     end
 
   end

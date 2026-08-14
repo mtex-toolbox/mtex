@@ -81,7 +81,9 @@ classdef triplePointList < phaseList & dynProp
     end
 
     function tP = set.frame(tP,fr)
+      % the normal direction lives in the very same frame as the vertices
       tP.allV.frame = fr;
+      tP.N.frame = fr;
     end
 
     function pC = get.how2plot(tP)
@@ -90,6 +92,8 @@ classdef triplePointList < phaseList & dynProp
 
     function tP = set.how2plot(tP,pC)
       tP.allV.how2plot = pC;
+      % the normal direction lives in the very same frame as the vertices
+      tP.N.frame = tP.allV.frame;
     end
 
     function v = get.V(tP)

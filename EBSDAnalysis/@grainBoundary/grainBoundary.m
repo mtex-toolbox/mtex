@@ -109,8 +109,11 @@ classdef grainBoundary < phaseList & dynProp
       % ensure V is vector3d
       if ~isa(V,'vector3d'), V = vector3d.byXYZ(V); end
       
-      % assign properties
-      gB.triplePoints = struct('allV',V,'N',zvector);
+      % assign properties - the normal lives in the very same frame as
+      % the vertices
+      N0 = zvector;
+      N0.frame = V.frame;
+      gB.triplePoints = struct('allV',V,'N',N0);
       gB.F = F;
       gB.misrotation = mori;
       gB.CSList = CSList;
@@ -230,6 +233,8 @@ classdef grainBoundary < phaseList & dynProp
 
     function gB = set.frame(gB,fr)
       gB.allV.frame = fr;
+      % the triple points carry their own vertices and the normal
+      gB.triplePoints.frame = fr;
     end
 
     function pC = get.how2plot(gB)
@@ -238,6 +243,8 @@ classdef grainBoundary < phaseList & dynProp
 
     function gB = set.how2plot(gB,pC)
       gB.allV.how2plot = pC;
+      % the triple points carry their own vertices and the normal
+      gB.triplePoints.how2plot = pC;
     end
 
     function V = get.allV(gB)

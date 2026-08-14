@@ -39,11 +39,9 @@ classdef S2FunTri < S2Fun
       
       sF.values = reshape(values,numel(sF.vertices),[]);
 
-      % the frame and the private convention of the vertices, not the
-      % resolved ones - that would pin a merely inherited default
-      v = sF.tri.vertices;
-      sF.framePrivate = v.frame;
-      sF.how2plotPrivate = v.how2plotPrivate;
+      % the frame of the vertices, not a resolved convention - that
+      % would pin a merely inherited default
+      sF.framePrivate = sF.tri.vertices.frame;
 
     end
     
@@ -60,7 +58,7 @@ classdef S2FunTri < S2Fun
     function display(sF,varargin)
 
       displayClass(sF,inputname(1),'moreInfo',...
-        referenceFrame.headerChar(sF.frame,sF.how2plot,sF.how2plotPrivate),varargin{:});
+        referenceFrame.headerChar(sF.frame,sF.how2plot),varargin{:});
 
       if length(sF) > 1, disp(['  size: ' size2str(sF)]); end
 

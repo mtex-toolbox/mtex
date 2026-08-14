@@ -42,7 +42,6 @@ else
   % the sample lives in the reference frame of the function - see the
   % open problem note in S2Fun/min about plain crystal-framed functions
   v.frame = S2F.frame;
-  v.how2plotPrivate = S2F.how2plotPrivate;
 end
 
 % set antipodal if function is antipodal

@@ -16,11 +16,11 @@ function [lambda,v] = eig(v,varargin)
 %
 
 xyz = v.xyz;
-% carry the frame and the private convention, not the resolved one -
-% that would pin a merely inherited frame or default onto the result
-fr = v.frame; pC = v.how2plotPrivate;
+% carry the frame - for a Miller input the eigenvectors stay expressed
+% in its crystal frame
+fr = v.frame;
 [v, lambda] = eig3(xyz.' * xyz);
-v.frame = fr; v.how2plotPrivate = pC;
+v.frame = fr;
 
 % for some reason Matlab eig function changes to order outputs if called
 % with two arguments - so we should do the same

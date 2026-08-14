@@ -17,9 +17,10 @@ function T = directionalMagnitude(T,v)
 
 % return a function if required
 if nargin == 1 || isempty(v)
-  pC = T.how2plot;
+  fr = T.framePrivate;
   T = S2FunHarmonicSym.quadrature(@(x) directionalMagnitude(T,x),'bandwidth',4,T.CS);
-  T.how2plot = pC;
+  % an own frame of the tensor rides along - only frames carry conventions
+  T.framePrivate = fr;
 
   return
 end

@@ -184,6 +184,9 @@ classdef grain2d < phaseList & dynProp
         if sum(grains.area) < 0, grains.N = -grains.N; end
       end
 
+      % the normal lives in the very same frame as the vertices
+      grains.N.frame = grains.allV.frame;
+
     end
     
     function V = get.allV(grains)
@@ -239,6 +242,9 @@ classdef grain2d < phaseList & dynProp
 
     function grains = set.frame(grains,fr)
       grains.allV.frame = fr;
+      % the boundary carries its own vertices, triple points and normal
+      grains.boundary.frame = fr;
+      grains.innerBoundary.frame = fr;
     end
 
     function pC = get.how2plot(grains)
@@ -247,6 +253,9 @@ classdef grain2d < phaseList & dynProp
 
     function grains = set.how2plot(grains,pC)
       grains.allV.how2plot = pC;
+      % the boundary carries its own vertices, triple points and normal
+      grains.boundary.how2plot = pC;
+      grains.innerBoundary.how2plot = pC;
     end
 
 

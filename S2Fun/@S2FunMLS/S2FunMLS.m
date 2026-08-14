@@ -113,9 +113,12 @@ classdef S2FunMLS < S2Fun
   methods
 
     function fr = getFrame(S2F)
-      % the frame of an MLS function is the frame of its symmetry
-      if isempty(S2F.s)
+      % the frame of an MLS function is the frame of its symmetry; an
+      % own frame, set internally, wins
+      if ~isempty(S2F.framePrivate)
         fr = S2F.framePrivate;
+      elseif isempty(S2F.s)
+        fr = [];
       else
         fr = S2F.s.frame;
       end

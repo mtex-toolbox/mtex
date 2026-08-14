@@ -22,7 +22,6 @@ sF = S2FunHandle(@(v) sF.eval(inv(rot).*v), sF.frame);
 % adopts the specimen frame; a plain rotation keeps the current frame
 if isa(rot,"orientation")
   sF.framePrivate = rot.SS.frame;
-  sF.how2plotPrivate = rot.SS.how2plotPrivate;
 end
 
 end

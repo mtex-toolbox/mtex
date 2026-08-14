@@ -117,6 +117,7 @@ classdef grain3d < phaseList & dynProp
 
     function grains = set.frame(grains,fr)
       grains.allV.frame = fr;
+      grains.boundary.frame = fr;
     end
 
     function pC = get.how2plot(grains)
@@ -125,6 +126,7 @@ classdef grain3d < phaseList & dynProp
 
     function grains = set.how2plot(grains,pC)
       grains.allV.how2plot = pC;
+      grains.boundary.how2plot = pC;
     end
 
     function F = get.F(grains)

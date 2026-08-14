@@ -325,7 +325,6 @@ if isa(sF,'S2FunHarmonicSym') && isa(sF.CS,'crystalSymmetry')
   v = Miller(v,sF.CS);
 elseif ~isa(v,'Miller')
   v.frame = sF.frame;
-  v.how2plotPrivate = sF.how2plotPrivate;
 end
 
 end

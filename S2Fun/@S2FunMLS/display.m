@@ -5,7 +5,7 @@ if check_option(varargin,'skipHeader')
   disp(strong("  MLS component"));
 else
   displayClass(S2F,inputname(1),'moreInfo',...
-    referenceFrame.headerChar(S2F.frame,S2F.how2plot,S2F.how2plotPrivate),varargin{:});
+    referenceFrame.headerChar(S2F.frame,S2F.how2plot),varargin{:});
 end
 
 if length(S2F) > 1, disp(['  size: ' size2str(S2F)]); end

@@ -72,10 +72,9 @@ if isa(q,'orientation')
     if isa(v,"Miller"), v = vector3d(v); end
 
     % rotating with an orientation changes the reference frame: the
-    % result adopts the specimen frame (and a convention override the
-    % symmetry may carry); rotating with a plain rotation keeps it
+    % result adopts the specimen frame; rotating with a plain rotation
+    % keeps it
     v.frame = q.SS.frame;
-    v.how2plotPrivate = q.SS.how2plotPrivate;
 
   end
 

@@ -8,7 +8,7 @@ function display(tP,varargin)
 % ---------------------------------
 
 displayClass(tP,inputname(1),'moreInfo',...
-  referenceFrame.headerChar(tP.frame,tP.how2plot,tP.allV.how2plotPrivate));
+  referenceFrame.headerChar(tP.frame,tP.how2plot));
 
 % empty grain boundary set 
 if isempty(tP)

@@ -3,7 +3,7 @@ function display(gB,varargin)
 %
 
 displayClass(gB,inputname(1),'moreInfo',...
-  referenceFrame.headerChar(gB.frame,gB.how2plot,gB.allV.how2plotPrivate));
+  referenceFrame.headerChar(gB.frame,gB.how2plot));
 
 % empty grain boundary set 
 if isempty(gB)

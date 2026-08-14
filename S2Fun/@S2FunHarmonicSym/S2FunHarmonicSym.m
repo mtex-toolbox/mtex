@@ -30,9 +30,13 @@ methods
 
   function fr = getFrame(sF)
     % the frame of a symmetrised function is the frame of its symmetry -
-    % resolved live, so it can never go stale when s is replaced
-    if isempty(sF.s)
+    % resolved live, so it can never go stale when s is replaced. An own
+    % frame, set internally when e.g. a tensor carrying one turns into a
+    % spherical function, wins - the public setter still refuses.
+    if ~isempty(sF.framePrivate)
       fr = sF.framePrivate;
+    elseif isempty(sF.s)
+      fr = [];
     else
       fr = sF.s.frame;
     end
@@ -52,10 +56,8 @@ methods
     if nargin == 0, return; end
     if isa(fhat,'S2FunHarmonic')
       sF.fhat = fhat.fhat;
-      % only a convention fhat carried itself, not the one it merely
-      % inherited from its old symmetry - otherwise attaching s here would
-      % not put the function into the frame of s
-      sF.how2plotPrivate = fhat.how2plotPrivate;
+      % symmetrising puts the function into the frame of s - whatever
+      % frame fhat carried is superseded
       sF.CS = s;
       %sF = sF.symmetrise;
       return

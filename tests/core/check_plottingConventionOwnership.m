@@ -9,18 +9,15 @@ function check_plottingConventionOwnership
 % orientation, in grain2d/grain3d meanOrientation, in tensor and in S2Fun,
 % which is why it gets a test of its own rather than one per class.
 %
-% The contract, for every class here:
+% The contract, for every class here (only frames carry conventions):
 %
-%   1. the convention is stored on the object, never written through to its
-%      symmetry
-%   2. an object that was never given one follows its symmetry, so setting
-%      CS.how2plot keeps working
-%   3. an explicitly set one wins over the symmetry's
-%   4. it survives the operations that rebuild the object
-%
-% vector3d is the reference implementation - since ADR 0003 it resolves
-% its convention override -> frame -> live session default, and an
-% explicitly assigned convention is stored on the vector itself.
+%   1. setting a convention forks the object's frame - it is never
+%      written through a shared frame or symmetry
+%   2. an object that was never given one follows its symmetry's frame,
+%      so editing that frame keeps working
+%   3. symmetrising or attaching a symmetry puts the object into the
+%      frame of that symmetry
+%   4. an own frame survives the operations that rebuild the object
 
 checkTensor;
 checkS2Fun;
@@ -36,10 +33,10 @@ end
 % =========================================================================
 function checkSymmetryOverride
 % since ADR 0003 a symmetry delegates how2plot to the referenceFrame it
-% holds; setting it lands in an override slot on the symmetry. copy() is
-% shallow, so the copy shares the frame handle - a naive forwarding setter
-% would write the convention through that shared frame and repoint the
-% original, which is exactly the leak family this file guards against.
+% holds; setting it forks that frame. copy() is shallow, so the copy
+% shares the frame handle - a naive forwarding setter would write the
+% convention through that shared frame and repoint the original, which
+% is exactly the leak family this file guards against.
 
 pC = plottingConvention('z↑→x');
 dflt = char(specimenSymmetry.default.how2plot);
@@ -57,6 +54,8 @@ assert(ss2.frame == ss.frame, ...
 ss2.how2plot = pC;
 assert(strcmp(char(ss2.how2plot),char(pC)), ...
   'check_plottingConventionOwnership: ss2.how2plot = pC did not take')
+assert(ss2.frame ~= ss.frame, ...
+  'check_plottingConventionOwnership: setting the convention must fork the frame')
 assert(strcmp(char(ss.how2plot),before) && ...
   strcmp(char(ss.frame.how2plot),before), ...
   'check_plottingConventionOwnership: ss2.how2plot wrote through the shared frame')
@@ -150,14 +149,15 @@ assert(~strcmp(dflt,char(pC)), ...
   ['check_plottingConventionOwnership: the test convention equals the ' ...
   'default one, so it cannot detect a leak - pick another one'])
 
-% (1) stored on the function - a plain S2Fun has no symmetry anymore,
-% only a frame, and an override must not touch any frame or the default
+% (1) setting the convention forks the function's frame and must not
+% touch the session frame or the default
 sF.how2plot = pC;
 assert(strcmp(char(sF.how2plot),char(pC)), ...
   'check_plottingConventionOwnership: sF.how2plot = pC did not take')
 
-assert(isempty(sF.frame) || strcmp(char(sF.frame.how2plot),dflt), ...
-  'check_plottingConventionOwnership: the override was written into a frame')
+assert(sF.frame ~= specimenFrame.default && ...
+  strcmp(char(specimenFrame.default.how2plot),dflt), ...
+  'check_plottingConventionOwnership: the convention was written through the session frame')
 
 assert(strcmp(char(S2FunHarmonic.quadrature(@(v) v.x).how2plot),dflt), ...
   'check_plottingConventionOwnership: sF.how2plot leaked into the next S2Fun')
@@ -177,10 +177,11 @@ assert(strcmp(char(S2FunHarmonicSym(plain,cs).how2plot),char(cs.how2plot)), ...
   ['check_plottingConventionOwnership: S2FunHarmonicSym(sF,cs) does not ' ...
   'follow cs - it pinned the frame sF merely inherited from its old symmetry'])
 
-% (3) but one set on the function itself still wins
-assert(strcmp(char(S2FunHarmonicSym(sF,cs).how2plot),char(pC)), ...
-  ['check_plottingConventionOwnership: S2FunHarmonicSym(sF,cs) dropped the ' ...
-  'convention that was set on sF'])
+% (3) symmetrising puts the function into the frame of cs - a
+% convention the function carried before is superseded
+assert(strcmp(char(S2FunHarmonicSym(sF,cs).how2plot),char(cs.how2plot)), ...
+  ['check_plottingConventionOwnership: S2FunHarmonicSym(sF,cs) must land ' ...
+  'in the frame of cs'])
 
 end
 

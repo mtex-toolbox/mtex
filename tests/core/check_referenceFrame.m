@@ -229,35 +229,36 @@ v = vector3d.rand(5);
 assert(isempty(v.frame) && v.how2plot == plottingConvention.default, ...
   'check_referenceFrame: a fresh vector3d must be frame-free and follow the default');
 
-% an own convention wins and stays local
+% an own convention becomes an own, unregistered frame carrying it -
+% only frames carry conventions
 pC = plottingConvention('z↑→x');
 v.how2plot = pC;
-assert(v.how2plot == pC && isempty(v.frame), ...
-  'check_referenceFrame: v.how2plot = pC did not become an override');
+assert(v.how2plot == pC && ~isempty(v.frame) && v.frame ~= specimenFrame.default, ...
+  'check_referenceFrame: v.how2plot = pC did not fork a frame');
 assert(vector3d.X.how2plot == plottingConvention.default, ...
-  'check_referenceFrame: the override leaked to other vectors');
+  'check_referenceFrame: the fork leaked to other vectors');
 
 % assigning the session default itself means membership in the default frame
 w = vector3d.rand(3);
 w.how2plot = plottingConvention.default;
-assert(w.frame == specimenFrame.default && isempty(w.how2plotPrivate), ...
+assert(w.frame == specimenFrame.default, ...
   'check_referenceFrame: assigning the default must become frame membership');
 
-% under default replacement framed and frame-free data follow, an
-% override does not
+% under default replacement framed and frame-free data follow, an own
+% frame does not
 pC0 = plottingConvention.default;
 pC2 = plottingConvention('y↑→x');
 plottingConvention.default(pC2);
 followsFramed = w.how2plot == pC2;
 followsFree = vector3d.rand(2).how2plot == pC2;
-keepsOverride = v.how2plot == pC;
+keepsOwn = v.how2plot == pC;
 plottingConvention.default(pC0);
 assert(followsFramed, ...
   'check_referenceFrame: default-framed data does not follow a default replacement');
 assert(followsFree, ...
   'check_referenceFrame: frame-free data does not follow a default replacement');
-assert(keepsOverride, ...
-  'check_referenceFrame: an override must not follow a default replacement');
+assert(keepsOwn, ...
+  'check_referenceFrame: an own frame must not follow a default replacement');
 
 % rotating with an orientation adopts the specimen frame ...
 ori = orientation.rand(crystalSymmetry('m-3m'),specimenSymmetry.default);
@@ -267,19 +268,19 @@ assert(r.frame == specimenFrame.default, ...
 
 % ... while a plain rotation keeps the current frame state
 v2 = rotate(v,rotation.rand);
-assert(isempty(v2.frame) && v2.how2plot == pC, ...
+assert(v2.frame == v.frame && v2.how2plot == pC, ...
   'check_referenceFrame: a plain rotation must keep the frame state');
 
-% save / load: membership re-interns, an override survives, frame-free
-% stays frame-free
+% save / load: membership re-interns, an own fork stays local - only a
+% CONTAINER like EBSD applies its convention to the session on load
 fname = [tempname '.mat'];
 save(fname,'v','w');
 S = load(fname);
 delete(fname);
 assert(S.w.frame == specimenFrame.default, ...
   'check_referenceFrame: loaded frame membership did not re-intern');
-assert(isempty(S.v.frame) && isapprox(S.v.how2plot,pC), ...
-  'check_referenceFrame: a loaded override did not survive');
+assert(S.v.frame ~= specimenFrame.default && isapprox(S.v.how2plot,pC), ...
+  'check_referenceFrame: a loaded own frame did not survive');
 
 % the data classes expose the frame of their positions - EBSD delegation
 ebsd = EBSD(vector3d.rand(4),rotation.rand(4,1),ones(4,1), ...
@@ -312,18 +313,16 @@ m.CS = cs2;
 assert(m.frame == cs2.frame, ...
   'check_referenceFrame: setting CS left a stale frame');
 
-% an own convention still wins over the crystal frame's ...
-pC = plottingConvention('z↑→x');
-m.how2plot = pC;
-assert(m.how2plot == pC && cs2.how2plot ~= pC, ...
-  'check_referenceFrame: the Miller override leaked into the symmetry');
-
-% ... and assigning the session default becomes an override too - the
-% frame of a Miller is fixed, membership in the specimen frame is not
-% available for it
-m.how2plot = plottingConvention.default;
-assert(m.frame == cs2.frame && m.how2plot == plottingConvention.default, ...
-  'check_referenceFrame: assigning the default must not detach a Miller from its frame');
+% the convention of a Miller is the one of its crystal frame - assigning
+% one directly is refused, like assigning a frame
+try
+  m.how2plot = plottingConvention('z↑→x');
+  failed = false;
+catch e
+  failed = strcmp(e.identifier,'MTEX:Miller:fixedFrame');
+end
+assert(failed, ...
+  'check_referenceFrame: assigning a convention to a Miller must error');
 
 % assigning a frame directly is refused
 try
@@ -576,9 +575,22 @@ fname = [tempname '.mat'];
 save(fname,'ssF');
 S = load(fname);
 delete(fname);
-assert(S.ssF.frame ~= specimenFrame.default && ...
-  isapprox(S.ssF.how2plot,pCF), ...
-  'check_referenceFrame: loadobj re-interned a forked frame');
+assert(S.ssF.frame ~= specimenFrame.default && isapprox(S.ssF.how2plot,pCF), ...
+  'check_referenceFrame: a loaded forked frame did not survive');
+
+% a loaded CONTAINER applies its convention to the whole session - the
+% default frame adopts it and the map joins that frame
+pC0e = plottingConvention.default;
+restoreDefault = onCleanup(@() plottingConvention.default(pC0e));
+ebsd = EBSD(vector3d.rand(4),rotation.rand(4,1),ones(4,1), ...
+  {crystalSymmetry('m-3m')},struct());
+ebsd.how2plot = pCF;
+save(fname,'ebsd');
+S = load(fname);
+delete(fname);
+assert(plottingConvention.default == pCF && S.ebsd.frame == specimenFrame.default, ...
+  'check_referenceFrame: loading an EBSD did not apply its convention to the session');
+clear restoreDefault
 
 end
 
