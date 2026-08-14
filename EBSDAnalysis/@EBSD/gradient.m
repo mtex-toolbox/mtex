@@ -67,6 +67,15 @@ function [g,A] = gradient(ebsd,varargin)
 % See also
 % EBSD/gradientX EBSD/curvature EBSD/calcGND EBSD/lattice
 
+% --- the map plane ------------------------------------------------------
+% Everything geometric below - the basis A, the lattice index - is done in
+% the map plane frame, which for a map in the xy plane (rot2Plane == id) is
+% the specimen frame and changes nothing. The tangent vectors themselves are
+% never rotated: they are misorientations, and they live in specimen
+% coordinates whatever plane the map sits in.
+rot2Plane = ebsd.rot2Plane;
+posP = rot2Plane * ebsd.pos;
+
 % --- basis --------------------------------------------------------------
 aIn = get_option(varargin,'basis',[]);
 if ~isempty(aIn)
@@ -77,8 +86,10 @@ if ~isempty(aIn)
   A = [a1.x a2.x; a1.y a2.y];
 else
   A = orientBasis(ebsd.lattice.A);
-  a1 = vector3d(A(1,1),A(2,1),0);
-  a2 = vector3d(A(1,2),A(2,2),0);
+  % back to specimen coordinates, so a1/a2 are the real step vectors of the
+  % map and gradientDir can resolve a specimen direction against them
+  aP = inv(rot2Plane) * vector3d([A(1,1) A(1,2)],[A(2,1) A(2,2)],[0 0]);
+  a1 = aP(1); a2 = aP(2);
 end
 
 nE = length(ebsd);
@@ -86,7 +97,7 @@ nE = length(ebsd);
 % --- lattice index and neighbour lookup ---------------------------------
 % recomputed against A rather than reusing ebsd.lattice.ij, because ij is
 % only meaningful together with the basis it was built from
-ij = assignGridIndex([ebsd.pos.x(:), ebsd.pos.y(:)], A);
+ij = assignGridIndex([posP.x(:), posP.y(:)], A);
 [ij2ebsd,ij2slot,ijMin,ijSize] = latticeLookup(ij);
 
 inBox = @(IJ) IJ(:,1) >= ijMin(1) & IJ(:,1) <= ijMin(1)+ijSize(1)-1 & ...
@@ -280,13 +291,18 @@ iv = @(R) deal((R(:,1).*M22 - R(:,2).*M12)./det, ...
 [Gy1,Gy2] = iv(Ry);
 [Gz1,Gz2] = iv(Rz);
 
-G1 = vector3d(Gx1,Gy1,Gz1);      % d(ori)/dx
-G2 = vector3d(Gx2,Gy2,Gz2);      % d(ori)/dy
+G1 = vector3d(Gx1,Gy1,Gz1);      % d(ori)/dx, x of the MAP PLANE frame
+G2 = vector3d(Gx2,Gy2,Gz2);      % d(ori)/dy, likewise
 
-% report along the two lattice directions, as the one sided branch does
+% Report along the two lattice directions, as the one sided branch does.
+% The offsets d above are in the map plane frame, so G1/G2 are derivatives
+% with respect to that frame and have to be combined with the plane frame
+% components of a1,a2 - i.e. the columns of A. NOT a1.x/a1.y, which are the
+% specimen components and only coincide with them for a map in the xy
+% plane. The norms are the same in either frame.
 g = vector3d.nan(nE,2);
-g(:,1) = (G1*a1.x + G2*a1.y) ./ norm(a1);
-g(:,2) = (G1*a2.x + G2*a2.y) ./ norm(a2);
+g(:,1) = (G1*A(1,1) + G2*A(2,1)) ./ norm(a1);
+g(:,2) = (G1*A(1,2) + G2*A(2,2)) ./ norm(a2);
 g(bad,:) = vector3d.nan;
 
 g = asTangent(g,ebsd);

@@ -21,6 +21,7 @@ checkBitIdenticalToSquare;
 checkEdgeAndHoles;
 checkLeastSquaresOnLinear;
 checkStencilChoice;
+checkOffPlaneMap;
 checkShapeFollowsInput;
 
 disp('gradient: all checks passed');
@@ -270,6 +271,105 @@ for k = 1:3, n(k) = nnz(isnan(ebsd.gradient('stencil',st{k}))); end
 assert(n(1) > n(2) && n(2) > n(3), ...
   ['check_gradient: the stencils should be strictly ordered in coverage, ' ...
    'got oneSided %d, 1hop %d, full %d'], n(1), n(2), n(3));
+
+end
+
+% =========================================================================
+function checkOffPlaneMap
+% a map whose normal is not z - gradient, gradientDir and curvature
+%
+% latticeBasis used to read the unit cell as (x,y), so a map in the xz plane
+% collapsed to a singular basis, A = [d 0; 0 0], and gradient/curvature died
+% inside assignGridIndex with "Array indices must be positive integers".
+% Everything geometric is now done in the map plane frame (ebsd.rot2Plane).
+%
+% The statement checked is equivariance: turning the map and asking along a
+% turned direction must give the turned answer. That is stronger than any
+% single number, and it is checked on the DIRECTIONAL derivatives rather
+% than on the tensor, for two reasons. gradient() reports along the two
+% lattice directions and orientBasis re-pins which of them is a1 when the
+% map turns in plane, so its columns are not equivariant by label. And the
+% tensor carries a NaN column, which rotate() then smears over every entry -
+% NaN*0 is NaN - so comparing rotated tensors is vacuously true.
+
+cs = crystalSymmetry('m-3m');
+pos = makePositions('square axis aligned');
+ori = orientation.byAxisAngle(zvector,0.002*pos.x + 0.0035*pos.y,cs);
+ebsd = EBSD(pos,ori,ones(length(pos),1),{cs},struct);
+ebsd.unitCell = unitCellOf('square axis aligned');
+
+gX = vector3d(ebsd.gradientX);
+gY = vector3d(ebsd.gradientY);
+
+% 90 degree about x: the map plane normal goes z -> -y, so the in plane
+% directions become x and z, and y leaves the plane
+rot = rotation.byAxisAngle(xvector,90*degree);
+ebsdR = rotate(ebsd,rot);
+
+assert(isnull(angle(ebsdR.N,-vector3d.Y)), ...
+  'check_gradient: rotating the map did not carry its normal, N = %s', ...
+  char(ebsdR.N));
+
+% the lattice must still be a lattice
+A = ebsdR.lattice.A;
+assert(abs(det(A)) > 1e-12, ...
+  ['check_gradient: the lattice basis of an off plane map is singular, ' ...
+   'A = %s - latticeBasis is reading the unit cell as (x,y)'], mat2str(A,3));
+
+% equivariance of the two in plane directions
+pairs = {vector3d.X, gX, 'gradientX'; vector3d.Z, gY, 'gradientY'};
+
+for p = 1:2
+
+  got = vector3d(gradientDirPublic(ebsdR,pairs{p,1}));
+  ref = reshape(rot * pairs{p,2}, size(pairs{p,2}));
+
+  ok = ~isnan(got) & ~isnan(ref);
+  assert(nnz(ok) > 0.5*numel(ok), ...
+    'check_gradient: too little of the off plane gradient is defined');
+
+  d = max(norm(got(ok) - ref(ok)));
+  assert(d < 1e-10, ...
+    ['check_gradient: the off plane map is not equivariant - the rotated ' ...
+     '%s differs from the rotation of %s by %.3g'], ...
+    pairs{p,3}, pairs{p,3}, d);
+
+end
+
+% and the direction that has left the plane has no answer
+assert(all(isnan(ebsdR.gradientY)), ...
+  ['check_gradient: gradientY must be NaN once y is out of the map plane, ' ...
+   'the same way gradientZ is for an xy map']);
+
+% curvature: assembled from the in plane directions, unknown along N. N is
+% -y here, so it is the SECOND column that is unknown, not the third
+kappa = ebsdR.curvature;
+fin = @(j) nnz(~isnan(kappa{1,j}));
+
+assert(fin(2) == 0, ...
+  'check_gradient: curvature column 2 should be unknown for N = -y, %d finite', fin(2));
+assert(fin(1) > 0 && fin(3) > 0, ...
+  ['check_gradient: curvature columns 1 and 3 should be known for N = -y, ' ...
+   'got %d and %d finite'], fin(1), fin(3));
+
+% the xy case still puts it in column 3
+kappa0 = ebsd.curvature;
+assert(nnz(~isnan(kappa0{1,3})) == 0 && nnz(~isnan(kappa0{1,1})) > 0, ...
+  'check_gradient: for a map in the xy plane column 3 must be the unknown one');
+
+end
+
+% =========================================================================
+function g = gradientDirPublic(ebsd,w)
+% gradientDir is private to @EBSD, so reach it through the public wrappers
+
+if isnull(angle(w,vector3d.X))
+  g = ebsd.gradientX;
+elseif isnull(angle(w,vector3d.Y))
+  g = ebsd.gradientY;
+else
+  g = ebsd.gradientZ;
+end
 
 end
 
