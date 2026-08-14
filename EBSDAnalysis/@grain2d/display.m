@@ -1,7 +1,8 @@
 function  display(grains,varargin)
 % standard output
 
-displayClass(grains,inputname(1),'moreInfo',char(grains.how2plot,'compact'));
+displayClass(grains,inputname(1),'moreInfo',...
+  referenceFrame.headerChar(grains.frame,grains.how2plot,grains.allV.how2plotPrivate));
 
 disp(' ')
 %disp(char(dynOption(grains)));

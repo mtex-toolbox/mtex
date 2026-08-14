@@ -4,11 +4,7 @@ function display(T,varargin)
 % the frame together with the convention the tensor is drawn in - an own
 % convention override wins and is shown plainly; a crystal frame shows
 % only its identity, a non trivial specimen symmetry keeps its point group
-if isempty(T.how2plotPrivate)
-  info = referenceFrame.headerChar(T.CS.frame,T.how2plot);
-else
-  info = char(T.how2plot,'compact');
-end
+info = referenceFrame.headerChar(T.CS.frame,T.how2plot,T.how2plotPrivate);
 if isa(T.CS,'specimenSymmetry') && T.CS.id > 1
   info = [info ' (' T.CS.pointGroup ')'];
 end

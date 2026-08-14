@@ -85,7 +85,7 @@ classdef slipSystem
       if isa(sS.b,'Miller')
         info = char(sS.CS,'compact');
       else
-        info = referenceFrame.headerChar(sS.b.frame,sS.b.how2plot);
+        info = referenceFrame.headerChar(sS.b.frame,sS.b.how2plot,sS.b.how2plotPrivate);
       end
       displayClass(sS,inputname(1),varargin{:},'moreInfo',info);
       

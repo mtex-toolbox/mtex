@@ -11,12 +11,8 @@ end
 
 % the frame together with the convention the data is drawn in - an own
 % convention override wins and is shown plainly
-if isempty(v.how2plotPrivate)
-  info = referenceFrame.headerChar(v.frame,v.how2plot);
-else
-  info = char(v.how2plot,'compact');
-end
-displayClass(v,inputname(1),'moreInfo',info,varargin{:});
+displayClass(v,inputname(1),'moreInfo',...
+  referenceFrame.headerChar(v.frame,v.how2plot,v.how2plotPrivate),varargin{:});
 
 if length(v) ~= 1, disp([' size: ' size2str(v)]);end
 

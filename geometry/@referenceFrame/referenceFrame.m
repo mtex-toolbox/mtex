@@ -142,7 +142,7 @@ classdef referenceFrame < matlab.mixin.Copyable
 
     end
 
-    function c = headerChar(fr,pC)
+    function c = headerChar(fr,pC,own)
       % the string data class displays show: the frame together with the
       % plotting convention the data is drawn in
       %
@@ -150,13 +150,17 @@ classdef referenceFrame < matlab.mixin.Copyable
       % convention of a crystal frame is derived from its axes and adds
       % nothing. For a specimen frame the convention appears in the
       % frame's axes names ('TD←RD↑'); frame-free data shows the plain
-      % convention.
+      % convention. An own convention override of the data (own
+      % nonempty) wins and is shown plainly.
       %
       % Input
-      %  fr - @referenceFrame or []
-      %  pC - @plottingConvention, the resolved convention of the data
+      %  fr  - @referenceFrame or []
+      %  pC  - @plottingConvention, the resolved convention of the data
+      %  own - the data's private convention slot, [] when it follows fr
 
-      if isa(fr,'crystalFrame')
+      if nargin > 2 && ~isempty(own)
+        c = char(pC,'compact');
+      elseif isa(fr,'crystalFrame')
         c = char(fr);
       elseif isa(fr,'referenceFrame')
         c = conventionChar(fr,pC);

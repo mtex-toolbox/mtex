@@ -59,7 +59,8 @@ classdef S2FunTri < S2Fun
 
     function display(sF,varargin)
 
-      displayClass(sF,inputname(1),'moreInfo',char(sF.how2plot,'compact'),varargin{:});
+      displayClass(sF,inputname(1),'moreInfo',...
+        referenceFrame.headerChar(sF.frame,sF.how2plot,sF.how2plotPrivate),varargin{:});
 
       if length(sF) > 1, disp(['  size: ' size2str(sF)]); end
 
