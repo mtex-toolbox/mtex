@@ -388,6 +388,18 @@ p = S2FunHarmonic(sFs);
 assert(p.frame == cs.frame && p.how2plot == cs.how2plot, ...
   'check_referenceFrame: the cast to S2FunHarmonic lost the crystal frame');
 
+% extrema come back in the frame of the function: Miller for a
+% symmetrised one, a crystal-framed vector3d for a plain one - that the
+% latter should ideally be a Miller too is an open problem, see the note
+% in S2Fun/min and ADR 0003
+[~,pos] = max(sFs);
+assert(isa(pos,'Miller') && pos.CS == cs, ...
+  'check_referenceFrame: extrema of a symmetrised S2Fun are not Miller');
+
+[~,pos] = max(p);
+assert(pos.frame == cs.frame, ...
+  'check_referenceFrame: extrema of a crystal-framed S2Fun lost the frame');
+
 end
 
 % -------------------------------------------------------------------------

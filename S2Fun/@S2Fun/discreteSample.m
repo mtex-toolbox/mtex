@@ -39,7 +39,10 @@ v = rotation.rand(n,'maxAngle',res*1.5) .* v(:);
 if isa(S2F,'S2FunHarmonicSym') && isa(S2F.CS,'crystalSymmetry')
   v = Miller(v,S2F.CS);
 else
-  v.how2plot = S2F.how2plot;
+  % the sample lives in the reference frame of the function - see the
+  % open problem note in S2Fun/min about plain crystal-framed functions
+  v.frame = S2F.frame;
+  v.how2plotPrivate = S2F.how2plotPrivate;
 end
 
 % set antipodal if function is antipodal

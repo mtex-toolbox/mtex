@@ -192,6 +192,15 @@ job implicitly and produced the bug family this ADR opens with.
   freezing `copy` in `newSphericalPlot` also becomes automatic). This refines the
   Considered Options above: value semantics was rejected for frames and conventions
   *wholesale*; the end state is value conventions inside handle frames.
+- Open problem: a plain data object expressed in a *crystal* frame — a `vector3d` or
+  `S2Fun` whose frame is a `crystalFrame`, e.g. the deliberately unsymmetrised GBND —
+  cannot be turned into a `Miller`, because `Miller` requires a `crystalSymmetry` and
+  the frame does not know its point group. Extrema and sampling of such functions
+  (`S2Fun/min`, `discreteSample`, `optimalSample`) therefore return crystal-framed
+  `vector3d` where `Miller` would be the natural answer. Resolution candidates: a back
+  reference from `crystalFrame` to its point group (which re-tangles frame and
+  symmetry), or a `Miller` that can live on a bare crystal frame with the symmetry
+  optional.
 - The `phaseItem` sealed-`eq` problem is *not* resolved here. Phase identity is a fourth
   concept tangled into `crystalSymmetry`; it is the one data-side handle that is
   legitimately identity-semantic, and it deserves its own decision.

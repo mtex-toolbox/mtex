@@ -129,8 +129,20 @@ else % detect local or global minima
   end
   pos = pos(I(1:n));
 
+  % return the positions in the reference frame of the function
   sym = getSym(sF);
-  if isa(sym,'crystalSymmetry'), pos = Miller(pos,sym); end
+  if isa(sym,'crystalSymmetry')
+    pos = Miller(pos,sym);
+  elseif ~isa(pos,'Miller')
+    % OPEN PROBLEM (ADR 0003): when sF.frame is a crystalFrame - a plain
+    % function expressed in a crystal frame, e.g. the GBND - the
+    % positions should come back as @Miller; but a Miller requires a
+    % crystalSymmetry, which the frame alone does not know. Needs either
+    % a back reference from crystalFrame to its point group or a Miller
+    % that can live on a bare crystal frame.
+    pos.frame = sF.frame;
+    pos.how2plotPrivate = sF.how2plotPrivate;
+  end
 
 end
 

@@ -319,6 +319,15 @@ if optWeights && minWeight > 0
   end
 end
 
+% return the sample in the reference frame of the function - see the
+% open problem note in S2Fun/min about plain crystal-framed functions
+if isa(sF,'S2FunHarmonicSym') && isa(sF.CS,'crystalSymmetry')
+  v = Miller(v,sF.CS);
+elseif ~isa(v,'Miller')
+  v.frame = sF.frame;
+  v.how2plotPrivate = sF.how2plotPrivate;
+end
+
 end
 
 
