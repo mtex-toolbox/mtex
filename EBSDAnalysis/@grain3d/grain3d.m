@@ -20,6 +20,7 @@ classdef grain3d < phaseList & dynProp
     numFaces  % number of boundary faces per grain
     extent   %
     midPoint % midPoint of extent
+    frame    % the specimen reference frame (carried by allV)
     how2plot % plotting convention
     grainSize % depreciated for numPixel
   end
@@ -108,6 +109,14 @@ classdef grain3d < phaseList & dynProp
    
     function grains = set.allV(grains,V)
       grains.boundary.allV = V;
+    end
+
+    function fr = get.frame(grains)
+      fr = grains.allV.frame;
+    end
+
+    function grains = set.frame(grains,fr)
+      grains.allV.frame = fr;
     end
 
     function pC = get.how2plot(grains)

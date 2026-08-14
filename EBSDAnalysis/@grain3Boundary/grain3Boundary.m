@@ -53,6 +53,7 @@ properties (Dependent)
   I_FG     % incidence matrix: faces <-> grains
   I_VF     % incidence matrix: vertices <-> faces
   I_VG     % incidence matrix: vertices <-> grains
+  frame    % the specimen reference frame (carried by allV)
   how2plot % @plottingConvention
 end
 
@@ -99,6 +100,14 @@ methods
   
   function gB3 = set.V(gB3,V)
     gB3.allV(gB3.idV) = V;
+  end
+
+  function fr = get.frame(gB3)
+    fr = gB3.allV.frame;
+  end
+
+  function gB3 = set.frame(gB3,fr)
+    gB3.allV.frame = fr;
   end
 
   function pC = get.how2plot(gB3)

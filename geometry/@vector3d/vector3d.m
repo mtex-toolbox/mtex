@@ -39,19 +39,26 @@ classdef vector3d < dynOption
 % See also
 % VectorDefinition VectorsOperations VectorsAxes VectorsImport VectorsExport
 
-  properties 
+  properties
     x = []; % x coordinate
     y = []; % y coordinate
     z = []; % z coordinate
     antipodal = false;
     isNormalized = false;
-    how2plot = plottingConvention.default
+    frame = [] % the referenceFrame this vector is expressed in; empty = frame-free
   end
-    
+
+  properties (Hidden = true)
+    % the plotting convention of this vector, empty means follow the one
+    % of frame, or the session default - see get.how2plot
+    how2plotPrivate = []
+  end
+
   properties (Dependent = true)
     theta   % polar angle
     rho     % azimuth angle
     resolution % mean distance between the points on the sphere
+    how2plot % plotting convention
     plottingConvention
   end
 
@@ -68,18 +75,22 @@ classdef vector3d < dynOption
       
       elseif nargin == 0
 
-        v.how2plot = plottingConvention.default;
+        % frame-free - the plotting convention resolves against the
+        % session default at render time
 
       else
         if isa(varargin{1},'vector3d') % copy-constructor
-          
+
           v.x = varargin{1}.x;
           v.y = varargin{1}.y;
           v.z = varargin{1}.z;
           v.antipodal = varargin{1}.antipodal;
           v.isNormalized = varargin{1}.isNormalized;
           v.opt = varargin{1}.opt;
-          v.how2plot = varargin{1}.how2plot;
+          % the private slot, not the resolved convention - copying the
+          % resolved one would pin a merely inherited frame or default
+          v.frame = varargin{1}.frame;
+          v.how2plotPrivate = varargin{1}.how2plotPrivate;
           return
           
         elseif isa(varargin{1},'float')
@@ -126,10 +137,9 @@ classdef vector3d < dynOption
             end
 
           end
-          v.how2plot = plottingConvention.default;
         else
           error('wrong type of argument');
-        end       
+        end
                
       end
 
@@ -170,9 +180,12 @@ classdef vector3d < dynOption
       
         % normalize
        if check_option(varargin,'normalize'), v = normalize(v); end
-       
-       v.how2plot = getClass(varargin,'plottingConvention');
-       if isempty(v.how2plot), v.how2plot = plottingConvention.default; end
+
+       fr = getClass(varargin,'referenceFrame');
+       if ~isempty(fr), v.frame = fr; end
+
+       pC = getClass(varargin,'plottingConvention');
+       if ~isempty(pC), v.how2plot = pC; end
 
       end
     end
@@ -197,10 +210,36 @@ classdef vector3d < dynOption
       end
     end
 
+    function pC = get.how2plot(v)
+      % an own convention wins, then the frame's, then the session default
+      % - resolved live, so frame-free data follows whatever the default
+      % becomes
+      pC = v.how2plotPrivate;
+      if isempty(pC) && ~isempty(v.frame), pC = v.frame.how2plot; end
+      if isempty(pC), pC = plottingConvention.default; end
+    end
+
     function v = set.how2plot(v,pC)
       % accept a string like 'y↑→x' as a shortcut for the convention
       if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
-      v.how2plot = pC;
+
+      if ~isempty(pC) && pC == plottingConvention.default
+        % the session default itself means membership in the default
+        % frame - the data then follows the default under both in-place
+        % mutation (plotx2east) and replacement (plottingConvention.default)
+        v.frame = specimenFrame.default;
+        v.how2plotPrivate = [];
+      else
+        % any other convention is this vector's own - stored on the
+        % vector, never written through a frame handle
+        v.how2plotPrivate = pC;
+      end
+    end
+
+    function v = set.frame(v,fr)
+      assert(isempty(fr) || isa(fr,'referenceFrame'), ...
+        'The frame of a vector3d has to be a referenceFrame or empty.');
+      v.frame = fr;
     end
 
     % ------- to be removed ------
@@ -347,15 +386,19 @@ classdef vector3d < dynOption
       % this overloaded method ensures compatibility with older MTEX
       % versions
 
-      if isempty(v.how2plot)
-        v.how2plot = plottingConvention.default;
-      else
-        % re-intern: a deserialized convention equal to the session
-        % default becomes the default handle again, so the in-place
-        % default workflow (plotx2east) reaches loaded data too - the
-        % same rule matchDefault applies on import
-        v.how2plot = matchDefault(v.how2plot);
+      % a pre-frame object restored its convention into the override
+      % slot - re-route it through the setter after matchDefault: equal
+      % to the session default becomes membership in the default frame,
+      % anything else stays this vector's own convention, empty stays
+      % frame-free
+      pC = v.how2plotPrivate;
+      if ~isempty(pC)
+        v.how2plotPrivate = [];
+        v.how2plot = matchDefault(pC);
       end
+
+      % a modern object arrives with a deserialized frame - re-intern it
+      if ~isempty(v.frame), v.frame = referenceFrame.reintern(v.frame); end
 
     end
     

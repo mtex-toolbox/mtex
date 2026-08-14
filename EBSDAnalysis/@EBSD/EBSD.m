@@ -72,6 +72,7 @@ classdef EBSD < phaseList & dynProp & dynOption
   properties (Dependent = true)
     dPos       % spacing of the positions
     rot2Plane  % rotation to xy plane
+    frame      % the specimen reference frame (carried by pos)
     how2plot   % plotting convention
     plottingConvention % plotting convention
     EulerCorrection    % EulerXYZ -> mapXYZ, correction for inconsistent reference frames
@@ -381,9 +382,17 @@ classdef EBSD < phaseList & dynProp & dynOption
     function pC = get.how2plot(ebsd)
       pC = ebsd.pos.how2plot;
     end
-    
+
     function ebsd = set.how2plot(ebsd,pC)
       ebsd.pos.how2plot = pC;
+    end
+
+    function fr = get.frame(ebsd)
+      fr = ebsd.pos.frame;
+    end
+
+    function ebsd = set.frame(ebsd,fr)
+      ebsd.pos.frame = fr;
     end
 
     function rot = get.EulerCorrection(ebsd)

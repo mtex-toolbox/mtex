@@ -137,6 +137,24 @@ classdef referenceFrame < matlab.mixin.Copyable
 
     end
 
+    function rf = reintern(rf)
+      % swap a deserialized frame for the registered instance of its name
+      % when the two agree by value - so separately saved datasets share
+      % one frame handle again after loading; a frame that differs (e.g.
+      % saved under another default convention) is kept as it is
+      %
+      % See also
+      % referenceFrame/byName specimenSymmetry/loadobj vector3d/loadobj
+
+      reg = referenceFrame.byName(rf.name);
+      if ~isempty(reg) && strcmp(class(reg),class(rf)) && ...
+          isAligned(rf,reg) && ~isempty(rf.how2plot) && ...
+          ~isempty(reg.how2plot) && isapprox(rf.how2plot,reg.how2plot)
+        rf = reg;
+      end
+
+    end
+
   end
 
 end

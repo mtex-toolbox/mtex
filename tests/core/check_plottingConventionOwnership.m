@@ -18,8 +18,9 @@ function check_plottingConventionOwnership
 %   3. an explicitly set one wins over the symmetry's
 %   4. it survives the operations that rebuild the object
 %
-% vector3d is the reference implementation - it has owned how2plot as a
-% plain property all along.
+% vector3d is the reference implementation - since ADR 0003 it resolves
+% its convention override -> frame -> live session default, and an
+% explicitly assigned convention is stored on the vector itself.
 
 checkTensor;
 checkS2Fun;

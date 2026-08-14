@@ -16,9 +16,11 @@ function [lambda,v] = eig(v,varargin)
 %
 
 xyz = v.xyz;
-pC = v.how2plot;
+% carry the frame and the private convention, not the resolved one -
+% that would pin a merely inherited frame or default onto the result
+fr = v.frame; pC = v.how2plotPrivate;
 [v, lambda] = eig3(xyz.' * xyz);
-v.how2plot = pC;
+v.frame = fr; v.how2plotPrivate = pC;
 
 % for some reason Matlab eig function changes to order outputs if called
 % with two arguments - so we should do the same

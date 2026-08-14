@@ -13,6 +13,7 @@ classdef S2Triangulation
   end
   
   properties (Dependent = true)
+    frame    % the reference frame (carried by vertices)
     how2plot
   end
 
@@ -89,6 +90,14 @@ classdef S2Triangulation
       sT.vertices = rotate(sT.vertices,rot);
       sT.midPoints =  rotate(sT.midPoints,rot);
       
+    end
+
+    function fr = get.frame(sT)
+      fr = sT.vertices.frame;
+    end
+
+    function sT = set.frame(sT,fr)
+      sT.vertices.frame = fr;
     end
 
     function pC = get.how2plot(sT)

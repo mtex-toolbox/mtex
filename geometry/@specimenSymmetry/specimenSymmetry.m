@@ -128,11 +128,7 @@ methods (Static = true)
         % the deserialized frame is this object's own handle - safe
         s.frame.how2plot = plottingConvention.default;
       else
-        fr = referenceFrame.byName(s.frame.name);
-        if isa(fr,'specimenFrame') && isAligned(s.frame,fr) && ...
-            isapprox(s.frame.how2plot,fr.how2plot)
-          s.frame = fr;
-        end
+        s.frame = referenceFrame.reintern(s.frame);
       end
 
       cs = s;

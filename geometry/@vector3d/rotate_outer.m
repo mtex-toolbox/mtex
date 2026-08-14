@@ -55,7 +55,10 @@ if isa(q,'orientation')
     % convert to vector3d
     if isa(v,"Miller"), v = vector3d(v); end
 
-    v.how2plot = q.SS.how2plot;
+    % rotating with an orientation changes the reference frame - see
+    % vector3d/rotate
+    v.frame = q.SS.frame;
+    v.how2plotPrivate = q.SS.how2plotPrivate;
 
   end
 

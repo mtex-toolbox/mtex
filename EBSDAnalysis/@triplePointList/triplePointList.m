@@ -29,6 +29,7 @@ classdef triplePointList < phaseList & dynProp
     y              % y coordinates of the vertices of the grains
     angles         % boundary segment angles at the triple points
     V              % vertices x,y coordinates of the triple points
+    frame          % the specimen reference frame (carried by allV)
     how2plot       % default plotting convention
   end
   
@@ -75,6 +76,14 @@ classdef triplePointList < phaseList & dynProp
       
     end
     
+    function fr = get.frame(tP)
+      fr = tP.allV.frame;
+    end
+
+    function tP = set.frame(tP,fr)
+      tP.allV.frame = fr;
+    end
+
     function pC = get.how2plot(tP)
       pC = tP.allV.how2plot;
     end

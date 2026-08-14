@@ -5,14 +5,10 @@ classdef S1Fun
 % S1FunHarmonic
 
   properties (Abstract = true)
-    antipodal 
-    bandwidth % 
-  end 
-
-  properties 
-    how2plot = plottingConvention.default
+    antipodal
+    bandwidth %
   end
-  
+
   methods (Abstract = true)
     
     f = eval(sF,v,varargin)

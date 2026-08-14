@@ -13,6 +13,7 @@ checkAxisRepairHeuristic;
 checkDelegation;
 checkNamedSpecimenFrames;
 checkRegisterDefaults;
+checkDataFrameMembership;
 checkSaveLoadRoundTrip;
 checkEnsureCS;
 
@@ -170,6 +171,80 @@ assert(specimenSymmetry.default.how2plot == pC2 && specimenSymmetry.default.id =
   'check_referenceFrame: the default symmetry does not follow the frame');
 assert(ssF.how2plot == pC, ...
   'check_referenceFrame: replacing the default touched a forked frame');
+
+end
+
+% -------------------------------------------------------------------------
+function checkDataFrameMembership
+% vector3d resolves its convention override -> frame -> live session
+% default; assigning the default itself means membership in the default
+% frame, and rotating with an orientation changes the frame while a plain
+% rotation keeps it
+
+% frame-free: follows the live default
+v = vector3d.rand(5);
+assert(isempty(v.frame) && v.how2plot == plottingConvention.default, ...
+  'check_referenceFrame: a fresh vector3d must be frame-free and follow the default');
+
+% an own convention wins and stays local
+pC = plottingConvention('z↑→x');
+v.how2plot = pC;
+assert(v.how2plot == pC && isempty(v.frame), ...
+  'check_referenceFrame: v.how2plot = pC did not become an override');
+assert(vector3d.X.how2plot == plottingConvention.default, ...
+  'check_referenceFrame: the override leaked to other vectors');
+
+% assigning the session default itself means membership in the default frame
+w = vector3d.rand(3);
+w.how2plot = plottingConvention.default;
+assert(w.frame == specimenFrame.default && isempty(w.how2plotPrivate), ...
+  'check_referenceFrame: assigning the default must become frame membership');
+
+% under default replacement framed and frame-free data follow, an
+% override does not
+pC0 = plottingConvention.default;
+pC2 = plottingConvention('y↑→x');
+plottingConvention.default(pC2);
+followsFramed = w.how2plot == pC2;
+followsFree = vector3d.rand(2).how2plot == pC2;
+keepsOverride = v.how2plot == pC;
+plottingConvention.default(pC0);
+assert(followsFramed, ...
+  'check_referenceFrame: default-framed data does not follow a default replacement');
+assert(followsFree, ...
+  'check_referenceFrame: frame-free data does not follow a default replacement');
+assert(keepsOverride, ...
+  'check_referenceFrame: an override must not follow a default replacement');
+
+% rotating with an orientation adopts the specimen frame ...
+ori = orientation.rand(crystalSymmetry('m-3m'),specimenSymmetry.default);
+r = rotate(Miller(1,0,0,ori.CS),ori);
+assert(r.frame == specimenFrame.default, ...
+  'check_referenceFrame: rotating by an orientation must adopt the specimen frame');
+
+% ... while a plain rotation keeps the current frame state
+v2 = rotate(v,rotation.rand);
+assert(isempty(v2.frame) && v2.how2plot == pC, ...
+  'check_referenceFrame: a plain rotation must keep the frame state');
+
+% save / load: membership re-interns, an override survives, frame-free
+% stays frame-free
+fname = [tempname '.mat'];
+save(fname,'v','w');
+S = load(fname);
+delete(fname);
+assert(S.w.frame == specimenFrame.default, ...
+  'check_referenceFrame: loaded frame membership did not re-intern');
+assert(isempty(S.v.frame) && isapprox(S.v.how2plot,pC), ...
+  'check_referenceFrame: a loaded override did not survive');
+
+% the data classes expose the frame of their positions - EBSD delegation
+ebsd = EBSD(vector3d.rand(4),rotation.rand(4,1),ones(4,1), ...
+  {crystalSymmetry('m-3m')},struct());
+ebsd.frame = specimenFrame.rolling;
+assert(ebsd.frame == specimenFrame.rolling && ...
+  ebsd.pos.frame == specimenFrame.rolling, ...
+  'check_referenceFrame: ebsd.frame does not delegate to pos');
 
 end
 

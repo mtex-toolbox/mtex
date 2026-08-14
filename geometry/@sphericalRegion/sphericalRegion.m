@@ -31,6 +31,7 @@ classdef sphericalRegion
   end
 
   properties (Dependent = true)
+    frame    % the reference frame (carried by N)
     how2plot
   end
 
@@ -93,9 +94,12 @@ classdef sphericalRegion
       % otherwise a plain sphericalRegion is left behind which carries the
       % global default convention
       if check_option(varargin,{'complete','3d'})
-        h2p = sR.how2plot;
+        % carry the frame and the private convention, not the resolved
+        % one - restoring the resolved convention would pin a merely
+        % inherited frame or default onto the fresh region
+        fr = sR.frame; pC = sR.N.how2plotPrivate;
         sR = sphericalRegion;
-        sR.how2plot = h2p;
+        sR.frame = fr; sR.N.how2plotPrivate = pC;
       end
 
       % which hemisphere is the upper one depends on the convention the
@@ -119,6 +123,14 @@ classdef sphericalRegion
 
     function sR = set.how2plot(sR,how2plot)
       sR.N.how2plot = how2plot;
+    end
+
+    function fr = get.frame(sR)
+      fr = sR.N.frame;
+    end
+
+    function sR = set.frame(sR,fr)
+      sR.N.frame = fr;
     end
 
     function out = ne(sR1,sR2)

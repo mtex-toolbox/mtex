@@ -51,6 +51,7 @@ classdef PoleFigure < dynProp & dynOption
     r                   % specimen directions
     intensities         % diffraction intensities
     antipodal
+    frame               % the specimen reference frame (carried by allR)
     how2plot            % plotting convention
   end
   
@@ -101,6 +102,16 @@ classdef PoleFigure < dynProp & dynOption
       CS = pf.allH{1}.CS;
     end
     
+    function fr = get.frame(pf)
+      fr = pf.allR{1}.frame;
+    end
+
+    function pf = set.frame(pf,fr)
+      for k=1:length(pf.allR)
+        pf.allR{k}.frame = fr;
+      end
+    end
+
     function pC = get.how2plot(pf)
       pC = pf.allR{1}.how2plot;
     end
