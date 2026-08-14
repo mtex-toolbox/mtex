@@ -21,6 +21,8 @@ checkTwoFrames;
 checkRotateFrameFit;
 checkSaveLoadRoundTrip;
 checkEnsureCS;
+checkSessionReset;
+checkFrameCarriage;
 
 disp('check_referenceFrame: passed');
 
@@ -663,5 +665,57 @@ catch
 end
 assert(~failed, ...
   'check_referenceFrame: ensureCS accepted two different point groups');
+
+end
+
+function checkSessionReset
+% referenceFrame.reset restores the pristine session frame state: the
+% register forgets every named frame and the default falls back to a
+% fresh measurement frame with the ij convention. The doc build resets
+% between pages this way - resetting only the convention used to write
+% ij into whatever frame was default, corrupting the registered rolling
+% frame for every following page.
+
+specimenFrame.rolling.makeDefault;
+plottingConvention.default(plottingConvention.ij);   % the old corruption
+rCorrupt = specimenFrame.rolling;
+assert(isapprox(rCorrupt.how2plot,plottingConvention.ij), ...
+  'check_referenceFrame: setup - the register frame should be mutated here');
+
+referenceFrame.reset;
+
+d = specimenFrame.default;
+assert(strcmp(d.name,'measurement') && isapprox(d.how2plot,plottingConvention.ij), ...
+  'check_referenceFrame: reset must fall back to measurement / ij');
+
+rFresh = specimenFrame.rolling;
+assert(rFresh ~= rCorrupt && isapprox(rFresh.how2plot,plottingConvention('y←↑x')), ...
+  'check_referenceFrame: reset must let rolling remint with its seed convention');
+
+referenceFrame.reset;
+
+end
+
+function checkFrameCarriage
+% derived data adopts the frame HANDLE of its source, never an
+% equal-valued copy of the convention - otherwise it stops following the
+% frame the source lives in and loses the axes names
+
+referenceFrame.reset;
+
+cs = crystalSymmetry('432');
+ori1 = orientation.rand(cs); ori2 = orientation.rand(cs);
+a = axis(ori1,ori2);
+assert(a.frame == ori2.SS.frame, ...
+  'check_referenceFrame: the misorientation axis must carry the SS frame handle');
+
+% orientation/map: a framed input hands its frame to the result's SS
+fr = specimenFrame('lab','axesNames',{'A','B','C'},plottingConvention('y←↑x'));
+v = vector3d.X; v.frame = fr;
+ori = orientation.map(Miller(1,0,0,cs),v);
+assert(ori.SS.frame == fr, ...
+  'check_referenceFrame: orientation.map must adopt the frame of the framed input');
+
+referenceFrame.reset;
 
 end
