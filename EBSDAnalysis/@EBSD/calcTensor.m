@@ -64,7 +64,10 @@ end
 TRot = TRot(ebsd.isIndexed);
 [varargout{1:nargout}] = mean(TRot,varargin{:});
 
-TRot.how2plot = ebsd.how2plot;
+% the averages live in the frame of the map - stamp the outputs (the old
+% code stamped the local TRot after the outputs were already extracted,
+% so they never carried the convention)
+for k = 1:nargout, varargout{k}.frame = ebsd.pos.frame; end
 
 % average density - only over the indexed pixels, as the density of the not
 % indexed ones is unknown (they keep the NaN they were initialised with) and

@@ -61,6 +61,13 @@ end
 
 if isa(varargin{2},'Miller')
   ori.SS = varargin{2}.CS;
+elseif isa(varargin{2}.frame,'specimenFrame')
+  % the input carries a frame - adopt the handle itself, so the result
+  % follows that frame's convention like the input does
+  if varargin{2}.frame ~= ori.SS.frame
+    ori.SS = copy(ori.SS);
+    ori.SS.frame = varargin{2}.frame;
+  end
 elseif ori.SS.how2plot ~= varargin{2}.how2plot
   % never write the convention through the SS handle - it is shared, either
   % specimenSymmetry.default or the symmetry the caller passed in; a copy

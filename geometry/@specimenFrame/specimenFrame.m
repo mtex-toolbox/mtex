@@ -97,6 +97,9 @@ classdef specimenFrame < referenceFrame
       persistent def
 
       if nargin == 1
+        if isempty(sF)
+          def = []; return  % referenceFrame.reset - re-seeded on next get
+        end
         assert(isa(sF,'specimenFrame'), ...
           'Only a specimenFrame can supply the session default.');
         def = sF;

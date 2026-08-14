@@ -69,7 +69,7 @@ else % the same algorithm in 2d
 
 end
 
-c.how2plot = grains.how2plot;
+c.frame = grains.frame;
 
 end
 

@@ -300,7 +300,7 @@ end
     % grainId(:,1) lies to the left of the walk direction
     gB = grainBoundary(V,F,ebsdInd,grainId,ebsd.phaseId,mori,ebsd.CSList,...
       ebsd.phaseMap,ebsd.id,'ebsdPos',ebsd.pos);
-    gB.how2plot = ebsd.how2plot;
+    gB.frame = ebsd.pos.frame;
 
   end
 

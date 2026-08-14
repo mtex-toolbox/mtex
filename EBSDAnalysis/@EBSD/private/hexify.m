@@ -62,7 +62,7 @@ allJ = allRow(:) - 1;
 allI = allCol(:) - 1 + cMin - floor(allJ/2);
 xy   = reconstructPos([allI, allJ]);
 
-pos = reshape(vector3d(xy(:,1),xy(:,2),0,ebsd.how2plot),sGrid);
+pos = reshape(vector3d(xy(:,1),xy(:,2),0,ebsd.pos.frame),sGrid);
 pos(newId) = ebsd.pos;
 
 % --- scatter the data ----------------------------------------------------

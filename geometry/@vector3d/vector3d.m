@@ -404,6 +404,19 @@ classdef vector3d < dynOption
       % this overloaded method ensures compatibility with older MTEX
       % versions
 
+      % when the saved fields do not match the class anymore MATLAB hands
+      % over the raw data as a struct - rebuild from it and drop whatever
+      % convention slot the saving version had, the frame model resolves
+      % conventions at render time anyway
+      if ~isa(v,'vector3d')
+        s = v;
+        v = vector3d(s.x,s.y,s.z);
+        if isfield(s,'antipodal'),    v.antipodal = s.antipodal; end
+        if isfield(s,'isNormalized'), v.isNormalized = s.isNormalized; end
+        if isfield(s,'opt') && isstruct(s.opt), v.opt = s.opt; end
+        if isfield(s,'framePrivate'), v.framePrivate = s.framePrivate; end
+      end
+
       % a deserialized frame is re-interned against the register - the
       % convention the loaded data was saved with applies to the whole
       % session, see referenceFrame/reintern. A pre-frame object arrives

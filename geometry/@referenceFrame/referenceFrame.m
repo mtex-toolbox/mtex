@@ -147,7 +147,10 @@ classdef referenceFrame < matlab.mixin.Copyable
       if isempty(store), store = containers.Map; end
 
       name = char(name);
-      if nargin == 2
+      if nargin == 1 && strcmp(name,'-reset-')
+        % internal, used by referenceFrame.reset only
+        store = containers.Map; rf = [];
+      elseif nargin == 2
         store(name) = rf;
       elseif store.isKey(name)
         rf = store(name);
@@ -182,6 +185,27 @@ classdef referenceFrame < matlab.mixin.Copyable
 
       c = conventionChar(fr,pC);
       if isempty(c), c = char(pC,'compact'); end
+
+    end
+
+    function reset
+      % restore the pristine session frame state
+      %
+      % Forgets every registered frame and lets the session default fall
+      % back to a fresh measurement frame with the ij convention - the
+      % state a newly started MTEX session is in. Data objects keep the
+      % frame handles they hold; only the register and the default are
+      % affected. Meant for scripted environments that run independent
+      % jobs in one session, e.g. the documentation build between pages.
+      %
+      % Syntax
+      %   referenceFrame.reset
+      %
+      % See also
+      % referenceFrame/byName specimenFrame/default
+
+      referenceFrame.byName('-reset-');
+      specimenFrame.default([]);
 
     end
 
