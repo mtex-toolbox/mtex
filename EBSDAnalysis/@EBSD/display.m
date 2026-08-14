@@ -66,8 +66,8 @@ if isempty(ebsd.pos)
   disp(strong(" X x Y x Z") + " : none, this EBSD has no positions");
 else
   ext = ebsd.extent;
-  disp(strong(" X x Y x Z") + " : [" + xnum2str(ext(1:2),'delimiter',', ') + "] x [" + ...
-    xnum2str(ext(3:4),'delimiter',', ') + "] x [" + xnum2str(ext(5:6),'delimiter',', ') + "]");
+  disp(strong(" X x Y x Z") + " : [" + xnum2str(ext(1:2),'delimiter',' → ') + "] x [" + ...
+    xnum2str(ext(3:4),'delimiter',' → ') + "] x [" + xnum2str(ext(5:6),'delimiter',' → ') + "]");
 end
 disp(strong(" Normal vector") + ": (" + ...
   char(round(ebsd.N,'accuracy',5*degree)) + ")");

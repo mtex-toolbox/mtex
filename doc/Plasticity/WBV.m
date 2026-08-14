@@ -67,7 +67,7 @@ wbv = weightedBurgersVec(ebsd)
 
 plot(ebsd,wbv.norm,'refFrame','on')
 mtexColorbar
-mtexTitle('norm of the WBV')
+mtexTitle('WBV magnitude')
 
 %% Visualizing the WBV
 % In order to visualize the direction of the WBV in specimen coordinates,
@@ -75,33 +75,29 @@ mtexTitle('norm of the WBV')
 
 cK = HSVDirectionKey(wbv);
 plot(ebsd,cK.direction2color(wbv),'FaceAlpha',wbv.norm/0.22)
-mtexTitle('direction of the WBV in specimen coordinates')
+mtexTitle('WBV in specimen coordinates')
 
-%%
-
+nextAxis
 plot(cK,'figSize','tiny')
+mtexTitle('directional color key')
 
 %%
 % We could also display the WBV as small arrows. If we allow for any
 % magnitude, the plot would become quite cluttered. Hence, we will only
 % display those vectors which have a reasonably large magnitude.
+% Next to it we plot the distributions of WBV in a spherical projection. 
 
 cond = wbv.norm > quantile(wbv.norm,0.85);
 
 plot(ebsd,cK.direction2color(wbv),'FaceAlpha',wbv.norm/0.22)
 hold on
-quiver(ebsd(cond),wbv(cond),'color','k','autoScaleFactor', 2, 'antipodal');
+quiver(ebsd(cond),wbv(cond),'color','k','autoScaleFactor', 2, 'antipodal','linewidth',0.5);
 hold off
-mtexTitle('direction of the WBV in specimen coordinates')
+mtexTitle('WBV in specimen coordinates')
 
-%%
-% If we are simply interested in the distributions of WBV, we can plot them
-% in a spherical projection. Since the WBV is assigned |nan| at points
-% where it cannot be defined, we need to filter those values
-
-wbv.antipodal = 0;
-notNan = ~isnan(wbv);
-plot(wbv(notNan),'weights',wbv(notNan).norm,'contourf')
+nextAxis
+plot(wbv,'weights',wbv.norm,'contourf')
+mtexTitle('WBV density distribution')
 
 %% The WBV in crystal coordinates
 % In order to inspect the WBV in crystal coordinates we transform them
@@ -115,17 +111,17 @@ cKC = HSVDirectionKey(wbvC);
 
 % plot the data
 plot(ebsd,cKC.direction2color(wbvC),'FaceAlpha',wbv.norm/0.22)
-mtexTitle('direction of the WBV in crystal coordinates')
-
-%%
+mtexTitle('WBV in crystal coordinates')
 
 % plot the color key
+nextAxis
 plot(cKC)
+mtexTitle('directional color key')
 
-% overlaid with the
+% overlaid with the contour lines of its density distribution
 hold on
-plot(wbvC(notNan),'weights',wbvC(notNan).norm,'contour', ...
-    'contours',0.5:0.25:2,'linecolor','k','ShowText','on', ...
+plot(wbvC,'weights',wbvC.norm,'contour', ...
+    'contours',0.2:0.1:2,'linecolor','k','ShowText','on', ...
     'linewidth',2)
 hold off
 
@@ -142,11 +138,11 @@ newMtexFigure('layout',[2,4])
 wbv = weightedBurgersVec(ebsd);
 nextAxis(1,1)
 plot(ebsd,wbv.norm); hold on
-mtexTitle('norm (denoised) / box = 3')
+mtexTitle('WBV norm (denoised) / box = 3')
 
 nextAxis(2,1)
-notNan = ~isnan(wbv);
-plot(wbv(notNan),'weights',wbv(notNan).norm,'contourf','antipodal')
+plot(wbv,'weights',wbv.norm,'contourf','antipodal')
+mtexTitle('density distribution')
 
 % next we plot the WBV form the noisy dataset
 
@@ -158,8 +154,8 @@ for ws = [1 2 3]
   mtexTitle(['WBV norm / box =' num2str(2*ws+1)])
 
   nextAxis(2,ws+1)
-  notNan = ~isnan(wbv);
-  plot(wbv(notNan),'weights',wbv(notNan).norm,'contourf','antipodal')
+  plot(wbv,'weights',wbv.norm,'contourf','antipodal')
+  mtexTitle('density distribution')
 
 end
 mtexColorbar
@@ -190,12 +186,12 @@ wbv = weightedBurgersVec(ebsd,'gradient');
 close all
 cK = HSVDirectionKey(wbv);
 plot(ebsd,cK.direction2color(wbv),'FaceAlpha',wbv.norm/0.2)
-mtexTitle('WBV direction / gradient' )
+mtexTitle('WBV in specimen coordinates' )
 
-%%
+nextAxis(1,2) 
 
-notNan = ~isnan(wbv);
-plot(wbv(notNan),'weights',wbv(notNan).norm,'antipodal','contourf')
+plot(wbv,'weights',wbv.norm,'antipodal','contourf')
+mtexTitle('density distribution')
 
 %%
 % Comparing this with the map from part 1 we observe that for denoised data
@@ -238,12 +234,11 @@ for k = 1:3
 
   nextAxis(1,k)
   plot(ebsd,wbv.norm)
-  mtexTitle(['norm / ' stencils{k}])
-  setColorRange([0 0.15])
-
+  mtexTitle(['WBV norm / ' stencils{k}])
+  
   nextAxis(2,k)
-  notNan = ~isnan(wbv);
-  plot(wbv(notNan),'weights',wbv(notNan).norm,'contourf','antipodal')
+  plot(wbv,'weights',wbv.norm,'contourf','antipodal')
+  mtexTitle('density distribution')
 
 end
 mtexColorbar
