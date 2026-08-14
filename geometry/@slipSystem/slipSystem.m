@@ -80,7 +80,14 @@ classdef slipSystem
     function display(sS,varargin) %#ok<DISPLAY>
       % standard output
 
-      displayClass(sS,inputname(1),varargin{:},'moreInfo',char(sS.CS,'compact'));
+      % a slip system in the crystal frame shows its symmetry, a rotated
+      % one - plain vector3d directions - the frame it landed in
+      if isa(sS.b,'Miller')
+        info = char(sS.CS,'compact');
+      else
+        info = referenceFrame.headerChar(sS.b.frame,sS.b.how2plot);
+      end
+      displayClass(sS,inputname(1),varargin{:},'moreInfo',info);
       
       if length(sS)>24, disp([' CRSS: ' xnum2str(unique(sS.CRSS))]); end
       if length(sS)>1, disp([' size: ' size2str(sS.b)]); end

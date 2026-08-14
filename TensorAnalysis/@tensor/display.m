@@ -1,8 +1,18 @@
 function display(T,varargin)
 % standard output
 
-% T.how2plot, not T.CS.how2plot - the convention lives on the tensor
-displayClass(T,inputname(1),'moreInfo',char(T.CS,'compact',T.how2plot),varargin{:});
+% the frame together with the convention the tensor is drawn in - an own
+% convention override wins and is shown plainly; a crystal frame shows
+% only its identity, a non trivial specimen symmetry keeps its point group
+if isempty(T.how2plotPrivate)
+  info = referenceFrame.headerChar(T.CS.frame,T.how2plot);
+else
+  info = char(T.how2plot,'compact');
+end
+if isa(T.CS,'specimenSymmetry') && T.CS.id > 1
+  info = [info ' (' T.CS.pointGroup ')'];
+end
+displayClass(T,inputname(1),'moreInfo',info,varargin{:});
 
 % collect tensor properties
 props = fieldnames(T.opt);

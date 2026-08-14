@@ -142,6 +142,31 @@ classdef referenceFrame < matlab.mixin.Copyable
 
     end
 
+    function c = headerChar(fr,pC)
+      % the string data class displays show: the frame together with the
+      % plotting convention the data is drawn in
+      %
+      % For a crystal frame only the frame identity is shown - the
+      % convention of a crystal frame is derived from its axes and adds
+      % nothing. For a specimen frame the convention appears in the
+      % frame's axes names ('TD←RD↑'); frame-free data shows the plain
+      % convention.
+      %
+      % Input
+      %  fr - @referenceFrame or []
+      %  pC - @plottingConvention, the resolved convention of the data
+
+      if isa(fr,'crystalFrame')
+        c = char(fr);
+      elseif isa(fr,'referenceFrame')
+        c = conventionChar(fr,pC);
+        if isempty(c), c = char(pC,'compact'); end
+      else
+        c = char(pC,'compact');
+      end
+
+    end
+
     function rf = reintern(rf)
       % swap a deserialized frame for the registered instance of its name
       % when the two agree by value - so separately saved datasets share

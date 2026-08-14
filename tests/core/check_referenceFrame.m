@@ -505,6 +505,43 @@ sSr = rotate(sS,orientation.rand(cs));
 assert(~isa(sSr.b,'Miller') && sSr.b.frame == specimenFrame.default, ...
   'check_referenceFrame: a rotated slip system must land in the specimen frame');
 
+% a crystal frame never fits a specimen frame - a wrong sided rotation
+% of specimen framed data errors ...
+w = vector3d.rand;
+w.how2plot = plottingConvention.default;  % membership in the specimen frame
+try
+  rotate(w,ori);
+  failed = false;
+catch e
+  failed = strcmp(e.identifier,'MTEX:orientation:frameMismatch');
+end
+assert(failed, ...
+  'check_referenceFrame: rotating specimen framed data by an orientation must error');
+
+% ... while the right side passes and lands in the crystal frame
+r3 = rotate(w,inv(ori));
+assert(r3.frame == cs.frame, ...
+  'check_referenceFrame: inv(ori) must take specimen data into the crystal frame');
+
+% the displays show the frame together with the convention: a rotated
+% slip system reports the specimen convention, a rolling framed vector
+% its axes names, a crystal framed vector only the frame identity
+out = evalc('display(sSr)');
+assert(contains(out,['(' char(plottingConvention.default,'compact') ')']), ...
+  'check_referenceFrame: a rotated slip system must display the specimen convention');
+
+rf = specimenFrame('rolling','axesNames',{'RD','TD','ND'},plottingConvention('y↑→x'));
+vR = vector3d.rand(3);
+vR.frame = rf;
+out = evalc('display(vR)');
+assert(contains(out,'TD↑→RD'), ...
+  'check_referenceFrame: a rolling framed vector must display its axes names');
+
+mAl = Miller(1,0,0,cs);
+out = evalc('display(mAl)');
+assert(contains(out,'Al'), ...
+  'check_referenceFrame: a crystal framed direction must display the frame identity');
+
 end
 
 % -------------------------------------------------------------------------

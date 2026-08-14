@@ -139,12 +139,19 @@ elseif nargin>1 && (isa(varargin{1},'S2Fun') || isa(varargin{1},'ipfColorKey'))
   scaling = sqrt(grains.area);
   shift = grains.centroid + ...
     2*scaling * grains.N * sign(dot(grains.N,pC.outOfScreen));
-  
+
+  ori = grains.meanOrientation;
+
+  % the overlay is crystal data - a function handed in without a crystal
+  % claim (frame-free or merely default-framed) is put into the crystal
+  % frame of the grains before it is rotated into the map
+  if ~isa(getFrame(S2F),'crystalFrame'), S2F.frame = ori.CS.frame; end
+
   for k = 1:length(grains)
 
-    h(k) = plot(rotate(S2F,grains.meanOrientation(k)),'parent', mP.ax,...
+    h(k) = plot(rotate(S2F,ori(k)),'parent', mP.ax,...
     'shift',shift.subSet(k),varargin{:},'scale',0.3*scaling(k),'3d'); %#ok<AGROW>
-    
+
   end
   
   plotBoundary = false;
