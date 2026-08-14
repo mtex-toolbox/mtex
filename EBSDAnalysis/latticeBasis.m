@@ -22,6 +22,19 @@ function [A,stencil,dxy] = latticeBasis(unitCell)
 % NB the derived (i,j) indexing is PRIVATE to the decomposition and need not
 % agree with the matrix layout of a gridified EBSDsquare/EBSDhex object.
 
+% The construction below is 2d - it reads the cell as (x,y). For a map that
+% does not lie in the xy plane that projection is degenerate: a cell in the
+% xz plane collapses onto a line and A comes out singular, e.g. [d 0; 0 0],
+% which then propagates as a cryptic indexing error out of assignGridIndex.
+% So rotate the cell into the xy plane first and return A in THAT frame -
+% the map plane frame. The caller reaches the same frame through
+% ebsd.rot2Plane, which is derived from the same normal (EBSD.N is
+% perp(ebsd.unitCell)), so the two agree by construction.
+N = perp(unitCell);
+if ~isnull(angle(N,zvector,'antipodal'))
+  unitCell = rotation.map(N,zvector) * unitCell;
+end
+
 V = [unitCell.x(:), unitCell.y(:)];
 V = V - mean(V,1);                       % centre the cell on the origin
 k = size(V,1);
