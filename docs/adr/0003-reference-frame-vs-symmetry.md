@@ -176,9 +176,11 @@ job implicitly and produced the bug family this ADR opens with.
 - Interning needs an equality notion at the register door, so the `eqTol` tolerance
   question resurfaces — at one door, instead of scattered through `ensureCS` call sites.
   The register is global state: parallel workers do not share it and tests need a reset.
-- `plottingConvention` stays a handle class for now, but the intended end state is a
-  *value* class — after the register and after data-class frame membership, not before.
-  Today value semantics would break the default-follows workflow three ways:
+- `plottingConvention` is a *value* class since 2026-08-14 (commit `3237eb638`); the
+  paragraph below records why that had to wait for the register and for data-class
+  frame membership, and what carries the coupling now.
+  Before those two steps, value semantics would have broken the default-follows
+  workflow three ways:
   `plotx2east` mutates the default in place; `matchDefault` and the import loaders alias
   the default handle; and `vector3d`'s class default (`geometry/@vector3d/vector3d.m:48`,
   evaluated once at class init) would freeze the init-time convention into every plain
