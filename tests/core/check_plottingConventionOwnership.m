@@ -26,9 +26,78 @@ checkS2Fun;
 checkTensorToS2Fun;
 checkOrientationMap;
 checkPoleFigure;
+checkSymmetryOverride;
 
 disp('check_plottingConventionOwnership: passed');
 
+end
+
+% =========================================================================
+function checkSymmetryOverride
+% since ADR 0003 a symmetry delegates how2plot to the referenceFrame it
+% holds; setting it lands in an override slot on the symmetry. copy() is
+% shallow, so the copy shares the frame handle - a naive forwarding setter
+% would write the convention through that shared frame and repoint the
+% original, which is exactly the leak family this file guards against.
+
+pC = plottingConvention('z↑→x');
+dflt = char(specimenSymmetry.default.how2plot);
+assert(~strcmp(dflt,char(pC)), ...
+  ['check_plottingConventionOwnership: the test convention equals the ' ...
+  'default one, so it cannot detect a leak - pick another one'])
+
+% the fork idiom: the copy shares the frame, the override stays local
+ss = specimenSymmetry('222');
+before = char(ss.how2plot);
+ss2 = copy(ss);
+assert(ss2.frame == ss.frame, ...
+  'check_plottingConventionOwnership: copy(ss) does not share the frame handle')
+
+ss2.how2plot = pC;
+assert(strcmp(char(ss2.how2plot),char(pC)), ...
+  'check_plottingConventionOwnership: ss2.how2plot = pC did not take')
+assert(strcmp(char(ss.how2plot),before) && ...
+  strcmp(char(ss.frame.how2plot),before), ...
+  'check_plottingConventionOwnership: ss2.how2plot wrote through the shared frame')
+assert(strcmp(char(specimenSymmetry.default.how2plot),dflt), ...
+  'check_plottingConventionOwnership: ss2.how2plot changed specimenSymmetry.default')
+
+% same on the crystal side, incl. the cached Laue group sharing the frame
+% (a non-centrosymmetric group, so that Laue is a copy and not cs itself)
+cs = crystalSymmetry('432');
+csBefore = char(cs.how2plot);
+csL = cs.Laue;
+assert(csL ~= cs, ...
+  'check_plottingConventionOwnership: pick a group that is not its own Laue group')
+assert(csL.frame == cs.frame, ...
+  'check_plottingConventionOwnership: the Laue group does not share the frame')
+
+csL.how2plot = pC;
+assert(strcmp(char(cs.how2plot),csBefore) && ...
+  strcmp(char(cs.frame.how2plot),csBefore), ...
+  'check_plottingConventionOwnership: cs.Laue.how2plot wrote through the shared frame')
+
+% the in-place default workflow keeps working: a symmetry without an
+% override follows the very handle plotx2east and friends mutate
+pCd = specimenSymmetry.default.how2plot;
+rot0 = pCd.rot; last0 = pCd.lastSet;
+restoreDefault = onCleanup(@() setBack(pCd,rot0,last0));
+
+ssd = specimenSymmetry;
+assert(ssd.how2plot == pCd, ...
+  'check_plottingConventionOwnership: a fresh specimenSymmetry does not alias the default')
+
+plotx2north
+assert(ssd.how2plot == pCd && specimenSymmetry.default.how2plot == pCd, ...
+  'check_plottingConventionOwnership: plotx2north replaced the default handle instead of mutating it')
+assert(angle(pCd.rot,rot0) > 1e-3, ...
+  'check_plottingConventionOwnership: plotx2north did not mutate the default in place')
+
+end
+
+function setBack(pC,rot0,last0)
+pC.rot = rot0;
+pC.lastSet = last0;
 end
 
 % =========================================================================

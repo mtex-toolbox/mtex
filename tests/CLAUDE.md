@@ -72,6 +72,7 @@ over budget, trim from outside these before trimming inside them.
 | `orientation/find`, k-nearest and epsilon | `core/check_find` |
 | orientation embedding | `core/check_embedding` |
 | symmetry comparison, `eqTol`/`sim` | `core/check_symmetryCompare` |
+| reference frames: symmetry→frame delegation, frame transitions, `ensureCS` compatibility | `core/check_referenceFrame` |
 | `vector3d` construction and shape contract | `core/check_vector3d` |
 | crystal axes, `X\|\|a` / `X\|\|a*` alignment, EDAX frame | `core/check_crystalAxes` |
 | `Miller`, crystal directions, hkl↔uvw | `core/check_Miller` |

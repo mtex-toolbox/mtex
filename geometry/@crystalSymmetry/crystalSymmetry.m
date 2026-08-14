@@ -92,14 +92,9 @@ classdef crystalSymmetry < symmetry & phaseItem
 %  47  icosahedral     Ih       -5-32/m   -5-32/m  532
 %
 
-  properties
-    axes = [xvector,yvector,zvector]; % coordinate system
-    %mineral = ''                      % mineral name
-    %color = ''                        % color used for EBSD / grain plotting
-  end
-
   properties (Dependent = true)
-      
+
+    axes        % coordinate system - the basis of the crystalFrame
     alpha       % angle between b and c
     beta        % angle between c and a
     gamma       % angle between a and b
@@ -173,26 +168,45 @@ classdef crystalSymmetry < symmetry & phaseItem
       end
 
       % define the symmetry
-      s = s@symmetry(id,rot,[]);
-      
-      % set axes, mineral name and color
-      s.axes = axes;
+      s = s@symmetry(id,rot);
+
+      % set mineral name and color
       s.mineral = get_option(varargin,'mineral','');
       s.mineral = strtrim(regexprep(s.mineral,char(0),' '));
       s.color = get_option(varargin,'color','');
-      
+
+      % the reference frame carries the axes and, below, the plotting
+      % convention; the mineral doubles as the frame identity for now
+      s.frame = crystalFrame(axes,'name',s.mineral);
+
       if check_option(varargin,'density')
         s.opt.density = get_option(varargin,'density','');
       end
 
-      % the plotting convention     
+      % the plotting convention of the frame
       if id > 11 || id==0
         pC = plottingConvention(s.cAxisRec,s.aAxis);
       else
         pC = plottingConvention(s.cAxisRec,s.bAxis);
       end
-      s.how2plot = pC;
+      s.frame.how2plot = pC;
 
+    end
+
+    function v = get.axes(cs)
+      v = cs.frame.basis;
+    end
+
+    function set.axes(cs,v)
+      % fork - never write the basis through a possibly shared frame
+      % handle; carries name and convention over to the new frame
+      if isempty(cs.frame)
+        cs.frame = crystalFrame(v);
+      else
+        f = crystalFrame(v,'name',cs.frame.name);
+        f.how2plot = cs.frame.how2plot;
+        cs.frame = f;
+      end
     end
     
     function x = get.X(cs)
@@ -234,24 +248,24 @@ classdef crystalSymmetry < symmetry & phaseItem
     end
 
     function abg = get.abg(cs)
-      abg = angle(cs.axes([2,3,1]),cs.axes([3,1,2]));
+      abg = cs.frame.abg;
     end
 
     function abc = get.abc(cs)
-      abc = norm(cs.axes);
+      abc = cs.frame.abc;
     end
 
     function alpha = get.alpha(cs)
-      alpha = angle(cs.axes(2),cs.axes(3));
+      alpha = cs.frame.alpha;
     end
-    
+
     function beta = get.beta(cs)
-      beta = angle(cs.axes(3),cs.axes(1));
+      beta = cs.frame.beta;
     end
-    
+
     function gamma = get.gamma(cs)
-      gamma = angle(cs.axes(1),cs.axes(2));
-    end    
+      gamma = cs.frame.gamma;
+    end
    
   end
   
@@ -285,7 +299,17 @@ classdef crystalSymmetry < symmetry & phaseItem
           cs.color = str2rgb(cs.color);
         end
 
-        if isa(s.how2plot,'plottingConvention'), return; end        
+        % a pre-frame object restored axes/how2plot through the dependent
+        % setters: axes minted a frame, how2plot landed in the override
+        % slot - move it onto the frame so the frame supplies the default
+        if isempty(cs.frame), cs.frame = crystalFrame([xvector,yvector,zvector]); end
+        if isempty(cs.frame.how2plot) && isa(cs.how2plotPrivate,'plottingConvention')
+          cs.frame.how2plot = cs.how2plotPrivate;
+          cs.how2plotPrivate = [];
+        end
+        cs.frame.name = cs.mineral;
+
+        if isa(cs.how2plot,'plottingConvention'), return; end
       end
       
       if isfield(s,'rot') || isprop(s,'rot')
@@ -311,6 +335,7 @@ classdef crystalSymmetry < symmetry & phaseItem
       if isfield(s,'mineral') || isprop(s,'mineral'), cs.mineral = s.mineral; end
       if isfield(s,'color') || isprop(s,'color'), cs.color = s.color; end
       if isfield(s,'opt') || isprop(s,'opt'), cs.opt = s.opt; end
+      cs.frame.name = cs.mineral;
             
     end
 

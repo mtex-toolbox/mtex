@@ -67,6 +67,46 @@
     ]
 },
 
+"referenceFrame":
+{
+    "inputs":
+    [
+      {"name":"basis", "kind":"ordered", "type":["vector3d"], "purpose":"the three basis vectors"},
+      {"name":"name", "kind":"namevalue", "type":["char"], "purpose":"identity of the frame"}
+    ],
+    "outputs":
+    [
+      {"name":"rf", "type":"referenceFrame"}
+    ]
+},
+
+"crystalFrame":
+{
+    "inputs":
+    [
+      {"name":"axes", "kind":"ordered", "type":["vector3d"], "purpose":"the crystal axes a, b, c"},
+      {"name":"name", "kind":"namevalue", "type":["char"], "purpose":"identity of the frame"}
+    ],
+    "outputs":
+    [
+      {"name":"cF", "type":"crystalFrame"}
+    ]
+},
+
+"specimenFrame":
+{
+    "inputs":
+    [
+      {"name":"basis", "kind":"ordered", "type":["vector3d"], "purpose":"the three basis vectors"},
+      {"name":"name", "kind":"namevalue", "type":["char"], "purpose":"identity of the frame"},
+      {"name":"axisLabels", "kind":"namevalue", "type":["cell"], "purpose":"names of the three axes"}
+    ],
+    "outputs":
+    [
+      {"name":"sF", "type":"specimenFrame"}
+    ]
+},
+
 "vector3d":
 {
     "inputs":

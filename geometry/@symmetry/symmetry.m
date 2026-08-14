@@ -18,12 +18,19 @@ classdef symmetry < matlab.mixin.Copyable
   
   properties
     opt = struct
-    how2plot
+    frame = []       % the referenceFrame this symmetry is attached to
+  end
+
+  properties (Hidden = true)
+    % the plotting convention of this symmetry, empty means follow the one
+    % of frame - see get.how2plot
+    how2plotPrivate = []
   end
 
   properties (Dependent = true)
     lattice          % type of crystal lattice
     pointGroup       % point group name
+    how2plot         % plotting convention
   end
   
   properties (Access = protected)
@@ -48,9 +55,11 @@ classdef symmetry < matlab.mixin.Copyable
       
       s.id = id;
       if ~isempty(rot), s.rot = rot; end
-      
-      if nargin < 3, pC = plottingConvention; end
-      s.how2plot = pC;
+
+      % kept for backward compatibility: an explicitly passed convention
+      % lands in the override slot; the subclass constructors mint a frame
+      % that supplies the default instead
+      if nargin == 3 && ~isempty(pC), s.how2plot = pC; end
 
       if s.id == 1, return; end
         
@@ -65,10 +74,22 @@ classdef symmetry < matlab.mixin.Copyable
     end
     
     
+    function pC = get.how2plot(s)
+      % a symmetry that was not given a convention of its own follows its
+      % reference frame
+      pC = s.how2plotPrivate;
+      if isempty(pC) && ~isempty(s.frame), pC = s.frame.how2plot; end
+    end
+
     function set.how2plot(s,pC)
       % accept a string like 'y↑→x' as a shortcut for the convention
+      %
+      % stored in the override slot, never written through the frame: the
+      % frame handle is shared by every copy of this symmetry (copy() is
+      % shallow), so writing through it would repoint the convention of
+      % unrelated objects - the leak family of ADR 0003
       if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
-      s.how2plot = pC;
+      s.how2plotPrivate = pC;
     end
 
     function pg = get.pointGroup(sym)

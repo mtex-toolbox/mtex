@@ -42,8 +42,14 @@ methods
     how2plot = getClass(varargin,'plottingConvention');
     if isempty(how2plot), how2plot = plottingConvention.default; end
 
-    s = s@symmetry(id,rot,how2plot);
-    
+    s = s@symmetry(id,rot);
+
+    % the frame supplies the plotting convention; deliberately keeping the
+    % handle that was passed in (possibly the session default), so that
+    % mutating the convention in place keeps reaching this symmetry
+    s.frame = specimenFrame.measurement;
+    s.frame.how2plot = how2plot;
+
     if s.id > 16
       warning(s.pointGroup + " is not a suitable specimen symmetry!")
     end
@@ -98,13 +104,26 @@ methods (Static = true)
     if isa(s,'specimenSymmetry')
       if isempty(s.multiplicityPerpZ)
         isPerpZ = isnull(dot(s.rot.axis,zvector)) & ~isnull(s.rot.angle);
-        
+
         if any(isPerpZ(:))
           s.multiplicityPerpZ = round(2*pi/min(abs(angle(s.rot(isPerpZ)))));
         else
           s.multiplicityPerpZ = 1;
         end
       end
+
+      % a pre-frame object restored how2plot into the override slot - mint
+      % the frame and move the convention onto it
+      if isempty(s.frame), s.frame = specimenFrame.measurement; end
+      if isempty(s.frame.how2plot)
+        if isa(s.how2plotPrivate,'plottingConvention')
+          s.frame.how2plot = s.how2plotPrivate;
+          s.how2plotPrivate = [];
+        else
+          s.frame.how2plot = plottingConvention.default;
+        end
+      end
+
       cs = s;
       return;
     end
@@ -130,7 +149,10 @@ methods (Static = true)
     cs = specimenSymmetry(rot,id{:},axes);
       
     if isfield(s,'opt'), cs.opt = s.opt; end
-    if isfield(s,'how2plot'), cs.how2plot = s.how2plot; end
+    % onto the frame, not into the override - the frame supplies the default
+    if isfield(s,'how2plot') && isa(s.how2plot,'plottingConvention')
+      cs.frame.how2plot = s.how2plot;
+    end
             
   end
 
