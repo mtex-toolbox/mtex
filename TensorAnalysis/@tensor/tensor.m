@@ -55,6 +55,8 @@ classdef tensor < dynOption
         % extract additional properties
         varargin = delete_option(varargin,'doubleConvention');
         varargin = delete_option(varargin,'rank',1);
+        [pC,varargin] = getClass(varargin,'plottingConvention');
+        if ~isempty(pC), T.how2plot = pC; end
         T = T.setOption(varargin{:});
         return
       end
@@ -129,9 +131,13 @@ classdef tensor < dynOption
         varargin(args) = [];
       end
 
+      % extract plotting convention
+      [pC,varargin] = getClass(varargin,'plottingConvention');
+      if ~isempty(pC), T.how2plot = pC; end
+
       options = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel','noCheck'});
       options = delete_option(options,'rank',1);
-      
+
       % extract properties
       T = T.setOption(options{:});
          
@@ -162,6 +168,15 @@ classdef tensor < dynOption
     end
 
     function T = set.how2plot(T,pC)
+      % symmetry is a handle class, so setting the convention on T.CS would
+      % change every other user of that same object. The class default of
+      % the CS property is one single specimenSymmetry shared by every
+      % tensor, so without a copy this leaked into all of them.
+      %
+      % Only specimenSymmetry is copied: crystalSymmetry inherits a sealed
+      % handle-identity eq from phaseItem, so a copy would no longer compare
+      % equal to the symmetry the caller passed in.
+      if isa(T.CS,'specimenSymmetry'), T.CS = copy(T.CS); end
       T.CS.how2plot = pC;
     end
 

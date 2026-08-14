@@ -111,7 +111,7 @@ over budget, trim from outside these before trimming inside them.
 | RBF approximation | `check_SO3FunRBFApproximation` at tests/ root — **known failure, #2588** |
 | `calcPoleFigure` superposition | `core/check_calcPoleFigureSuperposition` |
 | pole figure → ODF inversion | `slow/check_poleFigureInversion` |
-| tensor factories | `core/check_tensorFactories` |
+| tensor factories, `tensor` constructor arguments | `core/check_tensorFactories` |
 | `calcTensor` averaging | `slow/check_meanTensor` |
 | ODF export interfaces | `core/check_odfExport` |
 | `holdOn`/`holdRelease` semantics | `core/check_holdGuard` |

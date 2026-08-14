@@ -1,5 +1,6 @@
 function check_tensorFactories
-% check the static factories of the rank 4 tensor classes
+% check the static factories of the rank 4 tensor classes and the arguments
+% the tensor constructor accepts
 %
 % MATLAB gives a static method no way to learn which subclass it was called
 % on, so stiffnessTensor.rand resolved to tensor.rand and returned a plain
@@ -19,6 +20,7 @@ checkQuiet;
 checkShape;
 checkSymmetryArgument;
 checkNoInvalidFactories;
+checkPlottingConvention;
 
 disp('check_tensorFactories: passed');
 
@@ -130,5 +132,63 @@ for f = {'zeros','ones','nan'}
     '@stiffnessTensor/rand.m'], f{1}, class(T))
 
 end
+
+end
+
+% -------------------------------------------------------------------------
+function checkPlottingConvention
+% a plottingConvention may be passed positionally, and must stay local to
+% the tensor it was given to
+%
+% tensor stores how2plot on its CS, symmetry is a handle class, and the
+% class default of the CS property - specimenSymmetry.default - is one
+% single object shared by every tensor. Setting the convention without
+% copying first therefore silently changed the plotting frame of every
+% tensor constructed afterwards.
+
+M = diag([3 1 -1]);
+pC = plottingConvention('y↑→x');
+
+before = char(tensor(M,'rank',2).how2plot);
+assert(~strcmp(before,char(pC)), ...
+  ['check_tensorFactories: the test convention equals the default one, so ' ...
+  'it cannot detect a leak - pick another one'])
+
+% positionally, on its own and next to a symmetry and a named option
+T = tensor(M,'rank',2,pC);
+assert(strcmp(char(T.how2plot),char(pC)), ...
+  'check_tensorFactories: tensor(M,''rank'',2,pC) has convention %s', ...
+  char(T.how2plot))
+
+cs = crystalSymmetry('mmm');
+T = tensor(M,'rank',2,cs,pC,'name','foo');
+assert(strcmp(char(T.how2plot),char(pC)) && strcmp(T.opt.name,'foo'), ...
+  'check_tensorFactories: convention, symmetry and name do not survive together')
+
+% a crystalSymmetry is deliberately not copied - phaseItem seals eq to
+% handle identity, so a copy would stop comparing equal to what was passed
+assert(T.CS == cs, ...
+  'check_tensorFactories: tensor(M,...,cs,pC) no longer holds cs itself')
+
+% and through the copy constructor
+assert(strcmp(char(tensor(T).how2plot),char(pC)), ...
+  'check_tensorFactories: the copy constructor dropped the convention')
+
+% none of that may have touched any other tensor
+assert(strcmp(char(tensor(M,'rank',2).how2plot),before), ...
+  ['check_tensorFactories: constructing with a plotting convention leaked ' ...
+  'it into the next tensor'])
+
+% same for assigning the property afterwards
+T = tensor(M,'rank',2);
+T.how2plot = pC;
+assert(strcmp(char(T.how2plot),char(pC)), ...
+  'check_tensorFactories: T.how2plot = pC did not take')
+
+assert(strcmp(char(tensor(M,'rank',2).how2plot),before), ...
+  'check_tensorFactories: T.how2plot = pC leaked into the next tensor')
+
+assert(strcmp(char(specimenSymmetry.default.how2plot),before), ...
+  'check_tensorFactories: T.how2plot = pC changed specimenSymmetry.default')
 
 end
