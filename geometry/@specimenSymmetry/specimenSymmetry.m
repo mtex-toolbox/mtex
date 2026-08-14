@@ -44,11 +44,11 @@ methods
 
     s = s@symmetry(id,rot);
 
-    % reuse the registered session frame when the requested convention is
-    % exactly the one it carries - handle identity, so that mutating the
-    % default in place (plotx2east) keeps reaching this symmetry; fork an
-    % unregistered frame otherwise - never write a caller's convention
-    % through the shared session frame
+    % reuse the registered session frame when the requested convention
+    % equals the one it carries, so that plotx2east - which writes onto
+    % that frame - keeps reaching this symmetry; fork an unregistered
+    % frame otherwise - never write a caller's convention through the
+    % shared session frame
     s.frame = specimenSymmetry.frameFor(how2plot);
 
     if s.id > 16
@@ -166,8 +166,8 @@ methods (Static = true)
 
 
   function fr = frameFor(pC)
-    % the registered session frame when pC is exactly the convention it
-    % carries (handle identity), an unregistered fork otherwise
+    % the registered session frame when pC equals the convention it
+    % carries, an unregistered fork otherwise
     fr = specimenFrame.default;
     if pC ~= fr.how2plot
       fr = specimenFrame('measurement');

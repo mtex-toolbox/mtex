@@ -1,5 +1,11 @@
-classdef plottingConvention < matlab.mixin.Copyable
+classdef plottingConvention
 % class describing the alignment of a reference frame on the screen
+%
+% plottingConvention is a value class: assigning one always copies, so a
+% convention can never be changed behind the back of the data holding it.
+% What couples data to the session default is the shared referenceFrame -
+% see <specimenFrame.default.html specimenFrame.default> - not a shared
+% convention handle.
 %
 % Syntax
 %   % specify a custom plotting convention
@@ -13,10 +19,9 @@ classdef plottingConvention < matlab.mixin.Copyable
 %   pC = plottingConvention('z⊙→x')  % z points out of screen, x right
 %   pC = plottingConvention('y^->x') % same as 'y↑→x', ASCII arrows
 %
-%   % changing the default plotting convention - note that the default has
-%   % to be modified in place, plottingConvention.default.east = yvector
-%   % would replace it and detach all data that refers to it
-%   pC = plottingConvention.default; pC.east = yvector;
+%   % changing the default plotting convention - modify a copy and make
+%   % it the default (this is what plotx2east and friends do)
+%   pC = plottingConvention.default; pC.east = yvector; pC.makeDefault
 %
 %   % changing the plotting convention for a dataset
 %   % to be used in all future plotting commands
@@ -214,7 +219,7 @@ classdef plottingConvention < matlab.mixin.Copyable
       v.how2plot = pC;
     end
 
-    function set.outOfScreen(pC,n)
+    function pC = set.outOfScreen(pC,n)
       if angle(pC.rot * vector3d.Z,n) > 0.1*degree
         try
           pC.rot = rotation.map(pC.outOfScreen,n,pC.lastSet,pC.lastSet) * pC.rot;
@@ -229,7 +234,7 @@ classdef plottingConvention < matlab.mixin.Copyable
       v = -pC.rot * vector3d.Z;
       v.how2plot = pC;
     end
-    function set.intoScreen(pC,n)
+    function pC = set.intoScreen(pC,n)
       try
         pC.rot = rotation.map(pC.outOfScreen,-n,pC.lastSet,pC.lastSet) * pC.rot;
       catch
@@ -243,7 +248,7 @@ classdef plottingConvention < matlab.mixin.Copyable
       v = pC.rot * vector3d.X;
       v.how2plot = pC;
     end
-    function set.east(pC,e)
+    function pC = set.east(pC,e)
       if angle(pC.rot * vector3d.X,e) > 0.1*degree
         try
           pC.rot = rotation.map(pC.east,e,pC.lastSet,pC.lastSet) * pC.rot;
@@ -258,11 +263,11 @@ classdef plottingConvention < matlab.mixin.Copyable
       v = -pC.rot * vector3d.X; 
       v.how2plot = pC;
     end
-    function set.west(pC,w)
+    function pC = set.west(pC,w)
       try
-        pC.rot = rotation.map(pC.east,-w,pC.lastSet,pC.lastSet) * pC.rot; 
+        pC.rot = rotation.map(pC.east,-w,pC.lastSet,pC.lastSet) * pC.rot;
       catch
-        pC.rot = rotation.map(pC.east,-w) * pC.rot; 
+        pC.rot = rotation.map(pC.east,-w) * pC.rot;
       end
       pC.lastSet = w;
     end
@@ -271,18 +276,18 @@ classdef plottingConvention < matlab.mixin.Copyable
       v = pC.rot * vector3d.Y(pC); 
       %v.how2plot = pC;
     end
-    function set.north(pC,v)
+    function pC = set.north(pC,v)
       try
-        pC.rot = rotation.map(pC.north,v,pC.lastSet,pC.lastSet) * pC.rot; 
+        pC.rot = rotation.map(pC.north,v,pC.lastSet,pC.lastSet) * pC.rot;
       catch
-        pC.rot = rotation.map(pC.north,v) * pC.rot; 
+        pC.rot = rotation.map(pC.north,v) * pC.rot;
       end
       pC.lastSet = v;
     end
     
     function v = get.south(pC), v = -pC.rot * vector3d.Y; end
 
-    function set.south(pC,v)
+    function pC = set.south(pC,v)
       try
         pC.rot = rotation.map(pC.north,-v,pC.lastSet,pC.lastSet) * pC.rot;
       catch ME
@@ -305,13 +310,25 @@ classdef plottingConvention < matlab.mixin.Copyable
 
     end
 
+    function out = eq(pC,pC2)
+      % as a value class equality means equal alignment on screen -
+      % there is no handle identity to compare
+      out = isa(pC,'plottingConvention') && isapprox(pC,pC2);
+    end
+
+    function out = ne(pC,pC2)
+      out = ~eq(pC,pC2);
+    end
+
     function pC = matchDefault(pC)
-      % reuse the default convention if it describes the same alignment
+      % normalize to the default convention if it describes the same
+      % alignment
       %
-      % Data that is plotted the default way should refer to the one
-      % default instance instead of an equivalent copy of it. Changing
-      % <plottingConvention.default.html plottingConvention.default>, e.g.
-      % by |plotx2north|, then applies to this data as well.
+      % Historically this re-aliased to the default handle; since
+      % plottingConvention is a value class it merely returns an equal
+      % value, and what makes data follow the default is membership in
+      % the default frame - see vector3d/set.how2plot. Kept for
+      % compatibility.
 
       pCd = plottingConvention.default;
       if isapprox(pC,pCd), pC = pCd; end

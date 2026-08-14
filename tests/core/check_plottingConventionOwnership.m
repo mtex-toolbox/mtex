@@ -78,27 +78,23 @@ assert(strcmp(char(cs.how2plot),csBefore) && ...
   strcmp(char(cs.frame.how2plot),csBefore), ...
   'check_plottingConventionOwnership: cs.Laue.how2plot wrote through the shared frame')
 
-% the in-place default workflow keeps working: a symmetry without an
-% override follows the very handle plotx2east and friends mutate
-pCd = specimenSymmetry.default.how2plot;
-rot0 = pCd.rot; last0 = pCd.lastSet;
-restoreDefault = onCleanup(@() setBack(pCd,rot0,last0));
+% the default workflow: a symmetry without an override holds the session
+% frame, and plotx2north writes the new convention onto that frame - the
+% symmetry follows without any shared convention handle (the convention
+% is a value class)
+pCd0 = plottingConvention.default;   % a value snapshot
+restoreDefault = onCleanup(@() plottingConvention.default(pCd0));
 
 ssd = specimenSymmetry;
-assert(ssd.how2plot == pCd, ...
-  'check_plottingConventionOwnership: a fresh specimenSymmetry does not alias the default')
+assert(ssd.frame == specimenFrame.default, ...
+  'check_plottingConventionOwnership: a fresh specimenSymmetry does not hold the session frame')
 
 plotx2north
-assert(ssd.how2plot == pCd && specimenSymmetry.default.how2plot == pCd, ...
-  'check_plottingConventionOwnership: plotx2north replaced the default handle instead of mutating it')
-assert(angle(pCd.rot,rot0) > 1e-3, ...
-  'check_plottingConventionOwnership: plotx2north did not mutate the default in place')
+assert(plottingConvention.default ~= pCd0, ...
+  'check_plottingConventionOwnership: plotx2north did not change the default')
+assert(ssd.how2plot == plottingConvention.default, ...
+  'check_plottingConventionOwnership: plotx2north did not reach the fresh specimenSymmetry')
 
-end
-
-function setBack(pC,rot0,last0)
-pC.rot = rot0;
-pC.lastSet = last0;
 end
 
 % =========================================================================

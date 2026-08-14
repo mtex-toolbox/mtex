@@ -224,9 +224,9 @@ classdef vector3d < dynOption
       if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
 
       if ~isempty(pC) && pC == plottingConvention.default
-        % the session default itself means membership in the default
-        % frame - the data then follows the default under both in-place
-        % mutation (plotx2east) and replacement (plottingConvention.default)
+        % a convention equal to the session default means membership in
+        % the default frame - the data then follows whatever plotx2east
+        % or plottingConvention.default(pC) later make the default
         v.frame = specimenFrame.default;
         v.how2plotPrivate = [];
       else

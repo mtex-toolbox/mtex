@@ -3,3 +3,4 @@ function plotx2east
 
 how2plot = plottingConvention.default;
 how2plot.east = xvector;
+how2plot.makeDefault;

@@ -35,7 +35,7 @@ function [h,mP] = plot(grains,varargin)
 % --------------------- compute color coding ------------------------
 
 % ensure we do not plot perpendicular to the slice
-pC = grains.how2plot.copy;
+pC = grains.how2plot; % a value class - this is already a private copy
 if isnull(dot(pC.outOfScreen,grains.N)), pC.outOfScreen = grains.N; end
 
 % create a new plot
