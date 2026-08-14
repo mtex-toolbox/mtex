@@ -99,7 +99,10 @@ pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y,vector3d.Z],...
   {'RD','TD','ND'},'BackgroundColor','w','tag','axesLabels',varargin{:});
 storepfA = getMTEXpref('pfAnnotations');
 setMTEXpref('pfAnnotations',pfAnnotations);
-plottingConvention.default("y←↑x");
+
+% the resulting texture lives in the rolling frame - RD to the north, TD
+% to the west and ND out of the page
+specimenFrame.rolling.makeDefault
 
 plotPDF(ori,Miller({0,0,1},{1,1,1},cs),'contourf')
 mtexColorbar

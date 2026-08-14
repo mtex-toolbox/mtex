@@ -2,8 +2,9 @@
 %
 %
 %% Basic Settings
-% display pole figure plots with RD on top and ND west
-plottingConvention.default("y←↑x");
+% we work in the rolling frame - RD to the north, TD to the west and ND
+% out of the page
+specimenFrame.rolling.makeDefault
 
 % store old annotation style
 storepfA = getMTEXpref('pfAnnotations');

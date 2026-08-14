@@ -67,9 +67,9 @@ classdef specimenFrame < referenceFrame
     function sF = rolling
       % rolling direction, transverse direction, normal direction,
       % seeded with the typical rolling convention - RD to the north,
-      % TD to the right
+      % TD to the west and hence ND out of the page
       sF = specimenFrame.named('rolling',{'RD','TD','ND'});
-      if isempty(sF.how2plot), sF.how2plot = plottingConvention('x↑→y'); end
+      if isempty(sF.how2plot), sF.how2plot = plottingConvention('y←↑x'); end
     end
 
     function sF = geological
