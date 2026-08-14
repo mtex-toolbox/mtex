@@ -57,8 +57,11 @@ classdef specimenFrame < referenceFrame
   methods (Static = true)
 
     function sF = measurement
-      % the frame of the instrument the data was measured in
-      sF = specimenFrame.named('measurement',{'X','Y','Z'});
+      % the frame the data was measured in, with its axes named in the
+      % Oxford notation X1, Y1, Z1 - the sample frame CS1, which is what
+      % imported EBSD data refers to (the acquisition surface CS0 is
+      % reported by the Oxford loaders but not applied)
+      sF = specimenFrame.named('measurement',{'X1','Y1','Z1'});
     end
 
     function sF = rolling

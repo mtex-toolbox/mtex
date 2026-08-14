@@ -163,10 +163,11 @@ methods (Static = true)
 
   function fr = frameFor(pC)
     % the registered session frame when pC equals the convention it
-    % carries, an unregistered fork otherwise
+    % carries, an unregistered fork otherwise - the fork keeps the name
+    % and the axes names of the session frame
     fr = specimenFrame.default;
     if pC ~= fr.how2plot
-      fr = specimenFrame('measurement');
+      fr = copy(fr);
       fr.how2plot = pC;
     end
   end

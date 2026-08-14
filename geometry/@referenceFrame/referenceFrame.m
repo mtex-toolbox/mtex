@@ -99,7 +99,7 @@ classdef referenceFrame < matlab.mixin.Copyable
         disp(['  ' rf.axesNames{k} ': ' char(b(k))]);
       end
       if isa(rf.how2plot,'plottingConvention')
-        disp(['  how2plot: ' char(rf.how2plot,'compact')]);
+        disp(['  how2plot: ' conventionChar(rf)]);
       end
       disp(' ');
     end
