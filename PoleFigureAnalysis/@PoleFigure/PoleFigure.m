@@ -106,10 +106,19 @@ classdef PoleFigure < dynProp & dynOption
     end
 
     function pf = set.how2plot(pf,pC)
+      % accept a string like 'y↑→x' as a shortcut, as symmetry does
+      if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
       for k=1:length(pf.allR)
         pf.allR{k}.how2plot = pC;
       end
-      pf.SS.how2plot = pC;
+      % never write the convention through the SS handle - the class
+      % default of SS is one shared specimenSymmetry instance, so this
+      % reached every pole figure that never set an SS of its own; a copy
+      % keeps the point group and still compares equal (ADR 0003)
+      if pf.SS.how2plot ~= pC
+        pf.SS = copy(pf.SS);
+        pf.SS.how2plot = pC;
+      end
     end
 
     function h = get.h(pf)

@@ -24,6 +24,8 @@ function check_plottingConventionOwnership
 checkTensor;
 checkS2Fun;
 checkTensorToS2Fun;
+checkOrientationMap;
+checkPoleFigure;
 
 disp('check_plottingConventionOwnership: passed');
 
@@ -135,5 +137,92 @@ close all
 
 assert(~isempty(sP) && strcmp(char(sP.proj.pC),char(pC)), ...
   'check_plottingConventionOwnership: plot(T) did not use the convention of T')
+
+end
+
+% -------------------------------------------------------------------------
+function checkOrientationMap
+% orientation.map translates the conventions of its vector arguments onto
+% the orientation (a20c992ee) - but it used to do so by writing through
+% shared symmetry handles: through specimenSymmetry.default when no
+% symmetry was passed, and through the caller's own symmetry when one was
+
+pC = plottingConvention('z↑→x');
+dflt = char(specimenSymmetry.default.how2plot);
+assert(~strcmp(dflt,char(pC)), ...
+  ['check_plottingConventionOwnership: the test convention equals the ' ...
+  'default one, so it cannot detect a leak - pick another one'])
+
+% two plain vector3d arguments carrying a non-default convention
+u = vector3d.X; u.how2plot = pC;
+v = vector3d.Z; v.how2plot = pC;
+ori = orientation.map(u,v);
+
+% the orientation carries the convention on both sides...
+assert(strcmp(char(ori.CS.how2plot),char(pC)) && ...
+  strcmp(char(ori.SS.how2plot),char(pC)), ...
+  'check_plottingConventionOwnership: orientation.map dropped the convention')
+
+% ...and the shared default is untouched
+assert(strcmp(char(specimenSymmetry.default.how2plot),dflt), ...
+  'check_plottingConventionOwnership: orientation.map repointed specimenSymmetry.default')
+
+% a caller-passed symmetry must not be written on either
+ss = specimenSymmetry('222');
+ssPC = char(ss.how2plot);
+h = Miller(1,0,0,crystalSymmetry('m-3m'));
+ori = orientation.map(h,v,ss);
+
+assert(strcmp(char(ori.SS.how2plot),char(pC)), ...
+  'check_plottingConventionOwnership: orientation.map(h,v,ss) dropped the convention')
+
+assert(strcmp(char(ss.how2plot),ssPC), ...
+  'check_plottingConventionOwnership: orientation.map wrote the convention onto the caller''s ss')
+
+% the fork still compares equal to what was passed - @symmetry/eq is id based
+assert(ori.SS == ss, ...
+  'check_plottingConventionOwnership: the forked SS no longer compares equal to ss')
+
+end
+
+% -------------------------------------------------------------------------
+function checkPoleFigure
+% PoleFigure.SS defaults to one shared class-default specimenSymmetry
+% instance, and set.how2plot used to write the convention through it -
+% reaching every pole figure that never set an SS of its own
+
+pC = plottingConvention('z↑→x');
+cs = crystalSymmetry('m-3m');
+h = Miller(1,0,0,cs);
+r = vector3d.rand(10);
+pf = PoleFigure(h,r,ones(10,1));
+
+ssShared = pf.SS; % the shared class-default instance
+before = char(ssShared.how2plot);
+assert(~strcmp(before,char(pC)), ...
+  ['check_plottingConventionOwnership: the test convention equals the ' ...
+  'default one, so it cannot detect a leak - pick another one'])
+
+pf.how2plot = pC;
+
+assert(strcmp(char(pf.how2plot),char(pC)), ...
+  'check_plottingConventionOwnership: pf.how2plot = pC did not take')
+
+% the pole figure''s own SS follows, on a forked copy
+assert(strcmp(char(pf.SS.how2plot),char(pC)), ...
+  'check_plottingConventionOwnership: pf.SS does not carry the convention')
+
+% but the shared instance and the next pole figure are untouched
+assert(strcmp(char(ssShared.how2plot),before), ...
+  'check_plottingConventionOwnership: pf.how2plot wrote through the shared SS')
+
+pf2 = PoleFigure(h,r,ones(10,1));
+assert(strcmp(char(pf2.SS.how2plot),before), ...
+  'check_plottingConventionOwnership: pf.how2plot leaked into the next PoleFigure')
+
+% the string shortcut works as on every other class
+pf.how2plot = 'y↑→x';
+assert(strcmp(char(pf.how2plot),'y↑→x'), ...
+  'check_plottingConventionOwnership: pf.how2plot = char did not take')
 
 end
