@@ -20,6 +20,7 @@ checkLinearField;
 checkBitIdenticalToSquare;
 checkEdgeAndHoles;
 checkLeastSquaresOnLinear;
+checkStencilChoice;
 checkShapeFollowsInput;
 
 disp('gradient: all checks passed');
@@ -146,23 +147,129 @@ end
 
 % =========================================================================
 function checkLeastSquaresOnLinear
-% on an exactly linear field the one sided and the least squares form agree
+% on an exactly linear field every stencil agrees, on square and on hex
+%
+% Any stencil with two independent directions fits a linear field exactly,
+% so this pins that all three implement the same derivative - it cannot,
+% by construction, tell the stencils apart. checkStencilChoice does that.
 
 cs = crystalSymmetry('m-3m');
-pos = makePositions('square rotated 30');
+
+for geom = {'square rotated 30','hex'}
+
+  pos = makePositions(geom{1});
+  ori = orientation.byAxisAngle(zvector,0.002*pos.x + 0.001*pos.y,cs);
+  ebsd = EBSD(pos,ori,ones(length(pos),1),{cs},struct);
+  ebsd.unitCell = unitCellOf(geom{1});
+
+  inner = interiorMask(ebsd);
+  g1 = ebsd.gradient;
+
+  for st = {'oneSided','1hop','full'}
+
+    g2 = ebsd.gradient('stencil',st{1});
+    d = max(norm(vector3d(g1(inner,:)) - vector3d(g2(inner,:))),[],'all');
+
+    assert(d < 1e-8, ...
+      ['check_gradient: %s - the ''%s'' stencil differs from one sided by ' ...
+       '%.3g on an exactly linear field, where every stencil must be exact'], ...
+      geom{1}, st{1}, d);
+
+  end
+
+  % the documented alias
+  gA = ebsd.gradient('leastSquares');
+  gH = ebsd.gradient('stencil','1hop');
+  ok = ~isnan(gA) & ~isnan(gH);
+  assert(isequaln(isnan(gA),isnan(gH)) && ...
+      max(norm(vector3d(gA(ok)) - vector3d(gH(ok))),[],'all') < 1e-14, ...
+    'check_gradient: %s - ''leastSquares'' is not the same as ''1hop''',geom{1});
+
+end
+
+end
+
+% =========================================================================
+function checkStencilChoice
+% the three stencils really are three different neighbourhoods
+%
+% The linear field check above passes for any of them, so on its own it
+% would not notice the stencil being ignored, or reverting to the hardcoded
+% six offset list that made 'leastSquares' asymmetric on a square grid
+% (4 axial plus TWO of the four diagonals - see EBSD/gradient).
+%
+% Two things are pinned: coverage is strictly ordered, and the two diagonal
+% pairs are treated alike.
+%
+% NB rotating the whole map does NOT test the second one. The stencil lives
+% in lattice index space and latticeBasis re-derives the basis from the
+% rotated unit cell, so the map and its lattice frame turn together and the
+% NaN pattern is invariant for any stencil whatsoever - the old asymmetric
+% list passes that test unchanged. What does discriminate is removing one
+% diagonal pair or the other from an otherwise singular pixel: a stencil
+% using (1,-1),(-1,1) but not (1,1),(-1,-1) rescues the pixel in one case
+% and not in the mirrored one.
+
+cs = crystalSymmetry('m-3m');
+pos = makePositions('square axis aligned');
 ori = orientation.byAxisAngle(zvector,0.002*pos.x + 0.001*pos.y,cs);
-ebsd = EBSD(pos,ori,ones(length(pos),1),{cs},struct);
-ebsd.unitCell = unitCellOf('square rotated 30');
 
-g1 = ebsd.gradient;
-g2 = ebsd.gradient('leastSquares');
+% Deliberately isolate one pixel along a line. makePositions lays the grid
+% out as ndgrid(0:n-1,0:n-1) with x from j and y from i, so the linear index
+% of (i,j) is i + j*n + 1. Removing the two j-neighbours of the target
+% leaves it with only its two i-neighbours, which are collinear - so the
+% 1hop fit is singular there and yields NaN, while 'full' still has the four
+% diagonals and solves it. Punching random holes does not achieve this: with
+% 4 axial neighbours a pixel stays solvable unless it loses a whole
+% direction.
+n0 = 25; ind = @(i,j) i + j*n0 + 1;
+target = [12 12];
 
-inner = interiorMask(ebsd);
-d = max(norm(vector3d(g1(inner,:)) - vector3d(g2(inner,:))),[],'all');
+keep = true(length(pos),1);
+keep(ind(target(1),target(2)-1)) = false;
+keep(ind(target(1),target(2)+1)) = false;
 
-assert(d < 1e-8, ...
-  ['check_gradient: one sided and least squares differ by %.3g on an ' ...
-  'exactly linear field, where both must be exact'], d);
+ebsd = EBSD(pos(keep),ori(keep),ones(nnz(keep),1),{cs},struct);
+ebsd.unitCell = unitCellOf('square axis aligned');
+
+% Now the two mirrored configurations. Both keep the target singular in its
+% axial directions; one removes the main diagonal neighbours (+d,+d),
+% (-d,-d), the other the anti diagonal (+d,-d), (-d,+d). x runs with j and y
+% with i, so (+d,+d) is (i+1,j+1) and (+d,-d) is (i-1,j+1).
+st = {'oneSided','1hop','full'};
+
+mainDiag = [ind(target(1)+1,target(2)+1), ind(target(1)-1,target(2)-1)];
+antiDiag = [ind(target(1)-1,target(2)+1), ind(target(1)+1,target(2)-1)];
+
+% this one first: it is the specific claim, and it is the assertion the old
+% asymmetric stencil violates
+for k = 2:3
+
+  nDrop = zeros(1,2); drop = {mainDiag,antiDiag};
+
+  for c = 1:2
+    kp = keep;
+    kp(drop{c}) = false;
+    e = EBSD(pos(kp),ori(kp),ones(nnz(kp),1),{cs},struct);
+    e.unitCell = unitCellOf('square axis aligned');
+    nDrop(c) = nnz(isnan(e.gradient('stencil',st{k})));
+  end
+
+  assert(nDrop(1) == nDrop(2), ...
+    ['check_gradient: the ''%s'' stencil treats the two diagonals ' ...
+     'differently - dropping the main diagonal leaves %d NaN, dropping the ' ...
+     'anti diagonal %d. A stencil must use either both pairs or neither.'], ...
+    st{k}, nDrop(1), nDrop(2));
+
+end
+
+% and the coverage ordering
+n = zeros(1,3);
+for k = 1:3, n(k) = nnz(isnan(ebsd.gradient('stencil',st{k}))); end
+
+assert(n(1) > n(2) && n(2) > n(3), ...
+  ['check_gradient: the stencils should be strictly ordered in coverage, ' ...
+   'got oneSided %d, 1hop %d, full %d'], n(1), n(2), n(3));
 
 end
 

@@ -7,9 +7,12 @@ function [g,A] = gradient(ebsd,varargin)
 % A rotated or sheared grid is handled by the same code.
 %
 % Syntax
-%   g = gradient(ebsd)                    % one sided (default)
-%   g = gradient(ebsd,'leastSquares')     % fit over the whole 1-hop stencil
-%   g = gradient(ebsd,'basis',[a1 a2])    % use an explicit basis
+%   g = gradient(ebsd)                        % one sided (default)
+%   g = gradient(ebsd,'stencil','oneSided')   % the same, explicitly
+%   g = gradient(ebsd,'stencil','1hop')       % least squares, 1-hop stencil
+%   g = gradient(ebsd,'stencil','full')       % least squares, full stencil
+%   g = gradient(ebsd,'leastSquares')         % alias for 'stencil','1hop'
+%   g = gradient(ebsd,'basis',[a1 a2])        % use an explicit basis
 %   [g,A] = gradient(ebsd)
 %
 % Input
@@ -21,20 +24,45 @@ function [g,A] = gradient(ebsd,varargin)
 %  A - 2 x 2 basis actually used, columns a1, a2 (map plane components)
 %
 % Options
-%  leastSquares - least squares fit over every available 1-hop neighbour,
-%                 which in the interior is the central difference. Better
-%                 behaved, but it moves every GND / WBV number, so it is
-%                 opt-in and one sided stays the default.
-%  basis        - 1x2 @vector3d, use these as (a1,a2) instead of the ones
-%                 derived from the unit cell
+%  stencil - which neighbours the gradient is computed from, see below
+%  basis   - 1x2 @vector3d, use these as (a1,a2) instead of the ones derived
+%            from the unit cell
+%
+% Flags
+%  leastSquares - alias for |'stencil','1hop'|
 %
 % Description
-% The one sided form takes the neighbour at +a_k, and falls back to -a_k
+% Three stencils are available. All of them skip a neighbour that is not
+% comparable - outside the map, notIndexed, a different phase, or across a
+% grain boundary where grainId is known.
+%
+% |'oneSided'| (default) takes the neighbour at +a_k, and falls back to -a_k
 % (negated) only where +a_k lies outside the map. A missing neighbour inside
-% the map - a notIndexed hole, a different phase, the far side of a grain
-% boundary - yields NaN and does NOT fall back, which is what the matrix
-% based @EBSDsquare/gradient1 does and what keeps existing GND / WBV numbers
-% unchanged.
+% the map yields NaN and does NOT fall back, which is what the matrix based
+% @EBSDsquare/gradient1 does and what keeps existing GND / WBV numbers
+% unchanged. This is why it stays the default: the other two move every
+% number that depends on the gradient.
+%
+% |'1hop'| is a least squares fit over the lattice's own neighbour stencil,
+% |ebsd.lattice.stencil| - the 4 axial neighbours of a square grid, the 6
+% neighbours of a hex one. Symmetric, and in the interior of a square grid
+% exactly the central difference.
+%
+% |'full'| is the same fit over all eight offsets in {-1,0,1}^2, i.e. the
+% 1-hop stencil plus the diagonals. On a square grid that is the full 8
+% neighbourhood; on a hex grid it adds the two second nearest neighbours
+% along a1+a2. Still symmetric, and better conditioned - a pixel needs two
+% independent directions to be solvable at all, so the wider stencil leaves
+% far fewer pixels NaN (18 against 374 on forsterite). The fit uses each
+% neighbour's true physical offset, so mixing the two distances is handled
+% correctly, but note it does weight every neighbour equally rather than by
+% distance.
+%
+% Before MTEX 7 |'leastSquares'| used a hardcoded six offset list on every
+% grid. That is the hex stencil, and on a square grid it is 4 axial plus TWO
+% of the four diagonals - an asymmetric neighbourhood which biased the fit
+% along one diagonal, by up to 0.042 (mean 0.0009) on forsterite. Its comment
+% claimed those offsets did not exist on a square lattice; they do.
 %
 % See also
 % EBSD/gradientX EBSD/curvature EBSD/calcGND EBSD/lattice
@@ -69,9 +97,34 @@ lookup = @(IJ,use) lookupAt(IJ,use,ij2ebsd,ij2slot,nE);
 step = [norm(a1), norm(a2)];
 e = [1 0; 0 1];
 
-if check_option(varargin,'leastSquares')
-  g = lsqGradient(ebsd,ij,inBox,lookup,A,a1,a2,nE);
-  return
+% --- which stencil ------------------------------------------------------
+stencil = get_option(varargin,'stencil','oneSided');
+if check_option(varargin,'leastSquares'), stencil = '1hop'; end
+
+switch lower(stencil)
+
+  case 'onesided'
+    % handled below
+
+  case '1hop'
+    g = lsqGradient(ebsd,ij,inBox,lookup,A,a1,a2,nE,ebsd.lattice.stencil);
+    return
+
+  case 'full'
+    % every offset in {-1,0,1}^2 except the centre. On a square lattice
+    % that is the 8 neighbourhood, on a hex one the 6 neighbours plus the
+    % two second nearest along a1+a2 - symmetric either way, which the old
+    % hardcoded six offset list was not.
+    [u,v] = ndgrid(-1:1,-1:1);
+    full = [u(:) v(:)];
+    g = lsqGradient(ebsd,ij,inBox,lookup,A,a1,a2,nE,full(any(full,2),:));
+    return
+
+  otherwise
+    error('MTEX:EBSD:gradient:stencil', ...
+      ['Unknown stencil ''%s''. Use ''oneSided'' (default), ''1hop'' or ' ...
+       '''full''.'], stencil);
+
 end
 
 % --- one sided ----------------------------------------------------------
@@ -171,18 +224,17 @@ end
 end
 
 % =========================================================================
-function g = lsqGradient(ebsd,ij,inBox,lookup,A,a1,a2,nE)
-% least squares fit of the gradient over every available 1-hop neighbour
+function g = lsqGradient(ebsd,ij,inBox,lookup,A,a1,a2,nE,stencil)
+% least squares fit of the gradient over the given neighbour stencil
 %
 % For each pixel solve  min_G sum_q |G d_q - h_q|^2  with d_q the 2d offset
 % to neighbour q and h_q = log(ori(q),ori(p)). With a symmetric pair present
 % this is exactly the central difference. Accumulated as the 2x2 normal
 % matrix sum(d d') and the 3x2 right hand side sum(h d'), then inverted in
 % closed form.
-
-stencil = [1 0; -1 0; 0 1; 0 -1; 1 -1; -1 1];
-% the hex stencil contains the square one, and offsets that do not exist on
-% a square lattice simply find no neighbour, so one list serves both
+%
+% stencil is passed in rather than chosen here - see the caller for the
+% three available neighbourhoods.
 
 M11 = zeros(nE,1); M12 = zeros(nE,1); M22 = zeros(nE,1);
 Rx = zeros(nE,2); Ry = zeros(nE,2); Rz = zeros(nE,2);
@@ -214,8 +266,12 @@ for s = 1:size(stencil,1)
 
 end
 
+% fewer than 2 independent neighbour directions. Tested relative to
+% M11*M22, not against zero: with the 'full' stencil the offsets carry two
+% different lengths, so a near collinear set can leave det small but not
+% zero, and inverting that returns a huge gradient rather than a NaN.
 det = M11.*M22 - M12.^2;
-bad = ~(abs(det) > 0);           % fewer than 2 independent neighbours
+bad = ~(det > 1e-10 * M11 .* M22);
 
 % G = R * inv(M), per pixel; G is 3 x 2 (tangent component x map direction)
 iv = @(R) deal((R(:,1).*M22 - R(:,2).*M12)./det, ...
