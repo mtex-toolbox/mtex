@@ -398,15 +398,16 @@
 %
 %   ebsd.how2plot = 'y↑→x'            % also 'x←↑y', 'z⊙→x', ASCII 'y^->x'
 %
-% Data plotted the default way now refers to the one default convention
-% instead of a copy of it, hence changing the default also turns data imported
-% before. Since @plottingConvention is a handle class this requires modifying
-% the default in place - assigning to it installs a new default and detaches
-% all data still referring to the old one
+% Plotting conventions are carried by reference frames: data plotted the
+% default way follows the session's default frame, hence changing the
+% default convention also turns data imported before
 %
-%   pC = plottingConvention.default; pC.east = yvector;   % turns all data
-%   plottingConvention.default.east = yvector;            % does not
-%   plottingConvention.default('y↑→x')                    % a new default
+%   plotx2east                                             % turns all data
+%   plottingConvention.default('y↑→x')                     % the same by a string
+%   pC = plottingConvention.default; pC.east = yvector; pC.makeDefault
+%
+% A convention assigned to a single object becomes an own reference frame
+% of that object and stays untouched by later changes of the default.
 %
 % *Approximation, Sampling and Clustering*
 %
