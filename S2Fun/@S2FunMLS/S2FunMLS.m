@@ -250,7 +250,7 @@ classdef S2FunMLS < S2Fun
         S2F = S2F.init_reg_params;
       end
 
-      S2F.s.how2plot = nodes.how2plot;
+      S2F.how2plot = nodes.how2plot;
     end
 
     function S2F = set.w(S2F, weightfun)

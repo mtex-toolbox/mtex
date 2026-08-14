@@ -40,7 +40,7 @@ classdef S2FunTri < S2Fun
       
       sF.values = reshape(values,numel(sF.vertices),[]);
       
-      sF.s.how2plot = nodes.how2plot;
+      sF.how2plot = nodes.how2plot;
 
     end
     

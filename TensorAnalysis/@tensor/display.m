@@ -1,7 +1,8 @@
 function display(T,varargin)
 % standard output
 
-displayClass(T,inputname(1),'moreInfo',char(T.CS,'compact'),varargin{:});
+% T.how2plot, not T.CS.how2plot - the convention lives on the tensor
+displayClass(T,inputname(1),'moreInfo',char(T.CS,'compact',T.how2plot),varargin{:});
 
 % collect tensor properties
 props = fieldnames(T.opt);

@@ -7,6 +7,12 @@ classdef tensor < dynOption
     doubleConvention = false %
   end
 
+  properties (Hidden = true)
+    % the plotting convention of this tensor, empty means follow the one of
+    % CS - see get.how2plot
+    how2plotPrivate = []
+  end
+
   properties (Dependent = true)
     isSymmetric
     isSkewSymmetric
@@ -51,7 +57,10 @@ classdef tensor < dynOption
           T.doubleConvention = M.doubleConvention;
         end
         T.opt = M.opt;
-        
+        % the convention lives on the tensor, so it has to be copied over -
+        % it no longer rides along on CS
+        T.how2plotPrivate = M.how2plotPrivate;
+
         % extract additional properties
         varargin = delete_option(varargin,'doubleConvention');
         varargin = delete_option(varargin,'rank',1);
@@ -164,20 +173,23 @@ classdef tensor < dynOption
     end
 
     function pC = get.how2plot(T)
-      pC = T.CS.how2plot;
+      % a tensor that was not given a convention of its own follows its
+      % reference system, so setting CS.how2plot keeps working as before
+      pC = T.how2plotPrivate;
+      if isempty(pC), pC = T.CS.how2plot; end
     end
 
     function T = set.how2plot(T,pC)
-      % symmetry is a handle class, so setting the convention on T.CS would
-      % change every other user of that same object. The class default of
-      % the CS property is one single specimenSymmetry shared by every
-      % tensor, so without a copy this leaked into all of them.
+      % stored on the tensor, never on T.CS: symmetry is a handle class and
+      % the class default of CS is one single specimenSymmetry shared by
+      % every tensor, so writing the convention through CS changed the
+      % plotting frame of unrelated tensors. Copying CS instead is not an
+      % option either - crystalSymmetry inherits a sealed handle-identity eq
+      % from phaseItem, so a copy stops comparing equal to what was passed in.
       %
-      % Only specimenSymmetry is copied: crystalSymmetry inherits a sealed
-      % handle-identity eq from phaseItem, so a copy would no longer compare
-      % equal to the symmetry the caller passed in.
-      if isa(T.CS,'specimenSymmetry'), T.CS = copy(T.CS); end
-      T.CS.how2plot = pC;
+      % accept a string like 'y↑→x' as a shortcut, as symmetry does
+      if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
+      T.how2plotPrivate = pC;
     end
 
     function x = x(t)

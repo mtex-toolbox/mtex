@@ -53,11 +53,13 @@ if nargin == 1 % the isotropic case
 elseif nargin == 2 || isempty(h)
   
   E = S2FunHarmonicSym.quadrature(@(u) shearModulus(S,h,u),'bandwidth',4,S.CS);
-    
+  E.how2plot = S.how2plot;
+
 elseif isempty(u)
 
   E = S2FunHarmonicSym.quadrature(@(u) shearModulus(S,h,u),'bandwidth',4,S.CS);
-    
+  E.how2plot = S.how2plot;
+
 else
 
   % the anisotropic shear modulus

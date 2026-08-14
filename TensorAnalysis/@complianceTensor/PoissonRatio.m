@@ -31,11 +31,13 @@ end
 if nargin == 1 || isempty(x)
   
   nu = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(S,v,y),'bandwidth',4,S.CS);
-    
+  nu.how2plot = S.how2plot;
+
 elseif nargin <= 2 || isempty(y)
 
   nu = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(S,x,v),'bandwidth',4,S.CS);
-    
+  nu.how2plot = S.how2plot;
+
 else
 
   % compute tensor product

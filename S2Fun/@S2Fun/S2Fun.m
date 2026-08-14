@@ -10,9 +10,15 @@ properties (Abstract = true)
   isReal
 end
 
-properties (Dependent = true)  
+properties (Dependent = true)
   CS, SS   % crystal / specimen symmetry - both refer to s
-  how2plot % plotting convention 
+  how2plot % plotting convention
+end
+
+properties (Hidden = true)
+  % the plotting convention of this function, empty means follow the one of
+  % s - see get.how2plot
+  how2plotPrivate = []
 end
 
    
@@ -23,11 +29,21 @@ end
 methods
   
   function pC = get.how2plot(sF)
-    pC = sF.s.how2plot;
+    % a function that was not given a convention of its own follows its
+    % reference system, so setting s.how2plot keeps working as before
+    pC = sF.how2plotPrivate;
+    if isempty(pC), pC = sF.s.how2plot; end
   end
 
   function sF = set.how2plot(sF,pC)
-    sF.s.how2plot = pC;
+    % stored on the function, never on sF.s: symmetry is a handle class and
+    % the class default of s is one single specimenSymmetry shared by every
+    % S2Fun, so writing the convention through s changed the plotting frame
+    % of unrelated functions
+    %
+    % accept a string like 'y↑→x' as a shortcut, as symmetry does
+    if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
+    sF.how2plotPrivate = pC;
   end
 
   function CS = get.CS(sF)

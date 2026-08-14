@@ -59,8 +59,9 @@ else
   % get plotting convention
   how2plot = getClass(varargin,'plottingConvention',nodes.how2plot);
   if sF.s.how2plot ~= how2plot && isempty(getClass(varargin,'symmetry'))
-    sF.s = specimenSymmetry;
-    sF.s.how2plot = how2plot;
+    % the convention now lives on the function, so there is no need to swap
+    % in a fresh symmetry just to avoid writing through the shared default
+    sF.how2plot = how2plot;
   end
 end
 

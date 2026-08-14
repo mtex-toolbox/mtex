@@ -140,11 +140,12 @@ function checkPlottingConvention
 % a plottingConvention may be passed positionally, and must stay local to
 % the tensor it was given to
 %
-% tensor stores how2plot on its CS, symmetry is a handle class, and the
-% class default of the CS property - specimenSymmetry.default - is one
-% single object shared by every tensor. Setting the convention without
-% copying first therefore silently changed the plotting frame of every
-% tensor constructed afterwards.
+% tensor used to store how2plot on its CS. symmetry is a handle class and
+% the class default of the CS property - specimenSymmetry.default - is one
+% single object shared by every tensor, so that silently changed the
+% plotting frame of every tensor constructed afterwards, and of whatever
+% else held the same symmetry. The convention now lives on the tensor, and
+% falls back to CS only when it was never set.
 
 M = diag([3 1 -1]);
 pC = plottingConvention('y↑→x');
@@ -160,18 +161,31 @@ assert(strcmp(char(T.how2plot),char(pC)), ...
   'check_tensorFactories: tensor(M,''rank'',2,pC) has convention %s', ...
   char(T.how2plot))
 
+% a crystalSymmetry derives its own convention from the crystal axes - for
+% mmm that is y↑→x, so the check below needs one that differs from both it
+% and the specimen default
 cs = crystalSymmetry('mmm');
-T = tensor(M,'rank',2,cs,pC,'name','foo');
-assert(strcmp(char(T.how2plot),char(pC)) && strcmp(T.opt.name,'foo'), ...
+pCs = plottingConvention('z↑→x');
+assert(~strcmp(char(cs.how2plot),char(pCs)) && ~strcmp(before,char(pCs)), ...
+  ['check_tensorFactories: the second test convention collides with the ' ...
+  'crystal or the specimen default - pick another one'])
+
+T = tensor(M,'rank',2,cs,pCs,'name','foo');
+assert(strcmp(char(T.how2plot),char(pCs)) && strcmp(T.opt.name,'foo'), ...
   'check_tensorFactories: convention, symmetry and name do not survive together')
 
-% a crystalSymmetry is deliberately not copied - phaseItem seals eq to
-% handle identity, so a copy would stop comparing equal to what was passed
+% the symmetry is neither copied nor written to. it must still be the very
+% object that was passed in - phaseItem seals eq to handle identity, so a
+% copy would stop comparing equal - and it must still carry its own
+% convention, since other users share that handle
 assert(T.CS == cs, ...
   'check_tensorFactories: tensor(M,...,cs,pC) no longer holds cs itself')
 
+assert(~strcmp(char(cs.how2plot),char(pCs)), ...
+  'check_tensorFactories: the convention was written onto the caller''s cs')
+
 % and through the copy constructor
-assert(strcmp(char(tensor(T).how2plot),char(pC)), ...
+assert(strcmp(char(tensor(T).how2plot),char(pCs)), ...
   'check_tensorFactories: the copy constructor dropped the convention')
 
 % none of that may have touched any other tensor
@@ -190,5 +204,19 @@ assert(strcmp(char(tensor(M,'rank',2).how2plot),before), ...
 
 assert(strcmp(char(specimenSymmetry.default.how2plot),before), ...
   'check_tensorFactories: T.how2plot = pC changed specimenSymmetry.default')
+
+assert(strcmp(char(T.CS.how2plot),before), ...
+  'check_tensorFactories: T.how2plot = pC was written through to T.CS')
+
+% with nothing set on the tensor itself, CS is still what it follows
+assert(strcmp(char(tensor(M,'rank',2,cs).how2plot),char(cs.how2plot)), ...
+  'check_tensorFactories: a tensor without its own convention ignores CS')
+
+% and the convention reaches the S2Fun the tensor turns into, which is what
+% plotting reads - @S2FunHarmonicSym/plot used to override it with the one
+% of the symmetry
+T = tensor(M,'rank',2,pC);
+assert(strcmp(char(T.directionalMagnitude.how2plot),char(pC)), ...
+  'check_tensorFactories: directionalMagnitude dropped the convention')
 
 end
