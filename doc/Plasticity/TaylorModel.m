@@ -6,14 +6,7 @@
 % out of the page
 specimenFrame.rolling.makeDefault
 
-% store old annotation style
-storepfA = getMTEXpref('pfAnnotations');
-
-% set new annotation style to display RD and ND
-pfAnnotations = @(varargin) text(-[vector3d.X,vector3d.Y],{'RD','ND'},...
-  'BackgroundColor','w','tag','axesLabels',varargin{:});
-
-setMTEXpref('pfAnnotations',pfAnnotations);
+% the rolling frame also annotates the pole figures with RD, TD, ND
 
 %% Slip in Body Centered Cubic Materials
 %
@@ -147,9 +140,6 @@ text([xvector,yvector,zvector],'labeled','BackGroundcolor','w')
 % deformation. This is the subject of its own chapter,
 % <TextureEvolution.html Texture Evolution>.
 
-%% restore MTEX preferences
-
 close all
-setMTEXpref('pfAnnotations',storepfA);
 
 %#ok<*ASGLU>

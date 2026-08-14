@@ -27,6 +27,10 @@ odf = fibreODF(cs.cAxis, vector3d.Z);
 
 h = Miller({0,0,0,1},{1,0,-1,0},{1,0,-1,1},cs);
 
+% the rolled sheet lives in the rolling frame - the tension of this
+% example is applied along RD
+specimenFrame.rolling.makeDefault
+
 % the pfAnnotations preference is a global setting - store it such that we
 % can restore it at the end of this page
 storepfA = getMTEXpref('pfAnnotations');

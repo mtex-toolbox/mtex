@@ -95,13 +95,9 @@ end
 
 %% The resulting rolling texture
 
-pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y,vector3d.Z],...
-  {'RD','TD','ND'},'BackgroundColor','w','tag','axesLabels',varargin{:});
-storepfA = getMTEXpref('pfAnnotations');
-setMTEXpref('pfAnnotations',pfAnnotations);
-
 % the resulting texture lives in the rolling frame - RD to the north, TD
-% to the west and ND out of the page
+% to the west and ND out of the page; the frame also annotates the pole
+% figures with RD, TD, ND
 specimenFrame.rolling.makeDefault
 
 plotPDF(ori,Miller({0,0,1},{1,1,1},cs),'contourf')
@@ -142,8 +138,5 @@ mtexColorbar
 % |slipSystem.fcc| by |slipSystem.bcc| or by a hexagonal family, see
 % <TaylorHex.html Taylor Model for Hexagonal Materials>, changes the
 % predicted texture completely.
-
-% restore MTEX preferences
-setMTEXpref('pfAnnotations',storepfA);
 
 %#ok<*NOPTS,*ASGLU>

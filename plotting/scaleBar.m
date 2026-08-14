@@ -41,7 +41,9 @@ classdef scaleBar < handle
 %                       the |showRefFrame| preference
 %  refFrameDirs      - @vector3d, the directions to indicate
 %                       (default xvector, yvector, zvector)
-%  refFrameLabels    - cell of char, their labels (default {'x','y','z'})
+%  refFrameLabels    - cell of char, their labels; default are the axes
+%                       names of the frame the data lives in, e.g.
+%                       X1, Y1, Z1 or RD, TD, ND
 %
 % Example
 %
@@ -121,6 +123,12 @@ methods
     % squeezed into a corner of a far too large axes.
     set([sB.shadow, sB.txt, sB.ruler, sB.rfArrows, sB.rfSymbol, sB.rfLabels],...
       'XLimInclude','off','YLimInclude','off','ZLimInclude','off');
+
+    % the labels of the reference frame indicator default to the axes
+    % names of the frame the data lives in - a rolling framed map shows
+    % RD, TD, ND - or of the session default frame for frame-free data
+    fr = getClass(varargin,'referenceFrame',specimenFrame.default);
+    sB.refFrameLabels = fr.axesNames;
 
     % apply user options
     sB.backgroundColor = get_option(varargin,'SBBackgroundColor',sB.backgroundColor);
@@ -568,7 +576,10 @@ headHalf  = 3*shaftHalf;    % half width of the arrow head
 headLen   = 0.3*arm;
 symR      = 0.32*arm;       % radius of the out of screen circle
 pad       = 0.55*t;         % distance between an arrow tip and its label
-labHalf   = [0.4*t, 0.5*t]; % estimated half extent of a one letter label
+% estimated half extent of a label, growing with the longest label - the
+% frame axes names may be two letters, RD or X1
+maxLen    = max([1,cellfun(@numel,labels)]);
+labHalf   = [(0.15 + 0.25*maxLen)*t, 0.5*t];
 
 n = size(rfScreen,1);
 

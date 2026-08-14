@@ -233,7 +233,7 @@ for k = 1:3
   wbv = weightedBurgersVec(ebsd,'gradient','stencil',stencils{k});
 
   nextAxis(1,k)
-  plot(ebsd,wbv.norm)
+  plot(ebsd,wbv.norm,'micronbar','off')
   mtexTitle(['WBV norm / ' stencils{k}])
   
   nextAxis(2,k)

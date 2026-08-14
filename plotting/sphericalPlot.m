@@ -346,8 +346,9 @@ classdef sphericalPlot < handle
 
     function plotAxesLabels(sP,CS,varargin)
       % annotate the directions of the reference frame the way pole figures
-      % do - X / Y / Z by default, the pfAnnotations preference lets the
-      % user replace them by RD / TD / ND or switch them off entirely
+      % do - by default the axes names of the session's default frame,
+      % e.g. X1 / Y1 / Z1 or RD / TD / ND; the pfAnnotations preference
+      % lets the user replace them or switch them off entirely
       %
       % A crystal symmetry in the argument list marks the plot as living in
       % crystal coordinates, there X / Y / Z would be meaningless and

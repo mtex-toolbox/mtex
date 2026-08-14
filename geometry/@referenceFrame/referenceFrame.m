@@ -40,6 +40,14 @@ classdef referenceFrame < matlab.mixin.Copyable
     how2plot = []  % default plottingConvention (a value)
   end
 
+  properties (Dependent = true)
+    % the default pole figure annotation of this frame - a function
+    % handle drawing the axes of the frame with their names, e.g. RD,
+    % TD, ND for the rolling frame; consumed via the pfAnnotations
+    % preference, see mtex_settings and sphericalPlot/plotAxesLabels
+    pfAnnotations
+  end
+
   properties (Constant, Hidden)
     % the tolerances currently scattered over the tree - named here so the
     % comparisons can be rerouted onto one definition step by step
@@ -81,6 +89,13 @@ classdef referenceFrame < matlab.mixin.Copyable
       % accept a string like 'y↑→x' as a shortcut, as symmetry does
       if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
       rf.how2plot = pC;
+    end
+
+    function f = get.pfAnnotations(rf)
+      b = normalize(rf.basis);
+      names = rf.axesNames;
+      f = @(varargin) text(b,names,...
+        'BackgroundColor','w','tag','axesLabels',varargin{:});
     end
 
     function c = char(rf)

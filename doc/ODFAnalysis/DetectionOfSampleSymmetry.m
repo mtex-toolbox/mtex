@@ -9,6 +9,10 @@
 CS = crystalSymmetry('cubic');
 SS = specimenSymmetry('222');
 
+% an orthotropic texture is a rolling type texture - so we work in the
+% rolling frame
+specimenFrame.rolling.makeDefault
+
 % some component center
 ori = [orientation.byEuler(135*degree,45*degree,120*degree,CS,SS) ...
   orientation.byEuler( 60*degree, 54.73*degree, 45*degree,CS,SS) ...

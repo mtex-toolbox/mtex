@@ -21,6 +21,10 @@
 
 %% Define Parameters
 
+% electrical steel is a rolled product - we work in the rolling frame,
+% and the external field below starts along RD, i.e. the x direction
+specimenFrame.rolling.makeDefault
+
 % alloy content of Si and Al in wt.%
 x_Si = 3;
 x_Al = 1;

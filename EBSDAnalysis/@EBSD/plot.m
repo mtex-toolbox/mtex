@@ -64,7 +64,7 @@ if isempty(ebsd), return; end
 % create a new plot
 mtexFig = newMtexFigure('datacursormode',{@tooltip,ebsd},varargin{:});
 [mP,isNew] = newMapPlot('scanUnit',ebsd.scanUnit,...
-  'parent',mtexFig.gca,varargin{:},ebsd.how2plot);
+  'parent',mtexFig.gca,varargin{:},ebsd.how2plot,ebsd.pos.frame);
 
 % transform orientations to color
 if nargin>1 && isa(varargin{1},'orientation')
