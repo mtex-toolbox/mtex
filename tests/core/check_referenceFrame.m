@@ -17,6 +17,7 @@ checkRegisterDefaults;
 checkDataFrameMembership;
 checkMillerFrame;
 checkS2FunFrame;
+checkTwoFrames;
 checkSaveLoadRoundTrip;
 checkEnsureCS;
 
@@ -399,6 +400,54 @@ assert(isa(pos,'Miller') && pos.CS == cs, ...
 [~,pos] = max(p);
 assert(pos.frame == cs.frame, ...
   'check_referenceFrame: extrema of a crystal-framed S2Fun lost the frame');
+
+end
+
+% -------------------------------------------------------------------------
+function checkTwoFrames
+% orientation and SO3Fun have exactly two frames - the frames of their
+% symmetries, resolved live and never assignable directly
+
+cs = crystalSymmetry('m-3m');
+ss = specimenSymmetry('222');
+ori = orientation.rand(cs,ss);
+assert(ori.frameRight == cs.frame && ori.frameLeft == ss.frame, ...
+  'check_referenceFrame: the orientation frames are not its symmetries'' frames');
+
+% a misorientation has two crystal frames
+cs2 = crystalSymmetry('6/mmm',[3 3 5]);
+mori = orientation.rand(cs,cs2);
+assert(isa(mori.frameLeft,'crystalFrame') && mori.frameLeft == cs2.frame, ...
+  'check_referenceFrame: the misorientation left frame is not the crystal frame');
+
+% replacing a symmetry moves the frame with it
+ori.CS = cs2;
+assert(ori.frameRight == cs2.frame, ...
+  'check_referenceFrame: replacing CS left a stale frameRight');
+
+% assigning a frame directly is refused
+try
+  ori.frameLeft = specimenFrame.rolling;
+  failed = false;
+catch e
+  failed = strcmp(e.identifier,'MTEX:orientation:fixedFrame');
+end
+assert(failed, ...
+  'check_referenceFrame: assigning a frame to an orientation must error');
+
+% same for SO3Fun
+odf = unimodalODF(orientation.rand(cs,ss));
+assert(odf.frameRight == cs.frame && odf.frameLeft == ss.frame, ...
+  'check_referenceFrame: the SO3Fun frames are not its symmetries'' frames');
+
+try
+  odf.frameLeft = specimenFrame.rolling;
+  failed = false;
+catch e
+  failed = strcmp(e.identifier,'MTEX:SO3Fun:fixedFrame');
+end
+assert(failed, ...
+  'check_referenceFrame: assigning a frame to an SO3Fun must error');
 
 end
 

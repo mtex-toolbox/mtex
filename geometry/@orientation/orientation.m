@@ -39,6 +39,38 @@ properties
 
 end
 
+properties (Dependent = true)
+  frameLeft  % the reference frame of SS - the specimen side of an orientation
+  frameRight % the reference frame of CS - the crystal side of an orientation
+end
+
+methods
+
+  % the two frames of an orientation are the frames of its symmetries -
+  % resolved live, so they can never go stale when a symmetry is
+  % replaced ('must have two' in the cardinality table of ADR 0003)
+  function fr = get.frameLeft(o)
+    fr = o.SS.frame;
+  end
+
+  function fr = get.frameRight(o)
+    fr = o.CS.frame;
+  end
+
+  function o = set.frameLeft(o,~)
+    error('MTEX:orientation:fixedFrame',...
+      ['The frames of an orientation are the frames of its symmetries - ' ...
+      'assign SS / CS instead.']);
+  end
+
+  function o = set.frameRight(o,~)
+    error('MTEX:orientation:fixedFrame',...
+      ['The frames of an orientation are the frames of its symmetries - ' ...
+      'assign SS / CS instead.']);
+  end
+
+end
+
 methods
 
   function o = orientation(varargin)    

@@ -11,27 +11,52 @@ classdef SO3Fun < dynOption
   
   properties (Dependent = true)
     CS
-    SS 
+    SS
+    frameLeft  % the reference frame of SLeft - the specimen side of an ODF
+    frameRight % the reference frame of SRight - the crystal side of an ODF
   end
-  
+
   methods
-        
+
     function CS = get.CS(SO3F)
       CS = SO3F.SRight;
     end
-    
+
     function SS = get.SS(SO3F)
       SS = SO3F.SLeft;
     end
-    
+
     function SO3F = set.CS(SO3F,CS)
       SO3F.SRight = CS;
     end
-    
+
     function SO3F = set.SS(SO3F,SS)
       SO3F.SLeft = SS;
     end
-    
+
+    % the two frames of an SO3Fun are the frames of its symmetries -
+    % resolved live, so they can never go stale when a symmetry is
+    % replaced ('must have two' in the cardinality table of ADR 0003)
+    function fr = get.frameLeft(SO3F)
+      fr = SO3F.SLeft.frame;
+    end
+
+    function fr = get.frameRight(SO3F)
+      fr = SO3F.SRight.frame;
+    end
+
+    function SO3F = set.frameLeft(SO3F,~)
+      error('MTEX:SO3Fun:fixedFrame',...
+        ['The frames of an SO3Fun are the frames of its symmetries - ' ...
+        'assign SLeft / SRight instead.']);
+    end
+
+    function SO3F = set.frameRight(SO3F,~)
+      error('MTEX:SO3Fun:fixedFrame',...
+        ['The frames of an SO3Fun are the frames of its symmetries - ' ...
+        'assign SLeft / SRight instead.']);
+    end
+
   end
   
   methods (Hidden = true)
