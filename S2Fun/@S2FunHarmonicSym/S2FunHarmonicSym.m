@@ -6,7 +6,10 @@ methods
     if nargin == 0, return; end
     if isa(fhat,'S2FunHarmonic')
       sF.fhat = fhat.fhat;
-      sF.how2plot = fhat.how2plot;
+      % only a convention fhat carried itself, not the one it merely
+      % inherited from its old symmetry - otherwise attaching s here would
+      % not put the function into the frame of s
+      sF.how2plotPrivate = fhat.how2plotPrivate;
       sF.CS = s;
       %sF = sF.symmetrise;
       return

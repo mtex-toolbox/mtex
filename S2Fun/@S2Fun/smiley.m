@@ -7,9 +7,10 @@ if nargin == 0 || ~isa(varargin{1},'vector3d')
     f = S2FunHarmonic.quadrature(@(v) S2Fun.smiley(v),varargin{:});
   end
 
-  f.SS = specimenSymmetry;
+  % no need to swap in a fresh specimenSymmetry first - the convention is
+  % stored on the function and never written through to its symmetry
   f.how2plot = plottingConvention("y↑→x");
-  
+
   return;
 end
 

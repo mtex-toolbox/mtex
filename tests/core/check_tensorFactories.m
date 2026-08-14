@@ -137,15 +137,12 @@ end
 
 % -------------------------------------------------------------------------
 function checkPlottingConvention
-% a plottingConvention may be passed positionally, and must stay local to
-% the tensor it was given to
+% a plottingConvention may be passed positionally, next to a symmetry and
+% named options, and survives the copy constructor
 %
-% tensor used to store how2plot on its CS. symmetry is a handle class and
-% the class default of the CS property - specimenSymmetry.default - is one
-% single object shared by every tensor, so that silently changed the
-% plotting frame of every tensor constructed afterwards, and of whatever
-% else held the same symmetry. The convention now lives on the tensor, and
-% falls back to CS only when it was never set.
+% it used to land in dynOption/setOption as a name with no value and error.
+% That the convention then stays local to this tensor is the subject of
+% core/check_plottingConventionOwnership, not of this file.
 
 M = diag([3 1 -1]);
 pC = plottingConvention('y↑→x');
@@ -187,36 +184,5 @@ assert(~strcmp(char(cs.how2plot),char(pCs)), ...
 % and through the copy constructor
 assert(strcmp(char(tensor(T).how2plot),char(pCs)), ...
   'check_tensorFactories: the copy constructor dropped the convention')
-
-% none of that may have touched any other tensor
-assert(strcmp(char(tensor(M,'rank',2).how2plot),before), ...
-  ['check_tensorFactories: constructing with a plotting convention leaked ' ...
-  'it into the next tensor'])
-
-% same for assigning the property afterwards
-T = tensor(M,'rank',2);
-T.how2plot = pC;
-assert(strcmp(char(T.how2plot),char(pC)), ...
-  'check_tensorFactories: T.how2plot = pC did not take')
-
-assert(strcmp(char(tensor(M,'rank',2).how2plot),before), ...
-  'check_tensorFactories: T.how2plot = pC leaked into the next tensor')
-
-assert(strcmp(char(specimenSymmetry.default.how2plot),before), ...
-  'check_tensorFactories: T.how2plot = pC changed specimenSymmetry.default')
-
-assert(strcmp(char(T.CS.how2plot),before), ...
-  'check_tensorFactories: T.how2plot = pC was written through to T.CS')
-
-% with nothing set on the tensor itself, CS is still what it follows
-assert(strcmp(char(tensor(M,'rank',2,cs).how2plot),char(cs.how2plot)), ...
-  'check_tensorFactories: a tensor without its own convention ignores CS')
-
-% and the convention reaches the S2Fun the tensor turns into, which is what
-% plotting reads - @S2FunHarmonicSym/plot used to override it with the one
-% of the symmetry
-T = tensor(M,'rank',2,pC);
-assert(strcmp(char(T.directionalMagnitude.how2plot),char(pC)), ...
-  'check_tensorFactories: directionalMagnitude dropped the convention')
 
 end
