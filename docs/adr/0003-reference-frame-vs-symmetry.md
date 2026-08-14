@@ -176,6 +176,20 @@ job implicitly and produced the bug family this ADR opens with.
 - Interning needs an equality notion at the register door, so the `eqTol` tolerance
   question resurfaces — at one door, instead of scattered through `ensureCS` call sites.
   The register is global state: parallel workers do not share it and tests need a reset.
+- `plottingConvention` stays a handle class for now, but the intended end state is a
+  *value* class — after the register and after data-class frame membership, not before.
+  Today value semantics would break the default-follows workflow three ways:
+  `plotx2east` mutates the default in place; `matchDefault` and the import loaders alias
+  the default handle; and `vector3d`'s class default (`geometry/@vector3d/vector3d.m:48`,
+  evaluated once at class init) would freeze the init-time convention into every plain
+  `vector3d` for the whole session. Once data classes hold a frame — or empty for
+  "follow the default" — the frame is the shared handle *entity* and the convention it
+  carries can be a plain value: `plotx2east` then edits the default frame through its
+  register handle and every holder of that frame follows, while write-through leaks at
+  the convention level become structurally impossible rather than test-guarded (the
+  freezing `copy` in `newSphericalPlot` also becomes automatic). This refines the
+  Considered Options above: value semantics was rejected for frames and conventions
+  *wholesale*; the end state is value conventions inside handle frames.
 - The `phaseItem` sealed-`eq` problem is *not* resolved here. Phase identity is a fourth
   concept tangled into `crystalSymmetry`; it is the one data-side handle that is
   legitimately identity-semantic, and it deserves its own decision.
