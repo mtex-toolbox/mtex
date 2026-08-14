@@ -36,7 +36,8 @@ classdef referenceFrame < matlab.mixin.Copyable
     % default how2plot -> plottingConvention.default -> specimenSymmetry
     % -> specimenFrame while the vector3d class is still initializing
     basis = []
-    how2plot = []  % default plottingConvention (handle)
+    axesNames = {'X','Y','Z'}  % names of the three basis axes
+    how2plot = []  % default plottingConvention (a value)
   end
 
   properties (Constant, Hidden)
@@ -58,6 +59,7 @@ classdef referenceFrame < matlab.mixin.Copyable
       end
 
       rf.name = get_option(varargin,'name','');
+      rf.axesNames = get_option(varargin,'axesNames',rf.axesNames);
 
       pC = getClass(varargin,'plottingConvention');
       if ~isempty(pC), rf.how2plot = pC; end
@@ -92,7 +94,10 @@ classdef referenceFrame < matlab.mixin.Copyable
     function display(rf,varargin)
       displayClass(rf,inputname(1),varargin{:});
       if ~isempty(rf.name), disp(['  name: ' rf.name]); end
-      disp(['  basis: ' char(rf.basis(1)) ', ' char(rf.basis(2)) ', ' char(rf.basis(3))]);
+      b = rf.basis;
+      for k = 1:3
+        disp(['  ' rf.axesNames{k} ': ' char(b(k))]);
+      end
       if isa(rf.how2plot,'plottingConvention')
         disp(['  how2plot: ' char(rf.how2plot,'compact')]);
       end

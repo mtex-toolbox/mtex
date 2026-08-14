@@ -158,14 +158,19 @@ classdef crystalSymmetry < symmetry & phaseItem
           varargin(1) = [];
         end
         
-        % compute coordinate system
-        axes = calcAxis(id,abc,angles,varargin{:});
+        % compute the reference frame - crystalFrame owns the axes
+        % computation including the alignment options
+        fr = crystalFrame(abc,angles,varargin{:},'pointId',id);
+        axes = fr.basis;
 
         % compute symmetry operations
         rot = getClass(varargin,'quaternion');
         if isempty(rot), rot = symmetry.calcQuat(id,axes); end
-         
+
       end
+
+      % axes given directly - wrap them into a frame
+      if ~exist('fr','var'), fr = crystalFrame(axes); end
 
       % define the symmetry
       s = s@symmetry(id,rot);
@@ -177,7 +182,8 @@ classdef crystalSymmetry < symmetry & phaseItem
 
       % the reference frame carries the axes and, below, the plotting
       % convention; the mineral doubles as the frame identity for now
-      s.frame = crystalFrame(axes,'name',s.mineral);
+      fr.name = s.mineral;
+      s.frame = fr;
 
       if check_option(varargin,'density')
         s.opt.density = get_option(varargin,'density','');

@@ -29,10 +29,6 @@ classdef specimenFrame < referenceFrame
 % See also
 % referenceFrame crystalFrame specimenSymmetry
 
-  properties
-    axesNames = {'X','Y','Z'}  % names of the three axes
-  end
-
   methods
 
     function sF = specimenFrame(varargin)
@@ -41,7 +37,6 @@ classdef specimenFrame < referenceFrame
         varargin = [varargin(2:end),{'name',char(varargin{1})}];
       end
       sF = sF@referenceFrame(varargin{:});
-      sF.axesNames = get_option(varargin,'axesNames',sF.axesNames);
     end
 
   end

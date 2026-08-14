@@ -10,6 +10,7 @@ function check_referenceFrame
 
 checkTransitionEquivalence;
 checkAxisRepairHeuristic;
+checkCrystalFrameConstruction;
 checkDelegation;
 checkNamedSpecimenFrames;
 checkRegisterDefaults;
@@ -70,6 +71,44 @@ Mpure = axesB^-1 * axesA;
 assert(norm(Mpure*Mpure.' - eye(3)) > 0.1, ...
   ['check_referenceFrame: the test lattice does not distinguish the pure ' ...
   'from the re-paired transition - pick other axis lengths']);
+
+end
+
+% -------------------------------------------------------------------------
+function checkCrystalFrameConstruction
+% a crystal frame can be defined by lattice parameters and alignment
+% options directly, without a symmetry - and gives the very axes
+% crystalSymmetry computes
+
+cs = crystalSymmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||a*');
+cF = crystalFrame([1 2 3],[70 80 120]*degree,'Z||a*');
+assert(all(norm(cF.basis - cs.axes) < 1e-10), ...
+  'check_referenceFrame: crystalFrame from lattice parameters disagrees with crystalSymmetry');
+
+% without a point group the geometry is triclinic - identical frame for
+% every lattice, here the hexagonal X||a setup
+cs = crystalSymmetry('6/mmm',[3 3 5],'X||a');
+cF = crystalFrame([3 3 5],[90 90 120]*degree,'X||a');
+assert(all(norm(cF.basis - cs.axes) < 1e-10), ...
+  'check_referenceFrame: the general construction disagrees with the hexagonal setup');
+
+% the crystal axes are named a, b, c and the display reflects the
+% alignment and expresses the convention in crystal directions
+assert(isequal(cF.axesNames,{'a','b','c'}), ...
+  'check_referenceFrame: crystal axes are not named a, b, c');
+assert(any(contains(alignment(cF),'X||a')), ...
+  'check_referenceFrame: the alignment does not reflect X||a');
+assert(isequal(alignment(cF),alignment(cs)), ...
+  'check_referenceFrame: frame and symmetry disagree on the alignment');
+
+fr = cs.frame;
+out = evalc('display(fr)');
+assert(contains(out,'X||a') && contains(out,'⊙c→a'), ...
+  'check_referenceFrame: the crystal frame display misses alignment or convention');
+
+% orthogonal lattices report no alignment, as before
+assert(isempty(alignment(crystalFrame([2 3 4]))), ...
+  'check_referenceFrame: an orthogonal frame must not report an alignment');
 
 end
 
