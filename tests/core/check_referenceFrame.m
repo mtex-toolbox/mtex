@@ -718,6 +718,16 @@ ori = orientation.map(Miller(1,0,0,cs),v);
 assert(ori.SS.frame == fr, ...
   'check_referenceFrame: orientation.map must adopt the frame of the framed input');
 
+% quadrature built results keep the frame of their input - the wrapper
+% used to fabricate a default specimenSymmetry whose session frame then
+% shadowed the input's own, so S2Fun.smiley.^2 changed its convention
+s = S2Fun.smiley;
+assert(getFrame(s.^2) == getFrame(s), ...
+  'check_referenceFrame: S2Fun arithmetic must keep the frame of its input');
+q = S2FunHarmonic.quadrature(@(v) v.x.^2,'bandwidth',16);
+assert(isempty(getFrame(q)), ...
+  'check_referenceFrame: a quadrature over plain nodes must stay frame-free');
+
 referenceFrame.reset;
 
 end

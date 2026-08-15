@@ -43,8 +43,11 @@ end
 % ---------- (2) Get nodes, values and weights in case of S2Fun ----------
 
 if isa(f,'function_handle')
-  sym = extractSym(varargin);
-  f = S2FunHandle(f,sym);
+  % only hand over a symmetry that was actually given - extractSym would
+  % fabricate a default specimenSymmetry, whose session frame would then
+  % shadow a frame passed by the caller (S2Fun.smiley.^2 used to change
+  % its plotting convention this way)
+  f = S2FunHandle(f,getClass(varargin,'symmetry'));
 end
 
 % commented out - seems to be obsolete and leads to misbehaviour for S2FunMLS
@@ -66,7 +69,9 @@ values = f.eval(S2G);
 
 % ----------------------- (3) Do adjoint NSOFT ----------------------------
 
-sF = S2FunHarmonic.adjoint(S2G,values,f.frame,varargin{:});
+% the function's own frame is only the fallback - a frame or convention
+% passed by the caller comes first in the list and wins
+sF = S2FunHarmonic.adjoint(S2G,values,varargin{:},f.frame);
 sF.bandwidth = bw;
 
 % if antipodal consider only even coefficients
