@@ -370,7 +370,9 @@
 %
 % What used to be reserved to pole figures now happens on every spherical plot
 % that is not given in crystal coordinates as well - the axes of the reference
-% frame are annotated with X, Y, Z. This includes @vector3d and @S2Fun plots,
+% frame are annotated with their names: X1, Y1, Z1 for the measurement frame,
+% RD, TD, ND once the rolling frame rules the session (see *Named Reference
+% Frames* below). This includes @vector3d and @S2Fun plots,
 % @sigmaSections and @pfSections, spherical densities as returned by
 % <grainBoundary.calcGBND.html |calcGBND|> or <vector3d.calcDensity.html
 % |calcDensity|>, and @specimenSymmetry. Plots in crystal coordinates -
@@ -408,6 +410,42 @@
 %
 % A convention assigned to a single object becomes an own reference frame
 % of that object and stays untouched by later changes of the default.
+%
+% *Named Reference Frames*
+%
+% Behind the conventions sits a new class @referenceFrame that answers
+% "what coordinate system is this data expressed in". A frame carries an
+% identity, named axes and the plotting convention its data is drawn in;
+% @crystalSymmetry and @specimenSymmetry delegate their frame data (crystal
+% axes, |how2plot|) to the frame they hold. Specimen frames come as named
+% session instances
+%
+%   specimenFrame.measurement   % the instrument frame, axes X1, Y1, Z1
+%   specimenFrame.rolling       % RD, TD, ND - RD north, TD west
+%   specimenFrame.geological    % N, E, D
+%
+% and any of them can take over the session by
+%
+%   specimenFrame.rolling.makeDefault
+%
+% after which maps, pole figures and the micron bar annotate RD / TD / ND
+% and plot in the rolling convention - no manual label definition needed.
+% Every data class shows the frame it lives in at the top of its display,
+% e.g. |EBSD (Y1↓→X1)| or |PoleFigure (TD←RD↑)|; a crystal frame displays
+% its alignment (|X||a|) and the resulting convention in crystal directions
+% (|⊙c→a|).
+%
+% Rotating data by an @orientation now moves it from the crystal to the
+% specimen frame (or back): the result adopts the new frame but never
+% claims the orientation's symmetry, and mixing frames raises an error
+% instead of silently producing numbers in an undefined coordinate system.
+% Conventions loaded from |.mat| files are decided by the container: an
+% @EBSD or @PoleFigure applies the convention its positions were saved
+% with to the whole session, individual vectors keep theirs private.
+% Scripted environments that run many independent jobs in one session can
+% restore the pristine state by
+%
+%   referenceFrame.reset
 %
 % *Approximation, Sampling and Clustering*
 %
