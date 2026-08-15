@@ -32,8 +32,9 @@ function varargout = runTests(varargin)
 %
 % Every test runs in its own try/catch, so one failure does not hide the
 % ones after it. Figures are invisible for the whole run, and figures, the
-% random seed and the warning state are reset between tests, so that a test
-% cannot be made to pass or fail by the one that ran before it. This is why
+% random seed, the warning state and the reference frame register are reset
+% between tests, so that a test cannot be made to pass or fail by the one
+% that ran before it. This is why
 % a test does not need the DefaultFigureVisible prologue that several of
 % them used to carry individually.
 %
@@ -183,9 +184,18 @@ function resetSharedState
 % pass or fail by the one that ran before it. The warning state is included
 % because a test that switches a warning off without an onCleanup - which
 % has happened - otherwise leaks it into everything after it.
+%
+% The reference frame register is reset for the same reason, and the leak
+% there is by design rather than by accident: importing EBSD data applies
+% the file's plotting convention to the session default (ADR 0003), so
+% every test that calls mtexdata legitimately moves it. That is what made
+% check_plottingConventionOwnership fail in the tier while passing alone -
+% check_gradient ran before it and left the default at 'y up'. This is the
+% use referenceFrame.reset was written for.
 
 close('all','force');
 rng('default');
 warning('on','all');
+referenceFrame.reset;
 
 end
