@@ -8,6 +8,9 @@
 % An ODF determined from XRD data
 SO3F1 = SO3Fun.dubna
 
+% make its specimen reference frame the default for this session
+SO3F1.frameLeft.makeDefault
+
 plot(SO3F1,'sigma')
 
 %%
