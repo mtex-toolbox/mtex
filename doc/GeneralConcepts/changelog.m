@@ -370,9 +370,10 @@
 %
 % What used to be reserved to pole figures now happens on every spherical plot
 % that is not given in crystal coordinates as well - the axes of the reference
-% frame are annotated with their names: X1, Y1, Z1 for the measurement frame,
-% RD, TD, ND once the rolling frame rules the session (see *Named Reference
-% Frames* below). This includes @vector3d and @S2Fun plots,
+% frame are annotated with the axes names of the frame the data lives in:
+% X, Y, Z by default, X1, Y1, Z1 for the measurement frame of the
+% instrument, RD, TD, ND once the rolling frame rules the session (see
+% *Named Reference Frames* below). This includes @vector3d and @S2Fun plots,
 % @sigmaSections and @pfSections, spherical densities as returned by
 % <grainBoundary.calcGBND.html |calcGBND|> or <vector3d.calcDensity.html
 % |calcDensity|>, and @specimenSymmetry. Plots in crystal coordinates -
@@ -420,6 +421,7 @@
 % axes, |how2plot|) to the frame they hold. Specimen frames come as named
 % session instances
 %
+%   specimenFrame.specimen      % the generic frame, axes X, Y, Z - the default
 %   specimenFrame.measurement   % the instrument frame, axes X1, Y1, Z1
 %   specimenFrame.rolling       % RD, TD, ND - RD north, TD west
 %   specimenFrame.geological    % N, E, D

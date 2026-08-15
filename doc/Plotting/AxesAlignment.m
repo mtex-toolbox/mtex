@@ -83,15 +83,15 @@ specimenFrame.rolling.makeDefault
 
 %%
 % all frame-free data plots in the rolling convention and the spherical
-% plots annotate RD / TD / ND instead of X1 / Y1 / Z1 - no manual label
+% plots annotate RD / TD / ND instead of X / Y / Z - no manual label
 % definition required
 
 plot(v2,'upper','label','v_2')
 
 %%
-% We return to the measurement frame for the rest of this section.
+% We return to the generic specimen frame for the rest of this section.
 
-specimenFrame.measurement.makeDefault
+specimenFrame.specimen.makeDefault
 plottingConvention.default('y↑→x');
 
 %%

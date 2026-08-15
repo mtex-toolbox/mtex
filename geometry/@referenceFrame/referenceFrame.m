@@ -192,7 +192,7 @@ classdef referenceFrame < matlab.mixin.Copyable
       % restore the pristine session frame state
       %
       % Forgets every registered frame and lets the session default fall
-      % back to a fresh measurement frame with the ij convention - the
+      % back to a fresh generic specimen frame with the ij convention - the
       % state a newly started MTEX session is in. Data objects keep the
       % frame handles they hold; only the register and the default are
       % affected. Meant for scripted environments that run independent

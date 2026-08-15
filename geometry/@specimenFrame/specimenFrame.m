@@ -12,7 +12,8 @@ classdef specimenFrame < referenceFrame
 %
 % Syntax
 %
-%   sF = specimenFrame.measurement          % the session instance
+%   sF = specimenFrame.specimen             % the generic frame X, Y, Z
+%   sF = specimenFrame.measurement          % the instrument frame X1, Y1, Z1
 %   sF = specimenFrame.rolling
 %   sF = specimenFrame.geological
 %   sF = specimenFrame.default              % supplies the default convention
@@ -56,6 +57,14 @@ classdef specimenFrame < referenceFrame
 
   methods (Static = true)
 
+    function sF = specimen
+      % the generic specimen frame with the canonical axes X, Y, Z - the
+      % session default until the data or the user declares a more
+      % specific frame, e.g. specimenFrame.measurement for Oxford data
+      % or specimenFrame.rolling for a rolled sheet
+      sF = specimenFrame.named('specimen',{'X','Y','Z'});
+    end
+
     function sF = measurement
       % the frame the data was measured in, with its axes named in the
       % Oxford notation X1, Y1, Z1 - the sample frame CS1, which is what
@@ -83,10 +92,11 @@ classdef specimenFrame < referenceFrame
       %
       % plottingConvention.default reads and writes through this frame,
       % and specimenSymmetry.default's singleton holds it. Initially it
-      % is the measurement frame, seeded with plottingConvention.ij - x
-      % to east, y to south, z into the screen, the convention of SEM
-      % images and of most EBSD imports. Any specimen frame can take
-      % over via <specimenFrame.makeDefault.html |makeDefault|>, e.g.
+      % is the generic specimen frame X, Y, Z, seeded with
+      % plottingConvention.ij - x to east, y to south, z into the
+      % screen, the convention of SEM images and of most EBSD imports.
+      % Any specimen frame can take over via
+      % <specimenFrame.makeDefault.html |makeDefault|>, e.g.
       %
       %   specimenFrame.rolling.makeDefault
       %
@@ -104,7 +114,7 @@ classdef specimenFrame < referenceFrame
           'Only a specimenFrame can supply the session default.');
         def = sF;
       else
-        if isempty(def), def = specimenFrame.measurement; end
+        if isempty(def), def = specimenFrame.specimen; end
         % the default frame always carries a convention
         if isempty(def.how2plot), def.how2plot = plottingConvention.ij; end
         sF = def;
