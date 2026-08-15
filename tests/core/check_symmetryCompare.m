@@ -40,5 +40,47 @@ assert(~ok,'adding SO3Funs with different specimen symmetries must be rejected')
 % while matching ones still work
 odf + odf; %#ok<VUNUS>
 
+checkPhaseIdentity;
+
 disp('check_symmetryCompare passed')
+end
+
+% ------------------------------------------------------------------------
+
+function checkPhaseIdentity
+% two phases that share a lattice are still two phases
+%
+% Regression test: phaseItem/eqTolPair opened with
+% strcmpi(obj1.mineral,obj2.mineral). The fitSym that replaced it in
+% ensureCompatibleSymmetries compares the Laue class and the reference
+% frame, neither of which can tell two minerals apart when they share a
+% lattice. It stayed invisible while @SO3Fun/ensureCompatibleSymmetries
+% shadowed the free function; deleting that method let two ODFs of
+% different phases combine silently.
+
+ss = specimenSymmetry('222');
+abc = [3.52 3.52 3.52];
+csA = crystalSymmetry('m-3m',abc,'mineral','Nickel');
+csB = crystalSymmetry('m-3m',abc,'mineral','Iron fcc');
+
+a = unimodalODF(orientation.rand(csA,ss),'halfwidth',10*degree);
+b = unimodalODF(orientation.rand(csB,ss),'halfwidth',10*degree);
+
+ok = false;
+try %#ok<TRYNC>
+  a + b;
+  ok = true;
+end
+assert(~ok,['check_symmetryCompare: two minerals that share a lattice are ' ...
+  'still different phases and must not combine'])
+
+% an unnamed symmetry makes no phase claim, so it still combines - the same
+% rule the trivial group follows for the symmetry claim itself (ADR 0003)
+csU = crystalSymmetry('m-3m',abc);
+a + unimodalODF(orientation.rand(csU,ss),'halfwidth',10*degree); %#ok<VUNUS>
+
+% and one phase on two independently built handles still combines
+csA2 = crystalSymmetry('m-3m',abc,'mineral','Nickel');
+a + unimodalODF(orientation.rand(csA2,ss),'halfwidth',10*degree); %#ok<VUNUS>
+
 end

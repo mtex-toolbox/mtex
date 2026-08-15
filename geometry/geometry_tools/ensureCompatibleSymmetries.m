@@ -125,6 +125,19 @@ function ok = fitSym(s1,s2)
 
 if s1.Laue.id ~= s2.Laue.id, ok = false; return; end
 
+% phase identity, which neither the group nor the frame can express: two
+% minerals may share a Laue class and a lattice and still be two phases.
+% eqTolPair always opened with this test. An unnamed symmetry makes no
+% phase claim and is not held against anything - the same rule the trivial
+% group follows for the symmetry claim itself. A stripped symmetry keeps
+% its mineral, and crystalSymmetry(cF) takes the frame's name, so the
+% symmetry-free state carries the phase along (ADR 0003).
+if isa(s1,'crystalSymmetry') && isa(s2,'crystalSymmetry') && ...
+    ~isempty(s1.mineral) && ~isempty(s2.mineral) && ...
+    ~strcmpi(s1.mineral,s2.mineral)
+  ok = false; return
+end
+
 fr1 = s1.frame; fr2 = s2.frame;
 
 if ~isempty(fr1) && ~isempty(fr2)
