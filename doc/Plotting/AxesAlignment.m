@@ -90,9 +90,13 @@ plot(v2,'upper','label','v_2')
 
 %%
 % We return to the generic specimen frame for the rest of this section.
+% Note that this does not affect |v1|, which still carries the private
+% frame it received above - assigning |[]| to its |how2plot| releases
+% the private frame, so |v1| follows the session default again
 
 specimenFrame.specimen.makeDefault
 plottingConvention.default('y↑→x');
+v1.how2plot = [];
 
 %%
 % The annotation of the spherical plots is a function handle stored in
