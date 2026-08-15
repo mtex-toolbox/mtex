@@ -65,7 +65,6 @@ plot(pf_modified)
 
 %% PDF - to - ODF Reconstruction
 
-
 rec = calcODF(pf,'RESOLUTION',10*degree,'iter_max',6)
 
 plotPDF(rec,h)

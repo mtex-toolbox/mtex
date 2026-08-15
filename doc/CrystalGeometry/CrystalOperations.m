@@ -12,10 +12,10 @@ plottingConvention.default('y↑→x');
 data = load([mtexDataPath filesep 'quartzPattern.mat']);
 pattern = data.pattern;
 
-[~,ax1] = plot(pattern,'resolution',0.25*degree,'complete','upper',"UVTW");
+[~,ax1] = plot(pattern,'resolution',0.25*degree,'complete','upper',"UVTW",'noLabel');
 mtexColorMap black2white
 nextAxis
-[~,ax2] = plot(pattern.radon,'resolution',0.25*degree,'complete','upper','hkil');
+[~,ax2] = plot(pattern.radon,'resolution',0.25*degree,'complete','upper','hkil','noLabel');
 mtexColorMap black2white
 
 %%

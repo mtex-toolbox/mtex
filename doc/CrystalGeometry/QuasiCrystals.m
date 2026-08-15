@@ -42,7 +42,7 @@ axis off
 
 ipfKey = ipfHSVKey(cs);
 
-plot(ipfKey,'complete','upper','resolution',0.5*degree)
+plot(ipfKey,'complete','upper','resolution',0.5*degree,'noLabel')
 hold on
 plot(cs,'SymbolSize',0.6,'linewidth',1)
 hold off

@@ -15,14 +15,14 @@ v2 = vector3d(1,1,-2);
 %%
 % and plots them in a spherical projection
 
-plot([v1,v2],'label',{'v_1','v_2'})
+plot([v1,v2],'label',{'v_1','v_2'},'grid','on')
 
 %%
 % These vectors will appear either on the upper or on the lower hemisphere.
 % In order to treat these vectors as axes, i.e. in order to assume
 % antipodal symmetry - one has to use the keyword |'antipodal'|.
 
-plot([v1,v2],'label',{'v_1','v_2'},'antipodal')
+plot([v1,v2],'label',{'v_1','v_2'},'antipodal','grid','on')
 
 %%
 % Now the direction |v2| is identified with the direction |-v2| which plots
@@ -103,12 +103,12 @@ plotPDF(odf,Miller(1,2,2,CS),'antipodal')
 % look at complete, inverse pole figures they do not posses antipodal symmetry
 % in general
 
-plotIPDF(odf,[yvector,-yvector],'complete')
+plotIPDF(odf,[yvector,-yvector],'complete','noLabel')
 
 %%
 % However, if we add the keyword antipodal, antipodal symmetry is enforced.
 
-plotIPDF(odf,yvector,'antipodal','complete')
+plotIPDF(odf,yvector,'antipodal','complete','noLabel')
 
 %%
 % Notice how MTEX, automatically reduces the fundamental region of inverse

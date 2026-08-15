@@ -19,7 +19,6 @@ C = stiffnessTensor.load(fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa'),cs)
 %%
 
 plot(C,'complete','upper')
-text(Miller({1,0,0},{0,1,0},{0,0,1},cs,'uvw'),'labeled','backgroundColor','White')
 
 mtexColorbar
 

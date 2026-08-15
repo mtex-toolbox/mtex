@@ -330,13 +330,15 @@ classdef sphericalPlot < handle
       % equivalent positions inside the plotted region: on a full plot a
       % single variant would single out one of several equivalent maxima
       % for no reason
-      if isempty(h)
+      hasVertices = ~isempty(h);
+      if ~hasVertices
         h = fundamentalSector(CS).vertices;
         if isempty(h), return; end
         h = Miller(unique(h),CS);
         h.antipodal = false;
         h = unique(symmetrise(h),'noSymmetry');
         h = h(sR.checkInside(h,'noAntipodal'));
+        h = h(ismembertol(h.theta,[0,pi/2,pi],1*degree));
         if isempty(h), return; end
       end
 
@@ -349,9 +351,14 @@ classdef sphericalPlot < handle
       end
       h = round(h);
       
-      sP.labels = [sP.labels,scatter(h,'MarkerFaceColor','k',...
+      if hasVertices
+        sP.labels = [sP.labels,scatter(h,'MarkerFaceColor','k',...
         'labeled','Marker','none',...
         'backgroundcolor','w','autoAlignText','parent',sP.ax,'doNotDraw')];
+      else
+        sP.labels = [sP.labels,text(h,'labeled','backgroundcolor','w',...
+        'parent',sP.ax,'doNotDraw')];
+      end
 
     end
 

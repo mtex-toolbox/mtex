@@ -68,7 +68,6 @@ E.eval(d)
 % or plot it
 setMTEXpref('defaultColorMap',blue2redColorMap);
 plot(C.YoungsModulus,'complete','upper')
-text([xvector,yvector,zvector],'labeled','BackgroundColor','w')
 
 %% Linear Compressibility
 % The linear compressibility is the deformation of an arbitrarily shaped
@@ -83,7 +82,6 @@ beta = linearCompressibility(C)
 
 % plot it
 plot(beta,'complete','upper')
-text([xvector,yvector,zvector],'labeled','BackgroundColor','w')
 
 % evaluate the function at a specific direction
 beta.eval(d)

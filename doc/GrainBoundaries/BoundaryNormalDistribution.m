@@ -68,7 +68,7 @@ cond = gB.misorientation.angle > 80 * degree;
 
 plot(ebsd,ebsd.orientations)
 hold on
-plot(grains.boundary,'lineWidth',2)
+plot(grains.boundary,'lineWidth',3)
 plot(gB(cond),'lineWidth',2,'lineColor','w')
 hold off
 
