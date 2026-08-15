@@ -268,7 +268,7 @@ classdef grain2d < phaseList & dynProp
         ori = orientation;
       else
         ori = orientation(grains.prop.meanRotation,grains.CS,...
-          specimenSymmetryFor(grains.how2plot));
+          specimenSymmetryFor(grains.frame));
 
         % set not indexed orientations to nan
         if ~all(grains.isIndexed), ori(~grains.isIndexed) = NaN; end

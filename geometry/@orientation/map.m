@@ -55,7 +55,7 @@ else
     % reuses specimenSymmetry.default only while it already carries this
     % convention - writing the convention onto the default repointed the
     % session wide frame (see specimenSymmetryFor and ADR 0003)
-    ori.CS = specimenSymmetryFor(varargin{1}.how2plot);
+    ori.CS = specimenSymmetryFor(getFrame(varargin{1}));
   end
 end
 

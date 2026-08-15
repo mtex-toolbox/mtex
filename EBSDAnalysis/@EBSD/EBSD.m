@@ -323,7 +323,7 @@ classdef EBSD < phaseList & dynProp & dynOption
         ori = orientation;
       else
         ori = orientation(ebsd.rotations,ebsd.CS,...
-          specimenSymmetryFor(ebsd.how2plot));
+          specimenSymmetryFor(ebsd.pos.frame));
 
         % set not indexed orientations to nan
         if ~all(ebsd.isIndexed(:)), ori(~ebsd.isIndexed) = NaN; end

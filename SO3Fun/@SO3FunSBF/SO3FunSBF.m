@@ -41,7 +41,7 @@ classdef SO3FunSBF < SO3Fun
       % the strain tensor lives in the specimen reference frame - take the
       % plotting convention from there, but do not write it into SLeft
       % afterwards: @symmetry is a handle class, see specimenSymmetryFor
-      if isa(E,'tensor'), SO3F.SLeft = specimenSymmetryFor(E.how2plot); end
+      if isa(E,'tensor'), SO3F.SLeft = specimenSymmetryFor(E.frame); end
     end
 
     function SO3F = set.SRight(SO3F,CS)

@@ -14,7 +14,7 @@ function ss = specimenSymmetryFor(pC)
 % handle identity, so ss == specimenSymmetry.default either way.
 %
 % Input
-%  pC - @plottingConvention
+%  pC - @plottingConvention, or the @referenceFrame the data lives in
 %
 % Output
 %  ss - @specimenSymmetry
@@ -23,6 +23,17 @@ function ss = specimenSymmetryFor(pC)
 % EBSD/subsref grain2d/subsref plottingConvention/matchDefault
 
 ss = specimenSymmetry.default;
+
+% a data class that knows its frame passes the frame itself - the
+% symmetry adopts the very handle, so the orientations keep following
+% that frame, not a snapshot of its convention
+if isa(pC,'referenceFrame')
+  if ss.frame ~= pC
+    ss = copy(ss);
+    ss.frame = pC;
+  end
+  return
+end
 
 % plottingConvention is a value class, so == means equal alignment: the
 % default symmetry is reused whenever the data is plotted the default
