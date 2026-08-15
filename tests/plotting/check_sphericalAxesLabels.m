@@ -82,6 +82,34 @@ for i = 1:size(plain,1)
   end
 end
 
+% --- a plain function on a crystal frame annotates a, b, c --------------
+% the GBND in crystal coordinates is a plain S2FunHarmonic that carries a
+% crystalFrame - the specimen X / Y / Z would be meaningless there, the
+% frame annotates its own axes instead
+sFc = calcDensity(v);
+sFc = setFrame(sFc,csHex.frame);
+close all
+plot(sFc);
+str = string(get(findobj(gcf,'type','text','tag','axesLabels'),'String'));
+close all
+if ~all(ismember(["a","b","c"],str))
+  error(['check_sphericalAxesLabels: a crystal framed S2Fun must be ' ...
+    'annotated with its crystal axes, found %s'],join(str,', '));
+end
+
+% --- a full plot in crystal coordinates gets Miller labels --------------
+% the sector vertices in all their symmetrically equivalent positions -
+% they are drawn by plotLabels, hence not tagged axesLabels
+close all
+plot(calcDensity(Miller(v,csHex)),'complete','upper');
+txt = findobj(gcf,'type','text','-not','tag','axesLabels');
+nMiller = sum(arrayfun(@(h) ~isempty(char(get(h,'String'))),txt));
+close all
+if nMiller < 7 % 0001 + at least the six equivalents of the rim vertices
+  error(['check_sphericalAxesLabels: a complete crystal coordinate plot ' ...
+    'must label the symmetrised sector vertices']);
+end
+
 % --- every axis of a multi plot is annotated ----------------------------
 n = countLabels(@() plotPDF(odf,Miller({1,0,0},{1,1,1},cs)));
 if numel(n) < 2 || any(n == 0)

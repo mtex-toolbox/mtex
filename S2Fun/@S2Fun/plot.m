@@ -35,8 +35,16 @@ if sF.antipodal, varargin = [varargin,'antipodal']; end
 S2Proj = makeSphericalProjection(varargin{:},sF.how2plot);
 
 % a crystal symmetry marks the plot as living in crystal coordinates, such
-% that it is not annotated with the X / Y / Z of the reference frame
-if isa(cs,'crystalSymmetry'), symArg = {cs}; else, symArg = {}; end
+% that it is not annotated with the X / Y / Z of the reference frame but
+% with Miller indices; a plain function on a crystal frame passes the
+% frame, which annotates its own axes a, b, c instead
+if isa(cs,'crystalSymmetry')
+  symArg = {cs};
+elseif isa(getFrame(sF),'crystalFrame')
+  symArg = {getFrame(sF)};
+else
+  symArg = {};
+end
 
 % generate a grid where the function will be plotted
 plotNodes = ensurecell(S2Proj.makeGrid(varargin{:}));

@@ -321,22 +321,33 @@ classdef sphericalPlot < handle
     function plotLabels(sP,CS,varargin)
 
       if check_option(varargin,'noLabel') || isempty(CS), return; end
-      
-      sR = sP.sphericalRegion; 
-      h = sR.vertices;
 
-      if ~isempty(CS)
+      sR = sP.sphericalRegion;
+      h = Miller(unique(sR.vertices),CS);
+
+      % a full sphere or hemisphere has no sector vertices - fall back to
+      % the vertices of the fundamental sector, in all their symmetrically
+      % equivalent positions inside the plotted region: on a full plot a
+      % single variant would single out one of several equivalent maxima
+      % for no reason
+      if isempty(h)
+        h = fundamentalSector(CS).vertices;
+        if isempty(h), return; end
         h = Miller(unique(h),CS);
-        
-        % try direct coordinates
-        h.dispStyle = MillerConvention(abs(MillerConvention(h.dispStyle)));
-        
-        % if this gives no integer values - go to reciprocal coordinates
-        if any(angle(round(h),h)>1e-5)
-          h.dispStyle = MillerConvention(-MillerConvention(h.dispStyle)); 
-        end
-        h = round(h);
+        h.antipodal = false;
+        h = unique(symmetrise(h),'noSymmetry');
+        h = h(sR.checkInside(h,'noAntipodal'));
+        if isempty(h), return; end
       end
+
+      % try direct coordinates
+      h.dispStyle = MillerConvention(abs(MillerConvention(h.dispStyle)));
+
+      % if this gives no integer values - go to reciprocal coordinates
+      if any(angle(round(h),h)>1e-5)
+        h.dispStyle = MillerConvention(-MillerConvention(h.dispStyle));
+      end
+      h = round(h);
       
       sP.labels = [sP.labels,scatter(h,'MarkerFaceColor','k',...
         'labeled','Marker','none',...
@@ -356,8 +367,16 @@ classdef sphericalPlot < handle
 
       if check_option(varargin,'noLabel') || ~isempty(CS), return; end
 
-      pfAnnotations = getMTEXpref('pfAnnotations');
-      h = pfAnnotations('parent',sP.ax,'doNotDraw');
+      fr = getClass(varargin,'referenceFrame');
+      if isa(fr,'crystalFrame')
+        % a plain function living in a crystal frame - the X / Y / Z of
+        % the specimen would be meaningless, the frame annotates its own
+        % axes a, b, c instead
+        h = fr.pfAnnotations('parent',sP.ax,'doNotDraw');
+      else
+        pfAnnotations = getMTEXpref('pfAnnotations');
+        h = pfAnnotations('parent',sP.ax,'doNotDraw');
+      end
 
       % the preference is user defined, it may return anything
       if ~isempty(h) && all(isgraphics(h(:)))
