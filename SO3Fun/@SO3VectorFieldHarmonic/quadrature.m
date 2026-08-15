@@ -94,7 +94,9 @@ if exist('rot','var')
   % This depends on the tangent space representation 
   if isa(rot,'quadratureSO3Grid')
     if tS.isRight
-      rot = quadratureSO3Grid(rot,stripSym(rot.CS));
+      % both slots, always - quadratureSO3Grid fabricates a session-framed
+      % default for a slot left open, which would swap the data's frame
+      rot = quadratureSO3Grid(rot,stripSym(rot.CS),rot.SS);
     else
       rot = quadratureSO3Grid(rot,rot.CS,stripSym(rot.SS));
     end

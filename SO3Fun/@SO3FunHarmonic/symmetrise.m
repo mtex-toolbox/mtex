@@ -33,9 +33,9 @@ L = SO3F.bandwidth;
 % symmetrise with respect to an axis
 if nargin>1 && isa(varargin{1},'rotation')
   
-  % Forget about the symmetries
-  SO3F.CS = crystalSymmetry.default;
-  SO3F.SS = specimenSymmetry.default;
+  % Forget about the symmetries - but not about the frames they name
+  SO3F.CS = stripSym(SO3F.CS);
+  SO3F.SS = stripSym(SO3F.SS);
   center = rotation(varargin{1});
 
   % rotate SO3F such that center -> rotation.id

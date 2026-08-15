@@ -218,7 +218,7 @@ storing frames on `orientation` with groups optional (the clean end state, but i
 rewrites the most-threaded property pair in the codebase; everything below is a subset
 of it and keeps it reachable).
 
-Three consequences, all implemented on `feature/referenceFrame`:
+Four consequences, all implemented on `feature/referenceFrame`:
 
 1. **Absence is empty, never fabricated.** The historical idiom — `extractSym`
    (`tools/option_tools/extractSym.m`) fabricating a session-framed `specimenSymmetry`
@@ -229,7 +229,10 @@ Three consequences, all implemented on `feature/referenceFrame`:
    slots; consumers guard with `isempty`, so a passed trivial symmetry survives with
    its frame. A fabricated default remains correct in exactly one place: constructors
    of objects that genuinely have nothing to inherit from (a bare function handle, a
-   bare rotation) — there "absent" really does mean "the session default".
+   bare rotation) — there "absent" really does mean "the session default". The
+   fabricating overload is still the default, so a caller that has not been converted
+   keeps it: `quadratureSO3Grid` is the one that matters, since a symmetry slot left
+   open there silently becomes a session-framed stand-in.
 
 2. **Frames convert to trivial symmetries.** `crystalSymmetry(cF)` /
    `specimenSymmetry(sF)` construct the trivial group on a given frame, adopting the
@@ -257,10 +260,21 @@ Three consequences, all implemented on `feature/referenceFrame`:
    warn; for `ori*Miller` and friends the `fitFrame` gate inside `rotate` decides
    alone, since transforming in both places would transform twice. The
    `rot`-respects-symmetry warnings stay: a bare rotation factor is a genuine group
-   question. `ensureCompatibleSymmetries` (SO3Fun arithmetic/conv/eval) decides by
-   frame handle first — registered symmetries share their frame handle, and
-   `stripSym` stand-ins keep it, so handle identity alone certifies compatibility;
-   duplicates not yet interned fall back to aligned frames carrying the same Laue
-   class. The Laue comparison survives only in that fallback and where the group is
-   the actual subject (`orientation/dot`'s misorientation branches, deliberately
-   untouched).
+   question. `ensureCompatibleSymmetries`
+   (`geometry/geometry_tools/`) decides by Laue class **and** reference frame: the
+   groups must agree, and the frames must be of the same kind and either the same
+   handle or aligned. Comparing frame handles alone was tried and is wrong on the
+   specimen side, where every group shares the session frame, so `odf('222')` and
+   `odf('1')` would have passed. The frame-*kind* test is what keeps a crystal side
+   from matching a specimen one: a symmetry built without lattice parameters has the
+   canonical basis, so the alignment test alone accepts the pair. The Laue
+   comparison also survives where the group is the actual subject
+   (`orientation/dot`'s misorientation branches, deliberately untouched).
+
+   **Not yet in force for `SO3Fun` arithmetic.** `@SO3Fun/ensureCompatibleSymmetries`
+   is a *method* and shadows the function above for every `SO3Fun` receiver, so `+`,
+   `.*`, `conv` and evaluation still run the old `eqTol` comparison. The function is
+   reached only from `SO3TangentVector` and `SO3VectorField`. Deleting the method is
+   the intended end state and is the one step of this section that has not been
+   taken — it changes behaviour across every `SO3Fun` operation and wants a test
+   tier run behind it.

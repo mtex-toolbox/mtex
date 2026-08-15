@@ -10,14 +10,8 @@ function [SRight,SLeft] = extractSym(list,varargin)
 %   [SRight,SLeft] = extractSym(list)
 %   [SRight,SLeft] = extractSym(list,'empty')
 
-if check_option(varargin,'empty')
-  SRight = [];
-  SLeft = [];
-else
-  % two separate objects - a shared handle in both slots would couple them
-  SRight = specimenSymmetry;
-  SLeft = specimenSymmetry;
-end
+SRight = [];
+SLeft = [];
 
 isSym = cellfun(@(x) isa(x,'symmetry'),list,'UniformOutput',true);
 
@@ -27,6 +21,14 @@ if any(isSym)
   isSym(pos) = false;
 
   if any(isSym), SLeft = list{find(isSym,1)}; end
+end
+
+if ~check_option(varargin,'empty')
+  % fill only what is genuinely missing - this runs on every SO3Fun
+  % constructor. Two separate objects, since a shared handle in both slots
+  % would couple them
+  if isempty(SRight), SRight = specimenSymmetry; end
+  if isempty(SLeft), SLeft = specimenSymmetry; end
 end
 
 end

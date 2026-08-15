@@ -207,8 +207,11 @@ classdef crystalSymmetry < symmetry & phaseItem
         s.opt.density = get_option(varargin,'density','');
       end
 
-      % the plotting convention of the frame
-      if ~frameAdopted
+      % the plotting convention of the frame. An adopted frame is never
+      % overwritten - unless it carries no convention at all, as a
+      % standalone crystalFrame does, in which case there is nothing to
+      % clobber and every sharer gains the one derived from the axes
+      if ~frameAdopted || isempty(s.frame.how2plot)
         if id > 11 || id==0
           pC = plottingConvention(s.cAxisRec,s.aAxis);
         else

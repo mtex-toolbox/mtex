@@ -176,6 +176,10 @@ classdef referenceFrame < matlab.mixin.Copyable
 
       if isa(fr,'crystalFrame')
         c = char(fr);
+        % an unnamed crystal frame - a symmetry built without a mineral -
+        % has no identity to show, and the bare class name says nothing to
+        % a reader. Name the coordinate system instead
+        if isempty(fr.name), c = 'crystal'; end
       else
         if ~isa(fr,'referenceFrame')
           % frame-free data resolves against the session default frame at

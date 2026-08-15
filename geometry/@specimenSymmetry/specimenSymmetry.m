@@ -45,6 +45,11 @@ methods
     end
     
     how2plot = getClass(varargin,'plottingConvention');
+    if frameAdopted && ~isempty(how2plot)
+      error('MTEX:specimenSymmetry:frameAndConvention',...
+        ['A reference frame carries its own plotting convention - pass '...
+        'either a frame or a convention, not both.'])
+    end
     if isempty(how2plot), how2plot = plottingConvention.default; end
 
     s = s@symmetry(id,rot);

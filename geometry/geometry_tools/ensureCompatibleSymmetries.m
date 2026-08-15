@@ -70,12 +70,18 @@ if isa(obj1,'SO3Fun') && isa(obj2,'S2Fun')
   return
 end
 
-% compare symmetries in case of convolution of SO3Funs
-if check_option(varargin,'conv') && ~fitSym(obj1.SRight,obj2.SLeft)
-  error('When convoluting @SO3Fun''s the symmetries have to be compatible.')
+% compare symmetries in case of convolution of SO3Funs. Only the inner pair
+% has to fit here - a convolution deliberately combines two functions with
+% different outer symmetries, so the general check below must not run
+if check_option(varargin,'conv')
+  if ~fitSym(obj1.SRight,obj2.SLeft)
+    error('When convoluting @SO3Fun''s the symmetries have to be compatible.')
+  end
+  return
 end
 
 % check symmetries for all other cases
+s = 'The symmetries are not compatible.';
 if isa(obj1,'SO3VectorField') || isa(obj1,'SO3TangentVector')
   [cs1,ss1] = symPair(obj1);
   [cs2,ss2] = symPair(obj2);
@@ -122,6 +128,10 @@ if s1.Laue.id ~= s2.Laue.id, ok = false; return; end
 fr1 = s1.frame; fr2 = s2.frame;
 
 if ~isempty(fr1) && ~isempty(fr2)
+  % a crystal frame never fits a specimen frame, however aligned their
+  % bases are: a symmetry built without lattice parameters has the
+  % canonical basis, so the alignment test alone would accept the pair
+  if isa(fr1,'crystalFrame') ~= isa(fr2,'crystalFrame'), ok = false; return; end
   ok = fr1 == fr2 || isAligned(fr1,fr2);
 else
   ok = true; % legacy frame-free objects - the group already matched
