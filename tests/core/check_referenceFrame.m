@@ -729,6 +729,19 @@ q = S2FunHarmonic.quadrature(@(v) v.x.^2,'bandwidth',16);
 assert(isempty(getFrame(q)), ...
   'check_referenceFrame: a quadrature over plain nodes must stay frame-free');
 
+% the gradient of an ODF keeps the specimen frame - ID1 drops the point
+% group but never the frame, and SO3VectorField reads frameLeft live
+% from its SLeft like SO3Fun does
+oriF = orientation.rand(10,cs);
+oriF.SS = copy(oriF.SS);
+oriF.SS.frame = fr;
+odfF = calcDensity(oriF,'halfwidth',20*degree);
+assert(odfF.frameLeft == fr, ...
+  'check_referenceFrame: calcDensity must keep the specimen frame');
+gF = odfF.grad;
+assert(gF.frameLeft == fr, ...
+  'check_referenceFrame: SO3Fun/grad must keep the specimen frame');
+
 referenceFrame.reset;
 
 end

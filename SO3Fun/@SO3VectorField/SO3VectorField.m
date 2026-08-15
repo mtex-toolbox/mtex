@@ -39,6 +39,8 @@ end
 properties (Dependent = true)
   CS
   SS
+  frameLeft  % the reference frame of SLeft - the specimen side
+  frameRight % the reference frame of SRight - the crystal side
 end
 
 methods
@@ -46,11 +48,33 @@ methods
   function CS = get.CS(SO3VF)
     CS = SO3VF.SRight;
   end
-  
+
   function SS = get.SS(SO3VF)
     SS = SO3VF.SLeft;
   end
-  
+
+  % the frames are the frames of the symmetries, resolved live - exactly
+  % as on SO3Fun ('must have two' in the cardinality table of ADR 0003)
+  function fr = get.frameLeft(SO3VF)
+    fr = SO3VF.SLeft.frame;
+  end
+
+  function fr = get.frameRight(SO3VF)
+    fr = SO3VF.SRight.frame;
+  end
+
+  function SO3VF = set.frameLeft(SO3VF,~)
+    error('MTEX:SO3Fun:fixedFrame',...
+      ['The frames of an SO3VectorField are the frames of its symmetries - ' ...
+      'assign SLeft / SRight instead.']);
+  end
+
+  function SO3VF = set.frameRight(SO3VF,~)
+    error('MTEX:SO3Fun:fixedFrame',...
+      ['The frames of an SO3VectorField are the frames of its symmetries - ' ...
+      'assign SLeft / SRight instead.']);
+  end
+
   function SO3VF = set.CS(SO3VF,CS)
     SO3VF.SRight = CS;
   end

@@ -131,11 +131,17 @@ classdef symmetry < matlab.mixin.Copyable
     end
 
     function out = ID1(sym)
+      % the trivial group in the reference frame of the input - the
+      % symmetry is dropped, where the data lives is not
+
+      if sym.id == 1, out = sym; return; end
+
       if isa(sym,'crystalSymmetry')
-        out = crystalSymmetry.default;
+        out = crystalSymmetry;
       elseif isa(sym,'specimenSymmetry')
-        out = specimenSymmetry.default;
+        out = specimenSymmetry;
       end
+      out.frame = sym.frame;
     end
     
   end
