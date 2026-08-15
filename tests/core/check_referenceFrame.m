@@ -552,7 +552,8 @@ assert(r3.frame == cs.frame, ...
 % slip system reports the specimen convention, a rolling framed vector
 % its axes names, a crystal framed vector only the frame identity
 out = evalc('display(sSr)');
-assert(contains(out,['(' conventionChar(specimenFrame.default) ')']), ...
+% the convention sits inside the clickable frame link, so match it bare
+assert(contains(out,conventionChar(specimenFrame.default)), ...
   'check_referenceFrame: a rotated slip system must display the specimen convention');
 
 rf = specimenFrame('rolling','axesNames',{'RD','TD','ND'},plottingConvention('y↑→x'));

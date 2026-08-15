@@ -176,15 +176,24 @@ classdef referenceFrame < matlab.mixin.Copyable
 
       if isa(fr,'crystalFrame')
         c = char(fr);
-        return
-      elseif ~isa(fr,'referenceFrame')
-        % frame-free data resolves against the session default frame at
-        % render time, so its labels apply here too
-        fr = specimenFrame.default;
+      else
+        if ~isa(fr,'referenceFrame')
+          % frame-free data resolves against the session default frame at
+          % render time, so its labels apply here too
+          fr = specimenFrame.default;
+        end
+
+        c = conventionChar(fr,pC);
+        if isempty(c), c = char(pC,'compact'); end
       end
 
-      c = conventionChar(fr,pC);
-      if isempty(c), c = char(pC,'compact'); end
+      % clicking the header displays the frame itself - same pattern as
+      % the crystal symmetry link in crystalSymmetry/char
+      if ~getMTEXpref('generatingHelpMode')
+        id = pushTemp(fr);
+        c = ['<a href="matlab: display(pullTemp(' int2str(id) ...
+          '),''variableName'',''frame'')">' c '</a>'];
+      end
 
     end
 
