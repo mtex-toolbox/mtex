@@ -54,10 +54,12 @@ plottingConvention.default('y↑→x');
 
 v1.how2plot = plottingConvention('z↑→x');
 
-% plot v1 and v2 in separate plots
-plot(v1,'upper','label','v_1')
+% plot v1 and v2 in separate plots - both hemispheres are shown, labeled
+% upper / lower relative to the viewing direction of each object's own
+% convention
+plot(v1,'label','v_1')
 nextAxis
-plot(v2,'upper','label','v_2')
+plot(v2,'label','v_2')
 
 %%
 % This is a deliberate change compared to MTEX 6, where |how2plot| was a
