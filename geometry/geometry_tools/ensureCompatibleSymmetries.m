@@ -34,7 +34,7 @@ function ensureCompatibleSymmetries(obj1,varargin)
 
 % check necessary symmetry condition for antipodal
 if check_option(varargin,'antipodal')
-  if ~eqTol(obj1.CS,obj1.SS)
+  if ~fitSym(obj1.CS,obj1.SS)
     error('ODF can only be antipodal if both symmetries coincide!')
   end
   return
@@ -59,7 +59,9 @@ if isa(obj1,'SO3Fun') && isa(obj2,'S2Fun')
   else
     % a plain S2Fun carries at most a frame - the left side of the SO3Fun
     % has to be group free, and an existing frame has to fit
-    ok = obj1.SLeft.Laue.id <= 2;
+    % group free: Laue always returns a centrosymmetric group, so the
+    % triclinic one is id 2 - there is no id 1 to reach here
+    ok = obj1.SLeft.Laue.id == 2;
     if ok, ok = fitFrames(obj2.frame,obj1.SLeft.frame); end
   end
   if ~ok

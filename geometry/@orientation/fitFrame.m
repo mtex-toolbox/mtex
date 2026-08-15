@@ -30,6 +30,14 @@ if isempty(fr), return; end
 
 frR = R.CS.frame;
 
+% an orientation whose symmetry carries no frame at all - a legacy .mat -
+% would otherwise be reported as acting on a 'double'
+if isempty(frR)
+  error('MTEX:orientation:frameMismatch',...
+    ['The data is expressed in a %s while the orientation carries no '...
+    'reference frame at all.'],class(fr));
+end
+
 % a crystal frame never fits a specimen frame
 if isa(fr,'crystalFrame') ~= isa(frR,'crystalFrame')
   error('MTEX:orientation:frameMismatch',...

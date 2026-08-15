@@ -133,15 +133,13 @@ methods
     % check whether the symmetries of the inner SO3Fun are suitable to the 
     % symmetries of the vector field w.r.t. the tangent space
     % representations
-    % the inner function may carry a freshly minted trivial stand-in
-    % (stripSym) rather than the identical handle - suitable means the same
-    % group living in the same frame
+    % see SO3VectorField.symMatches for why this is not simply ==
     if sign(SO3VF.internTangentSpace)>0
-      E(1) = symMatches(SO3VF.SO3F.CS, SO3VF.hiddenCS);
+      E(1) = SO3VectorField.symMatches(SO3VF.SO3F.CS, SO3VF.hiddenCS);
       E(2) = SO3VF.SO3F.SS.id == 1;
     else
       E(1) = SO3VF.SO3F.CS.id == 1;
-      E(2) = symMatches(SO3VF.SO3F.SS, SO3VF.hiddenSS);
+      E(2) = SO3VectorField.symMatches(SO3VF.SO3F.SS, SO3VF.hiddenSS);
     end
     if ~all(E)
       error(['The symmetries of the underlying SO3Fun do not match to the ' ...
@@ -173,16 +171,5 @@ methods(Static = true)
   SO3VF = interpolate(nodes, values, varargin)
   SO3VF = example(varargin)
 end
-
-end
-
-function out = symMatches(inner,hidden)
-% the inner function's symmetry is suitable when it is the hidden one
-% itself, or a trivial stand-in for the same group living in the same
-% frame - crystalSymmetry == is sealed to handle identity, so freshly
-% minted stripSym objects need the structural comparison
-
-out = inner == hidden || (inner.id == hidden.id && ...
-  ~isempty(inner.frame) && ~isempty(hidden.frame) && inner.frame == hidden.frame);
 
 end

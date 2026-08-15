@@ -115,6 +115,20 @@ methods(Static = true)
   
   function SO3VF = Z(varargin)
     SO3VF = SO3VectorFieldHandle(@(varargin) vector3d.Z(size(varargin{1})),varargin{:});
+  end
+
+  function out = symMatches(inner,hidden)
+    % whether the symmetry of the inner SO3Fun is the one the field claims
+    %
+    % Not simply ==: on the crystal side that is sealed to handle identity
+    % (phaseItem), and the inner function often carries a freshly minted
+    % stripSym stand-in rather than the identical handle. Suitable means
+    % the same group living in the same frame. On the specimen side == is
+    % already id equality, so only the crystal side needs the fallback.
+
+    out = inner == hidden || (inner.id == hidden.id && ...
+      ~isempty(inner.frame) && ~isempty(hidden.frame) && ...
+      inner.frame == hidden.frame);
   end 
 
   
