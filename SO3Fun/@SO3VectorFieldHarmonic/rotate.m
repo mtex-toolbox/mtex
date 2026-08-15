@@ -19,13 +19,13 @@ if check_option(varargin,'right')
   cs = SO3VF.hiddenCS;
   if length(cs.rot)>2 && ~any(q == cs.rot(:))
     warning('Rotating an SO3VectorField with crystal symmetry will remove the crystal symmetry')
-    SO3VF.hiddenCS = ID1(cs);
+    SO3VF.hiddenCS = stripSym(cs);
   end
 else
   ss = SO3VF.hiddenSS;
   if length(ss.rot)>2 && ~any(q == ss.rot(:))
     warning('Rotating an SO3VectorField with specimen symmetry will remove the specimen symmetry')
-    SO3VF.hiddenSS = ID1(ss);
+    SO3VF.hiddenSS = stripSym(ss);
   end
 end
 

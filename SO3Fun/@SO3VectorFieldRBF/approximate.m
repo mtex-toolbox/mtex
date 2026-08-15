@@ -17,9 +17,12 @@ function SO3VF = approximate(f, varargin)
 % See also
 % SO3FunRBF/approximate SO3VectorFieldRBF SO3VectorFieldHarmonic/quadrature
 
-% extract tangentSpace and symmetries
+% extract tangentSpace and symmetries - for a bare function handle an
+% absent symmetry genuinely means the session default
 tS = SO3TangentSpace.extract(varargin{:});
-[SRight,SLeft] = extractSym(varargin);
+[SRight,SLeft] = extractSym(varargin,'empty');
+if isempty(SRight), SRight = specimenSymmetry; end
+if isempty(SLeft), SLeft = specimenSymmetry; end
 
 
 if isa(f,'SO3VectorFieldRBF')
@@ -63,9 +66,9 @@ end
 % For approximation, one of the symmetries needs to have id=1.
 % This depends on the tangent space representation
 if tS.isRight
-  f.CS = ID1(f.CS);
+  f.CS = stripSym(f.CS);
 else
-  f.SS = ID1(f.SS);
+  f.SS = stripSym(f.SS);
 end
 
 % ----------------- Do approximation on the components --------------------

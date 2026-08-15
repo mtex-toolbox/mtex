@@ -449,6 +449,28 @@
 %
 %   referenceFrame.reset
 %
+% Data without any symmetry can now state the frame it lives in: the
+% trivial group carrying a frame is a first class citizen, obtained from a
+% symmetry by |cs.stripSym| or directly from a frame by
+%
+%   crystalSymmetry(cF)    % the trivial group on the crystal frame cF
+%   specimenSymmetry(sF)
+%
+% Extrema and samples of a spherical function expressed in a crystal frame
+% - for instance the deliberately unsymmetrised boundary normal
+% distribution of <grainBoundary.calcGBND.html |calcGBND|> - therefore
+% come back as @Miller with proper crystal indices
+%
+%   [value,pos] = max(gbnd)   % pos is a Miller now
+%
+% Along the same lines the compatibility checks behind orientation
+% products and @SO3Fun arithmetic compare the reference frames the
+% coordinates are expressed in, rather than the symmetry groups: aligned
+% crystal frames combine even when the groups differ, a compatible frame
+% transition is absorbed automatically, and a wrong sided product - an
+% orientation applied to data in specimen coordinates - is an error now
+% instead of a warning.
+%
 % *Approximation, Sampling and Clustering*
 %
 % Moving least squares approximation supports vector valued data, outlier

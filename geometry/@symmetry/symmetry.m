@@ -32,6 +32,12 @@ classdef symmetry < matlab.mixin.Copyable
     LaueRef = []
     properRef = []
   end
+
+  properties (Access = protected, Transient = true)
+    % cache for stripSym: the trivial stand-in must be a stable handle, since
+    % crystalSymmetry equality is sealed to handle identity - never saved
+    stripSymRef = []
+  end
     
   properties (Constant = true)
     pointGroups = pointGroupList % list of all point groups
@@ -130,18 +136,38 @@ classdef symmetry < matlab.mixin.Copyable
       out = lt(cs2,cs1);
     end
 
-    function out = ID1(sym)
+    function out = stripSym(sym)
       % the trivial group in the reference frame of the input - the
       % symmetry is dropped, where the data lives is not
+      %
+      % the stand-in is cached on the input handle: crystalSymmetry
+      % equality is sealed to handle identity, so repeated drops of the
+      % same symmetry must return the same handle to stay comparable
 
       if sym.id == 1, out = sym; return; end
 
-      if isa(sym,'crystalSymmetry')
-        out = crystalSymmetry;
-      elseif isa(sym,'specimenSymmetry')
-        out = specimenSymmetry;
+      out = sym.stripSymRef;
+
+      % invalidate when the frame was replaced - handle identity, since
+      % an equal-valued fork is a different frame
+      if ~isempty(out)
+        sameFrame = (isempty(sym.frame) && isempty(out.frame)) || ...
+          (~isempty(sym.frame) && ~isempty(out.frame) && out.frame == sym.frame);
+        if ~sameFrame, out = []; end
       end
-      out.frame = sym.frame;
+
+      if isempty(out)
+        if isa(sym,'crystalSymmetry')
+          out = crystalSymmetry;
+          % the mineral doubles as the frame identity, so displays keep
+          % saying whose frame the data lives in
+          out.mineral = sym.mineral;
+        elseif isa(sym,'specimenSymmetry')
+          out = specimenSymmetry;
+        end
+        out.frame = sym.frame;
+        sym.stripSymRef = out;
+      end
     end
     
   end

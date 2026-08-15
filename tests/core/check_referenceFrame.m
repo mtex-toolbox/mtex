@@ -23,6 +23,8 @@ checkSaveLoadRoundTrip;
 checkEnsureCS;
 checkSessionReset;
 checkFrameCarriage;
+checkTangentVectorFrames;
+checkTrivialSymmetryFromFrame;
 
 disp('check_referenceFrame: passed');
 
@@ -416,16 +418,22 @@ assert(p.frame == cs.frame && p.how2plot == cs.how2plot, ...
   'check_referenceFrame: the cast to S2FunHarmonic lost the crystal frame');
 
 % extrema come back in the frame of the function: Miller for a
-% symmetrised one, a crystal-framed vector3d for a plain one - that the
-% latter should ideally be a Miller too is an open problem, see the note
-% in S2Fun/min and ADR 0003
+% symmetrised one, and Miller carrying the trivial group on the crystal
+% frame for a plain crystal-framed one (ADR 0003, orientation without
+% symmetry - resolved the former open problem in S2Fun/min)
 [~,pos] = max(sFs);
 assert(isa(pos,'Miller') && pos.CS == cs, ...
   'check_referenceFrame: extrema of a symmetrised S2Fun are not Miller');
 
 [~,pos] = max(p);
-assert(pos.frame == cs.frame, ...
-  'check_referenceFrame: extrema of a crystal-framed S2Fun lost the frame');
+assert(isa(pos,'Miller') && pos.CS.id == 1 && pos.frame == cs.frame, ...
+  ['check_referenceFrame: extrema of a plain crystal-framed S2Fun must be ' ...
+  'Miller with the trivial group on that frame']);
+
+v = p.discreteSample(5);
+assert(isa(v,'Miller') && v.CS.id == 1 && v.frame == cs.frame, ...
+  ['check_referenceFrame: a sample of a plain crystal-framed S2Fun must be ' ...
+  'Miller with the trivial group on that frame']);
 
 end
 
@@ -729,7 +737,7 @@ q = S2FunHarmonic.quadrature(@(v) v.x.^2,'bandwidth',16);
 assert(isempty(getFrame(q)), ...
   'check_referenceFrame: a quadrature over plain nodes must stay frame-free');
 
-% the gradient of an ODF keeps the specimen frame - ID1 drops the point
+% the gradient of an ODF keeps the specimen frame - stripSym drops the point
 % group but never the frame, and SO3VectorField reads frameLeft live
 % from its SLeft like SO3Fun does
 oriF = orientation.rand(10,cs);
@@ -741,6 +749,105 @@ assert(odfF.frameLeft == fr, ...
 gF = odfF.grad;
 assert(gF.frameLeft == fr, ...
   'check_referenceFrame: SO3Fun/grad must keep the specimen frame');
+
+referenceFrame.reset;
+
+end
+
+function checkTangentVectorFrames
+% the frames of a vector field survive evaluation and tangent space
+% conversion. eval runs through transformTangentSpace, which used to
+% downcast the reference to a bare rotation and refabricate the dropped
+% triclinic specimen symmetry from the session default - the main way
+% frameLeft flipped to the session frame while running a doc page
+% (ADR 0003: absence is empty, never fabricated)
+
+referenceFrame.reset;
+
+cs = crystalSymmetry('321');
+fr = specimenFrame('lab','axesNames',{'A','B','C'},plottingConvention('y←↑x'));
+
+ori = orientation.rand(20,cs);
+ori.SS = copy(ori.SS);
+ori.SS.frame = fr;
+odf = calcDensity(ori,'halfwidth',20*degree);
+G = SO3FunHarmonic(odf).grad;
+assert(G.frameLeft == fr, ...
+  'check_referenceFrame: grad must keep the specimen frame');
+
+% the tangent vector keeps the pair; its own frame is derived from the
+% side it is expressed in
+v = G.eval(ori(1));
+ref = v.oriRef;
+assert(ref.SS.frame == fr, ...
+  'check_referenceFrame: eval must keep the specimen frame on the tangent vector');
+assert(v.frame == fr, ...
+  'check_referenceFrame: a left tangent vector is expressed in the specimen frame');
+assert(right(v).frame == cs.frame, ...
+  'check_referenceFrame: a right tangent vector is expressed in the crystal frame');
+
+% an explicitly requested representation converts and keeps the frames
+vR = G.eval(ori(1),SO3TangentSpace.rightVector);
+ref = vR.oriRef;
+assert(ref.SS.frame == fr, ...
+  'check_referenceFrame: a converted evaluation must keep the specimen frame');
+
+% converting the intern representation rebuilds the inner harmonic from
+% Wigner-D products - the components lose the groups but keep the frames
+GR = right(G,'internTangentSpace');
+assert(GR.frameLeft == fr, ...
+  'check_referenceFrame: transformInternTangentSpace must keep the specimen frame');
+
+referenceFrame.reset;
+
+end
+
+function checkTrivialSymmetryFromFrame
+% frames convert to the trivial group carrying them - the enabling half of
+% "orientation without symmetry" (ADR 0003): the constructors adopt the
+% frame handle, and extractSym can report absence instead of fabricating a
+% session-framed stand-in
+
+referenceFrame.reset;
+
+cs = crystalSymmetry('321',[4.9 4.9 5.4],'mineral','quartz');
+t = crystalSymmetry(cs.frame);
+assert(t.id == 1, ...
+  'check_referenceFrame: crystalSymmetry(frame) must be the trivial group');
+assert(t.frame == cs.frame, ...
+  'check_referenceFrame: crystalSymmetry(frame) must adopt the frame handle');
+assert(strcmp(t.mineral,'quartz'), ...
+  'check_referenceFrame: the mineral doubles as the frame identity');
+
+sF = specimenFrame.rolling;
+s = specimenSymmetry(sF);
+assert(s.id == 1 && s.frame == sF, ...
+  'check_referenceFrame: specimenSymmetry(frame) must adopt the frame handle');
+
+% a deliberately passed trivial symmetry is indistinguishable from
+% "absent" by its id, so it must survive construction with its frame
+fr = sF;
+VF = SO3VectorFieldHandle(@(r) vector3d.X .* angle(r), cs, specimenSymmetry(fr));
+assert(VF.frameLeft == fr, ...
+  'check_referenceFrame: a passed trivial specimen symmetry must survive the Handle ctor');
+VFH = SO3VectorFieldHarmonic(VF,'bandwidth',16);
+assert(VFH.frameLeft == fr, ...
+  'check_referenceFrame: the trivial symmetry frame must survive quadrature into a harmonic field');
+
+% extractSym: absence is representable
+[a,b] = extractSym({},'empty');
+assert(isempty(a) && isempty(b), ...
+  'check_referenceFrame: extractSym ''empty'' must return empty for absent slots');
+[a,b] = extractSym({t},'empty');
+assert(~isempty(a) && a.frame == cs.frame && isempty(b), ...
+  'check_referenceFrame: a passed symmetry fills only its slot');
+
+% the default path returns two distinct objects - a shared handle in both
+% slots couples them
+[a,b] = extractSym({});
+a.opt.tag = true;
+assert(~isfield(b.opt,'tag'), ...
+  'check_referenceFrame: extractSym default slots must not alias one handle');
 
 referenceFrame.reset;
 

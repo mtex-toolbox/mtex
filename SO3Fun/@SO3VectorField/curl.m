@@ -55,9 +55,11 @@ cs = SO3VF.hiddenCS;
 ss = SO3VF.hiddenSS;
 
 if SO3VF.tangentSpace.isRight
-  c = SO3TangentVector(dx,dy,dz,pRot(:),SO3VF.tangentSpace,cs,ss) + SO3VF.eval(pRot(:));
+  c = SO3TangentVector(vector3d(dx,dy,dz),orientation(pRot(:),cs,ss),...
+    SO3VF.tangentSpace) + SO3VF.eval(pRot(:));
 else
-  c = SO3TangentVector(dx,dy,dz,pRot(:),SO3VF.tangentSpace,cs,ss) - SO3VF.eval(pRot(:));
+  c = SO3TangentVector(vector3d(dx,dy,dz),orientation(pRot(:),cs,ss),...
+    SO3VF.tangentSpace) - SO3VF.eval(pRot(:));
 end
 
 end

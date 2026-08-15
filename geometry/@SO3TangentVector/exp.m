@@ -14,8 +14,8 @@ function rot = exp(v,varargin)
 % vector3d/exp orientation/log
 
 if nargin>1 && isa(varargin{1},'quaternion') 
- r1 = orientation(v.rot,v.hiddenCS,v.hiddenSS);
- r2 = orientation(varargin{1},v.hiddenCS,v.hiddenSS);
+ r1 = v.oriRef;
+ r2 = orientation(varargin{1},r1.CS,r1.SS);
  if r1 ~= r2
    error('The tangent space representation and the given rotations do not coincide.')
  end
@@ -23,7 +23,7 @@ end
 tS = SO3TangentSpace.extract(varargin,v.tangentSpace);
 v = transformTangentSpace(v,tS);
 
-rot_ref = orientation(v.rot,v.hiddenCS,v.hiddenSS);
+rot_ref = v.oriRef;
 
 rot = exp@vector3d(v,rot_ref,tS);
 

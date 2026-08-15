@@ -12,8 +12,9 @@ function a = accumarray(subs,v,varargin)
 %  v - @SO3TangentVector
 
 % ensure compatible tangent spaces
+q = rotation(v.oriRef);
 groupcheck = @(r) all( angle(r,r(1))<1e-5 ,'all' );
-e = accumarray(subs, (1:numel(v.rot))', [],  @(ii) groupcheck(v.rot(ii)));
+e = accumarray(subs, (1:numel(q))', [],  @(ii) groupcheck(q(ii)));
 if ~all(e)
   error(['Trying to add some tangent vectors of different tangent spaces. ' ...
          'Sometimes the rotations (which define the tangent spaces) do not coincide.'])
@@ -21,6 +22,7 @@ end
 
 % Computation
 a = accumarray@vector3d(subs,v,varargin{:});
-a.rot = accumarray(subs,v.rot);
+ref = v.oriRef;
+a.oriRef = orientation(accumarray(subs,rotation(ref)),ref.CS,ref.SS);
 
 end

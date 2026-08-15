@@ -192,15 +192,75 @@ job implicitly and produced the bug family this ADR opens with.
   freezing `copy` in `newSphericalPlot` also becomes automatic). This refines the
   Considered Options above: value semantics was rejected for frames and conventions
   *wholesale*; the end state is value conventions inside handle frames.
-- Open problem: a plain data object expressed in a *crystal* frame — a `vector3d` or
-  `S2Fun` whose frame is a `crystalFrame`, e.g. the deliberately unsymmetrised GBND —
-  cannot be turned into a `Miller`, because `Miller` requires a `crystalSymmetry` and
-  the frame does not know its point group. Extrema and sampling of such functions
-  (`S2Fun/min`, `discreteSample`, `optimalSample`) therefore return crystal-framed
-  `vector3d` where `Miller` would be the natural answer. Resolution candidates: a back
-  reference from `crystalFrame` to its point group (which re-tangles frame and
-  symmetry), or a `Miller` that can live on a bare crystal frame with the symmetry
-  optional.
+- ~~Open problem~~ resolved 2026-08-15 by the "orientation without symmetry" section
+  below: a plain data object expressed in a *crystal* frame — a `vector3d` or `S2Fun`
+  whose frame is a `crystalFrame`, e.g. the deliberately unsymmetrised GBND — becomes
+  a `Miller` via `crystalSymmetry(cF)`, the trivial group carrying the frame. Extrema
+  and sampling (`S2Fun/min`/`max`, `discreteSample`, `optimalSample`) return such a
+  `Miller`: hkl in the right basis, honestly unsymmetrised. The once-considered back
+  reference from `crystalFrame` to its point group was not needed.
 - The `phaseItem` sealed-`eq` problem is *not* resolved here. Phase identity is a fourth
   concept tangled into `crystalSymmetry`; it is the one data-side handle that is
   legitimately identity-semantic, and it deserves its own decision.
+
+## Orientation without symmetry (2026-08-15)
+
+An orientation is a coordinate transform between two reference frames; the symmetry
+groups are optional decoration on top. The CS/SS slots therefore sometimes need to hold
+only a frame — the equivariant side of an `SO3TangentVector`'s reference orientation,
+the symmetry-free side of a quadrature grid, a function deliberately built
+`'noSymmetry'`. **Decided: the symmetry-free state is represented as the trivial group
+carrying the frame** — the shape `stripSym` (`geometry/@symmetry/symmetry.m`) already
+produces, made first-class. Two rejected alternatives: bare `referenceFrame`s directly
+in the CS/SS slots (every reader of `ori.CS` would have to branch or wrap — in MATLAB
+the wrapping cost lands on hundreds of read sites instead of one construction site), and
+storing frames on `orientation` with groups optional (the clean end state, but it
+rewrites the most-threaded property pair in the codebase; everything below is a subset
+of it and keeps it reachable).
+
+Three consequences, all implemented on `feature/referenceFrame`:
+
+1. **Absence is empty, never fabricated.** The historical idiom — `extractSym`
+   (`tools/option_tools/extractSym.m`) fabricating a session-framed `specimenSymmetry`
+   as fallback, consumers testing `id==1` for "nothing given" — conflates a
+   *deliberately passed* triclinic symmetry with an absent one, and the fabricated
+   sentinel carries the live session frame, which is exactly how results silently swap
+   a data frame for the session's. `extractSym(list,'empty')` returns `[]` for absent
+   slots; consumers guard with `isempty`, so a passed trivial symmetry survives with
+   its frame. A fabricated default remains correct in exactly one place: constructors
+   of objects that genuinely have nothing to inherit from (a bare function handle, a
+   bare rotation) — there "absent" really does mean "the session default".
+
+2. **Frames convert to trivial symmetries.** `crystalSymmetry(cF)` /
+   `specimenSymmetry(sF)` construct the trivial group on a given frame, adopting the
+   handle (never copying, never writing to it — it may be shared). This supplies the
+   missing half of the crystalFrame→Miller open problem above: the basis was always in
+   the frame, only the demand for a group blocked the construction.
+
+3. **A tangent vector's own frame is derived, not stored.** `SO3TangentVector` keeps
+   its symmetry pair (`hiddenCS`/`hiddenSS`) — the pair must be stored because both
+   groups reappear depending on the representation: one side is an *invariance* of the
+   reference orientation (a left tangent vector is identical at `R` and `R*c`, so CS
+   stays on `rot`), the other an *equivariance* (the left vector at `s*R` is `s` applied
+   to the vector at `R`, so SS cannot reduce the reference without transforming the
+   vector — `get.rot` presents it as `stripSym`). But the vector *as a vector* is expressed
+   in exactly one frame: the specimen frame for left vectors, the crystal frame for
+   right ones. `getFrame` derives it from the corresponding side
+   (`geometry/@SO3TangentVector/SO3TangentVector.m`), `setFrame` errors — the `Miller`
+   pattern. In the cardinality table `SO3TangentVector` joins `Miller` as "must have
+   one, derived from a symmetry it holds".
+
+4. **Compatibility checks compare frames, not groups.** `ensureSym` (the gate of
+   `orientation/times`/`mtimes`) routes the `ori*ori` inner check through `fitFrame`:
+   aligned crystal frames pass — *also when the point groups differ* — a compatible
+   transition is absorbed, and a wrong-sided combination now errors where it used to
+   warn; for `ori*Miller` and friends the `fitFrame` gate inside `rotate` decides
+   alone, since transforming in both places would transform twice. The
+   `rot`-respects-symmetry warnings stay: a bare rotation factor is a genuine group
+   question. `ensureCompatibleSymmetries` (SO3Fun arithmetic/conv/eval) decides by
+   frame handle first — registered symmetries share their frame handle, and
+   `stripSym` stand-ins keep it, so handle identity alone certifies compatibility;
+   duplicates not yet interned fall back to aligned frames carrying the same Laue
+   class. The Laue comparison survives only in that fallback and where the group is
+   the actual subject (`orientation/dot`'s misorientation branches, deliberately
+   untouched).

@@ -65,7 +65,61 @@ if max(norm(v - vRef)) > 1e-10
   error('log without reference orientation is broken');
 end
 
+checkSymmetryCarriage;
+
 disp('check_logReference: ok')
+
+end
+
+% ------------------------------------------------------------------------
+
+function checkSymmetryCarriage
+% the symmetry pair of the reference survives log and exp
+%
+% Regression test: quaternion/log builds the tangent vector on a bare
+% reference, then orientation/log rewraps it with the real one. The
+% SO3TangentVector constructor appended the source's own pair to the
+% argument list, and extractSym returns the FIRST symmetry it finds - so
+% the trivial pair of the bare inner reference outranked the caller's
+% orientation. It stayed invisible while a fabricated default was
+% indistinguishable from an absent symmetry; once absence became empty
+% (ADR 0003) every log and exp silently returned triclinic.
+
+cs = crystalSymmetry('321');
+ss = specimenSymmetry('222');
+ori_ref = orientation.byEuler(10*degree,20*degree,30*degree,cs,ss);
+ori = ori_ref * orientation.byAxisAngle(Miller(1,2,-3,3,cs),1,cs,cs);
+
+for tS = [SO3TangentSpace.rightVector,SO3TangentSpace.leftVector]
+
+  v = log(ori,ori_ref,tS);
+  ref = v.oriRef;
+
+  if ref.CS.id ~= cs.id || ref.SS.id ~= ss.id
+    error('log dropped a symmetry of the reference, tangentSpace %d',double(tS));
+  end
+
+  % the frames ride along with the groups - a refabricated symmetry would
+  % carry the session frame instead of the one of the data
+  if ref.CS.frame ~= cs.frame || ref.SS.frame ~= ss.frame
+    error('log dropped a reference frame, tangentSpace %d',double(tS));
+  end
+
+  e = exp(v,ori_ref,tS);
+  if e.CS.id ~= cs.id || e.SS.id ~= ss.id
+    error('exp(log(ori,ori_ref)) dropped a symmetry, tangentSpace %d',double(tS));
+  end
+end
+
+% the reference is the single source of the pair, so a tangent vector has to
+% survive being rebuilt from its own oriRef. Not from its rot - that one
+% shows the equivariant side as a trivial stand-in on purpose
+v = log(ori,ori_ref,SO3TangentSpace.leftVector);
+r = SO3TangentVector(v,v.oriRef,v.tangentSpace);
+ref = r.oriRef;
+if ref.CS.id ~= cs.id || ref.SS.id ~= ss.id
+  error('rebuilding a tangent vector from its own reference dropped a symmetry');
+end
 
 end
 

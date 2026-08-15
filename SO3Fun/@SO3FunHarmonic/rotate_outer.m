@@ -23,7 +23,7 @@ if check_option(varargin,'right')
     SO3F.CS = rot.CS;
   elseif numSym(SO3F.CS.Laue)>2 && ~all(any(rot(:).' == SO3F.CS.rot(:)))
     warning('Rotating an ODF with crystal symmetry will remove the crystal symmetry')
-    SO3F.CS = crystalSymmetry.default;
+    SO3F.CS = stripSym(SO3F.CS); % drop the group, keep the frame (ADR 0003)
   end
   
 else
@@ -32,7 +32,7 @@ else
     SO3F.SS = rot.SS;
   elseif numSym(SO3F.SS.Laue)>2 && ~all(any(rot(:).' == SO3F.SS.rot(:)))
     warning('Rotating an ODF with specimen symmetry will remove the specimen symmetry')
-    SO3F.SS = specimenSymmetry.default;
+    SO3F.SS = stripSym(SO3F.SS); % drop the group, keep the frame (ADR 0003)
   end
 end
 

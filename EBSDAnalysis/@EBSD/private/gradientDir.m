@@ -61,8 +61,9 @@ gW = h1 .* c(1) + h2 .* c(2);
 
 % restore the tangent type, where gradient produced one
 if isa(g,'SO3TangentVector')
-  rot = g.rot;
-  gW = SO3TangentVector(gW, rot(:,1), g.tangentSpace);
+  % oriRef, not .rot - the latter shows one side of the pair as a stand-in
+  oriRef = g.oriRef;
+  gW = SO3TangentVector(gW, oriRef(:,1), g.tangentSpace);
 end
 
 % in the shape of the data, so a gridded map gives a map shaped gradient and

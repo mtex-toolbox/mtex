@@ -8,7 +8,7 @@ switch s(1).type
     v.y = subsref(v.y,s(1));
     v.z = subsref(v.z,s(1));
 
-    v.rot = subsref(v.rot,s(1));
+    v.oriRef = subsref(v.oriRef,s(1));
 
     v.opt = struct;
 

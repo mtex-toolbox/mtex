@@ -115,8 +115,9 @@ for n=1:N
 
 end
 
-% output
-f_new = SO3FunHarmonic(sqrt(3)*fhat);
+% output - the product with a degree 1 Wigner-D function is no longer
+% symmetric under f's groups, but it still lives in f's frames
+f_new = SO3FunHarmonic(sqrt(3)*fhat, stripSym(f.SRight), stripSym(f.SLeft));
 
 end
 

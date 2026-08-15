@@ -35,12 +35,14 @@ v = S2G(discretesample(d,n));
 % some local distortions
 v = rotation.rand(n,'maxAngle',res*1.5) .* v(:);
 
-% if there is a symmetry, return a Miller
+% the sample lives in the reference frame of the function - in a crystal
+% frame it comes back as Miller, with the trivial group when the function
+% carries no symmetry (ADR 0003, orientation without symmetry)
 if isa(S2F,'S2FunHarmonicSym') && isa(S2F.CS,'crystalSymmetry')
   v = Miller(v,S2F.CS);
+elseif isa(S2F.frame,'crystalFrame')
+  v = Miller(v, crystalSymmetry(S2F.frame));
 else
-  % the sample lives in the reference frame of the function - see the
-  % open problem note in S2Fun/min about plain crystal-framed functions
   v.frame = S2F.frame;
 end
 

@@ -13,11 +13,16 @@ methods
     % usually specimen symmetry is either triclinic or orthorhombic
     %
     
-    if nargin == 0 || isa(varargin{1},'plottingConvention')
-      
+    % the trivial group carrying a given specimenFrame - "orientation
+    % without symmetry", see ADR 0003. The frame handle is adopted, not
+    % copied, and never written to - it may be shared
+    frameAdopted = nargin > 0 && isa(varargin{1},'specimenFrame');
+
+    if frameAdopted || nargin == 0 || isa(varargin{1},'plottingConvention')
+
       id = 1;
       rot = rotation.id;
-      
+
     else
       
       if isa(varargin{1},'quaternion') % define the symmetry just by rotations
@@ -44,12 +49,16 @@ methods
 
     s = s@symmetry(id,rot);
 
-    % reuse the registered session frame when the requested convention
-    % equals the one it carries, so that plotx2east - which writes onto
-    % that frame - keeps reaching this symmetry; fork an unregistered
-    % frame otherwise - never write a caller's convention through the
-    % shared session frame
-    s.frame = specimenSymmetry.frameFor(how2plot);
+    if frameAdopted
+      s.frame = varargin{1};
+    else
+      % reuse the registered session frame when the requested convention
+      % equals the one it carries, so that plotx2east - which writes onto
+      % that frame - keeps reaching this symmetry; fork an unregistered
+      % frame otherwise - never write a caller's convention through the
+      % shared session frame
+      s.frame = specimenSymmetry.frameFor(how2plot);
+    end
 
     if s.id > 16
       warning(s.pointGroup + " is not a suitable specimen symmetry!")

@@ -5,10 +5,10 @@ s = sum@vector3d(v,varargin{:});
 
 % cut the rotations
 if isscalar(s)
-  s.rot = v.rot(1);
+  s.oriRef = v.oriRef(1);
 else
   sm = size(s);
-  d = length(size(s.rot));
+  d = length(size(s.oriRef));
   sm(end+1:d) = 1;
   idx = repmat({':'}, 1, d);
   for i = 1:d
@@ -16,7 +16,7 @@ else
       idx{i} = 1;
     end
   end
-  s.rot = s.rot(idx{:});
+  s.oriRef = s.oriRef(idx{:});
 end
 
 % ensure compatible tangent spaces

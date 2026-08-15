@@ -67,14 +67,11 @@ methods
     SO3VF.internTangentSpace = tS;
     SO3VF.tangentSpace = tS;
 
-    % get symmetries
-    [cs,ss] = extractSym(varargin);
-    if cs.id==1
-      cs = SO3F.SRight;
-    end
-    if ss.id==1
-      ss = SO3F.SLeft;
-    end
+    % get symmetries - absence is empty, never a fabricated default, so a
+    % passed triclinic symmetry survives with its frame (ADR 0003)
+    [cs,ss] = extractSym(varargin,'empty');
+    if isempty(cs), cs = SO3F.SRight; end
+    if isempty(ss), ss = SO3F.SLeft; end
 
     % set the symmetries (one of the symmetries have to be ignored,
     % dependent on the intern tangent space representation)
@@ -82,9 +79,9 @@ methods
     SO3VF.hiddenSS = ss;
     if tS.isLeft
       SO3F.SRight = cs;
-      SO3F.SLeft = ID1(ss);
+      SO3F.SLeft = stripSym(ss);
     else
-      SO3F.SRight = ID1(cs);
+      SO3F.SRight = stripSym(cs);
       SO3F.SLeft = ss;
     end
 
@@ -119,12 +116,12 @@ methods
     if sign(SO3VF.tangentSpace)>0
       cs = SO3VF.hiddenCS;
     else
-      cs = ID1(SO3VF.hiddenCS);
+      cs = stripSym(SO3VF.hiddenCS);
     end
   end
   function ss = get.SLeft(SO3VF)
     if sign(SO3VF.tangentSpace)>0
-      ss = ID1(SO3VF.hiddenSS);
+      ss = stripSym(SO3VF.hiddenSS);
     else
       ss = SO3VF.hiddenSS;
     end
@@ -136,12 +133,15 @@ methods
     % check whether the symmetries of the inner SO3Fun are suitable to the 
     % symmetries of the vector field w.r.t. the tangent space
     % representations
+    % the inner function may carry a freshly minted trivial stand-in
+    % (stripSym) rather than the identical handle - suitable means the same
+    % group living in the same frame
     if sign(SO3VF.internTangentSpace)>0
-      E(1) = SO3VF.SO3F.CS == SO3VF.hiddenCS;
+      E(1) = symMatches(SO3VF.SO3F.CS, SO3VF.hiddenCS);
       E(2) = SO3VF.SO3F.SS.id == 1;
     else
       E(1) = SO3VF.SO3F.CS.id == 1;
-      E(2) = SO3VF.SO3F.SS == SO3VF.hiddenSS;
+      E(2) = symMatches(SO3VF.SO3F.SS, SO3VF.hiddenSS);
     end
     if ~all(E)
       error(['The symmetries of the underlying SO3Fun do not match to the ' ...
@@ -173,5 +173,16 @@ methods(Static = true)
   SO3VF = interpolate(nodes, values, varargin)
   SO3VF = example(varargin)
 end
+
+end
+
+function out = symMatches(inner,hidden)
+% the inner function's symmetry is suitable when it is the hidden one
+% itself, or a trivial stand-in for the same group living in the same
+% frame - crystalSymmetry == is sealed to handle identity, so freshly
+% minted stripSym objects need the structural comparison
+
+out = inner == hidden || (inner.id == hidden.id && ...
+  ~isempty(inner.frame) && ~isempty(hidden.frame) && inner.frame == hidden.frame);
 
 end

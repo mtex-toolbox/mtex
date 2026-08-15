@@ -4,6 +4,7 @@ classdef crystalSymmetry < symmetry & phaseItem
 %   crystalSymmetry('cubic')
 %   crystalSymmetry('2/m',[8.6 13 7.2],[90 116, 90]*degree,'mineral','orthoclase')
 %   crystalSymmetry('O')
+%   crystalSymmetry(cF) % the trivial group carrying the crystalFrame cF
 %   crystalSymmetry('LaueId',9)
 %   crystalSymmetry('SpaceId',153)
 %   rot = rotation.map(vector3d(1,1,1),vector3d.Z,vector3d(0,-1,1),vector3d.X)
@@ -118,8 +119,20 @@ classdef crystalSymmetry < symmetry & phaseItem
       % this is for compatibility with using "strings" as input
       try varargin = controllib.internal.util.hString2Char(varargin); catch, end
 
+      % the trivial group carrying a given crystalFrame - "orientation
+      % without symmetry", see ADR 0003. The frame handle is adopted, not
+      % copied, and never written to - it may be shared
+      frameAdopted = nargin > 0 && isa(varargin{1},'crystalFrame');
+
+      if frameAdopted
+
+        fr = varargin{1};
+        varargin(1) = [];
+        id = 1;
+        rot = rotation.id;
+
       % define the symmetry just by rotations
-      if nargin == 0
+      elseif nargin == 0
         
         id = 1;
         axes = [xvector,yvector,zvector];
@@ -175,14 +188,19 @@ classdef crystalSymmetry < symmetry & phaseItem
       % define the symmetry
       s = s@symmetry(id,rot);
 
-      % set mineral name and color
-      s.mineral = get_option(varargin,'mineral','');
+      % set mineral name and color - an adopted frame donates its name
+      if frameAdopted
+        s.mineral = get_option(varargin,'mineral',char(fr.name));
+      else
+        s.mineral = get_option(varargin,'mineral','');
+      end
       s.mineral = strtrim(regexprep(s.mineral,char(0),' '));
       s.color = get_option(varargin,'color','');
 
       % the reference frame carries the axes and, below, the plotting
-      % convention; the mineral doubles as the frame identity for now
-      fr.name = s.mineral;
+      % convention; the mineral doubles as the frame identity for now -
+      % except for an adopted frame, which is never written to
+      if ~frameAdopted, fr.name = s.mineral; end
       s.frame = fr;
 
       if check_option(varargin,'density')
@@ -190,12 +208,14 @@ classdef crystalSymmetry < symmetry & phaseItem
       end
 
       % the plotting convention of the frame
-      if id > 11 || id==0
-        pC = plottingConvention(s.cAxisRec,s.aAxis);
-      else
-        pC = plottingConvention(s.cAxisRec,s.bAxis);
+      if ~frameAdopted
+        if id > 11 || id==0
+          pC = plottingConvention(s.cAxisRec,s.aAxis);
+        else
+          pC = plottingConvention(s.cAxisRec,s.bAxis);
+        end
+        s.frame.how2plot = pC;
       end
-      s.frame.how2plot = pC;
 
     end
 

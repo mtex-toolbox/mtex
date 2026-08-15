@@ -9,6 +9,6 @@ v2 = transformTangentSpace(v2,tS);
 
 ensureCompatibleTangentSpaces(v1,v2,'equal');
 v = cross@vector3d(vector3d(v1),vector3d(v2),varargin{:});
-v = SO3TangentVector(v,v1.rot,tS,v1.hiddenCS,v1.hiddenSS);
+v = SO3TangentVector(v,v1.oriRef,tS);
 
 end

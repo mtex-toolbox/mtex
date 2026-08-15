@@ -45,6 +45,7 @@ checkRotateCommutes(fix);
 checkCurlIdentity(fix);
 checkQuadrature(fix);
 checkEvalOnGrid(fix);
+checkPairCarriage(fix);
 
 disp('check_SO3TangentVectors: passed');
 
@@ -307,6 +308,41 @@ d = max(norm(vector3d(gr.eval(q)) - vector3d(gr.eval(q(:)))));
 assert(d < 1e-5, ...
   ['check_SO3TangentVectors: evaluating on a quadratureSO3Grid and on its ' ...
    'flat list differ by %.3g'], d)
+
+end
+
+% =========================================================================
+function checkPairCarriage(fix)
+% the symmetry pair rides along every reconstruction of a tangent vector.
+% .rot exposes only one group (stripSym on the equivariant side, frame kept),
+% so a path that rebuilds from .rot without passing the pair drops one
+% symmetry silently - cat did exactly that: concatenating left vectors
+% lost the specimen symmetry, right vectors the crystal symmetry.
+
+r = orientation.rand(2,fix.cs,fix.ss);
+v = fix.g1.eval(r);
+
+ref = v.oriRef;
+assert(ref.CS.id == fix.cs.id && ref.SS.id == fix.ss.id, ...
+  'check_SO3TangentVectors: eval must keep both symmetries on the tangent vector');
+
+w = [v(1); v(2)];
+ref = w.oriRef;
+assert(ref.CS.id == fix.cs.id && ref.SS.id == fix.ss.id, ...
+  'check_SO3TangentVectors: cat must keep both symmetries');
+
+u = transformTangentSpace(v,v.tangentSpace);
+ref = u.oriRef;
+assert(ref.CS.id == fix.cs.id && ref.SS.id == fix.ss.id, ...
+  'check_SO3TangentVectors: a no-op tangent space transform must keep both symmetries');
+
+% the vector's own frame is derived from the reference orientation:
+% left vectors live in the specimen frame, right vectors in the crystal one
+assert(v.frame == fix.ss.frame, ...
+  'check_SO3TangentVectors: a left tangent vector is expressed in the specimen frame');
+vr = right(v);
+assert(vr.frame == fix.cs.frame, ...
+  'check_SO3TangentVectors: a right tangent vector is expressed in the crystal frame');
 
 end
 
