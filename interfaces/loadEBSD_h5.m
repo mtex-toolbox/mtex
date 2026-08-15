@@ -277,6 +277,15 @@ elseif startsWith(string(Conf.settings.name),"EDAX","IgnoreCase",true) && ...
   ebsd = applyEulerCorrectionTable(ebsd,ext);
 end
 
+% an Oxford file states its data in the sample frame CS1 - the map lives
+% in the measurement frame with the axes X1, Y1, Z1
+if startsWith(string(Conf.settings.name),"Oxford","IgnoreCase",true)
+  fr = specimenFrame.measurement;
+  pC = getClass(varargin,'plottingConvention');
+  if ~isempty(pC), fr.how2plot = pC; end
+  ebsd.frame = fr;
+end
+
 end
 
 %% Formating functions

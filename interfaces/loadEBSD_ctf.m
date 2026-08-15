@@ -97,6 +97,13 @@ end
 ebsd = applyEulerCorrectionFixed(ebsd,'.ctf',rotation.byEuler(pi,0,0),...
   varargin{:},'acquisitionEuler',acq);
 
+% Oxford states its data in the sample frame CS1 - the map lives in the
+% measurement frame with the axes X1, Y1, Z1
+fr = specimenFrame.measurement;
+pC = getClass(varargin,'plottingConvention');
+if ~isempty(pC), fr.how2plot = pC; end
+ebsd.frame = fr;
+
 end
 
 function header = ctfHeaderStruct(hl,phase_line)

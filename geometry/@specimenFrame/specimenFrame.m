@@ -71,6 +71,9 @@ classdef specimenFrame < referenceFrame
       % imported EBSD data refers to (the acquisition surface CS0 is
       % reported by the Oxford loaders but not applied)
       sF = specimenFrame.named('measurement',{'X1','Y1','Z1'});
+      % seeded with the convention of the vendor software - x east, y
+      % south, the way an SEM image is displayed
+      if isempty(sF.how2plot), sF.how2plot = plottingConvention.ij; end
     end
 
     function sF = rolling
