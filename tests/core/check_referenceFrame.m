@@ -25,6 +25,7 @@ checkSessionReset;
 checkFrameCarriage;
 checkTangentVectorFrames;
 checkTrivialSymmetryFromFrame;
+checkFundamentalSectorFrame;
 
 disp('check_referenceFrame: passed');
 
@@ -854,6 +855,57 @@ assert(~isempty(a) && a.frame == cs.frame && isempty(b), ...
 a.opt.tag = true;
 assert(~isfield(b.opt,'tag'), ...
   'check_referenceFrame: extractSym default slots must not alias one handle');
+
+referenceFrame.reset;
+
+end
+
+% =========================================================================
+function checkFundamentalSectorFrame
+% the fundamental sector of a crystal symmetry belongs to the CRYSTAL
+% frame, so an inverse pole figure color does not depend on the session
+%
+% sphericalRegion/isUpper, restrict2Upper and polarCoordinates all read
+% sR.how2plot, and the IPF key lays its colors over the sector with
+% polarCoordinates. A frame free sector resolves against the session
+% default instead, and then the color of a fixed orientation changes with
+% plottingConvention.default - which it must never do.
+
+referenceFrame.reset;
+d0 = plottingConvention.default;
+
+cs = crystalSymmetry('622',[3 3 4.7],'mineral','Titanium (Alpha)');
+ori = orientation.byEuler([10 20 30]*degree,cs);
+
+conv = {'y↑→x','y↓→x','x←↑y','z↑→x'};
+rgb = zeros(numel(conv),3);
+grd = zeros(numel(conv),3);
+
+for k = 1:numel(conv)
+  plottingConvention.default(conv{k});
+
+  assert(cs.fundamentalSector.how2plot == cs.how2plot, ...
+    'check_referenceFrame: the sector must carry the convention of the crystal frame');
+
+  key = ipfColorKey(ori);
+  key.inversePoleFigureDirection = zvector;
+  rgb(k,:) = key.orientation2color(ori);
+
+  % the precomputed grid has to agree with the exact map - it is cached
+  % across a session, so a key that misses what the colors depend on
+  % silently hands out a grid computed for something else
+  keyG = ipfColorKey(ori);
+  keyG.inversePoleFigureDirection = zvector;
+  keyG.precompute;
+  grd(k,:) = keyG.orientation2color(ori);
+end
+
+plottingConvention.default(d0);
+
+assert(max(max(abs(rgb - rgb(1,:)))) < 1e-10, ...
+  'check_referenceFrame: the ipf color must not depend on the session convention');
+assert(max(max(abs(grd - rgb))) < 0.05, ...
+  'check_referenceFrame: the precomputed color grid must agree with the exact map');
 
 referenceFrame.reset;
 

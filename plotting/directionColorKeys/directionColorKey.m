@@ -24,8 +24,14 @@ classdef directionColorKey < handle
           dM.sym = sym.CS;
         catch
           dM.sym = specimenSymmetry.default;
-          try
-            dM.sym.frame = sym.frame;
+          try %#ok<TRYNC>
+            % fork first - specimenSymmetry.default is the shared session
+            % symmetry, so assigning the caller's frame onto it would move
+            % the whole session
+            if ~isempty(sym.frame)
+              dM.sym = copy(dM.sym);
+              dM.sym.frame = sym.frame;
+            end
           end
           %error('No symmetry specified!')
         end

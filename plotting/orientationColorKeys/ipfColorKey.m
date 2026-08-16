@@ -163,13 +163,21 @@ function id = colorGridKey(oM)
 % The point group alone would not be enough: for trigonal and hexagonal
 % lattices the map additionally depends on whether x is aligned with a or
 % with a*, and for monoclinic and triclinic lattices on the lattice metric.
+%
+% The bounding normals do not pin the sector down on their own either. The
+% colors are laid out over the sector by sphericalRegion/polarCoordinates,
+% which measures from sR.how2plot.outOfScreen - two sectors with the very
+% same normals in different conventions get different colors, so the
+% convention has to enter the key as well.
 
 sR = oM.dirMap.sR;
 N = sR.N;
 wc = oM.dirMap.whiteCenter;
+pC = sR.how2plot;
 
 id = ['id' num2str(oM.CS1.id) '_' ...
-  digest([N.x(:); N.y(:); N.z(:); sR.alpha(:); wc.x(:); wc.y(:); wc.z(:)])];
+  digest([N.x(:); N.y(:); N.z(:); sR.alpha(:); wc.x(:); wc.y(:); wc.z(:); ...
+  pC.rot.a(:); pC.rot.b(:); pC.rot.c(:); pC.rot.d(:)])];
 
 end
 

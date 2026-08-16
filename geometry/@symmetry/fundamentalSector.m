@@ -24,10 +24,10 @@ if check_option(varargin,'complete')
   return
 end
 
-pC = getClass(varargin,'plottingConvention',sym.how2plot);
-if isempty(pC)
-  pC = plottingConvention.default;
-end
+pCopt = getClass(varargin,'plottingConvention');
+pC = pCopt;
+if isempty(pC), pC = sym.how2plot; end
+if isempty(pC), pC = plottingConvention.default; end
 
 % antipodal symmetry is nothing else then adding inversion to the symmetry
 % group
@@ -127,6 +127,19 @@ end
 % this will be restricted later anyway
 if check_option(varargin,{'upper','lower','maxTheta','minTheta'})
   N(isnull(angle(N,pC.outOfScreen,'antipodal'))) = [];
+end
+
+% the sector is a region OF the symmetry's frame, and it has to say so:
+% sR.how2plot is read by isUpper, isLower, restrict2Upper, restrict2Lower
+% and polarCoordinates, so a frame free sector resolves against the session
+% default instead of the convention it was computed in. For a crystal
+% symmetry the two differ - the crystal frame has c out of the screen while
+% the session may have z into it - and the inverse pole figure colour key
+% is built from this very sector, so the whole key would flip with it
+if isempty(pCopt) && ~isempty(sym.frame)
+  N.frame = sym.frame;
+else
+  N.frame = specimenSymmetry.frameFor(pC);
 end
 
 sR = sphericalRegion(N,zeros(size(N)),varargin{:});
