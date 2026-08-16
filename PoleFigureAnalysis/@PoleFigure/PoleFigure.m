@@ -248,16 +248,11 @@ classdef PoleFigure < dynProp & dynOption
     function pf = loadobj(pf)
       % called by Matlab when an object is loaded from an .mat file
       %
-      % the convention the pole figure was saved with applies to the
-      % whole session - see EBSD/loadobj; the specimen directions state
-      % the intent, the individual vectors of the file carry incidental
-      % conventions of the saving session
+      % a loaded file does not change how the session plots - see
+      % EBSD/loadobj. The pole figure keeps the frame it was saved in
       if isa(pf,'PoleFigure') && ~isempty(pf.allR) && ...
-          isa(pf.allR{1}.frame,'specimenFrame') && ~isempty(pf.allR{1}.frame.how2plot)
-        fr = specimenFrame.default;
-        pC = pf.allR{1}.frame.how2plot;
-        if fr.how2plot ~= pC, fr.how2plot = pC; end
-        pf.frame = fr;
+          isa(pf.allR{1}.frame,'specimenFrame')
+        pf.frame = referenceFrame.reintern(pf.allR{1}.frame);
       end
     end
   end

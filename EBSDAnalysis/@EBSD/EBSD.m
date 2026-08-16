@@ -495,16 +495,11 @@ classdef EBSD < phaseList & dynProp & dynOption
       % ensure CSList is vector
       ebsd.CSList = ensureCSArray(ebsd.CSList);
 
-      % the convention the map was saved with applies to the whole
-      % session - the default frame adopts it and the data joins that
-      % frame. Only the container decides this: the individual vectors
-      % of the file carry incidental conventions of the saving session.
-      if ~isempty(ebsd.pos) && isa(ebsd.pos.frame,'specimenFrame') && ...
-          ~isempty(ebsd.pos.frame.how2plot)
-        fr = specimenFrame.default;
-        pC = ebsd.pos.frame.how2plot;
-        if fr.how2plot ~= pC, fr.how2plot = pC; end
-        ebsd.frame = fr;
+      % a loaded file does not change how the session plots. The map keeps
+      % the frame it was saved in, re-interned so that separately saved
+      % datasets share one frame handle again
+      if ~isempty(ebsd.pos) && isa(ebsd.pos.frame,'specimenFrame')
+        ebsd.frame = referenceFrame.reintern(ebsd.pos.frame);
       end
 
     end
