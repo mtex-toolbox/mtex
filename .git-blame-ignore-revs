@@ -1,0 +1,8 @@
+# Revisions to skip in git blame, e.g. tree-wide line-ending or whitespace
+# normalization. Use with:
+#
+#   git blame --ignore-revs-file .git-blame-ignore-revs <file>
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs   # once, per clone
+
+# normalize line endings to LF, and pin them in .gitattributes
+fb190286c1d790653fadd61ff50a41a90da59351
