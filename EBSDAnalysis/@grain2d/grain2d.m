@@ -360,6 +360,13 @@ classdef grain2d < phaseList & dynProp
         grains.allV = vector3d(grains.allV(:,1),grains.allV(:,2),0);
       end
 
+      % files written before segments were stored in walk order have an
+      % arbitrary column order in F, so grainId(:,1) is not reliably the
+      % grain on the left. grainBoundary.loadobj cannot tell - it only sees
+      % the segments - but here the grain each one belongs to is known, and
+      % that is enough to recover the sense
+      grains.boundary = repairBoundarySense(grains.boundary,grains.id);
+
     end
 
   end
