@@ -115,12 +115,15 @@ methods
   end
 
   function gB3 = set.how2plot(gB3,pC)
-
-    % one cascade only: resolve the convention to a frame and let
-    % set.frame carry it into everything this object contains. Two
-    % setters that had to stay in lockstep is how PoleFigure lost its
-    % SS and how the fork family of ADR 0003 kept reappearing
-    gB3.frame = specimenSymmetry.frameFor(pC);
+    % a convention belongs to a frame, not to data - see
+    % plottingConvention.assignedToData. Releasing the frame is
+    % still a legitimate gesture and stays silent
+    if isempty(pC)
+      gB3.frame = [];
+    else
+      plottingConvention.assignedToData(class(gB3));
+      plottingConvention.default(pC);
+    end
   end
 
   function out = get.idV(gB3)

@@ -1301,7 +1301,9 @@ classdef import_wizard < matlab.apps.AppBase
 
     function applyCurrentCoordinateState(app)
       idx = app.MapCoordinatesDropDown.ValueIndex;
-      app.ebsd.how2plot = app.CoordinateSystems.how2plot(idx);
+      % a convention chosen in the wizard is a user gesture - it sets the
+      % session, it is not a property of the imported data
+      plottingConvention.default(app.CoordinateSystems.how2plot(idx));
 
       rot = [app.CoordinateSystems.how2plot.rot];
       eulerRot = rot(app.EulerCoordinatesDropDown.ValueIndex);
@@ -1818,7 +1820,7 @@ classdef import_wizard < matlab.apps.AppBase
       setCoordinateImage(app, app.MapImage, mapIdx)
 
       try
-        app.ebsd.how2plot = app.CoordinateSystems.how2plot(mapIdx);
+        plottingConvention.default(app.CoordinateSystems.how2plot(mapIdx));
         eulerRot = inv(app.ebsd.EulerCorrection) * app.ebsd.how2plot.rot; %#ok<MINV>
         eulerIdx = closestCoordinateIndex(app, eulerRot);
         app.EulerCoordinatesDropDown.ValueIndex = eulerIdx;

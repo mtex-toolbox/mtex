@@ -48,8 +48,7 @@ for pC = {plottingConvention(-zvector,xvector), plottingConvention(zvector,xvect
   what = 'z into the screen';
   if pC{1}.outOfScreen.z > 0, what = 'z out of the screen'; end
 
-  ebsd.how2plot = pC{1};
-  grains.how2plot = pC{1};
+  plottingConvention.default(pC{1});
 
   checkAbove(what,'EBSD + crystalShape',pC{1}, ...
     @() plot(ebsd,ebsd.orientations), @() plot(ebsd,0.3*cS));

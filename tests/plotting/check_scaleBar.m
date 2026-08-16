@@ -38,7 +38,7 @@ for k = 1:size(cases,1)
   expected = cases{k,2};
   symbol = cases{k,3};
 
-  ebsd.how2plot = conv;
+  plottingConvention.default(conv);
   plot(ebsd);
   drawnow
   sB = getappdata(gca,'mapPlot').micronBar;
@@ -105,7 +105,7 @@ end
 % them - otherwise the 'axis tight' EBSD/plot.m does after drawing the map
 % picks up the position the bar still had for the default [0 1] limits and
 % drags the whole map extent down to the origin
-ebsd.how2plot = 'y↑→x';
+plottingConvention.default('y↑→x');
 plot(ebsd,'micronbar','off');
 drawnow
 limNoBar = [xlim(gca) ylim(gca)];
@@ -130,7 +130,7 @@ close all
 % throughout and say nothing about it.
 for conv = {'y↑→x','y↓→x','x←↑y','x↑→y'}
 
-  ebsd.how2plot = conv{1};
+  plottingConvention.default(conv{1});
 
   for loc = {'sw','se','nw','ne'}
 
@@ -172,7 +172,7 @@ end
 % a view no axis is aligned with: all three directions become arrows and
 % there is no circled symbol at all
 pC = plottingConvention; pC.outOfScreen = vector3d(0.4,0.3,1);
-ebsd.how2plot = pC;
+plottingConvention.default(pC);
 plot(ebsd);
 drawnow
 sB = getappdata(gca,'mapPlot').micronBar;
@@ -184,7 +184,7 @@ inside(sB.rfArrows.Vertices, sB.shadow.Vertices, 'the arrows, tilted view');
 close all
 
 % switching the indicator off has to restore the bare bar
-ebsd.how2plot = 'y↑→x';
+plottingConvention.default('y↑→x');
 plot(ebsd,'refFrame','off');
 drawnow
 sB = getappdata(gca,'mapPlot').micronBar;
@@ -230,7 +230,7 @@ close all
 % MATLAB then sorts the axes children by depth. The whole bar has to follow
 % into the plane closest to the camera, otherwise it ends up buried under
 % that content no matter where it sits in the child list
-ebsd.how2plot = 'y↓→x';
+plottingConvention.default('y↓→x');
 grains = calcGrains(ebsd,'threshold',10*degree);
 biggest = grains(grains.numPixel == max(grains.numPixel));
 plot(ebsd);

@@ -105,12 +105,15 @@ classdef S2Triangulation
     end
 
     function sT = set.how2plot(sT,pC)
-
-      % one cascade only: resolve the convention to a frame and let
-      % set.frame carry it into everything this object contains. Two
-      % setters that had to stay in lockstep is how PoleFigure lost its
-      % SS and how the fork family of ADR 0003 kept reappearing
-      sT.frame = specimenSymmetry.frameFor(pC);
+      % a convention belongs to a frame, not to data - see
+      % plottingConvention.assignedToData. Releasing the frame is
+      % still a legitimate gesture and stays silent
+      if isempty(pC)
+        sT.frame = [];
+      else
+        plottingConvention.assignedToData(class(sT));
+        plottingConvention.default(pC);
+      end
     end
 
     function e = eq(sT1,sT2)

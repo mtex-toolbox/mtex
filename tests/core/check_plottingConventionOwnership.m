@@ -265,32 +265,40 @@ h = Miller(1,0,0,cs);
 r = vector3d.rand(10);
 pf = PoleFigure(h,r,ones(10,1));
 
-ssShared = pf.SS; % the shared class-default instance
-before = char(ssShared.how2plot);
-assert(~strcmp(before,char(pC)), ...
+% a convention assigned to data is a session change now, and it says so.
+% This block used to assert the opposite - that the assignment forked a
+% private frame for this pole figure alone. That capability is gone: a
+% convention belongs to a reference frame, and an anonymous fork carrying
+% the session frame's name while following nothing was the leak family
+% itself (ADR 0003).
+pC0 = plottingConvention.default;
+restore = onCleanup(@() plottingConvention.default(pC0));
+
+assert(~(pC0 == pC), ...
   ['check_plottingConventionOwnership: the test convention equals the ' ...
-  'default one, so it cannot detect a leak - pick another one'])
+  'default one, so it cannot detect anything - pick another one'])
 
+lastwarn('','');
+ws = warning('off','all');
 pf.how2plot = pC;
+warning(ws);
+[~,id] = lastwarn;
 
-assert(strcmp(char(pf.how2plot),char(pC)), ...
-  'check_plottingConventionOwnership: pf.how2plot = pC did not take')
+assert(strcmp(id,'MTEX:plottingConvention:global'), ...
+  'check_plottingConventionOwnership: assigning a convention to data must warn')
 
-% the pole figure''s own SS follows, on a forked copy
-assert(strcmp(char(pf.SS.how2plot),char(pC)), ...
-  'check_plottingConventionOwnership: pf.SS does not carry the convention')
+assert(plottingConvention.default == pC, ...
+  'check_plottingConventionOwnership: the assignment must change the session')
 
-% but the shared instance and the next pole figure are untouched
-assert(strcmp(char(ssShared.how2plot),before), ...
-  'check_plottingConventionOwnership: pf.how2plot wrote through the shared SS')
+% everything that follows the session follows along - including the pole
+% figure itself and its specimen symmetry, which is what used to fork
+assert(pf.how2plot == pC && pf.SS.how2plot == pC, ...
+  'check_plottingConventionOwnership: the pole figure does not follow the session')
 
 pf2 = PoleFigure(h,r,ones(10,1));
-assert(strcmp(char(pf2.SS.how2plot),before), ...
-  'check_plottingConventionOwnership: pf.how2plot leaked into the next PoleFigure')
+assert(pf2.how2plot == pC, ...
+  'check_plottingConventionOwnership: a new pole figure does not follow the session')
 
-% the string shortcut works as on every other class
-pf.how2plot = 'y↑→x';
-assert(strcmp(char(pf.how2plot),'y↑→x'), ...
-  'check_plottingConventionOwnership: pf.how2plot = char did not take')
+clear restore
 
 end

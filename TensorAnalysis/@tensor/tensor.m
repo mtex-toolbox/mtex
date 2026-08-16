@@ -66,7 +66,8 @@ classdef tensor < dynOption
         varargin = delete_option(varargin,'doubleConvention');
         varargin = delete_option(varargin,'rank',1);
         [pC,varargin] = getClass(varargin,'plottingConvention');
-        if ~isempty(pC), T.how2plot = pC; end
+        % an own frame for this tensor - not a session change
+        if ~isempty(pC), T.framePrivate = specimenFrame.default.copy; T.framePrivate.how2plot = pC; end
         T = T.setOption(varargin{:});
         return
       end
@@ -143,7 +144,8 @@ classdef tensor < dynOption
 
       % extract plotting convention
       [pC,varargin] = getClass(varargin,'plottingConvention');
-      if ~isempty(pC), T.how2plot = pC; end
+      % an own frame for this tensor - not a session change
+      if ~isempty(pC), T.framePrivate = specimenFrame.default.copy; T.framePrivate.how2plot = pC; end
 
       options = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel','noCheck'});
       options = delete_option(options,'rank',1);
@@ -195,12 +197,15 @@ classdef tensor < dynOption
     end
 
     function T = set.how2plot(T,pC)
-
-      % one cascade only: resolve the convention to a frame and let
-      % set.frame carry it into everything this object contains. Two
-      % setters that had to stay in lockstep is how PoleFigure lost its
-      % SS and how the fork family of ADR 0003 kept reappearing
-      T.frame = specimenSymmetry.frameFor(pC);
+      % a convention belongs to a frame, not to data - see
+      % plottingConvention.assignedToData. Releasing the frame is
+      % still a legitimate gesture and stays silent
+      if isempty(pC)
+        T.frame = [];
+      else
+        plottingConvention.assignedToData(class(T));
+        plottingConvention.default(pC);
+      end
     end
 
     function x = x(t)

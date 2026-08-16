@@ -619,7 +619,10 @@ pC0e = plottingConvention.default;
 restoreDefault = onCleanup(@() plottingConvention.default(pC0e));
 ebsd = EBSD(vector3d.rand(4),rotation.rand(4,1),ones(4,1), ...
   {crystalSymmetry('m-3m')},struct());
-ebsd.how2plot = pCF;
+% give the map a frame of its own - assigning a convention to data is a
+% session change now, which is not what this block is testing
+frF = copy(specimenFrame.default); frF.how2plot = pCF;
+ebsd.frame = frF;
 save(fname,'ebsd');
 S = load(fname);
 delete(fname);

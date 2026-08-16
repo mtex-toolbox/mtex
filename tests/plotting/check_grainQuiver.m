@@ -198,7 +198,7 @@ assert(isequal(sortrows(round(vertcat(hH.Color),6)), ...
 
 assert(angle(N,-zvector) < 1e-10,...
   'the default plotting convention should have z pointing into the screen');
-grains.how2plot = plottingConvention(zvector,xvector); % z out of the screen now
+plottingConvention.default(plottingConvention(zvector,xvector)); % z out of the screen now
 
 close all
 h = quiver(grains,dir);

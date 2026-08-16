@@ -242,12 +242,15 @@ classdef grainBoundary < phaseList & dynProp
     end
 
     function gB = set.how2plot(gB,pC)
-
-      % one cascade only: resolve the convention to a frame and let
-      % set.frame carry it into everything this object contains. Two
-      % setters that had to stay in lockstep is how PoleFigure lost its
-      % SS and how the fork family of ADR 0003 kept reappearing
-      gB.frame = specimenSymmetry.frameFor(pC);
+      % a convention belongs to a frame, not to data - see
+      % plottingConvention.assignedToData. Releasing the frame is
+      % still a legitimate gesture and stays silent
+      if isempty(pC)
+        gB.frame = [];
+      else
+        plottingConvention.assignedToData(class(gB));
+        plottingConvention.default(pC);
+      end
     end
 
     function V = get.allV(gB)

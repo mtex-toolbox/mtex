@@ -145,12 +145,15 @@ classdef PoleFigure < dynProp & dynOption
     end
 
     function pf = set.how2plot(pf,pC)
-
-      % one cascade only: resolve the convention to a frame and let
-      % set.frame carry it into everything this object contains. Two
-      % setters that had to stay in lockstep is how PoleFigure lost its
-      % SS and how the fork family of ADR 0003 kept reappearing
-      pf.frame = specimenSymmetry.frameFor(pC);
+      % a convention belongs to a frame, not to data - see
+      % plottingConvention.assignedToData. Releasing the frame is
+      % still a legitimate gesture and stays silent
+      if isempty(pC)
+        pf.frame = [];
+      else
+        plottingConvention.assignedToData(class(pf));
+        plottingConvention.default(pC);
+      end
     end
 
     function h = get.h(pf)

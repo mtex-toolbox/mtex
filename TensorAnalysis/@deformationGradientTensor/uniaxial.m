@@ -24,7 +24,7 @@ if isa(d,'Miller')
   F.CS = d.CS;
 else
   F.CS = specimenSymmetry.default;
-  F.how2plot = d.how2plot;
+  F.frame = d.frame;
 end
 
 end

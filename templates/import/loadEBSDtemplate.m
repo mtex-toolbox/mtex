@@ -33,7 +33,8 @@ EulerCorrection = {eulerCorrection};
 % The interface (file format) is auto-detected from the file extension.
 ebsd = EBSD.load(fname,csList,{options}, ...
   'EulerCorrection',EulerCorrection);
-ebsd.how2plot = pC;
+% the convention applies to the session, not to this one object
+plottingConvention.default(pC);
 
 %% Plot a First Sanity Check
 

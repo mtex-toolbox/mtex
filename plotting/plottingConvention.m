@@ -339,6 +339,25 @@ classdef plottingConvention
 
   methods (Static=true)
 
+    function assignedToData(cls)
+      % complain about assigning a convention to data, and say what to do
+      %
+      % A plotting convention belongs to a reference frame, not to a data
+      % object. Assigning one to data used to fork a private frame that
+      % carried the session frame's name and labels and then silently
+      % stopped following it - the leak family of ADR 0003. The assignment
+      % now changes the session instead, which is what nearly every caller
+      % meant, and says so. It will become an error.
+
+      warning('MTEX:plottingConvention:global', ...
+        ['Assigning a plotting convention to a %s changes it for the '...
+        'whole session.\nUse plot(...,''y↑→x'') for a single plot, '...
+        'plottingConvention.default(...) to change the session '...
+        'explicitly,\nor move the data to a named frame with '...
+        'x.frame = specimenFrame.rolling. This will become an error.'],cls);
+
+    end
+
     function pC = fromOption(list,default)
       % the plotting convention among a list of plot options, if any
       %
