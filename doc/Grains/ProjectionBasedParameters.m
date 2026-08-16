@@ -10,6 +10,7 @@
 % data set.
 
 % load sample EBSD data set
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 % reconstruct grains, discard boundary grains and smooth them

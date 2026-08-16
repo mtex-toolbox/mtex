@@ -9,6 +9,7 @@
 % In order to illustrate the effect of birefringence lets consider a
 % olivine data set.
 
+plottingConvention.default('y↑→x');
 mtexdata olivine
 
 % reconstruct grains

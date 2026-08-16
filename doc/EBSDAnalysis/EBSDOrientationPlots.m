@@ -5,6 +5,7 @@
 % This section gives an overview over the possibilities that MTEX offers to
 % visualize orientation data. Let us first load a sample EBSD data set
 
+plottingConvention.default('y↑→x');
 mtexdata forsterite
 
 %%

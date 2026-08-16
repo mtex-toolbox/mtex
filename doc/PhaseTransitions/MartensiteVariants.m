@@ -15,6 +15,7 @@
 % dimension of meters.
 
 % import the ebsd data
+plottingConvention.default('y↑→x');
 mtexdata emsland
 
 % extract crystal symmetries

@@ -13,6 +13,7 @@
 % We shall use the following sample data set.
 
 % load the data
+plottingConvention.default('y↑→x');
 mtexdata martensite
 
 % grain reconstruction

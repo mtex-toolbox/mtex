@@ -5,6 +5,7 @@
 % properties. In this chapter we discus the ordering of EBSD pixels  within
 % MTEX. Lets start by importing some sample data
 
+plottingConvention.default('y↑→x');
 mtexdata twins
 
 %%

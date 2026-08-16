@@ -18,6 +18,7 @@
 % orientation map of deformed Magnesium.
 
 % import the data
+plottingConvention.default('y↑→x');
 mtexdata twins
 
 % reconstruct the grain structure

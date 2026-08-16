@@ -6,6 +6,7 @@
 % data.
 
 close all;
+plottingConvention.default('y↑→x');
 mtexdata forsterite
 csFo = ebsd('Forsterite').CS;
 

@@ -8,6 +8,7 @@
 % the largest GOS (grain orientation spread) for further analysis.
 
 close all
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 % reconstruct grains

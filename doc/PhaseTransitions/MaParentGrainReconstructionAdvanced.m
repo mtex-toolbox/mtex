@@ -10,6 +10,7 @@
 % Nyyssönen. We shall use the following sample data set.
 
 % load the data
+plottingConvention.default('y↑→x');
 mtexdata martensite 
 
 % extract fcc and bcc symmetries

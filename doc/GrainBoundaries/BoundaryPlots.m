@@ -8,6 +8,7 @@
 close all;
 
 % import the data
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 % restrict it to a sub-region of interest.

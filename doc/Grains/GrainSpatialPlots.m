@@ -4,6 +4,7 @@
 % We start by importing some EBSD data and reconstructing some grains
 
 % import a demo data set
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 % perform grain segmentation

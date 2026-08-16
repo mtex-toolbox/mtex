@@ -52,6 +52,7 @@ plotAxisDistribution(cs)
 %
 % Let us again consider the Magnesium data set
 
+plottingConvention.default('y↑→x');
 mtexdata twins silent
 
 grains = calcGrains(ebsd('indexed'),'threshold',5*degree);

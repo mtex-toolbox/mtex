@@ -15,6 +15,7 @@
 % concept at a practical example let us first import some Magnesium EBSD
 % data.
 
+plottingConvention.default('y↑→x');
 mtexdata twins silent
 
 % use only proper symmetry operations

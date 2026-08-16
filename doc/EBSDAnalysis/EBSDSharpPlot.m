@@ -147,6 +147,7 @@ hold off
 % Another application for sharp color keys is the analysis of orientation
 % gradients within grains
 
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 % segment grains

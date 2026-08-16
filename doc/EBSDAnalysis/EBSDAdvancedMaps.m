@@ -42,6 +42,7 @@
 % set.
 
 close all;
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 csFo = ebsd('Forsterite').CS;
 

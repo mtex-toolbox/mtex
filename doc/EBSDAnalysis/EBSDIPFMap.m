@@ -9,6 +9,7 @@
 % Let us first import some sample EBSD data. We shall do this at the
 % example of olivine data.
 
+plottingConvention.default('y↑→x');
 mtexdata olivine
 ebsd('olivine').CS = ebsd('olivine').CS.Laue;
 

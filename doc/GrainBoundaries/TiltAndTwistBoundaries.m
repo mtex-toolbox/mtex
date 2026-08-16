@@ -21,6 +21,7 @@
 % <SubGrainBoundaries.html Subgrain Boundaries>.
 
 % load some test data
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 % compute subgrain boundaries with 1 degree threshold angle

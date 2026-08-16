@@ -4,6 +4,7 @@
 % In order to discuss ODF estimation from individual orientation data we
 % start by loading an EBSD data set
 
+plottingConvention.default('y↑→x');
 mtexdata copper
 
 plot(ebsd,ebsd.orientations)

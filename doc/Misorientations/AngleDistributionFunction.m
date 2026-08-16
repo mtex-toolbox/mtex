@@ -55,6 +55,7 @@ plotAngleDistribution(crystalSymmetry('222'),crystalSymmetry('12/m1'),'linewidth
 % Let us now compare this reference against real data. We consider the
 % Magnesium data set and reconstruct its grains
 
+plottingConvention.default('y↑→x');
 mtexdata twins silent
 
 grains = calcGrains(ebsd('indexed'),'threshold',5*degree);

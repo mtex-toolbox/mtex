@@ -19,6 +19,7 @@
 % Throughout this page we use the same subregion of the forsterite data set
 % as the basic page.
 
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 

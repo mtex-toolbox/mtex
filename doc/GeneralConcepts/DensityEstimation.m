@@ -190,6 +190,7 @@ hold off
 % between two phases in an EBSD map
 
 % import ebsd data
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 % reconstruct grains

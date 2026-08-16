@@ -5,6 +5,7 @@
 % of its spatial coordinates. For spatial analysis, we refer to
 % <EBSDProfile.html this page>. Let us first import some EBSD data:
 
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 plot(ebsd)

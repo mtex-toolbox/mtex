@@ -5,6 +5,7 @@
 % properties. Let us first import some example EBSD data using the command
 % <mtexdata.html |mtexdata|>.
 
+plottingConvention.default('y↑→x');
 mtexdata forsterite
 
 %%

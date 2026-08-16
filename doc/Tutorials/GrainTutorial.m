@@ -8,6 +8,7 @@
 % Grain detection from 2d and 3d EBSD data>. Data courtesy of Daniel Rutte
 % and Bret Hacker, Stanford.
 
+plottingConvention.default('y↑→x');
 mtexdata mylonite
 
 % plot a phase map

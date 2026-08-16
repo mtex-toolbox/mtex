@@ -39,6 +39,7 @@
 % plane, which makes it a good example here - the twin boundaries are
 % coherent, i.e. they actually lie on that plane.
 
+plottingConvention.default('y↑→x');
 mtexdata twins
 
 [grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',3);

@@ -6,6 +6,7 @@
 % grain boundaries.
 
 % load some example data
+plottingConvention.default('y↑→x');
 mtexdata twins silent
 ebsd.prop = rmfield(ebsd.prop,{'error','bands'});
 

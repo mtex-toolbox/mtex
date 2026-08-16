@@ -14,8 +14,8 @@
 % grains with less than 6 pixels
 
 % import the EBSD data
+plottingConvention.default('y←↑x');
 ebsd = EBSD.load([mtexDataPath filesep 'EBSD' filesep 'DC06_2uniax.ang'],'setting',2);
-ebsd.how2plot = "y←↑x";
 
 % reconstruct grains
 [grains,ebsd] = calcGrains(ebsd,'angle',2.5*degree,'minPixel',6);

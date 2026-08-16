@@ -9,6 +9,7 @@
 % explanations.
 
 % load sample EBSD data set
+plottingConvention.default('y↑→x');
 mtexdata twins silent
 CS = ebsd.CS;
 

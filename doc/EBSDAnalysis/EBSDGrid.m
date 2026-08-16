@@ -7,6 +7,7 @@
 % back to a plain list of pixels only when they do not. Which of the two you
 % have got is stated by the class of the variable
 
+plottingConvention.default('y↑→x');
 mtexdata twins
 
 %%

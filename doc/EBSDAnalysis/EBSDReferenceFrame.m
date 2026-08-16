@@ -60,14 +60,13 @@ plot(ebsd('olivine'),ebsd('olivine').orientations,'refFrame','on')
 %%
 % The plot should already fit the alignment of the map in the EDAX software
 % as MTEX by default plots the x-axis to east and the y-axis to the south.
-% However, if the interpretation of the map a different alignment with
-% respect to the screen is more useful we can easily change this by
-% changing the @plottingConvention stored in |ebsd.how2plot|.
+% However, if a different alignment with respect to the screen is more
+% useful we can pass the @plottingConvention we want to the plot. This
+% affects only that plot - to change the alignment of the whole session
+% use |plottingConvention.default| instead.
  
 % assume we want x pointing down and y pointing towards east
-ebsd.how2plot = 'x↓→y';
-
-plot(ebsd('olivine'),ebsd('olivine').orientations,'refFrame','on')
+plot(ebsd('olivine'),ebsd('olivine').orientations,'x↓→y','refFrame','on')
 
 %%
 % Note that these options only alter the orientation of the EBSD map and

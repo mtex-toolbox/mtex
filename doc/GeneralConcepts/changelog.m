@@ -492,6 +492,37 @@
 % If you relied on the old silence, the symmetry was already wrong; a result
 % that should keep its group has to be rotated by a symmetry element.
 %
+% *A plotting convention belongs to a reference frame*
+%
+% There are exactly three ways to say how something should be aligned on
+% screen, and a plotting convention is now always a property of a reference
+% frame rather than of a data object
+%
+%   plot(ebsd,'y↑→x')                  % this one plot
+%   plottingConvention.default('y↑→x') % the whole session
+%   ebsd.frame = specimenFrame.rolling % move the data to a named frame
+%
+% The first of these is new. Assigning a convention to the data itself,
+% |ebsd.how2plot = 'y↑→x'|, used to attach a private copy of the session
+% frame to that one object - a frame that carried the session frame's name
+% and axis labels, was indistinguishable from it in every display, and then
+% silently stopped following it. Such an assignment now warns and changes
+% the session instead; it will become an error. Reading |ebsd.how2plot| is
+% unchanged, and releasing a frame with |ebsd.how2plot = []| still means
+% "follow the session again".
+%
+% *Importing data no longer changes how the session plots*
+%
+% A file describes its own data, not your screen. Loading an |.mat| file,
+% and <mtexdata.html |mtexdata|>, no longer repoint the session convention.
+% An import may still state *which frame* the data lives in - Oxford data
+% lands in |specimenFrame.measurement| with the axes |X1|, |Y1|, |Z1| - and
+% a convention you pass yourself still applies, since that is your choice
+% and not the file's.
+%
+% Documentation pages that want a particular alignment now say so, which
+% they previously inherited invisibly from |mtexdata|.
+%
 % *Approximation, Sampling and Clustering*
 %
 % Moving least squares approximation supports vector valued data, outlier

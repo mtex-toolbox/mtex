@@ -13,6 +13,7 @@
 %
 % Let us start with any plot
 
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 plot(ebsd('Forsterite'),ebsd('Forsterite').orientations)

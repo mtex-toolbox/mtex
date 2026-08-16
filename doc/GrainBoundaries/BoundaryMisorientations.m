@@ -10,6 +10,7 @@
 % set to a subregion to make the results easier to visualize
 
 % take some MTEX data set
+plottingConvention.default('y↑→x');
 mtexdata forsterite
 
 % define a sub region
