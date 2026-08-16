@@ -6,6 +6,7 @@
 % symmetry> and the left symmetry is the <SpecimenSymmetry.html specimen
 % symmetry>.
 
+plottingConvention.default('y↑→x');
 SO3F = SO3Fun.dubna
 
 cs = SO3F.SRight

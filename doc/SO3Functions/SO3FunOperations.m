@@ -6,10 +6,8 @@
 % illustrate this we consider the following two rotational functions
 %
 % An ODF determined from XRD data
+plottingConvention.default('y↑→x');
 SO3F1 = SO3Fun.dubna
-
-% make its specimen reference frame the default for this session
-SO3F1.frameLeft.makeDefault
 
 plot(SO3F1,'sigma')
 

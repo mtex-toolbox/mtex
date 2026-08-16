@@ -22,6 +22,7 @@
 %%
 %
 % We construct an arbitrary ODF which generally is an SO3Fun:
+plottingConvention.default('y↑→x');
 mtexdata dubna
 odf = calcODF(pf,'resolution',5*degree,'zero_Range')
 %%

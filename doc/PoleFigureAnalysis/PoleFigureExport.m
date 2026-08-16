@@ -10,6 +10,7 @@
 % Let us consider the Dubna quartz data set, which consists of seven pole
 % figures
 
+plottingConvention.default('y↑→x');
 mtexdata dubna silent
 
 pf

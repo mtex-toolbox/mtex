@@ -17,6 +17,7 @@
 %%
 % Lets load an orientation dependent function as @SO3Fun. 
 
+plottingConvention.default('y↑→x');
 mtexdata dubna
 odf = calcODF(pf,'resolution',5*degree,'zero_Range')
 plot(odf,'sigma')

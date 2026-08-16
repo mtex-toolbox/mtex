@@ -17,6 +17,7 @@
 %%
 % Lets consider the following ODF of a quartz specimen.
 
+plottingConvention.default('y↑→x');
 odf = SO3Fun.dubna;
 
 %% 

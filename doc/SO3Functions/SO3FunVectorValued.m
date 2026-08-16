@@ -47,6 +47,7 @@ nodes = nodes(:);
 %%
 % Next we define function values for the vertices
 
+plottingConvention.default('y↑→x');
 y = [SO3Fun.dubna(nodes), (nodes.a .* nodes.b).^(1/4)];
 nodes.CS = SO3Fun.dubna.CS;
 

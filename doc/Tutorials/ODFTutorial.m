@@ -57,6 +57,7 @@ plot(odf)
 % corresponding to the pixel position.
 
 % import pole figure data
+plottingConvention.default('y↑→x');
 mtexdata ptx
 
 % plot the data
