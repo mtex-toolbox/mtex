@@ -277,6 +277,15 @@ elseif startsWith(string(Conf.settings.name),"EDAX","IgnoreCase",true) && ...
   ebsd = applyEulerCorrectionTable(ebsd,ext);
 end
 
+% EMSphInx flags a pattern it failed to index with phase 255, but not a
+% pixel a ROI mask kept out of the run in the first place - that one keeps
+% phase 0 and is only recognisable by orientation, image quality and fit
+% metric all being exactly zero. Without this a masked map imports as one
+% huge grain sitting at orientation (0,0,0).
+if startsWith(string(Conf.settings.name),"EMSphInx","IgnoreCase",true)
+  ebsd = markUnmeasured(ebsd);
+end
+
 % an Oxford file states its data in the sample frame CS1 - the map lives
 % in the measurement frame with the axes X1, Y1, Z1
 if startsWith(string(Conf.settings.name),"Oxford","IgnoreCase",true)
@@ -595,6 +604,27 @@ function out = phase_default(raw_data)
 
 end
 
+function out = phase_zeroBased(raw_data)
+% EMSphInx indexes the declared phase list from 0 and marks a pixel it
+% could not index with the largest value its storage type can hold - 255
+% for the uint8 it writes. EDAX starts the very same column at 1 and keeps
+% 0 for not indexed, so the numbers alone never say which of the two is
+% meant and the convention has to come from the config.
+%
+% How many phases the file declares is only known where the cs list is
+% assembled, so the index cannot be resolved here - hand ebsd_default the
+% column together with the sentinel to look for.
+
+  if isinteger(raw_data)
+    notIndexedValue = double(intmax(class(raw_data)));
+  else
+    notIndexedValue = 255;
+  end
+
+  out = struct('zeroBased', double(raw_data(:)), 'notIndexed', notIndexedValue);
+
+end
+
 function out = ebsd_default(raw_data)
 
   % Check if cs is set --> if not create simple (an optional "cs" whose
@@ -633,9 +663,29 @@ function out = ebsd_default(raw_data)
       'Make sure you have a position, rotation, phase and field!'])
   end
 
-  if ~isequal(numel(raw_data.position), numel(raw_data.rotation), numel(raw_data.phase))
+  % a config may state that the phase column indexes the declared phases
+  % from 0 (phase_zeroBased) rather than from 1 - then every value has a
+  % known meaning and phaseId / phaseMap can be handed over as they are,
+  % with nothing left for phaseList/init to infer from which phases happen
+  % to occur in this particular map
+  phases = raw_data.phase;
+  phaseMapOpt = {};
+  if isstruct(phases) && isfield(phases, 'zeroBased')
+    csList  = ensureCSArray(raw_data.cs);
+    nPhases = numel(csList);
+    p        = phases.zeroBased;
+    sentinel = phases.notIndexed;
+
+    phases = p + 2;    % CSList(1) is the notIndexed phase prepended below
+    phases(p < 0 | p >= nPhases | p == sentinel) = 1;
+
+    raw_data.cs = [notIndexed, reshape(csList, 1, [])];
+    phaseMapOpt = {'phaseMap', [-1; (0:nPhases-1).']};
+  end
+
+  if ~isequal(numel(raw_data.position), numel(raw_data.rotation), numel(phases))
     error('Array dimension mismatch! position (%d), rotation (%d), and phase (%d) must have the exact same number of elements.', ...
-          numel(raw_data.position), numel(raw_data.rotation), numel(raw_data.phase));
+          numel(raw_data.position), numel(raw_data.rotation), numel(phases));
   end
 
   prop = struct();
@@ -645,7 +695,8 @@ function out = ebsd_default(raw_data)
     unitCellHint = {'unitCellHint', raw_data.unitCell};
   end
 
-  ebsd = EBSD(raw_data.position, raw_data.rotation, raw_data.phase, raw_data.cs, prop, unitCellHint{:});
+  ebsd = EBSD(raw_data.position, raw_data.rotation, phases, raw_data.cs, prop, ...
+    unitCellHint{:}, phaseMapOpt{:});
 
   % if a correction is set add
   if isfield(raw_data, 'map_correction')
@@ -654,10 +705,11 @@ function out = ebsd_default(raw_data)
 
   ebsd.opt.header = header;
 
-  % if a how2plot is set, it applies to the whole session - the default
-  % frame adopts it and the data joins that frame
+  % a file does not change how the session plots - a convention stated in
+  % the file describes the vendor's view, and the map is put in a frame
+  % carrying it rather than repointing the session
   if isfield(raw_data, 'how2plot')
-    fr = specimenFrame.default;
+    fr = copy(specimenFrame.default);
     fr.how2plot = raw_data.how2plot;
     ebsd.frame = fr;
   end
