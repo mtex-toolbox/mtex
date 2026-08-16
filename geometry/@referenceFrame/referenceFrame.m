@@ -107,14 +107,21 @@ classdef referenceFrame < matlab.mixin.Copyable
     end
 
     function display(rf,varargin)
-      displayClass(rf,inputname(1),varargin{:});
-      if ~isempty(rf.name), disp(['  name: ' rf.name]); end
+      % the identity and the convention go in the header - together they
+      % are what tells one frame from another, the way a symmetry shows
+      % its point group there. The basis is the detail below
+
+      info = {};
+      if ~isempty(rf.name), info{end+1} = rf.name; end %#ok<AGROW>
+      if isa(rf.how2plot,'plottingConvention')
+        info{end+1} = conventionChar(rf); %#ok<AGROW>
+      end
+
+      displayClass(rf,inputname(1),'moreInfo',strjoin(info,', '),varargin{:});
+
       b = rf.basis;
       for k = 1:3
         disp(['  ' rf.axesNames{k} ': ' char(b(k))]);
-      end
-      if isa(rf.how2plot,'plottingConvention')
-        disp(['  how2plot: ' conventionChar(rf)]);
       end
       disp(' ');
     end
