@@ -14,6 +14,7 @@ checkDisplay;
 checkLoadobj;
 checkInterp;
 checkIndexing;
+checkEulerCorrectionSurvives;
 
 disp('check_ebsd: passed');
 
@@ -474,5 +475,67 @@ assert(length(list(5))==1,'check_ebsd: scalar indexing broke');
 assert(length(list(list.pos.x > 2))==nnz(list.pos.x > 2), ...
   'check_ebsd: logical indexing broke');
 assert(length(list('id',3))==1,'check_ebsd: indexing by id broke');
+
+end
+
+% =========================================================================
+function checkEulerCorrectionSurvives
+% the EulerCorrection an import applied has to survive every operation
+%
+% EulerCorrection is a dependent view on the protected Euler2Map, which
+% records the rotation that aligned the Euler angle frame with the map
+% frame. Two constructors dropped it:
+%
+%   * the EBSD copy constructor returned before Euler2Map (and N) were set,
+%     and subSet of a grid EBSD goes through it - so ebsd('Magnesium') alone
+%     lost the record, and with it ebsd('Magnesium').gridify, the example in
+%     gridify's own help
+%   * squarify / hexify build a fresh @EBSDsquare / @EBSDhex from pos,
+%     rotations and phases
+%
+% The record cannot be handed over through the public setter, which rotates
+% the orientations by the difference - the copy already carries corrected
+% orientations. So the orientations are checked to be untouched here too.
+
+cs = crystalSymmetry('m-3m');
+[x,y] = meshgrid(1:8,1:6);
+ebsd = EBSD(vector3d(x(:),y(:),0),orientation.rand(numel(x),cs), ...
+  ones(numel(x),1),{cs},struct());
+
+rot = rotation.byAxisAngle(vector3d.X,180*degree);
+ebsd.EulerCorrection = rot;
+ref = ebsd.rotations;
+
+kept = @(e) angle(e.EulerCorrection .* inv(rot)) < 1e-10;
+
+assert(kept(EBSD(ebsd)), ...
+  'check_ebsd: the copy constructor must carry the EulerCorrection');
+assert(kept(ebsd(1:10)), ...
+  'check_ebsd: subSet must carry the EulerCorrection');
+assert(kept([ebsd(1:5) ebsd(6:10)]), ...
+  'check_ebsd: concatenation must carry the EulerCorrection');
+
+g = ebsd.gridify;
+assert(kept(g), ...
+  'check_ebsd: gridify must carry the EulerCorrection');
+assert(kept(g(1:5)), ...
+  'check_ebsd: subSet of a gridded map must carry the EulerCorrection');
+
+% carrying the record must not rotate anything a second time
+a = g.rotations.a(:); a = a(~isnan(a));
+assert(numel(a) == length(ref) && norm(sort(a) - sort(ref.a(:))) < 1e-12, ...
+  'check_ebsd: gridify changed the orientations');
+
+% the copy constructor must keep the measurement plane normal too - the
+% same early return dropped it, so a map on a non z plane came back with
+% the default zvector
+ebsd.N = normalize(vector3d(1,1,1));
+assert(angle(EBSD(ebsd).N,ebsd.N) < 1e-10, ...
+  'check_ebsd: the copy constructor must carry the map normal N');
+
+% and the setter still applies the difference, as documented
+e2 = ebsd; e2.EulerCorrection = rotation.id;
+assert(all(angle(e2.rotations,ref) > 1e-3), ...
+  'check_ebsd: setting EulerCorrection must still rotate the orientations');
 
 end

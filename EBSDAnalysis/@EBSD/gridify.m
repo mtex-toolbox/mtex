@@ -106,4 +106,14 @@ else
   [varargout{1:nargout}] = squarify(ebsd,varargin{:});
 end
 
+% both build a fresh @EBSDsquare / @EBSDhex from pos, rotations and phases,
+% which leaves Euler2Map at its default. It cannot be handed over through
+% the public EulerCorrection setter, since that rotates the orientations by
+% the difference - the gridded map already carries corrected orientations
+% and only has to inherit the record of the correction
+if nargout >= 1 && isa(varargout{1},'EBSD')
+  varargout{1}.Euler2Map = ebsd.Euler2Map;
+  varargout{1}.N = ebsd.N;
+end
+
 end
