@@ -46,6 +46,8 @@ nodes = nodes(:);
 %%
 % Next we define function values for the vertices
 
+% the smiley reads right with y up
+plottingConvention.default('y↑→x');
 y = [S2Fun.smiley(nodes), (nodes.x.*nodes.y).^(1/4)];
 
 %%

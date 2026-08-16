@@ -260,15 +260,15 @@ assert(isempty(v.frame) && v.how2plot == plottingConvention.default, ...
 % an own convention becomes an own, unregistered frame carrying it -
 % only frames carry conventions
 pC = plottingConvention('z↑→x');
-v.how2plot = pC;
+v.frame = specimenSymmetry.frameFor(pC);
 assert(v.how2plot == pC && ~isempty(v.frame) && v.frame ~= specimenFrame.default, ...
-  'check_referenceFrame: v.how2plot = pC did not fork a frame');
+  'check_referenceFrame: giving v a frame did not take');
 assert(vector3d.X.how2plot == plottingConvention.default, ...
   'check_referenceFrame: the fork leaked to other vectors');
 
 % assigning the session default itself means membership in the default frame
 w = vector3d.rand(3);
-w.how2plot = plottingConvention.default;
+w.frame = specimenSymmetry.frameFor(plottingConvention.default);
 assert(w.frame == specimenFrame.default, ...
   'check_referenceFrame: assigning the default must become frame membership');
 
@@ -344,7 +344,7 @@ assert(m.frame == cs2.frame, ...
 % the convention of a Miller is the one of its crystal frame - assigning
 % one directly is refused, like assigning a frame
 try
-  m.how2plot = plottingConvention('z↑→x');
+  m.frame = specimenSymmetry.frameFor(plottingConvention('z↑→x'));
   failed = false;
 catch e
   failed = strcmp(e.identifier,'MTEX:Miller:fixedFrame');
@@ -541,7 +541,7 @@ assert(~isa(sSr.b,'Miller') && sSr.b.frame == specimenFrame.default, ...
 % a crystal frame never fits a specimen frame - a wrong sided rotation
 % of specimen framed data errors ...
 w = vector3d.rand;
-w.how2plot = plottingConvention.default;  % membership in the specimen frame
+w.frame = specimenFrame.default;  % membership in the specimen frame
 try
   rotate(w,ori);
   failed = false;
@@ -582,7 +582,7 @@ end
 function checkSaveLoadRoundTrip
 
 cs = crystalSymmetry('321',[3 3 5],'mineral','RoundTrip','X||a');
-cs.how2plot = plottingConvention('z↑→x');   % an override on top of the frame
+cs.frame = specimenSymmetry.frameFor(plottingConvention('z↑→x')); % its own frame
 ss = specimenSymmetry('222');
 
 fname = [tempname '.mat'];
@@ -733,7 +733,10 @@ assert(ori.SS.frame == fr, ...
 % quadrature built results keep the frame of their input - the wrapper
 % used to fabricate a default specimenSymmetry whose session frame then
 % shadowed the input's own, so S2Fun.smiley.^2 changed its convention
+% smiley no longer carries a convention of its own, so give the function a
+% frame explicitly - what is under test is that arithmetic keeps it
 s = S2Fun.smiley;
+s.frame = specimenSymmetry.frameFor(plottingConvention('z↑→x'));
 assert(getFrame(s.^2) == getFrame(s), ...
   'check_referenceFrame: S2Fun arithmetic must keep the frame of its input');
 q = S2FunHarmonic.quadrature(@(v) v.x.^2,'bandwidth',16);

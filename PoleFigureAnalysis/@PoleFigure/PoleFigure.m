@@ -60,7 +60,11 @@ classdef PoleFigure < dynProp & dynOption
     intensities         % diffraction intensities
     antipodal
     frame               % the specimen reference frame (carried by allR)
-    how2plot            % plotting convention
+    how2plot            % plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
   end
   
   methods
@@ -144,17 +148,6 @@ classdef PoleFigure < dynProp & dynOption
       pC = pf.allR{1}.how2plot;
     end
 
-    function pf = set.how2plot(pf,pC)
-      % a convention belongs to a frame, not to data - see
-      % plottingConvention.assignedToData. Releasing the frame is
-      % still a legitimate gesture and stays silent
-      if isempty(pC)
-        pf.frame = [];
-      else
-        plottingConvention.assignedToData(class(pf));
-        plottingConvention.default(pC);
-      end
-    end
 
     function h = get.h(pf)
       h = pf.allH;

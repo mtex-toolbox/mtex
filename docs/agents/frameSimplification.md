@@ -133,7 +133,28 @@ session's.
 | `specimenSymmetryFor`, the register's fork/no-fork distinction | `byName` shrinks to a label lookup |
 | most of `check_plottingConventionOwnership` | the whole file polices the ownership question |
 
-Roughly **300 lines**. The line count is the smaller prize.
+Roughly **300 lines** was the estimate. **It was wrong** - see the accounting
+below.
+
+### What it actually cost, measured
+
+Steps A-D landed at **+95 lines of code**, not fewer: A's `plot(v,'y↑→x')` is a
+genuine new feature (+54, not recoverable), and B's warn-and-redirect shim was
+additive by construction (+54), turning each one-line setter into eleven. Only
+C reduced anything (-13).
+
+Step E then removed the thirteen `set.how2plot` outright (-157) along with
+`plottingConvention.assignedToData` (-18), which takes the whole of Part 2 to
+roughly **-60 on code** - so the machinery sheds about 115 lines once A's
+feature is set aside.
+
+The original 300 assumed `referenceFrame.reintern`, `matchDefault`, the
+register and `framePrivate` would go too. They did not: C's `loadobj` methods
+now *depend* on `reintern`, and `specimenSymmetry.frameFor` stays reachable
+from the `specimenSymmetry(pC)` constructor. Deleting those is a separate
+decision about the primitives.
+
+The line count is the smaller prize anyway.
 
 ## What it really deletes
 

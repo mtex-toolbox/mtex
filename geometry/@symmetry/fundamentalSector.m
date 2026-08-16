@@ -129,7 +129,6 @@ if check_option(varargin,{'upper','lower','maxTheta','minTheta'})
   N(isnull(angle(N,pC.outOfScreen,'antipodal'))) = [];
 end
 
-N.how2plot = pC;
 sR = sphericalRegion(N,zeros(size(N)),varargin{:});
 
 % determine the fundamental sector for misorientation axes with fixed

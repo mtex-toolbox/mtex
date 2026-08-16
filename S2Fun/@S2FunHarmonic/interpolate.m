@@ -124,7 +124,7 @@ S2FunHarmonic.adjoint(1,1,'killPlan',varargin{:});
 S2FunHarmonic(1).eval(1,'killPlan',varargin{:});
 
 sF = S2FunHarmonic(fhat);
-sF.how2plot = getClass(varargin,'plottingConvention',nodes.how2plot);
+sF.frame = getClass(varargin,'referenceFrame',nodes.frame);
 
 % ensure symmetry if required
 if isa(nodes,'Miller')

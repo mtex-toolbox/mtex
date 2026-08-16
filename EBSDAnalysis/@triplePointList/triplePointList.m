@@ -30,7 +30,11 @@ classdef triplePointList < phaseList & dynProp
     angles         % boundary segment angles at the triple points
     V              % vertices x,y coordinates of the triple points
     frame          % the specimen reference frame (carried by allV)
-    how2plot       % default plotting convention
+    how2plot       % default plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
   end
   
   methods
@@ -90,17 +94,6 @@ classdef triplePointList < phaseList & dynProp
       pC = tP.allV.how2plot;
     end
 
-    function tP = set.how2plot(tP,pC)
-      % a convention belongs to a frame, not to data - see
-      % plottingConvention.assignedToData. Releasing the frame is
-      % still a legitimate gesture and stays silent
-      if isempty(pC)
-        tP.frame = [];
-      else
-        plottingConvention.assignedToData(class(tP));
-        plottingConvention.default(pC);
-      end
-    end
 
     function v = get.V(tP)
       v = tP.allV(tP.id,:);

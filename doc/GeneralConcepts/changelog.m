@@ -523,6 +523,12 @@
 % Documentation pages that want a particular alignment now say so, which
 % they previously inherited invisibly from |mtexdata|.
 %
+% |how2plot| is consequently read only on every class but @referenceFrame,
+% where the convention actually lives. Reading it is unchanged. This also
+% applies to <S2Fun.smiley.html |S2Fun.smiley|>, which used to carry its
+% own convention so the face always read right - a page that shows it now
+% declares |plottingConvention.default('y↑→x')| like any other.
+%
 % *Approximation, Sampling and Clustering*
 %
 % Moving least squares approximation supports vector valued data, outlier

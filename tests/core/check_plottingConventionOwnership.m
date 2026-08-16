@@ -9,10 +9,12 @@ function check_plottingConventionOwnership
 % orientation, in grain2d/grain3d meanOrientation, in tensor and in S2Fun,
 % which is why it gets a test of its own rather than one per class.
 %
-% The contract, for every class here (only frames carry conventions):
+% The contract, for every class here (only frames carry conventions, and
+% since the how2plot setters were removed a frame is the only way to give
+% an object one):
 %
-%   1. setting a convention forks the object's frame - it is never
-%      written through a shared frame or symmetry
+%   1. giving an object a frame reaches nothing else - not a shared frame,
+%      not a shared symmetry, not the next object of that class
 %   2. an object that was never given one follows its symmetry's frame,
 %      so editing that frame keeps working
 %   3. symmetrising or attaching a symmetry puts the object into the
@@ -51,9 +53,9 @@ ss2 = copy(ss);
 assert(ss2.frame == ss.frame, ...
   'check_plottingConventionOwnership: copy(ss) does not share the frame handle')
 
-ss2.how2plot = pC;
+ss2.frame = specimenSymmetry.frameFor(pC);
 assert(strcmp(char(ss2.how2plot),char(pC)), ...
-  'check_plottingConventionOwnership: ss2.how2plot = pC did not take')
+  'check_plottingConventionOwnership: giving ss2 a frame did not take')
 assert(ss2.frame ~= ss.frame, ...
   'check_plottingConventionOwnership: setting the convention must fork the frame')
 assert(strcmp(char(ss.how2plot),before) && ...
@@ -72,7 +74,7 @@ assert(csL ~= cs, ...
 assert(csL.frame == cs.frame, ...
   'check_plottingConventionOwnership: the Laue group does not share the frame')
 
-csL.how2plot = pC;
+csL.frame = specimenSymmetry.frameFor(pC);
 assert(strcmp(char(cs.how2plot),csBefore) && ...
   strcmp(char(cs.frame.how2plot),csBefore), ...
   'check_plottingConventionOwnership: cs.Laue.how2plot wrote through the shared frame')
@@ -110,9 +112,9 @@ assert(~strcmp(dflt,char(pC)), ...
 % (1) nothing else may see it, neither a later tensor, nor the shared
 % default, nor this tensor's own CS
 T = tensor(M,'rank',2);
-T.how2plot = pC;
+T.frame = specimenSymmetry.frameFor(pC);
 assert(strcmp(char(T.how2plot),char(pC)), ...
-  'check_plottingConventionOwnership: T.how2plot = pC did not take')
+  'check_plottingConventionOwnership: giving T a frame did not take')
 
 assert(strcmp(char(tensor(M,'rank',2).how2plot),dflt), ...
   'check_plottingConventionOwnership: T.how2plot leaked into the next tensor')
@@ -151,9 +153,9 @@ assert(~strcmp(dflt,char(pC)), ...
 
 % (1) setting the convention forks the function's frame and must not
 % touch the session frame or the default
-sF.how2plot = pC;
+sF.frame = specimenSymmetry.frameFor(pC);
 assert(strcmp(char(sF.how2plot),char(pC)), ...
-  'check_plottingConventionOwnership: sF.how2plot = pC did not take')
+  'check_plottingConventionOwnership: giving sF a frame did not take')
 
 assert(sF.frame ~= specimenFrame.default && ...
   strcmp(char(specimenFrame.default.how2plot),dflt), ...
@@ -222,8 +224,9 @@ assert(~strcmp(dflt,char(pC)), ...
   'default one, so it cannot detect a leak - pick another one'])
 
 % two plain vector3d arguments carrying a non-default convention
-u = vector3d.X; u.how2plot = pC;
-v = vector3d.Z; v.how2plot = pC;
+fr = specimenSymmetry.frameFor(pC);
+u = vector3d.X; u.frame = fr;
+v = vector3d.Z; v.frame = fr;
 ori = orientation.map(u,v);
 
 % the orientation carries the convention on both sides...
@@ -280,7 +283,7 @@ assert(~(pC0 == pC), ...
 
 lastwarn('','');
 ws = warning('off','all');
-pf.how2plot = pC;
+pf.frame = specimenSymmetry.frameFor(pC);
 warning(ws);
 [~,id] = lastwarn;
 

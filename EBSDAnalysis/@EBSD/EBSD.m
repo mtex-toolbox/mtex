@@ -73,7 +73,11 @@ classdef EBSD < phaseList & dynProp & dynOption
     dPos       % spacing of the positions
     rot2Plane  % rotation to xy plane
     frame      % the specimen reference frame (carried by pos)
-    how2plot   % plotting convention
+    how2plot   % plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
     plottingConvention % plotting convention
     EulerCorrection    % EulerXYZ -> mapXYZ, correction for inconsistent reference frames
   end
@@ -380,24 +384,13 @@ classdef EBSD < phaseList & dynProp & dynOption
     end
     
     function ebsd = set.plottingConvention(ebsd,pC)
-      ebsd.pos.how2plot = pC;
+      ebsd.pos.frame = specimenSymmetry.frameFor(pC);
     end
 
     function pC = get.how2plot(ebsd)
       pC = ebsd.pos.how2plot;
     end
 
-    function ebsd = set.how2plot(ebsd,pC)
-      % a convention belongs to a frame, not to data - see
-      % plottingConvention.assignedToData. Releasing the frame is
-      % still a legitimate gesture and stays silent
-      if isempty(pC)
-        ebsd.frame = [];
-      else
-        plottingConvention.assignedToData(class(ebsd));
-        plottingConvention.default(pC);
-      end
-    end
 
     function fr = get.frame(ebsd)
       fr = ebsd.pos.frame;

@@ -62,7 +62,11 @@ classdef vector3d < dynOption
     rho     % azimuth angle
     resolution % mean distance between the points on the sphere
     frame    % the referenceFrame this vector is expressed in
-    how2plot % plotting convention
+    how2plot % plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
     plottingConvention
   end
 
@@ -190,7 +194,7 @@ classdef vector3d < dynOption
        if ~isempty(fr), v.frame = fr; end
 
        pC = getClass(varargin,'plottingConvention');
-       if ~isempty(pC), v.how2plot = pC; end
+       if ~isempty(pC), v.frame = specimenSymmetry.frameFor(pC); end
 
       end
     end
@@ -224,21 +228,6 @@ classdef vector3d < dynOption
       if isempty(pC), pC = plottingConvention.default; end
     end
 
-    function v = set.how2plot(v,pC)
-      % accept a string like 'y↑→x' as a shortcut for the convention
-      if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
-
-      if isempty(pC)
-        % no convention claim - back to frame-free
-        v = setFrame(v,[]);
-      else
-        % only frames carry conventions: the session frame when pC is
-        % the convention it carries, an unregistered fork otherwise -
-        % never written through a shared frame handle. On a class whose
-        % frame is fixed (Miller) this errors - assign the symmetry.
-        v = setFrame(v,specimenSymmetry.frameFor(pC));
-      end
-    end
 
     function fr = get.frame(v)
       fr = getFrame(v);
@@ -266,7 +255,7 @@ classdef vector3d < dynOption
     end
 
     function v = set.plottingConvention(v,pC)
-      v.how2plot = pC;
+      v.frame = specimenSymmetry.frameFor(pC);
     end
     % -------------------------------
     

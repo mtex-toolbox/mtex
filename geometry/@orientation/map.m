@@ -73,7 +73,7 @@ elseif ori.SS.how2plot ~= varargin{2}.how2plot
   % specimenSymmetry.default or the symmetry the caller passed in; a copy
   % keeps the point group and still compares equal (@symmetry/eq is id based)
   ori.SS = copy(ori.SS);
-  ori.SS.how2plot = varargin{2}.how2plot;
+  ori.SS.frame = varargin{2}.frame;
 end
 
 if length(sym) == 2

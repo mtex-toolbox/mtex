@@ -9,6 +9,8 @@
 % Lets start by clustering some directional data which we sample from our
 % smiley function
 
+% the smiley reads right with y up
+plottingConvention.default('y↑→x');
 S2F = S2Fun.smiley.^2;
 
 v = S2F.discreteSample(10000);

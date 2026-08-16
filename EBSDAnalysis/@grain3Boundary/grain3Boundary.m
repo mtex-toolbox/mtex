@@ -54,7 +54,11 @@ properties (Dependent)
   I_VF     % incidence matrix: vertices <-> faces
   I_VG     % incidence matrix: vertices <-> grains
   frame    % the specimen reference frame (carried by allV)
-  how2plot % @plottingConvention
+  how2plot % @plottingConvention - read only
+  % A convention belongs to a reference frame. To change how this is
+  % drawn use plot(...,'y↑→x') for one plot,
+  % plottingConvention.default(...) for the session, or move the data
+  % with x.frame = specimenFrame.rolling
 end
 
 methods
@@ -114,17 +118,6 @@ methods
     pC = gB3.allV.how2plot;
   end
 
-  function gB3 = set.how2plot(gB3,pC)
-    % a convention belongs to a frame, not to data - see
-    % plottingConvention.assignedToData. Releasing the frame is
-    % still a legitimate gesture and stays silent
-    if isempty(pC)
-      gB3.frame = [];
-    else
-      plottingConvention.assignedToData(class(gB3));
-      plottingConvention.default(pC);
-    end
-  end
 
   function out = get.idV(gB3)
     if iscell(gB3.F)

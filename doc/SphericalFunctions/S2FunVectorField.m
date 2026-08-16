@@ -68,6 +68,8 @@ sVF1-sVF2; sVF2-vector3d(sqrt(2)/2, sqrt(2)/2, 0);
 %%
 % multiplication/division by a scalar or a |S2Fun|
 2.*sVF1; sVF1./4;
+% the smiley reads right with y up
+plottingConvention.default('y↑→x');
 S2Fun.smiley .* sVF1;
 
 %%

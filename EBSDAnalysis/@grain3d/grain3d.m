@@ -21,7 +21,11 @@ classdef grain3d < phaseList & dynProp
     extent   %
     midPoint % midPoint of extent
     frame    % the specimen reference frame (carried by allV)
-    how2plot % plotting convention
+    how2plot % plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
     grainSize % depreciated for numPixel
   end
 
@@ -124,17 +128,6 @@ classdef grain3d < phaseList & dynProp
       pC = grains.allV.how2plot;
     end
 
-    function grains = set.how2plot(grains,pC)
-      % a convention belongs to a frame, not to data - see
-      % plottingConvention.assignedToData. Releasing the frame is
-      % still a legitimate gesture and stays silent
-      if isempty(pC)
-        grains.frame = [];
-      else
-        plottingConvention.assignedToData(class(grains));
-        plottingConvention.default(pC);
-      end
-    end
 
     function F = get.F(grains)
       F = grains.boundary.F;

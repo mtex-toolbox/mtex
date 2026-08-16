@@ -32,7 +32,11 @@ classdef sphericalRegion
 
   properties (Dependent = true)
     frame    % the reference frame (carried by N)
-    how2plot
+    how2plot % plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
   end
 
 
@@ -120,17 +124,6 @@ classdef sphericalRegion
       h2p = sR.N.how2plot;
     end
 
-    function sR = set.how2plot(sR,pC)
-      % a convention belongs to a frame, not to data - see
-      % plottingConvention.assignedToData. Releasing the frame is
-      % still a legitimate gesture and stays silent
-      if isempty(pC)
-        sR.frame = [];
-      else
-        plottingConvention.assignedToData(class(sR));
-        plottingConvention.default(pC);
-      end
-    end
 
     function fr = get.frame(sR)
       fr = sR.N.frame;

@@ -159,8 +159,9 @@ methods (Static = true)
     elseif isfield(s,'s') && isa(s.s,'symmetry')
       sF.framePrivate = s.s.frame;
     elseif isfield(s,'how2plotPrivate') && ~isempty(s.how2plotPrivate)
-      sF.how2plot = s.how2plotPrivate;
-      sF.framePrivate = referenceFrame.reintern(sF.framePrivate);
+      % a pre-frame file stored a bare convention - give it a frame
+      sF.framePrivate = referenceFrame.reintern( ...
+        specimenSymmetry.frameFor(s.how2plotPrivate));
     end
 
   end

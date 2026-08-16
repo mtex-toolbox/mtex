@@ -25,7 +25,11 @@ end
 
 properties (Dependent = true)
   frame    % the referenceFrame this function is expressed in
-  how2plot % plotting convention
+  how2plot % plotting convention - read only
+  % A convention belongs to a reference frame. To change how this is
+  % drawn use plot(...,'y↑→x') for one plot,
+  % plottingConvention.default(...) for the session, or move the data
+  % with x.frame = specimenFrame.rolling
 end
 
 
@@ -43,21 +47,6 @@ methods
     if isempty(pC), pC = plottingConvention.default; end
   end
 
-  function sF = set.how2plot(sF,pC)
-    % accept a string like 'y↑→x' as a shortcut, as symmetry does
-    if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
-
-    if isempty(pC)
-      % no convention claim - back to frame-free
-      sF = setFrame(sF,[]);
-    else
-      % only frames carry conventions: the session frame when pC is the
-      % convention it carries, an unregistered fork otherwise. On a
-      % class whose frame is fixed (S2FunHarmonicSym) this errors -
-      % assign the symmetry sF.s instead.
-      sF = setFrame(sF,specimenSymmetry.frameFor(pC));
-    end
-  end
 
   function fr = get.frame(sF)
     fr = getFrame(sF);

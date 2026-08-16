@@ -88,7 +88,11 @@ classdef grainBoundary < phaseList & dynProp
     V              % vertices that are part of the grain boundary
     N              % normal direction of the pseudo3d data    
     frame          % the specimen reference frame (carried by allV)
-    how2plot       % default plotting convention
+    how2plot       % default plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
   end
   
   methods
@@ -241,17 +245,6 @@ classdef grainBoundary < phaseList & dynProp
       pC = gB.allV.how2plot;
     end
 
-    function gB = set.how2plot(gB,pC)
-      % a convention belongs to a frame, not to data - see
-      % plottingConvention.assignedToData. Releasing the frame is
-      % still a legitimate gesture and stays silent
-      if isempty(pC)
-        gB.frame = [];
-      else
-        plottingConvention.assignedToData(class(gB));
-        plottingConvention.default(pC);
-      end
-    end
 
     function V = get.allV(gB)
       V = gB.triplePoints.allV;

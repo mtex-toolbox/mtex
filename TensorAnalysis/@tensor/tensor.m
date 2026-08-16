@@ -17,7 +17,11 @@ classdef tensor < dynOption
     isSymmetric
     isSkewSymmetric
     frame    % the referenceFrame this tensor is expressed in
-    how2plot % plotting convention
+    how2plot % plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
   end
 
   methods
@@ -196,17 +200,6 @@ classdef tensor < dynOption
       if isempty(pC), pC = plottingConvention.default; end
     end
 
-    function T = set.how2plot(T,pC)
-      % a convention belongs to a frame, not to data - see
-      % plottingConvention.assignedToData. Releasing the frame is
-      % still a legitimate gesture and stays silent
-      if isempty(pC)
-        T.frame = [];
-      else
-        plottingConvention.assignedToData(class(T));
-        plottingConvention.default(pC);
-      end
-    end
 
     function x = x(t)
       v = vector3d(t);

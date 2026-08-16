@@ -7,9 +7,8 @@ if nargin == 0 || ~isa(varargin{1},'vector3d')
     f = S2FunHarmonic.quadrature(@(v) S2Fun.smiley(v),varargin{:});
   end
 
-  % no need to swap in a fresh specimenSymmetry first - the convention is
-  % stored on the function and never written through to its symmetry
-  f.how2plot = plottingConvention("y↑→x");
+  % the face reads right in 'y↑→x'; a function does not carry a private
+  % convention, so a page that shows it says so - see AxesAlignment
 
   return;
 end

@@ -5,6 +5,8 @@
 % explained. We start by defining some example functions.
 
 % the smiley
+% the smiley reads right with y up
+plottingConvention.default('y↑→x');
 sF1 = S2Fun.smiley;
 
 % some oscillatory function

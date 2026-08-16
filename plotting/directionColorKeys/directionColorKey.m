@@ -25,7 +25,7 @@ classdef directionColorKey < handle
         catch
           dM.sym = specimenSymmetry.default;
           try
-            dM.sym.how2plot = sym.how2plot;
+            dM.sym.frame = sym.frame;
           end
           %error('No symmetry specified!')
         end
