@@ -8,10 +8,14 @@ function h = quiver3(sAF,varargin)
 %   S2VectorField/plot
 %
 
-% maybe we should an empty sphere as background
+% the background sphere and the arrows have to accumulate into the same
+% axes, so the hold spans both - see @S2VectorField/quiver3
 ax = get_option(varargin,'parent',gca);
+hG = holdOn(ax); %#ok<NASGU>
+
+% maybe we should an empty sphere as background
 if ~any(isgraphics(ax.Children,'surface'))
-  plotEmptySphere;
+  plotEmptySphere('parent',ax);
 end
 
 % plot the function values
