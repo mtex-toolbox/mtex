@@ -12,7 +12,7 @@ catch ME
   how2plot = plottingConvention.default;
 end
 % plottingConvention is a value class - this is already a private copy
-how2plot = getClass(varargin,'plottingConvention',how2plot);
+how2plot = plottingConvention.fromOption(varargin,how2plot);
 
 % case 1: predefined axis
 % -----------------------

@@ -338,7 +338,48 @@ classdef plottingConvention
   end
 
   methods (Static=true)
-  
+
+    function pC = fromOption(list,default)
+      % the plotting convention among a list of plot options, if any
+      %
+      % Accepts a @plottingConvention passed as an argument and, for a one
+      % off plot, the string form
+      %
+      %   plot(v,'y↑→x')
+      %
+      % Only a string that carries a direction marker is even tried, so an
+      % ordinary option such as 'upper', 'complete' or 'noLabel' can never
+      % be mistaken for a convention. A marker cannot occur in an option
+      % name, and str2rot below rejects anything it cannot read anyway.
+      %
+      % Syntax
+      %   pC = plottingConvention.fromOption(varargin)
+      %   pC = plottingConvention.fromOption(varargin,default)
+      %
+      % Input
+      %  list    - the option list
+      %  default - returned when the list carries no convention
+      %
+      % See also
+      % plottingConvention/default
+
+      if nargin < 2, default = []; end
+
+      pC = getClass(list,'plottingConvention');
+      if ~isempty(pC), return; end
+
+      for k = 1:numel(list)
+        if ~conventionLike(list{k}), continue; end
+        try %#ok<TRYNC>
+          pC = plottingConvention(list{k});
+          return
+        end
+      end
+
+      pC = default;
+
+    end
+
     function test
       grainsR = rotate(grains,rotation.rand);
       plot(grainsR,grainsR.meanOrientation,'micronbar','off');
@@ -627,3 +668,16 @@ end
 
 end
 
+function out = conventionLike(s)
+% whether a value could name a plotting convention at all
+%
+% The markers are what distinguishes 'y↑→x' or the ASCII 'y^->x' from an
+% option name - no option in MTEX contains one, so this cannot collide.
+
+out = false;
+if ~(ischar(s) || isstring(s)), return; end
+
+s = char(s);
+out = any(ismember(s,'↑↓←→⊙⊗^')) || contains(s,'->') || contains(s,'<-');
+
+end
