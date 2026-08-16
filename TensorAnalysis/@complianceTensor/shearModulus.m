@@ -50,17 +50,19 @@ if nargin == 1 % the isotropic case
   GHill = 0.5.*(GVoigt + GReuss);
   E = GVoigt;
     
-elseif nargin == 2 || isempty(h)
-  
-  E = S2FunHarmonicSym.quadrature(@(u) shearModulus(S,h,u),'bandwidth',4,S.CS);
-  % an own frame of the tensor rides along - only frames carry conventions
-  E.framePrivate = S.framePrivate;
+elseif nargin == 2 || isempty(u)
 
-elseif isempty(u)
+  % the shear direction is left open: a function of u with h held fixed
+  E = S2FunHarmonic.quadrature(@(v) shearModulus(S,h,v),'bandwidth',16);
+  E.framePrivate = S.frame;
 
-  E = S2FunHarmonicSym.quadrature(@(u) shearModulus(S,h,u),'bandwidth',4,S.CS);
-  % an own frame of the tensor rides along - only frames carry conventions
-  E.framePrivate = S.framePrivate;
+elseif isempty(h)
+
+  % the shear plane is left open: a function of h with u held fixed. This
+  % branch used to carry the u-varying integrand with h still empty, so the
+  % documented shearModulus(S,[],u) recursed into itself and errored.
+  E = S2FunHarmonic.quadrature(@(v) shearModulus(S,v,u),'bandwidth',16);
+  E.framePrivate = S.frame;
 
 else
 
