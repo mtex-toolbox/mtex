@@ -91,9 +91,12 @@ classdef triplePointList < phaseList & dynProp
     end
 
     function tP = set.how2plot(tP,pC)
-      tP.allV.how2plot = pC;
-      % the normal direction lives in the very same frame as the vertices
-      tP.N.frame = tP.allV.frame;
+
+      % one cascade only: resolve the convention to a frame and let
+      % set.frame carry it into everything this object contains. Two
+      % setters that had to stay in lockstep is how PoleFigure lost its
+      % SS and how the fork family of ADR 0003 kept reappearing
+      tP.frame = specimenSymmetry.frameFor(pC);
     end
 
     function v = get.V(tP)

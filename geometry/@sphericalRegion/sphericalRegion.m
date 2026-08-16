@@ -120,8 +120,13 @@ classdef sphericalRegion
       h2p = sR.N.how2plot;
     end
 
-    function sR = set.how2plot(sR,how2plot)
-      sR.N.how2plot = how2plot;
+    function sR = set.how2plot(sR,pC)
+
+      % one cascade only: resolve the convention to a frame and let
+      % set.frame carry it into everything this object contains. Two
+      % setters that had to stay in lockstep is how PoleFigure lost its
+      % SS and how the fork family of ADR 0003 kept reappearing
+      sR.frame = specimenSymmetry.frameFor(pC);
     end
 
     function fr = get.frame(sR)

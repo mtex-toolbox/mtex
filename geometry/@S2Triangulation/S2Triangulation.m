@@ -105,7 +105,12 @@ classdef S2Triangulation
     end
 
     function sT = set.how2plot(sT,pC)
-      sT.vertices.how2plot = pC;
+
+      % one cascade only: resolve the convention to a frame and let
+      % set.frame carry it into everything this object contains. Two
+      % setters that had to stay in lockstep is how PoleFigure lost its
+      % SS and how the fork family of ADR 0003 kept reappearing
+      sT.frame = specimenSymmetry.frameFor(pC);
     end
 
     function e = eq(sT1,sT2)

@@ -471,6 +471,27 @@
 % orientation applied to data in specimen coordinates - is an error now
 % instead of a warning.
 %
+% *Rotating a function drops a symmetry it destroys - now consistently*
+%
+% Rotating an @SO3Fun or an @SO3VectorField by a rotation which is not one
+% of its own symmetry elements destroys that symmetry, so the group is
+% dropped and only the reference frame kept. The twelve |rotate| methods
+% implementing this had drifted into three different tests for "is there a
+% symmetry to lose", and they disagree for every non centrosymmetric point
+% group of order two - |2|, |m|, |-4| and friends. Concretely
+%
+%   cs  = crystalSymmetry('2',[1 2 3],[90 100 90]*degree);
+%   odf = unimodalODF(orientation.rand(cs));
+%   rot = rotation.byAxisAngle(vector3d(1,2,3),37*degree);
+%   odf = rotate(odf,rot,'right');
+%
+% warned and dropped the symmetry in @SO3FunHarmonic, and silently kept the
+% - by then false - claim of |2| symmetry in @SO3FunComposition and the
+% @SO3VectorField classes. All of them now warn and drop, which is the
+% correct behaviour: the rotated function really is no longer |2| symmetric.
+% If you relied on the old silence, the symmetry was already wrong; a result
+% that should keep its group has to be rotated by a symmetry element.
+%
 % *Approximation, Sampling and Clustering*
 %
 % Moving least squares approximation supports vector valued data, outlier

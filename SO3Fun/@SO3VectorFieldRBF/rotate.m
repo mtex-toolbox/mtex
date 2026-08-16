@@ -16,19 +16,10 @@ function SO3VF = rotate(SO3VF, q,varargin)
 % SO3VectorField/rotate SO3VectorFieldHandle/rotate
 
 if check_option(varargin,'right')
-  cs = SO3VF.hiddenCS;
-  if length(cs.rot)>2 && ~any(q == cs.rot(:))
-    warning('Rotating an SO3VectorField with crystal symmetry will remove the crystal symmetry')
-    SO3VF.hiddenCS = stripSym(cs);
-  end
+  SO3VF.hiddenCS = dropSymmetry(SO3VF.hiddenCS,q,'crystal','SO3VectorField');
 else
-  ss = SO3VF.hiddenSS;
-  if length(ss.rot)>2 && ~any(q == ss.rot(:))
-    warning('Rotating an SO3VectorField with specimen symmetry will remove the specimen symmetry')
-    SO3VF.hiddenSS = stripSym(ss);
-  end
+  SO3VF.hiddenSS = dropSymmetry(SO3VF.hiddenSS,q,'specimen','SO3VectorField');
 end
-
 
 % rotate the argument of the vector field
 SO3VF.SO3F = rotate(SO3VF.SO3F, q,varargin{:});
@@ -47,7 +38,6 @@ elseif SO3VF.internTangentSpace.isLeft
 end
 
 end
-
 
 function SO3VF = rotateTangentCoordinates(SO3VF,q)
 % replace the coordinates (x,y,z) of the tangent vectors by q * (x,y,z),

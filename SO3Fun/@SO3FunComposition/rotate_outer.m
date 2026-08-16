@@ -16,19 +16,10 @@ function SO3F = rotate_outer(SO3F,rot,varargin)
 % SO3FunHandle/rotate_outer
 
 if check_option(varargin,'right')
-  cs = SO3F.CS.rot;
-  if length(cs)>2 && ~all(any(rot(:).' == cs(:)))
-    warning('Rotating an ODF with crystal symmetry will remove the crystal symmetry')
-    SO3F.CS = stripSym(SO3F.CS); % drop the group, keep the frame (ADR 0003)
-  end
+  SO3F.CS = dropSymmetry(SO3F.CS,rot,'crystal','ODF');
 else
-  ss = SO3F.SS.rot;
-  if length(ss)>2 && ~all(any(rot(:).' == ss(:)))
-    warning('Rotating an ODF with specimen symmetry will remove the specimen symmetry')
-    SO3F.SS = stripSym(SO3F.SS); % drop the group, keep the frame (ADR 0003)
-  end
+  SO3F.SS = dropSymmetry(SO3F.SS,rot,'specimen','ODF');
 end
-
 
 for i = 1:length(SO3F.components)
   SO3F.components{i} = SO3F.components{i}.rotate_outer(rot,varargin{:});  

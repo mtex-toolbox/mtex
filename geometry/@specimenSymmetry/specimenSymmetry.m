@@ -179,6 +179,13 @@ methods (Static = true)
     % the registered session frame when pC equals the convention it
     % carries, an unregistered fork otherwise - the fork keeps the name
     % and the axes names of the session frame
+    %
+    % Accepts a string like 'y↑→x', and reports no frame for no
+    % convention, so that every set.how2plot can be one line through here
+    % instead of repeating the normalisation
+    if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
+    if isempty(pC), fr = []; return; end
+
     fr = specimenFrame.default;
     if pC ~= fr.how2plot
       fr = copy(fr);

@@ -14,12 +14,7 @@ function SO3F = rotate(SO3F,rot,varargin)
 % See also
 % SO3FunHandle/rotate_outer
     
-ss = SO3F.SS.rot;
-if length(ss)>2 && ~any(rot == ss(:))
-  warning('Rotating an ODF with specimen symmetry will remove the specimen symmetry')
-  SO3F.SS = stripSym(SO3F.SS); % drop the group, keep the frame (ADR 0003)
-end
-
+  SO3F.SS = dropSymmetry(SO3F.SS,rot,'specimen','ODF');
 
 if check_option(varargin,'right')
   error('Not implemented yet.')

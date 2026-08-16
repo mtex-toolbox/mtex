@@ -195,15 +195,12 @@ classdef tensor < dynOption
     end
 
     function T = set.how2plot(T,pC)
-      % stored as an own frame on the tensor, never written through T.CS
-      % or its frame - both are shared handles (the leak family of ADR
-      % 0003); accept a string like 'y↑→x' as a shortcut, as symmetry does
-      if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
-      if isempty(pC)
-        T.framePrivate = [];
-      else
-        T.framePrivate = specimenSymmetry.frameFor(pC);
-      end
+
+      % one cascade only: resolve the convention to a frame and let
+      % set.frame carry it into everything this object contains. Two
+      % setters that had to stay in lockstep is how PoleFigure lost its
+      % SS and how the fork family of ADR 0003 kept reappearing
+      T.frame = specimenSymmetry.frameFor(pC);
     end
 
     function x = x(t)

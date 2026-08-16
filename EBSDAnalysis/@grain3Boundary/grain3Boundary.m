@@ -115,7 +115,12 @@ methods
   end
 
   function gB3 = set.how2plot(gB3,pC)
-    gB3.allV.how2plot = pC;
+
+    % one cascade only: resolve the convention to a frame and let
+    % set.frame carry it into everything this object contains. Two
+    % setters that had to stay in lockstep is how PoleFigure lost its
+    % SS and how the fork family of ADR 0003 kept reappearing
+    gB3.frame = specimenSymmetry.frameFor(pC);
   end
 
   function out = get.idV(gB3)

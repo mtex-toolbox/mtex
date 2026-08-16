@@ -125,8 +125,12 @@ classdef grain3d < phaseList & dynProp
     end
 
     function grains = set.how2plot(grains,pC)
-      grains.allV.how2plot = pC;
-      grains.boundary.how2plot = pC;
+
+      % one cascade only: resolve the convention to a frame and let
+      % set.frame carry it into everything this object contains. Two
+      % setters that had to stay in lockstep is how PoleFigure lost its
+      % SS and how the fork family of ADR 0003 kept reappearing
+      grains.frame = specimenSymmetry.frameFor(pC);
     end
 
     function F = get.F(grains)

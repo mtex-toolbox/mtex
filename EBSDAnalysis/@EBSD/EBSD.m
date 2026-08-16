@@ -388,10 +388,12 @@ classdef EBSD < phaseList & dynProp & dynOption
     end
 
     function ebsd = set.how2plot(ebsd,pC)
-      ebsd.pos.how2plot = pC;
-      % unitCell and N live in the very same frame as the positions
-      ebsd.unitCell.frame = ebsd.pos.frame;
-      ebsd.N.frame = ebsd.pos.frame;
+
+      % one cascade only: resolve the convention to a frame and let
+      % set.frame carry it into everything this object contains. Two
+      % setters that had to stay in lockstep is how PoleFigure lost its
+      % SS and how the fork family of ADR 0003 kept reappearing
+      ebsd.frame = specimenSymmetry.frameFor(pC);
     end
 
     function fr = get.frame(ebsd)

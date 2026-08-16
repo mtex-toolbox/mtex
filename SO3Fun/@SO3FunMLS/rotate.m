@@ -24,18 +24,16 @@ if check_option(varargin,'right')
 
   if isa(rot,'orientation')
     assert(rot.SS == SO3F.CS,'symmetry missmatch')    
-  elseif numSym(SO3F.CS.Laue)>2 && ~all(any(rot(:).' == SO3F.CS.rot(:)))
-    warning('Rotating an ODF with crystal symmetry will remove the crystal symmetry')
-    SO3F.CS = stripSym(SO3F.CS); % drop the group, keep the frame (ADR 0003)
+  else
+  SO3F.CS = dropSymmetry(SO3F.CS,rot,'crystal','ODF');
   end
 
   SO3F.nodes = orientation(SO3F.nodes * rot);
 else
   if isa(rot,'orientation')
     assert(rot.CS == SO3F.SS,'symmetry missmatch')    
-  elseif numSym(SO3F.SS.Laue)>2 && ~any(rot == SO3F.SS.rot(:))
-    warning('Rotating an ODF with specimen symmetry will remove the specimen symmetry')
-    SO3F.SS = stripSym(SO3F.SS); % drop the group, keep the frame (ADR 0003)
+  else
+  SO3F.SS = dropSymmetry(SO3F.SS,rot,'specimen','ODF');
   end
 
   SO3F.nodes = orientation(rot * SO3F.nodes);
