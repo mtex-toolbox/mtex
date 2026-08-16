@@ -364,10 +364,17 @@ classdef plottingConvention
 
       if nargin < 2, default = []; end
 
-      pC = getClass(list,'plottingConvention');
-      if ~isempty(pC), return; end
-
+      % the name value form wins over a bare object. The plot methods
+      % append the convention of their data - plot(ebsd,...,ebsd.how2plot)
+      % - AFTER varargin, meaning it as the fallback for this plot; taking
+      % the bare object first would make that fallback beat the option the
+      % caller actually typed, and plot(ebsd,ori,'how2plot','y←↑x') would
+      % silently draw in the convention of the data. A bare convention the
+      % caller passed themselves still wins over the appended one, because
+      % getClass returns the first match.
       pC = get_option(list,'how2plot');
+
+      if isempty(pC), pC = getClass(list,'plottingConvention'); end
       if isempty(pC), pC = default; return; end
 
       if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end

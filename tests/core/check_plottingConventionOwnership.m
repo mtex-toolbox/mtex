@@ -27,6 +27,7 @@ checkTensorToS2Fun;
 checkOrientationMap;
 checkPoleFigure;
 checkSymmetryOverride;
+checkOptionBeatsData;
 
 disp('check_plottingConventionOwnership: passed');
 
@@ -303,5 +304,51 @@ assert(pf2.how2plot == pC, ...
   'check_plottingConventionOwnership: a new pole figure does not follow the session')
 
 clear restore
+
+end
+
+% =========================================================================
+function checkOptionBeatsData
+% the 'how2plot' plot option outranks the convention of the data
+%
+% Every plot method appends the convention of its own data AFTER varargin
+%
+%   newMapPlot(...,varargin{:},ebsd.how2plot,ebsd.pos.frame)
+%
+% meaning it as the fallback for this plot. plottingConvention.fromOption
+% used to take a bare @plottingConvention before it looked at the name
+% value form, so that fallback beat the option the caller had typed and
+%
+%   plot(ebsd,ebsd.orientations,'how2plot','y←↑x')
+%
+% silently drew the map in the convention of the data instead.
+
+data = plottingConvention('y↑→x');
+want = plottingConvention('y←↑x');
+other = plottingConvention('z↑→x');
+
+% the option the caller typed wins over the appended fallback
+list = {'how2plot','y←↑x','refFrame','on',data};
+assert(plottingConvention.fromOption(list,plottingConvention.default) == want, ...
+  'check_plottingConventionOwnership: the how2plot option must beat the data convention');
+
+% a @plottingConvention accepted as an object too
+list = {'how2plot',want,data};
+assert(plottingConvention.fromOption(list,plottingConvention.default) == want, ...
+  'check_plottingConventionOwnership: how2plot must accept a plottingConvention');
+
+% without the option the appended fallback applies, which is what makes
+% plots follow their data at all
+assert(plottingConvention.fromOption({data},plottingConvention.default) == data, ...
+  'check_plottingConventionOwnership: without the option the data convention applies');
+
+% a bare convention the CALLER passed still wins over the appended one -
+% getClass returns the first match
+assert(plottingConvention.fromOption({other,data},plottingConvention.default) == other, ...
+  'check_plottingConventionOwnership: a caller passed convention must beat the appended one');
+
+% and an empty list falls through to the default
+assert(plottingConvention.fromOption({},other) == other, ...
+  'check_plottingConventionOwnership: an empty list must return the default');
 
 end
