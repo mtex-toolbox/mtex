@@ -20,6 +20,7 @@ checkMatrixShapes;
 checkAmbiguousAndInvalid;
 checkNoInternalAmbiguity;
 checkByXYZ;
+checkLoadobjKeepsSubclass;
 
 disp('check_vector3d: passed');
 
@@ -192,5 +193,53 @@ for d = {zeros(0,4), rand(3,4), rand(5,1)}
       mat2str(size(d{1})), ME.identifier);
   end
 end
+
+end
+
+% =========================================================================
+function checkLoadobjKeepsSubclass
+% loadobj must rebuild the CLASS it was given, not a plain vector3d
+%
+% MATLAB hands loadobj a raw struct whenever the saved property set no
+% longer matches the class definition - which is what loading a file
+% written by an earlier MTEX looks like. @S2Grid is the class this bites:
+% it cannot be default constructed, so there is no object for MATLAB to
+% fill, and the inherited vector3d/loadobj used to rebuild a plain
+% @vector3d. The grid methods are then gone, and an ODF loaded from such a
+% file dies on evaluation inside SO3Grid/dot_outer with "Undefined function
+% 'getdata' for input arguments of type 'vector3d'".
+
+g = equispacedS2Grid('resolution',10*degree);
+
+% the struct MATLAB would hand over for a grid saved by another version -
+% the current fields, plus one it does not know
+s = struct('x',g.x,'y',g.y,'z',g.z,'antipodal',g.antipodal, ...
+  'isNormalized',g.isNormalized,'opt',g.opt,'framePrivate',[], ...
+  'thetaGrid',g.thetaGrid,'rhoGrid',g.rhoGrid,'res',g.res, ...
+  'how2plot',plottingConvention.default);
+
+r = S2Grid.loadobj(s);
+
+assert(isa(r,'S2Grid'), ...
+  'check_vector3d: S2Grid.loadobj must return an S2Grid, not a plain vector3d');
+assert(length(r) == length(g) && all(norm(vector3d(r) - vector3d(g)) < 1e-10), ...
+  'check_vector3d: S2Grid.loadobj lost or moved the nodes');
+
+% the grid methods the class exists for have to work on the result
+[~,~,~,palpha] = getdata(r); %#ok<ASGLU>
+assert(isnumeric(palpha), ...
+  'check_vector3d: getdata does not work on the reloaded grid');
+
+% a plain vector3d struct still rebuilds a plain vector3d
+v = vector3d.loadobj(struct('x',1,'y',2,'z',3));
+assert(strcmp(class(v),'vector3d') && v.x == 1 && v.z == 3, ...
+  'check_vector3d: the vector3d struct branch regressed');
+
+% and a normal round trip is untouched
+d = tempname; mkdir(d); f = fullfile(d,'g.mat');
+save(f,'g'); clear g
+L = load(f); rmdir(d,'s');
+assert(isa(L.g,'S2Grid'), ...
+  'check_vector3d: a same version S2Grid round trip must stay an S2Grid');
 
 end

@@ -397,14 +397,7 @@ classdef vector3d < dynOption
       % over the raw data as a struct - rebuild from it and drop whatever
       % convention slot the saving version had, the frame model resolves
       % conventions at render time anyway
-      if ~isa(v,'vector3d')
-        s = v;
-        v = vector3d(s.x,s.y,s.z);
-        if isfield(s,'antipodal'),    v.antipodal = s.antipodal; end
-        if isfield(s,'isNormalized'), v.isNormalized = s.isNormalized; end
-        if isfield(s,'opt') && isstruct(s.opt), v.opt = s.opt; end
-        if isfield(s,'framePrivate'), v.framePrivate = s.framePrivate; end
-      end
+      if ~isa(v,'vector3d'), v = vector3d.fromStruct(vector3d,v); end
 
       % a deserialized frame is re-interned against the register - the
       % convention the loaded data was saved with applies to the whole
@@ -417,6 +410,32 @@ classdef vector3d < dynOption
       end
 
     end
-    
+
+    function v = fromStruct(v,s)
+      % fill the vector3d part of v from a struct handed to loadobj
+      %
+      % A SUBCLASS has to pass an object of its own class here. MATLAB
+      % hands loadobj a raw struct whenever the saved property set no
+      % longer matches the class definition - which is what loading a file
+      % written by an earlier MTEX looks like - and rebuilding a plain
+      % vector3d from it silently downgrades the class. An @S2Grid that
+      % comes back as a list of vectors has lost the very methods it
+      % exists for: @S2Grid/getdata is then undefined, and SO3Grid/dot_outer
+      % fails deep inside the evaluation of any ODF loaded from such a file.
+      %
+      % Syntax
+      %   v = vector3d.fromStruct(S2Grid(...),s)
+      %
+      % See also
+      % vector3d/loadobj S2Grid/loadobj
+
+      [v.x,v.y,v.z] = deal(s.x,s.y,s.z);
+      if isfield(s,'antipodal'),    v.antipodal = s.antipodal; end
+      if isfield(s,'isNormalized'), v.isNormalized = s.isNormalized; end
+      if isfield(s,'opt') && isstruct(s.opt), v.opt = s.opt; end
+      if isfield(s,'framePrivate'), v.framePrivate = s.framePrivate; end
+
+    end
+
   end
 end

@@ -70,4 +70,34 @@ methods
 
 end
 
+methods (Static = true)
+
+  function S2G = loadobj(S2G)
+    % called by MATLAB when an S2Grid is loaded from an .mat file
+    %
+    % Needed because an S2Grid cannot be default constructed - the
+    % constructor requires the two S1Grid arguments. MATLAB therefore has
+    % no object to fill when the saved property set does not match the
+    % current class definition, and hands over the raw struct instead.
+    % Without this method the inherited vector3d/loadobj would rebuild a
+    % plain @vector3d from it, and every grid method would be gone: an ODF
+    % saved by an earlier MTEX then fails on evaluation with "Undefined
+    % function 'getdata' for input arguments of type 'vector3d'", raised
+    % from SO3Grid/dot_outer by way of the grid its center holds.
+
+    if ~isa(S2G,'S2Grid')
+      s = S2G;
+      S2G = S2Grid(S1Grid([],0,pi),S1Grid([],0,2*pi));
+      S2G = vector3d.fromStruct(S2G,s);
+      for p = {'thetaGrid','rhoGrid','res'}
+        if isfield(s,p{1}), S2G.(p{1}) = s.(p{1}); end
+      end
+    end
+
+    S2G = vector3d.loadobj(S2G);
+
+  end
+
+end
+
 end
