@@ -26,6 +26,7 @@ checkFrameCarriage;
 checkTangentVectorFrames;
 checkTrivialSymmetryFromFrame;
 checkFundamentalSectorFrame;
+checkProductDropsSymmetry;
 
 disp('check_referenceFrame: passed');
 
@@ -906,6 +907,75 @@ assert(max(max(abs(rgb - rgb(1,:)))) < 1e-10, ...
   'check_referenceFrame: the ipf color must not depend on the session convention');
 assert(max(max(abs(grd - rgb))) < 0.05, ...
   'check_referenceFrame: the precomputed color grid must agree with the exact map');
+
+referenceFrame.reset;
+
+end
+
+% =========================================================================
+function checkProductDropsSymmetry
+% a rotation that is not a symmetry element destroys the symmetry it acts
+% on, and the product drops the group while keeping the frame
+%
+% Same policy as SO3Fun/rotate, and the same helper - see dropSymmetry. A
+% rotation multiplied on the LEFT acts in the specimen frame and can only
+% destroy the specimen symmetry; on the RIGHT it acts in the crystal frame.
+%
+% ensureSym used to keep the group and merely warn, and its membership test
+% was dot_outer(sym.rot,rot) > 0.99 - a quaternion dot of 0.99 is a rotation
+% angle of 16.2 degree, so any rotation up to sixteen degrees counted as a
+% symmetry element and not even the warning fired. That is what broke
+% doc/ODFAnalysis/DetectionOfSampleSymmetry.m: it rotates by 15.6 degree to
+% destroy the sample symmetry deliberately, the claim survived, and
+% centerSpecimen then "detected" nothing - it returned the identity, an
+% error equal to the full applied rotation.
+
+referenceFrame.reset;
+
+CS = crystalSymmetry('cubic');
+SS = specimenSymmetry('222');
+fr = SS.frame;
+ori = orientation.byEuler(10*degree,20*degree,30*degree,CS,SS);
+
+% left: the specimen symmetry goes, the crystal symmetry and the frame stay
+rot = rotation.byEuler(15*degree,12*degree,-5*degree);
+assert(angle(rot)/degree < 16.2, ...
+  'check_referenceFrame: pick a rotation the old 0.99 threshold accepted');
+
+l = rot * ori;
+assert(l.SS.id == 1, ...
+  'check_referenceFrame: a general rotation on the left must drop the specimen symmetry');
+assert(l.SS.frame == fr, ...
+  'check_referenceFrame: dropping the specimen symmetry must keep its frame');
+assert(l.CS.id == CS.id, ...
+  'check_referenceFrame: the left factor must not touch the crystal symmetry');
+
+% right: the crystal symmetry goes instead
+r = ori * rot;
+assert(r.CS.id == 1 && r.SS.id == SS.id, ...
+  'check_referenceFrame: a general rotation on the right must drop the crystal symmetry');
+assert(r.CS.frame == CS.frame, ...
+  'check_referenceFrame: dropping the crystal symmetry must keep its frame');
+
+% a genuine symmetry element changes nothing
+k = SS.rot(2) * ori;
+assert(k.SS.id == SS.id, ...
+  'check_referenceFrame: a symmetry element must not drop the symmetry');
+
+% and the membership test is a numerical tolerance, not sixteen degrees
+noise = rotation.byAxisAngle(zvector,180*degree + 1e-9) * ori;
+assert(noise.SS.id == SS.id, ...
+  'check_referenceFrame: numerical noise must not drop the symmetry');
+off = rotation.byAxisAngle(zvector,180.5*degree) * ori;
+assert(off.SS.id == 1, ...
+  'check_referenceFrame: half a degree off a symmetry element must drop it');
+
+% misorientations are unaffected - both factors carry symmetry, so this
+% goes through the frame fitting branch and not through the drop
+o2 = orientation.byEuler(40*degree,50*degree,60*degree,CS,SS);
+m = inv(ori) * o2;
+assert(m.CS.id == CS.id && m.SS.id == CS.id, ...
+  'check_referenceFrame: a misorientation must keep both crystal symmetries');
 
 referenceFrame.reset;
 

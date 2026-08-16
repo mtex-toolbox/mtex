@@ -13,19 +13,20 @@ function [a,left,right] = ensureSym(a,b)
 
 if isempty(inner1)  % e.g. rot * ori
 
-  if ~isempty(inner2) && inner2.id > 2 && ...
-      ~(isa(a,'rotation') && all(max(dot_outer(inner2.rot,a))>0.99))
-    warning('Rotation does not respect symmetry!');
-  end
+  % a rotation applied on the LEFT acts in the specimen frame, so it is
+  % the specimen symmetry it can destroy - and if it does, the group goes
+  % and the frame stays, exactly as when an SO3Fun is rotated
   left = inner2;
+  if isa(a,'rotation') && ~isempty(inner2)
+    left = dropSymmetry(inner2,a,'specimen','orientation');
+  end
 
 elseif isempty(inner2) % e.g. ori * rot, ori * vector3d
 
   if isa(b,'rotation')
 
-    if inner1.id > 2 && ~all(max(dot_outer(inner1.rot,b))>0.99)
-      warning('Rotation does not respect symmetry!');
-    end
+    % on the RIGHT it acts in the crystal frame
+    inner1 = dropSymmetry(inner1,b,'crystal','orientation');
 
   elseif isa(inner1.frame,'crystalFrame') && isempty(frameOf(b))
 

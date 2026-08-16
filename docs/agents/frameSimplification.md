@@ -68,7 +68,7 @@ which representation the ODF happened to be in.
 `numSym(sym.Laue) > 2` is the correct guard — it means "the point group is not `1`
 or `-1`", i.e. the symmetry claims something a rotation can destroy. The
 `length(sym.rot) > 2` spelling under-warns for every non-centrosymmetric group of
-order 2. Resolved onto one helper, `SO3Fun/dropSymmetry.m`.
+order 2. Resolved onto one helper, `geometry/geometry_tools/dropSymmetry.m`.
 
 **This is a deliberate behaviour change**, documented in `doc/GeneralConcepts/changelog.m`:
 six of the twelve methods now warn and drop where they used to stay silent, for

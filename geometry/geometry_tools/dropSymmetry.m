@@ -33,8 +33,16 @@ function sym = dropSymmetry(sym,rot,side,what)
 % |all(any(rot(:).' == sym.rot(:)))| reduces to |any(rot == sym.rot(:))| when
 % |rot| is scalar, which is what rotate needs and rotate_outer generalises.
 %
+% It also gates the products in @orientation/private/ensureSym: a rotation
+% applied on the left acts in the specimen frame and can destroy the
+% specimen symmetry, on the right it acts in the crystal frame. That guard
+% used to be a separate one testing dot_outer(sym.rot,rot) > 0.99 - a
+% quaternion dot of 0.99 is a rotation angle of 16.2 degree, so any
+% rotation up to sixteen degrees counted as a symmetry element and the
+% claim survived untouched.
+%
 % See also
-% symmetry/stripSym SO3Fun/rotate SO3VectorField/rotate
+% symmetry/stripSym SO3Fun/rotate SO3VectorField/rotate orientation/mtimes
 
 if numSym(sym.Laue) > 2 && ~all(any(rot(:).' == sym.rot(:)))
 

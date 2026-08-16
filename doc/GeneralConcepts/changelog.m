@@ -492,6 +492,24 @@
 % If you relied on the old silence, the symmetry was already wrong; a result
 % that should keep its group has to be rotated by a symmetry element.
 %
+% *Orientation products follow the same rule*
+%
+% |rot * ori| acts in the specimen frame and so can only destroy the
+% specimen symmetry; |ori * rot| acts in the crystal frame and destroys the
+% crystal one. Both now drop the group and keep the frame, through the very
+% same helper. Previously the product kept the group and merely warned, and
+% the test for "is this a symmetry element" was a quaternion dot above 0.99
+% - which is a rotation angle of 16.2 degree, so any rotation up to sixteen
+% degrees passed as a symmetry element and not even the warning fired.
+%
+% This was visible in <DetectionOfSampleSymmetry.html Detection of Sample
+% Symmetry>, which rotates a sample by 15.6 degree in order to destroy its
+% orthotropic symmetry deliberately. The claim of |222| survived the
+% rotation, the ODF estimated from those orientations was symmetrised with
+% it, and <SO3Fun.centerSpecimen.html |centerSpecimen|> then had nothing
+% left to find: it returned the identity, an error of the full 15.6 degree.
+% It now recovers the rotation to 0.8 degree.
+%
 % *A plotting convention belongs to a reference frame*
 %
 % There are exactly three ways to say how something should be aligned on
