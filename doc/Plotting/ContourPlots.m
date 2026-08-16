@@ -8,7 +8,6 @@
 % figures, Schmidt or Taylor factor maps, etc.
 
 % define the spherical function
-% the smiley reads right with y up
 plottingConvention.default('y↑→x');
 sF = 0.01 + 10*S2Fun.smiley
 

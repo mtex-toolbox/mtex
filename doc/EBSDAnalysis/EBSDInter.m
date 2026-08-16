@@ -73,6 +73,7 @@ xlim(ebsd.extent(1:2)), ylim(ebsd.extent(3:4))
 % implicitly called by the command <EBSD.gridify.html |gridify|>. In order
 % to demonstrate this functionality we start by EBSD data on a hex grid
 
+plottingConvention.default('y↓→x');
 mtexdata ferrite silent
 plot(ebsd(1:50,1:100),ebsd(1:50,1:100).orientations)
 

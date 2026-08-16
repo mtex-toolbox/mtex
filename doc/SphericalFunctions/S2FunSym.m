@@ -15,7 +15,6 @@
 % symmetrisation of an ordinary |@S2FunHarmonic|.
 
 % the original function 
-% the smiley reads right with y up
 plottingConvention.default('y↑→x');
 sF = S2Fun.smiley;
 

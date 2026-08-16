@@ -22,7 +22,7 @@ plot(v,'grid')
 % convention, which can be easily changed without changing the
 % coordinates. For a single plot pass the convention along
 
-pC = plottingConvention; pC.outOfScreen = xvector;
+pC = plottingConvention('z←↑y'); 
 plot(v,'how2plot',pC,'grid')
 
 %%

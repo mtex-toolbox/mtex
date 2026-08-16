@@ -5,6 +5,7 @@
 % correct for measurement errors. To illustrate lets start by importing
 % some sample XRD data.
 
+specimenFrame.rolling.makeDefault
 mtexdata geesthacht
 
 % plot imported pole figure

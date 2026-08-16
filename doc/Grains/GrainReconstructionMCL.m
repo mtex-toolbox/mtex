@@ -30,16 +30,28 @@
 % We demonstrate this on the deformed austenite of the |EMSphinx| data set,
 % the same one the <GrainReconstruction.html basic page> uses.
 
+plottingConvention.default("y↓→x");
 mtexdata EMSphinx silent
 
 ebsd = ebsd('Iron fcc');
 ebsd = ebsd(inpolygon(ebsd,[40 30 80 60]));
 
 grains = calcGrains(ebsd,'angle',10*degree,'minPixel',10)
+grains = smoothBoundary(grains,5);
+
+plot(ebsd,ebsd.orientations)
+hold on
+plot(grains.boundary,'LineWidth',4)
+hold off
 
 %%
 
 grains = calcGrains(ebsd,'mcl',[1.2 4],'angle',10*degree,'minPixel',10)
+grains = smoothBoundary(grains,5);
+
+hold on
+plot(grains.boundary,'LineWidth',3,'LineColor','White')
+hold off
 
 %%
 % The same 20 grains. What MCL needs is the soft threshold
@@ -48,6 +60,11 @@ grains = calcGrains(ebsd,'mcl',[1.2 4],'angle',10*degree,'minPixel',10)
 % |'soft'| as a pair |[angle width]|
 
 grains = calcGrains(ebsd,'soft',[1 0.5]*degree,'minPixel',10)
+grains = smoothBoundary(grains,5);
+
+hold on
+plot(grains.boundary,'LineWidth',1,'LineColor','gray')
+hold off
 
 %%
 % On its own the soft criterion is still evaluated by connected components,
@@ -59,7 +76,7 @@ grains = smoothBoundary(grains,5);
 
 plot(ebsd,ebsd.orientations)
 hold on
-plot(grains.boundary,'linewidth',1.5)
+plot(grains.boundary,'linewidth',3)
 hold off
 
 %%

@@ -165,7 +165,8 @@ plot(ebsd,ebsd.orientations,'how2plot','y↑→x','refFrame','on','figSize','sma
 %%
 % Changing the plotting convention turns the indicator along with the map
 
-plot(ebsd,ebsd.orientations,'how2plot','x←↑y','refFrame','on','figSize','small')
+figure
+plot(ebsd,ebsd.orientations,'how2plot','y←↑x','refFrame','on','figSize','small')
 
 %%
 % The indicator may be switched off for a single plot by the option

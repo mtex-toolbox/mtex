@@ -40,14 +40,13 @@
 % *Definition via function values*
 %
 % At first we need some vertices
+plottingConvention.default('y↑→x');
 nodes = equispacedS2Grid('points', 1e5);
 nodes = nodes(:);
 
 %%
 % Next we define function values for the vertices
 
-% the smiley reads right with y up
-plottingConvention.default('y↑→x');
 y = [S2Fun.smiley(nodes), (nodes.x.*nodes.y).^(1/4)];
 
 %%

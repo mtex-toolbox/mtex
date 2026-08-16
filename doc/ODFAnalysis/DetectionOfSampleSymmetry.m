@@ -4,14 +4,13 @@
 % ODF. 
 %
 %% A synthetic example
-% We start by modeling a orthotropic ODF with cubic crystal symmetry.
+% We start by modeling a orthotropic ODF with cubic crystal symmetry. an
+% orthotropic texture is a rolling type texture - so we work in the rolling
+% frame
 
+specimenFrame.rolling.makeDefault
 CS = crystalSymmetry('cubic');
 SS = specimenSymmetry('222');
-
-% an orthotropic texture is a rolling type texture - so we work in the
-% rolling frame
-specimenFrame.rolling.makeDefault
 
 % some component center
 ori = [orientation.byEuler(135*degree,45*degree,120*degree,CS,SS) ...
@@ -27,8 +26,7 @@ odf = unimodalODF(ori(:),'weights',c,'halfwidth',12*degree)
 
 % lets plot some pole figures
 h = [Miller(1,1,1,CS),Miller(2,0,0,CS),Miller(2,2,0,CS)];
-plotPDF(odf,h,'antipodal','silent','complete')
-
+plotPDF(odf,h,'antipodal','silent','complete','upper')
 
 %% Reconstruct an ODF from simulated EBSD data
 % Next we simulated some EBSD data, rotate them and estimate an ODF from
@@ -36,7 +34,6 @@ plotPDF(odf,h,'antipodal','silent','complete')
 
 % define a sample rotation
 rot = rotation.byEuler(15*degree,12*degree,-5*degree);
-
 
 % Simulate individual orientations and rotate them.
 % Note that we loose the sample symmetry by rotating the orientations
@@ -79,7 +76,7 @@ plot(pf,'silent')
 
 odf = calcODF(pf,'silent')
 
-plotPDF(odf,h,'antipodal','silent')
+plotPDF(odf,h,'antipodal','silent','noLabel','grid','on')
 
 %%
 % Finally, we detect the orthotropic symmetry axes a1, a2, a3 by

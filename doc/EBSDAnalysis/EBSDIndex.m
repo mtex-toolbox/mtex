@@ -109,9 +109,8 @@ text(ebsd,1:length(ebsd))
 % well. Such data is imported as an @EBSDhex, i.e. it already is in matrix
 % form
 
-mtexdata titanium silent
-
-ebsd
+plottingConvention.default('y↓→x');
+mtexdata titanium 
 
 %%
 % and can be indexed similarly as in the square case.

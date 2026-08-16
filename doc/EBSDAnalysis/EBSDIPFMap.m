@@ -87,10 +87,6 @@ plot(big_grains('o'),colors)
 
 plot(ipfKey,'complete','upper')
 
-h = Miller({1,0,0},{0,1,0},{0,0,1},{1,1,0},{1,0,1},{0,1,1},{1,2,0},{0,2,1},...
-  ebsd('olivine').CS);
-annotate(h.symmetrise,'labeled','backgroundColor','w')
-
 %%
 % From the colors of the grains in the map we may now deduce for each grain
 % which crystal axis is pointing out of the plane of the specimen.

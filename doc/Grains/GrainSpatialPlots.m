@@ -179,6 +179,7 @@ hold off
 % grains using the command <grain2d.quiver.html |quiver|>.
 
 % load some single phase data set
+plottingConvention.default('y↓→x')
 mtexdata csl
 
 % compute and plot grains

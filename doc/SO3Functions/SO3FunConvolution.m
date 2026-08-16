@@ -25,6 +25,7 @@
 % C$ where $S_x$ is the left symmetry and $S_R$ is
 % the right symmetry be given. 
 
+plottingConvention.default('y↑→x');
 g = SO3FunHarmonic.example
 
 ss1 = specimenSymmetry;
@@ -81,8 +82,6 @@ mean(SO3FunHandle(@(q) f.eval(q).*g.eval(r.*inv(q)),c.CS))
 % denotes the symmetries.
 
 cs = crystalSymmetry;
-% the smiley reads right with y up
-plottingConvention.default('y↑→x');
 f = S2FunHarmonicSym(S2Fun.smiley,cs)
 g = S2FunHarmonic(S2DeLaValleePoussinKernel)
 

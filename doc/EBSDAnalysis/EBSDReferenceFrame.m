@@ -53,6 +53,7 @@
 % |'setting',0| to switch the correction off. Hence a typical command for
 % importing data from an .ang file would look like
 
+plottingConvention.default('y↓→x');
 ebsd = EBSD.load([mtexEBSDPath filesep 'olivineopticalmap.ang'],'setting',2)
 
 plot(ebsd('olivine'),ebsd('olivine').orientations,'refFrame','on')
@@ -128,7 +129,6 @@ hold on
 plot(largeGrains,cS,'colored')
 legend off
 hold off
-
 
 %% Change the Euler angle reference system
 % Analogously we may change the Euler angle reference frame while keeping

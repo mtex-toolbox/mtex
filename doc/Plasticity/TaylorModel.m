@@ -85,6 +85,8 @@ mtexColorbar
 %% Identification of the most active slip directions
 % Next we consider a real world data set
 
+specimenFrame.specimen.makeDefault
+plottingConvention.default('y↓→x');
 mtexdata csl
 
 % compute grains

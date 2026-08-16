@@ -113,13 +113,6 @@ classdef EBSD < phaseList & dynProp & dynOption
           ebsd.prop.(char(fn)) = p;
         end
         ebsd.opt = pos.opt;
-
-        % state that is neither derivable from the copied fields nor
-        % recomputed below - the general path falls through to
-        % N = perp(unitCell) and to the Euler2Map default, this branch
-        % returns before both. Losing Euler2Map silently strips the
-        % EulerCorrection an import applied, and every subSet of a grid
-        % EBSD comes through here, so ebsd('phase') alone was enough
         ebsd.N = pos.N;
         ebsd.Euler2Map = pos.Euler2Map;
 

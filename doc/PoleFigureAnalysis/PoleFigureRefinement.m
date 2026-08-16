@@ -4,6 +4,7 @@
 % Please refer to |PoleFigure2ODF| tutorial first. The regular way of
 % estimating an ODF:
 
+plottingConvention.default("y↑→x");
 mtexdata dubna
 odf_naive = calcODF(pf);
 
