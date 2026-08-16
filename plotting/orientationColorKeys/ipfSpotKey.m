@@ -4,7 +4,7 @@ classdef ipfSpotKey < ipfColorKey
 %
 % Syntax
 %   ipfKey = ipfSpotKey
-%   ipfKey.inversePoleFigureDirection = zvector; 
+%   ipfKey.ipfDirection = zvector; 
 %   ipfKey.center = Miller(1,0,0,cs); % the centers of the spots in the inverse pole figure
 %   ipfKey.color = [0 0 1];           % the color of the spots
 %   ipfKey.psi = S2DeLaValleePoussinKernel('halfwidth',7.5*degree);
@@ -15,7 +15,7 @@ classdef ipfSpotKey < ipfColorKey
 %  center  - list of crystal directions @Miller
 %  color   - n-by-3 list representing RGB values, one for each center
 %  psi     - @S2Kernel providing the width and brightness for colored fibre
-%  inversePoleFigureDirection - specimen direction @vector3d
+%  ipfDirection - specimen direction @vector3d
 %
 % See also
 % EBSDAdvancedMapping
@@ -40,6 +40,20 @@ classdef ipfSpotKey < ipfColorKey
             
     end
   
+    function [props,propV] = keyRows(oM)
+      % the inverse pole figure rows, plus the spots placed on it
+
+      [props,propV] = keyRows@ipfColorKey(oM);
+
+      props{end+1} = 'spots'; propV{end+1} = int2str(length(oM.center));
+
+      if ~isempty(oM.psi)
+        props{end+1} = 'halfwidth';
+        propV{end+1} = [xnum2str(oM.psi.halfwidth/degree) '°'];
+      end
+
+    end
+
     function rgb = dir2color(oM,h)
       
       h = normalize(h);

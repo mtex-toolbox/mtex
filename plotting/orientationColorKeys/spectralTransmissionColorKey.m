@@ -18,6 +18,22 @@ classdef spectralTransmissionColorKey < orientationColorKey
 
     end
     
+    function [props,propV] = keyRows(oM)
+      % the optical setup the transmission color is computed for
+
+      props = {'thickness'}; propV = {xnum2str(oM.thickness)};
+
+      props{end+1} = 'propagation';
+      propV{end+1} = ['(' strtrim(char(oM.propagationDirection)) ')'];
+
+      props{end+1} = 'polarizer';
+      propV{end+1} = ['(' strtrim(char(oM.polarizer)) ')'];
+
+      props{end+1} = 'polarizer to analyzer';
+      propV{end+1} = [xnum2str(oM.phi/degree) '°'];
+
+    end
+
     function rgb = orientation2color(oM,ori,varargin)
       
       % compute propagation direction in crystal coordinates

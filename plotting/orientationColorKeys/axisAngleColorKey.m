@@ -82,6 +82,36 @@ classdef axisAngleColorKey < orientationColorKey
 
     end
   
+    function [props,propV] = keyRows(oM)
+      % what the angle is measured from, and where the colors saturate
+
+      props = {}; propV = {};
+
+      if ~isempty(oM.oriRef)
+        props{end+1} = 'reference';
+        propV{end+1} = ['1x1 ' class(oM.oriRef)];
+        if ~isscalar(oM.oriRef)
+          propV{end} = [size2str(oM.oriRef) ' ' class(oM.oriRef)];
+        end
+      end
+
+      if isfinite(oM.maxAngle)
+        props{end+1} = 'max angle';
+        propV{end+1} = [xnum2str(oM.maxAngle/degree) '°'];
+      end
+
+      if isfinite(oM.thresholdAngle)
+        props{end+1} = 'threshold angle';
+        propV{end+1} = [xnum2str(oM.thresholdAngle/degree) '°'];
+      end
+
+      if ~isempty(oM.dirMapping)
+        props{end+1} = 'axis key';
+        propV{end+1} = class(oM.dirMapping);
+      end
+
+    end
+
     function rgb = orientation2color(oM,ori,oriRef)
       
       if nargin == 3 

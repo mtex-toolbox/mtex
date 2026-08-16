@@ -134,7 +134,7 @@ parentGrains = parentGrains.update;
 
 % define a color key
 ipfKey = ipfColorKey(ebsd(betaName));
-ipfKey.inversePoleFigureDirection = vector3d.Y;
+ipfKey.ipfDirection = vector3d.Y;
 
 % and plot
 plot(parentGrains(betaName), ...

@@ -526,6 +526,31 @@
 % carry its own convention so the face always read right - a page that shows
 % it now declares |plottingConvention.default('y↑→x')| like any other.
 %
+% *Color Keys Say What They Are*
+%
+% Color keys used to display as MATLAB's dump of their properties, in which
+% every interesting one read |[1x1 crystalSymmetry]|. They now show the pair
+% of reference systems they map between in the header, the way an
+% @orientation does, and below it only the settings that distinguish them
+% from a default key
+%
+%   ipfKey = ipfColorKey (Titanium (Alpha) → y↓→x)
+%
+%     ipfDirection : (0,0,1)
+%     direction key: HSVDirectionKey
+%
+% A directional color key additionally states which way round its colors
+% run, written in the axes of its frame - |⊙c→a| for a crystal key. That
+% layout belongs to the frame of the symmetry and not to the session.
+%
+% The property |inversePoleFigureDirection| is called |ipfDirection| now,
+% and |'ipfDirection'| works as a plot option beside the old spelling
+%
+%   plot(ebsd,ebsd.orientations,'ipfDirection',vector3d.X)
+%
+% The long name keeps working as an alias, so existing scripts are
+% unaffected.
+%
 % *Approximation, Sampling and Clustering*
 %
 % Moving least squares approximation supports vector valued data, outlier

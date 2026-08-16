@@ -71,7 +71,7 @@ classdef import_wizard < matlab.apps.AppBase
     SelectedImagePath cell = {} % field-name path of the OptTree's selected image node
     IPFKeys cell = {}           % precomputed ipfColorKey per phase, shared
                                 % by the IPF X/Y/Z tabs (they only differ by
-                                % the inversePoleFigureDirection)
+                                % the ipfDirection)
     PFODF = []                  % cached ODF for the pole figure tab
     PFODFKey string = ""        % cache key describing what PFODF was computed from
     PFODFCorr = []              % Euler correction the cached ODF refers to
@@ -1118,7 +1118,7 @@ classdef import_wizard < matlab.apps.AppBase
         % one precomputed color key per phase - only the direction differs
         % between the IPF tabs and switching it costs nothing
         ipfKey = ipfKeyForPhase(app, phaseId);
-        ipfKey.inversePoleFigureDirection = direction;
+        ipfKey.ipfDirection = direction;
         ori = orientation(app.ebsd.rotations(mask), app.ebsd.CSList(phaseId));
         color(mask,:) = ipfKey.orientation2color(ori);
       end
@@ -1252,7 +1252,7 @@ classdef import_wizard < matlab.apps.AppBase
       % lazily create and precompute one ipfColorKey per phase. The
       % expensive precomputation depends only on the crystal symmetry, so
       % the key is shared by the IPF X/Y/Z tabs - they merely set their
-      % inversePoleFigureDirection before use (ipfColorKey is a handle
+      % ipfDirection before use (ipfColorKey is a handle
       % class, so mutating the direction on the cached key is fine).
       if numel(app.IPFKeys) < phaseId || isempty(app.IPFKeys{phaseId})
         key = ipfColorKey(app.ebsd.CSList(phaseId));

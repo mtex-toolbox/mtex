@@ -888,14 +888,14 @@ for k = 1:numel(conv)
     'check_referenceFrame: the sector must carry the convention of the crystal frame');
 
   key = ipfColorKey(ori);
-  key.inversePoleFigureDirection = zvector;
+  key.ipfDirection = zvector;
   rgb(k,:) = key.orientation2color(ori);
 
   % the precomputed grid has to agree with the exact map - it is cached
   % across a session, so a key that misses what the colors depend on
   % silently hands out a grid computed for something else
   keyG = ipfColorKey(ori);
-  keyG.inversePoleFigureDirection = zvector;
+  keyG.ipfDirection = zvector;
   keyG.precompute;
   grd(k,:) = keyG.orientation2color(ori);
 end

@@ -3,37 +3,52 @@ classdef ipfColorKey < orientationColorKey
   %   Detailed explanation goes here
   
   properties
-    inversePoleFigureDirection
-    dirMap 
+    ipfDirection % the specimen direction the inverse pole figure is taken of
+    dirMap
   end
-    
+
+  properties (Dependent = true)
+    % the name this direction carried before - kept working because it
+    % appears in a decade of user scripts, but it is a mouthful to type
+    % and to read in a display, so ipfDirection is the name now
+    inversePoleFigureDirection
+  end
+
   methods
-    
+
     function oM = ipfColorKey(varargin)
       oM = oM@orientationColorKey(varargin{:});
-      
+
       oM.dirMap = getClass(varargin,'directionColorKey',[]);
       if isempty(oM.dirMap), oM.dirMap = HSVDirectionKey(oM.CS1); end
-      
+
       if isa(oM.CS2,'crystalSymmetry')
         try
-          oM.inversePoleFigureDirection = Miller(oM.dirMap.whiteCenter,oM.CS2);
+          oM.ipfDirection = Miller(oM.dirMap.whiteCenter,oM.CS2);
         catch
-          oM.inversePoleFigureDirection = Miller(0,0,1,oM.CS2);
+          oM.ipfDirection = Miller(0,0,1,oM.CS2);
         end
       else
-        oM.inversePoleFigureDirection = zvector;
+        oM.ipfDirection = zvector;
       end
-      
+
     end
-    
+
+    function r = get.inversePoleFigureDirection(oM)
+      r = oM.ipfDirection;
+    end
+
+    function oM = set.inversePoleFigureDirection(oM,r)
+      oM.ipfDirection = r;
+    end
+
     function plot(oM,varargin)
       
     
       [~,caxes] = plot(oM.dirMap,'doNotDraw',varargin{:});
       mtexFig = gcm;
       
-      %mtexTitle(caxes(1),char(oM.inversePoleFigureDirection,'LaTeX'),varargin{:});
+      %mtexTitle(caxes(1),char(oM.ipfDirection,'LaTeX'),varargin{:});
       mtexTitle(caxes(1),char(oM.CS1,'latex'),varargin{:});
       
       name = oM.CS1.pointGroup;
@@ -44,7 +59,7 @@ classdef ipfColorKey < orientationColorKey
       end
       set(caxes,'tag','ipdf')
       setAllAppdata(caxes,'CS',oM.CS1,...
-        'inversePoleFigureDirection',oM.inversePoleFigureDirection);
+        'ipfDirection',oM.ipfDirection);
             
       try
         mtexFig.drawNow('figSize','small',varargin{:});
@@ -71,15 +86,29 @@ classdef ipfColorKey < orientationColorKey
 
     end
 
+    function [props,propV] = keyRows(oM)
+      % which inverse pole figure this key is, and which direction key
+      % lays the colors over its fundamental sector
+
+      props = {'ipfDirection'};
+      propV = {['(' strtrim(char(oM.ipfDirection)) ')']};
+
+      if ~isempty(oM.dirMap)
+        props{end+1} = 'direction key';
+        propV{end+1} = class(oM.dirMap);
+      end
+
+    end
+
     function rgb = orientation2color(oM,ori)
-    
+
       if ~(ori.CS.properSubGroup <= oM.CS1)
         warning('The symmetry of the ipf key and the orientations does not fit.')
       end
       
       % compute crystal directions
       ori.CS = oM.CS1;
-      h = inv(ori) .* normalize(oM.inversePoleFigureDirection);
+      h = inv(ori) .* normalize(oM.ipfDirection);
       
       % colorize fundamental region
       rgb = oM.Miller2Color(h);

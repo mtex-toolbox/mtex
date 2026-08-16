@@ -32,7 +32,7 @@ function [ebsd,filter] = smooth(ebsd,varargin)
 %   plot(largeGrains(1).boundary,'linewidth',2)
 %   hold on
 %   oM = ipfHSVKey(ebsd);
-%   oM.inversePoleFigureDirection = mean(ebsd.orientations) * oM.whiteCenter;
+%   oM.ipfDirection = mean(ebsd.orientations) * oM.whiteCenter;
 %   oM.colorStretching = 50;
 %   plot(ebsd,oM.orientation2color(ebsd.orientations))
 %   hold off

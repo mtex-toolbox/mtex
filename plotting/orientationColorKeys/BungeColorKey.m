@@ -25,6 +25,20 @@ classdef BungeColorKey < orientationColorKey
   end
   
   methods
+    function [props,propV] = keyRows(oM)
+      % the Euler angle box the colors are spread over
+
+      props = {'phi1 range','Phi range','phi2 range'};
+      propV = {rangeChar(oM.phi1Range),rangeChar(oM.PhiRange), ...
+        rangeChar(oM.phi2Range)};
+
+      if angle(oM.center) > 1e-10
+        props{end+1} = 'center';
+        propV{end+1} = [xnum2str(angle(oM.center)/degree) '° from identity'];
+      end
+
+    end
+
     function rgb = orientation2color(oM,ori)
             
       % convert to euler angles angles
@@ -39,4 +53,13 @@ classdef BungeColorKey < orientationColorKey
       
     end
   end
+end
+
+% =========================================================================
+function c = rangeChar(r)
+% an Euler angle range in degrees
+
+if isempty(r), c = 'unset'; return; end
+c = [xnum2str(r(1)/degree) '° - ' xnum2str(r(2)/degree) '°'];
+
 end

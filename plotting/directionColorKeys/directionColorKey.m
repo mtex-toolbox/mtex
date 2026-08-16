@@ -105,7 +105,66 @@ classdef directionColorKey < handle
     function rgb = direction2color(oM,h,varargin)
       rgb = oM.dir2color(h,varargin{:});
     end
-       
+
+    function display(dM,varargin)
+      % standard output
+      %
+      % A direction key colors one reference system, so the header names
+      % it, as @orientationColorKey names the pair. Below it the settings
+      % that change the colors - above all the layout of the fundamental
+      % sector, which is where the colors are laid out and which belongs
+      % to the frame of the symmetry, not to the session.
+
+      displayClass(dM(1),inputname(1),'moreInfo',char(dM(1).sym,'compact'),varargin{:});
+
+      if ~isscalar(dM)
+        disp(['  size: ' size2str(dM)]);
+        disp(' ');
+        return
+      end
+
+      if ~check_option(varargin,'skipHeader'), disp(' '); end
+
+      props = {}; propV = {};
+
+      % sphericalRegion/polarCoordinates measures the hue from
+      % sR.how2plot.outOfScreen, so this line says which way round the
+      % colors run - in the axes names of the frame, e.g. 'c↑→a'
+      fr = dM.sR.frame;
+      if isa(fr,'referenceFrame')
+        c = conventionChar(fr,dM.sR.how2plot);
+        if ~isempty(c)
+          props{end+1} = 'color layout'; propV{end+1} = c; %#ok<AGROW>
+        end
+      end
+
+      if angle(dM.colorPostRotation) > 1e-10
+        props{end+1} = 'post rotation'; %#ok<AGROW>
+        propV{end+1} = [xnum2str(angle(dM.colorPostRotation)/degree) '°']; %#ok<AGROW>
+      end
+
+      [p,v] = keyRows(dM);
+      props = [props,p]; propV = [propV,v];
+
+      % the discretized map is reused for a whole session, so whether it
+      % is in place is worth seeing when colors are in question
+      if ~isempty(dM.dir2color)
+        props{end+1} = 'color grid'; propV{end+1} = 'precomputed';
+      end
+
+      if ~isempty(props)
+        cprintf(propV(:),'-L','  ','-ic','L','-la','L','-Lr',props,'-d',': ');
+        disp(' ');
+      end
+
+    end
+
+    function [props,propV] = keyRows(~)
+      % the rows a concrete direction key adds to its display
+
+      props = {}; propV = {};
+    end
+
   end
 
 end

@@ -106,10 +106,10 @@ plotIPDF(big_grains('olivine').meanOrientation,colors,vector3d.Z,...
 % surface we may also colorizing which crystal axis is pointing towards the
 % rolling or foliation direction or any other specimen fixed direction.
 % This reference direction is stored as the property
-% |inversePoleFigureDirection| in the color key.
+% |ipfDirection| in the color key.
 
 % set the reference direction to X
-ipfKey.inversePoleFigureDirection = vector3d.X;
+ipfKey.ipfDirection = vector3d.X;
 
 % compute the colors
 colors = ipfKey.orientation2color(ebsd('olivine').orientations);
@@ -118,7 +118,7 @@ colors = ipfKey.orientation2color(ebsd('olivine').orientations);
 plot(ebsd('o'),colors)
 
 %%
-% Note, that |ipfKey.inversePoleFigureDirection| may even be a vector of
+% Note, that |ipfKey.ipfDirection| may even be a vector of
 % directions. Which is helpful for round specimen where one wants to
 % consider the direction normal to the surface.
 %

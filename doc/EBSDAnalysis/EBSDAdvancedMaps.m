@@ -107,7 +107,7 @@ f = fibre(Miller(1,1,1,csFo),zvector);
 
 % set up coloring
 colorKey = ipfSpotKey(csFo);
-colorKey.inversePoleFigureDirection = f.r;
+colorKey.ipfDirection = f.r;
 colorKey.center = f.h;
 colorKey.color = [0 0 1];
 colorKey.psi = S2DeLaValleePoussinKernel('halfwidth',7.5*degree);
@@ -163,7 +163,7 @@ plot(ebsd,ebsd.bc,'micronbar','off')
 mtexColorMap black2white
 
 colorKey = ipfSpotKey(csFo);
-colorKey.inversePoleFigureDirection = zvector;
+colorKey.ipfDirection = zvector;
 colorKey.center = Miller(1,1,1,csFo);
 colorKey.color = [0 0 1];
 colorKey.psi = S2DeLaValleePoussinKernel('halfwidth',7.5*degree);

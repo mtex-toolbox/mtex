@@ -65,7 +65,7 @@ ipfKey = ipfHSVKey(ebsd.CS.properGroup);
 
 % To this end, we first compute the inverse pole figure direction such that
 % the mean orientation is just at the gray spot of the inverse pole figure
-ipfKey.inversePoleFigureDirection = mean(ebsd.orientations,'robust') * ipfKey.whiteCenter;
+ipfKey.ipfDirection = mean(ebsd.orientations,'robust') * ipfKey.whiteCenter;
 
 close all;
 plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
@@ -180,7 +180,7 @@ hold off
 plot(largeGrains.boundary,'linewidth',2)
 hold on
 ipfKey = ipfHSVKey(ebsd);
-ipfKey.inversePoleFigureDirection = mean(ebsd.orientations) * ipfKey.whiteCenter;
+ipfKey.ipfDirection = mean(ebsd.orientations) * ipfKey.whiteCenter;
 ipfKey.maxAngle = 10*degree;
 plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 hold off

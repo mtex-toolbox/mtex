@@ -57,7 +57,7 @@ ipfKey = ipfColorKey(grains('Fo'));
 %%
 % we can set the inverse pole figure direction and many other properties
 
-ipfKey.inversePoleFigureDirection = xvector;
+ipfKey.ipfDirection = xvector;
 
 % compute the color from the meanorientation
 color = ipfKey.orientation2color(grains('Fo').meanOrientation);

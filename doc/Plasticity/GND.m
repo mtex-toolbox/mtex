@@ -25,7 +25,7 @@ grains = smoothBoundary(grains,5);
 
 % define the color key
 ipfKey = ipfHSVKey(ebsd);
-ipfKey.inversePoleFigureDirection = yvector;
+ipfKey.ipfDirection = yvector;
 
 % plot the orientation data
 plot(ebsd,ipfKey.orientation2color(ebsd.orientations),'refFrame','on','figSize','medium')

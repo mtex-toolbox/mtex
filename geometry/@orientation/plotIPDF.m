@@ -53,7 +53,7 @@ end
 
 % find inverse pole figure direction
 r = [];
-try r = getappdata(mtexFig.currentAxes,'inversePoleFigureDirection'); end
+try r = getappdata(mtexFig.currentAxes,'ipfDirection'); end
 if isempty(r), r = varargin{1}; end
 argin_check(r,'vector3d');
 
@@ -92,7 +92,7 @@ for ir = 1:length(r)
 
   % plot annotations
   [cax.Tag] = deal('ipdf');
-  setAllAppdata(cax,'CS',ori.CS,'SS',ori.SS,'inversePoleFigureDirection',r(ir));
+  setAllAppdata(cax,'CS',ori.CS,'SS',ori.SS,'ipfDirection',r(ir));
 
   % store handles to patch objects
   gList = [gList;g(:)]; %#ok<AGROW>
