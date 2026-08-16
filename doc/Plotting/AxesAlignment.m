@@ -50,7 +50,7 @@ plottingConvention.default('y↑→x');
 % Nothing else is affected - not the data, not the session, not the plot
 % after it
 
-plot(v1,'z↑→x','label','v_1')
+plot(v1,'how2plot','z↑→x','label','v_1')
 nextAxis
 plot(v2,'label','v_2')
 
@@ -60,16 +60,16 @@ plot(v2,'label','v_2')
 % frame and never to a data object, so there are exactly three ways to say
 % how something should be aligned
 %
-% * for one plot, |plot(v1,'z↑→x')| as above
+% * for one plot, |plot(v1,'how2plot','z↑→x')| as above
 % * for the session, |plottingConvention.default('z↑→x')|
 % * by moving the data into a named frame that carries its own convention,
 %   |v1.frame = specimenFrame.rolling|
 %
 % Assigning a convention to the data itself - |ebsd.how2plot = 'z↑→x'| - is
-% not one of them. It used to attach a private copy of the session frame to
+% not one of them, and |how2plot| is read only on every class but
+% @referenceFrame. It used to attach a private copy of the session frame to
 % that one object, which then looked exactly like the session frame in every
-% display while silently no longer following it. Such an assignment now
-% warns and changes the session instead, and will become an error.
+% display while silently no longer following it.
 
 %% Named Reference Frames
 %
@@ -160,18 +160,18 @@ cs = crystalSymmetry('321','X||a')
 
 mtexdata titanium
 
-plot(ebsd,ebsd.orientations,'y↑→x','refFrame','on','figSize','small')
+plot(ebsd,ebsd.orientations,'how2plot','y↑→x','refFrame','on','figSize','small')
 
 %%
 % Changing the plotting convention turns the indicator along with the map
 
-plot(ebsd,ebsd.orientations,'x←↑y','refFrame','on','figSize','small')
+plot(ebsd,ebsd.orientations,'how2plot','x←↑y','refFrame','on','figSize','small')
 
 %%
 % The indicator may be switched off for a single plot by the option
 % |'refFrame','off'| or for the entire session by
 % |setMTEXpref('showRefFrame','off')|
 
-plot(ebsd,ebsd.orientations,'y↑→x','refFrame','off','figSize','small')
+plot(ebsd,ebsd.orientations,'how2plot','y↑→x','refFrame','off','figSize','small')
 
 %%

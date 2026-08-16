@@ -96,7 +96,8 @@
       {"name":"coordinates", "kind":"namevalue", "type":["char","choices={'on','off'}"]},
       {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
       {"name":"parent", "kind":"namevalue", "type":["matlab.graphics.axis.Axes"]},
-      {"name":"style", "kind":"flag", "type":["char","choices={'points','exact','unitCell'}"]}
+      {"name":"style", "kind":"flag", "type":["char","choices={'points','exact','unitCell'}"]},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -121,7 +122,8 @@
       {"name":"coordinates", "kind":"namevalue", "type":["char","choices={'on','off'}"]},
       {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
       {"name":"parent", "kind":"namevalue", "type":["matlab.graphics.axis.Axes"]},
-      {"name":"noBoundary", "kind":"flag"}
+      {"name":"noBoundary", "kind":"flag"},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -141,7 +143,8 @@
       {"name":"coordinates", "kind":"namevalue", "type":["char","choices={'on','off'}"]},
       {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
       {"name":"parent", "kind":"namevalue", "type":["matlab.graphics.axis.Axes"]},
-      {"name":"smooth", "kind":"flag"}
+      {"name":"smooth", "kind":"flag"},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -155,7 +158,8 @@
       {"name":"MarkerSize", "kind":"namevalue", "type":["numeric","scalar",">0"]},
       {"name":"MarkerFaceColor", "kind":"namevalue", "type":["choices=str2rgb"]},
       {"name":"MarkerEdgeColor", "kind":"namevalue", "type":["choices=str2rgb"]},
-      {"name":"DisplayName", "kind":"namevalue", "type":["char"]}
+      {"name":"DisplayName", "kind":"namevalue", "type":["char"]},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -168,7 +172,8 @@
       {"name":"FaceAlpha", "kind":"namevalue", "type":["numeric","scalar",">=0","<=1"]},
       {"name":"LineStyle", "kind":"namevalue", "type":["char","choices={'-','--',':','-.','none'}"]},
       {"name":"LineWidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
-      {"name":"DisplayName", "kind":"namevalue", "type":["char"]}
+      {"name":"DisplayName", "kind":"namevalue", "type":["char"]},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 

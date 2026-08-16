@@ -423,7 +423,8 @@
       {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
       {"name":"antipodal", "kind":"flag"},
       {"name":"grid", "kind":"flag"},
-      {"name":"noTitle", "kind":"flag"}
+      {"name":"noTitle", "kind":"flag"},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -444,7 +445,8 @@
       {"name":"backgroundColor", "kind":"namevalue", "type":["choices=str2rgb"]},
       {"name":"DisplayName", "kind":"namevalue", "type":["char"]},
       {"name":"projection", "kind":"namevalue", "type":["char","choices={'axisAngle','Rodrigues','Euler','homochoric','quaternion','ipdf'}"]},
-      {"name":"antipodal", "kind":"flag"}
+      {"name":"antipodal", "kind":"flag"},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -470,7 +472,8 @@
       {"name":"antipodal", "kind":"flag"},
       {"name":"noTitle", "kind":"flag"},
       {"name":"noSymmetry", "kind":"flag"},
-      {"name":"filled", "kind":"flag"}
+      {"name":"filled", "kind":"flag"},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -494,7 +497,8 @@
       {"name":"drawing", "kind":"flag", "type":["char","choices={'smooth','contour','contourf','scatter'}"]},
       {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
       {"name":"antipodal", "kind":"flag"},
-      {"name":"filled", "kind":"flag"}
+      {"name":"filled", "kind":"flag"},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -511,7 +515,8 @@
       {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
       {"name":"sectionType", "kind":"flag", "type":["char","choices={'phi2','phi1','sigma','omega','axisAngle'}"]},
       {"name":"drawing", "kind":"flag", "type":["char","choices={'smooth','contour','contourf','scatter'}"]},
-      {"name":"all", "kind":"flag"}
+      {"name":"all", "kind":"flag"},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -529,7 +534,8 @@
       {"name":"label", "kind":"namevalue", "type":[["char"],["cell"],["string"]]},
       {"name":"DisplayName", "kind":"namevalue", "type":["char"]},
       {"name":"antipodal", "kind":"flag"},
-      {"name":"filled", "kind":"flag"}
+      {"name":"filled", "kind":"flag"},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -559,7 +565,8 @@
       {"name":"autoScaleFactor", "kind":"namevalue", "type":["numeric","scalar",">0"]},
       {"name":"arrowSize", "kind":"namevalue", "type":["numeric","scalar",">=0"]},
       {"name":"antipodal", "kind":"flag"},
-      {"name":"centered", "kind":"flag"}
+      {"name":"centered", "kind":"flag"},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 

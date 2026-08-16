@@ -342,15 +342,14 @@ classdef plottingConvention
     function pC = fromOption(list,default)
       % the plotting convention among a list of plot options, if any
       %
-      % Accepts a @plottingConvention passed as an argument and, for a one
-      % off plot, the string form
+      % Accepts a @plottingConvention passed as an argument, and the name
+      % value form for a one off plot
       %
-      %   plot(v,'y↑→x')
+      %   plot(v,'how2plot','y↑→x')
       %
-      % Only a string that carries a direction marker is even tried, so an
-      % ordinary option such as 'upper', 'complete' or 'noLabel' can never
-      % be mistaken for a convention. A marker cannot occur in an option
-      % name, and str2rot below rejects anything it cannot read anyway.
+      % The name value form is what functionSignatures.json can advertise,
+      % so the conventions show up in tab completion. It also removes the
+      % need to guess whether a bare string was meant as a convention.
       %
       % Syntax
       %   pC = plottingConvention.fromOption(varargin)
@@ -368,15 +367,10 @@ classdef plottingConvention
       pC = getClass(list,'plottingConvention');
       if ~isempty(pC), return; end
 
-      for k = 1:numel(list)
-        if ~conventionLike(list{k}), continue; end
-        try %#ok<TRYNC>
-          pC = plottingConvention(list{k});
-          return
-        end
-      end
+      pC = get_option(list,'how2plot');
+      if isempty(pC), pC = default; return; end
 
-      pC = default;
+      if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
 
     end
 
@@ -668,16 +662,3 @@ end
 
 end
 
-function out = conventionLike(s)
-% whether a value could name a plotting convention at all
-%
-% The markers are what distinguishes 'y↑→x' or the ASCII 'y^->x' from an
-% option name - no option in MTEX contains one, so this cannot collide.
-
-out = false;
-if ~(ischar(s) || isstring(s)), return; end
-
-s = char(s);
-out = any(ismember(s,'↑↓←→⊙⊗^')) || contains(s,'->') || contains(s,'<-');
-
-end

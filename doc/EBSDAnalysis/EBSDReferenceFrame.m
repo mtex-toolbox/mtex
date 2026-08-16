@@ -66,7 +66,7 @@ plot(ebsd('olivine'),ebsd('olivine').orientations,'refFrame','on')
 % use |plottingConvention.default| instead.
  
 % assume we want x pointing down and y pointing towards east
-plot(ebsd('olivine'),ebsd('olivine').orientations,'x↓→y','refFrame','on')
+plot(ebsd('olivine'),ebsd('olivine').orientations,'how2plot','x↓→y','refFrame','on')
 
 %%
 % Note that these options only alter the orientation of the EBSD map and

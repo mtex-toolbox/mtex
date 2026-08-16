@@ -1,4 +1,4 @@
-%% Orientation Density Functions
+%% ODF Reconstruction - Dubna Example
 %
 %%
 % This example demonstrates the most important MTEX tools for analysing
@@ -117,8 +117,6 @@ calcError(odf,rec)
 calcError(odf,rec_ng)
 
 %% Exercises
-%
-% 3)
 %
 % a) Load the pole figure data of a quartz specimen from: data/dubna!
 
