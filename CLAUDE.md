@@ -55,6 +55,8 @@ Class-per-folder convention: `@ClassName/` holds a class's methods as separate `
 - `mex/` — compiled MEX binaries (checked in; not rebuilt by default)
 - `obsolete/`, `old/`, `compatibility/` — deprecated functions kept only as thin wrappers/shims for backward compatibility (they warn/error and forward to the current API); don't use them as a reference for current coding patterns
 
+**Line endings are LF**, enforced by `.gitattributes` (`*.m text eol=lf`). About 360 sources had drifted to CRLF from Windows commits and were normalized in one pass; `extern/**` and `data/**` are marked `-text` and keep their bytes, because importers parse fixtures byte by byte and some carry deliberately odd endings. If you edit a file byte-wise rather than line-wise, you no longer need to check first — but do not "fix" a line ending under `data/`.
+
 ## Tests
 
 `tests/` contains standalone `check_*.m` functions — not a `matlab.unittest` suite. Each runs a computation and calls `error(...)`/`assert(...)` on failure. They are sorted into tiers, and `runTests` runs a tier:
@@ -64,6 +66,13 @@ matlab -batch "runTests"            # core, the fast suite
 matlab -batch "runTests('slow')"
 matlab -batch "check_mtex"          # same as runTests
 ```
+
+> **Never start a test run without asking first.** That means `runTests` in any
+> tier, `check_mtex`, and any individual `check_*.m` — a tier is minutes of the
+> machine, and the developer may already have a MATLAB session doing something
+> they care about. Ask, say what you want to run and why, and wait for an answer.
+> Targeted commands of your own through the bridge are fine and need no
+> permission; it is the predefined suite that does.
 
 | tier | what is in it |
 | --- | --- |
