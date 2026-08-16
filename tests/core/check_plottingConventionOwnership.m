@@ -396,6 +396,20 @@ assert(T.CS.id == cs.id, ...
 assert(T.how2plot == cs.how2plot, ...
   'check_plottingConventionOwnership: a crystal framed tensor follows its crystal frame');
 
+% a tensor built FROM crystal data is in crystal coordinates and keeps that
+% symmetry - the session default must not overwrite what the data brought.
+% This is the route slipSystem/deformationTensor takes into calcTaylor,
+% where a specimen framed deformation tensor makes the Taylor spin come
+% back in the wrong frame
+m = Miller(1,1,0,crystalSymmetry('432'));
+assert(isa(tensor(m).CS,'crystalSymmetry'), ...
+  'check_plottingConventionOwnership: tensor(Miller) must keep the crystal symmetry');
+assert(isa(dyad(m.normalize,Miller(1,-1,1,m.CS).normalize).frame,'crystalFrame'), ...
+  'check_plottingConventionOwnership: dyad of Miller directions must be crystal framed');
+sS = slipSystem.bcc(crystalSymmetry('432'));
+assert(isa(sS.deformationTensor.frame,'crystalFrame'), ...
+  'check_plottingConventionOwnership: a slip system deformation tensor is crystal framed');
+
 referenceFrame.reset;
 
 end

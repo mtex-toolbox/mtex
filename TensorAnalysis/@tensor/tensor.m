@@ -81,10 +81,15 @@ classdef tensor < dynOption
       
       T.doubleConvention = check_option(varargin,'doubleConvention');
       
+      % whether a reference system came with the data - a @Miller brings
+      % its crystal symmetry, and it must not be overwritten by the
+      % session default below
+      csGiven = false;
+
       if isa(M,'vector3d') % conversion from vector3d
         T.M = shiftdim(fullDouble(M),ndims(M));
         T.rank = 1;
-        if isa(M,'Miller'), T.CS = M.CS; end
+        if isa(M,'Miller'), T.CS = M.CS; csGiven = true; end
       
       elseif isa(M,'quaternion') % conversion from quaternion
 
@@ -144,7 +149,7 @@ classdef tensor < dynOption
       if ~isempty(args)
         T.CS = varargin{args};
         varargin(args) = [];
-      else
+      elseif ~csGiven
         % resolve the session default HERE, not from the property default
         % above: MATLAB evaluates a property default expression once, when
         % the class is first loaded, so CS = specimenSymmetry.default froze
@@ -152,7 +157,9 @@ classdef tensor < dynOption
         % later specimenFrame.default / referenceFrame.reset installs a new
         % session frame, which that stale handle never sees - a fresh tensor
         % then reported the convention the session had BEFORE the last
-        % change, while vector3d and S2Fun, which resolve lazily, were right
+        % change, while vector3d and S2Fun, which resolve lazily, were right.
+        % Only when nothing else supplied one: a tensor built from a @Miller
+        % is in crystal coordinates and keeps that symmetry
         T.CS = specimenSymmetry.default;
       end
 
