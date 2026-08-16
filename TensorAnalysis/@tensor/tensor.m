@@ -144,6 +144,16 @@ classdef tensor < dynOption
       if ~isempty(args)
         T.CS = varargin{args};
         varargin(args) = [];
+      else
+        % resolve the session default HERE, not from the property default
+        % above: MATLAB evaluates a property default expression once, when
+        % the class is first loaded, so CS = specimenSymmetry.default froze
+        % whichever symmetry handle happened to be the default then. Every
+        % later specimenFrame.default / referenceFrame.reset installs a new
+        % session frame, which that stale handle never sees - a fresh tensor
+        % then reported the convention the session had BEFORE the last
+        % change, while vector3d and S2Fun, which resolve lazily, were right
+        T.CS = specimenSymmetry.default;
       end
 
       % extract plotting convention

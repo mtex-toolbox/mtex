@@ -28,6 +28,7 @@ checkOrientationMap;
 checkPoleFigure;
 checkSymmetryOverride;
 checkOptionBeatsData;
+checkTensorFollowsSession;
 
 disp('check_plottingConventionOwnership: passed');
 
@@ -350,5 +351,51 @@ assert(plottingConvention.fromOption({other,data},plottingConvention.default) ==
 % and an empty list falls through to the default
 assert(plottingConvention.fromOption({},other) == other, ...
   'check_plottingConventionOwnership: an empty list must return the default');
+
+end
+
+% =========================================================================
+function checkTensorFollowsSession
+% a freshly built tensor follows the CURRENT session frame
+%
+% @tensor declared its reference system as a property default,
+% CS = specimenSymmetry.default. MATLAB evaluates a property default
+% expression ONCE, when the class is first loaded, so that froze whichever
+% symmetry handle was the default at the time. Every later
+% specimenFrame.default / referenceFrame.reset installs a new session
+% frame, which the frozen handle never sees, and a new tensor reported the
+% convention the session had BEFORE the last change - one step behind,
+% while @vector3d and @S2Fun, which resolve lazily in their getters, were
+% right. The constructor resolves it now.
+
+referenceFrame.reset;
+
+follows = @() tensor.eye.how2plot == plottingConvention.default;
+
+assert(follows(), ...
+  'check_plottingConventionOwnership: a tensor must follow a fresh session');
+
+specimenFrame.rolling.makeDefault;
+assert(follows(), ...
+  'check_plottingConventionOwnership: a tensor must follow makeDefault');
+
+referenceFrame.reset;
+assert(follows(), ...
+  'check_plottingConventionOwnership: a tensor must follow referenceFrame.reset');
+
+plottingConvention.default('z↑→x');
+assert(follows(), ...
+  'check_plottingConventionOwnership: a tensor must follow a convention change');
+
+% an explicitly given symmetry still wins over the session, and a crystal
+% framed tensor keeps the convention of its crystal frame
+cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942]);
+T = tensor.eye(cs);
+assert(T.CS.id == cs.id, ...
+  'check_plottingConventionOwnership: an explicit symmetry must survive');
+assert(T.how2plot == cs.how2plot, ...
+  'check_plottingConventionOwnership: a crystal framed tensor follows its crystal frame');
+
+referenceFrame.reset;
 
 end
