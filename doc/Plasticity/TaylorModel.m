@@ -2,11 +2,10 @@
 %
 %
 %% Basic Settings
-% we work in the rolling frame - RD to the north, TD to the west and ND
-% out of the page
-specimenFrame.rolling.makeDefault
+% We work in the rolling frame - RD to the north, TD to the west and ND out
+% of the page
 
-% the rolling frame also annotates the pole figures with RD, TD, ND
+specimenFrame.rolling.makeDefault
 
 %% Slip in Body Centered Cubic Materials
 %
