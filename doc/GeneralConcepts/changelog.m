@@ -1,14 +1,14 @@
 %% MTEX Changelog
 %
-%% MTEX 7.0 xx/2026 - New Features
+%% MTEX 7.0 08/2026 - New Features
 %
 % This is the first release that uses AI. This allowed us to implement many
-% long lasting ideas.  
+% long lasting ideas.
 %
 % *Grain Reconstruction*
 %
-% Grain reconstruction has been entirely rewritten to give better results, be
-% faster and be more easy to control. The general syntax is now
+% Grain reconstruction has been entirely rewritten to give better results,
+% be faster and be more easy to control. The general syntax is now
 %
 %   [grains, ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',5,'alpha',3.1)
 %
@@ -31,11 +31,11 @@
 % Along with grain reconstruction we also greatly improved grain boundary
 % smoothing which is now done with the command
 %
-%   grains = smoothBoundary(grains)
+%   grains = smoothBoundary(grains,5)
 %
 % The command <grain2d.smoothBoundary.html |smoothBoundary|> allows for
-% several backends which are explained in detail <TODO.html here>.
-%
+% several backends which are explained in detail <GrainSmoothing.html here>
+% and <GrainSmoothingAdvanced.html here>.
 %
 % *Much Better EBSD Import*
 %
@@ -43,11 +43,12 @@
 % allows to scroll through your data files, adjust reference system
 % alignment by inspecting ipf maps and pole figures. We put a lot of effort
 % in getting all the different conventions right for all the formats on the
-% market, i.e. from Bruker, EDAX, Oxford, and ThermoFisher. In this process
-% we changed the default plotting convention to |y↓→x|, i.e. the current
-% standard among all vendors. This default can be easily changed by 
+% market, i.e. from Bruker, EDAX, Oxford, EMSphinx and ThermoFisher. In
+% this process we changed the default plotting convention to |y↓→x|, i.e.
+% the current standard among all vendors. This default can be easily
+% changed by
 %
-%   ebsd.how2plot = 'y↑→x';
+%   plottingConvention.default('y↑→x');
 %   
 % Additionally, we now support multiple data sets per file and allow to
 % import all additional scans that might be present in your file.
@@ -55,92 +56,22 @@
 % *Imported Data Comes on Its Grid*
 %
 % <EBSD.load.html |EBSD.load|> now returns an @EBSDsquare or an @EBSDhex
-% whenever the measurements sit on one lattice, instead of a plain list that
-% had to be <EBSD.gridify.html |gridify|>ed by hand. Almost every scan is a
-% complete raster, so this is what you get for almost every file: the map is
-% stored as a matrix, |ebsd(i,j)| addresses a scan position, and plotting
-% and denoising no longer rebuild the raster on every call.
-%
-% Data that would lose measurements by being gridded - two of them falling
-% into the same lattice cell, or positions too irregular to span a raster -
-% is never gridded and comes back as a list with a warning saying why. A
-% plain list can also be asked for explicitly
-%
-%   ebsd = EBSD.load(fname,'noGrid')     % this import
-%   setMTEXpref('gridifyOnImport',false) % every import
-%
-% Both representations are accepted everywhere, and |EBSD(ebsd)| and
-% |gridify| convert between them at any time. Note that putting data on a
-% grid *reorders* it - the matrix layout fixes the first dimension to y
-% while a |.ctf| or |.ang| runs x fastest - so |ebsd(k)| is in general no
-% longer line k of the file. The original ids are kept in |ebsd.oldId|. See
-% <EBSDGrid.html Square and Hex Grids>.
-%
-% One syntax had to go for this: |ebsd(x,y)| used to be the measurement
-% closest to the coordinate |(x,y)| on a list, while on a gridded map the
-% very same expression is the pixel in row |x| and column |y|. Since almost
-% every file now arrives gridded, that silent difference would decide itself
-% by the data rather than by the script, so |ebsd(x,y)| is an error now. Ask
-% for the coordinate by name
-%
-%   ebsd('xy',x,y)   % the measurement closest to (x,y), grid or list
-%   ebsd(i,j)        % the pixel in row i and column j, gridded map only
-%
-% *EBSD Analysis No Longer Needs a Grid*
-%
-% Computations that used to require <EBSD.gridify.html |gridify|> now work
-% on any @EBSD - a plain list, a phase subset, or a gridded map alike. This
-% concerns the <EBSD.gradientX.html orientation gradient> and
-% everything built on it: <EBSD.curvature.html |curvature|>,
-% <EBSD.calcGND.html |calcGND|> and the gradient method of
-% <EBSD.weightedBurgersVec.html |weightedBurgersVec|>.
-%
-%   kappa = curvature(ebsd)      % no ebsd.gridify needed
-%   gnd   = calcGND(ebsd,dS)
-%
-% They are computed on the virtual lattice MTEX derives from the unit cell,
-% so they also work for grids that are rotated or sheared with respect to
-% the x/y axes, which the previous matrix based implementation could not do
-% at all - |ebsd.gradientX| raised an error unless a grid direction happened
-% to lie along an axis. |calcGND| additionally exists for hexagonal grids
-% now; there simply was no hexagonal implementation before.
-%
-% <EBSD.fill.html |fill|>, <EBSD.smooth.html |smooth|>,
-% <EBSD.interp.html |interp|> and |weightedBurgersVec| keep the class and
-% shape they were given. Previously |fill| and |smooth| turned a plain
-% @EBSD into an @EBSDsquare, and |weightedBurgersVec| returned a result
-% shaped like the grid rather than like the input.
-%
-% Both grid classes now also accept a *rotated* grid. @EBSDhex in particular
-% no longer stores |dHex| and |isRowAlignment| - those could express only two
-% orientations - but derives them, together with |offset|, |dx| and |dy|,
-% from the unit cell and the pixel positions.
-%
-% *Corrections worth knowing*
-%
-% * |gradientX| on a row aligned hexagonal grid divided by |dHex| where the
-% neighbour distance is |sqrt(3)*dHex|, so hexagonal |curvature|, |calcGND|
-% and the gradient based |weightedBurgersVec| were wrong by a factor 1.732
-% in one column of the tensor. Values on hexagonal maps change accordingly;
-% square grids are unaffected.
-% * |gridify| of a rotated hexagonal map silently placed several
-% measurements on the same cell and kept only the last - 5.2% of a titanium
-% map rotated by 20 degree. It now places cells by their lattice index and
-% keeps the measured positions exactly.
-% * |calcGrains(...,'removeQuadruplePoints')| merged the wrong boundary
-% segments and destroyed real grain boundary - 0.21% of a forsterite map.
-% * |export_ang| of a square grid failed in the header with an unrecognized
-% |dx|. It works again, and refuses a rotated grid, whose spacings the ang
-% format cannot express.
-% * |interp(ebsd,x,y)| with row vectors returned an object whose |length|
-% reported 1, and dropped query points when the source was a gridded map.
+% whenever the measurements sit on one lattice, instead of a plain list
+% that had to be <EBSD.gridify.html |gridify|>ed by hand. Almost every scan
+% is a complete raster, so this is what you get for almost every file: the
+% map is stored as a matrix, |ebsd(i,j)| addresses a scan position. 
+% 
+% Note that putting data on a grid *reorders* it - the matrix layout fixes
+% the first dimension to y while a |.ctf| or |.ang| runs x fastest - so
+% |ebsd(k)| is in general no longer line k of the file. The original ids
+% are kept in |ebsd.oldId|. See <EBSDGrid.html Square and Hex Grids>.
 %
 % *Much Faster Plotting of EBSD Maps*
 %
-% Plotting EBSD and grain maps is now orders of magnitude faster. It supports 
-% multiple backends that allow for fast plotting of hexagonal or strongly
-% deformed pixel layouts. The micronbar has been largely improved to
-% include also a small pictogram of the reference system.
+% Plotting EBSD and grain maps is now orders of magnitude faster. It
+% supports multiple backends that allow for fast plotting of hexagonal or
+% strongly deformed pixel layouts. The micronbar has been largely improved
+% to include also a small pictogram of the reference system.
 % 
 % *Approximation, Sampling and Clustering*
 %
