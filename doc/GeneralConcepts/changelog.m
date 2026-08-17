@@ -88,8 +88,6 @@
 % * <PoleFigure.calcODFIterative.html |calcODFIterative|> inverts pole figure
 % data by iteratively adjusting the kernel width, which is much more robust
 % for irregularly sampled data
-% * @planarColorKey encodes two scalar properties at once, the first one as
-% hue, the second one as saturation
 %
 %   sF   = S2FunMLS(nodes,values,'degree',3)
 %   ori  = optimalSample(odf,10000)
@@ -112,7 +110,7 @@
 % vector valued> function and arrays of them are handled like any other MATLAB
 % array.
 %
-%% MTEX 7.0 xx/2026 - Technical Changes
+%% MTEX 7.0 08/2026 - Technical Changes
 %
 % *Grain Reconstruction*
 %
@@ -188,6 +186,21 @@
 % * <grain2d.isOuterBoundary.html |isOuterBoundary(grains)|> tells which
 % grains border the map, no longer obvious once an alpha shape has traced it
 %
+% The walk order is also what gives <grainBoundary.curvature.html |curvature|>
+% its sign: a segment is stored with the grain in |gB.grainId(:,1)| to its
+% left, so a positive curvature bulges into |gB.grainId(:,2)| - for the whole
+% map at once, not only for one grain at a time. Which of the two grains ends
+% up in the first column is not decided by |grains(k).boundary|, so put the
+% grain the sign is meant to refer to there
+%
+%   gB = flip(gB, gB.grainId(:,2) == grains(k).id)   % grain k to the left
+%   kappa = gB.curvature                             % positive = convex
+%
+% Grain maps saved before the walk order are turned the right way round when
+% they are loaded - a grain whose segments enclose |-area| is reversed by
+% |grain2d.loadobj|, which leaves a well formed file untouched. See
+% <BoundaryCurvature.html Boundary Curvature>.
+%
 % What used to be |smooth(grains)| is called
 % <grain2d.smoothBoundary.html |smoothBoundary(grains)|> now - |smooth| on an
 % @EBSD denoises orientations, something entirely different - and it performs
@@ -246,6 +259,14 @@
 % assuming it, as it still has to for |ctf| and |crc|. Orientations imported
 % from |h5oina| change by that angle, usually 180 degree, and now agree with
 % the same map imported from a |ctf|
+% * EMSphInx writes the EDAX |ang| and HDF5 layouts, but counts the phases
+% from 0 and flags a pattern it could not index by 255, where EDAX counts from
+% 1 and keeps 0 for not indexed - so every phase used to come out shifted by
+% one. Its |ang| carries no vendor marker at all and is recognized by its
+% empty phase descriptions; |'EDAX'| and |'EMSphInx'| overrule that guess.
+% Pixels an ROI mask kept out of the run - a valid looking phase at
+% orientation (0,0,0) with every quality measure zero - are marked notIndexed
+% instead of fusing into one huge spurious grain
 % * the file header is kept in |ebsd.opt.header| and readable by
 % |'headerOnly'| without importing the data at all, the SEM / PRIAS images an
 % EDAX map comes with in |ebsd.opt.electron_image|, as the Oxford electron
@@ -270,6 +291,82 @@
 % basis in |cs.opt.spaceId| and |cs.opt.atoms|. Fixed along the way: |ang|
 % files whose header contains a stray carriage return - as written by some
 % EDAX exports - silently lost their first data point.
+%
+% *EBSD Grids*
+%
+% Both representations - the gridded map and the plain list - are accepted
+% everywhere, and |EBSD(ebsd)| and <EBSD.gridify.html |gridify|> convert
+% between them at any time. Data that would lose measurements by being
+% gridded - two of them falling into the same lattice cell, or positions too
+% irregular to span a raster - is never gridded and comes back as a list with
+% a warning saying why. A plain list can also be asked for explicitly
+%
+%   ebsd = EBSD.load(fname,'noGrid')     % this import
+%   setMTEXpref('gridifyOnImport',false) % every import
+%
+% One syntax had to go for this: |ebsd(x,y)| used to be the measurement
+% closest to the coordinate |(x,y)| on a list, while on a gridded map the
+% very same expression is the pixel in row |x| and column |y|. Since almost
+% every file now arrives gridded, that silent difference would decide itself
+% by the data rather than by the script, so |ebsd(x,y)| is an error now. Ask
+% for the coordinate by name
+%
+%   ebsd('xy',x,y)   % the measurement closest to (x,y), grid or list
+%   ebsd(i,j)        % the pixel in row i and column j, gridded map only
+%
+% Both grid classes accept a *rotated* grid now. @EBSDhex in particular no
+% longer stores |dHex| and |isRowAlignment| - those could express only two
+% orientations - but derives them, together with |offset|, |dx| and |dy|,
+% from the unit cell and the pixel positions.
+%
+% *EBSD Analysis No Longer Needs a Grid*
+%
+% Computations that used to require <EBSD.gridify.html |gridify|> now work on
+% any @EBSD - a plain list, a phase subset, or a gridded map alike. This
+% concerns the <EBSD.gradientX.html orientation gradient> and everything built
+% on it: <EBSD.curvature.html |curvature|>, <EBSD.calcGND.html |calcGND|> and
+% the gradient method of <EBSD.weightedBurgersVec.html |weightedBurgersVec|>
+%
+%   kappa = curvature(ebsd)      % no ebsd.gridify needed
+%   gnd   = calcGND(ebsd,dS)
+%
+% They are computed on the virtual lattice MTEX derives from the unit cell, so
+% they also work for grids that are rotated or sheared with respect to the x/y
+% axes, which the previous matrix based implementation could not do at all -
+% |ebsd.gradientX| raised an error unless a grid direction happened to lie
+% along an axis. |calcGND| additionally exists for hexagonal grids now; there
+% simply was no hexagonal implementation before.
+%
+% <EBSD.fill.html |fill|>, <EBSD.smooth.html |smooth|>, <EBSD.interp.html
+% |interp|> and |weightedBurgersVec| keep the class and the shape they were
+% given. Previously |fill| and |smooth| turned a plain @EBSD into an
+% @EBSDsquare, and |weightedBurgersVec| returned a result shaped like the grid
+% rather than like the input.
+%
+% *Corrections Worth Knowing*
+%
+% * |gradientX| on a row aligned hexagonal grid divided by |dHex| where the
+% neighbour distance is |sqrt(3)*dHex|, so hexagonal |curvature|, |calcGND|
+% and the gradient based |weightedBurgersVec| were wrong by a factor 1.732 in
+% one column of the tensor. Values on hexagonal maps change accordingly;
+% square grids are unaffected
+% * |gridify| of a rotated hexagonal map silently placed several measurements
+% on the same cell and kept only the last - 5.2% of a titanium map rotated by
+% 20 degree. It now places cells by their lattice index and keeps the measured
+% positions exactly
+% * |calcGrains(...,'removeQuadruplePoints')| merged the wrong boundary
+% segments and destroyed real grain boundary - 0.21% of a forsterite map
+% * <grain2d.merge.html |merge|> assigned rather than added its merge matrix
+% in two of the six branches collecting the criteria, so a call stating
+% several of them applied only some, and which ones depended on the order they
+% were written in - |merge(grains,twinBoundary,'inclusions','maxSize',5)| left
+% the twins unmerged. Every criterion is applied now, and a numeric value
+% following an option name is no longer mistaken for a list of grain pairs
+% * |export_ang| of a square grid failed in the header with an unrecognized
+% |dx|. It works again, and refuses a rotated grid, whose spacings the ang
+% format cannot express
+% * |interp(ebsd,x,y)| with row vectors returned an object whose |length|
+% reported 1, and dropped query points when the source was a gridded map
 %
 % *Plotting EBSD Maps*
 %
@@ -622,6 +719,17 @@
 % * |ebsd('phaseName').orientations| carries the plotting convention of the
 % map, and a @specimenSymmetry displays the convention it holds -
 % |specimenSymmetry.default| is where the session wide default lives
+% * a note about an assumption an import had to make - the Euler correction,
+% the |setting| of an EDAX file - is emitted as a warning instead of being
+% printed to the error stream, where the command window painted it in the red
+% of a failed import. Such notes carry an id, so
+% |warning('off','MTEX:eulerCorrectionAssumed')| silences them
+% * documentation links printed to the command window resolve against a local
+% |doc/html| where it is installed and against
+% <https://mtex-toolbox.github.io the online documentation> where it is not -
+% a clone carries no generated html, and |web()| on a missing file did nothing
+% at all, no page and no error. Line wrapping in the command window no longer
+% breaks such a link apart, which it did for every link it ever touched
 %
 %% MTEX 6.1 10/2025
 %

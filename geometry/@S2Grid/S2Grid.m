@@ -36,7 +36,7 @@ classdef S2Grid < vector3d
 % Examples
 %
 %   S2G = equispacedS2Grid('resolution',5*degree,'maxTheta',70*degree)
-%   plot(S2G)
+%   plot(S2G,'y↑→x','upper')
 %
 % See also
 % vector3d.vector3d plotS2Grid regularS2Grid equispaceS2Grid
