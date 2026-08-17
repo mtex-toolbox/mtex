@@ -119,6 +119,7 @@ over budget, trim from outside these before trimming inside them.
 | ODF export interfaces | `core/check_odfExport` |
 | `holdOn`/`holdRelease` semantics | `core/check_holdGuard` |
 | `setMTEXpref`/`getMTEXpref` round trip | `core/check_mtexPref` |
+| command window text wrapping, hyperlink integrity | `core/check_wraptext` |
 | `mtexFigure` layout, colorbar placement | `plotting/check_colorbarLocation` |
 | micron bar, reference frame indicator | `plotting/check_scaleBar` |
 | polar histogram of directions, `setView` on a polaraxes | `plotting/check_polarHistogram` |

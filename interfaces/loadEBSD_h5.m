@@ -263,6 +263,20 @@ if ~isempty(iSet)
   ebsd.opt.dataSets = [dataSets.label];
 end
 
+% EMSphInx flags a pattern it failed to index with phase 255, but not a
+% pixel a ROI mask kept out of the run in the first place - that one keeps
+% phase 0 and is only recognisable by orientation, image quality and fit
+% metric all being exactly zero. Without this a masked map imports as one
+% huge grain sitting at orientation (0,0,0).
+%
+% This has to happen before any correction the caller asks for below, on the
+% orientations as the file states them - the .ang route does it in the same
+% place, and reading them afterwards made a stated 'setting' silently
+% disable the whole check.
+if startsWith(string(Conf.settings.name),"EMSphInx","IgnoreCase",true)
+  ebsd = markUnmeasured(ebsd);
+end
+
 % Euler <-> map reference frame -------------------------------------------
 % Normally the correction is stated in the file and has been picked up by
 % the config above. An explicitly given 'setting' / 'EulerCorrection' still
@@ -275,15 +289,6 @@ if check_option(varargin,{'setting','EulerCorrection'})
 elseif startsWith(string(Conf.settings.name),"EDAX","IgnoreCase",true) && ...
     ebsd.EulerCorrection.angle < 1e-6
   ebsd = applyEulerCorrectionTable(ebsd,ext);
-end
-
-% EMSphInx flags a pattern it failed to index with phase 255, but not a
-% pixel a ROI mask kept out of the run in the first place - that one keeps
-% phase 0 and is only recognisable by orientation, image quality and fit
-% metric all being exactly zero. Without this a masked map imports as one
-% huge grain sitting at orientation (0,0,0).
-if startsWith(string(Conf.settings.name),"EMSphInx","IgnoreCase",true)
-  ebsd = markUnmeasured(ebsd);
 end
 
 % an Oxford file states its data in the sample frame CS1 - the map lives

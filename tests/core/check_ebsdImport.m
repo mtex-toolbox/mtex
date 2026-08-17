@@ -31,6 +31,7 @@ checkSquareCtf;
 checkHexCtf;
 checkMultiPhaseCtf;
 checkAng;
+checkEMSphInxAngROI;
 checkGridDispatch;
 checkGridOnImport;
 
@@ -153,6 +154,137 @@ expectRow(e, 'ACOM.ang', 'last',  225, [28 28],   [264.02 39.57 56.00]);
 % not be square any more
 assert(length(e) == 225, ...
   'check_ebsdImport: ACOM.ang has %d pixels, expected 225', length(e))
+
+end
+
+% =========================================================================
+function checkEMSphInxAngROI
+% a region of interest EMSphInx left out of the run must import as notIndexed
+%
+% EMSphInx writes a value for every pixel of the scan grid but only indexes
+% the pixels inside a ROI mask, and it flags nothing: a masked pixel arrives
+% with a valid looking phase number at orientation (0,0,0) with every quality
+% measure zero. Left indexed they fuse into one huge grain at that
+% orientation, which is what the map then looks like.
+%
+% The file written here carries an SEM signal column that keeps reading
+% outside the ROI, because that is what defeated the first version of
+% markUnmeasured: it asked for every numeric property of a pixel to be zero,
+% so one column that is legitimately not zero out there switched the whole
+% check off without a word. Only quality measures may count.
+%
+% The EDAX flavour of the same map is the control. It is byte for byte the
+% same layout - the two are only told apart by the header fingerprint - and
+% it must come back untouched, since a zero orientation in a real EDAX
+% export is a measurement like any other.
+
+nx = 12; ny = 10; nOutside = ny*numel(nx/2:nx-1);
+
+f = writeSyntheticAng('EMSphInx',nx,ny);
+c = onCleanup(@() delete(f));
+
+evalc('e = EBSD.load(f,''noGrid'');');
+
+assert(nnz(~e.isIndexed) == nOutside, ...
+  ['check_ebsdImport: an EMSphInx .ang with a %d pixel ROI mask imported %d ' ...
+   'notIndexed pixels, expected %d - the masked region is being read as data'], ...
+  nOutside, nnz(~e.isIndexed), nOutside)
+
+% and it has to be the masked half, not just the right count
+assert(all(~e.isIndexed(e.x >= (nx/2)*0.5)) && all(e.isIndexed(e.x < (nx/2)*0.5)), ...
+  'check_ebsdImport: the pixels marked notIndexed are not the ones outside the ROI')
+
+assert(all(isnan(e.rotations(~e.isIndexed))), ...
+  'check_ebsdImport: an unmeasured pixel kept its (0,0,0) orientation instead of NaN')
+
+fEDAX = writeSyntheticAng('EDAX',nx,ny);
+cEDAX = onCleanup(@() delete(fEDAX));
+
+evalc('eEDAX = EBSD.load(fEDAX,''noGrid'');');
+
+assert(nnz(~eEDAX.isIndexed) == 0, ...
+  ['check_ebsdImport: the same map in the EDAX flavour lost %d pixels to ' ...
+   'notIndexed - a zero orientation in a genuine EDAX export is a measurement'], ...
+  nnz(~eEDAX.isIndexed))
+
+end
+
+% =========================================================================
+function f = writeSyntheticAng(flavour,nx,ny)
+% write an nx x ny .ang whose right half was never measured
+%
+% Both flavours write the identical layout - ten columns, phase in column 8 -
+% and differ only in what loadEBSD_ang fingerprints them by: EMSphInx fills
+% in no phase description at all (no material name, no reflectors, no
+% VERSION line) and numbers the phases from 0, EDAX names the material,
+% lists reflectors and numbers from 1.
+
+isEMSphInx = strcmp(flavour,'EMSphInx');
+
+if isEMSphInx
+  mineral = ''; nFamilies = 0; version = {};
+else
+  mineral = 'Iron'; nFamilies = 2; version = {'# VERSION 5'};
+end
+
+hdr = [{'# TEM_PIXperUM     1.000000'
+        '# x-star           0.500000'
+        '# y-star           0.500000'
+        '# z-star           0.500000'}
+       version(:)
+      {'#'
+       '# Phase            1'
+      ['# MaterialName     ' mineral]
+       '# Formula          '
+       '# Info             '
+       '# Symmetry         43'
+      ['# NumberFamilies   ' num2str(nFamilies)]
+       '# LatticeConstants 2.870 2.870 2.870 90.000 90.000 90.000'}];
+
+for k = 1:nFamilies
+  hdr{end+1,1} = sprintf('# hklFamilies    %d  %d  0 1 0.000000 1',2-k,k-1); %#ok<AGROW>
+end
+
+hdr = [hdr
+      {'# Categories 0 0 0 0 0 '
+       '#'
+       '# GRID:            SqrGrid'
+       '# XSTEP:           0.500000'
+       '# YSTEP:           0.500000'
+      ['# NCOLS_ODD:       ' num2str(nx)]
+      ['# NCOLS_EVEN:      ' num2str(nx)]
+      ['# NROWS:           ' num2str(ny)]
+       '#'
+       '# OPERATOR:        unknown'
+       '#'}];
+
+f = [tempname '.ang'];
+fid = fopen(f,'w');
+
+assert(fid > 0, 'check_ebsdImport: could not write the synthetic .ang to %s', f)
+
+fprintf(fid,'%s\n',hdr{:});
+
+for iy = 0:ny-1
+  for ix = 0:nx-1
+
+    if ix < nx/2
+      % phi1 Phi phi2   x      y     IQ   CI  phase  SEM   fit
+      row = [0.3 0.4 0.5, ix*0.5, iy*0.5, 0.7, 0.9, 0, 130+ix, 1.2];
+    else
+      % outside the ROI: no orientation and no quality at all - but the SEM
+      % detector went on reading, and that reading is not zero
+      row = [0   0   0,   ix*0.5, iy*0.5, 0,   0,   0, 130+ix, 0];
+    end
+
+    if ~isEMSphInx, row(8) = 1; end
+
+    fprintf(fid,'%9.5f %9.5f %9.5f %12.5f %12.5f %8.1f %6.3f %2d %7.1f %6.3f\n',row);
+
+  end
+end
+
+fclose(fid);
 
 end
 

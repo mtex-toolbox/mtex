@@ -12,9 +12,14 @@ function ebsd = markUnmeasured(ebsd)
 %
 % A zero orientation on its own is a legitimate measurement, so it is not
 % enough on its own: a pixel is only taken as never measured when its
-% orientation is the identity *and* every numeric per pixel property
-% (image quality, fit metric, confidence index, ...) is exactly zero. That
+% orientation is the identity *and* every quality measure the file provides
+% (image quality, confidence index, fit metric, ...) is exactly zero. That
 % combination does not occur in real data.
+%
+% Only quality measures count, not every numeric property: an SEM signal
+% keeps reading outside the ROI, and MTEX adds index columns of its own
+% (gridify writes oldId), so a rule over all properties would quietly
+% never fire again the moment such a column is present.
 %
 % Syntax
 %
@@ -33,22 +38,43 @@ if isempty(notIndexedId), return; end
 
 % "orientation is zero" means zero as it stands in the file - a reference
 % frame correction already applied to the data shows up as exactly that
-% rotation here, not as the identity
-isNull = ~isnan(ebsd.rotations) & angle(ebsd.rotations,ebsd.EulerCorrection) < 1e-8;
+% rotation here, not as the identity. The tolerance is generous on purpose:
+% re-applying a correction composes three rotations and leaves round-off of
+% some 1e-7 radian behind, while no two distinct measurements of a real map
+% come anywhere near this close.
+isNull = ~isnan(ebsd.rotations) & angle(ebsd.rotations,ebsd.EulerCorrection) < 1e-3*degree;
+isNull = isNull(:);
 if ~any(isNull), return; end
 
-nProps = 0;
+nQuality = 0;
 for fn = fieldnames(ebsd.prop).'
+  if ~isQualityMeasure(char(fn)), continue; end
   p = ebsd.prop.(char(fn));
   if ~isnumeric(p) || ~isreal(p) || numel(p) ~= length(ebsd), continue; end
   isNull = isNull & p(:) == 0;
-  nProps = nProps + 1;
+  nQuality = nQuality + 1;
 end
 
-% with no property to corroborate it, a zero orientation says nothing
-if nProps == 0 || ~any(isNull), return; end
+% with no quality measure to corroborate it, a zero orientation says nothing
+if nQuality == 0 || ~any(isNull), return; end
 
 ebsd.phaseId(isNull) = notIndexedId;
 ebsd.rotations(isNull) = NaN;
+
+end
+
+% -----------------------------------------------------------------------
+
+function out = isQualityMeasure(name)
+% does this property name describe how well the pattern was indexed?
+%
+% The names the EDAX and EMSphInx routes produce - .ang columns arrive
+% lowercased through the generic loader, HDF5 data sets keep the spelling
+% of the file - plus the Oxford equivalents, so the test does not depend on
+% which of them wrote the map.
+
+out = ~isempty(regexpi(name,['^(iq|imagequality|image_quality|ci|confidenceindex|' ...
+  'confidence_index|confidence|metric|xc|fit|mad|error|bc|bs|bandcontrast|' ...
+  'bandslope|quality)$'],'once'));
 
 end

@@ -9,7 +9,12 @@ function out = wraptext(txt,width)
 %      paragraph (line) is wrapped independently and separated by '\n'
 %      exactly as in the input.
 %   2) HTML fragments of the form <a ...>...</a> are treated as a single
-%      unbreakable word, even if they contain spaces in attributes.
+%      unbreakable word, even if they contain spaces in attributes. They
+%      count towards the line length by the text they show, not by the
+%      length of their markup - a hyperlink that is only a few characters
+%      wide on screen must not push the words around it onto the next line,
+%      and a line must never be broken inside the tag, which would leave
+%      the command window with markup it can no longer turn into a link.
 %
 %   txt   ... string or char
 %   width ... positive integer
@@ -50,32 +55,25 @@ for L = 1:numel(lines_in)
   protected_paragraph = paragraph;
   placeholder = char(160); % non-breaking space (&nbsp;)
 
-  % Find all <a ...>...</a> segments (non-greedy match)
-  anchor_pat = "<a\b.*?>.*?</a>";
-  [startIdx,endIdx] = regexp(protected_paragraph, anchor_pat, 'start','end','once');
+  % Find all <a ...>...</a> segments (non-greedy match). Note that MATLAB
+  % regexp has no \b for a word boundary - \b is a backspace character, so
+  % the '<a\b' this used to look for never matched anything at all.
+  anchor_pat = '<a[^>]*>.*?</a>';
+  [startIdx,endIdx] = regexp(protected_paragraph, anchor_pat, 'start','end');
 
-  % We may have multiple <a>...</a>, so loop carefully
-  while ~isempty(startIdx)
-    before  = extractBetween(protected_paragraph, 1, startIdx-1);
-    anchor  = extractBetween(protected_paragraph, startIdx, endIdx);
-    after   = extractBetween(protected_paragraph, endIdx+1, strlength(protected_paragraph));
-
-    % Replace normal spaces in the anchor block by placeholder
-    anchor = replace(anchor," ",placeholder);
-    
-    % Reassemble
-    protected_paragraph = before + anchor + after;
-    
-    % search again (continue after this anchor)
-    offset = endIdx; % position in ORIGINAL string
-    % But since string lengths changed only by 1:1 replacement,
-    % indices are still consistent. We can just search again fresh:
-    [startIdx,endIdx] = regexp(protected_paragraph, anchor_pat, 'start','end','once');
-    % Note: this finds from beginning again, but since we've already
-    % replaced spaces in this anchor, running again will skip it
-    % because pattern still matches <a ...>...</a>. That's fine,
-    % because replacing spaces with placeholder didn't change '<' or '>'.
-    % So multiple anchors still get processed eventually.
+  % Replace normal spaces in every anchor block by the placeholder. Doing it
+  % in place keeps the match positions valid - the replacement is one
+  % character for one character - and needs no repeated search, which would
+  % not terminate: the pattern still matches an anchor once its spaces are
+  % gone.
+  if ~isempty(startIdx)
+    chars = char(protected_paragraph);
+    for a = 1:numel(startIdx)
+      seg = chars(startIdx(a):endIdx(a));
+      seg(seg == ' ') = placeholder;
+      chars(startIdx(a):endIdx(a)) = seg;
+    end
+    protected_paragraph = string(chars);
   end
 
   % --- 2) split into "words" by real spaces ---
@@ -89,7 +87,7 @@ for L = 1:numel(lines_in)
     w = words(k);
     
     % restore placeholders only for measuring length
-    w_len = strlength(replace(w,placeholder," "));
+    w_len = visibleLength(w,placeholder);
     
     if current == ""
       % starting a new output line
@@ -101,7 +99,7 @@ for L = 1:numel(lines_in)
         current = w;
       end
     else
-      curr_len = strlength(replace(current,placeholder," "));
+      curr_len = visibleLength(current,placeholder);
       if curr_len + 1 + w_len <= width
         current = current + " " + w;
       else
@@ -132,9 +130,23 @@ out = strjoin(wrapped_lines_all, newline);
 out = char(out); % char is handy for fprintf, etc.
 
 if nargout==0
-  disp(out); 
+  disp(out);
   clear out
 end
 
+
+end
+
+% -----------------------------------------------------------------------
+
+function len = visibleLength(w,placeholder)
+% how wide does this word appear on screen
+%
+% The markup of a hyperlink is not on screen, only its link text is, so a
+% one word link the command window shows as four characters must be counted
+% as four - counting its 80 characters of markup pushes everything around it
+% onto lines of its own for no reason.
+
+len = strlength(regexprep(replace(w,placeholder," "),'<[^>]*>',''));
 
 end

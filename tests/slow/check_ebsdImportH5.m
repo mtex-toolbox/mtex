@@ -42,6 +42,7 @@ checkPhases(fname);
 scans = checkEveryDataSet(fname);
 checkTheScansDiffer(scans);
 checkDefaultAndNameSelection(fname,scans);
+checkEMSphInxROI;
 
 disp('check_ebsdImportH5: passed');
 
@@ -180,6 +181,133 @@ assert(isequaln(byName.rotations,scans{3}.rotations), ...
    'different data'])
 assert(isequal(byName.pos,scans{3}.pos), ...
   'check_ebsdImportH5: the two selection forms give different positions')
+
+end
+
+% =========================================================================
+function checkEMSphInxROI
+% a region of interest EMSphInx left out of the run must import as notIndexed
+%
+% EMSphInx writes a value for every pixel of the scan grid but only indexes
+% the pixels inside a ROI mask, and it flags nothing: a masked pixel arrives
+% with a valid looking phase number at orientation (0,0,0) and every quality
+% measure zero, and left indexed the whole masked region fuses into one grain
+% at that orientation. markUnmeasured is what recognises them.
+%
+% The result must not depend on whether the caller states a 'setting'. It did:
+% the check ran after the Euler correction and compared the orientations
+% against the correction the data carries, and re-applying a correction
+% composes three rotations, leaving some 1e-7 radian of round-off - just
+% enough to miss an exact equality test, so a stated 'setting' silently
+% turned the whole thing off and only the 255 flagged pattern survived.
+%
+% Synthetic and 120 pixels, unlike the rest of this file: nothing here needs
+% real data, and it lives with the HDF5 interface it exercises rather than in
+% core/ so the format stays in one place. The .ang half of the same problem is
+% in core/check_ebsdImport.
+
+nx = 12; ny = 10; nOutside = ny*numel(nx/2:nx-1);
+
+f = writeSyntheticEMSphInxH5(nx,ny);
+c = onCleanup(@() delete(f));
+
+% one pattern inside the ROI carries the 255 EMSphInx uses for "could not
+% index this", so the two mechanisms are told apart rather than confused
+for opts = {{}, {'setting',2}, {'EulerCorrection',rotation.byAxisAngle(xvector,180*degree)}}
+
+  e = load1(f,opts{1});
+
+  assert(nnz(~e.isIndexed) == nOutside + 1, ...
+    ['check_ebsdImportH5: with %s the ROI masked map imported %d notIndexed ' ...
+     'pixels, expected %d - %d outside the ROI plus the one flagged pattern'], ...
+    optionName(opts{1}), nnz(~e.isIndexed), nOutside+1, nOutside)
+
+  assert(all(~e.isIndexed(e.x >= (nx/2)*0.5)), ...
+    'check_ebsdImportH5: with %s a pixel outside the ROI stayed indexed', ...
+    optionName(opts{1}))
+
+end
+
+end
+
+% =========================================================================
+function name = optionName(opts)
+
+if isempty(opts)
+  name = 'no options';
+else
+  name = ['''' char(opts{1}) ''''];
+end
+
+end
+
+% =========================================================================
+function f = writeSyntheticEMSphInxH5(nx,ny)
+% write the smallest file interfaces/hdf5_config/EMSphInx.json will read
+%
+% Data runs along x first. The right half of the map is what a ROI mask kept
+% out of the run: zero Euler angles, zero image quality, zero metric, and a
+% phase number that looks perfectly valid.
+
+n = nx*ny;
+
+[X,~] = meshgrid(0:nx-1,0:ny-1);
+inROI = reshape((X < nx/2).',[],1);
+
+phi1 = zeros(n,1); Phi = zeros(n,1); phi2 = zeros(n,1);
+IQ = zeros(n,1);   metric = zeros(n,1);
+phase = zeros(n,1,'uint8');
+
+phi1(inROI) = 0.3; Phi(inROI) = 0.4; phi2(inROI) = 0.5;
+IQ(inROI)   = 0.7; metric(inROI) = 0.9;
+
+% EMSphInx marks a pattern it failed to index with the largest value its
+% uint8 phase column can hold
+phase(find(inROI,1)) = 255;
+
+f = [tempname '.h5'];
+scan = '/Scan 1/EBSD';
+
+writeStr(f,'/Manufacturer','EMSphInx');
+writeStr(f,[scan '/Header/Grid Type'],'SqrGrid');
+writeNum(f,[scan '/Header/Step X'],0.5);
+writeNum(f,[scan '/Header/Step Y'],0.5);
+writeNum(f,[scan '/Header/nColumns'],nx);
+writeNum(f,[scan '/Header/nRows'],ny);
+
+writeStr(f,[scan '/Header/Phase/1/MaterialName'],'Iron');
+writeNum(f,[scan '/Header/Phase/1/Symmetry'],43);
+for lc = {'a','b','c'}
+  writeNum(f,[scan '/Header/Phase/1/Lattice Constant ' char(lc)],2.87);
+end
+for lc = {'alpha','beta','gamma'}
+  writeNum(f,[scan '/Header/Phase/1/Lattice Constant ' char(lc)],90);
+end
+
+writeNum(f,[scan '/Data/Phi1'],phi1);
+writeNum(f,[scan '/Data/Phi'],Phi);
+writeNum(f,[scan '/Data/Phi2'],phi2);
+writeNum(f,[scan '/Data/IQ'],IQ);
+writeNum(f,[scan '/Data/Metric'],metric);
+
+h5create(f,[scan '/Data/Phase'],n,'Datatype','uint8');
+h5write(f,[scan '/Data/Phase'],phase);
+
+end
+
+% =========================================================================
+function writeStr(f,ds,val)
+
+h5create(f,ds,1,'Datatype','string');
+h5write(f,ds,string(val));
+
+end
+
+% =========================================================================
+function writeNum(f,ds,val)
+
+h5create(f,ds,numel(val));
+h5write(f,ds,double(val));
 
 end
 
