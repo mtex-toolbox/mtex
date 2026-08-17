@@ -46,18 +46,30 @@ zipName = [rDir,'.zip'];
 unix(['rm -rf ',rDir]);
 unix(['cp -R ' mtex_path ' ' rDir]);
 
+% cp -R copies the untracked files too, so anything a working session leaves
+% lying around is staged along with the tree. CLAUDE.local.md holds the
+% developer's own MATLAB install paths, and a stray save at the repo root
+% (ebsd.mat, Orientations.mat) had been shipping as *.mat - both are ignored
+% by git, which is exactly why neither showed up as a dirty tree.
 rmList = {'doc/makeDoc/tmp', 'myToken.txt', 'data/*.mat' '.git*' ...
   'data/EBSD/*' '.mailmap' 'gitTricks.md' 'makeRelease.m' ...
   'mex/*.mex*' '.claude' 'docs/agents/matlab-bridge/.venv' ...
-  'docs/agents/matlab-bridge/session.*'};
+  'docs/agents/matlab-bridge/session.*' 'CLAUDE.local.md' '*.mat'};
 for rd = rmList 
   unix(['rm -rf ' rDir filesep char(rd)]); 
 end
 
-if any(strfind(ver,'beta'))
-  unix(['rm -rf ' rDir filesep 'doc/html/*']);
-  mkdir([rDir filesep 'doc/html/helpsearch-v3/']);
-end
+% The built HTML documentation does not ship any more - it was 143 of the 195
+% MB of the 7.0.0 zip, and mtexShowDoc looks a page that is not installed up
+% at mtex-toolbox.github.io, so the links in the command window keep working
+% without it. Used to be stripped from beta releases only.
+%
+% The empty helpsearch-v3 has to stay: startup_mtex calls builddocsearchdb on
+% doc/html whenever no helpsearch* folder is found there, so removing the
+% folder outright would run - and fail - on every start. MATLAB's zip keeps an
+% empty directory, so the stub survives into the archive.
+unix(['rm -rf ' rDir filesep 'doc/html']);
+mkdir([rDir filesep 'doc/html/helpsearch-v3/']);
 
 unix(['chmod -R a+rX ' rDir]);
 
