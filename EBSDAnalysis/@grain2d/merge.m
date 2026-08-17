@@ -55,10 +55,19 @@ function [grainsMerged,parentId,newInd] = merge(grains,varargin)
 %
 
 % 1. set up merge matrix
+%
+% Every criterion ADDS to A - a call may give several of them and they are
+% meant to apply together. Two branches used to assign to A instead, which
+% silently threw away everything collected before them: on the twinning
+% example of doc/Grains/GrainMerge.m,
+% merge(grains,twinBoundary,'inclusions','maxSize',5) returned 86 grains
+% where the twin merge alone returns 28, and putting the same two criteria
+% the other way round returned 28. The result must not depend on the order
+% of the arguments.
 maxId = max(grains.id); % initial, empty merge matrix
 A = sparse(maxId+1,maxId+1); % not indexed will be stored to maxId+1s
 
-for k = 1:length(varargin)  
+for k = 1:length(varargin)
   
   if isa(varargin{k},'grainBoundary')
     
@@ -78,17 +87,21 @@ for k = 1:length(varargin)
     A = A | sparse(mergeId(:,2),mergeId(:,3),1,maxId+1,maxId+1);
     A = A | sparse(mergeId(:,1),mergeId(:,3),1,maxId+1,maxId+1);
     
-  elseif isnumeric(varargin{k}) && all(size(varargin{k}) == size(A)-1) 
+  elseif isnumeric(varargin{k}) && all(size(varargin{k}) == size(A)-1) ...
+      && isArgument(varargin,k)
     % adjacency matrix
-    
+
     % this supindexing is required as varargin{k} is only maxId x maxId
     A(1:maxId,1:maxId) = A(1:maxId,1:maxId) + varargin{k};
-    
-  elseif  isnumeric(varargin{k}) && size(varargin{k},2) == 2 
+
+  elseif  isnumeric(varargin{k}) && size(varargin{k},2) == 2 ...
+      && isArgument(varargin,k)
     % pairs of grains
-    
-    A = sparse(varargin{k}(:,1),varargin{k}(:,2),1,maxId+1,maxId+1);
-    
+
+    if ~isempty(varargin{k})
+      A = A | sparse(varargin{k}(:,1),varargin{k}(:,2),true,maxId+1,maxId+1);
+    end
+
   elseif ischar(varargin{k}) && strcmpi(varargin{k},'inclusions')
     
     [isIncl, hostId] = grains.isInclusion;
@@ -104,7 +117,9 @@ for k = 1:length(varargin)
       isIncl(isIncl) = cond(grains.id2ind(hostId(isIncl)));
     end
 
-    A = sparse(grains.id(isIncl),hostId(isIncl),1,maxId+1,maxId+1);
+    if any(isIncl)
+      A = A | sparse(grains.id(isIncl),hostId(isIncl),true,maxId+1,maxId+1);
+    end
     bSize = grains.boundarySize;
     
     varargin = [varargin,'calcMeanOrientation','inclusion'];     %#ok<AGROW>
@@ -313,3 +328,24 @@ grainsMerged.boundary.triplePoints = grainsMerged.boundary.calcTriplePoints;
 end
 
 
+
+% ------------------------------------------------------------------------
+
+function tf = isArgument(varargin_,k)
+% is varargin_{k} an argument of its own, or the value of an option?
+%
+% The dispatch above classifies every entry of varargin by its type and
+% shape, which cannot by itself tell a list of grain pairs from the value
+% of some option that happens to be an n x 2 numeric array - and what it
+% mistakes it for depends on the map: on a two grain map any 2 x 2 numeric
+% matches the adjacency matrix, on a larger one it matches the pair list.
+% merge(grains,gB,'someOption',[5 10]) therefore used to merge grains 5 and
+% 10 and, before the fix above, to discard the boundaries as well.
+%
+% A value always follows the name of its option, an argument never does.
+% None of the callers in MTEX passes a pair list or an adjacency matrix
+% directly after a character option, so this costs nothing.
+
+tf = k == 1 || ~ischar(varargin_{k-1});
+
+end

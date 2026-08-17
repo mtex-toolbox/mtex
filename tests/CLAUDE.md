@@ -86,6 +86,7 @@ over budget, trim from outside these before trimming inside them.
 | `EBSD/gradient`, KAM | `core/check_gradient` |
 | `gridify` on real data | `slow/check_gridify` |
 | `calcGrains` | `core/check_calcGrainsCases` |
+| `grain2d/merge` argument dispatch | `core/check_grainMerge` |
 | grain boundary walk order | `core/check_boundaryChains` |
 | `chainOrder` mex vs MATLAB | `core/check_chainOrder` |
 | Voronoi / Delaunay backends | `core/check_jcvoronoi` |
