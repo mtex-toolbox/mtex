@@ -981,9 +981,10 @@ classdef import_wizard < matlab.apps.AppBase
       % Symmetry and Alignment are categorical so that MATLAB draws them
       % as dropdowns. Their category sets have to cover every value any
       % row could ever take, since an edit can only pick an existing
-      % category - hence the full point group list and the fixed setup
-      % list up front, plus 'None' / '-' for a notIndexed or orthogonal
-      % row that has nothing to report.
+      % category - hence the full point group list and the full setup
+      % list up front, plus 'None' / '-' for a notIndexed row, which has
+      % nothing to report, and '(custom)' for a frame no offered setup
+      % reproduces.
       pgCats = [{'None'}, {symmetry.pointGroups.Inter}];
       alCats = [{'-'}, {'(custom)'}, alignmentSetups(app)];
 
@@ -1002,8 +1003,7 @@ classdef import_wizard < matlab.apps.AppBase
         mineral = asChar(app, cs.mineral);
         if isa(cs,'symmetry')
           pg = asChar(app, cs.pointGroup);
-          abc = cs.abc;
-          abg = cs.abg / degree;
+          [abc, abg] = displayLattice(app, cs);
           al = closestSetup(app, cs);
         else
           mineral = 'NotIndexed';
@@ -1023,25 +1023,23 @@ classdef import_wizard < matlab.apps.AppBase
       [~,maxPhase] = max(numPhases);
       phaseTable.Plot(maxPhase) = true;
 
+      % assigning row by row keeps only the categories those rows happen
+      % to use - two of forty eight on a typical file - which left the
+      % dropdowns offering just the point groups already in the data
+      phaseTable.Symmetry  = setcats(phaseTable.Symmetry, pgCats);
+      phaseTable.Alignment = setcats(phaseTable.Alignment, alCats);
+
       app.PhaseTable.Data = phaseTable;
 
-      % mark editable columns in the header so users don't have to
-      % double-click every cell to find out what can be changed. This is
-      % not simply every ColumnEditable column: Plot (column 1) is a
-      % checkbox, self-evidently clickable, so it's excluded; Phase
-      % (column 2) carries the phase color and opens a color picker on a
-      % click (PhaseTableCellSelection) rather than through normal cell
-      % editing, so it is ColumnEditable=false but still needs the marker
+      % No pencil markers on the editable headers here: all but three of
+      % these columns are editable, so marking them says nothing - it is
+      % the handful that are read only (Pixels, %) that stand out.
       colNames = phaseTable.Properties.VariableNames;
       colNames{5}  = '%';   % 'Percent' is not a valid display header choice
       colNames{10} = char(945);
       colNames{11} = char(946);
       colNames{12} = char(947);
       colNames{13} = 'Align';
-      editableCols = setdiff(find(app.PhaseTable.ColumnEditable), 1);
-      editableCols = union(editableCols, 2);
-      colNames(editableCols) = cellfun(@(s) [s ' ' char(9998)], ...
-        colNames(editableCols), 'UniformOutput', false);
       app.PhaseTable.ColumnName = colNames;
 
       restylePhaseTable(app)
@@ -1077,9 +1075,10 @@ classdef import_wizard < matlab.apps.AppBase
           continue
         end
 
+        % Align (column 13) is never greyed - every lattice has at least
+        % six distinct frames to choose between
         free = latticeFreedom(app, cs.id);
         cols = [6+find(~free.len), 9+find(~free.ang)];
-        if ~free.align, cols = [cols, 13]; end %#ok<AGROW>
         if ~isempty(cols)
           addStyle(app.PhaseTable, fixed, ...
             'cell', [repmat(row,numel(cols),1), cols(:)])
@@ -1170,6 +1169,7 @@ classdef import_wizard < matlab.apps.AppBase
       % EBSD data into phases (EBSD/subsref copies all property arrays).
       % Pixels of unselected phases keep NaN colors and are not drawn.
       color = NaN(length(app.ebsd), 3);
+      noKey = {};
       for phaseId = enabledPhaseIds(:)'
         % skip not indexed "phases" - they carry no orientations
         if ~isa(app.ebsd.CSList(phaseId), 'symmetry'), continue; end
@@ -1178,13 +1178,24 @@ classdef import_wizard < matlab.apps.AppBase
         % one precomputed color key per phase - only the direction differs
         % between the IPF tabs and switching it costs nothing
         ipfKey = ipfKeyForPhase(app, phaseId);
+        if isempty(ipfKey)
+          % no color key exists for this crystal frame - say so rather
+          % than draw the phase in a color that means nothing
+          noKey{end+1} = asChar(app, app.ebsd.CSList(phaseId).mineral); %#ok<AGROW>
+          continue
+        end
         ipfKey.ipfDirection = direction;
         ori = orientation(app.ebsd.rotations(mask), app.ebsd.CSList(phaseId));
         color(mask,:) = ipfKey.orientation2color(ori);
       end
 
       if all(isnan(color(:)))
-        title(ax, 'No phase selected'); return
+        if isempty(noKey)
+          title(ax, 'No phase selected')
+        else
+          title(ax, ['No IPF color key for ' strjoin(noKey, ', ')])
+        end
+        return
       end
 
       plot(app.ebsd, color, 'parent', ax)
@@ -1309,18 +1320,35 @@ classdef import_wizard < matlab.apps.AppBase
     end
 
     function key = ipfKeyForPhase(app, phaseId)
-      % lazily create and precompute one ipfColorKey per phase. The
-      % expensive precomputation depends only on the crystal symmetry, so
-      % the key is shared by the IPF X/Y/Z tabs - they merely set their
+      % lazily create and precompute one ipfColorKey per phase, or [] if
+      % MTEX cannot build one for that crystal frame. The expensive
+      % precomputation depends only on the crystal symmetry, so the key
+      % is shared by the IPF X/Y/Z tabs - they merely set their
       % ipfDirection before use (ipfColorKey is a handle
       % class, so mutating the direction on the cached key is fine).
-      if numel(app.IPFKeys) < phaseId || isempty(app.IPFKeys{phaseId})
-        key = ipfColorKey(app.ebsd.CSList(phaseId));
-        key.precompute;
-        app.IPFKeys{phaseId} = key;
-      else
+      %
+      % Not every valid crystal symmetry has a color key:
+      % HSVDirectionKey/updatesR picks bounding normals of the
+      % fundamental sector out at fixed positions (sR.N(2), sR.N(2:3)),
+      % and for six point groups - 112/m, 222, -3, -3m1, 312, -31m -
+      % those positions do not exist once Z is aligned with a, so it
+      % errors with "Index exceeds the number of array elements". The
+      % symmetry itself is perfectly usable, so this must not take the
+      % app down with it: the failure is cached as false and the IPF
+      % tabs simply leave that phase uncolored.
+      if numel(app.IPFKeys) >= phaseId && ~isempty(app.IPFKeys{phaseId})
         key = app.IPFKeys{phaseId};
+      else
+        try
+          key = ipfColorKey(app.ebsd.CSList(phaseId));
+          key.precompute;
+        catch
+          key = false;
+        end
+        app.IPFKeys{phaseId} = key;
       end
+
+      if isequal(key, false), key = []; end
     end
 
     function counts = phaseCounts(app)
@@ -1704,13 +1732,11 @@ classdef import_wizard < matlab.apps.AppBase
         [data.alpha(row), data.beta(row), data.gamma(row)], driver);
 
       % --- the alignment ------------------------------------------------
-      if ~free.align
-        al = {};        % orthogonal axes - all setups describe one frame
-      elseif isSetup
+      if isSetup
         al = strsplit(alStr, ', ');
       else
-        % a frame no standard setup reproduces; keep it rather than let
-        % an edit of an unrelated cell silently reset it to the default
+        % a frame no offered setup reproduces; keep it rather than let an
+        % edit of an unrelated cell silently reset it to the default
         al = alignment(cs);
       end
 
@@ -1761,8 +1787,7 @@ classdef import_wizard < matlab.apps.AppBase
       cs = app.ebsd.CSList(row);
       if isa(cs, 'crystalSymmetry')
         pg = asChar(app, cs.pointGroup);
-        abc = cs.abc;
-        abg = cs.abg / degree;
+        [abc, abg] = displayLattice(app, cs);
         al = closestSetup(app, cs);
       else
         pg = 'None';
@@ -1788,12 +1813,40 @@ classdef import_wizard < matlab.apps.AppBase
     end
 
     function list = alignmentSetups(~)
-      % the alignments the Align dropdown offers - the four the
-      % crystalSymmetry help lists as options, which is every setup that
-      % gets used in practice. Anything more exotic (X||c, Y||b*, a
-      % rotAxes frame) still imports and is reported as '(custom)'; it is
-      % just not something the table can be asked for.
-      list = {'X||a*, Z||c', 'X||a, Z||c*', 'X||b*, Z||c', 'X||b, Z||c*'};
+      % every alignment the Align dropdown offers: X on a direct crystal
+      % axis and Z on a reciprocal one, or the other way round, always
+      % naming two different letters.
+      %
+      % These twelve were measured rather than guessed. They are exactly
+      % the pairs of the 36 possible that construct on *every* lattice -
+      % so the dropdown never offers a row a choice that would fail -
+      % and between them they already reach every distinct frame any
+      % lattice has: twelve for triclinic, monoclinic, trigonal and
+      % hexagonal, six for the orthogonal ones, where a and a* coincide
+      % and the pairs collapse onto each other. Pairs naming two direct
+      % axes (X||a, Z||c) add nothing: they duplicate a frame this list
+      % already contains wherever they are legal at all.
+      %
+      % Naming Y is never needed - fixing X and Z leaves Y to follow.
+      %
+      % The two setups in practically every data set come first so they
+      % are at the top of the dropdown, and so that closestSetup reports
+      % them in preference on an orthogonal lattice, where several
+      % entries describe the one frame.
+
+      list = {'X||a*, Z||c', ...   % the MTEX default
+              'X||a, Z||c*'};      % EDAX / TSL, and the usual hexagonal setting
+
+      direct = {'a','b','c'};
+      recip  = {'a*','b*','c*'};
+      for i = 1:3
+        for j = 1:3
+          if i == j, continue, end
+          list{end+1} = ['X||' direct{i} ', Z||' recip{j}]; %#ok<AGROW>
+          list{end+1} = ['X||' recip{i} ', Z||' direct{j}]; %#ok<AGROW>
+        end
+      end
+      list = unique(list, 'stable');
     end
 
     function name = closestSetup(app, cs)
@@ -1803,9 +1856,6 @@ classdef import_wizard < matlab.apps.AppBase
       % crystalSymmetry/alignment: for a hexagonal lattice c and c*
       % coincide, so alignment() reports Z||c whichever setup was asked
       % for, and a string comparison would match nothing.
-
-      free = latticeFreedom(app, cs.id);
-      if ~free.align, name = '-'; return, end
 
       [abc, abg] = snapLattice(app, cs.id, cs.abc, cs.abg / degree);
 
@@ -1821,6 +1871,25 @@ classdef import_wizard < matlab.apps.AppBase
         end
       end
       name = '(custom)';
+    end
+
+    function [abc, abg] = displayLattice(app, cs)
+      % the lattice parameters of a phase as the table should show them,
+      % angles in degree
+      %
+      % Neither is read straight off the crystalSymmetry. cs.abc and
+      % cs.abg are recovered from the basis by norm() and acos(), so a
+      % hexagonal gamma comes back as 120.00000000000001 and b as
+      % 3.20889999999999 against an a of 3.2089. uitable then prints the
+      % whole column with decimals - the reported "alpha and beta show as
+      % 90 but gamma as 120.000" - and, worse, a and b no longer look
+      % equal. Snapping onto what the lattice forces and rounding off the
+      % arccos noise makes the table show the numbers the lattice
+      % actually has.
+
+      [abc, abg] = snapLattice(app, cs.id, cs.abc, cs.abg / degree);
+      abc = round(abc, 8);
+      abg = round(abg, 8);
     end
 
     function [abc, abg] = snapLattice(app, id, abc, abg, driver)
@@ -1869,9 +1938,10 @@ classdef import_wizard < matlab.apps.AppBase
         free.ang(floor(double(id)/3)) = true;
       end
 
-      % the alignment only picks between genuinely different frames where
-      % the crystal axes are not mutually orthogonal
-      free.align = isTri || isMono || lat.isTriHex;
+      % note there is deliberately no free.align: every lattice has at
+      % least six distinct frames among the offered setups (a and a*
+      % coincide on an orthogonal one, which halves twelve to six, but
+      % does not reduce it to one), so the Align cell is never fixed
       free.lattice = lat;
     end
 
