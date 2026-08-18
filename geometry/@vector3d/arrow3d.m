@@ -85,8 +85,8 @@ end
 % set caxis back
 clim(ax,cax);
 
-% set axis to 3d
-if ~ishold, axis(ax,'equal');end
+% set axis to 3d - ask the axis we draw into, not whatever gca happens to be
+if ~ishold(ax), axis(ax,'equal');end
 
 % increase box limits if required
 %bounds = [-1 1] * max(max(norm(vec)));

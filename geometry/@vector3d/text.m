@@ -18,8 +18,8 @@ function h = text(v,varargin)
 %
 % See also
 
-if check_option(varargin,'add2all') 
-  
+if check_option(varargin,'add2all')
+
   ax = get_option(varargin,'parent');
   if isempty(ax)
     mtexFig = gcm;
@@ -31,21 +31,36 @@ if check_option(varargin,'add2all')
   end
   varargin = delete_option(varargin,'parent',1);
   varargin = delete_option(varargin,'add2all');
-  
+
+  h = [];
   for i = 1:length(ax)
-    if strcmpi(get(ax,'PlotBoxAspectRatioMode'),'manual') % check for 3d plot
-      hG = holdOn(ax(i)); %#ok<NASGU>
-      arrow3d(v,varargin{:},'parent',ax(i));
-      text3(v,varargin{:},'parent',ax(i));
-      clear hG
-    else
-      text(v,varargin{:},'parent',ax(i));
-    end
+    h = [h, text(v,varargin{:},'parent',ax(i))]; %#ok<AGROW>
   end
-  
+
+  if nargout == 0, clear h; end
   return
 end
 
+if check_option(varargin,'parent')
+  ax = get_option(varargin,'parent');
+else
+  ax = gca;
+end
+
+% a three dimensional spherical plot, e.g. plot(...,'3d') - it does not go
+% through a sphericalPlot at all, and a flat label would end up pinned to
+% the z = 0 plane, i.e. inside the sphere. Place the label in space
+% instead, with an arrow pointing along the direction it names.
+if is3dPlot(ax)
+
+  hG = holdOn(ax); %#ok<NASGU>
+  h = [reshape(arrow3d(v,varargin{:},'parent',ax),1,[]),...
+    reshape(text3(v,varargin{:},'parent',ax),1,[])];
+  clear hG
+
+  if nargout == 0, clear h; end
+  return
+end
 
 % initialize spherical plot
 sP = newSphericalPlot(v,varargin{:},'hold');
@@ -147,6 +162,22 @@ function tf = isMathMode(s)
 
 s = strtrim(char(s));
 tf = numel(s) >= 2 && s(1) == '$' && s(end) == '$';
+
+end
+
+% -------------------------------------------------------------------------
+function tf = is3dPlot(ax)
+% true if ax holds a three dimensional spherical plot
+%
+% vector3d/plot3d, vector3d/scatter3d and plotEmptySphere - the three ways
+% such an axis comes into being - all end with axis(ax,'equal','vis3d'),
+% which is what pins the plot box aspect ratio; a two dimensional spherical
+% plot only ever pins the data aspect ratio. An EBSD map pins it as well,
+% but it announces itself by its appdata, and so does a sphericalPlot.
+
+tf = isscalar(ax) && isgraphics(ax,'axes') && ...
+  strcmpi(ax.PlotBoxAspectRatioMode,'manual') && ...
+  ~isappdata(ax,'mapPlot') && ~isappdata(ax,'sphericalPlot');
 
 end
 

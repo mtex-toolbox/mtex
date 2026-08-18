@@ -97,13 +97,18 @@ mtexColorMap white2black
 %% Three-dimensional Plots
 %
 % MTEX also offers a three-dimensional plot of pole figures which even
-% might be rotated freely in space
+% might be rotated freely in space. Just as on a projected plot the
+% option |'grid'| lays a spherical grid over the data, and |'grid_res'|
+% controls its spacing.
 
 how2plot = plottingConvention;
-how2plot.north = zvector;
-how2plot.outOfScreen = vector3d(-2,-1,0);
+how2plot.east = vector3d(9,3,3);
+how2plot.outOfScreen = vector3d(6,10,9);
 
 close all
-plotPDF(odf,Miller(1,1,0,odf.CS),'3d',how2plot)
+plotPDF(odf,Miller(1,1,0,odf.CS),'3d','grid','grid_res',10*degree,'noTitle')
 how2plot.setView
-mtexColorMap parula
+mtexColorMap LaboTeX
+
+%%
+

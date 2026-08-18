@@ -200,8 +200,20 @@ classdef plottingConvention
 
         guard = plottingConvention.beginCameraUpdate(ax); %#ok<NASGU>
 
+        % view() reads its argument in the plot box, not in the data: on an
+        % axis with a reversed direction it negates that component before
+        % placing the camera. outOfScreen is a direction in the data, so
+        % undo that here - otherwise the view comes out mirrored on the 3d
+        % spherical plots, the only axes in MTEX that reverse XDir and YDir
+        % (@vector3d/plot3d, scatter3d, plotEmptySphere). Map axes leave
+        % all three directions normal, so nothing changes for them. With
+        % the flip undone the camera also lands where the branch above puts
+        % it, and where getView reads it back from.
+        n = pC.outOfScreen.xyz .* [1-2*strcmp(ax.XDir,'reverse'),...
+          1-2*strcmp(ax.YDir,'reverse'), 1-2*strcmp(ax.ZDir,'reverse')];
+
         ax.CameraUpVector = pC.north.xyz;
-        view(ax,pC.outOfScreen.xyz);
+        view(ax,n);
         ax.CameraUpVector = pC.north.xyz;
         ax.CameraViewAngleMode = 'auto';
       end

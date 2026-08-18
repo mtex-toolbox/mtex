@@ -20,10 +20,17 @@ end
 [hG,washeld] = holdOn(ax); %#ok<ASGLU>
 
 % plot a inner sphere that is not translucent
-if ~washeld || isempty(ax.Children)
+isNew = ~washeld || isempty(ax.Children);
+if isNew
   cla(ax)
-  plotEmptySphere(ax);
+  plotEmptySphere(ax,varargin{:});
 end
+
+% a Miller index marks the plot as living in crystal coordinates, where the
+% X / Y / Z of the specimen would be meaningless - Miller/scatter tells the
+% two dimensional plots the very same way, but the three dimensional ones
+% never go through it. Note this before v is normalized below.
+if isa(v,'Miller'), csArg = {v.CS}; else, csArg = {}; end
 
 % normalize vectors
 v = reshape(v,[],1);
@@ -68,8 +75,15 @@ axis(ax,'equal','vis3d','off');
 set(ax,'XDir','rev','YDir','rev',...
   'XLim',[-1.02,1.02],'YLim',[-1.02,1.02],'ZLim',[-1.02,1.02]);
 
-pC = getClass(varargin,'plottingConvention',plottingConvention.default);
+% fromOption rather than getClass, so that the name value form
+% plot(v,'3d','how2plot','y↑→x') is understood here as everywhere else
+pC = plottingConvention.fromOption(varargin,plottingConvention.default);
 pC.setView(ax);
+
+% annotate the axes of the reference frame the way every two dimensional
+% spherical plot does - here as arrows in space, since there is no
+% sphericalPlot on a three dimensional axis to do it for us
+if isNew, annotateFrame(ax,varargin{:},csArg{:}); end
 
 if nargout == 0, clear h;end
 

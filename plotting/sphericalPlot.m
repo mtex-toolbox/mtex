@@ -364,31 +364,12 @@ classdef sphericalPlot < handle
 
     function plotAxesLabels(sP,CS,varargin)
       % annotate the directions of the reference frame the way pole figures
-      % do - by default the axes names of the session's default frame,
-      % e.g. X1 / Y1 / Z1 or RD / TD / ND; the pfAnnotations preference
-      % lets the user replace them or switch them off entirely
-      %
-      % A crystal symmetry in the argument list marks the plot as living in
-      % crystal coordinates, there X / Y / Z would be meaningless and
-      % plotLabels writes the Miller indices of the sector vertices instead
+      % do - see annotateFrame, which the three dimensional plots that
+      % never build a sphericalPlot share with us
 
-      if check_option(varargin,'noLabel') || ~isempty(CS), return; end
+      if ~isempty(CS), return; end
 
-      fr = getClass(varargin,'referenceFrame');
-      if isa(fr,'crystalFrame')
-        % a plain function living in a crystal frame - the X / Y / Z of
-        % the specimen would be meaningless, the frame annotates its own
-        % axes a, b, c instead
-        h = fr.pfAnnotations('parent',sP.ax,'doNotDraw');
-      else
-        pfAnnotations = getMTEXpref('pfAnnotations');
-        h = pfAnnotations('parent',sP.ax,'doNotDraw');
-      end
-
-      % the preference is user defined, it may return anything
-      if ~isempty(h) && all(isgraphics(h(:)))
-        sP.axesLabels = [sP.axesLabels(:); h(:)];
-      end
+      sP.axesLabels = [sP.axesLabels(:); annotateFrame(sP.ax,varargin{:})];
 
     end
   end

@@ -67,8 +67,13 @@ classdef directionColorKey < handle
         defaultPlotCMD = 'pcolor';
       end
       
-      [h,caxes] = plot(v,d,defaultPlotCMD,varargin{:});
-            
+      % the three dimensional key names its axes itself, a few lines below,
+      % and in gray rather than black - so keep the generic annotation of
+      % the reference frame out of it
+      if check_option(varargin,'3d'), ownLabels = {'noLabel'}; else, ownLabels = {}; end
+
+      [h,caxes] = plot(v,d,defaultPlotCMD,varargin{:},ownLabels{:});
+
       setAllAppdata(caxes,'CS',dM.sym);
             
       % annotate crystal directions
