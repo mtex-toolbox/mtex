@@ -368,26 +368,52 @@ classdef import_wizard < matlab.apps.AppBase
       % middle), CoordinatePanel (fixed, right - added by
       % createCoordinateControls); row 2: TabGroup spanning all 3 columns
       app.RightLayout = uigridlayout(app.RightPanel, ...
-        'ColumnWidth', {665,'1x',300}, ...
+        'ColumnWidth', {817,'1x',300}, ...
         'RowHeight', {230, '1x'}, ...
         'RowSpacing', 8, ...
         'ColumnSpacing', 8, ...
         'Padding', [0 0 0 0]);
 
+      % The whole crystal symmetry of a phase is edited in this table:
+      % Symmetry and Alignment are categorical columns, so MATLAB renders
+      % them as dropdowns, and the lattice parameters are plain numeric
+      % cells. Everything an edit needs to be consistent (b following a
+      % on a tetragonal lattice, ...) is enforced in PhaseTableCellEdit,
+      % which rebuilds the crystalSymmetry from the whole row.
       app.PhaseTable = uitable(app.RightLayout, ...
-        'ColumnEditable', [true false true false false false false false false false], ...
+        'ColumnEditable', [true false true false false true ...
+                           true true true true true true true], ...
         'RowName', {}, ...
         'CellEditCallback', createCallbackFcn(app, @PhaseTableCellEdit, true), ...
         'CellSelectionCallback', createCallbackFcn(app, @PhaseTableCellSelection, true), ...
         'FontSize', app.FontSize - 1);
       app.PhaseTable.Layout.Row = 1;
       app.PhaseTable.Layout.Column = 1;
-      % columns: Plot, Phase, Mineral, Pixels, %, Symmetry, a, b, c, Color -
-      % Plot/Color only ever hold a checkbox/swatch and Phase a small
-      % integer, so they need far less room than the default equal split;
-      % Mineral gets extra room since it carries the longest text; Color
-      % gets a little extra to fit its pencil marker (see fillPhaseTable)
-      app.PhaseTable.ColumnWidth = {45, 55, 135, 70, 55, 75, 55, 55, 55, 60};
+      % columns: Plot, Phase, Mineral, Pixels, %, Symmetry, a, b, c,
+      % alpha, beta, gamma, Alignment - Plot only ever holds a checkbox
+      % and Phase a small integer, so they need far less room than the
+      % default equal split; Mineral gets extra room since it carries the
+      % longest text, Alignment enough for "X||a*, Z||c". There is no
+      % separate Color column: the phase color is the background of the
+      % Phase cell, which opens the color picker on a click (see
+      % PhaseTableCellSelection) - a swatch that also says which phase it
+      % belongs to, for one column instead of two.
+      % Widths are set so nothing truncates on a real multi-phase file -
+      % eclogite.ctf is the one to check against, its triclinic phase
+      % being the only thing that puts real numbers in all six lattice
+      % columns at once.
+      %
+      % The lattice columns are sized to their real content rather than
+      % to a worst case: two decimals (see fillPhaseTable), an axis
+      % length that stays below 100 A in any EBSD phase, so "99.99", and
+      % an angle below 180 degree, so "179.99". A unit cell of 100 A or
+      % more would clip its axis lengths - not something an EBSD data set
+      % carries, and worth the space it saves the rest of the table.
+      % Pixels holds nine digits - a 999 million point scan - where eight
+      % was the old cut. Large counts stay plain integers rather than
+      % turning into 1.0000e+07, so the width is all that limits them.
+      app.PhaseTable.ColumnWidth = ...
+        {42, 48, 125, 70, 52, 78, 48, 48, 48, 52, 52, 52, 92};
 
       % browser for the full ebsd.opt structure - selecting an image-shaped
       % field shows it in the Images tab (see OptTreeSelectionChanged)
@@ -962,18 +988,42 @@ classdef import_wizard < matlab.apps.AppBase
     end
 
     function fillPhaseTable(app)
-      removeStyle(app.PhaseTable)
-      % right-align every column except Plot (column 1, a checkbox) and
-      % Phase (column 2, a small id, centered instead)
-      addStyle(app.PhaseTable, uistyle('HorizontalAlignment', 'center'), 'column', 2)
-      addStyle(app.PhaseTable, uistyle('HorizontalAlignment', 'right'), 'column', 3:10)
 
       csList = app.ebsd.CSList;
       numPhases = phaseCounts(app);
 
-      phaseTable = table('size',[0 10],...
-        'VariableTypes',{'logical','uint8','string','double','double','string','double','double','double','string'},...
-        'VariableNames',{'Plot'; 'Phase'; 'Mineral'; 'Pixels'; 'Percent'; 'Symmetry'; 'a'; 'b'; 'c'; 'Color'});
+      % Symmetry and Alignment are categorical so that MATLAB draws them
+      % as dropdowns. Their category sets have to cover every value any
+      % row could ever take, since an edit can only pick an existing
+      % category - hence the full point group list and the full setup
+      % list up front, plus 'None' / '-' for a notIndexed row, which has
+      % nothing to report, and '(custom)' for a frame no offered setup
+      % reproduces.
+      pgCats = [{'None'}, {symmetry.pointGroups.Inter}];
+      alCats = [{'-'}, {'(custom)'}, alignmentSetups(app)];
+
+      % Percent and the six lattice parameters are text, not numbers, and
+      % that is the only way to print them to two decimals: uitable
+      % formats a numeric column with MATLAB's short format - four
+      % decimals for anything that is not an integer - and ColumnFormat,
+      % which could ask for something else, is ignored outright when Data
+      % is a table. Rounding the stored numbers does not help either,
+      % since 18.32 still prints as 18.3200.
+      %
+      % Costing precision is not a concern: rebuildPhaseSymmetry takes
+      % the lattice from the crystalSymmetry and only the one cell the
+      % user typed in from the table, so what is shown never feeds back.
+      % Phase is int32, not uint8: it shows the phase numbers the file
+      % itself uses, and those are not always non-negative. An .ang
+      % numbers its indexed phases from 0 and leaves -1 for the not
+      % indexed one - ferrite.ang has phaseMap [-1 0] - which uint8
+      % saturated to [0 0], printing phase 0 twice.
+      phaseTable = table('size',[0 13],...
+        'VariableTypes',{'logical','int32','string','double','string', ...
+          'categorical','string','string','string','string','string', ...
+          'string','categorical'},...
+        'VariableNames',{'Plot'; 'Phase'; 'Mineral'; 'Pixels'; 'Percent'; ...
+          'Symmetry'; 'a'; 'b'; 'c'; 'alpha'; 'beta'; 'gamma'; 'Alignment'});
 
       for pId = 1:length(numPhases)
 
@@ -982,19 +1032,24 @@ classdef import_wizard < matlab.apps.AppBase
         if isnan(app.Color{pId}), app.Color{pId} = [1 1 1]; end
         mineral = asChar(app, cs.mineral);
         if isa(cs,'symmetry')
-          symmetry = asChar(app, cs.pointGroup);
-          a = norm(cs.aAxis);
-          b = norm(cs.bAxis);
-          c = norm(cs.cAxis);
+          pg = asChar(app, cs.pointGroup);
+          [abc, abg] = displayLattice(app, cs);
+          al = closestSetup(app, cs);
         else
+          % a notIndexed phase has no lattice at all - leave the cells
+          % blank rather than state a meaningless 0.00
           mineral = 'NotIndexed';
-          symmetry = 'None';
-          a = 0; b = 0; c = 0;
+          pg = 'None';
+          abc = [NaN NaN NaN]; abg = [NaN NaN NaN];
+          al = '-';
         end
 
         phaseTable(pId, :) = {false, app.ebsd.phaseMap(pId), mineral, ...
-           numPhases(pId), 100*numPhases(pId)/sum(numPhases), ...
-           symmetry, a, b, c, ''};
+           numPhases(pId), fmt2(app, 100*numPhases(pId)/sum(numPhases)), ...
+           categorical({pg}, pgCats), ...
+           fmt2(app, abc(1)), fmt2(app, abc(2)), fmt2(app, abc(3)), ...
+           fmt2(app, abg(1)), fmt2(app, abg(2)), fmt2(app, abg(3)), ...
+           categorical({al}, alCats)};
       end
 
       % pre select indexed phase with the most pixels
@@ -1002,29 +1057,71 @@ classdef import_wizard < matlab.apps.AppBase
       [~,maxPhase] = max(numPhases);
       phaseTable.Plot(maxPhase) = true;
 
+      % assigning row by row keeps only the categories those rows happen
+      % to use - two of forty eight on a typical file - which left the
+      % dropdowns offering just the point groups already in the data
+      phaseTable.Symmetry  = setcats(phaseTable.Symmetry, pgCats);
+      phaseTable.Alignment = setcats(phaseTable.Alignment, alCats);
+
       app.PhaseTable.Data = phaseTable;
 
-      % mark editable columns in the header so users don't have to
-      % double-click every cell to find out what can be changed. This is
-      % not simply every ColumnEditable column: Plot (column 1) is a
-      % checkbox, self-evidently clickable, so it's excluded; Color
-      % (column 10) is edited by clicking the swatch to open a color
-      % picker (PhaseTableCellSelection), not through normal cell
-      % editing, so it's ColumnEditable=false but still needs the marker
+      % No pencil markers on the editable headers here: all but three of
+      % these columns are editable, so marking them says nothing - it is
+      % the handful that are read only (Pixels, %) that stand out.
       colNames = phaseTable.Properties.VariableNames;
-      colNames{5} = '%'; % 'Percent' is not a valid display header choice
-      editableCols = setdiff(find(app.PhaseTable.ColumnEditable), 1);
-      editableCols = union(editableCols, 10);
-      colNames(editableCols) = cellfun(@(s) [s ' ' char(9998)], ...
-        colNames(editableCols), 'UniformOutput', false);
+      colNames{5}  = '%';   % 'Percent' is not a valid display header choice
+      colNames{10} = char(945);
+      colNames{11} = char(946);
+      colNames{12} = char(947);
+      colNames{13} = 'Align';
       app.PhaseTable.ColumnName = colNames;
 
-      % colorize color column (now column 10)
-      for row = 1:length(csList)
-        addStyle(app.PhaseTable, ...
-          uistyle('BackgroundColor', app.Color{row}), 'cell', [row 10])
-      end
+      restylePhaseTable(app)
+    end
 
+    function restylePhaseTable(app)
+      % all cell styling in one place - it has to be reapplied whenever a
+      % lattice changes, because which cells are fixed changes with it
+
+      removeStyle(app.PhaseTable)
+      % Right-align every column, headers included. A column style is the
+      % only way to reach a header label at all: addStyle has no header
+      % target (only table/row/column/cell) and a uifigure uitable prints
+      % HTML in ColumnName literally rather than rendering it. The header
+      % follows its column's HorizontalAlignment, so aligning the cells
+      % aligns the labels with them.
+      addStyle(app.PhaseTable, uistyle('HorizontalAlignment', 'right'), ...
+        'column', 1:width(app.PhaseTable.Data))
+
+      % uitable can only enable or disable a whole column, so a cell the
+      % lattice fixes is greyed instead - typing in one anyway is not an
+      % error, PhaseTableCellEdit just snaps it back onto the value the
+      % lattice forces (see rebuildPhaseSymmetry)
+      fixed = uistyle('BackgroundColor', [0.94 0.94 0.94], ...
+        'FontColor', [0.45 0.45 0.45]);
+
+      for row = 1:numel(app.ebsd.CSList)
+        % the Phase cell is the phase color swatch, so the id printed on
+        % it needs a font that stays readable on a dark one
+        rgb = app.Color{row};
+        addStyle(app.PhaseTable, uistyle('BackgroundColor', rgb, ...
+          'FontColor', readableOn(app, rgb)), 'cell', [row 2])
+
+        cs = app.ebsd.CSList(row);
+        if ~isa(cs,'crystalSymmetry')
+          addStyle(app.PhaseTable, fixed, 'cell', [repmat(row,8,1), (6:13).'])
+          continue
+        end
+
+        % Align (column 13) is never greyed - every lattice has at least
+        % six distinct frames to choose between
+        free = latticeFreedom(app, cs.id);
+        cols = [6+find(~free.len), 9+find(~free.ang)];
+        if ~isempty(cols)
+          addStyle(app.PhaseTable, fixed, ...
+            'cell', [repmat(row,numel(cols),1), cols(:)])
+        end
+      end
     end
 
     function updatePlot(app, force)
@@ -1110,6 +1207,29 @@ classdef import_wizard < matlab.apps.AppBase
       % EBSD data into phases (EBSD/subsref copies all property arrays).
       % Pixels of unselected phases keep NaN colors and are not drawn.
       color = NaN(length(app.ebsd), 3);
+
+      % Not indexed regions carry no orientation, so an IPF map has
+      % nothing to color them with and normally leaves them undrawn. When
+      % one has been given a color of its own though, use it as the
+      % background here too - that is the whole point of setting it. Only
+      % a color that was actually chosen counts: white is what an unset
+      % phase color falls back to (see fillPhaseTable).
+      %
+      % Deliberately independent of the Plot checkboxes, which select
+      % which *indexed* phase is colored by orientation - a not indexed
+      % phase is never among them, so keying this off them would mean the
+      % color never showed.
+      for phaseId = 1:numel(app.ebsd.CSList)
+        if isa(app.ebsd.CSList(phaseId), 'symmetry'), continue; end
+        rgb = app.Color{phaseId};
+        if numel(rgb) ~= 3 || any(isnan(rgb)) || isequal(rgb(:).', [1 1 1])
+          continue
+        end
+        mask = app.ebsd.phaseId == phaseId;
+        color(mask,:) = repmat(rgb(:).', nnz(mask), 1);
+      end
+
+      noKey = {};
       for phaseId = enabledPhaseIds(:)'
         % skip not indexed "phases" - they carry no orientations
         if ~isa(app.ebsd.CSList(phaseId), 'symmetry'), continue; end
@@ -1118,13 +1238,24 @@ classdef import_wizard < matlab.apps.AppBase
         % one precomputed color key per phase - only the direction differs
         % between the IPF tabs and switching it costs nothing
         ipfKey = ipfKeyForPhase(app, phaseId);
+        if isempty(ipfKey)
+          % no color key exists for this crystal frame - say so rather
+          % than draw the phase in a color that means nothing
+          noKey{end+1} = asChar(app, app.ebsd.CSList(phaseId).mineral); %#ok<AGROW>
+          continue
+        end
         ipfKey.ipfDirection = direction;
         ori = orientation(app.ebsd.rotations(mask), app.ebsd.CSList(phaseId));
         color(mask,:) = ipfKey.orientation2color(ori);
       end
 
       if all(isnan(color(:)))
-        title(ax, 'No phase selected'); return
+        if isempty(noKey)
+          title(ax, 'No phase selected')
+        else
+          title(ax, ['No IPF color key for ' strjoin(noKey, ', ')])
+        end
+        return
       end
 
       plot(app.ebsd, color, 'parent', ax)
@@ -1249,18 +1380,35 @@ classdef import_wizard < matlab.apps.AppBase
     end
 
     function key = ipfKeyForPhase(app, phaseId)
-      % lazily create and precompute one ipfColorKey per phase. The
-      % expensive precomputation depends only on the crystal symmetry, so
-      % the key is shared by the IPF X/Y/Z tabs - they merely set their
+      % lazily create and precompute one ipfColorKey per phase, or [] if
+      % MTEX cannot build one for that crystal frame. The expensive
+      % precomputation depends only on the crystal symmetry, so the key
+      % is shared by the IPF X/Y/Z tabs - they merely set their
       % ipfDirection before use (ipfColorKey is a handle
       % class, so mutating the direction on the cached key is fine).
-      if numel(app.IPFKeys) < phaseId || isempty(app.IPFKeys{phaseId})
-        key = ipfColorKey(app.ebsd.CSList(phaseId));
-        key.precompute;
-        app.IPFKeys{phaseId} = key;
-      else
+      %
+      % Not every valid crystal symmetry has a color key:
+      % HSVDirectionKey/updatesR picks bounding normals of the
+      % fundamental sector out at fixed positions (sR.N(2), sR.N(2:3)),
+      % and for six point groups - 112/m, 222, -3, -3m1, 312, -31m -
+      % those positions do not exist once Z is aligned with a, so it
+      % errors with "Index exceeds the number of array elements". The
+      % symmetry itself is perfectly usable, so this must not take the
+      % app down with it: the failure is cached as false and the IPF
+      % tabs simply leave that phase uncolored.
+      if numel(app.IPFKeys) >= phaseId && ~isempty(app.IPFKeys{phaseId})
         key = app.IPFKeys{phaseId};
+      else
+        try
+          key = ipfColorKey(app.ebsd.CSList(phaseId));
+          key.precompute;
+        catch
+          key = false;
+        end
+        app.IPFKeys{phaseId} = key;
       end
+
+      if isequal(key, false), key = []; end
     end
 
     function counts = phaseCounts(app)
@@ -1597,6 +1745,297 @@ classdef import_wizard < matlab.apps.AppBase
 
     end
 
+    function rebuildPhaseSymmetry(app, row, col)
+      % Rebuild the crystalSymmetry of one phase from its table row after
+      % an inline edit of the point group, a lattice parameter, an axis
+      % angle or the alignment.
+      %
+      % The row is read as a whole rather than the edited cell applied on
+      % its own, because a lattice ties its parameters together and
+      % crystalFrame/private/calcAxis asserts on an inconsistent set: a
+      % cubic phase must have a = b = c, a hexagonal one a = b and
+      % alpha = beta = 90, gamma = 120. uitable can only enable or
+      % disable a whole column, so those cells are merely greyed (see
+      % restylePhaseTable) and an edit that lands in one is snapped back
+      % onto what the lattice forces instead of being rejected.
+
+      cs = app.ebsd.CSList(row);
+      data = app.PhaseTable.Data;
+
+      % a notIndexed phase has no lattice - and turning one into an
+      % indexed phase (or back) is a different operation than editing a
+      % symmetry, so put the row back as it was
+      pg = char(data.Symmetry(row));
+      if ~isa(cs, 'crystalSymmetry') || strcmp(pg, 'None')
+        refreshPhaseRow(app, row); return
+      end
+
+      id = find(strcmp({symmetry.pointGroups.Inter}, pg), 1);
+      if isempty(id), refreshPhaseRow(app, row); return, end
+      free = latticeFreedom(app, id);
+
+      % '-' and '(custom)' are labels describing the current frame, not
+      % setups anybody can select
+      alStr = char(data.Alignment(row));
+      isSetup = any(strcmp(alStr, alignmentSetups(app)));
+      if col == 13 && ~isSetup, refreshPhaseRow(app, row); return, end
+
+      % --- snap whatever the (possibly new) lattice fixes ---------------
+      % The lattice comes from the crystalSymmetry, and only the single
+      % cell the user typed in comes from the table. Reading the whole
+      % row back instead would quietly round every parameter to the two
+      % decimals the table prints (see fillPhaseTable) on every unrelated
+      % edit - change the point group and the axis lengths would lose
+      % their last digits with it.
+      abc = cs.abc;
+      abg = cs.abg / degree;
+
+      driver = [];
+      if col >= 7 && col <= 12
+        typed = str2double(data{row, col});
+        if isnan(typed) || ~isreal(typed)
+          uialert(app.UIFigure, ...
+            sprintf('"%s" is not a number.', string(data{row, col})), ...
+            'Invalid lattice parameter')
+          refreshPhaseRow(app, row); return
+        end
+        if col <= 9
+          % a, and every length tied to it, take the value of the edited
+          % cell when that cell is one of them - so typing 4 into b on a
+          % cubic phase means a = b = c = 4, not "b rejected"
+          driver = col - 6;
+          abc(driver) = typed;
+        else
+          abg(col - 9) = typed;
+        end
+      end
+
+      [abc, abg] = snapLattice(app, id, abc, abg, driver);
+
+      % --- the alignment ------------------------------------------------
+      if isSetup
+        al = strsplit(alStr, ', ');
+      else
+        % a frame no offered setup reproduces; keep it rather than let an
+        % edit of an unrelated cell silently reset it to the default
+        al = alignment(cs);
+      end
+
+      try
+        newCS = crystalSymmetry('PointId', id, abc, abg * degree, ...
+          al{:}, 'mineral', asChar(app, data.Mineral(row)));
+      catch ME
+        uialert(app.UIFigure, ME.message, 'Invalid crystal symmetry')
+        refreshPhaseRow(app, row); return
+      end
+
+      % keep the phase color - it belongs to the phase, not to its
+      % lattice, and is edited through the Color swatch
+      if isnumeric(cs.color) && numel(cs.color) == 3 && ~any(isnan(cs.color))
+        newCS.color = cs.color;
+      end
+
+      installPhaseSymmetry(app, row, newCS)
+    end
+
+    function installPhaseSymmetry(app, row, cs)
+      % install an edited crystal symmetry and drop everything cached
+      % that described the old one
+
+      app.ebsd.CSList(row) = cs;
+
+      % the precomputed IPF color key and the cached pole figure ODF both
+      % carry the previous symmetry - the ODF cache is keyed by phase id
+      % alone, so it would happily be reused for the new lattice
+      if numel(app.IPFKeys) >= row, app.IPFKeys{row} = []; end
+      app.PFODF = [];
+      app.PFODFKey = "";
+      app.PFODFCorr = [];
+
+      refreshPhaseRow(app, row)
+      restylePhaseTable(app)   % a new lattice fixes a different set of cells
+
+      invalidateAllSigs(app)
+      updatePlot(app, true)
+    end
+
+    function refreshPhaseRow(app, row)
+      % write one row's symmetry cells back from the crystalSymmetry,
+      % which is what makes a rejected or snapped edit visibly revert.
+      % Only these cells - a full fillPhaseTable would reset the Plot
+      % selection back to the largest phase.
+
+      cs = app.ebsd.CSList(row);
+      if isa(cs, 'crystalSymmetry')
+        pg = asChar(app, cs.pointGroup);
+        [abc, abg] = displayLattice(app, cs);
+        al = closestSetup(app, cs);
+      else
+        pg = 'None';
+        abc = [NaN NaN NaN]; abg = [NaN NaN NaN];
+        al = '-';
+      end
+
+      app.PhaseTable.Data.Symmetry(row)  = pg;
+      app.PhaseTable.Data.a(row)         = fmt2(app, abc(1));
+      app.PhaseTable.Data.b(row)         = fmt2(app, abc(2));
+      app.PhaseTable.Data.c(row)         = fmt2(app, abc(3));
+      app.PhaseTable.Data.alpha(row)     = fmt2(app, abg(1));
+      app.PhaseTable.Data.beta(row)      = fmt2(app, abg(2));
+      app.PhaseTable.Data.gamma(row)     = fmt2(app, abg(3));
+      app.PhaseTable.Data.Alignment(row) = al;
+    end
+
+    function s = fmt2(~, value)
+      % a lattice parameter as the table prints it: two decimals, or
+      % blank where there is no value at all
+      if isempty(value) || isnan(value)
+        s = "";
+      else
+        s = string(sprintf('%.2f', value));
+      end
+    end
+
+    function rgb = readableOn(~, background)
+      % black or white, whichever stays legible on the given background
+      % (Rec. 709 luma, the usual threshold for this)
+      luma = [0.2126 0.7152 0.0722] * background(:);
+      rgb = repmat(double(luma < 0.55), 1, 3);
+    end
+
+    function list = alignmentSetups(~)
+      % every alignment the Align dropdown offers: X on a direct crystal
+      % axis and Z on a reciprocal one, or the other way round, always
+      % naming two different letters.
+      %
+      % These twelve were measured rather than guessed. They are exactly
+      % the pairs of the 36 possible that construct on *every* lattice -
+      % so the dropdown never offers a row a choice that would fail -
+      % and between them they already reach every distinct frame any
+      % lattice has: twelve for triclinic, monoclinic, trigonal and
+      % hexagonal, six for the orthogonal ones, where a and a* coincide
+      % and the pairs collapse onto each other. Pairs naming two direct
+      % axes (X||a, Z||c) add nothing: they duplicate a frame this list
+      % already contains wherever they are legal at all.
+      %
+      % Naming Y is never needed - fixing X and Z leaves Y to follow.
+      %
+      % The two setups in practically every data set come first so they
+      % are at the top of the dropdown, and so that closestSetup reports
+      % them in preference on an orthogonal lattice, where several
+      % entries describe the one frame.
+
+      list = {'X||a*, Z||c', ...   % the MTEX default
+              'X||a, Z||c*'};      % EDAX / TSL, and the usual hexagonal setting
+
+      direct = {'a','b','c'};
+      recip  = {'a*','b*','c*'};
+      for i = 1:3
+        for j = 1:3
+          if i == j, continue, end
+          list{end+1} = ['X||' direct{i} ', Z||' recip{j}]; %#ok<AGROW>
+          list{end+1} = ['X||' recip{i} ', Z||' direct{j}]; %#ok<AGROW>
+        end
+      end
+      list = unique(list, 'stable');
+    end
+
+    function name = closestSetup(app, cs)
+      % which of the offered setups reproduces this crystal frame
+      %
+      % Decided by rebuilding the frame rather than by reading
+      % crystalSymmetry/alignment: for a hexagonal lattice c and c*
+      % coincide, so alignment() reports Z||c whichever setup was asked
+      % for, and a string comparison would match nothing.
+
+      [abc, abg] = snapLattice(app, cs.id, cs.abc, cs.abg / degree);
+
+      setups = alignmentSetups(app);
+      for k = 1:numel(setups)
+        try
+          parts = strsplit(setups{k}, ', ');
+          ref = crystalSymmetry('PointId', cs.id, abc, abg * degree, parts{:});
+          if max(angle(cs.axes, ref.axes)) < 1e-4 * degree
+            name = setups{k}; return
+          end
+        catch %#ok<CTCH> a setup the lattice cannot express - try the next
+        end
+      end
+      name = '(custom)';
+    end
+
+    function [abc, abg] = displayLattice(app, cs)
+      % the lattice parameters of a phase as the table should show them,
+      % angles in degree
+      %
+      % Neither is read straight off the crystalSymmetry. cs.abc and
+      % cs.abg are recovered from the basis by norm() and acos(), so a
+      % hexagonal gamma comes back as 120.00000000000001 and b as
+      % 3.20889999999999 against an a of 3.2089. uitable then prints the
+      % whole column with decimals - the reported "alpha and beta show as
+      % 90 but gamma as 120.000" - and, worse, a and b no longer look
+      % equal. Snapping onto what the lattice forces and rounding off the
+      % arccos noise makes the table show the numbers the lattice
+      % actually has.
+
+      [abc, abg] = snapLattice(app, cs.id, cs.abc, cs.abg / degree);
+      abc = round(abc, 8);
+      abg = round(abg, 8);
+    end
+
+    function [abc, abg] = snapLattice(app, id, abc, abg, driver)
+      % force lattice parameters onto what a point group's lattice allows
+      %
+      % Exactness is the whole point: calcAxis checks a == b with ==, and
+      % lattice parameters read back out of a basis (cs.abc) only agree to
+      % about 15 digits, so feeding them straight back in trips "For
+      % hexagonal lattices a and b must be equal!". Angles are in degree.
+      %
+      % driver is the index of the length the user just typed; when it is
+      % one of the lengths tied to a, that is the one they all follow.
+
+      free = latticeFreedom(app, id);
+
+      tied = [true, ~free.len(2), ~free.len(3)];
+      if nargin < 5 || isempty(driver) || ~tied(driver), driver = 1; end
+      abc(tied) = abc(driver);
+
+      defAng = free.lattice.defaultAngles / degree;
+      abg(~free.ang) = defAng(~free.ang);
+    end
+
+    function free = latticeFreedom(~, id)
+      % which lattice parameters, angles and alignments a point group
+      % leaves free - the same rules crystalFrame/private/calcAxis
+      % asserts on, read out rather than discovered by trial and error
+
+      lat = symmetry.pointGroups(id).lattice;
+      isTri  = lat == latticeType.triclinic;
+      isMono = lat == latticeType.monoclinic;
+
+      % b is independent only where a and b are not tied together;
+      % c only where it is not tied to a as well
+      free.len = [true, ...
+        isTri || isMono || lat == latticeType.orthorhombic, ...
+        ~(lat == latticeType.cubic || lat == latticeType.icosahedral)];
+
+      % only a triclinic lattice leaves all three angles free; a
+      % monoclinic one leaves the angle about its symmetry axis - the
+      % very index calcAxis exempts from its 90 degree assertion
+      free.ang = false(1,3);
+      if isTri
+        free.ang(:) = true;
+      elseif isMono
+        free.ang(floor(double(id)/3)) = true;
+      end
+
+      % note there is deliberately no free.align: every lattice has at
+      % least six distinct frames among the offered setups (a and a*
+      % coincide on an orthogonal one, which halves twelve to six, but
+      % does not reduce it to one), so the Align cell is never fixed
+      free.lattice = lat;
+    end
+
     function width = leftPanelWidth(app)
       % Enough room for two coordinate columns plus padding. The labels
       % are the limiting elements, so scale the width with font size.
@@ -1790,11 +2229,18 @@ classdef import_wizard < matlab.apps.AppBase
           updateMineralName(app, row, event.NewData)
           invalidateAllSigs(app)
           updatePlot(app, true)
+
+        case {6, 7, 8, 9, 10, 11, 12, 13}
+          % point group, lattice parameters, axis angles and alignment
+          % all rebuild the same crystalSymmetry from the whole row
+          rebuildPhaseSymmetry(app, row, col)
       end
     end
 
     function PhaseTableCellSelection(app, event)
-      if isempty(event.Indices) || event.Indices(2) ~= 10
+      % the Phase cell doubles as the phase color swatch - clicking it
+      % opens the color picker
+      if isempty(event.Indices) || event.Indices(2) ~= 2
         return
       end
 
@@ -1806,7 +2252,8 @@ classdef import_wizard < matlab.apps.AppBase
       app.ebsd.CSList(row).color = newColor;
       app.Color{row} = newColor;
 
-      addStyle(app.PhaseTable, uistyle('BackgroundColor', newColor), 'cell', [row 10])
+      addStyle(app.PhaseTable, uistyle('BackgroundColor', newColor, ...
+        'FontColor', readableOn(app, newColor)), 'cell', [row 2])
       invalidateAllSigs(app)
       updatePlot(app, true)
     end
@@ -2063,6 +2510,9 @@ classdef import_wizard < matlab.apps.AppBase
   end
   methods (Access = public)
     function app = import_wizard
+
+      if getMTEXpref("generatingHelpMode"), return; end
+
       runningApp = getRunningApp(app);
 
       if isempty(runningApp)
