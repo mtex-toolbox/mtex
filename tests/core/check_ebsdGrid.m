@@ -17,6 +17,7 @@ function check_ebsdGrid
 
 checkTransform;
 checkUnitCellProperty;
+checkUnitCellHint;
 checkGridShapes;
 checkMultiColumnProps;
 checkLatticeBasisCanonical;
@@ -73,6 +74,91 @@ assert(abs(range(uCLine(:,1)) - d) < 1e-12 && abs(range(uCLine(:,2)) - d) < 1e-1
 
 assert(all(isfinite(line.unitCell.xyz),'all'), ...
   'check_ebsdGrid: the constructor stored a non finite unit cell for a single scan line');
+
+end
+
+% =========================================================================
+function checkUnitCellHint
+% a vendor's header step size may only override the measured spacing when
+% the two describe the same lattice
+%
+% Both regressions are silent and both came out of the h5Data collection.
+%
+% A hint was taken whenever the position based estimate happened to come
+% out as a square of side 1, on the theory that a size-1 cell means
+% calcUnitCell had nothing to work from. It does not: a spacing of exactly
+% 1 is an ordinary answer, and it is precisely what a file whose positions
+% are beam column/row indices produces. A Bruker map hit that - positions
+% in beam indices, header step in micrometre - and ended up with the two
+% in different units, claiming an extent of 1999 x 1331 um for a
+% 778 x 510 um scan. gridify then built a lattice 6.7 times too large,
+% 85% of it empty, taking 65 s.
+%
+% The other way round, the agreement test compared mean(norm(uC)), which
+% is a different quantity for a rectangle than for a hexagon: a vendor
+% states a rectangular step size whatever the lattice, so every hex grid
+% read a 22% "mismatch" out of pure convention, warned, and threw the
+% header step size away.
+
+d = 0.3;
+
+% 1. a hint that contradicts the measured spacing is rejected, loudly
+ebsd = makeMap(12,d);
+lastwarn('');
+hint = vector3d([1 1 -1 -1]*2*d, [-1 1 1 -1]*2*d, 0);   % 4x too coarse
+ebsd = ebsd.updateUnitCell([], 'hint', hint);
+[msg,id] = lastwarn;
+assert(strcmp(id,'MTEX:unitCellMismatch'), ...
+  'check_ebsdGrid: a unit cell hint contradicting the positions was taken silently (%s)', msg);
+assert(abs(2*max(ebsd.unitCell.x) - d) < 1e-9, ...
+  'check_ebsdGrid: the contradicting hint replaced the measured unit cell');
+
+% the same, with the measured spacing at exactly 1 - the case that was
+% mistaken for "calcUnitCell could not estimate anything"
+ebsd = makeMap(12,1);
+lastwarn('');
+hint = vector3d([1 1 -1 -1]*0.2, [-1 1 1 -1]*0.2, 0);
+ebsd = ebsd.updateUnitCell([], 'hint', hint);
+[~,id] = lastwarn;
+assert(strcmp(id,'MTEX:unitCellMismatch'), ...
+  'check_ebsdGrid: a hint was taken over a measured spacing of exactly 1');
+assert(abs(2*max(ebsd.unitCell.x) - 1) < 1e-9, ...
+  'check_ebsdGrid: unit cell 1 was treated as "no estimate" and replaced by the hint');
+
+% 2. a hint that agrees is taken, and an agreeing hint of a different cell
+% SHAPE is not - it must neither warn nor turn a hex grid into a square one
+ebsd = makeMap(12,d);
+lastwarn('');
+hint = vector3d([1 1 -1 -1]*d/2, [-1 1 1 -1]*d/2, 0);
+ebsd = ebsd.updateUnitCell([], 'hint', hint);
+assert(isempty(lastwarn), 'check_ebsdGrid: an agreeing unit cell hint warned');
+assert(length(ebsd.unitCell) == 4 && abs(2*max(ebsd.unitCell.x) - d) < 1e-9, ...
+  'check_ebsdGrid: an agreeing unit cell hint was not taken');
+
+ebsdHex = makeHexMap(10,d);
+assert(length(ebsdHex.unitCell) == 6, ...
+  'check_ebsdGrid: the hex fixture is not on a hex cell');
+lastwarn('');
+% the rectangle a vendor states for this hex grid: side = the step
+hint = vector3d([1 1 -1 -1]*d/2, [-1 1 1 -1]*d/2, 0);
+ebsdHex = ebsdHex.updateUnitCell([], 'hint', hint);
+assert(isempty(lastwarn), ...
+  'check_ebsdGrid: a rectangular hint of the right step warned on a hex grid');
+assert(length(ebsdHex.unitCell) == 6, ...
+  'check_ebsdGrid: a rectangular hint replaced a hexagonal unit cell');
+
+end
+
+% =========================================================================
+function ebsd = makeHexMap(sz,d)
+% a hex lattice of nearest neighbour distance d, as a flat list
+
+[J,I] = ndgrid(0:sz-1, 0:sz-1);
+x = (I(:) + 0.5*mod(J(:),2)) * d;
+y = J(:) * d * sqrt(3)/2;
+
+ebsd = EBSD(vector3d(x,y,zeros(numel(x),1)), rotation.rand(numel(x),1), ...
+  ones(numel(x),1), {crystalSymmetry('m-3m')}, struct());
 
 end
 
