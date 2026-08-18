@@ -40,7 +40,7 @@
 %
 %%
 % Within the class |@SO3Kernel|, kernel functions are represented by
-% their Chebyshev coefficients $(2n+1)\,\hat\psi_n$, which are stored in 
+% their Chebyshev coefficients $a_n=(2n+1)\,\hat\psi_n$, which are stored in 
 % the field |fun.A|. 
 % As an example lets define an |SO3Kernel| with
 % Chebyshev coefficients $a_0 = 1$, $a_1 = 0$, $a_2 = 3$ and $a_3 = 1$
