@@ -692,3 +692,178 @@
  -> LeftLayout row 2 (CurrentData's row) bumped 160px -> 210px; verified
     the table's actual rendered Position height matches 210px with all 7
     rows (File/Coordinates/Grid/Step Size/Vendor/File size/Created)
+
+**** round 5 ****
+
+41. [profiled, DONE] the window is created small and then maximizes
+    itself, and the constructor does not return until everything is
+    painted
+ -> createComponents set `Position = [100 100 1300 700]` and then
+    `WindowState = 'maximized'`. Measured: `WindowState` alone does not
+    resize a uifigure at all - it keeps whatever Position it was given
+    and merely reports itself as maximized. So the wizard actually came
+    up as a fixed 1300x700 window, wider than a 1024x768 screen, and
+    whatever the window manager then made of the maximize request is the
+    resize that was visible
+ -> DONE: the figure is constructed with `Position` = the primary
+    monitor (new `screenArea` helper - MonitorPositions row 1, not
+    ScreenSize, which spans every monitor of a multi head setup), before
+    it has a single child, so the layout tree is built once at the final
+    size. `WindowState = 'maximized'` stays, for a window manager that
+    does honour it
+ -> second finding on the same path: `setImportStatus` ends in an
+    unconditional `drawnow`, and its first caller is createFileBrowser,
+    i.e. it fires while the figure is still invisible and half built.
+    That flush has nothing to show and only pulls the renderer's
+    deferred work forward into the constructor - 0.28s of a 1.01s warm
+    construction. Now guarded on the figure being visible
+ -> third: `Visible = 'on'` only marks the figure for display; nothing
+    painted it until the next flush, which was the `focus(app.FileTree)`
+    at the very end of the constructor (0.88s of a 1.49s construction,
+    all of it that flush). A `drawnow` right after `Visible = 'on'` puts
+    the window on screen before the analysis UI is built: cold, the
+    window now appears after ~1.9s instead of after ~4.0s
+ -> verified: `app.UIFigure.Position` is the full screen rectangle,
+    WindowState 'maximized'
+
+42. [profiled, DONE] the wait from picking a file to seeing its IPF map
+ -> profiled through the app's public component callbacks
+    (FileTree.SelectionChangedFcn -> preview, DataSetList.ValueChangedFcn
+    -> import), no instrumentation in the app itself. Forsterite.ctf,
+    R2024b, cold session:
+    - preview (headerOnly load) 0.87s, import 5.48s
+    - inside the 5.48s: EBSD.load 1.04s, updatePlot 2.36s (of which
+      plotIPF 1.61s and 0.77s of plain `uiaxes` construction),
+      fillPhaseTable 0.36s, the TabGroup.SelectedTab switch ~0.29s,
+      populateMapTabs 0.19s
+ -> the static suspicion going in was wrong, and worth recording: round
+    29 measured 0.88s per `uiaxes` and left the per-property map tabs
+    eager on the argument that they are not startup cost. Remeasured, a
+    uiaxes is 0.19s cold and 0.03s warm, so those six tabs were 0.19s of
+    the import, not 5s. The 0.88s figure does not hold any more
+ -> what the numbers actually say: most of a first import is one-time
+    cost, paid because the wizard has never plotted anything yet. The
+    same import in an already warm session costs 2.9s against 5.5s;
+    `mapPlot` is 0.36s on its first call and 23ms on every later one;
+    `crystalSymmetry` 53ms then 5ms
+ -> DONE, three changes:
+    (a) a warm-up timer (`scheduleWarmUp`/`warmUp`), started at the end
+        of the constructor, that builds the IPF Z and phase map axes,
+        preselects the IPF Z tab and draws one throwaway four pixel map -
+        i.e. everything the first import is certain to need - while the
+        user is still looking for a file. A timer, so the constructor
+        returns and the window is live; one step per tick, because
+        MATLAB will not interrupt a running callback, so a single blob
+        would make a user who double-clicks half way through wait it out;
+        cancelled by importEBSDData, which must never have this run
+        inside it (a timer callback fires on any drawnow, and the import
+        has several)
+    (b) the per-property map tabs are lazy now like every other tab -
+        `populateMapTabs` builds the tab and its grid, `ensureTabAxesBuilt`
+        builds the axes on first display. `MapAxes` therefore holds
+        holes and is a plain graphics array rather than a typed
+        `matlab.ui.control.UIAxes` one; `createPlotTab` is gone
+    (c) the IPF Z tab is selected during the warm-up rather than by the
+        import
+ -> the warm-up deliberately does NOT go through
+    applyCurrentCoordinateState, which would set the session's plotting
+    convention behind the user's back, and wipes its axes with resetAxes
+    afterwards
+ -> measured, Forsterite.ctf, cold session, select a file -> map on
+    screen: 0.87 + 5.48 = 6.35s before, 0.32 + 2.32 = 2.64s after. Warm:
+    3.87s before, 1.21s after. The warm-up itself costs ~1.9s, off the
+    critical path
+ -> verified: imported Forsterite.ctf, ferrite.ang, eclogite.ctf and
+    Forsterite.ctf again in one session, cycling every tab after each
+    (11-12 tabs, different property sets, 2 to 8 phases) - all plot, no
+    errors; the session plotting convention is unchanged by the warm-up,
+    the warm-up axes is left with no children and no mapPlot appdata,
+    and no timer outlives the app
+ -> NOT changed, and left as backlog: `EBSD.load` is 1.0s of the
+    remaining 2.3s (txt2mat 0.35s, tryGridify 0.20s on a 14MB ctf) and
+    is core, shared, real work. `WebComponentController.setProperty`
+    still accounts for ~0.29s of the import across four property
+    assignments - renderer side, not obviously ours to fix
+
+
+**** round 6 - the h5Data collection ****
+
+43. [profiled, DONE] the same two paths, measured over ~29 HDF5 files in
+    /home/hielscher/mtex/data/h5Data (Bruker, Oxford h5oina, EDAX
+    oh5/edaxh5, ThermoFisher, EMSphInx, DREAM3D, XNOVO)
+ -> the preview path is fine: a headerOnly load is 0.02 - 0.9s for every
+    file in the collection, including a 4.8 GB h5oina (0.40s). Nothing to
+    do there
+ -> the import path had one outlier by two orders of magnitude:
+    h5_bruker.h5 took 65.7s. Profiled: loadEBSD_h5 itself was 0.46s of
+    it and EBSD.load>tryGridify 66.7s, all of it in calcMesh
+ -> root cause, and it is not a performance bug: Bruker.json read
+    position from "X BEAM"/"Y BEAM" - the beam column and row INDEX,
+    step 1 - while taking the unit cell from XSTEP/YSTEP, which are
+    micrometre. Two units in one object. The map claimed an extent of
+    1999 x 1331 um for a 778 x 510 um scan, and gridify sized its
+    lattice from the micrometre cell: 5138 x 3473 = 17.8 million nodes
+    for 2.66 million measurements, 85% of them empty, ~50s of which was
+    spent interpolating a deformation field into nodes that hold nothing
+ -> what let it through: EBSD/updateUnitCell preferred a header hint
+    whenever the position based estimate came out as a square of side 1,
+    reading that as "calcUnitCell had nothing to work from". A spacing
+    of exactly 1 is an ordinary answer - and it is exactly what beam
+    indices produce, so the guard fired on the one case it should have
+    caught
+ -> DONE (a): Bruker.json now reads position from "X SAMPLE"/"Y SAMPLE",
+    the micrometre datasets the file already carries - the same shape
+    EDAX.json uses ("X Position" + "Step X"). Measured on both Bruker
+    files, X SAMPLE = xMax - XSTEP * X BEAM and Y SAMPLE = YSTEP * Y BEAM
+    to within 1e-5 um, so there is no stage drift being taken on; note
+    the map is mirrored in x against what the beam indices gave, which
+    is the file's own orientation
+ -> DONE (b): updateUnitCell decides "the estimate carries no
+    information" from the POSITIONS (no extent) rather than from the
+    cell coming out at size 1, so a hint that contradicts the measured
+    spacing now warns and is rejected instead of silently replacing it
+ -> DONE (c), found while fixing (b): the hint/estimate agreement test
+    compared mean(norm(uC)), which is a different quantity for a
+    rectangle than for a hexagon. A vendor states a rectangular step
+    size whatever the lattice, so every hex grid saw a 22% "mismatch"
+    out of pure convention, warned, and threw the header step size away
+    (testdata_hex.ctf did). Both are now converted to the lattice step -
+    twice the distance from the cell centre to the nearest edge midpoint,
+    the unit-cell-as-Voronoi-cell reading calcMesh already uses. A hint
+    that agrees in step but not in cell SHAPE is kept out too: taking the
+    rectangle turned an EBSDhex into an EBSDsquare
+ -> DONE (d), independent of the above: calcMesh interpolated its
+    deformation field over the whole lattice and then overwrote every
+    measured node with the measurement two lines later, so on a nearly
+    complete map almost all of that work was discarded. It now
+    interpolates only into nodes that hold nothing, and builds one
+    scatteredInterpolant with three value sets instead of three
+    interpolants over the identical point set (4.7s apiece). Verified
+    equivalent on the pathological case: max |new - old| = 0 exactly
+ -> measured, cold: h5_bruker.h5 EBSD.load 65.74s -> 1.57s, and the
+    result is now 2,664,000 pixels (= NCOLS x NROWS) instead of
+    17,844,274. Bruker/BCWQ10min2.h5 went from a plain EBSD list -
+    tryGridify refused it, 57 million lattice cells for 666,000 points -
+    to a proper EBSDsquare in 0.46s. Through the wizard, select -> IPF Z
+    on h5_bruker.h5 is 5.0s cold / 2.3s warm
+ -> verified: the whole collection plus data/EBSD reloaded, exactly one
+    MTEX:unitCellMismatch warning left (h5_edax.h5, whose positions
+    genuinely are degenerate - estimated spacing 4666 against a header
+    step of 0.17 - and which was already warning before). Every grid
+    class, pixel count and extent in data/EBSD unchanged. Eight HDF5
+    files across all six vendors imported through the wizard, every tab
+    plotted, no leftover timers
+ -> regression test: checkUnitCellHint in tests/core/check_ebsdGrid.m,
+    on synthetic maps. Both halves fail on the unfixed tree - the
+    beam-index case with "a hint was taken over a measured spacing of
+    exactly 1", the hex case with the spurious mismatch warning. The
+    Bruker config itself cannot be pinned by a test: the fixtures live
+    outside the repo
+ -> also fixed: the wizard's preview did not pass 'silent', so every
+    arrow key move through a folder of HDF5 files printed a full "HDF5
+    CONFIGURATION LOADED" banner to the command window. The import still
+    prints it - there it says which data set was taken
+ -> NOT fixed, known: DREAM3D and XNOVO files are rejected outright
+    ("No Manufacturer config found") in 0.01s, which matches their
+    WIP status; h5_edax.h5's positions are degenerate and it stays a
+    list; Oxford's 4.8 GB h5oina was left out of the full-load sweep

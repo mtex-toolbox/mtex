@@ -30,8 +30,10 @@ classdef import_wizard < matlab.apps.AppBase
 
     TabGroup                       matlab.ui.container.TabGroup
     MapTabs                        matlab.ui.container.Tab       % phase map + one tab per property
-    MapAxes                        matlab.ui.control.UIAxes      % parallel to MapTabs; built lazily, see ensureTabAxesBuilt
-    MapAxesParent                  matlab.ui.container.GridLayout % holds MapAxes(1) once built
+    MapAxes                        = gobjects(1,0)               % parallel to MapTabs; built lazily, see
+                                                                 % ensureTabAxesBuilt - hence a graphics array
+                                                                 % with holes rather than a UIAxes array
+    MapAxesParent                  matlab.ui.container.GridLayout % parallel to MapTabs, holds MapAxes once built
     IPFTabs                        matlab.ui.container.Tab       % 1x3 array: IPF X / Y / Z
     IPFAxes                        matlab.ui.control.UIAxes      % 1x3 array; built lazily, see ensureTabAxesBuilt
     IPFAxesParent                  matlab.ui.container.GridLayout % 1x3 array, holds IPFAxes once built
@@ -72,6 +74,8 @@ classdef import_wizard < matlab.apps.AppBase
     IPFKeys cell = {}           % precomputed ipfColorKey per phase, shared
                                 % by the IPF X/Y/Z tabs (they only differ by
                                 % the ipfDirection)
+    WarmUpTimer = []            % see scheduleWarmUp
+    WarmUpStep double = 0       % which warm-up step runs on the next tick
     PFODF = []                  % cached ODF for the pole figure tab
     PFODFKey string = ""        % cache key describing what PFODF was computed from
     PFODFCorr = []              % Euler correction the cached ODF refers to
@@ -105,8 +109,19 @@ classdef import_wizard < matlab.apps.AppBase
     function createComponents(app)
       leftWidth = app.leftPanelWidth();
 
-      app.UIFigure = uifigure('Visible', 'off');
-      app.UIFigure.Position = [100 100 1300 700];
+      % Come up at the size the app is actually going to have, before it
+      % has a single child: everything below is laid out once, at the
+      % final size, instead of once at a fixed default and again when the
+      % window maximizes - which is the resize the user sees.
+      %
+      % The Position is what does the work here. WindowState 'maximized'
+      % alone does not resize the figure at all (measured: the figure
+      % keeps whatever Position it was given and merely reports itself as
+      % maximized), so the old fixed 1300x700 stayed 1300x700 - larger
+      % than a 1024x768 screen. It is still set, so a window manager that
+      % does honour it puts the window in its maximized state rather than
+      % in a free floating window that happens to be screen sized.
+      app.UIFigure = uifigure('Visible', 'off', 'Position', screenArea(app));
       app.UIFigure.WindowState = 'maximized';
       app.UIFigure.Name = 'MTEX Import Wizard';
       app.UIFigure.WindowKeyPressFcn = createCallbackFcn(app, @WizardKeyPress, true);
@@ -155,7 +170,13 @@ classdef import_wizard < matlab.apps.AppBase
       app.RightPanel.Layout.Row = 1;
       app.RightPanel.Layout.Column = 2;
 
+      % Put the window on screen before anything else is built. Setting
+      % Visible only marks it for display - without a flush here nothing
+      % is actually painted until the next one, which is the focus() call
+      % at the end, so the user waited out the whole construction staring
+      % at nothing.
       app.UIFigure.Visible = 'on';
+      drawnow
 
       % Build the analysis UI (tabs, axes, phase table, ...) right away:
       % the first axes and the table pay a substantial one-time renderer
@@ -166,6 +187,10 @@ classdef import_wizard < matlab.apps.AppBase
       % start with the keyboard focus on the file browser, so a file can
       % be picked with the arrow keys and loaded with Enter right away
       try focus(app.FileTree); catch, end
+
+      % the rest of what an import needs, once the window is live - see
+      % scheduleWarmUp
+      scheduleWarmUp(app)
     end
 
     function createFileBrowser(app)
@@ -530,30 +555,23 @@ classdef import_wizard < matlab.apps.AppBase
         'Padding', [6 6 6 6]);
     end
 
-    function [tab, ax] = createPlotTab(app, tabTitle, color)
-      % a tab holding nothing but a single full-size axes, built right
-      % away - used for the per-property map tabs (populateMapTabs),
-      % which only ever get created after a file is already loaded, not
-      % at app startup, so there is no startup cost to defer here
-      tab = uitab(app.TabGroup, 'Title', tabTitle, 'ForegroundColor', color);
-      g = uigridlayout(tab, 'ColumnWidth', {'1x'}, 'RowHeight', {'1x'}, ...
-        'Padding', [6 6 6 6]);
-      ax = uiaxes(g);
-      ax.Layout.Row = 1; ax.Layout.Column = 1;
-    end
-
     function ensureTabAxesBuilt(app, tab)
       % axes are built lazily, the first time their tab is actually shown
-      % (~0.88s per axes, measured - see TODO item 29) - this is the
+      % (0.19s per axes the first time in a session, see TODO item 29 and
+      % the remeasurement in item 42) - this is the
       % single place that guarantees they exist before any plotting code
       % touches them. Called at the top of updatePlot, which every tab
       % switch funnels through: interactive (TabSelectionChanged) and
       % programmatic (both call updatePlot right after setting
       % TabGroup.SelectedTab, see importEBSDData/OptTreeSelectionChanged).
       % Idempotent - already-built groups are left untouched.
-      if ~isempty(app.MapTabs) && tab == app.MapTabs(1) && isempty(app.MapAxes)
-        app.MapAxes = uiaxes(app.MapAxesParent);
-        app.MapAxes(1).Layout.Row = 1; app.MapAxes(1).Layout.Column = 1;
+      mapIdx = find(app.MapTabs == tab, 1);
+      if ~isempty(mapIdx)
+        if numel(app.MapAxes) < mapIdx || ~isgraphics(app.MapAxes(mapIdx))
+          ax = uiaxes(app.MapAxesParent(mapIdx));
+          ax.Layout.Row = 1; ax.Layout.Column = 1;
+          app.MapAxes(mapIdx) = ax;
+        end
       elseif ~isempty(app.IPFTabs) && any(tab == app.IPFTabs) && isempty(app.IPFAxes)
         for i = 1:3
           app.IPFAxes(i) = uiaxes(app.IPFAxesParent(i));
@@ -567,6 +585,96 @@ classdef import_wizard < matlab.apps.AppBase
       elseif ~isempty(app.ImagesTab) && tab == app.ImagesTab && isempty(app.ImagesAxes)
         app.ImagesAxes = uiaxes(app.ImagesAxesParent);
         app.ImagesAxes.Layout.Row = 1; app.ImagesAxes.Layout.Column = 1;
+      end
+    end
+
+    function scheduleWarmUp(app)
+      % Do what the first import is certain to need while the user is
+      % still looking for a file, instead of on the path from double
+      % click to map.
+      %
+      % Two costs live there, both of them one-time. The IPF Z axes are
+      % the default view after an import, so they are always built - and
+      % a uiaxes costs 0.19s the first time in a session, three of them
+      % here. The first EBSD map drawn in a session pays another ~0.5s
+      % of one-time cost in the plotting stack below it (mapPlot,
+      % scaleBar, plotUnitCells, the canvas). Measured on Forsterite.ctf,
+      % that is ~1.5s of a 5.2s cold import.
+      %
+      % A timer rather than a straight call, so the constructor returns
+      % and the window is live while this runs. It is cancelled by any
+      % real work (see cancelWarmUp): a timer callback fires on any
+      % drawnow, and there are drawnows inside the import, so without
+      % that this could run in the middle of one.
+      %
+      % One step per tick rather than all of it in one callback, because
+      % MATLAB will not interrupt a callback that is already running: in
+      % one blob, a user who double-clicks a file half way through waits
+      % out the whole warm-up first. Between two ticks their click is
+      % serviced, and the import then cancels whatever is left.
+      cancelWarmUp(app)
+      app.WarmUpStep = 0;
+      app.WarmUpTimer = timer('Name', 'MTEXImportWizardWarmUp', ...
+        'StartDelay', 0.3, 'Period', 0.1, ...
+        'ExecutionMode', 'fixedSpacing', ...
+        'TimerFcn', @(~,~) warmUp(app), ...
+        'StopFcn', @(t,~) delete(t));  % so nothing of it outlives the run
+      start(app.WarmUpTimer)
+    end
+
+    function cancelWarmUp(app)
+      if isempty(app.WarmUpTimer) || ~isvalid(app.WarmUpTimer), return, end
+      stop(app.WarmUpTimer)   % the StopFcn deletes it
+      if isvalid(app.WarmUpTimer), delete(app.WarmUpTimer), end
+      app.WarmUpTimer = [];
+    end
+
+    function warmUp(app)
+      % see scheduleWarmUp - runs once, on an app that has not loaded
+      % anything yet. Everything here is allowed to fail silently:
+      % nothing in it is required for correctness, it only moves cost off
+      % the import path.
+      if ~isvalid(app) || isempty(app.UIFigure) || ~isvalid(app.UIFigure) ...
+          || ~isempty(app.ebsd) || ~app.AnalysisUICreated
+        cancelWarmUp(app); return
+      end
+
+      app.WarmUpStep = app.WarmUpStep + 1;
+      try
+        switch app.WarmUpStep
+          case 1
+            % the axes of the two tabs every import builds: IPF Z is the
+            % default view, and populateMapTabs forces the phase map one
+            ensureTabAxesBuilt(app, app.IPFTabs(3))
+            ensureTabAxesBuilt(app, app.MapTabs(1))
+
+            % IPF Z is where the import puts the user anyway, and making
+            % the tab group change its selection is not free - do it here
+            % rather than on the import path
+            app.TabGroup.SelectedTab = app.IPFTabs(3);
+
+          case 2
+            % draw a map once, so the plotting stack below EBSD/plot is
+            % loaded and its canvas is up. Four pixels of nothing in
+            % particular, drawn with an explicit color matrix exactly the
+            % way plotIPF does it, and wiped again right after -
+            % deliberately not through applyCurrentCoordinateState, which
+            % would set the session's plotting convention behind the
+            % user's back.
+            ax = app.IPFAxes(3);
+            ebsdWarm = EBSD(vector3d([0 1 0 1], [0 0 1 1], zeros(1,4)), ...
+              rotation.id(4), ones(4,1), {crystalSymmetry('m-3m')}, struct());
+            plot(ebsdWarm, 0.5*ones(4,3), 'parent', ax)
+            resetAxes(app, ax)
+        end
+      catch
+      end
+
+      % last step - stop it, which disposes of the timer through its
+      % StopFcn (see scheduleWarmUp)
+      if app.WarmUpStep >= 2 && ~isempty(app.WarmUpTimer) && ...
+          isvalid(app.WarmUpTimer)
+        stop(app.WarmUpTimer)
       end
     end
 
@@ -726,7 +834,14 @@ classdef import_wizard < matlab.apps.AppBase
           app.ImportStatusLabel.Text = 'Double-click a file (or select + Enter) to import';
           app.ImportStatusLabel.BackgroundColor = [0.90 0.94 0.98]; % light blue - hint
       end
-      drawnow % force the label to actually repaint before a blocking load
+
+      % force the label to actually repaint before a blocking load - but
+      % only once there is a window to repaint. The first call comes from
+      % createFileBrowser, while the figure is still invisible and half
+      % built, where the flush has nothing to show and merely pulls the
+      % renderer's deferred work forward into the constructor: 0.28s of a
+      % 1.01s construction, measured.
+      if strcmp(app.UIFigure.Visible, 'on'), drawnow, end
     end
 
     function opts = importOptions(app, entry)
@@ -808,6 +923,7 @@ classdef import_wizard < matlab.apps.AppBase
     end
 
     function importEBSDData(app, filePath)
+      cancelWarmUp(app) % this is the real thing - see scheduleWarmUp
       filePath = char(filePath); % normalize string -> char so fileparts
                                   % and [fileName fileExt] behave predictably
       [~, fName, fExt] = fileparts(filePath);
@@ -863,24 +979,24 @@ classdef import_wizard < matlab.apps.AppBase
       % data set. New tabs can only be appended, so to keep the images tab
       % the last one it is recreated afterwards - existing tabs (and in
       % particular the currently visible one) are never touched.
-
-      % the Phase Map tab (index 1) is the one lazily-built tab this
-      % function keeps around (see ensureTabAxesBuilt) - force it built
-      % now since the code below assumes app.MapAxes(1) already exists,
-      % regardless of whether the user has ever actually visited it
-      ensureTabAxesBuilt(app, app.MapTabs(1))
+      %
+      % Only the tabs and their (empty) grids are built here; the axes
+      % follow on first display, same as everywhere else - see
+      % ensureTabAxesBuilt. A property map tab is one the user may well
+      % never open, and building all of them cost 0.19s of every import.
 
       % drop the tabs of a previously loaded data set
       delete(app.MapTabs(2:end))
       app.MapTabs = app.MapTabs(1);
-      app.MapAxes = app.MapAxes(1);
+      app.MapAxesParent = app.MapAxesParent(1);
+      app.MapAxes = app.MapAxes(1:min(1,numel(app.MapAxes)));
       delete(app.ImagesTab)
 
       names = getPropertyNames(app);
       app.MapNames = [{'Phase Map'}; names(:)];
       for k = 2:numel(app.MapNames)
-        [app.MapTabs(k), app.MapAxes(k)] = ...
-          createPlotTab(app, app.MapNames{k}, app.TabColors.Maps);
+        [app.MapTabs(k), app.MapAxesParent(k)] = ...
+          createLazyPlotTab(app, app.MapNames{k}, app.TabColors.Maps);
       end
 
       createImagesTab(app)
@@ -2036,6 +2152,22 @@ classdef import_wizard < matlab.apps.AppBase
       free.lattice = lat;
     end
 
+    function pos = screenArea(~)
+      % the primary monitor as a figure Position, i.e. the size the
+      % wizard comes up at (see createComponents)
+      %
+      % Not ScreenSize: that spans every monitor of a multi head setup,
+      % which would open the wizard across all of them. Row 1 of
+      % MonitorPositions is the primary monitor, in the same bottom left
+      % origin convention a figure Position uses.
+      pos = get(groot, 'ScreenSize');
+      try
+        monitors = get(groot, 'MonitorPositions');
+        if ~isempty(monitors), pos = monitors(1,:); end
+      catch
+      end
+    end
+
     function width = leftPanelWidth(app)
       % Enough room for two coordinate columns plus padding. The labels
       % are the limiting elements, so scale the width with font size.
@@ -2148,7 +2280,13 @@ classdef import_wizard < matlab.apps.AppBase
       end
 
       try
-        ebsdPreview = EBSD.load(filePath, 'wizard', 'headerOnly');
+        % 'silent': an HDF5 import prints a configuration banner naming
+        % the manufacturer and the data set it picked. That belongs to a
+        % deliberate import, not to this - which fires on every arrow key
+        % move through the file tree, and filled the command window with
+        % one banner per file browsed past. The wizard shows the same
+        % information in its own data set list.
+        ebsdPreview = EBSD.load(filePath, 'wizard', 'headerOnly', 'silent');
       catch
         % not a recognized/loadable format - leave the table as is
         app.DataSetEntries(:) = [];
@@ -2529,6 +2667,7 @@ classdef import_wizard < matlab.apps.AppBase
     end
 
     function delete(app)
+      cancelWarmUp(app)
       if ~isempty(app.UIFigure) && isvalid(app.UIFigure)
         delete(app.UIFigure)
       end
