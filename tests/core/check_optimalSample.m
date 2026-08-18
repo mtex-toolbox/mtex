@@ -11,10 +11,13 @@ function check_optimalSample
 % 'memory',0 empties the L-BFGS memory in every iteration and hence walks
 % along the negative gradient throughout. It reproduces the gradient descent
 % that optimalSample used before to 6e-6 degree, so it is the control the
-% first case compares against.
+% comparisons below are made against.
+%
+% The last case covers S2Fun/optimalSample, which runs the same iteration on
+% the sphere. This file owns both.
 %
 % See also
-% SO3Fun/optimalSample SO3RestrictedDistanceKernel
+% SO3Fun/optimalSample S2Fun/optimalSample SO3RestrictedDistanceKernel
 
 rng(0)
 
@@ -77,6 +80,33 @@ assert(numel(ori1) == 1, ...
   'optimalSample returned %d orientations for a single starting node.', ...
   numel(ori1))
 
+% --------------------- the same on the sphere ----------------------------
+% S2Fun/optimalSample runs the same iteration along the geodesics of the
+% sphere. There the tangent plane turns with the node, so the stored pairs
+% have to be parallel transported along every step - if that transport is
+% wrong the pairs are added up across different tangent planes and the
+% memory becomes worse than useless, which this case would see.
+sF = S2FunHandle(@(x) real( exp(-5*acos(dot(x,xvector)).^2) ...
+  + exp(-5*acos(dot(x,yvector)).^2) + exp(-5*acos(dot(x,zvector)).^2) ));
+
+vGD = optimalSample(sF,100,'bandwidth',32,'maxIter',20,'memory',0);
+vQN = optimalSample(sF,100,'bandwidth',32,'maxIter',20);
+
+% the nodes have to stay on the sphere - the geodesic step is what keeps
+% them there, and a direction that is not tangential would leave it
+assert(max(abs(norm(vQN)-1)) < 1e-12, ...
+  'optimalSample moved a direction off the sphere by %.3e.', ...
+  max(abs(norm(vQN)-1)))
+
+resGD = discrepancyS2(sF,vGD,32);
+resQN = discrepancyS2(sF,vQN,32);
+
+% measured at 0.49 here, and between 0.40 and 0.84 over the bandwidths,
+% sample sizes and iteration budgets tried
+assert(resQN < 0.9*resGD, ...
+  ['S2Fun/optimalSample is no better than gradient descent - discrepancy ' ...
+  '%.4e against %.4e for ''memory'',0.'],resQN,resGD)
+
 end
 
 
@@ -100,6 +130,32 @@ mu.bandwidth = bw;
 
 D = (lambda/(sqrt(8)*pi)) * mu - (sqrt(8)*pi) * f;
 D.bandwidth = bw;
+
+res = sum(abs(w.*D.fhat).^2);
+
+end
+
+
+function res = discrepancyS2(sF,v,bw)
+% the same functional on the sphere, see S2Fun/optimalSample
+
+sF = S2FunHarmonic(sF,'bandwidth',bw);
+sF.bandwidth = bw;
+
+psi = S2RestrictedDistanceKernel(bw+1);
+if sF.antipodal, psi.A(2:2:end) = 0; end
+lambda = sum(sF);
+
+w = zeros((bw+1)^2,1);
+for l = 1:bw
+  w(l^2+1:(l+1)^2) = sqrt( 4*pi * psi.A(l+1)/(2*l+1) );
+end
+
+mu = S2FunHarmonic.adjointNFSFT(v(:),ones(numel(v),1)/numel(v),'bandwidth',bw);
+mu.bandwidth = bw;
+
+D = sF;
+D.fhat = lambda * mu.fhat - sF.fhat;
 
 res = sum(abs(w.*D.fhat).^2);
 

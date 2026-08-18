@@ -22,8 +22,16 @@ function [v,c] = optimalSample(sF,n,varargin)
 % <S2RestrictedDistanceKernel.html restricted distance kernel> and $N$ is the
 % |bandwidth|, i.e. only the harmonic degrees up to $N$ are taken into
 % account - choose it to match the intended use of the points. The
-% minimization is done by gradient descent along the geodesics of the sphere
-% together with an Armijo line search.
+% minimization is done by a limited memory BFGS iteration along the
+% geodesics of the sphere together with an Armijo line search.
+%
+% *Why L-BFGS and not gradient descent.* $J$ is badly conditioned and the
+% convergence rate of gradient descent degrades with exactly that condition
+% number, while collecting the curvature of the steps already taken costs
+% nothing beyond a few vectors of memory. In contrast to the rotation group
+% the sphere is no group, so the tangent plane turns with the node and the
+% stored steps have to be parallel transported along every step before they
+% may be used again.
 %
 % Note that the sum above starts at degree 1. The restricted distance kernel
 % is only conditionally positive definite, its Legendre coefficient of degree
@@ -114,6 +122,7 @@ function [v,c] = optimalSample(sF,n,varargin)
 %  bandwidth  - harmonic degree to approximate (default = 128), see above
 %  maxIter    - number of (outer) iterations (default = 1000)
 %  tol        - termination tolerance for the directions (default = 0.01*degree)
+%  memory     - secant pairs kept by the L-BFGS iteration (default = 5)
 %  weights    - starting weights, fixed if they are not optimized (default = ones(M,1)/M)
 %
 % The following options apply only if the weights are optimized
@@ -153,9 +162,10 @@ v = v(:);
 % mu - sF of the discrete measure and the density function is formed below
 v.antipodal = sF.antipodal;
 
-% specify parameters for the (alternating) gradient method
+% specify parameters for the (alternating) descent method
 maxIter = get_option(varargin,'maxIter',1000);
 tol = get_option(varargin,'tol',0.01*degree);
+mem = get_option(varargin,'memory',5);
 innerIter = get_option(varargin,'innerIter',5);
 warmUp = get_option(varargin,'warmUp',ceil(maxIter/5));
 tolWeights = get_option(varargin,'tolWeights',1e-3/M);
@@ -214,15 +224,31 @@ psi0 = S2Kernel([0;psi.A(2:end)]);
 nfsft = nfsftPlan(bw,M);
 freePlans = onCleanup(@() nfsft.finalize());
 
-% Step size of the line search. It is carried over between the iterations and
-% doubled before every line search, so that it can grow as well as shrink.
-% Starting each line search at 1 instead would tie the length of a step to
-% the magnitude of the gradient, which is proportional to the weights and
-% hence of the order 1/M - the nodes would then crawl.
+% Step size of the line search along the steepest descent direction, i.e. as
+% long as the L-BFGS memory is still empty. It is carried over between the
+% iterations and doubled before every line search, so that it can grow as
+% well as shrink. Starting each line search at 1 instead would tie the length
+% of a step to the magnitude of the gradient, which is proportional to the
+% weights and hence of the order 1/M - the nodes would then crawl. Once the
+% memory is filled the direction carries that scaling itself and the unit
+% step is the natural trial step.
 stepSize = 1;
+
+% L-BFGS memory. The columns of S hold the steps taken, those of Y the
+% corresponding changes of the gradient, both as plain 3M vectors [x;y;z].
+% In contrast to SO(3) the sphere is no group, i.e. there is no global
+% trivialization of the tangent bundle: the tangent plane turns with the
+% node. The stored pairs are therefore parallel transported along the
+% geodesic of every step, see transport below - without that they would be
+% added up across different tangent planes and the curvature information
+% would be nonsense.
+S = []; Y = [];
 
 % harmonic coefficients D of mu - sF and the resulting discrepancy
 [resOld,D] = J(nfsft,v,c,sF,w,lambda);
+
+% gradient of the functional with respect to the directions
+g = grad_J(nfsft,v,c,D,psi0,lambda);
 
 pC = progressCounter(maxIter);
 for i = 1:maxIter
@@ -242,36 +268,72 @@ for i = 1:maxIter
     if all(isfinite(cNew)) && all(cNew>=0) && sum(cNew)>0
       c = cNew/sum(cNew); % also compensates round off in the mass constraint
     end
-    % the weights changed, hence the discrepancy has to be recomputed
+    % the weights changed, hence the discrepancy and the gradient have to be
+    % recomputed
     [resOld,D] = J(nfsft,v,c,sF,w,lambda);
+    g = grad_J(nfsft,v,c,D,psi0,lambda);
   end
 
   % ------------------------ (2) optimize points --------------------------
-  % compute gradient of the functional with respect to the directions
-  g = grad_J(nfsft,v,c,D,psi0,lambda);
+  % the gradient of the functional with respect to the directions is computed
+  % at the end of the previous iteration, resp. above if the weight step has
+  % changed the functional in between
+  gVec = [g.x(:);g.y(:);g.z(:)];
 
   gNorm = sqrt(sum(norm(g).^2));
 
   % a vanishing gradient cannot be improved by any step size
   if gNorm == 0, break, end
 
+  % L-BFGS direction, i.e. the inverse Hessian approximation built from the
+  % memory applied to the gradient. With an empty memory this is the negative
+  % gradient and the iteration below is plain gradient descent.
+  d = twoLoop(gVec,S,Y);
+
+  dir = vector3d(d(1:M),d(M+1:2*M),d(2*M+1:3*M));
+
+  % The direction has to be tangential to v, otherwise the geodesic step
+  % below leaves the tangent plane it is meant to follow. The two loop
+  % recursion mixes in gradients transported from earlier iterates and hence
+  % gives away a little of that, so the normal components are dropped here.
+  dir = dir - dot(dir,v).*v;
+
+  dVec = [dir.x(:);dir.y(:);dir.z(:)];
+
+  % the directional derivative of J along dir
+  slope = dVec.' * gVec;
+
+  % Safeguard. The memory may have gone stale - the weight step changes the
+  % functional the pairs were taken from - and then produce a direction that
+  % does not decrease J at all. Drop it and fall back to gradient descent.
+  if slope >= 0
+    S = []; Y = [];
+    dir = -g;
+    dVec = -gVec;
+    slope = -gNorm.^2;
+  end
+
   % Line search with Armijo, capped such that no node travels more than half
   % a turn - without the cap the step size would keep doubling once the
   % gradient becomes small and every line search would waste its first
-  % dozens of trials. Doubling is what pays off here: starting each line
-  % search directly at the cap does lower J per iteration, but the extra
-  % backtracking costs more than it gains per second.
-  stepSize = min(2*stepSize, pi/max(norm(g)));
+  % dozens of trials. Doubling is what pays off along the gradient: starting
+  % each line search directly at the cap does lower J per iteration, but the
+  % extra backtracking costs more than it gains per second.
+  if isempty(S)
+    stepSize = min(2*stepSize, pi/max(norm(dir)));
+  else
+    stepSize = min(1, pi/max(norm(dir)));
+  end
 
   lineSearchFailed = false;
   while true
 
-    % gradient step along the geodesics through v in direction -g
-    vNew = geodesicStep(v,g,stepSize);
+    % step along the geodesics through v in direction dir
+    vNew = geodesicStep(v,dir,stepSize);
 
     [resNew,DNew] = J(nfsft,vNew,c,sF,w,lambda);
 
-    if resNew < resOld - 1e-4*stepSize*gNorm.^2 % Armijo Condition
+    if resNew < resOld + 1e-4*stepSize*slope % Armijo Condition
       break;
     end
 
@@ -295,10 +357,44 @@ for i = 1:maxIter
     break;
   end
 
+  % The gradient in the new nodes. It is taken under the same weights as gVec
+  % above, hence the two form a secant pair of one and the same functional -
+  % which is what the memory has to consist of.
+  gNew = grad_J(nfsft,vNew,c,DNew,psi0,lambda);
+
+  % Everything collected so far lives in the tangent planes of v and has to
+  % be carried along to those of vNew before it may be combined with a
+  % gradient taken there.
+  nDir = norm(dir);
+  t = stepSize * nDir;
+  V = [v.x(:) v.y(:) v.z(:)];
+  U = zeros(M,3);
+  ind = nDir > 0;
+  U(ind,:) = [dir.x(ind) dir.y(ind) dir.z(ind)] ./ nDir(ind);
+  sinT = sin(t(:));
+  cosT1 = 1 - cos(t(:));
+
+  sVec = transport(stepSize*dVec,V,U,sinT,cosT1);
+  yVec = [gNew.x(:);gNew.y(:);gNew.z(:)] - transport(gVec,V,U,sinT,cosT1);
+
+  if ~isempty(S)
+    S = transport(S,V,U,sinT,cosT1);
+    Y = transport(Y,V,U,sinT,cosT1);
+  end
+
+  % Keep the pair only if it carries positive curvature. Otherwise the
+  % inverse Hessian approximation would lose its positive definiteness and
+  % with it the guarantee that the next direction is one of descent.
+  if sVec.'*yVec > 1e-12 * norm(sVec) * norm(yVec)
+    S = [S,sVec]; Y = [Y,yVec]; %#ok<AGROW>
+    if size(S,2) > mem, S(:,1) = []; Y(:,1) = []; end
+  end
+
   % update
   v = vNew;
   D = DNew;
   resOld = resNew;
+  g = gNew;
 
   pC.show(i)
 
@@ -335,16 +431,78 @@ end
 end
 
 
-function vNew = geodesicStep(v,g,stepSize)
-% move every node along the geodesic through v in direction -g, i.e.
-% vNew = exp_v(-stepSize*g). Note that g is tangential to v, hence this stays
-% on the sphere. Nodes with a vanishing gradient are left untouched.
+function vNew = geodesicStep(v,d,stepSize)
+% move every node along the geodesic through v in direction d, i.e.
+% vNew = exp_v(stepSize*d). Note that d is tangential to v, hence this stays
+% on the sphere. Nodes with a vanishing direction are left untouched.
 
-t = stepSize * norm(g);
+t = stepSize * norm(d);
 
 vNew = v;
 ind = t>0;
-vNew(ind) = normalize( cos(t(ind)).*v(ind) - sin(t(ind)).*g(ind)./norm(g(ind)) );
+vNew(ind) = normalize( cos(t(ind)).*v(ind) + sin(t(ind)).*d(ind)./norm(d(ind)) );
+
+end
+
+
+function d = twoLoop(g,S,Y)
+% The two loop recursion of L-BFGS. It applies the inverse Hessian
+% approximation built from the secant pairs in S and Y to the gradient g,
+% without ever forming a matrix - only inner products of the stored vectors
+% are needed. An empty memory gives the negative gradient.
+
+k = size(S,2);
+
+if k == 0, d = -g; return, end
+
+rho = zeros(k,1);
+a = zeros(k,1);
+
+q = g;
+for j = k:-1:1
+  rho(j) = 1./(Y(:,j).'*S(:,j));
+  a(j) = rho(j)*(S(:,j).'*q);
+  q = q - a(j)*Y(:,j);
+end
+
+% initial inverse Hessian, scaled by the most recent pair - this is the step
+% length that makes the unit trial step of the line search the right one
+q = q * (S(:,k).'*Y(:,k))/(Y(:,k).'*Y(:,k));
+
+for j = 1:k
+  b = rho(j)*(Y(:,j).'*q);
+  q = q + S(:,j)*(a(j)-b);
+end
+
+d = -q;
+
+end
+
+
+function W = transport(W,V,U,sinT,cosT1)
+% Parallel transport of tangent vectors along the geodesics of a step. Every
+% column of W holds one tangent vector per node, stacked as [x;y;z], and V
+% and U hold the nodes and the unit directions of the step as M x 3
+% matrices. For the geodesic that leaves v in direction u by the angle t
+% parallel transport is
+%
+%   P(w) = w - (u.w) ( sin(t) v + (1-cos(t)) u ) ,
+%
+% i.e. the component of w along u is turned with the geodesic while the one
+% orthogonal to it stays where it is. Nodes that did not move have sin(t) = 0
+% and 1-cos(t) = 0 and are left untouched by the same formula.
+
+M = size(V,1);
+k = size(W,2);
+
+W = reshape(W,M,3,k);
+
+% the projection of every stored vector onto the direction of the step
+a = sum(W .* U,2);
+
+W = W - a .* (sinT.*V + cosT1.*U);
+
+W = reshape(W,3*M,k);
 
 end
 
