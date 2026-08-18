@@ -368,7 +368,7 @@ classdef import_wizard < matlab.apps.AppBase
       % middle), CoordinatePanel (fixed, right - added by
       % createCoordinateControls); row 2: TabGroup spanning all 3 columns
       app.RightLayout = uigridlayout(app.RightPanel, ...
-        'ColumnWidth', {824,'1x',300}, ...
+        'ColumnWidth', {845,'1x',300}, ...
         'RowHeight', {230, '1x'}, ...
         'RowSpacing', 8, ...
         'ColumnSpacing', 8, ...
@@ -398,8 +398,13 @@ classdef import_wizard < matlab.apps.AppBase
       % Phase cell, which opens the color picker on a click (see
       % PhaseTableCellSelection) - a swatch that also says which phase it
       % belongs to, for one column instead of two.
+      % Widths are set so nothing truncates on a real multi-phase file -
+      % eclogite.ctf is the one to check against, its triclinic phase
+      % being the only thing that puts real numbers in all six lattice
+      % columns at once. They fit "115.87" now that those columns print
+      % to two decimals rather than MATLAB's four.
       app.PhaseTable.ColumnWidth = ...
-        {45, 55, 130, 70, 50, 72, 52, 52, 52, 48, 48, 48, 92};
+        {42, 48, 125, 62, 52, 78, 56, 56, 56, 56, 56, 56, 92};
 
       % browser for the full ebsd.opt structure - selecting an image-shaped
       % field shows it in the Images tab (see OptTreeSelectionChanged)
@@ -988,10 +993,21 @@ classdef import_wizard < matlab.apps.AppBase
       pgCats = [{'None'}, {symmetry.pointGroups.Inter}];
       alCats = [{'-'}, {'(custom)'}, alignmentSetups(app)];
 
+      % Percent and the six lattice parameters are text, not numbers, and
+      % that is the only way to print them to two decimals: uitable
+      % formats a numeric column with MATLAB's short format - four
+      % decimals for anything that is not an integer - and ColumnFormat,
+      % which could ask for something else, is ignored outright when Data
+      % is a table. Rounding the stored numbers does not help either,
+      % since 18.32 still prints as 18.3200.
+      %
+      % Costing precision is not a concern: rebuildPhaseSymmetry takes
+      % the lattice from the crystalSymmetry and only the one cell the
+      % user typed in from the table, so what is shown never feeds back.
       phaseTable = table('size',[0 13],...
-        'VariableTypes',{'logical','uint8','string','double','double', ...
-          'categorical','double','double','double','double','double', ...
-          'double','categorical'},...
+        'VariableTypes',{'logical','uint8','string','double','string', ...
+          'categorical','string','string','string','string','string', ...
+          'string','categorical'},...
         'VariableNames',{'Plot'; 'Phase'; 'Mineral'; 'Pixels'; 'Percent'; ...
           'Symmetry'; 'a'; 'b'; 'c'; 'alpha'; 'beta'; 'gamma'; 'Alignment'});
 
@@ -1006,16 +1022,20 @@ classdef import_wizard < matlab.apps.AppBase
           [abc, abg] = displayLattice(app, cs);
           al = closestSetup(app, cs);
         else
+          % a notIndexed phase has no lattice at all - leave the cells
+          % blank rather than state a meaningless 0.00
           mineral = 'NotIndexed';
           pg = 'None';
-          abc = [0 0 0]; abg = [0 0 0];
+          abc = [NaN NaN NaN]; abg = [NaN NaN NaN];
           al = '-';
         end
 
         phaseTable(pId, :) = {false, app.ebsd.phaseMap(pId), mineral, ...
-           numPhases(pId), 100*numPhases(pId)/sum(numPhases), ...
-           categorical({pg}, pgCats), abc(1), abc(2), abc(3), ...
-           abg(1), abg(2), abg(3), categorical({al}, alCats)};
+           numPhases(pId), fmt2(app, 100*numPhases(pId)/sum(numPhases)), ...
+           categorical({pg}, pgCats), ...
+           fmt2(app, abc(1)), fmt2(app, abc(2)), fmt2(app, abc(3)), ...
+           fmt2(app, abg(1)), fmt2(app, abg(2)), fmt2(app, abg(3)), ...
+           categorical({al}, alCats)};
       end
 
       % pre select indexed phase with the most pixels
@@ -1050,10 +1070,14 @@ classdef import_wizard < matlab.apps.AppBase
       % lattice changes, because which cells are fixed changes with it
 
       removeStyle(app.PhaseTable)
-      % right-align every column except Plot (column 1, a checkbox) and
-      % Phase (column 2, a small id, centered instead)
-      addStyle(app.PhaseTable, uistyle('HorizontalAlignment', 'center'), 'column', 2)
-      addStyle(app.PhaseTable, uistyle('HorizontalAlignment', 'right'), 'column', 3:12)
+      % Right-align every column, headers included. A column style is the
+      % only way to reach a header label at all: addStyle has no header
+      % target (only table/row/column/cell) and a uifigure uitable prints
+      % HTML in ColumnName literally rather than rendering it. The header
+      % follows its column's HorizontalAlignment, so aligning the cells
+      % aligns the labels with them.
+      addStyle(app.PhaseTable, uistyle('HorizontalAlignment', 'right'), ...
+        'column', 1:width(app.PhaseTable.Data))
 
       % uitable can only enable or disable a whole column, so a cell the
       % lattice fixes is greyed instead - typing in one anyway is not an
@@ -1169,6 +1193,28 @@ classdef import_wizard < matlab.apps.AppBase
       % EBSD data into phases (EBSD/subsref copies all property arrays).
       % Pixels of unselected phases keep NaN colors and are not drawn.
       color = NaN(length(app.ebsd), 3);
+
+      % Not indexed regions carry no orientation, so an IPF map has
+      % nothing to color them with and normally leaves them undrawn. When
+      % one has been given a color of its own though, use it as the
+      % background here too - that is the whole point of setting it. Only
+      % a color that was actually chosen counts: white is what an unset
+      % phase color falls back to (see fillPhaseTable).
+      %
+      % Deliberately independent of the Plot checkboxes, which select
+      % which *indexed* phase is colored by orientation - a not indexed
+      % phase is never among them, so keying this off them would mean the
+      % color never showed.
+      for phaseId = 1:numel(app.ebsd.CSList)
+        if isa(app.ebsd.CSList(phaseId), 'symmetry'), continue; end
+        rgb = app.Color{phaseId};
+        if numel(rgb) ~= 3 || any(isnan(rgb)) || isequal(rgb(:).', [1 1 1])
+          continue
+        end
+        mask = app.ebsd.phaseId == phaseId;
+        color(mask,:) = repmat(rgb(:).', nnz(mask), 1);
+      end
+
       noKey = {};
       for phaseId = enabledPhaseIds(:)'
         % skip not indexed "phases" - they carry no orientations
@@ -1721,15 +1767,36 @@ classdef import_wizard < matlab.apps.AppBase
       if col == 13 && ~isSetup, refreshPhaseRow(app, row); return, end
 
       % --- snap whatever the (possibly new) lattice fixes ---------------
-      % a, and every length tied to it, take the value of the edited cell
-      % when that cell is one of them - so typing 4 into b on a cubic
-      % phase means a = b = c = 4, not "b rejected"
-      driver = [];
-      if col >= 7 && col <= 9, driver = col - 6; end
+      % The lattice comes from the crystalSymmetry, and only the single
+      % cell the user typed in comes from the table. Reading the whole
+      % row back instead would quietly round every parameter to the two
+      % decimals the table prints (see fillPhaseTable) on every unrelated
+      % edit - change the point group and the axis lengths would lose
+      % their last digits with it.
+      abc = cs.abc;
+      abg = cs.abg / degree;
 
-      [abc, abg] = snapLattice(app, id, ...
-        [data.a(row), data.b(row), data.c(row)], ...
-        [data.alpha(row), data.beta(row), data.gamma(row)], driver);
+      driver = [];
+      if col >= 7 && col <= 12
+        typed = str2double(data{row, col});
+        if isnan(typed) || ~isreal(typed)
+          uialert(app.UIFigure, ...
+            sprintf('"%s" is not a number.', string(data{row, col})), ...
+            'Invalid lattice parameter')
+          refreshPhaseRow(app, row); return
+        end
+        if col <= 9
+          % a, and every length tied to it, take the value of the edited
+          % cell when that cell is one of them - so typing 4 into b on a
+          % cubic phase means a = b = c = 4, not "b rejected"
+          driver = col - 6;
+          abc(driver) = typed;
+        else
+          abg(col - 9) = typed;
+        end
+      end
+
+      [abc, abg] = snapLattice(app, id, abc, abg, driver);
 
       % --- the alignment ------------------------------------------------
       if isSetup
@@ -1791,18 +1858,28 @@ classdef import_wizard < matlab.apps.AppBase
         al = closestSetup(app, cs);
       else
         pg = 'None';
-        abc = [0 0 0]; abg = [0 0 0];
+        abc = [NaN NaN NaN]; abg = [NaN NaN NaN];
         al = '-';
       end
 
       app.PhaseTable.Data.Symmetry(row)  = pg;
-      app.PhaseTable.Data.a(row)         = abc(1);
-      app.PhaseTable.Data.b(row)         = abc(2);
-      app.PhaseTable.Data.c(row)         = abc(3);
-      app.PhaseTable.Data.alpha(row)     = abg(1);
-      app.PhaseTable.Data.beta(row)      = abg(2);
-      app.PhaseTable.Data.gamma(row)     = abg(3);
+      app.PhaseTable.Data.a(row)         = fmt2(app, abc(1));
+      app.PhaseTable.Data.b(row)         = fmt2(app, abc(2));
+      app.PhaseTable.Data.c(row)         = fmt2(app, abc(3));
+      app.PhaseTable.Data.alpha(row)     = fmt2(app, abg(1));
+      app.PhaseTable.Data.beta(row)      = fmt2(app, abg(2));
+      app.PhaseTable.Data.gamma(row)     = fmt2(app, abg(3));
       app.PhaseTable.Data.Alignment(row) = al;
+    end
+
+    function s = fmt2(~, value)
+      % a lattice parameter as the table prints it: two decimals, or
+      % blank where there is no value at all
+      if isempty(value) || isnan(value)
+        s = "";
+      else
+        s = string(sprintf('%.2f', value));
+      end
     end
 
     function rgb = readableOn(~, background)
