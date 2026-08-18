@@ -12,16 +12,17 @@ warnings = initWarnings;
 
 grid_vals = reshape(SO3F.values(:), numel(SO3F.nodes), numf);
 
-if SO3F.detectOutliers && isempty(SO3F.outlierIndicators)
-  SO3F.outlierIndicators = SO3F.compute_outlier_indicators;
-end
+% Outlier indicators may differ per function component. Unlike the higher
+% degrees, degree zero is not split into components by eval, so the local
+% averages have to be formed componentwise here.
+perComponent = SO3F.detectOutliers && ...
+  (size(SO3F.outlierIndicators, 2) > 1);
 
 
 % KNN mode
 if (SO3F.delta == 0)
   nn = candidate_count_SO3(SO3F);
-  [ind, dist] = SO3F.nodes.find(ori, nn, varargin{:}, ...
-    'searcher', SO3F.searcher);
+  [ind, dist] = SO3F.nodes.find(ori, nn, varargin{:});
 
   if SO3F.use_smooth_delta
     deltas = supportMargin * get_option(varargin, 'smoothDelta', []);
@@ -48,22 +49,23 @@ if (SO3F.delta == 0)
       (positiveCount == nn) & ...
       (min(weights, [], 2) > candidateTol * max(weights, [], 2)));
   else
-    deltas = supportMargin * max(dist, [], 2);
-    weights = SO3F.w(dist ./ max(real(deltas), realmin));
+    deltas = max(real(supportMargin * max(dist, [], 2)), realmin);
+    weights = SO3F.w(dist ./ deltas);
   end
 
   weights = weights .* SO3F.vor_weights(ind);
   weights = max(real(weights), 0);
 
-  if SO3F.detectOutliers && ...
-      ~isempty(SO3F.outlierIndicators) && ...
-      size(SO3F.outlierIndicators,2) > 1
+  if perComponent
     vals = zeros(N, numf);
+    % NOTE: with a second subscript the N-by-nn neighborhood layout of
+    %   ind is lost, so it has to be restored explicitly
     for j = 1 : numf
-      weights_j = weights .* exp(-SO3F.outlierIndicators(ind,j));
+      weights_j = weights .* ...
+        exp(-reshape(SO3F.outlierIndicators(ind,j), size(ind)));
       Wsum = sum(weights_j, 2);
-      vals(:,j) = sum(weights_j .* grid_vals(ind,j), 2) ./ ...
-        max(Wsum, realmin);
+      vals(:,j) = sum(weights_j .* ...
+        reshape(grid_vals(ind,j), size(ind)), 2) ./ max(Wsum, realmin);
     end
   else
     if SO3F.detectOutliers
@@ -75,8 +77,7 @@ if (SO3F.delta == 0)
       vals = sum(weights .* grid_vals(ind), 2) ./ max(Wsum, realmin);
     else
       center_id = repmat((1:N)', nn, 1);
-      A = sparse(center_id, ind(:), weights(:), ...
-        N, numel(SO3F.nodes));
+      A = sparse(center_id, ind(:), weights(:), N, numel(SO3F.nodes));
       vals = (A * grid_vals) ./ max(Wsum, realmin);
     end
   end
@@ -84,8 +85,7 @@ if (SO3F.delta == 0)
 
 % range mode
 else
-  [ind, dist] = SO3F.nodes.find(ori, SO3F.delta, ...
-    'searcher', SO3F.searcher);
+  [ind, dist] = SO3F.nodes.find(ori, SO3F.delta);
   [grid_id, center_id] = find(ind');
 
   I = sub2ind(size(dist), center_id, grid_id);
@@ -93,13 +93,10 @@ else
   weights = weights .* SO3F.vor_weights(grid_id);
   weights = max(real(weights), 0);
 
-  if SO3F.detectOutliers && ...
-      ~isempty(SO3F.outlierIndicators) && ...
-      size(SO3F.outlierIndicators,2) > 1
+  if perComponent
     vals = zeros(N, numf);
     for j = 1 : numf
-      weights_j = weights .* ...
-        exp(-SO3F.outlierIndicators(grid_id,j));
+      weights_j = weights .* exp(-SO3F.outlierIndicators(grid_id,j));
       Wsum = accumarray(center_id, weights_j, [N, 1], @sum, 0);
       vals(:,j) = accumarray(center_id, ...
         weights_j .* grid_vals(grid_id,j), [N, 1], @sum, 0) ./ ...
@@ -115,8 +112,7 @@ else
       vals = accumarray(center_id, weights .* grid_vals(grid_id), ...
         [N, 1], @sum, 0) ./ max(Wsum, realmin);
     else
-      A = sparse(center_id, grid_id, weights, ...
-        N, numel(SO3F.nodes));
+      A = sparse(center_id, grid_id, weights, N, numel(SO3F.nodes));
       vals = (A * grid_vals) ./ max(Wsum, realmin);
     end
   end

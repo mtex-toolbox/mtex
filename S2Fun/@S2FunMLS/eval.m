@@ -17,13 +17,18 @@ if isempty(v)
   return;
 end
 
+if S2F.detectOutliers && isempty(S2F.outlierIndicators)
+  S2F.outlierIndicators = S2F.compute_outlier_indicators;
+end
+
 dimensions = size(v);
 N = numel(v);
 
-% degree zero is a weighted average and needs no local linear solves
+% Degree zero is a weighted average and needs no local linear solves.
 if (S2F.degree == 0)
   if S2F.use_smooth_delta && (S2F.delta == 0)
-    varargin = set_option(varargin, 'smoothDelta', getSmoothDelta(S2F, v));
+    varargin = set_option(varargin, ...
+      'smoothDelta', getSmoothDelta(S2F, v));
   end
 
   [vals, warnings_batch] = S2F.eval_const(v, varargin{:});
@@ -42,7 +47,7 @@ if (S2F.degree == 0)
   return;
 end
 
-% avoid page-dimension problems in the local solver for a single center
+% Avoid page-dimension problems in the local solver for one center.
 if (N == 1)
   [vals, conds, info, warnings] = S2F.eval([v;v], varargin{:});
   vals = reshape(vals(1,:), size(S2F));
@@ -52,18 +57,27 @@ if (N == 1)
   return;
 end
 
-% Outlier indicators depend on the values, so vector-valued functions are
-% evaluated componentwise when outlier detection is active.
+% Outlier indicators depend on the values. Evaluate vector-valued functions
+% componentwise when outlier detection is active.
 if (~isscalar(S2F)) && S2F.detectOutliers
   v = v(:);
   vals = zeros(numel(v), numel(S2F));
 
+  S2F1 = S2F.subSet(1);
+  if ~isempty(S2F.outlierIndicators)
+    S2F1.outlierIndicators = S2F.outlierIndicators(:,1);
+  end
   [vals(:,1), conds, info, warnings] = ...
-    S2F.subSet(1).eval(v, varargin{:});
+    S2F1.eval(v, varargin{:});
 
   for k = 2 : numel(S2F)
+    S2Fk = S2F.subSet(k);
+    if ~isempty(S2F.outlierIndicators) && ...
+        size(S2F.outlierIndicators,2) >= k
+      S2Fk.outlierIndicators = S2F.outlierIndicators(:,k);
+    end
     [vals(:,k), ~, ~, warnings_batch] = ...
-      S2F.subSet(k).eval(v, varargin{:});
+      S2Fk.eval(v, varargin{:});
     warnings = mergeWarnings(warnings, warnings_batch);
   end
 
@@ -86,14 +100,15 @@ if (S2F.delta == 0)
     smoothDelta = getSmoothDelta(S2F, v);
   end
 else
+  % Fixed-radius neighborhoods are capped at this size in eval_range.
   nn = S2F.dim * S2F.oF_max;
 end
 
-% keep the large pagewise arrays close to one GiB per batch
+% Keep the large pagewise arrays close to one GiB per batch.
 numf = numel(S2F);
-bytes_per_v = (3*nn*S2F.dim + 6*S2F.dim^2 + ...
+bytes_per_center = (3*nn*S2F.dim + 7*S2F.dim^2 + ...
   2*nn*numf + 2*S2F.dim*numf) * 8;
-batch_size = max(2, floor(2^30 / max(bytes_per_v, 1)));
+batch_size = max(2, floor(2^30 / max(bytes_per_center, 1)));
 
 start_idx = 1;
 while start_idx <= N
@@ -147,14 +162,18 @@ if emitWarnings, issueWarnings(warnings, S2F); end
 end
 
 
-% smooth d_n(x)^2 on an equispaced grid and take the square root afterwards
+% Smooth the local support area d_n^2 and take the square root afterwards.
 function delta = getSmoothDelta(S2F, v)
-  dn2 = S2F.auxgrid.opt.dn.^2;
+  if isempty(S2F.auxgrid)
+    S2F = S2F.init_auxgrid;
+  end
 
-  % d_n^2 is proportional to inverse local node density for small spherical
-  % neighborhoods and is therefore smoother to average than d_n itself.
-  mls = S2FunMLS(S2F.auxgrid, dn2, 'degree', 0, 'oF', 20, ...
-    'centered', false, 'regularize', false, 'use_vor_weights', false, ...
+  % d_n^2 is proportional to the inverse local node density for small
+  % spherical neighborhoods and is therefore smoother to average than d_n.
+  dnArea = S2F.auxgrid.opt.dn.^2;
+  mls = S2FunMLS(S2F.auxgrid, dnArea, ...
+    'degree', 0, 'oF', 20, 'centered', false, ...
+    'regularize', false, 'use_vor_weights', false, ...
     'use_smooth_delta', false, 'weight', 'wendland');
   mls.delta = mls.compute_delta;
 
@@ -182,8 +201,8 @@ end
 function issueWarnings(warnings, S2F)
   if warnings.rangeTooFew
     warning('MTEX:MLS:rangeTooFew', ...
-      ['Some fixed-radius neighborhoods had at most the ansatz dimension ' ...
-      'many nodes and were replaced by minimal KNN neighborhoods.']);
+      ['Some fixed-radius neighborhoods had at most the ansatz ' ...
+      'dimension many nodes and were replaced by minimal KNN neighborhoods.']);
   end
 
   if warnings.rangeTooMany

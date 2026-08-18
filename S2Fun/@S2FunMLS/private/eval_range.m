@@ -27,8 +27,10 @@ if any(too_few)
     S2F = S2F.init_auxgrid;
   end
 
+  % switch to a minimal KNN neighborhood; assigning oF resets oF_max
   delta_original = S2F.delta;
   oF_original = S2F.oF;
+  oF_max_original = S2F.oF_max;
   S2F.delta = 0;
   S2F.oF = 1;
 
@@ -41,6 +43,7 @@ if any(too_few)
   if wantInfo, info = insertRegInfo(info, too_few, info_batch); end
 
   S2F.oF = oF_original;
+  S2F.oF_max = oF_max_original;
   S2F.delta = delta_original;
   if n_few == N0, return; end
 end
@@ -57,6 +60,7 @@ if any(too_many)
 
   delta_original = S2F.delta;
   oF_original = S2F.oF;
+  oF_max_original = S2F.oF_max;
   S2F.delta = 0;
   S2F.oF = S2F.oF_max;
 
@@ -69,11 +73,13 @@ if any(too_many)
   if wantInfo, info = insertRegInfo(info, too_many, info_batch); end
 
   S2F.oF = oF_original;
+  S2F.oF_max = oF_max_original;
   S2F.delta = delta_original;
   if nnz(too_few | too_many) == N0, return; end
 end
 
-% neighborhoods of moderate size
+
+% continue with the neighborhoods of moderate size
 J = ~(too_few | too_many);
 J_idx = find(J);
 v = v.subSet(J);
@@ -87,6 +93,7 @@ end
 
 [grid_id, center_id] = find(ind');
 nn = full(sum(ind, 2));
+clear ind;
 
 if S2F.subsample
   localDist = angle(v.subSet(center_id), S2F.nodes.subSet(grid_id));
@@ -95,13 +102,15 @@ end
 
 nn_total = numel(grid_id);
 
-% local basis values
+
+% evaluate the local basis
 if ~S2F.centered
-  if nn_total > numel(S2F.nodes.x)
+  if nn_total > numel(S2F.nodes)
     basis_on_grid = eval_basis_functions(S2F);
     G = basis_on_grid(grid_id, :);
+    clear basis_on_grid;
   else
-    G = eval_basis_functions(S2F, S2F.nodes(grid_id));
+    G = eval_basis_functions(S2F, S2F.nodes.subSet(grid_id));
   end
 
   if S2F.antipodal && mod(S2F.degree, 2) == 1
@@ -110,8 +119,8 @@ if ~S2F.centered
     G(I,:) = -G(I,:);
   end
 
-  basis_in_v = eval_basis_functions(S2F, v);
-  eval_vector = permute(basis_in_v, [2, 3, 1]);
+  basis_at_centers = eval_basis_functions(S2F, v);
+  eval_vector = permute(basis_at_centers, [2, 3, 1]);
 
   % the geometry score describes the local node cloud in the tangent frame, so
   % the diagnostic needs local coordinates even for a non-centered basis
@@ -128,24 +137,31 @@ else
     I = zloc < 0;
     G(I,:) = -G(I,:);
   end
+  clear zloc;
 
-  basis_in_v = eval_basis_functions(S2F, vector3d.Z);
-  eval_vector = basis_in_v.';
+  % in centered coordinates evaluation is always at the north pole
+  basis_at_centers = eval_basis_functions(S2F, vector3d.Z);
+  eval_vector = basis_at_centers.';
 end
 
-% compact local weights
+
+% compute the compact local weights
 I = sub2ind(size(dist), center_id, grid_id);
 weights = S2F.w(dist(I) ./ S2F.delta);
 weights = weights .* S2F.vor_weights(grid_id) * 4*pi / numel(S2F.nodes);
+clear dist I;
 
 if S2F.detectOutliers
   weights = weights .* exp(-S2F.outlierIndicators(grid_id));
 end
 weights = max(real(weights), 0);
 
-% local function values
+
+% set up the local function values
 grid_vals = reshape(S2F.values(:), numel(S2F.nodes), numf);
 f = grid_vals(grid_id,:);
+clear grid_vals;
+
 
 % solve the variable-size systems
 solve_args = {'eval_vector', eval_vector};
@@ -156,7 +172,8 @@ if S2F.regularize
   solve_args = [solve_args, {'regularize', ...
     'mincond', S2F.mincond, 'maxcond', S2F.maxcond, ...
     'targetcond', S2F.targetcond, ...
-    'basis_degrees', basis_degrees_S2(S2F)}];
+    'basis_degrees', basis_degrees_S2(S2F), ...
+    'degree_laplace_shift', 1}];
 end
 solve_args = [solve_args, varargin];
 
@@ -165,7 +182,7 @@ if wantInfo
     solve_lsq_book_varsize(weights, G, f, nn, solve_args{:});
   % local geometry of the weighted neighborhoods, as it enters the local systems
   info_batch.geometryScore = ...
-    local_geometry_score(xloc, yloc, weights, nn);
+    local_geometry_score_S2(xloc, yloc, weights, nn);
   info = insertRegInfo(info, J_idx, info_batch);
 elseif wantConds
   [c_book, conds(J_idx)] = ...
@@ -173,9 +190,12 @@ elseif wantConds
 else
   c_book = solve_lsq_book_varsize(weights, G, f, nn, solve_args{:});
 end
+clear weights G f grid_id solve_args;
 
-vals(J_idx,:) = permute(sum(basis_in_v .* ...
-  permute(c_book, [3 1 2]), 2), [1 3 2]);
+
+% evaluate the local coefficient vectors
+vals(J_idx,:) = permute(sum(basis_at_centers .* ...
+  permute(c_book, [3, 1, 2]), 2), [1, 3, 2]);
 
 if isalmostreal(S2F.values), vals = real(vals); end
 

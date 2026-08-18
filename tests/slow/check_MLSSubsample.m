@@ -13,9 +13,8 @@ function check_MLSSubsample
 % to interior-point-legacy only if it fails. Whatever a given release does,
 % the multipliers come back.
 %
-% Only the S2 side is exercised here. SO3FunMLS carries the same private
-% helper, but SO3FunMLS.m:319 calls syms, so it needs the Symbolic Math
-% Toolbox and cannot run on a machine without it.
+% Only the S2 side is exercised here; SO3FunMLS carries the same private
+% helper.
 
 if isempty(ver('optim'))
   disp('check_MLSSubsample: skipped, no Optimization Toolbox');
