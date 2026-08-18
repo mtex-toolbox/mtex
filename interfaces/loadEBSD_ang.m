@@ -306,8 +306,9 @@ function header = angHeaderStruct(hl,phasePos)
 % hl       - cell array of header lines (# ...), truncated to the header
 % phasePos - line indices of "# Phase N" markers within hl
 
-phaseKeys = {'materialname','formula','info','symmetry','latticeconstants',...
-  'numberfamilies','hklfamilies','elasticconstants','categories','phase'};
+phaseKeys = {'materialname','formula','info','symmetry','pointgroupid',...
+  'latticeconstants','numberfamilies','hklfamilies','elasticconstants',...
+  'categories','phase'};
 
 exclude = false(size(hl));
 

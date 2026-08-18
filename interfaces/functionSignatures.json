@@ -255,5 +255,47 @@
       {"name":"interface", "kind":"namevalue", "type":["char"], "purpose":"force a specific import filter"},
       {"name":"comment", "kind":"namevalue", "type":["char"], "purpose":"comment associated with the data"}
     ]
+},
+
+"exportEBSD_ang":
+{
+    "inputs":
+    [
+      {"name":"ebsd", "kind":"required", "type":["EBSD"]},
+      {"name":"fName", "kind":"required", "type":["file=*.ang"]},
+      {"name":"setting", "kind":"namevalue", "type":["numeric","scalar",">=0","<=4"], "purpose":"alignment of the Euler and the map reference frame"},
+      {"name":"EulerCorrection", "kind":"namevalue", "type":["rotation"]},
+      {"name":"flipud", "kind":"flag", "type":["choices={'flipud'}"]},
+      {"name":"fliplr", "kind":"flag", "type":["choices={'fliplr'}"]},
+      {"name":"silent", "kind":"flag", "type":["choices={'silent'}"]}
+    ]
+},
+
+"exportEBSD_ctf":
+{
+    "inputs":
+    [
+      {"name":"ebsd", "kind":"required", "type":["EBSD"]},
+      {"name":"fName", "kind":"required", "type":["file=*.ctf"]},
+      {"name":"cprStruct", "kind":"ordered", "type":["struct"], "purpose":"properties from a cpr file import"},
+      {"name":"EulerCorrection", "kind":"namevalue", "type":["rotation"]},
+      {"name":"manual", "kind":"flag", "type":["choices={'manual'}"], "purpose":"prompt for the microscopy parameters"},
+      {"name":"flipud", "kind":"flag", "type":["choices={'flipud'}"]},
+      {"name":"fliplr", "kind":"flag", "type":["choices={'fliplr'}"]},
+      {"name":"silent", "kind":"flag", "type":["choices={'silent'}"]}
+    ]
+},
+
+"exportEBSD_h5":
+{
+    "inputs":
+    [
+      {"name":"ebsd", "kind":"required", "type":["EBSD"]},
+      {"name":"fName", "kind":"required", "type":["file=*.h5,*.hdf5,*.h5oina,*.oh5,*.edaxh5"]},
+      {"name":"reference", "kind":"namevalue", "type":["file"], "purpose":"file to copy and write the changed data into"},
+      {"name":"compression", "kind":"namevalue", "type":["numeric","scalar",">=0","<=9"], "purpose":"deflate level of the standalone layout"},
+      {"name":"standalone", "kind":"flag", "type":["choices={'standalone'}"], "purpose":"write MTEX's own layout"},
+      {"name":"noProp", "kind":"flag", "type":["choices={'noProp'}"], "purpose":"write orientations and phases only"}
+    ]
 }
 }
