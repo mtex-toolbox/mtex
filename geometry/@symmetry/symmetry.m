@@ -41,6 +41,11 @@ classdef symmetry < matlab.mixin.Copyable
     % cache for stripSym: the trivial stand-in must be a stable handle, since
     % crystalSymmetry equality is sealed to handle identity - never saved
     stripSymRef = []
+
+    % cache for multiplicityZ: computing it builds the axes of the whole
+    % group, and the Wigner transform asks for it on every single call.
+    % Cleared by set.rot, since the multiplicity follows the group elements
+    multiplicityZRef = []
   end
     
   properties (Constant = true)
@@ -81,6 +86,14 @@ classdef symmetry < matlab.mixin.Copyable
     end
     
     
+    function s = set.rot(s,rot)
+      % replacing the group elements invalidates everything derived from
+      % them - properGroup/properSubGroup/makeLaue all work this way
+      s.rot = rot;
+      s.multiplicityZRef = [];
+    end
+
+
     function pC = get.how2plot(s)
       % only frames carry conventions - a symmetry shows the one of its
       % reference frame

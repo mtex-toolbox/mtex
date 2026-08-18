@@ -51,24 +51,25 @@ else
   flags = 2^0 + SO3F.isReal*2^2 + 2^4;
 end
 
-% get symmetries
+% get symmetries - only needed when they are actually used. Symmetries that
+% are not standardized have no usable multiplicities, so drop the flag
 cs = SO3F.SRight;
 ss = SO3F.SLeft;
-sym = [min(cs.multiplicityPerpZ,2),cs.multiplicityZ,...
-       min(ss.multiplicityPerpZ,2),ss.multiplicityZ];
-
-% do not use symmetric properties, if symmetries are not standardized
-if cs.id==0 || ss.id==0
-  flags = dec2bin(flags); 
-  flags = flip(str2num(flags(:)));
-  if length(flags)>=5
-    flags(5) = 0;
-  end
-  flags = bin2dec(sprintf('%d',flip(flags)));
+if bitand(flags,2^4) && cs.id~=0 && ss.id~=0
+  sym = [min(cs.multiplicityPerpZ,2),cs.multiplicityZ,...
+         min(ss.multiplicityPerpZ,2),ss.multiplicityZ];
+else
+  flags = flags - bitand(flags,2^4);
+  sym = [1,1,1,1];
 end
 
+% the mex reads coefficients only up to degree N, but duplicates whatever it
+% is handed - so hand it only the part it reads
+fhat = SO3F.fhat;
+if N < SO3F.bandwidth, fhat = fhat(1:deg2dim(N+1),:); end
+
 % Wigner transform
-ghat = wignerTrafomex(N,double(SO3F.fhat),flags,sym);
+ghat = wignerTrafomex(N,double(fhat),flags,sym);
 % reconstruct symmetric coefficients
 ghat = symmetriseFourierCoefficients(ghat,flags,cs,ss,sym);
 

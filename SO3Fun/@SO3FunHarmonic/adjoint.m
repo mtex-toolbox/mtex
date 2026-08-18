@@ -23,6 +23,7 @@ function SO3F = adjoint(rot,values, varargin)
 %  bandwidth - maximal harmonic degree (default: 64)
 %  weights   - quadrature weights
 %  cutOffParameter - set parameter precision parameter m for nfft
+%  oversampling - NFFT oversampling factor sigma (default: 2)
 %
 % Flags
 %  'nfsoft'            - use (mostly slower) NFSOFT algorithm
@@ -225,8 +226,8 @@ if isempty(plan) && ~(isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'Clensha
     nfft_flags = 1+2^12+2^4+2^10; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT
   % nfft_cutoff parameter
     m = get_option(varargin,'cutoffParameter',4);
-  % oversampling factor
-    sigma = 3;
+  % oversampling factor - see SO3FunHarmonic/eval, the forward transform
+    sigma = get_option(varargin,'oversampling',2);
     fftw_size = 2*ceil(sigma/2*NN);
   % initialize nfft plan
   plan = nfftmex('init_guru',{3,NN,NN,NN,length(rot),fftw_size,fftw_size,fftw_size,m,nfft_flags,fftw_flags});

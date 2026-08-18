@@ -19,6 +19,8 @@ function f = eval(SO3F,rot,varargin)
 %
 % Options
 %  bandwidth - cut bandwidth of the harmonic series in evaluation process
+%  cutoffParameter - NFFT window cutoff m (default: 4)
+%  oversampling - NFFT oversampling factor sigma (default: 2)
 %
 % Flags
 %  nfsoft - use Nonequispace Fast Fourier Transform of the NFFT3 Toolbox (expensive precomputations)
@@ -106,10 +108,12 @@ if isempty(plan)
   %                         measuring their execution time. This can take some time (often a few seconds).
     fftw_flags = int8(64);
     nfft_flags = 1+2^12+2^4+2^10; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT
-  % nfft_cutoff parameter 
+  % nfft_cutoff parameter
     m = get_option(varargin,'cutoffParameter',4);
-  % oversampling factor
-    sigma = 3;
+  % oversampling factor - 2 is the standard pairing for the cutoff m=4 above
+  % and holds the NFFT error at ~1e-8. In 3d every increment costs the cube,
+  % so sigma=3 spent 3.4x the FFT on accuracy that is not used
+    sigma = get_option(varargin,'oversampling',2);
     fftw_size = 2*ceil(sigma/2*NN);
     fftw_size2 = 2*ceil(sigma/2*N2);
   % initialize nfft plan
