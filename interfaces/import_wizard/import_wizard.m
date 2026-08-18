@@ -368,7 +368,7 @@ classdef import_wizard < matlab.apps.AppBase
       % middle), CoordinatePanel (fixed, right - added by
       % createCoordinateControls); row 2: TabGroup spanning all 3 columns
       app.RightLayout = uigridlayout(app.RightPanel, ...
-        'ColumnWidth', {845,'1x',300}, ...
+        'ColumnWidth', {809,'1x',300}, ...
         'RowHeight', {230, '1x'}, ...
         'RowSpacing', 8, ...
         'ColumnSpacing', 8, ...
@@ -401,10 +401,16 @@ classdef import_wizard < matlab.apps.AppBase
       % Widths are set so nothing truncates on a real multi-phase file -
       % eclogite.ctf is the one to check against, its triclinic phase
       % being the only thing that puts real numbers in all six lattice
-      % columns at once. They fit "115.87" now that those columns print
-      % to two decimals rather than MATLAB's four.
+      % columns at once.
+      %
+      % The lattice columns are sized to their real content rather than
+      % to a worst case: two decimals (see fillPhaseTable), an axis
+      % length that stays below 100 A in any EBSD phase, so "99.99", and
+      % an angle below 180 degree, so "179.99". A unit cell of 100 A or
+      % more would clip its axis lengths - not something an EBSD data set
+      % carries, and worth the space it saves the rest of the table.
       app.PhaseTable.ColumnWidth = ...
-        {42, 48, 125, 62, 52, 78, 56, 56, 56, 56, 56, 56, 92};
+        {42, 48, 125, 62, 52, 78, 48, 48, 48, 52, 52, 52, 92};
 
       % browser for the full ebsd.opt structure - selecting an image-shaped
       % field shows it in the Images tab (see OptTreeSelectionChanged)
