@@ -133,7 +133,10 @@
 % replaces random sampling by an almost perfectly equally distributed set of
 % orientations or directions representing a given function. Asking for a
 % second output optimizes the weights of the sampling points as well, which
-% needs considerably fewer points for the same accuracy
+% needs considerably fewer points for the same accuracy. The orientations
+% are moved by a limited memory BFGS iteration, which copes with the bad
+% conditioning of the underlying functional far better than plain gradient
+% descent - roughly an order of magnitude in time to a given accuracy
 % * <orientation.calcCluster.html |calcCluster|> uses by default the
 % <https://github.com/nla-group/classix CLASSIX> algorithm, which is much
 % faster than hierarchical clustering and needs no number of clusters

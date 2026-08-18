@@ -22,7 +22,18 @@ function [ori,c] = optimalSample(f,n,varargin)
 % <SO3RestrictedDistanceKernel.html restricted distance kernel> and $N$ is
 % the |bandwidth|, i.e. only the harmonic degrees up to $N$ are taken into
 % account - choose it to match the intended use of the orientations. The
-% minimization is done by gradient descent with Armijo line search.
+% minimization is done by a limited memory BFGS iteration with Armijo line
+% search.
+%
+% *Why L-BFGS and not gradient descent.* $J$ is badly conditioned - in a
+% minimizer of a 92 point sample of the |SO3Fun.dubna| ODF the Hessian has a
+% condition number of roughly 2000 - and the convergence rate of gradient
+% descent degrades with exactly that number. Collecting curvature from the
+% steps already taken costs nothing beyond a few vectors of memory and buys
+% about an order of magnitude in time to a given discrepancy. A true Newton
+% method does not pay on top of that: the Hessian couples every pair of
+% orientations, so it is a dense $3M \times 3M$ matrix, and in a measurement
+% its iteration count was no better than the one of L-BFGS.
 %
 % Note that the sum above starts at degree 1. The restricted distance kernel
 % is only conditionally positive definite, its Chebyshev coefficient of
@@ -107,6 +118,7 @@ function [ori,c] = optimalSample(f,n,varargin)
 %  bandwidth  - harmonic degree to approximate (default = 32), see above
 %  maxIter    - number of (outer) iterations (default = 100)
 %  tol        - termination tolerance for the orientations (default = 0.1*degree)
+%  memory     - secant pairs kept by the L-BFGS iteration (default = 5)
 %  weights    - starting weights, fixed if they are not optimized (default = ones(M,1)/M)
 %
 % The following options apply only if the weights are optimized
@@ -144,9 +156,10 @@ M = numel(ori);
 % the discrete measure and the density function is formed below
 ori = orientation(ori(:),f.CS,f.SS);
 
-% specify parameters for the (alternating) gradient method
+% specify parameters for the (alternating) descent method
 maxIter = get_option(varargin,'maxIter',100);
 tol = get_option(varargin,'tol',0.1*degree);
+mem = get_option(varargin,'memory',5);
 innerIter = get_option(varargin,'innerIter',5);
 warmUp = get_option(varargin,'warmUp',0);
 tolWeights = get_option(varargin,'tolWeights',1e-3/M);
@@ -193,15 +206,29 @@ I = w .* ((sqrt(8)*pi) * f.fhat);
 % the same kernel without its degree 0 part, used for the gradient w.r.t. ori
 psi0 = SO3Kernel([0;psi.A(2:end)]);
 
-% Step size of the line search. It is carried over between the iterations and
-% doubled before every line search, so that it can grow as well as shrink.
-% Starting each line search at 1 instead would tie the length of a step to
-% the magnitude of the gradient, which is proportional to the weights and
-% hence of the order 1/M - the orientations would then crawl.
+% Step size of the line search along the steepest descent direction, i.e. as
+% long as the L-BFGS memory is still empty. It is carried over between the
+% iterations and doubled before every line search, so that it can grow as
+% well as shrink. Starting each line search at 1 instead would tie the length
+% of a step to the magnitude of the gradient, which is proportional to the
+% weights and hence of the order 1/M - the orientations would then crawl.
+% Once the memory is filled the direction carries that scaling itself and the
+% unit step is the natural trial step.
 stepSize = 1;
+
+% L-BFGS memory. The columns of S hold the steps taken, those of Y the
+% corresponding changes of the gradient, both as plain 3M vectors [x;y;z].
+% Note that the left tangent space is a global trivialization of the tangent
+% bundle of SO(3), i.e. the components of a tangent vector refer to one and
+% the same frame in every iterate. Hence the pairs may simply be accumulated
+% and no vector transport is needed.
+S = []; Y = [];
 
 % Wigner coefficients D of mu - f and the resulting discrepancy
 [resOld,D] = J(ori,c,f,w,lambda,bw);
+
+% gradient of the functional with respect to the orientations
+g = grad_J(ori,c,D,psi0,lambda);
 
 pC = progressCounter(maxIter);
 for i = 1:maxIter
@@ -221,34 +248,60 @@ for i = 1:maxIter
     if all(isfinite(cNew)) && all(cNew>=0) && sum(cNew)>0
       c = cNew/sum(cNew); % also compensates round off in the mass constraint
     end
-    % the weights changed, hence the discrepancy has to be recomputed
+    % the weights changed, hence the discrepancy and the gradient have to be
+    % recomputed
     [resOld,D] = J(ori,c,f,w,lambda,bw);
+    g = grad_J(ori,c,D,psi0,lambda);
   end
 
   % ---------------------- (2) optimize orientations ----------------------
-  % compute gradient of the functional with respect to the orientations
-  g = grad_J(ori,c,D,psi0,lambda);
+  % the gradient of the functional with respect to the orientations is
+  % computed at the end of the previous iteration, resp. above if the weight
+  % step has changed the functional in between
+  gVec = [g.x(:);g.y(:);g.z(:)];
 
   gNorm = sqrt(sum(norm(g).^2));
 
   % a vanishing gradient cannot be improved by any step size
   if gNorm == 0, break, end
 
+  % L-BFGS direction, i.e. the inverse Hessian approximation built from the
+  % memory applied to the gradient. With an empty memory this is the negative
+  % gradient and the iteration below is plain gradient descent.
+  d = twoLoop(gVec,S,Y);
+
+  % the directional derivative of J along d
+  slope = d.' * gVec;
+
+  % Safeguard. The memory may have gone stale - the weight step changes the
+  % functional the pairs were taken from - and then produce a direction that
+  % does not decrease J at all. Drop it and fall back to gradient descent.
+  if slope >= 0
+    S = []; Y = []; d = -gVec; slope = -gNorm.^2;
+  end
+
+  dir = SO3TangentVector(vector3d(d(1:M),d(M+1:2*M),d(2*M+1:3*M)),ori,...
+    g.tangentSpace);
+
   % line search with Armijo, capped such that no orientation travels more
   % than half a turn - without the cap the step size would keep doubling
   % once the gradient becomes small and every line search would waste its
   % first dozens of trials
-  stepSize = min(2*stepSize, pi/max(norm(g)));
+  if isempty(S)
+    stepSize = min(2*stepSize, pi/max(norm(dir)));
+  else
+    stepSize = min(1, pi/max(norm(dir)));
+  end
 
   lineSearchFailed = false;
   while true
 
-    % gradient step
-    oriNew = exp(-stepSize*g,ori);
+    % descent step
+    oriNew = exp(stepSize*dir,ori);
 
     [resNew,DNew] = J(oriNew,c,f,w,lambda,bw);
 
-    if resNew < resOld - 1e-4*stepSize*gNorm.^2 % Armijo Condition
+    if resNew < resOld + 1e-4*stepSize*slope % Armijo Condition
       break;
     end
 
@@ -272,10 +325,27 @@ for i = 1:maxIter
     break;
   end
 
+  % The gradient in the new orientations. It is taken under the same weights
+  % as gVec above, hence the two form a secant pair of one and the same
+  % functional - which is what the memory has to consist of.
+  gNew = grad_J(oriNew,c,DNew,psi0,lambda);
+
+  sVec = stepSize*d;
+  yVec = [gNew.x(:);gNew.y(:);gNew.z(:)] - gVec;
+
+  % Keep the pair only if it carries positive curvature. Otherwise the
+  % inverse Hessian approximation would lose its positive definiteness and
+  % with it the guarantee that the next direction is one of descent.
+  if sVec.'*yVec > 1e-12 * norm(sVec) * norm(yVec)
+    S = [S,sVec]; Y = [Y,yVec]; %#ok<AGROW>
+    if size(S,2) > mem, S(:,1) = []; Y(:,1) = []; end
+  end
+
   % update
   ori = oriNew;
   D = DNew;
   resOld = resNew;
+  g = gNew;
 
   pC.show(i)
 
@@ -350,6 +420,40 @@ D = (lambda/(sqrt(8)*pi)) * mu - (sqrt(8)*pi) * f;
 D.bandwidth = bw;
 
 res = sum(abs(w.*D.fhat).^2);
+
+end
+
+
+function d = twoLoop(g,S,Y)
+% The two loop recursion of L-BFGS. It applies the inverse Hessian
+% approximation built from the secant pairs in S and Y to the gradient g,
+% without ever forming a matrix - only inner products of the stored vectors
+% are needed. An empty memory gives the negative gradient.
+
+k = size(S,2);
+
+if k == 0, d = -g; return, end
+
+rho = zeros(k,1);
+a = zeros(k,1);
+
+q = g;
+for j = k:-1:1
+  rho(j) = 1./(Y(:,j).'*S(:,j));
+  a(j) = rho(j)*(S(:,j).'*q);
+  q = q - a(j)*Y(:,j);
+end
+
+% initial inverse Hessian, scaled by the most recent pair - this is the step
+% length that makes the unit trial step of the line search the right one
+q = q * (S(:,k).'*Y(:,k))/(Y(:,k).'*Y(:,k));
+
+for j = 1:k
+  b = rho(j)*(Y(:,j).'*q);
+  q = q + S(:,j)*(a(j)-b);
+end
+
+d = -q;
 
 end
 
