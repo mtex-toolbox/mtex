@@ -78,7 +78,7 @@ over budget, trim from outside these before trimming inside them.
 | `Miller`, crystal directions, hkl↔uvw | `core/check_Miller` |
 | **every mex binary's functional behaviour** | `core/check_mexFunctions` |
 | mex build completeness | `check_mexComplete` (root) |
-| **EBSD import**, text formats (.ctf, .ang) | `core/check_ebsdImport` |
+| **EBSD import**, text formats (.ctf, .ang) and the Oxford binary pair (.cpr/.crc) | `core/check_ebsdImport` |
 | **EBSD import**, HDF5 and multi-scan files | `slow/check_ebsdImportH5` |
 | **EBSD export**, text formats and round trips | `core/check_ebsdExport` |
 | **EBSD export**, HDF5 into a copy of the reference file | `slow/check_ebsdImportH5` |

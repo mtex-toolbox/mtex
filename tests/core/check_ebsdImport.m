@@ -25,13 +25,14 @@ function check_ebsdImport
 % slow/check_ebsdImportH5.
 %
 % See also
-% EBSD.load loadEBSD_ctf loadEBSD_ang check_ebsdImportH5
+% EBSD.load loadEBSD_ctf loadEBSD_ang loadEBSD_crc check_ebsdImportH5
 
 checkSquareCtf;
 checkHexCtf;
 checkMultiPhaseCtf;
 checkAng;
 checkEMSphInxAngROI;
+checkCprMissingPhase;
 checkGridDispatch;
 checkGridOnImport;
 
@@ -284,6 +285,155 @@ for iy = 0:ny-1
   end
 end
 
+fclose(fid);
+
+end
+
+% =========================================================================
+function checkCprMissingPhase
+% a phase the .cpr counts but never describes must not shift the others
+%
+% [Phases] Count is not always matched by that many [PhaseN] sections. A
+% Channel-5 stitch of six projects announced 13 phases, wrote 12 sections,
+% and its .crc did use phase 13 on 1949 pixels. Reading the count as
+% "sections present" throws on the missing field, which is how the file was
+% found - but the failure worth a test is the other one: reading the
+% sections in the order they appear moves every phase after the gap onto
+% the wrong crystallography, silently. So the undescribed phase has to keep
+% its slot, and its pixels become notIndexed rather than someone else's
+% mineral.
+%
+% All three positions are covered, because only a gap that is not last can
+% shift anything, and the file that produced the bug had the last one
+% missing. omit = 0 is the control: a complete file must import unchanged
+% and must not warn.
+
+names = {'Iron','Quartz','Calcite'};
+nx = 8; ny = 5;
+
+for omit = [1 2 3 0]
+
+  f = writeSyntheticCpr(nx,ny,omit);
+  c = onCleanup(@() delete(f,[f(1:end-4) '.crc'])); %#ok<NASGU>
+
+  % state the Euler correction rather than switching its warning off: a
+  % disabled warning still updates lastwarn, so the note about the assumed
+  % alignment would be the one read back below. Naming it suppresses it at
+  % the source, and this test is about phases, not about the correction.
+  lastwarn('');
+  evalc(['e = EBSD.load(f,''noGrid'',''EulerCorrection'',' ...
+    'rotation.byAxisAngle(zvector,180*degree));']);
+  [~,warnId] = lastwarn;
+
+  % the announced phases all keep their slot, described or not
+  assert(numel(e.CSList) == numel(names)+1, ...
+    ['check_ebsdImport: a .cpr announcing %d phases with section %d missing ' ...
+     'gave %d phases, expected %d - a gap must not drop a slot'], ...
+    numel(names), omit, numel(e.CSList), numel(names)+1)
+
+  assert(isequal(reshape(e.phaseMap,1,[]),0:numel(names)), ...
+    'check_ebsdImport: the .cpr phase map is %s, expected %s', ...
+    mat2str(reshape(e.phaseMap,1,[])), mat2str(0:numel(names)))
+
+  % and the described ones stay on their own mineral - this is the
+  % assertion that catches a shift
+  want = [{'notIndexed'} names];
+  if omit > 0, want{omit+1} = 'notIndexed'; end
+
+  assert(isequal(reshape(e.mineralList,1,[]),want), ...
+    ['check_ebsdImport: a .cpr with section %d missing gave the minerals ' ...
+     '{%s}, expected {%s}'], omit, strjoin(e.mineralList,','), strjoin(want,','))
+
+  if omit > 0
+    assert(strcmp(warnId,'MTEX:cprPhaseMissing'), ...
+      ['check_ebsdImport: a .cpr with section %d missing warned ''%s'', ' ...
+       'expected MTEX:cprPhaseMissing'], omit, warnId)
+  else
+    assert(isempty(warnId), ...
+      ['check_ebsdImport: a complete .cpr warned ''%s'' - the missing phase ' ...
+       'notice must only fire on a file that is short a section'], warnId)
+  end
+
+  % what the .crc states per pixel, in file order - 'noGrid' keeps that
+  % order, so this is what every pixel below is held against. The
+  % undescribed phase cannot be read back off the import: an EBSD merges
+  % every notIndexed entry onto phase 0, which is exactly what those pixels
+  % are supposed to become.
+  filePhase = reshape(mod(0:nx*ny-1,numel(names)+1),[],1);
+
+  % phase 0 is unindexed in every file; a phase left undescribed joins it
+  unindexed = filePhase == 0 | filePhase == omit;
+
+  assert(isequal(reshape(~e.isIndexed,[],1),unindexed), ...
+    ['check_ebsdImport: with section %d missing, %d pixels came back ' ...
+     'notIndexed and %d should have - an undescribed phase must lose its ' ...
+     'measurements, and no described phase may'], ...
+    omit, nnz(~e.isIndexed), nnz(unindexed))
+
+  % and every described phase keeps its own crystallography, pixel by pixel
+  for p = setdiff(1:numel(names),omit)
+    got = unique(e.mineralList(e.phaseId(filePhase == p)));
+    assert(isequal(got,names(p)), ...
+      ['check_ebsdImport: with section %d missing, the pixels of phase %d ' ...
+       'came back as {%s}, expected %s - the phases shifted across the gap'], ...
+      omit, p, strjoin(got,','), names{p})
+  end
+
+end
+
+end
+
+% =========================================================================
+function f = writeSyntheticCpr(nx,ny,omit)
+% write a tiny Oxford .cpr/.crc pair announcing three phases
+%
+% omit is the number of the [PhaseN] section left out of the .cpr, 0 for a
+% complete file. [Phases] Count always says three, which is the point: the
+% count and the sections disagree exactly as they do in the stitched file.
+%
+% The .crc is the raw record layout the .cpr's [Fields] describes - here one
+% phase byte followed by phi1, Phi, phi2 and MAD as 4 byte floats - with the
+% coordinates implicit in xCells/yCells. Phase numbers cycle 0..3, so every
+% announced phase and the notIndexed 0 occur equally often.
+
+phases = {
+  'Iron',    [2.870 2.870 2.870],  [90 90 90],  11, 229
+  'Quartz',  [4.913 4.913 5.504],  [90 90 120],  7, 152
+  'Calcite', [4.989 4.989 17.053], [90 90 120],  7, 167};
+
+f = [tempname '.cpr'];
+
+fid = fopen(f,'w');
+assert(fid > 0, 'check_ebsdImport: could not write the synthetic .cpr to %s', f)
+
+fprintf(fid,'[General]\nVersion=5.0\n');
+fprintf(fid,'[Job]\nGridDistX=1.0000\nGridDistY=1.0000\nxCells=%d\nyCells=%d\n',nx,ny);
+fprintf(fid,'[Fields]\nCount=4\nField1=3\nField2=4\nField3=5\nField4=6\n');
+fprintf(fid,'[Phases]\nCount=%d\nNoReflectors=75\n',size(phases,1));
+
+for p = 1:size(phases,1)
+
+  if p == omit, continue, end
+
+  fprintf(fid,'[Phase%d]\nStructureName=%s\nEnabled=True\n',p,phases{p,1});
+  fprintf(fid,'a=%.4f\nb=%.4f\nc=%.4f\n',phases{p,2});
+  fprintf(fid,'alpha=%.2f\nbeta=%.2f\ngamma=%.2f\n',phases{p,3});
+  fprintf(fid,'LaueGroup=%d\nSpaceGroup=%d\n',phases{p,4},phases{p,5});
+
+end
+
+fclose(fid);
+
+% the binary companion - 17 bytes per pixel, in the order [Fields] gives
+n = nx*ny;
+rec = zeros(17,n,'uint8');
+rec(1,:) = uint8(mod(0:n-1,size(phases,1)+1));                % phase
+rec(2:end,:) = reshape(typecast(single(repmat([0.3;0.4;0.5;0.7],n,1)),'uint8'),16,n);
+
+fid = fopen([f(1:end-4) '.crc'],'w');
+assert(fid > 0, 'check_ebsdImport: could not write the synthetic .crc')
+
+fwrite(fid,rec,'uint8');
 fclose(fid);
 
 end
