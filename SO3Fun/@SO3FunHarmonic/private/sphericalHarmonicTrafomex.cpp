@@ -63,6 +63,7 @@
 #include <cstdio>    // For printf
 #include <complex>
 #include <cstring>
+#include <limits>
 #ifdef _OPENMP // For parallelisation
 #include <omp.h>
 #endif
@@ -401,7 +402,18 @@ void mexFunction( int nlhs, mxArray *plhs[],
   
   // call the computational routine
     if (bandwidth > 1023){
-      // TODO: evt. muss outFourierCOeff erst im long double gerechnet werden und später auf double transformiert und dann zurückgegeben werden.
+      // The Wigner-d recursion seeds every entry with a value as small as
+      // 2^(-n) and a seed that underflows stays zero for all higher degrees,
+      // so what limits the bandwidth is the exponent range of the type the
+      // matrices are stored in (see wigner_d_recursion_at_pi_half.cpp).
+      // long double buys that range only where the ABI makes it wider than
+      // double - it does on x86 (80 bit, n up to about 16000) and with
+      // MinGW-w64, but on Apple silicon long double *is* double. Say so
+      // instead of returning silently wrong coefficients.
+      if (bandwidth > -std::numeric_limits<long double>::min_exponent-1)
+        mexWarnMsgIdAndTxt("sphericalHarmonicTrafomex:bandwidthTooLarge",
+          "long double is too narrow on this platform to represent the Wigner-d "
+          "functions up to bandwidth %d - the result is inaccurate.",bandwidth);
       std::vector<std::complex<long double>> ghat_tmp(dims[0]*dims[1]);
       calculate_ghat<long double>(bandwidth,inCoeff,makeEven,isReal,isAntipodal,sym_axis,ghat_tmp.data() + start_shift,(mwSize)nrows);
       for (size_t i = 0; i < dims[0]*dims[1]; i++) {

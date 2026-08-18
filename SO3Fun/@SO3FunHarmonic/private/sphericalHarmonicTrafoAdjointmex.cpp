@@ -56,6 +56,7 @@
 #include <cstdio>
 #include <complex>
 #include <cstring>
+#include <limits>
 #ifdef _OPENMP // For parallelisation
 #include <omp.h>
 #endif
@@ -363,6 +364,13 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
   // call the computational routine
     if (bandwidth > 1023){
+      // What limits the bandwidth is the exponent range of the type the
+      // Wigner-d matrices are stored in, see the same guard in
+      // sphericalHarmonicTrafomex.cpp and wigner_d_recursion_at_pi_half.cpp.
+      if (bandwidth > -std::numeric_limits<long double>::min_exponent-1)
+        mexWarnMsgIdAndTxt("sphericalHarmonicTrafoAdjointmex:bandwidthTooLarge",
+          "long double is too narrow on this platform to represent the Wigner-d "
+          "functions up to bandwidth %d - the result is inaccurate.",(int)bandwidth);
       std::vector<std::complex<long double>> ghat_tmp(deg2dim);
       // TODO: evt. muss outFourierCOeff erst im long double gerechnet werden und später auf double transformiert und dann zurückgegeben werden.
       calculate_ghat_adjoint<long double>(bandwidth,inCoeff,isReal,isAntipodal,sym_axis,ghat_tmp.data());
