@@ -30,6 +30,9 @@ function check_ebsdImportH5
 % See also
 % loadEBSD_h5 EBSD.load check_ebsdImport
 
+% synthetic and does not need the 50 MB asset below
+checkExportIntoReference;
+
 fname = fullfile(mtexDataPath,'EBSD','EMSphinx.h5');
 
 if ~isfile(fname)
@@ -227,6 +230,86 @@ for opts = {{}, {'setting',2}, {'EulerCorrection',rotation.byAxisAngle(xvector,1
     optionName(opts{1}))
 
 end
+
+end
+
+% =========================================================================
+function checkExportIntoReference
+% exporting to HDF5 writes into a copy of the file the data came from
+%
+% There is no such thing as "the" EBSD HDF5 format, so exportEBSD_h5 does not
+% write one: it copies the reference file and writes the changed data into
+% the very data sets loadEBSD_h5 read, which are recorded in ebsd.opt.h5.
+% What has to hold is that the changed values arrive, that everything else
+% in the file survives untouched, and that a property MTEX added shows up as
+% a new data set next to the ones the file brought along.
+%
+% Synthetic, on the same 120 pixel file the ROI check above writes.
+
+nx = 12; ny = 10;
+
+ref = writeSyntheticEMSphInxH5(nx,ny);
+tgt = [tempname '.h5'];
+c = onCleanup(@() cellfun(@(f) delete(f),{ref,tgt}));
+
+e0 = load1(ref,{});
+
+% turn the map and overwrite one of the columns the file brought along
+turn = rotation.byAxisAngle(zvector,13*degree);
+e1 = e0;
+e1.rotations = turn .* e0.rotations;
+e1.prop.IQ = 42 * ones(size(e1));
+e1.prop.grainId = reshape(1:length(e1),size(e1));
+
+% the phase list is part of the map too - renaming a mineral used to be
+% silently dropped, since only the per pixel data was written back
+csList = e1.CSList;
+if iscell(csList), csList{2}.mineral = 'Fe(alpha-iron)';
+else, csList(2).mineral = 'Fe(alpha-iron)'; end
+e1.CSList = csList;
+
+evalc('export(e1,tgt,''reference'',ref)');
+
+e2 = load1(tgt,{});
+
+assert(length(e2) == length(e1), ...
+  'check_ebsdImportH5: the exported file holds %d of %d measurements', ...
+  length(e2),length(e1))
+
+ok = e1.isIndexed(:) & e2.isIndexed(:);
+d = angle(e1.rotations(ok),e2.rotations(ok))/degree;
+assert(max(d) < 1e-3, ...
+  'check_ebsdImportH5: the exported orientations came back %.3g degree off',max(d))
+
+assert(isequal(e1.phaseId(:),e2.phaseId(:)), ...
+  'check_ebsdImportH5: the exported file changed the phase of %d pixels', ...
+  nnz(e1.phaseId(:) ~= e2.phaseId(:)))
+
+assert(isfield(e2.prop,'IQ') && all(e2.prop.IQ(:) == 42), ...
+  'check_ebsdImportH5: the overwritten IQ column did not arrive')
+
+assert(isfield(e2.prop,'grainId') && isequal(e2.prop.grainId(:),e1.prop.grainId(:)), ...
+  'check_ebsdImportH5: grainId was not added to the exported file')
+
+assert(strcmp(e2.mineralList{2},'Fe(alpha-iron)'), ...
+  'check_ebsdImportH5: the renamed mineral came back as %s',e2.mineralList{2})
+
+% everything the export does not touch has to be passed through
+for ds = {'/Manufacturer','/Scan 1/EBSD/Header/Step X', ...
+    '/Scan 1/EBSD/Header/nColumns','/Scan 1/EBSD/Header/Phase/1/Symmetry', ...
+    '/Scan 1/EBSD/Data/Metric'}
+  assert(isequaln(h5read(ref,ds{1}),h5read(tgt,ds{1})), ...
+    'check_ebsdImportH5: the export changed %s, which it never read',ds{1})
+end
+
+% and the reference must not be writable over
+ok = false;
+try
+  evalc('export(e1,ref,''reference'',ref)');
+catch ME
+  ok = strcmp(ME.identifier,'MTEX:exportEBSD_h5:overwriteReference');
+end
+assert(ok,'check_ebsdImportH5: exporting onto the reference file was allowed')
 
 end
 

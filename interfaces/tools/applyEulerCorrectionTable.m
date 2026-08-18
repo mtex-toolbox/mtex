@@ -26,14 +26,9 @@ isAssumed = ~check_option(varargin,{'setting','EulerCorrection','wizard'});
 
 if corSetting > 0 || check_option(varargin,'EulerCorrection')
 
-  % change reference frame
-  rotCorrection = [rotation.id,...
-    rotation.byAxisAngle(xvector+yvector,180*degree),... % setting 1
-    rotation.byAxisAngle(xvector-yvector,180*degree),... % setting 2
-    rotation.byAxisAngle(xvector,180*degree),...         % setting 3
-    rotation.byAxisAngle(yvector,180*degree)];           % setting 4
-
-  rot = get_option(varargin,'EulerCorrection',rotCorrection(corSetting+1));
+  % change reference frame - the table is shared with the exporters, which
+  % have to undo exactly this rotation again
+  rot = get_option(varargin,'EulerCorrection',eulerCorrectionRotation(corSetting));
 
   % correct rotations
   ebsd.EulerCorrection = rot;

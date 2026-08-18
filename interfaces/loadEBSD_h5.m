@@ -184,6 +184,7 @@ end
 % Construct prop-----------------------------------------------------------
 
 prop_data = struct();
+propPaths = struct();
 
 try
 
@@ -229,6 +230,10 @@ try
         end
         prop_data = rmfield(prop_data, prop_fields(drop));
       end
+
+      % which data set every surviving property was read from -
+      % exportEBSD_h5 writes the values back exactly there
+      propPaths = propDataSetPaths(info_struct, h, prop_data);
     else
       warning("Still to do when additions is not auto...")
     end
@@ -261,6 +266,15 @@ ebsd = data.ebsd;
 if ~isempty(iSet)
   ebsd.opt.dataSet = dataSets(iSet).path;
   ebsd.opt.dataSets = [dataSets.label];
+end
+
+% how this map maps back onto the file it was read from: the data sets the
+% config resolved to, together with what has to be undone to state a value
+% the way the file does. exportEBSD_h5 copies the file and writes the
+% changed data into those very data sets - see exportEBSD_h5.
+if ~headerOnly
+  ebsd.opt.h5 = h5Provenance(info_struct, Conf, fname, prop_data, propPaths);
+  if ~isempty(iSet), ebsd.opt.h5.dataSet = dataSets(iSet).path; end
 end
 
 % EMSphInx flags a pattern it failed to index with phase 255, but not a
@@ -1579,6 +1593,267 @@ function out = walk(node, fieldName, filterDir, out)
   for f = fieldnames(node)'
     out = walk(node.(f{1}), fieldName, filterDir, out);
   end
+end
+
+%% Provenance - where in the file every imported value came from
+%
+% Import resolves a config against one particular file, which is the only
+% place that knows that e.g. "the rotations" are the data set /1/EBSD/Data/
+% Euler, read in radian. exportEBSD_h5 writes changed data back into a copy
+% of that file and needs exactly that answer, so it is recorded here rather
+% than resolved a second time - the paths below are already resolved, the
+% config is not consulted again.
+
+function prov = h5Provenance(info_struct, Conf, fname, prop_data, propPaths) %#ok<INUSD>
+
+prov = struct('fileName', char(fname), ...
+  'manufacturer', char(string(Conf.settings.name)), ...
+  'prop', propPaths);
+
+if ~isfield(Conf,'ebsd'), return; end
+
+if isfield(Conf.ebsd,'rotation')
+  prov.rotation = rotationProvenance(Conf.ebsd.rotation, Conf, info_struct);
+end
+
+if isfield(Conf.ebsd,'phase')
+  ph = pathProvenance(Conf.ebsd.phase, Conf, info_struct);
+  ph.type = 'default';
+  if isfield(Conf.ebsd.phase,'type')
+    ph.type = char(string(Conf.ebsd.phase.type));
+  end
+  prov.phase = ph;
+end
+
+if isfield(Conf.ebsd,'cs')
+  prov.cs = csProvenance(Conf.ebsd.cs, Conf, info_struct);
+end
+
+end
+
+function items = csProvenance(node, Conf, info_struct)
+% where every phase states its name and its lattice
+%
+% The phase description is read with "multiple", so each entry resolves to
+% one path per phase, in the order the phases appear in the file - which is
+% the order of the CSList the import builds from them.
+%
+% How the lattice is stored is the one thing that differs between vendors:
+% six separate data sets, one data set of six values, or a pair of three
+% value ones. All three shapes are recorded here so that the exporter does
+% not have to know which vendor it is writing.
+
+items = struct('what',{},'path',{});
+
+if ~isstruct(node), return; end
+
+% the description sits under the sub struct named after the type
+sub = node;
+if isfield(node,'type') && isfield(node,char(string(node.type)))
+  sub = node.(char(string(node.type)));
+end
+
+items = addCsItem(items,'name',sub,'name',Conf,info_struct);
+
+if ~isfield(sub,'lattice'), return; end
+lat = sub.lattice;
+
+% one data set holding a, b, c, alpha, beta, gamma
+if isfield(lat,'path') || isfield(lat,'value')
+  items = addCsItem(items,'lattice6',lat,'',Conf,info_struct);
+  return
+end
+
+if isfield(lat,'dim')
+  items = addCsItem(items,'a',lat.dim,'lattice_a',Conf,info_struct);
+  items = addCsItem(items,'b',lat.dim,'lattice_b',Conf,info_struct);
+  items = addCsItem(items,'c',lat.dim,'lattice_c',Conf,info_struct);
+  items = addCsItem(items,'dim',lat.dim,'',Conf,info_struct);
+end
+
+if isfield(lat,'angle')
+  items = addCsItem(items,'alpha',lat.angle,'lattice_alpha',Conf,info_struct);
+  items = addCsItem(items,'beta',lat.angle,'lattice_beta',Conf,info_struct);
+  items = addCsItem(items,'gamma',lat.angle,'lattice_gamma',Conf,info_struct);
+  items = addCsItem(items,'angle',lat.angle,'',Conf,info_struct);
+end
+
+end
+
+function items = addCsItem(items, what, node, field, Conf, info_struct)
+% one quantity of the phase description, as one path per phase
+
+if ~isstruct(node), return; end
+
+if ~isempty(field)
+  if ~isfield(node,field), return; end
+  node = node.(field);
+end
+
+item = pathProvenance(node, Conf, info_struct);
+
+if isempty(item.path), return; end
+
+paths = item.path;
+if ~iscell(paths), paths = {paths}; end
+if all(cellfun(@(p) isempty(char(string(p))), paths)), return; end
+
+items(end+1) = struct('what',what,'path',{paths});
+
+end
+
+function rot = rotationProvenance(node, Conf, info_struct)
+% the data sets holding the orientations, plus how to state a rotation the
+% way the file does: which parameterization, and in which angular unit
+
+rot = struct('type','','format',1,'item',[]);
+
+if isfield(node,'type'), rot.type = char(string(node.type)); end
+
+% "euler": {"format": ..., "phi1": ...} - the formatter is handed the
+% sub-struct named after the type whenever there is one
+sub = node;
+if ~isempty(rot.type) && isfield(node,rot.type), sub = node.(rot.type); end
+
+if isfield(sub,'format') && isstruct(sub.format) && isfield(sub.format,'data') ...
+    && strcmpi(char(string(sub.format.data)),'degree')
+  rot.format = degree;
+end
+
+switch rot.type
+
+  case 'euler'
+    % one data set per Euler angle, or a single stacked one - either way in
+    % the order rotation_euler concatenates them, which is the config order
+    fn = fieldnames(sub);
+    fn(strcmp(fn,'format')) = [];
+    for i = 1:numel(fn)
+      rot.item = [rot.item, pathProvenance(sub.(fn{i}), Conf, info_struct)];
+    end
+
+  case 'euler_stack'
+    if isfield(sub,'phi')
+      rot.item = pathProvenance(sub.phi, Conf, info_struct);
+    end
+
+  otherwise % byMatrix and anything else reading a single data set
+    rot.item = pathProvenance(node, Conf, info_struct);
+
+end
+
+end
+
+function item = pathProvenance(node, Conf, info_struct)
+% the resolved location of one config entry: the data set it was read from
+% and, where the vendor packs several values into a compound data set, the
+% field within it
+
+item = struct('path','','field','');
+
+if ~isstruct(node), return; end
+
+if isfield(node,'path')
+
+  p = node.path;
+  if iscell(p) && isscalar(p), p = p{1}; end
+  if ~iscell(p), p = char(string(p)); end
+  item.path = p;
+
+elseif isfield(node,'load') && isfield(node.load,'value')
+
+  % the value was read elsewhere and taken from the cache - follow the
+  % cache name back to the entry that did read it
+  parts = strsplit(char(string(node.load.value)),'.');
+  source = findConfNode(Conf,parts{1});
+  if isempty(source), return; end
+
+  item = pathProvenance(source, Conf, info_struct);
+
+  for k = 2:numel(parts)
+    if isempty(item.path) || iscell(item.path), return; end
+    child = childDataSet(info_struct, item.path, parts{k});
+    if isempty(child)
+      % not a child of a group, hence a field of a compound data set
+      item.field = parts{k};
+      return
+    end
+    item.path = child;
+  end
+
+end
+
+end
+
+function node = findConfNode(Conf, name)
+% the config entry of a given name, wherever it sits in the tree
+
+node = [];
+if ~isstruct(Conf) || isempty(fieldnames(Conf)), return; end
+
+if isfield(Conf,name) && isstruct(Conf.(name))
+  node = Conf.(name);
+  return
+end
+
+for f = fieldnames(Conf)'
+  node = findConfNode(Conf.(f{1}), name);
+  if ~isempty(node), return; end
+end
+
+end
+
+function p = childDataSet(info_struct, group_path, name)
+% the child of a group whose cleaned up name matches, '' if the path is not
+% a group at all
+
+p = '';
+
+try
+  node = locate_subtree(info_struct, char(group_path));
+catch
+  return
+end
+
+if ~isfield(node,'Datasets') || isempty(node.Datasets), return; end
+
+for i = 1:numel(node.Datasets)
+  raw = char(string(node.Datasets(i).Name));
+  if strcmp(validFieldName(clean_string(string(raw))), name)
+    p = join_path(char(group_path), raw);
+    return
+  end
+end
+
+end
+
+function paths = propDataSetPaths(info_struct, group_path, prop_data)
+% which data set each auto discovered property was read from
+
+paths = struct();
+
+if isempty(group_path), return; end
+if ~iscell(group_path), group_path = {group_path}; end
+
+for k = 1:numel(group_path)
+
+  try
+    group = locate_subtree(info_struct, char(group_path{k}));
+  catch
+    continue
+  end
+
+  if ~isfield(group,'Datasets'), continue; end
+
+  for i = 1:numel(group.Datasets)
+    raw = char(string(group.Datasets(i).Name));
+    fn = validFieldName(clean_string(string(raw)));
+    if isfield(prop_data,fn)
+      paths.(fn) = join_path(char(group_path{k}), raw);
+    end
+  end
+
+end
+
 end
 
 %% Main functions

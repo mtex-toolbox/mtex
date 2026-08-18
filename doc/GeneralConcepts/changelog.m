@@ -1,5 +1,57 @@
 %% MTEX Changelog
 %
+%% MTEX 7.1 - New Features
+%
+% *EBSD Export That Keeps the File*
+%
+% Exporting to HDF5 no longer writes a bare MTEX layout that throws away
+% everything a vendor stores. <exportEBSD_h5.html |exportEBSD_h5|> copies
+% the file the data was imported from and writes only the changed data into
+% the copy, so the result is still a file of the vendor's own format -
+% patterns, acquisition settings and all the rest are passed through
+% untouched, and properties MTEX computed are added next to the ones the
+% file brought along.
+%
+%   ebsd = EBSD.load('myfile.h5oina')
+%   ebsd = ebsd.denoise(halfQuadraticFilter)
+%   export(ebsd,'denoised.h5oina')
+%
+% |EBSD.load| remembers the file and the data sets it read in |ebsd.opt.h5|;
+% a different reference file may be named by |'reference'|, and MTEX's own
+% flat layout is still available by |'standalone'|. Changes to the phase
+% list - a renamed mineral, a corrected lattice parameter - are written back
+% into the phase header as well. Verified against Bruker, EDAX (.oh5 and
+% .edaxh5), EMSphInx, Oxford and ThermoFisher files.
+%
+% The text exporters are now interfaces like the loaders they mirror -
+% <exportEBSD_ang.html |exportEBSD_ang|> and <exportEBSD_ctf.html
+% |exportEBSD_ctf|>, with |export_ang| and |export_ctf| kept as wrappers -
+% and they take the header of the imported file along, so an import/export
+% cycle no longer replaces the acquisition parameters by zeros.
+%
+%% MTEX 7.1 - Technical Changes
+%
+% *EBSD Export*
+%
+% * neither the ang nor the ctf exporter undid the Euler angle correction
+% its loader applies, so importing an exported map turned it by 180 degree.
+% An import/export cycle now reproduces the angles of the original file
+% * the .ang phase block stated symmetry codes 132 to 137 for the monoclinic
+% and orthorhombic alignment variants. EDAX numbers only 32 point groups, so
+% those codes were read back as space group ids and a monoclinic phase came
+% back as tetragonal, failing the import with "a and b must be equal". The
+% Laue code and the point group id are written now
+% * exporting a hexagonal map to .ang dropped the last column of every scan
+% row, whether or not it held measurements, and stated NCOLS_ODD/NCOLS_EVEN
+% accordingly. The cells that carry no measurement are told apart from the
+% ones that do now, and a full hexagonal map exports and imports unchanged
+% * the ctf exporter renumbered phases by a loop that tested phase 1 rather
+% than the phase it was about to renumber, and derived the grid from
+% |unique| of the coordinates. Phases are written as Channel numbers them,
+% 1 to N in the order of the phase table with 0 for not indexed
+% * the ang and ctf exporters state the column layout they write (|VERSION|
+% for .ang), so the importer no longer has to guess it
+%
 %% MTEX 7.0 08/2026 - New Features
 %
 % This is the first release that uses AI. This allowed us to implement many

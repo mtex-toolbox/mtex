@@ -80,6 +80,8 @@ over budget, trim from outside these before trimming inside them.
 | mex build completeness | `check_mexComplete` (root) |
 | **EBSD import**, text formats (.ctf, .ang) | `core/check_ebsdImport` |
 | **EBSD import**, HDF5 and multi-scan files | `slow/check_ebsdImportH5` |
+| **EBSD export**, text formats and round trips | `core/check_ebsdExport` |
+| **EBSD export**, HDF5 into a copy of the reference file | `slow/check_ebsdImportH5` |
 | `EBSD` object: construction, `display`, `loadobj`, `interp` | `core/check_ebsd` |
 | EBSD grid geometry, `unitCell`/`lattice.ij`, `dynProp` | `core/check_ebsdGrid` |
 | spatial shift (`plus`/`minus`) of EBSD, grains, boundaries, triple points | `core/check_spatialShift` |
