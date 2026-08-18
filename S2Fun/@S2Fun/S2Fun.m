@@ -8,7 +8,7 @@ classdef S2Fun
 % symmetry, whose frame it exposes here.
 %
 % See also
-% S2FunHarmonic S2FunBingham S2FunTri
+% S2FunHarmonic S2Bingham S2FunTri
 
 properties (Abstract = true)
   isReal

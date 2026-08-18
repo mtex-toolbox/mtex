@@ -19,7 +19,7 @@ classdef SO3RestrictedDistanceKernel < SO3Kernel
 %  psi - @SO3Kernel
 %
 % See also
-% SO3Kernel SO3Fun/compactify
+% SO3Kernel SO3Fun/optimalSample
 
 
 

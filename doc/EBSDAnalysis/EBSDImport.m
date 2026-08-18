@@ -5,50 +5,20 @@
 % In the most simplest case import can be done by the command
 % <EBSD.load.html |EBSD.load|>
 
-ebsd = EBSD.load([mtexEBSDPath filesep 'twins.ctf'],...
-  'EulerCorrection',rotation.byAxisAngle(xvector,180*degree))
+fileName = [mtexEBSDPath filesep 'EMSphinx.h5'];
+ebsd = EBSD.load(fileName)
 
 %%
 % This command automatically detects the file format and generates a
 % variable of type @EBSD which contains all the information of the EBSD
-% data set. Let us quickly do an orientation plot of the Magnesium phase
+% data set. Let us quickly do an orientation plot of the gamma phase
 
-plot(ebsd('Magnesium'),ebsd('Magnesium').orientations)
+plot(ebsd('Fe(gamma'), ebsd('Fe(gamma').orientations)
 
 %%
 % The variable of type EBSD is the starting point for all further analysis,
 % e.g., <GrainReconstruction.html grain reconstruction>, <EBSD2ODF.html ODF
 % reconstruction>, <EBSDMisorientation misorientation analysis>, etc.
-%
-%% Imported Data Comes on Its Grid
-%
-% Note that the variable above is not a plain @EBSD but an @EBSDsquare.
-% Almost every scan is a complete raster on a square or a hexagonal grid,
-% and <EBSD.load.html |EBSD.load|> keeps it that way: the measurements are
-% stored as a matrix, so that |ebsd(i,j)| addresses a scan position and
-% plotting and denoising do not have to reconstruct the raster first. The
-% details are described in <EBSDGrid.html Square and Hex Grids>.
-%
-% Data that would lose measurements by being gridded - because two of them
-% fall into the same lattice cell, or because the positions are too
-% irregular to span a raster at all - is never gridded. Such a file is
-% imported as a plain list of pixels and states why
-%
-%   Warning: 48 of 613 indexed measurements share a lattice cell with
-%   another one, so gridding them would drop those measurements. Keeping the
-%   data as a list [...]
-%
-% You may also ask for a plain list explicitly, for a single import
-%
-%   ebsd = EBSD.load(fname,'noGrid')
-%
-% or for the whole session
-%
-%   setMTEXpref('gridifyOnImport',false)
-%
-% Neither is needed for the analysis - all MTEX functions accept both
-% representations - and you can convert at any time with |EBSD(ebsd)| and
-% <EBSD.gridify.html |gridify|>.
 %
 %% Importing EBSD data using the import wizard
 %
@@ -61,20 +31,16 @@ plot(ebsd('Magnesium'),ebsd('Magnesium').orientations)
 % about how to set up reference frames correctly.
 %
 % In order to help the user to import EBSD data consistently to a fixed
-% specimen reference frame (which the user should know), MTEX provide the
-% <matlab:import_wizard import wizard> as a graphical user
-% interface. The |import_wizard| can be started either by typing into the
-% command line
+% specimen reference frame (which the user should know), MTEX provides the
+% <matlab:import_wizard import wizard> as a graphical user interface. The
+% |import_wizard| is started by typing into the command line
 
-import_wizard
+import_wizard;
 
 %%
-% EBSD Data files can be also imported via the <matlab:filebrowser file
-% browser> by choosing _Import Data_ from the context menu of the selected
-% file if its file extension was registered with
-% <matlab:opentoline(fullfile(mtex_path,'mtex_settings.m'),25,1)
-% |mtex_settings.m|>
-%
+% 
+% <<importWizard.png>>
+% 
 % The import wizard guides through the correct setup of:
 %
 % * <CrystalSymmetries.html crystal symmetries> associated with phases 
@@ -93,30 +59,38 @@ import_wizard
 % form:
 
 % crystal symmetry
-CS = {... 
-  'notIndexed',...
-  crystalSymmetry('6/mmm', [3.2 3.2 5.2], 'X||a*', 'Y||b', 'Z||c*',...
-  'mineral', 'Magnesium', 'color', [0.53 0.81 0.98])};
+csList = [
+  notIndexed(), ...
+  crystalSymmetry('m-3m', [2.8665, 2.8665, 2.8665], 'mineral', 'Fe(alpha-iron)'), ...
+  crystalSymmetry('m-3m', [3.5910, 3.5910, 3.5910], 'mineral', 'Fe(gamma-iron)'), ...
+  crystalSymmetry('6/mmm', [2.5071, 2.5071, 4.0686], 'mineral', 'Co(alpha-cobalt)')
+];
 
 % plotting convention
-setMTEXpref('xAxisDirection','east');
-setMTEXpref('zAxisDirection','outOfPlane');
+plottingConvention.default('y↓→x');
 
 % path to files
 pname = mtexEBSDPath;
 
 % which files to be imported
-fname = [pname filesep 'twins.ctf'];
+fname = [pname filesep 'EMSphinx.h5'];
+
+% Euler reference frame to map reference frame correction
+EulerCorrection = rotation.map(-yvector,xvector,zvector,-zvector);
 
 % create an EBSD variable containing the data
-ebsd = EBSD.load(fname,CS,'interface','ctf',...
-  'EulerCorrection',rotation.byAxisAngle(zvector,180*degree));
+ebsd = EBSD.load(fname,csList, 'EulerCorrection', EulerCorrection)
 
 %%
 % Running this script imports the data into a variable named
 % |ebsd|. From this point, the script can be extended to your needs, e.g:
 
-plot(ebsd,ebsd.orientations)
+grains = calcGrains(ebsd)
+
+plot(ebsd('Fe(gamma-iron)'),ebsd('Fe(gamma-iron)').orientations)
+hold on
+plot(grains.boundary,'LineWidth',2)
+hold off
 
 %% Supported Data Formats
 %
@@ -165,8 +139,8 @@ plot(ebsd,ebsd.orientations)
 %
 %   ebsd = EBSD.load(fname,'headerOnly')
 %
-% The <import_wizard.html import wizard> lists everything a file offers
-% below its file browser - selecting a row imports it.
+% The import wizard lists everything a file offers below its file browser -
+% selecting a row imports it.
 %
 %% Raw and Post Processed Data
 %
