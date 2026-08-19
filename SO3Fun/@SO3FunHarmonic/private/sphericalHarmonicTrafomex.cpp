@@ -63,6 +63,7 @@
 #include <cstdio>    // For printf
 #include <complex>
 #include <cstring>
+#include <limits>
 #ifdef _OPENMP // For parallelisation
 #include <omp.h>
 #endif
@@ -76,7 +77,7 @@
 template<typename T>
 static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
                             const int makeEven, const int isReal, const int isAntipodal, 
-                            mxDouble *sym_axis, std::complex<T> *ghat, const mwSize nrows )
+                            std::complex<T> *ghat )
 {
 
   // define usefull variables
@@ -242,7 +243,7 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
         // The Wigner-d functions satisfy the symmetry property
         //          d_n(j,k)*d_n(j,l) = d_n(k,-j)*d_n(l,-j)
         // in MTEX. We use this in the following.
-        #pragma omp parallel for firstprivate(ghat,fhat,wigd) private(value)        // Parallelization
+        #pragma omp parallel for firstprivate(ghat,fhat,wigd) private(value,k)        // Parallelization
         for (j= 0; j<=n; j+=JIter)
         {
           // jump to actual column --> ghat(0,j)
@@ -295,7 +296,6 @@ void mexFunction( int nlhs, mxArray *plhs[],
     mxComplexDouble *inCoeff;         // nrows x 1 input coefficient vector
     size_t nrows;                     // size of inCoeff
     mxDouble input_flags = 0;
-    mxDouble *sym_axis;
     mxComplexDouble *outFourierCoeff; // output fourier coefficient matrix
     
     
@@ -351,13 +351,21 @@ void mexFunction( int nlhs, mxArray *plhs[],
     bool flags[7];
     get_flags(input_flags,flags);
 
-    // if exists and the flag implies we want to use the symmetry to 
-    // speed up --> get sym_axis of input
-    double s[2] = {1,1};
-    if( (nrhs>=4) && (flags[4]) )
-      sym_axis = mxGetDoubles(prhs[2]);
-    else
-      sym_axis = s;
+    // (N+1)^2 coefficients are required, and L2_normalized_sphericalHarmonics
+    // below *writes* exactly that many - so a short vector is a heap overflow
+    // before the transform even starts. A longer one is legitimate:
+    // sphericalHarmonicTrafo.m passes the whole fhat and lets N truncate.
+    if( (double)nrows < (bandwidth+1.0)*(bandwidth+1.0) )
+      mexErrMsgIdAndTxt("sphericalHarmonicTrafomex:coefficientVectorTooShort",
+        "Bandwidth %d needs at least %.0f coefficients, got %.0f.",
+        bandwidth,(bandwidth+1.0)*(bandwidth+1.0),(double)nrows);
+
+    // The fourth argument (sym_axis) is still accepted and type checked above
+    // for callers that pass it, but the symmetry flag 2^4 is not implemented:
+    // calculate_ghat never dereferenced sym_axis, it only carried it around.
+    // The pointer was moreover taken from prhs[2] - the scalar flags - rather
+    // than prhs[3], so implementing 2^4 on top of it would have read two
+    // doubles out of a one element array. Dropped rather than repaired.
 
     const int makeEven = flags[1];
     const int isReal = flags[2];
@@ -401,9 +409,20 @@ void mexFunction( int nlhs, mxArray *plhs[],
   
   // call the computational routine
     if (bandwidth > 1023){
-      // TODO: evt. muss outFourierCOeff erst im long double gerechnet werden und später auf double transformiert und dann zurückgegeben werden.
+      // The Wigner-d recursion seeds every entry with a value as small as
+      // 2^(-n) and a seed that underflows stays zero for all higher degrees,
+      // so what limits the bandwidth is the exponent range of the type the
+      // matrices are stored in (see wigner_d_recursion_at_pi_half.cpp).
+      // long double buys that range only where the ABI makes it wider than
+      // double - it does on x86 (80 bit, n up to about 16000) and with
+      // MinGW-w64, but on Apple silicon long double *is* double. Say so
+      // instead of returning silently wrong coefficients.
+      if (bandwidth > -std::numeric_limits<long double>::min_exponent-1)
+        mexWarnMsgIdAndTxt("sphericalHarmonicTrafomex:bandwidthTooLarge",
+          "long double is too narrow on this platform to represent the Wigner-d "
+          "functions up to bandwidth %d - the result is inaccurate.",bandwidth);
       std::vector<std::complex<long double>> ghat_tmp(dims[0]*dims[1]);
-      calculate_ghat<long double>(bandwidth,inCoeff,makeEven,isReal,isAntipodal,sym_axis,ghat_tmp.data() + start_shift,(mwSize)nrows);
+      calculate_ghat<long double>(bandwidth,inCoeff,makeEven,isReal,isAntipodal,ghat_tmp.data() + start_shift);
       for (size_t i = 0; i < dims[0]*dims[1]; i++) {
         outFourierCoeff[i].real = static_cast<double>(ghat_tmp[i].real());
         outFourierCoeff[i].imag = static_cast<double>(ghat_tmp[i].imag());
@@ -413,7 +432,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     else{
       std::vector<std::complex<double>> ghat_tmp(dims[0]*dims[1]);
       // std::complex<double> *g = ghat_tmp.data() + start_shift;
-      calculate_ghat<double>(bandwidth,inCoeff,makeEven,isReal,isAntipodal,sym_axis,ghat_tmp.data() + start_shift,(mwSize)nrows);
+      calculate_ghat<double>(bandwidth,inCoeff,makeEven,isReal,isAntipodal,ghat_tmp.data() + start_shift);
       for (size_t i = 0; i < dims[0]*dims[1]; i++) {
         outFourierCoeff[i].real = ghat_tmp[i].real();
         outFourierCoeff[i].imag = ghat_tmp[i].imag();

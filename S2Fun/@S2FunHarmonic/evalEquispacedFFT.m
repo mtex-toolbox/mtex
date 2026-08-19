@@ -99,11 +99,16 @@ f = f(1:Htheta/2+1,:);
 
 
 % 6) shift the summation of fft from [-N:N]x[-N:N] to [0:2N]x[0:2N]. 
+% Note that exp(2i*pi*z) is 1-periodic in z, hence we reduce the index
+% products modulo the lattice size before scaling them by 2*pi. Otherwise the
+% argument grows up to 2*pi*N and its rounding error eps*2*pi*N (about 4e-12 at
+% N = 1520) dominates the error of the whole evaluation. Both products are
+% integers below 2^53, so mod is exact.
 if isReal  
-  z = (0:Htheta/2)'*N/Htheta ;%+ (0:Hrho-1)*N/Hrho;
+  z = mod((0:Htheta/2)'*N,Htheta)/Htheta ;%+ mod((0:Hrho-1)*N,Hrho)/Hrho;
   f = 2*real( exp(2i*pi*z) .* f );
 else
-  z = (0:Htheta/2)'*N/Htheta + (0:Hrho-1)*N/Hrho;
+  z = mod((0:Htheta/2)'*N,Htheta)/Htheta + mod((0:Hrho-1)*N,Hrho)/Hrho;
   f = exp(2i*pi*z) .* f;
 end
 

@@ -38,7 +38,7 @@ classdef SO3FunMLS < SO3Fun
   %  weight  - @function_handle (weight function)
   %          - predefined choices are 'auto' (default, a degree-dependent
   %            Wendland C6 variant), 'C1hat', 'const', 'cos', 'hat',
-  %            'indicator', 'squared hat', 'wendland', 'wendlandC6',
+  %            'indicator', 'plateau', 'squared hat', 'wendland', 'wendlandC6',
   %            'wendlandSquared', and 'wendlandC6Squared'
   %  use_smooth_delta - use a smooth local support radius with about SO3F.nn
   %                     neighbors at each center
@@ -313,6 +313,16 @@ classdef SO3FunMLS < SO3Fun
             SO3F.w = @(t)(wendlandC6(t.^alpha).^beta);
           end
 
+        case 'plateau'
+          % Broad weight: constant on the inner 60 percent of the support,
+          % then a C1 taper to zero. A concentrated weight makes the local fit
+          % hinge on the few nearest nodes, so it swings whenever the neighbor
+          % ranking changes under the moving center. Keeping the weight flat
+          % near the center spreads the fit over the whole neighborhood and
+          % suppresses that variation, which matters when the reconstruction is
+          % subsequently sampled on a quadrature grid of finite bandwidth.
+          plateauTaper = @(x)(x.^2 .* (3 - 2*x));
+          SO3F.w = @(t)(1 - plateauTaper(min(max((t - 0.6)/0.4, 0), 1)));
         case 'c1hat'
           % Fixed broad weight for explicit comparisons.
           SO3F.w = @(t)(max(1-t.^2, 0).^2);
