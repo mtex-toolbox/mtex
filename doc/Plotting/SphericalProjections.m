@@ -106,8 +106,7 @@ how2plot.east = vector3d(9,3,3);
 how2plot.outOfScreen = vector3d(6,10,9);
 
 close all
-plotPDF(odf,Miller(1,1,0,odf.CS),'3d','grid','grid_res',10*degree,'noTitle')
-how2plot.setView
+plotPDF(odf,Miller(1,1,0,odf.CS),'3d',how2plot,'grid','grid_res',10*degree,'noTitle')
 mtexColorMap LaboTeX
 
 %%
