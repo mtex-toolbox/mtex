@@ -48,8 +48,18 @@
   },
   "additions": {
     "type": "auto",
-    "group": { "mode": "search_set", "value": "^/Data$"},
+    "group": [
+      { "mode": "search_set", "value": "^/Data$"},
+      { "mode": "search_free", "value": "/EDS/Data$", "optional": true}
+    ],
     "exclude": {"data": ["^X$", "^Y$"]}
+  },
+  "eds": {
+    "key" : { "mode": "search_free", "value": "/EDS$" },
+    "optional": true,
+    "header": {
+      "group": {"mode": "search_root", "value": "Header"}
+    }
   },
   "electron_image": {
     "key" : { "mode": "search_root", "value": "Electron Image" },

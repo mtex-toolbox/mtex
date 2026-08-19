@@ -22,6 +22,14 @@ function [ebsd] = loadEBSD_h5(fname, varargin)
 %               (potentially large) per-pixel position/rotation/phase
 %               data and any other top-level category (e.g. electron
 %               images). Also lists the data sets the file contains.
+%
+% Every per pixel data set the config does not read itself becomes a
+% property of the map. For an Oxford file that includes the EDS element
+% maps stored next to the EBSD data set, e.g. plot(ebsd,
+% ebsd.WindowIntegral_FeKa1) - the subgroup they are sorted into is part
+% of the property name, since a quantified map holds a "Fe Ka1" both as a
+% window integral and as a peak area. The EDS header - beam voltage,
+% detector geometry, channel width - comes along as ebsd.opt.eds.header.
 
 % Selecting right config and load------------------------------------------
 
@@ -190,50 +198,7 @@ try
 
   if ~headerOnly && isfield(Conf, 'additions')
     if Conf.additions.type == "auto"
-  
-      opt_prop = struct("root", "/", "optional", true, "name", "prop", ...
-        "level", 1, "multiple", false);
-  
-      prop_data = fetch_from_group(info_struct, Conf.additions, opt_prop);
-  
-      h = get_hdf5_path(info_struct, Conf.additions.group);
-    
-      paths_allready_used = search_Conf(Conf, 'path', h);
-  
-      [~, exclude_fields] = cellfun(@fileparts, paths_allready_used, 'UniformOutput', false);
-
-      for i = 1:length(exclude_fields)
-        exclude_fields{i} = clean_string(exclude_fields{i});
-      end
-
-      prop_fields = fieldnames(prop_data);
-
-      for i = 1:length(prop_fields)
-        cur_field = prop_fields{i};
-        if ismember(cur_field, exclude_fields)
-          prop_data = rmfield(prop_data, cur_field);
-        end
-      end
-
-      % The loop above drops whatever the config consumes by path. That
-      % does not cover a data set the config reads *around*: an "indirect"
-      % position is built from the step size in the header, so the per
-      % pixel X / Y next to the data are never named by a path and would
-      % come back as properties duplicating ebsd.pos. A config lists those
-      % as regular expressions over the property names.
-      if isfield(Conf.additions, 'exclude')
-        patterns = cellstr(string(Conf.additions.exclude.data));
-        prop_fields = fieldnames(prop_data);
-        drop = false(size(prop_fields));
-        for i = 1:numel(patterns)
-          drop = drop | ~cellfun(@isempty, regexpi(prop_fields, patterns{i}, 'once'));
-        end
-        prop_data = rmfield(prop_data, prop_fields(drop));
-      end
-
-      % which data set every surviving property was read from -
-      % exportEBSD_h5 writes the values back exactly there
-      propPaths = propDataSetPaths(info_struct, h, prop_data);
+      [prop_data, propPaths] = readAdditions(info_struct, Conf, length(data.ebsd));
     else
       warning("Still to do when additions is not auto...")
     end
@@ -1826,6 +1791,112 @@ end
 
 end
 
+function [prop_data, propPaths] = readAdditions(info_struct, Conf, nPixel)
+%READADDITIONS  Every per pixel data set the config does not name becomes a
+% property of the map.
+%
+% A config may list more than one group. The first one is the data set's
+% own - the group the position / rotation / phase were read from - and
+% every further one is another analysis recorded on the same map site: an
+% Oxford file keeps the EDS window integrals under /<site>/EDS/Data, next
+% to and not inside the EBSD data set. Those only belong on the map if they
+% were measured on the very same pixels, so they are checked for that.
+
+prop_data = struct();
+propPaths = struct();
+
+groups = configList(Conf.additions.group);
+
+patterns = {};
+if isfield(Conf.additions, 'exclude')
+  patterns = cellstr(string(Conf.additions.exclude.data));
+end
+
+for g = 1:numel(groups)
+
+  gConf = groups{g};
+
+  % the data set's own group has to be there, a further one is an offer
+  optional = g > 1;
+  if isfield(gConf,'optional'), optional = logical(gConf.optional); end
+
+  h = get_hdf5_path(info_struct, gConf, "optional", optional);
+  if iscell(h) || all(strlength(string(h)) == 0), continue; end
+  h = char(h);
+
+  item = Conf.additions;
+  item.group = gConf;
+
+  opt = struct("root", "/", "optional", optional, "name", "prop", ...
+    "level", 1, "multiple", false, "recursive", true);
+
+  new_data = fetch_from_group(info_struct, item, opt);
+
+  % whatever the config already consumes by path is a field of the map and
+  % must not show up a second time as a property
+  used = search_Conf(Conf, 'path', h);
+  if isempty(used), used = {}; end
+  [~, used] = cellfun(@fileparts, used, 'UniformOutput', false);
+  used = cellfun(@(s) validFieldName(clean_string(string(s))), used, ...
+    'UniformOutput', false);
+
+  % That does not cover a data set the config reads *around*: an "indirect"
+  % position is built from the step size in the header, so the per pixel
+  % X / Y next to the data are never named by a path and would come back as
+  % properties duplicating ebsd.pos. A config lists those as regular
+  % expressions over the property names.
+  names = fieldnames(new_data);
+  drop = ismember(names, used);
+  for i = 1:numel(patterns)
+    drop = drop | ~cellfun(@isempty, regexpi(names, patterns{i}, 'once'));
+  end
+  new_data = rmfield(new_data, names(drop));
+
+  % a further group is a different analysis and may well have been recorded
+  % on a coarser raster - that is not a property of this map
+  if g > 1 && ~isempty(fieldnames(new_data))
+    names = fieldnames(new_data);
+    keep = structfun(@(v) numel(v) == nPixel, new_data);
+    if ~any(keep)
+      mtexWarning('MTEX:additionsNotAligned', ...
+        ['Not importing "%s" - it holds %d values per data set, while ' ...
+        'the map has %d pixel, so it was not recorded on these pixels.'], ...
+        h, numel(new_data.(names{1})), nPixel);
+      continue
+    end
+    new_data = rmfield(new_data, names(~keep));
+  end
+
+  for f = fieldnames(new_data)'
+    prop_data.(f{1}) = new_data.(f{1});
+  end
+
+  % which data set every surviving property was read from -
+  % exportEBSD_h5 writes the values back exactly there
+  p = propDataSetPaths(info_struct, h, new_data);
+  for f = fieldnames(p)'
+    propPaths.(f{1}) = p.(f{1});
+  end
+
+end
+
+end
+
+function items = configList(node)
+% a config entry that may be stated once or as a list of alternatives -
+% jsondecode turns a JSON array of objects into a struct array when they
+% share their fields and into a cell array when they do not
+
+if iscell(node)
+  items = reshape(node, 1, []);
+elseif isstruct(node) && numel(node) > 1
+  items = num2cell(reshape(node, 1, []));
+else
+  items = {node};
+end
+
+end
+
 function paths = propDataSetPaths(info_struct, group_path, prop_data)
 % which data set each auto discovered property was read from
 
@@ -1842,17 +1913,40 @@ for k = 1:numel(group_path)
     continue
   end
 
-  if ~isfield(group,'Datasets'), continue; end
-
-  for i = 1:numel(group.Datasets)
-    raw = char(string(group.Datasets(i).Name));
-    fn = validFieldName(clean_string(string(raw)));
-    if isfield(prop_data,fn)
-      paths.(fn) = join_path(char(group_path{k}), raw);
-    end
-  end
+  paths = walkDataSetPaths(group, char(group_path{k}), '', prop_data, paths);
 
 end
+
+end
+
+function paths = walkDataSetPaths(group, group_path, prefix, prop_data, paths)
+% the same walk fetch_from_group does, recording where a field came from
+
+if isfield(group,'Datasets')
+  for i = 1:numel(group.Datasets)
+    raw = char(string(group.Datasets(i).Name));
+    fn = [prefix validFieldName(clean_string(string(raw)))];
+    if isfield(prop_data,fn)
+      paths.(fn) = join_path(group_path, raw);
+    end
+  end
+end
+
+if ~isfield(group,'Groups'), return; end
+
+for k = 1:numel(group.Groups)
+  sub = char(group.Groups(k).Name);
+  paths = walkDataSetPaths(group.Groups(k), sub, ...
+    [prefix subGroupPrefix(sub)], prop_data, paths);
+end
+
+end
+
+function prefix = subGroupPrefix(group_path)
+% a subgroup contributes its own name to the field names below it
+
+parts = split(string(normalize_path(group_path)), '/');
+prefix = [validFieldName(clean_string(parts(end))) '_'];
 
 end
 
@@ -2023,7 +2117,14 @@ function raw_data = fetch_from_group(info_struct, config_item, options)
 % dataset name as the field name. Useful for header blobs and image
 % bundles (FSE/SE). Under "multiple" one struct per matching group is
 % returned, e.g. the atom positions of every phase.
+%
+% options.recursive additionally descends into the subgroups of a matched
+% group, prefixing the field names with the subgroup name. Only the
+% additions auto-discovery asks for this - a header group has subgroups of
+% its own (Phases, Stage Position) that are read by their own config entry.
   raw_data = struct();
+
+  recursive = isfield(options,'recursive') && options.recursive;
 
   group_path = get_hdf5_path(info_struct, config_item.group, ...
     "root", options.root, ...
@@ -2050,21 +2151,59 @@ function raw_data = fetch_from_group(info_struct, config_item, options)
       length(group.Datasets), group_path{k});
     print_debug(label, pathLabel, options.level);
 
-    raw_data{k} = struct();
-    for i = 1:length(group.Datasets)
-      raw_name  = string(group.Datasets(i).Name);
-      cleanName = validFieldName(clean_string(raw_name));
-      raw_data{k}.(cleanName) = h5read(info_struct.Filename, group_path{k} + "/" + raw_name);
-    end
+    raw_data{k} = collectDataSets(info_struct.Filename, group, ...
+      char(group_path{k}), '', struct(), recursive);
   end
 
   if ~options.multiple, raw_data = raw_data{1}; end
 end
 
+function s = collectDataSets(fname, group, group_path, prefix, s, recursive)
+% Read every data set of a group into a struct, optionally descending into
+% its subgroups. An Oxford EDS map sorts its data sets by what was computed
+% from a spectrum - one "Co Ka1" under "Window Integral" and, once the map
+% is quantified, a second one under "Peak Area" - so the subgroup name has
+% to become part of the field name.
+
+  if isfield(group,'Datasets')
+    for i = 1:numel(group.Datasets)
+      raw_name  = string(group.Datasets(i).Name);
+      cleanName = [prefix validFieldName(clean_string(raw_name))];
+      s.(cleanName) = h5read(fname, string(group_path) + "/" + raw_name);
+    end
+  end
+
+  if ~recursive || ~isfield(group,'Groups'), return; end
+
+  for k = 1:numel(group.Groups)
+    sub = char(group.Groups(k).Name);
+    s = collectDataSets(fname, group.Groups(k), sub, ...
+      [prefix subGroupPrefix(sub)], s, recursive);
+  end
+
+end
+
 function name = validFieldName(name)
-% dataset names may start with a digit, e.g. the atoms of a Bruker phase
-% are stored as AtomPositions/1, AtomPositions/2, ...
+% A data set name is not a field name. It may start with a digit - the
+% atoms of a Bruker phase are stored as AtomPositions/1, AtomPositions/2 -
+% and an EDS map names its X-ray lines with a greek letter, "Ni Kα1", which
+% MATLAB does not accept in a field name at all.
   name = char(name);
+
+  greek = {'α' 'a'; 'β' 'b'; 'γ' 'g'; 'δ' 'd'; 'ε' 'e'; 'ζ' 'z'; 'η' 'h'; ...
+           'θ' 'th'; 'ι' 'i'; 'κ' 'k'; 'λ' 'l'; 'μ' 'mu'; 'ν' 'n'; 'ξ' 'xi'; ...
+           'π' 'pi'; 'ρ' 'rho'; 'σ' 's'; 'τ' 't'; 'φ' 'phi'; 'χ' 'chi'; ...
+           'ψ' 'psi'; 'ω' 'w'};
+  for i = 1:size(greek,1)
+    name = strrep(name, greek{i,1}, greek{i,2});
+  end
+
+  % whatever is left that a field name cannot hold - clean_string keeps a
+  % few characters that are fine in a symmetry name but not here
+  name = regexprep(name, '[^0-9A-Za-z_]', '_');
+  name = regexprep(name, '_{2,}', '_');
+  name = regexprep(name, '_$', '');
+
   if isempty(name) || ~isletter(name(1)), name = ['x' name]; end
 end
 
