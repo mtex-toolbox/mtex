@@ -32,7 +32,12 @@ classdef HSVDirectionKey < directionColorKey
             
       dM = dM@directionColorKey(varargin{:});
       if ismember(dM.sym.id,[2,18,26])
-        warning(['Not a topological correct colormap! Please use the point group ' char(dM.sym.properGroup)]);
+        % naming the proper group is only half an answer - it is a different
+        % symmetry, not a display setting, so say what changes with it
+        dM.warnNoTopologicalKey(sprintf([' Colorizing with the point group '...
+          '%s instead removes the jump, but that identifies directions '...
+          'differently, so symmetrically equivalent directions no longer '...
+          'share a color.'],char(dM.sym.properGroup)));
       end
       
       dM.updatesR;

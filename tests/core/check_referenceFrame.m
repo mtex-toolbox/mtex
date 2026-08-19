@@ -878,7 +878,9 @@ referenceFrame.reset;
 
 cs = crystalSymmetry('-1',[8.1796 12.8747 14.1720],[93.1 115.9 91.2]*degree);
 
-w = warning('off','all');  % -1 has no topologically correct key, by design
+% -1 genuinely has no topologically correct key - a hemisphere with antipodal
+% boundary identification is RP2 - so the note is expected here, not a failure
+w = warning('off','MTEX:noTopologicalColorKey');
 key = ipfHSVKey(cs);
 warning(w);
 

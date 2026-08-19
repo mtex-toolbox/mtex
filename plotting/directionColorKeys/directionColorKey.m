@@ -172,4 +172,31 @@ classdef directionColorKey < handle
 
   end
 
+  methods (Access = protected)
+
+    function warnNoTopologicalKey(dM,detail)
+      % one source for the note that a sector cannot be colored smoothly
+      %
+      % Which point groups are affected is a question for the concrete key -
+      % HSV asks it of the point group, HKL and TSL of the Laue group - so
+      % only the wording lives here. What every one of them owes the user is
+      % the same: what is wrong, and what to do instead.
+      %
+      % An identifier is the point of routing this through one place. Without
+      % one there is nothing for warning('off',...) to bind to, and a
+      % triclinic phase raises this on every single key it builds.
+
+      if nargin < 2, detail = ''; end
+
+      mtexWarning('MTEX:noTopologicalColorKey',...
+        ['The point group %s has no topologically correct color key: its '...
+        'fundamental sector cannot be mapped smoothly and one to one onto '...
+        'the color space, so the colors jump somewhere.%s Use '...
+        'axisAngleColorKey or BungeColorKey for a key without a jump.'],...
+        char(dM.sym), detail);
+
+    end
+
+  end
+
 end
