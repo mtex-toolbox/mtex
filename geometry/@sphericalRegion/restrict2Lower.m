@@ -6,6 +6,10 @@ elseif isa(ref,'plottingConvention')
   ref = ref.outOfScreen;
 end
 
+% see restrict2Upper - a condition that is already there must not be added
+% a second time, otherwise the boundary circle is drawn twice
+if any(dot(sR.N(:),-ref) > 1-1e-10 & sR.alpha(:) >= 0), return; end
+
  sR.N = [-ref;sR.N(:)];
  sR.alpha = [0;sR.alpha(:)];
  

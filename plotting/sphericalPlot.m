@@ -74,6 +74,7 @@ classdef sphericalPlot < handle
 
         % plot grid, labels, ..
         try sP.plotPolarGrid(varargin{:});end
+        sP.doBoundaryInFront;
         sP.plotLabels(CS,varargin{:});
         sP.plotAxesLabels(CS,varargin{:});
 
@@ -197,8 +198,25 @@ classdef sphericalPlot < handle
 
     end
 
+    function doBoundaryInFront(sP)
+      % the grid is drawn after the boundary and hence covers it. Since
+      % the small circle at the border of the plotted region coincides
+      % with the boundary exactly - and so do the meridians along the
+      % edges of a fundamental sector - the light grey grid line paints
+      % out the middle of the much thicker boundary line, leaving only
+      % its two antialiased flanks: the boundary then reads as two very
+      % thin circles instead of one thick one.
+
+      if isempty(sP.boundary), return; end
+
+      childs = allchild(sP.ax);
+      isBoundary = ismember(childs,sP.boundary(:));
+      sP.ax.Children = [childs(isBoundary); childs(~isBoundary)];
+
+    end
+
     function doGridInFront(sP)
-      
+
       if ~isempty(sP.grid)
         childs = allchild(sP.ax);
   

@@ -72,6 +72,8 @@ if check_option(varargin,{'fmc','FMC'})
   gbc = getClass(varargin,'grainBoundaryCriterion',gbcFMC(varargin{:}));
 elseif check_option(varargin,'soft')
   gbc = getClass(varargin,'grainBoundaryCriterion',gbcSoft(varargin{:}));
+elseif check_option(varargin,'variants')
+    gbc = getClass(varargin,'grainBoundaryCriterion',gbcVariants(varargin{:}));
 else
   gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
 end

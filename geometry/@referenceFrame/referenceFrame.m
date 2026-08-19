@@ -195,7 +195,7 @@ classdef referenceFrame < matlab.mixin.Copyable
         end
 
         c = conventionChar(fr,pC);
-        if isempty(c), c = char(pC,'compact'); end
+        if isempty(c), c = char(pC); end
       end
 
       % clicking the header displays the frame itself - same pattern as

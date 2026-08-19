@@ -26,7 +26,7 @@ if isempty(pC), c = ''; return; end
 
 % the canonical frame reads best in the classic lowercase form
 if isequal(rf.axesNames,{'X','Y','Z'})
-  c = char(pC,'compact');
+  c = char(pC);
   return
 end
 
@@ -37,15 +37,16 @@ dirs = normalize(rf.basis);
 
 % no frame axis on the screen axes - fall back to the Cartesian form
 if isempty(iN) || isempty(iE)
-  c = char(pC,'compact');
+  c = char(pC);
   return
 end
 
-arrows = '↑↓';
-northPart = [rf.axesNames{iN} arrows(ud)];
+% {west, east, north, south, ...}, ASCII when UTF8 output is off
+a = plottingConvention.arrows;
+northPart = [rf.axesNames{iN} a{ud+2}];
 
 if lr == 1
-  c = [northPart '→' rf.axesNames{iE}];
+  c = [northPart a{2} rf.axesNames{iE}];
 else
-  c = [rf.axesNames{iE} '←' northPart];
+  c = [rf.axesNames{iE} a{1} northPart];
 end

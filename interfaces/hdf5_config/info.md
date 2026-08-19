@@ -35,6 +35,22 @@ An `additions` block may carry an `exclude` list of regular expressions over
 the property names, for per pixel data sets that are read some other way and
 would otherwise come back as duplicated properties.
 
+`additions` turns every per pixel data set of its `group` into a property of
+the map, descending into subgroups and prefixing their field names with the
+subgroup name. Its `group` may be a list, in which case the first entry is the
+data set's own group and every further one is a different analysis of the same
+map site: an Oxford file records the EDS element maps under `/<site>/EDS/Data`,
+next to and not inside the EBSD data set. A further group is only imported if
+it holds one value per pixel of the map - a coarser EDS raster is not a
+property of this map - and should be marked `"optional": true`, since a file
+that only holds EBSD must still import.
+
+Metadata is a separate matter: every top-level category besides `ebsd` lands
+under `ebsd.opt.<category>`, which is where the `eds` block puts the EDS header
+(beam voltage, detector geometry, channel width) - `electron_image` works the
+same way. A category whose `key` is `optional` is skipped when the file does
+not hold the group.
+
 # Bruker
 
 Euler vs. Map Coordinate system:
