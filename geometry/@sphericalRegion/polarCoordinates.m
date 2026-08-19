@@ -34,12 +34,24 @@ else
   end
 end
 
-% a reference direction for rho = 0
+% A reference direction for rho = 0. Subtracting the center is what leaves a
+% component in the tangent plane at the center - but only while the candidate
+% is not the center itself. For a hemisphere sector the barycenter IS the pole
+% of the hemisphere, and the pole is exactly where outOfScreen points, so the
+% difference collapses to the zero vector. calcAngle then normalizes it to NaN
+% and hands back rho = 0 for every direction, i.e. one single hue. Point group
+% -1 on any cell whose c* is not along z runs into this.
 if center == zvector
-  rx = ref - center; 
+  rx = ref - center;
 else
   rx = sR.how2plot.outOfScreen - center;
 end
+
+% fall back to the frame's east, and only then to an arbitrary tangent, so the
+% hue stays tied to the convention wherever the convention still determines it
+if tangentIsNull(rx,center), rx = ref - center; end
+if tangentIsNull(rx,center), rx = orth(center); end
+
 rho = calcAngle(center,rx,v);
 
 ind = isnull(angle(center,sR.vertices));
@@ -113,6 +125,14 @@ omega = 2*pi*cumsum([0,omega./ sum(omega)]);
 
 end
 %plot(omega)
+
+function tf = tangentIsNull(rx,center)
+% rx is useless as a rho = 0 reference once it has no component perpendicular
+% to the center - calcAngle would be normalizing the zero vector
+
+tf = norm(rx - dot(rx,center) .* center) < 1e-10;
+
+end
 
 function rho = calcAngle(center,rx,v)
 % the angle

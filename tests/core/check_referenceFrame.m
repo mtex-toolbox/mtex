@@ -26,6 +26,7 @@ checkFrameCarriage;
 checkTangentVectorFrames;
 checkTrivialSymmetryFromFrame;
 checkFundamentalSectorFrame;
+checkHemisphereSectorHue;
 checkProductDropsSymmetry;
 
 disp('check_referenceFrame: passed');
@@ -856,6 +857,55 @@ assert(~isempty(a) && a.frame == cs.frame && isempty(b), ...
 a.opt.tag = true;
 assert(~isfield(b.opt,'tag'), ...
   'check_referenceFrame: extractSym default slots must not alias one handle');
+
+referenceFrame.reset;
+
+end
+
+% =========================================================================
+function checkHemisphereSectorHue
+% an IPF key over a hemisphere sector has to use the whole color wheel
+%
+% polarCoordinates measures the hue from sR.how2plot.outOfScreen by taking
+% outOfScreen - center. For point group -1 the fundamental sector is a
+% hemisphere, so its barycenter IS its pole - and the pole is exactly where
+% outOfScreen points. The difference is then the zero vector, normalizing it
+% gives NaN, and rho falls back to 0 for every direction: one single hue, an
+% all red color key. The default -1 cell escaped only because its center is
+% exactly zvector, which takes the other branch.
+
+referenceFrame.reset;
+
+cs = crystalSymmetry('-1',[8.1796 12.8747 14.1720],[93.1 115.9 91.2]*degree);
+
+% -1 genuinely has no topologically correct key - a hemisphere with antipodal
+% boundary identification is RP2 - so the note is expected here, not a failure
+w = warning('off','MTEX:noTopologicalColorKey');
+key = ipfHSVKey(cs);
+warning(w);
+
+sR = key.dirMap.sR;
+assert(isscalar(sR.N) && isempty(sR.vertices), ...
+  'check_referenceFrame: the -1 sector is expected to be a bare hemisphere');
+
+% the center coinciding with outOfScreen is the trigger, so pin it down -
+% if this stops holding the test below is no longer covering the bug
+ctr = vector3d(key.dirMap.whiteCenter).normalize;
+assert(angle(ctr,vector3d(sR.how2plot.outOfScreen)) < 1e-6, ...
+  'check_referenceFrame: expected the hemisphere center to be the view direction');
+assert(~(ctr == zvector), ...
+  'check_referenceFrame: a skewed cell must not put the center on zvector');
+
+v = equispacedS2Grid('resolution',7.5*degree);
+v = v(sR.checkInside(v));
+hue = rgb2hsv(key.dirMap.direction2color(v));
+hue = hue(:,1);
+
+assert(~any(isnan(hue)), ...
+  'check_referenceFrame: the IPF key must not produce NaN colors');
+assert(max(hue) - min(hue) > 0.9, ...
+  ['check_referenceFrame: the IPF key of -1 collapsed to a single hue ' ...
+  '(span ' xnum2str(max(hue)-min(hue)) ' of the color wheel)']);
 
 referenceFrame.reset;
 

@@ -9,7 +9,7 @@ classdef TSLDirectionKey < directionColorKey
       dM.sR = dM.sym.fundamentalSector;
       
       if ismember(dM.sym.id,[2,5,8,11,18,21,24,27,35,42])
-        warning('Not a topological correct colormap! Green to blue colorjumps possible');
+        dM.warnNoTopologicalKey(' Expect it between green and blue.');
       end
     end
   
