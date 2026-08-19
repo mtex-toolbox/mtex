@@ -48,6 +48,14 @@ if isempty(dxy)
   dxy2 = [mean(diff(uniquetol(xyEst(:,1),dxy(1)/100,'DataScale',1))),...
     mean(diff(uniquetol(xyEst(:,2),dxy(end)/100,'DataScale',1)))];
 
+  % a single scan line is constant in one coordinate, so uniquetol leaves a
+  % single value there and mean(diff(.)) is NaN - which regularPoly happily
+  % propagates into a unit cell with a NaN side. Take the spacing from the
+  % direction the line does extend in; a line has only one step size anyway
+  if any(isnan(dxy2))
+    if all(isnan(dxy2)), dxy2(:) = dxy(1); else, dxy2(isnan(dxy2)) = dxy2(~isnan(dxy2)); end
+  end
+
 else
 
   dxy2 = dxy;

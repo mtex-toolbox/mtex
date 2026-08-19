@@ -40,6 +40,7 @@
 % *Definition via function values*
 %
 % At first we need some vertices
+plottingConvention.default('y↑→x');
 nodes = equispacedS2Grid('points', 1e5);
 nodes = nodes(:);
 

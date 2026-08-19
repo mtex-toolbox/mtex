@@ -27,7 +27,8 @@ check_symmetry(SO3VF)
 xyz = SO3VF.SO3F.eval(rot,varargin{:});
 
 % generate tangent space vector
-f = SO3TangentVector(xyz.',rot(:),SO3VF.internTangentSpace,SO3VF.hiddenCS,SO3VF.hiddenSS);
+f = SO3TangentVector(vector3d(xyz.'),...
+  orientation(rot(:),SO3VF.hiddenCS,SO3VF.hiddenSS),SO3VF.internTangentSpace);
 f = reshape(f,size(rot));
 
 % Maybe change tangent space

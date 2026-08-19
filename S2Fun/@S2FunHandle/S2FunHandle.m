@@ -4,7 +4,6 @@ classdef S2FunHandle < S2Fun
 properties
   fun
   antipodal = false
-  s     % reference system
   bandwidth = getMTEXpref('maxS2Bandwidth')
 end
 
@@ -16,9 +15,10 @@ end
 methods
   function S2F = S2FunHandle(fun,varargin)
     S2F.fun = fun;
-    sym = extractSym(varargin);
-    S2F.s = sym;
-    
+
+    % a referenceFrame argument wins, a symmetry contributes its frame
+    S2F.framePrivate = S2Fun.extractFrame(varargin{:});
+
     if check_option(varargin,'antipodal')
       S2F.antipodal = true;
     end
@@ -54,7 +54,7 @@ methods
 
   function F = set.isReal(F,value)
     if ~value, return; end
-    F = S2FunHandle(@(v) real(F.eval(v)),F.s);
+    F = S2FunHandle(@(v) real(F.eval(v)),F.frame);
   end
 
   % % Using antipodal as dependent property is not completely clean, and 

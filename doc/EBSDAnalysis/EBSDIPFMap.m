@@ -9,6 +9,7 @@
 % Let us first import some sample EBSD data. We shall do this at the
 % example of olivine data.
 
+plottingConvention.default('y↑→x');
 mtexdata olivine
 ebsd('olivine').CS = ebsd('olivine').CS.Laue;
 
@@ -86,10 +87,6 @@ plot(big_grains('o'),colors)
 
 plot(ipfKey,'complete','upper')
 
-h = Miller({1,0,0},{0,1,0},{0,0,1},{1,1,0},{1,0,1},{0,1,1},{1,2,0},{0,2,1},...
-  ebsd('olivine').CS);
-annotate(h.symmetrise,'labeled','backgroundColor','w')
-
 %%
 % From the colors of the grains in the map we may now deduce for each grain
 % which crystal axis is pointing out of the plane of the specimen.
@@ -105,10 +102,10 @@ plotIPDF(big_grains('olivine').meanOrientation,colors,vector3d.Z,...
 % surface we may also colorizing which crystal axis is pointing towards the
 % rolling or foliation direction or any other specimen fixed direction.
 % This reference direction is stored as the property
-% |inversePoleFigureDirection| in the color key.
+% |ipfDirection| in the color key.
 
 % set the reference direction to X
-ipfKey.inversePoleFigureDirection = vector3d.X;
+ipfKey.ipfDirection = vector3d.X;
 
 % compute the colors
 colors = ipfKey.orientation2color(ebsd('olivine').orientations);
@@ -117,7 +114,7 @@ colors = ipfKey.orientation2color(ebsd('olivine').orientations);
 plot(ebsd('o'),colors)
 
 %%
-% Note, that |ipfKey.inversePoleFigureDirection| may even be a vector of
+% Note, that |ipfKey.ipfDirection| may even be a vector of
 % directions. Which is helpful for round specimen where one wants to
 % consider the direction normal to the surface.
 %

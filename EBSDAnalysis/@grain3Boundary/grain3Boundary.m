@@ -53,7 +53,12 @@ properties (Dependent)
   I_FG     % incidence matrix: faces <-> grains
   I_VF     % incidence matrix: vertices <-> faces
   I_VG     % incidence matrix: vertices <-> grains
-  how2plot % @plottingConvention
+  frame    % the specimen reference frame (carried by allV)
+  how2plot % @plottingConvention - read only
+  % A convention belongs to a reference frame. To change how this is
+  % drawn use plot(...,'y↑→x') for one plot,
+  % plottingConvention.default(...) for the session, or move the data
+  % with x.frame = specimenFrame.rolling
 end
 
 methods
@@ -101,13 +106,18 @@ methods
     gB3.allV(gB3.idV) = V;
   end
 
+  function fr = get.frame(gB3)
+    fr = gB3.allV.frame;
+  end
+
+  function gB3 = set.frame(gB3,fr)
+    gB3.allV.frame = fr;
+  end
+
   function pC = get.how2plot(gB3)
     pC = gB3.allV.how2plot;
   end
 
-  function gB3 = set.how2plot(gB3,pC)
-    gB3.allV.how2plot = pC;
-  end
 
   function out = get.idV(gB3)
     if iscell(gB3.F)
@@ -162,7 +172,10 @@ methods
       % compute normal directions
       N = normalize(cross(VV(faceEnds-1),VV(faceEnds)));
     end
-    
+
+    % the normals live in the very same frame as the vertices
+    N.frame = gB3.allV.frame;
+
   end
   
   function I_FG = get.I_FG(gB3)

@@ -3,7 +3,7 @@ function odf = SantaFe
 
 CS = crystalSymmetry('cubic');
 SS = specimenSymmetry('222');
-SS.how2plot = 'y↑→x';
+SS.frame = specimenSymmetry.frameFor(plottingConvention('y↑→x'));
 
 psi = SO3vonMisesFisherKernel('HALFWIDTH',10*degree);
 ori = orientation.byMiller(Miller(1,2,2,CS),Miller(2,2,1,CS),CS,SS);

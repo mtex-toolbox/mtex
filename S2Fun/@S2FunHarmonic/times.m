@@ -37,7 +37,7 @@ if isa(sF1,'S2VectorField') || isa(sF2,'S2VectorField')
 elseif isa(sF1,'S2AxisField') || isa(sF2,'S2AxisField')
   sF = S2AxisFieldHarmonic.quadrature(f, 'bandwidth', bw);
 else
-  sF = S2FunHarmonic.quadrature(f, 'bandwidth', bw, sF1.s);
+  sF = S2FunHarmonic.quadrature(f, 'bandwidth', bw, sF1.frame);
 end
 
 end

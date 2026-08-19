@@ -40,7 +40,7 @@ if ~isempty(reg)
 end
 
 % create a new plot
-pC = gB.how2plot.copy;
+pC = gB.how2plot; % a value class - this is already a private copy
 if isnull(dot(pC.outOfScreen,gB.N)), pC.outOfScreen = gB.N; end
 mtexFig = newMtexFigure(varargin{:});
 [mP,isNew] = newMapPlot('scanUnit',gB.scanUnit,'parent',mtexFig.gca,varargin{:},pC);

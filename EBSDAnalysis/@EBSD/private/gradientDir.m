@@ -27,8 +27,15 @@ function gW = gradientDir(ebsd,w,varargin)
 
 [g,A] = gradient(ebsd,varargin{:});
 
-a1 = vector3d(A(1,1),A(2,1),0);
-a2 = vector3d(A(1,2),A(2,2),0);
+% A is in the map plane frame, w is a specimen direction, so bring the two
+% lattice vectors back to the specimen frame before resolving w in them.
+% For a map in the xy plane rot2Plane is the identity and this is a no-op;
+% for a map in, say, the xz plane it is what lets the in-plane directions be
+% found at all - and what keeps the out of plane one correctly NaN, since
+% the residual test below is then against the real map plane rather than
+% against xy.
+aP = inv(ebsd.rot2Plane) * vector3d([A(1,1) A(1,2)],[A(2,1) A(2,2)],[0 0]);
+a1 = aP(1); a2 = aP(2);
 
 % undo the per-direction normalisation: h_k = dO/da_k, not per unit length.
 % Done on plain vector3d and re-wrapped at the end: combining two
@@ -54,8 +61,9 @@ gW = h1 .* c(1) + h2 .* c(2);
 
 % restore the tangent type, where gradient produced one
 if isa(g,'SO3TangentVector')
-  rot = g.rot;
-  gW = SO3TangentVector(gW, rot(:,1), g.tangentSpace);
+  % oriRef, not .rot - the latter shows one side of the pair as a stand-in
+  oriRef = g.oriRef;
+  gW = SO3TangentVector(gW, oriRef(:,1), g.tangentSpace);
 end
 
 % in the shape of the data, so a gridded map gives a map shaped gradient and

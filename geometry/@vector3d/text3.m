@@ -16,7 +16,7 @@ else
   ax = gca;
 end
 
-scaling = get_option(varargin,'scaling',1.2);
+scaling = get_option(varargin,'scaling',1.3);
 v = scaling.*v;
 
 if check_option(varargin,'labeled')
@@ -31,8 +31,9 @@ else
   end
 end
 
+h = gobjects(1,length(v));
 for i = 1:length(v)
-  h = optiondraw(text(v.x(i),v.y(i),v.z(i),strings{i},'FontSize',15,'parent',ax,'interpreter','LaTeX'),...
+  h(i) = optiondraw(text(v.x(i),v.y(i),v.z(i),strings{i},'FontSize',15,'parent',ax,'interpreter','LaTeX'),...
     'horizontalAlignment','center','verticalAlignment','middle',varargin{:});
 end
 

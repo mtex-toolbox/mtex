@@ -25,6 +25,65 @@ function ref = grainReconstructionReference()
 % also drops boundary between two grains it joins that touch elsewhere, which
 % needs a large map to occur. That -55.4 is long-standing and correct.
 %
+% Regenerated 2026-08-12. Only steel1C_1's removeQuadruplePoints columns
+% moved: nGrainsQP 99843 -> 99875 and totalLenQP 155980.2966759323 ->
+% 155980.6048791179. forsterite and copper are back at their long-standing
+% values, and nGrains/totalLen are unchanged everywhere.
+%
+% The cause is a5bc0f427, latticeBasis. It used to read the lattice basis
+% off the ORDER the unit cell's corners happen to be listed in, so the same
+% square gave A = [50 0; 0 50] as loaded and A = [-50 0; 0 50] after
+% gridify - a mirrored, left handed (i,j) frame - and the decomposition
+% changed with it. The basis is now taken from the directions of the cell to
+% cell translations and normalised right handed. That is also what brought
+% forsterite back from 2929 to 2931 and totalLen from 2109862.726874 to
+% 2109862.588230, i.e. back onto this file's own numbers.
+%
+% Two further commits, b2ca13189 and 14463616f, made the pairing at a
+% quadruple point deterministic instead of letting atan2's branch cut decide
+% it, and moved these columns much further. They were reverted in 4f351d38e
+% because they appeared to break ring closure - up to 117 grains of negative
+% area on alphaBetaTitanium - and then brought back, see the 2026-08-12
+% entry below.
+%
+% negAreaQP counts grain polygons that enclose a NEGATIVE area, i.e. rings
+% traced inside out. It was 0 everywhere except steel1C_1, which had 2 of
+% 99875, and is now 0 there too: #2590 was root caused to the vertex rewrite
+% in removeQuadruplePoints losing one of two writes to an edge shared by two
+% neighbouring quadruple points, and fixed. That fix alone moved nothing
+% else - nGrainsQP and totalLenQP came out bit identical on steel1C_1,
+% because it only changes which vertex a segment attaches to and the
+% duplicate sits at the same coordinates.
+%
+% Regenerated again 2026-08-12, after b2ca13189 + 14463616f were brought
+% BACK on top of that fix: the 117 negative area grains that got them
+% reverted were the #2590 bug, not the pairing. The deterministic pairing
+% merely moved the shared edge of two neighbouring quadruple points into the
+% relocation slot where the lost write bit. With the fix under it,
+% alphaBetaTitanium at 1.5 degree has 0 negative areas and 0 grains whose
+% boundary walk does not close, against 117 before, and 1 negative area
+% after smoothBoundary(...,5) where the branch cut pairing has 16.
+%
+% So the QP columns move, and this time it is the reconstruction that
+% changed, deliberately: the pairing now offers the criterion the diagonal
+% it connects most instead of whichever one atan2's branch cut presented
+% first, so a matching diagonal is found every time rather than roughly half
+% the time, and more quadruple points merge. nGrainsQP 2931 -> 2905
+% (forsterite) and 99875 -> 97856 (steel1C_1); copper has no mergeable
+% quadruple point and does not move at all. nGrains, totalLen and meanArea
+% are unchanged on all three, i.e. the plain reconstruction is untouched.
+%
+% steel1C_1.totalLenQP goes 155980.6048791179 -> 155959.3580926838, i.e. the
+% long-standing -55.4 against totalLen becomes -76.3. That is the same
+% documented effect at a larger count: merge drops boundary between two
+% grains it joins that also touch elsewhere. Nothing real is lost on the
+% maps where that cannot happen - check_removeQuadruplePoints still passes,
+% and it asserts the multiset of non zero segment lengths is IDENTICAL with
+% and without the option on forsterite, titanium and twins.
+% forsterite.totalLenQP moves in its last digit only (...2765 -> ...2760),
+% which is summation order, nine orders of magnitude inside that test's
+% tolerance.
+%
 % This metric has a history of moving on its own. forsterite.nGrainsQP was
 % 2932, then 2933, then found to flip between 2933 and 2931 across sessions
 % with byte-identical code - root caused to a tie-break in calcUnitCell's
@@ -34,24 +93,27 @@ function ref = grainReconstructionReference()
 ref = struct();
 
 ref.forsterite.nGrains    = 3100;
-ref.forsterite.nGrainsQP  = 2931;
+ref.forsterite.nGrainsQP  = 2905;
 ref.forsterite.totalLen   = 2109862.5882302765;
-ref.forsterite.totalLenQP = 2109862.5882302765;
+ref.forsterite.totalLenQP = 2109862.5882302760;
 ref.forsterite.meanArea   = 196661.7753931304;
-ref.forsterite.time       = 0.5919;
+ref.forsterite.negAreaQP  = 0;
+ref.forsterite.time       = 0.9971;
 
 ref.copper.nGrains    = 755;
 ref.copper.nGrainsQP  = 755;
 ref.copper.totalLen   = 37299.7178983177;
 ref.copper.totalLenQP = 37299.7178983177;
 ref.copper.meanArea   = 462.1479171713;
-ref.copper.time       = 0.0719;
+ref.copper.negAreaQP  = 0;
+ref.copper.time       = 0.1296;
 
 ref.steel1C_1.nGrains    = 104814;
-ref.steel1C_1.nGrainsQP  = 99843;
-ref.steel1C_1.totalLen   = 156035.7019482653;
-ref.steel1C_1.totalLenQP = 155980.2966759323;
+ref.steel1C_1.nGrainsQP  = 97856;
+ref.steel1C_1.totalLen   = 156035.7019482664;
+ref.steel1C_1.totalLenQP = 155959.3580926838;
 ref.steel1C_1.meanArea   = 0.5428519276;
-ref.steel1C_1.time       = 8.9355;
+ref.steel1C_1.negAreaQP  = 0;
+ref.steel1C_1.time       = 17.5747;
 
 end

@@ -35,7 +35,7 @@ tS = SO3TangentSpace.extract(varargin{:});
 rot = varargin{1}; varargin(1) = [];
 
 if isempty(SO3F.center)
-  g = SO3TangentVector( vector3d.zeros(size(rot)) , rot , SO3F.CS, SO3F.SS);
+  g = SO3TangentVector(vector3d.zeros(size(rot)),orientation(rot,SO3F.CS,SO3F.SS),tS);
   return
 end
 
@@ -45,7 +45,7 @@ center = SO3F.center;
 qSS = unique(quaternion(SO3F.SS));
 % forget about second symmetry (this destroys the grid structure)
 % center = center(:);
-center.SS = specimenSymmetry.default;
+center.SS = stripSym(center.SS); % drop the group, keep the frame (ADR 0003)
 
 psi = SO3F.psi;
 epsilon = min(pi,get_option(varargin,'epsilon',psi.halfwidth*4.5));
@@ -82,7 +82,7 @@ for issq = length(qSS):-1:1
 end
 g = g ./ length(qSS) ./ length(SO3F.CS.properGroup.rot) ;
 
-g = SO3TangentVector(g,rot,SO3TangentSpace.leftVector,SO3F.CS,SO3F.SS);
+g = SO3TangentVector(g,orientation(rot,SO3F.CS,SO3F.SS),SO3TangentSpace.leftVector);
 g = transformTangentSpace(g,tS);
 
 % TODO: consider antipodal

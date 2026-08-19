@@ -43,6 +43,13 @@ end
 ebsd = applyEulerCorrectionFixed(ebsd,'.cpr',rotation.byEuler(pi,0,0),...
   varargin{:},'acquisitionEuler',acq);
 
+% Oxford states its data in the sample frame CS1 - the map lives in the
+% measurement frame with the axes X1, Y1, Z1
+fr = specimenFrame.measurement;
+pC = getClass(varargin,'plottingConvention');
+if ~isempty(pC), fr.how2plot = pC; end
+ebsd.frame = fr;
+
 end
 
 % -----------------------------------------------------------------------
@@ -218,10 +225,26 @@ end
 % --------------------------------------------------------------------
 
 function CS = getCS(cpr)
-    
+
+% [Phases] Count is not always matched by that many [PhaseN] sections - a
+% stitch of several projects may count a phase whose section was never
+% written. Start from notIndexed so an undescribed phase keeps its slot,
+% and fill in the ones the file does describe.
+CS = repmat(notIndexed,1,cpr.phases.count);
+missing = false(1,cpr.phases.count);
+
+% the crystallography a phase section has to state to be usable
+required = {'a','b','c','alpha','beta','gamma','structurename'};
+
 for p=1:cpr.phases.count
-  phase = cpr.(['phase' num2str(p)]);
-      
+
+  sec = ['phase' num2str(p)];
+  if ~isfield(cpr,sec) || ~all(isfield(cpr.(sec),required))
+    missing(p) = true;
+    continue
+  end
+  phase = cpr.(sec);
+
   if isfield(phase,'spacegroup') && phase.spacegroup>0
     Laue = {'spaceId',phase.spacegroup};
   elseif ischar(phase.lauegroup)
@@ -230,11 +253,18 @@ for p=1:cpr.phases.count
     LaueGroups =  {'-1','2/m','mmm','4/m','4/mmm','-3','-3m','6/m','6/mmm','m-3','m-3m'};
     Laue = LaueGroups(phase.lauegroup);
   end
-      
+
   CS(p) = crystalSymmetry(Laue{:},...
     [phase.a phase.b phase.c],...
     [phase.alpha phase.beta phase.gamma]*degree,...
-    'mineral',phase.structurename); %#ok<AGROW>
+    'mineral',phase.structurename);
+end
+
+if any(missing)
+  mtexWarning('MTEX:cprPhaseMissing',['the cpr file announces %d phases ' ...
+    'but does not describe phase %s - pixels of that phase are imported ' ...
+    'as notIndexed'],cpr.phases.count,...
+    strjoin(arrayfun(@num2str,find(missing),'UniformOutput',false),', '));
 end
 
 CS = [notIndexed,CS];

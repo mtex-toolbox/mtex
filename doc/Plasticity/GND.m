@@ -8,23 +8,14 @@
 % geometrically necessary dislocation content by conventional electron
 % back-scattering diffraction, Scripta Materialia, 2008>
 %
+%%
 % Lets start by importing orientation data from 2 percent uniaxial deformed
-% steel DC06 and visualize those data in an ipf map.
+% steel DC06 and reconstructing the grain structure while removing all
+% grains with less than 6 pixels
 
 % import the EBSD data
+plottingConvention.default('y←↑x');
 ebsd = EBSD.load([mtexDataPath filesep 'EBSD' filesep 'DC06_2uniax.ang'],'setting',2);
-ebsd.how2plot = plottingConvention(zvector,-yvector);
-
-% define the color key
-ipfKey = ipfHSVKey(ebsd);
-ipfKey.inversePoleFigureDirection = yvector;
-
-% and plot the orientation data
-plot(ebsd,ipfKey.orientation2color(ebsd.orientations),'micronBar','off','figSize','medium')
-
-%%
-% In the next step we reconstruct grains, remove all grains with less then
-% 5 pixels and smooth the grain boundaries.
 
 % reconstruct grains
 [grains,ebsd] = calcGrains(ebsd,'angle',2.5*degree,'minPixel',6);
@@ -32,6 +23,14 @@ plot(ebsd,ipfKey.orientation2color(ebsd.orientations),'micronBar','off','figSize
 % smooth grain boundaries
 grains = smoothBoundary(grains,5);
 
+% define the color key
+ipfKey = ipfHSVKey(ebsd);
+ipfKey.ipfDirection = yvector;
+
+% plot the orientation data
+plot(ebsd,ipfKey.orientation2color(ebsd.orientations),'refFrame','on','figSize','medium')
+
+% and on top of it the grain boundaries
 hold on
 plot(grains.boundary,'linewidth',2)
 hold off
@@ -107,9 +106,11 @@ hold off
 % rank two tensor that is defined for every pixel in the EBSD map by the
 % directional derivatives in x, y and z direction.
 
+% the curvature tensor for each pixel in the map
 kappa = ebsd.curvature
 
-kappa(32)
+% the curvature tensor in pixel (3,2)
+kappa(3,2)
 
 %%
 % As expected the curvature tensor is NaN in the third column as this
@@ -143,19 +144,20 @@ end
 setColorRange([-0.005,0.005])
 drawNow(gcm,'figSize','large')
 
-%%
-% If you prefer to address the curvature by pixel coordinates rather than by
-% a linear index, <EBSD.gridify.html |gridify|> the map first. The tensor
-% then comes back in the shape of the map, and |kappa(2,3)| is the curvature
-% of the pixel in row 2, column 3.
-
-kappaGrid = ebsd.gridify.curvature;
-
-kappaGrid(2,3)
-
 %% The incomplete dislocation density tensor
-% According to Kroener the curvature tensor is directly related to the
-% dislocation density tensor.
+% The curvature tensor $\kappa$ is directly related to the dislocation
+% density tensor $\alpha$ by
+%
+% $$ \alpha = \kappa^T - \mathrm{tr}(\kappa) \, I $$
+%
+% This is the relation
+% <https://doi.org/10.1016/0001-6160(53)90054-6 Nye, Some geometrical
+% relations in dislocated crystals, Acta Metallurgica, 1953> derived for a
+% crystal lattice, which is why $\alpha$ is also called the Nye tensor. The
+% continuum theory it belongs to is
+% <https://link.springer.com/book/9783540022619 Kröner, Kontinuumstheorie
+% der Versetzungen und Eigenspannungen, Springer, 1958>, hence the relation
+% is usually attributed to both.
 
 alpha = kappa.dislocationDensity
 
@@ -163,12 +165,15 @@ alpha = kappa.dislocationDensity
 % which has the same unit as the curvature tensor and is incomplete as well
 % as we can see when looking at a particular one.
 
-alpha(2)
+% the incomplete dislocation density tensor for map position (3,2)
+alpha(3,2)
 
 %% Crystallographic Dislocations
-% The central idea of Pantleon is that the dislocation density tensor is
-% build up by single dislocations with different densities such that the
-% total energy is minimum. Depending on the atomic lattice different
+% The central idea of
+% <https://doi.org/10.1016/j.scriptamat.2008.01.050 Pantleon (2008)> is that
+% the dislocation density tensor is build up by single dislocations with
+% different densities such that the total energy is minimum. Depending on
+% the atomic lattice different
 % dislocation systems have to be considered. In present case of a body
 % centered cubic (bcc) material 48 edge dislocations and 4 screw
 % dislocations have to be considered. Those principle dislocations are
@@ -191,8 +196,10 @@ a = norm(ebsd.CS.aAxis);
 % By default this value it set to 1 but should be changed according to the
 % specific model and the specific material.
 %
-% According to Hull & Bacon the energy U of edge and screw dislocations is
-% given by the formulae
+% According to
+% <https://doi.org/10.1016/C2009-0-64358-0 Hull & Bacon, Introduction to
+% Dislocations, 5th edition, Butterworth-Heinemann, 2011> the energy U of
+% edge and screw dislocations is given by the formulae
 %
 % $$ U_{\mathrm{screw}} = \frac{Gb^2}{4\pi} \ln \frac{R}{r_0} $$
 %
@@ -256,21 +263,23 @@ dSRot = ebsd.orientations * dS
 % tensors derived from the curvature, i.e.,
 
 % the restored dislocation density tensors
-alpha = sum(dSRot.tensor .* rho,2);
+alpha = reshape(sum(dSRot.tensor .* rho,2),size(ebsd));
 
 % we have to set the unit manually since it is not stored in rho
 alpha.opt.unit = '1/um';
 
-% the restored dislocation density tensor for pixel 2
-alpha(2)
+% the restored dislocation density tensor for map position (3,2)
+alpha(3,2)
 
-% the dislocation density derived from the curvature in pixel 2
-kappa(2).dislocationDensity
+% the dislocation density derived from the curvature for map position (3,2)
+kappa(3,2).dislocationDensity
 
 %%
 % we may also restore the complete curvature tensor with
 
 kappa = alpha.curvature
+
+kappa(3,2)
 
 %%
 % and plot it as we did before

@@ -5,6 +5,7 @@ function [vals, warnings, conds, info] = eval_knn(SO3F, ori, varargin)
 
 ori = ori(:);
 N = numel(ori);
+numf = numel(SO3F);
 supportMargin = 1.10;
 candidateTol = 1e-4;
 wantConds = nargout > 2;
@@ -14,85 +15,86 @@ warnings = initWarnings;
 % Smooth support radii need a candidate buffer because many candidates should
 % lie outside the final compact support.
 nn = candidate_count_SO3(SO3F);
-nn_total = nn * N;
 
-[ind, dist] = SO3F.nodes.find(ori, nn, varargin{:}, ...
-  'searcher', SO3F.searcher);
+[ind, dist] = SO3F.nodes.find(ori, nn, varargin{:});
 if SO3F.subsample
   ind = SO3F.find_optimal_subset(ind, ori, varargin{:});
   nn = SO3F.dim;
-  nn_total = nn * N;
 end
 
+% ind is N x nn, the local systems are the pages of nn x ... x N books
+nn_total = nn * N;
 grid_id = reshape(ind', nn_total, 1);
-ori_id = repelem((1:N)', nn);
+center_id = repelem((1:N)', nn);
 
 if SO3F.subsample
-  dist = angle(ori.subSet(ori_id), SO3F.nodes.subSet(grid_id));
-  dist = reshape(dist, SO3F.dim, N)';
+  dist = angle(ori.subSet(center_id), SO3F.nodes.subSet(grid_id));
+  dist = reshape(dist, nn, N)';
 end
 
 
-% evaluate the local basis
+% local basis values, as nn_total x dim
 if ~SO3F.centered
+  % without crystal symmetry no neighbor has to be projected to the
+  % fundamental region of its center, so the basis can be reused
   if (SO3F.CS.id == 1) && (nn_total > numel(SO3F.nodes))
     G = eval_basis_functions(SO3F);
-    G = G(grid_id, :).';
+    G = G(grid_id, :);
 
     if SO3F.antipodal && mod(SO3F.degree, 2) == 1
-      I = sum(ori.subSet(ori_id).abcd .* ...
+      I = sum(ori.subSet(center_id).abcd .* ...
         SO3F.nodes.subSet(grid_id).abcd, 2) < 0;
-      G(:,I) = -G(:,I);
+      G(I,:) = -G(I,:);
     end
   else
     projected = project2FundamentalRegion( ...
-      SO3F.nodes(grid_id), ori(ori_id));
-    G = eval_basis_functions(SO3F, projected).';
+      SO3F.nodes.subSet(grid_id), ori.subSet(center_id));
+    G = eval_basis_functions(SO3F, projected);
   end
 
-  g_book = reshape(eval_basis_functions(SO3F, ori).', ...
-    SO3F.dim, 1, N);
+  g_book = permute(eval_basis_functions(SO3F, ori), [2, 3, 1]);
 
   % the geometry score describes the local node cloud in the tangent space, so
   % the diagnostic needs local coordinates even for a non-centered basis
   if wantInfo
     [~, ~, bloc, cloc, dloc] = ...
-      local_coordinates_SO3(ori, ori_id, SO3F.nodes, grid_id);
+      local_coordinates_SO3(ori, center_id, SO3F.nodes, grid_id);
   end
 else
   if wantInfo
     [rotneighbors, aloc, bloc, cloc, dloc] = ...
-      local_coordinates_SO3(ori, ori_id, SO3F.nodes, grid_id);
+      local_coordinates_SO3(ori, center_id, SO3F.nodes, grid_id);
   else
     [rotneighbors, aloc] = ...
-      local_coordinates_SO3(ori, ori_id, SO3F.nodes, grid_id);
+      local_coordinates_SO3(ori, center_id, SO3F.nodes, grid_id);
   end
 
-  G = eval_basis_functions(SO3F, rotneighbors).';
+  G = eval_basis_functions(SO3F, rotneighbors);
 
   if SO3F.antipodal && mod(SO3F.degree, 2) == 1
     I = aloc < 0;
-    G(:,I) = -G(:,I);
+    G(I,:) = -G(I,:);
   end
 
-  % In centered coordinates evaluation is always at the identity.
+  % in centered coordinates evaluation is always at the identity
   g_book = eval_basis_functions(SO3F, orientation.id).';
 end
 
-G_book = permute(reshape(G, SO3F.dim, nn, N), [2, 1, 3]);
-clear G ori_id aloc rotneighbors projected;
+G_book = permute(reshape(G, nn, N, SO3F.dim), [1, 3, 2]);
+clear G center_id aloc rotneighbors projected;
 if ~wantInfo, clear bloc cloc dloc; end
 
 
-% compute compact local weights
+% compact local weights
 if SO3F.use_smooth_delta
   deltas = supportMargin * get_option(varargin, 'smoothDelta', []);
   deltas = max(real(deltas(:)), realmin);
-  weights = SO3F.w(dist ./ deltas);
 
   % Enlarge the smooth radius only where it would leave fewer than dim
-  % positive-weight rows. Fewer than the nominal SO3F.nn rows are allowed.
+  % positive-weight rows in the local least-squares problem.
+  weights = SO3F.w(dist ./ deltas);
   deltaFallback = sum(weights > 0, 2) < SO3F.dim;
+
   if any(deltaFallback)
     if SO3F.subsample
       fallbackDelta = supportMargin * max(dist, [], 2);
@@ -126,14 +128,11 @@ else
   candidateLimit = false(N, 1);
 end
 
-vor_weights = reshape(SO3F.vor_weights(grid_id), nn, N)';
-weights = weights .* vor_weights * pi^2 / numel(SO3F.nodes);
+% ind has the N x nn layout of the weights, no reordering is needed here
+weights = weights .* SO3F.vor_weights(ind) * pi^2 / numel(SO3F.nodes);
 
 if SO3F.detectOutliers
-  oI = SO3F.outlierIndicators;
-  if isempty(oI), oI = SO3F.compute_outlier_indicators; end
-  oI = reshape(oI(grid_id), nn, N)';
-  weights = weights .* exp(-oI);
+  weights = weights .* exp(-SO3F.outlierIndicators(ind));
 end
 
 weights = max(real(weights), 0);
@@ -146,13 +145,12 @@ if wantInfo
     weights.');
 end
 
-clear weights dist deltas vor_weights oI bloc cloc dloc;
+clear ind weights dist deltas bloc cloc dloc;
 
 
-% set up local function values
-grid_vals = reshape(SO3F.values(:), numel(SO3F.nodes), numel(SO3F));
-f_book = permute(reshape(grid_vals(grid_id,:), ...
-  nn, N, numel(SO3F)), [1, 3, 2]);
+% set up the local function values
+grid_vals = reshape(SO3F.values(:), numel(SO3F.nodes), numf);
+f_book = permute(reshape(grid_vals(grid_id,:), nn, N, numf), [1, 3, 2]);
 clear grid_id grid_vals;
 
 
@@ -183,8 +181,9 @@ else
   c_book = solve_lsq_book_constsize( ...
     W_book, G_book, f_book, solve_args{:});
 end
-clear f_book G_book W_book solve_args;
+clear W_book G_book f_book solve_args;
 
+% evaluate the local coefficient vectors
 vals = permute(sum(c_book .* g_book, 1), [3, 2, 1]);
 if isalmostreal(SO3F.values), vals = real(vals); end
 

@@ -49,8 +49,21 @@ if check_option(varargin,'killPlan')
   return
 end
 
-% get plotting convention
-how2plot = getClass(varargin,'plottingConvention',v.how2plot);
+% the frame of the result: an explicitly given frame wins, then an
+% explicitly given convention (as its own frame), then the frame of the
+% nodes - which is empty for plain nodes, so the result keeps following
+% the session default. A given symmetry means the caller attaches its
+% own frame afterwards, nothing to do here.
+fr = getClass(varargin,'referenceFrame');
+if isempty(fr)
+  pC = getClass(varargin,'plottingConvention');
+  if ~isempty(pC)
+    fr = specimenSymmetry.frameFor(pC);
+  else
+    fr = getFrame(v);
+  end
+end
+applyFrame = isempty(getClass(varargin,'symmetry')) && ~isempty(fr);
 
 % multivariate case
 y = reshape(y,length(v),[]);
@@ -90,12 +103,12 @@ end
 
 if isempty(v)
   sF = S2FunHarmonic(0);
-  sF.how2plot = how2plot;
+  if applyFrame, sF = setFrame(sF,fr); end
   return
 end
 if N==0
   sF = S2FunHarmonic(mean(y)*sqrt(4*pi));
-  sF.how2plot = how2plot;
+  if applyFrame, sF = setFrame(sF,fr); end
   return
 end
 
@@ -230,6 +243,6 @@ end
 
 sF = S2FunHarmonic(fhat,varargin{:});
 sF = reshape(sF,sz(2:end));
-sF.how2plot = how2plot;
+if applyFrame, sF = setFrame(sF,fr); end
 
 end

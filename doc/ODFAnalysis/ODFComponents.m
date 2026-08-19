@@ -9,6 +9,7 @@
 % We start by reconstruction a Quartz ODF from Neutron pole figure data.
 
 % import Neutron pole figure data from a Quartz specimen
+plottingConvention.default("y↑→x");
 mtexdata dubna silent
 
 % reconstruct the ODF

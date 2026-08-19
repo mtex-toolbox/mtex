@@ -25,6 +25,7 @@
 % C$ where $S_x$ is the left symmetry and $S_R$ is
 % the right symmetry be given. 
 
+plottingConvention.default('y↑→x');
 g = SO3FunHarmonic.example
 
 ss1 = specimenSymmetry;

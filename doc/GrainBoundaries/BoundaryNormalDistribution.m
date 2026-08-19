@@ -39,6 +39,7 @@
 % plane, which makes it a good example here - the twin boundaries are
 % coherent, i.e. they actually lie on that plane.
 
+plottingConvention.default('y↑→x');
 mtexdata twins
 
 [grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',3);
@@ -68,7 +69,7 @@ cond = gB.misorientation.angle > 80 * degree;
 
 plot(ebsd,ebsd.orientations)
 hold on
-plot(grains.boundary,'lineWidth',2)
+plot(grains.boundary,'lineWidth',3)
 plot(gB(cond),'lineWidth',2,'lineColor','w')
 hold off
 

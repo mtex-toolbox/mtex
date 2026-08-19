@@ -20,6 +20,7 @@ odf2 = fibreODF(f001_x)
 %%
 % An ODF estimated from diffraction data
 
+plottingConvention.default('y↑→x');
 mtexdata dubna
 
 odf3 = calcODF(pf,'resolution',5*degree,'zero_Range')

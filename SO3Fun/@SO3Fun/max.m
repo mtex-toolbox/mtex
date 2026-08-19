@@ -145,6 +145,8 @@ while res > targetRes
   res = res / 1.25;
 
   % neighborhood search
+  % SLeft on both sides is deliberate: the grid left-multiplies the modes
+  % below, so its inner symmetry must match the modes' specimen side
   S3Glocal = localOrientationGrid(SO3F.SLeft,SO3F.SLeft,2*res,'resolution',res/2,'doNotRespectFR');
   newModes = (S3Glocal * modes).';
   f = reshape(eval(SO3F,newModes,varargin{:}),size(newModes));

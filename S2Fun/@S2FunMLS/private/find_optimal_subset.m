@@ -1,7 +1,7 @@
 function opt_sub_ind = find_optimal_subset(S2F, ind, v, varargin)
 
 
-% compute for given index sets ind(.,:) describing points of S2F.nodes 
+% compute for given index sets ind(.,:) describing points of S2F.nodes
 %   and polynomial degree (given by S2F) the OPTimal SUBset INDice
 
 
@@ -10,9 +10,9 @@ function opt_sub_ind = find_optimal_subset(S2F, ind, v, varargin)
 %   ind    - N x numel(S2F.nodes) logical array describing sets of nodes
 %   v      - the centers where the MLS approximation is to be evaluated
 
-% outputs: 
-%   opt_sub_ind  - a N x numel(S2F.nodes) logical array with 
-%                    sum(optind, 2) = (dim,...,dim)  describing the optimal subsets 
+% outputs:
+%   opt_sub_ind  - a N x numel(S2F.nodes) logical array with
+%                    sum(optind, 2) = (dim,...,dim)  describing the optimal subsets
 %                    of cardinality = dim(ansatz space)
 
 
@@ -43,7 +43,7 @@ if (isa(ind, 'double') == true)
   n = size(ind, 2);
   row_idx = repmat((1:N)', 1, n);
   ind = sparse(row_idx, ind, true, N, grid_size, N*n);
-end 
+end
 
 
 % set linprog options to suppress output
@@ -59,7 +59,7 @@ rots = rotation.map(v, vector3d.Z);
 
 if (num_threads == 1)
   for i = 1 : N
-    n = ns(i); 
+    n = ns(i);
     dists = angle(S2F.nodes.subSet(ind(i,:)), v.subSet(i));
     maxdist = max(dists);
     weights = S2F.w(dists ./ (maxdist * 1.1));

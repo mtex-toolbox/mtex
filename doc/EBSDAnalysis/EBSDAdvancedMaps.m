@@ -42,6 +42,7 @@
 % set.
 
 close all;
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 csFo = ebsd('Forsterite').CS;
 
@@ -49,7 +50,7 @@ csFo = ebsd('Forsterite').CS;
 % The oldest way to colorize orientations is to simply map the three Euler
 % angles into the RGB values. This can be done by
 
-colorKey = BungeColorKey(csFo);
+colorKey = BungeColorKey(ebsd('Fo'));
 
 plot(ebsd('fo'),colorKey.orientation2color(ebsd('fo').orientations))
 
@@ -106,7 +107,7 @@ f = fibre(Miller(1,1,1,csFo),zvector);
 
 % set up coloring
 colorKey = ipfSpotKey(csFo);
-colorKey.inversePoleFigureDirection = f.r;
+colorKey.ipfDirection = f.r;
 colorKey.center = f.h;
 colorKey.color = [0 0 1];
 colorKey.psi = S2DeLaValleePoussinKernel('halfwidth',7.5*degree);
@@ -162,7 +163,7 @@ plot(ebsd,ebsd.bc,'micronbar','off')
 mtexColorMap black2white
 
 colorKey = ipfSpotKey(csFo);
-colorKey.inversePoleFigureDirection = zvector;
+colorKey.ipfDirection = zvector;
 colorKey.center = Miller(1,1,1,csFo);
 colorKey.color = [0 0 1];
 colorKey.psi = S2DeLaValleePoussinKernel('halfwidth',7.5*degree);

@@ -4,6 +4,7 @@
 % Please refer to |PoleFigure2ODF| tutorial first. The regular way of
 % estimating an ODF:
 
+plottingConvention.default("y↑→x");
 mtexdata dubna
 odf_naive = calcODF(pf);
 
@@ -12,7 +13,7 @@ calcError(pf,odf_naive)
 %%
 % visual inspection
 
-odf_naive.plot(pf.allH,'sigma')
+plotPDF(odf_naive,pf.allH)
 
 %%
 % another form to regularize the inversion problem is to iteratively
@@ -25,7 +26,7 @@ calcError(pf,odf_iter)
 %%
 % visual inspection
 
-odf_iter.plot(pf.allH)
+plotPDF(odf_iter,pf.allH)
 
 %%
 % volume portion that is differently distributed between the two methods
@@ -43,6 +44,7 @@ plot(calcPoleFigure(pf,odf_naive-odf_iter))
 % demonstrated the iterative ODF estimation with a synthetic data set.
 
 cs = crystalSymmetry('cubic');
+plottingConvention.default('y↑→x')
 ss = specimenSymmetry;
 
 q = rotation.byEuler(10*degree,10*degree,10*degree,'ABG');
@@ -59,14 +61,13 @@ h = [ ...
   Miller(1,1,0,cs), ...
   ];
 
-figure, odf_true.plotPDF(h)
+plotPDF(odf_true,h)
 
 %% Initial measure grid
 
 r = equispacedS2Grid('resolution',15*degree,'maxtheta',80*degree);
 
-figure
-plot(r,'markersize',12)
+plot(r,'markersize',12,'upper')
 
 %% Refinement
 % for selected directions r we perform a 'point' like  measurement.
@@ -120,7 +121,7 @@ end
 %% Measured Pole Figure
 
 pf_measured
-plot(pf_measured,'silent');
+plot(pf_measured,'silent')
 
 %% Final model
 % the default odf estimation will distribute volume on nodes that do not

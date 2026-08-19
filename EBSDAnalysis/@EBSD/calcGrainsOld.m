@@ -345,7 +345,7 @@ end
       .* ebsd.rotations(ebsdInd(isNotBoundary,1));
     
     gB = grainBoundary(V,F,ebsdInd,grainId,ebsd.phaseId,mori,ebsd.CSList,ebsd.phaseMap,ebsd.id);
-    gB.how2plot = ebsd.how2plot;
+    gB.frame = ebsd.frame;
 
   end
 

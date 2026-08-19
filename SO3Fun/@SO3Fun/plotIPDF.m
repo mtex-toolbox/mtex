@@ -49,7 +49,7 @@ for i = 1:length(r)
   % store geometry
   [cax.Tag] = deal('ipdf');
   setAllAppdata(cax,'CS',SO3F.CS,'SS',SO3F.SS, ...
-    'inversePoleFigureDirection',r(i));
+    'ipfDirection',r(i));
   
 end
 

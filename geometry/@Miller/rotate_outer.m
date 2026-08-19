@@ -9,9 +9,7 @@ function v = rotate_outer(m,rot,varargin)
 %  v - vector3d
 %
 
-% ensure that the rotations have the right reference frame
-if isa(rot,'orientation') && nargin == 2
-  rot = m.CS.ensureCS(rot);
-end
-
+% the frame fit is checked in vector3d/rotate_outer via
+% orientation/fitFrame - the symmetries need not agree, only the frames
+% have to fit
 v = rotate_outer@vector3d(m,rot);

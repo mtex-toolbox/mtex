@@ -17,10 +17,20 @@ if numel(d) == numel(pos) || numel(d) == 3*numel(pos)
 
   if numel(alpha) == numel(pos)
     varargin = delete_option(varargin,'faceAlpha');
-    if size(d,2) == 3 % rgb
-      obj.FaceVertexAlphaData = alpha.*(1-min(d,[],2));
+
+    % both of these have to be read off the RESHAPED data, not off d: on a
+    % gridded map a per pixel quantity arrives with the shape of the map, so
+    % d is (r x c) or (r x c x 3) and alpha is (r x c), while
+    % FaceVertexAlphaData is a column. Taken from d directly, size(d,2) is
+    % the number of map columns and the rgb test below picks the wrong
+    % branch, and the product mixes an (r x c) with an (r*c x 1).
+    cData = obj.FaceVertexCData;
+    alpha = reshape(alpha,[],1);
+
+    if size(cData,2) == 3 % rgb
+      obj.FaceVertexAlphaData = alpha.*(1-min(cData,[],2));
     else
-      obj.FaceVertexAlphaData = alpha.*d./max(d);
+      obj.FaceVertexAlphaData = alpha.*cData./max(cData);
     end
     obj.AlphaDataMapping = 'none';
     obj.FaceAlpha = 'flat';

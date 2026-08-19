@@ -115,7 +115,6 @@ classdef sphericalProjection
         v(~sR.checkInside(v)) = nan;
 
         S2G{iP} = sP(iP).pC.rot .* v; %#ok<AGROW>
-        S2G{iP}.how2plot = sP(iP).pC;
       end
     end
 

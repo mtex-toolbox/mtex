@@ -23,7 +23,7 @@ if check_option(varargin,'noSymmetry')
   return
 end
 
-if ~isa(m1,'Miller') || (isa(m2,'Miller') && m1.CS.Laue ~= m2.CS.Laue)
+if ~isa(m1,'Miller') || (isa(m2,'Miller') && symMismatch(m1,m2))
   warning('Symmetry mismatch')
 end
 

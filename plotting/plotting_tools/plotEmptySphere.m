@@ -15,25 +15,7 @@ hG = holdOn(ax); %#ok<NASGU>
 
 surface(x,y,z,'FaceColor', 'w','EdgeColor','none','parent',ax,'handlevisibility','off')
 
-dth = 15*degree;
-th = -pi/2+dth:dth:pi/2-dth;
-rh = linspace(0,2*pi,100);
-
-[th,rh] = meshgrid(th,rh);
-
-[x,y,z] = sph2cart(rh, th, 1);
-
-line(x,y,z,'color',[1 1 1] * 0.8,'parent',ax,'handlevisibility','off');
-
-drh = 15*degree;
-rh = 0:drh:2*pi-drh;
-th = linspace(-pi/2,pi/2,50);
-
-[th,rh] = meshgrid(th,rh);
-
-[x,y,z] = sph2cart(rh, th, 1);
-
-line(x.',y.',z.','color',[1 1 1] * 0.8,'parent',ax,'handlevisibility','off')
+plotSphericalGrid(ax,varargin{:});
 
 axis(ax,'equal','vis3d','off');
 set(ax,'XDir','rev','YDir','rev',...

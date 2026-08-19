@@ -29,7 +29,12 @@ classdef triplePointList < phaseList & dynProp
     y              % y coordinates of the vertices of the grains
     angles         % boundary segment angles at the triple points
     V              % vertices x,y coordinates of the triple points
-    how2plot       % default plotting convention
+    frame          % the specimen reference frame (carried by allV)
+    how2plot       % default plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
   end
   
   methods
@@ -75,13 +80,20 @@ classdef triplePointList < phaseList & dynProp
       
     end
     
+    function fr = get.frame(tP)
+      fr = tP.allV.frame;
+    end
+
+    function tP = set.frame(tP,fr)
+      % the normal direction lives in the very same frame as the vertices
+      tP.allV.frame = fr;
+      tP.N.frame = fr;
+    end
+
     function pC = get.how2plot(tP)
       pC = tP.allV.how2plot;
     end
 
-    function tP = set.how2plot(tP,pC)
-      tP.allV.how2plot = pC;
-    end
 
     function v = get.V(tP)
       v = tP.allV(tP.id,:);

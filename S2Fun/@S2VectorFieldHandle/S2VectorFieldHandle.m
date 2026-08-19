@@ -7,7 +7,7 @@ properties
 end
 
 methods
-  function S2F = S2VectorFieldHandle(fun)
+  function S2F = S2VectorFieldHandle(fun,varargin)
     S2F.fun = fun;
   end
   

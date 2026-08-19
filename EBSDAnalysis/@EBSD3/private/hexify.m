@@ -122,7 +122,7 @@ else
   
 end
 
-ebsdGrid = EBSDhex(vector3d(x,y,0),rot,phaseId(:),...
+ebsdGrid = EBSDhex(vector3d(x,y,0,ebsd.pos.frame),rot,phaseId(:),...
   ebsd.phaseMap,ebsd.CSList,dHex,isRowAlignment,'options',prop,'opt',ebsd.opt);
 
 end

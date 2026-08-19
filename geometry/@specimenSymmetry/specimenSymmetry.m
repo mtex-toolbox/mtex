@@ -13,11 +13,16 @@ methods
     % usually specimen symmetry is either triclinic or orthorhombic
     %
     
-    if nargin == 0 || isa(varargin{1},'plottingConvention')
-      
+    % the trivial group carrying a given specimenFrame - "orientation
+    % without symmetry", see ADR 0003. The frame handle is adopted, not
+    % copied, and never written to - it may be shared
+    frameAdopted = nargin > 0 && isa(varargin{1},'specimenFrame');
+
+    if frameAdopted || nargin == 0 || isa(varargin{1},'plottingConvention')
+
       id = 1;
       rot = rotation.id;
-      
+
     else
       
       if isa(varargin{1},'quaternion') % define the symmetry just by rotations
@@ -40,10 +45,26 @@ methods
     end
     
     how2plot = getClass(varargin,'plottingConvention');
+    if frameAdopted && ~isempty(how2plot)
+      error('MTEX:specimenSymmetry:frameAndConvention',...
+        ['A reference frame carries its own plotting convention - pass '...
+        'either a frame or a convention, not both.'])
+    end
     if isempty(how2plot), how2plot = plottingConvention.default; end
 
-    s = s@symmetry(id,rot,how2plot);
-    
+    s = s@symmetry(id,rot);
+
+    if frameAdopted
+      s.frame = varargin{1};
+    else
+      % reuse the registered session frame when the requested convention
+      % equals the one it carries, so that plotx2east - which writes onto
+      % that frame - keeps reaching this symmetry; fork an unregistered
+      % frame otherwise - never write a caller's convention through the
+      % shared session frame
+      s.frame = specimenSymmetry.frameFor(how2plot);
+    end
+
     if s.id > 16
       warning(s.pointGroup + " is not a suitable specimen symmetry!")
     end
@@ -98,13 +119,28 @@ methods (Static = true)
     if isa(s,'specimenSymmetry')
       if isempty(s.multiplicityPerpZ)
         isPerpZ = isnull(dot(s.rot.axis,zvector)) & ~isnull(s.rot.angle);
-        
+
         if any(isPerpZ(:))
           s.multiplicityPerpZ = round(2*pi/min(abs(angle(s.rot(isPerpZ)))));
         else
           s.multiplicityPerpZ = 1;
         end
       end
+
+      % a pre-frame object restored how2plot through the setter, which
+      % forked it into a frame; a modern object arrives with its own
+      % deserialized frame. Either way re-intern against the register -
+      % the loaded convention applies to the whole session, see
+      % referenceFrame/reintern.
+      if isempty(s.frame)
+        s.frame = specimenFrame.default;
+      elseif isempty(s.frame.how2plot)
+        % the deserialized frame is this object's own handle - safe
+        s.frame.how2plot = plottingConvention.default;
+      else
+        s.frame = referenceFrame.reintern(s.frame);
+      end
+
       cs = s;
       return;
     end
@@ -130,21 +166,54 @@ methods (Static = true)
     cs = specimenSymmetry(rot,id{:},axes);
       
     if isfield(s,'opt'), cs.opt = s.opt; end
-    if isfield(s,'how2plot'), cs.how2plot = s.how2plot; end
+    if isfield(s,'how2plot') && isa(s.how2plot,'plottingConvention')
+      % reuse-or-fork - the frame the constructor attached may be the
+      % shared session frame, so never write the loaded convention there
+      cs.frame = specimenSymmetry.frameFor(matchDefault(s.how2plot));
+    end
             
   end
 
 
+  function fr = frameFor(pC)
+    % the registered session frame when pC equals the convention it
+    % carries, an unregistered fork otherwise - the fork keeps the name
+    % and the axes names of the session frame
+    %
+    % Accepts a string like 'y↑→x', and reports no frame for no
+    % convention, so that every set.how2plot can be one line through here
+    % instead of repeating the normalisation
+    if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
+    if isempty(pC), fr = []; return; end
+
+    fr = specimenFrame.default;
+    if pC ~= fr.how2plot
+      fr = copy(fr);
+      fr.how2plot = pC;
+    end
+  end
+
   function ss = default(ss)
       persistent save
       if nargin == 1
-        save =  ss;
+        % make ss the default: it adopts the registered default frame,
+        % which in turn adopts ss's convention - so the default stays one
+        % named entity (specimenFrame.default) whatever the point group
+        fr = specimenFrame.default;
+        pC = ss.how2plot;
+        if ~isempty(pC) && pC ~= fr.how2plot, fr.how2plot = pC; end
+        ss.frame = fr;
+        save = ss;
       else
         if isempty(save)
-          % x to east, y to south, z into the screen - the convention of
-          % SEM images and of most EBSD imports
-          save = specimenSymmetry(plottingConvention.ij);
+          % the constructor attaches the registered default frame, which
+          % specimenFrame.default seeds with plottingConvention.ij
+          save = specimenSymmetry;
         end
+        % the singleton always holds the session default frame - another
+        % frame may have taken over via specimenFrame/makeDefault
+        fr = specimenFrame.default;
+        if save.frame ~= fr, save.frame = fr; end
         ss = save;
       end
     end

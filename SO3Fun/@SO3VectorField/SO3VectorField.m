@@ -39,6 +39,8 @@ end
 properties (Dependent = true)
   CS
   SS
+  frameLeft  % the reference frame of SLeft - the specimen side
+  frameRight % the reference frame of SRight - the crystal side
 end
 
 methods
@@ -46,11 +48,33 @@ methods
   function CS = get.CS(SO3VF)
     CS = SO3VF.SRight;
   end
-  
+
   function SS = get.SS(SO3VF)
     SS = SO3VF.SLeft;
   end
-  
+
+  % the frames are the frames of the symmetries, resolved live - exactly
+  % as on SO3Fun ('must have two' in the cardinality table of ADR 0003)
+  function fr = get.frameLeft(SO3VF)
+    fr = SO3VF.SLeft.frame;
+  end
+
+  function fr = get.frameRight(SO3VF)
+    fr = SO3VF.SRight.frame;
+  end
+
+  function SO3VF = set.frameLeft(SO3VF,~)
+    error('MTEX:SO3Fun:fixedFrame',...
+      ['The frames of an SO3VectorField are the frames of its symmetries - ' ...
+      'assign SLeft / SRight instead.']);
+  end
+
+  function SO3VF = set.frameRight(SO3VF,~)
+    error('MTEX:SO3Fun:fixedFrame',...
+      ['The frames of an SO3VectorField are the frames of its symmetries - ' ...
+      'assign SLeft / SRight instead.']);
+  end
+
   function SO3VF = set.CS(SO3VF,CS)
     SO3VF.SRight = CS;
   end
@@ -91,6 +115,20 @@ methods(Static = true)
   
   function SO3VF = Z(varargin)
     SO3VF = SO3VectorFieldHandle(@(varargin) vector3d.Z(size(varargin{1})),varargin{:});
+  end
+
+  function out = symMatches(inner,hidden)
+    % whether the symmetry of the inner SO3Fun is the one the field claims
+    %
+    % Not simply ==: on the crystal side that is sealed to handle identity
+    % (phaseItem), and the inner function often carries a freshly minted
+    % stripSym stand-in rather than the identical handle. Suitable means
+    % the same group living in the same frame. On the specimen side == is
+    % already id equality, so only the crystal side needs the fallback.
+
+    out = inner == hidden || (inner.id == hidden.id && ...
+      ~isempty(inner.frame) && ~isempty(hidden.frame) && ...
+      inner.frame == hidden.frame);
   end 
 
   

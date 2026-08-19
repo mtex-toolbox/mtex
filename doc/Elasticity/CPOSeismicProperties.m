@@ -7,6 +7,7 @@
 %
 % Let's first import an example dataset from the MTEX toolbox
 
+plottingConvention.default('y↑→x');
 mtexdata forsterite
 
 %%
@@ -29,9 +30,10 @@ mtexdata forsterite
 
 ebsd = rotation.byAxisAngle(zvector,-90*degree) * ebsd;
 
-% we shall plot x to the north for a better screen fit
-ebsd.how2plot.north = xvector;
-plot(ebsd,'micronbar','off')
+% we shall plot x to the north for a better screen fit - session wide,
+% so the pole figures of the ODFs and tensors derived below follow suit
+plotx2north
+plot(ebsd,'refFrame','on')
 
 
 %% Import the elastic stiffness tensors

@@ -54,7 +54,8 @@ sF = S2FunHarmonic(rand(10, 3));
 sVF4 = S2VectorFieldHarmonic(sF)
 
 %% Operations
-%
+%%
+plottingConvention.default('y↑→x');
 %%
 %
 % *Basic arithmetic operations*

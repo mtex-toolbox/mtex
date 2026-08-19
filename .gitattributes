@@ -26,3 +26,16 @@
 *.png binary
 *.xlsx binary
 *.dream3d filter=lfs diff=lfs merge=lfs -text
+
+## Line endings
+##
+## MTEX sources are LF. Without this, files committed from Windows arrive as
+## CRLF and stay that way, which is how ~360 of them had drifted - a byte
+## level edit then has to match \r\n or it silently fails to apply.
+*.m text eol=lf
+
+## Vendored code and test fixtures keep their bytes exactly as they are.
+## Importers are parsed byte by byte and some fixtures carry deliberately
+## odd line endings - see the lone CR that made .ang imports drop a row.
+extern/** -text
+data/** -text

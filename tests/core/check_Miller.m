@@ -27,7 +27,7 @@ checkRoundKeepsDirection(csC);
 checkDispStyleSurvives(cs);
 checkCubicHklUvw(csC);
 checkSymmetriseMultiplicity(cs);
-checkSymmetriseMultiplicity(csC);
+checkSymmetriseMultiplicity(csC,[6 12 8 48]);  % the m-3m powder values
 
 disp('check_Miller: passed');
 
@@ -172,28 +172,38 @@ end
 end
 
 % =========================================================================
-function checkSymmetriseMultiplicity(cs)
-% the orbit-stabilizer relation between multiplicity and symmetrise
+function checkSymmetriseMultiplicity(cs,expected)
+% multiplicity is the size of the orbit, and the orbit-stabilizer relation
 %
-% Deliberately NOT asserting that multiplicity is the number of equivalent
-% directions, although its help line reads that way: it returns
-% numSym(CS)/n, i.e. the order of the stabilizer, so for cubic (100) it is 8
-% while the form {100} has 6 members. See
-% https://github.com/mtex-toolbox/mtex/issues/2584 - it has no callers in
-% the toolbox, so which of the two the name should mean is open. What is
-% true either way is that the two multiply to the order of the group, and
-% that is what is pinned here.
+% Until #2584 this returned the reciprocal - the order of the stabilizer -
+% so cubic (100) came out as 8 while the form {100} has 6 members. Both
+% halves are pinned: the value itself, and that it divides the group order.
+% expected, when given, are the standard crystallographic multiplicities -
+% the powder diffraction values, which is the whole point of the convention.
 
-for m = [1 0 0; 1 1 0; 1 1 1; 3 2 1].'
+forms = [1 0 0; 1 1 0; 1 1 1; 3 2 1].';
 
+for k = 1:size(forms,2)
+
+  m = forms(:,k);
   h = Miller(m(1),m(2),m(3),cs,'hkl');
   n = length(symmetrise(h,'unique','noAntipodal'));
 
-  assert(n * h.multiplicity == numSym(cs), ...
-    ['check_Miller: %s (%d%d%d) - multiplicity %d times %d unique ' ...
-     'directions is %d, but the group has %d elements'], ...
-    char(cs.pointGroup), m(1), m(2), m(3), h.multiplicity, n, ...
-    n*h.multiplicity, numSym(cs))
+  assert(h.multiplicity == n, ...
+    ['check_Miller: %s (%d%d%d) - multiplicity is %d but there are %d ' ...
+     'symmetrically equivalent directions'], ...
+    char(cs.pointGroup), m(1), m(2), m(3), h.multiplicity, n)
+
+  assert(mod(numSym(cs),n) == 0, ...
+    ['check_Miller: %s (%d%d%d) - %d equivalent directions does not ' ...
+     'divide the group order %d'], ...
+    char(cs.pointGroup), m(1), m(2), m(3), n, numSym(cs))
+
+  if nargin > 1
+    assert(h.multiplicity == expected(k), ...
+      'check_Miller: %s {%d%d%d} multiplicity is %d, expected %d', ...
+      char(cs.pointGroup), m(1), m(2), m(3), h.multiplicity, expected(k))
+  end
 
 end
 

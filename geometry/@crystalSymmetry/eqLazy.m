@@ -34,8 +34,7 @@ elseif S1.id == 0
       
 else
   
-  out = S1.id == S2.id && ...
-    all(norm(S1.axes - S2.axes)./norm(S1.axes)<5*10^-2);
+  out = S1.id == S2.id && isAligned(S1.frame,S2.frame);
 
   if ~isempty(S1.mineral) && ~isempty(S2.mineral)
     out = out && strcmpi(S1.mineral,S2.mineral);

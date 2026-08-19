@@ -16,7 +16,7 @@ else
   ax = gca;
 end
 
-how2plot = getClass(varargin,'plottingConvention',plottingConvention.default);
+how2plot = plottingConvention.fromOption(varargin,plottingConvention.default);
 
 how2plot.setView(ax);
 

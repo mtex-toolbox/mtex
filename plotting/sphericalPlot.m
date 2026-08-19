@@ -321,47 +321,55 @@ classdef sphericalPlot < handle
     function plotLabels(sP,CS,varargin)
 
       if check_option(varargin,'noLabel') || isempty(CS), return; end
-      
-      sR = sP.sphericalRegion; 
-      h = sR.vertices;
 
-      if ~isempty(CS)
+      sR = sP.sphericalRegion;
+      h = Miller(unique(sR.vertices),CS);
+
+      % a full sphere or hemisphere has no sector vertices - fall back to
+      % the vertices of the fundamental sector, in all their symmetrically
+      % equivalent positions inside the plotted region: on a full plot a
+      % single variant would single out one of several equivalent maxima
+      % for no reason
+      hasVertices = ~isempty(h);
+      if ~hasVertices
+        h = fundamentalSector(CS).vertices;
+        if isempty(h), return; end
         h = Miller(unique(h),CS);
-        
-        % try direct coordinates
-        h.dispStyle = MillerConvention(abs(MillerConvention(h.dispStyle)));
-        
-        % if this gives no integer values - go to reciprocal coordinates
-        if any(angle(round(h),h)>1e-5)
-          h.dispStyle = MillerConvention(-MillerConvention(h.dispStyle)); 
-        end
-        h = round(h);
+        h.antipodal = false;
+        h = unique(symmetrise(h),'noSymmetry');
+        h = h(sR.checkInside(h,'noAntipodal'));
+        h = h(ismembertol(h.theta,[0,pi/2,pi],1*degree));
+        if isempty(h), return; end
       end
+
+      % try direct coordinates
+      h.dispStyle = MillerConvention(abs(MillerConvention(h.dispStyle)));
+
+      % if this gives no integer values - go to reciprocal coordinates
+      if any(angle(round(h),h)>1e-5)
+        h.dispStyle = MillerConvention(-MillerConvention(h.dispStyle));
+      end
+      h = round(h);
       
-      sP.labels = [sP.labels,scatter(h,'MarkerFaceColor','k',...
+      if hasVertices
+        sP.labels = [sP.labels,scatter(h,'MarkerFaceColor','k',...
         'labeled','Marker','none',...
         'backgroundcolor','w','autoAlignText','parent',sP.ax,'doNotDraw')];
+      else
+        sP.labels = [sP.labels,text(h,'labeled','backgroundcolor','w',...
+        'parent',sP.ax,'doNotDraw')];
+      end
 
     end
 
     function plotAxesLabels(sP,CS,varargin)
       % annotate the directions of the reference frame the way pole figures
-      % do - X / Y / Z by default, the pfAnnotations preference lets the
-      % user replace them by RD / TD / ND or switch them off entirely
-      %
-      % A crystal symmetry in the argument list marks the plot as living in
-      % crystal coordinates, there X / Y / Z would be meaningless and
-      % plotLabels writes the Miller indices of the sector vertices instead
+      % do - see annotateFrame, which the three dimensional plots that
+      % never build a sphericalPlot share with us
 
-      if check_option(varargin,'noLabel') || ~isempty(CS), return; end
+      if ~isempty(CS), return; end
 
-      pfAnnotations = getMTEXpref('pfAnnotations');
-      h = pfAnnotations('parent',sP.ax,'doNotDraw');
-
-      % the preference is user defined, it may return anything
-      if ~isempty(h) && all(isgraphics(h(:)))
-        sP.axesLabels = [sP.axesLabels(:); h(:)];
-      end
+      sP.axesLabels = [sP.axesLabels(:); annotateFrame(sP.ax,varargin{:})];
 
     end
   end

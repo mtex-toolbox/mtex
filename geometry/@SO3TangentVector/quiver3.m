@@ -18,7 +18,8 @@ function h = quiver3(tV,varargin)
 %
 
 % generate a new 3d projection of the orientation space
-oP = newOrientationPlot(tV.hiddenCS,tV.hiddenSS,'project2FundamentalRegion',...
+ref = tV.oriRef;
+oP = newOrientationPlot(ref.CS,ref.SS,'project2FundamentalRegion',...
   varargin{:});
 
 % get the base points of the arrows

@@ -27,6 +27,9 @@ function [c_book, conds, info] = ...
 % flags:
 %   centered_evaluation  the evaluation vector is the first basis direction
 %
+% The local systems are solved from the normalized normal equations, with one
+% step of iterative refinement wherever no regularization is active.
+%
 % The evaluation direction is protected and only its orthogonal complement is
 % regularized. In centered coordinates, the nuisance block C0 is whitened by
 % its Cholesky factor and successive degree layers are penalized increasingly.
@@ -67,7 +70,8 @@ fw_book = sqrtW_book .* f_book;
 clear G_book f_book W_book sqrtW_book;
 
 % normalize columns; regularization therefore does not depend on basis scaling
-s_book = sqrt(sum(abs(B_book).^2, 1));
+% vecnorm avoids the two full-size temporaries of sqrt(sum(abs(B).^2))
+s_book = vecnorm(B_book, 2, 1);
 pageScale = max(s_book, [], 2);
 s_floor = max(realmin, colNormTol .* pageScale);
 s_book = max(s_book, s_floor);
@@ -87,14 +91,13 @@ if ~regularize && nargout <= 2
 end
 
 % normalized Gram matrices and right-hand sides
-B_adj = conj(permute(B_book, [2, 1, 3]));
-H_book = pagemtimes(B_adj, B_book);
+% the transpose flag of pagemtimes keeps the adjoint book from being formed
+H_book = pagemtimes(B_book, 'ctranspose', B_book, 'none');
 H_book = (H_book + conj(permute(H_book, [2, 1, 3]))) / 2;
 
 if regularize
-  rhs_book = pagemtimes(B_adj, fw_book);
+  rhs_book = pagemtimes(B_book, 'ctranspose', fw_book, 'none');
 end
-clear B_adj;
 
 % evaluation direction in normalized coefficient coordinates
 [g_book, centeredEvaluation] = getEvaluationVector( ...
@@ -186,18 +189,22 @@ end
 
 H_reg = (H_reg + conj(permute(H_reg, [2, 1, 3]))) / 2;
 
-% Exactly inactive pages retain the more accurate rectangular LSQ solve.
+% On an inactive page no regularization is applied at all, so H_reg is exactly
+% the normalized Gram matrix and one solve covers both kinds of page.
 active = (numericalRidge > 0) | (shapeRegularization > 0);
-numf = size(fw_book, 2);
-c_scaled = zeros(dim, numf, N, 'like', fw_book);
+c_scaled = pagemldivide(H_reg, rhs_book);
 
-if any(~active)
-  c_scaled(:,:,~active) = ...
-    pagemldivide(B_book(:,:,~active), fw_book(:,:,~active));
-end
-if any(active)
-  c_scaled(:,:,active) = ...
-    pagemldivide(H_reg(:,:,active), rhs_book(:,:,active));
+% One step of iterative refinement for the pages that solve the plain least
+% squares problem. The columns of B are normalized and the inactive pages are
+% the well conditioned ones, so this reaches the accuracy of a rectangular QR
+% per page at a small fraction of its cost. A regularized page solves a
+% different system and must not be refined towards the unregularized one.
+if ~all(active)
+  residual = fw_book - pagemtimes(B_book, c_scaled);
+  correction = pagemldivide(H_reg, ...
+    pagemtimes(B_book, 'ctranspose', residual, 'none'));
+  correction(:,:,active) = 0;
+  c_scaled = c_scaled + correction;
 end
 
 c_book = c_scaled ./ s_book;

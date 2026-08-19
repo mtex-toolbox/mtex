@@ -1,138 +1,178 @@
-%% On Screen Coordinate System Alignment 
+%% On Screen Coordinate System Alignment
 %%
 plottingConvention.default('y↑→x');
 %%
 % In this section we discuss how MTEX aligns coordinate systems on the
-% screen and how to change it. In MTEX it is possible to mix different
-% alignment. At the same time MTEX tries to be as consistent as possible,
-% e.g. by aligning EBSD maps and pole figures with respect to the same
-% reference directions.
+% screen and how to change it. At the same time MTEX tries to be as
+% consistent as possible, e.g. by aligning EBSD maps and pole figures with
+% respect to the same reference directions.
 %
 % Different alignments are typically used when
-% 
+%
 % * displaying directions in crystal vs. specimen reference frame
 % * displaying orthogonal 2d EBSD sections
-% 
-%%
-% In MTEX each plottable variable has a property |how2plot|
+%
+%% Reference Frames Carry the Alignment
+%
+% Every plottable quantity in MTEX lives in a reference frame - an
+% instance of <referenceFrame.referenceFrame.html |@referenceFrame|> - and
+% it is the frame that knows how its data is aligned on screen. The
+% alignment itself is described by a |@plottingConvention|, which can be
+% read off any object via its |how2plot| property
 
 v1 = vector3d(1,1,1);
 v2 = vector3d(-1,1,1);
 v1.how2plot
 
 %%
-% The property |how2plot| is a handle class of type |@plottingConvention|
-% and tells MTEX how to align the corresponding coordinate system on
-% screen. Every spherical plot that is not in crystal coordinates is
-% annotated with the axes of the reference frame, such that the alignment
-% can be read off the plot directly.
+% Freshly created data does not carry a frame of its own - it belongs to
+% the session's default frame, |specimenFrame.default|. Every spherical
+% plot that is not in crystal coordinates is annotated with the axes of
+% that frame, such that the alignment can be read off the plot directly.
 
 plot(v1,'label','v_1','figSize','small')
 
 %%
-% We can change it by setting |north|, |east| or |outOfScreen| to other
-% directions.
+% Changing the convention of the session frame changes the alignment of
+% everything that belongs to it - |v1|, |v2| and all plots to come
 
-v1.how2plot.outOfScreen = yvector
+plottingConvention.default('y←↑x')
 plot(v1,'label','v_1','figSize','small')
 
 %%
-% Note that |@plottingConvention| is a handle class, i.e. changing
-% |v1.how2plot| changes also |v2.how2plot|
+% The commands <plotx2east.html |plotx2east|>, |plotx2north|,
+% |plotzIntoPlane|, ... do exactly this for the most common cases.
+plottingConvention.default('y↑→x');
 
-v2.how2plot
+%% One Plot in a Different Alignment
+%
+% A single plot may be drawn in any convention by passing it as an option.
+% Nothing else is affected - not the data, not the session, not the plot
+% after it
 
-plot(v2,'label','v_2','figSize','small')
-
-%%
-% In order to have different plotting axes alignments within one MTEX
-% session we have to define a new |@plottingConvention| by
-
-% instantiate a new plotting convention
-pC2 = plottingConvention('y↑→x')
-
-% assign this plottingConvention to v2
-v2.how2plot = pC2;
-
-% plot v1 and v2 in separate plots
-plot(v1,'upper','label','v_1')
+plot(v1,'how2plot','z↑→x','label','v_1')
 nextAxis
+plot(v2,'label','v_2')
+
+%%
+% The convention may be given as a |@plottingConvention| or, as above, by
+% the string that names it. A plotting convention belongs to a reference
+% frame and never to a data object, so there are exactly three ways to say
+% how something should be aligned
+%
+% * for one plot, |plot(v1,'how2plot','z↑→x')| as above
+% * for the session, |plottingConvention.default('z↑→x')|
+% * by moving the data into a named frame that carries its own convention,
+%   |v1.frame = specimenFrame.rolling|
+%
+% Assigning a convention to the data itself - |ebsd.how2plot = 'z↑→x'| - is
+% not one of them, and |how2plot| is read only on every class but
+% @referenceFrame. It used to attach a private copy of the session frame to
+% that one object, which then looked exactly like the session frame in every
+% display while silently no longer following it.
+
+%% Named Reference Frames
+%
+% Frames have an identity and named axes. The frame of the instrument is
+% <specimenFrame.measurement.html |specimenFrame.measurement|> with the
+% axes |X1|, |Y1|, |Z1| in Oxford notation. For rolled sheets the frame
+% <specimenFrame.rolling.html |specimenFrame.rolling|> names its axes
+% |RD|, |TD|, |ND| and comes with the typical rolling geometry
+% convention, RD to the north and TD to the west
+
+specimenFrame.rolling
+
+%%
+% Any specimen frame can supply the session default. After
+
+specimenFrame.rolling.makeDefault
+
+%%
+% all frame-free data plots in the rolling convention and the spherical
+% plots annotate RD / TD / ND instead of X / Y / Z - no manual label
+% definition required
+
 plot(v2,'upper','label','v_2')
 
 %%
-% When initiating a new |@vector3d| MTEX uses |plottingConvention.default|
-% as default plotting convention. This default plotting convention can be
-% changed by |plottingConvention.default('y↑→x')| or by
+% We return to the generic specimen frame for the rest of this section
 
-plottingConvention.default('y←↑x')
-plot(v1,'upper','label','v_1')
+specimenFrame.specimen.makeDefault
+plottingConvention.default('y↑→x');
 
 %%
-% The labels of the reference frame are taken from the |pfAnnotations|
-% preference, which allows to replace |X|, |Y|, |Z| by the rolling
-% directions or to switch them off for the entire session
-
-storepfA = getMTEXpref('pfAnnotations');
-
-pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y,vector3d.Z],...
-  {'RD','TD','ND'},'BackgroundColor','w','tag','axesLabels',varargin{:});
-setMTEXpref('pfAnnotations',pfAnnotations);
-
-plot(v1,'upper','label','v_1')
-
-%%
+% The annotation of the spherical plots is a function handle stored in
+% the |pfAnnotations| preference. By default it draws the axes of the
+% session's frame with their names; it can be replaced by any custom
+% annotation or switched off for the entire session by
+%
+%   setMTEXpref('pfAnnotations',@(varargin) []);
+%
 % For a single plot the flag |noLabel| does the same
 
-setMTEXpref('pfAnnotations',storepfA);
 plot(v1,'upper','label','v_1','noLabel')
 
-%%
-% When importing data those might be associated with a plotting convention
-% that is different to the default one
+%% Imported Data
+%
+% Imported data follows the session convention like everything else - a
+% file does not decide how the rest of your session is drawn. What an
+% import may do is state *which frame* the data lives in: data from an
+% Oxford instrument lands in |specimenFrame.measurement|, whose axes appear
+% as |X1|, |Y1|, |Z1| in the display of the object.
 
+plottingConvention.default('y↑→x');
 mtexdata dubna
 
 pf.how2plot
 plot(pf{1:4})
 
 %%
-% Note that all quantities derived from those data will inherit the stored
-% plotting convention
+% Consequently, all quantities derived from those data are plotted in the
+% same alignment
 
 odf = calcODF(pf,'silent');
 
 plotPDF(odf,pf.allH{1:4})
 
-%%
-% We may also set the default plotting convention to the plotting
-% convention of the imported data by
+%% Crystal Frames
+%
+% Data in crystal coordinates, e.g. @Miller directions, lives in the
+% crystal frame of its symmetry. The alignment of a crystal frame is not
+% a free choice - it is derived from the crystal axes, following the
+% alignment options like |X||a| the symmetry was defined with. Its
+% display states the alignment and the resulting convention in crystal
+% directions, e.g. |⊙c→a| for "c out of screen, a to the east".
 
-pf.how2plot.makeDefault
-plottingConvention.default
+cs = crystalSymmetry('321','X||a')
+
+%%
+% A pole figure is not crystal framed, although it is computed from crystal
+% directions. An orientation is the coordinate transform from its right
+% frame to its left one, so |ori * h| lands in the left - the specimen -
+% frame, and a pole figure is aligned by the specimen convention.
 
 %% The Reference Frame on EBSD Maps
 % On an EBSD or grain map the alignment in use is indicated within the
-% scale bar. Every axis with a component within the screen plane becomes an
-% arrow, the axis along the viewing direction becomes a circled dot if it
-% points out of the screen and a circled cross if it points into it.
+% scale bar, labeled with the axes names of the frame the map lives in.
+% Every axis with a component within the screen plane becomes an arrow,
+% the axis along the viewing direction becomes a circled dot if it points
+% out of the screen and a circled cross if it points into it.
 
 mtexdata titanium
 
-ebsd.how2plot = 'y↑→x';
-plot(ebsd,ebsd.orientations,'refFrame','on','figSize','small')
+plot(ebsd,ebsd.orientations,'how2plot','y↑→x','refFrame','on','figSize','small')
 
 %%
 % Changing the plotting convention turns the indicator along with the map
 
-ebsd.how2plot = 'x←↑y';
-plot(ebsd,ebsd.orientations,'refFrame','on','figSize','small')
+figure
+plot(ebsd,ebsd.orientations,'how2plot','y←↑x','refFrame','on','figSize','small')
 
 %%
 % The indicator may be switched off for a single plot by the option
 % |'refFrame','off'| or for the entire session by
 % |setMTEXpref('showRefFrame','off')|
 
-ebsd.how2plot = 'y↑→x';
-plot(ebsd,ebsd.orientations,'refFrame','off','figSize','small')
+plot(ebsd,ebsd.orientations,'how2plot','y↑→x','refFrame','off','figSize','small')
 
 %%

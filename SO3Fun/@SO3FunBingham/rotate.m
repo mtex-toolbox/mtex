@@ -23,18 +23,16 @@ function SO3F = rotate(SO3F,rot,varargin)
 if check_option(varargin,'right')
   if isa(rot,'orientation')
     assert(rot.SS == SO3F.CS,'symmetry missmatch')    
-  elseif numSym(SO3F.CS.Laue)>2 && ~all(any(rot(:).' == SO3F.CS.rot(:)))
-    warning('Rotating an ODF with crystal symmetry will remove the crystal symmetry')
-    SO3F.CS = crystalSymmetry.default;
+  else
+  SO3F.CS = dropSymmetry(SO3F.CS,rot,'crystal','ODF');
   end
 
   SO3F.A = orientation(SO3F.A * rot);
 else
   if isa(rot,'orientation')
     assert(rot.CS == SO3F.SS,'symmetry missmatch')    
-  elseif numSym(SO3F.SS.Laue)>2 && ~any(rot == SO3F.SS.rot(:))
-    warning('Rotating an ODF with specimen symmetry will remove the specimen symmetry')
-    SO3F.SS = specimenSymmetry.default;
+  else
+  SO3F.SS = dropSymmetry(SO3F.SS,rot,'specimen','ODF');
   end
 
   SO3F.A = orientation(rot * SO3F.A);

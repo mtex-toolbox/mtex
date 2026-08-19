@@ -29,9 +29,9 @@ tS = SO3VF1.tangentSpace;
 SO3VF1.tangentSpace = SO3VF1.internTangentSpace;
 % Furthermore, dependent on the tangent space representation, we have to ignore one of the symmetries of SO3FunHarmonic 
 if sign(SO3VF1.tangentSpace)==1
-  SO3VF2.SS = ID1(SO3VF2.SS);
+  SO3VF2.SS = stripSym(SO3VF2.SS);
 else
-  SO3VF2.CS = ID1(SO3VF2.CS);
+  SO3VF2.CS = stripSym(SO3VF2.CS);
 end
 
 % quadrature

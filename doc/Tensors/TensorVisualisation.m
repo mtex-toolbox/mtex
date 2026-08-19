@@ -20,35 +20,23 @@ C = stiffnessTensor.load(fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa'),cs)
 
 plot(C,'complete','upper')
 
-%%
-% set back the default color map.
-
-setMTEXpref('defaultColorMap',WhiteJetColorMap)
-
-%% The directional magnitude is a spherical function
-%
-% Since the directional magnitude is an ordinary spherical function, all of
-% the <S2FunPlotting.html spherical plotting options> apply - filled
-% contours, contour lines, 3d plots, and any
-% <SphericalProjections.html spherical projection>.
-
-plot(C,'contourf','upper')
 mtexColorbar
 
 %%
-
-plot(C,'3d')
-
-%%
-% It can also be obtained as an object in its own right, which is useful
-% whenever one wants to compute with it rather than only look at it - find
-% its extrema, integrate it, or compare two tensors.
+% In particular, all of the <S2FunPlotting.html spherical plotting options>
+% apply - filled contours, contour lines, 3d plots, as well as any
+% <SphericalProjections.html spherical projection>.
+%
+% Furthermore, we can access this directional function directly by
 
 sF = C.directionalMagnitude
 
 %%
+% and use it to derive e.g. the location of the maximum directional
+% magnitude
 
 [v,pos] = max(sF)
+
 
 %% Rank two tensors and their principal axes
 %
@@ -56,7 +44,7 @@ sF = C.directionalMagnitude
 % quadratic form $\vec x^T T \vec x$, and its extrema are attained along
 % the eigenvectors. Hence the plot shows the principal axes directly.
 
-T = tensor(diag([3 1 -1]),'rank',2)
+T = tensor(diag([3 1 -1]),'rank',2,plottingConvention('y↑→x'))
 
 %%
 
@@ -64,6 +52,8 @@ plot(T,'complete','upper')
 mtexColorbar
 
 %%
+% the principle axes of a symmetric rank two tensor are computed by the
+% command <tensor.eig.html |eig|>
 
 [e,lambda] = eig(T);
 
@@ -94,5 +84,9 @@ mtexColorbar
 % <BirefringenceDemo.html birefringence> of the refractive index tensor, or
 % the <PiezoElectricity.html piezoelectric> modulus. Each is described in
 % its own chapter.
+%%
 
+setMTEXpref('defaultColorMap',WhiteJetColorMap)
+
+%%
 %#ok<*NOPTS,*ASGLU>

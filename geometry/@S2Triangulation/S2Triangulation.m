@@ -13,7 +13,12 @@ classdef S2Triangulation
   end
   
   properties (Dependent = true)
-    how2plot
+    frame    % the reference frame (carried by vertices)
+    how2plot % plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
   end
 
   methods
@@ -91,13 +96,18 @@ classdef S2Triangulation
       
     end
 
+    function fr = get.frame(sT)
+      fr = sT.vertices.frame;
+    end
+
+    function sT = set.frame(sT,fr)
+      sT.vertices.frame = fr;
+    end
+
     function pC = get.how2plot(sT)
       pC = sT.vertices.how2plot;
     end
 
-    function sT = set.how2plot(sT,pC)
-      sT.vertices.how2plot = pC;
-    end
 
     function e = eq(sT1,sT2)
       e=false;

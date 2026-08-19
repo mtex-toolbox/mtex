@@ -1,5 +1,20 @@
 function export(ebsd,fname,varargin)
-% export EBSD data to a ascii file
+% export EBSD data to a file
+%
+% Description
+%
+% The file format is taken from the extension of the file name. Formats
+% that a vendor software reads are written by the interfaces in
+% |mtex/interfaces|, everything else is written as a plain ascii table with
+% one line per measurement.
+%
+% Syntax
+%
+%   export(ebsd,'myFile.ang')     % TSL / EDAX
+%   export(ebsd,'myFile.ctf')     % Oxford / Channel 5
+%   export(ebsd,'myFile.h5oina')  % HDF5, written into a copy of the file
+%                                 % the data was imported from
+%   export(ebsd,'myFile.txt')     % ascii table
 %
 % Input
 %  ebsd - @EBSD
@@ -10,20 +25,23 @@ function export(ebsd,fname,varargin)
 %  ABG     - Matthies convention (alpha beta gamma)
 %  degree  - output in degree (default)
 %  radians - output in radians
+%
+% See also
+% exportEBSD_ang exportEBSD_ctf exportEBSD_h5
 
 [~,~,ext] = fileparts(fname);
 switch lower(ext)
   case {'.crc','.cpr'}
     export_crc(ebsd,fname,varargin{:});
     return
-  case {'.h5','.hdf5'}
-    export_h5(ebsd,fname,varargin{:});
+  case {'.h5','.hdf5','.h5oina','.oh5','.edaxh5','.dream3d','.h5ebsd'}
+    exportEBSD_h5(ebsd,fname,varargin{:});
     return
   case '.ctf'
-    export_ctf(ebsd,fname,varargin{:});
+    exportEBSD_ctf(ebsd,fname,varargin{:});
     return
   case '.ang'
-    export_ang(ebsd,fname,varargin{:});
+    exportEBSD_ang(ebsd,fname,varargin{:});
     return
 end
 
@@ -52,5 +70,5 @@ for j = 5:numel(fn)
     d(:,j) = angle(reshape(ebsd.prop.(fn{j}),1,[])) / degree;
   end
 end
- 
+
 cprintf(d,'-Lc',fn,'-fc',fname,'-q',true);

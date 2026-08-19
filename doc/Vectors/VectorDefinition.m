@@ -19,14 +19,16 @@ plot(v,'grid')
 
 %%
 % Note that the alignment of the X, Y, Z axes is only a plotting
-% convention, which can be easily changed without changing the coordinates,
-% e.g., by setting
+% convention, which can be easily changed without changing the
+% coordinates. For a single plot pass the convention along
 
-v.how2plot.outOfScreen = xvector;
-plot(v,'grid')
+pC = plottingConvention('z←↑y'); 
+plot(v,'how2plot',pC,'grid')
 
-% lets revert the plotting convention
-v.how2plot.outOfScreen = zvector;
+%%
+% Nothing about |v| has changed - the next plot is aligned as before. To
+% change the alignment of the whole session use
+% <plottingConvention.default.html |plottingConvention.default|>.
 
 %%
 % One can easily access the coordinates of any vector by

@@ -72,7 +72,12 @@ classdef EBSD < phaseList & dynProp & dynOption
   properties (Dependent = true)
     dPos       % spacing of the positions
     rot2Plane  % rotation to xy plane
-    how2plot   % plotting convention
+    frame      % the specimen reference frame (carried by pos)
+    how2plot   % plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
     plottingConvention % plotting convention
     EulerCorrection    % EulerXYZ -> mapXYZ, correction for inconsistent reference frames
   end
@@ -108,6 +113,8 @@ classdef EBSD < phaseList & dynProp & dynOption
           ebsd.prop.(char(fn)) = p;
         end
         ebsd.opt = pos.opt;
+        ebsd.N = pos.N;
+        ebsd.Euler2Map = pos.Euler2Map;
 
         ebsd = ebsd.subSet(~isnan(ebsd.phaseId));
         return
@@ -164,6 +171,10 @@ classdef EBSD < phaseList & dynProp & dynOption
         'hint',get_option(varargin,'unitCellHint'));
             
       ebsd.N = perp(ebsd.unitCell);
+
+      % unitCell and N live in the very same frame as the positions
+      ebsd.unitCell.frame = ebsd.pos.frame;
+      ebsd.N.frame = ebsd.pos.frame;
 
       % orientations of not indexed pixels should be nan
       ebsd.rotations(~ebsd.isIndexed) = nan;
@@ -318,7 +329,7 @@ classdef EBSD < phaseList & dynProp & dynOption
         ori = orientation;
       else
         ori = orientation(ebsd.rotations,ebsd.CS,...
-          specimenSymmetryFor(ebsd.how2plot));
+          specimenSymmetryFor(ebsd.pos.frame));
 
         % set not indexed orientations to nan
         if ~all(ebsd.isIndexed(:)), ori(~ebsd.isIndexed) = NaN; end
@@ -341,6 +352,23 @@ classdef EBSD < phaseList & dynProp & dynOption
             
     end
            
+    function ebsd = set.unitCell(ebsd,uC)
+      % calcUnitCell returns the cell as an n x 2 list of coordinates while
+      % the property is a vector3d, so the documented way of recomputing a
+      % cell, ebsd.unitCell = calcUnitCell(xy), used to store a raw double
+      % that every reader of the property then tripped over. Convert here
+      % rather than at each call site.
+      if isnumeric(uC)
+        if isempty(uC)
+          uC = vector3d;
+        else
+          if size(uC,2) < 3, uC(:,3) = 0; end
+          uC = vector3d(uC(:,1),uC(:,2),uC(:,3));
+        end
+      end
+      ebsd.unitCell = uC;
+    end
+
     function d = get.dPos(ebsd)
       d = min(norm(ebsd.unitCell(1) - ebsd.unitCell(2:end)));
     end
@@ -358,15 +386,23 @@ classdef EBSD < phaseList & dynProp & dynOption
     end
     
     function ebsd = set.plottingConvention(ebsd,pC)
-      ebsd.pos.how2plot = pC;
+      ebsd.pos.frame = specimenSymmetry.frameFor(pC);
     end
 
     function pC = get.how2plot(ebsd)
       pC = ebsd.pos.how2plot;
     end
-    
-    function ebsd = set.how2plot(ebsd,pC)
-      ebsd.pos.how2plot = pC;
+
+
+    function fr = get.frame(ebsd)
+      fr = ebsd.pos.frame;
+    end
+
+    function ebsd = set.frame(ebsd,fr)
+      % unitCell and N live in the very same frame as the positions
+      ebsd.pos.frame = fr;
+      ebsd.unitCell.frame = fr;
+      ebsd.N.frame = fr;
     end
 
     function rot = get.EulerCorrection(ebsd)
@@ -453,7 +489,14 @@ classdef EBSD < phaseList & dynProp & dynOption
 
       % ensure CSList is vector
       ebsd.CSList = ensureCSArray(ebsd.CSList);
-      
+
+      % a loaded file does not change how the session plots. The map keeps
+      % the frame it was saved in, re-interned so that separately saved
+      % datasets share one frame handle again
+      if ~isempty(ebsd.pos) && isa(ebsd.pos.frame,'specimenFrame')
+        ebsd.frame = referenceFrame.reintern(ebsd.pos.frame);
+      end
+
     end
 
   end

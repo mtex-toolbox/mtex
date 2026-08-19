@@ -42,16 +42,29 @@ classdef PoleFigure < dynProp & dynOption
     allR = {}           % specimen directions
     allI = {}           % intensities
     c = {}              % structure coefficients for superposed pole figures
-    SS = specimenSymmetry       % specimen symmetry
   end
-   
+
+  properties (Hidden = true)
+    % the specimen symmetry, empty while none was given - then SS follows
+    % the session default, exactly as how2plot does. A class level default
+    % here would be one handle shared by every pole figure that never set
+    % one, and it would not follow the session at all
+    SSprivate = []
+  end
+
   properties (Dependent = true)
+    SS                  % specimen symmetry
     CS                  % crystal symmetry
     h                   % crystal direction of single pole figure
     r                   % specimen directions
     intensities         % diffraction intensities
     antipodal
-    how2plot            % plotting convention
+    frame               % the specimen reference frame (carried by allR)
+    how2plot            % plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
   end
   
   methods
@@ -82,7 +95,9 @@ classdef PoleFigure < dynProp & dynOption
             
       % extract symmetries
       pf.CS = getClass(varargin,'crystalSymmetry',pf.CS);
-      pf.SS = getClass(varargin,'specimenSymmetry',pf.SS);
+      % only a symmetry that was actually given is stored - otherwise SS
+      % keeps following the session default
+      pf.SSprivate = getClass(varargin,'specimenSymmetry',pf.SSprivate);
       
     end
 
@@ -101,16 +116,38 @@ classdef PoleFigure < dynProp & dynOption
       CS = pf.allH{1}.CS;
     end
     
+    function ss = get.SS(pf)
+      ss = pf.SSprivate;
+      if isempty(ss), ss = specimenSymmetry.default; end
+    end
+
+    function pf = set.SS(pf,ss)
+      pf.SSprivate = ss;
+    end
+
+    function fr = get.frame(pf)
+      fr = pf.allR{1}.frame;
+    end
+
+    function pf = set.frame(pf,fr)
+      for k=1:length(pf.allR)
+        pf.allR{k}.frame = fr;
+      end
+      % the symmetry has to move with the data. set.how2plot has kept the
+      % two in step since ADR 0003 while this setter did not, so assigning
+      % a frame left pf.SS behind on the old one. Fork rather than write
+      % through - an unset SS is the shared session singleton
+      if ~isempty(fr) && (isempty(pf.SSprivate) || pf.SSprivate.frame ~= fr)
+        ss = copy(pf.SS);
+        ss.frame = fr;
+        pf.SSprivate = ss;
+      end
+    end
+
     function pC = get.how2plot(pf)
       pC = pf.allR{1}.how2plot;
     end
 
-    function pf = set.how2plot(pf,pC)
-      for k=1:length(pf.allR)
-        pf.allR{k}.how2plot = pC;
-      end
-      pf.SS.how2plot = pC;
-    end
 
     function h = get.h(pf)
       h = pf.allH;
@@ -200,6 +237,17 @@ classdef PoleFigure < dynProp & dynOption
   
   methods (Static = true)
     [pf,interface,options] = load(fname,varargin)
+
+    function pf = loadobj(pf)
+      % called by Matlab when an object is loaded from an .mat file
+      %
+      % a loaded file does not change how the session plots - see
+      % EBSD/loadobj. The pole figure keeps the frame it was saved in
+      if isa(pf,'PoleFigure') && ~isempty(pf.allR) && ...
+          isa(pf.allR{1}.frame,'specimenFrame')
+        pf.frame = referenceFrame.reintern(pf.allR{1}.frame);
+      end
+    end
   end
   
 end

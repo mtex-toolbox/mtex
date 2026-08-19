@@ -1,14 +1,66 @@
 %% MTEX Changelog
 %
-%% MTEX 7.0 xx/2026 - New Features
+%% MTEX 7.1 - New Features
+%
+% *EBSD Export That Keeps the File*
+%
+% Exporting to HDF5 no longer writes a bare MTEX layout that throws away
+% everything a vendor stores. <exportEBSD_h5.html |exportEBSD_h5|> copies
+% the file the data was imported from and writes only the changed data into
+% the copy, so the result is still a file of the vendor's own format -
+% patterns, acquisition settings and all the rest are passed through
+% untouched, and properties MTEX computed are added next to the ones the
+% file brought along.
+%
+%   ebsd = EBSD.load('myfile.h5oina')
+%   ebsd = ebsd.denoise(halfQuadraticFilter)
+%   export(ebsd,'denoised.h5oina')
+%
+% |EBSD.load| remembers the file and the data sets it read in |ebsd.opt.h5|;
+% a different reference file may be named by |'reference'|, and MTEX's own
+% flat layout is still available by |'standalone'|. Changes to the phase
+% list - a renamed mineral, a corrected lattice parameter - are written back
+% into the phase header as well. Verified against Bruker, EDAX (.oh5 and
+% .edaxh5), EMSphInx, Oxford and ThermoFisher files.
+%
+% The text exporters are now interfaces like the loaders they mirror -
+% <exportEBSD_ang.html |exportEBSD_ang|> and <exportEBSD_ctf.html
+% |exportEBSD_ctf|>, with |export_ang| and |export_ctf| kept as wrappers -
+% and they take the header of the imported file along, so an import/export
+% cycle no longer replaces the acquisition parameters by zeros.
+%
+%% MTEX 7.1 - Technical Changes
+%
+% *EBSD Export*
+%
+% * neither the ang nor the ctf exporter undid the Euler angle correction
+% its loader applies, so importing an exported map turned it by 180 degree.
+% An import/export cycle now reproduces the angles of the original file
+% * the .ang phase block stated symmetry codes 132 to 137 for the monoclinic
+% and orthorhombic alignment variants. EDAX numbers only 32 point groups, so
+% those codes were read back as space group ids and a monoclinic phase came
+% back as tetragonal, failing the import with "a and b must be equal". The
+% Laue code and the point group id are written now
+% * exporting a hexagonal map to .ang dropped the last column of every scan
+% row, whether or not it held measurements, and stated NCOLS_ODD/NCOLS_EVEN
+% accordingly. The cells that carry no measurement are told apart from the
+% ones that do now, and a full hexagonal map exports and imports unchanged
+% * the ctf exporter renumbered phases by a loop that tested phase 1 rather
+% than the phase it was about to renumber, and derived the grid from
+% |unique| of the coordinates. Phases are written as Channel numbers them,
+% 1 to N in the order of the phase table with 0 for not indexed
+% * the ang and ctf exporters state the column layout they write (|VERSION|
+% for .ang), so the importer no longer has to guess it
+%
+%% MTEX 7.0 08/2026 - New Features
 %
 % This is the first release that uses AI. This allowed us to implement many
-% long lasting ideas.  
+% long lasting ideas.
 %
 % *Grain Reconstruction*
 %
-% Grain reconstruction has been entirely rewritten to give better results, be
-% faster and be more easy to control. The general syntax is now
+% Grain reconstruction has been entirely rewritten to give better results,
+% be faster and be more easy to control. The general syntax is now
 %
 %   [grains, ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',5,'alpha',3.1)
 %
@@ -31,11 +83,11 @@
 % Along with grain reconstruction we also greatly improved grain boundary
 % smoothing which is now done with the command
 %
-%   grains = smoothBoundary(grains)
+%   grains = smoothBoundary(grains,5)
 %
 % The command <grain2d.smoothBoundary.html |smoothBoundary|> allows for
-% several backends which are explained in detail <TODO.html here>.
-%
+% several backends which are explained in detail <GrainSmoothing.html here>
+% and <GrainSmoothingAdvanced.html here>.
 %
 % *Much Better EBSD Import*
 %
@@ -43,70 +95,35 @@
 % allows to scroll through your data files, adjust reference system
 % alignment by inspecting ipf maps and pole figures. We put a lot of effort
 % in getting all the different conventions right for all the formats on the
-% market, i.e. from Bruker, EDAX, Oxford, and ThermoFisher. In this process
-% we changed the default plotting convention to |y↓→x|, i.e. the current
-% standard among all vendors. This default can be easily changed by 
+% market, i.e. from Bruker, EDAX, Oxford, EMSphinx and ThermoFisher. In
+% this process we changed the default plotting convention to |y↓→x|, i.e.
+% the current standard among all vendors. This default can be easily
+% changed by
 %
-%   ebsd.how2plot = 'y↑→x';
+%   plottingConvention.default('y↑→x');
 %   
 % Additionally, we now support multiple data sets per file and allow to
 % import all additional scans that might be present in your file.
 %
-% *EBSD Analysis No Longer Needs a Grid*
+% *Imported Data Comes on Its Grid*
 %
-% Computations that used to require <EBSD.gridify.html |gridify|> now work
-% on any @EBSD - a plain list, a phase subset, or a gridded map alike. This
-% concerns the <OrientationGradient.html orientation gradient> and
-% everything built on it: <EBSD.curvature.html |curvature|>,
-% <EBSD.calcGND.html |calcGND|> and the gradient method of
-% <EBSD.weightedBurgersVec.html |weightedBurgersVec|>.
-%
-%   kappa = curvature(ebsd)      % no ebsd.gridify needed
-%   gnd   = calcGND(ebsd,dS)
-%
-% They are computed on the virtual lattice MTEX derives from the unit cell,
-% so they also work for grids that are rotated or sheared with respect to
-% the x/y axes, which the previous matrix based implementation could not do
-% at all - |ebsd.gradientX| raised an error unless a grid direction happened
-% to lie along an axis. |calcGND| additionally exists for hexagonal grids
-% now; there simply was no hexagonal implementation before.
-%
-% <EBSD.fill.html |fill|>, <EBSD.smooth.html |smooth|>,
-% <EBSD.interp.html |interp|> and |weightedBurgersVec| keep the class and
-% shape they were given. Previously |fill| and |smooth| turned a plain
-% @EBSD into an @EBSDsquare, and |weightedBurgersVec| returned a result
-% shaped like the grid rather than like the input.
-%
-% Both grid classes now also accept a *rotated* grid. @EBSDhex in particular
-% no longer stores |dHex| and |isRowAlignment| - those could express only two
-% orientations - but derives them, together with |offset|, |dx| and |dy|,
-% from the unit cell and the pixel positions.
-%
-% *Corrections worth knowing*
-%
-% * |gradientX| on a row aligned hexagonal grid divided by |dHex| where the
-% neighbour distance is |sqrt(3)*dHex|, so hexagonal |curvature|, |calcGND|
-% and the gradient based |weightedBurgersVec| were wrong by a factor 1.732
-% in one column of the tensor. Values on hexagonal maps change accordingly;
-% square grids are unaffected.
-% * |gridify| of a rotated hexagonal map silently placed several
-% measurements on the same cell and kept only the last - 5.2% of a titanium
-% map rotated by 20 degree. It now places cells by their lattice index and
-% keeps the measured positions exactly.
-% * |calcGrains(...,'removeQuadruplePoints')| merged the wrong boundary
-% segments and destroyed real grain boundary - 0.21% of a forsterite map.
-% * |export_ang| of a square grid failed in the header with an unrecognized
-% |dx|. It works again, and refuses a rotated grid, whose spacings the ang
-% format cannot express.
-% * |interp(ebsd,x,y)| with row vectors returned an object whose |length|
-% reported 1, and dropped query points when the source was a gridded map.
+% <EBSD.load.html |EBSD.load|> now returns an @EBSDsquare or an @EBSDhex
+% whenever the measurements sit on one lattice, instead of a plain list
+% that had to be <EBSD.gridify.html |gridify|>ed by hand. Almost every scan
+% is a complete raster, so this is what you get for almost every file: the
+% map is stored as a matrix, |ebsd(i,j)| addresses a scan position. 
+% 
+% Note that putting data on a grid *reorders* it - the matrix layout fixes
+% the first dimension to y while a |.ctf| or |.ang| runs x fastest - so
+% |ebsd(k)| is in general no longer line k of the file. The original ids
+% are kept in |ebsd.oldId|. See <EBSDGrid.html Square and Hex Grids>.
 %
 % *Much Faster Plotting of EBSD Maps*
 %
-% Plotting EBSD and grain maps is now orders of magnitude faster. It supports 
-% multiple backends that allow for fast plotting of hexagonal or strongly
-% deformed pixel layouts. The micronbar has been largely improved to
-% include also a small pictogram of the reference system.
+% Plotting EBSD and grain maps is now orders of magnitude faster. It
+% supports multiple backends that allow for fast plotting of hexagonal or
+% strongly deformed pixel layouts. The micronbar has been largely improved
+% to include also a small pictogram of the reference system.
 % 
 % *Approximation, Sampling and Clustering*
 %
@@ -123,8 +140,6 @@
 % * <PoleFigure.calcODFIterative.html |calcODFIterative|> inverts pole figure
 % data by iteratively adjusting the kernel width, which is much more robust
 % for irregularly sampled data
-% * @planarColorKey encodes two scalar properties at once, the first one as
-% hue, the second one as saturation
 %
 %   sF   = S2FunMLS(nodes,values,'degree',3)
 %   ori  = optimalSample(odf,10000)
@@ -147,7 +162,7 @@
 % vector valued> function and arrays of them are handled like any other MATLAB
 % array.
 %
-%% MTEX 7.0 xx/2026 - Technical Changes
+%% MTEX 7.0 08/2026 - Technical Changes
 %
 % *Grain Reconstruction*
 %
@@ -223,6 +238,21 @@
 % * <grain2d.isOuterBoundary.html |isOuterBoundary(grains)|> tells which
 % grains border the map, no longer obvious once an alpha shape has traced it
 %
+% The walk order is also what gives <grainBoundary.curvature.html |curvature|>
+% its sign: a segment is stored with the grain in |gB.grainId(:,1)| to its
+% left, so a positive curvature bulges into |gB.grainId(:,2)| - for the whole
+% map at once, not only for one grain at a time. Which of the two grains ends
+% up in the first column is not decided by |grains(k).boundary|, so put the
+% grain the sign is meant to refer to there
+%
+%   gB = flip(gB, gB.grainId(:,2) == grains(k).id)   % grain k to the left
+%   kappa = gB.curvature                             % positive = convex
+%
+% Grain maps saved before the walk order are turned the right way round when
+% they are loaded - a grain whose segments enclose |-area| is reversed by
+% |grain2d.loadobj|, which leaves a well formed file untouched. See
+% <BoundaryCurvature.html Boundary Curvature>.
+%
 % What used to be |smooth(grains)| is called
 % <grain2d.smoothBoundary.html |smoothBoundary(grains)|> now - |smooth| on an
 % @EBSD denoises orientations, something entirely different - and it performs
@@ -281,6 +311,14 @@
 % assuming it, as it still has to for |ctf| and |crc|. Orientations imported
 % from |h5oina| change by that angle, usually 180 degree, and now agree with
 % the same map imported from a |ctf|
+% * EMSphInx writes the EDAX |ang| and HDF5 layouts, but counts the phases
+% from 0 and flags a pattern it could not index by 255, where EDAX counts from
+% 1 and keeps 0 for not indexed - so every phase used to come out shifted by
+% one. Its |ang| carries no vendor marker at all and is recognized by its
+% empty phase descriptions; |'EDAX'| and |'EMSphInx'| overrule that guess.
+% Pixels an ROI mask kept out of the run - a valid looking phase at
+% orientation (0,0,0) with every quality measure zero - are marked notIndexed
+% instead of fusing into one huge spurious grain
 % * the file header is kept in |ebsd.opt.header| and readable by
 % |'headerOnly'| without importing the data at all, the SEM / PRIAS images an
 % EDAX map comes with in |ebsd.opt.electron_image|, as the Oxford electron
@@ -305,6 +343,82 @@
 % basis in |cs.opt.spaceId| and |cs.opt.atoms|. Fixed along the way: |ang|
 % files whose header contains a stray carriage return - as written by some
 % EDAX exports - silently lost their first data point.
+%
+% *EBSD Grids*
+%
+% Both representations - the gridded map and the plain list - are accepted
+% everywhere, and |EBSD(ebsd)| and <EBSD.gridify.html |gridify|> convert
+% between them at any time. Data that would lose measurements by being
+% gridded - two of them falling into the same lattice cell, or positions too
+% irregular to span a raster - is never gridded and comes back as a list with
+% a warning saying why. A plain list can also be asked for explicitly
+%
+%   ebsd = EBSD.load(fname,'noGrid')     % this import
+%   setMTEXpref('gridifyOnImport',false) % every import
+%
+% One syntax had to go for this: |ebsd(x,y)| used to be the measurement
+% closest to the coordinate |(x,y)| on a list, while on a gridded map the
+% very same expression is the pixel in row |x| and column |y|. Since almost
+% every file now arrives gridded, that silent difference would decide itself
+% by the data rather than by the script, so |ebsd(x,y)| is an error now. Ask
+% for the coordinate by name
+%
+%   ebsd('xy',x,y)   % the measurement closest to (x,y), grid or list
+%   ebsd(i,j)        % the pixel in row i and column j, gridded map only
+%
+% Both grid classes accept a *rotated* grid now. @EBSDhex in particular no
+% longer stores |dHex| and |isRowAlignment| - those could express only two
+% orientations - but derives them, together with |offset|, |dx| and |dy|,
+% from the unit cell and the pixel positions.
+%
+% *EBSD Analysis No Longer Needs a Grid*
+%
+% Computations that used to require <EBSD.gridify.html |gridify|> now work on
+% any @EBSD - a plain list, a phase subset, or a gridded map alike. This
+% concerns the <EBSD.gradientX.html orientation gradient> and everything built
+% on it: <EBSD.curvature.html |curvature|>, <EBSD.calcGND.html |calcGND|> and
+% the gradient method of <EBSD.weightedBurgersVec.html |weightedBurgersVec|>
+%
+%   kappa = curvature(ebsd)      % no ebsd.gridify needed
+%   gnd   = calcGND(ebsd,dS)
+%
+% They are computed on the virtual lattice MTEX derives from the unit cell, so
+% they also work for grids that are rotated or sheared with respect to the x/y
+% axes, which the previous matrix based implementation could not do at all -
+% |ebsd.gradientX| raised an error unless a grid direction happened to lie
+% along an axis. |calcGND| additionally exists for hexagonal grids now; there
+% simply was no hexagonal implementation before.
+%
+% <EBSD.fill.html |fill|>, <EBSD.smooth.html |smooth|>, <EBSD.interp.html
+% |interp|> and |weightedBurgersVec| keep the class and the shape they were
+% given. Previously |fill| and |smooth| turned a plain @EBSD into an
+% @EBSDsquare, and |weightedBurgersVec| returned a result shaped like the grid
+% rather than like the input.
+%
+% *Corrections Worth Knowing*
+%
+% * |gradientX| on a row aligned hexagonal grid divided by |dHex| where the
+% neighbour distance is |sqrt(3)*dHex|, so hexagonal |curvature|, |calcGND|
+% and the gradient based |weightedBurgersVec| were wrong by a factor 1.732 in
+% one column of the tensor. Values on hexagonal maps change accordingly;
+% square grids are unaffected
+% * |gridify| of a rotated hexagonal map silently placed several measurements
+% on the same cell and kept only the last - 5.2% of a titanium map rotated by
+% 20 degree. It now places cells by their lattice index and keeps the measured
+% positions exactly
+% * |calcGrains(...,'removeQuadruplePoints')| merged the wrong boundary
+% segments and destroyed real grain boundary - 0.21% of a forsterite map
+% * <grain2d.merge.html |merge|> assigned rather than added its merge matrix
+% in two of the six branches collecting the criteria, so a call stating
+% several of them applied only some, and which ones depended on the order they
+% were written in - |merge(grains,twinBoundary,'inclusions','maxSize',5)| left
+% the twins unmerged. Every criterion is applied now, and a numeric value
+% following an option name is no longer mistaken for a list of grain pairs
+% * |export_ang| of a square grid failed in the header with an unrecognized
+% |dx|. It works again, and refuses a rotated grid, whose spacings the ang
+% format cannot express
+% * |interp(ebsd,x,y)| with row vectors returned an object whose |length|
+% reported 1, and dropped query points when the source was a gridded map
 %
 % *Plotting EBSD Maps*
 %
@@ -336,7 +450,10 @@
 %
 % What used to be reserved to pole figures now happens on every spherical plot
 % that is not given in crystal coordinates as well - the axes of the reference
-% frame are annotated with X, Y, Z. This includes @vector3d and @S2Fun plots,
+% frame are annotated with the axes names of the frame the data lives in:
+% X, Y, Z by default, X1, Y1, Z1 for the measurement frame of the
+% instrument, RD, TD, ND once the rolling frame rules the session (see
+% *Named Reference Frames* below). This includes @vector3d and @S2Fun plots,
 % @sigmaSections and @pfSections, spherical densities as returned by
 % <grainBoundary.calcGBND.html |calcGBND|> or <vector3d.calcDensity.html
 % |calcDensity|>, and @specimenSymmetry. Plots in crystal coordinates -
@@ -364,15 +481,173 @@
 %
 %   ebsd.how2plot = 'y↑→x'            % also 'x←↑y', 'z⊙→x', ASCII 'y^->x'
 %
-% Data plotted the default way now refers to the one default convention
-% instead of a copy of it, hence changing the default also turns data imported
-% before. Since @plottingConvention is a handle class this requires modifying
-% the default in place - assigning to it installs a new default and detaches
-% all data still referring to the old one
+% Plotting conventions are carried by reference frames: data plotted the
+% default way follows the session's default frame, hence changing the
+% default convention also turns data imported before
 %
-%   pC = plottingConvention.default; pC.east = yvector;   % turns all data
-%   plottingConvention.default.east = yvector;            % does not
-%   plottingConvention.default('y↑→x')                    % a new default
+%   plotx2east                                             % turns all data
+%   plottingConvention.default('y↑→x')                     % the same by a string
+%   pC = plottingConvention.default; pC.east = yvector; pC.makeDefault
+%
+% A convention assigned to a single object becomes an own reference frame
+% of that object and stays untouched by later changes of the default.
+%
+% *Named Reference Frames*
+%
+% Behind the conventions sits a new class @referenceFrame that answers
+% "what coordinate system is this data expressed in". A frame carries an
+% identity, named axes and the plotting convention its data is drawn in;
+% @crystalSymmetry and @specimenSymmetry delegate their frame data (crystal
+% axes, |how2plot|) to the frame they hold. Specimen frames come as named
+% session instances
+%
+%   specimenFrame.specimen      % the generic frame, axes X, Y, Z - the default
+%   specimenFrame.measurement   % the instrument frame, axes X1, Y1, Z1
+%   specimenFrame.rolling       % RD, TD, ND - RD north, TD west
+%   specimenFrame.geological    % N, E, D
+%
+% and any of them can take over the session by
+%
+%   specimenFrame.rolling.makeDefault
+%
+% after which maps, pole figures and the micron bar annotate RD / TD / ND
+% and plot in the rolling convention - no manual label definition needed.
+% Every data class shows the frame it lives in at the top of its display,
+% e.g. |EBSD (Y1↓→X1)| or |PoleFigure (TD←RD↑)|; a crystal frame displays
+% its alignment (|X||a|) and the resulting convention in crystal directions
+% (|⊙c→a|).
+%
+% Rotating data by an @orientation now moves it from the crystal to the
+% specimen frame (or back): the result adopts the new frame but never
+% claims the orientation's symmetry, and mixing frames raises an error
+% instead of silently producing numbers in an undefined coordinate system.
+% Conventions loaded from |.mat| files are decided by the container: an
+% @EBSD or @PoleFigure applies the convention its positions were saved
+% with to the whole session, individual vectors keep theirs private.
+% Scripted environments that run many independent jobs in one session can
+% restore the pristine state by
+%
+%   referenceFrame.reset
+%
+% Data without any symmetry can now state the frame it lives in: the
+% trivial group carrying a frame is a first class citizen, obtained from a
+% symmetry by |cs.stripSym| or directly from a frame by
+%
+%   crystalSymmetry(cF)    % the trivial group on the crystal frame cF
+%   specimenSymmetry(sF)
+%
+% Extrema and samples of a spherical function expressed in a crystal frame
+% - for instance the deliberately unsymmetrised boundary normal
+% distribution of <grainBoundary.calcGBND.html |calcGBND|> - therefore
+% come back as @Miller with proper crystal indices
+%
+%   [value,pos] = max(gbnd)   % pos is a Miller now
+%
+% Along the same lines the compatibility checks behind orientation
+% products and @SO3Fun arithmetic compare the reference frames the
+% coordinates are expressed in, rather than the symmetry groups: aligned
+% crystal frames combine even when the groups differ, a compatible frame
+% transition is absorbed automatically, and a wrong sided product - an
+% orientation applied to data in specimen coordinates - is an error now
+% instead of a warning.
+%
+% *Rotating a function drops a symmetry it destroys - now consistently*
+%
+% Rotating an @SO3Fun or an @SO3VectorField by a rotation which is not one
+% of its own symmetry elements destroys that symmetry, so the group is
+% dropped and only the reference frame kept. The twelve |rotate| methods
+% implementing this had drifted into three different tests for "is there a
+% symmetry to lose", and they disagree for every non centrosymmetric point
+% group of order two - |2|, |m|, |-4| and friends. Concretely
+%
+%   cs  = crystalSymmetry('2',[1 2 3],[90 100 90]*degree);
+%   odf = unimodalODF(orientation.rand(cs));
+%   rot = rotation.byAxisAngle(vector3d(1,2,3),37*degree);
+%   odf = rotate(odf,rot,'right');
+%
+% warned and dropped the symmetry in @SO3FunHarmonic, and silently kept the
+% - by then false - claim of |2| symmetry in @SO3FunComposition and the
+% @SO3VectorField classes. All of them now warn and drop, which is the
+% correct behaviour: the rotated function really is no longer |2| symmetric.
+% If you relied on the old silence, the symmetry was already wrong; a result
+% that should keep its group has to be rotated by a symmetry element.
+%
+% *Orientation products follow the same rule*
+%
+% |rot * ori| acts in the specimen frame and so can only destroy the
+% specimen symmetry; |ori * rot| acts in the crystal frame and destroys the
+% crystal one. Both now drop the group and keep the frame, through the very
+% same helper. Previously the product kept the group and merely warned, and
+% the test for "is this a symmetry element" was a quaternion dot above 0.99
+% - which is a rotation angle of 16.2 degree, so any rotation up to sixteen
+% degrees passed as a symmetry element and not even the warning fired.
+%
+% This was visible in <DetectionOfSampleSymmetry.html Detection of Sample
+% Symmetry>, which rotates a sample by 15.6 degree in order to destroy its
+% orthotropic symmetry deliberately. The claim of |222| survived the
+% rotation, the ODF estimated from those orientations was symmetrised with
+% it, and <SO3Fun.centerSpecimen.html |centerSpecimen|> then had nothing
+% left to find: it returned the identity, an error of the full 15.6 degree.
+% It now recovers the rotation to 0.8 degree.
+%
+% *A plotting convention belongs to a reference frame*
+%
+% There are exactly three ways to say how something should be aligned on
+% screen, and a plotting convention is now always a property of a reference
+% frame rather than of a data object
+%
+%   plot(ebsd,'how2plot','y↑→x')       % this one plot
+%   plottingConvention.default('y↑→x') % the whole session
+%   ebsd.frame = specimenFrame.rolling % move the data to a named frame
+%
+% The first of these is new. Assigning a convention to the data itself,
+% |ebsd.how2plot = 'y↑→x'|, used to attach a private copy of the session
+% frame to that one object - a frame that carried the session frame's name
+% and axis labels, was indistinguishable from it in every display, and then
+% silently stopped following it. |how2plot| is therefore read only on every
+% class but @referenceFrame, where the convention actually lives. Reading it
+% is unchanged, and |ebsd.frame = []| still means "follow the session again".
+%
+% *Importing data no longer changes how the session plots*
+%
+% A file describes its own data, not your screen. Loading an |.mat| file,
+% and <mtexdata.html |mtexdata|>, no longer repoint the session convention.
+% An import may still state *which frame* the data lives in - Oxford data
+% lands in |specimenFrame.measurement| with the axes |X1|, |Y1|, |Z1| - and
+% a convention you pass yourself still applies, since that is your choice
+% and not the file's.
+%
+% Documentation pages that want a particular alignment now say so, which
+% they previously inherited invisibly from |mtexdata|.
+%
+% This also applies to <S2Fun.smiley.html |S2Fun.smiley|>, which used to
+% carry its own convention so the face always read right - a page that shows
+% it now declares |plottingConvention.default('y↑→x')| like any other.
+%
+% *Color Keys Say What They Are*
+%
+% Color keys used to display as MATLAB's dump of their properties, in which
+% every interesting one read |[1x1 crystalSymmetry]|. They now show the pair
+% of reference systems they map between in the header, the way an
+% @orientation does, and below it only the settings that distinguish them
+% from a default key
+%
+%   ipfKey = ipfColorKey (Titanium (Alpha) → y↓→x)
+%
+%     ipfDirection : (0,0,1)
+%     direction key: HSVDirectionKey
+%
+% A directional color key additionally states which way round its colors
+% run, written in the axes of its frame - |⊙c→a| for a crystal key. That
+% layout belongs to the frame of the symmetry and not to the session.
+%
+% The property |inversePoleFigureDirection| is called |ipfDirection| now,
+% and |'ipfDirection'| works as a plot option beside the old spelling
+%
+%   plot(ebsd,ebsd.orientations,'ipfDirection',vector3d.X)
+%
+% The long name keeps working as an alias, so existing scripts are
+% unaffected.
 %
 % *Approximation, Sampling and Clustering*
 %
@@ -417,6 +692,14 @@
 % y, z
 % * |gB.V| returns the two end points of every boundary segment, the plain
 % list of all vertices is |gB.allV|
+% * |multiplicity| now returns the number of symmetrically equivalent
+% directions, fibres or misorientations - the multiplicity as the term is used
+% crystallographically, e.g. |multiplicity(Miller(1,0,0,cs))| is 6 in |m-3m|
+% and not 8. It used to return the reciprocal quantity, the number of symmetry
+% operations fixing the input, which contradicted its own help line. The two
+% multiply to the order of the group, so the old value is
+% |numSym(cs) ./ multiplicity(m)|. This affects @Miller, @orientation and
+% @fibre alike
 %
 % *Renamed and Removed*
 %
@@ -488,6 +771,17 @@
 % * |ebsd('phaseName').orientations| carries the plotting convention of the
 % map, and a @specimenSymmetry displays the convention it holds -
 % |specimenSymmetry.default| is where the session wide default lives
+% * a note about an assumption an import had to make - the Euler correction,
+% the |setting| of an EDAX file - is emitted as a warning instead of being
+% printed to the error stream, where the command window painted it in the red
+% of a failed import. Such notes carry an id, so
+% |warning('off','MTEX:eulerCorrectionAssumed')| silences them
+% * documentation links printed to the command window resolve against a local
+% |doc/html| where it is installed and against
+% <https://mtex-toolbox.github.io the online documentation> where it is not -
+% a clone carries no generated html, and |web()| on a missing file did nothing
+% at all, no page and no error. Line wrapping in the command window no longer
+% breaks such a link apart, which it did for every link it ever touched
 %
 %% MTEX 6.1 10/2025
 %

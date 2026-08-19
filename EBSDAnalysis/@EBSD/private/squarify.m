@@ -138,7 +138,7 @@ j = floor(min(IJ(2,:))):ceil(max(IJ(2,:)));
 
 [ii,jj] = ndgrid(i,j);
 xy = A * [ii(:).'; jj(:).'] + corner(:,1);
-pos = reshape(vector3d(xy(1,:),xy(2,:),0,ebsd.how2plot),size(ii));
+pos = reshape(vector3d(xy(1,:),xy(2,:),0,ebsd.pos.frame),size(ii));
 
 % the closest grid point for every measured position
 IJm = round(A \ ([ebsd.pos.x(:), ebsd.pos.y(:)].' - corner(:,1)));

@@ -6,6 +6,7 @@
 % grain boundaries.
 
 % load some example data
+plottingConvention.default('y↑→x');
 mtexdata twins silent
 ebsd.prop = rmfield(ebsd.prop,{'error','bands'});
 
@@ -66,11 +67,11 @@ gB4.grainId
 
 %%
 % results in 8x2 matrix indicating that grain 4 is a tiny inclusion of
-% grain 15.
+% grain 42.
 
 plot(grains(4),'FaceColor','DarkBlue','micronbar','off')
 hold on
-plot(grains(15),'FaceColor','LightCoral')
+plot(grains(42),'FaceColor','LightCoral')
 hold off
 
 %% Grain boundary misorientations
@@ -130,14 +131,14 @@ plot(gB_Mg,angle(gB_Mg.calcMeanDirection(4),axes),'linewidth',4,'micronbar','off
 
 plot(grains,grains.meanOrientation,'faceAlpha',0.3,'micronbar','off')
 hold on
-quiver(gB_Mg,axes,'color','black','autoScaleFactor',0.4)
+quiver(gB_Mg(1:3:end),axes(1:3:end),'color','black','autoScaleFactor',0.6)
 hold off
 
 %%
 % and it is equally the natural handle for a spatial selection
 
 pos = gB_Mg.midPoint;
-isTop = pos.y > 40;
+isTop = pos.y > 30;
 
 plot(grains,'faceAlpha',0.3,'micronbar','off')
 hold on

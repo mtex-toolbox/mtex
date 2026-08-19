@@ -7,10 +7,13 @@ classdef vector3d < dynOption
 % Syntax
 %   v = vector3d(x,y,z)
 %   v = vector3d(x,y,z,'antipodal')
+%   v = vector3d(xyz)
 %   v = vector3d.byPolar(theta,rho)
 %
 % Input
 %  x,y,z - cart. coordinates
+%  xyz   - 3 x N matrix (one vector per column, gives a 1 x N list) or
+%          N x 3 matrix (one vector per row, gives an N x 1 list)
 %
 % Output
 %  v - @vector3d
@@ -36,19 +39,34 @@ classdef vector3d < dynOption
 % See also
 % VectorDefinition VectorsOperations VectorsAxes VectorsImport VectorsExport
 
-  properties 
+  properties
     x = []; % x coordinate
     y = []; % y coordinate
     z = []; % z coordinate
     antipodal = false;
     isNormalized = false;
-    how2plot = plottingConvention.default
   end
-    
+
+  properties (Hidden = true)
+    % the referenceFrame this vector is expressed in; empty = frame-free.
+    % Do not read/write directly outside loadobj and the copy constructor
+    % - the public view is the dependent property frame, which resolves
+    % through getFrame/setFrame so that Miller can couple its frame to
+    % the one of its crystal symmetry. Only frames carry plotting
+    % conventions - there is no per object convention slot.
+    framePrivate = []
+  end
+
   properties (Dependent = true)
     theta   % polar angle
     rho     % azimuth angle
     resolution % mean distance between the points on the sphere
+    frame    % the referenceFrame this vector is expressed in
+    how2plot % plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
     plottingConvention
   end
 
@@ -65,37 +83,72 @@ classdef vector3d < dynOption
       
       elseif nargin == 0
 
-        v.how2plot = plottingConvention.default;
+        % frame-free - the plotting convention resolves against the
+        % session default at render time
 
       else
         if isa(varargin{1},'vector3d') % copy-constructor
-          
+
           v.x = varargin{1}.x;
           v.y = varargin{1}.y;
           v.z = varargin{1}.z;
           v.antipodal = varargin{1}.antipodal;
           v.isNormalized = varargin{1}.isNormalized;
           v.opt = varargin{1}.opt;
-          v.how2plot = varargin{1}.how2plot;
+          % the private slot, not the resolved frame - copying the
+          % resolved one would pin a merely inherited frame or default;
+          % casting a Miller to vector3d deliberately drops the crystal
+          % frame (its private slot is empty)
+          v.framePrivate = varargin{1}.framePrivate;
           return
           
         elseif isa(varargin{1},'float')
           xyz = varargin{1};
 
           if numel(xyz) == 2
+
             v.x = xyz(1);
             v.y = xyz(2);
             v.z = 0;
+
+          elseif isempty(xyz) && size(xyz,2) ~= 3
+
+            v.x = []; v.y = []; v.z = [];
+
           else
-            if size(xyz,1) ~= 3, xyz = xyz.'; end
-            v.x = xyz(1,:);
-            v.y = xyz(2,:);
-            v.z = xyz(3,:);
+
+            % a matrix of coordinates keeps the row / column correspondence
+            % of the three argument form: a 3 x N matrix holds one vector
+            % per column and gives a 1 x N list, an N x 3 matrix holds one
+            % per row and gives an N x 1 list - the same reading byXYZ uses.
+            % Previously anything that was not 3 x N was transposed into it,
+            % so an N x 3 matrix came back as a ROW of N vectors (#2145).
+            if size(xyz,1) == 3 && size(xyz,2) == 3
+              % satisfies both readings and nothing in the data says which
+              warning('MTEX:vector3d:ambiguousMatrix',...
+                ['A 3 x 3 matrix of coordinates is ambiguous - it is read '...
+                'as three vectors given by its COLUMNS. Use '...
+                'vector3d.byXYZ(xyz) to read it by rows instead.']);
+            end
+
+            if size(xyz,1) == 3
+              v.x = xyz(1,:);
+              v.y = xyz(2,:);
+              v.z = xyz(3,:);
+            elseif size(xyz,2) == 3
+              v.x = xyz(:,1);
+              v.y = xyz(:,2);
+              v.z = xyz(:,3);
+            else
+              error('MTEX:vector3d:wrongSize',...
+                ['A vector3d is built from a 3 x N or an N x 3 matrix of '...
+                'coordinates, not from a %s one.'],mat2str(size(xyz)));
+            end
+
           end
-          v.how2plot = plottingConvention.default;
         else
           error('wrong type of argument');
-        end       
+        end
                
       end
 
@@ -136,9 +189,12 @@ classdef vector3d < dynOption
       
         % normalize
        if check_option(varargin,'normalize'), v = normalize(v); end
-       
-       v.how2plot = getClass(varargin,'plottingConvention');
-       if isempty(v.how2plot), v.how2plot = plottingConvention.default; end
+
+       fr = getClass(varargin,'referenceFrame');
+       if ~isempty(fr), v.frame = fr; end
+
+       pC = getClass(varargin,'plottingConvention');
+       if ~isempty(pC), v.frame = specimenSymmetry.frameFor(pC); end
 
       end
     end
@@ -163,10 +219,34 @@ classdef vector3d < dynOption
       end
     end
 
-    function v = set.how2plot(v,pC)
-      % accept a string like 'y↑→x' as a shortcut for the convention
-      if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
-      v.how2plot = pC;
+    function pC = get.how2plot(v)
+      % the convention of the frame, or the session default - resolved
+      % live, so frame-free data follows whatever the default becomes;
+      % only frames carry conventions
+      pC = [];
+      if ~isempty(v.frame), pC = v.frame.how2plot; end
+      if isempty(pC), pC = plottingConvention.default; end
+    end
+
+
+    function fr = get.frame(v)
+      fr = getFrame(v);
+    end
+
+    function v = set.frame(v,fr)
+      v = setFrame(v,fr);
+    end
+
+    function fr = getFrame(v)
+      % overloaded by Miller, whose frame is the one of its symmetry
+      fr = v.framePrivate;
+    end
+
+    function v = setFrame(v,fr)
+      % overloaded by Miller, where assigning a frame is an error
+      assert(isempty(fr) || isa(fr,'referenceFrame'), ...
+        'The frame of a vector3d has to be a referenceFrame or empty.');
+      v.framePrivate = fr;
     end
 
     % ------- to be removed ------
@@ -175,7 +255,7 @@ classdef vector3d < dynOption
     end
 
     function v = set.plottingConvention(v,pC)
-      v.how2plot = pC;
+      v.frame = specimenSymmetry.frameFor(pC);
     end
     % -------------------------------
     
@@ -259,10 +339,28 @@ classdef vector3d < dynOption
     [v,interface,options] = load(fname,varargin)
 
     function v = byXYZ(d,varargin)
+      % read a matrix of coordinates by ROWS - one vector per row
+      %
+      % Syntax
+      %   v = vector3d.byXYZ([x(:) y(:) z(:)])
+      %   v = vector3d.byXYZ([x(:) y(:)])       % z = 0
+      %
       if size(d,2) == 3
         v = vector3d(d(:,1),d(:,2),d(:,3),varargin{:});
+      elseif size(d,2) == 2
+        % zeros(n,1) and not the scalar 0: the constructor repairs a scalar
+        % coordinate by repmat-ing it to the size of the others, and for an
+        % EMPTY d there is no non singular size to repmat to - a scalar z
+        % then stays 1 x 1 against a 0 x 1 x and y and the constructor
+        % errors with "Coordinates have different size"
+        v = vector3d(d(:,1),d(:,2),zeros(size(d,1),1),varargin{:});
       else
-        v = vector3d(d(:,1),d(:,2),0,varargin{:});
+        % anything else used to silently keep columns 1 and 2 and drop the
+        % rest, which is how an n x 4 built by a caller that had already
+        % appended a z column lost that column without a word
+        error('MTEX:vector3d:wrongSize',...
+          ['vector3d.byXYZ reads one vector per row, so it takes an N x 3 '...
+          'or an N x 2 matrix of coordinates, not a %s one.'],mat2str(size(d)));
       end
     end
 
@@ -295,9 +393,49 @@ classdef vector3d < dynOption
       % this overloaded method ensures compatibility with older MTEX
       % versions
 
-      if isempty(v.how2plot), v.how2plot = plottingConvention.default; end
+      % when the saved fields do not match the class anymore MATLAB hands
+      % over the raw data as a struct - rebuild from it and drop whatever
+      % convention slot the saving version had, the frame model resolves
+      % conventions at render time anyway
+      if ~isa(v,'vector3d'), v = vector3d.fromStruct(vector3d,v); end
+
+      % a deserialized frame is re-interned against the register - the
+      % convention the loaded data was saved with applies to the whole
+      % session, see referenceFrame/reintern. A pre-frame object arrives
+      % here with the frame its saved convention was forked into by
+      % set.how2plot during loading. (The private slot: a Miller
+      % resolves its frame from its symmetry.)
+      if ~isempty(v.framePrivate)
+        v.framePrivate = referenceFrame.reintern(v.framePrivate);
+      end
 
     end
-    
+
+    function v = fromStruct(v,s)
+      % fill the vector3d part of v from a struct handed to loadobj
+      %
+      % A SUBCLASS has to pass an object of its own class here. MATLAB
+      % hands loadobj a raw struct whenever the saved property set no
+      % longer matches the class definition - which is what loading a file
+      % written by an earlier MTEX looks like - and rebuilding a plain
+      % vector3d from it silently downgrades the class. An @S2Grid that
+      % comes back as a list of vectors has lost the very methods it
+      % exists for: @S2Grid/getdata is then undefined, and SO3Grid/dot_outer
+      % fails deep inside the evaluation of any ODF loaded from such a file.
+      %
+      % Syntax
+      %   v = vector3d.fromStruct(S2Grid(...),s)
+      %
+      % See also
+      % vector3d/loadobj S2Grid/loadobj
+
+      [v.x,v.y,v.z] = deal(s.x,s.y,s.z);
+      if isfield(s,'antipodal'),    v.antipodal = s.antipodal; end
+      if isfield(s,'isNormalized'), v.isNormalized = s.isNormalized; end
+      if isfield(s,'opt') && isstruct(s.opt), v.opt = s.opt; end
+      if isfield(s,'framePrivate'), v.framePrivate = s.framePrivate; end
+
+    end
+
   end
 end

@@ -51,9 +51,10 @@ if isa(nodes,'SO3TangentVector')
   % Maybe change tangent space
   nodes = transformTangentSpace(nodes,tS);
   
+  ref = nodes.oriRef;
   rot = nodes.rot;
   val = vector3d(nodes);
-  varargin = {nodes.hiddenCS, nodes.hiddenSS, varargin{:}};
+  varargin = {ref.CS, ref.SS, varargin{:}};
 
 elseif isa(nodes,'rotation') && isa(values,'SO3TangentVector')
   
@@ -70,9 +71,10 @@ elseif isa(nodes,'rotation') && isa(values,'SO3TangentVector')
     error('The input nodes have to be the same as the rotations which define the tangent spaces of the tangent vectors.')
   end
   
+  ref = values.oriRef;
   rot = values.rot;
   val = vector3d(values);
-  varargin = { values.hiddenCS , values.hiddenSS , varargin{:} };
+  varargin = { ref.CS , ref.SS , varargin{:} };
 
 elseif isa(nodes,'rotation') && ( isa(values,'vector3d') || isa(values,'spinTensor'))
 
@@ -94,16 +96,15 @@ if numel(val) ~= numel(rot)
 end
 
 
-% extract symmetries
-[SRight,SLeft] = extractSym(varargin);
+% extract symmetries - absence is empty, so passed triclinic symmetries
+% survive with their frames (ADR 0003)
+[SRight,SLeft] = extractSym(varargin,'empty');
 if isa(rot,'orientation')
-  if SRight.id==1
-    SRight = rot.CS;
-  end
-  if SLeft.id==1
-    SLeft = rot.SS;
-  end
+  if isempty(SRight), SRight = rot.CS; end
+  if isempty(SLeft), SLeft = rot.SS; end
 else
+  if isempty(SRight), SRight = specimenSymmetry; end
+  if isempty(SLeft), SLeft = specimenSymmetry; end
   rot = orientation(rot,SRight,SLeft);
 end
 
@@ -111,9 +112,9 @@ end
 % For interpolation, one of the symmetries needs to have id=1.
 % This depends on the tangent space representation 
 if tS.isRight
-  rot.CS = ID1(rot.CS);
+  rot.CS = stripSym(rot.CS);
 else
-  rot.SS = ID1(rot.SS);
+  rot.SS = stripSym(rot.SS);
 end
 
 

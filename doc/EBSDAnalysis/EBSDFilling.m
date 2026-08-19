@@ -160,6 +160,7 @@ nnz(ebsdSub_smoothed.quality == 0)
 % reconstructing the grain structure.
 
 close all;
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 ebsd = ebsd(inpolygon(ebsd,[10 4 5 3]*10^3));
 plot(ebsd('Fo'),ebsd('Fo').orientations)

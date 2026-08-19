@@ -134,6 +134,17 @@ classdef phaseList
       phase = zeros(size(pL.phaseId));
       isIndex = pL.phaseId>0;
       phase(isIndex) = pL.phaseMap(pL.phaseId(isIndex));
+
+      % a per entry view takes the shape of the object, exactly as
+      % isIndexed below does. phaseId is the storage and stays a column even
+      % on a gridded EBSD, where everything else the user sees - id,
+      % rotations, pos, isIndexed and every prop - is the (r x c) matrix of
+      % the map, so an unreshaped phase was the one property that came back
+      % as a list (#2128). Guarded because a @grainBoundary stores a phase
+      % on each side, i.e. an n x 2 phaseId against an n x 1 object.
+      if numel(phase) == prod(size(pL)) %#ok<PSIZE>
+        phase = reshape(phase,size(pL));
+      end
     end
     
     function pL = set.phase(pL,phase)

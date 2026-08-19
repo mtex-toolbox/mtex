@@ -4,7 +4,16 @@ function varargout = subsref(ebsd,s)
 % Syntax
 %   ebsd('Fe')        - returns data of phase Fe
 %   ebsd({'Fe','Mg'}) - returns data of phase Fe and Mg
-%   ebsd(1:end)       - returns 
+%   ebsd(1:end)       - returns the measurements with these indices
+%   ebsd('id',id)     - returns the measurements with these ids
+%   ebsd('xy',x,y)    - returns the measurements closest to the coordinates
+%
+% Note that |ebsd(x,y)| is NOT the coordinate lookup - it is an error, since
+% on a gridded map the same expression is the pixel in row x and column y.
+% Use |ebsd('xy',x,y)|, which means the same on a grid and on a list.
+%
+% See also
+% EBSD/subsind EBSDgrid/subsind EBSD/findByLocation
 %
 
 
@@ -34,7 +43,7 @@ if strcmp(s(1).type,'()') && ...
   % this shortcut bypasses get.orientations, so it has to attach the
   % plotting convention itself - see specimenSymmetryFor
   ori = orientation(ebsd.rotations(ind),ebsd.CSList(phaseId),...
-    specimenSymmetryFor(ebsd.how2plot));
+    specimenSymmetryFor(ebsd.pos.frame));
 
   if numel(s)>2
     [varargout{1:nargout}] = builtin('subsref',ori,s(3:end));

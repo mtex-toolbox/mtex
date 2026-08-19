@@ -6,21 +6,19 @@ csOld = obj.CS;
 % if equal, everything is ok
 if eqTol(csOld,csNew), return; end
 
-% check for compatibility
-try
-  axesOld = csOld.axes.xyz;
-  axesNew = csNew.axes.xyz;
-catch
+% a frame transition is only defined between two crystal symmetries
+if ~isa(csOld,'crystalSymmetry') || ~isa(csNew,'crystalSymmetry')
   warning('MTEX:symmetry:missmatch',...
     'The symmetries %s and %s do not match!',char(csNew),char(csOld));
   return
 end
-M = axesOld^(-1) * axesNew;
 
-% if compatible transform to new reference frame
-MM = M'*M;%norm(MM - diag(diag(MM))) / norm(MM)
-if csNew.id == csOld.id && ...
-    norm(MM - eye(3)) / norm(MM) < 1*10^-1
+% if the frames are compatible transform to the new reference frame; the
+% decision runs on the same normalized, length-repaired matrix that
+% transformReferenceFrame applies - lattice constant differences no longer
+% enter the decision
+[compatible,M] = isCompatible(csOld.frame,csNew.frame);
+if csNew.id == csOld.id && compatible
   if norm(M - eye(3)) > 1e-1
     disp(' ');
     disp('  The involved symmetries have different reference systems');
@@ -36,7 +34,7 @@ if csNew.id == csOld.id && ...
 end
 
 % trivial symmetry - for the lazy ones
-if csOld.id < 3 && isnull(norm(axesOld - eye(3)))
+if csOld.id < 3 && isnull(norm(csOld.axes.xyz - eye(3)))
   obj.CS = csNew;
   return
 end

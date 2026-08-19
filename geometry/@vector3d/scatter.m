@@ -125,6 +125,19 @@ for i = 1:numel(sP)
         'Width','Page','Ends','type','color'},...
         {'double','double','double',...
         'double','double','char','char','double'});
+
+      % arrow measures its head in PIXELS and takes no notice of how long
+      % the segment is. Chaining arrows through a series of nearby
+      % orientations - which is what they are for - gives segments only a
+      % few pixels long, where the default 16 pixel head is longer than the
+      % whole arrow and sticks out well past its tip (#2072). Zooming in
+      % was the known workaround, and it is exactly this ratio changing.
+      % So cap the head at a fraction of the segment, unless the caller
+      % said what they want.
+      if ~check_option(varargin,'length')
+        arrowOpt = [arrowOpt,{'length',headLength(sP(i).ax,x,y)}]; %#ok<AGROW>
+      end
+
       h(i) = arrow([x(1),y(1)],[x(2),y(2)],arrowOpt{:});
       h(i).Parent = sP(i).ax;
     end
@@ -335,6 +348,22 @@ for i = 1:length(u)
 end
 
 p.Units = oldUnit;
+
+end
+
+function len = headLength(ax,x,y)
+% arrow head length in pixels, never more than a fraction of the segment
+%
+% 16 is arrow's own default and stays the cap, so a segment long enough to
+% carry it is drawn exactly as before.
+
+len = 16;
+
+[p2dx,p2dy] = pix2data(ax);
+if ~(p2dx > 0) || ~(p2dy > 0), return; end
+
+segment = hypot((x(2)-x(1))/p2dx, (y(2)-y(1))/p2dy);
+if isfinite(segment), len = min(len, 0.4*segment); end
 
 end
 

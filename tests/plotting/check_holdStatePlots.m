@@ -107,7 +107,64 @@ if max(abs(p1.Color - ax.ColorOrder(1,:))) > 1e-6 || ...
 end
 close all
 
+% --------------------------------------- the 3d background sphere composes
+checkEmptySphereBackground;
+
 disp('check_holdState: ok')
+
+end
+
+% -------------------------------------------------------------------------
+function checkEmptySphereBackground
+% quiver3 draws its arrows ON TOP of a background sphere
+%
+% plotEmptySphere used to end with hold(ax,'on'), deliberately leaving the
+% axes held so that its CALLER could draw on top of the background it had
+% just laid down. The incremental hold rewrite read that as a missing
+% release and gave it an onCleanup guard, which is released the moment
+% plotEmptySphere returns - so the plot that followed started a fresh axes
+% and the sphere and its grid were gone from every quiver3.
+%
+% The hold has to span the background AND the field, which is what
+% @vector3d/scatter3d already did and the two quiver3 now do as well.
+%
+% Note the objects are drawn with 'handlevisibility','off', so they are
+% invisible to findobj - this has to use findall.
+
+sVF = S2VectorFieldHarmonic(@(v) vector3d(v.x,v.y,0*v.x));
+sAF = S2AxisFieldHarmonic(@(v) vector3d(-v.y,v.x,0*v.x,'antipodal'));
+v3d = equispacedS2Grid('resolution',20*degree);
+
+cases = {'S2VectorField/quiver3', @() quiver3(sVF), ...
+         'S2AxisField/quiver3',   @() quiver3(sAF), ...
+         'vector3d/scatter3d',    @() scatter3d(v3d)};
+
+for k = 1:2:numel(cases)
+  close all; figure; ax = gca;
+  cases{k+1}();
+
+  nSurf = numel(findall(ax,'Type','surface'));
+  nLine = numel(findall(ax,'Type','line'));
+
+  if nSurf < 1 || nLine < 10
+    error(['check_holdState: %s lost the background sphere - ' ...
+      'found %d surface and %d line objects'],cases{k},nSurf,nLine);
+  end
+end
+
+% and the caller's hold state survives it, in both directions
+for held = [false true]
+  close all; figure; ax = gca; ax.NextPlot = 'replace';
+  if held, hold(ax,'on'); end
+  before = ishold(ax);
+  quiver3(sVF);
+  if ishold(ax) ~= before
+    error('check_holdState: quiver3 changed the hold state from %d to %d', ...
+      before,ishold(ax));
+  end
+end
+
+close all
 
 end
 

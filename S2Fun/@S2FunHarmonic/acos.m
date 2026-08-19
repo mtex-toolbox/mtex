@@ -14,6 +14,6 @@ function sF = acos(sF, varargin)
 %  bandwidth - minimal degree of the spherical harmonic
 %
 
-sF = sF.quadrature(@(v) acos(max(-1,min(1,sF.eval(v)))),varargin{:},sF.s);
+sF = sF.quadrature(@(v) acos(max(-1,min(1,sF.eval(v)))),varargin{:},sF.frame);
 
 end

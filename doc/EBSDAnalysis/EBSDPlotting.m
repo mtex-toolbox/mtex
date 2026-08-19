@@ -6,6 +6,7 @@
 % data.
 
 close all;
+plottingConvention.default('y↑→x');
 mtexdata forsterite
 csFo = ebsd('Forsterite').CS;
 
@@ -66,7 +67,7 @@ mtexColorbar
 
 % this defines an ipf color key for the Forsterite phase
 ipfKey = ipfColorKey(ebsd('Forsterite'));
-ipfKey.inversePoleFigureDirection = vector3d.Z;
+ipfKey.ipfDirection = vector3d.Z;
 
 % this is the colored fundamental sector
 plot(ipfKey)

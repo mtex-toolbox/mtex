@@ -35,14 +35,14 @@ function [h,mP] = plot(grains,varargin)
 % --------------------- compute color coding ------------------------
 
 % ensure we do not plot perpendicular to the slice
-pC = grains.how2plot.copy;
+pC = grains.how2plot; % a value class - this is already a private copy
 if isnull(dot(pC.outOfScreen,grains.N)), pC.outOfScreen = grains.N; end
 
 % create a new plot
 %mtexFig = newMtexFigure('datacursormode',{@tooltip,grains},varargin{:});
 mtexFig = newMtexFigure(varargin{:});
 [mP,isNew] = newMapPlot('scanUnit',grains.scanUnit,'parent',mtexFig.gca,...
-  varargin{:}, pC);
+  varargin{:}, pC, grains.frame);
 
 if isempty(grains)
   if nargout==1, h = [];end
@@ -53,12 +53,12 @@ end
 if nargin>1 && isa(varargin{1},'orientation')
 
   oM = ipfColorKey(varargin{1});
-  oM.inversePoleFigureDirection = ...
-    get_option(varargin,{'inversePoleFigureDirection','ipfd'},zvector);
+  oM.ipfDirection = ...
+    get_option(varargin,{'ipfDirection','inversePoleFigureDirection','ipfd'},zvector);
 
   varargin{1} = oM.orientation2color(varargin{1});
   
-  if ~getMTEXpref('generatingHelpMode') && ~check_option(varargin,'inversePoleFigureDirection')
+  if ~getMTEXpref('generatingHelpMode') && ~check_option(varargin,{'ipfDirection','inversePoleFigureDirection','ipfd'})
     disp('  I''m going to colorize the orientation data with the ');
     disp('  standard MTEX colorkey. To view the colorkey do:');
     disp(' ');
@@ -135,15 +135,23 @@ elseif nargin>1 && (isa(varargin{1},'S2Fun') || isa(varargin{1},'ipfColorKey'))
   if isa(S2F,'ipfColorKey'), S2F = S2Fun(S2F); end
   if length(S2F)==3, varargin = ['rgb',varargin]; end
   
-  % position in the map
+  % position in the map - towards the viewer, as for the crystal shapes above
   scaling = sqrt(grains.area);
-  shift = grains.centroid + 2*scaling *grains.N;
-  
+  shift = grains.centroid + ...
+    2*scaling * grains.N * sign(dot(grains.N,pC.outOfScreen));
+
+  ori = grains.meanOrientation;
+
+  % the overlay is crystal data - a function handed in without a crystal
+  % claim (frame-free or merely default-framed) is put into the crystal
+  % frame of the grains before it is rotated into the map
+  if ~isa(getFrame(S2F),'crystalFrame'), S2F.frame = ori.CS.frame; end
+
   for k = 1:length(grains)
 
-    h(k) = plot(rotate(S2F,grains.meanOrientation(k)),'parent', mP.ax,...
+    h(k) = plot(rotate(S2F,ori(k)),'parent', mP.ax,...
     'shift',shift.subSet(k),varargin{:},'scale',0.3*scaling(k),'3d'); %#ok<AGROW>
-    
+
   end
   
   plotBoundary = false;

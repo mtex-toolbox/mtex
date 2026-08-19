@@ -10,11 +10,11 @@ elseif isa(sF2, 'S2FunMLS')
 end
 
 if isnumeric(sF1)
-  sF = S2FunHandle(@(v) sF1 + sF2.eval(v),sF2.s);
+  sF = S2FunHandle(@(v) sF1 + sF2.eval(v),sF2.frame);
 elseif isnumeric(sF2)
-  sF = S2FunHandle(@(v) sF1.eval(v) + sF2,sF1.s);
+  sF = S2FunHandle(@(v) sF1.eval(v) + sF2,sF1.frame);
 else
-  sF = S2FunHandle(@(v) sF1.eval(v) + sF2.eval(v),sF1.s);
+  sF = S2FunHandle(@(v) sF1.eval(v) + sF2.eval(v),sF1.frame);
 end
 
 end

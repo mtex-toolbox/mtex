@@ -8,6 +8,7 @@
 close all;
 
 % import the data
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 % restrict it to a sub-region of interest.
@@ -179,6 +180,7 @@ plot(gB_Fo.misorientation,...
 % Lets illustrate this color coding also at a iron sample.
 
 % import the data
+plottingConvention.default("y↓→x");
 mtexdata csl
 
 % grain segmentation and smoothing

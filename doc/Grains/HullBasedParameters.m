@@ -6,6 +6,7 @@
 % these properties with some artificial grain shapes
 
 % import the artificial grain shapes
+plottingConvention.default("y↑→x");
 mtexdata testgrains silent
 
 % select and smooth a few interesting grains

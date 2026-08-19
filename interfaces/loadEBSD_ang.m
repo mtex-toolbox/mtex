@@ -16,6 +16,21 @@ function ebsd = loadEBSD_ang(fname,varargin)
 %                    https://mtex-toolbox.github.io/EBSDReferenceFrame.html
 %  headerOnly      - return only phase/header metadata, skip reading the data
 %
+% Flags
+%  EDAX     - read the phase column the EDAX way, 1 to N with 0 for not
+%             indexed
+%  EMSphInx - read the phase column the EMSphInx way, 0 to N-1 with 255 for
+%             not indexed
+%
+% Description
+%
+% EDAX and EMSphInx write the very same .ang layout but number the phase
+% column differently, and neither states which of the two it used. Since
+% the values alone can not tell them apart the header is fingerprinted:
+% EMSphInx leaves every MaterialName empty, states NumberFamilies 0 and
+% lists no reflectors, where OIM always names the material. Pass the EDAX
+% or the EMSphInx flag to overrule the guess.
+%
 
 assertExtension(fname,'.ang');
 
@@ -41,18 +56,29 @@ if isempty(phasePos)
   phasePos = strmatch('# MaterialName ',hl)-1;
 end
         
+minerals = cell(1,length(phasePos));
+nFamilies = zeros(1,length(phasePos));
+
 for i = 1:length(phasePos)
-      
+
   str = hl(phasePos(i):min(phasePos(i)+100,end));
-            
+
   % load phase number
   phase = readByToken(str,'# Phase',i);
-            
+
   % load mineral data
   mineral = readByToken(str,'# MaterialName');
   laue = readByToken(str,'# Symmetry');
   pointGroup = readByToken(str,'# PointGroupID');
   lattice = readByToken(str,'# LatticeConstants',[1 1 1 90 90 90]);
+
+  % NaN, not 0, when the line is missing or empty - the fingerprint below
+  % keys on a phase block that states zero reflectors, not on one that
+  % says nothing about them at all
+  minerals{i} = mineral;
+  nFam = readByToken(str,'# NumberFamilies',NaN);
+  if isempty(nFam), nFam = NaN; end
+  nFamilies(i) = nFam;
 
   % setup crystal symmetry - the symmetry is stored as a TSL code, newer
   % files state the point group in addition, and the crystal reference
@@ -61,6 +87,20 @@ for i = 1:length(phasePos)
     lattice(4:6)'*degree,'mineral',mineral,'EDAX');
 
 end
+
+% Which convention does the phase column follow? EDAX counts the declared
+% phases from 1 and keeps 0 for not indexed, EMSphInx counts them from 0
+% and flags not indexed with 255 - so the same number means a different
+% phase depending on who wrote the file, and nothing in it says who did.
+% EMSphInx does leave a fingerprint though: it copies the EDAX header
+% layout but fills none of the phase description in, no material name, no
+% reflectors, and never writes the # VERSION line OIM has emitted for
+% years.
+isEMSphInx = ~isempty(phasePos) && all(cellfun(@isempty,minerals)) && ...
+  all(nFamilies == 0) && isempty(readByToken(hl(1:nh),'# VERSION'));
+
+if check_option(varargin,'EMSphInx'), isEMSphInx = true; end
+if check_option(varargin,'EDAX'), isEMSphInx = false; end
 
 % capture all remaining header metadata (phase/symmetry data is excluded,
 % it is already captured by cs/CSList above)
@@ -159,33 +199,104 @@ switch version
 end
     
 ColumnNames = get_option(varargin,'ColumnNames',ColumnNames(1:length(isnum)));
-  
+
+% an EMSphInx phase column is resolved against the declared phases below,
+% so keep it out of the generic loader's hands - it would read the numbers
+% as EDAX ones, and a 255 would even trip its "too many phases" guard and
+% wipe the whole column
+% the generic loader lowercases every column name into the property name,
+% hence the spelling of the field read back below
+iPhase = find(strcmpi(ColumnNames,'Phase'),1);
+if isEMSphInx && ~isempty(iPhase), ColumnNames{iPhase} = 'emsphinxphase'; end
+
 % import the data
 ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
   'ColumnNames',ColumnNames,varargin{:},'header',nh,ReplaceExpr{:},'keepNaN',unitCellHint{:});
 
 ebsd.opt.header = header;
 
-% Explicitly non-indexed phases appear to have 4*pi for all Euler angles
-% which are filtered by loadHelper() already AND ci==-1.
-% Taking phase 0 for non indexed does not really work in the case of single
-% phase ang files; only for multiphase data, notIndexed is 0
-% So here's the attempt to introduce notIndexed to .ang data
-% Set notIndexed (id 0 in multiphase, id -1 in single phase) for ci=-1
-% as well as add empty points (those removed by loadHelper)
-  
-if length(cs)>2
-  notIndexedID = 0;
+if isEMSphInx
+
+  ebsd = applyZeroBasedPhases(ebsd,cs);
+
+  % EMSphInx flags a pattern it failed to index, but not a pixel a ROI mask
+  % kept out of the run - that one keeps a valid phase number and is only
+  % recognisable by orientation, image quality and fit metric all being
+  % exactly zero
+  ebsd = markUnmeasured(ebsd);
+
 else
-  notIndexedID = -1;
+
+  % Explicitly non-indexed phases appear to have 4*pi for all Euler angles
+  % which are filtered by loadHelper() already AND ci==-1.
+  % Taking phase 0 for non indexed does not really work in the case of single
+  % phase ang files; only for multiphase data, notIndexed is 0
+  % So here's the attempt to introduce notIndexed to .ang data
+  % Set notIndexed (id 0 in multiphase, id -1 in single phase) for ci=-1
+  % as well as add empty points (those removed by loadHelper)
+
+  if length(cs)>2
+    notIndexedID = 0;
+  else
+    notIndexedID = -1;
+  end
+
+  % phaseMap and CSList have to stay in lockstep and no phase number may
+  % occur twice - a header declaring more phases than the data ever states
+  % otherwise leaves a trailing symmetry that no phase number reaches, and
+  % renaming the notIndexed phase to a number the data already uses makes
+  % every lookup by phase ambiguous. Both happen on an .ang whose phase
+  % column does not follow the convention its header suggests.
+  if numel(ebsd.phaseMap) < numel(ebsd.CSList)
+    nMissing = numel(ebsd.CSList) - numel(ebsd.phaseMap);
+    ebsd.phaseMap = [ebsd.phaseMap(:); max(ebsd.phaseMap) + (1:nMissing).'];
+  end
+  if ~ismember(notIndexedID,ebsd.phaseMap(2:end))
+    ebsd.phaseMap(1) = notIndexedID;
+  end
+  ebsd(ebsd.rotations.isnan | ebsd.prop.ci<0).phase = ebsd.phaseMap(1);
+
 end
-ebsd.phaseMap(1) = notIndexedID;
-ebsd(ebsd.rotations.isnan | ebsd.prop.ci<0).phase = notIndexedID;
 
 ebsd = applyEulerCorrectionTable(ebsd,'.ang',varargin{:});
 
-ebsd.how2plot = matchDefault(...
-  getClass(varargin,'plottingConvention',plottingConvention.ij));
+% a file does not change how the session plots - the map follows the
+% session convention like everything else. That was a no-op in a pristine
+% session anyway, since the default frame is seeded with the same
+% plottingConvention.ij; where it was not, it was overriding the user.
+% A convention passed by the caller is a user gesture and still applies
+pC = getClass(varargin,'plottingConvention');
+if ~isempty(pC), plottingConvention.default(pC); end
+
+end
+
+function ebsd = applyZeroBasedPhases(ebsd,cs)
+% resolve an EMSphInx phase column against the declared phase list
+%
+% The column was imported as a plain property, so which phase a number
+% names is decided here and nowhere else: p counts the declared phases
+% from 0, so it is CSList(p+2) - CSList(1) being the notIndexed phase -
+% and 255, the largest value the uint8 EMSphInx writes can hold, means the
+% pattern could not be indexed. Anything out of range is treated the same
+% way rather than silently shifting every phase behind it.
+
+if ~isfield(ebsd.prop,'emsphinxphase'), return; end
+
+p = double(ebsd.prop.emsphinxphase(:));
+ebsd.prop = rmfield(ebsd.prop,'emsphinxphase');
+
+% the list starts with the notIndexed phase - unless a file numbered one of
+% its phase blocks 0 and overwrote it, then it has to be put back
+if cs(1).isIndexed, cs = [notIndexed, reshape(cs,1,[])]; end
+nPhases = numel(cs) - 1;
+
+phaseId = p + 2;
+phaseId(p < 0 | p >= nPhases) = 1;
+
+ebsd.CSList = cs;
+ebsd.phaseMap = [-1;(0:nPhases-1).'];
+ebsd.phaseId = phaseId;
+ebsd.rotations(phaseId == 1) = NaN;
 
 end
 
@@ -195,8 +306,9 @@ function header = angHeaderStruct(hl,phasePos)
 % hl       - cell array of header lines (# ...), truncated to the header
 % phasePos - line indices of "# Phase N" markers within hl
 
-phaseKeys = {'materialname','formula','info','symmetry','latticeconstants',...
-  'numberfamilies','hklfamilies','elasticconstants','categories','phase'};
+phaseKeys = {'materialname','formula','info','symmetry','pointgroupid',...
+  'latticeconstants','numberfamilies','hklfamilies','elasticconstants',...
+  'categories','phase'};
 
 exclude = false(size(hl));
 

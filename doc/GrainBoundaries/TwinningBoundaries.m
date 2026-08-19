@@ -5,6 +5,7 @@
 % by importing some Magnesium data and reconstructing the grain structure.
 
 % load some example data
+plottingConvention.default('y↑→x');
 mtexdata twins
 
 % segment grains

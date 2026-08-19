@@ -10,6 +10,7 @@
 % Nyyssönen. We shall use the following sample data set.
 
 % load the data
+plottingConvention.default('y↑→x');
 mtexdata martensite 
 
 % extract fcc and bcc symmetries
@@ -17,7 +18,7 @@ csBCC = ebsd.CSList(2); % austenite bcc:
 csFCC = ebsd.CSList(3); % martensite fcc:
 
 % grain reconstruction
-[grains,ebsd] = calcGrains(ebsd,'angle',3*degree,'minPixel',5);
+[grains,ebsd] = calcGrains(ebsd,'angle',3*degree,'minPixel',2,'removeQuadruplePoints');
 
 % plot the data and the grain boundaries
 plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
@@ -255,8 +256,11 @@ hold off
 % orientations of each pixel in our original EBSD map. To this end we first
 % find pixels that now belong to an austenite grain.
 
-% consider only martensite pixels that now belong to austenite grains
-isNowFCC = parentGrains.phaseId(max(1,parentEBSD.grainId)) == 3 & parentEBSD.phaseId == 2;
+% consider only martensite pixels that now belong to austenite grains. The
+% (:) matter: on a gridded map every per pixel property has the shape of the
+% map, but phaseId is the storage and stays a column, so combining the two
+% without flattening compares an (r x c) against an (r*c x 1)
+isNowFCC = parentGrains.phaseId(max(1,parentEBSD.grainId(:))) == 3 & parentEBSD.phaseId(:) == 2;
 
 % compute parent orientation
 [parentEBSD(isNowFCC).orientations, fit] = calcParent(ebsd(isNowFCC).orientations,...

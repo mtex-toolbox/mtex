@@ -16,9 +16,11 @@ function [lambda,v] = eig(v,varargin)
 %
 
 xyz = v.xyz;
-pC = v.how2plot;
+% carry the frame - for a Miller input the eigenvectors stay expressed
+% in its crystal frame
+fr = v.frame;
 [v, lambda] = eig3(xyz.' * xyz);
-v.how2plot = pC;
+v.frame = fr;
 
 % for some reason Matlab eig function changes to order outputs if called
 % with two arguments - so we should do the same

@@ -38,8 +38,38 @@ classdef HSVDirectionKey < directionColorKey
       dM.updatesR;
     end
 
+    function [props,propV] = keyRows(dM)
+      % the white center pins the colors down on the sector; the rest is
+      % shown only when it deviates from the default, so a plain key stays
+      % a two line display
+
+      % in polar coordinates, not as a Miller: the white center is the
+      % barycenter of the fundamental sector and hardly ever a low index
+      % direction - rounding it to one prints noise like (12 3̅ 9̅ 10)
+      [theta,rho] = polar(dM.whiteCenter); %#ok<POLAR>
+      props = {'white center'};
+      propV = {['θ ' xnum2str(theta/degree) '°, ρ ' xnum2str(rho/degree) '°']};
+
+      if dM.colorStretching ~= 1
+        props{end+1} = 'color stretching';
+        propV{end+1} = xnum2str(dM.colorStretching);
+      end
+
+      if isfinite(dM.maxAngle)
+        props{end+1} = 'max angle';
+        propV{end+1} = [xnum2str(dM.maxAngle/degree) '°'];
+      end
+
+      if ~isequal(dM.grayValue,[0.2 0.5]) || dM.grayGradient ~= 0.5
+        props{end+1} = 'gray value';
+        propV{end+1} = ['[' xnum2str(dM.grayValue) '], gradient ' ...
+          xnum2str(dM.grayGradient)];
+      end
+
+    end
+
     function rgb = direction2color(dM,h,varargin)
-      
+
       if ~isempty(dM.dir2color)        
         rgb = dM.dir2color(h);
         return

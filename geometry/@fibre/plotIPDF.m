@@ -36,7 +36,7 @@ end
 
 % find inverse pole figure direction
 r = [];
-try r = getappdata(mtexFig.currentAxes,'inversePoleFigureDirection'); end
+try r = getappdata(mtexFig.currentAxes,'ipfDirection'); end
 if isempty(r), r = varargin{1}; end
 argin_check(r,'vector3d');
 
@@ -58,7 +58,7 @@ for ir = 1:length(r)
 
   [cax.Tag] = deal('ipdf');
   setAllAppdata(cax,'CS',f.CS,'SS',f.SS,...
-    'inversePoleFigureDirection',r(ir));
+    'ipfDirection',r(ir));
 
 end
 

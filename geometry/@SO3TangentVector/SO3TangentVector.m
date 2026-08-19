@@ -20,22 +20,28 @@ classdef (InferiorClasses = {?vector3d}) SO3TangentVector < vector3d
 % the methods right(v) and left(v).
 %
 % Syntax
-%   SO3TV = SO3TangentVector(x,y,z,ori)
-%   SO3TV = SO3TangentVector(v,ori,SO3TangentSpace.rightVector)
-%   SO3TV = SO3TangentVector(v,ori,SO3TangentSpace.rightVector,cs,ss)
+%   SO3TV = SO3TangentVector(v,oriRef)
+%   SO3TV = SO3TangentVector(v,oriRef,SO3TangentSpace.rightVector)
+%   SO3TV = SO3TangentVector(v,oriRef,'right')
 %
 % Input
-%  x,y,z - cart. coordinates
-%  v - @vector3d
-%  ori - @orientation
-%  cs,ss - @symmetry
+%  v      - @vector3d, the components of the skew symmetric matrix
+%  oriRef - @orientation the tangent space is located at
+%  tS     - @SO3TangentSpace, or 'left' / 'right'
 %
 % Output
 %  SO3TV - @SO3TangentVector
 %
-% Options
-%  left  - ori_ref multiplies from the right (default)
-%  right - ori_ref multiplies from the left
+% Description
+%  The symmetries of a tangent vector are the symmetries of |oriRef| -
+%  there is no separate symmetry argument. A field or function that owns
+%  the pair therefore states it on the reference it hands in, e.g.
+%  |SO3TangentVector(v,orientation(rot,SO3F.CS,SO3F.SS),tS)|, rather than
+%  passing it alongside. That leaves exactly one place a symmetry can come
+%  from, so there is nothing to arbitrate.
+%
+%  |left| means oriRef multiplies from the right (the default), |right|
+%  that it multiplies from the left.
 %
 % See also
 % vector3d.vector3d SO3VectorField.eval SO3VectorFieldHarmonic.eval
@@ -47,12 +53,18 @@ classdef (InferiorClasses = {?vector3d}) SO3TangentVector < vector3d
 
 properties
   tangentSpace SO3TangentSpace
-  rot
+  % the reference orientation the tangent space is located at. It carries
+  % both symmetries and is the ONLY place they are stored - everything
+  % below is derived from it
+  oriRef
 end
 
-properties (Hidden = true)
-  hiddenCS symmetry = crystalSymmetry;
-  hiddenSS symmetry = specimenSymmetry;
+properties (Dependent = true)
+  % the reference as this representation sees it: the symmetry that acts
+  % equivariantly is shown as a trivial stand-in, since it cannot reduce
+  % the reference without transforming the vector. Read only - it is a
+  % view, and writing a view back would silently drop that symmetry
+  rot
 end
 
 % There is a left and a right tangent space representation.
@@ -66,87 +78,101 @@ end
 %   - the 3 components of the skew symmetric matrix S   --> vector3d
 %   - the rotation, where the tangent space is located  --> rot
 %
-% The most common application is the gradient of some SO3Fun (i.e. the 
+% The most common application is the gradient of some SO3Fun (i.e. the
 % evaluation of SO3VectorFields). Therefore only one of the symmetries is
-% preserved on the orientation (dependent on the tangent space 
-% representation). The other symmetry is hidden, but both symmetries 
+% preserved on the orientation (dependent on the tangent space
+% representation). The other symmetry is hidden, but both symmetries
 % interchange, if the tangent space representation is switched.
 %
-% Thats why, both symmetries are stored in the properties hiddenCS and hiddenSS.
+% Thats why both symmetries live on oriRef, the reference orientation, and
+% rot is only the view of it this representation may show. Ask oriRef for
+% the pair - there is no separate copy of it on the object.
 
 methods
 
-  function SO3TV = SO3TangentVector(varargin)
+  function SO3TV = SO3TangentVector(v,oriRef,tS)
     % constructor
-    
-    % reconstruct SO3TangentVector (apply options and maybe change attributes)
-    if nargin > 0 && isa(varargin{1},'SO3TangentVector')
-      varargin = {varargin{:}, varargin{1}.rot, varargin{1}.tangentSpace, varargin{1}.hiddenCS, varargin{1}.hiddenSS};
-      varargin{1} = vector3d(varargin{1});
+
+    if nargin < 2
+      error('MTEX:SO3TangentVector:missingReference',...
+        ['A tangent vector needs the reference orientation its tangent '...
+        'space is located at: SO3TangentVector(v,oriRef,tS).'])
     end
 
-    % vectors
-    SO3TV = SO3TV@vector3d(varargin{:});
+    % the components
+    if ~isa(v,'vector3d'), v = vector3d(v); end
+    SO3TV = SO3TV@vector3d(v);
 
-    % tangent space representation
-    tS = SO3TangentSpace.extract(varargin);
+    % the representation
+    if nargin < 3, tS = SO3TangentSpace.leftVector; end
+    if ~isa(tS,'SO3TangentSpace'), tS = SO3TangentSpace.extract(tS); end
     SO3TV.tangentSpace = tS;
 
-    % get rotations
-    id = find(cellfun(@(i) isa(i,'quaternion') , varargin),1);
-    if isempty(id)
-      error('The orientations which belong to the tangent vectors and defines the tangent space are missing.')
-    end
-    rot = orientation(varargin{id});
+    % the reference and, with it, the symmetries - a bare rotation has
+    % nothing to inherit from, so there the session defaults apply
+    oriRef = orientation(oriRef);
 
-    % Bring both to same dimension size
-    sa = size(rot); sb = size(SO3TV);
+    % one reference per vector, or one reference for all of them. The
+    % broadcast runs on the bare rotation: expanding an orientation would
+    % send a symmetry through the compatibility gate of times for nothing
+    q = rotation(oriRef);
+    sa = size(q); sb = size(SO3TV);
     maxDims = max(length(sa), length(sb));
     sa(end+1:maxDims) = 1; sb(end+1:maxDims) = 1;
 
-    if length(rot) == numel(SO3TV)
-      rot = reshape(rot,size(SO3TV));
+    if length(q) == numel(SO3TV)
+      q = reshape(q,size(SO3TV));
     elseif any(sa~=sb)
-      try 
-        rot = rot.*rotation.id(size(SO3TV));
+      try
+        q = q .* rotation.id(size(SO3TV));
       catch
-        error('The sizes of the tangent vectors and there orientations do not match.')
+        error('The sizes of the tangent vectors and their reference orientations do not match.')
       end
     end
 
-    % get symmetries
-    [cs,ss] = extractSym(varargin);
-    if cs.id==1
-      cs = rot.CS;
-    end
-    if ss.id==1
-      ss = rot.SS;
-    end
-    SO3TV.hiddenCS = cs;
-    SO3TV.hiddenSS = ss;
-
-    SO3TV.rot = rotation(rot);
+    SO3TV.oriRef = orientation(q,oriRef.CS,oriRef.SS);
 
   end
   
   % -----------------------------------------------------------------------
 
-  % Get and Set outer symmetries dependent of the tangent space representation
+  % the outer symmetry that survives on the reference depends on the
+  % tangent space representation - the other one acts equivariantly and is
+  % shown as a trivial stand-in, keeping its reference frame
   function r = get.rot(SO3TV)
-    r = orientation(SO3TV.rot);
-    if sign(SO3TV.tangentSpace)>0
-      r.CS = SO3TV.hiddenCS;
-      r.SS = ID1(SO3TV.hiddenSS);
+    r = SO3TV.oriRef;
+    if isempty(r), return; end
+    if SO3TV.tangentSpace.isLeft
+      r.SS = stripSym(r.SS);
     else
-      r.CS = ID1(SO3TV.hiddenCS);
-      r.SS = SO3TV.hiddenSS;
+      r.CS = stripSym(r.CS);
     end
   end
 
 
   % -----------------------------------------------------------------------
 
-  % TODO: rotating tangent vectors is not clear. 
+  function fr = getFrame(SO3TV)
+    % the frame of a tangent vector is derived from its reference
+    % orientation: a left vector is expressed in the specimen frame, a
+    % right vector in the crystal frame
+    ref = SO3TV.oriRef;
+    if SO3TV.tangentSpace.isLeft
+      fr = ref.SS.frame;
+    else
+      fr = ref.CS.frame;
+    end
+  end
+
+  function SO3TV = setFrame(SO3TV,fr) %#ok<INUSD>
+    error('MTEX:SO3TangentVector:fixedFrame',...
+      ['The frame of a tangent vector is the specimen frame (left) or ' ...
+      'crystal frame (right) of its reference orientation.']);
+  end
+
+  % -----------------------------------------------------------------------
+
+  % TODO: rotating tangent vectors is not clear.
   %       It could be defined as rotation of the tangent space with q or as
   %       rotation of the vector.
   % When rotating tangent vectors it may changes the representation of the
@@ -162,23 +188,26 @@ methods
  
 
   function tV = transformTangentSpace(tV,newtS)
-    
-    rot = rotation(tV.rot);
-    cs = tV.hiddenCS;
-    ss = tV.hiddenSS;
-    
+
+    % nothing to transform - and rebuilding anyway would cost a round trip
+    % through the constructor for no change
+    if newtS == tV.tangentSpace, return; end
+
+    ref = tV.oriRef;
+    q = rotation(ref);
+
     if sign(tV.tangentSpace) > sign(newtS)
       % transform from left to right
-      tV = inv(rot) .* tV;
+      tV = inv(q) .* tV;
     elseif sign(tV.tangentSpace) < sign(newtS)
-      % transform from right to left 
-      tV = rot .* tV;
+      % transform from right to left
+      tV = q .* tV;
     end
 
     if abs(newtS) > 1
       tV = spinTensor(tV);
     else
-      tV = SO3TangentVector(tV,rot,newtS,cs,ss);
+      tV = SO3TangentVector(tV,ref,newtS);
     end
   end
 

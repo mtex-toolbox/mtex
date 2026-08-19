@@ -11,7 +11,8 @@ try
 catch ME
   how2plot = plottingConvention.default;
 end
-how2plot = copy(getClass(varargin,'plottingConvention',how2plot));
+% plottingConvention is a value class - this is already a private copy
+how2plot = plottingConvention.fromOption(varargin,how2plot);
 
 % case 1: predefined axis
 % -----------------------
@@ -187,18 +188,15 @@ end
 function proj = ownConvention(proj)
 % let the axis own the plotting convention of a projection handed in
 
-% @plottingConvention is a handle class, so a projection that was set up
-% outside - S2Fun/plot builds one to generate the grid it evaluates on -
-% still points to the convention of the data, e.g. odf.SS.how2plot. Editing
-% that convention in place afterwards - which is exactly what plotx2east
-% and friends do to the default one - would then reproject everything that
-% is added to the axis later, while the data already drawn keeps its old
-% placement. A projection created here is safe anyway: it is built from the
-% copy taken at the beginning of newSphericalPlot.
+% Since plottingConvention became a value class the freezing this
+% function used to do - copying the convention so that a later
+% plotx2east does not reproject an already drawn axis - happens by
+% itself on every assignment; what remains is aligning all projections
+% on the value of the first one.
 
 if isempty(proj), return; end
 
-pC = copy(proj(1).pC);
-for i = 1:numel(proj), proj(i).pC = pC; end
+pC = proj(1).pC;
+for i = 2:numel(proj), proj(i).pC = pC; end
 
 end

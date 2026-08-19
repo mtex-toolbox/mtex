@@ -7,6 +7,7 @@
 % computing grain boundaries.
 
 % load some example data
+plottingConvention.default('y↑→x');
 mtexdata twins silent
 
 % detect grains

@@ -15,15 +15,20 @@
 % are gradients of orientation distribution functions.
 %
 %%
-% Lets consider the following ODF of a quartz specimen Then its gradient is
-% computed by the command <SO3Fun.grad.html |odf.grad|>
+% Lets consider the following ODF of a quartz specimen.
 
+plottingConvention.default('y↑→x');
 odf = SO3Fun.dubna;
+
+%% 
+% Then its gradient is computed by the command <SO3Fun.grad.html
+% |odf.grad|>
+
 G = odf.grad
 
-% Evaluation of the Gradient in some rotations
-rot = rotation.rand(3);
-G.eval(rot)
+% evaluation of the gradient in some rotations
+ori = odf.discreteSample(1);
+G.eval(ori)
 
 %%
 % Lets visualize the ODF together with its gradient in a sigma section plot
@@ -75,7 +80,7 @@ hold off
 % with the |left| and |right| command
 
 GR = right(G)
-v = GR.eval(rot)
+v = GR.eval(ori)
 v_right = right(v)
 
 %%

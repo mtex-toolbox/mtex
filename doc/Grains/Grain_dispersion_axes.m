@@ -3,6 +3,7 @@
 %%
 % We will prepare some data to evaluate grain dispersion axes.
 
+plottingConvention.default('y↑→x');
 mtexdata forsterite
 [grains,ebsd] = calcGrains(ebsd,'minPixel',5);
 

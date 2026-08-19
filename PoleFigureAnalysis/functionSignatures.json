@@ -87,7 +87,8 @@
       {"name":"drawing", "kind":"flag", "type":["char","choices={'contour','contourf','smooth','scatter'}"]},
       {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
       {"name":"minmax", "kind":"flag"},
-      {"name":"antipodal", "kind":"flag"}
+      {"name":"antipodal", "kind":"flag"},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -97,7 +98,8 @@
     [
       {"name":"pf", "kind":"required", "type":["PoleFigure"]},
       {"name":"ref", "kind":"required", "type":[["PoleFigure"],["SO3Fun"]], "purpose":"reference pole figure or ODF"},
-      {"name":"errorType", "kind":"flag", "type":["char","choices={'RP','l1','l2'}"]}
+      {"name":"errorType", "kind":"flag", "type":["char","choices={'RP','l1','l2'}"]},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 

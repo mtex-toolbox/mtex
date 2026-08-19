@@ -157,8 +157,9 @@ classdef (Abstract) phaseItem < handle & matlab.mixin.Heterogeneous %& matlab.mi
       end
       if ~out, return; end
 
-      % check axes
-      out = all(norm(obj1.axes - obj2.axes)./norm(obj1.axes)<5*10^-2);
+      % check the reference frames are aligned - same 5e-2 rule as always,
+      % now defined in one place (referenceFrame.tolAligned)
+      out = isAligned(obj1.frame,obj2.frame);
   end
 
   end

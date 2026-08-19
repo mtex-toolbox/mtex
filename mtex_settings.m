@@ -56,8 +56,10 @@ setMTEXpref('showRefFrame','on')
 % how to annotate pole figure plots
 % the following line add X and Y to the plot
 % you may want to replace this by 'RD' and 'ND'
-pfAnnotations = @(varargin) text([vector3d.X,vector3d.Y,vector3d.Z],{'X','Y','Z'},...
-  'BackgroundColor','w','tag','axesLabels',varargin{:});
+% pole figures are annotated with the axes of the session's default
+% reference frame - X1, Y1, Z1 for the measurement frame, RD, TD, ND once
+% e.g. specimenFrame.rolling.makeDefault rules the session
+pfAnnotations = @(varargin) feval(specimenFrame.default.pfAnnotations,varargin{:});
 
 % you can uncomment the following line to disable the annotations
 %pfAnnotations = @(varargin) [];
@@ -190,6 +192,15 @@ setMTEXpref('mosek',false)
 % this should be faster
 
 setMTEXpref('insidepoly',true)
+
+%% Put imported EBSD data on its grid
+% EBSD.load returns @EBSDsquare / @EBSDhex instead of a plain list whenever
+% the measurements sit on one lattice, which saves every later plot from
+% rebuilding that lattice. Data that would lose measurements by being
+% gridded is never gridded, whatever this is set to. Set to false to always
+% import a plain list; EBSD.load(...,'noGrid') does the same per call.
+
+setMTEXpref('gridifyOnImport',true)
 
 %% Turn off Grain Selector
 % turning off the grain selector allows faster plotting

@@ -319,6 +319,19 @@ if optWeights && minWeight > 0
   end
 end
 
+% return the sample in the reference frame of the function - in a crystal
+% frame it comes back as Miller, with the trivial group when the function
+% carries no symmetry (ADR 0003, orientation without symmetry)
+if isa(sF,'S2FunHarmonicSym') && isa(sF.CS,'crystalSymmetry')
+  v = Miller(v,sF.CS);
+elseif ~isa(v,'Miller')
+  if isa(sF.frame,'crystalFrame')
+    v = Miller(v, crystalSymmetry(sF.frame));
+  else
+    v.frame = sF.frame;
+  end
+end
+
 end
 
 

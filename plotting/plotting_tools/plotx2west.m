@@ -3,3 +3,4 @@ function plotx2west
 
 how2plot = plottingConvention.default;
 how2plot.west = xvector;
+how2plot.makeDefault;

@@ -21,7 +21,7 @@
       "type": "rotation",
       "data": [135, 180, 225]
     },
-    "phase": {"mode": "search_root", "value": "Phase", "type": "default"},
+    "phase": {"mode": "search_root", "value": "Phase", "type": "zeroBased"},
     "rotation": {
       "type": "euler",
       "euler": {

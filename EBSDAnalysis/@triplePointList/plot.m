@@ -22,7 +22,7 @@ function h = plot(tP,varargin)
 
 % create a new plot
 % ensure we do not plot perpendicular to the slice
-pC = tP.how2plot.copy;
+pC = tP.how2plot; % a value class - this is already a private copy
 if isnull(dot(pC.outOfScreen,tP.N)), pC.outOfScreen = tP.N; end
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});

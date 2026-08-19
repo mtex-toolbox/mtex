@@ -64,19 +64,19 @@ if isempty(ebsd), return; end
 % create a new plot
 mtexFig = newMtexFigure('datacursormode',{@tooltip,ebsd},varargin{:});
 [mP,isNew] = newMapPlot('scanUnit',ebsd.scanUnit,...
-  'parent',mtexFig.gca,varargin{:},ebsd.how2plot);
+  'parent',mtexFig.gca,varargin{:},ebsd.how2plot,ebsd.pos.frame);
 
 % transform orientations to color
 if nargin>1 && isa(varargin{1},'orientation')
 
   oM = ipfColorKey(varargin{1});
-  oM.inversePoleFigureDirection = ...
-    get_option(varargin,{'inversePoleFigureDirection','ipfd'},zvector);
+  oM.ipfDirection = ...
+    get_option(varargin,{'ipfDirection','inversePoleFigureDirection','ipfd'},zvector);
   
   oM.precompute;
   varargin{1} = oM.orientation2color(varargin{1});
   
-  if ~getMTEXpref('generatingHelpMode') && ~check_option(varargin,'inversePoleFigureDirection')
+  if ~getMTEXpref('generatingHelpMode') && ~check_option(varargin,{'ipfDirection','inversePoleFigureDirection','ipfd'})
     disp('  I''m going to colorize the orientation data with the ');
     disp('  standard MTEX ipf-Z colorkey. To view the colorkey do:');
     disp(' ');
@@ -101,7 +101,16 @@ if nargin>1 && isnumeric(varargin{1})
 elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   cS = varargin{1};
-  pos = ebsd.pos + cS.diameter * ebsd.N;
+
+  % Lift the shapes off the map TOWARDS THE VIEWER. ebsd.N is the normal of
+  % the map and may point either way - with the default convention, which
+  % has z pointing into the screen, it points away, and the shapes were
+  % drawn behind the map where the depth sorting hides them.
+  % grain2d/plot corrects the sign the same way.
+  s = sign(dot(ebsd.N,mP.how2plot.outOfScreen,'noAntipodal'));
+  if s == 0, s = 1; end % the map is seen edge on - either side will do
+
+  pos = ebsd.pos + s * cS.diameter * ebsd.N;
   plot(pos.x,pos.y,pos.z,ebsd.orientations * cS,varargin{2:end});
   
 else % phase plot
@@ -188,10 +197,21 @@ mP.how2plot.setView(mP.ax);
 
 try axis(mP.ax,'tight'); end %#ok<TRYNC>
 %set(mP.ax,'zlim',[0,1.1]);
-mP.extent(1) = min(mP.extent(1),min(ebsd.pos.x(:)));
-mP.extent(2) = max(mP.extent(2),max(ebsd.pos.x(:)));
-mP.extent(3) = min(mP.extent(3),min(ebsd.pos.y(:)));
-mP.extent(4) = max(mP.extent(4),max(ebsd.pos.y(:)));
+
+% the map is drawn as a cell around every measured position
+ext = ebsd.extent;
+uC = ebsd.unitCell;
+if isempty(uC), dx = [0 0]; dy = [0 0]; else
+  dx = [min(uC.x(:)) max(uC.x(:))]; dy = [min(uC.y(:)) max(uC.y(:))];
+end
+
+% note that ebsd.extent leaves out the padding a gridded map is completed
+% with - the axis limits keep it out through the backends, which do not let
+% a cell without a measurement count, see EBSD/private/plotSurf
+mP.extent(1) = min(mP.extent(1),ext(1) + dx(1));
+mP.extent(2) = max(mP.extent(2),ext(2) + dx(2));
+mP.extent(3) = min(mP.extent(3),ext(3) + dy(1));
+mP.extent(4) = max(mP.extent(4),ext(4) + dy(2));
 
 if nargout==0, clear h; end
 

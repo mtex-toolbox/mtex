@@ -6,6 +6,7 @@
 % illustrate this we consider the following two rotational functions
 %
 % An ODF determined from XRD data
+plottingConvention.default('y↑→x');
 SO3F1 = SO3Fun.dubna
 
 plot(SO3F1,'sigma')

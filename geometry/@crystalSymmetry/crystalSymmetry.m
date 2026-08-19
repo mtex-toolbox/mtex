@@ -4,6 +4,7 @@ classdef crystalSymmetry < symmetry & phaseItem
 %   crystalSymmetry('cubic')
 %   crystalSymmetry('2/m',[8.6 13 7.2],[90 116, 90]*degree,'mineral','orthoclase')
 %   crystalSymmetry('O')
+%   crystalSymmetry(cF) % the trivial group carrying the crystalFrame cF
 %   crystalSymmetry('LaueId',9)
 %   crystalSymmetry('SpaceId',153)
 %   rot = rotation.map(vector3d(1,1,1),vector3d.Z,vector3d(0,-1,1),vector3d.X)
@@ -92,14 +93,9 @@ classdef crystalSymmetry < symmetry & phaseItem
 %  47  icosahedral     Ih       -5-32/m   -5-32/m  532
 %
 
-  properties
-    axes = [xvector,yvector,zvector]; % coordinate system
-    %mineral = ''                      % mineral name
-    %color = ''                        % color used for EBSD / grain plotting
-  end
-
   properties (Dependent = true)
-      
+
+    axes        % coordinate system - the basis of the crystalFrame
     alpha       % angle between b and c
     beta        % angle between c and a
     gamma       % angle between a and b
@@ -123,8 +119,20 @@ classdef crystalSymmetry < symmetry & phaseItem
       % this is for compatibility with using "strings" as input
       try varargin = controllib.internal.util.hString2Char(varargin); catch, end
 
+      % the trivial group carrying a given crystalFrame - "orientation
+      % without symmetry", see ADR 0003. The frame handle is adopted, not
+      % copied, and never written to - it may be shared
+      frameAdopted = nargin > 0 && isa(varargin{1},'crystalFrame');
+
+      if frameAdopted
+
+        fr = varargin{1};
+        varargin(1) = [];
+        id = 1;
+        rot = rotation.id;
+
       % define the symmetry just by rotations
-      if nargin == 0
+      elseif nargin == 0
         
         id = 1;
         axes = [xvector,yvector,zvector];
@@ -163,36 +171,71 @@ classdef crystalSymmetry < symmetry & phaseItem
           varargin(1) = [];
         end
         
-        % compute coordinate system
-        axes = calcAxis(id,abc,angles,varargin{:});
+        % compute the reference frame - crystalFrame owns the axes
+        % computation including the alignment options
+        fr = crystalFrame(abc,angles,varargin{:},'pointId',id);
+        axes = fr.basis;
 
         % compute symmetry operations
         rot = getClass(varargin,'quaternion');
         if isempty(rot), rot = symmetry.calcQuat(id,axes); end
-         
+
       end
 
+      % axes given directly - wrap them into a frame
+      if ~exist('fr','var'), fr = crystalFrame(axes); end
+
       % define the symmetry
-      s = s@symmetry(id,rot,[]);
-      
-      % set axes, mineral name and color
-      s.axes = axes;
-      s.mineral = get_option(varargin,'mineral','');
+      s = s@symmetry(id,rot);
+
+      % set mineral name and color - an adopted frame donates its name
+      if frameAdopted
+        s.mineral = get_option(varargin,'mineral',char(fr.name));
+      else
+        s.mineral = get_option(varargin,'mineral','');
+      end
       s.mineral = strtrim(regexprep(s.mineral,char(0),' '));
       s.color = get_option(varargin,'color','');
-      
+
+      % the reference frame carries the axes and, below, the plotting
+      % convention; the mineral doubles as the frame identity for now -
+      % except for an adopted frame, which is never written to
+      if ~frameAdopted, fr.name = s.mineral; end
+      s.frame = fr;
+
       if check_option(varargin,'density')
         s.opt.density = get_option(varargin,'density','');
       end
 
-      % the plotting convention     
-      if id > 11 || id==0
-        pC = plottingConvention(s.cAxisRec,s.aAxis);
-      else
-        pC = plottingConvention(s.cAxisRec,s.bAxis);
+      % the plotting convention of the frame. An adopted frame is never
+      % overwritten - unless it carries no convention at all, as a
+      % standalone crystalFrame does, in which case there is nothing to
+      % clobber and every sharer gains the one derived from the axes
+      if ~frameAdopted || isempty(s.frame.how2plot)
+        if id > 11 || id==0
+          pC = plottingConvention(s.cAxisRec,s.aAxis);
+        else
+          pC = plottingConvention(s.cAxisRec,s.bAxis);
+        end
+        s.frame.how2plot = pC;
       end
-      s.how2plot = pC;
 
+    end
+
+    function v = get.axes(cs)
+      v = cs.frame.basis;
+    end
+
+    function set.axes(cs,v)
+      % fork - never write the basis through a possibly shared frame
+      % handle; carries name and convention over to the new frame
+      if isempty(cs.frame)
+        cs.frame = crystalFrame(v);
+      else
+        f = crystalFrame(v,'name',cs.frame.name);
+        f.how2plot = cs.frame.how2plot;
+        cs.frame = f;
+      end
     end
     
     function x = get.X(cs)
@@ -234,24 +277,24 @@ classdef crystalSymmetry < symmetry & phaseItem
     end
 
     function abg = get.abg(cs)
-      abg = angle(cs.axes([2,3,1]),cs.axes([3,1,2]));
+      abg = cs.frame.abg;
     end
 
     function abc = get.abc(cs)
-      abc = norm(cs.axes);
+      abc = cs.frame.abc;
     end
 
     function alpha = get.alpha(cs)
-      alpha = angle(cs.axes(2),cs.axes(3));
+      alpha = cs.frame.alpha;
     end
-    
+
     function beta = get.beta(cs)
-      beta = angle(cs.axes(3),cs.axes(1));
+      beta = cs.frame.beta;
     end
-    
+
     function gamma = get.gamma(cs)
-      gamma = angle(cs.axes(1),cs.axes(2));
-    end    
+      gamma = cs.frame.gamma;
+    end
    
   end
   
@@ -285,7 +328,12 @@ classdef crystalSymmetry < symmetry & phaseItem
           cs.color = str2rgb(cs.color);
         end
 
-        if isa(s.how2plot,'plottingConvention'), return; end        
+        % a pre-frame object restored axes and how2plot through the
+        % dependent setters, which minted and forked the frame
+        if isempty(cs.frame), cs.frame = crystalFrame([xvector,yvector,zvector]); end
+        cs.frame.name = cs.mineral;
+
+        if isa(cs.how2plot,'plottingConvention'), return; end
       end
       
       if isfield(s,'rot') || isprop(s,'rot')
@@ -311,6 +359,7 @@ classdef crystalSymmetry < symmetry & phaseItem
       if isfield(s,'mineral') || isprop(s,'mineral'), cs.mineral = s.mineral; end
       if isfield(s,'color') || isprop(s,'color'), cs.color = s.color; end
       if isfield(s,'opt') || isprop(s,'opt'), cs.opt = s.opt; end
+      cs.frame.name = cs.mineral;
             
     end
 

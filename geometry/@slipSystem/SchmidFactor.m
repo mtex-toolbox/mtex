@@ -40,7 +40,12 @@ elseif isa(sigma,'vector3d')
 % Schmid factor with respect to a stress tensor
 elseif isa(sigma,'stressTensor')
   
-  if isa(n,'Miller') && sigma.CS ~= n.CS
+  % the slip systems live in a crystal frame - a stress tensor that does
+  % not is given in specimen coordinates and has to be rotated first;
+  % the frame decides, since a rotated tensor carries only the frame of
+  % the orientation, never its symmetry (ADR 0003)
+  if isa(n,'Miller') && (~isa(sigma.frame,'crystalFrame') || ...
+      ~isAligned(sigma.frame,n.CS.frame))
     warning('The reference system of the stress tensor and the slip systems do not match!');
   end
 

@@ -7,10 +7,21 @@ classdef tensor < dynOption
     doubleConvention = false %
   end
 
+  properties (Hidden = true)
+    % the referenceFrame of this tensor, empty means follow the one of CS
+    % - see get.frame; only frames carry plotting conventions
+    framePrivate = []
+  end
+
   properties (Dependent = true)
     isSymmetric
     isSkewSymmetric
-    how2plot % plotting convention
+    frame    % the referenceFrame this tensor is expressed in
+    how2plot % plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
   end
 
   methods
@@ -51,10 +62,16 @@ classdef tensor < dynOption
           T.doubleConvention = M.doubleConvention;
         end
         T.opt = M.opt;
-        
+        % an own frame lives on the tensor, so it has to be copied over -
+        % it does not ride along on CS
+        T.framePrivate = M.framePrivate;
+
         % extract additional properties
         varargin = delete_option(varargin,'doubleConvention');
         varargin = delete_option(varargin,'rank',1);
+        [pC,varargin] = getClass(varargin,'plottingConvention');
+        % an own frame for this tensor - not a session change
+        if ~isempty(pC), T.framePrivate = specimenFrame.default.copy; T.framePrivate.how2plot = pC; end
         T = T.setOption(varargin{:});
         return
       end
@@ -64,10 +81,15 @@ classdef tensor < dynOption
       
       T.doubleConvention = check_option(varargin,'doubleConvention');
       
+      % whether a reference system came with the data - a @Miller brings
+      % its crystal symmetry, and it must not be overwritten by the
+      % session default below
+      csGiven = false;
+
       if isa(M,'vector3d') % conversion from vector3d
         T.M = shiftdim(fullDouble(M),ndims(M));
         T.rank = 1;
-        if isa(M,'Miller'), T.CS = M.CS; end
+        if isa(M,'Miller'), T.CS = M.CS; csGiven = true; end
       
       elseif isa(M,'quaternion') % conversion from quaternion
 
@@ -127,11 +149,28 @@ classdef tensor < dynOption
       if ~isempty(args)
         T.CS = varargin{args};
         varargin(args) = [];
+      elseif ~csGiven
+        % resolve the session default HERE, not from the property default
+        % above: MATLAB evaluates a property default expression once, when
+        % the class is first loaded, so CS = specimenSymmetry.default froze
+        % whichever symmetry handle happened to be the default then. Every
+        % later specimenFrame.default / referenceFrame.reset installs a new
+        % session frame, which that stale handle never sees - a fresh tensor
+        % then reported the convention the session had BEFORE the last
+        % change, while vector3d and S2Fun, which resolve lazily, were right.
+        % Only when nothing else supplied one: a tensor built from a @Miller
+        % is in crystal coordinates and keeps that symmetry
+        T.CS = specimenSymmetry.default;
       end
+
+      % extract plotting convention
+      [pC,varargin] = getClass(varargin,'plottingConvention');
+      % an own frame for this tensor - not a session change
+      if ~isempty(pC), T.framePrivate = specimenFrame.default.copy; T.framePrivate.how2plot = pC; end
 
       options = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel','noCheck'});
       options = delete_option(options,'rank',1);
-      
+
       % extract properties
       T = T.setOption(options{:});
          
@@ -157,13 +196,27 @@ classdef tensor < dynOption
       end     
     end
 
-    function pC = get.how2plot(T)
-      pC = T.CS.how2plot;
+    function fr = get.frame(T)
+      % a tensor that was not given a frame of its own follows its
+      % reference system, so setting the frame of CS keeps working
+      fr = T.framePrivate;
+      if isempty(fr), fr = T.CS.frame; end
     end
 
-    function T = set.how2plot(T,pC)
-      T.CS.how2plot = pC;
+    function T = set.frame(T,fr)
+      assert(isempty(fr) || isa(fr,'referenceFrame'), ...
+        'The frame of a tensor has to be a referenceFrame or empty.');
+      T.framePrivate = fr;
     end
+
+    function pC = get.how2plot(T)
+      % only frames carry conventions - the tensor's own frame wins, then
+      % the one of its reference system
+      pC = [];
+      if ~isempty(T.frame), pC = T.frame.how2plot; end
+      if isempty(pC), pC = plottingConvention.default; end
+    end
+
 
     function x = x(t)
       v = vector3d(t);

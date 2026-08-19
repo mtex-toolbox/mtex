@@ -5,6 +5,7 @@
 % This section describes various possibilities to visualize pole figure
 % data. Lets start by loading some XRD data
 
+specimenFrame.rolling.makeDefault
 mtexdata ptx
 
 %% 

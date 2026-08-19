@@ -52,15 +52,28 @@ else
   if ~isempty(sym)
     ori.CS = sym{1};
   else
-    ori.CS = specimenSymmetry.default;
-    ori.CS.how2plot = varargin{1}.how2plot;
+    % reuses specimenSymmetry.default only while it already carries this
+    % convention - writing the convention onto the default repointed the
+    % session wide frame (see specimenSymmetryFor and ADR 0003)
+    ori.CS = specimenSymmetryFor(getFrame(varargin{1}));
   end
 end
 
 if isa(varargin{2},'Miller')
-  ori.SS = varargin{2}.CS; 
-else
-  ori.SS.how2plot = varargin{2}.how2plot;
+  ori.SS = varargin{2}.CS;
+elseif isa(varargin{2}.frame,'specimenFrame')
+  % the input carries a frame - adopt the handle itself, so the result
+  % follows that frame's convention like the input does
+  if varargin{2}.frame ~= ori.SS.frame
+    ori.SS = copy(ori.SS);
+    ori.SS.frame = varargin{2}.frame;
+  end
+elseif ori.SS.how2plot ~= varargin{2}.how2plot
+  % never write the convention through the SS handle - it is shared, either
+  % specimenSymmetry.default or the symmetry the caller passed in; a copy
+  % keeps the point group and still compares equal (@symmetry/eq is id based)
+  ori.SS = copy(ori.SS);
+  ori.SS.frame = varargin{2}.frame;
 end
 
 if length(sym) == 2

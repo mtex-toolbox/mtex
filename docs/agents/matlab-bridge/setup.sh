@@ -5,7 +5,8 @@
 set -euo pipefail
 
 BRIDGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MATLAB_ROOT="/opt/matlab-2024b"
+# Override for your own install: MATLAB_ROOT=/opt/matlab-R20XXx ./setup.sh
+MATLAB_ROOT="${MATLAB_ROOT:-/opt/matlab-2024b}"
 VENV_DIR="$BRIDGE_DIR/.venv"
 
 if ! command -v uv >/dev/null 2>&1; then

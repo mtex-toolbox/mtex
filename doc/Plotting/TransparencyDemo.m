@@ -67,6 +67,7 @@ mtexColorbar
 % texture and the image quality of the measurement are visible at the same
 % time
 
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 plot(ebsd,ebsd.bc)

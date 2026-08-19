@@ -7,6 +7,7 @@
 % grains within the data set. 
 
 % load some example data
+plottingConvention.default('y↑→x');
 mtexdata twins
 
 % detect grains

@@ -51,6 +51,9 @@ else
   f = reshape(SO3F.eval([inv(deltaRot).*rot,deltaRot.*rot]),length(rot),[]);
 end
 
-g = SO3TangentVector(f(:,4)-f(:,1),f(:,5)-f(:,2),f(:,6)-f(:,3),rot,tS,SO3F.CS,SO3F.SS) ./ delta;
+% the symmetries of the gradient are those of the function, not of the
+% points it was evaluated at - so they are stated on the reference
+g = SO3TangentVector(vector3d(f(:,4)-f(:,1),f(:,5)-f(:,2),f(:,6)-f(:,3)),...
+  orientation(rot,SO3F.CS,SO3F.SS),tS) ./ delta;
 
 g = reshape(g,s);

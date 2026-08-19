@@ -3,3 +3,4 @@ function plotzOutOfPlane
 
 how2plot = plottingConvention.default;
 how2plot.outOfScreen = zvector;
+how2plot.makeDefault;

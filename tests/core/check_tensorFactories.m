@@ -1,5 +1,6 @@
 function check_tensorFactories
-% check the static factories of the rank 4 tensor classes
+% check the static factories of the rank 4 tensor classes and the arguments
+% the tensor constructor accepts
 %
 % MATLAB gives a static method no way to learn which subclass it was called
 % on, so stiffnessTensor.rand resolved to tensor.rand and returned a plain
@@ -19,6 +20,7 @@ checkQuiet;
 checkShape;
 checkSymmetryArgument;
 checkNoInvalidFactories;
+checkPlottingConvention;
 
 disp('check_tensorFactories: passed');
 
@@ -130,5 +132,57 @@ for f = {'zeros','ones','nan'}
     '@stiffnessTensor/rand.m'], f{1}, class(T))
 
 end
+
+end
+
+% -------------------------------------------------------------------------
+function checkPlottingConvention
+% a plottingConvention may be passed positionally, next to a symmetry and
+% named options, and survives the copy constructor
+%
+% it used to land in dynOption/setOption as a name with no value and error.
+% That the convention then stays local to this tensor is the subject of
+% core/check_plottingConventionOwnership, not of this file.
+
+M = diag([3 1 -1]);
+pC = plottingConvention('y↑→x');
+
+before = char(tensor(M,'rank',2).how2plot);
+assert(~strcmp(before,char(pC)), ...
+  ['check_tensorFactories: the test convention equals the default one, so ' ...
+  'it cannot detect a leak - pick another one'])
+
+% positionally, on its own and next to a symmetry and a named option
+T = tensor(M,'rank',2,pC);
+assert(strcmp(char(T.how2plot),char(pC)), ...
+  'check_tensorFactories: tensor(M,''rank'',2,pC) has convention %s', ...
+  char(T.how2plot))
+
+% a crystalSymmetry derives its own convention from the crystal axes - for
+% mmm that is y↑→x, so the check below needs one that differs from both it
+% and the specimen default
+cs = crystalSymmetry('mmm');
+pCs = plottingConvention('z↑→x');
+assert(~strcmp(char(cs.how2plot),char(pCs)) && ~strcmp(before,char(pCs)), ...
+  ['check_tensorFactories: the second test convention collides with the ' ...
+  'crystal or the specimen default - pick another one'])
+
+T = tensor(M,'rank',2,cs,pCs,'name','foo');
+assert(strcmp(char(T.how2plot),char(pCs)) && strcmp(T.opt.name,'foo'), ...
+  'check_tensorFactories: convention, symmetry and name do not survive together')
+
+% the symmetry is neither copied nor written to. it must still be the very
+% object that was passed in - phaseItem seals eq to handle identity, so a
+% copy would stop comparing equal - and it must still carry its own
+% convention, since other users share that handle
+assert(T.CS == cs, ...
+  'check_tensorFactories: tensor(M,...,cs,pC) no longer holds cs itself')
+
+assert(~strcmp(char(cs.how2plot),char(pCs)), ...
+  'check_tensorFactories: the convention was written onto the caller''s cs')
+
+% and through the copy constructor
+assert(strcmp(char(tensor(T).how2plot),char(pCs)), ...
+  'check_tensorFactories: the copy constructor dropped the convention')
 
 end

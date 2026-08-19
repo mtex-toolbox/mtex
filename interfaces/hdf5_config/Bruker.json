@@ -10,8 +10,8 @@
     "position": {
       "type": "direct",
       "direct": {
-        "x": { "mode": "search_root", "value": "/X Beam$" },
-        "y": { "mode": "search_root", "value": "/Y Beam$" }
+        "x": { "mode": "search_root", "value": "/X Sample$" },
+        "y": { "mode": "search_root", "value": "/Y Sample$" }
       }
     },
     "phase": {"mode": "search_root", "value": "/Phase", "type": "default"},

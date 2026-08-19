@@ -1,6 +1,12 @@
 classdef S2FunMLS < S2Fun
   % A class representing a function on the 2-sphere S^2.
   %
+  % The function is not stored by coefficients, but by nodes and values. It is
+  % evaluated by a moving least squares approximation: at every evaluation
+  % point a small weighted least squares problem over a local polynomial
+  % ansatz space is solved, using only the nodes in a compactly supported
+  % neighborhood of that point.
+  %
   % Syntax
   %   S2F = S2FunMLS(nodes, values);
   %   S2F = S2FunMLS(nodes, values, 'degree', 3, 'oF', 4);
@@ -31,7 +37,7 @@ classdef S2FunMLS < S2Fun
   %  weight  - @function_handle (weight function)
   %          - predefined choices are 'auto' (default, a degree-dependent
   %            Wendland C6 variant), 'C1hat', 'const', 'cos', 'hat',
-  %            'indicator', 'squared hat', 'wendland', 'wendlandC6',
+  %            'indicator', 'plateau', 'squared hat', 'wendland', 'wendlandC6',
   %            'wendlandSquared', and 'wendlandC6Squared'
   %  use_smooth_delta - use a smooth local support radius with about S2F.nn
   %                     neighbors at each center
@@ -40,6 +46,7 @@ classdef S2FunMLS < S2Fun
   %  use_vor_weights  - multiply the local weights by Voronoi areas
   %
   %  distance - metric for neighbor search (default: 'euclidean')
+  %           - run 'help rangesearch' for the available options
   %  s        - symmetry of the nodes
   %
   %  regularize - use goal-oriented regularization of the local systems
@@ -56,6 +63,8 @@ classdef S2FunMLS < S2Fun
   %  detectOutliers - detect local outliers and reduce their MLS weights
   %  subsample      - select a subset that minimizes the Lebesgue constant
   %
+  % See also
+  % SO3FunMLS S2FunHarmonic S2FunTri S2FunMLS/eval S2FunMLS/approximate
 
 
   properties
@@ -76,7 +85,10 @@ classdef S2FunMLS < S2Fun
     w           = [];     % compactly supported weight function
     distance    = 'euclidean'; % metric for neighbor search
 
-    s = specimenSymmetry.default; % symmetry
+    % the symmetry used by the approximation machinery (grids, bandwidth
+    % choice) - not frame data; the frame this function is expressed in
+    % is s.frame, see getFrame below
+    s = specimenSymmetry.default;
 
     monomials   = true;   % use monomial basis?
     centered    = true;   % use local coordinates centered at evaluation point?
@@ -88,8 +100,8 @@ classdef S2FunMLS < S2Fun
     targetcond = [];      % full-strength target; one is the limiting minimum
 
     detectOutliers = false; % reduce the weight of detected outliers?
-    outlierDetectionRange = 10;
-    outlierIndicators = [];
+    outlierDetectionRange = 10; % neighbors used for outlier detection
+    outlierIndicators = []; % bigger numbers (one per node) indicate outliers
 
     subsample   = false;  % perform optimal subsampling?
 
@@ -103,11 +115,29 @@ classdef S2FunMLS < S2Fun
     antipodal             % inherited from the nodes
     isReal                % = isReal(S2F.values)
 
-    fill_distance         % fill distance of the nodes
-    separation_distance   % separation distance of the nodes
+    % properties of the underlying nodes
+    fill_distance         % fill distance
+    separation_distance   % separation distance
   end
 
   methods
+
+    function fr = getFrame(S2F)
+      % the frame of an MLS function is the frame of its symmetry; an
+      % own frame, set internally, wins
+      if ~isempty(S2F.framePrivate)
+        fr = S2F.framePrivate;
+      elseif isempty(S2F.s)
+        fr = [];
+      else
+        fr = S2F.s.frame;
+      end
+    end
+
+    function s = getSym(S2F)
+      s = S2F.s;
+    end
+
     % initialize a spherical function
     function S2F = S2FunMLS(nodes, values, varargin)
 
@@ -138,6 +168,8 @@ classdef S2FunMLS < S2Fun
         nodes = reshape(nodes, numel(nodes), 1);
       end
       S2F.nodes = nodes;
+
+      % @vector3d.find picks the searcher up from the nodes themselves
       if ~isfield(nodes.opt, 'searcher')
         S2F.nodes.opt.searcher = createns(nodes.xyz);
       end
@@ -182,6 +214,7 @@ classdef S2FunMLS < S2Fun
       S2F.degree = get_option(varargin, {'degree', 'deg'}, 4, 'double');
       S2F.oF = get_option(varargin, {'oF','of', 'OF','oversamplingfactor', ...
         'oversampling_factor','oversampling factor'}, 4, 'double');
+      % half of the sphere should already contain sufficiently many nodes
       if (S2F.nn > numel(S2F.nodes) / 2)
         error('Too few data points for the specified degree and oversampling factor.');
       end
@@ -215,7 +248,7 @@ classdef S2FunMLS < S2Fun
         S2F.outlierIndicators = S2F.compute_outlier_indicators;
       end
 
-      % optimal subsampling
+      % optimal subsampling (minimizes the Lebesgue constant)
       S2F.subsample = check_option(varargin, {'subsampling', 'subsample'});
       if S2F.subsample, S2F.centered = true; end
 
@@ -250,7 +283,7 @@ classdef S2FunMLS < S2Fun
         S2F = S2F.init_reg_params;
       end
 
-      S2F.s.how2plot = nodes.how2plot;
+      S2F.frame = nodes.frame;
     end
 
     function S2F = set.w(S2F, weightfun)
@@ -258,6 +291,10 @@ classdef S2FunMLS < S2Fun
         S2F.w = weightfun;
         return;
       end
+
+      % Wendland C6 in Horner form. The weight is evaluated once per center and
+      % neighbor, so avoiding the repeated powers of t is worth the detour.
+      wendlandC6 = @(t)(max(1-t, 0).^8 .* (((32*t + 25).*t + 8).*t + 1));
 
       switch lower(char(weightfun))
         case 'hat'
@@ -271,29 +308,39 @@ classdef S2FunMLS < S2Fun
         case 'auto'
           % Degree-dependent localization:
           % higher degrees use a narrower effective neighborhood.
+          % Wendland C6 evaluated at t^alpha and subsequently raised to beta.
           alpha = max(1, 2 - (S2F.degree - 1) / 3);
           beta = 1 + max(S2F.degree - 2, 0) / 3;
 
-          % Wendland C6 evaluated at t^alpha and subsequently raised to beta.
-          S2F.w = @(t)( ...
-            max(1 - t.^alpha, 0).^8 .* ...
-            (32*t.^(3*alpha) + 25*t.^(2*alpha) + ...
-            8*t.^alpha + 1) ...
-            ).^beta;
+          if alpha == 1
+            S2F.w = @(t)(wendlandC6(t).^beta);
+          elseif beta == 1
+            S2F.w = @(t)(wendlandC6(t.^alpha));
+          else
+            S2F.w = @(t)(wendlandC6(t.^alpha).^beta);
+          end
 
+        case 'plateau'
+          % Broad weight: constant on the inner 60 percent of the support,
+          % then a C1 taper to zero. A concentrated weight makes the local fit
+          % hinge on the few nearest nodes, so it swings whenever the neighbor
+          % ranking changes under the moving center. Keeping the weight flat
+          % near the center spreads the fit over the whole neighborhood and
+          % suppresses that variation, which matters when the reconstruction is
+          % subsequently sampled on a quadrature grid of finite bandwidth.
+          plateauTaper = @(x)(x.^2 .* (3 - 2*x));
+          S2F.w = @(t)(1 - plateauTaper(min(max((t - 0.6)/0.4, 0), 1)));
         case 'c1hat'
           % Fixed broad weight for explicit comparisons.
           S2F.w = @(t)(max(1-t.^2, 0).^2);
         case 'wendland'
           S2F.w = @(t)(max(1-t, 0).^4 .* (4*t+1));
         case 'wendlandc6'
-          S2F.w = @(t)(max(1-t,0).^8 .* ...
-            (32*t.^3 + 25*t.^2 + 8*t + 1));
+          S2F.w = wendlandC6;
         case 'wendlandsquared'
           S2F.w = @(t)((max(1-t, 0).^4 .* (4*t+1)).^2);
         case 'wendlandc6squared'
-          S2F.w = @(t)((max(1-t,0).^8 .* ...
-            (32*t.^3 + 25*t.^2 + 8*t + 1)).^2);
+          S2F.w = @(t)(wendlandC6(t).^2);
         otherwise
           error('Unknown MLS weight function.');
       end
@@ -301,6 +348,10 @@ classdef S2FunMLS < S2Fun
 
     % choose delta such that factor-oF oversampling is expected for iid nodes
     function d = compute_delta(S2F)
+      % the relative area of a spherical cap with angular radius phi is
+      %   (1 - cos(phi)) / 2
+      % antipodal nodes represent two points each, so for N nodes the expected
+      % number of nodes in such a cap is (1 + antipodal) * N * (1-cos(phi))/2
       antipodal_factor = 1 + S2F.antipodal;
       d = acos(1 - 2 * S2F.dim * S2F.oF / ...
         numel(S2F.nodes) / antipodal_factor);
@@ -321,11 +372,15 @@ classdef S2FunMLS < S2Fun
     function S2F = set.detectOutliers(S2F, value)
       S2F.detectOutliers = value;
       if value
+        % set standard value of the outlier detection range
+        % should be at least 3, since this is the dimension of the basis which
+        % is used for computing the outlier indicators
         S2F.outlierDetectionRange = max(round(S2F.dim * .7), 3);
       end
     end
 
-    % subsampling needs a real monomial sampling matrix
+    % subsampling needs a real monomial sampling matrix, since linprog does
+    % not accept a complex one
     function S2F = set.subsample(S2F, value)
       S2F.subsample = value;
       if value
@@ -376,6 +431,7 @@ classdef S2FunMLS < S2Fun
       S2F.candidateFactor = value;
     end
 
+    % make sure nn is an integer value
     function nn = get.nn(S2F)
       nn = ceil(S2F.dim * S2F.oF);
     end
@@ -405,19 +461,146 @@ classdef S2FunMLS < S2Fun
       reg_params.maxcond = S2F.maxcond;
       reg_params.targetcond = S2F.targetcond;
       reg_params.numericalCondMax = 1e10;
+      reg_params.degreeExponent = 1;
+      reg_params.degreeLaplaceShift = 1;
     end
 
-    % equispaced auxiliary grid used only for smoothing the support radius
+
+    % create the auxiliary grid and precompute the distance to the n-th
+    % neighbor; it is used for smoothing the support radius only
     function S2F = init_auxgrid(S2F)
-      S2F.auxgrid = fibonacciS2Grid(10001);
+      [nAux, auxInfo] = S2F.estimate_auxgrid_points;
+
+      S2F.auxgrid = fibonacciS2Grid(nAux);
       S2F.auxgrid.opt.searcher = createns(S2F.auxgrid.xyz);
+
+      % store diagnostics on the grid itself, without adding class properties
+      S2F.auxgrid.opt.requestedPoints = nAux;
+      S2F.auxgrid.opt.denseSupportRadius = auxInfo.denseSupportRadius;
+      S2F.auxgrid.opt.densityContrast = auxInfo.densityContrast;
+
       S2F = S2F.update_auxgrid_dn;
+    end
+
+    % choose the auxiliary grid size from the smallest robust local support area
+    function [nAux, info] = estimate_auxgrid_points(S2F)
+      N = numel(S2F.nodes);
+
+      % resolve the actual S2F.nn-th-neighbor distance field
+      nfind = min(S2F.nn, N - 1);
+
+      % probe at data nodes, since densely sampled regions require the finest
+      %   auxiliary grid resolution; a one percent quantile is still well
+      %   determined by a couple of thousand probes
+      nProbe = min(N, 2000);
+      probeId = unique(round(linspace(1, N, nProbe))).';
+
+      % the first neighbor is the query node itself
+      [~, dProbe] = S2F.nodes.find(S2F.nodes.subSet(probeId), nfind + 1);
+      supportRadius = dProbe(:,end);
+
+      % use a robust dense-region radius instead of the absolute minimum
+      denseSupportRadius = getQuantile(supportRadius, .01);
+
+      % relative area of a spherical cap with angular radius d
+      capFraction = (1 - cos(denseSupportRadius)) / 2;
+
+      % antipodal nodes represent two points each and hence cover twice as much
+      domainFraction = (1 + S2F.antipodal) * capFraction;
+      domainFraction = min(max(domainFraction, realmin), 1);
+
+      % The degree-zero helper MLS uses oF = 20. Resolve roughly that many
+      % auxiliary nodes inside the smallest robust data-support area.
+      targetAuxNeighbors = 20;
+      nAux = ceil(targetAuxNeighbors / domainFraction);
+
+      % round up for reproducible grid sizes and apply practical bounds
+      nAux = 1000 * ceil(nAux / 1000);
+      nAux = min(max(nAux, 10000), 200000);
+
+      % density contrast relative to a uniform node set with the same nfind
+      uniformFraction = nfind / N;
+      densityContrast = uniformFraction / domainFraction;
+
+      info = struct;
+      info.denseSupportRadius = denseSupportRadius;
+      info.densityContrast = densityContrast;
     end
 
     function S2F = update_auxgrid_dn(S2F)
       if isempty(S2F.auxgrid), return; end
-      [~, dn] = S2F.nodes.find(S2F.auxgrid, S2F.nn);
+
+      nfind = min(S2F.nn, numel(S2F.nodes));
+      [~, dn] = S2F.nodes.find(S2F.auxgrid, nfind);
       S2F.auxgrid.opt.dn = dn(:,end);
+    end
+
+    % healthy baseline amplification chi0 of the ansatz space
+    %
+    % chi0 is the center amplification that a perfectly distributed node cloud
+    % produces with this degree, weight function and oversampling factor. It is
+    % a property of the ansatz space and of the dimension of the manifold, not
+    % of the nodes, so it is measured once on a small equispaced reference grid
+    % rather than estimated from a quantile of the user's own nodes. A quantile
+    % of the actual amplifications would mix this floor with the badly
+    % distributed neighborhoods that the regularization is meant to detect.
+    %
+    % Because chi0 does not depend on the nodes, the measurement is cached for
+    % the ansatz space it belongs to and costs nothing after the first call.
+    function chi0 = baseline_amplification(S2F)
+
+      persistent cache
+      if isempty(cache), cache = containers.Map; end
+
+      key = sprintf('%d|%g|%s|%d%d%d|%d', S2F.degree, S2F.oF, ...
+        func2str(S2F.w), S2F.centered, S2F.tangent, S2F.monomials, ...
+        S2F.antipodal);
+      if isKey(cache, key)
+        chi0 = cache(key);
+        return;
+      end
+
+      ref = S2F;
+      if ~isscalar(ref), ref = ref.subSet(1); end
+      ref.regularize = false;
+      ref.subsample = false;
+      ref.detectOutliers = false;
+      ref.outlierIndicators = [];
+
+      % The floor is independent of the number of nodes, so a small reference
+      % grid is enough. Uniform weights and a plain KNN support keep it cheap;
+      % on equispaced nodes neither choice changes the result noticeably.
+      ref.use_vor_weights = false;
+      ref.use_smooth_delta = false;
+      ref.delta = 0;
+      ref.auxgrid = [];
+
+      refnodes = reshape(fibonacciS2Grid(max(4000, 8 * S2F.nn)), [], 1);
+      refnodes.antipodal = S2F.antipodal;
+      ref.nodes = refnodes;
+      ref.values = zeros(numel(refnodes), 1);
+      ref.vor_weights = ones(numel(refnodes), 1);
+
+      % On well-distributed nodes the amplification is almost constant, so a
+      % few hundred centers resolve its median to well within one percent.
+      stream = RandStream('mt19937ar', 'Seed', 1741 + 97 * S2F.degree);
+      z = 2 * rand(stream, 250, 1) - 1;
+      phi = 2*pi * rand(stream, 250, 1);
+      r = sqrt(max(1 - z.^2, 0));
+      centers = vector3d(r .* cos(phi), r .* sin(phi), z);
+
+      [~, ~, info, ~] = ref.eval(centers);
+
+      amp = real(info.centerAmplification(:));
+      amp = amp(isfinite(amp) & amp >= 1);
+      if isempty(amp)
+        chi0 = 1;
+      else
+        chi0 = max(getQuantile(amp, .5), 1);
+      end
+
+      cache(key) = chi0;
+
     end
 
     % small reproducible random grid used only for regularization calibration
@@ -432,7 +615,7 @@ classdef S2FunMLS < S2Fun
       S2F.reg_auxgrid = vector3d(r .* cos(phi), r .* sin(phi), z);
     end
 
-    % compute expected number of neighbors for a range-search radius
+    % compute expected number of neighbors with given S2F.nodes and S2F.delta
     function nn = guess_nn(S2F, varargin)
       if (S2F.delta == 0)
         nn = S2F.nn;
@@ -443,8 +626,7 @@ classdef S2FunMLS < S2Fun
       end
 
       v = vector3d.rand(1e4, 1);
-      ind = S2F.nodes.find(v, S2F.delta);
-      nns = full(sum(ind, 2));
+      nns = S2F.count_neighbors(v);
 
       if isempty(varargin)
         nn = ceil(mean(nns));
@@ -453,8 +635,10 @@ classdef S2FunMLS < S2Fun
 
       switch lower(string(varargin{1}))
         case "min"
+          % expected minimal number of neighbors
           nn = min(nns);
         case "max"
+          % expected maximal number of neighbors
           nn = max(nns);
         otherwise
           nn = ceil(mean(nns));
@@ -463,7 +647,7 @@ classdef S2FunMLS < S2Fun
       nn = full(nn);
     end
 
-    % return number of neighbors for identifying locally difficult regions
+    % return number of neighbors for given v (use for identifying 'bad regions')
     function nns = count_neighbors(S2F, v)
       if (S2F.delta == 0)
         nns = repmat(S2F.nn, size(v));
@@ -496,6 +680,7 @@ classdef S2FunMLS < S2Fun
   end
 
   methods (Static = true)
+    S2F = interpolate(varargin);
     S2F = approximate(f, varargin);
     S2F = example(varargin)
   end

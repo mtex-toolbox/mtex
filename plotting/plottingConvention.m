@@ -1,5 +1,11 @@
-classdef plottingConvention < matlab.mixin.Copyable
+classdef plottingConvention
 % class describing the alignment of a reference frame on the screen
+%
+% plottingConvention is a value class: assigning one always copies, so a
+% convention can never be changed behind the back of the data holding it.
+% What couples data to the session default is the shared referenceFrame -
+% see <specimenFrame.default.html specimenFrame.default> - not a shared
+% convention handle.
 %
 % Syntax
 %   % specify a custom plotting convention
@@ -13,10 +19,9 @@ classdef plottingConvention < matlab.mixin.Copyable
 %   pC = plottingConvention('z⊙→x')  % z points out of screen, x right
 %   pC = plottingConvention('y^->x') % same as 'y↑→x', ASCII arrows
 %
-%   % changing the default plotting convention - note that the default has
-%   % to be modified in place, plottingConvention.default.east = yvector
-%   % would replace it and detach all data that refers to it
-%   pC = plottingConvention.default; pC.east = yvector;
+%   % changing the default plotting convention - modify a copy and make
+%   % it the default (this is what plotx2east and friends do)
+%   pC = plottingConvention.default; pC.east = yvector; pC.makeDefault
 %
 %   % changing the plotting convention for a dataset
 %   % to be used in all future plotting commands
@@ -120,14 +125,25 @@ classdef plottingConvention < matlab.mixin.Copyable
 
       elseif isa(ax,'matlab.graphics.axis.PolarAxes')
         
-        switch round(angle(pC.east,xvector,zvector)/degree)
+        % ThetaZeroLocation says where theta = 0 is DRAWN, and theta is the
+        % azimuth measured from the x axis of the data, so this is the
+        % screen angle of xvector itself: how far it sits from east,
+        % measured towards north. The angle from east to x about z that was
+        % taken here instead runs the other way round, which is the same for
+        % 0 and 180 degree but swaps top and bottom - so of the four axis
+        % aligned conventions only 'x↑→y' came out wrong, by exactly 180
+        % degree. Rounded to the quadrant MATLAB offers; a convention no
+        % axis is aligned with has no exact answer here.
+        onScreen = atan2(dot(xvector,pC.north,'noAntipodal'), ...
+          dot(xvector,pC.east,'noAntipodal'));
+        switch mod(round(onScreen/(90*degree)),4)
           case 0
             ax.ThetaZeroLocation='right';
-          case 90
+          case 1
             ax.ThetaZeroLocation='top';
-          case 180
+          case 2
             ax.ThetaZeroLocation='left';
-          case 270
+          case 3
             ax.ThetaZeroLocation='bottom';
         end
         if pC.outOfScreen.z<0
@@ -184,8 +200,20 @@ classdef plottingConvention < matlab.mixin.Copyable
 
         guard = plottingConvention.beginCameraUpdate(ax); %#ok<NASGU>
 
+        % view() reads its argument in the plot box, not in the data: on an
+        % axis with a reversed direction it negates that component before
+        % placing the camera. outOfScreen is a direction in the data, so
+        % undo that here - otherwise the view comes out mirrored on the 3d
+        % spherical plots, the only axes in MTEX that reverse XDir and YDir
+        % (@vector3d/plot3d, scatter3d, plotEmptySphere). Map axes leave
+        % all three directions normal, so nothing changes for them. With
+        % the flip undone the camera also lands where the branch above puts
+        % it, and where getView reads it back from.
+        n = pC.outOfScreen.xyz .* [1-2*strcmp(ax.XDir,'reverse'),...
+          1-2*strcmp(ax.YDir,'reverse'), 1-2*strcmp(ax.ZDir,'reverse')];
+
         ax.CameraUpVector = pC.north.xyz;
-        view(ax,pC.outOfScreen.xyz);
+        view(ax,n);
         ax.CameraUpVector = pC.north.xyz;
         ax.CameraViewAngleMode = 'auto';
       end
@@ -198,12 +226,14 @@ classdef plottingConvention < matlab.mixin.Copyable
     end
 
 
+    % the direction getters return a bare vector3d. They used to tag it
+    % with pC so it displayed in this convention, which forked a frame
+    % for a purely cosmetic reason - the vector belongs to no frame
     function v = get.outOfScreen(pC)
       v = pC.rot * vector3d.Z; 
-      v.how2plot = pC;
     end
 
-    function set.outOfScreen(pC,n)
+    function pC = set.outOfScreen(pC,n)
       if angle(pC.rot * vector3d.Z,n) > 0.1*degree
         try
           pC.rot = rotation.map(pC.outOfScreen,n,pC.lastSet,pC.lastSet) * pC.rot;
@@ -216,9 +246,8 @@ classdef plottingConvention < matlab.mixin.Copyable
 
     function v = get.intoScreen(pC)
       v = -pC.rot * vector3d.Z;
-      v.how2plot = pC;
     end
-    function set.intoScreen(pC,n)
+    function pC = set.intoScreen(pC,n)
       try
         pC.rot = rotation.map(pC.outOfScreen,-n,pC.lastSet,pC.lastSet) * pC.rot;
       catch
@@ -230,9 +259,8 @@ classdef plottingConvention < matlab.mixin.Copyable
 
     function v = get.east(pC) 
       v = pC.rot * vector3d.X;
-      v.how2plot = pC;
     end
-    function set.east(pC,e)
+    function pC = set.east(pC,e)
       if angle(pC.rot * vector3d.X,e) > 0.1*degree
         try
           pC.rot = rotation.map(pC.east,e,pC.lastSet,pC.lastSet) * pC.rot;
@@ -245,13 +273,12 @@ classdef plottingConvention < matlab.mixin.Copyable
 
     function v = get.west(pC)
       v = -pC.rot * vector3d.X; 
-      v.how2plot = pC;
     end
-    function set.west(pC,w)
+    function pC = set.west(pC,w)
       try
-        pC.rot = rotation.map(pC.east,-w,pC.lastSet,pC.lastSet) * pC.rot; 
+        pC.rot = rotation.map(pC.east,-w,pC.lastSet,pC.lastSet) * pC.rot;
       catch
-        pC.rot = rotation.map(pC.east,-w) * pC.rot; 
+        pC.rot = rotation.map(pC.east,-w) * pC.rot;
       end
       pC.lastSet = w;
     end
@@ -260,18 +287,18 @@ classdef plottingConvention < matlab.mixin.Copyable
       v = pC.rot * vector3d.Y(pC); 
       %v.how2plot = pC;
     end
-    function set.north(pC,v)
+    function pC = set.north(pC,v)
       try
-        pC.rot = rotation.map(pC.north,v,pC.lastSet,pC.lastSet) * pC.rot; 
+        pC.rot = rotation.map(pC.north,v,pC.lastSet,pC.lastSet) * pC.rot;
       catch
-        pC.rot = rotation.map(pC.north,v) * pC.rot; 
+        pC.rot = rotation.map(pC.north,v) * pC.rot;
       end
       pC.lastSet = v;
     end
     
     function v = get.south(pC), v = -pC.rot * vector3d.Y; end
 
-    function set.south(pC,v)
+    function pC = set.south(pC,v)
       try
         pC.rot = rotation.map(pC.north,-v,pC.lastSet,pC.lastSet) * pC.rot;
       catch ME
@@ -294,13 +321,25 @@ classdef plottingConvention < matlab.mixin.Copyable
 
     end
 
+    function out = eq(pC,pC2)
+      % as a value class equality means equal alignment on screen -
+      % there is no handle identity to compare
+      out = isa(pC,'plottingConvention') && isapprox(pC,pC2);
+    end
+
+    function out = ne(pC,pC2)
+      out = ~eq(pC,pC2);
+    end
+
     function pC = matchDefault(pC)
-      % reuse the default convention if it describes the same alignment
+      % normalize to the default convention if it describes the same
+      % alignment
       %
-      % Data that is plotted the default way should refer to the one
-      % default instance instead of an equivalent copy of it. Changing
-      % <plottingConvention.default.html plottingConvention.default>, e.g.
-      % by |plotx2north|, then applies to this data as well.
+      % Historically this re-aliased to the default handle; since
+      % plottingConvention is a value class it merely returns an equal
+      % value, and what makes data follow the default is membership in
+      % the default frame - see vector3d/set.how2plot. Kept for
+      % compatibility.
 
       pCd = plottingConvention.default;
       if isapprox(pC,pCd), pC = pCd; end
@@ -310,7 +349,50 @@ classdef plottingConvention < matlab.mixin.Copyable
   end
 
   methods (Static=true)
-  
+
+
+    function pC = fromOption(list,default)
+      % the plotting convention among a list of plot options, if any
+      %
+      % Accepts a @plottingConvention passed as an argument, and the name
+      % value form for a one off plot
+      %
+      %   plot(v,'how2plot','y↑→x')
+      %
+      % The name value form is what functionSignatures.json can advertise,
+      % so the conventions show up in tab completion. It also removes the
+      % need to guess whether a bare string was meant as a convention.
+      %
+      % Syntax
+      %   pC = plottingConvention.fromOption(varargin)
+      %   pC = plottingConvention.fromOption(varargin,default)
+      %
+      % Input
+      %  list    - the option list
+      %  default - returned when the list carries no convention
+      %
+      % See also
+      % plottingConvention/default
+
+      if nargin < 2, default = []; end
+
+      % the name value form wins over a bare object. The plot methods
+      % append the convention of their data - plot(ebsd,...,ebsd.how2plot)
+      % - AFTER varargin, meaning it as the fallback for this plot; taking
+      % the bare object first would make that fallback beat the option the
+      % caller actually typed, and plot(ebsd,ori,'how2plot','y←↑x') would
+      % silently draw in the convention of the data. A bare convention the
+      % caller passed themselves still wins over the appended one, because
+      % getClass returns the first match.
+      pC = get_option(list,'how2plot');
+
+      if isempty(pC), pC = getClass(list,'plottingConvention'); end
+      if isempty(pC), pC = default; return; end
+
+      if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
+
+    end
+
     function test
       grainsR = rotate(grains,rotation.rand);
       plot(grainsR,grainsR.meanOrientation,'micronbar','off');
@@ -325,14 +407,19 @@ classdef plottingConvention < matlab.mixin.Copyable
       %   plottingConvention.default(pC)       % make pC the default
       %   plottingConvention.default('y↑→x')   % same by a string
       %
+      % The default is carried by the registered default specimen frame -
+      % see <specimenFrame.default.html specimenFrame.default>. Setting a
+      % new default replaces the convention of that frame; symmetries and
+      % data holding the frame follow, data holding the old convention
+      % handle keeps it (as before). The point group of
+      % specimenSymmetry.default is untouched.
 
       if nargin == 1 % new default
         if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
-        ss = specimenSymmetry(pC);
-        ss.makeDefault;
+        fr = specimenFrame.default;
+        fr.how2plot = pC;
       else
-        ss = specimenSymmetry.default;
-        pC = ss.how2plot;
+        pC = specimenFrame.default.how2plot;
       end
     end
     

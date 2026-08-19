@@ -191,7 +191,8 @@
       {"name":"contours", "kind":"namevalue", "type":["numeric"]},
       {"name":"complete", "kind":"namevalue", "type":["char","choices={'on','off'}"]},
       {"name":"drawing", "kind":"flag", "type":["char","choices={'3d','surf','contour','contourf','smooth'}"]},
-      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]}
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 

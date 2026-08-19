@@ -43,7 +43,7 @@ if ( nargin > 1 ) && ( isa(varargin{1}, 'S2Fun') )
   else
     value = S2FunHarmonic.quadrature(f);
   end
-  value.CS = sF.CS;
+  value.frame = sF.frame;
 
 % pointwise minimum of spherical harmonics
 elseif ( nargin > 1 ) && ~isempty(varargin{1}) && ( isa(varargin{1}, 'double') )
@@ -54,7 +54,7 @@ elseif ( nargin > 1 ) && ~isempty(varargin{1}) && ( isa(varargin{1}, 'double') )
   else
     value = S2FunHarmonic.quadrature(f);
   end
-  value.CS = sF.CS;
+  value.frame = sF.frame;
 
 elseif (nargin > 1) && isempty(varargin{1}) % third input is dimension
   
@@ -65,7 +65,7 @@ elseif (nargin > 1) && isempty(varargin{1}) % third input is dimension
     d = varargin{2};
   end
   f = @(v) min(reshape(sF.eval(v),[length(v),s]), [], d(1)+1);
-  value = S2FunHarmonic.quadrature(f, sF.CS);
+  value = S2FunHarmonic.quadrature(f, sF.frame);
   
 else % detect local or global minima
 
@@ -127,7 +127,20 @@ else % detect local or global minima
   end
   pos = pos(I(1:n));
 
-  if isa(sF.CS,'crystalSymmetry'), pos = Miller(pos,sF.CS); end
+  % return the positions in the reference frame of the function
+  sym = getSym(sF);
+  if isa(sym,'crystalSymmetry')
+    pos = Miller(pos,sym);
+  elseif ~isa(pos,'Miller')
+    if isa(sF.frame,'crystalFrame')
+      % a plain function expressed in a crystal frame, e.g. the GBND -
+      % the positions come back as Miller carrying the trivial group on
+      % that frame (ADR 0003, orientation without symmetry)
+      pos = Miller(pos, crystalSymmetry(sF.frame));
+    else
+      pos.frame = sF.frame;
+    end
+  end
 
 end
 

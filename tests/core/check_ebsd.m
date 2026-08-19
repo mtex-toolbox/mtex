@@ -8,11 +8,13 @@ function check_ebsd
 % regression it pins.
 %
 % See also
-% EBSD/display EBSD/loadobj EBSD/interp
+% EBSD/display EBSD/loadobj EBSD/interp EBSD/subsind
 
 checkDisplay;
 checkLoadobj;
 checkInterp;
+checkIndexing;
+checkEulerCorrectionSurvives;
 
 disp('check_ebsd: passed');
 
@@ -418,5 +420,122 @@ for k = 1:size(cases,1)
   e.prop.tag = reshape(1:length(e),size(e));
   cases{k,2} = e;
 end
+
+end
+
+% =========================================================================
+function checkIndexing
+% ebsd(x,y) means two different things and is therefore refused
+%
+% On a gridded map ebsd(i,j) is the pixel in row i and column j, plain
+% matrix indexing (EBSDgrid/subsind). On a list the same expression used to
+% be the measurement CLOSEST TO THE COORDINATE (x,y) - a different pixel,
+% chosen silently, and since EBSD.load puts data on its grid whenever that
+% is lossless, one and the same script could hit either meaning depending on
+% the file it was given. The coordinate lookup now has to be asked for by
+% name, ebsd('xy',x,y), which means the same on a grid and on a list.
+
+cs = crystalSymmetry('m-3m');
+n = 6;
+rot = rotation.byAxisAngle(zvector,reshape((1:n*n)*2*degree,n,n));
+
+grid = EBSDsquare([],rot,2*ones(n,n),[0 1],{'notIndexed',cs},'dxy',[1 1]);
+list = EBSD(grid.pos(:),grid.rotations(:),grid.phaseId(:), ...
+  {'notIndexed',cs},struct());
+
+% the two used to disagree on this very expression
+accepted = false;
+try
+  list(2,3); %#ok<VUNUS>
+  accepted = true;
+catch err
+  assert(strcmp(err.identifier,'MTEX:EBSD:ambiguousIndex'), ...
+    'check_ebsd: ebsd(x,y) threw %s instead of MTEX:EBSD:ambiguousIndex', ...
+    err.identifier);
+  assert(contains(err.message,"ebsd('xy',x,y)"), ...
+    'check_ebsd: the error has to name the replacement syntax');
+end
+assert(~accepted,'check_ebsd: ebsd(x,y) on a list has to be an error');
+
+% while the grid keeps its matrix indexing
+p = grid(2,3).pos;
+assert(length(grid(2,3))==1 && p.x == grid.pos.x(2,3) && p.y == grid.pos.y(2,3), ...
+  'check_ebsd: ebsd(i,j) on a grid must stay the pixel in row i, column j');
+
+% and 'xy' is the coordinate lookup on both, giving the same pixel
+for e = {grid,list}
+  p = e{1}('xy',2,3).pos;
+  assert(length(e{1}('xy',2,3))==1 && abs(p.x-2) < 1e-10 && abs(p.y-3) < 1e-10, ...
+    'check_ebsd: ebsd(''xy'',2,3) must be the pixel at the coordinate (2,3)');
+end
+
+% everything else a list is indexed by is untouched
+assert(length(list(1:10))==10,'check_ebsd: linear indexing broke');
+assert(length(list(5))==1,'check_ebsd: scalar indexing broke');
+assert(length(list(list.pos.x > 2))==nnz(list.pos.x > 2), ...
+  'check_ebsd: logical indexing broke');
+assert(length(list('id',3))==1,'check_ebsd: indexing by id broke');
+
+end
+
+% =========================================================================
+function checkEulerCorrectionSurvives
+% the EulerCorrection an import applied has to survive every operation
+%
+% EulerCorrection is a dependent view on the protected Euler2Map, which
+% records the rotation that aligned the Euler angle frame with the map
+% frame. Two constructors dropped it:
+%
+%   * the EBSD copy constructor returned before Euler2Map (and N) were set,
+%     and subSet of a grid EBSD goes through it - so ebsd('Magnesium') alone
+%     lost the record, and with it ebsd('Magnesium').gridify, the example in
+%     gridify's own help
+%   * squarify / hexify build a fresh @EBSDsquare / @EBSDhex from pos,
+%     rotations and phases
+%
+% The record cannot be handed over through the public setter, which rotates
+% the orientations by the difference - the copy already carries corrected
+% orientations. So the orientations are checked to be untouched here too.
+
+cs = crystalSymmetry('m-3m');
+[x,y] = meshgrid(1:8,1:6);
+ebsd = EBSD(vector3d(x(:),y(:),0),orientation.rand(numel(x),cs), ...
+  ones(numel(x),1),{cs},struct());
+
+rot = rotation.byAxisAngle(vector3d.X,180*degree);
+ebsd.EulerCorrection = rot;
+ref = ebsd.rotations;
+
+kept = @(e) angle(e.EulerCorrection .* inv(rot)) < 1e-10;
+
+assert(kept(EBSD(ebsd)), ...
+  'check_ebsd: the copy constructor must carry the EulerCorrection');
+assert(kept(ebsd(1:10)), ...
+  'check_ebsd: subSet must carry the EulerCorrection');
+assert(kept([ebsd(1:5) ebsd(6:10)]), ...
+  'check_ebsd: concatenation must carry the EulerCorrection');
+
+g = ebsd.gridify;
+assert(kept(g), ...
+  'check_ebsd: gridify must carry the EulerCorrection');
+assert(kept(g(1:5)), ...
+  'check_ebsd: subSet of a gridded map must carry the EulerCorrection');
+
+% carrying the record must not rotate anything a second time
+a = g.rotations.a(:); a = a(~isnan(a));
+assert(numel(a) == length(ref) && norm(sort(a) - sort(ref.a(:))) < 1e-12, ...
+  'check_ebsd: gridify changed the orientations');
+
+% the copy constructor must keep the measurement plane normal too - the
+% same early return dropped it, so a map on a non z plane came back with
+% the default zvector
+ebsd.N = normalize(vector3d(1,1,1));
+assert(angle(EBSD(ebsd).N,ebsd.N) < 1e-10, ...
+  'check_ebsd: the copy constructor must carry the map normal N');
+
+% and the setter still applies the difference, as documented
+e2 = ebsd; e2.EulerCorrection = rotation.id;
+assert(all(angle(e2.rotations,ref) > 1e-3), ...
+  'check_ebsd: setting EulerCorrection must still rotate the orientations');
 
 end

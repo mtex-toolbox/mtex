@@ -66,7 +66,7 @@ m = size(IJnew,1);
 if m == 0, return; end
 
 posNew = vector3d(xy(:,1),xy(:,2),0);
-posNew.how2plot = ebsd.pos.how2plot;
+posNew.frame = ebsd.pos.frame;
 
 % the properties have to line up, so pad every field the same way squarify
 % does - NaN for numeric/logical, the class's own nan for everything else

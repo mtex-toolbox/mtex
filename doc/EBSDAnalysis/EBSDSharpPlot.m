@@ -23,16 +23,16 @@ h = project2FundamentalRegion(h);
 % compute the azimuth angle in degree
 color = h.rho ./ degree;
 
-plotIPDF(ebsd.orientations,r,'property',color,'MarkerSize',3,'grid')
+plotIPDF(ebsd.orientations,r,'property',color,'MarkerSize',3,'grid','points','all')
 mtexColorbar
 
 %%
 % We see that all individual orientations are clustered around azimuth
 % angle -20 degrees with some outliers at -35 degree. In order to
 % increase the contrast for the main group, we restrict the color range from
-% 110 degree to 120 degree.
+% -25 degree to -14 degree.
 
-setColorRange([-25 -15]);
+setColorRange([-25 -14]);
 
 % by the following lines we colorize the outliers in purple.
 cmap = colormap;
@@ -65,7 +65,7 @@ ipfKey = ipfHSVKey(ebsd.CS.properGroup);
 
 % To this end, we first compute the inverse pole figure direction such that
 % the mean orientation is just at the gray spot of the inverse pole figure
-ipfKey.inversePoleFigureDirection = mean(ebsd.orientations,'robust') * ipfKey.whiteCenter;
+ipfKey.ipfDirection = mean(ebsd.orientations,'robust') * ipfKey.whiteCenter;
 
 close all;
 plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
@@ -105,7 +105,7 @@ hold off
 % grains is the |@axisAngleColorKey|. In order to demonstrate this color
 % key let us first separate the EBSD into grains.
 
-[grains,ebsd] = calcGrains(ebsd,'angle',1.5*degree,'minPixel',3);
+[grains,ebsd] = calcGrains(ebsd,'angle',1.5*degree,'minPixel',5);
 grains = smoothBoundary(grains,5);
 
 %%
@@ -119,10 +119,10 @@ ipfKey = axisAngleColorKey(ebsd);
 ipfKey.oriRef = grains.meanOrientation(ebsd('indexed').grainId);
 
 plot(ebsd('indexed'),ipfKey.orientation2color(ebsd('indexed').orientations))
-xlim(ebsd.extent(1:2)),ylim(ebsd.extent(3:4))
 
 hold on
-plot(grains.boundary,'lineWidth',4)
+plot(grains.boundary,'lineWidth',4,'LineColor','white')
+plot(grains.boundary,'lineWidth',2,'LineColor','black')
 hold off
 
 %%
@@ -137,25 +137,27 @@ ebsdS = smooth(ebsd,F,'fill',grains);
 ipfKey.oriRef = grains.meanOrientation(ebsdS('indexed').grainId);
 
 plot(ebsdS('indexed'),ipfKey.orientation2color(ebsdS('indexed').orientations))
-xlim(ebsd.extent(1:2)),ylim(ebsd.extent(3:4))
 
 hold on
-plot(grains.boundary,'lineWidth',4)
+plot(grains.boundary,'lineWidth',4,'LineColor','white')
+plot(grains.boundary,'lineWidth',2,'LineColor','black')
 hold off
 
 %% 
 % Another application for sharp color keys is the analysis of orientation
 % gradients within grains
 
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 % segment grains
 [grains,ebsd] = calcGrains(ebsd);
 
 % find largest grains
-largeGrains = grains(grains.numPixel > 800);
+[~,ind] = max(grains.numPixel);
+largeGrains = grains(ind);
 
-ebsd = ebsd(largeGrains(1))
+ebsd = ebsd(largeGrains)
 
 %%
 % When plotting one specific grain with its orientations we see that they
@@ -163,7 +165,7 @@ ebsd = ebsd(largeGrains(1))
 
 % plot a grain 
 close all
-plot(largeGrains(1).boundary,'linewidth',2)
+plot(largeGrains.boundary,'linewidth',2)
 hold on
 plot(ebsd,ebsd.orientations)
 hold off
@@ -175,10 +177,10 @@ hold off
 % visualized.
 
 % plot a grain 
-plot(largeGrains(1).boundary,'linewidth',2)
+plot(largeGrains.boundary,'linewidth',2)
 hold on
 ipfKey = ipfHSVKey(ebsd);
-ipfKey.inversePoleFigureDirection = mean(ebsd.orientations) * ipfKey.whiteCenter;
-ipfKey.maxAngle = 2*degree;
+ipfKey.ipfDirection = mean(ebsd.orientations) * ipfKey.whiteCenter;
+ipfKey.maxAngle = 10*degree;
 plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 hold off

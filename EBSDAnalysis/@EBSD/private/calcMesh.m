@@ -55,8 +55,8 @@ nI = max(I)+1; nJ = max(J)+1;
 [ii,jj] = ndgrid(1:nI,1:nJ);
 idealMesh = p0 + (ii-1) * u + (jj-1)*v;
 
-% p0,u,v are plain vector3d - restore the plotting convention of the input
-idealMesh.how2plot = pos.how2plot;
+% p0,u,v are plain vector3d - restore the frame of the input
+idealMesh.frame = pos.frame;
 
 if nargout == 1
   mesh = idealMesh;
@@ -82,15 +82,29 @@ mesh(ind) = pos;
 known = ~isnan(mesh);
 % local deformation on known nodes
 def = mesh - idealMesh;
-% interpolate deformation field in index space
-Ik = ii(known);
-Jk = jj(known);
-Fx = scatteredInterpolant(Ik,Jk,def.x(known),'natural','nearest');
-Fy = scatteredInterpolant(Ik,Jk,def.y(known),'natural','nearest');
-Fz = scatteredInterpolant(Ik,Jk,def.z(known),'natural','nearest');
-defFull = vector3d(Fx(ii,jj),Fy(ii,jj),Fz(ii,jj));
-% reconstruct full mesh
-mesh = idealMesh + defFull;
+
+% Interpolate the deformation field in index space - but only into the
+% nodes that have nothing measured in them. A node that does gets pos
+% written straight back into it below, so interpolating there produces a
+% value that is thrown away again, and on a nearly complete map that is
+% nearly every node: an 18 million pixel Bruker map spent 50 of its 65
+% seconds evaluating an interpolant over its own data points.
+%
+% One interpolant, three value sets, for the same reason: Fx, Fy and Fz
+% differ only in what they interpolate, and building one each
+% triangulated the identical point set three times over (4.7s apiece).
+mesh = idealMesh;
+missing = ~known;
+if any(missing(:))
+
+  F = scatteredInterpolant(ii(known),jj(known),def.x(known),'natural','nearest');
+  dx = F(ii(missing),jj(missing));
+  F.Values = def.y(known); dy = F(ii(missing),jj(missing));
+  F.Values = def.z(known); dz = F(ii(missing),jj(missing));
+
+  mesh(missing) = idealMesh(missing) + vector3d(dx,dy,dz);
+
+end
 % keep observed nodes exact - index by ind, not by the mask known: the mask
 % assigns in ascending linear order, while pos is in the callers order
 mesh(ind) = pos;

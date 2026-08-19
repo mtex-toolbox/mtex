@@ -20,6 +20,8 @@ checkLinearField;
 checkBitIdenticalToSquare;
 checkEdgeAndHoles;
 checkLeastSquaresOnLinear;
+checkStencilChoice;
+checkOffPlaneMap;
 checkShapeFollowsInput;
 
 disp('gradient: all checks passed');
@@ -146,23 +148,228 @@ end
 
 % =========================================================================
 function checkLeastSquaresOnLinear
-% on an exactly linear field the one sided and the least squares form agree
+% on an exactly linear field every stencil agrees, on square and on hex
+%
+% Any stencil with two independent directions fits a linear field exactly,
+% so this pins that all three implement the same derivative - it cannot,
+% by construction, tell the stencils apart. checkStencilChoice does that.
 
 cs = crystalSymmetry('m-3m');
-pos = makePositions('square rotated 30');
+
+for geom = {'square rotated 30','hex'}
+
+  pos = makePositions(geom{1});
+  ori = orientation.byAxisAngle(zvector,0.002*pos.x + 0.001*pos.y,cs);
+  ebsd = EBSD(pos,ori,ones(length(pos),1),{cs},struct);
+  ebsd.unitCell = unitCellOf(geom{1});
+
+  inner = interiorMask(ebsd);
+  g1 = ebsd.gradient;
+
+  for st = {'oneSided','1hop','full'}
+
+    g2 = ebsd.gradient('stencil',st{1});
+    d = max(norm(vector3d(g1(inner,:)) - vector3d(g2(inner,:))),[],'all');
+
+    assert(d < 1e-8, ...
+      ['check_gradient: %s - the ''%s'' stencil differs from one sided by ' ...
+       '%.3g on an exactly linear field, where every stencil must be exact'], ...
+      geom{1}, st{1}, d);
+
+  end
+
+  % the documented alias
+  gA = ebsd.gradient('leastSquares');
+  gH = ebsd.gradient('stencil','1hop');
+  ok = ~isnan(gA) & ~isnan(gH);
+  assert(isequaln(isnan(gA),isnan(gH)) && ...
+      max(norm(vector3d(gA(ok)) - vector3d(gH(ok))),[],'all') < 1e-14, ...
+    'check_gradient: %s - ''leastSquares'' is not the same as ''1hop''',geom{1});
+
+end
+
+end
+
+% =========================================================================
+function checkStencilChoice
+% the three stencils really are three different neighbourhoods
+%
+% The linear field check above passes for any of them, so on its own it
+% would not notice the stencil being ignored, or reverting to the hardcoded
+% six offset list that made 'leastSquares' asymmetric on a square grid
+% (4 axial plus TWO of the four diagonals - see EBSD/gradient).
+%
+% Two things are pinned: coverage is strictly ordered, and the two diagonal
+% pairs are treated alike.
+%
+% NB rotating the whole map does NOT test the second one. The stencil lives
+% in lattice index space and latticeBasis re-derives the basis from the
+% rotated unit cell, so the map and its lattice frame turn together and the
+% NaN pattern is invariant for any stencil whatsoever - the old asymmetric
+% list passes that test unchanged. What does discriminate is removing one
+% diagonal pair or the other from an otherwise singular pixel: a stencil
+% using (1,-1),(-1,1) but not (1,1),(-1,-1) rescues the pixel in one case
+% and not in the mirrored one.
+
+cs = crystalSymmetry('m-3m');
+pos = makePositions('square axis aligned');
 ori = orientation.byAxisAngle(zvector,0.002*pos.x + 0.001*pos.y,cs);
+
+% Deliberately isolate one pixel along a line. makePositions lays the grid
+% out as ndgrid(0:n-1,0:n-1) with x from j and y from i, so the linear index
+% of (i,j) is i + j*n + 1. Removing the two j-neighbours of the target
+% leaves it with only its two i-neighbours, which are collinear - so the
+% 1hop fit is singular there and yields NaN, while 'full' still has the four
+% diagonals and solves it. Punching random holes does not achieve this: with
+% 4 axial neighbours a pixel stays solvable unless it loses a whole
+% direction.
+n0 = 25; ind = @(i,j) i + j*n0 + 1;
+target = [12 12];
+
+keep = true(length(pos),1);
+keep(ind(target(1),target(2)-1)) = false;
+keep(ind(target(1),target(2)+1)) = false;
+
+ebsd = EBSD(pos(keep),ori(keep),ones(nnz(keep),1),{cs},struct);
+ebsd.unitCell = unitCellOf('square axis aligned');
+
+% Now the two mirrored configurations. Both keep the target singular in its
+% axial directions; one removes the main diagonal neighbours (+d,+d),
+% (-d,-d), the other the anti diagonal (+d,-d), (-d,+d). x runs with j and y
+% with i, so (+d,+d) is (i+1,j+1) and (+d,-d) is (i-1,j+1).
+st = {'oneSided','1hop','full'};
+
+mainDiag = [ind(target(1)+1,target(2)+1), ind(target(1)-1,target(2)-1)];
+antiDiag = [ind(target(1)-1,target(2)+1), ind(target(1)+1,target(2)-1)];
+
+% this one first: it is the specific claim, and it is the assertion the old
+% asymmetric stencil violates
+for k = 2:3
+
+  nDrop = zeros(1,2); drop = {mainDiag,antiDiag};
+
+  for c = 1:2
+    kp = keep;
+    kp(drop{c}) = false;
+    e = EBSD(pos(kp),ori(kp),ones(nnz(kp),1),{cs},struct);
+    e.unitCell = unitCellOf('square axis aligned');
+    nDrop(c) = nnz(isnan(e.gradient('stencil',st{k})));
+  end
+
+  assert(nDrop(1) == nDrop(2), ...
+    ['check_gradient: the ''%s'' stencil treats the two diagonals ' ...
+     'differently - dropping the main diagonal leaves %d NaN, dropping the ' ...
+     'anti diagonal %d. A stencil must use either both pairs or neither.'], ...
+    st{k}, nDrop(1), nDrop(2));
+
+end
+
+% and the coverage ordering
+n = zeros(1,3);
+for k = 1:3, n(k) = nnz(isnan(ebsd.gradient('stencil',st{k}))); end
+
+assert(n(1) > n(2) && n(2) > n(3), ...
+  ['check_gradient: the stencils should be strictly ordered in coverage, ' ...
+   'got oneSided %d, 1hop %d, full %d'], n(1), n(2), n(3));
+
+end
+
+% =========================================================================
+function checkOffPlaneMap
+% a map whose normal is not z - gradient, gradientDir and curvature
+%
+% latticeBasis used to read the unit cell as (x,y), so a map in the xz plane
+% collapsed to a singular basis, A = [d 0; 0 0], and gradient/curvature died
+% inside assignGridIndex with "Array indices must be positive integers".
+% Everything geometric is now done in the map plane frame (ebsd.rot2Plane).
+%
+% The statement checked is equivariance: turning the map and asking along a
+% turned direction must give the turned answer. That is stronger than any
+% single number, and it is checked on the DIRECTIONAL derivatives rather
+% than on the tensor, for two reasons. gradient() reports along the two
+% lattice directions and orientBasis re-pins which of them is a1 when the
+% map turns in plane, so its columns are not equivariant by label. And the
+% tensor carries a NaN column, which rotate() then smears over every entry -
+% NaN*0 is NaN - so comparing rotated tensors is vacuously true.
+
+cs = crystalSymmetry('m-3m');
+pos = makePositions('square axis aligned');
+ori = orientation.byAxisAngle(zvector,0.002*pos.x + 0.0035*pos.y,cs);
 ebsd = EBSD(pos,ori,ones(length(pos),1),{cs},struct);
-ebsd.unitCell = unitCellOf('square rotated 30');
+ebsd.unitCell = unitCellOf('square axis aligned');
 
-g1 = ebsd.gradient;
-g2 = ebsd.gradient('leastSquares');
+gX = vector3d(ebsd.gradientX);
+gY = vector3d(ebsd.gradientY);
 
-inner = interiorMask(ebsd);
-d = max(norm(vector3d(g1(inner,:)) - vector3d(g2(inner,:))),[],'all');
+% 90 degree about x: the map plane normal goes z -> -y, so the in plane
+% directions become x and z, and y leaves the plane
+rot = rotation.byAxisAngle(xvector,90*degree);
+ebsdR = rotate(ebsd,rot);
 
-assert(d < 1e-8, ...
-  ['check_gradient: one sided and least squares differ by %.3g on an ' ...
-  'exactly linear field, where both must be exact'], d);
+assert(isnull(angle(ebsdR.N,-vector3d.Y)), ...
+  'check_gradient: rotating the map did not carry its normal, N = %s', ...
+  char(ebsdR.N));
+
+% the lattice must still be a lattice
+A = ebsdR.lattice.A;
+assert(abs(det(A)) > 1e-12, ...
+  ['check_gradient: the lattice basis of an off plane map is singular, ' ...
+   'A = %s - latticeBasis is reading the unit cell as (x,y)'], mat2str(A,3));
+
+% equivariance of the two in plane directions
+pairs = {vector3d.X, gX, 'gradientX'; vector3d.Z, gY, 'gradientY'};
+
+for p = 1:2
+
+  got = vector3d(gradientDirPublic(ebsdR,pairs{p,1}));
+  ref = reshape(rot * pairs{p,2}, size(pairs{p,2}));
+
+  ok = ~isnan(got) & ~isnan(ref);
+  assert(nnz(ok) > 0.5*numel(ok), ...
+    'check_gradient: too little of the off plane gradient is defined');
+
+  d = max(norm(got(ok) - ref(ok)));
+  assert(d < 1e-10, ...
+    ['check_gradient: the off plane map is not equivariant - the rotated ' ...
+     '%s differs from the rotation of %s by %.3g'], ...
+    pairs{p,3}, pairs{p,3}, d);
+
+end
+
+% and the direction that has left the plane has no answer
+assert(all(isnan(ebsdR.gradientY)), ...
+  ['check_gradient: gradientY must be NaN once y is out of the map plane, ' ...
+   'the same way gradientZ is for an xy map']);
+
+% curvature: assembled from the in plane directions, unknown along N. N is
+% -y here, so it is the SECOND column that is unknown, not the third
+kappa = ebsdR.curvature;
+fin = @(j) nnz(~isnan(kappa{1,j}));
+
+assert(fin(2) == 0, ...
+  'check_gradient: curvature column 2 should be unknown for N = -y, %d finite', fin(2));
+assert(fin(1) > 0 && fin(3) > 0, ...
+  ['check_gradient: curvature columns 1 and 3 should be known for N = -y, ' ...
+   'got %d and %d finite'], fin(1), fin(3));
+
+% the xy case still puts it in column 3
+kappa0 = ebsd.curvature;
+assert(nnz(~isnan(kappa0{1,3})) == 0 && nnz(~isnan(kappa0{1,1})) > 0, ...
+  'check_gradient: for a map in the xy plane column 3 must be the unknown one');
+
+end
+
+% =========================================================================
+function g = gradientDirPublic(ebsd,w)
+% gradientDir is private to @EBSD, so reach it through the public wrappers
+
+if isnull(angle(w,vector3d.X))
+  g = ebsd.gradientX;
+elseif isnull(angle(w,vector3d.Y))
+  g = ebsd.gradientY;
+else
+  g = ebsd.gradientZ;
+end
 
 end
 

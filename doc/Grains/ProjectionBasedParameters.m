@@ -10,6 +10,7 @@
 % data set.
 
 % load sample EBSD data set
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 % reconstruct grains, discard boundary grains and smooth them
@@ -20,7 +21,7 @@ grains = smoothBoundary(grains('indexed'),10,'moveTriplePoints');
 % plot all grains and highlight a specific one
 plot(grains)
 
-ind = 679;
+ind = 515;
 hold on
 plot(grains(ind).boundary,'lineWidth',5,'linecolor','blue')
 hold off

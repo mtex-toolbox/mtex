@@ -97,6 +97,6 @@ end
 % scale half axes
 a = a .* scaling; b = b .* scaling;
 
-a.how2plot = grains.how2plot;
-b.how2plot = grains.how2plot;
+a.frame = grains.frame;
+b.frame = grains.frame;
 end

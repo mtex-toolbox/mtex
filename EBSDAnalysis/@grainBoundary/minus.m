@@ -1,16 +1,16 @@
-function gB = minus(gB,xy)
-% shift grains in x/y direction
+function gB = minus(gB,v)
+% shift grain boundaries in x/y direction
 %
 % Syntax
 %
 %   % shift in x direction
-%   gB = gB - [100,0] 
+%   gB = gB - vector3d(100,200,0)
 %
 % Input
 %  gB - @grainBoundary
-%  xy - x and y coordinates of the shift
+%  v  - @vector3d, coordinates of the shift
 %
 % Output
 %  gB - @grainBoundary
 
-gB = gB + (-xy);
+gB = gB + (-v);

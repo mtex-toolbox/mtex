@@ -14,6 +14,15 @@ function kappa = curvature(gB,n)
 % bulges into gB.grainId(:,2) and a negative one that it bulges into
 % gB.grainId(:,1).
 %
+% Which of the two grains ends up in the first column is not a property of
+% the segment, it is the direction it is walked in. To read the curvature as
+% convex or concave with respect to one specific grain, put that grain into
+% the first column everywhere first
+%
+%   gB = grains(k).boundary;
+%   gB = flip(gB, gB.grainId(:,2) == grains(k).id);
+%
+%
 % Segments at the end of an open chain have no neighbour on one side and
 % therefore no curvature - those are returned as NaN. A chain consisting of
 % a single segment is NaN throughout. Closed chains wrap around and are
@@ -27,7 +36,7 @@ function kappa = curvature(gB,n)
 %  kappa - 1/fitting radius in EBSD units
 %
 % See also
-% grainBoundary/chainId grainBoundary/arcLength
+% grainBoundary/flip grainBoundary/chainId grainBoundary/arcLength
 
 if nargin == 1, n = 50; end
 

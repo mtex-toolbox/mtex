@@ -19,7 +19,7 @@ classdef S2RestrictedDistanceKernel < S2Kernel
 %  psi - @S2Kernel
 %
 % See also
-% S2Kernel S2Fun/compactify
+% S2Kernel S2Fun/optimalSample
 
 
 

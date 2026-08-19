@@ -87,7 +87,12 @@ classdef grainBoundary < phaseList & dynProp
     allV           % list of all vertices
     V              % vertices that are part of the grain boundary
     N              % normal direction of the pseudo3d data    
-    how2plot       % default plotting convention
+    frame          % the specimen reference frame (carried by allV)
+    how2plot       % default plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
   end
   
   methods
@@ -108,8 +113,11 @@ classdef grainBoundary < phaseList & dynProp
       % ensure V is vector3d
       if ~isa(V,'vector3d'), V = vector3d.byXYZ(V); end
       
-      % assign properties
-      gB.triplePoints = struct('allV',V,'N',zvector);
+      % assign properties - the normal lives in the very same frame as
+      % the vertices
+      N0 = zvector;
+      N0.frame = V.frame;
+      gB.triplePoints = struct('allV',V,'N',N0);
       gB.F = F;
       gB.misrotation = mori;
       gB.CSList = CSList;
@@ -223,13 +231,20 @@ classdef grainBoundary < phaseList & dynProp
       
     end
     
+    function fr = get.frame(gB)
+      fr = gB.allV.frame;
+    end
+
+    function gB = set.frame(gB,fr)
+      gB.allV.frame = fr;
+      % the triple points carry their own vertices and the normal
+      gB.triplePoints.frame = fr;
+    end
+
     function pC = get.how2plot(gB)
       pC = gB.allV.how2plot;
     end
 
-    function gB = set.how2plot(gB,pC)
-      gB.allV.how2plot = pC;
-    end
 
     function V = get.allV(gB)
       V = gB.triplePoints.allV;

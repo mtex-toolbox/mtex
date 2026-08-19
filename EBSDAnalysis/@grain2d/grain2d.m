@@ -67,7 +67,12 @@ classdef grain2d < phaseList & dynProp
   properties (Dependent = true, Access = protected)
     idV        % active vertices
     rot2Plane  % rotation to xy plane
-    how2plot   % plotting convention
+    frame      % the specimen reference frame (carried by allV)
+    how2plot   % plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
     N          % normal direction of the pseudo3d data    
   end
   
@@ -183,6 +188,9 @@ classdef grain2d < phaseList & dynProp
         if sum(grains.area) < 0, grains.N = -grains.N; end
       end
 
+      % the normal lives in the very same frame as the vertices
+      grains.N.frame = grains.allV.frame;
+
     end
     
     function V = get.allV(grains)
@@ -232,13 +240,21 @@ classdef grain2d < phaseList & dynProp
       rot = rotation.map(grains.N,vector3d.Z);
     end
 
+    function fr = get.frame(grains)
+      fr = grains.allV.frame;
+    end
+
+    function grains = set.frame(grains,fr)
+      grains.allV.frame = fr;
+      % the boundary carries its own vertices, triple points and normal
+      grains.boundary.frame = fr;
+      grains.innerBoundary.frame = fr;
+    end
+
     function pC = get.how2plot(grains)
       pC = grains.allV.how2plot;
     end
 
-    function grains = set.how2plot(grains,pC)
-      grains.allV.how2plot = pC;
-    end
 
 
     function varargout = size(grains,varargin)
@@ -250,7 +266,7 @@ classdef grain2d < phaseList & dynProp
         ori = orientation;
       else
         ori = orientation(grains.prop.meanRotation,grains.CS,...
-          specimenSymmetryFor(grains.how2plot));
+          specimenSymmetryFor(grains.frame));
 
         % set not indexed orientations to nan
         if ~all(grains.isIndexed), ori(~grains.isIndexed) = NaN; end
@@ -343,6 +359,13 @@ classdef grain2d < phaseList & dynProp
       if isa(grains.allV,'double')
         grains.allV = vector3d(grains.allV(:,1),grains.allV(:,2),0);
       end
+
+      % files written before segments were stored in walk order have an
+      % arbitrary column order in F, so grainId(:,1) is not reliably the
+      % grain on the left. grainBoundary.loadobj cannot tell - it only sees
+      % the segments - but here the grain each one belongs to is known, and
+      % that is enough to recover the sense
+      grains.boundary = repairBoundarySense(grains.boundary,grains.id);
 
     end
 

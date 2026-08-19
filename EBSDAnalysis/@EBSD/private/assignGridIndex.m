@@ -30,6 +30,16 @@ function [ij,origin] = assignGridIndex(pos,A)
 % but line changes are ever a multi-cell step there), nor for a phase
 % subset under a realistic amount of distortion.
 %
+% The two raster orders are not equally easy, either. A distortion along
+% the inner direction is measured cell by cell, one along the outer
+% direction has to be reconstructed from the drift model in stepwiseIndex,
+% so a map whose distortion runs along its outer direction gives out
+% earlier. On the forsterite benchmark, both orders are exact up to a
+% trapezoidal drift of 49% of a cell along the inner direction and 10%
+% along the outer one (2% on the sparsest phase subset) - see
+% check_gridDistortionBenchmark, which pins both. Realistic stage drift is
+% far below either.
+%
 % This function only recovers the integer index correctly - it does NOT
 % by itself make grain reconstruction correct under distortion. See the
 % known limitation noted in spatialDecompositionGrid.m: sites with no real
@@ -66,8 +76,18 @@ function [I,J] = stepwiseIndex(pos,A)
 % which is decided from the data (the outer one is zero far more often)
 % rather than assumed, so this works for both row-major and column-major
 % scan order. The outer step is always exactly one cell (or a small,
-% unambiguous number of cells if whole lines are missing) and its rounding
-% is trusted outright.
+% unambiguous number of cells if whole lines are missing).
+%
+% Its rounding used to be trusted outright, which is wrong as soon as the
+% distortion runs along the OUTER direction: the line-to-line jump undoes a
+% whole line's worth of inner travel in one step, and whatever the outer
+% coordinate drifted over that line comes along with it. On twins under a
+% 5% trapezoidal drift, read column major, the jump back to the next column
+% carried up to 8 cells of x drift, so an outer step that is +1 rounded to
+% anything from -7 to +9. The same map read row major was exact, because
+% there the distorted direction is the inner one, which was already handled.
+% So the outer step is now measured in a LOCAL basis too - see localDrift
+% below.
 %
 % For the inner direction, a single-cell step (the ordinary case within an
 % unbroken line) is likewise trusted outright: dividing it by the fixed
@@ -91,6 +111,20 @@ function [I,J] = stepwiseIndex(pos,A)
 % trusted data at once rather than propagating a single nearby sample, and
 % reduces to the plain nominal-cell-size division (equivalent to the old
 % unconditional cumulative sum) wherever the grid is rigid.
+%
+% The outer component of a step gets the mirror image of that treatment.
+% A trusted single-cell step carries, besides its one inner cell, a small
+% outer displacement - the amount the outer coordinate drifts per inner
+% cell. Rounded on its own that is 0, which is why it used to be discarded,
+% but it is exactly the quantity a big step needs: over |innerStep| cells it
+% accumulates to |innerStep| times as much, and subtracting it turns the
+% contaminated jump back into the plain outer step. It is estimated by the
+% same regression as the inner scale, is 0 for a rigid grid (so nothing
+% changes there), and is 0 as well whenever the distortion runs along the
+% inner direction, which is the case that always worked. Note it corrects a
+% multi-cell gap WITHIN a line just as it corrects a line change, with no
+% need to tell the two apart: the drift subtracted is proportional to the
+% inner distance actually travelled.
 d = diff(pos,1,1);           % (n-1) x 2
 dIJ = A \ d.';                % 2 x (n-1)
 rd = round(dIJ);
@@ -98,31 +132,40 @@ rd = round(dIJ);
 fracZero = mean(rd == 0, 2);
 outerIsFirst = fracZero(1) >= fracZero(2);
 if outerIsFirst
-  outerStep = rd(1,:); innerRaw = dIJ(2,:); innerStep = rd(2,:);
+  outerRaw = dIJ(1,:); innerRaw = dIJ(2,:); innerStep = rd(2,:);
 else
-  outerStep = rd(2,:); innerRaw = dIJ(1,:); innerStep = rd(1,:);
+  outerRaw = dIJ(2,:); innerRaw = dIJ(1,:); innerStep = rd(1,:);
 end
 
-outerCumPts = [0, cumsum(outerStep)];          % row index per point
-rowMid = (outerCumPts(1:end-1) + outerCumPts(2:end)) / 2;  % row per step
+% where each step sits along the outer direction, read straight off the
+% positions instead of accumulated from the outer steps: the accumulation is
+% precisely what a mis-rounded step at a line change corrupts, and it is the
+% regressor both fits below depend on
+outerCoord = A \ (pos - pos(1,:)).';
+outerCoord = outerCoord(1 + ~outerIsFirst,:);
+rowMid = (outerCoord(1:end-1) + outerCoord(2:end)) / 2;
 
 isSingleCell = abs(innerStep) == 1;
 isBigStep    = abs(innerStep) >= 2;
 
-rows   = rowMid(isSingleCell);
-scales = innerRaw(isSingleCell) ./ innerStep(isSingleCell);
+% inner cell size, and outer drift per inner cell, as they vary across the map
+%
+% The drift is read off what is LEFT of the outer component after rounding,
+% never off the component itself: a step may legitimately move a whole cell
+% in the outer direction too, and that is not drift. A hexagonal map walked
+% along its staggered direction is exactly that case - every second step
+% moves one outer cell, so the raw components alternate 0 and -1, and taking
+% them at face value would call a rigid lattice half a cell of drift per
+% inner cell and then multiply it by the length of a line.
+outerResid = outerRaw - round(outerRaw);
 
-if nnz(isSingleCell) >= 2 && range(rows) > 0
-  designMatrix = [ones(numel(rows),1), rows(:)];
-  coeffs = designMatrix \ scales(:);           % [intercept; slope vs row]
-  localScale = coeffs(1) + coeffs(2) * rowMid;
-elseif nnz(isSingleCell) >= 1
-  localScale = repmat(mean(scales), 1, numel(innerStep));
-else
-  localScale = ones(1,numel(innerStep));
-end
+localScale = fitAcrossMap(rowMid, isSingleCell, ...
+  innerRaw(isSingleCell) ./ innerStep(isSingleCell), 1);
+localDrift = fitAcrossMap(rowMid, isSingleCell, ...
+  outerResid(isSingleCell) ./ innerStep(isSingleCell), 0);
 
 innerStep(isBigStep) = round(innerRaw(isBigStep) ./ localScale(isBigStep));
+outerStep = round(outerRaw - innerStep .* localDrift);
 
 outerCum = [0, cumsum(outerStep)];
 innerCum = [0, cumsum(innerStep)];
@@ -131,6 +174,27 @@ if outerIsFirst
   I = outerCum.'; J = innerCum.';
 else
   J = outerCum.'; I = innerCum.';
+end
+end
+
+% =========================================================================
+function val = fitAcrossMap(rowMid, isSingleCell, obs, fallback)
+% linear regression of a per-step observation on the outer coordinate
+%
+% Fit from the trusted single-cell steps only and evaluated at every step,
+% so a quantity that drifts smoothly across the map is available where it is
+% needed - at the steps that are not trusted. Degenerates to the mean, and
+% then to fallback, when there is not enough to fit.
+
+rows = rowMid(isSingleCell);
+
+if nnz(isSingleCell) >= 2 && range(rows) > 0
+  coeffs = [ones(numel(rows),1), rows(:)] \ obs(:);  % [intercept; slope]
+  val = coeffs(1) + coeffs(2) * rowMid;
+elseif nnz(isSingleCell) >= 1
+  val = repmat(mean(obs), 1, numel(rowMid));
+else
+  val = repmat(fallback, 1, numel(rowMid));
 end
 end
 

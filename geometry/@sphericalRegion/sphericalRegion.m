@@ -31,7 +31,12 @@ classdef sphericalRegion
   end
 
   properties (Dependent = true)
-    how2plot
+    frame    % the reference frame (carried by N)
+    how2plot % plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
   end
 
 
@@ -93,9 +98,11 @@ classdef sphericalRegion
       % otherwise a plain sphericalRegion is left behind which carries the
       % global default convention
       if check_option(varargin,{'complete','3d'})
-        h2p = sR.how2plot;
+        % carry the frame - restoring a resolved convention instead
+        % would pin a merely inherited default onto the fresh region
+        fr = sR.frame;
         sR = sphericalRegion;
-        sR.how2plot = h2p;
+        sR.frame = fr;
       end
 
       % which hemisphere is the upper one depends on the convention the
@@ -117,8 +124,13 @@ classdef sphericalRegion
       h2p = sR.N.how2plot;
     end
 
-    function sR = set.how2plot(sR,how2plot)
-      sR.N.how2plot = how2plot;
+
+    function fr = get.frame(sR)
+      fr = sR.N.frame;
+    end
+
+    function sR = set.frame(sR,fr)
+      sR.N.frame = fr;
     end
 
     function out = ne(sR1,sR2)

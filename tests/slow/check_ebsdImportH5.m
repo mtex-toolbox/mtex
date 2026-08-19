@@ -30,6 +30,9 @@ function check_ebsdImportH5
 % See also
 % loadEBSD_h5 EBSD.load check_ebsdImport
 
+% synthetic and does not need the 50 MB asset below
+checkExportIntoReference;
+
 fname = fullfile(mtexDataPath,'EBSD','EMSphinx.h5');
 
 if ~isfile(fname)
@@ -42,6 +45,7 @@ checkPhases(fname);
 scans = checkEveryDataSet(fname);
 checkTheScansDiffer(scans);
 checkDefaultAndNameSelection(fname,scans);
+checkEMSphInxROI;
 
 disp('check_ebsdImportH5: passed');
 
@@ -180,6 +184,213 @@ assert(isequaln(byName.rotations,scans{3}.rotations), ...
    'different data'])
 assert(isequal(byName.pos,scans{3}.pos), ...
   'check_ebsdImportH5: the two selection forms give different positions')
+
+end
+
+% =========================================================================
+function checkEMSphInxROI
+% a region of interest EMSphInx left out of the run must import as notIndexed
+%
+% EMSphInx writes a value for every pixel of the scan grid but only indexes
+% the pixels inside a ROI mask, and it flags nothing: a masked pixel arrives
+% with a valid looking phase number at orientation (0,0,0) and every quality
+% measure zero, and left indexed the whole masked region fuses into one grain
+% at that orientation. markUnmeasured is what recognises them.
+%
+% The result must not depend on whether the caller states a 'setting'. It did:
+% the check ran after the Euler correction and compared the orientations
+% against the correction the data carries, and re-applying a correction
+% composes three rotations, leaving some 1e-7 radian of round-off - just
+% enough to miss an exact equality test, so a stated 'setting' silently
+% turned the whole thing off and only the 255 flagged pattern survived.
+%
+% Synthetic and 120 pixels, unlike the rest of this file: nothing here needs
+% real data, and it lives with the HDF5 interface it exercises rather than in
+% core/ so the format stays in one place. The .ang half of the same problem is
+% in core/check_ebsdImport.
+
+nx = 12; ny = 10; nOutside = ny*numel(nx/2:nx-1);
+
+f = writeSyntheticEMSphInxH5(nx,ny);
+c = onCleanup(@() delete(f));
+
+% one pattern inside the ROI carries the 255 EMSphInx uses for "could not
+% index this", so the two mechanisms are told apart rather than confused
+for opts = {{}, {'setting',2}, {'EulerCorrection',rotation.byAxisAngle(xvector,180*degree)}}
+
+  e = load1(f,opts{1});
+
+  assert(nnz(~e.isIndexed) == nOutside + 1, ...
+    ['check_ebsdImportH5: with %s the ROI masked map imported %d notIndexed ' ...
+     'pixels, expected %d - %d outside the ROI plus the one flagged pattern'], ...
+    optionName(opts{1}), nnz(~e.isIndexed), nOutside+1, nOutside)
+
+  assert(all(~e.isIndexed(e.x >= (nx/2)*0.5)), ...
+    'check_ebsdImportH5: with %s a pixel outside the ROI stayed indexed', ...
+    optionName(opts{1}))
+
+end
+
+end
+
+% =========================================================================
+function checkExportIntoReference
+% exporting to HDF5 writes into a copy of the file the data came from
+%
+% There is no such thing as "the" EBSD HDF5 format, so exportEBSD_h5 does not
+% write one: it copies the reference file and writes the changed data into
+% the very data sets loadEBSD_h5 read, which are recorded in ebsd.opt.h5.
+% What has to hold is that the changed values arrive, that everything else
+% in the file survives untouched, and that a property MTEX added shows up as
+% a new data set next to the ones the file brought along.
+%
+% Synthetic, on the same 120 pixel file the ROI check above writes.
+
+nx = 12; ny = 10;
+
+ref = writeSyntheticEMSphInxH5(nx,ny);
+tgt = [tempname '.h5'];
+c = onCleanup(@() cellfun(@(f) delete(f),{ref,tgt}));
+
+e0 = load1(ref,{});
+
+% turn the map and overwrite one of the columns the file brought along
+turn = rotation.byAxisAngle(zvector,13*degree);
+e1 = e0;
+e1.rotations = turn .* e0.rotations;
+e1.prop.IQ = 42 * ones(size(e1));
+e1.prop.grainId = reshape(1:length(e1),size(e1));
+
+% the phase list is part of the map too - renaming a mineral used to be
+% silently dropped, since only the per pixel data was written back
+csList = e1.CSList;
+if iscell(csList), csList{2}.mineral = 'Fe(alpha-iron)';
+else, csList(2).mineral = 'Fe(alpha-iron)'; end
+e1.CSList = csList;
+
+evalc('export(e1,tgt,''reference'',ref)');
+
+e2 = load1(tgt,{});
+
+assert(length(e2) == length(e1), ...
+  'check_ebsdImportH5: the exported file holds %d of %d measurements', ...
+  length(e2),length(e1))
+
+ok = e1.isIndexed(:) & e2.isIndexed(:);
+d = angle(e1.rotations(ok),e2.rotations(ok))/degree;
+assert(max(d) < 1e-3, ...
+  'check_ebsdImportH5: the exported orientations came back %.3g degree off',max(d))
+
+assert(isequal(e1.phaseId(:),e2.phaseId(:)), ...
+  'check_ebsdImportH5: the exported file changed the phase of %d pixels', ...
+  nnz(e1.phaseId(:) ~= e2.phaseId(:)))
+
+assert(isfield(e2.prop,'IQ') && all(e2.prop.IQ(:) == 42), ...
+  'check_ebsdImportH5: the overwritten IQ column did not arrive')
+
+assert(isfield(e2.prop,'grainId') && isequal(e2.prop.grainId(:),e1.prop.grainId(:)), ...
+  'check_ebsdImportH5: grainId was not added to the exported file')
+
+assert(strcmp(e2.mineralList{2},'Fe(alpha-iron)'), ...
+  'check_ebsdImportH5: the renamed mineral came back as %s',e2.mineralList{2})
+
+% everything the export does not touch has to be passed through
+for ds = {'/Manufacturer','/Scan 1/EBSD/Header/Step X', ...
+    '/Scan 1/EBSD/Header/nColumns','/Scan 1/EBSD/Header/Phase/1/Symmetry', ...
+    '/Scan 1/EBSD/Data/Metric'}
+  assert(isequaln(h5read(ref,ds{1}),h5read(tgt,ds{1})), ...
+    'check_ebsdImportH5: the export changed %s, which it never read',ds{1})
+end
+
+% and the reference must not be writable over
+ok = false;
+try
+  evalc('export(e1,ref,''reference'',ref)');
+catch ME
+  ok = strcmp(ME.identifier,'MTEX:exportEBSD_h5:overwriteReference');
+end
+assert(ok,'check_ebsdImportH5: exporting onto the reference file was allowed')
+
+end
+
+% =========================================================================
+function name = optionName(opts)
+
+if isempty(opts)
+  name = 'no options';
+else
+  name = ['''' char(opts{1}) ''''];
+end
+
+end
+
+% =========================================================================
+function f = writeSyntheticEMSphInxH5(nx,ny)
+% write the smallest file interfaces/hdf5_config/EMSphInx.json will read
+%
+% Data runs along x first. The right half of the map is what a ROI mask kept
+% out of the run: zero Euler angles, zero image quality, zero metric, and a
+% phase number that looks perfectly valid.
+
+n = nx*ny;
+
+[X,~] = meshgrid(0:nx-1,0:ny-1);
+inROI = reshape((X < nx/2).',[],1);
+
+phi1 = zeros(n,1); Phi = zeros(n,1); phi2 = zeros(n,1);
+IQ = zeros(n,1);   metric = zeros(n,1);
+phase = zeros(n,1,'uint8');
+
+phi1(inROI) = 0.3; Phi(inROI) = 0.4; phi2(inROI) = 0.5;
+IQ(inROI)   = 0.7; metric(inROI) = 0.9;
+
+% EMSphInx marks a pattern it failed to index with the largest value its
+% uint8 phase column can hold
+phase(find(inROI,1)) = 255;
+
+f = [tempname '.h5'];
+scan = '/Scan 1/EBSD';
+
+writeStr(f,'/Manufacturer','EMSphInx');
+writeStr(f,[scan '/Header/Grid Type'],'SqrGrid');
+writeNum(f,[scan '/Header/Step X'],0.5);
+writeNum(f,[scan '/Header/Step Y'],0.5);
+writeNum(f,[scan '/Header/nColumns'],nx);
+writeNum(f,[scan '/Header/nRows'],ny);
+
+writeStr(f,[scan '/Header/Phase/1/MaterialName'],'Iron');
+writeNum(f,[scan '/Header/Phase/1/Symmetry'],43);
+for lc = {'a','b','c'}
+  writeNum(f,[scan '/Header/Phase/1/Lattice Constant ' char(lc)],2.87);
+end
+for lc = {'alpha','beta','gamma'}
+  writeNum(f,[scan '/Header/Phase/1/Lattice Constant ' char(lc)],90);
+end
+
+writeNum(f,[scan '/Data/Phi1'],phi1);
+writeNum(f,[scan '/Data/Phi'],Phi);
+writeNum(f,[scan '/Data/Phi2'],phi2);
+writeNum(f,[scan '/Data/IQ'],IQ);
+writeNum(f,[scan '/Data/Metric'],metric);
+
+h5create(f,[scan '/Data/Phase'],n,'Datatype','uint8');
+h5write(f,[scan '/Data/Phase'],phase);
+
+end
+
+% =========================================================================
+function writeStr(f,ds,val)
+
+h5create(f,ds,1,'Datatype','string');
+h5write(f,ds,string(val));
+
+end
+
+% =========================================================================
+function writeNum(f,ds,val)
+
+h5create(f,ds,numel(val));
+h5write(f,ds,double(val));
 
 end
 

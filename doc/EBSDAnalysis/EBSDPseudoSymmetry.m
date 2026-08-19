@@ -31,6 +31,7 @@
 % 180 degree rotation. Let us import a Forsterite data set and reconstruct
 % the grains.
 
+plottingConvention.default('y↑→x');
 mtexdata forsterite
 
 % consider only indexed data

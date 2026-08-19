@@ -3,3 +3,4 @@ function plotx2south
 
 how2plot = plottingConvention.default;
 how2plot.south = xvector;
+how2plot.makeDefault;

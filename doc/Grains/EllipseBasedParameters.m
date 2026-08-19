@@ -12,6 +12,7 @@
 % grain structure from a sample EBSD data set.
 
 % load sample EBSD data set
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 % reconstruct grains and smooth them 

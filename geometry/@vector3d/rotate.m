@@ -20,6 +20,10 @@ function v = rotate(v,q,varargin)
 
 if isnumeric(q), q = axis2quat(zvector,q);end
 
+% an orientation has to act on the frame the data is expressed in - the
+% symmetries need not agree, only the frames have to fit
+if isa(q,'orientation'), q = fitFrame(q,v.frame); end
+
 wasNormalized = v.isNormalized;
 
 if ~isa(q,'rotation')
@@ -62,12 +66,15 @@ if isa(q,'orientation')
     v = Miller(v,q.SS);
     v.dispStyle = MillerConvention(v.dispStyle);
     v.dispStyle = make4Digit(v.dispStyle,q.SS);
-  else % convert to vector3d 
+  else % convert to vector3d
 
     % convert to vector3d
     if isa(v,"Miller"), v = vector3d(v); end
 
-    v.how2plot = q.SS.how2plot;
+    % rotating with an orientation changes the reference frame: the
+    % result adopts the specimen frame; rotating with a plain rotation
+    % keeps it
+    v.frame = q.SS.frame;
 
   end
 

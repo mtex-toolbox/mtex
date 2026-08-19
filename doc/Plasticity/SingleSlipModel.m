@@ -75,7 +75,6 @@ Omega = @(ori) -SO3TangentVector(spinTensor(((ori * S(2)) : E) .* (ori * S(2))),
 Omega = SO3VectorFieldHarmonic.quadrature(Omega,csOli)
 
 %%
-
 % We may visualize the orientation dependence of the spin tensor by plotting
 % its divergence in sigma sections and on top of it the spin tensors as a
 % quiver plot

@@ -98,7 +98,7 @@ job.calcParentFromVote('minProb',0.7)
 
 % define a color key
 ipfKey = ipfColorKey(ebsd('Ti (Beta)'));
-ipfKey.inversePoleFigureDirection = vector3d.Y;
+ipfKey.ipfDirection = vector3d.Y;
 
 % plot the result
 color = ipfKey.orientation2color(job.parentGrains.meanOrientation);

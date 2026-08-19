@@ -91,5 +91,5 @@ specimenSymmetry('112')
 % only affects how the symmetry is annotated in plots.
 
 ss = specimenSymmetry('mmm');
-ss.how2plot = plottingConvention(zvector,xvector);
+ss.frame = specimenFrame.rolling;
 ss

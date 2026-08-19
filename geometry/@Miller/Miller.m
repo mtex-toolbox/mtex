@@ -185,6 +185,23 @@ classdef Miller < vector3d
       end      
     end
     
+    function fr = getFrame(m)
+      % the frame of a Miller is the crystal frame of its symmetry -
+      % resolved live, so it can never go stale when CS is replaced
+      % (e.g. by transformReferenceFrame)
+      if isempty(m.CSprivate)
+        fr = m.framePrivate; % degenerate machinery state without a CS
+      else
+        fr = m.CSprivate.frame;
+      end
+    end
+
+    function m = setFrame(m,fr) %#ok<INUSD>
+      error('MTEX:Miller:fixedFrame',...
+        ['The frame of a Miller is the crystal frame of its crystal ' ...
+        'symmetry - assign m.CS instead.']);
+    end
+
     function l = get.lattice(m)
       l = m.CS.lattice;
     end
@@ -378,7 +395,27 @@ classdef Miller < vector3d
 end
   
   methods (Static = true)
-    
+
+    function m = loadobj(s)
+      % called by Matlab when an object is loaded from an .mat file
+      % this overloaded method ensures compatibility with older MTEX
+      % versions
+
+      if isa(s,'Miller'), m = s; return; end
+
+      % a pre-frame Miller arrives as a struct: restoring its stored
+      % convention through set.how2plot is refused, since the frame of a
+      % Miller is fixed by its symmetry, and MATLAB then hands over the
+      % raw data - rebuild from it and drop the legacy convention, the
+      % frame comes from the symmetry
+      m = Miller(vector3d(s.x,s.y,s.z),s.CSprivate);
+      if isfield(s,'dispStyle'),    m.dispStyle = s.dispStyle; end
+      if isfield(s,'antipodal'),    m.antipodal = s.antipodal; end
+      if isfield(s,'isNormalized'), m.isNormalized = s.isNormalized; end
+      if isfield(s,'opt'),          m.opt = s.opt; end
+
+    end
+
     function h = nan(varargin)
       s = varargin(cellfun(@isnumeric,varargin));
       v = vector3d.nan(s{:});

@@ -19,6 +19,18 @@ classdef spotColorKey < orientationColorKey
         SO3DeLaValleePoussinKernel('halfwidth',get_option(varargin,'halfwidth',10*degree)));
     end
   
+    function [props,propV] = keyRows(oM)
+      % how many spots are colored and how wide they are
+
+      props = {'spots'}; propV = {int2str(length(oM.center))};
+
+      if ~isempty(oM.psi)
+        props{end+1} = 'halfwidth';
+        propV{end+1} = [xnum2str(oM.psi.halfwidth/degree) '°'];
+      end
+
+    end
+
     function rgb = orientation2color(oM,ori)
       
       s = size(ori);

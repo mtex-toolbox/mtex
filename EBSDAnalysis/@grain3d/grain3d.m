@@ -20,7 +20,12 @@ classdef grain3d < phaseList & dynProp
     numFaces  % number of boundary faces per grain
     extent   %
     midPoint % midPoint of extent
-    how2plot % plotting convention
+    frame    % the specimen reference frame (carried by allV)
+    how2plot % plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
     grainSize % depreciated for numPixel
   end
 
@@ -110,13 +115,19 @@ classdef grain3d < phaseList & dynProp
       grains.boundary.allV = V;
     end
 
+    function fr = get.frame(grains)
+      fr = grains.allV.frame;
+    end
+
+    function grains = set.frame(grains,fr)
+      grains.allV.frame = fr;
+      grains.boundary.frame = fr;
+    end
+
     function pC = get.how2plot(grains)
       pC = grains.allV.how2plot;
     end
 
-    function grains = set.how2plot(grains,pC)
-      grains.allV.how2plot = pC;
-    end
 
     function F = get.F(grains)
       F = grains.boundary.F;
@@ -127,7 +138,7 @@ classdef grain3d < phaseList & dynProp
         ori = orientation;
       else
         ori = orientation(grains.prop.meanRotation,grains.CS,...
-          specimenSymmetryFor(grains.how2plot));
+          specimenSymmetryFor(grains.frame));
 
         % set not indexed orientations to nan
         if ~all(grains.isIndexed), ori(~grains.isIndexed) = NaN; end

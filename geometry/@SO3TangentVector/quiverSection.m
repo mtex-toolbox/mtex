@@ -26,7 +26,8 @@ function quiverSection(tV,varargin)
 % See also
 % saveFigure Plotting
 
-oS = newODFSectionPlot(tV.hiddenCS,tV.hiddenSS,varargin{:});
+ref = tV.oriRef;
+oS = newODFSectionPlot(ref.CS,ref.SS,varargin{:});
 
 if check_option(varargin,'normalize')
   tV = normalize(tV);

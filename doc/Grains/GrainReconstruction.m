@@ -15,6 +15,7 @@
 % following sample data set
 
 % import the data
+plottingConvention.default('y↑→x');
 mtexdata forsterite
 
 % restrict it to a subregion of interest.

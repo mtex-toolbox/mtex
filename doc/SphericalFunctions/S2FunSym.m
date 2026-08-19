@@ -15,6 +15,7 @@
 % symmetrisation of an ordinary |@S2FunHarmonic|.
 
 % the original function 
+plottingConvention.default('y↑→x');
 sF = S2Fun.smiley;
 
 % the symmetry

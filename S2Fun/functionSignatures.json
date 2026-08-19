@@ -118,7 +118,8 @@
       {"name":"drawing", "kind":"flag", "type":["char","choices={'contour','contourf','pcolor','surf','smooth','plot3d'}"]},
       {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
       {"name":"antipodal", "kind":"flag"},
-      {"name":"noTitle", "kind":"flag"}
+      {"name":"noTitle", "kind":"flag"},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -145,7 +146,8 @@
       {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
       {"name":"LineColor", "kind":"namevalue", "type":["choices=str2rgb"]},
       {"name":"LineWidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
-      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]}
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -155,7 +157,8 @@
     [
       {"name":"sF", "kind":"required", "type":["S2Fun"]},
       {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
-      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]}
+      {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -166,7 +169,8 @@
       {"name":"sF", "kind":"required", "type":["S2Fun"]},
       {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"]},
       {"name":"FaceAlpha", "kind":"namevalue", "type":["numeric","scalar",">=0","<=1"]},
-      {"name":"EdgeColor", "kind":"namevalue", "type":["choices=str2rgb"]}
+      {"name":"EdgeColor", "kind":"namevalue", "type":["choices=str2rgb"]},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -191,7 +195,8 @@
       {"name":"rho", "kind":"ordered", "type":["numeric"], "purpose":"azimuth angles to be plotted"},
       {"name":"LineColor", "kind":"namevalue", "type":["choices=str2rgb"]},
       {"name":"LineWidth", "kind":"namevalue", "type":["numeric","scalar",">0"]},
-      {"name":"DisplayName", "kind":"namevalue", "type":["char"]}
+      {"name":"DisplayName", "kind":"namevalue", "type":["char"]},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 

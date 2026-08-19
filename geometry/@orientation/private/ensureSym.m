@@ -1,43 +1,65 @@
 function [a,left,right] = ensureSym(a,b)
-% ensure a and b have compatible symmetries
+% ensure the inner reference frames of a and b are compatible
+%
+% What has to fit between the two factors is the reference frame the inner
+% coordinates are expressed in - NOT the symmetry groups: aligned crystal
+% frames pass also when the point groups differ (ADR 0003, orientation
+% without symmetry). Group checks remain only for bare rotation factors,
+% which have to respect the symmetry they are multiplied onto.
 
 % collect inner and outer symmetries
 [left,inner1] = extractSym(a);
 [inner2,right] = extractSym(b);
 
-% ensure inner symmetries coincide
 if isempty(inner1)  % e.g. rot * ori
-  
-  if ~isempty(inner2) && inner2.id > 2 && ... 
-      ~(isa(a,'rotation') && all(max(dot_outer(inner2.rot,a))>0.99))
-    warning('Rotation does not respect symmetry!');
-  end
+
+  % a rotation applied on the LEFT acts in the specimen frame, so it is
+  % the specimen symmetry it can destroy - and if it does, the group goes
+  % and the frame stays, exactly as when an SO3Fun is rotated
   left = inner2;
-  
+  if isa(a,'rotation') && ~isempty(inner2)
+    left = dropSymmetry(inner2,a,'specimen','orientation');
+  end
+
 elseif isempty(inner2) % e.g. ori * rot, ori * vector3d
-  
-  if isa(inner1,'crystalSymmetry') && ~isa(b,'rotation') % ori * vector3d
-    
+
+  if isa(b,'rotation')
+
+    % on the RIGHT it acts in the crystal frame
+    inner1 = dropSymmetry(inner1,b,'crystal','orientation');
+
+  elseif isa(inner1.frame,'crystalFrame') && isempty(frameOf(b))
+
+    % framed data is gated by fitFrame inside rotate - only frame-free
+    % data cannot be checked there
     warning('Possibly applying an orientation to an object in specimen coordinates!');
-    
-  elseif isa(b,'rotation') && inner1.id > 2 && ~all(max(dot_outer(inner1.rot,b))>0.99)
-    
-    warning('Rotation does not respect symmetry!');
-    
+
   end
   right = inner1;
-  
-elseif inner1.Laue ~= inner2.Laue % ori * ori, ori * Miller
-  
-  if isa(inner1,'crystalSymmetry') && isa(inner2,'specimenSymmetry')
-    
-    warning('Possibly applying an orientation to an object in specimen coordinates!');
-    
-  elseif isa(inner2,'crystalSymmetry') && isa(inner1,'specimenSymmetry')
-  
-    warning('Possibly applying an inverse orientation to an object in crystal coordinates!');
-    
-  elseif isa(inner2,'crystalSymmetry') && isa(inner1,'crystalSymmetry')
-    a = a.transformReferenceFrame(inner2);
+
+elseif isa(b,'quaternion') && isa(a,'orientation')
+  % ori * ori: the frames have to fit - aligned frames pass, a compatible
+  % transition is absorbed into a, a wrong sided or incompatible
+  % combination errors. For non-quaternion b (Miller, tensor, ...) the
+  % fitFrame gate inside rotate takes over - transforming here as well
+  % would transform twice.
+
+  fr1 = inner1.frame; fr2 = inner2.frame;
+  if ~(~isempty(fr1) && ~isempty(fr2) && fr1 == fr2) % same handle passes cheaply
+    a = fitFrame(a,fr2);
   end
+
+end
+
+end
+
+function fr = frameOf(obj)
+% the reference frame of a factor that carries one, [] otherwise
+
+try
+  fr = obj.frame;
+catch
+  fr = [];
+end
+
 end

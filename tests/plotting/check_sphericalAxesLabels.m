@@ -2,10 +2,14 @@ function check_sphericalAxesLabels
 % check that spherical plots annotate the reference frame if and only if
 % they are not given in crystal coordinates
 %
-% The annotation is drawn by sphericalPlot/plotAxesLabels from the
-% pfAnnotations preference. A crystal symmetry in the argument list marks a
-% plot as living in crystal coordinates, there the vertices of the
-% fundamental sector are labelled by their Miller indices instead.
+% The annotation is drawn by annotateFrame from the pfAnnotations
+% preference. A crystal symmetry in the argument list marks a plot as
+% living in crystal coordinates, there the vertices of the fundamental
+% sector are labelled by their Miller indices instead.
+%
+% A three dimensional plot never builds a sphericalPlot, so it calls
+% annotateFrame itself - there the labels are placed in space and each of
+% them gets an arrow, see vector3d/text.
 
 oldVis = get(0,'DefaultFigureVisible');
 set(0,'DefaultFigureVisible','off');
@@ -82,6 +86,65 @@ for i = 1:size(plain,1)
   end
 end
 
+% --- three dimensional plots are annotated too --------------------------
+% they bypass sphericalPlot entirely, so plot3d and scatter3d have to ask
+% annotateFrame themselves - and the labels come with an arrow each, drawn
+% as a surface, since a flat text would sit in the z = 0 plane, i.e. inside
+% the sphere
+labeled3d = {
+  'plot(vector3d,3d)'  , @() plot(v,'3d')
+  'plot(S2Fun,3d)'     , @() plot(calcDensity(v),'3d')
+  'plotPDF ODF 3d'     , @() plotPDF(odf,Miller(1,0,0,cs),'3d')
+  };
+
+for i = 1:size(labeled3d,1)
+  [n,nArrow] = countLabels(labeled3d{i,2});
+  if all(n == 0)
+    error('check_sphericalAxesLabels: %s is not annotated',labeled3d{i,1});
+  end
+  if all(nArrow == 0)
+    error('check_sphericalAxesLabels: %s has labels but no arrows',...
+      labeled3d{i,1});
+  end
+end
+
+% crystal coordinates stay unannotated in three dimensions as well
+if any(countLabels(@() plot(Miller(1,0,0,cs),'3d')) > 0)
+  error('check_sphericalAxesLabels: plot(Miller,3d) must not be annotated');
+end
+
+if any(countLabels(@() plot(v,'3d','noLabel')) > 0)
+  error('check_sphericalAxesLabels: noLabel does not suppress the 3d annotation');
+end
+
+% --- a plain function on a crystal frame annotates a, b, c --------------
+% the GBND in crystal coordinates is a plain S2FunHarmonic that carries a
+% crystalFrame - the specimen X / Y / Z would be meaningless there, the
+% frame annotates its own axes instead
+sFc = calcDensity(v);
+sFc = setFrame(sFc,csHex.frame);
+close all
+plot(sFc);
+str = string(get(findobj(gcf,'type','text','tag','axesLabels'),'String'));
+close all
+if ~all(ismember(["a","b","c"],str))
+  error(['check_sphericalAxesLabels: a crystal framed S2Fun must be ' ...
+    'annotated with its crystal axes, found %s'],join(str,', '));
+end
+
+% --- a full plot in crystal coordinates gets Miller labels --------------
+% the sector vertices in all their symmetrically equivalent positions -
+% they are drawn by plotLabels, hence not tagged axesLabels
+close all
+plot(calcDensity(Miller(v,csHex)),'complete','upper');
+txt = findobj(gcf,'type','text','-not','tag','axesLabels');
+nMiller = sum(arrayfun(@(h) ~isempty(char(get(h,'String'))),txt));
+close all
+if nMiller < 7 % 0001 + at least the six equivalents of the rim vertices
+  error(['check_sphericalAxesLabels: a complete crystal coordinate plot ' ...
+    'must label the symmetrised sector vertices']);
+end
+
 % --- every axis of a multi plot is annotated ----------------------------
 n = countLabels(@() plotPDF(odf,Miller({1,0,0},{1,1,1},cs)));
 if numel(n) < 2 || any(n == 0)
@@ -126,16 +189,19 @@ disp('check_sphericalAxesLabels passed');
 end
 
 % --------------------------------------------------------------------
-function n = countLabels(fun)
-% number of reference frame labels per axis of a freshly created figure
+function [n,nArrow] = countLabels(fun)
+% number of reference frame labels - and of the arrows a three dimensional
+% plot draws along with them - per axis of a freshly created figure
 
 close all
 fun();
 fig = gcf;
 ax = findobj(fig,'type','axes');
 n = zeros(1,numel(ax));
+nArrow = zeros(1,numel(ax));
 for i = 1:numel(ax)
   n(i) = numel(findobj(ax(i),'type','text','tag','axesLabels'));
+  nArrow(i) = numel(findobj(ax(i),'type','surface','tag','axesLabels'));
 end
 close all
 

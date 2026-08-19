@@ -3,7 +3,6 @@ classdef S2FunBingham < S2Fun
   properties
     a  % principle axes
     Z  % smoothing parameters
-    s  % reference system
     isReal = 1;
   end
   
@@ -42,10 +41,8 @@ classdef S2FunBingham < S2Fun
         BS2.a = a.normalize;
       end
 
-      if nargin <= 2
-        BS2.s = specimenSymmetry.default;
-      else
-        BS2.s = sym;
+      if nargin > 2
+        BS2.framePrivate = S2Fun.extractFrame(sym);
       end
       
       % compute normalization constant

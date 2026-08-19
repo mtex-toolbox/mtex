@@ -2,17 +2,10 @@
 %
 %
 %% Basic Settings
-% display pole figure plots with RD on top and ND west
-plottingConvention.default("y←↑x");
+% We work in the rolling frame - RD to the north, TD to the west and ND out
+% of the page
 
-% store old annotation style
-storepfA = getMTEXpref('pfAnnotations');
-
-% set new annotation style to display RD and ND
-pfAnnotations = @(varargin) text(-[vector3d.X,vector3d.Y],{'RD','ND'},...
-  'BackgroundColor','w','tag','axesLabels',varargin{:});
-
-setMTEXpref('pfAnnotations',pfAnnotations);
+specimenFrame.rolling.makeDefault
 
 %% Slip in Body Centered Cubic Materials
 %
@@ -91,6 +84,8 @@ mtexColorbar
 %% Identification of the most active slip directions
 % Next we consider a real world data set
 
+specimenFrame.specimen.makeDefault
+plottingConvention.default('y↓→x');
 mtexdata csl
 
 % compute grains
@@ -146,9 +141,6 @@ text([xvector,yvector,zvector],'labeled','BackGroundcolor','w')
 % deformation. This is the subject of its own chapter,
 % <TextureEvolution.html Texture Evolution>.
 
-%% restore MTEX preferences
-
 close all
-setMTEXpref('pfAnnotations',storepfA);
 
 %#ok<*ASGLU>

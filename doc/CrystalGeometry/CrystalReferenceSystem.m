@@ -72,10 +72,10 @@ annotate(-vector3d.X,'MarkerFaceColor','green','label','-x','backgroundColor','w
 % aligned on the screen according to the a- or b-axis.
 %
 % This on-screen alignment can be modified individually for each crystal
-% symmetry by
+% symmetry through the convention of its crystal frame
 
 % change on screen alignment
-cs_y2a.how2plot.east = cs_y2a.bAxis
+cs_y2a.frame.how2plot.east = cs_y2a.bAxis
 
 % redo last plot
 plot(cs_y2a,'figSize','small')

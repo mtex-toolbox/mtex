@@ -196,6 +196,39 @@ save(fName,'scrambled');
 loaded = load(fName);
 assertOrdered(loaded.scrambled,'loadobj of an unordered boundary');
 
+% Scrambling the rows is all grainBoundary.loadobj can repair. Older files
+% also have an arbitrary *column* order in F, so grainId(:,1) is not the
+% grain on the left - data/testgrains.mat had 14 of its 43 chains that way,
+% which gave two identical convex grains opposite curvature signs. order
+% cannot see it, since without a leftPos it takes the sense from F. grain2d
+% knows which grain each segment belongs to and repairs it on load.
+assertLeftGrain(grains,'the reference map');
+
+stale = grains;
+gBstale = gB;
+gBstale.F = fliplr(gBstale.F);
+stale.boundary = gBstale;
+
+save(fName,'stale');
+repaired = load(fName);
+
+assertOrdered(repaired.stale.boundary,'loadobj of a reversed boundary');
+assertLeftGrain(repaired.stale,'loadobj of a reversed boundary');
+
+% reversing every segment and turning it back has to land on the boundary we
+% started from, not merely on a consistent one
+if ~isequal(repaired.stale.boundary.F,gB.F)
+  error('loadobj did not restore the original segment directions');
+end
+
+% and a boundary that was already right is left alone
+wellFormed = grains;
+save(fName,'wellFormed');
+untouched = load(fName);
+if ~isequal(untouched.wellFormed.boundary.F,gB.F)
+  error('loadobj changed a boundary that already satisfied the convention');
+end
+
 %% 11. a second, independent map
 
 ebsd = mtexdata('twins','silent');
@@ -473,6 +506,29 @@ onInner = false(nV,1);
 onInner(grains.innerBoundary.F(:)) = true;
 if ~all(onInner(shared0))
   error('%s dropped an inner vertex the outer boundary still ends on',name);
+end
+
+end
+
+% -------------------------------------------------------------------------
+function assertLeftGrain(grains,name)
+% walked with the grain on its left, a grain boundary runs counterclockwise
+% around it, so it encloses exactly +area. This says the same as the pixel
+% based check in section 5, but from the geometry alone - which is what makes
+% it applicable to a stored grain2d that carries no ebsd
+
+gB = grains.boundary;
+V1 = gB.allV(gB.F(:,1));
+V2 = gB.allV(gB.F(:,2));
+c = 0.5*dot(cross(V1,V2),normalize(gB.N));
+
+area = grains.area;
+for k = 1:length(grains)
+  A = sum(c(gB.grainId(:,1) == grains.id(k))) - sum(c(gB.grainId(:,2) == grains.id(k)));
+  if abs(A - area(k)) > 1e-6*area(k)
+    error('%s: grain %d encloses %g instead of its area %g - its boundary is walked the wrong way round',...
+      name,grains.id(k),A,area(k));
+  end
 end
 
 end

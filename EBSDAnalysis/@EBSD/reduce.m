@@ -1,6 +1,6 @@
 function ebsd = reduce(ebsd,fak)
 % reduce ebsd data by a factor
-% 
+%
 % Syntax
 %   ebsd = reduce(ebsd)   % take every second pixel horiz. and vert.
 %   ebsd = reduce(ebsd,3) % take every third pixel horiz. and vert.
@@ -12,44 +12,32 @@ function ebsd = reduce(ebsd,fak)
 % Output
 %  ebsd    - @EBSD
 %
+% Description
+% Keeps every fak-th site in both lattice directions. That sublattice is the
+% same kind of lattice fak times coarser - square from a square grid,
+% hexagonal from a hexagonal one - so the unit cell simply scales with fak.
+%
+% Selecting on the lattice index (see <EBSD.lattice.html |lattice|>) rather
+% than on positions or on matrix subscripts is what makes one implementation
+% cover every case: a plain list and a gridded map, a square and a hexagonal
+% grid, and a grid that is rotated or otherwise not axis aligned. @EBSDhex
+% used to override this with a version written on the staggered matrix
+% subscripts, which could only ever express fak = 2 and rejected the second
+% argument outright.
+%
+% See also
+% EBSD/lattice EBSD/gridify
 
 if nargin == 1, fak = 2; end
 
-if length(ebsd.unitCell) == 4
-  
-  % generate regular grid
-  ext = ebsd.extent;
-  dx = max(ebsd.unitCell.x)-min(ebsd.unitCell.x);
-  dy = max(ebsd.unitCell.y)-min(ebsd.unitCell.y);
-  
-  % detect position within grid
-  iy = round((ebsd.pos.y - ext(3))/dy);
-  ix = round((ebsd.pos.x - ext(1))/dx);
+% a gridded map keeps its class, a list stays a list
+wasGrid = isa(ebsd,'EBSDgrid');
 
-  ebsd = ebsd.subSet(~mod(ix,fak) & ~mod(iy,fak));
-  ebsd.unitCell = fak*ebsd.unitCell;
-  
-elseif length(ebsd.unitCell) == 6 % hexgrid
-  
-  % generate regular grid
-  ext = ebsd.extent;
-  dx = max(ebsd.unitCell.x)-min(ebsd.unitCell.x);
-  dy = max(ebsd.unitCell.y)-min(ebsd.unitCell.y);
-  
-  % detect position within grid
-  if dx>dy
-    ix = round((ebsd.pos.x - ext(1))/dx*4/3);
-    iy = round((ebsd.pos.y - ext(3))/dy*2);
-    
-    ebsd = ebsd.subSet(~mod(iy,fak) & mod(ix+iy,2*fak));    
-  else
-    iy = round((ebsd.pos.y - ext(3))/dy*4/3);
-    ix = round((ebsd.pos.x - ext(1))/dx*2);
+ij = ebsd.lattice.ij;
 
-    ebsd = ebsd.subSet(~mod(ix,fak) & ~mod(ix+iy,2*fak));    
-  end
-  ebsd.unitCell = fak*ebsd.unitCell;
-  
-end
+ebsd = ebsd.subSet(all(mod(ij,fak) == 0, 2));
+ebsd.unitCell = fak * ebsd.unitCell;
+
+if wasGrid, ebsd = ebsd.gridify; end
 
 end

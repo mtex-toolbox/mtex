@@ -26,14 +26,9 @@ isAssumed = ~check_option(varargin,{'setting','EulerCorrection','wizard'});
 
 if corSetting > 0 || check_option(varargin,'EulerCorrection')
 
-  % change reference frame
-  rotCorrection = [rotation.id,...
-    rotation.byAxisAngle(xvector+yvector,180*degree),... % setting 1
-    rotation.byAxisAngle(xvector-yvector,180*degree),... % setting 2
-    rotation.byAxisAngle(xvector,180*degree),...         % setting 3
-    rotation.byAxisAngle(yvector,180*degree)];           % setting 4
-
-  rot = get_option(varargin,'EulerCorrection',rotCorrection(corSetting+1));
+  % change reference frame - the table is shared with the exporters, which
+  % have to undo exactly this rotation again
+  rot = get_option(varargin,'EulerCorrection',eulerCorrectionRotation(corSetting));
 
   % correct rotations
   ebsd.EulerCorrection = rot;
@@ -42,7 +37,8 @@ end
 
 if isAssumed
 
-  fprintf(2,wraptext(sprintf(['\nNote: %s files come with different coordinate systems for the Euler angles ' ...
+  mtexWarning('MTEX:eulerCorrectionAssumed', ...
+    ['%s files come with different coordinate systems for the Euler angles ' ...
     'and the spatial coordinates. Their relative alignment is chosen when exporting ' ...
     'the data from your EBSD maschine and is labeled as setting 1 to setting 4. ' ...
     'Since it is not stored in the file MTEX assumes the most common setting 2. ' ...
@@ -51,8 +47,7 @@ if isAssumed
     'ebsd = EBSD.load(fileName,''setting'', 3)' ...
     '\n\n' ...
     'or switch the correction off by ''setting'', 0.\n\n' ...
-    'Click <a href="matlab:MTEXdoc(''EBSDReferenceFrame'')">here</a> for more information.'...
-    '\n'],ext)))
+    'Click %s for more information.'],ext,doclink('EBSDReferenceFrame','here'))
 
 end
 

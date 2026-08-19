@@ -30,12 +30,14 @@ end
 % generate a function if required
 if nargin == 1 || isempty(x)
   
-  nu = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(S,v,y),'bandwidth',4,S.CS);
-    
+  nu = S2FunHarmonic.quadrature(@(v) PoissonRatio(S,v,y),'bandwidth',16);
+  nu.framePrivate = S.frame;
+
 elseif nargin <= 2 || isempty(y)
 
-  nu = S2FunHarmonicSym.quadrature(@(v) PoissonRatio(S,x,v),'bandwidth',4,S.CS);
-    
+  nu = S2FunHarmonic.quadrature(@(v) PoissonRatio(S,x,v),'bandwidth',16);
+  nu.framePrivate = S.frame;
+
 else
 
   % compute tensor product

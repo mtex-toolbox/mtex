@@ -1,7 +1,14 @@
 function display(T,varargin)
 % standard output
 
-displayClass(T,inputname(1),'moreInfo',char(T.CS,'compact'),varargin{:});
+% the frame together with the convention the tensor is drawn in; a
+% crystal frame shows only its identity, a non trivial specimen symmetry
+% keeps its point group
+info = referenceFrame.headerChar(T.frame,T.how2plot);
+if isa(T.CS,'specimenSymmetry') && T.CS.id > 1
+  info = [info ' (' T.CS.pointGroup ')'];
+end
+displayClass(T,inputname(1),'moreInfo',info,varargin{:});
 
 % collect tensor properties
 props = fieldnames(T.opt);

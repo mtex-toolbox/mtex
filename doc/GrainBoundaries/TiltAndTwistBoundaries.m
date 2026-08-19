@@ -21,6 +21,7 @@
 % <SubGrainBoundaries.html Subgrain Boundaries>.
 
 % load some test data
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 % compute subgrain boundaries with 1 degree threshold angle
@@ -32,7 +33,7 @@ grains = smoothBoundary(grains,5,'noSimplify','noRefine');
 
 % set up the ipf coloring
 cKey = ipfColorKey(ebsd('fo').CS.properGroup);
-cKey.inversePoleFigureDirection = yvector;
+cKey.ipfDirection = yvector;
 color = cKey.orientation2color(ebsd('fo').orientations);
 
 % plot the forsterite phase

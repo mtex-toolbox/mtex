@@ -39,9 +39,10 @@ if isa(f,'SO3TangentVector')
   % Maybe change tangent space
   f = transformTangentSpace(f,tS);
   
+  ref = f.oriRef;
   rot = f.rot;
   val = vector3d(f);
-  varargin = {f.hiddenCS, f.hiddenSS, varargin{:}};
+  varargin = {ref.CS, ref.SS, varargin{:}};
 
 elseif isa(f,'rotation') && isa(varargin{1},'SO3TangentVector')
 
@@ -60,7 +61,8 @@ elseif isa(f,'rotation') && isa(varargin{1},'SO3TangentVector')
 
   rot = f;
   val = vector3d(varargin{1});
-  varargin = { varargin{1}.hiddenCS , varargin{1}.hiddenSS , varargin{:} };
+  ref = varargin{1}.oriRef;
+  varargin = { ref.CS , ref.SS , varargin{:} };
 
 elseif isa(f,'rotation') && ( isa(varargin{1},'vector3d') || isa(varargin{1},'spinTensor') )
 
@@ -76,15 +78,15 @@ end
 if exist('rot','var')
 
   val = val.xyz;
-  [SRight,SLeft] = extractSym(varargin);
+  % absence is empty, so passed triclinic symmetries survive with their
+  % frames (ADR 0003); only genuinely absent slots fall back
+  [SRight,SLeft] = extractSym(varargin,'empty');
   if isa(rot,'orientation')
-    if SRight.id==1
-      SRight = rot.CS;
-    end
-    if SLeft.id==1
-      SLeft = rot.SS;
-    end
+    if isempty(SRight), SRight = rot.CS; end
+    if isempty(SLeft), SLeft = rot.SS; end
   else
+    if isempty(SRight), SRight = specimenSymmetry; end
+    if isempty(SLeft), SLeft = specimenSymmetry; end
     rot = orientation(rot,SRight,SLeft);
   end
 
@@ -92,15 +94,19 @@ if exist('rot','var')
   % This depends on the tangent space representation 
   if isa(rot,'quadratureSO3Grid')
     if tS.isRight
-      rot = quadratureSO3Grid(rot,crystalSymmetry);
+      % both slots, always - quadratureSO3Grid fabricates a session-framed
+      % default for a slot left open, which would swap the data's frame
+      rot = quadratureSO3Grid(rot,stripSym(rot.CS),rot.SS);
     else
-      rot = quadratureSO3Grid(rot,rot.CS,specimenSymmetry);
-    end    
+      rot = quadratureSO3Grid(rot,rot.CS,stripSym(rot.SS));
+    end
   else
+    % drop the group, keep the frame - a session default here would swap
+    % the data's frame for the session's (ADR 0003)
     if tS.isRight
-      rot.CS = crystalSymmetry.default;
+      rot.CS = stripSym(rot.CS);
     else
-      rot.SS = specimenSymmetry.default;
+      rot.SS = stripSym(rot.SS);
     end
   end
   
@@ -116,9 +122,12 @@ end
 % ------------------------ (2) Transform to SO3Fun ------------------------
 % -------------------------------------------------------------------------
 
-% extract tangentSpace and symmetries
+% extract tangentSpace and symmetries - for a bare function handle an
+% absent symmetry genuinely means the session default
 tS = SO3TangentSpace.extract(varargin{:});
-[SRight,SLeft] = extractSym(varargin);
+[SRight,SLeft] = extractSym(varargin,'empty');
+if isempty(SRight), SRight = specimenSymmetry; end
+if isempty(SLeft), SLeft = specimenSymmetry; end
 
 % How to handle SO3VectorFieldHarmonics
 if isa(f,'SO3VectorFieldHarmonic')
@@ -161,9 +170,9 @@ end
 % For quadrature, one of the symmetries needs to have id=1.
 % This depends on the tangent space representation 
 if tS.isRight
-  f.CS = ID1(f.CS);
+  f.CS = stripSym(f.CS);
 else
-  f.SS = ID1(f.SS);
+  f.SS = stripSym(f.SS);
 end
 
 % -------------------------------------------------------------------------

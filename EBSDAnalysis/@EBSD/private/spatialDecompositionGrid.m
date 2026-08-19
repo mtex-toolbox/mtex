@@ -240,12 +240,14 @@ site2id  = [idxSiteEbsd; niId];
 % decomposition pass (calcGrains.m) never sets this flag and keeps getting
 % full Voronoi geometry.
 %
-% Caveat: on an exactly regular/rigid grid, jcvoronoiDelaunayOnly_mex's
-% adjacency is a strict superset of jcvoronoi2_mex's - it can report a
-% spurious diagonal adjacency at an exactly-cocircular interior vertex that
-% the full Voronoi build correctly excludes (see check_jcvoronoiDelaunayOnly
-% and minPixelMask.m). Never a missing adjacency, so this is safe for a
-% sizing-only pass.
+% Caveat: jcvoronoiDelaunayOnly_mex's adjacency is a superset of
+% jcvoronoi2_mex's - wherever an interior Voronoi vertex is exactly
+% cocircular it reports a spurious diagonal adjacency that the full Voronoi
+% build correctly excludes (see check_jcvoronoi). Never a MISSING adjacency,
+% so a sizing pass can only ever under-cull with it, not over-cull. That is
+% harmless on a hex grid, where no such degeneracy exists, and systematic on
+% a square one, where every interior vertex is degenerate - which is why
+% minPixelMask.m only sets this flag for hex (#2513).
 if check_option(varargin,'delaunayOnly')
   V = zeros(0,2); F = zeros(0,2);
   I_FD = jcvoronoiDelaunayOnly(double(XY),double(numReal), double(epsilon));

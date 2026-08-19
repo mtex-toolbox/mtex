@@ -17,8 +17,9 @@
 cs = crystalSymmetry('m-3m');
 ss = specimenSymmetry('orthorhombic');
 
-% set plotting convention 
-plotzOutOfPlane; plotx2east
+% the standard components are defined relative to the rolling frame -
+% RD to the north, TD to the west and ND out of the page
+specimenFrame.rolling.makeDefault
 
 %%
 % and select a subset of the above predefined orientations

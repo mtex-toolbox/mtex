@@ -10,6 +10,7 @@
 % triple points.
 
 % import some EBSD data set
+plottingConvention.default('y↑→x');
 mtexdata small silent
 
 % compute grains

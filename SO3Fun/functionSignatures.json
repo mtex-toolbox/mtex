@@ -217,7 +217,8 @@
       {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
       {"name":"parent", "kind":"namevalue", "type":["matlab.graphics.axis.Axes"]},
       {"name":"sectionType", "kind":"flag", "type":["char","choices={'phi2','phi1','gamma','sigma','omega','axisAngle','rodrigues'}"]},
-      {"name":"drawing", "kind":"flag", "type":["char","choices={'smooth','contour','contourf','surf','contour3','surf3','slice3'}"]}
+      {"name":"drawing", "kind":"flag", "type":["char","choices={'smooth','contour','contourf','surf','contour3','surf3','slice3'}"]},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -233,7 +234,8 @@
       {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
       {"name":"sectionType", "kind":"flag", "type":["char","choices={'phi2','phi1','gamma','sigma','omega','axisAngle'}"]},
       {"name":"drawing", "kind":"flag", "type":["char","choices={'smooth','contour','contourf','contour3','surf3','slice3'}"]},
-      {"name":"all", "kind":"flag"}
+      {"name":"all", "kind":"flag"},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -250,7 +252,8 @@
       {"name":"drawing", "kind":"flag", "type":["char","choices={'smooth','contour','contourf'}"]},
       {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
       {"name":"antipodal", "kind":"flag"},
-      {"name":"noTitle", "kind":"flag"}
+      {"name":"noTitle", "kind":"flag"},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -265,7 +268,8 @@
       {"name":"figSize", "kind":"namevalue", "type":[["char","choices={'tiny','small','normal','medium','large','huge'}"],["numeric","scalar"]]},
       {"name":"drawing", "kind":"flag", "type":["char","choices={'smooth','contour','contourf'}"]},
       {"name":"hemisphere", "kind":"flag", "type":["char","choices={'upper','lower','complete'}"]},
-      {"name":"antipodal", "kind":"flag"}
+      {"name":"antipodal", "kind":"flag"},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 
@@ -288,7 +292,8 @@
     [
       {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
       {"name":"ref", "kind":"required", "type":[["SO3Fun"],["PoleFigure"]]},
-      {"name":"errorType", "kind":"flag", "type":["char","choices={'RP','L1','L2','L0'}"]}
+      {"name":"errorType", "kind":"flag", "type":["char","choices={'RP','L1','L2','L0'}"]},
+      {"name":"how2plot", "kind":"namevalue", "type":["choices={'y↑→x','y↓→x','x↑→y','x↓→y','x←↑y','x←↓y','y←↑x','y←↓x'}"], "purpose":"screen alignment for this plot only"}
     ]
 },
 

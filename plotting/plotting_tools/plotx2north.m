@@ -3,4 +3,4 @@ function plotx2north
 
 how2plot = plottingConvention.default;
 how2plot.north = xvector;
-
+how2plot.makeDefault;

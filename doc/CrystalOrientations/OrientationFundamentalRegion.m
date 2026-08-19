@@ -72,6 +72,7 @@ hold off
 %%
 % As an example consider the following EBSD data set
 
+plottingConvention.default('y↑→x');
 mtexdata forsterite
 
 %%

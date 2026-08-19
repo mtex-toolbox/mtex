@@ -9,8 +9,12 @@
 % formats like |.osc| or |.h5|. Most conveniently, EBSD data may be imported
 % using the import wizard, by typing
 
-import_wizard
+import_wizard;
 
+%%
+% 
+% <<importWizard.png>>
+% 
 %%
 % or by the command <EBSD.load.html EBSD.load>
 
@@ -32,7 +36,7 @@ ebsd = EBSD.load(fileName,'EulerCorrection',rotation.id)
 % spatial distribution of the different phases can be visualized by the
 % plotting command
 
-plot(ebsd,'coordinates','on')
+plot(ebsd,'refFrame','on')
 
 %% 
 % When importing EBSD data it is important to check the alignment of the
@@ -117,8 +121,8 @@ hold off
 % the selected crystal directions
 h = Miller({1,0,0},{0,1,0},{0,0,1},ebsd('Forsterite').CS);
 
-% plot their positions with respect to specimen coordinates
-plotPDF(ebsd('Forsterite').orientations,h,'figSize','medium')
+% plot their distribution with respect to the specimen reference system
+plotPDF(ebsd('Forsterite').orientations,h,'figSize','medium','contourf')
 
 %% Inverse Pole Figures
 % 
@@ -126,12 +130,11 @@ plotPDF(ebsd('Forsterite').orientations,h,'figSize','medium')
 % specimen direction. The resulting plots are called
 % <OrientationInversePoleFigure.html inverse pole figures>.
 
-% select the specimen direction
-r = vector3d.Z;
+% select specimen directions
+r = [vector3d.X,vector3d.Y,vector3d.Z];
 
-% plot the position of the z-Axis in crystal coordinates
-plotIPDF(ebsd('Forsterite').orientations,r,'MarkerSize',5,...
-  'MarkerFaceAlpha',0.05,'MarkerEdgeAlpha',0.05)
+% plot the distribution of the x, y, and z-Axis positions in crystal coordinates
+plotIPDF(ebsd('Forsterite').orientations,r,'contour')
 
 %%
 %#ok<*NOPTS>

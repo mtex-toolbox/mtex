@@ -21,7 +21,9 @@ of that pass.
 Updated 2026-08-12: O12, C19, F5 and L12 fixed, each with a check script.
 G10 could not be confirmed as a defect. A second pass the same day fixed O8,
 O9, C18 and G35; O8 turned out to have a second half, two implementations
-ignoring `'bandwidth'` once it reached them.
+ignoring `'bandwidth'` once it reached them. A third pass closed E1 and E2 —
+neither was the `calcUnitCell` bug it was filed as; the real defect is the
+new E15, a shift that expands the vertex list instead of translating it.
 
 ## Legend
 
@@ -74,7 +76,7 @@ The multi-release work. Everything here is bigger than one branch.
 | P11 | **EBSD simulation** — forward-model a map from an ODF plus a microstructure | 0 | 2 | idea | — | — |
 | P12 | **Texture heterogeneity / local ODF estimation** | 0 | 2 | idea | — | — |
 | P13 | **Single-precision storage** throughout, to halve memory on large maps | 1 | 2 | idea | — | #2466 |
-| P14 | **`gridify` by default** — make the gridded EBSD the normal representation, not an opt-in | 2 | 2 | decide | — | #2295, #2167, #2128, [→](#p14) |
+| P14 | **`gridify` by default** — **implemented 2026-08-12** in `0fcb33a32`: `EBSD.load` grids whenever that loses no measurement, opt out with `'noGrid'` or `setMTEXpref('gridifyOnImport',false)`. G7 closed with it. Documentation rewritten 2026-08-13, see C0 | 2 | 0 | done | — | #2295, #2167, #2128, [→](#p14) |
 
 ---
 
@@ -87,10 +89,10 @@ The multi-release work. Everything here is bigger than one branch.
 | G3 | `smooth` should work on gridded data and return gridded data; what to fill and what not decided by `grainId`, not by the caller | 2 | 1 | planned | — | — |
 | G4 | Faster `EBSD/smooth` — not per grain | 1 | 1 | idea | — | — |
 | G5 | `minPixel` culling can isolate a pixel from its true grain, producing a malformed single-pixel grain | 2 | 1 | bug | — | #2574 |
-| G6 | `minPixel` is ignored when alpha shapes are used | 2 | 0 | bug | — | #2513 |
-| G7 | `calcGrains(EBSD(ebsd))` and `calcGrains(ebsd.gridify)` disagree — different grains from the same data | 3 | 1 | bug | — | #2295, [→](#p14) |
-| G8 | `calcGrains` errors after `interp` | 2 | 0 | bug | — | #1870 |
-| G9 | `calcPolygonsC` produces negative areas | 2 | 0 | bug | — | #2076 |
+| G6 | `minPixel` is ignored when alpha shapes are used — **fixed 2026-08-12** in `8a3f98703`: neither alpha-specific nor an outright ignore, but a systematic under-cull on every square map, since the Delaunay-only sizing pass runs 8-connected where the segmentation is 4-connected | 2 | 0 | done | — | #2513 |
+| G7 | `calcGrains(EBSD(ebsd))` and `calcGrains(ebsd.gridify)` disagree — **fixed 2026-08-12** in `6f95f63b1`: `gridify` pads empty lattice sites with `phaseId = NaN`, which compares false against every phase, so every criterion scored a pad cell 0 against its neighbours and each became its own single-pixel grain. Normalised in `grainBoundaryCriterion/eval`. Indexed grains were never affected | 3 | 0 | done | — | #2295, [→](#p14) |
+| G8 | `calcGrains` errors after `interp` — **not reproducible** on a synthetic map after the `interp` rewrite (2026-08-12: interp to half the step, 14641 points, 89 grains, no error); the reporter's own 50x50 map is attached to the issue and has not been tried | 2 | 0 | triage | — | #1870, [→](#g8) |
+| G9 | Grain polygons that enclose a **negative** area, i.e. rings traced inside out — **fixed 2026-08-12**: the vertex rewrite in `removeQuadruplePoints` was row wise, so an edge shared by two neighbouring quadruple points lost one of its two writes and the grain whose corner was cut there was left with an open boundary walk. Not the mex, not the `atan2` branch cut. `steel1C_1` 2 → 0, open walks on forsterite/martensite/epidote/mylonite 2/2/2/6 → 0, see [→](#g9) | 2 | 2 | done | — | #2590, #2076, [→](#g9) |
 | G10 | `grains(1).poly` and `grains(1).boundary` have incompatible sizes — on a synthetic map `poly` has 17 vertices for 16 segments, i.e. a closed ring, which may be the whole report; needs the reporter's case (checked 2026-08-12) | 2 | 0 | triage | — | #1555 |
 | G11 | `neighbors` returns wrong results | 1 | 0 | triage | — | #865 |
 | G12 | `grainMean` behaves differently since 6.0 beta3 | 1 | 0 | triage | — | #2090 |
@@ -122,6 +124,7 @@ The multi-release work. Everything here is bigger than one branch.
 | G38 | `removeQuadruplePoints` destroyed real grain boundary — fixed, reference regenerated, benchmark green | 2 | 0 | done | — | [→](#g38) |
 | G39 | Analytic Voronoi decomposition for gap-free regular grids — 43 % of `calcGrains` runtime is Fortune's sweep | 1 | 1 | paused | — | br/analytic-voronoi-grid, [→](#g39) |
 | G40 | Speed up the segmentation criterion `gbcAngle.doEvaluate` — 0.71 s of `doSegmentation`'s 1.47 s | 1 | 1 | paused | — | [→](#g39) |
+| G41 | `assignGridIndex` was order dependent on a distorted map — **fixed 2026-08-13**: the walk trusted the outer component of a step outright, so a line change carried a whole line's worth of accumulated drift into it. The outer step is now measured against a drift model, the mirror of the inner one. Grid order goes from exact at 0.05% distortion to exact at 10%; file order and every undistorted map are bit identical | 3 | 0 | done | — | [→](#g41) |
 
 ---
 
@@ -149,10 +152,10 @@ The multi-release work. Everything here is bigger than one branch.
 
 | # | Item | U | Sz | Status | Owner | Refs |
 |---|------|:-:|:--:|--------|-------|------|
-| E1 | `calcUnitCell` bug in `interfaces/tools` | 2 | 0 | bug | — | #2531 |
-| E2 | `calcUnitCell` breaks when the map's xy is far from the origin | 2 | 0 | bug | — | #1722 |
-| E3 | `gridify` and the ungridded EBSD report different point counts | 2 | 0 | bug | — | #2167 |
-| E4 | Indexing a gridified EBSD returns a different size than in 5.10.2 | 2 | 0 | bug | — | #2128 |
+| E1 | `ebsd.unitCell = calcUnitCell(xy)` stored a raw double — **fixed 2026-08-12** with a `set.unitCell` on `@EBSD` that converts, and `calcUnitCell` no longer returns a NaN cell for a single scan line | 2 | 0 | done | — | #2531, [→](#e1) |
+| E2 | `calcUnitCell` breaks when the map's xy is far from the origin — **not `calcUnitCell`**, it is exact to 1e5 units out; the reproduction's `ebsd + [x y]` was the defect, see E15 | 2 | 0 | done | — | #1722, [→](#e2) |
+| E3 | `gridify` and the ungridded EBSD report different point counts — **not a defect**, `gridify` re-inserts the scan positions the input is missing; a complete map keeps its count exactly (checked 2026-08-12) | 2 | 0 | done | — | #2167, [→](#e3) |
+| E4 | `ebsd.gridify.phase` came back as a list while everything else on the object was the map — **fixed 2026-08-12**, the `phase` getter now takes the object's shape the way `isIndexed` already did | 2 | 0 | done | — | #2128, [→](#e4) |
 | E5 | Rotating/cropping an EBSD map leaves an artifact | 2 | 1 | triage | — | #471 |
 | E6 | `EBSD/cat` should be able to remove overlapping data | 1 | 1 | idea | — | #362 |
 | E7 | Edge-preserving bilateral filter | 1 | 1 | idea | — | #346 |
@@ -163,6 +166,7 @@ The multi-release work. Everything here is bigger than one branch.
 | E12 | `latticeBasis:38` "Index exceeds array bounds" — the real defect is a degenerate, self-intersecting unit cell reaching it, not the unguarded index | 2 | 1 | bug | — | [→](#e12) |
 | E13 | `gridify` transposes the map at a 45° grid rotation — the layout tie-break is decided by float noise | 1 | 0 | bug | — | [→](#e13) |
 | E14 | `gridify` cannot place a rotated hexagonal grid — **fixed**, hexify is lattice based and @EBSDhex stores no geometry | 2 | 1 | done | — | [→](#e14) |
+| E15 | Shifting a `grainBoundary` / `triplePointList` silently expanded its vertex list instead of translating it — **fixed 2026-08-12**; the obsolete `obj + [x,y]` form, which expands the same way, is now rejected and gone from the docs | 3 | 0 | done | — | [→](#e15) |
 
 ---
 
@@ -211,7 +215,7 @@ copy; only what is still open is summarised here.
 | O3 | Wrong misorientation angle when an orientation lies outside the fundamental region | 3 | 1 | bug | — | #2162 |
 | O4 | `misorientation` volume gives different results by route | 2 | 1 | bug | — | #445 |
 | O5 | Euler angles of random orientations are inconsistent with the crystal symmetry | 2 | 1 | triage | — | #1597 |
-| O6 | `vector3d` constructor is inconsistent across input shapes | 2 | 0 | bug | — | #2145 |
+| O6 | `vector3d` constructor is inconsistent across input shapes — **fixed 2026-08-12**, Ralf's call: an `N x 3` matrix now gives an `N x 1` list, `3 x N` still gives `1 x N`, `3 x 3` warns and is read column wise | 2 | 0 | done | — | #2145, [→](#o6) |
 | O7 | `calcComponents` gives strange results or crashes when `'angle'` is passed | 2 | 1 | bug | — | #1840 |
 | O8 | `radon(odf,h,'bandwidth',64)` crashed — the option bound to the positional `r` — **fixed 2026-08-12**, an option string in position 3 is shifted into `varargin` in all five implementations; `@SO3FunRBF` and `@SO3FunBingham` additionally ignored `'bandwidth'` once it arrived | 2 | 0 | done | — | [→](#o8) |
 | O9 | `SO3FunComposition/radon` had no antipodal check of its own — **fixed 2026-08-12**, it now decides the flag itself instead of inheriting whatever its components set | 1 | 0 | done | — | [→](#o8) |
@@ -246,7 +250,7 @@ copy; only what is still open is summarised here.
 | F3 | `calcDensity` crashes MATLAB when producing a pole figure | 3 | 1 | crash | — | #1464, #580 |
 | F4 | `plotSection(mdf,'axisAngle')` segfaults — needs differing left/right symmetry and bandwidth ≥ 32 | 3 | 1 | crash | — | [→](#f4) |
 | F5 | `'logarithmic'` was ignored by `plotPDF` — **fixed 2026-08-12**, `@vector3d/smooth` tested only for the short spelling `'log'` | 2 | 0 | done | — | #1691 |
-| F6 | Filled contours extend past the edge of the pole figure | 1 | 0 | bug | — | #707 |
+| F6 | Filled contours extend past the edge of the pole figure — **reproduced and half diagnosed 2026-08-12**; the `'cutOutside'` guard is inert, for two independent reasons, and the second needs a decision on how far a partial pole figure may be extrapolated | 1 | 0 | decide | — | #707, [→](#f6) |
 | F7 | `plotSection` glitch for m-3 | 1 | 0 | triage | — | #209 |
 | F8 | Better visualization of an OR in pole figures | 1 | 1 | idea | — | — |
 | F9 | Sigma-section coloured pole figure; marker size in sigma sections | 1 | 0 | idea | — | — |
@@ -283,19 +287,20 @@ copy; only what is still open is summarised here.
 
 | # | Item | U | Sz | Status | Owner | Refs |
 |---|------|:-:|:--:|--------|-------|------|
-| L1 | The scale bar moves depending on the plotting convention | 2 | 0 | bug | — | #2576 |
-| L2 | Sigma sections ignore the plotting convention | 2 | 0 | bug | — | #2093 |
-| L3 | `histogram(grains.longAxis)` ignores the plotting convention | 2 | 0 | bug | — | — |
+| L1 | The scale bar moves depending on the plotting convention — **already fixed** by the scaleBar rework that reads the convention back from the camera; measured 2026-08-12 across four conventions x four `Location` corners and the reporter's own preference pair, and pinned in `check_scaleBar` | 2 | 0 | done | — | #2576, [→](#l1) |
+| L2 | Sigma sections ignore the plotting convention — **they do not**; measured 2026-08-12, the section follows `odf.SS.how2plot`. What the report actually shows is that data keeps the convention it captured at construction, so changing the default afterwards does not reach it — that is L4 | 2 | 0 | done | — | #2093, [→](#l2) |
+| L2b | `setMTEXpref` had three preferences `getMTEXpref` could not read back — **fixed 2026-08-12**, `xyzPlotting`, `xAxisDirection` and `zAxisDirection` are held by the plotting convention, not by the appdata group | 2 | 0 | done | — | [→](#l2) |
+| L3 | `histogram(grains.longAxis)` ignores the plotting convention — **fixed 2026-08-12**; it does follow it, but `setView`'s polaraxes branch measured the angle the wrong way round, so `x↑→y` came out rotated by exactly 180° | 2 | 0 | done | — | [→](#l3) |
 | L4 | General plotting-convention oddities; `setMTEXpref('xAxisDirection',...)` has no effect | 3 | 1 | bug | — | #2014, #2096 |
 | L5 | Crystal shapes do not follow the EBSD data when it is rotated or the convention changes | 2 | 1 | bug | — | #1952 |
 | L6 | Colour keys in specimen coordinates should respect the plotting convention — better, `colorKey(what2color)` should take what it needs from the object | 2 | 1 | planned | — | [→](#l6) |
 | L7 | `directionColorKey` bug | 1 | 0 | triage | — | #2515 |
-| L8 | IPDF plots arrows incorrectly | 2 | 0 | bug | — | #2072 |
+| L8 | IPDF plots arrows incorrectly — **fixed 2026-08-12**, `arrow` sizes its head in pixels regardless of the segment, so on the short segments arrows are meant for the head was longer than the arrow; now capped at 0.4 of the segment | 2 | 0 | done | — | #2072, [→](#l8) |
 | L9 | `ipfKey.inversePoleFigureDirection` should probably be `outOfPlane` | 1 | 0 | decide | — | — |
 | L10 | `plot(ebsd,ebsd.orientation,'ipfDirection',xvector)` should work | 1 | 0 | idea | — | — |
-| L11 | The IPF colour key disk cache is keyed only by point-group id, so it silently serves a stale table when the crystal frame changes | 3 | 0 | bug | — | [→](#l11) |
+| L11 | The IPF colour key disk cache is keyed only by point-group id, so it silently serves a stale table when the crystal frame changes — **fixed** in `3767b60b9`/`556c0b469`: the cache is in memory and keyed by a digest of the sector geometry and white centre, and `removeObsoleteCacheFiles` deletes what earlier versions left in `prefdir` | 3 | 0 | done | — | [→](#l11) |
 | L12 | Colorbar at `'northoutside'` was placed below — **fixed 2026-08-12**; `'westoutside'` was equally broken. The side is kept in `mtexFig.cBarSide` and honoured by `calcTightInset`/`updateLayout` | 1 | 0 | done | — | #1744 |
-| L13 | ODF subplots get different colormaps | 1 | 0 | bug | — | #1732 |
+| L13 | ODF subplots get different colormaps — **not a defect**: `mtexColorMap(ax,...)` on a single axes handle gives distinct colormaps, while the bare form deliberately covers every axes of the figure. `mtexColorMap` had no help at all, which is the actual gap; written 2026-08-12 | 1 | 0 | done | — | #1732 |
 | L14 | `colorrange` misbehaves | 1 | 0 | triage | — | #1608 |
 | L15 | ODFs plot differently than expected | 1 | 0 | triage | — | #320 |
 | L16 | Plotting a circle glitches | 1 | 0 | bug | — | #330 |
@@ -364,6 +369,9 @@ copy; only what is still open is summarised here.
 
 | # | Item | U | Sz | Status | Owner | Refs |
 |---|------|:-:|:--:|--------|-------|------|
+| C0b | **Four pages broken by gridify-on-import, fixed 2026-08-13** — `CrystalShapes` (the `ebsd(x,y)` meaning flip), `ODFTheory` (`reduce(ebsd,4)` on a hex grid), `LowLevelParentGrainReconstruction` and `MaParentGrainReconstructionAdvanced` (`phaseId` column vs map-shaped `grainId`). Two were code defects, not page defects, see [→](#c0b) | 3 | 0 | done | — | [→](#c0) |
+| C0c | **Decide: should `ebsd.phaseId` be map shaped on a grid?** — it is the one per-pixel view that stays a column while `id`, `rotations`, `pos`, `isIndexed`, `phase` and every prop are the (r x c) map (#2128, pinned by `check_ebsdGrid/checkGridShapes`). Any user expression mixing `phaseId` with a prop therefore errors, which is what broke both parent-reconstruction pages. Now that an import returns a grid by default this is the common case, not the exotic one | 2 | 2 | decide | — | [→](#c0b) |
+| C0 | **Document `gridify` by default** — **done 2026-08-13.** `EBSDGrid.m` rewritten around the imported map already being a grid, with the `'noGrid'` flag, the `gridifyOnImport` preference, the `MTEX:load:notOnGrid` case (eclogite) and the reordering note; a matching section in `EBSDImport.m`; stale claims fixed in `EBSDIndex.m`, `EBSDInter.m`, `Plasticity/GND.m`, `Plasticity/WBV.m`; changelog entry added. Every touched page was executed. Two defects found on the way, see [→](#c0) | 2 | 0 | done | — | [→](#p14) |
 | C1 | **3 empty chapters left** — `Misorientations/Twinning`, `Plasticity/SachsModel`, `Plasticity/TwinningTutorial`; the other eleven were written or dropped on 2026-08-10 | 2 | 1 | planned | — | [→](#c-empty) |
 | C2 | 4 prose TODO markers left, all genuine open questions rather than authoring gaps | 1 | 1 | decide | — | [→](#c-todo) |
 | C3 | Four content orphans with no TOC slot: `Dream3dGrains`, `S2FunQuadrature`, `MisorientationGrainExchangeSym`, `changelog` (plus the prose-only `Contribute2Doc`) | 1 | 0 | decide | — | docs/doc-audit-plan.md item 6 |
@@ -465,11 +473,201 @@ Making gridded the default representation would remove the class of problem
 rather than the individual symptoms, but it is a breaking change and needs a
 decision first.
 
+**Decided and implemented 2026-08-12.** `EBSD.load` now grids the data
+whenever that is lossless, and refuses when it is not: the raster is bounded
+before it is built (a stray position asked for a 35201 x 35201 lattice),
+`gridify` runs inside a `try`, and the result is kept only if no indexed
+measurement was dropped. `eclogite.ctf` fails that last test - 613 indexed
+measurements over 565 lattice cells - and comes back as a plain list with a
+`MTEX:load:notOnGrid` warning. Opt out per call with `'noGrid'`, globally
+with `setMTEXpref('gridifyOnImport',false)`.
+
+G7 was fixed on the way and separately (`6f95f63b1`): the two representations
+disagreed because `gridify` pads empty lattice sites with `phaseId = NaN`,
+which compares false against every phase, so every criterion scored a pad
+cell 0 against its neighbours and each became its own single-pixel grain - a
+solid 5841 cell hole gave 5842 notIndexed grains instead of 6. Normalised in
+`grainBoundaryCriterion/eval`. The indexed grain count was never affected,
+which is why it stayed hidden.
+
+Note the reproduction above no longer distinguishes anything: after
+`a5bc0f427` a plain list, a column major and a row major gridded map all give
+3100 / 2905 / 2109862.588230 on forsterite. What remains is that gridding
+REORDERS the measurements and cannot avoid it - the layout fixes dim 1 to y
+while a .ctf runs x fastest - documented in `gridify`'s help. `calcGrains` is
+invariant under that; `removeQuadruplePoints` is not, see G9.
+
+### G41
+Found 2026-08-13 while rewriting the gridify documentation. The two objects
+below hold the *same set* of positions and derive the *same* lattice basis
+`[0.3 0; 0 0.3]`; they differ only in the order of the list.
+
+```matlab
+fn = [mtexDataPath filesep 'EBSD' filesep 'twins.ctf'];
+a = EBSD(mtexdata('twins','silent'));          % grid order, i.e. after gridify
+b = EBSD.load(fn,'noGrid', ...
+      'EulerCorrection',rotation.byAxisAngle(xvector,180*degree)); % file order
+
+% same 5% trapezoidal drift on both, then look at the recovered indices
+%   file order : I 0..166, J 0..136, 22879 unique cells of 22879   correct
+%   grid order : I 0..174, J 0..136, 22593 unique cells of 22879   286 collide
+```
+
+The consequence is silent: `gridify` writes the measurements with
+`mesh(ind) = pos`, so each of the 286 collisions loses one of its two
+measurements and the surviving one sits a full step (0.3 µm) away from where
+it was measured. `calcMesh`'s deformation branch is not at fault — it was
+already fixed for order dependence, and it is handed the wrong `ind`.
+
+Only *distorted* maps are affected; an undistorted one takes the ideal-grid
+branch and is exact in either order. That is why nothing caught it before:
+`check_gridify/checkDistortedGrid` is the only test that distorts a real map,
+and until `EBSD.load` started gridding, `mtexdata('twins')` handed it the file
+order, which happens to be the order that works.
+
+Not caused by the gridify-on-import work, only exposed by it. The collision is
+invisible precisely because a repeated index keeps the last write.
+
+**Fixed 2026-08-13.** `stepwiseIndex` trusted the outer component of every step
+outright. That is fine while the distortion runs along the *inner* direction —
+which is measured cell by cell and was already drift-corrected — but a line
+change undoes a whole line of inner travel in one step, so any drift the outer
+coordinate picked up along that line rides along with it. The outer step now
+gets the mirror of the inner treatment: the sub-cell part of the outer component
+of every trusted single-cell step is the drift per inner cell, fitted across the
+map by the same regression, and subtracted in proportion to the inner distance a
+step actually covers. That corrects a multi-cell gap *within* a line as well as a
+line change, with no need to tell them apart.
+
+Two traps found while building it:
+
+- the drift must be read off `outerRaw - round(outerRaw)`, never off `outerRaw`.
+  A hexagonal map walked along its staggered direction moves a whole outer cell
+  on every second step, so the raw components alternate 0 and -1; taken at face
+  value that reads as half a cell of drift per inner cell on a *rigid* lattice,
+  and multiplied by a line length it shattered the hex fixture in
+  `check_calcGrainsCases` into 389 grains instead of 16.
+- the regressor cannot be the accumulated outer index, which is exactly what a
+  mis-rounded line change corrupts. It is now the outer coordinate read straight
+  off the positions.
+
+Measured on forsterite, highest trapezoidal drift at which `lattice.ij` is still
+exact — full map / Forsterite / Enstatite / Diopside:
+
+| order | before | after |
+| --- | --- | --- |
+| grid (y fastest) | 0.0005 / — / — / — | **0.10 / 0.05 / 0.02 / 0.02** |
+| file (x fastest) | 0.49 / 0.20 / 0.20 / 0.20 | unchanged |
+
+Grid order stays the weaker of the two by construction — a distortion along the
+outer direction is modelled rather than measured — but 2% is still far beyond a
+realistic stage drift. `check_gridDistortionBenchmark` now runs both orders and
+pins the table above; it also had to stop reducing `ebsd.pos.x` without `(:)`,
+since forsterite arrives map shaped now. `lattice.ij` is bit identical on all
+seven bundled real maps in both orders, so grain reconstruction does not move and
+no reference needed regenerating.
+
 ### G13
 Note that FMC was rewritten on 2026-07-25 — saliency was dead code and
 `quatmax` was chaotic; level-3 ARI went 0.84 → 0.95 at 2.7× the speed. #539
 predates that rewrite and has not been re-checked against it. Re-verify
 before spending time on it.
+
+### G9
+Reproduced 2026-08-12, by a different route than the original report:
+
+```matlab
+ebsd = EBSD.load('1C_1.ctf'); i = ebsd('indexed');
+nnz(calcGrains(i).area < 0)                            % 0 of 104814
+nnz(calcGrains(i,'removeQuadruplePoints').area < 0)    % 2 of 99875
+```
+
+`nnz(grains.area < 0)` is the detector; a negative area means the ring was
+traced inside out, and `area`, `equivalentRadius`, `smoothBoundary` and every
+plot then read a polygon that is not the grain.
+
+Not the mex, contrary to #2076: forcing the MATLAB `calcPolygons` on the same
+input gives **6** where `calcPolygonsC` gives **2**, so both tracers are being
+handed a boundary graph that does not close and merely disagree about how to
+fail on it. Not `minPixel` either - `'removeQuadruplePoints'` alone is enough -
+and not new, the count is unchanged at `059ff152a`.
+
+**Root caused and fixed 2026-08-12, and it is not the branch cut.** Splitting a
+quadruple point rewrites the shared vertex of two of its four edges to a
+duplicate, and that rewrite was row wise over all quadruple points at once:
+
+```matlab
+Ftmp = Fext(iqF(orderSub(1)),:).';
+Ftmp(Ftmp == quadPoints.') = newVid;
+Fext(iqF(orderSub(1)),:) = Ftmp.';    % repeated row -> only the last write survives
+```
+
+Two quadruple points that are neighbours share the edge between them, so that
+edge is in the relocation list of both, and MATLAB keeps only the last write for
+a repeated row. One rewrite is silently lost: the edge keeps the original vertex
+where it should have taken the duplicate, the quadruple point ends up with three
+of its four edges and the duplicate with one, and the grain whose corner was cut
+there has an **open path** instead of a closed ring. `EulerCycles` closes every
+walk it returns by repeating the first vertex, so the breakage never surfaces as
+an error - it surfaces as a polygon that is not the grain. Fixed by assigning
+element wise (`sub2ind`); the two writes to a shared edge touch its two
+different endpoints, so nothing collides.
+
+Measured, same data cache, `threshold` 5 degree, grains with an open boundary
+walk before -> after: forsterite 2 -> 0, martensite 2 -> 0 (and its one negative
+area -> 0), epidote 2 -> 0, mylonite 6 -> 0, `steel1C_1` 2 negative areas -> 0
+with `nGrainsQP` and `totalLenQP` bit identical. The count of collisions
+predicts it exactly - one collision breaks two grains.
+
+On an ideal square grid the collision cannot happen: the shared edge points +x
+at one quadruple point and -x at the other, and the angular sort puts those in
+different relocation slots. It takes an irregular neighbourhood - a hole, a map
+border - which is why real maps show it only a few times each.
+
+Consequence for the reverted pairing work: **the conclusion in `4f351d38e` is an
+artifact of this bug.** Re-applying `b2ca13189` + `14463616f` on top of the fix
+gives `alphaBetaTitanium` at 1.5 degree **0** negative areas and 0 open walks
+(was 117), 46230 grains, and only **1** negative area after
+`smoothBoundary(...,5)` against **16** for the branch-cut pairing with the same
+fix. The pairing can be decided per quadruple point after all, and doing so also
+all but removes the smoothing induced breakage. **Both commits are back in the
+tree** - see [→](#g9-followup).
+
+Guarded: `check_calcGrainsCases` has a `checkClosedBoundary` helper asserting
+that every vertex a grain's boundary uses is met by an even number of that
+grain's segments - the sharp form, since testing `poly(1) == poly(end)` cannot
+see an open walk - plus a 4x4 fixture with holes that fails on the unfixed tree.
+The benchmark now pins `negAreaQP` at 0/0/0.
+
+### G9-followup
+**Done 2026-08-12:** `b2ca13189` + `14463616f` (deterministic pairing at a
+quadruple point) are back, on top of the #2590 fix that removes the reason they
+were reverted. What they buy: `removeQuadruplePoints` is no longer a function of
+the order the measurements arrived in - shuffling `twins` used to move it
+between 110 and 108 grains, and a gridified map disagreed with the same map as a
+list - and smoothing induced negative areas on `alphaBetaTitanium` at 1.5 degree
+drop from 16 to 1.
+
+What they cost, all in the QP columns and all verified as the intended
+direction: a matching diagonal is now found at every quadruple point instead of
+roughly half of them, so more merge. `nGrainsQP` 2931 -> 2905 (forsterite),
+99875 -> 97856 (`steel1C_1`), `alphaBetaTitanium` at 1.5 degree 52398 -> 46230;
+copper has no mergeable quadruple point and does not move. `nGrains`,
+`totalLen` and `meanArea` are unchanged on all three benchmark datasets, i.e.
+the plain reconstruction is untouched. `steel1C_1.totalLenQP` goes -55.4 to
+-76.3 against `totalLen`, which is the documented "merge also drops boundary
+between two grains it joins that touch elsewhere" at a larger merge count;
+`check_removeQuadruplePoints` still passes, and it asserts the non zero segment
+lengths are identical with and without the option. Benchmark reference
+regenerated.
+
+Still open, and older than any of this: `sum(grains.area)` under
+`removeQuadruplePoints` exceeds the plain sum by up to 0.08% (martensite at 10
+degree, 85855.5 -> 85927.0), and it grows with the number of merges. Present
+before the #2590 fix and before the pairing change, so it is neither's doing -
+a merged grain that touches itself at a quadruple point apparently gets a
+polygon slightly larger than the union of its parts. Worth a look, since every
+per grain area on such a grain is wrong by that much.
 
 ### G33
 Two related requests: default filter masks whose size follows the grid
@@ -689,6 +887,280 @@ defect. Only reachable because the `@EBSDsquare/plotUnitCells.m` and
 `@EBSDhex/plotUnitCells.m` overrides were deleted — they dispatched straight
 to `plotSurf` and never entered `latticeBasis`.
 
+### E15
+`@grainBoundary/plus` and `@triplePointList/plus` shifted their vertices with
+
+```matlab
+if isa(xy,'vector3d'), xy = [xy.x,xy.y]; end
+gB.allV = gB.allV + repmat(xy,size(gB.allV,1),1);
+```
+
+written when `allV` / `V` were an `n x 2` double. They are a `vector3d` now,
+and `vector3d + numeric` adds the numeric to *each* of `x`, `y`, `z`
+separately — so an `n x 2` matrix against the `n x 1` coordinate arrays
+implicitly expands them to `n x 2`. `gB + vector3d(10,0,0)` on `twins` came
+back with `allV` of size `[3723 2]` and an x range of `9.85 .. -0.15` where
+the input spanned `49.95 .. 59.95`. No error, at any point.
+
+The obsolete numeric form, `obj + [100,0]`, expands identically (a `1 x 2`
+row) and hit `@EBSD` as well. That is what issue **#1722** actually
+reproduces: `ebsd + [-3500 10]` on `single` returned a map with twice the
+measurements, spread over a 3500 unit range in all three coordinates, and
+`gridify` of it then asked for a 35201 x 35201 lattice — 30 GB, i.e. the
+machine, not a `calcUnitCell` bug. `calcUnitCell` itself returns the exact
+0.1 x 0.1 cell at shifts of 10, 100, 1000, 3500 and 1e5 units; the
+`'DataScale',1` now passed to `uniquetol` is what fixed the originally
+reported cause.
+
+Fixed by shifting the `vector3d` directly in all four classes and rejecting
+anything else with `MTEX:shift:invalidShift`, and by removing `obj + [x,y]`
+from the `plus`/`minus` docstrings of `@EBSD`, `@grain2d`, `@grainBoundary`
+and `@triplePointList`. `@triplePointList/plus` also tested `isa(v,
+'triplPointList')` — misspelled, so the operands were never swapped.
+
+Verification: `tests/core/check_spatialShift.m`, which asserts on the
+positions and on the shape of the coordinate arrays, not just on the point
+count — `size(gB)` reads the segment list and does not see the expansion.
+Also pins that the lattice index range is unchanged by a far shift, which is
+where #1722 actually goes wrong.
+
+### F6
+Reproduced 2026-08-12. A `Miller(1,1,1)` pole figure of a cubic ODF sampled
+only to a polar angle of 60 degree, plotted with `'contourf'`: of the 22021
+plotting grid nodes inside the hemisphere, **6498 lie beyond the measured
+region and every one of them is given a value**. At 45 degree it is 10108 of
+10108. A fully measured hemisphere has 0, so the padding itself is not the
+problem — the values really are smeared out to the edge.
+
+`@vector3d/smooth.m:52` already asks for the remedy, `interp(...,
+'cutOutside', ...)`, and `@vector3d/interp.m` implements it. It is inert for
+two independent reasons:
+
+1. **The test is written along the wrong dimension.** It was
+   `M(all(so(:,1:4)>delta),:) = NaN`, and `all` over an `n x 4` matrix
+   without a dimension reduces down the COLUMNS, so it produced a `1 x 4`
+   row that then indexed rows 1 to 4 of `M`. The per query point test never
+   happened. Fixed to `all(...,2)`, which is unambiguously what the line
+   means — but it changes nothing observable on its own, because of:
+
+2. **`delta` is calibrated on a statistic the outliers pollute.**
+   `delta = 4*quantile(minO,0.5)`, where `minO` is each *query* point's
+   distance to the nearest datum — a set dominated by the very nodes the
+   cut is meant to catch. Measured: **0 of 8507** nodes exceed it. A
+   threshold derived from the data's own spacing, `v.resolution` (already
+   computed a few lines above as `res`), is the obvious candidate.
+
+Ralf's call on 2026-08-12 was to take the threshold from the data spacing,
+`delta = k * v.resolution`. **Tried and reverted**, because the measurement
+does not support any constant: on the 60 degree case, with
+`v.resolution = 5.01` degree correctly reported, `k = 2` and `k = 4` blank
+**all 8507** plotting nodes and `k = 6` still blanks 8401 of them. The
+reason is that `angle_outer(vi,v)` reports a *median* nearest-data distance
+of 75 degree and a maximum of 120 degree between an upper hemisphere query
+grid and data covering the upper 60 degree cap — which is geometrically
+impossible, since every query point within the cap has data within one
+spacing of it. So the distances that both the old heuristic and any new one
+are built on are not what they appear to be, and that is what has to be
+understood first. Only the `all(...,2)` dimension fix was kept; it is a
+no-op while delta stays as it is.
+
+Note also that a symmetric pole figure legitimately constrains directions
+outside the measured range, so once the cut works it has to be applied to
+the *symmetrised* directions, not the raw ones.
+
+### L8
+`extern/arrow.m` measures its head in **pixels** — `Length` is documented as
+"length of the arrowhead in pixels" and defaults to 16 — and takes no notice
+of how long the segment is. Chaining arrows through a series of nearby
+orientations, which is what the option is for, gives segments only a few
+pixels long, so the head is longer than the whole arrow and sticks out past
+its tip.
+
+Measured on the pair from the report, whose two points are **0.0096** apart
+in the plot:
+
+| head length | patch extent |
+|---|---|
+| default (16 px) | **0.0279** |
+| 6 px | 0.0105 |
+| 2 px | 0.0096 |
+| 0 px (bare shaft) | 0.0096 |
+
+So the drawn patch was nearly three times the arrow it represents. That also
+explains the reporter's own finding that zooming in about 6x fixes it and
+less zoom fixes it partially — zoom changes exactly this ratio, since the
+head is constant in pixels while the segment grows.
+
+`@vector3d/scatter`'s arrow branch now caps the head at `0.4 *` the segment
+length in pixels when the caller did not ask for a `'length'`, so a segment
+long enough to carry the full 16 pixels is drawn exactly as before and a
+short one keeps its head inside itself. An explicit `'length'` still wins.
+
+Owning test `tests/plotting/check_arrowPlot.m`, which takes `'length',0` —
+the bare shaft — as the reference segment rather than trying to recover the
+two measurements from the markers, since those also carry the sector
+corners.
+
+### L3
+`vector3d/histogram` does hand the convention to
+`plottingConvention/setView`, whose polaraxes branch sets
+`ThetaZeroLocation` and `ThetaDir`. It took
+
+```matlab
+round(angle(pC.east,xvector,zvector)/degree)
+```
+
+i.e. the angle *from east to x*, while `ThetaZeroLocation` asks where
+`theta = 0` — the x axis of the data — is *drawn*, which is the angle the
+other way round, `atan2(<x,north>,<x,east>)`. The two agree at 0 and 180
+degree and swap top and bottom, so three of the four axis aligned
+conventions looked right and only `x↑→y` was wrong — by exactly 180 degree.
+
+Measured as the on screen angle of a tight cluster of directions, resolving
+`ThetaZeroLocation` and `ThetaDir` back into an angle (it is their
+combination that decides what the reader sees):
+
+| convention | x lands / wanted | y lands / wanted |
+|---|---|---|
+| `y↑→x` | 0.6 / 0 | 90.7 / 90 |
+| `y↓→x` | 0.3 / 0 | 270.7 / 270 |
+| `x←↑y` | 180.0 / 180 | 90.4 / 90 |
+| `x↑→y` | **270.0 / 90** | **180.2 / 360** |
+
+New owner `tests/plotting/check_polarHistogram.m`.
+
+### G8
+Not reproducible as of 2026-08-12: interpolating `small` onto half its step
+with a `meshgrid` and running `calcGrains` gives 89 grains from 14641 points
+with no error. `@EBSD/interp` was rewritten since the report (see `bugs.md`
+item 7 — `scatteredInterpolant` replaced by a local nearest-within-the-cell
+test), and the reported "Index exceeds the number of array elements" is the
+shape of failure that rewrite removed. The reporter's own 50x50 cutout is
+attached to the issue as `no5_02um.zip` and has **not** been tried; that is
+what would close this rather than leave it in triage.
+
+### L2
+Measured 2026-08-12 with an asymmetric `unimodalODF`, reading the peak
+position off the first section's contour:
+
+| what was changed | peak |
+|---|---|
+| `odf.SS.how2plot` out of screen | (+0.5913, +1.0242) |
+| `odf.SS.how2plot` into screen | (-0.5913, +1.0242) |
+
+So `plotSection(odf,'sigma')` **does** follow the convention — `pfSections`
+passes `oS.SS.how2plot` into both `plotS2Grid` and the reference field.
+
+What #2093 really runs into is that the convention is captured when the data
+is constructed, not read at plot time: the report builds `odf` once and then
+changes the preference, and `orientation.byEuler(...,cs)` had already taken
+`specimenSymmetry.default` as it stood. `plottingConvention.matchDefault`
+exists precisely so that data plotted the default way keeps referring to the
+one default instance and does follow later changes, but data given an
+explicit convention does not. That propagation question is L4, not a sigma
+section defect. It is made harder to reason about by `plottingConvention`
+being a handle class, so the report's `xyzPlot.intoScreen = zvector` mutates
+the very object anything holding it already refers to — see
+`plottingconvention-eq-and-default-frame` in the agent memory.
+
+Found while measuring it, and fixed: `setMTEXpref` translates
+`xyzPlotting`, `xAxisDirection` and `zAxisDirection` into a call on the
+plotting convention instead of storing them in the appdata group, and
+`getMTEXpref` knew nothing about that - it looked them up in the group,
+found nothing and returned `[]` while the setting was in effect.
+`getMTEXpref('xyzPlotting')` returned a `double`. All three read back now; a
+convention no axis is aligned with reports `''` for the two axis directions,
+since there is no such setting to name. New owner
+`tests/core/check_mtexPref.m`.
+
+### L1
+Measured 2026-08-12 on `small`, projecting the bar's box centre onto the
+convention's `east`/`north` (the axes `XDir`/`YDir` stay `normal` for every
+convention — the view is applied through the camera, so a data space
+measurement says nothing about where the bar appears):
+
+| convention | east | north | corner |
+|---|---|---|---|
+| `y↑→x` | -0.87 | -0.83 | south west |
+| `y↓→x` | -0.87 | -0.83 | south west |
+| `x←↑y` | -0.87 | -0.83 | south west |
+| `x↑→y` | -0.87 | -0.83 | south west |
+| `xAxisDirection` west + `zAxisDirection` outOfPlane | -0.87 | -0.83 | south west |
+
+The last row is #2576's own reproduction. The ruler also runs along screen
+east (dot 1.00) with the label unrotated in all four, and `'Location'`
+reaches all four corners correctly. So the report is answered by the
+rework in which the bar reads the convention back from the axes camera; it
+was never given a regression test, which it now has.
+
+### O6
+Measured before the change: `vector3d(3 x N)` → `1 x N`, `vector3d(N x 3)` →
+`1 x N` (anything not already `3 x N` was transposed into it),
+`vector3d(3 x 3)` → `1 x 3`, while `vector3d.byXYZ(N x 3)` → `N x 1`. So the
+bare constructor accepted an `N x 3` matrix and returned the right
+coordinates in the wrong orientation, silently, and disagreed with `byXYZ`
+on the same input.
+
+The contract now is that a matrix keeps the row / column correspondence of
+the three argument form: `3 x N` is one vector per column and gives a row,
+`N x 3` is one per row and gives a column. `3 x 3` satisfies both, so it
+warns (`MTEX:vector3d:ambiguousMatrix`) and is read column wise, i.e.
+unchanged; a matrix that is neither errors with `MTEX:vector3d:wrongSize`
+instead of being transposed into shape.
+
+Blast radius in tree is one call site, not nil as the commit message says —
+that audit grepped for a single *identifier* argument and so missed
+bracketed ones. `@grain2d/checkInside` builds `[xy zeros(n,1)]`, a genuine
+`n x 3`. The orientation change is harmless there (`in` is assigned into a
+column slice either way), but for exactly **three** query points that matrix
+is also `3 x 3` and would now warn, so the call was moved to
+`vector3d.byXYZ`, which reads rows unconditionally.
+
+New owner `tests/core/check_vector3d.m` — there was none for the class the
+whole geometry chain is built on.
+
+### E4
+Measured on gridified forsterite, `336 x 732`: `id`, `rotations`, `pos`,
+`isIndexed`, `mad` and `bc` all came back `[336 732]`, `phase` and `phaseId`
+came back `[245952 1]`. So `phase` was the single per-pixel view a sliding
+window analysis indexes by `(row,col)` that could not be — which is what
+#2128 reports as "different size outputs between 5.10.2 and 5.11.2".
+
+`phaseId` is the storage and stays a column: `phaseList/length`, `numel` and
+`end` all read `size(phaseId,1)` and `@EBSD` overrides only `size`, so
+reshaping the property itself would make `numel(grid)` 336 rather than
+245952. The fix is on the dependent `get.phase`, which now reshapes to
+`size(pL)` exactly as `get.isIndexed` in the same file already did. Guarded
+on `numel(phase) == prod(size(pL))`, because a `@grainBoundary` stores a
+phase on each side — an `n x 2` `phaseId` against an `n x 1` object — and has
+to keep its columns.
+
+### E3
+Not a defect. On forsterite: the complete map is `length(ebsd) = 245952` and
+`numel(ebsd.gridify) = 245952`, unchanged. The counts differ only when the
+input has holes — `ebsd('indexed')` is 187467 points and gridifies to 245952
+— which is what `gridify` is for: it re-inserts the missing scan positions as
+notIndexed so the map is a full rectangle. Same for a map that has been
+through `interp`. Worth a sentence in the `gridify` help rather than a code
+change.
+
+### E1
+`calcUnitCell` returns an `n x 2` list of coordinates while `ebsd.unitCell`
+is a `vector3d`, so the documented recompute `ebsd.unitCell =
+calcUnitCell(xy)` stored a raw double that every later reader of the property
+tripped over, far from the assignment. The conversion existed in exactly one
+place, `EBSD.loadobj`, and in the local `setUnitCell` of `updateUnitCell`;
+it is now a `set.unitCell` on `@EBSD`, so the property cannot hold a double
+whichever route wrote it.
+
+Found on the way, from `bugs.md`: `calcUnitCell` returned a cell with a **NaN
+side** for a single scan line. The coordinate that does not vary leaves
+`uniquetol` a single value, so `mean(diff(...))` is NaN and `regularPoly`
+propagates it. Reached by ordinary code — `check_ebsdGrid`'s own
+`makeMultiPropMap` fixture is a single line and was carrying a NaN unit cell
+the whole time. Now the spacing is taken from the direction the line does
+extend in.
+
 ### I9
 `loadEBSD_ctf.m` already reads its header separately from the bulk data, so
 it is the natural place to prototype a header-only path. The wizard's
@@ -871,6 +1343,69 @@ Symbolic Math Toolbox. On a machine without that licence every
 of type 'char'", which is also why the SO3 half of T3 could not be verified.
 Found 2026-08-11. Either replace the symbolic step with a numeric one, or
 declare the dependency and fail with a message that names the toolbox.
+
+### C0
+Done 2026-08-13. Beyond the gridify-by-default material itself, running the
+pages turned up three things worth recording.
+
+**The `mtexdata` `.mat` caches mask the whole feature.** `tools/mtexdata.m`
+loads `data/<name>.mat` in preference to the source file, so on a machine
+that has run MTEX before, `mtexdata twins` keeps returning the pre-branch
+plain list and every rewritten page describes something the reader does not
+see. The caches are gitignored derived data, so nothing in the repo records
+the staleness. Regenerated here with `mtexdata(name,'force')`; a released
+7.0 should either version the cache or drop it for EBSD sets.
+
+**`loadEBSD_*` called directly bypasses the gridding.** The hook lives in
+`EBSD.load`, so `mtexdata csl` and `mtexdata mylonite`, which call
+`loadEBSD_generic` directly, still come back as plain lists while every other
+sample set is gridded. Not wrong, but an inconsistency a user will notice.
+
+**Two latent defects, neither reached by a doc page as written.**
+`vector3d.byXYZ` on an *empty* matrix with other than three columns throws
+"Coordinates have different size": the scalar `0` for z is repmat'd to
+`1 x 1` while x and y stay `0 x 1`. `grain2d/checkInside` walks into it,
+because for an @EBSD query it builds an `n x 3` and then appends a fourth
+zero column at line 88 — which also silently discards z on every call. The
+reachable symptom is `fill(ebsd,grains)` erroring whenever nothing is left to
+fill: resampling copper onto a 2.5 µm square cell leaves 137 unfilled cells,
+all outside the hull, so the query set is empty. Both are older than the
+gridify work.
+
+### C0b
+Reported by Ralf against the rewritten docs, 2026-08-13. Four pages, three
+distinct causes, two of which are code and not documentation.
+
+**`ebsd(x,y)` silently changes meaning.** `@EBSD/subsind` reads two numeric
+subscripts as a *position* and calls `findByLocation`; `@EBSDgrid/subsind`
+reads them as *(row,column)*. `CrystalShapes.m` asked for the orientation at
+(500,500) µm and got row 500 of a 97 row map, i.e. an out of range error.
+The page now says `ebsd('xy',500,500)`, which selects the same pixel the list
+form used to. **The dangerous case is not this one**: on a map with enough
+rows and columns the positional form does not error, it silently returns a
+different pixel. Every script written against pre-gridify MTEX that indexes
+by position is exposed. Worth deciding whether the grid class should keep
+overloading the same syntax at all.
+
+**`@EBSDhex/reduce` took no factor** — it was written on the staggered matrix
+subscripts and could only ever express `fak = 2`, so `reduce(ebsd,4)` in
+`ODFTheory.m` raised "Too many input arguments" as soon as titanium started
+arriving as an @EBSDhex. Deleted; `@EBSD/reduce` now selects on the lattice
+index (`all(mod(ij,fak)==0,2)`) and scales the unit cell, which covers square
+and hex, list and grid, rotated grids, and any factor in one implementation.
+The list and the grid form now also agree pixel for pixel, which they did not
+before: titanium/copper/ferrite/forsterite/twins at factors 2, 3 and 4 all
+match exactly.
+
+**`phaseId` is a column while every other per pixel view is the map.** Both
+parent-reconstruction pages do
+
+```matlab
+parentGrains.phaseId(max(1,parentEBSD.grainId)) == x & parentEBSD.phaseId == y
+```
+
+which on a gridded map is an `(r x c)` against an `(r*c x 1)`. Flattened with
+`(:)` in both pages, but the asymmetry itself is the real issue - see C0c.
 
 ### C-empty
 Of the fourteen empty chapters found by the 2026-07-28 doc audit

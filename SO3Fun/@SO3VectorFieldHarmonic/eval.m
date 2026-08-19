@@ -50,8 +50,9 @@ if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
     % and evaluate them with FFT on the full quadrature grid.
     % Subsequently, the surplus evaluations could be omitted, as we only 
     % have to evaluate on a sub-grid.
-    fullG = quadratureSO3Grid(rot,crystalSymmetry,specimenSymmetry);
-    fun = SO3VF.SO3F; fun.CS = crystalSymmetry.default; fun.SS = specimenSymmetry.default;
+    % drop the groups, keep the frames (ADR 0003)
+    fullG = quadratureSO3Grid(rot,stripSym(rot.CS),stripSym(rot.SS));
+    fun = SO3VF.SO3F; fun.CS = stripSym(fun.CS); fun.SS = stripSym(fun.SS);
     xyz = evalEquispacedFFT(fun,fullG,varargin{:});
     xyz = reshape(xyz,[size(fullG.fullGrid) 3]);
     s = size(rot.fullGrid);
@@ -68,7 +69,8 @@ else
 end
 
 % generate tangent space vector
-f = SO3TangentVector(xyz.',rot(:),SO3VF.internTangentSpace,SO3VF.hiddenCS,SO3VF.hiddenSS);
+f = SO3TangentVector(vector3d(xyz.'),...
+  orientation(rot(:),SO3VF.hiddenCS,SO3VF.hiddenSS),SO3VF.internTangentSpace);
 f = reshape(f,size(rot));
 
 % Maybe change tangent space

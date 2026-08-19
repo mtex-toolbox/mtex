@@ -15,6 +15,10 @@ unitCell = ebsd.unitCell;
 pos = ebsd.pos;
 alpha = get_option(varargin,'faceAlpha');
 
+% which cells carry a measurement - gridded data is completed into a full
+% rectangular raster, and the padding must not count towards the axis limits
+isCell = ~isnan(ebsd.phaseId);
+
 % region crop (kept here so the backends receive already-cropped data)
 if check_option(varargin,'region')
   reg = get_option(varargin,'region');
@@ -22,6 +26,7 @@ if check_option(varargin,'region')
   pos = pos(ind,:);
   if numel(d) == numel(ind) || numel(ind) == size(d,1), d = d(ind,:); end
   if numel(alpha) == numel(ind), alpha = alpha(ind); end  
+  isCell = isCell(ind);
 end
 
 % convert a color name to rgb (backend-agnostic)
@@ -48,7 +53,7 @@ switch lower(backend)
   case 'patch'
     h = plotPatch(pos,d,unitCell,alpha,varargin{:});
   case 'surf'
-    h = plotSurf(pos,d,unitCell,varargin{:});
+    h = plotSurf(pos,d,unitCell,'isCell',isCell,varargin{:});
   case 'imagesc'
     h = plotImagesc(pos,d,unitCell,alpha,varargin{:});
   otherwise

@@ -103,3 +103,33 @@ A connected notIndexed area within the actually-scanned region — see notIndexe
 **Local deformation model**:
 The correction used when recovering positions for cells with no measurement (holes, dummy ring, gaps) on a scan grid that isn't perfectly rigid: an ideal affine grid is fit first, then the local deviation between real measured positions and that ideal grid is interpolated back in, rather than assuming one global affine transform explains the whole scan.
 _Avoid_: Distortion correction (too vague), warping
+
+### Reference frames and symmetry
+
+See `docs/adr/0003-reference-frame-vs-symmetry.md` for the model behind these terms.
+
+**Reference frame**:
+The coordinate system a piece of data is expressed in — an identity (measurement, rolling, geological, or a crystal's), a basis, and the default convention for drawing it. Distinct from the symmetry attached to it and from the plotting convention it supplies.
+_Avoid_: coordinate system, alignment, reference system (currently used for both frame and symmetry)
+
+**Crystal frame**:
+The Cartesian reference frame glued to the lattice basis of a phase. The `X||a*, Z||c` alignment choice belongs to the frame, not to the point group.
+
+**Specimen frame**:
+The reference frame the sample is expressed in. Named instances — measurement frame, rolling frame (RD/TD/ND), geological frame — so that moving between them is an explicit operation, not a rotation tracked by hand.
+
+**Symmetry**:
+The point group data is invariant under. Attached to a reference frame, not identical with one: two datasets can share a symmetry while sitting in differently aligned frames (`sim`), or share a frame with different symmetries.
+_Avoid_: reference system (when meaning the point group specifically)
+
+**Plotting convention**:
+How a reference frame is laid out on screen (which axis points east, which out of screen). Supplied by the frame as a default and overridable per plot. Not purely screen-facing — the import path consumes `how2plot.rot` as a frame relation — so do not treat it as a camera setting.
+_Avoid_: view, camera
+
+**Frame change**:
+Re-expressing the same physical object in a different reference frame (`transformReferenceFrame`), leaving the object itself untouched. Distinct from rotating, which moves the object.
+_Avoid_: transformation (ambiguous between the two)
+
+**Frame-free**:
+The state of a `vector3d`, `S2Fun` or `tensor` that is not tied to any reference frame, spelled by an *empty* frame and resolved against the session default at render time. Pointing at the default frame instance is not frame-free — it is framed data that follows the default.
+_Avoid_: default frame, no symmetry

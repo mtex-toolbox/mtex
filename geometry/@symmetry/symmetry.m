@@ -18,17 +18,29 @@ classdef symmetry < matlab.mixin.Copyable
   
   properties
     opt = struct
-    how2plot
+    frame = []       % the referenceFrame this symmetry is attached to
   end
+
 
   properties (Dependent = true)
     lattice          % type of crystal lattice
     pointGroup       % point group name
+    how2plot         % plotting convention - read only
+    % A convention belongs to a reference frame. To change how this is
+    % drawn use plot(...,'y↑→x') for one plot,
+    % plottingConvention.default(...) for the session, or move the data
+    % with x.frame = specimenFrame.rolling
   end
   
   properties (Access = protected)
     LaueRef = []
     properRef = []
+  end
+
+  properties (Access = protected, Transient = true)
+    % cache for stripSym: the trivial stand-in must be a stable handle, since
+    % crystalSymmetry equality is sealed to handle identity - never saved
+    stripSymRef = []
   end
     
   properties (Constant = true)
@@ -48,9 +60,13 @@ classdef symmetry < matlab.mixin.Copyable
       
       s.id = id;
       if ~isempty(rot), s.rot = rot; end
-      
-      if nargin < 3, pC = plottingConvention; end
-      s.how2plot = pC;
+
+      % kept for backward compatibility: an explicitly passed convention
+      % gets a frame carrying it; the subclass constructors mint a frame
+      % that supplies the default instead
+      if nargin == 3 && ~isempty(pC)
+        s.frame = specimenSymmetry.frameFor(pC);
+      end
 
       if s.id == 1, return; end
         
@@ -65,11 +81,13 @@ classdef symmetry < matlab.mixin.Copyable
     end
     
     
-    function set.how2plot(s,pC)
-      % accept a string like 'y↑→x' as a shortcut for the convention
-      if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
-      s.how2plot = pC;
+    function pC = get.how2plot(s)
+      % only frames carry conventions - a symmetry shows the one of its
+      % reference frame
+      pC = [];
+      if ~isempty(s.frame), pC = s.frame.how2plot; end
     end
+
 
     function pg = get.pointGroup(sym)
       if sym.id>0
@@ -107,11 +125,37 @@ classdef symmetry < matlab.mixin.Copyable
       out = lt(cs2,cs1);
     end
 
-    function out = ID1(sym)
-      if isa(sym,'crystalSymmetry')
-        out = crystalSymmetry.default;
-      elseif isa(sym,'specimenSymmetry')
-        out = specimenSymmetry.default;
+    function out = stripSym(sym)
+      % the trivial group in the reference frame of the input - the
+      % symmetry is dropped, where the data lives is not
+      %
+      % the stand-in is cached on the input handle: crystalSymmetry
+      % equality is sealed to handle identity, so repeated drops of the
+      % same symmetry must return the same handle to stay comparable
+
+      if sym.id == 1, out = sym; return; end
+
+      out = sym.stripSymRef;
+
+      % invalidate when the frame was replaced - handle identity, since
+      % an equal-valued fork is a different frame
+      if ~isempty(out)
+        sameFrame = (isempty(sym.frame) && isempty(out.frame)) || ...
+          (~isempty(sym.frame) && ~isempty(out.frame) && out.frame == sym.frame);
+        if ~sameFrame, out = []; end
+      end
+
+      if isempty(out)
+        if isa(sym,'crystalSymmetry')
+          out = crystalSymmetry;
+          % the mineral doubles as the frame identity, so displays keep
+          % saying whose frame the data lives in
+          out.mineral = sym.mineral;
+        elseif isa(sym,'specimenSymmetry')
+          out = specimenSymmetry;
+        end
+        out.frame = sym.frame;
+        sym.stripSymRef = out;
       end
     end
     

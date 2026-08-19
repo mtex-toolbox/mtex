@@ -1,7 +1,8 @@
 function display(ebsd,varargin)
 % standard output
 
-displayClass(ebsd,inputname(1));
+displayClass(ebsd,inputname(1),'moreInfo',...
+  referenceFrame.headerChar(ebsd.frame,ebsd.how2plot));
 
 % empty ebsd set 
 if isempty(ebsd)

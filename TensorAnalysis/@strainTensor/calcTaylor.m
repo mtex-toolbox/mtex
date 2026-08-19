@@ -39,9 +39,14 @@ function [M,b,spin] = calcTaylor(eps,sS,varargin)
 %   [M,~,W] = calcTaylor(eps,sS.symmetrise)
 %
 
-% Compute the Taylor factor and strain dependent gradient independent of 
+% Compute the Taylor factor and strain dependent gradient independent of
 % the orientation, i.e. SO3FunHarmonic and SO3VectorFieldHarmonic
-if sS.CS.Laue ~= eps.CS.Laue
+%
+% a strain given in crystal coordinates is recognized by its crystal
+% frame - a rotated tensor carries only the frame of the orientation,
+% never its symmetry (ADR 0003), so the symmetry claim cannot serve as
+% the mode switch here
+if ~isa(eps.frame,'crystalFrame')
   bw = get_option(varargin,'bandwidth',32);
   numOut = nargout;
 

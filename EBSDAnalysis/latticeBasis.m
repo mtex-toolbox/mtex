@@ -22,6 +22,19 @@ function [A,stencil,dxy] = latticeBasis(unitCell)
 % NB the derived (i,j) indexing is PRIVATE to the decomposition and need not
 % agree with the matrix layout of a gridified EBSDsquare/EBSDhex object.
 
+% The construction below is 2d - it reads the cell as (x,y). For a map that
+% does not lie in the xy plane that projection is degenerate: a cell in the
+% xz plane collapses onto a line and A comes out singular, e.g. [d 0; 0 0],
+% which then propagates as a cryptic indexing error out of assignGridIndex.
+% So rotate the cell into the xy plane first and return A in THAT frame -
+% the map plane frame. The caller reaches the same frame through
+% ebsd.rot2Plane, which is derived from the same normal (EBSD.N is
+% perp(ebsd.unitCell)), so the two agree by construction.
+N = perp(unitCell);
+if ~isnull(angle(N,zvector,'antipodal'))
+  unitCell = rotation.map(N,zvector) * unitCell;
+end
+
 V = [unitCell.x(:), unitCell.y(:)];
 V = V - mean(V,1);                       % centre the cell on the origin
 k = size(V,1);
@@ -30,9 +43,34 @@ k = size(V,1);
 mids  = 0.5 * (V + V([2:end 1],:));
 trans = 2 * mids;                        % k x 2, one per shared edge
 
+% Choose the basis from the DIRECTIONS of these translations, never from
+% their position in the list.
+%
+% trans carries one translation per edge, so both its order and the signs of
+% its entries follow the order in which the unit cell's corners happen to be
+% written down - and that is not an invariant of the cell. squarify sorts the
+% corners by angle before gridding, which on the importers' cells also
+% reverses the winding: the same 50 x 50 square arrived counter-clockwise
+% from EBSD.load and clockwise from gridify. Reading a1 off trans(1,:) turned
+% that into A = [50 0; 0 50] for one and A = [-50 0; 0 50] for the other - a
+% mirrored, left handed (i,j) frame for the same lattice - which propagated
+% through assignGridIndex into the decomposition and changed the
+% reconstruction: forsterite gave 2931 grains and a total boundary length of
+% 2109862.588230 one way against 2936 and 2109862.726874 the other, from
+% identical measurements.
+%
+% Every translation occurs as a +-pair, so take from each pair the
+% representative pointing into the upper half plane (+x on the axis itself).
+% That is fixed by the geometry of the cell alone.
+tol  = 1e-12 * max(vecnorm(trans,2,2));
+flip = trans(:,2) < -tol | (abs(trans(:,2)) <= tol & trans(:,1) < 0);
+trans(flip,:) = -trans(flip,:);
+
 if k == 4
-  % square: a1 = first translation, a2 = the one orthogonal to it
-  a1 = trans(1,:);
+  % square: a1 = translation with the smallest polar angle, a2 the one
+  % orthogonal to it, oriented so that the frame stays right handed
+  [~,i1] = min(atan2(trans(:,2),trans(:,1)));
+  a1 = trans(i1,:);
   d  = abs(trans * a1') ./ (vecnorm(trans,2,2) * norm(a1) + eps);
   cand = find(d < 0.5);                  % ~orthogonal to a1
   a2 = trans(cand(1),:);
@@ -53,6 +91,9 @@ elseif k == 6
 else
   error('latticeBasis:unitCell','unit cell must have 4 or 6 corners');
 end
+
+% right handed, so that the (i,j) frame cannot mirror with the cell's winding
+if a1(1)*a2(2) - a1(2)*a2(1) < 0, a2 = -a2; end
 
 A   = [a1(:) a2(:)];                     % columns are a1, a2
 dxy = mean(vecnorm(A,2,1));

@@ -54,7 +54,7 @@ if nargin < 2, v0 = xvector; end
 delta = get_option(varargin,'delta',45*degree);
 
 % the ODF should not yet have a specimen symmetry
-odf.SS = specimenSymmetry.default;
+odf.SS = stripSym(odf.SS); % drop the group, keep the frame (ADR 0003)
 
 % two different algorithms
 useFourier = check_option(varargin,'Fourier') || isa(odf,'SO3FunHarmonic');

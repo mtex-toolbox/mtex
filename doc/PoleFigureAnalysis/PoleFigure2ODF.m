@@ -6,6 +6,7 @@
 % <PoleFigure.PoleFigure.html |PoleFigure|> object which can be created
 % e.g. by
 
+plottingConvention.default("y↑→x");
 mtexdata dubna
 
 %%

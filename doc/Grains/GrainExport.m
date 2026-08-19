@@ -10,6 +10,7 @@
 %
 % Throughout this page we work with the Forsterite data set.
 
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 grains = calcGrains(ebsd('indexed'),'angle',10*degree);

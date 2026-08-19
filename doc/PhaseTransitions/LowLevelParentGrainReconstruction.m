@@ -134,7 +134,7 @@ parentGrains = parentGrains.update;
 
 % define a color key
 ipfKey = ipfColorKey(ebsd(betaName));
-ipfKey.inversePoleFigureDirection = vector3d.Y;
+ipfKey.ipfDirection = vector3d.Y;
 
 % and plot
 plot(parentGrains(betaName), ...
@@ -276,8 +276,11 @@ sum(parentGrains(alphaName).numPixel) ./ sum(parentGrains.numPixel)*100
 
 % consider only original alpha pixels that now belong to beta grains
 
-isNowBeta = parentGrains.phaseId(max(1,parentEBSD.grainId)) == ebsd.name2id(betaName) &...
-  parentEBSD.phaseId == ebsd.name2id(alphaName);
+% the (:) matter: on a gridded map every per pixel property has the shape of
+% the map, but phaseId is the storage and stays a column, so combining the
+% two without flattening compares an (r x c) against an (r*c x 1)
+isNowBeta = parentGrains.phaseId(max(1,parentEBSD.grainId(:))) == ebsd.name2id(betaName) &...
+  parentEBSD.phaseId(:) == ebsd.name2id(alphaName);
 
 %%
 % Next we can use once again the function <calcParent.html |calcParent|> to

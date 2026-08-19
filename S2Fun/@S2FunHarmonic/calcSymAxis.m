@@ -20,4 +20,5 @@ end
 
 [~,id] = min(err);
 v = v2(id);
-v.how2plot = S2F.how2plot;
+% the axis lives in the reference frame of the function
+v.frame = S2F.frame;

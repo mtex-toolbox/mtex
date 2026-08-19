@@ -6,6 +6,7 @@
 % data set.
 
 % load sample EBSD data set
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 % restrict it to a subregion of interest.

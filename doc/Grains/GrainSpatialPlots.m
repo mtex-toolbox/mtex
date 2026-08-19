@@ -4,6 +4,7 @@
 % We start by importing some EBSD data and reconstructing some grains
 
 % import a demo data set
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 % perform grain segmentation
@@ -56,7 +57,7 @@ ipfKey = ipfColorKey(grains('Fo'));
 %%
 % we can set the inverse pole figure direction and many other properties
 
-ipfKey.inversePoleFigureDirection = xvector;
+ipfKey.ipfDirection = xvector;
 
 % compute the color from the meanorientation
 color = ipfKey.orientation2color(grains('Fo').meanOrientation);
@@ -178,6 +179,7 @@ hold off
 % grains using the command <grain2d.quiver.html |quiver|>.
 
 % load some single phase data set
+plottingConvention.default('y↓→x')
 mtexdata csl
 
 % compute and plot grains

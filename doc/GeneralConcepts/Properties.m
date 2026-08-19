@@ -17,6 +17,7 @@
 % EBSD file usually contributes at least the confidence index and the
 % error of the fit. All properties are collected in the struct |prop|
 
+plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 ebsd.prop

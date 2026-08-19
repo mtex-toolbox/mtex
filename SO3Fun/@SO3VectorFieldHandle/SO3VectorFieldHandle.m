@@ -58,8 +58,11 @@ methods
     
     SO3VF.fun = fun;
     
-    % set symmetries
-    [SRight,SLeft] = extractSym(varargin);
+    % set symmetries - a bare function handle has nothing to inherit from,
+    % so an absent symmetry genuinely means the session default
+    [SRight,SLeft] = extractSym(varargin,'empty');
+    if isempty(SRight), SRight = specimenSymmetry; end
+    if isempty(SLeft), SLeft = specimenSymmetry; end
     SO3VF.hiddenCS = SRight;
     SO3VF.hiddenSS = SLeft;
     
@@ -89,12 +92,12 @@ methods
     if sign(SO3VF.tangentSpace)>0
       cs = SO3VF.hiddenCS;
     else
-      cs = ID1(SO3VF.hiddenCS);
+      cs = stripSym(SO3VF.hiddenCS);
     end
   end
   function ss = get.SLeft(SO3VF)
     if sign(SO3VF.tangentSpace)>0
-      ss = ID1(SO3VF.hiddenSS);
+      ss = stripSym(SO3VF.hiddenSS);
     else
       ss = SO3VF.hiddenSS;
     end
