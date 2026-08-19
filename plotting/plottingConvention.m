@@ -18,6 +18,7 @@ classdef plottingConvention
 %   pC = plottingConvention('x←↑y')  % x points to the left, y points up
 %   pC = plottingConvention('z⊙→x')  % z points out of screen, x right
 %   pC = plottingConvention('y^->x') % same as 'y↑→x', ASCII arrows
+%   pC = plottingConvention('z(.)->x') % same as 'z⊙→x', (x) is ⊗
 %
 %   % changing the default plotting convention - modify a copy and make
 %   % it the default (this is what plotx2east and friends do)
@@ -72,7 +73,7 @@ classdef plottingConvention
         
     function display(pC,varargin)
 
-      [c,isPictogram] = char(pC,'compact');
+      [c,isPictogram] = char(pC);
       displayClass(pC,inputname(1),'moreInfo',c,varargin{:});
 
       % an axis aligned convention is completely described by the pictogram
@@ -98,29 +99,32 @@ classdef plottingConvention
 
     end
 
-    function [c,isPictogram] = char(pC,varargin)
+    function [c,isPictogram] = char(pC)
       % pictogram of the convention, e.g. 'y↑→x'
+      %
+      % The symbols follow the UTF8Output preference - with it switched
+      % off the ASCII form 'y^->x' is printed, which is exactly what the
+      % constructor parses back
       %
       % Output
       %  c           - char, the pictogram, or 'xyz' if there is none
       %  isPictogram - is the convention axis aligned, i.e. is c a pictogram?
 
-      arrows = '←→↑↓'; xyz = 'xyz';
+      a = plottingConvention.arrows; xyz = 'xyz';
 
-      [ud,north] = find(pC.north == [1;-1] .* [xvector,yvector,zvector]); %#ok<PROPLC>
-      c = [xyz(north) arrows(ud+2)]; %#ok<PROPLC>
-
-
-      [lr,east] = find(pC.east == [1;-1] .* [xvector,yvector,zvector]); %#ok<PROPLC>
+      % which axis points north, which one east - ud and lr say whether it
+      % is the axis itself or its negative
+      [ud,iN] = find(pC.north == [1;-1] .* [xvector,yvector,zvector]);
+      [lr,iE] = find(pC.east == [1;-1] .* [xvector,yvector,zvector]);
 
       isPictogram = ~isempty(ud) && ~isempty(lr);
 
       if ~isPictogram
         c = 'xyz';
       elseif lr == 1
-        c = [c,arrows(2),xyz(east)]; %#ok<PROPLC>
+        c = [xyz(iN),a{ud+2},a{2},xyz(iE)];
       else
-        c = [xyz(east),arrows(1),fliplr(c)]; %#ok<PROPLC>
+        c = [xyz(iE),a{1},a{ud+2},xyz(iN)];
       end
 
     end
@@ -364,6 +368,26 @@ classdef plottingConvention
 
   methods (Static=true)
 
+    function a = arrows
+      % the screen direction symbols, in the order
+      % {west, east, north, south, intoScreen, outOfScreen}
+      %
+      % Everything that prints a convention - <plottingConvention.char>,
+      % <referenceFrame.conventionChar>, <crystalFrame.conventionChar> -
+      % takes its symbols from here, so the UTF8Output preference reaches
+      % all of them. The ASCII forms are the ones str2rot parses back, so
+      % a printed convention can always be pasted into the constructor.
+      %
+      % See also
+      % plottingConvention/char
+
+      if getMTEXpref('UTF8Output',true)
+        a = {'←','→','↑','↓','⊗','⊙'};
+      else
+        a = {'<-','->','^','v','(x)','(.)'};
+      end
+
+    end
 
     function pC = fromOption(list,default)
       % the plotting convention among a list of plot options, if any
@@ -614,8 +638,11 @@ function rot = str2rot(str)
 
 str = char(str);
 
-% ASCII replacements for the arrows - note that <- has to be resolved
-% before the remaining minus signs are read as sign changes
+% ASCII replacements for the arrows - note that (x) has to be resolved
+% before its x is read as an axis name, and <- before the remaining minus
+% signs are read as sign changes
+str = strrep(str,'(x)','⊗');
+str = strrep(str,'(.)','⊙');
 str = strrep(str,'->','→');
 str = strrep(str,'<-','←');
 str = strrep(str,'^','↑');
@@ -646,7 +673,7 @@ for k = 1:length(str)
   if isempty(ind)
     error('MTEX:plottingConvention',['Can not interpret ''%s'' as a plotting ' ...
       'convention - unknown symbol ''%s''. Use axis names x,y,z and the ' ...
-      'arrows ←→↑↓⊗⊙ (or <- -> ^ v), e.g. ''y↑→x''.'],str,str(k));
+      'arrows ←→↑↓⊗⊙ (or <- -> ^ v (x) (.)), e.g. ''y↑→x''.'],str,str(k));
   end
   n = n+1; isAxis(n) = false; vec(n) = screenDir(ind);
 

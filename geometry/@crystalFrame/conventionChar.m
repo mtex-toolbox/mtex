@@ -36,9 +36,12 @@ out = matchAxis(pC.outOfScreen,dirs,names);
 east = matchAxis(pC.east,dirs,names);
 
 if isempty(out) || isempty(east)
-  c = char(pC,'compact');
+  c = char(pC);
 else
-  c = ['⊙' out '→' east];
+  % {west, east, north, south, intoScreen, outOfScreen}, ASCII when UTF8
+  % output is off
+  a = plottingConvention.arrows;
+  c = [a{6} out a{2} east];
 end
 
 end

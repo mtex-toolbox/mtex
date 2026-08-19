@@ -81,9 +81,16 @@ methods
     % classes that carry one - see e.g. @EBSD/display - since for a
     % specimen symmetry it is the only thing besides the point group
     % that distinguishes one instance from another
+    %
+    % It goes through conventionChar, so a named frame states it in its
+    % own axes names ('TD↑→RD') exactly as the data in that frame does -
+    % see @vector3d/display
+
+    c = '';
+    if ~isempty(s.frame), c = [' (' conventionChar(s.frame) ')']; end
+
     disp(' ');
-    disp([inputname(1) ' = ' char(s.lattice) ' ' doclink(s) ...
-      ' (' char(s.how2plot,'compact') ') ' docmethods(inputname(1))]);
+    disp([inputname(1) ' = ' char(s.lattice) ' ' doclink(s) c]);
     disp(' ');
   end
 

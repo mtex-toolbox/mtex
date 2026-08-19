@@ -50,22 +50,29 @@ propV{end+1} = numSym(cs);
 
 
 
-% add axis length
-props{end+1} = 'a, b, c';
-propV{end+1} = option2str(vec2cell(norm(cs.axes)));
+% the lattice geometry all lives on the reference frame - a symmetry
+% without one has no axes to report, and every one of these would throw
+% out of the display rather than print what it does know
+if ~isempty(cs.frame)
 
-% add axis angle
-if cs.id < 12
-  props{end+1} = 'alpha, beta, gamma';
-  propV{end+1} = [num2str(cs.alpha./degree) mtexdegchar ', ' ...
-    num2str(cs.beta./degree) mtexdegchar ', ' ...
-    num2str(cs.gamma./degree) mtexdegchar];
-end
+  % add axis length
+  props{end+1} = 'a, b, c';
+  propV{end+1} = option2str(vec2cell(norm(cs.axes)));
 
-% add reference frame
-if ~cs.lattice.isEucledean
-  props{end+1} = 'reference frame'; 
-  propV{end+1} = option2str(cs.alignment);    
+  % add axis angle
+  if cs.id < 12
+    props{end+1} = 'alpha, beta, gamma';
+    propV{end+1} = [num2str(cs.alpha./degree) mtexdegchar ', ' ...
+      num2str(cs.beta./degree) mtexdegchar ', ' ...
+      num2str(cs.gamma./degree) mtexdegchar];
+  end
+
+  % add reference frame
+  if ~cs.lattice.isEucledean
+    props{end+1} = 'reference frame';
+    propV{end+1} = option2str(cs.alignment);
+  end
+
 end
 
 % display all properties
