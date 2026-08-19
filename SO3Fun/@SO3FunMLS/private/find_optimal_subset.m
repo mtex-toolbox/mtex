@@ -1,18 +1,18 @@
 function opt_sub_ind = find_optimal_subset(SO3F, ind, ori, varargin)
 
 
-% compute for given index sets ind(.,:) describing points of SO3F.nodes 
+% compute for given index sets ind(.,:) describing points of SO3F.nodes
 %   and polynomial degree (given by SO3F) the OPTimal SUBset INDice
 
 
 % inputs:
-%   SO3F    - @SO3FunMLS, containing data like nodes, degree, dimension of poly space, ...
-%   ind     - N x numel(SO3F.nodes) logical array describing sets of nodes
-%   ori     - the centers where the MLS approximation is to be evaluated
+%   SO3F   - @SO3FunMLS, containing data like nodes, degree, dimension of poly space, ...
+%   ind    - N x numel(SO3F.nodes) logical array describing sets of nodes
+%   ori    - the centers where the MLS approximation is to be evaluated
 
-% outputs: 
-%   opt_sub_ind  - a N x numel(SO3F.nodes) logical array with 
-%                    sum(optind, 2) = (dim,...,dim)  describing the optimal subsets 
+% outputs:
+%   opt_sub_ind  - a N x numel(SO3F.nodes) logical array with
+%                    sum(optind, 2) = (dim,...,dim)  describing the optimal subsets
 %                    of cardinality = dim(ansatz space)
 
 
@@ -30,7 +30,7 @@ function opt_sub_ind = find_optimal_subset(SO3F, ind, ori, varargin)
 is_logical = isa(ind, 'logical');
 
 % set parameters and initialize
-N = numel(ori);
+N = size(ind, 1);
 grid_size = numel(SO3F.nodes);
 dim = SO3F.dim;
 
@@ -43,7 +43,7 @@ if (isa(ind, 'double') == true)
   n = size(ind, 2);
   row_idx = repmat((1:N)', 1, n);
   ind = sparse(row_idx, ind, true, N, grid_size, N*n);
-end 
+end
 
 
 % set linprog options to suppress output
@@ -56,22 +56,23 @@ ns = sum(ind, 2);
 
 inv_ori = inv(ori);
 
+
 if (num_threads == 1)
   for i = 1 : N
-    n = ns(i); 
+    n = ns(i);
     dists = angle(SO3F.nodes.subSet(ind(i,:)), ori.subSet(i));
     maxdist = max(dists);
     weights = SO3F.w(dists ./ (maxdist * 1.1));
     b = repmat(1 ./ weights, 2, 1);
 
     % now the vandermonde matrix
-    rot_neighbors = inv_ori(i) * SO3F.nodes.subSet(ind(i,:));
-    halfM = SO3F.eval_basis_functions(rot_neighbors);
+    rotneighbors = inv_ori(i) * SO3F.nodes.subSet(ind(i,:));
+    halfM = SO3F.eval_basis_functions(rotneighbors);
 
     % find the worst poly p* via linprog
     M = [halfM; -halfM];
     [~, ~, ~, ~, lambda] = linprog(c, M, b, [], [], [], [], options);
-    
+
     % get the optimal subset markers
     % due to numerical instability, many lambdas are almost 0, but not precisely 0
     % thus we choose the optimal subset to consist of the indice where the
@@ -94,8 +95,8 @@ else
     b = repmat(1 ./ weights, 2, 1);
 
     % now the vandermonde matrix
-    rot_neighbors = inv_ori(i) * SO3F.nodes.subSet(ind(i,:));
-    halfM = SO3F.eval_basis_functions(rot_neighbors);
+    rotneighbors = inv_ori(i) * SO3F.nodes.subSet(ind(i,:));
+    halfM = SO3F.eval_basis_functions(rotneighbors);
 
     % find the worst poly p* via linprog
     M = [halfM; -halfM];

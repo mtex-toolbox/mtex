@@ -1,41 +1,55 @@
-function sF = plus(sF1, sF2)
-
-% implements sF1 + sF2
+function S2F = plus(S2F1, S2F2)
+% overloads |S2F1 + S2F2|
 %
 % Syntax
-%   sF = sF1 + sF2
-%   sF = a + sF1
-%   sF = sF1 + a
+%   S2F = S2F1 + S2F2
+%   S2F = a + S2F1
+%   S2F = S2F1 + a
+%
+% Input
+%  S2F1, S2F2 - @S2FunMLS
+%  a - double
+%
+% Output
+%  S2F - @S2Fun
 %
 
-if isnumeric(sF1) && isscalar(sF1)
-  sF = sF2;
-  sF.values = sF2.values + sF1;
-  return;
+if isnumeric(S2F1)
+  S2F = S2F2;
+  S2F.values = S2F.values + reshape(S2F1,[1 size(S2F1)]);
+  return
 end
-
-if isnumeric(sF2) && isscalar(sF2)
-  sF = sF1;
-  sF.values = sF1.values + sF2;
-  return;
-end
-
-if (isa(sF2, 'S2FunHarmonic'))
-  sF = sF2 + sF1;
-  return;
-end
-
-if ~isa(sF2,'S2FunMLS')
-  sF = plus@S2Fun(sF1,sF2);
+if isnumeric(S2F2)
+  S2F = S2F2 + S2F1;
   return
 end
 
+ensureCompatibleSymmetries(S2F1,S2F2);
 
-if (sF1.nodes ~= sF2.nodes)
-  error('Addition of S2FunMLS only works if the grids are the same.');
+if (isa(S2F2, 'S2FunHarmonic'))
+  S2F = S2F2 + S2F1;
+  return;
 end
 
-sF = sF1;
-sF.values = sF1.values + sF2.values;
+% adding the values only works on a shared set of nodes
+if isa(S2F1,'S2FunMLS') && isa(S2F2,'S2FunMLS') && ...
+    length(S2F1.nodes) == length(S2F2.nodes) && ...
+    all(S2F1.nodes(:) == S2F2.nodes(:))
+
+  S2F = S2F1;
+  S2F.values = S2F.values + S2F2.values;
+  return
+
+end
+
+% Two node sets that do not match have no common values array, so the sum stays
+% unevaluated. @S2Fun/plus hands a sum with an S2FunMLS on the right back to
+% this method, hence that fallback is spelled out here rather than delegated.
+if isa(S2F2,'S2FunMLS')
+  S2F = S2FunHandle(@(v) S2F1.eval(v) + S2F2.eval(v), S2F1.frame);
+  return
+end
+
+S2F = plus@S2Fun(S2F1,S2F2);
 
 end

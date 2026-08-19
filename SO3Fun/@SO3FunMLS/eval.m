@@ -53,7 +53,6 @@ if cs.id ~= 1 && ss.id ~= 1
     ori.CS = specimenSymmetry.default;
   end
 
-  SO3F.searcher = createns(SO3F.nodes.abcd);
   if SO3F.use_smooth_delta && (SO3F.delta == 0)
     SO3F = SO3F.init_auxgrid;
   end
@@ -148,9 +147,9 @@ end
 
 % Keep the large pagewise arrays close to one GiB per batch.
 numf = numel(SO3F);
-bytes_per_ori = (3*nn*SO3F.dim + 7*SO3F.dim^2 + ...
+bytes_per_center = (3*nn*SO3F.dim + 7*SO3F.dim^2 + ...
   2*nn*numf + 2*SO3F.dim*numf) * 8;
-batch_size = max(2, floor(2^30 / max(bytes_per_ori, 1)));
+batch_size = max(2, floor(2^30 / max(bytes_per_center, 1)));
 
 start_idx = 1;
 while start_idx <= N
@@ -210,8 +209,10 @@ function delta = getSmoothDelta(SO3F, ori)
     SO3F = SO3F.init_auxgrid;
   end
 
-  dnVol = SO3F.auxgrid.opt.dn.^3;
-  mls = SO3FunMLS(SO3F.auxgrid, dnVol, ...
+  % d_n^3 is proportional to the inverse local node density for small
+  % neighborhoods in SO(3) and is therefore smoother to average than d_n.
+  dnVolume = SO3F.auxgrid.opt.dn.^3;
+  mls = SO3FunMLS(SO3F.auxgrid, dnVolume, ...
     'degree', 0, 'oF', 20, 'centered', false, ...
     'regularize', false, 'use_vor_weights', false, ...
     'use_smooth_delta', false, 'weight', 'wendland');
