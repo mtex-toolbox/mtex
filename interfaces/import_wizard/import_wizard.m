@@ -33,17 +33,14 @@ classdef import_wizard < matlab.apps.AppBase
     MapAxes                        = gobjects(1,0)               % parallel to MapTabs; built lazily, see
                                                                  % ensureTabAxesBuilt - hence a graphics array
                                                                  % with holes rather than a UIAxes array
-    MapAxesParent                  matlab.ui.container.GridLayout % parallel to MapTabs, holds MapAxes once built
     IPFTabs                        matlab.ui.container.Tab       % 1x3 array: IPF X / Y / Z
     IPFAxes                        matlab.ui.control.UIAxes      % 1x3 array; built lazily, see ensureTabAxesBuilt
-    IPFAxesParent                  matlab.ui.container.GridLayout % 1x3 array, holds IPFAxes once built
     PFTab                          matlab.ui.container.Tab
     PFGrid                         matlab.ui.container.GridLayout
     ImagesTab                      matlab.ui.container.Tab
     PFMillerField                  matlab.ui.control.EditField   % 1x3 array
     PFAxes                         matlab.ui.control.UIAxes      % 1x3 array; built lazily, see ensureTabAxesBuilt
     ImagesAxes                     matlab.ui.control.UIAxes      % built lazily, see ensureTabAxesBuilt
-    ImagesAxesParent               matlab.ui.container.GridLayout % holds ImagesAxes once built
     OptTree                        matlab.ui.container.Tree      % browser for ebsd.opt, right of PhaseTable
 
     CoordinatePanel                matlab.ui.container.Panel
@@ -476,15 +473,14 @@ classdef import_wizard < matlab.apps.AppBase
       % and briefly blanks the currently visible plot.
 
       % --- map tabs: the phase map now, one tab per property at import ---
-      [app.MapTabs, app.MapAxesParent] = createLazyPlotTab(app, 'Phase Map', app.TabColors.Maps);
+      app.MapTabs = createLazyPlotTab(app, 'Phase Map', app.TabColors.Maps);
       app.MapNames = {'Phase Map'};
 
       % --- IPF tabs: one tab per direction, Z first -----------------------
-      [tz, gz] = createLazyPlotTab(app, 'IPF Z', app.TabColors.IPF);
-      [ty, gy] = createLazyPlotTab(app, 'IPF Y', app.TabColors.IPF);
-      [tx, gx] = createLazyPlotTab(app, 'IPF X', app.TabColors.IPF);
+      tz = createLazyPlotTab(app, 'IPF Z', app.TabColors.IPF);
+      ty = createLazyPlotTab(app, 'IPF Y', app.TabColors.IPF);
+      tx = createLazyPlotTab(app, 'IPF X', app.TabColors.IPF);
       app.IPFTabs = [tx, ty, tz];   % index 1/2/3 = direction X/Y/Z
-      app.IPFAxesParent = [gx, gy, gz];
 
       % --- Pole Figures tab: parallel axes, a Miller field above each -----
       app.PFTab = uitab(app.TabGroup, 'Title', 'Pole Figures', ...
@@ -538,21 +534,36 @@ classdef import_wizard < matlab.apps.AppBase
       % so this tab is just the axes - built lazily, see ensureTabAxesBuilt.
       app.ImagesTab = uitab(app.TabGroup, 'Title', 'Images', ...
         'ForegroundColor', app.TabColors.Images);
-      app.ImagesAxesParent = uigridlayout(app.ImagesTab, ...
-        'ColumnWidth', {'1x'}, 'RowHeight', {'1x'}, ...
-        'Padding', [6 6 6 6]);
       % the old ImagesAxes (if any) was a child of the just-deleted
       % previous ImagesTab and is no longer valid - clear the handle so
       % ensureTabAxesBuilt correctly sees this as "not yet built" again
       app.ImagesAxes = matlab.ui.control.UIAxes.empty;
     end
 
-    function [tab, parentGrid] = createLazyPlotTab(app, tabTitle, color)
-      % a tab holding nothing but an (empty) full-size grid layout - the
-      % axes itself is built on demand, see ensureTabAxesBuilt
+    function tab = createLazyPlotTab(app, tabTitle, color)
+      % An empty tab - the axes inside it is built on demand, see
+      % ensureTabAxesBuilt, and is parented to the tab itself.
+      %
+      % Deliberately NOT through a uigridlayout, which is what a one cell
+      % tab like this would normally use. A uiaxes is created at the App
+      % Designer default size of 400x300 and a grid only corrects that when
+      % it next runs its layout pass, which is after the callback that
+      % created the axes has returned - so the first frame of the map is
+      % rendered at 400x300 and then re-rendered at the real size, and
+      % anything laid out in data units in between (the scale bar and its
+      % reference frame indicator) comes out for the wrong geometry. A
+      % normalized axes parented straight to the tab is at its full size
+      % from the very first render: measured directly after creation,
+      % getpixelposition is the whole 1000x800 tab against [10 10 400 300]
+      % for the grid child. It also puts the axes' Position property back
+      % in play, which a grid child does not have (see scaleBar).
       tab = uitab(app.TabGroup, 'Title', tabTitle, 'ForegroundColor', color);
-      parentGrid = uigridlayout(tab, 'ColumnWidth', {'1x'}, 'RowHeight', {'1x'}, ...
-        'Padding', [6 6 6 6]);
+    end
+
+    function ax = createTabAxes(~, parent)
+      % the axes of a single plot tab - full size from the first render,
+      % see createLazyPlotTab
+      ax = uiaxes(parent, 'Units', 'normalized', 'Position', [0 0 1 1]);
     end
 
     function ensureTabAxesBuilt(app, tab)
@@ -565,26 +576,34 @@ classdef import_wizard < matlab.apps.AppBase
       % programmatic (both call updatePlot right after setting
       % TabGroup.SelectedTab, see importEBSDData/OptTreeSelectionChanged).
       % Idempotent - already-built groups are left untouched.
+      %
+      % The single plot tabs parent their axes straight to the tab, so it
+      % is at its final size from the first render and the map is drawn
+      % once - see createLazyPlotTab for why a uigridlayout is not used
+      % there. The pole figure tab is the exception: its three axes share a
+      % real grid with the Miller fields above them, so they do start at
+      % the App Designer default 400x300 and only get their size when the
+      % grid next runs. Let that happen before anything is drawn into them.
       mapIdx = find(app.MapTabs == tab, 1);
       if ~isempty(mapIdx)
         if numel(app.MapAxes) < mapIdx || ~isgraphics(app.MapAxes(mapIdx))
-          ax = uiaxes(app.MapAxesParent(mapIdx));
-          ax.Layout.Row = 1; ax.Layout.Column = 1;
-          app.MapAxes(mapIdx) = ax;
+          app.MapAxes(mapIdx) = createTabAxes(app, app.MapTabs(mapIdx));
         end
       elseif ~isempty(app.IPFTabs) && any(tab == app.IPFTabs) && isempty(app.IPFAxes)
         for i = 1:3
-          app.IPFAxes(i) = uiaxes(app.IPFAxesParent(i));
-          app.IPFAxes(i).Layout.Row = 1; app.IPFAxes(i).Layout.Column = 1;
+          app.IPFAxes(i) = createTabAxes(app, app.IPFTabs(i));
         end
       elseif ~isempty(app.PFTab) && tab == app.PFTab && isempty(app.PFAxes)
         for i = 1:3
           app.PFAxes(i) = uiaxes(app.PFGrid);
           app.PFAxes(i).Layout.Row = 2; app.PFAxes(i).Layout.Column = i;
         end
+        % nocallbacks, since this runs inside a selection callback and the
+        % queued click that follows must not re-enter the plotting half
+        % way through
+        drawnow('nocallbacks')
       elseif ~isempty(app.ImagesTab) && tab == app.ImagesTab && isempty(app.ImagesAxes)
-        app.ImagesAxes = uiaxes(app.ImagesAxesParent);
-        app.ImagesAxes.Layout.Row = 1; app.ImagesAxes.Layout.Column = 1;
+        app.ImagesAxes = createTabAxes(app, app.ImagesTab);
       end
     end
 
@@ -980,23 +999,21 @@ classdef import_wizard < matlab.apps.AppBase
       % the last one it is recreated afterwards - existing tabs (and in
       % particular the currently visible one) are never touched.
       %
-      % Only the tabs and their (empty) grids are built here; the axes
-      % follow on first display, same as everywhere else - see
-      % ensureTabAxesBuilt. A property map tab is one the user may well
-      % never open, and building all of them cost 0.19s of every import.
+      % Only the (empty) tabs are built here; the axes follow on first
+      % display, same as everywhere else - see ensureTabAxesBuilt. A
+      % property map tab is one the user may well never open, and building
+      % all of them cost 0.19s of every import.
 
       % drop the tabs of a previously loaded data set
       delete(app.MapTabs(2:end))
       app.MapTabs = app.MapTabs(1);
-      app.MapAxesParent = app.MapAxesParent(1);
       app.MapAxes = app.MapAxes(1:min(1,numel(app.MapAxes)));
       delete(app.ImagesTab)
 
       names = getPropertyNames(app);
       app.MapNames = [{'Phase Map'}; names(:)];
       for k = 2:numel(app.MapNames)
-        [app.MapTabs(k), app.MapAxesParent(k)] = ...
-          createLazyPlotTab(app, app.MapNames{k}, app.TabColors.Maps);
+        app.MapTabs(k) = createLazyPlotTab(app, app.MapNames{k}, app.TabColors.Maps);
       end
 
       createImagesTab(app)

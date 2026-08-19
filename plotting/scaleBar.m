@@ -58,6 +58,7 @@ properties (Hidden = true)
   hgt      % handle of the hgtransform grouping the scale bar graphics
   lastLayout = {}          % memo of the inputs of the last layout (see update)
   lastZ = NaN              % the plane the bar was last laid out in (see update)
+  lastExtent = []          % label footprint the last layout was measured against
   updating logical = false % re-entrance guard for update
 end
 
@@ -160,6 +161,17 @@ methods
     hListener(5) = addlistener(hax,'YLim',          'PostSet', @(~,~) sB.update);
     hListener(6) = addlistener(hax,'ZLim',          'PostSet', @(~,~) sB.update);
 
+    % Position does not cover every way the pixel geometry can change: a
+    % uiaxes laid out by a uigridlayout - the import wizard's tabs - is
+    % given its size without its Position ever being written, so a bar laid
+    % out while the axes was still at the default 400x300 would keep those
+    % (data unit) sizes and blow up to several times the intended size as
+    % soon as the layout ran. MarkedClean fires after every render of the
+    % axes, whatever caused it, and is the one signal that is always there;
+    % checkGeometry makes it cheap by only re-laying out when the label's
+    % footprint actually moved.
+    hListener(7) = addlistener(hax,'MarkedClean',    @(~,~) sB.checkGeometry);
+
     % Tie these axes-level listeners' lifetime directly to this scale
     % bar's own graphics, rather than to garbage collection of the
     % variable above: mapPlot.m clears the axes' appdata (via
@@ -248,6 +260,22 @@ methods
         'Unknown reference frame visibility "%s". Use ''on'' or ''off''.',value);
     end
     sB.refFrame = value;
+  end
+
+  function checkGeometry(sB)
+    % Called after every render of the axes (MarkedClean). The whole
+    % layout is derived from how much of the map one line of the label
+    % covers, so that footprint is at the same time the probe for "did the
+    % axes' pixel geometry change": a resized window, an axes that just
+    % got its size from a layout manager, a colorbar taking a slice off
+    % it. Only its width and height are compared - the position within it
+    % is what the layout moves around, and comparing that would make every
+    % layout trigger the next one.
+    if sB.updating || isempty(sB.hgt) || ~isvalid(sB.hgt) || ...
+        isempty(sB.txt) || ~isvalid(sB.txt), return, end
+
+    e = get(sB.txt,'Extent');
+    if ~isequaln(e(3:4), sB.lastExtent), sB.update(true); end
   end
 
   function update(sB, forceLayout)
@@ -387,6 +415,10 @@ methods
     % because that fires the Position listener which forces a re-layout.
     set(sB.txt,'string',labelStr,'position',cP([dx(1),dy(1)]))
     extent = get(sB.txt, 'Extent');
+
+    % what checkGeometry compares against - the measurement this layout is
+    % about to be built on, not the fallback that may replace it below
+    sB.lastExtent = extent(3:4);
 
     % Extent(3:4) are the text's footprint along data-x/data-y - which one
     % is the visually "wide" direction depends on whether the data axes
