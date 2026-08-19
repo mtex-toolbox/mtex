@@ -8,10 +8,9 @@ function check_optimalSample
 % caller can see directly: if the secant pairs stop being used the function
 % still returns a plausible sample, only a worse one.
 %
-% 'memory',0 empties the L-BFGS memory in every iteration and hence walks
-% along the negative gradient throughout. It reproduces the gradient descent
-% that optimalSample used before to 6e-6 degree, so it is the control the
-% comparisons below are made against.
+% 'method','steepestDescent' selects the plain gradient descent that
+% optimalSample used before - it reproduces it to 6e-6 degree - so it is the
+% control the comparisons below are made against.
 %
 % The last case covers S2Fun/optimalSample, which runs the same iteration on
 % the sphere. This file owns both.
@@ -27,7 +26,7 @@ f = SO3FunHarmonic(SO3Fun.dubna,'bandwidth',bw);
 opt = {'bandwidth',bw};
 
 % ------------------- the memory has to buy accuracy ----------------------
-oriGD = optimalSample(f,20,opt{:},'maxIter',10,'memory',0);
+oriGD = optimalSample(f,20,opt{:},'maxIter',10,'method','steepestDescent');
 oriQN = optimalSample(f,20,opt{:},'maxIter',10);
 
 resGD = discrepancy(f,oriGD,[],bw);
@@ -36,13 +35,13 @@ resQN = discrepancy(f,oriQN,[],bw);
 % The measured ratio is 0.67 to 0.75 here and stays around 0.7 for every
 % larger bandwidth and iteration budget tried, so 0.9 is a threshold that
 % only a broken memory can cross - on a tree without the L-BFGS iteration
-% 'memory' is an unknown option and both calls return the same sample, i.e.
+% 'method' is an unknown option and both calls return the same sample, i.e.
 % the ratio is exactly 1. Keep the sample well above the M = 8 that a smaller
 % n gives: with that few nodes the ratio jumps between 0.73 and 0.93.
 assert(resQN < 0.9*resGD, ...
   ['optimalSample is no better than gradient descent - discrepancy %.4e ' ...
-  'against %.4e for ''memory'',0. The curvature collected in the secant ' ...
-  'pairs is not reaching the search direction.'],resQN,resGD)
+  'against %.4e for ''method'',''steepestDescent''. The curvature collected ' ...
+  'in the secant pairs is not reaching the search direction.'],resQN,resGD)
 
 % ---------------- the weights form a probability distribution ------------
 [ori,c] = optimalSample(f,20,opt{:},'maxIter',4);
@@ -89,7 +88,7 @@ assert(numel(ori1) == 1, ...
 sF = S2FunHandle(@(x) real( exp(-5*acos(dot(x,xvector)).^2) ...
   + exp(-5*acos(dot(x,yvector)).^2) + exp(-5*acos(dot(x,zvector)).^2) ));
 
-vGD = optimalSample(sF,100,'bandwidth',32,'maxIter',20,'memory',0);
+vGD = optimalSample(sF,100,'bandwidth',32,'maxIter',20,'method','steepestDescent');
 vQN = optimalSample(sF,100,'bandwidth',32,'maxIter',20);
 
 % the nodes have to stay on the sphere - the geodesic step is what keeps
@@ -105,7 +104,7 @@ resQN = discrepancyS2(sF,vQN,32);
 % sample sizes and iteration budgets tried
 assert(resQN < 0.9*resGD, ...
   ['S2Fun/optimalSample is no better than gradient descent - discrepancy ' ...
-  '%.4e against %.4e for ''memory'',0.'],resQN,resGD)
+  '%.4e against %.4e for ''method'',''steepestDescent''.'],resQN,resGD)
 
 end
 

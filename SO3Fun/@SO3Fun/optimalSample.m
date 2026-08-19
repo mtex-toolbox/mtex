@@ -35,6 +35,16 @@ function [ori,c] = optimalSample(f,n,varargin)
 % orientations, so it is a dense $3M \times 3M$ matrix, and in a measurement
 % its iteration count was no better than the one of L-BFGS.
 %
+% Both descent methods are available and are selected by |method|,
+%
+%   ori = optimalSample(f,n,'method','lbfgs')            % the default
+%   ori = optimalSample(f,n,'method','steepestDescent')
+%
+% where |'steepestDescent'| is the plain gradient descent described above.
+% It is kept because it is the method the cited literature uses and because
+% it is the reference the L-BFGS iteration is compared against; there is no
+% reason to prefer it in production.
+%
 % Note that the sum above starts at degree 1. The restricted distance kernel
 % is only conditionally positive definite, its Chebyshev coefficient of
 % degree 0 being negative, $A_0 = -\frac{16\sqrt2}{3\pi} < 0$. Since $D_0$ is
@@ -100,6 +110,7 @@ function [ori,c] = optimalSample(f,n,varargin)
 %   ori = optimalSample(f,n)
 %   ori = optimalSample(f,ori)
 %   ori = optimalSample(f,n,'bandwidth',32)
+%   ori = optimalSample(f,n,'method','steepestDescent')
 %   ori = optimalSample(f,n,'maxIter',1000,'tol',0.05*degree)
 %
 %   [ori,c] = optimalSample(f,n)                    % optimize the weights, too
@@ -118,6 +129,7 @@ function [ori,c] = optimalSample(f,n,varargin)
 %  bandwidth  - harmonic degree to approximate (default = 32), see above
 %  maxIter    - number of (outer) iterations (default = 100)
 %  tol        - termination tolerance for the orientations (default = 0.1*degree)
+%  method     - 'lbfgs' (default) or 'steepestDescent', see above
 %  memory     - secant pairs kept by the L-BFGS iteration (default = 5)
 %  weights    - starting weights, fixed if they are not optimized (default = ones(M,1)/M)
 %
@@ -160,6 +172,18 @@ ori = orientation(ori(:),f.CS,f.SS);
 maxIter = get_option(varargin,'maxIter',100);
 tol = get_option(varargin,'tol',0.1*degree);
 mem = get_option(varargin,'memory',5);
+
+% which descent method moves the orientations, see above
+method = lower(get_option(varargin,'method','lbfgs'));
+switch method
+  case {'lbfgs','l-bfgs','quasinewton'}
+    useLBFGS = true;
+  case {'steepestdescent','gradientdescent','gradient','steepest'}
+    useLBFGS = false;
+  otherwise
+    error(['Unknown method ''%s''. optimalSample knows ''lbfgs'' and ' ...
+      '''steepestDescent''.'],method)
+end
 innerIter = get_option(varargin,'innerIter',5);
 warmUp = get_option(varargin,'warmUp',0);
 tolWeights = get_option(varargin,'tolWeights',1e-3/M);
@@ -227,8 +251,12 @@ S = []; Y = [];
 % Wigner coefficients D of mu - f and the resulting discrepancy
 [resOld,D] = J(ori,c,f,w,lambda,bw);
 
-% gradient of the functional with respect to the orientations
-g = grad_J(ori,c,D,psi0,lambda);
+% Whether g below still is the gradient of the current functional in the
+% current orientations. L-BFGS needs the gradient in the new orientations
+% anyway, to form the secant pair, and carries it over to the next iteration;
+% steepest descent does not and simply recomputes it. Either way it is one
+% gradient per iteration, except that a weight step invalidates it.
+gValid = false;
 
 pC = progressCounter(maxIter);
 for i = 1:maxIter
@@ -248,16 +276,19 @@ for i = 1:maxIter
     if all(isfinite(cNew)) && all(cNew>=0) && sum(cNew)>0
       c = cNew/sum(cNew); % also compensates round off in the mass constraint
     end
-    % the weights changed, hence the discrepancy and the gradient have to be
-    % recomputed
+    % the weights changed, hence the discrepancy has to be recomputed - and
+    % the gradient of the previous iteration refers to the old weights
     [resOld,D] = J(ori,c,f,w,lambda,bw);
-    g = grad_J(ori,c,D,psi0,lambda);
+    gValid = false;
   end
 
   % ---------------------- (2) optimize orientations ----------------------
-  % the gradient of the functional with respect to the orientations is
-  % computed at the end of the previous iteration, resp. above if the weight
-  % step has changed the functional in between
+  % gradient of the functional with respect to the orientations
+  if ~gValid
+    g = grad_J(ori,c,D,psi0,lambda);
+  end
+  gValid = false;
+
   gVec = [g.x(:);g.y(:);g.z(:)];
 
   gNorm = sqrt(sum(norm(g).^2));
@@ -266,9 +297,13 @@ for i = 1:maxIter
   if gNorm == 0, break, end
 
   % L-BFGS direction, i.e. the inverse Hessian approximation built from the
-  % memory applied to the gradient. With an empty memory this is the negative
-  % gradient and the iteration below is plain gradient descent.
-  d = twoLoop(gVec,S,Y);
+  % memory applied to the gradient. With an empty memory - and always, for
+  % 'steepestDescent' - this is the negative gradient.
+  if useLBFGS
+    d = twoLoop(gVec,S,Y);
+  else
+    d = -gVec;
+  end
 
   % the directional derivative of J along d
   slope = d.' * gVec;
@@ -325,27 +360,32 @@ for i = 1:maxIter
     break;
   end
 
-  % The gradient in the new orientations. It is taken under the same weights
-  % as gVec above, hence the two form a secant pair of one and the same
-  % functional - which is what the memory has to consist of.
-  gNew = grad_J(oriNew,c,DNew,psi0,lambda);
+  if useLBFGS
+    % The gradient in the new orientations. It is taken under the same
+    % weights as gVec above, hence the two form a secant pair of one and the
+    % same functional - which is what the memory has to consist of. It is
+    % carried over to the next iteration, so this costs nothing extra.
+    gNew = grad_J(oriNew,c,DNew,psi0,lambda);
 
-  sVec = stepSize*d;
-  yVec = [gNew.x(:);gNew.y(:);gNew.z(:)] - gVec;
+    sVec = stepSize*d;
+    yVec = [gNew.x(:);gNew.y(:);gNew.z(:)] - gVec;
 
-  % Keep the pair only if it carries positive curvature. Otherwise the
-  % inverse Hessian approximation would lose its positive definiteness and
-  % with it the guarantee that the next direction is one of descent.
-  if sVec.'*yVec > 1e-12 * norm(sVec) * norm(yVec)
-    S = [S,sVec]; Y = [Y,yVec]; %#ok<AGROW>
-    if size(S,2) > mem, S(:,1) = []; Y(:,1) = []; end
+    % Keep the pair only if it carries positive curvature. Otherwise the
+    % inverse Hessian approximation would lose its positive definiteness and
+    % with it the guarantee that the next direction is one of descent.
+    if sVec.'*yVec > 1e-12 * norm(sVec) * norm(yVec)
+      S = [S,sVec]; Y = [Y,yVec]; %#ok<AGROW>
+      if size(S,2) > mem, S(:,1) = []; Y(:,1) = []; end
+    end
+
+    g = gNew;
+    gValid = true;
   end
 
   % update
   ori = oriNew;
   D = DNew;
   resOld = resNew;
-  g = gNew;
 
   pC.show(i)
 

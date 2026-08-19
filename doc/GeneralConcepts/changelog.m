@@ -137,7 +137,9 @@
 % are moved by a limited memory BFGS iteration, which copes with the bad
 % conditioning of the underlying functional far better than plain gradient
 % descent - roughly an order of magnitude in time to a given accuracy in
-% orientation space, and a factor 3 to the same accuracy on the sphere
+% orientation space, and a factor 3 to the same accuracy on the sphere. The
+% plain gradient descent remains available as
+% |optimalSample(f,n,'method','steepestDescent')|
 % * <orientation.calcCluster.html |calcCluster|> uses by default the
 % <https://github.com/nla-group/classix CLASSIX> algorithm, which is much
 % faster than hierarchical clustering and needs no number of clusters

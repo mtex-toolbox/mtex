@@ -33,6 +33,13 @@ function [v,c] = optimalSample(sF,n,varargin)
 % stored steps have to be parallel transported along every step before they
 % may be used again.
 %
+% Both descent methods are available and are selected by |method|,
+%
+%   v = optimalSample(sF,n,'method','lbfgs')            % the default
+%   v = optimalSample(sF,n,'method','steepestDescent')
+%
+% where |'steepestDescent'| is the plain gradient descent described above.
+%
 % Note that the sum above starts at degree 1. The restricted distance kernel
 % is only conditionally positive definite, its Legendre coefficient of degree
 % 0 being negative, $A_0 = -\frac43 < 0$. Since $Y_0^0$ is constant, the
@@ -104,6 +111,7 @@ function [v,c] = optimalSample(sF,n,varargin)
 %   v = optimalSample(sF,n)
 %   v = optimalSample(sF,v)
 %   v = optimalSample(sF,n,'bandwidth',128)
+%   v = optimalSample(sF,n,'method','steepestDescent')
 %   v = optimalSample(sF,n,'maxIter',1000,'tol',0.005*degree)
 %
 %   [v,c] = optimalSample(sF,n)                   % optimize the weights, too
@@ -122,6 +130,7 @@ function [v,c] = optimalSample(sF,n,varargin)
 %  bandwidth  - harmonic degree to approximate (default = 128), see above
 %  maxIter    - number of (outer) iterations (default = 1000)
 %  tol        - termination tolerance for the directions (default = 0.01*degree)
+%  method     - 'lbfgs' (default) or 'steepestDescent', see above
 %  memory     - secant pairs kept by the L-BFGS iteration (default = 5)
 %  weights    - starting weights, fixed if they are not optimized (default = ones(M,1)/M)
 %
@@ -166,6 +175,18 @@ v.antipodal = sF.antipodal;
 maxIter = get_option(varargin,'maxIter',1000);
 tol = get_option(varargin,'tol',0.01*degree);
 mem = get_option(varargin,'memory',5);
+
+% which descent method moves the nodes, see above
+method = lower(get_option(varargin,'method','lbfgs'));
+switch method
+  case {'lbfgs','l-bfgs','quasinewton'}
+    useLBFGS = true;
+  case {'steepestdescent','gradientdescent','gradient','steepest'}
+    useLBFGS = false;
+  otherwise
+    error(['Unknown method ''%s''. optimalSample knows ''lbfgs'' and ' ...
+      '''steepestDescent''.'],method)
+end
 innerIter = get_option(varargin,'innerIter',5);
 warmUp = get_option(varargin,'warmUp',ceil(maxIter/5));
 tolWeights = get_option(varargin,'tolWeights',1e-3/M);
@@ -247,8 +268,12 @@ S = []; Y = [];
 % harmonic coefficients D of mu - sF and the resulting discrepancy
 [resOld,D] = J(nfsft,v,c,sF,w,lambda);
 
-% gradient of the functional with respect to the directions
-g = grad_J(nfsft,v,c,D,psi0,lambda);
+% Whether g below still is the gradient of the current functional in the
+% current nodes. L-BFGS needs the gradient in the new nodes anyway, to form
+% the secant pair, and carries it over to the next iteration; steepest
+% descent does not and simply recomputes it. Either way it is one gradient
+% per iteration, except that a weight step invalidates it.
+gValid = false;
 
 pC = progressCounter(maxIter);
 for i = 1:maxIter
@@ -268,16 +293,19 @@ for i = 1:maxIter
     if all(isfinite(cNew)) && all(cNew>=0) && sum(cNew)>0
       c = cNew/sum(cNew); % also compensates round off in the mass constraint
     end
-    % the weights changed, hence the discrepancy and the gradient have to be
-    % recomputed
+    % the weights changed, hence the discrepancy has to be recomputed - and
+    % the gradient of the previous iteration refers to the old weights
     [resOld,D] = J(nfsft,v,c,sF,w,lambda);
-    g = grad_J(nfsft,v,c,D,psi0,lambda);
+    gValid = false;
   end
 
   % ------------------------ (2) optimize points --------------------------
-  % the gradient of the functional with respect to the directions is computed
-  % at the end of the previous iteration, resp. above if the weight step has
-  % changed the functional in between
+  % gradient of the functional with respect to the directions
+  if ~gValid
+    g = grad_J(nfsft,v,c,D,psi0,lambda);
+  end
+  gValid = false;
+
   gVec = [g.x(:);g.y(:);g.z(:)];
 
   gNorm = sqrt(sum(norm(g).^2));
@@ -286,9 +314,13 @@ for i = 1:maxIter
   if gNorm == 0, break, end
 
   % L-BFGS direction, i.e. the inverse Hessian approximation built from the
-  % memory applied to the gradient. With an empty memory this is the negative
-  % gradient and the iteration below is plain gradient descent.
-  d = twoLoop(gVec,S,Y);
+  % memory applied to the gradient. With an empty memory - and always, for
+  % 'steepestDescent' - this is the negative gradient.
+  if useLBFGS
+    d = twoLoop(gVec,S,Y);
+  else
+    d = -gVec;
+  end
 
   dir = vector3d(d(1:M),d(M+1:2*M),d(2*M+1:3*M));
 
@@ -357,44 +389,50 @@ for i = 1:maxIter
     break;
   end
 
-  % The gradient in the new nodes. It is taken under the same weights as gVec
-  % above, hence the two form a secant pair of one and the same functional -
-  % which is what the memory has to consist of.
-  gNew = grad_J(nfsft,vNew,c,DNew,psi0,lambda);
+  if useLBFGS
 
-  % Everything collected so far lives in the tangent planes of v and has to
-  % be carried along to those of vNew before it may be combined with a
-  % gradient taken there.
-  nDir = norm(dir);
-  t = stepSize * nDir;
-  V = [v.x(:) v.y(:) v.z(:)];
-  U = zeros(M,3);
-  ind = nDir > 0;
-  U(ind,:) = [dir.x(ind) dir.y(ind) dir.z(ind)] ./ nDir(ind);
-  sinT = sin(t(:));
-  cosT1 = 1 - cos(t(:));
+    % The gradient in the new nodes. It is taken under the same weights as gVec
+    % above, hence the two form a secant pair of one and the same functional -
+    % which is what the memory has to consist of. It is carried over to the
+    % next iteration, so this costs nothing extra.
+    gNew = grad_J(nfsft,vNew,c,DNew,psi0,lambda);
 
-  sVec = transport(stepSize*dVec,V,U,sinT,cosT1);
-  yVec = [gNew.x(:);gNew.y(:);gNew.z(:)] - transport(gVec,V,U,sinT,cosT1);
+    % Everything collected so far lives in the tangent planes of v and has to
+    % be carried along to those of vNew before it may be combined with a
+    % gradient taken there.
+    nDir = norm(dir);
+    t = stepSize * nDir;
+    V = [v.x(:) v.y(:) v.z(:)];
+    U = zeros(M,3);
+    ind = nDir > 0;
+    U(ind,:) = [dir.x(ind) dir.y(ind) dir.z(ind)] ./ nDir(ind);
+    sinT = sin(t(:));
+    cosT1 = 1 - cos(t(:));
 
-  if ~isempty(S)
-    S = transport(S,V,U,sinT,cosT1);
-    Y = transport(Y,V,U,sinT,cosT1);
-  end
+    sVec = transport(stepSize*dVec,V,U,sinT,cosT1);
+    yVec = [gNew.x(:);gNew.y(:);gNew.z(:)] - transport(gVec,V,U,sinT,cosT1);
 
-  % Keep the pair only if it carries positive curvature. Otherwise the
-  % inverse Hessian approximation would lose its positive definiteness and
-  % with it the guarantee that the next direction is one of descent.
-  if sVec.'*yVec > 1e-12 * norm(sVec) * norm(yVec)
-    S = [S,sVec]; Y = [Y,yVec]; %#ok<AGROW>
-    if size(S,2) > mem, S(:,1) = []; Y(:,1) = []; end
+    if ~isempty(S)
+      S = transport(S,V,U,sinT,cosT1);
+      Y = transport(Y,V,U,sinT,cosT1);
+    end
+
+    % Keep the pair only if it carries positive curvature. Otherwise the
+    % inverse Hessian approximation would lose its positive definiteness and
+    % with it the guarantee that the next direction is one of descent.
+    if sVec.'*yVec > 1e-12 * norm(sVec) * norm(yVec)
+      S = [S,sVec]; Y = [Y,yVec]; %#ok<AGROW>
+      if size(S,2) > mem, S(:,1) = []; Y(:,1) = []; end
+    end
+
+    g = gNew;
+    gValid = true;
   end
 
   % update
   v = vNew;
   D = DNew;
   resOld = resNew;
-  g = gNew;
 
   pC.show(i)
 
