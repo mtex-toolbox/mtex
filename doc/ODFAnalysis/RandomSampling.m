@@ -50,17 +50,37 @@ hold off
 % estimate ODF with the initial ODF.
 
 % estimate an ODF from the random orientations
+odf_rec = calcDensity(ori,'halfwidth',10*degree);
+
+% plot the estimated ODF
+plot(odf_rec,'sigma','silent')
+mtexColorbar
+
+% the error between the true and the reconstructed ODF
+calcError(odf_rec,fibre_odf)
+
+%%
+% Clearly, a halfwidth of 10 degree it too small for only 500 random
+% orientations. Let's increase the halfwidth as long as the error between
+% the reconstructed ODF and the true ODF descents.
+
+% estimate an ODF from the random orientations
 odf_rec = calcDensity(ori,'halfwidth',20*degree);
 
 % plot the estimated ODF
-plot(odf_rec,'sections',6,'silent')
+plot(odf_rec,'sigma','silent')
 mtexColorbar
 
-%%
-% We may now compare the original model ODF |fibre_odf| with the
-% reconstructed ODF |odf_rec|. 
-
 calcError(odf_rec,fibre_odf)
+
+%%
+% With halfwidth 20 degree the estimated ODF is much closer to the original
+% ODF and does not show the random oscillation or the 10 degree estimate.
+% The price we have to pay is that the reconstructed ODF is now much weaker
+% than the true ODF. More precisely the texture index drops as 
+
+disp("Texture index original ODF: " + norm(fibre_odf)^2)
+disp("Texture index reconstructed ODF: " + norm(odf_rec)^2)
 
 %% Optimal Sample
 %
@@ -74,15 +94,25 @@ calcError(odf_rec,fibre_odf)
 % to be as representative for the ODF as possible. Lets verify this by
 % comparing the error with respect to the original model ODF.
 
-
 ori = fibre_odf.optimalSample(500)
 
-% Note that we can use here a much smaller halfwidth. If we would have used
-% this halfwidth with the random orientations the error would have been
-% even worse
-odf_rec = calcDensity(ori,'halfwidth',12*degree);
+%%
+% Lets reconstruct the ODF with the small halfwidth 10 degree
+
+odf_rec = calcDensity(ori,'halfwidth',10*degree);
+
+plot(odf_rec,'sigma','silent')
 
 calcError(odf_rec,fibre_odf)
+mtexColorbar
+
+%%
+% We visually observe a much butter reconstruction and also the error
+% between the reconstructed and original ODF dropped by 50 percent.
+% Finally, we have a look at the texture index.
+
+disp("Texture index original ODF: " + norm(fibre_odf)^2)
+disp("Texture index reconstructed ODF: " + norm(odf_rec)^2)
 
 %%
 % By default all sampled orientations carry the same weight. Asking
