@@ -71,8 +71,15 @@ classdef plottingConvention
     end
         
     function display(pC,varargin)
-      displayClass(pC,inputname(1),'moreInfo',char(pC,'compact'),varargin{:});
-    
+
+      [c,isPictogram] = char(pC,'compact');
+      displayClass(pC,inputname(1),'moreInfo',c,varargin{:});
+
+      % an axis aligned convention is completely described by the pictogram
+      % in the header line - listing its directions afterwards would only
+      % repeat it
+      if isPictogram, return; end
+
       if ~check_option(varargin,'skipHeader'), disp(' '); end
 
       props{1} = 'outOfScreen';
@@ -91,17 +98,24 @@ classdef plottingConvention
 
     end
 
-    function c = char(pC,varargin)
+    function [c,isPictogram] = char(pC,varargin)
+      % pictogram of the convention, e.g. 'y↑→x'
+      %
+      % Output
+      %  c           - char, the pictogram, or 'xyz' if there is none
+      %  isPictogram - is the convention axis aligned, i.e. is c a pictogram?
 
       arrows = '←→↑↓'; xyz = 'xyz';
 
       [ud,north] = find(pC.north == [1;-1] .* [xvector,yvector,zvector]); %#ok<PROPLC>
       c = [xyz(north) arrows(ud+2)]; %#ok<PROPLC>
 
-      
+
       [lr,east] = find(pC.east == [1;-1] .* [xvector,yvector,zvector]); %#ok<PROPLC>
 
-      if isempty(ud) || isempty(lr)
+      isPictogram = ~isempty(ud) && ~isempty(lr);
+
+      if ~isPictogram
         c = 'xyz';
       elseif lr == 1
         c = [c,arrows(2),xyz(east)]; %#ok<PROPLC>

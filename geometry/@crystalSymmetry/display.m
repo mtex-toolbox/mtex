@@ -1,7 +1,16 @@
 function display(cs,varargin)
 % standard output
 
-displayClass(cs,inputname(1),varargin{:});
+% the plotting convention goes into the header, the way a specimen symmetry
+% shows it - see @specimenSymmetry/display. For a crystal it is stated in
+% crystal directions, e.g. '⊙c*→a', which is how a crystallographer names
+% a setting; conventionChar falls back to the Cartesian pictogram when no
+% crystal axis points out of the screen or east
+if isscalar(cs) && isa(cs.how2plot,'plottingConvention')
+  displayClass(cs,inputname(1),'moreInfo',conventionChar(cs.frame),varargin{:});
+else
+  displayClass(cs,inputname(1),varargin{:});
+end
 
 if ~isscalar(cs)
   disp(cs);
