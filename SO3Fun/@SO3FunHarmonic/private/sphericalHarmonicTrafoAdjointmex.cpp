@@ -69,7 +69,7 @@
 // The computational routine
 template<typename T>
 static void calculate_ghat_adjoint( const mxDouble bandwidth, mxComplexDouble *ghat,
-                          const int isReal, const int isAntipodal, mxDouble *sym_axis,
+                          const int isReal, const int isAntipodal,
                           std::complex<T> *fhat)
 {
 
@@ -212,7 +212,7 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, mxComplexDouble *g
       // If antipodal: only compute spherical harmonic coefficients of even degree
       if((isAntipodal==0) || (n%2==0)){
 
-      #pragma omp parallel for firstprivate(ghat,fhat,wigd) private(pm,wigk,wigl,ghat2,column,value)        // Parallelization
+      #pragma omp parallel for firstprivate(ghat,fhat,wigd) private(pm,wigk,wigl,ghat2,column,value,j)        // Parallelization
   
         // // shift pointer ghat to (K_min,0,l)
         // ghat = center_ghat + K_min + l*matrix_size;
@@ -283,7 +283,6 @@ void mexFunction( int nlhs, mxArray *plhs[],
     mxDouble bandwidth;               // input bandwidth
     mxComplexDouble *inCoeff;         // input coefficient 3-tensor
     mxDouble input_flags = 0;
-    mxDouble *sym_axis;
     mxComplexDouble *outFourierCoeff; // output fourier coefficient vector
     
   // check data types
@@ -341,13 +340,10 @@ void mexFunction( int nlhs, mxArray *plhs[],
     bool flags[7];
     get_flags(input_flags,flags);
 
-    // if exists and the flag implies we want to use right and left 
-    // symmetries to speed up --> get sym_axis of input
-    double s[2] = {1,1};
-    if( (nrhs>=4) && (flags[4]) )
-      sym_axis = mxGetDoubles(prhs[3]);
-    else
-      sym_axis = s;
+    // The fourth argument (sym_axis) is still accepted and type checked above
+    // for callers that pass it, but the symmetry flag 2^4 is not implemented:
+    // calculate_ghat_adjoint never dereferenced sym_axis, it only carried it
+    // around. Dropped rather than left as a trap.
 
     
     const int isReal = flags[2];
@@ -373,8 +369,8 @@ void mexFunction( int nlhs, mxArray *plhs[],
           "functions up to bandwidth %d - the result is inaccurate.",(int)bandwidth);
       std::vector<std::complex<long double>> ghat_tmp(deg2dim);
       // TODO: evt. muss outFourierCOeff erst im long double gerechnet werden und später auf double transformiert und dann zurückgegeben werden.
-      calculate_ghat_adjoint<long double>(bandwidth,inCoeff,isReal,isAntipodal,sym_axis,ghat_tmp.data());
-      for (size_t i = 0; i < deg2dim; ++i) {
+      calculate_ghat_adjoint<long double>(bandwidth,inCoeff,isReal,isAntipodal,ghat_tmp.data());
+      for (size_t i = 0; i < (size_t)deg2dim; ++i) {
         outFourierCoeff[i].real = static_cast<double>(ghat_tmp[i].real());
         outFourierCoeff[i].imag = static_cast<double>(ghat_tmp[i].imag());
       }
@@ -382,8 +378,8 @@ void mexFunction( int nlhs, mxArray *plhs[],
     }
     else{
       std::vector<std::complex<double>> ghat_tmp(deg2dim);
-      calculate_ghat_adjoint<double>(bandwidth,inCoeff,isReal,isAntipodal,sym_axis,ghat_tmp.data());
-      for (size_t i = 0; i < deg2dim; ++i) {
+      calculate_ghat_adjoint<double>(bandwidth,inCoeff,isReal,isAntipodal,ghat_tmp.data());
+      for (size_t i = 0; i < (size_t)deg2dim; ++i) {
         outFourierCoeff[i].real = ghat_tmp[i].real();
         outFourierCoeff[i].imag = ghat_tmp[i].imag();
       }

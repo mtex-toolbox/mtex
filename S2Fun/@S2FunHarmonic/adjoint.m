@@ -198,7 +198,9 @@ else
 end
 
 % shift grid
-z = (1i).^(-N:N).';
+% as in sphericalHarmonicTrafo: the exact i^k, not exp(k*log(1i))
+ipow = [1;1i;-1;-1i];
+z = ipow(mod((-N:N).',4)+1);
 ghat = z .* ghat;
 
 
