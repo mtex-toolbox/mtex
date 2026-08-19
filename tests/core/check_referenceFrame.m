@@ -885,7 +885,7 @@ key = ipfHSVKey(cs);
 warning(w);
 
 sR = key.dirMap.sR;
-assert(length(sR.N) == 1 && isempty(sR.vertices), ...
+assert(isscalar(sR.N) && isempty(sR.vertices), ...
   'check_referenceFrame: the -1 sector is expected to be a bare hemisphere');
 
 % the center coinciding with outOfScreen is the trigger, so pin it down -
