@@ -60,6 +60,22 @@ assert(abs(sum(c)-1) < 1e-10, ...
 assert(discrepancy(f,ori,c,bw) < discrepancy(f,ori,[],bw), ...
   'The optimized weights of optimalSample do not decrease the discrepancy.')
 
+% ------------- a warm up must not swallow the weight step ----------------
+% The orientations may converge before the warm up is over. Since the weights
+% are held fixed during the warm up, the termination test then compares them
+% against themselves and is satisfied, and optimalSample would return the
+% equal weights the caller explicitly asked to have optimized - silently, and
+% the more reliably the faster the orientation step is.
+[~,cWarm] = optimalSample(f,20,opt{:},'maxIter',12,'tol',2*degree,'warmUp',10);
+
+assert(max(abs(cWarm-1/numel(cWarm))) > 1e-6, ...
+  ['optimalSample returned the equal weights 1/M although the weights were ' ...
+  'asked for. The iteration terminated inside the warm up, before a single ' ...
+  'weight step had run.'])
+
+assert(abs(sum(cWarm)-1) < 1e-10, ...
+  'The weights after a warm up sum up to %.12f instead of 1.',sum(cWarm))
+
 % ------------------------- starting nodes --------------------------------
 % a given list of orientations is taken as it is, in particular the sample
 % keeps its size

@@ -357,7 +357,18 @@ for i = 1:maxIter
   if lineSearchFailed || ...
       ( max(angle(ori,oriNew)) < tol && max(abs(c-cOld)) < tolWeights )
     ori = oriNew;
-    break;
+    % During the warm up the weights are held fixed, hence c == cOld and the
+    % test above reduces to the one on the orientations alone. Returning
+    % here would hand back the equal weights the caller asked to have
+    % optimized, without a single weight step ever having run - which is
+    % what happens as soon as the orientations converge in fewer iterations
+    % than the warm up is long. End the warm up instead and let the weight
+    % step take over.
+    if optWeights && i <= warmUp
+      warmUp = i;
+    else
+      break;
+    end
   end
 
   if useLBFGS
