@@ -33,6 +33,25 @@
 %
 %% MTEX develop - Technical Changes
 %
+% *Reference Frames*
+%
+% * a @crystalSymmetry accepted any reference frame, including a
+% @specimenFrame - and since the crystal axes are read straight off
+% |frame.basis|, that replaced the lattice by the identity without a word.
+% Such an assignment raises |MTEX:wrongFrameClass| now. To give a crystal
+% symmetry a plotting convention of its own, fork its frame:
+% |fr = crystalFrame(cs.axes,'name',cs.mineral)|, set |fr.how2plot| and
+% assign that
+% * <plotS2Grid.html |plotS2Grid|> takes a @referenceFrame and returns
+% directions of that frame, e.g. |plotS2Grid('upper',cs.frame)| for a grid
+% of crystal directions. Which hemisphere is the upper one is then decided
+% by the crystal frame instead of the session convention, and the result
+% needs no |Miller(v,cs)| cast to be used as a crystal direction
+% * <slipSystem.SchmidFactor.html |SchmidFactor|> no longer warns about a
+% tension direction that states no reference frame, such as |vector3d.Z| or
+% a plain plotting grid - only a direction or stress tensor that names a
+% frame contradicting the one of the slip systems does
+%
 % *EBSD Export*
 %
 % * neither the ang nor the ctf exporter undid the Euler angle correction
@@ -56,6 +75,27 @@
 %
 % *Plotting*
 %
+% * an axis angle section coloured area outside the sector it draws, and left
+% area inside it white. The reason is that a spherical region is bounded by
+% small circles, so the polar angles belonging to a fixed azimuth angle need
+% not form a single interval - close to the maximum misorientation angle the
+% axis sector is cut open at its corners and eventually falls apart into
+% separate caps, for the point groups |m-3|, |23| and |mmm|.
+% <plotS2Grid.html |plotS2Grid|> kept the bounding box of such a region and
+% punched NaN holes into it, which a surface survives but |contourf| does
+% not - it draws straight across the gap. The grid is now assembled from
+% strips that have one interval per grid line, swept along whichever of the
+% two angles gives fewer of them, and each strip is contoured on its own.
+% This is <https://github.com/mtex-toolbox/mtex/issues/209 issue #209>. The
+% two new methods <sphericalRegion.thetaIntervals.html |thetaIntervals|> and
+% <sphericalRegion.rhoIntervals.html |rhoIntervals|> return the components,
+% where |thetaRange| returns only their hull. Both solve for the crossings
+% with the bounding circles in closed form, where |thetaRange| used to walk
+% a discretisation of ten thousand polar angles per grid line - a spherical
+% plotting grid is built about four times faster now, and its boundary is
+% exact rather than snapped to that discretisation. As a further side effect
+% the grid of a disconnected region is no longer padded out to the bounding
+% box, so a narrow sector costs a fraction of the points it used to
 % * a three dimensional spherical plot, |plot(sF,'3d')| and friends, ignored
 % the plotting convention it was given whenever that convention happened to
 % equal the session default - the whole of the pristine x-east / y-down /
@@ -123,6 +163,17 @@
 % every predefined hexagonal family, |slipSystem.basal|,
 % |slipSystem.prismaticA|, |slipSystem.pyramidalCA| and the rest, with the
 % Miller indices of each, so the set can be put together on the spot
+% * |slipSystem/SchmidFactor| checked the reference frames in one direction
+% only: it caught a specimen stress tensor against crystal slip systems,
+% but not a crystal tensor against slip systems already rotated into
+% specimen coordinates by |ori * sS| - that combination silently returned a
+% Schmid factor computed across two frames. The tension direction syntax
+% |sS.SchmidFactor(r)| checked nothing at all, so the very same computation
+% warned or stayed silent depending on whether it was written as a
+% direction or as a uniaxial stress tensor. Both branches now apply the
+% same test, and the warning carries the identifier |MTEX:frameMismatch| so
+% it can be switched off. A crystal direction has to be stated as a
+% @Miller, since a plain @vector3d is taken to be a specimen direction
 %
 % *VPSC Files*
 %
@@ -138,6 +189,17 @@
 % silently treated as Bunge. |export_VPSC| likewise writes the letter that
 % matches the angles it wrote, and defaults to Bunge rather than to the
 % |EulerAngleConvention| preference, which may be one VPSC cannot express
+%
+% *Fundamental Regions*
+%
+% * |orientationRegion/checkInside| tested whether its two symmetries are
+% trivial by comparing them against a freshly constructed |crystalSymmetry|,
+% i.e. it built a symmetry object on every call only to throw it away.
+% |orientationRegion/cleanUp| calls it a few hundred times, so this was the
+% bulk of |fundamentalRegion(cs,cs)| - and an axis angle section plot builds
+% the fundamental region twice. The comparison object is built once now;
+% |fundamentalRegion| is about three times faster and returns bit identical
+% regions
 %
 % *Axis Distributions*
 %

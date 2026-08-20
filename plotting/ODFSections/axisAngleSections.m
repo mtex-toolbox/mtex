@@ -116,10 +116,12 @@ classdef axisAngleSections < ODFSections
             
       v.opt.region = oS.axesSectors{sec};
       
-      % plot data into all axes
-      h = gobjects(1,length(cax));
+      % plot data into all axes - a disconnected sector needs more than one
+      % graphics object per axes
+      h = gobjects(1,0);
       for k = 1:length(cax)
-        h(k) = plot(v,data{:},'parent',cax(k),varargin{:},'doNotDraw');
+        hk = plot(v,data{:},'parent',cax(k),varargin{:},'doNotDraw');
+        h = [h,reshape(hk,1,[])]; %#ok<AGROW>
       end
 
     end

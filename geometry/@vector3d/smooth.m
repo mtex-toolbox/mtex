@@ -155,6 +155,24 @@ end
 % ------------------------------------------------------------
 function h = betterContourf(ax,X,Y,data,contours,varargin)
 
+% A plotting grid may consist of several strips separated by columns of
+% NaN, since a disconnected region can not be swept by a single one. Unlike
+% surface, contourf does not skip the cells around such a column but draws
+% garbage across the gap - so draw one contour object per strip.
+if ~check_option(varargin,'pcolor')
+  sep = find(all(~isfinite(X),1));
+  if ~isempty(sep)
+    bnd = [0,sep,size(X,2)+1];
+    h = gobjects(1,0);
+    for k = 1:numel(bnd)-1
+      ind = bnd(k)+1:bnd(k+1)-1;
+      if numel(ind) < 2, continue; end
+      h = [h,betterContourf(ax,X(:,ind),Y(:,ind),data(:,ind),contours,varargin{:})]; %#ok<AGROW>
+    end
+    return
+  end
+end
+
 if isscalar(unique(data)), data(1) = data(1) + 2*eps; end
 
 % workauround for a MATLAB Bug

@@ -25,7 +25,14 @@ q = quaternion(q);
 if isempty(oR.N), inside = true(size(q)); return; end
 if isempty(q), inside = false(size(q)); return; end
 
-if oR.CS1 == crystalSymmetry & oR.CS2 == crystalSymmetry & oR.antipodal
+% orientationRegion/cleanUp calls this a few hundred times, and building a
+% crystalSymmetry costs more than the test it is used for. Caching it is
+% safe here because symmetry/eq compares the point group id, not the state
+% of the object
+persistent trivialCS
+if isempty(trivialCS), trivialCS = crystalSymmetry; end
+
+if oR.CS1 == trivialCS & oR.CS2 == trivialCS & oR.antipodal
   d = dot_outer(oR.N,q);
   inside = all(d>=tol,1);
   return

@@ -81,6 +81,22 @@ classdef symmetry < matlab.mixin.Copyable
     end
     
     
+    function set.frame(s,fr)
+      % a crystal symmetry keeps its lattice in its frame - the axes are
+      % read straight off frame.basis - so a specimen frame, which has no
+      % lattice, would silently replace the crystal axes by the identity
+      if isa(s,'crystalSymmetry') && ~isempty(fr) && ~isa(fr,'crystalFrame')
+        error('MTEX:wrongFrameClass',...
+          ['A crystalSymmetry needs a crystalFrame, not a ' class(fr) '. ' ...
+          'To give it a convention of its own fork its frame:\n' ...
+          '  fr = crystalFrame(cs.axes,''name'',cs.mineral);\n' ...
+          '  fr.how2plot = plottingConvention(...);\n' ...
+          '  cs.frame = fr;']);
+      end
+      s.frame = fr;
+    end
+
+
     function pC = get.how2plot(s)
       % only frames carry conventions - a symmetry shows the one of its
       % reference frame

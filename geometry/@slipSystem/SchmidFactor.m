@@ -16,7 +16,19 @@ function SF = SchmidFactor(sS,sigma,varargin)
 % Output
 %  SFfun - size(sS) x 1 list of @S2FunHarmonic
 %  SF - size(sS) x size(sigma) matrix of Schmid factors
-%   
+%
+% Description
+% The slip systems and the stress state have to be given with respect to
+% the same reference frame - either both in crystal coordinates, i.e.
+% Miller indexed slip systems and |inv(ori) * sigma|, or both in specimen
+% coordinates, i.e. |ori * sS| and a stress state as measured. Mixing the
+% two is warned about as |MTEX:frameMismatch|. A tension direction that
+% does not state a reference frame at all is taken at face value and never
+% warned about.
+%
+% See also
+% slipSystem/SchmidTensor stressTensor
+%
 
 b = sS.b.normalize; %#ok<*PROPLC>
 n = sS.n.normalize;
@@ -30,25 +42,22 @@ end
 % Schmid factor with respect to a tension direction
 if nargin == 1 || (isnumeric(sigma) && isempty(sigma))
   
-  SF = S2FunHarmonic.quadrature(@(v) sS.SchmidFactor(v,varargin{:}),'bandwidth',4,sS.CS);
-    
+  % the quadrature nodes are frame free, hence checkFrame stays silent -
+  % they are directions of whatever frame sS is given in
+  SF = S2FunHarmonic.quadrature(@(v) sS.SchmidFactor(v,varargin{:}),...
+    'bandwidth',4,sS.CS);
+
 elseif isa(sigma,'vector3d')
-  
+
+  checkFrame(n,sigma,'tension direction');
+
   r = sigma.normalize;
   SF = dot_outer(r,b,'noSymmetry') .* dot_outer(r,n,'noSymmetry');
-  
+
 % Schmid factor with respect to a stress tensor
 elseif isa(sigma,'stressTensor')
-  
-  % the slip systems live in a crystal frame - a stress tensor that does
-  % not is given in specimen coordinates and has to be rotated first;
-  % the frame decides, since a rotated tensor carries only the frame of
-  % the orientation, never its symmetry (ADR 0003)
-  if isa(n,'Miller') && (~isa(sigma.frame,'crystalFrame') || ...
-      ~isAligned(sigma.frame,n.CS.frame))
-    warning('The reference system of the stress tensor and the slip systems do not match!');
-  end
 
+  checkFrame(n,sigma,'stress tensor');
 
   % normalize the stress tensor
   % such that the resulting Schmid factor is always between [0, 0.5]
@@ -69,6 +78,40 @@ elseif isa(sigma,'stressTensor')
 else
   
   error('Second argument should be either vector3d or stressTensor.')
-  
+
 end
+end
+
+% --------------------------------------------------------------------
+
+function checkFrame(n,ref,refName)
+% warn if the slip systems and the stress state are given in different
+% reference frames
+%
+% Slip systems are in crystal coordinates exactly if they are Miller
+% indexed - the same convention slipSystem/get.CS follows - and in specimen
+% coordinates otherwise, since rotating them (ori * sS) drops the Miller
+% index. The frame decides, never the symmetry: a rotated tensor carries
+% only the frame of the orientation (ADR 0003).
+
+% a Miller index resolves its frame from its symmetry, a tensor from its
+% own frame or its reference system, a vector3d only if it was given one
+refFrame = ref.frame;
+
+% a frame free direction states nothing about its reference frame - take it
+% at face value, since demanding a frame would reject the most common way
+% of writing a tension direction, e.g. plotS2Grid or vector3d.Z
+if isempty(refFrame), return; end
+
+if isa(n,'Miller') % slip systems in crystal coordinates
+  isMismatch = ~isa(refFrame,'crystalFrame') || ~isAligned(refFrame,n.CS.frame);
+else % slip systems in specimen coordinates
+  isMismatch = isa(refFrame,'crystalFrame');
+end
+
+if isMismatch
+  warning('MTEX:frameMismatch',...
+    ['The reference frame of the ' refName ' and the slip systems do not match!']);
+end
+
 end
