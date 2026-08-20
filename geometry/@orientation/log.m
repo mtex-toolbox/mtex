@@ -15,6 +15,12 @@ function v = log(ori,varargin)
 % space onto the orientation space is the exponential map 
 % |<SO3TangentVector.exp.html exp>|.
 %
+% The pair is reduced by symmetry first, exactly as
+% |<orientation.angle.html angle>| does it, so that the result describes the
+% two crystals and not the representatives they happen to be stored as. In
+% particular |norm(log(ori,ori_ref))| is |angle(ori,ori_ref)|. Pass
+% |'noSymmetry'| to take the logarithm of the rotations as they are.
+%
 % Syntax
 %   v = log(ori)
 %   v = log(ori,ori_ref,SO3TangentSpace.rightVector) 
@@ -58,6 +64,15 @@ tS = SO3TangentSpace.extract(varargin);
 % every element.
 if isRef
   if tS.isLeft
+    % A left tangent vector is ori * inv(ori_ref), a rotation in specimen
+    % coordinates. Crystal symmetry acts BETWEEN the two factors - the
+    % equally valid representatives are ori * s * inv(ori_ref) - so once the
+    % product is formed it is no longer a symmetry of anything and cannot be
+    % reduced any more: the object below carries a trivial CS. The pair has
+    % to be reduced first, which is what angle(ori,ori_ref) does, and without
+    % it a neighbour stored in another representative contributes a rotation
+    % of up to pi instead of the small one it really is.
+    if isa(ori,'orientation'), ori = project2FundamentalRegion(ori,ori_ref); end
     orin = ori .* inv(ori_ref);
     % we should not change the reference frame of the reference orientation
     ori = orientation(orin,specimenSymmetry,ori.SS);

@@ -7,16 +7,19 @@ function check_gradient
 % computed on the virtual lattice (ebsd.lattice), so a plain list, a phase
 % subset, a rotated grid and a sheared grid are all the same code path.
 %
-% Two things are checked:
+% Three things are checked:
 %
 %  * a synthetic field with a KNOWN constant gradient is recovered, on five
 %    geometries. This is the test that could not be written before: three of
 %    the five error out on the old code.
+%  * the gradient does not depend on which symmetric equivalent each pixel
+%    happens to be stored as - issue #194.
 %  * on an axis aligned square map the new one sided gradient is BIT
 %    identical to the old matrix based gradient1/gradient2, NaN placement
 %    included, so no GND / WBV number moves.
 
 checkLinearField;
+checkSymmetricEquivalents;
 checkBitIdenticalToSquare;
 checkEdgeAndHoles;
 checkLeastSquaresOnLinear;
@@ -71,6 +74,65 @@ for c = 1:numel(geom)
     geom{c});
 
 end
+
+end
+
+% =========================================================================
+function checkSymmetricEquivalents
+% the gradient may not depend on WHICH representative a pixel is stored in
+%
+% Issue #194. An EBSD file gives each pixel some symmetrically equivalent
+% representative of its orientation, and two neighbours can easily be given
+% different ones - it happens for 1.7% of the neighbour pairs of forsterite
+% and for 62% of titanium. The gradient is log(ori(q),ori(p)), and in the
+% left tangent space the crystal symmetry acts between the two factors, so
+% the pair has to be reduced before the product is formed. It was not, and
+% a neighbour in another representative contributed a rotation of up to pi
+% instead of the fraction of a degree that really separates the two - which
+% is what made the GND density of #194 depend on the file rather than on
+% the material.
+
+cs = crystalSymmetry('m-3m');
+k1 = 0.002; k2 = 0.0035;
+
+pos = makePositions('square axis aligned');
+omega = k1*pos.x + k2*pos.y;
+ori = orientation.byAxisAngle(zvector,omega,cs);
+
+ebsd = EBSD(pos,ori,ones(length(pos),1),{cs},struct);
+ebsd.unitCell = unitCellOf('square axis aligned');
+
+% the same crystals, each stored as a random equivalent
+rng(0)
+symOps = cs.properGroup.rot;
+ebsdS = ebsd;
+ebsdS.rotations = rotation(ebsd.rotations) .* symOps(randi(length(symOps),length(ebsd),1));
+
+% the symmetry elements are themselves only good to about 1e-8 rad, so the
+% two sets agree to that and not to eps - which is still seven orders below
+% the deviation this test is about
+assert(max(angle(ebsd.orientations,ebsdS.orientations)) < 1e-6, ...
+  'check_gradient: the two orientation sets are not the same crystals');
+
+g  = ebsd.gradient;
+gS = ebsdS.gradient;
+
+ok = ~isnan(g(:,1)) & ~isnan(g(:,2));
+d = max(max(norm(vector3d(g(ok,:)) - vector3d(gS(ok,:)))));
+
+assert(d < 1e-10, ['check_gradient: the gradient depends on which ' ...
+  'symmetric equivalent each pixel is stored as (max deviation %.3g)'], d);
+
+% and it is still the known field, i.e. both are right rather than equally
+% wrong. Asked along the specimen directions, as checkLinearField does - the
+% columns of ebsd.gradient are the LATTICE directions and may be a
+% permutation of them
+inner = interiorMask(ebsd);
+eX = max(norm(vector3d(ebsdS.gradientX(inner)) - k1*zvector));
+eY = max(norm(vector3d(ebsdS.gradientY(inner)) - k2*zvector));
+assert(eX < 1e-8 && eY < 1e-8, ...
+  ['check_gradient: the gradient of the re-represented map is not the ' ...
+  'known linear field (max error %.3g in x, %.3g in y)'],eX,eY);
 
 end
 

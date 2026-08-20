@@ -64,6 +64,33 @@
 % their own data by comparing values; the two are marked apart now, so a
 % convention handed in is always honoured
 %
+% *Orientation Gradients, Curvature and GND*
+%
+% * |log(ori,ori_ref)| in the left tangent space did not reduce the pair by
+% crystal symmetry, while |angle(ori,ori_ref)| always did. A left tangent
+% vector is |ori * inv(ori_ref)|, and the symmetry acts between the two
+% factors - the equally valid representatives are |ori * s * inv(ori_ref)| -
+% so once the product is formed it can no longer be reduced, and the pair
+% has to be reduced first. It was not, so two neighbouring pixels stored as
+% different symmetric representatives of their orientations - which is a
+% property of the file, not of the material - came back as a rotation of up
+% to 180 degree instead of the fraction of a degree that really separates
+% them. Every |EBSD.gradient|, |gradientX/Y/Z|, |curvature|, |calcGND| and
+% |WBV| number inherited that. This is
+% <https://github.com/mtex-toolbox/mtex/issues/194 issue #194>, open since
+% 2016; @ThomasChauve's reading of Pantleon 2005 was right all along.
+%
+% *Numbers move.* The affected pixels are not rare: of the neighbour pairs
+% in the shipped datasets 1.7 percent (forsterite), 5.8 percent (csl), 7.0
+% percent (twins) and 62 percent (titanium) were computed from an
+% overstated misorientation. Denoising a map with <EBSD.smooth.html
+% |smooth|> rewrites the orientations of a grain consistently and hides the
+% effect, which is why the GND and WBV example sheets - both of which
+% denoise before they compute - are unchanged, to 3e-6 percent and bit for
+% bit respectively. Without denoising they are not: the weighted Burgers
+% vector of the undenoised |single| dataset had a mean norm of 15.7 against
+% the 0.127 it has now, on all three stencils.
+%
 % *Plasticity*
 %
 % * there is no |slipSystem.hcp| and there will not be one: which slip and
