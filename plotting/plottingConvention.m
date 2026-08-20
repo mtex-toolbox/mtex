@@ -389,7 +389,7 @@ classdef plottingConvention
 
     end
 
-    function pC = fromOption(list,default)
+    function [pC,isExplicit] = fromOption(list,default)
       % the plotting convention among a list of plot options, if any
       %
       % Accepts a @plottingConvention passed as an argument, and the name
@@ -401,18 +401,40 @@ classdef plottingConvention
       % so the conventions show up in tab completion. It also removes the
       % need to guess whether a bare string was meant as a convention.
       %
+      % A plot method that wants its data to set the convention unless the
+      % caller says otherwise appends it as |'how2plotFallback',pC| rather
+      % than as a bare object. That is what |isExplicit| reports on: it is
+      % false for such a fallback and for |default|, true only when the
+      % caller put a convention in the list themselves. A plot that would
+      % rather pick its own camera than follow a fallback - @vector3d/plot3d
+      % does, a sphere seen down its polar axis being a poor picture - can
+      % then tell the two apart instead of guessing from the value.
+      %
       % Syntax
       %   pC = plottingConvention.fromOption(varargin)
       %   pC = plottingConvention.fromOption(varargin,default)
+      %   [pC,isExplicit] = plottingConvention.fromOption(varargin,default)
       %
       % Input
       %  list    - the option list
       %  default - returned when the list carries no convention
       %
+      % Output
+      %  pC         - the @plottingConvention to use
+      %  isExplicit - whether the caller asked for it
+      %
       % See also
       % plottingConvention/default
 
       if nargin < 2, default = []; end
+
+      % take an appended fallback out of the list before anything else -
+      % otherwise the bare object search below finds its value and reports
+      % it as a convention the caller passed
+      fallback = get_option(list,'how2plotFallback');
+      list = delete_option(list,'how2plotFallback',1);
+
+      isExplicit = true;
 
       % the name value form wins over a bare object. The plot methods
       % append the convention of their data - plot(ebsd,...,ebsd.how2plot)
@@ -425,7 +447,12 @@ classdef plottingConvention
       pC = get_option(list,'how2plot');
 
       if isempty(pC), pC = getClass(list,'plottingConvention'); end
-      if isempty(pC), pC = default; return; end
+
+      if isempty(pC)
+        isExplicit = false;
+        pC = fallback;
+        if isempty(pC), pC = default; return; end
+      end
 
       if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
 

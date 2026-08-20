@@ -59,18 +59,21 @@ if ~ishold
   set(ax,'XDir','rev','YDir','rev',...
     'XLim',[-1,1],'YLim',[-1,1],'ZLim',[-1,1]);
 
-  % A convention handed in wins - that is what passing one is for. It used
-  % to be ignored here, because the plot methods append the convention of
-  % their data as a trailing fallback (S2FunHarmonicSym/plot does, see
-  % plottingConvention.fromOption) and reading the option list at all would
-  % have picked that fallback up: it is a screen alignment meant for a
-  % projected plot, looking straight down the polar axis, which shows a
-  % sphere at its worst. Hence the test below rather than a plain
-  % fromOption - a convention that is merely the session default is taken
-  % as that appended fallback and replaced by the tilted default3D,
-  % anything else is taken as deliberate.
-  pC = plottingConvention.fromOption(varargin,plottingConvention.default);
-  if pC == plottingConvention.default, pC = plottingConvention.default3D; end
+  % A convention handed in wins - that is what passing one is for. What may
+  % not win is the convention the plot methods append for their own data
+  % (S2FunHarmonicSym/plot does, see plottingConvention.fromOption): it is a
+  % screen alignment meant for a projected plot, looking straight down the
+  % polar axis, which shows a sphere at its worst, so without a convention
+  % from the caller the tilted default3D is the better picture.
+  %
+  % Telling the two apart used to be done by value - a convention equal to
+  % the session default was assumed to be the appended one. That also threw
+  % away a convention the caller had passed deliberately whenever it
+  % happened to equal the default, which is the whole of the pristine
+  % x-east / y-down / z-into-screen alignment (issue #481). fromOption
+  % reports the origin instead, so the value no longer decides.
+  [pC,isExplicit] = plottingConvention.fromOption(varargin,plottingConvention.default);
+  if ~isExplicit, pC = plottingConvention.default3D; end
   pC.setView(ax);
 
   % the spherical grid - off unless asked for, exactly as on a projected

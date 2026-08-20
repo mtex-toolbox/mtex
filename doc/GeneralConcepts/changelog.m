@@ -54,6 +54,16 @@
 % * the ang and ctf exporters state the column layout they write (|VERSION|
 % for .ang), so the importer no longer has to guess it
 %
+% *Plotting*
+%
+% * a three dimensional spherical plot, |plot(sF,'3d')| and friends, ignored
+% the plotting convention it was given whenever that convention happened to
+% equal the session default - the whole of the pristine x-east / y-down /
+% z-into-screen alignment - and used its own tilted camera instead. It told
+% a convention the caller had passed from the one its callers append for
+% their own data by comparing values; the two are marked apart now, so a
+% convention handed in is always honoured
+%
 %% MTEX 7.0 08/2026 - New Features
 %
 % This is the first release that uses AI. This allowed us to implement many

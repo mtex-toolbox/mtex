@@ -20,7 +20,11 @@ sR = sF.s.fundamentalSector(varargin{:});
 % perform plotting
 % sF.how2plot, not sF.s.how2plot - a convention set on the function itself
 % has to win over the one of its reference system
-[varargout{1:nargout}] = sF.plot@S2Fun(sR,sF.s,varargin{:},sF.how2plot);
+%
+% appended as a marked fallback rather than as a bare object, so that a plot
+% that wants to choose its own camera when the caller named no convention
+% can see that this one is ours and not theirs - @vector3d/plot3d does
+[varargout{1:nargout}] = sF.plot@S2Fun(sR,sF.s,varargin{:},'how2plotFallback',sF.how2plot);
 
 
 function txt = tooltip(varargin)

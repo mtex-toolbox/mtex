@@ -354,6 +354,39 @@ assert(plottingConvention.fromOption({other,data},plottingConvention.default) ==
 assert(plottingConvention.fromOption({},other) == other, ...
   'check_plottingConventionOwnership: an empty list must return the default');
 
+% ---------------------------------------------------------------------
+% the second output separates a convention the caller asked for from one a
+% plot method appended for its own data. @vector3d/plot3d chooses its own
+% camera in the second case, and used to tell the two apart by VALUE - a
+% convention equal to the session default was assumed to be the appended
+% one, which silently discarded an explicit request for exactly the
+% pristine x-east / y-down / z-into-screen alignment (issue #481).
+
+[pC,isExplicit] = plottingConvention.fromOption({'how2plotFallback',data}, ...
+  plottingConvention.default);
+assert(pC == data && ~isExplicit, ...
+  'check_plottingConventionOwnership: a marked fallback must not count as explicit');
+
+[pC,isExplicit] = plottingConvention.fromOption({other,'how2plotFallback',data}, ...
+  plottingConvention.default);
+assert(pC == other && isExplicit, ...
+  'check_plottingConventionOwnership: a caller convention must beat a marked fallback');
+
+[pC,isExplicit] = plottingConvention.fromOption({'how2plot',other,'how2plotFallback',data}, ...
+  plottingConvention.default);
+assert(pC == other && isExplicit, ...
+  'check_plottingConventionOwnership: the name value form must beat a marked fallback');
+
+[~,isExplicit] = plottingConvention.fromOption({},other);
+assert(~isExplicit, ...
+  'check_plottingConventionOwnership: the default must not count as explicit');
+
+% a convention that merely equals the default is still the caller's
+[pC,isExplicit] = plottingConvention.fromOption({plottingConvention.default}, ...
+  plottingConvention.default);
+assert(pC == plottingConvention.default && isExplicit, ...
+  'check_plottingConventionOwnership: a passed convention equal to the default is still explicit');
+
 end
 
 % =========================================================================

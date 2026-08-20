@@ -117,6 +117,53 @@ if any(countLabels(@() plot(v,'3d','noLabel')) > 0)
   error('check_sphericalAxesLabels: noLabel does not suppress the 3d annotation');
 end
 
+% --- a 3d plot points its camera where the caller asked -----------------
+% plot3d picks the tilted default3D when the caller named no convention, a
+% sphere seen straight down its polar axis being a poor picture. It used to
+% recognise that case by VALUE - a convention equal to the session default
+% was taken for the fallback its own callers append - which also discarded
+% a convention the caller had passed on purpose whenever it happened to
+% equal the default, i.e. the whole pristine x-east / y-down / z-into-screen
+% alignment (issue #481). Every right handed convention must be honoured,
+% whatever its value.
+sf3d = calcDensity(zvector,'halfwidth',20*degree);
+east  = {xvector,-xvector, yvector,-yvector,xvector,zvector};
+north = {-yvector,yvector, xvector,-xvector,yvector,xvector};
+
+for i = 1:numel(east)
+  pC = plottingConvention;
+  pC.east = east{i}; pC.north = north{i};
+  pC.outOfScreen = cross(east{i},north{i});
+
+  close all
+  plot(sf3d,'3d','how2plot',pC);
+  camPos = get(gca,'CameraPosition');
+  close all
+
+  % the camera sits on the outOfScreen side of the target, at whatever
+  % distance the axes chose - only the direction is the contract here
+  if norm(camPos/norm(camPos) - pC.outOfScreen.xyz/norm(pC.outOfScreen.xyz)) > 1e-3
+    error(['check_sphericalAxesLabels: plot3d ignored the convention ' ...
+      'east %s north %s - camera at [%g %g %g]'], ...
+      char(pC.east),char(pC.north),camPos);
+  end
+end
+
+% without a convention the tilted default3D applies, and a symmetrised
+% function must not override that with the one it appends for its own data
+d3 = plottingConvention.default3D;
+for f = {@() plot(sf3d,'3d'), ...
+    @() plot(S2FunHarmonicSym.quadrature(@(w) exp(-4*angle(w,zvector).^2),cs),'3d')}
+  close all
+  f{1}();
+  camPos = get(gca,'CameraPosition');
+  close all
+  if norm(camPos/norm(camPos) - d3.outOfScreen.xyz/norm(d3.outOfScreen.xyz)) > 1e-3
+    error(['check_sphericalAxesLabels: a 3d plot without a convention ' ...
+      'must keep default3D, camera at [%g %g %g]'],camPos);
+  end
+end
+
 % --- a plain function on a crystal frame annotates a, b, c --------------
 % the GBND in crystal coordinates is a plain S2FunHarmonic that carries a
 % crystalFrame - the specimen X / Y / Z would be meaningless there, the
