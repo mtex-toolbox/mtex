@@ -2,22 +2,24 @@
 %
 %% Theory
 %
-% The orientation distribution function (ODF) is a function on the
-% orientation space that associates to each orientation $g$ the volume
-% percentage of crystals in a polycrystalline specimen that are in this
+% The orientation distribution function (ODF) is a function in
+% orientation space that associates each orientation $g$ with the volume
+% fraction of crystals in a polycrystalline specimen that are in this
 % specific orientation, i.e.,
 %
 % $$\mathrm{odf}(g) = \frac{1}{V} \frac{\mathrm{d}V(g)}{\mathrm{d}g}.$$
 %
-% In MTEX an entirely random texture will have an ODF constant to one. In
-% other word the values of ODFs in MTEX can be interpreted as multiples of
-% the random distribution (mrd).
+% In MTEX a perfectly random texture will have an ODF equal to one for
+% all orientations. In other words the values of ODFs in MTEX can be
+% interpreted as multiples of the random distribution (mrd).
 %
 %% Computing an ODF from Individual Orientations
 %
-% Individual orientations data may be obtained by experimental by EBSD,
-% ACOM or 3d X-ray imaging; or from simulations, like VPSC. In the
-% following we consider an EBSD map of an Titanium alloy.
+% Individual orientation data may be obtained experimentally by EBSD
+% (orientation mapping in a SEM), ACOM (orientation mapping in a TEM) or
+% 3d X-ray imaging; or from simulations, like VPSC. In the following we
+% consider an EBSD map of a Titanium alloy. Note that this data set is
+% measured on a hexagonal grid rather than the more common square grid.
 
 % import the titanium data
 mtexdata titanium
@@ -37,12 +39,12 @@ ori = ebsd.orientations;
 odf = calcDensity(ori)
 
 %%
-% There many different ways to visualize ODF: <EulerAngleSections.html
-% Euler> or <SigmaSections.html sigma sections>, <ODFPlot.html thee
-% dimensional plots>, <ODFPoleFigure.html pole figures> and
-% <ODFInversePoleFigure.html inverse pole figures>. The most common but not
-% recommended way are sections with respect to the third Euler angle
-% $\varphi_2$
+% There are many different ways to visualize an ODF:
+% <EulerAngleSections.html Euler> or <SigmaSections.html sigma sections>,
+% <ODFPlot.html three dimensional plots>, <ODFPoleFigure.html pole
+% figures> and <ODFInversePoleFigure.html inverse pole figures>. The most
+% common but not recommended way are sections with respect to the third
+% Euler angle $\varphi_2$
 
 plot(odf)
 
@@ -62,11 +64,14 @@ mtexdata ptx
 
 % plot the data
 plot(pf)
+
+% show the colour bar - note that the maximum intensity is different for
+% each pole figure
 mtexColorbar
 
 %%
 % The <PoleFigure2ODF.html reconstuction> of an ODF from pole figure data
-% requires the solution of an ill posed inverse problem. This mean the
+% requires the solution of an *ill posed inverse problem*. This means the
 % reconstruction problem has in general <PoleFigure2ODFAmbiguity.html not a
 % unique solution>, but there are several ODFs that correspond to the same
 % set of pole figure data. MTEX applies <PoleFigure2ODFGhostCorrection.html
@@ -86,12 +91,12 @@ plotPDF(odf,pf.h)
 
 %% ODF Modeling
 %
-% Besides from experimental data MTEX allows also the definition of model
-% ODFS of different type. These include <RadialODFs.html#2 unimodal ODFs>,
-% <FibreODFs.html fibre ODF>, <BinghamODFs.html Bingham Distributed ODFs>
+% Aside from experimental data MTEX also allows the definition of model
+% ODFs of different types. These include <RadialODFs.html#2 unimodal ODFs>,
+% <FibreODFs.html fibre ODFs>, <BinghamODFs.html Bingham Distributed ODFs>
 % and any <ODFModeling.html combination of such ODFs>.
 
-% define a fibre symmetric ODF
+% define a gamma fibre ODF
 odf = fibreODF(fibre.gamma(odf.CS))
 
 % plot it in sigma sections
