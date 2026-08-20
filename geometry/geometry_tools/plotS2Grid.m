@@ -50,33 +50,38 @@ for i = 2:length(rhoMin)
   rho = [rho,nan,linspace(rhoMin(i),rhoMax(i),round(1+(rhoMax(i)-rhoMin(i))/res))]; %#ok<AGROW>
 end
 
-[thetaMin,thetaMax] = thetaRange(sRRot,rho);
+% For a fixed azimuth angle the polar angles inside the region need not form
+% a single interval, and a surface can have no holes. Hence the grid is
+% assembled from strips that have one interval per grid line and are
+% separated by columns of NaN.
+[thetaMin,thetaMax] = thetaIntervals(sRRot,rho);
+[rho,thetaMin,thetaMax] = buildStrips(rho,thetaMin,thetaMax,0,pi);
 
-% remove values out of region
-ind = (thetaMax > 1e-5) & (thetaMin < pi - 1e-5);
+% Which of the two angles decomposes the region into fewer strips depends on
+% its shape - a sector that is cut open at its corners in azimuth direction
+% has a single interval per polar angle and vice versa. So sweep along the
+% polar angle instead whenever that is the better direction.
+nStrips = 1 + nnz(isnan(rho));
+sweepTheta = false;
+if nStrips > 1 && isscalar(rhoMin)
 
-ind(end) = ind(end-1); ind(1) = ind(2);
+  % the hull of the strips already found is the polar angle range
+  tMin = min(thetaMin); tMax = max(thetaMax);
+  theta = linspace(tMin,tMax,round(1+(tMax-tMin)/res));
+  [rMin,rMax] = rhoIntervals(sRRot,theta,[rhoMin,rhoMax]);
+  % in azimuth direction there is no pole all grid lines share
+  [theta,rMin,rMax] = buildStrips(theta,rMin,rMax,-Inf,Inf);
 
-% we should put some nans to separate regions
-rho(diff(ind) == 1) = nan;
-ind(diff(ind) == 1) = true;
+  sweepTheta = ~isempty(theta) && 1 + nnz(isnan(theta)) < nStrips;
+end
 
-rho(~ind) = []; thetaMin(~ind) = []; thetaMax(~ind) = [];
-
-if isempty(rho)
-  v = vector3d;
-  theta = [];
+if sweepTheta
+  [rho,theta] = fillStrips(rMin,rMax,theta,res);
+  v = vector3d.byPolar(theta,rho);
+elseif isempty(rho)
+  v = vector3d; theta = []; rho = [];
 else
-
-  % generate grid
-  dtheta = thetaMax - thetaMin;
-  % ensure an odd number of points to have some points at the equator
-  ntheta = max(3,2*round(max(dtheta./res./2))+1);
-
-  theta = linspace(0,1,ntheta).' * dtheta + repmat(thetaMin,ntheta,1);
-
-  rho = repmat(rho,ntheta,1);
-
+  [theta,rho] = fillStrips(thetaMin,thetaMax,rho,res);
   v = vector3d.byPolar(theta,rho);
 end
 
@@ -87,9 +92,78 @@ v = inv(rot) .* v;
 v.frame = sR.frame;
 
 v = v.setOption('plot',true,'resolution',res,'region',sR,'theta',theta,'rho',rho);
-% the above procedure does not work so well if we have a full sphere
-% and the theta region is not connected
-% thatswhy we have to check once again
+% safety net - drop whatever ended up outside of the region nevertheless
 v(~sR.checkInside(v)) = nan;
+
+end
+
+% ------------------------------------------------------------------------
+
+function [a,bMin,bMax] = buildStrips(a,bMin,bMax,lowerPole,upperPole)
+% split a region given as intervals [bMin,bMax] over the grid lines a into
+% strips of one interval per grid line, separated by NaN
+%
+% bMin, bMax are nInt x numel(a) and padded with NaN
+
+% an interval that has collapsed onto one of the two poles is not a region
+% - the poles belong to every grid line and would otherwise glue all strips
+% together
+degenerated = (bMax < lowerPole + 1e-5) | (bMin > upperPole - 1e-5);
+
+% at the first and the last grid line a sector may legitimately close in a
+% vertex - keep those, so that the grid extends up to it
+if size(degenerated,2) > 1
+  degenerated(1,1) = degenerated(1,2);
+  degenerated(1,end) = degenerated(1,end-1);
+end
+
+todo = ~isnan(bMin) & ~degenerated;
+[nInt,nA] = size(todo);
+
+aOut = []; minOut = []; maxOut = [];
+while any(todo(:))
+
+  % start a new strip at the first interval not yet used
+  [j,i] = ind2sub([nInt,nA],find(todo,1));
+  sA = a(i); sMin = bMin(j,i); sMax = bMax(j,i);
+  todo(j,i) = false;
+
+  % and follow it along the grid lines as long as the intervals overlap
+  while i < nA
+    j = find(todo(:,i+1) & bMin(:,i+1) <= sMax(end) & ...
+      bMax(:,i+1) >= sMin(end),1);
+    if isempty(j), break; end
+    i = i + 1;
+    sA(end+1) = a(i); %#ok<AGROW>
+    sMin(end+1) = bMin(j,i); %#ok<AGROW>
+    sMax(end+1) = bMax(j,i); %#ok<AGROW>
+    todo(j,i) = false;
+  end
+
+  if isempty(aOut)
+    aOut = sA; minOut = sMin; maxOut = sMax;
+  else
+    aOut = [aOut,NaN,sA]; %#ok<AGROW>
+    minOut = [minOut,NaN,sMin]; %#ok<AGROW>
+    maxOut = [maxOut,NaN,sMax]; %#ok<AGROW>
+  end
+end
+
+a = aOut; bMin = minOut; bMax = maxOut;
+
+end
+
+% ------------------------------------------------------------------------
+
+function [b,a] = fillStrips(bMin,bMax,a,res)
+% discretize the intervals [bMin,bMax] of every grid line a
+
+db = bMax - bMin;
+
+% ensure an odd number of points to have some points at the equator
+nb = max(3,2*round(max(db./res./2))+1);
+
+b = linspace(0,1,nb).' * db + repmat(bMin,nb,1);
+a = repmat(a,nb,1);
 
 end

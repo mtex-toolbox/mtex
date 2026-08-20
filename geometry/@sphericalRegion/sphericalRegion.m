@@ -210,21 +210,15 @@ classdef sphericalRegion
       sR.antipodal = false;
       
       if nargin == 2
-        
-        theta = linspace(0,pi,10001);
-        
-        srho = size(rho);
-        [rho,theta] = meshgrid(rho,theta);
-        
-        v = vector3d.byPolar(theta,rho);
-        
-        ind = sR.checkInside(v);
-        
-        theta(~ind) = NaN;
-        
-        thetaMin = reshape(min(theta),srho);
-        thetaMax = reshape(max(theta),srho);
-   
+
+        % the polar angles inside the region may form several intervals -
+        % here we are interested in the hull only, see thetaIntervals for
+        % the individual components
+        [tMin,tMax] = sR.thetaIntervals(rho);
+
+        thetaMin = reshape(min(tMin,[],1),size(rho));
+        thetaMax = reshape(max(tMax,[],1),size(rho));
+
       else
         
         % polar angle of the vertices

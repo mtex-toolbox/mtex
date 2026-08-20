@@ -69,6 +69,7 @@ over budget, trim from outside these before trimming inside them.
 | homochoric coordinates | `core/check_homochoric` |
 | misorientation distance, antipodal flag | `core/check_antipodalDistance` |
 | fundamental region projection | `core/check_fundamentalRegion` |
+| plotting grids of a `sphericalRegion` — that they cover it, stay inside it, and split into hole-free strips | `core/check_plotS2Grid` |
 | `orientation/find`, k-nearest and epsilon | `core/check_find` |
 | orientation embedding | `core/check_embedding` |
 | symmetry comparison, `eqTol`/`sim` | `core/check_symmetryCompare` |

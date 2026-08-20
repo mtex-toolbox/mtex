@@ -75,6 +75,27 @@
 %
 % *Plotting*
 %
+% * an axis angle section coloured area outside the sector it draws, and left
+% area inside it white. The reason is that a spherical region is bounded by
+% small circles, so the polar angles belonging to a fixed azimuth angle need
+% not form a single interval - close to the maximum misorientation angle the
+% axis sector is cut open at its corners and eventually falls apart into
+% separate caps, for the point groups |m-3|, |23| and |mmm|.
+% <plotS2Grid.html |plotS2Grid|> kept the bounding box of such a region and
+% punched NaN holes into it, which a surface survives but |contourf| does
+% not - it draws straight across the gap. The grid is now assembled from
+% strips that have one interval per grid line, swept along whichever of the
+% two angles gives fewer of them, and each strip is contoured on its own.
+% This is <https://github.com/mtex-toolbox/mtex/issues/209 issue #209>. The
+% two new methods <sphericalRegion.thetaIntervals.html |thetaIntervals|> and
+% <sphericalRegion.rhoIntervals.html |rhoIntervals|> return the components,
+% where |thetaRange| returns only their hull. Both solve for the crossings
+% with the bounding circles in closed form, where |thetaRange| used to walk
+% a discretisation of ten thousand polar angles per grid line - a spherical
+% plotting grid is built about four times faster now, and its boundary is
+% exact rather than snapped to that discretisation. As a further side effect
+% the grid of a disconnected region is no longer padded out to the bounding
+% box, so a narrow sector costs a fraction of the points it used to
 % * a three dimensional spherical plot, |plot(sF,'3d')| and friends, ignored
 % the plotting convention it was given whenever that convention happened to
 % equal the session default - the whole of the pristine x-east / y-down /
