@@ -248,6 +248,16 @@ function out = check_insidepoly_dblengine
 out = all(logical(insidepoly(x,y,poly(:,1),poly(:,2))) == ...
   inpolygon(x,y,poly(:,1),poly(:,2)));
 
+% Every vertex of a polygon lies on that polygon - issue #2527. Random
+% points never land exactly on an edge, so the comparison above says nothing
+% about the on-boundary answer, and that is where the engine was wrong: it
+% brackets each edge by a half open interval in x, which is what makes the
+% crossing count right at a shared vertex, but it used the same bracket for
+% the on test. A vertex that is a local maximum in x is the excluded end of
+% both edges meeting there, so nothing ever tested a point sitting on it.
+[~,on] = insidepoly(poly(:,1),poly(:,2),poly(:,1),poly(:,2));
+out = out && all(on);
+
 end
 
 function out = check_insidepoly_sglengine
@@ -262,6 +272,14 @@ got = insidepoly(single(x),single(y),single(poly(:,1)),single(poly(:,2)));
 safe = pointToPolyDistance(x,y,poly) > 1e-4;
 
 out = all(logical(got(safe)) == ref(safe));
+
+% No on-boundary check here, unlike check_insidepoly_dblengine: the single
+% engine cannot pass one. insidepoly derives its tolerance from the SIZE of
+% the polygon, ontol = 1e-9*extent, and never from the magnitude of the
+% coordinates - so for a polygon of extent 3 the tolerance is 2.7e-9 while
+% eps of a single precision 1 is 1.2e-7, the on-band collapses to nothing
+% and not one point is ever reported on the boundary. Separate defect, see
+% the issue tracker.
 
 end
 
