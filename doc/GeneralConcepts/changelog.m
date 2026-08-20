@@ -190,6 +190,17 @@
 % matches the angles it wrote, and defaults to Bunge rather than to the
 % |EulerAngleConvention| preference, which may be one VPSC cannot express
 %
+% *Fundamental Regions*
+%
+% * |orientationRegion/checkInside| tested whether its two symmetries are
+% trivial by comparing them against a freshly constructed |crystalSymmetry|,
+% i.e. it built a symmetry object on every call only to throw it away.
+% |orientationRegion/cleanUp| calls it a few hundred times, so this was the
+% bulk of |fundamentalRegion(cs,cs)| - and an axis angle section plot builds
+% the fundamental region twice. The comparison object is built once now;
+% |fundamentalRegion| is about three times faster and returns bit identical
+% regions
+%
 % *Axis Distributions*
 %
 % * <SO3Fun.calcAxisDistribution.html |calcAxisDistribution|> takes
