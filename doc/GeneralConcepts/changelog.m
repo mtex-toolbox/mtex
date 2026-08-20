@@ -1,6 +1,6 @@
 %% MTEX Changelog
 %
-%% MTEX 7.1 - New Features
+%% MTEX develop - New Features
 %
 % *EBSD Export That Keeps the File*
 %
@@ -31,7 +31,7 @@
 % and they take the header of the imported file along, so an import/export
 % cycle no longer replaces the acquisition parameters by zeros.
 %
-%% MTEX 7.1 - Technical Changes
+%% MTEX develop - Technical Changes
 %
 % *EBSD Export*
 %

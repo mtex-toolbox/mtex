@@ -12,9 +12,6 @@
 cs = crystalSymmetry('32');
 fibre_odf = 0.5*uniformODF(cs) + 0.5*fibreODF(fibre.rand(cs),'halfwidth',20*degree);
 
-plot(fibre_odf,'sections',6,'silent')
-mtexColorbar
-
 %% Computing Random Orientations
 %
 % In order to compute $500$ random orientations from the ODF |fibre_odf|
@@ -22,7 +19,11 @@ mtexColorbar
 
 ori = fibre_odf.discreteSample(500)
 
-% plot the orientations into the Bunge sections
+% plot the odf in Bunge sections
+plot(fibre_odf,'sections',6,'silent')
+mtexColorbar
+
+% and plot the orientations on top of them
 hold on
 plot(ori,'MarkerFaceColor','none','all','MarkerEdgeColor','k','MarkerSize',4)
 hold off
