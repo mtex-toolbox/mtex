@@ -51,6 +51,12 @@ end
 
 % compute vertices
 
+% the sector of rotational axes is needed only for vertices at an angle of
+% 180 degree, where the axis may be flipped - computing it costs more than
+% the whole of the loop below, so compute it at most once, and only if such
+% a vertex actually shows up
+aS = [];
+
 % set up faces
 for j = 1:length(Nq)
   
@@ -67,13 +73,18 @@ for j = 1:length(Nq)
   aNq0 = aNq(j0);
   aNqj = Nqj.axis;
   aNq0 = aNq0 - dot(aNq0,aNqj) * aNqj;
-  rot = rotation.map(aNqj,zvector,aNq0,xvector);  
+  rot = rotation.map(aNqj,zvector,aNq0,xvector);
   aNq = rot * aNq; % the rotated axes
-  
+
+  % the polar angles as plain doubles - the loop below indexes them once
+  % per candidate edge, and doing that on the vector3d recomputes the
+  % atan2 for every single one of them
+  aRho = aNq.rho;
+
   % order the other normals according to
   % 1. angle to aNq0
   % 2. angle to Nqj
-  [~,order] = sort(100*mod(aNq.rho+1e-5,2*pi) + aNq.theta);
+  [~,order] = sort(100*mod(aRho+1e-5,2*pi) + aNq.theta);
   order(end+1) = order(1); %#ok<AGROW>
   
   % the first edge
@@ -83,7 +94,7 @@ for j = 1:length(Nq)
   for i = 2:length(order)
     
     % if axis is in the same direction -> skip
-    if isnull(aNq(order(i)).rho - aNq(e).rho), continue; end
+    if isnull(aRho(order(i)) - aRho(e)), continue; end
     
     % is axis is inline whith Nqj -> skip
     %if abs(dot(aNq(order(i)),zvector))>1-1e-6, continue; end
@@ -101,8 +112,12 @@ for j = 1:length(Nq)
     
     if abs(v.a)<1e-5, v.a = sign(v.a)*1e-5; end
     
-    if ~oR.axisSector.checkInside(v.axis) && (abs(v.a) < 1e-4)
-      v.a = -v.a;
+    % the cheap condition first - the sector test behind it is the most
+    % expensive operation in this function and decides nothing unless the
+    % rotational angle is 180 degree
+    if abs(v.a) < 1e-4
+      if isempty(aS), aS = oR.axisSector; end
+      if ~aS.checkInside(v.axis), v.a = -v.a; end
     end
     
     % if we have found a vertice - store it

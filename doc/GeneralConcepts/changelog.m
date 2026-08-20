@@ -75,6 +75,19 @@
 %
 % *Plotting*
 %
+% * |plotSection(mdf,'axisAngle','Sections',6)| is between one and a half
+% and two times faster, the wider margin on an otherwise idle machine. The
+% time went to three places, none of them the data: the bounding circles of
+% a region were drawn with 8641 points each, purely so that clipping them
+% would not visibly cut a corner - they are sampled at a degree now, all
+% circles of a region at once, and the end of every arc is bisected onto the
+% boundary, which is both cheaper and more accurate. |orientationRegion|
+% rebuilt the sector of rotational axes for every candidate vertex, although
+% it is needed only for the ones at 180 degree. And
+% <symmetry.fundamentalRegion.html |fundamentalRegion|> now remembers the
+% regions it computed - keyed on the rotations, the lattice, the convention
+% and the mineral of both symmetries, never on the point group id, so two
+% differently aligned symmetries of the same class cannot be confused
 % * an axis angle section coloured area outside the sector it draws, and left
 % area inside it white. The reason is that a spherical region is bounded by
 % small circles, so the polar angles belonging to a fixed azimuth angle need
