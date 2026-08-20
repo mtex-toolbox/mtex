@@ -13,7 +13,6 @@ EBSDFilling           Filling Missing Data
 EBSDPseudoSymmetry    Pseudo Symmetry
 EBSDInter             Regridding and Interpolation
 EBSD2ODF              ODF Estimation
-EBSDOrientationPlots  Orientation Plots
 EBSDSharpPlot         Sharp Color Keys 
 EBSDAdvancedMaps      Advanced Plotting
 EBSDKAM               KAM

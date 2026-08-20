@@ -132,12 +132,14 @@ setMTEXpref('SaveToFile',false)
 % modify following paths according to your needs, if your files are located at
 % different path
 
+if ~isdeployed
 setMTEXpref('CIFPath',       fullfile(mtexDataPath,'cif'));
 setMTEXpref('EBSDPath',      fullfile(mtexDataPath,'EBSD'));
 setMTEXpref('PoleFigurePath',fullfile(mtexDataPath,'PoleFigure'));
 setMTEXpref('ODFPath',       fullfile(mtexDataPath,'ODF'));
 setMTEXpref('TensorPath',    fullfile(mtexDataPath,'tensor'));
 setMTEXpref('ExamplePath',   fullfile(mtex_path,'..','examples'));
+end
 
 %% set default location to look for data with import wizard
 % if not activated, the paths are selected according to the above
