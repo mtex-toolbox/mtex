@@ -37,12 +37,12 @@ eps1 = 0.01 * strainTensor(diag([1 -q -(1-q)]));
 
 [M,~,W] = calcTaylor(inv(ori) * eps1, sS);
 
-M
+M, W
 
 %%
 % and the updated orientation is obtained by applying it
 
-oriNew = ori .* orientation(-W);
+oriNew = exp(ori,-W);
 
 angle(ori,oriNew) ./ degree
 
@@ -84,11 +84,12 @@ norm(odf0)^2
 pC = progressCounter(numIter);
 for k = 1:numIter
 
-  % the spin experienced by each individual orientation
-  W = spinTensor(spin.eval(ori).').';
+  % the spin experienced by each individual orientation, in crystal
+  % coordinates - the field was set to return a right sided spin tensor
+  W = spin.eval(ori);
 
-  % rotate the orientations
-  ori = ori .* orientation(-W);
+  % update the orientations
+  ori = exp(ori,-W);
 
   pC.show(k);
 end

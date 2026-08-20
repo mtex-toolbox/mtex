@@ -90,11 +90,10 @@ end
 % compute logarithmic map without symmetries
 v = log@quaternion(ori);
 
-% construct output
-if tS.isSpinTensor
-  v = spinTensor(v);
-else
-  v = SO3TangentVector(v,ori_ref,tS);
-end
+% construct output - the tangent vector is built first in either case, so
+% that a spin tensor inherits the frame from the reference instead of
+% falling back to the constructor default
+v = SO3TangentVector(v,ori_ref,tS);
+if tS.isSpinTensor, v = spinTensor(v); end
 
 end

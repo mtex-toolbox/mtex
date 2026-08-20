@@ -48,7 +48,18 @@ classdef spinTensor < velocityGradientTensor
         Omega.M(1,3,:,:,:) =  y;
         Omega.M(2,3,:,:,:) = -x;
         
-        if isa(in,'Miller'), Omega.CS = in.CS; end
+        if isa(in,'Miller')
+          Omega.CS = in.CS;
+        elseif isa(in,'SO3TangentVector')
+          
+          % right tangent vector -->  crystal frame
+          % left tangent vector --> specimen frame
+          if in.tangentSpace.isRight
+            Omega.CS = in.oriRef.CS;
+          else
+            Omega.CS = in.oriRef.SS;
+          end
+        end
 
       elseif isnumeric(in) % ensure it is antisymmetric
 

@@ -172,20 +172,21 @@ methods
 
   % -----------------------------------------------------------------------
 
-  % TODO: rotating tangent vectors is not clear.
-  %       It could be defined as rotation of the tangent space with q or as
-  %       rotation of the vector.
-  % When rotating tangent vectors it may changes the representation of the
-  % tangent space (left <-> right)
-  % This funtions are necessary for .left and .right methods 
-  % (we need to forget the tangent vector structure and rotate vector3d)
-  function v = rotate(v,q,varargin)
-    v = rotate@vector3d(vector3d(v),q,varargin{:});
-  end
+  % Rotating a tangent vector rotates its components and leaves it where it
+  % is: the left tangent space at R is {S*R | S skew}, so every rotation of
+  % the axial vector is again a tangent vector at R in the same
+  % representation. Hence rotate is inherited from vector3d - it writes x,y,z
+  % in place and so keeps both the class and the reference, without a cast.
+  % What it does NOT do is change the representation; left, right and
+  % transformTangentSpace rotate and then set tangentSpace themselves.
+  %
+  % rotate_outer is the exception: it returns an n x m array from n vectors,
+  % so the one-to-one pairing with oriRef is gone and there is no tangent
+  % vector left to return.
   function v = rotate_outer(v,q,varargin)
     v = rotate_outer@vector3d(vector3d(v),q,varargin{:});
   end
- 
+
 
   function tV = transformTangentSpace(tV,newtS)
 
@@ -193,9 +194,10 @@ methods
     % through the constructor for no change
     if newtS == tV.tangentSpace, return; end
 
-    ref = tV.oriRef;
-    q = rotation(ref);
+    q = rotation(tV.oriRef);
 
+    % rotating keeps the class and the reference, so the components change
+    % in place and only the label has to follow - no cast, no rebuild
     if sign(tV.tangentSpace) > sign(newtS)
       % transform from left to right
       tV = inv(q) .* tV;
@@ -204,11 +206,9 @@ methods
       tV = q .* tV;
     end
 
-    if abs(newtS) > 1
-      tV = spinTensor(tV);
-    else
-      tV = SO3TangentVector(tV,ref,newtS);
-    end
+    tV.tangentSpace = newtS;
+
+    if abs(newtS) > 1, tV = spinTensor(tV); end
   end
 
 
