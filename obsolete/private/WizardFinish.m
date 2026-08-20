@@ -197,37 +197,34 @@ end
     end
     
     function openUntitled( str, fname )
-      
-      err = javachk('mwt','The MATLAB Editor');
-      if ~isempty(err)
-        local_display_mcode(str,'cmdwindow');  %??
-      end
-      
+
+      % every caller passes only the script text
+      if nargin < 2 || isempty(fname), fname = 'mtex_import_script'; end
+
       if ~getMTEXpref('SaveToFile')
         try
-          EditorServices = com.mathworks.mlservices.MLEditorServices;
-          if ~verLessThan('matlab','7.11')
-            EditorServices.getEditorApplication.newEditor(str);
-          else
-            EditorServices.newDocument(str,true);
-          end
+          % the documented editor API - the old bridge through
+          % com.mathworks.mlservices.MLEditorServices fails on MATLAB
+          % R2025a and later, see issue #2387
+          matlab.desktop.editor.newDocument(str);
+          return
         catch %#ok<CTCH>
+          % no editor (no desktop), fall through to saving the file
           setMTEXpref('SaveToFile',true);
-          openUntitled( str, fname );
-        end
-      else
-        [file, path] = uiputfile([fname '.m']);
-        if ischar(file)
-          fname = fullfile(path,file);
-          fid = fopen(fname,'w');
-          fwrite(fid,str);
-          fclose(fid);
-          edit(fname);
-        else
-          error('no data file specified')
         end
       end
-      
+
+      [file, path] = uiputfile([fname '.m']);
+      if ischar(file)
+        fname = fullfile(path,file);
+        fid = fopen(fname,'w');
+        fwrite(fid,str);
+        fclose(fid);
+        edit(fname);
+      else
+        error('no data file specified')
+      end
+
     end
     
     % ------------------ replaceMarkup Strings ----------------------------
