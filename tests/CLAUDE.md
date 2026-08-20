@@ -104,6 +104,7 @@ over budget, trim from outside these before trimming inside them.
 | `rotate` on `SO3Fun` subclasses | `core/check_SO3FunRotate` |
 | kernel halfwidth | `core/check_kernelHalfwidth` |
 | ODF gradients | `core/check_odfGrad` |
+| axis distribution, and the `minAngle`/`maxAngle` window | `core/check_axisDistribution` |
 | `optimalSample` on SO(3) and on S2 — that the L-BFGS memory is used, weights on the simplex | `core/check_optimalSample` |
 | Clebsch–Gordan coefficients | `core/check_clebschGordan` |
 | Wigner D, and the `'kernel'` option against the harmonic transform | `core/check_WignerD` |
