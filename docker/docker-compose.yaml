@@ -1,7 +1,7 @@
 # Runs MATLAB with MTEX in a Docker container, in browser mode
 # Requires a .env file (see template.env) with:
-#   MATLAB_VERSION=R2025a
-#   MTEX_VERSION=6.1.0
+#   MATLAB_VERSION=R2026a
+#   MTEX_VERSION=7.0.0
 #   MLM_LICENSE_FILE=27000@MyServerName
 #   MATLAB_DATA=/path/to/your/data
 # Usage:
