@@ -124,6 +124,32 @@
 % |slipSystem.prismaticA|, |slipSystem.pyramidalCA| and the rest, with the
 % Miller indices of each, so the set can be put together on the spot
 %
+% *VPSC Files*
+%
+% * a VPSC texture file is now recognised by its fourth header line - the
+% Euler angle convention and the number of orientations - instead of by the
+% string |TEXTURE AT STRAIN| on the first. Only VPSC *output* carries that
+% marker, so the weight (|.wts|) files that are handed to VPSC, and the files
+% <orientation.export_VPSC.html |export_VPSC|> itself writes, were both
+% rejected as "Interface VPSC does not fit file format!". Reading back what
+% MTEX exported now works
+% * the convention letter is honoured rather than assumed: a file announcing
+% Kocks (|K|) or Roe (|R|) angles is read in that convention instead of being
+% silently treated as Bunge. |export_VPSC| likewise writes the letter that
+% matches the angles it wrote, and defaults to Bunge rather than to the
+% |EulerAngleConvention| preference, which may be one VPSC cannot express
+%
+% *Axis Distributions*
+%
+% * <SO3Fun.calcAxisDistribution.html |calcAxisDistribution|> takes
+% |'minAngle'| and |'maxAngle'|, so the axis distribution can be restricted
+% to the rotations an axis angle section shows rather than always covering
+% the whole fundamental region. It works the same way on an ODF, on an MDF,
+% on a @symmetry and on an @orientationRegion, and passes through
+% |plotAxisDistribution| and |calcAxisVolume|
+%
+%   adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
+%
 %% MTEX 7.0 08/2026 - New Features
 %
 % This is the first release that uses AI. This allowed us to implement many

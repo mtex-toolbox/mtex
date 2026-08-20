@@ -382,6 +382,9 @@
       {"name":"SO3F", "kind":"required", "type":["SO3Fun"]},
       {"name":"a", "kind":"ordered", "type":["vector3d"], "purpose":"rotational axes - omit to get an S2Fun"},
       {"name":"bandwidth", "kind":"namevalue", "type":["numeric","scalar","integer",">0"]},
+      {"name":"minAngle", "kind":"namevalue", "type":["numeric","scalar",">=0"], "purpose":"ignore smaller rotation angles"},
+      {"name":"maxAngle", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"ignore larger rotation angles"},
+      {"name":"resolution", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"step of the angle quadrature"},
       {"name":"antipodal", "kind":"flag"}
     ]
 },

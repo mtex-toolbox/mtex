@@ -50,6 +50,32 @@ runs:
       with:
         command: run(fullfile('.github','scripts','buildMex.m'))
 
+    # A Linux mex is linked against the libstdc++ of the build compiler but
+    # loaded against the one MATLAB ships, and MATLAB's is the older of the
+    # two. Nothing in the build fails when the requirement is too high - the
+    # binary compiles, uploads and ships, and only breaks on the user's
+    # machine, with a GLIBCXX message that reads like a broken install. That
+    # is issue #2482, and it cost people a day each. So check it here, where
+    # the answer is one objdump away, instead of pinning a runner label and
+    # hoping it keeps meaning the same compiler.
+    - name: check the libstdc++ requirement
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        # What R2024b above ships: its sys/os/glnxa64/libstdc++.so.6.0.30 tops
+        # out at GLIBCXX_3.4.30. This is the number to change if the release
+        # pinned above changes - not the runner's compiler version, which only
+        # has to stay at or below it.
+        ceiling=GLIBCXX_3.4.30
+        needed=$(objdump -p mex/*.mexa64 | grep -oE 'GLIBCXX_[0-9.]+' | sort -V | tail -1)
+        echo "highest libstdc++ version required: ${needed:-none} (ceiling $ceiling)"
+        if [ -n "$needed" ] && \
+           [ "$(printf '%s\n%s\n' "$needed" "$ceiling" | sort -V | tail -1)" != "$ceiling" ]; then
+          echo "::error::the binaries require $needed, above the $ceiling that MATLAB ships - see issue #2482"
+          objdump -p mex/*.mexa64 | grep -B2 "$needed" || true
+          exit 1
+        fi
+
     - name: upload
       uses: actions/upload-artifact@v4
       with:
