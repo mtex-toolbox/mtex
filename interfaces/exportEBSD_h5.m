@@ -706,7 +706,9 @@ for k=1:numel(CSList)
 
   else
 
-    h5writeatt(fname,name,'Name',CS);
+    % a not indexed phase is a @notIndexed object, not the char it used to
+    % be - h5writeatt takes no object, so write the name it carries
+    h5writeatt(fname,name,'Name',CS.mineral);
 
   end
 
