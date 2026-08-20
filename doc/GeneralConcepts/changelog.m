@@ -116,6 +116,18 @@
 % a convention the caller had passed from the one its callers append for
 % their own data by comparing values; the two are marked apart now, so a
 % convention handed in is always honoured
+% * a small circle drawn on a plot that covers both hemispheres went into
+% whichever of the two axes happened to be current - the lower one, even for
+% a cone around an axis in the upper hemisphere - and the part of it that
+% crossed the equator was clipped away at the rim instead of being continued
+% in the other half. An upper and a lower hemisphere are two axes but one
+% plot, and they know about each other now, so |circle|, markers, labels and
+% everything else added with |hold on| reaches both of them, each showing the
+% part that falls into its hemisphere. Drawing the two halves by hand, one
+% |'upper'| and one |'lower'| plot per hemisphere, is no longer necessary.
+% This is <https://github.com/mtex-toolbox/mtex/issues/330 issue #330>.
+% Passing |'upper'| and |'lower'| together gave a single hemisphere as well,
+% fewer axes than passing neither - it now means the same as asking for both
 %
 % *Orientation Gradients, Curvature and GND*
 %

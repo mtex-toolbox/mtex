@@ -91,8 +91,12 @@ if isNew || ~isappdata(mtexFig.currentAxes,'sphericalPlot')
     
     % create a new spherical plot
     sP(i) = sphericalPlot(mtexFig.gca,proj(i),tr{:},varargin{:});         %#ok<AGROW>
-    
+
   end
+
+  % an upper and a lower hemisphere are two axes, but one plot
+  registerHemispheres([sP.ax]);
+
   mtexFig.drawNow(varargin{:});
   isNew = true;
           
@@ -105,9 +109,18 @@ elseif check_option(varargin,'add2all') % add to or override existing axes
   end
   
 else
-  
+
   sP = getappdata(mtexFig.currentAxes,'sphericalPlot');
-  
+
+  % a plot that covers both hemispheres is spread over two axes - a circle,
+  % a marker or a label added to it belongs to both of them, each showing
+  % the part of it that falls into its hemisphere (#330). A caller that
+  % hands in a projection, on the other hand, has already decided which
+  % half it is drawing - S2Fun/plot walks the halves itself.
+  if isempty(getClass(varargin,'sphericalProjection'))
+    sP = sP.allHemispheres;
+  end
+
 end
 
 end
@@ -127,10 +140,18 @@ end
 if check_option(varargin,'complete')
   sR = sphericalRegion;
 end
-if check_option(varargin,'upper')
-  sR = sR.restrict2Upper(how2plot);
-elseif check_option(varargin,'lower')
-  sR = sR.restrict2Lower(how2plot);
+
+% asking for the upper and the lower hemisphere at once asks for both halves
+% of the plot, not for one of them - it restricts nothing and it also
+% overrules the reduction to a single hemisphere below (#330)
+bothHemispheres = check_option(varargin,'upper') && check_option(varargin,'lower');
+
+if ~bothHemispheres
+  if check_option(varargin,'upper')
+    sR = sR.restrict2Upper(how2plot);
+  elseif check_option(varargin,'lower')
+    sR = sR.restrict2Lower(how2plot);
+  end
 end
 
 % extract antipodal
@@ -138,7 +159,7 @@ sR.antipodal = sR.antipodal || check_option(varargin,'antipodal');
 
 % for antipodal symmetry reduce to halfsphere
 if sR.antipodal && sR.isUpper(how2plot) && sR.isLower(how2plot) &&...
-    ~check_option(varargin,'complete')
+    ~check_option(varargin,'complete') && ~bothHemispheres
   sR = sR.restrict2Upper(how2plot);
 end
 

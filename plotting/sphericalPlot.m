@@ -11,6 +11,7 @@ classdef sphericalPlot < handle
     axesLabels % X / Y / Z of the reference frame
     ax       % axis
     parent   % the figure that contains the spherical plot
+    hemispheres % the halves this plot consists of, see allHemispheres
     TL       %
     TR       %
     BL       %
@@ -40,6 +41,7 @@ classdef sphericalPlot < handle
       sP.ax = ax;    
       sP.parent = ax.Parent;
       sP.proj = proj;
+      sP.hemispheres = sP;
       sP.dispMinMax = check_option(varargin,'minmax');
       setAllAppdata(ax,'sphericalPlot',sP);
       
@@ -96,6 +98,27 @@ classdef sphericalPlot < handle
       plotAnnotate(sP,varargin{:});
 
       clear hG
+
+    end
+
+    function sPall = allHemispheres(sP)
+      % all halves of the plot sP belongs to, sP included
+      %
+      % A region that covers the upper as well as the lower hemisphere is
+      % drawn into two axes - but it remains a single plot. Data added to
+      % it later belongs to both halves, each of which then shows the part
+      % of it that falls into its hemisphere. newSphericalPlot registers
+      % the halves with each other when it creates them, everybody else
+      % asks here.
+
+      sPall = sP(1).hemispheres;
+
+      % drop halves whose axis has been deleted in the meantime
+      if ~isempty(sPall), sPall = sPall(isgraphics([sPall.ax],'axes')); end
+
+      % a plot restored from a figure saved before the halves were
+      % registered has none - it is then a plot on its own
+      if isempty(sPall), sPall = sP(1); end
 
     end
 

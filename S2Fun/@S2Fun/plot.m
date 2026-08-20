@@ -84,8 +84,13 @@ else
       % plot the function values
       [h(ul,j),ax(ul,j)] = plot(plotNodes{ul},values{ul}(:,j),ulLabel{:},...
         'pcolor','hold','colorRange',cR,S2Proj(ul),symArg{:},varargin{:});
-      
+
     end
+
+    % the upper and the lower hemisphere are two axes but a single plot -
+    % a circle or a marker added to it later belongs to both of them
+    if length(S2Proj) == 2, registerHemispheres(ax(:,j)); end
+
   end
 end
 
