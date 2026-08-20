@@ -11,10 +11,12 @@ classdef sphericalRegion
 %   sR = sphericalRegion(N)
 %   sR = sphericalRegion(N,alpha)
 %   sR = sphericalRegion(N,'antipodal')
+%   sR = sphericalRegion('upper',frame)
 %
 % Input
 %  N     - @vector3d
 %  alpha - double (default is 0 which corresponds to a great circle)
+%  frame - @referenceFrame the region is given in
 %
 % Class Properties
 %  N         - the normal @vector3d of the bounding circles
@@ -104,6 +106,13 @@ classdef sphericalRegion
         sR = sphericalRegion;
         sR.frame = fr;
       end
+
+      % a reference frame states which coordinate system the region is
+      % meant in - it decides which hemisphere is the upper one below and
+      % is passed on to every grid generated from the region, e.g.
+      % plotS2Grid('upper',cs.frame) gives directions of the crystal frame
+      fr = getClass(varargin,'referenceFrame');
+      if ~isempty(fr), sR.frame = fr; end
 
       % which hemisphere is the upper one depends on the convention the
       % region is given in - resolving this against the global default

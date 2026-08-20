@@ -13,7 +13,12 @@ end
 % before the 'upper' option is evaluated in newSphericalPlot/getPlotRegion
 if any(dot(sR.N(:),ref) > 1-1e-10 & sR.alpha(:) >= 0), return; end
 
+% the new condition is stated in the coordinates of the region, but it is
+% prepended and vector3d/cat takes all its properties from the first
+% argument - so the frame of the region has to be restored explicitly
+fr = sR.frame;
 sR.N = [ref;sR.N(:)];
 sR.alpha = [0;sR.alpha(:)];
- 
+sR.frame = fr;
+
 end

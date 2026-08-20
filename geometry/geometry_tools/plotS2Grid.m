@@ -4,6 +4,12 @@ function v = plotS2Grid(varargin)
 % Syntax
 %   plotS2Grid('resolution',[5*degree 2.5*degree])
 %
+%   % a grid of directions of the crystal reference frame
+%   plotS2Grid('resolution',0.5*degree,'upper',cs.frame)
+%
+% Input
+%  frame - @referenceFrame the resulting directions are expressed in
+%
 % Options
 %  resolution - resolution in polar and azimuthal direction
 %  hemisphere - 'lower', 'upper', 'complete', 'sphere', 'identified'
@@ -26,11 +32,11 @@ sR = extractSphericalRegion(varargin{:});
 if check_option(varargin,'plain')
   rot = rotation.id;
 else
-  
+
   pC = getClass(varargin,'plottingConvention',sR.how2plot);
 
   % rotate sR it such that pC.outOfPlane points to z
-  rot = rotation.map(pC.outOfScreen,zvector);  
+  rot = rotation.map(pC.outOfScreen,zvector);
 end
 
 sRRot = rot*sR;
@@ -76,6 +82,9 @@ end
 
 % rotate back
 v = inv(rot) .* v;
+
+% the grid consists of directions of the frame the region is given in
+v.frame = sR.frame;
 
 v = v.setOption('plot',true,'resolution',res,'region',sR,'theta',theta,'rho',rho);
 % the above procedure does not work so well if we have a full sphere

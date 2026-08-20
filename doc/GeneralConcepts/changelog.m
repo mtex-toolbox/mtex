@@ -33,6 +33,21 @@
 %
 %% MTEX develop - Technical Changes
 %
+% *Reference Frames*
+%
+% * a @crystalSymmetry accepted any reference frame, including a
+% @specimenFrame - and since the crystal axes are read straight off
+% |frame.basis|, that replaced the lattice by the identity without a word.
+% Such an assignment raises |MTEX:wrongFrameClass| now. To give a crystal
+% symmetry a plotting convention of its own, fork its frame:
+% |fr = crystalFrame(cs.axes,'name',cs.mineral)|, set |fr.how2plot| and
+% assign that
+% * <plotS2Grid.html |plotS2Grid|> takes a @referenceFrame and returns
+% directions of that frame, e.g. |plotS2Grid('upper',cs.frame)| for a grid
+% of crystal directions. Which hemisphere is the upper one is then decided
+% by the crystal frame instead of the session convention, and the result
+% needs no |Miller(v,cs)| cast to be used as a crystal direction
+%
 % *EBSD Export*
 %
 % * neither the ang nor the ctf exporter undid the Euler angle correction
