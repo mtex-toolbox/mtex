@@ -55,6 +55,52 @@ for k = 1:numel(csList)
   checkGrid(cs.fundamentalSector,res,['fundamental sector of ' csList{k}]);
 end
 
+checkScalarGridLine
+
+end
+
+% -------------------------------------------------------------------------
+
+function checkScalarGridLine
+% a single grid line has to work as well as many
+
+% thetaIntervals and rhoIntervals decide the gaps between the crossings and
+% the crossings themselves in one call, and stack the two. For a single grid
+% line repelem returns a row rather than a column, so the two do not stack
+% and the call errors - which is how plotSection(odf,'contourf') broke, since
+% evalODFSections asks for thetaRange(oS.sR,rho(1)), i.e. one meridian.
+
+csList = {'1','222','23','6/mmm','m-3m'};
+
+for k = 1:numel(csList)
+
+  sR = crystalSymmetry(csList{k}).fundamentalSector;
+
+  % one grid line, and the same angle as part of many
+  [t1,t2] = sR.thetaIntervals(0.3);
+  [T1,T2] = sR.thetaIntervals([0.1 0.3 0.5]);
+  compare(t1,t2,T1(:,2),T2(:,2),'thetaIntervals',csList{k});
+
+  [r1,r2] = sR.rhoIntervals(0.6);
+  [R1,R2] = sR.rhoIntervals([0.4 0.6 0.8]);
+  compare(r1,r2,R1(:,2),R2(:,2),'rhoIntervals',csList{k});
+
+end
+
+end
+
+% -------------------------------------------------------------------------
+
+function compare(a1,a2,b1,b2,fn,name)
+
+a = [a1(~isnan(a1)),a2(~isnan(a2))];
+b = [b1(~isnan(b1)),b2(~isnan(b2))];
+
+if ~isequal(size(a),size(b)) || any(abs(a(:)-b(:)) > 1e-9)
+  error('%s: a single grid line gives %d intervals for %s, %d as part of many',...
+    fn,size(a,1),name,size(b,1));
+end
+
 end
 
 % -------------------------------------------------------------------------

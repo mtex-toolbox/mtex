@@ -42,9 +42,10 @@ end
 nMid = reshape(cellfun(@numel,mid),[],1);
 nB = reshape(cellfun(@numel,b),[],1);
 
+% note repelem returns a row for a scalar gridLine, so reshape is required
 inside = sR.checkInside(mkVec(...
   [vertcat(mid{:});vertcat(b{:})],...
-  [repelem(gridLine(:),nMid);repelem(gridLine(:),nB)]));
+  [reshape(repelem(gridLine(:),nMid),[],1);reshape(repelem(gridLine(:),nB),[],1)]));
 
 inMid = reshape(inside(1:sum(nMid)),[],1);
 inB = reshape(inside(sum(nMid)+1:end),[],1);
