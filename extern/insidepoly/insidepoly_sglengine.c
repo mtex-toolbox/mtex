@@ -149,14 +149,24 @@ void mexFunction(int nlhs, mxArray *plhs[],
         /* The last pointer scanned by xx */
         xlast = x+last;
                 
+        /* The x bracket [xmin,xmax) is half open, which is what makes the
+         * crossing count right where two edges meet: a vertex belongs to
+         * exactly one of them and is counted once. The ON test may not use
+         * the same bracket. A vertex that is a local maximum in x is the
+         * excluded end of BOTH edges meeting there - of the one arriving and
+         * of the one leaving again - so no edge ever looks at a query point
+         * sitting exactly on it, and a point on the boundary is reported as
+         * off it. At a local minimum that same vertex is the included end of
+         * both, which is why only one side of a map was ever affected.
+         * So: closed bracket for ON, half open for the parity. */
         /* Branching */
         if (dPx>0) { /* x2>x1 */
             /* Loop on data points */
             while (xx<=xlast) {
-                if (*xx>=x1 && *xx<x2) {
+                if (*xx>=x1 && *xx<=x2) {
                     c = *xx*dPy - *yy*dPx;
-                    *ii ^= (c >= a);
                     *oo |= (c>cmin && c<cmax);
+                    if (*xx<x2) *ii ^= (c >= a);
                 }
                 xx++;
                 yy++;
@@ -166,10 +176,10 @@ void mexFunction(int nlhs, mxArray *plhs[],
         } else if (dPx<0) { /* x2<x1 */
             /* Loop on data points */
             while (xx<=xlast) {
-                if (*xx>=x2 && *xx<x1) {
+                if (*xx>=x2 && *xx<=x1) {
                     c = *xx*dPy - *yy*dPx;
-                    *ii ^= (c <= a);
                     *oo |= (c>cmin && c<cmax);
+                    if (*xx<x1) *ii ^= (c <= a);
                 }
                 xx++;
                 yy++;

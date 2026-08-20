@@ -91,6 +91,27 @@
 % vector of the undenoised |single| dataset had a mean norm of 15.7 against
 % the 0.127 it has now, on all three stencils.
 %
+% *Points On A Grain Boundary*
+%
+% * |insidepoly|, the fast point in polygon engine MTEX uses in place of
+% MATLAB's |inpolygon|, reported points sitting exactly on a grain boundary
+% as off it - but only ever on one side of a map, the side with the largest
+% x. The engine brackets each edge by a half open interval in x, which is
+% what makes the crossing count right where two edges meet, and it used that
+% same bracket for the on-boundary test. A vertex that is a local maximum in
+% x is the excluded end of both edges meeting there, so no edge ever looked
+% at a point sitting exactly on it. The bracket is closed for the on test
+% now and stays half open for the crossing count. On the map of
+% <https://github.com/mtex-toolbox/mtex/issues/2527 issue #2527> this made
+% 504 of the queried boundary points come back wrong, and
+% |grains.isOuterBoundary| found 110 boundary grains instead of 147
+%
+% * <grain2d.isOuterBoundary.html |isOuterBoundary|> no longer asks that
+% question at all. The envelope it lays around the map is spanned by
+% vertices of the grains themselves, so which grain it touches is a matter
+% of vertex identity and is read off the polygons directly - exact, faster,
+% and independent of how a point lying on a boundary is classified
+%
 % *Plasticity*
 %
 % * there is no |slipSystem.hcp| and there will not be one: which slip and
