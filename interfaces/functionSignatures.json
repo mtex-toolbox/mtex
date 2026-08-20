@@ -142,7 +142,7 @@
 {
     "inputs":
     [
-      {"name":"fname", "kind":"required", "type":["file=*.tex,*.txt,*.out"]},
+      {"name":"fname", "kind":"required", "type":["file=*.tex,*.txt,*.out,*.wts"]},
       {"name":"CS", "kind":"namevalue", "type":["crystalSymmetry"]},
       {"name":"SS", "kind":"namevalue", "type":["specimenSymmetry"]},
       {"name":"halfwidth", "kind":"namevalue", "type":["numeric","scalar",">0"]}

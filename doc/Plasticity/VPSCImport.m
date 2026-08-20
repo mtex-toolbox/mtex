@@ -28,6 +28,14 @@ path2file = [mtexDataPath filesep 'VPSC'];
 odf = SO3Fun.load([path2file filesep 'TEX_PH1.OUT'],'halfwidth',10*degree,'CS',cs)
 
 %%
+% The same command reads the weight files (|.wts|) that are handed *to*
+% VPSC, and files written by <orientation.export_VPSC.html
+% |export_VPSC|>. Those carry no strain and no phase ellipsoid, so the
+% corresponding entries in |odf.opt| are |NaN|. VPSC names the Euler angle
+% convention on the fourth header line - |B| for Bunge, |K| for Kocks and
+% |R| for Roe - and the file is read in whichever of them it announces.
+
+%%
 % The individual ODFs can be accessed by |odf{id}|
 
 % lets plot the second ODF
