@@ -72,8 +72,19 @@ for j = 1:numel(sP)
   % specify contour lines explicitly
   if isscalar(contours)
     if check_option(varargin,'log')
-      contours = logspace(log10(colorRange(1)),log10(colorRange(2)),contours);
-    else      
+      % a contoured ODF routinely has a small negative minimum, and log10 of
+      % a non positive bound returns complex levels which contourf then
+      % rejects - start at the smallest positive value instead
+      lowerBound = colorRange(1);
+      if ~(lowerBound > 0), lowerBound = min(cdata(cdata > 0)); end
+    else
+      lowerBound = [];
+    end
+
+    % nothing positive to space logarithmically -> stay linear
+    if ~isempty(lowerBound) && colorRange(2) > lowerBound
+      contours = logspace(log10(lowerBound),log10(colorRange(2)),contours);
+    else
       contours = linspace(colorRange(1),colorRange(2),contours);
     end
   end
