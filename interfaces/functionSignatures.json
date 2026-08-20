@@ -293,8 +293,6 @@
       {"name":"ebsd", "kind":"required", "type":["EBSD"]},
       {"name":"fName", "kind":"required", "type":["file=*.h5,*.hdf5,*.h5oina,*.oh5,*.edaxh5"]},
       {"name":"reference", "kind":"namevalue", "type":["file"], "purpose":"file to copy and write the changed data into"},
-      {"name":"compression", "kind":"namevalue", "type":["numeric","scalar",">=0","<=9"], "purpose":"deflate level of the standalone layout"},
-      {"name":"standalone", "kind":"flag", "type":["choices={'standalone'}"], "purpose":"write MTEX's own layout"},
       {"name":"noProp", "kind":"flag", "type":["choices={'noProp'}"], "purpose":"write orientations and phases only"}
     ]
 }

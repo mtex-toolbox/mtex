@@ -17,8 +17,10 @@
 %   export(ebsd,'denoised.h5oina')
 %
 % |EBSD.load| remembers the file and the data sets it read in |ebsd.opt.h5|;
-% a different reference file may be named by |'reference'|, and MTEX's own
-% flat layout is still available by |'standalone'|. Changes to the phase
+% a different reference file may be named by |'reference'|. MTEX's own flat
+% layout, and the |'standalone'| flag that wrote it, are gone - nothing could
+% read it back, so a |.mat| file is the way to carry a map between MTEX
+% sessions. Changes to the phase
 % list - a renamed mineral, a corrected lattice parameter - are written back
 % into the phase header as well. Verified against Bruker, EDAX (.oh5 and
 % .edaxh5), EMSphInx, Oxford and ThermoFisher files.
