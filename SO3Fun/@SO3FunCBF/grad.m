@@ -34,7 +34,7 @@ ori = varargin{1};
 s = size(ori);
 ori = ori(:);
 
-% symmetrise - only crystal symmetry
+% symmetrise the crystal directions
 [h,l] = symmetrise(SO3F.h.normalize,'unique');
 r = repelem(SO3F.r.normalize,l);
 w = repelem(SO3F.weights./l,l);
@@ -43,16 +43,31 @@ g = vector3d.zeros(size(ori));
 
 tS = SO3TangentSpace.extract(varargin{:});
 
-if tS.isRight
-  for i = 1:length(h)
-    g = g + w(i) * SO3F.psi.grad(dot(ori*h(i),r(i),'noSymmetry'),'polynomial') .* ...
-        cross(h(i),inv(ori) * r(i));
+% eval averages over the proper specimen group as well - see SO3FunCBF/eval -
+% and the gradient has to follow it, otherwise it describes a different
+% function. Since <s*g*h,r> = <g*h,inv(s)*r>, a specimen operation is the
+% same sum with r replaced by inv(s)*r, so the formulas below are unchanged.
+sProper = SO3F.SS.properGroup.rot;
+nS = numel(sProper);
+
+for k = 1:nS
+
+  % one rotation times a column of vectors comes back as a row, so put the
+  % shape back before indexing it alongside h and w
+  rS = reshape(inv(sProper(k)) * r(:),[],1);
+
+  if tS.isRight
+    for i = 1:length(h)
+      g = g + w(i)/nS * SO3F.psi.grad(dot(ori*h(i),rS(i),'noSymmetry'),'polynomial') .* ...
+          cross(h(i),inv(ori) * rS(i));
+    end
+  else
+    for i = 1:length(h)
+      g = g + w(i)/nS * SO3F.psi.grad(dot(h(i),inv(ori) * rS(i),'noSymmetry'),'polynomial') .* ...
+          cross(ori*h(i),rS(i));
+    end
   end
-else
-  for i = 1:length(h)
-    g = g + w(i) * SO3F.psi.grad(dot(h(i),inv(ori) * r(i),'noSymmetry'),'polynomial') .* ...
-        cross(ori*h(i),r(i));
-  end
+
 end
 
 g = SO3TangentVector(g,orientation(ori,SO3F.CS,SO3F.SS),tS);
