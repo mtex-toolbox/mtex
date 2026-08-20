@@ -134,7 +134,7 @@ end
 % they must not take a color of their own: line() advances the color order
 % of the axes even when it is given an explicit color, which would leave the
 % next plot with the wrong one - the two quiver calls at the end of
-% doc/Plasticity/SchmidtFactor.m came out blue and green instead of blue and
+% doc/Plasticity/SchmidFactor.m came out blue and green instead of blue and
 % red. Note that line() also draws irrespective of the hold state.
 ax = gca; colorIndex = ax.ColorOrderIndex;
 

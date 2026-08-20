@@ -163,7 +163,7 @@ assert(all(norm(vector3d.byXYZ(X) - pos) < 1e-10),'noScaling must not shift');
 % line() takes the next color of the axes color order even when it is given
 % an explicit one, so the markers and the heads used to advance it by two
 % per call: the two quiver commands at the end of doc/Plasticity/
-% SchmidtFactor.m came out blue and green instead of blue and red
+% SchmidFactor.m came out blue and green instead of blue and red
 
 close all
 ax = gca; hold on

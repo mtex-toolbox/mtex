@@ -1,5 +1,5 @@
 SlipSystems
-SchmidtFactor
+SchmidFactor
 TaylorModel
 SachsModel
 SingleSlipModel
