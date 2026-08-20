@@ -15,7 +15,9 @@
 cs = crystalSymmetry('cubic',[3.523,3.523,3.523],'mineral','Nickel');
 sS = slipSystem.fcc(cs)
 
-r = vector3d.Z;
+% the tension direction, as a crystal direction - the crystal is not
+% oriented yet, so its frame and the specimen frame coincide
+r = Miller(0,0,1,cs);
 
 %%
 % Lets visualize the situation
@@ -122,8 +124,9 @@ sSAll(id)
 % directions. This allows us to display the maximum Schmid factor over all
 % slip systems as a function of the tension direction.
 
-% define a grid of tension directions
-r = plotS2Grid('resolution',0.5*degree,'upper');
+% define a grid of tension directions - passing the crystal reference frame
+% makes them directions of the crystal, as the slip systems are
+r = plotS2Grid('resolution',0.5*degree,'upper',cs.frame);
 
 % compute the Schmid factors for all slip systems and all tension
 % directions

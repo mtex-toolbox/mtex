@@ -47,6 +47,10 @@
 % of crystal directions. Which hemisphere is the upper one is then decided
 % by the crystal frame instead of the session convention, and the result
 % needs no |Miller(v,cs)| cast to be used as a crystal direction
+% * <slipSystem.SchmidFactor.html |SchmidFactor|> no longer warns about a
+% tension direction that states no reference frame, such as |vector3d.Z| or
+% a plain plotting grid - only a direction or stress tensor that names a
+% frame contradicting the one of the slip systems does
 %
 % *EBSD Export*
 %
@@ -138,6 +142,17 @@
 % every predefined hexagonal family, |slipSystem.basal|,
 % |slipSystem.prismaticA|, |slipSystem.pyramidalCA| and the rest, with the
 % Miller indices of each, so the set can be put together on the spot
+% * |slipSystem/SchmidFactor| checked the reference frames in one direction
+% only: it caught a specimen stress tensor against crystal slip systems,
+% but not a crystal tensor against slip systems already rotated into
+% specimen coordinates by |ori * sS| - that combination silently returned a
+% Schmid factor computed across two frames. The tension direction syntax
+% |sS.SchmidFactor(r)| checked nothing at all, so the very same computation
+% warned or stayed silent depending on whether it was written as a
+% direction or as a uniaxial stress tensor. Both branches now apply the
+% same test, and the warning carries the identifier |MTEX:frameMismatch| so
+% it can be switched off. A crystal direction has to be stated as a
+% @Miller, since a plain @vector3d is taken to be a specimen direction
 %
 % *VPSC Files*
 %

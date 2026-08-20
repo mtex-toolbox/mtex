@@ -29,6 +29,7 @@ checkFundamentalSectorFrame;
 checkHemisphereSectorHue;
 checkProductDropsSymmetry;
 checkPlotS2GridFrame;
+checkSchmidFactorFrames;
 
 disp('check_referenceFrame: passed');
 
@@ -1090,5 +1091,105 @@ assert(isempty(u.frame), ...
 
 plottingConvention.default(d0);
 referenceFrame.reset;
+
+end
+
+% =========================================================================
+function checkSchmidFactorFrames
+% slipSystem/SchmidFactor warns exactly when the slip systems and the
+% stress state live in different reference frames
+%
+% The guard used to test isa(n,'Miller') only, so it caught a specimen
+% stress tensor against crystal slip systems but was silent the other way
+% round: rotating the systems (ori * sS) drops the Miller index, and a
+% crystal frame tensor then went through unnoticed and returned a Schmid
+% factor computed across two frames. The tension direction branch had no
+% check at all, so the same computation warned or not depending on whether
+% it was written as a direction or as a uniaxial tensor.
+%
+% A direction that states no frame at all is a different case: it says
+% nothing about where it belongs, so it is taken at face value and never
+% warned about - vector3d.Z and every plotting grid are written that way.
+
+referenceFrame.reset;
+
+cs = crystalSymmetry('m-3m');
+sS = slipSystem.fcc(cs);          % crystal frame
+ori = orientation.byEuler(20*degree,30*degree,40*degree,cs);
+sSr = ori * sS;                   % specimen frame - no longer Miller
+assert(~isa(sSr.n,'Miller'), ...
+  'check_referenceFrame: rotating slip systems is expected to drop the Miller index');
+
+sigmaS = stressTensor.uniaxial(vector3d.Z);   % specimen frame
+sigmaC = rotate(sigmaS,inv(ori));             % crystal frame
+r0 = vector3d.Z;                              % frame free direction
+rS = vector3d.Z; rS.frame = specimenFrame.default;  % specimen direction
+rC = Miller(0,0,1,cs);                        % crystal direction
+
+% frame agrees -> silent, frame differs -> warns, on both branches
+assertWarn(sS ,sigmaS,true ,'crystal systems / specimen tensor');
+assertWarn(sS ,sigmaC,false,'crystal systems / crystal tensor');
+assertWarn(sSr,sigmaS,false,'specimen systems / specimen tensor');
+assertWarn(sSr,sigmaC,true ,'specimen systems / crystal tensor');
+assertWarn(sS ,rS    ,true ,'crystal systems / specimen direction');
+assertWarn(sS ,rC    ,false,'crystal systems / crystal direction');
+assertWarn(sSr,rS    ,false,'specimen systems / specimen direction');
+assertWarn(sSr,rC    ,true ,'specimen systems / crystal direction');
+
+% a direction without a frame is never complained about, whichever frame
+% the slip systems are in
+assertWarn(sS ,r0    ,false,'crystal systems / frame free direction');
+assertWarn(sSr,r0    ,false,'specimen systems / frame free direction');
+assertWarn(sS ,plotS2Grid('resolution',20*degree,'upper'),false, ...
+  'crystal systems / plain plotting grid');
+assertWarn(sS ,plotS2Grid('resolution',20*degree,'upper',cs.frame),false, ...
+  'crystal systems / crystal frame plotting grid');
+
+% the quadrature nodes of the no argument syntax are directions of the
+% frame the quadrature runs in, so that branch must stay silent
+lastwarn('');
+SF = sS.SchmidFactor;
+assert(isempty(lastwarn), ...
+  'check_referenceFrame: SchmidFactor without argument must not warn about frames');
+
+% and still be the Schmid factor - it is a degree 2 polynomial, so the
+% bandwidth 4 expansion is exact
+v = Miller(vector3d.rand(50),cs);
+ref = dot(v,sS.n.normalize,'noSymmetry') .* dot(v,sS.b.normalize,'noSymmetry');
+assert(max(abs(SF.eval(v) - ref)) < 1e-10, ...
+  'check_referenceFrame: SchmidFactor without argument is not the Schmid factor');
+
+% expressing the same stress state in either frame gives the same numbers
+w = warning('off','MTEX:frameMismatch');
+wCleanup = onCleanup(@() warning(w));
+a = sS.SchmidFactor(sigmaC);
+b = sSr.SchmidFactor(sigmaS);
+assert(isequal(size(a),size(b)) && max(abs(a(:)-b(:))) < 1e-12, ...
+  'check_referenceFrame: the Schmid factor depends on which frame it is computed in');
+
+% a tension direction and the corresponding uniaxial tensor agree
+assert(max(abs(sS.SchmidFactor(rC) - sS.SchmidFactor(stressTensor.uniaxial(rC)))) < 1e-12, ...
+  'check_referenceFrame: tension direction and uniaxial stress tensor disagree');
+
+referenceFrame.reset;
+
+end
+
+% -------------------------------------------------------------------------
+function assertWarn(sS,ref,expected,name) %#ok<INUSD>
+% call SchmidFactor and check whether it warned about the reference frame
+%
+% evalc keeps the expected warnings out of the test log - switching them off
+% would also stop lastwarn from recording them, which is what is under test
+
+lastwarn('');
+evalc('sS.SchmidFactor(ref);');
+[~,id] = lastwarn;
+got = strcmp(id,'MTEX:frameMismatch');
+
+if got ~= expected
+  if expected, verb = 'did not warn'; else, verb = 'warned'; end
+  error('check_referenceFrame: SchmidFactor %s for %s',verb,name);
+end
 
 end
