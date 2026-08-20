@@ -78,7 +78,6 @@ sSBasal.deformationTensor
 
 sSBasal.SchmidTensor
 
-
 %% Rotating slip systems
 % By definition the slip system and accordingly the deformation tensor are
 % with the respect to the crystal coordinate system. In order to transform
