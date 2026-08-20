@@ -44,9 +44,9 @@ classdef axisAngleSections < ODFSections
       ori = orientation(oS.CS1,oS.CS2);
       oS.gridSize(1) = 0;
       for s = 1:length(oS.angles)
-        sR = oS.oR.axisSector(oS.angles(s));
-        
-        oS.plotGrid{s} = plotS2Grid(sR,varargin{:});
+        % the sectors are computed once in the constructor - recomputing
+        % them here costs as much as the grid itself
+        oS.plotGrid{s} = plotS2Grid(oS.axesSectors{s},varargin{:});
         
         oS.gridSize(s+1) = oS.gridSize(s) + length(oS.plotGrid{s});
         ori(1+oS.gridSize(s):oS.gridSize(s+1)) = ...

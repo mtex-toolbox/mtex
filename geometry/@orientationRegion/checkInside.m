@@ -25,18 +25,14 @@ q = quaternion(q);
 if isempty(oR.N), inside = true(size(q)); return; end
 if isempty(q), inside = false(size(q)); return; end
 
-% orientationRegion/cleanUp calls this a few hundred times, and building a
-% crystalSymmetry costs more than the test it is used for. Caching it is
-% safe here because symmetry/eq compares the point group id, not the state
-% of the object
-persistent trivialCS
-if isempty(trivialCS), trivialCS = crystalSymmetry; end
-
-if oR.CS1 == trivialCS & oR.CS2 == trivialCS & oR.antipodal
-  d = dot_outer(oR.N,q);
-  inside = all(d>=tol,1);
-  return
-end
+% There used to be a branch here for a region without symmetry, taken when
+% oR.CS1 == crystalSymmetry & oR.CS2 == crystalSymmetry & oR.antipodal. It
+% cannot be taken: crystalSymmetry is a @phaseItem, which seals eq to plain
+% handle identity, so a symmetry only ever equals itself and never the
+% freshly built one this compared against. That has been so since
+% crystalSymmetry became a phaseItem in b7e84a5ee, and the branch did not
+% compute the same thing as the general case below - it dropped the
+% condition on -q and reshape - so it is gone rather than repaired.
 
 % verify all conditions are satisfies
 d = dot_outer(oR.N,q);
