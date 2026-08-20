@@ -27,10 +27,12 @@ cS = crystalShape.cube(cs);
 plot(cS,'faceAlpha',0.5)
 hold on
 plot(cS,sS,'facecolor','blue','label','b')
-arrow3d(-0.8*sS.n,'faceColor','black','linewidth',2,'label','n')
+% normalize - the length of a Miller is a reciprocal lattice spacing, not a
+% length in the plot
+arrow3d(-0.4*normalize(sS.n),'faceColor','black','linewidth',2,'label','n')
 plottingConvention.default3D().setView
 
-arrow3d(0.4*r,'faceColor','red','linewidth',2,'label','r')
+arrow3d(0.4*normalize(r),'faceColor','red','linewidth',2,'label','r')
 hold off
 
 %% Definition of the Schmid factor
@@ -102,7 +104,7 @@ for k = 1:length(sSAll)
   hold on
   plot(cS,sSAll(k),'facecolor','blue','parent',ax)
   plottingConvention.default3D().setView
-  arrow3d(0.4*r,'faceColor','red','linewidth',3)
+  arrow3d(0.4*normalize(r),'faceColor','red','linewidth',3)
   hold off
 end
 
