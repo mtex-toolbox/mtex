@@ -104,13 +104,23 @@ setMTEXpref('EBSDExtensions',...
   [".osc",".ctf",".ang",".hkl",".tsl",".sor",".crc",".h5",".hdf5",".h5oina",".oh5",".edaxh5",".dream3d"]);
 
 % set default colors
-colors = load(fullfile(mtex_path,'plotting','plotting_tools','colors.mat'),'rgb');
-% in former MTEX version this was
-% color.rgb = vega20;
-setMTEXpref('colors',colors.rgb)
+% colors.mat is read through mtex_path, which the MATLAB Compiler dependency
+% checker cannot see - compile-mtex passes it to mcc as a payload. A
+% compiled application that was built without it would otherwise die here,
+% on the very first line of its startup, so fall back rather than error
+% (#2369).
+try
+  colors = load(fullfile(mtex_path,'plotting','plotting_tools','colors.mat'),'rgb');
+  % in former MTEX version this was
+  % color.rgb = vega20;
+  setMTEXpref('colors',colors.rgb)
 
-% make these colors the default in Matlab
-set(0,'DefaultAxesColorOrder',colors.rgb)
+  % make these colors the default in Matlab
+  set(0,'DefaultAxesColorOrder',colors.rgb)
+catch
+  assert(isdeployed,'MTEX:missingColors', ...
+    'colors.mat is missing from %s', fullfile(mtex_path,'plotting','plotting_tools'));
+end
 
 %% Default save-mode for generated code snipped (import wizard)
 % set to true if generated import-script should be stored on disk by
