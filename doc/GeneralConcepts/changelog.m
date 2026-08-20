@@ -64,6 +64,18 @@
 % their own data by comparing values; the two are marked apart now, so a
 % convention handed in is always honoured
 %
+% *Plasticity*
+%
+% * there is no |slipSystem.hcp| and there will not be one: which slip and
+% twinning systems carry the deformation of a hexagonal material, and at
+% which critical resolved shear stress, is a property of the material and
+% the experiment rather than of the lattice. The placeholder that used to
+% warn and then return nothing - which made |dislocationSystem.hcp| fail
+% with "Output argument sS not assigned" - now raises an error that lists
+% every predefined hexagonal family, |slipSystem.basal|,
+% |slipSystem.prismaticA|, |slipSystem.pyramidalCA| and the rest, with the
+% Miller indices of each, so the set can be put together on the spot
+%
 %% MTEX 7.0 08/2026 - New Features
 %
 % This is the first release that uses AI. This allowed us to implement many
