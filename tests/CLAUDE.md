@@ -10,11 +10,11 @@ tier, so adding a file is all it takes to register it.
 | `plotting/` | tests whose assertion is about a graphics object | opt-in, not budgeted |
 | `lib/` | fixtures and generators, not tests | never collected |
 
-A file at `tests/` root is deliberately **not** collected by `runTests`. That is where a test
-goes when it cannot currently pass — `check_SO3FunRBFApproximation` (#2595) — or has not been
-converted yet — `SO3FunTests/test_convolution`. Each carries a header saying so. A tier is meant
-to go green, so a test that is known to fail does not belong in one; parking it here keeps it and
-its assertion alive without making the tier meaningless.
+A file at `tests/` root is deliberately **not** collected by `runTests`. That is where a test goes
+when it cannot currently pass, or has not been converted yet — `SO3FunTests/test_convolution`.
+Each carries a header saying so. A tier is meant to go green, so a test that is known to fail does
+not belong in one; parking it here keeps it and its assertion alive without making the tier
+meaningless.
 
 `check_mtex`, `check_mex` and `check_mexComplete` also stay at `tests/` root. `check_mtex` runs the
 core tier. `check_mex` is an installer called from `startup_mtex.m` on every start, not a test.
@@ -113,7 +113,7 @@ over budget, trim from outside these before trimming inside them.
 | `S1Fun/plot` options | `plotting/check_S1FunPlot` |
 | MLS subsampling | `slow/check_MLSSubsample` |
 | `radon` options | `core/check_radonOptions` |
-| RBF approximation | `check_SO3FunRBFApproximation` at tests/ root — **known failure, #2595** |
+| RBF approximation, every route into it | `slow/check_SO3FunRBFApproximation` |
 | `calcPoleFigure` superposition | `core/check_calcPoleFigureSuperposition` |
 | pole figure → ODF inversion | `slow/check_poleFigureInversion` |
 | tensor factories, `tensor` constructor arguments | `core/check_tensorFactories` |

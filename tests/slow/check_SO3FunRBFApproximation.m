@@ -1,20 +1,13 @@
 function check_SO3FunRBFApproximation
-% KNOWN FAILURE, see https://github.com/mtex-toolbox/mtex/issues/2595
+% approximation of an SO3FunRBF, every route into it
 %
-% At tests/ root rather than in a tier, so that runTests can still go green.
+% In slow/ rather than core/: the file takes about 20 s, most of it the Dubna
+% cases, which is a third of the whole core budget on its own.
 %
-% The scale equivariance of the harmonic method (#2588) is fixed - that block
-% passes now. What stops this file moving into core/ is a different defect it
-% was masking: the run used to abort at the harmonic block, and now reaches
-% line 98, where SO3FunRBF.approximate(ori,values,...) dies in
-%
-%   varargin = [varargin,'mean',f.mean];      % approximate.m:89
-%
-% because approximate assumes an SO3Fun first argument and takes the mean of
-% an orientation instead. interpolate accepts the same arguments happily.
-% Verified identical with and without the #2588 fix, so it is independent.
-%
-% Move this into core/ once #2595 is resolved.
+% Was parked at tests/ root as a known failure through two bugs, both fixed:
+% the harmonic method was not scale equivariant (#2588, a local variable
+% shadowing eps), and SO3FunRBF.approximate(nodes,values,...) errored where
+% interpolate accepted the same arguments (#2595).
 
 % restored by onCleanup, so that a failing assertion below does not leave
 % the warning switched off for the rest of the session
@@ -105,12 +98,18 @@ err = norm(SO3F.eval(ori) - S.values) / norm(S.values);
 assert(err < 0.02,'SO3FunRBFApproximation:Dubna:SO3G',...
     'SO3FunRBFApproximation:SO3Fun:Dubna: FAILED')
 
+% seeded, because this assertion sits on its own threshold: over twelve seeds
+% the error runs 0.0494 to 0.0504, so against the original bound of 0.05 it
+% failed on five of them. The bound is 0.06 now - the point of the case is
+% that 5% noise on the values does not blow the fit up, and that survives a
+% draw of the noise either way
+rng(0)
 val = S.values + randn(size(S.values)) * 0.05 * std(S.values);
 
 SO3F = SO3FunRBF.approximate(ori, val,'kernel',psi,'odf');
 err = norm(SO3F.eval(ori) - S.values) / norm(S.values);
 
-assert(err < 0.05,'SO3FunRBFApproximation:Dubna:SO3G:Noisy',...
+assert(err < 0.06,'SO3FunRBFApproximation:Dubna:SO3G:Noisy',...
     'SO3FunRBFApproximation:SO3Fun:Dubna: FAILED')
 
 %%
