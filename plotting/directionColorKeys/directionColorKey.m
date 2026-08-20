@@ -10,6 +10,10 @@ classdef directionColorKey < handle
   properties %(Access = hidden)
     dir2color % function handle
   end
+
+  properties (Access = private)
+    hsvFallback = [] % HSVDirectionKey used when dir2color is not set
+  end
   
   methods
     
@@ -108,6 +112,21 @@ classdef directionColorKey < handle
     end        
    
     function rgb = direction2color(oM,h,varargin)
+
+      % without an explicit dir2color the property is empty and the call
+      % below would index an empty array with a @Miller. Fall back to the
+      % HSV key, which is the coloring a bare directionColorKey shows when
+      % it is plotted anyway.
+      %
+      % Kept in its own property rather than filled into dir2color: an
+      % empty dir2color is what ipfColorKey/precompute reads to decide
+      % whether its color grid still has to be built.
+      if isempty(oM.dir2color)
+        if isempty(oM.hsvFallback), oM.hsvFallback = HSVDirectionKey(oM.sym); end
+        rgb = oM.hsvFallback.direction2color(h,varargin{:});
+        return
+      end
+
       rgb = oM.dir2color(h,varargin{:});
     end
 
