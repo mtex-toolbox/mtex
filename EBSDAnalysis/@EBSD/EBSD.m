@@ -166,9 +166,11 @@ classdef EBSD < phaseList & dynProp & dynOption
       % remove nan positions
       if any(isnan(ebsd.pos)), ebsd = ebsd.subSet(~isnan(ebsd.pos)); end
 
-      % get unit cell
+      % get unit cell - varargin comes along so that the grid options of
+      % calcUnitCell (GridResolution, GridType, GridRotation) reach it from
+      % EBSD.load; the hint goes last, since get_option keeps the last match
       ebsd = ebsd.updateUnitCell(get_option(varargin,'unitCell'),...
-        'hint',get_option(varargin,'unitCellHint'));
+        varargin{:},'hint',get_option(varargin,'unitCellHint'));
             
       ebsd.N = perp(ebsd.unitCell);
 

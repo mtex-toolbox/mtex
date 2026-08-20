@@ -18,6 +18,7 @@ function check_ebsdGrid
 checkTransform;
 checkUnitCellProperty;
 checkUnitCellHint;
+checkGridOptions;
 checkGridShapes;
 checkMultiColumnProps;
 checkLatticeBasisCanonical;
@@ -146,6 +147,85 @@ assert(isempty(lastwarn), ...
   'check_ebsdGrid: a rectangular hint of the right step warned on a hex grid');
 assert(length(ebsdHex.unitCell) == 6, ...
   'check_ebsdGrid: a rectangular hint replaced a hexagonal unit cell');
+
+end
+
+% =========================================================================
+function checkGridOptions
+% what calcUnitCell is told beats what it measures (#2600)
+%
+% The options are reachable from user code - loadData hands its varargin
+% straight to calcUnitCell, so EBSD.load(...,'GridResolution',5) lands
+% here - but every route out of the function ignored them. A scalar
+% resolution errored (the square grid check indexes dxy2(2), and the
+% option was the only way that could be shorter than 1x2), a pair was
+% compared against the measured spacing rather than replacing it, the
+% lattice detection never looked at it, and the Voronoi fallback
+% overwrote it with its own estimate. GridType went the same way whenever
+% the estimate already was a regular polygon.
+%
+% Silent except for the scalar: the cell simply came back as the estimate.
+
+step = 5; [gx,gy] = meshgrid((0:20)*step,(0:20)*step);
+sq = [gx(:) gy(:)];
+
+d = 3; [J,I] = ndgrid(0:20,0:20);
+hex = [(I(:) + 0.5*mod(J(:),2))*d, J(:)*d*sqrt(3)/2];
+
+% no option -> the estimate, on both fixtures
+assertCell(calcUnitCell(sq),4,[step step],'the estimate on a square lattice');
+assertCell(calcUnitCell(hex),6,[d d],'the estimate on a hex lattice');
+
+% a scalar resolution means the same step in x and y - this one errored
+assertCell(calcUnitCell(sq,'GridResolution',7),4,[7 7],'a scalar GridResolution');
+assertCell(calcUnitCell(sq,'GridResolution',[7 7]),4,[7 7],'GridResolution [7 7]');
+assertCell(calcUnitCell(sq,'GridResolution',[7 3]),4,[7 3],'an anisotropic GridResolution');
+
+% each option replaces the quantity it names and only that one: the size
+% is taken from the option, the hexagonal shape still from the positions
+assertCell(calcUnitCell(hex,'GridResolution',5),6,[5 5],'GridResolution on a hex lattice');
+assertCell(calcUnitCell(hex,'GridType','rectangular'),4,[d d],'GridType on a hex lattice');
+assertCell(calcUnitCell(sq,'GridResolution',5,'GridType','hexagonal'),6,[5 5], ...
+  'GridResolution together with GridType');
+
+% ... and that holds for the rotation as well: a rotated lattice keeps
+% the detected rotation when only the resolution is given
+theta = 20*degree; R = [cos(theta) -sin(theta); sin(theta) cos(theta)];
+uC = calcUnitCell(sq*R.','GridResolution',7);
+assertCell(uC,4,[7 7],'GridResolution on a rotated lattice');
+assert(abs(cellRotation(uC) - theta) < 0.5*degree, ...
+  'check_ebsdGrid: GridResolution discarded the detected rotation, cell is at %g degree', ...
+  cellRotation(uC)/degree);
+
+uC = calcUnitCell(sq,'GridRotation',10*degree);
+assert(abs(cellRotation(uC) - 10*degree) < 1e-9, ...
+  'check_ebsdGrid: GridRotation was ignored, cell is at %g degree',cellRotation(uC)/degree);
+
+end
+
+% =========================================================================
+function assertCell(uC,sides,d,what)
+% a unit cell of the expected shape and size - the size in the convention
+% calcUnitCell/regularPoly uses, i.e. [dx dy] = vecnorm(uC,2,1)
+
+assert(size(uC,1) == sides, ...
+  'check_ebsdGrid: %s gave a cell with %d vertices, expected %d', ...
+  what,size(uC,1),sides);
+
+% assert substitutes only scalars into its message, so unpack the sizes
+dCell = vecnorm(uC,2,1);
+assert(all(abs(dCell - d) < 1e-6*d), ...
+  'check_ebsdGrid: %s gave a cell of size [%g %g], expected [%g %g]', ...
+  what,dCell(1),dCell(2),d(1),d(2));
+
+end
+
+% =========================================================================
+function rot = cellRotation(uC)
+% the rotation a cell was built with - regularPoly puts its first vertex
+% at pi/s + rot, and a cell of s vertices repeats every 2*pi/s
+
+rot = mod(atan2(uC(1,2),uC(1,1)) - pi/size(uC,1), 2*pi/size(uC,1));
 
 end
 

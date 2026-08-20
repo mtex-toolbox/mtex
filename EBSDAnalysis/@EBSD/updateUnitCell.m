@@ -12,6 +12,14 @@ function ebsd = updateUnitCell(ebsd,uc,varargin)
 %         Anything else keeps the estimate and warns: positions and unit
 %         cell describing different things is worse than an unscaled map,
 %         because nothing downstream can tell.
+%
+% All remaining options are passed on to calcUnitCell, so that the grid
+% options GridResolution, GridType and GridRotation reach it from
+% EBSD.load. Any of them makes the cell a requested one rather than a
+% measured one, and a hint is then ignored.
+%
+% See also
+% calcUnitCell
 
 if nargin > 1 && ~isempty(uc)
   % 1. an explicit unit cell always wins, no further checks
@@ -23,9 +31,18 @@ end
 % comparing a hint against a cheap independent re-estimate risks subtly
 % diverging from calcUnitCell's own (more elaborate) internal logic
 xyz = ebsd.pos.xyz;
-uc = calcUnitCell(xyz);
+uc = calcUnitCell(xyz,varargin{:});
 
 hint = get_option(varargin,'hint');
+
+% a grid the user has asked for is not a measurement, so a header hint
+% must neither override it nor be tested against it - the test would
+% compare the file's step size against the requested one and warn about a
+% mismatch that is the whole point of passing the option
+if check_option(varargin,{'GridResolution','GridType','GridRotation'})
+  hint = [];
+end
+
 if ~isempty(hint)
   % 2. prefer the hint unless the estimate is well-defined and actively
   % disagrees with it
