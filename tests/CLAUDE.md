@@ -11,7 +11,7 @@ tier, so adding a file is all it takes to register it.
 | `lib/` | fixtures and generators, not tests | never collected |
 
 A file at `tests/` root is deliberately **not** collected by `runTests`. That is where a test
-goes when it cannot currently pass — `check_WignerD` (#2582) and `check_SO3FunRBFApproximation` (#2588) — or has not been
+goes when it cannot currently pass — `check_SO3FunRBFApproximation` (#2588) — or has not been
 converted yet — `SO3FunTests/test_convolution`. Each carries a header saying so. A tier is meant
 to go green, so a test that is known to fail does not belong in one; parking it here keeps it and
 its assertion alive without making the tier meaningless.
@@ -104,10 +104,9 @@ over budget, trim from outside these before trimming inside them.
 | `rotate` on `SO3Fun` subclasses | `core/check_SO3FunRotate` |
 | kernel halfwidth | `core/check_kernelHalfwidth` |
 | ODF gradients | `core/check_odfGrad` |
-| `calcComponents` - ODF modes, their volumes, the seed to mode map | `core/check_calcComponents` |
 | `optimalSample` on SO(3) and on S2 — that the L-BFGS memory is used, weights on the simplex | `core/check_optimalSample` |
 | Clebsch–Gordan coefficients | `core/check_clebschGordan` |
-| Wigner D | `check_WignerD` at tests/ root — **known failure, #2582**, so not in a tier |
+| Wigner D, and the `'kernel'` option against the harmonic transform | `core/check_WignerD` |
 | `calcDensity` edge cases | `core/check_calcDensityEmpty` |
 | S2 kernel normalization | `core/check_S2KernelNormalization` |
 | `S1Fun` arithmetic | `core/check_S1Fun` |

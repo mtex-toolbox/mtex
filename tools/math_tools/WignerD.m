@@ -10,10 +10,12 @@ function Psi = WignerD(ori,varargin)
 %   dl = WignerD(beta,l)
 %   dl = WignerD(beta,'degree',l)
 %   d  = WignerD(beta,'bandwidth',l)
+%   C  = WignerD(g,'kernel',psi)
 %
 % Input
 %  g - @quaternion / @rotation / @orientation / @symmetry
 %  beta - second Euler angle in [0,pi]
+%  psi - @SO3Kernel
 %
 % Output
 %  Dl - Wigner-D matrix D_l^(m,n) ($(2l+1) \times (2l+1)$)
@@ -24,6 +26,15 @@ function Psi = WignerD(ori,varargin)
 % Options
 %  bandwidth - harmonic degree of series expansion
 %  degree    - number or array, single degree reshapes result
+%  kernel    - @SO3Kernel, weights every degree by its Chebyshev coefficient
+%              and, unless a bandwidth is given, sets the bandwidth to the
+%              kernel's own. With it,
+%
+%                WignerD(ori,'kernel',psi)
+%
+%              is the harmonic expansion of the radial basis function psi
+%              centered in ori, i.e. calcFourier(SO3FunRBF(ori,psi,1)) up to
+%              the L2 normalization conj(.)/sqrt(2n+1) per degree.
 %
 % Flags
 %  normalize - l2 normalized Wigner-D functions (multiply by \sqrt(2n+1))
@@ -41,7 +52,18 @@ if isa(varargin{1},'double')
   varargin = ['degree',varargin];
 end
 
-L = get_option(varargin,'bandwidth',getMTEXpref('maxSO3Bandwidth'));
+% a kernel caps the expansion at its own bandwidth - going beyond it would
+% only append degrees the kernel weights with zero
+psi = get_option(varargin,'kernel',[]);
+if ~isa(psi,'SO3Kernel'), psi = getClass(varargin,'SO3Kernel'); end
+
+if isempty(psi)
+  defaultL = getMTEXpref('maxSO3Bandwidth');
+else
+  defaultL = psi.bandwidth;
+end
+
+L = get_option(varargin,'bandwidth',defaultL);
 l = get_option(varargin,{'order','degree'},0:L);
 
 % Wigner-d functions
@@ -64,6 +86,19 @@ else % use matrix exponential
 
   Psi = wignerDmatrix(ori,l,varargin{:});
 
+end
+
+% weight every degree by the kernel's Chebyshev coefficient. Doing it here
+% rather than in the three backends keeps them interchangeable - they all
+% return the degree blocks concatenated in the order of l.
+if ~isempty(psi)
+  A = psi.A(:);
+  d = (2*l(:)+1).^2;
+  cs = [0;cumsum(d)];
+  for i = 1:numel(l)
+    if l(i)+1 <= numel(A), a = A(l(i)+1); else, a = 0; end
+    Psi(cs(i)+1:cs(i+1),:) = a * Psi(cs(i)+1:cs(i+1),:);
+  end
 end
 
 % reshape
