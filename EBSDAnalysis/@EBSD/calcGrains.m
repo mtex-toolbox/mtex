@@ -29,7 +29,9 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %
 % Options
 %  angle    - misorientation angle that indicates a grain boundary
-%  minPixel - minimum number of pixels that form a grain
+%  minPixel - minimum number of pixels that form a grain. No indexed grain
+%             smaller than this is returned; the pixels of one that would be
+%             are marked notIndexed
 %  alpha    - fill distances into not indexed regions
 %  soft     - [angle delta] soft threshold instead of a hard one
 %  fmc       - fast multiscale clustering method
@@ -115,6 +117,13 @@ I_FD = remapIFD(out,ebsd);
 [A_Db,I_DG] = doSegmentation(I_FD,ebsd,gbc,varargin{:});
 % A_db - neighboring cells with (inner) grain boundary
 % I_DG - incidence matrix cells to grains
+
+% minPixel is enforced before the decomposition, but culling changes the map
+% the alpha closing runs on, so a handful of grains can re-fragment below the
+% threshold afterwards (#2574). Mop those up here, on the segmentation graph:
+% decomposing a second time would mean another Voronoi build, while I_DG
+% already carries the sizes.
+enforceMinPixel
 
 % now we remove all empty grains
 notEmpty = full(any(I_FD * I_DG,1)).';
@@ -558,6 +567,36 @@ end
     % rows) so pixels with no assigned grain correctly stay 0, matching
     % the original grainId computation above
     grainId = full(I_DG * (1:size(I_DG,2)).');
+  end
+
+  function enforceMinPixel
+    % indexed grains that came out below minPixel despite the cull before
+    % the decomposition - mark their pixels notIndexed, which is what that
+    % pass does to everything it removes
+    %
+    % Reads I_DG only, so it needs no second decomposition. Note this leaves
+    % the cells exactly as the decomposition drew them: a pixel the closing
+    % stranded keeps its oversized cell and simply becomes notIndexed, the
+    % same way the pixels culled before the decomposition do.
+    %
+    % Merging the offenders into a neighbour instead was measured and
+    % dropped: they are stranded in notIndexed regions by construction, so
+    % 14 of 15 across forsterite and small had no neighbour of their own
+    % phase to merge into and fell back to this anyway.
+
+    mp = get_option(varargin,'minPixel',1);
+    if mp <= 1, return; end
+
+    szG = full(sum(I_DG,1)).';
+    phG = full(max(I_DG' * ...
+      spdiags(ebsd.phaseId,0,length(ebsd),length(ebsd)),[],2));
+
+    % notIndexed grains are not subject to minPixel
+    under = szG < mp & szG > 0 & phG > 1;
+    if ~any(under), return; end
+
+    ebsd.phaseId(full(any(I_DG(:,under),2))) = 1;
+
   end
 
 end

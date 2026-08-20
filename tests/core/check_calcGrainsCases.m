@@ -1,7 +1,13 @@
 function check_calcGrainsCases
 % fast correctness suite for EBSD.calcGrains, covering grid type x
-% transform combinations plus the removeQuadruplePoints option, using only
-% small synthetic maps (runs in well under a second).
+% transform combinations plus the removeQuadruplePoints option, on small
+% synthetic maps throughout - with one deliberate exception, the stranded
+% pixel case of #2574, which needs a real notIndexed topology and uses
+% mtexdata('small').
+%
+% Takes about 4 s. The header used to claim "well under a second"; measured,
+% it was already ~3.7 s before the #2574 case was added, which contributes
+% 0.17 s of that.
 %
 % Consolidates the small-map regression cases that used to live in
 % check_calcGrainsTransform and check_calcGrainsQuadruplePoints. Real,
@@ -253,6 +259,23 @@ ebsdMPhex.rotations(iMP) = o2;
 
 checkMinPixel(calcGrains(ebsdMPhex,'threshold',thr,'minPixel',2), 2, 1, ...
   'hex, single stray pixel');
+
+% a pixel the alpha closing stranded (#2574)
+%
+% Both cases above are fully indexed, where the cull before the decomposition
+% is the whole story. This one is not: the offending pixel reaches its 239
+% pixel grain only over a Voronoi face bridge across a notIndexed gap, and it
+% is culling 57 OTHER pixels elsewhere that moves the closing raster enough to
+% break that bridge. The sizing pass is right to leave the pixel alone; the
+% second decomposition then finds it isolated, and it came back as a one pixel
+% indexed grain against minPixel = 3.
+%
+% The one real map in this file. Reproducing the topology synthetically means
+% hard coding how the closing lays out its dummy cells, which would be brittle
+% against any change to it - and mtexdata('small') is about 2500 pixels, a
+% tenth of a second.
+checkMinPixel(calcGrains(mtexdata('small','silent'),'minPixel',3), 3, 24, ...
+  'stranded pixel, mtexdata small');
 
 %% every grain polygon must be a closed ring enclosing a positive area
 %
