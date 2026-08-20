@@ -57,7 +57,8 @@ ebsd(50,100)
 % land in the same cell, one would be lost - so MTEX keeps such a data set
 % as a plain list instead, and says why
 
-ebsd = EBSD.load([mtexEBSDPath filesep 'eclogite.ctf'])
+ebsd = EBSD.load([mtexEBSDPath filesep 'eclogite.ctf'],...
+  'EulerCorrection', rotation.byAxisAngle(zvector,180*degree))
 
 %%
 % The same happens for a scan whose positions are too irregular to span a
@@ -122,7 +123,7 @@ plot(ebsdMg(50:100,5:100),ebsdMg(50:100,5:100).orientations)
 % consecutive ids run along a matrix row, i.e. across the map, while
 % MATLAB's linear index runs down a column
 
-ebsd.oldId(1:3,1:3)
+ebsd.oldId(1:3,1:4)
 
 %%
 % and the second output of |gridify| is the translation in the other
