@@ -58,7 +58,7 @@ mori = grains(grainPairs).meanOrientation;
 grainPairs(angle(mori(:,1),mori(:,2)) < 5*degree,:) = [];
 
 % compute an optimal parent to child orientation relationship
-[fcc2bcc, fit] = calcParent2Child(grains(grainPairs).meanOrientation,KS);
+[fcc2bcc, fit] = calcParent2Child(grains(grainPairs).meanOrientation);
 
 %%
 % Beside the optimized parent to child orientation relationship the command
@@ -88,7 +88,8 @@ xlabel('disorientation angle')
 
 plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
 hold on;
-plot(gB,fit(pairId) ./ degree,'linewidth',3,'smooth')
+plot(gB,'linewidth',3,'LineColor','white')
+plot(gB,fit(pairId) ./ degree,'linewidth',2,'smooth')
 hold off
 
 mtexColorMap LaboTeX
@@ -146,6 +147,7 @@ A = mclComponents(A,p);
 
 % merge grains according to the adjacency matrix A
 [parentGrains, parentId] = merge(grains,A);
+parentGrains = parentGrains.smoothBoundary(20);
 
 % ensure grainId in parentEBSD is set up correctly with parentGrains - every
 % pixel has to be remapped, not only the indexed ones, as the not indexed
@@ -222,12 +224,12 @@ color = ind2color(packetId);
 plot(childGrains,color)
 
 hold on
-plot(parentGrains.boundary,'linewidth',3)
+plot(parentGrains.boundary,'linewidth',2)
 
 % outline a specific parent grain
 hold on
 id = parentGrains.findByLocation([100,80]);
-plot(parentGrains(id).boundary,'linewidth',3,'lineColor','w')
+plot(parentGrains(id).boundary,'linewidth',2,'lineColor','w')
 hold off
 
 %% 
@@ -286,12 +288,13 @@ mtexColorbar
 [parentGrains, parentEBSD] = ...
   calcGrains(parentEBSD('indexed'),'angle',3*degree,'minPixel',10);
 
-parentGrains = smoothBoundary(parentGrains,5);
+parentGrains = smoothBoundary(parentGrains,20);
 
 plot(ebsd('indexed'),ebsd('indexed').orientations,'figSize','large')
 
 hold on
-plot(parentGrains.boundary,'lineWidth',4)
+plot(parentGrains.boundary,'lineWidth',4,'linecolor','White')
+plot(parentGrains.boundary,'lineWidth',2)
 hold off
 
 %%
@@ -307,7 +310,8 @@ plot(parentEBSD('Iron fcc'),parentEBSD('Iron fcc').orientations,'figSize','large
 
 % with grain boundaries
 hold on
-plot(parentGrains.boundary,'lineWidth',4)
+plot(parentGrains.boundary,'lineWidth',4,'linecolor','White')
+plot(parentGrains.boundary,'lineWidth',2)
 hold off
 
 %% Summary of relevant thresholds
@@ -386,6 +390,7 @@ A = mclComponents(A,p);
 
 % merge grains according to the adjacency matrix A
 [parentGrains, parentId] = merge(grains,A);
+parentGrains = smoothBoundary(parentGrains,20);
 
 % ensure grainId in parentEBSD is set up correctly with parentGrains
 parentEBSD = ebsd;
@@ -398,7 +403,7 @@ parentEBSD.grainId = old2new(1 + ebsd.grainId);
 
 plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
 hold on;
-plot(parentGrains.boundary,'linewidth',4)
+plot(parentGrains.boundary,'linewidth',2)
 set(gcf,'Renderer','painters')
 hold off
 

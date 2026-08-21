@@ -9,9 +9,6 @@
 % accuracy <DensityEstimation.html density estimation methods>. Here we
 % start with a trigonal alpha-fibre ODF which we define by
 
-% fix the random seed, so that the numbers quoted on this page are reproducible
-rng(0)
-
 cs = crystalSymmetry('32');
 fibre_odf = 0.5*uniformODF(cs) + 0.5*fibreODF(fibre.rand(cs),'halfwidth',20*degree);
 

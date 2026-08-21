@@ -75,13 +75,13 @@ job.calcParent2Child
 
 %%
 % We observe that the optimized parent to child orientation relationship is
-% 2.3° off the initial Kurdjumov Sachs orientation relationship
-% and reduced the first quintil of the misfit with the child to child
-% misorientations to 1.5°. These misfits are stored by the
-% command <calcParent2Child.html |calcParent2Child|> in the variable
-% |job.fit|. In fact, the algorithm assumes that the majority of all
-% boundary misorientations are child to child misorientations and finds the
-% parent to child orientations relationship by minimizing this misfit. The
+% now more close to the Nishiyama–Wassermann orientation relationship (2.5°
+% off) and reduces the first quintil of the misfit with the child to child
+% misorientations to 1.3°. These misfits are stored by the command
+% <calcParent2Child.html |calcParent2Child|> in the variable |job.fit|. In
+% fact, the algorithm assumes that the majority of all boundary
+% misorientations are child to child misorientations and finds the parent
+% to child orientations relationship by minimizing this misfit. The
 % following histogram displays the distribution of the misfit over all
 % grain to grain misorientations.
 
@@ -207,6 +207,7 @@ plot(job.parentGrains,job.parentGrains.meanOrientation)
 
 % merge grains with similar orientation
 job.mergeSimilar('threshold',7.5*degree);
+job.grains = smoothBoundary(job.grains,20);
 
 % plot the result
 plot(job.parentGrains,job.parentGrains.meanOrientation)
@@ -334,6 +335,7 @@ hold off
 % on the parent map
 
 [parentGrains, parentEBSD] = calcGrains(parentEBSD,'angle',3*degree,'minPixel',10);
+parentGrains = smoothBoundary(parentGrains,20);
 
 plot(ebsd,ebsd.orientations,'figSize','large')
 
