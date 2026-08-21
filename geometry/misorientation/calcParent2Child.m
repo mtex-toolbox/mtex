@@ -7,8 +7,8 @@ function [p2c, omega] = calcParent2Child(mori,p2c,varargin)
 %   p2c = calcParent2Child(c2c,p2c0)
 %   p2c = calcParent2Child(c2c,p2c0,'quantile',0.8)
 %
-%   % search the entire fundamental zone instead of starting from p2c0
-%   p2c = calcParent2Child(c2c,p2c0,'global')
+%   % start the iteration at p2c0 instead of searching the fundamental zone
+%   p2c = calcParent2Child(c2c,p2c0,'local')
 %
 %   [p2c, fit] = calcParent2Child(c2c,p2c0)
 %
@@ -22,12 +22,11 @@ function [p2c, omega] = calcParent2Child(mori,p2c,varargin)
 %  fit      - disorientation angle between all c2c misorientations and the computed one
 %
 % Options
-%  global       - scan the misorientation fundamental zone for the best starting point
+%  local        - iterate from p2c0 only, skipping the fundamental zone scan
 %  maxIteration - maximum number of iterations (default - 30)
 %  quantile     - fraction of the misorientations the fit is based on (default 0.9)
 %  threshold    - misorientations misfitting by more are treated as outliers (default - inf)
-%  maxSample    - fit on at most this many misorientations (default - 50000), the
-%                 subsample is drawn at random, so beyond it repeated calls differ
+%  maxSample    - fit on at most this many misorientations (default - 50000)
 %  searchResolution - grid resolution of the global scan (default - 4*degree)
 %  scanSample   - misorientations used to rank basins during the scan (default - 250)
 %
@@ -51,16 +50,15 @@ maxIt = get_option(varargin,'maxIteration',30);
 tau = 1 - cos(min(threshold,pi));
 
 % subsample once - redrawing inside the loop would make successive misfits incomparable
-maxSample = get_option(varargin,'maxSample',50000);
 moriAll = mori;
-if length(mori) > maxSample, mori = discreteSample(mori,maxSample); end
+mori = subSample(mori,get_option(varargin,'maxSample',50000));
 h = ceil(quant * length(mori));
 
 vdisp(' ',varargin{:});
 vdisp(' optimizing parent to child orientation relationship',varargin{:});
 
 % the iteration is local, so a bad p2c0 costs more than the scan does
-if check_option(varargin,'global')
+if ~check_option(varargin,'local')
   p2c = globalSearch(mori,p2c,h,tau,varargin{:});
 end
 
@@ -133,9 +131,7 @@ res = get_option(varargin,'searchResolution',4*degree);
 nBasin = get_option(varargin,'numLocal',5);
 
 % the scan only has to rank basins, so a subsample is enough
-sub = mori;
-nSub = get_option(varargin,'scanSample',250);
-if length(sub) > nSub, sub = discreteSample(sub,nSub); end
+sub = subSample(mori,get_option(varargin,'scanSample',250));
 hSub = max(1,ceil(h / length(mori) * length(sub)));
 
 g = orientation(equispacedSO3Grid(p2c.CS,p2c.SS,'resolution',res));
@@ -163,7 +159,7 @@ for a = 1:block:length(g)
 
 end
 
-% always fit from p2c0 too, so that 'global' can never do worse than the plain fit
+% always fit from p2c0 too, so that the search can never do worse than 'local'
 % then the best grid basins, well separated so that one is not fitted twice
 [~,order] = sort(fit);
 seed = p2c;
@@ -174,9 +170,8 @@ end
 
 % iterating a candidate only has to reach its basin, so it may use a subsample - but
 % every candidate is scored on all the data, and the caller refines the winner there
-opt = [delete_option(varargin,'global'),{'silent'}];
-pSub = mori;
-if length(pSub) > 3000, pSub = discreteSample(pSub,3000); end
+opt = [delete_option(varargin,'global'),{'local','silent'}];
+pSub = subSample(mori,3000);
 
 best = inf;
 for j = 1:length(seed)
@@ -184,6 +179,22 @@ for j = 1:length(seed)
   s = misfit(mori,pj,h,tau);
   if s.fit < best, best = s.fit; p2c = pj; end
 end
+
+end
+
+% ---------------------------------------------------------------------------------
+
+function mori = subSample(mori,n)
+% deterministic stand in for a random subsample
+%
+% a random draw would make two calls on the same data disagree, and picking every
+% k-th row would make the answer depend on the row order - striding an angle sorted
+% list depends only on the misorientations themselves and spans their distribution
+
+if length(mori) <= n, return; end
+
+[~,order] = sort(angle(mori));
+mori = mori(order(unique(round(linspace(1,length(mori),n)))));
 
 end
 

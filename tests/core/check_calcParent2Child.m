@@ -12,6 +12,7 @@ p2c0 = perturb(p2c,vector3d(1,2,3),3*degree,csP,csC);
 checkRecovery(mori,p2c,p2c0);
 checkOrderIndependence(mori,p2c0);
 checkFitLength(mori,p2c0);
+checkDeterminism(mori,p2c0);
 
 end
 
@@ -19,7 +20,7 @@ end
 
 function checkRecovery(mori,p2c,p2c0)
 
-p = calcParent2Child(mori,p2c0,'silent');
+p = calcParent2Child(mori,p2c0,'local','silent');
 
 assert(angle(p,p2c) < 0.3*degree, ...
   sprintf('calcParent2Child recovered the OR only to %.3f degree',angle(p,p2c)/degree));
@@ -34,8 +35,8 @@ end
 function checkOrderIndependence(mori,p2c0)
 % the fit averages over a symmetry spread list, so it must not read element 1 as reference
 
-p = calcParent2Child(mori,p2c0,'silent');
-q = calcParent2Child(mori(randperm(length(mori))),p2c0,'silent');
+p = calcParent2Child(mori,p2c0,'local','silent');
+q = calcParent2Child(mori(randperm(length(mori))),p2c0,'local','silent');
 
 assert(angle(p,q) < 1e-3*degree, ...
   sprintf('calcParent2Child depends on the input order, by %.4f degree',angle(p,q)/degree));
@@ -47,11 +48,27 @@ end
 function checkFitLength(mori,p2c0)
 % the misfit is reported per input misorientation, also when the fit subsamples
 
-[~,fit] = calcParent2Child(mori,p2c0,'silent');
+[~,fit] = calcParent2Child(mori,p2c0,'local','silent');
 assert(numel(fit) == length(mori),'calcParent2Child returned %d misfits for %d misorientations',numel(fit),length(mori));
 
-[~,fit] = calcParent2Child(mori,p2c0,'maxSample',300,'silent');
+[~,fit] = calcParent2Child(mori,p2c0,'local','maxSample',300,'silent');
 assert(numel(fit) == length(mori),'calcParent2Child returned the misfit of the subsample, not of the input');
+
+end
+
+% ---------------------------------------------------------------------------------
+
+function checkDeterminism(mori,p2c0)
+% subsampling must not be random, or two calls on the same data disagree
+
+opt = {'searchResolution',10*degree,'numLocal',1,'maxSample',300,'scanSample',100,'silent'};
+p = calcParent2Child(mori,p2c0,opt{:});
+q = calcParent2Child(mori,p2c0,opt{:});
+
+assert(angle(p,q) == 0,'calcParent2Child gave two different answers for the same input, by %.4f degree',angle(p,q)/degree);
+
+r = calcParent2Child(mori(randperm(length(mori))),p2c0,opt{:});
+assert(angle(p,r) < 1e-3*degree,'the subsample depends on the input order, by %.4f degree',angle(p,r)/degree);
 
 end
 

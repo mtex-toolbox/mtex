@@ -195,12 +195,18 @@ answer depends on the row order of the input. This is what `'q0'` does and what 
 fixed. For the same reason the trimming cuts on the residual *value* at the `h`-th order
 statistic rather than on rank: ties at the boundary would otherwise resolve by input order.
 
-**Subsampling is where reproducibility still ends.** Above `maxSample` (50000) the fit runs
-on a random draw, so two calls on the same list give different answers — measured at up to
-0.4 degree with `maxSample` forced to 500. Drawing once instead of once per iteration makes
-the *iteration* consistent, but not two separate calls. There is no fix that is both
-deterministic and independent of row order, since any deterministic subsample of an unordered
-list must read the order; raise `maxSample` when it matters.
+**Subsample by value, never at random and never by position.** A random draw makes two calls
+on the same list disagree — up to 0.4 degree with `maxSample` forced to 500 — and taking
+every k-th row makes the answer depend on the row order, which is the bug `a15b1ecf2` fixed
+elsewhere. Both are avoided by striding an **angle sorted** list: the selection is a function
+of the misorientations alone, so it is reproducible across calls *and* invariant under
+permutation, and the stride spans the angle distribution instead of sampling it. This is what
+`subSample` does, for all three places that reduce the data — `maxSample`, `scanSample` and
+the candidate polish.
+
+An earlier version of this document claimed no such fix existed, on the grounds that any
+deterministic subsample of an unordered list must read the order. That is only true of
+selections based on *position*; sorting by a value first removes the dependence.
 
 **Fixed count, not fixed threshold.** See above: a `p`-dependent number of retained
 observations is not an objective.
@@ -346,23 +352,36 @@ fixed count, which needs no new constant.
 **Better starting orientations.** Explicitly not the answer. Any scheme whose robustness
 comes from being handed a good `p2c0` has only moved the problem. Hence `'global'`.
 
-**Making `'global'` the default.** The cost argument against it has largely gone. Three
-changes took the martensite global fit from 88 s to **12.5 s**, against 4.9 s for the plain
-local fit — a factor of 2.5, not 20:
+**Scanning by default.** Adopted. The scan runs unless the caller passes `'local'`. Two
+things had to be true first.
 
-* the scan ranks basins on 250 misorientations rather than 3000, which changes no answer on
-  any case tested (125 does: Burgers moves by 0.06 degree, so 250 is the floor);
-* candidates are *iterated* on a 3000 pair subsample and only *scored* on all the data, with
-  the caller refining the winner on everything, so the guarantee is unchanged;
-* the scan conjugates the parent group directly instead of calling `variants` per grid point.
+The cost had to come down, and it did: three changes took the martensite global fit from 88 s
+to about 13 s, against 5 s for the plain local fit — a factor of 2.5, not 20. The scan ranks
+basins on 250 misorientations rather than 3000, which changes no answer on any case tested
+(125 does: Burgers moves by 0.06 degree, so 250 is the floor); candidates are *iterated* on a
+3000 pair subsample and only *scored* on all the data, with the caller refining the winner on
+everything; and the scan conjugates the parent group directly instead of calling `variants`
+per grid point. The scan is work bound in `angle_outer`, not overhead bound, so blocking the
+grid buys nothing beyond bounding memory — the only real levers are fewer misorientations,
+fewer grid points and fewer symmetry operations.
 
-The scan is genuinely work bound, not overhead bound — `angle_outer` is essentially all of
-it — so blocking the grid buys nothing beyond bounding memory, and the only real levers are
-fewer misorientations, fewer grid points and fewer symmetry operations.
+And it had to be deterministic. A random subsample makes two calls on the same data disagree
+— measured at up to 0.4 degree with `maxSample` forced to 500 — which is not acceptable in
+the default path of a tool people publish numbers from. Striding an *angle sorted* list
+solves both halves of the problem at once: the selection depends only on the misorientations
+themselves, so it is reproducible across calls **and** independent of the row order, and the
+stride spans the angle distribution rather than sampling it. Repeat calls and permuted input
+now agree exactly, to 0 degree.
 
-What still argues for keeping it opt-in is not the runtime but the bias above: `'global'`
-reliably finds a lower misfit, which is only the same thing as a better relationship when the
-variant count is high.
+The argument that was *not* the reason to keep it opt-in, and was wrong when this document
+first made it, is the bias below. Bias is a property of the objective, not of the search:
+local optimises the same functional and is no closer to the truth, it merely stops wherever
+the starting guess leads. It is a caveat on the method as a whole.
+
+What remains is a genuine change in results — martensite moves by about 1.4 degree, and the
+habit plane derived from it by several — so it belongs in the release notes, and `'local'`
+exists for refining a relationship already trusted and for fitting many small data sets in a
+loop, where the fixed cost of the scan dominates (0.1 s against 6 s at 500 pairs).
 
 ## By-product worth having
 

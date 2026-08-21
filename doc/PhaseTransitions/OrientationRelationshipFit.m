@@ -192,17 +192,19 @@ norm(A)
 
 %% Local and global fits
 %
-% The iteration is local. It converges to a stationary point of the misfit, not
-% to the best one, and on real data the starting point decides which.
+% The iteration itself is local. It converges to a stationary point of the
+% misfit, not to the best one, and on real data the starting point decides which.
+% The |'local'| option runs exactly that, starting from the given guess.
 
-p2cKS = calcParent2Child(mori,orientation.KurdjumovSachs(csParent,csChild))
+p2cKS = calcParent2Child(mori,orientation.KurdjumovSachs(csParent,csChild),'local')
 
 %%
 % Scanning the entire fundamental zone finds a relationship a good degree away
-% from this one, and fitting it better. The |'global'| option does that scan
-% instead of trusting the initial guess.
+% from this one, and fitting it better. That scan is what |calcParent2Child|
+% does by default, so the initial guess becomes one candidate among many rather
+% than the thing that decides the answer.
 
-p2cGlobal = calcParent2Child(mori,p2c,'global')
+p2cGlobal = calcParent2Child(mori,p2c)
 
 %%
 % The two differ by
@@ -212,6 +214,11 @@ angle(p2cKS,p2cGlobal)./degree
 %%
 % degree, which is far from negligible once habit planes are computed from the
 % result. Nishiyama-Wassermann, Pitsch and Greninger-Trojano all reach the
-% better basin from the start; Kurdjumov-Sachs does not. Use |'global'| whenever
-% the orientation relationship itself is the result, and the local fit when
-% refining a relationship you already trust.
+% better basin from the start; Kurdjumov-Sachs does not. That is why the scan is
+% the default. It costs about two and a half times a single fit, and it is
+% deterministic: the subsamples it uses are strided through an angle sorted list
+% rather than drawn at random, so the same data always gives the same answer.
+%
+% Reach for |'local'| when you are refining a relationship you already trust, or
+% when fitting many small data sets in a loop, where the fixed cost of the scan
+% dominates.
