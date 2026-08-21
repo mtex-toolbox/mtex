@@ -12,9 +12,9 @@ function ebsd = calcParentEBSD(job,varargin)
 %
 % Output
 %  ebsd - reconstructed parent @EBSD
-%  ebsd.grainId   - ids to the reconstructed parent grains                       x %                                                                                 12
-%  ebsd.variantId - the variantId of the child phase                             <                                                                                    -
-%  ebsd.packetId  - the packetId of the child phase                              <                                                                                    -
+%  ebsd.grainId   - ids to the reconstructed parent grains
+%  ebsd.variantId - the variantId of the child phase
+%  ebsd.packetId  - the packetId of the child phase
 %  ebsd.fit       - fit of the reconstruction
 
 % copy prior EBSD
