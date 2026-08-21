@@ -73,6 +73,9 @@ k = round(outlierFraction*n);
 mori(1:k) = orientation.rand(k,csC,csC);
 mori(mori.angle < 5*degree) = [];
 
+% a row times a column expands to n x n, and the fit then runs on n^2 pairs
+assert(length(mori) <= n,'c2cData produced %d misorientations for n = %d',length(mori),n);
+
 end
 
 % ---------------------------------------------------------------------------------

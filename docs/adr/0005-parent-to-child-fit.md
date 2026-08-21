@@ -242,7 +242,9 @@ fundamental zone has about `vol / delta^3` points: 612 at 5 degree, 1237 at 4 de
 covered in 30 to 130 s. The scan only has to *rank basins*, which a subsample does perfectly
 well; the strongest well-separated candidates are then fitted exactly and compared on the
 full data with the same trimmed objective the iteration uses. Measured end to end on
-martensite: 63 s at 5 degree, 88 s at 4 degree, both landing on the same optimum.
+martensite: 63 s at 5 degree, 88 s at 4 degree, both landing on the same optimum. Those are
+the costs of the first implementation; the tuning below brought the 4 degree scan to 12.5 s
+for the whole global fit.
 
 **Kernel surrogate — tried, and it does not rank.** Building the misorientation density once
 and evaluating `sum over k of MDF(c_k(p))` is enormously cheaper: 65412 evaluations over a
@@ -282,6 +284,48 @@ same trimmed chordal misfit the iteration itself descends. The starting orientat
 one more candidate rather than the thing that decides the answer. The Lipschitz certificate
 is not run per call; it is the tool for a one-off validation study.
 
+## What simulated data says
+
+Real data can only be fitted, never checked against a known answer. Simulating child to
+child misorientations for a *given* relationship — draw a parent operation per pair, form
+the corresponding c2c variant, perturb it, inject outliers — closes that gap, and at 300 to
+500 pairs a fit costs under 0.1 s, so the whole study runs in seconds.
+
+**Damping does not help, in any symmetry tested.** Iterations to 1e-3 degree from 2 degree
+off, at 1 degree noise:
+
+| relationship | variants | rho(A) | a=0 | a=1/24 | a=0.18 | a=0.35 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Kurdjumov-Sachs, cubic to cubic | 23 | 0.043 | **6** | 6 | 7 | 9 |
+| Nishiyama-Wassermann, cubic to cubic | 11 | 0.091 | **11** | 11 | 14 | 16 |
+| Burgers, cubic to hexagonal | 11 | 0.273 | **12** | 13 | 15 | 16 |
+
+The Burgers row is the decisive one. Its spectrum is entirely real and negative,
+`{-0.273, -0.091, -0.091}`, which is the case the relaxation argument most favours — theory
+predicts `alpha = 0.18` should cut the asymptotic rate by 3.5 times. It does not reduce the
+iteration count at all. The asymptotic rate governs only the last digits; the count is set by
+the transient in which the assignment and the trimmed set still move, and there damping is
+only a shorter step. `alpha = 0` is the default on this evidence, not on one dataset.
+
+**The fitted relationship is a biased estimate of the true one.** Started 3 degree off at
+1 degree noise, the iteration lands 0.82 degree from the truth for Nishiyama-Wassermann and
+0.40 degree for Burgers, and — this is the point — that gap is the same at 300 and at 10000
+pairs, so it is not sampling noise. Nor is it a failure to optimise: the trimmed misfit *at
+the recovered point is lower than at the truth* (8.5e-05 against 1.0e-04 for Burgers). The
+optimiser is doing its job; the objective's minimiser simply is not the generating
+relationship. Searching harder moves further from the truth, not closer. Relationships with
+few distinct variants are the worst affected, Kurdjumov-Sachs with 23 the least at
+0.04 degree.
+
+Two consequences. Users should not read the fit as the physical orientation relationship to
+better than a few tenths of a degree when the variant count is low. And a genuinely better
+estimator — a redescending loss, or the mixture likelihood below — should be judged on this
+bias, not on the misfit it reports.
+
+One caveat on the simulation: it draws parent operations uniformly, whereas physical variant
+pairing is not uniform when variants merge, as they do for Nishiyama-Wassermann. The bias is
+real but its size depends on that occupancy.
+
 ## Alternatives considered
 
 **Soft assignment (EM with a uniform background).** Responsibilities instead of `argmin` over
@@ -302,10 +346,23 @@ fixed count, which needs no new constant.
 **Better starting orientations.** Explicitly not the answer. Any scheme whose robustness
 comes from being handed a good `p2c0` has only moved the problem. Hence `'global'`.
 
-**Making `'global'` the default.** Not yet. It is 20 times slower than a single fit — 88 s
-against 4.8 s on martensite — and the honest case for it rests on one dataset. The measurement
-above says it changes the answer by 1.44 degree there, which is a strong argument; it should
-be repeated on more data before the cost is imposed on every caller.
+**Making `'global'` the default.** The cost argument against it has largely gone. Three
+changes took the martensite global fit from 88 s to **12.5 s**, against 4.9 s for the plain
+local fit — a factor of 2.5, not 20:
+
+* the scan ranks basins on 250 misorientations rather than 3000, which changes no answer on
+  any case tested (125 does: Burgers moves by 0.06 degree, so 250 is the floor);
+* candidates are *iterated* on a 3000 pair subsample and only *scored* on all the data, with
+  the caller refining the winner on everything, so the guarantee is unchanged;
+* the scan conjugates the parent group directly instead of calling `variants` per grid point.
+
+The scan is genuinely work bound, not overhead bound — `angle_outer` is essentially all of
+it — so blocking the grid buys nothing beyond bounding memory, and the only real levers are
+fewer misorientations, fewer grid points and fewer symmetry operations.
+
+What still argues for keeping it opt-in is not the runtime but the bias above: `'global'`
+reliably finds a lower misfit, which is only the same thing as a better relationship when the
+variant count is high.
 
 ## By-product worth having
 

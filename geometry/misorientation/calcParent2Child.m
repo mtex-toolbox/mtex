@@ -29,6 +29,7 @@ function [p2c, omega] = calcParent2Child(mori,p2c,varargin)
 %  maxSample    - fit on at most this many misorientations (default - 50000), the
 %                 subsample is drawn at random, so beyond it repeated calls differ
 %  searchResolution - grid resolution of the global scan (default - 4*degree)
+%  scanSample   - misorientations used to rank basins during the scan (default - 250)
 %
 % References
 %
@@ -133,32 +134,53 @@ nBasin = get_option(varargin,'numLocal',5);
 
 % the scan only has to rank basins, so a subsample is enough
 sub = mori;
-if length(sub) > 3000, sub = discreteSample(sub,3000); end
-hSub = ceil(h / length(mori) * length(sub));
+nSub = get_option(varargin,'scanSample',250);
+if length(sub) > nSub, sub = discreteSample(sub,nSub); end
+hSub = max(1,ceil(h / length(mori) * length(sub)));
 
 g = orientation(equispacedSO3Grid(p2c.CS,p2c.SS,'resolution',res));
-g = [p2c; g(:)];
+g = [p2c; reshape(g,[],1)];
+
+% conjugating the parent group directly avoids a variants call per grid point - the
+% duplicates that variants would remove cannot change a minimum over the variants
+S = p2c.CS.properGroup.rot;
+S = reshape(S(angle(S) > 1e-3*degree),1,[]);
 
 vdisp(['  scanning ' int2str(length(g)) ' orientations'],varargin{:});
-fit = zeros(size(g));
-for j = 1:length(g)
-  s = misfit(sub,g(j),hSub,tau);
-  fit(j) = s.fit;
+
+% grid points in blocks, sized so that the residual matrix stays a few million entries
+fit = zeros(length(g),1);
+block = max(1,round(2e6 / (length(sub)*length(S))));
+for a = 1:block:length(g)
+
+  b = min(a+block-1,length(g));
+  q = reshape(quaternion(g(a:b)),[],1);
+  c2c = orientation(reshape(q .* inv(S) .* inv(q),[],1),p2c.SS,p2c.SS); %#ok<MINV>
+
+  omega = min(reshape(angle_outer(sub,c2c),length(sub),b-a+1,[]),[],3);
+  r = sort(min(1-cos(omega),tau),1);
+  fit(a:b) = mean(r(1:hSub,:),1).';
+
 end
 
-% keep the best basins, well separated so that they are not the same one twice
+% always fit from p2c0 too, so that 'global' can never do worse than the plain fit
+% then the best grid basins, well separated so that one is not fitted twice
 [~,order] = sort(fit);
-seed = g(order(1));
-for j = order(2:end).'
-  if length(seed) >= nBasin, break; end
+seed = p2c;
+for j = order(:).'
+  if length(seed) >= nBasin + 1, break; end
   if min(angle(seed,g(j))) > res, seed = [seed; g(j)]; end %#ok<AGROW>
 end
 
-% score every basin with the one functional the iteration itself uses
+% iterating a candidate only has to reach its basin, so it may use a subsample - but
+% every candidate is scored on all the data, and the caller refines the winner there
 opt = [delete_option(varargin,'global'),{'silent'}];
+pSub = mori;
+if length(pSub) > 3000, pSub = discreteSample(pSub,3000); end
+
 best = inf;
 for j = 1:length(seed)
-  pj = calcParent2Child(mori,seed(j),opt{:});
+  pj = calcParent2Child(pSub,seed(j),opt{:});
   s = misfit(mori,pj,h,tau);
   if s.fit < best, best = s.fit; p2c = pj; end
 end
