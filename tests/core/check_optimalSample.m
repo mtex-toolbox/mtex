@@ -12,8 +12,9 @@ function check_optimalSample
 % optimalSample used before - it reproduces it to 6e-6 degree - so it is the
 % control the comparisons below are made against.
 %
-% The last case covers S2Fun/optimalSample, which runs the same iteration on
-% the sphere. This file owns both.
+% The last cases cover S2Fun/optimalSample, which runs the same iteration on
+% the sphere - there the weights are no separate step but a softmax block of
+% the very same L-BFGS iteration. This file owns both.
 %
 % See also
 % SO3Fun/optimalSample S2Fun/optimalSample SO3RestrictedDistanceKernel
@@ -113,14 +114,41 @@ assert(max(abs(norm(vQN)-1)) < 1e-12, ...
   'optimalSample moved a direction off the sphere by %.3e.', ...
   max(abs(norm(vQN)-1)))
 
-resGD = discrepancyS2(sF,vGD,32);
-resQN = discrepancyS2(sF,vQN,32);
+resGD = discrepancyS2(sF,vGD,[],32);
+resQN = discrepancyS2(sF,vQN,[],32);
 
 % measured at 0.49 here, and between 0.40 and 0.84 over the bandwidths,
 % sample sizes and iteration budgets tried
 assert(resQN < 0.9*resGD, ...
   ['S2Fun/optimalSample is no better than gradient descent - discrepancy ' ...
   '%.4e against %.4e for ''method'',''steepestDescent''.'],resQN,resGD)
+
+% ---------------- the weights on the sphere, same contracts --------------
+[vw,cw] = optimalSample(sF,100,'bandwidth',32,'maxIter',20);
+
+assert(numel(cw) == numel(vw), ...
+  'S2Fun/optimalSample returned %d weights for %d directions.', ...
+  numel(cw),numel(vw))
+
+assert(all(cw >= 0) && abs(sum(cw)-1) < 1e-10, ...
+  ['The weights of S2Fun/optimalSample are no probability distribution - ' ...
+  'smallest %.3e, sum %.12f.'],min(cw),sum(cw))
+
+assert(discrepancyS2(sF,vw,cw,32) < discrepancyS2(sF,vw,[],32), ...
+  'The optimized weights of S2Fun/optimalSample do not decrease the discrepancy.')
+
+% ------------- a warm up must not swallow the weight step ----------------
+% the same trap as on SO(3) above, and one the softmax block falls into in
+% its own way: the gradient the L-BFGS iteration carries over from the warm
+% up has no weight component yet, so a weight step that starts from it moves
+% nothing and the termination test right after it is satisfied again
+[~,cWarmS2] = optimalSample(sF,100,'bandwidth',32,'maxIter',12, ...
+  'tol',2*degree,'warmUp',10);
+
+assert(max(abs(cWarmS2-1/numel(cWarmS2))) > 1e-6, ...
+  ['S2Fun/optimalSample returned the equal weights 1/M although the weights ' ...
+  'were asked for. The iteration terminated as the warm up ended, before the ' ...
+  'weights had moved once.'])
 
 end
 
@@ -151,8 +179,10 @@ res = sum(abs(w.*D.fhat).^2);
 end
 
 
-function res = discrepancyS2(sF,v,bw)
+function res = discrepancyS2(sF,v,c,bw)
 % the same functional on the sphere, see S2Fun/optimalSample
+
+if isempty(c), c = ones(numel(v),1)/numel(v); end
 
 sF = S2FunHarmonic(sF,'bandwidth',bw);
 sF.bandwidth = bw;
@@ -166,7 +196,7 @@ for l = 1:bw
   w(l^2+1:(l+1)^2) = sqrt( 4*pi * psi.A(l+1)/(2*l+1) );
 end
 
-mu = S2FunHarmonic.adjointNFSFT(v(:),ones(numel(v),1)/numel(v),'bandwidth',bw);
+mu = S2FunHarmonic.adjointNFSFT(v(:),c(:)/sum(c),'bandwidth',bw);
 mu.bandwidth = bw;
 
 D = sF;
