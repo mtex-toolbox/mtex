@@ -59,7 +59,6 @@ classdef vector3d < dynOption
     frame    % the referenceFrame this vector is expressed in
     how2plot % plotting convention - read only
     % a convention belongs to a reference frame, see plottingConvention.default
-    plottingConvention
   end
 
   methods
@@ -233,16 +232,6 @@ classdef vector3d < dynOption
       v.framePrivate = fr;
     end
 
-    % ------- to be removed ------
-    function pC = get.plottingConvention(v)
-      pC = v.how2plot;
-    end
-
-    function v = set.plottingConvention(v,pC)
-      v.frame = specimenSymmetry.frameFor(pC);
-    end
-    % -------------------------------
-    
     function xyz = xyz(v)
       xyz = [v.x(:),v.y(:),v.z(:)];      
     end

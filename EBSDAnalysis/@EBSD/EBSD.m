@@ -75,7 +75,6 @@ classdef EBSD < phaseList & dynProp & dynOption
     frame      % the specimen reference frame (carried by pos)
     how2plot   % plotting convention - read only
     % a convention belongs to a reference frame, see plottingConvention.default
-    plottingConvention % plotting convention
     EulerCorrection    % EulerXYZ -> mapXYZ, correction for inconsistent reference frames
   end
 
@@ -360,14 +359,6 @@ classdef EBSD < phaseList & dynProp & dynOption
       else
         rot = rotation.map(ebsd.N,vector3d.Z);
       end
-    end
-
-    function pC = get.plottingConvention(ebsd)
-      pC = ebsd.pos.how2plot;
-    end
-    
-    function ebsd = set.plottingConvention(ebsd,pC)
-      ebsd.pos.frame = specimenSymmetry.frameFor(pC);
     end
 
     function pC = get.how2plot(ebsd)

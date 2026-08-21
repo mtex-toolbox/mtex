@@ -670,7 +670,7 @@
 % hemisphere they show. A @plottingConvention is stated as a string, each axis
 % followed or preceded by the direction it points to on screen
 %
-%   ebsd.how2plot = 'y↑→x'            % also 'x←↑y', 'z⊙→x', ASCII 'y^->x'
+%   plot(ebsd,'how2plot','y↑→x')      % also 'x←↑y', 'z⊙→x', ASCII 'y^->x'
 %
 % Plotting conventions are carried by reference frames: data plotted the
 % default way follows the session's default frame, hence changing the
@@ -680,8 +680,11 @@
 %   plottingConvention.default('y↑→x')                     % the same by a string
 %   pC = plottingConvention.default; pC.east = yvector; pC.makeDefault
 %
-% A convention assigned to a single object becomes an own reference frame
-% of that object and stays untouched by later changes of the default.
+% A convention belongs to a frame and never to a data object, so |how2plot|
+% is read only on every class but @referenceFrame. Data is aligned
+% differently by drawing one plot in another convention as above, by moving
+% the session, or by moving the data into a frame that carries its own
+% convention - |ebsd.frame = specimenFrame.rolling|.
 %
 % *Named Reference Frames*
 %

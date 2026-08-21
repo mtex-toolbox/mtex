@@ -24,9 +24,10 @@ classdef plottingConvention
 %   % it the default (this is what plotx2east and friends do)
 %   pC = plottingConvention.default; pC.east = yvector; pC.makeDefault
 %
-%   % changing the plotting convention for a dataset
-%   % to be used in all future plotting commands
-%   ebsd.how2plot = pC
+%   % a convention belongs to a reference frame, never to a data object, so
+%   % how2plot is read only everywhere but @referenceFrame - align data by
+%   % moving it into a frame that carries the convention
+%   ebsd.frame = specimenFrame.rolling
 %
 % Input
 %  outOfScreen - @vector3d
