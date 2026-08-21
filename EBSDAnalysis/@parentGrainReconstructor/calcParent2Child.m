@@ -89,19 +89,7 @@ if (noOpt && angle(p2c0)>5*degree) || check_option(varargin,'c2c')
   p2c0 = getClass(varargin,'orientation',p2c0);
   
   % compute an optimal parent to child orientation relationship
-  if check_option(varargin,'v3')
-    
-   p2c = fitP2C(mori,p2c0);
-    
-  elseif check_option(varargin,'v2')
-    
-    p2c = calcParent2Child2(mori,p2c0);
-    
-  else
-   
-    p2c = calcParent2Child(mori,p2c0,varargin{:});
-    
-  end
+  p2c = calcParent2Child(mori,p2c0,varargin{:});
   
   % combine p2c and c2c orientation relationships
   if ~isempty(p2cData) && ~check_option(varargin,'noP2C')
