@@ -141,6 +141,7 @@ function [v,c] = optimalSample(sF,n,varargin)
 %
 %  warmUp     - iterations that move the points only (default = maxIter/5)
 %  tolWeights - termination tolerance for the weights (default = 1e-3/M)
+%  tolJ       - terminate below this relative decrease of J (default = 1e-4)
 %  minWeight  - discard directions with a smaller weight (default = 0, i.e. keep all)
 %
 % See also
@@ -191,6 +192,7 @@ switch method
 end
 warmUp = get_option(varargin,'warmUp',ceil(maxIter/5));
 tolWeights = get_option(varargin,'tolWeights',1e-3/M);
+tolJ = get_option(varargin,'tolJ',1e-4);
 minWeight = get_option(varargin,'minWeight',0);
 
 if check_option(varargin,'innerIter')
@@ -199,10 +201,10 @@ if check_option(varargin,'innerIter')
     'method as the directions.'])
 end
 
-if ~optWeights && ( check_option(varargin,'warmUp') || ...
-    check_option(varargin,'tolWeights') || check_option(varargin,'minWeight') )
-  warning(['The options warmUp, tolWeights and minWeight apply only if the ' ...
-    'weights are optimized. Ask for them as a second output, i.e. ' ...
+if ~optWeights && ( check_option(varargin,'warmUp') || check_option(varargin,'tolJ') ...
+    || check_option(varargin,'tolWeights') || check_option(varargin,'minWeight') )
+  warning(['The options warmUp, tolWeights, tolJ and minWeight apply only if ' ...
+    'the weights are optimized. Ask for them as a second output, i.e. ' ...
     '[v,c] = optimalSample(sF,n).'])
 end
 
@@ -372,8 +374,16 @@ for i = 1:maxIter
   end
 
   % --- Global Termination ---
-  if lineSearchFailed || ...
-      ( max(angle(v,vNew)) < tol && max(abs(cNew-c)) < tolWeights )
+  % Once the weights are unknowns as well, a small step is no longer a sign
+  % of convergence: the weights approach their optimum in many steps that are
+  % individually below tolWeights, and whether the very first of them happens
+  % to fall under it is a matter of luck. Ask the functional itself instead.
+  converged = max(angle(v,vNew)) < tol && max(abs(cNew-c)) < tolWeights;
+  if ~isempty(z)
+    converged = converged && resOld - resNew < tolJ * resOld;
+  end
+
+  if lineSearchFailed || converged
     v = vNew; z = zNew; c = cNew;
     % During the warm up the weights are held fixed, hence c == cNew and the
     % test above reduces to the one on the directions alone. Returning here
