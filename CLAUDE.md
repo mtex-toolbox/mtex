@@ -129,10 +129,13 @@ matlab -batch "runTests"            # core, the fast tier
 matlab -batch "runTests('slow')"
 ```
 
-> **Never start a test run without asking first.** That means `runTests` in any tier,
-> `check_mtex`, and any individual `check_*.m` — a tier is minutes of the machine, and the
-> developer may already have a session doing something they care about. Say what you want to
-> run and why, and wait. Targeted commands of your own through the bridge are fine.
+> **Never start a test run without asking first, and never start any run that could take
+> longer than 5 minutes.** That means `runTests` in any tier, `check_mtex`, and any individual
+> `check_*.m` — a tier is minutes of the machine, and the developer may already have a session
+> doing something they care about. Say what you want to run and why, and wait. Targeted
+> commands of your own through the bridge are fine, under the same limit: give every command a
+> timeout that enforces it, and when a check does not fit, find the way to get the same answer
+> inside it — a handful of cases rather than the whole set — instead of raising the timeout.
 
 **Read `tests/CLAUDE.md` before adding a test.** It has the tier budgets, which file owns
 which subsystem, and when a bug earns a new file at all.
