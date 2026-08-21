@@ -101,7 +101,7 @@ while k <= maxIt
     end
   end 
 
-  p2c = mean([p2cOld,mean(p2cCandidates)],'weights',[alpha 1]);
+  p2c = mean([p2cOld,mean(p2cCandidates,'q0',p2cOld)],'weights',[alpha 1]);
   
 end
 
