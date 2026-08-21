@@ -51,14 +51,19 @@ end
 
 % compute variantId
 [vId,pId,~,fit] = calcVariantId(ori, ebsd(isNowParent).orientations, job.p2c);
-ebsd.prop.variantId = NaN(size(ebsd));
-ebsd.prop.variantId(isNowParent) = vId;
-ebsd.prop.packetId = NaN(size(ebsd));
-ebsd.prop.packetId(isNowParent) = pId; 
 
 % adjust parent and child orientations such that the misorientation is
 % closest to the given OR job.p2c
 ori = ori.project2FundamentalRegion .* inv(variants(job.p2c,vId)) * job.p2c;
+
+% pixels without orientation have no variant
+vId(isnan(fit)) = NaN;
+pId(isnan(fit)) = NaN;
+
+ebsd.prop.variantId = NaN(size(ebsd));
+ebsd.prop.variantId(isNowParent) = vId;
+ebsd.prop.packetId = NaN(size(ebsd));
+ebsd.prop.packetId(isNowParent) = pId;
 
 % setup parent ebsd
 ebsd.prop.fit = nan(size(ebsd));
