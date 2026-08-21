@@ -55,6 +55,21 @@ Class-per-folder convention: `@ClassName/` holds a class's methods as separate `
 - `mex/` — compiled MEX binaries (checked in; not rebuilt by default)
 - `obsolete/`, `old/`, `compatibility/` — deprecated functions kept only as thin wrappers/shims for backward compatibility (they warn/error and forward to the current API); don't use them as a reference for current coding patterns
 
+### Comments
+
+**One line, saying what the next lines do.** Match the surrounding style: lowercase,
+terse, no full stop, either above the statement or trailing on it. If the code is
+self-explanatory, write no comment at all.
+
+Do **not** write the multi-line justification blocks an agent tends to produce: what
+the previous implementation did, which MTEX version changed it, which commit or
+dataset the number was measured on, what would go wrong if the line were removed,
+how many grains some map gained. None of that helps the next reader of the file, and
+it ages badly - the repository was swept once to remove ~2800 such lines. A single
+line is the budget; two or three are acceptable only for a genuinely non-obvious
+invariant or a formula. Where the reasoning is worth keeping, it belongs in the
+commit message, in an issue, or in an ADR under `docs/adr/` - not in the source.
+
 **Line endings are LF**, enforced by `.gitattributes` (`*.m text eol=lf`). About 360 sources had drifted to CRLF from Windows commits and were normalized in one pass; `extern/**` and `data/**` are marked `-text` and keep their bytes, because importers parse fixtures byte by byte and some carry deliberately odd endings. If you edit a file byte-wise rather than line-wise, you no longer need to check first — but do not "fix" a line ending under `data/`.
 
 ## Tests
