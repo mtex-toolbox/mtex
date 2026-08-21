@@ -125,6 +125,8 @@ classdef gbcFMC < grainBoundaryCriterion
 %     38 % of the boundary lands on exactly the right pixel (mean offset
 %     1.0 px), while at 5 degree and above it is essentially exact.
 
+% the sweeps these defaults come from are in docs/adr/0004-fmc-parameter-defaults.md
+
 properties
 
   % Mahalanobis sharpness of the coarse level rebias, larger means more boundaries
