@@ -39,9 +39,7 @@ len = last - first + 1;
 
 wraps = isClosedChain(cId);
 
-% On a closed chain the window must stay strictly shorter than the chain. It
-% spans 2*n+1 segments, so 2*n+1 <= len-1 is needed: otherwise fwd lands on
-% or before back and the direction degenerates to a zero vector.
+% on a closed chain the window has to stay shorter than the chain, i.e. 2*n+1 <= len-1
 nEff = repmat(n,nF,1);
 nEff(wraps) = max(0,min(n,floor((len(wraps)-2)/2)));
 

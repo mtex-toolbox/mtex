@@ -10,6 +10,10 @@ classdef directionColorKey < handle
   properties %(Access = hidden)
     dir2color % function handle
   end
+
+  properties (Access = private)
+    hsvFallback = [] % HSVDirectionKey used when dir2color is not set
+  end
   
   methods
     
@@ -25,9 +29,7 @@ classdef directionColorKey < handle
         catch
           dM.sym = specimenSymmetry.default;
           try %#ok<TRYNC>
-            % fork first - specimenSymmetry.default is the shared session
-            % symmetry, so assigning the caller's frame onto it would move
-            % the whole session
+            % fork first, specimenSymmetry.default is the shared session symmetry
             if ~isempty(sym.frame)
               dM.sym = copy(dM.sym);
               dM.sym.frame = sym.frame;
@@ -67,9 +69,7 @@ classdef directionColorKey < handle
         defaultPlotCMD = 'pcolor';
       end
       
-      % the three dimensional key names its axes itself, a few lines below,
-      % and in gray rather than black - so keep the generic annotation of
-      % the reference frame out of it
+      % the three dimensional key names its axes itself, a few lines below
       if check_option(varargin,'3d'), ownLabels = {'noLabel'}; else, ownLabels = {}; end
 
       [h,caxes] = plot(v,d,defaultPlotCMD,varargin{:},ownLabels{:});
@@ -108,6 +108,14 @@ classdef directionColorKey < handle
     end        
    
     function rgb = direction2color(oM,h,varargin)
+
+      % fall back to the HSV key, which is what a bare directionColorKey shows
+      if isempty(oM.dir2color)
+        if isempty(oM.hsvFallback), oM.hsvFallback = HSVDirectionKey(oM.sym); end
+        rgb = oM.hsvFallback.direction2color(h,varargin{:});
+        return
+      end
+
       rgb = oM.dir2color(h,varargin{:});
     end
 
@@ -132,9 +140,7 @@ classdef directionColorKey < handle
 
       props = {}; propV = {};
 
-      % sphericalRegion/polarCoordinates measures the hue from
-      % sR.how2plot.outOfScreen, so this line says which way round the
-      % colors run - in the axes names of the frame, e.g. 'c↑→a'
+      % say which way round the colors run, in the axes names of the frame
       fr = dM.sR.frame;
       if isa(fr,'referenceFrame')
         c = conventionChar(fr,dM.sR.how2plot);

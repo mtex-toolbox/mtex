@@ -403,11 +403,7 @@ end
 
       if isa(s,'Miller'), m = s; return; end
 
-      % a pre-frame Miller arrives as a struct: restoring its stored
-      % convention through set.how2plot is refused, since the frame of a
-      % Miller is fixed by its symmetry, and MATLAB then hands over the
-      % raw data - rebuild from it and drop the legacy convention, the
-      % frame comes from the symmetry
+      % a pre-frame Miller arrives as a struct, its frame comes from the symmetry
       m = Miller(vector3d(s.x,s.y,s.z),s.CSprivate);
       if isfield(s,'dispStyle'),    m.dispStyle = s.dispStyle; end
       if isfield(s,'antipodal'),    m.antipodal = s.antipodal; end

@@ -105,9 +105,7 @@ function scans = checkEveryDataSet(fname)
 
 scans = cell(1,4);
 
-% only scan 3 has unindexed points - the other three indexing runs assigned
-% every pixel. That is what makes scan 3 the one carrying NaN rotations, and
-% why the isequal trap in the header shows up there and nowhere else.
+% only scan 3 has unindexed points, so only its rotations carry NaN
 nNotIndexed = [0 0 113995 0];
 
 for k = 1:4

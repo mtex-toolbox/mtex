@@ -76,9 +76,8 @@ N = min(sF.bandwidth,get_option(varargin,'bandwidth',inf));
 [theta,rho] = polar(v);
 tr = [theta,rho].'./(2*pi);
 
-% non finite nodes let the nfft library write outside of its buffers, which
-% corrupts the heap and crashes MATLAB. Hence we replace them by a valid
-% node and set the corresponding function values to NaN afterwards.
+% a non finite node makes nfft write outside its buffers and crash MATLAB, so
+% replace it by a valid one and set its function value to NaN afterwards
 isBadNode = any(~isfinite(tr),1);
 tr(:,isBadNode) = 0;
 

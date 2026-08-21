@@ -55,17 +55,11 @@ for L = 1:numel(lines_in)
   protected_paragraph = paragraph;
   placeholder = char(160); % non-breaking space (&nbsp;)
 
-  % Find all <a ...>...</a> segments (non-greedy match). Note that MATLAB
-  % regexp has no \b for a word boundary - \b is a backspace character, so
-  % the '<a\b' this used to look for never matched anything at all.
+  % find all <a ...>...</a> segments - MATLAB regexp has no \b for a word boundary
   anchor_pat = '<a[^>]*>.*?</a>';
   [startIdx,endIdx] = regexp(protected_paragraph, anchor_pat, 'start','end');
 
-  % Replace normal spaces in every anchor block by the placeholder. Doing it
-  % in place keeps the match positions valid - the replacement is one
-  % character for one character - and needs no repeated search, which would
-  % not terminate: the pattern still matches an anchor once its spaces are
-  % gone.
+  % replace in place, one character for one character, so the match positions stay valid
   if ~isempty(startIdx)
     chars = char(protected_paragraph);
     for a = 1:numel(startIdx)

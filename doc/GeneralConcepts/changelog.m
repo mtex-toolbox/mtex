@@ -1,6 +1,6 @@
 %% MTEX Changelog
 %
-%% MTEX 7.1 - New Features
+%% MTEX develop - New Features
 %
 % *EBSD Export That Keeps the File*
 %
@@ -17,8 +17,10 @@
 %   export(ebsd,'denoised.h5oina')
 %
 % |EBSD.load| remembers the file and the data sets it read in |ebsd.opt.h5|;
-% a different reference file may be named by |'reference'|, and MTEX's own
-% flat layout is still available by |'standalone'|. Changes to the phase
+% a different reference file may be named by |'reference'|. MTEX's own flat
+% layout, and the |'standalone'| flag that wrote it, are gone - nothing could
+% read it back, so a |.mat| file is the way to carry a map between MTEX
+% sessions. Changes to the phase
 % list - a renamed mineral, a corrected lattice parameter - are written back
 % into the phase header as well. Verified against Bruker, EDAX (.oh5 and
 % .edaxh5), EMSphInx, Oxford and ThermoFisher files.
@@ -29,7 +31,26 @@
 % and they take the header of the imported file along, so an import/export
 % cycle no longer replaces the acquisition parameters by zeros.
 %
-%% MTEX 7.1 - Technical Changes
+%% MTEX develop - Technical Changes
+%
+% *Reference Frames*
+%
+% * a @crystalSymmetry accepted any reference frame, including a
+% @specimenFrame - and since the crystal axes are read straight off
+% |frame.basis|, that replaced the lattice by the identity without a word.
+% Such an assignment raises |MTEX:wrongFrameClass| now. To give a crystal
+% symmetry a plotting convention of its own, fork its frame:
+% |fr = crystalFrame(cs.axes,'name',cs.mineral)|, set |fr.how2plot| and
+% assign that
+% * <plotS2Grid.html |plotS2Grid|> takes a @referenceFrame and returns
+% directions of that frame, e.g. |plotS2Grid('upper',cs.frame)| for a grid
+% of crystal directions. Which hemisphere is the upper one is then decided
+% by the crystal frame instead of the session convention, and the result
+% needs no |Miller(v,cs)| cast to be used as a crystal direction
+% * <slipSystem.SchmidFactor.html |SchmidFactor|> no longer warns about a
+% tension direction that states no reference frame, such as |vector3d.Z| or
+% a plain plotting grid - only a direction or stress tensor that names a
+% frame contradicting the one of the slip systems does
 %
 % *EBSD Export*
 %
@@ -51,6 +72,170 @@
 % 1 to N in the order of the phase table with 0 for not indexed
 % * the ang and ctf exporters state the column layout they write (|VERSION|
 % for .ang), so the importer no longer has to guess it
+%
+% *Plotting*
+%
+% * |plotSection(mdf,'axisAngle','Sections',6)| is between one and a half
+% and two times faster, the wider margin on an otherwise idle machine. The
+% time went to three places, none of them the data: the bounding circles of
+% a region were drawn with 8641 points each, purely so that clipping them
+% would not visibly cut a corner - they are sampled at a degree now, all
+% circles of a region at once, and the end of every arc is bisected onto the
+% boundary, which is both cheaper and more accurate. |orientationRegion|
+% rebuilt the sector of rotational axes for every candidate vertex, although
+% it is needed only for the ones at 180 degree. And
+% <symmetry.fundamentalRegion.html |fundamentalRegion|> now remembers the
+% regions it computed - keyed on the rotations, the lattice, the convention
+% and the mineral of both symmetries, never on the point group id, so two
+% differently aligned symmetries of the same class cannot be confused
+% * an axis angle section coloured area outside the sector it draws, and left
+% area inside it white. The reason is that a spherical region is bounded by
+% small circles, so the polar angles belonging to a fixed azimuth angle need
+% not form a single interval - close to the maximum misorientation angle the
+% axis sector is cut open at its corners and eventually falls apart into
+% separate caps, for the point groups |m-3|, |23| and |mmm|.
+% <plotS2Grid.html |plotS2Grid|> kept the bounding box of such a region and
+% punched NaN holes into it, which a surface survives but |contourf| does
+% not - it draws straight across the gap. The grid is now assembled from
+% strips that have one interval per grid line, swept along whichever of the
+% two angles gives fewer of them, and each strip is contoured on its own.
+% This is <https://github.com/mtex-toolbox/mtex/issues/209 issue #209>. The
+% two new methods <sphericalRegion.thetaIntervals.html |thetaIntervals|> and
+% <sphericalRegion.rhoIntervals.html |rhoIntervals|> return the components,
+% where |thetaRange| returns only their hull. Both solve for the crossings
+% with the bounding circles in closed form, where |thetaRange| used to walk
+% a discretisation of ten thousand polar angles per grid line - a spherical
+% plotting grid is built about four times faster now, and its boundary is
+% exact rather than snapped to that discretisation. As a further side effect
+% the grid of a disconnected region is no longer padded out to the bounding
+% box, so a narrow sector costs a fraction of the points it used to
+% * a three dimensional spherical plot, |plot(sF,'3d')| and friends, ignored
+% the plotting convention it was given whenever that convention happened to
+% equal the session default - the whole of the pristine x-east / y-down /
+% z-into-screen alignment - and used its own tilted camera instead. It told
+% a convention the caller had passed from the one its callers append for
+% their own data by comparing values; the two are marked apart now, so a
+% convention handed in is always honoured
+% * a small circle drawn on a plot that covers both hemispheres went into
+% whichever of the two axes happened to be current - the lower one, even for
+% a cone around an axis in the upper hemisphere - and the part of it that
+% crossed the equator was clipped away at the rim instead of being continued
+% in the other half. An upper and a lower hemisphere are two axes but one
+% plot, and they know about each other now, so |circle|, markers, labels and
+% everything else added with |hold on| reaches both of them, each showing the
+% part that falls into its hemisphere. Drawing the two halves by hand, one
+% |'upper'| and one |'lower'| plot per hemisphere, is no longer necessary.
+% This is <https://github.com/mtex-toolbox/mtex/issues/330 issue #330>.
+% Passing |'upper'| and |'lower'| together gave a single hemisphere as well,
+% fewer axes than passing neither - it now means the same as asking for both
+%
+% *Orientation Gradients, Curvature and GND*
+%
+% * |log(ori,ori_ref)| in the left tangent space did not reduce the pair by
+% crystal symmetry, while |angle(ori,ori_ref)| always did. A left tangent
+% vector is |ori * inv(ori_ref)|, and the symmetry acts between the two
+% factors - the equally valid representatives are |ori * s * inv(ori_ref)| -
+% so once the product is formed it can no longer be reduced, and the pair
+% has to be reduced first. It was not, so two neighbouring pixels stored as
+% different symmetric representatives of their orientations - which is a
+% property of the file, not of the material - came back as a rotation of up
+% to 180 degree instead of the fraction of a degree that really separates
+% them. Every |EBSD.gradient|, |gradientX/Y/Z|, |curvature|, |calcGND| and
+% |WBV| number inherited that. This is
+% <https://github.com/mtex-toolbox/mtex/issues/194 issue #194>, open since
+% 2016; @ThomasChauve's reading of Pantleon 2005 was right all along.
+%
+% *Numbers move.* The affected pixels are not rare: of the neighbour pairs
+% in the shipped datasets 1.7 percent (forsterite), 5.8 percent (csl), 7.0
+% percent (twins) and 62 percent (titanium) were computed from an
+% overstated misorientation. Denoising a map with <EBSD.smooth.html
+% |smooth|> rewrites the orientations of a grain consistently and hides the
+% effect, which is why the GND and WBV example sheets - both of which
+% denoise before they compute - are unchanged, to 3e-6 percent and bit for
+% bit respectively. Without denoising they are not: the weighted Burgers
+% vector of the undenoised |single| dataset had a mean norm of 15.7 against
+% the 0.127 it has now, on all three stencils.
+%
+% *Points On A Grain Boundary*
+%
+% * |insidepoly|, the fast point in polygon engine MTEX uses in place of
+% MATLAB's |inpolygon|, reported points sitting exactly on a grain boundary
+% as off it - but only ever on one side of a map, the side with the largest
+% x. The engine brackets each edge by a half open interval in x, which is
+% what makes the crossing count right where two edges meet, and it used that
+% same bracket for the on-boundary test. A vertex that is a local maximum in
+% x is the excluded end of both edges meeting there, so no edge ever looked
+% at a point sitting exactly on it. The bracket is closed for the on test
+% now and stays half open for the crossing count. On the map of
+% <https://github.com/mtex-toolbox/mtex/issues/2527 issue #2527> this made
+% 504 of the queried boundary points come back wrong, and
+% |grains.isOuterBoundary| found 110 boundary grains instead of 147
+%
+% * <grain2d.isOuterBoundary.html |isOuterBoundary|> no longer asks that
+% question at all. The envelope it lays around the map is spanned by
+% vertices of the grains themselves, so which grain it touches is a matter
+% of vertex identity and is read off the polygons directly - exact, faster,
+% and independent of how a point lying on a boundary is classified
+%
+% *Plasticity*
+%
+% * there is no |slipSystem.hcp| and there will not be one: which slip and
+% twinning systems carry the deformation of a hexagonal material, and at
+% which critical resolved shear stress, is a property of the material and
+% the experiment rather than of the lattice. The placeholder that used to
+% warn and then return nothing - which made |dislocationSystem.hcp| fail
+% with "Output argument sS not assigned" - now raises an error that lists
+% every predefined hexagonal family, |slipSystem.basal|,
+% |slipSystem.prismaticA|, |slipSystem.pyramidalCA| and the rest, with the
+% Miller indices of each, so the set can be put together on the spot
+% * |slipSystem/SchmidFactor| checked the reference frames in one direction
+% only: it caught a specimen stress tensor against crystal slip systems,
+% but not a crystal tensor against slip systems already rotated into
+% specimen coordinates by |ori * sS| - that combination silently returned a
+% Schmid factor computed across two frames. The tension direction syntax
+% |sS.SchmidFactor(r)| checked nothing at all, so the very same computation
+% warned or stayed silent depending on whether it was written as a
+% direction or as a uniaxial stress tensor. Both branches now apply the
+% same test, and the warning carries the identifier |MTEX:frameMismatch| so
+% it can be switched off. A crystal direction has to be stated as a
+% @Miller, since a plain @vector3d is taken to be a specimen direction
+%
+% *VPSC Files*
+%
+% * a VPSC texture file is now recognised by its fourth header line - the
+% Euler angle convention and the number of orientations - instead of by the
+% string |TEXTURE AT STRAIN| on the first. Only VPSC *output* carries that
+% marker, so the weight (|.wts|) files that are handed to VPSC, and the files
+% <orientation.export_VPSC.html |export_VPSC|> itself writes, were both
+% rejected as "Interface VPSC does not fit file format!". Reading back what
+% MTEX exported now works
+% * the convention letter is honoured rather than assumed: a file announcing
+% Kocks (|K|) or Roe (|R|) angles is read in that convention instead of being
+% silently treated as Bunge. |export_VPSC| likewise writes the letter that
+% matches the angles it wrote, and defaults to Bunge rather than to the
+% |EulerAngleConvention| preference, which may be one VPSC cannot express
+%
+% *Fundamental Regions*
+%
+% * |orientationRegion/checkInside| tested whether its two symmetries are
+% trivial by comparing them against a freshly constructed |crystalSymmetry|,
+% i.e. it built a symmetry object on every call only to throw it away.
+% |orientationRegion/cleanUp| calls it a few hundred times, so this was the
+% bulk of |fundamentalRegion(cs,cs)| - and an axis angle section plot builds
+% the fundamental region twice. The comparison object is built once now;
+% |fundamentalRegion| is about three times faster and returns bit identical
+% regions
+%
+% *Axis Distributions*
+%
+% * <SO3Fun.calcAxisDistribution.html |calcAxisDistribution|> takes
+% |'minAngle'| and |'maxAngle'|, so the axis distribution can be restricted
+% to the rotations an axis angle section shows rather than always covering
+% the whole fundamental region. It works the same way on an ODF, on an MDF,
+% on a @symmetry and on an @orientationRegion, and passes through
+% |plotAxisDistribution| and |calcAxisVolume|
+%
+%   adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
 %
 %% MTEX 7.0 08/2026 - New Features
 %

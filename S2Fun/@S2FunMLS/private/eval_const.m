@@ -12,9 +12,7 @@ warnings = initWarnings;
 
 grid_vals = reshape(S2F.values(:), numel(S2F.nodes), numf);
 
-% Outlier indicators may differ per function component. Unlike the higher
-% degrees, degree zero is not split into components by eval, so the local
-% averages have to be formed componentwise here.
+% degree zero is not split into components by eval, so average componentwise here
 perComponent = S2F.detectOutliers && ...
   (size(S2F.outlierIndicators, 2) > 1);
 

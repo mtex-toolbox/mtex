@@ -40,12 +40,14 @@ y = reshape(y,numel(SO3G),[]);
 % Use the 'mlsq'-method, if:
 %   - an density is approximated
 %   - the input is nearly positive and we have (or can easily compute) the expected mean of the result
-eps = max(y(:))*1e-3;
+% yTol decides whether y is essentially of one sign - not to be confused with the
+% machine epsilon the sparsification of Fstar below uses
+yTol = max(y(:))*1e-3;
 if check_option(varargin,'density')
   varargin = ['mlsq',varargin];
-elseif check_option(varargin,'mean') && (all(y(:)>-eps) || all(y(:)<eps))
+elseif check_option(varargin,'mean') && (all(y(:)>-yTol) || all(y(:)<yTol))
   varargin = ['mlsq',varargin];
-elseif numel(SO3G)<1e4 && (all(y(:)>-eps) || all(y(:)<eps))
+elseif numel(SO3G)<1e4 && (all(y(:)>-yTol) || all(y(:)<yTol))
   W = calcVoronoiVolume(SO3G);
   W = W./sum(W);
   meanV = sum(W(:).*y);
@@ -115,7 +117,7 @@ if length(m)<prod(sz)
 end
 
 c0 = y ; %odf.eval(SO3G);
-c0(c0<=eps) = eps;
+c0(c0<=yTol) = yTol;
 c0 = reshape(m,[1 sz]).*c0./sum(c0,1);
 
 itermax = get_option(varargin,'maxit',100);

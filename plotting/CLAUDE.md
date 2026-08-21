@@ -1,12 +1,52 @@
 # plotting/
 
-All figure/plot code funnels through `@mtexFigure`, which manages multi-axis layouts (e.g. arrays of pole figures or ODF sections), shared/individual colorbars, and consistent resizing (`@mtexFigure/mtexFigure.m`). Most `plot` methods on geometry/EBSD/ODF classes elsewhere in the codebase call into this rather than raw MATLAB `axes`/`figure` calls — when adding a new plot type, build on `mtexFigure` instead of managing figure/axes handles directly.
+Everything funnels through `@mtexFigure`, which owns multi-axis layout, colorbars and
+resizing. Build a new plot type on it rather than on raw `figure`/`axes` handles.
 
-- `mtexFigure` owns the axes position, so anything MATLAB glues to the outside of an axes — a colorbar, or a legend with an `...outside` location — has to be taken over rather than left to MATLAB's own layout manager, otherwise the two fight over the axes position and the result depends on how many resize events happened (`private/adoptLegend.m`, `adoptColorbars` in `private/updateLayout.m`). Both are handled the same way: reserve a band in `calcTightInset`, then position the object explicitly in `updateLayout`. The gap to a legend is `mtexFig.legendSpacing`, settable per plot via `'legendSpacing'` or globally via `setMTEXpref('legendSpacing',...)`.
-- Layout is computed from the axes' *camera*, not from the data: `private/calcAxesSize.m` shapes the axes like the shadow the plot box casts on the screen. A plot that sets its view or camera after calling `drawNow` therefore gets an axes shaped for the wrong view — set the camera first (see `geometry/@crystalShape/plot.m`).
+- `mtexFigure` owns the axes position, so anything MATLAB glues to the outside of an axes —
+  a colorbar, a legend with an `...outside` location — has to be **adopted**, or the two
+  fight over the position and the result depends on the number of resize events.
+  `private/adoptLegend.m`, `adoptColorbars` in `private/updateLayout.m`. Both work the same
+  way: reserve a band in `calcTightInset`, position explicitly in `updateLayout`. Legend gap
+  is `mtexFig.legendSpacing`, per plot via `'legendSpacing'` or `setMTEXpref`.
+- Layout comes from the axes **camera**, not the data: `private/calcAxesSize.m` shapes the
+  axes like the shadow the plot box casts on screen. Set the camera *before* `drawNow`, or
+  the axes is shaped for the wrong view (see `geometry/@crystalShape/plot.m`).
+- `sphericalProjections/` holds the sphere→plane projections (stereographic, equal area,
+  equal angle, orthographic, gnomonic); `makeSphericalProjection.m` / `screenProjection.m`
+  wire a choice into a plot.
+- `ODFSections/` — one class per way of slicing an `SO3Fun`. Add a section type here rather
+  than special-casing `SO3Fun/plot`.
+- `orientationColorKeys/`, `directionColorKeys/`, `planarColorKeys/` are the single source of
+  truth for orientation→colour, for plotting and for programmatic lookups alike.
 
-- `plottingConvention.m` controls the *reference-frame alignment on screen* (which crystal/specimen direction points "east"/"out of the page"). A convention belongs to a `@referenceFrame`, never to a data object: `how2plot` is **read only** on every class but `referenceFrame`. There are exactly three ways to set it — `plot(x,'how2plot','y↑→x')` for one plot, `plottingConvention.default(...)` for the session, and moving the data into a frame that carries its own, `x.frame = specimenFrame.rolling`. Changing it doesn't recompute anything; it only affects how existing data is projected onto the screen.
-- **A crystal frame's convention is not the session's.** Anything derived from a `@crystalSymmetry` — `fundamentalSector` above all — must carry that symmetry's frame, because `sphericalRegion/isUpper`, `restrict2Upper` and `polarCoordinates` all read `sR.how2plot`. A frame-free sector silently resolves against the session default, which flips the hemisphere and re-lays the IPF colour key: the colour of a fixed orientation then depends on `plottingConvention.default`, which it must never do.
-- `sphericalProjections/` implements the actual sphere→plane projections (stereographic/equal-area/equal-angle/orthographic/gnomonic — `eangleProjection.m`, `eareaProjection.m`, etc.) used when plotting pole figures or `S2Fun` objects; `makeSphericalProjection.m` / `screenProjection.m` wire a projection choice into a plot.
-- `ODFSections/` (`phi1Sections.m`, `phi2Sections.m`, `sigmaSections.m`, `axisAngleSections.m`, `ipfSections.m`, …) each implement one way of slicing/rendering an `SO3Fun` (ODF) as a grid of 2D plots via a shared `@ODFSections` helper — this is where to look when adding a new section type rather than special-casing `SO3Fun/plot`.
-- `orientationColorKeys/`, `directionColorKeys/`, `planarColorKeys/` implement the various orientation→color mappings (IPF coloring in several conventions — HSV/HKL/TSL/spot/Patala/Bunge — plus direction and planar color keys); these are the single source of truth for "what color does this orientation get," used by both plotting and any programmatic color lookups.
+## Plotting conventions
+
+`plottingConvention.m` sets which direction points east / out of the page. It reprojects
+existing data; it recomputes nothing.
+
+A convention belongs to a `@referenceFrame`, never to a data object — `how2plot` is **read
+only** on every other class (`docs/adr/0003-reference-frame-vs-symmetry.md`). Exactly three
+ways to set it:
+
+```matlab
+plot(x,'how2plot','y↑→x')        % this plot
+plottingConvention.default(...)   % this session
+x.frame = specimenFrame.rolling   % move the data into a frame that carries one
+```
+
+Traps:
+
+- **A crystal frame's convention is not the session's.** Anything derived from a
+  `@crystalSymmetry` — `fundamentalSector` above all — must carry that symmetry's frame,
+  because `sphericalRegion/isUpper`, `restrict2Upper` and `polarCoordinates` read
+  `sR.how2plot`. A frame-free sector resolves against the session default, which flips the
+  hemisphere and re-lays the IPF colour key: the colour of a fixed orientation then depends
+  on `plottingConvention.default`, which it must never do.
+- `symmetry` is a **handle** class, so assigning `how2plot` on one can move the whole session.
+- `view()` reads the plot box, not the data, so it mirrors on a reversed axis. The 3d
+  spherical plots are the only MTEX axes that reverse `XDir`/`YDir`.
+- A manual camera makes MATLAB report `TightInset` as `[0 0 0 0]`, which silently kills
+  autocropping.
+- `plot(...,'3d')` builds no `sphericalPlot`. `annotateFrame` is the shared seam for axes
+  annotation across both paths.

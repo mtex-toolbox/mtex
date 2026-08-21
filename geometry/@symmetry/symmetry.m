@@ -26,10 +26,7 @@ classdef symmetry < matlab.mixin.Copyable
     lattice          % type of crystal lattice
     pointGroup       % point group name
     how2plot         % plotting convention - read only
-    % A convention belongs to a reference frame. To change how this is
-    % drawn use plot(...,'y↑→x') for one plot,
-    % plottingConvention.default(...) for the session, or move the data
-    % with x.frame = specimenFrame.rolling
+    % a convention belongs to a reference frame, see plottingConvention.default
   end
   
   properties (Access = protected)
@@ -66,9 +63,7 @@ classdef symmetry < matlab.mixin.Copyable
       s.id = id;
       if ~isempty(rot), s.rot = rot; end
 
-      % kept for backward compatibility: an explicitly passed convention
-      % gets a frame carrying it; the subclass constructors mint a frame
-      % that supplies the default instead
+      % kept for backward compatibility, an explicit convention gets a frame carrying it
       if nargin == 3 && ~isempty(pC)
         s.frame = specimenSymmetry.frameFor(pC);
       end
@@ -87,10 +82,25 @@ classdef symmetry < matlab.mixin.Copyable
     
     
     function s = set.rot(s,rot)
-      % replacing the group elements invalidates everything derived from
-      % them - properGroup/properSubGroup/makeLaue all work this way
+      % replacing the group elements invalidates everything derived from them
       s.rot = rot;
       s.multiplicityZRef = [];
+    end
+
+
+    function set.frame(s,fr)
+      % a crystal symmetry keeps its lattice in its frame - the axes are
+      % read straight off frame.basis - so a specimen frame, which has no
+      % lattice, would silently replace the crystal axes by the identity
+      if isa(s,'crystalSymmetry') && ~isempty(fr) && ~isa(fr,'crystalFrame')
+        error('MTEX:wrongFrameClass',...
+          ['A crystalSymmetry needs a crystalFrame, not a ' class(fr) '. ' ...
+          'To give it a convention of its own fork its frame:\n' ...
+          '  fr = crystalFrame(cs.axes,''name'',cs.mineral);\n' ...
+          '  fr.how2plot = plottingConvention(...);\n' ...
+          '  cs.frame = fr;']);
+      end
+      s.frame = fr;
     end
 
 

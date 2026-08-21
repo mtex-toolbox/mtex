@@ -35,10 +35,16 @@ how2plot = plottingConvention.fromOption(varargin,plottingConvention.default);
 if check_option(varargin,{'complete','3d'})
   sR = sphericalRegion;
 end
-if check_option(varargin,'upper')
-  sR = sR.restrict2Upper(how2plot);
-elseif check_option(varargin,'lower')
-  sR = sR.restrict2Lower(how2plot);
+
+% upper and lower at once asks for both halves, and overrules the reduction below (#330)
+bothHemispheres = check_option(varargin,'upper') && check_option(varargin,'lower');
+
+if ~bothHemispheres
+  if check_option(varargin,'upper')
+    sR = sR.restrict2Upper(how2plot);
+  elseif check_option(varargin,'lower')
+    sR = sR.restrict2Lower(how2plot);
+  end
 end
 
 % extract antipodal
@@ -46,7 +52,7 @@ sR.antipodal = sR.antipodal || check_option(varargin,'antipodal');
 
 % for antipodal symmetry reduce to halfsphere
 if sR.antipodal && sR.isUpper(how2plot) && sR.isLower(how2plot) &&...
-    ~check_option(varargin,{'complete','3d'})
+    ~check_option(varargin,{'complete','3d'}) && ~bothHemispheres
   sR = sR.restrict2Upper(how2plot);
 end
 

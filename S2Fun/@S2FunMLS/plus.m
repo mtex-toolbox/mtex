@@ -42,9 +42,7 @@ if isa(S2F1,'S2FunMLS') && isa(S2F2,'S2FunMLS') && ...
 
 end
 
-% Two node sets that do not match have no common values array, so the sum stays
-% unevaluated. @S2Fun/plus hands a sum with an S2FunMLS on the right back to
-% this method, hence that fallback is spelled out here rather than delegated.
+% two node sets that do not match have no common values array, so leave the sum unevaluated
 if isa(S2F2,'S2FunMLS')
   S2F = S2FunHandle(@(v) S2F1.eval(v) + S2F2.eval(v), S2F1.frame);
   return

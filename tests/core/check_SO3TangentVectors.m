@@ -70,9 +70,7 @@ fix.g2 = fix.g1.right;                        % right vector
 fix.h1 = fix.g1.right('internTangentSpace');  % right, intern
 fix.h2 = fix.h1.left;                         % back to left
 
-% the same gradient at a fixed bandwidth, for the quadrature and the grid
-% evaluation - both used to rebuild it, which is the single most expensive
-% call in this file
+% the same gradient at a fixed bandwidth, for the quadrature and the grid evaluation
 fix.g20 = fix.g1;
 fix.g20.bandwidth = 20;
 

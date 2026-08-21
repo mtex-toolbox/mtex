@@ -15,21 +15,14 @@ properties (Abstract = true)
 end
 
 properties (Hidden = true)
-  % the referenceFrame this function is expressed in; empty = frame-free.
-  % The public view is the dependent property frame, which resolves
-  % through getFrame/setFrame so that S2FunHarmonicSym can couple its
-  % frame to the one of its symmetry. Only frames carry plotting
-  % conventions - there is no per object convention slot.
+  % the referenceFrame this function is expressed in, empty = frame-free
   framePrivate = []
 end
 
 properties (Dependent = true)
   frame    % the referenceFrame this function is expressed in
   how2plot % plotting convention - read only
-  % A convention belongs to a reference frame. To change how this is
-  % drawn use plot(...,'y↑→x') for one plot,
-  % plottingConvention.default(...) for the session, or move the data
-  % with x.frame = specimenFrame.rolling
+  % a convention belongs to a reference frame, see plottingConvention.default
 end
 
 

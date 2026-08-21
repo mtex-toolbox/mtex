@@ -40,6 +40,32 @@ sSBasalSym = sSBasal.symmetrise('antipodal')
 
 sSBasalSym.b.norm
 
+%% Predefined slip systems
+% For cubic lattices the whole set of slip systems comes as one command,
+% |slipSystem.fcc(cs)| and |slipSystem.bcc(cs)|. For hexagonal lattices
+% there is deliberately no |slipSystem.hcp|: which families carry the
+% deformation, and at which critical resolved shear stress (CRSS), is a
+% property of the material and of the experiment rather than of the
+% lattice. The families are predefined individually and are meant to be
+% combined as the material at hand asks for
+%
+%   slipSystem.basal(cs)          <11-20>{0001}
+%   slipSystem.prismaticA(cs)     <2-1-10>{01-10}
+%   slipSystem.prismatic2A(cs)    <01-10>{2-1-10}     2nd order prismatic
+%   slipSystem.pyramidalA(cs)     <2-1-10>{01-11}     1st order pyramidal <a>
+%   slipSystem.pyramidalCA(cs)    <2-1-13>{-1101}     1st order pyramidal <c+a>
+%   slipSystem.pyramidal2CA(cs)   <2-1-13>{-2112}     2nd order pyramidal <c+a>
+%   slipSystem.twinT1(cs)         <1-101>{-1102}      tensile twinning
+%   slipSystem.twinT2(cs)         <2-1-16>{-2111}     tensile twinning
+%   slipSystem.twinC1(cs)         <-110-2>{-1101}     compressive twinning
+%   slipSystem.twinC2(cs)         <2-1-1-3>{2-1-12}   compressive twinning
+%
+% The second argument of each is the CRSS of that family, which is what
+% makes the families comparable to each other
+
+sS = [slipSystem.basal(cs,1), slipSystem.prismatic2A(cs,66), ...
+  slipSystem.pyramidalCA(cs,80), slipSystem.twinC1(cs,100)]
+
 %% Displacement
 % In linear theory the displacement of a slip system is described by the
 % strain tensor 
@@ -51,7 +77,6 @@ sSBasal.deformationTensor
 % tensor
 
 sSBasal.SchmidTensor
-
 
 %% Rotating slip systems
 % By definition the slip system and accordingly the deformation tensor are

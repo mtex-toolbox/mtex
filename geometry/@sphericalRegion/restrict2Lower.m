@@ -10,7 +10,10 @@ end
 % a second time, otherwise the boundary circle is drawn twice
 if any(dot(sR.N(:),-ref) > 1-1e-10 & sR.alpha(:) >= 0), return; end
 
+ % see restrict2Upper - prepending drops the frame of the region
+ fr = sR.frame;
  sR.N = [-ref;sR.N(:)];
  sR.alpha = [0;sR.alpha(:)];
- 
+ sR.frame = fr;
+
  end

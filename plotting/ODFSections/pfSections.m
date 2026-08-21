@@ -109,12 +109,7 @@ classdef pfSections < ODFSections
     function h = plotSection(oS,ax,sec,v,data,varargin)
 
       % plot data
-      % a section is a pole figure of h1, split up by the omega angle,
-      % hence it lives in the reference frame of SS - passing it makes the
-      % plot annotate itself with the specimen directions the way pole
-      % figures do. For misorientations SS is a crystal symmetry, the
-      % sections then show crystal directions and are labelled by their
-      % Miller indices instead
+      % a section is a pole figure of h1, so it lives in the reference frame of SS
       h = plot(v,data{:},oS.sR,oS.SS,'TR',[int2str(oS.omega(sec)./degree),'^\circ'],...
         'parent',ax,varargin{:},'doNotDraw');
 

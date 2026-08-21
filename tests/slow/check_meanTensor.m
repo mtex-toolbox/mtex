@@ -79,16 +79,9 @@ odf = unimodalODF(o,crystalSymmetry("1"),specimenSymmetry("1"),'halfwidth',2*deg
 T_odf_q = calcTensor(odf,T,'quadrature');
 
 
-% Compare the quadrature path against the Fourier path, not against
-% rotate(T,o). At a halfwidth of 2 degrees both methods return 0.0062 away
-% from the single crystal tensor - that residual is the intrinsic difference
-% between an ODF average of finite width and a delta function, so no method
-% can meet a 2e-3 tolerance against rotate(T,o) here. What is worth testing
-% is that the two code paths agree, which they do to 6e-5.
-%
-% Note that the quadrature grid has a fixed default resolution of 2.5
-% degrees, so it does not resolve sharper ODFs: the same comparison at a
-% halfwidth of 1 degree is off by 8.1e-3.
+% compare the quadrature path against the Fourier path, not against rotate(T,o) -
+% an ODF average of finite width differs from a delta function by more than the
+% tolerance, and the quadrature grid resolves no more than about 2.5 degree
 T_odf_f = calcTensor(odf,T,'Fourier');
 
 assert(mean(abs(reshape(matrix(T_odf_q-T_odf_f),[],1)))<1e-3, ...
@@ -134,9 +127,4 @@ assert(mean(abs(reshape(matrix(T_odf-rotate(T,o)),[],1)))<1e-3,'Error checking f
 %assert(mean(abs(reshape(matrix(T_odf-rotate(T,o)),[],1)))<1e-3,'Error checking fourth rank tensor!')
 
 
-% Removed 2026-07-28: an abandoned scratch block used to follow here. It
-% referenced variables that are never defined in this file
-% (ebsd_corrected, C_Epidote, odf_Epidote, CS, SS, C_Glaucophane) and so
-% could only ever error. It was unreachable while the rank 3 quadrature
-% assert above still failed; fixing that assert exposed it. See git history
-% if the intent needs recovering.
+% an unreachable scratch block was removed here 2026-07-28, see git history

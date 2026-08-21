@@ -137,9 +137,7 @@ for style = {'hkl','hkil','uvw','UVTW'}
   h = Miller(1,3,-4,8,cs,'UVTW');
   h.dispStyle = style{1};
 
-  % NB h.dispStyle is a char, so == on two of them is an elementwise
-  % comparison of the letters, not an identity test - and it errors outright
-  % when the two names differ in length. Compare them as strings.
+  % dispStyle is a char, so == compares the letters and errors on different lengths
   hr = round(h);
   assert(strcmp(char(h.dispStyle),char(hr.dispStyle)), ...
     'check_Miller: round() changed the display convention from %s to %s', ...

@@ -7,16 +7,19 @@ function check_gradient
 % computed on the virtual lattice (ebsd.lattice), so a plain list, a phase
 % subset, a rotated grid and a sheared grid are all the same code path.
 %
-% Two things are checked:
+% Three things are checked:
 %
 %  * a synthetic field with a KNOWN constant gradient is recovered, on five
 %    geometries. This is the test that could not be written before: three of
 %    the five error out on the old code.
+%  * the gradient does not depend on which symmetric equivalent each pixel
+%    happens to be stored as - issue #194.
 %  * on an axis aligned square map the new one sided gradient is BIT
 %    identical to the old matrix based gradient1/gradient2, NaN placement
 %    included, so no GND / WBV number moves.
 
 checkLinearField;
+checkSymmetricEquivalents;
 checkBitIdenticalToSquare;
 checkEdgeAndHoles;
 checkLeastSquaresOnLinear;
@@ -75,6 +78,60 @@ end
 end
 
 % =========================================================================
+function checkSymmetricEquivalents
+% the gradient may not depend on WHICH representative a pixel is stored in
+%
+% Issue #194. An EBSD file gives each pixel some symmetrically equivalent
+% representative of its orientation, and two neighbours can easily be given
+% different ones - it happens for 1.7% of the neighbour pairs of forsterite
+% and for 62% of titanium. The gradient is log(ori(q),ori(p)), and in the
+% left tangent space the crystal symmetry acts between the two factors, so
+% the pair has to be reduced before the product is formed. It was not, and
+% a neighbour in another representative contributed a rotation of up to pi
+% instead of the fraction of a degree that really separates the two - which
+% is what made the GND density of #194 depend on the file rather than on
+% the material.
+
+cs = crystalSymmetry('m-3m');
+k1 = 0.002; k2 = 0.0035;
+
+pos = makePositions('square axis aligned');
+omega = k1*pos.x + k2*pos.y;
+ori = orientation.byAxisAngle(zvector,omega,cs);
+
+ebsd = EBSD(pos,ori,ones(length(pos),1),{cs},struct);
+ebsd.unitCell = unitCellOf('square axis aligned');
+
+% the same crystals, each stored as a random equivalent
+rng(0)
+symOps = cs.properGroup.rot;
+ebsdS = ebsd;
+ebsdS.rotations = rotation(ebsd.rotations) .* symOps(randi(length(symOps),length(ebsd),1));
+
+% the symmetry elements are only good to about 1e-8 rad, so the two agree to that
+assert(max(angle(ebsd.orientations,ebsdS.orientations)) < 1e-6, ...
+  'check_gradient: the two orientation sets are not the same crystals');
+
+g  = ebsd.gradient;
+gS = ebsdS.gradient;
+
+ok = ~isnan(g(:,1)) & ~isnan(g(:,2));
+d = max(max(norm(vector3d(g(ok,:)) - vector3d(gS(ok,:)))));
+
+assert(d < 1e-10, ['check_gradient: the gradient depends on which ' ...
+  'symmetric equivalent each pixel is stored as (max deviation %.3g)'], d);
+
+% and it is still the known field - asked along the specimen directions
+inner = interiorMask(ebsd);
+eX = max(norm(vector3d(ebsdS.gradientX(inner)) - k1*zvector));
+eY = max(norm(vector3d(ebsdS.gradientY(inner)) - k2*zvector));
+assert(eX < 1e-8 && eY < 1e-8, ...
+  ['check_gradient: the gradient of the re-represented map is not the ' ...
+  'known linear field (max error %.3g in x, %.3g in y)'],eX,eY);
+
+end
+
+% =========================================================================
 function checkBitIdenticalToSquare
 % the lattice native one sided gradient == the old matrix based one
 
@@ -116,9 +173,7 @@ ebsd.unitCell = unitCellOf('square axis aligned');
 [~,A] = ebsd.gradient;
 a1 = vector3d(A(1,1),A(2,1),0);
 
-% Located by POSITION, not by ebsd.lattice.ij: gradient works in the basis
-% orientBasis pins, which may be a permutation/flip of the one lattice
-% returns, so the columns of the two do not have to correspond.
+% located by position, gradient works in the basis orientBasis pins
 lat = ebsd.lattice;
 ij = lat.ij;
 interior = find(all(ij > min(ij,[],1)+2 & ij < max(ij,[],1)-2, 2), 1);
@@ -215,14 +270,7 @@ cs = crystalSymmetry('m-3m');
 pos = makePositions('square axis aligned');
 ori = orientation.byAxisAngle(zvector,0.002*pos.x + 0.001*pos.y,cs);
 
-% Deliberately isolate one pixel along a line. makePositions lays the grid
-% out as ndgrid(0:n-1,0:n-1) with x from j and y from i, so the linear index
-% of (i,j) is i + j*n + 1. Removing the two j-neighbours of the target
-% leaves it with only its two i-neighbours, which are collinear - so the
-% 1hop fit is singular there and yields NaN, while 'full' still has the four
-% diagonals and solves it. Punching random holes does not achieve this: with
-% 4 axial neighbours a pixel stays solvable unless it loses a whole
-% direction.
+% isolate one pixel along a line, so that the 1hop fit is singular but 'full' is not
 n0 = 25; ind = @(i,j) i + j*n0 + 1;
 target = [12 12];
 
@@ -233,10 +281,7 @@ keep(ind(target(1),target(2)+1)) = false;
 ebsd = EBSD(pos(keep),ori(keep),ones(nnz(keep),1),{cs},struct);
 ebsd.unitCell = unitCellOf('square axis aligned');
 
-% Now the two mirrored configurations. Both keep the target singular in its
-% axial directions; one removes the main diagonal neighbours (+d,+d),
-% (-d,-d), the other the anti diagonal (+d,-d), (-d,+d). x runs with j and y
-% with i, so (+d,+d) is (i+1,j+1) and (+d,-d) is (i-1,j+1).
+% the two mirrored configurations, removing the main and the anti diagonal neighbours
 st = {'oneSided','1hop','full'};
 
 mainDiag = [ind(target(1)+1,target(2)+1), ind(target(1)-1,target(2)-1)];

@@ -6,6 +6,9 @@ function x = calcAxisDistribution(S3F,varargin)
 %   value = calcAxisDistribution(odf, a)
 %   adf = calcAxisDistribution(odf)
 %
+%   % only rotations by 20 to 40 degree
+%   adf = calcAxisDistribution(odf,'minAngle',20*degree,'maxAngle',40*degree)
+%
 % Input
 %  S3F - orientation or misorientation distribution function, @SO3Fun
 %  a   - rotational axis, @vector3d
@@ -13,6 +16,23 @@ function x = calcAxisDistribution(S3F,varargin)
 % Output
 %  afd   - axis distribution function, @S2Fun
 %  value - value of axis distribution function for rotational axis a
+%
+% Options
+%  minAngle   - ignore rotations by less than this angle
+%  maxAngle   - ignore rotations by more than this angle
+%  resolution - step of the angle quadrature, 2.5 degree by default
+%
+% Description
+% By default the rotation angle is integrated over the full range the
+% fundamental region allows for the axis in question. |minAngle| and
+% |maxAngle| restrict that range, which is what the axis angle sections
+% show: the distribution of the axes of those rotations whose angle falls
+% into a given window. An axis for which the window lies entirely outside
+% the fundamental region contributes zero.
+%
+% The quadrature keeps its step, not its number of points, so a narrow
+% window is integrated with correspondingly few of them - lower
+% |resolution| if the values it returns matter to better than a percent.
 %
 % See also
 % symmetry/calcAxisDistribution
@@ -28,12 +48,19 @@ end
 h = varargin{1};
 
 maxOmega = oR.maxAngle(project2FundamentalRegion(h,dcs));
+
+% the requested angle window, clipped to what the fundamental region holds
+% for each axis - it may be empty for some axes and full for others
+omegaMin = min(max(get_option(varargin,'minAngle',0),0),maxOmega(:));
+omegaMax = min(get_option(varargin,'maxAngle',inf),maxOmega(:));
+width = max(omegaMax - omegaMin,0);
+
 res = get_option(varargin,'resolution',2.5*degree);
-nOmega = round(max(maxOmega(:))/res);
+nOmega = max(2,round(max(width(:))/res));
 
 % define a grid for quadrature
 omega = linspace(0,1,nOmega);
-omega = maxOmega(:) * omega(:).'; 
+omega = omegaMin + width * omega(:).';
 h = repmat(h(:),1,nOmega);
 S3G = orientation.byAxisAngle(h,omega,S3F.CS,S3F.SS);
 
@@ -41,7 +68,7 @@ S3G = orientation.byAxisAngle(h,omega,S3F.CS,S3F.SS);
 weights = sin(omega./2).^2 ./ nOmega;
 
 % eval ODF
-f = eval(S3F,S3G,varargin{:}); 
+f = eval(S3F,S3G,varargin{:});
 
 % sum along axes
-x = 2*nSym / pi * sum(f .* weights,2) .* maxOmega(:);
+x = 2*nSym / pi * sum(f .* weights,2) .* width;

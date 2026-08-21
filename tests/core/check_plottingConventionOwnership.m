@@ -84,10 +84,7 @@ csL.frame = specimenSymmetry.frameFor(pC);
 assert(cs.how2plot == csBefore && cs.frame.how2plot == csBefore, ...
   'check_plottingConventionOwnership: cs.Laue.how2plot wrote through the shared frame')
 
-% the default workflow: a symmetry without an override holds the session
-% frame, and plotx2north writes the new convention onto that frame - the
-% symmetry follows without any shared convention handle (the convention
-% is a value class)
+% a symmetry without an override holds the session frame and follows plotx2north
 pCd0 = plottingConvention.default;   % a value snapshot
 restoreDefault = onCleanup(@() plottingConvention.default(pCd0));
 
@@ -135,9 +132,7 @@ cs = crystalSymmetry('mmm');
 assert(tensor(M,'rank',2,cs).how2plot == cs.how2plot, ...
   'check_plottingConventionOwnership: a tensor without its own convention ignores CS')
 
-% (4) rebuilding operations keep it. EinsteinSum has a branch that builds a
-% fresh tensor instead of reusing the input, which used to get the
-% convention for free off CS
+% (4) rebuilding operations keep it, EinsteinSum may build a fresh tensor
 T = tensor(M,'rank',2,pC);
 T2 = EinsteinSum(T,[1 -1],vector3d.X,-1);
 assert(T2.how2plot == pC, ...
@@ -272,12 +267,7 @@ h = Miller(1,0,0,cs);
 r = vector3d.rand(10);
 pf = PoleFigure(h,r,ones(10,1));
 
-% a convention assigned to data is a session change now, and it says so.
-% This block used to assert the opposite - that the assignment forked a
-% private frame for this pole figure alone. That capability is gone: a
-% convention belongs to a reference frame, and an anonymous fork carrying
-% the session frame's name while following nothing was the leak family
-% itself (ADR 0003).
+% a convention assigned to data is a session change, and it says so (ADR 0003)
 pC0 = plottingConvention.default;
 restore = onCleanup(@() plottingConvention.default(pC0));
 
@@ -354,6 +344,35 @@ assert(plottingConvention.fromOption({other,data},plottingConvention.default) ==
 assert(plottingConvention.fromOption({},other) == other, ...
   'check_plottingConventionOwnership: an empty list must return the default');
 
+% ---------------------------------------------------------------------
+% the second output separates a convention the caller asked for from one a plot
+% method appended for its own data - telling them apart by value was #481
+
+[pC,isExplicit] = plottingConvention.fromOption({'how2plotFallback',data}, ...
+  plottingConvention.default);
+assert(pC == data && ~isExplicit, ...
+  'check_plottingConventionOwnership: a marked fallback must not count as explicit');
+
+[pC,isExplicit] = plottingConvention.fromOption({other,'how2plotFallback',data}, ...
+  plottingConvention.default);
+assert(pC == other && isExplicit, ...
+  'check_plottingConventionOwnership: a caller convention must beat a marked fallback');
+
+[pC,isExplicit] = plottingConvention.fromOption({'how2plot',other,'how2plotFallback',data}, ...
+  plottingConvention.default);
+assert(pC == other && isExplicit, ...
+  'check_plottingConventionOwnership: the name value form must beat a marked fallback');
+
+[~,isExplicit] = plottingConvention.fromOption({},other);
+assert(~isExplicit, ...
+  'check_plottingConventionOwnership: the default must not count as explicit');
+
+% a convention that merely equals the default is still the caller's
+[pC,isExplicit] = plottingConvention.fromOption({plottingConvention.default}, ...
+  plottingConvention.default);
+assert(pC == plottingConvention.default && isExplicit, ...
+  'check_plottingConventionOwnership: a passed convention equal to the default is still explicit');
+
 end
 
 % =========================================================================
@@ -398,11 +417,7 @@ assert(T.CS.id == cs.id, ...
 assert(T.how2plot == cs.how2plot, ...
   'check_plottingConventionOwnership: a crystal framed tensor follows its crystal frame');
 
-% a tensor built FROM crystal data is in crystal coordinates and keeps that
-% symmetry - the session default must not overwrite what the data brought.
-% This is the route slipSystem/deformationTensor takes into calcTaylor,
-% where a specimen framed deformation tensor makes the Taylor spin come
-% back in the wrong frame
+% a tensor built from crystal data is in crystal coordinates and keeps that symmetry
 m = Miller(1,1,0,crystalSymmetry('432'));
 assert(isa(tensor(m).CS,'crystalSymmetry'), ...
   'check_plottingConventionOwnership: tensor(Miller) must keep the crystal symmetry');

@@ -1,5 +1,6 @@
 function check_logReference
-% check that log(ori,ori_ref) respects an array valued reference
+% check that log(ori,ori_ref) respects the reference - the array, and the
+% crystal symmetry of the pair
 %
 % Regression test: the reference orientation used to be subtracted only
 % inside a guard "if ori_ref ~= quaternion.id". For an array valued reference
@@ -66,6 +67,7 @@ if max(norm(v - vRef)) > 1e-10
 end
 
 checkSymmetryCarriage;
+checkSymmetryReduction;
 
 disp('check_logReference: ok')
 
@@ -111,9 +113,7 @@ for tS = [SO3TangentSpace.rightVector,SO3TangentSpace.leftVector]
   end
 end
 
-% the reference is the single source of the pair, so a tangent vector has to
-% survive being rebuilt from its own oriRef. Not from its rot - that one
-% shows the equivariant side as a trivial stand-in on purpose
+% rebuild from oriRef, not from rot, which shows the equivariant side as a stand-in
 v = log(ori,ori_ref,SO3TangentSpace.leftVector);
 r = SO3TangentVector(v,v.oriRef,v.tangentSpace);
 ref = r.oriRef;
@@ -125,8 +125,73 @@ end
 
 % ------------------------------------------------------------------------
 
+function checkSymmetryReduction
+% log(ori,ori_ref) measures the misorientation, so it has to agree with angle
+%
+% Regression test for issue #194. Replacing ori by a symmetrically
+% equivalent representative describes the same crystal and may not change
+% the misorientation vector. In the LEFT tangent space the vector is
+% ori * inv(ori_ref), and crystal symmetry acts between the two factors -
+% the equally valid representatives are ori * s * inv(ori_ref) - so once the
+% product is formed nothing about it is a symmetry any more and it cannot be
+% reduced. It was reduced only afterwards, which does nothing, and a pair
+% stored in different representatives came back as a rotation of up to pi.
+% angle(ori,ori_ref) always reduced the pair; the two disagreed by up to 180
+% degree, and every EBSD gradient, curvature and GND density inherited it.
+
+rng(0)
+for cs = {crystalSymmetry('m-3m'),crystalSymmetry('622'),crystalSymmetry('2/m')}
+
+  cs = cs{1}; %#ok<FXSET>
+  symOps = cs.properGroup.rot;
+
+  ref = orientation.rand(50,cs);
+  ori = orientation(rotation.byAxisAngle(vector3d.rand(50),1*degree) .* ...
+    rotation(ref),cs);
+
+  for tS = [SO3TangentSpace.rightVector,SO3TangentSpace.leftVector]
+
+    v = vector3d(log(ori,ref,tS));
+
+    % the length of the misorientation vector IS the misorientation angle
+    if max(abs(norm(v) - angle(ori,ref))) > 1e-10
+      error('norm(log(ori,ori_ref)) ~= angle(ori,ori_ref), tangentSpace %d',...
+        double(tS));
+    end
+
+    % and it does not move when either side is stored differently
+    for k = 1:length(symOps)
+
+      oriK = orientation(rotation(ori) .* symOps(k),cs);
+      if max(norm(vector3d(log(oriK,ref,tS)) - v)) > 1e-10
+        error(['log depends on the representative of ori, ' ...
+          'tangentSpace %d, symmetry %s'],double(tS),cs.pointGroup);
+      end
+
+      % a right tangent vector turns with the crystal frame, a left one may not move
+      refK = orientation(rotation(ref) .* symOps(k),cs);
+      vK = vector3d(log(ori,refK,tS));
+
+      if tS.isLeft, dev = max(norm(vK - v));
+      else, dev = max(abs(norm(vK) - norm(v))); end
+
+      if dev > 1e-10
+        error(['log depends on the representative of ori_ref, ' ...
+          'tangentSpace %d, symmetry %s'],double(tS),cs.pointGroup);
+      end
+    end
+  end
+end
+
+end
+
+% ------------------------------------------------------------------------
+
 function v = refLog(ori,ref,tS)
 % what log(ori,ref,tS) is supposed to do, spelled out
+
+% reduce the pair first, in the left tangent space the product cannot be reduced
+if isa(ori,'orientation'), ori = project2FundamentalRegion(ori,ref); end
 
 if tS.isRight
   m = orientation(itimes(ref,ori,true),ori.CS,specimenSymmetry);

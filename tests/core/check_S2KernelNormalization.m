@@ -13,11 +13,8 @@ function check_S2KernelNormalization
 
 hw = 10*degree;
 
-% the density kernels, i.e. the ones calcDensity is meant to be called
-% with. Deliberately not in this list: S2RestrictedDistanceKernel, which is
-% negative by construction and measures a distance for compactify rather
-% than estimating a density (its A(1) is -4/3), and likewise the
-% special-purpose SchulzDefocusingKernel and calcGBNDKernel.
+% the density kernels - not S2RestrictedDistanceKernel, SchulzDefocusingKernel
+% and calcGBNDKernel, none of which estimates a density
 kernels = { ...
   S2DeLaValleePoussinKernel('halfwidth',hw), ...
   S2BumpKernel(hw), ...

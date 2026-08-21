@@ -29,7 +29,9 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %
 % Options
 %  angle    - misorientation angle that indicates a grain boundary
-%  minPixel - minimum number of pixels that form a grain
+%  minPixel - minimum number of pixels that form a grain. No indexed grain
+%             smaller than this is returned; the pixels of one that would be
+%             are marked notIndexed
 %  alpha    - fill distances into not indexed regions
 %  soft     - [angle delta] soft threshold instead of a hard one
 %  fmc       - fast multiscale clustering method
@@ -80,11 +82,7 @@ end
 
 % first pass:
 % mark pixels that would become grains smaller than minPixel as notIndexed
-%
-% Criteria that enforce minPixel themselves are handed the value instead
-% and this pass is skipped: it is a second full segmentation, which for a
-% global criterion such as gbcFMC means running the whole clustering twice
-% only to find that it has already dealt with the undersized regions.
+% a criterion enforcing minPixel itself is handed the value and this pass is skipped
 if gbc.handlesMinPixel
 
   minPixel = get_option(varargin,'minPixel',[]);
@@ -115,6 +113,9 @@ I_FD = remapIFD(out,ebsd);
 [A_Db,I_DG] = doSegmentation(I_FD,ebsd,gbc,varargin{:});
 % A_db - neighboring cells with (inner) grain boundary
 % I_DG - incidence matrix cells to grains
+
+% culling changes the map the closing runs on, so mop up what re-fragmented (#2574)
+enforceMinPixel
 
 % now we remove all empty grains
 notEmpty = full(any(I_FD * I_DG,1)).';
@@ -195,9 +196,7 @@ if check_option(varargin,'variants')
   grains.prop.parentId = variantId(firstD,2);
 end
 
-% assign a grainId to pixels that ended up entirely within a grain;
-% grainId=0 stays reserved for pixels a grain boundary passes through (see
-% private/absorbInteriorPixels)
+% assign a grainId to pixels entirely within a grain, 0 stays for those on a boundary
 if nargout > 1
   wasNotIndexed = ~ebsd.isIndexed(:);
   ebsd.grainId = absorbInteriorPixels(grains,ebsd,grainId);
@@ -234,20 +233,9 @@ end
     keyInt = pairKey(ai(sameGrain), aj(sameGrain));
     keyExt = pairKey(ai(~sameGrain), aj(~sameGrain));
 
-    % incident cell pair per face (0-padded in column 2 for faces with
-    % only one incident cell, i.e. the outer boundary of the map).
-    % I_FD can have all-zero rows (faces with no real-cell incidence at
-    % all, e.g. a Voronoi face entirely between dummy/exterior sites), so
-    % unlike makeBoundary's ebsdInd - built only from the already-trimmed
-    % I_FDext/I_FDint, where every row has >=1 entry - fId cannot be
-    % compressed into a running count; index by the true face id fId
-    % itself and disambiguate repeats (2nd cell of the same face) locally.
-    %
-    % I_FDt (I_FD transposed) is computed once and reused both for that
-    % extraction and for the final row-selection below: sparse row
-    % indexing (I_FD(mask,:)) is column-major-hostile and dominates this
-    % function's cost on large maps, same reason the previous
-    % implementation always transposed first too.
+    % incident cell pair per face, 0-padded in column 2 on the outer boundary -
+    % I_FD can have all-zero rows, so index by the true face id and disambiguate
+    % repeats locally; I_FDt is computed once, sparse row indexing dominates the cost
     I_FDt = I_FD.';
     [eId,fId] = find(I_FDt);
     isSecond = [false; fId(2:end) == fId(1:end-1)];
@@ -337,32 +325,10 @@ end
     % sort the angles
     [~,qOrder] = sort(qOmega,2);
       
-    % Pair the four edges. The four, taken in angular order, can be joined
-    % as (1,4)+(2,3) or as (1,2)+(3,4); the two pairings pick out the two
-    % DIAGONALS of the four pixels meeting here, and the pairing decides
-    % which diagonal the new boundary separates.
-    %
-    % Which pairing the sorted order presented first used to decide it, and
-    % that is not a property of the map. On a square grid the four edges
-    % leave the vertex along +-x and +-y, so one of them sits exactly on
-    % atan2's branch cut at +-pi: a change of 1e-14 in the vertex position -
-    % all it takes to give the same map in a different measurement order -
-    % flips that edge between +pi and -pi, rotates the sorted order by one
-    % and swaps the pairing. Shuffling twins moved the result between 110
-    % and 108 grains that way, and gridify's reordering did the same.
-    %
-    % The geometry cannot break the tie: at a square quadruple point all
-    % four angular gaps are exactly pi/2. The orientations can.
-    % mergeQuadrupleGrains removes the new boundary again whenever the
-    % criterion says its two pixels belong together, and that is how two
-    % diagonally opposite grains that match get joined THROUGH the
-    % quadruple point. So the pairing has to offer the criterion the pair
-    % most likely to match: take the one it connects most, and where it is
-    % indifferent - which is common, it answers on three levels only - the
-    % one with the smaller misorientation angle, i.e. join what matches
-    % better. Only if that is undecided too do the pixel positions break
-    % the tie. All three read the measurements, so the outcome cannot
-    % depend on the order they arrived in.
+    % pair the four edges - the two pairings pick out the two diagonals of the
+    % four pixels meeting here. Take the pair the criterion connects most, then
+    % the smaller misorientation, then the pixel positions - all read the
+    % measurements, so the outcome does not depend on the measurement order
     s = size(iqF);
     pairOf = @(o) I_FDext(iqF(sub2ind(s,(1:s(1)).',o(:,1))),:) .* ...
                   I_FDext(iqF(sub2ind(s,(1:s(1)).',o(:,4))),:) + ...
@@ -409,25 +375,8 @@ end
     V = [V;V(quadPoints,:)];
   
     % include new vertex into face list, i.e. replace quadpoint -> newVid
-    % for the two edges that move to the copy
-    %
-    % This has to be an element-wise assignment, not a row-wise one: two
-    % adjacent quadruple points share the edge between them, and that edge
-    % is then in the relocation list of both. A row-wise
-    % Fext(rows,:) = ... silently keeps only the last write for a repeated
-    % row, so one of the two vertices was never replaced - the edge kept the
-    % original vertex where it should have taken the copy. The quadruple
-    % point then ends up with three of its four edges instead of two, the
-    % copy with one, and the boundary of the grain whose corner was cut
-    % there is an open path rather than a closed ring. Every downstream
-    % tracer (calcPolygonsC and calcPolygons alike) then returns a polygon
-    % that is not the grain, typically with a negative area, see #2590.
-    %
-    % Assigning by linear index is safe because the two writes to a shared
-    % edge touch its two *different* endpoints, and quadPoints are distinct,
-    % so no element is ever written twice. The reshape is for the single
-    % quadruple point case, where iqF is a row and linear indexing into it
-    % would inherit that shape.
+    % element-wise, since two adjacent quadruple points share an edge and a
+    % repeated row would keep only the last write (#2590)
     relF  = reshape(iqF([orderSub(1);orderSub(2)]),[],1); % edges that move
     relQP = repmat(quadPoints,2,1);           % vertex they have to give up
     relV  = repmat(newVid,2,1);               % vertex they take instead
@@ -445,8 +394,7 @@ end
     newBd = full(sum(I_DG(iqD(:,1),:) .* I_DG(iqD(:,2),:),2)) == 0;
 
     % add new edges
-    % qF identifies them by their vertex pair, which survives any later
-    % reordering of the segments - see mergeQuadrupleGrains
+    % qF identifies them by their vertex pair, which survives any later reordering
     qF = [quadPoints(newBd),newVid(newBd)];
     Fext = [Fext; qF];
     qAdded = sum(newBd);
@@ -526,20 +474,11 @@ end
 
   function mergeQuadrupleGrains
 
-    % a new boundary introduced by splitting a quadruple point is merged
-    % away exactly when the same grain boundary criterion that was used
-    % for the original segmentation would not consider it a boundary
+    % merge a new boundary away when the segmentation criterion sees none
     connect = gbc.eval(ebsd,qPairs(:,1),qPairs(:,2));
     toMerge = connect > 0;
 
-    % Find the added segments by their vertex pair, not by row position.
-    % removeQuadruplePoints appends them to the end of Fext, but the
-    % grainBoundary constructor sorts every segment into chain walk order,
-    % so gB(end-qAdded+1:end) stopped selecting them - it merged whichever
-    % segments happened to land last instead, destroying real boundary.
-    % The constructor permutes rows and may flip the two columns of a row,
-    % but never renumbers vertices, so a sorted vertex pair identifies a
-    % segment uniquely and reordering cannot break it.
+    % find the added segments by their vertex pair, the constructor reorders them
     gB = grains.boundary;
     [found,loc] = ismember(sort(qF,2),sort(gB.F,2),'rows');
 
@@ -554,10 +493,38 @@ end
     I_PC = sparse(1:length(parentId),parentId,1);
     I_DG = I_DG * I_PC;
 
-    % update grain ids; matrix product (not find, which drops all-zero
-    % rows) so pixels with no assigned grain correctly stay 0, matching
-    % the original grainId computation above
+    % update grain ids by a matrix product, find would drop the all-zero rows
     grainId = full(I_DG * (1:size(I_DG,2)).');
+  end
+
+  function enforceMinPixel
+    % indexed grains that came out below minPixel despite the cull before
+    % the decomposition - mark their pixels notIndexed, which is what that
+    % pass does to everything it removes
+    %
+    % Reads I_DG only, so it needs no second decomposition. Note this leaves
+    % the cells exactly as the decomposition drew them: a pixel the closing
+    % stranded keeps its oversized cell and simply becomes notIndexed, the
+    % same way the pixels culled before the decomposition do.
+    %
+    % Merging the offenders into a neighbour instead was measured and
+    % dropped: they are stranded in notIndexed regions by construction, so
+    % 14 of 15 across forsterite and small had no neighbour of their own
+    % phase to merge into and fell back to this anyway.
+
+    mp = get_option(varargin,'minPixel',1);
+    if mp <= 1, return; end
+
+    szG = full(sum(I_DG,1)).';
+    phG = full(max(I_DG' * ...
+      spdiags(ebsd.phaseId,0,length(ebsd),length(ebsd)),[],2));
+
+    % notIndexed grains are not subject to minPixel
+    under = szG < mp & szG > 0 & phG > 1;
+    if ~any(under), return; end
+
+    ebsd.phaseId(full(any(I_DG(:,under),2))) = 1;
+
   end
 
 end

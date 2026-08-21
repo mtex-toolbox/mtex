@@ -100,8 +100,7 @@ while true
 end
 
 % -- one start half edge per chain ---------------------------------------
-% every open chain has two, one per direction; pick the lower for a
-% deterministic result
+% an open chain has one per direction, pick the lower for a deterministic result
 startH = find(partner == 0);
 [~,iFirst] = unique(hCid(startH),'stable');
 startH = startH(iFirst);

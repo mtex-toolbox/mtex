@@ -24,9 +24,7 @@ if any(isSym)
 end
 
 if ~check_option(varargin,'empty')
-  % fill only what is genuinely missing - this runs on every SO3Fun
-  % constructor. Two separate objects, since a shared handle in both slots
-  % would couple them
+  % fill only what is genuinely missing, and with two separate objects
   if isempty(SRight), SRight = specimenSymmetry; end
   if isempty(SLeft), SLeft = specimenSymmetry; end
 end

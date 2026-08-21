@@ -29,8 +29,7 @@ try set(0,'defaultPolarAxesFontSize',fontSize); end %#ok<TRYNC>
 setMTEXpref('UTF8Output',true)
 
 % default plotting of specimen coordinates
-% x to east, y to south, z into the screen - the convention of SEM images
-% and of most EBSD imports
+% x to east, y to south, z into the screen
 pC = plottingConvention.ij;
 pC.makeDefault;
 
@@ -39,8 +38,7 @@ pC.makeDefault;
 setMTEXpref('figSize','large');
 
 % the screen figure sizes are a fraction of, as [width height] in pixel
-% empty means the actual monitor - set this to make figure exports
-% independent of the screen they were rendered on
+% empty means the actual monitor
 setMTEXpref('screenSize',[]);
 
 % whether to show or not to show a micronbar on EBSD maps
@@ -53,12 +51,7 @@ setMTEXpref('showCoordinates','off')
 % the micronbar of EBSD maps
 setMTEXpref('showRefFrame','on')
 
-% how to annotate pole figure plots
-% the following line add X and Y to the plot
-% you may want to replace this by 'RD' and 'ND'
-% pole figures are annotated with the axes of the session's default
-% reference frame - X1, Y1, Z1 for the measurement frame, RD, TD, ND once
-% e.g. specimenFrame.rolling.makeDefault rules the session
+% pole figures are annotated with the axes of the default reference frame
 pfAnnotations = @(varargin) feval(specimenFrame.default.pfAnnotations,varargin{:});
 
 % you can uncomment the following line to disable the annotations
@@ -104,13 +97,19 @@ setMTEXpref('EBSDExtensions',...
   [".osc",".ctf",".ang",".hkl",".tsl",".sor",".crc",".h5",".hdf5",".h5oina",".oh5",".edaxh5",".dream3d"]);
 
 % set default colors
-colors = load(fullfile(mtex_path,'plotting','plotting_tools','colors.mat'),'rgb');
-% in former MTEX version this was
-% color.rgb = vega20;
-setMTEXpref('colors',colors.rgb)
+% fall back rather than error, a compiled application may not ship colors.mat (#2369)
+try
+  colors = load(fullfile(mtex_path,'plotting','plotting_tools','colors.mat'),'rgb');
+  % in former MTEX version this was
+  % color.rgb = vega20;
+  setMTEXpref('colors',colors.rgb)
 
-% make these colors the default in Matlab
-set(0,'DefaultAxesColorOrder',colors.rgb)
+  % make these colors the default in Matlab
+  set(0,'DefaultAxesColorOrder',colors.rgb)
+catch
+  assert(isdeployed,'MTEX:missingColors', ...
+    'colors.mat is missing from %s', fullfile(mtex_path,'plotting','plotting_tools'));
+end
 
 %% Default save-mode for generated code snipped (import wizard)
 % set to true if generated import-script should be stored on disk by
@@ -122,12 +121,14 @@ setMTEXpref('SaveToFile',false)
 % modify following paths according to your needs, if your files are located at
 % different path
 
+if ~isdeployed
 setMTEXpref('CIFPath',       fullfile(mtexDataPath,'cif'));
 setMTEXpref('EBSDPath',      fullfile(mtexDataPath,'EBSD'));
 setMTEXpref('PoleFigurePath',fullfile(mtexDataPath,'PoleFigure'));
 setMTEXpref('ODFPath',       fullfile(mtexDataPath,'ODF'));
 setMTEXpref('TensorPath',    fullfile(mtexDataPath,'tensor'));
 setMTEXpref('ExamplePath',   fullfile(mtex_path,'..','examples'));
+end
 
 %% set default location to look for data with import wizard
 % if not activated, the paths are selected according to the above
@@ -194,11 +195,8 @@ setMTEXpref('mosek',false)
 setMTEXpref('insidepoly',true)
 
 %% Put imported EBSD data on its grid
-% EBSD.load returns @EBSDsquare / @EBSDhex instead of a plain list whenever
-% the measurements sit on one lattice, which saves every later plot from
-% rebuilding that lattice. Data that would lose measurements by being
-% gridded is never gridded, whatever this is set to. Set to false to always
-% import a plain list; EBSD.load(...,'noGrid') does the same per call.
+% EBSD.load returns @EBSDsquare / @EBSDhex whenever the measurements sit on one
+% lattice - set to false, or pass 'noGrid', to import a plain list
 
 setMTEXpref('gridifyOnImport',true)
 

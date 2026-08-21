@@ -17,9 +17,10 @@ function exportEBSD_h5(ebsd,fName,varargin)
 % into the data sets the import resolved, so anything else in the file is
 % passed through untouched.
 %
-% Without a reference file a self contained HDF5 file in MTEX's own layout
-% is written instead - orientations, phases, coordinates and properties,
-% and nothing else.
+% A reference file is therefore required. MTEX used to write a flat layout
+% of its own when there was none, but nothing could read it back - not MTEX
+% and no vendor tool - so it was removed. To carry a map between MTEX
+% sessions use a |.mat| file, which keeps everything this one dropped.
 %
 % Syntax
 %
@@ -31,28 +32,18 @@ function exportEBSD_h5(ebsd,fName,varargin)
 %   % name the reference explicitly
 %   exportEBSD_h5(ebsd,'denoised.h5oina','reference','myfile.h5oina')
 %
-%   % MTEX's own layout, no reference involved
-%   exportEBSD_h5(ebsd,'myfile.h5','standalone')
-%
 % Input
 %  ebsd  - @EBSD
 %  fName - file name of the file to be written
 %
 % Options
 %  reference   - file to copy and write the changed data into
-%  compression - deflate level of the standalone layout, default 9
 %
 % Flags
-%  standalone  - write MTEX's own layout instead of copying a reference
 %  noProp      - write orientations and phases only, leave properties alone
 %
 % See also
 % EBSD.load exportEBSD_ctf exportEBSD_ang
-
-if check_option(varargin,'standalone')
-  exportStandalone(ebsd,fName,varargin{:});
-  return
-end
 
 refFile = get_option(varargin,'reference','');
 
@@ -61,9 +52,13 @@ if isempty(refFile) && isfield(ebsd.opt,'h5') && isfield(ebsd.opt.h5,'fileName')
 end
 
 if isempty(refFile)
-  % nothing to copy - MTEX's own layout is all that can be written
-  exportStandalone(ebsd,fName,varargin{:});
-  return
+  error('MTEX:exportEBSD_h5:noReference',...
+    ['Writing HDF5 needs a reference file to copy, and this data was not '...
+    'imported from one.\n\nName it explicitly\n\n'...
+    '  export(ebsd,''%s'',''reference'',''myfile.h5'')\n\n'...
+    'or, to carry the map between MTEX sessions, use save/load on a .mat '...
+    'file - it keeps the reference frames, the imported header and '...
+    'everything else an HDF5 export would drop.'],fName);
 end
 
 exportByReference(ebsd,fName,refFile,varargin{:});
@@ -76,17 +71,16 @@ function exportByReference(ebsd,fName,refFile,varargin)
 if ~exist(refFile,'file')
   error('MTEX:exportEBSD_h5:noReference',...
     ['The reference file\n\n  %s\n\nwas not found. Name an existing one\n\n'...
-    '  export(ebsd,''%s'',''reference'',''myfile.h5'')\n\n'...
-    'or write MTEX''s own layout with export(ebsd,''%s'',''standalone'').'],...
-    refFile,fName,fName);
+    '  export(ebsd,''%s'',''reference'',''myfile.h5'')'],...
+    refFile,fName);
 end
 
 if ~isfield(ebsd.opt,'h5')
   error('MTEX:exportEBSD_h5:noProvenance',...
     ['This data was not imported from an HDF5 file, so there is no record '...
     'of which data set holds what and the reference file can not be '...
-    'written into. Import the map with EBSD.load first, or write MTEX''s '...
-    'own layout with\n\n  export(ebsd,''%s'',''standalone'')'],fName);
+    'written into. Import the map with EBSD.load first, or use save/load '...
+    'on a .mat file to carry it between MTEX sessions.']);
 end
 
 prov = ebsd.opt.h5;
@@ -109,10 +103,7 @@ end
 % read only as well and every write below would fail
 fileattrib(fName,'+w');
 
-% which row of the file every measurement belongs to. gridify pads a map to
-% a full rectangle and reorders it (see EBSD/gridify), so the grid position
-% alone says nothing - oldId is the translation back, and the padded cells
-% carry NaN.
+% oldId translates a measurement back to its row in the file, a padded cell is NaN
 if isfield(ebsd.prop,'oldId')
   idx = ebsd.prop.oldId(:);
 else
@@ -128,14 +119,12 @@ if numel(unique(idx)) < numel(idx)
   error('MTEX:exportEBSD_h5:ambiguousIds',...
     ['Several measurements claim the same row of the reference file. This '...
     'happens when maps from different files are concatenated - export '...
-    'those separately, or with the ''standalone'' flag.']);
+    'those separately, each against its own reference.']);
 end
 
 scrPrnt('Step',sprintf('Writing %d of %d measurements',numel(idx),nFile));
 
-% the file states the Euler angles in its own reference frame - undoing the
-% correction the import applied is what makes the round trip give the very
-% same numbers back
+% undo the correction the import applied, the file states its own reference frame
 raw = ebsd;
 raw.EulerCorrection = rotation.id;
 
@@ -182,9 +171,7 @@ switch rot.type
     phi = [phi1(:),Phi(:),phi2(:)];
     phi = phi(keep,:) ./ rot.format;
 
-    % a pixel MTEX holds as not indexed has no Euler angles to state - the
-    % file keeps whatever it said about it (EMSphInx marks those in the
-    % phase column, others by a fit metric)
+    % a not indexed pixel has no Euler angles, keep whatever the file said
     ok = all(~isnan(phi),2);
 
     if isscalar(rot.item)
@@ -222,9 +209,7 @@ phase = ebsd.phase(:);
 phase = phase(keep);
 
 if strcmpi(ph.type,'zeroBased')
-  % the phases are numbered from 0 and a pattern that could not be indexed
-  % carries the largest value the column can hold - phaseMap states the
-  % former, the storage type of the data set the latter
+  % numbered from 0, with the largest value the column can hold for not indexed
   notIndexed = double(ebsd.phaseMap(1));
   raw = readItem(fName,ph);
   if isinteger(raw)
@@ -317,10 +302,7 @@ try
         h5write(fName,path,string(val));
       end
     catch
-      % h5write writes a string only into a data set whose type it happens
-      % to match. A vendor storing the name as a fixed length field - 21
-      % characters for an EDAX MaterialName, 17 for a Bruker one - is not
-      % one of those, and only the low level interface can fill it.
+      % only the low level interface can fill a fixed length string field
       writeFixedString(fName,path,char(val));
     end
 
@@ -438,9 +420,7 @@ for fn = fieldnames(ebsd.prop)'
 
   elseif ~isempty(newGroup)
 
-    % a property MTEX added - grainId, KAM, ... - goes next to the ones the
-    % file brought along, filled with NaN where the map no longer has a
-    % measurement
+    % a property MTEX added goes next to the ones the file brought along
     path = [newGroup '/' name];
     if ~dataSetExists(fName,path)
       h5create(fName,path,[1 nFile],'Datatype','double','FillValue',NaN);
@@ -458,15 +438,12 @@ for fn = fieldnames(ebsd.prop)'
 
 end
 
-% a file that packs its whole map into one compound data set - an .edaxh5
-% does - has no group to put another column in, and saying so beats
-% silently dropping the property
+% a file packing its whole map into one compound data set has no group to extend
 if ~isempty(skipped)
   warning('MTEX:exportEBSD_h5:newProperties',...
     ['The properties %s could not be added to the file: it stores its map '...
     'as one record per measurement, which has no room for a column that '...
-    'was not in it. Use export(ebsd,fileName,''standalone'') to write '...
-    'them.'],strjoin(skipped,', '));
+    'was not in it.'],strjoin(skipped,', '));
 end
 
 end
@@ -650,139 +627,6 @@ if ~isempty(w), d = w(1).path; end
 p = fullfile(d,[n e]);
 
 end
-
-% ------------------------------------------------------------------------
-function exportStandalone(ebsd,fname,varargin)
-% MTEX's own layout - orientations, phases, coordinates and properties in
-% one flat group, and nothing of whatever a vendor would have stored
-
-root = get_option(varargin,'root','');
-if isempty(root)
-  root = inputname(1);
-  if isempty(root), root = 'EBSD'; end
-  root = ['/' root];
-end
-
-[p,f] = fileparts(fname);
-fname = fullfile(p,[f '.h5']);
-
-if exist(fname,'file'), delete(fname); end
-
-CSList = ebsd.CSList;
-phaseMap = ebsd.phaseMap;
-
-for k=1:numel(CSList)
-  CS = CSList(k);
-
-  cm = phaseMap(k);
-
-  name = [root '/Phase/' num2str(cm) ];
-
-  h5create(fname,name,1)
-  h5write(fname,name,cm);
-
-  if isa(CS,'symmetry')
-
-    h5writeatt(fname,name,'Name',CS.pointGroup);
-    h5writeatt(fname,name,'Mineral',CS.mineral);
-    h5writeatt(fname,name,'Color',CS.color);
-    h5writeatt(fname,name,'Laue',CS.LaueName);
-
-    ax = norm(CS.axes);
-    h5writeatt(fname,name,'a',ax(1));
-    h5writeatt(fname,name,'b',ax(2));
-    h5writeatt(fname,name,'c',ax(3));
-
-    h5writeatt(fname,name,'alpha',CS.alpha);
-    h5writeatt(fname,name,'beta',CS.beta);
-    h5writeatt(fname,name,'gamma',CS.gamma);
-
-    ali = CS.alignment;
-    if numel(ali) >0
-      ali(1:end-1) = strcat(ali(1:end-1),', ');
-      ali = regexprep([ali{:}],',',', ');
-      h5writeatt(fname,name,'Alignment',ali);
-    end
-
-  else
-
-    h5writeatt(fname,name,'Name',CS);
-
-  end
-
-end
-
-
-n = length(ebsd);
-
-if n > 2^14
-  chnk = 2^14;
-else
-  chnk = n;
-end
-opts =  {'Deflate',get_option(varargin,{'compression','Deflate'},9)};
-
-
-[phi1,Phi,phi2] = Euler(ebsd.rotations,'ZXZ');
-
-h5create(fname,[root '/Orientations'],[3 n],'Datatype','single','ChunkSize',[3 chnk],opts{:});
-h5write(fname,[root '/Orientations'],double([phi1(:) Phi(:) phi2(:)]'));
-
-h5writeatt(fname,[root '/Orientations'],'Parameterization','Euler');
-h5writeatt(fname,[root '/Orientations'],'Convention','ZXZ');
-h5writeatt(fname,[root '/Orientations'],'Unit','Radian');
-h5writeatt(fname,[root '/Orientations'],'Mapping','Active');
-
-h5create(fname,[root '/PhaseIndex'],[1 n],'Datatype','uint8','ChunkSize',[1 chnk],opts{:});
-h5write(fname, [root '/PhaseIndex'],ebsd.phase(:).');
-
-fn = fields(ebsd.prop);
-
-coords = [ebsd.pos.x(:),ebsd.pos.y(:),ebsd.pos.z(:)];
-
-if ~isempty(coords)
-  h5create(fname,[root '/SpatialCoordinates'],[size(coords,2) n],'Datatype','single','ChunkSize',[size(coords,2) chnk],opts{:});
-  h5write(fname,[root '/SpatialCoordinates'],double(coords'));
-
-  u = ebsd.unitCell;
-  if ~isempty(u)
-    h5writeatt(fname,[root '/SpatialCoordinates'],'Unit','unknown')
-    h5writeatt(fname,[root '/SpatialCoordinates'],'UnitCell',[u.x(:),u.y(:),u.z(:)])
-  end
-end
-
-for k=1:numel(fn)
-
-  p = ebsd.prop.(fn{k});
-
-  % the coordinates have their own data set above, and oldId is bookkeeping
-  % of the gridded layout rather than data of the map
-  if any(strcmp(fn{k},{'x','y','z','oldId'})), continue; end
-
-  if islogical(p), p = double(p); end
-  if ~isnumeric(p) || numel(p) ~= n, continue; end
-
-  p = double(p(:)).';
-
-  if ~any(mod(p,1) ~= 0) && ~any(isnan(p)) && all(p >= 0) % its an int
-
-    dtype = num2str(2^(sum(max(p) > 2.^(2.^(3:6))-1)+3),'uint%d');
-
-  else
-    dtype = 'single';
-  end
-
-  h5create(fname,[root '/Properties/' fn{k}],[1 n],'Datatype',dtype,'ChunkSize',[1 chnk],opts{:});
-  h5write(fname, [root '/Properties/' fn{k}],p);
-
-end
-
-
-h5writeatt(fname,root,'DataType','EBSD');
-h5writeatt(fname,root,'CreationTime',char(datetime('now')));
-
-end
-
 % ------------------------------------------------------------------------
 function scrPrnt(mode,varargin)
 

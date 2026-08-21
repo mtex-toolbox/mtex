@@ -85,9 +85,7 @@ posC = pos;
 
 if ~isAntipodal && isScaled && ~check_option(varargin,'noShift')
 
-  % arrows pointing into the screen are hidden below the map - shift them
-  % such that the arrow tip ends at the grain center and the tail sticks out
-  % of the map
+  % shift an arrow pointing into the screen, so that its tip ends at the grain center
   isBelow = dot(dir,oS,'noAntipodal') < 0;
   pos = pos - dir .* double(isBelow);
 
@@ -96,10 +94,7 @@ end
 % mark the grain centers, so that one sees where an arrow is anchored
 doMarker = ~check_option(varargin,'noMarker');
 
-% MATLAB scales the arrow head with the length of the arrow, so the head of
-% a long arrow grows into a fork. Draw the heads ourselves, with an upper
-% bound. This needs the drawn arrow length, so it is restricted to the
-% scaled case just as the shift above.
+% MATLAB scales the arrow head with the arrow, so draw the heads with an upper bound
 doHead = isScaled && ~isAntipodal && ~check_option(varargin,'noHead');
 
 if doHead
@@ -130,12 +125,7 @@ else
   h = optiondraw(quiver3(pos.x,pos.y,pos.z,dir.x,dir.y,dir.z),varargin{:});
 end
 
-% The heads and the markers are decorations of the arrows drawn above, so
-% they must not take a color of their own: line() advances the color order
-% of the axes even when it is given an explicit color, which would leave the
-% next plot with the wrong one - the two quiver calls at the end of
-% doc/Plasticity/SchmidtFactor.m came out blue and green instead of blue and
-% red. Note that line() also draws irrespective of the hold state.
+% heads and markers are decorations, they must not consume a color of the color order
 ax = gca; colorIndex = ax.ColorOrderIndex;
 
 % the heads come last of all: their upper bound is given in points on the
@@ -204,10 +194,7 @@ u = u(ind) ./ len;
 s = cross(N,u); % perpendicular to the arrow, in the plane of the screen
 l = l(ind);
 
-% A head that ends in the plane of the map is a tie for the depth sorting,
-% which may then draw the map on top of it. Lift it marginally towards the
-% viewer - as the projection is orthographic this does not move it on the
-% screen.
+% lift the head towards the viewer, otherwise the depth sorting has a tie
 tip = tip(ind) + 1e-2 .* len .* N;
 
 % the barbs, at 22.5 degree to the arrow, separated by NaN

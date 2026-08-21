@@ -30,24 +30,16 @@ function gB = repairBoundarySense(gB,id)
 
 if isempty(gB), return; end
 
-% twice the signed area contribution of a segment, taken in the plane the
-% grains live in rather than in xy, so that a section through a 3d dataset
-% is judged by its own normal
+% twice the signed area contribution of a segment, in the plane the grains live in
 V1 = gB.allV(gB.F(:,1));
 V2 = gB.allV(gB.F(:,2));
 c = dot(cross(V1,V2),normalize(gB.N));
 
-% every grain claims the segments it borders, oriented so that it comes
-% first - the second column has to be walked backwards to put its grain on
-% the left, hence the minus
+% every grain claims the segments it borders, the second column walked backwards
 [gId,~,pos] = unique(gB.grainId(:));
 A = accumarray(pos,[c;-c],[numel(gId) 1]);
 
-% Only grains that are still in the list get a vote. testgrains references
-% four grains that were dropped before it was saved, and the sum over such
-% a phantom mixes chains that disagree, so its sign means nothing.
-% A grain of zero enclosed area - the sum cannot say which way round it is -
-% abstains rather than voting itself wrong
+% only a grain still in the list, and of nonzero area, may vote
 verdict = zeros(numel(gId),1);
 isReal = ismember(gId,id) & gId > 0;
 verdict(isReal) = -sign(A(isReal));
@@ -59,9 +51,7 @@ wrong = sum(reshape(s,[],2),2) > 0;
 
 if ~any(wrong), return; end
 
-% reverse the walk direction *without* touching grainId - flip would move
-% both and preserve the convention rather than restore it. order then reads
-% the corrected column order back out and rebuilds the walk from it.
+% reverse the walk direction without touching grainId, then let order rebuild it
 gB.F(wrong,:) = fliplr(gB.F(wrong,:));
 gB = gB.order;
 

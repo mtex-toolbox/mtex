@@ -18,10 +18,7 @@ classdef tensor < dynOption
     isSkewSymmetric
     frame    % the referenceFrame this tensor is expressed in
     how2plot % plotting convention - read only
-    % A convention belongs to a reference frame. To change how this is
-    % drawn use plot(...,'y↑→x') for one plot,
-    % plottingConvention.default(...) for the session, or move the data
-    % with x.frame = specimenFrame.rolling
+    % a convention belongs to a reference frame, see plottingConvention.default
   end
 
   methods
@@ -81,9 +78,7 @@ classdef tensor < dynOption
       
       T.doubleConvention = check_option(varargin,'doubleConvention');
       
-      % whether a reference system came with the data - a @Miller brings
-      % its crystal symmetry, and it must not be overwritten by the
-      % session default below
+      % whether a reference system came with the data, e.g. the CS of a @Miller
       csGiven = false;
 
       if isa(M,'vector3d') % conversion from vector3d
@@ -150,16 +145,8 @@ classdef tensor < dynOption
         T.CS = varargin{args};
         varargin(args) = [];
       elseif ~csGiven
-        % resolve the session default HERE, not from the property default
-        % above: MATLAB evaluates a property default expression once, when
-        % the class is first loaded, so CS = specimenSymmetry.default froze
-        % whichever symmetry handle happened to be the default then. Every
-        % later specimenFrame.default / referenceFrame.reset installs a new
-        % session frame, which that stale handle never sees - a fresh tensor
-        % then reported the convention the session had BEFORE the last
-        % change, while vector3d and S2Fun, which resolve lazily, were right.
-        % Only when nothing else supplied one: a tensor built from a @Miller
-        % is in crystal coordinates and keeps that symmetry
+        % resolve the session default here, a property default is evaluated once
+        % when the class is loaded and would freeze the frame of that moment
         T.CS = specimenSymmetry.default;
       end
 

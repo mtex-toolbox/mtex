@@ -22,8 +22,7 @@ fname = {file names};
 
 %% Correct for the Euler Angle Reference Frame
 %
-% rotates the map coordinate system's axes into the Euler coordinate
-% system's axes
+% rotates the map coordinate system's axes into the Euler coordinate system's axes
 
 EulerCorrection = {eulerCorrection};
 

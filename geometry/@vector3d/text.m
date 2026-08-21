@@ -47,10 +47,7 @@ else
   ax = gca;
 end
 
-% a three dimensional spherical plot, e.g. plot(...,'3d') - it does not go
-% through a sphericalPlot at all, and a flat label would end up pinned to
-% the z = 0 plane, i.e. inside the sphere. Place the label in space
-% instead, with an arrow pointing along the direction it names.
+% a 3d plot has no sphericalPlot, so place the label in space, with an arrow
 if is3dPlot(ax)
 
   hG = holdOn(ax); %#ok<NASGU>
@@ -106,11 +103,7 @@ for j = 1:numel(sP)
     s = strings{i};
     if ~ischar(s) && ~isstring(s), s = char(s,interpreter);end
 
-    % A string enclosed in $..$ is LaTeX math - Miller/char(m,'LaTeX')
-    % returns exactly that, and so do hand written labels. The tex
-    % interpreter has no math mode, hence it would print the dollars and
-    % every backslash literally, so render those with LaTeX no matter what
-    % textInterpreter says. They must not be wrapped a second time either.
+    % a string enclosed in $..$ is LaTeX math, the tex interpreter has no math mode
     if isMathMode(s)
       sInterpreter = 'LaTeX';
     else

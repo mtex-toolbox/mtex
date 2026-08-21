@@ -13,9 +13,7 @@ methods
     % usually specimen symmetry is either triclinic or orthorhombic
     %
     
-    % the trivial group carrying a given specimenFrame - "orientation
-    % without symmetry", see ADR 0003. The frame handle is adopted, not
-    % copied, and never written to - it may be shared
+    % the trivial group carrying a given specimenFrame, see ADR 0003
     frameAdopted = nargin > 0 && isa(varargin{1},'specimenFrame');
 
     if frameAdopted || nargin == 0 || isa(varargin{1},'plottingConvention')
@@ -57,11 +55,7 @@ methods
     if frameAdopted
       s.frame = varargin{1};
     else
-      % reuse the registered session frame when the requested convention
-      % equals the one it carries, so that plotx2east - which writes onto
-      % that frame - keeps reaching this symmetry; fork an unregistered
-      % frame otherwise - never write a caller's convention through the
-      % shared session frame
+      % reuse the registered session frame when it carries the requested convention
       s.frame = specimenSymmetry.frameFor(how2plot);
     end
 
@@ -134,11 +128,7 @@ methods (Static = true)
         end
       end
 
-      % a pre-frame object restored how2plot through the setter, which
-      % forked it into a frame; a modern object arrives with its own
-      % deserialized frame. Either way re-intern against the register -
-      % the loaded convention applies to the whole session, see
-      % referenceFrame/reintern.
+      % re-intern against the register, the loaded convention applies to the session
       if isempty(s.frame)
         s.frame = specimenFrame.default;
       elseif isempty(s.frame.how2plot)
@@ -203,9 +193,7 @@ methods (Static = true)
   function ss = default(ss)
       persistent save
       if nargin == 1
-        % make ss the default: it adopts the registered default frame,
-        % which in turn adopts ss's convention - so the default stays one
-        % named entity (specimenFrame.default) whatever the point group
+        % make ss the default, which stays specimenFrame.default whatever the group
         fr = specimenFrame.default;
         pC = ss.how2plot;
         if ~isempty(pC) && pC ~= fr.how2plot, fr.how2plot = pC; end

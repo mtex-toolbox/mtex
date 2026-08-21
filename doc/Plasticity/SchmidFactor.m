@@ -15,7 +15,9 @@
 cs = crystalSymmetry('cubic',[3.523,3.523,3.523],'mineral','Nickel');
 sS = slipSystem.fcc(cs)
 
-r = vector3d.Z;
+% the tension direction, as a crystal direction - the crystal is not
+% oriented yet, so its frame and the specimen frame coincide
+r = Miller(0,0,1,cs);
 
 %%
 % Lets visualize the situation
@@ -25,10 +27,12 @@ cS = crystalShape.cube(cs);
 plot(cS,'faceAlpha',0.5)
 hold on
 plot(cS,sS,'facecolor','blue','label','b')
-arrow3d(-0.8*sS.n,'faceColor','black','linewidth',2,'label','n')
+% normalize - the length of a Miller is a reciprocal lattice spacing, not a
+% length in the plot
+arrow3d(-0.4*normalize(sS.n),'faceColor','black','linewidth',2,'label','n')
 plottingConvention.default3D().setView
 
-arrow3d(0.4*r,'faceColor','red','linewidth',2,'label','r')
+arrow3d(0.4*normalize(r),'faceColor','red','linewidth',2,'label','r')
 hold off
 
 %% Definition of the Schmid factor
@@ -100,7 +104,7 @@ for k = 1:length(sSAll)
   hold on
   plot(cS,sSAll(k),'facecolor','blue','parent',ax)
   plottingConvention.default3D().setView
-  arrow3d(0.4*r,'faceColor','red','linewidth',3)
+  arrow3d(0.4*normalize(r),'faceColor','red','linewidth',3)
   hold off
 end
 
@@ -122,8 +126,9 @@ sSAll(id)
 % directions. This allows us to display the maximum Schmid factor over all
 % slip systems as a function of the tension direction.
 
-% define a grid of tension directions
-r = plotS2Grid('resolution',0.5*degree,'upper');
+% define a grid of tension directions - passing the crystal reference frame
+% makes them directions of the crystal, as the slip systems are
+r = plotS2Grid('resolution',0.5*degree,'upper',cs.frame);
 
 % compute the Schmid factors for all slip systems and all tension
 % directions

@@ -50,9 +50,7 @@ propV{end+1} = numSym(cs);
 
 
 
-% the lattice geometry all lives on the reference frame - a symmetry
-% without one has no axes to report, and every one of these would throw
-% out of the display rather than print what it does know
+% the lattice geometry lives on the reference frame, without one there is none
 if ~isempty(cs.frame)
 
   % add axis length

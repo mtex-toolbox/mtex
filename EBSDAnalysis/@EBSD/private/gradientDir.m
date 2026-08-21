@@ -27,21 +27,11 @@ function gW = gradientDir(ebsd,w,varargin)
 
 [g,A] = gradient(ebsd,varargin{:});
 
-% A is in the map plane frame, w is a specimen direction, so bring the two
-% lattice vectors back to the specimen frame before resolving w in them.
-% For a map in the xy plane rot2Plane is the identity and this is a no-op;
-% for a map in, say, the xz plane it is what lets the in-plane directions be
-% found at all - and what keeps the out of plane one correctly NaN, since
-% the residual test below is then against the real map plane rather than
-% against xy.
+% A is in the map plane frame, so bring the lattice vectors back to the specimen frame
 aP = inv(ebsd.rot2Plane) * vector3d([A(1,1) A(1,2)],[A(2,1) A(2,2)],[0 0]);
 a1 = aP(1); a2 = aP(2);
 
-% undo the per-direction normalisation: h_k = dO/da_k, not per unit length.
-% Done on plain vector3d and re-wrapped at the end: combining two
-% SO3TangentVectors goes through ensureCompatibleTangentSpaces, and the
-% linear combination below is a statement about the components, not about
-% the tangent space.
+% undo the per-direction normalisation, on plain vector3d - h_k = dO/da_k
 h1 = vector3d(g(:,1)) .* norm(a1);
 h2 = vector3d(g(:,2)) .* norm(a2);
 
@@ -66,9 +56,7 @@ if isa(g,'SO3TangentVector')
   gW = SO3TangentVector(gW, oriRef(:,1), g.tangentSpace);
 end
 
-% in the shape of the data, so a gridded map gives a map shaped gradient and
-% with it a map shaped curvature tensor - kappa(2,3) then addresses the pixel
-% in row 2, column 3, as the matrix based @EBSDsquare/gradientX used to allow
+% in the shape of the data, so a gridded map gives a map shaped gradient
 gW = reshape(gW,size(ebsd));
 
 end

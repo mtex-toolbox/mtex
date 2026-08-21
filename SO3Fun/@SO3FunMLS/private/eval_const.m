@@ -12,9 +12,7 @@ warnings = initWarnings;
 
 grid_vals = reshape(SO3F.values(:), numel(SO3F.nodes), numf);
 
-% Outlier indicators may differ per function component. Unlike the higher
-% degrees, degree zero is not split into components by eval, so the local
-% averages have to be formed componentwise here.
+% degree zero is not split into components by eval, so average componentwise here
 perComponent = SO3F.detectOutliers && ...
   (size(SO3F.outlierIndicators, 2) > 1);
 

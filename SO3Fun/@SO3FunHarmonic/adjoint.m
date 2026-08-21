@@ -88,12 +88,9 @@ else
   rot = orientation(rot,SRight,SLeft);
 end
 
-% Non finite nodes let the nfft library write outside of its buffers, which
-% corrupts the heap and crashes MATLAB. As a node can not be removed from an
-% nfft plan we keep it, but set its function value to zero here and replace
-% its coordinates below, such that it does not contribute to the transform.
-% The nodes of a quadratureSO3Grid are finite by construction and expanding
-% it into a plain orientation would be expensive, hence we skip the test.
+% a non finite node makes nfft write outside its buffers and crash MATLAB - it
+% cannot be removed from a plan, so zero its value and replace its coordinates
+% below; a quadratureSO3Grid is finite by construction and is not tested
 if isa(rot,'quadratureSO3Grid')
   isBadNode = false;
 else

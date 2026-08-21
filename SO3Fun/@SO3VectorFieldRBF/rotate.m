@@ -24,11 +24,8 @@ end
 % rotate the argument of the vector field
 SO3VF.SO3F = rotate(SO3VF.SO3F, q,varargin{:});
 
-% rotating the argument is not enough - the coordinates of the tangent
-% vectors refer to the frame the tangent space is attached to, and that frame
-% is rotated as well whenever the rotation acts from the same side as the
-% intern tangent space representation. See SO3VectorField/rotate for the
-% derivation.
+% the tangent coordinates refer to the frame the tangent space is attached to,
+% which is rotated too whenever the rotation acts from the same side
 if check_option(varargin,'right')
   if SO3VF.internTangentSpace.isRight
     SO3VF = rotateTangentCoordinates(SO3VF,inv(q));

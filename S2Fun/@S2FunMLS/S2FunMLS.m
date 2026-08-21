@@ -85,9 +85,7 @@ classdef S2FunMLS < S2Fun
     w           = [];     % compactly supported weight function
     distance    = 'euclidean'; % metric for neighbor search
 
-    % the symmetry used by the approximation machinery (grids, bandwidth
-    % choice) - not frame data; the frame this function is expressed in
-    % is s.frame, see getFrame below
+    % the symmetry used by the approximation machinery, the frame is s.frame
     s = specimenSymmetry.default;
 
     monomials   = true;   % use monomial basis?
@@ -306,9 +304,7 @@ classdef S2FunMLS < S2Fun
         case 'cos'
           S2F.w = @(t)(((1+cos(pi*t))/2) .* (t <= 1));
         case 'auto'
-          % Degree-dependent localization:
-          % higher degrees use a narrower effective neighborhood.
-          % Wendland C6 evaluated at t^alpha and subsequently raised to beta.
+          % degree dependent localization: Wendland C6 at t^alpha, raised to beta
           alpha = max(1, 2 - (S2F.degree - 1) / 3);
           beta = 1 + max(S2F.degree - 2, 0) / 3;
 
@@ -321,13 +317,7 @@ classdef S2FunMLS < S2Fun
           end
 
         case 'plateau'
-          % Broad weight: constant on the inner 60 percent of the support,
-          % then a C1 taper to zero. A concentrated weight makes the local fit
-          % hinge on the few nearest nodes, so it swings whenever the neighbor
-          % ranking changes under the moving center. Keeping the weight flat
-          % near the center spreads the fit over the whole neighborhood and
-          % suppresses that variation, which matters when the reconstruction is
-          % subsequently sampled on a quadrature grid of finite bandwidth.
+          % constant on the inner 60 percent of the support, then a C1 taper to zero
           plateauTaper = @(x)(x.^2 .* (3 - 2*x));
           S2F.w = @(t)(1 - plateauTaper(min(max((t - 0.6)/0.4, 0), 1)));
         case 'c1hat'
@@ -372,9 +362,7 @@ classdef S2FunMLS < S2Fun
     function S2F = set.detectOutliers(S2F, value)
       S2F.detectOutliers = value;
       if value
-        % set standard value of the outlier detection range
-        % should be at least 3, since this is the dimension of the basis which
-        % is used for computing the outlier indicators
+        % at least 3, the dimension of the basis the outlier indicators use
         S2F.outlierDetectionRange = max(round(S2F.dim * .7), 3);
       end
     end
@@ -489,9 +477,7 @@ classdef S2FunMLS < S2Fun
       % resolve the actual S2F.nn-th-neighbor distance field
       nfind = min(S2F.nn, N - 1);
 
-      % probe at data nodes, since densely sampled regions require the finest
-      %   auxiliary grid resolution; a one percent quantile is still well
-      %   determined by a couple of thousand probes
+      % probe at data nodes, the densely sampled regions need the finest resolution
       nProbe = min(N, 2000);
       probeId = unique(round(linspace(1, N, nProbe))).';
 
@@ -535,18 +521,8 @@ classdef S2FunMLS < S2Fun
       S2F.auxgrid.opt.dn = dn(:,end);
     end
 
-    % healthy baseline amplification chi0 of the ansatz space
-    %
-    % chi0 is the center amplification that a perfectly distributed node cloud
-    % produces with this degree, weight function and oversampling factor. It is
-    % a property of the ansatz space and of the dimension of the manifold, not
-    % of the nodes, so it is measured once on a small equispaced reference grid
-    % rather than estimated from a quantile of the user's own nodes. A quantile
-    % of the actual amplifications would mix this floor with the badly
-    % distributed neighborhoods that the regularization is meant to detect.
-    %
-    % Because chi0 does not depend on the nodes, the measurement is cached for
-    % the ansatz space it belongs to and costs nothing after the first call.
+    % the center amplification a perfectly distributed node cloud produces with
+    % this ansatz space - measured once on an equispaced grid, and cached
     function chi0 = baseline_amplification(S2F)
 
       persistent cache
@@ -567,9 +543,7 @@ classdef S2FunMLS < S2Fun
       ref.detectOutliers = false;
       ref.outlierIndicators = [];
 
-      % The floor is independent of the number of nodes, so a small reference
-      % grid is enough. Uniform weights and a plain KNN support keep it cheap;
-      % on equispaced nodes neither choice changes the result noticeably.
+      % the floor does not depend on the nodes, so keep the reference grid small
       ref.use_vor_weights = false;
       ref.use_smooth_delta = false;
       ref.delta = 0;

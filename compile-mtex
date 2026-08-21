@@ -1,7 +1,55 @@
 #!/bin/bash
-# Usage: compile-mtex your-matlab-script.m
+# Compile a MATLAB script that uses MTEX into a standalone executable, i.e.
+# one that runs without a MATLAB licence. This is the MATLAB Compiler (mcc),
+# not to be confused with mex/mex_install.m, which builds the mex binaries
+# MTEX itself calls from inside MATLAB.
+#
+# Usage:
+#   MTEX_DIR=/path/to/mtex ./compile-mtex your-script.m [-o name] [mcc args...]
+#
+# MTEX_DIR defaults to the directory holding this script.
+#
+# The include list is built from the directory tree every run. It used to
+# live in a checked-in file (mtex-include), which silently went stale as the
+# toolbox grew - by 7.0.0 it was missing 35 directories, among them whole
+# namespaces such as S1Fun, geometry/misorientation and plotting/
+# planarColorKeys, which is what made this script stop working (#2369).
+set -euo pipefail
 
-# This script uses two environment variables which you must set.
-# 1. MTEX_DIR = the directory containing this script.
-# 2. MTEX_INCLUDE = ${MTEX_DIR}/mtex-include
-mcc -R -singleCompThread -m $1 $(cat $MTEX_INCLUDE | envsubst)
+MTEX_DIR="${MTEX_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
+
+if [ $# -lt 1 ]; then
+  sed -n '2,15p' "${BASH_SOURCE[0]}" | sed 's/^# \?//'
+  exit 1
+fi
+
+# Directories to keep off the path:
+#   .git .github .claude docs - not MATLAB code
+#   @... private              - resolved through their parent directory
+#   data                      - added as a payload below, not as code
+#   makeDoc templates         - build/scaffolding, and the import templates
+#                               are markup, not runnable MATLAB
+#   nfft_openMP               - mex binaries, added by mex_install
+#   compatibility/            - version shims, picked per MATLAB release by
+#                               startup_mtex; the parent stays on the list
+#   tests userScripts         - not part of a deployed application
+#   helpsearch                - documentation search index
+INCLUDE=()
+while IFS= read -r dir; do
+  INCLUDE+=(-I "$dir")
+done < <(find "${MTEX_DIR}" -type d \
+  | grep -v -e '/\.git' -e '/\.github' -e '/\.claude' -e '/docs' \
+            -e '/@' -e '/private' -e '/data' -e '/makeDoc' -e '/templates' \
+            -e '/nfft_openMP' -e '/compatibility/' \
+            -e '/tests' -e '/userScripts' -e 'helpsearch')
+
+# Payload files read at run time through mtex_path, which the dependency
+# checker cannot see: mtex_settings loads colors.mat on every startup, and
+# refractiveIndexTensor/spectralTransmission reads ciexyz31_1.csv.
+PAYLOAD=(-a "${MTEX_DIR}/data"
+         -a "${MTEX_DIR}/plotting/plotting_tools/colors.mat"
+         -a "${MTEX_DIR}/plotting/plotting_tools/ciexyz31_1.csv")
+
+# -R -softwareopengl keeps the figures rendering on a machine without a GPU,
+# which is usually where a compiled application ends up running.
+mcc -R -singleCompThread -R -softwareopengl -m "$@" "${INCLUDE[@]}" "${PAYLOAD[@]}"

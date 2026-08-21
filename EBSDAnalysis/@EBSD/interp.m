@@ -30,12 +30,7 @@ function ebsdNew = interp(ebsd, newPos, varargin)
 
 if ~isa(newPos,'vector3d'), newPos = vector3d(newPos,varargin{1},0); end
 
-% an @EBSD is a flat list, so normalise the query the same way the
-% constructor normalises its input. interp assigns pos/phaseId/rotations
-% directly and so bypasses that: interp(ebsd,x,y) with row vectors used to
-% return an object whose pos and phaseId were 1 x n against an n x 1 id -
-% self inconsistent, and length() then reported 1 rather than n. The
-% documented row vector call in doc/EBSDAnalysis/EBSDInter.m hit exactly it.
+% an @EBSD is a flat list, so normalise the query as the constructor would
 newPos = newPos(:);
 
 ebsdNew = ebsd;
@@ -47,33 +42,15 @@ ebsdNew.id = (1:length(newPos)).';
 pos = ebsd.rot2Plane .* ebsd.pos;
 newPos = ebsd.rot2Plane .* newPos;
 
-% nearest measurement for every query point, and how far away it is.
-%
-% NOT scatteredInterpolant with an ExtrapolationMethod of 'none': that
-% decides "inside the map" by the convex hull of the source points, and a
-% query sitting exactly ON that hull - which is what every border pixel does
-% as soon as a map is resampled onto itself, e.g. by private/squarify - is
-% put on either side of the test by floating point alone. Interpolating the
-% forsterite map at its own positions lost 899 of its 245952 measurements
-% that way, in a ragged pattern along the border, where the griddedInterpolant
-% this replaced lost none. Being nearest to a pixel and lying inside it is a
-% purely local criterion with no such edge, and knnsearch delivers it about
-% twice as fast as scatteredInterpolant builds its triangulation.
-%
-% (:) so that a gridded source works too - ebsd.pos is a matrix there
+% nearest measurement for every query point, and how far away it is - not
+% scatteredInterpolant, whose convex hull test drops border pixels; (:) so
+% that a gridded source works too
 [idNearest,dist] = knnsearch([pos.x(:),pos.y(:)],[newPos.x,newPos.y]);
 
-% the circumradius of the unit cell: the largest distance from a pixel
-% centre to a point still covered by that pixel, for a square, hexagonal or
-% rotated cell alike. Slightly generous at the cell corners - the exact test
-% would be point-in-polygon per cell - which errs towards keeping data
-% rather than dropping it, the failure that mattered here.
+% the circumradius of the unit cell, i.e. how far a pixel reaches at most
 r = max(norm(ebsd.unitCell));
 if isempty(r) || ~(r > 0)
-  % no usable unit cell, so nothing says how far a pixel reaches and the
-  % nearest measurement is the best available answer. NaN lands here too -
-  % calcUnitCell no longer produces one for a single scan line, but a cell
-  % can still be handed in from anywhere
+  % no usable unit cell, so the nearest measurement is the best available answer
   r = inf;
 end
 
@@ -93,11 +70,7 @@ for fn = fieldnames(ebsd.prop).'
 
   p = ebsd.prop.(char(fn));
 
-  % a multi channel property holds one ROW per measurement and k channels,
-  % so it is indexed by row and keeps its columns - same test as dynProp's
-  % isMultiColumn. On a gridded source an ordinary property is the (r x c)
-  % matrix of the map, which length(ebsd) does not match, so it lands in the
-  % else branch and idNearest indexes it linearly, as before
+  % a multi channel property is indexed by row and keeps its columns, see dynProp
   if size(p,2) > 1 && size(p,1) == length(ebsd)
 
     if isnumeric(p) || islogical(p)
@@ -122,16 +95,8 @@ for fn = fieldnames(ebsd.prop).'
 
 end
 
-% Interpolating at arbitrary positions yields a LIST, whatever the source
-% was, so the grid classes do not apply - they promise a matrix layout the
-% query does not have. Callers wanting a grid back reshape or gridify, as
-% private/squarify does.
-%
-% Rebuilt through the constructor rather than demoted with subSet: subSet
-% routes through the copy constructor, which drops rows whose phaseId is
-% NaN - and a gridded source has exactly those, at the notIndexed padding
-% gridify added, so interpolating near them silently lost pixels (46 of
-% 120000 when resampling a gridified ferrite map).
+% interpolating at arbitrary positions yields a list, so rebuild through the
+% constructor - subSet would drop the rows whose phaseId is NaN
 if isa(ebsdNew,'EBSDgrid')
   out = EBSD(ebsdNew.pos, ebsdNew.rotations, ebsdNew.phaseId, ...
     ebsdNew.CSList, ebsdNew.prop, 'phaseMap', ebsdNew.phaseMap);

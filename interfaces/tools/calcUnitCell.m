@@ -8,8 +8,15 @@ function unitCell = calcUnitCell(xy,varargin)
 %  unitCell - coordinates of the unit cell
 %
 % Options
+%  GridType       - [automatic, hexagonal, rectangular, circle]
+%  GridResolution - step size of the grid, either dx or [dx dy]
+%  GridRotation   - rotation of the unit cell against the x axis
 %
-% GridType - [automatic, hexagonal, rectangular]
+% Description
+% Without options the cell is estimated from the positions alone. Each
+% option overrides exactly the quantity it names and leaves the remaining
+% ones to the estimate, so |'GridResolution',5| on a hexagonal point set
+% returns a hexagon of size 5 in the orientation that was detected.
 
 % nothing to do -> skip
 if isempty(xy)
@@ -19,53 +26,50 @@ elseif size(xy,2) == 3
   xy = xy(:,1:2);
 end
 
-% maybe everything is given by options
-dxy = get_option(varargin,'GridResolution',[]);
-cellType = get_option(varargin,'GridType','');
-cellRot = get_option(varargin,'GridRotation',0*degree);
+% estimate size, shape and rotation of the cell from the positions ...
+[unitCell,dxy,cellRot] = estimateUnitCell(xy);
 
-if isempty(dxy)
-  
-  % first estimate of the grid resolution - very rough idea
-  area = (max(xy(:,1))-min(xy(:,1)))*(max(xy(:,2))-min(xy(:,2)));
-  dxy = sqrt(area / length(xy));
+% ... and let the options overrule what they name
+unitCell = applyGridOptions(unitCell,dxy,cellRot,varargin{:});
 
-  % compensate for single line EBSD
-  if dxy == 0
-    lx = mean(diff(xy(:,1))); ly = mean(diff(xy(:,2)));
-    if lx==0, lx=ly; else; ly=lx; end
-    dxy = (lx+ly)/2;
-  end
 
-  if ~(dxy > 0)
-    unitCell = regularPoly(4,1,0);
-    return
-  end
+% =========================================================================
+% the unit cell as it follows from the positions alone, together with its size
+% [dx dy] and rotation, which cannot be read back off a scaled cell
+function [unitCell,dxy,cellRot] = estimateUnitCell(xy)
 
-  % second estimate of the grid resolution
-  % works good for square grids that are not rotated
-  xyEst = subSample(xy,10000);
-  dxy2 = [mean(diff(uniquetol(xyEst(:,1),dxy(1)/100,'DataScale',1))),...
-    mean(diff(uniquetol(xyEst(:,2),dxy(end)/100,'DataScale',1)))];
+cellRot = 0;
 
-  % a single scan line is constant in one coordinate, so uniquetol leaves a
-  % single value there and mean(diff(.)) is NaN - which regularPoly happily
-  % propagates into a unit cell with a NaN side. Take the spacing from the
-  % direction the line does extend in; a line has only one step size anyway
-  if any(isnan(dxy2))
-    if all(isnan(dxy2)), dxy2(:) = dxy(1); else, dxy2(isnan(dxy2)) = dxy2(~isnan(dxy2)); end
-  end
+% first estimate of the grid resolution - very rough idea
+area = (max(xy(:,1))-min(xy(:,1)))*(max(xy(:,2))-min(xy(:,2)));
+dxy = sqrt(area / length(xy));
 
-else
+% compensate for single line EBSD
+if dxy == 0
+  lx = mean(diff(xy(:,1))); ly = mean(diff(xy(:,2)));
+  if lx==0, lx=ly; else; ly=lx; end
+  dxy = (lx+ly)/2;
+end
 
-  dxy2 = dxy;
+if ~(dxy > 0)
+  unitCell = regularPoly(4,1,0);
+  dxy = [1 1];
+  return
+end
 
+% second estimate of the grid resolution
+% works good for square grids that are not rotated
+xyEst = subSample(xy,10000);
+dxy2 = [mean(diff(uniquetol(xyEst(:,1),dxy(1)/100,'DataScale',1))),...
+  mean(diff(uniquetol(xyEst(:,2),dxy(end)/100,'DataScale',1)))];
+
+% a single scan line is constant in one coordinate, take the spacing from the other
+if any(isnan(dxy2))
+  if all(isnan(dxy2)), dxy2(:) = dxy(1); else, dxy2(isnan(dxy2)) = dxy2(~isnan(dxy2)); end
 end
 
 % check for square grid
-% (use a tolerance instead of exact == since coordinates may be rotated
-% or otherwise not bit-identical, and fall back gracefully instead of
-% crashing when fewer than two points share the reference coordinate)
+% (use a tolerance, the coordinates may be rotated)
 col = xy(abs(xy(:,1)-xy(2,1)) < dxy2(1)*1e-3, 2);
 row = xy(abs(xy(:,2)-xy(2,2)) < dxy2(2)*1e-3, 1);
 if numel(col) > 1 && numel(row) > 1 && ...
@@ -73,15 +77,14 @@ if numel(col) > 1 && numel(row) > 1 && ...
     abs((min(diff(uniquetol(col,'DataScale',1))) - dxy2(2))/dxy2(2)) < 0.01 && ...
     abs((min(diff(uniquetol(row,'DataScale',1))) - dxy2(1))/dxy2(1)) < 0.01
   unitCell = regularPoly(4,dxy2,0);
+  dxy = dxy2;
   return
 end
 
-% maybe it is a grid after all, just rotated - try to detect the lattice
-% directly from nearest-neighbor statistics, which is much cheaper than
-% a full Voronoi decomposition. Falls through to Voronoi below if the
-% point set does not look like a clean lattice.
-unitCell = detectLattice(xy);
+% maybe it is a grid after all, just rotated - much cheaper than a Voronoi
+[unitCell,dxy,cellRot] = detectLattice(xy);
 if ~isempty(unitCell), return; end
+cellRot = 0;
 
 
 % if we are not sure we make a voronoi decomposition
@@ -111,8 +114,8 @@ try
   ignore = [false;sqrt(sum(diff(unitCell,1).^2,2)) < max(sqrt(sum(diff(unitCell,1).^2,2)))/5];
   unitCell(ignore,:) = [];
     
-  % third estimate of the grid resolution
-  dxy2 = min(vecnorm(unitCell.',2));
+  % third estimate of the grid resolution, as [dx dy] in the convention of regularPoly
+  dxy2 = vecnorm(unitCell,2,1);
 catch
   unitCell = [];
 end
@@ -120,39 +123,75 @@ end
 dxy = dxy2;
 
 %if 100*dxy3 > dxy2, dxy = dxy2; end
-   
-if ~isempty(unitCell) && isRegularPoly(unitCell,varargin)
+
+if ~isempty(unitCell) && isRegularPoly(unitCell)
+  % a Voronoi cell is a genuine polygon, so its rotation has to be read
+  % back off its vertices - regularPoly puts the first one at pi/s + rot
+  cellRot = atan2(unitCell(1,2),unitCell(1,1)) - pi/size(unitCell,1);
   return
 end
 
+% otherwise take a regular unit cell of the estimated size, keeping the
+% shape the Voronoi cell had - and a rectangle if there was no cell at all
+if size(unitCell,1) == 6
+  unitCell = regularPoly(6,dxy,0);
+else
+  unitCell = regularPoly(4,dxy,0);
+end
+
+
+% =========================================================================
+% replace the quantities the user specified and keep the estimate for the others
+function unitCell = applyGridOptions(unitCell,dxy,cellRot,varargin)
+
+dxyOpt = get_option(varargin,'GridResolution',[]);
+cellType = get_option(varargin,'GridType','');
+cellRotOpt = get_option(varargin,'GridRotation',[]);
+
+% nothing specified -> the estimate stands as it is
+if isempty(dxyOpt) && isempty(cellType) && isempty(cellRotOpt), return; end
+
+if ~isempty(dxyOpt)
+  % a scalar resolution is the same step size in x and y direction
+  if isscalar(dxyOpt)
+    dxy = [dxyOpt dxyOpt];
+  elseif numel(dxyOpt) == 2
+    dxy = reshape(dxyOpt,1,2);
+  else
+    error('MTEX:calcUnitCell:GridResolution',...
+      ['The option GridResolution has to be either a scalar step size dx, '...
+      'or a pair [dx dy], but %d values were given.'],numel(dxyOpt));
+  end
+end
+
+if ~isempty(cellRotOpt), cellRot = cellRotOpt; end
+
 if isempty(cellType)
-  if length(unitCell) == 6
+  if size(unitCell,1) == 6
     cellType = 'hexagonal';
   else
     cellType = 'rectangular';
   end
 end
 
-% otherwise take a regular unit cell
 switch lower(cellType)
-  
+
   case 'rectangular'
-  
+
     unitCell = regularPoly(4,dxy,cellRot);
-    
+
   case 'hexagonal'
-    
+
     unitCell = regularPoly(6,dxy,cellRot);
-    
+
   case 'circle'
-    
+
     unitCell = regularPoly(16,dxy,cellRot);
-    
+
   otherwise
-    
+
     error('MTEX:plotspatial:UnitCell','Unknown unit cell type!')
 end
-
 
 
 % a regular polygon with s vertices, diameter d, and rotation rot
@@ -162,7 +201,7 @@ c = exp(1i*((pi/s:pi/(s/2):2*pi)+rot))./sqrt((s/2));
 unitCell = [real(c(:)),imag(c(:))].*d;
 
 
-function isRegular = isRegularPoly(unitCell,varargin)
+function isRegular = isRegularPoly(unitCell)
 
 sideLength = sqrt(sum((unitCell).^2,2));
 sides      = numel(sideLength);
@@ -178,16 +217,12 @@ isRegular = any(sides == [4 6]) && ... % norm(sideLength - mean(sideLength))*dxy
   norm(enclosingAngle - mean(enclosingAngle)) < 0.05*degree;
 
 
-% try to detect a (possibly rotated) square or hex point lattice from
-% nearest-neighbor statistics. Returns [] if xy does not look like a
-% clean lattice, in which case the caller should fall back to Voronoi.
-function unitCell = detectLattice(xy)
+% detect a possibly rotated square or hex lattice, [] if xy does not look like one
+function [unitCell,dxy,rot] = detectLattice(xy)
 
-unitCell = [];
+unitCell = []; dxy = []; rot = 0;
 
-% work on a spatially contiguous (not globally random!) chunk of points
-% so the local neighbor structure of the lattice is preserved while the
-% KD-tree stays cheap to build and query
+% work on a spatially contiguous chunk, so the local neighbor structure survives
 q = subSample(xy,5000);
 if size(q,1) < 30, return; end
 
@@ -208,10 +243,7 @@ vy = q(idx(keep),2) - q(ref(keep),2);
 len = hypot(vx,vy);
 lenSpread = std(len)/median(len);
 
-% a translation vector v and its negation -v represent the same lattice
-% direction; doubling the angle maps {theta, theta+pi} onto the same
-% value on the full circle [0,2pi), which sidesteps having to special
-% case the wrap at theta=0/pi (same trick MTEX uses for antipodal axes)
+% doubling the angle identifies v with -v, as MTEX does for antipodal axes
 ang2 = mod(2*atan2(vy,vx), 2*pi);
 
 [a2s,ord] = sort(ang2);
@@ -241,21 +273,14 @@ nClust = numel(clustAng2);
 clustAng = mod(clustAng2/2,pi); % back to a single-angle [0,pi) representative
 
 if nClust == 2
-  % candidate square lattice: two directions ~90 deg apart, equal length.
-  % Sort by angle first (as the hex case below already does) rather than
-  % using cluster 1/2 as they come out of the earlier clustering: for a
-  % square lattice the two directions are exactly antipodal on the
-  % doubled-angle circle, so the "largest gap" used to unwrap that circle
-  % is a genuine tie broken only by floating-point noise in the input
-  % data - without this sort, which cluster ends up first (and so becomes
-  % a1 in EBSD/latticeBasis) is not reproducible from one run to the next,
-  % even for byte-identical input.
+  % candidate square lattice - sort by angle, the largest gap is a tie here
   [clustAng,sortOrd] = sort(clustAng);
   clustLen = clustLen(sortOrd);
   dAng = mod(abs(diff(clustAng)),pi);
   dAng = min(dAng, pi-dAng);
   if abs(dAng - pi/2) < 0.08 && abs(diff(clustLen))/mean(clustLen) < 0.05 && lenSpread < 0.12
-    unitCell = regularPoly(4,mean(clustLen),clustAng(1));
+    dxy = mean(clustLen)*[1 1]; rot = clustAng(1);
+    unitCell = regularPoly(4,dxy,rot);
   end
 elseif nClust == 3
   % candidate hex lattice: three directions 60 deg apart, equal length
@@ -263,7 +288,8 @@ elseif nClust == 3
   d1 = mod(a(2)-a(1),pi); d2 = mod(a(3)-a(2),pi); d3 = mod(a(1)-a(3)+pi,pi);
   if all(abs([d1 d2 d3] - pi/3) < 0.08) && ...
       (max(clustLen)-min(clustLen))/mean(clustLen) < 0.05 && lenSpread < 0.12
-    unitCell = regularPoly(6,mean(clustLen),a(1));
+    dxy = mean(clustLen)*[1 1]; rot = a(1);
+    unitCell = regularPoly(6,dxy,rot);
   end
 end
 

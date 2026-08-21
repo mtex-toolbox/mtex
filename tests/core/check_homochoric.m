@@ -36,10 +36,7 @@ om = 10.^(-linspace(7,1,4000))';
 w2 = om.^2;
 rho = (0.75 * om.^3/6 .* (1 - w2/20 .* (1 - w2/42 .* (1 - w2/72)))).^(1/3);
 rec = rotation.byHomochoric(rho .* vector3d(1,2,3).normalize);
-% Read omega back as 2*asin(|vector part|). Neither angle() nor homochoric()
-% can be used here: both recover omega through acos(cos(omega/2)), which for
-% omega = 1e-7 has already lost every significant digit, whereas
-% sin(omega/2) keeps full relative precision.
+% read omega back as 2*asin(|vector part|), acos loses every digit at 1e-7
 omRec = 2*asin(min(norm(vector3d(rec.b,rec.c,rec.d)),1));
 assert(max(abs(omRec - om)./om) < 1e-9, ...
   'small angle accuracy: max rel %.3e', max(abs(omRec-om)./om))

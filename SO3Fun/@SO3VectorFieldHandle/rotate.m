@@ -21,16 +21,10 @@ else
   SO3VF.hiddenSS = dropSymmetry(SO3VF.hiddenSS,q,'specimen','SO3VectorField');
 end
 
-% Rotating the argument is not enough - the coordinates of the tangent
-% vectors refer to the frame the tangent space is attached to, and that frame
-% is rotated as well whenever the rotation acts from the same side as the
-% intern tangent space representation. See SO3VectorField/rotate for the
-% derivation. qC is the rotation the coordinates have to undergo, it is empty
-% if they stay untouched.
-%
-% Note that we use .* and not * - the latter is the outer product of the
-% rotations and hence would change the shape of the list of rotations the
-% field is evaluated in.
+% the tangent coordinates refer to the frame the tangent space is attached to,
+% which is rotated too whenever the rotation acts from the same side - qC is the
+% rotation they undergo, empty if they stay untouched. Note .* and not *, whose
+% outer product would change the shape of the list.
 fun = SO3VF.fun;
 if check_option(varargin,'right')
   arg = @(r) r .* inv(q);

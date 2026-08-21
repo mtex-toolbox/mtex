@@ -101,9 +101,7 @@ if nargin > 1 && ~isnumeric(iter)
 end
 if nargin < 2 || isempty(iter), iter = 1; end
 
-% smoothing happens in the xy plane, so tilt the grains into it first. Test the
-% angle rather than dot(N,zvector) == 1 - rotate2Plane leaves the latter at
-% 1+2e-16, which never satisfies an exact comparison and recurses forever
+% smoothing happens in the xy plane - test the angle, an exact comparison never holds
 if angle(grains.N,zvector,'antipodal') > 1e-10
 
   [grains,rot] = rotate2Plane(grains);
@@ -135,10 +133,7 @@ I_VF = [grains.boundary.I_VF,grains.innerBoundary.I_VF];
 % compute vertices adjacency matrix
 A_V = I_VF * I_VF';
 
-% Do not move the junctions - the vertices where anything other than two
-% segments meet, counting the inner boundary too. diag(A_V) is that count.
-% The test used to be > 2, which missed the loose ends where a single
-% segment terminates; those are chain ends as well and have to stay put.
+% do not move a vertex where other than two segments meet, a loose end included
 if check_option(varargin,'moveTriplePoints')
   ignore = false(size(A_V,1),1);
 else

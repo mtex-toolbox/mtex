@@ -34,13 +34,8 @@ else
   end
 end
 
-% A reference direction for rho = 0. Subtracting the center is what leaves a
-% component in the tangent plane at the center - but only while the candidate
-% is not the center itself. For a hemisphere sector the barycenter IS the pole
-% of the hemisphere, and the pole is exactly where outOfScreen points, so the
-% difference collapses to the zero vector. calcAngle then normalizes it to NaN
-% and hands back rho = 0 for every direction, i.e. one single hue. Point group
-% -1 on any cell whose c* is not along z runs into this.
+% a reference direction for rho = 0 - for a hemisphere sector the barycenter is
+% the pole itself, where the difference to the center collapses to zero
 if center == zvector
   rx = ref - center;
 else

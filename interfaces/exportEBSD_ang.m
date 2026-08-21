@@ -59,11 +59,7 @@ if check_option(varargin,'fliplr')
   scrPrnt(silent,'SubStep','flipping EBSD spatial data left right');
 end
 
-% The Euler angles of an .ang file are stated in the Euler reference frame,
-% which the map reference frame is aligned with by one of the four settings
-% - loadEBSD_ang applies that rotation on import, so writing has to undo it
-% again. Without this an import/export cycle turned the whole map, the .ctf
-% and the .ang correction being 180 degree apart.
+% undo the Euler correction loadEBSD_ang applies, the file states its own frame
 cor = get_option(varargin,'EulerCorrection',...
   eulerCorrectionRotation(get_option(varargin,'setting',2)));
 ebsd.rotations = inv(cor) .* ebsd.rotations;
@@ -77,10 +73,7 @@ isHex = isa(g,'EBSDhex');
 % the file the data came from wherever it stated them
 hdr = importedHeader(ebsd);
 
-% the phase numbers to write. A file numbers its phases from 1 and keeps 0
-% for not indexed, so a map whose own numbering does not fit - a single
-% phase .ang numbers its one phase 0 - is renumbered rather than written
-% ambiguously.
+% a file numbers its phases from 1 and keeps 0 for not indexed, so renumber if needed
 [phaseNr,renumbered] = angPhaseNumbers(ebsd);
 if renumbered
   scrPrnt(silent,'SubStep','phases renumbered from 1, 0 is not indexed');
@@ -165,9 +158,7 @@ fprintf(filePh,'#\n');
 % -- data ----------------------------------------------------------------
 scrPrnt(silent,'Step','Assembling data array');
 
-% gridify orders its first dimension along y and its second along x, both
-% increasing, so the file order - x fastest - is the transposed matrix read
-% column wise
+% gridify orders y then x, so the file order - x fastest - is the transposed matrix
 sel = reshape(keep.',[],1);
 
 notes = {};
@@ -217,10 +208,7 @@ function [nr,renumbered] = angPhaseNumbers(ebsd)
 nr = double(ebsd.phaseMap(ebsd.indexedPhasesId));
 nr = nr(:).';
 
-% OIM numbers the phases by their position in the very table the header
-% writes, so anything else - a single phase .ang numbering its one phase 0,
-% or a gap left by a deleted phase - is renumbered rather than written
-% ambiguously
+% OIM numbers the phases by their position in the header table, so renumber if needed
 renumbered = ~isequal(nr,1:numel(nr));
 
 if renumbered, nr = 1:numel(ebsd.indexedPhasesId); end

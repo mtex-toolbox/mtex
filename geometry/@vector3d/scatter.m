@@ -79,10 +79,7 @@ for i = 1:numel(sP)
   
   patchArgs = [patchArgs,{'MarkerSize',MarkerSize}]; %#ok<AGROW>
 
-  % markers are drawn as scatter objects - only those support
-  % MarkerFaceAlpha / MarkerEdgeAlpha and they are at least as fast as
-  % patches. Lines (option 'edgecolor', see vector3d/line) remain patches
-  % since a scatter object can not connect its points.
+  % markers are scatter objects, only they support MarkerFaceAlpha; lines stay patches
   isLine = check_option(varargin,'edgecolor');
 
   % marker transparency
@@ -126,14 +123,7 @@ for i = 1:numel(sP)
         {'double','double','double',...
         'double','double','char','char','double'});
 
-      % arrow measures its head in PIXELS and takes no notice of how long
-      % the segment is. Chaining arrows through a series of nearby
-      % orientations - which is what they are for - gives segments only a
-      % few pixels long, where the default 16 pixel head is longer than the
-      % whole arrow and sticks out well past its tip (#2072). Zooming in
-      % was the known workaround, and it is exactly this ratio changing.
-      % So cap the head at a fraction of the segment, unless the caller
-      % said what they want.
+      % arrow measures its head in pixels, so cap it at a fraction of the segment (#2072)
       if ~check_option(varargin,'length')
         arrowOpt = [arrowOpt,{'length',headLength(sP(i).ax,x,y)}]; %#ok<AGROW>
       end
@@ -223,10 +213,7 @@ for i = 1:numel(sP)
         'MarkerFaceColor',mfc,'MarkerEdgeColor',mec,...
         alphaArgs{:},dynamicArgs{:}),varargin{:});
 
-      % hold puts the axes into the color cycling mode, where every object
-      % created takes the next color and does not give it back. A marker
-      % drawn in a color of its own must not consume one - only a color
-      % taken from the color order above is meant to be consumed.
+      % a marker drawn in a color of its own must not consume one of the color order
       if ownColor, sP(i).ax.ColorOrderIndex = coi; end
       clear hG
 

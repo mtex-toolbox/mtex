@@ -220,14 +220,8 @@ if any(c<0)
 end
 c = c/sum(c);
 
-% The discrepancy J is the squared euclidean norm of the harmonic
-% coefficients of mu - sF, weighted by w.^2 = 4*pi*A_n/(2n+1) in degree n.
-% Note that w is zero in degree 0, i.e. the degree with the negative kernel
-% coefficient is dropped. It does not contribute anyway, as long as
-% sum(c) == 1, but dropping it keeps J and its gradients consistent by
-% construction. In contrast to SO3 no additional scaling of the coefficients
-% is needed, since the spherical harmonics of MTEX are already orthonormal
-% with respect to the (unnormalized) surface measure.
+% J is the squared euclidean norm of the harmonic coefficients of mu - sF,
+% weighted by w.^2 = 4*pi*A_n/(2n+1) - degree 0 is dropped, it does not contribute
 w = zeros((bw+1)^2,1);
 for l = 1:bw
   w(l^2+1:(l+1)^2) = sqrt( 4*pi * psi.A(l+1)/(2*l+1) );
@@ -239,20 +233,12 @@ I = w .* sF.fhat;
 % the same kernel without its degree 0 part, used for the gradient w.r.t. v
 psi0 = S2Kernel([0;psi.A(2:end)]);
 
-% The nodes change in every iteration, hence the NFSFT plans are set up once
-% and the nodes are updated in place. The onCleanup makes sure that they are
-% freed, also if the user interrupts with Ctrl-C.
+% the nodes change in every iteration, so set the plans up once and update in place
 nfsft = nfsftPlan(bw,M);
 freePlans = onCleanup(@() nfsft.finalize());
 
-% Step size of the line search along the steepest descent direction, i.e. as
-% long as the L-BFGS memory is still empty. It is carried over between the
-% iterations and doubled before every line search, so that it can grow as
-% well as shrink. Starting each line search at 1 instead would tie the length
-% of a step to the magnitude of the gradient, which is proportional to the
-% weights and hence of the order 1/M - the nodes would then crawl. Once the
-% memory is filled the direction carries that scaling itself and the unit
-% step is the natural trial step.
+% steepest descent step size, carried over and doubled so that it can grow as
+% well as shrink - starting at 1 would tie it to the gradient, which is O(1/M)
 stepSize = 1;
 
 % L-BFGS memory. The columns of S hold the steps taken, those of Y the
@@ -279,13 +265,9 @@ pC = progressCounter(maxIter);
 for i = 1:maxIter
 
   % ------------------------ (1) optimize weights -------------------------
-  % for fixed directions this is a convex least squares problem, which mlsq
-  % decreases while maintaining sum(c) = 1 and c >= 0
+  % for fixed directions this is a convex least squares problem, solved by mlsq
   cOld = c;
-  % During the warm up the weights are left alone, see above. For a single
-  % direction the simplex degenerates to the point c = 1, so there is nothing
-  % to optimize either - and mlsq would divide by the length of a vanishing
-  % search direction.
+  % during the warm up, and for a single direction, there is nothing to optimize
   if optWeights && M > 1 && i > warmUp
     cNew = mlsq(@(x,flag) Psi(x,flag,nfsft,v,w,lambda),I,c,innerIter,0);
     % guard against the same degeneracy for M > 1, which occurs if the
@@ -313,9 +295,7 @@ for i = 1:maxIter
   % a vanishing gradient cannot be improved by any step size
   if gNorm == 0, break, end
 
-  % L-BFGS direction, i.e. the inverse Hessian approximation built from the
-  % memory applied to the gradient. With an empty memory - and always, for
-  % 'steepestDescent' - this is the negative gradient.
+  % L-BFGS direction - with an empty memory this is the negative gradient
   if useLBFGS
     d = twoLoop(gVec,S,Y);
   else
@@ -324,10 +304,8 @@ for i = 1:maxIter
 
   dir = vector3d(d(1:M),d(M+1:2*M),d(2*M+1:3*M));
 
-  % The direction has to be tangential to v, otherwise the geodesic step
-  % below leaves the tangent plane it is meant to follow. The two loop
-  % recursion mixes in gradients transported from earlier iterates and hence
-  % gives away a little of that, so the normal components are dropped here.
+  % the two loop recursion mixes in transported gradients and gives away a
+  % little of the tangentiality the geodesic step below relies on
   dir = dir - dot(dir,v).*v;
 
   dVec = [dir.x(:);dir.y(:);dir.z(:)];
@@ -335,9 +313,8 @@ for i = 1:maxIter
   % the directional derivative of J along dir
   slope = dVec.' * gVec;
 
-  % Safeguard. The memory may have gone stale - the weight step changes the
-  % functional the pairs were taken from - and then produce a direction that
-  % does not decrease J at all. Drop it and fall back to gradient descent.
+  % the weight step changes the functional the pairs were taken from, so a
+  % stale memory may give a direction that does not decrease J - drop it
   if slope >= 0
     S = []; Y = [];
     dir = -g;
@@ -345,12 +322,7 @@ for i = 1:maxIter
     slope = -gNorm.^2;
   end
 
-  % Line search with Armijo, capped such that no node travels more than half
-  % a turn - without the cap the step size would keep doubling once the
-  % gradient becomes small and every line search would waste its first
-  % dozens of trials. Doubling is what pays off along the gradient: starting
-  % each line search directly at the cap does lower J per iteration, but the
-  % extra backtracking costs more than it gains per second.
+  % line search with Armijo, capped so that no node travels more than half a turn
   if isempty(S)
     stepSize = min(2*stepSize, pi/max(norm(dir)));
   else
@@ -371,10 +343,7 @@ for i = 1:maxIter
 
     stepSize = 0.5*stepSize;
 
-    % --- Local Termination ---
-    % This is not an error. The weight step may already have brought us to a
-    % point where the directions cannot be improved any further, in which
-    % case we are simply done.
+    % --- local termination: the weight step may have left nothing to improve
     if stepSize < 1e-16
       lineSearchFailed = true;
       vNew = v;
@@ -448,9 +417,7 @@ for i = 1:maxIter
 
 end
 
-% Since the weight update of mlsq is multiplicative, a weight that reached 0
-% stays 0, i.e. the corresponding direction does not contribute to the sample
-% any longer. Optionally discard those directions.
+% the mlsq update is multiplicative, so a weight that reached 0 stays 0
 if optWeights && minWeight > 0
   keep = c >= minWeight;
   if ~any(keep)
@@ -463,9 +430,7 @@ if optWeights && minWeight > 0
   end
 end
 
-% return the sample in the reference frame of the function - in a crystal
-% frame it comes back as Miller, with the trivial group when the function
-% carries no symmetry (ADR 0003, orientation without symmetry)
+% return the sample in the reference frame of the function
 if isa(sF,'S2FunHarmonicSym') && isa(sF.CS,'crystalSymmetry')
   v = Miller(v,sF.CS);
 elseif ~isa(v,'Miller')

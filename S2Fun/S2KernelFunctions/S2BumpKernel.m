@@ -50,10 +50,7 @@ classdef S2BumpKernel < S2Kernel
     function value = eval(psi,t)
       % evaluate the kernel function at nodes x
 
-      % the indicator of the cap, divided by the relative area of that cap
-      % so that the mean value over the sphere is one. calcFourier above
-      % evaluates the kernel, so the Legendre coefficients pick this up and
-      % A(1) comes out as one without any further scaling
+      % the indicator of the cap over the relative area of that cap, so the mean is one
       value  = double(t > cos(psi.halfwidth)) ./ ((1-cos(psi.halfwidth))/2);
 
     end

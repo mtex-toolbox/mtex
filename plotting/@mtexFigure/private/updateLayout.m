@@ -3,21 +3,9 @@ function updateLayout(mtexFig)
 
 if isempty(mtexFig.children), return;end
 
-% Pick up colorbars that were added behind mtexFigure's back: a plain
-% colorbar(...) call - rather than mtexColorbar / mtexFig.colorbar - leaves
-% mtexFig.cBarAxis empty. The layout below would then hand the axes the
-% whole figure again, and MATLAB, which keeps a colorbar glued to the
-% outside of its peer axes, follows along - pushing a 'southoutside' bar
-% clean off the bottom of the figure. Adopting it instead lets the regular
-% colorbar handling reserve a band for it and keep it positioned there.
-% This also drops handles of colorbars that have meanwhile been deleted.
-%
-% The tight inset has to be recomputed on any such change: it is what
-% reserves the band, and it is also where cBarShift - used by
-% resizeColorBar below - is determined.
-%
-% The same applies to a legend asked to sit outside the axes, see
-% adoptLegend.
+% adopt colorbars and legends added by a plain colorbar(...) call, otherwise the
+% layout hands the axes the whole figure and pushes them off it - the tight
+% inset has to be recomputed on any such change, it reserves the band
 changed = adoptColorbars;
 changed = adoptLegend(mtexFig) || changed;
 if changed
@@ -63,9 +51,7 @@ end
 if isscalar(mtexFig.cBarAxis) && i>1
   pos = get(mtexFig.cBarAxis,'position');
 
-  % bounding box of all axes, used to place a bar on the side the raster
-  % does not grow from - the east and south formulas below are expressed in
-  % the raster geometry and are left as they are
+  % bounding box of all axes, to place a bar on the side the raster does not grow from
   box = cell2mat(get(mtexFig.children(:),{'Position'}));
 
   if pos(4)>pos(3) %Vertical bar
@@ -96,9 +82,7 @@ if isscalar(mtexFig.cBarAxis) && i>1
   set(mtexFig.cBarAxis,'position',pos);
 end
 
-% position the legend within the band calcTightInset has reserved for it -
-% at mtexFig.legendSpacing from the axes and centered along the other
-% direction
+% position the legend within the band calcTightInset has reserved for it
 if ~isempty(mtexFig.legendAxis) && all(isgraphics(mtexFig.legendAxis))
 
   set(mtexFig.legendAxis,'Units','pixels');
@@ -138,9 +122,7 @@ set(mtexFig.parent,'Units',old_units);
 
     cBar = findobj(mtexFig.parent,'Type','colorbar');
 
-    % order them like mtexFig.children, since the layout above pairs
-    % cBarAxis(i) with children(i). A single colorbar shared by several axes
-    % is peered to one of them and so is picked up here as well.
+    % order them like mtexFig.children, the layout pairs cBarAxis(i) with children(i)
     found = gobjects(0,1);
     if ~isempty(cBar)
       peer = gobjects(numel(cBar),1);
@@ -166,12 +148,7 @@ set(mtexFig.parent,'Units',old_units);
     end
 
     if changed
-      % all colorbar geometry here - the reserved band in calcTightInset as
-      % well as resizeColorBar below - is computed in pixels, which is what
-      % mtexFig.colorbar creates its own colorbars in. A colorbar from a
-      % plain colorbar(...) call still uses normalized units, so bring it
-      % over first; this only changes the unit the position is expressed in,
-      % not where the bar currently sits.
+      % all colorbar geometry here is in pixels, a plain colorbar(...) is normalized
       if ~isempty(found)
 
         % take the side from the colorbar itself, before the Position
@@ -182,10 +159,7 @@ set(mtexFig.parent,'Units',old_units);
 
         set(found,'Units','pixels');
 
-        % give them the same thickness mtexFig.colorbar gives the colorbars
-        % it creates itself, so that a plain colorbar(...) does not end up
-        % looking chunkier than mtexColorbar. Has to happen before the tight
-        % inset is recomputed, since that sizes the reserved band from it.
+        % give them the thickness mtexFig.colorbar uses, before the inset is recomputed
         for k = 1:numel(found)
           pos = found(k).Position;
           if pos(3) < pos(4)  % vertical bar
@@ -205,9 +179,7 @@ set(mtexFig.parent,'Units',old_units);
 
     pos = get(cBar,'position');
 
-    % the orientation decides which pair of sides is possible, cBarSide
-    % which of the two - a 'northoutside' bar is horizontal and belongs
-    % above the axes, not below it
+    % the orientation decides which pair of sides is possible, cBarSide which of them
     if pos(4) > pos(3) % vertical
       if strcmp(mtexFig.cBarSide,'west')
         x = axisPos(1) - 10 - pos(3);

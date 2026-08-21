@@ -22,9 +22,7 @@ if sVF.bandwidth ~= 0
   sVF = S2VectorFieldHarmonic.quadrature(f, 'bandwidth', sVF.bandwidth);
 end
 
-% rotating with an orientation changes the reference frame - the result
-% adopts the specimen frame; a plain rotation keeps the current frame,
-% which the quadrature rebuild above dropped
+% an orientation takes the result into the specimen frame, a rotation keeps it
 if isa(rot,'orientation')
   sVF.sF = setFrame(sVF.sF,rot.SS.frame);
 elseif ~isempty(fr)

@@ -12,8 +12,11 @@ function SO3TV = right(SO3TV)
 %
 
 if SO3TV.tangentSpace.isLeft
-  % transform from left to right
-  SO3TV = SO3TangentVector( inv(rotation(SO3TV.oriRef)) .* SO3TV , SO3TV.oriRef, -SO3TV.tangentSpace);
+  % transform from left to right - rotating keeps the class and the
+  % reference, so only the label has to follow
+  tS = -SO3TV.tangentSpace;
+  SO3TV = inv(rotation(SO3TV.oriRef)) .* SO3TV;
+  SO3TV.tangentSpace = tS;
 end
 
 end

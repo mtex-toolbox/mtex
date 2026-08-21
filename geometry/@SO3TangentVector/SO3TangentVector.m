@@ -53,17 +53,12 @@ classdef (InferiorClasses = {?vector3d}) SO3TangentVector < vector3d
 
 properties
   tangentSpace SO3TangentSpace
-  % the reference orientation the tangent space is located at. It carries
-  % both symmetries and is the ONLY place they are stored - everything
-  % below is derived from it
+  % the reference orientation, the only place the two symmetries are stored
   oriRef
 end
 
 properties (Dependent = true)
-  % the reference as this representation sees it: the symmetry that acts
-  % equivariantly is shown as a trivial stand-in, since it cannot reduce
-  % the reference without transforming the vector. Read only - it is a
-  % view, and writing a view back would silently drop that symmetry
+  % the reference as this representation sees it - read only, it is a view
   rot
 end
 
@@ -82,11 +77,8 @@ end
 % evaluation of SO3VectorFields). Therefore only one of the symmetries is
 % preserved on the orientation (dependent on the tangent space
 % representation). The other symmetry is hidden, but both symmetries
-% interchange, if the tangent space representation is switched.
-%
-% Thats why both symmetries live on oriRef, the reference orientation, and
-% rot is only the view of it this representation may show. Ask oriRef for
-% the pair - there is no separate copy of it on the object.
+% interchange, if the tangent space representation is switched. Hence both
+% live on oriRef and rot is only the view of it this representation may show.
 
 methods
 
@@ -112,9 +104,7 @@ methods
     % nothing to inherit from, so there the session defaults apply
     oriRef = orientation(oriRef);
 
-    % one reference per vector, or one reference for all of them. The
-    % broadcast runs on the bare rotation: expanding an orientation would
-    % send a symmetry through the compatibility gate of times for nothing
+    % one reference per vector, or one for all of them - broadcast the bare rotation
     q = rotation(oriRef);
     sa = size(q); sb = size(SO3TV);
     maxDims = max(length(sa), length(sb));
@@ -136,9 +126,7 @@ methods
   
   % -----------------------------------------------------------------------
 
-  % the outer symmetry that survives on the reference depends on the
-  % tangent space representation - the other one acts equivariantly and is
-  % shown as a trivial stand-in, keeping its reference frame
+  % which outer symmetry survives depends on the tangent space representation
   function r = get.rot(SO3TV)
     r = SO3TV.oriRef;
     if isempty(r), return; end
@@ -172,20 +160,12 @@ methods
 
   % -----------------------------------------------------------------------
 
-  % TODO: rotating tangent vectors is not clear.
-  %       It could be defined as rotation of the tangent space with q or as
-  %       rotation of the vector.
-  % When rotating tangent vectors it may changes the representation of the
-  % tangent space (left <-> right)
-  % This funtions are necessary for .left and .right methods 
-  % (we need to forget the tangent vector structure and rotate vector3d)
-  function v = rotate(v,q,varargin)
-    v = rotate@vector3d(vector3d(v),q,varargin{:});
-  end
+  % rotate is inherited from vector3d - a rotated tangent vector is again one at
+  % the same reference; rotate_outer is not, its n x m result has no reference
   function v = rotate_outer(v,q,varargin)
     v = rotate_outer@vector3d(vector3d(v),q,varargin{:});
   end
- 
+
 
   function tV = transformTangentSpace(tV,newtS)
 
@@ -193,9 +173,10 @@ methods
     % through the constructor for no change
     if newtS == tV.tangentSpace, return; end
 
-    ref = tV.oriRef;
-    q = rotation(ref);
+    q = rotation(tV.oriRef);
 
+    % rotating keeps the class and the reference, so the components change
+    % in place and only the label has to follow - no cast, no rebuild
     if sign(tV.tangentSpace) > sign(newtS)
       % transform from left to right
       tV = inv(q) .* tV;
@@ -204,11 +185,9 @@ methods
       tV = q .* tV;
     end
 
-    if abs(newtS) > 1
-      tV = spinTensor(tV);
-    else
-      tV = SO3TangentVector(tV,ref,newtS);
-    end
+    tV.tangentSpace = newtS;
+
+    if abs(newtS) > 1, tV = spinTensor(tV); end
   end
 
 

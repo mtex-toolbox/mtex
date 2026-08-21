@@ -130,12 +130,8 @@ nRows = nGR * grainSize;      % map size in pixels
 nCols = nGC * grainSize;
 
 % ------------------------------------------- ground truth grain partition
-%
-% Grain columns are separated by vertical boundary lines whose position may
-% depend on the pixel row, grain rows by horizontal boundary lines whose
-% position may depend on the pixel column. Both stay monotone as long as
-% the displacement is small compared to grainSize, so the grains remain
-% connected blocks and the partition remains a valid tiling.
+% the boundary lines stay monotone as long as the displacement is small
+% compared to grainSize, so the grains remain connected blocks
 
 maxShift = max(0,grainSize/2 - 1);
 
@@ -226,10 +222,7 @@ if unindFrac > 0
 end
 
 % --------------------------------------------------------------- assemble
-%
-% phase 1 is notIndexed, phase 2 carries CS - the standard MTEX convention,
-% used unconditionally so that the phase layout does not depend on whether
-% unindexedFraction is zero.
+% phase 1 is notIndexed, phase 2 carries CS, whatever unindexedFraction is
 
 phaseId = 2*ones(nPix,1);
 phaseId(isUnind) = 1;

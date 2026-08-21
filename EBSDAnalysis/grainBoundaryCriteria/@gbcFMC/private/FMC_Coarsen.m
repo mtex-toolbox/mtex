@@ -151,10 +151,7 @@ nC = fmc.sizeWnext;
 [ii,jj,pp] = find(fmc.P);
 t = pp > .05 & ii ~= Celements(jj);
 
-% Forced to columns. find on a 1x1 sparse returns 0x0 empties, and 0x0 is
-% not a valid subs argument for accumarray below ("at least one column"),
-% while 0x1 is. The last coarsening level can be a single node whose only
-% pair is dropped by t, and mtexdata single reached exactly that.
+% force columns, accumarray below rejects the 0x0 empty that find on a 1x1 sparse gives
 i = ii(t); i = i(:);
 j = jj(t); j = j(:);
 p = pp(t); p = p(:);
@@ -171,44 +168,9 @@ Oc = reshape(squeeze(double(Oc)),[],4);
 vi = fmc.v(i).*p;
 vc = fmc.v(Celements);
 
-% ------------------------------------------------- mean orientation
-%
-% The members of an aggregate all lie within quatmax of each other, so the
-% normalised weighted sum of their quaternions and the principal eigenvector
-% of their weighted scatter matrix agree to well below the angular
-% resolution that matters here, and the sum needs no per aggregate eigen
-% decomposition.
+% mean orientation - the members lie within quatmax, so a weighted sum is enough
 
-% Outlier radius, per aggregate: kappa standard deviations of its own
-% spread, held inside the band [0.4 quatmax, quatmax]. A hard radius puts a
-% fixed angular scale back into an algorithm whose whole point is not to
-% have one, but letting it follow the spread all the way down is worse, so
-% quatmax sets the band and the spread picks the value inside it.
-%
-% The floor is not cosmetic. The radius exists to keep MISINDEXED pixels
-% out of the statistics, and those are tens of degrees away; it must never
-% become so tight that ordinary intra-grain variation is thrown out with
-% them. Tying it to the noise alone does exactly that on clean data: on
-% data/EBSD/EMSphinx.h5 the noise is 0.11 degree, the radius collapsed to
-% 0.75 degree, and the map shattered into 11846 grains where a 5 degree
-% radius gives 1563. The floor costs nothing on the synthetic benchmark,
-% whose noise is high enough that it never binds:
-%
-%   floor        1 deg     2 deg     3 deg     5 deg
-%   EMSphinx     3281      2136      1882      1563   grains
-%   benchmark    0.9887    0.9887    0.9889    0.9667 (level 1 ARI)
-%
-% The EMSphinx column was measured with all three phases in one graph, i.e.
-% before doEvaluate started clustering each phase on its own; the numbers
-% shifted with that (1563 -> 1293 at the 5 degree floor), the ordering did
-% not.
-%
-% kappa = 4 was measured over five benchmark realisations per level, where
-% it beat 3, 6 and a fixed 5 degree radius (0.9875 +-0.0013 on level 1
-% against 0.969 +-0.017 for the fixed radius). Note that the benchmark's
-% level 3 carries a 5 degree gradient, exactly the old quatmax, so some of
-% what the adaptive radius fixed there was that coincidence; the floor
-% above is what keeps it honest on data the benchmark does not resemble.
+% outlier radius per aggregate: kappa sigma of its own spread, within [0.4 quatmax, quatmax]
 kappa = 4;
 
 rad = kappa * sqrt(max(fmc.Qvar(Celements),fmc.sigma^2));
@@ -240,12 +202,7 @@ p(~keep) = 0;      % a member further than quatmax away is not one
 
 % --------------------------------- member list: kept fine nodes + seeds
 
-% Indices rather than a logical mask, and forced to a column. Logical
-% indexing of a SCALAR with a false scalar returns 0x0, where the same
-% index into any longer vector returns 0x1, and 0x10 .* 0x0 is a size
-% error while 0x10 .* 0x1 is not. The last coarsening level can be left
-% with a single fine-coarse pair, and if that one pair is an outlier the
-% whole run used to die there.
+% indices rather than a mask, and a column - logical indexing of a scalar gives 0x0
 kp = reshape(find(keep),[],1);
 
 jm = [j(kp); (1:nC).'];
@@ -258,22 +215,8 @@ Mm = [fmc.M(i(kp),:).*p(kp); fmc.M(Celements,:)];
 
 tm = tangent(mu(jm,:),[O(kp,:); Oc]);   % member offsets, in degree
 
-% ----------------------------------------------------- moment sums
-%
-% The moments are carried UP the hierarchy rather than recomputed from the
-% member means at each level, and that is the whole point of them. An
-% aggregate high up has only a handful of members, far too few to fit nine
-% parameters to, but between them those members hold the moments of every
-% pixel underneath. Shifting a member's moments into its parent's frame is
-% exact for the spatial part and first order in the angles for the
-% orientation part, which is the same approximation the tangent space model
-% rests on throughout:
-%
-%   x = x' + u,  t = t' + d      u = c_member - c_parent
-%                                d = tangent(mu_parent,mu_member)
-%
-% and since x' and t' are centred within the member, all the cross terms
-% drop out and only  Sxx_k + w u^2,  Sxv_k + w u d,  Stt_k + w |d|^2  remain.
+% moment sums - shift every member's moments into its parent's frame, so that an
+% aggregate holds the moments of every pixel underneath it, not just of its members
 
 n  = accumarray(jm,wm,[nC 1]);
 n(n <= 0) = 1;
@@ -299,12 +242,7 @@ Stt = accumarray(jm,Mm(:,10) + wm.*sum(tm.^2,2),[nC 1]);
 
 sseConst = max(Stt - sum(Sv.^2,2)./n, 0);
 
-% ------------------------------------------------------ linear model
-%
-% Written in aggregate centred coordinates, so the constant term is
-% orthogonal to the two gradient terms and the linear residual is the
-% constant residual minus the gain of one 2x2 solve per component. No
-% matrix inversion, and nothing to condition.
+% linear model - in aggregate centred coordinates, so it is one 2x2 solve per component
 
 det = Sxx.*Syy - Sxy.^2;
 ok  = det > 0 & n >= 12;
@@ -317,18 +255,8 @@ gy = (- Sxy.*Sxv + Sxx.*Syv) .* idet;
 gain = min(max(sum(gx.*Sxv + gy.*Syv,2),0),sseConst);
 sseLin = sseConst - gain;
 
-% Adopt the gradient only where it earns its parameters back, by minimum
-% description length in nats:
-%
-%   L = SSE/(2 sigma^2) + k log(maxAngle/sigma) + k/2 log(n)
-%
-% with k = 3 for the constant model and k = 9 for the linear one. Comparing
-% the two residuals per remaining degree of freedom instead - an F test in
-% all but name - was tried first and is far too lenient: it adopts a
-% gradient on the CLEAN benchmark, where there is none to find, and the
-% shrunken Qvar then lets the rebias merge the 1 degree boundaries away.
-% The parameters have to be paid for at the resolution the data actually
-% has, which is what ties the penalty to sigma.
+% adopt the gradient only where minimum description length pays for its parameters,
+% L = SSE/(2 sigma^2) + k log(maxAngle/sigma) + k/2 log(n), k = 3 constant, 9 linear
 
 sigma  = fmc.sigma;
 bits   = 3*log(max(fmc.maxAng,2*sigma)/sigma);
@@ -345,24 +273,10 @@ sse(useLin) = sseLin(useLin);
 gx(~useLin,:) = 0;
 gy(~useLin,:) = 0;
 
-% Floored at the noise. A one or two pixel aggregate has no measurable
-% spread and comes out at Qvar = 0, and an aggregate of zero spread makes
-% the rebias below infinitely discriminating: every edge touching it is
-% cut, and it is frozen out of the hierarchy for good. No orientation is
-% ever known better than the noise it was measured with, so that is the
-% floor.
+% floor at the noise, an aggregate of zero spread would cut every edge touching it
 Qvar = max(sse./n, sigma^2);
 
-% The TOTAL spread, i.e. before the gradient is taken out. part7BiasWeights
-% measures against this rather than against the residual, and the two are
-% deliberately different things: the gradient is used to PREDICT what the
-% offset to a neighbour ought to be, but the yardstick that offset is
-% judged against has to be how much this region varies internally. Letting
-% the gradient shrink the yardstick as well makes the rebias hypersensitive
-% on clean data - with sigma around 0.1 degree the model is adopted for
-% nearly every aggregate, Qvar collapses to the noise, and a neighbour
-% 1.7 degree away reads as a 17 sigma event and is cut off, even from a
-% region that varies by 12 degree across itself.
+% the total spread, before the gradient is taken out - part7BiasWeights measures against it
 QvarTot = max(sseConst./n, sigma^2);
 
 % reported by FMC_report, not printed here - one line per coarsening level

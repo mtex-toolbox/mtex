@@ -48,12 +48,7 @@ classdef vector3d < dynOption
   end
 
   properties (Hidden = true)
-    % the referenceFrame this vector is expressed in; empty = frame-free.
-    % Do not read/write directly outside loadobj and the copy constructor
-    % - the public view is the dependent property frame, which resolves
-    % through getFrame/setFrame so that Miller can couple its frame to
-    % the one of its crystal symmetry. Only frames carry plotting
-    % conventions - there is no per object convention slot.
+    % the referenceFrame this vector is expressed in, empty = frame-free
     framePrivate = []
   end
 
@@ -63,10 +58,7 @@ classdef vector3d < dynOption
     resolution % mean distance between the points on the sphere
     frame    % the referenceFrame this vector is expressed in
     how2plot % plotting convention - read only
-    % A convention belongs to a reference frame. To change how this is
-    % drawn use plot(...,'y↑→x') for one plot,
-    % plottingConvention.default(...) for the session, or move the data
-    % with x.frame = specimenFrame.rolling
+    % a convention belongs to a reference frame, see plottingConvention.default
     plottingConvention
   end
 
@@ -95,10 +87,7 @@ classdef vector3d < dynOption
           v.antipodal = varargin{1}.antipodal;
           v.isNormalized = varargin{1}.isNormalized;
           v.opt = varargin{1}.opt;
-          % the private slot, not the resolved frame - copying the
-          % resolved one would pin a merely inherited frame or default;
-          % casting a Miller to vector3d deliberately drops the crystal
-          % frame (its private slot is empty)
+          % the private slot, not the resolved frame
           v.framePrivate = varargin{1}.framePrivate;
           return
           
@@ -117,12 +106,7 @@ classdef vector3d < dynOption
 
           else
 
-            % a matrix of coordinates keeps the row / column correspondence
-            % of the three argument form: a 3 x N matrix holds one vector
-            % per column and gives a 1 x N list, an N x 3 matrix holds one
-            % per row and gives an N x 1 list - the same reading byXYZ uses.
-            % Previously anything that was not 3 x N was transposed into it,
-            % so an N x 3 matrix came back as a ROW of N vectors (#2145).
+            % a 3 x N matrix gives a 1 x N list, an N x 3 matrix an N x 1 list
             if size(xyz,1) == 3 && size(xyz,2) == 3
               % satisfies both readings and nothing in the data says which
               warning('MTEX:vector3d:ambiguousMatrix',...
@@ -348,16 +332,10 @@ classdef vector3d < dynOption
       if size(d,2) == 3
         v = vector3d(d(:,1),d(:,2),d(:,3),varargin{:});
       elseif size(d,2) == 2
-        % zeros(n,1) and not the scalar 0: the constructor repairs a scalar
-        % coordinate by repmat-ing it to the size of the others, and for an
-        % EMPTY d there is no non singular size to repmat to - a scalar z
-        % then stays 1 x 1 against a 0 x 1 x and y and the constructor
-        % errors with "Coordinates have different size"
+        % zeros(n,1) and not the scalar 0, which an empty d has no size to repmat to
         v = vector3d(d(:,1),d(:,2),zeros(size(d,1),1),varargin{:});
       else
-        % anything else used to silently keep columns 1 and 2 and drop the
-        % rest, which is how an n x 4 built by a caller that had already
-        % appended a z column lost that column without a word
+        % anything else used to silently keep columns 1 and 2 and drop the rest
         error('MTEX:vector3d:wrongSize',...
           ['vector3d.byXYZ reads one vector per row, so it takes an N x 3 '...
           'or an N x 2 matrix of coordinates, not a %s one.'],mat2str(size(d)));
@@ -393,18 +371,10 @@ classdef vector3d < dynOption
       % this overloaded method ensures compatibility with older MTEX
       % versions
 
-      % when the saved fields do not match the class anymore MATLAB hands
-      % over the raw data as a struct - rebuild from it and drop whatever
-      % convention slot the saving version had, the frame model resolves
-      % conventions at render time anyway
+      % MATLAB hands over a struct when the saved fields do not match the class
       if ~isa(v,'vector3d'), v = vector3d.fromStruct(vector3d,v); end
 
-      % a deserialized frame is re-interned against the register - the
-      % convention the loaded data was saved with applies to the whole
-      % session, see referenceFrame/reintern. A pre-frame object arrives
-      % here with the frame its saved convention was forked into by
-      % set.how2plot during loading. (The private slot: a Miller
-      % resolves its frame from its symmetry.)
+      % re-intern a deserialized frame against the register, see referenceFrame/reintern
       if ~isempty(v.framePrivate)
         v.framePrivate = referenceFrame.reintern(v.framePrivate);
       end

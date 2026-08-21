@@ -6,12 +6,8 @@ function ind = subsind(ebsd,subs)
 
 if numel(subs)==2 && all(cellfun(@isnumeric, subs))
 
-  % ebsd(x,y) used to be the measurement closest to the coordinate (x,y),
-  % while on a gridded map the very same expression is the pixel in row x
-  % and column y - see EBSDgrid/subsind. Two different pixels, no warning,
-  % and since EBSD.load puts data on its grid whenever that is lossless the
-  % same script may hit either meaning. Hence the coordinate lookup has to
-  % be asked for by name.
+  % ebsd(x,y) is the pixel in row x and column y on a gridded map, so the
+  % coordinate lookup has to be asked for by name
   error('MTEX:EBSD:ambiguousIndex',['%s\n\n  %s\n\n%s\n\n  %s\n\n%s'],...
     'ebsd(x,y) is ambiguous and therefore no longer supported. To select the measurement closest to the coordinate (x,y) write',...
     'ebsd(''xy'',x,y)',...

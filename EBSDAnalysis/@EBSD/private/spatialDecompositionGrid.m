@@ -233,21 +233,9 @@ isNotIdx = [false(size(sitesIdx,1),1); true(size(niPos,1),1)];
 site2id  = [idxSiteEbsd; niId];
 
 % ---- Voronoi -----------------------------------------------------------
-% 'delaunayOnly' is internal-only (not a user-facing option): calcGrains'
-% minPixel sizing pass (minPixelMask.m) only ever needs the site-to-site
-% adjacency doSegmentation.m builds from I_FD, never the V/F geometry, so it
-% requests the cheaper Delaunay-adjacency-only mex here. The real second
-% decomposition pass (calcGrains.m) never sets this flag and keeps getting
-% full Voronoi geometry.
-%
-% Caveat: jcvoronoiDelaunayOnly_mex's adjacency is a superset of
-% jcvoronoi2_mex's - wherever an interior Voronoi vertex is exactly
-% cocircular it reports a spurious diagonal adjacency that the full Voronoi
-% build correctly excludes (see check_jcvoronoi). Never a MISSING adjacency,
-% so a sizing pass can only ever under-cull with it, not over-cull. That is
-% harmless on a hex grid, where no such degeneracy exists, and systematic on
-% a square one, where every interior vertex is degenerate - which is why
-% minPixelMask.m only sets this flag for hex (#2513).
+% 'delaunayOnly' is internal-only: minPixelMask needs the site-to-site adjacency
+% alone, and the cheaper mex delivers it - its adjacency is a superset wherever
+% an interior Voronoi vertex is cocircular, so it is set for hex grids only (#2513)
 if check_option(varargin,'delaunayOnly')
   V = zeros(0,2); F = zeros(0,2);
   I_FD = jcvoronoiDelaunayOnly(double(XY),double(numReal), double(epsilon));
@@ -348,10 +336,7 @@ slot = (IJ(:,1)-ijmin(1)) + (IJ(:,2)-ijmin(2))*ijsz(1) + 1;
 ID(inRange) = ij2ebsd(slot(inRange));
 ID(ID==0) = NaN;
 
-% wherever a real ebsd row sits at this grid slot (e.g. a genuinely
-% scanned but notIndexed pixel), its true measured position is exact -
-% use it directly; only reconstruct where no such row exists (dummy ring,
-% phase-subset gaps, filled small gaps)
+% take the measured position wherever a real ebsd row sits at this slot
 hasReal = ~isnan(ID);
 POS = reconstructPos(IJ);
 POS(hasReal,:) = pos(ID(hasReal),:);

@@ -80,9 +80,7 @@ detC = C11 .* (C22 .* C33 - C23.^2) ...
   - C12 .* (C12 .* C33 - C13 .* C23) ...
   + C13 .* (C12 .* C23 - C13 .* C22);
 
-% 3 * geometric mean / sum of the covariance eigenvalues
-%   = (27 det(C) / trace(C)^3)^(1/3)
-% This equals one for equal eigenvalues and zero for rank loss.
+% 3 * geometric mean / sum of the covariance eigenvalues = (27 det(C) / trace(C)^3)^(1/3)
 iso = 27 .* detC ./ max(trC.^3, realmin);
 iso = min(max(real(iso), 0), 1) .^ (1/3);
 

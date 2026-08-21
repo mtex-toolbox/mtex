@@ -13,9 +13,7 @@ function [a,left,right] = ensureSym(a,b)
 
 if isempty(inner1)  % e.g. rot * ori
 
-  % a rotation applied on the LEFT acts in the specimen frame, so it is
-  % the specimen symmetry it can destroy - and if it does, the group goes
-  % and the frame stays, exactly as when an SO3Fun is rotated
+  % a rotation on the left acts in the specimen frame, so the group goes and the frame stays
   left = inner2;
   if isa(a,'rotation') && ~isempty(inner2)
     left = dropSymmetry(inner2,a,'specimen','orientation');
@@ -38,11 +36,7 @@ elseif isempty(inner2) % e.g. ori * rot, ori * vector3d
   right = inner1;
 
 elseif isa(b,'quaternion') && isa(a,'orientation')
-  % ori * ori: the frames have to fit - aligned frames pass, a compatible
-  % transition is absorbed into a, a wrong sided or incompatible
-  % combination errors. For non-quaternion b (Miller, tensor, ...) the
-  % fitFrame gate inside rotate takes over - transforming here as well
-  % would transform twice.
+  % ori * ori: the frames have to fit - for a non-quaternion b the gate inside rotate takes over
 
   fr1 = inner1.frame; fr2 = inner2.frame;
   if ~(~isempty(fr1) && ~isempty(fr2) && fr1 == fr2) % same handle passes cheaply

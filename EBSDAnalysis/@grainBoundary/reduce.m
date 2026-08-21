@@ -55,9 +55,7 @@ keepEnd = isEnd | mod(posInChain+1,factor) == 0;
 % only two segments meet there - see isNeighborChange
 keepEnd = keepEnd | isNeighborChange(gB);
 
-% a vertex may also be shared with another boundary object, which finds its
-% junctions from its own face list and so cannot see it - grain2d passes
-% those in, see grain2d/reduceBoundary
+% a vertex shared with another boundary object, see grain2d/reduceBoundary
 protect = get_option(varargin,'protect',[]);
 if ~isempty(protect)
   isProtected = false(size(gB.allV,1),1);
@@ -65,9 +63,7 @@ if ~isempty(protect)
   keepEnd = keepEnd | isProtected(gB.F(:,2));
 end
 
-% A closed chain has no junction to anchor it, so nothing above is guaranteed to
-% leave it with three vertices - and two enclose no area. A closed chain is the
-% entire boundary of a grain, so keep it a polygon.
+% a closed chain has no junction to anchor it, so keep it a polygon by hand
 iEnd = find(isEnd);
 chainId = gB.chainId;
 isClosedCh = gB.F(iEnd,2) == gB.F(iStart,1);

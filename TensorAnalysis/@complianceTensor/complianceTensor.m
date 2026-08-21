@@ -26,9 +26,7 @@ classdef complianceTensor < tensor
 
     end
 
-    % see the note in @stiffnessTensor - a static method cannot tell which
-    % subclass it was called on, and zeros, ones and nan have no meaningful
-    % counterpart here either
+    % see the note in @stiffnessTensor
     C = rand(varargin);
 
   end

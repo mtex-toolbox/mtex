@@ -28,10 +28,7 @@ for i = 1:pf.numPF
   
   % TODO: consider the case of no antipodal symmetry
   %
-  % h and l are rebuilt for every pole figure. Reusing them would leave the
-  % entries of a previous, longer superposition in place once a pole figure
-  % with fewer crystal directions comes along, which both mixes in its
-  % directions and skews the superposition coefficients below.
+  % rebuild h and l per pole figure, a longer previous superposition would remain
   nh = length(pf.allH{i});
   h = cell(1,nh);
   l = zeros(1,nh);

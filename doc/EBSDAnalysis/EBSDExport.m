@@ -39,9 +39,15 @@
 %
 %   export(ebsd,'denoised.h5oina','reference','myfile.h5oina')
 %
-% Data that was not imported from an HDF5 file, or the flag |'standalone'|,
-% gives MTEX's own flat layout instead - orientations, phases, coordinates
-% and properties, and nothing else.
+% A reference file is therefore required, and exporting data that did not
+% come from an HDF5 file raises an error saying so. Earlier versions wrote a
+% flat layout of MTEX's own in that case, but nothing could read it back -
+% not MTEX and no vendor tool - so it was removed.
 %
-%   export(ebsd,'myFile.h5','standalone')
+% To carry a map between MTEX sessions, save it as a |.mat| file. That keeps
+% everything an HDF5 export drops, the reference frames and the imported
+% header included.
+%
+%   save('myFile.mat','ebsd')
+%   load('myFile.mat')
 %

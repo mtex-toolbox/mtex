@@ -137,10 +137,7 @@ else
   outerRaw = dIJ(2,:); innerRaw = dIJ(1,:); innerStep = rd(1,:);
 end
 
-% where each step sits along the outer direction, read straight off the
-% positions instead of accumulated from the outer steps: the accumulation is
-% precisely what a mis-rounded step at a line change corrupts, and it is the
-% regressor both fits below depend on
+% read the outer coordinate off the positions, accumulating it propagates a bad step
 outerCoord = A \ (pos - pos(1,:)).';
 outerCoord = outerCoord(1 + ~outerIsFirst,:);
 rowMid = (outerCoord(1:end-1) + outerCoord(2:end)) / 2;
@@ -148,15 +145,8 @@ rowMid = (outerCoord(1:end-1) + outerCoord(2:end)) / 2;
 isSingleCell = abs(innerStep) == 1;
 isBigStep    = abs(innerStep) >= 2;
 
-% inner cell size, and outer drift per inner cell, as they vary across the map
-%
-% The drift is read off what is LEFT of the outer component after rounding,
-% never off the component itself: a step may legitimately move a whole cell
-% in the outer direction too, and that is not drift. A hexagonal map walked
-% along its staggered direction is exactly that case - every second step
-% moves one outer cell, so the raw components alternate 0 and -1, and taking
-% them at face value would call a rigid lattice half a cell of drift per
-% inner cell and then multiply it by the length of a line.
+% inner cell size, and outer drift per inner cell, as they vary across the map -
+% the drift is what is left after rounding, a hex step legitimately moves a cell
 outerResid = outerRaw - round(outerRaw);
 
 localScale = fitAcrossMap(rowMid, isSingleCell, ...

@@ -158,7 +158,23 @@ classdef slipSystem
      end
     
      function sS = hcp(varargin) %#ok<STOUT>
-       warning('There are no predefined slip systems for hcp yet. You might have to define those individually.');      
+       % There is no hcp default and there will not be one: which families
+       % carry the deformation of a hexagonal material, and at which
+       % relative CRSS, is a property of the material and of the experiment
+       % rather than of the lattice - so the caller has to say. Every family
+       % one would pick from is predefined on its own, so the message lists
+       % them instead of leaving the user to find them.
+
+       error('MTEX:slipSystem:hcp','%s',slipSystem.hexHint(...
+         ['There is no predefined set of hcp slip systems, and this is on ' ...
+          'purpose: which slip and twinning systems carry the deformation of ' ...
+          'a hexagonal material depends strongly on the material itself, on ' ...
+          'temperature and on the loading - and so do their critical resolved ' ...
+          'shear stresses (CRSS). Please combine the families you need ' ...
+          'yourself, handing the CRSS of each family in as second argument, ' ...
+          'e.g.'],...
+         ['  sS = [slipSystem.basal(cs,1), slipSystem.prismatic2A(cs,66), ...' newline ...
+          '        slipSystem.pyramidalCA(cs,80), slipSystem.twinC1(cs,100)]']));
      end
      
     function sS = basal(cs,varargin)
@@ -217,5 +233,55 @@ classdef slipSystem
     end
     
   end
-  
+
+  methods (Static = true, Hidden = true)
+
+    function msg = hexHint(prose,example)
+      % the message behind slipSystem.hcp and dislocationSystem.hcp
+      %
+      % Both refuse to guess a hexagonal family set and both have to say
+      % which families there are instead, so the list lives here once. The
+      % prose and the example differ per class and are handed in.
+      %
+      % Syntax
+      %   msg = slipSystem.hexHint(prose,example)
+      %
+      % Input
+      %  prose   - paragraph explaining why there is no default, wrapped here
+      %  example - code block, printed as it comes in
+      %
+
+      families = {...
+        'basal','<11-20>{0001}','';...
+        'prismaticA','<2-1-10>{01-10}','';...
+        'prismatic2A','<01-10>{2-1-10}','2nd order prismatic';...
+        'pyramidalA','<2-1-10>{01-11}','1st order pyramidal <a>';...
+        'pyramidalCA','<2-1-13>{-1101}','1st order pyramidal <c+a>';...
+        'pyramidal2CA','<2-1-13>{-2112}','2nd order pyramidal <c+a>';...
+        'twinT1','<1-101>{-1102}','tensile twinning';...
+        'twinT2','<2-1-16>{-2111}','tensile twinning';...
+        'twinC1','<-110-2>{-1101}','compressive twinning';...
+        'twinC2','<2-1-1-3>{2-1-12}','compressive twinning'};
+
+      % pad behind the call and behind the indices, never inside them - these
+      % lines are there to be copied
+      call = strcat('  slipSystem.',families(:,1),'(cs)');
+      list = cellfun(@(c,m,t) deblank([pad(c) '   ' pad(m) '   ' t]),...
+        pad(call),pad(families(:,2)),families(:,3),'UniformOutput',false);
+
+      % a line reaching exactly the window width gets wrapped a second time
+      % by the command window itself, which lands mid-indent - leave a column
+      cms = get(0,'CommandWindowSize');
+      width = max(20,cms(1) - 1);
+
+      msg = [wraptext(prose,width) newline newline ...
+        example newline newline ...
+        wraptext('The predefined hexagonal families are',width) newline newline ...
+        strjoin(list.',newline) newline newline ...
+        wraptext(['See ' doclink('SlipSystems','SlipSystems') ' for details.'],width)];
+
+    end
+
+  end
+
 end

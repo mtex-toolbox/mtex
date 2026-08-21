@@ -52,8 +52,5 @@ grains.numPixel = grains.numPixel(ind);
 grains.boundary = subSet(grains.boundary,indBd);
 grains.innerBoundary = subSet(grains.innerBoundary,indinnerBd);
 
-% boundary segments used to be sorted into walk order here, but only for a
-% single grain, which made grains(k).boundary ordered while grains.boundary
-% was not. Segments are now stored in walk order throughout and subSet
-% preserves it, so there is nothing left to do - and 'keepOrder' has no
-% effect any more.
+% segments are stored in walk order throughout and subSet preserves it, so
+% 'keepOrder' has no effect any more

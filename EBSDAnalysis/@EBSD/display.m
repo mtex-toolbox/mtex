@@ -59,10 +59,7 @@ else
 end
 disp(strong(" Scan unit") + " : " + ebsd.scanUnit);
 
-% an EBSD may hold measurements and yet no positions - a damaged file, or
-% one written by a version that stored them elsewhere. extent is empty
-% then, so ext(1:2) would throw and the display would be the thing that
-% breaks on the very object one is trying to look at
+% an EBSD may hold measurements and yet no positions, and extent is empty then
 if isempty(ebsd.pos)
   disp(strong(" X x Y x Z") + " : none, this EBSD has no positions");
 else

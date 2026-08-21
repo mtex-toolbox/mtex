@@ -15,9 +15,7 @@ if SO3F.tangent
     idx = idx + blockSize;
   end
 else
-  % On S^3 the ansatz contains the parity degrees L,L-2,... . Consecutive
-  % k-blocks in eval_monomials_SO3 form one homogeneous degree block of size
-  % (ell+1)^2.
+  % on S^3 the ansatz contains the parity degrees L,L-2,... in blocks of (ell+1)^2
   for ell = mod(L,2) : 2 : L
     blockSize = (ell + 1)^2;
     degrees(idx : idx + blockSize - 1) = ell;

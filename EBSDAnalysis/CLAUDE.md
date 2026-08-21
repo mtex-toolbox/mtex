@@ -2,12 +2,32 @@
 
 The EBSD → grains pipeline, plus parent-phase reconstruction.
 
-- `@EBSD` (and grid-specific `@EBSDsquare`/`@EBSDhex`, volume `@EBSD3`/`@EBSD3square`) holds per-pixel phase/orientation/property data for an entire scan as vectorized arrays — indexing (`ebsd(idx)`, `ebsd(condition)`) is the normal way to select sub-regions, not loops.
-- `calcGrains` segments an `EBSD` object into a `grain2d` (or `grain3d` for volume data); the segmentation criterion is pluggable via `grainBoundaryCriteria/` (see `gbcCustom.m` for the extension point) and can additionally take a `'delaunay'` flag for an alpha-complex-based decomposition (`spatialDecompositionAlpha.m`) instead of the default Voronoi-style decomposition.
-- Grain boundary segments live in a separate `@grainBoundary` object (`grains.boundary`), not on `grain2d` itself — each segment stores adjacent grain/EBSD ids, position, and misorientation; see the class doc in `@grainBoundary/grainBoundary.m`.
-- `@parentGrainReconstructor` (`job = parentGrainReconstructor(ebsd, grains, p2c0)`) drives parent-phase reconstruction from child-phase data (e.g. austenite from martensite): it builds a graph over grain boundaries weighted by how well each boundary's misorientation matches the parent↔child orientation relationship (`calcGraph.m`, `calcGBVotes.m`, `private/calcBndWeights.m`), then a separate variant graph (`calcVariantGraph.m`) resolves which of several crystallographically equivalent parent variants each child grain belongs to.
-- `@grain3Boundary`/`calcGBND.m` computes grain boundary normal distributions for 3D data — this is a distinct code path from the 2D `@grainBoundary`, not a generalization of it. They also differ observably: in crystal coordinates the 3D one returns an `S2FunHarmonicSym` and is exactly symmetric under the crystal group (1.85e-11 over all 24 rotations of `432`), while the 2D one builds its density with `'noSymmetry'` and merely attaches a `crystalSymmetry`. Tested by `tests/slow/check_gbnd3d.m` and `tests/core/check_gbnd.m` respectively.
+- `@EBSD` (grid variants `@EBSDsquare`/`@EBSDhex`, volume `@EBSD3`/`@EBSD3square`) holds a
+  whole scan as vectorized arrays. Select with `ebsd(idx)` / `ebsd(condition)`, never a loop.
+- `calcGrains` segments an `@EBSD` into a `grain2d` (`grain3d` for volume data). The
+  criterion is pluggable — `grainBoundaryCriteria/`, extension point `gbcCustom.m`. The
+  `'delaunay'` flag selects the alpha-complex decomposition (`spatialDecompositionAlpha.m`)
+  over the default Voronoi one. `gbcFMC` defaults: `docs/adr/0004-fmc-parameter-defaults.md`.
+- Boundary segments live in `@grainBoundary` (`grains.boundary`), not on `grain2d`. Each
+  segment stores adjacent grain/EBSD ids, position and misorientation. Segments are stored
+  in **walk order** — `docs/adr/0002-ordered-boundary-segments.md`.
+- `@parentGrainReconstructor` (`job = parentGrainReconstructor(ebsd,grains,p2c0)`): builds a
+  boundary graph weighted by orientation-relationship fit (`calcGraph.m`, `calcGBVotes.m`,
+  `private/calcBndWeights.m`), then `calcVariantGraph.m` resolves which parent variant each
+  child grain belongs to.
+- `@grain3Boundary`/`calcGBND.m` is a **distinct code path** from the 2D `@grainBoundary`,
+  not a generalization. They differ observably: in crystal coordinates the 3D one returns an
+  `S2FunHarmonicSym`, exactly symmetric under the crystal group; the 2D one builds with
+  `'noSymmetry'` and merely attaches a `crystalSymmetry`.
 
-For regression testing changes in this folder, `tests/core/check_calcGrainsCases.m` is the fast (<1s), routine suite of small synthetic maps — run it after touching `calcGrains`/segmentation criteria before reaching for the much slower real-data benchmarks (`tests/slow/check_grainReconstructionBenchmark.m`, `tests/slow/check_grainBenchmark.m`). The rest of the EBSD route is owned by `tests/core/check_ebsdImport.m` (import), `check_ebsd.m` (the object), `check_ebsdGrid.m` (grid geometry and properties), `check_boundaryChains.m` (boundary walk order), `check_jcvoronoi.m` (the Voronoi backends) and `check_gbnd.m` — see `tests/CLAUDE.md` for the full map.
+Traps:
 
-`check_gbnd.m` is the one test that runs the whole route in one go: a committed `.ctf` → `EBSD.load` → `calcGrains` → `smoothBoundary` → `calcGBND`. It also pins the seam `calcGBND`'s own help warns about — it reads orientations through `gB.ebsdId`, and default `smoothBoundary` rewrites that while leaving segment directions and lengths untouched, so the GBND shifts ~10% with nothing erroring or warning.
+- `calcGBND` reads orientations through `gB.ebsdId`. Default `smoothBoundary` rewrites
+  `ebsdId` while leaving segment directions and lengths untouched, so the GBND shifts ~10%
+  with nothing erroring. Pinned by `core/check_gbnd`.
+- `calcGrains` returns notIndexed grains alongside the indexed ones and gives every pixel a
+  `grainId`. Code that assumes every grain is indexed breaks on real maps.
+
+Testing: `core/check_calcGrainsCases` (<1 s, synthetic) is the routine suite after touching
+`calcGrains` or a criterion. Reach for `slow/check_grainReconstructionBenchmark` /
+`slow/check_grainBenchmark` only when that is not enough. Full map in `tests/CLAUDE.md`.

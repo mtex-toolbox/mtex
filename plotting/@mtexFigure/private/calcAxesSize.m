@@ -18,11 +18,7 @@ if isa(mtexFig.children(1),'matlab.graphics.axis.PolarAxes')
 
 else
 
-  % the axes should have the shape of what the plot box covers on the
-  % screen: project its corners along the viewing direction and take the
-  % extent of the shadow. For a 2d view this is just the plot box itself,
-  % for a 3d view it is what keeps the axes from being much wider than the
-  % object drawn in it.
+  % shape the axes like the shadow of the plot box along the viewing direction
   ax = mtexFig.children(1);
   axesSize = ax.PlotBoxAspectRatio;
 

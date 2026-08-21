@@ -42,23 +42,13 @@ else
   id = 'MTEX:note';
 end
 
-% warning writes "Warning: " in front of the first line - wrap short enough
-% that this does not push it past the window edge, and indent the rest to
-% line up underneath it instead of leaving one long line above a narrow block
-%
-% One column has to stay free. A line that reaches exactly the window width
-% makes the command window wrap it again by itself, and that second wrap lands
-% in the middle of the indent - the ragged breaks this wrapping exists to
-% avoid. The old floor of 40 had the same effect the other way round: in a
-% window narrower than 49 columns it handed back lines the window could not
-% hold, so every one of them was rewrapped.
+% warning writes "Warning: " in front of the first line, so wrap short enough that
+% it fits and indent the rest underneath - one column has to stay free, a line
+% reaching exactly the window width is wrapped a second time by the command window
 prefix = 'Warning: ';
 cms = get(0,'CommandWindowSize');
 
-% The prefix is on the first line whether or not the rest is indented, so it
-% always comes off the width - there is no narrow-window case in which
-% dropping the indent buys anything. The floor only keeps a degenerate or
-% unreported window size from asking for a nonsensical wrap.
+% the prefix is on the first line either way, the floor only guards a degenerate size
 width = max(20,cms(1) - numel(prefix) - 1);
 
 msg = wraptext(sprintf(varargin{:}),width);

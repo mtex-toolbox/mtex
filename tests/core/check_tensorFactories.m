@@ -147,9 +147,7 @@ function checkPlottingConvention
 M = diag([3 1 -1]);
 pC = plottingConvention('y↑→x');
 
-% conventions are compared as objects, not through char: every convention
-% that is not axis aligned prints 'xyz', so two different ones would
-% compare equal and the assertions below would hold vacuously
+% compare conventions as objects, every one that is not axis aligned prints 'xyz'
 before = tensor(M,'rank',2).how2plot;
 assert(before ~= pC, ...
   ['check_tensorFactories: the test convention equals the default one, so ' ...
@@ -161,9 +159,7 @@ assert(T.how2plot == pC, ...
   'check_tensorFactories: tensor(M,''rank'',2,pC) has convention %s', ...
   char(T.how2plot))
 
-% a crystalSymmetry derives its own convention from the crystal axes - for
-% mmm that is y↑→x, so the check below needs one that differs from both it
-% and the specimen default
+% mmm derives y↑→x from its axes, so pick one differing from it and from the default
 cs = crystalSymmetry('mmm');
 pCs = plottingConvention('z↑→x');
 assert(cs.how2plot ~= pCs && before ~= pCs, ...
@@ -174,10 +170,7 @@ T = tensor(M,'rank',2,cs,pCs,'name','foo');
 assert(T.how2plot == pCs && strcmp(T.opt.name,'foo'), ...
   'check_tensorFactories: convention, symmetry and name do not survive together')
 
-% the symmetry is neither copied nor written to. it must still be the very
-% object that was passed in - phaseItem seals eq to handle identity, so a
-% copy would stop comparing equal - and it must still carry its own
-% convention, since other users share that handle
+% the symmetry is neither copied nor written to, other users share that handle
 assert(T.CS == cs, ...
   'check_tensorFactories: tensor(M,...,cs,pC) no longer holds cs itself')
 

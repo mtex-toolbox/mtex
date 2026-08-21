@@ -169,9 +169,7 @@ T = struct('setNodes',@setNodes,'adjoint',@adjoint,'trafo',@trafo, ...
       if ~isempty(X), nfsftmex('set_x',planH,X); end
     end
 
-    % Apply the gradient recursion a second time, component by component.
-    % S2FunHarmonic/grad indexes fhat linearly and is not multivariate safe,
-    % hence the loop is required and not an optimization.
+    % apply the gradient recursion a second time - grad is not multivariate safe
     B = zeros((bw+3)^2,3,3);
     for k = 1:3
       Ak = S2FunHarmonic(fhatG(:,k)).grad;

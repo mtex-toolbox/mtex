@@ -102,9 +102,7 @@ methods
       'Interpreter',getMTEXpref('textInterpreter'),'FontSize',getMTEXpref('FontSize'));
     sB.ruler = patch('parent',sB.hgt,'Faces',1,'Vertices',[NaN NaN NaN]);
 
-    % the reference frame indicator - the arrows and the filled dot of the
-    % out of screen symbol share one patch (they are all filled with
-    % lineColor), the circle and the cross of that symbol are one polyline
+    % the reference frame indicator - all filled parts share one patch
     sB.rfArrows = patch('parent',sB.hgt,'Faces',1,'Vertices',[NaN NaN],...
       'EdgeColor','none');
     sB.rfSymbol = line('parent',sB.hgt,'XData',NaN,'YData',NaN,'LineWidth',1);
@@ -114,20 +112,11 @@ methods
         'Interpreter',getMTEXpref('textInterpreter'),'FontSize',getMTEXpref('FontSize'));
     end
 
-    % The scale bar is an annotation that happens to be drawn in data
-    % coordinates: it is positioned *from* the axes limits and must never
-    % contribute to them. Otherwise an 'axis tight' - EBSD/plot.m does one
-    % after the map is drawn - picks up whatever position the bar was last
-    % laid out for. On a fresh axes that is the corner of the default
-    % [0 1] limits, so the map extent gets dragged all the way down to the
-    % origin; the bar then follows the enlarged limits and the map ends up
-    % squeezed into a corner of a far too large axes.
+    % the bar is positioned from the axes limits and must not contribute to them
     set([sB.shadow, sB.txt, sB.ruler, sB.rfArrows, sB.rfSymbol, sB.rfLabels],...
       'XLimInclude','off','YLimInclude','off','ZLimInclude','off');
 
-    % the labels of the reference frame indicator default to the axes
-    % names of the frame the data lives in - a rolling framed map shows
-    % RD, TD, ND - or of the session default frame for frame-free data
+    % label the indicator with the axes names of the frame the data lives in
     fr = getClass(varargin,'referenceFrame',specimenFrame.default);
     sB.refFrameLabels = fr.axesNames;
 
@@ -142,17 +131,7 @@ methods
     sB.refFrame        = get_option(varargin,'refFrame',...
       getMTEXpref('showRefFrame','on'));
 
-    % redraw whenever the axes is resized, zoomed/panned or reoriented
-    % (e.g. through plottingConvention.setView). Position alone is not a
-    % reliable proxy for a changed map width (e.g. 'axis equal' can keep
-    % Position fixed across a zoom, or change it without XLim/YLim
-    % changing), so XLim/YLim are watched explicitly. ZLim matters as well,
-    % since the bar is laid out in the plane closest to the camera (see
-    % update) - note though that this only covers limits that are set
-    % explicitly, see setOnTop for the rest.
-    % A Position change alters the axes' pixel geometry, which the label
-    % measurement depends on even when the data limits are unchanged - so
-    % it forces a fresh layout past the memo in update.
+    % redraw whenever the axes is resized, zoomed, panned or reoriented
     hax = mP.ax;
     hListener(1) = addlistener(hax,'Position',      'PostSet', @(~,~) sB.update(true));
     hListener(2) = addlistener(hax,'CameraPosition','PostSet', @(~,~) sB.update);
@@ -161,29 +140,10 @@ methods
     hListener(5) = addlistener(hax,'YLim',          'PostSet', @(~,~) sB.update);
     hListener(6) = addlistener(hax,'ZLim',          'PostSet', @(~,~) sB.update);
 
-    % Position does not cover every way the pixel geometry can change: a
-    % uiaxes laid out by a uigridlayout - the import wizard's tabs - is
-    % given its size without its Position ever being written, so a bar laid
-    % out while the axes was still at the default 400x300 would keep those
-    % (data unit) sizes and blow up to several times the intended size as
-    % soon as the layout ran. MarkedClean fires after every render of the
-    % axes, whatever caused it, and is the one signal that is always there;
-    % checkGeometry makes it cheap by only re-laying out when the label's
-    % footprint actually moved.
+    % a uiaxes in a uigridlayout is sized without writing Position, so watch MarkedClean
     hListener(7) = addlistener(hax,'MarkedClean',    @(~,~) sB.checkGeometry);
 
-    % Tie these axes-level listeners' lifetime directly to this scale
-    % bar's own graphics, rather than to garbage collection of the
-    % variable above: mapPlot.m clears the axes' appdata (via
-    % rmallappdata) *before* constructing the next scale bar, so a
-    % listener stored only in appdata can never be found and deleted by
-    % the following scale bar's constructor. An app that repeatedly
-    % cla's/replots the same axes (e.g. the import wizard) can then fire a
-    % CameraPosition/CameraUpVector change while the old, now-unreferenced
-    % listener is still alive (garbage collection is not immediate), which
-    % calls back into the already-deleted old scale bar and errors.
-    % Deleting the listeners the moment sB.hgt itself is destroyed (e.g.
-    % by cla) is immediate and needs no appdata bookkeeping at all.
+    % tie the listeners to the graphics, appdata is cleared before the next scale bar
     addlistener(sB.hgt, 'ObjectBeingDestroyed', @(~,~) delete(hListener(isvalid(hListener))));
 
     addlistener(sB,'length',          'PostSet', @(~,~) sB.update);
@@ -280,14 +240,10 @@ methods
 
   function update(sB, forceLayout)
 
-    % forceLayout skips the memo below - used by the Position listener,
-    % since a changed pixel geometry invalidates the label measurement
-    % without any of the memoized inputs changing
+    % forceLayout skips the memo below, a changed pixel geometry is not part of its key
     if nargin < 2, forceLayout = false; end
 
-    % belt-and-braces: a listener attached to the axes can outlive the
-    % scale bar it belonged to (see the constructor), so bail out rather
-    % than error if this instance's own graphics were already deleted
+    % a listener attached to the axes can outlive the scale bar it belonged to
     if isempty(sB.hgt) || ~isvalid(sB.hgt)
       return
     end
@@ -302,34 +258,17 @@ methods
 
     ax = get(sB.hgt,'Parent');
 
-    % skip while the camera is only half updated: reorienting an axes takes
-    % several property assignments (see plottingConvention.beginCameraUpdate)
-    % and the ones in between describe a viewing direction paired with an up
-    % vector that does not belong to it. Laying the bar out for such a state
-    % is wasted work - a single notification follows once the camera is
-    % consistent again
+    % skip while the camera is only half updated, a notification follows
     if isappdata(ax,'MTEXcameraUpdate'), return; end
 
-    % the plotting convention currently active on the map - read back from
-    % the axes camera itself (not from a cached plottingConvention
-    % reference) so this stays correct even if setView was applied through
-    % a plottingConvention object other than the one the map was
-    % originally created with
+    % read the plotting convention back from the axes camera, not from a cache
     pC = plottingConvention.getView(ax);
 
-    % determine which compass direction (E-S-W-N is 0-1-2-3) the data x-
-    % and y-axis are currently pointing to on screen - cheaper and more
-    % direct than the previous round trip through view(ax)'s azimuth /
-    % elevation, and it is always consistent with pC since it is derived
-    % from pC itself
+    % which compass direction (E-S-W-N is 0-1-2-3) the data axes point to on screen
     xDir = compassDirection(vector3d.X,pC);
     yDir = compassDirection(vector3d.Y,pC);
 
-    % where the reference frame directions point to on screen: how far to
-    % the right (column 1), how far up (column 2) and how far out of the
-    % screen (column 3) - i.e. the full screen projection, not just the
-    % four compass directions above, so that the indicator stays correct
-    % for a tilted view as well
+    % the full screen projection of the reference frame directions, for a tilted view
     showRF = strcmp(sB.refFrame,'on') && ~isempty(sB.refFrameDirs);
     if showRF
       rfDir = normalize(sB.refFrameDirs(:).');
@@ -346,30 +285,12 @@ methods
     if any(yDir == [1,2]), dy= fliplr(dy); end
     if mod(xDir,2), [dx,dy] = deal(dy,dx); end
 
-    % The bar is an annotation and must never be hidden by the map content.
-    % As long as the axes draws in child order, bringing the bar to the
-    % front of that list (setOnTop) is all it takes. Once something with a
-    % z extent is drawn on top of the map - the crystal shapes of
-    % grain2d/plot, say - MATLAB sorts by depth instead, uistack stops
-    % meaning anything, and the bar has to lay itself out in the plane
-    % closest to the camera to stay visible. It cannot be moved any further
-    % to the front than that: the axes clips everything to its own z limits,
-    % and switching clipping off for the bar does not help either, since the
-    % renderer's own near plane then cuts it away. See barPlanes.
+    % lay the bar out in the plane closest to the camera, depth sorting beats uistack
     [zBar, zBack] = barPlanes(ax);
     sB.lastZ = [zBar, zBack];
 
-    % Find the range in meters for later determination of magnitude
-    % We do this so that we never display 10000 nm and always something like
-    % 10 microns. Also, the correct choice of units will avoid decimals.
-    %
-    % In auto mode the nice length AND its unit both come from 10% of the
-    % current map width, so the bar rescales (both value and unit) as the
-    % map width changes through zooming/resizing/replotting instead of
-    % freezing at whatever was picked when the bar was first drawn. In
-    % fixed-length mode the unit is instead derived from sB.length itself,
-    % since that is a length given in scanUnit units, independent of
-    % whatever the map width currently happens to be.
+    % pick the unit from 10% of the map width, so that the bar never says
+    % 10000 nm - in fixed length mode take it from sB.length instead
     if isnan(sB.length)
       [sBLength, sBUnit, factor] = switchUnit(0.1*abs(diff(dx)), sB.scanUnit);
       goodValues = [1 2 5 10 15 20 25 50 75 100 125 150 200 500 750]; % Possible values for scale bar length
@@ -383,15 +304,7 @@ methods
 
     labelStr = ['\rm{\textbf{' num2str(barLength) ' ' sBUnit '}}'];
 
-    % Skip the expensive re-layout - it includes a full drawnow to measure
-    % the label - when nothing the layout depends on has changed. The
-    % camera/limits listeners fire in bursts (a single setView triggers
-    % several PostSet events), so most calls end here. Pixel geometry
-    % changes are covered separately: the Position listener passes
-    % forceLayout, so no (layout-forcing) geometry probe is needed here.
-    % rfScreen has to be part of the key as well: reorienting the map by
-    % less than a quarter turn changes the indicator without changing
-    % xDir/yDir, so the four compass directions alone would memoize it away
+    % skip the expensive re-layout when none of its inputs changed
     key = {xDir, yDir, dx, dy, zBar, zBack, rulerLength, labelStr, sB.lineColor, ...
       sB.backgroundColor, sB.backgroundAlpha, sB.location, ...
       rfScreen, sB.refFrameLabels};
@@ -401,18 +314,7 @@ methods
     end
     sB.lastLayout = key;
 
-    % Set the label and measure its footprint before laying out the box -
-    % the box (and hence the bar) must be sized for the label that is
-    % about to be shown, not the one left over from the previous redraw.
-    %
-    % The extent is measured without flushing pending layout/rendering
-    % first: a drawnow here is extremely expensive on large maps (it
-    % synchronously renders everything pending, possibly several times per
-    % interaction). If the axes' pixel geometry is not settled yet (e.g. a
-    % uiaxes inside a freshly built App Designer layout), the measured
-    % extent is implausible and the fallback below kicks in; the final
-    % correct layout follows automatically once the geometry settles,
-    % because that fires the Position listener which forces a re-layout.
+    % measure the label that is about to be shown, but without a drawnow
     set(sB.txt,'string',labelStr,'position',cP([dx(1),dy(1)]))
     extent = get(sB.txt, 'Extent');
 
@@ -420,25 +322,14 @@ methods
     % about to be built on, not the fallback that may replace it below
     sB.lastExtent = extent(3:4);
 
-    % Extent(3:4) are the text's footprint along data-x/data-y - which one
-    % is the visually "wide" direction depends on whether the data axes
-    % are currently swapped on screen (same flag as used by cP below)
+    % Extent(3:4) is the footprint along data x and y, which may be swapped on screen
     if mod(xDir,2)
       textWidth = extent(4); textHeight = extent(3) * sign(diff(dy));
     else
       textWidth = extent(3); textHeight = extent(4) * sign(diff(dy));
     end
 
-    % Fall back to a size proportional to the map's own current extent -
-    % rather than a fixed font-size-based guess, which would only look
-    % right at whatever zoom level its absolute size happens to match -
-    % whenever Extent could not be measured (NaN) or is implausible
-    % (larger than a generous fraction of the map itself). The latter
-    % happens when the axes has not settled on its final pixel geometry
-    % yet (e.g. a uiaxes inside a freshly built App Designer layout, as in
-    % the import wizard), which throws off the pixel-to-data scale behind
-    % Extent; see the comment above the measurement for why this is only
-    % transient.
+    % fall back to a size proportional to the map when the extent is not measurable
     bogus = isnan(textHeight) || isnan(textWidth) || ...
       abs(textHeight) > 0.4*abs(diff(dy)) || abs(textWidth) > 0.9*abs(diff(dx));
     if bogus
@@ -451,13 +342,7 @@ methods
     % screen orientation of the data axes, as signs
     sX = sign(diff(dx)); sY = sign(diff(dy));
 
-    % Reference frame indicator - laid out in screen relative lengths (u to
-    % the right, v upwards, both unsigned) around an origin of its own, and
-    % only mapped onto the data axes further below. mapPlot sets
-    % 'axis equal', so one data unit is the same screen length along both
-    % axes and a single set of lengths serves both directions. Its size is
-    % derived from the measured label height, hence it scales with the font
-    % just like the rest of the box - including the fallback above.
+    % the indicator is laid out in screen relative lengths around its own origin
     if showRF
       [rfV, rfF, rfLine, rfLabPos, rfLabStr, rfBox] = ...
         refFrameGeometry(rfScreen, sB.refFrameLabels, abs(textHeight));
@@ -467,19 +352,8 @@ methods
       triadWidth = 0; triadHeight = 0;
     end
 
-    % Box position - dx(1)/dy(1) is the screen bottom-left corner of the
-    % map, dx(2)/dy(2) the top-right corner, so the requested location
-    % just picks which edge(s) the box is anchored to
-    %
-    % The box (and with it the bar) is sized to fit whichever of the bar
-    % or the label is wider, so a short bar with a long label - which
-    % easily happens after zooming or reorienting the map - does not spill
-    % out of the background box
-    %
-    % When the reference frame indicator is shown the box additionally
-    % grows upwards by its height plus one gap separating it from the
-    % label; with 'refFrame','off' the geometry is exactly the one without
-    % the indicator
+    % box position - the location picks which corner of the map the box is
+    % anchored to, and it is sized to fit whichever of bar or label is wider
     boxWidth  = (max([abs(rulerLength),textWidth,triadWidth]) + 2*abs(gapX)) * sign(diff(dx));
     if showRF
       boxHeight = 4*gapY + textHeight + triadHeight * sY;
@@ -517,9 +391,7 @@ methods
       'VerticalAlignment', 'baseline','color',sB.lineColor,...
       'Position', cP([boxx+boxWidth/2,boxy+3*gapY]));
 
-    % Create line as a patch, in the plane in front of the bounding box.
-    % The bar is centered within the box, so it stays centered under/above
-    % the label even when the label is wider than the bar itself.
+    % create line as a patch, centered in the box, in front of the bounding box
     rulerStart = boxx + (boxWidth - rulerLength)/2;
     set(sB.ruler,'Vertices',cP([rulerStart, boxy+gapY; ...
       rulerStart, boxy+2*gapY; ...
@@ -527,10 +399,7 @@ methods
       rulerStart + rulerLength, boxy + gapY]), ...
       'Faces',[1 2 3 4], 'FaceColor',sB.lineColor, 'FaceAlpha',1);
 
-    % Place the reference frame indicator: horizontally centered in the box
-    % - its own bounding box, so that a two arrow indicator is not pushed
-    % off center by the empty quadrants - and sitting one gap above the
-    % label
+    % place the indicator centered in its own bounding box, one gap above the label
     if showRF
 
       originU = boxx + boxWidth/2 - (rfBox(1) + rfBox(2))/2 * sX;
@@ -615,19 +484,13 @@ labHalf   = [(0.15 + 0.25*maxLen)*t, 0.5*t];
 
 n = size(rfScreen,1);
 
-% a direction is drawn as an arrow as soon as it is more than about 9
-% degree away from the viewing direction - closer than that its projection
-% is too short to show a direction, and the circled symbol is used instead
+% draw an arrow only when the direction is more than about 9 degree off the view
 inPlane = hypot(rfScreen(:,1),rfScreen(:,2)) >= 0.15;
 
 V = zeros(0,2); L = zeros(0,2); faceIdx = {};
 labPos = nan(n,2); labStr = repmat({''},1,n);
 
-% the direction along the viewing axis becomes a circled dot (out of the
-% screen) or a circled cross (into the screen), as in the string form of
-% @plottingConvention. It is drawn first since the arrows have to start
-% outside of it - otherwise they would run right through the circle and
-% cover the very mark that distinguishes the two cases
+% draw the out of screen symbol first, the arrows have to start outside of it
 kSym = find(~inPlane,1);
 if isempty(kSym)
   r0 = 0;

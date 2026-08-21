@@ -27,12 +27,8 @@ elseif nargin == 3
   x = vector3d(x,y,0);
 end
 
-% Invert the grid basis rather than project onto its two directions
-% separately. Projecting - dot(.,d1)/|d1|^2 - inverts the basis only when d1
-% and d2 are perpendicular. A rotation keeps them perpendicular, so that
-% went unnoticed, but a shear does not: on a 0.35 sheared twins map it
-% answered (5,8) for the cell at (3,7) and (32,47) for the one at (20,40),
-% the error growing with the distance from pos(1,1).
+% invert the grid basis, projecting onto the two directions separately is only
+% the same when they are perpendicular - which a shear destroys
 d = x - ebsd.pos(1,1);
 A = [ebsd.d1.x, ebsd.d2.x; ebsd.d1.y, ebsd.d2.y];
 ij = A \ [d.x(:).'; d.y(:).'];

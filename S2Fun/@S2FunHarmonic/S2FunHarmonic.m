@@ -150,9 +150,7 @@ methods (Static = true)
       return
     end
 
-    % a pre-frame file arrives as a struct because the property s is
-    % gone - rebuild and take the frame from the stored symmetry or a
-    % stored convention (only frames carry conventions now)
+    % a pre-frame file arrives as a struct, take the frame from its symmetry
     sF = S2FunHarmonic(s.fhat);
     if isfield(s,'framePrivate') && ~isempty(s.framePrivate)
       sF.framePrivate = referenceFrame.reintern(s.framePrivate);

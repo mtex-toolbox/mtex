@@ -74,10 +74,7 @@ classdef EBSD < phaseList & dynProp & dynOption
     rot2Plane  % rotation to xy plane
     frame      % the specimen reference frame (carried by pos)
     how2plot   % plotting convention - read only
-    % A convention belongs to a reference frame. To change how this is
-    % drawn use plot(...,'y↑→x') for one plot,
-    % plottingConvention.default(...) for the session, or move the data
-    % with x.frame = specimenFrame.rolling
+    % a convention belongs to a reference frame, see plottingConvention.default
     plottingConvention % plotting convention
     EulerCorrection    % EulerXYZ -> mapXYZ, correction for inconsistent reference frames
   end
@@ -104,9 +101,7 @@ classdef EBSD < phaseList & dynProp & dynOption
         ebsd.unitCell = pos.unitCell;
         ebsd.scanUnit = pos.scanUnit;
         ebsd.A_D = pos.A_D;
-        % same rule as the general constructor below: a map shaped property
-        % is flattened along with pos, while a genuine N x k one (multi
-        % channel image data) keeps its columns
+        % a map shaped property is flattened along with pos, an N x k one is not
         for fn = fieldnames(pos.prop)'
           p = pos.prop.(char(fn));
           if ~(size(p,2) > 1 && size(p,1) == length(pos)), p = p(:); end
@@ -128,12 +123,8 @@ classdef EBSD < phaseList & dynProp & dynOption
           pos = vector3d(pos(:,1),pos(:,2),0);
         end
       end
-      % an @EBSD is a flat list of measurements - size(ebsd) is size(ebsd.id)
-      % and id is a column below, as is phaseId. Map shaped (r x c) data is
-      % what the grid classes @EBSDsquare / @EBSDhex are for, so normalize
-      % the input here rather than storing pos and rotations in a shape that
-      % contradicts id, phaseId and size(ebsd) - an object that looks valid
-      % but breaks much later, e.g. inside gridify.
+      % an @EBSD is a flat list of measurements - map shaped data is what the
+      % grid classes @EBSDsquare / @EBSDhex are for, so normalize the input
       sPos = size(pos);
       ebsd.pos = pos(:);
 
@@ -151,9 +142,7 @@ classdef EBSD < phaseList & dynProp & dynOption
 
       ebsd.id = (1:numel(phases)).';
 
-      % extract additional properties - a property handed over in the shape
-      % of pos is flattened along with it, while a genuine N x k property
-      % (e.g. multi channel image data) keeps its columns
+      % extract additional properties, flattening those in the shape of pos
       if isstruct(prop)
         for fn = fieldnames(prop).'
           if isequal(size(prop.(char(fn))),sPos)
@@ -166,9 +155,9 @@ classdef EBSD < phaseList & dynProp & dynOption
       % remove nan positions
       if any(isnan(ebsd.pos)), ebsd = ebsd.subSet(~isnan(ebsd.pos)); end
 
-      % get unit cell
+      % get unit cell - varargin carries the grid options, the hint goes last
       ebsd = ebsd.updateUnitCell(get_option(varargin,'unitCell'),...
-        'hint',get_option(varargin,'unitCellHint'));
+        varargin{:},'hint',get_option(varargin,'unitCellHint'));
             
       ebsd.N = perp(ebsd.unitCell);
 
@@ -258,15 +247,7 @@ classdef EBSD < phaseList & dynProp & dynOption
     
     function ebsd = set.grainId(ebsd,grainId)
 
-      % the second output of calcGrains used to be the list of grainIds and
-      % is now the EBSD variable itself. Hence the old syntax
-      %
-      %   [grains,ebsd.grainId] = calcGrains(ebsd('indexed'))
-      %
-      % ends up here with an EBSD variable. Translate it into the
-      % corresponding list of grainIds - pixels missing from the returned
-      % data, e.g. since calcGrains was called on ebsd('indexed') only,
-      % keep grainId == 0 and become notIndexed, exactly as before.
+      % translate the old syntax [grains,ebsd.grainId] = calcGrains(ebsd('indexed'))
       if isa(grainId,'EBSD')
 
         warning('MTEX:calcGrains:oldSyntax',['The syntax\n\n' ...
@@ -462,13 +443,7 @@ classdef EBSD < phaseList & dynProp & dynOption
         ebsd.prop = rmfield(ebsd.prop,{'x','y'});
       end
 
-      % rebuild pos from the grid spacing of the @EBSDsquare era that stored
-      % dx / dy and no pos at all - 859b62af0 replaced them by the pos
-      % derived d1 / d2. Matlab cannot assign the vanished dx / dy, which is
-      % exactly why it hands such a file over as a struct, so the spacing is
-      % still here. This repeats the formula that constructor used, hence it
-      % recovers the very positions that MTEX version worked with - up to
-      % the origin, which that representation did not store either.
+      % rebuild pos from the dx / dy an @EBSDsquare stored before 859b62af0
       if isempty(ebsd.pos) && isstruct(s) && ...
           all(isfield(s,{'dx','dy'})) && ~isempty(s.dx)
 
@@ -490,9 +465,7 @@ classdef EBSD < phaseList & dynProp & dynOption
       % ensure CSList is vector
       ebsd.CSList = ensureCSArray(ebsd.CSList);
 
-      % a loaded file does not change how the session plots. The map keeps
-      % the frame it was saved in, re-interned so that separately saved
-      % datasets share one frame handle again
+      % keep the frame the map was saved in, re-interned against the register
       if ~isempty(ebsd.pos) && isa(ebsd.pos.frame,'specimenFrame')
         ebsd.frame = referenceFrame.reintern(ebsd.pos.frame);
       end

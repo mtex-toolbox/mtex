@@ -49,10 +49,8 @@ if check_option(varargin,'gradient') % use the gradient method
   
 else % use the integral method
 
-  % A 2d raster algorithm - filter2/ordfilt2 over a window shape - so it
-  % still needs the matrix form, unlike the gradient branch above. onGrid
-  % supplies it and maps the result back, so a plain @EBSD gets a W shaped
-  % like itself rather than like the grid it was gridified onto.
+  % a 2d raster algorithm, so it needs the matrix form - onGrid supplies it
+  % and maps the result back into the shape of the input
   W = onGrid(ebsd,@(eG) wbvIntegral(eG,varargin{:}));
 
 end

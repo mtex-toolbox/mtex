@@ -84,9 +84,7 @@ ok  = sum(C,2) > 0;
 dom(ok) = gLab(domCol(ok));
 
 % ------------------------------------------- per boundary pixel pair counts
-%
-% count, for every pair of adjacent true grains, how many adjacent pixel
-% pairs straddle it and how many of those were actually separated
+% per pair of adjacent true grains: how many pixel pairs straddle it, how many were separated
 
 cnt = zeros(nP); sep = zeros(nP);
 [cnt,sep] = tally(cnt,sep,tid(:,1:end-1),tid(:,2:end), ...
@@ -144,9 +142,7 @@ end
 
 % ------------------------------------------------------------ over/under
 
-% two different questions, and a shattered map must not score well on
-% either: 'fragments' counts every extra piece a true grain was broken
-% into, 'majorSplits' only pieces large enough to be a genuine split
+% 'fragments' counts every extra piece, 'majorSplits' only the genuine splits
 nTruePix = sum(C,2);
 fragments = 0; majorSplits = 0;
 for k = 1:nP

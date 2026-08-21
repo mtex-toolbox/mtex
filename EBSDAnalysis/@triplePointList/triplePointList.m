@@ -31,10 +31,7 @@ classdef triplePointList < phaseList & dynProp
     V              % vertices x,y coordinates of the triple points
     frame          % the specimen reference frame (carried by allV)
     how2plot       % default plotting convention - read only
-    % A convention belongs to a reference frame. To change how this is
-    % drawn use plot(...,'y↑→x') for one plot,
-    % plottingConvention.default(...) for the session, or move the data
-    % with x.frame = specimenFrame.rolling
+    % a convention belongs to a reference frame, see plottingConvention.default
   end
   
   methods

@@ -77,9 +77,7 @@ for grid = {'square','hex'}
   assert(isequal(alphaData{3},alphaData{4}), ...
     'check_ebsdMapBackends: %s grid, a map shaped alpha and its column differ for rgb data', grid{1});
 
-  % and the rgb branch has to be the rgb branch: for rgb the alpha is scaled
-  % by (1 - min(rgb)), for a scalar field by data/max(data). Those disagree
-  % here, which is what makes the check meaningful.
+  % rgb scales the alpha by (1 - min(rgb)), a scalar field by data/max(data)
   expected = alphaMap(:) .* (1 - min(rgbList,[],2));
   assert(max(abs(alphaData{3} - expected)) < 1e-12, ...
     'check_ebsdMapBackends: %s grid, rgb data did not take the rgb transparency branch', grid{1});

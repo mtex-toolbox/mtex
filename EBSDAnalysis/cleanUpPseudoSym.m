@@ -110,11 +110,8 @@ cond = tortuosity > maxT & gB.componentSize > 4;
 ind = ebsd.grainId > 0;
 ebsd.grainId(ind) = parentId(grains.id2ind(ebsd.grainId(ind)));
 
-% the operators that turn a measurement into the alternative indexing
-% solution. Note that the boundaries above are detected as misorientation
-% classes, which is why the direction of the boundary does not matter there,
-% while the correction below multiplies a fixed representative from the
-% right - so the list has to be completed first, see the local function.
+% the operators that turn a measurement into the alternative indexing solution -
+% the list has to be completed first, since the correction multiplies from the right
 psOps = completeOperators(mori);
 
 if isempty(psOps)

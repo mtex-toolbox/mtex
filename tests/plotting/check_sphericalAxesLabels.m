@@ -87,10 +87,7 @@ for i = 1:size(plain,1)
 end
 
 % --- three dimensional plots are annotated too --------------------------
-% they bypass sphericalPlot entirely, so plot3d and scatter3d have to ask
-% annotateFrame themselves - and the labels come with an arrow each, drawn
-% as a surface, since a flat text would sit in the z = 0 plane, i.e. inside
-% the sphere
+% they bypass sphericalPlot, so plot3d and scatter3d ask annotateFrame themselves
 labeled3d = {
   'plot(vector3d,3d)'  , @() plot(v,'3d')
   'plot(S2Fun,3d)'     , @() plot(calcDensity(v),'3d')
@@ -117,10 +114,48 @@ if any(countLabels(@() plot(v,'3d','noLabel')) > 0)
   error('check_sphericalAxesLabels: noLabel does not suppress the 3d annotation');
 end
 
+% --- a 3d plot points its camera where the caller asked -----------------
+% plot3d takes the tilted default3D only when the caller named no convention (#481)
+sf3d = calcDensity(zvector,'halfwidth',20*degree);
+east  = {xvector,-xvector, yvector,-yvector,xvector,zvector};
+north = {-yvector,yvector, xvector,-xvector,yvector,xvector};
+
+for i = 1:numel(east)
+  pC = plottingConvention;
+  pC.east = east{i}; pC.north = north{i};
+  pC.outOfScreen = cross(east{i},north{i});
+
+  close all
+  plot(sf3d,'3d','how2plot',pC);
+  camPos = get(gca,'CameraPosition');
+  close all
+
+  % the camera sits on the outOfScreen side of the target, at whatever
+  % distance the axes chose - only the direction is the contract here
+  if norm(camPos/norm(camPos) - pC.outOfScreen.xyz/norm(pC.outOfScreen.xyz)) > 1e-3
+    error(['check_sphericalAxesLabels: plot3d ignored the convention ' ...
+      'east %s north %s - camera at [%g %g %g]'], ...
+      char(pC.east),char(pC.north),camPos);
+  end
+end
+
+% without a convention the tilted default3D applies, and a symmetrised
+% function must not override that with the one it appends for its own data
+d3 = plottingConvention.default3D;
+for f = {@() plot(sf3d,'3d'), ...
+    @() plot(S2FunHarmonicSym.quadrature(@(w) exp(-4*angle(w,zvector).^2),cs),'3d')}
+  close all
+  f{1}();
+  camPos = get(gca,'CameraPosition');
+  close all
+  if norm(camPos/norm(camPos) - d3.outOfScreen.xyz/norm(d3.outOfScreen.xyz)) > 1e-3
+    error(['check_sphericalAxesLabels: a 3d plot without a convention ' ...
+      'must keep default3D, camera at [%g %g %g]'],camPos);
+  end
+end
+
 % --- a plain function on a crystal frame annotates a, b, c --------------
-% the GBND in crystal coordinates is a plain S2FunHarmonic that carries a
-% crystalFrame - the specimen X / Y / Z would be meaningless there, the
-% frame annotates its own axes instead
+% the specimen X / Y / Z would be meaningless there
 sFc = calcDensity(v);
 sFc = setFrame(sFc,csHex.frame);
 close all
@@ -133,8 +168,7 @@ if ~all(ismember(["a","b","c"],str))
 end
 
 % --- a full plot in crystal coordinates gets Miller labels --------------
-% the sector vertices in all their symmetrically equivalent positions -
-% they are drawn by plotLabels, hence not tagged axesLabels
+% the sector vertices are drawn by plotLabels, hence not tagged axesLabels
 close all
 plot(calcDensity(Miller(v,csHex)),'complete','upper');
 txt = findobj(gcf,'type','text','-not','tag','axesLabels');

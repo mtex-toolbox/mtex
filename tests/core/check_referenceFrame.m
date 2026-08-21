@@ -28,6 +28,8 @@ checkTrivialSymmetryFromFrame;
 checkFundamentalSectorFrame;
 checkHemisphereSectorHue;
 checkProductDropsSymmetry;
+checkPlotS2GridFrame;
+checkSchmidFactorFrames;
 
 disp('check_referenceFrame: passed');
 
@@ -420,10 +422,7 @@ p = S2FunHarmonic(sFs);
 assert(p.frame == cs.frame && p.how2plot == cs.how2plot, ...
   'check_referenceFrame: the cast to S2FunHarmonic lost the crystal frame');
 
-% extrema come back in the frame of the function: Miller for a
-% symmetrised one, and Miller carrying the trivial group on the crystal
-% frame for a plain crystal-framed one (ADR 0003, orientation without
-% symmetry - resolved the former open problem in S2Fun/min)
+% extrema come back in the frame of the function, as Miller for a crystal frame
 [~,pos] = max(sFs);
 assert(isa(pos,'Miller') && pos.CS == cs, ...
   'check_referenceFrame: extrema of a symmetrised S2Fun are not Miller');
@@ -559,9 +558,7 @@ r3 = rotate(w,inv(ori));
 assert(r3.frame == cs.frame, ...
   'check_referenceFrame: inv(ori) must take specimen data into the crystal frame');
 
-% the displays show the frame together with the convention: a rotated
-% slip system reports the specimen convention, a rolling framed vector
-% its axes names, a crystal framed vector only the frame identity
+% the displays show the frame together with the convention
 out = evalc('display(sSr)');
 % the convention sits inside the clickable frame link, so match it bare
 assert(contains(out,conventionChar(specimenFrame.default)), ...
@@ -585,7 +582,24 @@ end
 function checkSaveLoadRoundTrip
 
 cs = crystalSymmetry('321',[3 3 5],'mineral','RoundTrip','X||a');
-cs.frame = specimenSymmetry.frameFor(plottingConvention('z↑→x')); % its own frame
+
+% give it a frame of its own, carrying a convention that is not the default
+frC = crystalFrame(cs.axes,'name','RoundTrip');
+frC.how2plot = plottingConvention('z↑→x');
+cs.frame = frC;
+
+% a specimen frame has no lattice, so it is not a frame a crystal symmetry
+% can live in - taking one would replace the crystal axes by the identity
+try
+  cs.frame = specimenSymmetry.frameFor(plottingConvention('z↑→x'));
+  error('check_referenceFrame: a crystalSymmetry accepted a specimenFrame');
+catch e
+  assert(strcmp(e.identifier,'MTEX:wrongFrameClass'), ...
+    'check_referenceFrame: a crystalSymmetry accepted a specimenFrame');
+end
+assert(all(abs(norm(cs.axes) - [3 3 5]) < 1e-10), ...
+  'check_referenceFrame: the rejected assignment must leave the crystal axes alone');
+
 ss = specimenSymmetry('222');
 
 fname = [tempname '.mat'];
@@ -616,21 +630,20 @@ delete(fname);
 assert(S.ssF.frame ~= specimenFrame.default && isapprox(S.ssF.how2plot,pCF), ...
   'check_referenceFrame: a loaded forked frame did not survive');
 
-% a loaded CONTAINER applies its convention to the whole session - the
-% default frame adopts it and the map joins that frame
+% a loaded container keeps the frame it was saved in and leaves the session alone
 pC0e = plottingConvention.default;
 restoreDefault = onCleanup(@() plottingConvention.default(pC0e));
 ebsd = EBSD(vector3d.rand(4),rotation.rand(4,1),ones(4,1), ...
   {crystalSymmetry('m-3m')},struct());
-% give the map a frame of its own - assigning a convention to data is a
-% session change now, which is not what this block is testing
 frF = copy(specimenFrame.default); frF.how2plot = pCF;
 ebsd.frame = frF;
 save(fname,'ebsd');
 S = load(fname);
 delete(fname);
-assert(plottingConvention.default == pCF && S.ebsd.frame == specimenFrame.default, ...
-  'check_referenceFrame: loading an EBSD did not apply its convention to the session');
+assert(S.ebsd.frame ~= specimenFrame.default && S.ebsd.how2plot == pCF, ...
+  'check_referenceFrame: a loaded EBSD did not keep the frame it was saved in');
+assert(plottingConvention.default == pC0e, ...
+  'check_referenceFrame: loading an EBSD must not change the session convention');
 clear restoreDefault
 
 end
@@ -733,11 +746,7 @@ ori = orientation.map(Miller(1,0,0,cs),v);
 assert(ori.SS.frame == fr, ...
   'check_referenceFrame: orientation.map must adopt the frame of the framed input');
 
-% quadrature built results keep the frame of their input - the wrapper
-% used to fabricate a default specimenSymmetry whose session frame then
-% shadowed the input's own, so S2Fun.smiley.^2 changed its convention
-% smiley no longer carries a convention of its own, so give the function a
-% frame explicitly - what is under test is that arithmetic keeps it
+% quadrature built results keep the frame of their input, so give the function one
 s = S2Fun.smiley;
 s.frame = specimenSymmetry.frameFor(plottingConvention('z↑→x'));
 assert(getFrame(s.^2) == getFrame(s), ...
@@ -746,9 +755,7 @@ q = S2FunHarmonic.quadrature(@(v) v.x.^2,'bandwidth',16);
 assert(isempty(getFrame(q)), ...
   'check_referenceFrame: a quadrature over plain nodes must stay frame-free');
 
-% the gradient of an ODF keeps the specimen frame - stripSym drops the point
-% group but never the frame, and SO3VectorField reads frameLeft live
-% from its SLeft like SO3Fun does
+% the gradient of an ODF keeps the specimen frame, stripSym drops only the point group
 oriF = orientation.rand(10,cs);
 oriF.SS = copy(oriF.SS);
 oriF.SS.frame = fr;
@@ -942,9 +949,7 @@ for k = 1:numel(conv)
   key.ipfDirection = zvector;
   rgb(k,:) = key.orientation2color(ori);
 
-  % the precomputed grid has to agree with the exact map - it is cached
-  % across a session, so a key that misses what the colors depend on
-  % silently hands out a grid computed for something else
+  % the precomputed grid has to agree with the exact map, it is cached across a session
   keyG = ipfColorKey(ori);
   keyG.ipfDirection = zvector;
   keyG.precompute;
@@ -1028,5 +1033,147 @@ assert(m.CS.id == CS.id && m.SS.id == CS.id, ...
   'check_referenceFrame: a misorientation must keep both crystal symmetries');
 
 referenceFrame.reset;
+
+end
+
+% =========================================================================
+function checkPlotS2GridFrame
+% a plotting grid is a list of directions of the frame its region is given
+% in, and passing a frame is the way to ask for one
+%
+% Without it the only way to get a grid of crystal directions was to cast
+% the result, Miller(plotS2Grid('upper'),cs) - which does not merely tag the
+% directions but reinterprets a grid built for the session convention as
+% crystal directions, so the 'upper' hemisphere is the one the session
+% happens to draw, not the one of the crystal frame.
+
+referenceFrame.reset;
+d0 = plottingConvention.default;
+
+cs = crystalSymmetry('m-3m','mineral','Nickel');
+
+plottingConvention.default('y↓→x');   % z into the screen, the opposite of
+                                      % what a crystal frame does
+v = plotS2Grid('resolution',10*degree,'upper',cs.frame);
+
+assert(isa(v.frame,'crystalFrame') && isAligned(v.frame,cs.frame), ...
+  'check_referenceFrame: plotS2Grid did not carry the frame it was given');
+
+% 'upper' is the hemisphere the crystal frame draws, not the session one
+assert(all(v.z(~isnan(v.x)) > -1e-10), ...
+  'check_referenceFrame: plotS2Grid followed the session convention, not the frame');
+
+% the region of a crystal symmetry brings its frame along by itself
+w = plotS2Grid(cs.fundamentalSector,'resolution',10*degree);
+assert(isa(w.frame,'crystalFrame') && isAligned(w.frame,cs.frame), ...
+  'check_referenceFrame: the grid of a crystal frame region is frame free');
+
+% and a grid without any frame stays frame free
+u = plotS2Grid('resolution',10*degree,'upper');
+assert(isempty(u.frame), ...
+  'check_referenceFrame: a plain plotting grid must not gain a frame');
+
+plottingConvention.default(d0);
+referenceFrame.reset;
+
+end
+
+% =========================================================================
+function checkSchmidFactorFrames
+% slipSystem/SchmidFactor warns exactly when the slip systems and the
+% stress state live in different reference frames
+%
+% The guard used to test isa(n,'Miller') only, so it caught a specimen
+% stress tensor against crystal slip systems but was silent the other way
+% round: rotating the systems (ori * sS) drops the Miller index, and a
+% crystal frame tensor then went through unnoticed and returned a Schmid
+% factor computed across two frames. The tension direction branch had no
+% check at all, so the same computation warned or not depending on whether
+% it was written as a direction or as a uniaxial tensor.
+%
+% A direction that states no frame at all is a different case: it says
+% nothing about where it belongs, so it is taken at face value and never
+% warned about - vector3d.Z and every plotting grid are written that way.
+
+referenceFrame.reset;
+
+cs = crystalSymmetry('m-3m');
+sS = slipSystem.fcc(cs);          % crystal frame
+ori = orientation.byEuler(20*degree,30*degree,40*degree,cs);
+sSr = ori * sS;                   % specimen frame - no longer Miller
+assert(~isa(sSr.n,'Miller'), ...
+  'check_referenceFrame: rotating slip systems is expected to drop the Miller index');
+
+sigmaS = stressTensor.uniaxial(vector3d.Z);   % specimen frame
+sigmaC = rotate(sigmaS,inv(ori));             % crystal frame
+r0 = vector3d.Z;                              % frame free direction
+rS = vector3d.Z; rS.frame = specimenFrame.default;  % specimen direction
+rC = Miller(0,0,1,cs);                        % crystal direction
+
+% frame agrees -> silent, frame differs -> warns, on both branches
+assertWarn(sS ,sigmaS,true ,'crystal systems / specimen tensor');
+assertWarn(sS ,sigmaC,false,'crystal systems / crystal tensor');
+assertWarn(sSr,sigmaS,false,'specimen systems / specimen tensor');
+assertWarn(sSr,sigmaC,true ,'specimen systems / crystal tensor');
+assertWarn(sS ,rS    ,true ,'crystal systems / specimen direction');
+assertWarn(sS ,rC    ,false,'crystal systems / crystal direction');
+assertWarn(sSr,rS    ,false,'specimen systems / specimen direction');
+assertWarn(sSr,rC    ,true ,'specimen systems / crystal direction');
+
+% a direction without a frame is never complained about, whichever frame
+% the slip systems are in
+assertWarn(sS ,r0    ,false,'crystal systems / frame free direction');
+assertWarn(sSr,r0    ,false,'specimen systems / frame free direction');
+assertWarn(sS ,plotS2Grid('resolution',20*degree,'upper'),false, ...
+  'crystal systems / plain plotting grid');
+assertWarn(sS ,plotS2Grid('resolution',20*degree,'upper',cs.frame),false, ...
+  'crystal systems / crystal frame plotting grid');
+
+% the quadrature nodes of the no argument syntax are directions of the
+% frame the quadrature runs in, so that branch must stay silent
+lastwarn('');
+SF = sS.SchmidFactor;
+assert(isempty(lastwarn), ...
+  'check_referenceFrame: SchmidFactor without argument must not warn about frames');
+
+% and still be the Schmid factor - it is a degree 2 polynomial, so the
+% bandwidth 4 expansion is exact
+v = Miller(vector3d.rand(50),cs);
+ref = dot(v,sS.n.normalize,'noSymmetry') .* dot(v,sS.b.normalize,'noSymmetry');
+assert(max(abs(SF.eval(v) - ref)) < 1e-10, ...
+  'check_referenceFrame: SchmidFactor without argument is not the Schmid factor');
+
+% expressing the same stress state in either frame gives the same numbers
+w = warning('off','MTEX:frameMismatch');
+wCleanup = onCleanup(@() warning(w));
+a = sS.SchmidFactor(sigmaC);
+b = sSr.SchmidFactor(sigmaS);
+assert(isequal(size(a),size(b)) && max(abs(a(:)-b(:))) < 1e-12, ...
+  'check_referenceFrame: the Schmid factor depends on which frame it is computed in');
+
+% a tension direction and the corresponding uniaxial tensor agree
+assert(max(abs(sS.SchmidFactor(rC) - sS.SchmidFactor(stressTensor.uniaxial(rC)))) < 1e-12, ...
+  'check_referenceFrame: tension direction and uniaxial stress tensor disagree');
+
+referenceFrame.reset;
+
+end
+
+% -------------------------------------------------------------------------
+function assertWarn(sS,ref,expected,name) %#ok<INUSD>
+% call SchmidFactor and check whether it warned about the reference frame
+%
+% evalc keeps the expected warnings out of the test log - switching them off
+% would also stop lastwarn from recording them, which is what is under test
+
+lastwarn('');
+evalc('sS.SchmidFactor(ref);');
+[~,id] = lastwarn;
+got = strcmp(id,'MTEX:frameMismatch');
+
+if got ~= expected
+  if expected, verb = 'did not warn'; else, verb = 'warned'; end
+  error('check_referenceFrame: SchmidFactor %s for %s',verb,name);
+end
 
 end

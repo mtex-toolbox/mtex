@@ -105,7 +105,8 @@ end
 % accumulate only weights that are sufficiently close to the centers
 if maxAngle < inf
   inRadius = angle(seed,modes(centerId))<maxAngle;
-  weights = accumarray(centerId(inRadius), weights(inRadius));
+  % one weight per mode, including those no seed came close enough to
+  weights = accumarray(centerId(inRadius), weights(inRadius), [length(modes) 1]);
 end
 
 % sort components according to volume

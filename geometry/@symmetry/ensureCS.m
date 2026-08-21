@@ -13,10 +13,7 @@ if ~isa(csOld,'crystalSymmetry') || ~isa(csNew,'crystalSymmetry')
   return
 end
 
-% if the frames are compatible transform to the new reference frame; the
-% decision runs on the same normalized, length-repaired matrix that
-% transformReferenceFrame applies - lattice constant differences no longer
-% enter the decision
+% if the frames are compatible transform to the new reference frame
 [compatible,M] = isCompatible(csOld.frame,csNew.frame);
 if csNew.id == csOld.id && compatible
   if norm(M - eye(3)) > 1e-1

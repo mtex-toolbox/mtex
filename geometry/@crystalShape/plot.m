@@ -72,9 +72,7 @@ if check_option(varargin,'colored')
 
   if nargout == 0, clear h; end
 
-  % the legend has to exist before the layout is computed - mtexFigure
-  % reserves the space it needs and positions it 'legendSpacing' pixels
-  % beside the axes
+  % the legend has to exist before the layout is computed
   legend({},'interpreter','LaTeX','location','eastoutside')
 
   if isNew && ~check_option(varargin,'doNotDraw')

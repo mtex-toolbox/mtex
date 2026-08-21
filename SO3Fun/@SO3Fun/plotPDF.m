@@ -62,9 +62,7 @@ for i = 1:length(h)
   pdf = radon(SO3F,h{i},[],varargin{:}).' * c{i}.';
     
   % plot the pole density function
-  % for a misorientation SS is a crystal symmetry, the pole density
-  % function is then given in crystal directions - passing it lets the plot
-  % annotate itself accordingly
+  % for a misorientation SS is a crystal symmetry, so pass it for the annotation
   [~,cax] = plot(pdf,'smooth','doNotDraw','ensureNonNeg',SO3F.SS,varargin{:});
 
   if ~check_option(varargin,'noTitle')

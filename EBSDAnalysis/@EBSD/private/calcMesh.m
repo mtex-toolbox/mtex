@@ -36,13 +36,8 @@ xy = [pos.x(:), pos.y(:)];
 IJ = assignGridIndex(xy,A);
 I = IJ(:,1); J = IJ(:,2);
 
-% refine the lattice basis by fitting p0,u,v to the actual measured
-% positions via least squares against the rough integer indices. The
-% unit-cell-derived (u,v) is only a statistical estimate (calcUnitCell
-% fits it from local point statistics), and even a tiny mismatch against
-% the true per-pixel step compounds over hundreds of grid steps, which
-% can displace far-away points by a large fraction of a cell and corrupt
-% the mesh built below.
+% refine the lattice basis by fitting p0,u,v to the measured positions - the
+% estimate from calcUnitCell is statistical and its error compounds over the map
 designMatrix = [ones(numel(I),1), I, J];
 posXYZ = [pos.x(:), pos.y(:), pos.z(:)];
 fit = designMatrix \ posXYZ;
@@ -83,16 +78,8 @@ known = ~isnan(mesh);
 % local deformation on known nodes
 def = mesh - idealMesh;
 
-% Interpolate the deformation field in index space - but only into the
-% nodes that have nothing measured in them. A node that does gets pos
-% written straight back into it below, so interpolating there produces a
-% value that is thrown away again, and on a nearly complete map that is
-% nearly every node: an 18 million pixel Bruker map spent 50 of its 65
-% seconds evaluating an interpolant over its own data points.
-%
-% One interpolant, three value sets, for the same reason: Fx, Fy and Fz
-% differ only in what they interpolate, and building one each
-% triangulated the identical point set three times over (4.7s apiece).
+% interpolate the deformation field only into the nodes with nothing measured,
+% and with one interpolant for all three components, which triangulates once
 mesh = idealMesh;
 missing = ~known;
 if any(missing(:))

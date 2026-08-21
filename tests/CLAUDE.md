@@ -1,7 +1,7 @@
 # Tests
 
-Tiered suite. `runTests` runs a tier; every `check_*.m` in a tier folder is a test of that
-tier, so adding a file is all it takes to register it.
+`runTests` runs a tier. Every `check_*.m` in a tier folder is a test of that tier — adding
+the file is all it takes to register it.
 
 | tier | what belongs there | budget |
 | --- | --- | --- |
@@ -10,57 +10,50 @@ tier, so adding a file is all it takes to register it.
 | `plotting/` | tests whose assertion is about a graphics object | opt-in, not budgeted |
 | `lib/` | fixtures and generators, not tests | never collected |
 
-A file at `tests/` root is deliberately **not** collected by `runTests`. That is where a test
-goes when it cannot currently pass — `check_WignerD` (#2582) and `check_SO3FunRBFApproximation` (#2588) — or has not been
-converted yet — `SO3FunTests/test_convolution`. Each carries a header saying so. A tier is meant
-to go green, so a test that is known to fail does not belong in one; parking it here keeps it and
-its assertion alive without making the tier meaningless.
-
-`check_mtex`, `check_mex` and `check_mexComplete` also stay at `tests/` root. `check_mtex` runs the
-core tier. `check_mex` is an installer called from `startup_mtex.m` on every start, not a test.
-`check_mexComplete` is the build gate referenced by `.github/workflows/build-mex.yml`.
+`tests/` root is **not** collected. That is where a test goes when it cannot currently pass
+or has not been converted yet (`SO3FunTests/test_convolution`); each carries a header saying
+so. Also at root: `check_mtex` (runs the core tier), `check_mex` (an installer called from
+`startup_mtex.m`, not a test) and `check_mexComplete` (the build gate in
+`.github/workflows/build-mex.yml`).
 
 ## Before adding a test
 
-Most bug fixes do not earn a new file. This folder reached 84 files by adding one per bug, and
-about a third of them asserted nothing at all. In order:
+Most bug fixes do not earn a new file. This folder reached 84 files at one per bug, about a
+third asserting nothing. In order:
 
 1. **Does it deserve a regression test?** Yes if the bug produced wrong numbers or a wrong
-   shape **silently**. No if MATLAB or `checkcode` would have caught it — undefined variable,
-   wrong argument count, missing field, a stale docstring. Those are edits, not regressions.
+   shape **silently**. No if MATLAB or `checkcode` would have caught it — undefined
+   variable, wrong argument count, missing field, stale docstring. Those are edits.
+2. **Which file owns the subsystem?** See the map. Add a local `check<Thing>` subfunction
+   there and call it from the driver, as `check_calcGrainsCases`, `check_gridify` and
+   `check_boundaryChains` already do.
+3. **Only if nothing owns it**, add a file — and put it in the map.
 
-2. **Which file owns the subsystem?** See the map below. Add a local `check<Thing>` subfunction
-   there and call it from the driver. That is how `check_calcGrainsCases`, `check_gridify` and
-   `check_boundaryChains` are already built — the pattern exists, use it.
+**A new test must fail on the unfixed tree.** Verify that, and say so in the commit message.
 
-3. **Only if nothing owns it**, add a file — and it owns that subsystem from then on. Put it in
-   the map.
+**`core/` is synthetic by default.** `mtexdata` dominates the runtime here. A 24×24
+synthetic map catches shape, convention and ordering bugs as well as forsterite does — real
+data needs a reason, or the test goes in `slow/`.
 
-**A new test must fail on the unfixed tree.** Check that it does, and say so in the commit
-message. A test that passes before the fix documents nothing.
-
-**`core/` is synthetic by default.** `mtexdata` is the dominant cost in this suite. A 24×24
-synthetic map catches shape, convention and ordering bugs exactly as well as forsterite does —
-that is why `check_calcGrainsCases` runs in under a second while the forsterite-based tests take
-tens. Real data needs a reason, or the test goes in `slow/`.
-
-**Delete tests with their subject.** When the thing a test covers is removed or rewritten, remove
-or rewrite the test in the same commit. A vacuous assertion is worse than no test. Investigation
-findings go in the commit message or a GitHub issue — never a `.m` file parked in this folder.
+**Delete tests with their subject.** A vacuous assertion is worse than no test. Findings go
+in the commit message or a GitHub issue, never a `.m` file parked in this folder.
 
 ## Running them
 
-- Iterating on a fix: run the **one** owning file, through `docs/agents/matlab-bridge/`.
+**Ask before starting any predefined test run** — `runTests` in any tier, `check_mtex`, or
+an individual `check_*.m`. Targeted commands of your own through the bridge need no
+permission.
+
+- Iterating on a fix: the **one** owning file, through `docs/agents/matlab-bridge/`.
 - Before committing: `runTests` once.
-- `runTests('slow')` / `runTests('plotting')`: only when you touched that subsystem, or when
-  asked — these are minutes, not seconds. Ask before starting one.
+- `runTests('slow')` / `runTests('plotting')`: only after touching that subsystem.
 - Never `runTests('all')` unattended.
 
 ## Ownership map
 
-**Priority areas.** Anything depending on a **mex file** and **orientation geometry** are the
-critical ones; **import → grain reconstruction** is the important route. When the core tier runs
-over budget, trim from outside these before trimming inside them.
+**Priority areas**, in order: anything depending on a **mex file**, **orientation
+geometry**, then the **import → grain reconstruction** route. When the core tier runs over
+budget, trim from outside these first.
 
 | subsystem | owning test |
 | --- | --- |
@@ -69,6 +62,7 @@ over budget, trim from outside these before trimming inside them.
 | homochoric coordinates | `core/check_homochoric` |
 | misorientation distance, antipodal flag | `core/check_antipodalDistance` |
 | fundamental region projection | `core/check_fundamentalRegion` |
+| plotting grids of a `sphericalRegion` — that they cover it, stay inside it, and split into hole-free strips | `core/check_plotS2Grid` |
 | `orientation/find`, k-nearest and epsilon | `core/check_find` |
 | orientation embedding | `core/check_embedding` |
 | symmetry comparison, `eqTol`/`sim` | `core/check_symmetryCompare` |
@@ -104,16 +98,17 @@ over budget, trim from outside these before trimming inside them.
 | `rotate` on `SO3Fun` subclasses | `core/check_SO3FunRotate` |
 | kernel halfwidth | `core/check_kernelHalfwidth` |
 | ODF gradients | `core/check_odfGrad` |
+| axis distribution, and the `minAngle`/`maxAngle` window | `core/check_axisDistribution` |
 | `optimalSample` on SO(3) and on S2 — that the L-BFGS memory is used, weights on the simplex | `core/check_optimalSample` |
 | Clebsch–Gordan coefficients | `core/check_clebschGordan` |
-| Wigner D | `check_WignerD` at tests/ root — **known failure, #2582**, so not in a tier |
+| Wigner D, and the `'kernel'` option against the harmonic transform | `core/check_WignerD` |
 | `calcDensity` edge cases | `core/check_calcDensityEmpty` |
 | S2 kernel normalization | `core/check_S2KernelNormalization` |
 | `S1Fun` arithmetic | `core/check_S1Fun` |
 | `S1Fun/plot` options | `plotting/check_S1FunPlot` |
 | MLS subsampling | `slow/check_MLSSubsample` |
 | `radon` options | `core/check_radonOptions` |
-| RBF approximation | `check_SO3FunRBFApproximation` at tests/ root — **known failure, #2588** |
+| RBF approximation, every route into it | `slow/check_SO3FunRBFApproximation` |
 | `calcPoleFigure` superposition | `core/check_calcPoleFigureSuperposition` |
 | pole figure → ODF inversion | `slow/check_poleFigureInversion` |
 | tensor factories, `tensor` constructor arguments | `core/check_tensorFactories` |
@@ -130,15 +125,16 @@ over budget, trim from outside these before trimming inside them.
 | `grain2d/quiver` - arrow anchoring, center markers, head size | `plotting/check_grainQuiver` |
 | overlays on a map (crystal shapes, S2Fun) sit on the viewer's side | `plotting/check_mapOverlays` |
 | spherical axes labels | `plotting/check_sphericalAxesLabels` |
+| how many axes a spherical plot spans, and which of them data added with `hold on` reaches | `plotting/check_hemispherePlots` |
 | color scale options | `plotting/check_logColorScale` |
 | plots leave hold state untouched | `plotting/check_holdStatePlots` |
 | EBSD map plot backends (patch/imagesc/surf), per-pixel shape contract | `plotting/check_ebsdMapBackends` |
 
+
 ## Fixtures
 
-`lib/EBSDGrainBenchmark` generates synthetic EBSD maps with known grain structure and ground
-truth in `prop.trueGrainId`; `lib/scoreGrainBenchmark` scores a reconstruction against it.
-`benchmarkData/grainReconstructionReference` holds the stored topology snapshot for
-`slow/check_grainReconstructionBenchmark`. Its `'update'` mode rewrites that file — the
-hand-written provenance comments in it explain why each number is what it is, so check they
-survive.
+`lib/EBSDGrainBenchmark` generates synthetic maps with ground truth in `prop.trueGrainId`;
+`lib/scoreGrainBenchmark` scores a reconstruction against it.
+`benchmarkData/grainReconstructionReference` holds the topology snapshot for
+`slow/check_grainReconstructionBenchmark`. Its `'update'` mode rewrites that file — check
+that the hand-written provenance comments survive.

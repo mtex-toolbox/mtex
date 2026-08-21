@@ -13,6 +13,15 @@ function x = calcAxisDistribution(cs,varargin)
 %  value - values of the axis distribution function at axes a
 %  adf - axes distribution function @S2Fun
 %
+% Options
+%  minAngle - ignore rotations by less than this angle
+%  maxAngle - ignore rotations by more than this angle
+%
+% Description
+% The angle window works exactly as in <SO3Fun.calcAxisDistribution.html
+% SO3Fun/calcAxisDistribution>, so this stays the uniform reference a
+% restricted MDF can be compared against.
+%
 % See also
 % SO3Fun/calcAxisDistribution
 
@@ -34,8 +43,14 @@ end
 
 function value = getValue(h)
   h = project2FundamentalRegion(h,dcs);
-  omega = oR.maxAngle(h);
-  value = nSym * (omega - sin(omega)) ./ pi;
+  maxOmega = oR.maxAngle(h);
+
+  % the requested angle window, clipped to the fundamental region
+  a = min(max(get_option(varargin,'minAngle',0),0),maxOmega);
+  b = max(min(get_option(varargin,'maxAngle',inf),maxOmega),a);
+
+  % 2/pi * int_a^b sin(omega/2)^2 domega, per symmetry element
+  value = nSym * (b - a - sin(b) + sin(a)) ./ pi;
 end
 
 end

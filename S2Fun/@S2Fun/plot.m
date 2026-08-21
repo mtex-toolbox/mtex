@@ -34,10 +34,8 @@ if sF.antipodal, varargin = [varargin,'antipodal']; end
 
 S2Proj = makeSphericalProjection(varargin{:},sF.how2plot);
 
-% a crystal symmetry marks the plot as living in crystal coordinates, such
-% that it is not annotated with the X / Y / Z of the reference frame but
-% with Miller indices; a plain function on a crystal frame passes the
-% frame, which annotates its own axes a, b, c instead
+% a crystal symmetry annotates the plot with Miller indices, a crystal frame
+% with its own axes a, b, c
 if isa(cs,'crystalSymmetry')
   symArg = {cs};
 elseif isa(getFrame(sF),'crystalFrame')
@@ -84,8 +82,13 @@ else
       % plot the function values
       [h(ul,j),ax(ul,j)] = plot(plotNodes{ul},values{ul}(:,j),ulLabel{:},...
         'pcolor','hold','colorRange',cR,S2Proj(ul),symArg{:},varargin{:});
-      
+
     end
+
+    % the upper and the lower hemisphere are two axes but a single plot -
+    % a circle or a marker added to it later belongs to both of them
+    if length(S2Proj) == 2, registerHemispheres(ax(:,j)); end
+
   end
 end
 

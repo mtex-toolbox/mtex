@@ -46,10 +46,7 @@ methods
     
     if nargin == 0, return;end
     
-    % a function handle becomes an SO3FunHandle and is then converted like
-    % any other SO3Fun - this must not be an elseif of the chain below, or
-    % the object just built skips the conversion and is stored as if it were
-    % a coefficient vector
+    % a function handle becomes an SO3FunHandle and is then converted like any other
     if isa(fhat,'function_handle')
       [SRight,SLeft] = extractSym(varargin);
       fhat = SO3FunHandle(fhat,SRight,SLeft);

@@ -42,9 +42,7 @@ isAntipodal = check_option(varargin,'antipodal') || SO3F.CS.isLaue || ...
   (nargin > 1 && ~isempty(h) && h.antipodal) || ...
   (nargin > 2 && ~isempty(r) && r.antipodal);
 
-% bandwidth - the kernel carries no information beyond psi.bandwidth, so a
-% larger request can only be answered with what there is, as in
-% @SO3FunHarmonic/radon
+% bandwidth - the kernel carries no information beyond psi.bandwidth
 bw = min(get_option(varargin,'bandwidth',SO3F.psi.bandwidth),SO3F.psi.bandwidth);
 
 if isPF % pole figure

@@ -44,9 +44,9 @@ classdef axisAngleSections < ODFSections
       ori = orientation(oS.CS1,oS.CS2);
       oS.gridSize(1) = 0;
       for s = 1:length(oS.angles)
-        sR = oS.oR.axisSector(oS.angles(s));
-        
-        oS.plotGrid{s} = plotS2Grid(sR,varargin{:});
+        % the sectors are computed once in the constructor - recomputing
+        % them here costs as much as the grid itself
+        oS.plotGrid{s} = plotS2Grid(oS.axesSectors{s},varargin{:});
         
         oS.gridSize(s+1) = oS.gridSize(s) + length(oS.plotGrid{s});
         ori(1+oS.gridSize(s):oS.gridSize(s+1)) = ...
@@ -116,10 +116,12 @@ classdef axisAngleSections < ODFSections
             
       v.opt.region = oS.axesSectors{sec};
       
-      % plot data into all axes
-      h = gobjects(1,length(cax));
+      % plot data into all axes - a disconnected sector needs more than one
+      % graphics object per axes
+      h = gobjects(1,0);
       for k = 1:length(cax)
-        h(k) = plot(v,data{:},'parent',cax(k),varargin{:},'doNotDraw');
+        hk = plot(v,data{:},'parent',cax(k),varargin{:},'doNotDraw');
+        h = [h,reshape(hk,1,[])]; %#ok<AGROW>
       end
 
     end

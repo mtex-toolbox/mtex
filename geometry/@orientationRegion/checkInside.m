@@ -25,11 +25,8 @@ q = quaternion(q);
 if isempty(oR.N), inside = true(size(q)); return; end
 if isempty(q), inside = false(size(q)); return; end
 
-if oR.CS1 == crystalSymmetry & oR.CS2 == crystalSymmetry & oR.antipodal
-  d = dot_outer(oR.N,q);
-  inside = all(d>=tol,1);
-  return
-end
+% the branch for a region without symmetry is gone: crystalSymmetry seals eq to
+% handle identity, so it could never be taken
 
 % verify all conditions are satisfies
 d = dot_outer(oR.N,q);

@@ -142,9 +142,7 @@ elseif nargin>1 && (isa(varargin{1},'S2Fun') || isa(varargin{1},'ipfColorKey'))
 
   ori = grains.meanOrientation;
 
-  % the overlay is crystal data - a function handed in without a crystal
-  % claim (frame-free or merely default-framed) is put into the crystal
-  % frame of the grains before it is rotated into the map
+  % the overlay is crystal data, so put a function without a crystal claim into that frame
   if ~isa(getFrame(S2F),'crystalFrame'), S2F.frame = ori.CS.frame; end
 
   for k = 1:length(grains)
@@ -228,9 +226,7 @@ if isNew
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 
-% crystal shapes and tensorial properties stick out of the map plane, which
-% makes MATLAB sort the axes children by depth - tell the scale bar to move
-% in front of them
+% crystal shapes stick out of the map plane, so tell the scale bar to move in front
 mP.micronBar.setOnTop
 
 % allow change of aspect ratio only for single figures

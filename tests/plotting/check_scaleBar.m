@@ -21,11 +21,8 @@ cleanUp = onCleanup(@() cleanup(oldVis)); %#ok<NASGU>
 ebsd = mtexdata('small');
 ebsd = ebsd('indexed');
 
-% the axis aligned conventions, together with the expected screen direction
-% (right, up) of x, y and z - [0 0] marks the axis along the viewing
-% direction, which has to become the circled symbol instead of an arrow -
-% and the symbol expected for it: a filled dot pointing out of the screen
-% or a cross pointing into it
+% the axis aligned conventions, the screen direction (right, up) of x, y and z,
+% where [0 0] is the axis along the view, and the symbol expected for it
 cases = { ...
   'y↑→x', [1 0; 0 1; 0 0], 'dot'; ...
   'y↓→x', [1 0; 0 -1; 0 0], 'cross'; ...  % plottingConvention.ij
@@ -101,10 +98,7 @@ for k = 1:size(cases,1)
   close all
 end
 
-% the bar is positioned from the axes limits and must never contribute to
-% them - otherwise the 'axis tight' EBSD/plot.m does after drawing the map
-% picks up the position the bar still had for the default [0 1] limits and
-% drags the whole map extent down to the origin
+% the bar is positioned from the axes limits and must not contribute to them
 plottingConvention.default('y↑→x');
 plot(ebsd,'micronbar','off');
 drawnow
@@ -120,14 +114,7 @@ if ~all(abs(limBar - limNoBar) <= 1e-9*max(abs(limNoBar)))
 end
 close all
 
-% Where the bar itself sits, which nothing above pins - the cases so far are
-% all about the reference frame indicator inside it. Reported as #2576: the
-% bar moved out of the corner and turned with the map as soon as the
-% plotting convention was changed, e.g. by xAxisDirection west. The bar is
-% laid out in data coordinates while the convention is applied through the
-% axes camera, so "bottom left" has to be decided on SCREEN, projecting onto
-% the convention's east / north - the axes XDir / YDir stay 'normal'
-% throughout and say nothing about it.
+% #2576: the bar is laid out in data coordinates, so its corner is decided on screen
 for conv = {'y↑→x','y↓→x','x←↑y','x↑→y'}
 
   plottingConvention.default(conv{1});
@@ -195,10 +182,7 @@ end
 hOff = abs(sB.shadow.Vertices(2,2) - sB.shadow.Vertices(1,2));
 wOff = abs(sB.shadow.Vertices(3,1) - sB.shadow.Vertices(1,1));
 
-% ... i.e. exactly the geometry the bar had before the indicator was
-% introduced: twice the height of its own label. The tolerance covers the
-% label being re-measured here, after a drawnow, while the layout measures
-% it without flushing (see scaleBar/update)
+% ... i.e. twice the height of its own label, as before the indicator was introduced
 if abs(2*abs(sB.txt.Extent(4)) - hOff) > 0.03*hOff
   error('check_scaleBar: ''refFrame'',''off'' box is %g high, expected %g',...
     hOff, 2*abs(sB.txt.Extent(4)));
@@ -215,21 +199,14 @@ if hOn <= hOff || wOn < wOff - 1e-6*wOff
   error('check_scaleBar: the indicator did not make the box grow (%gx%g vs %gx%g)',...
     wOn, hOn, wOff, hOff);
 end
-% A flat map has to stay a two dimensional, child order drawn axes. Giving
-% the bar a z coordinate here would switch SortMethod to 'depth' and with it
-% the rendering of the entire map - among other things the translucent
-% background box would then be composited over the bar and the arrows
+% a flat map stays a two dimensional, child order drawn axes
 if ~strcmp(get(gca,'SortMethod'),'childorder') || ...
     size(sB.shadow.Vertices,2) > 2 || ~isempty(sB.rfSymbol.ZData)
   error('check_scaleBar: a flat map was turned into a depth sorted 3d axes');
 end
 close all
 
-% Content plotted on top of the map that reaches out of the map plane -
-% crystal shapes are the typical case - gives the axes a z extent, and
-% MATLAB then sorts the axes children by depth. The whole bar has to follow
-% into the plane closest to the camera, otherwise it ends up buried under
-% that content no matter where it sits in the child list
+% content with a z extent makes MATLAB sort by depth, the bar has to follow
 plottingConvention.default('y↓→x');
 grains = calcGrains(ebsd,'threshold',10*degree);
 biggest = grains(grains.numPixel == max(grains.numPixel));

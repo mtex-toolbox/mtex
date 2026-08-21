@@ -108,21 +108,9 @@ for k = 2:numel(e.CSList)
     k, class(e.CSList(k)))
 end
 
-% the scan is not a full rectangle. gridify fills the raster out - the cells
-% with no measurement become notIndexed rather than NaN, and they do get an
-% id - so what has to survive is the number of INDEXED pixels, not the
-% number of cells.
-%
-% 565, not 613: this scan does not sit on one regular lattice. Its 613
-% indexed measurements have 605 distinct positions but fall into only 565
-% distinct cells of the fitted lattice, and gridify keeps one measurement
-% per cell. The count below is exactly that number of cells, so this pins
-% "one per cell, none lost beyond the collisions" rather than a magic
-% constant - if it ever drops below 565, measurements are being lost for
-% some other reason.
-%
-% Those collisions are also why EBSD.load refuses to grid this file at all;
-% checkGridOnImport pins that.
+% the scan is not a full rectangle, so what has to survive is the number of
+% indexed pixels - 565, since its 613 measurements fall into 565 lattice cells
+% and gridify keeps one per cell, which is also why EBSD.load refuses to grid it
 g = gridify(e);
 assert(isequal(size(g),[64 73]), ...
   'check_ebsdImport: eclogite.ctf gridified to %s, expected [64 73]', mat2str(size(g)))
@@ -316,10 +304,7 @@ for omit = [1 2 3 0]
   f = writeSyntheticCpr(nx,ny,omit);
   c = onCleanup(@() delete(f,[f(1:end-4) '.crc'])); %#ok<NASGU>
 
-  % state the Euler correction rather than switching its warning off: a
-  % disabled warning still updates lastwarn, so the note about the assumed
-  % alignment would be the one read back below. Naming it suppresses it at
-  % the source, and this test is about phases, not about the correction.
+  % state the Euler correction, a disabled warning would still update lastwarn
   lastwarn('');
   evalc(['e = EBSD.load(f,''noGrid'',''EulerCorrection'',' ...
     'rotation.byAxisAngle(zvector,180*degree));']);
@@ -354,11 +339,7 @@ for omit = [1 2 3 0]
        'notice must only fire on a file that is short a section'], warnId)
   end
 
-  % what the .crc states per pixel, in file order - 'noGrid' keeps that
-  % order, so this is what every pixel below is held against. The
-  % undescribed phase cannot be read back off the import: an EBSD merges
-  % every notIndexed entry onto phase 0, which is exactly what those pixels
-  % are supposed to become.
+  % what the .crc states per pixel, in file order - 'noGrid' keeps that order
   filePhase = reshape(mod(0:nx*ny-1,numel(names)+1),[],1);
 
   % phase 0 is unindexed in every file; a phase left undescribed joins it

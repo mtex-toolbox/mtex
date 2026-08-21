@@ -16,9 +16,7 @@ grid_vals = reshape(S2F.values(:), numel(S2F.nodes), numel(S2F));
 oI = zeros(numel(S2F.nodes), numel(S2F));
 
 for j = 1 : numel(S2F)
-  % gather neighbor values as N-by-k matrix
-  % NOTE: linear indexing of a column with the N-by-k index array returns a
-  %   single column, so the neighborhood layout has to be restored
+  % gather neighbor values as N-by-k matrix, linear indexing returns a single column
   vals = reshape(grid_vals(id,j), size(id));
 
   % local median value of neighborhood, for each node as center (N x 1)

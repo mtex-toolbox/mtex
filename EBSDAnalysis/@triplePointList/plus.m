@@ -15,10 +15,7 @@ function tP = plus(tP,v)
 
 if isa(v,'triplePointList'), [v,tP] = deal(tP,v); end
 
-% V is a vector3d - it used to be an n x 2 double, which is what the old
-% [v.x,v.y] / repmat route here was written for. Against a vector3d that
-% route implicitly expands the coordinate arrays into n x 2 and silently
-% returns a nonsensical object instead of a translation.
+% V is a vector3d, an n x 2 double would expand its coordinate arrays
 if ~isa(v,'vector3d')
   error('MTEX:shift:invalidShift',...
     'Triple points can only be shifted by a vector3d.');

@@ -77,10 +77,7 @@ if exist('jcvoronoi2_mex','file') ~= 3
     ' - there is nothing to compare the fallback against. Run mex_install.']);
 end
 
-% the DelaunayOnly binary is guarded separately: claims (1) and (2) are still
-% worth running without it, and the original check_jcvoronoiDelaunayOnly had
-% no guard at all, so on an un-mexed platform it died with an undefined
-% function error instead of a readable message
+% guard the DelaunayOnly binary separately, claims (1) and (2) run without it
 hasDelaunayMex = exist('jcvoronoiDelaunayOnly_mex','file') == 3;
 
 % -- (1) MATLAB fallback vs mex -------------------------------------------
@@ -164,8 +161,7 @@ if nOnlyM || nOnlyF
 end
 
 % -- segment geometry, order and direction independent --------------------
-% a segment is identified by its midpoint and its length, so that neither the
-% row order nor which endpoint comes first has to agree
+% a segment is identified by its midpoint and its length
 tol = 2*epsTol;   % both sides jitter the dummies by up to 0.1*epsTol per axis
 dMax = matchSets(segKey(Vm,Fm), segKey(Vf,Ff), tol, label, 'segments');
 fprintf('  %-38s %4d segments, max deviation %.3g (tolerance %.3g)\n', ...

@@ -87,9 +87,7 @@ methods
     lambda = F.smoothingLength;
     if isempty(lambda), lambda = 4*h; end
 
-    % Invert the gain 1/(1+4*alpha*sin(w/2)^4) = 1/2 at w = 2*pi*h/Lambda.
-    % Solving it exactly rather than for small w matters at the short end -
-    % the small angle form is 20% out already at Lambda = 4h.
+    % invert the gain 1/(1+4*alpha*sin(w/2)^4) = 1/2 at w = 2*pi*h/Lambda, exactly
     alpha = 1 / (4 * sin(pi*h/max(lambda,2*h))^4);
 
   end

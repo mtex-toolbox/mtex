@@ -29,8 +29,7 @@ end
 close all
 
 % -------------------------------------------------- 10 hold state composition
-% every plot has to leave the caller's hold state exactly as it found it,
-% and has to accumulate rather than replace when the caller holds
+% every plot leaves the caller's hold state as it found it, and accumulates when held
 ebsd = mtexdata('small');
 ebsd = ebsd('indexed');
 grains = calcGrains(ebsd,'threshold',10*degree);
@@ -76,10 +75,7 @@ for k = 1:size(cases,1)
 end
 
 % -------------------------------------------------------- 11 the color order
-% hold puts an axes into the color cycling mode, so a plot that holds only
-% internally would consume a color of the caller - doc/Rotations/
-% RotationTangentSpace.m draws a marker in an explicit color and expects the
-% quiver that follows to get the first color of the color order
+% a plot that holds only internally must not consume a color of the caller
 close all
 R = rotation.byAxisAngle(xvector,20*degree);
 plot(R,'axisAngle','MarkerColor','red')

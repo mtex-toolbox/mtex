@@ -79,9 +79,7 @@ posP = rot2Plane * ebsd.pos;
 % --- basis --------------------------------------------------------------
 aIn = get_option(varargin,'basis',[]);
 if ~isempty(aIn)
-  % an explicit basis is used exactly as given - no pinning, since the
-  % caller has already decided what dimension 1 is (e.g. @EBSDsquare
-  % handing over its own d1,d2 so the numbers stay bit identical)
+  % an explicit basis is used as given, the caller has decided what dimension 1 is
   a1 = aIn(1); a2 = aIn(2);
   A = [a1.x a2.x; a1.y a2.y];
 else
@@ -95,8 +93,7 @@ end
 nE = length(ebsd);
 
 % --- lattice index and neighbour lookup ---------------------------------
-% recomputed against A rather than reusing ebsd.lattice.ij, because ij is
-% only meaningful together with the basis it was built from
+% recomputed against A, ij only means something together with its own basis
 ij = assignGridIndex([posP.x(:), posP.y(:)], A);
 [ij2ebsd,ij2slot,ijMin,ijSize] = latticeLookup(ij);
 
@@ -122,10 +119,8 @@ switch lower(stencil)
     return
 
   case 'full'
-    % every offset in {-1,0,1}^2 except the centre. On a square lattice
-    % that is the 8 neighbourhood, on a hex one the 6 neighbours plus the
-    % two second nearest along a1+a2 - symmetric either way, which the old
-    % hardcoded six offset list was not.
+    % every offset in {-1,0,1}^2 except the centre, which is symmetric on a
+    % square as well as on a hex lattice
     [u,v] = ndgrid(-1:1,-1:1);
     full = [u(:) v(:)];
     g = lsqGradient(ebsd,ij,inBox,lookup,A,a1,a2,nE,full(any(full,2),:));
@@ -277,10 +272,7 @@ for s = 1:size(stencil,1)
 
 end
 
-% fewer than 2 independent neighbour directions. Tested relative to
-% M11*M22, not against zero: with the 'full' stencil the offsets carry two
-% different lengths, so a near collinear set can leave det small but not
-% zero, and inverting that returns a huge gradient rather than a NaN.
+% fewer than 2 independent neighbour directions - relative to M11*M22, not to zero
 det = M11.*M22 - M12.^2;
 bad = ~(det > 1e-10 * M11 .* M22);
 
@@ -294,12 +286,7 @@ iv = @(R) deal((R(:,1).*M22 - R(:,2).*M12)./det, ...
 G1 = vector3d(Gx1,Gy1,Gz1);      % d(ori)/dx, x of the MAP PLANE frame
 G2 = vector3d(Gx2,Gy2,Gz2);      % d(ori)/dy, likewise
 
-% Report along the two lattice directions, as the one sided branch does.
-% The offsets d above are in the map plane frame, so G1/G2 are derivatives
-% with respect to that frame and have to be combined with the plane frame
-% components of a1,a2 - i.e. the columns of A. NOT a1.x/a1.y, which are the
-% specimen components and only coincide with them for a map in the xy
-% plane. The norms are the same in either frame.
+% report along the two lattice directions, combining with the columns of A
 g = vector3d.nan(nE,2);
 g(:,1) = (G1*A(1,1) + G2*A(2,1)) ./ norm(a1);
 g(:,2) = (G1*A(1,2) + G2*A(2,2)) ./ norm(a2);

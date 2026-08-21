@@ -72,30 +72,20 @@ for i = 1:length(phasePos)
   pointGroup = readByToken(str,'# PointGroupID');
   lattice = readByToken(str,'# LatticeConstants',[1 1 1 90 90 90]);
 
-  % NaN, not 0, when the line is missing or empty - the fingerprint below
-  % keys on a phase block that states zero reflectors, not on one that
-  % says nothing about them at all
+  % NaN, not 0, the fingerprint below keys on a phase block stating zero reflectors
   minerals{i} = mineral;
   nFam = readByToken(str,'# NumberFamilies',NaN);
   if isempty(nFam), nFam = NaN; end
   nFamilies(i) = nFam;
 
-  % setup crystal symmetry - the symmetry is stored as a TSL code, newer
-  % files state the point group in addition, and the crystal reference
-  % frame follows the EDAX convention
+  % setup crystal symmetry - the symmetry is stored as a TSL code
   cs(phase+1) = crystalSymmetry(TSL2pointGroup(laue,pointGroup),lattice(1:3)',...
     lattice(4:6)'*degree,'mineral',mineral,'EDAX');
 
 end
 
-% Which convention does the phase column follow? EDAX counts the declared
-% phases from 1 and keeps 0 for not indexed, EMSphInx counts them from 0
-% and flags not indexed with 255 - so the same number means a different
-% phase depending on who wrote the file, and nothing in it says who did.
-% EMSphInx does leave a fingerprint though: it copies the EDAX header
-% layout but fills none of the phase description in, no material name, no
-% reflectors, and never writes the # VERSION line OIM has emitted for
-% years.
+% EDAX counts the phases from 1 and keeps 0 for not indexed, EMSphInx counts
+% from 0 and flags 255 - EMSphInx fills in no phase description and no # VERSION
 isEMSphInx = ~isempty(phasePos) && all(cellfun(@isempty,minerals)) && ...
   all(nFamilies == 0) && isempty(readByToken(hl(1:nh),'# VERSION'));
 
@@ -200,12 +190,8 @@ end
     
 ColumnNames = get_option(varargin,'ColumnNames',ColumnNames(1:length(isnum)));
 
-% an EMSphInx phase column is resolved against the declared phases below,
-% so keep it out of the generic loader's hands - it would read the numbers
-% as EDAX ones, and a 255 would even trip its "too many phases" guard and
-% wipe the whole column
-% the generic loader lowercases every column name into the property name,
-% hence the spelling of the field read back below
+% resolve an EMSphInx phase column below, the generic loader would read the
+% numbers as EDAX ones - it lowercases the column name into the property name
 iPhase = find(strcmpi(ColumnNames,'Phase'),1);
 if isEMSphInx && ~isempty(iPhase), ColumnNames{iPhase} = 'emsphinxphase'; end
 
@@ -219,10 +205,7 @@ if isEMSphInx
 
   ebsd = applyZeroBasedPhases(ebsd,cs);
 
-  % EMSphInx flags a pattern it failed to index, but not a pixel a ROI mask
-  % kept out of the run - that one keeps a valid phase number and is only
-  % recognisable by orientation, image quality and fit metric all being
-  % exactly zero
+  % a pixel a ROI mask kept out of the run has orientation, IQ and fit all zero
   ebsd = markUnmeasured(ebsd);
 
 else
@@ -241,12 +224,7 @@ else
     notIndexedID = -1;
   end
 
-  % phaseMap and CSList have to stay in lockstep and no phase number may
-  % occur twice - a header declaring more phases than the data ever states
-  % otherwise leaves a trailing symmetry that no phase number reaches, and
-  % renaming the notIndexed phase to a number the data already uses makes
-  % every lookup by phase ambiguous. Both happen on an .ang whose phase
-  % column does not follow the convention its header suggests.
+  % phaseMap and CSList have to stay in lockstep, and no phase number may occur twice
   if numel(ebsd.phaseMap) < numel(ebsd.CSList)
     nMissing = numel(ebsd.CSList) - numel(ebsd.phaseMap);
     ebsd.phaseMap = [ebsd.phaseMap(:); max(ebsd.phaseMap) + (1:nMissing).'];
@@ -260,11 +238,7 @@ end
 
 ebsd = applyEulerCorrectionTable(ebsd,'.ang',varargin{:});
 
-% a file does not change how the session plots - the map follows the
-% session convention like everything else. That was a no-op in a pristine
-% session anyway, since the default frame is seeded with the same
-% plottingConvention.ij; where it was not, it was overriding the user.
-% A convention passed by the caller is a user gesture and still applies
+% a file does not change how the session plots, but a convention the caller passed does
 pC = getClass(varargin,'plottingConvention');
 if ~isempty(pC), plottingConvention.default(pC); end
 

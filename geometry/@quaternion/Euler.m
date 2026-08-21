@@ -48,12 +48,8 @@ ind = isnull(beta);
 conventions = {'nfft','ZYZ','ABG','Matthies','Roe','Kocks','Bunge','ZXZ','Canova'};
 convention = get_flag(varargin,conventions,getMTEXpref('EulerAngleConvention'));
 
-% zSign and zShift describe how the convention encodes a pure z-rotation by
-% omega once the third angle is set to zero, i.e. alpha = zSign*omega + zShift.
-% They are the inverse of the convention -> Matthies map in euler2quat, which
-% is all that survives at beta == 0: there the quaternion only depends on
-% alphaMatthies + gammaMatthies, so the split between the two angles is
-% arbitrary and only their contribution to the z-rotation is determined.
+% zSign and zShift describe how the convention encodes a pure z-rotation, i.e.
+% alpha = zSign*omega + zShift - the inverse of the map in euler2quat at beta == 0
 
 switch lower(convention)
 
@@ -94,10 +90,7 @@ switch lower(convention)
 
 end
 
-% beta == 0: the rotation is a pure rotation about the z-axis by omega. Only
-% the sum of the first and the third angle is determined, so put all of it
-% into the first one - but in the coordinates of the convention, not in
-% Matthies coordinates, which is what zSign and zShift correct for.
+% beta == 0: only the sum of the first and the third angle is determined, so take the first
 if any(ind(:))
   omega = 2*asin(max(-1,min(1,ssign(qa(ind)).*qd(ind))));
   alpha(ind) = mod(zSign*omega + zShift,2*pi);

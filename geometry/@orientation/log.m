@@ -15,6 +15,12 @@ function v = log(ori,varargin)
 % space onto the orientation space is the exponential map 
 % |<SO3TangentVector.exp.html exp>|.
 %
+% The pair is reduced by symmetry first, exactly as
+% |<orientation.angle.html angle>| does it, so that the result describes the
+% two crystals and not the representatives they happen to be stored as. In
+% particular |norm(log(ori,ori_ref))| is |angle(ori,ori_ref)|. Pass
+% |'noSymmetry'| to take the logarithm of the rotations as they are.
+%
 % Syntax
 %   v = log(ori)
 %   v = log(ori,ori_ref,SO3TangentSpace.rightVector) 
@@ -51,13 +57,12 @@ end
 tS = SO3TangentSpace.extract(varargin);
 
 % subtract the reference orientation
-% Note: this may not be guarded by a test like "if ori_ref ~= quaternion.id".
-% For an array valued reference such a condition collapses into an all() over
-% all elements and, since ne is symmetry aware, a single reference orientation
-% that coincides with a symmetry element would silently drop the reference for
-% every element.
+% Note: this may not be guarded by a test like "if ori_ref ~= quaternion.id",
+% since ne is symmetry aware and collapses into an all() over the whole array
 if isRef
   if tS.isLeft
+    % reduce the pair first, the product ori * inv(ori_ref) cannot be reduced any more
+    if isa(ori,'orientation'), ori = project2FundamentalRegion(ori,ori_ref); end
     orin = ori .* inv(ori_ref);
     % we should not change the reference frame of the reference orientation
     ori = orientation(orin,specimenSymmetry,ori.SS);
@@ -75,11 +80,8 @@ end
 % compute logarithmic map without symmetries
 v = log@quaternion(ori);
 
-% construct output
-if tS.isSpinTensor
-  v = spinTensor(v);
-else
-  v = SO3TangentVector(v,ori_ref,tS);
-end
+% construct output - build the tangent vector first, so it inherits the frame
+v = SO3TangentVector(v,ori_ref,tS);
+if tS.isSpinTensor, v = spinTensor(v); end
 
 end

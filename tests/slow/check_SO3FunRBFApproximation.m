@@ -1,16 +1,13 @@
 function check_SO3FunRBFApproximation
-% KNOWN FAILURE, see https://github.com/mtex-toolbox/mtex/issues/2588
+% approximation of an SO3FunRBF, every route into it
 %
-% At tests/ root rather than in slow/, so that runTests('slow') can still go
-% green. The harmonic method is not scale equivariant: over s = 1, 0.378,
-% -4.583, 11.269 its relative error err/|s| runs 0.0135, 0.0159, 0.0097 then
-% jumps to 0.1426, failing the last assertion by 7x. mlsq holds ~0.012 across
-% the same 30x range of amplitude, which is what points at an absolute
-% tolerance being used where a relative one is needed.
+% In slow/ rather than core/: the file takes about 20 s, most of it the Dubna
+% cases, which is a third of the whole core budget on its own.
 %
-% The unmodified develop copy fails identically - this is not a regression
-% from the tests/ refactor. The only edit made here was to restore the
-% mlsq:itermax warning under onCleanup.
+% Was parked at tests/ root as a known failure through two bugs, both fixed:
+% the harmonic method was not scale equivariant (#2588, a local variable
+% shadowing eps), and SO3FunRBF.approximate(nodes,values,...) errored where
+% interpolate accepted the same arguments (#2595).
 
 % restored by onCleanup, so that a failing assertion below does not leave
 % the warning switched off for the rest of the session
@@ -101,12 +98,14 @@ err = norm(SO3F.eval(ori) - S.values) / norm(S.values);
 assert(err < 0.02,'SO3FunRBFApproximation:Dubna:SO3G',...
     'SO3FunRBFApproximation:SO3Fun:Dubna: FAILED')
 
+% seeded, the error runs 0.0494 to 0.0504 over twelve seeds and the bound is 0.06
+rng(0)
 val = S.values + randn(size(S.values)) * 0.05 * std(S.values);
 
 SO3F = SO3FunRBF.approximate(ori, val,'kernel',psi,'odf');
 err = norm(SO3F.eval(ori) - S.values) / norm(S.values);
 
-assert(err < 0.05,'SO3FunRBFApproximation:Dubna:SO3G:Noisy',...
+assert(err < 0.06,'SO3FunRBFApproximation:Dubna:SO3G:Noisy',...
     'SO3FunRBFApproximation:SO3Fun:Dubna: FAILED')
 
 %%

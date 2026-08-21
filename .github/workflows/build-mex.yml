@@ -81,7 +81,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
+          # Deliberately not ubuntu-latest. A mex links against the libstdc++
+          # of the compiler that built it, but loads against the one MATLAB
+          # ships, and MATLAB's is always the older of the two. Building on
+          # 24.04 (gcc 13/14) produced binaries needing GLIBCXX_3.4.32, which
+          # no released MATLAB provides, so jcvoronoi_mex - the only C++ source
+          # here - failed to load on Linux for everyone who did not patch their
+          # MATLAB. 22.04 ships gcc 11 and caps the requirement at
+          # GLIBCXX_3.4.29. See issue #2482; the build-mex action verifies the
+          # cap rather than trusting this label to keep meaning gcc 11.
+          - os: ubuntu-22.04
             ext: mexa64
             products: ''
           # MATLAB does not detect the Visual Studio that ships on the Windows

@@ -47,8 +47,7 @@ if nF == 0, return; end
 mp = gB.midPoint.xy;
 
 % -- neighbours within the chain -----------------------------------------
-% walk order makes these k-1 and k+1, so no segment adjacency matrix is
-% needed at all
+% walk order makes these k-1 and k+1, so no adjacency matrix is needed
 iStart = find(gB.isChainStart);
 iEnd = find(gB.isChainEnd);
 isClosedChain = gB.isClosed(iStart);
@@ -77,8 +76,7 @@ kappa(ok) = 2*(((mpC - mpL) .* fliplr(mpR - mpL)) * [1;-1]) ./ ...
   sqrt(sum((mpC-mpL).^2,2) .* sum((mpR-mpL).^2,2) .* sum((mpC-mpR).^2,2));
 
 % -- smooth along the chain ----------------------------------------------
-% clamping the neighbours at open chain ends keeps the smoothing inside its
-% own chain and stops the undefined ends from spreading
+% clamp the neighbours at an open chain end, so the undefined ends do not spread
 if n > 0
 
   p = prev; p(~hasPrev) = find(~hasPrev);

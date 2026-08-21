@@ -45,19 +45,9 @@ else
   d = reshape(d,size(pos,1),size(pos,2),[]);
 end
 
-% For surf we need an (m+1) x (n+1) grid of cell CORNERS: surf draws m x n
-% faces and colours face (i,j) with d(i,j), taking the colour from the face's
-% lower-index corner. Each corner is the local average of its (up to) four
-% neighbouring pixel centres, so every face is centred on its pixel.
-%
-% Corners are built from local neighbours only, not a single grid-wide step
-% vector: the centre grid is first padded by one row/column on every side via
-% local linear extrapolation (each padded value uses only its two nearest
-% neighbours), then every corner is the average of the four centres around
-% it. This is exact for a rigid grid (equivalent to the previous du/dv/2
-% shift) and, unlike a single global step, also tracks a locally varying
-% step - e.g. a distorted, non-rigid grid - since each corner only depends on
-% its immediate neighbourhood.
+% surf needs an (m+1) x (n+1) grid of cell corners, so that every face is centred
+% on its pixel - pad the centre grid by one row and column and average the four
+% centres around every corner, which also tracks a locally varying step
 if size(pos,1) >= 2
   topPad = 2*pos(1,:) - pos(2,:);
   botPad = 2*pos(end,:) - pos(end-1,:);
@@ -77,10 +67,7 @@ posPad = [leftPad, posPad, rightPad];
 posExt = (posPad(1:end-1,1:end-1) + posPad(1:end-1,2:end) + ...
           posPad(2:end,1:end-1)   + posPad(2:end,2:end)) / 4;
 
-% keep only the corners that a measured cell touches, so that the padding
-% of a gridded map does not enter the axis limits. Every corner of a drawn
-% face survives, hence nothing visible is lost - the faces that lose a
-% corner are the ones painted NaN anyway.
+% keep only the corners a measured cell touches, so the padding stays out of the limits
 if ~isempty(isCell) && ~all(isCell(:))
 
   keep = false(size(pos)+2);

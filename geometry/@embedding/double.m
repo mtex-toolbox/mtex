@@ -149,9 +149,7 @@ switch E.CS.Laue.id
 
   case 32 % D4
 
-    % D4 has no independent second tensor: u{2} is itself a linear
-    % function of u{1} (see setDouble.m), so its norm contribution must
-    % be folded into the packing of all 14 components of u{1} at once
+    % D4 has no independent second tensor, so fold u{2} into the packing of u{1}
     M1 = reshape(E.u{1}.M,3^4,[]).';
     d = M1(:,ind4);
     mult = [1,4,4,6,12,6,4,12,12,4,1,4,6,4];

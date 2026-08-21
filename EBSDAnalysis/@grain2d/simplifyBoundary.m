@@ -37,7 +37,5 @@ protect = sharedBoundaryV(grains);
 grains.boundary = simplify(grains.boundary,varargin{:},'protect',protect);
 grains.innerBoundary = simplify(grains.innerBoundary,varargin{:},'protect',protect);
 
-% simplify only stops referencing vertices, it never appends any, so the
-% existing ids stay valid and allV needs no propagation - grains.V filters by
-% the poly loops and drops the orphans by itself
+% simplify never appends a vertex, so the existing ids stay valid
 grains = updatePoly(grains);

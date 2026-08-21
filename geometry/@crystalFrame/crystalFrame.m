@@ -48,10 +48,7 @@ classdef crystalFrame < referenceFrame
 
     function cF = crystalFrame(varargin)
 
-      % lattice parameters given - compute the axes like crystalSymmetry
-      % always has; without a point group the geometry is treated as
-      % triclinic, which gives the identical frame for every lattice and
-      % merely skips the lattice specific consistency checks
+      % lattice parameters given - without a point group treat them as triclinic
       if ~isempty(varargin) && isnumeric(varargin{1})
 
         abc = varargin{1};

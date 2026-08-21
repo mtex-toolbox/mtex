@@ -56,9 +56,7 @@ for K = 1:nphase
 
 end
 
-% capture all remaining header metadata (phase/symmetry data is excluded,
-% it is already captured by cs/CSList above; the column-schema line right
-% after the phase table is excluded too, it is redundant with ColumnNames)
+% capture all remaining header metadata, phases and the column schema excluded
 header = ctfHeaderStruct(hl,phase_line);
 
 % hint the exact step size from the header, preferred over EBSD's own

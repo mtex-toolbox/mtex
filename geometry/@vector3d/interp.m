@@ -114,22 +114,9 @@ function yi = spline(vi)
 
   % set point to nan which are to far away
   %
-  % all() over an n x 4 matrix without a dimension reduces down the COLUMNS,
-  % so the test used to produce a 1 x 4 row that then indexed rows 1 to 4 of
-  % M: the per query point test never happened. Corrected to all(...,2).
-  %
-  % That alone changes nothing yet, because delta is still inert. It is a
-  % quantile of how far each QUERY point sits from the data - a set
-  % dominated by the very outliers the cut is meant to catch, so it grows
-  % with them and never fires. On a pole figure measured only to a polar
-  % angle of 60 degree, 0 of 8507 plotting nodes exceed it and all 6498
-  % lying beyond the measured region are filled in, smeared out to the edge
-  % of the hemisphere (#707). Deriving delta from the data's own spacing is
-  % the obvious candidate, but 2 to 8 times v.resolution each blanked the
-  % whole plot in measurement, which does not fit the geometry: angle_outer
-  % reports a median nearest-data distance of 75 degree between an upper
-  % hemisphere query grid and data covering the upper 60 degree cap. Work
-  % out what that number really is before picking a constant.
+  % delta is a quantile over the query points, i.e. over the very outliers it
+  % should catch, so it grows with them and never fires (#707) - work out what
+  % the right scale is before replacing it by a constant
   if check_option(varargin,'cutOutside')
     minO = min(omega,[],2);
     delta = 4*quantile(minO,0.5);

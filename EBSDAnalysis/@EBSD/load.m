@@ -147,9 +147,7 @@ try
   ij = ebsd.lattice.ij;
   nCells = prod(max(ij,[],1) - min(ij,[],1) + 1);
 
-  % a scan may legitimately leave holes, so allow the raster to be a good
-  % deal bigger than the measurement count - this is a sanity bound against
-  % a stray position, not a density criterion
+  % a scan may leave holes, so this is a sanity bound against a stray position
   if ~isfinite(nCells) || nCells > 10 * max(1,length(ebsd))
     warning('MTEX:load:notOnGrid',...
       ['The measurements span %d lattice cells but there are only %d of ' ...

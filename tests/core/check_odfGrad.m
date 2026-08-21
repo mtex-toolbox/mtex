@@ -28,17 +28,13 @@ cs1 = crystalSymmetry('-3m1');
 cs2 = crystalSymmetry('m-3m');
 checkGrad(unimodalODF(orientation.rand(20,cs1,cs2)), N, 1e-3, 'unimodal');
 
-% KNOWN FAILURE, see https://github.com/mtex-toolbox/mtex/issues/2586
-% The SO3FunCBF branch - a fibreODF - returns an analytic gradient that
-% disagrees with the finite difference by a relative 6.5, in direction as
-% well as magnitude, and the disagreement does not move with the step size.
-% An independent differentiation of eval confirms grad(...,'check') is the
-% correct side. This is what check_FibreGrad was quietly printing 'failed'
-% about; uncomment once #2586 is fixed.
-%
-% cs = crystalSymmetry('432');
-% ss = specimenSymmetry('222');
-% checkGrad(fibreODF(Miller.rand(cs),vector3d.rand,ss), N, 1e-3, 'fibre');
+% the SO3FunCBF branch - #2586, where grad symmetrised over the crystal symmetry
+% only, which a non trivial specimen symmetry exposes
+cs = crystalSymmetry('432');
+ss = specimenSymmetry('222');
+fibre = fibreODF(Miller.rand(cs),vector3d.rand,ss);
+checkGrad(fibre, N, 1e-3, 'fibre');
+checkGrad(fibre, N, 1e-3, 'fibre, right tangent space', 'right');
 
 % SantaFe, a multi component RBF
 checkGrad(SantaFe, N, 1e-3, 'SantaFe');
@@ -52,12 +48,14 @@ disp('check_odfGrad: passed');
 end
 
 % =========================================================================
-function checkGrad(odf,N,tol,what)
+function checkGrad(odf,N,tol,what,varargin)
+% varargin passes a tangent space through to both sides, so that the
+% reference and the analytic gradient are always compared in the same one
 
 ori = orientation.rand(N,odf.CS,odf.SS);
 
-gRef = odf.grad(ori(:),'check','delta',0.05*degree);
-gGot = odf.grad(ori(:));
+gRef = odf.grad(ori(:),'check','delta',0.05*degree,varargin{:});
+gGot = odf.grad(ori(:),varargin{:});
 
 % relative to 1 + norm, so that an orientation where the gradient vanishes
 % does not dominate the measure

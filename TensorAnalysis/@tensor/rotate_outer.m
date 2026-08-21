@@ -18,9 +18,7 @@ function T = rotate_outer(T,R,varargin)
 if isa(R,'orientation') && nargin == 2
   R = fitFrame(R,T.CS.frame);
 
-  % the rotated tensor lives in the specimen frame of the orientation,
-  % but it does not possess the specimen SYMMETRY - only the reference
-  % frame is taken over
+  % the rotated tensor takes the specimen frame, but not the specimen symmetry
   if R.SS.id == 1
     T.CS = R.SS;
   else

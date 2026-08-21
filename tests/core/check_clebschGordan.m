@@ -43,9 +43,7 @@ D2 = WignerD(g,'order',l2);
 % the reference: the outer product of the two, as a matrix
 ref = D1(:) * D2(:).';
 
-% the outer product of the two VECTORISED matrices, so (2l1+1)^2 by
-% (2l2+1)^2 - not (2l1+1)(2l2+1) square. The two readings coincide only when
-% l1 == l2, which is why the original file could get away with one number.
+% the outer product of the two vectorised matrices, so (2l1+1)^2 by (2l2+1)^2
 n1 = (2*l1+1)^2;
 n2 = (2*l2+1)^2;
 assert(isequal(size(ref),[n1 n2]), ...

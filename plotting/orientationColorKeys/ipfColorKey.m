@@ -8,9 +8,7 @@ classdef ipfColorKey < orientationColorKey
   end
 
   properties (Dependent = true)
-    % the name this direction carried before - kept working because it
-    % appears in a decade of user scripts, but it is a mouthful to type
-    % and to read in a display, so ipfDirection is the name now
+    % the old name of ipfDirection, kept working for existing scripts
     inversePoleFigureDirection
   end
 

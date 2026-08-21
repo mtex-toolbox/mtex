@@ -26,10 +26,7 @@ function check_grainMerge
 cs = crystalSymmetry('1','mineral','test');
 
 %% a map with two things to merge: a weak stripe boundary and an inclusion
-%
-% left half and right half are ten degrees apart, and the left half carries
-% a 2x2 speck of a completely different orientation, which is an inclusion
-% below any sensible minimum size.
+% left and right half are ten degrees apart, and the left carries a 2x2 inclusion
 
 n = 24;
 rot = rotation.id(n,n);
@@ -63,9 +60,7 @@ if length(merge(grains,'inclusions','maxSize',5)) ~= 2
 end
 
 %% both criteria in one call, in either order
-%
-% This is the regression: with the assignment the second of the two used to
-% erase the first, so the answer depended on the order of the arguments.
+% the second of the two used to erase the first, so the order of the arguments mattered
 
 nFirst = length(merge(grains,stripeBoundary,'inclusions','maxSize',5));
 nSecond = length(merge(grains,'inclusions','maxSize',5,stripeBoundary));
@@ -77,9 +72,7 @@ if nFirst ~= 1 || nSecond ~= 1
 end
 
 %% the value of an option is not a list of grain pairs
-%
-% 'someOption' is not an option merge knows - a typo, or one forwarded by a
-% wrapper. Its value must be ignored, not acted on.
+% 'someOption' is no option of merge, so its value must be ignored, not acted on
 
 nPlain = length(merge(grains,stripeBoundary));
 nWithValue = length(merge(grains,stripeBoundary,'someOption',[1 3]));

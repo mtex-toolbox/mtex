@@ -32,9 +32,7 @@ setMaxcond = isempty(SO3F.maxcond) || force;
 setTargetcond = isempty(SO3F.targetcond) || force;
 manualTargetcond = SO3F.targetcond;
 
-% Onset relative to the healthy baseline. Ten is safe on well-distributed
-% nodes at every degree tested and does not weaken the correction on badly
-% distributed ones. The transition interval keeps the former width.
+% onset relative to the healthy baseline, the transition keeps the former width
 onsetFactor = 10;
 fullFactor = 100;
 

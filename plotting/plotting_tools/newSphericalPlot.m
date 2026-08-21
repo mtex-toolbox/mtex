@@ -65,9 +65,7 @@ if isNew || ~isappdata(mtexFig.currentAxes,'sphericalPlot')
     proj = getProjection(sR,how2plot,varargin{:});
   end
   
-  % the axes created below have to start out in the same hold state as the
-  % current one - this is a baseline, not a temporary hold, so it must
-  % survive this function
+  % the new axes start out in the hold state of the current one, as a baseline
   srcAx = mtexFig.gca;
 
   for i = 1:numel(proj)
@@ -91,8 +89,12 @@ if isNew || ~isappdata(mtexFig.currentAxes,'sphericalPlot')
     
     % create a new spherical plot
     sP(i) = sphericalPlot(mtexFig.gca,proj(i),tr{:},varargin{:});         %#ok<AGROW>
-    
+
   end
+
+  % an upper and a lower hemisphere are two axes, but one plot
+  registerHemispheres([sP.ax]);
+
   mtexFig.drawNow(varargin{:});
   isNew = true;
           
@@ -105,9 +107,14 @@ elseif check_option(varargin,'add2all') % add to or override existing axes
   end
   
 else
-  
+
   sP = getappdata(mtexFig.currentAxes,'sphericalPlot');
-  
+
+  % a plot covering both hemispheres is spread over two axes, an annotation over both (#330)
+  if isempty(getClass(varargin,'sphericalProjection'))
+    sP = sP.allHemispheres;
+  end
+
 end
 
 end
@@ -127,10 +134,16 @@ end
 if check_option(varargin,'complete')
   sR = sphericalRegion;
 end
-if check_option(varargin,'upper')
-  sR = sR.restrict2Upper(how2plot);
-elseif check_option(varargin,'lower')
-  sR = sR.restrict2Lower(how2plot);
+
+% upper and lower at once asks for both halves, and overrules the reduction below (#330)
+bothHemispheres = check_option(varargin,'upper') && check_option(varargin,'lower');
+
+if ~bothHemispheres
+  if check_option(varargin,'upper')
+    sR = sR.restrict2Upper(how2plot);
+  elseif check_option(varargin,'lower')
+    sR = sR.restrict2Lower(how2plot);
+  end
 end
 
 % extract antipodal
@@ -138,7 +151,7 @@ sR.antipodal = sR.antipodal || check_option(varargin,'antipodal');
 
 % for antipodal symmetry reduce to halfsphere
 if sR.antipodal && sR.isUpper(how2plot) && sR.isLower(how2plot) &&...
-    ~check_option(varargin,'complete')
+    ~check_option(varargin,'complete') && ~bothHemispheres
   sR = sR.restrict2Upper(how2plot);
 end
 
@@ -188,11 +201,7 @@ end
 function proj = ownConvention(proj)
 % let the axis own the plotting convention of a projection handed in
 
-% Since plottingConvention became a value class the freezing this
-% function used to do - copying the convention so that a later
-% plotx2east does not reproject an already drawn axis - happens by
-% itself on every assignment; what remains is aligning all projections
-% on the value of the first one.
+% align all projections on the value of the first one
 
 if isempty(proj), return; end
 

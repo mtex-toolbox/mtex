@@ -71,9 +71,7 @@ else
   k = (-N-shift:N)';
 end
 
-% Adjust signs to finalize the coefficient transform. Note that 1i.^k is
-% evaluated as exp(k*log(1i)) and is off by up to 3e-13 in phase for |k| ~ 1500,
-% so take the four exact values from a table instead.
+% adjust signs - take the four exact values from a table, 1i.^k drifts in phase
 ipow = [1;1i;-1;-1i];
 ghat(:,N+1:end) = ipow(mod(k,4)+1) .* ghat(:,N+1:end);
 

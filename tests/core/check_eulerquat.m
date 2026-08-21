@@ -30,9 +30,7 @@ N = 2000;
 % the tolerance is on 1 - |dot|, not on an angle - see assertSame
 tol = 1e-13;
 
-% a general sample plus the awkward ones: identity, and rotations at and
-% near beta == 0, where the Bunge convention is degenerate (gimbal lock -
-% only alpha + gamma is determined)
+% a general sample plus the awkward ones: identity, and rotations at and near beta == 0
 r = [rotation.rand(N); ...
   rotation.id; ...
   rotation.byEuler(30*degree,0,50*degree,'Bunge'); ...
@@ -57,12 +55,7 @@ function checkEuler(r,tol)
 
 for conv = {'Bunge','ABG','Matthies','Roe','Kocks','Canova'}
 
-  % the second angle exactly 0 is the degenerate case: only the sum of the
-  % first and the third angle is determined, and Euler puts all of it into
-  % the first one. Kocks and Canova are the conventions that redefine the
-  % third angle, so that sum is not simply alpha + gamma for them and both
-  % used to come back rotated - see #2583. beta = 1e-8 always worked, so
-  % the exact-zero branch is what this covers.
+% at beta == 0 only alpha + gamma is determined, and Kocks and Canova redefine gamma (#2583)
   [a,b,c] = Euler(r,conv{1});
   back = rotation.byEuler(a,b,c,conv{1});
 

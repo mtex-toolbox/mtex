@@ -195,9 +195,7 @@ methods
   function varargout = subsref(SO3F,s)
     switch s(1).type
       case '()'
-        % the weights carry the size of SO3F in the dimensions 2:end, hence
-        % we may reuse the subscripts - shifted by one dimension. This also
-        % keeps ':' and logical subscripts working, in contrast to sub2ind.
+        % the weights carry the size of SO3F in dimensions 2:end, so reuse the subscripts
         sw = s(1); sw.subs = [':' sw.subs];
 
         % sparse matrices do not accept more than two subscripts

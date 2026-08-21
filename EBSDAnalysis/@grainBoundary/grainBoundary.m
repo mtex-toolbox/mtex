@@ -89,10 +89,7 @@ classdef grainBoundary < phaseList & dynProp
     N              % normal direction of the pseudo3d data    
     frame          % the specimen reference frame (carried by allV)
     how2plot       % default plotting convention - read only
-    % A convention belongs to a reference frame. To change how this is
-    % drawn use plot(...,'y↑→x') for one plot,
-    % plottingConvention.default(...) for the session, or move the data
-    % with x.frame = specimenFrame.rolling
+    % a convention belongs to a reference frame, see plottingConvention.default
   end
   
   methods
@@ -144,10 +141,7 @@ classdef grainBoundary < phaseList & dynProp
         gB.grainId(doSort,:) = fliplr(gB.grainId(doSort,:));
         gB.misrotation(doSort) = inv(gB.misrotation(doSort));
 
-        % leftOriented says the caller built F such that the pre-sort first
-        % grain is already on its left - as grain2d does, since it derives F
-        % from the positively wound poly loops. Swapping the grain columns
-        % swaps left and right, so F has to follow.
+        % leftOriented says F already has the first grain on the left, so F follows the swap
         if check_option(varargin,'leftOriented')
           gB.F(doSort,:) = fliplr(gB.F(doSort,:));
         end
@@ -337,9 +331,7 @@ classdef grainBoundary < phaseList & dynProp
       F = gB.F;
       if size(F,1) == 0, isStart = false(0,1); return; end
 
-      % a chain continues only if the rows chain head to tail AND the shared
-      % vertex is not a junction - without the second test two different
-      % chains meeting at a junction would be welded into one
+      % a chain continues only head to tail and only where the shared vertex is no junction
       isJct = gB.isJunction;
       isStart = [true; F(2:end,1) ~= F(1:end-1,2) | isJct(F(1:end-1,2))];
 

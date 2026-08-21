@@ -43,25 +43,10 @@ k = size(V,1);
 mids  = 0.5 * (V + V([2:end 1],:));
 trans = 2 * mids;                        % k x 2, one per shared edge
 
-% Choose the basis from the DIRECTIONS of these translations, never from
-% their position in the list.
-%
-% trans carries one translation per edge, so both its order and the signs of
-% its entries follow the order in which the unit cell's corners happen to be
-% written down - and that is not an invariant of the cell. squarify sorts the
-% corners by angle before gridding, which on the importers' cells also
-% reverses the winding: the same 50 x 50 square arrived counter-clockwise
-% from EBSD.load and clockwise from gridify. Reading a1 off trans(1,:) turned
-% that into A = [50 0; 0 50] for one and A = [-50 0; 0 50] for the other - a
-% mirrored, left handed (i,j) frame for the same lattice - which propagated
-% through assignGridIndex into the decomposition and changed the
-% reconstruction: forsterite gave 2931 grains and a total boundary length of
-% 2109862.588230 one way against 2936 and 2109862.726874 the other, from
-% identical measurements.
-%
-% Every translation occurs as a +-pair, so take from each pair the
-% representative pointing into the upper half plane (+x on the axis itself).
-% That is fixed by the geometry of the cell alone.
+% choose the basis from the directions of these translations, never from their
+% position in the list, which follows the order the cell's corners are written
+% down in - every translation occurs as a +-pair, so take the representative
+% pointing into the upper half plane (+x on the axis itself)
 tol  = 1e-12 * max(vecnorm(trans,2,2));
 flip = trans(:,2) < -tol | (abs(trans(:,2)) <= tol & trans(:,1) < 0);
 trans(flip,:) = -trans(flip,:);

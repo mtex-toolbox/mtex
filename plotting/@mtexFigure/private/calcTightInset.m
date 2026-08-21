@@ -93,9 +93,7 @@ end
 
    pos(pos>0) = pos(pos>0) + mtexFig.cBarShift + fs / 2;
 
-   % reserve the band on the side the colorbar was asked for - pos(1) is the
-   % thickness of a vertical bar, pos(2) that of a horizontal one, the other
-   % having been zeroed above
+   % reserve the band on the side the colorbar was asked for
    band = zeros(1,4); % [left bottom right top]
    switch mtexFig.cBarSide
      case 'west'
@@ -115,10 +113,7 @@ end
    end
  end
  
- % consider a legend placed outside the axes - reserve a band of its size
- % plus the requested spacing, so that the legend does not eat into the
- % space given to the axes. It is positioned within that band in
- % updateLayout.
+ % reserve a band for a legend outside the axes, updateLayout positions it in there
  if ~isempty(mtexFig.legendAxis) && all(isgraphics(mtexFig.legendAxis))
 
    set(mtexFig.legendAxis,'Units','pixels');

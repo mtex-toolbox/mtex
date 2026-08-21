@@ -61,11 +61,7 @@ if delta <= 0, return; end
 xyz = gB.allV.xyz;
 nV0 = size(xyz,1);
 
-% resample between the vertices that may not move, not merely between the two
-% junctions of a chain - a vertex where the neighbouring grains change is a
-% corner of both grain polygons, and grain2d passes in the ones shared with the
-% inner boundary, which finds its junctions from its own face list and so
-% cannot see them (see grain2d/refineBoundary)
+% resample between the vertices that may not move, not only between the junctions
 isEnd = gB.isChainEnd | isNeighborChange(gB);
 
 protect = get_option(varargin,'protect',[]);
@@ -79,22 +75,12 @@ iEnd = find(isEnd);
 iStart = [1; iEnd(1:end-1)+1];
 nCh = numel(iStart);
 
-% Every piece is a contiguous run of segments, so one cumulative arc over the
-% whole segment list serves all of them at once - the arc within a piece is the
-% global one minus the value at its start. That is what lets the resampling run
-% over all pieces together instead of one chain at a time.
+% every piece is a contiguous run, so one cumulative arc serves all of them
 L = gB.segLength;
 Lc = [0; cumsum(L)];
 
-% The length of a piece is summed on its own rather than read off Lc as a
-% difference of two large numbers. round(total/delta) sits exactly on a tie
-% whenever a piece is a whole number of samples long, which on a regular grid
-% is most of them, so the last bits of total decide how many samples it gets.
-% Every repelem below is forced to a column. With a single piece both its
-% arguments are scalars, and repelem of two scalars returns a ROW - which
-% makes accumarray reject its arguments here, and turns the kOf subtraction
-% below into an outer difference. A boundary that is one single piece is
-% ordinary: an isolated grain, or a small inner boundary.
+% sum the length of a piece on its own, round(total/delta) sits on a tie whenever
+% a piece is a whole number of samples long - and force every repelem to a column
 pieceOf = reshape(repelem((1:nCh).',iEnd-iStart+1),[],1);
 total = accumarray(pieceOf,L,[nCh 1]);
 
@@ -108,9 +94,7 @@ cOf = reshape(repelem((1:nCh).',m),[],1);
 mOf = m(cOf);
 kOf = (1:M).' - reshape(repelem([0; cumsum(m(1:end-1))],m),[],1);
 
-% the samples, in the same global arc coordinate. The midpoint is the mean of
-% the two ends rather than (k-1/2)/m - the same number in exact arithmetic, but
-% this is the form the per chain version used and the two do not round alike
+% the samples, in the same global arc coordinate
 gStart = Lc(iStart);
 tEnd = total(cOf).*kOf./mOf;
 tPrev = total(cOf).*(kOf-1)./mOf;
@@ -120,10 +104,7 @@ gMid = gStart(cOf) + (tPrev + tEnd)/2;
 % inherit the per segment data from whatever covers the new segment's midpoint
 src = locate(gMid,Lc,iStart(cOf),iEnd(cOf));
 
-% Every new segment contributes its head vertex, except the last one of a
-% piece, whose head is the junction the piece ends on and already exists. The
-% junctions at both ends of a piece keep their vertex ids, so the triple points
-% and any other boundary meeting them stay attached.
+% every new segment contributes its head vertex, except the last one of a piece
 isLast = kOf == mOf;
 isNew = ~isLast;
 
@@ -163,10 +144,7 @@ function [iSeg,lambda] = locate(g,Lc,lo,hi)
 nE = numel(Lc) - 1;
 n = numel(g);
 
-% Count the segment starts strictly below each sample. Sorting the samples and
-% the starts together costs (n+nE)log(n+nE), where comparing them pairwise
-% costs n*nE - and MATLAB sorts stably, so putting the samples first in the
-% concatenation is what breaks the ties in their favour.
+% count the segment starts below each sample by sorting, ties go to the samples
 [~,ord] = sort([g(:); Lc(1:nE)]);
 isEdge = ord > n;
 cnt = cumsum(isEdge);

@@ -318,21 +318,10 @@ for nameC = {'twins','titanium'}
   assert(isequaln([r0.a r0.b r0.c r0.d],[r1.a r1.b r1.c r1.d]), ...
     'check_gridify: %s - fill altered the measured orientations', name);
 
-  % every site it created is a site gridify creates too - never one outside
-  % the scanned area. With a tolerance rather than exactly, since gridify
-  % regularises positions slightly (the main loop of this file allows
-  % 0.05*dPos for that).
-  %
-  % The converse does NOT hold: gridify pads the map out to a rectangle,
-  % which on a hex grid adds corner cells that are not hex lattice sites at
-  % all - 48 of them on titanium, a gap free scan where there is nothing to
-  % fill and the lattice route correctly adds nothing.
+  % every site it created is one gridify creates too, but not the other way round
   A = [fp.pos.x(:) fp.pos.y(:)];
   B = [fg.pos.x(:) fg.pos.y(:)];
-  % note the argument order: pdist2(X,Y,'Smallest',1) gives one distance per
-  % point of Y, so this is "for each site I made, how far is the nearest
-  % gridify site" - the other order asks the converse, which is false by
-  % design (gridify's rectangle padding has no counterpart here)
+  % pdist2(X,Y,'Smallest',1) gives one distance per point of Y, so mind the order
   dNear = pdist2(B,A,'euclidean','Smallest',1).';
   nOutside = nnz(dNear > 0.1*e.dPos);
   assert(nOutside == 0, ...
@@ -345,9 +334,7 @@ end
 % and a hole really does get filled
 ebsd = EBSD(mtexdata('twins','silent'));
 e = ebsd('indexed');
-% chosen by lattice position, not by scan order: a run of consecutive scan
-% indices straddles a row end, and a removed pixel at the map border sits on
-% the convex hull, where fill's 'none' extrapolation legitimately returns NaN
+% by lattice position, not by scan order, a border pixel sits on the convex hull
 ij = e.lattice.ij;
 interior = find(all(ij > min(ij,[],1)+3 & ij < max(ij,[],1)-3, 2));
 drop = interior(round(linspace(1,numel(interior),10)));
@@ -361,10 +348,7 @@ filled = fill(holed);
 assert(length(filled) > length(holed), ...
   'check_gridify: fill did not materialise the removed pixels');
 
-% the removed pixels are back, at their old positions, and carry data.
-% Note fill does not promise to fill EVERYTHING: scatteredInterpolant with
-% the default 'none' extrapolation returns NaN outside the convex hull, so a
-% few sites on the border stay empty unless 'extrapolate' is given.
+% back at their old positions and carrying data - fill leaves the convex hull empty
 d = pdist2([filled.pos.x filled.pos.y],[gone.x gone.y],'euclidean','Smallest',1);
 assert(all(d < 1e-9), ...
   'check_gridify: fill did not restore %d of the removed pixels', nnz(d >= 1e-9));
@@ -532,11 +516,7 @@ assert(abs(g.dHex - mean(norm(g.unitCell))) < 1e-12, ...
   'check_gridify: dHex is not the unit cell circumradius');
 assert(g.isRowAlignment == true && g.offset == 1, ...
   'check_gridify: titanium should be row aligned with offset +1');
-% relative, not exact: dx/dy are measured off pos now, while dHex comes from
-% the unit cell, which calcUnitCell fits statistically - on titanium the
-% measured column step is 12.000000 against sqrt(3)*dHex = 11.999824. Being
-% the measured spacing is the point; the ideal relation only has to hold to
-% the accuracy of that fit.
+% relative, not exact: dx/dy are measured off pos, dHex is fitted by calcUnitCell
 assert(abs(g.dx - sqrt(3)*g.dHex) < 1e-3*g.dx && abs(g.dy - 1.5*g.dHex) < 1e-3*g.dy, ...
   'check_gridify: dx/dy do not reproduce the row aligned spacings');
 
@@ -547,9 +527,7 @@ assert(e.isRowAlignment == false, ...
 assert(abs(e.dx - 1.5*e.dHex) < 1e-3*e.dx && abs(e.dy - sqrt(3)*e.dHex) < 1e-3*e.dy, ...
   'check_gridify: dx/dy are not swapped for a flat top grid');
 
-% and rotating the map does not disturb any of them. The old offset was
-% sign(pos.x(2,1)-pos.x(1,1)), which flips from 45 degree on and inverts
-% the whole staggered addressing.
+% and rotating the map does not disturb any of them
 for w = [20 45 90 120 200]
   r = rotate(g,w*degree);
   assert(isa(r,'EBSDhex') && length(r.unitCell) == 6, ...

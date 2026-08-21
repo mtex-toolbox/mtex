@@ -124,9 +124,7 @@ classdef dynProp
               v = value.prop.(fn{i});
 
               if ~isfield(dp.prop,fn{i})
-                % a property the target does not carry yet. Size the
-                % placeholder from the incoming value, so an N x k one
-                % still fits
+                % a property the target does not carry yet, sized from the value
                 if isMultiColumn(value,v)
                   dp.prop.(fn{i}) = zeros(length(dp),size(v,2));
                 else

@@ -69,10 +69,7 @@ classdef grain2d < phaseList & dynProp
     rot2Plane  % rotation to xy plane
     frame      % the specimen reference frame (carried by allV)
     how2plot   % plotting convention - read only
-    % A convention belongs to a reference frame. To change how this is
-    % drawn use plot(...,'y↑→x') for one plot,
-    % plottingConvention.default(...) for the session, or move the data
-    % with x.frame = specimenFrame.rolling
+    % a convention belongs to a reference frame, see plottingConvention.default
     N          % normal direction of the pseudo3d data    
   end
   
@@ -167,9 +164,7 @@ classdef grain2d < phaseList & dynProp
           inv(grains.prop.meanRotation(grainId(isNotBoundary,2))) ...
           .* grains.prop.meanRotation(grainId(isNotBoundary,1));
 
-        % F is taken straight from the poly loops, which calcPolygons winds
-        % positively, so the grain that contributed a segment is already on
-        % its left - see the leftOriented option
+        % calcPolygons winds the loops positively, so the grain is already on the left
         grains.boundary = grainBoundary(V,F,grainId,grains.id,...
           grains.phaseId,mori,grains.CSList,grains.phaseMap,[],'leftOriented');
         
@@ -360,11 +355,7 @@ classdef grain2d < phaseList & dynProp
         grains.allV = vector3d(grains.allV(:,1),grains.allV(:,2),0);
       end
 
-      % files written before segments were stored in walk order have an
-      % arbitrary column order in F, so grainId(:,1) is not reliably the
-      % grain on the left. grainBoundary.loadobj cannot tell - it only sees
-      % the segments - but here the grain each one belongs to is known, and
-      % that is enough to recover the sense
+      % an older file has an arbitrary column order in F, which the grain ids recover
       grains.boundary = repairBoundarySense(grains.boundary,grains.id);
 
     end

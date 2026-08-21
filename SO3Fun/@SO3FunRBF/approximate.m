@@ -33,10 +33,16 @@ function [SO3F,iter] = approximate(f, varargin)
 %   SO3F = SO3FunRBF.approximate(f,'harmonic','tol',1e-3,'maxit',100)
 %   SO3F = SO3FunRBF.approximate(f,'harmonic','kernel',psi,'SO3Grid',S3G,'density')
 %
+%   % given function values at given nodes - handed to SO3FunRBF.interpolate
+%   SO3F = SO3FunRBF.approximate(nodes,y)
+%   SO3F = SO3FunRBF.approximate(nodes,y,'kernel',psi)
+%
 %   [SO3F,lsqrIter] = SO3FunRBF.approximate(___)
 %
 % Input
 %  f     - @SO3Fun
+%  nodes - @SO3Grid, @orientation or @rotation
+%  y     - function values at nodes
 %  psi   - @SO3Kernel of the approximated SO3FunRBF (default: SO3DeLaValleePoussinKernel('halfwidth',5*degree))
 %  S3G   - @rotation
 %
@@ -66,6 +72,15 @@ function [SO3F,iter] = approximate(f, varargin)
 % See also
 % SO3FunRBF SO3FunHarmonic/approximate
 
+
+% approximate(nodes,values,...) is what interpolate does - it takes exactly
+% that pair and the same options. Without this the values stay in varargin,
+% f remains an orientation, and f.mean further down returns a mean
+% orientation instead of a number
+if isa(f,'rotation')
+  [SO3F,iter] = SO3FunRBF.interpolate(f,varargin{:});
+  return
+end
 
 if isa(f,'function_handle')
   [SRight,SLeft] = extractSym(varargin);

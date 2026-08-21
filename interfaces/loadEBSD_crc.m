@@ -71,9 +71,7 @@ data = reshape(data,[],n);          % m × n uint8
 ndx  = cumsum([0 type]);
 
 nf = numel(type);
-% double, not single - the file stores 4 byte floats, but single precision
-% Euler angles / coordinates propagate into ebsd.rotations and ebsd.pos and
-% break the nfft/nfsft mex interfaces, which insist on double input
+% double, not single - the nfft/nfsft mex interfaces insist on double input
 d  = zeros(n, nf + 2*params.cells);
 
 for j = 1:nf
@@ -226,10 +224,7 @@ end
 
 function CS = getCS(cpr)
 
-% [Phases] Count is not always matched by that many [PhaseN] sections - a
-% stitch of several projects may count a phase whose section was never
-% written. Start from notIndexed so an undescribed phase keeps its slot,
-% and fill in the ones the file does describe.
+% [Phases] Count may exceed the [PhaseN] sections, so start from notIndexed
 CS = repmat(notIndexed,1,cpr.phases.count);
 missing = false(1,cpr.phases.count);
 

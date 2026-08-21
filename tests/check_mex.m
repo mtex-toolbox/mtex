@@ -142,9 +142,7 @@ else
 
 end
 
-% with 'strict' the verdict is raised rather than only printed, which is what
-% lets a test suite gate on it - see check_mexFunctions. Without it the
-% behaviour is unchanged, so startup_mtex's check_mex('fast') is unaffected.
+% with 'strict' the verdict is raised rather than only printed, see check_mexFunctions
 if check_option(varargin,'strict')
   bad = cellstr(mexFiles(~res));
   if isMissing || ~isempty(bad)
@@ -248,6 +246,10 @@ function out = check_insidepoly_dblengine
 out = all(logical(insidepoly(x,y,poly(:,1),poly(:,2))) == ...
   inpolygon(x,y,poly(:,1),poly(:,2)));
 
+% #2527: every vertex lies on its polygon, which random points never test
+[~,on] = insidepoly(poly(:,1),poly(:,2),poly(:,1),poly(:,2));
+out = out && all(on);
+
 end
 
 function out = check_insidepoly_sglengine
@@ -262,6 +264,8 @@ got = insidepoly(single(x),single(y),single(poly(:,1)),single(poly(:,2)));
 safe = pointToPolyDistance(x,y,poly) > 1e-4;
 
 out = all(logical(got(safe)) == ref(safe));
+
+% no on-boundary check, the single engine derives ontol from the polygon size
 
 end
 
@@ -315,9 +319,7 @@ nV = length(gB.allV);
 
 [g, c, cP] = EulerCyclesC(gB.I_FG,gB.F,nV);
 
-% g and c are offset arrays into c and cP - a nested CSR - so they have to
-% close on the arrays they index, be monotone, and every cycle has to be a
-% closed walk over vertices that exist
+% g and c are offset arrays into c and cP, so they have to close and be monotone
 out = c(end) == numel(cP)+1 && g(end) == numel(c) && ...
   all(diff(g) >= 0) && all(diff(c) >= 0) && ...
   all(cP >= 1 & cP <= nV) && numel(c) > 1;
@@ -488,18 +490,12 @@ y  = vector3d.rand(40);
 
 got = find(x,y);
 
-% compared through the dot_outer matrix: angle() broadcasts a column against
-% a column into an outer product, so the elementwise reading would silently
-% become 40x40
+% compare through dot_outer, angle() would broadcast two columns into 40x40
 D = dot_outer(xv,y);
 best = max(D,[],1);
 lin = sub2ind(size(D),double(got(:)).',1:numel(y));
 
-% S2Grid_find is not exact - it searches the nearest ring of constant theta
-% and then within it, and near a cell boundary settles on a neighbour: 4 of
-% 200 queries on a 510 point grid, overshooting by at most 0.84 degree with a
-% 9.0 degree spacing. A fifth of the spacing tolerates that and would still
-% catch a binary returning the wrong point.
+% S2Grid_find settles on a neighbour near a cell boundary, so allow a fifth of the spacing
 spacing = sqrt(4*pi/numel(xv));
 extra = acos(min(1,D(lin))) - acos(min(1,best));
 

@@ -72,8 +72,17 @@ for j = 1:numel(sP)
   % specify contour lines explicitly
   if isscalar(contours)
     if check_option(varargin,'log')
-      contours = logspace(log10(colorRange(1)),log10(colorRange(2)),contours);
-    else      
+      % log10 of a non positive bound gives complex levels, so start at the smallest positive
+      lowerBound = colorRange(1);
+      if ~(lowerBound > 0), lowerBound = min(cdata(cdata > 0)); end
+    else
+      lowerBound = [];
+    end
+
+    % nothing positive to space logarithmically -> stay linear
+    if ~isempty(lowerBound) && colorRange(2) > lowerBound
+      contours = logspace(log10(lowerBound),log10(colorRange(2)),contours);
+    else
       contours = linspace(colorRange(1),colorRange(2),contours);
     end
   end
@@ -143,6 +152,21 @@ end
 
 % ------------------------------------------------------------
 function h = betterContourf(ax,X,Y,data,contours,varargin)
+
+% contourf draws across a column of NaN instead of skipping it, so draw one object per strip
+if ~check_option(varargin,'pcolor')
+  sep = find(all(~isfinite(X),1));
+  if ~isempty(sep)
+    bnd = [0,sep,size(X,2)+1];
+    h = gobjects(1,0);
+    for k = 1:numel(bnd)-1
+      ind = bnd(k)+1:bnd(k+1)-1;
+      if numel(ind) < 2, continue; end
+      h = [h,betterContourf(ax,X(:,ind),Y(:,ind),data(:,ind),contours,varargin{:})]; %#ok<AGROW>
+    end
+    return
+  end
+end
 
 if isscalar(unique(data)), data(1) = data(1) + 2*eps; end
 

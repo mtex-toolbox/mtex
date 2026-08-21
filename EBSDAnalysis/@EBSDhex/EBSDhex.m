@@ -42,9 +42,7 @@ classdef EBSDhex < EBSDgrid
       ebsd.prop = get_option(varargin,'options',struct);
       ebsd.opt = get_option(varargin,'opt',struct);
 
-      % set up the unit cell - a supplied one is kept as it is, which is
-      % what lets a rotated grid survive. Previously it was always
-      % overwritten by an axis aligned hexagon built from dHex.
+      % set up the unit cell - a supplied one is kept, which lets a rotated grid survive
       if check_option(varargin,'unitCell')
         ebsd.unitCell = get_option(varargin,'unitCell',[]);
       else
@@ -149,14 +147,9 @@ classdef EBSDhex < EBSDgrid
 
       if nargin == 3, x = vector3d(x,y,0); end
 
-      % Invert the grid basis instead of applying a fixed axial matrix in
-      % raw x/y. The old form divided by dHex after multiplying by hard
-      % coded sqrt(3)/3 and 1/3 factors, which is the inverse basis of an
-      % AXIS ALIGNED hex lattice only - there was no rotation to feed it.
-      % The two matrix step directions describe the lattice whatever its
-      % orientation, and they are exactly the pair cube2hex expects: the
-      % coefficient along the column direction is the cube x, the one along
-      % the row direction the cube z.
+      % invert the grid basis, which describes the lattice whatever its
+      % orientation - the coefficient along the column direction is the cube x,
+      % the one along the row direction the cube z
       p0 = ebsd.pos(1,1);
       cd = ebsd.pos(1,2) - p0;
       rd = ebsd.pos(2,1) - p0;
