@@ -1,8 +1,26 @@
 # TensorAnalysis/
 
-Elastic/plastic tensor calculations built on a single generic `@tensor` base class, with physically-typed subclasses (`@stiffnessTensor`, `@complianceTensor`, `@strainTensor`, `@stressTensor`, `@strainRateTensor`, `@curvatureTensor`, `@dislocationDensityTensor`, `@ChristoffelTensor`, `@refractiveIndexTensor`, `@spinTensor`, `@velocityGradientTensor`, `@deformationGradientTensor`) adding physical meaning and unit/rank-specific behavior (e.g. `stiffnessTensor`/`complianceTensor` know they're mutual inverses under Voigt contraction) rather than reimplementing tensor algebra each.
+One generic `@tensor` base with physically typed subclasses (`@stiffnessTensor`,
+`@complianceTensor`, `@strainTensor`, `@stressTensor`, `@strainRateTensor`,
+`@curvatureTensor`, `@dislocationDensityTensor`, `@ChristoffelTensor`,
+`@refractiveIndexTensor`, `@spinTensor`, `@velocityGradientTensor`,
+`@deformationGradientTensor`) that add physical meaning, not their own tensor algebra.
 
-- `EinsteinSum.m` is the core contraction engine (`EinsteinSum(T1, dimT1, T2, dimT2, ...)`, negative indices mark summed dimensions) underlying most tensor products/contractions in this folder and used by higher-level code elsewhere — reach for it instead of writing manual index loops over tensor components.
-- `dyad.m` builds tensors as outer (dyadic) products of vectors — the usual way to construct a rank-2+ tensor from `vector3d` inputs rather than assembling a components matrix by hand.
-- `SchmidTensor.m` computes the Schmid tensor/factor for slip systems (paired with `@dislocationSystem` in `geometry/`).
-- Symmetry constraints (e.g. how many independent components a `stiffnessTensor` has for a given crystal symmetry) are enforced via the attached `crystalSymmetry`, following the same symmetry-threading convention as the rest of the codebase — don't hand-write symmetry reduction for a new tensor type; check whether `@tensor` already handles it generically.
+- `EinsteinSum(T1,dimT1,T2,dimT2,...)` is the contraction engine, negative indices mark
+  summed dimensions. Use it instead of index loops over components.
+- `dyad.m` builds a rank-2+ tensor from `vector3d` inputs — the usual construction, rather
+  than assembling a components matrix.
+- `SchmidTensor.m` computes the Schmid tensor and factor (paired with
+  `geometry/@dislocationSystem`).
+- Symmetry constraints, e.g. the number of independent components of a `stiffnessTensor`,
+  come from the attached `crystalSymmetry`. Check whether `@tensor` already handles it
+  generically before hand-writing reduction for a new type.
+
+Traps:
+
+- A tensor built from crystal data is in crystal coordinates and keeps that symmetry — the
+  session default must not overwrite it. That is the route `slipSystem/deformationTensor`
+  takes into `calcTaylor`.
+- A tensor resolves the session default in its **constructor**, not in a property default: a
+  property default expression is evaluated once when the class is loaded and would freeze
+  whichever frame was current then.

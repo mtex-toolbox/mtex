@@ -1,11 +1,27 @@
 # geometry/
 
-Core geometric class hierarchy underlying everything else in MTEX. Two parallel chains, both built on the invariant that **every object holds an array of many entities**, not a single one.
+The core class hierarchy. Every object holds an array of many entities, never one.
 
-- `quaternion` → `rotation` → `orientation`: a rotation is a quaternion with group operations (composition, inverse, angle); an `orientation` additionally carries a pair of `crystalSymmetry`/`specimenSymmetry` (`CS`/`SS`) and knows how to reduce itself to the fundamental zone, enumerate symmetrically equivalent representations, and compute misorientations.
-- `vector3d` → `Miller`: a `Miller` index is a `vector3d` stored internally in an Euclidean reference frame, with a `crystalSymmetry` and a convention (`hkl`/`hkil`/`uvw`/`UVTW`) attached so it prints and parses in the crystallographic convention (`@Miller/Miller.m`). `MillerConvention.m` centralizes the convention parsing/switching logic — don't hand-roll hkl↔uvw conversions elsewhere.
-- `symmetry` → `crystalSymmetry`/`specimenSymmetry` is threaded through both chains. Almost every "reduce to fundamental domain" or "list symmetric equivalents" operation ultimately calls into `fundamentalRegion.m` / `@orientationRegion`, which represents the fundamental zone as a convex region bounded by quaternion half-spaces (`dot(q,N) <= 0`), not as an explicit angle range — see `@orientationRegion/orientationRegion.m`.
-- `@embedding` maps orientations/rotations into a Euclidean embedding space; the load-bearing invariant is that this map must be an **isometry** (distances in embedding space must match orientation-space distances) for every Laue class — this broke silently for several Laue classes and was fixed in `geometry/@embedding/double.m` (see git history). If you touch `@embedding`, verify isometry across all Laue groups, not just cubic/hexagonal.
-- `functionSignatures.json` drives MATLAB's tab-completion/argument validation for this folder's public functions; keep it in sync when changing a public signature.
+- `quaternion` → `rotation` → `orientation`. An `orientation` carries a
+  `crystalSymmetry`/`specimenSymmetry` pair (`CS`/`SS`) and with it fundamental-zone
+  reduction, symmetric equivalents and misorientation.
+- `vector3d` → `Miller`. A `Miller` is a `vector3d` in a crystal frame plus a convention
+  (`hkl`/`hkil`/`uvw`/`UVTW`). `MillerConvention.m` owns hkl↔uvw — never hand-roll it.
+- `symmetry` → `crystalSymmetry`/`specimenSymmetry` is threaded through both chains.
+- `@referenceFrame` → `@crystalFrame`/`@specimenFrame` carries the axes and the plotting
+  convention. **Only a frame carries a convention**; `how2plot` is read only everywhere
+  else. See `docs/adr/0003-reference-frame-vs-symmetry.md`.
 
-Subclasses under `@crystalShape`, `@dislocationSystem`, `@fibre`, `misorientation/` build on the above rather than introducing new primitives — check whether the behavior you need already exists on `orientation`/`vector3d` before adding it here.
+Traps:
+
+- The fundamental zone is a convex region bounded by quaternion half-spaces
+  (`dot(q,N) <= 0`) in `@orientationRegion`, not an angle range.
+  `@symmetry/fundamentalRegionEuler` is a bounding box, about 3x too large for cubic — an
+  orientation outside it is not a bug.
+- `@embedding` must be an **isometry for every Laue class**, not just cubic and hexagonal.
+  Verify across all of them when touching `@embedding/double.m`.
+- `functionSignatures.json` drives tab-completion for this folder. Keep it in sync with
+  public signatures.
+
+`@crystalShape`, `@dislocationSystem`, `@fibre` and `misorientation/` build on the above.
+Check `orientation`/`vector3d` for the behaviour before adding it here.

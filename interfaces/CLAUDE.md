@@ -1,12 +1,37 @@
 # interfaces/
 
-File format import/export for EBSD, pole figure, ODF, orientation, and grain data.
+File format import/export for EBSD, pole figure, ODF, orientation and grain data.
 
-- `loadData.m` is the format-agnostic entry point (`loadData(fname, type, ...)`); it never guesses a parser itself — it delegates to `interfaces/tools/check_interfaces.m`, which auto-detects the right loader by trying each installed `load<Type>_*.m` in turn (via `dir([mtex_path '/interfaces/load' type '_*.m'])`) and checking which one accepts the file. Adding a new format means adding a new `load<Type>_<format>.m` file with the right naming convention — there is no separate registry to update.
-- Format-specific loaders (`loadEBSD_ang.m`, `loadEBSD_ctf.m`, `loadEBSD_h5.m`, `loadEBSD_osc.m`, `loadEBSD_crc.m`, `loadEBSD_generic.m`, `loadODF_*`, `loadOrientation_*`, `loadGrains_Dream3d.m`, `loadGrainSet_hdf5.m`, `loadNeperTess.m`, …) each live directly under `interfaces/`; shared low-level helpers (header parsing, Euler angle corrections, grid assertions) live in `interfaces/tools/`.
-- `loadEBSD_dream3d.m` and `loadEBSD_xnovo.m` are **known-WIP, not yet functional** — a failure there is not a regression to chase down.
-- Export mirrors import: `exportEBSD_ang.m`, `exportEBSD_ctf.m` and `exportEBSD_h5.m` sit next to their loaders, `EBSD/export.m` dispatches to them by file extension, and the old `@EBSD/export_ang.m`, `export_ctf.m`, `export_h5.m` are thin wrappers kept for existing scripts. Shared exporter helpers (`gridCells`, `gridSteps`, `fileOrder`, `getColumn`, `hdrGet`, `importedHeader`, `tslSymmetryCodes`, `csOf`) live in `interfaces/private/`.
-- **An exporter has to undo the Euler correction its loader applies** (`eulerCorrectionRotation` for the EDAX settings, a 180° z rotation for .ctf), otherwise the exported file re-imports turned. The same goes for the header: whatever the loader captured in `ebsd.opt.header` is what the exporter writes back instead of zeros.
-- `exportEBSD_h5` does not write an HDF5 file from scratch unless asked to (`'standalone'`). It copies the file the data was imported from and writes the changed data into the copy, using the record `loadEBSD_h5` leaves in `ebsd.opt.h5` (source file, resolved data set paths per quantity, and the compound-record field where a vendor packs several into one data set). `h5write` cannot write a compound data set, nor a fixed-length string one (an EDAX `MaterialName` is 21 characters, a Bruker `Name` 17) — the low-level `H5D.write` paths in `exportEBSD_h5` are what make `.edaxh5` and phase renaming work. Both fail with a shape/type complaint rather than silently, but only if you look: the value simply stays as the file had it otherwise.
-- `hdf5_config/` and `import_wizard/` support format-specific HDF5 configuration and (legacy) interactive import — not the primary code path for scripted loading.
-- `functionSignatures.json` drives MATLAB tab-completion/argument validation for public loaders; keep it in sync when changing a public loader's signature.
+- `loadData(fname,type,...)` is the entry point. It delegates to
+  `interfaces/tools/check_interfaces.m`, which tries every installed `load<Type>_*.m` in
+  turn. **A new format is a new `load<Type>_<format>.m` file** — there is no registry.
+- Loaders sit directly under `interfaces/`, shared helpers (header parsing, Euler
+  corrections, grid assertions) under `interfaces/tools/`.
+- Export mirrors import: `exportEBSD_ang.m`, `exportEBSD_ctf.m` and `exportEBSD_h5.m` sit
+  next to their loaders, dispatched by extension from `EBSD/export.m`. The old
+  `@EBSD/export_*.m` are wrappers. Shared helpers are in `interfaces/private/`.
+- `loadEBSD_dream3d.m` and `loadEBSD_xnovo.m` are **WIP, not functional** — a failure there
+  is not a regression.
+- `functionSignatures.json` drives tab-completion for public loaders. Keep it in sync.
+
+Rules:
+
+- **An exporter undoes the Euler correction its loader applies** — `eulerCorrectionRotation`
+  for the EDAX settings, a 180° z rotation for `.ctf` — or the file re-imports turned. Same
+  for the header: write back what the loader put in `ebsd.opt.header`, not zeros. See
+  `docs/adr/0001-ebsd-opt-header.md`.
+- `exportEBSD_h5` copies the source file and writes into the copy, driven by the record
+  `loadEBSD_h5` leaves in `ebsd.opt.h5`. Only `'standalone'` writes from scratch.
+- `h5write` cannot write a compound data set nor a fixed-length string (EDAX `MaterialName`
+  is 21 chars, Bruker `Name` 17). The low-level `H5D.write` paths are what make `.edaxh5`
+  and phase renaming work — without them the value silently stays as the file had it.
+
+Traps:
+
+- Phase column conventions are opposite: EDAX numbers phases from 1 with 0 = notIndexed,
+  EMSphInx from 0 with 255 = notIndexed. An EMSphInx `.ang` carries no vendor marker.
+- `fgetl` stops at a lone CR and `txt2mat` does not, so a vendor file with mixed line
+  endings loses a row silently. Prefer `txt2mat` for the data block.
+
+`hdf5_config/` and `import_wizard/` are HDF5 configuration and the interactive import, not
+the scripted path.
