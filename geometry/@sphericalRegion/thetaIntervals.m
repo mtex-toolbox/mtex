@@ -29,12 +29,9 @@ sR.antipodal = false;
 
 rho = reshape(rho,1,[]);
 
-% Along the meridian rho the bounding circle i is crossed where
+% along the meridian rho the bounding circle i is crossed where
 %
 %   a sin(theta) + Nz cos(theta) = alpha,   a = Nx cos(rho) + Ny sin(rho)
-%
-% and the left hand side is a single sine wave, hypot(a,Nz) * sin(theta+phi)
-% with phi = atan2(Nz,a), so this is solvable in closed form
 a = sR.N.x(:) * cos(rho) + sR.N.y(:) * sin(rho);
 b = repmat(sR.N.z(:),1,numel(rho));
 

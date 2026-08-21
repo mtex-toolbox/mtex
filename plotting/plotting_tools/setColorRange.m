@@ -41,9 +41,7 @@ end
 
 if isempty(mtexFig.children), return; end
 
-% both spellings, as in optionplot - plotPDF and the other plot commands
-% pass their options straight through to here, and the documented flag on
-% those is 'logarithmic'
+% both spellings, as in optionplot - the documented flag is 'logarithmic'
 if check_option(varargin,{'logarithmic','log'})
   set(mtexFig.children,'ColorScale','log');
 elseif check_option(varargin,'linear')

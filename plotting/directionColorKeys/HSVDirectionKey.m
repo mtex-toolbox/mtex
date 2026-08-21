@@ -48,9 +48,7 @@ classdef HSVDirectionKey < directionColorKey
       % shown only when it deviates from the default, so a plain key stays
       % a two line display
 
-      % in polar coordinates, not as a Miller: the white center is the
-      % barycenter of the fundamental sector and hardly ever a low index
-      % direction - rounding it to one prints noise like (12 3̅ 9̅ 10)
+      % in polar coordinates, the white center is hardly ever a low index direction
       [theta,rho] = polar(dM.whiteCenter); %#ok<POLAR>
       props = {'white center'};
       propV = {['θ ' xnum2str(theta/degree) '°, ρ ' xnum2str(rho/degree) '°']};

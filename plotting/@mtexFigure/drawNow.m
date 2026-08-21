@@ -12,9 +12,7 @@ if ~check_option(varargin,'keepAxisSize')
   updateLayout(mtexFig);
 end
 
-% take over a legend placed outside the axes, so that the tight inset below
-% reserves the space it needs - updateLayout does this as well, but it is
-% skipped with 'keepAxisSize'
+% take over a legend outside the axes, updateLayout is skipped with 'keepAxisSize'
 adoptLegend(mtexFig);
 
 % compute surrounding box of each axis in pixel

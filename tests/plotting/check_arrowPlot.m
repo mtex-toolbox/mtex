@@ -28,9 +28,7 @@ near = orientation.byEuler([70.6491 41.3549 5.15433; ...
   71.1963 40.9086 4.51548]*degree,cs);
 far = orientation.byEuler([0 0 0; 30 40 20]*degree,cs);
 
-% 'length',0 draws the bare shaft, so its extent IS the segment - a more
-% reliable reference than digging the two measurements out of the markers,
-% which also carry the sector corners
+% 'length',0 draws the bare shaft, so its extent is the segment
 for pair = {near, far}
 
   segment = arrowExtent(pair{1},'length',0);

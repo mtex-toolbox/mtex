@@ -99,11 +99,7 @@ function check(numeric,closed,what)
 
   err = max(abs(numeric(:)-closed(:))) / max(closed(:));
 
-  % the rectangle rule converges only linearly in the step and a narrow
-  % window gets few points, so a percent or two is the quadrature and not a
-  % defect. Everything this test exists to catch - the wrong end clipped, a
-  % weight scaled by the region instead of by the window - is off by tens of
-  % percent or more
+  % the rectangle rule converges linearly, so a percent or two is quadrature error
   assert(err < 3e-2, ...
     'check_axisDistribution: %s differs from the closed form by %.2g%%',...
     what,100*err)

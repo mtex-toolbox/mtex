@@ -47,8 +47,7 @@ for k = 1:numel(cases)
 end
 
 % ------------------------------------------------------- random cell walls
-% random planar-ish edge sets with a realistic mix of degree 2 vertices and
-% junctions, which is what a real grain boundary looks like
+% a realistic mix of degree 2 vertices and junctions
 rng(0);
 for k = 1:25
 

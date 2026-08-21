@@ -68,8 +68,7 @@ else
 end
 
 % --------------------------------------------------------------- collect
-% only check_*.m counts, so that a helper dropped into a tier folder is not
-% mistaken for a test
+% only check_*.m counts, a helper in a tier folder is not a test
 root = fileparts(mfilename('fullpath'));
 
 names = {}; tierOf = {};
@@ -89,10 +88,7 @@ for k = 1:numel(runList)
     tierOf{end+1} = runList{k}; %#ok<AGROW>
   end
 
-  % a tier folder must contain nothing BUT tests. Without this an .m file
-  % whose name does not start with check_ sits in the folder looking like a
-  % test and is silently never run - which is exactly what checkMeanTensor
-  % did, since it matches check* but not check_*.
+  % a tier folder must contain nothing but tests, anything else is silently never run
   all = dir(fullfile(folder,'*.m'));
   stray = setdiff({all.name},{files.name});
   if ~isempty(stray)
@@ -109,8 +105,7 @@ if isempty(names)
 end
 
 % ------------------------------------------------------------------- run
-% invisible figures for the whole run - restored even if a test throws
-% something the per-test catch does not see
+% invisible figures for the whole run, restored even if a test throws
 oldVis = get(0,'DefaultFigureVisible');
 resetAfterwards = onCleanup(@() set(0,'DefaultFigureVisible',oldVis)); %#ok<NASGU>
 set(0,'DefaultFigureVisible','off');

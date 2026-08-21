@@ -50,17 +50,11 @@ for i = 2:length(rhoMin)
   rho = [rho,nan,linspace(rhoMin(i),rhoMax(i),round(1+(rhoMax(i)-rhoMin(i))/res))]; %#ok<AGROW>
 end
 
-% For a fixed azimuth angle the polar angles inside the region need not form
-% a single interval, and a surface can have no holes. Hence the grid is
-% assembled from strips that have one interval per grid line and are
-% separated by columns of NaN.
+% the polar angles need not form a single interval, so assemble the grid from strips
 [thetaMin,thetaMax] = thetaIntervals(sRRot,rho);
 [rho,thetaMin,thetaMax] = buildStrips(rho,thetaMin,thetaMax,0,pi);
 
-% Which of the two angles decomposes the region into fewer strips depends on
-% its shape - a sector that is cut open at its corners in azimuth direction
-% has a single interval per polar angle and vice versa. So sweep along the
-% polar angle instead whenever that is the better direction.
+% sweep along the polar angle instead whenever that gives fewer strips
 nStrips = 1 + nnz(isnan(rho));
 sweepTheta = false;
 if nStrips > 1 && isscalar(rhoMin)
@@ -105,9 +99,7 @@ function [a,bMin,bMax] = buildStrips(a,bMin,bMax,lowerPole,upperPole)
 %
 % bMin, bMax are nInt x numel(a) and padded with NaN
 
-% an interval that has collapsed onto one of the two poles is not a region
-% - the poles belong to every grid line and would otherwise glue all strips
-% together
+% an interval collapsed onto a pole is no region, it would glue all strips together
 degenerated = (bMax < lowerPole + 1e-5) | (bMin > upperPole - 1e-5);
 
 % at the first and the last grid line a sector may legitimately close in a

@@ -142,9 +142,7 @@ else
 
 end
 
-% with 'strict' the verdict is raised rather than only printed, which is what
-% lets a test suite gate on it - see check_mexFunctions. Without it the
-% behaviour is unchanged, so startup_mtex's check_mex('fast') is unaffected.
+% with 'strict' the verdict is raised rather than only printed, see check_mexFunctions
 if check_option(varargin,'strict')
   bad = cellstr(mexFiles(~res));
   if isMissing || ~isempty(bad)
@@ -248,13 +246,7 @@ function out = check_insidepoly_dblengine
 out = all(logical(insidepoly(x,y,poly(:,1),poly(:,2))) == ...
   inpolygon(x,y,poly(:,1),poly(:,2)));
 
-% Every vertex of a polygon lies on that polygon - issue #2527. Random
-% points never land exactly on an edge, so the comparison above says nothing
-% about the on-boundary answer, and that is where the engine was wrong: it
-% brackets each edge by a half open interval in x, which is what makes the
-% crossing count right at a shared vertex, but it used the same bracket for
-% the on test. A vertex that is a local maximum in x is the excluded end of
-% both edges meeting there, so nothing ever tested a point sitting on it.
+% #2527: every vertex lies on its polygon, which random points never test
 [~,on] = insidepoly(poly(:,1),poly(:,2),poly(:,1),poly(:,2));
 out = out && all(on);
 
@@ -273,13 +265,7 @@ safe = pointToPolyDistance(x,y,poly) > 1e-4;
 
 out = all(logical(got(safe)) == ref(safe));
 
-% No on-boundary check here, unlike check_insidepoly_dblengine: the single
-% engine cannot pass one. insidepoly derives its tolerance from the SIZE of
-% the polygon, ontol = 1e-9*extent, and never from the magnitude of the
-% coordinates - so for a polygon of extent 3 the tolerance is 2.7e-9 while
-% eps of a single precision 1 is 1.2e-7, the on-band collapses to nothing
-% and not one point is ever reported on the boundary. Separate defect, see
-% the issue tracker.
+% no on-boundary check, the single engine derives ontol from the polygon size
 
 end
 
@@ -333,9 +319,7 @@ nV = length(gB.allV);
 
 [g, c, cP] = EulerCyclesC(gB.I_FG,gB.F,nV);
 
-% g and c are offset arrays into c and cP - a nested CSR - so they have to
-% close on the arrays they index, be monotone, and every cycle has to be a
-% closed walk over vertices that exist
+% g and c are offset arrays into c and cP, so they have to close and be monotone
 out = c(end) == numel(cP)+1 && g(end) == numel(c) && ...
   all(diff(g) >= 0) && all(diff(c) >= 0) && ...
   all(cP >= 1 & cP <= nV) && numel(c) > 1;
@@ -506,18 +490,12 @@ y  = vector3d.rand(40);
 
 got = find(x,y);
 
-% compared through the dot_outer matrix: angle() broadcasts a column against
-% a column into an outer product, so the elementwise reading would silently
-% become 40x40
+% compare through dot_outer, angle() would broadcast two columns into 40x40
 D = dot_outer(xv,y);
 best = max(D,[],1);
 lin = sub2ind(size(D),double(got(:)).',1:numel(y));
 
-% S2Grid_find is not exact - it searches the nearest ring of constant theta
-% and then within it, and near a cell boundary settles on a neighbour: 4 of
-% 200 queries on a 510 point grid, overshooting by at most 0.84 degree with a
-% 9.0 degree spacing. A fifth of the spacing tolerates that and would still
-% catch a binary returning the wrong point.
+% S2Grid_find settles on a neighbour near a cell boundary, so allow a fifth of the spacing
 spacing = sqrt(4*pi/numel(xv));
 extra = acos(min(1,D(lin))) - acos(min(1,best));
 

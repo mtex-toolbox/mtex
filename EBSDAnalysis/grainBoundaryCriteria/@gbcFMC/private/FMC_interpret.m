@@ -79,9 +79,7 @@ scaleOfAgg = zeros(numAgg,1);   % scale an aggregate lives on
 indexOfAgg = zeros(numAgg,1);   % its index within that scale
 parent     = cell(1,numS);      % dominant parent one scale up
 
-% B holds the membership of every ORIGINAL pixel in the aggregates of the
-% current scale, accumulated forward: one sparse product per scale instead
-% of rebuilding the whole chain at every scale
+% membership of every original pixel, accumulated forward, one product per scale
 B = AllPs{2};
 
 for s = 2:numS
@@ -95,15 +93,7 @@ for s = 2:numS
   [p,a] = max(B,[],2);
   p = full(p);
 
-  % Saliency is not comparable between scales as it stands. It RISES as
-  % aggregates grow - on the clean benchmark the median goes 3.6, 6.2, 13,
-  % 30, 49, 68 - and then collapses to exactly 0 at the top, because the
-  % rebias plus edge dilution eventually cut every edge leaving an
-  % aggregate. Zero is the legitimate reading "perfectly separated", but
-  % once the whole map has saturated there it says nothing about which
-  % scale a region should be read at. Each scale is therefore scored
-  % against its OWN median, so what is compared is how salient an aggregate
-  % is FOR ITS SCALE.
+% saliency rises with the aggregate size, so score every scale against its own median
   sal = full(AllSals{s});
   ref = median(sal(isfinite(sal) & sal > 0));
   if isempty(ref) || ~(ref > 0), ref = 1; end
@@ -115,14 +105,7 @@ for s = 2:numS
   q(isnan(q)) = inf;
   sal = q;
 
-  % Strictly less, so ties go to the FINEST scale that attains the minimum.
-  % This is what makes the selection mean anything: saliency saturates at
-  % the top, where every aggregate reads 0, so a rule that broke ties
-  % towards the coarse end would read the whole map off the last scale and
-  % the hierarchy below it would be wasted. Breaking them towards the fine
-  % end reads each region off as soon as it is fully separated - early for
-  % a grain that resolves quickly, at the top for one that only separates
-  % from its neighbour at the very end.
+% strictly less, so a tie goes to the finest scale that attains the minimum
   take = ok & sal < bestSal;
 
   bestSal(take) = sal(take);
@@ -135,10 +118,7 @@ for s = 2:numS
   end
 end
 
-% Assigned pixels only. There is no spare bin to put the others in: offset(2)
-% is 0, so global aggregate id 1 is a genuine scale 2 aggregate and folding
-% bestLab == 0 into it would report unassigned pixels as read off at scale 2.
-% They are counted on their own, as rep.numUnassigned below.
+% assigned pixels only, the unassigned ones are counted as rep.numUnassigned
 sel = bestLab > 0;
 rep.readPerScale = accumarray(scaleOfAgg(bestLab(sel)),ones(nnz(sel),1),[numS 1]).';
 rep.numStranded  = nnz(~sel);
@@ -182,40 +162,12 @@ label = conncomp(graph(i(same),j(same),[],N)).';
 label(bestLab == 0) = 0;
 
 % ------------------------------------------- 4 absorb undersized regions
-%
-% A misindexed pixel reaches this point in one of two states. Either
-% part6InterpWeights zeroed its interpolation weight, because it sits
-% further than its aggregate's outlier radius from the mean, and it has no
-% membership at all; or its couplings were so weak that edge dilution cut
-% it loose and it became a seed, and hence an aggregate, of its very own.
-% Left alone both end up as single pixel grains, which is the one failure
-% mode this algorithm is otherwise free of.
-%
-% Both are treated the same way, and minPixel simply raises the size below
-% which a region counts as too small to stand on its own: undersized
-% regions are eaten from the rim inwards by whichever full sized neighbour
-% touches them, one shell per round, until nothing undersized is left.
-%
-% This ABSORBS rather than deletes, which is the opposite of what
-% calcGrains' own minPixel does - that one marks undersized pixels
-% notIndexed and throws their orientations away. Absorbing suits FMC: the
-% pixels it strands are misindexed ones that belong to the grain around
-% them, and putting them back there is the whole point.
-%
-% A region is only ever dissolved into a neighbour that is itself big
-% enough, so two undersized regions cannot merge into one, and an
-% undersized region with no full sized neighbour anywhere is left alone
-% rather than being destroyed.
+% eat a region below minPixel from the rim inwards, by whichever full sized
+% neighbour touches it - unlike calcGrains' minPixel this absorbs, not deletes
 
 thr = max(minPixel,2);
 
-% Strongest coupling first. Adopting every stranded pixel at once, one
-% shell per round, lets a pixel sitting on a sharp internal boundary take
-% whichever side happens to be labelled already - and along such a boundary
-% the pixels on BOTH sides are usually stranded, so which side wins is
-% decided by nothing at all. Working down from the strongest coupling makes
-% each pixel wait until its own side has been settled, which is the same
-% reason a priority flood beats a plain flood fill.
+% strongest coupling first, so a pixel on a boundary waits until its side is settled
 mx = max(max(W0));
 if ~(mx > 0), mx = 1; end
 levels = mx * [0.9 0.7 0.5 0.3 0.15 0.05 0];
@@ -241,14 +193,7 @@ for lv = levels
     target = zeros(N,1);
     target(label>0) = big(label(label>0));
 
-    % Join the MOST SIMILAR full sized neighbour, not an arbitrary one.
-    % Picking by largest label id - which is what this did first - glues a
-    % stranded pixel to whichever neighbour happens to be numbered highest,
-    % and on ebsd2 that turned 389 sharp (>10 degree) pixel steps into
-    % INTERNAL steps of a grain, 61 % of them from exactly this. W0 holds
-    % the finest level couplings, which fall off with the local
-    % misorientation, so the largest coupling is the nearest neighbour in
-    % orientation.
+% join the most similar full sized neighbour, i.e. the one with the largest coupling
     cand = double(A_D(undersized,:)) .* W0(undersized,:);
     cand = cand .* (target(:).' > 0);
 

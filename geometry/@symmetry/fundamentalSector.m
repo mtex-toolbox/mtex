@@ -129,13 +129,8 @@ if check_option(varargin,{'upper','lower','maxTheta','minTheta'})
   N(isnull(angle(N,pC.outOfScreen,'antipodal'))) = [];
 end
 
-% the sector is a region OF the symmetry's frame, and it has to say so:
-% sR.how2plot is read by isUpper, isLower, restrict2Upper, restrict2Lower
-% and polarCoordinates, so a frame free sector resolves against the session
-% default instead of the convention it was computed in. For a crystal
-% symmetry the two differ - the crystal frame has c out of the screen while
-% the session may have z into it - and the inverse pole figure colour key
-% is built from this very sector, so the whole key would flip with it
+% the sector is a region of the symmetry's frame and has to say so - a frame free
+% one resolves against the session default, which would flip the ipf colour key
 if isempty(pCopt) && ~isempty(sym.frame)
   N.frame = sym.frame;
 else

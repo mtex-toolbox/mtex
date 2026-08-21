@@ -26,10 +26,7 @@ if isNew
   plotEmptySphere(ax,varargin{:});
 end
 
-% a Miller index marks the plot as living in crystal coordinates, where the
-% X / Y / Z of the specimen would be meaningless - Miller/scatter tells the
-% two dimensional plots the very same way, but the three dimensional ones
-% never go through it. Note this before v is normalized below.
+% a Miller index marks the plot as living in crystal coordinates, note it before normalizing
 if isa(v,'Miller'), csArg = {v.CS}; else, csArg = {}; end
 
 % normalize vectors
@@ -80,9 +77,7 @@ set(ax,'XDir','rev','YDir','rev',...
 pC = plottingConvention.fromOption(varargin,plottingConvention.default);
 pC.setView(ax);
 
-% annotate the axes of the reference frame the way every two dimensional
-% spherical plot does - here as arrows in space, since there is no
-% sphericalPlot on a three dimensional axis to do it for us
+% annotate the reference frame as arrows, there is no sphericalPlot to do it
 if isNew, annotateFrame(ax,varargin{:},csArg{:}); end
 
 if nargout == 0, clear h;end

@@ -17,9 +17,7 @@ N = numel(a);
 dim = nchoosek(deg + 3, 3);
 
 % if the tangent parameter is true, we set the a coordinate to 1
-% NOTE:
-% if tangent == true, then also centered == true (SO3FunMLS-constructor),
-%   thus all nodes in ori are close to the identity
+% NOTE: tangent == true implies centered == true, so ori is close to the identity
 if tangent
   I = a >= 0;
   a( I) =  1;

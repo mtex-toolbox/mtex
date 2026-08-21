@@ -119,13 +119,8 @@ function [ebsdGrid,ind] = resample(ebsd,uC,varargin)
 
 ext = get_option(varargin,'extent',ebsd.extent);
 
-% The new grid is the lattice the unit cell tiles the plane with, taken from
-% the unit cell itself and not from its bounding box: for a unit cell that is
-% not axis aligned - a rotated one, say - the bounding box is larger than the
-% actual cell to cell translation, so an axis aligned grid built from it
-% leaves gaps between the cells (for a 45 degree rotated square cell exactly
-% every second cell of a checkerboard). latticeBasis returns the translations
-% for any square, rectangular or rotated cell.
+% take the lattice from the unit cell and not from its bounding box, which for a
+% rotated cell is larger than the cell to cell translation and leaves gaps
 A = latticeBasis(uC);
 
 % the four corners of the extent, referred to the lower left one

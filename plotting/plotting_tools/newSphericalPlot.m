@@ -65,9 +65,7 @@ if isNew || ~isappdata(mtexFig.currentAxes,'sphericalPlot')
     proj = getProjection(sR,how2plot,varargin{:});
   end
   
-  % the axes created below have to start out in the same hold state as the
-  % current one - this is a baseline, not a temporary hold, so it must
-  % survive this function
+  % the new axes start out in the hold state of the current one, as a baseline
   srcAx = mtexFig.gca;
 
   for i = 1:numel(proj)
@@ -112,11 +110,7 @@ else
 
   sP = getappdata(mtexFig.currentAxes,'sphericalPlot');
 
-  % a plot that covers both hemispheres is spread over two axes - a circle,
-  % a marker or a label added to it belongs to both of them, each showing
-  % the part of it that falls into its hemisphere (#330). A caller that
-  % hands in a projection, on the other hand, has already decided which
-  % half it is drawing - S2Fun/plot walks the halves itself.
+  % a plot covering both hemispheres is spread over two axes, an annotation over both (#330)
   if isempty(getClass(varargin,'sphericalProjection'))
     sP = sP.allHemispheres;
   end
@@ -141,9 +135,7 @@ if check_option(varargin,'complete')
   sR = sphericalRegion;
 end
 
-% asking for the upper and the lower hemisphere at once asks for both halves
-% of the plot, not for one of them - it restricts nothing and it also
-% overrules the reduction to a single hemisphere below (#330)
+% upper and lower at once asks for both halves, and overrules the reduction below (#330)
 bothHemispheres = check_option(varargin,'upper') && check_option(varargin,'lower');
 
 if ~bothHemispheres
@@ -209,11 +201,7 @@ end
 function proj = ownConvention(proj)
 % let the axis own the plotting convention of a projection handed in
 
-% Since plottingConvention became a value class the freezing this
-% function used to do - copying the convention so that a later
-% plotx2east does not reproject an already drawn axis - happens by
-% itself on every assignment; what remains is aligning all projections
-% on the value of the first one.
+% align all projections on the value of the first one
 
 if isempty(proj), return; end
 

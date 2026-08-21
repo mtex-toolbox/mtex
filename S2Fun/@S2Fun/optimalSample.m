@@ -189,14 +189,8 @@ if any(c<0)
 end
 c = c/sum(c);
 
-% The discrepancy J is the squared euclidean norm of the harmonic
-% coefficients of mu - sF, weighted by w.^2 = 4*pi*A_n/(2n+1) in degree n.
-% Note that w is zero in degree 0, i.e. the degree with the negative kernel
-% coefficient is dropped. It does not contribute anyway, as long as
-% sum(c) == 1, but dropping it keeps J and its gradients consistent by
-% construction. In contrast to SO3 no additional scaling of the coefficients
-% is needed, since the spherical harmonics of MTEX are already orthonormal
-% with respect to the (unnormalized) surface measure.
+% J is the squared euclidean norm of the harmonic coefficients of mu - sF,
+% weighted by w.^2 = 4*pi*A_n/(2n+1) - degree 0 is dropped, it does not contribute
 w = zeros((bw+1)^2,1);
 for l = 1:bw
   w(l^2+1:(l+1)^2) = sqrt( 4*pi * psi.A(l+1)/(2*l+1) );
@@ -208,17 +202,11 @@ I = w .* sF.fhat;
 % the same kernel without its degree 0 part, used for the gradient w.r.t. v
 psi0 = S2Kernel([0;psi.A(2:end)]);
 
-% The nodes change in every iteration, hence the NFSFT plans are set up once
-% and the nodes are updated in place. The onCleanup makes sure that they are
-% freed, also if the user interrupts with Ctrl-C.
+% the nodes change in every iteration, so set the plans up once and update in place
 nfsft = nfsftPlan(bw,M);
 freePlans = onCleanup(@() nfsft.finalize());
 
-% Step size of the line search. It is carried over between the iterations and
-% doubled before every line search, so that it can grow as well as shrink.
-% Starting each line search at 1 instead would tie the length of a step to
-% the magnitude of the gradient, which is proportional to the weights and
-% hence of the order 1/M - the nodes would then crawl.
+% carry the step size over and double it, so that it can grow as well as shrink
 stepSize = 1;
 
 % harmonic coefficients D of mu - sF and the resulting discrepancy
@@ -228,13 +216,9 @@ pC = progressCounter(maxIter);
 for i = 1:maxIter
 
   % ------------------------ (1) optimize weights -------------------------
-  % for fixed directions this is a convex least squares problem, which mlsq
-  % decreases while maintaining sum(c) = 1 and c >= 0
+  % for fixed directions this is a convex least squares problem, solved by mlsq
   cOld = c;
-  % During the warm up the weights are left alone, see above. For a single
-  % direction the simplex degenerates to the point c = 1, so there is nothing
-  % to optimize either - and mlsq would divide by the length of a vanishing
-  % search direction.
+  % during the warm up, and for a single direction, there is nothing to optimize
   if optWeights && M > 1 && i > warmUp
     cNew = mlsq(@(x,flag) Psi(x,flag,nfsft,v,w,lambda),I,c,innerIter,0);
     % guard against the same degeneracy for M > 1, which occurs if the
@@ -255,12 +239,7 @@ for i = 1:maxIter
   % a vanishing gradient cannot be improved by any step size
   if gNorm == 0, break, end
 
-  % Line search with Armijo, capped such that no node travels more than half
-  % a turn - without the cap the step size would keep doubling once the
-  % gradient becomes small and every line search would waste its first
-  % dozens of trials. Doubling is what pays off here: starting each line
-  % search directly at the cap does lower J per iteration, but the extra
-  % backtracking costs more than it gains per second.
+% line search with Armijo, capped so that no node travels more than half a turn
   stepSize = min(2*stepSize, pi/max(norm(g)));
 
   lineSearchFailed = false;
@@ -277,10 +256,7 @@ for i = 1:maxIter
 
     stepSize = 0.5*stepSize;
 
-    % --- Local Termination ---
-    % This is not an error. The weight step may already have brought us to a
-    % point where the directions cannot be improved any further, in which
-    % case we are simply done.
+    % --- local termination: the weight step may have left nothing to improve
     if stepSize < 1e-16
       lineSearchFailed = true;
       vNew = v;
@@ -304,9 +280,7 @@ for i = 1:maxIter
 
 end
 
-% Since the weight update of mlsq is multiplicative, a weight that reached 0
-% stays 0, i.e. the corresponding direction does not contribute to the sample
-% any longer. Optionally discard those directions.
+% the mlsq update is multiplicative, so a weight that reached 0 stays 0
 if optWeights && minWeight > 0
   keep = c >= minWeight;
   if ~any(keep)
@@ -319,9 +293,7 @@ if optWeights && minWeight > 0
   end
 end
 
-% return the sample in the reference frame of the function - in a crystal
-% frame it comes back as Miller, with the trivial group when the function
-% carries no symmetry (ADR 0003, orientation without symmetry)
+% return the sample in the reference frame of the function
 if isa(sF,'S2FunHarmonicSym') && isa(sF.CS,'crystalSymmetry')
   v = Miller(v,sF.CS);
 elseif ~isa(v,'Miller')

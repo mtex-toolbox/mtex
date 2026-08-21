@@ -61,17 +61,11 @@ end
 mtexId2ctfId = [1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,3,6,6,7,7,7,7,7,7,4,4,...
   4,5,5,5,5,5,8,8,8,9,9,9,9,9,10,10,11,11,11];
 
-% The Euler angles of a ctf file are stated in the Euler reference frame,
-% which loadEBSD_ctf aligns with the map by a rotation of 180 degree about
-% z - writing has to undo that again. Without this an import/export cycle
-% turned the whole map by 180 degree.
+% undo the Euler correction loadEBSD_ctf applies, the file states its own frame
 cor = get_option(varargin,'EulerCorrection',rotation.byEuler(pi,0,0));
 ebsd.rotations = inv(cor) .* ebsd.rotations;
 
-% The map on its grid, and which of its cells the file lists. A ctf states
-% the position of every measurement, so unlike an .ang it can also hold a
-% map that is no axis aligned grid at all - then only the step size in the
-% header is an approximation, and the data is written as it is.
+% a ctf states every position, so it can also hold a map that is no axis aligned grid
 isGrid = true;
 try
   [g,keep] = gridCells(ebsd);
@@ -88,8 +82,7 @@ end
 hdr = importedHeader(ebsd);
 
 % -- acquisition parameters ----------------------------------------------
-% names and formats as a Channel text file states them, which is also how
-% loadEBSD_ctf puts them into ebsd.opt.header
+% names and formats as a Channel text file states them, see loadEBSD_ctf
 AcquParam.Str = {'Mag','Coverage','Device','KV','TiltAngle','TiltAxis',...
   'DetectorOrientationE1','DetectorOrientationE2','DetectorOrientationE3',...
   'WorkingDistance','InsertionDistance'};
@@ -189,9 +182,7 @@ end
 fprintf(filePh,'\r\n');
 
 % -- phases --------------------------------------------------------------
-% Channel numbers the phases 1 to N in the order of this very table, and
-% keeps 0 for not indexed - so the data column below is the position in it,
-% not whatever number the map happens to carry
+% Channel numbers the phases 1 to N in the order of this table, 0 is not indexed
 phaseId = ebsd.indexedPhasesId;
 
 fprintf(filePh,'Phases\t%.0f\r\n',numel(phaseId));
@@ -216,9 +207,7 @@ scrPrnt(silent,'Step','Assembling data array');
 
 fprintf(filePh,'Phase\tX\tY\tBands\tError\tEuler1\tEuler2\tEuler3\tMAD\tBC\tBS\r\n');
 
-% gridify orders its first dimension along y and its second along x, both
-% increasing, so the file order - x fastest - is the transposed matrix read
-% column wise
+% gridify orders y then x, so the file order - x fastest - is the transposed matrix
 if isGrid
   ordAll = reshape(reshape(1:numel(g),size(g)).',[],1);
   sel = ordAll(reshape(keep.',[],1));

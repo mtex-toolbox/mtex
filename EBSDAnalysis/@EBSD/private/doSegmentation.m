@@ -33,15 +33,8 @@ if check_option(varargin,'mcl')
   
 else
 
-  % A boundary is drawn where the criterion says 0.5 or less - 0.5 is what
-  % it returns for a low angle boundary, 0 for a high angle one. The test
-  % used to be connect < 1, which is the same thing for a criterion whose
-  % answers are 0, 0.5 and 1, but not for one that answers on a continuum:
-  % gbcSoft only reaches 1 once its error function has saturated, so
-  % connect < 1 declared a boundary between nearly every pair of pixels
-  % inside a grain - 57616 inner boundary segments on 49 grains of the
-  % EMSphinx map, which then froze grain2d/smoothBoundary completely,
-  % every vertex of the outer boundary being a junction with one of them.
+  % a boundary is drawn where the criterion says 0.5 or less - connect < 1 also
+  % works for a criterion answering 0, 0.5 and 1, but not for a continuous one
   isBnd = connect <= 0.5;
   A_Db = sparse(double(Dl(isBnd)),double(Dr(isBnd)),true,...
     length(ebsd),length(ebsd));

@@ -64,15 +64,10 @@ end
 TRot = TRot(ebsd.isIndexed);
 [varargout{1:nargout}] = mean(TRot,varargin{:});
 
-% the averages live in the frame of the map - stamp the outputs (the old
-% code stamped the local TRot after the outputs were already extracted,
-% so they never carried the convention)
+% the averages live in the frame of the map, so stamp the outputs
 for k = 1:nargout, varargout{k}.frame = ebsd.pos.frame; end
 
-% average density - only over the indexed pixels, as the density of the not
-% indexed ones is unknown (they keep the NaN they were initialised with) and
-% would otherwise render the average, and with it all derived quantities
-% like wave velocities, NaN
+% average density over the indexed pixels only, a NaN would spread into everything
 if hasDensity
   for k=1:nargout, varargout{k}.opt.density = mean(density(ebsd.isIndexed)); end
 end

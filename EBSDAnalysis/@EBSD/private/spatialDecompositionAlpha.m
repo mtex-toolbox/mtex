@@ -67,11 +67,7 @@ isIndexed = ebsd.isIndexed(:);
 % ---- alpha partition via a true circumradius alpha-complex -----------------
 rAlpha = alpha*dxy;
 
-% padding must accommodate the full diameter (~2*rAlpha) an included
-% triangle can span, centered anywhere up to that same reach beyond the
-% real data, plus a safety margin - same style of margin as
-% spatialDecompositionGrid.m, sized off rAlpha instead of the closing
-% radius (see there for the breakdown of the +4 safety term)
+% pad for the full diameter an included triangle can span, plus a safety margin
 closeCells = ceil(2*rAlpha / min(vecnorm(A,2,1)));
 padding = closeCells + 4;
 szP     = ijsz + 2*padding;
@@ -95,14 +91,8 @@ assert(~any([matP(1,:), matP(end,:), matP(:,1).', matP(:,end).']), ...
   'spatialDecompositionAlpha:padding', ...
   'material reaches the padded border - dummy ring truncated; increase padding');
 
-% classification of every padded raster cell - same scheme as
-% spatialDecompositionGrid.m (see there for the full rationale); the
-% comp/single-pixel-concavity correction logic that compensates for the
-% disk structuring element's discretization error is dropped here since
-% the true alpha-complex has no such error. The shallow-recess
-% vacate/push adjustment below is NOT disk-specific - it corrects for
-% how the exterior band sits relative to site-less filled cells, a
-% structural property of the shared site-assembly scheme - so it is kept.
+% classification of every padded raster cell, as in spatialDecompositionGrid.m -
+% without the concavity correction, the true alpha-complex has no discretization error
 materialP = ~exteriorP;
 bigHoleP  = ~closedP & ~exteriorP;
 
@@ -158,35 +148,16 @@ function closedP = alphaComplexMask(pos, isIndexed, ij, epsilon, rAlpha, ...
   szP, padding, ijmin, ijsz, ij2slotP, idealFun, reconstructPos)
 % true circumradius alpha-complex, rasterized onto the padded (i,j) grid
 %
-% Triangulates the indexed sites (via jcvoronoi2_mex) together with an
-% explicit dummy ring far beyond any possible alpha-included triangle, so
-% no Voronoi edge is left unbounded/clipped by jc_voronoi's internal
-% default box (an arbitrary absolute-unit inflate, not scaled to dxy - see
-% jc_voronoi.h's jcv_diagram_generate_internal). Each interior Voronoi
-% vertex is the circumcenter of its dual Delaunay triangle; a vertex is a
-% genuine (non-dummy-contaminated) circumcenter iff none of its incident
-% Voronoi edges are incident to a dummy site - detected via nnz per row of
-% I_FD (2 real sites = a real-real edge, 1 = real-dummy). All sites
-% incident to a given Voronoi vertex are, by construction, equidistant
-% from it, so a single incident real-real edge already gives that vertex's
-% circumradius without needing to reconstruct the full triangle.
-%
-% Union rule: an edge survives if >= 1 incident triangle has circumradius
-% <= rAlpha; equivalently here, every triangle (= qualifying vertex) with
-% radius <= rAlpha is filled (its convex hull of incident real sites
-% rasterized onto the padded grid), independent of any neighbouring
-% triangle. Cocircular site groups (exact squares on a regular grid -
-% routine on EBSD grids, not a rare degeneracy) share one circumradius for
-% every triangulation of the group, so the whole convex hull of the group
-% is rasterized rather than picking one arbitrary triangulation.
+% The indexed sites are triangulated together with a dummy ring beyond any
+% alpha-included triangle, so no Voronoi edge is left unbounded. A triangle with
+% circumradius <= rAlpha is filled, i.e. the convex hull of its incident real
+% sites is rasterized - for a cocircular group the hull of the whole group.
 
 idxIdx = find(isIndexed);
 idxPos = pos(idxIdx,:);
 nIdx = numel(idxIdx);
 
-% dummy ring along the padded raster's own perimeter - by construction
-% (padding sized off 2*rAlpha, see caller) this is always farther from the
-% real data than any alpha-included triangle can reach
+% dummy ring along the padded raster's perimeter, beyond any alpha-included triangle
 iRange = (ijmin(1)-padding):(ijmin(1)+ijsz(1)-1+padding);
 jRange = (ijmin(2)-padding):(ijmin(2)+ijsz(2)-1+padding);
 ringIJ = [ ...
@@ -263,9 +234,7 @@ for k = 1:numel(uV2)
   candList = [ci(:) cj(:)];
   candXY = reconstructPos(candList);
 
-  % point-in-convex-polygon test: order P by angle around its centroid
-  % (always inside a convex polygon), then require every candidate to be
-  % on the interior side of every directed edge
+  % point-in-convex-polygon: order P around its centroid, then test every edge
   c = mean(P,1);
   ang = atan2(P(:,2)-c(2), P(:,1)-c(1));
   [~,ord] = sort(ang);

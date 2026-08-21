@@ -34,10 +34,8 @@ unitCell = applyGridOptions(unitCell,dxy,cellRot,varargin{:});
 
 
 % =========================================================================
-% the unit cell as it follows from the positions alone - the given options
-% play no role here, they are applied to the result. Alongside the cell
-% itself its size [dx dy] and its rotation are reported, since neither can
-% be read back off the vertices once the cell is scaled anisotropically
+% the unit cell as it follows from the positions alone, together with its size
+% [dx dy] and rotation, which cannot be read back off a scaled cell
 function [unitCell,dxy,cellRot] = estimateUnitCell(xy)
 
 cellRot = 0;
@@ -65,18 +63,13 @@ xyEst = subSample(xy,10000);
 dxy2 = [mean(diff(uniquetol(xyEst(:,1),dxy(1)/100,'DataScale',1))),...
   mean(diff(uniquetol(xyEst(:,2),dxy(end)/100,'DataScale',1)))];
 
-% a single scan line is constant in one coordinate, so uniquetol leaves a
-% single value there and mean(diff(.)) is NaN - which regularPoly happily
-% propagates into a unit cell with a NaN side. Take the spacing from the
-% direction the line does extend in; a line has only one step size anyway
+% a single scan line is constant in one coordinate, take the spacing from the other
 if any(isnan(dxy2))
   if all(isnan(dxy2)), dxy2(:) = dxy(1); else, dxy2(isnan(dxy2)) = dxy2(~isnan(dxy2)); end
 end
 
 % check for square grid
-% (use a tolerance instead of exact == since coordinates may be rotated
-% or otherwise not bit-identical, and fall back gracefully instead of
-% crashing when fewer than two points share the reference coordinate)
+% (use a tolerance, the coordinates may be rotated)
 col = xy(abs(xy(:,1)-xy(2,1)) < dxy2(1)*1e-3, 2);
 row = xy(abs(xy(:,2)-xy(2,2)) < dxy2(2)*1e-3, 1);
 if numel(col) > 1 && numel(row) > 1 && ...
@@ -88,10 +81,7 @@ if numel(col) > 1 && numel(row) > 1 && ...
   return
 end
 
-% maybe it is a grid after all, just rotated - try to detect the lattice
-% directly from nearest-neighbor statistics, which is much cheaper than
-% a full Voronoi decomposition. Falls through to Voronoi below if the
-% point set does not look like a clean lattice.
+% maybe it is a grid after all, just rotated - much cheaper than a Voronoi
 [unitCell,dxy,cellRot] = detectLattice(xy);
 if ~isempty(unitCell), return; end
 cellRot = 0;
@@ -124,10 +114,7 @@ try
   ignore = [false;sqrt(sum(diff(unitCell,1).^2,2)) < max(sqrt(sum(diff(unitCell,1).^2,2)))/5];
   unitCell(ignore,:) = [];
     
-  % third estimate of the grid resolution - as [dx dy], in the same
-  % convention regularPoly uses for its d: for a cell it generated with
-  % d=1 this returns 1, whereas the distance to the closest vertex would
-  % come out short by sqrt(2) for a square and sqrt(3) for a hexagon
+  % third estimate of the grid resolution, as [dx dy] in the convention of regularPoly
   dxy2 = vecnorm(unitCell,2,1);
 catch
   unitCell = [];
@@ -154,9 +141,7 @@ end
 
 
 % =========================================================================
-% replace in the estimated cell exactly those quantities the user has
-% specified - size by GridResolution, shape by GridType, orientation by
-% GridRotation - and keep the estimate for all the others
+% replace the quantities the user specified and keep the estimate for the others
 function unitCell = applyGridOptions(unitCell,dxy,cellRot,varargin)
 
 dxyOpt = get_option(varargin,'GridResolution',[]);
@@ -232,16 +217,12 @@ isRegular = any(sides == [4 6]) && ... % norm(sideLength - mean(sideLength))*dxy
   norm(enclosingAngle - mean(enclosingAngle)) < 0.05*degree;
 
 
-% try to detect a (possibly rotated) square or hex point lattice from
-% nearest-neighbor statistics. Returns [] if xy does not look like a
-% clean lattice, in which case the caller should fall back to Voronoi.
+% detect a possibly rotated square or hex lattice, [] if xy does not look like one
 function [unitCell,dxy,rot] = detectLattice(xy)
 
 unitCell = []; dxy = []; rot = 0;
 
-% work on a spatially contiguous (not globally random!) chunk of points
-% so the local neighbor structure of the lattice is preserved while the
-% KD-tree stays cheap to build and query
+% work on a spatially contiguous chunk, so the local neighbor structure survives
 q = subSample(xy,5000);
 if size(q,1) < 30, return; end
 
@@ -262,10 +243,7 @@ vy = q(idx(keep),2) - q(ref(keep),2);
 len = hypot(vx,vy);
 lenSpread = std(len)/median(len);
 
-% a translation vector v and its negation -v represent the same lattice
-% direction; doubling the angle maps {theta, theta+pi} onto the same
-% value on the full circle [0,2pi), which sidesteps having to special
-% case the wrap at theta=0/pi (same trick MTEX uses for antipodal axes)
+% doubling the angle identifies v with -v, as MTEX does for antipodal axes
 ang2 = mod(2*atan2(vy,vx), 2*pi);
 
 [a2s,ord] = sort(ang2);
@@ -295,15 +273,7 @@ nClust = numel(clustAng2);
 clustAng = mod(clustAng2/2,pi); % back to a single-angle [0,pi) representative
 
 if nClust == 2
-  % candidate square lattice: two directions ~90 deg apart, equal length.
-  % Sort by angle first (as the hex case below already does) rather than
-  % using cluster 1/2 as they come out of the earlier clustering: for a
-  % square lattice the two directions are exactly antipodal on the
-  % doubled-angle circle, so the "largest gap" used to unwrap that circle
-  % is a genuine tie broken only by floating-point noise in the input
-  % data - without this sort, which cluster ends up first (and so becomes
-  % a1 in EBSD/latticeBasis) is not reproducible from one run to the next,
-  % even for byte-identical input.
+  % candidate square lattice - sort by angle, the largest gap is a tie here
   [clustAng,sortOrd] = sort(clustAng);
   clustLen = clustLen(sortOrd);
   dAng = mod(abs(diff(clustAng)),pi);

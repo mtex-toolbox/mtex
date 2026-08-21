@@ -21,11 +21,8 @@ function grains = updatePoly(grains)
 
 gB = grains.boundary;
 
-% grainBoundary/I_FG has one column per grainId *value*, which lines up with
-% grains.poly only when grains.id == (1:N)'. Build the incidence against the
-% position in this list instead and leave out the grains that are not part of
-% it - subSet keeps every segment adjacent to a member grain, so each member
-% still has a complete cycle.
+% I_FG has one column per grainId value, so build the incidence against the
+% position in this list instead
 pos = zeros(max([gB.grainId(:); grains.id(:); 0]),1);
 pos(grains.id) = 1:length(grains);
 

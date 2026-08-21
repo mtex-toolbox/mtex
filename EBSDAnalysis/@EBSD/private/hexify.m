@@ -51,8 +51,7 @@ assert(numel(unique(newId)) == numel(newId), ...
   numel(newId) - numel(unique(newId)));
 
 % --- positions of every cell of the rectangle ----------------------------
-% deformation aware, and the measured nodes are put back exactly afterwards,
-% so nothing is replaced by a theoretical coordinate
+% deformation aware, and the measured nodes are put back exactly afterwards
 isIndexed = ebsd.isIndexed(:);
 if ~any(isIndexed), isIndexed = true(size(pos2d,1),1); end
 reconstructPos = latticeModel(pos2d,ij,isIndexed,mean(vecnorm(A,2,1)));

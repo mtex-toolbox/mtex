@@ -43,10 +43,8 @@ g = vector3d.zeros(size(ori));
 
 tS = SO3TangentSpace.extract(varargin{:});
 
-% eval averages over the proper specimen group as well - see SO3FunCBF/eval -
-% and the gradient has to follow it, otherwise it describes a different
-% function. Since <s*g*h,r> = <g*h,inv(s)*r>, a specimen operation is the
-% same sum with r replaced by inv(s)*r, so the formulas below are unchanged.
+% eval averages over the proper specimen group as well, so the gradient follows -
+% since <s*g*h,r> = <g*h,inv(s)*r> the formulas below are unchanged
 sProper = SO3F.SS.properGroup.rot;
 nS = numel(sProper);
 

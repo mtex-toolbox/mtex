@@ -31,10 +31,7 @@ else
   ax = gca;
 end
 
-% a Miller index marks the plot as living in crystal coordinates, where the
-% X / Y / Z of the specimen would be meaningless - Miller/scatter tells the
-% two dimensional plots the very same way, but the three dimensional ones
-% never go through it. Note this before v is scaled below.
+% a Miller index marks the plot as living in crystal coordinates, note it before scaling
 if isa(v,'Miller'), csArg = {v.CS}; else, csArg = {}; end
 
 % scale and shift if required
@@ -59,36 +56,20 @@ if ~ishold
   set(ax,'XDir','rev','YDir','rev',...
     'XLim',[-1,1],'YLim',[-1,1],'ZLim',[-1,1]);
 
-  % A convention handed in wins - that is what passing one is for. What may
-  % not win is the convention the plot methods append for their own data
-  % (S2FunHarmonicSym/plot does, see plottingConvention.fromOption): it is a
-  % screen alignment meant for a projected plot, looking straight down the
-  % polar axis, which shows a sphere at its worst, so without a convention
-  % from the caller the tilted default3D is the better picture.
-  %
-  % Telling the two apart used to be done by value - a convention equal to
-  % the session default was assumed to be the appended one. That also threw
-  % away a convention the caller had passed deliberately whenever it
-  % happened to equal the default, which is the whole of the pristine
-  % x-east / y-down / z-into-screen alignment (issue #481). fromOption
-  % reports the origin instead, so the value no longer decides.
+  % a convention handed in wins, but not one a plot method appended for its own
+  % data - that one is meant for a projected plot, where default3D is the better
+  % picture. fromOption reports the origin, so the value does not decide (#481)
   [pC,isExplicit] = plottingConvention.fromOption(varargin,plottingConvention.default);
   if ~isExplicit, pC = plottingConvention.default3D; end
   pC.setView(ax);
 
-  % the spherical grid - off unless asked for, exactly as on a projected
-  % plot, where sphericalPlot hides it without the 'grid' flag. It goes a
-  % hair outside the data, which sits on the unit sphere, so that the two
-  % do not fight over the same depth - and hence outside the axis limits,
-  % which is why the clipping has to go.
+  % the spherical grid - off unless asked for, and drawn just outside the data
   if check_option(varargin,'grid')
     ax.Clipping = 'off';
     plotSphericalGrid(ax,varargin{:},'radius',1.002*scale,'center',shift);
   end
 
-  % annotate the axes of the reference frame the way every two dimensional
-  % spherical plot does - here as arrows in space, since there is no
-  % sphericalPlot on a three dimensional axis to do it for us
+  % annotate the reference frame as arrows, there is no sphericalPlot to do it
   annotateFrame(ax,varargin{:},csArg{:});
 
 end

@@ -38,8 +38,7 @@ for k = 1:numel(laue)
 end
 
 % -- two different symmetries, i.e. a phase boundary ----------------------
-% the branch that takes CS2 and CS1 separately; kept to a few representative
-% pairs because angle() on mismatched symmetries prints both of them
+% a few representative pairs, angle() on mismatched symmetries prints both
 cross = {'m-3m','-3m'; '6/mmm','2/m'; '4/mmm','-1'; 'mmm','m-3'};
 
 for k = 1:size(cross,1)
@@ -147,11 +146,7 @@ q2 = quaternion.rand(N);
 o1 = orientation(q1,cs1,specimenSymmetry);
 o2 = orientation(q2,cs2,specimenSymmetry);
 
-% NB @quaternion/project2FundamentalRegion returns ONE output. Its help
-% block still documents a second one, omega, and the previous version of
-% this test asked for it - so the file would have failed here too, even had
-% the numeric symmetry constructor still existed. The angle is taken from
-% the returned quaternion instead.
+% @quaternion/project2FundamentalRegion returns one output, take the angle from it
 q = project2FundamentalRegion(inv(q1).*q2,cs2,cs1);
 omega = angle(q,quaternion.id);
 
@@ -168,9 +163,7 @@ wPlain = angle(inv(q1).*q2,quaternion.id);
 assert(all(omega(:) <= wPlain(:) + tol), ...
   'check_fundamentalRegion: %s - the projected angle exceeds the unprojected one', lbl)
 
-% and for anything past triclinic it has to actually reduce some of them,
-% otherwise the two assertions above would also hold for a projection that
-% did nothing at all
+% and past triclinic it has to actually reduce some of them
 if length(cs1.properGroup.rot) * length(cs2.properGroup.rot) > 1
   assert(any(omega(:) < wPlain(:) - 1e-6), ...
     ['check_fundamentalRegion: %s - the projection changed no angle at all, ' ...

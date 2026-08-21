@@ -57,10 +57,7 @@ if isa(obj1,'SO3Fun') && isa(obj2,'S2Fun')
   if isa(obj2,'S2FunHarmonicSym')
     ok = fitSym(obj1.SLeft,obj2.s);
   else
-    % a plain S2Fun carries at most a frame - the left side of the SO3Fun
-    % has to be group free, and an existing frame has to fit
-    % group free: Laue always returns a centrosymmetric group, so the
-    % triclinic one is id 2 - there is no id 1 to reach here
+    % a plain S2Fun carries at most a frame, so the left side has to be group free
     ok = obj1.SLeft.Laue.id == 2;
     if ok, ok = fitFrames(obj2.frame,obj1.SLeft.frame); end
   end
@@ -70,9 +67,7 @@ if isa(obj1,'SO3Fun') && isa(obj2,'S2Fun')
   return
 end
 
-% two spherical functions. ADR 0003 took CS / SS off the plain ones, so a
-% symmetry - where there is one - is reached through getSym; what always has
-% to fit is the frame the function is expressed in
+% two spherical functions - what always has to fit is the frame they are expressed in
 if isa(obj1,'S2Fun') && isa(obj2,'S2Fun')
   s1 = getSym(obj1); s2 = getSym(obj2);
   ok = isempty(s1) || isempty(s2) || fitSym(s1,s2);
@@ -83,9 +78,7 @@ if isa(obj1,'S2Fun') && isa(obj2,'S2Fun')
   return
 end
 
-% compare symmetries in case of convolution of SO3Funs. Only the inner pair
-% has to fit here - a convolution deliberately combines two functions with
-% different outer symmetries, so the general check below must not run
+% compare symmetries in case of convolution of SO3Funs, only the inner pair has to fit
 if check_option(varargin,'conv')
   if ~fitSym(obj1.SRight,obj2.SLeft)
     error('When convoluting @SO3Fun''s the symmetries have to be compatible.')
@@ -138,13 +131,7 @@ function ok = fitSym(s1,s2)
 
 if s1.Laue.id ~= s2.Laue.id, ok = false; return; end
 
-% phase identity, which neither the group nor the frame can express: two
-% minerals may share a Laue class and a lattice and still be two phases.
-% eqTolPair always opened with this test. An unnamed symmetry makes no
-% phase claim and is not held against anything - the same rule the trivial
-% group follows for the symmetry claim itself. A stripped symmetry keeps
-% its mineral, and crystalSymmetry(cF) takes the frame's name, so the
-% symmetry-free state carries the phase along (ADR 0003).
+% phase identity - two minerals may share a Laue class and a lattice and still differ
 if isa(s1,'crystalSymmetry') && isa(s2,'crystalSymmetry') && ...
     ~isempty(s1.mineral) && ~isempty(s2.mineral) && ...
     ~strcmpi(s1.mineral,s2.mineral)

@@ -76,20 +76,9 @@ for k = 1:numel(cases)
   end
   grainsQP = calcGrains(ebsdI,'removeQuadruplePoints');
 
-  % A ring traced inside out encloses a negative area, and none of the
-  % metrics below would notice - they are counts and sums. It is tracked
-  % here, on real maps, because that is where it bit: an attempt at making
-  % the quadruple point pairing deterministic (reverted in 4f351d38e) left
-  % 117 such grains on alphaBetaTitanium while every count still looked
-  % plausible. core/check_calcGrainsCases carries the synthetic version.
-  %
-  % Plain reconstruction must have none, on any dataset, and that is
-  % asserted outright. The removeQuadruplePoints path is only COMPARED with
-  % the reference, because it does not currently have none: steel1C_1 has 2
-  % of 99875, unchanged since before this was looked at (measured at
-  % 059ff152a). Asserting zero there would leave the benchmark permanently
-  % red on a known defect, which is the state in which nobody reads it -
-  % pinning the count catches a regression from 2 to 117 just as well.
+  % a ring traced inside out encloses a negative area, which no count notices -
+  % asserted for a plain reconstruction, only compared for removeQuadruplePoints,
+  % which has 2 of 99875 on steel1C_1
   assert(nnz(grains.area < 0) == 0, 'MTEX:grainBenchmark:negativeArea', ...
     ['%s: %d of %d grain polygons from a plain reconstruction enclose a ' ...
     'negative area - the boundary ring did not close'], ...
@@ -101,10 +90,7 @@ for k = 1:numel(cases)
   m.nGrainsQP = length(grainsQP);
   m.totalLen  = sum(grains.boundary.segLength);
   m.meanArea  = mean(grains.area);
-  % the QP variant's own geometry. Without it nGrainsQP is the only probe of
-  % the removeQuadruplePoints path - a bare integer with nothing to say
-  % whether a drift is a tie-break shuffling grains between counts or real
-  % boundary being destroyed. That is exactly how G38 stayed invisible.
+  % the QP variant's own geometry, nGrainsQP alone cannot tell a shuffle from a loss
   m.totalLenQP = sum(grainsQP.boundary.segLength);
   m.time      = median(t);
   results.(c.name) = m;
@@ -118,14 +104,7 @@ for k = 1:numel(cases)
     c.name, m.nGrains, m.nGrainsQP, m.totalLen, m.totalLenQP, m.meanArea, ...
     m.time, speedTxt);
 
-  % Reported, not asserted against totalLen. The segments removeQuadruplePoints
-  % adds have zero length, so one might expect totalLenQP == totalLen - and on
-  % forsterite and copper it holds exactly. It is not universal: merge drops
-  % every segment whose two sides end up in the same grain (@grain2d/merge:204),
-  % so where a quadruple point merge joins two grains that also touch along a
-  % real boundary elsewhere, that boundary goes too. steel1C_1 loses 55.4 that
-  % way, identically before and after the G38 fix. What catches a regression is
-  % the comparison against the stored reference below.
+  % reported, not asserted: merge drops a segment whose two sides end in one grain
   if ~doUpdate && isfield(ref,c.name)
     allOk = compareToReference(c.name, m, ref.(c.name)) && allOk;
   end
@@ -153,11 +132,7 @@ function writeReferenceFile(refFile, results)
 % gitignored in this repo, and a text file gives a readable git diff
 % whenever the reference legitimately changes.
 
-% anything a human wrote into the old header is carried across before the
-% file is overwritten. The numbers in this file are auto-generated but the
-% commentary explaining WHY each of them is what it is - which measurement
-% settled it, which commit moved it - is not reproducible, and an earlier
-% version of this writer silently destroyed 25 lines of it on every update.
+% carry the hand written commentary of the old header across before overwriting
 preserved = readProvenance(refFile);
 
 fid = fopen(refFile,'w');
@@ -267,12 +242,7 @@ if ~isfile(refFile), return; end
 
 txt = strsplit(fileread(refFile),newline);
 
-% The generated header, as a SEQUENCE. It used to be matched line by line
-% against the whole file, which meant the bare '%' in it matched every
-% paragraph separator in the hand written part as well - so each update
-% silently glued the commentary into one block, and after a few of them it
-% would have been the wall of text this preservation exists to prevent.
-% Matching it as a leading block keeps a '%' that separates paragraphs.
+% the generated header as a sequence, so that a '%' separating paragraphs survives
 boiler = { ...
   '% reference snapshot for check_grainReconstructionBenchmark', ...
   '%', ...

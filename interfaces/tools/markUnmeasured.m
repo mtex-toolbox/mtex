@@ -36,12 +36,8 @@ function ebsd = markUnmeasured(ebsd)
 notIndexedId = find(~[ebsd.CSList.isIndexed],1);
 if isempty(notIndexedId), return; end
 
-% "orientation is zero" means zero as it stands in the file - a reference
-% frame correction already applied to the data shows up as exactly that
-% rotation here, not as the identity. The tolerance is generous on purpose:
-% re-applying a correction composes three rotations and leaves round-off of
-% some 1e-7 radian behind, while no two distinct measurements of a real map
-% come anywhere near this close.
+% zero as it stands in the file, i.e. the Euler correction - the tolerance covers
+% the round-off of composing three rotations
 isNull = ~isnan(ebsd.rotations) & angle(ebsd.rotations,ebsd.EulerCorrection) < 1e-3*degree;
 isNull = isNull(:);
 if ~any(isNull), return; end

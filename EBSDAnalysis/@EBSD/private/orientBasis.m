@@ -25,15 +25,9 @@ horiz = @(a) abs(a(1)) - abs(a(2));
 h1 = horiz(a1); h2 = horiz(a2);
 
 if abs(h1 - h2) <= 1e-12 * (norm(a1) + norm(a2))
-  % A 45 degree grid: both directions are equally horizontal and the primary
-  % rule has nothing to decide on - h1 and h2 are both 0 up to rounding, so
-  % comparing them would pick whichever way the noise fell. Decide it here
-  % instead, on the y component and then the x component. The choice is
-  % arbitrary at this configuration, as it must be; the point is only that
-  % it is the same choice every time.
-  %
-  % Note squarify is NOT routed through this yet and still has the noise
-  % sensitive form - see TODO.md E13.
+  % a 45 degree grid: both directions are equally horizontal, so decide on the y
+  % and then the x component - arbitrary, but the same choice every time
+  % (squarify is not routed through this yet, see TODO.md E13)
   if a1(2) ~= a2(2)
     isXFirst = a1(2) < a2(2);
   else

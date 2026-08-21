@@ -28,10 +28,7 @@ function check_gbnd
 
 [ebsd,grains,gB] = routeFromFile('testdata_sqr.ctf');
 
-% calcGBND costs about 2 s a call - a harmonic density estimate plus a
-% convolution - and the import and calcGrains before it cost 0.13 s
-% together. So the base distribution is computed ONCE here and passed to
-% every check that needs it, rather than each recomputing its own.
+% calcGBND costs about 2 s a call, so compute the base distribution once here
 ref = calcGBND(gB,ebsd);
 
 checkIsADensity(ref,gB,grains);
@@ -78,9 +75,7 @@ nG = calcGBND(gB,grains);
 assert(isa(nE,'S2FunHarmonic'), ...
   'check_gbnd: calcGBND returned a %s, expected an S2FunHarmonic', class(nE))
 
-% since ADR 0003 a plain S2Fun carries a reference frame instead of a
-% symmetry - the GBND is deliberately not symmetrised, but it lives in
-% the crystal frame
+% since ADR 0003 a plain S2Fun carries a reference frame instead of a symmetry
 assert(isa(nE.frame,'crystalFrame'), ...
   'check_gbnd: the result carries no crystal frame')
 
@@ -158,9 +153,7 @@ assert(~isequal(bDflt.ebsdId,gB.ebsdId), ...
    'is intentional, calcGBND''s warning about it is now stale and this ' ...
    'check should become an equality'])
 
-% the geometry is untouched, so any change in the GBND comes purely from
-% segments being paired with the wrong orientations - which is what makes
-% this failure silent
+% the geometry is untouched, so a change comes from segments paired with wrong orientations
 assert(max(angle(bDflt.direction,gB.direction)) < 1e-9, ...
   'check_gbnd: default smoothBoundary moved the segment directions too')
 

@@ -31,10 +31,7 @@ rng(0)
 
 res = 3*degree;
 
-% 'm-3' is the point group whose axis sectors fall apart - '23' has the same
-% proper group and hence the very same sectors, so it adds nothing - 'mmm'
-% is the one where they only get cut open, '-3m1' and 'm-3m' are controls
-% that gain bounding planes at a large angle without ever coming apart
+% 'm-3' has axis sectors that fall apart, 'mmm' only cut open, the rest are controls
 csList = {'m-3','mmm','-3m1','m-3m'};
 
 for k = 1:numel(csList)
@@ -64,11 +61,7 @@ end
 function checkScalarGridLine
 % a single grid line has to work as well as many
 
-% thetaIntervals and rhoIntervals decide the gaps between the crossings and
-% the crossings themselves in one call, and stack the two. For a single grid
-% line repelem returns a row rather than a column, so the two do not stack
-% and the call errors - which is how plotSection(odf,'contourf') broke, since
-% evalODFSections asks for thetaRange(oS.sR,rho(1)), i.e. one meridian.
+% for a single grid line repelem returns a row, so the two halves do not stack
 
 csList = {'1','222','23','6/mmm','m-3m'};
 

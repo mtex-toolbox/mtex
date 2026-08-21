@@ -56,11 +56,8 @@ if keepPlan
 else
   sF = S2FunHarmonic([],varargin{:});
 
-  % the frame of the result: an explicitly given frame wins, then an
-  % explicitly given convention (as its own frame), then the frame of
-  % the nodes - which is empty for plain nodes, so the result keeps
-  % following the session default. A given symmetry means the caller
-  % attaches its own frame afterwards, nothing to do here.
+  % the frame of the result: an explicit frame wins, then an explicit convention,
+  % then the frame of the nodes
   fr = getClass(varargin,'referenceFrame');
   if isempty(fr)
     pC = getClass(varargin,'plottingConvention');

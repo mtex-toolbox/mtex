@@ -314,11 +314,7 @@ dev = cellDeviation(ebsdT.unitCell,shear(uC0,g));
 assert(dev < 1e-12*d, ...
   'check_ebsdTransform: shearing by %g is off by %g in the unit cell',g,dev);
 
-% and so the lattice basis derived from it is the sheared old basis. Note
-% g = 0.3 keeps latticeBasis picking the same pair of translations for
-% a1/a2 - it takes the two that are closest to orthogonal, and a shear
-% tilts them by asin(g/sqrt(1+g^2)), so beyond g = 0.577 the pair would be
-% permuted and this direct comparison would need the permutation too
+% and so is the lattice basis - g = 0.3 keeps latticeBasis picking the same pair
 S = [1 g; 0 1];
 dA = norm(latticeBasis(ebsdT.unitCell) - S*latticeBasis(uC0),'fro');
 assert(dA < 1e-12*d, ...
@@ -395,9 +391,7 @@ distort = @(pos) vector3d( ...
 
 ebsdT = transform(ebsd,distort);
 
-% a 2% drift must leave a square cell square - in particular it must not
-% come back as a hexagon, which is what recomputing it via calcUnitCell
-% would risk
+% a 2% drift must leave a square cell square, not turn it into a hexagon
 assert(length(ebsdT.unitCell) == 4, ...
   'check_ebsdTransform: a %g%% drift turned the 4 corner cell into %d corners',...
   100*trapFrac,length(ebsdT.unitCell));

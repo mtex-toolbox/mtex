@@ -27,37 +27,20 @@ if nargin > 1 && ~isempty(uc)
   return
 end
 
-% 3. compute from scratch - always run as the baseline/fallback, since
-% comparing a hint against a cheap independent re-estimate risks subtly
-% diverging from calcUnitCell's own (more elaborate) internal logic
+% 3. compute from scratch - always run as the baseline, also when there is a hint
 xyz = ebsd.pos.xyz;
 uc = calcUnitCell(xyz,varargin{:});
 
 hint = get_option(varargin,'hint');
 
-% a grid the user has asked for is not a measurement, so a header hint
-% must neither override it nor be tested against it - the test would
-% compare the file's step size against the requested one and warn about a
-% mismatch that is the whole point of passing the option
+% a grid the user asked for is not a measurement, so do not test a hint against it
 if check_option(varargin,{'GridResolution','GridType','GridRotation'})
   hint = [];
 end
 
 if ~isempty(hint)
-  % 2. prefer the hint unless the estimate is well-defined and actively
-  % disagrees with it
-  %
-  % "well-defined" is a property of the POSITIONS, not of the cell that
-  % comes out of them. calcUnitCell falls back to a fixed size-1 square
-  % only when it has nothing to work from - which is when the points have
-  % no extent - and a size-1 square is otherwise a perfectly ordinary
-  % answer. Testing for the value instead was how a Bruker map came to
-  % carry positions and a unit cell in different units: its positions
-  % were beam column/row indices, so the estimate was a correct square of
-  % side 1, read as "no estimate", and the micrometre step size from the
-  % header was taken over it. The map then claimed an extent of 1999 x
-  % 1331 um for a 778 x 510 um scan and gridify built a lattice 6.7 times
-  % too large, 85% of it empty - a 65 second import.
+  % 2. prefer the hint unless the estimate is well-defined and disagrees with it -
+  % well-defined is a property of the positions, not of the cell that comes out
   span = max(xyz(:,1:2),[],1) - min(xyz(:,1:2),[],1);
   noEstimate = isempty(uc) || ~all(isfinite(span)) || all(span == 0);
 
@@ -83,11 +66,7 @@ if ~isempty(hint)
       uc = hint;
 
     end
-    % same step but a different cell shape is neither a disagreement nor
-    % a reason to take the hint: a vendor states a rectangular step size
-    % whatever the lattice, while the estimate knows a hex grid when it
-    % sees one. Taking the rectangle there turned an EBSDhex into an
-    % EBSDsquare.
+    % a different cell shape is no disagreement, a vendor states a rectangular step
   end
 end
 

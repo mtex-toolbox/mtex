@@ -25,14 +25,8 @@ q = quaternion(q);
 if isempty(oR.N), inside = true(size(q)); return; end
 if isempty(q), inside = false(size(q)); return; end
 
-% There used to be a branch here for a region without symmetry, taken when
-% oR.CS1 == crystalSymmetry & oR.CS2 == crystalSymmetry & oR.antipodal. It
-% cannot be taken: crystalSymmetry is a @phaseItem, which seals eq to plain
-% handle identity, so a symmetry only ever equals itself and never the
-% freshly built one this compared against. That has been so since
-% crystalSymmetry became a phaseItem in b7e84a5ee, and the branch did not
-% compute the same thing as the general case below - it dropped the
-% condition on -q and reshape - so it is gone rather than repaired.
+% the branch for a region without symmetry is gone: crystalSymmetry seals eq to
+% handle identity, so it could never be taken
 
 % verify all conditions are satisfies
 d = dot_outer(oR.N,q);

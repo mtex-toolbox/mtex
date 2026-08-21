@@ -4,9 +4,7 @@ function [rotneighbors, aloc, bloc, cloc, dloc] = ...
 % compute local coordinates of nodes w.r.t. centers
 % the rotation maps each center to the identity
 % centers(center_id) and nodes(grid_id) are assumed to be column-compatible
-% aloc fixes the sign of the basis for antipodal nodes and odd degrees,
-%   (bloc, cloc, dloc) are the tangent coordinates the local geometry score
-%   is computed from
+% aloc fixes the sign of the basis, (bloc, cloc, dloc) are the tangent coordinates
 
 % project neighbors to the representer that belongs to the center
 projected = project2FundamentalRegion(nodes(grid_id), centers(center_id));

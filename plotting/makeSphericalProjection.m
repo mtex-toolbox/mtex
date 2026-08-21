@@ -36,9 +36,7 @@ if check_option(varargin,{'complete','3d'})
   sR = sphericalRegion;
 end
 
-% asking for the upper and the lower hemisphere at once asks for both halves
-% of the plot, not for one of them - it restricts nothing and it also
-% overrules the reduction to a single hemisphere below (#330)
+% upper and lower at once asks for both halves, and overrules the reduction below (#330)
 bothHemispheres = check_option(varargin,'upper') && check_option(varargin,'lower');
 
 if ~bothHemispheres

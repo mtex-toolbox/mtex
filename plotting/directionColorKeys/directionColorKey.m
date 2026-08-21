@@ -29,9 +29,7 @@ classdef directionColorKey < handle
         catch
           dM.sym = specimenSymmetry.default;
           try %#ok<TRYNC>
-            % fork first - specimenSymmetry.default is the shared session
-            % symmetry, so assigning the caller's frame onto it would move
-            % the whole session
+            % fork first, specimenSymmetry.default is the shared session symmetry
             if ~isempty(sym.frame)
               dM.sym = copy(dM.sym);
               dM.sym.frame = sym.frame;
@@ -71,9 +69,7 @@ classdef directionColorKey < handle
         defaultPlotCMD = 'pcolor';
       end
       
-      % the three dimensional key names its axes itself, a few lines below,
-      % and in gray rather than black - so keep the generic annotation of
-      % the reference frame out of it
+      % the three dimensional key names its axes itself, a few lines below
       if check_option(varargin,'3d'), ownLabels = {'noLabel'}; else, ownLabels = {}; end
 
       [h,caxes] = plot(v,d,defaultPlotCMD,varargin{:},ownLabels{:});
@@ -113,14 +109,7 @@ classdef directionColorKey < handle
    
     function rgb = direction2color(oM,h,varargin)
 
-      % without an explicit dir2color the property is empty and the call
-      % below would index an empty array with a @Miller. Fall back to the
-      % HSV key, which is the coloring a bare directionColorKey shows when
-      % it is plotted anyway.
-      %
-      % Kept in its own property rather than filled into dir2color: an
-      % empty dir2color is what ipfColorKey/precompute reads to decide
-      % whether its color grid still has to be built.
+      % fall back to the HSV key, which is what a bare directionColorKey shows
       if isempty(oM.dir2color)
         if isempty(oM.hsvFallback), oM.hsvFallback = HSVDirectionKey(oM.sym); end
         rgb = oM.hsvFallback.direction2color(h,varargin{:});
@@ -151,9 +140,7 @@ classdef directionColorKey < handle
 
       props = {}; propV = {};
 
-      % sphericalRegion/polarCoordinates measures the hue from
-      % sR.how2plot.outOfScreen, so this line says which way round the
-      % colors run - in the axes names of the frame, e.g. 'c↑→a'
+      % say which way round the colors run, in the axes names of the frame
       fr = dM.sR.frame;
       if isa(fr,'referenceFrame')
         c = conventionChar(fr,dM.sR.how2plot);

@@ -76,11 +76,7 @@ end
 
 function plotOrdered2(gB,varargin)
 
-% Segments are stored in walk order, so each chain is a contiguous block of
-% rows and its polyline is simply its segments one after another. Emitting
-% both vertices of every segment keeps the line continuous - consecutive
-% segments repeat the shared vertex - while giving each segment its own pair
-% of entries to carry its own colour. A NaN after each chain breaks the line.
+% segments are stored in walk order, so emit both vertices of every one and a NaN per chain
 nF = length(gB);
 isEnd = gB.isChainEnd;
 pos = 2*(1:nF).' - 1 + cumsum([0; double(isEnd(1:end-1))]);
@@ -100,9 +96,7 @@ if nargin > 1 && isnumeric(varargin{1}) && ...
   if size(varargin{1},1) ~= length(gB), varargin{1} = varargin{1}.'; end
   data = reshape(varargin{1},length(gB),[]);
 
-  % MATLAB interpolates colours between vertices, but both entries of a
-  % segment get that segment's colour, so the interpolation is constant
-  % along it and no colour bleeds across a segment boundary
+  % both entries of a segment get its colour, so the interpolation is constant along it
   color = nan(numel(x),size(data,2));
   color(pos,:) = data;
   color(pos+1,:) = data;

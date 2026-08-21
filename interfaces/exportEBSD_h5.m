@@ -103,10 +103,7 @@ end
 % read only as well and every write below would fail
 fileattrib(fName,'+w');
 
-% which row of the file every measurement belongs to. gridify pads a map to
-% a full rectangle and reorders it (see EBSD/gridify), so the grid position
-% alone says nothing - oldId is the translation back, and the padded cells
-% carry NaN.
+% oldId translates a measurement back to its row in the file, a padded cell is NaN
 if isfield(ebsd.prop,'oldId')
   idx = ebsd.prop.oldId(:);
 else
@@ -127,9 +124,7 @@ end
 
 scrPrnt('Step',sprintf('Writing %d of %d measurements',numel(idx),nFile));
 
-% the file states the Euler angles in its own reference frame - undoing the
-% correction the import applied is what makes the round trip give the very
-% same numbers back
+% undo the correction the import applied, the file states its own reference frame
 raw = ebsd;
 raw.EulerCorrection = rotation.id;
 
@@ -176,9 +171,7 @@ switch rot.type
     phi = [phi1(:),Phi(:),phi2(:)];
     phi = phi(keep,:) ./ rot.format;
 
-    % a pixel MTEX holds as not indexed has no Euler angles to state - the
-    % file keeps whatever it said about it (EMSphInx marks those in the
-    % phase column, others by a fit metric)
+    % a not indexed pixel has no Euler angles, keep whatever the file said
     ok = all(~isnan(phi),2);
 
     if isscalar(rot.item)
@@ -216,9 +209,7 @@ phase = ebsd.phase(:);
 phase = phase(keep);
 
 if strcmpi(ph.type,'zeroBased')
-  % the phases are numbered from 0 and a pattern that could not be indexed
-  % carries the largest value the column can hold - phaseMap states the
-  % former, the storage type of the data set the latter
+  % numbered from 0, with the largest value the column can hold for not indexed
   notIndexed = double(ebsd.phaseMap(1));
   raw = readItem(fName,ph);
   if isinteger(raw)
@@ -311,10 +302,7 @@ try
         h5write(fName,path,string(val));
       end
     catch
-      % h5write writes a string only into a data set whose type it happens
-      % to match. A vendor storing the name as a fixed length field - 21
-      % characters for an EDAX MaterialName, 17 for a Bruker one - is not
-      % one of those, and only the low level interface can fill it.
+      % only the low level interface can fill a fixed length string field
       writeFixedString(fName,path,char(val));
     end
 
@@ -432,9 +420,7 @@ for fn = fieldnames(ebsd.prop)'
 
   elseif ~isempty(newGroup)
 
-    % a property MTEX added - grainId, KAM, ... - goes next to the ones the
-    % file brought along, filled with NaN where the map no longer has a
-    % measurement
+    % a property MTEX added goes next to the ones the file brought along
     path = [newGroup '/' name];
     if ~dataSetExists(fName,path)
       h5create(fName,path,[1 nFile],'Datatype','double','FillValue',NaN);
@@ -452,9 +438,7 @@ for fn = fieldnames(ebsd.prop)'
 
 end
 
-% a file that packs its whole map into one compound data set - an .edaxh5
-% does - has no group to put another column in, and saying so beats
-% silently dropping the property
+% a file packing its whole map into one compound data set has no group to extend
 if ~isempty(skipped)
   warning('MTEX:exportEBSD_h5:newProperties',...
     ['The properties %s could not be added to the file: it stores its map '...

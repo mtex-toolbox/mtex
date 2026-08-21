@@ -35,10 +35,7 @@ classdef sphericalRegion
   properties (Dependent = true)
     frame    % the reference frame (carried by N)
     how2plot % plotting convention - read only
-    % A convention belongs to a reference frame. To change how this is
-    % drawn use plot(...,'y↑→x') for one plot,
-    % plottingConvention.default(...) for the session, or move the data
-    % with x.frame = specimenFrame.rolling
+    % a convention belongs to a reference frame, see plottingConvention.default
   end
 
 
@@ -95,10 +92,7 @@ classdef sphericalRegion
         sR.alpha = [sR.alpha,0,0];
       end
       
-      % 'complete' replaces the region by the entire sphere - but it has to
-      % keep the reference frame alignment of the region it replaces,
-      % otherwise a plain sphericalRegion is left behind which carries the
-      % global default convention
+      % 'complete' replaces the region by the sphere, but keeps its reference frame
       if check_option(varargin,{'complete','3d'})
         % carry the frame - restoring a resolved convention instead
         % would pin a merely inherited default onto the fresh region
@@ -107,22 +101,11 @@ classdef sphericalRegion
         sR.frame = fr;
       end
 
-      % a reference frame states which coordinate system the region is
-      % meant in - it decides which hemisphere is the upper one below and
-      % is passed on to every grid generated from the region, e.g.
-      % plotS2Grid('upper',cs.frame) gives directions of the crystal frame
+      % the frame states which coordinate system the region is meant in
       fr = getClass(varargin,'referenceFrame');
       if ~isempty(fr), sR.frame = fr; end
 
-      % which hemisphere is the upper one depends on the convention the
-      % region is given in - resolving this against the global default
-      % instead would silently pick the opposite hemisphere for any data
-      % plotted in a different one, e.g. anything in a crystal reference
-      % frame (z out of the screen) while the default is
-      % plottingConvention.ij (z into the screen). The plot region is
-      % determined the very same way in newSphericalPlot/getPlotRegion, and
-      % the two have to agree - where they do not, the grid and the region
-      % it is drawn in overlap in the equator only
+      % which hemisphere is the upper one depends on the convention the region is in
       pC = getClass(varargin,'plottingConvention',sR.how2plot);
       if check_option(varargin,'upper'), sR = sR.restrict2Upper(pC); end
       if check_option(varargin,'lower'), sR = sR.restrict2Lower(pC); end
@@ -211,9 +194,7 @@ classdef sphericalRegion
       
       if nargin == 2
 
-        % the polar angles inside the region may form several intervals -
-        % here we are interested in the hull only, see thetaIntervals for
-        % the individual components
+        % the hull only, see thetaIntervals for the individual components
         [tMin,tMax] = sR.thetaIntervals(rho);
 
         thetaMin = reshape(min(tMin,[],1),size(rho));

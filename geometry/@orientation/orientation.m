@@ -46,9 +46,7 @@ end
 
 methods
 
-  % the two frames of an orientation are the frames of its symmetries -
-  % resolved live, so they can never go stale when a symmetry is
-  % replaced ('must have two' in the cardinality table of ADR 0003)
+  % the two frames of an orientation are the frames of its symmetries, resolved live
   function fr = get.frameLeft(o)
     fr = o.SS.frame;
   end

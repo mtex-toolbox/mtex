@@ -24,9 +24,7 @@ function ss = specimenSymmetryFor(pC)
 
 ss = specimenSymmetry.default;
 
-% a data class that knows its frame passes the frame itself - the
-% symmetry adopts the very handle, so the orientations keep following
-% that frame, not a snapshot of its convention
+% a data class that knows its frame passes the frame itself, and it is adopted
 if isa(pC,'referenceFrame')
   if ss.frame ~= pC
     ss = copy(ss);
@@ -35,10 +33,7 @@ if isa(pC,'referenceFrame')
   return
 end
 
-% plottingConvention is a value class, so == means equal alignment: the
-% default symmetry is reused whenever the data is plotted the default
-% way - what keeps both following the session default is the shared
-% specimenFrame.default, not a shared convention handle
+% == is equal alignment, so reuse the default symmetry for the default plotting
 if isempty(pC) || ss.how2plot == pC, return; end
 
 ss = specimenSymmetry(pC);

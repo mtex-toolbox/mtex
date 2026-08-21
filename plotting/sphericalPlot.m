@@ -366,11 +366,8 @@ classdef sphericalPlot < handle
       sR = sP.sphericalRegion;
       h = Miller(unique(sR.vertices),CS);
 
-      % a full sphere or hemisphere has no sector vertices - fall back to
-      % the vertices of the fundamental sector, in all their symmetrically
-      % equivalent positions inside the plotted region: on a full plot a
-      % single variant would single out one of several equivalent maxima
-      % for no reason
+      % a full sphere has no sector vertices, so take the fundamental sector's,
+      % in all their symmetrically equivalent positions inside the region
       hasVertices = ~isempty(h);
       if ~hasVertices
         h = fundamentalSector(CS).vertices;

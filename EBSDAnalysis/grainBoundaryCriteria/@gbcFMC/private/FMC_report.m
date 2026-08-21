@@ -52,10 +52,7 @@ for s = 1:numS
 
 end
 
-% the read off column does not add up to the pixel count on its own: a pixel
-% whose interpolation weight was zeroed as an outlier belongs to no
-% aggregate at any scale and is read off nowhere. Those are picked up by the
-% same absorption that dissolves the undersized regions.
+% a pixel whose interpolation weight was zeroed is read off at no scale
 if intp.numStranded > 0
   fprintf('\n %d pixels read off at no scale\n',intp.numStranded);
 end

@@ -177,11 +177,8 @@ if any(c<0)
 end
 c = c/sum(c);
 
-% The discrepancy J is the squared euclidean norm of the Wigner coefficients
-% of mu - f, weighted by w.^2 = 8*pi^2*A_n/(2n+1) in degree n. Note that w is
-% zero in degree 0, i.e. the degree with the negative kernel coefficient is
-% dropped. It does not contribute anyway, as long as sum(c) == 1, but
-% dropping it keeps J and its gradients consistent by construction.
+% J is the squared euclidean norm of the Wigner coefficients of mu - f,
+% weighted by w.^2 = 8*pi^2*A_n/(2n+1) - degree 0 is dropped, it does not contribute
 w = zeros(deg2dim(bw+1),1);
 for l = 1:bw
   w(deg2dim(l)+1:deg2dim(l+1)) = sqrt( 8*pi^2 * psi.A(l+1)/(2*l+1) );
@@ -193,11 +190,7 @@ I = w .* ((sqrt(8)*pi) * f.fhat);
 % the same kernel without its degree 0 part, used for the gradient w.r.t. ori
 psi0 = SO3Kernel([0;psi.A(2:end)]);
 
-% Step size of the line search. It is carried over between the iterations and
-% doubled before every line search, so that it can grow as well as shrink.
-% Starting each line search at 1 instead would tie the length of a step to
-% the magnitude of the gradient, which is proportional to the weights and
-% hence of the order 1/M - the orientations would then crawl.
+% carry the step size over and double it, so that it can grow as well as shrink
 stepSize = 1;
 
 % Wigner coefficients D of mu - f and the resulting discrepancy
@@ -207,13 +200,9 @@ pC = progressCounter(maxIter);
 for i = 1:maxIter
 
   % ------------------------ (1) optimize weights -------------------------
-  % for fixed orientations this is a convex least squares problem, which
-  % mlsq decreases while maintaining sum(c) = 1 and c >= 0
+  % for fixed orientations this is a convex least squares problem, solved by mlsq
   cOld = c;
-  % During the warm up the weights are left alone, see above. For a single
-  % orientation the simplex degenerates to the point c = 1, so there is
-  % nothing to optimize either - and mlsq would divide by the length of a
-  % vanishing search direction.
+  % during the warm up, and for a single orientation, there is nothing to optimize
   if optWeights && M > 1 && i > warmUp
     cNew = mlsq(@(x,flag) Psi(x,flag,ori,f,w,lambda,bw),I,c,innerIter,0);
     % guard against the same degeneracy for M > 1, which occurs if the
@@ -234,10 +223,7 @@ for i = 1:maxIter
   % a vanishing gradient cannot be improved by any step size
   if gNorm == 0, break, end
 
-  % line search with Armijo, capped such that no orientation travels more
-  % than half a turn - without the cap the step size would keep doubling
-  % once the gradient becomes small and every line search would waste its
-  % first dozens of trials
+  % line search with Armijo, capped so that nothing travels more than half a turn
   stepSize = min(2*stepSize, pi/max(norm(g)));
 
   lineSearchFailed = false;
@@ -254,10 +240,7 @@ for i = 1:maxIter
 
     stepSize = 0.5*stepSize;
 
-    % --- Local Termination ---
-    % This is not an error. The weight step may already have brought us to a
-    % point where the orientations cannot be improved any further, in which
-    % case we are simply done.
+    % --- local termination: the weight step may have left nothing to improve
     if stepSize < 1e-16
       lineSearchFailed = true;
       oriNew = ori;
@@ -281,9 +264,7 @@ for i = 1:maxIter
 
 end
 
-% Since the weight update of mlsq is multiplicative, a weight that reached 0
-% stays 0, i.e. the corresponding orientation does not contribute to the
-% sample any longer. Optionally discard those orientations.
+% the mlsq update is multiplicative, so a weight that reached 0 stays 0
 if optWeights && minWeight > 0
   keep = c >= minWeight;
   if ~any(keep)
@@ -321,11 +302,7 @@ if strcmp(flag,'notransp')
 
 else
 
-  % Psi' is the evaluation of the w weighted coefficient vector at the nodes.
-  % Reuse f as a template to keep bandwidth and symmetries and to bypass the
-  % symmetrisation in the SO3FunHarmonic constructor - w.*x already lies in
-  % the symmetric subspace, since diag(w) acts degreewise and hence commutes
-  % with the symmetrisation.
+  % Psi' evaluates the w weighted coefficients, f is reused as a template
   G = f;
   G.fhat = w.*x;
 

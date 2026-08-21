@@ -76,9 +76,7 @@ classdef plottingConvention
       [c,isPictogram] = char(pC);
       displayClass(pC,inputname(1),'moreInfo',c,varargin{:});
 
-      % an axis aligned convention is completely described by the pictogram
-      % in the header line - listing its directions afterwards would only
-      % repeat it
+      % an axis aligned convention is completely described by the pictogram above
       if isPictogram, return; end
 
       if ~check_option(varargin,'skipHeader'), disp(' '); end
@@ -143,15 +141,8 @@ classdef plottingConvention
 
       elseif isa(ax,'matlab.graphics.axis.PolarAxes')
         
-        % ThetaZeroLocation says where theta = 0 is DRAWN, and theta is the
-        % azimuth measured from the x axis of the data, so this is the
-        % screen angle of xvector itself: how far it sits from east,
-        % measured towards north. The angle from east to x about z that was
-        % taken here instead runs the other way round, which is the same for
-        % 0 and 180 degree but swaps top and bottom - so of the four axis
-        % aligned conventions only 'x↑→y' came out wrong, by exactly 180
-        % degree. Rounded to the quadrant MATLAB offers; a convention no
-        % axis is aligned with has no exact answer here.
+        % ThetaZeroLocation is where theta = 0 is drawn, i.e. the screen angle
+        % of xvector, from east towards north, rounded to the quadrant
         onScreen = atan2(dot(xvector,pC.north,'noAntipodal'), ...
           dot(xvector,pC.east,'noAntipodal'));
         switch mod(round(onScreen/(90*degree)),4)
@@ -173,14 +164,7 @@ classdef plottingConvention
       elseif ax.PlotBoxAspectRatioMode == "manual" && ...
           ax.CameraPositionMode == "manual" % 3d plot with a placed camera
 
-        % Note: this branch is only for axes whose camera has already been
-        % placed by hand (e.g. after rotate3d / zoom in a 3d plot), where the
-        % camera distance encodes the current zoom and has to be preserved.
-        % Setting CameraPosition/CameraTarget makes them 'manual', which
-        % makes MATLAB report ax.TightInset as [0 0 0 0] - the axes then
-        % looks like it needs no space for labels and mtexFigure crops them
-        % away. For an untouched camera the map branch below is used instead,
-        % which leaves the camera modes on 'auto' and keeps TightInset alive.
+        % only for a camera placed by hand, where the distance encodes the zoom
 
         %cameraDist = norm(ax.CameraPosition - ax.CameraTarget);
         %ax.CameraPosition = ax.CameraTarget + cameraDist*pC.outOfScreen.xyz;
@@ -204,9 +188,7 @@ classdef plottingConvention
       
       else % map plot
 
-        % nothing to do if the camera already matches - this avoids firing
-        % the camera PostSet listeners (e.g. the scale bar's) for a no-op
-        % view change
+        % nothing to do if the camera already matches, do not fire the listeners
         try
           if angle(plottingConvention.getView(ax).rot, pC.rot) < 1e-6
             return
@@ -218,15 +200,7 @@ classdef plottingConvention
 
         guard = plottingConvention.beginCameraUpdate(ax); %#ok<NASGU>
 
-        % view() reads its argument in the plot box, not in the data: on an
-        % axis with a reversed direction it negates that component before
-        % placing the camera. outOfScreen is a direction in the data, so
-        % undo that here - otherwise the view comes out mirrored on the 3d
-        % spherical plots, the only axes in MTEX that reverse XDir and YDir
-        % (@vector3d/plot3d, scatter3d, plotEmptySphere). Map axes leave
-        % all three directions normal, so nothing changes for them. With
-        % the flip undone the camera also lands where the branch above puts
-        % it, and where getView reads it back from.
+        % view() reads the plot box, so undo a reversed axis direction here
         n = pC.outOfScreen.xyz .* [1-2*strcmp(ax.XDir,'reverse'),...
           1-2*strcmp(ax.YDir,'reverse'), 1-2*strcmp(ax.ZDir,'reverse')];
 
@@ -244,9 +218,7 @@ classdef plottingConvention
     end
 
 
-    % the direction getters return a bare vector3d. They used to tag it
-    % with pC so it displayed in this convention, which forked a frame
-    % for a purely cosmetic reason - the vector belongs to no frame
+    % the direction getters return a bare vector3d, it belongs to no frame
     function v = get.outOfScreen(pC)
       v = pC.rot * vector3d.Z; 
     end
@@ -428,22 +400,13 @@ classdef plottingConvention
 
       if nargin < 2, default = []; end
 
-      % take an appended fallback out of the list before anything else -
-      % otherwise the bare object search below finds its value and reports
-      % it as a convention the caller passed
+      % take the appended fallback out first, the bare object search would find it
       fallback = get_option(list,'how2plotFallback');
       list = delete_option(list,'how2plotFallback',1);
 
       isExplicit = true;
 
-      % the name value form wins over a bare object. The plot methods
-      % append the convention of their data - plot(ebsd,...,ebsd.how2plot)
-      % - AFTER varargin, meaning it as the fallback for this plot; taking
-      % the bare object first would make that fallback beat the option the
-      % caller actually typed, and plot(ebsd,ori,'how2plot','y←↑x') would
-      % silently draw in the convention of the data. A bare convention the
-      % caller passed themselves still wins over the appended one, because
-      % getClass returns the first match.
+      % the name value form wins over a bare object, which the plot methods append
       pC = get_option(list,'how2plot');
 
       if isempty(pC), pC = getClass(list,'plottingConvention'); end
@@ -533,11 +496,7 @@ classdef plottingConvention
       if ~isgraphics(ax), return; end
       if isappdata(ax,'MTEXcameraUpdate'), rmappdata(ax,'MTEXcameraUpdate'); end
 
-      % re-assigning an unchanged property still fires its PostSet event, so
-      % this delivers the single notification the listeners were kept from
-      % during the update - and unlike simply relying on the last assignment
-      % of the update itself, it also reaches them when that assignment did
-      % not actually change anything
+      % re-assign to fire the single PostSet the listeners were kept from
       up = ax.CameraUpVector;
       ax.CameraUpVector = up;
     end
@@ -566,24 +525,15 @@ classdef plottingConvention
 
       if nargin == 0, ax = gca; end
 
-      % In both the map and the 3d branch of setView the camera ends up with
-      %   CameraPosition - CameraTarget  parallel to  outOfScreen
-      %   CameraUpVector                 equal to     north
-      % so we can simply read those two directions back.
+      % setView leaves CameraPosition - CameraTarget parallel to outOfScreen and
+      % CameraUpVector equal to north, so read those two directions back
       camDir = ax.CameraPosition - ax.CameraTarget;   % points towards viewer
       up     = ax.CameraUpVector;
 
       outOfScreen = normalize(vector3d(camDir(1),camDir(2),camDir(3)));
       up          = vector3d(up(1),up(2),up(3));
 
-      % MATLAB does not require CameraUpVector to be perpendicular to the
-      % viewing direction - what points north on screen is only the component
-      % of it orthogonal to outOfScreen. Projecting instead of taking the up
-      % vector as is also keeps this working while the camera is halfway
-      % through an update: setView assigns CameraPosition before
-      % CameraUpVector, and the CameraPosition PostSet listeners (e.g. the
-      % scale bar's) run in between, i.e. on a new camera direction paired
-      % with the still old up vector.
+      % north is only the component of the up vector orthogonal to outOfScreen
       north = up - dot(up,outOfScreen) * outOfScreen;
 
       % rebuild the rotation consistent with the getters
@@ -665,9 +615,7 @@ function rot = str2rot(str)
 
 str = char(str);
 
-% ASCII replacements for the arrows - note that (x) has to be resolved
-% before its x is read as an axis name, and <- before the remaining minus
-% signs are read as sign changes
+% ASCII replacements for the arrows - (x) before its x is read as an axis name
 str = strrep(str,'(x)','⊗');
 str = strrep(str,'(.)','⊙');
 str = strrep(str,'->','→');

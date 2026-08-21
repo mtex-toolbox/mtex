@@ -299,9 +299,7 @@ classdef SO3FunMLS < SO3Fun
         case 'cos'
           SO3F.w = @(t)(((1+cos(pi*t))/2) .* (t <= 1));
         case 'auto'
-          % Degree-dependent localization, identical to S2FunMLS:
-          % higher degrees use a narrower effective neighborhood.
-          % Wendland C6 evaluated at t^alpha and subsequently raised to beta.
+          % degree dependent localization: Wendland C6 at t^alpha, raised to beta
           alpha = max(1, 2 - (SO3F.degree - 1) / 3);
           beta = 1 + max(SO3F.degree - 2, 0) / 3;
 
@@ -314,13 +312,7 @@ classdef SO3FunMLS < SO3Fun
           end
 
         case 'plateau'
-          % Broad weight: constant on the inner 60 percent of the support,
-          % then a C1 taper to zero. A concentrated weight makes the local fit
-          % hinge on the few nearest nodes, so it swings whenever the neighbor
-          % ranking changes under the moving center. Keeping the weight flat
-          % near the center spreads the fit over the whole neighborhood and
-          % suppresses that variation, which matters when the reconstruction is
-          % subsequently sampled on a quadrature grid of finite bandwidth.
+          % constant on the inner 60 percent of the support, then a C1 taper to zero
           plateauTaper = @(x)(x.^2 .* (3 - 2*x));
           SO3F.w = @(t)(1 - plateauTaper(min(max((t - 0.6)/0.4, 0), 1)));
         case 'c1hat'
@@ -407,9 +399,7 @@ classdef SO3FunMLS < SO3Fun
     function SO3F = set.detectOutliers(SO3F, value)
       SO3F.detectOutliers = value;
       if value
-        % set standard value of the outlier detection range
-        % should be at least 4, since this is the dimension of the basis which
-        % is used for computing the outlier indicators
+        % at least 4, the dimension of the basis the outlier indicators use
         SO3F.outlierDetectionRange = max(round(SO3F.dim * .7), 4);
       end
     end
@@ -524,9 +514,7 @@ classdef SO3FunMLS < SO3Fun
       % resolve the actual SO3F.nn-th-neighbor distance field
       nfind = min(SO3F.nn, N - 1);
 
-      % probe at data nodes, since densely sampled regions require the finest
-      %   auxiliary grid resolution; a one percent quantile is still well
-      %   determined by a couple of thousand probes
+      % probe at data nodes, the densely sampled regions need the finest resolution
       nProbe = min(N, 2000);
       probeId = unique(round(linspace(1, N, nProbe))).';
 
@@ -586,18 +574,8 @@ classdef SO3FunMLS < SO3Fun
         SO3F.SRight, SO3F.SLeft);
     end
 
-    % healthy baseline amplification chi0 of the ansatz space
-    %
-    % chi0 is the center amplification that a perfectly distributed node cloud
-    % produces with this degree, weight function and oversampling factor. It is
-    % a property of the ansatz space and of the dimension of the manifold, not
-    % of the nodes, so it is measured once on a small equispaced reference grid
-    % rather than estimated from a quantile of the user's own nodes. A quantile
-    % of the actual amplifications would mix this floor with the badly
-    % distributed neighborhoods that the regularization is meant to detect.
-    %
-    % Because chi0 does not depend on the nodes, the measurement is cached for
-    % the ansatz space it belongs to and costs nothing after the first call.
+    % the center amplification a perfectly distributed node cloud produces with
+    % this ansatz space - measured once on an equispaced grid, and cached
     function chi0 = baseline_amplification(SO3F)
 
       persistent cache
@@ -618,9 +596,7 @@ classdef SO3FunMLS < SO3Fun
       ref.detectOutliers = false;
       ref.outlierIndicators = [];
 
-      % The floor is independent of the number of nodes, so a small reference
-      % grid is enough. Uniform weights and a plain KNN support keep it cheap;
-      % on equispaced nodes neither choice changes the result noticeably.
+      % the floor does not depend on the nodes, so keep the reference grid small
       ref.use_vor_weights = false;
       ref.use_smooth_delta = false;
       ref.delta = 0;

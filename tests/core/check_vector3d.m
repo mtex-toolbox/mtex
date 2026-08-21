@@ -97,10 +97,7 @@ function checkNoInternalAmbiguity
 state = warning('error','MTEX:vector3d:ambiguousMatrix'); %#ok<CTPCT>
 cleanup = onCleanup(@() warning(state)); %#ok<NASGU>
 
-% The 'mineral' option is what routes through calcAxis's alignment branch,
-% and that is the branch that built the 3 x 3. Without it the branch is not
-% taken, so a bare crystalSymmetry(pg) does NOT catch the regression - which
-% is exactly how it escaped the first time. Every real script passes it.
+% 'mineral' is what routes through calcAxis's alignment branch, which built the 3 x 3
 cases = {{'432','mineral','Austenite'}, {'m-3m','mineral','X'}, ...
   {'321','mineral','Quartz'}, {'622','mineral','X'}, {'2/m','mineral','X'}, ...
   {'1',[1 2 3],[80 90 100]*degree,'mineral','X'}};

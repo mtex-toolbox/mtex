@@ -58,8 +58,7 @@ else
 end
 
 % ----- structure coefficients -------------
-% by default all crystal directions of a superposed pole figure contribute
-% with the same weight, so that the result is again a pole density
+% by default every crystal direction contributes with the same weight
 defaultC = cellfun(@(hh) ones(1,length(hh))./length(hh),h,'UniformOutput',false);
 c = ensurecell(get_option(varargin,'superposition',defaultC));
 

@@ -26,10 +26,7 @@ classdef symmetry < matlab.mixin.Copyable
     lattice          % type of crystal lattice
     pointGroup       % point group name
     how2plot         % plotting convention - read only
-    % A convention belongs to a reference frame. To change how this is
-    % drawn use plot(...,'y↑→x') for one plot,
-    % plottingConvention.default(...) for the session, or move the data
-    % with x.frame = specimenFrame.rolling
+    % a convention belongs to a reference frame, see plottingConvention.default
   end
   
   properties (Access = protected)
@@ -61,9 +58,7 @@ classdef symmetry < matlab.mixin.Copyable
       s.id = id;
       if ~isempty(rot), s.rot = rot; end
 
-      % kept for backward compatibility: an explicitly passed convention
-      % gets a frame carrying it; the subclass constructors mint a frame
-      % that supplies the default instead
+      % kept for backward compatibility, an explicit convention gets a frame carrying it
       if nargin == 3 && ~isempty(pC)
         s.frame = specimenSymmetry.frameFor(pC);
       end

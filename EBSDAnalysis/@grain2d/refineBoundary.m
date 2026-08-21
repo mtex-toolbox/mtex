@@ -36,9 +36,7 @@ else
   delta = median(grains.boundary.segLength) / 2;
 end
 
-% a vertex where the inner boundary ends on the outer one is an ordinary
-% degree two vertex to either of them, so neither would keep it on its own -
-% resampling across it would leave the other one hanging
+% a vertex shared by the inner and the outer boundary is of degree two to either
 protect = sharedBoundaryV(grains);
 
 % refine appends the new vertices, so the existing ids stay valid - but the

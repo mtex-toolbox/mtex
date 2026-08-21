@@ -56,10 +56,7 @@ if ~isempty(posLeft)
   sw  = firstEnd(rep) == 2;
   Fr(sw,:) = fliplr(Fr(sw,:));
 
-  % which side of the segment posLeft lies on. Only the segment's line
-  % matters, not where along it the reference point is measured from -
-  % cross(d,.) kills everything parallel to d - so this takes the start
-  % vertex rather than the midpoint and needs one endpoint less
+  % which side of the segment posLeft lies on - only its line matters
   V1 = gB.allV(Fr(:,1));
   d  = gB.allV(Fr(:,2)) - V1;
 
@@ -68,11 +65,7 @@ if ~isempty(posLeft)
 
 else
 
-  % without that information keep the sense already encoded in the column
-  % order of F. On an already ordered boundary every segment of a chain
-  % agrees, so this recovers the sense exactly and makes order idempotent -
-  % which is what lets cat, subsasgn and loadobj re-establish the invariant
-  % without scrambling the left/right convention.
+  % without it keep the sense encoded in the column order of F, which makes order idempotent
   flipCh = accumarray(cid,double(firstEnd == 1),[nCh 1]) < 0.5*len;
 
 end
@@ -84,18 +77,14 @@ if any(ind)
 end
 
 % -- apply ---------------------------------------------------------------
-% cid is ascending in blocks and pos runs 0..len-1 within each, so the
-% destination row of every segment is known outright - no need to sort
+% cid is ascending in blocks and pos runs 0..len-1, so no sort is needed
 chOff = cumsum([0;len]);
 p(chOff(cid) + pos + 1) = (1:nF).';
 
 doFlip = firstEnd == 2;
 gB.F(doFlip,:) = fliplr(gB.F(doFlip,:));
 
-% subSet restricts the triple points to those still touched by a segment,
-% which for a permutation is every one of them - but it pays for the full
-% nV x nF I_VF incidence to find that out. Detach them across the subSet
-% instead; the placeholder struct is what carries allV and N.
+% detach the triple points across the subSet, it would build the full I_VF
 tP = gB.triplePoints;
 detach = isa(tP,'triplePointList') && ~isempty(tP);
 if detach, gB.triplePoints = struct('allV',tP.allV,'N',tP.N); end

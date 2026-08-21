@@ -105,10 +105,7 @@ if check_option(varargin, 'ebsd_key')
 end
 
 % Select the data set to import -------------------------------------------
-% Vendor files are project files: an EDAX .edaxh5 nests
-% <project>/<sample>/Area N/OIM Map N/EBSD, an Oxford .h5oina nests
-% /1, /2, ... - so the config's ebsd key alone may well be ambiguous.
-% Enumerate what the file holds and let the user pick one of them.
+% a vendor file is a project file holding several maps, so enumerate them
 
 dataSets = find_dataSets(info_struct, Conf);
 requested = get_option(varargin, 'dataSet', []);
@@ -118,9 +115,7 @@ if ~isempty(iSet)
   if isfield(Conf.ebsd, 'key')
     Conf.ebsd.key = struct('mode', 'absolute', 'value', dataSets(iSet).path);
   end
-  % properties, header, images and the values a config reads next to the
-  % data set (step size, grid size, ...) have to come from the very same
-  % data set
+  % properties, header, images and step size come from the same data set
   dataSetScope(parent_path(dataSets(iSet).path));
   dataSetPath(dataSets(iSet).path);
 end
@@ -149,24 +144,14 @@ exclude = ["settings", "additions"];
 data = struct();
 
 if headerOnly
-  % only the phase/header metadata under "ebsd" is needed; skip any
-  % other top-level category (e.g. electron_image) and strip the
-  % expensive per-pixel sub-fields within "ebsd" itself, so they are
-  % never read at all
+  % keep only the header metadata under "ebsd", so nothing per pixel is read
   otherCats = setdiff(string(fieldnames(Conf)), ["ebsd", exclude]);
   exclude = [exclude, reshape(otherCats, 1, [])];
-  % map_correction is a small lookup table, not per-pixel data, and
-  % EDAX's config caches a value under it that how2plot reuses - so it
-  % must stay, only the genuinely bulk per-pixel fields are stripped
+  % keep map_correction, it is a lookup table how2plot reuses
   bulkFields = intersect(fieldnames(Conf.ebsd), {'position','phase','rotation'});
   Conf.ebsd = rmfield(Conf.ebsd, bulkFields);
 
-  % explicit marker for ebsd_default (uses the same inline-"data"
-  % convention as map_correction/how2plot's fixed lookup tables above) -
-  % deliberately NOT inferred from position/phase/rotation being absent,
-  % since a malformed file can legitimately fail to resolve those too,
-  % and that must still raise the normal "missing fields" error rather
-  % than silently produce an empty EBSD
+  % flag it explicitly, a malformed file must still raise "missing fields"
   Conf.ebsd.headerOnlyFlag = struct('data', true);
 end
 
@@ -224,44 +209,26 @@ end
 
 ebsd = data.ebsd;
 
-% remember where the data came from and what else the file has to offer -
-% the full path of the imported set and the short labels of all of them,
-% which is what the 'dataSet' option and the listing accept. The import
-% wizard offers both as controls.
+  % remember which data set was imported and which others the file offers
 if ~isempty(iSet)
   ebsd.opt.dataSet = dataSets(iSet).path;
   ebsd.opt.dataSets = [dataSets.label];
 end
 
-% how this map maps back onto the file it was read from: the data sets the
-% config resolved to, together with what has to be undone to state a value
-% the way the file does. exportEBSD_h5 copies the file and writes the
-% changed data into those very data sets - see exportEBSD_h5.
+% remember where every value came from, exportEBSD_h5 writes back into it
 if ~headerOnly
   ebsd.opt.h5 = h5Provenance(info_struct, Conf, fname, prop_data, propPaths);
   if ~isempty(iSet), ebsd.opt.h5.dataSet = dataSets(iSet).path; end
 end
 
-% EMSphInx flags a pattern it failed to index with phase 255, but not a
-% pixel a ROI mask kept out of the run in the first place - that one keeps
-% phase 0 and is only recognisable by orientation, image quality and fit
-% metric all being exactly zero. Without this a masked map imports as one
-% huge grain sitting at orientation (0,0,0).
-%
-% This has to happen before any correction the caller asks for below, on the
-% orientations as the file states them - the .ang route does it in the same
-% place, and reading them afterwards made a stated 'setting' silently
-% disable the whole check.
+% EMSphInx marks a pixel a ROI mask kept out of the run by orientation,
+% image quality and fit metric all being zero - check before any correction
 if startsWith(string(Conf.settings.name),"EMSphInx","IgnoreCase",true)
   ebsd = markUnmeasured(ebsd);
 end
 
 % Euler <-> map reference frame -------------------------------------------
-% Normally the correction is stated in the file and has been picked up by
-% the config above. An explicitly given 'setting' / 'EulerCorrection' still
-% wins, and if an EDAX flavoured file did not state it at all (.edaxh5
-% writes -1 as coordinate system id) the user is asked for it, just as the
-% .ang and .osc interfaces do.
+% an explicit 'setting' wins, and if the file states none the user is asked
 [~,~,ext] = fileparts(fname);
 if check_option(varargin,{'setting','EulerCorrection'})
   ebsd = applyEulerCorrectionTable(ebsd,ext,varargin{:});
@@ -458,9 +425,7 @@ function out = cs_default(raw_data)
       raw_data.name);
   end
 
-  % structural information beyond the point group. MTEX does not model
-  % translational symmetry, so keep it as stated by the vendor instead of
-  % dropping it
+  % keep the space group, even though MTEX does not model translations
   if isfield(raw_data,'space_group_id') && ~isempty(raw_data.space_group_id)
     out.opt.spaceId = double(raw_data.space_group_id);
   end
@@ -611,9 +576,7 @@ end
 
 function out = ebsd_default(raw_data)
 
-  % Check if cs is set --> if not create simple (an optional "cs" whose
-  % key search comes up empty is present but [], not absent, hence the
-  % isempty check too)
+  % check if cs is set --> if not create simple
   if ~isfield(raw_data, 'cs') || isempty(raw_data.cs)
     raw_data.cs = notIndexed;
   end
@@ -624,13 +587,7 @@ function out = ebsd_default(raw_data)
   end
 
   if isfield(raw_data, 'headerOnlyFlag') && raw_data.headerOnlyFlag
-    % loadEBSD_h5's 'headerOnly' option deliberately stripped
-    % position/phase/rotation from the config before this ran and set
-    % this flag explicitly - unlike inferring headerOnly from their
-    % absence, this can't be confused with a malformed file that
-    % legitimately fails to resolve those fields (which must still hit
-    % the "missing fields" error below, not silently produce an empty
-    % EBSD)
+    % the flag is set explicitly, so a malformed file still errors below
     if isfield(raw_data, 'unitCell')
       out = emptyHeaderOnlyEBSD(raw_data.cs, header, 'unitCellHint', raw_data.unitCell);
     else
@@ -647,11 +604,7 @@ function out = ebsd_default(raw_data)
       'Make sure you have a position, rotation, phase and field!'])
   end
 
-  % a config may state that the phase column indexes the declared phases
-  % from 0 (phase_zeroBased) rather than from 1 - then every value has a
-  % known meaning and phaseId / phaseMap can be handed over as they are,
-  % with nothing left for phaseList/init to infer from which phases happen
-  % to occur in this particular map
+  % with phase_zeroBased every value is known, so hand phaseId / phaseMap over
   phases = raw_data.phase;
   phaseMapOpt = {};
   if isstruct(phases) && isfield(phases, 'zeroBased')
@@ -689,9 +642,7 @@ function out = ebsd_default(raw_data)
 
   ebsd.opt.header = header;
 
-  % a file does not change how the session plots - a convention stated in
-  % the file describes the vendor's view, and the map is put in a frame
-  % carrying it rather than repointing the session
+  % put the map into a frame carrying the convention, do not repoint the session
   if isfield(raw_data, 'how2plot')
     fr = copy(specimenFrame.default);
     fr.how2plot = raw_data.how2plot;
@@ -704,9 +655,7 @@ end
 
 function out = image_data_default(raw_data)
 
-  % a vendor stores whichever detectors were actually recorded - an Oxford
-  % map may well come with the forescatter images alone and no secondary
-  % electron one - so any one of the image groups is enough
+  % a vendor stores whichever detectors were recorded, so one group is enough
   if ~isfield(raw_data, 'x_size') || ~isfield(raw_data, 'y_size') || ...
       (~isfield(raw_data, 'FSE') && ~isfield(raw_data, 'SE'))
     error(['image_data default has not the correct fields! ' ...
@@ -826,9 +775,7 @@ function out = map_correction_by_id(raw_data)
   id = double(raw_data.id);
   data = raw_data.correct_data;
 
-  % some vendors do not always state the setting, e.g. EDAX writes -1 into
-  % .edaxh5 files - then there is nothing to correct here and loadEBSD_h5
-  % asks the user for the setting instead
+  % some vendors do not state the setting, e.g. EDAX writes -1 into .edaxh5
   if id < 1 || id > size(data,1)
     out = rotation.id;
     return
@@ -1029,15 +976,9 @@ function val = dataSetPath(setVal)
 end
 
 %% Path resolution --------------------------------------------------------
-%
-% The functions in this section are the "config -> HDF5 path" bridge.
-% - get_hdf5_path : resolve a config item to one (or many) absolute HDF5
-%                   paths, dispatching on config_item.mode.
-% - flattenH5     : walk an h5info tree once and emit a flat item list.
-% - locate_subtree: fetch the h5info sub-tree at a given path (used by
-%                   the group-based readers and the additions branch).
-% - search_Conf   : walk the JSON config tree and collect path values
-%                   already used by explicit config entries.
+% the "config -> HDF5 path" bridge: get_hdf5_path resolves a config item to
+% absolute paths, flattenH5 flattens an h5info tree, locate_subtree fetches a
+% sub-tree and search_Conf collects the paths already used by the config
 
 function final_path = get_hdf5_path(info_struct, config_item, options)
 %GET_HDF5_PATH  Resolve a config item to an HDF5 path (or cell of paths).
@@ -1079,9 +1020,7 @@ function final_path = get_hdf5_path(info_struct, config_item, options)
   search_val = string(config_item.value);
   mode = string(config_item.mode);
 
-  % Searches are confined to the selected data set - "search_free" means
-  % "anywhere in the data set", and an entry that has not been anchored to
-  % a key group yet starts at the data set rather than at the file root.
+  % searches are confined to the selected data set
   scope = dataSetScope();
   root = normalize_root(options.root);
   if strcmp(root, '/'), root = scope; end
@@ -1165,9 +1104,7 @@ function sets = find_dataSets(info_struct, Conf)
     return
   end
 
-  % a key that does not resolve at all is not this function's business to
-  % report - an empty list leaves the config untouched, so the category
-  % loop raises the proper error and the config fallback still kicks in
+  % leave an unresolved key to the category loop, which raises the proper error
   try
     paths = get_hdf5_path(info_struct, Conf.ebsd.key, "multiple", true);
   catch
@@ -1208,12 +1145,7 @@ function sets = find_dataSets(info_struct, Conf)
   % discarding everything - fall back to the unvalidated list
   if any(isSet), paths = paths(isSet); end
 
-  % a key may name several variants of one map - Oxford stores it as
-  % recorded under "EBSD" and as cleaned up under "Data Processing". Which
-  % of them an import takes by default must not depend on the order the
-  % vendor happened to write the groups in, so the order of the
-  % alternatives in the key decides it. sort is stable, hence file order
-  % still orders the sets that matched the same alternative.
+  % a key may name several variants of one map, its order decides which wins
   [~, ord] = sort(alternative_rank(paths, Conf.ebsd.key));
   paths = paths(ord);
 
@@ -1561,13 +1493,7 @@ function out = walk(node, fieldName, filterDir, out)
 end
 
 %% Provenance - where in the file every imported value came from
-%
-% Import resolves a config against one particular file, which is the only
-% place that knows that e.g. "the rotations" are the data set /1/EBSD/Data/
-% Euler, read in radian. exportEBSD_h5 writes changed data back into a copy
-% of that file and needs exactly that answer, so it is recorded here rather
-% than resolved a second time - the paths below are already resolved, the
-% config is not consulted again.
+% record the resolved paths, so exportEBSD_h5 does not resolve the config again
 
 function prov = h5Provenance(info_struct, Conf, fname, prop_data, propPaths) %#ok<INUSD>
 
@@ -1840,11 +1766,7 @@ for g = 1:numel(groups)
   used = cellfun(@(s) validFieldName(clean_string(string(s))), used, ...
     'UniformOutput', false);
 
-  % That does not cover a data set the config reads *around*: an "indirect"
-  % position is built from the step size in the header, so the per pixel
-  % X / Y next to the data are never named by a path and would come back as
-  % properties duplicating ebsd.pos. A config lists those as regular
-  % expressions over the property names.
+  % a config lists the data it reads around, e.g. per pixel X / Y, by name
   names = fieldnames(new_data);
   drop = ismember(names, used);
   for i = 1:numel(patterns)

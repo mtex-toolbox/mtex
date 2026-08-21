@@ -46,23 +46,6 @@ end
 
 % ---------------------------------------------------------------------
 % KNOWN FAILURES, see https://github.com/mtex-toolbox/mtex/issues/2585 item 8
-%
-% SO3BumpKernel: the rebuilt halfwidth is 0.2 degree whatever the parameter.
-% Measured at 0.01, 1 and pi-0.1, whose own halfwidths are 0.573, 57.3 and
-% 174.27 degree, the rebuilt kernel reports 0.2 degree for all three. A bump
-% is an indicator function, so its Chebyshev series converges slowly and the
-% stored coefficients do not reconstruct it - which is the substance of that
-% issue rather than a separate defect.
-%
-% SO3AbelPoissonKernel breaks at both ends of its range. At kappa 0.1 and
-% 0.2 the halfwidth is exactly 0 degree, from the class and from the rebuilt
-% kernel alike - a flatter kernel should have a LARGER halfwidth, and the
-% trend 0.99 -> 0.7 -> 0.4 is 0.8 -> 26.5 -> 74.1 degree, so those two
-% should be approaching 180 rather than collapsing. Whatever locates the
-% half maximum is failing to bracket. At kappa 0.99 the two disagree by
-% 12.5 percent, 0.80 against 0.90 degree, where 0.4 and 0.7 agree to 8e-4.
-% The degeneracy guard in checkKernel below is what caught the zeros.
-%
 %   checkKernel(SO3BumpKernel(1),'SO3BumpKernel(1)');
 %   checkKernel(SO3AbelPoissonKernel(0.1),'SO3AbelPoissonKernel(0.1)');
 %   checkKernel(SO3AbelPoissonKernel(0.99),'SO3AbelPoissonKernel(0.99)');
@@ -78,9 +61,7 @@ function checkKernel(psi,name)
 h1 = psi.halfwidth;
 h2 = halfwidth(SO3Kernel(psi.A));
 
-% the rebuilt halfwidth is found on a 0.01 degree grid - every value it
-% returns is a multiple of it - so the comparison allows the larger of that
-% quantisation and one percent
+% the rebuilt halfwidth is found on a 0.01 degree grid, so allow that or one percent
 tol = max(0.02*degree, 0.01*h1);
 
 assert(abs(h1 - h2) <= tol, ...

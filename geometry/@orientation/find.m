@@ -43,9 +43,7 @@ v.SS = v.SS.properGroup;
 w.CS = w.CS.properGroup;
 w.SS = w.SS.properGroup;
 
-% Check for matching symmetries. Note that == on a crystalSymmetry is handle
-% identity (see phaseItem.m, where eq is sealed) - eqTol is the comparison
-% that asks for the same Laue group and the same axes.
+% check for matching symmetries - == is handle identity, eqTol compares the axes
 if ~all(eqTol(v.CS,w.CS)) || ~all(eqTol(v.SS,w.SS))
   error('MTEX:find:symmetryMismatch','The symmetries have to coincide.')
 end
@@ -102,9 +100,7 @@ vq = quaternion(v);
 
 if isK
 
-  % a point of v may have several copies inside the tolerance band of the
-  % fundamental region. Ask for enough candidates so that k *distinct*
-  % points of v remain once the copies are mapped back.
+  % ask for enough candidates so that k distinct points remain after folding
   if isempty(id), mult = 1; else, mult = max(accumarray(id,1)); end
   kSub = min(epsilon_or_k * mult, numel(id));
 
@@ -145,9 +141,7 @@ N = length(v);
 cs = v.CS; ss = v.SS;
 ws = w;
 
-% antipodal requires CS == SS, which the fold destroys. Keep the inverted
-% points around, they are folded into the data set below - then the search
-% itself does not have to deal with antipodal at all.
+% antipodal requires CS == SS, so fold the inverted points into the data set instead
 vi = v;
 if v.antipodal
   vi = inv(v); vi.CS = v.CS; vi.SS = v.SS; vi.antipodal = false;
@@ -183,9 +177,7 @@ origIdx = repelem((1:N).',nRep,1);
 
 if floor(epsilon_or_k) == epsilon_or_k
 
-  % the k nearest distinct points of v are among the k*nRep nearest copies:
-  % any copy beating the i-th ranked point belongs to one of the i-1 <= k-1
-  % better points, which contribute at most (k-1)*nRep < k*nRep copies
+% the k nearest distinct points of v are among the k*nRep nearest copies
   kSub = min(epsilon_or_k * nRep, numel(vs));
 
   [ind,d] = find(vs,ws,kSub,varargin{:});

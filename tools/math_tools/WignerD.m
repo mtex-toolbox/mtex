@@ -88,9 +88,7 @@ else % use matrix exponential
 
 end
 
-% weight every degree by the kernel's Chebyshev coefficient. Doing it here
-% rather than in the three backends keeps them interchangeable - they all
-% return the degree blocks concatenated in the order of l.
+% weight every degree by the kernel's Chebyshev coefficient, so the backends stay interchangeable
 if ~isempty(psi)
   A = psi.A(:);
   d = (2*l(:)+1).^2;

@@ -49,9 +49,7 @@ end
 weights = weights(~isnan(ori));
 ori = subSet(ori,~isnan(ori));
 
-% nothing left to estimate from - an empty list and a list of nothing but
-% nan orientations both end up here, and the least informative density is
-% the uniform one
+% nothing left to estimate from, so return the uniform density
 if isempty(ori), odf = uniformODF(ori.CS,ori.SS); return, end
 
 % normalize weights

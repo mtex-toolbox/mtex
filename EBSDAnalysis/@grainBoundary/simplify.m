@@ -64,9 +64,7 @@ for c = 1:numel(iStart)
   s = iStart(c):iEnd(c);
   v = [gB.F(s,1); gB.F(s(end),2)];
 
-  % A closed chain has no ends to anchor the recursion on, so cut it at the
-  % vertex furthest from the start - that one is on the hull and survives
-  % any tolerance.
+  % a closed chain has no ends, so cut it at the vertex furthest from the start
   if v(end) == v(1) && numel(v) > 3
     d = sum((xy(v,:) - xy(v(1),:)).^2,2);
     [~,iFar] = max(d);
@@ -76,9 +74,7 @@ for c = 1:numel(iStart)
     keep(1:iFar) = keep(1:iFar) | douglasPeucker(xy(v(1:iFar),:),epsilon);
     keep(iFar:end) = keep(iFar:end) | douglasPeucker(xy(v(iFar:end),:),epsilon);
 
-    % keep(1) and keep(end) are the same vertex, so this leaves only two
-    % distinct ones - a loop that encloses no area. A closed chain is the whole
-    % boundary of a grain, so give it a third vertex and keep it a polygon.
+    % keep(1) and keep(end) are the same vertex, so give the loop a third one
     if nnz(keep) < 4
       chord = xy(v(iFar),:) - xy(v(1),:);
       rel = xy(v,:) - xy(v(1),:);
@@ -100,16 +96,10 @@ end
 % chain ends are junctions and are never dropped
 keepEnd(iEnd) = true;
 
-% a vertex where the neighbouring grains change is a corner of both grain
-% polygons even when only two segments meet there - and merging across it would
-% have to throw one of the two grainId pairs away. On a full map this coincides
-% with a junction, but not on a subset, where the segment between two grains
-% that are both outside the subset is gone and its triple point looks ordinary.
+% a vertex where the neighbouring grains change is a corner of both grain polygons
 keepEnd = keepEnd | isNeighborChange(gB);
 
-% a vertex may also be shared with another boundary object, which finds its
-% junctions from its own face list and so cannot see it - grain2d passes
-% those in, see grain2d/simplifyBoundary
+% a vertex shared with another boundary object, see grain2d/simplifyBoundary
 protect = get_option(varargin,'protect',[]);
 if ~isempty(protect)
   isProtected = false(size(gB.allV,1),1);

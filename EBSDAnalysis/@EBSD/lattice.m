@@ -33,10 +33,7 @@ function g = lattice(ebsd)
 
 [A,stencil,dxy] = latticeBasis(ebsd.unitCell);
 
-% A is in the map plane frame - see latticeBasis - so the positions have to
-% be read in the same frame, otherwise a map that is not in the xy plane is
-% indexed against its own degenerate xy projection. rot2Plane is the
-% identity for the usual xy map, so nothing changes there.
+% A is in the map plane frame, so read the positions in the same frame
 pos = ebsd.rot2Plane * ebsd.pos;
 pos = [pos.x(:), pos.y(:)];
 [ij,origin] = assignGridIndex(pos,A);

@@ -53,25 +53,15 @@ cases = { ...
   'SO3FunRBF',      RBF; ...
   'SO3FunCBF',      F4};
 
-% 1e-6, not machine precision: SO3FunHarmonic evaluates through NFSOFT and
-% lands about 1.7e-8 from the handle. Nothing here is a close call - a
-% rotation that is genuinely wrong is off by 0.05 to 0.6 relative, as the
-% symmetry cases above show, so this leaves two orders of margin either way.
+% 1e-6, not machine precision: SO3FunHarmonic evaluates through NFSOFT
 tol = 1e-6;
 
 for k = 1:size(cases,1)
   checkRotate(cases{k,1},cases{k,2},A,CS,SS,tol,'both');
 end
 
-% SO3FunSBF only on the left. rotate(SO3FunSBF,rot,'right') raises
-% 'Not implemented yet' from SO3Fun/rotate.m:25 - an explicit gap rather
-% than a defect, and the reason the original script never ran to completion:
-% it looped over all five subclasses with the right sided case first and
-% threw there.
-%
-% Its symmetries are left as the example defines them; forcing CS/SS onto it
-% the way the other four are set up makes tensor/rotate warn that the
-% symmetries do not match.
+% SO3FunSBF only on the left, the right sided case raises 'Not implemented yet' -
+% and its symmetries are left as the example defines them
 SBF = SO3FunSBF.example;
 checkRotate('SO3FunSBF',SBF,SBF.SS,SBF.CS,SBF.SS,tol,'left');
 
@@ -104,9 +94,7 @@ end
 % =========================================================================
 function compare(name,side,a,b,tol)
 
-% a whole sample, not one orientation and its symmetric copies: SO3FunBingham
-% is sharply peaked, so at a single random orientation both sides are ~0 and
-% the comparison says nothing - which the vacuity guard below caught
+% a whole sample, at a single orientation a sharply peaked function says nothing
 r = orientation.rand(200,a.CS,a.SS);
 
 va = a.eval(r(:));

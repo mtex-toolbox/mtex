@@ -22,9 +22,7 @@ function [xStep,yStep] = gridSteps(g,fmt)
 if nargin < 2, fmt = 'ang'; end
 
 if isa(g,'EBSDhex')
-  % the hex row step is at 60 degree even on an unrotated map, so the test
-  % has to be on the dense direction and the one across it, not on the raw
-  % matrix steps. The cross vector spans two lines, hence the halving.
+  % test the dense direction and the one across it, the cross vector spans two lines
   if g.isRowAlignment
     u = g.pos(1,2) - g.pos(1,1);  v = (g.pos(3,1) - g.pos(1,1)) ./ 2;
   else
@@ -47,10 +45,7 @@ if ~(onAxis(u) && onAxis(v))
     atan2(u.y,u.x)/degree, atan2(v.y,v.x)/degree, fmt);
 end
 
-% which of the two runs along x. Read off the grid rather than taken from
-% g.dx/dy - @EBSDsquare has had no dx/dy since 859b62af0, so ang export of a
-% square map died in the header with "Unrecognized method, property, or
-% field 'dx'".
+% which of the two runs along x, read off the grid - there is no g.dx/dy any more
 if abs(dot(normalize(u),xvector)) > 1 - 1e-6
   xStep = norm(u); yStep = norm(v);
 else

@@ -119,9 +119,7 @@ classdef crystalSymmetry < symmetry & phaseItem
       % this is for compatibility with using "strings" as input
       try varargin = controllib.internal.util.hString2Char(varargin); catch, end
 
-      % the trivial group carrying a given crystalFrame - "orientation
-      % without symmetry", see ADR 0003. The frame handle is adopted, not
-      % copied, and never written to - it may be shared
+      % the trivial group carrying a given crystalFrame, see ADR 0003
       frameAdopted = nargin > 0 && isa(varargin{1},'crystalFrame');
 
       if frameAdopted
@@ -197,9 +195,7 @@ classdef crystalSymmetry < symmetry & phaseItem
       s.mineral = strtrim(regexprep(s.mineral,char(0),' '));
       s.color = get_option(varargin,'color','');
 
-      % the reference frame carries the axes and, below, the plotting
-      % convention; the mineral doubles as the frame identity for now -
-      % except for an adopted frame, which is never written to
+      % the reference frame carries the axes, the mineral doubles as its identity
       if ~frameAdopted, fr.name = s.mineral; end
       s.frame = fr;
 
@@ -207,10 +203,7 @@ classdef crystalSymmetry < symmetry & phaseItem
         s.opt.density = get_option(varargin,'density','');
       end
 
-      % the plotting convention of the frame. An adopted frame is never
-      % overwritten - unless it carries no convention at all, as a
-      % standalone crystalFrame does, in which case there is nothing to
-      % clobber and every sharer gains the one derived from the axes
+      % the plotting convention of the frame, unless an adopted frame carries one
       if ~frameAdopted || isempty(s.frame.how2plot)
         if id > 11 || id==0
           pC = plottingConvention(s.cAxisRec,s.aAxis);

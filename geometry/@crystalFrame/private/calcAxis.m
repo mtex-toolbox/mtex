@@ -68,9 +68,7 @@ switch pg.lattice
 
   case {'orthorhombic','tetragonal','cubic'}
 
-    % all angles are 90 degree, so the axes are simply the scaled
-    % coordinate axes - tetragonal used to take the general formula below,
-    % which gives the same numbers up to rounding noise
+    % all angles are 90 degree, so the axes are the scaled coordinate axes
     abc = (axisLength(:) .* vector3d.byXYZ(eye(3))).';
 
   otherwise
@@ -87,11 +85,7 @@ end
 % vendor specific alignment conventions
 varargin = expandVendorAlignment(pg,varargin);
 
-% Only the strings that actually name an alignment. 'mineral','Quartz' and
-% 'color','red' are strings too, and used to reach the machinery below,
-% which then found no axis to align, quietly added Z||c and multiplied by
-% the identity - so every crystalSymmetry carrying a name paid for the full
-% alignment computation and got the reference frame back.
+% only the strings that name an alignment, not 'mineral','Quartz' and the like
 alignOpt = varargin(cellfun(@(s) ischar(s) || isstring(s),varargin));
 alignOpt = alignOpt(cellfun(@(s) contains(s,'||'),alignOpt));
 
@@ -115,17 +109,12 @@ function abc = alignAxes(pg,axisLength,abc,alignOpt)
 alignment = parseAlignment(alignOpt);
 
 % ---- the two standard setups ------------------------------------------
-% Essentially every call in practice asks for one of these, and for them
-% the axes are simply written down - no reciprocal lattice, no
-% transformation matrix, no rounding noise. Anything else falls through to
-% the general construction below.
+% for these the axes are simply written down, anything else falls through below
 if isStandardSetup(alignment)
   switch pg.lattice
 
     case {'orthorhombic','tetragonal','cubic'}
-      % the axes are mutually orthogonal, hence a*||a, b*||b and c*||c, so
-      % naming either of a pair asks for the very same frame - the
-      % reference one
+      % the axes are orthogonal, so a*||a, b*||b, c*||c all give the reference frame
       return
 
     case {'trigonal','hexagonal'}
@@ -141,13 +130,9 @@ if isStandardSetup(alignment)
 end
 
 % ---- the general construction -----------------------------------------
-% monoclinic and triclinic, and any alignment naming b, m, d or an axis out
-% of its usual place
+% monoclinic and triclinic, and any axis out of its usual place
 
-% compute a* b* c*
-% (the direction of the reciprocal axes only depends on the physical
-% lattice, not on the coordinate frame abc happens to be expressed in,
-% so a single cross product formula works for all lattice types)
+% compute a* b* c*, one cross product formula for all lattice types
 abcStar = cross(abc([2 3 1]),abc([3 1 2]));
 
 % setup new x, y, z directions
@@ -204,10 +189,7 @@ end
 
 if det(M) < 0, M(2,:) = -M(2,:);end
 
-% now compute the new a, b, c axes
-% double(v) is 3 x N with the vectors in its COLUMNS, and for the three
-% axes that is 3 x 3 - a shape the constructor cannot read unambiguously.
-% Slice it explicitly rather than let it guess (and warn).
+% now compute the new a, b, c axes - slice the 3 x 3, the constructor cannot read it
 xyz = M * double(abc);
 abc = vector3d(xyz(1,:),xyz(2,:),xyz(3,:));
 

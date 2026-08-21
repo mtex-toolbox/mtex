@@ -19,10 +19,7 @@ if check_option(varargin,'noSymmetry')
   return
 end
 
-% grain exchange symmetry: a misorientation and its inverse describe the same
-% boundary. Below, only the operand that ends up being symmetrised carries
-% its flag into symmetrise, and which one that is depends on the input
-% lengths - so the inversion is taken care of here, once, for all branches.
+% grain exchange symmetry: a misorientation and its inverse describe the same boundary
 if (isa(o1,'orientation') && o1.antipodal) || (isa(o2,'orientation') && o2.antipodal)
 
   % the inverse of the second operand - inv swaps crystal and specimen

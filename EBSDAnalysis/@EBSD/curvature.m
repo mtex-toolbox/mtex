@@ -39,15 +39,9 @@ gv = gradientDir(ebsd,v,varargin{:});
 
 kappa = dyad(gu,u) + dyad(gv,v);
 
-% The component along the plane normal is unknown. Entry (i,j) of the tensor
-% is gu_i u_j + gv_i v_j + gN_i N_j, so it is unknown exactly where N_j is
-% nonzero - for N = Z that is the third column, which is what this function
-% always did. A tilted plane genuinely loses more: its normal has several
-% nonzero components, and each of them contaminates a whole column. That is
-% a property of writing the tensor in the specimen basis, not a defect.
-%
-% NB this must be a mask on the columns, not dyad(vector3d.nan,N): NaN*0 is
-% NaN, so the dyad marks the entire tensor unknown even for N = Z.
+% the component along the plane normal is unknown, i.e. every column where N is
+% nonzero - a mask on the columns and not dyad(vector3d.nan,N), whose NaN*0 = NaN
+% would mark the whole tensor unknown
 N = normalize(ebsd.N);
 Nc = [N.x N.y N.z];
 

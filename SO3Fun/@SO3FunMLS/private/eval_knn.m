@@ -112,11 +112,8 @@ if SO3F.use_smooth_delta
   warnings.smoothTooFew = any(deltaFallback | ...
     (positiveCount < SO3F.dim));
 
-  % If every fetched candidate has positive weight, the artificial KNN cutoff
-  % may truncate the intended compact support. Only a candidate that still
-  % carries a numerically relevant weight actually contributes to the local
-  % system; smooth weight functions have decayed to rounding level at the
-  % support boundary, where dropping a node changes nothing.
+  % the KNN cutoff may truncate the compact support, but only a candidate with a
+  % numerically relevant weight actually contributes
   candidateLimit = ~SO3F.subsample & (positiveCount == nn) & ...
     (min(weights, [], 2) > candidateTol * max(weights, [], 2));
   warnings.smoothAllCandidates = any(candidateLimit);

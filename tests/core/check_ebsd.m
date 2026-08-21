@@ -275,10 +275,7 @@ for k = 1:size(cases,1)
 
   [name,ebsd] = cases{k,:};
 
-  % everything here is relative to the map's own step size - the two
-  % synthetic maps are 3 um across, titanium is 1000 um across with a 7 um
-  % step, so any absolute offset is either inside one of them or far outside
-  % the other
+  % everything here is relative to the map's own step size
   p = ebsd.pos(:);
   ext = ebsd.extent;
   r = max(norm(ebsd.unitCell));
@@ -526,9 +523,7 @@ a = g.rotations.a(:); a = a(~isnan(a));
 assert(numel(a) == length(ref) && norm(sort(a) - sort(ref.a(:))) < 1e-12, ...
   'check_ebsd: gridify changed the orientations');
 
-% the copy constructor must keep the measurement plane normal too - the
-% same early return dropped it, so a map on a non z plane came back with
-% the default zvector
+% the copy constructor must keep the measurement plane normal too
 ebsd.N = normalize(vector3d(1,1,1));
 assert(angle(EBSD(ebsd).N,ebsd.N) < 1e-10, ...
   'check_ebsd: the copy constructor must carry the map normal N');

@@ -422,10 +422,7 @@ p = S2FunHarmonic(sFs);
 assert(p.frame == cs.frame && p.how2plot == cs.how2plot, ...
   'check_referenceFrame: the cast to S2FunHarmonic lost the crystal frame');
 
-% extrema come back in the frame of the function: Miller for a
-% symmetrised one, and Miller carrying the trivial group on the crystal
-% frame for a plain crystal-framed one (ADR 0003, orientation without
-% symmetry - resolved the former open problem in S2Fun/min)
+% extrema come back in the frame of the function, as Miller for a crystal frame
 [~,pos] = max(sFs);
 assert(isa(pos,'Miller') && pos.CS == cs, ...
   'check_referenceFrame: extrema of a symmetrised S2Fun are not Miller');
@@ -561,9 +558,7 @@ r3 = rotate(w,inv(ori));
 assert(r3.frame == cs.frame, ...
   'check_referenceFrame: inv(ori) must take specimen data into the crystal frame');
 
-% the displays show the frame together with the convention: a rotated
-% slip system reports the specimen convention, a rolling framed vector
-% its axes names, a crystal framed vector only the frame identity
+% the displays show the frame together with the convention
 out = evalc('display(sSr)');
 % the convention sits inside the clickable frame link, so match it bare
 assert(contains(out,conventionChar(specimenFrame.default)), ...
@@ -635,10 +630,7 @@ delete(fname);
 assert(S.ssF.frame ~= specimenFrame.default && isapprox(S.ssF.how2plot,pCF), ...
   'check_referenceFrame: a loaded forked frame did not survive');
 
-% a loaded CONTAINER keeps the frame it was saved in and leaves the session
-% alone - only frames carry conventions (ADR 0003), so a map that was given
-% a frame of its own comes back in that frame rather than dragging every
-% other object in the session into it
+% a loaded container keeps the frame it was saved in and leaves the session alone
 pC0e = plottingConvention.default;
 restoreDefault = onCleanup(@() plottingConvention.default(pC0e));
 ebsd = EBSD(vector3d.rand(4),rotation.rand(4,1),ones(4,1), ...
@@ -754,11 +746,7 @@ ori = orientation.map(Miller(1,0,0,cs),v);
 assert(ori.SS.frame == fr, ...
   'check_referenceFrame: orientation.map must adopt the frame of the framed input');
 
-% quadrature built results keep the frame of their input - the wrapper
-% used to fabricate a default specimenSymmetry whose session frame then
-% shadowed the input's own, so S2Fun.smiley.^2 changed its convention
-% smiley no longer carries a convention of its own, so give the function a
-% frame explicitly - what is under test is that arithmetic keeps it
+% quadrature built results keep the frame of their input, so give the function one
 s = S2Fun.smiley;
 s.frame = specimenSymmetry.frameFor(plottingConvention('z↑→x'));
 assert(getFrame(s.^2) == getFrame(s), ...
@@ -767,9 +755,7 @@ q = S2FunHarmonic.quadrature(@(v) v.x.^2,'bandwidth',16);
 assert(isempty(getFrame(q)), ...
   'check_referenceFrame: a quadrature over plain nodes must stay frame-free');
 
-% the gradient of an ODF keeps the specimen frame - stripSym drops the point
-% group but never the frame, and SO3VectorField reads frameLeft live
-% from its SLeft like SO3Fun does
+% the gradient of an ODF keeps the specimen frame, stripSym drops only the point group
 oriF = orientation.rand(10,cs);
 oriF.SS = copy(oriF.SS);
 oriF.SS.frame = fr;
@@ -963,9 +949,7 @@ for k = 1:numel(conv)
   key.ipfDirection = zvector;
   rgb(k,:) = key.orientation2color(ori);
 
-  % the precomputed grid has to agree with the exact map - it is cached
-  % across a session, so a key that misses what the colors depend on
-  % silently hands out a grid computed for something else
+  % the precomputed grid has to agree with the exact map, it is cached across a session
   keyG = ipfColorKey(ori);
   keyG.ipfDirection = zvector;
   keyG.precompute;

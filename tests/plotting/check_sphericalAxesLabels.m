@@ -87,10 +87,7 @@ for i = 1:size(plain,1)
 end
 
 % --- three dimensional plots are annotated too --------------------------
-% they bypass sphericalPlot entirely, so plot3d and scatter3d have to ask
-% annotateFrame themselves - and the labels come with an arrow each, drawn
-% as a surface, since a flat text would sit in the z = 0 plane, i.e. inside
-% the sphere
+% they bypass sphericalPlot, so plot3d and scatter3d ask annotateFrame themselves
 labeled3d = {
   'plot(vector3d,3d)'  , @() plot(v,'3d')
   'plot(S2Fun,3d)'     , @() plot(calcDensity(v),'3d')
@@ -118,14 +115,7 @@ if any(countLabels(@() plot(v,'3d','noLabel')) > 0)
 end
 
 % --- a 3d plot points its camera where the caller asked -----------------
-% plot3d picks the tilted default3D when the caller named no convention, a
-% sphere seen straight down its polar axis being a poor picture. It used to
-% recognise that case by VALUE - a convention equal to the session default
-% was taken for the fallback its own callers append - which also discarded
-% a convention the caller had passed on purpose whenever it happened to
-% equal the default, i.e. the whole pristine x-east / y-down / z-into-screen
-% alignment (issue #481). Every right handed convention must be honoured,
-% whatever its value.
+% plot3d takes the tilted default3D only when the caller named no convention (#481)
 sf3d = calcDensity(zvector,'halfwidth',20*degree);
 east  = {xvector,-xvector, yvector,-yvector,xvector,zvector};
 north = {-yvector,yvector, xvector,-xvector,yvector,xvector};
@@ -165,9 +155,7 @@ for f = {@() plot(sf3d,'3d'), ...
 end
 
 % --- a plain function on a crystal frame annotates a, b, c --------------
-% the GBND in crystal coordinates is a plain S2FunHarmonic that carries a
-% crystalFrame - the specimen X / Y / Z would be meaningless there, the
-% frame annotates its own axes instead
+% the specimen X / Y / Z would be meaningless there
 sFc = calcDensity(v);
 sFc = setFrame(sFc,csHex.frame);
 close all
@@ -180,8 +168,7 @@ if ~all(ismember(["a","b","c"],str))
 end
 
 % --- a full plot in crystal coordinates gets Miller labels --------------
-% the sector vertices in all their symmetrically equivalent positions -
-% they are drawn by plotLabels, hence not tagged axesLabels
+% the sector vertices are drawn by plotLabels, hence not tagged axesLabels
 close all
 plot(calcDensity(Miller(v,csHex)),'complete','upper');
 txt = findobj(gcf,'type','text','-not','tag','axesLabels');

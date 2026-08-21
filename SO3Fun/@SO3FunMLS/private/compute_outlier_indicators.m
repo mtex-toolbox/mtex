@@ -16,9 +16,7 @@ grid_vals = reshape(SO3F.values(:), numel(SO3F.nodes), numel(SO3F));
 oI = zeros(numel(SO3F.nodes), numel(SO3F));
 
 for j = 1 : numel(SO3F)
-  % gather neighbor values as N-by-k matrix
-  % NOTE: linear indexing of a column with the N-by-k index array returns a
-  %   single column, so the neighborhood layout has to be restored
+  % gather neighbor values as N-by-k matrix, linear indexing returns a single column
   vals = reshape(grid_vals(id,j), size(id));
 
   % local median value of neighborhood, for each node as center (N x 1)

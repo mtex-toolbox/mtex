@@ -77,10 +77,7 @@ nV = length(grains.boundary.allV);
 % group the directed edges by (grain, undirected edge)
 [~,~,gEId] = unique((gId(hfId)-1) * max(eId) + eId);
 
-% on a closed manifold surface every such group contains exactly two half
-% faces - non manifold edges, where a grain surface pinches itself, are
-% ignored. They may split a grain surface into several patches, which are
-% then oriented independently in step 4.
+% on a closed manifold surface every group has two half faces, ignore the others
 isManifold = accumarray(gEId,1);
 ind = find(isManifold(gEId) == 2);
 
@@ -97,10 +94,8 @@ w = -eDir(e1) .* eDir(e2);
 % -------------------------------------------------------------------------
 % step 3: solve for the signs x by connected components
 % -------------------------------------------------------------------------
-% duplicate every half face into a node i for x = +1 and a node i + nHF for
-% x = -1 and connect the copies according to w. Then every orientable patch
-% falls apart into exactly two components - one for each of its two possible
-% orientations
+% duplicate every half face into a +1 and a -1 node, so every orientable patch
+% falls apart into two components
 src = [n1; n1 + nHF];
 dst = [n2 + nHF*(w<0); n2 + nHF*(w>0)];
 
@@ -128,9 +123,7 @@ patchVol = accumarray(patchId, x .* fV(fId));
 
 x = x .* (1 - 2*(patchVol(patchId) < 0));
 
-% the two grains sharing an inner face have to see opposite normals - this
-% fails if a grain completely encloses another one, as then the enclosing
-% surface is a cavity that has to be oriented inwards
+% the two grains sharing an inner face see opposite normals, unless one encloses the other
 nG = accumarray(fId,1,[size(I_GF,2) 1]);
 isInconsistent = (nG == 2) & (accumarray(fId,x,[size(I_GF,2) 1]) ~= 0);
 if any(isInconsistent)

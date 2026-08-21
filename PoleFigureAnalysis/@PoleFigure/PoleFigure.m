@@ -45,10 +45,7 @@ classdef PoleFigure < dynProp & dynOption
   end
 
   properties (Hidden = true)
-    % the specimen symmetry, empty while none was given - then SS follows
-    % the session default, exactly as how2plot does. A class level default
-    % here would be one handle shared by every pole figure that never set
-    % one, and it would not follow the session at all
+    % the specimen symmetry, empty while none was given - then SS follows the session
     SSprivate = []
   end
 
@@ -61,10 +58,7 @@ classdef PoleFigure < dynProp & dynOption
     antipodal
     frame               % the specimen reference frame (carried by allR)
     how2plot            % plotting convention - read only
-    % A convention belongs to a reference frame. To change how this is
-    % drawn use plot(...,'y↑→x') for one plot,
-    % plottingConvention.default(...) for the session, or move the data
-    % with x.frame = specimenFrame.rolling
+    % a convention belongs to a reference frame, see plottingConvention.default
   end
   
   methods
@@ -133,10 +127,7 @@ classdef PoleFigure < dynProp & dynOption
       for k=1:length(pf.allR)
         pf.allR{k}.frame = fr;
       end
-      % the symmetry has to move with the data. set.how2plot has kept the
-      % two in step since ADR 0003 while this setter did not, so assigning
-      % a frame left pf.SS behind on the old one. Fork rather than write
-      % through - an unset SS is the shared session singleton
+      % the symmetry has to move with the data - fork it, an unset SS is shared
       if ~isempty(fr) && (isempty(pf.SSprivate) || pf.SSprivate.frame ~= fr)
         ss = copy(pf.SS);
         ss.frame = fr;

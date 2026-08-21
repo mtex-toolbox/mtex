@@ -133,9 +133,7 @@ else % detect local or global minima
     pos = Miller(pos,sym);
   elseif ~isa(pos,'Miller')
     if isa(sF.frame,'crystalFrame')
-      % a plain function expressed in a crystal frame, e.g. the GBND -
-      % the positions come back as Miller carrying the trivial group on
-      % that frame (ADR 0003, orientation without symmetry)
+      % a plain function in a crystal frame, e.g. the GBND - return Miller
       pos = Miller(pos, crystalSymmetry(sF.frame));
     else
       pos.frame = sF.frame;

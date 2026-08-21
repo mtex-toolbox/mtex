@@ -32,11 +32,8 @@ tS = SO3TangentSpace.extract(varargin);
 
 
 % if reference point for tangential space is given - rotate
-% Note: this may not be guarded by a test like "if q_ref ~= quaternion.id".
-% For an array valued reference such a condition collapses into an all() over
-% all elements, hence a single reference that equals the identity - or, if
-% q_ref is an orientation, a symmetry element - would silently drop the
-% reference for every element.
+% Note: this may not be guarded by a test like "if q_ref ~= quaternion.id",
+% since ne is symmetry aware and collapses into an all() over the whole array
 if isRef
   if tS.isRight
     %q = times(q_ref', q,1);

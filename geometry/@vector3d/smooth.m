@@ -72,9 +72,7 @@ for j = 1:numel(sP)
   % specify contour lines explicitly
   if isscalar(contours)
     if check_option(varargin,'log')
-      % a contoured ODF routinely has a small negative minimum, and log10 of
-      % a non positive bound returns complex levels which contourf then
-      % rejects - start at the smallest positive value instead
+      % log10 of a non positive bound gives complex levels, so start at the smallest positive
       lowerBound = colorRange(1);
       if ~(lowerBound > 0), lowerBound = min(cdata(cdata > 0)); end
     else
@@ -155,10 +153,7 @@ end
 % ------------------------------------------------------------
 function h = betterContourf(ax,X,Y,data,contours,varargin)
 
-% A plotting grid may consist of several strips separated by columns of
-% NaN, since a disconnected region can not be swept by a single one. Unlike
-% surface, contourf does not skip the cells around such a column but draws
-% garbage across the gap - so draw one contour object per strip.
+% contourf draws across a column of NaN instead of skipping it, so draw one object per strip
 if ~check_option(varargin,'pcolor')
   sep = find(all(~isfinite(X),1));
   if ~isempty(sep)

@@ -98,11 +98,7 @@ err = norm(SO3F.eval(ori) - S.values) / norm(S.values);
 assert(err < 0.02,'SO3FunRBFApproximation:Dubna:SO3G',...
     'SO3FunRBFApproximation:SO3Fun:Dubna: FAILED')
 
-% seeded, because this assertion sits on its own threshold: over twelve seeds
-% the error runs 0.0494 to 0.0504, so against the original bound of 0.05 it
-% failed on five of them. The bound is 0.06 now - the point of the case is
-% that 5% noise on the values does not blow the fit up, and that survives a
-% draw of the noise either way
+% seeded, the error runs 0.0494 to 0.0504 over twelve seeds and the bound is 0.06
 rng(0)
 val = S.values + randn(size(S.values)) * 0.05 * std(S.values);
 

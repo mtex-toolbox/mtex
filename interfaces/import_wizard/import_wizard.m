@@ -106,18 +106,7 @@ classdef import_wizard < matlab.apps.AppBase
     function createComponents(app)
       leftWidth = app.leftPanelWidth();
 
-      % Come up at the size the app is actually going to have, before it
-      % has a single child: everything below is laid out once, at the
-      % final size, instead of once at a fixed default and again when the
-      % window maximizes - which is the resize the user sees.
-      %
-      % The Position is what does the work here. WindowState 'maximized'
-      % alone does not resize the figure at all (measured: the figure
-      % keeps whatever Position it was given and merely reports itself as
-      % maximized), so the old fixed 1300x700 stayed 1300x700 - larger
-      % than a 1024x768 screen. It is still set, so a window manager that
-      % does honour it puts the window in its maximized state rather than
-      % in a free floating window that happens to be screen sized.
+      % come up at the final size, so everything below is laid out only once
       app.UIFigure = uifigure('Visible', 'off', 'Position', screenArea(app));
       app.UIFigure.WindowState = 'maximized';
       app.UIFigure.Name = 'MTEX Import Wizard';
@@ -167,18 +156,11 @@ classdef import_wizard < matlab.apps.AppBase
       app.RightPanel.Layout.Row = 1;
       app.RightPanel.Layout.Column = 2;
 
-      % Put the window on screen before anything else is built. Setting
-      % Visible only marks it for display - without a flush here nothing
-      % is actually painted until the next one, which is the focus() call
-      % at the end, so the user waited out the whole construction staring
-      % at nothing.
+      % show the window before building its content
       app.UIFigure.Visible = 'on';
       drawnow
 
-      % Build the analysis UI (tabs, axes, phase table, ...) right away:
-      % the first axes and the table pay a substantial one-time renderer
-      % boot cost, which this way happens asynchronously while the user
-      % is still browsing for a file - instead of delaying the first plot.
+      % build the analysis UI while the user is still browsing for a file
       ensureAnalysisUI(app)
 
       % start with the keyboard focus on the file browser, so a file can
@@ -346,10 +328,7 @@ classdef import_wizard < matlab.apps.AppBase
       app.EulerImage.Layout.Column = 2;
     end
 
-    % Row 1: "Import to variable" + inline variable name field; row 2:
-    % "Generate import script" spanning the full width (no more type
-    % dropdown, see ExportScriptButtonPushed - this app only ever loads
-    % EBSD data)
+    % row 1: import to variable, row 2: generate import script
     function createExportButtonsPanel(app)
       buttonGrid = uigridlayout(app.LeftLayout, ...
         'ColumnWidth', {'1x', '1x'}, ...
@@ -396,12 +375,7 @@ classdef import_wizard < matlab.apps.AppBase
         'ColumnSpacing', 8, ...
         'Padding', [0 0 0 0]);
 
-      % The whole crystal symmetry of a phase is edited in this table:
-      % Symmetry and Alignment are categorical columns, so MATLAB renders
-      % them as dropdowns, and the lattice parameters are plain numeric
-      % cells. Everything an edit needs to be consistent (b following a
-      % on a tetragonal lattice, ...) is enforced in PhaseTableCellEdit,
-      % which rebuilds the crystalSymmetry from the whole row.
+      % the crystal symmetry of a phase is edited here, see PhaseTableCellEdit
       app.PhaseTable = uitable(app.RightLayout, ...
         'ColumnEditable', [true false true false false true ...
                            true true true true true true true], ...
@@ -412,28 +386,7 @@ classdef import_wizard < matlab.apps.AppBase
       app.PhaseTable.Layout.Row = 1;
       app.PhaseTable.Layout.Column = 1;
       % columns: Plot, Phase, Mineral, Pixels, %, Symmetry, a, b, c,
-      % alpha, beta, gamma, Alignment - Plot only ever holds a checkbox
-      % and Phase a small integer, so they need far less room than the
-      % default equal split; Mineral gets extra room since it carries the
-      % longest text, Alignment enough for "X||a*, Z||c". There is no
-      % separate Color column: the phase color is the background of the
-      % Phase cell, which opens the color picker on a click (see
-      % PhaseTableCellSelection) - a swatch that also says which phase it
-      % belongs to, for one column instead of two.
-      % Widths are set so nothing truncates on a real multi-phase file -
-      % eclogite.ctf is the one to check against, its triclinic phase
-      % being the only thing that puts real numbers in all six lattice
-      % columns at once.
-      %
-      % The lattice columns are sized to their real content rather than
-      % to a worst case: two decimals (see fillPhaseTable), an axis
-      % length that stays below 100 A in any EBSD phase, so "99.99", and
-      % an angle below 180 degree, so "179.99". A unit cell of 100 A or
-      % more would clip its axis lengths - not something an EBSD data set
-      % carries, and worth the space it saves the rest of the table.
-      % Pixels holds nine digits - a 999 million point scan - where eight
-      % was the old cut. Large counts stay plain integers rather than
-      % turning into 1.0000e+07, so the width is all that limits them.
+      % alpha, beta, gamma, Alignment - widths sized to their real content
       app.PhaseTable.ColumnWidth = ...
         {42, 48, 125, 70, 52, 78, 48, 48, 48, 52, 52, 52, 92};
 
@@ -467,10 +420,7 @@ classdef import_wizard < matlab.apps.AppBase
         'SelectionChangedFcn', createCallbackFcn(app, @TabSelectionChanged, true));
       app.TabGroup.Layout.Row = 2;
 
-      % The tabs are created directly in their display order - the tab
-      % group is never reordered through its Children property, since
-      % that makes the renderer rebuild the whole group, which is slow
-      % and briefly blanks the currently visible plot.
+      % create the tabs in display order, reordering them is slow
 
       % --- map tabs: the phase map now, one tab per property at import ---
       app.MapTabs = createLazyPlotTab(app, 'Phase Map', app.TabColors.Maps);
@@ -485,20 +435,14 @@ classdef import_wizard < matlab.apps.AppBase
       % --- Pole Figures tab: parallel axes, a Miller field above each -----
       app.PFTab = uitab(app.TabGroup, 'Title', 'Pole Figures', ...
         'ForegroundColor', app.TabColors.PF);
-      % three rows: Miller fields, pole figure axes, filler. The axes row
-      % is capped to roughly the column width by PFTabSizeChanged so the
-      % square pole figures stay right below their Miller fields instead
-      % of floating in the middle of a tall axes.
+      % three rows: Miller fields, pole figure axes, filler
       gPF = uigridlayout(app.PFTab, ...
         'ColumnWidth', {'1x','1x','1x'}, 'RowHeight', {26, '1x', 1}, ...
         'Padding', [6 6 6 6], 'RowSpacing', 2, 'ColumnSpacing', 6);
       app.PFGrid = gPF;
       defaults = {'(100)','(010)','(001)'};
       for i = 1:3
-        % the Miller field sits centered right above its pole figure; the
-        % pencil marks it as editable - cheap uicontrols, built eagerly.
-        % The pole figure axes themselves are deferred, see
-        % ensureTabAxesBuilt
+        % the Miller field sits centered above its pole figure
         gField = uigridlayout(gPF, ...
           'ColumnWidth', {'1x', 22, 110, '1x'}, 'RowHeight', {'1x'}, ...
           'Padding', [0 0 0 0], 'ColumnSpacing', 4);
@@ -534,9 +478,7 @@ classdef import_wizard < matlab.apps.AppBase
       % so this tab is just the axes - built lazily, see ensureTabAxesBuilt.
       app.ImagesTab = uitab(app.TabGroup, 'Title', 'Images', ...
         'ForegroundColor', app.TabColors.Images);
-      % the old ImagesAxes (if any) was a child of the just-deleted
-      % previous ImagesTab and is no longer valid - clear the handle so
-      % ensureTabAxesBuilt correctly sees this as "not yet built" again
+      % the old axes died with the previous tab, clear the handle
       app.ImagesAxes = matlab.ui.control.UIAxes.empty;
     end
 
@@ -598,9 +540,7 @@ classdef import_wizard < matlab.apps.AppBase
           app.PFAxes(i) = uiaxes(app.PFGrid);
           app.PFAxes(i).Layout.Row = 2; app.PFAxes(i).Layout.Column = i;
         end
-        % nocallbacks, since this runs inside a selection callback and the
-        % queued click that follows must not re-enter the plotting half
-        % way through
+        % nocallbacks, the queued click must not re-enter the plotting
         drawnow('nocallbacks')
       elseif ~isempty(app.ImagesTab) && tab == app.ImagesTab && isempty(app.ImagesAxes)
         app.ImagesAxes = createTabAxes(app, app.ImagesTab);
@@ -667,19 +607,11 @@ classdef import_wizard < matlab.apps.AppBase
             ensureTabAxesBuilt(app, app.IPFTabs(3))
             ensureTabAxesBuilt(app, app.MapTabs(1))
 
-            % IPF Z is where the import puts the user anyway, and making
-            % the tab group change its selection is not free - do it here
-            % rather than on the import path
+            % select IPF Z here rather than on the import path
             app.TabGroup.SelectedTab = app.IPFTabs(3);
 
           case 2
-            % draw a map once, so the plotting stack below EBSD/plot is
-            % loaded and its canvas is up. Four pixels of nothing in
-            % particular, drawn with an explicit color matrix exactly the
-            % way plotIPF does it, and wiped again right after -
-            % deliberately not through applyCurrentCoordinateState, which
-            % would set the session's plotting convention behind the
-            % user's back.
+            % draw a dummy map once, to load and warm up the plotting stack
             ax = app.IPFAxes(3);
             ebsdWarm = EBSD(vector3d([0 1 0 1], [0 0 1 1], zeros(1,4)), ...
               rotation.id(4), ones(4,1), {crystalSymmetry('m-3m')}, struct());
@@ -854,12 +786,7 @@ classdef import_wizard < matlab.apps.AppBase
           app.ImportStatusLabel.BackgroundColor = [0.90 0.94 0.98]; % light blue - hint
       end
 
-      % force the label to actually repaint before a blocking load - but
-      % only once there is a window to repaint. The first call comes from
-      % createFileBrowser, while the figure is still invisible and half
-      % built, where the flush has nothing to show and merely pulls the
-      % renderer's deferred work forward into the constructor: 0.28s of a
-      % 1.01s construction, measured.
+      % repaint the label before a blocking load, but only once there is a window
       if strcmp(app.UIFigure.Visible, 'on'), drawnow, end
     end
 
@@ -973,9 +900,7 @@ classdef import_wizard < matlab.apps.AppBase
 
       markLoadedDataSet(app, ebsdData)
 
-      % --- paint first: everything up to the flush below is the minimum
-      % required for the initial IPF Z view; the remaining setup happens
-      % afterwards, while the user is already looking at the map
+      % --- paint first: the minimum required for the initial IPF Z view
       invalidateAllSigs(app)
       syncCoordinateControls(app)  % plotIPF reads the coordinate dropdowns
       fillPhaseTable(app)          % ... and the phase selection
@@ -1085,16 +1010,10 @@ classdef import_wizard < matlab.apps.AppBase
         elseif (isnumeric(value) || islogical(value)) && isscalar(value)
           txt = num2str(value);
         elseif (isnumeric(value) || islogical(value)) && isvector(value) && numel(value) <= 10
-          % small enough to just show the values - transpose a column
-          % vector to a row first so it reads left-to-right like the rest
-          % of the preview instead of stacking vertically
+          % small enough to show the values, as a row
           txt = num2str(value(:)');
         elseif isnumeric(value) || islogical(value)
-          % sprintf (not '[...]' concatenation) - mixing char and string
-          % scalars inside '[...]' silently promotes everything to a
-          % string ARRAY (one element per operand) instead of
-          % concatenating into a single string, which uitreenode's Text
-          % then rejects
+          % sprintf, since '[...]' would promote the char scalars to a string array
           txt = sprintf('[%s %s]', strjoin(string(size(value)),'x'), class(value));
         else
           txt = class(value);
@@ -1125,32 +1044,13 @@ classdef import_wizard < matlab.apps.AppBase
       csList = app.ebsd.CSList;
       numPhases = phaseCounts(app);
 
-      % Symmetry and Alignment are categorical so that MATLAB draws them
-      % as dropdowns. Their category sets have to cover every value any
-      % row could ever take, since an edit can only pick an existing
-      % category - hence the full point group list and the full setup
-      % list up front, plus 'None' / '-' for a notIndexed row, which has
-      % nothing to report, and '(custom)' for a frame no offered setup
-      % reproduces.
+      % Symmetry and Alignment are categorical, so they are drawn as dropdowns -
+      % the categories have to cover every value a row could take
       pgCats = [{'None'}, {symmetry.pointGroups.Inter}];
       alCats = [{'-'}, {'(custom)'}, alignmentSetups(app)];
 
-      % Percent and the six lattice parameters are text, not numbers, and
-      % that is the only way to print them to two decimals: uitable
-      % formats a numeric column with MATLAB's short format - four
-      % decimals for anything that is not an integer - and ColumnFormat,
-      % which could ask for something else, is ignored outright when Data
-      % is a table. Rounding the stored numbers does not help either,
-      % since 18.32 still prints as 18.3200.
-      %
-      % Costing precision is not a concern: rebuildPhaseSymmetry takes
-      % the lattice from the crystalSymmetry and only the one cell the
-      % user typed in from the table, so what is shown never feeds back.
-      % Phase is int32, not uint8: it shows the phase numbers the file
-      % itself uses, and those are not always non-negative. An .ang
-      % numbers its indexed phases from 0 and leaves -1 for the not
-      % indexed one - ferrite.ang has phaseMap [-1 0] - which uint8
-      % saturated to [0 0], printing phase 0 twice.
+      % percent and the lattice parameters are text, the only way to print
+      % them to two decimals; Phase is int32, since phaseMap may be negative
       phaseTable = table('size',[0 13],...
         'VariableTypes',{'logical','int32','string','double','string', ...
           'categorical','string','string','string','string','string', ...
@@ -1190,17 +1090,13 @@ classdef import_wizard < matlab.apps.AppBase
       [~,maxPhase] = max(numPhases);
       phaseTable.Plot(maxPhase) = true;
 
-      % assigning row by row keeps only the categories those rows happen
-      % to use - two of forty eight on a typical file - which left the
-      % dropdowns offering just the point groups already in the data
+      % row by row assignment keeps only the categories those rows use
       phaseTable.Symmetry  = setcats(phaseTable.Symmetry, pgCats);
       phaseTable.Alignment = setcats(phaseTable.Alignment, alCats);
 
       app.PhaseTable.Data = phaseTable;
 
-      % No pencil markers on the editable headers here: all but three of
-      % these columns are editable, so marking them says nothing - it is
-      % the handful that are read only (Pixels, %) that stand out.
+      % mark the read only columns, not the editable ones
       colNames = phaseTable.Properties.VariableNames;
       colNames{5}  = '%';   % 'Percent' is not a valid display header choice
       colNames{10} = char(945);
@@ -1217,19 +1113,11 @@ classdef import_wizard < matlab.apps.AppBase
       % lattice changes, because which cells are fixed changes with it
 
       removeStyle(app.PhaseTable)
-      % Right-align every column, headers included. A column style is the
-      % only way to reach a header label at all: addStyle has no header
-      % target (only table/row/column/cell) and a uifigure uitable prints
-      % HTML in ColumnName literally rather than rendering it. The header
-      % follows its column's HorizontalAlignment, so aligning the cells
-      % aligns the labels with them.
+      % right align every column - the header follows its column
       addStyle(app.PhaseTable, uistyle('HorizontalAlignment', 'right'), ...
         'column', 1:width(app.PhaseTable.Data))
 
-      % uitable can only enable or disable a whole column, so a cell the
-      % lattice fixes is greyed instead - typing in one anyway is not an
-      % error, PhaseTableCellEdit just snaps it back onto the value the
-      % lattice forces (see rebuildPhaseSymmetry)
+      % grey out the cells the lattice fixes, uitable disables only whole columns
       fixed = uistyle('BackgroundColor', [0.94 0.94 0.94], ...
         'FontColor', [0.45 0.45 0.45]);
 
@@ -1288,10 +1176,7 @@ classdef import_wizard < matlab.apps.AppBase
     function plotMaps(app, mapIdx, force)
       applyCurrentCoordinateState(app)
 
-      % the maps always show the full data set - the phase selection in
-      % the phase table only applies to the IPF maps and the pole figures.
-      % The drawn content neither depends on the map coordinate system -
-      % when only that changed, realigning the view is all that is needed.
+      % the maps always show the full data set in the current map coordinates
       sel = app.MapNames{mapIdx};
       sig = strjoin(["maps", string(sel)], '|');
       if ~force && numel(app.LastSig.Maps) >= mapIdx && ...
@@ -1335,23 +1220,10 @@ classdef import_wizard < matlab.apps.AppBase
 
       direction = directionVector(app, dirLabels{ipfIdx});
 
-      % compute the color of every pixel first, then plot the entire map
-      % in a single call - this avoids the expensive subsetting of the
-      % EBSD data into phases (EBSD/subsref copies all property arrays).
-      % Pixels of unselected phases keep NaN colors and are not drawn.
+      % color every pixel first and plot the map in one call, subsetting is expensive
       color = NaN(length(app.ebsd), 3);
 
-      % Not indexed regions carry no orientation, so an IPF map has
-      % nothing to color them with and normally leaves them undrawn. When
-      % one has been given a color of its own though, use it as the
-      % background here too - that is the whole point of setting it. Only
-      % a color that was actually chosen counts: white is what an unset
-      % phase color falls back to (see fillPhaseTable).
-      %
-      % Deliberately independent of the Plot checkboxes, which select
-      % which *indexed* phase is colored by orientation - a not indexed
-      % phase is never among them, so keying this off them would mean the
-      % color never showed.
+      % color a not indexed phase with its own color, if one was chosen
       for phaseId = 1:numel(app.ebsd.CSList)
         if isa(app.ebsd.CSList(phaseId), 'symmetry'), continue; end
         rgb = app.Color{phaseId};
@@ -1399,9 +1271,7 @@ classdef import_wizard < matlab.apps.AppBase
       enabledPhaseIds = find(app.PhaseTable.Data.Plot);
       applyCurrentCoordinateState(app)
 
-      % spherical axes cannot change their view after plotting, so a map
-      % coordinate change requires a replot - but only of the (cheap)
-      % pole figures, the cached ODF is reused
+      % spherical axes cannot change their view, so replot the pole figures
       millers = string({app.PFMillerField.Value});
       sig = strjoin(["pf", strjoin(millers,';'), phaseSig(app,enabledPhaseIds), ...
         eulerSig(app), string(app.MapCoordinatesDropDown.ValueIndex)], '|');
@@ -1418,11 +1288,7 @@ classdef import_wizard < matlab.apps.AppBase
       end
       ebsdPhase = app.ebsd(app.ebsd.phaseId == pid);
 
-      % the ODF only depends on the phase and the Euler correction, not on
-      % the Miller indices or the map view, so compute it once and cache
-      % it. When only the Euler correction changed the orientations were
-      % merely rotated, so the cached ODF is rotated along instead of
-      % being recomputed.
+      % cache the ODF per phase, and rotate it when only the Euler correction changed
       corr = ebsdPhase.EulerCorrection;
       odfKey = "odf|" + string(pid);
       if odfKey ~= app.PFODFKey || isempty(app.PFODF)
@@ -1445,9 +1311,7 @@ classdef import_wizard < matlab.apps.AppBase
         catch
           title(ax, 'invalid Miller'); continue
         end
-        % pass the current plotting convention explicitly - the spherical
-        % projection would otherwise fall back to odf.SS.how2plot, which
-        % does not follow the map coordinate dropdown
+        % pass the plotting convention explicitly, odf.SS.how2plot is not it
         plotPDF(odf, h, 'parent', ax, 'contourf','upper','noTitle',...
           'fontSize', 20,'TL','upper', app.ebsd.how2plot);
 
@@ -1895,9 +1759,7 @@ classdef import_wizard < matlab.apps.AppBase
       cs = app.ebsd.CSList(row);
       data = app.PhaseTable.Data;
 
-      % a notIndexed phase has no lattice - and turning one into an
-      % indexed phase (or back) is a different operation than editing a
-      % symmetry, so put the row back as it was
+      % a notIndexed phase has no lattice, put the row back as it was
       pg = char(data.Symmetry(row));
       if ~isa(cs, 'crystalSymmetry') || strcmp(pg, 'None')
         refreshPhaseRow(app, row); return
@@ -1914,12 +1776,7 @@ classdef import_wizard < matlab.apps.AppBase
       if col == 13 && ~isSetup, refreshPhaseRow(app, row); return, end
 
       % --- snap whatever the (possibly new) lattice fixes ---------------
-      % The lattice comes from the crystalSymmetry, and only the single
-      % cell the user typed in comes from the table. Reading the whole
-      % row back instead would quietly round every parameter to the two
-      % decimals the table prints (see fillPhaseTable) on every unrelated
-      % edit - change the point group and the axis lengths would lose
-      % their last digits with it.
+      % take the lattice from the symmetry and only the edited cell from the table
       abc = cs.abc;
       abg = cs.abg / degree;
 
@@ -1933,9 +1790,7 @@ classdef import_wizard < matlab.apps.AppBase
           refreshPhaseRow(app, row); return
         end
         if col <= 9
-          % a, and every length tied to it, take the value of the edited
-          % cell when that cell is one of them - so typing 4 into b on a
-          % cubic phase means a = b = c = 4, not "b rejected"
+          % every length tied to a takes the value of the edited cell
           driver = col - 6;
           abc(driver) = typed;
         else
@@ -1977,9 +1832,7 @@ classdef import_wizard < matlab.apps.AppBase
 
       app.ebsd.CSList(row) = cs;
 
-      % the precomputed IPF color key and the cached pole figure ODF both
-      % carry the previous symmetry - the ODF cache is keyed by phase id
-      % alone, so it would happily be reused for the new lattice
+      % drop the caches that carry the previous symmetry
       if numel(app.IPFKeys) >= row, app.IPFKeys{row} = []; end
       app.PFODF = [];
       app.PFODFKey = "";
@@ -2152,9 +2005,7 @@ classdef import_wizard < matlab.apps.AppBase
         isTri || isMono || lat == latticeType.orthorhombic, ...
         ~(lat == latticeType.cubic || lat == latticeType.icosahedral)];
 
-      % only a triclinic lattice leaves all three angles free; a
-      % monoclinic one leaves the angle about its symmetry axis - the
-      % very index calcAxis exempts from its 90 degree assertion
+      % triclinic leaves all three angles free, monoclinic the one about its axis
       free.ang = false(1,3);
       if isTri
         free.ang(:) = true;
@@ -2162,10 +2013,7 @@ classdef import_wizard < matlab.apps.AppBase
         free.ang(floor(double(id)/3)) = true;
       end
 
-      % note there is deliberately no free.align: every lattice has at
-      % least six distinct frames among the offered setups (a and a*
-      % coincide on an orthogonal one, which halves twelve to six, but
-      % does not reduce it to one), so the Align cell is never fixed
+      % no free.align - every lattice has at least six distinct frames
       free.lattice = lat;
     end
 
@@ -2286,10 +2134,7 @@ classdef import_wizard < matlab.apps.AppBase
       sameFile = strcmp(filePath, char(app.PreviewFilePath));
       app.PreviewFilePath = string(filePath);
 
-      % already the actually imported file - show its real info instead
-      % of a redundant, more limited "preview" of the same data. Its list
-      % is up to date as well, so it is left alone (rebuilding it would
-      % drop the selection back onto the first row).
+      % this is the imported file - show its real info instead of a preview
       if strcmp(filePath, char(app.LoadedFilePath))
         updateCurrentDataInfo(app, app.ebsd, filePath, false)
         if ~sameFile, markLoadedDataSet(app, app.ebsd), end
@@ -2297,12 +2142,7 @@ classdef import_wizard < matlab.apps.AppBase
       end
 
       try
-        % 'silent': an HDF5 import prints a configuration banner naming
-        % the manufacturer and the data set it picked. That belongs to a
-        % deliberate import, not to this - which fires on every arrow key
-        % move through the file tree, and filled the command window with
-        % one banner per file browsed past. The wizard shows the same
-        % information in its own data set list.
+        % 'silent': do not print an import banner for every file browsed past
         ebsdPreview = EBSD.load(filePath, 'wizard', 'headerOnly', 'silent');
       catch
         % not a recognized/loadable format - leave the table as is
@@ -2375,9 +2215,7 @@ classdef import_wizard < matlab.apps.AppBase
 
       switch col
         case 1
-          % the phase selection only affects the IPF maps and the pole
-          % figures - their signatures include it, so a plain update
-          % suffices and the (phase independent) maps stay untouched
+          % the phase selection is part of the IPF and pole figure signatures
           updatePlot(app)
 
         case 3
@@ -2430,9 +2268,7 @@ classdef import_wizard < matlab.apps.AppBase
       catch
       end
 
-      % no invalidation: the Euler correction is kept fixed, so map and
-      % IPF content is unchanged - the plotters only realign the view via
-      % setView; only the pole figures replot (with the cached ODF)
+      % no invalidation, the plotters only realign the view
       updatePlot(app)
     end
 
@@ -2443,9 +2279,7 @@ classdef import_wizard < matlab.apps.AppBase
 
       setCoordinateImage(app, app.EulerImage, app.EulerCoordinatesDropDown.ValueIndex)
 
-      % IPF maps and pole figures pick up the new Euler correction through
-      % their signatures (the cached ODF is rotated, not recomputed);
-      % phase and property maps are unaffected
+      % IPF maps and pole figures pick up the new Euler correction by signature
       updatePlot(app)
     end
 
@@ -2515,28 +2349,16 @@ classdef import_wizard < matlab.apps.AppBase
 
       %% 3. Dynamic Replacements based on App Data
       
-      % Crystal Symmetry - one entry per phase, joined into a phaseItem
-      % array literal. crystalSymmetry and notIndexed share the common
-      % phaseItem base class, so they concatenate directly with '[ ]' -
-      % no cell array needed. (The previous version joined the entries
-      % without ever wrapping them in braces at all, producing e.g.
-      % "CS = crystalSymmetry(...), 'notIndexed', ;" - not valid MATLAB.)
+      % crystal symmetry - one entry per phase, joined into a phaseItem array
       csLines = {};
       for k = 1:numel(app.ebsd.CSList)
         cs = app.ebsd.CSList(k);
 
-        % Check if the phase is "notIndexed" by class, not by mineral
-        % name - the mineral name is user-renameable (see item 25 below)
-        % and must not be what decides which branch runs.
+        % decide by class, the mineral name is renameable
         isNotIndexed = ischar(cs) || isa(cs, 'notIndexed');
 
         if isNotIndexed
-          % carry over the color set for this phase in the wizard's phase
-          % table, and the mineral name only if it was actually renamed
-          % away from the default. notIndexed(name,color) is
-          % positional-only (see geometry/notIndexed.m), so a customized
-          % color still needs some name written out in front of it - only
-          % the fully-default case can drop the argument list entirely.
+          % notIndexed(name,color) is positional, so a color needs a name in front
           hasColor = isobject(cs) && isprop(cs, 'color') && numel(cs.color) == 3 && ~any(isnan(cs.color));
           if isobject(cs) && isprop(cs,'mineral') && ~strcmpi(char(cs.mineral),'notIndexed')
             nameArg = char(cs.mineral);
@@ -2558,12 +2380,7 @@ classdef import_wizard < matlab.apps.AppBase
             abc = [norm(cs.aAxis), norm(cs.bAxis), norm(cs.cAxis)];
             minName = char(cs.mineral);
 
-            % cubic/orthorhombic/trigonal/tetragonal/hexagonal have their
-            % angles implied by the lattice type (crystalSymmetry defaults
-            % to lattice.defaultAngles when the angle argument is
-            % omitted, see geometry/latticeType.m) - only monoclinic and
-            % triclinic have angles that actually vary and must be
-            % written out explicitly
+            % only monoclinic and triclinic have angles that are not implied
             impliedAngles = ismember(cs.lattice, [latticeType.cubic, ...
               latticeType.orthorhombic, latticeType.trigonal, ...
               latticeType.tetragonal, latticeType.hexagonal]);
@@ -2618,14 +2435,8 @@ classdef import_wizard < matlab.apps.AppBase
       replaceMarkup('{path to files}', sprintf('''%s''', safePath));
       replaceMarkup('{file names}', sprintf('[pname filesep ''%s'']', safeFile));
 
-      % Options (the interface/file format is auto-detected from the file
-      % extension by EBSD.load - forcing 'wizard' here, as before, made
-      % EBSD.load's own dispatcher fail to recognize the format and fall
-      % through to the generic loader instead of e.g. loadEBSD_ctf).
-      % What does have to be written out is which data set of a multi map
-      % file was picked and whether the recorded instead of the post
-      % processed data was taken - without them the script would silently
-      % import something else than the wizard showed.
+      % options - the format is auto detected, but the data set and the
+      % recorded / post processed choice have to be written out
       optList = {};
       entry = selectedDataSet(app);
       if ~isempty(entry)
@@ -2635,14 +2446,7 @@ classdef import_wizard < matlab.apps.AppBase
       end
       replaceMarkup('{options}', strjoin(optList, ','), ',{options}');
 
-      % Euler Correction - passed as the EulerCorrection option of
-      % EBSD.load itself (see loadEBSDtemplate.m), not applied via a
-      % separate post-load rotate() call: EulerCorrection is a proper
-      % EBSD.load option (see EBSD/load.m and how mtexdata.m's built-in
-      % loaders use it), and rotate() after the fact is a different,
-      % non-equivalent mechanism. Written as rotation.map(...) so the
-      % script makes explicit which map axes get rotated onto which
-      % Euler axes, rather than an opaque set of Euler angles.
+      % Euler correction - an EBSD.load option, written as rotation.map
       eulerIdx = app.EulerCoordinatesDropDown.ValueIndex;
       eulerObj = app.CoordinateSystems.how2plot(eulerIdx);
       replaceMarkup('{eulerCorrection}', sprintf('rotation.map(%s,%s,%s,%s)', ...

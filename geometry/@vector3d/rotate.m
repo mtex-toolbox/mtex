@@ -71,9 +71,7 @@ if isa(q,'orientation')
     % convert to vector3d
     if isa(v,"Miller"), v = vector3d(v); end
 
-    % rotating with an orientation changes the reference frame: the
-    % result adopts the specimen frame; rotating with a plain rotation
-    % keeps it
+    % an orientation takes the result into the specimen frame, a rotation keeps it
     v.frame = q.SS.frame;
 
   end

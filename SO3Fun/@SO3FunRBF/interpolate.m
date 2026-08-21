@@ -99,9 +99,7 @@ if isa(nodes,'rotation') && check_option(varargin,'exact')
   SO3G = nodes;
 end
 
-% the values may arrive shaped like the evaluation grid (SO3Fun/eval returns
-% size(nodes) for a scalar function, e.g. 3 x 26 for an equispacedSO3Grid) -
-% flatten that to one column per function component first
+% the values may arrive shaped like the grid, so flatten to one column per component
 if ~isempty(y), y = reshape(y,numel(nodes),[]); end
 
 % vector valued case

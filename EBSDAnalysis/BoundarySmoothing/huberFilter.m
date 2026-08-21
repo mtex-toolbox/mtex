@@ -94,9 +94,7 @@ methods
 
     isFixed = isFixed | ~isfinite(sum(V,2));
 
-    % A vertex turning by theta sits about h*theta/2 off the line through its
-    % neighbours, which is what |L V| measures - so this is the threshold
-    % expressed in the same units as the residual.
+    % a vertex turning by theta sits about h*theta/2 off the line, as |L V| measures
     delta = h * F.threshold / 2;
 
     w = ones(nV,1);

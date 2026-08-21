@@ -46,11 +46,7 @@ zipName = [rDir,'.zip'];
 unix(['rm -rf ',rDir]);
 unix(['cp -R ' mtex_path ' ' rDir]);
 
-% cp -R copies the untracked files too, so anything a working session leaves
-% lying around is staged along with the tree. CLAUDE.local.md holds the
-% developer's own MATLAB install paths, and a stray save at the repo root
-% (ebsd.mat, Orientations.mat) had been shipping as *.mat - both are ignored
-% by git, which is exactly why neither showed up as a dirty tree.
+% cp -R copies the untracked files too, so drop what a working session leaves behind
 rmList = {'doc/makeDoc/tmp', 'myToken.txt', 'data/*.mat' '.git*' ...
   'data/EBSD/*' '.mailmap' 'gitTricks.md' 'makeRelease.m' ...
   'mex/*.mex*' '.claude' 'docs/agents/matlab-bridge/.venv' ...
@@ -59,15 +55,8 @@ for rd = rmList
   unix(['rm -rf ' rDir filesep char(rd)]); 
 end
 
-% The built HTML documentation does not ship any more - it was 143 of the 195
-% MB of the 7.0.0 zip, and mtexShowDoc looks a page that is not installed up
-% at mtex-toolbox.github.io, so the links in the command window keep working
-% without it. Used to be stripped from beta releases only.
-%
-% The empty helpsearch-v3 has to stay: startup_mtex calls builddocsearchdb on
-% doc/html whenever no helpsearch* folder is found there, so removing the
-% folder outright would run - and fail - on every start. MATLAB's zip keeps an
-% empty directory, so the stub survives into the archive.
+% the built HTML documentation does not ship, mtexShowDoc falls back online -
+% the empty helpsearch-v3 has to stay, startup_mtex builds it whenever it is gone
 unix(['rm -rf ' rDir filesep 'doc/html']);
 mkdir([rDir filesep 'doc/html/helpsearch-v3/']);
 
@@ -85,11 +74,7 @@ disp('compressing release ...')
 zip(zipName,rDir);
 
 
-% gh stores its token in the system keyring, so a login normally already
-% exists and running one on every release was pointless. Only its absence
-% needs an interactive terminal - the one thing that cannot be done from
-% MATLAB - so ask for it rather than depending on a particular terminal
-% emulator being installed and behaving.
+% gh keeps its token in the keyring, so only its absence needs a terminal
 disp('checking the GitHub authentication ...')
 if system('gh auth status > /dev/null 2>&1') ~= 0
   error('makeRelease:notAuthenticated', ...
@@ -97,22 +82,8 @@ if system('gh auth status > /dev/null 2>&1') ~= 0
     'in a terminal and start makeRelease again.']);
 end
 
-% The release is created as a DRAFT and stays invisible until the build mex
-% workflow has attached the binaries for all four platforms and published it.
-% That ordering matters: the zip ships no mex files (see rmList above), so
-% check_mex downloads them from the release assets on first start - and anyone
-% installing between "release visible" and "binaries attached" would get a
-% failed download and be told to compile them by hand.
-% The title and the notes have to be given here, not because the defaults are
-% wrong but because gh asks for anything it was not told. MATLAB's system
-% hands the child a terminal, so gh believes it can prompt - and then waits
-% forever for an answer that cannot be typed, with MATLAB hanging on it. That
-% is what the terminator window used to be for.
-%
-% --generate-notes fills the notes from the commits since the previous
-% release; the draft can be edited on GitHub before the workflow publishes it.
-% --verify-tag stops here if the tag never reached the remote, rather than
-% letting the workflow dispatch below fail with a less obvious message.
+% create a draft, which stays invisible until the build mex workflow attached
+% the binaries - title and notes are given, since gh prompts for what it lacks
 doRelease = ['gh release create ' ver ' ' zipName ...
   ' --draft --verify-tag --generate-notes --title "' ver '"'];
 if any(strfind(ver,'beta')), doRelease = [doRelease,' -p']; end
@@ -120,12 +91,7 @@ if any(strfind(ver,'beta')), doRelease = [doRelease,' -p']; end
 disp('uploading release draft to GitHub ...')
 sh(doRelease,'creating the release draft');
 
-% Hand over to CI, which builds the mex files for every platform, uploads them
-% onto this draft and only then publishes it. Dispatched explicitly rather
-% than triggered by the release, because a draft fires no release event.
-%
-% This needs the tag to be on the remote already, which the git push above
-% did - if that silently failed, this is where it surfaces.
+% hand over to CI explicitly, a draft fires no release event
 buildMex = ['gh workflow run build-mex.yml --ref ' ver ...
   ' -f release_tag=' ver];
 
@@ -176,18 +142,12 @@ function sh(cmd,what)
 
 disp(['  ' cmd])
 
-% gh paints its output with ANSI escapes and asks the terminal for its
-% background colour to pick a theme; in the command window both arrive as
-% unreadable noise around the text that matters.
+% gh paints its output with ANSI escapes, which the command window cannot show
 oldNoColor = getenv('NO_COLOR');
 setenv('NO_COLOR','1');
 restoreNoColor = onCleanup(@() setenv('NO_COLOR',oldNoColor)); %#ok<NASGU>
 
-% Close stdin. MATLAB's system leaves a terminal attached to the child, so a
-% command that wants to ask something believes it can - and MATLAB then hangs
-% on a question nobody can answer. With stdin at end of file the question
-% fails instead, which is recoverable. Every command here is meant to be
-% non-interactive, so there is nothing to lose.
+% close stdin, so that a command asking a question fails instead of hanging
 if system([cmd ' < /dev/null']) ~= 0
   error('makeRelease:commandFailed','%s failed:\n\n  %s\n',what,cmd);
 end

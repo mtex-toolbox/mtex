@@ -266,9 +266,7 @@ n  = d(7)
 %}
 
 
-% named fields decodable at fixed byte offsets; these offsets are
-% reverse-engineered and may not hold for every .osc file version, so
-% failure to decode any of them is not fatal
+% named fields at reverse-engineered byte offsets, so a failure to decode is not fatal
 header = struct();
 try
   breaks    = find(data == 0);
@@ -303,9 +301,7 @@ headerStop   = strfind(data,headerStop)-1;
 
 headerBytes = data(headerStart+8:headerStop);
 
-% everything else in the header cannot be generically interpreted (no
-% self-describing labels like .ang/.ctf); keep the raw bytes so nothing
-% is silently discarded
+% keep the raw bytes, the rest of the header is not self describing
 header.rawBytes = headerBytes;
 
 osc_phases = file2cell([mtex_path filesep 'interfaces' filesep 'osc_phases.txt']);
@@ -339,9 +335,7 @@ for k = 1:nPhase
   axAngle   = double(typecast(cellBytes(13:end),'single'))*degree;
   numHKL    = typecast(phaseBytes(285:288),'int32');
 
-  % the crystal reference frame follows the EDAX convention - same as for
-  % .ang files. Depending on the version this field holds either the TSL
-  % symmetry code or the point group id, TSL2pointGroup takes both
+  % the crystal reference frame follows the EDAX convention, as for .ang files
   symCode = typecast(phaseBytes(257:260),'int32');
   laueGroup = TSL2pointGroup(symCode,symCode);
 

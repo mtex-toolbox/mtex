@@ -40,9 +40,7 @@ lines = file2cell(fname);
 head = regexp(lines,'^\s*([BbKkRr])\s+(\d+)\s*$','tokens','once');
 isHead = find(~cellfun(@isempty,head));
 
-% VPSC prescribes exactly three lines ahead of the first convention line -
-% requiring that keeps this interface from claiming files that merely happen
-% to contain such a line somewhere
+% VPSC prescribes exactly three lines ahead of the first convention line
 assert(~isempty(isHead) && isHead(1) == 4,...
   'Interface VPSC does not fit file format!');
 
@@ -74,10 +72,7 @@ for k = 1:numel(isHead)
 
   odf{k} = calcDensity(ori,'weights',weights,varargin{:});
 
-  % the three lines above the convention line: the strain, and the length
-  % and the orientation of the phase ellipsoid axes. They are free format -
-  % a weight file written by hand carries comments here instead - so read
-  % what is there and report NaN for the rest
+  % the strain and the phase ellipsoid axes - free format, so report NaN for what is missing
   strain = regexp(lines{h-3},'STRAIN\s*=?\s*([-+.0-9eEdD]+)','tokens','once');
   if isempty(strain)
     odf{k}.opt.strain = NaN;

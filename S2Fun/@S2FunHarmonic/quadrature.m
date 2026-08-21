@@ -43,10 +43,7 @@ end
 % ---------- (2) Get nodes, values and weights in case of S2Fun ----------
 
 if isa(f,'function_handle')
-  % only hand over a symmetry that was actually given - extractSym would
-  % fabricate a default specimenSymmetry, whose session frame would then
-  % shadow a frame passed by the caller (S2Fun.smiley.^2 used to change
-  % its plotting convention this way)
+  % only hand over a symmetry that was given, extractSym would fabricate one
   f = S2FunHandle(f,getClass(varargin,'symmetry'));
 end
 

@@ -152,9 +152,7 @@ set(dcm,'UIContextMenu',hcmenu)
 
 set(dcm,'UpdateFcn',@tooltip)
 
-% this function hands out handles to its nested functions as figure
-% callbacks, which keeps its workspace - and with it the guard - alive for
-% as long as the figure lives, so release it explicitly
+% the nested function handles keep this workspace alive, so release the guard
 clear hG
 
 

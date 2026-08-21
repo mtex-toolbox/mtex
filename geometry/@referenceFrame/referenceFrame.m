@@ -30,21 +30,14 @@ classdef referenceFrame < matlab.mixin.Copyable
 
   properties
     name = ''      % identity of the frame
-    % basis vectors in canonical coordinates; stored empty for the
-    % canonical identity basis and resolved lazily in get.basis - a
-    % vector3d default here would recurse through vector3d's own class
-    % default how2plot -> plottingConvention.default -> specimenSymmetry
-    % -> specimenFrame while the vector3d class is still initializing
+    % basis vectors in canonical coordinates, empty = identity, resolved in get.basis
     basis = []
     axesNames = {'X','Y','Z'}  % names of the three basis axes
     how2plot = []  % default plottingConvention (a value)
   end
 
   properties (Dependent = true)
-    % the default pole figure annotation of this frame - a function
-    % handle drawing the axes of the frame with their names, e.g. RD,
-    % TD, ND for the rolling frame; consumed via the pfAnnotations
-    % preference, see mtex_settings and sphericalPlot/plotAxesLabels
+    % the default pole figure annotation of this frame, e.g. RD, TD, ND
     pfAnnotations
   end
 
@@ -183,9 +176,7 @@ classdef referenceFrame < matlab.mixin.Copyable
 
       if isa(fr,'crystalFrame')
         c = char(fr);
-        % an unnamed crystal frame - a symmetry built without a mineral -
-        % has no identity to show, and the bare class name says nothing to
-        % a reader. Name the coordinate system instead
+        % an unnamed crystal frame has no identity, so name the coordinate system
         if isempty(fr.name), c = 'crystal'; end
       else
         if ~isa(fr,'referenceFrame')

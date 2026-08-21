@@ -49,10 +49,7 @@ d(:,4) = w./ sum(w);
 fid = efopen(filename,'w');
 
 % header
-% VPSC prescribes four header lines. The first three are free format - a
-% VPSC output file carries the strain and the phase ellipsoid there, an
-% exported texture has neither - while the fourth has to name the angle
-% convention and the total number of grains in the phase
+% VPSC prescribes four lines, the fourth naming the convention and the grain count
 fprintf(fid,'texture exported by MTEX\n\n\n%s %d\n',letter,length(ori));
 
 fprintf(fid,'%7.2f %7.2f %7.2f %11.7f\n',d');

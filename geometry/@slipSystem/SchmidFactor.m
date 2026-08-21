@@ -98,9 +98,7 @@ function checkFrame(n,ref,refName)
 % own frame or its reference system, a vector3d only if it was given one
 refFrame = ref.frame;
 
-% a frame free direction states nothing about its reference frame - take it
-% at face value, since demanding a frame would reject the most common way
-% of writing a tension direction, e.g. plotS2Grid or vector3d.Z
+% a frame free direction states nothing, so take it at face value
 if isempty(refFrame), return; end
 
 if isa(n,'Miller') % slip systems in crystal coordinates

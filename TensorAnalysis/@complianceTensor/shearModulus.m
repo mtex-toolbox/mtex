@@ -58,9 +58,7 @@ elseif nargin == 2 || isempty(u)
 
 elseif isempty(h)
 
-  % the shear plane is left open: a function of h with u held fixed. This
-  % branch used to carry the u-varying integrand with h still empty, so the
-  % documented shearModulus(S,[],u) recursed into itself and errored.
+  % the shear plane is left open: a function of h with u held fixed
   E = S2FunHarmonic.quadrature(@(v) shearModulus(S,v,u),'bandwidth',16);
   E.framePrivate = S.frame;
 

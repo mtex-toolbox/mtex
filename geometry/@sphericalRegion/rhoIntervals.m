@@ -32,12 +32,9 @@ sR.antipodal = false;
 
 theta = reshape(theta,1,[]);
 
-% On the circle of latitude theta the bounding circle i is crossed where
+% on the circle of latitude theta the bounding circle i is crossed where
 %
-%   A cos(rho) + B sin(rho) = alpha - Nz cos(theta)
-%
-% with A = Nx sin(theta) and B = Ny sin(theta) - again a single wave,
-% hypot(A,B) * cos(rho-psi) with psi = atan2(B,A)
+%   A cos(rho) + B sin(rho) = alpha - Nz cos(theta),  A = Nx sin(theta), B = Ny sin(theta)
 A = sR.N.x(:) * sin(theta);
 B = sR.N.y(:) * sin(theta);
 

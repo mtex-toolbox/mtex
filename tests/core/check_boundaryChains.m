@@ -196,12 +196,7 @@ save(fName,'scrambled');
 loaded = load(fName);
 assertOrdered(loaded.scrambled,'loadobj of an unordered boundary');
 
-% Scrambling the rows is all grainBoundary.loadobj can repair. Older files
-% also have an arbitrary *column* order in F, so grainId(:,1) is not the
-% grain on the left - data/testgrains.mat had 14 of its 43 chains that way,
-% which gave two identical convex grains opposite curvature signs. order
-% cannot see it, since without a leftPos it takes the sense from F. grain2d
-% knows which grain each segment belongs to and repairs it on load.
+% an older file also has an arbitrary column order in F, which only grain2d can repair
 assertLeftGrain(grains,'the reference map');
 
 stale = grains;
@@ -358,9 +353,7 @@ end
 
 %% 14. the grain2d wrappers keep the grains in sync with their boundary
 
-% coarsening the boundary moves the polygons too, so poly and inclusionId
-% have to be retraced - a grain2d whose poly still walks through dissolved
-% vertices reports an area that plot(grains.boundary) disagrees with
+% coarsening the boundary moves the polygons too, so poly and inclusionId are retraced
 
 gSim = simplifyBoundary(grains,sl);
 assertConsistent(gSim,grains,'simplifyBoundary');
@@ -394,9 +387,7 @@ if any(bId(:) < 0) || any(bId(:) > length(gSim.boundary))
   error('simplifyBoundary left triplePoints.boundaryId pointing past the segment list');
 end
 
-% a tolerance far beyond the size of the smallest grains must still not
-% flatten one of them onto a line - a single pixel grain is bounded by two open
-% chains of two segments, and straightening both leaves the same diagonal twice
+% a tolerance beyond the size of the smallest grains must not flatten one onto a line
 for eps = [2*sl 5*sl 20*sl]
   gBig = simplifyBoundary(grains,eps);
   assertConsistent(gBig,grains,sprintf('simplifyBoundary(grains,%g*sl)',eps/sl));
@@ -452,9 +443,7 @@ if ~all(cellfun(@(p) p(1) == p(end),poly))
   error('%s left an unclosed poly loop',name);
 end
 
-% three distinct vertices plus the repeated first one - fewer than that is a
-% loop that encloses no area, which is what a closed chain collapses to if a
-% coarsening step is allowed to reduce it to its two extreme vertices
+% three distinct vertices plus the repeated first one, fewer encloses no area
 if any(cellfun(@numel,poly) < 4)
   error('%s collapsed a poly loop to fewer than three vertices',name);
 end

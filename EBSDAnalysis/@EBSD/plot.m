@@ -102,11 +102,7 @@ elseif nargin>1 && isa(varargin{1},'crystalShape')
   
   cS = varargin{1};
 
-  % Lift the shapes off the map TOWARDS THE VIEWER. ebsd.N is the normal of
-  % the map and may point either way - with the default convention, which
-  % has z pointing into the screen, it points away, and the shapes were
-  % drawn behind the map where the depth sorting hides them.
-  % grain2d/plot corrects the sign the same way.
+  % lift the shapes off the map towards the viewer, ebsd.N may point either way
   s = sign(dot(ebsd.N,mP.how2plot.outOfScreen,'noAntipodal'));
   if s == 0, s = 1; end % the map is seen edge on - either side will do
 
@@ -140,10 +136,7 @@ else % phase plot
 
   else
 
-    % Compute the color of every pixel first and plot the entire map in a
-    % single call - subsetting the EBSD data per phase is much more
-    % expensive, since EBSD/subsref copies all property arrays. Pixels of
-    % phases without a color keep NaN and are not drawn.
+    % color every pixel first and plot the map in one call, subsetting is expensive
     color = NaN(length(ebsd),3);
     phaseColor = NaN(numel(ebsd.phaseMap),3);
     for k = 1:numel(ebsd.phaseMap)
@@ -205,9 +198,7 @@ if isempty(uC), dx = [0 0]; dy = [0 0]; else
   dx = [min(uC.x(:)) max(uC.x(:))]; dy = [min(uC.y(:)) max(uC.y(:))];
 end
 
-% note that ebsd.extent leaves out the padding a gridded map is completed
-% with - the axis limits keep it out through the backends, which do not let
-% a cell without a measurement count, see EBSD/private/plotSurf
+% ebsd.extent leaves out the padding of a gridded map, and so do the backends
 mP.extent(1) = min(mP.extent(1),ext(1) + dx(1));
 mP.extent(2) = max(mP.extent(2),ext(2) + dx(2));
 mP.extent(3) = min(mP.extent(3),ext(3) + dy(1));

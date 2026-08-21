@@ -23,10 +23,7 @@ for j = 1:numel(sP)
     continue;
   end
 
-  % plot the region - the bounding circles are built, clipped and projected
-  % in one go, since what this costs is calls into the vector3d machinery
-  % and not points: 46 line objects cost the same with 361 points as with
-  % the 8641 this used to draw
+  % plot the region - build, clip and project the bounding circles in one go
   [X,Y] = boundaryPolygons(sR,sP(j).proj);
 
   varargin = delete_option(varargin,'parent',1);
@@ -85,9 +82,7 @@ i = i(:); c = c(:);
 
 if ~isempty(i)
 
-  % the sample to move is the one outside the region, and every crossing
-  % has to claim a different one - two adjacent crossings would fight over
-  % the single sample between them, and that arc is below the sample step
+  % move the sample outside the region, and every crossing has to claim a different one
   isLo = inside(sub2ind(size(inside),i,c));
   ind = sub2ind(size(inside),i,c + double(isLo));
   [~,firstOfInd] = unique(ind,'stable');

@@ -46,11 +46,7 @@ check(numel(n) == nGR*nGC && all(n == 400), ...
   min(n),max(n),numel(n));
 
 %% generator: the misorientation ladder is exact
-%
-% this is the whole point of the product construction ori(i,j) = u_i * v_j:
-% every vertical boundary realizes colAngles(j) and every horizontal
-% boundary realizes rowAngles(i), exactly and consistently around every
-% 4-cycle of grains
+% the product construction ori(i,j) = u_i * v_j realizes every ladder angle exactly
 
 ori = ebsd.opt.trueMeanOrientation;
 check(isequal(size(ori),[nGR nGC]),'trueMeanOrientation must be numGrainRows x numGrainCols');
@@ -72,19 +68,14 @@ end
 check(err < tol,'horizontal boundaries are off by %.3g deg',err/degree);
 
 %% generator: trueGrainId indexes trueMeanOrientation
-%
-% guards a trap that is easy to reintroduce: trueGrainId must be the
-% MATLAB linear index into the numGrainRows x numGrainCols orientation
-% array, not a row major index
+% trueGrainId is the MATLAB linear index, not a row major one
 
 o   = ebsd.orientations;
 err = max(angle(o(:),ori(ebsd.prop.trueGrainId(:))));
 check(err < tolZero,'pixel orientations do not match trueMeanOrientation(trueGrainId), off by %.3g deg',err/degree);
 
 %% generator: the intra grain spread is exactly 'deformation'
-%
-% checked on complete grains, since the extremes of a linear ramp sit at
-% the grain corners and a subsample would miss them
+% on complete grains, the extremes of a linear ramp sit at the grain corners
 
 def  = 5*degree;
 ebsd = EBSDGrainBenchmark((1:7)*degree,[2 4 6]*degree, ...
@@ -114,10 +105,7 @@ check(all(ebsd.prop.trueGrainId > 0), ...
   'trueGrainId must be set for every pixel, including outliers');
 
 %% generator: reproducible, and explicit options override the level preset
-%
-% guards a real regression: get_option takes the LAST occurrence of an
-% option, so the preset has to be PREPENDED to varargin. Getting this
-% backwards silently ignores everything the caller asks for.
+% get_option takes the last occurrence, so the preset has to be prepended
 
 a = EBSDGrainBenchmark('level',2);
 b = EBSDGrainBenchmark('level',2);
@@ -158,9 +146,7 @@ check(sum([r.byAngle.numBoundaries]) == nGR*(nGC-1) + (nGR-1)*nGC, ...
   'wrong number of boundaries in the table');
 
 %% scorer: shattering must NOT score well
-%
-% purity would be 1 here, which is exactly why it is not reported. The
-% fragment count has to see it.
+% purity would be 1 here, so the fragment count has to see it
 
 ebsd.grainId = (1:length(ebsd)).';
 r = scoreGrainBenchmark(ebsd,[]);
@@ -185,18 +171,8 @@ if check_option(varargin,'fast')
 end
 
 %% baselines of the existing chain
-%
-% reference values measured 2026-07-25, each at the best threshold found in
-% a sweep (plain 1/2/3/5 deg, denoised 0.05..2 deg). The bands are wide on
-% purpose; what must not change is the qualitative picture:
-%
-%  - plain calcGrains has no usable operating point on ANY level: below
-%    3 deg it shatters, above it merges the whole map, and the best ARI it
-%    ever reaches is 0.29
-%  - denoising first gets close on level 1 (every boundary down to 1 deg
-%    is found) but still returns 192 instead of 32 grains
-%  - on levels 2 and 3 it shatters, and it shatters on the wild pixels,
-%    not on the boundaries: ~97 % of them end up as their own grain
+% reference values measured 2026-07-25, each at the best threshold of a sweep -
+% the bands are wide, what must not change is the qualitative picture
 
 fprintf('\nbaselines of the existing reconstruction chain\n\n');
 fprintf('  level             chain   grains      ARI   minDet   wild alone\n');

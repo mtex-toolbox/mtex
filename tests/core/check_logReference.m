@@ -113,9 +113,7 @@ for tS = [SO3TangentSpace.rightVector,SO3TangentSpace.leftVector]
   end
 end
 
-% the reference is the single source of the pair, so a tangent vector has to
-% survive being rebuilt from its own oriRef. Not from its rot - that one
-% shows the equivariant side as a trivial stand-in on purpose
+% rebuild from oriRef, not from rot, which shows the equivariant side as a stand-in
 v = log(ori,ori_ref,SO3TangentSpace.leftVector);
 r = SO3TangentVector(v,v.oriRef,v.tangentSpace);
 ref = r.oriRef;
@@ -170,10 +168,7 @@ for cs = {crystalSymmetry('m-3m'),crystalSymmetry('622'),crystalSymmetry('2/m')}
           'tangentSpace %d, symmetry %s'],double(tS),cs.pointGroup);
       end
 
-      % a right tangent vector lives in the crystal frame of the reference,
-      % so moving the reference to another representative turns it with that
-      % frame - only its length has to stay put. A left one is in specimen
-      % coordinates and may not move at all.
+      % a right tangent vector turns with the crystal frame, a left one may not move
       refK = orientation(rotation(ref) .* symOps(k),cs);
       vK = vector3d(log(ori,refK,tS));
 
@@ -195,10 +190,7 @@ end
 function v = refLog(ori,ref,tS)
 % what log(ori,ref,tS) is supposed to do, spelled out
 
-% The pair is reduced first - see checkSymmetryReduction. In the right
-% tangent space the product below still carries ori.CS and could be reduced
-% afterwards, in the left one it carries nothing and could not, so doing it
-% here is what makes the two agree.
+% reduce the pair first, in the left tangent space the product cannot be reduced
 if isa(ori,'orientation'), ori = project2FundamentalRegion(ori,ref); end
 
 if tS.isRight

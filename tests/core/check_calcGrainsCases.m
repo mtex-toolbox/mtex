@@ -23,18 +23,7 @@ cs = crystalSymmetry('1','mineral','test');
 thr = 5*degree;
 
 %% square grid: plain reconstruction + transform/rotate commutation
-%
-% covers a bug in spatialDecompositionGrid's private cells2posId helper:
-% it used to place the synthetic position of every grid cell with no real
-% measurement (notIndexed holes, the exterior dummy ring, filled small
-% gaps) via a single RIGID affine reconstruction ij*A' + origin, instead of
-% the true measured position (when a real ebsd row exists there) or a
-% locally interpolated deformation model (otherwise). A non-rigid
-% distortion (trapezoidal stage drift) exposes this: calcGrains on a
-% transformed map must agree with transforming the grains reconstructed
-% from the untransformed map (see grain2d/transform). A rigid rotation is
-% checked the same way (see grain2d/rotate) since it stresses a rotated,
-% non-axis-aligned grid instead of a distorted one.
+% cells2posId placed a cell without measurement rigidly, so calcGrains did not commute with transform
 
 ebsdSq = buildSquareBlockGrid(cs, 6, 4, ...
   orientation.byAxisAngle(zvector,(1:16)*7*degree,cs));
@@ -48,10 +37,7 @@ checkTransformCommutation(ebsdSq, grains0Sq, thr, 'square, transformed');
 checkRotateCommutation(ebsdSq, grains0Sq, thr, 'square, rotated');
 
 %% hex grid: plain reconstruction + transform/rotate commutation
-%
-% same commutation checks as above, on a hexagonal grid built by
-% gridify-ing an unstructured triangular-lattice point set (calcUnitCell
-% auto-detects the hex unit cell from the point spacing).
+% the same commutation checks on a hexagonal grid
 
 ebsdHex = buildHexBlockGrid(cs, 5, 4, ...
   orientation.byAxisAngle(zvector,(1:16)*7*degree,cs));
@@ -65,14 +51,7 @@ checkTransformCommutation(ebsdHex, grains0Hex, thr, 'hex, transformed');
 checkRotateCommutation(ebsdHex, grains0Hex, thr, 'hex, rotated');
 
 %% 'delaunay' flag: true alpha-complex backend (spatialDecompositionAlpha)
-%
-% same square/hex grids as above, reconstructed with the 'delaunay' flag
-% instead of the default morphological-closing backend. Grids here are
-% perfectly regular, so most Voronoi vertices are exactly cocircular
-% (every 2x2 block of the square grid, and the hex grid's own triangular
-% symmetry) - this exercises the alpha-complex's handling of cocircular
-% site groups (rasterizing the whole convex hull rather than one arbitrary
-% triangulation), not just the generic non-degenerate case.
+% a regular grid is cocircular everywhere, which is what the alpha complex has to handle
 
 grains0SqD = calcGrains(ebsdSq,'threshold',thr,'delaunay');
 if length(grains0SqD) ~= 16
@@ -87,18 +66,7 @@ end
 checkTransformCommutation2(ebsdHex, grains0HexD, thr, 'hex, delaunay, transformed', 'delaunay');
 
 %% gbcFMC: single precision rotations and coordinates
-%
-% regression test for gbcFMC dying on any map stored in SINGLE - which
-% mtexdata martensite is, as are the .ang/.ctf imports generally:
-%
-%   Error using sparse. Third input must be double or logical.
-%
-% quaternion/double only stacks the four components, it does not convert
-% them, so single propagated from ebsd.rotations through the neighbour
-% misorientations into the edge weights, and sparse() rejected them. Both
-% the orientation and the position path are forced to single here, since
-% each reaches a different consumer (sparse for the weights, accumarray for
-% the moment sums in part6InterpWeights).
+% single precision propagated into the edge weights, and sparse rejects them
 
 ebsdSgl = buildSquareBlockGrid(cs, 6, 4, ...
   orientation.byAxisAngle(zvector,(1:16)*7*degree,cs));
@@ -120,12 +88,7 @@ if length(grainsSgl) ~= 16
 end
 
 %% removeQuadruplePoints: a low angle threshold must not be overridden
-%
-% regression test for a bug in the private mergeQuadrupleGrains helper: it
-% used a hardcoded 5 degree threshold to decide whether to merge grains
-% split by a quadruple point, instead of the actual grain boundary
-% criterion used for reconstruction - silently re-merging grains that a
-% lower angle threshold had correctly kept separate.
+% mergeQuadrupleGrains merged with a hardcoded 5 degree threshold, not the criterion
 
 qpThr = 2*degree;
 ebsdQP1 = buildQuadPointGrid(cs, 3, [orientation.id(cs), ...
@@ -143,16 +106,7 @@ if length(gPlain) ~= 4 || length(gQP) ~= 4
 end
 
 %% removeQuadruplePoints: grainId must stay the right length after a merge
-%
-% regression test for a second bug in mergeQuadrupleGrains: it used to
-% rebuild the per-pixel grainId via find(I_DG.'), which drops all-zero
-% rows (pixels not assigned to any single grain) and produces a grainId
-% vector shorter than length(ebsd). The fix rebuilds grainId via the same
-% matrix product used for the initial computation, which preserves the
-% row count unconditionally. Orientations are chosen so the two grains
-% meeting only diagonally at the quadruple point (blocks 1 and 4) are
-% within qpThr of each other while the other two blocks are not, so
-% removeQuadruplePoints actually triggers a merge (unlike the case above).
+% mergeQuadrupleGrains rebuilt grainId with find, which drops the unassigned pixels
 
 ebsdQP2 = buildQuadPointGrid(cs, 3, [orientation.id(cs), ...
   orientation.byAxisAngle(xvector,90*degree,cs), ...
@@ -174,31 +128,7 @@ if numel(ebsdQP2.grainId) ~= numel(ebsdQP2)
 end
 
 %% removeQuadruplePoints: two quadruple points sharing an edge
-%
-% regression test for #2590. Splitting a quadruple point detaches two of its
-% four edges and rewrites their shared vertex to a duplicate at the same
-% coordinates. That rewrite was done row wise, Fext(rows,:) = ..., over all
-% quadruple points at once - and two quadruple points that are neighbours
-% share the edge between them, so that edge is in the relocation list of
-% both. A repeated row in a MATLAB assignment silently keeps only the last
-% write, so one of the two rewrites was lost: the edge kept the original
-% vertex where it should have taken the duplicate. The quadruple point then
-% carries three of its four edges instead of two, the duplicate carries one,
-% and the boundary of the grain whose corner was cut there is an open path
-% rather than a closed ring - which no tracer can turn into a polygon.
-%
-% On an ideal square grid the two never collide: the edge shared by two
-% horizontally adjacent quadruple points points +x at one and -x at the
-% other, and the angular sort puts those in different relocation slots. It
-% takes an irregular neighbourhood - a hole, a map border - for the sort to
-% land both in the same slot, which is why this needs a map with missing
-% pixels and why real maps show it only a few times each (one collision on
-% forsterite, martensite and epidote, three on mylonite, two negative area
-% grains on the 2.5M pixel steel map of the benchmark).
-%
-% Every pixel is its own grain here, so every interior grid corner is a
-% quadruple point. The hole pattern is the smallest one found that makes the
-% collision fire.
+% #2590: two neighbouring quadruple points share an edge, and the repeated row kept only the last write
 
 csQP3 = crystalSymmetry('m-3m','mineral','test');
 [xQP,yQP] = meshgrid(0:3,0:3);
@@ -219,28 +149,11 @@ end
 checkClosedBoundary(gQP3,'removeQuadruplePoints on adjacent quadruple points');
 
 %% minPixel: a diagonal-only neighbour must not save an undersized grain
-%
-% regression test for #2513. The minPixel filter is a two pass scheme:
-% minPixelMask sizes the grains once, marks the undersized ones notIndexed,
-% and calcGrains then decomposes again. That sizing pass used the cheaper
-% Delaunay-adjacency-only Voronoi build unconditionally, whose adjacency is
-% a superset of the true Voronoi face adjacency wherever an interior vertex
-% is exactly cocircular - which on a SQUARE lattice is every single one, so
-% the whole map got sized 8-connected while the final segmentation is
-% 4-connected. A pixel joined to a same-orientation grain only diagonally
-% was therefore sized as part of it and survived a cull it should not have.
-% Not a rare degeneracy: it left 393 of 3115 grains below minPixel on
-% martensite and 655 of 3803 on emsland. A triangular (hex) lattice has no
-% cocircular degeneracy, so the fast path is exact there and is kept.
-%
-% Both maps below are fully indexed, one stray pixel apart, so a survivor
-% shows up directly as an indexed grain smaller than minPixel.
+% #2513: the sizing pass was 8-connected on a square lattice, the segmentation 4-connected
 
 o2 = orientation.byAxisAngle(zvector,30*degree,cs);
 
-% square: 2x2 block of o2, plus ONE stray o2 pixel touching that block only
-% diagonally. In the final 4-connected segmentation the stray is its own
-% grain of one pixel, so minPixel = 2 must remove it.
+% square: a 2x2 block of o2 plus one stray pixel touching it only diagonally
 nMP = 8;
 rotMPsq = rotation.id(nMP,nMP);
 rotMPsq(1:2,1:2) = o2;
@@ -260,48 +173,12 @@ ebsdMPhex.rotations(iMP) = o2;
 checkMinPixel(calcGrains(ebsdMPhex,'threshold',thr,'minPixel',2), 2, 1, ...
   'hex, single stray pixel');
 
-% a pixel the alpha closing stranded (#2574)
-%
-% Both cases above are fully indexed, where the cull before the decomposition
-% is the whole story. This one is not: the offending pixel reaches its 239
-% pixel grain only over a Voronoi face bridge across a notIndexed gap, and it
-% is culling 57 OTHER pixels elsewhere that moves the closing raster enough to
-% break that bridge. The sizing pass is right to leave the pixel alone; the
-% second decomposition then finds it isolated, and it came back as a one pixel
-% indexed grain against minPixel = 3.
-%
-% The one real map in this file. Reproducing the topology synthetically means
-% hard coding how the closing lays out its dummy cells, which would be brittle
-% against any change to it - and mtexdata('small') is about 2500 pixels, a
-% tenth of a second.
+% #2574: culling elsewhere moves the closing raster and strands a pixel across a gap
 checkMinPixel(calcGrains(mtexdata('small','silent'),'minPixel',3), 3, 24, ...
   'stranded pixel, mtexdata small');
 
 %% every grain polygon must be a closed ring enclosing a positive area
-%
-% The cheapest statement of "the reconstruction is topologically sound", and
-% the one the suite was missing. A grain's polygon is a ring traced so that
-% the interior lies to one side; if it comes out with NEGATIVE area the ring
-% was traced inside out, which means the boundary graph did not close and
-% everything downstream - area, equivalent radius, smoothBoundary, plotting -
-% is reading a polygon that is not the grain.
-%
-% It is not hypothetical. Making the pairing at a quadruple point
-% deterministic (b2ca13189, 14463616f) produced up to 117 such grains on
-% alphaBetaTitanium, and none of the tests here noticed: they assert grain
-% COUNTS, and a broken ring does not change the count. It surfaced only when
-% a grain was plotted by hand. Those 117 were in fact #2590 - the pairing
-% change merely moved the shared edge of two neighbouring quadruple points
-% into the relocation slot where the lost write bit - and the pairing work is
-% back in the tree with the fix under it, so what this case now guards is
-% that the two stay compatible.
-%
-% The regime that exposes it is a dense one - many small grains, so quadruple
-% points everywhere - not the block maps above, which have too few. Per pixel
-% random orientations on a 30 x 30 grid give ~900 grains and reproduce it in
-% under a second. The step is 0.3 rather than 1 for the same reason as the
-% gridify padding case below: with integer coordinates atan2 lands exactly on
-% its branch cut every time and the ambiguity never arises.
+% a negative area means the ring was traced inside out, i.e. the boundary graph did not close
 
 csRing = crystalSymmetry('432','mineral','test');
 rng(3);
@@ -340,30 +217,9 @@ for optRing = {{}, {'removeQuadruplePoints'}}
 end
 
 %% removeQuadruplePoints must not depend on the order of the measurements
-%
-% Reconstruction is a function of the measurements, not of the sequence they
-% were written down in - shuffling the input has to give the same grains.
-% Plain calcGrains always did; removeQuadruplePoints did not.
-%
-% At a quadruple point the four incident boundary edges are paired, and the
-% two possible pairings pick out the two DIAGONALS of the four pixels
-% meeting there. The pairing was taken from the position of the edges in
-% the angular sort, and on a square grid the edges leave the vertex along
-% +-x and +-y - so one of them sits exactly on atan2's branch cut at +-pi.
-% 1e-14 of noise in the Voronoi vertex, which is all a different
-% measurement order produces, flipped that edge between +pi and -pi,
-% rotated the sorted order by one and swapped the pairing. On twins that
-% was 110 grains against 108, and it is also what made a gridified map
-% disagree with the same map as a list (gridify reorders - see
-% EBSD/gridify).
-%
-% The tie cannot be broken geometrically: all four angular gaps are exactly
-% pi/2. It is broken by the criterion, and where that is indifferent by the
-% pixel positions - both properties of the data, neither of the order.
+% the pairing at a quadruple point was taken from an angular sort sitting on atan2's branch cut
 
-% a 4 x 4 block layout tiling the same four orientations the merge test
-% above uses, so that every interior quadruple point has one diagonal pair
-% within the threshold and there are many of them to disagree about
+% a 4 x 4 block layout, so that many quadruple points have a pair within the threshold
 oq = [orientation.id(cs), ...
       orientation.byAxisAngle(xvector,90*degree,cs), ...
       orientation.byAxisAngle(yvector,90*degree,cs), ...
@@ -403,24 +259,7 @@ if numel(La) ~= numel(Lb) || norm(La(:)-Lb(:),inf) > 1e-9*max(1,max(La))
 end
 
 %% gridify padding must segment exactly like notIndexed pixels
-%
-% The two ways of saying "nothing was measured here" have to give the same
-% grains. A scan whose file simply omits those positions gets them back
-% from gridify as lattice sites with phaseId = NaN; a scan that records
-% them as unindexed has them present with phaseId = 1. spatialDecomposition
-% Grid's help states the two are treated identically - they were not.
-%
-% Every grain boundary criterion selects its pixels with a test of the form
-% phaseId(i) == p, and NaN compares false against every phase, so the pad
-% cells matched no phase, scored 0 (= high angle boundary) against each of
-% their neighbours, and each came out as its own single-pixel grain. On
-% forsterite with a solid 5841 cell hole that was 5842 notIndexed grains
-% instead of 6. Only the notIndexed count moved - the indexed grains were
-% identical either way - which is why it stayed invisible for so long, and
-% why this asserts on the notIndexed grains specifically.
-%
-% Fixed in grainBoundaryCriterion/eval, which normalises NaN to phase 1 for
-% every criterion and every caller at once.
+% a pad cell has phaseId NaN, which compares false against every phase and scored a boundary
 
 ebsdPadBase = buildSquareBlockGrid(cs, 6, 4, ...
   orientation.byAxisAngle(zvector,(1:16)*7*degree,cs));

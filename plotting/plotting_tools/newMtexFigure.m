@@ -98,9 +98,7 @@ else % use an existing figure
   % get existing mtexFigure
   mtexFig = getappdata(gcf,'mtexFig');
   
-  % distribute the hold state of the current axes over all of them - this is
-  % the baseline for the plot that is about to happen, hence a plain copy and
-  % not a holdOn guard
+  % distribute the hold state of the current axes over all of them
   copyHoldState(gca,mtexFig.children);
   
   % set current axis

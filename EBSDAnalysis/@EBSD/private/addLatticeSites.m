@@ -48,13 +48,8 @@ if ~any(isIndexed), isIndexed = true(n,1); end   % nothing to fit against
 reconstructPos = latticeModel(pos,ij,isIndexed,g.dxy);
 xy = reconstructPos(IJnew);
 
-% Keep only sites inside the scanned area. The index bounding box is a box
-% in LATTICE coordinates, which for a hex grid - whose two axes are 60
-% degree apart - is a rhombus in the plane, so its box contains a large
-% wedge of sites that were never scanned. On titanium that was 12804 sites
-% against gridify's 8148. For a square grid the two coincide and this
-% removes nothing. The quarter step tolerance only absorbs rounding; it is
-% well below the half step that would admit another ring.
+% keep only the sites inside the scanned area - the index bounding box is a
+% rhombus for a hex grid, so it contains a wedge that was never scanned
 ext = ebsd.extent;
 tol = 0.25 * g.dxy;
 inside = xy(:,1) >= ext(1)-tol & xy(:,1) <= ext(2)+tol & ...
@@ -83,10 +78,7 @@ end
 pad = EBSD(posNew, rotation.nan(m,1), nan(m,1), ebsd.CSList, prop, ...
   'phaseMap', ebsd.phaseMap);
 
-% explicit ids: cat resets EVERY id, noisily, if it sees a duplicate, and
-% the EBSD constructor numbers the pad from 1. Counting from max(id) rather
-% than from length: a subset such as ebsd('indexed') keeps the ids of the
-% map it came from, so those are neither contiguous nor bounded by n.
+% explicit ids: cat renumbers everything on a duplicate, and a subset keeps its ids
 pad.id = max([ebsd.id(:); 0]) + (1:m).';
 pad.unitCell = ebsd.unitCell;
 pad.scanUnit = ebsd.scanUnit;

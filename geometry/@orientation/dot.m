@@ -23,10 +23,7 @@ if check_option(varargin,'noSymmetry')
   return
 end
 
-% grain exchange symmetry: a misorientation and its inverse describe the same
-% boundary, hence the distance is the smaller of the two. Only some of the
-% branches below symmetrise an operand, so the flag cannot be left to
-% symmetrise the way it is in dot_outer.
+% grain exchange symmetry: a misorientation and its inverse describe the same boundary
 if (isa(o1,'orientation') && o1.antipodal) || (isa(o2,'orientation') && o2.antipodal)
 
   % the inverse of the second operand - inv swaps crystal and specimen

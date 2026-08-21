@@ -97,10 +97,7 @@ assert(isa(gbnd.CS,'crystalSymmetry'), ...
 
 checkIsADensity(gbnd,'crystal frame');
 
-% the symmetry has to hold on evaluation, not just in the class name. The
-% function only varies between 0.959 and 1.027 on this dataset, so a
-% deviation of even a percent would be larger than the signal - this is a
-% tight check, not a loose one.
+% the symmetry has to hold on evaluation - the function only varies by 7% here
 rots = gbnd.CS.rot;
 v = vector3d.rand(100);
 ref = gbnd.eval(v);

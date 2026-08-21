@@ -57,10 +57,7 @@ methods
 
     F.weight = get_flag(varargin,{'gauss','expotential','exp','umbrella','rate'},'rate');
 
-    % the kernel name doubles as the name of its parameter, so it may or may
-    % not be followed by a value - insisting on a numeric one keeps a
-    % following flag from being read as the step size, which used to make
-    % smoothBoundary(grains,5,'gauss','moveTriplePoints') throw
+    % the kernel name doubles as its parameter, so insist on a numeric value
     F.lambda = get_option(varargin,F.weight,0.5,'double');
     F.secondOrder = check_option(varargin,{'second order','second_order','S','S2'});
 

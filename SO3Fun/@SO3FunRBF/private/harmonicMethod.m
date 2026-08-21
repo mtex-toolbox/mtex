@@ -40,12 +40,8 @@ y = reshape(y,numel(SO3G),[]);
 % Use the 'mlsq'-method, if:
 %   - an density is approximated
 %   - the input is nearly positive and we have (or can easily compute) the expected mean of the result
-% a relative tolerance on the values of y - it decides whether y is
-% essentially of one sign, and floors the initial guess further down. It must
-% not be called eps: the sparsification of Fstar below wants machine epsilon,
-% and shadowing it there scaled the threshold with the amplitude of y, which
-% emptied the system matrix for a large function and left it dense for a
-% negative one
+% yTol decides whether y is essentially of one sign - not to be confused with the
+% machine epsilon the sparsification of Fstar below uses
 yTol = max(y(:))*1e-3;
 if check_option(varargin,'density')
   varargin = ['mlsq',varargin];

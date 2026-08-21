@@ -118,10 +118,7 @@ classdef orientationPlot < handle
       MarkerSize = get_option(varargin,'MarkerSize',getMTEXpref('markerSize'));
       Marker = get_option(varargin,'Marker','o');
 
-      % markers are drawn as scatter objects - only those support
-      % MarkerFaceAlpha / MarkerEdgeAlpha and they are at least as fast as
-      % patches. Lines (option 'edgecolor') remain patches since a scatter
-      % object can not connect its points.
+      % markers are scatter objects, only they support MarkerFaceAlpha; lines stay patches
       isLine = check_option(varargin,'edgecolor');
 
       % marker transparency
@@ -183,12 +180,7 @@ classdef orientationPlot < handle
             'MarkerFaceColor',MFC,'MarkerEdgeColor',MEC,'Marker',Marker,...
             'parent',oP.ax,alphaArgs{:});
 
-          % hold puts the axes into the color cycling mode, where every
-          % object created takes the next color and does not give it back.
-          % A marker drawn in a color of its own must not consume one -
-          % otherwise plot(R,'MarkerColor','red') leaves the quiver that
-          % follows the second color. Only a color taken from the color
-          % order above is meant to be consumed.
+          % a marker drawn in a color of its own must not consume one of the color order
           if ownColor, oP.ax.ColorOrderIndex = coi; end
           clear hG
         end

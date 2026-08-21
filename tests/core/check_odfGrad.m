@@ -28,12 +28,8 @@ cs1 = crystalSymmetry('-3m1');
 cs2 = crystalSymmetry('m-3m');
 checkGrad(unimodalODF(orientation.rand(20,cs1,cs2)), N, 1e-3, 'unimodal');
 
-% the SO3FunCBF branch - a fibreODF. Was the known failure #2586, where grad
-% symmetrised over the crystal symmetry only while eval averages over the
-% proper specimen group as well, so the two described different functions.
-% Only a non trivial specimen symmetry exposes it - with ss = '1' the old
-% code was already exact - so that is what is used here, in both tangent
-% spaces, since the fix touches the left and right branch alike.
+% the SO3FunCBF branch - #2586, where grad symmetrised over the crystal symmetry
+% only, which a non trivial specimen symmetry exposes
 cs = crystalSymmetry('432');
 ss = specimenSymmetry('222');
 fibre = fibreODF(Miller.rand(cs),vector3d.rand,ss);

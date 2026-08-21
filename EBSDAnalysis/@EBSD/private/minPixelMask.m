@@ -41,33 +41,11 @@ minPixelMethod = get_option(varargin,'minPixelMethod','voronoi');
 if strcmpi(minPixelMethod,'grid')
   gid0 = gridComponents(ebsd,gbc,varargin{:});    % grain id per pixel, 0 = none
 else
-  % Delaunay-adjacency-only sizing is exact on a HEX grid and wrong on a
-  % SQUARE one (#2513). A triangular lattice has no cocircular degeneracy:
-  % its Delaunay triangulation is unique and its edges are exactly the
-  % 6-neighbour graph, so the cheap build gives the same adjacency the full
-  % Voronoi does - and full Voronoi would only cost time there (+22..66% on
-  % the sizing pass of a 4M pixel map).
-  %
-  % On a square lattice every interior Voronoi vertex is four cocircular
-  % points, so the Delaunay has to invent a diagonal at every single one.
-  % Sizing is then 8-connected while the final segmentation is 4-connected:
-  % a chain of pixels joined only diagonally counts as ONE grain here and
-  % breaks into several afterwards, so undersized grains survive the cull.
-  % Not a rare degeneracy but the generic case on a square map: at
-  % 'angle',10*degree,'minPixel',5 it left 361 of 3643 grains undersized on
-  % martensite and 33 of 903 on forsterite, against 4 and 2 with the full
-  % build, at the same runtime. So use the cheap build only where it is exact.
-  %
-  % The residual few are a different, deeper effect and not addressed here:
-  % culling changes the map the SECOND decomposition runs on, so the alpha
-  % closing reorganises and grains can re-fragment below minPixel after the
-  % sizing pass has already decided. Iterating the two passes oscillates
-  % rather than converges, so it stays a one-shot filter.
-  %
-  % Gate on the unit cell rather than on ebsd.lattice: same answer, without
-  % recomputing the per-pixel lattice index that spatialDecompositionGrid is
-  % about to compute anyway. Anything that is not a 6-corner (hex) cell gets
-  % the correct-but-slower path.
+  % Delaunay-adjacency-only sizing is exact on a hex grid, whose triangulation is
+  % unique, and wrong on a square one, where every interior Voronoi vertex is four
+  % cocircular points - sizing is then 8-connected while the segmentation is
+  % 4-connected, so undersized grains survive the cull (#2513). Gate on the unit
+  % cell, which spatialDecompositionGrid is about to use anyway.
   if length(ebsd.unitCell) == 6, varargin = [varargin,{'delaunayOnly'}]; end
 
   out0  = spatialDecompositionGrid(ebsd,varargin{:});

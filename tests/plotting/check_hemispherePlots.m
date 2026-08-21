@@ -87,9 +87,7 @@ if sum(n) ~= total
     'of the circle'], sum(n), total);
 end
 
-% a marker belongs to the plot as a whole as well - it is invisible in the
-% half it does not fall into, but both halves have to cycle their colors in
-% lockstep, which only happens if both of them draw it
+% both halves have to draw the marker, so that their colors cycle in lockstep
 if ~all(arrayfun(@(a) any(ismember(m(:),allchild(a))), ax))
   error('check_hemispherePlots: a marker added with hold on reached only one half');
 end

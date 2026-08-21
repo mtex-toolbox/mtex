@@ -69,9 +69,7 @@ v = vector3d.rand(20);
 assert(max(abs(eval(S2F,v) - eval(ref,v))) < 1e-10, ...
   'check_radonOptions: %s gives a different result with and without the explicit []', name)
 
-% the option is honoured rather than swallowed. A representation may not be
-% able to give more than it has - @SO3FunHarmonic and @SO3FunRBF cap the
-% request at their own bandwidth - but it must not give more than asked for
+% a representation may cap the request at its own bandwidth, but not exceed it
 low = radon(SO3F,h,'bandwidth',4);
 assert(low.bandwidth <= 4, ...
   'check_radonOptions: %s ignores the shifted bandwidth, it is %d instead of 4', ...
