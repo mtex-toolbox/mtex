@@ -17,8 +17,7 @@ plottingConvention.default('y↑→x');
 mtexdata martensite
 
 % grain reconstruction
-[grains,ebsd] = calcGrains(ebsd, 'angle', 3*degree, 'minPixel',2,'removeQuadruplePoints');
-grains = smoothBoundary(grains,5);
+[grains,ebsd] = calcGrains(ebsd, 'angle', 3*degree, 'minPixel',2,'alpha',12);
 
 % plot the data and the grain boundaries
 plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,'figSize','large')
