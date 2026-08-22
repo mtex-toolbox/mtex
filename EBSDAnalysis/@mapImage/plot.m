@@ -70,7 +70,7 @@ end
 % =========================================================================
 function [h,mP] = plotOne(mg,mtexFig,varargin)
 
-mP = newMapPlot('scanUnit','um','parent',mtexFig.gca,varargin{:}, ...
+mP = newMapPlot('scanUnit',mg.scanUnit,'parent',mtexFig.gca,varargin{:}, ...
   mg.how2plot,mg.frame);
 
 if check_option(varargin,'edge')

@@ -67,12 +67,12 @@ dx = m.dx; dy = m.dy;
 
 if dx == 0 || isnan(dx), s = '-'; return; end
 
-% um rather than the symbol - MTEX gates its special characters on a
-% preference and there is none for microns, and this is what scanUnit says
+% the map's own unit, not a hardcoded micron - MTEX gates its special
+% characters on a preference and there is none for microns anyway
 if isnan(dy) || abs(dy-dx) <= 1e-3*max(abs(dx),abs(dy))
-  s = [xnum2str(dx) ' um'];
+  s = [xnum2str(dx) ' ' m.scanUnit];
 else
-  s = [xnum2str(dx) ' x ' xnum2str(dy) ' um'];
+  s = [xnum2str(dx) ' x ' xnum2str(dy) ' ' m.scanUnit];
 end
 
 end

@@ -15,6 +15,7 @@ function check_mapImage(varargin)
 
 checkConstruction
 checkFromMap
+checkScanUnit
 checkFrameIsCopied
 checkPosAndIndex
 checkExtent
@@ -267,6 +268,37 @@ assert(max(norm(mg.pos - ebsd.pos),[],'all') < 1e-12,...
 % and the layout the array is in is the one the map states
 assert(isAligned(mg.arrayFrame,imageFrame(ebsd.d2,ebsd.d1)),...
   'arrayFrame disagrees with the map''s own d2/d1')
+
+end
+
+% =========================================================================
+function checkScanUnit
+% the unit of the positions travels with the image
+%
+% Every other spatial class - @EBSD, @grain2d, @grainBoundary - carries
+% scanUnit. @mapImage did not, and plot hardcoded 'um', so a map in nm
+% rendered and printed as micrometres regardless.
+
+d = 0.3; ebsd = makeMap(6,d);
+ebsd.scanUnit = 'nm';
+
+mg = mapImage(ebsd.bc,ebsd,'name','bc');
+assert(strcmp(mg.scanUnit,'nm'),...
+  'the unit was not taken from the map, it is ''%s''',mg.scanUnit)
+
+% and it survives everything that rebuilds the entry
+assert(strcmp(subGrid(mg,2:5,2:6).scanUnit,'nm'),'subGrid lost the unit')
+turned = transformReferenceFrame(mg,imageFrame(-mg.d1,mg.d2));
+assert(strcmp(turned.scanUnit,'nm'),'transformReferenceFrame lost the unit')
+
+% it reaches the display, which is where a wrong unit would mislead
+txt = evalc('display(mg)');
+assert(contains(txt,'nm'),'display does not show the unit')
+
+% an image with no map keeps the default, or takes what it is given
+assert(strcmp(mapImage(rand(4,4),'dxy',1).scanUnit,'um'),'the default is not um')
+assert(strcmp(mapImage(rand(4,4),'dxy',1,'scanUnit','mm').scanUnit,'mm'),...
+  '''scanUnit'' was not accepted')
 
 end
 

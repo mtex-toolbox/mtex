@@ -46,7 +46,8 @@ classdef mapImage
 % Options
 %  dxy    - pixel size, scalar or [dx dy]
 %  name   - a valid MATLAB identifier, the field an aligned image is written under
-%  origin - @vector3d position of pixel (1,1)
+%  origin   - @vector3d position of pixel (1,1)
+%  scanUnit - unit of the positions, default 'um' or the map's own
 %
 % Class Properties
 %  img        - r x c x k values
@@ -55,6 +56,7 @@ classdef mapImage
 %  origin     - @vector3d, the position of pixel (1,1)
 %  d1, d2     - @vector3d, the step from row to row and column to column
 %  frame      - @referenceFrame the geometry is expressed in
+%  scanUnit   - unit of the positions, taken from the map. Default 'um'
 %  pos        - r x c @vector3d, derived from origin, d1 and d2
 %  arrayFrame - @imageFrame the array is laid out in, derived from d2 and d1
 %
@@ -70,6 +72,7 @@ classdef mapImage
     d1 = vector3d(0,1,0)
     d2 = vector3d(1,0,0)
     frame = referenceFrame.empty
+    scanUnit = 'um'   % unit of the positions, as on @EBSD and @grain2d
   end
 
   properties (Dependent = true)
@@ -104,6 +107,8 @@ classdef mapImage
         mg.d1 = mg.ebsd.d1; mg.d2 = mg.ebsd.d2;
         mg.origin = mg.ebsd.pos(1,1);
 
+        mg.scanUnit = mg.ebsd.scanUnit;
+
         % a COPY, not the handle - mg.frame.how2plot = ... is the natural way
         % to frame an image, and on a shared handle that would silently
         % restate the caller's own map
@@ -130,6 +135,8 @@ classdef mapImage
       mg.img = toDouble(img);
 
       mg.origin = get_option(varargin,'origin',mg.origin);
+
+      mg.scanUnit = get_option(varargin,'scanUnit',mg.scanUnit);
 
       nm = get_option(varargin,'name','');
       if ~isempty(nm)
