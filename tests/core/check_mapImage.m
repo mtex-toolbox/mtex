@@ -23,6 +23,8 @@ checkInterp
 checkSubGrid
 checkRelayout
 checkEdgeMap
+checkRescale
+checkBoxFilter
 checkDisplay
 checkErrors
 
@@ -70,6 +72,99 @@ assert(all(isfinite(flat(:))),'a constant image produced non finite values')
 wide = edgeMap(mapImage(img,'dxy',1),3);
 assert(nnz(any(wide > 0,1)) > nnz(any(e > 0,1)),...
   'a larger padWidth did not widen the edge')
+
+end
+
+% =========================================================================
+function checkRescale
+% stretch to a range, over an array, without inventing values
+
+rng(3);
+a = mapImage(2+3*rand(9,11),'dxy',1);
+b = mapImage(-5*rand(6,6),'dxy',1);
+
+arr = rescale([a b]);
+assert(numel(arr) == 2,'rescale did not return the whole array')
+
+for k = 1:2
+  v = arr(k).img;
+  assert(abs(min(v(:))) < 1e-12 && abs(max(v(:))-1) < 1e-12,...
+    'entry %d is on [%g %g], expected [0 1]',k,min(v(:)),max(v(:)))
+end
+
+% a stated range
+r = rescale(a,-1,1);
+assert(abs(min(r.img(:))+1) < 1e-12 && abs(max(r.img(:))-1) < 1e-12,...
+  'a stated range was not used')
+
+% channels move together by default, so the colour balance survives
+rgb = mapImage(cat(3,rand(8,8),0.5*rand(8,8),0.1*rand(8,8)),'dxy',1);
+together = rescale(rgb);
+mx = squeeze(max(together.img,[],[1 2]));
+assert(max(mx) > 0.99 && min(mx) < 0.9,...
+  'the channels were rescaled separately by default')
+
+apart = rescale(rgb,'perChannel');
+mx = squeeze(max(apart.img,[],[1 2]));
+assert(all(abs(mx-1) < 1e-12),'''perChannel'' did not rescale each channel')
+
+% a flat image has no range and must not be divided by zero
+flat = rescale(mapImage(0.5*ones(5,5),'dxy',1));
+assert(all(flat.img(:) == 0.5) && all(isfinite(flat.img(:))),...
+  'a constant image was not left alone')
+
+% padding neither skews the range nor becomes a number
+withNaN = mapImage([1 2 NaN; 3 4 5],'dxy',1);
+rn = rescale(withNaN);
+assert(isnan(rn.img(1,3)),'rescale filled in a NaN')
+assert(abs(max(rn.img(:),[],'omitnan')-1) < 1e-12,'NaN skewed the range')
+
+end
+
+% =========================================================================
+function checkBoxFilter
+% the box filter, over an array, and its deliberate NaN behaviour
+
+rng(4);
+a = mapImage(randn(20,26),'dxy',1);
+b = mapImage(randn(13,13,3),'dxy',1);
+
+arr = imboxfilt([a b],5);
+assert(numel(arr) == 2,'imboxfilt did not return the whole array')
+assert(isequal(gridSize(arr(1)),gridSize(a)) && arr(2).nChannel == 3,...
+  'imboxfilt changed a shape')
+
+% a constant image is its own box mean, which is the check that the border
+% is replicated rather than zero padded
+flat = imboxfilt(mapImage(7*ones(9,9),'dxy',1),3);
+assert(max(abs(flat.img(:)-7)) < 1e-12,...
+  'a constant image was not preserved - the border is not replicated')
+
+% separability: a box mean of a box mean is not the same filter, but a
+% single box has to reproduce a hand computed interior value
+v = reshape(1:25,5,5); mv = imboxfilt(mapImage(v,'dxy',1),3);
+assert(abs(mv.img(3,3) - mean(v(2:4,2:4),'all')) < 1e-12,...
+  'the interior box mean is wrong')
+
+% NaN is excluded, not propagated - a resampled map is padded with it
+n = [1 2 3; 4 NaN 6; 7 8 9];
+mn = imboxfilt(mapImage(n,'dxy',1),3);
+assert(all(isfinite(mn.img(:))),...
+  'a single NaN spread over the neighbourhood instead of being excluded')
+assert(abs(mn.img(2,2) - mean([1 2 3 4 6 7 8 9])) < 1e-12,...
+  'the centre is not the mean of the finite values around it')
+
+% only where nothing finite was under the box does it stay NaN
+allNaN = imboxfilt(mapImage(nan(7,7),'dxy',1),3);
+assert(all(isnan(allNaN.img(:))),'an all NaN image came back finite')
+
+try
+  imboxfilt(a,4);
+  error('an even box size was accepted')
+catch e
+  assert(strcmp(e.identifier,'MTEX:mapImage:badBoxSize'),...
+    'wrong identifier for an even box: %s',e.identifier)
+end
 
 end
 

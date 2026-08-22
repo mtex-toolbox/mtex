@@ -17,6 +17,7 @@ set(0,'DefaultFigureVisible','off');
 cleanup = onCleanup(@() restore(vis));
 
 checkBackends
+checkArray
 checkCoordinates
 checkChannels
 checkRefusals
@@ -46,6 +47,37 @@ rot.d2 = 0.4*normalize(vector3d(1,-1,0));
 figure; h = plot(rot);
 assert(isa(h,'matlab.graphics.primitive.Surface'),...
   'a rotated grid drew a %s, expected a Surface',class(h))
+
+end
+
+% =========================================================================
+function checkArray
+% an array of images gets one axis each, named
+
+seq = [mapImage(rand(10,12),'dxy',0.5,'name','a'), ...
+       mapImage(rand(10,12),'dxy',0.5,'name','b'), ...
+       mapImage(rand(8,8),  'dxy',1.0,'name','c')];
+
+figure; h = plot(seq);
+
+assert(numel(h) == 3,'plotting 3 images returned %d handles',numel(h))
+
+ax = findobj(gcf,'Type','axes');
+assert(numel(ax) >= 3,'3 images drew %d axes',numel(ax))
+
+titles = sort(string(arrayfun(@(a) string(a.Title.String),ax)));
+assert(all(ismember(["a" "b" "c"],titles)),...
+  'the axes are not named after the images: %s',strjoin(titles,', '))
+
+% a single image is not titled - it needs no distinguishing
+figure; plot(seq(1));
+ax1 = findobj(gcf,'Type','axes');
+assert(isempty(char(ax1(1).Title.String)),'a lone image was given a title')
+
+% the edge flag draws the transform rather than the values
+figure; he = plot(seq(1),'edge');
+assert(max(abs(he.CData - edgeMap(seq(1))),[],'all') < 1e-12,...
+  '''edge'' did not draw the edge transform')
 
 end
 
@@ -99,7 +131,7 @@ end
 
 % =========================================================================
 function checkRefusals
-% the two states that have no sensible picture
+% the state that has no sensible picture
 
 try
   figure; plot(mapImage(rand(9,9,5),'dxy',1));
@@ -109,13 +141,7 @@ catch e
     'wrong identifier for a 5 channel image: %s',e.identifier)
 end
 
-% a sequence need not share a grid, so there is no one thing to draw
-try
-  figure; plot([mapImage(rand(4,4),'dxy',1), mapImage(rand(6,6),'dxy',2)]);
-  error('an array of images was drawn')
-catch e
-  assert(strcmp(e.identifier,'MTEX:mapImage:notScalar'),...
-    'wrong identifier for an array: %s',e.identifier)
-end
+% a sequence whose entries do not share a grid is still fine - one axis each
+figure; plot([mapImage(rand(4,4),'dxy',1), mapImage(rand(6,6),'dxy',2)]);
 
 end

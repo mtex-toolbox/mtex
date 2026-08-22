@@ -1,29 +1,38 @@
 function [h,mP] = plot(mg,varargin)
-% plot a mapImage on its specimen coordinates
+% plot one image, or a whole sequence, on its specimen coordinates
 %
-% Draws the image where it sits on the specimen, in micrometres rather than
-% pixels, with the screen orientation taken from the frame. So an image and
+% Draws each image where it sits on the specimen, in micrometres rather than
+% pixels, with the screen orientation taken from its frame. So an image and
 % the map it is aligned to plot on top of each other without either being
 % permuted first - MTEX moves the camera, not the data.
+%
+% Given an array, one axis per image, named by mg(k).name. That is the quick
+% check that a sequence covers the same area and is stored the same way up.
 %
 % Syntax
 %
 %   plot(mg)
+%   plot(imgList)                      % one axis per image
+%   plot(imgList,'edge')               % the edge transform of each
 %   plot(mg,'channel',2)
 %   plot(mg,'micronbar','off')
 %
 %   plot(ebsd,ebsd.bc); hold on; plot(mg,'AlphaData',0.5)
 %
 % Input
-%  mg - @mapImage
+%  mg - @mapImage, one or an array
 %
 % Output
-%  h  - handle to the graphics object
-%  mP - @mapPlot
+%  h  - handle to the graphics object, one per image
+%  mP - @mapPlot of the last axis
 %
 % Options
 %  channel   - which channel to draw, default all of them
 %  micronbar - 'on'/'off'
+%
+% Flags
+%  edge - draw edgeMap(mg) instead of the values, which is what a
+%         registration actually matches on
 %
 % Description
 % One channel is drawn as a scalar field through the current colormap; three
@@ -31,19 +40,44 @@ function [h,mP] = plot(mg,varargin)
 % picture, so name a channel.
 %
 % See also
-% mapImage EBSD/plot
+% mapImage mapImage/edgeMap EBSD/plot
 
 if isempty(mg), return; end
 
-assert(isscalar(mg),'MTEX:mapImage:notScalar',...
-  ['plot draws one image. For a sequence, loop or use nextAxis - '...
-  'plot(mg(k)) - since the entries need not share a grid.']);
-
 mtexFig = newMtexFigure(varargin{:});
-[mP,~] = newMapPlot('scanUnit','um','parent',mtexFig.gca,varargin{:},...
+
+h = gobjects(1,numel(mg));
+
+for k = 1:numel(mg)
+
+  if k > 1, mtexFig.nextAxis; end
+
+  [h(k),mP] = plotOne(mg(k),mtexFig,varargin{:});
+
+  % a sequence is worth labelling, a single image speaks for itself
+  if ~isscalar(mg) && ~isempty(mg(k).name)
+    title(mP.ax,mg(k).name);
+  end
+
+end
+
+mtexFig.drawNow(varargin{:});
+
+if nargout == 0, clear h; end
+
+end
+
+% =========================================================================
+function [h,mP] = plotOne(mg,mtexFig,varargin)
+
+mP = newMapPlot('scanUnit','um','parent',mtexFig.gca,varargin{:}, ...
   mg.how2plot,mg.frame);
 
-d = mg.img;
+if check_option(varargin,'edge')
+  d = edgeMap(mg);
+else
+  d = mg.img;
+end
 
 ch = get_option(varargin,'channel',[]);
 if ~isempty(ch), d = d(:,:,ch); end
@@ -80,8 +114,6 @@ end
 % only the options that name a property of what was drawn - the rest are
 % ours, or newMapPlot's, and image() would reject them
 h = optiondraw(h,varargin{:});
-
-if nargout == 0, clear h; end
 
 end
 
