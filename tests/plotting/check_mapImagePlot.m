@@ -17,6 +17,7 @@ set(0,'DefaultFigureVisible','off');
 cleanup = onCleanup(@() restore(vis));
 
 checkBackends
+checkScaling
 checkArray
 checkCoordinates
 checkChannels
@@ -47,6 +48,45 @@ rot.d2 = 0.4*normalize(vector3d(1,-1,0));
 figure; h = plot(rot);
 assert(isa(h,'matlab.graphics.primitive.Surface'),...
   'a rotated grid drew a %s, expected a Surface',class(h))
+
+end
+
+% =========================================================================
+function checkScaling
+% the colour scale has to follow the data, whatever range it is on
+%
+% image() maps CData through the colormap by VALUE unless told otherwise, so
+% an image on [0,1] - which is what rescale returns - used to land entirely
+% on the first colormap row and come out uniform, while one on [38,180]
+% happened to look right.
+
+rng(11);
+
+for rangeCase = {[0 1],[38 180],[-3 -1]}
+  r = rangeCase{1};
+  v = r(1) + (r(2)-r(1))*rand(20,25);
+
+  figure; h = plot(mapImage(v,'dxy',1));
+
+  assert(strcmp(h.CDataMapping,'scaled'),...
+    'CData on [%g %g] is mapped ''%s'', which ignores the colour limits',...
+    r(1),r(2),h.CDataMapping)
+
+  ax = ancestor(h,'axes');
+  assert(abs(ax.CLim(1)-min(v(:))) < 1e-9 && abs(ax.CLim(2)-max(v(:))) < 1e-9,...
+    'CLim is [%g %g] for data on [%g %g]',ax.CLim,min(v(:)),max(v(:)))
+end
+
+% a flat image has no range, and CLim must not be set to a degenerate one
+figure; hf = plot(mapImage(0.5*ones(8,8),'dxy',1));
+axf = ancestor(hf,'axes');
+assert(axf.CLim(2) > axf.CLim(1),'a constant image gave CLim %s',mat2str(axf.CLim))
+
+% grey by default - an image is a picture, not a scalar field
+figure; hg = plot(mapImage(rand(9,9),'dxy',1));
+cm = colormap(ancestor(hg,'axes'));
+assert(max(abs(cm(:,1)-cm(:,2))) < 1e-9 && max(abs(cm(:,2)-cm(:,3))) < 1e-9,...
+  'the default colormap is not grey')
 
 end
 

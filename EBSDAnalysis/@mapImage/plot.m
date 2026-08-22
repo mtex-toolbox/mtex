@@ -95,11 +95,18 @@ if isAxisAligned(mg)
 
   % the fast path - a regular axis aligned grid is what image() draws, and
   % XData/YData carry the true coordinates so no permutation is needed
+  % 'scaled', not image()'s default of 'direct'. Direct mapping indexes the
+  % colormap by the VALUE, so an image on [0,1] - which is what rescale
+  % returns, and what most of these are - lands entirely on row 1 and comes
+  % out uniform, while one on [38,180] happens to look right.
   h = image('XData',[pos.x(1,1) pos.x(end,end)],...
     'YData',[pos.y(1,1) pos.y(end,end)],...
-    'CData',d,'parent',mP.ax);
+    'CData',d,'CDataMapping','scaled','parent',mP.ax);
 
-  if size(d,3) == 1, set(mP.ax,'CLim',[min(d,[],'all') max(d,[],'all')]); end
+  if size(d,3) == 1
+    lo = min(d,[],'all'); hi = max(d,[],'all');
+    if hi > lo, set(mP.ax,'CLim',[lo hi]); end
+  end
 
 else
 
@@ -109,6 +116,13 @@ else
     'EdgeColor','none','parent',mP.ax);
   view(mP.ax,0,90);
 
+end
+
+% grey by default: an image is a picture, not a scalar field with a meaning
+% attached to its colour. A later mtexColorMap call overrides it, and a
+% three channel image is truecolor and uses no colormap at all
+if size(d,3) == 1 && ~check_option(varargin,'colormap')
+  mtexColorMap(mP.ax,'gray');
 end
 
 % only the options that name a property of what was drawn - the rest are
