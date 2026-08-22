@@ -63,6 +63,14 @@
 % and two flips, nothing resampled - and turns the map that travels with it,
 % so |ebsd.bc| keeps sitting beside |img| pixel for pixel.
 %
+% <mapImage.registerImage.html |registerImage|> says what an image should be
+% cross correlated on, which is not the same as what it carries -
+% |'edge'| for the <mapImage.edgeMap.html |edgeMap|> transform that makes a
+% band contrast map comparable to a backscatter image, |'raw'| where they
+% already share contrast, or a handle:
+%
+%   mg = mapImage(bse,'dxy',0.05,'registerOn',@(v) nthroot(v,0.1))
+%
 % <mapImage.plot.html |plot|> draws the image in micrometres where it sits, so
 % it overlays the map without either being permuted. Note that |size|, |numel|
 % and |length| describe the ARRAY of images, not the grid - a sequence of

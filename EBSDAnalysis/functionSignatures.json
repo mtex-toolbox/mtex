@@ -480,7 +480,26 @@
       {"name":"ebsd", "kind":"ordered", "type":["EBSD"]},
       {"name":"dxy", "kind":"namevalue", "type":["numeric"], "purpose":"pixel size, scalar or [dx dy]"},
       {"name":"name", "kind":"namevalue", "type":["char"]},
-      {"name":"origin", "kind":"namevalue", "type":["vector3d"]}
+      {"name":"origin", "kind":"namevalue", "type":["vector3d"]},
+      {"name":"registerOn", "kind":"namevalue", "type":[["choices={'edge','raw'}"],["function_handle"]]},
+      {"name":"edgePadWidth", "kind":"namevalue", "type":["numeric","scalar",">0"]}
+    ]
+},
+
+"mapImage.edgeMap":
+{
+    "inputs":
+    [
+      {"name":"mg", "kind":"required", "type":["mapImage"]},
+      {"name":"padWidth", "kind":"ordered", "type":["numeric","scalar",">0"]}
+    ]
+},
+
+"mapImage.registerImage":
+{
+    "inputs":
+    [
+      {"name":"mg", "kind":"required", "type":["mapImage"]}
     ]
 },
 

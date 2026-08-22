@@ -22,8 +22,88 @@ checkSize
 checkInterp
 checkSubGrid
 checkRelayout
+checkEdgeMap
+checkRegisterOn
 checkDisplay
 checkErrors
+
+end
+
+% =========================================================================
+function checkEdgeMap
+% the edge transform, and the percentile it normalises by
+
+% a step edge - the boundary lights up and the flat regions do not
+img = zeros(20,20); img(:,11:end) = 1;
+e = edgeMap(mapImage(img,'dxy',1));
+
+assert(isequal(size(e),[20 20]),'edgeMap returned %s',mat2str(size(e)))
+assert(all(e(:,10) > 0) && all(e(:,11) > 0),'the step itself did not light up')
+
+% away from the step AND away from the image border, since a pixel whose
+% neighbour is off the image differences against zero - so the border of the
+% bright half lights up too, deliberately
+in = 2:19;
+assert(all(e(in,2:9) == 0,'all') && all(e(in,12:19) == 0,'all'),...
+  'the flat interior of a step is not flat in the edge map')
+
+% that border behaviour is the documented choice, so pin it: the bright half
+% differences against the padding, the dark half has nothing to differ from
+assert(all(e(1,12:19) > 0),'the border of the bright region did not light up')
+assert(all(e(1,2:9) == 0),'the border of the dark region lit up against zero')
+
+% the scale does not depend on the channel count - a greyscale image and the
+% same values in three channels differ only by the sqrt(3) of the norm
+grey = rand(15,18);
+e1 = edgeMap(mapImage(grey,'dxy',1));
+e3 = edgeMap(mapImage(repmat(grey,1,1,3),'dxy',1));
+assert(max(abs(e3 - sqrt(3)*e1),[],'all') < 1e-12,...
+  'three identical channels are not sqrt(3) times one')
+
+% a flat image has no edges inside it, and must not divide by a zero range.
+% Its border is a different matter - see above, the padding is zero and the
+% image is not, so the frame lights up whatever the image
+flat = edgeMap(mapImage(0.5*ones(10,10),'dxy',1));
+assert(all(flat(2:9,2:9) == 0,'all'),'a constant image produced interior edges')
+assert(all(isfinite(flat(:))),'a constant image produced non finite values')
+
+% padWidth reaches further
+wide = edgeMap(mapImage(img,'dxy',1),3);
+assert(nnz(any(wide > 0,1)) > nnz(any(e > 0,1)),...
+  'a larger padWidth did not widen the edge')
+
+end
+
+% =========================================================================
+function checkRegisterOn
+% what an image is registered on is not what it carries
+
+img = rand(12,15);
+
+% the default is the edge transform, which is what makes a band contrast map
+% comparable to a backscatter image at all
+mg = mapImage(img,'dxy',1);
+assert(strcmp(mg.registerOn,'edge'),'the default registerOn is %s',mg.registerOn)
+assert(max(abs(registerImage(mg) - edgeMap(mg)),[],'all') == 0,...
+  'the default did not give the edge transform')
+
+% raw values, for images that already share contrast
+raw = mapImage(img,'dxy',1,'registerOn','raw');
+assert(max(abs(registerImage(raw) - img),[],'all') == 0,'''raw'' altered the values')
+
+% multi channel raw is averaged, since correlation wants one channel
+rgb = mapImage(rand(12,15,3),'dxy',1,'registerOn','raw');
+assert(isequal(size(registerImage(rgb)),[12 15]),...
+  '''raw'' on 3 channels returned %s',mat2str(size(registerImage(rgb))))
+
+% a handle - copper's gamma compression is the case this exists for
+gamma = mapImage(img,'dxy',1,'registerOn',@(v) nthroot(v,0.1));
+assert(max(abs(registerImage(gamma) - nthroot(img,0.1)),[],'all') < 1e-12,...
+  'the handle was not applied to the values')
+
+% and the values themselves are untouched by any of it
+assert(max(abs(gamma.img - img),[],'all') == 0,...
+  'registerOn changed what the image carries')
 
 end
 
@@ -394,6 +474,23 @@ try
 catch e
   assert(strcmp(e.identifier,'MTEX:mapImage:notContiguous'),...
     'wrong identifier for a non contiguous crop: %s',e.identifier)
+end
+
+try
+  mapImage(rand(5,5),'registerOn','sharpen');
+  error('an unknown registerOn was accepted')
+catch e
+  assert(strcmp(e.identifier,'MTEX:mapImage:badRegisterOn'),...
+    'wrong identifier for an unknown registerOn: %s',e.identifier)
+end
+
+% a handle that changes the grid is not a registration channel
+try
+  registerImage(mapImage(rand(5,5),'dxy',1,'registerOn',@(v) v(1:2,1:2)));
+  error('a handle that resized the image was accepted')
+catch e
+  assert(strcmp(e.identifier,'MTEX:mapImage:badRegisterOn'),...
+    'wrong identifier for a resizing handle: %s',e.identifier)
 end
 
 end
