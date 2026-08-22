@@ -38,6 +38,31 @@
 % the field does not fold and says so when it does. |discretize| collapses a
 % chain of any length into one interpolated field.
 %
+% *An Image That Knows Where It Sits*
+%
+% <mapImage.mapImage.html |mapImage|> is a raster of values together with the
+% geometry saying which part of the specimen each pixel covers, so an image
+% and an EBSD map are comparable objects rather than an array plus a pixel
+% size held separately. An EBSD map joins a sequence of images as one of them,
+% carrying the map along with whichever channel is to be registered on:
+%
+%   mg = mapImage(ebsd.bc,ebsd)
+%   mg = mapImage(bse,'dxy',0.05,'name','bse')
+%   v  = interp(mg, eval(inv(T),target.pos))   % resample through a transform
+%
+% The grid is regular - an origin and two perpendicular step vectors, with
+% |pos| derived rather than stored. That is the difference from
+% <EBSDgrid.EBSDgrid.html |EBSDgrid|>, which stores a position per pixel so a
+% measured grid may be rotated, sheared or smoothly distorted; an image is
+% none of those, since a distortion is applied by resampling onto a new
+% regular grid rather than by moving grid points. So |interp| is a
+% |griddedInterpolant| and |pos2ind| is a projection and a round.
+%
+% <mapImage.transformReferenceFrame.html |transformReferenceFrame|> lays the
+% array out in another <imageFrame.imageFrame.html |imageFrame|> - a transpose
+% and two flips, nothing resampled - and turns the map that travels with it,
+% so |ebsd.bc| keeps sitting beside |img| pixel for pixel.
+%
 % *A Gridded Map Can Be Stored In Any Layout*
 %
 % <EBSD.gridify.html |gridify|> takes an <imageFrame.imageFrame.html

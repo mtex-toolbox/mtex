@@ -80,6 +80,7 @@ budget, trim from outside these first.
 | EBSD grid geometry, `unitCell`/`lattice.ij`, `dynProp`, and `EBSD/transform` | `core/check_ebsdGrid` |
 | the spatial transform algebra: compose, invert, evaluate | `core/check_spatialTransform` |
 | fitting a spatial transform, and the robust solver behind every class | `core/check_spatialTransformFit` |
+| `@mapImage` geometry: derived `pos`, `pos2ind`, `interp`, cropping, relayout | `core/check_mapImage` |
 | spatial shift (`plus`/`minus`) of EBSD, grains, boundaries, triple points | `core/check_spatialShift` |
 | `EBSD/gradient`, KAM | `core/check_gradient` |
 | `gridify` on real data | `slow/check_gridify` |

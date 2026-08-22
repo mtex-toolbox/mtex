@@ -470,5 +470,28 @@
       {"name":"job", "kind":"required", "type":["parentGrainReconstructor"]},
       {"name":"maxSize", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"maximum pixel size of an inclusion"}
     ]
+},
+
+"mapImage":
+{
+    "inputs":
+    [
+      {"name":"img", "kind":"required", "type":["numeric"]},
+      {"name":"ebsd", "kind":"ordered", "type":["EBSD"]},
+      {"name":"dxy", "kind":"namevalue", "type":["numeric"], "purpose":"pixel size, scalar or [dx dy]"},
+      {"name":"name", "kind":"namevalue", "type":["char"]},
+      {"name":"origin", "kind":"namevalue", "type":["vector3d"]}
+    ]
+},
+
+"mapImage.interp":
+{
+    "inputs":
+    [
+      {"name":"mg", "kind":"required", "type":["mapImage"]},
+      {"name":"pos", "kind":"required", "type":["vector3d"]},
+      {"name":"method", "kind":"flag", "type":["choices={'linear','nearest','cubic','spline','makima'}"]},
+      {"name":"extrapolationMethod", "kind":"namevalue", "type":["char"]}
+    ]
 }
 }

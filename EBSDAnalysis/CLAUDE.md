@@ -4,6 +4,13 @@ The EBSD → grains pipeline, plus parent-phase reconstruction.
 
 - `@EBSD` (grid variants `@EBSDsquare`/`@EBSDhex`, volume `@EBSD3`/`@EBSD3square`) holds a
   whole scan as vectorized arrays. Select with `ebsd(idx)` / `ebsd(condition)`, never a loop.
+- `@mapImage` is an image plus the geometry saying where on the specimen it sits, so an
+  image and a map are comparable objects. Its grid is **regular** — origin, perpendicular
+  `d1`/`d2`, `pos` derived — which is why it does *not* descend from `@EBSDgrid`, whose
+  per-pixel `pos` exists to carry rotated, sheared and distorted grids. An image is never
+  those: a distortion is applied by resampling, never by moving grid points. The payoff is
+  `griddedInterpolant` in `interp` where `@EBSD/interp` must use `scatteredInterpolant`. An
+  EBSD map joins a sequence of images as `mapImage(ebsd.bc,ebsd)`.
 - `calcGrains` segments an `@EBSD` into a `grain2d` (`grain3d` for volume data). The
   criterion is pluggable — `grainBoundaryCriteria/`, extension point `gbcCustom.m`. The
   `'delaunay'` flag selects the alpha-complex decomposition (`spatialDecompositionAlpha.m`)
