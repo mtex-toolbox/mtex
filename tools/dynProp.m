@@ -59,12 +59,21 @@ classdef dynProp
     
     function dp = subSet(dp,ind)
 
+      n  = length(dp);
       fn = fieldnames(dp.prop);
       for i = 1:numel(fn)
-        if isMultiColumn(dp,dp.prop.(fn{i}))
-          dp.prop.(fn{i}) = dp.prop.(fn{i})(ind,:);
+        v = dp.prop.(fn{i});
+        k = nChannels(dp,v);
+        if k > 1
+          % index the objects and take every channel along. Flattening to
+          % one row per object first makes this the same operation whether
+          % the property is stored as N x k or, on a grid class, as
+          % r x c x k - the result is a list either way, and a caller that
+          % wants the map shape back reshapes (EBSDsquare/subGrid does).
+          v = reshape(v,n,k);
+          dp.prop.(fn{i}) = v(ind(:),:);
         else
-          dp.prop.(fn{i}) = dp.prop.(fn{i})(ind);
+          dp.prop.(fn{i}) = v(ind);
         end
       end
 
@@ -112,8 +121,7 @@ classdef dynProp
 
             fn = fieldnames(dp.prop);
             for i = 1:numel(fn)
-              dp.prop.(fn{i}) = subsasgn(dp.prop.(fn{i}),...
-                rowSubs(dp,s(1),dp.prop.(fn{i})),[]);
+              dp.prop.(fn{i}) = assignRows(dp,dp.prop.(fn{i}),s(1),[]);
             end
 
           else
@@ -124,16 +132,17 @@ classdef dynProp
               v = value.prop.(fn{i});
 
               if ~isfield(dp.prop,fn{i})
-                % a property the target does not carry yet, sized from the value
-                if isMultiColumn(value,v)
-                  dp.prop.(fn{i}) = zeros(length(dp),size(v,2));
+                % a property the target does not carry yet, sized from the
+                % value - one plane per channel, behind the object's shape
+                k = nChannels(value,v);
+                if k > 1
+                  dp.prop.(fn{i}) = zeros([objShape(dp) k]);
                 else
                   dp.prop.(fn{i}) = zeros(size(dp));
                 end
               end
 
-              dp.prop.(fn{i}) = subsasgn(dp.prop.(fn{i}),...
-                rowSubs(dp,s(1),dp.prop.(fn{i})),v);
+              dp.prop.(fn{i}) = assignRows(dp,dp.prop.(fn{i}),s(1),v);
 
             end
 
@@ -238,22 +247,75 @@ classdef dynProp
 end
 
 % =========================================================================
-function tf = isMultiColumn(dp,value)
-% is value a multi channel property, i.e. one column per channel?
+function k = nChannels(dp,value)
+% how many channels a property carries; 1 for an ordinary one
 %
-% An N x k property (a 5 channel forescatter image, say) holds one ROW per
-% object, so indexing has to address the rows and take every column along -
-% plain linear indexing would flatten it. An ordinary property holds one
-% entry per object and is indexed as it comes.
+% A property holds one entry per object, or k of them. On a list that is an
+% N x k matrix - a 5 diode forescatter image, say, or an RGB image. On a
+% grid class, whose properties are stored as the (r x c) matrix of the map,
+% the same image is r x c x k, one plane per channel. Either way the leading
+% dimensions are the shape of the object and the channels are whatever is
+% left over once the object count is divided out.
 %
 % length(dp) is the number of objects, not a matrix dimension: for the
 % classes that matter here it resolves to phaseList/length, which returns
-% size(phaseId,1) and so stays the pixel count even for a grid class whose
-% properties are stored as the (r x c) matrix of the map. That is what keeps
-% a square map's ordinary (r x c) property from being mistaken for r
-% channels of r objects.
+% size(phaseId,1) and so stays the pixel count even for a grid class. The
+% size(value,1) == size(dp,1) test is what keeps a square map's ordinary
+% (r x c) property from being read as c channels.
 
-tf = size(value,2) > 1 && length(dp) == size(value,1);
+k = 1;
+
+n = length(dp);
+if n == 0 || isempty(value), return; end
+
+m = numel(value) / n;
+if m > 1 && m == round(m) && size(value,1) == size(dp,1), k = m; end
+
+end
+
+% =========================================================================
+function sz = objShape(dp)
+% the object's own shape, with the channel dimension to be appended behind it
+%
+% A column shaped object stores a multi channel property as n x k, not
+% n x 1 x k, so its trailing singleton has to go before the channels are
+% appended. A grid keeps both of its dimensions and takes r x c x k.
+
+sz = size(dp);
+if numel(sz) == 2 && sz(2) == 1, sz = sz(1); end
+
+end
+
+% =========================================================================
+function target = assignRows(dp,target,s,v)
+% assign v into the objects picked out by s, channels and all
+%
+% A multi channel property is flattened to one row per object first, so that
+% a single linear or logical subscript addresses pixels rather than rows of
+% the (r x c) matrix a grid class stores, and the shape is put back
+% afterwards. Deleting removes objects, so there is no shape left to put
+% back and the result stays a list.
+
+k = nChannels(dp,target);
+
+if k == 1
+  target = subsasgn(target,s,v);
+  return
+end
+
+shp    = size(target);
+n      = length(dp);
+target = reshape(target,n,k);
+
+% the caller's subscript, resolved against the objects rather than against
+% the storage, so that (i,j) and a linear index mean the same thing here
+s.subs = {reshape(subsref(reshape(1:n,size(dp)),s),[],1), ':'};
+
+if isempty(v)
+  target = reshape(subsasgn(target,s,[]),[],k);
+else
+  target = reshape(subsasgn(target,s,reshape(v,[],k)),shp);
+end
 
 end
 
@@ -263,8 +325,15 @@ function s = rowSubs(dp,s,value)
 %
 % Built fresh from the caller's subscript for every property rather than
 % appended to a shared one - accumulating into s adds a second ':' as soon
-% as a second property is N x k.
+% as a second property is multi channel.
+%
+% Appending one ':' is right when the subscript already addresses the
+% object's own dimensions: (ind) on an N x k list, (i,j) on an r x c x k
+% grid. A single linear subscript into a grid would need the property
+% flattened to one row per object instead - subSet does that, and @EBSD and
+% @grain2d route all of their () indexing through it rather than through
+% here.
 
-if isMultiColumn(dp,value), s.subs = [s.subs, ':']; end
+if nChannels(dp,value) > 1, s.subs = [s.subs, ':']; end
 
 end

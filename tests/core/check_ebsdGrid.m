@@ -570,6 +570,27 @@ for fn = {'id','phase','isIndexed','rotations','pos','bc'}
     char(fn), mat2str(size(v)), mat2str(size(grid)));
 end
 
+% the same has to hold after subGrid, which reshapes the map it cuts out.
+% reshape rebuilt id, rotations and every prop but left pos a column, so
+% subGrid handed back an @EBSDsquare on which d2 read pos(1,2) and errored
+% while d1 returned the right number for the wrong reason.
+sub = subGrid(grid,[false(3,sz); true(sz-3,sz)]);
+
+assert(isequal(size(sub),[sz-3 sz]), ...
+  'check_ebsdGrid: subGrid returned %s, expected %s', ...
+  mat2str(size(sub)), mat2str([sz-3 sz]));
+
+for fn = {'id','phase','isIndexed','rotations','pos','bc'}
+  v = sub.(char(fn));
+  assert(isequal(size(v),size(sub)), ...
+    'check_ebsdGrid: %s of a subGrid map is %s, expected the map shape %s', ...
+    char(fn), mat2str(size(v)), mat2str(size(sub)));
+end
+
+assert(abs(norm(sub.d1) - d) < 1e-10 && abs(norm(sub.d2) - d) < 1e-10, ...
+  'check_ebsdGrid: subGrid steps are %g, %g, expected %g', ...
+  norm(sub.d1), norm(sub.d2), d);
+
 % an ungridded map is a flat list, and phase must not be reshaped there
 assert(isequal(size(ebsd.phase),size(ebsd)), ...
   'check_ebsdGrid: phase of a plain list is %s, expected %s', ...
@@ -614,7 +635,93 @@ checkAssignment(ebsd);
 checkAssignmentNewField(ebsd);
 checkDeletion(ebsd);
 checkCat(ebsd);
+checkChannelsOnAGrid;
 
+
+end
+
+% =========================================================================
+function checkChannelsOnAGrid
+% the same property on a grid class, where it is stored as r x c x k
+%
+% A grid holds one entry per pixel as the (r x c) matrix of the map, so a
+% k channel property is r x c x k, not N x k. Nothing knew that:
+%
+%  - dynProp decided "multi channel" from size(value,2) > 1, which an r x c
+%    property satisfies on its own. An r x c x k one therefore came out the
+%    other side as an ordinary property indexed linearly, so ebsd(i,j) and
+%    subGrid returned channel 1 with the values of the wrong pixels, and
+%    said nothing
+%  - EBSD/reshape reshaped to the map shape alone, dropping the channels
+%  - squarify wrote every property into an r x c matrix, so gridify of a
+%    list carrying an N x k property errored on the element count
+%
+% Values here encode both pixel and channel, so a flattened or misindexed
+% result is visible in the numbers rather than only in the size.
+
+r = 7; c = 5; n = r*c; d = 0.3;
+[Y,X] = ndgrid((0:r-1)*d,(0:c-1)*d);
+
+ebsd = gridify(EBSD(vector3d(X(:),Y(:),zeros(n,1)), rotation.rand(n,1), ...
+  ones(n,1), {crystalSymmetry('m-3m')}, struct('bc',(1:n).')));
+
+assert(isequal(size(ebsd),[r c]),'check_ebsdGrid: the fixture did not grid');
+
+base = reshape(1:n,r,c);
+ebsd.prop.rgb = cat(3,base,10*base,100*base);   % channel k is 10^(k-1) * pixel
+
+% two subscripts: the pixel block, all three channels
+sub = ebsd(2:5,2:4);
+assertChannels(sub.rgb,base(2:5,2:4),'ebsd(i,j)');
+
+% a logical mask that keeps a rectangle, through subGrid
+mask = false(r,c); mask(3:r,:) = true;
+assertChannels(subGrid(ebsd,mask).rgb,base(3:r,:),'subGrid');
+
+% a mask that does not, so the map becomes a list - then N x k
+lin = ebsd(mask);
+assert(isequal(size(lin.rgb),[nnz(mask) 3]), ...
+  'check_ebsdGrid: a grid reduced to a list must hold N x k, got %s', ...
+  mat2str(size(lin.rgb)));
+assert(isequal(lin.rgb(:,3),100*base(mask)), ...
+  'check_ebsdGrid: the list lost track of which pixel a channel value belongs to');
+
+% and back again
+reGrid = gridify(lin);
+assert(ndims(reGrid.rgb)==3 && size(reGrid.rgb,3)==3, ...
+  'check_ebsdGrid: gridify of a list carrying N x k must give r x c x k, got %s', ...
+  mat2str(size(reGrid.rgb)));
+c1 = reGrid.rgb(:,:,1); c3 = reGrid.rgb(:,:,3); known = ~isnan(c1);
+assert(isequal(c3(known),100*c1(known)), ...
+  'check_ebsdGrid: gridify scattered the channels independently');
+
+% writing a subset back keeps the map shape and moves every channel
+tgt = ebsd; tgt(1:2,1:2) = ebsd(4:5,3:4);
+assert(isequal(size(tgt.rgb),[r c 3]), ...
+  'check_ebsdGrid: assignment flattened the channels to %s',mat2str(size(tgt.rgb)));
+assert(isequal(tgt.rgb(1:2,1:2,3),100*base(4:5,3:4)), ...
+  'check_ebsdGrid: assignment wrote the wrong channel values');
+assert(isequal(tgt.rgb(r,c,2),10*base(r,c)), ...
+  'check_ebsdGrid: assignment disturbed a pixel outside the target');
+
+% the ordinary property next to it is untouched throughout
+assert(isequal(size(tgt.bc),[r c]) && isequal(sub.bc,base(2:5,2:4)), ...
+  'check_ebsdGrid: an ordinary property stopped being the map matrix');
+
+end
+
+% =========================================================================
+function assertChannels(v,pixels,what)
+% v has to be pixels in channel 1, 10x in channel 2, 100x in channel 3
+
+assert(isequal(size(v),[size(pixels) 3]), ...
+  'check_ebsdGrid: %s gives %s, expected %s', ...
+  what, mat2str(size(v)), mat2str([size(pixels) 3]));
+
+for k = 1:3
+  assert(isequal(v(:,:,k),10^(k-1)*pixels), ...
+    'check_ebsdGrid: %s returned the wrong values in channel %d',what,k);
+end
 
 end
 

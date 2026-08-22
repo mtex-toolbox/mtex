@@ -35,12 +35,7 @@ d(ind) = ebsd.rotations.d;
 % update all other properties
 prop = ebsd.prop;
 for fn = fieldnames(ebsd.prop).'
-  if isnumeric(prop.(char(fn))) || islogical(prop.(char(fn)))
-    prop.(char(fn)) = nan(sGrid);
-  else
-    prop.(char(fn)) = prop.(char(fn)).nan(sGrid);
-  end
-  prop.(char(fn))(ind) = ebsd.prop.(char(fn));
+  prop.(char(fn)) = scatterProp(ebsd.prop.(char(fn)),ind,sGrid,length(ebsd));
 end
 
 % store old id
