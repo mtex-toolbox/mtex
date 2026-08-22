@@ -59,7 +59,8 @@ classdef mapImage
   properties
     img = []
     name = ''
-    ebsd = EBSD.empty
+    ebsd = EBSD    % default constructed, not EBSD.empty - isempty on an
+                   % empty EBSD ARRAY errors inside phaseList
     origin = vector3d(0,0,0)
     d1 = vector3d(0,1,0)
     d2 = vector3d(1,0,0)
@@ -81,7 +82,8 @@ classdef mapImage
 
       if nargin == 0, return; end
 
-      [mg.ebsd,varargin] = getClass(varargin,'EBSD');
+      [payload,varargin] = getClass(varargin,'EBSD');
+      if ~isempty(payload), mg.ebsd = payload; end
 
       if ~isempty(mg.ebsd)
 
@@ -170,8 +172,13 @@ classdef mapImage
     function d = get.dy(mg), d = norm(mg.d1); end
     function k = get.nChannel(mg), k = size(mg.img,3); end
 
-    function varargout = size(mg,dim)
-      % the size of the GRID, not of img - use nChannel for the third
+    function varargout = gridSize(mg,dim)
+      % the size of the grid this image is on
+      %
+      % NOT size(mg): a sequence of images is a @mapImage array, so size,
+      % numel and length have to keep describing that array. @EBSD can
+      % overload them to mean the map because nobody builds an array of EBSD
+      % objects; here the array is the point.
 
       sz = size(mg.img,[1 2]);
 
@@ -181,18 +188,10 @@ classdef mapImage
       elseif nargout <= 1
         varargout{1} = sz;
       else
-        varargout = num2cell([sz, ones(1,nargout-2)]);
-        varargout = varargout(1:nargout);
+        sz = [sz, ones(1,max(0,nargout-2))];
+        varargout = num2cell(sz(1:nargout));
       end
 
-    end
-
-    function n = numel(mg)
-      n = prod(size(mg)); %#ok<PSIZE> size is the grid, not the object array
-    end
-
-    function tf = isempty(mg)
-      tf = isempty(mg.img);
     end
 
     function v = double(mg)
@@ -202,7 +201,7 @@ classdef mapImage
 
     function s = char(mg)
 
-      sz = size(mg);
+      sz = gridSize(mg);
       s = sprintf('%d x %d',sz(1),sz(2));
       if mg.nChannel > 1, s = sprintf('%s x %d',s,mg.nChannel); end
       s = sprintf('%s  step %.4g x %.4g',s,mg.dx,mg.dy);

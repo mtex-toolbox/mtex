@@ -27,7 +27,7 @@ function [i,j,inside] = pos2ind(mg,pos)
 i = round(u) + 1;
 j = round(v) + 1;
 
-sz = size(mg);
+sz = gridSize(mg);
 inside = i >= 1 & i <= sz(1) & j >= 1 & j <= sz(2);
 
 if nargout <= 1

@@ -42,7 +42,7 @@ extrap = get_option(varargin,'extrapolationMethod','none');
 
 [ri,ci] = gridCoordinates(mg,pos);
 
-sz = size(mg);
+sz = gridSize(mg);
 gi = griddedInterpolant({1:sz(1),1:sz(2)},mg.img(:,:,1),method,extrap);
 
 k = mg.nChannel;

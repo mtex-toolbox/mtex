@@ -22,7 +22,7 @@ function varargout = extent(mg,ind)
 % See also
 % mapImage EBSD/extent
 
-sz = size(mg);
+sz = gridSize(mg);
 
 corners = mg.origin + [0 0 sz(1)-1 sz(1)-1].*mg.d1 + [0 sz(2)-1 0 sz(2)-1].*mg.d2;
 

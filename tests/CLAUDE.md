@@ -81,6 +81,7 @@ budget, trim from outside these first.
 | the spatial transform algebra: compose, invert, evaluate | `core/check_spatialTransform` |
 | fitting a spatial transform, and the robust solver behind every class | `core/check_spatialTransformFit` |
 | `@mapImage` geometry: derived `pos`, `pos2ind`, `interp`, cropping, relayout | `core/check_mapImage` |
+| `mapImage/plot` — the two backends, and that an image draws where the map says it is | `plotting/check_mapImagePlot` |
 | spatial shift (`plus`/`minus`) of EBSD, grains, boundaries, triple points | `core/check_spatialShift` |
 | `EBSD/gradient`, KAM | `core/check_gradient` |
 | `gridify` on real data | `slow/check_gridify` |

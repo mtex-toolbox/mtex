@@ -63,6 +63,12 @@
 % and two flips, nothing resampled - and turns the map that travels with it,
 % so |ebsd.bc| keeps sitting beside |img| pixel for pixel.
 %
+% <mapImage.plot.html |plot|> draws the image in micrometres where it sits, so
+% it overlays the map without either being permuted. Note that |size|, |numel|
+% and |length| describe the ARRAY of images, not the grid - a sequence of
+% images is a |mapImage| array, which is the opposite choice from |@EBSD|. The
+% grid is |gridSize(mg)|.
+%
 % *A Gridded Map Can Be Stored In Any Layout*
 %
 % <EBSD.gridify.html |gridify|> takes an <imageFrame.imageFrame.html

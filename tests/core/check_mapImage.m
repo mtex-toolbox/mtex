@@ -22,7 +22,37 @@ checkSize
 checkInterp
 checkSubGrid
 checkRelayout
+checkDisplay
 checkErrors
+
+end
+
+% =========================================================================
+function checkDisplay
+% display has to survive every state a mapImage can be in
+%
+% It did not: it looped over length(mg) while size and numel had been
+% overloaded to mean the GRID, so a scalar image displayed its pixels as
+% though they were objects, and an array could not be displayed at all. A
+% default constructed entry then broke it again on the empty frame.
+
+d = 0.3; ebsd = makeMap(6,d);
+
+states = {mapImage, ...                                  % nothing set
+          mapImage(rand(4,5),'dxy',0.2), ...             % no map, no name
+          mapImage(rand(4,5,3),'dxy',0.2,'name','rgb'), ...
+          mapImage(ebsd.bc,ebsd,'name','bc'), ...        % carries a map
+          [mapImage(rand(3,3),'dxy',1), mapImage], ...   % array with a gap
+          mapImage.empty};
+
+for k = 1:numel(states)
+  try
+    txt = evalc('display(states{k})');
+  catch e
+    error('display failed on state %d: %s',k,e.message);
+  end
+  assert(~isempty(txt),'display produced nothing for state %d',k)
+end
 
 end
 
@@ -56,7 +86,7 @@ function checkConstruction
 img = rand(7,11);
 mg = mapImage(img,'dxy',[0.5 0.25],'name','bse');
 
-assert(isequal(size(mg),[7 11]),'size is %s, expected [7 11]',mat2str(size(mg)))
+assert(isequal(gridSize(mg),[7 11]),'gridSize is %s, expected [7 11]',mat2str(gridSize(mg)))
 assert(mg.nChannel == 1,'a 2d array has %d channels',mg.nChannel)
 assert(strcmp(mg.name,'bse'),'the name did not survive construction')
 assert(abs(mg.dx - 0.5) < 1e-12 && abs(mg.dy - 0.25) < 1e-12,...
@@ -74,7 +104,7 @@ assert(abs(max(u8.img,[],'all') - 1) < 1e-12,'uint8 was not scaled to [0,1]')
 % channels are kept
 rgb = mapImage(rand(4,5,3));
 assert(rgb.nChannel == 3,'a 3 channel image reports %d',rgb.nChannel)
-assert(isequal(size(rgb),[4 5]),'size should be the grid, not the array')
+assert(isequal(gridSize(rgb),[4 5]),'gridSize should be the grid')
 
 end
 
@@ -85,7 +115,7 @@ function checkFromMap
 d = 0.3; ebsd = makeMap(9,d);
 mg = mapImage(ebsd.bc,ebsd);
 
-assert(isequal(size(mg),size(ebsd)),'the image and the map disagree on size')
+assert(isequal(gridSize(mg),size(ebsd)),'the image and the map disagree on size')
 assert(abs(mg.dx - norm(ebsd.d2)) < 1e-12 && abs(mg.dy - norm(ebsd.d1)) < 1e-12,...
   'the step was not taken from the map')
 
@@ -196,15 +226,25 @@ function checkSize
 
 mg = mapImage(rand(4,9,3),'dxy',0.5);
 
-assert(isequal(size(mg),[4 9]),'size(mg) is %s',mat2str(size(mg)))
-assert(size(mg,1) == 4 && size(mg,2) == 9,'size(mg,dim) is wrong')
-assert(size(mg,3) == 1,'size(mg,3) should be 1 - channels are nChannel')
+assert(isequal(gridSize(mg),[4 9]),'gridSize is %s',mat2str(gridSize(mg)))
+assert(gridSize(mg,1) == 4 && gridSize(mg,2) == 9,'gridSize(mg,dim) is wrong')
+assert(gridSize(mg,3) == 1,'gridSize(mg,3) should be 1 - channels are nChannel')
 
-[r,c] = size(mg);
-assert(r == 4 && c == 9,'[r,c] = size(mg) is wrong')
+[r,c] = gridSize(mg);
+assert(r == 4 && c == 9,'[r,c] = gridSize(mg) is wrong')
 
-assert(numel(mg) == 36,'numel is %d, expected 36',numel(mg))
-assert(~isempty(mg) && isempty(mapImage),'isempty is wrong')
+% size, numel and length have to keep describing the OBJECT ARRAY, or a
+% sequence of images cannot be one. This is where mapImage parts company
+% with @EBSD, which overloads them to mean the map
+assert(isscalar(mg),'a single mapImage is not scalar')
+
+arr = [mg, mapImage(rand(3,3),'dxy',1)];
+assert(numel(arr) == 2 && length(arr) == 2 && isequal(size(arr),[1 2]),...
+  'an array of 2 images reports numel %d, length %d, size %s',...
+  numel(arr),length(arr),mat2str(size(arr)))
+assert(isequal(gridSize(arr(2)),[3 3]),'indexing the array gave the wrong image')
+
+assert(isempty(mapImage.empty),'an empty mapImage array is not empty')
 
 end
 
@@ -244,7 +284,7 @@ mg = mapImage(ebsd.bc,ebsd);
 
 sub = subGrid(mg,3:7,4:9);
 
-assert(isequal(size(sub),[5 6]),'the crop is %s, expected [5 6]',mat2str(size(sub)))
+assert(isequal(gridSize(sub),[5 6]),'the crop is %s, expected [5 6]',mat2str(gridSize(sub)))
 assert(max(abs(sub.img - mg.img(3:7,4:9)),[],'all') == 0,'the crop took the wrong pixels')
 
 % the geometry has to follow, or the crop no longer says where it is
@@ -259,7 +299,7 @@ assert(isequal(size(sub.ebsd),[5 6]),'the map was not cropped with the image')
 % a mask takes its bounding box
 mask = false(10,10); mask(4:6,2:8) = true;
 mb = subGrid(mg,mask);
-assert(isequal(size(mb),[3 7]),'the mask crop is %s, expected [3 7]',mat2str(size(mb)))
+assert(isequal(gridSize(mb),[3 7]),'the mask crop is %s, expected [3 7]',mat2str(gridSize(mb)))
 
 end
 
@@ -276,9 +316,9 @@ turned = transformReferenceFrame(mg,target);
 assert(isAligned(turned.arrayFrame,target),...
   'the array was not laid out in the frame asked for')
 
-assert(isequal(size(turned),flip(size(mg))),...
+assert(isequal(gridSize(turned),flip(gridSize(mg))),...
   'a quarter turn left the array %s, expected %s',...
-  mat2str(size(turned)),mat2str(flip(size(mg))))
+  mat2str(gridSize(turned)),mat2str(flip(gridSize(mg))))
 
 % every pixel still covers the same piece of specimen, so the two position
 % sets agree as SETS - sortrows, not sort, or x and y would be compared
@@ -295,7 +335,7 @@ assert(abs(turned.dx - mg.dy) < 1e-12 && abs(turned.dy - mg.dx) < 1e-12,...
 % the new origin is worth pinning outright rather than only via the round
 % trip. Columns now run along -d1, so the corner that ends up at (1,1) is
 % the one at the far end of the old rows
-sz = size(mg);
+sz = gridSize(mg);
 assert(norm(turned.origin - mg.pos(sz(1),1)) < 1e-12,...
   'the new origin is not the corner the flips brought to the front')
 
@@ -305,14 +345,14 @@ assert(abs(turned.img(i,j) - mg.img(2,3)) < 1e-12,...
   'a pixel and its position came apart in the relayout')
 
 % the map came too
-assert(isequal(size(turned.ebsd),size(turned)),...
+assert(isequal(size(turned.ebsd),gridSize(turned)),...
   'the map was not turned with the image')
 assert(max(abs(turned.ebsd.bc - turned.img),[],'all') < 1e-12,...
   'the map and the image are no longer in the same order')
 
 % turning it back is the identity
 back = transformReferenceFrame(turned,mg.arrayFrame);
-assert(isequal(size(back),size(mg)) && ...
+assert(isequal(gridSize(back),gridSize(mg)) && ...
   max(abs(back.img - mg.img),[],'all') < 1e-12,'the relayout does not round trip')
 assert(norm(back.origin - mg.origin) < 1e-12,'the origin did not round trip')
 
