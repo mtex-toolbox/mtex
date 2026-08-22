@@ -623,5 +623,40 @@
       {"name":"antipodal", "kind":"flag"},
       {"name":"unique", "kind":"flag"}
     ]
+},
+
+"spatialTransformShift":
+{
+    "inputs":
+    [
+      {"name":"M", "kind":"required", "type":["numeric","2d"], "purpose":"3x3 homogeneous matrix"}
+    ]
+},
+
+"spatialTransformShift.fit":
+{
+    "inputs":
+    [
+      {"name":"posA", "kind":"required", "type":["vector3d"]},
+      {"name":"posB", "kind":"required", "type":["vector3d"]},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"], "purpose":"one weight per point"}
+    ]
+},
+
+"spatialTransformHandle":
+{
+    "inputs":
+    [
+      {"name":"fun", "kind":"required", "type":["function_handle"]},
+      {"name":"funInv", "kind":"ordered", "type":["function_handle"]}
+    ]
+},
+
+"spatialTransformComposite":
+{
+    "inputs":
+    [
+      {"name":"T", "kind":"required", "type":["spatialTransform"], "repeating":true, "purpose":"stages, in the order they are applied"}
+    ]
 }
 }

@@ -2,6 +2,28 @@
 %
 %% MTEX develop - New Features
 %
+% *A Spatial Distortion Is An Object*
+%
+% <spatialTransform.spatialTransform.html |spatialTransform|> is a map from
+% position to position that composes, inverts and displays, where
+% <EBSD.transform.html |transform|> previously took only a bare function
+% handle. |transform| still takes either:
+%
+%   T = spatialTransformShift.fit(posA,posB,'weights',peakHeight)
+%   ebsd = transform(ebsd,T)
+%   ebsd = transform(ebsd,inv(T))     % and back again
+%
+% Direction is fixed once: |T| maps a position in one frame to the same
+% physical point in the next, and |T2 * T1| applies |T1| first. Filling an
+% output grid always uses |inv(T)| - for each target pixel, ask where it came
+% from. |T * pos| evaluates and |T2 * T1| composes, as for a
+% <rotation.rotation.html |rotation|>.
+%
+% Two affines absorb into a third; anything else composes into a
+% |spatialTransformComposite| that keeps its stages, so a distortion fitted in
+% several passes is still one object. Differently modelled transforms share a
+% base, so a chain of hops is one array rather than a cell array.
+%
 % *A Gridded Map Can Be Stored In Any Layout*
 %
 % <EBSD.gridify.html |gridify|> takes an <imageFrame.imageFrame.html

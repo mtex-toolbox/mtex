@@ -19,13 +19,15 @@ function grains = transform(grains,fun)
 %
 % Input
 %  grains - @grain2d
-%  fun    - function handle, @vector3d -> @vector3d
+%  fun    - function handle, @vector3d -> @vector3d, or a @spatialTransform
 %
 % Output
 %  grains - @grain2d with transformed vertices
 %
 % See also
-% grain2d/rotate EBSD/transform
+% grain2d/rotate EBSD/transform spatialTransform
+
+if isa(fun,'spatialTransform'), T = fun; fun = @(pos) eval(T,pos); end
 
 grains.allV = fun(grains.allV);
 

@@ -263,7 +263,41 @@ checkShear;
 checkRotationAgreesWithRotate;
 checkGridInvariants;
 checkTrapezoidalDrift;
+checkTransformObject;
 
+
+end
+
+% =========================================================================
+function checkTransformObject
+% a @spatialTransform and the equivalent handle have to agree
+%
+% transform takes either, and the object route must not become a second
+% implementation - same positions, same unit cell, same lattice index.
+
+d = 0.3; ebsd = makeMap(12,d);
+
+M = [1.02 0.13 4; -0.09 0.97 -2.5; 0 0 1];
+T = spatialTransformShift(M);
+
+ebsdT = transform(ebsd,T);
+ebsdF = transform(ebsd, @(pos) vector3d( ...
+  M(1,1)*pos.x + M(1,2)*pos.y + M(1,3), ...
+  M(2,1)*pos.x + M(2,2)*pos.y + M(2,3), pos.z));
+
+assert(max(norm(ebsdT.pos(:) - ebsdF.pos(:))) < 1e-12*d, ...
+  'check_ebsdGrid: transform(ebsd,T) and the equivalent handle moved pixels differently');
+
+assert(cellDeviation(ebsdT.unitCell,ebsdF.unitCell) < 1e-12*d, ...
+  'check_ebsdGrid: transform(ebsd,T) and the equivalent handle disagree on the unit cell');
+
+assert(isequal(ebsdT.lattice.ij, ebsdF.lattice.ij), ...
+  'check_ebsdGrid: transform(ebsd,T) and the equivalent handle disagree on the lattice index');
+
+% inv(T) undoes it, which is the property a handle cannot offer
+ebsdBack = transform(ebsdT,inv(T));
+assert(max(norm(ebsdBack.pos(:) - ebsd.pos(:))) < 1e-10*d, ...
+  'check_ebsdGrid: transform by inv(T) did not return the map to where it started');
 
 end
 
