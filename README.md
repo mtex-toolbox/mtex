@@ -31,6 +31,13 @@ In contrast to many other software
 
 More detail can be found in the [documentation](http://mtex-toolbox.github.io/documentation.html).
 
+Using an AI assistant?
+======================
+
+Language models generally learned MTEX from material written for MTEX 5.x and will produce
+outdated code — much of which still runs, but silently does something else. Paste
+[`MTEX_for_LLMs.md`](MTEX_for_LLMs.md) into your chat first; it lists every syntax and
+concept that changed in MTEX 6.0, 6.1 and 7.0.
 
 Installation and requirements
 =============================
