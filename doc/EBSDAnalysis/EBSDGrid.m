@@ -49,7 +49,68 @@ ebsd(50,100)
 % curvature>, <EBSD.calcGND.html GND> and <EBSD.fill.html fill> are computed
 % on the virtual lattice that <EBSD.lattice.html |lattice|> derives from the
 % unit cell, and therefore work on arbitrarily aligned data just as well.
+
+%% Choosing the Layout
 %
+% The first bullet above - hand the data to image processing as a matrix -
+% only pays off if the matrix is the way round the picture is. A forescatter
+% or BSE image of the same area is stored the way its detector wrote it, and
+% that need not be the way MTEX stores a map. Correlating the two, or using
+% one as a mask on the other, then needs the map in the image's layout.
+%
+% |'columnMajor'| and |'rowMajor'| are the two layouts aligned with x and y,
+% and they are <imageFrame.imageFrame.html |imageFrame|>s like any other. Hand
+% |gridify| a different one and the map is stored that way instead. Say the
+% picture's columns run along y and its rows against x - a detector mounted a
+% quarter turn from the scan
+
+iF = imageFrame(yvector,-xvector)
+
+%%
+% Then the map goes into that layout, and its shape follows
+
+ebsdI = gridify(ebsd,iF)
+
+%%
+% Nothing was resampled and no value invented: a transpose and two flips are
+% all that is ever applied, which is why this is safe to do to orientation
+% data. A map states the layout it is in, so it can be read back off
+
+imageFrame(ebsdI)
+
+%%
+% Every per pixel property comes out in that layout, so band contrast is now
+% a matrix that can be put beside an image stored the same way with nothing in
+% between. For this particular pair of layouts that is a quarter turn, and it
+% really is only that - reindexed, not resampled
+
+isequal(ebsdI.bc, rot90(ebsd.bc))
+
+%%
+% Putting it back is therefore exact. The two layouts are a conversion, not a
+% transformation, and |imageFrame(ebsd)| names the one to come back to
+
+isequal(gridify(ebsdI,imageFrame(ebsd)).bc, ebsd.bc)
+
+%%
+% Note what has *not* changed. The layout is how the measurements are stored,
+% not where the specimen is, so the map still plots the same way up - MTEX
+% moves the camera for the screen, never the data
+
+nextAxis
+plot(ebsd,ebsd.bc), mtexColorMap gray
+title('columnMajor')
+nextAxis
+plot(ebsdI,ebsdI.bc), mtexColorMap gray
+title('col ||y, row ||-x')
+
+%%
+% A grid that is rotated or sheared cannot land on an axis aligned layout
+% exactly, and is put as close to it as a permutation can get - the same
+% best effort |gridify| has always made for the two flags.
+% <EBSDsquare.transformReferenceFrame.html |transformReferenceFrame|> is this
+% step under its own name, for a map that is already gridded.
+
 %% Data That Can Not Be Put on a Grid
 %
 % Gridding writes the measurements into a rectangular raster, which is

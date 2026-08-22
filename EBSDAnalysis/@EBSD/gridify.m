@@ -31,9 +31,11 @@ function varargout = gridify(ebsd,varargin)
 %   [ebsdGrid,newId] = gridify(ebsd)
 %   [ebsdGrid,newId] = gridify(ebsd,'unitCell',unitCell)
 %   [ebsdGrid,newId] = gridify(ebsd,'rowMajor')
+%   [ebsdGrid,newId] = gridify(ebsd,imageFrame(otherMap))
 %
 % Input
 %  ebsd - an @EBSD data set with a non regular grid
+%  iF   - @imageFrame, any axis aligned layout
 %
 % Output
 %  ebsd - @EBSDsquare, @EBSDhex data on a regular grid
@@ -54,6 +56,13 @@ function varargout = gridify(ebsd,varargin)
 % Accordingly |ebsd(i,j)| is the j-th pixel of the i-th scan row and
 % |ebsd(1,1)| is the corner with the smallest coordinates. Hexagonal grids
 % are always stored this way, the flags apply to square grids only.
+%
+% The two flags are the two layouts an <imageFrame.imageFrame.html
+% |imageFrame|> can state that are aligned with x and y, and any other axis
+% aligned layout may be asked for by handing one over instead - which is how
+% a map is put in the same order as an image it is to be compared with pixel
+% by pixel. A grid that is rotated or sheared cannot land on the requested
+% layout exactly and is put as close to it as a permutation can get.
 %
 % The layout is a property of the MAP, not of the file: it is the same
 % whichever corner the acquisition started from and whichever direction it
@@ -97,9 +106,9 @@ unitCell = get_option(varargin,'unitCell',ebsd.unitCell);
 if length(unitCell) == 6
   % a hexagonal grid encodes the alternating offset of its lines in the
   % matrix layout, hence there is no choice to be made here
-  if check_option(varargin,'rowMajor')
+  if ~isAligned(gridLayout(varargin{:}),gridLayout())
     warning('MTEX:gridify:rowMajor',...
-      'A hexagonal grid is always stored column major - ignoring the flag ''rowMajor''.');
+      'A hexagonal grid is always stored column major - ignoring the layout requested.');
   end
   [varargout{1:nargout}] = hexify(ebsd,varargin{:});
 else

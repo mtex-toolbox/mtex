@@ -2,6 +2,25 @@
 %
 %% MTEX develop - New Features
 %
+% *A Gridded Map Can Be Stored In Any Layout*
+%
+% <EBSD.gridify.html |gridify|> takes an <imageFrame.imageFrame.html
+% |imageFrame|> as well as the |'columnMajor'| and |'rowMajor'| flags, which
+% are now just the two layouts aligned with x and y. Any other axis aligned
+% layout may be asked for, which is what puts a map in the same order as an
+% image it is to be compared with pixel by pixel:
+%
+%   ebsd = gridify(ebsd,imageFrame(yvector,-xvector))
+%   ebsd = gridify(ebsd,imageFrame(otherMap))
+%   iF   = imageFrame(ebsd)      % read the layout back off a map
+%
+% Nothing is resampled - <imageFrame.layoutIndex.html |layoutIndex|> works out
+% the transpose and two flips relating two layouts, and
+% <EBSDsquare.transformReferenceFrame.html |transformReferenceFrame|> applies
+% them to a map that is already gridded. A layout no permutation can reach is
+% refused; a rotated or sheared grid is put as close to the one asked for as a
+% permutation can get, exactly as the flags always did.
+%
 % *EBSD Export That Keeps the File*
 %
 % Exporting to HDF5 no longer writes a bare MTEX layout that throws away

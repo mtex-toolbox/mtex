@@ -44,47 +44,13 @@ function ebsd = rotate(ebsd,rot,varargin)
 % is what keeps size(ebsd) meaning the same thing before and after.
 %
 % See also
-% EBSD/rotate EBSD/gridify
+% EBSD/rotate EBSD/gridify EBSDsquare/transformReferenceFrame
 
 ebsd = rotate@EBSD(ebsd,rot,varargin{:});
 
 % only the spatial half can disturb the layout
 if check_option(varargin,'keepXY'), return; end
 
-ebsd = orientGrid(ebsd);
-
-end
-
-% -------------------------------------------------------------------------
-function ebsd = orientGrid(ebsd)
-% put the matrix back on the layout rule, by reindexing only
-%
-% Deliberately the same rule as EBSD/private/squarify/orientGrid, which is
-% not reachable from here. Keep the two in step.
-
-d1 = ebsd.pos(2,1) - ebsd.pos(1,1);
-d2 = ebsd.pos(1,2) - ebsd.pos(1,1);
-
-% which of the two grid directions is the more horizontal one
-horizontal = @(d) abs(dot(d,xvector)) - abs(dot(d,yvector));
-
-lin = reshape(1:numel(ebsd.id),size(ebsd.id));
-plain = lin;
-
-if horizontal(d1) > horizontal(d2)
-  lin = lin.';
-  [d1,d2] = deal(d2,d1);
-end
-
-% ensure increasing coordinates along both grid directions
-if dot(d1,yvector) < 0, lin = flipud(lin); end
-if dot(d2,xvector) < 0, lin = fliplr(lin); end
-
-% subsref explicitly: inside a class method MATLAB indexes the object with
-% the built-in rather than the overload, and ebsd(lin) would treat this
-% scalar object as a 1x1 array
-if ~isequal(lin,plain)
-  ebsd = subsref(ebsd,substruct('()',{lin}));
-end
+ebsd = transformReferenceFrame(ebsd,gridLayout());
 
 end

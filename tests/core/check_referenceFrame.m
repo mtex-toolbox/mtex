@@ -26,6 +26,7 @@ checkFrameCarriage;
 checkTangentVectorFrames;
 checkTrivialSymmetryFromFrame;
 checkImageFrame;
+checkLayoutIndex;
 checkScreenAlignment;
 checkFundamentalSectorFrame;
 checkHemisphereSectorHue;
@@ -917,6 +918,78 @@ for pC = axisAlignedConventions
     'check_referenceFrame: assumedFor did not return east/south for %s',char(pC{1}));
   assert(strcmp(iF.name,'assumed from plot'), ...
     'check_referenceFrame: assumedFor must say that it assumed');
+end
+
+referenceFrame.reset;
+
+end
+
+% =========================================================================
+function checkLayoutIndex
+% layoutIndex is the array-order half of an image frame: which transpose and
+% flips lay a matrix out the way a frame says. The inverse is the same call
+% with the two layouts swapped, which is what makes a separate back
+% conversion unnecessary
+
+referenceFrame.reset;
+
+cm = imageFrame(xvector,yvector);
+rm = imageFrame(yvector,xvector);
+A  = reshape(1:12,3,4);
+
+% the layout an array is already in asks for nothing
+lin = layoutIndex(cm,[yvector xvector],size(A));
+assert(isequal(A(lin),A), ...
+  'check_referenceFrame: layoutIndex into the layout already held is not the identity');
+
+% a quarter turn transposes, and says so - a caller with a pixel step has to
+% swap it and the index cannot carry that
+[lin,doTranspose] = layoutIndex(rm,[yvector xvector],size(A));
+assert(isequal(A(lin),A.') && doTranspose, ...
+  'check_referenceFrame: layoutIndex did not transpose for a quarter turn');
+
+% every axis aligned layout is reachable, and swapping the two layouts is
+% the way back
+for pC = axisAlignedConventions
+  tgt = imageFrame.assumedFor(specimenFrame('test',pC{1}));
+  B = A(layoutIndex(tgt,[yvector xvector],size(A)));
+  back = B(layoutIndex(cm,[tgt.basis(2) tgt.basis(1)],size(B)));
+  assert(isequal(back,A), ...
+    'check_referenceFrame: layoutIndex is not its own inverse for %s',char(pC{1}));
+end
+
+% channels ride along, which a plain transpose could not do
+A3 = cat(3,A,10*A);
+B3 = A3(layoutIndex(rm,[yvector xvector],size(A3)));
+assert(isequal(B3(:,:,1),A.') && isequal(B3(:,:,2),(10*A).'), ...
+  'check_referenceFrame: layoutIndex lost the channels of an r x c x k array');
+
+% only a signed permutation can be applied by reindexing, so a layout half
+% way between two axes is refused rather than approximated
+try
+  layoutIndex(cm,[vector3d(1,1,0) vector3d(1,-1,0)],size(A));
+  caught = '';
+catch ME
+  caught = ME.identifier;
+end
+assert(strcmp(caught,'MTEX:imageFrame:notAxisAligned'), ...
+  'check_referenceFrame: a layout no permutation can reach was accepted');
+
+% unless the caller says to take the closest one, which is what a grid does
+r30 = rotation.byAxisAngle(zvector,30*degree);
+lin = layoutIndex(cm,[r30*yvector r30*xvector],size(A),'nearest');
+assert(isequal(A(lin),A), ...
+  'check_referenceFrame: a 30 degree layout did not snap to the identity');
+
+% a transposed layout has to stay the transpose of the layout it transposes,
+% including at 45 degrees where nothing about the array can decide
+for th = [0 30 45 60 90 135]*degree
+  r = rotation.byAxisAngle(zvector,th);
+  [~,trCol] = layoutIndex(cm,[r*yvector r*xvector],size(A),'nearest');
+  [~,trRow] = layoutIndex(rm,[r*yvector r*xvector],size(A),'nearest');
+  assert(trCol ~= trRow, ...
+    'check_referenceFrame: rowMajor is not the transpose of columnMajor at %g degrees',...
+    th./degree);
 end
 
 referenceFrame.reset;

@@ -19,6 +19,7 @@ checkTransform;
 checkUnitCellProperty;
 checkUnitCellHint;
 checkGridOptions;
+checkArrayLayout;
 checkGridShapes;
 checkMultiColumnProps;
 checkLatticeBasisCanonical;
@@ -458,6 +459,88 @@ function ebsd = makeMap(sz,d)
 
 ebsd = EBSD(vector3d(X(:),Y(:),zeros(numel(X),1)), rotation.rand(numel(X),1), ...
   ones(numel(X),1), {crystalSymmetry('m-3m')}, struct('bc',rand(numel(X),1)));
+
+end
+
+% =========================================================================
+function checkArrayLayout
+% a gridded map can be stored in any axis aligned matrix layout, not only the
+% two the flags name
+%
+% 'columnMajor' and 'rowMajor' are the two layouts aligned with x and y, so
+% they are @imageFrames like any other and the flags are shorthands. What a
+% caller wants a third one for is comparing a map with an image pixel by
+% pixel, which needs the map in the image's order.
+
+d = 0.3; sz = 12;
+list = makeMap(sz,d);
+g    = gridify(list);
+
+cm = imageFrame(xvector,yvector);
+rm = imageFrame(yvector,xvector);
+
+% the frame form and the flag it generalises are the same request
+for src = {list,g}
+  a = gridify(src{1},rm);
+  b = gridify(src{1},'rowMajor');
+  assert(isequal(size(a),size(b)) && isequal(a.id,b.id) && ...
+      max(norm(a.pos - b.pos),[],'all') < 1e-10, ...
+    'check_ebsdGrid: gridify with an imageFrame disagrees with the rowMajor flag on a %s',...
+    class(src{1}));
+end
+
+% a layout is a reindexing, so no position may move and no value be invented
+gr = gridify(g,rm);
+assert(isequal(size(gr),fliplr(size(g))), ...
+  'check_ebsdGrid: rowMajor of a %s map is %s, expected %s', ...
+  mat2str(size(g)),mat2str(size(gr)),mat2str(fliplr(size(g))));
+assert(isequal(sort(g.id(:)),sort(gr.id(:))) && ...
+    isequal(sort(double(g.pos.x(:))),sort(double(gr.pos.x(:)))), ...
+  'check_ebsdGrid: a layout change altered the data');
+
+% and the data has to follow the permutation, not merely survive it
+assert(isequal(gr.bc,g.bc.'), ...
+  'check_ebsdGrid: bc did not follow the relayout');
+
+% asking for the layout already held changes nothing, and the two together
+% are the identity
+assert(isequal(gridify(g,cm).id,g.id), ...
+  'check_ebsdGrid: relaying a map into its own layout was not a no-op');
+assert(isequal(gridify(gr,cm).id,g.id) && isequal(gridify(gr,cm).bc,g.bc), ...
+  'check_ebsdGrid: the layout round trip did not restore the map');
+
+% imageFrame(ebsd) is how the layout is read back off a map
+assert(isAligned(imageFrame(g),cm), ...
+  'check_ebsdGrid: imageFrame(ebsd) is not the layout the map is stored in');
+assert(isAligned(imageFrame(gr),rm), ...
+  'check_ebsdGrid: imageFrame(ebsd) did not follow the relayout');
+
+% a sheared grid has no image frame - its axes are not perpendicular - but it
+% can still be relaid out, which is why layoutIndex takes directions
+es = transform(g, @(pos) vector3d(pos.x + 0.3*pos.y, pos.y, pos.z));
+try
+  imageFrame(es);
+  caught = '';
+catch ME
+  caught = ME.identifier;
+end
+assert(strcmp(caught,'MTEX:imageFrame:notOrthogonal'), ...
+  'check_ebsdGrid: a sheared grid was given an imageFrame');
+assert(isequal(size(gridify(es,rm)),fliplr(size(es))), ...
+  'check_ebsdGrid: a sheared grid could not be relaid out');
+
+% a hexagonal grid encodes its line offset in the layout, so it says no
+hex = gridify(makeHexMap([sz sz],d));
+lastwarn('','');
+gridify(hex,rm);
+[~,wid] = lastwarn;
+assert(strcmp(wid,'MTEX:gridify:rowMajor'), ...
+  'check_ebsdGrid: a hex grid accepted a transposed layout without saying so');
+lastwarn('','');
+gridify(hex,cm);
+[~,wid] = lastwarn;
+assert(isempty(wid), ...
+  'check_ebsdGrid: a hex grid warned about the layout it is already in');
 
 end
 

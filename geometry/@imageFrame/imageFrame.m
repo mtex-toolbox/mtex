@@ -20,12 +20,14 @@ classdef imageFrame < referenceFrame
 %   iF = imageFrame                       % col||X, row||Y, depth||Z
 %   iF = imageFrame(colDir,rowDir)        % stated directly
 %   iF = imageFrame(colDir,rowDir,'name','fsd')
+%   iF = imageFrame(ebsd)                 % the layout a gridded map is stored in
 %
 %   iF = imageFrame.assumedFor(ebsd)      % inferred from the map's convention
 %
 % Input
 %  colDir - @vector3d, the direction along which the column index advances
 %  rowDir - @vector3d, the direction along which the row index advances
+%  ebsd   - @EBSDgrid, read as col along d2 and row along d1
 %
 % Class Properties
 %  basis     - 1x3 @vector3d, [col, row, depth]
@@ -42,6 +44,12 @@ classdef imageFrame < referenceFrame
       % the column and row directions may be given as two separate vector3d
       % - the superclass takes a ready made 1x3 basis instead, so pull them
       % out and build the basis here before handing the rest over
+      % a gridified map states its layout outright - the column index
+      % advances along d2 and the row index along d1
+      if nargin >= 1 && isa(varargin{1},'EBSDgrid')
+        varargin = [{varargin{1}.d2, varargin{1}.d1}, varargin(2:end)];
+      end
+
       isV = find(cellfun(@(x) isa(x,'vector3d'),varargin));
       b = [];
 

@@ -70,11 +70,17 @@ classdef EBSDsquare < EBSDgrid
 
     function [varargout] = gridify(ebsd,varargin)
       % nothing to do :) unless a different unit cell or layout is requested
-      if ~check_option(varargin,{'unitCell','rowMajor','columnMajor','force'})
+      if check_option(varargin,{'unitCell','force'})
+        [varargout{1:nargout}] = gridify@EBSD(ebsd,varargin{:});
+      elseif check_option(varargin,{'rowMajor','columnMajor'}) || ...
+          ~isempty(getClass(varargin,'imageFrame',[]))
+        % a layout is a reindexing, so do not rebuild from the positions -
+        % squarify would refit the lattice and move them
+        [varargout{1:max(1,nargout)}] = ...
+          transformReferenceFrame(ebsd,gridLayout(varargin{:}));
+      else
         varargout{1} = ebsd;
         varargout{2} = (1:length(ebsd)).';
-      else
-        [varargout{1:nargout}] = gridify@EBSD(ebsd,varargin{:});
       end
     end
            
