@@ -18,8 +18,8 @@ function e = edgeMap(mg,padWidth)
 %
 % Input
 %  mg       - @mapImage
-%  padWidth - neighbour distance in pixels, default mg.edgePadWidth. Raise it
-%             to bring out boundaries blurred over several pixels
+%  padWidth - neighbour distance in pixels, default 1. Raise it to bring out
+%             boundaries blurred over several pixels
 %
 % Output
 %  e - r x c, one value per pixel
@@ -38,9 +38,9 @@ function e = edgeMap(mg,padWidth)
 % dropping it changes no registration result.
 %
 % See also
-% mapImage mapImage/registerImage
+% mapImage mapImage/interp
 
-if nargin < 2, padWidth = mg.edgePadWidth; end
+if nargin < 2, padWidth = 1; end
 
 img = mg.img;
 [r,c,nChan] = size(img);

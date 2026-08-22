@@ -22,6 +22,11 @@ classdef mapImage
 % so a whole sequence is one @mapImage array rather than a list of two
 % different things.
 %
+% An image pre-processed for registration - gamma compressed, filtered - is
+% an entry of its own, with spatialTransformId as the transform between it
+% and the image it was derived from. Nothing here declares what to register
+% on: that is a fact about a comparison, so it belongs to the job.
+%
 % Syntax
 %
 %   mg = mapImage(img)                        % unit step, its own frame
@@ -30,7 +35,6 @@ classdef mapImage
 %   mg = mapImage(ebsd.bc,ebsd)               % a channel of a gridded map
 %   mg = mapImage(img,ebsd)                   % an image already on the map's grid
 %   mg = mapImage(img,'dxy',0.05,'name','bse')
-%   mg = mapImage(bse,'dxy',0.05,'registerOn',@(v) nthroot(v,0.1))
 %
 % Input
 %  img  - r x c x k numeric, integer types scaled to [0,1]
@@ -40,11 +44,9 @@ classdef mapImage
 %  mg - @mapImage
 %
 % Options
-%  dxy          - pixel size, scalar or [dx dy]
-%  name         - a valid MATLAB identifier, the field an aligned image is written under
-%  origin       - @vector3d position of pixel (1,1)
-%  registerOn   - 'edge' (default), 'raw', or a handle applied to the values
-%  edgePadWidth - neighbour distance for the edge transform, default 1
+%  dxy    - pixel size, scalar or [dx dy]
+%  name   - a valid MATLAB identifier, the field an aligned image is written under
+%  origin - @vector3d position of pixel (1,1)
 %
 % Class Properties
 %  img        - r x c x k values
@@ -55,10 +57,9 @@ classdef mapImage
 %  frame      - @referenceFrame the geometry is expressed in
 %  pos        - r x c @vector3d, derived from origin, d1 and d2
 %  arrayFrame - @imageFrame the array is laid out in, derived from d2 and d1
-%  registerOn - what to cross correlate this image on, see registerImage
 %
 % See also
-% EBSD EBSDsquare imageFrame mapImage/interp mapImage/registerImage
+% EBSD EBSDsquare imageFrame mapImage/interp mapImage/edgeMap
 
   properties
     img = []
@@ -69,8 +70,6 @@ classdef mapImage
     d1 = vector3d(0,1,0)
     d2 = vector3d(1,0,0)
     frame = referenceFrame.empty
-    registerOn = 'edge'   % 'edge', 'raw' or a function handle
-    edgePadWidth = 1      % neighbour distance edgeMap differences over
   end
 
   properties (Dependent = true)
@@ -139,15 +138,6 @@ classdef mapImage
           'has to be a valid MATLAB identifier. "%s" is not.'],nm);
         mg.name = nm;
       end
-
-      mg.edgePadWidth = get_option(varargin,'edgePadWidth',mg.edgePadWidth);
-
-      ro = get_option(varargin,'registerOn',mg.registerOn);
-      assert(isa(ro,'function_handle') || ...
-        (ischar(ro) && any(strcmpi(ro,{'edge','raw'}))),...
-        'MTEX:mapImage:badRegisterOn',...
-        'registerOn is ''edge'', ''raw'' or a function handle.');
-      mg.registerOn = ro;
 
       assert(ndims(mg.img) <= 3,'MTEX:mapImage:tooManyDimensions',...
         'An image is r x c x k, got %s.',mat2str(size(mg.img)));
