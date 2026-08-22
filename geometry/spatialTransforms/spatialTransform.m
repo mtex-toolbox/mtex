@@ -90,6 +90,26 @@ classdef spatialTransform < matlab.mixin.Heterogeneous
       tf = false;
     end
 
+    function u = displacement(T,pos)
+      % where each position goes, minus where it started
+      u = eval(T,pos) - pos;
+    end
+
+    function n = norm(T,pos)
+      % how far the transform moves each of the given positions
+      n = norm(displacement(T,pos));
+    end
+
+    function F = discretize(T,pos)
+      % the same transform sampled at pos, as a @spatialTransformField
+      %
+      % Collapses a chain of any length to one interpolated field, which is
+      % what to do when a composite is about to be evaluated many times.
+
+      F = spatialTransformField(pos(:),displacement(T,pos(:)));
+
+    end
+
     function T = absorb(T1,T2)
       % the product as a single transform, or empty if it needs a composite
 

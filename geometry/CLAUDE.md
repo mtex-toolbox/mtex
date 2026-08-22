@@ -15,7 +15,10 @@ The core class hierarchy. Every object holds an array of many entities, never on
   position, as an object. An abstract base plus concrete classes as bare files, the
   `EBSDSmoothing/` layout. Direction is the contract: `T` maps a position in one frame to
   the same point in the next, `T2 * T1` applies `T1` first, and filling an output grid
-  always uses `inv(T)`. Consumed by `EBSD/transform` and `grain2d/transform`.
+  always uses `inv(T)`. Consumed by `EBSD/transform` and `grain2d/transform`. Every class
+  fits itself from two point sets through one solver, `private/robustLsq` — supply a design
+  matrix, get bisquare-reweighted coefficients. `inv` is exact for the affine and the
+  homography and iterates otherwise, via `spatialTransformInverse`.
 
 Traps:
 

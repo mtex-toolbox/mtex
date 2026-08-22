@@ -78,7 +78,8 @@ budget, trim from outside these first.
 | **EBSD export**, HDF5 into a copy of the reference file | `slow/check_ebsdImportH5` |
 | `EBSD` object: construction, `display`, `loadobj`, `interp` | `core/check_ebsd` |
 | EBSD grid geometry, `unitCell`/`lattice.ij`, `dynProp`, and `EBSD/transform` | `core/check_ebsdGrid` |
-| the spatial transform algebra: compose, invert, evaluate, fit | `core/check_spatialTransform` |
+| the spatial transform algebra: compose, invert, evaluate | `core/check_spatialTransform` |
+| fitting a spatial transform, and the robust solver behind every class | `core/check_spatialTransformFit` |
 | spatial shift (`plus`/`minus`) of EBSD, grains, boundaries, triple points | `core/check_spatialShift` |
 | `EBSD/gradient`, KAM | `core/check_gradient` |
 | `gridify` on real data | `slow/check_gridify` |

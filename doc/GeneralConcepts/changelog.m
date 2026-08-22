@@ -24,6 +24,20 @@
 % several passes is still one object. Differently modelled transforms share a
 % base, so a chain of hops is one array rather than a cell array.
 %
+% Each class is named for the distortion it models and fits itself from two
+% point sets - a rigid displacement, an affine, a polynomial, a homography, a
+% linear spline down the slow scan direction, or a scattered field. All of
+% them go through one weighted bisquare solver, so a measurement that arrived
+% with a low confidence is outvoted rather than dragging the fit:
+%
+%   T = spatialTransformProjective.fit(posA,posB,'weights',w)
+%   T = spatialTransformDrift.fit(posA,posB,'slowScan',xvector)
+%
+% |inv| is exact where the model allows it - an affine, a homography - and
+% otherwise iterates the displacement field back, which converges as long as
+% the field does not fold and says so when it does. |discretize| collapses a
+% chain of any length into one interpolated field.
+%
 % *A Gridded Map Can Be Stored In Any Layout*
 %
 % <EBSD.gridify.html |gridify|> takes an <imageFrame.imageFrame.html

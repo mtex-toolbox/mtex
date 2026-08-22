@@ -652,6 +652,59 @@
     ]
 },
 
+"spatialTransformRigid.fit":
+{
+    "inputs":
+    [
+      {"name":"posA", "kind":"required", "type":["vector3d"]},
+      {"name":"posB", "kind":"required", "type":["vector3d"]},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"]}
+    ]
+},
+
+"spatialTransformPoly.fit":
+{
+    "inputs":
+    [
+      {"name":"posA", "kind":"required", "type":["vector3d"]},
+      {"name":"posB", "kind":"required", "type":["vector3d"]},
+      {"name":"degree", "kind":"namevalue", "type":["choices={1,2}"]},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"]},
+      {"name":"noRobust", "kind":"flag"}
+    ]
+},
+
+"spatialTransformProjective.fit":
+{
+    "inputs":
+    [
+      {"name":"posA", "kind":"required", "type":["vector3d"]},
+      {"name":"posB", "kind":"required", "type":["vector3d"]},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"]},
+      {"name":"noRobust", "kind":"flag"}
+    ]
+},
+
+"spatialTransformDrift.fit":
+{
+    "inputs":
+    [
+      {"name":"posA", "kind":"required", "type":["vector3d"]},
+      {"name":"posB", "kind":"required", "type":["vector3d"]},
+      {"name":"slowScan", "kind":"namevalue", "type":["vector3d"]},
+      {"name":"extrapolate", "kind":"flag"}
+    ]
+},
+
+"spatialTransformField.fit":
+{
+    "inputs":
+    [
+      {"name":"posA", "kind":"required", "type":["vector3d"]},
+      {"name":"posB", "kind":"required", "type":["vector3d"]}
+    ]
+},
+
 "spatialTransformComposite":
 {
     "inputs":
