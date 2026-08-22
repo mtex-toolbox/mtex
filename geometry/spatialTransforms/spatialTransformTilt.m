@@ -94,6 +94,10 @@ classdef spatialTransformTilt < spatialTransform
       tf = all(arrayfun(@isid,T.stages));
     end
 
+    function s = shortChar(~)
+      s = 'tilt';
+    end
+
     function s = char(T)
 
       names = arrayfun(@(t) string(char(t)),T.stages);

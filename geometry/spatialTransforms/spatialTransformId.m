@@ -26,6 +26,10 @@ classdef spatialTransformId < spatialTransform
       tf = true;
     end
 
+    function s = shortChar(~)
+      s = 'identity';
+    end
+
     function s = char(~)
       s = 'identity';
     end

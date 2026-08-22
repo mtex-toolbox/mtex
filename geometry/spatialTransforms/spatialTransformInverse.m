@@ -99,6 +99,10 @@ classdef spatialTransformInverse < spatialTransform
       tf = isid(Ti.T);
     end
 
+    function s = shortChar(Ti)
+      s = ['inv-' shortChar(Ti.T)];
+    end
+
     function s = char(Ti)
       s = ['inverse of  ' char(Ti.T)];
     end

@@ -92,6 +92,10 @@ classdef spatialTransformPoly < spatialTransform
 
     end
 
+    function s = shortChar(T)
+      s = sprintf('poly%d%d',T.degree,T.degree);
+    end
+
     function s = char(T)
       s = sprintf('poly%d%d  |c| = %.4g',T.degree,T.degree,norm(T.c,'fro'));
     end

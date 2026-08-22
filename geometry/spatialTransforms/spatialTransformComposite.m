@@ -73,6 +73,14 @@ classdef spatialTransformComposite < spatialTransform
       tf = all(arrayfun(@isid,T.stages));
     end
 
+    function s = shortChar(T)
+      % the stages, in the order they are applied - which is where the old
+      % 'shift-drift' vocabulary comes back, as a rendering rather than as
+      % something anything is constructed from
+      if isempty(T.stages), s = 'empty'; return; end
+      s = char(join(arrayfun(@(t) string(shortChar(t)),T.stages),'-'));
+    end
+
     function s = char(T)
 
       if isempty(T.stages), s = 'composite  (empty)'; return; end

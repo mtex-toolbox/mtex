@@ -85,6 +85,16 @@ classdef spatialTransform < matlab.mixin.Heterogeneous
 
   methods
 
+    function s = shortChar(T)
+      % a name for a table column, where char gives the parameters
+      %
+      % char(T) states what a transform IS, coefficients and all, which is
+      % what display wants. A sequence table wants what KIND it is.
+
+      s = lower(erase(class(T),'spatialTransform'));
+
+    end
+
     function tf = isid(T) %#ok<MANU>
       % true if the transform leaves every position where it is
       tf = false;
