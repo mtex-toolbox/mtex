@@ -38,6 +38,23 @@
 % the field does not fold and says so when it does. |discretize| collapses a
 % chain of any length into one interpolated field.
 %
+% *Cross Correlation As A Primitive*
+%
+% <xcfShift.html |xcfShift|> divides the region two images share into tiles
+% and phase correlates each against its counterpart, returning a sub pixel
+% displacement per tile and the height of the correlation peak that produced
+% it. The peak height is the fit weight, not a diagnostic - a tile that landed
+% on featureless background must not get an equal vote:
+%
+%   [u,peak,pos] = xcfShift(imA,imB);
+%   T = spatialTransformShift.fit(pos, pos + u, 'weights', peak);
+%
+% |u| is the displacement FROM A TO B: the feature at |pos| in A is at
+% |pos + u| in B. Given two <mapImage.mapImage.html |mapImage|> the answer is
+% in specimen units instead of pixels. Only the region where both images are
+% finite is tiled, so padding left by an earlier resampling is excluded rather
+% than correlated against.
+%
 % *An Image That Knows Where It Sits*
 %
 % <mapImage.mapImage.html |mapImage|> is a raster of values together with the

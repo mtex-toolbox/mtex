@@ -11,5 +11,19 @@
       {"name":"force", "kind":"flag", "purpose":"re-import even if a cached .mat file exists"},
       {"name":"silent", "kind":"flag"}
     ]
+},
+
+"xcfShift":
+{
+    "inputs":
+    [
+      {"name":"A", "kind":"required", "type":[["numeric","2d"],["mapImage"]]},
+      {"name":"B", "kind":"required", "type":[["numeric","2d"],["mapImage"]]},
+      {"name":"ROISize", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"numROI", "kind":"namevalue", "type":["numeric"]},
+      {"name":"XCFMesh", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"coarseMesh", "kind":"namevalue", "type":["numeric","scalar",">0"]},
+      {"name":"dedupeBand", "kind":"flag"}
+    ]
 }
 }
