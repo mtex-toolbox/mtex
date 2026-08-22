@@ -245,10 +245,22 @@ classdef phaseList
     end
     
     function rgb = get.color(pL)
-      
-      % notindexed phase should be white by default
-      if ~any(pL.isIndexed), rgb = nan(1,3); return; end
-      
+
+      % A not indexed phase carries a name and a colour of its own since
+      % @notIndexed took both, so ask it rather than answering "no colour"
+      % for every one of them. pL.CS is no help here - checkSinglePhase
+      % errors on a purely not indexed list. An unnamed one still comes back
+      % NaN, because that is the colour @notIndexed gives itself.
+      if ~any(pL.isIndexed)
+        id = unique(pL.phaseId(pL.phaseId > 0));
+        if isscalar(id) && ~isempty(pL.CSList(id).color)
+          rgb = str2rgb(pL.CSList(id).color);
+        else
+          rgb = nan(1,3);
+        end
+        return
+      end
+
       % ensure single phase and extract symmetry
       cs = pL.CS;
             
