@@ -82,6 +82,12 @@ assert(isequal(size(A),size(B)),'MTEX:xcfShift:sizeMismatch',...
 roiSize = get_option(varargin,'ROISize',2^ceil(log2(nRows/4)));
 roiSize = 2*round(roiSize/2);
 
+% below this the band pass keeps no frequencies at all and the correlation
+% fails somewhere deep inside instead of here
+assert(roiSize >= 8,'MTEX:xcfShift:tileTooSmall',...
+  ['A correlation tile of %d pixels is too small to filter and correlate. '...
+  'ROISize is in pixels and has to be at least 8.'],roiSize);
+
 n = get_option(varargin,'numROI',24);
 if isscalar(n), n = [n, max(1,round(n*nRows/nCols))]; end
 
