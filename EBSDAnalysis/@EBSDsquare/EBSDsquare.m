@@ -70,7 +70,7 @@ classdef EBSDsquare < EBSDgrid
 
     function [varargout] = gridify(ebsd,varargin)
       % nothing to do :) unless a different unit cell or layout is requested
-      if ~check_option(varargin,{'unitCell','rowMajor','columnMajor'})
+      if ~check_option(varargin,{'unitCell','rowMajor','columnMajor','force'})
         varargout{1} = ebsd;
         varargout{2} = (1:length(ebsd)).';
       else

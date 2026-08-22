@@ -25,6 +25,8 @@ checkSessionReset;
 checkFrameCarriage;
 checkTangentVectorFrames;
 checkTrivialSymmetryFromFrame;
+checkImageFrame;
+checkScreenAlignment;
 checkFundamentalSectorFrame;
 checkHemisphereSectorHue;
 checkProductDropsSymmetry;
@@ -866,6 +868,144 @@ assert(~isfield(b.opt,'tag'), ...
   'check_referenceFrame: extractSym default slots must not alias one handle');
 
 referenceFrame.reset;
+
+end
+
+% =========================================================================
+function checkImageFrame
+% an image frame says where a raster array sits relative to another frame:
+% which directions the column and row indices advance along. That is a
+% rotation and has nothing to do with a screen - the frame is what it is
+% whether or not anything is ever plotted
+
+referenceFrame.reset;
+tol = 1e-6;
+
+% the two-vector constructor stores what it is given, and completes the
+% right handed set itself - depth is not a free choice
+iF = imageFrame(yvector,-xvector);
+assert(angle(iF.basis(1),yvector) < tol && angle(iF.basis(2),-xvector) < tol, ...
+  'check_referenceFrame: imageFrame(colDir,rowDir) lost the directions given');
+assert(angle(iF.basis(3),cross(yvector,-xvector)) < tol, ...
+  'check_referenceFrame: imageFrame did not complete a right handed basis');
+
+% columns and rows of an image are perpendicular; anything else is a
+% mistake rather than a shear to be accommodated
+try
+  imageFrame(xvector,vector3d(1,1,0));
+  caught = '';
+catch ME
+  caught = ME.identifier;
+end
+assert(strcmp(caught,'MTEX:imageFrame:notOrthogonal'), ...
+  'check_referenceFrame: non-perpendicular col/row directions were accepted');
+
+% an image frame can be carried by the trivial group, which is what lets an
+% orientation name one on a side. A crystalFrame still may not be
+ss = specimenSymmetry(iF);
+assert(ss.id == 1 && ss.frame == iF, ...
+  'check_referenceFrame: specimenSymmetry must adopt an imageFrame handle');
+
+% assumedFor recovers the relation from a frame's convention - the
+% backwards compatible path, for data that predates the relation having a
+% home. It names itself so the assumption is visible wherever it is shown
+for pC = axisAlignedConventions
+  v = vector3d.X;
+  v.frame = specimenFrame('test',pC{1});
+  iF = imageFrame.assumedFor(v);
+  assert(angle(iF.basis(1),pC{1}.east) < tol && angle(iF.basis(2),pC{1}.south) < tol, ...
+    'check_referenceFrame: assumedFor did not return east/south for %s',char(pC{1}));
+  assert(strcmp(iF.name,'assumed from plot'), ...
+    'check_referenceFrame: assumedFor must say that it assumed');
+end
+
+referenceFrame.reset;
+
+end
+
+% =========================================================================
+function checkScreenAlignment
+% orientation.byScreenAlignment turns "I plotted both and they were the same
+% way up" into the rotation that assertion implies. It reads how2plot and
+% never touches basis, which is what makes it safe for ESTABLISHING a basis
+% that transformationMatrix then reproduces from the bases alone
+
+referenceFrame.reset;
+tol = 1e-6;
+
+for pC = axisAlignedConventions
+
+  sF = specimenFrame('test',pC{1});
+  iF = imageFrame;
+
+  % stated independently of the implementation's formula: if an image and a
+  % map look the same way up, the image's columns run the way east runs and
+  % its rows the way south runs
+  M = matrix(orientation.byScreenAlignment(iF,sF));
+  b = vector3d(M(1,:),M(2,:),M(3,:));
+  assert(angle(b(1),pC{1}.east) < tol, ...
+    'check_referenceFrame: byScreenAlignment columns do not run east for %s',char(pC{1}));
+  assert(angle(b(2),pC{1}.south) < tol, ...
+    'check_referenceFrame: byScreenAlignment rows do not run south for %s',char(pC{1}));
+  assert(angle(b(3),-pC{1}.outOfScreen) < tol, ...
+    'check_referenceFrame: byScreenAlignment depth is not into the screen for %s',char(pC{1}));
+
+  % the two ways of asking are INVERSE, not equal, and that is not an
+  % accident of either implementation: an @orientation is an ACTIVE
+  % rotation, turning one direction into another, while transformationMatrix
+  % is the PASSIVE transition, re-expressing one fixed direction in another
+  % frame's coordinates. Six of the eight conventions are 180 degree
+  % rotations and so are their own inverse, which hides the difference -
+  % only the two 90 degree cases show it, so asserting equality would pass
+  % six times and mean nothing
+  iF.basis = b;
+  assert(norm(M.' - transformationMatrix(iF,sF)) < tol, ...
+    'check_referenceFrame: the basis disagrees with the inference it was set from (%s)',...
+    char(pC{1}));
+
+end
+
+% under ij an image and a map need no permutation at all, so the relation
+% between their frames has to come out as the identity. If this ever fails,
+% every array order derived from it is wrong
+ori = orientation.byScreenAlignment(imageFrame, ...
+  specimenFrame('ij',plottingConvention.ij));
+assert(angle(ori) < tol, ...
+  'check_referenceFrame: ij must give the identity, it gave %.3f degrees',angle(ori)./degree);
+
+% the orientation names both frames rather than only carrying a number
+assert(isa(ori.frameRight,'imageFrame') && isa(ori.frameLeft,'specimenFrame'), ...
+  'check_referenceFrame: byScreenAlignment must name both frames on the orientation');
+
+% an empty convention means "follows the session default", so inferring
+% from it would silently make the answer depend on session state
+bare = specimenFrame('bare');
+bare.how2plot = [];
+try
+  orientation.byScreenAlignment(imageFrame,bare);
+  caught = '';
+catch ME
+  caught = ME.identifier;
+end
+assert(strcmp(caught,'MTEX:orientation:noConvention'), ...
+  'check_referenceFrame: a frame without a convention of its own was accepted');
+
+referenceFrame.reset;
+
+end
+
+% =========================================================================
+function pcs = axisAlignedConventions
+% the eight axis-aligned conventions, as (outOfScreen, east) pairs
+
+pcs = { plottingConvention(-vector3d.Z, vector3d.X), ...
+        plottingConvention( vector3d.Z, vector3d.Y), ...
+        plottingConvention( vector3d.Z, vector3d.X), ...
+        plottingConvention(-vector3d.Z, vector3d.Y), ...
+        plottingConvention(-vector3d.Z,-vector3d.X), ...
+        plottingConvention( vector3d.Z,-vector3d.Y), ...
+        plottingConvention( vector3d.Z,-vector3d.X), ...
+        plottingConvention(-vector3d.Z,-vector3d.Y)};
 
 end
 
