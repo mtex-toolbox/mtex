@@ -21,6 +21,7 @@ checkUnitCellHint;
 checkGridOptions;
 checkArrayLayout;
 checkGridShapes;
+checkTrim;
 checkMultiColumnProps;
 checkLatticeBasisCanonical;
 checkLatticeIndexOrderInvariance;
@@ -603,6 +604,44 @@ gB = grains.boundary;
 assert(isequal(size(gB.phase),size(gB.phaseId)) && size(gB.phase,2) == 2, ...
   'check_ebsdGrid: grainBoundary phase is %s, expected the n x 2 of phaseId %s', ...
   mat2str(size(gB.phase)), mat2str(size(gB.phaseId)));
+
+end
+
+% =========================================================================
+function checkTrim
+% trim cuts the notIndexed border and keeps everything inside the rectangle
+
+d = 0.3; sz = 12;
+grid = gridify(makeMap(sz,d));
+
+ebsd = grid;
+ebsd(1:2,:) = 'notIndexed';
+ebsd(:,end) = 'notIndexed';
+ebsd(5,5)   = 'notIndexed';     % a hole, which must survive
+
+t = trim(ebsd);
+
+assert(isequal(size(t),[sz-2 sz-1]), ...
+  'check_ebsdGrid: trim returned %s, expected %s', ...
+  mat2str(size(t)), mat2str([sz-2 sz-1]));
+
+assert(isequal(t.bc,grid.bc(3:end,1:end-1)), ...
+  'check_ebsdGrid: trim kept the wrong pixels');
+
+assert(nnz(~t.isIndexed) == 1 && ~t.isIndexed(3,5), ...
+  'check_ebsdGrid: trim did not keep the enclosed notIndexed pixel');
+
+assert(~any(isnan(t.phaseId)), ...
+  'check_ebsdGrid: trim set %d phaseId to NaN, it must only crop', ...
+  nnz(isnan(t.phaseId)));
+
+% a mask and the indices of that mask trim to the same rectangle
+mask = false(size(grid)); mask(4:7,2:3) = true;
+assert(isequal(trim(grid,mask).bc,trim(grid,find(mask)).bc), ...
+  'check_ebsdGrid: trim disagrees between mask and index form');
+
+assert(isequal(trim(grid,mask).bc,grid.bc(4:7,2:3)), ...
+  'check_ebsdGrid: trim(mask) kept the wrong pixels');
 
 end
 
