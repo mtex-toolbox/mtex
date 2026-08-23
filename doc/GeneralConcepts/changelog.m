@@ -24,6 +24,21 @@
 % several passes is still one object. Differently modelled transforms share a
 % base, so a chain of hops is one array rather than a cell array.
 %
+% Declaring a multi stage model is |+| rather than |*|, and reads left to
+% right in the order the stages are applied:
+%
+%   T = spatialTransformShift + spatialTransformDrift
+%
+% The two are different operations. |*| simplifies, and it decides by value:
+% an operand that reports |isid| disappears. An unfitted prototype has zero
+% coefficients and so reports exactly that, which makes
+% |spatialTransformShift * spatialTransformDrift| a bare drift with the shift
+% silently gone. |+| keeps both stages and drops only a literal
+% |spatialTransformId|, the class that means nothing separates the two frames.
+% So |+| declares a distortion that is about to be fitted and |*| composes
+% ones that already are. Note |+| chains the maps rather than adding the
+% displacements, unlike the |+| of a <vector3d.vector3d.html |vector3d|>.
+%
 % Each class is named for the distortion it models and fits itself from two
 % point sets - a rigid displacement, an affine, a polynomial, a homography, a
 % linear spline down the slow scan direction, or a scattered field. All of

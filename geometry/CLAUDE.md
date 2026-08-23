@@ -21,7 +21,14 @@ The core class hierarchy. Every object holds an array of many entities, never on
   position, as an object. An abstract base plus concrete classes as bare files, the
   `EBSDSmoothing/` layout. Direction is the contract: `T` maps a position in one frame to
   the same point in the next, `T2 * T1` applies `T1` first, and filling an output grid
-  always uses `inv(T)`. Consumed by `EBSD/transform` and `grain2d/transform`. Every class
+  always uses `inv(T)`. **`+` and `*` are different operations**: `T1 + T2` declares a
+  multi-stage *model*, reads left to right, and drops only a literal `spatialTransformId`
+  (by class); `T2 * T1` *composes* and simplifies by value, so an operand reporting `isid`
+  disappears. An unfitted prototype has zero coefficients and so reports `isid` — hence
+  `spatialTransformShift * spatialTransformDrift` is a bare drift with the shift gone,
+  while `spatialTransformShift + spatialTransformDrift` is the two-stage model it looks
+  like. Use `+` before fitting, `*` after. Consumed by `EBSD/transform` and
+  `grain2d/transform`. Every class
   fits itself from two point sets through one solver, `private/robustLsq` — supply a design
   matrix, get bisquare-reweighted coefficients. `inv` is exact for the affine and the
   homography and iterates otherwise, via `spatialTransformInverse`.

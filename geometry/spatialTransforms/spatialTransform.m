@@ -19,10 +19,33 @@ classdef spatialTransform < matlab.mixin.Heterogeneous
 % Subclasses of one base may be collected in one array, so a chain of
 % differently modelled hops is [T1 T2 T3] rather than a cell array.
 %
+% There are two ways to put two transforms together, and they are not the
+% same operation:
+%
+%   T1 + T2   builds a MODEL. It reads left to right, T1 applied first, and
+%             it keeps both as stages. Only a literal spatialTransformId is
+%             dropped, since that is the class that MEANS nothing separates
+%             the two frames.
+%   T2 * T1   COMPOSES. It reads in matrix order, T1 applied first, and it
+%             simplifies where it can - two affines make a third, and an
+%             operand that reports isid disappears.
+%
+% Use + to declare a distortion that is about to be fitted, * for
+% transforms that already are. An unfitted prototype has zero coefficients
+% and so reports isid, which is why the two differ where it matters:
+% shift * drift is a bare drift with the shift silently gone, while
+% shift + drift is the two stage model it looks like.
+%
+% Note that + is not the pointwise + of vector3d or S2Fun. It chains the
+% maps, it does not add the displacements - though for displacements small
+% against the scale they vary on the two agree to first order, which is why
+% the notation reads the way it does.
+%
 % Syntax
 %
 %   posB = eval(T,posA)
 %   posB = T * posA               % the same
+%   T    = T1 + T2                % chain as stages, T1 applied first
 %   T    = T2 * T1                % compose, T1 applied first
 %   Tinv = inv(T)
 %   tf   = isid(T)
@@ -67,6 +90,38 @@ classdef spatialTransform < matlab.mixin.Heterogeneous
       out = absorb(T1,T2);
       % the composite takes its stages in application order, so T2 first
       if isempty(out), out = spatialTransformComposite(T2,T1); end
+
+    end
+
+    function T = plus(T1,T2)
+      % chain two transforms as stages, T1 applied first
+      %
+      % + builds a model where * composes one. * absorbs an operand that
+      % reports isid, and an unfitted prototype has zero coefficients and
+      % so reports exactly that - shift * drift is a bare drift with the
+      % shift silently gone. + drops only a literal spatialTransformId,
+      % the class that MEANS nothing separates the two frames, so a
+      % prototype chain survives being written down.
+      %
+      % Not the pointwise + of vector3d or S2Fun: this chains the maps
+      % rather than adding the displacements.
+
+      assert(isa(T1,'spatialTransform') && isa(T2,'spatialTransform'),...
+        'MTEX:spatialTransform:badSum',...
+        ['A spatial transform chains with another spatial transform. '...
+        'Got %s + %s.'],class(T1),class(T2));
+
+      assert(isscalar(T1) && isscalar(T2),...
+        'MTEX:spatialTransform:badSum',...
+        ['+ chains the stages within one transform. A sequence of hops '...
+        'is an array, [T1 T2 T3], not a sum. Got %s + %s.'],...
+        size2str(T1),size2str(T2));
+
+      % by class, never by isid - that is the whole difference from *
+      if isa(T1,'spatialTransformId'), T = T2; return; end
+      if isa(T2,'spatialTransformId'), T = T1; return; end
+
+      T = spatialTransformComposite(T1,T2);
 
     end
 

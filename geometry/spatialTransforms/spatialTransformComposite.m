@@ -9,9 +9,13 @@ classdef spatialTransformComposite < spatialTransform
 % Stages are held in the order they are applied, so stages(1) acts first.
 % A composite given a composite flattens it, so a chain never nests.
 %
+% Written out by hand this is T1 + T2 - the constructor is what + calls, and
+% is spelled out only where the stages arrive as an array or a comma list
+% rather than as two names.
+%
 % Syntax
 %
-%   T = spatialTransformComposite(T1,T2)   % apply T1, then T2 - i.e. T2*T1
+%   T = spatialTransformComposite(T1,T2)   % apply T1, then T2 - i.e. T1+T2
 %   T = spatialTransformComposite(TArray)
 %
 % Input
@@ -25,7 +29,7 @@ classdef spatialTransformComposite < spatialTransform
 %  stages - @spatialTransform array, stages(1) applied first
 %
 % See also
-% spatialTransform spatialTransform/mtimes
+% spatialTransform spatialTransform/plus spatialTransform/mtimes
 
   properties
     stages = spatialTransformId.empty

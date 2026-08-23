@@ -16,6 +16,7 @@ checkEvalAndOrder
 checkInverse
 checkAbsorb
 checkComposite
+checkPlus
 checkHeterogeneous
 checkFit
 checkFitWeights
@@ -115,6 +116,64 @@ assert(isa(C.stages(1),'spatialTransformShift'),'stages are not in application o
 
 pos = vector3d(randn(10,1),randn(10,1),zeros(10,1));
 assert(max(norm(C*pos - h2*(h1*(T1*pos)))) < 1e-12,'composite evaluated out of order')
+
+end
+
+%% + keeps a stage that * would absorb
+function checkPlus
+
+% THE case. Both prototypes are unfitted, so both report isid and * throws
+% one of them away - which is why a model is declared with + and only a
+% fitted chain is composed with *.
+P = spatialTransformShift + spatialTransformDrift;
+
+assert(isa(P,'spatialTransformComposite'),...
+  '+ collapsed an unfitted prototype chain to a %s',class(P))
+assert(numel(P.stages) == 2,'+ gave %d stages, not 2',numel(P.stages))
+assert(isa(P.stages(1),'spatialTransformShift') && ...
+  isa(P.stages(2),'spatialTransformDrift'),...
+  '+ does not read left to right in application order')
+
+% and the difference it exists for
+assert(isa(spatialTransformShift * spatialTransformDrift,'spatialTransformDrift'),...
+  '* no longer absorbs an unfitted prototype - recheck what + is for')
+
+% only spatialTransformId is dropped, and by class rather than by value
+T = spatialTransformShift([1 0 3; 0 1 0; 0 0 1]);
+assert(isa(spatialTransformId + T,'spatialTransformShift'),'identity survived on the left')
+assert(isa(T + spatialTransformId,'spatialTransformShift'),'identity survived on the right')
+
+% a chain flattens rather than nesting, as under *
+C = spatialTransformShift + spatialTransformDrift + spatialTransformRigid;
+assert(isa(C,'spatialTransformComposite') && numel(C.stages) == 3,...
+  'a three stage sum nested instead of flattening')
+
+% order: T1 + T2 applies T1 first, which is T2 * T1
+h = spatialTransformHandle(@(p) 2*p);
+pos = vector3d(randn(10,1),randn(10,1),zeros(10,1));
+assert(max(norm((T + h)*pos - h*(T*pos))) < 1e-12,'+ evaluated out of order')
+assert(max(norm((T + h)*pos - (h * T)*pos)) < 1e-12,'T1 + T2 is not T2 * T1')
+
+% and it inverts like any other composite
+R = T + spatialTransformRigid(vector3d(1,-2,0));
+assert(max(norm(inv(R)*(R*pos) - pos)) < 1e-12,'summed chain lost points') %#ok<MINV>
+
+% a sequence of hops is an array, not a sum
+try
+  T + 1; %#ok<VUNUS>
+  error('adding a double to a transform was accepted')
+catch e
+  assert(strcmp(e.identifier,'MTEX:spatialTransform:badSum'),...
+    'wrong error for T + 1: %s',e.identifier)
+end
+
+try
+  [T T] + h; %#ok<VUNUS>
+  error('summing an array of transforms was accepted')
+catch e
+  assert(strcmp(e.identifier,'MTEX:spatialTransform:badSum'),...
+    'wrong error for an array operand: %s',e.identifier)
+end
 
 end
 
