@@ -316,24 +316,35 @@ gridify(EBSD(ebsdR))
 mtexdata small
 
 %%
-% The command <EBSD.transform.html |transform|> applies an arbitrary
-% function to the position of every pixel, leaving orientations and all
-% other properties untouched. Here we scale the x-position of every pixel
-% about the map's centre by an amount that grows linearly with y - a
-% trapezoidal stage drift of up to |trapFrac| at the top and bottom edges.
-% Note that the distortion is defined through the physical y position, not
-% through a column of <EBSD.lattice.html |ebsd.lattice.ij|> - which of its
-% two columns happens to correspond to rows vs columns depends on an
-% internal, unspecified choice of the lattice basis and is not something
-% to rely on.
+% The command <EBSD.transform.html |transform|> moves every pixel of a map,
+% and its unit cell with it, leaving orientations and all other properties
+% untouched. It takes a <spatialTransform.spatialTransform.html
+% |spatialTransform|>, so the drift is written down as an object rather than
+% as a closure - see <EBSDSpatialTransform.html Spatial Transforms>.
+%
+% Here we scale the x-position of every pixel about the map's centre by an
+% amount that grows linearly with y - a trapezoidal stage drift of up to
+% |trapFrac| at the top and bottom edges. That displacement is
+% |k*(x-xc)*(y-yc)| in x and nothing in y, which a degree 2
+% <spatialTransformPoly.spatialTransformPoly.html |spatialTransformPoly|>
+% states exactly. Note that the distortion is defined through the physical y
+% position, not through a column of <EBSD.lattice.html |ebsd.lattice.ij|> -
+% which of its two columns happens to correspond to rows vs columns depends
+% on an internal, unspecified choice of the lattice basis and is not
+% something to rely on.
 
 x = ebsd.pos.x; xCenter = (min(x)+max(x))/2;
 y = ebsd.pos.y; yCenter = (min(y)+max(y))/2; yHalf = (max(y)-min(y))/2;
 trapFrac = 0.05;
 
-distort = @(pos) vector3d( ...
-  xCenter + (pos.x-xCenter) .* (1 + trapFrac*(pos.y-yCenter)/yHalf), ...
-  pos.y, pos.z);
+% the coefficients run against the basis [1 x y x^2 xy y^2]
+k = trapFrac / yHalf;
+c = zeros(6,2);
+c([1 2 3 5],1) = k * [xCenter*yCenter; -yCenter; -xCenter; 1];
+
+distort = spatialTransformPoly(c,2)
+
+%%
 
 ebsdDistorted = transform(ebsd, distort);
 
@@ -357,6 +368,62 @@ grains = calcGrains(ebsdDistorted,'minPixel',5)
 hold on
 plot(grains.boundary,'lineWidth',2)
 hold off
+
+%% The Same Outline From a Tilt
+%
+% A trapezoid is also what a tilted specimen produces, and the distortion
+% above has four straight edges, so a
+% <spatialTransformProjective.spatialTransformProjective.html |projective
+% transform|> through the same four corners traces the very same
+% quadrilateral. Four correspondences determine a homography exactly, so
+% there is nothing to outvote and the fit is asked for plain least squares.
+
+corners = vector3d([min(x) max(x) max(x) min(x)].', ...
+  [min(y) min(y) max(y) max(y)].',0);
+
+tilt = spatialTransformProjective.fit(corners,distort*corners,'noRobust')
+
+%%
+% The corners land on top of each other, and since both maps take a straight
+% line to a straight line the two outlines coincide - as shapes the two
+% distorted maps cannot be told apart
+
+max(norm(tilt*corners - distort*corners))
+
+%%
+% Inside they are not the same map at all. A homography cannot stretch x
+% while leaving y alone - that would need a |y^2| the projective form does
+% not have - so it foreshortens along the tilt axis as well, which a
+% drifting stage never does
+
+ebsdTilted = transform(ebsd,tilt);
+
+uTrap = ebsdDistorted.pos - ebsd.pos;
+uTilt = ebsdTilted.pos - ebsd.pos;
+
+[max(abs(uTrap.y)), max(abs(uTilt.y))]
+
+plot(ebsdTilted('Fo'),ebsdTilted('Fo').orientations,'unitCell','EdgeColor','black')
+hold on
+plot(ebsdTilted('En'),ebsdTilted('En').orientations,'unitCell','EdgeColor','black')
+hold on
+plot(ebsdTilted('Di'),ebsdTilted('Di').orientations,'unitCell','EdgeColor','black')
+hold off
+
+%%
+% so away from the four corners that pin them the two drift apart, here by
+% up to 75 units - one and a half pixels on this 50 unit step
+
+%plot(ebsd,norm(ebsdTilted.pos - ebsdDistorted.pos))
+%mtexColorbar
+
+%%
+% Which of the two a map wants is a question about the instrument and not
+% about the data: a stage that drifts stretches each scan line but leaves
+% the lines where they were, while a tilted surface is seen in perspective
+% and is compressed along the tilt axis too. Same trapezoid, different
+% insides - see <EBSDSpatialTransform.html Spatial Transforms> for the
+% classes and how each is fitted.
 
 
 %#ok<*NASGU>

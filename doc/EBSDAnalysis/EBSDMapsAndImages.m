@@ -180,10 +180,12 @@ mtexColorMap gray
 
 %%
 % The two still do not overlay perfectly: the beam drifts during a scan, the
-% camera moves between acquisitions, the specimen is tilted. Correcting that
-% is <example_WCCoSmall_2.html what TrueEBSD does> - and it starts exactly
-% here, with a sequence whose entries agree about the specimen and about the
-% order they are stored in.
+% camera moves between acquisitions, the specimen is tilted. Each of those is
+% a <EBSDSpatialTransform.html spatial transform> that can be fitted from the
+% two pictures and taken back out, which is
+% <example_WCCoSmall_2.html what TrueEBSD does> - and it starts exactly here,
+% with a sequence whose entries agree about the specimen and about the order
+% they are stored in.
 %
 % See also <EBSDGrid.html Square and Hex Grids> for what a layout is good
 % for, and <EBSDReferenceFrame.html Reference Frame Alignment> for the other
