@@ -45,7 +45,8 @@ function [pf,varargin] = loadPoleFigure_generic(fname,varargin)
 %        'Columns',[1 2 3])
 %
 %   % state the crystal direction instead of guessing it from the file name
-%   pf = loadPoleFigure_generic(fname,Miller(1,1,0,cs),'HEADER',21,'degree',...
+%   cs = crystalSymmetry('m-3m');
+%   pf = loadPoleFigure_generic(fname,Miller(1,1,1,cs),'HEADER',21,'degree',...
 %        'ColumnNames',{'polar angle','azimuth angle','intensity'},...
 %        'Columns',[1 2 3])
 %

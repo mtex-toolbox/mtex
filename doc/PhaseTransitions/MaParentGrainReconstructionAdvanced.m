@@ -58,7 +58,7 @@ mori = grains(grainPairs).meanOrientation;
 grainPairs(angle(mori(:,1),mori(:,2)) < 5*degree,:) = [];
 
 % compute an optimal parent to child orientation relationship
-[fcc2bcc, fit] = calcParent2Child(grains(grainPairs).meanOrientation);
+[fcc2bcc, fit] = calcParent2Child(grains(grainPairs).meanOrientation,KS);
 
 %%
 % Beside the optimized parent to child orientation relationship the command
