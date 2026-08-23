@@ -91,6 +91,51 @@ classdef spatialTransformProjective < spatialTransform
 
   methods (Static = true)
 
+    function T = byTilt(theta,wd,centre)
+      % the homography a tilted surface is seen through
+      %
+      % A surface tilted by theta about the x axis and viewed from a working
+      % distance wd: the far edge is further away and images smaller. cos
+      % foreshortens along the tilt axis, wd sets how much the scale varies
+      % across the frame - as wd grows the perspective vanishes and only the
+      % foreshortening is left.
+      %
+      % This is the tilt one KNOWS, to state a distortion. To recover one
+      % that was measured, see
+      % <spatialTransformTilt.spatialTransformTilt.html
+      % |spatialTransformTilt|>, which fits it in stages from two images.
+      %
+      % Syntax
+      %   T = spatialTransformProjective.byTilt(70*degree,wd)
+      %   T = spatialTransformProjective.byTilt(70*degree,wd,centre)
+      %
+      % Input
+      %  theta  - tilt angle, about the x axis
+      %  wd     - working distance the surface is seen from
+      %  centre - @vector3d the tilt leaves in place, default the origin
+      %
+      % Output
+      %  T - @spatialTransformProjective
+
+      if nargin < 3, centre = vector3d(0,0,0); end
+
+      assert(isa(centre,'vector3d') && isscalar(centre),...
+        'MTEX:spatialTransform:notAVector',...
+        'The centre of a tilt is one @vector3d.');
+
+      assert(wd > 0,'MTEX:spatialTransform:badWorkingDistance',...
+        'A working distance is positive, got %g.',wd);
+
+      cx = centre.x; cy = centre.y;
+      s = sin(theta) / wd; k = cos(theta);
+
+      T = spatialTransformProjective(...
+        [1, -cx*s,  cx*s*cy; ...
+         0, k-cy*s, cy*(1 + cy*s - k); ...
+         0, -s,     1 + s*cy]);
+
+    end
+
     function T = fit(posA,posB,varargin)
       % the homography best mapping posA onto posB, by the DLT
       %

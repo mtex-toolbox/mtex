@@ -20,6 +20,7 @@ checkPlus
 checkHeterogeneous
 checkFit
 checkFitWeights
+checkByTilt
 checkErrors
 
 end
@@ -228,6 +229,45 @@ assert(norm(Tbad.M - M,'fro') > 0.1,'the outlier did not move the unweighted fit
 w = ones(60,1); w(1) = 0;
 Tgood = spatialTransformShift.fit(posA,posB,'weights',w);
 assert(norm(Tgood.M - M,'fro') < 1e-10,'a zero weighted outlier still moved the fit')
+
+end
+
+%% byTilt states the homography a tilted surface is seen through
+function checkByTilt
+
+th = 20*degree; wd = 24000;
+c = vector3d(34500,6000,0);
+pos = vector3d(34500 + 3000*(rand(200,1)-.5), 6000 + 3000*(rand(200,1)-.5), 0);
+
+T = spatialTransformProjective.byTilt(th,wd,c);
+
+% the same thing written out by hand: tilt about the origin, conjugated to
+% the centre. This is the definition, so it is what byTilt has to reproduce
+toC = spatialTransformRigid(c);
+ref = toC * spatialTransformProjective([1 0 0; 0 cos(th) 0; 0 -sin(th)/wd 1]) * inv(toC); %#ok<MINV>
+assert(max(norm(T*pos - ref*pos)) < 1e-9*3000,'byTilt is not the conjugated tilt')
+
+assert(norm(T*c - c) < 1e-9,'byTilt moved the point it tilts about')
+
+assert(isid(spatialTransformProjective.byTilt(0,wd,c)),'a zero tilt is not the identity')
+
+% the two limits: no perspective left at infinite working distance, only the
+% foreshortening along the tilt axis
+Tinf = spatialTransformProjective.byTilt(th,1e12,c);
+flat = vector3d(pos.x, c.y + (pos.y - c.y)*cos(th), 0);
+assert(max(norm(Tinf*pos - flat)) < 1e-4,'byTilt does not tend to the plain cosine')
+
+% the centre is optional
+assert(norm(spatialTransformProjective.byTilt(th,wd)*vector3d(0,0,0)) < 1e-9,...
+  'byTilt without a centre does not tilt about the origin')
+
+try
+  spatialTransformProjective.byTilt(th,-1,c);
+  error('a negative working distance was accepted')
+catch e
+  assert(strcmp(e.identifier,'MTEX:spatialTransform:badWorkingDistance'),...
+    'wrong error for a negative working distance: %s',e.identifier)
+end
 
 end
 
