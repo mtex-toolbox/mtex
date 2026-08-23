@@ -23,6 +23,7 @@ myScripts
 /data/Neper/lamnormals.txt
 /data/HDF5/
 /data/h5data/
+/data/EBSD/copper29.h5oina
 
 .mailmap
 gitTricks.md
