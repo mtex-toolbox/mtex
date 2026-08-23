@@ -19,6 +19,20 @@ classdef spatialTransform < matlab.mixin.Heterogeneous
 % Subclasses of one base may be collected in one array, so a chain of
 % differently modelled hops is [T1 T2 T3] rather than a cell array.
 %
+% AN ARRAY IS A CHAIN, not a collection of N transforms: [T1 T2 T3] means
+% apply T1, then T2, then T3, and it is the composite T1 + T2 + T3 written
+% out. So its inverse is [inv(T3) inv(T2) inv(T1)] - inverting REVERSES, as
+% spatialTransformComposite/inv already does with its stages. This is the one
+% place the class departs from the MTEX reading where an array is N entities
+% and every method is elementwise. See docs/adr/0007.
+%
+% None of that is implemented yet. Every method here takes one transform, and
+% an array is only a container: MATLAB dispatches a method on a heterogeneous
+% array only if it is sealed, and only mtimes, plus and display are, so
+% inv(T), isid(T) and char(T) all fail on a sequence. Until they are sealed,
+% fold the chain with * - inv(T(3)*T(2)*T(1)) - or go hop by hop with
+% arrayfun(@inv,T,'UniformOutput',false), which does not reverse.
+%
 % There are two ways to put two transforms together, and they are not the
 % same operation:
 %
@@ -72,6 +86,7 @@ classdef spatialTransform < matlab.mixin.Heterogeneous
     pos = eval(T,pos)
     T = inv(T)
     s = char(T)
+    s = paramChar(T)
 
   end
 
@@ -126,12 +141,53 @@ classdef spatialTransform < matlab.mixin.Heterogeneous
     end
 
     function display(T,varargin) %#ok<DISPLAY> every MTEX class overloads it
+      % one row per transform, with the stages of a multi stage one below it
+      %
+      % An array of transforms is a sequence of hops and most hops have
+      % stages, so what is worth reading off is which model each hop is and
+      % what each of its stages came out as. char says the same thing on one
+      % line, joined by arrows, which past two stages cannot be read.
 
       displayClass(T,inputname(1),varargin{:});
       if length(T) > 1, disp([' size: ' size2str(T)]); end
       disp(' ');
 
-      for k = 1:length(T), disp(['  ' char(T(k))]); end
+      if isempty(T), return; end
+
+      % only a sequence numbers its entries
+      num = length(T) > 1;
+      matrix = cell(0,3+num);
+
+      for k = 1:length(T)
+
+        stages = stageList(T(k));
+
+        if length(stages) <= 1
+          % nothing inside it, so the stage column has nothing to say
+          block = {shortChar(T(k)),'·',paramChar(T(k))};
+        else
+          block = [repmat({''},length(stages),1), ...
+            arrayfun(@shortChar,stages(:),'UniformOutput',false), ...
+            arrayfun(@paramChar,stages(:),'UniformOutput',false)];
+          % the model names the hop, so it sits on its first row alone
+          block{1,1} = shortChar(T(k));
+        end
+
+        if num
+          block = [repmat({''},size(block,1),1), block]; %#ok<AGROW>
+          block{1,1} = int2str(k);
+        end
+
+        matrix = [matrix; block]; %#ok<AGROW>
+
+      end
+
+      label = {'model','stage','parameters'};
+      if num, label = [{''} label]; end
+
+      cprintf(wrapLastColumn(matrix,label),'-L',' ','-Lc',label,...
+        '-d','  ','-ic',true,'-la',true);
+
       disp(' ');
 
     end
@@ -141,12 +197,29 @@ classdef spatialTransform < matlab.mixin.Heterogeneous
   methods
 
     function s = shortChar(T)
-      % a name for a table column, where char gives the parameters
+      % what KIND of transform this is, for a table column
       %
-      % char(T) states what a transform IS, coefficients and all, which is
-      % what display wants. A sequence table wants what KIND it is.
+      % char(T) states what a transform IS, name and coefficients in one
+      % line. A table wants the two apart, so display pairs this with
+      % paramChar, which gives the coefficients alone.
 
       s = lower(erase(class(T),'spatialTransform'));
+
+    end
+
+    function stages = stageList(T)
+      % what a multi stage transform is built from, itself if it has none
+      %
+      % A tilt is fitted as a projective, then a polynomial on what that
+      % leaves, then another - each against a freshly measured residual,
+      % which is why the class only says what its stages are and the caller
+      % drives the loop over them.
+      %
+      % NOT isid: an unfitted prototype has zero coefficients and so reports
+      % itself as the identity. Only spatialTransformId means nothing
+      % separates the pair, the same class-not-value rule that plus applies.
+
+      stages = T;
 
     end
 
@@ -197,5 +270,42 @@ classdef spatialTransform < matlab.mixin.Heterogeneous
     end
 
   end
+
+end
+
+% =========================================================================
+function matrix = wrapLastColumn(matrix,label)
+% break the parameters over further rows so the table fits the window
+%
+% The parameters are the wide column and the only one that may be broken, so
+% what the others take up is measured and the rest goes to it. One column is
+% left free - filling the last one makes the command window wrap the row
+% itself, in the middle of the indent.
+
+n = size(matrix,2);
+
+w = get(0,'CommandWindowSize');
+% headless the command window has no size to report
+if w(1) < 40, w = 80; else, w = w(1); end
+
+colw = cellfun(@numel,[label(1:n-1); matrix(:,1:n-1)]);
+budget = max(30,w - 1 - sum(max(colw,[],1) + 2) - 1);
+
+out = cell(0,n);
+
+for k = 1:size(matrix,1)
+
+  lines = split(string(wraptext(matrix{k,n},budget)),newline);
+
+  for l = 1:numel(lines)
+    row = matrix(k,:);
+    if l > 1, row(1:n-1) = {''}; end
+    row{n} = char(lines(l));
+    out(end+1,:) = row; %#ok<AGROW>
+  end
+
+end
+
+matrix = out;
 
 end

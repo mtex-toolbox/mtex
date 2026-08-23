@@ -100,10 +100,14 @@ classdef spatialTransformDrift < spatialTransform
       tf = isempty(T.s) || norm(T.u,'fro') < 1e-12;
     end
 
-    function s = char(T)
-      if isempty(T.s), s = 'drift  (no knots)'; return; end
-      s = sprintf('drift  %d knots over [%.4g %.4g], |u| <= %.4g',...
+    function s = paramChar(T)
+      if isempty(T.s), s = '(no knots)'; return; end
+      s = sprintf('%d knots over %.4g .. %.4g, |u| <= %.4g',...
         numel(T.s),T.s(1),T.s(end),max(hypot(T.u(:,1),T.u(:,2))));
+    end
+
+    function s = char(T)
+      s = ['drift  ' paramChar(T)];
     end
 
   end

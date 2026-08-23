@@ -66,8 +66,12 @@ classdef spatialTransformRigid < spatialTransform
 
     end
 
+    function s = paramChar(T)
+      s = sprintf('move (%.4g, %.4g)',T.u.x,T.u.y);
+    end
+
     function s = char(T)
-      s = sprintf('rigid  (%.4g, %.4g)',T.u.x,T.u.y);
+      s = ['rigid  ' paramChar(T)];
     end
 
   end

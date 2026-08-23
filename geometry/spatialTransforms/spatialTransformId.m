@@ -30,8 +30,17 @@ classdef spatialTransformId < spatialTransform
       s = 'identity';
     end
 
+    function s = paramChar(~)
+      s = '·';
+    end
+
     function s = char(~)
       s = 'identity';
+    end
+
+    function stages = stageList(~)
+      % nothing separates the two frames, so there is nothing to fit
+      stages = spatialTransform.empty;
     end
 
   end

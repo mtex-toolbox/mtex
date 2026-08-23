@@ -79,9 +79,54 @@ classdef spatialTransformShift < spatialTransform
 
     end
 
+    function s = paramChar(T)
+      % what the affine does, which its matrix does not say
+      %
+      % Six numbers in two rows are not readable as a distortion, and the
+      % four that matter are all near their identity value, where a rotation
+      % of a hundredth of a degree and one of ten degrees look alike. The QR
+      % factors are what a registration is judged on instead.
+
+      [sx,sy,rot,shear] = parts(T);
+
+      s = sprintf('scale %.4g x %.4g, rotate %.3g°, shear %.3g°, move (%.4g, %.4g)',...
+        sx,sy,rot,shear,T.M(1,3),T.M(2,3));
+
+    end
+
     function s = char(T)
-      s = sprintf('affine  [%.4g %.4g; %.4g %.4g] + (%.4g, %.4g)',...
-        T.M(1,1),T.M(1,2),T.M(2,1),T.M(2,2),T.M(1,3),T.M(2,3));
+      s = ['affine  ' paramChar(T)];
+    end
+
+  end
+
+  methods (Access = private)
+
+    function [sx,sy,rot,shear] = parts(T)
+      % the affine as rotation, scale and shear, from its QR factors
+      %
+      % M = Q*R with R upper triangular: Q is the rotation, the diagonal of
+      % R the scale along each axis and R(1,2) the shear of x with y. A
+      % mirrored transform has no rotation of its own, so its flip is
+      % carried by a negative y scale.
+
+      [Q,R] = qr(T.M(1:2,1:2));
+
+      % qr fixes neither the sign of a column nor which factor carries it
+      d = sign(diag(R)); d(d == 0) = 1;
+      Q = Q .* d.'; R = d .* R;
+
+      if det(Q) < 0, Q(:,2) = -Q(:,2); R(2,:) = -R(2,:); end
+
+      sx = R(1,1); sy = R(2,2);
+      rot = atan2d(Q(2,1),Q(1,1));
+      shear = atand(R(1,2)/R(2,2));
+
+      % below this an angle is rounding noise out of qr and not a
+      % distortion - and a signed zero prints as -0
+      rot(abs(rot) < 1e-9) = 0;
+      shear(abs(shear) < 1e-9) = 0;
+
     end
 
   end

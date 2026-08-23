@@ -91,9 +91,13 @@ classdef spatialTransformField < spatialTransform
       tf = isempty(T.pos) || max(norm(T.u)) < 1e-12;
     end
 
+    function s = paramChar(T)
+      if isempty(T.pos), s = '(empty)'; return; end
+      s = sprintf('%d points, |u| <= %.4g',length(T.pos),max(norm(T.u)));
+    end
+
     function s = char(T)
-      if isempty(T.pos), s = 'field  (empty)'; return; end
-      s = sprintf('field  %d points, |u| <= %.4g',length(T.pos),max(norm(T.u)));
+      s = ['field  ' paramChar(T)];
     end
 
   end

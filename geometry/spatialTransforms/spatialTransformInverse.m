@@ -103,6 +103,11 @@ classdef spatialTransformInverse < spatialTransform
       s = ['inv-' shortChar(Ti.T)];
     end
 
+    function s = paramChar(Ti)
+      % the parameters are the forward transform's - this class has none
+      s = paramChar(Ti.T);
+    end
+
     function s = char(Ti)
       s = ['inverse of  ' char(Ti.T)];
     end

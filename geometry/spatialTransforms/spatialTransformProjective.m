@@ -83,8 +83,12 @@ classdef spatialTransformProjective < spatialTransform
 
     end
 
+    function s = paramChar(T)
+      s = sprintf('perspective (%.3g, %.3g)',T.H(3,1),T.H(3,2));
+    end
+
     function s = char(T)
-      s = sprintf('projective  perspective (%.3g, %.3g)',T.H(3,1),T.H(3,2));
+      s = ['projective  ' paramChar(T)];
     end
 
   end

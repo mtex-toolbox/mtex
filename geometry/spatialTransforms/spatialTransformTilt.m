@@ -98,11 +98,19 @@ classdef spatialTransformTilt < spatialTransform
       s = 'tilt';
     end
 
-    function s = char(T)
+    function s = paramChar(T)
 
       names = arrayfun(@(t) string(char(t)),T.stages);
-      s = char("tilt  " + join(names," -> "));
+      s = char(join(names," -> "));
 
+    end
+
+    function s = char(T)
+      s = ['tilt  ' paramChar(T)];
+    end
+
+    function stages = stageList(T)
+      stages = T.stages;
     end
 
   end

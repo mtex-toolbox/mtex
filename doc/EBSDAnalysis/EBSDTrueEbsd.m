@@ -150,11 +150,14 @@ plot(job.resizedList,'edge')
 % Steps whose transform is |spatialTransformId| are skipped: nothing
 % separates that pair, so their shift is taken as zero whatever the residual
 % says.
-%
+
+job.calcDistortion('fitErr')
+
+%%
 % Afterwards |job.T| holds the *fitted* transforms rather than the prototypes
 % it started from.
 
-job.calcDistortion('fitErr')
+job.T
 
 %% Correct It
 %

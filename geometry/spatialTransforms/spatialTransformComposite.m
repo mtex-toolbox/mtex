@@ -85,13 +85,21 @@ classdef spatialTransformComposite < spatialTransform
       s = char(join(arrayfun(@(t) string(shortChar(t)),T.stages),'-'));
     end
 
-    function s = char(T)
+    function s = paramChar(T)
 
-      if isempty(T.stages), s = 'composite  (empty)'; return; end
+      if isempty(T.stages), s = '(empty)'; return; end
 
       names = arrayfun(@(t) string(char(t)),T.stages);
-      s = char("composite  " + join(names," -> "));
+      s = char(join(names," -> "));
 
+    end
+
+    function s = char(T)
+      s = ['composite  ' paramChar(T)];
+    end
+
+    function stages = stageList(T)
+      stages = T.stages;
     end
 
   end
