@@ -29,6 +29,10 @@ function [h,mP] = plot(mg,varargin)
 % Options
 %  channel   - which channel to draw, default all of them
 %  micronbar - 'on'/'off'
+%  figSize   - 'huge' (the default here), 'large', 'normal', 'small', 'tiny'
+%              or a fraction of the screen. A new figure is made full screen,
+%              because a sequence tiles one axis per image and the usual
+%              default leaves each too small to read
 %
 % Flags
 %  edge - draw edgeMap(mg) instead of the values, which is what a
@@ -44,7 +48,7 @@ function [h,mP] = plot(mg,varargin)
 
 if isempty(mg), return; end
 
-mtexFig = newMtexFigure(varargin{:});
+[mtexFig,newFigure] = newMtexFigure(varargin{:});
 
 h = gobjects(1,numel(mg));
 
@@ -61,7 +65,16 @@ for k = 1:numel(mg)
 
 end
 
-mtexFig.drawNow(varargin{:});
+% An image is there to be looked at, and a sequence of them tiles into one
+% axis each, so the default figure leaves every panel too small to read. Take
+% the whole screen. get_option keeps the LAST match, so an explicit figSize
+% still wins, and a figure that already existed is left as the user sized it
+% rather than being resized underneath a hold.
+if newFigure
+  mtexFig.drawNow('figSize','huge',varargin{:});
+else
+  mtexFig.drawNow(varargin{:});
+end
 
 if nargout == 0, clear h; end
 
