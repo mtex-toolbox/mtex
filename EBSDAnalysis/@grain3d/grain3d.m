@@ -1,5 +1,45 @@
 classdef grain3d < phaseList & dynProp 
   % class representing 3 dimensional grains
+  %
+  % A grain3d is a list of polyhedra, given by the incidence matrix I_GF
+  % between grains and the boundary faces of a @grain3Boundary. It is what
+  % <EBSD3.calcGrains.html calcGrains> returns for volume data, and the
+  % three dimensional counterpart of @grain2d.
+  %
+  % Syntax
+  %   grains = calcGrains(ebsd3)
+  %   grains = grain3d(V,F,I_GF,ori,CSList,phaseList)
+  %
+  % Input
+  %  V         - @vector3d, the vertices
+  %  F         - faces, as a cell array or an n x 3 array
+  %  I_GF      - incidence matrix grains x faces, -1 for an inward normal
+  %  ori       - mean @orientation of each grain
+  %  CSList    - cell list of @crystalSymmetry
+  %  phaseList - phase of each grain
+  %
+  % Output
+  %  grains - @grain3d
+  %
+  % Class Properties
+  %  id              - unique identifier of each grain
+  %  boundary        - @grain3Boundary
+  %  I_GF            - incidence matrix grains x faces
+  %  numPixel        - number of measurements per grain
+  %  numFaces        - number of boundary faces per grain
+  %  V, allV         - @vector3d, the vertices
+  %  F               - the faces
+  %  meanOrientation - mean @orientation of each grain
+  %  extent          - bounding box of each grain
+  %  midPoint        - center of the bounding box
+  %  CSList          - cell list of @crystalSymmetry
+  %  phaseId         - phase of each grain as entry of CSList
+  %  frame           - the specimen @referenceFrame
+  %  how2plot        - @plottingConvention, read only
+  %
+  % See also
+  % grain2d grain3Boundary EBSD3 EBSD3/calcGrains
+  %
 
   properties  % with as many rows as data
     id = []

@@ -5,7 +5,34 @@ classdef EBSDsquare < EBSDgrid
   % pos(i,j) is affine in (i,j) here - the grid may be rotated or sheared,
   % but the step between adjacent entries is the same everywhere, which is
   % what separates this from @EBSDhex.
-  
+  %
+  % In practice this class is not constructed directly but by
+  % <EBSD.gridify.html gridify>.
+  %
+  % Syntax
+  %   ebsd = gridify(ebsd)
+  %   ebsd = EBSDsquare(pos,rot,phaseId,phaseMap,CSList)
+  %
+  % Input
+  %  pos      - @vector3d, one per grid point
+  %  rot      - @rotation, in matrix layout
+  %  phaseId  - phase as index to CSList
+  %  phaseMap - convert between phase = phaseMap(phaseId)
+  %  CSList   - cell list of @crystalSymmetry
+  %
+  % Output
+  %  ebsd - @EBSDsquare
+  %
+  % Class Properties
+  %  gradient1 - orientation gradient along the first grid dimension
+  %  gradient2 - orientation gradient along the second grid dimension
+  %  d1, d2    - @vector3d, directions of the two grid dimensions
+  %  layout    - @gridLayout, d1 and d2 in the order the map is stored
+  %
+  % See also
+  % EBSD EBSDgrid EBSDhex EBSD/gridify
+  %
+
   properties (Dependent = true)
     gradient1 % orientation gradient in dimension 1
     gradient2 % orientation gradient in dimension 2

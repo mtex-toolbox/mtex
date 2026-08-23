@@ -1,5 +1,31 @@
 classdef SO3FunHomochoric < SO3Fun
-% a class representing SO3Funs on a special grid
+% a class representing a function on SO(3) by values on a homochoric grid
+%
+% The function is given by one coefficient per cell of a homochoric grid
+% and is piecewise constant on those cells. Since the grid allows to look
+% up the cell of an orientation directly, evaluation is O(1) - which is
+% what makes this representation useful for kernel density estimation from
+% many individual orientations.
+%
+% Syntax
+%   SO3F = SO3FunHomochoric(S3G,c)
+%
+% Input
+%  S3G - @homochoricSO3Grid
+%  c   - coefficient for each grid cell
+%
+% Output
+%  SO3F - @SO3FunHomochoric
+%
+% Class Properties
+%  S3G        - @homochoricSO3Grid
+%  c          - coefficients
+%  bandwidth  - harmonic degree used when converting to @SO3FunHarmonic
+%  SRight, CS - @symmetry of the grid, acting from the right
+%  SLeft, SS  - @symmetry of the grid, acting from the left
+%
+% See also
+% SO3Fun homochoricSO3Grid SO3FunRBF
 
   properties
     S3G % homochoric orientation grid

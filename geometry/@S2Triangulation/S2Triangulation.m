@@ -1,6 +1,40 @@
 classdef S2Triangulation
 % a class representing a spherical triangulation
-  
+%
+% The Delaunay triangulation of a set of directions, computed as the
+% convex hull of the points. Besides the triangles it stores the
+% adjacencies and the neighbour of every triangle, which is what the
+% barycentric interpolation of @S2FunTri and the local search on it need.
+%
+% Syntax
+%   sT = S2Triangulation(v)
+%
+% Input
+%  v - @vector3d, the vertices
+%
+% Output
+%  sT - @S2Triangulation
+%
+% Class Properties
+%  vertices   - @vector3d, the nodes
+%  edges      - @vector3d, the normals of the triangle edges
+%  T          - list of triangles as indices into vertices
+%  midPoints  - @vector3d, the center of each triangle
+%  A_V        - adjacency matrix of the vertices
+%  A_T        - adjacency matrix of the triangles
+%  neighbours - the three neighbours of each triangle
+%  antipodal  - identify v and -v
+%  frame      - @referenceFrame, carried by the vertices
+%  how2plot   - @plottingConvention, read only
+%
+% Example
+%
+%   sT = S2Triangulation(equispacedS2Grid('resolution',10*degree))
+%
+% See also
+% S2FunTri S2VectorFieldTri vector3d
+%
+
   properties
     vertices = vector3d % 
     edges    = vector3d %

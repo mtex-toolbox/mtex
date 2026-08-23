@@ -1,5 +1,59 @@
 classdef tensor < dynOption
-   
+% class representing a material tensor of arbitrary rank
+%
+% A tensor stores its coefficients in the array M, together with the
+% @referenceFrame, respectively the crystal @symmetry, they are given with
+% respect to. Rotating a tensor or an orientation acting on it transforms
+% the coefficients accordingly, which is what makes calculations like the
+% elastic properties of a textured aggregate possible.
+%
+% Tensors of rank 4 come in two flavours of Voigt matrix notation. The
+% flag doubleConvention selects the one where the off diagonal entries
+% carry a factor of two, as is usual for the compliance tensor.
+%
+% Syntax
+%   T = tensor(M,CS)
+%   T = tensor(M,'rank',r)
+%   T = tensor(M,CS,'name',name,'unit',unit)
+%
+% Input
+%  M  - matrix of tensor entries
+%  CS - crystal @symmetry
+%
+% Options
+%  rank             - rank of the tensor
+%  unit             - physical unit of the entries
+%  name             - name of the tensor
+%  doubleConvention - Voigt notation with a factor of two off the diagonal
+%
+% Class Properties
+%  M                - the tensor coefficients
+%  rank             - tensor rank
+%  CS               - @symmetry the coefficients refer to
+%  frame            - @referenceFrame the tensor is expressed in
+%  how2plot         - @plottingConvention, read only
+%  doubleConvention - Voigt convention of a rank 4 tensor
+%  isSymmetric      - is the tensor symmetric
+%  isSkewSymmetric  - is the tensor skew symmetric
+%
+% Derived Classes
+%  @stiffnessTensor            - elastic stiffness
+%  @complianceTensor           - elastic compliance
+%  @strainTensor               - strain
+%  @strainRateTensor           - strain rate
+%  @stressTensor               - stress
+%  @deformationGradientTensor  - deformation gradient
+%  @velocityGradientTensor     - velocity gradient
+%  @spinTensor                 - infinitesimal rotation
+%  @curvatureTensor            - lattice curvature
+%  @dislocationDensityTensor   - dislocation density, Nye tensor
+%  @ChristoffelTensor          - Christoffel tensor of a wave direction
+%  @refractiveIndexTensor      - optical refractive index
+%
+% See also
+% TensorDefinition stiffnessTensor
+%
+
   properties
     M = []        % the tensor coefficients
     rank = 0      % tensor rank

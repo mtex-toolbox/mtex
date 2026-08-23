@@ -1,5 +1,41 @@
 classdef S2FunHarmonic < S2Fun
-% a class representing a function on the sphere
+% a class representing a function on the sphere by its harmonic series
+%
+% The function is stored by its coefficients fhat with respect to the
+% spherical harmonics, ordered degree by degree. This is the default
+% representation in MTEX, since convolution, rotation and quadrature are
+% cheap on it.
+%
+% Syntax
+%   sF = S2FunHarmonic(fhat)
+%   sF = S2FunHarmonic(fun)
+%   sF = S2FunHarmonic(psi)
+%   sF = S2FunHarmonic(fun,'bandwidth',N)
+%
+% Input
+%  fhat - harmonic coefficients, ordered by degree
+%  fun  - @S2Fun or @function_handle to be approximated
+%  psi  - @S2Kernel
+%
+% Output
+%  sF - @S2FunHarmonic
+%
+% Options
+%  bandwidth - maximum harmonic degree
+%  antipodal - the function fulfills f(v) = f(-v)
+%
+% Class Properties
+%  fhat      - harmonic coefficients
+%  bandwidth - maximum harmonic degree
+%  antipodal - f(v) = f(-v)
+%  isReal    - the function takes only real values
+%
+% Example
+%
+%   sF = S2FunHarmonic.quadrature(@(v) dot(v,vector3d.Z).^2)
+%
+% See also
+% S2Fun S2FunHarmonicSym S2Kernel
 
 properties
   fhat = []; % harmonic coefficients

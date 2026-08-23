@@ -1,7 +1,33 @@
 classdef EBSD3square < EBSD3
-  % EBSD data on a rectangular grid. In contrast to arbitrary EBSD data the
-  % values are stored in a matrix.
-  
+  % 3d EBSD data on a rectangular grid. In contrast to arbitrary EBSD3
+  % data the values are stored in a three dimensional array, so that
+  % ebsd(i,j,k) addresses a voxel and orientation gradients are available
+  % along all three axes.
+  %
+  % Syntax
+  %   ebsd = EBSD3square(pos,rot,phases,CSList,[dx dy dz])
+  %
+  % Input
+  %  pos        - @vector3d, one per voxel
+  %  rot        - @rotation, in array layout
+  %  phases     - phase of each voxel
+  %  CSList     - cell list of @crystalSymmetry
+  %  dx, dy, dz - voxel size
+  %
+  % Output
+  %  ebsd - @EBSD3square
+  %
+  % Class Properties
+  %  dx, dy, dz - voxel size
+  %  d1, d2, d3 - @vector3d, directions of the three array dimensions
+  %  gradientX  - orientation gradient in x
+  %  gradientY  - orientation gradient in y
+  %  gradientZ  - orientation gradient in z
+  %
+  % See also
+  % EBSD3 EBSD EBSDsquare
+  %
+
   % properties with as many rows as data
   properties
   end

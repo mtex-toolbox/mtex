@@ -1,5 +1,37 @@
 classdef shape2d < grain2d
-
+% class representing a single closed shape in the plane
+%
+% A shape2d is a @grain2d consisting of exactly one grain, which makes
+% every grain shape method - long axis, aspect ratio, equivalent radius,
+% paror and surfor - available for an outline that did not come from a
+% segmentation. This is what the characteristic shape of a boundary
+% length distribution is returned as.
+%
+% Syntax
+%   shape = shape2d(V)
+%   shape = shape2d(V,cs)
+%
+% Input
+%  V  - n x 2 list of vertices, or a @grainBoundary
+%  cs - crystal @symmetry
+%
+% Output
+%  shape - @shape2d
+%
+% Class Properties
+%  Vs    - list of vertices
+%  rho   - radius in polar coordinates
+%  theta - angle in polar coordinates
+%
+% Example
+%
+%   mtexdata forsterite
+%   grains = calcGrains(ebsd('indexed'));
+%   shape = characteristicShape(grains.boundary('f','f'))
+%
+% See also
+% grain2d calcTDF characteristicShape
+%
 
   properties (Dependent=true)
     Vs      % list of vertices

@@ -1,8 +1,37 @@
 classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
     ?SO3FunHandle,?SO3FunHarmonic,?SO3FunHomochoric,?SO3FunRBF,?SO3FunSBF})...
     SO3VectorFieldHandle < SO3VectorField
-% a class representing a vector field on SO(3)
-  
+% a class representing a vector field on SO(3) by a function handle
+%
+% Syntax
+%   SO3VF = SO3VectorFieldHandle(fun)
+%   SO3VF = SO3VectorFieldHandle(fun,CS,SS)
+%   SO3VF = SO3VectorFieldHandle(fun,CS,SS,SO3TangentSpace.rightVector)
+%
+% Input
+%  fun   - @function_handle taking a @rotation and returning a @vector3d
+%  CS,SS - @symmetry
+%
+% Output
+%  SO3VF - @SO3VectorFieldHandle
+%
+% Options
+%  SO3TangentSpace - the tangent space the values refer to
+%
+% Class Properties
+%  fun          - @function_handle
+%  bandwidth    - degree used when converting to @SO3VectorFieldHarmonic
+%  tangentSpace - @SO3TangentSpace of the evaluations
+%  SRight, CS   - @symmetry acting from the right
+%  SLeft, SS    - @symmetry acting from the left
+%
+% Example
+%
+%   SO3VF = SO3VectorFieldHandle(@(rot) rot.axis)
+%
+% See also
+% SO3VectorField SO3VectorFieldHarmonic
+
 properties
   fun
   bandwidth = getMTEXpref('maxSO3Bandwidth');

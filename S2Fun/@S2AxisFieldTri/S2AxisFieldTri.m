@@ -1,6 +1,30 @@
 classdef S2AxisFieldTri < S2AxisField
-% a class representing an axes valued function on the sphere
-  
+% a class representing an axis field on the sphere by values at nodes
+%
+% The field is given by an axis at every vertex of a spherical
+% triangulation and interpolated linearly in between.
+%
+% Syntax
+%   aF = S2AxisFieldTri(nodes,values)
+%   aF = S2AxisFieldTri(fun)
+%
+% Input
+%  nodes  - @vector3d or @S2Triangulation
+%  values - @vector3d, the axis at each node
+%  fun    - @function_handle, sampled on an equispaced grid
+%
+% Output
+%  aF - @S2AxisFieldTri
+%
+% Class Properties
+%  tri       - @S2Triangulation
+%  vertices  - @vector3d, the nodes of the triangulation
+%  values    - @vector3d, the axis at each node
+%  antipodal - always true for an axis field
+%
+% See also
+% S2AxisField S2AxisFieldHarmonic S2Triangulation
+
   properties
     tri       % S2Triangulation
     values = vector3d  % function values

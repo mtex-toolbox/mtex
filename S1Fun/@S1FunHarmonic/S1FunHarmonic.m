@@ -1,5 +1,38 @@
 classdef S1FunHarmonic < S1Fun
-% a class representing a function on the sphere
+% a class representing a function on the circle by its Fourier series
+%
+% The function is stored by its Fourier coefficients fhat, running from
+% degree -N to N. Accordingly fhat has an odd number of rows.
+%
+% Syntax
+%   sF = S1FunHarmonic(fhat)
+%   sF = S1FunHarmonic(fun)
+%   sF = S1FunHarmonic(fun,'bandwidth',N)
+%
+% Input
+%  fhat - Fourier coefficients, from degree -N to N
+%  fun  - @S1Fun or @function_handle to be approximated
+%
+% Output
+%  sF - @S1FunHarmonic
+%
+% Options
+%  bandwidth - maximum harmonic degree
+%
+% Class Properties
+%  fhat      - Fourier coefficients
+%  bandwidth - maximum harmonic degree
+%  antipodal - f(x) = f(x + pi)
+%  even      - f(x) = f(-x)
+%  odd       - f(x) = -f(-x)
+%  isReal    - the function takes only real values
+%
+% Example
+%
+%   sF = S1FunHarmonic.quadrature(@(x) sin(2*x))
+%
+% See also
+% S1Fun S1FunHandle
 
 properties
   fhat = []; % harmonic coefficients

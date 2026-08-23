@@ -4,7 +4,37 @@ classdef PatalaColorKey < orientationColorKey
 % S. Patala, J. K. Mason, and C. A. Schuh, Improved representations of
 % misorientation information for grain boundary science and engineering,
 % Prog. Mater. Sci., vol. 57, no. 8, pp. 1383-1425, 2012.
-  
+%
+% The color key is defined for grain exchange symmetry only, so it is
+% always antipodal, and only for the Laue groups m-3m, m-3, mmm, 4/mmm and
+% 6/mmm - any other symmetry raises an error.
+%
+% Syntax
+%   oM = PatalaColorKey(cs)
+%   oM = PatalaColorKey(cs1,cs2)
+%   rgb = oM.orientation2color(mori)
+%
+% Input
+%  cs, cs1, cs2 - @crystalSymmetry
+%  mori         - mis@orientation
+%
+% Output
+%  oM  - @PatalaColorKey
+%  rgb - list of RGB triplets
+%
+% Class Properties
+%  CS1, CS2 - the two @crystalSymmetry
+%
+% Example
+%
+%   mtexdata twins
+%   grains = calcGrains(ebsd('indexed'));
+%   oM = PatalaColorKey(grains.boundary('Magnesium','Magnesium'))
+%
+% See also
+% orientationColorKey grainBoundary/plot
+%
+
   properties
     
   end

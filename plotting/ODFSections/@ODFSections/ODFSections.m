@@ -1,6 +1,33 @@
 classdef ODFSections < handle
-  %ODFSECTIONS Summary of this class goes here
-  %   Detailed explanation goes here
+  % an abstract class representing sections through orientation space
+  %
+  % Orientation space is three dimensional, so plotting an ODF means
+  % slicing it. A deriving class fixes how the slices are cut and how an
+  % orientation is projected into a slice; everything the plotting needs -
+  % the grid, the projection, the axes labels - is asked through this
+  % interface.
+  %
+  % Derived Classes
+  %  @sigmaSections     - fixed phi1 - phi2, the MTEX default
+  %  @phi1Sections      - fixed Euler angle phi1
+  %  @PhiSections       - fixed Euler angle Phi
+  %  @phi2Sections      - fixed Euler angle phi2
+  %  @alphaSections     - fixed Matthies Euler angle alpha
+  %  @gammaSections     - fixed Matthies Euler angle gamma
+  %  @axisAngleSections - fixed misorientation angle
+  %  @omegaSections     - rotations about a fixed axis
+  %  @pfSections        - pole figure like sections
+  %  @ipfSections       - inverse pole figure like sections
+  %
+  % Class Properties
+  %  CS1, CS2 - the two @symmetry
+  %  CS, SS   - crystal and specimen @symmetry
+  %  tol      - tolerance an orientation may deviate from a section
+  %  plotGrid - the grid the section is evaluated on
+  %  gridSize - number of points per section
+  %
+  % See also
+  % sigmaSections phi2Sections SO3Fun/plotSection
   %
   % Example
   %

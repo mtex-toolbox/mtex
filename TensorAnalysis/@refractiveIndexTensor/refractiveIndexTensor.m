@@ -1,6 +1,35 @@
 classdef refractiveIndexTensor < tensor
-  
-  
+% class representing the optical refractive index tensor
+%
+% The rank 2 refractive index tensor describes how light of a given
+% propagation direction is slowed down by the crystal. Its anisotropy is
+% what makes a crystal birefringent, and is the basis of the simulated
+% thin section colours computed by spectralTransmission.
+%
+% Syntax
+%   rI = refractiveIndexTensor(M,cs)
+%
+% Input
+%  M  - 3x3 matrix
+%  cs - crystal @symmetry
+%
+% Output
+%  rI - @refractiveIndexTensor
+%
+% Class Properties
+%  M    - the tensor coefficients
+%  rank - always 2
+%  CS   - @symmetry the coefficients refer to
+%
+% Example
+%
+%   rI = refractiveIndexTensor.calcite
+%
+% See also
+% tensor
+%
+
+
   methods
     
     

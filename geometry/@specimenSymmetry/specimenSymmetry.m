@@ -1,8 +1,44 @@
 classdef specimenSymmetry < symmetry
 % defines a specimen symmetry
-% 
-% usually specimen symmetry is either 
-% triclinic or orthorhombic
+%
+% Usually specimen symmetry is either triclinic or orthorhombic - the
+% latter for a rolled sheet, where the sample is symmetric with respect to
+% the rolling and the transverse direction. Unlike a @crystalSymmetry it
+% carries no lattice, only the group and the specimen @referenceFrame.
+%
+% Passing a reference frame gives the trivial group carrying that frame,
+% which is how a plotting convention or a @gridLayout enters an
+% @orientation, see ADR 0003.
+%
+% Syntax
+%   ss = specimenSymmetry
+%   ss = specimenSymmetry('mmm')
+%   ss = specimenSymmetry('orthorhombic')
+%   ss = specimenSymmetry(pC)
+%   ss = specimenSymmetry(frame)
+%
+% Input
+%  name  - Schoenflies or International notation of the point group
+%  pC    - @plottingConvention
+%  frame - @referenceFrame to be carried by the trivial group
+%
+% Output
+%  ss - @specimenSymmetry
+%
+% Class Properties
+%  id         - point group id
+%  pointGroup - international notation of the point group
+%  lattice    - lattice type
+%  rot        - the symmetry elements as @rotation
+%  frame      - the specimen @referenceFrame
+%  how2plot   - @plottingConvention, read only
+%
+% Example
+%
+%   ss = specimenSymmetry('mmm')
+%
+% See also
+% symmetry crystalSymmetry specimenFrame
 %
 
 methods

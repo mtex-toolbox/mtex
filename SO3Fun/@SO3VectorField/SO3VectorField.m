@@ -1,5 +1,27 @@
 classdef SO3VectorField
-% a class representing a vector field on the rotation group
+% an abstract class representing vector fields on the rotation group
+%
+% A vector field on SO(3) assigns a tangent vector to every orientation,
+% e.g. the gradient of an ODF. Tangent vectors live in either the left or
+% the right tangent space, see @SO3TangentSpace; the property tangentSpace
+% says which representation evaluations are returned in.
+%
+% Deriving classes only have to implement the method eval.
+%
+% Class Properties
+%  SRight, CS   - @symmetry acting from the right, the crystal side
+%  SLeft, SS    - @symmetry acting from the left, the specimen side
+%  tangentSpace - @SO3TangentSpace of the evaluations
+%  frameLeft    - @referenceFrame of SLeft, read only
+%  frameRight   - @referenceFrame of SRight, read only
+%
+% Derived Classes
+%  @SO3VectorFieldHarmonic - harmonic series of the components
+%  @SO3VectorFieldRBF      - radial basis function series
+%  @SO3VectorFieldHandle   - field given by a function handle
+%
+% See also
+% SO3Fun SO3TangentSpace SO3TangentVector
 
 % properties
 %   SLeft = specimenSymmetry  % symmetry that acts from the left

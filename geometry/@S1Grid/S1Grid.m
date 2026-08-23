@@ -1,5 +1,41 @@
 classdef S1Grid
-  
+% a class representing a grid of angles
+%
+% An S1Grid is a sorted list of angles within an interval [min,max], which
+% may be periodic. Its point is the fast nearest neighbour search of
+% <S1Grid.find.html find> and <S1Grid.dist.html dist>, which is what makes
+% the tensor product grids @S2Grid and @SO3Grid work.
+%
+% Syntax
+%   S1G = S1Grid(points,min,max)
+%   S1G = S1Grid(points,min,max,'periodic')
+%
+% Input
+%  points - list of angles
+%  min    - start of the fundamental region
+%  max    - end of the fundamental region
+%
+% Output
+%  S1G - @S1Grid
+%
+% Options
+%  periodic - identify min and max
+%  matrix   - one grid per column of points
+%
+% Class Properties
+%  points   - the angles
+%  min, max - the fundamental region
+%  periodic - are min and max identified
+%  period   - max - min if periodic, 0 otherwise
+%
+% Example
+%
+%   S1G = S1Grid(0:10*degree:350*degree,0,2*pi,'periodic')
+%
+% See also
+% S2Grid SO3Grid
+%
+
   properties
     points   % the angles
     min = 0  % start of fundamental region

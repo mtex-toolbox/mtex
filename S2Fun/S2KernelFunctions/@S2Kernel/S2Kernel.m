@@ -4,6 +4,35 @@ classdef S2Kernel
 % methods <fibreODF.html fibreODF>.
 % For more information take a look at the <S2Kernels.html documentation>.
 %
+% A kernel is a radially symmetric function on the sphere and is stored by
+% its Legendre coefficients A. Deriving classes give A a closed form, the
+% arithmetics and the evaluation are inherited from here.
+%
+% Syntax
+%   psi = S2Kernel(A)
+%   psi = S2Kernel(A,fun)
+%
+% Input
+%  A   - Legendre coefficients
+%  fun - @function_handle for exact evaluation in the angle
+%
+% Output
+%  psi - @S2Kernel
+%
+% Options
+%  normalized - multiply A by 2*l+1
+%
+% Class Properties
+%  A         - Legendre coefficients
+%  bandwidth - maximum Legendre degree
+%
+% Derived Classes
+%  @S2DeLaValleePoussinKernel  - de la Vallee Poussin kernel
+%  @S2DirichletKernel          - Dirichlet kernel
+%  @S2BumpKernel               - indicator function of a spherical cap
+%  @S2RestrictedDistanceKernel - kernel with local support
+%  @S2KernelHandle             - kernel given by a function handle
+%
 % See also
 % S2DeLaValleePoussinKernel S2BumpKernel
 

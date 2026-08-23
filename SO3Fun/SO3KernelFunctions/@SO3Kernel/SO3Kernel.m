@@ -5,6 +5,33 @@ classdef SO3Kernel
 % methods <uniformODF.html uniformODF>. 
 % For more information take a look at the <SO3Kernels.html documentation>.
 %
+% A kernel is a radially symmetric function on SO(3) and is stored by its
+% Chebyshev coefficients A. Deriving classes give A a closed form, the
+% arithmetics and the evaluation are inherited from here.
+%
+% Syntax
+%   psi = SO3Kernel(A)
+%   psi = SO3Kernel(fun)
+%
+% Input
+%  A   - Chebyshev coefficients
+%  fun - @function_handle, gives an @SO3KernelHandle
+%
+% Output
+%  psi - @SO3Kernel
+%
+% Class Properties
+%  A         - Chebyshev coefficients
+%  bandwidth - maximum harmonic degree
+%
+% Derived Classes
+%  @SO3DeLaValleePoussinKernel - de la Vallee Poussin kernel
+%  @SO3AbelPoissonKernel       - Abel Poisson kernel
+%  @SO3vonMisesFisherKernel    - von Mises Fisher kernel
+%  @SO3GaussWeierstrassKernel  - Gauss Weierstrass kernel
+%  @SO3BumpKernel              - indicator function of a ball
+%  @SO3KernelHandle            - kernel given by a function handle
+%
 % See also
 % SO3DeLaValleePoussinKernel SO3AbelPoissonKernel
   

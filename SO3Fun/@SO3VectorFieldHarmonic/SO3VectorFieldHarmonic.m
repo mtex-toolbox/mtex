@@ -2,7 +2,38 @@ classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
     ?SO3FunHandle,?SO3FunHarmonic,?SO3FunHomochoric,?SO3FunRBF,?SO3FunSBF, ...
     ?SO3VectorFieldHandle,?SO3VectorFieldRBF,?vector3d}) ...
     SO3VectorFieldHarmonic < SO3VectorField
-% a class representing left sided vector fields on the rotation group
+% a class representing a vector field on SO(3) by a harmonic series
+%
+% The three components of the tangent vector are stored as a 3x1 array of
+% @SO3FunHarmonic. Since one of the two symmetries is consumed by the
+% tangent space, the inner SO3FunHarmonic carries only the other one.
+%
+% Syntax
+%   SO3VF = SO3VectorFieldHarmonic(SO3F)
+%   SO3VF = SO3VectorFieldHarmonic(fun)
+%   SO3VF = SO3VectorFieldHarmonic(fun,'bandwidth',N)
+%
+% Input
+%  SO3F - 3x1 @SO3FunHarmonic, the x, y and z component
+%  fun  - @SO3VectorField or @function_handle to be approximated
+%
+% Output
+%  SO3VF - @SO3VectorFieldHarmonic
+%
+% Options
+%  bandwidth       - maximum harmonic degree
+%  SO3TangentSpace - the tangent space the values refer to
+%
+% Class Properties
+%  SO3F         - the three components as @SO3FunHarmonic
+%  x, y, z      - the individual components
+%  bandwidth    - maximum harmonic degree
+%  tangentSpace - @SO3TangentSpace of the evaluations
+%  SRight, CS   - @symmetry acting from the right
+%  SLeft, SS    - @symmetry acting from the left
+%
+% See also
+% SO3VectorField SO3FunHarmonic SO3TangentSpace
 
 properties
   SO3F

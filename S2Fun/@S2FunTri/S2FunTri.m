@@ -1,6 +1,39 @@
 classdef S2FunTri < S2Fun
-% a class representing a function on the sphere
-  
+% a class representing a function on the sphere by values at grid points
+%
+% The function is given by its values at the vertices of a spherical
+% triangulation and interpolated linearly in between. This is the
+% representation used for measured data, e.g. a pole figure.
+%
+% Syntax
+%   sF = S2FunTri(nodes,values)
+%   sF = S2FunTri(nodes,values,s)
+%   sF = S2FunTri(fun)
+%
+% Input
+%  nodes  - @vector3d or @S2Triangulation
+%  values - function value at each node
+%  s      - @symmetry the nodes are symmetrised with
+%  fun    - @S2Fun or @function_handle, sampled on an equispaced grid
+%
+% Output
+%  sF - @S2FunTri
+%
+% Class Properties
+%  tri       - @S2Triangulation
+%  vertices  - @vector3d, the nodes of the triangulation
+%  values    - function value at each node
+%  antipodal - f(v) = f(-v)
+%  isReal    - the function takes only real values
+%
+% Example
+%
+%   v = equispacedS2Grid('resolution',5*degree);
+%   sF = S2FunTri(v,dot(v,vector3d.Z))
+%
+% See also
+% S2Fun S2FunHarmonic S2Triangulation
+
   properties
     tri          % S2Triangulation
     values = []  % function values

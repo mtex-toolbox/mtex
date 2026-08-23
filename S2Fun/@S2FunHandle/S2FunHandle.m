@@ -1,6 +1,38 @@
 classdef S2FunHandle < S2Fun
-% spherical function given by a function handle
-  
+% a class representing a function on the sphere by a function handle
+%
+% Since nothing is precomputed, evaluation is exact but every operation
+% that needs coefficients - convolution, quadrature, plotting a smooth
+% surface - converts to @S2FunHarmonic first.
+%
+% Syntax
+%   sF = S2FunHandle(fun)
+%   sF = S2FunHandle(fun,'antipodal')
+%   sF = S2FunHandle(fun,cs)
+%
+% Input
+%  fun - @function_handle taking a @vector3d
+%  cs  - @symmetry or @referenceFrame the function is expressed in
+%
+% Output
+%  sF - @S2FunHandle
+%
+% Options
+%  antipodal - the function fulfills f(v) = f(-v)
+%
+% Class Properties
+%  fun       - @function_handle
+%  antipodal - f(v) = f(-v)
+%  bandwidth - bandwidth used when converting to @S2FunHarmonic
+%  isReal    - the function takes only real values
+%
+% Example
+%
+%   sF = S2FunHandle(@(v) dot(v,vector3d.Z))
+%
+% See also
+% S2Fun S2FunHarmonic
+
 properties
   fun
   antipodal = false

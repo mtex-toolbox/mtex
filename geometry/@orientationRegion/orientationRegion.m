@@ -3,7 +3,45 @@ classdef orientationRegion
   % The region is bounded by planes normal to quaternions N i.e., all
   % quaternions q inside a region satisfy the condition dot(q, N) <= 0 or
   % dot(-q, N) <= 0 for all N
-  
+  %
+  % The most common one is the fundamental region of a pair of symmetries,
+  % which is what fundamentalRegion returns and what
+  % <orientation.project2FundamentalRegion.html project2FundamentalRegion>
+  % projects into. Setting antipodal identifies q and inv(q), i.e. adds
+  % grain exchange symmetry.
+  %
+  % Syntax
+  %   oR = fundamentalRegion(cs1,cs2)
+  %   oR = orientationRegion(N)
+  %   oR = orientationRegion(N,'antipodal')
+  %
+  % Input
+  %  N        - @quaternion, the normals of the bounding faces
+  %  cs1, cs2 - @crystalSymmetry
+  %
+  % Output
+  %  oR - @orientationRegion
+  %
+  % Options
+  %  antipodal - identify q and inv(q)
+  %
+  % Class Properties
+  %  N          - @quaternion, the normals of the bounding faces
+  %  V          - @orientation, the vertices
+  %  F          - the faces as indices into V
+  %  E          - the edges
+  %  faceCenter - @orientation, center of each face
+  %  CS1, CS2   - the two @symmetry
+  %  antipodal  - identify q and inv(q)
+  %
+  % Example
+  %
+  %   oR = fundamentalRegion(crystalSymmetry('432'))
+  %
+  % See also
+  % fundamentalRegion orientation/project2FundamentalRegion
+  %
+
   properties
     N = quaternion  % the normal vectors of the bounding faces
     V = orientation % list of vertices

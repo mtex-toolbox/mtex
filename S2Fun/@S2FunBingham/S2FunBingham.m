@@ -1,5 +1,37 @@
 classdef S2FunBingham < S2Fun
-  
+% a class representing a spherical Bingham distribution
+%
+% The Bingham distribution is the antipodal analogue of a Gaussian on the
+% sphere. Its shape parameters Z, sorted decreasingly with Z(3) < 0, run
+% from a rotationally symmetric unimodal distribution for Z(1) = Z(2) to a
+% girdle distribution for Z(1) << Z(2).
+%
+% Syntax
+%   BS2 = S2FunBingham(Z)
+%   BS2 = S2FunBingham(Z,a)
+%   BS2 = S2FunBingham(Z,a,cs)
+%
+% Input
+%  Z  - shape parameters, Z(1) >= Z(2) >= Z(3), Z(3) < 0
+%  a  - principal axes, @vector3d, default are the coordinate axes
+%  cs - @symmetry or @referenceFrame the distribution is expressed in
+%
+% Output
+%  BS2 - @S2FunBingham
+%
+% Class Properties
+%  a         - principal axes, @vector3d
+%  Z         - shape parameters
+%  N         - normalization constant
+%  antipodal - always true
+%
+% Example
+%
+%   BS2 = S2FunBingham([-10 -10 -20])
+%
+% See also
+% S2Fun S2FunHarmonic
+
   properties
     a  % principle axes
     Z  % smoothing parameters

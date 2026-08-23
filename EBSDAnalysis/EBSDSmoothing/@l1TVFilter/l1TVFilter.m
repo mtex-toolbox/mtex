@@ -1,7 +1,32 @@
 classdef l1TVFilter < EBSDFilter
   % smoothes quaternions by projecting them into tangential space and
   % performing there smoothing spline approximation
-  
+  %
+  % The total variation penalty keeps sharp steps, so unlike a spline or
+  % halfquadratic filter this one does not smear a subgrain boundary out.
+  % The price is a cyclic proximal point iteration, which makes it the
+  % slowest of the @EBSDFilter.
+  %
+  % Syntax
+  %   F = l1TVFilter
+  %   F = l1TVFilter(alpha)
+  %   ebsd = smooth(ebsd,F)
+  %
+  % Input
+  %  alpha - regularization parameter, larger means smoother
+  %
+  % Output
+  %  F - @l1TVFilter
+  %
+  % Class Properties
+  %  alpha  - regularization parameter
+  %  maxit  - maximum number of iterations
+  %  lambda - step sizes of the proximal point iteration
+  %
+  % See also
+  % EBSDFilter EBSD/smooth
+  %
+
   properties
     alpha = 0.4  % regularization parameter
     maxit = 1000; % maximum number of iterations

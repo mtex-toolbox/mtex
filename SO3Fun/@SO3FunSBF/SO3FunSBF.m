@@ -1,13 +1,34 @@
 classdef SO3FunSBF < SO3Fun
 % Deformation texture specified by strain and slipsystems
 %
+% The orientation distribution follows from a finite strain and the active
+% slip systems, without integrating a texture evolution. It is evaluated
+% analytically, so it has no finite bandwidth of its own.
+%
+% Syntax
+%   SO3F = SO3FunSBF(sS,E)
+%
+% Input
+%  sS - @slipSystem
+%  E  - @strainTensor
+%
+% Output
+%  SO3F - @SO3FunSBF
+%
+% Class Properties
+%  sS         - @slipSystem
+%  E          - @strainTensor
+%  SRight, CS - @symmetry of the slip system, acting from the right
+%  SLeft, SS  - @symmetry acting from the left, taken from the frame of E
+%
 % References
 %
 % * <https://doi.org/10.1093/gji/ggy442 An analytical finite-strain
 % parametrization for texture evolution in deforming olivine polycrystals>,
 % Geoph. J. Intern. 216, 2019.
-% 
+%
 % See also
+% SO3Fun slipSystem strainTensor
 %
 
   properties

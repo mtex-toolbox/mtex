@@ -6,6 +6,40 @@ classdef crystalShape
   % Enderlein, J., 1997. A package for displaying crystal morphology.
   % Mathematica Journal, 7(1).
   %
+  % A crystal shape is defined by a list of face normals. The faces are
+  % placed at a distance given by the length of their normal and the
+  % polyhedron is the intersection of the corresponding half spaces, so
+  % scaling a normal moves its face and can make it disappear entirely.
+  %
+  % Syntax
+  %   cS = crystalShape(N)
+  %   cS = crystalShape(N,habitus,extension)
+  %   cS = crystalShape.hex(cs)
+  %
+  % Input
+  %  N         - @Miller, the face normals
+  %  habitus   - how visible mixed hkl faces are, 0 switches it off
+  %  extension - [a b c], distance of the faces depending on hkl
+  %
+  % Output
+  %  cS - @crystalShape
+  %
+  % Class Properties
+  %  N          - @Miller, the face normals
+  %  V          - @vector3d, the vertices
+  %  F          - the faces as indices into V
+  %  E          - the edges
+  %  habitus    - how visible mixed hkl faces are
+  %  extension  - distance of the faces depending on hkl
+  %  CS         - crystal @symmetry
+  %  diameter   - largest distance between two vertices
+  %  faceArea   - area of each face
+  %  faceCenter - @vector3d, center of each face
+  %  volume     - volume of the polyhedron
+  %
+  % See also
+  % CrystalShapes Miller
+  %
   % Example
   %
   %   mtexdata titanium;

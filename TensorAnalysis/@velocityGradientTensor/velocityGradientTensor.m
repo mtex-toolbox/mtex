@@ -1,9 +1,40 @@
 classdef velocityGradientTensor < tensor
-  %
-  %
-  % since solids are no compressible the all velocity gradient tensors have
-  % trace 0
-  
+% class representing a velocity gradient tensor
+%
+% The velocity gradient L is the rank 2 tensor of the spatial derivatives
+% of the velocity field. Its symmetric part is the @strainRateTensor, its
+% skew symmetric part the @spinTensor. Since solids are not compressible
+% all velocity gradient tensors have trace 0.
+%
+% Syntax
+%   L = velocityGradientTensor(M)
+%   L = velocityGradientTensor.uniaxial(d,e)
+%   L = velocityGradientTensor.simpleShear(d,n,e)
+%   L = velocityGradientTensor.pureShear(exp,comp,e)
+%
+% Input
+%  M       - 3x3 matrix
+%  d, n    - @vector3d
+%  e       - strain rate
+%  exp     - extension direction, @vector3d
+%  comp    - compression direction, @vector3d
+%
+% Output
+%  L - @velocityGradientTensor
+%
+% Class Properties
+%  M    - the tensor coefficients
+%  rank - always 2
+%  CS   - @symmetry the coefficients refer to
+%
+% Example
+%
+%   L = velocityGradientTensor.simpleShear(vector3d.X,vector3d.Z)
+%
+% See also
+% tensor strainRateTensor spinTensor
+%
+
   methods
     function L = velocityGradientTensor(varargin)
       L = L@tensor(varargin{:},'rank',2);

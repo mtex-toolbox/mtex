@@ -1,7 +1,43 @@
 classdef EBSDhex < EBSDgrid
   % EBSD data on a hexagonal grid. In contrast to arbitrary EBSD data the
   % values are stored in a matrix.
-  
+  %
+  % Every second line of the matrix is staggered by half a step, so unlike
+  % on a square grid pos(i,j) is not an affine function of (i,j) and the
+  % conversion between matrix and lattice indices needs the parity.
+  %
+  % In practice this class is not constructed directly but by
+  % <EBSD.gridify.html gridify>.
+  %
+  % Syntax
+  %   ebsd = gridify(ebsd)
+  %   ebsd = EBSDhex(pos,rot,phaseId,phaseMap,CSList,'unitCell',uC)
+  %   ebsd = EBSDhex(pos,rot,phaseId,phaseMap,CSList,dHex,isRowAlignment)
+  %
+  % Input
+  %  pos            - @vector3d, one per grid point
+  %  rot            - @rotation, in matrix layout
+  %  phaseId        - phase as index to CSList
+  %  phaseMap       - convert between phase = phaseMap(phaseId)
+  %  CSList         - cell list of @crystalSymmetry
+  %  uC             - @vector3d, the measured unit cell
+  %  dHex           - circumradius of an axis aligned hexagonal cell
+  %  isRowAlignment - do the matrix rows carry the stagger
+  %
+  % Output
+  %  ebsd - @EBSDhex
+  %
+  % Class Properties
+  %  dHex           - circumradius of the hexagonal unit cell
+  %  isRowAlignment - true if the matrix rows carry the parity stagger
+  %  offset         - +/-1, which parity the first staggered line has
+  %  dx             - spacing along the dense direction
+  %  dy             - spacing across it
+  %
+  % See also
+  % EBSD EBSDgrid EBSDsquare EBSD/gridify
+  %
+
   % No stored geometry. dHex + isRowAlignment could only ever express two
   % orientations, 0 and 30 degree, which is why a rotated hex grid was
   % unrepresentable; unitCell and pos hold the geometry instead, exactly as

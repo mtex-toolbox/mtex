@@ -1,5 +1,35 @@
 classdef S2VectorFieldHarmonic < S2VectorField
-% a class representing a function on the sphere
+% a class representing a vector field on the sphere by harmonic series
+%
+% The three Cartesian components are stored as a 3x1 array of
+% @S2FunHarmonic.
+%
+% Syntax
+%   vF = S2VectorFieldHarmonic(sF)
+%   vF = S2VectorFieldHarmonic(fun)
+%   vF = S2VectorFieldHarmonic(fun,'bandwidth',N)
+%
+% Input
+%  sF  - 3x1 @S2FunHarmonic, the x, y and z component
+%  fun - @S2VectorField or @function_handle to be approximated
+%
+% Output
+%  vF - @S2VectorFieldHarmonic
+%
+% Options
+%  bandwidth - maximum harmonic degree
+%
+% Class Properties
+%  sF        - the three components as @S2FunHarmonic
+%  x, y, z   - the individual components
+%  bandwidth - maximum harmonic degree
+%
+% Example
+%
+%   vF = S2VectorFieldHarmonic.quadrature(@(v) cross(v,vector3d.Z))
+%
+% See also
+% S2VectorField S2FunHarmonic
 
 properties
   sF

@@ -1,5 +1,30 @@
 classdef S2AxisFieldHarmonic < S2AxisField
-% a class representing a axis field on the sphere
+% a class representing an axis field on the sphere by harmonic series
+%
+% Since an axis has no sign, not the axis itself but the six independent
+% entries of the symmetric matrix v*v' are expanded into spherical
+% harmonics. Evaluation recovers the axis as its leading eigenvector.
+%
+% Syntax
+%   aF = S2AxisFieldHarmonic(sF)
+%   aF = S2AxisFieldHarmonic(fun)
+%
+% Input
+%  sF  - 6x1 @S2FunHarmonic, the entries xx, xy, yy, xz, yz, zz
+%  fun - @S2AxisField or @function_handle to be approximated
+%
+% Output
+%  aF - @S2AxisFieldHarmonic
+%
+% Options
+%  bandwidth - maximum harmonic degree
+%
+% Class Properties
+%  sF        - the six components as @S2FunHarmonic
+%  bandwidth - maximum harmonic degree
+%
+% See also
+% S2AxisField S2AxisFieldTri S2VectorFieldHarmonic
 
 properties
   sF

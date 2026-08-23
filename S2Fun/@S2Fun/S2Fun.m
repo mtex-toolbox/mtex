@@ -7,8 +7,24 @@ classdef S2Fun
 % @S2FunHarmonicSym represents a symmetrised function and holds a
 % symmetry, whose frame it exposes here.
 %
+% Deriving classes only have to implement the method eval, everything else
+% - arithmetics, plotting, integration, extrema - is inherited from here.
+%
+% Class Properties
+%  isReal   - the function takes only real values
+%  frame    - @referenceFrame the function is expressed in
+%  how2plot - @plottingConvention, read only
+%
+% Derived Classes
+%  @S2FunHarmonic    - spherical harmonic series
+%  @S2FunHarmonicSym - symmetrised spherical harmonic series
+%  @S2FunTri         - piecewise linear on a spherical triangulation
+%  @S2FunHandle      - function given by a function handle
+%  @S2FunBingham     - spherical Bingham distribution
+%  @S2FunMLS         - moving least squares approximation
+%
 % See also
-% S2FunHarmonic S2Bingham S2FunTri
+% S2FunHarmonic S2FunBingham S2FunTri
 
 properties (Abstract = true)
   isReal

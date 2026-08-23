@@ -1,6 +1,35 @@
 classdef S2VectorFieldTri < S2VectorField
-% a class representing a vector valued function on the sphere
-  
+% a class representing a vector field on the sphere by values at nodes
+%
+% The field is given by a @vector3d at every vertex of a spherical
+% triangulation and interpolated linearly in between.
+%
+% Syntax
+%   vF = S2VectorFieldTri(nodes,values)
+%   vF = S2VectorFieldTri(fun)
+%
+% Input
+%  nodes  - @vector3d or @S2Triangulation
+%  values - @vector3d, the field value at each node
+%  fun    - @function_handle, sampled on an equispaced grid
+%
+% Output
+%  vF - @S2VectorFieldTri
+%
+% Class Properties
+%  tri       - @S2Triangulation
+%  vertices  - @vector3d, the nodes of the triangulation
+%  values    - @vector3d, the field value at each node
+%  antipodal - vF(v) = vF(-v)
+%
+% Example
+%
+%   v = equispacedS2Grid('resolution',10*degree);
+%   vF = S2VectorFieldTri(v,cross(v,vector3d.Z))
+%
+% See also
+% S2VectorField S2VectorFieldHarmonic S2Triangulation
+
   properties
     tri       % S2Triangulation
     values = vector3d  % function values

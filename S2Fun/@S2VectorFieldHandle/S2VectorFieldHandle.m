@@ -1,6 +1,26 @@
 classdef S2VectorFieldHandle < S2VectorField
-% a class representing a function on the sphere
-  
+% a class representing a vector field on the sphere by a function handle
+%
+% Syntax
+%   vF = S2VectorFieldHandle(fun)
+%
+% Input
+%  fun - @function_handle taking a @vector3d and returning a @vector3d
+%
+% Output
+%  vF - @S2VectorFieldHandle
+%
+% Class Properties
+%  fun       - @function_handle
+%  antipodal - vF(v) = vF(-v)
+%
+% Example
+%
+%   vF = S2VectorFieldHandle(@(v) cross(v,vector3d.Z))
+%
+% See also
+% S2VectorField S2VectorFieldHarmonic
+
 properties
   fun
   antipodal = false

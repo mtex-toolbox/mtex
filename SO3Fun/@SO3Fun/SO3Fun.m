@@ -1,5 +1,36 @@
 classdef SO3Fun < dynOption
-% a class representing functions on the rotational group
+% an abstract class representing functions on the rotation group
+%
+% SO3Fun is the common interface of all representations of a function on
+% SO(3), most prominently an ODF. Two symmetries act on it, SRight from
+% the crystal side and SLeft from the specimen side, and each contributes
+% the @referenceFrame of that side.
+%
+% Deriving classes only have to implement the method eval, everything else
+% - arithmetics, plotting, pole figures, texture characteristics - is
+% inherited from here.
+%
+% Class Properties
+%  SRight, CS - @symmetry acting from the right, the crystal side
+%  SLeft, SS  - @symmetry acting from the left, the specimen side
+%  antipodal  - grain exchange symmetry
+%  bandwidth  - maximum harmonic degree
+%  isReal     - the function takes only real values
+%  frameLeft  - @referenceFrame of SLeft, read only
+%  frameRight - @referenceFrame of SRight, read only
+%
+% Derived Classes
+%  @SO3FunHarmonic    - harmonic series on SO(3)
+%  @SO3FunRBF         - superposition of radial basis functions
+%  @SO3FunCBF         - superposition of fibre components
+%  @SO3FunBingham     - Bingham distribution
+%  @SO3FunHandle      - function given by a function handle
+%  @SO3FunHomochoric  - values on a homochoric grid
+%  @SO3FunComposition - sum of several SO3Fun
+%  @SO3FunSBF         - deformation texture from strain and slip systems
+%
+% See also
+% SO3FunHarmonic SO3FunRBF SO3FunHandle
 
   properties (Abstract = true)
     SLeft     % symmetry that acts from the left

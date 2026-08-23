@@ -4,6 +4,36 @@ classdef S2FunHarmonicSym < S2FunHarmonic
 % This is the one S2Fun that holds a symmetry - the abstract classes
 % carry only a referenceFrame, which for a symmetrised function is the
 % frame of its symmetry.
+%
+% Syntax
+%   sF = S2FunHarmonicSym(fhat,s)
+%   sF = S2FunHarmonicSym(fun,s)
+%
+% Input
+%  fhat - harmonic coefficients, ordered by degree
+%  fun  - @S2Fun or @S2Kernel to be symmetrised
+%  s    - @crystalSymmetry or @specimenSymmetry
+%
+% Output
+%  sF - @S2FunHarmonicSym
+%
+% Options
+%  skipSymmetrise - take the coefficients as already symmetric
+%
+% Class Properties
+%  s         - the @symmetry, and with it the @referenceFrame
+%  CS, SS    - both refer to s
+%  fhat      - harmonic coefficients
+%  bandwidth - maximum harmonic degree
+%  antipodal - f(v) = f(-v)
+%
+% Example
+%
+%   sF = S2FunHarmonic.quadrature(@(v) dot(v,vector3d.Z).^2);
+%   sF = S2FunHarmonicSym(sF,crystalSymmetry('432'))
+%
+% See also
+% S2FunHarmonic S2Fun
 
 properties
   s % the symmetry
