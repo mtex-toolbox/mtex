@@ -108,7 +108,7 @@ switch class(proto)
     T = spatialTransformField.fit(posA,posB);
 
   otherwise
-    error('trueEbsd:noFit', ...
+    error('MTEX:trueEbsd:noFit', ...
       '%s has no fit, so it cannot be a stage of a hop.',class(proto));
 
 end

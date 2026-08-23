@@ -1,99 +1,86 @@
 classdef trueEbsd2 < handle
-    % @trueEbsd2 class constructor
-    % class guiding through the trueEBSD image correction process
-    %
-    % A handle class, as every class guiding through a process in MTEX is -
-    % see @parentGrainReconstructor. The workflow methods still return the
-    % job, so
-    %
-    %   job = pixelSizeMatch(job,pixSz)
-    %
-    % reads and behaves the same as before; the difference is that the job
-    % is now modified in place, so forgetting the assignment no longer
-    % silently does nothing. Two consequences worth knowing: a second
-    % variable holding the job refers to the same object rather than to a
-    % snapshot, and a method that errors part way through leaves the job
-    % partly filled instead of leaving the caller's copy untouched.
-    %
-    % Syntax
-    %
-    %   job = trueEbsd2(imgList)
-    %   job = trueEbsd2(imgList,T)
-    %
-    % Input
-    %  imgList - @mapImage array, ordered from the most distorted map
-    %            imgList(1) to the ground truth imgList(end). One array
-    %            argument, not one argument per map. An EBSD map joins the
-    %            sequence as mapImage(ebsd.bc,ebsd) - an image, with the map
-    %            riding along
-    %  T       - @spatialTransform array, one per hop, so numel(T) is
-    %            numel(imgList)-1. Unfitted prototypes: the class says which
-    %            distortion separates the pair, calcDistortion fills in the
-    %            coefficients. May also be set afterwards as job.T
-    %
-    % Output
-    %  job - @trueEbsd2
-    %
-    % Class Properties
-    %  imgList         - @mapImage array, as imported: differing pixel sizes
-    %                    and extents
-    %  T               - @spatialTransform array, one per hop. THE MODEL IS
-    %                    THE CLASS - see below
-    %  resizedList     - @mapImage array, every map on one common pixel
-    %                    grid. Filled by pixelSizeMatch
-    %  shifts          - cell, one entry per hop, each a @pairShifts array
-    %                    with one entry per fit stage - the last being the
-    %                    final fit. Filled by calcDistortion
-    %  fitError        - @pairShifts array, one per hop: the residual shifts
-    %                    measured *after* correction, which is the
-    %                    diagnostic saying whether registration worked.
-    %                    Filled by calcDistortion with the 'fitErr' flag
-    %  undistortedList - @mapImage array, aligned: every pixel of every map
-    %                    directly overlayable. Filled by undistort
-    %  opt             - struct array, one per map: the registration
-    %                    settings that are a fact about the job rather than
-    %                    about the image. Set them with setOptions rather
-    %                    than by hand - see trueEbsd2/setOptions
-    %
-    % The model is the class
-    %
-    % A hop's distortion used to be a string on the map before it, expanded
-    % by a switch into a list of fit functions. It is now an unfitted
-    % @spatialTransform, one per hop, and the class IS the model:
-    %
-    %   job.T = [spatialTransformShift + spatialTransformDrift, ...
-    %            spatialTransformId, ...
-    %            spatialTransformShift, ...
-    %            spatialTransformTilt];
-    %
-    % A multi stage hop is +, never *: mtimes absorbs an operand that
-    % reports isid, and an unfitted prototype has zero coefficients and so
-    % reports exactly that, which would leave hop 1 above a bare drift with
-    % the shift silently gone. + keeps both stages.
-    %
-    % Three things follow. Parameters travel with the model, where a string
-    % could not carry them - spatialTransformDrift('slowScan',xvector) says
-    % which way the beam scanned. The old 'shift-drift' and 'drift-shift'
-    % stop being names anything is constructed from and become the order the
-    % stages are written in - they survive only as labels the GUI menu
-    % offers, which is transformRegistry. And there is no 'true' sentinel on
-    % the reference: there are numel(imgList)-1 hops and that many entries in
-    % T, with spatialTransformId where nothing separates a pair.
-    %
-    % Indexing
-    %
-    %   job.opt(n)              % the settings for map n
+% align a sequence of images and EBSD maps of one specimen area
+%
+% Two pictures of the same area rarely overlay: the EBSD map is taken at a
+% tilt and drifts as it scans, the electron images do not, and no single
+% distortion relates the extremes. TrueEBSD relates them through a CHAIN of
+% intermediate maps instead, each pair separated by one distortion simple
+% enough to fit, and composes the hops. What comes out is one common grid on
+% which every pixel of every map is the same piece of specimen, so an image
+% becomes a per pixel property of the map.
+%
+% The sequence is ordered from the most distorted map to the ground truth,
+% and hop n separates imgList(n) from imgList(n+1). Three methods walk it:
+% pixelSizeMatch puts every map on one grid, calcDistortion measures and fits
+% each hop, undistort accumulates the hops and resamples.
+%
+% A handle class, as every class guiding a process in MTEX is - see
+% @parentGrainReconstructor. The methods still return the job, so
+% job = pixelSizeMatch(job,pixSz) reads as before, but the job is modified in
+% place: a second variable holding it is an alias rather than a snapshot, and
+% a method that errors part way leaves the job partly filled.
+%
+% THE MODEL IS THE CLASS. A hop's distortion is an unfitted
+% @spatialTransform - the class names which distortion separates the pair and
+% calcDistortion fills in the coefficients. A multi stage hop is written with
+% + and never *, because mtimes absorbs an operand reporting isid and an
+% unfitted prototype has zero coefficients, so * would silently drop a stage.
+% There is no sentinel on the reference: where nothing separates a pair, the
+% entry is spatialTransformId.
+%
+% Syntax
+%
+%   job = trueEbsd2(imgList)
+%   job = trueEbsd2(imgList,T)
+%
+%   imgList = [mapImage(ebsd.bc,ebsd), mapImage(img,'dxy',0.05)]
+%   job = trueEbsd2(imgList, spatialTransformShift + spatialTransformDrift)
+%   job.pixelSizeMatch
+%   job.calcDistortion('fitErr')
+%   job.undistort
+%
+% Input
+%  imgList - @mapImage array, most distorted first, ground truth last. One
+%            array, not one argument per map. An EBSD map joins the sequence
+%            as mapImage(ebsd.bc,ebsd) - an image, with the map riding along
+%  T       - @spatialTransform array, one per hop, numel(imgList)-1 of them.
+%            Unfitted prototypes. May also be set afterwards as job.T
+%
+% Output
+%  job - @trueEbsd2
+%
+% Class Properties
+%  imgList         - @mapImage array as imported, differing pixel sizes and
+%                    extents
+%  T               - @spatialTransform array, one per hop
+%  resizedList     - @mapImage array on one common pixel grid, filled by
+%                    pixelSizeMatch
+%  shifts          - cell, one entry per hop, each a @pairShifts array with
+%                    one entry per fit stage, the last being the final fit
+%  fitError        - @pairShifts array, one per hop: the residual shifts
+%                    measured AFTER correction, which is what says whether
+%                    registration worked. Needs the 'fitErr' flag
+%  undistortedList - @mapImage array, aligned, filled by undistort
+%  opt             - struct array, one per map, the registration settings.
+%                    Set with setOptions rather than by hand
+%
+% Indexing, with numel(job.T) == numel(job.imgList) - 1
+%
 %   job.imgList(n)          % @mapImage
-    %   job.T(n)                % @spatialTransform, hop n
-    %   job.shifts{n}(m)        % hop n, fit stage m
-    %   job.fitError(n)         % @pairShifts
-    %
-    % and numel(job.T) == numel(job.imgList) - 1.
-    %
-    % See also
-    % mapImage spatialTransform pairShifts trueEbsd2/pixelSizeMatch
-    % trueEbsd2/calcDistortion trueEbsd2/undistort parentGrainReconstructor
-    %
+%   job.T(n)                % @spatialTransform, hop n
+%   job.opt(n)              % the settings for map n
+%   job.shifts{n}(m)        % hop n, fit stage m
+%   job.fitError(n)         % @pairShifts
+%
+% References
+%
+% Tong et al., TrueEBSD in MTEX: automatic image matching for correlative
+% microscopy applications, <https://arxiv.org/abs/2605.00703 arXiv 2605.00703>
+%
+% See also
+% mapImage spatialTransform pairShifts trueEbsd2/pixelSizeMatch
+% trueEbsd2/calcDistortion trueEbsd2/undistort trueEbsd2/setOptions
+% parentGrainReconstructor
 
     properties % one per workflow stage
         imgList = mapImage.empty % as imported
@@ -138,7 +125,7 @@ classdef trueEbsd2 < handle
             % the time this runs
             n = numel(job.imgList); %#ok<MCSUP>
             assert(n == 0 || numel(T) == n-1, ...
-                'trueEbsd:modelCount', ...
+                'MTEX:trueEbsd:modelCount', ...
                 ['A %d map sequence has %d hops, so T needs %d entries, ' ...
                 'got %d. Use spatialTransformId where nothing separates a ' ...
                 'pair - the reference has no entry of its own.'], ...
@@ -196,7 +183,7 @@ u = {imgList.scanUnit};
 bad = find(~strcmp(u,u{1}),1);
 
 if ~isempty(bad)
-  error('trueEbsd:unitMismatch', ...
+  error('MTEX:trueEbsd:unitMismatch', ...
     ['Image 1 is in %s and image %d is in %s, so no length given to the '...
     'job means the same thing to both. Put the sequence in one unit '...
     'before building it.'],u{1},bad,u{bad});
@@ -233,7 +220,7 @@ for k = 2:numel(imgList)
   gL = imgList(k).layout;
 
   if isempty(ref) || isempty(gL) || ~isAligned(gL,ref)
-    error('trueEbsd:frameMismatch',...
+    error('MTEX:trueEbsd:frameMismatch',...
       ['Images %d and %d are stored along different directions, so they '...
        'cannot be compared pixel by pixel.\n'...
        '  image 1: rows run %s, columns run %s\n'...

@@ -136,7 +136,8 @@ for nd2=1:2 %only do this for xy coordinates
             % vc{nd2} = max(extentMin(:,nd2)) : pixelsize : min(extentMax(:,nd2)) + eps*10000;
             npix = floor(eps*10000 + (min(extentMax(:,nd2))- max(extentMin(:,nd2)))/pixelsize);            
         otherwise
-            error("invalid extentMatch option: use either 'largest' or 'smallest'");
+            error('MTEX:trueEbsd:badExtentMatch', ...
+                'invalid extentMatch option: use either ''largest'' or ''smallest''');
     end
 
     switch offsetMatch
@@ -154,7 +155,8 @@ for nd2=1:2 %only do this for xy coordinates
             %centre of top left pixel = [pixelsize/2,pixelsize/2]
             offsetPos(nd2) = (-0.5)*pixelsize;
         otherwise
-            error("invalid offsetMatch option: use either 'centre' or 'topLeft'");
+            error('MTEX:trueEbsd:badOffsetMatch', ...
+                'invalid offsetMatch option: use either ''centre'' or ''topLeft''');
     end
     %convert to length units (um) and apply position offset between images
     vc{nd2} = pixelsize*(1:npix) + offsetPos(nd2); 

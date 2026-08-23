@@ -50,7 +50,7 @@ backend = get_option(varargin,'backend','inverse',{'char'});
 
 nImg = numel(job.resizedList);
 if numel(job.shifts)+1 ~= nImg
-    error('trueEbsd:shiftsMissing', ...
+    error('MTEX:trueEbsd:shiftsMissing', ...
         ['job has %d maps but %d hops of shifts - run calcDistortion first, ' ...
          'or check that it completed'],nImg,numel(job.shifts));
 end
@@ -85,7 +85,7 @@ for n = nImg:-1:1
                     'yShiftsMap',sy + (posRef.y - pos.y));
 
     if ndims(job.resizedList(n).img) > 3
-        error('trueEbsd:image4D','can''t handle 4D images');
+        error('MTEX:trueEbsd:image4D','can''t handle 4D images');
     end
 
     % The image channels and, where there is one, the map's id all go
@@ -124,7 +124,7 @@ for n = 1:nImg
     for m = 1:nImg
         fn = imgName(job.undistortedList(m),m);
         if isfield(ebsdOut.prop,fn)
-            warning('trueEbsd:propOverwritten', ...
+            warning('MTEX:trueEbsd:propOverwritten', ...
                 ['map %d already carries a property ''%s'' - the aligned ' ...
                  'image of map %d is overwriting it. Give that map a ' ...
                  'distinct ''name'' to keep both.'],n,fn,m);
