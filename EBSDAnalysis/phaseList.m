@@ -1,5 +1,38 @@
 classdef phaseList
 % handles a list of phases
+%
+% The part of an @EBSD, @grain2d or @grainBoundary that knows which phase
+% each entry belongs to. It keeps three things apart that are easily
+% confused: phaseId indexes CSList, phase is the number the measuring
+% software used, and phaseMap converts between them by
+% phase = phaseMap(phaseId).
+%
+% Indexing a phaseList by a mineral name - ebsd('Forsterite') - is
+% implemented here.
+%
+% Syntax
+%   pL = phaseList(phases,CSList)
+%
+% Input
+%  phases - phase of each entry
+%  CSList - cell list of @crystalSymmetry
+%
+% Class Properties
+%  phaseId         - phase of each entry as an index into CSList
+%  phase           - phase of each entry as imported
+%  phaseMap        - convert between phase = phaseMap(phaseId)
+%  CSList          - cell list of @crystalSymmetry
+%  CS              - @crystalSymmetry of one specific phase
+%  isIndexed       - is the entry indexed
+%  indexedPhasesId - phaseIds of all non empty indexed phases
+%  mineral         - mineral name of one specific phase
+%  mineralList     - list of all mineral names
+%  color           - color of one specific phase
+%  colorList       - list of all phase colors
+%
+% See also
+% EBSD grain2d crystalSymmetry notIndexed
+%
 
   properties
     phaseId = []    % index to a phase map - 1,2,3,4,....    

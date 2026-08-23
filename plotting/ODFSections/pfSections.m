@@ -1,4 +1,32 @@
 classdef pfSections < ODFSections
+% pole figure like sections for ODF and orientation plotting
+%
+% Each section is the pole figure of a fixed crystal direction h1, split
+% up by the angle omega a second direction h2 makes with a reference
+% field. The base of @sigmaSections and @omegaSections, which differ only
+% in that reference field.
+%
+% Syntax
+%   oS = pfSections(cs1,cs2)
+%   oS = pfSections(cs1,cs2,'sections',5)
+%
+% Input
+%  cs1, cs2 - @crystalSymmetry, @specimenSymmetry
+%
+% Options
+%  sections - number of sections
+%  maxOmega - the period the sections cover
+%
+% Class Properties
+%  h1             - the @Miller whose pole figure is split up
+%  h2             - the second @Miller, defining omega
+%  omega          - the value of each section
+%  sR             - @sphericalRegion each section is plotted on
+%  referenceField - @S2VectorField omega is measured against
+%
+% See also
+% ODFSections sigmaSections omegaSections
+%
 
   properties
     h1        % the pole figure which is split up

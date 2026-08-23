@@ -1,4 +1,25 @@
 classdef HKLDirectionKey < directionColorKey
+  % converts directions to rgb values as HKL Channel 5 does
+  %
+  % Syntax
+  %   dM = HKLDirectionKey(cs)
+  %   rgb = dM.direction2color(h)
+  %
+  % Input
+  %  cs - @crystalSymmetry
+  %  h  - @Miller
+  %
+  % Output
+  %  dM  - @HKLDirectionKey
+  %  rgb - list of RGB triplets
+  %
+  % Class Properties
+  %  sym - the Laue group of cs
+  %  sR  - the fundamental sector
+  %
+  % See also
+  % directionColorKey TSLDirectionKey ipfHKLKey
+  %
   
   methods
     

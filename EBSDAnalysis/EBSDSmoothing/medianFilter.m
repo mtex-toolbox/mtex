@@ -1,4 +1,24 @@
 classdef medianFilter < EBSDFilter
+  % replaces every orientation by the median of its neighbourhood
+  %
+  % Unlike @meanFilter this one removes single wild pixels without pulling
+  % the boundary along, but it is not yet fully supported on hexagonal grids.
+  %
+  % Syntax
+  %   F = medianFilter
+  %   F = medianFilter('neighbours',2)
+  %   ebsd = smooth(ebsd,F)
+  %
+  % Options
+  %  neighbours - radius of the window in pixel, 1 by default
+  %
+  % Class Properties
+  %  numNeighbours - radius of the window in pixel
+  %  isHex         - is the map on a hexagonal grid
+  %
+  % See also
+  % EBSDFilter EBSD/smooth meanFilter
+  %
   
   properties
     numNeighbours % number of neigbours to consider (default 1)

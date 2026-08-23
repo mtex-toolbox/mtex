@@ -11,7 +11,33 @@ classdef HSVDirectionKey < directionColorKey
   % There are three cases, -1, -3, -4, where this does not work. Actually one
   % can show that in this cases it is impossible to have a smooth one to one
   % relation between the color space and the fundamental sector.
-  
+  %
+  % Syntax
+  %   dM = HSVDirectionKey(cs)
+  %   rgb = dM.direction2color(h)
+  %
+  % Input
+  %  cs - @symmetry
+  %  h  - @Miller or @vector3d
+  %
+  % Output
+  %  dM  - @HSVDirectionKey
+  %  rgb - list of RGB triplets
+  %
+  % Class Properties
+  %  whiteCenter       - @vector3d that becomes white
+  %  colorStretching   - saturation exponent, larger means more contrast
+  %  grayValue         - [min max] gray of the two subsectors
+  %  grayGradient      - how fast the gray fades away from the center
+  %  maxAngle          - restrict the key to a ball around whiteCenter
+  %  colorPostRotation - @rotation applied to the color space
+  %  sym               - the @symmetry the sector is taken of
+  %  sR                - @sphericalRegion the key is defined on
+  %
+  % See also
+  % directionColorKey ipfHSVKey TSLDirectionKey
+  %
+
   properties
     colorStretching = 1;
     whiteCenter = vector3d(1,0,0)

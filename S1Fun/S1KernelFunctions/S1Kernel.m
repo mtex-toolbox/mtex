@@ -1,6 +1,33 @@
 classdef S1Kernel < S1FunHarmonic
+% an abstract class representing kernel functions on the circle
+%  
+% A kernel on the circle is a nonnegative even function concentrated at 0,
+% stored as an @S1FunHarmonic. Deriving classes give its Fourier
+% coefficients a closed form; the halfwidth and the arithmetics come from
+% here.
+%
+% Syntax
+%   psi = S1Kernel(fhat)
+%
+% Input
+%  fhat - Fourier coefficients, from degree -N to N
+%
+% Output
+%  psi - @S1Kernel
+%
+% Class Properties
+%  fhat      - Fourier coefficients
+%  bandwidth - maximum harmonic degree
+%
+% Derived Classes
+%  @S1DeLaValleePoussinKernel - de la Vallee Poussin kernel
+%  @S1DirichletKernel         - Dirichlet kernel
+%  @S1FejerKernel             - Fejer kernel
+%  @S1BumpKernel              - indicator function of an interval
+%
 % See also
 % S1DirichletKernel S1FejerKernel S1DeLaValleePoussinKernel S1BumpKernel
+%
 
   methods
     

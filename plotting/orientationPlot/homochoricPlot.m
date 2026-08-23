@@ -1,4 +1,28 @@
 classdef homochoricPlot < axisAnglePlot
+% 3d plot of orientation space in homochoric coordinates
+%
+% The homochoric parametrisation scales the rotational axis such that
+% volume is preserved, i.e. equal volumes in the ball correspond to equal
+% volumes in orientation space. That makes it the right one for judging
+% the density of a cloud of orientations by eye.
+%
+% Syntax
+%   plot(ori,'homochoric')
+%
+% Options
+%  ignoreFundamentalRegion    - plot orientations as they are
+%  project2FundamentalRegion  - project into the fundamental region, default
+%  restrict2FundamentalRegion - drop orientations outside it
+%  noBoundary                 - do not plot the boundary
+%
+% Class Properties
+%  oR       - @orientationRegion drawn as the boundary
+%  CS1, CS2 - the two @symmetry
+%  ax       - the axes handle
+%
+% See also
+% orientationPlot cubochoricPlot axisAnglePlot orientation/plot
+%
   
   methods
     

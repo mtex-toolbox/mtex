@@ -1,5 +1,22 @@
 classdef latticeType < int32
 % class representing the different Bravais lattices
+%
+% An enumeration, so a lattice can be compared against its name -
+% cs.lattice == 'hexagonal' - and carries the conventions that follow from
+% it, above all the default axis angles and whether the three or four digit
+% Miller notation applies.
+%
+% Syntax
+%   l = latticeType.hexagonal
+%   l = cs.lattice
+%
+% Class Properties
+%  triclinic, monoclinic, orthorhombic, trigonal, tetragonal, hexagonal,
+%  cubic, none, icosahedral - the enumeration members
+%
+% See also
+% crystalSymmetry MillerConvention Miller
+%
   
   enumeration
     triclinic    (1)

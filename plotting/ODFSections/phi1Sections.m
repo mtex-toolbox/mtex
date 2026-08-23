@@ -1,4 +1,31 @@
 classdef phi1Sections < ODFSections
+% phi1 sections for ODF and orientation plotting
+%
+% Sections of constant Bunge Euler angle phi1, with Phi and phi2 as the
+% polar and azimuthal coordinate within a section.
+%
+% Syntax
+%   oS = phi1Sections(cs1,cs2)
+%   oS = phi1Sections(cs1,cs2,'sections',5)
+%   oS = phi1Sections(cs1,cs2,'phi1',(0:15:90)*degree)
+%
+% Input
+%  cs1, cs2 - @crystalSymmetry, @specimenSymmetry
+%
+% Options
+%  sections - number of sections
+%  phi1     - explicit section values
+%  maxPhi   - restrict the Phi range
+%  maxphi2  - restrict the phi2 range
+%
+% Class Properties
+%  phi1    - the value of each section
+%  maxphi1 - the phi1 period of the symmetry pair
+%  sR      - @sphericalRegion each section is plotted on
+%
+% See also
+% ODFSections phi2Sections PhiSections sigmaSections
+%
 
   properties
     phi1

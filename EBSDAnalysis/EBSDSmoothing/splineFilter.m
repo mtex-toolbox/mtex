@@ -1,6 +1,29 @@
 classdef splineFilter < EBSDFilter
   % smoothes quaternions by projecting them into tangential space and
   % performing there smoothing spline approximation
+  %
+  % The MTEX default filter. With alpha empty the smoothing parameter is
+  % chosen by generalized cross validation, which is why it needs no tuning
+  % in most cases. Not yet fully supported on hexagonal grids.
+  %
+  % Syntax
+  %   F = splineFilter
+  %   F = splineFilter(alpha)
+  %   ebsd = smooth(ebsd,F)
+  %
+  % Input
+  %  alpha  - smoothing parameter, empty means choose it automatically
+  %  robust - down weight outliers, true by default
+  %
+  % Class Properties
+  %  alpha        - smoothing parameter
+  %  robust       - robust smoothing
+  %  useEmbedding - smooth the isometric embedding instead of the tangent space
+  %  isHex        - is the map on a hexagonal grid
+  %
+  % See also
+  % EBSDFilter EBSD/smooth halfQuadraticFilter
+  %
   
   properties
     alpha = []    % smoothing parameter

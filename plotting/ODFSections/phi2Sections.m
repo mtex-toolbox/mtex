@@ -1,4 +1,39 @@
 classdef phi2Sections < ODFSections
+% phi2 sections for ODF and orientation plotting
+%
+% Sections of constant Bunge Euler angle phi2, with Phi and phi1 as the
+% polar and azimuthal coordinate within a section. The classical way of
+% presenting a rolling texture.
+%
+% Syntax
+%   oS = phi2Sections(cs1,cs2)
+%   oS = phi2Sections(cs1,cs2,'sections',5)
+%   oS = phi2Sections(cs1,cs2,'phi2',(0:15:90)*degree)
+%
+% Input
+%  cs1, cs2 - @crystalSymmetry, @specimenSymmetry
+%
+% Options
+%  sections      - number of sections
+%  phi2          - explicit section values
+%  secResolution - spacing between the sections
+%  maxPhi        - restrict the Phi range
+%  maxphi1       - restrict the phi1 range
+%
+% Class Properties
+%  phi2    - the value of each section
+%  maxphi2 - the phi2 period of the symmetry pair
+%  sR      - @sphericalRegion each section is plotted on
+%
+% Example
+%
+%   mtexdata dubna
+%   odf = calcODF(pf,'silent');
+%   plotSection(odf,'phi2')
+%
+% See also
+% ODFSections phi1Sections PhiSections sigmaSections
+%
 
   properties
     phi2

@@ -1,5 +1,34 @@
 classdef ipfSections < ODFSections
-  
+% inverse pole figure like sections for ODF and orientation plotting
+%
+% The counterpart of @pfSections: each section is the inverse pole figure
+% of a fixed specimen direction r1, split up by the angle omega a second
+% direction r2 makes with a reference field. An orientation ori is drawn
+% at h1 = sym * inv(ori) * r1, with sym chosen so that h1 falls into the
+% fundamental sector.
+%
+% Syntax
+%   oS = ipfSections(cs1,cs2)
+%   oS = ipfSections(cs1,cs2,'sections',5)
+%
+% Input
+%  cs1, cs2 - @crystalSymmetry, @specimenSymmetry
+%
+% Options
+%  sections - number of sections
+%  maxOmega - the period the sections cover
+%
+% Class Properties
+%  r1             - @vector3d whose inverse pole figure is split up
+%  r2             - the second @vector3d, defining omega
+%  omega          - the value of each section
+%  sR             - @sphericalRegion each section is plotted on
+%  referenceField - @S2VectorField omega is measured against
+%
+% See also
+% ODFSections pfSections sigmaSections
+%
+
   properties
     r1        % the inverse pole figure which is split up
     r2        % the second

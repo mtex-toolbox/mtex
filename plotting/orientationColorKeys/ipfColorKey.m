@@ -1,6 +1,41 @@
 classdef ipfColorKey < orientationColorKey
-  % defines an orientation mapping based on a certain inverse pole figure
-  %   Detailed explanation goes here
+  % converts orientations to rgb values by an inverse pole figure
+  %
+  % The most common orientation coloring: a fixed specimen direction is
+  % rotated into the crystal frame and the resulting crystal direction is
+  % colored by a @directionColorKey. Which key that is decides the flavour -
+  % @ipfHSVKey, @ipfTSLKey and @ipfHKLKey differ in nothing else.
+  %
+  % Syntax
+  %   oM = ipfColorKey(cs)
+  %   oM = ipfColorKey(ori)
+  %   oM = ipfColorKey(ebsd('phaseName'))
+  %   oM.ipfDirection = vector3d.Z;
+  %   rgb = oM.orientation2color(ori)
+  %
+  % Input
+  %  cs   - @crystalSymmetry
+  %  ori  - @orientation
+  %  ebsd - @EBSD
+  %
+  % Output
+  %  oM  - @ipfColorKey
+  %  rgb - list of RGB triplets
+  %
+  % Class Properties
+  %  ipfDirection - the specimen direction the inverse pole figure is taken of
+  %  dirMap       - the @directionColorKey doing the coloring
+  %  CS1, CS2     - the two @symmetry
+  %
+  % Example
+  %
+  %   mtexdata titanium
+  %   oM = ipfColorKey(ebsd);
+  %   plot(ebsd,oM.orientation2color(ebsd.orientations))
+  %
+  % See also
+  % ipfHSVKey ipfTSLKey ipfHKLKey directionColorKey EBSDColorCoding
+  %
   
   properties
     ipfDirection % the specimen direction the inverse pole figure is taken of

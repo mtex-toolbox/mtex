@@ -1,19 +1,47 @@
 classdef orientationPlot < handle
-% ODFSECTIONS 
+% an abstract class representing 3d plots of orientation space
 %
-% Example
+% Where an @ODFSections slices orientation space, an orientationPlot maps
+% all of it into one three dimensional axes. A deriving class only says
+% how an orientation becomes a point - the fundamental region boundary,
+% the axes and the labels are handled here.
 %
-%   cs = crystalSymmetry('mmm');
-%   oS = axisAngleSections(cs,cs);
-%   ori = oS.makeGrid('resolution',2*degree);
-%   oM = PatalaColorKey(cs,cs);
-%   rgb = oM.orientation2color(ori);
-%   plot(oS,rgb,'surf')
-%   %
-%   hold on
-%   ori = orientation.rand(100,cs,cs)
-%   plot(oS,ori)
-  
+% Such a plot is not constructed directly but selected by a flag of
+% <orientation.plot.html plot>, see newOrientationPlot.
+%
+% Syntax
+%   plot(ori,'axisAngle')
+%   plot(ori,'Rodrigues')
+%   plot(ori,'Bunge','ignoreFundamentalRegion')
+%
+% Options
+%  ignoreFundamentalRegion    - plot orientations as they are
+%  project2FundamentalRegion  - project into the fundamental region, default
+%  restrict2FundamentalRegion - drop orientations outside it
+%  noBoundary                 - do not plot the boundary
+%
+% Class Properties
+%  CS1, CS2  - the two @symmetry
+%  CS, SS    - crystal and specimen @symmetry
+%  ax        - the axes handle
+%  antipodal - grain exchange symmetry
+%  fRMode    - how orientations outside the fundamental region are treated
+%  plotGrid  - the grid the plot is evaluated on
+%  gridSize  - size of that grid
+%
+% Derived Classes
+%  @axisAnglePlot   - axis times angle
+%  @RodriguesPlot   - axis times tan(angle/2)
+%  @homochoricPlot  - volume preserving ball
+%  @cubochoricPlot  - volume preserving cube
+%  @quaternionPlot  - axis times sin(angle/2)
+%  @conformalPlot   - axis times 2*tan(angle/4)
+%  @BungePlot       - the Euler angle box
+%
+% See also
+% newOrientationPlot ODFSections orientation/plot
+%
+
   properties
     CS1 % crystal symmetry of phase 1
     CS2 % crystal symmetry of phase 2

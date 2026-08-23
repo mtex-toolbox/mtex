@@ -1,5 +1,38 @@
 classdef sphericalProjection
-  %sphericalProjection
+  % an abstract class representing projections of the sphere to the plane
+  %  
+  % Every pole figure or inverse pole figure needs one - it turns a
+  % @vector3d into the x and y of the axes, and back. Which one is used is
+  % picked by a flag of the plotting command, see makeSphericalProjection.
+  %
+  % Syntax
+  %   sP = eareaProjection(sR)
+  %   [x,y] = sP.project(v)
+  %   v = sP.iproject(x,y)
+  %
+  % Input
+  %  sR   - @sphericalRegion the projection is restricted to
+  %  v    - @vector3d
+  %  x, y - plane coordinates
+  %
+  % Class Properties
+  %  sR        - @sphericalRegion the projection is restricted to
+  %  pC        - @plottingConvention, which direction points east
+  %  antipodal - identify v and -v
+  %
+  % Derived Classes
+  %  @eareaProjection        - equal area, Schmidt, the MTEX default
+  %  @eangleProjection       - equal angle, stereographic, conformal
+  %  @edistProjection        - equal distance
+  %  @gnonomicProjection     - gnomonic, great circles become lines
+  %  @orthographicProjection - orthographic, the sphere as seen from far away
+  %  @squareProjection       - equal area onto a square
+  %  @plainProjection        - plain polar angles, no projection at all
+  %  @full3dProjection       - no projection, the sphere is drawn in 3d
+  %
+  % See also
+  % makeSphericalProjection sphericalPlot vector3d/plot
+  %
   
   properties    
     sR = sphericalRegion

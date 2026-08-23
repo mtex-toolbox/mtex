@@ -1,5 +1,41 @@
 classdef sphericalPlot < handle
-  % sphericalPlot is responsible for visualizing spherical data  
+  % sphericalPlot is responsible for visualizing spherical data
+  %
+  % One per axes, stored in its appdata. It owns everything around the data -
+  % the projection, the outer boundary, the grid, the tick and Miller labels
+  % and the X / Y / Z annotation of the reference frame - so that a second
+  % plot into the same axes reuses them instead of drawing them again.
+  %
+  % Note that plot(...,'3d') builds no sphericalPlot at all; annotateFrame is
+  % the seam the two paths share.
+  %
+  % Syntax
+  %   sP = sphericalPlot(ax,proj)
+  %   sP = getappdata(gca,'sphericalPlot')
+  %
+  % Input
+  %  ax   - the axes handle
+  %  proj - @sphericalProjection
+  %
+  % Class Properties
+  %  proj            - @sphericalProjection
+  %  sphericalRegion - the region being plotted
+  %  antipodal       - identify v and -v
+  %  boundary        - the outer boundary
+  %  bounds          - [minx miny maxx maxy] of the projected region
+  %  grid            - the spherical grid lines
+  %  ticks           - the tick labels
+  %  labels          - @Miller indices at the vertices of the region
+  %  axesLabels      - X / Y / Z of the reference frame
+  %  ax              - the axes handle
+  %  parent          - the figure containing the plot
+  %  hemispheres     - the halves this plot consists of
+  %  TL, TR, BL, BR  - the four corner annotations
+  %  minData, maxData - data range, shown if dispMinMax
+  %
+  % See also
+  % sphericalProjection newSphericalPlot mtexFigure vector3d/plot
+  %
   
   properties
     proj = sphericalProjection

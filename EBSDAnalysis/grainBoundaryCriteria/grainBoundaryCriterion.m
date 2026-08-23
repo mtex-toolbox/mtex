@@ -17,6 +17,28 @@ classdef (Abstract) grainBoundaryCriterion
 %   out = 0    high-angle grain boundary
 %
 % Subclasses implement the protected method doEvaluate.
+%
+% Syntax
+%   grains = calcGrains(ebsd,gbcAngle(10*degree))
+%   out = criterion.evaluate(ebsd,i,j)
+%
+% Input
+%  ebsd - @EBSD
+%  i, j - equally sized arrays of neighbouring pixel indices
+%
+% Output
+%  out - one value per pair, between 0 and 1
+%
+% Derived Classes
+%  @gbcAngle    - threshold on the misorientation angle
+%  @gbcSoft     - a smooth transition instead of a threshold
+%  @gbcFMC      - fast multiscale clustering
+%  @gbcVariants - boundaries between variants of a parent grain
+%  @gbcCustom   - criterion given by a function handle
+%
+% See also
+% EBSD/calcGrains gbcAngle gbcFMC
+%
 
 methods
 

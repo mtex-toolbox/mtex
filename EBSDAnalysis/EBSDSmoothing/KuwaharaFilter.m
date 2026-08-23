@@ -1,4 +1,26 @@
 classdef KuwaharaFilter < EBSDFilter
+  % edge preserving mean over the most homogeneous subwindow
+  %
+  % Of the four quadrants of the window around a pixel, the one with the
+  % smallest orientation spread wins and its mean is taken. That keeps a
+  % boundary sharp, since the quadrant across it is never the quietest one.
+  % Not yet fully supported on hexagonal grids.
+  %
+  % Syntax
+  %   F = KuwaharaFilter
+  %   F = KuwaharaFilter('neighbours',2)
+  %   ebsd = smooth(ebsd,F)
+  %
+  % Options
+  %  neighbours - radius of the window in pixel, 1 by default
+  %
+  % Class Properties
+  %  numNeighbours - radius of the window in pixel
+  %  isHex         - is the map on a hexagonal grid
+  %
+  % See also
+  % EBSDFilter EBSD/smooth medianFilter halfQuadraticFilter
+  %
   
   properties
     numNeighbours % number of neigbours to consider (default 1)

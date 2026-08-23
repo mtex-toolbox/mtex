@@ -1,4 +1,29 @@
 classdef infimalConvolutionFilter < EBSDFilter
+  % denoises EBSD data by combined first and second order total variation
+  %
+  % Total variation alone keeps steps but flattens a smooth gradient into
+  % a staircase. Adding a second order term through an infimal convolution
+  % lets a linear orientation gradient survive while a boundary stays
+  % sharp.
+  %
+  % Syntax
+  %   F = infimalConvolutionFilter
+  %   F.lambda = 0.01;
+  %   ebsd = smooth(ebsd,F)
+  %
+  % Class Properties
+  %  lambda  - first order regularization parameter, in [0,1]
+  %  mu      - second order regularization parameter, in [0,1]
+  %  gamma   - parameter of the augmented lagrangian, > 0
+  %  maxit   - maximum number of iterations
+  %  eps_rel - relative stopping criterion
+  %  tol_CG  - tolerance of the CG method
+  %  method  - inner solver, 'CG' by default
+  %  isHex   - is the map on a hexagonal grid
+  %
+  % See also
+  % EBSDFilter EBSD/smooth halfQuadraticFilter l1TVFilter
+  %
   % matrix-valued image with the TV-norm.
   % \argmin_u{\|u-u_0\|_2^2 + \lambda \|\nabla u\|_{2,1} + \mu \|H u\|_{2,1}},
   % \lambda,\mu > 0

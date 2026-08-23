@@ -1,5 +1,29 @@
 classdef BungeColorKey < orientationColorKey
-  % assigns rgb values to orientations according the the Euler angles
+  % converts orientations to rgb values according to their Euler angles
+  %
+  % The three Bunge Euler angles, each scaled to its fundamental range,
+  % become the three RGB channels. Simple and one to one, but the coloring
+  % jumps where the Euler angle range wraps.
+  %
+  % Syntax
+  %   oM = BungeColorKey(cs)
+  %   rgb = oM.orientation2color(ori)
+  %
+  % Input
+  %  cs  - @crystalSymmetry
+  %  ori - @orientation
+  %
+  % Output
+  %  oM  - @BungeColorKey
+  %  rgb - list of RGB triplets
+  %
+  % Class Properties
+  %  center                        - @quaternion the angles are measured from
+  %  phi1Range, PhiRange, phi2Range - the Euler angle ranges mapped to 0..1
+  %
+  % See also
+  % orientationColorKey ipfColorKey EBSDColorCoding
+  %
   
   
   properties

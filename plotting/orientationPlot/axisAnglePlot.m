@@ -1,5 +1,34 @@
 classdef axisAnglePlot < orientationPlot
-  
+% 3d plot of orientation space in axis angle coordinates
+%
+% An orientation is drawn at its rotational axis scaled by its rotational
+% angle in degree. This is the default of <orientation.plot.html plot> and
+% the base of the other ball shaped parametrisations.
+%
+% Syntax
+%   plot(ori,'axisAngle')
+%   plot(ori,'axisAngle','ignoreFundamentalRegion')
+%
+% Options
+%  ignoreFundamentalRegion    - plot orientations as they are
+%  project2FundamentalRegion  - project into the fundamental region, default
+%  restrict2FundamentalRegion - drop orientations outside it
+%  noBoundary                 - do not plot the boundary
+%
+% Class Properties
+%  oR       - @orientationRegion drawn as the boundary
+%  CS1, CS2 - the two @symmetry
+%  ax       - the axes handle
+%
+% Example
+%
+%   cs = crystalSymmetry('432');
+%   plot(orientation.rand(200,cs),'axisAngle')
+%
+% See also
+% orientationPlot RodriguesPlot homochoricPlot orientation/plot
+%
+
   properties
     oR 
   end

@@ -1,5 +1,27 @@
 classdef ipfTSLKey < ipfColorKey
-  % orientation mapping as it is used by TSL and HKL software
+  % converts orientations to rgb values as TSL / OIM does
+  %
+  % Syntax
+  %   oM = ipfTSLKey(cs)
+  %   oM = ipfTSLKey(ebsd('phaseName'))
+  %   rgb = oM.orientation2color(ori)
+  %
+  % Input
+  %  cs   - @crystalSymmetry
+  %  ebsd - @EBSD
+  %  ori  - @orientation
+  %
+  % Output
+  %  oM  - @ipfTSLKey
+  %  rgb - list of RGB triplets
+  %
+  % Class Properties
+  %  ipfDirection - the specimen direction the inverse pole figure is of
+  %  dirMap       - the @TSLDirectionKey doing the coloring
+  %
+  % See also
+  % ipfColorKey TSLDirectionKey ipfHKLKey
+  %
       
   methods
     function oM =ipfTSLKey(varargin)

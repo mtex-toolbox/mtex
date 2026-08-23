@@ -1,5 +1,31 @@
 classdef omegaSections < pfSections
-     
+% omega sections for ODF and orientation plotting
+%
+% Like @sigmaSections, but the sections are the rotations about the c*
+% axis by a fixed angle omega rather than by sigma = phi1 - phi2.
+%
+% Syntax
+%   oS = omegaSections(cs1,cs2)
+%   oS = omegaSections(cs1,cs2,'sections',5)
+%   oS = omegaSections(cs1,cs2,'omega',(0:15:90)*degree)
+%
+% Input
+%  cs1, cs2 - @crystalSymmetry, @specimenSymmetry
+%
+% Options
+%  sections - number of sections
+%  omega    - explicit section values
+%
+% Class Properties
+%  omega          - the value of each section
+%  h1, h2         - the @Miller the sections are built from
+%  sR             - @sphericalRegion each section is plotted on
+%  referenceField - @S2VectorField omega is measured against
+%
+% See also
+% ODFSections pfSections sigmaSections
+%
+
   methods
     
     function oS = omegaSections(CS1,CS2,varargin)

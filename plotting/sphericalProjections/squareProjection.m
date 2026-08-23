@@ -1,5 +1,28 @@
 classdef squareProjection < sphericalProjection
-  %equal area projection
+  % equal area projection of a hemisphere onto a square
+  %
+  % The Lambert projection folded onto a square rather than a disc, so that a
+  % regular grid in the plane is an equal area grid on the sphere. Used for
+  % the square master patterns of dynamical simulations.
+  %
+  % Syntax
+  %   sP = squareProjection(sR)
+  %   [x,y] = sP.project(v)
+  %   v = sP.iproject(x,y)
+  %
+  % Input
+  %  sR   - @sphericalRegion the projection is restricted to
+  %  v    - @vector3d
+  %  x, y - plane coordinates
+  %
+  % Class Properties
+  %  sR        - @sphericalRegion the projection is restricted to
+  %  pC        - @plottingConvention, which direction points east
+  %  antipodal - identify v and -v
+  %
+  % See also
+  % sphericalProjection eareaProjection makeSphericalProjection
+  %
   
   methods 
         

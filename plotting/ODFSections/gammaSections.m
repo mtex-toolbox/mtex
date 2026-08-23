@@ -1,4 +1,29 @@
 classdef gammaSections < ODFSections
+% gamma sections for ODF and orientation plotting
+%
+% Sections of constant Matthies Euler angle gamma, with beta and alpha as
+% the polar and azimuthal coordinate within a section.
+%
+% Syntax
+%   oS = gammaSections(cs1,cs2)
+%   oS = gammaSections(cs1,cs2,'sections',5)
+%   oS = gammaSections(cs1,cs2,'gamma',(0:15:90)*degree)
+%
+% Input
+%  cs1, cs2 - @crystalSymmetry, @specimenSymmetry
+%
+% Options
+%  sections - number of sections
+%  gamma    - explicit section values
+%
+% Class Properties
+%  gamma    - the value of each section
+%  maxGamma - the gamma period of the symmetry pair
+%  sR       - @sphericalRegion each section is plotted on
+%
+% See also
+% ODFSections alphaSections phi2Sections
+%
 
   properties
     gamma

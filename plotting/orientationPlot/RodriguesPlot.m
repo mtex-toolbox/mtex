@@ -1,4 +1,28 @@
 classdef RodriguesPlot < axisAnglePlot
+% 3d plot of orientation space in Rodrigues Frank coordinates
+%
+% An orientation is drawn at its rotational axis scaled by tan(angle/2).
+% In these coordinates the fundamental region is a convex polyhedron, but
+% a rotation by 180 degree runs off to infinity.
+%
+% Syntax
+%   plot(ori,'Rodrigues')
+%   plot(ori,'Rodrigues','antipodal')
+%
+% Options
+%  ignoreFundamentalRegion    - plot orientations as they are
+%  project2FundamentalRegion  - project into the fundamental region, default
+%  restrict2FundamentalRegion - drop orientations outside it
+%  noBoundary                 - do not plot the boundary
+%
+% Class Properties
+%  oR       - @orientationRegion drawn as the boundary
+%  CS1, CS2 - the two @symmetry
+%  ax       - the axes handle
+%
+% See also
+% orientationPlot axisAnglePlot orientation/plot orientation/Rodrigues
+%
   
   methods
     

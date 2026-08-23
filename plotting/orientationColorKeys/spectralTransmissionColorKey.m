@@ -1,4 +1,40 @@
 classdef spectralTransmissionColorKey < orientationColorKey
+  % computes the thin section color of an anisotropic crystal
+  %
+  % Simulates a polarization microscope: light of the given propagation
+  % direction passes polarizer, crystal and analyzer, and the transmitted
+  % spectrum is converted to RGB. That makes the color a function of the
+  % orientation, the sample thickness and the optical setup.
+  %
+  % Syntax
+  %   oM = spectralTransmissionColorKey(rI,thickness)
+  %   oM.propagationDirection = vector3d.Z;
+  %   rgb = oM.orientation2color(ori)
+  %
+  % Input
+  %  rI        - @refractiveIndexTensor
+  %  thickness - thickness of the sample in nm
+  %  ori       - @orientation
+  %
+  % Output
+  %  oM  - @spectralTransmissionColorKey
+  %  rgb - list of RGB triplets
+  %
+  % Class Properties
+  %  rI                   - @refractiveIndexTensor
+  %  thickness            - thickness of the sample
+  %  propagationDirection - @vector3d, direction of the light
+  %  polarizer            - @vector3d, direction of the polarizer
+  %  phi                  - angle between polarizer and analyzer
+  %
+  % Example
+  %
+  %   rI = refractiveIndexTensor.calcite;
+  %   oM = spectralTransmissionColorKey(rI,30000)
+  %
+  % See also
+  % orientationColorKey refractiveIndexTensor tensor/spectralTransmission
+  %
 
   properties
     rI                      % refractiveIndexTensor

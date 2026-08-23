@@ -1,4 +1,32 @@
 classdef fibreVonMisesFisherKernel < SO3Kernel
+  % the von Mises Fisher kernel of a fibre
+  %
+  % The kernel belonging to a fibre rather than to a single orientation - it
+  % is what fibreODF convolves with. The concentration kappa may be given
+  % directly or through a halfwidth.
+  %
+  % Syntax
+  %   psi = fibreVonMisesFisherKernel(kappa)
+  %   psi = fibreVonMisesFisherKernel('halfwidth',10*degree)
+  %
+  % Input
+  %  kappa - concentration parameter, larger means sharper
+  %
+  % Output
+  %  psi - @fibreVonMisesFisherKernel
+  %
+  % Options
+  %  halfwidth - halfwidth instead of kappa
+  %  bandwidth - maximum harmonic degree
+  %
+  % Class Properties
+  %  kappa     - concentration parameter
+  %  A         - Chebyshev coefficients
+  %  bandwidth - maximum harmonic degree
+  %
+  % See also
+  % SO3Kernel SO3vonMisesFisherKernel fibreODF
+  %
       
   properties
     kappa = 45;

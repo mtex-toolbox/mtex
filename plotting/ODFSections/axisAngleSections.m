@@ -1,5 +1,41 @@
 classdef axisAngleSections < ODFSections
-  
+% sections of constant rotational angle for ODF and orientation plotting
+%
+% Every section is the axis sector belonging to one misorientation angle,
+% so an orientation is placed at its rotational axis. Since that sector
+% shrinks with the angle, the axes are rescaled by default to keep equal
+% orientation volumes comparable.
+%
+% Syntax
+%   oS = axisAngleSections(cs1,cs2)
+%   oS = axisAngleSections(cs1,cs2,'sections',5)
+%   oS = axisAngleSections(cs1,cs2,'axisAngle',(10:20:180)*degree)
+%
+% Input
+%  cs1, cs2 - @crystalSymmetry, @specimenSymmetry
+%
+% Options
+%  sections      - number of sections
+%  axisAngle     - explicit section values
+%  volumeScaling - rescale the axes by the volume of the section
+%  antipodal     - grain exchange symmetry
+%
+% Class Properties
+%  angles        - the rotational angle of each section
+%  axesSectors   - the axis sector of each section
+%  jointCS       - the joint proper @symmetry of cs1 and cs2
+%  oR            - @orientationRegion of cs1 and cs2
+%  volumeScaling - rescale the axes by the volume of the section
+%
+% Example
+%
+%   cs = crystalSymmetry('432');
+%   oS = axisAngleSections(cs,cs)
+%
+% See also
+% ODFSections sigmaSections SO3Fun/plotSection
+%
+
   properties
     angles
     axesSectors 

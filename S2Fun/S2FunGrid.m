@@ -1,5 +1,31 @@
 classdef S2FunGrid < S2Fun
   % bilinear interpolation on a regular grid in polar coordinates
+  %
+  % Unlike @S2FunTri, which triangulates arbitrary nodes, this one assumes a
+  % regular theta over rho grid, which makes evaluation a direct index
+  % computation rather than a search.
+  %
+  % Syntax
+  %   sF = S2FunGrid(values)
+  %   sF = S2FunGrid(fun)
+  %
+  % Input
+  %  values - nTheta x nRho matrix of function values
+  %  fun    - @function_handle, sampled on a 1 degree grid
+  %
+  % Output
+  %  sF - @S2FunGrid
+  %
+  % Class Properties
+  %  values    - the function values
+  %  gSize     - size of the grid
+  %  s         - @symmetry the grid refers to
+  %  antipodal - f(v) = f(-v)
+  %  isReal    - the function takes only real values
+  %
+  % See also
+  % S2Fun S2FunTri S2FunHarmonic
+  %
 
   properties
     values % [0,pi] x [0,2*pi]

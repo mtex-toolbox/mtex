@@ -1,5 +1,29 @@
 classdef S2KernelHandle < S2Kernel
   % defines a kernel function as a function of the rotational angle
+  %
+  % Wraps an arbitrary function of the cosine of the polar angle into an
+  % @S2Kernel. Its Legendre coefficients are computed by quadrature unless
+  % they are passed in.
+  %
+  % Syntax
+  %   psi = S2KernelHandle(fun)
+  %   psi = S2KernelHandle(fun,A)
+  %
+  % Input
+  %  fun - @function_handle of cos(theta)
+  %  A   - Legendre coefficients, computed by quadrature if omitted
+  %
+  % Output
+  %  psi - @S2Kernel
+  %
+  % Class Properties
+  %  fun       - the @function_handle
+  %  A         - Legendre coefficients
+  %  bandwidth - maximum Legendre degree
+  %
+  % See also
+  % S2Kernel S2DeLaValleePoussinKernel
+  %
   
   properties
     fun = @(x) 1;

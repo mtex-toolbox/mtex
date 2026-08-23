@@ -1,5 +1,37 @@
 classdef directionColorKey < handle
-  % converts directions to rgb values
+  % an abstract class converting directions to rgb values
+  %  
+  % The base of every color key that turns a crystal or specimen direction
+  % into a color - the inverse pole figure colorings above all. A deriving
+  % class implements direction2color; the fundamental sector, the symmetry
+  % and the post rotation of the color space live here.
+  %
+  % Syntax
+  %   dM = directionColorKey(cs)
+  %   rgb = dM.direction2color(h)
+  %
+  % Input
+  %  cs - @symmetry, or anything carrying one
+  %  h  - @Miller or @vector3d
+  %
+  % Output
+  %  dM  - @directionColorKey
+  %  rgb - list of RGB triplets
+  %
+  % Class Properties
+  %  sym               - the @symmetry the sector is taken of
+  %  sR                - @sphericalRegion the key is defined on
+  %  colorPostRotation - @rotation applied to the color space
+  %  dir2color         - @function_handle doing the actual conversion
+  %
+  % Derived Classes
+  %  @HSVDirectionKey - white in the center, MTEX default
+  %  @TSLDirectionKey - the coloring used by TSL / OIM
+  %  @HKLDirectionKey - the coloring used by HKL Channel 5
+  %
+  % See also
+  % ipfColorKey HSVDirectionKey vector3d/plot
+  %
     
   properties
     colorPostRotation = rotation.id

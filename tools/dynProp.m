@@ -1,6 +1,21 @@
 classdef dynProp
-  %class to add dynamic properties to a static class
-  %   Detailed explanation goes here
+  % class to add dynamic properties to a static class
+  %
+  % Properties added this way have one entry per object in the array and are
+  % indexed, concatenated and reshaped along with it - which is how an @EBSD
+  % carries mad, bc or any other imported column. Values describing the whole
+  % object belong in @dynOption instead.
+  %
+  % Syntax
+  %   dp = dynProp('name',values)
+  %   ebsd.prop.mad
+  %
+  % Class Properties
+  %  prop - struct holding the properties, one entry per object
+  %
+  % See also
+  % dynOption EBSD grain2d
+  %
   
   properties
     prop = struct    

@@ -1,4 +1,42 @@
 classdef ipfHSVKey < ipfColorKey
+% converts orientations to rgb values by the MTEX inverse pole figure key
+%
+% The MTEX default inverse pole figure coloring: white in the center of the
+% fundamental sector, the primary colors at its vertices. Its parameters
+% are those of the underlying @HSVDirectionKey and are forwarded to it.
+%
+% Syntax
+%   oM = ipfHSVKey(cs)
+%   oM = ipfHSVKey(ebsd('phaseName'))
+%   rgb = oM.orientation2color(ori)
+%
+% Input
+%  cs   - @crystalSymmetry
+%  ebsd - @EBSD
+%  ori  - @orientation
+%
+% Output
+%  oM  - @ipfHSVKey
+%  rgb - list of RGB triplets
+%
+% Class Properties
+%  ipfDirection      - the specimen direction the inverse pole figure is of
+%  whiteCenter       - @vector3d that becomes white
+%  colorStretching   - saturation exponent
+%  grayValue         - [min max] gray of the two subsectors
+%  grayGradient      - how fast the gray fades away from the center
+%  maxAngle          - restrict the key to a ball around whiteCenter
+%  colorPostRotation - @rotation applied to the color space
+%
+% Example
+%
+%   mtexdata titanium
+%   oM = ipfHSVKey(ebsd);
+%   plot(oM)
+%
+% See also
+% ipfColorKey HSVDirectionKey ipfTSLKey EBSDColorCoding
+%
 % defines an orientation mapping based on a certain inverse pole figure
   
 properties (Dependent = true)

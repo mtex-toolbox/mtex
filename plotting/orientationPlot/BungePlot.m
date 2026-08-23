@@ -1,6 +1,25 @@
 classdef BungePlot < orientationPlot
-  %
-  %
+% 3d plot of orientation space in Bunge Euler angles
+%
+% The Euler angle box, with phi1, Phi and phi2 as the three axes. Note
+% that this parametrisation is heavily distorted near Phi = 0, where a
+% whole line of the box is one single orientation.
+%
+% Syntax
+%   plot(ori,'Bunge')
+%
+% Options
+%  ignoreFundamentalRegion    - plot the full 360 x 180 x 360 box
+%  project2FundamentalRegion  - project into the fundamental region, default
+%  restrict2FundamentalRegion - drop orientations outside it
+%
+% Class Properties
+%  CS1, CS2 - the two @symmetry
+%  ax       - the axes handle
+%
+% See also
+% orientationPlot axisAnglePlot phi2Sections orientation/plot
+%
 
   methods
 

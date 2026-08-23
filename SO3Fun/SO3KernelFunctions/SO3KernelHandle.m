@@ -1,5 +1,30 @@
 classdef SO3KernelHandle < SO3Kernel
   % defines a kernel function as a function of the rotational angle
+  %
+  % Wraps an arbitrary function of cos(omega/2) into an @SO3Kernel. Its
+  % Chebyshev coefficients are computed by quadrature.
+  %
+  % Syntax
+  %   psi = SO3KernelHandle(fun)
+  %   psi = SO3KernelHandle(fun,'bandwidth',N)
+  %
+  % Input
+  %  fun - @function_handle of cos(omega/2)
+  %
+  % Output
+  %  psi - @SO3Kernel
+  %
+  % Options
+  %  bandwidth - maximum harmonic degree
+  %
+  % Class Properties
+  %  fun       - the @function_handle
+  %  A         - Chebyshev coefficients
+  %  bandwidth - maximum harmonic degree
+  %
+  % See also
+  % SO3Kernel SO3DeLaValleePoussinKernel
+  %
   
   properties
     fun = @(x) 1;

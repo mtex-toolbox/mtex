@@ -1,4 +1,29 @@
 classdef alphaSections < ODFSections
+% alpha sections for ODF and orientation plotting
+%
+% Sections of constant Matthies Euler angle alpha, with beta and gamma as
+% the polar and azimuthal coordinate within a section.
+%
+% Syntax
+%   oS = alphaSections(cs1,cs2)
+%   oS = alphaSections(cs1,cs2,'sections',5)
+%   oS = alphaSections(cs1,cs2,'alpha',(0:15:90)*degree)
+%
+% Input
+%  cs1, cs2 - @crystalSymmetry, @specimenSymmetry
+%
+% Options
+%  sections - number of sections
+%  alpha    - explicit section values
+%
+% Class Properties
+%  alpha    - the value of each section
+%  maxalpha - the alpha period of the symmetry pair
+%  sR       - @sphericalRegion each section is plotted on
+%
+% See also
+% ODFSections gammaSections phi1Sections
+%
 
   properties
     alpha

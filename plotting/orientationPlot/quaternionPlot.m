@@ -1,4 +1,27 @@
 classdef quaternionPlot < axisAnglePlot
+% 3d plot of orientation space in quaternion coordinates
+%
+% An orientation is drawn at its rotational axis scaled by sin(angle/2),
+% i.e. at the imaginary part of its unit quaternion. Since sin is not
+% monotone on the full range, rotations by more than 180 degree fold back.
+%
+% Syntax
+%   plot(ori,'quaternion')
+%
+% Options
+%  ignoreFundamentalRegion    - plot orientations as they are
+%  project2FundamentalRegion  - project into the fundamental region, default
+%  restrict2FundamentalRegion - drop orientations outside it
+%  noBoundary                 - do not plot the boundary
+%
+% Class Properties
+%  oR       - @orientationRegion drawn as the boundary
+%  CS1, CS2 - the two @symmetry
+%  ax       - the axes handle
+%
+% See also
+% orientationPlot axisAnglePlot orientation/plot
+%
   
   methods
     

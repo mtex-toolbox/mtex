@@ -1,5 +1,27 @@
 classdef eangleProjection < sphericalProjection
   % stereographic, conformal or equal angle projection
+  %
+  % Scales the radius by tan(theta/2). Preserves angles and maps circles to
+  % circles, which is what makes it the usual choice for crystallography.
+  %
+  % Syntax
+  %   sP = eangleProjection(sR)
+  %   [x,y] = sP.project(v)
+  %   v = sP.iproject(x,y)
+  %
+  % Input
+  %  sR   - @sphericalRegion the projection is restricted to
+  %  v    - @vector3d
+  %  x, y - plane coordinates
+  %
+  % Class Properties
+  %  sR        - @sphericalRegion the projection is restricted to
+  %  pC        - @plottingConvention, which direction points east
+  %  antipodal - identify v and -v
+  %
+  % See also
+  % sphericalProjection eareaProjection makeSphericalProjection
+  %
   
   methods 
         

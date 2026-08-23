@@ -1,5 +1,21 @@
 classdef MillerConvention < int32
-% class representing the different Miller conventions  
+% class representing the different Miller conventions
+%
+% An enumeration of the ways a crystal direction may be written: the three
+% and four digit reciprocal forms hkl and hkil, the direct forms uvw and
+% UVTW, and plain Cartesian xyz. It also carries which brackets belong to
+% each, and the sign tells reciprocal from direct.
+%
+% Syntax
+%   c = MillerConvention.hkil
+%   m.dispStyle = 'uvw'
+%
+% Class Properties
+%  hkil, hkl, xyz, uvw, UVTW - the enumeration members
+%
+% See also
+% Miller latticeType crystalSymmetry
+%
   
   enumeration
     hkil         (-2)

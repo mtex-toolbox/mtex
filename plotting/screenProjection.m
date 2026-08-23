@@ -1,6 +1,29 @@
 classdef screenProjection < handle
-  %SCREENPROJECTION Summary of this class goes here
-  %   Detailed explanation goes here
+  % converts between screen and reference frame coordinates
+  %
+  % Holds the rotation that takes screen coordinates - east, north, out of
+  % the screen - to the coordinates of a reference frame, and turns that into
+  % a camera for an axes.
+  %
+  % Work in progress: project and iproject are still empty, and the declared
+  % west, south and intoScree have no getter yet. Nothing in MTEX uses this
+  % class so far.
+  %
+  % Syntax
+  %   sP = screenProjection;
+  %   sP.outOfScreen = vector3d.Z;
+  %   sP.setView(gca)
+  %
+  % Class Properties
+  %  rot         - @rotation from screen to reference coordinates
+  %  east        - @vector3d pointing right on the screen
+  %  north       - @vector3d pointing up on the screen
+  %  outOfScreen - @vector3d pointing at the viewer
+  %  viewOpt     - the corresponding axes camera properties
+  %
+  % See also
+  % plottingConvention referenceFrame
+  %
   
   properties
     rot = rotation.id % screen coordinates to reference coordinates

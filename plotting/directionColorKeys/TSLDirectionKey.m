@@ -1,5 +1,28 @@
 classdef TSLDirectionKey < directionColorKey
-  % converts directions to rgb values
+  % converts directions to rgb values as TSL / OIM does
+  %
+  % In the TSL coloring every fundamental sector is white in its center, not
+  % at a vertex, which is the visible difference to the MTEX default.
+  %
+  % Syntax
+  %   dM = TSLDirectionKey(cs)
+  %   rgb = dM.direction2color(h)
+  %
+  % Input
+  %  cs - @crystalSymmetry
+  %  h  - @Miller
+  %
+  % Output
+  %  dM  - @TSLDirectionKey
+  %  rgb - list of RGB triplets
+  %
+  % Class Properties
+  %  sym - the Laue group of cs
+  %  sR  - the fundamental sector
+  %
+  % See also
+  % directionColorKey HKLDirectionKey ipfTSLKey
+  %
     
   methods
     

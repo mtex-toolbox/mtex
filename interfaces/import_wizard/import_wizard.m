@@ -1,6 +1,18 @@
 classdef import_wizard < matlab.apps.AppBase
   % EBSD app variant with lazy analysis UI, one colorized tab per plot
   % view, compact layout, and a single self-contained updatePlot routine.
+  %
+  % An App Designer app that browses a folder, imports the EBSD, pole
+  % figure or ODF data it finds and shows the result, so that a file can
+  % be checked before any script is written. It generates the import code
+  % for the choices made.
+  %
+  % Syntax
+  %   import_wizard
+  %
+  % See also
+  % loadEBSD loadPoleFigure ImportEBSDData
+  %
 
   properties (Access = public)
     UIFigure                       matlab.ui.Figure

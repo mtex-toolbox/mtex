@@ -5,8 +5,30 @@ classdef halfQuadraticFilter < EBSDFilter
   % R. Bergmann, R. H. Chan, R. Hielscher, J. Persch, G. Steidl
   % Restoration of Manifold-Valued Images by Half-Quadratic Minimization.
   % Preprint, ArXiv #1505.07029. (2015)
-  % 
-  
+  %
+  % With the l1 norms switched on the filter keeps sharp steps, so a
+  % subgrain boundary survives the smoothing instead of being blurred
+  % away.
+  %
+  % Syntax
+  %   F = halfQuadraticFilter
+  %   F.alpha = 0.5;
+  %   ebsd = smooth(ebsd,F)
+  %
+  % Class Properties
+  %  alpha     - regularization parameter, larger means smoother
+  %  l1DataFit - use the l1 norm for data fitting
+  %  l1TV      - use the l1 norm for regularization
+  %  iterMax   - maximum number of iterations
+  %  tol       - stopping criterion of the gradient descent
+  %  eps       - l1 relaxation parameter
+  %  threshold - threshold for subgrain boundaries
+  %  isHex     - is the map on a hexagonal grid
+  %
+  % See also
+  % EBSDFilter EBSD/smooth l1TVFilter infimalConvolutionFilter
+  %
+
   properties
     l1DataFit = true      % use l^1 norm for data fitting
     l1TV      = true      % use l^1 norm for regularization

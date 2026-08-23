@@ -1,5 +1,22 @@
 classdef SO3TangentSpace < int32
-% class representing the different types of SO3Tangent space
+% class representing the different types of SO3 tangent space
+%
+% A tangent vector on SO(3) is only defined together with the side it is
+% taken on: left, i.e. in specimen coordinates, or right, i.e. in crystal
+% coordinates, and either as a @vector3d or as a @spinTensor. This
+% enumeration is how that choice is passed around, and the sign of its
+% value tells left from right.
+%
+% Syntax
+%   tS = SO3TangentSpace.leftVector
+%   SO3VF = SO3VectorFieldHandle(fun,SO3TangentSpace.rightVector)
+%
+% Class Properties
+%  leftVector, rightVector, leftSpinTensor, rightSpinTensor - the members
+%
+% See also
+% SO3VectorField SO3TangentVector spinTensor
+%
   
   enumeration
     leftVector    (1)

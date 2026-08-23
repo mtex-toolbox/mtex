@@ -1,5 +1,27 @@
 classdef eareaProjection < sphericalProjection
-  %equal area projection
+  % equal area or Schmidt projection
+  %
+  % Scales the radius by sqrt(2*(1-cos(theta))), which preserves area and
+  % makes it the right projection for judging densities. The MTEX default.
+  %
+  % Syntax
+  %   sP = eareaProjection(sR)
+  %   [x,y] = sP.project(v)
+  %   v = sP.iproject(x,y)
+  %
+  % Input
+  %  sR   - @sphericalRegion the projection is restricted to
+  %  v    - @vector3d
+  %  x, y - plane coordinates
+  %
+  % Class Properties
+  %  sR        - @sphericalRegion the projection is restricted to
+  %  pC        - @plottingConvention, which direction points east
+  %  antipodal - identify v and -v
+  %
+  % See also
+  % sphericalProjection eangleProjection makeSphericalProjection
+  %
   
   methods 
         

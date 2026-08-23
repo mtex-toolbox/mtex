@@ -1,4 +1,27 @@
 classdef conformalPlot < axisAnglePlot
+% 3d plot of orientation space in conformal coordinates
+%
+% An orientation is drawn at its rotational axis scaled by
+% 2*tan(angle/4), the stereographic projection of the quaternion ball.
+% Unlike the other parametrisations this one preserves angles.
+%
+% Syntax
+%   plot(ori,'conformal')
+%
+% Options
+%  ignoreFundamentalRegion    - plot orientations as they are
+%  project2FundamentalRegion  - project into the fundamental region, default
+%  restrict2FundamentalRegion - drop orientations outside it
+%  noBoundary                 - do not plot the boundary
+%
+% Class Properties
+%  oR       - @orientationRegion drawn as the boundary
+%  CS1, CS2 - the two @symmetry
+%  ax       - the axes handle
+%
+% See also
+% orientationPlot axisAnglePlot orientation/plot
+%
   
   methods
     

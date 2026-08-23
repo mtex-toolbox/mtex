@@ -1,5 +1,25 @@
 classdef meanFilter < EBSDFilter
-  % implements a convolution filter for quaternion
+  % implements a convolution filter for quaternions
+  %
+  % Replaces every orientation by the weighted mean of its neighbourhood.
+  % The fastest filter, and the one that blurs boundaries most.
+  %
+  % Syntax
+  %   F = meanFilter
+  %   F = meanFilter('weights',ones(5))
+  %   ebsd = smooth(ebsd,F)
+  %
+  % Options
+  %  weights - the convolution kernel, ones(3) by default
+  %
+  % Class Properties
+  %  weights       - the convolution kernel
+  %  numNeighbours - half the width of the kernel
+  %  isHex         - is the map on a hexagonal grid
+  %
+  % See also
+  % EBSDFilter EBSD/smooth splineFilter
+  %
   
   properties
     weights

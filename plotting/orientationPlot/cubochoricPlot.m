@@ -1,4 +1,27 @@
 classdef cubochoricPlot < axisAnglePlot
+% 3d plot of orientation space in cubochoric coordinates
+%
+% Like @homochoricPlot volume preserving, but mapped onto a cube rather
+% than a ball, which is what makes a regular grid in these coordinates an
+% equal volume grid in orientation space.
+%
+% Syntax
+%   plot(ori,'cubochoric')
+%
+% Options
+%  ignoreFundamentalRegion    - plot orientations as they are
+%  project2FundamentalRegion  - project into the fundamental region, default
+%  restrict2FundamentalRegion - drop orientations outside it
+%  noBoundary                 - do not plot the boundary
+%
+% Class Properties
+%  oR       - @orientationRegion drawn as the boundary
+%  CS1, CS2 - the two @symmetry
+%  ax       - the axes handle
+%
+% See also
+% orientationPlot homochoricPlot orientation/plot
+%
   
   methods
     

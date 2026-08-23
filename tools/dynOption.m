@@ -1,6 +1,22 @@
 classdef dynOption
-  %class to add dynamic options to a static class
-  %   Detailed explanation goes here
+  % class to add dynamic options to a static class
+  %
+  % Options are named values that describe a whole object rather than its
+  % individual entries - a unit, a grid layout, a comment - and are therefore
+  % not indexed along with it. That is the difference to @dynProp.
+  %
+  % Syntax
+  %   dOpt = dynOption('name',value)
+  %   x = x.setOption('name',value)
+  %   v = x.getOption('name')
+  %   tf = x.isOption('name')
+  %
+  % Class Properties
+  %  opt - struct holding the options
+  %
+  % See also
+  % dynProp EBSD grain2d
+  %
   
   properties
     opt = struct    

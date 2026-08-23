@@ -1,5 +1,27 @@
 classdef mapPlot < handle
   % class to handle spatial plots of EBSD data and grains
+  %
+  % One per axes, stored in its appdata. It owns the extent of the map, the
+  % micron bar and the plotting convention, so that EBSD, grains and boundary
+  % plots drawn into the same axes agree on all three.
+  %
+  % Syntax
+  %   mP = mapPlot(ax)
+  %   mP = getappdata(gca,'mapPlot')
+  %
+  % Input
+  %  ax - the axes handle
+  %
+  % Class Properties
+  %  ax        - the axes handle
+  %  parent    - the figure containing the map
+  %  micronBar - the scale bar
+  %  extent    - [minx maxx miny maxy] of the map
+  %  how2plot  - the @plottingConvention of the map
+  %
+  % See also
+  % newMapPlot mtexFigure EBSD/plot grain2d/plot
+  %
   
   properties    
     ax        % the axes that contain the map

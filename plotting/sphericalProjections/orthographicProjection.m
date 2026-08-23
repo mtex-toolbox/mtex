@@ -1,5 +1,27 @@
 classdef orthographicProjection < sphericalProjection
-  %orthographic projection
+  % orthographic projection
+  %
+  % Scales the radius by sin(theta), i.e. the sphere as seen from infinitely
+  % far away.
+  %
+  % Syntax
+  %   sP = orthographicProjection(sR)
+  %   [x,y] = sP.project(v)
+  %   v = sP.iproject(x,y)
+  %
+  % Input
+  %  sR   - @sphericalRegion the projection is restricted to
+  %  v    - @vector3d
+  %  x, y - plane coordinates
+  %
+  % Class Properties
+  %  sR        - @sphericalRegion the projection is restricted to
+  %  pC        - @plottingConvention, which direction points east
+  %  antipodal - identify v and -v
+  %
+  % See also
+  % sphericalProjection eareaProjection makeSphericalProjection
+  %
   
   methods 
         

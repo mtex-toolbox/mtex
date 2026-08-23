@@ -1,7 +1,33 @@
 classdef kMeans < handle
+% k means clustering of orientations or directions
 %
-% k-means++: The Advantages of Careful Seeding", by David Arthur and 
+% Works on anything with a mean and an angle, so it clusters @orientation,
+% @vector3d or @Miller alike. The seeds are chosen by k-means++.
+%
+% References
+%
+% * k-means++: The Advantages of Careful Seeding, by David Arthur and
 % Sergei Vassilvitskii, SODA 2007.
+%
+% Syntax
+%   km = kMeans(n);
+%   [label,center] = km.doClustering(ori)
+%
+% Input
+%  n   - number of clusters
+%  ori - @orientation or @vector3d
+%
+% Output
+%  label  - cluster id of each input
+%  center - the cluster centers
+%
+% Class Properties
+%  n      - number of clusters
+%  center - the cluster centers
+%
+% See also
+% cMeans orientation/calcCluster
+%
 
   properties
     n      % number of clusters

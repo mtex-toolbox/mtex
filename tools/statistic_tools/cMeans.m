@@ -1,4 +1,31 @@
 classdef cMeans < kMeans
+% fuzzy c means clustering of orientations or directions
+%
+% Like @kMeans, but every input gets a membership in each cluster rather
+% than one hard label. The fuzzifier m controls how soft that is; m close
+% to 1 approaches k means.
+%
+% Syntax
+%   cm = cMeans(n);
+%   [cid,center,u] = cm.doClustering(ori)
+%
+% Input
+%  n   - number of clusters
+%  ori - @orientation or @vector3d
+%
+% Output
+%  cid    - cluster id of the largest membership
+%  center - the cluster centers
+%  u      - membership of each input in each cluster
+%
+% Class Properties
+%  n      - number of clusters
+%  center - the cluster centers
+%  m      - fuzzifier, > 1
+%
+% See also
+% kMeans orientation/calcCluster
+%
   
   properties
     m = 1.5 % fuzzifier

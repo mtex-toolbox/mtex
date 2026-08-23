@@ -1,5 +1,27 @@
 classdef edistProjection < sphericalProjection
-  %equal distant projection
+  % equal distance projection
+  %
+  % Scales the radius by theta itself, so distances from the center are
+  % reproduced exactly.
+  %
+  % Syntax
+  %   sP = edistProjection(sR)
+  %   [x,y] = sP.project(v)
+  %   v = sP.iproject(x,y)
+  %
+  % Input
+  %  sR   - @sphericalRegion the projection is restricted to
+  %  v    - @vector3d
+  %  x, y - plane coordinates
+  %
+  % Class Properties
+  %  sR        - @sphericalRegion the projection is restricted to
+  %  pC        - @plottingConvention, which direction points east
+  %  antipodal - identify v and -v
+  %
+  % See also
+  % sphericalProjection eareaProjection makeSphericalProjection
+  %
   
   methods 
         

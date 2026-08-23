@@ -1,5 +1,34 @@
 classdef loadHelper < handle
-% helps to load data-matrix with ColumnNames
+% helps to load a data matrix with column names
+%
+% Wraps the numeric matrix an importer has read together with the names of
+% its columns, so that the interface can ask for 'phi1' or 'mad' instead of
+% a column index. The matrix itself is never copied.
+%
+% Syntax
+%   loader = loadHelper(d,'ColumnNames',names)
+%   loader = loadHelper(d,'ColumnNames',names,'Columns',cols,'radians')
+%
+% Input
+%  d     - numeric data matrix
+%  names - cell list of column names
+%  cols  - which physical column each name refers to
+%
+% Output
+%  loader - @loadHelper
+%
+% Options
+%  radians - angles are in radians rather than degree
+%
+% Class Properties
+%  data        - the numeric matrix, unchanged
+%  colMap      - physical column in data for each logical column
+%  columnNames - the column names, lower case and without whitespace
+%  unit        - the angle unit of the data
+%
+% See also
+% loadEBSD loadPoleFigure
+%
 
 properties
   data         % (n x M) numeric matrix, UNveraendert (copy-on-write geteilt)

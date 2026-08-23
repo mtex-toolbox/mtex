@@ -1,4 +1,23 @@
 classdef (Abstract) phaseItem < handle & matlab.mixin.Heterogeneous %& matlab.mixin.CustomDisplay
+% an abstract class for anything that can be a phase of a map
+%
+% The common base of @crystalSymmetry and @notIndexed, so that the CSList
+% of a @phaseList may hold both. It is a handle and heterogeneous class,
+% which is what lets a mixed cell list of symmetries and notIndexed entries
+% be concatenated into one array.
+%
+% Class Properties
+%  mineral   - mineral name
+%  color     - color used in an EBSD phase plot
+%  isIndexed - is this a real phase or the notIndexed placeholder
+%
+% Derived Classes
+%  @crystalSymmetry - an indexed phase
+%  @notIndexed      - the placeholder for unindexed measurements
+%
+% See also
+% crystalSymmetry notIndexed phaseList
+%
 
   properties
     mineral

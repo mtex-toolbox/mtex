@@ -1,6 +1,37 @@
 classdef spotColorKey < orientationColorKey
-  % 
-  %   Detailed explanation goes here
+  % colors a neighbourhood of given orientations and leaves the rest gray
+  %
+  % Every orientation within the halfwidth of one of the centers takes that
+  % center's color, faded by the kernel. Useful for pointing out a handful of
+  % texture components in a map without recoloring everything.
+  %
+  % Syntax
+  %   oM = spotColorKey(ori)
+  %   oM = spotColorKey(cs,'center',ori,'halfwidth',15*degree)
+  %   rgb = oM.orientation2color(ori)
+  %
+  % Input
+  %  cs  - @crystalSymmetry
+  %  ori - @orientation
+  %
+  % Output
+  %  oM  - @spotColorKey
+  %  rgb - list of RGB triplets
+  %
+  % Options
+  %  center    - the @orientation to be colored
+  %  color     - one RGB triplet per center
+  %  halfwidth - width of the colored neighbourhood
+  %  kernel    - @SO3Kernel used instead of halfwidth
+  %
+  % Class Properties
+  %  center - the colored @orientation
+  %  color  - one RGB triplet per center
+  %  psi    - the @SO3Kernel defining the fade
+  %
+  % See also
+  % orientationColorKey ipfColorKey EBSDColorCoding
+  %
   
   properties
     center

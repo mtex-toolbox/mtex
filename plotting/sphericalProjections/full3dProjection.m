@@ -1,5 +1,26 @@
 classdef full3dProjection < sphericalProjection
-  %equal area projection
+  % no projection, the sphere is drawn in three dimensions
+  %
+  % Selected by the 3d flag of a spherical plot. Note that such a plot builds
+  % no @sphericalPlot, so anything that annotates the axes has to go through
+  % annotateFrame.
+  %
+  % Syntax
+  %   sP = full3dProjection(sR)
+  %   [x,y,z] = sP.project(v)
+  %
+  % Input
+  %  sR - @sphericalRegion the projection is restricted to
+  %  v  - @vector3d
+  %
+  % Class Properties
+  %  sR        - @sphericalRegion the projection is restricted to
+  %  pC        - @plottingConvention, which direction points east
+  %  antipodal - identify v and -v
+  %
+  % See also
+  % sphericalProjection sphericalPlot vector3d/plot
+  %
   
   methods 
         
