@@ -37,16 +37,18 @@ function [ij,origin] = assignGridIndex(pos,A)
 % earlier. On the forsterite benchmark, both orders are exact up to a
 % trapezoidal drift of 49% of a cell along the inner direction and 10%
 % along the outer one (2% on the sparsest phase subset) - see
-% check_gridDistortionBenchmark, which pins both. Realistic stage drift is
-% far below either.
+% check_gridDistortionBenchmark, which pins both. A tilt, which distorts
+% both directions at once, gives out earlier: 10% read file order and 5%
+% read grid order. Realistic stage drift is far below any of these.
 %
 % This function only recovers the integer index correctly - it does NOT
-% by itself make grain reconstruction correct under distortion. See the
-% known limitation noted in spatialDecompositionGrid.m: sites with no real
-% measurement (notIndexed holes, the map's outer edge) get a synthetic
-% position from this index via a rigid, non-distortion-aware
-% reconstruction, which currently reintroduces the same kind of error at a
-% later stage of calcGrains.
+% by itself make grain reconstruction correct under distortion. Sites with
+% no real measurement (notIndexed holes, the map's outer edge) get their
+% position from this index through latticeModel, which follows the local
+% deformation rather than a rigid affine, so a correct index does carry
+% through - but the alpha closing in spatialDecompositionGrid sizes its
+% structuring element from the unit cell, and a distortion that changes the
+% cell can still flip a borderline single-pixel hole.
 %
 % Input
 %  pos - n x 2 spatial coordinates (map plane only, z is not considered)
@@ -103,14 +105,20 @@ function [I,J] = stepwiseIndex(pos,A)
 % Rather than fall back to some fixed assumption about where a line starts
 % (which would break for anything other than a complete, gap-free
 % rectangle - a phase subset's first surviving pixel in a line can sit at
-% any column), every such bigger step is instead divided by the *locally
-% observed* cell size: a linear regression of (single-cell step size) on
-% (row index), fit once from every trusted single-cell step in the whole
-% scan, estimating how that size drifts from line to line. Since a smooth
-% distortion changes gradually, this tracks the drift using all the
-% trusted data at once rather than propagating a single nearby sample, and
-% reduces to the plain nominal-cell-size division (equivalent to the old
-% unconditional cumulative sum) wherever the grid is rigid.
+% any column), every such bigger step is instead measured against the
+% *locally observed* cell size, fit once from every trusted single-cell step
+% in the whole scan - see fitCellSize. Since a smooth distortion changes
+% gradually, this tracks it using all the trusted data at once rather than
+% propagating a single nearby sample, and reduces to the plain
+% nominal-cell-size division (equivalent to the old unconditional cumulative
+% sum) wherever the grid is rigid.
+%
+% A big step spans a range over which that size itself varies, so it is
+% integrated across the step rather than sampled anywhere in it - see
+% cellsBetween. Sampling it was enough while the size was modelled as
+% varying from line to line only, which is all a trapezoidal drift does; a
+% distortion that foreshortens along the scan varies it within the step, and
+% a phase subset's gaps are long enough for that to round to the wrong cell.
 %
 % The outer component of a step gets the mirror image of that treatment.
 % A trusted single-cell step carries, besides its one inner cell, a small
@@ -137,10 +145,12 @@ else
   outerRaw = dIJ(2,:); innerRaw = dIJ(1,:); innerStep = rd(1,:);
 end
 
-% read the outer coordinate off the positions, accumulating it propagates a bad step
-outerCoord = A \ (pos - pos(1,:)).';
-outerCoord = outerCoord(1 + ~outerIsFirst,:);
+% read the coordinates off the positions, accumulating them propagates a bad step
+coord = A \ (pos - pos(1,:)).';
+outerCoord = coord(1 + ~outerIsFirst,:);
+innerCoord = coord(2 - ~outerIsFirst,:);
 rowMid = (outerCoord(1:end-1) + outerCoord(2:end)) / 2;
+colMid = (innerCoord(1:end-1) + innerCoord(2:end)) / 2;
 
 isSingleCell = abs(innerStep) == 1;
 isBigStep    = abs(innerStep) >= 2;
@@ -149,12 +159,13 @@ isBigStep    = abs(innerStep) >= 2;
 % the drift is what is left after rounding, a hex step legitimately moves a cell
 outerResid = outerRaw - round(outerRaw);
 
-localScale = fitAcrossMap(rowMid, isSingleCell, ...
-  innerRaw(isSingleCell) ./ innerStep(isSingleCell), 1);
+[scale, scaleSlope] = fitCellSize(colMid, rowMid, isSingleCell, ...
+  innerRaw(isSingleCell) ./ innerStep(isSingleCell));
 localDrift = fitAcrossMap(rowMid, isSingleCell, ...
   outerResid(isSingleCell) ./ innerStep(isSingleCell), 0);
 
-innerStep(isBigStep) = round(innerRaw(isBigStep) ./ localScale(isBigStep));
+innerStep(isBigStep) = round(cellsBetween(innerCoord(1:end-1), innerCoord(2:end), ...
+  scale, scaleSlope, colMid, isBigStep));
 outerStep = round(outerRaw - innerStep .* localDrift);
 
 outerCum = [0, cumsum(outerStep)];
@@ -165,6 +176,79 @@ if outerIsFirst
 else
   J = outerCum.'; I = innerCum.';
 end
+end
+
+% =========================================================================
+function [scale, slope] = fitCellSize(colMid, rowMid, isSingleCell, obs)
+% local inner cell size, as an affine function of BOTH lattice coordinates
+%
+% Fitting it across the map alone (fitAcrossMap) makes it constant along the
+% inner direction, which is right for a trapezoidal drift - there the inner
+% cell size is exactly nominal everywhere - but not for a distortion that
+% foreshortens along the scan. Under a perspective the size varies along the
+% inner direction and barely at all across it, i.e. in precisely the
+% direction the older model held fixed.
+%
+% Returns the size at each step (scale) plus how it varies per unit of inner
+% coordinate (slope), which is what cellsBetween needs to integrate it.
+
+n = nnz(isSingleCell);
+slope = 0;
+
+if n >= 3 && range(colMid(isSingleCell)) > 0
+  % in double throughout - real imported maps arrive as single, and the fit
+  % is what the integrated step size below is most sensitive to
+  X = double([ones(n,1), colMid(isSingleCell).', rowMid(isSingleCell).']);
+  p = X \ double(obs(:));
+  slope = p(2);
+  scale = p(1) + p(2)*colMid + p(3)*rowMid;
+elseif n >= 2 && range(rowMid(isSingleCell)) > 0
+  coeffs = [ones(n,1), rowMid(isSingleCell).'] \ obs(:);
+  scale = coeffs(1) + coeffs(2) * rowMid;
+elseif n >= 1
+  scale = repmat(mean(obs), 1, numel(rowMid));
+else
+  scale = ones(1, numel(rowMid));
+end
+
+end
+
+% =========================================================================
+function step = cellsBetween(c1, c2, scale, slope, colMid, sel)
+% how many lattice cells separate two inner coordinates
+%
+% A step of many cells spans a range over which the cell size itself varies,
+% so dividing by the size at any single point is wrong - what the index needs
+% is the integral of dc / size(c). For a size that is affine along the inner
+% direction that integral is exact rather than a quadrature.
+%
+% Written through log1p(z)/z rather than log(s2/s1)/slope: on a near rigid
+% grid the fitted slope is numerical noise, and dividing a logarithm of
+% something indistinguishable from 1 by it loses every digit - single
+% precision maps segmented differently for it. log1p(z)/z tends to 1 as the
+% size stops varying, so this degenerates cleanly to the plain division it
+% replaces instead of needing a threshold to switch over.
+
+c1 = double(c1(sel)); c2 = double(c2(sel));
+s  = double(scale(sel));
+slope = double(slope);
+
+% the fitted size is anchored at the step's own midpoint
+s1 = s - slope * (double(colMid(sel)) - c1);
+
+dc = c2 - c1;
+z  = slope * dc ./ s1;
+
+w = ones(size(z));
+vary = abs(z) > 1e-6 & isfinite(z);
+w(vary) = log1p(z(vary)) ./ z(vary);
+
+step = dc ./ s1 .* w;
+
+% a size that is not positive throughout means the fit has run away
+bad = ~(s1 > 0 & s1 + slope*dc > 0) | ~isfinite(step);
+step(bad) = dc(bad) ./ s(bad);
+
 end
 
 % =========================================================================

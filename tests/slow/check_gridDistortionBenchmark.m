@@ -15,6 +15,17 @@ function check_gridDistortionBenchmark(varargin)
 % x-position per row, the recomputed ij must recover that same ground
 % truth exactly, up to the distortion strength recorded below.
 %
+% Run for TWO distortion families, because they stress different halves of
+% the model. The trapezoid moves each row along itself and leaves the rows
+% where they were, so the inner cell size stays exactly nominal and only
+% varies from row to row. The tilt is the homography through the same four
+% corners - the same outline - but a genuine perspective, so it foreshortens
+% across the rows as well and the inner cell size varies along the scan
+% itself. A model that is a function of the row alone cannot see that, and a
+% phase subset's multi-cell gaps are long enough for it to round to the wrong
+% cell: on a tilted map the column index drifted by tens of cells while the
+% row index stayed exact, and no two pixels collided, so nothing noticed.
+%
 % Run in BOTH scan orders. assignGridIndex walks the list, so the same
 % measurements handed over in the other raster order are a genuinely
 % different problem for it: file order (x fastest, as a .ctf is written)
@@ -62,10 +73,12 @@ trapFracs = [0.0005 0.001 0.005 0.01 0.02 0.05 0.10 0.20 0.30 0.49];
 
 selections = {'full','Forsterite','Enstatite','Diopside'};
 
-% highest trapFrac at which ij is still recovered exactly, measured
-% 2026-08-13; the test fails if any entry gets worse
-expected = [0.10 0.05 0.02 0.02;    % grid order, y fastest
-            0.49 0.20 0.20 0.20];   % file order, x fastest
+% highest trapFrac at which ij is still recovered exactly; the test fails if
+% any entry gets worse. Trapezoid measured 2026-08-13, tilt 2026-08-23.
+expected.trapezoid = [0.10 0.05 0.02 0.02;    % grid order, y fastest
+                      0.49 0.20 0.20 0.20];   % file order, x fastest
+expected.tilt      = [0.05 0.05 0.02 0.02;
+                      0.10 0.10 0.20 0.10];
 
 ebsdGrid = mtexdata('forsterite');
 
@@ -91,40 +104,58 @@ for o = 1:size(orders,1)
     xCenter + (pos.x-xCenter) .* (1 + trapFrac*(pos.y-yCenter)/yHalf), ...
     pos.y, pos.z);
 
-  fprintf('\n=== %s ===\n', orders{o,1});
-  fprintf('%-12s %10s %10s %8s\n', 'selection', 'exact to', 'expected', 'pixels');
-  fprintf('%s\n', repmat('-',1,44));
+  % the same outline as the trapezoid - the homography through its four
+  % corners - but a genuine perspective, so it foreshortens ACROSS the rows as
+  % well. That is the part a per-row model cannot see: the trapezoid leaves
+  % the inner cell size exactly nominal everywhere, a tilt varies it along the
+  % scan itself. See assignGridIndex/fitCellSize.
+  corners = vector3d([min(x) max(x) max(x) min(x)].', ...
+    [min(y) min(y) max(y) max(y)].', 0);
+  tilt = @(trapFrac) fitTilt(corners, distort(trapFrac));
 
-  for s = 1:numel(selections)
+  families = {'trapezoid', distort; 'tilt', tilt};
 
-    if strcmp(selections{s},'full')
-      ebsdSel = ebsd;
-    else
-      ebsdSel = ebsd(selections{s});
-    end
+  for f = 1:size(families,1)
 
-    ij0 = ebsdSel.lattice.ij;
+    famName = families{f,1};
+    famFun  = families{f,2};
+    famExp  = expected.(famName);
 
-    achieved = 0;
-    for k = 1:numel(trapFracs)
-      if ~isequal(transform(ebsdSel,distort(trapFracs(k))).lattice.ij, ij0)
-        break
+    fprintf('\n=== %s, %s ===\n', orders{o,1}, famName);
+    fprintf('%-12s %10s %10s %8s\n', 'selection', 'exact to', 'expected', 'pixels');
+    fprintf('%s\n', repmat('-',1,44));
+
+    for s = 1:numel(selections)
+
+      if strcmp(selections{s},'full')
+        ebsdSel = ebsd;
+      else
+        ebsdSel = ebsd(selections{s});
       end
-      achieved = trapFracs(k);
+
+      ij0 = ebsdSel.lattice.ij;
+
+      achieved = 0;
+      for k = 1:numel(trapFracs)
+        if ~isequal(transform(ebsdSel,famFun(trapFracs(k))).lattice.ij, ij0)
+          break
+        end
+        achieved = trapFracs(k);
+      end
+
+      ok = achieved >= famExp(o,s);
+      allOk = allOk && ok;
+
+      fprintf('%-12s %10g %10g %8d %s\n', selections{s}, achieved, ...
+        famExp(o,s), length(ebsdSel), mark(ok));
+
     end
-
-    ok = achieved >= expected(o,s);
-    allOk = allOk && ok;
-
-    fprintf('%-12s %10g %10g %8d %s\n', selections{s}, achieved, ...
-      expected(o,s), length(ebsdSel), mark(ok));
-
   end
 end
 
 if ~allOk
   error(['assignGridIndex recovers the true grid index over a smaller '...
-    'range of trapezoidal distortion than it used to - see the table above']);
+    'range of distortion than it used to - see the table above']);
 end
 
 fprintf('\ngrid distortion benchmark: ij recovered exactly over the expected range\n');
@@ -134,4 +165,16 @@ end
 % =========================================================================
 function s = mark(ok)
 if ok, s = ''; else, s = '  <- WORSE'; end
+end
+
+% =========================================================================
+function T = fitTilt(corners, fun)
+% the homography taking the map's four corners where fun takes them
+%
+% Four correspondences determine a homography exactly, so there is nothing
+% for the robust reweighting to outvote and it would only report the
+% resulting rank deficiency.
+
+T = spatialTransformProjective.fit(corners, fun(corners), 'noRobust');
+
 end
