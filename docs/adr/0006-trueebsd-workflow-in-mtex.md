@@ -68,10 +68,19 @@ mirrored against the image it registers to.
   repository are vendored files under `extern/`. **`checkOrientation` was deleted**, which
   removes both calls, the `'skipOrientationCheck'` option and
   `MTEX:trueEbsd:orientationMismatch` — 116 lines. MTEX gains no toolbox dependency.
-- **`createArray` — still open.** Two calls in `calcDistortion`, R2024b or later.
-  `README.md:38` declares MTEX supports R2014b and `createArray` appears nowhere else in the
-  repository, so the class as it stands cannot run on the declared floor.
-  `createArray(n,1,'pairShifts')` is `repmat(pairShifts,n,1)`; this has not been done.
+- **`createArray` — still open.** Two calls in `calcDistortion`. It was **introduced in
+  R2024a** — verified by bisecting the eleven MATLAB installs on this machine: absent in
+  R2023a and R2023b, present as `toolbox/matlab/elmat/createArray.m` from R2024a (24.1.0)
+  onward, and promoted to a built-in by R2026a. `README.md:38` declares MTEX supports R2014b
+  and `createArray` appears nowhere else in the repository, so the class as it stands cannot
+  run on the declared floor. `createArray(n,1,'pairShifts')` is `repmat(pairShifts,n,1)`;
+  this has not been done.
+
+  Raising the floor to R2024a would also close it, and is the wrong trade: ten years of
+  supported releases for two calls that have an exact one-token replacement. Note too that
+  nobody has swept the class for its *actual* binding constraint — `xcfShift` beneath it
+  already needs `pagemtimes` (R2020b) — so R2024a is the floor `createArray` imposes, not
+  necessarily the floor the workflow imposes.
 
 Neither broke anything here — IPT is licensed on this machine and the bridge runs R2024b —
 which is exactly why they had to be looked for rather than waited for.
@@ -200,7 +209,7 @@ their install blocks — telling the reader to `addpath` an external toolbox —
 ## The conditions, restated
 
 1. ~~Remove the IPT dependency~~ — **done**, by deleting `checkOrientation`. What remains is
-   `createArray`, two calls, against a declared floor of R2014b.
+   `createArray`, two calls, needing R2024a against a declared floor of R2014b.
 2. **Convert the 330 lines of body comments**, extracting the measured reasoning into ADRs
    rather than deleting it.
 3. **Decide the options idiom** — accept `setOptions` as a second pattern, or reconcile it
