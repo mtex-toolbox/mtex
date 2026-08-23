@@ -50,9 +50,9 @@ backend = get_option(varargin,'backend','inverse',{'char'});
 
 nImg = numel(job.resizedList);
 if numel(job.shifts)+1 ~= nImg
-    error('MTEX:trueEbsd:shiftsMissing', ...
-        ['job has %d maps but %d hops of shifts - run calcDistortion first, ' ...
-         'or check that it completed'],nImg,numel(job.shifts));
+  error('MTEX:trueEbsd:shiftsMissing', ...
+    ['job has %d maps but %d hops of shifts - run calcDistortion first, ' ...
+    'or check that it completed'],nImg,numel(job.shifts));
 end
 
 % start from the resized maps and overwrite what moves
@@ -73,44 +73,44 @@ sy = zeros(size(posRef));
 
 for n = nImg:-1:1
 
-    if n < nImg
-        for m = 1:numel(job.shifts{n})
-            sx = sx + job.shifts{n}(m).xShiftsMap;
-            sy = sy + job.shifts{n}(m).yShiftsMap;
-        end
+  if n < nImg
+    for m = 1:numel(job.shifts{n})
+      sx = sx + job.shifts{n}(m).xShiftsMap;
+      sy = sy + job.shifts{n}(m).yShiftsMap;
     end
+  end
 
-    pos = imageGrid(job.resizedList(n));
-    shifts = struct('xShiftsMap',sx + (posRef.x - pos.x), ...
-                    'yShiftsMap',sy + (posRef.y - pos.y));
+  pos = imageGrid(job.resizedList(n));
+  shifts = struct('xShiftsMap',sx + (posRef.x - pos.x), ...
+    'yShiftsMap',sy + (posRef.y - pos.y));
 
-    if ndims(job.resizedList(n).img) > 3
-        error('MTEX:trueEbsd:image4D','can''t handle 4D images');
-    end
+  if ndims(job.resizedList(n).img) > 3
+    error('MTEX:trueEbsd:image4D','can''t handle 4D images');
+  end
 
-    % The image channels and, where there is one, the map's id all go
-    % through the same resampling, so they travel as one stack and the
-    % mapping is worked out once.
-    stack   = job.resizedList(n).img;
-    nChan   = size(stack,3);
-    ebsdIn  = job.resizedList(n).ebsd;
-    hasEbsd = ~isempty(ebsdIn);
-    % the map is stored in the same array order as its image, so its ids can
-    % be stacked on top and travel through the resampling with the channels
-    if hasEbsd
-        stack = cat(3,stack,double(ebsdIn.id));
-    end
+  % The image channels and, where there is one, the map's id all go
+  % through the same resampling, so they travel as one stack and the
+  % mapping is worked out once.
+  stack   = job.resizedList(n).img;
+  nChan   = size(stack,3);
+  ebsdIn  = job.resizedList(n).ebsd;
+  hasEbsd = ~isempty(ebsdIn);
+  % the map is stored in the same array order as its image, so its ids can
+  % be stacked on top and travel through the resampling with the channels
+  if hasEbsd
+    stack = cat(3,stack,double(ebsdIn.id));
+  end
 
-    stack = remapShifted(pos,shifts,stack,'test2ref','backend',backend);
+  stack = remapShifted(pos,shifts,stack,'test2ref','backend',backend);
 
-    job.undistortedList(n).img = stack(:,:,1:nChan);
+  job.undistortedList(n).img = stack(:,:,1:nChan);
 
-    % the last map is the reference and comes back unchanged, which is why
-    % numel(job.shifts)+1 == numel(job.resizedList)
+  % the last map is the reference and comes back unchanged, which is why
+  % numel(job.shifts)+1 == numel(job.resizedList)
 
-    if hasEbsd
-        job.undistortedList(n).ebsd = rebuildMap(ebsdIn,stack(:,:,nChan+1));
-    end
+  if hasEbsd
+    job.undistortedList(n).ebsd = rebuildMap(ebsdIn,stack(:,:,nChan+1));
+  end
 end
 
 % Every map is now on the reference grid, so every aligned image is a
@@ -119,19 +119,19 @@ end
 % plain assignment, and the image then travels with the map through gridify,
 % indexing and subGrid like any other property.
 for n = 1:nImg
-    if isempty(job.undistortedList(n).ebsd), continue; end
-    ebsdOut = job.undistortedList(n).ebsd;
-    for m = 1:nImg
-        fn = imgName(job.undistortedList(m),m);
-        if isfield(ebsdOut.prop,fn)
-            warning('MTEX:trueEbsd:propOverwritten', ...
-                ['map %d already carries a property ''%s'' - the aligned ' ...
-                 'image of map %d is overwriting it. Give that map a ' ...
-                 'distinct ''name'' to keep both.'],n,fn,m);
-        end
-        ebsdOut.prop.(fn) = job.undistortedList(m).img;
+  if isempty(job.undistortedList(n).ebsd), continue; end
+  ebsdOut = job.undistortedList(n).ebsd;
+  for m = 1:nImg
+    fn = imgName(job.undistortedList(m),m);
+    if isfield(ebsdOut.prop,fn)
+      warning('MTEX:trueEbsd:propOverwritten', ...
+        ['map %d already carries a property ''%s'' - the aligned ' ...
+        'image of map %d is overwriting it. Give that map a ' ...
+        'distinct ''name'' to keep both.'],n,fn,m);
     end
-    job.undistortedList(n).ebsd = ebsdOut;
+    ebsdOut.prop.(fn) = job.undistortedList(m).img;
+  end
+  job.undistortedList(n).ebsd = ebsdOut;
 end
 
 end
@@ -161,9 +161,9 @@ blank = zeros(ebsdIn.size);
 
 prop = ebsdIn.prop;
 for fn = fieldnames(prop)'
-    v = ebsdIn.prop.(char(fn));
-    prop.(char(fn))     = blank;
-    prop.(char(fn))(ix) = v(src);
+  v = ebsdIn.prop.(char(fn));
+  prop.(char(fn))     = blank;
+  prop.(char(fn))(ix) = v(src);
 end
 
 rot      = rotation.nan(ebsdIn.size);

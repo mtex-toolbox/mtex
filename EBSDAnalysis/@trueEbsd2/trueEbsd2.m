@@ -82,60 +82,60 @@ classdef trueEbsd2 < handle
 % trueEbsd2/calcDistortion trueEbsd2/undistort trueEbsd2/setOptions
 % parentGrainReconstructor
 
-    properties % one per workflow stage
-        imgList = mapImage.empty % as imported
-        T = spatialTransform.empty % the distortion of each hop
-        resizedList = mapImage.empty % pixel sizes and FOV matched
-        undistortedList = mapImage.empty % aligned
-        shifts = {} % cell, one entry per hop - see the class help
-        fitError = pairShifts.empty % residuals measured after correction
-        opt = struct.empty % per map registration settings
-    end %properties
+  properties % one per workflow stage
+    imgList = mapImage.empty % as imported
+    T = spatialTransform.empty % the distortion of each hop
+    resizedList = mapImage.empty % pixel sizes and FOV matched
+    undistortedList = mapImage.empty % aligned
+    shifts = {} % cell, one entry per hop - see the class help
+    fitError = pairShifts.empty % residuals measured after correction
+    opt = struct.empty % per map registration settings
+  end %properties
 
-    methods
-        % constructor
-        function job = trueEbsd2(imgListIn,T)
-            % a handle class has to be constructible without arguments,
-            % for trueEbsd2.empty and for preallocation
-            if nargin == 0, return; end
+  methods
+    % constructor
+    function job = trueEbsd2(imgListIn,T)
+      % a handle class has to be constructible without arguments,
+      % for trueEbsd2.empty and for preallocation
+      if nargin == 0, return; end
 
-            job.imgList = argin_check(imgListIn,{'mapImage'});
-            job.imgList = shareOneFrame(job.imgList);
-            shareOneUnit(job.imgList);
+      job.imgList = argin_check(imgListIn,{'mapImage'});
+      job.imgList = shareOneFrame(job.imgList);
+      shareOneUnit(job.imgList);
 
-            job.opt = defaultOptions(job.imgList);
+      job.opt = defaultOptions(job.imgList);
 
-            if nargin >= 2
-                job.T = T;
-            else
-                % nothing said about any hop yet, so nothing is assumed -
-                % calcDistortion refuses rather than guessing a model
-                job.T = repmat(spatialTransform.empty,1,0);
-            end
+      if nargin >= 2
+        job.T = T;
+      else
+        % nothing said about any hop yet, so nothing is assumed -
+        % calcDistortion refuses rather than guessing a model
+        job.T = repmat(spatialTransform.empty,1,0);
+      end
 
-        end % constructor function
+    end % constructor function
 
-        function set.T(job,T)
+    function set.T(job,T)
 
-            if isempty(T), job.T = spatialTransform.empty; return; end
+      if isempty(T), job.T = spatialTransform.empty; return; end
 
-            T = argin_check(T,{'spatialTransform'});
+      T = argin_check(T,{'spatialTransform'});
 
-            % the constructor assigns imgList first, so it is populated by
-            % the time this runs
-            n = numel(job.imgList); %#ok<MCSUP>
-            assert(n == 0 || numel(T) == n-1, ...
-                'MTEX:trueEbsd:modelCount', ...
-                ['A %d map sequence has %d hops, so T needs %d entries, ' ...
-                'got %d. Use spatialTransformId where nothing separates a ' ...
-                'pair - the reference has no entry of its own.'], ...
-                n,n-1,n-1,numel(T));
+      % the constructor assigns imgList first, so it is populated by
+      % the time this runs
+      n = numel(job.imgList); %#ok<MCSUP>
+      assert(n == 0 || numel(T) == n-1, ...
+        'MTEX:trueEbsd:modelCount', ...
+        ['A %d map sequence has %d hops, so T needs %d entries, ' ...
+        'got %d. Use spatialTransformId where nothing separates a ' ...
+        'pair - the reference has no entry of its own.'], ...
+        n,n-1,n-1,numel(T));
 
-            job.T = T(:).';
+      job.T = T(:).';
 
-        end
+    end
 
-    end %methods
+  end %methods
 
 end %classdef
 
@@ -159,12 +159,12 @@ function opt = defaultOptions(imgList)
 n = numel(imgList);
 
 opt = repmat(struct( ...
-    'roiSize','auto', ...       % length, per stage
-    'numROI',24, ...            % tiles across; down follows the aspect ratio
-    'registerOn','edge', ...    % 'edge' or 'raw'; see setOptions
-    'edgeWidth','auto', ...     % length
-    'highContrast','auto', ...  % true, false, or a measurement
-    'pixelTime',0), 1, n);
+  'roiSize','auto', ...       % length, per stage
+  'numROI',24, ...            % tiles across; down follows the aspect ratio
+  'registerOn','edge', ...    % 'edge' or 'raw'; see setOptions
+  'edgeWidth','auto', ...     % length
+  'highContrast','auto', ...  % true, false, or a measurement
+  'pixelTime',0), 1, n);
 
 end
 
@@ -222,12 +222,12 @@ for k = 2:numel(imgList)
   if isempty(ref) || isempty(gL) || ~isAligned(gL,ref)
     error('MTEX:trueEbsd:frameMismatch',...
       ['Images %d and %d are stored along different directions, so they '...
-       'cannot be compared pixel by pixel.\n'...
-       '  image 1: rows run %s, columns run %s\n'...
-       '  image %d: rows run %s, columns run %s\n'...
-       'Bring them into one frame first, with transformReferenceFrame.'],...
-       1,k,char(ref.basis(1)),char(ref.basis(2)),...
-       k,char(gL.basis(1)),char(gL.basis(2)));
+      'cannot be compared pixel by pixel.\n'...
+      '  image 1: rows run %s, columns run %s\n'...
+      '  image %d: rows run %s, columns run %s\n'...
+      'Bring them into one frame first, with transformReferenceFrame.'],...
+      1,k,char(ref.basis(1)),char(ref.basis(2)),...
+      k,char(gL.basis(1)),char(gL.basis(2)));
   end
 
 end
