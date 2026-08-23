@@ -26,9 +26,6 @@ function job = calcDistortion(job,varargin)
 %                         after the first doubles the ROI width. Counts
 %                         total attempts, not extra ones, so 1 means a
 %                         single pass; values below 1 are clamped to 1.
-%  skipOrientationCheck - accept an @EBSD map that reads mirrored against
-%                         the image it registers to. Only for a setup where
-%                         the map genuinely is stored that way.
 %  backend              - 'fast' (default) or 'legacy', see below
 %  remapBackend         - 'inverse' or 'scattered' for the resampling,
 %                         overriding 'backend'. Picking the halves
@@ -122,18 +119,6 @@ end
 % cannot be audited is worse than a parameter. Settings given outright are
 % used untouched and nothing is measured for them.
 [job.opt,regImg,autoNotes] = autoTune(job);
-
-% An @EBSD map is read into image index order through its own plotting
-% convention; a plain image array has no convention to read, it is axis ij by
-% construction. So the map's convention alone decides whether the two arrive
-% the same way up, and if it is wrong for the data they arrive mirrored.
-% Nothing downstream notices - the ROI shifts come out as noise, the fits
-% succeed on that noise, and the workflow returns a finished-looking job. The
-% constructor's frame check cannot catch this because it compares map against
-% map, and an image-only entry carries no frame to compare with.
-if ~check_option(varargin,'skipOrientationCheck')
-    checkOrientation(job,regImg);
-end
 
 % -- output --------------------------------------------------------------
 job.shifts = cell(1,nImg-1);
@@ -482,107 +467,3 @@ if isempty(v) || isnan(v), s = '·'; else, s = sprintf('%.2f px',v); end
 
 end
 
-%% =========================================================================
-function checkOrientation(job,regImg)
-% Error if an @EBSD map is mirrored against the image it registers to.
-%
-% Only pairs where exactly one side carries a map are worth testing - that is
-% where a plotting convention meets an array that has none. Image-to-image
-% pairs share the ij convention by construction and cannot disagree.
-%
-% This measures rather than adjudicates: it fires only on a gross mismatch,
-% where some flip beats the identity by more than a factor of 1.5. On WC-Co
-% the identity scores about 0.43 and every flip about 0.14, so a real
-% mismatch clears the bar by a wide margin while a merely weak EBSD-to-image
-% correlation - which is normal, band contrast and forescatter contrast are
-% different physics - stays quiet.
-
-for n = 1:numel(job.resizedList)-1
-
-    test = job.resizedList(n);
-    ref  = job.resizedList(n+1);
-
-    hasMap = [~isempty(test.ebsd) ~isempty(ref.ebsd)];
-    if all(hasMap) || ~any(hasMap), continue; end     % nothing to compare
-    if isa(job.T(n),'spatialTransformId'), continue; end % never correlated
-
-    A = flatten(regImg{n});
-    B = flatten(regImg{n+1});
-    if isempty(A) || isempty(B) || ~isequal(size(A),size(B)), continue; end
-
-    % downsample - this is a yes/no question, not a measurement
-    sc = 128/max(size(A));
-    if sc < 1, A = imresize(A,sc); B = imresize(B,sc); end
-    if any(size(A) < 48), continue; end
-
-    ops   = {@(x) x, @flipud, @fliplr, @(x) rot90(x,2)};
-    names = {'identity','flipud','fliplr','rot180'};
-    score = zeros(1,4);
-    for k = 1:4, score(k) = peakXC(ops{k}(A),B); end
-
-    [best,ix] = max(score);
-    if ix == 1 || ~(best > 1.5*score(1)), continue; end   % identity is fine
-
-    % name the map, and work out what convention would fix it
-    if hasMap(1), mapN = n; pC = test.how2plot; else, mapN = n+1; pC = ref.how2plot; end
-    fix = suggestConvention(pC, any(ix==[2 4]), any(ix==[3 4]));
-
-    error('MTEX:trueEbsd:orientationMismatch', ...
-        ['The EBSD map (image %d) is %s relative to image %d.\n' ...
-         'Correlation scores: identity %.3f, flipud %.3f, fliplr %.3f, rot180 %.3f.\n' ...
-         'The map is on plotting convention %s. A plain image array has no\n' ...
-         'convention - it is axis ij by construction - so the map''s convention\n' ...
-         'is what decides whether the two are the same way up.%s\n' ...
-         'Registration would run to the end and return nonsense, so this is an\n' ...
-         'error rather than a warning. Pass ''skipOrientationCheck'' to override.'], ...
-        mapN, names{ix}, n+1-(mapN==n+1), score(1), score(2), score(3), score(4), ...
-        char(pC), fix);
-end
-
-end
-
-%% -------------------------------------------------------------------------
-function a = flatten(a)
-% registration inputs may carry several channels; orientation is a whole
-% image property, so one channel's worth of structure is enough
-a = double(a);
-if ~ismatrix(a), a = mean(a,3); end
-a(~isfinite(a)) = 0;
-end
-
-%% -------------------------------------------------------------------------
-function m = peakXC(A,B)
-% peak normalised cross-correlation of a central window of A anywhere in B.
-%
-% The window is the central two thirds, and that size is what gives the check
-% its teeth. Measured on WC-Co, a genuine flip beats the identity by 2.65x
-% with this window against only 1.52x with a central third, while in the
-% correct orientation the identity wins by 2.4x either way. A smaller window
-% carries too little structure to tell the orientations apart and would let a
-% real mismatch slip under the threshold.
-[r,c] = size(B);
-w = A(round(r/6):round(5*r/6), round(c/6):round(5*c/6));
-if std(w(:)) < eps || std(B(:)) < eps, m = 0; return; end
-m = max(normxcorr2(w,B),[],'all');
-end
-
-%% -------------------------------------------------------------------------
-function s = suggestConvention(pC,flipUD,flipLR)
-% search the axis-aligned conventions for the one with the screen axes the
-% measurement says are needed. Returns '' if the map is on a convention whose
-% axes are not screen axes, where no single named convention is the answer.
-tgtEast  = pC.east;  if flipLR, tgtEast  = -tgtEast;  end
-tgtSouth = pC.south; if flipUD, tgtSouth = -tgtSouth; end
-
-v = [vector3d.X, -vector3d.X, vector3d.Y, -vector3d.Y, vector3d.Z, -vector3d.Z];
-for a = 1:6
-    for b = 1:6
-        try q = plottingConvention(v(a),v(b)); catch, continue; end
-        if norm(q.east - tgtEast) < 1e-9 && norm(q.south - tgtSouth) < 1e-9
-            s = sprintf('\nTry plottingConvention.default(''%s'') before loading.', char(q));
-            return
-        end
-    end
-end
-s = '';
-end

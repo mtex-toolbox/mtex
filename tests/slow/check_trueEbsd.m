@@ -147,7 +147,6 @@ function out = measureEdge(im)
 % one two-map job carrying im twice, taken as far as the measurement
 %
 % The pair is the identity, so nothing is fitted and the cost is all autoTune.
-% The orientation check is skipped because the two maps are the same picture.
 
 px = 0.05;
 
@@ -155,7 +154,7 @@ L = [mapImage(im,'dxy',px,'name','a'), mapImage(im,'dxy',px,'name','b')];
 
 job = trueEbsd2(L,spatialTransformId);
 job.pixelSizeMatch(px);
-evalc('job.calcDistortion(''skipOrientationCheck'')');
+evalc('job.calcDistortion');
 
 out.grid = gridSize(job.resizedList(1));
 out.edge = round([job.opt.edgeWidth]/px);

@@ -58,29 +58,39 @@ still being one path entry away from the thing it claimed not to use. `check_tru
 `checkSelfSufficient` pins the honest property instead — everything resolves under
 `mtex_path` — which is also true for a user who legitimately has the add-on installed.
 
-### 2. Two new external dependencies — **condition 1**
+### 2. Two new external dependencies — one removed, one open (**condition 1**)
 
-Both are in `checkOrientation`, the defensive check that errors when an EBSD map is mirrored
-against the image it registers to.
+Both were in `checkOrientation`, the defensive check that errored when an EBSD map read
+mirrored against the image it registers to.
 
-- **Image Processing Toolbox.** `calcDistortion.m:515` calls `imresize`, `:566` calls
-  `normxcorr2`. Neither appears anywhere in `EBSDAnalysis/`, `geometry/`, `tools/` or
-  `plotting/` today; the only occurrences in the repository are vendored files under
-  `extern/`. Landing this class adds IPT to MTEX's toolbox dependencies.
-- **`createArray`, at `:141` and `:208`.** R2024b or later. `README.md:38` declares MTEX
-  supports R2014b, and `createArray` appears nowhere else in the repository. The class as
-  written cannot run on MTEX's declared floor.
+- **Image Processing Toolbox — resolved.** `imresize` and `normxcorr2` appeared nowhere in
+  `EBSDAnalysis/`, `geometry/`, `tools/` or `plotting/`; the only occurrences in the
+  repository are vendored files under `extern/`. **`checkOrientation` was deleted**, which
+  removes both calls, the `'skipOrientationCheck'` option and
+  `MTEX:trueEbsd:orientationMismatch` — 116 lines. MTEX gains no toolbox dependency.
+- **`createArray` — still open.** Two calls in `calcDistortion`, R2024b or later.
+  `README.md:38` declares MTEX supports R2014b and `createArray` appears nowhere else in the
+  repository, so the class as it stands cannot run on the declared floor.
+  `createArray(n,1,'pairShifts')` is `repmat(pairShifts,n,1)`; this has not been done.
 
-Neither breaks anything here — IPT is licensed on this machine and the bridge runs R2024b —
-which is exactly why they must be recorded rather than discovered. Both are cheap to remove:
-`normxcorr2` can be `xcfShift`, which is already in `tools/registration_tools/`; `imresize`
-can be indexing or `interp2`; `createArray(n,1,'pairShifts')` can be `repmat`.
+Neither broke anything here — IPT is licensed on this machine and the bridge runs R2024b —
+which is exactly why they had to be looked for rather than waited for.
 
-There is a third option worth weighing, because it removes both IPT calls at once: **delete
-`checkOrientation`.** The add-on's own notes already ask whether its ~70 lines still earn
-their place, since the constructor's frame check now catches a genuine mismatch earlier. It
-was deliberately not touched here — the move had to change no numbers — but it is the
-cheapest route to conformance and should be decided on its own merits.
+**On deleting the check rather than rewriting it.** It guarded a real failure mode: a map
+read into image order through the wrong plotting convention arrives mirrored, the ROI shifts
+come out as noise, the fits succeed on that noise, and the workflow returns a
+finished-looking job. What changed is that it is no longer the only guard. The constructor
+compares every entry's `@gridLayout` and raises `MTEX:trueEbsd:frameMismatch`, and a map
+entry's array order is now read off `d1`/`d2` with no convention consulted anywhere — so the
+session convention, which was what made the mirror reachable, is no longer load-bearing. The
+add-on's own notes had already asked whether the check still earned its lines.
+
+What is genuinely lost is the case the constructor cannot see: a *single* map registered
+against images that carry no frame to compare against. That is the configuration both
+shipped examples use. The residual risk is that such a job now fails as a bad registration
+rather than as a named error — visible in the residuals, but not explained. If it should
+come back, it belongs as a cheap check built on `xcfShift`, which is already in
+`tools/registration_tools/`, rather than on `normxcorr2`.
 
 ### 3. Numerical neutrality — exact
 
@@ -189,8 +199,8 @@ their install blocks — telling the reader to `addpath` an external toolbox —
 
 ## The conditions, restated
 
-1. **Remove the IPT and R2024b dependencies**, most cheaply by deciding the fate of
-   `checkOrientation`.
+1. ~~Remove the IPT dependency~~ — **done**, by deleting `checkOrientation`. What remains is
+   `createArray`, two calls, against a declared floor of R2014b.
 2. **Convert the 330 lines of body comments**, extracting the measured reasoning into ADRs
    rather than deleting it.
 3. **Decide the options idiom** — accept `setOptions` as a second pattern, or reconcile it
