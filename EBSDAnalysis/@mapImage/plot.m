@@ -36,7 +36,9 @@ function [h,mP] = plot(mg,varargin)
 %
 % Flags
 %  edge - draw edgeMap(mg) instead of the values, which is what a
-%         registration actually matches on
+%         registration actually matches on. Contrast is stretched over the
+%         2nd to 98th percentile rather than the full range, because an edge
+%         transform's bright tail would otherwise crush the picture to black
 %
 % Description
 % One channel is drawn as a scalar field through the current colormap; three
@@ -104,6 +106,27 @@ if size(d,3) == 3, d = rescale(d); end
 
 pos = mg.pos;
 
+% Colour limits, decided before the branch so both ways of drawing get them -
+% surface() would otherwise be left on CLimMode auto, which is the full range
+% again.
+%
+% An edge transform is not a picture: it is heavily right skewed, a thin tail
+% of bright boundary pixels over a bulk near zero. Scaling it to its full
+% range lets the tail set the top, and on WC-Co that puts 85-90% of every
+% forescatter panel in the bottom tenth of the colormap - the boundaries are
+% all there, and the figure reads as black. Scale it the way edgeMap scales
+% its own input instead. A real image keeps its true range, which is what a
+% picture wants.
+[lo,hi] = deal(NaN);
+if size(d,3) == 1
+  if check_option(varargin,'edge')
+    lim = percentileOf(d,[2 98]);
+    lo = lim(1); hi = lim(2);
+  else
+    lo = min(d,[],'all'); hi = max(d,[],'all');
+  end
+end
+
 if isAxisAligned(mg)
 
   % the fast path - a regular axis aligned grid is what image() draws, and
@@ -116,11 +139,6 @@ if isAxisAligned(mg)
     'YData',[pos.y(1,1) pos.y(end,end)],...
     'CData',d,'CDataMapping','scaled','parent',mP.ax);
 
-  if size(d,3) == 1
-    lo = min(d,[],'all'); hi = max(d,[],'all');
-    if hi > lo, set(mP.ax,'CLim',[lo hi]); end
-  end
-
 else
 
   % rotated against the specimen axes, so the pixels are not rows and
@@ -130,6 +148,9 @@ else
   view(mP.ax,0,90);
 
 end
+
+% NaN limits mean truecolor, which uses no colormap and so has none to set
+if hi > lo, set(mP.ax,'CLim',[lo hi]); end
 
 % grey by default: an image is a picture, not a scalar field with a meaning
 % attached to its colour. A later mtexColorMap call overrides it, and a
