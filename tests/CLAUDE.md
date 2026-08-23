@@ -83,6 +83,7 @@ budget, trim from outside these first.
 | `@mapImage` geometry: derived `pos`, `pos2ind`, `interp`, cropping, relayout | `core/check_mapImage` |
 | `mapImage/plot` — the two backends, that an image draws where the map says it is, and that it faces the way its frame asks | `plotting/check_mapImagePlot` |
 | `xcfShift` — the sign of the measured displacement, sub-pixel accuracy, and the peak as a weight | `core/check_xcfShift` |
+| the TrueEBSD workflow end to end, and that settings left at `'auto'` are measured rather than guessed | `slow/check_trueEbsd` |
 | spatial shift (`plus`/`minus`) of EBSD, grains, boundaries, triple points | `core/check_spatialShift` |
 | `EBSD/gradient`, KAM | `core/check_gradient` |
 | `gridify` on real data | `slow/check_gridify` |

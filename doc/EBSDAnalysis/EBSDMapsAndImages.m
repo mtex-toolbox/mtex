@@ -183,7 +183,7 @@ mtexColorMap gray
 % camera moves between acquisitions, the specimen is tilted. Each of those is
 % a <EBSDSpatialTransform.html spatial transform> that can be fitted from the
 % two pictures and taken back out, which is
-% <example_WCCoSmall_2.html what TrueEBSD does> - and it starts exactly here,
+% <EBSDTrueEbsd.html what TrueEBSD does> - and it starts exactly here,
 % with a sequence whose entries agree about the specimen and about the order
 % they are stored in.
 %
