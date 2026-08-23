@@ -11,7 +11,7 @@ function check_mapImage(varargin)
 %   check_mapImage
 %
 % See also
-% mapImage EBSDsquare imageFrame
+% mapImage EBSDsquare gridLayout
 
 checkConstruction
 checkFromMap
@@ -266,8 +266,8 @@ assert(max(norm(mg.pos - ebsd.pos),[],'all') < 1e-12,...
   'the derived pos differs from the map by %g',max(norm(mg.pos - ebsd.pos),[],'all'))
 
 % and the layout the array is in is the one the map states
-assert(isAligned(mg.arrayFrame,imageFrame(ebsd.d2,ebsd.d1)),...
-  'arrayFrame disagrees with the map''s own d2/d1')
+assert(isAligned(mg.layout,gridLayout(ebsd.d1,ebsd.d2)),...
+  'the layout disagrees with the map''s own d1/d2')
 
 end
 
@@ -288,7 +288,7 @@ assert(strcmp(mg.scanUnit,'nm'),...
 
 % and it survives everything that rebuilds the entry
 assert(strcmp(subGrid(mg,2:5,2:6).scanUnit,'nm'),'subGrid lost the unit')
-turned = transformReferenceFrame(mg,imageFrame(-mg.d1,mg.d2));
+turned = transformReferenceFrame(mg,gridLayout(mg.d2,-mg.d1));
 assert(strcmp(turned.scanUnit,'nm'),'transformReferenceFrame lost the unit')
 
 % it reaches the display, which is where a wrong unit would mislead
@@ -483,11 +483,11 @@ function checkRelayout
 d = 0.3; ebsd = makeMap(8,d);   % 8 x 11, so a transpose is visible
 mg = mapImage(ebsd.bc,ebsd);
 
-target = imageFrame(-mg.d1,mg.d2);   % a quarter turn from where it is
+target = gridLayout(mg.d2,-mg.d1);   % a quarter turn from where it is
 turned = transformReferenceFrame(mg,target);
 
-assert(isAligned(turned.arrayFrame,target),...
-  'the array was not laid out in the frame asked for')
+assert(isAligned(turned.layout,target),...
+  'the array was not laid out the way asked for')
 
 assert(isequal(gridSize(turned),flip(gridSize(mg))),...
   'a quarter turn left the array %s, expected %s',...
@@ -524,7 +524,7 @@ assert(max(abs(turned.ebsd.bc - turned.img),[],'all') < 1e-12,...
   'the map and the image are no longer in the same order')
 
 % turning it back is the identity
-back = transformReferenceFrame(turned,mg.arrayFrame);
+back = transformReferenceFrame(turned,mg.layout);
 assert(isequal(gridSize(back),gridSize(mg)) && ...
   max(abs(back.img - mg.img),[],'all') < 1e-12,'the relayout does not round trip')
 assert(norm(back.origin - mg.origin) < 1e-12,'the origin did not round trip')

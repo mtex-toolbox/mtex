@@ -58,10 +58,10 @@ classdef mapImage
 %  frame      - @referenceFrame the geometry is expressed in
 %  scanUnit   - unit of the positions, taken from the map. Default 'um'
 %  pos        - r x c @vector3d, derived from origin, d1 and d2
-%  arrayFrame - @imageFrame the array is laid out in, derived from d2 and d1
+%  layout     - @gridLayout the array is stored in, derived from d1 and d2
 %
 % See also
-% EBSD EBSDsquare imageFrame mapImage/interp mapImage/edgeMap
+% EBSD EBSDsquare gridLayout mapImage/interp mapImage/edgeMap
 
   properties
     img = []
@@ -77,7 +77,7 @@ classdef mapImage
 
   properties (Dependent = true)
     pos        % r x c @vector3d, one per pixel
-    arrayFrame % @imageFrame the array is laid out in
+    layout     % @gridLayout the array is stored in
     how2plot   % plotting convention - read only, carried by the frame
     dx         % column step length
     dy         % row step length
@@ -102,8 +102,8 @@ classdef mapImage
           'Resample it first, e.g. with gridify after interp onto a square '...
           'grid.']);
 
-        % the map states its own layout: the column index advances along d2
-        % and the row index along d1. No convention is consulted
+        % the map states its own layout: the row index advances along d1 and
+        % the column index along d2. No convention is consulted
         mg.d1 = mg.ebsd.d1; mg.d2 = mg.ebsd.d2;
         mg.origin = mg.ebsd.pos(1,1);
 
@@ -120,15 +120,15 @@ classdef mapImage
 
       else
 
-        % nothing to take a frame from. Where the row and column indices
-        % point relative to a specimen is not derivable from the array, so
-        % give it a frame of its own and leave establishing the relation to
-        % transformReferenceFrame - the honest state before alignment
-        mg.frame = imageFrame;
+        % nothing to take a frame from, so give it one of its own - axes
+        % iX, iY, iZ, and the relation to anything else left to
+        % transformReferenceFrame
+        mg.frame = ownFrame;
 
+        % and lay it out the way gridify stores a map, rows along y
         dxy = get_option(varargin,'dxy',1);
-        mg.d2 = dxy(1) * mg.frame.basis(1);
         mg.d1 = dxy(end) * mg.frame.basis(2);
+        mg.d2 = dxy(1) * mg.frame.basis(1);
 
       end
 
@@ -172,12 +172,18 @@ classdef mapImage
 
     end
 
-    function iF = get.arrayFrame(mg)
-      iF = imageFrame(mg.d2,mg.d1);
+    function gL = get.layout(mg)
+      gL = gridLayout(mg.d1,mg.d2);
     end
 
     function pC = get.how2plot(mg)
-      pC = mg.frame.how2plot;
+      % an entry with no frame yet has no convention either - reading one
+      % off an empty handle is an error rather than an empty answer
+      if isempty(mg.frame)
+        pC = plottingConvention.empty;
+      else
+        pC = mg.frame.how2plot;
+      end
     end
 
     function d = get.dx(mg), d = norm(mg.d2); end

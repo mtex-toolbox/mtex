@@ -60,7 +60,7 @@ function [pos,ind] = orientGrid(pos,ind,varargin)
 %    ebsd(i,j) is the j-th pixel of the i-th scan row. This matches the
 %    layout of hexagonal grids, see hexify.
 %  rowMajor - the transposed layout, size(ebsd) = [numCols numRows]
-%  an @imageFrame - any other axis aligned layout
+%  a @gridLayout - any other axis aligned layout
 %
 % In every case the grid directions are oriented such that the coordinates
 % increase along them, so ebsd(1,1) is the corner with the smallest
@@ -70,7 +70,7 @@ function [pos,ind] = orientGrid(pos,ind,varargin)
 
 if size(pos,1) < 2 || size(pos,2) < 2, return; end
 
-lin = layoutIndex(gridLayout(varargin{:}),...
+lin = layoutIndex(gridLayout.fromOption(varargin),...
   [pos(2,1) - pos(1,1), pos(1,2) - pos(1,1)], size(pos), 'nearest');
 
 pos = pos(lin);

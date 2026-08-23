@@ -61,24 +61,25 @@ ebsd(50,100)
 % SEM images taken of the same area.
 %
 % |'columnMajor'| and |'rowMajor'| are the two layouts aligned with x and y,
-% and they are <imageFrame.imageFrame.html |imageFrame|>s like any other. Hand
-% |gridify| a different one and the map is stored that way instead. Say the
-% picture's columns run along y and its rows against x - a detector mounted a
+% and they are <gridLayout.gridLayout.html |gridLayout|>s like any other. Hand
+% |gridify| a different one and the map is stored that way instead. A layout
+% names the row direction first, the order |size(A)| is written in. Say the
+% picture's rows run against x and its columns along y - a detector mounted a
 % quarter turn from the scan
 
-iF = imageFrame(yvector,-xvector)
+gL = gridLayout(-xvector,yvector)
 
 %%
 % Then the map goes into that layout, and its shape follows
 
-ebsdI = gridify(ebsd,iF)
+ebsdI = gridify(ebsd,gL)
 
 %%
 % Nothing was resampled and no value invented: a transpose and two flips are
 % all that is ever applied, which is why this is safe to do to orientation
 % data. A map states the layout it is in, so it can be read back off
 
-imageFrame(ebsdI)
+ebsdI.layout
 
 %%
 % Every per pixel property comes out in that layout, so band contrast is now
@@ -90,9 +91,9 @@ isequal(ebsdI.bc, rot90(ebsd.bc))
 
 %%
 % Putting it back is therefore exact. The two layouts are a conversion, not a
-% transformation, and |imageFrame(ebsd)| names the one to come back to
+% transformation, and |ebsd.layout| names the one to come back to
 
-isequal(gridify(ebsdI,imageFrame(ebsd)).bc, ebsd.bc)
+isequal(gridify(ebsdI,ebsd.layout).bc, ebsd.bc)
 
 %%
 % Note what has *not* changed. The layout is how the measurements are stored,
@@ -104,7 +105,7 @@ plot(ebsd,ebsd.bc), mtexColorMap gray
 title('columnMajor')
 nextAxis
 plot(ebsdI,ebsdI.bc), mtexColorMap gray
-title('col ||y, row ||-x')
+title('row ||-x, col ||y')
 
 %%
 % A grid that is rotated or sheared cannot land on an axis aligned layout

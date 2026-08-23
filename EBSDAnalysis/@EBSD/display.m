@@ -1,8 +1,14 @@
 function display(ebsd,varargin)
 % standard output
 
-displayClass(ebsd,inputname(1),'moreInfo',...
-  referenceFrame.headerChar(ebsd.frame,ebsd.how2plot));
+% a gridded map states which way its indices run as well - on the same
+% screen as the convention, so the two read together
+info = referenceFrame.headerChar(ebsd.frame,ebsd.how2plot);
+if isa(ebsd,'EBSDsquare') && min(size(ebsd)) > 1
+  info = [info ', ' conventionChar(ebsd.layout,ebsd.how2plot)];
+end
+
+displayClass(ebsd,inputname(1),'moreInfo',info);
 
 % empty ebsd set 
 if isempty(ebsd)

@@ -51,6 +51,6 @@ ebsd = rotate@EBSD(ebsd,rot,varargin{:});
 % only the spatial half can disturb the layout
 if check_option(varargin,'keepXY'), return; end
 
-ebsd = transformReferenceFrame(ebsd,gridLayout());
+ebsd = transformReferenceFrame(ebsd,gridLayout.columnMajor);
 
 end

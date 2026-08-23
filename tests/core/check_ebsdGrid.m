@@ -503,7 +503,7 @@ function checkArrayLayout
 % two the flags name
 %
 % 'columnMajor' and 'rowMajor' are the two layouts aligned with x and y, so
-% they are @imageFrames like any other and the flags are shorthands. What a
+% they are @gridLayouts like any other and the flags are shorthands. What a
 % caller wants a third one for is comparing a map with an image pixel by
 % pixel, which needs the map in the image's order.
 
@@ -511,16 +511,16 @@ d = 0.3; sz = 12;
 list = makeMap(sz,d);
 g    = gridify(list);
 
-cm = imageFrame(xvector,yvector);
-rm = imageFrame(yvector,xvector);
+cm = gridLayout(yvector,xvector);   % dim 1 along y
+rm = gridLayout(xvector,yvector);   % its transpose
 
-% the frame form and the flag it generalises are the same request
+% the layout form and the flag it generalises are the same request
 for src = {list,g}
   a = gridify(src{1},rm);
   b = gridify(src{1},'rowMajor');
   assert(isequal(size(a),size(b)) && isequal(a.id,b.id) && ...
       max(norm(a.pos - b.pos),[],'all') < 1e-10, ...
-    'check_ebsdGrid: gridify with an imageFrame disagrees with the rowMajor flag on a %s',...
+    'check_ebsdGrid: gridify with a gridLayout disagrees with the rowMajor flag on a %s',...
     class(src{1}));
 end
 
@@ -544,23 +544,30 @@ assert(isequal(gridify(g,cm).id,g.id), ...
 assert(isequal(gridify(gr,cm).id,g.id) && isequal(gridify(gr,cm).bc,g.bc), ...
   'check_ebsdGrid: the layout round trip did not restore the map');
 
-% imageFrame(ebsd) is how the layout is read back off a map
-assert(isAligned(imageFrame(g),cm), ...
-  'check_ebsdGrid: imageFrame(ebsd) is not the layout the map is stored in');
-assert(isAligned(imageFrame(gr),rm), ...
-  'check_ebsdGrid: imageFrame(ebsd) did not follow the relayout');
+% ebsd.layout is how the layout is read back off a map
+assert(isAligned(g.layout,cm), ...
+  'check_ebsdGrid: ebsd.layout is not the layout the map is stored in');
+assert(isAligned(gr.layout,rm), ...
+  'check_ebsdGrid: ebsd.layout did not follow the relayout');
+assert(isAligned(gridLayout(g),g.layout), ...
+  'check_ebsdGrid: gridLayout(ebsd) and ebsd.layout disagree');
 
-% a sheared grid has no image frame - its axes are not perpendicular - but it
+% and it reaches the display, next to the plotting convention
+hdr = evalc('display(g)');
+assert(contains(hdr,'row') && contains(hdr,'col'), ...
+  'check_ebsdGrid: the header does not state the layout');
+
+% a sheared grid has no layout object - its axes are not perpendicular - but it
 % can still be relaid out, which is why layoutIndex takes directions
 es = transform(g, @(pos) vector3d(pos.x + 0.3*pos.y, pos.y, pos.z));
 try
-  imageFrame(es);
+  gridLayout(es);
   caught = '';
 catch ME
   caught = ME.identifier;
 end
-assert(strcmp(caught,'MTEX:imageFrame:notOrthogonal'), ...
-  'check_ebsdGrid: a sheared grid was given an imageFrame');
+assert(strcmp(caught,'MTEX:gridLayout:notOrthogonal'), ...
+  'check_ebsdGrid: a sheared grid was given a gridLayout');
 assert(isequal(size(gridify(es,rm)),fliplr(size(es))), ...
   'check_ebsdGrid: a sheared grid could not be relaid out');
 

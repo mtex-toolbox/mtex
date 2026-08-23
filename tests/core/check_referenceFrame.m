@@ -25,7 +25,7 @@ checkSessionReset;
 checkFrameCarriage;
 checkTangentVectorFrames;
 checkTrivialSymmetryFromFrame;
-checkImageFrame;
+checkGridLayout;
 checkLayoutIndex;
 checkScreenAlignment;
 checkFundamentalSectorFrame;
@@ -873,39 +873,49 @@ referenceFrame.reset;
 end
 
 % =========================================================================
-function checkImageFrame
-% an image frame says where a raster array sits relative to another frame:
-% which directions the column and row indices advance along. That is a
-% rotation and has nothing to do with a screen - the frame is what it is
-% whether or not anything is ever plotted
+function checkGridLayout
+% a layout says which directions the two array indices advance along, in the
+% order the array is written in: dimension 1 first. That is a relation to a
+% basis and has nothing to do with a screen - a layout is what it is whether
+% or not anything is ever plotted
 
 referenceFrame.reset;
 tol = 1e-6;
 
-% the two-vector constructor stores what it is given, and completes the
-% right handed set itself - depth is not a free choice
-iF = imageFrame(yvector,-xvector);
-assert(angle(iF.basis(1),yvector) < tol && angle(iF.basis(2),-xvector) < tol, ...
-  'check_referenceFrame: imageFrame(colDir,rowDir) lost the directions given');
-assert(angle(iF.basis(3),cross(yvector,-xvector)) < tol, ...
-  'check_referenceFrame: imageFrame did not complete a right handed basis');
+% the two-vector constructor stores what it is given, row direction first,
+% and completes the right handed set itself - the third is not a free choice
+gL = gridLayout(yvector,-xvector);
+assert(angle(gL.basis(1),yvector) < tol && angle(gL.basis(2),-xvector) < tol, ...
+  'check_referenceFrame: gridLayout(rowDir,colDir) lost the directions given');
+assert(angle(gL.basis(3),cross(yvector,-xvector)) < tol, ...
+  'check_referenceFrame: gridLayout did not complete a right handed basis');
 
-% columns and rows of an image are perpendicular; anything else is a
+% the default is what gridify stores a map in - rows along y
+assert(isAligned(gridLayout,gridLayout.columnMajor) && ...
+    angle(gridLayout.columnMajor.basis(1),yvector) < tol, ...
+  'check_referenceFrame: the default layout is not columnMajor');
+
+% a layout carries no plotting convention of its own - the only screen it
+% could mean is the one imagesc imposes, which is not a property of the data
+assert(isempty(gridLayout.columnMajor.how2plot), ...
+  'check_referenceFrame: a gridLayout must not carry a plotting convention');
+
+% rows and columns of an array are perpendicular; anything else is a
 % mistake rather than a shear to be accommodated
 try
-  imageFrame(xvector,vector3d(1,1,0));
+  gridLayout(xvector,vector3d(1,1,0));
   caught = '';
 catch ME
   caught = ME.identifier;
 end
-assert(strcmp(caught,'MTEX:imageFrame:notOrthogonal'), ...
-  'check_referenceFrame: non-perpendicular col/row directions were accepted');
+assert(strcmp(caught,'MTEX:gridLayout:notOrthogonal'), ...
+  'check_referenceFrame: non-perpendicular row/col directions were accepted');
 
-% an image frame can be carried by the trivial group, which is what lets an
+% a layout can be carried by the trivial group, which is what lets an
 % orientation name one on a side. A crystalFrame still may not be
-ss = specimenSymmetry(iF);
-assert(ss.id == 1 && ss.frame == iF, ...
-  'check_referenceFrame: specimenSymmetry must adopt an imageFrame handle');
+ss = specimenSymmetry(gL);
+assert(ss.id == 1 && ss.frame == gL, ...
+  'check_referenceFrame: specimenSymmetry must adopt a gridLayout handle');
 
 % assumedFor recovers the relation from a frame's convention - the
 % backwards compatible path, for data that predates the relation having a
@@ -913,10 +923,10 @@ assert(ss.id == 1 && ss.frame == iF, ...
 for pC = axisAlignedConventions
   v = vector3d.X;
   v.frame = specimenFrame('test',pC{1});
-  iF = imageFrame.assumedFor(v);
-  assert(angle(iF.basis(1),pC{1}.east) < tol && angle(iF.basis(2),pC{1}.south) < tol, ...
-    'check_referenceFrame: assumedFor did not return east/south for %s',char(pC{1}));
-  assert(strcmp(iF.name,'assumed from plot'), ...
+  gL = gridLayout.assumedFor(v);
+  assert(angle(gL.basis(1),pC{1}.south) < tol && angle(gL.basis(2),pC{1}.east) < tol, ...
+    'check_referenceFrame: assumedFor did not return south/east for %s',char(pC{1}));
+  assert(strcmp(gL.name,'assumed from plot'), ...
     'check_referenceFrame: assumedFor must say that it assumed');
 end
 
@@ -926,15 +936,14 @@ end
 
 % =========================================================================
 function checkLayoutIndex
-% layoutIndex is the array-order half of an image frame: which transpose and
-% flips lay a matrix out the way a frame says. The inverse is the same call
-% with the two layouts swapped, which is what makes a separate back
-% conversion unnecessary
+% layoutIndex is what a layout is for: which transpose and flips lay a matrix
+% out the way it says. The inverse is the same call with the two layouts
+% swapped, which is what makes a separate back conversion unnecessary
 
 referenceFrame.reset;
 
-cm = imageFrame(xvector,yvector);
-rm = imageFrame(yvector,xvector);
+cm = gridLayout.columnMajor;
+rm = gridLayout.rowMajor;
 A  = reshape(1:12,3,4);
 
 % the layout an array is already in asks for nothing
@@ -951,9 +960,9 @@ assert(isequal(A(lin),A.') && doTranspose, ...
 % every axis aligned layout is reachable, and swapping the two layouts is
 % the way back
 for pC = axisAlignedConventions
-  tgt = imageFrame.assumedFor(specimenFrame('test',pC{1}));
+  tgt = gridLayout.assumedFor(specimenFrame('test',pC{1}));
   B = A(layoutIndex(tgt,[yvector xvector],size(A)));
-  back = B(layoutIndex(cm,[tgt.basis(2) tgt.basis(1)],size(B)));
+  back = B(layoutIndex(cm,tgt.basis(1:2),size(B)));
   assert(isequal(back,A), ...
     'check_referenceFrame: layoutIndex is not its own inverse for %s',char(pC{1}));
 end
@@ -972,7 +981,7 @@ try
 catch ME
   caught = ME.identifier;
 end
-assert(strcmp(caught,'MTEX:imageFrame:notAxisAligned'), ...
+assert(strcmp(caught,'MTEX:gridLayout:notAxisAligned'), ...
   'check_referenceFrame: a layout no permutation can reach was accepted');
 
 % unless the caller says to take the closest one, which is what a grid does
@@ -1009,17 +1018,17 @@ tol = 1e-6;
 for pC = axisAlignedConventions
 
   sF = specimenFrame('test',pC{1});
-  iF = imageFrame;
+  imgF = specimenFrame('image',plottingConvention.ij);
 
   % stated independently of the implementation's formula: if an image and a
-  % map look the same way up, the image's columns run the way east runs and
-  % its rows the way south runs
-  M = matrix(orientation.byScreenAlignment(iF,sF));
+  % map look the same way up, the image's x runs the way east runs and its y
+  % the way south runs
+  M = matrix(orientation.byScreenAlignment(imgF,sF));
   b = vector3d(M(1,:),M(2,:),M(3,:));
   assert(angle(b(1),pC{1}.east) < tol, ...
-    'check_referenceFrame: byScreenAlignment columns do not run east for %s',char(pC{1}));
+    'check_referenceFrame: byScreenAlignment x does not run east for %s',char(pC{1}));
   assert(angle(b(2),pC{1}.south) < tol, ...
-    'check_referenceFrame: byScreenAlignment rows do not run south for %s',char(pC{1}));
+    'check_referenceFrame: byScreenAlignment y does not run south for %s',char(pC{1}));
   assert(angle(b(3),-pC{1}.outOfScreen) < tol, ...
     'check_referenceFrame: byScreenAlignment depth is not into the screen for %s',char(pC{1}));
 
@@ -1031,8 +1040,8 @@ for pC = axisAlignedConventions
   % rotations and so are their own inverse, which hides the difference -
   % only the two 90 degree cases show it, so asserting equality would pass
   % six times and mean nothing
-  iF.basis = b;
-  assert(norm(M.' - transformationMatrix(iF,sF)) < tol, ...
+  imgF.basis = b;
+  assert(norm(M.' - transformationMatrix(imgF,sF)) < tol, ...
     'check_referenceFrame: the basis disagrees with the inference it was set from (%s)',...
     char(pC{1}));
 
@@ -1041,13 +1050,13 @@ end
 % under ij an image and a map need no permutation at all, so the relation
 % between their frames has to come out as the identity. If this ever fails,
 % every array order derived from it is wrong
-ori = orientation.byScreenAlignment(imageFrame, ...
+ori = orientation.byScreenAlignment(specimenFrame('image',plottingConvention.ij), ...
   specimenFrame('ij',plottingConvention.ij));
 assert(angle(ori) < tol, ...
   'check_referenceFrame: ij must give the identity, it gave %.3f degrees',angle(ori)./degree);
 
 % the orientation names both frames rather than only carrying a number
-assert(isa(ori.frameRight,'imageFrame') && isa(ori.frameLeft,'specimenFrame'), ...
+assert(isa(ori.frameRight,'specimenFrame') && isa(ori.frameLeft,'specimenFrame'), ...
   'check_referenceFrame: byScreenAlignment must name both frames on the orientation');
 
 % an empty convention means "follows the session default", so inferring
@@ -1055,13 +1064,24 @@ assert(isa(ori.frameRight,'imageFrame') && isa(ori.frameLeft,'specimenFrame'), .
 bare = specimenFrame('bare');
 bare.how2plot = [];
 try
-  orientation.byScreenAlignment(imageFrame,bare);
+  orientation.byScreenAlignment(specimenFrame('image',plottingConvention.ij),bare);
   caught = '';
 catch ME
   caught = ME.identifier;
 end
 assert(strcmp(caught,'MTEX:orientation:noConvention'), ...
   'check_referenceFrame: a frame without a convention of its own was accepted');
+
+% a layout is not something that gets plotted, so it carries no convention
+% and cannot be a side of this inference either
+try
+  orientation.byScreenAlignment(gridLayout.columnMajor,specimenFrame.default);
+  caught = '';
+catch ME
+  caught = ME.identifier;
+end
+assert(strcmp(caught,'MTEX:orientation:noConvention'), ...
+  'check_referenceFrame: a gridLayout was accepted as a plotted frame');
 
 referenceFrame.reset;
 

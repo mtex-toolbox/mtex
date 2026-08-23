@@ -22,8 +22,8 @@ for n = 1:numel(mg)
   matrix{n,1} = int2str(n);
   matrix{n,2} = sizeStr(m.img);
   matrix{n,3} = pixelStr(m);
-  matrix{n,4} = frameStr(m.frame);
-  matrix{n,5} = frameStr(arrayFrameOf(m));
+  matrix{n,4} = frameStr(m.frame,m.how2plot);
+  matrix{n,5} = frameStr(layoutOf(m),m.how2plot);
   matrix{n,6} = char(m.name);
   matrix{n,7} = ebsdStr(m.ebsd);
 
@@ -78,27 +78,27 @@ end
 end
 
 % =========================================================================
-function iF = arrayFrameOf(m)
+function gL = layoutOf(m)
 % the layout, or nothing when there is no grid to have one
 
-if isempty(m.img) || isempty(m.frame), iF = imageFrame.empty; return; end
-iF = m.arrayFrame;
+if isempty(m.img) || isempty(m.frame), gL = gridLayout.empty; return; end
+gL = m.layout;
 
 end
 
 % =========================================================================
-function s = frameStr(fr)
-% the frame in its own axes names
+function s = frameStr(fr,pC)
+% the frame in its own axes names, read on the screen the entry is drawn on
 %
 % conventionChar writes a convention in the axes names of the frame it
 % belongs to, so each kind of entry states itself in its own terms. An entry
-% carrying a map is in a @specimenFrame, whose axes are X, Y, Z, so it reads
-% 'y↓→x'; a layout is an @imageFrame, whose axes are col and row, so it reads
+% is in a @specimenFrame, whose axes are X, Y, Z, so it reads 'y↓→x'; its
+% layout is a @gridLayout, whose axes are row and col, so it reads
 % 'row↓→col', or 'row←col↓' a quarter turn from that.
 
 if isempty(fr), s = '-'; return; end
 
-s = conventionChar(fr);
+s = conventionChar(fr,pC);
 
 % a frame with no convention, or whose axes are off the screen axes
 if isempty(s), s = char(fr); end

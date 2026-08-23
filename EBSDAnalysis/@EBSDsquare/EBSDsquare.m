@@ -9,7 +9,8 @@ classdef EBSDsquare < EBSDgrid
   properties (Dependent = true)
     gradient1 % orientation gradient in dimension 1
     gradient2 % orientation gradient in dimension 2
-    d1, d2    % @vector3d, directions of the two grid dimensions 
+    d1, d2    % @vector3d, directions of the two grid dimensions
+    layout    % @gridLayout, d1 and d2 as the order the map is stored in
   end
   
   methods
@@ -73,11 +74,11 @@ classdef EBSDsquare < EBSDgrid
       if check_option(varargin,{'unitCell','force'})
         [varargout{1:nargout}] = gridify@EBSD(ebsd,varargin{:});
       elseif check_option(varargin,{'rowMajor','columnMajor'}) || ...
-          ~isempty(getClass(varargin,'imageFrame',[]))
+          ~isempty(getClass(varargin,'gridLayout',[]))
         % a layout is a reindexing, so do not rebuild from the positions -
         % squarify would refit the lattice and move them
         [varargout{1:max(1,nargout)}] = ...
-          transformReferenceFrame(ebsd,gridLayout(varargin{:}));
+          transformReferenceFrame(ebsd,gridLayout.fromOption(varargin));
       else
         varargout{1} = ebsd;
         varargout{2} = (1:length(ebsd)).';
@@ -100,7 +101,11 @@ classdef EBSDsquare < EBSDgrid
     function out = get.d2(ebsd)
       out = ebsd.pos(1,2) - ebsd.pos(1,1);
     end
-    
+
+    function gL = get.layout(ebsd)
+      gL = gridLayout(ebsd);
+    end
+
     function g1 = get.gradient1(ebsd)
       % gradient in first dimension in specimen coordinates
       

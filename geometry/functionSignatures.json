@@ -107,18 +107,17 @@
     ]
 },
 
-"imageFrame":
+"gridLayout":
 {
     "inputs":
     [
-      {"name":"colDir", "kind":"ordered", "type":["vector3d"], "purpose":"direction the column index advances along"},
       {"name":"rowDir", "kind":"ordered", "type":["vector3d"], "purpose":"direction the row index advances along"},
-      {"name":"name", "kind":"namevalue", "type":["char"], "purpose":"identity of the frame"},
-      {"name":"how2plot", "kind":"ordered", "type":["plottingConvention"], "purpose":"default plotting convention"}
+      {"name":"colDir", "kind":"ordered", "type":["vector3d"], "purpose":"direction the column index advances along"},
+      {"name":"name", "kind":"namevalue", "type":["char"], "purpose":"identity of the layout"}
     ],
     "outputs":
     [
-      {"name":"iF", "type":"imageFrame"}
+      {"name":"gL", "type":"gridLayout"}
     ]
 },
 
@@ -126,7 +125,7 @@
 {
     "inputs":
     [
-      {"name":"iF", "kind":"required", "type":["imageFrame"], "purpose":"layout the array is to be laid out in"},
+      {"name":"gL", "kind":"required", "type":["gridLayout"], "purpose":"layout the array is to be laid out in"},
       {"name":"dims", "kind":"required", "type":["vector3d"], "purpose":"directions dimensions 1 and 2 advance along"},
       {"name":"sz", "kind":"required", "type":["numeric","vector"], "purpose":"size of the array"},
       {"name":"nearest", "kind":"flag", "type":["char","choices={'nearest'}"], "purpose":"snap to the closest layout instead of erroring"}

@@ -114,9 +114,13 @@ classdef referenceFrame < matlab.mixin.Copyable
 
       displayClass(rf,inputname(1),'moreInfo',strjoin(info,', '),varargin{:});
 
+      % a basis that is the canonical one says nothing the header does not -
+      % only a frame that sits somewhere else is worth spelling out
       b = rf.basis;
-      for k = 1:numel(rf.axesNames)
-        disp(['  ' rf.axesNames{k} ': ' char(b(k))]);
+      if max(norm(b - [xvector,yvector,zvector])) > 1e-10
+        for k = 1:numel(rf.axesNames)
+          disp(['  ' rf.axesNames{k} ': ' char(b(k))]);
+        end
       end
       disp(' ');
     end

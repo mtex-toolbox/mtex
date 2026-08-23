@@ -222,21 +222,8 @@
       {"name":"ebsd", "kind":"required", "type":["EBSD"]},
       {"name":"unitCell", "kind":"namevalue", "type":["vector3d"], "purpose":"unit cell of the gridded map"},
       {"name":"extent", "kind":"namevalue", "type":["numeric","vector","numel=4"], "purpose":"[xmin xmax ymin ymax]"},
-      {"name":"iF", "kind":"ordered", "type":["imageFrame"], "purpose":"matrix layout of the gridded map"},
+      {"name":"gL", "kind":"ordered", "type":["gridLayout"], "purpose":"matrix layout of the gridded map"},
       {"name":"layout", "kind":"flag", "type":["char","choices={'columnMajor','rowMajor'}"], "purpose":"matrix layout of the gridded map"}
-    ]
-},
-
-"gridLayout":
-{
-    "inputs":
-    [
-      {"name":"iF", "kind":"ordered", "type":["imageFrame"], "purpose":"layout given outright"},
-      {"name":"layout", "kind":"flag", "type":["char","choices={'columnMajor','rowMajor'}"], "purpose":"named layout"}
-    ],
-    "outputs":
-    [
-      {"name":"iF", "type":"imageFrame"}
     ]
 },
 
@@ -245,7 +232,7 @@
     "inputs":
     [
       {"name":"ebsd", "kind":"required", "type":["EBSDsquare"]},
-      {"name":"iF", "kind":"required", "type":["imageFrame"], "purpose":"matrix layout to store the map in"}
+      {"name":"gL", "kind":"required", "type":["gridLayout"], "purpose":"matrix layout to store the map in"}
     ],
     "outputs":
     [

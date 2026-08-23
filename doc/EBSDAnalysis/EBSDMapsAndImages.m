@@ -8,7 +8,7 @@
 % * where on the specimen does each picture sit - its
 % <referenceFrame.referenceFrame.html reference frame>
 % * which way round is each array stored - its
-% <imageFrame.imageFrame.html layout>
+% <gridLayout.gridLayout.html layout>
 %
 % The first decides what is drawn where. The second decides what |img(i,j)|
 % means. This page walks through both on one WC-Co dataset, an EBSD map and
@@ -26,14 +26,14 @@ img = ebsd.opt.trueEbsdImgs;
 % to. A channel of an EBSD map joins such a sequence as one entry of it, so a
 % map and its images are one array rather than two different kinds of thing.
 
-imgList = [mapImage(ebsd.bc,   ebsd,                'name','bcImg'), ...
-           mapImage(img.fsdT1, 'dxy',img.pixSzImg,  'name','fsdT1'), ...
-           mapImage(img.fsdT10,'dxy',img.pixSzImg,  'name','fsdT10')]
+imgList = [mapImage(ebsd.bc,ebsd,         'name','bcImg'), ...
+  mapImage(img.fsdT1, 'dxy',img.pixSzImg, 'name','fsdT1'), ...
+  mapImage(img.fsdT10,'dxy',img.pixSzImg, 'name','fsdT10')]
 
 %%
 % Plotting the sequence draws each entry where it sits, one axis per picture
 
-plot(imgList,'layout',[1,3])
+plot(imgList,'layout',[1,3],'refFrame','on')
 
 %% What an Image Does Not Know
 %
@@ -42,10 +42,11 @@ plot(imgList,'layout',[1,3])
 imgList(1).frame
 
 %%
-% An image does not. Which specimen direction its columns run along is not
-% in the array and cannot be computed from it - somebody has to say. Until
-% they do, MTEX gives the image a frame of its own and says so rather than
-% assuming the map's
+% An image does not. Which specimen direction its x runs along is not in the
+% array and cannot be computed from it - somebody has to say. Until they do,
+% MTEX gives the image a frame of its own rather than assuming the map's, and
+% names its axes |iX|, |iY|, |iZ| so that every plot and every display shows
+% they are the image's own
 
 imgList(2).frame
 
@@ -57,16 +58,16 @@ imgList(2).frame
 
 ebsd = rotate(ebsd,90*degree);
 
-imgList = [mapImage(ebsd.bc,   ebsd,                'name','bcImg'), ...
-           mapImage(img.fsdT1, 'dxy',img.pixSzImg,  'name','fsdT1'), ...
-           mapImage(img.fsdT10,'dxy',img.pixSzImg,  'name','fsdT10')]
+imgList = [mapImage(ebsd.bc, ebsd,         'name', 'bcImg'), ...
+  mapImage(img.fsdT1, 'dxy', img.pixSzImg, 'name', 'fsdT1'), ...
+  mapImage(img.fsdT10,'dxy', img.pixSzImg, 'name', 'fsdT10')]
 
 %%
 % The map's array is 128 x 96 now where the pictures are 192 x 256 - the two
 % are transposed to each other. Plotting shows it at once: the map is on its
 % side relative to the images, and somewhere else on the specimen
 
-plot(imgList,'layout',[1,3])
+plot(imgList,'layout',[1,3],'refFrame','on')
 
 %% Saying Which Way Round the Map Is
 %
@@ -102,35 +103,34 @@ plot(imgList,'layout',[1,3])
 % and it has nothing to do with the specimen: it is the order the numbers sit
 % in memory.
 %
-% The layout is an <imageFrame.imageFrame.html |imageFrame|>, and there is
-% nothing more to it than two directions - the one the column index advances
-% along, and the one the row index advances along
+% The layout is a <gridLayout.gridLayout.html |gridLayout|>, and there is
+% nothing more to it than two directions - the one the row index advances
+% along, and the one the column index advances along, in that order
 
-imgList(1).arrayFrame
+imgList(1).layout
 
 %%
-% Every |mapImage| states its own, and <EBSD.gridify.html |gridify|> reads
-% the one a gridded map is in
+% Every |mapImage| states its own, and so does a gridded map
 
-imageFrame(ebsd)
+ebsd.layout
 
 %% Putting a Map in an Image's Layout
 %
 % |gridify| takes such a layout, which is how a map is put in the same order
 % as a picture it is to be compared with. |'columnMajor'| and |'rowMajor'|
 % are the two it knows by name - see <EBSDGrid.html Square and Hex Grids> -
-% and any other is stated as an |imageFrame|. Start again from the map as it
+% and any other is stated as a |gridLayout|. Start again from the map as it
 % was imported, and say the detector had been mounted a quarter turn from
-% the scan, so its columns run along y and its rows against x
+% the scan, so its rows run against x and its columns along y
 
 mtexdata trueEbsdWCCoSmall silent
 
-iF = imageFrame(yvector,-xvector)
+gL = gridLayout(-xvector,yvector)
 
 %%
 % Then the map goes into that layout and its shape follows
 
-ebsdI = gridify(ebsd,iF)
+ebsdI = gridify(ebsd,gL)
 
 %%
 % Nothing was resampled and no value invented - a transpose and two flips are
@@ -143,7 +143,7 @@ isequal(ebsdI.bc, rot90(ebsd.bc))
 %%
 % so putting it back is exact
 
-isequal(gridify(ebsdI,imageFrame(ebsd)).bc, ebsd.bc)
+isequal(gridify(ebsdI,ebsd.layout).bc, ebsd.bc)
 
 %%
 % Note what has *not* changed. The layout is how the measurements are stored,
@@ -154,7 +154,7 @@ plot(ebsd,ebsd.bc,'micronbar','off','layout',[1,2]), mtexColorMap gray
 title('as imported')
 nextAxis
 plot(ebsdI,ebsdI.bc,'micronbar','off'), mtexColorMap gray
-title('col ||y, row ||-x')
+title('row ||-x, col ||y')
 
 %% Comparing Them Pixel by Pixel
 %

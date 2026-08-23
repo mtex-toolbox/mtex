@@ -1,23 +1,23 @@
-function [ebsd,newId] = transformReferenceFrame(ebsd,iF)
+function [ebsd,newId] = transformReferenceFrame(ebsd,gL)
 % store a gridded map in a given matrix layout
 %
 % Syntax
 %
-%   ebsd = transformReferenceFrame(ebsd,imageFrame(yvector,xvector))
-%   ebsd = transformReferenceFrame(ebsd,imageFrame(otherMap))
-%   [ebsd,newId] = transformReferenceFrame(ebsd,iF)
+%   ebsd = transformReferenceFrame(ebsd,gridLayout(yvector,xvector))
+%   ebsd = transformReferenceFrame(ebsd,gridLayout(otherMap))
+%   [ebsd,newId] = transformReferenceFrame(ebsd,gL)
 %
 % Input
 %  ebsd - @EBSDsquare
-%  iF   - @imageFrame the matrix indices are to advance along
+%  gL   - @gridLayout the matrix indices are to advance along
 %
 % Output
 %  ebsd  - @EBSDsquare, the same data reindexed
 %  newId - where each element of the old matrix sits in the new one
 %
 % Description
-% A gridded map has a matrix layout of its own - the column index advances
-% along d2 and the row index along d1 - and this puts it into another one.
+% A gridded map has a layout of its own - the row index advances along d1
+% and the column index along d2 - and this puts it into another one.
 % Nothing is resampled and no value is invented: a transpose and two flips
 % are all that is ever applied, so a layout no permutation can reach is
 % approached as closely as one can, the same way <EBSD.gridify.html gridify>
@@ -27,11 +27,11 @@ function [ebsd,newId] = transformReferenceFrame(ebsd,iF)
 % quarter turn - an r x c map comes back c x r.
 %
 % See also
-% EBSD/gridify imageFrame/layoutIndex EBSDsquare/rotate
+% EBSD/gridify gridLayout/layoutIndex EBSDsquare/rotate
 
 if min(size(ebsd)) < 2, newId = (1:numel(ebsd)).'; return; end
 
-lin = layoutIndex(iF,[ebsd.d1 ebsd.d2],size(ebsd),'nearest');
+lin = layoutIndex(gL,[ebsd.d1 ebsd.d2],size(ebsd),'nearest');
 
 if nargout > 1
   newId = zeros(numel(lin),1);

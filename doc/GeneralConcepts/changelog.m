@@ -76,7 +76,7 @@
 % |griddedInterpolant| and |pos2ind| is a projection and a round.
 %
 % <mapImage.transformReferenceFrame.html |transformReferenceFrame|> lays the
-% array out in another <imageFrame.imageFrame.html |imageFrame|> - a transpose
+% array out in another <gridLayout.gridLayout.html |gridLayout|> - a transpose
 % and two flips, nothing resampled - and turns the map that travels with it,
 % so |ebsd.bc| keeps sitting beside |img| pixel for pixel.
 %
@@ -94,17 +94,18 @@
 %
 % *A Gridded Map Can Be Stored In Any Layout*
 %
-% <EBSD.gridify.html |gridify|> takes an <imageFrame.imageFrame.html
-% |imageFrame|> as well as the |'columnMajor'| and |'rowMajor'| flags, which
-% are now just the two layouts aligned with x and y. Any other axis aligned
-% layout may be asked for, which is what puts a map in the same order as an
-% image it is to be compared with pixel by pixel:
+% <EBSD.gridify.html |gridify|> takes a <gridLayout.gridLayout.html
+% |gridLayout|> as well as the |'columnMajor'| and |'rowMajor'| flags, which
+% are now just the two layouts aligned with x and y. A layout names the
+% direction each array index advances along, dimension 1 first, and any axis
+% aligned one may be asked for - which is what puts a map in the same order as
+% an image it is to be compared with pixel by pixel:
 %
-%   ebsd = gridify(ebsd,imageFrame(yvector,-xvector))
-%   ebsd = gridify(ebsd,imageFrame(otherMap))
-%   iF   = imageFrame(ebsd)      % read the layout back off a map
+%   ebsd = gridify(ebsd,gridLayout(-xvector,yvector))
+%   ebsd = gridify(ebsd,gridLayout(otherMap))
+%   gL   = ebsd.layout           % read the layout back off a map
 %
-% Nothing is resampled - <imageFrame.layoutIndex.html |layoutIndex|> works out
+% Nothing is resampled - <gridLayout.layoutIndex.html |layoutIndex|> works out
 % the transpose and two flips relating two layouts, and
 % <EBSDsquare.transformReferenceFrame.html |transformReferenceFrame|> applies
 % them to a map that is already gridded. A layout no permutation can reach is
