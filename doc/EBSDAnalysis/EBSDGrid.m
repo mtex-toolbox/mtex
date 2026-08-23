@@ -295,18 +295,17 @@ plot(ebsdR,ebsdR.orientations)
 
 gridify(EBSD(ebsdR))
 
-%% Robustness to Distorted (e.g. Trapezoidal) Grids
+%% Robustness to Distorted Grids
 %
-% Real EBSD stages sometimes drift smoothly during a scan rather than
-% rotating rigidly. A common signature is a trapezoidal distortion: each
-% scan row is stretched or compressed about the map centre by an amount
-% that grows with the row's y position, so the same nominally rectangular
-% map ends up narrower at one edge than at the other. MTEX reconstructs
-% the underlying grid indices of an <EBSD.EBSD.html |EBSD|> object robustly
-% under this kind of smooth, non-rigid distortion - which matters for
-% <EBSD.gridify.html |gridify|> above, but also for any operation that
-% needs the map's grid structure internally, such as
-% <EBSD.calcGrains.html |calcGrains|> or the |surf| plotting backend.
+% EBSD is measured on a tilted specimen, and a tilted surface is not imaged
+% rigidly: seen from a finite working distance its far edge is further away
+% and comes out smaller, so the scan positions no longer sit on a rigid
+% lattice. MTEX reconstructs the underlying grid indices of an
+% <EBSD.EBSD.html |EBSD|> object robustly under this kind of smooth,
+% non-rigid distortion - which matters for <EBSD.gridify.html |gridify|>
+% above, but also for any operation that needs the map's grid structure
+% internally, such as <EBSD.calcGrains.html |calcGrains|> or the |surf|
+% plotting backend.
 %
 % We demonstrate this on a real map, rather than a small synthetic one,
 % since the failure mode this guards against only becomes visible once the
@@ -319,111 +318,74 @@ mtexdata small
 % The command <EBSD.transform.html |transform|> moves every pixel of a map,
 % and its unit cell with it, leaving orientations and all other properties
 % untouched. It takes a <spatialTransform.spatialTransform.html
-% |spatialTransform|>, so the drift is written down as an object rather than
-% as a closure - see <EBSDSpatialTransform.html Spatial Transforms>.
+% |spatialTransform|>, so the distortion is written down as an object rather
+% than as a closure - see <EBSDSpatialTransform.html Spatial Transforms>.
 %
-% Here we scale the x-position of every pixel about the map's centre by an
-% amount that grows linearly with y - a trapezoidal stage drift of up to
-% |trapFrac| at the top and bottom edges. That displacement is
-% |k*(x-xc)*(y-yc)| in x and nothing in y, which a degree 2
-% <spatialTransformPoly.spatialTransformPoly.html |spatialTransformPoly|>
-% states exactly. Note that the distortion is defined through the physical y
-% position, not through a column of <EBSD.lattice.html |ebsd.lattice.ij|> -
-% which of its two columns happens to correspond to rows vs columns depends
-% on an internal, unspecified choice of the lattice basis and is not
-% something to rely on.
+% A tilt is a projective transform: the surface is seen obliquely, so
+% straight lines stay straight but parallel ones need not and the scale
+% varies across the frame. Three things state it - how far the surface is
+% tilted, how far away it is seen from, and the point it is tilted about.
+% The tilt angle foreshortens along the tilt axis, the working distance sets
+% how much the scale varies across the frame, and as it grows the
+% perspective vanishes and only the foreshortening is left.
+%
+% This is the tilt one *knows*, written down to impose it. Recovering one
+% that was only measured is the other direction, and is what
+% <spatialTransformTilt.spatialTransformTilt.html |spatialTransformTilt|>
+% fits in stages from two images.
 
-x = ebsd.pos.x; xCenter = (min(x)+max(x))/2;
-y = ebsd.pos.y; yCenter = (min(y)+max(y))/2; yHalf = (max(y)-min(y))/2;
-trapFrac = 0.05;
+theta  = 20*degree;                             % surface tilt
+wd     = 8*(max(ebsd.pos.y) - min(ebsd.pos.y)); % working distance
+centre = mean(ebsd.pos);                        % what the tilt leaves in place
 
-% the coefficients run against the basis [1 x y x^2 xy y^2]
-k = trapFrac / yHalf;
-c = zeros(6,2);
-c([1 2 3 5],1) = k * [xCenter*yCenter; -yCenter; -xCenter; 1];
-
-distort = spatialTransformPoly(c,2)
+distort = spatialTransformProjective.byTilt(theta,wd,centre)
 
 %%
+% The map is foreshortened along the tilt axis and tapers towards the edge
+% that is further away
 
 ebsdDistorted = transform(ebsd, distort);
 
 plot(ebsdDistorted('Fo'),ebsdDistorted('Fo').orientations)
 hold on
 plot(ebsdDistorted('En'),ebsdDistorted('En').orientations)
-hold on
 plot(ebsdDistorted('Di'),ebsdDistorted('Di').orientations)
 hold off
 
 %%
-% Even though every row has now shifted by a different amount, MTEX
-% recovers exactly the same grid indices as for the undistorted map
+% Every pixel has moved, by up to two and a half cells and by a different
+% amount at each end of the map. Most of that is the foreshortening, which
+% is affine and which a lattice absorbs without noticing; what a grid
+% reconstruction has to survive is the three quarters of a cell that is left
+% once the best affine is taken out - more than enough to round a pixel onto
+% its neighbour's site. Even so, MTEX recovers exactly the same grid indices
+% as for the undistorted map
 
 isequal(ebsdDistorted('Fo').lattice.ij, ebsd('Fo').lattice.ij)
 
 %%
+% Drawing the pixels as their unit cells shows what that buys. The cells are
+% those of one lattice, followed through the distortion: a mesh that closes
+% up, with no cell sheared against its neighbour. A map indexed against a
+% rigid lattice instead comes out visibly wavy here, and would hand
+% <EBSD.calcGrains.html |calcGrains|> the wrong neighbours with it.
 
-grains = calcGrains(ebsdDistorted,'minPixel',5)
+plot(ebsdDistorted('Fo'),ebsdDistorted('Fo').orientations,'unitCell','EdgeColor','black')
+hold on
+plot(ebsdDistorted('En'),ebsdDistorted('En').orientations,'unitCell','EdgeColor','black')
+plot(ebsdDistorted('Di'),ebsdDistorted('Di').orientations,'unitCell','EdgeColor','black')
+hold off
+
+%%
+% so grain reconstruction runs on the distorted map as it would on the
+% undistorted one
+
+grains = calcGrains(ebsdDistorted,'minPixel',3)
+grains = smoothBoundary(grains,'noSimplify')
 
 hold on
 plot(grains.boundary,'lineWidth',2)
 hold off
 
-%% The Same Outline From a Tilt
-%
-% A trapezoid is also what a tilted specimen produces, and the distortion
-% above has four straight edges, so a
-% <spatialTransformProjective.spatialTransformProjective.html |projective
-% transform|> through the same four corners traces the very same
-% quadrilateral. Four correspondences determine a homography exactly, so
-% there is nothing to outvote and the fit is asked for plain least squares.
-
-corners = vector3d([min(x) max(x) max(x) min(x)].', ...
-  [min(y) min(y) max(y) max(y)].',0);
-
-tilt = spatialTransformProjective.fit(corners,distort*corners,'noRobust')
-
 %%
-% The corners land on top of each other, and since both maps take a straight
-% line to a straight line the two outlines coincide - as shapes the two
-% distorted maps cannot be told apart
-
-max(norm(tilt*corners - distort*corners))
-
-%%
-% Inside they are not the same map at all. A homography cannot stretch x
-% while leaving y alone - that would need a |y^2| the projective form does
-% not have - so it foreshortens along the tilt axis as well, which a
-% drifting stage never does
-
-ebsdTilted = transform(ebsd,tilt);
-
-uTrap = ebsdDistorted.pos - ebsd.pos;
-uTilt = ebsdTilted.pos - ebsd.pos;
-
-[max(abs(uTrap.y)), max(abs(uTilt.y))]
-
-plot(ebsdTilted('Fo'),ebsdTilted('Fo').orientations,'unitCell','EdgeColor','black')
-hold on
-plot(ebsdTilted('En'),ebsdTilted('En').orientations,'unitCell','EdgeColor','black')
-hold on
-plot(ebsdTilted('Di'),ebsdTilted('Di').orientations,'unitCell','EdgeColor','black')
-hold off
-
-%%
-% so away from the four corners that pin them the two drift apart, here by
-% up to 75 units - one and a half pixels on this 50 unit step
-
-%plot(ebsd,norm(ebsdTilted.pos - ebsdDistorted.pos))
-%mtexColorbar
-
-%%
-% Which of the two a map wants is a question about the instrument and not
-% about the data: a stage that drifts stretches each scan line but leaves
-% the lines where they were, while a tilted surface is seen in perspective
-% and is compressed along the tilt axis too. Same trapezoid, different
-% insides - see <EBSDSpatialTransform.html Spatial Transforms> for the
-% classes and how each is fitted.
-
-
 %#ok<*NASGU>
