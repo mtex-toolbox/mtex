@@ -85,8 +85,10 @@ classdef referenceFrame < matlab.mixin.Copyable
     end
 
     function f = get.pfAnnotations(rf)
-      b = normalize(rf.basis);
+      % a frame may name fewer axes than it has - annotate only the named ones
       names = rf.axesNames;
+      b = normalize(rf.basis);
+      b = b(1:numel(names));
       f = @(varargin) text(b,names,...
         'BackgroundColor','w','tag','axesLabels',varargin{:});
     end
@@ -113,7 +115,7 @@ classdef referenceFrame < matlab.mixin.Copyable
       displayClass(rf,inputname(1),'moreInfo',strjoin(info,', '),varargin{:});
 
       b = rf.basis;
-      for k = 1:3
+      for k = 1:numel(rf.axesNames)
         disp(['  ' rf.axesNames{k} ': ' char(b(k))]);
       end
       disp(' ');

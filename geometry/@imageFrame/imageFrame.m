@@ -17,7 +17,7 @@ classdef imageFrame < referenceFrame
 %
 % Syntax
 %
-%   iF = imageFrame                       % col||X, row||Y, depth||Z
+%   iF = imageFrame                       % col||X, row||Y
 %   iF = imageFrame(colDir,rowDir)        % stated directly
 %   iF = imageFrame(colDir,rowDir,'name','fsd')
 %   iF = imageFrame(ebsd)                 % the layout a gridded map is stored in
@@ -30,8 +30,8 @@ classdef imageFrame < referenceFrame
 %  ebsd   - @EBSDgrid, read as col along d2 and row along d1
 %
 % Class Properties
-%  basis     - 1x3 @vector3d, [col, row, depth]
-%  axesNames - {'col','row','depth'}
+%  basis     - 1x3 @vector3d, [col, row, col x row]
+%  axesNames - {'col','row'}
 %  how2plot  - @plottingConvention, seeded to plottingConvention.ij
 %
 % See also
@@ -67,7 +67,7 @@ classdef imageFrame < referenceFrame
           'but the ones given are %.1f%s apart.'],...
           angle(col,row)./degree, mtexdegchar);
 
-        % depth completes the right handed set, so it is not a free choice
+        % the third axis completes the right handed set, not a free choice
         b = [col, row, cross(col,row)];
         varargin(isV(1:2)) = [];
 
@@ -75,7 +75,9 @@ classdef imageFrame < referenceFrame
 
       iF = iF@referenceFrame(varargin{:});
 
-      iF.axesNames = {'col','row','depth'};
+      % the axis normal to the image is fixed by the other two - it carries
+      % no index and so gets no name
+      iF.axesNames = {'col','row'};
       if ~isempty(b), iF.basis = b; end
 
       % a raster is conventionally drawn with row 1 at the top. This is a
