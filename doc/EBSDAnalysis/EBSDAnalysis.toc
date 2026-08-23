@@ -8,6 +8,7 @@ EBSDIndex             Select by Index
 EBSDOrientationAnalysis Orientation Analysis
 GrainReconstruction   Grain Reconstruction
 EBSDGrid              Square and Hex Grids
+EBSDMapsAndImages     Maps and Images
 EBSDDenoising         Denoising
 EBSDFilling           Filling Missing Data
 EBSDPseudoSymmetry    Pseudo Symmetry

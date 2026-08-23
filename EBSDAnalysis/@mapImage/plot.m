@@ -149,6 +149,9 @@ else
 
 end
 
+% the frame decides where the picture points on screen, as it does for a map
+mP.how2plot.setView(mP.ax);
+
 % NaN limits mean truecolor, which uses no colormap and so has none to set
 if hi > lo, set(mP.ax,'CLim',[lo hi]); end
 

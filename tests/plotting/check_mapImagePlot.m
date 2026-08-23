@@ -20,6 +20,7 @@ checkBackends
 checkScaling
 checkArray
 checkCoordinates
+checkConvention
 checkChannels
 checkRefusals
 
@@ -148,6 +149,38 @@ assert(isequal(h.CData,mg.img),'plot permuted the image data')
 
 % overlaying the map it came from must not error or move the axes
 figure; plot(ebsd,ebsd.bc); hold on; plot(mg,'AlphaData',0.5); hold off
+
+end
+
+% =========================================================================
+function checkConvention
+% the frame decides where the picture points on screen
+%
+% plot used to leave the camera at MATLAB's default, so an image ignored
+% both the session convention and the one its own frame carried - and
+% turning a frame until the plots agree, which is how a map and an image are
+% related to each other, changed nothing on screen
+
+mg = mapImage(rand(12,17),'dxy',0.4);
+
+fr = mg.frame;
+fr.how2plot = plottingConvention('y↓→x');
+figure; plot(mg);
+up = get(gca,'CameraUpVector');
+assert(norm(up - [0 -1 0]) < 1e-6,...
+  'a y↓ image was drawn with the camera up %s',mat2str(up,3))
+
+fr.how2plot = plottingConvention('x↑→y');
+figure; plot(mg);
+up = get(gca,'CameraUpVector');
+assert(norm(up - [1 0 0]) < 1e-6,...
+  'plot ignored the convention of the image frame, camera up %s',mat2str(up,3))
+
+% and an explicit option wins over the frame, as it does for a map
+figure; plot(mg,'how2plot','y↓→x');
+up = get(gca,'CameraUpVector');
+assert(norm(up - [0 -1 0]) < 1e-6,...
+  'plot ignored the how2plot option, camera up %s',mat2str(up,3))
 
 end
 

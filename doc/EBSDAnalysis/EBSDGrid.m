@@ -56,7 +56,9 @@ ebsd(50,100)
 % only pays off if the matrix is the way round the picture is. A forescatter
 % or BSE image of the same area is stored the way its detector wrote it, and
 % that need not be the way MTEX stores a map. Correlating the two, or using
-% one as a mask on the other, then needs the map in the image's layout.
+% one as a mask on the other, then needs the map in the image's layout -
+% <EBSDMapsAndImages.html Maps and Images> does that with a real map and the
+% SEM images taken of the same area.
 %
 % |'columnMajor'| and |'rowMajor'| are the two layouts aligned with x and y,
 % and they are <imageFrame.imageFrame.html |imageFrame|>s like any other. Hand
