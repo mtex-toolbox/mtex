@@ -27,7 +27,12 @@ The core class hierarchy. Every object holds an array of many entities, never on
   disappears. An unfitted prototype has zero coefficients and so reports `isid` — hence
   `spatialTransformShift * spatialTransformDrift` is a bare drift with the shift gone,
   while `spatialTransformShift + spatialTransformDrift` is the two-stage model it looks
-  like. Use `+` before fitting, `*` after. Consumed by `EBSD/transform` and
+  like. Use `+` before fitting, `*` after. **An array is a chain, not a collection** —
+  `[T1 T2 T3]` is the composite written out, so inverting it reverses the order
+  (`docs/adr/0007`). Nothing implements that yet: the methods are scalar-only and MATLAB
+  dispatches on a heterogeneous array only what is `Sealed`, which is `mtimes`, `plus` and
+  `display` — so `inv(job.T)` errors, and the fold `inv(T(3)*T(2)*T(1))` is the way round
+  it. Consumed by `EBSD/transform` and
   `grain2d/transform`. Every class
   fits itself from two point sets through one solver, `private/robustLsq` — supply a design
   matrix, get bisquare-reweighted coefficients. `inv` is exact for the affine and the

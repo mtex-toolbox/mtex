@@ -68,6 +68,10 @@ classdef trueEbsd2 < handle
 %
 %   job.imgList(n)          % @mapImage
 %   job.T(n)                % @spatialTransform, hop n
+%
+% job.T is a sequence and every @spatialTransform method takes one transform,
+% so inv(job.T) and isid(job.T) do not work - index a hop, or fold the chain
+% with *. See @spatialTransform and docs/adr/0007.
 %   job.opt(n)              % the settings for map n
 %   job.shifts{n}(m)        % hop n, fit stage m
 %   job.fitError(n)         % @pairShifts
