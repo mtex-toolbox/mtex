@@ -2,6 +2,7 @@ S2FunConcept                    Concept
 S2FunOperations                 Operations
 S2FunPlotting                   Plotting
 S2FunApproximationInterpolation Approximation and Interpolation
+S2FunSampling                   Sampling
 S2FunHarmonicRepresentation     Harmonic Representation
 S2Bingham                    	Bingham Distribution
 S2FunRadon                      Radon Transform

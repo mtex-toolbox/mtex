@@ -74,12 +74,7 @@ if ~check_option(varargin,'nearest')
   rot(newId) = ebsd.rotations;
 
   for fn = fieldnames(ebsd.prop).'
-    if isnumeric(prop.(char(fn))) || islogical(prop.(char(fn)))
-      prop.(char(fn)) = nan(sGrid);
-    else
-      prop.(char(fn)) = prop.(char(fn)).nan(sGrid);
-    end
-    prop.(char(fn))(newId) = ebsd.prop.(char(fn));
+    prop.(char(fn)) = scatterProp(ebsd.prop.(char(fn)),newId,sGrid,length(ebsd));
   end
 
   prop.oldId = nan(sGrid);
@@ -101,13 +96,12 @@ else
   rot = rotation.nan(sGrid);
   rot(~toIgnore) = ebsd.rotations(nearId(~toIgnore));
 
+  src = nearId(~toIgnore);
+  tgt = find(~toIgnore);
   for fn = fieldnames(ebsd.prop).'
-    if isnumeric(prop.(char(fn))) || islogical(prop.(char(fn)))
-      prop.(char(fn)) = nan(sGrid);
-    else
-      prop.(char(fn)) = prop.(char(fn)).nan(sGrid);
-    end
-    prop.(char(fn))(~toIgnore) = ebsd.prop.(char(fn))(nearId(~toIgnore));
+    v = ebsd.prop.(char(fn));
+    v = reshape(v,length(ebsd),[]);      % one row per measurement, k columns
+    prop.(char(fn)) = scatterProp(v(src,:),tgt,sGrid,numel(src));
   end
 
 end

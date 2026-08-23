@@ -25,6 +25,9 @@ checkSessionReset;
 checkFrameCarriage;
 checkTangentVectorFrames;
 checkTrivialSymmetryFromFrame;
+checkGridLayout;
+checkLayoutIndex;
+checkScreenAlignment;
 checkFundamentalSectorFrame;
 checkHemisphereSectorHue;
 checkProductDropsSymmetry;
@@ -866,6 +869,236 @@ assert(~isfield(b.opt,'tag'), ...
   'check_referenceFrame: extractSym default slots must not alias one handle');
 
 referenceFrame.reset;
+
+end
+
+% =========================================================================
+function checkGridLayout
+% a layout says which directions the two array indices advance along, in the
+% order the array is written in: dimension 1 first. That is a relation to a
+% basis and has nothing to do with a screen - a layout is what it is whether
+% or not anything is ever plotted
+
+referenceFrame.reset;
+tol = 1e-6;
+
+% the two-vector constructor stores what it is given, row direction first,
+% and completes the right handed set itself - the third is not a free choice
+gL = gridLayout(yvector,-xvector);
+assert(angle(gL.basis(1),yvector) < tol && angle(gL.basis(2),-xvector) < tol, ...
+  'check_referenceFrame: gridLayout(rowDir,colDir) lost the directions given');
+assert(angle(gL.basis(3),cross(yvector,-xvector)) < tol, ...
+  'check_referenceFrame: gridLayout did not complete a right handed basis');
+
+% the default is what gridify stores a map in - rows along y
+assert(isAligned(gridLayout,gridLayout.columnMajor) && ...
+    angle(gridLayout.columnMajor.basis(1),yvector) < tol, ...
+  'check_referenceFrame: the default layout is not columnMajor');
+
+% a layout carries no plotting convention of its own - the only screen it
+% could mean is the one imagesc imposes, which is not a property of the data
+assert(isempty(gridLayout.columnMajor.how2plot), ...
+  'check_referenceFrame: a gridLayout must not carry a plotting convention');
+
+% rows and columns of an array are perpendicular; anything else is a
+% mistake rather than a shear to be accommodated
+try
+  gridLayout(xvector,vector3d(1,1,0));
+  caught = '';
+catch ME
+  caught = ME.identifier;
+end
+assert(strcmp(caught,'MTEX:gridLayout:notOrthogonal'), ...
+  'check_referenceFrame: non-perpendicular row/col directions were accepted');
+
+% a layout can be carried by the trivial group, which is what lets an
+% orientation name one on a side. A crystalFrame still may not be
+ss = specimenSymmetry(gL);
+assert(ss.id == 1 && ss.frame == gL, ...
+  'check_referenceFrame: specimenSymmetry must adopt a gridLayout handle');
+
+% assumedFor recovers the relation from a frame's convention - the
+% backwards compatible path, for data that predates the relation having a
+% home. It names itself so the assumption is visible wherever it is shown
+for pC = axisAlignedConventions
+  v = vector3d.X;
+  v.frame = specimenFrame('test',pC{1});
+  gL = gridLayout.assumedFor(v);
+  assert(angle(gL.basis(1),pC{1}.south) < tol && angle(gL.basis(2),pC{1}.east) < tol, ...
+    'check_referenceFrame: assumedFor did not return south/east for %s',char(pC{1}));
+  assert(strcmp(gL.name,'assumed from plot'), ...
+    'check_referenceFrame: assumedFor must say that it assumed');
+end
+
+referenceFrame.reset;
+
+end
+
+% =========================================================================
+function checkLayoutIndex
+% layoutIndex is what a layout is for: which transpose and flips lay a matrix
+% out the way it says. The inverse is the same call with the two layouts
+% swapped, which is what makes a separate back conversion unnecessary
+
+referenceFrame.reset;
+
+cm = gridLayout.columnMajor;
+rm = gridLayout.rowMajor;
+A  = reshape(1:12,3,4);
+
+% the layout an array is already in asks for nothing
+lin = layoutIndex(cm,[yvector xvector],size(A));
+assert(isequal(A(lin),A), ...
+  'check_referenceFrame: layoutIndex into the layout already held is not the identity');
+
+% a quarter turn transposes, and says so - a caller with a pixel step has to
+% swap it and the index cannot carry that
+[lin,doTranspose] = layoutIndex(rm,[yvector xvector],size(A));
+assert(isequal(A(lin),A.') && doTranspose, ...
+  'check_referenceFrame: layoutIndex did not transpose for a quarter turn');
+
+% every axis aligned layout is reachable, and swapping the two layouts is
+% the way back
+for pC = axisAlignedConventions
+  tgt = gridLayout.assumedFor(specimenFrame('test',pC{1}));
+  B = A(layoutIndex(tgt,[yvector xvector],size(A)));
+  back = B(layoutIndex(cm,tgt.basis(1:2),size(B)));
+  assert(isequal(back,A), ...
+    'check_referenceFrame: layoutIndex is not its own inverse for %s',char(pC{1}));
+end
+
+% channels ride along, which a plain transpose could not do
+A3 = cat(3,A,10*A);
+B3 = A3(layoutIndex(rm,[yvector xvector],size(A3)));
+assert(isequal(B3(:,:,1),A.') && isequal(B3(:,:,2),(10*A).'), ...
+  'check_referenceFrame: layoutIndex lost the channels of an r x c x k array');
+
+% only a signed permutation can be applied by reindexing, so a layout half
+% way between two axes is refused rather than approximated
+try
+  layoutIndex(cm,[vector3d(1,1,0) vector3d(1,-1,0)],size(A));
+  caught = '';
+catch ME
+  caught = ME.identifier;
+end
+assert(strcmp(caught,'MTEX:gridLayout:notAxisAligned'), ...
+  'check_referenceFrame: a layout no permutation can reach was accepted');
+
+% unless the caller says to take the closest one, which is what a grid does
+r30 = rotation.byAxisAngle(zvector,30*degree);
+lin = layoutIndex(cm,[r30*yvector r30*xvector],size(A),'nearest');
+assert(isequal(A(lin),A), ...
+  'check_referenceFrame: a 30 degree layout did not snap to the identity');
+
+% a transposed layout has to stay the transpose of the layout it transposes,
+% including at 45 degrees where nothing about the array can decide
+for th = [0 30 45 60 90 135]*degree
+  r = rotation.byAxisAngle(zvector,th);
+  [~,trCol] = layoutIndex(cm,[r*yvector r*xvector],size(A),'nearest');
+  [~,trRow] = layoutIndex(rm,[r*yvector r*xvector],size(A),'nearest');
+  assert(trCol ~= trRow, ...
+    'check_referenceFrame: rowMajor is not the transpose of columnMajor at %g degrees',...
+    th./degree);
+end
+
+referenceFrame.reset;
+
+end
+
+% =========================================================================
+function checkScreenAlignment
+% orientation.byScreenAlignment turns "I plotted both and they were the same
+% way up" into the rotation that assertion implies. It reads how2plot and
+% never touches basis, which is what makes it safe for ESTABLISHING a basis
+% that transformationMatrix then reproduces from the bases alone
+
+referenceFrame.reset;
+tol = 1e-6;
+
+for pC = axisAlignedConventions
+
+  sF = specimenFrame('test',pC{1});
+  imgF = specimenFrame('image',plottingConvention.ij);
+
+  % stated independently of the implementation's formula: if an image and a
+  % map look the same way up, the image's x runs the way east runs and its y
+  % the way south runs
+  M = matrix(orientation.byScreenAlignment(imgF,sF));
+  b = vector3d(M(1,:),M(2,:),M(3,:));
+  assert(angle(b(1),pC{1}.east) < tol, ...
+    'check_referenceFrame: byScreenAlignment x does not run east for %s',char(pC{1}));
+  assert(angle(b(2),pC{1}.south) < tol, ...
+    'check_referenceFrame: byScreenAlignment y does not run south for %s',char(pC{1}));
+  assert(angle(b(3),-pC{1}.outOfScreen) < tol, ...
+    'check_referenceFrame: byScreenAlignment depth is not into the screen for %s',char(pC{1}));
+
+  % the two ways of asking are INVERSE, not equal, and that is not an
+  % accident of either implementation: an @orientation is an ACTIVE
+  % rotation, turning one direction into another, while transformationMatrix
+  % is the PASSIVE transition, re-expressing one fixed direction in another
+  % frame's coordinates. Six of the eight conventions are 180 degree
+  % rotations and so are their own inverse, which hides the difference -
+  % only the two 90 degree cases show it, so asserting equality would pass
+  % six times and mean nothing
+  imgF.basis = b;
+  assert(norm(M.' - transformationMatrix(imgF,sF)) < tol, ...
+    'check_referenceFrame: the basis disagrees with the inference it was set from (%s)',...
+    char(pC{1}));
+
+end
+
+% under ij an image and a map need no permutation at all, so the relation
+% between their frames has to come out as the identity. If this ever fails,
+% every array order derived from it is wrong
+ori = orientation.byScreenAlignment(specimenFrame('image',plottingConvention.ij), ...
+  specimenFrame('ij',plottingConvention.ij));
+assert(angle(ori) < tol, ...
+  'check_referenceFrame: ij must give the identity, it gave %.3f degrees',angle(ori)./degree);
+
+% the orientation names both frames rather than only carrying a number
+assert(isa(ori.frameRight,'specimenFrame') && isa(ori.frameLeft,'specimenFrame'), ...
+  'check_referenceFrame: byScreenAlignment must name both frames on the orientation');
+
+% an empty convention means "follows the session default", so inferring
+% from it would silently make the answer depend on session state
+bare = specimenFrame('bare');
+bare.how2plot = [];
+try
+  orientation.byScreenAlignment(specimenFrame('image',plottingConvention.ij),bare);
+  caught = '';
+catch ME
+  caught = ME.identifier;
+end
+assert(strcmp(caught,'MTEX:orientation:noConvention'), ...
+  'check_referenceFrame: a frame without a convention of its own was accepted');
+
+% a layout is not something that gets plotted, so it carries no convention
+% and cannot be a side of this inference either
+try
+  orientation.byScreenAlignment(gridLayout.columnMajor,specimenFrame.default);
+  caught = '';
+catch ME
+  caught = ME.identifier;
+end
+assert(strcmp(caught,'MTEX:orientation:noConvention'), ...
+  'check_referenceFrame: a gridLayout was accepted as a plotted frame');
+
+referenceFrame.reset;
+
+end
+
+% =========================================================================
+function pcs = axisAlignedConventions
+% the eight axis-aligned conventions, as (outOfScreen, east) pairs
+
+pcs = { plottingConvention(-vector3d.Z, vector3d.X), ...
+        plottingConvention( vector3d.Z, vector3d.Y), ...
+        plottingConvention( vector3d.Z, vector3d.X), ...
+        plottingConvention(-vector3d.Z, vector3d.Y), ...
+        plottingConvention(-vector3d.Z,-vector3d.X), ...
+        plottingConvention( vector3d.Z,-vector3d.Y), ...
+        plottingConvention( vector3d.Z,-vector3d.X), ...
+        plottingConvention(-vector3d.Z,-vector3d.Y)};
 
 end
 

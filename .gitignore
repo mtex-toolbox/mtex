@@ -8,6 +8,7 @@ doc/html
 help/mtex/*
 help/tmp/*
 !data/testgrains.mat
+!data/EBSD/trueEbsdWCCoSmall.mat
 /myToken.txt
 resources/*
 *.asv

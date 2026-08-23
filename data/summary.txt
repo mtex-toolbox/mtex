@@ -21,6 +21,7 @@ ferrite    EBSD        ferrite.ang
 martensite EBSD        martensite.cpr
 emsland    EBSD        Emsland_plessite_500x_15.ctf
 trueEbsdWCCo EBSD      trueEbsdWCCo.mat
+trueEbsdWCCoSmall EBSD trueEbsdWCCoSmall.mat
 alphaBetaTitanium EBSD EDXLMDTi64.cpr
 EMSphinx   EBSD        EMSphinx.h5
 testgrains grain2d     testgrains.mat

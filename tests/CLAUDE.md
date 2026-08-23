@@ -77,7 +77,12 @@ budget, trim from outside these first.
 | **EBSD export**, text formats and round trips | `core/check_ebsdExport` |
 | **EBSD export**, HDF5 into a copy of the reference file | `slow/check_ebsdImportH5` |
 | `EBSD` object: construction, `display`, `loadobj`, `interp` | `core/check_ebsd` |
-| EBSD grid geometry, `unitCell`/`lattice.ij`, `dynProp` | `core/check_ebsdGrid` |
+| EBSD grid geometry, `unitCell`/`lattice.ij`, `dynProp`, and `EBSD/transform` | `core/check_ebsdGrid` |
+| the spatial transform algebra: compose, invert, evaluate | `core/check_spatialTransform` |
+| fitting a spatial transform, and the robust solver behind every class | `core/check_spatialTransformFit` |
+| `@mapImage` geometry: derived `pos`, `pos2ind`, `interp`, cropping, relayout | `core/check_mapImage` |
+| `mapImage/plot` — the two backends, that an image draws where the map says it is, and that it faces the way its frame asks | `plotting/check_mapImagePlot` |
+| `xcfShift` — the sign of the measured displacement, sub-pixel accuracy, and the peak as a weight | `core/check_xcfShift` |
 | spatial shift (`plus`/`minus`) of EBSD, grains, boundaries, triple points | `core/check_spatialShift` |
 | `EBSD/gradient`, KAM | `core/check_gradient` |
 | `gridify` on real data | `slow/check_gridify` |

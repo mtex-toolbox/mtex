@@ -107,6 +107,36 @@
     ]
 },
 
+"gridLayout":
+{
+    "inputs":
+    [
+      {"name":"rowDir", "kind":"ordered", "type":["vector3d"], "purpose":"direction the row index advances along"},
+      {"name":"colDir", "kind":"ordered", "type":["vector3d"], "purpose":"direction the column index advances along"},
+      {"name":"name", "kind":"namevalue", "type":["char"], "purpose":"identity of the layout"}
+    ],
+    "outputs":
+    [
+      {"name":"gL", "type":"gridLayout"}
+    ]
+},
+
+"layoutIndex":
+{
+    "inputs":
+    [
+      {"name":"gL", "kind":"required", "type":["gridLayout"], "purpose":"layout the array is to be laid out in"},
+      {"name":"dims", "kind":"required", "type":["vector3d"], "purpose":"directions dimensions 1 and 2 advance along"},
+      {"name":"sz", "kind":"required", "type":["numeric","vector"], "purpose":"size of the array"},
+      {"name":"nearest", "kind":"flag", "type":["char","choices={'nearest'}"], "purpose":"snap to the closest layout instead of erroring"}
+    ],
+    "outputs":
+    [
+      {"name":"lin", "type":"numeric"},
+      {"name":"doTranspose", "type":"logical"}
+    ]
+},
+
 "vector3d":
 {
     "inputs":
@@ -591,6 +621,94 @@
       {"name":"obj", "kind":"required", "type":[["vector3d"],["Miller"],["orientation"],["tensor"]]},
       {"name":"antipodal", "kind":"flag"},
       {"name":"unique", "kind":"flag"}
+    ]
+},
+
+"spatialTransformShift":
+{
+    "inputs":
+    [
+      {"name":"M", "kind":"required", "type":["numeric","2d"], "purpose":"3x3 homogeneous matrix"}
+    ]
+},
+
+"spatialTransformShift.fit":
+{
+    "inputs":
+    [
+      {"name":"posA", "kind":"required", "type":["vector3d"]},
+      {"name":"posB", "kind":"required", "type":["vector3d"]},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"], "purpose":"one weight per point"}
+    ]
+},
+
+"spatialTransformHandle":
+{
+    "inputs":
+    [
+      {"name":"fun", "kind":"required", "type":["function_handle"]},
+      {"name":"funInv", "kind":"ordered", "type":["function_handle"]}
+    ]
+},
+
+"spatialTransformRigid.fit":
+{
+    "inputs":
+    [
+      {"name":"posA", "kind":"required", "type":["vector3d"]},
+      {"name":"posB", "kind":"required", "type":["vector3d"]},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"]}
+    ]
+},
+
+"spatialTransformPoly.fit":
+{
+    "inputs":
+    [
+      {"name":"posA", "kind":"required", "type":["vector3d"]},
+      {"name":"posB", "kind":"required", "type":["vector3d"]},
+      {"name":"degree", "kind":"namevalue", "type":["choices={1,2}"]},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"]},
+      {"name":"noRobust", "kind":"flag"}
+    ]
+},
+
+"spatialTransformProjective.fit":
+{
+    "inputs":
+    [
+      {"name":"posA", "kind":"required", "type":["vector3d"]},
+      {"name":"posB", "kind":"required", "type":["vector3d"]},
+      {"name":"weights", "kind":"namevalue", "type":["numeric"]},
+      {"name":"noRobust", "kind":"flag"}
+    ]
+},
+
+"spatialTransformDrift.fit":
+{
+    "inputs":
+    [
+      {"name":"posA", "kind":"required", "type":["vector3d"]},
+      {"name":"posB", "kind":"required", "type":["vector3d"]},
+      {"name":"slowScan", "kind":"namevalue", "type":["vector3d"]},
+      {"name":"extrapolate", "kind":"flag"}
+    ]
+},
+
+"spatialTransformField.fit":
+{
+    "inputs":
+    [
+      {"name":"posA", "kind":"required", "type":["vector3d"]},
+      {"name":"posB", "kind":"required", "type":["vector3d"]}
+    ]
+},
+
+"spatialTransformComposite":
+{
+    "inputs":
+    [
+      {"name":"T", "kind":"required", "type":["spatialTransform"], "repeating":true, "purpose":"stages, in the order they are applied"}
     ]
 }
 }

@@ -15,6 +15,7 @@ checkLoadobj;
 checkInterp;
 checkIndexing;
 checkEulerCorrectionSurvives;
+checkNamedNotIndexedColor;
 
 disp('check_ebsd: passed');
 
@@ -351,6 +352,50 @@ assert(q.bc == ebsd.bc(k), ...
 
 assert(~q.isIndexed, ...
   'check_ebsdInterp: a notIndexed source pixel came back indexed');
+
+end
+
+% =========================================================================
+function checkNamedNotIndexedColor
+% a not indexed phase that was given a colour has to report it
+%
+% @notIndexed takes a name and a colour, which is how a thresholded mask -
+% voids in a copper metallisation, an amorphous region - becomes a phase of
+% its own without being handed a fake symmetry and a fake identity
+% orientation. The colour getter answered nan(1,3) for anything not indexed
+% before it ever looked at the phase, so grain2d/plot, which colours each
+% phase by grains.subSet(ind).color, drew nothing for it and left it out of
+% the legend. Silent: no error, just a phase missing from the picture.
+
+cs = crystalSymmetry('m-3m','mineral','Copper','color','LightSkyBlue');
+n = 6;
+rot = rotation.byAxisAngle(zvector,reshape((1:n*n)*2*degree,n,n));
+
+phaseId = 2*ones(n,n);
+phaseId(end,:) = 1;              % a row of plain, unnamed notIndexed
+
+ebsd = EBSDsquare([],rot,phaseId,[0 1],{'notIndexed',cs},'dxy',[1 1]);
+
+voidColor = str2rgb('DarkBlue');
+ebsd.CSList(end+1)   = notIndexed('voids',voidColor);
+ebsd.phaseMap(end+1) = max(ebsd.phaseMap) + 1;
+
+mask = false(n,n); mask(1:2,:) = true;
+ebsd(mask) = 'voids';
+
+assert(isequal(ebsd('voids').color,voidColor), ...
+  'check_ebsd: a named notIndexed phase must report its own colour, got %s', ...
+  mat2str(ebsd('voids').color));
+
+% one that was never given a colour still has none to give
+assert(all(isnan(ebsd('notIndexed').color)), ...
+  'check_ebsd: a notIndexed phase without a colour must stay NaN, got %s', ...
+  mat2str(ebsd('notIndexed').color));
+
+% and an indexed phase is untouched
+assert(isequal(ebsd('Copper').color,str2rgb('LightSkyBlue')), ...
+  'check_ebsd: the colour of an indexed phase changed to %s', ...
+  mat2str(ebsd('Copper').color));
 
 end
 

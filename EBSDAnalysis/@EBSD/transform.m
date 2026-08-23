@@ -20,13 +20,15 @@ function ebsd = transform(ebsd,fun)
 %
 % Input
 %  ebsd - @EBSD
-%  fun  - function handle, @vector3d -> @vector3d
+%  fun  - function handle, @vector3d -> @vector3d, or a @spatialTransform
 %
 % Output
 %  ebsd - @EBSD with transformed ebsd.pos and ebsd.unitCell
 %
 % See also
-% EBSD/rotate EBSD/updateUnitCell grain2d/transform
+% EBSD/rotate EBSD/updateUnitCell grain2d/transform spatialTransform
+
+if isa(fun,'spatialTransform'), T = fun; fun = @(pos) eval(T,pos); end
 
 % the transformation changes the pixel footprint as well, and a unit cell
 % left behind is not merely cosmetic: ebsd.lattice derives the lattice basis

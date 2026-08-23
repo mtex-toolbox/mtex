@@ -11,6 +11,20 @@ The core class hierarchy. Every object holds an array of many entities, never on
 - `@referenceFrame` → `@crystalFrame`/`@specimenFrame` carries the axes and the plotting
   convention. **Only a frame carries a convention**; `how2plot` is read only everywhere
   else. See `docs/adr/0003-reference-frame-vs-symmetry.md`.
+- `@gridLayout` is the fourth subclass and the odd one: it relates the two *array* indices
+  of a gridded map or an image to a frame's basis — dimension 1 first, so
+  `gridLayout(rowDir,colDir)` matches `size(A)` and `A(i,j)`. It carries **no** convention:
+  the only screen it could mean is the one `imagesc` imposes, which `gridLayout.assumedFor`
+  names outright. `ebsd.layout`/`mg.layout` read it off `d1` and `d2`; `gridify` and
+  `transformReferenceFrame` take one as a target.
+- `spatialTransforms/` holds `spatialTransform` and its subclasses — a map from position to
+  position, as an object. An abstract base plus concrete classes as bare files, the
+  `EBSDSmoothing/` layout. Direction is the contract: `T` maps a position in one frame to
+  the same point in the next, `T2 * T1` applies `T1` first, and filling an output grid
+  always uses `inv(T)`. Consumed by `EBSD/transform` and `grain2d/transform`. Every class
+  fits itself from two point sets through one solver, `private/robustLsq` — supply a design
+  matrix, get bisquare-reweighted coefficients. `inv` is exact for the affine and the
+  homography and iterates otherwise, via `spatialTransformInverse`.
 
 Traps:
 

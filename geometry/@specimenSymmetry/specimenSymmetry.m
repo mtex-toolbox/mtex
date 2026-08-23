@@ -13,8 +13,14 @@ methods
     % usually specimen symmetry is either triclinic or orthorhombic
     %
     
-    % the trivial group carrying a given specimenFrame, see ADR 0003
-    frameAdopted = nargin > 0 && isa(varargin{1},'specimenFrame');
+    % the trivial group carrying a given frame, see ADR 0003. Any frame
+    % that is not a crystalFrame may be carried: a crystal frame holds a
+    % lattice this group knows nothing about, while a specimen frame or a
+    % grid layout is just an identity plus a basis. That is what lets an
+    % orientation name a @gridLayout on one side - see
+    % orientation/byScreenAlignment
+    frameAdopted = nargin > 0 && isa(varargin{1},'referenceFrame') && ...
+      ~isa(varargin{1},'crystalFrame');
 
     if frameAdopted || nargin == 0 || isa(varargin{1},'plottingConvention')
 

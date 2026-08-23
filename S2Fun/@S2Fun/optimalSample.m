@@ -14,7 +14,12 @@ function [v,c] = optimalSample(sF,n,varargin)
 %
 % $$ \mu = \lambda \, \sum_{j=1}^M c_j \, \delta_{v_j}, \qquad \lambda = \int_{S^2} f(v) \,dv, $$
 %
-% and the directions $v_j$ are moved such that the kernel discrepancy
+% where $f$ may be any nonnegative function - it does not have to be
+% normalized, since scaling $f$ multiplies the functional below by
+% $\lambda^2$ and leaves both the optimal directions and the optimal weights
+% exactly where they are.
+%
+% The directions $v_j$ are moved such that the kernel discrepancy
 %
 % $$ J(v,c) = \| \mu - f \|_{\psi}^2 = \sum_{n=1}^N \frac{4\pi A_n}{2n+1} \sum_{k=-n}^{n} | \hat{\mu}_n^{k} - \hat{f}_n^{k} |^2 $$
 %
@@ -59,32 +64,32 @@ function [v,c] = optimalSample(sF,n,varargin)
 % weights are volume fractions and may be passed on directly, e.g. by
 % |calcDensity(v,'weights',c)|.
 %
-% The weights are then restricted to the probability simplex, i.e.
+% The weights have to stay on the probability simplex, i.e.
 %
 % $$ c_j \ge 0, \qquad \sum_{j=1}^M c_j = 1 . $$
 %
-% This is not merely a cosmetic normalization. Keeping the weights on the
-% simplex removes the only degree with a negative kernel coefficient, see
-% above - without the constraint $\sum_j c_j = 1$ the functional would be
-% unbounded from below and the iteration would simply inflate the weights.
+% This is not merely a cosmetic normalization. Keeping the weights there
+% removes the only degree with a negative kernel coefficient, see above -
+% without the constraint $\sum_j c_j = 1$ the functional would be unbounded
+% from below and the iteration would simply inflate the weights.
 %
-% The problem is solved by alternating minimization. For fixed directions $J$
-% is a convex least squares functional in $c$ and is decreased with
-% <mlsq.html |mlsq|>, which preserves both $\sum_j c_j$ and $c_j \ge 0$. For
-% fixed weights the directions are moved as described above.
+% Both constraints are met by construction, since the weights enter through a
+% softmax, $c_j = \exp(z_j) / \sum_k \exp(z_k)$. The unknowns are then $(v,z)$
+% without any constraint left, and directions and weights are moved by *one*
+% L-BFGS iteration - parallel transport concerns the directions, the softmax
+% block is euclidean. The gradient with respect to the weights,
 %
-% *The first |warmUp| iterations move the points only.* The update of |mlsq|
-% is multiplicative, so a weight that reaches 0 stays 0 - and since the
-% gradient with respect to $v_j$ carries the factor $c_j$, such a node is
-% frozen in place as well and is lost for good. Started on a grid that
-% ignores the density, e.g. <equispacedS2Grid.html |equispacedS2Grid|>, the
-% first weight step is drastic and kills a fifth of the nodes before the
-% points ever had a chance to move: on the three Gaussian example below with
-% 214 nodes and bandwidth 64, 16 weights drop below $10^{-5}$ in iteration 1
-% alone, and the method then ends up *worse* than with fixed weights despite
-% optimizing over a strictly larger set. Letting the points settle first
-% avoids this - with the warm up no weight dies and $J$ ends up about 10
-% percent below the unweighted optimum.
+% $$ \frac{\partial J}{\partial c_j} = 2 \lambda \, (\psi * (\mu - f))(v_j), $$
+%
+% is the value of the very convolution whose gradient moves the directions
+% and costs one additional transform per iteration.
+%
+% *The first |warmUp| iterations move the points only.* Started on a grid
+% that ignores the density, e.g. <equispacedS2Grid.html |equispacedS2Grid|>,
+% the weights would otherwise concentrate on the few points that happen to
+% lie well before the points ever had a chance to move. Letting the points
+% settle first is measurably better: on |abs(S2Fun.smiley)| with 100 points
+% and bandwidth 32 the warm up buys a factor 2.5 in $J$.
 %
 % *The weights help most where the points are far from optimal.* On
 % |abs(S2Fun.smiley)| with 200 points and bandwidth 64 the weights alone
@@ -97,9 +102,7 @@ function [v,c] = optimalSample(sF,n,varargin)
 %
 % Note that the weights buy their accuracy up to |bandwidth| partly at the
 % expense of the higher degrees, since concentrating the mass on fewer points
-% makes the sample less uniform. Increasing |innerIter| beyond its default of
-% 5 spends more work on the weights per outer iteration and does lower $J$
-% noticeably, at the price of two additional transforms per inner iteration.
+% makes the sample less uniform.
 %
 % For more details, see
 %
@@ -128,7 +131,7 @@ function [v,c] = optimalSample(sF,n,varargin)
 %
 % Options
 %  bandwidth  - harmonic degree to approximate (default = 128), see above
-%  maxIter    - number of (outer) iterations (default = 1000)
+%  maxIter    - number of iterations (default = 1000)
 %  tol        - termination tolerance for the directions (default = 0.01*degree)
 %  method     - 'lbfgs' (default) or 'steepestDescent', see above
 %  memory     - secant pairs kept by the L-BFGS iteration (default = 5)
@@ -136,13 +139,13 @@ function [v,c] = optimalSample(sF,n,varargin)
 %
 % The following options apply only if the weights are optimized
 %
-%  warmUp     - outer iterations that move the points only (default = maxIter/5)
-%  innerIter  - mlsq iterations per weight step (default = 5)
+%  warmUp     - iterations that move the points only (default = maxIter/5)
 %  tolWeights - termination tolerance for the weights (default = 1e-3/M)
+%  tolJ       - terminate below this relative decrease of J (default = 1e-4)
 %  minWeight  - discard directions with a smaller weight (default = 0, i.e. keep all)
 %
 % See also
-% S2Fun/discreteSample mlsq S2RestrictedDistanceKernel
+% S2Fun/discreteSample S2RestrictedDistanceKernel
 
 % TODO: Symmetries, i.e. S2FunHarmonicSym
 
@@ -171,12 +174,12 @@ v = v(:);
 % mu - sF of the discrete measure and the density function is formed below
 v.antipodal = sF.antipodal;
 
-% specify parameters for the (alternating) descent method
+% specify parameters for the descent method
 maxIter = get_option(varargin,'maxIter',1000);
 tol = get_option(varargin,'tol',0.01*degree);
 mem = get_option(varargin,'memory',5);
 
-% which descent method moves the nodes, see above
+% which descent method moves the unknowns, see above
 method = lower(get_option(varargin,'method','lbfgs'));
 switch method
   case {'lbfgs','l-bfgs','quasinewton'}
@@ -187,17 +190,22 @@ switch method
     error(['Unknown method ''%s''. optimalSample knows ''lbfgs'' and ' ...
       '''steepestDescent''.'],method)
 end
-innerIter = get_option(varargin,'innerIter',5);
 warmUp = get_option(varargin,'warmUp',ceil(maxIter/5));
 tolWeights = get_option(varargin,'tolWeights',1e-3/M);
+tolJ = get_option(varargin,'tolJ',1e-4);
 minWeight = get_option(varargin,'minWeight',0);
 
-if ~optWeights && ( check_option(varargin,'warmUp') || ...
-    check_option(varargin,'innerIter') || check_option(varargin,'tolWeights') ...
-    || check_option(varargin,'minWeight') )
-  warning(['The options warmUp, innerIter, tolWeights and minWeight apply ' ...
-    'only if the weights are optimized. Ask for them as a second output, ' ...
-    'i.e. [v,c] = optimalSample(sF,n).'])
+if check_option(varargin,'innerIter')
+  warning(['innerIter has no meaning any more. The weights are no longer ' ...
+    'optimized in an inner iteration of their own, but by the same descent ' ...
+    'method as the directions.'])
+end
+
+if ~optWeights && ( check_option(varargin,'warmUp') || check_option(varargin,'tolJ') ...
+    || check_option(varargin,'tolWeights') || check_option(varargin,'minWeight') )
+  warning(['The options warmUp, tolWeights, tolJ and minWeight apply only if ' ...
+    'the weights are optimized. Ask for them as a second output, i.e. ' ...
+    '[v,c] = optimalSample(sF,n).'])
 end
 
 % Define Restricted Distance Kernel
@@ -206,8 +214,17 @@ psi = S2RestrictedDistanceKernel(bw+1);
 % for antipodal functions the odd degrees vanish anyway
 if sF.antipodal, psi.A(2:2:end) = 0; end
 
-% get integral (mean) weight lambda
+% The mass lambda of the density. Scaling f multiplies J by lambda^2 and
+% leaves its minimizer where it is, so the sample does not depend on how f is
+% scaled - but the step sizes of the descent would. Normalize the function
+% and the iteration is the same one for any nonnegative input.
 lambda = sum(sF);
+if ~(lambda > 0)
+  error(['optimalSample needs a nonnegative function with a positive ' ...
+    'integral, this one integrates to %g.'],lambda)
+end
+sF.fhat = sF.fhat / lambda;
+lambda = 1;
 
 % starting weights - they have to form a probability distribution, see above
 c = get_option(varargin,'weights',ones(M,1)/M);
@@ -220,15 +237,16 @@ if any(c<0)
 end
 c = c/sum(c);
 
+% the softmax variables behind the weights - the block is empty and the
+% iteration is the one over the directions alone if the weights are fixed
+if optWeights && M > 1, z = log(c); else, z = zeros(0,1); end
+
 % J is the squared euclidean norm of the harmonic coefficients of mu - sF,
 % weighted by w.^2 = 4*pi*A_n/(2n+1) - degree 0 is dropped, it does not contribute
 w = zeros((bw+1)^2,1);
 for l = 1:bw
   w(l^2+1:(l+1)^2) = sqrt( 4*pi * psi.A(l+1)/(2*l+1) );
 end
-
-% right hand side of the linear system Psi*c = I solved in the weight step
-I = w .* sF.fhat;
 
 % the same kernel without its degree 0 part, used for the gradient w.r.t. v
 psi0 = S2Kernel([0;psi.A(2:end)]);
@@ -242,55 +260,49 @@ freePlans = onCleanup(@() nfsft.finalize());
 stepSize = 1;
 
 % L-BFGS memory. The columns of S hold the steps taken, those of Y the
-% corresponding changes of the gradient, both as plain 3M vectors [x;y;z].
+% corresponding changes of the gradient, as the plain vectors [x;y;z;softmax].
 % In contrast to SO(3) the sphere is no group, i.e. there is no global
 % trivialization of the tangent bundle: the tangent plane turns with the
-% node. The stored pairs are therefore parallel transported along the
-% geodesic of every step, see transport below - without that they would be
-% added up across different tangent planes and the curvature information
-% would be nonsense.
+% node. The direction block of the stored pairs is therefore parallel
+% transported along the geodesic of every step, see transport below - without
+% that they would be added up across different tangent planes and the
+% curvature information would be nonsense.
 S = []; Y = [];
 
 % harmonic coefficients D of mu - sF and the resulting discrepancy
 [resOld,D] = J(nfsft,v,c,sF,w,lambda);
 
-% Whether g below still is the gradient of the current functional in the
-% current nodes. L-BFGS needs the gradient in the new nodes anyway, to form
-% the secant pair, and carries it over to the next iteration; steepest
-% descent does not and simply recomputes it. Either way it is one gradient
-% per iteration, except that a weight step invalidates it.
+% whether g and gZ below still are the gradient in the current point. L-BFGS
+% needs the gradient in the new point anyway, to form the secant pair, and
+% carries it over to the next iteration; steepest descent does not and simply
+% recomputes it.
 gValid = false;
+moveWeightsOld = false;
 
 pC = progressCounter(maxIter);
 for i = 1:maxIter
 
-  % ------------------------ (1) optimize weights -------------------------
-  % for fixed directions this is a convex least squares problem, solved by mlsq
-  cOld = c;
-  % during the warm up, and for a single direction, there is nothing to optimize
-  if optWeights && M > 1 && i > warmUp
-    cNew = mlsq(@(x,flag) Psi(x,flag,nfsft,v,w,lambda),I,c,innerIter,0);
-    % guard against the same degeneracy for M > 1, which occurs if the
-    % gradient happens to be constant along the simplex
-    if all(isfinite(cNew)) && all(cNew>=0) && sum(cNew)>0
-      c = cNew/sum(cNew); % also compensates round off in the mass constraint
-    end
-    % the weights changed, hence the discrepancy has to be recomputed - and
-    % the gradient of the previous iteration refers to the old weights
-    [resOld,D] = J(nfsft,v,c,sF,w,lambda);
-    gValid = false;
-  end
+  % the weights join the iteration once the points have settled, see above
+  moveWeights = ~isempty(z) && i > warmUp;
 
-  % ------------------------ (2) optimize points --------------------------
-  % gradient of the functional with respect to the directions
+  % a gradient carried over from the warm up has no weight block yet
+  if moveWeights && ~moveWeightsOld, gValid = false; end
+  moveWeightsOld = moveWeights;
+
+  % ------------------------------ gradient -------------------------------
   if ~gValid
     g = grad_J(nfsft,v,c,D,psi0,lambda);
+    if moveWeights
+      gZ = grad_z(nfsft,c,D,w,lambda);
+    else
+      gZ = zeros(numel(z),1);
+    end
   end
   gValid = false;
 
-  gVec = [g.x(:);g.y(:);g.z(:)];
+  gVec = [g.x(:);g.y(:);g.z(:);gZ];
 
-  gNorm = sqrt(sum(norm(g).^2));
+  gNorm = norm(gVec);
 
   % a vanishing gradient cannot be improved by any step size
   if gNorm == 0, break, end
@@ -308,25 +320,33 @@ for i = 1:maxIter
   % little of the tangentiality the geodesic step below relies on
   dir = dir - dot(dir,v).*v;
 
-  dVec = [dir.x(:);dir.y(:);dir.z(:)];
+  dZ = d(3*M+1:end);
+  if ~moveWeights, dZ = zeros(numel(z),1); end
+
+  dVec = [dir.x(:);dir.y(:);dir.z(:);dZ];
 
   % the directional derivative of J along dir
   slope = dVec.' * gVec;
 
-  % the weight step changes the functional the pairs were taken from, so a
-  % stale memory may give a direction that does not decrease J - drop it
+  % a stale memory may give a direction that does not decrease J - drop it
   if slope >= 0
     S = []; Y = [];
     dir = -g;
+    dZ = -gZ;
     dVec = -gVec;
     slope = -gNorm.^2;
   end
 
-  % line search with Armijo, capped so that no node travels more than half a turn
+  % cap the step so that no node travels more than half a turn and a single
+  % step cannot saturate the softmax
+  cap = pi/max(norm(dir));
+  if any(dZ ~= 0), cap = min(cap, 1/max(abs(dZ))); end
+
+  % line search with Armijo
   if isempty(S)
-    stepSize = min(2*stepSize, pi/max(norm(dir)));
+    stepSize = min(2*stepSize, cap);
   else
-    stepSize = min(1, pi/max(norm(dir)));
+    stepSize = min(1, cap);
   end
 
   lineSearchFailed = false;
@@ -334,8 +354,10 @@ for i = 1:maxIter
 
     % step along the geodesics through v in direction dir
     vNew = geodesicStep(v,dir,stepSize);
+    zNew = z + stepSize*dZ;
+    cNew = softmax(zNew,c);
 
-    [resNew,DNew] = J(nfsft,vNew,c,sF,w,lambda);
+    [resNew,DNew] = J(nfsft,vNew,cNew,sF,w,lambda);
 
     if resNew < resOld + 1e-4*stepSize*slope % Armijo Condition
       break;
@@ -343,26 +365,38 @@ for i = 1:maxIter
 
     stepSize = 0.5*stepSize;
 
-    % --- local termination: the weight step may have left nothing to improve
+    % --- local termination: there may be nothing left to improve
     if stepSize < 1e-16
       lineSearchFailed = true;
-      vNew = v;
+      vNew = v; zNew = z; cNew = c;
       break;
     end
   end
 
   % --- Global Termination ---
-  if lineSearchFailed || ...
-      ( max(angle(v,vNew)) < tol && max(abs(c-cOld)) < tolWeights )
-    v = vNew;
-    % During the warm up the weights are held fixed, hence c == cOld and the
+  % Once the weights are unknowns as well, a small step is no longer a sign
+  % of convergence: the weights approach their optimum in many steps that are
+  % individually below tolWeights, and whether the very first of them happens
+  % to fall under it is a matter of luck. Ask the functional itself instead.
+  converged = max(angle(v,vNew)) < tol && max(abs(cNew-c)) < tolWeights;
+  if ~isempty(z)
+    converged = converged && resOld - resNew < tolJ * resOld;
+  end
+
+  if lineSearchFailed || converged
+    v = vNew; z = zNew; c = cNew;
+    % During the warm up the weights are held fixed, hence c == cNew and the
     % test above reduces to the one on the directions alone. Returning here
     % would hand back the equal weights the caller asked to have optimized,
-    % without a single weight step ever having run - which is what happens
-    % as soon as the directions converge in fewer iterations than the warm
-    % up is long. End the warm up instead and let the weight step take over.
-    if optWeights && i <= warmUp
+    % without the weights ever having moved - which is what happens as soon
+    % as the directions converge in fewer iterations than the warm up is
+    % long. End the warm up instead and let the weights in.
+    if ~isempty(z) && i <= warmUp
       warmUp = i;
+      [resOld,D] = J(nfsft,v,c,sF,w,lambda);
+      % the nodes moved, hence the gradient carried over refers to the old ones
+      gValid = false;
+      continue
     else
       break;
     end
@@ -370,11 +404,14 @@ for i = 1:maxIter
 
   if useLBFGS
 
-    % The gradient in the new nodes. It is taken under the same weights as gVec
-    % above, hence the two form a secant pair of one and the same functional -
-    % which is what the memory has to consist of. It is carried over to the
-    % next iteration, so this costs nothing extra.
-    gNew = grad_J(nfsft,vNew,c,DNew,psi0,lambda);
+    % The gradient in the new point. It is carried over to the next
+    % iteration, so forming the secant pair costs nothing extra.
+    gNew = grad_J(nfsft,vNew,cNew,DNew,psi0,lambda);
+    if moveWeights
+      gZNew = grad_z(nfsft,cNew,DNew,w,lambda);
+    else
+      gZNew = zeros(numel(z),1);
+    end
 
     % Everything collected so far lives in the tangent planes of v and has to
     % be carried along to those of vNew before it may be combined with a
@@ -389,7 +426,7 @@ for i = 1:maxIter
     cosT1 = 1 - cos(t(:));
 
     sVec = transport(stepSize*dVec,V,U,sinT,cosT1);
-    yVec = [gNew.x(:);gNew.y(:);gNew.z(:)] - transport(gVec,V,U,sinT,cosT1);
+    yVec = [gNew.x(:);gNew.y(:);gNew.z(:);gZNew] - transport(gVec,V,U,sinT,cosT1);
 
     if ~isempty(S)
       S = transport(S,V,U,sinT,cosT1);
@@ -405,11 +442,14 @@ for i = 1:maxIter
     end
 
     g = gNew;
+    gZ = gZNew;
     gValid = true;
   end
 
   % update
   v = vNew;
+  z = zNew;
+  c = cNew;
   D = DNew;
   resOld = resNew;
 
@@ -417,7 +457,7 @@ for i = 1:maxIter
 
 end
 
-% the mlsq update is multiplicative, so a weight that reached 0 stays 0
+% drop the directions that carry next to no mass
 if optWeights && minWeight > 0
   keep = c >= minWeight;
   if ~any(keep)
@@ -440,6 +480,18 @@ elseif ~isa(v,'Miller')
     v.frame = sF.frame;
   end
 end
+
+end
+
+
+function c = softmax(z,c)
+% the weights behind the softmax variables - fixed weights have no z at all
+
+if isempty(z), return, end
+
+z = z - max(z);
+c = exp(z);
+c = c/sum(c);
 
 end
 
@@ -494,63 +546,38 @@ end
 
 function W = transport(W,V,U,sinT,cosT1)
 % Parallel transport of tangent vectors along the geodesics of a step. Every
-% column of W holds one tangent vector per node, stacked as [x;y;z], and V
-% and U hold the nodes and the unit directions of the step as M x 3
-% matrices. For the geodesic that leaves v in direction u by the angle t
-% parallel transport is
+% column of W holds one tangent vector per node, stacked as [x;y;z], followed
+% by the softmax block, and V and U hold the nodes and the unit directions of
+% the step as M x 3 matrices. For the geodesic that leaves v in direction u
+% by the angle t parallel transport is
 %
 %   P(w) = w - (u.w) ( sin(t) v + (1-cos(t)) u ) ,
 %
 % i.e. the component of w along u is turned with the geodesic while the one
 % orthogonal to it stays where it is. Nodes that did not move have sin(t) = 0
-% and 1-cos(t) = 0 and are left untouched by the same formula.
+% and 1-cos(t) = 0 and are left untouched by the same formula. The softmax
+% block is euclidean and passes through.
 
 M = size(V,1);
 k = size(W,2);
 
-W = reshape(W,M,3,k);
+WZ = W(3*M+1:end,:);
+
+W = reshape(W(1:3*M,:),M,3,k);
 
 % the projection of every stored vector onto the direction of the step
 a = sum(W .* U,2);
 
 W = W - a .* (sinT.*V + cosT1.*U);
 
-W = reshape(W,3*M,k);
-
-end
-
-
-function y = Psi(x,flag,nfsft,v,w,lambda)
-% The linear operator of the weight step and its adjoint, in the form
-% expected by mlsq. It maps the weights to the kernel weighted harmonic
-% coefficients of the discrete measure mu,
-%
-%   Psi = diag(w) * lambda * adjointNFSFT ,
-%
-% such that J = norm(Psi*c-I)^2. Note that Psi is never set up as a matrix -
-% mlsq only needs its two directions, which are exactly the adjoint and the
-% forward spherical Fourier transform.
-
-nfsft.setNodes(v);
-
-if strcmp(flag,'notransp')
-
-  % adjoint NFSFT
-  y = w .* (lambda * nfsft.adjoint(x));
-
-else
-
-  % Psi' is the evaluation of the w weighted coefficient vector at the nodes
-  y = lambda * real(nfsft.trafo(w.*x));
-
-end
+W = [reshape(W,3*M,k);WZ];
 
 end
 
 
 function [res,D] = J(nfsft,v,c,sF,w,lambda)
 % harmonic coefficients D of mu - sF and the resulting discrepancy. D is
-% reused by the gradient below.
+% reused by the gradients below.
 
 nfsft.setNodes(v);
 
@@ -578,6 +605,19 @@ tanV = 2*lambda*nfsft.grad(C).*c;
 end
 
 
+function gZ = grad_z(nfsft,c,D,w,lambda)
+% gradient with respect to the softmax variables. The nodes are the ones D
+% was taken at, hence no setNodes is needed here.
+
+% dJ/dc is the same convolution grad_J differentiates, evaluated at the nodes
+gC = 2*lambda*real(nfsft.trafo(w.^2.*D.fhat));
+
+% chain rule of the softmax
+gZ = c .* (gC - c.'*gC);
+
+end
+
+
 function Test %#ok<DEFNU>
 
 % Example of the paper of Gräf, Potts, Steidl
@@ -585,7 +625,7 @@ q = [xvector,yvector,zvector];
 sF = S2FunHandle(@(x) real(exp(-5*acos(dot(x,q(1))).^2) + exp(-5*acos(dot(x,q(2))).^2) + exp(-5*acos(dot(x,q(3))).^2)) );
 
 % another example
-% sF = abs(S2Fun.smiley);
+% sF = abs(S2Fun.smiley)
 
 v = optimalSample(sF,200,'bandwidth',64);
 

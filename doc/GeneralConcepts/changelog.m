@@ -2,6 +2,116 @@
 %
 %% MTEX develop - New Features
 %
+% *A Spatial Distortion Is An Object*
+%
+% <spatialTransform.spatialTransform.html |spatialTransform|> is a map from
+% position to position that composes, inverts and displays, where
+% <EBSD.transform.html |transform|> previously took only a bare function
+% handle. |transform| still takes either:
+%
+%   T = spatialTransformShift.fit(posA,posB,'weights',peakHeight)
+%   ebsd = transform(ebsd,T)
+%   ebsd = transform(ebsd,inv(T))     % and back again
+%
+% Direction is fixed once: |T| maps a position in one frame to the same
+% physical point in the next, and |T2 * T1| applies |T1| first. Filling an
+% output grid always uses |inv(T)| - for each target pixel, ask where it came
+% from. |T * pos| evaluates and |T2 * T1| composes, as for a
+% <rotation.rotation.html |rotation|>.
+%
+% Two affines absorb into a third; anything else composes into a
+% |spatialTransformComposite| that keeps its stages, so a distortion fitted in
+% several passes is still one object. Differently modelled transforms share a
+% base, so a chain of hops is one array rather than a cell array.
+%
+% Each class is named for the distortion it models and fits itself from two
+% point sets - a rigid displacement, an affine, a polynomial, a homography, a
+% linear spline down the slow scan direction, or a scattered field. All of
+% them go through one weighted bisquare solver, so a measurement that arrived
+% with a low confidence is outvoted rather than dragging the fit:
+%
+%   T = spatialTransformProjective.fit(posA,posB,'weights',w)
+%   T = spatialTransformDrift.fit(posA,posB,'slowScan',xvector)
+%
+% |inv| is exact where the model allows it - an affine, a homography - and
+% otherwise iterates the displacement field back, which converges as long as
+% the field does not fold and says so when it does. |discretize| collapses a
+% chain of any length into one interpolated field.
+%
+% *Cross Correlation As A Primitive*
+%
+% <xcfShift.html |xcfShift|> divides the region two images share into tiles
+% and phase correlates each against its counterpart, returning a sub pixel
+% displacement per tile and the height of the correlation peak that produced
+% it. The peak height is the fit weight, not a diagnostic - a tile that landed
+% on featureless background must not get an equal vote:
+%
+%   [u,peak,pos] = xcfShift(imA,imB);
+%   T = spatialTransformShift.fit(pos, pos + u, 'weights', peak);
+%
+% |u| is the displacement FROM A TO B: the feature at |pos| in A is at
+% |pos + u| in B. Given two <mapImage.mapImage.html |mapImage|> the answer is
+% in specimen units instead of pixels. Only the region where both images are
+% finite is tiled, so padding left by an earlier resampling is excluded rather
+% than correlated against.
+%
+% *An Image That Knows Where It Sits*
+%
+% <mapImage.mapImage.html |mapImage|> is a raster of values together with the
+% geometry saying which part of the specimen each pixel covers, so an image
+% and an EBSD map are comparable objects rather than an array plus a pixel
+% size held separately. An EBSD map joins a sequence of images as one of them,
+% carrying the map along with whichever channel is to be registered on:
+%
+%   mg = mapImage(ebsd.bc,ebsd)
+%   mg = mapImage(bse,'dxy',0.05,'name','bse')
+%   v  = interp(mg, eval(inv(T),target.pos))   % resample through a transform
+%
+% The grid is regular - an origin and two perpendicular step vectors, with
+% |pos| derived rather than stored. That is the difference from
+% <EBSDgrid.EBSDgrid.html |EBSDgrid|>, which stores a position per pixel so a
+% measured grid may be rotated, sheared or smoothly distorted; an image is
+% none of those, since a distortion is applied by resampling onto a new
+% regular grid rather than by moving grid points. So |interp| is a
+% |griddedInterpolant| and |pos2ind| is a projection and a round.
+%
+% <mapImage.transformReferenceFrame.html |transformReferenceFrame|> lays the
+% array out in another <gridLayout.gridLayout.html |gridLayout|> - a transpose
+% and two flips, nothing resampled - and turns the map that travels with it,
+% so |ebsd.bc| keeps sitting beside |img| pixel for pixel.
+%
+% <mapImage.edgeMap.html |edgeMap|> is the transform that makes a band
+% contrast map comparable to a backscatter image: absolute brightness is not,
+% but boundaries appear in both. An image pre-processed for registration -
+% gamma compressed, filtered - is simply another entry in the sequence, with
+% the identity as the transform between it and the image it came from.
+%
+% <mapImage.plot.html |plot|> draws the image in micrometres where it sits, so
+% it overlays the map without either being permuted. Note that |size|, |numel|
+% and |length| describe the ARRAY of images, not the grid - a sequence of
+% images is a |mapImage| array, which is the opposite choice from |@EBSD|. The
+% grid is |gridSize(mg)|.
+%
+% *A Gridded Map Can Be Stored In Any Layout*
+%
+% <EBSD.gridify.html |gridify|> takes a <gridLayout.gridLayout.html
+% |gridLayout|> as well as the |'columnMajor'| and |'rowMajor'| flags, which
+% are now just the two layouts aligned with x and y. A layout names the
+% direction each array index advances along, dimension 1 first, and any axis
+% aligned one may be asked for - which is what puts a map in the same order as
+% an image it is to be compared with pixel by pixel:
+%
+%   ebsd = gridify(ebsd,gridLayout(-xvector,yvector))
+%   ebsd = gridify(ebsd,gridLayout(otherMap))
+%   gL   = ebsd.layout           % read the layout back off a map
+%
+% Nothing is resampled - <gridLayout.layoutIndex.html |layoutIndex|> works out
+% the transpose and two flips relating two layouts, and
+% <EBSDsquare.transformReferenceFrame.html |transformReferenceFrame|> applies
+% them to a map that is already gridded. A layout no permutation can reach is
+% refused; a rotated or sheared grid is put as close to the one asked for as a
+% permutation can get, exactly as the flags always did.
+%
 % *EBSD Export That Keeps the File*
 %
 % Exporting to HDF5 no longer writes a bare MTEX layout that throws away

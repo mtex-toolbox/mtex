@@ -279,10 +279,10 @@ catch
           CS(4).mineral = 'Cobalt';
 
 
-        case 'trueebsdwcco'
-          
+        case {'trueebsdwcco','trueebsdwccosmall'}
+
           load(fName,'out');
-          
+
         case '3d'
           
           warning('TO BE IMPLEMENTED');

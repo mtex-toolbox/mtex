@@ -19,7 +19,9 @@ checkTransform;
 checkUnitCellProperty;
 checkUnitCellHint;
 checkGridOptions;
+checkArrayLayout;
 checkGridShapes;
+checkTrim;
 checkMultiColumnProps;
 checkLatticeBasisCanonical;
 checkLatticeIndexOrderInvariance;
@@ -261,7 +263,41 @@ checkShear;
 checkRotationAgreesWithRotate;
 checkGridInvariants;
 checkTrapezoidalDrift;
+checkTransformObject;
 
+
+end
+
+% =========================================================================
+function checkTransformObject
+% a @spatialTransform and the equivalent handle have to agree
+%
+% transform takes either, and the object route must not become a second
+% implementation - same positions, same unit cell, same lattice index.
+
+d = 0.3; ebsd = makeMap(12,d);
+
+M = [1.02 0.13 4; -0.09 0.97 -2.5; 0 0 1];
+T = spatialTransformShift(M);
+
+ebsdT = transform(ebsd,T);
+ebsdF = transform(ebsd, @(pos) vector3d( ...
+  M(1,1)*pos.x + M(1,2)*pos.y + M(1,3), ...
+  M(2,1)*pos.x + M(2,2)*pos.y + M(2,3), pos.z));
+
+assert(max(norm(ebsdT.pos(:) - ebsdF.pos(:))) < 1e-12*d, ...
+  'check_ebsdGrid: transform(ebsd,T) and the equivalent handle moved pixels differently');
+
+assert(cellDeviation(ebsdT.unitCell,ebsdF.unitCell) < 1e-12*d, ...
+  'check_ebsdGrid: transform(ebsd,T) and the equivalent handle disagree on the unit cell');
+
+assert(isequal(ebsdT.lattice.ij, ebsdF.lattice.ij), ...
+  'check_ebsdGrid: transform(ebsd,T) and the equivalent handle disagree on the lattice index');
+
+% inv(T) undoes it, which is the property a handle cannot offer
+ebsdBack = transform(ebsdT,inv(T));
+assert(max(norm(ebsdBack.pos(:) - ebsd.pos(:))) < 1e-10*d, ...
+  'check_ebsdGrid: transform by inv(T) did not return the map to where it started');
 
 end
 
@@ -462,6 +498,95 @@ ebsd = EBSD(vector3d(X(:),Y(:),zeros(numel(X),1)), rotation.rand(numel(X),1), ..
 end
 
 % =========================================================================
+function checkArrayLayout
+% a gridded map can be stored in any axis aligned matrix layout, not only the
+% two the flags name
+%
+% 'columnMajor' and 'rowMajor' are the two layouts aligned with x and y, so
+% they are @gridLayouts like any other and the flags are shorthands. What a
+% caller wants a third one for is comparing a map with an image pixel by
+% pixel, which needs the map in the image's order.
+
+d = 0.3; sz = 12;
+list = makeMap(sz,d);
+g    = gridify(list);
+
+cm = gridLayout(yvector,xvector);   % dim 1 along y
+rm = gridLayout(xvector,yvector);   % its transpose
+
+% the layout form and the flag it generalises are the same request
+for src = {list,g}
+  a = gridify(src{1},rm);
+  b = gridify(src{1},'rowMajor');
+  assert(isequal(size(a),size(b)) && isequal(a.id,b.id) && ...
+      max(norm(a.pos - b.pos),[],'all') < 1e-10, ...
+    'check_ebsdGrid: gridify with a gridLayout disagrees with the rowMajor flag on a %s',...
+    class(src{1}));
+end
+
+% a layout is a reindexing, so no position may move and no value be invented
+gr = gridify(g,rm);
+assert(isequal(size(gr),fliplr(size(g))), ...
+  'check_ebsdGrid: rowMajor of a %s map is %s, expected %s', ...
+  mat2str(size(g)),mat2str(size(gr)),mat2str(fliplr(size(g))));
+assert(isequal(sort(g.id(:)),sort(gr.id(:))) && ...
+    isequal(sort(double(g.pos.x(:))),sort(double(gr.pos.x(:)))), ...
+  'check_ebsdGrid: a layout change altered the data');
+
+% and the data has to follow the permutation, not merely survive it
+assert(isequal(gr.bc,g.bc.'), ...
+  'check_ebsdGrid: bc did not follow the relayout');
+
+% asking for the layout already held changes nothing, and the two together
+% are the identity
+assert(isequal(gridify(g,cm).id,g.id), ...
+  'check_ebsdGrid: relaying a map into its own layout was not a no-op');
+assert(isequal(gridify(gr,cm).id,g.id) && isequal(gridify(gr,cm).bc,g.bc), ...
+  'check_ebsdGrid: the layout round trip did not restore the map');
+
+% ebsd.layout is how the layout is read back off a map
+assert(isAligned(g.layout,cm), ...
+  'check_ebsdGrid: ebsd.layout is not the layout the map is stored in');
+assert(isAligned(gr.layout,rm), ...
+  'check_ebsdGrid: ebsd.layout did not follow the relayout');
+assert(isAligned(gridLayout(g),g.layout), ...
+  'check_ebsdGrid: gridLayout(ebsd) and ebsd.layout disagree');
+
+% and it reaches the display, next to the plotting convention
+hdr = evalc('display(g)');
+assert(contains(hdr,'row') && contains(hdr,'col'), ...
+  'check_ebsdGrid: the header does not state the layout');
+
+% a sheared grid has no layout object - its axes are not perpendicular - but it
+% can still be relaid out, which is why layoutIndex takes directions
+es = transform(g, @(pos) vector3d(pos.x + 0.3*pos.y, pos.y, pos.z));
+try
+  gridLayout(es);
+  caught = '';
+catch ME
+  caught = ME.identifier;
+end
+assert(strcmp(caught,'MTEX:gridLayout:notOrthogonal'), ...
+  'check_ebsdGrid: a sheared grid was given a gridLayout');
+assert(isequal(size(gridify(es,rm)),fliplr(size(es))), ...
+  'check_ebsdGrid: a sheared grid could not be relaid out');
+
+% a hexagonal grid encodes its line offset in the layout, so it says no
+hex = gridify(makeHexMap([sz sz],d));
+lastwarn('','');
+gridify(hex,rm);
+[~,wid] = lastwarn;
+assert(strcmp(wid,'MTEX:gridify:rowMajor'), ...
+  'check_ebsdGrid: a hex grid accepted a transposed layout without saying so');
+lastwarn('','');
+gridify(hex,cm);
+[~,wid] = lastwarn;
+assert(isempty(wid), ...
+  'check_ebsdGrid: a hex grid warned about the layout it is already in');
+
+end
+
+% =========================================================================
 function checkGridShapes
 % every per pixel view of a gridded map is the (r x c) matrix of the map
 %
@@ -487,6 +612,27 @@ for fn = {'id','phase','isIndexed','rotations','pos','bc'}
     char(fn), mat2str(size(v)), mat2str(size(grid)));
 end
 
+% the same has to hold after subGrid, which reshapes the map it cuts out.
+% reshape rebuilt id, rotations and every prop but left pos a column, so
+% subGrid handed back an @EBSDsquare on which d2 read pos(1,2) and errored
+% while d1 returned the right number for the wrong reason.
+sub = subGrid(grid,[false(3,sz); true(sz-3,sz)]);
+
+assert(isequal(size(sub),[sz-3 sz]), ...
+  'check_ebsdGrid: subGrid returned %s, expected %s', ...
+  mat2str(size(sub)), mat2str([sz-3 sz]));
+
+for fn = {'id','phase','isIndexed','rotations','pos','bc'}
+  v = sub.(char(fn));
+  assert(isequal(size(v),size(sub)), ...
+    'check_ebsdGrid: %s of a subGrid map is %s, expected the map shape %s', ...
+    char(fn), mat2str(size(v)), mat2str(size(sub)));
+end
+
+assert(abs(norm(sub.d1) - d) < 1e-10 && abs(norm(sub.d2) - d) < 1e-10, ...
+  'check_ebsdGrid: subGrid steps are %g, %g, expected %g', ...
+  norm(sub.d1), norm(sub.d2), d);
+
 % an ungridded map is a flat list, and phase must not be reshaped there
 assert(isequal(size(ebsd.phase),size(ebsd)), ...
   'check_ebsdGrid: phase of a plain list is %s, expected %s', ...
@@ -499,6 +645,44 @@ gB = grains.boundary;
 assert(isequal(size(gB.phase),size(gB.phaseId)) && size(gB.phase,2) == 2, ...
   'check_ebsdGrid: grainBoundary phase is %s, expected the n x 2 of phaseId %s', ...
   mat2str(size(gB.phase)), mat2str(size(gB.phaseId)));
+
+end
+
+% =========================================================================
+function checkTrim
+% trim cuts the notIndexed border and keeps everything inside the rectangle
+
+d = 0.3; sz = 12;
+grid = gridify(makeMap(sz,d));
+
+ebsd = grid;
+ebsd(1:2,:) = 'notIndexed';
+ebsd(:,end) = 'notIndexed';
+ebsd(5,5)   = 'notIndexed';     % a hole, which must survive
+
+t = trim(ebsd);
+
+assert(isequal(size(t),[sz-2 sz-1]), ...
+  'check_ebsdGrid: trim returned %s, expected %s', ...
+  mat2str(size(t)), mat2str([sz-2 sz-1]));
+
+assert(isequal(t.bc,grid.bc(3:end,1:end-1)), ...
+  'check_ebsdGrid: trim kept the wrong pixels');
+
+assert(nnz(~t.isIndexed) == 1 && ~t.isIndexed(3,5), ...
+  'check_ebsdGrid: trim did not keep the enclosed notIndexed pixel');
+
+assert(~any(isnan(t.phaseId)), ...
+  'check_ebsdGrid: trim set %d phaseId to NaN, it must only crop', ...
+  nnz(isnan(t.phaseId)));
+
+% a mask and the indices of that mask trim to the same rectangle
+mask = false(size(grid)); mask(4:7,2:3) = true;
+assert(isequal(trim(grid,mask).bc,trim(grid,find(mask)).bc), ...
+  'check_ebsdGrid: trim disagrees between mask and index form');
+
+assert(isequal(trim(grid,mask).bc,grid.bc(4:7,2:3)), ...
+  'check_ebsdGrid: trim(mask) kept the wrong pixels');
 
 end
 
@@ -531,7 +715,93 @@ checkAssignment(ebsd);
 checkAssignmentNewField(ebsd);
 checkDeletion(ebsd);
 checkCat(ebsd);
+checkChannelsOnAGrid;
 
+
+end
+
+% =========================================================================
+function checkChannelsOnAGrid
+% the same property on a grid class, where it is stored as r x c x k
+%
+% A grid holds one entry per pixel as the (r x c) matrix of the map, so a
+% k channel property is r x c x k, not N x k. Nothing knew that:
+%
+%  - dynProp decided "multi channel" from size(value,2) > 1, which an r x c
+%    property satisfies on its own. An r x c x k one therefore came out the
+%    other side as an ordinary property indexed linearly, so ebsd(i,j) and
+%    subGrid returned channel 1 with the values of the wrong pixels, and
+%    said nothing
+%  - EBSD/reshape reshaped to the map shape alone, dropping the channels
+%  - squarify wrote every property into an r x c matrix, so gridify of a
+%    list carrying an N x k property errored on the element count
+%
+% Values here encode both pixel and channel, so a flattened or misindexed
+% result is visible in the numbers rather than only in the size.
+
+r = 7; c = 5; n = r*c; d = 0.3;
+[Y,X] = ndgrid((0:r-1)*d,(0:c-1)*d);
+
+ebsd = gridify(EBSD(vector3d(X(:),Y(:),zeros(n,1)), rotation.rand(n,1), ...
+  ones(n,1), {crystalSymmetry('m-3m')}, struct('bc',(1:n).')));
+
+assert(isequal(size(ebsd),[r c]),'check_ebsdGrid: the fixture did not grid');
+
+base = reshape(1:n,r,c);
+ebsd.prop.rgb = cat(3,base,10*base,100*base);   % channel k is 10^(k-1) * pixel
+
+% two subscripts: the pixel block, all three channels
+sub = ebsd(2:5,2:4);
+assertChannels(sub.rgb,base(2:5,2:4),'ebsd(i,j)');
+
+% a logical mask that keeps a rectangle, through subGrid
+mask = false(r,c); mask(3:r,:) = true;
+assertChannels(subGrid(ebsd,mask).rgb,base(3:r,:),'subGrid');
+
+% a mask that does not, so the map becomes a list - then N x k
+lin = ebsd(mask);
+assert(isequal(size(lin.rgb),[nnz(mask) 3]), ...
+  'check_ebsdGrid: a grid reduced to a list must hold N x k, got %s', ...
+  mat2str(size(lin.rgb)));
+assert(isequal(lin.rgb(:,3),100*base(mask)), ...
+  'check_ebsdGrid: the list lost track of which pixel a channel value belongs to');
+
+% and back again
+reGrid = gridify(lin);
+assert(ndims(reGrid.rgb)==3 && size(reGrid.rgb,3)==3, ...
+  'check_ebsdGrid: gridify of a list carrying N x k must give r x c x k, got %s', ...
+  mat2str(size(reGrid.rgb)));
+c1 = reGrid.rgb(:,:,1); c3 = reGrid.rgb(:,:,3); known = ~isnan(c1);
+assert(isequal(c3(known),100*c1(known)), ...
+  'check_ebsdGrid: gridify scattered the channels independently');
+
+% writing a subset back keeps the map shape and moves every channel
+tgt = ebsd; tgt(1:2,1:2) = ebsd(4:5,3:4);
+assert(isequal(size(tgt.rgb),[r c 3]), ...
+  'check_ebsdGrid: assignment flattened the channels to %s',mat2str(size(tgt.rgb)));
+assert(isequal(tgt.rgb(1:2,1:2,3),100*base(4:5,3:4)), ...
+  'check_ebsdGrid: assignment wrote the wrong channel values');
+assert(isequal(tgt.rgb(r,c,2),10*base(r,c)), ...
+  'check_ebsdGrid: assignment disturbed a pixel outside the target');
+
+% the ordinary property next to it is untouched throughout
+assert(isequal(size(tgt.bc),[r c]) && isequal(sub.bc,base(2:5,2:4)), ...
+  'check_ebsdGrid: an ordinary property stopped being the map matrix');
+
+end
+
+% =========================================================================
+function assertChannels(v,pixels,what)
+% v has to be pixels in channel 1, 10x in channel 2, 100x in channel 3
+
+assert(isequal(size(v),[size(pixels) 3]), ...
+  'check_ebsdGrid: %s gives %s, expected %s', ...
+  what, mat2str(size(v)), mat2str([size(pixels) 3]));
+
+for k = 1:3
+  assert(isequal(v(:,:,k),10^(k-1)*pixels), ...
+    'check_ebsdGrid: %s returned the wrong values in channel %d',what,k);
+end
 
 end
 

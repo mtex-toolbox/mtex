@@ -35,12 +35,7 @@ d(ind) = ebsd.rotations.d;
 % update all other properties
 prop = ebsd.prop;
 for fn = fieldnames(ebsd.prop).'
-  if isnumeric(prop.(char(fn))) || islogical(prop.(char(fn)))
-    prop.(char(fn)) = nan(sGrid);
-  else
-    prop.(char(fn)) = prop.(char(fn)).nan(sGrid);
-  end
-  prop.(char(fn))(ind) = ebsd.prop.(char(fn));
+  prop.(char(fn)) = scatterProp(ebsd.prop.(char(fn)),ind,sGrid,length(ebsd));
 end
 
 % store old id
@@ -54,7 +49,7 @@ end
 
 % =========================================================================
 function [pos,ind] = orientGrid(pos,ind,varargin)
-% bring a grid into row or column major layout
+% bring a grid into the requested matrix layout
 %
 % Which of the two lattice directions ends up as the first matrix dimension
 % is, on its own, an arbitrary consequence of the vertex order of the unit
@@ -65,35 +60,18 @@ function [pos,ind] = orientGrid(pos,ind,varargin)
 %    ebsd(i,j) is the j-th pixel of the i-th scan row. This matches the
 %    layout of hexagonal grids, see hexify.
 %  rowMajor - the transposed layout, size(ebsd) = [numCols numRows]
+%  a @gridLayout - any other axis aligned layout
 %
-% In both cases the grid directions are oriented such that the coordinates
+% In every case the grid directions are oriented such that the coordinates
 % increase along them, so ebsd(1,1) is the corner with the smallest
-% coordinates.
+% coordinates. A grid that is rotated or sheared cannot land on the rule
+% exactly and is put as close to it as a permutation can get, hence
+% 'nearest'.
 
 if size(pos,1) < 2 || size(pos,2) < 2, return; end
 
-isRowMajor = check_option(varargin,'rowMajor');
-
-d1 = pos(2,1) - pos(1,1);
-d2 = pos(1,2) - pos(1,1);
-
-% which of the two grid directions is the more horizontal one
-horizontal = @(d) abs(dot(d,xvector)) - abs(dot(d,yvector));
-isXFirst = horizontal(d1) > horizontal(d2);
-
-% a permutation of the linear indices describes both the transposition and
-% the flips at once
-lin = reshape(1:numel(pos),size(pos));
-
-if xor(isXFirst,isRowMajor)
-  lin = lin.';
-  [d1,d2] = deal(d2,d1);
-end
-
-% ensure increasing coordinates along both grid directions
-if isRowMajor, ref = [xvector,yvector]; else, ref = [yvector,xvector]; end
-if dot(d1,ref(1)) < 0, lin = flipud(lin); end
-if dot(d2,ref(2)) < 0, lin = fliplr(lin); end
+lin = layoutIndex(gridLayout.fromOption(varargin),...
+  [pos(2,1) - pos(1,1), pos(1,2) - pos(1,1)], size(pos), 'nearest');
 
 pos = pos(lin);
 

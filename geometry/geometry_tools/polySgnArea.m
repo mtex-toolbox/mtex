@@ -10,8 +10,13 @@ function area = polySgnArea(x,y,polyStart)
 area = (y(2:end)-y(1:end-1)) .* (x(2:end)+x(1:end-1));
 
 if nargin == 3
-  
-  ind = repelem(1:length(polyStart)-1,diff(polyStart)).';
+
+  % see polySgnArea3 - an empty list leaves repelem an empty replication
+  % factor, which it rejects
+  nPoly = numel(polyStart) - 1;
+  if nPoly == 0, area = zeros(0,1); return; end
+
+  ind = repelem(1:nPoly,diff(polyStart)).';
 
   % set the value for last entry of each loop to zero
   area(polyStart(2:end)-1) = 0;

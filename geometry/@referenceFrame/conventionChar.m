@@ -35,8 +35,8 @@ dirs = normalize(rf.basis);
 [ud,iN] = find(pC.north == [1;-1] .* dirs,1);
 [lr,iE] = find(pC.east  == [1;-1] .* dirs,1);
 
-% no frame axis on the screen axes - fall back to the Cartesian form
-if isempty(iN) || isempty(iE)
+% no named frame axis on the screen axes - fall back to the Cartesian form
+if isempty(iN) || isempty(iE) || max(iN,iE) > numel(rf.axesNames)
   c = char(pC);
   return
 end

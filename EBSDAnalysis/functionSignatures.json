@@ -221,7 +221,23 @@
     [
       {"name":"ebsd", "kind":"required", "type":["EBSD"]},
       {"name":"unitCell", "kind":"namevalue", "type":["vector3d"], "purpose":"unit cell of the gridded map"},
-      {"name":"extent", "kind":"namevalue", "type":["numeric","vector","numel=4"], "purpose":"[xmin xmax ymin ymax]"}
+      {"name":"extent", "kind":"namevalue", "type":["numeric","vector","numel=4"], "purpose":"[xmin xmax ymin ymax]"},
+      {"name":"gL", "kind":"ordered", "type":["gridLayout"], "purpose":"matrix layout of the gridded map"},
+      {"name":"layout", "kind":"flag", "type":["char","choices={'columnMajor','rowMajor'}"], "purpose":"matrix layout of the gridded map"}
+    ]
+},
+
+"transformReferenceFrame":
+{
+    "inputs":
+    [
+      {"name":"ebsd", "kind":"required", "type":["EBSDsquare"]},
+      {"name":"gL", "kind":"required", "type":["gridLayout"], "purpose":"matrix layout to store the map in"}
+    ],
+    "outputs":
+    [
+      {"name":"ebsd", "type":"EBSDsquare"},
+      {"name":"newId", "type":"numeric"}
     ]
 },
 
@@ -440,6 +456,39 @@
     [
       {"name":"job", "kind":"required", "type":["parentGrainReconstructor"]},
       {"name":"maxSize", "kind":"namevalue", "type":["numeric","scalar",">0"], "purpose":"maximum pixel size of an inclusion"}
+    ]
+},
+
+"mapImage":
+{
+    "inputs":
+    [
+      {"name":"img", "kind":"required", "type":["numeric"]},
+      {"name":"ebsd", "kind":"ordered", "type":["EBSD"]},
+      {"name":"dxy", "kind":"namevalue", "type":["numeric"], "purpose":"pixel size, scalar or [dx dy]"},
+      {"name":"name", "kind":"namevalue", "type":["char"]},
+      {"name":"origin", "kind":"namevalue", "type":["vector3d"]}
+    ]
+},
+
+"mapImage.edgeMap":
+{
+    "inputs":
+    [
+      {"name":"mg", "kind":"required", "type":["mapImage"]},
+      {"name":"padWidth", "kind":"ordered", "type":["numeric","scalar",">0"]}
+    ]
+},
+
+
+"mapImage.interp":
+{
+    "inputs":
+    [
+      {"name":"mg", "kind":"required", "type":["mapImage"]},
+      {"name":"pos", "kind":"required", "type":["vector3d"]},
+      {"name":"method", "kind":"flag", "type":["choices={'linear','nearest','cubic','spline','makima'}"]},
+      {"name":"extrapolationMethod", "kind":"namevalue", "type":["char"]}
     ]
 }
 }

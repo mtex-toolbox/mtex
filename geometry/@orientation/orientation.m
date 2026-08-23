@@ -119,6 +119,9 @@ end
 
 methods (Static = true)
 
+  % the orientation implied by two reference frames rendering alike
+  ori = byScreenAlignment(frA,frB);
+
   function ori = nan(varargin)
     s = varargin(cellfun(@isnumeric,varargin));
     q = quaternion.nan(s{:});

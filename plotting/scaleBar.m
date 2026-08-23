@@ -557,7 +557,9 @@ else
   for k = 1:numel(faceIdx), F(k,1:numel(faceIdx{k})) = faceIdx{k}; end
 end
 
-% the tight bounding box of arrows, symbol, labels and the origin
+% the tight bounding box of arrows, symbol, labels and the origin - an
+% unlabelled direction reserves no room
+labPos(cellfun(@isempty,labStr),:) = NaN;
 P = [V; L; labPos - labHalf; labPos + labHalf; 0 0];
 P(any(isnan(P),2),:) = [];
 bbox = [min(P(:,1)), max(P(:,1)), min(P(:,2)), max(P(:,2))];
