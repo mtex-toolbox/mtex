@@ -4,38 +4,28 @@
 plottingConvention.default('y↑→x');
 
 %%
-% Many computations do not use a density function itself but a finite set of
-% directions that represents it - orientations to feed a simulation, a
-% discrete measure to integrate against, or simply a scatter plot. This page
-% compares the three ways MTEX offers to produce such a sample and shows how
-% well each of them recovers the density it came from.
+% Many computations do not use a density function itself but a finite set
+% of directions that represents it - orientations to feed a simulation, a
+% discrete measure to integrate against, or simply a scatter plot. This
+% page compares the three ways MTEX offers to produce such a sample and
+% shows how well each of them recovers the density it came from.
 %
 % As an example we take the smiley, a function that is zero on most of the
 % sphere and concentrated on a few narrow features - which makes it easy to
 % see where a sample puts its points.
 
-sF = 0.05 + abs(S2Fun.smiley);
+sF = 0.02 + abs(S2Fun.smiley);
 
 contourf(sF)
+mtexColorbar
 
-%%
-% Note that this function is *not* normalized, it integrates to
-
-sum(sF)
-
-%%
-% Any nonnegative function will do. Scaling a density moves neither the
-% sampling points nor their weights, it only changes the mass
-% $\lambda = \int_{S^2} f$ that the sample carries.
-%
 %% Random Sampling
 %
 % <S2Fun.discreteSample.html |discreteSample|> draws the directions at
-% random, with a probability proportional to the function value. This is fast
-% and unbiased, but a random sample clusters and leaves holes - both are easy
-% to spot along the mouth below.
+% random, with a probability proportional to the function value. This is
+% fast and unbiased, but a random sample clusters and leaves holes - both
+% are easy to spot along the mouth below.
 
-rng(0)
 vRnd = discreteSample(sF,1000);
 
 contourf(sF)
@@ -50,7 +40,7 @@ hold off
 % number of points allows. The points end up evenly spread along every
 % feature, dense where the function is large and absent where it is zero.
 
-vOpt = optimalSample(sF,1000,'bandwidth',32);
+vOpt = optimalSample(sF,1000,'bandwidth',128);
 
 contourf(sF)
 hold on
@@ -59,16 +49,16 @@ hold off
 
 %%
 % The |bandwidth| decides up to which harmonic degree the sample has to
-% reproduce the function. Choose it to match the intended use of the points -
-% a low bandwidth is cheaper and asks for less.
+% reproduce the function. Choose it to match the intended use of the points
+% - a low bandwidth is faster and asks for less.
 %
 %% Sampling with Weights
 %
-% The points do not have to carry the same mass. Asking |optimalSample| for a
-% second output optimizes the weights alongside the directions, which gives
-% the sample $M$ additional degrees of freedom.
+% The points do not have to carry the same mass. Asking |optimalSample| for
+% a second output optimizes the weights alongside the directions, which
+% gives the sample $M$ additional degrees of freedom.
 
-[vWgt,c] = optimalSample(sF,200,'bandwidth',32);
+[vWgt,c] = optimalSample(sF,500,'bandwidth',128);
 
 %%
 % The weights are volume fractions - they are nonnegative and sum up to one
@@ -87,10 +77,7 @@ hold off
 %%
 % Directions that ended up with almost no mass may be dropped right away with
 % |minWeight|
-
-[vSmall,cSmall] = optimalSample(sF,200,'bandwidth',32,'minWeight',0.5/200);
-length(vSmall)
-
+%
 %% Which Sample Recovers the Density Best?
 %
 % To answer that we go the way back: estimate a density from the sample with

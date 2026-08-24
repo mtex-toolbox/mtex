@@ -70,8 +70,6 @@ classdef planarColorKey
 % pK.label2 = 'area';
 % plot(pK,v1,v2)
 %
-%
-%
 % See also: directionColorKey, ipfColorKey, HSVDirectionKey
 
 % TODO:
