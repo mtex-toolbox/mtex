@@ -107,8 +107,12 @@ classdef sphericalRegion
 
       % which hemisphere is the upper one depends on the convention the region is in
       pC = getClass(varargin,'plottingConvention',sR.how2plot);
-      if check_option(varargin,'upper'), sR = sR.restrict2Upper(pC); end
-      if check_option(varargin,'lower'), sR = sR.restrict2Lower(pC); end
+
+      % both flags are the whole sphere, as in newSphericalPlot, not their intersection
+      if ~(check_option(varargin,'upper') && check_option(varargin,'lower'))
+        if check_option(varargin,'upper'), sR = sR.restrict2Upper(pC); end
+        if check_option(varargin,'lower'), sR = sR.restrict2Lower(pC); end
+      end
       
     end
             
