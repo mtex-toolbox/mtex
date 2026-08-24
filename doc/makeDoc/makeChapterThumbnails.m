@@ -195,10 +195,18 @@ function drawOne(name)
 switch name
 
   case 'Tutorials'
-    % a phase map: flat colour blocks, so it cannot be mistaken for an ipf map
-    mtexdata forsterite silent
+    % a four phase rock: flat saturated colour blocks with grain outlines, so
+    % it cannot be mistaken for the ipf maps elsewhere in the set
+    mtexdata mylonite silent
     ebsd = evalin('base','ebsd');
-    plot(ebsd(inpolygon(ebsd,[5 2 10 5]*10^3)),'micronbar','off')
+    % a quarter of the map: at full extent the grains are smaller than a
+    % tile pixel and the boundaries close up into a black mesh
+    ebsd = ebsd(inpolygon(ebsd,[15000 1020 3000 2970]));
+    grains = calcGrains(ebsd('indexed'),'threshold',10*degree);
+    plot(ebsd('indexed'),'micronbar','off')
+    hold on
+    plot(grains.boundary,'lineWidth',1.5)
+    hold off
 
   case 'GeneralConcepts'
     v = vector3d.rand(500);
@@ -316,12 +324,15 @@ switch name
     plot(velocity(C),'complete','upper')
 
   case 'Plasticity'
-    cs = crystalSymmetry('m-3m','mineral','Aluminium');
-    cS = crystalShape.cube(cs);
-    plot(cS,'faceAlpha',0.2)
+    % a hexagonal crystal with its basal plane: a stronger silhouette than a
+    % cube, and not the same solid as the Orientations tile
+    cs = crystalSymmetry('6/mmm',[3.2 3.2 5.2],'mineral','Magnesium');
+    cS = crystalShape.hex(cs);
+    plot(cS,'faceColor',[0.62 0.74 0.86],'faceAlpha',0.75)
     hold on
-    plot(cS,slipSystem.fcc(cs),'faceColor','red')
+    plot(cS,slipSystem.basal(cs),'faceColor',[0.88 0.15 0.15])
     hold off
+    view(140,18)
 
   case 'PhaseTransitions'
     % one colour per variant, so the tile shows that one parent gives many
