@@ -1380,7 +1380,7 @@
 % robustly finds fibers in data sets of individual orientations and ODFs.
 % * <fibre.angle.html |angle(f1,f2)|> computes the angle between two
 % <OrientationFibre.html fibers>.
-% * <S2Fun/calcSymAxis.html |calcSymAxis(pf)|> allows to find rotational
+% * <S2FunHarmonic.calcSymAxis.html |calcSymAxis(pf)|> allows to find rotational
 % symmetries in <ODFPoleFigure.html pole figures> or arbitrary
 % <S2FunConcept.html spherical functions>.
 %

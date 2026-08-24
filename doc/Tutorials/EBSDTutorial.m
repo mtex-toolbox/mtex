@@ -76,7 +76,7 @@ plot(ebsd('Forsterite'),ebsd('Forsterite').orientations,'micronbar','off')
 % <GrainReconstruction.html Grain Reconstruction>. The syntax is
 
 % reconstruct grains with a threshold angle of 10 degrees
-grains = calcGrains(ebsd,'theshold',10*degree,'minPixel',5)
+grains = calcGrains(ebsd,'threshold',10*degree,'minPixel',5)
 
 % smooth the grains to avoid the staircase effect
 grains = smoothBoundary(grains,5);
@@ -103,7 +103,7 @@ hold off
 % define the crystal shape of Forsterite and store it in the variable cS
 cS = crystalShape.olivine(ebsd('Forsterite').CS)
 
-% select only Forsterite grains with more then 100 pixels
+% select only Forsterite grains with more than 100 pixels
 grains = grains('Forsterite',grains.numPixel > 100);
 
 % plot crystal shapes at the positions of the Forsterite grains

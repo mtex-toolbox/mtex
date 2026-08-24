@@ -10,6 +10,7 @@ PoleFigureAnalysis     Pole Figures
 EBSDAnalysis           EBSD
 Grains                 Grains 
 GrainBoundaries        Grain Boundaries
+EBSD3Analysis          3D - EBSD
 Tensors                Tensors
 Elasticity             Elasticity
 Plasticity             Plasticity

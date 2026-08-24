@@ -54,7 +54,7 @@ odf = calcDensity(ebsd.orientations)
 % Estimation>.
 %
 % The resulting orientation distribution function |odf| can be evaluated
-% for any arbitrary orientation. Lets us e.g. consider the orientation
+% for any arbitrary orientation. Let us e.g. consider the orientation
 
 ori = orientation.byEuler(0,0,0,ebsd.CS);
 

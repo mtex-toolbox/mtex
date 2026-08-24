@@ -81,7 +81,7 @@ plot(ebsd('Forsterite'),colors)
 
 %%
 % The above ipf color key can be largely customized. This is explained in
-% more detail in <EBSDIPFMap IPF Maps>. Beside IPF maps there are also more
+% more detail in <EBSDIPFMap.html IPF Maps>. Beside IPF maps there are also more
 % specific ways to colorize orientations as they are discussed in
 % <EBSDAdvancedMaps.html Advanced Plotting>.
 %

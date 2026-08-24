@@ -1,5 +1,5 @@
 CrystalSymmetries       Crystal Symmetries
-CrystalDirections       Miller Indicies
+CrystalDirections       Miller Indices
 CrystalOperations       Operations
 CrystalReferenceSystem  Reference System
 SymmetryAlignment       Crystal Axes Alignment

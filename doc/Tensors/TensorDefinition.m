@@ -1,7 +1,7 @@
 %% Defining Tensorial Properties
 %
 % Physical laws describe the relationship between physical properties. The
-% most simplest laws are linear ones and are of the form
+% simplest laws are linear ones and are of the form
 %
 % $$ y = \mathbf A x $$
 %
@@ -169,7 +169,7 @@ e = stressTensor.uniaxial(vector3d.Z)
 
 %%
 % The advantage of using these specific tensor classes is that some tensor
-% operations like <stressTensor/calcShearStress.html |calcShearStress(e)|>
+% operations like <stressTensor.calcShearStress.html |calcShearStress(e)|>
 % are defined only for specific tensor classes.
 %
 %% Predefined tensors

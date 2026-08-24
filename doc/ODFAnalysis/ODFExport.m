@@ -27,7 +27,7 @@ plot(model_odf,'sections',6,'silent')
 
 %% Save as .mat file
 %
-% The most simplest way to store an ODF is to store the corresponding
+% The simplest way to store an ODF is to store the corresponding
 % variable |model_odf| as any other MATLAB variable using the command
 % |save|. Note that you have to specify the variable name as a string.
 

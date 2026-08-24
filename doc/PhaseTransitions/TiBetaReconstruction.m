@@ -107,7 +107,7 @@ job.clusterVariantGraph('numIter',3)
 job.calcParentFromVote
 
 %%
-% We observe that after this step more then 99 percent of the grains became
+% We observe that after this step more than 99 percent of the grains became
 % parent grains. Lets visualize these reconstructed beta grains
 
 % define a color key

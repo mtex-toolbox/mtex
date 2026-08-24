@@ -4,7 +4,7 @@ PoleFigureCorrection    Modify
 PoleFigure2ODF          ODF Reconstruction
 PoleFigureRefinement    Iterative ODF Reconstruction
 PoleFigureSimulation    Simulation
-PoleFigure2ODFAmbiguity The Gost Effect
+PoleFigure2ODFAmbiguity The Ghost Effect
 PoleFigure2ODFGhostCorrection Ghost Correction
 PoleFigureSantaFe       Santa Fe Example
 PoleFigureDubna         Dubna Example

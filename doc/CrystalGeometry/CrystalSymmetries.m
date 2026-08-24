@@ -135,11 +135,11 @@ annotate(cs.aAxis,'labeled')
 %
 % If additionally to the proper and improper rotations also translations
 % are considered as symmetry operations the number of different symmetry
-% groups increases to 320. Those are exhaustively described in the
-% international table of crystallography. 
+% groups increases to 230. Those are exhaustively described in the
+% international table of crystallography.
 %
 % MTEX currently does not support space groups. If the name of a space
-% group os passed to the command crystalSymmetry, MTEX automatically
+% group is passed to the command crystalSymmetry, MTEX automatically
 % determines the corresponding point group and assigns it to the variable.
 
 cs = crystalSymmetry('Td');

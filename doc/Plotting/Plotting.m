@@ -53,8 +53,8 @@
 % * Specifying the colorrange
 % * Setting a logarithmic color scale
 % * Switching to a monochrome color scale
-% *
-% See also <EBSDSpatialPlots Spatial EBSD Plots>.
+%
+% See also <EBSDPlotting.html Spatial EBSD Plots>.
 %
 %% Plot Annotations
 %

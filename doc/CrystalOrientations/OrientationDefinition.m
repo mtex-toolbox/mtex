@@ -7,7 +7,7 @@
 % <MTEXvsBungeConvention.html MTEX vs Bunge Convention>.
 %
 % Technically, a variable of type <orientation.orientation.html
-% |orientation|> is nothing else then a <rotation.rotation.html |rotation|>
+% |orientation|> is nothing but a <rotation.rotation.html |rotation|>
 % that is accompanied by a crystal symmetry. Hence, all methods for
 % defining rotations (<RotationDefinition.html as explained here>) are also
 % applicable for orientations with the only difference that the crystal

@@ -12,7 +12,7 @@
 % crystals with the crystal lattice planes $\vec h$ being normal to the
 % specimen direction $\vec r$. 
 % 
-% In order to illustrate the concept of pole figures at an example lets us
+% In order to illustrate the concept of pole figures at an example let us
 % first define some model ODFs to be plotted later on.
 
 cs = crystalSymmetry('32');

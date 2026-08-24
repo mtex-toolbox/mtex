@@ -90,7 +90,7 @@ norm(eval(sF, nodes) - S.values)
 %
 % The strategy underlying the |interp(...,'harmonicApproximation')|-command
 % to obtain such an approximation works via spherical harmonics
-% (<S2FunHarmonicRepresentation Basics of spherical harmonics>). For that,
+% (<S2FunHarmonicRepresentation.html Basics of spherical harmonics>). For that,
 % we seek for so-called Fourier-coefficients ${\bf \hat f} = (\hat
 % f_0^0,\dots,\hat f_M^M)^T$ such that
 %

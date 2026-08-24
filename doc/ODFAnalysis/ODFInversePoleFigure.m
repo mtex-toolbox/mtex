@@ -14,7 +14,7 @@
 % specimen direction $\vec r$. 
 % 
 % In order to illustrate the concept of inverse pole figures at an example
-% lets us first define a model ODF to be plotted later on.
+% let us first define a model ODF to be plotted later on.
 
 cs = crystalSymmetry('32');
 mod1 = orientation.byEuler(90*degree,40*degree,110*degree,'ZYZ',cs);
