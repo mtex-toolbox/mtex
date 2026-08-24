@@ -11,7 +11,7 @@ function pf = loadPoleFigure_siemens(fname,varargin)
 %  pf    - @PoleFigure
 %
 % See also
-% loadPoleFigure ImportPoleFigureData
+% PoleFigure.load PoleFigureImport
 
 fid = fopen(fname,'r');
 d = {};

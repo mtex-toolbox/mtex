@@ -11,7 +11,7 @@ function pf = loadPoleFigure_pwd(fname,varargin)
 %  pf    - @PoleFigure
 %
 % See also
-% loadPoleFigure ImportPoleFigureData
+% PoleFigure.load PoleFigureImport
 
 assertExtension(fname,'.pwd');
 

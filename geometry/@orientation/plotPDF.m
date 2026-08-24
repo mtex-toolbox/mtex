@@ -32,9 +32,9 @@ function plotPDF(ori,varargin)
 %
 %
 % See also
-% orientation/plotIPDF S2Grid/plot savefigure
-% Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
-% SphericalProjection_demo
+% orientation/plotIPDF S2Grid/plot saveFigure
+% Plotting Annotations ColorMaps PlotTypes
+% SphericalProjections
 
 if check_option(varargin,{'contour','contourf','smooth','pcolor'})
   dcMode = {};

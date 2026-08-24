@@ -11,7 +11,7 @@ function pf = loadPoleFigure_rigaku_dat(fname,varargin)
 %  pf - @PoleFigure
 %
 % See also
-% ImportPoleFigureData loadPoleFigure
+% PoleFigureImport PoleFigure.load
 
 try
   % read header

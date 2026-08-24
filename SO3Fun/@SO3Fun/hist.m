@@ -8,7 +8,7 @@ function hist(SO3F,varargin)
 %  resolution - resolution used for calculation (default = 5*degree)
 %
 % See also
-%  savefigure
+%  saveFigure
 
 % eval SO3Fun
 SO3G = equispacedSO3Grid(SO3F.CS,SO3F.SS,varargin{:});

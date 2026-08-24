@@ -33,7 +33,7 @@ classdef PoleFigure < dynProp & dynOption
 %  antipodal - 
 %
 % See also
-% ImportPoleFigureData loadPoleFigure loadPoleFigure_generic
+% PoleFigureImport PoleFigure.load loadPoleFigure_generic
 % This section describes the class *PoleFigure* and gives an overview of
 % the functionality MTEX offers to analyze pole figure data.
 

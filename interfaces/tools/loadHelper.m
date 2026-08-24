@@ -27,7 +27,7 @@ classdef loadHelper < handle
 %  unit        - the angle unit of the data
 %
 % See also
-% loadEBSD loadPoleFigure
+% loadEBSD PoleFigure.load
 %
 
 properties

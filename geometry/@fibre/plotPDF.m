@@ -20,9 +20,9 @@ function plotPDF(f,varargin)
 %  complete  - plot entire (hemi)--sphere
 %
 % See also
-% orientation/plotIPDF S2Grid/plot savefigure
-% Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
-% SphericalProjection_demo
+% orientation/plotIPDF S2Grid/plot saveFigure
+% Plotting Annotations ColorMaps PlotTypes
+% SphericalProjections
 
 % generate a new figure
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});

@@ -7,7 +7,7 @@ function h = text3(v,varargin)
 % Input
 %
 % See also
-% savefigure vector3d/scatter3 vector3d/plot3 vector3d/arrow3
+% saveFigure vector3d/scatter3 vector3d/plot3 vector3d/arrow3
 
 % where to plot
 if check_option(varargin,'parent')

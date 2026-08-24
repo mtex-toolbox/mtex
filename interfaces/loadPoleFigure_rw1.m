@@ -11,7 +11,7 @@ function pf = loadPoleFigure_rw1(fname,varargin)
 %  pf - vector of @PoleFigure
 %
 % See also
-% ImportPoleFigureData loadPoleFigure
+% PoleFigureImport PoleFigure.load
 
 
 assertExtension(fname,'.rw1');

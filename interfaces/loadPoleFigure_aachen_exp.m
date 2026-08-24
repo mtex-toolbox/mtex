@@ -11,7 +11,7 @@ function pf = loadPoleFigure_aachen_exp(fname,varargin)
 %  pf - vector of @PoleFigure
 %
 % See also
-% ImportPoleFigureData loadPoleFigure
+% PoleFigureImport PoleFigure.load
 
 % open file
 fid = efopen(fname);

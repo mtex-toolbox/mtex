@@ -16,8 +16,8 @@ function plot(pf,varargin)
 
 %
 % See also
-% vector3d/plot savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
-% SphericalProjection_demo 
+% vector3d/plot saveFigure Plotting Annotations ColorMaps PlotTypes
+% SphericalProjections 
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
