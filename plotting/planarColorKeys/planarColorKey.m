@@ -28,29 +28,22 @@ classdef planarColorKey
 %
 % % Example 1: long axis mapping, with saturation given by aspect ratio
 % % get the data
-% mtexdata martensite
+% mtexdata martensite silent
 % grains = ebsd('indexed').calcGrains('minPixel',5);
 % asr  = grains('indexed').aspectRatio;
 % lax  = grains('indexed').longAxis;
+%
 % % set up colormap
-% pK = planarColorKey(colorcet('C2'))
+% pK = planarColorKey(colorcet('C2'));
 % % since long axis direction is periodic and antipodal (=pi)
 % pK.periode = pi;
-%
-% pK.label1 = 'phi'
-% pK.label2 = 'a/b'
-% % plot a map
-% plot(grains('indexed'),pK.property2color(mod(lax.rho,pi)/degree,asr))
-% % and a colorbar
-%
-% figure
+% pK.label1 = 'phi';
+% pK.label2 = 'a/b';
+% % and plot it
 % plot(pK,mod(lax.rho,pi)/degree,asr)
 %
-% % alternatively use radians
-%
-% figure
-% plot(pK,mod(lax.rho,pi),asr)
-%
+% % use the key to colorize the map
+% plot(grains('indexed'),pK.property2color(mod(lax.rho,pi)/degree,asr))
 %
 % % example 2:
 % % highlight grains which are large AND have a large aspect ratio
@@ -59,13 +52,13 @@ classdef planarColorKey
 % v2 = grains('indexed').area;
 %
 % % set a colormap
-% pK = planarColorKey(inferno)
+% pK = planarColorKey(inferno);
 %
 % % shade to black
-% pK.shading = 'black'
+% pK.shading = 'black';
 %
 % % set the range1 for v1
-% pK.range1 = [1 4]
+% pK.range1 = [1 4];
 %
 % % set the autoselection of v2 a little lower
 % pK.quantileCap = 0.9;
@@ -73,9 +66,8 @@ classdef planarColorKey
 % plot(grains('indexed'),pK.property2color(v1,v2))
 %
 % % set labels
-% pK.label1 = 'asr'
-% pK.label2 = 'area'
-% figure
+% pK.label1 = 'asr';
+% pK.label2 = 'area';
 % plot(pK,v1,v2)
 %
 %
@@ -224,7 +216,7 @@ methods
     % Syntax
     %   plot(cK)             % color key image only
     %   plot(cK, v1, v2)     % color key, axis ranges and labels
-    %   h = plot(...)        % return figure handle
+    %   h = plot(...)        % return the image handle
     %
     % the x-axis spans the hue (v1) range (as defined by data or range1);
     % the y-axis spans the saturation (v2) range (as defined by data or range1 or qunatileCap)
@@ -256,7 +248,7 @@ methods
     % build the 2-D colormap
     
     xvals = linspace(1,256,nHue); yvals = linspace(1,128,nSat);
-    [Xg, Yg] = meshgrid(xvals, yvals);   % nSat x nHue
+    [Xg, Yg] = meshgrid(xvals, yvals);   % nSat × nHue
     
     % use a copy of the key so that ranges do not interfer
     cKtemp = cK;
@@ -324,7 +316,7 @@ methods
 
     end
 
-    if nargout > 0, varargout{1} = h; end
+    if nargout > 0, varargout{1} = p; end
   end
 
 end
@@ -378,8 +370,8 @@ methods (Access = private)
     elseif ischar(varargin{1})
       colors = eval(varargin{1},256); % maybe that is not optimal
     else
-      error(['colorMap was not properly specified. Either leave empty' \newline ...
-        'or provide a n-by-3 colormap or a character string with' \newline ...
+      error(['colorMap was not properly specified. Either leave empty' newline ...
+        'or provide a n-by-3 colormap or a character string with' newline ...
         'the colormap name']);
     end
   end
