@@ -31,6 +31,18 @@ rotate(Miller({1,0,0},cs),ori)
 ori_Bunge = inv(ori)
 
 %%
+% The difference is not a matter of bookkeeping. Applied to a crystal, the
+% two put it in different places - the blue crystal is where the MTEX
+% orientation says it is, the orange one where the same three Euler angles
+% read as a Bunge orientation would put it.
+
+cS = crystalShape.cube(cs);
+
+plot(ori * cS,'faceColor',[0.35 0.6 0.85])
+nextAxis
+plot(ori_Bunge * cS,'faceColor',[0.85 0.45 0.3])
+
+%%
 % and translates specimen coordinates into Miller indices
 ori_Bunge * r
 

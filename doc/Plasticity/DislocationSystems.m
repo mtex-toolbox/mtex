@@ -24,10 +24,20 @@ l = Miller(1,-1,-2,cs,'uvw')
 % setup the dislocation system
 dS = dislocationSystem(b,l)
 
+%%
+% The grey arrow is the line vector, the direction the dislocation runs
+% along, and the red arrow is the Burgers vector, the shift the lattice
+% suffers across it. For an edge dislocation the two are at right angles.
+
+arrow3d(1.3*normalize(vector3d(l)),'faceColor',[.45 .45 .45])
+hold on
+arrow3d(0.9*normalize(vector3d(b)),'faceColor','red')
+hold off
+axis off
 
 %% Screw Dislocations
 % Screw dislocations are characterized by the fact that Burgers vector and
-% line vector are perpendicular to each other.
+% line vector are parallel to each other.
 
 % define a burgers vector in crystal coordinates
 b = Miller(1,1,0,cs,'uvw')
@@ -37,6 +47,17 @@ l = Miller(1,1,0,cs,'uvw')
 
 % setup the dislocation system
 dS = dislocationSystem(b,l)
+
+%%
+% The same two arrows, now lying on top of one another: for a screw
+% dislocation the lattice is shifted along the direction the dislocation
+% runs, so the Burgers vector and the line vector point the same way.
+
+arrow3d(1.3*normalize(vector3d(l)),'faceColor',[.45 .45 .45])
+hold on
+arrow3d(0.9*normalize(vector3d(b)),'faceColor','red')
+hold off
+axis off
 
 
 %% Relation to Slip Systems

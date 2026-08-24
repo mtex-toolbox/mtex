@@ -58,6 +58,25 @@ R = rotation.rand;
 D = WignerD(R,1,'normalize')
 
 %%
+% The Wigner-d functions are ordinary functions of the single angle beta, so
+% they can simply be drawn. Three entries of the degree one matrix:
+
+beta = linspace(0,pi,181);
+d = zeros(numel(beta),3);
+for k = 1:numel(beta)
+  Dk = WignerD(beta(k),1);
+  d(k,:) = [Dk(1,1) Dk(2,2) Dk(1,3)];
+end
+
+plot(beta./degree,d,'linewidth',2)
+xlim([0 180]); xlabel('beta in degree')
+legend('d^1_{-1,-1}','d^1_{0,0}','d^1_{-1,1}','location','best')
+
+%%
+% They are polynomials in cos(beta/2) and sin(beta/2), which is why they are
+% smooth and why a series in them converges quickly for smooth functions.
+
+%%
 % Here the orders $k$, $l$ work as row and column indices.
 %
 %% Series Expansion

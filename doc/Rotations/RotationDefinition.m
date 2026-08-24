@@ -77,6 +77,20 @@ rot.axis
 rot.angle ./degree
 
 %%
+% Drawn, that is all a rotation is: an axis, and everything else swung about
+% it. The blue arrow is the axis, the grey arrow a direction before the
+% rotation and the red arrow the same direction afterwards.
+
+v = normalize(vector3d(0.2,0.3,1));
+
+arrow3d(1.5*rot.axis,'faceColor','blue')
+hold on
+arrow3d(1.2*v,'faceColor',[.45 .45 .45])
+arrow3d(1.2*(rot*v),'faceColor','red')
+hold off
+axis off
+
+%%
 % Closely related to the axis angle parametrization of a rotation is the
 % Rodriguez Frank vector. 
 
