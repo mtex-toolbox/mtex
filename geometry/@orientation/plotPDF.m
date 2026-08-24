@@ -132,9 +132,10 @@ for i = 1:length(h)
   r = reshape(reshape(ori.SS * (ori * sh).',[],length(ori)).',[],1); % ori x (SS x CS)
   opt = replicateMarkerSize(varargin,numSym(ori.SS)*length(sh));
 
-  % maybe we can restrict ourselfs to the upper hemisphere
+  % maybe we can restrict ourselfs to the upper hemisphere, for this h{i} only
+  hOpt = varargin;
   if all(angle(h{i},-h{i})<1e-2) && ~check_option(varargin,{'lower','complete','3d'})
-    opt = [opt,'upper']; %#ok<AGROW>
+    hOpt = [varargin,'upper'];
   end
 
   % for a misorientation SS is a crystal symmetry, r are then crystal
@@ -142,13 +143,13 @@ for i = 1:length(h)
   if isa(data,'orientation')
     d = repmat(data,[1 numSym(ori.SS)*length(sh) 1]) .* sh(:).';
     [g,cax] = quiver(r, d(:)-r, ...
-      ori.SS.fundamentalSector(varargin{:}),ori.SS,'doNotDraw',opt{:});
+      ori.SS.fundamentalSector(hOpt{:}),ori.SS,'doNotDraw',opt{:});
   elseif isa(data,'vector3d')
     [g,cax] = quiver(r,repmat(data,[1 numSym(ori.SS)*length(sh) 1]),...
-      ori.SS.fundamentalSector(varargin{:}),ori.SS,'doNotDraw',opt{:});
+      ori.SS.fundamentalSector(hOpt{:}),ori.SS,'doNotDraw',opt{:});
   else
     [g,cax] = r.plot(repmat(data,[1 numSym(ori.SS)*length(sh) 1]),...
-      ori.SS.fundamentalSector(varargin{:}),ori.SS,'doNotDraw',opt{:});
+      ori.SS.fundamentalSector(hOpt{:}),ori.SS,'doNotDraw',opt{:});
   end
 
   if ~check_option(varargin,'noTitle'), mtexTitle(cax(1),char(h{i},'LaTeX')); end
