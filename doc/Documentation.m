@@ -18,52 +18,45 @@
 %
 % How to run MTEX at all, and how to make it draw things.
 %
-% || <<chapter_Tutorials.png>> || <<chapter_GeneralConcepts.png>> || <<chapter_Plotting.png>> ||
-% || <Tutorials.html Tutorials> || <GeneralConcepts.html General Concepts> || <Plotting.html Plotting> ||
+% <<group_StartHere.png>>
+%
+% <Tutorials.html Tutorials>, <GeneralConcepts.html General Concepts>, <Plotting.html Plotting>
 %
 %% Geometry
 %
 % Directions, rotations, symmetry, and the orientation of one crystal in one
 % specimen. Everything else is built on these.
 %
-% || <<chapter_Vectors.png>> || <<chapter_Rotations.png>> || <<chapter_CrystalGeometry.png>> ||
-% || <Vectors.html Vectors> || <Rotations.html Rotations> || <CrystalGeometry.html Crystal Geometry> ||
+% <<group_Geometry.png>>
 %
-% || <<chapter_CrystalOrientations.png>> || <<chapter_Misorientations.png>> ||
-% || <CrystalOrientations.html Orientations> || <Misorientations.html Misorientations> ||
+% <Vectors.html Vectors>, <Rotations.html Rotations>, <CrystalGeometry.html Crystal Geometry>, <CrystalOrientations.html Orientations>, <Misorientations.html Misorientations>
 %
 %% Orientation maps
 %
 % Measuring orientations point by point across a surface, and turning the
 % result into grains, boundaries and volumes.
 %
-% || <<chapter_EBSDAnalysis.png>> || <<chapter_Grains.png>> || <<chapter_GrainBoundaries.png>> ||
-% || <EBSDAnalysis.html EBSD> || <Grains.html Grains> || <GrainBoundaries.html Grain Boundaries> ||
+% <<group_Maps.png>>
 %
-% || <<chapter_EBSD3Analysis.png>> ||
-% || <EBSD3Analysis.html 3D - EBSD> ||
+% <EBSDAnalysis.html EBSD>, <Grains.html Grains>, <GrainBoundaries.html Grain Boundaries>, <EBSD3Analysis.html 3D - EBSD>
 %
 %% Texture
 %
 % Describing a whole population of orientations rather than one crystal, and
 % the mathematics that makes it computable.
 %
-% || <<chapter_PoleFigureAnalysis.png>> || <<chapter_ODFAnalysis.png>> ||
-% || <PoleFigureAnalysis.html Pole Figures> || <ODFAnalysis.html ODF> ||
+% <<group_Texture.png>>
 %
-% || <<chapter_SphericalFunctions.png>> || <<chapter_SO3Functions.png>> ||
-% || <SphericalFunctions.html Spherical Functions> || <SO3Functions.html Orientation Functions> ||
+% <PoleFigureAnalysis.html Pole Figures>, <ODFAnalysis.html ODF>, <SphericalFunctions.html Spherical Functions>, <SO3Functions.html Orientation Functions>
 %
 %% Material properties
 %
 % What the texture implies for how the material behaves - how stiff it is,
 % how sound travels through it, how it deforms and how it transforms.
 %
-% || <<chapter_Tensors.png>> || <<chapter_Elasticity.png>> || <<chapter_Plasticity.png>> ||
-% || <Tensors.html Tensors> || <Elasticity.html Elasticity> || <Plasticity.html Plasticity> ||
+% <<group_Properties.png>>
 %
-% || <<chapter_PhaseTransitions.png>> ||
-% || <PhaseTransitions.html Phase Transitions> ||
+% <Tensors.html Tensors>, <Elasticity.html Elasticity>, <Plasticity.html Plasticity>, <PhaseTransitions.html Phase Transitions>
 %
 %% These pages are scripts
 %
