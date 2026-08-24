@@ -6,8 +6,9 @@ function job = setOptions(job,varargin)
 %
 % Syntax
 %
-%   job.setOptions('roiSize',5,'numROI',24)   % every hop
+%   job.setOptions('roiSize',5,'numROI',24)   % 5 um tiles on every hop
 %   job.setOptions(3,'registerOn','raw')      % hop 3 only
+%   job.setOptions(1,'registerOn','edge')     % match hop 1 on edges
 %   job.setOptions(1,'roiSize',[4 8])         % per fit stage of hop 1
 %
 % Input
@@ -39,11 +40,6 @@ function job = setOptions(job,varargin)
 % Anything left at 'auto' is measured from a cheap coarse correlation when
 % calcDistortion first needs it, and what it chose is printed. Anything set
 % here is used untouched and nothing is measured for it.
-%
-% Example
-%
-%   job.setOptions('roiSize',5)          % 5 um tiles everywhere
-%   job.setOptions(1,'registerOn','edge')  % but match hop 1 on edges
 %
 % See also
 % trueEbsd2 trueEbsd2/calcDistortion mapImage/edgeMap
