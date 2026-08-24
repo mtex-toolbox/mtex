@@ -29,17 +29,17 @@ function [grains,F] = smoothBoundary(grains,iter,varargin)
 % times
 %
 % Which algorithm performs the last step is decided by a
-% <boundaryFilter.boundaryFilter.html |boundaryFilter|>
+% <boundaryFilter.html |boundaryFilter|>
 %
-% * <laplaceFilter.laplaceFilter.html |laplaceFilter|> - the default, repeated
+% * <laplaceFilter.html |laplaceFilter|> - the default, repeated
 % local averaging. Shrinks, and its knob is an iteration count rather than a
 % length
-% * <taubinFilter.taubinFilter.html |taubinFilter|> - follows every smoothing
+% * <taubinFilter.html |taubinFilter|> - follows every smoothing
 % pass by a slightly larger unshrinking pass, so the area is given back
-% * <curvatureFilter.curvatureFilter.html |curvatureFilter|> - one sparse
+% * <curvatureFilter.html |curvatureFilter|> - one sparse
 % solve instead of an iteration, stated as a smoothing *length* and therefore
 % independent both of the iteration count and of the step size of the map
-% * <huberFilter.huberFilter.html |huberFilter|> - the same, but with an
+% * <huberFilter.html |huberFilter|> - the same, but with an
 % l^1/l^2 penalty that keeps a genuinely faceted boundary faceted
 %
 % Both tolerances are derived from the median segment length *before* the

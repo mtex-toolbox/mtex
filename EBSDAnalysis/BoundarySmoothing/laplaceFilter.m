@@ -8,11 +8,11 @@ classdef laplaceFilter < boundaryFilter
 %
 % Note that a Laplacian is a low pass filter with gain |1-lambda*k|, so it
 % shrinks: every iteration pulls a convex region inwards, without bound. Use
-% <taubinFilter.taubinFilter.html |taubinFilter|> when that matters. Note also
+% <taubinFilter.html |taubinFilter|> when that matters. Note also
 % that |iter| is not a physical quantity - how far a boundary is smoothed
 % depends on how densely it is sampled, so the same call on the same sample
 % measured at a finer step size does something different. Use
-% <curvatureFilter.curvatureFilter.html |curvatureFilter|> when that matters.
+% <curvatureFilter.html |curvatureFilter|> when that matters.
 %
 % The averaging includes the vertex itself with the weight of its own degree,
 % which is how the adjacency comes out of the vertex - segment incidence

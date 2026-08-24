@@ -9,11 +9,11 @@ classdef boundaryFilter < handle
 % pixel staircase, resampling, deciding which vertices are allowed to move -
 % happens in smoothBoundary and is the same for every filter.
 %
-% The filters fall into two groups. <laplaceFilter.laplaceFilter.html
-% |laplaceFilter|> and <taubinFilter.taubinFilter.html |taubinFilter|> apply a
+% The filters fall into two groups. <laplaceFilter.html
+% |laplaceFilter|> and <taubinFilter.html |taubinFilter|> apply a
 % local averaging step a fixed number of times, so how much they smooth depends
-% on the vertex spacing. <curvatureFilter.curvatureFilter.html
-% |curvatureFilter|> and <huberFilter.huberFilter.html |huberFilter|> instead
+% on the vertex spacing. <curvatureFilter.html
+% |curvatureFilter|> and <huberFilter.html |huberFilter|> instead
 % define the smooth boundary as the solution of a minimization problem, which
 % is stated in terms of a length and therefore does not change when the same
 % sample is measured on a finer grid.

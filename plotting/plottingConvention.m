@@ -32,7 +32,7 @@ classdef plottingConvention
 % Input
 %  outOfScreen - @vector3d
 %  east        - @vector3d
-%  str         - char, e.g. 'y↑→x', see <plottingConvention.plottingConvention.html the syntax above>
+%  str         - char, e.g. 'y↑→x', see <plottingConvention.html the syntax above>
 %
 % Output
 %  pC - @plottingConvention

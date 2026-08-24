@@ -2,7 +2,7 @@ classdef spatialTransformPoly < spatialTransform
 % a displacement that varies polynomially across the frame
 %
 % Degree 1 is an affine and could equally be a
-% <spatialTransformShift.spatialTransformShift.html |spatialTransformShift|>
+% <spatialTransformShift.html |spatialTransformShift|>
 % - inv converts to one, since a matrix has an exact inverse where a
 % polynomial does not. Degree 2 is what mops up the residual curvature a
 % projective stage leaves behind.

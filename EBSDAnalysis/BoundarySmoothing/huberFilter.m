@@ -2,7 +2,7 @@ classdef huberFilter < boundaryFilter
 % smooth grain boundaries but keep genuine corners sharp
 %
 % Description
-% Same variational idea as <curvatureFilter.curvatureFilter.html
+% Same variational idea as <curvatureFilter.html
 % |curvatureFilter|>, but the curvature is penalized by a Huber function
 % instead of a square
 %
