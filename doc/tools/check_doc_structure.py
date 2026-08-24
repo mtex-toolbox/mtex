@@ -71,7 +71,7 @@ BUDGET = {
     # invalidates nothing. The rest are See also entries naming methods that
     # have no page at all - S2Grid.plot, SO3Fun.textureindex, EBSD.calcODF -
     # which want a decision each rather than a sweep.
-    'reference link dangling': 279,
+    'reference link dangling': 142,
 }
 
 STUB_LINES = 15
