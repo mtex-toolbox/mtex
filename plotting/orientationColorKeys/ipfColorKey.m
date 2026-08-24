@@ -34,7 +34,7 @@ classdef ipfColorKey < orientationColorKey
   %   plot(ebsd,oM.orientation2color(ebsd.orientations))
   %
   % See also
-  % ipfHSVKey ipfTSLKey ipfHKLKey directionColorKey EBSDColorCoding
+  % ipfHSVKey ipfTSLKey ipfHKLKey directionColorKey EBSDIPFMap
   %
   
   properties

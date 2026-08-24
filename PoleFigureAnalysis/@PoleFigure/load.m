@@ -37,7 +37,7 @@ function [pf,interface,options] = load(fname,varargin)
 %  pf - vector of @PoleFigure
 %
 % See also
-% PoleFigureImport PoleFigure/calcODF examples_index
+% PoleFigureImport PoleFigure/calcODF Examples
 
 % extract file names
 fname = getFileNames(fname);

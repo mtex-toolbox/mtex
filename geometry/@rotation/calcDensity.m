@@ -53,7 +53,7 @@ function odf = calcDensity(ori,varargin)
 % kernel halfwidth. Use the flag |'exact'| to avoid any gridding.
 %
 % See also
-% orientation/calcFourierODF orientation/calcKernelODF orientation/calcBinghamODF ebsd_demo EBSD2odf EBSDSimulation_demo 
+% orientation/calcFourierODF orientation/calcKernelODF orientation/calcBinghamODF EBSDTutorial EBSD2ODF EBSDSimulation_demo
 
 % Allow calcDensity for rotations
 [CS,SS] = extractSym(varargin);

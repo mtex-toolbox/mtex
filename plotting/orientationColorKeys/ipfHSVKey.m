@@ -35,7 +35,7 @@ classdef ipfHSVKey < ipfColorKey
 %   plot(oM)
 %
 % See also
-% ipfColorKey HSVDirectionKey ipfTSLKey EBSDColorCoding
+% ipfColorKey HSVDirectionKey ipfTSLKey EBSDIPFMap
 %
 % defines an orientation mapping based on a certain inverse pole figure
   
