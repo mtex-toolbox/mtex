@@ -4,7 +4,7 @@ function v = zeros(varargin)
 % Syntax
 %   v = zeros              % the zero vector 
 %   v = zeros('antipodal') % the zero axis
-%   v = zeros(m,n)         % a m x n matric of zero vectors
+%   v = zeros(m,n)         % a m × n matric of zero vectors
 %
 % Input
 %  m,n - double

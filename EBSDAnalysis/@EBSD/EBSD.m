@@ -100,7 +100,7 @@ classdef EBSD < phaseList & dynProp & dynOption
         ebsd.unitCell = pos.unitCell;
         ebsd.scanUnit = pos.scanUnit;
         ebsd.A_D = pos.A_D;
-        % a map shaped property is flattened along with pos, an N x k one is not
+        % a map shaped property is flattened along with pos, an N × k one is not
         for fn = fieldnames(pos.prop)'
           p = pos.prop.(char(fn));
           if ~(size(p,2) > 1 && size(p,1) == length(pos)), p = p(:); end
@@ -333,7 +333,7 @@ classdef EBSD < phaseList & dynProp & dynOption
     end
            
     function ebsd = set.unitCell(ebsd,uC)
-      % calcUnitCell returns the cell as an n x 2 list of coordinates while
+      % calcUnitCell returns the cell as an n × 2 list of coordinates while
       % the property is a vector3d, so the documented way of recomputing a
       % cell, ebsd.unitCell = calcUnitCell(xy), used to store a raw double
       % that every reader of the property then tripped over. Convert here

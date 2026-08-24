@@ -232,7 +232,7 @@ assert(isequal(gridSize(mg),[7 11]),'gridSize is %s, expected [7 11]',mat2str(gr
 assert(mg.nChannel == 1,'a 2d array has %d channels',mg.nChannel)
 assert(strcmp(mg.name,'bse'),'the name did not survive construction')
 assert(abs(mg.dx - 0.5) < 1e-12 && abs(mg.dy - 0.25) < 1e-12,...
-  'step is %g x %g, expected 0.5 x 0.25',mg.dx,mg.dy)
+  'step is %g × %g, expected 0.5 × 0.25',mg.dx,mg.dy)
 assert(max(abs(double(mg) - img),[],'all') == 0,'double(mg) is not the image')
 
 % a scalar dxy means square pixels
@@ -480,7 +480,7 @@ end
 function checkRelayout
 % turning the array to face another way moves nothing on the specimen
 
-d = 0.3; ebsd = makeMap(8,d);   % 8 x 11, so a transpose is visible
+d = 0.3; ebsd = makeMap(8,d);   % 8 × 11, so a transpose is visible
 mg = mapImage(ebsd.bc,ebsd);
 
 target = gridLayout(mg.d2,-mg.d1);   % a quarter turn from where it is

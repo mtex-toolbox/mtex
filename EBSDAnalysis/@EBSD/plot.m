@@ -26,7 +26,7 @@ function [h,mP] = plot(ebsd,varargin)
 %
 % Input
 %  ebsd  - @EBSD
-%  color - length(ebsd) x 3 vector of RGB values
+%  color - length(ebsd) × 3 vector of RGB values
 %
 % Options
 %  micronbar   - 'on'/'off'

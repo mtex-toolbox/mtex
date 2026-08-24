@@ -11,7 +11,7 @@ function gY = gradientY(ebsd,varargin)
 %  ebsd - @EBSD
 %
 % Output
-%  gY - length(ebsd) x 1 orientation gradient along Y
+%  gY - length(ebsd) × 1 orientation gradient along Y
 %
 % See also
 % EBSD/gradient EBSD/curvature

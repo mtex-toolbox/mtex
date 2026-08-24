@@ -21,7 +21,7 @@ else
     omegaP = 0:1:179 * degree;
 end
 
-% omega x vetices
+% omega × vetices
 d = cos(omegaP(:)) * Vg(:,1).' + sin(omegaP(:)) * Vg(:,2).';
 
 % max for each omega

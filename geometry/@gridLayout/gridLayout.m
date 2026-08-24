@@ -32,7 +32,7 @@ classdef gridLayout < referenceFrame
 %  ebsd   - @EBSDgrid, read as row along d1 and col along d2
 %
 % Class Properties
-%  basis     - 1x3 @vector3d, [row, col, row x col]
+%  basis     - 1x3 @vector3d, [row, col, row × col]
 %  axesNames - {'row','col'}
 %
 % See also

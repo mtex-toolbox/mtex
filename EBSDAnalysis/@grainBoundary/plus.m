@@ -15,7 +15,7 @@ function gB = plus(gB,v)
 
 if isa(v,'grainBoundary'), [v,gB] = deal(gB,v); end
 
-% allV is a vector3d, an n x 2 double would expand its coordinate arrays
+% allV is a vector3d, an n × 2 double would expand its coordinate arrays
 if ~isa(v,'vector3d')
   error('MTEX:shift:invalidShift',...
     'Grain boundaries can only be shifted by a vector3d.');

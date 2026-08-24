@@ -90,7 +90,7 @@ nsec = length(sec);
 sR = sphericalRegion('maxTheta',max_theta,'maxRho',max_rho);
 S2G = plotS2Grid(sR,varargin{:});
 
-% build size(S2G) x nsec matrix of Euler angles
+% build size(S2G) × nsec matrix of Euler angles
 sec_angle = repmat(reshape(sec,[1,1,nsec]),[size(S2G),1]);
 theta  = reshape(repmat(S2G.theta ,[1,1,nsec]),[size(S2G),nsec]);
 rho = reshape(repmat(S2G.rho,[1,1,nsec]),[size(S2G),nsec]);

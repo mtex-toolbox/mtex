@@ -18,13 +18,13 @@ function [cid,pos,firstEnd] = chainOrder(F,nV,varargin)
 % which is what lets the compiled and the MATLAB path be interchangeable.
 %
 % Input
-%  F  - nF x 2 list of edges, one based vertex indices
+%  F  - nF × 2 list of edges, one based vertex indices
 %  nV - number of vertices
 %
 % Output
-%  cid      - nF x 1 chain id, 1..nCh
-%  pos      - nF x 1 zero based position of the edge within its chain
-%  firstEnd - nF x 1, 1 or 2 - the column of F holding the entry vertex
+%  cid      - nF × 1 chain id, 1..nCh
+%  pos      - nF × 1 zero based position of the edge within its chain
+%  firstEnd - nF × 1, 1 or 2 - the column of F holding the entry vertex
 %
 % Flags
 %  noMex - use the MATLAB implementation even if chainOrderC is available

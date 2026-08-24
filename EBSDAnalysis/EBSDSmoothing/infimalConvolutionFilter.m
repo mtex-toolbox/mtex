@@ -238,7 +238,7 @@ classdef infimalConvolutionFilter < EBSDFilter
       
       function v = projection_sphere(u)
         % function projections_sphere projects the rows of a given matrix u onto
-        % the sphere. u is the M*N x m matrix, where every row consists of values
+        % the sphere. u is the M*N × m matrix, where every row consists of values
         % that will be projected onto S^m.
         %
 

@@ -7,11 +7,11 @@ function opt_sub_ind = find_optimal_subset(SO3F, ind, ori, varargin)
 
 % inputs:
 %   SO3F   - @SO3FunMLS, containing data like nodes, degree, dimension of poly space, ...
-%   ind    - N x numel(SO3F.nodes) logical array describing sets of nodes
+%   ind    - N × numel(SO3F.nodes) logical array describing sets of nodes
 %   ori    - the centers where the MLS approximation is to be evaluated
 
 % outputs:
-%   opt_sub_ind  - a N x numel(SO3F.nodes) logical array with
+%   opt_sub_ind  - a N × numel(SO3F.nodes) logical array with
 %                    sum(optind, 2) = (dim,...,dim)  describing the optimal subsets
 %                    of cardinality = dim(ansatz space)
 
@@ -38,7 +38,7 @@ opt_sub_ind = zeros(N, dim);
 num_threads = get_option(varargin, 'threads', 1, 'double');
 
 
-% if ind is N x nn, we convert it into sparse logical N x grid_size array first
+% if ind is N × nn, we convert it into sparse logical N × grid_size array first
 if (isa(ind, 'double') == true)
   n = size(ind, 2);
   row_idx = repmat((1:N)', 1, n);

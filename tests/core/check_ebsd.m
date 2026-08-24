@@ -316,10 +316,10 @@ q = interp(ebsd,ebsd.pos);
 
 % a multi channel property keeps its columns
 assert(isequal(size(q.fs),[n 5]), ...
-  'check_ebsdInterp: an N x 5 property came back as %s',mat2str(size(q.fs)));
+  'check_ebsdInterp: an N × 5 property came back as %s',mat2str(size(q.fs)));
 
 assert(isequal(q.fs,fs), ...
-  'check_ebsdInterp: an N x 5 property did not round trip');
+  'check_ebsdInterp: an N × 5 property did not round trip');
 
 assert(isequal(q.bc,(1:n).'), ...
   'check_ebsdInterp: an ordinary property did not round trip');
@@ -328,7 +328,7 @@ assert(isequal(q.bc,(1:n).'), ...
 far = ebsd.pos + vector3d(1000,0,0);
 qf = interp(ebsd,far);
 assert(isequal(size(qf.fs),[n 5]) && all(isnan(qf.fs(:))), ...
-  'check_ebsdInterp: outside the map an N x 5 property is %s',mat2str(size(qf.fs)));
+  'check_ebsdInterp: outside the map an N × 5 property is %s',mat2str(size(qf.fs)));
 
 end
 
@@ -423,7 +423,7 @@ end
 
 % =========================================================================
 function ebsd = smallMap(prop)
-% a 4 x 6 map, 24 measurements, as a flat list
+% a 4 × 6 map, 24 measurements, as a flat list
 %
 % Deliberately 2D and not a single scan line: calcUnitCell returns a unit
 % cell with a NaN y for a collinear map (uniquetol on the constant y leaves

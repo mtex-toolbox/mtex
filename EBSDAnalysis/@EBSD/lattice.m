@@ -17,11 +17,11 @@ function g = lattice(ebsd)
 %
 % Output
 %  g - struct with fields
-%       A       - 2 x 2 lattice basis, columns are the grid step vectors
-%       stencil - k x 2 integer neighbour offsets (k = 4 square, 6 hex)
+%       A       - 2 × 2 lattice basis, columns are the grid step vectors
+%       stencil - k × 2 integer neighbour offsets (k = 4 square, 6 hex)
 %       dxy     - representative spacing = mean column norm of A
-%       origin  - 1 x 2 physical position corresponding to ij = [0 0]
-%       ij      - nEbsd x 2 integer lattice index of every pixel, robust
+%       origin  - 1 × 2 physical position corresponding to ij = [0 0]
+%       ij      - nEbsd × 2 integer lattice index of every pixel, robust
 %                 to smooth (e.g. trapezoidal) grid distortion
 %
 % Note: ij is RELATIVE to this data's own extent. A phase subset therefore

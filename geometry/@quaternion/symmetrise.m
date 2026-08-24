@@ -7,23 +7,23 @@ function varargout = symmetrise(q,CS,SS,varargin)
 %  SS - specimen @symmetry
 %
 % Output
-%  q - symmetrically equivalent orientations CS x SS x q
+%  q - symmetrically equivalent orientations CS × SS × q
 %
 % See also
 % CrystalSymmetries
 
 if ~isempty(CS)
-  q = mtimes(q, CS.rot, 0).'; % CS x M <- q * CS
+  q = mtimes(q, CS.rot, 0).'; % CS × M <- q * CS
   lCS = numSym(CS);
 else
   lCS = 1;
 end
 
 if nargin>2 && ~isempty(SS) && numSym(SS)>1
-  q = mtimes(SS.rot, q, 1);     % SS x (CS X M)
+  q = mtimes(SS.rot, q, 1);     % SS × (CS × M)
   lSS = numSym(SS);
 else
   lSS = 1;
 end
 
-varargout{1} = reshape(q,lCS * lSS,[]); % (CSxSS) x M
+varargout{1} = reshape(q,lCS * lSS,[]); % (CS×SS) × M

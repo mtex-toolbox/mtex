@@ -1,7 +1,7 @@
 function T = transpose(T)
 % transpose a list of a tensors
 %
-% If T is a m x n list of rank r tensors so T.' is a n x m list of rank r
+% If T is a m × n list of rank r tensors so T.' is a n × m list of rank r
 % tensors.
 %
 % Syntax

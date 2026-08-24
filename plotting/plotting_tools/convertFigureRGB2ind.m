@@ -16,7 +16,7 @@ if isempty(childs), return;end
     
 CData = CData(ind);
   
-% concatenate all CData to a big N x 1 x 3 matrix
+% concatenate all CData to a big N × 1 × 3 matrix
 combined = cellfun(@(x) reshape(x,[],1,3),CData,'uniformOutput',false);
 
 combined = cat(1,combined{:});

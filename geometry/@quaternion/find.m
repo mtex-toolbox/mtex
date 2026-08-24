@@ -68,7 +68,7 @@ end
 % epsilon given ==> perform range-search with radius epsilon
 % scale spherical region to euclidean region before starting rangesearch
 ind = rangesearch(v.abcd, w.abcd, sqrt(2) * sqrt(1 - cos(epsilon_or_k/2)));
-% first convert ind into sparse logical matrix of size numel(w) x numel(v)
+% first convert ind into sparse logical matrix of size numel(w) × numel(v)
 lens = cellfun(@numel, ind);
 row_idx = repelem((1:numel(w)), lens);
 col_idx = cell2mat(ind');

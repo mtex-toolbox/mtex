@@ -48,7 +48,7 @@ q = squeeze(double(X));
 ind = q(:,1) < 0;
 q(ind) = -q(ind);
 
-% output K is a list of M tetrahegons, i.e., it is a M x 4 matrix
+% output K is a list of M tetrahegons, i.e., it is a M × 4 matrix
 % where the m-th line contains the indices of the points of the m-th
 % tetrahegon
 K = convhulln(q);

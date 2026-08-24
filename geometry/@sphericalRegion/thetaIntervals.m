@@ -10,8 +10,8 @@ function [thetaMin,thetaMax] = thetaIntervals(sR,rho)
 %  rho - azimuth angles
 %
 % Output
-%  thetaMin - nInt x numel(rho), padded with NaN
-%  thetaMax - nInt x numel(rho), padded with NaN
+%  thetaMin - nInt × numel(rho), padded with NaN
+%  thetaMax - nInt × numel(rho), padded with NaN
 %
 % Description
 % In contrast to |thetaRange|, which returns only the hull

@@ -40,13 +40,13 @@ function out = spatialDecompositionGrid(ebsd,varargin)
 %             alpha >= 1, matching the alpha shape.
 %
 % Output struct out with fields
-%  V        - nV x 2 Voronoi vertices
-%  F        - nF x 2 vertex indices per boundary segment (1-based)
-%  I_FD     - nF x nSites sparse incidence (segment x site), sites = grains
-%  isNotIdx - nSites x 1 logical, which sites are notIndexed grains
-%  site2id  - nSites x 1, ebsd linear index for indexed sites, NaN for
+%  V        - nV × 2 Voronoi vertices
+%  F        - nF × 2 vertex indices per boundary segment (1-based)
+%  I_FD     - nF × nSites sparse incidence (segment × site), sites = grains
+%  isNotIdx - nSites × 1 logical, which sites are notIndexed grains
+%  site2id  - nSites × 1, ebsd linear index for indexed sites, NaN for
 %             notIndexed sites that came from empty cells
-%  ij       - nEbsd x 2 axial indices (debug)
+%  ij       - nEbsd × 2 axial indices (debug)
 
 alpha = get_option(varargin,'alpha',3.1);
 
@@ -249,7 +249,7 @@ end
 
 % ===========================================================================
 function m2 = binaryDilate(m, offs, szP)
-% binary morphological dilation of mask m (prod(szP) x 1 logical) by the
+% binary morphological dilation of mask m (prod(szP) × 1 logical) by the
 % structuring element `offs`, given as [di dj] axial (i,j) offsets. Consistent
 % with the flatten ij2slotP, i is the row (dim 1) and j is the column (dim 2),
 % so an offset's 1st component moves the row and its 2nd component the column.
@@ -272,7 +272,7 @@ end
 
 % ===========================================================================
 function cnt = stencilCount(m, offs, szP)
-% number of foreground cells of m (prod(szP) x 1 logical) among the stencil
+% number of foreground cells of m (prod(szP) × 1 logical) among the stencil
 % neighbours of every raster cell. Same shifted-slice scheme as binaryDilate,
 % but accumulating a count instead of OR-ing.
 M   = reshape(m, szP);

@@ -34,7 +34,7 @@ classdef grain3Boundary < phaseList & dynProp
 
 properties  % with as many rows as data
   id = []
-  F                     % cell array or n x 3 array with all faces
+  F                     % cell array or n × 3 array with all faces
   grainId = zeros(0,2)  % id's of the neighboring grains to a face
   % (faceNormals direction from grain#1 to grain#2)
   ebsdId = zeros(0,2)   % id's of the neighboring ebsd data to a face
@@ -65,7 +65,7 @@ methods
     % Input
     %  V       - @vector3d list of vertices
     %  F       - cell array of closed loops of indices to V describing the boundary faces
-    %  F       - n x 3 array of indices to V describing the boundary faces
+    %  F       - n × 3 array of indices to V describing the boundary faces
     %  ebsdInd - [Id1,Id2] list of adjacent EBSD index for each segment
     %  grainId - [Id1,Id2] list of adjacent grainIds for each segment
     %  phaseId - list of adjacent phaseIds for each segment

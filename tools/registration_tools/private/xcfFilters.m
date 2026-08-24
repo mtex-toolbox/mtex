@@ -16,8 +16,8 @@ function [bandPass,window] = xcfFilters(roiSize,fPass)
 %  fPass   - [highCutOff highWidth lowCutOff lowWidth]
 %
 % Output
-%  bandPass - roiSize x roiSize, in fft order
-%  window   - roiSize x roiSize raised cosine
+%  bandPass - roiSize × roiSize, in fft order
+%  window   - roiSize × roiSize raised cosine
 %
 % See also
 % xcfShift

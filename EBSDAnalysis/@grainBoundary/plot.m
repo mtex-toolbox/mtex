@@ -14,7 +14,7 @@ function [h,mP] = plot(gB,varargin)
 % Input
 %  grains - @grain2d
 %  gB     - @grainBoundary
-%  color  - n x 3 list of RGB values
+%  color  - n × 3 list of RGB values
 %  
 % Options
 %  linewidth - line width

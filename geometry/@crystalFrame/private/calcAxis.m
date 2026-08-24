@@ -189,7 +189,7 @@ end
 
 if det(M) < 0, M(2,:) = -M(2,:);end
 
-% now compute the new a, b, c axes - slice the 3 x 3, the constructor cannot read it
+% now compute the new a, b, c axes - slice the 3 × 3, the constructor cannot read it
 xyz = M * double(abc);
 abc = vector3d(xyz(1,:),xyz(2,:),xyz(3,:));
 
@@ -199,7 +199,7 @@ end
 function alignment = parseAlignment(alignOpt)
 % canonicalise the alignment options into what x, y and z are aligned with
 %
-% Output is a 1 x 3 cell of 'a','b','c','a*','b*','c*','m','d' or '', one
+% Output is a 1 × 3 cell of 'a','b','c','a*','b*','c*','m','d' or '', one
 % per Cartesian axis.
 
 % an option may be written either way round, x||a or a||x

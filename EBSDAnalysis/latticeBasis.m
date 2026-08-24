@@ -16,7 +16,7 @@ function [A,stencil,dxy] = latticeBasis(unitCell)
 %
 % Output
 %  A       - 2x2 basis, columns a1,a2 (physical units)
-%  stencil - k x 2 integer neighbour offsets (k = 4 square, 6 hex)
+%  stencil - k × 2 integer neighbour offsets (k = 4 square, 6 hex)
 %  dxy     - representative spacing = mean column norm of A
 %
 % NB the derived (i,j) indexing is PRIVATE to the decomposition and need not
@@ -39,9 +39,9 @@ V = [unitCell.x(:), unitCell.y(:)];
 V = V - mean(V,1);                       % centre the cell on the origin
 k = size(V,1);
 
-% cell-to-cell translations = 2 x edge midpoints
+% cell-to-cell translations = 2 × edge midpoints
 mids  = 0.5 * (V + V([2:end 1],:));
-trans = 2 * mids;                        % k x 2, one per shared edge
+trans = 2 * mids;                        % k × 2, one per shared edge
 
 % choose the basis from the directions of these translations, never from their
 % position in the list, which follows the order the cell's corners are written

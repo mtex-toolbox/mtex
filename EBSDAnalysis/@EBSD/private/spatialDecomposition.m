@@ -110,7 +110,7 @@ F = [iv(:), ivn(:)];
 % should be unique (i.e one edge is incident to two cells D)
 [F, ~, ie] = unique(sort(F,2),'rows');
 
-% faces incident to cells, F x D
+% faces incident to cells, F × D
 I_FD = sparse(ie,id,1);
 
 end

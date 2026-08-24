@@ -15,7 +15,7 @@ function tP = plus(tP,v)
 
 if isa(v,'triplePointList'), [v,tP] = deal(tP,v); end
 
-% V is a vector3d, an n x 2 double would expand its coordinate arrays
+% V is a vector3d, an n × 2 double would expand its coordinate arrays
 if ~isa(v,'vector3d')
   error('MTEX:shift:invalidShift',...
     'Triple points can only be shifted by a vector3d.');

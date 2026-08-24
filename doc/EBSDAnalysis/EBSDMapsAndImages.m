@@ -12,7 +12,7 @@
 %
 % The first decides what is drawn where. The second decides what |img(i,j)|
 % means. This page walks through both on one WC-Co dataset, an EBSD map and
-% four forescatter images of the same 20 x 15 micron area.
+% four forescatter images of the same 20 × 15 micron area.
 
 plottingConvention.default('y↓→x');
 
@@ -63,7 +63,7 @@ imgList = [mapImage(ebsd.bc, ebsd,         'name', 'bcImg'), ...
   mapImage(img.fsdT10,'dxy', img.pixSzImg, 'name', 'fsdT10')]
 
 %%
-% The map's array is 128 x 96 now where the pictures are 192 x 256 - the two
+% The map's array is 128 × 96 now where the pictures are 192 × 256 - the two
 % are transposed to each other. Plotting shows it at once: the map is on its
 % side relative to the images, and somewhere else on the specimen
 
@@ -99,7 +99,7 @@ plot(imgList,'layout',[1,3])
 %% How the Array Is Stored
 %
 % Look at the |layout| column above. It changed too, and so did the shape of
-% the map - a 128 x 96 array came back 96 x 128. That is the second question,
+% the map - a 128 × 96 array came back 96 × 128. That is the second question,
 % and it has nothing to do with the specimen: it is the order the numbers sit
 % in memory.
 %

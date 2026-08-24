@@ -261,7 +261,7 @@ hold off
 % consider only martensite pixels that now belong to austenite grains. The
 % (:) matter: on a gridded map every per pixel property has the shape of the
 % map, but phaseId is the storage and stays a column, so combining the two
-% without flattening compares an (r x c) against an (r*c x 1)
+% without flattening compares an (r × c) against an (r*c × 1)
 isNowFCC = parentGrains.phaseId(max(1,parentEBSD.grainId(:))) == 3 & parentEBSD.phaseId(:) == 2;
 
 % compute parent orientation

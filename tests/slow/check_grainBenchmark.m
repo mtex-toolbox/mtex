@@ -37,8 +37,8 @@ ebsd = EBSDGrainBenchmark((1:7)*degree,[2 4 6]*degree,'grainSize',20);
 nGR = ebsd.opt.numGrainRows;
 nGC = ebsd.opt.numGrainCols;
 
-check(isequal([nGR nGC],[4 8]),'expected a 4 x 8 grain layout, got %d x %d',nGR,nGC);
-check(isequal(size(ebsd),[80 160]),'expected an 80 x 160 pixel map, got %d x %d',size(ebsd,1),size(ebsd,2));
+check(isequal([nGR nGC],[4 8]),'expected a 4 × 8 grain layout, got %d × %d',nGR,nGC);
+check(isequal(size(ebsd),[80 160]),'expected an 80 × 160 pixel map, got %d × %d',size(ebsd,1),size(ebsd,2));
 
 n = accumarray(ebsd.prop.trueGrainId(:),1);
 check(numel(n) == nGR*nGC && all(n == 400), ...
@@ -49,7 +49,7 @@ check(numel(n) == nGR*nGC && all(n == 400), ...
 % the product construction ori(i,j) = u_i * v_j realizes every ladder angle exactly
 
 ori = ebsd.opt.trueMeanOrientation;
-check(isequal(size(ori),[nGR nGC]),'trueMeanOrientation must be numGrainRows x numGrainCols');
+check(isequal(size(ori),[nGR nGC]),'trueMeanOrientation must be numGrainRows × numGrainCols');
 
 err = 0;
 for i = 1:nGR

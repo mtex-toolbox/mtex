@@ -549,7 +549,7 @@ function W = transport(W,V,U,sinT,cosT1)
 % Parallel transport of tangent vectors along the geodesics of a step. Every
 % column of W holds one tangent vector per node, stacked as [x;y;z], followed
 % by the softmax block, and V and U hold the nodes and the unit directions of
-% the step as M x 3 matrices. For the geodesic that leaves v in direction u
+% the step as M × 3 matrices. For the geodesic that leaves v in direction u
 % by the angle t parallel transport is
 %
 %   P(w) = w - (u.w) ( sin(t) v + (1-cos(t)) u ) ,

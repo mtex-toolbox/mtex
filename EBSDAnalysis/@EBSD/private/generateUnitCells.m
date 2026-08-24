@@ -6,8 +6,8 @@ function [v,faces] = generateUnitCells(pos,unitCell,varargin)
 %  unitCell - spatial coordinates of the unit cell corners (vector3d)
 %
 % Output
-%  v     - list of vertices (nV x 3)
-%  faces - list of faces (numel(pos) x length(unitCell))
+%  v     - list of vertices (nV × 3)
+%  faces - list of faces (numel(pos) × length(unitCell))
 %
 % Shared corners between neighbouring cells are welded so that patch draws
 % each cell once with no doubled edges. Welding is topological: each corner is
@@ -23,7 +23,7 @@ nC = numel(unitCell);
 N  = numel(pos);
 
 % corner positions (deformed positions are used only for coordinates)
-cx = pos.x(:) + unitCell.x(:).';       % N x nC
+cx = pos.x(:) + unitCell.x(:).';       % N × nC
 cy = pos.y(:) + unitCell.y(:).';
 cz = pos.z(:) + unitCell.z(:).';
 
@@ -44,7 +44,7 @@ if check_option(varargin,'noWeld') && ~check_option(varargin,'unitCell')
   v = [cx(:), cy(:), cz(:)];                  % all corners, no merge
 
   % column c of the corner arrays occupies rows (c-1)*N+(1:N) in v
-  col = @(c) ((c-1)*N + (1:N)).';             % vertex ids of corner c, N x 1
+  col = @(c) ((c-1)*N + (1:N)).';             % vertex ids of corner c, N × 1
   nT  = nC - 2;                               % triangles per cell (fan)
   faces = zeros(N*nT, 3);
   for t = 1:nT
@@ -55,10 +55,10 @@ end
 
 % --- grid indexing (topological) --------------------------------------------
 % basis and integer (i,j) index of each pixel, robust to a smooth distortion
-A = latticeBasis(unitCell);            % 2 x 2, columns are the grid step vectors
+A = latticeBasis(unitCell);            % 2 × 2, columns are the grid step vectors
 Ainv = inv(A);
-xy = [pos.x(:), pos.y(:)];             % N x 2
-ij = assignGridIndex(xy,A);            % N x 2 integer grid index
+xy = [pos.x(:), pos.y(:)];             % N × 2
+ij = assignGridIndex(xy,A);            % N × 2 integer grid index
 
 % corner offset in lattice units, scaled to integers: square -> m=2 (half
 % steps), hex -> m=3 (third steps). m is the smallest integer making all
@@ -66,7 +66,7 @@ ij = assignGridIndex(xy,A);            % N x 2 integer grid index
 % cells store rounded decimals (e.g. 3.46 for 2*sqrt(3)) so the exact rational
 % is only approximate - a tight tolerance would miss m=3 for hex and fall back
 % to m=2, which collapses each hexagon's 6 corners onto 4 nodes (parallelograms).
-off = Ainv * [unitCell.x(:).'; unitCell.y(:).'];   % 2 x nC
+off = Ainv * [unitCell.x(:).'; unitCell.y(:).'];   % 2 × nC
 tol = 1e-2;                                         % lattice units (~1% of a step)
 m = 1;
 while m <= 12 && ~all(abs(m*off(:) - round(m*off(:))) < tol)
@@ -77,7 +77,7 @@ if m > 12
     'could not find an integer corner scaling; falling back to m=3 (hex) / m=2 (square)');
   m = 2 + (nC == 6);      % 3 for hex, 2 for square
 end
-coff = round(m * off).';               % nC x 2 integer corner signs
+coff = round(m * off).';               % nC × 2 integer corner signs
 
 % --- topological key of every corner: m*index + cornerSign ------------------
 % column-major layout matches cx(:) (all cells corner 1, then corner 2, ...)
@@ -95,6 +95,6 @@ vx  = accumarray(in, cx(:), [nV 1]) ./ cnt;
 vy  = accumarray(in, cy(:), [nV 1]) ./ cnt;
 vz  = accumarray(in, cz(:), [nV 1]) ./ cnt;
 
-v     = [vx, vy, vz];        % welded vertices, nV x 3
+v     = [vx, vy, vz];        % welded vertices, nV × 3
 faces = reshape(in, N, nC);  % one row of corner ids per cell, unit-cell order
 end

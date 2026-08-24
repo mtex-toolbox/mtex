@@ -66,7 +66,7 @@ H = [2,4,2]*rot.bandwidth + [2,0,2];
 
 
 % 2) Transform harmonic/Wigner coefficients to Fourier coefficients
-% create ghat -> k x j x l
+% create ghat -> k × j × l
 % flags: 2^0 -> use L_2-normalized Wigner-D functions
 %        2^2 -> fhat are the Fourier coefficients of a real valued function
 %        2^4 -> use right and left symmetry

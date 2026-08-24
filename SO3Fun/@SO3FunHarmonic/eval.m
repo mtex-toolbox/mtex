@@ -15,7 +15,7 @@ function f = eval(SO3F,rot,varargin)
 %  rot - @rotation (evaluation nodes)
 %
 % Output
-%  f - double [numrot x size(SO3F)]
+%  f - double [numrot × size(SO3F)]
 %
 % Options
 %  bandwidth - cut bandwidth of the harmonic series in evaluation process

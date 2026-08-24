@@ -31,9 +31,9 @@ classdef loadHelper < handle
 %
 
 properties
-  data         % (n x M) numeric matrix, UNveraendert (copy-on-write geteilt)
-  colMap       % 1 x m: physische Spalte in data je logischer Spalte
-  columnNames  % 1 x m cellstr (stripws + lower)
+  data         % (n × M) numeric matrix, UNveraendert (copy-on-write geteilt)
+  colMap       % 1 × m: physische Spalte in data je logischer Spalte
+  columnNames  % 1 × m cellstr (stripws + lower)
   unit
   opts
 end

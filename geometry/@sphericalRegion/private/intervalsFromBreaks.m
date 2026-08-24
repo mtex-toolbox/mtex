@@ -6,14 +6,14 @@ function [aMin,aMax] = intervalsFromBreaks(sR,breaks,lo,hi,gridLine,mkVec)
 %
 % Input
 %  sR       - @sphericalRegion
-%  breaks   - nB x n, the angles where a bounding circle is crossed
+%  breaks   - nB × n, the angles where a bounding circle is crossed
 %  lo, hi   - the range the angle is searched in
-%  gridLine - 1 x n, the value of the other angle
+%  gridLine - 1 × n, the value of the other angle
 %  mkVec    - @(angle,gridLine) the @vector3d those two stand for
 %
 % Output
-%  aMin - nInt x n, padded with NaN
-%  aMax - nInt x n, padded with NaN
+%  aMin - nInt × n, padded with NaN
+%  aMax - nInt × n, padded with NaN
 %
 % Description
 % Between two consecutive crossings the region can not change, so testing

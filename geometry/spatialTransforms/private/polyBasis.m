@@ -10,11 +10,11 @@ function B = polyBasis(x,y,degree)
 %   B = polyBasis(x,y,2)   % [1 x y x^2 xy y^2]
 %
 % Input
-%  x, y   - n x 1 positions
+%  x, y   - n × 1 positions
 %  degree - 1 or 2
 %
 % Output
-%  B - n x m design matrix
+%  B - n × m design matrix
 %
 % See also
 % spatialTransformPoly robustLsq

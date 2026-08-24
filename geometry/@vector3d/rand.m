@@ -4,7 +4,7 @@ function v = rand( varargin )
 % Syntax
 %   v = rand              % a random unit vector 
 %   v = rand('antipodal') % a random axis
-%   v = rand(m,n)         % a m x n matrix of random unit vectors
+%   v = rand(m,n)         % a m × n matrix of random unit vectors
 %
 %   cs = crystalSymmetry('432');
 %   sR = cs.fundamentalSector;

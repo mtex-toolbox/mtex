@@ -45,7 +45,7 @@ if any(south)
   exy = (-csx .* csy) ./ exnorm;
   exz = (-csx .* csz) ./ exnorm;
 
-  % ey = center x ex, hence ex x ey = center
+  % ey = center × ex, hence ex × ey = center
   eyx = csy .* exz - csz .* exy;
   eyy = csz .* exx - csx .* exz;
   eyz = csx .* exy - csy .* exx;

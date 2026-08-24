@@ -161,7 +161,7 @@ methods
   % -----------------------------------------------------------------------
 
   % rotate is inherited from vector3d - a rotated tangent vector is again one at
-  % the same reference; rotate_outer is not, its n x m result has no reference
+  % the same reference; rotate_outer is not, its n × m result has no reference
   function v = rotate_outer(v,q,varargin)
     v = rotate_outer@vector3d(vector3d(v),q,varargin{:});
   end

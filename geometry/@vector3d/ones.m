@@ -4,7 +4,7 @@ function v = ones(varargin)
 % Syntax
 %   v = ones              % a ones vector 
 %   v = ones('antipodal') % a ones axis
-%   v = ones(m,n)         % a m x n matric of ones vectors
+%   v = ones(m,n)         % a m × n matric of ones vectors
 %
 % Input
 %  m,n - double

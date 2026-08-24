@@ -12,7 +12,7 @@ mtexdata twins
 
 %%
 % This is an @EBSDsquare, i.e. the 22879 measurements are stored as a
-% 137 x 167 matrix, one entry per scan position and arranged the way the map
+% 137 × 167 matrix, one entry per scan position and arranged the way the map
 % is. Apart from that it behaves like any other @EBSD variable
 
 plot(ebsd('Magnesium'),ebsd('Magnesium').orientations)

@@ -11,7 +11,7 @@ function o = symmetrise(o,varargin)
 %  ori - @orientation 
 %
 % Output
-%  oriSym - @orientation (numel(CS) * numel(SS)) x numel(ori)
+%  oriSym - @orientation (numel(CS) * numel(SS)) × numel(ori)
 %
 % Flags
 %  proper - consider only proper symmetry operations

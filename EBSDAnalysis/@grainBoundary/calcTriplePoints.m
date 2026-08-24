@@ -19,8 +19,8 @@ F  = gB.F;
 nV = size(gB.allV,1);
 nF = size(F,1);
 
-% Vertex face-degree straight from the face list (nF x 2 vertex ids), without
-% building the full nV x nF incidence matrix. A triple point must have
+% Vertex face-degree straight from the face list (nF × 2 vertex ids), without
+% building the full nV × nF incidence matrix. A triple point must have
 % face-degree exactly 3, so this alone selects the candidate vertices. This
 % avoids the expensive sparse(f,i,1,nV,nF) assembly, which dominated the
 % runtime on large maps.
@@ -29,7 +29,7 @@ cand     = find(vFaceDeg == 3);                 % candidate vertex ids
 
 % Build the vertex-face incidence only for the candidate vertices: for each of
 % the 2 columns of F, keep the faces whose endpoint is a candidate. I_VFc is
-% (#cand x nF) and cheap because #cand << nV.
+% (#cand × nF) and cheap because #cand << nV.
 vpos = zeros(nV,1); vpos(cand) = 1:numel(cand); % candidate vertex -> row
 r = []; c = [];
 for k = 1:2
@@ -49,8 +49,8 @@ isTP  = full(sum(I_VGc,2) == 3);
 % logical indexing (cand(isTP) with both 1x1) collapses to 0x0 instead
 % of 0x1 when isTP is false, unlike the Nx1 case for any other N.
 itP   = reshape(cand(isTP),[],1);               % triple-point vertex ids
-I_VG  = I_VGc(isTP,:);                          % (#tp x nG) grain incidence
-I_VFt = I_VFc(isTP,:);                          % (#tp x nF) face incidence
+I_VG  = I_VGc(isTP,:);                          % (#tp × nG) grain incidence
+I_VFt = I_VFc(isTP,:);                          % (#tp × nF) face incidence
 
 % grain ids per triple point (3 each)
 [tpGrainId,~] = find(I_VG.');

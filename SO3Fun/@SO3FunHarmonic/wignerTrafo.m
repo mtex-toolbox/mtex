@@ -40,7 +40,7 @@ function ghat = wignerTrafo(SO3F,varargin)
 %  flags - value (2^0+2^1+...)
 %
 % Output:
-%  ghat - double array (Fourier array with indices l x j x k)
+%  ghat - double array (Fourier array with indices l × j × k)
 %
 
 N = min(SO3F.bandwidth,get_option(varargin,'bandwidth',inf));

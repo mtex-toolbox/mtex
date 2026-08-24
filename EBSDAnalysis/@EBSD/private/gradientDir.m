@@ -3,7 +3,7 @@ function gW = gradientDir(ebsd,w,varargin)
 %
 % The gradient is measured along the two lattice directions a1,a2, which are
 % whatever the grid happens to be - not the specimen axes. Writing the
-% unknown gradient as the 3 x 2 matrix G (tangent component x map direction)
+% unknown gradient as the 3 × 2 matrix G (tangent component × map direction)
 % and the undivided differences as h_k = G a_k gives
 %
 %   [h1 h2] = G A      =>      G = [h1 h2] inv(A)
@@ -23,7 +23,7 @@ function gW = gradientDir(ebsd,w,varargin)
 %  w    - @vector3d, the specimen direction
 %
 % Output
-%  gW - length(ebsd) x 1, the derivative along w
+%  gW - length(ebsd) × 1, the derivative along w
 
 [g,A] = gradient(ebsd,varargin{:});
 

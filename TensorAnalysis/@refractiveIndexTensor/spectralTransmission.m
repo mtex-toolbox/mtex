@@ -50,7 +50,7 @@ rgbMap = csvread(fullfile(mtex_path,'plotting','plotting_tools','ciexyz31_1.csv'
 % first column is wavelength
 invLambda = 1./rgbMap(:,1).';
 
-% second to fourth column are RGB values - |lambda| x 3
+% second to fourth column are RGB values - |lambda| × 3
 rgbMap(:,1) = [];
 
 % extract polarization direction
@@ -69,11 +69,11 @@ phi = get_option(varargin,'phi',90*degree);
 % path difference between fast and slow waves
 delta = n .* thickness;
 
-% compute spectra - |nMin| x |lambda|
+% compute spectra - |nMin| × |lambda|
 spectra = sin(delta(:).* invLambda*pi()).^2;
 spectra = cos(phi).^2 - sin(2*(tau -phi)) .* sin(2*tau) .* spectra;
 %Ls(i,:) = (cosd(phi(j)))^2 - sind(2*(tau -phi(j)))*sind(2*tau)*(sind((Delta./visible_spectrum(i))*180)).^2;
-% spectra to color -> |nMin| x 3
+% spectra to color -> |nMin| × 3
 rgb = spectra * rgbMap;
 
 %Adobe RGB

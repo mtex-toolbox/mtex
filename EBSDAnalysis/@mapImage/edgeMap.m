@@ -22,7 +22,7 @@ function e = edgeMap(mg,padWidth)
 %             boundaries blurred over several pixels
 %
 % Output
-%  e - r x c, one value per pixel
+%  e - r × c, one value per pixel
 %
 % Description
 % This is work, not a property read - the whole image is normalised and

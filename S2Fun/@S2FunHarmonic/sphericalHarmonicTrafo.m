@@ -38,7 +38,7 @@ function ghat = sphericalHarmonicTrafo(S2F,varargin)
 %  flags - value (2^0+2^1+...)
 %
 % Output:
-%  ghat - double array (Fourier array with indices kxj --> theta x rho \in [0,pi]x[0,2pi))
+%  ghat - double array (Fourier array with indices kxj --> theta × rho \in [0,pi]x[0,2pi))
 %
 
 N = min(S2F.bandwidth,get_option(varargin,'bandwidth',inf));

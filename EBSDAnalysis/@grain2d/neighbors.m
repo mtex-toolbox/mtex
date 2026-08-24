@@ -19,7 +19,7 @@ function pairs = neighbors(grains,varargin)
 %  grains1, grains2 - @grain2d
 %
 % Output
-%  pairs  - index list of size N x 2
+%  pairs  - index list of size N × 2
 %  A - adjacency matrix
 %
 % Options

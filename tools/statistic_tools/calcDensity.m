@@ -9,7 +9,7 @@ function [f,bandwidth] = calcDensity(x,varargin)
 %   f = calcDensity([x,y,z],'range',[xmin,ymin,zmin;xmax,ymax,zmax])
 %
 % Input
-%  x,y,z - random samples as n x 1 vectors
+%  x,y,z - random samples as n × 1 vectors
 % 
 % Output
 %  f - density as <https://de.mathworks.com/help/matlab/ref/griddedinterpolant.html griddedinterpolant>

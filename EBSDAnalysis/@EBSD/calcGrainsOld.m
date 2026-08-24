@@ -149,8 +149,8 @@ phaseId = full(max(I_DG' * ...
 phaseId(phaseId==0) = 1; % why this is needed?
 
 % compute boundary this gives
-% I_FDext - faces x cells external grain boundaries
-% I_FDint - faces x cells internal grain boundaries
+% I_FDext - faces × cells external grain boundaries
+% I_FDint - faces × cells internal grain boundaries
 [I_FDext, I_FDint, Fext, Fint] = calcBoundary;
 
 if check_option(varargin,'removeQuadruplePoints')
@@ -285,7 +285,7 @@ end
     
     % cells that have a subgrain boundary, i.e. a boundary with a cell
     % belonging to the same grain
-    sub = ((A_Db * I_DG) & I_DG)';                 % grains x cell
+    sub = ((A_Db * I_DG) & I_DG)';                 % grains × cell
     [i,j] = find( diag(any(sub,1))*double(A_Db) ); % all adjacent to those
     sub = any(sub(:,i) & sub(:,j),1);              % pairs in a grain
     
@@ -363,7 +363,7 @@ end
     quadPoints = find(sum(I_FV) == 4).';
     [iqF,~] = find(I_FV(:,quadPoints));
       
-    % this is a length(quadPoints x 4 list of edges
+    % this is a length(quadPoints × 4 list of edges
     iqF = reshape(iqF,4,length(quadPoints)).';
       
     % find the 4 vertices adjacent to each quadruple point

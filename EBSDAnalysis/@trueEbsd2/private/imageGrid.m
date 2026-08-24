@@ -17,7 +17,7 @@ function pos = imageGrid(mg)
 %  mg - @mapImage
 %
 % Output
-%  pos - r x c @vector3d, x along columns and y along rows
+%  pos - r × c @vector3d, x along columns and y along rows
 %
 % See also
 % trueEbsd2/undistort remapShifted mapImage/pos

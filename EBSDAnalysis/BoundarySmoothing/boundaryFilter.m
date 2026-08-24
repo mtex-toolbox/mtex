@@ -31,7 +31,7 @@ classdef boundaryFilter < handle
 
 methods (Abstract = true)
 
-  % V       - nV x 3 vertex coordinates
+  % V       - nV × 3 vertex coordinates
   % A_V     - vertex adjacency, degree on the diagonal, as smoothBoundary
   %           builds it from the vertex - segment incidence matrix
   % isFixed - vertices that may not move, e.g. the junctions

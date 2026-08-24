@@ -8,7 +8,7 @@ function mg = imboxfilt(mg,k)
 %
 % Syntax
 %
-%   mg = imboxfilt(mg)        % 3 x 3
+%   mg = imboxfilt(mg)        % 3 × 3
 %   mg = imboxfilt(mg,5)
 %   mg = imboxfilt(mg,[3 7])  % rows, columns
 %
@@ -55,7 +55,7 @@ end
 
 % =========================================================================
 function v = boxMean(v,k)
-% the mean of the finite values under a k(1) x k(2) box, border replicated
+% the mean of the finite values under a k(1) × k(2) box, border replicated
 
 ok = isfinite(v);
 

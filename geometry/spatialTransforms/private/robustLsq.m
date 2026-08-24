@@ -13,13 +13,13 @@ function [p,wFinal] = robustLsq(A,b,w,varargin)
 %   p = robustLsq(A,b,w,'tune',4.685,'iterMax',50)
 %
 % Input
-%  A - n x m design matrix
-%  b - n x k right hand sides, one column per fitted coordinate
-%  w - n x 1 prior weights, [] for none
+%  A - n × m design matrix
+%  b - n × k right hand sides, one column per fitted coordinate
+%  w - n × 1 prior weights, [] for none
 %
 % Output
-%  p      - m x k coefficients
-%  wFinal - n x 1 weights of the last iteration, prior times bisquare
+%  p      - m × k coefficients
+%  wFinal - n × 1 weights of the last iteration, prior times bisquare
 %
 % Options
 %  tune    - bisquare tuning constant, default 4.685 for 95% efficiency

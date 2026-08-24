@@ -13,7 +13,7 @@ function A = orientBasis(A)
 % towards increasing coordinates.
 %
 % Input / Output
-%  A - 2 x 2, columns are the lattice step vectors
+%  A - 2 × 2, columns are the lattice step vectors
 %
 % See also
 % latticeBasis EBSD/gradient

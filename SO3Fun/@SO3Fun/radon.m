@@ -41,7 +41,7 @@ if isPF % pole figure
      
   for k = 1:length(h)
 
-    % define fibers ->  max(length(h),length(r)) x resolution
+    % define fibers ->  max(length(h),length(r)) × resolution
     ori = orientation(fibre2quat(h(k),S2G(:),'resolution',res),SO3F.CS,SO3F.SS);
     
     % evaluate ODF at these fibers
@@ -61,7 +61,7 @@ else % inverse pole figure
 
   for k = 1:length(r)
 
-    % define fibers ->  max(length(h),length(r)) x resolution
+    % define fibers ->  max(length(h),length(r)) × resolution
     ori = inv(fibre2quat(r(k),S2G(:),'resolution',res));
     
     % evaluate ODF at these fiber

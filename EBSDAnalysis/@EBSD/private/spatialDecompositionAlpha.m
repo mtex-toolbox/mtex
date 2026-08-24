@@ -40,13 +40,13 @@ function out = spatialDecompositionAlpha(ebsd,varargin)
 %          shared alpha value.
 %
 % Output struct out - same contract as spatialDecompositionGrid.m
-%  V        - nV x 2 Voronoi vertices
-%  F        - nF x 2 vertex indices per boundary segment (1-based)
-%  I_FD     - nF x nSites sparse incidence (segment x site), sites = grains
-%  isNotIdx - nSites x 1 logical, which sites are notIndexed grains
-%  site2id  - nSites x 1, ebsd linear index for indexed sites, NaN for
+%  V        - nV × 2 Voronoi vertices
+%  F        - nF × 2 vertex indices per boundary segment (1-based)
+%  I_FD     - nF × nSites sparse incidence (segment × site), sites = grains
+%  isNotIdx - nSites × 1 logical, which sites are notIndexed grains
+%  site2id  - nSites × 1, ebsd linear index for indexed sites, NaN for
 %             notIndexed sites that came from empty cells
-%  ij       - nEbsd x 2 axial indices (debug)
+%  ij       - nEbsd × 2 axial indices (debug)
 
 alpha = get_option(varargin,'alpha',2.2);
 
@@ -256,7 +256,7 @@ end
 
 % ===========================================================================
 function m2 = binaryDilate(m, offs, szP)
-% binary morphological dilation of mask m (prod(szP) x 1 logical) by the
+% binary morphological dilation of mask m (prod(szP) × 1 logical) by the
 % structuring element `offs`, given as [di dj] axial (i,j) offsets.
 % Duplicated verbatim from spatialDecompositionGrid.m (see there).
 M  = reshape(m, szP);

@@ -9,7 +9,7 @@ function f = eval(SO3F,g,varargin)
 %  rot  - @rotation
 %
 % Output
-%  f - double [numrot x size(SO3F)]
+%  f - double [numrot × size(SO3F)]
 %
 % Options
 %  exact   -

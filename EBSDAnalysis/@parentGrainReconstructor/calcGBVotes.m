@@ -78,7 +78,7 @@ if check_option(varargin,'reconsiderAll')
 
   % compute fits to all neighbors
   fit = nan(length(nId),numV);
-  % fit is a [grainInd,nId] x numV table
+  % fit is a [grainInd,nId] × numV table
   for iV = 1:numV
  
     % parent - parent fit

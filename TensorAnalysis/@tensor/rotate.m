@@ -28,7 +28,7 @@ if isa(R,'orientation') && nargin == 2
   end
 end
 
-% convert rotation to 3 x 3 matrix - (3 x 3 x N) for many rotation
+% convert rotation to 3 × 3 matrix - (3 × 3 × N) for many rotation
 if ~isnumeric(R), R = matrix(R); end
 
 % mulitply the tensor with respect to every dimension with the rotation

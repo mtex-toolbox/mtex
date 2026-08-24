@@ -14,7 +14,7 @@ function grainId = absorbInteriorPixels(grains,ebsd,grainId)
 % Input
 %  grains  - @grain2d
 %  ebsd    - @EBSD (gridified)
-%  grainId - nEbsd x 1 grain id per pixel (0 = unassigned)
+%  grainId - nEbsd × 1 grain id per pixel (0 = unassigned)
 %
 % Output
 %  grainId - updated grain id per pixel

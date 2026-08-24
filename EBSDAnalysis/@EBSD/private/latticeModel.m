@@ -20,13 +20,13 @@ function [reconstructPos,idealFun,isRigid] = latticeModel(pos,ij,isIndexed,dxy)
 %   [reconstructPos,idealFun] = latticeModel(pos,ij,isIndexed,dxy)
 %
 % Input
-%  pos       - nEbsd x 2 measured positions (map plane only)
-%  ij        - nEbsd x 2 integer lattice index, from ebsd.lattice
-%  isIndexed - nEbsd x 1 logical, which rows carry a real measurement
+%  pos       - nEbsd × 2 measured positions (map plane only)
+%  ij        - nEbsd × 2 integer lattice index, from ebsd.lattice
+%  isIndexed - nEbsd × 1 logical, which rows carry a real measurement
 %  dxy       - representative grid spacing, from ebsd.lattice
 %
 % Output
-%  reconstructPos - @(IJ) m x 2 positions for any integer index IJ
+%  reconstructPos - @(IJ) m × 2 positions for any integer index IJ
 %  idealFun       - @(IJ) the affine part alone, without the deformation
 %                   correction. spatialDecompositionAlpha wants it for the
 %                   dummy ring, where a regular polygon is the point and

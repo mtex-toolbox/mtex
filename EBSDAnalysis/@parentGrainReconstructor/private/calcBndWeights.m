@@ -6,7 +6,7 @@ function weights = calcBndWeights(gB, grainPairs,varargin)
 %
 % Input
 %  gB - @grainBoundary
-%  grainPairs - n x 2 list of grainIds 
+%  grainPairs - n × 2 list of grainIds 
 %
 % Output
 %  weights - computed as mean curvature along the common grain boundary

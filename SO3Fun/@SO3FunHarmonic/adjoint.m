@@ -247,7 +247,7 @@ end
 
 % use trivariate inverse equispaced fft in case of Clenshaw Curtis
 % quadrature grid and nfft otherwise 
-% TODO: Do FFT x NFFT x FFT in case of GaussLegendre-Quadrature
+% TODO: Do FFT × NFFT × FFT in case of GaussLegendre-Quadrature
 if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
 
   % Possibly use smaller input matrix by using the symmetries

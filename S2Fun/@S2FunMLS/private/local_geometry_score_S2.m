@@ -1,7 +1,7 @@
 function geometryScore = local_geometry_score_S2(xloc, yloc, weights, sizes)
 
 % local geometric badness of the weighted tangent node cloud
-% 3 inputs: constant-size neighborhoods, all inputs are nn x N
+% 3 inputs: constant-size neighborhoods, all inputs are nn × N
 % 4 inputs: variable-size neighborhoods, entries are ordered center-by-center
 
 beta = 2;

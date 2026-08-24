@@ -7,11 +7,11 @@ function [c_book, conds, info] = ...
 % input:
 %   W_book : nn  x 1    x N      local weights
 %   G_book : nn  x dim  x N      local basis values
-%   f_book : nn  x numf x N      local function values
+%   f_book : nn  x numf × N      local function values
 %
 % output:
-%   c_book : dim x numf x N      local coefficient vectors
-%   conds  : N x 1               conditions of the solved normalized Gram systems
+%   c_book : dim × numf × N      local coefficient vectors
+%   conds  : N × 1               conditions of the solved normalized Gram systems
 %   info   : struct              additional regularization diagnostics
 %
 % options:
@@ -21,7 +21,7 @@ function [c_book, conds, info] = ...
 %   targetcond         inverse-amplification bound reached at full correction
 %   basis_degrees      degree assigned to every basis column
 %   degree_laplace_shift shift in ell*(ell+shift); 1 on S2, 2 on S3
-%   eval_vector        basis values at the evaluation point (dim x 1 x N)
+%   eval_vector        basis values at the evaluation point (dim × 1 × N)
 %   numerical_cond_max condition cap for the nuisance block (default 1e10)
 %
 % flags:
@@ -218,7 +218,7 @@ end
 end
 
 
-% obtain basis evaluation vectors in a canonical dim x 1 x N layout
+% obtain basis evaluation vectors in a canonical dim × 1 × N layout
 function [g_book, centeredEvaluation] = getEvaluationVector( ...
     dim, N, prototype, centeredEvaluation, options)
 

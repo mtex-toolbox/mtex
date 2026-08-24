@@ -28,7 +28,7 @@ function job = undistort(job,varargin)
 % every map in the sequence that carries an @EBSD, under that map's name -
 % ebsd.fsd1a, or ebsd.img2 for an entry constructed without a 'name'. Map and
 % image are in one array order by then, so this is a plain assignment and a
-% multi channel image stays r x c x k. That is what makes an image usable as a
+% multi channel image stays r × c × k. That is what makes an image usable as a
 % per pixel property of the map: it survives gridify, indexing and subGrid
 % along with everything else the map carries.
 %

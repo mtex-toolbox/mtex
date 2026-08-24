@@ -46,7 +46,7 @@ function [assignments,rep] = FMC_interpret(AllSals, numClusters, AllPs, A_D, min
 %                a dissolved pixel joins
 %
 % Output
-%  assignments - nPixel x 2, [label confidence], label 0 = unassigned
+%  assignments - nPixel × 2, [label confidence], label 0 = unassigned
 %  rep         - what FMC_report prints: .readPerScale, the number of
 %                pixels read off at each scale, and .numStranded read off
 %                at none; .numRegions before and .numGrains after the

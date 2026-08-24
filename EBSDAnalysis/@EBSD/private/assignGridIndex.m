@@ -51,12 +51,12 @@ function [ij,origin] = assignGridIndex(pos,A)
 % cell can still flip a borderline single-pixel hole.
 %
 % Input
-%  pos - n x 2 spatial coordinates (map plane only, z is not considered)
-%  A   - 2 x 2 lattice basis, columns are the grid step vectors
+%  pos - n × 2 spatial coordinates (map plane only, z is not considered)
+%  A   - 2 × 2 lattice basis, columns are the grid step vectors
 %
 % Output
-%  ij     - n x 2 integer lattice index, minimum at [0 0]
-%  origin - 1 x 2 physical position corresponding to ij = [0 0]
+%  ij     - n × 2 integer lattice index, minimum at [0 0]
+%  origin - 1 × 2 physical position corresponding to ij = [0 0]
 
 [I,J] = stepwiseIndex(pos,A);
 if hasIndexCollision(I,J)
@@ -133,8 +133,8 @@ function [I,J] = stepwiseIndex(pos,A)
 % multi-cell gap WITHIN a line just as it corrects a line change, with no
 % need to tell the two apart: the drift subtracted is proportional to the
 % inner distance actually travelled.
-d = diff(pos,1,1);           % (n-1) x 2
-dIJ = A \ d.';                % 2 x (n-1)
+d = diff(pos,1,1);           % (n-1) × 2
+dIJ = A \ d.';                % 2 × (n-1)
 rd = round(dIJ);
 
 fracZero = mean(rd == 0, 2);

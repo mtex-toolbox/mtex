@@ -12,7 +12,7 @@ classdef shape2d < grain2d
 %   shape = shape2d(V,cs)
 %
 % Input
-%  V  - n x 2 list of vertices, or a @grainBoundary
+%  V  - n × 2 list of vertices, or a @grainBoundary
 %  cs - crystal @symmetry
 %
 % Output

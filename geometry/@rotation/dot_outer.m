@@ -5,7 +5,7 @@ function d = dot_outer(rot1,rot2,varargin)
 %  rot1, rot2 - @rotation
 %
 % Output
-%  d - double length(rot1) x length(rot2)
+%  d - double length(rot1) × length(rot2)
 
 if ~isempty(rot1) && ~isempty(rot2)
 

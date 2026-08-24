@@ -19,9 +19,9 @@ function [g,A] = gradient(ebsd,varargin)
 %  ebsd - @EBSD
 %
 % Output
-%  g - length(ebsd) x 2 @vector3d, g(:,k) = d(orientation) / d(a_k), in the
+%  g - length(ebsd) × 2 @vector3d, g(:,k) = d(orientation) / d(a_k), in the
 %      left tangent space, i.e. log(ori(p+a_k),ori(p))/|a_k|
-%  A - 2 x 2 basis actually used, columns a1, a2 (map plane components)
+%  A - 2 × 2 basis actually used, columns a1, a2 (map plane components)
 %
 % Options
 %  stencil - which neighbours the gradient is computed from, see below
@@ -256,7 +256,7 @@ for s = 1:size(stencil,1)
   ok = ~isnan(h);
   if ~any(ok), continue; end
 
-  d = stencil(s,:) * A.';          % physical offset, 1 x 2
+  d = stencil(s,:) * A.';          % physical offset, 1 × 2
   w = double(ok);
 
   M11 = M11 + w * d(1)^2;
@@ -276,7 +276,7 @@ end
 det = M11.*M22 - M12.^2;
 bad = ~(det > 1e-10 * M11 .* M22);
 
-% G = R * inv(M), per pixel; G is 3 x 2 (tangent component x map direction)
+% G = R * inv(M), per pixel; G is 3 × 2 (tangent component × map direction)
 iv = @(R) deal((R(:,1).*M22 - R(:,2).*M12)./det, ...
                (R(:,2).*M11 - R(:,1).*M12)./det);
 [Gx1,Gx2] = iv(Rx);

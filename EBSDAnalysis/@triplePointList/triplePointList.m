@@ -194,7 +194,7 @@ classdef triplePointList < phaseList & dynProp
         tP = s; 
       end
 
-      % up to MTEX 5.11 the vertices were stored as an n x 2 matrix
+      % up to MTEX 5.11 the vertices were stored as an n × 2 matrix
       if isnumeric(tP.allV)
         V = tP.allV;
         tP.allV = vector3d(V(:,1),V(:,2),zeros(size(V,1),1));

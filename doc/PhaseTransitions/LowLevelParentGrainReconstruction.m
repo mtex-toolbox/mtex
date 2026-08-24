@@ -278,7 +278,7 @@ sum(parentGrains(alphaName).numPixel) ./ sum(parentGrains.numPixel)*100
 
 % the (:) matter: on a gridded map every per pixel property has the shape of
 % the map, but phaseId is the storage and stays a column, so combining the
-% two without flattening compares an (r x c) against an (r*c x 1)
+% two without flattening compares an (r × c) against an (r*c × 1)
 isNowBeta = parentGrains.phaseId(max(1,parentEBSD.grainId(:))) == ebsd.name2id(betaName) &...
   parentEBSD.phaseId(:) == ebsd.name2id(alphaName);
 

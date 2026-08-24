@@ -38,7 +38,7 @@ if ~strcmp(SO3G.scheme,'ClenshawCurtis')
 end
 
 N = SO3G.bandwidth;
-sz = size(SO3G.iuniqueGrid);   % [nGamma x nBeta x nAlpha]
+sz = size(SO3G.iuniqueGrid);   % [nGamma × nBeta × nAlpha]
 
 % the grid nodes are alpha,gamma = (0:n-1)*2*pi/(2N+2) and
 % beta = (0:2N)*pi/(2N) in the 'nfft' Euler angle convention

@@ -129,7 +129,7 @@ for i = 1:length(h)
   else
     sh = symmetrise(h{i});
   end
-  r = reshape(reshape(ori.SS * (ori * sh).',[],length(ori)).',[],1); % ori x (SS x CS)
+  r = reshape(reshape(ori.SS * (ori * sh).',[],length(ori)).',[],1); % ori × (SS × CS)
   opt = replicateMarkerSize(varargin,numSym(ori.SS)*length(sh));
 
   % maybe we can restrict ourselfs to the upper hemisphere, for this h{i} only

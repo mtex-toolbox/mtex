@@ -71,7 +71,7 @@ nP  = nGR*nGC;
 % pixels used for partition scoring: indexed, not wild, actually assigned
 valid = ~isWild & ~isUnind & gid > 0;
 
-% ------------------------------------------------- contingency true x reco
+% ------------------------------------------------- contingency true × reco
 
 t = tid(valid); g = gid(valid);
 [gLab,~,gIdx] = unique(g);
@@ -237,7 +237,7 @@ function y = nchoose2(x), y = x.*(x-1)/2; end
 
 function printReport(r,ebsd)
 
-fprintf('\n grain benchmark: %d x %d grains, %d pixels', ...
+fprintf('\n grain benchmark: %d × %d grains, %d pixels', ...
   ebsd.opt.numGrainRows,ebsd.opt.numGrainCols,length(ebsd));
 fprintf('  (noise %.2f deg, deformation %.2f deg)\n', ...
   ebsd.opt.noiseLevel/degree,ebsd.opt.deformation/degree);
