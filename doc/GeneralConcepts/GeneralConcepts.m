@@ -81,6 +81,17 @@ hold off
 % where on screen. That last one changes every plot you make, so it is worth
 % knowing where it is set.
 %
+% Two pages are for looking things up rather than reading through.
+% <Glossary.html Glossary> defines the vocabulary used across the whole
+% documentation, with the pairs that are easy to confuse placed side by
+% side - misorientation and disorientation, halfwidth and bandwidth, hole
+% and inclusion. <NotationAndConventions.html Notation and Conventions>
+% states the choices MTEX makes that a result depends on: radians, the
+% Bunge Euler convention, the direction an orientation acts in, planes
+% against directions, and the crystal axis alignment. When a figure comes
+% out mirrored or a number is wrong by a factor nobody can place, that page
+% is where to look first.
+%
 % Two further pages are methods rather than mechanics.
 % <DensityEstimation.html Density Estimation> is the step from a list of
 % measurements to a smooth distribution, and
