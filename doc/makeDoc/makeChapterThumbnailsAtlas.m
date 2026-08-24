@@ -10,8 +10,9 @@ function makeChapterThumbnailsAtlas(varargin)
 % This is an intentionally self-contained alternative to the chapter
 % thumbnails in makeDoc/general.  It never writes there: by default the
 % images are placed in makeDoc/chapterThumbnailsAtlas so that two designs
-% can be reviewed side by side.  The visual system is a dark scientific
-% atlas with one large, chapter-specific silhouette per tile.
+% can be reviewed side by side.  The visual system uses the same light
+% background as the MTEX documentation and one chapter-specific subject
+% per tile.
 
 outDir = get_option(varargin,'outDir',fullfile(mtex_path,'doc','makeDoc', ...
   'chapterThumbnailsAtlas'));
@@ -83,16 +84,19 @@ switch name
 
   case 'GeneralConcepts'
     [~,ax] = canvas2d;
-    % MTEX objects form a composable pipeline rather than isolated commands.
-    objectCard(ax,[.09 .58 .25 .22],'EBSD',p.cyan);
-    objectCard(ax,[.38 .39 .25 .22],'grains',p.gold);
-    objectCard(ax,[.67 .20 .25 .22],'ODF',p.coral);
-    arrow2(ax,[.30 .56],[.42 .50],p.fg,3);
-    arrow2(ax,[.59 .37],[.71 .31],p.fg,3);
-    text(ax,.12,.33,'calcGrains( )','Color',p.muted,'FontName','DejaVu Sans Mono', ...
-      'FontSize',22,'FontWeight','bold');
-    text(ax,.41,.14,'calcDensity( )','Color',p.muted,'FontName','DejaVu Sans Mono', ...
-      'FontSize',22,'FontWeight','bold');
+    % A representative branching workflow: both grain reconstruction and
+    % ODF estimation start from EBSD, while parent reconstruction starts
+    % from the grain structure.
+    objectCard(ax,[.04 .62 .38 .28],'EBSD',p.cyan);
+    objectCard(ax,[.58 .62 .38 .28],'grains',p.gold);
+    objectCard(ax,[.04 .10 .38 .28],'ODF',p.coral);
+    objectCard(ax,[.58 .10 .38 .28],sprintf('parent\ngrains'),p.blue);
+
+    % At landing-page size the topology matters more than function names.
+    % Use the full gap for strong arrows and leave out miniature labels.
+    arrow2(ax,[.43 .76],[.57 .76],p.fg,5);
+    arrow2(ax,[.23 .61],[.23 .39],p.fg,5);
+    arrow2(ax,[.77 .61],[.77 .39],p.fg,5);
 
   case 'Vectors'
     [~,ax] = canvas3d;
@@ -100,18 +104,26 @@ switch name
     surf(ax,.72*x,.72*y,.72*z,'FaceColor',p.panel,'FaceAlpha',.30, ...
       'EdgeColor',p.muted,'EdgeAlpha',.12);
     hold(ax,'on')
-    arrow3(ax,[0 0 0],[1.20 .18 .20],p.coral,6);
-    arrow3(ax,[0 0 0],[-.42 1.05 .42],p.cyan,6);
-    arrow3(ax,[0 0 0],[.12 -.32 1.20],p.gold,6);
+    % Keep the three directions clearly separated in projection and only
+    % slightly outside the reference sphere.
+    arrow3(ax,[0 0 0],[.88 .16 .04],p.coral,6);
+    arrow3(ax,[0 0 0],[-.36 .58 .31],p.cyan,6);
+    arrow3(ax,[0 0 0],[.08 -.30 .76],p.gold,6);
     scatter3(ax,0,0,0,110,p.fg,'filled');
-    view(ax,132,23); axis(ax,[-1.25 1.25 -1.25 1.25 -1.15 1.35]);
+    view(ax,125,21); axis(ax,[-1.05 1.05 -1.05 1.05 -.95 1.05]);
 
   case 'Rotations'
     [~,ax] = canvas2d;
-    cubeGlyph(ax,[.40 .49],.22,-18,p.muted,.40);
-    cubeGlyph(ax,[.57 .50],.22,22,p.cyan,.95);
-    circularArrow(ax,[.50 .51],.35,35,285,p.coral);
-    plot(ax,.50,.51,'o','MarkerFaceColor',p.gold,'MarkerEdgeColor','none','MarkerSize',9);
+    % One reference frame and several rotated images make composition and
+    % non-commuting alternatives visible at thumbnail scale.
+    cubeGlyph(ax,[.23 .49],.16,-10,p.fg,.85);
+    cubeGlyph(ax,[.69 .70],.10,18,p.cyan,.95);
+    cubeGlyph(ax,[.73 .49],.10,-7,p.gold,.95);
+    cubeGlyph(ax,[.67 .28],.10,34,p.coral,.95);
+    arrow2(ax,[.37 .53],[.56 .66],p.cyan,3);
+    arrow2(ax,[.39 .49],[.59 .49],p.gold,3);
+    arrow2(ax,[.37 .44],[.54 .31],p.coral,3);
+    scatter(ax,.46,.49,80,p.fg,'filled');
 
   case 'CrystalGeometry'
     % The simulated quartz pattern links planes, directions and zone axes
@@ -138,8 +150,10 @@ switch name
 
   case 'CrystalOrientations'
     [~,ax] = canvas3d;
+    set(ax,'Projection','orthographic');
     drawCrystalAxes(ax,p);
-    view(ax,132,22); axis(ax,[-1.3 1.3 -1.3 1.3 -1.25 1.35]);
+    view(ax,132,22); axis(ax,[-1.35 1.35 -1.35 1.35 -1.30 1.38]);
+    set(ax,'Position',[.10 .10 .80 .80]);
 
   case 'Misorientations'
     % A Japan-law quartz twin.  Its inclined c axes make the relation
@@ -160,20 +174,37 @@ switch name
     polishMTEX;
 
   case 'ODFAnalysis'
-    % Build the distribution with MTEX, then show its modes as volumes in
-    % orientation space rather than flattening it into another pole figure.
-    cs = crystalSymmetry('432');
-    m1 = orientation.byEuler(15*degree,35*degree,10*degree,cs);
-    m2 = orientation.byEuler(70*degree,55*degree,45*degree,cs);
-    odf = .64*unimodalODF(m1,'halfwidth',13*degree) + ...
-      .36*unimodalODF(m2,'halfwidth',18*degree);
-    [~,ax] = canvas3d;
-    odfGlyph(ax,p,odf);
-    view(ax,132,22); axis(ax,[-1.1 1.1 -1.1 1.1 -.1 1.75]);
+    % Four phi2 sections of MTEX's standard SantaFe ODF are both canonical
+    % and readable in the 2-by-2 landing-page format.
+    mtexCanvas;
+    plotSection(SantaFe,'phi2',[15 30 45 60]*degree,'contourf', ...
+      'resolution',3*degree,'layout',[2 2],'innerPlotSpacing',0, ...
+      'outerPlotSpacing',0,'noLabel','silent','coordinates','off', ...
+      'labels','off');
+    mtexColorMap LaboTeX
+    % The phi2 corner annotations are inside their axes, but drawNow counts
+    % their text extent as an external inset and opens a gap between rows.
+    % Freeze the completed plot and place its axes as touching quadrants.
+    drawnow;
+    mtexFig = gcm;
+    set(mtexFig.parent,'ResizeFcn',[]);
+    set(mtexFig.parent,'Units','pixels','Position',[80 80 720 720]);
+    panelPosition = [1 361 360 360; 361 361 360 360; ...
+      1 1 360 360; 361 1 360 360];
+    for k = 1:4
+      set(mtexFig.children(k),'Units','pixels','Position',panelPosition(k,:));
+    end
+    drawnow;
 
   case 'PoleFigureAnalysis'
-    [~,ax] = canvas2d;
-    poleContour(ax,[.50 .50],.39,p);
+    % Recalculated pole figures from the smooth Dubna ODF, rather than a
+    % synthetic single pole or the visibly sampled raw measurements.
+    odf = SO3Fun.dubna;
+    h = Miller({1,0,-1,0},{0,1,-1,1},{1,0,-1,1},{1,1,-2,2},odf.CS);
+    mtexCanvas;
+    plotPDF(odf,h,'contourf','resolution',2.5*degree, ...
+      'antipodal','layout',[2 2],'silent');
+    polishMTEX;
 
   case 'EBSDAnalysis'
     ebsd = forsteritePatch;
@@ -185,21 +216,29 @@ switch name
 
   case 'Grains'
     [~,grains] = forsteriteGrains;
+    grains = smoothBoundary(grains,4);
     mtexCanvas;
     plot(grains,grains.area,'micronbar','off');
     hold on
-    plot(grains.boundary,'Color',p.bg,'LineWidth',1.8);
+    plot(grains.boundary,'lineColor',p.bg,'LineWidth',1.8);
     hold off
     polishMTEX;
 
   case 'GrainBoundaries'
-    [~,grains] = forsteriteGrains;
-    grains = smoothBoundary(grains,4);
+    % The CSL data has a strong population of Sigma-3 twin boundaries.
+    % Draw all interfaces quietly and let that crystallographically
+    % meaningful subset carry the image.
+    ebsd = mtexdata('csl');
+    ebsd = ebsd(inpolygon(ebsd,[170 55 160 160]));
+    [grains,ebsd] = calcGrains(ebsd,'minPixel',3);
+    grains = smoothBoundary(grains,5);
+    gB = grains.boundary('iron','iron');
+    twinBoundary = gB(gB.isTwinning(CSL(3,ebsd('iron').CS),3*degree));
     mtexCanvas;
-    plot(grains.boundary,'Color',p.blue,'LineWidth',7);
+    plot(grains.boundary,'lineColor',p.muted,'LineWidth',2.1, ...
+      'micronbar','off');
     hold on
-    plot(grains.boundary,'Color',p.cyan,'LineWidth',2.5);
-    plot(grains.triplePoints,'Color',p.gold,'MarkerSize',7);
+    plot(twinBoundary,'lineColor',p.coral,'LineWidth',3.3);
     hold off
     polishMTEX;
 
@@ -208,34 +247,65 @@ switch name
       'SmallIN100_MeshStats.dream3d'));
     mtexCanvas;
     plot(grains,grains.meanOrientation,'LineStyle','none','micronbar','off');
-    view(132,24); axis vis3d
+    view(132,24); axis tight equal vis3d
+    hold on
+    outlineVolume(gca,p.fg,3.2);
+    hold off
     polishMTEX;
 
   case 'Tensors'
     [~,ax] = canvas3d;
-    tensorGlyph(ax,p);
-    view(ax,134,23); axis(ax,[-1.45 1.45 -1.45 1.45 -1.2 1.4]);
+    stressTensorGlyph(ax,p);
+    view(ax,132,22); axis(ax,[-1.4 1.4 -1.4 1.4 -1.25 1.35]);
 
   case 'Elasticity'
+    % The radial Young's-modulus surface is the standard elasticity image:
+    % its radius and colour both encode the directional stiffness.
+    cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942], ...
+      'mineral','Olivine');
+    C = stiffnessTensor.load(fullfile(mtexDataPath,'tensor', ...
+      'Olivine1997PC.GPa'),cs);
     [~,ax] = canvas3d;
-    elasticGlyph(ax,p);
-    view(ax,132,25); axis(ax,[-1.25 1.25 -1.25 1.25 -1.25 1.25]);
+    elasticModulusGlyph(ax,C.YoungsModulus);
+    view(ax,132,24); axis(ax,[-1.18 1.18 -1.18 1.18 -1.18 1.18]);
 
   case 'Plasticity'
-    [~,ax] = canvas3d;
-    slipGlyph(ax,p);
-    view(ax,132,22); axis(ax,[-1.25 1.25 -1.25 1.25 -1.2 1.35]);
+    % Follow the Schmid-factor figure: a skew {111} plane inside the cube,
+    % with slip, plane-normal and loading arrows all visible.
+    cs = crystalSymmetry('m-3m');
+    cS = crystalShape.cube(cs);
+    sS = slipSystem.fcc(cs); sS = sS(1);
+    loadDirection = normalize(vector3d(.35,.55,1));
+    mtexCanvas;
+    plot(cS,'faceColor',p.cyan,'faceAlpha',.18,'edgeColor',p.fg, ...
+      'lineWidth',1.8);
+    hold on
+    plot(cS,sS,'faceColor',p.blue,'faceAlpha',.42);
+    b = normalize(vector3d(sS.b));
+    n = normalize(vector3d(sS.n));
+    arrow3d(.68*b,'anchor',-.34*b,'faceColor',p.coral,'lineWidth',2);
+    arrow3d(-.50*n,'anchor',.25*n,'faceColor',p.gold,'lineWidth',2);
+    arrow3d(.80*loadDirection,'anchor',-.40*loadDirection, ...
+      'faceColor',p.cyan,'lineWidth',2);
+    hold off
+    view(132,20); axis off equal vis3d
+    camzoom(.55)
+    polishMTEX;
 
   case 'PhaseTransitions'
-    [~,ax] = canvas2d;
-    cubeGlyph(ax,[.23 .49],.16,-10,p.fg,.85);
-    cubeGlyph(ax,[.69 .70],.10,18,p.cyan,.95);
-    cubeGlyph(ax,[.73 .49],.10,-7,p.gold,.95);
-    cubeGlyph(ax,[.67 .28],.10,34,p.coral,.95);
-    arrow2(ax,[.37 .53],[.56 .66],p.cyan,3);
-    arrow2(ax,[.39 .49],[.59 .49],p.gold,3);
-    arrow2(ax,[.37 .44],[.54 .31],p.coral,3);
-    scatter(ax,.46,.49,80,p.fg,'filled');
+    % Use the established parent-grain reconstruction thumbnail from the
+    % MTEX website: child variants are nested inside bold recovered-parent
+    % boundaries, with one parent grain explicitly selected.
+    source = fullfile(fileparts(mtex_path),'web','images','thumbnails', ...
+      'MaParentGrainReconstruction.jpg');
+    if isfile(source)
+      fig = figure('Visible','off','Color',p.bg,'Position',[80 80 720 720]);
+      ax = axes(fig,'Position',[0 0 1 1]);
+      image(ax,imread(source)); axis(ax,'image','off');
+    else
+      [~,ax] = canvas2d;
+      parentVariantGlyph(ax,p);
+    end
 
   case 'SphericalFunctions'
     % Keep MTEX's memorable example: the expression is itself a spherical
@@ -308,8 +378,19 @@ if isunix
       system('command -v distrobox-host-exec > /dev/null 2>&1') == 0
     magick = 'distrobox-host-exec magick';
   end
-  if contains(fileName,'Misorientations')
+  if contains(fileName,'ODFAnalysis')
+    % R2026a exportgraphics may rasterize this nominally square mtexFigure
+    % a few percent taller than wide.  Preserve the complete 2-by-2 layout;
+    % fill-and-crop would otherwise remove the phi2 labels and boundary data.
+    cmd = sprintf([ '%s "%s" -resize 420x420 -gravity center ' ...
+      '-background "rgb(250,251,252)" -extent 420x420 "%s"'], ...
+      magick,fileName,fileName);
+  elseif contains(fileName,'Misorientations')
     cmd = sprintf([ '%s "%s" -resize 370x370 -gravity center ' ...
+      '-background "rgb(250,251,252)" -extent 420x420 "%s"'], ...
+      magick,fileName,fileName);
+  elseif contains(fileName,'CrystalOrientations')
+    cmd = sprintf([ '%s "%s" -resize 380x380 -gravity center ' ...
       '-background "rgb(250,251,252)" -extent 420x420 "%s"'], ...
       magick,fileName,fileName);
   else
@@ -359,9 +440,9 @@ p = palette;
 rectangle(ax,'Position',pos,'Curvature',.16,'FaceColor',p.panel, ...
   'EdgeColor',accent,'LineWidth',3);
 plot(ax,pos(1)+.035,pos(2)+pos(4)-.045,'o','MarkerFaceColor',accent, ...
-  'MarkerEdgeColor','none','MarkerSize',9);
+  'MarkerEdgeColor','none','MarkerSize',11);
 text(ax,pos(1)+pos(3)/2,pos(2)+pos(4)/2,label,'HorizontalAlignment','center', ...
-  'VerticalAlignment','middle','Color',p.fg,'FontSize',27,'FontWeight','bold');
+  'VerticalAlignment','middle','Color',p.fg,'FontSize',32,'FontWeight','bold');
 end
 
 function arrow2(ax,a,b,color,width)
@@ -443,23 +524,21 @@ quiver3(ax,a(1),a(2),a(3),d(1),d(2),d(3),0,'Color',color, ...
 end
 
 function drawCrystalAxes(ax,p)
-[x,y,z] = sphere(24);
-surf(ax,.56*x,.56*y,.56*z,'FaceColor',p.panel,'FaceAlpha',.25, ...
-  'EdgeColor',p.muted,'EdgeAlpha',.10);
-% specimen frame
-arrow3(ax,[0 0 0],[1.12 0 0],p.fg,3);
-arrow3(ax,[0 0 0],[0 1.12 0],p.fg,3);
-arrow3(ax,[0 0 0],[0 0 1.12],p.fg,3);
-% crystal frame, rotated independently
+% The muted orthogonal triad is the specimen frame.  The colored triad and
+% cube are one crystal frame in its specimen orientation.
+arrow3(ax,[0 0 0],[.72 0 0],p.muted,2.5);
+arrow3(ax,[0 0 0],[0 .72 0],p.muted,2.5);
+arrow3(ax,[0 0 0],[0 0 .72],p.muted,2.5);
+
 R = axisRotation([.4 .7 .2],48*pi/180);
-v = .48*[-1 -1 -1; 1 -1 -1; 1 1 -1; -1 1 -1; ...
+v = .42*[-1 -1 -1; 1 -1 -1; 1 1 -1; -1 1 -1; ...
   -1 -1 1; 1 -1 1; 1 1 1; -1 1 1] * R';
 f = [1 2 3 4; 5 6 7 8; 1 2 6 5; 2 3 7 6; 3 4 8 7; 4 1 5 8];
-patch(ax,'Vertices',v,'Faces',f,'FaceColor',p.cyan,'FaceAlpha',.12, ...
-  'EdgeColor',p.cyan,'EdgeAlpha',.72,'LineWidth',2.5);
+patch(ax,'Vertices',v,'Faces',f,'FaceColor',p.panel,'FaceAlpha',.36, ...
+  'EdgeColor',p.fg,'EdgeAlpha',.88,'LineWidth',2.5);
 cols = {p.coral,p.cyan,p.gold};
 for k=1:3
-  d = R(:,k)'; arrow3(ax,[0 0 0],1.27*d,cols{k},6);
+  d = R(:,k)'; arrow3(ax,[0 0 0],.76*d,cols{k},6);
 end
 scatter3(ax,0,0,0,120,p.fg,'filled');
 end
@@ -469,42 +548,71 @@ axis = axis(:)/norm(axis); K = [0 -axis(3) axis(2); axis(3) 0 -axis(1); -axis(2)
 R = eye(3)*cos(angle) + (1-cos(angle))*(axis*axis') + sin(angle)*K;
 end
 
-function tensorGlyph(ax,p)
-[x,y,z] = sphere(56);
-A = [1.05 .28 .05; .28 .62 -.12; .05 -.12 .38];
-q = A*[x(:)';y(:)';z(:)'];
-X=reshape(q(1,:),size(x)); Y=reshape(q(2,:),size(y)); Z=reshape(q(3,:),size(z));
-C = sqrt(X.^2+Y.^2+Z.^2);
-surf(ax,X,Y,Z,C,'EdgeColor','none','FaceAlpha',.94);
-colormap(ax,atlasMap(256)); camlight(ax,'headlight'); lighting(ax,'gouraud');
-[V,D]=eig(A);
-for k=1:3
-  d=(V(:,k)*D(k,k)*1.28)'; arrow3(ax,[0 0 0],d,p.data(k,:),4);
-end
-end
-
-function elasticGlyph(ax,p)
-[az,el] = meshgrid(linspace(0,2*pi,120),linspace(-pi/2,pi/2,70));
-u = cos(el).*cos(az); v = cos(el).*sin(az); w = sin(el);
-r = .48 + .48*(u.^4 + .62*v.^4 + 1.28*w.^4) + .16*(u.*v).^2;
-X=r.*u; Y=r.*v; Z=r.*w;
-surf(ax,X,Y,Z,r,'EdgeColor','none','FaceAlpha',.96);
-colormap(ax,atlasMap(256)); camlight(ax,'headlight'); lighting(ax,'gouraud');
-for k=1:3
-  d=zeros(1,3); d(k)=1.16; arrow3(ax,-d,d,p.fg,2);
-end
-end
-
-function slipGlyph(ax,p)
-v = [-.72 -.72 -.72; .72 -.72 -.72; .72 .72 -.72; -.72 .72 -.72; ...
-     -.72 -.72 .72; .72 -.72 .72; .72 .72 .72; -.72 .72 .72];
+function stressTensorGlyph(ax,p)
+% A Cauchy stress element exposes both tensor indices: the face normal is
+% the first and the traction direction on that face is the second.
+v = .52*[-1 -1 -1; 1 -1 -1; 1 1 -1; -1 1 -1; ...
+  -1 -1 1; 1 -1 1; 1 1 1; -1 1 1];
 f = [1 2 3 4; 5 6 7 8; 1 2 6 5; 2 3 7 6; 3 4 8 7; 4 1 5 8];
-patch(ax,'Vertices',v,'Faces',f,'FaceColor',p.cyan,'FaceAlpha',.08, ...
-  'EdgeColor',p.muted,'LineWidth',2);
-q = [-.92 -.92 0; .92 -.92 0; .92 .92 0; -.92 .92 0];
-patch(ax,q(:,1),q(:,2),q(:,3),p.coral,'FaceAlpha',.55, ...
-  'EdgeColor',p.gold,'LineWidth',3);
-arrow3(ax,[-.62 0 .04],[.75 0 .04],p.fg,6);
+patch(ax,'Vertices',v,'Faces',f,'FaceColor',p.panel,'FaceAlpha',.42, ...
+  'EdgeColor',p.fg,'EdgeAlpha',.88,'LineWidth',2.5);
+
+% Opposed normal tractions on three pairs of faces.
+normalColor = {p.coral,p.cyan,p.gold};
+for k = 1:3
+  e = zeros(1,3); e(k) = 1;
+  arrow3(ax,.52*e,1.20*e,normalColor{k},5);
+  arrow3(ax,-.52*e,-1.20*e,normalColor{k},5);
+end
+
+% Shear components lie in their faces and make this more than a force cube.
+arrow3(ax,[.55 -.30 -.18],[.55 .34 -.18],p.blue,4);
+arrow3(ax,[-.28 .55 .16],[.34 .55 .16],p.coral,4);
+arrow3(ax,[-.30 -.16 .55],[.28 .30 .55],p.cyan,4);
+scatter3(ax,0,0,0,75,p.fg,'filled');
+end
+
+function elasticModulusGlyph(ax,E)
+% Sample MTEX's directional Young's modulus on a full sphere.  Using a
+% controlled radial mesh avoids the hemisphere/camera crop of S2Fun/surf
+% while retaining the actual olivine elasticity data.
+[az,el] = meshgrid(linspace(0,2*pi,145),linspace(-pi/2,pi/2,91));
+x = cos(el).*cos(az); y = cos(el).*sin(az); z = sin(el);
+value = reshape(E.eval(vector3d(x(:),y(:),z(:))),size(x));
+radius = .62 + .43*(value-min(value(:))) ./ range(value(:));
+surf(ax,radius.*x,radius.*y,radius.*z,value,'EdgeColor','none', ...
+  'FaceAlpha',.98);
+colormap(ax,atlasMap(256));
+camlight(ax,'headlight'); lighting(ax,'gouraud');
+end
+
+function outlineVolume(ax,color,width)
+% Emphasize the measurement volume independently of the internal grain
+% patches; relying on axes box rendering makes the back edges too faint.
+xl = xlim(ax); yl = ylim(ax); zl = zlim(ax);
+dx = .025*diff(xl); dy = .025*diff(yl); dz = .025*diff(zl);
+xl = xl + [-dx dx]; yl = yl + [-dy dy]; zl = zl + [-dz dz];
+q = [xl(1) yl(1) zl(1); xl(2) yl(1) zl(1); ...
+  xl(2) yl(2) zl(1); xl(1) yl(2) zl(1); ...
+  xl(1) yl(1) zl(2); xl(2) yl(1) zl(2); ...
+  xl(2) yl(2) zl(2); xl(1) yl(2) zl(2)];
+e = [1 2;2 3;3 4;4 1;5 6;6 7;7 8;8 5;1 5;2 6;3 7;4 8];
+for k = 1:size(e,1)
+  plot3(ax,q(e(k,:),1),q(e(k,:),2),q(e(k,:),3), ...
+    'Color',color,'LineWidth',width);
+end
+axis(ax,[xl yl zl]);
+end
+
+function parentVariantGlyph(ax,p)
+% Portable fallback when the sibling MTEX website checkout is unavailable.
+cubeGlyph(ax,[.23 .49],.16,-10,p.fg,.85);
+cubeGlyph(ax,[.69 .70],.10,18,p.cyan,.95);
+cubeGlyph(ax,[.73 .49],.10,-7,p.gold,.95);
+cubeGlyph(ax,[.67 .28],.10,34,p.coral,.95);
+arrow2(ax,[.37 .53],[.56 .66],p.cyan,3);
+arrow2(ax,[.39 .49],[.59 .49],p.gold,3);
+arrow2(ax,[.37 .44],[.54 .31],p.coral,3);
 end
 
 function orientationFunctionGlyph(ax,p)

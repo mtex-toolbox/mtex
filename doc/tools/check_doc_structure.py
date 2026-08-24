@@ -57,9 +57,9 @@ BUDGET = {
     'page unreachable': 6,       # changelog, Contribute2Doc and four others
     'narrative link dangling': 0,
     'chapter stub': 0,
-    # six images live only in web/images, so the offline help lacks them;
-    # clears when doc/images becomes the single source
-    'image missing': 8,
+    # the four smorf screenshots live only in web/images, so the offline
+    # help lacks them; clears when doc/images becomes the single source
+    'image missing': 4,
     # A ceiling, not a measurement, and only meaningful straight after a
     # complete makeDoc run: taken mid build the number falls as pages
     # republish, and it was seen going 863, 763, 732 within one minute while

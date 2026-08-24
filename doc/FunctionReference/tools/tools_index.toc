@@ -1,4 +1,3 @@
-toolsOverview            Overview
 option_tools_index       options
 math_tools_index         math 
 statistic_tools_index    statistics
