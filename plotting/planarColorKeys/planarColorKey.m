@@ -55,7 +55,7 @@ classdef planarColorKey
 % pK = planarColorKey(inferno);
 %
 % % shade to black
-% pK.shading = 'black';
+% pK.shading = 'black'; 
 %
 % % set the range1 for v1
 % pK.range1 = [1 4];
@@ -63,12 +63,11 @@ classdef planarColorKey
 % % set the autoselection of v2 a little lower
 % pK.quantileCap = 0.9;
 %
-% plot(grains('indexed'),pK.property2color(v1,v2))
-%
 % % set labels
-% pK.label1 = 'asr';
-% pK.label2 = 'area';
-% plot(pK,v1,v2)
+% pK.label1 = 'asr'; pK.label2 = 'area';
+% close all; plot(pK,v1,v2)
+%
+% plot(grains('indexed'),pK.property2color(v1,v2))
 %
 % See also: directionColorKey, ipfColorKey, HSVDirectionKey
 
