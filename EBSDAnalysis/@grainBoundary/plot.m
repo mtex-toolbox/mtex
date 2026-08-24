@@ -22,7 +22,7 @@ function [h,mP] = plot(gB,varargin)
 %  edgeAlpha - (list of) transparency values between 0 and 1
 %  region    - [xmin xmax ymin ymax] plot only a subregion
 %  DisplayName - label to appear in the legend
-%  smooth      - try to make a smooth connections at the vertices
+%  smooth      - draw ordered boundary chains with smooth vertex joins
 %
 
 reg = get_option(varargin,'region');
@@ -45,10 +45,15 @@ if isnull(dot(pC.outOfScreen,gB.N)), pC.outOfScreen = gB.N; end
 mtexFig = newMtexFigure(varargin{:});
 [mP,isNew] = newMapPlot('scanUnit',gB.scanUnit,'parent',mtexFig.gca,varargin{:},pC);
 
+% Thin boundaries are drawn as one Patch object.  Besides being compact,
+% this representation supports one edgeAlpha value per segment.  Thick
+% boundaries use the ordered chains so that MATLAB can draw continuous
+% joins; this returns several Line or Surface objects and cannot represent
+% segment-wise alpha in all cases.
 if get_option(varargin,'linewidth',0) > 3 || check_option(varargin,'smooth')
-  plotOrdered2(gB,varargin{:});
+  plotConnectedChains(gB,varargin{:});
 else
-  plotSimple(gB,varargin{:});
+  plotSegmentPatch(gB,varargin{:});
 end
 
 % if no DisplayName is set remove patch from legend
@@ -74,7 +79,7 @@ if ~isstruct(mtexFig)
 end
 
 
-function plotOrdered2(gB,varargin)
+function plotConnectedChains(gB,varargin)
 
 % segments are stored in walk order, so emit both vertices of every one and a NaN per chain
 nF = length(gB);
@@ -148,11 +153,19 @@ h = optiondraw(p,varargin{:});
 end
 
 
-function plotSimple(gB,varargin)
+function plotSegmentPatch(gB,varargin)
 obj.Faces    = gB.F;
 obj.Vertices = gB.allV.xyz;
 obj.parent = mP.ax;
 obj.FaceColor = 'none';
+
+% Each row of Faces is a two-vertex segment.  With the default miter join,
+% MATLAB's graphics renderer starting with R2025a may treat the implicit
+% return edge as a degenerate corner and draw long spikes.  Round joins
+% avoid that renderer defect, are visually identical to miter joins in
+% R2024b for these segments, and retain the compact Patch representation
+% and its support for segment-wise edgeAlpha.
+obj.LineJoin = 'round';
 
 % color given by second argument
 if nargin > 1 && isnumeric(varargin{1}) && ...
