@@ -14,6 +14,11 @@ slowly starts lying, so this is generated from the classdefs instead.
 
 Names and inheritance only. Anything richer - properties, methods - is
 already on the class pages and would only be a second copy to keep in step.
+
+Drawn with box characters, inside a raw html <pre>. MTEX documentation is
+utf-8 throughout - the plotting conventions are spelt y\u2191\u2192x - so the
+characters themselves are unremarkable; what matters is not letting the code
+highlighter see them.
 """
 
 import argparse
@@ -65,18 +70,19 @@ def classdefs(folders):
     return out
 
 
-def tree_lines(names, sup, seen, indent=0):
-    """the indented block, each class shown once"""
+def tree_lines(names, sup, seen, prefix=''):
+    """the branches below one root, drawn with box characters"""
     lines = []
-    for n in sorted(names):
-        if n in seen:
-            continue
+    names = [n for n in sorted(names) if n not in seen]
+    for i, n in enumerate(names):
+        last = i == len(names) - 1
         seen.add(n)
-        lines.append('  ' * indent + n)
+        lines.append(prefix + ('\u2514\u2500\u2500 ' if last else '\u251c\u2500\u2500 ') + n)
         # a class with two superclasses - crystalSymmetry is symmetry and
         # phaseItem - would otherwise appear under each of them
-        kids = sorted(c for c, s in sup.items() if s and s[0] == n)
-        lines += tree_lines(kids, sup, seen, indent + 1)
+        kids = [c for c, sp in sup.items() if sp and sp[0] == n]
+        lines += tree_lines(kids, sup, seen,
+                            prefix + ('    ' if last else '\u2502   '))
     return lines
 
 
@@ -93,11 +99,13 @@ def render(folders, all_classes):
     for r in sorted(roots):
         if r in seen:
             continue
+        if lines:
+            lines.append('')          # a blank line between separate roots
         seen.add(r)
         parent = next((p for p in sup.get(r, []) if p in all_classes), None)
-        lines.append(f'{r}  (< {parent})' if parent else r)
-        kids = sorted(c for c in mine if local[c] and local[c][0] == r)
-        lines += tree_lines(kids, local, seen, 1)
+        lines.append(f'{r}  < {parent}' if parent else r)
+        kids = [c for c in mine if local[c] and local[c][0] == r]
+        lines += tree_lines(kids, local, seen)
     return lines
 
 
@@ -121,9 +129,14 @@ def main():
         with open(page, encoding='utf8') as fh:
             title = fh.readline().rstrip('\n')
 
-        body = [title, '%', f'% {LEAD}', '%']
-        body += ['%   ' + l for l in lines]
-        body += ['%']
+        # A raw html block rather than an indented one. An indented block is
+        # published as {% highlight matlab %}, and the box characters are not
+        # MATLAB, so the highlighter tags them .err - which this site styles
+        # dark red. A class tree is not code and should not go through a code
+        # highlighter.
+        body = [title, '%', f'% {LEAD}', '%', '% <html>', '% <pre>']
+        body += ['% ' + l if l else '%' for l in lines]
+        body += ['% </pre>', '% </html>', '%']
 
         if args.show:
             print('\n'.join(body) + '\n')
