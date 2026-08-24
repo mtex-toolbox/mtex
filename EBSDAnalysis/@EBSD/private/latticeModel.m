@@ -33,14 +33,14 @@ function [reconstructPos,idealFun,isRigid] = latticeModel(pos,ij,isIndexed,dxy)
 %                   following the local distortion would only roughen it.
 %  isRigid        - whether the affine fit alone was used
 %
-% See also
-% EBSD/lattice EBSD/private/calcMesh
-%
 % Note calcMesh solves the same problem but is deliberately NOT routed
 % through here: it works in 3d (it carries a z interpolant), it materialises
 % the whole mesh instead of returning a closure, and it scales its rigidity
 % test by mean(norm(unitCell)) where this one uses dxy. Sharing the code
 % would mean changing one of the two criteria.
+%
+% See also
+% EBSD/lattice EBSD/private/calcMesh
 
 % scatteredInterpolant requires double; ij/pos can come in as single
 % (e.g. real imported EBSD data)

@@ -37,12 +37,13 @@ function exportEBSD_ctf(ebsd,fName,varargin)
 %  fliplr - flip ebsd spatial data left right (not the orientation data)
 %  silent - do not print what is being written
 %
-% See also
-% EBSD.export exportEBSD_ang exportEBSD_h5
-%
+% Authors
 % Originally contributed by Dr. Frank Niessen, University of Wollongong,
 % 2019, with acknowledgements to Dr. Azdiar A. Gazder - see the license at
 % the end of this file.
+%
+% See also
+% EBSD.export exportEBSD_ang exportEBSD_h5
 
 silent = check_option(varargin,'silent');
 scrPrnt(silent,'SegmentStart','Exporting ''ctf'' file');
