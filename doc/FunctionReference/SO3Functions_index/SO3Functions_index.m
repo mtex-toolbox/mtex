@@ -13,7 +13,7 @@
 % ├── SO3FunMLS
 % ├── SO3FunRBF
 % └── SO3FunSBF
-%
+% &nbsp;
 % SO3Kernel
 % ├── SO3AbelPoissonKernel
 % ├── SO3BumpKernel
@@ -28,9 +28,9 @@
 % ├── SO3SquareSingularityKernel
 % ├── SO3vonMisesFisherKernel
 % └── fibreVonMisesFisherKernel
-%
+% &nbsp;
 % SO3TangentSpace
-%
+% &nbsp;
 % SO3VectorField
 % </pre>
 % </html>

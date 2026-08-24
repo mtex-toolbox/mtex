@@ -15,16 +15,16 @@
 % │   └── sigmaSections
 % ├── phi1Sections
 % └── phi2Sections
-%
+% &nbsp;
 % directionColorKey
 % ├── HKLDirectionKey
 % ├── HSVDirectionKey
 % └── TSLDirectionKey
-%
+% &nbsp;
 % mapPlot
-%
+% &nbsp;
 % mtexFigure
-%
+% &nbsp;
 % orientationColorKey
 % ├── BungeColorKey
 % ├── PatalaColorKey
@@ -36,7 +36,7 @@
 % │   └── ipfTSLKey
 % ├── spectralTransmissionColorKey
 % └── spotColorKey
-%
+% &nbsp;
 % orientationPlot
 % ├── BungePlot
 % └── axisAnglePlot
@@ -45,17 +45,17 @@
 %     ├── cubochoricPlot
 %     ├── homochoricPlot
 %     └── quaternionPlot
-%
+% &nbsp;
 % planarColorKey
-%
+% &nbsp;
 % plottingConvention
-%
+% &nbsp;
 % scaleBar
-%
+% &nbsp;
 % screenProjection
-%
+% &nbsp;
 % sphericalPlot
-%
+% &nbsp;
 % sphericalProjection
 % ├── eangleProjection
 % ├── eareaProjection

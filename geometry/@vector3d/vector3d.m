@@ -12,8 +12,8 @@ classdef vector3d < dynOption
 %
 % Input
 %  x,y,z - cart. coordinates
-%  xyz   - 3 x N matrix (one vector per column, gives a 1 x N list) or
-%          N x 3 matrix (one vector per row, gives an N x 1 list)
+%  xyz   - 3 × N matrix (one vector per column, gives a 1 × N list) or
+%          N × 3 matrix (one vector per row, gives an N × 1 list)
 %
 % Output
 %  v - @vector3d
@@ -105,11 +105,11 @@ classdef vector3d < dynOption
 
           else
 
-            % a 3 x N matrix gives a 1 x N list, an N x 3 matrix an N x 1 list
+            % a 3 × N matrix gives a 1 × N list, an N × 3 matrix an N × 1 list
             if size(xyz,1) == 3 && size(xyz,2) == 3
               % satisfies both readings and nothing in the data says which
               warning('MTEX:vector3d:ambiguousMatrix',...
-                ['A 3 x 3 matrix of coordinates is ambiguous - it is read '...
+                ['A 3 × 3 matrix of coordinates is ambiguous - it is read '...
                 'as three vectors given by its COLUMNS. Use '...
                 'vector3d.byXYZ(xyz) to read it by rows instead.']);
             end
@@ -124,7 +124,7 @@ classdef vector3d < dynOption
               v.z = xyz(:,3);
             else
               error('MTEX:vector3d:wrongSize',...
-                ['A vector3d is built from a 3 x N or an N x 3 matrix of '...
+                ['A vector3d is built from a 3 × N or an N × 3 matrix of '...
                 'coordinates, not from a %s one.'],mat2str(size(xyz)));
             end
 
@@ -318,7 +318,10 @@ classdef vector3d < dynOption
       %   v = vector3d.byXYZ([x(:) y(:) z(:)])
       %   v = vector3d.byXYZ([x(:) y(:)])       % z = 0
       %
-      if size(d,2) == 3
+      if isequal(size(d),[0 0])
+        % [] says nothing about a width, an empty evaluation returns it
+        v = vector3d(zeros(0,3),varargin{:});
+      elseif size(d,2) == 3
         v = vector3d(d(:,1),d(:,2),d(:,3),varargin{:});
       elseif size(d,2) == 2
         % zeros(n,1) and not the scalar 0, which an empty d has no size to repmat to
@@ -326,8 +329,8 @@ classdef vector3d < dynOption
       else
         % anything else used to silently keep columns 1 and 2 and drop the rest
         error('MTEX:vector3d:wrongSize',...
-          ['vector3d.byXYZ reads one vector per row, so it takes an N x 3 '...
-          'or an N x 2 matrix of coordinates, not a %s one.'],mat2str(size(d)));
+          ['vector3d.byXYZ reads one vector per row, so it takes an N × 3 '...
+          'or an N × 2 matrix of coordinates, not a %s one.'],mat2str(size(d)));
       end
     end
 

@@ -12,26 +12,26 @@
 % ├── meanFilter
 % ├── medianFilter
 % └── splineFilter
-%
+% &nbsp;
 % boundaryFilter
 % ├── curvatureFilter
 % ├── huberFilter
 % ├── laplaceFilter
 % └── taubinFilter
-%
+% &nbsp;
 % grainBoundaryCriterion
 % ├── gbcAngle
 % ├── gbcCustom
 % ├── gbcFMC
 % ├── gbcSoft
 % └── gbcVariants
-%
+% &nbsp;
 % mapImage
-%
+% &nbsp;
 % neper
-%
+% &nbsp;
 % parentGrainReconstructor
-%
+% &nbsp;
 % phaseList
 % ├── EBSD
 % │   ├── EBSD3
@@ -45,9 +45,9 @@
 % ├── grain3d
 % ├── grainBoundary
 % └── triplePointList
-%
+% &nbsp;
 % simulateEBSD
-%
+% &nbsp;
 % trueEbsd2
 % </pre>
 % </html>

@@ -11,7 +11,7 @@ function [traces, rel, cSize] =  calcTraces(ebsd,varargin)
 %  clusterId  - an id indicating for which pixel form a region
 %
 % Output
-%  traces - @vector3d size max(clusterId(:,1)) x max(clusterId(:,2)) ....
+%  traces - @vector3d size max(clusterId(:,1)) × max(clusterId(:,2)) ....
 %  rel    - reliability index
 %  cSize  - cluster size
 %
@@ -121,6 +121,6 @@ for i = 1:length(ic)
 end
 
 xyz(~isnan(xyz(:,1)),3) = 0;
-traces = reshape(vector3d(xyz.','antipodal'),sz);
+traces = reshape(vector3d.byXYZ(xyz,'antipodal'),sz);
 end
 

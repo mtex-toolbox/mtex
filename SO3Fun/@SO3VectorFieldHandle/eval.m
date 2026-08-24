@@ -22,7 +22,9 @@ f = SO3VF.fun(ori);
 
 % generate tangent space vector
 if ~isa(f,'SO3TangentVector')
-  f = SO3TangentVector(vector3d(f.'),...
+  % coordinates come one rotation per row, a vector3d needs no reading at all
+  if ~isa(f,'vector3d'), f = vector3d.byXYZ(f); end
+  f = SO3TangentVector(f(:),...
     orientation(ori(:),SO3VF.hiddenCS,SO3VF.hiddenSS),SO3VF.internTangentSpace);
   f = reshape(f,size(ori));
 end
