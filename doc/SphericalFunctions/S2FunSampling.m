@@ -14,7 +14,7 @@ plottingConvention.default('y↑→x');
 % sphere and concentrated on a few narrow features - which makes it easy to
 % see where a sample puts its points.
 
-sF = abs(S2Fun.smiley);
+sF = 0.05 + abs(S2Fun.smiley);
 
 contourf(sF)
 
@@ -36,7 +36,7 @@ sum(sF)
 % to spot along the mouth below.
 
 rng(0)
-vRnd = discreteSample(sF,200);
+vRnd = discreteSample(sF,1000);
 
 contourf(sF)
 hold on
@@ -50,7 +50,7 @@ hold off
 % number of points allows. The points end up evenly spread along every
 % feature, dense where the function is large and absent where it is zero.
 
-vOpt = optimalSample(sF,200,'bandwidth',32);
+vOpt = optimalSample(sF,1000,'bandwidth',32);
 
 contourf(sF)
 hold on

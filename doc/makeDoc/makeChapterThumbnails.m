@@ -74,48 +74,6 @@ for k = 1:numel(names)
 end
 close all
 
-% the overview page uses one image per section, not the individual tiles
-makeGroups(outDir)
-
-end
-
-% -------------------------------------------------------------------------
-function makeGroups(outDir)
-% assemble the per chapter tiles into one labelled strip per section
-%
-% The overview page cannot put the tiles in a table. makeTable publishes
-% each cell on its own and injects the result as raw html, so the stylesheet
-% template that rewrites <img src> - adding the images/ prefix the website
-% serves from - never sees it, and every tile in a table 404s. A plain
-% <<file.png>> include does go through that template, so each section is
-% shipped as a single image instead.
-
-groups = {
-  'StartHere',  {'Tutorials','GeneralConcepts','Plotting'}, ...
-                {'Tutorials','General Concepts','Plotting'}
-  'Geometry',   {'Vectors','Rotations','CrystalGeometry','CrystalOrientations','Misorientations'}, ...
-                {'Vectors','Rotations','Crystal Geometry','Orientations','Misorientations'}
-  'Maps',       {'EBSDAnalysis','Grains','GrainBoundaries','EBSD3Analysis'}, ...
-                {'EBSD','Grains','Grain Boundaries','3D EBSD'}
-  'Texture',    {'PoleFigureAnalysis','ODFAnalysis','SphericalFunctions','SO3Functions'}, ...
-                {'Pole Figures','ODF','Spherical Functions','Orientation Functions'}
-  'Properties', {'Tensors','Elasticity','Plasticity','PhaseTransitions'}, ...
-                {'Tensors','Elasticity','Plasticity','Phase Transitions'}
-  };
-
-for g = 1:size(groups,1)
-  files = '';
-  for k = 1:numel(groups{g,2})
-    files = [files sprintf(' -label "%s" "%s"',groups{g,3}{k},...
-      fullfile(outDir,['chapter_' groups{g,2}{k} '.png']))]; %#ok<AGROW>
-  end
-  out = fullfile(outDir,['group_' groups{g,1} '.png']);
-  system(sprintf(['magick montage%s -tile %dx1 -geometry 200x200+6+6 ' ...
-    '-background white -fill black -font DejaVu-Sans -pointsize 15 "%s"'],...
-    files,numel(groups{g,2}),out));
-  fprintf('GROUP %s\n',groups{g,1});
-end
-
 end
 
 % -------------------------------------------------------------------------
