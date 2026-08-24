@@ -1,53 +1,100 @@
 %% Documentation
 %
 %%
-% Use the left sidebar to navigate through the different topics. Note that
-% all documentation pages are essentially MTEX scripts. You have a copy of
-% them in your MTEX download, with a file name equal to the last part of
-% the URL with .html swapped for .m (so this page is |Documentation.m|).
-% This means you can open them in MATLAB by typing
+% Every picture below opens a chapter. Together they are most of what MTEX
+% does: crystal geometry, orientation maps, diffraction data, the
+% distributions they are summarised by, and the material properties that
+% follow from them.
 %
-%   edit fileName
+% If you are new, the quickest route in is
+% <Tutorials.html Tutorials>, which walks a complete analysis from importing
+% a file to a result. <Glossary.html Glossary> and
+% <NotationAndConventions.html Notation and Conventions> are worth knowing
+% about early - the second collects the choices, such as Euler angle
+% convention and reference frame alignment, that quietly decide whether your
+% numbers agree with someone else's.
 %
-% This allows you to execute the sections step by step and investigate
-% the effect of each single MTEX command. It also should motivate you to
-% play around with different parameters, different input files, or further
-% analysis steps. Eventually, these documentation scripts may serve as a
-% good starting point for your own analysis scripts.
+%% Start here
 %
-%% Contributing to the Documentation
+% How to run MTEX at all, and how to make it draw things.
 %
-% Documenting a project like MTEX is a challenging and ongoing task.
-% Therefore, we are extremely happy about any spelling fixes, examples,
-% theoretical explanations, special use cases, etc. As a bonus, everybody
-% who contributes to MTEX will automatically appear on the
+% || <<chapter_Tutorials.png>> || <<chapter_GeneralConcepts.png>> || <<chapter_Plotting.png>> ||
+% || <Tutorials.html Tutorials> || <GeneralConcepts.html General Concepts> || <Plotting.html Plotting> ||
+%
+%% Geometry
+%
+% Directions, rotations, symmetry, and the orientation of one crystal in one
+% specimen. Everything else is built on these.
+%
+% || <<chapter_Vectors.png>> || <<chapter_Rotations.png>> || <<chapter_CrystalGeometry.png>> ||
+% || <Vectors.html Vectors> || <Rotations.html Rotations> || <CrystalGeometry.html Crystal Geometry> ||
+%
+% || <<chapter_CrystalOrientations.png>> || <<chapter_Misorientations.png>> ||
+% || <CrystalOrientations.html Orientations> || <Misorientations.html Misorientations> ||
+%
+%% Orientation maps
+%
+% Measuring orientations point by point across a surface, and turning the
+% result into grains, boundaries and volumes.
+%
+% || <<chapter_EBSDAnalysis.png>> || <<chapter_Grains.png>> || <<chapter_GrainBoundaries.png>> ||
+% || <EBSDAnalysis.html EBSD> || <Grains.html Grains> || <GrainBoundaries.html Grain Boundaries> ||
+%
+% || <<chapter_EBSD3Analysis.png>> ||
+% || <EBSD3Analysis.html 3D - EBSD> ||
+%
+%% Texture
+%
+% Describing a whole population of orientations rather than one crystal, and
+% the mathematics that makes it computable.
+%
+% || <<chapter_PoleFigureAnalysis.png>> || <<chapter_ODFAnalysis.png>> ||
+% || <PoleFigureAnalysis.html Pole Figures> || <ODFAnalysis.html ODF> ||
+%
+% || <<chapter_SphericalFunctions.png>> || <<chapter_SO3Functions.png>> ||
+% || <SphericalFunctions.html Spherical Functions> || <SO3Functions.html Orientation Functions> ||
+%
+%% Material properties
+%
+% What the texture implies for how the material behaves - how stiff it is,
+% how sound travels through it, how it deforms and how it transforms.
+%
+% || <<chapter_Tensors.png>> || <<chapter_Elasticity.png>> || <<chapter_Plasticity.png>> ||
+% || <Tensors.html Tensors> || <Elasticity.html Elasticity> || <Plasticity.html Plasticity> ||
+%
+% || <<chapter_PhaseTransitions.png>> ||
+% || <PhaseTransitions.html Phase Transitions> ||
+%
+%% These pages are scripts
+%
+% Every page here is an executable MATLAB script, and you have a copy of it
+% in your MTEX installation. The file name is the last part of the URL with
+% |.html| swapped for |.m|, so this page is |Documentation.m| and you can
+% open it with
+%
+%   edit Documentation
+%
+% Run a page section by section, change the numbers, and see what depends on
+% what. That is the fastest way to learn what a command actually does, and
+% these scripts are a reasonable starting point for your own.
+%
+%% Contributing
+%
+% Documenting a project like MTEX is an ongoing job, so corrections,
+% examples and explanations are all welcome, and everybody who contributes
+% appears on the
 % <https://github.com/mtex-toolbox/mtex/graphs/contributors contributors
 % page>.
 %
-% The easiest way to suggest changes to the MTEX documentation is online
-% via GitHub. This is done as follows:
+% The easiest route is through GitHub: sign in, open the page you want to
+% change, click *edit page* at the top to reach the file, then the pencil
+% icon to edit it in the browser. *Propose changes* and *create pull
+% request* at the bottom send it to us. You may also simply
+% <mailto:ralf.hielscher@mathematik.tu-chemnitz.de email> the change.
 %
-% # sign into <https://github.com GitHub>
-% # open the help page you want to change, e.g., this one
-% # click
-% <https://github.com/mtex-toolbox/mtex/blob/develop/doc/Documentation.m
-% edit page>, which leads you to the file on <https://github.com GitHub>
-% # click the little pencil in the top right corner, which allows you to
-% edit the script online
-% # enter or copy and paste your changes into the site
-% # click at the bottom *Propose changes*
-% # click create *pull request*
-%
-% Alternatively, you can send us your changes simply by <mailto:ralf.hielscher@mathematik.tu-chemnitz.de email>.
-%
-%% The Publish Command
-%
-% You may get a visual preview of your altered documentation page by using the
-% matlab function
+% To preview a page you have altered, use the MATLAB
 % <https://de.mathworks.com/help/matlab/matlab_prog/publishing-matlab-code.html publish>
+% command, which writes an |html| folder next to it:
 %
 %   publish filename
-%
-% which creates an folder, named |html|, in your current directory where you can
-% find the generated html page.
 %
