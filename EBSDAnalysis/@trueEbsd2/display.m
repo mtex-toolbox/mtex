@@ -3,11 +3,12 @@ function display(job,varargin) %#ok<DISPLAY> every MTEX class overloads it
 %
 % A @trueEbsd job is a sequence of maps plus the hops between them, so the
 % display is one row per map: what it is called, how big it is, which
-% distortion separates it from the next one, how far that hop moved it, and
-% what was left over afterwards. The name is the one undistort writes the
-% aligned image under, so it is also what to reach for afterwards -
-% ebsd.fsdT1 rather than job.undistortedList(4).img. The residual is the diagnostic that says whether the
-% registration worked - around a pixel or less is a success.
+% distortion separates it from the next one, how far and which way that hop
+% moved it, and what was left over afterwards. The name is the one undistort
+% writes the aligned image under, so it is also what to reach for afterwards -
+% ebsd.fsdT1 rather than job.undistortedList(4).img. The residual is the
+% diagnostic that says whether the registration worked - around a pixel or
+% less is a success.
 
 displayClass(job,inputname(1),varargin{:},'moreInfo',stageStr(job));
 
@@ -46,7 +47,7 @@ for k = 1:n
 end
 
 cprintf(matrix,'-L',' ','-Lc',...
-  {'' 'name' 'image' 'distortion' 'shift' 'residual'},...
+  {'' 'name' 'image' 'distortion' 'shift, px' 'residual, px'},...
   '-d','  ','-ic',true);
 
 disp(' ')
@@ -80,7 +81,8 @@ end
 
 % =========================================================================
 function s = hopStr(job,k,what)
-% mean length of hop k, in pixels, from job.shifts or job.fitError
+% hop k as a length and the signed x and y behind it, in pixels, from
+% job.shifts or job.fitError
 %
 % shifts is a cell of pairShifts arrays - one per distortion model stage,
 % the last being the final fit - while fitError is a plain object array.
@@ -104,11 +106,12 @@ end
 
 if isempty(x) || isempty(ps.dx) || isempty(ps.dy), return; end
 
-len = sqrt((x(:)./ps.dx).^2 + (y(:)./ps.dy).^2);
-len = len(~isnan(len));
-if isempty(len), return; end
+x  = x(:)./ps.dx;
+y  = y(:)./ps.dy;
+ok = ~isnan(x) & ~isnan(y);
+if ~any(ok), return; end
 
-s = [xnum2str(mean(len)) ' px'];
+s = pxStr([mean(sqrt(x(ok).^2 + y(ok).^2)) mean(x(ok)) mean(y(ok))]);
 
 end
 
@@ -128,14 +131,14 @@ end
 
 % =========================================================================
 function s = sizeStr(img)
-% r x c, with the channel count only when there is more than one
+% r × c, with the channel count only when there is more than one
 
 if isempty(img), s = '-'; return; end
 sz = size(img);
 if numel(sz) > 2 && sz(3) > 1
-  s = sprintf('%d x %d x %d',sz(1),sz(2),sz(3));
+  s = sprintf('%d × %d × %d',sz(1),sz(2),sz(3));
 else
-  s = sprintf('%d x %d',sz(1),sz(2));
+  s = sprintf('%d × %d',sz(1),sz(2));
 end
 
 end
