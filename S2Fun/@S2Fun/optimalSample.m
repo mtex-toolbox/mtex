@@ -317,8 +317,9 @@ for i = 1:maxIter
   dir = vector3d(d(1:M),d(M+1:2*M),d(2*M+1:3*M));
 
   % the two loop recursion mixes in transported gradients and gives away a
-  % little of the tangentiality the geodesic step below relies on
-  dir = dir - dot(dir,v).*v;
+  % little of the tangentiality the geodesic step below relies on. The nodes
+  % carry the antipodal flag of sF, for which dot returns |v.dir|.
+  dir = dir - dot(dir,v,'noAntipodal').*v;
 
   dZ = d(3*M+1:end);
   if ~moveWeights, dZ = zeros(numel(z),1); end
