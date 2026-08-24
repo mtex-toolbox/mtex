@@ -204,7 +204,9 @@ end
 
 
 function res = discrepancyS2(sF,v,c,bw)
-% the same functional on the sphere, see S2Fun/optimalSample
+% the same functional on the sphere, see S2Fun/optimalSample. S2Fun/discrepancy
+% computes it as well - this stays a copy on purpose, so that the assertions
+% above measure the shipped code against something that is not the shipped code
 
 if isempty(c), c = ones(numel(v),1)/numel(v); end
 

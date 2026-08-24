@@ -145,7 +145,7 @@ function [v,c] = optimalSample(sF,n,varargin)
 %  minWeight  - discard directions with a smaller weight (default = 0, i.e. keep all)
 %
 % See also
-% S2Fun/discreteSample S2RestrictedDistanceKernel
+% S2Fun/discrepancy S2Fun/discreteSample S2RestrictedDistanceKernel
 
 % TODO: Symmetries, i.e. S2FunHarmonicSym
 
