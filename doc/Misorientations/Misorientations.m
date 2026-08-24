@@ -54,6 +54,14 @@ hold off
 % phases without care: the set of equivalent rotations depends on the
 % symmetry of both crystals involved.
 %
+% One further ambiguity is easy to miss. A misorientation has a direction -
+% from the first crystal to the second - and reversing it gives the inverse
+% rotation. Between two grains of the same phase there is nothing that makes
+% either of them first, so the physically meaningful object is the rotation
+% and its inverse taken together. This is called grain exchange symmetry, and
+% it has to be included when misorientations are counted into a distribution,
+% or the same boundary is recorded as two different relationships.
+%
 %% Where to start
 %
 % <MisorientationTheory.html Theory> is the page to read first. It builds

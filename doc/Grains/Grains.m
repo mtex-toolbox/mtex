@@ -44,6 +44,20 @@ hold off
 % two neighbouring pixels is always a border, so a grain never spans two
 % phases.
 %
+% It is worth being honest about that definition: there is no canonical one.
+% A grain in a textbook is a volume of material whose lattice is continuous,
+% but a map gives you orientations sampled on a grid, and turning those into
+% regions requires a rule that somebody has to choose. The threshold above is
+% such a rule, and the value it takes is a convention rather than a
+% measurement - 10 or 15 degrees by long habit, because that is roughly where
+% boundary energy stops rising with misorientation. Deformed material is where
+% the choice bites hardest: a bent crystal accumulates orientation change
+% gradually, so whether it counts as one grain or several depends entirely on
+% the threshold, and the literature has argued about it for decades. This is
+% why <GrainReconstructionAdvanced.html Advanced Reconstruction> and
+% <GrainReconstructionMCL.html Markovian Clustering> exist at all - they are
+% different answers to the same unsettled question.
+%
 % *notIndexed* - the phase given to a measurement whose diffraction pattern
 % could not be indexed. It behaves like any other phase, so a connected
 % patch of it can form a grain of its own. It is not a hole in the data.
@@ -52,6 +66,14 @@ hold off
 % ended up in different grains. Boundaries are objects in their own right,
 % with their own properties, and they have
 % <GrainBoundaries.html a chapter of their own>.
+%
+% The same caution applies here. A real interface is a structure a few atoms
+% thick, and describing it fully takes five numbers: three for the
+% misorientation between the two crystals, and two more for the direction the
+% interface plane faces. A map of a polished surface gives you the trace of
+% that plane and not its inclination, so two of those five are only partly
+% within reach - which is why boundary plane analysis needs either 3D data or
+% an argument from many boundaries at once.
 %
 % *Hole* and *inclusion* - one grain lying entirely inside another. Seen
 % from the outside the enclosing grain has a hole; seen from the inside the
