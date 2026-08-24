@@ -1,10 +1,10 @@
 function [m,im,iu] = unique(m,varargin)
-% disjoint list of Miller indices%
+% disjoint list of Miller indices
 %
 % Syntax
 %   u = unique(m) % find disjoint elements of the vector v
 %   u = unique(m,'tolerance',0.01) % use tolerance 0.01
-%   [u,im,iu] = unique(m,varargin)] 
+%   [u,im,iu] = unique(m,varargin) 
 %
 % Input
 %  m   - @Miller

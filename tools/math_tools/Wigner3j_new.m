@@ -1,5 +1,5 @@
 function [w3j,jmin, jmax] = Wigner3j_new(j2, j3, m1, m2, m3)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
 %
 %	This subroutine will calculate the Wigner 3j symbols
 %
@@ -75,7 +75,7 @@ function [w3j,jmin, jmax] = Wigner3j_new(j2, j3, m1, m2, m3)
 %	Copyright (c) 2005-2009, Mark A. Wieczorek
 %	All rights reserved.
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
 %	implicit none
 %	integer, intent(in) ::	j2, j3, m1, m2, m3
 %	integer, intent(out) ::	jmin, jmax

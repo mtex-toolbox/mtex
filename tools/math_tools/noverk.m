@@ -1,16 +1,16 @@
 function a = noverk(n, k)
 % same as nchoosek, but works for vector-valued inputs
 %
-% Syntax:
-% a = noverk(n, k);
-% 
-% Input:
-% n - array of integers
-% k - array of integers with:
-%       either n(i) >= k(i) (same size), or min(n) >= max(k) (different size)
-% 
-% Output:
-% a = nchoosek(n, k) (pointwise)
+% Syntax
+%   a = noverk(n, k)
+%
+% Input
+%  n - array of integers
+%  k - array of integers, with either n(i) >= k(i) for equal sizes, or
+%      min(n) >= max(k) for different ones
+%
+% Output
+%  a - nchoosek(n,k), pointwise
 % 
 
 % if n and k have same size

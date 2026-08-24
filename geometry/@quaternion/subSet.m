@@ -2,7 +2,7 @@ function q = subSet(q,varargin)
 % indexing of quaternions
 %
 % Syntax
-%   subSet(q,ind) % 
+%   subSet(q,ind)
 %
 
 q.a = q.a(varargin{:});
