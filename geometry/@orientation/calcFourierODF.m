@@ -32,7 +32,7 @@ function odf = calcFourierODF(ori,varargin)
 %  bandwidth - order up to which Fourier coefficients are calculated
 %
 % See also
-% EBSDTutorial EBSD2ODF EBSDSimulation_demo EBSD/load EBSD/calcKernel kernel/kernel
+% EBSDTutorial EBSD2ODF EBSDSimulation_demo EBSD/load EBSD.EBSD SO3Kernel.SO3Kernel
 
 % construct an exact kernel ODF - this is also where an empty list, or one
 % of nothing but nan orientations, becomes the uniform ODF

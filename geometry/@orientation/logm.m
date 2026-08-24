@@ -16,7 +16,7 @@ function Omega = logm(ori,varargin)
 %  Omega - @spinTensor
 %
 % See also
-% orientation/log spinTensor/exp 
+% orientation/log spinTensor.spinTensor 
 
 
 m = log(ori,varargin{:});

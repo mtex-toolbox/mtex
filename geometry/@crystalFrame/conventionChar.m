@@ -24,7 +24,7 @@ function c = conventionChar(cF,pC)
 %  c - char
 %
 % See also
-% referenceFrame/conventionChar plottingConvention/char
+% referenceFrame/conventionChar plottingConvention
 
 if nargin < 2, pC = cF.how2plot; end
 if isempty(pC), c = ''; return; end

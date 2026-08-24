@@ -15,7 +15,7 @@ function mdf = calcMDF(SO3F1,varargin)
 % bandwidth - bandwidth for Fourier coefficients (default -- 32)
 %
 % See also
-% EBSD/calcODF
+% EBSD.EBSD
 
 % is second argument also an ODF?
 if nargin > 1 && isa(varargin{1},'SO3Fun')

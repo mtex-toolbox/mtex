@@ -32,7 +32,7 @@ function plotPDF(ori,varargin)
 %
 %
 % See also
-% orientation/plotIPDF S2Grid/plot saveFigure
+% orientation/plotIPDF vector3d.plot saveFigure
 % Plotting Annotations ColorMaps PlotTypes
 % SphericalProjections
 

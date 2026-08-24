@@ -20,7 +20,7 @@ function ss = specimenSymmetryFor(pC)
 %  ss - @specimenSymmetry
 %
 % See also
-% EBSD/subsref grain2d/subsref plottingConvention/matchDefault
+% EBSD/subsref grain2d/subsref plottingConvention
 
 ss = specimenSymmetry.default;
 

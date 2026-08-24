@@ -33,7 +33,7 @@ classdef spatialTransformInverse < spatialTransform
 %  iterMax - iteration budget
 %
 % See also
-% spatialTransform spatialTransformField spatialTransform/discretize
+% spatialTransform spatialTransformField spatialTransform
 
   properties
     T

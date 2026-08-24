@@ -17,7 +17,7 @@ function [x,omega] = plotFibre(odf,f,varargin)
 %   plotFibre(SantaFe,f)
 %
 % See also
-% S2Grid/plot saveFigure Plotting Annotations ColorMaps PlotTypes
+% vector3d.plot saveFigure Plotting Annotations ColorMaps PlotTypes
 % SphericalProjections
 
 if ~odf.isReal

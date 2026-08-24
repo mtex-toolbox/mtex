@@ -31,7 +31,7 @@ function f = evalEquispacedFFT(SO3F,rot,varargin)
 %   v = evalEquispacedFFT(SO3F,rot);
 %
 % See also
-% SO3FunHarmonic/eval SO3FunHarmonic/evalNFSOFT SO3FunHarmonic/evalSectionsEquispacedFFT
+% SO3FunHarmonic/eval SO3FunHarmonic/evalNFSOFT SO3FunHarmonic.SO3FunHarmonic
 
 % TODO: Extend to general equispaced grids and usage by plotting allows to
 % plot SO3FunHarmonics of high bandwidth

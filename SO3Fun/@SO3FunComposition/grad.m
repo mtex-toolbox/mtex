@@ -17,7 +17,7 @@ function g = grad(SO3F,varargin)
 %  g - @vector3d gradient of the ODF at the orientations ori
 %
 % See also
-% SO3Fun/eval orientation/exp
+% SO3Fun.SO3Fun orientation/exp
 
 % compute the gradient for each component seperately
 g = SO3F.components{1}.grad(varargin{:});

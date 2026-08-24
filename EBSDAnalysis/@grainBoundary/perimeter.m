@@ -22,7 +22,7 @@ function  peri = perimeter(gb,varargin)
 %  peri - list of grain perimeter sorted by grain id
 %
 % See also
-% Grain2d/perimeter
+% grain2d.perimeter
 
 F = reshape(nonzeros(gb.F),[],2);
 

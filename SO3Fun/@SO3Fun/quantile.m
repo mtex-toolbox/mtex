@@ -9,7 +9,7 @@ function S3G = quantile(SO3F,varargin)
 %  p   - upper quantile, if negative lower quantile
 %
 % See also
-% PoleFigure/quantile
+% PoleFigure.PoleFigure
 
 
 t = find_type(varargin,'double');

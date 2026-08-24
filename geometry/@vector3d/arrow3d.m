@@ -25,7 +25,7 @@ function h = arrow3d(vec,varargin)
 %  hold off
 %
 % See also
-% vector3d/scatter3 vector3d/plot3 vector3d/text3
+% vector3d.scatter3d vector3d.vector3d vector3d/text3
 
 % where to plot
 if check_option(varargin,'parent')

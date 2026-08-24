@@ -15,7 +15,7 @@ function v = cubochoric(q)
 %  v - @vector3d
 %
 % See also
-% quaternion/Euler quaternion/Rodigues quaternion/homochoric
+% quaternion/Euler quaternion.Rodrigues quaternion/homochoric
 
 % homochoric transformation first
 v = homochoric(q);

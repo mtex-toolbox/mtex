@@ -22,6 +22,6 @@ function r = rand(varargin)
 %  rot - @rotation
 %
 % See also
-% rotation/id rotation/nan orientation/rand
+% rotation/id rotation/nan rotation.rand
 
 r = rotation(quaternion.rand(varargin{:}));

@@ -7,7 +7,7 @@ function kappa = evalkappa(lambda,varargin)
 %  iteration    - number of newton iterations
 %
 % See also
-% orientation/mean EBSD/mean BinghamODF
+% orientation/mean EBSD.EBSD BinghamODF
 
 % only approximated solution of kappas' which hold true only for large
 % values of lambda see: F. Bachmann, R. Hielscher, P. Jupp, W. Pantleon, H.

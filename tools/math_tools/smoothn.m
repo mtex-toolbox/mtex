@@ -219,11 +219,12 @@ function [z,s,exitflag] = smoothn(varargin)
 %   set(hsurfaces,'AmbientStrength',.6)
 %   set(hcones,'DiffuseStrength',.8)
 %
-%   See also SMOOTH1Q, DCTN, IDCTN.
+%   Authors
+%   Damien Garcia, 2009/03, revised 2014/10,
+%   <a href="matlab:web('http://www.biomecardio.com')">www.BiomeCardio.com</a>
 %
-%   -- Damien Garcia -- 2009/03, revised 2014/10
-%   website: <a
-%   href="matlab:web('http://www.biomecardio.com')">www.BiomeCardio.com</a>
+%   See also
+%   SMOOTH1Q DCTN IDCTN
 
 %% Check input arguments
 %error(nargchk(1,5,nargin));

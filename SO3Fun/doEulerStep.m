@@ -18,7 +18,7 @@ function odf = doEulerStep(spin,odf,numIter,varargin)
 %  ori_n   - @orientation, orientations after numIter iteration steps
 %
 % See also
-% SingleSlipModel, Taylormodel, SO3Fun/div, strainTensor/calcTaylor
+% SingleSlipModel, Taylormodel, SO3Fun.SO3Fun, strainTensor/calcTaylor
 %
 
 if nargin == 2 || isempty(numIter)

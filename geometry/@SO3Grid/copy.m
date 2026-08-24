@@ -6,7 +6,7 @@ function S3G = copy(S3G,ind)
 %  indece - int32
 %
 % See also
-%  EBSD/delete EBSD/subGrid
+%  EBSD.EBSD EBSD.EBSD
 
  S3G.a = S3G.a(ind);
  S3G.b = S3G.b(ind);

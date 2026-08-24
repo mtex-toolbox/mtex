@@ -36,7 +36,7 @@ function kappa = curvature(gB,n)
 %  kappa - 1/fitting radius in EBSD units
 %
 % See also
-% grainBoundary/flip grainBoundary/chainId grainBoundary/arcLength
+% grainBoundary/flip grainBoundary.grainBoundary grainBoundary.grainBoundary
 
 if nargin == 1, n = 50; end
 

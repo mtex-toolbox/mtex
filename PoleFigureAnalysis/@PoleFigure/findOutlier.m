@@ -11,7 +11,7 @@ function ind = findOutlier(pf,varargin)
 %  ind - indece of the outliers
 %
 % See also
-% PoleFigure/delete
+% PoleFigure.PoleFigure
 
 alpha = get_option(varargin,'alpha',2);
 

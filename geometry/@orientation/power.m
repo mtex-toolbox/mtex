@@ -16,7 +16,7 @@ function ori = power(ori,n)
 %  ori - @rotation
 %
 % See also
-% rotation/log 
+% quaternion.log 
 
 if all(n == -1)
   ori = inv(ori);

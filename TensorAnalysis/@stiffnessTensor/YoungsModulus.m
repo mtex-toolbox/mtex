@@ -17,7 +17,7 @@ function varargout = YoungsModulus(C,varargin)
 % $$E = \frac{1}{S_{ijkl} x_i x_j x_k x_l}$$
 %
 % See also
-% tensor/shearModulus tensor/volumeCompressibility tensor/ChristoffelTensor
+% tensor.tensor tensor.tensor tensor.tensor
 
 % take formula using complience
 [varargout{1:nargout}] = YoungsModulus(inv(C),varargin{:});

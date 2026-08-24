@@ -15,7 +15,7 @@ function plotDiff(SO3F1,SO3F2,varargin)
 %  l2 - calculate $|pf1--pf2|^2$ error (only for SO3Fun -- pole figure)
 %
 % See also
-% S2Grid/plot PoleFigure/calcError SO3Fun/calcError saveFigure
+% vector3d.plot PoleFigure/calcError SO3Fun/calcError saveFigure
 % Plotting Annotations ColorMaps PlotTypes
 % SphericalProjections 
 

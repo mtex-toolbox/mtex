@@ -9,7 +9,7 @@ function c = BCV(ori,psi,varargin)
 %  c    - halfwidth
 %
 % See also
-% EBSD/calcODF EBSD/calcKernel orientation/LSCV
+% EBSD.EBSD EBSD.EBSD orientation/LSCV
 
 % extract data
 N = length(ori);

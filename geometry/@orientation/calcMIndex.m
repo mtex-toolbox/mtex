@@ -32,7 +32,7 @@ function m = calcMIndex(ori,varargin)
 %  M-index
 %
 % See also
-% odf/calcMIndex
+% ODF.ODF
 
 %
 if ~isa(ori.SS,'crystalSymmetry') % check if input is a misorientation

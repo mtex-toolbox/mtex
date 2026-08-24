@@ -14,7 +14,7 @@ function d = div(SO3VF,varargin)
 %  d - divergence of |SO3VF| at rotation |rot|
 %
 % See also
-% SO3VectorFieldHarmonic.div SO3Fun.grad SO3Fun.curl 
+% SO3VectorFieldHarmonic.div SO3Fun.grad SO3Fun.SO3Fun 
 
 % maybe we should return a function handle
 if nargin == 1 || ~isa(varargin{1},'rotation')  

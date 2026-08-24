@@ -22,7 +22,7 @@ function plotIPDF(f,varargin)
 %  complete  - plot entire (hemi)--sphere
 %
 % See also
-% S2Grid/plot saveFigure Plotting Annotations ColorMaps PlotTypes
+% vector3d.plot saveFigure Plotting Annotations ColorMaps PlotTypes
 % SphericalProjections
 
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});

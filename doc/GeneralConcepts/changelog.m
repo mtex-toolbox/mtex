@@ -4,7 +4,7 @@
 %
 % *A Spatial Distortion Is An Object*
 %
-% <spatialTransform.spatialTransform.html |spatialTransform|> is a map from
+% <spatialTransform.html |spatialTransform|> is a map from
 % position to position that composes, inverts and displays, where
 % <EBSD.transform.html |transform|> previously took only a bare function
 % handle. |transform| still takes either:
@@ -482,7 +482,7 @@
 %
 % *Grain Reconstruction*
 %
-% <ebsd.calcGrains.html |calcGrains|> covers small grain removal, alpha shapes
+% <EBSD.calcGrains.html |calcGrains|> covers small grain removal, alpha shapes
 % and gridded as well as arbitrarily placed data in a single call. Its second
 % output replaces the previous |ebsd.grainId = ...| assignment and marks
 % pixels belonging to no grain - not indexed or removed by |'minPixel'| - by
@@ -761,7 +761,7 @@
 % aligned on screen - an arrow for every axis with a component in the screen
 % plane, a circled dot or cross for the one pointing out of or into it,
 % exactly as in the string form of @plottingConvention. It follows the data
-% when the map is reoriented, e.g. by <plottingConvention.setView.html
+% when the map is reoriented, e.g. by <plottingConvention.html
 % |setView|>.
 %
 % What used to be reserved to pole figures now happens on every spherical plot
@@ -788,7 +788,7 @@
 %
 % *The Default Plotting Convention*
 %
-% The new default |y↓→x| is <plottingConvention.ij.html
+% The new default |y↓→x| is <plottingConvention.html
 % |plottingConvention.ij|> - x to east, y to south and z into the screen - as
 % SEM images are displayed and nearly every EBSD import states anyway. Pole
 % figures are not affected, spherical plots align themselves with the
@@ -1189,7 +1189,7 @@
 %
 % *Misc Changes*
 %
-% * new option |'minPixel'| for the command <ebsd.calcGrains.html
+% * new option |'minPixel'| for the command <EBSD.calcGrains.html
 % |calcGrains|> which allows to set a minimum grain size
 % * <xxx ipf-sections> are a novel way of representing the orientation
 % space
@@ -1199,7 +1199,7 @@
 % * the option |'FaceColor'| now allows to <CrystalShapes.html colorize
 % crystal shapes according to their orientation>
 % * <mtexFigure.drawNow.html |drawNow(gcm,'antiAliased')|> generates anti-aliased images
-% * <EBSD.transform2PolarReferenceFrame.html
+% * <EBSD.transform2PolarRefernceFrame.html
 % |transform2PolarReferenceFrame|> transforms ebsd data into a polar
 % reference frame
 % * support for area detectors in ODF reconstruction from pole figure data
@@ -1253,7 +1253,7 @@
 % 
 % *Lankford Parameter*
 %
-% The command <orientation.calcLankford.html |calcLankford|> allows for the
+% The command <orientation.orientation.html |calcLankford|> allows for the
 % computation of the Lankford or R-value. A full discussion of the
 % corresponding analysis can be found <Lankford.html here>.
 %
@@ -1316,7 +1316,7 @@
 % the largest misorientation angle. Helpful for identifying twinning.
 % * Added checks for symmetry and positive definiteness when defining
 % stress, strain and elasticity tensors.
-% * Add morphological filter <EBSD.erode.html |erode(ebsd)|> as a simple
+% * Add morphological filter <EBSD.EBSD.html |erode(ebsd)|> as a simple
 % method for data cleaning in EBSD maps.
 % * Pseudosymmetries like 532 are now natively supported using the syntax
 % |crystalSymmetry('532')|
@@ -1523,7 +1523,7 @@
 % particular this allows to remap EBSD data from hexagonal to square grids
 % and vice versa. Have a look at the chapter <EBSDInter.html Interpolation>
 % for more details.
-% * <EBSD.calcMis2Mean.html |calcMis2Mean|> computes the misorientation to
+% * <EBSD.EBSD.html |calcMis2Mean|> computes the misorientation to
 % a grain reference orientation, i.e., the <EBSDGROD.html grain reference
 % orientation deviation (GROD)>.
 % * KAM computation has been speed up significantly for hexagonal and
@@ -1589,9 +1589,9 @@
 % calcGrains>|
 % * harmonic approximation of spherical functions respecting symmetry
 % * |export(ebsd,'fileName.ang')| exports to .ang files
-% * <grain2d.neighbours.html |neighbours(grains)|> now returns a list of
+% * <grain2d.neighbors.html |neighbours(grains)|> now returns a list of
 % pairs of neighboring grains
-% * <grain2d.numNeighbours.html |grains.numNeighbours|> returns the number
+% * <grain2d.numNeighbors.html |grains.numNeighbours|> returns the number
 % of neighboring grains
 % * <grainBoundary.selectByGrainId.html |selectByGrainId|> allows to select
 % boundary segments by pairs of grains
@@ -1604,7 +1604,7 @@
 % 
 % *New Functions*
 %
-% * <EBSDSquare.interp.html interp> to interpolate EBSD maps
+% * <EBSD.interp.html interp> to interpolate EBSD maps
 % * grain properties <grain2d.longAxis.html longAxis>, <grain2d.shortAxis.html shortAxis>
 % * <BoundaryCurvature.html grain boundary curvature>
 %
@@ -1638,17 +1638,17 @@
 %
 % *New Functions*
 %
-% * <stiffnessTensor.plotWaveVelocities.html |plotWaveVelocities|>
+% * <stiffnessTensor.stiffnessTensor.html |plotWaveVelocities|>
 % illustrates anisotropy of seismic waves
 % * <EBSD.grainMean.html |grainMean|> grain averages of arbitrary properties
-% * shape functions <grain2d.surfor.html |surfor|>, <grain2d.paror.html
+% * shape functions <grain2d.grain2d.html |surfor|>, <grain2d.paror.html
 % |paror|>, <grain2d.caliper.html |caliper|>
 % * <Miller.multiplicity.html |multiplicity|> for Miller, orientation and
 % fiber
 %
 %% MTEX 5.2.3 11/2019
 %
-% * replaced |calcODF(ori)| by |<orientation.calcDensity.html calcDensity(ori)>|
+% * replaced |calcODF(ori)| by |<rotation.calcDensity.html calcDensity(ori)>|
 % * bug fix in ODF reconstruction from XRD data
 % * bug fix in EBSD export to ctf
 % * bug fix in grain reconstruction
@@ -1725,8 +1725,8 @@
 %
 % *Spherical Bingham Distribution* 
 %
-% Native support for spherical <BinghamS2.BinghamS2.html Bingham distributions>,
-% including the ability to <BinghamS2.fit.html fit> them to directional
+% Native support for spherical <S2FunBingham.S2FunBingham.html Bingham distributions>,
+% including the ability to <S2FunBingham.fit.html fit> them to directional
 % distributions.
 %
 % *Tensors*
@@ -1809,7 +1809,7 @@
 %
 % <dyad.html |dyad|>, <tensor.trace.html |trace|>, <tensor.det.html
 % |det|>, <tensor.mean.html |mean|>, <tensor.diag.html
-% |diag|>, <tensor.eye.html |eye|>, <tensor.sym.html |sym|>
+% |diag|>, <tensor.tensor.html |eye|>, <tensor.sym.html |sym|>
 %
 % *Birefringence*
 %
@@ -2361,7 +2361,7 @@
 %   ebsd.gradientY
 %
 % as well as an estimate of the geometrically necessary dislocation
-% density (GND) using the command <EBSDsquare.calcGND.html calcGND>
+% density (GND) using the command <EBSD.calcGND.html calcGND>
 %
 %   ebsd.calcGND
 %

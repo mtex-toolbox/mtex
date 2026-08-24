@@ -12,7 +12,7 @@ function v = homochoric(q)
 %  v - @vector3d
 %
 % See also
-% quaternion/Euler quaternion/Rodigues
+% quaternion/Euler quaternion.Rodrigues
 
 % the direction
 v = vector3d(q.b,q.c,q.d);

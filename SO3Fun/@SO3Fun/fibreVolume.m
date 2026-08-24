@@ -20,7 +20,7 @@ function v = fibreVolume(odf,h,r,radius,varargin)
 %  resolution - resolution of discretization
 %
 % See also
-% SO3Fun/volume SO3Fun/entropy SO3Fun/textureindex
+% SO3Fun/volume SO3Fun/entropy SO3Fun.SO3Fun
 
 if isa(h,'fibre')
   if nargin >3

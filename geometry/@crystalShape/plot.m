@@ -45,7 +45,7 @@ function h = plot(cS,varargin)
 %   hold off
 %
 % See also
-% grains/plot
+% grain2d.plot
 
 % create a new plot
 [mtexFig,isNew] = newMtexFigure(varargin{:});

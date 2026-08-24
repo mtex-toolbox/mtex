@@ -44,7 +44,7 @@ classdef (InferiorClasses = {?vector3d}) SO3TangentVector < vector3d
 %  that it multiplies from the left.
 %
 % See also
-% vector3d.vector3d SO3VectorField.eval SO3VectorFieldHarmonic.eval
+% vector3d.vector3d SO3VectorField.SO3VectorField SO3VectorFieldHarmonic.eval
 % SO3Fun.grad SO3FunHarmonic.grad
 
 % t_left * ori_ref = ori_ref * t_right

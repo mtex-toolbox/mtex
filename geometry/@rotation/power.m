@@ -14,7 +14,7 @@ function rot = power(rot,n)
 %  rot - @rotation
 %
 % See also
-% rotation/log 
+% quaternion.log 
 
 rot = power@quaternion(rot,n);
 

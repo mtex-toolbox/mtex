@@ -12,7 +12,7 @@ function T = transformReferenceFrame(T,cs,varargin)
 % Output
 %
 % See also
-% tensor/get
+% tensor.tensor
 
 M = transformationMatrix(T.CS,cs);
 T = rotate(T,M);

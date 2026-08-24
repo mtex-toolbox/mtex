@@ -9,9 +9,9 @@ classdef scaleBar < handle
 % |setMTEXpref('showRefFrame','off')|.
 %
 % The scale bar reads the plotting convention back from the axes camera
-% via <plottingConvention.getView.html plottingConvention.getView> and
+% via <plottingConvention.html plottingConvention.getView> and
 % realigns itself whenever the map is reoriented, e.g. via
-% <plottingConvention.setView.html plottingConvention.setView> or one of
+% <plottingConvention.html plottingConvention.setView> or one of
 % <plotx2north.html plotx2north>, <plotzOutOfPlane.html plotzOutOfPlane>,
 % etc. - this works no matter which @plottingConvention object was used to
 % apply the view, since it never relies on a cached reference to it. The

@@ -147,7 +147,7 @@ classdef referenceFrame < matlab.mixin.Copyable
       %  rf   - @referenceFrame
       %
       % See also
-      % specimenFrame/measurement specimenFrame/default
+      % specimenFrame/measurement specimenFrame.specimenFrame
 
       persistent store
       if isempty(store), store = containers.Map; end
@@ -219,7 +219,7 @@ classdef referenceFrame < matlab.mixin.Copyable
       %   referenceFrame.reset
       %
       % See also
-      % referenceFrame/byName specimenFrame/default
+      % referenceFrame.referenceFrame specimenFrame.specimenFrame
 
       referenceFrame.byName('-reset-');
       specimenFrame.default([]);
@@ -238,7 +238,7 @@ classdef referenceFrame < matlab.mixin.Copyable
       % the outcome depend on the load order within the file.
       %
       % See also
-      % referenceFrame/byName specimenSymmetry/loadobj vector3d/loadobj
+      % referenceFrame.referenceFrame specimenSymmetry/loadobj vector3d/loadobj
 
       reg = referenceFrame.byName(rf.name);
       if ~isempty(reg) && strcmp(class(reg),class(rf)) && ...

@@ -9,7 +9,7 @@ function c = LSCV(ori,psi,varargin)
 %  c - 
 %
 % See also
-% EBSD/calcODF EBSD/calcKernel grain/calcKernel EBSD/BCV
+% EBSD.EBSD EBSD.EBSD orientation.calcKernel EBSD.EBSD
 
 % extract data
 N = length(ori);

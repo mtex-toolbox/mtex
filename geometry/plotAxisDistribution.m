@@ -25,7 +25,7 @@ function h = plotAxisDistribution(obj,varargin)
 %  noLabel   - do not annotate
 %
 % See also
-% S2Grid/plot saveFigure Plotting Annotations ColorMaps PlotTypes
+% vector3d.plot saveFigure Plotting Annotations ColorMaps PlotTypes
 % SphericalProjections
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});

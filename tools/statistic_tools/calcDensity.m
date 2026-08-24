@@ -19,7 +19,7 @@ function [f,bandwidth] = calcDensity(x,varargin)
 %  periodic - consider values as periodic
 %
 % See also
-% vector3d/calcDensity orientation/calcDensity
+% vector3d/calcDensity rotation.calcDensity
 
 if check_option(varargin,'periodic')
 

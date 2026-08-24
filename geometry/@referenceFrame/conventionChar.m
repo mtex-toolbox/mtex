@@ -19,7 +19,7 @@ function c = conventionChar(rf,pC)
 %  c - char
 %
 % See also
-% plottingConvention/char
+% plottingConvention
 
 if nargin < 2, pC = rf.how2plot; end
 if isempty(pC), c = ''; return; end

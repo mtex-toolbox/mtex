@@ -4,7 +4,7 @@ classdef plottingConvention
 % plottingConvention is a value class: assigning one always copies, so a
 % convention can never be changed behind the back of the data holding it.
 % What couples data to the session default is the shared referenceFrame -
-% see <specimenFrame.default.html specimenFrame.default> - not a shared
+% see <specimenFrame.specimenFrame.html specimenFrame.default> - not a shared
 % convention handle.
 %
 % Syntax
@@ -352,7 +352,7 @@ classdef plottingConvention
       % a printed convention can always be pasted into the constructor.
       %
       % See also
-      % plottingConvention/char
+      % plottingConvention
 
       if getMTEXpref('UTF8Output',true)
         a = {'←','→','↑','↓','⊗','⊙'};
@@ -437,7 +437,7 @@ classdef plottingConvention
       %   plottingConvention.default('y↑→x')   % same by a string
       %
       % The default is carried by the registered default specimen frame -
-      % see <specimenFrame.default.html specimenFrame.default>. Setting a
+      % see <specimenFrame.specimenFrame.html specimenFrame.default>. Setting a
       % new default replaces the convention of that frame; symmetries and
       % data holding the frame follow, data holding the old convention
       % handle keeps it (as before). The point group of
@@ -485,7 +485,7 @@ classdef plottingConvention
       %  guard - onCleanup object, keep alive for the duration of the update
       %
       % See also
-      % plottingConvention/setView scaleBar/update
+      % plottingConvention scaleBar/update
 
       setappdata(ax,'MTEXcameraUpdate',true);
       guard = onCleanup(@() plottingConvention.endCameraUpdate(ax));
@@ -522,7 +522,7 @@ classdef plottingConvention
       %  pC - @plottingConvention
       %
       % See also
-      % plottingConvention/setView
+      % plottingConvention
 
       if nargin == 0, ax = gca; end
 

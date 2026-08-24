@@ -12,7 +12,7 @@ function r = cat(dim,varargin)
 %  r - @rotation
 %
 % See also
-% rotation/horzcat, rotation/vertcat
+% quaternion.horzcat, quaternion.vertcat
 
 % remove empty arguments
 varargin(cellfun('isempty',varargin)) = [];

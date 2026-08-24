@@ -26,7 +26,7 @@ function kam = KAM(ebsd,varargin)
 %  max       - take not the mean but the maximum misorientation angle
 %
 % See also
-% grain2d.GOS
+% grain2d.grain2d
 
 % compute adjacent measurements
 [~,~,I_FD] = spatialDecomposition([ebsd.pos.x(:), ebsd.pos.y(:)],ebsd.unitCell,'unitCell');

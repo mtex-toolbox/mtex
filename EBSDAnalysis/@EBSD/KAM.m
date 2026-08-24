@@ -35,7 +35,7 @@ function kam = KAM(ebsd,varargin)
 %              physical distance (default: uniform weight 1)
 %
 % See also
-% grain2d.GOS EBSD.gridIndex
+% grain2d.grain2d EBSD.gridIndex
 
 nE = length(ebsd);
 

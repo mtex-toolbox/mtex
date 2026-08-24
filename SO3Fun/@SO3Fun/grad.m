@@ -17,7 +17,7 @@ function g = grad(SO3F,varargin)
 %  g - @vector3d gradient of |SO3F| at rotation |rot|
 %
 % See also
-% SO3Fun/eval orientation/exp SO3FunHarmonic/grad SO3FunRBF/grad
+% SO3Fun.SO3Fun orientation/exp SO3FunHarmonic/grad SO3FunRBF/grad
 % SO3FunCBF/grad SO3VectorField
 
 tS = SO3TangentSpace.extract(varargin{:});

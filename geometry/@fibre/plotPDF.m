@@ -20,7 +20,7 @@ function plotPDF(f,varargin)
 %  complete  - plot entire (hemi)--sphere
 %
 % See also
-% orientation/plotIPDF S2Grid/plot saveFigure
+% orientation/plotIPDF vector3d.plot saveFigure
 % Plotting Annotations ColorMaps PlotTypes
 % SphericalProjections
 
