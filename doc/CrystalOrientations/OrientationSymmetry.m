@@ -45,6 +45,21 @@ ss * ori * cs
 symmetrise(ori)
 
 %%
+% The consequence is visible in any pole figure. One orientation and one
+% crystal direction give not one pole but a whole set of them, because the
+% lattice cannot tell its symmetrically equivalent settings apart.
+
+h = Miller(1,0,0,cs);
+
+plotPDF(ori,h,'MarkerSize',10,'figSize','small')
+
+%%
+% Every dot is the same physical direction of the same crystal. Which of
+% them you happen to compute is an accident of how the orientation was
+% written down, which is why every comparison in MTEX takes all of them into
+% account.
+%
+%%
 % For specific orientations, e.g. for the cube orientations, symmetrisation
 % leads to multiple identical orientations. This can be prevented by
 % passing the option |unique| to the command <orientation.symmetrise.html

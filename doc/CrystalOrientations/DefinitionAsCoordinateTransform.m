@@ -44,6 +44,21 @@ h = Miller(1,0,0,cs,'uvw')
 r = ori * h
 
 %%
+% This is the whole idea in one picture. The crystal is drawn where the
+% orientation |ori| puts it, the black arrows are the specimen axes X, Y and
+% Z, and the red arrow is the crystal direction |h| expressed in specimen
+% coordinates. The direction is fixed in the lattice; what the orientation
+% supplies is where the lattice is pointing.
+
+cS = crystalShape.cube(cs);
+
+plot(ori * cS,'faceAlpha',0.35,'faceColor',[0.6 0.75 0.9])
+hold on
+arrow3d(1.3*normalize(vector3d(r)),'faceColor','red')
+arrow3d(1.6*[vector3d.X,vector3d.Y,vector3d.Z],'faceColor','black')
+hold off
+
+%%
 % Similarly, orientations transform tensors given with respect to the
 % crystal reference frame, e.g., the following single crystal stiffness
 % tensor

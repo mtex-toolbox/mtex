@@ -36,7 +36,15 @@ ori = orientation.byMatrix(M,cs)
 % command <orientation.byMiller.html |orientation.byMiller|>. E.g. in order
 % to define the GOSS orientation (011)[100] we can write
 
-orientation.byMiller([0 1 1],[1 0 0],cs)
+ori = orientation.byMiller([0 1 1],[1 0 0],cs)
+
+%%
+% That definition says the (011) plane faces Z and the [100] direction points
+% along X, and a pole figure shows exactly that: the (011) pole sits at the
+% centre, where Z is, and the [100] pole on the X axis at the rim.
+
+plotPDF(ori,[Miller(0,1,1,cs),Miller(1,0,0,cs,'uvw')],'MarkerSize',10,...
+  'figSize','small')
 
 %%
 % Note that MTEX comes already with a long list of
