@@ -60,11 +60,18 @@ BUDGET = {
     # six images live only in web/images, so the offline help lacks them;
     # clears when doc/images becomes the single source
     'image missing': 8,
-    # A ceiling, not a measurement. It is only meaningful straight after a
+    # A ceiling, not a measurement, and only meaningful straight after a
     # complete makeDoc run: taken mid build the number falls as pages
     # republish, and it was seen going 863, 763, 732 within one minute while
-    # a build was under way. Re-measure once a build has finished, then lower.
-    'reference link dangling': 863,
+    # a build was under way.
+    #
+    # 869 when this was first counted, 279 now. About 64 of what is left is
+    # already fixed in the publisher and merely waiting for the pages to be
+    # rebuilt, since staleness hashes the source and a publisher change
+    # invalidates nothing. The rest are See also entries naming methods that
+    # have no page at all - S2Grid.plot, SO3Fun.textureindex, EBSD.calcODF -
+    # which want a decision each rather than a sweep.
+    'reference link dangling': 279,
 }
 
 STUB_LINES = 15
