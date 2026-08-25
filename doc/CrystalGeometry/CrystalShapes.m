@@ -1,43 +1,53 @@
 %% Crystal Shapes
 %
 %%
-% Crystal Shapes are used to visualize crystal orientations, twinning or
-% lattice planes.
+% A crystal shape is the outer form of a crystal - a solid bounded by
+% lattice planes - and MTEX draws it as an object in its own right. It is
+% the most direct way to show an orientation: instead of three angles, the
+% crystal itself, sitting the way the data says it sits. Twinning
+% relationships, slip systems and lattice planes are shown the same way.
+
+plottingConvention.default('y↑→x');
+
+%% Simple Crystal Shapes
 %
-%% Simple crystal shapes
-%
-% In the case of cubic or hexagonal materials the corresponding crystal are
-% often represented as cubes or hexagons, where the faces correspond to the
-% lattice planes {100} in the cubic case and {1,0,-1,0},{0,0,0,1} in the
-% hexagonal case. Such simple crystal shapes may be created in MTEX with
-% the commands
+% Cubic and hexagonal materials are usually drawn as a cube or a hexagonal
+% prism, the faces being $\{100\}$ in the cubic case and $\{10\bar10\}$,
+% $\{0001\}$ in the hexagonal one.
 
 % import some hexagonal data
 mtexdata titanium;
 
+%%
+
 % define a simple hexagonal crystal shape
 cS = crystalShape.hex(ebsd.CS)
 
-% and plot it
+%%
+
 close all
 plot(cS,'faceAlpha',0.2,'figSize','small')
 drawNow(gcm,'final')
 
-%% 
-% Internally, a crystal shape is represented as a list of faces which are
-% bounded by a list of vertices |cS.V| and edges |cS.E|
+%%
+% Internally the shape is a list of faces, bounded by the vertices |cS.V|
+% and the edges |cS.E|.
 
 cS.V
 
-%%
-% Using the commands <crystalShape.plotInnerFace.html |plotInnerFace|>,
+%% Planes and Slip Systems Inside the Crystal
+%
+% <crystalShape.plotInnerFace.html |plotInnerFace|>,
 % <crystalShape.plotInnerDirection.html |plotInnerDirection|>,
-% <crystalShape.plotSlipSystem.html |plot(cS,sS)|> and <vector3d.arrow3d.html
-% |arrow3d|> we may plot internal lattice planes, directions or slip
-% systems into the crystal shape
+% <crystalShape.plotSlipSystem.html |plot(cS,sS)|> and
+% <vector3d.arrow3d.html |arrow3d|> draw lattice planes, directions and slip
+% systems inside the shape, which is what makes a slip system readable at
+% all - a plane and a direction in it.
 
 sS = [slipSystem.pyramidal2CA(ebsd.CS), ...
   slipSystem.pyramidalA(ebsd.CS)]
+
+%%
 
 plot(cS,'faceAlpha',0.2,'figSize','small')
 hold on
@@ -46,10 +56,16 @@ plot(cS,sS(1),'faceColor','red')
 hold off
 drawNow(gcm,'final')
 
-%% Calculating with crystal shapes
-% Crystal shapes are defined in crystal coordinates. Thus applying an
-% orientation rotates them into specimen coordinates. This functionality
-% can be used to visualize crystal orientations in EBSD maps
+%%
+% Both slip planes are pyramidal, and the drawing shows how differently the
+% two slip directions lie in them.
+
+%% Calculating with Crystal Shapes
+%
+% A crystal shape is defined in crystal coordinates, so an
+% <OrientationDefinition.html orientation> applied to it turns it into
+% specimen coordinates - exactly as it does for a crystal direction. That is
+% how a shape ends up on a map at the orientation the measurement found.
 
 % plot an EBSD map
 close all
@@ -67,18 +83,14 @@ hold off
 drawNow(gcm,'final')
 
 %%
-% As we have seen in the previous section we can apply several operations
-% on crystal shapes. These include
-% 
-% * |factor * cS| scales the crystal shape in size
-% * |ori * cS| rotates the crystal shape in the defined orientation
-% * |[xy] + cS| or |[xyz] + cS| shifts the crystal shape in the specified
-% positions
+% Three operations are available, and each of them accepts lists:
 %
-% At this point it comes into help that MTEX supports lists of crystal
-% shapes, i.e., whenever one of the operations listed above includes a
-% list (e.g. a list of orientations) the multiplication will yield a list
-% of crystal shapes. Lets illustrate this
+% * |factor * cS| scales the shape
+% * |ori * cS| rotates it into the given orientation
+% * |[xy] + cS| or |[xyz] + cS| shifts it to the given position
+%
+% Because lists are allowed, a whole map of grains is drawn in one call -
+% one shape per grain, oriented like the grain and scaled by its size.
 
 % compute some grains
 grains = calcGrains(ebsd);
@@ -102,17 +114,20 @@ plot(grains(isBig).centroid + cSGrains,'FaceColor',color(isBig,:),'FaceAlpha',0.
 hold off
 drawNow(gcm,'final')
 
-%% Plotting crystal shapes
-% The above can be accomplished a bit more directly and a bit more nice
-% with
+%%
+% Neighbouring grains with a similar colour turn out to have their c-axes
+% pointing the same way, which the map colour alone does not say.
+
+%% The Direct Route
+%
+% Passing the grains and a shape to |plot| does the scaling and positioning
+% by itself.
 
 % plot a grain map
 plot(grains,grains.meanOrientation,'figSize','large','faceAlpha',0.5,'linewidth',2)
-%plot(grains.boundary,'figSize','large','linewidth',4)
 
 % and on top for each large grain a crystal shape colored according to the
 % grain orientation
-
 hold on
 plot(grains(isBig), 0.7*cS, 'FaceColor', color(isBig,:), ...
   'linewidth',2,'FaceAlpha',0.7 )
@@ -120,16 +135,16 @@ hold off
 drawNow(gcm,'final')
 
 %%
-% In the same way we may visualize grain orientations and grains size
-% within pole figures
+% The same works in a pole figure, where each shape sits at the pole of the
+% orientation it belongs to.
 
 plotPDF(grains(isBig).meanOrientation,Miller({1,0,-1,0},{0,0,0,1},ebsd.CS),'contour')
 plot(grains(isBig).meanOrientation,0.002*cSGrains,'add2all')
 
 %%
-% or even within ODF sections
+% and in ODF sections.
 
-% compute the odf 
+% compute the odf
 odf = calcDensity(ebsd.orientations);
 
 % plot the odf in sigma sections
@@ -138,16 +153,21 @@ plotSection(odf,'sigma','contour')
 % and on top of it the crystal shapes
 plot(grains(isBig).meanOrientation,0.002*cSGrains,'add2all')
 
-%% Twinning relationships
-% We may also you crystal shapes to illustrate twinning relation ships
+%% Twinning Relationships
+%
+% Two crystals in a twin relationship share a lattice plane. Drawing the
+% parent and the twin together makes the relationship visible in a way the
+% misorientation angle does not.
 
 % define some twinning misorientation
-mori = orientation.byAxisAngle(Miller({1 0-1 0},ebsd.CS),34.9*degree)
+mori = orientation.byAxisAngle(Miller({1 0 -1 0},ebsd.CS),34.9*degree)
+
+%%
 
 % plot the crystal in ideal orientation
 close all
 plot(cS,'FaceAlpha',0.5)
- 
+
 % and on top of it in twinning orientation
 hold on
 plot(mori * cS *0.9,'FaceColor','orange')
@@ -155,31 +175,30 @@ hold off
 view(45,20)
 drawNow(gcm,'final')
 
-%% Defining complicated crystal shapes
+%% Shapes That Look Like the Real Crystal
 %
-% For symmetries other then hexagonal or cubic one would like to have
-% more complicated crystal shape representing the true appearance. To this
-% end one has to include more faces into the representation and carefully
-% adjust their distance to the origin.
+% Outside the cubic and hexagonal cases a cube or a prism is a poor likeness.
+% A realistic shape needs more faces, and each face has to be placed at the
+% right distance from the origin - a face far away never reaches the solid
+% and leaves no trace on it.
 %
-%% 
-% Lets consider a quartz crystal. 
+% Quartz makes the point.
 
 cs = loadCIF('quartz')
 
 %%
-% Its shape is mainly bounded by the following faces
+% Its habit is bounded mainly by these faces.
 
 m = Miller({1,0,-1,0},cs);  % hexagonal prism
-r = Miller({1,0,-1,1},cs);  % positive rhomboedron, usally bigger then z
-z = Miller({0,1,-1,1},cs);  % negative rhomboedron
+r = Miller({1,0,-1,1},cs);  % positive rhombohedron, usually bigger than z
+z = Miller({0,1,-1,1},cs);  % negative rhombohedron
 s1 = Miller({2,-1,-1,1},cs);% left tridiagonal bipyramid
 s2 = Miller({1,1,-2,1},cs); % right tridiagonal bipyramid
-x1 = Miller({6,-1,-5,1},cs);% left positive Trapezohedron
-x2 = Miller({5,1,-6,1},cs); % right positive Trapezohedron
+x1 = Miller({6,-1,-5,1},cs);% left positive trapezohedron
+x2 = Miller({5,1,-6,1},cs); % right positive trapezohedron
 
 %%
-% If we take only the first three faces we end up with
+% Taking the first three gives
 
 N = [m,r,z];
 cS = crystalShape(N)
@@ -187,10 +206,10 @@ cS = crystalShape(N)
 plot(cS,'figSize','small')
 
 %%
-% i.e. we see only  the positive and negative rhododendrons, but the
-% hexagonal prism are to far away from the origin to cut the shape. We may
-% decrease the distance, by multiplying the corresponding normal with a
-% factor larger then 1.
+% Only the two rhombohedra show. The six prism faces are in the list, but
+% they are so far from the origin that they never cut the solid - the shape
+% has the same eight vertices it would have without them. Multiplying a
+% normal by a factor larger than one moves its face inwards.
 
 N = [2*m,r,z];
 
@@ -198,8 +217,9 @@ cS = crystalShape(N);
 plot(cS,'colored','figSize','small')
 
 %%
-% Next in a typical Quartz crystal the negative rhododendron is a bit smaller
-% then the positive rhododendron. Lets correct for this.
+% Now the prism is there. In a real quartz crystal the negative rhombohedron
+% is somewhat smaller than the positive one, which is again a matter of
+% distance.
 
 % collect the face normal with the right scaling
 N = [2*m,r,0.9*z];
@@ -208,7 +228,9 @@ cS = crystalShape(N);
 plot(cS,'colored','figSize','small')
 
 %%
-% Finally, we add the tridiagonal bipyramid and the positive Trapezohedron
+% Adding the tridiagonal bipyramid and the positive trapezohedron gives the
+% small slanted faces that make quartz recognisable, and that break its
+% apparent hexagonal symmetry down to the trigonal one it really has.
 
 % collect the face normal with the right scaling
 N = [2*m,r,0.9*z,0.7*s1,0.3*x1];
@@ -216,15 +238,13 @@ N = [2*m,r,0.9*z,0.7*s1,0.3*x1];
 cS = crystalShape(N);
 plot(cS,'colored','figSize','small')
 
-
-%% Defining complicated crystals more simple
-% We see that defining a complicated crystal shape is a tedious work. To
-% this end MTEX allows to model the shape with a habitus and a extension
-% parameter. This approach has been developed by J. Enderlein in
+%% Habitus and Extension
+%
+% Placing every face by hand is tedious. The alternative is to model the
+% distances by two parameters, following J. Enderlein,
 % <https://library.wolfram.com/infocenter/Articles/3279 A package for
-% displaying crystal morphology. Mathematical Journal, 7(1), 1997>. The two
-% parameters are used to model the distance of a face from the origin.
-% Setting all parameters to one we obtain
+% displaying crystal morphology. Mathematica Journal, 7(1), 1997>. With both
+% set to one, the faces are taken as they are.
 
 % take the face normals unscaled
 N = [m,r,z,s2,x2];
@@ -234,20 +254,19 @@ extension = [1 1 1];
 cS = crystalShape(N,habitus,extension);
 plot(cS,'colored','figSize','small')
 
-
 %%
-% The scale parameter models the inverse extension of the crystal in each
-% dimension. In order to make the crystal a bit longer and the negative
-% rhododendrons smaller we could do
+% *extension* is the inverse extent of the crystal along each axis, so
+% raising the second and third entry makes the crystal longer and the
+% negative rhombohedra smaller.
 
 extension = [1 1.2 1.1];
 cS = crystalShape(N,habitus,extension);
 plot(cS,'colored','figSize','small')
 
 %%
-% Next the habitus parameter describes how close faces with mixed hkl are
-% to the origin. If we increase the habitus parameter the trapezohedron and
-% the bipyramid become more and more dominant
+% *habitus* controls how close the faces with mixed indices come to the
+% origin. Raising it lets the trapezohedron and the bipyramid grow at the
+% expense of the prism.
 
 habitus = 1.1;
 cS = crystalShape(N,habitus,extension);
@@ -261,18 +280,22 @@ habitus = 1.3;
 cS = crystalShape(N,habitus,extension);
 plot(cS,'colored','figSize','small')
 
-%% Select faces
-% A specific face of the crystal shape may be selected by its normal vector
+%% Selecting a Face
+%
+% A single face is picked out by its normal, which is how one face is
+% highlighted or measured.
 
 plot(cS,'figSize','small')
 hold on
-plot(cS(Miller(0,-1,1,0,cs)),'FaceColor','DarkRed') 
+plot(cS(Miller(0,-1,1,0,cs)),'FaceColor','DarkRed')
 hold off
 
 % zoom a bit out to fit the screen
 camzoom(0.7)
 
-%% Gallery of hardcoded crystal shapes
+%% A Gallery of Predefined Shapes
+%
+% Several minerals come ready made, with the face distances already tuned.
 
 plot(crystalShape.olivine,'colored','figSize','small')
 
@@ -287,3 +310,11 @@ plot(crystalShape.topaz,'colored','figSize','small')
 %%
 
 plot(crystalShape.plagioclase,'colored','figSize','small')
+
+%% Next
+%
+% Shapes taken from the crystallographic database of the Smorf project are
+% <CrystalShapeSmorf.html Advanced Crystal Shapes>. The planes the faces
+% stand for are <CrystalDirections.html Miller Indices>.
+
+%#ok<*NOPTS>
