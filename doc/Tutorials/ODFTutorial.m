@@ -1,25 +1,25 @@
 %% ODF Tutorial
 %
-%% Theory
-%
-% The orientation distribution function (ODF) is a function in
-% orientation space that associates each orientation $g$ with the volume
-% fraction of crystals in a polycrystalline specimen that are in this
-% specific orientation, i.e.,
+%%
+% An orientation distribution function is what a texture is, once it has
+% been separated from the particular crystals that were measured. It gives,
+% for every orientation, how much of the specimen sits in it:
 %
 % $$\mathrm{odf}(g) = \frac{1}{V} \frac{\mathrm{d}V(g)}{\mathrm{d}g}.$$
 %
-% In MTEX a perfectly random texture will have an ODF equal to one for
-% all orientations. In other words the values of ODFs in MTEX can be
-% interpreted as multiples of the random distribution (mrd).
+% In MTEX its values are multiples of a random distribution, mrd - a random
+% texture is 1 everywhere, and a value of 10 means ten times as much
+% material in that orientation as chance would give.
 %
-%% Computing an ODF from Individual Orientations
+% There are two ways to get one: estimate it from individual orientations,
+% or reconstruct it from pole figures. This tutorial does both, and then
+% builds one from nothing.
+
+%% From individual orientations
 %
-% Individual orientation data may be obtained experimentally by EBSD
-% (orientation mapping in a SEM), ACOM (orientation mapping in a TEM) or
-% 3d X-ray imaging; or from simulations, like VPSC. In the following we
-% consider an EBSD map of a Titanium alloy. Note that this data set is
-% measured on a hexagonal grid rather than the more common square grid.
+% EBSD, ACOM in a TEM and three dimensional X-ray imaging all measure
+% orientations one at a time, as do simulations like VPSC. Here a titanium
+% alloy, measured on a hexagonal rather than the more common square grid:
 
 % import the titanium data
 mtexdata titanium
@@ -28,9 +28,9 @@ mtexdata titanium
 plot(ebsd, ebsd.orientations)
 
 %%
-% Computing an ODF from individual orientations is done by
-% <DensityEstimation.html kernel density estimation> using the command
-% <rotation.calcDensity.html |calcDensity|>.
+% The 8148 measured orientations are a sample, not a function. Turning them
+% into one is <DensityEstimation.html kernel density estimation>: put a
+% small bump on each measured orientation and add them up.
 
 % extract the orientations
 ori = ebsd.orientations;
@@ -39,24 +39,24 @@ ori = ebsd.orientations;
 odf = calcDensity(ori)
 
 %%
-% There are many different ways to visualize an ODF:
-% <EulerAngleSections.html Euler> or <SigmaSections.html sigma sections>,
-% <ODFPlot.html three dimensional plots>, <ODFPoleFigure.html pole
-% figures> and <ODFInversePoleFigure.html inverse pole figures>. The most
-% common but not recommended way are sections with respect to the third
-% Euler angle $\varphi_2$
+% The result reaches 9 mrd, so this specimen has nine times as much material
+% in its preferred orientation as a random one would.
+%
+% An ODF lives in three dimensions, so every way of drawing it is a
+% compromise: <EulerAngleSections.html Euler> or
+% <SigmaSections.html sigma sections>,
+% <ODFPlot.html three dimensional plots>, <ODFPoleFigure.html pole figures>,
+% <ODFInversePoleFigure.html inverse pole figures>. The default is sections
+% through the third Euler angle, which is the most common choice and not the
+% best one - sigma sections distort less.
 
 plot(odf)
 
-%% Computing an ODF from Pole Figure Data
+%% From pole figures
 %
-% Pole figure data arises when textured materials are measured via x-ray,
-% neutron or synchrotron radiation. Generally, for $3$ to $10$ diffraction
-% planes specified by Miller indices $(hk\ell)$ diffraction intensities are
-% measured at a spherical grid of specimen directions. In the example below
-% each dot corresponds to one diffraction intensity at the plane indicated
-% at the top of the spherical plots measured from the direction
-% corresponding to the pixel position.
+% X-ray, neutron and synchrotron diffraction measure something else: for
+% each of a handful of lattice planes, the intensity diffracted from a grid
+% of specimen directions. Each dot below is one such measurement.
 
 % import pole figure data
 plottingConvention.default('y↑→x');
@@ -70,31 +70,39 @@ plot(pf)
 mtexColorbar
 
 %%
-% The <PoleFigure2ODF.html reconstuction> of an ODF from pole figure data
-% requires the solution of an *ill posed inverse problem*. This means the
-% reconstruction problem has in general <PoleFigure2ODFAmbiguity.html not a
-% unique solution>, but there are several ODFs that correspond to the same
-% set of pole figure data. MTEX applies <PoleFigure2ODFGhostCorrection.html
-% some heuristics> to identify among all solutions the physically most
-% reasonable.
+% Reconstructing an ODF from these is an
+% <PoleFigure2ODF.html ill posed inverse problem>: several different ODFs
+% <PoleFigure2ODFAmbiguity.html produce the same pole figures>, and no
+% algorithm can tell which was the specimen. MTEX
+% <PoleFigure2ODFGhostCorrection.html picks among them> by preferring the
+% one with the largest uniform portion, which is the physically sensible
+% choice rather than a mathematical one.
 
 % compute an ODF with default settings
 odf = calcODF(pf)
 
 %%
-% Once an ODF is reconstructed we can check how well its pole figures fit
-% the measured pole figures
+% This one reaches 17.8 mrd - a considerably sharper texture than the
+% titanium above.
+%
+% The first thing to do with a reconstruction is to recalculate the pole
+% figures that were measured and compare them with the data:
 
-% plot the recalculated pole figures 
+% plot the recalculated pole figures
 plotPDF(odf,pf.h)
 
+%%
+% The maxima are in the same places and of similar height, which is what one
+% wants. They are smooth where the measurements were speckled, because the
+% noise of the measurement did not enter the ODF.
 
-%% ODF Modeling
+%% Model ODFs
 %
-% Aside from experimental data MTEX also allows the definition of model
-% ODFs of different types. These include <RadialODFs.html#2 unimodal ODFs>,
-% <FibreODFs.html fibre ODFs>, <BinghamODFs.html Bingham Distributed ODFs>
-% and any <ODFModeling.html combination of such ODFs>.
+% An ODF need not come from data at all. MTEX builds them from components -
+% <RadialODFs.html#2 unimodal>, <FibreODFs.html fibre>,
+% <BinghamODFs.html Bingham> and <ODFModeling.html any combination> - which
+% is how one states a texture to compare a measurement against, or generates
+% orientations for a simulation.
 
 % define a gamma fibre ODF
 odf = fibreODF(fibre.gamma(odf.CS))
@@ -102,3 +110,7 @@ odf = fibreODF(fibre.gamma(odf.CS))
 % plot it in sigma sections
 plot(odf,'sigma')
 
+%%
+% The gamma fibre is a standard rolling texture component, and here it is as
+% an exact function rather than as an approximation from data: a ridge of
+% constant value running through the sections, with nothing anywhere else.

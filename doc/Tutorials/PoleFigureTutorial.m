@@ -1,13 +1,18 @@
 %% Pole Figure Tutorial
 %
 %%
-% This tutorial explains the basic concepts for analyzing x-ray, synchrotron
-% and neutron diffraction pole figure data.
+% X-ray, synchrotron and neutron diffraction do not see individual crystals.
+% They measure, for a few lattice planes, how much of the specimen has that
+% plane facing a given direction - a pole figure. This tutorial takes such a
+% measurement from the files to an ODF.
+
+%% Importing the data
 %
-%% Import pole figure diffraction data
-% Click on <matlab:import_wizard Import pole figure data> to start the
-% <import_wizard.html import wizard>, which leads through the import step by
-% step. It ends with a script like the following one.
+% <matlab:import_wizard Import pole figure data> starts the
+% <import_wizard.html import wizard>, which asks for everything that is not
+% in the files - the crystal symmetry, which file holds which lattice plane,
+% how the specimen is aligned - and ends by writing a script. What follows
+% is such a script.
 
 % This script was automatically created by the import wizard. You should
 % run the whole script or parts of it in order to import your data. There
@@ -21,9 +26,9 @@ CS = crystalSymmetry('6/mmm', [2.633 2.633 4.8], 'X||a*', 'Y||b', 'Z||c');
 % specimen symmetry tells MTEX if a certain symmetry should be present in the plotted pole figures.  The command used here selects triclinic, the most flexible option.
 SS = specimenSymmetry('1');
 
-% plotting convention
-setMTEXpref('xAxisDirection','north');
-setMTEXpref('zAxisDirection','outOfPlane');
+% plotting convention: z out of the screen, x pointing north
+how2plot = plottingConvention(vector3d.Z,-vector3d.Y);
+how2plot.makeDefault;
 
 %%
 % *Specify File Names*
@@ -49,8 +54,10 @@ fname_def = {...
 
 %%
 % *Specify Miller Indices*
+%
+% Nothing in a data file says which lattice plane it belongs to, so this
+% list has to be right and in the same order as the file names above.
 
-% These correspond to the files loaded, in order.
 h = { ...
   Miller(0,0,2,CS),...
   Miller(1,0,0,CS),...
@@ -60,6 +67,10 @@ h = { ...
 
 %%
 % *Import the Data*
+%
+% The second set of files is a measurement of a texture-free specimen. It
+% records how much intensity the instrument loses as the specimen is tilted,
+% and dividing it out is the defocusing correction.
 
 % create a Pole Figure variable containing the data
 pf = PoleFigure.load(fname,h,CS,SS,'interface','uxd');
@@ -71,71 +82,66 @@ pf_def = PoleFigure.load(fname_def,h,CS,SS,'interface','uxd');
 pf = correct(pf,'def',pf_def);
 
 %%
-% After running the script the variable |pf| is created which contains all
-% information about the pole figure data. You may plot the data using the
-% command <PoleFigure.plot.html plot>
+% Everything is now in one variable, and the first thing to do with it is to
+% look at it.
 
 plot(pf)
 
 %%
-% By default pole figures are plotted as intensity-colored dots for every
-% data point. There are many options to specify the way pole figures are
-% plotted in MTEX. Have a look at the <PoleFigurePlot.html plotting
-% section> for more information.
+% 4608 measurements over four pole figures, each drawn as a dot coloured by
+% its intensity - see <PoleFigurePlot.html Plotting> for the other ways.
 %
-% After import make sure that the Miller indices are correctly assigned to
-% the pole figures and that the alignment of the specimen coordinate
-% system, i.e., X, Y, Z is correct. In case of outliers or misaligned data,
-% you may want to correct your raw data. Have a look at the
-% <PoleFigureCorrection.html correction section> for further information.
-% MTEX offers several methods correcting pole figure data, e.g.
-%
-% * rotating pole figures
-% * scaling pole figures
-% * finding outliers
-% * removing specific measurements
-% * superposing pole figures
-%
-% As an example we set all negative intensities to zero
+% What to check before going on: that the Miller indices ended up on the
+% right pole figures, and that X, Y and Z point where the specimen was
+% actually aligned. Both are assumptions made at import, and neither can be
+% recovered later. <PoleFigureCorrection.html Data Correction> covers the
+% repairs that are possible - rotating, scaling, removing outliers,
+% superposing - of which the simplest is to remove impossible values:
 
 pf(pf.intensities<0) = 0;
 plot(pf)
 
-%% ODF Estimation
+%%
+% On this data set that line changes nothing, since the defocusing
+% correction left no negative intensity behind. On many data sets it does,
+% and a negative diffracted intensity is always an artefact of a correction
+% rather than a measurement.
+
+%% Reconstructing an ODF
 %
-% Once your data is in good shape, i.e. defocusing correction has been
-% done and few outliers are left you can reconstruct an ODF out of
-% this data. This is done by the command <PoleFigure.calcODF.html
-% calcODF>.
+% <PoleFigure.calcODF.html |calcODF|> finds an ODF whose pole figures match
+% the measured ones.
 
 odf = calcODF(pf,'silent')
 
 %%
-% Note that reconstructing an ODF from pole figure data is a severely ill-
-% posed problem, i.e., it does *not* provide a unique solution. A more
-% through discussion on the ambiguity of ODF reconstruction from
-% pole figure data can be found <PoleFigure2ODFAmbiguity.html here>. As a
-% rule of thumb: the more pole figures you have and the more consistent your
-% pole figure data the better your reconstructed ODF will be.
+% That problem has no unique solution - several ODFs produce the same pole
+% figures, and <PoleFigure2ODFAmbiguity.html the ambiguity page> shows why.
+% As a rule of thumb: the more pole figures, and the more consistent they
+% are with each other, the less the ambiguity matters.
 %
-% To check how well your reconstructed ODF fits the measured pole figure
-% data use
+% The check is always the same. Recalculate the pole figures from the ODF
+% and compare them with the measurement:
 
 plotPDF(odf,pf.h)
 
 %%
-% Compare the recalculated pole figures with the measured data. 
-% A quantitative measure for the fitting is the so called RP value. They
-% can be computed for each imported pole figure with 
+% and put a number on it, one per pole figure:
 
 calcError(odf,pf)
 
 %%
-% In the case of a bad fit, you may want to tweak the reconstruction
-% algorithm. See <PoleFigure2ODF.html here> for more information.
+% Between 0.04 and 0.06 - a good fit. When it is not,
+% <PoleFigure2ODF.html ODF Estimation> discusses what to change.
 
-%% Visualize the ODF
-% Finally one can plot the resulting ODF
+%% Looking at the result
 
 plot(odf)
 mtexColorMap LaboTeX
+
+%%
+% The ODF reaches only 1.9 mrd, so this ZnCuTi sheet is weakly textured:
+% there is a preferred orientation, but nothing like the factor of ten a
+% rolled sheet often shows. <ODFAnalysis.html the ODF chapter> is what to
+% read next - how to plot such a function, take it apart into components,
+% and compute the material properties that follow from it.
