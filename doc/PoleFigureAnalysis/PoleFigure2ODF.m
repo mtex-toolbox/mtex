@@ -55,18 +55,23 @@ plotPDF(odf,pf.allH,'antipodal','silent','superposition',pf.c)
 % measured ones, since the noise of the measurement is not in the ODF.
 %
 % <PoleFigure.calcError.html |calcError|> puts numbers on the same
-% comparison, one per pole figure. Three measures are available, |'RP'|,
-% |'l1'| and |'l2'|:
+% comparison, one per pole figure. Four measures are available: |'RP'|,
+% |'l1'|, |'l2'|, and the default when none of them is given.
 
 calcError(pf,odf,'RP')
 
 %%
-% The values run from 0.36 to 0.86 across the seven pole figures. Note what
-% RP is: the mean absolute difference divided by the recalculated intensity,
-% so it is a relative error, and the weak parts of a pole figure - where a
-% small absolute difference is a large relative one - dominate it. That one
-% pole figure scores twice another says less about the reconstruction than
-% it appears to.
+% The RP values run from 0.36 to 0.86 across the seven pole figures. RP is
+% the mean absolute difference divided by the recalculated intensity, taken
+% only where that intensity exceeds a threshold - the number after |'RP'|,
+% 1 by default. It is a relative error, so the weak parts of a pole figure,
+% where a small absolute difference is a large relative one, dominate it.
+%
+% Called without a measure, |calcError| uses a regularised relative error
+% instead, dividing by the larger of the two intensities plus half the scale
+% factor. It never divides by something near zero, and on this
+% reconstruction it reports 0.24 to 0.40 rather than 0.36 to 0.86. Both are
+% legitimate; only comparing one with the other is not.
 %
 % Where the misfit sits is more informative than how large it is.
 % <PoleFigure.plotDiff.html |plotDiff|> draws the difference between the
