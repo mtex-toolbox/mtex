@@ -1,10 +1,14 @@
-%% Fibers of Orientations
+%% Fibres of Orientations
 %
-%% 
-% A fibre in orientation space is essentially a line connecting two
-% orientations and can be represented in MTEX by a single variable of type
-% <fibre.fibre.html fibre>. To illustrate the definition of a fibre we
-% first define the |cube| and the |goss| orientation
+%%
+% A fibre is a curve through orientation space, stored as a single variable
+% of type <fibre.fibre.html |@fibre|>. Fibres matter because many real
+% textures are not a point but a line: all orientations that put one crystal
+% direction along one specimen direction, with the rotation about it left
+% free. The rolling textures of cubic metals are described almost entirely
+% in these terms.
+%
+% To see how one is built, take the |cube| and the |goss| orientation
 
 % define crystal and specimen symmetry
 cs = crystalSymmetry('432');
@@ -33,7 +37,9 @@ hold off
 legend('Location','northwest')
 
 %%
-% Alternatively, we may visualize the fibre also in axis angle space
+% The green line runs from the one orientation to the other - it is the
+% shortest path between them, the orientation space equivalent of a straight
+% line. The same fibre in axis angle space:
 
 % plot the fibre
 plot(f,'linecolor','green','linewidth',6,'axisAngle')
@@ -45,10 +51,10 @@ plot(ori2,'MarkerFaceColor','blue','MarkerSize',15)
 hold off
 
 %%
-% Obviously, |f| is not a full fibre. Since, the orientation space has no
-% boundary a full fibre is best thought of as a circle that passes trough
-% two fixed orientations. In order to define the full fibre us the option
-% |'full'|
+% What is drawn so far is only the segment between the two orientations.
+% Orientation space has no boundary, so continuing along the curve brings it
+% back to where it started: a full fibre is a circle through the two
+% orientations. That is the option |'full'|.
 
 f = fibre(ori1,ori2,'full')
 
@@ -57,20 +63,21 @@ plot(f,'linecolor','gold','linewidth',3,'project2FundamentalRegion')
 hold off
 
 
-%% Fibres in pole figures and inverse pole figures
+%% Fibres in Pole Figures and Inverse Pole Figures
 %
-% MTEX supports for fibers all the plotting options that are available for
-% orientations. This included <OrientationPoleFigure.html pole figures> and
-% <OrientationInversePoleFigure.html inverse pole figures> using the
-% commands <fibre.plotPDF.html |plotPDF|> and <fibre.plotIPDF.html
-% |plotIPDF|>.
+% Everything that can be plotted for orientations can be plotted for fibres,
+% <OrientationPoleFigure.html pole figures> and
+% <OrientationInversePoleFigure.html inverse pole figures> included, through
+% <fibre.plotPDF.html |plotPDF|> and <fibre.plotIPDF.html |plotIPDF|>. A
+% fibre becomes a curve rather than a point in each of them.
 
 plotPDF(f,Miller({1,1,0},{1,1,1},cs),'linewidth',3,'lineColor','orange')
 
 %%
-% An important difference to orientation plots is that fibers are not
-% automatically symmetrised when plotted. To achieve this use the command
-% <fibre.symmetrise.html |symmetrise|>.
+% One difference to orientation plots matters: a fibre is *not*
+% automatically symmetrised, so the plot above shows one curve where a
+% symmetrised orientation would have shown all its equivalents. Asking for
+% them is <fibre.symmetrise.html |symmetrise|>.
 
 plotPDF(f.symmetrise,Miller({1,1,0},{2,1,0},{1,1,1},cs),'linewidth',3,'lineColor','orange')
 
@@ -82,7 +89,7 @@ plotPDF(f.symmetrise,Miller({1,1,0},{2,1,0},{1,1,1},cs),'linewidth',3,'lineColor
 r = [vector3d(1,1,0),vector3d(2,1,0),vector3d(1,1,1)];
 plotIPDF(f.symmetrise,r,'linewidth',3,'lineColor','orange')
 
-%% Defining a fibre by directions
+%% Defining a Fibre by Directions
 %
 % Alternatively, a fibre can also be defined by a pair of a crystal and a
 % specimen direction. In this case it consists of all orientations that
@@ -111,16 +118,17 @@ f = fibre(ori1,Miller(1,1,1,cs))
 
 plot(f,'linecolor','darkred','linewidth',4,'project2FundamentalRegion','axisAngle')
 
-%% Predefined fibers
-% MTEX includes also a list of predefined fibers, e.g., alpha, beta, gamma,
-% epsilon, eta, tau and theta fibers. Those can be defined by
+%% Predefined Fibres
+%
+% The fibres of rolling texture have names, as the components do - alpha,
+% beta, gamma, epsilon, eta, tau and theta - and MTEX has them built in.
 
 ss = specimenSymmetry('orthorhombic');
 beta = fibre.beta(cs,ss,'full')
 
 %%
-% Lets plot an overview of all predefined fibers with respect to
-% orthorhombic specimen symmetry
+% An overview of all of them, for cubic crystal and orthorhombic specimen
+% symmetry:
 
 plot(fibre.alpha(cs,ss,'full'),'linewidth',3,'lineColor',ind2color(1),'DisplayName','alpha')
 hold on
@@ -133,9 +141,11 @@ plot(fibre.theta(cs,ss,'full'),'linewidth',3,'lineColor',ind2color(7),'DisplayNa
 hold off
 legend('Location','best')
 
-%% Fiber ODFs
-% Note, that it is straight forward to define a corresponding fibre ODF by
-% the command <fibreODF.html |fibreODF|>
+%% Fibre ODFs
+%
+% A fibre is a curve of zero volume, and a real texture is a spread around
+% one. <fibreODF.html |fibreODF|> turns the curve into a density with a
+% given halfwidth, which is what a measurement is fitted against.
 
 odf = fibreODF(beta,'halfwidth',10*degree)
 
@@ -147,15 +157,31 @@ hold on
 plot(beta.symmetrise,'lineColor','b','linewidth',4)
 hold off
 
-%% Visualize an ODF along a fibre
-% We may also visualize an ODF along a fibre
+%% An ODF Along a Fibre
+%
+% An ODF can also be evaluated along a fibre and plotted as a curve, here
+% the beta fibre ODF read along the eta fibre.
 
 plot(odf,fibre.eta(cs,ss),'linewidth',2)
 
 
-%% Compute volume of fibre portions
-% or compute the volume of an ODF in a tube around a fibre using the
-% command <SO3Fun.volume.html |volume|>
+%% The Volume Around a Fibre
+%
+% <SO3Fun.volume.html |volume|> measures how much of an ODF lies within a
+% tube of given radius about a fibre - the number quoted when a texture is
+% reported as "so many percent beta fibre".
+
+100 * volume(odf,beta,5*degree)
+
+%%
+% 58 percent of this ODF lies within 5 degree of the fibre it was built on,
+% and within 10 degree it is the whole of it, to the precision printed.
 
 100 * volume(odf,beta,10*degree)
+
+%% Next
+%
+% Fibres of plain rotations, without a crystal symmetry, are
+% <RotationFibre.html Fibres>. Fibre ODFs and the rest of the model textures
+% are <FibreODFs.html Fibre ODFs>.
 

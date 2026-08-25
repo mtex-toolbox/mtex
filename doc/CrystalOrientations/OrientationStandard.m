@@ -1,8 +1,13 @@
 %% Standard Orientations
 %
 %%
-% This section displays some of the standard orientations that are build
-% into MTEX. The full list of predefined orientations consists of
+% Rolling, drawing and recrystallisation produce the same few orientations
+% again and again, and those have names - Cube, Goss, Brass, Copper. Naming
+% a component is how a texture is described in one sentence, and MTEX has
+% the standard ones built in, so a measured texture can be compared against
+% them directly.
+%
+% The predefined orientations are
 %
 % * Cube, CubeND22, CubeND45, CubeRD
 % * Goss, invGoss
@@ -36,9 +41,15 @@ components = [...
   orientation.QLage(cs,ss),...
   ];
 
-%% 3d Euler angle space
-% Lets first visualize the orientations in the three dimensional Euler
-% angle space
+%%
+% Each component is named in the legends below by the lattice plane and
+% direction it stands for, as $(hkl)[uvw]$ - the plane facing the sheet
+% normal and the direction along the rolling direction, which is what
+% <orientation.byMiller.html |orientation.byMiller|> takes.
+%
+%% Three Dimensional Euler Angle Space
+%
+% The first view puts every component at its three Bunge Euler angles.
 
 close all
 for i = 1:length(components)
@@ -49,9 +60,11 @@ end
 legend('show','interpreter','LaTeX','location','southoutside','numColumns',3,'FontSize',1.2*getMTEXpref('FontSize'));
 hold off
 
-%% Two dimensional phi2 sections
-% A second common way of visualizing the orientation space are sections
-% with fixed Euler angle phi2
+%% Two Dimensional phi2 Sections
+%
+% The classical way of showing the same thing on paper: sections of fixed
+% $\varphi_2$, in which the rolling components line up in recognisable
+% patterns, see <EulerAngleSections.html Euler Angle Sections>.
 
 close all
 for i = 1:length(components)
@@ -61,9 +74,11 @@ end
 
 legend('show','interpreter','LaTeX','location','southeast','FontSize',1.2*getMTEXpref('FontSize'));
 
-%% Three dimensional axis angle space
-% In the three dimensional axis angle space the orientation appear inside
-% the fundamental sector
+%% Three Dimensional Axis Angle Space
+%
+% In axis angle space the components sit inside the fundamental region of
+% the cubic-orthorhombic pair, see
+% <OrientationFundamentalRegion.html Fundamental Region>.
 
 close all
 for i = 1:length(components)
@@ -74,9 +89,12 @@ for i = 1:length(components)
 end
 legend('show','interpreter','LaTeX','location','southoutside','numColumns',3,'FontSize',1.2*getMTEXpref('FontSize'));
 
-%% pole figures
-% In the major pole figures the predefined orientations appear at the
-% following spots
+%% Pole Figures
+%
+% Where each component puts the major lattice planes. This is the view a
+% measured pole figure is compared against - Goss has a $(110)$ pole in the
+% centre, since its $(011)$ plane faces the sheet normal, and Cube has its
+% $(100)$ poles in the centre and on the two axes of the rim.
 
 h = Miller({1,0,0},{1,1,0},{1,1,1},{3,1,1},cs);
 
@@ -90,9 +108,11 @@ hold off
 
 legend('show','interpreter','LaTeX','location','northeast','numColumns',2,'FontSize',1.2*getMTEXpref('FontSize'));
 
-%% inverse pole figures
-% For inverse pole figure the situation is as follows. Note that the
-% different size of the markers has been chosen to avoid overprinting.
+%% Inverse Pole Figures
+%
+% The same components seen from the specimen side: which crystal direction
+% lies along X, Y and Z. The markers are drawn in decreasing size so that
+% components falling on the same spot stay visible.
 
 r = [vector3d.X,vector3d.Y,vector3d.Z];
 
@@ -107,7 +127,12 @@ hold off
 legend('show','interpreter','LaTeX','location','northeast','numColumns',2,'FontSize',1.2*getMTEXpref('FontSize'));
 
 
-%% Defining an Model ODF
+%% From a Component to a Model Texture
+%
+% A named component is a single orientation, and a real texture is a spread
+% around one. Giving the component a halfwidth turns it into a model ODF,
+% which is what the measured data is actually fitted against, see
+% <ODFModeling.html Modeling ODFs>.
 
 odf = unimodalODF(components(3),'halfwidth',7.5*degree)
 
@@ -117,6 +142,8 @@ plotPDF(odf,h,'contour','lineColor','k','linewidth',2)
 hold off
 
 %%
+% What was a single point is now a spread about seven degree wide. The same
+% in the inverse pole figures,
 
 plotIPDF(odf,r)
 hold on
@@ -124,6 +151,8 @@ plotIPDF(odf,r,'contour','lineColor','k','linewidth',2)
 hold off
 
 %%
+% and in phi2 sections, with all the components drawn on top so it is
+% visible which one the model was built around.
 
 plotSection(odf)
 
