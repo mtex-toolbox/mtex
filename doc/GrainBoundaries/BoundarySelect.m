@@ -1,9 +1,12 @@
 %% Select Grain Boundaries
 %
 %%
-% In this section we explain how to extract specific grain boundaries.
-% Therefore we start by importing some EBSD data and reconstructing the
-% grain structure.
+% The boundaries of a map are a list of short segments, each lying between
+% two neighbouring measurements that ended up in different grains. Any
+% analysis starts by choosing which of them to look at: the boundaries of
+% one grain, those between two particular phases, or those whose
+% misorientation has some character. All of these are an index into that
+% list, and the result is a boundary list again.
 
 close all;
 
@@ -26,40 +29,89 @@ hold on
 plot(grains.boundary,'linewidth',2)
 hold off
 
-%%
-% The output of
+%% What the list contains
+%
+% |grains.boundary| is that list, and displaying it gives the count of
+% segments for each pair of phases that meet anywhere in the map.
 
 grains.boundary
 
 %%
-% tells us the number of boundary segments between the different phases.
-% Those segments with phase |'notIndexed'| include also those boundary
-% segments where the grains are cut by the scanning boundary. To restrict
-% the grain boundaries to a specific phase transition you shall do
+% Note the rows involving |notIndexed|. They are two different things at
+% once: boundaries against a region that could not be indexed, and the outer
+% rim of the map, where a grain is cut off by the edge of the scan and has
+% no neighbour at all. <SelectingGrains.html Selecting Grains> shows how to
+% tell the second kind apart.
+
+%% By the phases on either side
+%
+% Two phase names select the segments between those two phases. The
+% forsterite to forsterite boundaries, the grain boundaries proper of the
+% dominant phase:
 
 hold on
 plot(grains.boundary('Fo','Fo'),'lineColor','blue','micronbar','off','lineWidth',4)
 hold off
 
 %%
-% Similarly, we may select all Forsterite to Enstatite boundary segments.
+% And the forsterite to enstatite boundaries, which are phase boundaries
+% rather than grain boundaries - two different crystals meeting, not two
+% orientations of the same one:
 
 hold on
 plot(grains.boundary('Fo','En'),'lineColor','darkgreen','micronbar','off','lineWidth',4)
 hold off
 
 %%
-% Note, that the order of the phase names matter when considering the
-% corresponding misorientations
+% The order of the two names matters, and not only for readability. A
+% misorientation is a rotation *from* one crystal *to* another, so the two
+% orders give misorientations inverse to each other, and any statement about
+% one of them - an axis in crystal coordinates, for instance - refers to
+% whichever crystal was named first.
 
-grains.boundary('Fo','En').misorientation(1)
-grains.boundary('En','Fo').misorientation(1)
+mori = grains.boundary('Fo','En').misorientation(1)
+
+inv(mori)
 
 %%
-% In the fist case the misorientation returned is from Forsterite to
-% Enstatite and in the second case its exactly the inverse
-% 
-% The selection of grain boundaries according to specific misorientations
-% according to twist / tilt character or twinning is explained in linked
-% sections.
+% One thing to be careful about: the two selections contain the same
+% segments, but not in the same order. Segment by segment the
+% misorientations are exact inverses of each other, while
+% |grains.boundary('En','Fo').misorientation(1)| is simply a different
+% segment from the one above.
+
+%% By grain
 %
+% A boundary list is also reachable from the grains it belongs to, which is
+% how one asks for the boundary of a single grain or of a selection.
+
+grains(47).boundary
+
+hold on
+plot(grains(47).boundary,'lineWidth',4,'lineColor','DarkBlue')
+hold off
+
+%% Boundaries inside a grain
+%
+% |grains.innerBoundary| holds the segments that separate two measurements
+% *of the same grain*. They arise where a grain has an orientation gradient
+% that comes back around: two pixels that are neighbours in space are far
+% apart along the gradient, so the criterion separates them, but a path
+% through the grain still connects them and they stay one grain.
+
+hold on
+plot(grains.innerBoundary,'linecolor','red','linewidth',4)
+hold off
+
+%%
+% Eleven segments here, in a rock that is barely deformed. In deformed
+% material there are many, and they are the subject of
+% <SubGrainBoundaries.html Subgrain Boundaries>.
+
+%% By misorientation
+%
+% Every segment carries its misorientation, so any condition on it selects
+% segments - a threshold on the angle, a distance from a twin relationship,
+% a coincidence site lattice. Those selections have pages of their own:
+% <TiltAndTwistBoundaries.html Twist and Tilt>,
+% <TwinningBoundaries.html Twinning> and <CSLBoundaries.html CSL>.
