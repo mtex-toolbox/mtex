@@ -1,41 +1,55 @@
 %% Defining Orientations
 %
 %%
-% An <orientation.orientation.html |@orientation|> is a
-% <rotation.rotation.html |@rotation|> that knows which crystal it belongs
-% to. Everything on <RotationDefinition.html Defining Rotations> therefore
-% applies here as well - the same constructors, with a
-% <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|> handed in as an
+% An <orientation.orientation.html |orientation|> answers one question:
+% how is this crystal placed in this specimen? In MTEX it is a
+% <rotation.rotation.html |rotation|> that maps coordinates from the
+% crystal reference frame into the specimen reference frame. It also carries
+% the symmetry attached to each frame.
+%
+% This page assumes the three-dimensional directions introduced in
+% <VectorDefinition.html Defining Three-Dimensional Vectors>, the plane and
+% direction notation from <CrystalDirections.html Miller Indices>, and basic
+% matrix algebra. The constructors are the same as on
+% <RotationDefinition.html Defining Rotations>, with a
+% <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|> supplied as an
 % extra argument.
 %
-% What the rotation *means* is a separate question, answered in
-% <DefinitionAsCoordinateTransform.html Theory> and in
-% <MTEXvsBungeConvention.html MTEX vs. Bunge Convention>. This page is about
-% building one.
+% What this mapping means is developed in
+% <DefinitionAsCoordinateTransform.html Theory> and compared with other
+% conventions in <MTEXvsBungeConvention.html MTEX vs. Bunge Convention>.
+% This page concentrates on building orientations.
 
 plottingConvention.default('y↑→x');
 
-% load copper cif file
-cs = crystalSymmetry.load('Cu-Copper.cif')
+% load the crystal symmetry and reference frame from a CIF file
+cs = crystalSymmetry.load('Cu-Copper.cif');
 
 %% Euler Angles
 %
-% The most common input, and the one that needs its convention stated -
-% MTEX reads and writes Bunge angles by default.
+% Euler angles are the most common input and the one most easily
+% misinterpreted. Their axes, order, and mapping direction belong to the
+% convention. Equal angle triplets in different conventions need not
+% describe the same orientation.
+%
+% MTEX uses the Bunge convention by default. Naming it explicitly keeps a
+% reusable script independent of the current session preference. Angles are
+% in radians, so values stated in degrees are multiplied by |degree|.
 
-ori = orientation.byEuler(30*degree,50*degree,10*degree,cs)
+ori = orientation.byEuler(30*degree,50*degree,10*degree,'Bunge',cs)
 
 %%
-% The display names the crystal symmetry alongside the angles. An
-% orientation without a symmetry is just a rotation, and MTEX keeps the two
-% apart for that reason.
+% The display gives the three Bunge angles and names the copper crystal
+% symmetry alongside them. This attached crystal frame and symmetry are
+% what distinguish an orientation from a bare rotation.
 
 %% Rotation Matrix
 %
-% A $3 \times 3$ matrix defines an orientation just as it defines a
-% rotation.
+% A $3 \times 3$ matrix can define the same mapping. Its convention must be
+% checked when it comes from another program: this matrix maps crystal-frame
+% coordinates into specimen-frame coordinates.
 
-M = eye(3)
+M = eye(3);
 
 %%
 
@@ -43,43 +57,53 @@ ori = orientation.byMatrix(M,cs)
 
 %%
 % The identity matrix gives the orientation in which the Cartesian crystal
-% frame is aligned with the specimen frame - the reference setting from
+% frame is aligned with the specimen frame. It is the reference setting from
 % which the Euler angles of every other orientation are counted.
+%
+% The point group does not by itself determine how the Cartesian crystal
+% frame is inscribed into the lattice axes. A statement such as
+% X &#124;&#124; a*, Z &#124;&#124; c belongs to the crystal reference frame,
+% not to the symmetry. Changing that alignment changes the coordinate
+% description without moving the crystal; see
+% <CrystalReferenceSystem.html The Crystal Reference System>.
 
 %% Miller Indices
 %
-% Metallurgy usually names an orientation by two crystal directions: the
+% Metallurgy often names an orientation by two crystal quantities: the
 % lattice plane facing the specimen Z axis and the lattice direction
-% pointing along X. That is what
+% pointing along specimen X. The inputs must describe an orthogonal plane
+% normal and direction. That is what
 % <orientation.byMiller.html |orientation.byMiller|> takes, here for the
 % Goss orientation $(011)[100]$.
 
 ori = orientation.byMiller([0 1 1],[1 0 0],cs)
 
 %%
-% A spherical plot confirms the reading: the $(011)$ pole sits at the
-% centre, where Z is, and the $[100]$ direction on the X axis at the rim.
+% Apply the orientation to the plane normal and the lattice direction to
+% check where they point in the specimen frame.
 
-rPlane = ori * Miller(0,1,1,cs);
+rPlane = ori * Miller(0,1,1,cs,'hkl');
 rDirection = ori * Miller(1,0,0,cs,'uvw');
 
 plot([rPlane,rDirection],'upper','grid','MarkerSize',10,...
   'label',{'(011)','[100]'},'backgroundColor','w','figSize','small')
-hold on
-annotate([vector3d.X,vector3d.Z],'label',{'X','Z'},'backgroundColor','w')
-hold off
 
 %%
-% Goss and the other named textures are predefined, so this one is also
-% |orientation.goss(cs)| - see
+% Notice that the $(011)$ pole is at the centre, the specimen Z direction,
+% while $[100]$ is on the specimen X axis at the rim.
+%
+% Goss and the other named texture components are predefined. The zero
+% angular difference confirms that this result is also
+% |orientation.goss(cs)|; see
 % <OrientationStandard.html Standard Orientations>.
 
 angle(ori,orientation.goss(cs)) ./ degree
 
 %% Random Orientations
 %
-% As for rotations, uniformly distributed orientations come from |rand|,
-% which needs the symmetry as well.
+% As for rotations, |rand| generates uniformly distributed orientations and
+% needs the crystal symmetry as well. MTEX stores the 100 results in one
+% vectorized orientation array.
 
 ori = orientation.rand(100,cs);
 
@@ -87,61 +111,89 @@ length(ori)
 
 %% Symmetrically Equivalent Orientations
 %
-% A crystal cannot distinguish its symmetrically equivalent settings, so
-% every orientation stands for a whole set of them.
-% <orientation.symmetrise.html |symmetrise|> lists that set.
+% A crystal cannot distinguish its symmetrically equivalent settings, so an
+% orientation represents a whole class of rotations.
+% <orientation.symmetrise.html |symmetrise|> lists that class.
 
-ori = orientation.byEuler(30*degree,50*degree,10*degree,cs);
+ori = orientation.byEuler(30*degree,50*degree,10*degree,'Bunge',cs);
 
 length(ori.symmetrise)
 
 %%
-% Copper is m-3m, which has 48 elements, and 24 of them are improper.
+% Copper has point group m-3m with 48 elements. Only the 24 proper elements
+% describe settings into which the crystal can be physically turned.
 
-nnz(ori.symmetrise.isImproper)
+length(ori.symmetrise('proper'))
 
 %%
-% Only the 24 proper ones are settings a crystal can be physically turned
-% into. The improper ones remain symmetries of the lattice and matter when
-% a calculation treats opposite plane normals as equivalent, as
-% conventional diffraction does under Friedel's law. This is why "the
-% angle between two orientations" is always
-% taken as the smallest over all equivalent pairs, see
-% <OrientationSymmetry.html Symmetry>.
+% The other 24 are improper lattice symmetries. They still matter when a
+% calculation treats opposite plane normals as equivalent, as conventional
+% diffraction does under Friedel's law.
+%
+% This equivalence is why the angle between two orientations is the smallest
+% angle over all equivalent pairs. The dedicated
+% <OrientationSymmetry.html Symmetry> page develops this rule and explains
+% when to use the |'noSymmetry'| option.
 
 %% Specimen Symmetry
 %
-% The specimen may have symmetry of its own - rolling, for instance, makes
-% the sheet look the same under three mirror planes. It is given as a
+% A specimen may have symmetry of its own. A rolled sheet, for example, is
+% commonly modelled with orthorhombic symmetry: three mutually perpendicular
+% twofold axes, or equivalently three mirror planes in the full point group.
+% It is represented by a
 % <specimenSymmetry.specimenSymmetry.html |specimenSymmetry|> and passed
 % alongside the crystal symmetry.
 
-% define orthotropic specimen symmetry
-ss = specimenSymmetry('orthorhombic')
+ss = specimenSymmetry('orthorhombic');
 
 %%
 
-ori = orientation.byEuler(30*degree,50*degree,10*degree,cs,ss)
+ori = orientation.byEuler(30*degree,50*degree,10*degree,'Bunge',cs,ss)
 
 %%
-% Both symmetries now act, one from each side, and the set of equivalent
-% orientations grows accordingly - the 48 crystal elements times the 8
-% specimen ones.
+% Crystal symmetry acts in the crystal frame and specimen symmetry in the
+% specimen frame. With the full point groups, the class contains the 48
+% copper elements times the 8 orthorhombic elements.
 
 length(ori.symmetrise)
 
 %%
+% Restricting both groups to proper operations leaves the 24 crystal
+% rotations times the 4 specimen rotations.
+
+length(ori.symmetrise('proper'))
+
+%%
 % Specimen symmetry is a statement about the sample, not about the
-% measurement, and imposing one that is not there hides real texture
-% components. <SpecimenSymmetry.html Specimen Symmetry> says when to use it.
+% measurement. Its axes must match the physical specimen frame, and imposing
+% a symmetry that is not present hides real texture components.
+% <SpecimenSymmetry.html Specimen Symmetry> explains when to use it.
+
+%% References
+%
+% * H.-J. Bunge, <https://doi.org/10.1016/C2013-0-11769-2 Texture Analysis
+% in Materials Science: Mathematical Methods>, Butterworths, English ed.,
+% 1982, establishes the Euler-angle convention used in texture analysis.
+% * A. Morawiec, <https://doi.org/10.1007/978-3-662-09156-2 Orientations
+% and Rotations: Computations in Crystallographic Textures>, Springer,
+% 2004, develops orientations as rotations modulo crystallographic symmetry.
+% * D. Rowenhorst et al.,
+% <https://doi.org/10.1088/0965-0393/23/8/083501 Consistent
+% representations of and conversions between 3D rotations>, Modelling and
+% Simulation in Materials Science and Engineering 23 (2015) 083501,
+% compares conventions and conversion formulas.
+% * The International Union of Crystallography,
+% <https://dictionary.iucr.org/Friedel%27s_law Friedel's law>, states the
+% diffraction equivalence and its exception for resonant scattering.
 
 %% Next
 %
-% <DefinitionAsCoordinateTransform.html Theory> explains what an orientation
-% does to coordinates, which is the definition the rest of MTEX rests on.
+% <DefinitionAsCoordinateTransform.html Theory> explains how an orientation
+% maps coordinates, which is the definition the rest of MTEX rests on.
 % <OrientationPoleFigure.html Pole Figures> and
 % <OrientationInversePoleFigure.html Inverse Pole Figures> are the two ways
-% of looking at one.
+% of looking at one. Existing orientation files are handled by
+% <OrientationImport.html Import>.
 
 %#ok<*NASGU>
 %#ok<*NOPTS>
