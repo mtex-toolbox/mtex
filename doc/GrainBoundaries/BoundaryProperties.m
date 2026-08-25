@@ -1,9 +1,17 @@
 %% Grain Boundary Properties
 %
 %%
-% In this section we discus geometric properties that can be derived from
-% grain boundaries. Lets start by importing some EBSD data and computing
-% grain boundaries.
+% A boundary segment lies between two measurements, so most of what it knows
+% comes in pairs: two pixels, two grains, two phases, and the misorientation
+% between them. The rest is geometry - where the segment is, which way it
+% runs, how long it is.
+%
+% || |ebsdId|         || neighboring pixel ids || |phaseId| || neighboring phase ids ||
+% || |grainId|        || neighboring grain ids || |F| || vertices ids of the segments ||
+% || <grainBoundary.segLength.html |segLength|> || length of each segment || |direction| || direction of each segment ||
+% || |midPoint|       || mid point of the segment || <grainBoundary.curvature.html |curvature|> || curvature of each segment ||
+% || |misorientation| || between |ebsdId(:,1)| and  |ebsdId(:,2)| || |triplePoints| || list of all triple points ||
+% || |componentId|    || connected component id || |componentSize| || connected component size ||
 
 % load some example data
 plottingConvention.default('y↑→x');
@@ -28,83 +36,81 @@ hold on
 plot(gB,'LineWidth',2)
 hold off
 
-%% Property overview
+%% The two sides of a segment
 %
-% A variable of type <grainBoundary.grainBoundary.html grainBoundary>
-% contains the following properties
-%
-% || |ebsdId|         || neighboring pixel ids || |phaseId| || neighboring phase ids ||
-% || |grainId|        || neighboring grain ids || |F| || vertices ids of the segments ||
-% || <grainBoundary.segLength.html |segLength|> || length of each segment || |direction| || direction of each segment ||
-% || |midPoint|       || mid point of the segment || <grainBoundary.curvature.html |curvature|> || curvature of each segment ||
-% || |misorientation| || between |ebsdId(:,1)| and  |ebsdId(:,2)| || |triplePoints| || list of all triple points ||
-% || |componentId|    || connected component id || |componentSize| || connected component size ||
-%
-% The first three properties refer to $N \times 2$ matrices where $N$ is
-% the number of boundary segments. Each row of these matrices contains the
-% information about the EBSD data, and grain data on both sides of the
-% grain boundary. To illustrate this consider the grain boundary of one
-% specific grain
+% |ebsdId|, |grainId| and |phaseId| are $N \times 2$ matrices, one row per
+% segment, holding what lies on either side of it. Take the boundary of one
+% small grain:
 
 gB4 = grains(4).boundary
 
 %%
-% This boundary consists of 8 segments and hence ebsdId forms a 8x2 matrix
+% Eight segments, so |ebsdId| is 8 by 2.
 
 gB4.ebsdId
 
 %%
-% It is important to understand that the *id* is not necessarily the same
-% as the index in the list. In order to index an variable of type EBSD by
-% id and not by index the following syntax has to be used
+% These are ids, not positions in the list, and the two differ as soon as
+% anything has been removed from the map. Indexing by id needs to say so.
 
 ebsd('id',gB4.ebsdId)
 
 %%
-% Similarly
+% The grain ids on either side tell us something about this grain in
+% particular.
 
 gB4.grainId
 
 %%
-% results in 8x2 matrix indicating that grain 4 is a tiny inclusion of
-% grain 42.
+% Grain 4 has grain 42 on the far side of every one of its segments, which
+% is what it means to be an inclusion: it is entirely surrounded by that one
+% grain.
 
 plot(grains(4),'FaceColor','DarkBlue','micronbar','off')
 hold on
 plot(grains(42),'FaceColor','LightCoral')
 hold off
 
-%% Grain boundary misorientations
+%% The misorientation across a segment
 %
-% The grain boundary misorientation defined as the misorientation between
-% the orientations corresponding to ids in first and second column of
-% ebsdId, i.e. following two commands should give the same result
+% The misorientation of a segment is the rotation from the orientation of
+% the second pixel to that of the first, so it follows the column order of
+% |ebsdId| and can be computed by hand from the two orientations:
 
 gB4(1).misorientation
 
 inv(ebsd('id',gB4.ebsdId(1,2)).orientations) .* ebsd('id',gB4.ebsdId(1,1)).orientations
 
 %%
-% Note that in the first result the antipodal flag is true while it is
-% false in the second result. 
+% The two rotations agree; only the |antipodal| flag differs. A boundary has
+% no preferred side, so the misorientation stored on a segment is marked
+% antipodal - it and its inverse are treated as one - whereas the
+% misorientation computed by hand from two orientations is not.
 %
-% Obviously, misorientations of a list of grain boundaries can only be
-% extracted if all of them have the same type of phase transition. Let us
-% consider only Magnesium to Magnesium grain boundaries, i.e., omit all
-% grain boundaries to an not indexed region. 
+% A list of misorientations only makes sense when every segment in it
+% relates the same two phases, which is why one selects a phase pair first.
 
 gB_Mg = gB('Magnesium','Magnesium')
 
 %%
-% Then the misorientation angles can be plotted by
+% Their angles, drawn on the map:
 
 plot(gB_Mg,gB_Mg.misorientation.angle./degree,'linewidth',4,'micronbar','off')
 mtexColorbar('title','misorientation angle (°)')
 
-%% Geometric properties
-% The |direction| property of the boundary segments is useful when
-% checking for tilt and twist boundaries, i.e., when we want to compare the
-% misorientation axis with the interface between the grains
+%%
+% The map is dominated by one angle: half of all segments are within 3
+% degrees of 86.3, the misorientation angle of the magnesium twin, and the
+% median over all of them is 84 degrees. This specimen is mostly twin
+% boundaries, which <TwinningBoundaries.html Twinning> pursues.
+
+%% Which way a segment runs
+%
+% |direction| is the direction of the segment itself, and comparing it with
+% the misorientation axis is how a boundary is classified as tilt or twist -
+% see <TiltAndTwistBoundaries.html Twist and Tilt>. The axis has to be
+% computed in specimen coordinates, which needs the two orientations rather
+% than the stored misorientation.
 
 % compute misorientation axes in specimen coordinates
 ori = ebsd('id',gB_Mg.ebsdId).orientations;
@@ -114,20 +120,34 @@ axes = axis(ori(:,1),ori(:,2),'antipodal')
 plot(gB_Mg,angle(gB_Mg.direction,axes),'linewidth',4,'micronbar','off')
 
 %%
-% We observe that the angle is quite oscillatory. This is because of the
-% stair casing effect when reconstructing grains from gridded EBSD data.
-% The weaken this effect we may average the segment directions using the
-% command <grainBoundary.calcMeanDirection.html |calcMeanDirection|>
+% The colour flickers from segment to segment along what is one straight
+% boundary. That is the staircase: a single segment lies between two pixels
+% and so has only a few possible directions, whatever the boundary is really
+% doing. <grainBoundary.calcMeanDirection.html |calcMeanDirection|> averages
+% the direction over a few neighbouring segments and the flicker goes away.
 
 % plot the angle between the misorientation axis and the boundary direction
 plot(gB_Mg,angle(gB_Mg.calcMeanDirection(4),axes),'linewidth',4,'micronbar','off')
 
 %%
-% The *midPoint* property gives the position of each segment as a
-% <vector3d.vector3d.html vector3d>. It is what one needs whenever
-% something has to be drawn at, or selected by, the location of a segment -
-% the misorientation axes above, for instance, are best shown as arrows
-% sitting on their segments
+% Now a boundary keeps one value along its length and the values differ from
+% boundary to boundary, which is the information the flicker was hiding. The
+% angles are large - a median of 43 degrees, with only one segment in ten
+% below 20 - so the misorientation axes are mostly *not* aligned with the
+% traces here.
+%
+% Be careful with what follows from that. A trace is not a plane: it is the
+% one direction of the boundary plane that the section reveals, and the
+% inclination is unknown. An axis parallel to the trace does lie in the
+% boundary plane and makes a tilt boundary, but an axis at a large angle to
+% the trace settles nothing on its own. <TiltAndTwistBoundaries.html Twist
+% and Tilt> takes this further.
+
+%% Where a segment is
+%
+% |midPoint| is the position of a segment as a
+% <vector3d.vector3d.html |vector3d|>. It is what one needs to draw
+% something at a segment - the misorientation axes above, for instance:
 
 plot(grains,grains.meanOrientation,'faceAlpha',0.3,'micronbar','off')
 hold on
@@ -135,7 +155,7 @@ quiver(gB_Mg(1:3:end),axes(1:3:end),'color','black','autoScaleFactor',0.6)
 hold off
 
 %%
-% and it is equally the natural handle for a spatial selection
+% and equally to select segments by position:
 
 pos = gB_Mg.midPoint;
 isTop = pos.y > 30;
@@ -147,22 +167,23 @@ plot(gB_Mg(~isTop),'linewidth',3,'lineColor','blue')
 hold off
 
 %%
-% While the command <grainBoundary.length.html |length(gB_Mg)|> gives the
-% total number of all Magnesium to Magnesium grain boundary segments the
-% command <grainBoundary.segLength.html |segLength(gB_Mg)|> gives the
-% length of each segment in µm. The total length of all Magnesium to
-% Magnesium grain boundary segments is hence 
+% Two lengths are easy to confuse. |length(gB_Mg)| is the number of
+% segments, a count, while
+% <grainBoundary.segLength.html |segLength(gB_Mg)|> is the length of each
+% segment in µm. The total boundary length is the sum of the second:
 
 sum(gB_Mg.segLength)
 
 %% Connected components
-% 
-% When analyzing the topology of boundary networks connected components of
-% certain subsets of boundaries are of interest. Using the
-% commands|gB.componentId| and |gB.componentSize| we are able to
-% separate the boundary network into groups of connected components and
-% analyze them separately. We do so below at the example of twin boundaries
-% which we first colorize according to length.
+%
+% A boundary network is more than a bag of segments: segments that touch
+% form a boundary, and boundaries that touch form a network. |componentId|
+% labels each connected group and |componentSize| gives its size, which is
+% what turns a question about single segments into one about whole
+% boundaries.
+%
+% Here on the twin boundaries, which we first pick out by their
+% misorientation and colour by the size of the component they belong to.
 
 CS = ebsd.CS;
 twinning = orientation.map(Miller(1,-1,0,1,CS),Miller(1,0,-1,-1,CS),...
@@ -178,10 +199,14 @@ hold off
 mtexColorbar
 
 %%
-% Next we compute how curvy each twin boundary component is, by dividing it
-% spatial extension by its total length. This measure has proven to be
-% useful to tell apart misindexing due to pseudosymmetries and true twin
-% boundaries.
+% The 1648 twin segments of this map form 54 components. A twin lamella
+% crossing a whole grain is one long component; a handful of segments that
+% happen to satisfy the twin relationship somewhere on their own are a short
+% one, and being able to tell those apart is what the component id is for.
+%
+% Straightness can be measured directly: divide the distance between the two
+% extreme points of a component by its total length. A single straight
+% lamella gives close to 1, a component that meanders or branches much less.
 
 numComponents = max(gBTwin.componentId);
 xmax = accumarray(gBTwin.componentId,gBTwin.midPoint.x,[numComponents,1],@max);
@@ -201,3 +226,13 @@ mtexColorbar
 mtexColorMap blue2red
 
 %%
+% The values run up to 0.97 with a median of 0.70. Note which components
+% score low: it is the *large* ones, at a median of 0.52 against 0.71 for
+% the rest. A long component here is rarely a single lamella - it is several
+% of them meeting inside one grain, and the straight line between its two
+% extreme points is nothing it ever follows.
+%
+% So this measure separates single straight lamellae from branched networks
+% rather than twins from misindexing. It is still worth computing for the
+% latter, because a few segments that satisfy the twin relationship by
+% accident, out of pseudosymmetry, form neither.
