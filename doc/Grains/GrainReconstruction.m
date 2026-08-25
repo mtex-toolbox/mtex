@@ -1,122 +1,213 @@
 %% Grain Reconstruction
 %
 %%
-% By grain reconstruction we mean the subdivision of the specimen, or more
-% precisely the measured surface of the specimen, into regions of similar
-% orientation which we then call grains. Note that there is no canonical
-% definition of what is a grain. The default grain reconstruction method in
-% MTEX is based on the definition of high angle grain boundaries which are
-% assumed at the perpendicular bisector between neighboring measurements
-% whenever their misorientation angle exceeds a certain threshold.
-% According to this point of view grains are regions surrounded by grain
-% boundaries.
+% Grain reconstruction turns a map of individual measurements into a list of
+% regions. Two neighbouring measurements belong to the same region as long
+% as they are of the same phase and their orientations agree to within a
+% threshold; where they do not, a boundary is drawn between them. The
+% command that does this is <EBSD.calcGrains.html |calcGrains|>.
 %
-% In order to illustrate the grain reconstruction process we consider the
-% following sample data set
+% Three settings decide what comes out: the misorientation angle at which a
+% boundary is drawn, what happens to measurements that could not be indexed,
+% and how few pixels a region may consist of and still be called a grain.
+% This page takes them one at a time, on a map that exercises all three.
 
 % import the data
 plottingConvention.default('y↑→x');
-mtexdata forsterite
+mtexdata forsterite silent
 
-% restrict it to a subregion of interest.
-ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
+% restrict it to a subregion of interest
+ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3))
 
 % make a phase plot
 plot(ebsd,'micronbar','off')
 
-%% Basic grain reconstruction
-%
-% We see that there are a lot of not indexed measurements. For grain
-% reconstruction, we have  three different choices how to deal with these
-% unindexed regions:
-%
-% # leave them unindexed
-% # assign them to the surrounding grains
-% # a mixture of both, e.g., assign small notindexed regions to the
-% surrounding grains but keep large notindexed regions
-%
-% The extent to which unindexed pixels are assigned is controlled by the
-% parameter |'alpha'|. Roughly speaking this parameter is the radius, in
-% pixels, of the smallest unindexed region that will not be entirely
-% assigned to surrounding grains. The default of this value is
-% |alpha = 3.1|.
-%
-% The second parameter |'angle'| involved in grain reconstruction is the
-% threshold misorientation angle indicating a grain boundary. By default,
-% this value is set to |angle = 10*degree|.
-%
-% Finally, the option |'minPixel'| controls the minimum size of a
-% reconstructed grain. Grains with less pixels are considered as not
-% indexed.
-%
-% All grain reconstruction methods in MTEX are accessible via the command 
-% <EBSD.calcGrains.html |calcGrains|> which takes as input an EBSD data set
-% and returns a list of grain.
+%%
+% The colours are the phases - forsterite, enstatite and diopside - and the
+% white speckle between them is the fourth phase in the list, the
+% measurements whose diffraction pattern could not be indexed. There are
+% many of them: one measurement in five on this map is notIndexed, and most
+% of them sit exactly where the grain boundaries will end up.
 
-[grains, ebsd] = calcGrains(ebsd,'alpha',2.1,'angle',10*degree,'minPixel',5);
-grains
+%% A first reconstruction
+%
+% |calcGrains| takes the map and returns the grains, with all three settings
+% left at their defaults.
+
+grains = calcGrains(ebsd,'angle',10*degree)
 
 %%
-% The reconstructed grains are stored in the variable |grains|. To
-% visualize the grains we can plot its boundaries by the command
-% <grainBoundary.plot.html |plot|>.
+% Each grain is one entry of this list, with its own phase, mean
+% orientation, size and shape. The boundaries between them are a separate
+% object, |grains.boundary|, which we plot on top of the map.
 
-% start override mode
+plot(ebsd,'micronbar','off')
 hold on
-
-% plot the boundary of all grains
-plot(grains.boundary,'linewidth',1.5,'micronbar','off')
-
-% stop override mode
+plot(grains.boundary,'linewidth',1.5)
 hold off
 
-%% Grain Boundary Smoothing 
-% 
-% Due to the gridded nature of the EBSD measurement the reconstructed grain
-% boundaries often suffer from the staircase effect. This can be reduced by
-% smoothing the grain boundaries using the command <grain2d.smoothBoundary.html
-% |smooth|>
+%%
+% Two things are worth noticing. The boundaries are drawn between
+% measurement points and never through them, so they follow the measurement
+% grid in steps. And although a fifth of the map is notIndexed, only one
+% grain is - the long white bar right of centre. The unindexed pixels
+% everywhere else have been handed to the grains beside them. That is the
+% default behaviour, and the section on |'alpha'| below is where it is
+% decided.
 
+%% The threshold angle
+%
+% The option |'angle'| sets the misorientation angle above which two
+% neighbouring measurements are separated by a boundary. Its default is 10
+% degrees, and values between 10 and 15 degrees are long habit rather than a
+% measurement - see the discussion in <Grains.html the chapter opener>.
+%
+% On a recrystallised map like this one the exact value hardly matters.
+
+for threshold = [2 5 10 15]*degree
+  g = calcGrains(ebsd,'angle',threshold);
+  fprintf('%2d degree threshold: %3d indexed grains\n',...
+    round(threshold./degree),length(g('indexed')));
+end
+
+%%
+% Between 5 and 15 degrees the number of grains moves by less than a tenth,
+% and only at 2 degrees does it start to climb. The reason is that the
+% misorientations between neighbouring measurements here are either small,
+% well below any of these thresholds, or large enough to exceed all of them;
+% there is little in between for the threshold to decide about. That is a
+% property of the material rather than of the algorithm, and it stops being
+% true as soon as the material is deformed - which is what the second half
+% of this page is about.
+
+%% Measurements that were not indexed
+%
+% A notIndexed measurement is not a hole in the map. It is a measurement
+% like any other whose phase happens to be notIndexed, so a connected patch
+% of them forms a grain, and that grain has a boundary with everything
+% around it.
+%
+% Whether this is what you want depends on the patch. A wide unindexed
+% region is genuinely a part of the specimen you know nothing about and
+% should stay a region of its own. A one pixel wide seam along a grain
+% boundary is not - it is the indexing failing where two lattices overlap in
+% the diffraction pattern, and leaving it in place puts a spurious grain
+% between every pair of neighbours.
+%
+% The option |'alpha'| draws the line between the two. Unindexed regions
+% narrower than about |2*alpha| pixels are absorbed by the surrounding
+% grains, wider ones survive. The default is |alpha = 3.1|.
+
+for alpha = [0 1 3.1 6]
+  g = calcGrains(ebsd,'angle',10*degree,'alpha',alpha);
+  fprintf('alpha = %3.1f: %4d grains, %4d of them notIndexed\n',...
+    alpha,length(g),length(g('notIndexed')));
+end
+
+%%
+% With |alpha = 0| nothing is absorbed. The unindexed pixels then contribute
+% a thousand grains of their own, five times the number of real grains the
+% default finds, and because their seams also cut through regions that
+% should be single grains the indexed count rises from 210 to 525. One pixel
+% of closing already removes almost all of them, the default keeps only the
+% one wide unindexed region, and |alpha = 6| absorbs that one too.
+%
+% The effect is easiest to see when the two extremes are drawn on the same
+% part of the map.
+
+region = [5 2 2 1.5]*10^3;
+ebsdSub = ebsd(inpolygon(ebsd,region));
+
+grainsSharp = calcGrains(ebsd,'angle',10*degree,'alpha',0);
+
+newMtexFigure('layout',[1,2])
+
+plot(ebsdSub,'micronbar','off')
+hold on
+plot(grainsSharp.boundary,'linewidth',1.5)
+hold off
+xlim(region(1)+[0 region(3)]), ylim(region(2)+[0 region(4)])
+
+nextAxis
+plot(ebsdSub,'micronbar','off')
+hold on
+plot(grains.boundary,'linewidth',1.5)
+hold off
+xlim(region(1)+[0 region(3)]), ylim(region(2)+[0 region(4)])
+
+%%
+% On the left, at |alpha = 0|, every white pixel is fenced off on its own and
+% the seams running through the blue forsterite cut it into pieces. On the
+% right, at the default, the white pixels are still there and still not
+% indexed, but they no longer separate anything: what is left are the
+% boundaries between the phases and between the grains. The isolated orange
+% pixels keep their boundary on both sides, because they were indexed - they
+% are diopside, and |'minPixel'| below is what deals with them.
+
+%% Grains that are too small to mean anything
+%
+% Even with the unindexed seams absorbed, a threshold criterion produces
+% grains of one, two or three pixels wherever a few measurements are
+% mis-indexed. They are noise, they are numerous, and because most grain
+% statistics are counts they distort every one of them. The option
+% |'minPixel'| removes them: an indexed grain with fewer pixels than this is
+% not returned, and its measurements are marked notIndexed instead.
+
+for minPixel = [1 5 10]
+  g = calcGrains(ebsd,'angle',10*degree,'minPixel',minPixel);
+  fprintf('minPixel = %2d: %3d indexed grains, holding %4.1f%% of the indexed pixels\n',...
+    minPixel,length(g('indexed')),100*sum(g('indexed').numPixel)/nnz(ebsd.isIndexed));
+end
+
+%%
+% More than half of the grains on this map consist of fewer than five
+% pixels, and together they hold one measurement in a hundred. Removing them
+% changes the grain statistics a great deal and the microstructure not at
+% all.
+
+%% Smoothing the boundaries
+%
+% Because the boundaries run between measurement points, they follow the
+% measurement grid in steps - the staircase effect. This is a property of
+% the reconstruction, not of the material, and it is worth removing before
+% anything is measured on the boundary itself, such as its length or its
+% direction. The command is <grain2d.smoothBoundary.html |smoothBoundary|>,
+% and its argument is the number of smoothing iterations.
+
+grains = calcGrains(ebsd,'angle',10*degree,'minPixel',5);
 grains = smoothBoundary(grains,5);
 
-% display the result
-plot(ebsd,'micronbar','off')
-hold on
-plot(grains.boundary,'linewidth',1.5)
-hold off
-
-%% Adapting the Alpha Parameter
-% Increasing the parameter |'alpha'| larger not indexed regions are
-% associated to grains.
-
-% reload the data
-mtexdata forsterite silent
-ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
-
-[grains, ebsd] = calcGrains(ebsd,'alpha',6,'angle',10*degree,'minPixel',3);
-grains = smoothBoundary(grains,3);
-
-% plot the boundary of all grains
 plot(ebsd,'micronbar','off')
 hold on
 plot(grains.boundary,'linewidth',1.5)
 hold off
 
 %%
-% On the other setting |alpha = 0| the grains consists exactly of the
-% measurement pixels
+% The steps are gone and the boundaries have kept their course. How far this
+% may be pushed before the shape itself starts to change, and which of the
+% available smoothing methods to use, is the subject of
+% <GrainSmoothing.html Grain Boundary Smoothing>.
 
-% reload the data
-mtexdata forsterite silent
-ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
+%% Keeping map and grains together
+%
+% |calcGrains| returns a second output: the map again, with one property
+% added, |grainId|, telling for every measurement which grain it went into.
+% Almost everything in this chapter that relates the two descriptions of the
+% specimen needs it, so it is worth asking for from the start.
 
-[grains, ebsd] = calcGrains(ebsd,'alpha',0,'angle',10*degree);
+[grains, ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',5);
 
-% plot the boundary of all grains
-plot(ebsd,'micronbar','off')
-hold on
-plot(grains.boundary,'linewidth',1.5)
-hold off
+% the measurements inside the largest grain
+[~,id] = max(grains.numPixel);
+ebsd(grains(id))
+
+%%
+% Two remarks on this second output. The measurements it holds are the same
+% measurements, but a pixel that was absorbed by |'alpha'|, or dropped by
+% |'minPixel'|, has had its phase rewritten, so it is not the map you
+% imported and reconstructing from it a second time is not meaningful. And
+% |grainId| is what <SelectingGrains.html Selecting Grains> uses throughout:
+% |ebsd(grains(id))| above is nothing but a lookup on it.
 
 %% Grain Reconstruction in heavily deformed microstructures
 %
@@ -243,12 +334,3 @@ hold off
 % second way of turning a criterion into grains, by clustering the map
 % instead of taking connected components, is described in
 % <GrainReconstructionMCL.html Markovian Clustering>.
-
- 
-
-
-
-
-
-
-
