@@ -1,24 +1,21 @@
 %% Tilt and Twist Boundaries
 %
 %%
-% If a material deforms through the movement of dislocations, rearrangement
-% of dislocations to a low-energy configuration may happen during
-% deformation (i.e. in slow, geologic deformation) or or afterwards (in
-% many metals). In any case, the arrangement of dislocation walls can lead
-% to so-called subgrains boundaries. If such a boundary is composed of edge
-% dislocations, it is called a tilt boundary and the rotation axis relating
-% both parts of the grain at each side can be expected to be within the
-% boundary plane (ideally parallel to the edge dislocation line). If the
-% boundary is composed of screw dislocations, the rotation axis should be
-% normal to the boundary. Between those end-members, there are general
-% boundaries where the rotation axis is not easily related to the type of
-% dislocations unless further information is available.
+% A subgrain boundary is a wall of dislocations. Which dislocations they are
+% is visible in the misorientation across it, because the two extreme cases
+% differ in where the misorientation axis points:
 %
-% In this chapter we discuss the computation of the misorientation axes at
-% subgrain boundaries and discuss whether they vote for twist or tilt
-% boundaries. We start by importing an sample EBSD data set and computing
-% all subgrain boundaries as it is described in more detail in the chapter
-% <SubGrainBoundaries.html Subgrain Boundaries>.
+% * a wall of *edge* dislocations rotates the lattice about an axis lying
+% *in* the boundary plane - a *tilt boundary*
+% * a wall of *screw* dislocations rotates it about the boundary *normal* -
+% a *twist boundary*
+%
+% Real boundaries lie between the two. This page computes the misorientation
+% axes of the subgrain boundaries of a map and asks what they say, and it
+% ends with what a two dimensional section can and cannot decide.
+%
+% The subgrain boundaries themselves come from a reconstruction with two
+% thresholds, as described in <SubGrainBoundaries.html Subgrain Boundaries>.
 
 % load some test data
 plottingConvention.default('y↑→x');
@@ -55,16 +52,17 @@ plot(grains('fo').innerBoundary,'linewidth',1.5,'edgeAlpha',alpha,'edgeColor','b
 hold off
 
 %%
-% In the above plot we have marked all subgrain boundaries in blue and
-% adjusted the transparency value according to the misorientation angle.
+% The blue lines are the subgrain boundaries, drawn the more opaque the
+% larger their misorientation. They are not scattered at random: they run in
+% families across the interiors of the larger grains, which is what
+% dislocation walls look like.
+
+%% Misorientation axes in crystal coordinates
 %
-%% Misorientation Axes
-%
-% When analyzing the misorientation axes of the subgrain boundary
-% misorientations we need to distinguish whether we look at the
-% misorientation axes in crystal coordinates or in specimen coordinates.
-% Lets start with the misorientation axes in crystal coordinates which can
-% directly be computed by the command <orientation.axis.html |axis|>.
+% The axis of a subgrain boundary misorientation, expressed in the crystal
+% frame, is a statement about the lattice - it is the direction the
+% dislocations run along, for a tilt wall. It comes straight from the
+% misorientation.
 
 % extract the Forsterite subgrain boundaries
 subGB = grains('fo').innerBoundary;
@@ -73,10 +71,8 @@ subGB = grains('fo').innerBoundary;
 plot(subGB.misorientation.axis,'fundamentalRegion','figSize','small')
 
 %%
-% Obviously from the above plot it is not easy to judge about preferred
-% misorientation axes. We get more insight if we <DensityEstimation.html
-% compute the density distribution> of the misorientation axes and look for
-% <S2FunOperations.html#4 local extrema>.
+% Thousands of dots say little. A <DensityEstimation.html density estimate>
+% of the same axes, and its <S2FunOperations.html#4 local maxima>, say more.
 
 % compute the density distribution of misorientation axes
 density = calcDensity(subGB.misorientation.axis,'halfwidth',3*degree);
@@ -89,23 +85,31 @@ mtexColorbar
 [~,hkl] = max(density,'numLocal',2); round(hkl)
 
 %%
-% We find two preferred misorientation axes - (001) and (071). *TODO*: can
-% this be interpreted?
-% 
-%% The misorientation axis in specimen coordinates
-% The computation of the misorientation axis in specimen coordinates is a
-% little bit more complicated as it is impossible using only the
-% misorientation. In fact we require the adjacent orientations on both
-% sides of the subgrain boundaries. We can find those by making use of the
-% |ebsdId| stored in the grain boundaries. The command
+% Two directions stand out, (001) and (071) - rotations about the c axis,
+% and about an axis close to b. That the axes cluster at all is the result:
+% a few kinds of dislocation wall account for most of the subgrain
+% boundaries in this rock.
+%
+% Attributing an axis to a particular slip system is a step further, and it
+% is a question about the material rather than about the data. The axis of a
+% tilt wall is the line direction of the edge dislocations that build it, so
+% naming the system means knowing which systems can be active in olivine at
+% the conditions this rock saw.
+
+%% Misorientation axes in specimen coordinates
+%
+% The same axes in the frame of the specimen say something else: how the
+% walls are oriented in space, which relates to the geometry of the flow
+% rather than to the lattice. This cannot be read from the misorientation
+% alone, since a misorientation is a crystal to crystal rotation. The two
+% orientations either side of each segment are needed, and |ebsdId| leads to
+% them.
 
 oriGB = ebsd('id',subGB.ebsdId).orientations
 
 %%
-% results in a $N \times 2$ matrix of orientations with rows corresponding
-% to the boundary segments and two columns for both sides of the boundary.
-% The misorientation axis in specimen coordinates is again computed by the
-% command <orientation.axis.html |axis|>
+% One row per segment, two columns for the two sides. Their misorientation
+% axis in specimen coordinates:
 
 axS = axis(oriGB(:,1),oriGB(:,2),'antipodal')
 
@@ -113,11 +117,11 @@ axS = axis(oriGB(:,1),oriGB(:,2),'antipodal')
 plot(axS,'MarkerAlpha',0.2,'MarkerSize',2,'figSize','small')
 
 %%
-% We have used here the option |antipodal| as we have no fixed ordering of
-% the grains at the two sides of the grain boundaries. For a more
-% quantitative analysis we again compute the corresponding density
-% distribution and find the preferred misorientation axes in specimen
-% coordinates
+% The flag |'antipodal'| is needed because the two sides of a boundary come
+% in no particular order: swapping them inverts the misorientation and
+% reverses the axis, and both answers must count as the same axis.
+%
+% Again the density says more than the dots.
 
 density = calcDensity(axS,'halfwidth',5*degree);
 plot(density,'figSize','small')
@@ -126,31 +130,21 @@ mtexColorbar
 [~,pos] = max(density)
 annotate(pos)
 
-%% Tilt and Twist Boundaries
+%% What a section can decide
 %
-% Subgrain boundaries are often assumed to form during deformation by the
-% accumulation of edge or screw dislocations. In the first extreme case of
-% exclusive edge dislocations the misorientation axis is parallel to the
-% deformation line and within the boundary plane. Such boundaries are
-% called *tilt boundaries*. In the second extreme case of exclusive screw
-% dislocations the misorientation axis is the screw axis and is parallel to
-% the boundary normal. Such boundaries are called *twist boundaries*.
+% In two dimensions the boundary plane is not observed - only its trace on
+% the polished surface. Since the plane is unknown, tilt and twist cannot be
+% told apart in general. One half of the question can still be answered.
 %
-% In the case of 2d-EBSD data one usually has not the full boundary
-% information, but only the trace of the boundary with the measurement
-% surface. Hence, it is impossible to distinguish tilt and twist
-% boundaries. However, for twist boundaries misorientation axis must be
-% normal to the boundary trace. This means, if the misorientation axis lays
-% in the measurement plane and normal to the boundary trace, the boundary
-% is quite likely to be a twist boundary. At the other hand, if the
-% misorientation axis is parallel to the trace of a boundary, the boundary
-% is quite likely to be a tilt boundary. We can be easily check the latter
-% situation from our EBSD data, which allows us to exclude certain
-% boundaries to be twist boundaries and to be most likely tilt boundaries
-% To do so, we colorize in the following plot all subgrain boundaries
-% according to the angle between the boundary trace and the misorientation
-% axis. Blue subgrain boundaries are very likely tilt boundaries, while red
-% subgrain boundaries are can be either tilt or twist boundaries.
+% A twist boundary has its misorientation axis along the boundary normal,
+% which is perpendicular to every direction in the plane and in particular
+% to the trace. So an axis *parallel to the trace* rules a twist boundary
+% out and makes a tilt boundary likely. An axis perpendicular to the trace
+% leaves both open, since the trace is only one direction of the plane.
+%
+% Colouring the subgrain boundaries by the angle between their trace and
+% their misorientation axis therefore separates the likely tilt boundaries,
+% in blue, from the undecided ones in red.
 
 plot(ebsd('fo'),color,'faceAlpha',0.5,'figSize','large')
 
@@ -167,3 +161,17 @@ mtexColorMap blue2red
 mtexColorbar
 
 hold off
+
+%%
+% Both colours are present, and where a subgrain boundary is long and
+% straight it holds one of them along its whole length - those are walls
+% whose character can be read off. The speckle in between is something else:
+% isolated one and two segment features, changing colour from one to the
+% next. Statistically the difference is modest, an angle scatter of 19
+% degrees within the components of 20 segments or more against 22 degrees
+% over the map, so it is the long boundaries that are worth reading and not
+% the average.
+%
+% Deciding the red ones needs the boundary plane, which means either three
+% dimensional data or an argument from many boundaries at once - see
+% <BoundaryNormalDistribution.html Grain Boundary Normal Distribution>.
