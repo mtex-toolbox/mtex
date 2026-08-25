@@ -1,17 +1,17 @@
 %% Vectors
 %
 %%
-% Almost everything in texture analysis is eventually a direction. A crystal
-% axis, the normal of a lattice plane, the direction a rolling mill pushed
-% the metal, the direction a diffracted beam left the sample - all of them
-% are answers to the question "which way?", and none of them cares how long
-% the arrow is.
+% Many quantities in texture analysis are ultimately directions: a
+% crystallographic direction, a lattice-plane normal, the rolling direction
+% of a sheet, or the direction of a diffracted beam. They answer "which
+% way?" rather than "how far?".
 %
-% This is why directions here live on a sphere. Fix the length at one and a
-% direction becomes a point on the unit sphere, so a collection of
-% directions becomes a cloud of points and the natural way to look at it is
-% a projection of that sphere onto the page. Every pole figure you will ever
-% plot is exactly that.
+% MTEX represents both directions and magnitude-bearing three-dimensional
+% vectors with <vector3d.vector3d.html |vector3d|>. When only direction
+% matters, divide out the length: a unit direction is a point on the sphere,
+% and a collection of directions is a cloud of points. A spherical plot uses
+% this direction and not the stored length. Pole figures use the same
+% spherical geometry for crystallographic directions.
 
 % a hundred random directions and the three specimen axes
 v = vector3d.rand(100);
@@ -22,18 +22,20 @@ plot([vector3d.X,vector3d.Y,vector3d.Z],'labeled','backgroundColor','w')
 hold off
 
 %%
-% Only half the sphere is drawn above. That is not laziness - see the note
-% on axes below.
+% The option |'upper'| hides directions on the lower hemisphere; it does not
+% by itself identify a direction with its negative. For unoriented axes the
+% lower hemisphere is genuinely redundant, as the next section explains.
 %
 %% Directions and axes are not the same thing
 %
 % A *direction* distinguishes its two ends: north is not south. An *axis*
-% does not. The normal of a lattice plane is an axis, because the plane has
-% no preferred side, and so is the direction of a twofold rotation. In MTEX
-% this distinction is the |antipodal| flag, and setting it changes real
-% answers: the angle between two axes is never obtuse, the mean of a set of
-% axes is not the mean of the same set read as directions, and a density
-% estimated from axes is symmetric under inversion by construction.
+% does not. Examples include the axis of a twofold rotation and a plane
+% normal when its two signs are physically equivalent, as in a conventional
+% kinematic pole figure under Friedel's law. In MTEX this distinction is the
+% |antipodal| flag. Setting it changes real answers: the angle between two
+% axes is never obtuse, the mean of a set of axes is not the mean of the same
+% set read as directions, and a density estimated from axes is symmetric
+% under inversion by construction.
 %
 % Forgetting the flag is one of the more common ways to get a plausible
 % wrong number, because nothing complains. When a quantity is an axis, say

@@ -1,9 +1,9 @@
 %% Vector Operations
 %
 %%
-% Directions are added, scaled and multiplied like ordinary numbers, and
-% every operation works on a whole list of directions at once. That is the
-% reason a loop over vectors is almost never needed in MTEX.
+% Three-dimensional vectors can be added, scaled, compared and combined, and
+% every operation works on a whole list at once. That is why a loop over
+% vectors is usually unnecessary in MTEX.
 
 plottingConvention.default('y↑→x');
 
@@ -15,18 +15,22 @@ plottingConvention.default('y↑→x');
 v = vector3d.X + 2*vector3d.Y
 
 %%
-% <vector3d.plus.html |+|>, <vector3d.minus.html |-|>,
-% <vector3d.times.html |*|>, the inner product <vector3d.dot.html |dot|> and
-% the cross product <vector3d.cross.html |cross|> all behave as in linear
-% algebra.
+% <vector3d.plus.html |+|> and <vector3d.minus.html |-|> add or subtract
+% Cartesian components. <vector3d.mtimes.html |*|> scales a vector by a
+% scalar, while <vector3d.times.html |.*|> performs componentwise scaling or
+% multiplication. The inner product <vector3d.dot.html |dot|> and cross
+% product <vector3d.cross.html |cross|> have their usual linear-algebra
+% meanings.
 
 u = dot(v,vector3d.Y) * vector3d.Y + 2 * cross(v,vector3d.Z)
 
 %% Angles
 %
-% The <vector3d.angle.html |angle|> between two directions is the central
-% measurement in texture analysis - how far a lattice plane is tilted out of
-% the sheet plane, how far two grains are misoriented.
+% The <vector3d.angle.html |angle|> between two directions is a central
+% measurement in texture analysis - for example, how far a lattice-plane
+% normal is tilted away from the sheet normal. The angle between complete
+% crystal orientations is a different operation, introduced in the
+% <MisorientationTheory.html misorientation chapter>.
 
 angle(vector3d.X,vector3d.Y) ./ degree
 
@@ -60,10 +64,12 @@ dot(normalize(v),vector3d.Y)
 % || <vector3d.angle.html angle(v1,v2)> || angle between two directions ||
 % || <vector3d.dot.html dot(v1,v2)> || inner product ||
 % || <vector3d.cross.html cross(v1,v2)> || cross product ||
+% || <vector3d.mtimes.html a*v> || multiplication by a scalar ||
+% || <vector3d.times.html a.*v> || componentwise multiplication or scaling ||
 % || <vector3d.norm.html norm(v)> || length ||
 % || <vector3d.normalize.html normalize(v)> || length scaled to one ||
 % || <vector3d.orthProj.html orthProj(v,N)> || component orthogonal to |N| ||
-% || <vector3d.perp.html perp(v)> || a direction orthogonal to all of |v| ||
+% || <vector3d.perp.html perp(v)> || best-fit direction orthogonal to a list ||
 % || <vector3d.sum.html sum(v)> || sum over the list ||
 % || <vector3d.mean.html mean(v)> || mean direction of the list ||
 % || <vector3d.polar.html polar(v)> || the two spherical angles ||
@@ -91,27 +97,40 @@ w = w + v
 % <ListsAndIndexing.html Lists and Indexing>.
 
 fname = fullfile(mtexDataPath,'vector3d','vectors.txt');
-v = vector3d.load(fname,'ColumnNames',{'polar angle','azimuth angle'})
+v = vector3d.load(fname,'ColumnNames',{'polar angle','azimuth angle'});
 
 %%
 
-scatter(v(v.theta < 60*degree),'grid','on')
+selected = v.theta < 60*degree;
+scatter(v(selected),'grid','on')
 
 %%
-% The outer ring of the projection is empty now. It held the 236 directions
-% that lie more than $60^\circ$ away from the Z axis.
+% The outer ring of the projection is empty now. The number of omitted
+% directions is
+
+sum(~selected)
+
+%%
+% so 236 of the 1000 directions lie at least $60^\circ$ away from the Z axis.
 %
 %% Averaging a List
 %
 % <vector3d.mean.html |mean|> averages the coordinates entry by entry, so it
-% points into the middle of the list.
+% points towards the centre of the list.
 
-mean(v)
+m = mean(v)
 
 %%
-% Its length says how tightly the list is clustered: unit directions all
-% pointing the same way average to length one, a list spread over the sphere
-% to something much shorter - here 0.72. Directions pointing opposite ways
+% Because these input vectors have unit length, the length of their mean is
+% the mean resultant length:
+
+norm(m)
+
+%%
+% Its value, about 0.72, summarizes directional clustering. Identical unit
+% directions give one; a dispersed or mutually cancelling set gives a
+% shorter result. For vectors of unequal length, normalize them first if this
+% directional statistic is intended. Directions pointing opposite ways
 % cancel outright. For axes, where |v| and |-v| mean the same thing, that
 % cancellation is wrong and the mean has to be taken with the |'antipodal'|
 % flag, see <VectorsAxes.html Axes and Antipodal Symmetry>.

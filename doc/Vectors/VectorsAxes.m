@@ -2,9 +2,9 @@
 %
 %%
 % A *direction* distinguishes its two ends - north is not south. An *axis*
-% does not. The normal of a lattice plane is an axis, because the plane has
-% no preferred side, and so is the axis of a twofold rotation, because
-% turning by $180^\circ$ one way and the other gives the same result.
+% does not. A plane normal is an axis when the two sides of the plane are
+% physically equivalent. The rotation axis of a twofold rotation is another
+% example: reversing that axis describes the same $180^\circ$ rotation.
 %
 % MTEX stores both as a <vector3d.vector3d.html |@vector3d|> and keeps the
 % difference in a single flag, |antipodal|. Setting it means: |v| and |-v|
@@ -24,8 +24,9 @@ plot([v1,v2],'label',{'v_1','v_2'},'grid','on')
 
 %%
 % They plot on opposite hemispheres, |v1| on the upper one and |v2| on the
-% lower one. Read as axes, |v2| is the same axis as |-v2|, which points
-% upwards, and both mark the same spot.
+% lower one. Read as an axis, |v2| is represented on the upper hemisphere by
+% |-v2|. It does not become the same axis as |v1|; the two upper-hemisphere
+% points remain separated.
 
 plot([v1,v2],'label',{'v_1','v_2'},'antipodal','grid','on')
 
@@ -50,8 +51,9 @@ angle(v1,v2,'antipodal') / degree
 %
 %% Attaching the Flag to the Data
 %
-% Rather than repeating the option at every command, mark the data itself
-% once. Every operation that follows honours the flag.
+% Rather than repeating the option at every symmetry-aware command, mark the
+% data itself once. Operations such as |angle|, |mean| and plotting then
+% honour the flag.
 
 v2.antipodal = true;
 
@@ -60,8 +62,8 @@ angle(v1,v2) / degree
 %% Densities of Axes
 %
 % <VectorsDensityEstimation.html Density estimation> turns a list of
-% directions into a function on the sphere. For directions, that function
-% can be anything.
+% directions into a function on the sphere. A density of directed data need
+% not be invariant under $v \mapsto -v$.
 
 v = vector3d.rand(100);
 density = v.calcDensity;
@@ -77,12 +79,13 @@ plot(density,'complete')
 
 %% Experimental Pole Figures
 %
-% Diffraction cannot tell a lattice plane from its back side - this is
-% Friedel's law - so measured pole figures always carry antipodal symmetry.
-% MTEX therefore plots pole figure data on the upper hemisphere only, and
-% reads any direction annotated to such a plot as an axis.
+% Under Friedel's law, conventional kinematic diffraction gives the same
+% intensity for opposite reflections. Pole figures measured in this way
+% therefore carry antipodal symmetry. MTEX plots such pole-figure data on
+% the upper hemisphere only and reads a direction annotated there as an
+% axis.
 
-mtexdata dubna
+mtexdata dubna silent
 
 CS = pf.CS;
 

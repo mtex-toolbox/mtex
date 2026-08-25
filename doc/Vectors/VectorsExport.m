@@ -9,9 +9,10 @@
 
 plottingConvention.default('y↑→x');
 
-v = vector3d.rand(5);
+v = vector3d.byPolar((10:20:90)*degree,(-80:40:80)*degree);
+v = v(:);
 
-fname = fullfile(tempdir,'vectors.txt');
+fname = [tempname,'.txt'];
 
 %% Cartesian Coordinates
 %
@@ -49,11 +50,12 @@ type(fname)
 
 vNew = vector3d.load(fname,'ColumnNames',{'x','y','z'});
 
-max(angle(v,vNew)) ./ degree
+max(angle(v(:),vNew(:))) ./ degree
 
 %%
 % The directions come back to within a few $10^{-5}$ degree. What limits the
-% roundtrip is the six digits written to the file, not the export itself.
+% roundtrip is the six significant digits written by the default numeric
+% format, not the in-memory vectors.
 
 delete(fname)
 

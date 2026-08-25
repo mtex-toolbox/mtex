@@ -15,7 +15,7 @@ plottingConvention.default('y↑→x');
 
 fname = fullfile(mtexDataPath,'vector3d','vectors.txt');
 
-v = vector3d.load(fname,'ColumnNames',{'polar angle','azimuth angle'})
+v = vector3d.load(fname,'ColumnNames',{'polar angle','azimuth angle'});
 
 %%
 % The column names are what makes the file readable, and they are what
@@ -34,8 +34,13 @@ v = vector3d.load(fname,'ColumnNames',{'polar angle','azimuth angle'},...
 
 %% Looking at the Result
 %
-% A thousand directions are too many to read off a table, so the first thing
-% to do with them is a plot. A scatter plot shows the individual directions,
+% Confirm the number of imported rows before plotting:
+
+length(v)
+
+%%
+% A thousand directions are too many to inspect in a table. A scatter plot
+% shows the individual directions,
 
 scatter(v,'upper')
 

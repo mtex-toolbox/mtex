@@ -3,9 +3,9 @@
 %%
 % Numerical work on the sphere needs a set of directions spread over it as
 % evenly as possible - to integrate a spherical function, to sample one, or
-% to draw it. There is no arrangement of more than a handful of points that
-% is perfectly even, which is why several constructions exist and why they
-% do not agree.
+% to draw it. Unlike a plane, a sphere has no rectangular grid with uniform
+% spacing everywhere. Grid constructions therefore make different tradeoffs
+% between spacing, equal-area cells and a regular data structure.
 
 plottingConvention.default('y↑→x');
 
@@ -14,9 +14,10 @@ plottingConvention.default('y↑→x');
 % MTEX offers the <regularS2Grid.html |regularS2Grid|>, the
 % <equispacedS2Grid.html |equispacedS2Grid|>, the
 % <HEALPixS2Grid.html |HEALPixS2Grid|> and the
-% <fibonacciS2Grid.fibonacciS2Grid.html |fibonacciS2Grid|>. All of them are
-% asked for a resolution, i.e. for the mean distance between neighbouring
-% points.
+% <fibonacciS2Grid.fibonacciS2Grid.html |fibonacciS2Grid|>. Each accepts a
+% target angular |resolution|, but the constructors interpret that target
+% according to their own geometry; it is not a guarantee that every pair of
+% neighbours has exactly that separation.
 
 % a regular grid in the two spherical angles
 grid{1} = regularS2Grid('resolution',7*degree);
@@ -30,7 +31,7 @@ grid{3} = HEALPixS2Grid('resolution',7*degree);
 % the Fibonacci grid
 grid{4} = fibonacciS2Grid('resolution',7*degree);
 
-names = {'regular','equispaced','HealPix','Fibonacci'};
+names = {'regular','equispaced','HEALPix','Fibonacci'};
 
 %%
 % Seen from above they differ most at the pole.
@@ -45,17 +46,24 @@ for k = 2:4
 end
 
 %%
+% The number of nodes in the four grids is
+
+cellfun(@length,grid)
+
+%%
 % The regular grid takes the same number of azimuth steps on every circle of
-% latitude, so its points crowd together towards the pole and it needs 1404
-% of them where the others need about 800. The other three keep the spacing
-% roughly constant and drop points as the circles get shorter.
+% latitude, so its points crowd together towards the pole and it uses 1404
+% nodes here, compared with 812, 768 and 827. The other three keep their node
+% density roughly constant as circles of latitude get shorter.
 
 %% Comparison of Uniformity
 %
-% How even a grid really is can be measured rather than eyeballed.
-% <VectorsDensityEstimation.html Density estimation> smooths the points into
-% a function on the sphere, and for a perfectly uniform grid that function
-% would be the constant $1$.
+% Node uniformity can be diagnosed rather than only eyeballed.
+% <VectorsDensityEstimation.html Density estimation> gives every node equal
+% weight and smooths the nodes into a function on the sphere. A uniform node
+% density would be close to the constant $1$. This tests equal-weight node
+% placement; it does not by itself test the accuracy of a particular
+% quadrature rule.
 
 for k = 1:4
   d(k) = calcDensity(grid{k},'halfwidth',5*degree);
@@ -82,12 +90,15 @@ norm(d-1).'
 sum(abs(d-1)).'
 
 %%
-% Two orders of magnitude separate the regular grid from the other three,
-% and the Fibonacci grid is the most even of them. That does not make the
-% regular grid useless: its points sit on a rectangular mesh in the two
-% spherical angles, which is what a contour or surface plot needs, and what
-% <regularS2Grid.html |regularS2Grid|> exists for. For integration and for
-% sampling, use one of the other three.
+% For this resolution and smoothing width, roughly two orders of magnitude
+% separate the regular grid from the other three, and the Fibonacci grid has
+% the smallest deviations. That does not make the regular grid useless: its
+% points sit on a rectangular mesh in the two spherical angles, which is
+% what a contour or surface plot needs, and what
+% <regularS2Grid.html |regularS2Grid|> exists for. For integration or
+% sampling where nearly uniform, equal-weight nodes are wanted, choose one
+% of the other constructions and check whether the downstream method needs
+% its own quadrature weights or grid structure.
 %
 %% Next
 %

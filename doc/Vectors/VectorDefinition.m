@@ -1,10 +1,11 @@
 %% Defining Three Dimensional Vectors
 %
 %%
-% A direction in the specimen is a variable of type
-% <vector3d.vector3d.html |@vector3d|>. It is stored as the three Cartesian
-% coordinates $x$, $y$, $z$ of a point, and everything that follows -
-% angles, rotations, pole figures - is computed from those three numbers.
+% A three-dimensional vector is represented by a variable of type
+% <vector3d.vector3d.html |@vector3d|>. It stores the Cartesian components
+% $x$, $y$, $z$, including their length. When the object represents only a
+% direction, positive multiples are equivalent and a spherical plot uses
+% the normalized components.
 
 plottingConvention.default('y↑→x');
 
@@ -44,12 +45,16 @@ v.x
 
 v.x = 0
 
+%%
+% The assignment changed |v| to $(0,2,3)$. Direct property assignment does
+% not preserve either its length or its direction.
+
 %% Polar Coordinates
 %
 % A direction is equally well described by two angles: the *polar angle*
 % $\theta$, measured away from the Z axis, and the *azimuth angle* $\rho$,
 % measured in the XY plane away from the X axis. This is what
-% <vector3d.byPolar.html |vector3d.byPolar|> takes.
+% <vector3d.byPolar.html |vector3d.byPolar|> takes; it returns a unit vector.
 
 v = vector3d.byPolar(60*degree,45*degree)
 
@@ -140,4 +145,4 @@ plot(v,'how2plot',plottingConvention('z←↑y'),'grid')
 % <VectorsOperations.html Operations> is the arithmetic: angles, dot and
 % cross products, means over a list. <VectorsAxes.html Axes> explains when a
 % direction is really an axis, i.e. when |v| and |-v| are the same thing,
-% which is the case for most crystallographic directions.
+% as for lattice-plane normals and conventional diffraction poles.
