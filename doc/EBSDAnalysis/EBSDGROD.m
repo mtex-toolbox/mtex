@@ -1,21 +1,17 @@
 %% Grain Reference Orientation Deviation (GROD)
 %
 %%
-% The grain reference orientation deviation is the misorientation
-% $\mathrm{GROD}_{i,j}$ between the orientation $o_{i,j}$ at position
-% $(i,j)$ and the reference or mean orientation $o_g$ of the grain the
-% position $(i,j)$ belongs to, i.e.,
+% The grain reference orientation deviation asks how far each measurement
+% has turned away from the average orientation of its own grain. Where
+% <EBSDKAM.html KAM> compares a point with its immediate neighbours and so
+% measures how sharply the lattice is bent, the GROD compares it with the
+% whole grain and so measures how much the grain has been deformed in
+% total. Both the angle of that deviation and the axis it turns about carry
+% information, and the axis turns out to say more.
 %
-% $$ \mathrm{GROD}_{i,j} = \mathbf S_{i,j} \cdot \mathrm{inv}(o_g) \cdot o_{i,j} $$
-%
-% In the above formula the symmetry elements $\mathbf S_{i,j}$ are chosen
-% to minimize the misorientation angle of $\mathrm{GROD}_{i,j}$.
-%
-% Let us demonstrate the computation of the grain reference orientation
-% deviation at the example of a deformed Ferrite specimen. Lets import the
-% data first, reconstruct the grain structure and perform some denoising of
-% the orientation data as the we are going to analyze the misorientation
-% axes which are very noise sensitive.
+% The example is a deformed ferrite specimen. The misorientation axes are
+% very sensitive to noise, so the orientations are denoised first - see
+% <EBSDDenoising.html Denoising>.
 
 mtexdata ferrite silent
 
@@ -33,20 +29,19 @@ hold on
 plot(grains.boundary,'lineWidth',2)
 hold off
 
-%%
+%% The deviation angle
 %
-% The grain reference orientation deviation is computed by the command
-% <EBSD.calcGROD.html |calcGROD|>. It requires the reconstructed |grains|
-% as second argument and that |ebsd.grainId| has been set as we did in the
-% above code.
+% <EBSD.calcGROD.html |calcGROD|> computes the deviation as a
+% misorientation, one per measurement. It needs the reconstructed grains as
+% a second argument, and |ebsd.grainId| to have been set, which the call to
+% |calcGrains| above did.
 
-% compute the grain reference orientation deviation 
+% compute the grain reference orientation deviation
 grod = ebsd.calcGROD(grains);
 
 %%
-% As a first application we simply plot the misorientation angle of the
-% grain reference orientation deviation and overlay it with the subgrain
-% boundaries
+% Its angle plotted as a map, with the subgrain boundaries drawn on top and
+% faded in proportion to their own misorientation.
 
 % plot the misorientation angle of the GROD
 plot(ebsd,grod.angle./degree,'micronbar','off')
@@ -59,28 +54,35 @@ plot(grains.boundary,'lineWidth',1.5)
 plot(grains.innerBoundary,'edgeAlpha',grains.innerBoundary.misorientation.angle / (5*degree))
 hold off
 
-%% Grain Orientation Spread (GOS)
+%%
+% Half the measurements are within 1.6° of their grain mean and the worst
+% reach 18.9°, and the large values are not scattered - they fill whole
+% parts of grains, bounded by the subgrain boundaries. A subgrain boundary
+% is precisely where the deviation jumps from one level to another.
 %
-% The grain orientation spread (GOS) is the averaged misorientation angle
-% of the grain reference orientation deviations of each grain. We may
-% compute this average by using the command <EBSD.grainMean.html
-% |grainMean|>.
+%% Grain orientation spread
+%
+% Averaging the deviation angle over each grain gives one number per grain,
+% the grain orientation spread, and <EBSD.grainMean.html |grainMean|> does
+% the averaging.
 
 GOS = grainMean(ebsd, grod.angle, grains);
 
 plot(grains, GOS ./ degree)
 mtexColorbar('title','GOS in degree')
 
-%% The Misorientation Axis in Crystal Coordinates
+%%
+% Of the 377 grains the median spread is 0.69° and the largest 6.6°. The
+% map is not uniform: some grains took up much more deformation than their
+% neighbours, which is what a spread of an order of magnitude between
+% grains means.
 %
-% When analyzing the misorientation axis of the grain reference orientation
-% deviations we have to distinguish whether we look at them in crystal
-% coordinates or in specimen coordinates. Let's start with the crystal
-% coordinates. In this case we use the command <orientation.axis.html
-% |axis|> to compute the corresponding $(hk\ell)$ values.
-% 
-% Lets first plot the distribution of misorientation axes in the
-% fundamental sector.
+%% The misorientation axis in crystal coordinates
+%
+% Every deviation also has an axis, and it matters in which frame that axis
+% is read. In crystal coordinates it is an $(hk\ell)$ direction of the
+% crystal, obtained with <orientation.axis.html |axis|>, and its
+% distribution over the fundamental sector is this.
 
 axCrystal = grod.axis;
 
@@ -88,18 +90,18 @@ plot(axCrystal,'contourf','fundamentalRegion','antipodal','figSize','small')
 mtexColorbar('title','mrd')
 
 %%
-% We observe that the distribution is very uniform and there is no preferred
-% misorientation axes. Lets have a look at the spatial distribution of the
-% misorientation axes. To this end we firs have to define a directional
-% color key.
+% The whole range is 0.85 to 1.2 times uniform, so in crystal coordinates
+% the axes are as good as evenly distributed, with only a slight preference
+% for $[101]$. Where they sit in the map is the next question, and it needs
+% a colour key for directions.
 
 colorKey = HSVDirectionKey(ebsd.CS,'antipodal');
 
 plot(colorKey,'figSize','small')
 
 %%
-% When plotting the misorientation axis we use the misorientation angle as
-% transparency value to fade out low angles misorientations to white.
+% The deviation angle serves as transparency, so that points which have
+% barely turned - and whose axis is therefore meaningless - fade to white.
 
 % compute the color from the misorientation axis
 color = colorKey.direction2color(axCrystal);
@@ -116,27 +118,26 @@ plot(grains.innerBoundary,'edgeAlpha',grains.innerBoundary.misorientation.angle 
 hold off
 
 %%
-% The misorientation axis in crystal coordinates can be related to active
-% slip systems. See: V. Tong, E. Wielewski, B. Britton
+% Whole regions of a grain share one colour, that is one misorientation
+% axis, and this is what makes the crystal frame worth looking at: a low
+% angle boundary formed by a single slip system has its axis fixed by the
+% geometry of that system - a pure tilt wall turns about an axis lying in
+% the slip plane and perpendicular to the Burgers vector, a pure twist wall
+% about the slip plane normal. A cluster of axes can therefore be matched
+% against the candidate slip systems of the phase, which is how V. Tong,
+% E. Wielewski and B. Britton identify the active systems in
 % <https://arxiv.org/abs/1803.00236 Characterization of slip and twinning
 % in high rate deformed zirconium with electron backscatter diffraction>,
-% 2018.
-%
-% The idea is that a low angle boundary formed by a single slip system has
-% its misorientation axis fixed by the geometry of that system - a pure
-% tilt wall about an axis lying in the slip plane and perpendicular to the
-% Burgers vector, a pure twist wall about the slip plane normal. Clusters
-% in the plot above can therefore be matched against the candidate slip
-% systems of the phase, which is how the reference identifies which systems
-% were active. The <SlipSystems.html slip system> and
+% 2018. The <SlipSystems.html slip system> and
 % <DislocationSystems.html dislocation system> chapters describe how to set
 % those candidates up in MTEX.
 %
-%% The Misorientation Axis in Specimen Coordinates
-% 
-% The misorientation axis in specimen coordinates is computed by applying
-% the EBSD orientations to the the misorientation axes in crystal
-% coordinates. It is important to use here the option |'noSymmetry'|.
+%% The misorientation axis in specimen coordinates
+%
+% The same axis in specimen coordinates is the crystal axis carried over by
+% the orientation of the measurement. The option |'noSymmetry'| is
+% essential here: the axis has to be the one representative that belongs
+% to this orientation, not any of its symmetric equivalents.
 
 axSpecimen = ebsd.orientations .* grod.axis('noSymmetry');
 
@@ -144,20 +145,23 @@ plot(axSpecimen,'contourf','fundamentalRegion','antipodal','halfwidth',2.5*degre
 mtexColorbar('title','distribution of misorientation axes in mrd')
 
 %%
-% When looking at the distribution of the misorientation axes in specimen
-% coordinates we observe some strongly preferred directions.
+% This distribution runs from 0.5 to 5.3 times uniform - the same axes that
+% were spread evenly over the crystal are strongly clustered in the
+% specimen. That is the expected way round, since the deformation is
+% imposed on the specimen and not on any crystal. Whether the maxima are a
+% property of the specimen or of a few grains is a question the map can
+% answer.
 %
-% As the misorientation axes in specimen coordinates have no symmetry at
-% all (not even antipodal symmetry) we may use a full color key to colorize
-% them
+% In specimen coordinates the axes have no symmetry at all, not even
+% antipodal, so the colour key can use the whole sphere.
 
 colorKey = HSVDirectionKey;
 
 plot(colorKey,'figSize','small')
 
 %%
-% The spatial plot of the misorientation axes in crystal coordinates
-% follows the same lines as the plot in specimen coordinates.
+% The spatial plot follows the same lines as the one in crystal
+% coordinates.
 
 % compute color and transparency
 omega = min(grod.angle/degree/7.5,1);
@@ -171,8 +175,21 @@ plot(grains.boundary,'lineWidth',2)
 plot(grains.innerBoundary,'edgeAlpha',grains.innerBoundary.misorientation.angle / (5*degree))
 hold off
 
-%omega = min(grod.angle/degree/7.5,1);
-%color = colorKey.direction2color(axSpecimen,'grayValue',omega);
-
-
-
+%%
+% Each deformed grain carries a single colour over large parts of itself,
+% and neighbouring grains rarely share it. The maxima of the distribution
+% above therefore come from individual grains, not from a pattern running
+% across the map - with 377 grains of which only some are strongly
+% deformed, that is what should be expected, and a larger map would be
+% needed to read the loading geometry off this figure.
+%
+%% The definition
+%
+% For the orientation $o_{i,j}$ at position $(i,j)$ in a grain of mean
+% orientation $o_g$,
+%
+% $$ \mathrm{GROD}_{i,j} = \mathbf S_{i,j} \cdot \mathrm{inv}(o_g) \cdot o_{i,j} $$
+%
+% where the symmetry element $\mathbf S_{i,j}$ is the one that makes the
+% misorientation angle as small as possible.
+%

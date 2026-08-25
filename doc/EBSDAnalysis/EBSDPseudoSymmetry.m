@@ -28,8 +28,8 @@
 % hexagonally close packed with the stacking axis along [100], i.e.,
 % rotations about [100] by multiples of 60 degree map the oxygen positions
 % nearly onto themselves although the true symmetry |mmm| contains only the
-% 180 degree rotation. Let us import a Forsterite data set and reconstruct
-% the grains.
+% 180 degree rotation. Importing a forsterite data set and reconstructing
+% the grains,
 
 plottingConvention.default('y↑→x');
 mtexdata forsterite
@@ -48,17 +48,17 @@ plot(grains.boundary,'linewidth',1.5)
 hold off
 
 %%
-% Note that we did *not* smooth the grain boundaries. Since
+% Note that the grain boundaries have *not* been smoothed. Since
 % <cleanUpPseudoSym.html |cleanUpPseudoSym|> decides by the raggedness of
 % the boundaries, smoothing has to be applied after the correction and not
 % before.
 %
 %% Detecting the Pseudo Symmetry
 %
-% If we do not know the pseudo symmetry beforehand we may look for it in
-% the distribution of the boundary misorientations. Since we expect a
-% rotation about 60 degree we restrict ourselves to those boundaries and
-% plot the distribution of the corresponding rotational axes.
+% When the pseudo symmetry is not known beforehand it can be looked for in
+% the distribution of the boundary misorientations. A rotation by about 60
+% degree is what to expect, so restrict the boundaries to those and plot the
+% distribution of their rotational axes.
 
 % the misorientations at all Forsterite - Forsterite boundaries
 mori = grains.boundary('Fo','Fo').misorientation;
@@ -71,8 +71,8 @@ plot(mori.axis,'contourf','fundamentalRegion','halfwidth',5*degree)
 mtexColorbar
 
 %%
-% The sharp maximum at [100] confirms our expectation. Accordingly we
-% define the pseudo symmetry as the rotation about [100] by 60 degree.
+% The sharp maximum at [100] confirms it, so the pseudo symmetry is the
+% rotation about [100] by 60 degree.
 
 cs = ebsd('Fo').CS;
 psSym = orientation.byAxisAngle(Miller(1,0,0,cs,'uvw'),60*degree)
@@ -95,8 +95,8 @@ psSym = orientation.byAxisAngle(Miller(1,0,0,cs,'uvw'),60*degree)
 %
 %% Pseudo Symmetric Grain Boundaries
 %
-% Let us select all boundary segments whose misorientation is the pseudo
-% symmetry and have a closer look at one of the affected regions. A grain
+% Selecting all boundary segments whose misorientation is the pseudo
+% symmetry gives a closer look at one of the affected regions. A grain
 % boundary has no direction - its misorientation carries the grain exchange
 % symmetry - so this catches the segments of both solutions at once.
 
@@ -121,7 +121,7 @@ hold off
 %%
 % The blue region has been indexed with the second solution. Note how the
 % red boundary meanders around single pixels instead of following a smooth
-% curve - this is the signature we are after.
+% curve - that is the signature to look for.
 %
 %% The Tortuosity Criterion
 %
