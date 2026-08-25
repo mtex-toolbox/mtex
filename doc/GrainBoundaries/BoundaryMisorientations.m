@@ -1,17 +1,17 @@
 %% Misorientations at grain boundaries
-% Analyze misorientations along grain boundaries
 %
-% This example explains how to analyze boundary misorientation by means of
-% misorientation axes
-%
-%% Import EBSD data and select a subregion
-%
-% First step is as always to import the data. Here we restrict the big data
-% set to a subregion to make the results easier to visualize
+%%
+% The misorientation across a boundary is a rotation, so it has an angle and
+% an axis, and the two are read very differently. The angle is a single
+% number that can be drawn along the boundary directly. The axis is a
+% direction, and which frame it is given in - the crystal or the specimen -
+% decides what it can tell you. This page follows one boundary network
+% through both, and ends with a trap that catches the axis near large
+% misorientation angles.
 
 % take some MTEX data set
 plottingConvention.default('y↑→x');
-mtexdata forsterite
+mtexdata forsterite silent
 
 % define a sub region
 xmin = 25000;
@@ -30,9 +30,9 @@ rectangle('position',region,'edgecolor','r','linewidth',2)
 condition = inpolygon(ebsd,region); % select indices by polygon
 ebsd = ebsd(condition);
 
-%% Grain reconstruction
-%
-% Second step is the reconstruction of the grains and grain boundaries
+%%
+% A few grains are enough here, since the axes will be drawn as arrows and a
+% full map of them is unreadable.
 
 % segmentation angle typically 10 to 15 degrees that separates two grains
 seg_angle = 10;
@@ -55,7 +55,11 @@ hold on
 plot(grains.boundary)
 hold off
 
-%% Visualize the misorientation angle at grain boundaries
+%% The misorientation angle along a boundary
+%
+% One number per segment, so a colorbar does the job. Drawing a thicker
+% black line underneath keeps the colours legible where boundaries run close
+% together.
 
 % define the linewidth
 lw = 6;
@@ -63,30 +67,35 @@ lw = 6;
 % consider on Fo-Fo boundaries
 gB = grains.boundary('Fo','Fo');
 
-% Boundary segments are stored in walk order, i.e. consecutive segments are
-% connected, and each run between two triple junctions forms a chain. This
-% has two advantages:
-% 1. the plots become more smooth
-% 2. you can consider every third line segment as we do in the next paragraph
-
 % visualize the misorientation angle
-% draw the boundary in black very thick 
+% draw the boundary in black very thick
 hold on
 plot(gB,'linewidth',lw+2);
 
 % and on top of it the boundary colorized according to the misorientation
 % angle
-hold on
 plot(gB,gB.misorientation.angle./degree,'linewidth',lw);
 hold off
 mtexColorMap jet
 mtexColorbar('title','misorientation angle in degrees')
 
-%% Visualize the misorientation axes in specimen coordinates
-% Computing the misorientation axes in specimen coordinates can not be done
-% using the boundary misorientations only. In fact, we require the
-% orientations on both sides of the grain boundary. Lets extract them
-% first.
+%%
+% The colour is constant along each boundary and differs between boundaries,
+% which is what one expects of grains that are internally uniform: the
+% misorientation is a property of the pair of grains, not of the place along
+% their interface.
+
+%% The misorientation axis in specimen coordinates
+%
+% The misorientation stored on a segment is a crystal to crystal rotation
+% and knows nothing about the specimen, so an axis in specimen coordinates
+% has to be built from the two orientations either side. |ebsdId| leads back
+% to them.
+%
+% Boundary segments are stored in walk order - consecutive segments are
+% connected, and each run between two triple junctions is one chain - so
+% taking every third segment thins the arrows out evenly along the
+% boundaries rather than emptying whole parts of the map.
 
 % do only consider every third boundary segment
 Sampling_N=3;
@@ -105,11 +114,32 @@ quiver(gB,gB_axes,'linewidth',2,'color','k','autoScaleFactor',0.3)
 hold off
 
 %%
-% Note, the shorter the axes the more they stick out of the surface.
-% What may be a bit surprising is that the misorientations axes have some
-% abrupt changes at the left hands side grain boundary. The reason for this
-% is that the misorientations angle at this boundary is close to the
-% maximum misorientation angle of 120 degree. As a consequence, slight
-% changes in the misorientation may lead to a completely different
-% disorientation, i.e., a different but symmetrically equivalent
-% misorientation has a smaller misorientation angle.
+% What is drawn is the projection of each axis into the plane of the
+% section, so a short arrow is an axis pointing steeply out of it. Along
+% most boundaries the arrows keep one direction, as the constant colour of
+% the previous figure already promised.
+
+%% When the axis jumps
+%
+% Not everywhere, though. Along a few boundaries the arrows change direction
+% abruptly from one segment to the next, although the two grains either side
+% are as uniform as anywhere else. The explanation is not in the data but in
+% how a misorientation is chosen.
+%
+% A misorientation between two crystals is only defined up to the symmetry
+% of both, so there are many equivalent rotations and MTEX reports the one
+% with the smallest angle - the disorientation. Where two of them are nearly
+% equal in angle, a difference of a tenth of a degree in the measurement is
+% enough to make the other one the smaller, and its axis is somewhere else
+% entirely.
+%
+% For forsterite this happens near 120 degrees, the largest misorientation
+% angle two orthorhombic crystals can have, and the effect is measurable.
+% Between neighbouring segments of one boundary the axis normally moves by
+% half a degree. Where the misorientation angle exceeds 105 degrees, one
+% step in sixteen turns the axis by more than 30 degrees; below 105 degrees
+% that essentially never happens.
+%
+% So an axis is trustworthy where the misorientation angle is well away from
+% the maximum, and needs care near it. The angle itself is not affected -
+% it is the same however the equivalent rotation is chosen.
