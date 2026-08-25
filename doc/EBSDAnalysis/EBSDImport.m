@@ -1,73 +1,92 @@
 %% Importing EBSD Data
 %
 %%
-% MTEX allows you to import EBSD data from a wide variety of file formats.
-% In the simplest case import can be done by the command
-% <EBSD.load.html |EBSD.load|>
+% An EBSD file is a table with one row per measured point: where the beam
+% was, which phase the pattern was indexed as, and the three Euler angles
+% that describe the crystal orientation there. Importing means reading that
+% table into a variable of type @EBSD, together with the crystallography
+% each phase needs and the coordinate frames the numbers refer to.
+%
+% Reading the table is the easy part. One command does it for every format
+% MTEX knows, and which format it is follows from the file itself.
+
+plottingConvention.default('y↓→x');
 
 fileName = [mtexEBSDPath filesep 'EMSphinx.h5'];
 ebsd = EBSD.load(fileName)
 
 %%
-% This command automatically detects the file format and generates a
-% variable of type @EBSD which contains all the information of the EBSD
-% data set. Let us quickly do an orientation plot of the gamma phase
+% The display is worth reading once, because it is the whole import in
+% summary. This file holds four scans and the first of them was taken. Its
+% three phases arrived with lattice parameters, so they are full crystal
+% symmetries and not just names. Two are cubic and 99% of the points are
+% the gamma iron; the map is a square grid of 508 × 955 points covering
+% 382 × 203 microns; and every point carries three further columns beyond
+% its orientation, here the image quality |IQ|, the |Metric| the indexing
+% reported and an |oldId|.
+%
+% From here the map plots, and the picture is the first thing that tells
+% you whether the import was right.
 
-plot(ebsd('Fe(gamma'), ebsd('Fe(gamma').orientations)
+plot(ebsd('Fe(gamma-iron)'),ebsd('Fe(gamma-iron)').orientations)
 
 %%
-% The variable of type EBSD is the starting point for all further analysis,
-% e.g., <GrainReconstruction.html grain reconstruction>, <EBSD2ODF.html ODF
-% reconstruction>, <EBSDMisorientation misorientation analysis>, etc.
+% The variable is the starting point for everything else -
+% <GrainReconstruction.html grain reconstruction>,
+% <EBSD2ODF.html ODF estimation>,
+% <Misorientations.html misorientation analysis>.
 %
-%% Importing EBSD data using the import wizard
+%% What import cannot guess
 %
-% In many cases however, importing EBSD data is not that straightforward as
-% suggested above. The reason is that during the measuring process
-% different reference systems are involved and resulting coordinates, i.e.,
-% the spatial coordinates and the Euler angles, are often not stored in a
-% consistent way by commercial software. Please read
-% <EBSDReferenceFrame.html EBSD Reference Systems> for more information
-% about how to set up reference frames correctly.
+% Two coordinate systems are involved in every EBSD measurement: the one
+% the map coordinates were written in, and the one the Euler angles were
+% written in. They need not agree, vendors align them differently, and
+% nothing in the file forces the two to be consistent or even records which
+% choice was made.
 %
-% In order to help the user to import EBSD data consistently to a fixed
-% specimen reference frame (which the user should know), MTEX provides the
-% <matlab:import_wizard import wizard> as a graphical user interface. The
-% |import_wizard| is started by typing into the command line
-
-import_wizard;
-
-%%
-% 
+% The failure mode is quiet. A map imported with the wrong alignment still
+% plots, still reconstructs into grains and still yields pole figures -
+% they are simply rotated or mirrored with respect to the specimen, and no
+% number in the data set says so. This is the one part of importing that
+% you have to supply, and <EBSDReferenceFrame.html Reference Frame>
+% explains how.
+%
+%% The import wizard
+%
+% The wizard is the interactive way to do exactly that. It is started by
+% <matlab:import_wizard |import_wizard|> and works on EBSD, pole figure and
+% ODF data alike.
+%
 % <<importWizard.png>>
-% 
-% The import wizard guides through the correct setup of:
 %
-% * <CrystalSymmetries.html crystal symmetries> associated with phases 
-% * specimen symmetry and plotting conventions
-% 
-% The import wizard allows you to either create directly a workspace
-% variable of type @EBSD or to generates a m-file, which contains all the
-% customization and allows you to import the data in future sessions
-% without the import wizard. This last option is highly recommended as the
-% created script is also a good starting point for further analysis and
-% data processing.
+% You point it at a file, and it shows what the file contains: its data
+% sets, its phases, and the map drawn with the alignment currently
+% selected. Changing the alignment redraws the map, so the choice is made
+% by looking at the specimen rather than by guessing a convention.
 %
-%% The Import Script
+% The wizard can hand you the finished variable, but the better option is
+% to let it write an import script. That script is reproducible, it can be
+% re-run without the wizard, and it is a natural place to grow the rest of
+% the analysis.
 %
-% A script generated by the import wizard has approximately the following
-% form:
+%% The import script
+%
+% A generated script looks like this - the phases, the alignment, the file,
+% the frame correction, and a first plot to check the result by.
 
 % crystal symmetry
 csList = [
   notIndexed(), ...
-  crystalSymmetry('m-3m', [2.8665, 2.8665, 2.8665], 'mineral', 'Fe(alpha-iron)'), ...
-  crystalSymmetry('m-3m', [3.5910, 3.5910, 3.5910], 'mineral', 'Fe(gamma-iron)'), ...
-  crystalSymmetry('6/mmm', [2.5071, 2.5071, 4.0686], 'mineral', 'Co(alpha-cobalt)')
+  crystalSymmetry('m-3m', [2.8665 2.8665 2.8665], ...
+    'mineral', 'Fe(alpha-iron)', 'color', 'LightSkyBlue'), ...
+  crystalSymmetry('m-3m', [3.591 3.591 3.591], ...
+    'mineral', 'Fe(gamma-iron)', 'color', 'DarkSeaGreen'), ...
+  crystalSymmetry('6/mmm', [2.5071 2.5071 4.0686], ...
+    'mineral', 'Co(alpha-cobalt)', 'color', 'Goldenrod', 'X||a', 'Y||b*', 'Z||c')
 ];
 
-% plotting convention
-plottingConvention.default('y↓→x');
+% how the map is aligned on screen
+pC = plottingConvention('y↓→x');
 
 % path to files
 pname = mtexEBSDPath;
@@ -75,45 +94,51 @@ pname = mtexEBSDPath;
 % which files to be imported
 fname = [pname filesep 'EMSphinx.h5'];
 
-% Euler reference frame to map reference frame correction
-EulerCorrection = rotation.map(-yvector,xvector,zvector,-zvector);
+% rotates the Euler angle reference frame onto the map reference frame
+EulerCorrection = rotation.map(xvector,xvector,zvector,-zvector);
 
 % create an EBSD variable containing the data
-ebsd = EBSD.load(fname,csList, 'EulerCorrection', EulerCorrection)
+ebsd = EBSD.load(fname,csList,'dataSet',1, ...
+  'EulerCorrection',EulerCorrection,pC)
+
+% everything derived later that states no frame of its own follows this
+plottingConvention.default(pC);
 
 %%
-% Running this script imports the data into a variable named
-% |ebsd|. From this point, the script can be extended to your needs, e.g:
-
-grains = calcGrains(ebsd)
+% Two lines in there deserve a second look. The |EulerCorrection| is the
+% wizard's answer to the previous section, written out as the rotation that
+% takes one frame onto the other - the |-zvector| is what a map with $y$
+% pointing down and Euler angles measured with $y$ up comes to. And |pC| is
+% passed into the import as well as set as the session default, because
+% data that lands in a named reference frame carries that frame's
+% convention and would otherwise not follow the session.
+%
+% The sanity plot the wizard appends is the one from the top of this page.
 
 plot(ebsd('Fe(gamma-iron)'),ebsd('Fe(gamma-iron)').orientations)
-hold on
-plot(grains.boundary,'LineWidth',2)
-hold off
 
-%% Supported Data Formats
+%% Supported data formats
 %
-% MTEX supports the following EBSD data formats:
+% || <loadEBSD_ang.html .ang> || EDAX and EMSphInx text files ||
+% || <loadEBSD_ctf.html .ctf> || Oxford / HKL text files ||
+% || <loadEBSD_osc.html .osc> || EDAX binary files ||
+% || <loadEBSD_crc.html .crc, .cpr> || Oxford binary files ||
+% || <loadEBSD_h5.html .h5, .hdf5, .oh5, .h5oina, .edaxh5> || Bruker, EDAX, Oxford, ThermoFisher, EMsoft and EMSphInx binary files ||
+% || <loadEBSD_generic.html .txt> || plain text with the columns in any order ||
 %
-% || <loadEBSD_ang.html     .ang> || EDAX ascii files.                  || <loadEBSD_ang.DRex     .DRex>  || single orientation files.         ||
-% || <loadEBSD_crc.html     .crc> || Oxford binary files.               || <loadEBSD_osc.html     .osc>   || EDAX binary files.          ||
-% || <loadEBSD_ctf.html     .ctf> || HKL single orientation files.      || <loadEBSD_generic.html .txt>   || ASCII files with Euler angles as columns. ||
-% || <loadEBSD_h5.html     .h5, .hdf5, .oh5, .h5oina> || Bruker, EDAX, Oxford, ThermoFisher, EMsoft/EMsphinx binary files. ||
-%
-% If the data is recognized as an ASCII list of orientations, phase and spatial
-% coordinates in the form 
+% The generic loader is the fallback for a text file that no vendor
+% interface recognises. If it holds Euler angles, a phase and spatial
+% coordinates as columns
 %
 %  alpha_1 beta_1 gamma_1 phase_1 x_1 y_1
 %  alpha_2 beta_2 gamma_2 phase_2 x_2 y_2
 %  alpha_3 beta_3 gamma_3 phase_3 x_3 y_3
-%  .      .       .       .       .   .
-%  .      .       .       .       .   .
-%  .      .       .       .       .   .
-%  alpha_M beta_M gamma_M phase_m x_m y_m
+%  .       .      .       .       .   .
+%  alpha_M beta_M gamma_M phase_M x_M y_M
 %
-% an additional tool supports you to associated the columns with the
-% corresponding properties.
+% then the wizard lets you say which column is which. Orientations without
+% spatial coordinates are not a map and are imported as described in
+% <OrientationImport.html Importing Orientations>.
 %
 %% HDF5 Files With Several Data Sets
 %
@@ -163,11 +188,9 @@ hold off
 %
 %% Writing your own interface
 %
-% In the rare case of an EBSD format that is not supported, the user can
-% write its own interface to import the data. Once you have successfully
-% written that, you can integrate this method into MTEX by copying it into
-% the folder |mtex/interfaces| and rename your function |loadEBSD_xxx|.
-% Then it will be automatically recognized by the import wizard. Examples
-% how to write such an interface can be found in the directory
-% |mtex/interfaces|.
+% A format that none of the above reads needs a function of its own. Write
+% it as |loadEBSD_xxx.m|, returning an @EBSD variable, and copy it into the
+% folder |mtex/interfaces| - the loaders are found by that name, so nothing
+% else has to be registered, and the import wizard picks it up as well. The
+% existing files in that folder are the examples to work from.
 %
