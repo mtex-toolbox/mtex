@@ -1,11 +1,16 @@
 %% The Tangent Space on the Rotation Group
-% 
-% Tangent vectors on the rotation group can be thought of as directions in
-% which a rotation can be varied. Since these directions depend on the
-% specific rotation you start from, they are not global but local objects.
-% The set of all tangent vectors at a given rotation forms the tangent
-% space, which describes the local geometry of the rotation group in the
-% neighborhood of that point.
+%
+%%
+% A tangent vector on the rotation group is a direction in which a rotation
+% can be varied - the answer to "which way could this rotation move, and how
+% fast?". Such a direction depends on the rotation it starts from, so it is
+% a local object, not a global one, and the set of all of them at a given
+% rotation is the *tangent space* there.
+%
+% This is the language in which gradients, velocities and derivatives on
+% SO(3) are written. It is what makes optimisation and interpolation of
+% rotations possible at all, since rotation space is curved and the usual
+% "add a small vector" does not apply to it directly.
 %
 %% Definition of Tangent Spaces and Tangent Vectors on the Rotation Group
 %
@@ -26,7 +31,7 @@
 % i.e. @spinTensor's.
 %
 
-R = rotation.byAxisAngle(xvector,20*degree);
+R = rotation.byAxisAngle(vector3d.X,20*degree);
 S1 = spinTensor(vector3d(0,0,1))
 
 % left tangent vector at some Rotation R
@@ -45,11 +50,12 @@ S2 = spinTensor(vector3d(0,sin(20*degree),cos(20*degree)))
 TV = matrix(R)*matrix(S2)
 
 %%
-% Note that the left and right tangent spaces describe the same tangent 
-% vectors, just in different notations.
-%
-% In the above example |S1| and |S2| describe the same tangent vector |TV|
-% in different representations.
+% The left and the right tangent space contain the same tangent vectors,
+% written in different bases. |S1| and |S2| above are the two descriptions
+% of one and the same tangent vector, which is why the two matrices agree.
+
+max(abs(matrix(S1)*matrix(R) - matrix(R)*matrix(S2)),[],'all')
+
 %
 %% Description of Rotational Tangent Vectors in MTEX
 % 
@@ -61,7 +67,7 @@ S = spinTensor(0.2*vector3d(1,2,3))
 v1 = SO3TangentVector(S,R)
 
 %%
-% We may visualize such a @SO3TangentVector by
+% Such a tangent vector is drawn as an arrow attached to its base point.
 
 % plot the base point
 plot(R,'axisAngle','MarkerColor','red')
@@ -72,8 +78,13 @@ hold on
 h = quiver3(v1,'LineWidth',3,'maxHeadSize',4);
 hold off
 
-%% 
-% A |@SO3TangentVector| in MTEX has three important properties:
+%%
+% The red marker is the rotation $R$, the arrow the direction in which $R$
+% is being varied. Attached at a different rotation the same three
+% coordinates would mean a different variation - that is what "local" means
+% here.
+%
+% A |@SO3TangentVector| carries three pieces of information:
 % 
 % * the rotation $R$ (which defines the tangent space)
 % * the tangent space representation (left or right)
@@ -96,10 +107,10 @@ v1_right = right(v1)
 v1_left = left(v1_right)
 
 %%
-% Note that MTEX cares about the tangent space representation. Hence if we
-% try to compute with |@SO3TangentVectors| MTEX automatically transform
-% them into the same representation and applies the operation afterwards.
-%
+% MTEX keeps track of which representation a vector is in, and converts
+% before it computes, so mixing the two in one expression is safe. Adding a
+% vector to itself in the other representation gives twice the vector, not
+% something else.
 
 v1 + v1_right
 
@@ -129,16 +140,26 @@ v1 + v1_right
 rot = exp(v1)
 
 %%
-% The logarithm map does the reverse: It takes two rotations and computes
-% the tangent vector in the tangent space of one rotation that points
-% towards the other rotation. It is performed onto the rotations with the
-% command <quaternion.log.html |log|>.
+% The logarithm map does the reverse: given two rotations it returns the
+% tangent vector at the first that points towards the second. It is
+% <quaternion.log.html |log|>.
 
 log(rot,R)
 
 %%
-% Together, these maps allow switching between the curved geometry of SO(3)
-% and the linear structure of its tangent spaces, which is essential for
-% interpolation, averaging, and optimization on rotations.
+% The vector we started from, to the last digit - |log| and |exp| are
+% inverse to each other.
 %
+% Together they connect the curved geometry of SO(3) with the flat structure
+% of its tangent spaces, which is what interpolation, averaging and
+% optimisation on rotations are built on.
+
+%% Next
 %
+% The skew symmetric matrices behind all of this, and their reading as a
+% rate of rotation in a deforming material, are
+% <RotationSpinTensor.html Spin Tensors>. The same construction with a
+% crystal symmetry attached appears in
+% <SO3FunVectorField.html vector fields on SO(3)>.
+
+%#ok<*NOPTS>

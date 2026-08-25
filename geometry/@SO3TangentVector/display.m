@@ -6,7 +6,7 @@ if check_option(varargin,'onlyShowVectors')
   return
 end
 
-v.opt.TagentSpace = v.tangentSpace;
+v.opt.tangentSpace = v.tangentSpace;
 
 displayClass(v,inputname(1),'moreInfo',referenceFrame.headerChar(v.frame,v.how2plot),varargin{:});
 
