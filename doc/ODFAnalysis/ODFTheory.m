@@ -1,22 +1,35 @@
 %% The Orientation Distribution Function
 %
 %%
-% The orientation distribution function (ODF), sometimes also called
-% orientation density function, is a function on the orientation space that
-% associates to each orientation $g$ the volume percentage of crystals in a
-% polycrystalline specimen that are in this specific orientation. Formally,
-% this is often expressed by the formula
+% A texture is a population of orientations, and the orientation
+% distribution function (ODF) is how that population is described as a
+% whole: not a list of measured orientations, but a *density* over
+% orientation space.
 %
-% $$\mathrm{odf}(g) = \frac{1}{V} \frac{\mathrm{d}V(g)}{\mathrm{d}g}.$$
-% 
-% Let us demonstrate the concept of an ODF at the example of an Titanium
-% alloy. Using EBSD crystal orientations $g_j$ have been measured at a
-% hexagonal grid $(x_j,y_j)$ on the surface of the specimen. We may
-% visualize these orientations by plotting accordingly rotated crystal
-% shapes at the positions $(x_j,y_j)$.
+% Density is the word to hold on to. The ODF does not say what percentage of
+% the material sits at one exact orientation - that percentage is zero, as
+% for any continuous distribution. It says how much volume is found *per
+% unit of orientation space* near that orientation,
+%
+% $$\mathrm{odf}(g) = \frac{1}{V} \frac{\mathrm{d}V(g)}{\mathrm{d}g},$$
+%
+% so a volume fraction is only obtained by integrating over a region of
+% orientations. The normalisation is chosen so that the uniform texture has
+% $\mathrm{odf} \equiv 1$, and values are read as *multiples of a random
+% distribution*, mrd.
+
+plottingConvention.default('y↑→x');
+
+%% From Measured Orientations to a Density
+%
+% A titanium alloy, measured by EBSD: an orientation at every point of a
+% hexagonal grid. The crystal shapes drawn on the map show what the colours
+% encode.
 
 % import the data
 mtexdata titanium
+
+%%
 
 % define the habitus of titanium as a sample hexagonal prism
 cS = crystalShape.hex(ebsd.CS);
@@ -30,48 +43,62 @@ plot(reduce(ebsd,4),40*cS)
 hold off
 
 %%
-% The idea of the orientation distribution function is to forget about the
-% spatial coordinates $(x_j,y_j)$ and consider the orientations as points
-% in the three dimensional orientation space. 
+% Now forget where each measurement was taken. What is left is a cloud of
+% points in orientation space, here drawn in Euler angles.
 
 plot(ebsd.orientations,'Euler')
 
 %%
-% As the orientation space is not an Euclidean one there is no canonical
-% way of visualizing it. In the above figure orientations are represented
-% by its three Euler angles $(\varphi_1, \Phi, \varphi_2)$. Other
-% visualizations are discussed in the section
-% <OrientationVisualization3d.html 3D Plots>. The orientation distribution
-% function is now the relative frequency of the above points per volume
-% element and can be computed by the command <rotation.calcDensity.html
-% |calcDensity|>. 
+% Orientation space is curved, so no drawing of it is canonical; the
+% alternatives are in <OrientationVisualization3d.html 3D Plots>. What
+% matters here is that the cloud is not uniform - it has regions where the
+% points crowd together.
+%
+% <rotation.calcDensity.html |calcDensity|> turns the cloud into the density
+% behind it, by placing a kernel at every measurement and adding them up,
+% see <DensityEstimation.html Density Estimation>.
 
 odf = calcDensity(ebsd.orientations)
 
-%%
-% More details about the computation of a density function from discrete
-% measurements can be found in the section <DensityEstimation.html Density
-% Estimation>.
+%% Reading Values
 %
-% The resulting orientation distribution function |odf| can be evaluated
-% for any arbitrary orientation. Let us e.g. consider the orientation
+% The result is a function, so it can be evaluated anywhere - also at
+% orientations that were never measured.
 
 ori = orientation.byEuler(0,0,0,ebsd.CS);
-
-%%
-% Then value of the ODF at this orientation is
 
 odf.eval(ori)
 
 %%
-% The resulting value needs to be interpreted as multiple of random
-% distribution (mrd). This means that for the specimen under investigation it is
-% less likely to have a crystal with orientation (0,0,0) compared to a
-% completely untextured specimen which has a constant orientation distribution
-% function that is equal to $1$ everywhere.
+% 0.82 mrd: this orientation is slightly *less* common in the specimen than
+% it would be in an untextured one, where the value would be 1 everywhere.
+% The strongest orientation of this texture is nine times as common as
+% random.
+
+max(odf)
+
+%%
+% The mean of an ODF is 1 by construction, whatever the texture, which is
+% why a single value only means something relative to it.
+
+mean(odf)
+
+%%
+% A volume fraction, the quantity the density is often mistaken for, comes
+% from integrating over a region - here all orientations within $10^\circ$
+% of the strongest one.
+
+[~,oriMax] = max(odf);
+
+volume(odf,oriMax,10*degree)
+
+%%
+% Two percent of the material, not nine: the 9 mrd above is a density, and
+% the region it applies to is small.
+
+%% Looking at an ODF
 %
-% Since, an ODF can be evaluated at any point in the orientation space we
-% may visualize it as a contour plot in 3d
+% Being a function on a three dimensional space, an ODF can be drawn in 3d,
 
 plot3d(odf,'Euler')
 hold on
@@ -79,8 +106,19 @@ plot(ebsd.orientations,'Euler','MarkerEdgeColor','k')
 hold off
 
 %%
-% Three dimensional plots of an ODF in Euler angle space are for various
-% reason not very recommended. A geometrically much more reasonable
-% representation are so-called <SigmaSections.html sigma sections>.
+% but Euler angle space distorts volumes, so a concentration there is
+% misleading, and the plot is hard to read besides.
+% <SigmaSections.html Sigma sections> are the geometrically sounder view and
+% the one to prefer.
 
 plotSection(odf,'sigma')
+
+%% Next
+%
+% How a density is estimated from measurements, and what the halfwidth does
+% to it, is <DensityEstimation.html Density Estimation>. Model ODFs, built
+% rather than measured, are <ODFModeling.html Modeling>, and the numbers
+% that summarise an ODF - texture index, entropy, volume fractions - are
+% <ODFCharacteristics.html Properties>.
+
+%#ok<*NOPTS>

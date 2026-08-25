@@ -1,54 +1,107 @@
 %% ODF Modeling
 %
 %%
+% An ODF does not have to come from a measurement. A *model ODF* is built
+% from a few numbers - a preferred orientation and a spread, a fibre, a
+% mixture - and it serves three purposes: as a reference to compare a
+% measured texture against, as a starting point for simulating how a texture
+% evolves, and as a way of generating test data with a known answer.
 %
-% ODFs are functions on the rotation group $SO(3)$. Therefore we construct 
-% them by the class |@SO3Fun|.
+% Every ODF in MTEX is an <SO3FunConcept.html |@SO3Fun|>, a function on the
+% rotation group, and the model ones differ only in how that function is
+% represented:
 %
-% MTEX provides a very simple way to define model ODFs. Generally, there
-% are five different ODF types in MTEX:
+% || <RadialODFs.html uniform> || constant, the untextured reference ||
+% || <RadialODFs.html unimodal> || a peak of given halfwidth about one orientation ||
+% || <RadialODFs.html multimodal> || several such peaks ||
+% || <FibreODFs.html fibre> || a peak spread along a curve in orientation space ||
+% || <BinghamODFs.html Bingham> || a peak with three different widths ||
+% || <SO3FunHarmonicRepresentation.html harmonic> || a series expansion, the form pole figure inversion produces ||
 %
-% * <RadialODFs.html#1 uniform ODFs>
-% * <RadialODFs.html#2 unimodal ODFs>
-% * <RadialODFs.html#4 multimodal ODFs>
-% * <FibreODFs.html fibre ODFs>
-% * <BinghamODFs.html Bingham ODFs>
-% * <SO3FunHarmonicRepresentation.html Harmonic ODFs>
-%
-% The central idea is that MTEX allows you to calculate mixture models, by
-% adding and subtracting arbitrary ODFs. Model ODFs may be used as
-% references for ODFs estimated from pole figure data or EBSD data and are
-% instrumental for simulating texture evolution.
-%
-%
+% They are freely mixed, because ODFs can be scaled and added.
+
+plottingConvention.default('y↑→x');
+
 %% The Uniform ODF
 %
-% The simplest case of a model ODF is the uniform ODF
+% The simplest model is the constant one,
 %
 % $$f(g) = 1,\quad  g \in SO(3),$$
 %
-% which is everywhere identical to one. In order to define a uniform ODF
-% one needs only to specify its crystal and specimen symmetry and to use
-% the command <uniformODF.html uniformODF>.
+% which needs nothing but the two symmetries.
 
 cs = crystalSymmetry('cubic');
 ss = specimenSymmetry('orthorhombic');
+
 odf = uniformODF(cs,ss)
 
-%% Combining model ODFs
-% All the above can be arbitrarily rotated and combined. For instance, the
-% classical Santa Fe example can be defined by commands
+%%
+% It is the texture a specimen has when it has no texture, and the reference
+% every mrd value is measured against.
 
-cs = crystalSymmetry('cubic');
-ss = specimenSymmetry('orthorhombic');
+%% A Single Component
+%
+% A unimodal ODF is a peak about one orientation, with a shape given by a
+% <SO3Kernels.html kernel> and a width given by its halfwidth.
 
 psi = SO3vonMisesFisherKernel('halfwidth',10*degree);
+
 mod1 = orientation.byMiller([1,2,2],[2,2,1],cs,ss);
 
-odf =  0.73 * uniformODF(cs,ss) + 0.27 * unimodalODF(mod1,psi)
+odf1 = unimodalODF(mod1,psi)
+
+%%
+% Its maximum sits where the component does, and the value there says how
+% concentrated the peak is - a narrower halfwidth means a higher maximum,
+% since the total is fixed at a mean of one.
+
+max(odf1)
+
+%% Mixtures
+%
+% ODFs are added and scaled like functions, so a texture with a background
+% is a weighted sum. The classical Santa Fe example is 27 percent of the
+% component above on top of a uniform background.
+
+odf = 0.73 * uniformODF(cs,ss) + 0.27 * unimodalODF(mod1,psi)
+
+%%
+% The mean is still 1 - the weights are volume fractions and have to add up
+% to one.
+
+mean(odf)
+
+%%
 
 close all
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 
-%#ok<*NASGU>
+%%
+% Against the uniform background, the component shows as the discrete spots.
+% This is the ODF that pole figure inversion is usually tested on: the
+% answer is known, so a reconstruction can be scored against it, see
+% <PoleFigure2ODF.html Reconstructing an ODF>.
 
+%% Rotating a Model
+%
+% A model built in one frame is moved to another by rotating it, which is
+% how a component is placed relative to the specimen axes.
+
+odfRot = rotate(odf,rotation.byAxisAngle(vector3d.Z,30*degree));
+
+plotPDF(odfRot,Miller(1,0,0,cs),'antipodal')
+
+%%
+% The pattern has turned by $30^\circ$ about the centre, the orientations
+% themselves are unchanged in the crystal.
+
+%% Next
+%
+% The individual model types have pages of their own, starting with
+% <RadialODFs.html Radial ODFs>. What such a model looks like once it is
+% sampled back into discrete orientations is
+% <RandomSampling.html Random Sampling>, and the numbers that describe any
+% ODF are <ODFCharacteristics.html Properties>.
+
+%#ok<*NASGU>
+%#ok<*NOPTS>
