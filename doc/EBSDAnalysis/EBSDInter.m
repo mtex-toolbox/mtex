@@ -1,50 +1,56 @@
 %% Interpolating EBSD Data
 %
 %%
-% In the section <EBSDDenoising.html Denoising> and <EBSDFilling.html
-% Filling Missing Data> we have discussed how to work with noisy EBSD data
-% the contained non indexed pixels. Hereby, we made the assumption that the
-% grid before and after the operations is the same. 
-%
-% In this section we explain how to interpolate an EBSD map at positions
-% that do not belong to the grid. Let us consider a simple example
+% <EBSDDenoising.html Denoising> and <EBSDFilling.html Filling Missing
+% Data> both leave the measurement grid exactly as it was. This page is
+% about the other case: reading the map at positions that are not grid
+% points at all, and resampling it onto a different grid.
 
 plottingConvention.default('y↑→x');
 mtexdata twins;
 
 [grains, ebsd] = calcGrains(ebsd);
 
-% this command here is important :)
-ebsd = ebsd.project2FundamentalRegion(grains);
-
 plot(ebsd,ebsd.orientations)
 
-%%
-% The command <EBSD.interp.html |interp|> interpolates the orientation at
-% arbitrary coordinates |x| and |y|. It does not require the data to be on
-% a grid - a plain @EBSD, a phase subset and a rotated or sheared map work
-% just as well - but our map is an @EBSDsquare anyway, since that is how it
-% was imported, see <EBSDGrid.html Square and Hex Grids>.
+%% Reading the map at a point
+%
+% <EBSD.interp.html |interp|> evaluates the map at arbitrary coordinates.
+% It makes no assumption about a grid - a plain @EBSD, a phase subset and a
+% rotated or sheared map all work - although this map is an @EBSDsquare
+% anyway, since that is how it was imported, see
+% <EBSDGrid.html Square and Hex Grids>.
 
 x = 30.5; y = 5.5;
 e1 = interp(ebsd,x,y)
 
 %%
-% By default the command <EBSD.interp.html |interp|> performs inverse
-% distance interpolation. This is different to
+% The rule is local and simple: the query takes the data of the measurement
+% it is nearest to, provided it falls inside that measurement's pixel.
+% A query further away than the pixel reaches - outside the map, or in a
+% hole in it - comes back as notIndexed rather than as an extrapolation.
+%
+% Picking out the nearest measurement is what the |'xy'| selector does,
 
 e2 = ebsd('xy',x,y)
 
 %%
-% which returns the nearest neighbor EBSD measurement. Lets have a look at
-% the difference
+% and inside the map the two therefore report the same orientation.
 
 angle(e1.orientations,e2.orientations)./degree
 
-%% Change of the measurement grid
-% The command <EBSD.interp.html |interp|> can be used to evaluate the EBSD
-% map on a different grid, which might have higher or lower resolution or
-% might even be rotated. Lets demonstrate this 
+%%
+% What differs is the result. |'xy'| hands back one of the original
+% measurements, with its own position and id; |interp| builds a new EBSD
+% variable that sits at the positions asked for, and it takes a whole list
+% of them - which is what makes resampling possible.
+%
+%% Resampling onto a different grid
+%
+% A new grid is described by its unit cell, and <EBSD.gridify.html
+% |gridify|> builds the grid from the cell to cell translations of that
+% cell, calling |interp| for the values. Here is a cell of twice the size,
+% turned by 45 degrees.
 
 % unit cell of twice the size, rotated by 45 degree
 uC = rotate(2*ebsd.unitCell,45*degree);
@@ -58,28 +64,25 @@ plot(ebsdNewGrid('indexed'),ebsdNewGrid('indexed').orientations)
 xlim(ebsd.extent(1:2)), ylim(ebsd.extent(3:4))
 
 %%
-% Note, that we have not rotated the EBSD data but only the grid. All
-% orientations as well as the position of all grains remains unchanged.
+% The data has not been rotated, only the grid: every orientation and every
+% grain is where it was, drawn with coarser, tilted pixels. Since a tilted
+% grid cannot fill a rectangular matrix, the corners of |ebsdNewGrid| stick
+% out beyond the map and hold no data - fewer than half of its 108 by 109
+% cells are indexed - which is why the plot above is restricted to the
+% indexed ones.
 %
-% The new grid is generated from the cell to cell translations of the given
-% unit cell, i.e. it is rotated by 45 degree as well. Since such a rotated
-% grid can not fill a rectangular matrix, the corners of |ebsdNewGrid| stick
-% out of the map and contain no data - this is why we have restricted the
-% plot above to the indexed measurements.
+%% From a hexagonal to a square grid
 %
-%%
-% Another example is the change from a square to an hexagonal grid or vice
-% versa. In this case the command <EBSD.interp.html |interp|> is
-% implicitly called by the command <EBSD.gridify.html |gridify|>. In order
-% to demonstrate this functionality we start by EBSD data on a hex grid
+% The same mechanism changes the grid type. Starting from data measured on
+% a hexagonal grid,
 
 plottingConvention.default('y↓→x');
 mtexdata ferrite silent
 plot(ebsd(1:50,1:100),ebsd(1:50,1:100).orientations)
 
 %%
-% and resample the data on a square grid. To do so we first define a
-% smaller square unit cell corresponding to the hexagonal unit cell
+% a square cell of half the measurement spacing is small enough to resolve
+% it, and |gridify| does the rest.
 
 % define a square unit cell
 squnitCell = ebsd.dPos / 4 * vector3d([-1 -1 1 1],[-1 1 1 -1],0).';
@@ -89,3 +92,11 @@ squnitCell = ebsd.dPos / 4 * vector3d([-1 -1 1 1],[-1 1 1 -1],0).';
 ebsdS = ebsd.gridify('unitCell',squnitCell);
 
 plot(ebsdS(1:150,1:350),ebsdS(1:150,1:350).orientations)
+
+%%
+% The result is an @EBSDsquare of 808 by 809 cells covering the area the
+% 270 by 234 hexagonal cells did, about ten times as many. No orientation
+% was invented on the way - each new cell repeats the hexagonal measurement
+% it falls inside, which is why the boundaries of the resampled map are
+% stepped rather than smooth.
+%

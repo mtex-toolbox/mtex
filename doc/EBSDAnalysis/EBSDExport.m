@@ -1,17 +1,15 @@
 %% Exporting EBSD Data
 %
 %%
-% MTEX allows you to export EBSD data as <exportEBSD_h5.html HDF5>,
+% A map can be written back out as an <exportEBSD_h5.html HDF5>,
 % <exportEBSD_ctf.html ctf>, <exportEBSD_ang.html ang> or
-% <EBSD.export_crc.html cpr/crc> files. The syntax is
+% <EBSD.export_crc.html cpr/crc> file, and the format follows from the
+% extension of the name given
 %
 %   ebsd.export('myFile.ctf')
 %
-% The file format is detected automatically from the extension of the
-% specified file name.
-%
-% Note that information may be lost during export into a format different
-% then the import format as not all file formats support all properties.
+% Exporting into a format other than the one the data came from loses
+% information, since no two formats carry the same set of properties.
 % The exporters take as much of it along as the format allows: whatever the
 % header of the imported file stated is kept in |ebsd.opt.header| and
 % written back out, and the Euler angles are written in the reference frame
