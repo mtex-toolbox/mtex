@@ -1,0 +1,187 @@
+function str = buildImportWizardScript(ebsd,filePath,mapConvention,eulerConvention,dataSet,plotMask,phaseNames)
+% build the reproducible import script emitted by import_wizard
+%
+% Syntax
+%   str = buildImportWizardScript(ebsd,filePath,mapConvention,eulerConvention)
+%   str = buildImportWizardScript(...,dataSet,plotMask,phaseNames)
+%
+% Input
+%  ebsd            - configured @EBSD data
+%  filePath        - source file
+%  mapConvention   - selected map @plottingConvention
+%  eulerConvention - selected Euler @plottingConvention
+%  dataSet         - selected HDF5 data set number
+%  plotMask        - phases enabled in the wizard
+%  phaseNames      - mineral names displayed in the phase table
+
+if nargin < 5, dataSet = []; end
+if nargin < 6, plotMask = true(1,numel(ebsd.CSList)); end
+if nargin < 7, phaseNames = []; end
+
+templatePath = fullfile(mtex_path,'templates','import','loadEBSDtemplate.m');
+str = fileread(templatePath);
+
+% phases
+lines = cell(1,numel(ebsd.CSList));
+for k = 1:numel(lines)
+  lines{k} = phaseLiteral(ebsd.CSList(k),phaseName(ebsd,phaseNames,k));
+end
+block = ['[' newline strjoin(lines,[', ...' newline]) newline ']'];
+str = strrep(str,'{crystal symmetry}',block);
+
+% plotting convention
+str = strrep(str,'{plottingConvention}', ...
+  plottingConventionLiteral(mapConvention));
+
+% source file
+[pathStr,baseName,extStr] = fileparts(char(filePath));
+str = strrep(str,'{path to files}',charLiteral(pathStr));
+str = strrep(str,'{file names}', ...
+  sprintf('[pname filesep %s]',charLiteral([baseName extStr])));
+
+% loader options
+if ~isempty(dataSet)
+  str = strrep(str,'{options}',sprintf('''dataSet'',%d',dataSet));
+else
+  str = strrep(str,',{options}','');
+end
+
+% Euler correction
+correction = sprintf('rotation.map(%s,%s,%s,%s)', ...
+  vectorLiteral(eulerConvention.east),vectorLiteral(mapConvention.east), ...
+  vectorLiteral(eulerConvention.outOfScreen),vectorLiteral(mapConvention.outOfScreen));
+str = strrep(str,'{eulerCorrection}',correction);
+
+% first plot
+str = strrep(str,'{sanityPlot}', ...
+  sanityPlotLiteral(ebsd,plotMask,phaseNames));
+
+end
+
+% =========================================================================
+function str = phaseLiteral(cs,name)
+
+name = char(name);
+color = colorLiteral(cs.color);
+
+if isa(cs,'notIndexed') || ischar(cs)
+  if strcmpi(name,'notIndexed') && isempty(color)
+    str = '  notIndexed()';
+  elseif isempty(color)
+    str = ['  notIndexed(' charLiteral(name) ')'];
+  else
+    str = ['  notIndexed(' charLiteral(name) ', ' color ')'];
+  end
+  return
+end
+
+args = {charLiteral(char(cs.pointGroup)),mat2str(double(cs.abc),15)};
+
+% these lattices determine their angles from the point group
+impliedAngles = ismember(cs.lattice,[latticeType.cubic, ...
+  latticeType.orthorhombic,latticeType.trigonal, ...
+  latticeType.tetragonal,latticeType.hexagonal]);
+if ~impliedAngles
+  args{end+1} = [mat2str(double(cs.abg / degree),15) ' * degree'];
+end
+
+% keep the phase metadata together in the conventional option block
+args = [args, {'''mineral''',charLiteral(name)}];
+if ~isempty(color), args = [args, {'''color''',color}]; end
+
+% preserve the crystal frame edited in the Alignment column
+align = alignment(cs);
+for k = 1:numel(align)
+  args{end+1} = charLiteral(align{k}); %#ok<AGROW>
+end
+
+str = ['  crystalSymmetry(' strjoin(args,', ') ')'];
+
+end
+
+% =========================================================================
+function name = phaseName(ebsd,phaseNames,k)
+
+if isempty(phaseNames) || numel(phaseNames) < k
+  name = ebsd.CSList(k).mineral;
+elseif iscell(phaseNames)
+  name = phaseNames{k};
+else
+  name = phaseNames(k);
+end
+name = char(name);
+
+end
+
+% =========================================================================
+function str = colorLiteral(color)
+
+str = '';
+if isnumeric(color) && numel(color) == 3 && all(isfinite(color))
+  str = mat2str(double(color(:).'),15);
+elseif ischar(color) || (isstring(color) && isscalar(color))
+  str = charLiteral(char(color));
+end
+
+end
+
+% =========================================================================
+function str = charLiteral(value)
+
+str = ['''' strrep(char(value),'''','''''') ''''];
+
+end
+
+% =========================================================================
+function str = vectorLiteral(v)
+
+v = double(v(:)).';
+names = {'xvector','yvector','zvector'};
+for k = 1:3
+  e = zeros(1,3); e(k) = 1;
+  if norm(v-e) < 1e-6
+    str = names{k}; return
+  elseif norm(v+e) < 1e-6
+    str = ['-' names{k}]; return
+  end
+end
+str = sprintf('vector3d(%s)',mat2str(v,15));
+
+end
+
+% =========================================================================
+function str = plottingConventionLiteral(pC)
+
+[pictogram,isPictogram] = char(pC);
+if isPictogram
+  % MTEX 7.0 represents the eight axis-aligned conventions by pictograms.
+  str = charLiteral(pictogram);
+else
+  % Keep custom, non-axis-aligned conventions reproducible as well.
+  str = sprintf('plottingConvention(%s,%s)', ...
+    vectorLiteral(pC.outOfScreen),vectorLiteral(pC.east));
+end
+
+end
+
+% =========================================================================
+function str = sanityPlotLiteral(ebsd,plotMask,phaseNames)
+
+plotMask = logical(plotMask(:));
+n = numel(ebsd.CSList);
+if numel(plotMask) < n, plotMask(end+1:n) = false; end
+
+counts = zeros(n,1);
+for k = 1:n, counts(k) = nnz(ebsd.phaseId == k); end
+counts(~plotMask(1:n)) = 0;
+counts(~[ebsd.CSList.isIndexed].') = 0;
+
+[best,phaseId] = max(counts);
+if isempty(best) || best == 0
+  str = '% No indexed phase selected for the sanity-check plot';
+else
+  mineral = charLiteral(phaseName(ebsd,phaseNames,phaseId));
+  str = sprintf('plot(ebsd(%s),ebsd(%s).orientations)',mineral,mineral);
+end
+
+end

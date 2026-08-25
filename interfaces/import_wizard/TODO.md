@@ -406,10 +406,8 @@
     dominant indexed phase; the script should end with the equivalent of
     plot(ebsd(dominantPhase), ebsd(dominantPhase).orientations) so running
     the script immediately shows something instead of just variables
- -> DONE: dominant phase read straight from the phase table's own Plot
-    checkbox column (the same one fillPhaseTable pre-checks for the
-    largest indexed phase), not re-derived; template's final section
-    plots `plot(ebsd('{dominantMineral}'),ebsd('{dominantMineral}').orientations)`
+ -> DONE: the generated script counts the enabled indexed phases and plots
+    the dominant one using its escaped mineral name.
  -> verified end-to-end: generated script executed in a fresh session,
     produced the expected IPF colorkey message and no errors
 

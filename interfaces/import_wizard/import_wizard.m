@@ -46,7 +46,8 @@ classdef import_wizard < matlab.apps.AppBase
                                                                  % ensureTabAxesBuilt - hence a graphics array
                                                                  % with holes rather than a UIAxes array
     IPFTabs                        matlab.ui.container.Tab       % 1x3 array: IPF X / Y / Z
-    IPFAxes                        matlab.ui.control.UIAxes      % 1x3 array; built lazily, see ensureTabAxesBuilt
+    IPFAxes                        = gobjects(1,0)               % parallel to IPFTabs; each axes is built only
+                                                                 % after its own tab is selected
     PFTab                          matlab.ui.container.Tab
     PFGrid                         matlab.ui.container.GridLayout
     ImagesTab                      matlab.ui.container.Tab
@@ -168,16 +169,18 @@ classdef import_wizard < matlab.apps.AppBase
       app.RightPanel.Layout.Row = 1;
       app.RightPanel.Layout.Column = 2;
 
-      % show the window before building its content
+      % the populated file tree is what the user needs first - paint it
+      % before building the initially empty analysis side of the app
       app.UIFigure.Visible = 'on';
       drawnow
-
-      % build the analysis UI while the user is still browsing for a file
-      ensureAnalysisUI(app)
 
       % start with the keyboard focus on the file browser, so a file can
       % be picked with the arrow keys and loaded with Enter right away
       try focus(app.FileTree); catch, end
+
+      % nothing below flushes the queue, so the analysis controls are laid
+      % out once, at the next drawnow - they need no hidden parent
+      ensureAnalysisUI(app)
 
       % the rest of what an import needs, once the window is live - see
       % scheduleWarmUp
@@ -477,17 +480,17 @@ classdef import_wizard < matlab.apps.AppBase
       app.PFTab.SizeChangedFcn = createCallbackFcn(app, @PFTabSizeChanged, true);
       PFTabSizeChanged(app, [])
 
-      % --- Images tab: image selection happens in the OptTree now --------
-      createImagesTab(app)
+      % the Images tab is appended by the first import, see populateMapTabs
     end
 
     function createImagesTab(app)
       % The images tab is always the last one. Since tabs can only be
-      % appended (see the comment in createTabs), it is recreated after
-      % the property map tabs of an imported data set have been appended,
-      % see populateMapTabs. Image selection happens via the OptTree
-      % (right of PhaseTable, see createRightPanel/OptTreeSelectionChanged),
-      % so this tab is just the axes - built lazily, see ensureTabAxesBuilt.
+      % appended (see the comment in createTabs), it is appended after the
+      % property map tabs of an imported data set, see populateMapTabs -
+      % which is also why it does not exist before the first import. Image
+      % selection happens via the OptTree (right of PhaseTable, see
+      % createRightPanel/OptTreeSelectionChanged), so this tab is just the
+      % axes - built lazily, see ensureTabAxesBuilt.
       app.ImagesTab = uitab(app.TabGroup, 'Title', 'Images', ...
         'ForegroundColor', app.TabColors.Images);
       % the old axes died with the previous tab, clear the handle
@@ -543,9 +546,10 @@ classdef import_wizard < matlab.apps.AppBase
         if numel(app.MapAxes) < mapIdx || ~isgraphics(app.MapAxes(mapIdx))
           app.MapAxes(mapIdx) = createTabAxes(app, app.MapTabs(mapIdx));
         end
-      elseif ~isempty(app.IPFTabs) && any(tab == app.IPFTabs) && isempty(app.IPFAxes)
-        for i = 1:3
-          app.IPFAxes(i) = createTabAxes(app, app.IPFTabs(i));
+      elseif ~isempty(app.IPFTabs) && any(tab == app.IPFTabs)
+        ipfIdx = find(app.IPFTabs == tab,1);
+        if numel(app.IPFAxes) < ipfIdx || ~isgraphics(app.IPFAxes(ipfIdx))
+          app.IPFAxes(ipfIdx) = createTabAxes(app,app.IPFTabs(ipfIdx));
         end
       elseif ~isempty(app.PFTab) && tab == app.PFTab && isempty(app.PFAxes)
         for i = 1:3
@@ -615,7 +619,10 @@ classdef import_wizard < matlab.apps.AppBase
         switch app.WarmUpStep
           case 1
             % the axes of the two tabs every import builds: IPF Z is the
-            % default view, and populateMapTabs forces the phase map one
+            % default view, and populateMapTabs forces the phase map one.
+            % Both are parented straight to their tab and are at full size
+            % from the first render, so neither has to be visible first -
+            % see createLazyPlotTab
             ensureTabAxesBuilt(app, app.IPFTabs(3))
             ensureTabAxesBuilt(app, app.MapTabs(1))
 
@@ -913,6 +920,7 @@ classdef import_wizard < matlab.apps.AppBase
       markLoadedDataSet(app, ebsdData)
 
       % --- paint first: the minimum required for the initial IPF Z view
+      dropMapTabs(app)             % the only tab deletion, see dropMapTabs
       invalidateAllSigs(app)
       syncCoordinateControls(app)  % plotIPF reads the coordinate dropdowns
       fillPhaseTable(app)          % ... and the phase selection
@@ -923,30 +931,39 @@ classdef import_wizard < matlab.apps.AppBase
       drawnow                      % first paint
 
       % --- deferred setup: only appends tabs / updates values, it never
-      % reorders the tab group (that would blank the visible plot) -------
+      % deletes or reorders (that would blank the visible plot) ----------
       updateCurrentDataInfo(app, app.ebsd, filePath, false)
       app.ExportButton.Text = 'Import to variable';
       populateMapTabs(app)
       populateImagesSelector(app)
     end
 
+    function dropMapTabs(app)
+      % Drop the property map tabs and the images tab of a previously
+      % loaded data set, so that populateMapTabs is left with nothing but
+      % appends. Deleting a tab after an MTEX plot has been drawn can
+      % invalidate the uifigure canvas and leave intact graphics objects
+      % visually blank, so this has to run before the first paint - see
+      % importEBSDData. On a first import there is nothing to delete and it
+      % costs nothing.
+      delete(app.MapTabs(2:end))
+      app.MapTabs = app.MapTabs(1);
+      app.MapAxes = app.MapAxes(1:min(1,numel(app.MapAxes)));
+      app.MapNames = app.MapNames(1);
+      delete(app.ImagesTab)
+    end
+
     function populateMapTabs(app)
-      % (Re)create the property map tabs, one per property of the imported
-      % data set. New tabs can only be appended, so to keep the images tab
-      % the last one it is recreated afterwards - existing tabs (and in
-      % particular the currently visible one) are never touched.
+      % Append one property map tab per property of the imported data set,
+      % then the images tab, which is always the last one. Nothing is
+      % deleted here (see dropMapTabs) and existing tabs - in particular
+      % the currently visible one - are never touched, so this can run
+      % after the first paint.
       %
       % Only the (empty) tabs are built here; the axes follow on first
       % display, same as everywhere else - see ensureTabAxesBuilt. A
       % property map tab is one the user may well never open, and building
       % all of them cost 0.19s of every import.
-
-      % drop the tabs of a previously loaded data set
-      delete(app.MapTabs(2:end))
-      app.MapTabs = app.MapTabs(1);
-      app.MapAxes = app.MapAxes(1:min(1,numel(app.MapAxes)));
-      delete(app.ImagesTab)
-
       names = getPropertyNames(app);
       app.MapNames = [{'Phase Map'}; names(:)];
       for k = 2:numel(app.MapNames)
@@ -1421,7 +1438,7 @@ classdef import_wizard < matlab.apps.AppBase
     end
 
     function counts = phaseCounts(app)
-      % measurements per phase, as a numel(CSList) x 1 column
+      % measurements per phase, as a numel(CSList) × 1 column
       %
       % Gridded data (@EBSDsquare / @EBSDhex) carries phaseId = NaN at the
       % lattice sites that hold no measurement - see EBSD/private/squarify.
@@ -1603,7 +1620,7 @@ classdef import_wizard < matlab.apps.AppBase
       try
         ext = ebsd.extent;
         rows(end+1,:) = {'Coordinates', ['[' xnum2str(ext(1:2), 'delimiter', ',') ...
-          '] x [' xnum2str(ext(3:4), 'delimiter', ',') '] ' scanUnitLabel(app, ebsd)]};
+          '] × [' xnum2str(ext(3:4), 'delimiter', ',') '] ' scanUnitLabel(app, ebsd)]};
       catch
       end
 
@@ -1634,9 +1651,9 @@ classdef import_wizard < matlab.apps.AppBase
 
     function [gridLabel, dimsTxt, resolutionTxt] = gridInfo(app, ebsd)
       % gridLabel: 'Square Grid' or 'Hex Grid' (used as the row's
-      % Property name); dimsTxt: e.g. '1000 x 500 pixel'; resolutionTxt
+      % Property name); dimsTxt: e.g. '1000 × 500 pixel'; resolutionTxt
       % (shown under "Step Size"): the plain step size value, no 'dx ='/
-      % 'dHex =' label - e.g. '60 µm' or '60 x 80 µm' when dx and dy differ
+      % 'dHex =' label - e.g. '60 µm' or '60 × 80 µm' when dx and dy differ
       u = scanUnitLabel(app, ebsd);
       [xmin, xmax, ymin, ymax] = extent(ebsd);
 
@@ -2318,165 +2335,35 @@ classdef import_wizard < matlab.apps.AppBase
       workspace
     end
 
-    % Dynamically loads and populates MTEX import templates
-    % Dynamically loads and populates MTEX import templates safely
     function ExportScriptButtonPushed(app, ~)
       if isempty(app.ebsd) || app.LoadedFilePath == ""
         return
       end
 
-      % 1. Determine the export type - this app only ever loads EBSD data
-      exportType = 'EBSD';
-
-      % 2. Read the template file from the MTEX directory safely
-      templatePath = fullfile(mtex_path, 'templates', 'import', ['load' exportType 'template.m']);
-      if ~exist(templatePath, 'file')
-        uialert(app.UIFigure, ['Template file not found: ' templatePath], 'Export Error');
-        return;
-      end
-
-      try
-        % fileread loads the whole text file into a string character vector safely
-        str = fileread(templatePath);
-      catch ME
-        uialert(app.UIFigure, ['Could not read template file: ' ME.message], 'Export Error');
-        return;
-      end
-
-      % File and path preparations
-      [pathStr, baseName, extStr] = fileparts(char(app.LoadedFilePath));
-
-      %% --- Helper: MTEX-like markup replacement function ---
-      function replaceMarkup(token, repVal, delLineMarkup)
-        if contains(str, token)
-          if ~isempty(repVal)
-            str = strrep(str, token, repVal);
-          elseif nargin > 2 && ~isempty(delLineMarkup)
-            str = strrep(str, delLineMarkup, '');
-          else
-            str = strrep(str, token, '');
-          end
-        end
-      end
-
-      %% 3. Dynamic Replacements based on App Data
-      
-      % crystal symmetry - one entry per phase, joined into a phaseItem array
-      csLines = {};
-      for k = 1:numel(app.ebsd.CSList)
-        cs = app.ebsd.CSList(k);
-
-        % decide by class, the mineral name is renameable
-        isNotIndexed = ischar(cs) || isa(cs, 'notIndexed');
-
-        if isNotIndexed
-          % notIndexed(name,color) is positional, so a color needs a name in front
-          hasColor = isobject(cs) && isprop(cs, 'color') && numel(cs.color) == 3 && ~any(isnan(cs.color));
-          if isobject(cs) && isprop(cs,'mineral') && ~strcmpi(char(cs.mineral),'notIndexed')
-            nameArg = char(cs.mineral);
-          else
-            nameArg = 'notIndexed';
-          end
-          if strcmp(nameArg,'notIndexed') && ~hasColor
-            csLines{end+1} = '  notIndexed()'; %#ok<AGROW>
-          else
-            col = [1 1 1];
-            if hasColor, col = double(cs.color); end
-            csLines{end+1} = sprintf('  notIndexed(''%s'', [%.4f, %.4f, %.4f])', ...
-              nameArg, col(1), col(2), col(3)); %#ok<AGROW>
-          end
-        else
-          % Safe extraction with fallbacks to avoid crashes
-          try
-            pg = char(cs.pointGroup);
-            abc = [norm(cs.aAxis), norm(cs.bAxis), norm(cs.cAxis)];
-            minName = char(cs.mineral);
-
-            % only monoclinic and triclinic have angles that are not implied
-            impliedAngles = ismember(cs.lattice, [latticeType.cubic, ...
-              latticeType.orthorhombic, latticeType.trigonal, ...
-              latticeType.tetragonal, latticeType.hexagonal]);
-
-            if impliedAngles
-              csLines{end+1} = sprintf('  crystalSymmetry(''%s'', [%.4f, %.4f, %.4f], ''mineral'', ''%s'')', ...
-                pg, abc(1), abc(2), abc(3), minName); %#ok<AGROW>
-            else
-              ang = [cs.alpha, cs.beta, cs.gamma] / degree;
-              csLines{end+1} = sprintf('  crystalSymmetry(''%s'', [%.4f, %.4f, %.4f], [%.1f, %.1f, %.1f], ''mineral'', ''%s'')', ...
-                pg, abc(1), abc(2), abc(3), ang(1), ang(2), ang(3), minName); %#ok<AGROW>
-            end
-          catch
-            % Fallback if it's an unrecognized or empty phase structure
-            csLines{end+1} = '  notIndexed(''notIndexed'')'; %#ok<AGROW>
-          end
-        end
-      end
-      csBlock = ['[' char(10) strjoin(csLines, [', ...' char(10)]) char(10) ']'];
-      str = strrep(str, '{crystal symmetry}', csBlock);
-
-      % Specimen Symmetry
-      replaceMarkup('{specimen symmetry}', 'specimenSymmetry(''1'')');
-
-      function s = vectorLiteral(v)
-        % render a principal-direction vector3d as xvector/-xvector/... ,
-        % falling back to an explicit vector3d(...) for anything else
-        v = double(v(:))';
-        names = {'xvector', 'yvector', 'zvector'};
-        for k = 1:3
-          ev = zeros(1,3); ev(k) = 1;
-          if norm(v - ev) < 1e-6
-            s = names{k};
-            return
-          elseif norm(v + ev) < 1e-6
-            s = ['-' names{k}];
-            return
-          end
-        end
-        s = sprintf('vector3d(%s)', mat2str(v));
-      end
-
-      % Plotting Convention
-      mapIdx = app.MapCoordinatesDropDown.ValueIndex;
-      mapObj = app.CoordinateSystems.how2plot(mapIdx);
-      replaceMarkup('{zAxisDirection}', vectorLiteral(mapObj.outOfScreen));
-      replaceMarkup('{xAxisDirection}', vectorLiteral(mapObj.east));
-
-      % File Paths & Names
-      safePath = strrep(pathStr, "'", "''");
-      safeFile = strrep([baseName extStr], "'", "''");
-      replaceMarkup('{path to files}', sprintf('''%s''', safePath));
-      replaceMarkup('{file names}', sprintf('[pname filesep ''%s'']', safeFile));
-
-      % options - the format is auto detected, but the data set and the
-      % recorded / post processed choice have to be written out
-      optList = {};
+      mapObj = app.CoordinateSystems.how2plot( ...
+        app.MapCoordinatesDropDown.ValueIndex);
+      eulerObj = app.CoordinateSystems.how2plot( ...
+        app.EulerCoordinatesDropDown.ValueIndex);
       entry = selectedDataSet(app);
-      if ~isempty(entry)
-        if entry.dataSet > 1
-          optList{end+1} = sprintf('''dataSet'',%d', entry.dataSet);
-        end
+      dataSet = [];
+      % A multi-map HDF5 file must state even dataSet 1 explicitly. For a
+      % single-map format the synthetic list row is only UI state and must
+      % not be passed to loaders that do not implement this option.
+      if ~isempty(entry) && numel(app.DataSetEntries) > 1
+        dataSet = entry.dataSet;
       end
-      replaceMarkup('{options}', strjoin(optList, ','), ',{options}');
 
-      % Euler correction - an EBSD.load option, written as rotation.map
-      eulerIdx = app.EulerCoordinatesDropDown.ValueIndex;
-      eulerObj = app.CoordinateSystems.how2plot(eulerIdx);
-      replaceMarkup('{eulerCorrection}', sprintf('rotation.map(%s,%s,%s,%s)', ...
-        vectorLiteral(eulerObj.east), vectorLiteral(mapObj.east), ...
-        vectorLiteral(eulerObj.outOfScreen), vectorLiteral(mapObj.outOfScreen)));
-
-      % Dominant Phase (for the sanity-check plot)
       plotMask = logical(app.PhaseTable.Data.Plot);
-      domRow = find(plotMask, 1);
-      if isempty(domRow), domRow = 1; end
-      replaceMarkup('{dominantMineral}', char(app.PhaseTable.Data.Mineral(domRow)));
+      phaseNames = app.PhaseTable.Data.Mineral;
+      try
+        str = buildImportWizardScript(app.ebsd,app.LoadedFilePath, ...
+          mapObj,eulerObj,dataSet,plotMask,phaseNames);
+      catch ME
+        uialert(app.UIFigure,ME.message,'Could not generate import script')
+        return
+      end
 
-      % Corrections / Coefficients
-      replaceMarkup('{corrections}', '', '{corrections}');
-      replaceMarkup('c = {structural coefficients}', '', 'c = {structural coefficients}');
-
-      %% 4. Open the generated script in the editor - not saved to disk
-      matlab.desktop.editor.newDocument(str);
+      matlab.desktop.editor.newDocument(str)
     end
   end
   methods (Access = public)

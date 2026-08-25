@@ -35,8 +35,64 @@ checkEMSphInxAngROI;
 checkCprMissingPhase;
 checkGridDispatch;
 checkGridOnImport;
+checkWizardScript;
 
 disp('check_ebsdImport: passed');
+
+end
+
+% =========================================================================
+function checkWizardScript
+% the wizard script must reproduce every phase edit and its named first plot
+
+ni = notIndexed('not'' indexed',[0.1 0.2 0.3]);
+cs2 = crystalSymmetry('1',[2 3 4],[75 85 105]*degree, ...
+  'Z||b','X||a*','mineral','O''Brien phase','color',[0.2 0.4 0.6]);
+cs3 = crystalSymmetry('m-3m',[3.6 3.6 3.6], ...
+  'mineral','name before table edit','color',[0.7 0.3 0.1]);
+
+phaseId = [1; 2; 2; 3; 3; 3; 3];
+n = numel(phaseId);
+ebsd = EBSD(vector3d((1:n).',zeros(n,1),zeros(n,1)), ...
+  rotation.id(n),phaseId,[ni cs2 cs3],struct());
+
+mapConvention = plottingConvention('y↑→x');
+eulerConvention = plottingConvention('x↓→y');
+filePath = fullfile(tempdir,'O''Brien.ctf');
+str = buildImportWizardScript(ebsd,filePath,mapConvention,eulerConvention, ...
+  1,[false true true],["not' indexed" "O'Brien phase" "dominant"]);
+
+% evaluate only the generated phase declaration, never the fake file load
+first = strfind(str,'csList = ');
+last = strfind(str,'% plotting convention');
+assert(isscalar(first) && isscalar(last) && last > first, ...
+  'check_ebsdImport: generated script has no isolated csList declaration')
+eval(str(first:last-1));
+
+assert(strcmp(csList(1).mineral,ni.mineral) && ...
+  max(abs(csList(1).color-ni.color)) < 1e-12, ...
+  'check_ebsdImport: generated script lost the notIndexed name or color')
+assert(strcmp(csList(2).mineral,cs2.mineral) && ...
+  max(angle(csList(2).axes,cs2.axes)) < 1e-10 && ...
+  max(abs(csList(2).color-cs2.color)) < 1e-12, ...
+  'check_ebsdImport: generated script lost the crystal alignment, name or color')
+assert(max(abs(csList(3).color-cs3.color)) < 1e-12, ...
+  'check_ebsdImport: generated script lost an indexed phase color')
+assert(strcmp(csList(3).mineral,'dominant'), ...
+  'check_ebsdImport: generated script ignored the edited table mineral name')
+
+assert(contains(str,'''dataSet'',1'), ...
+  'check_ebsdImport: generated script lost the first selected data set')
+assert(contains(str,"plottingConvention.default('y↑→x')"), ...
+  'check_ebsdImport: generated script did not use MTEX 7 plotting syntax')
+assert(contains(str,'O''''Brien.ctf'), ...
+  'check_ebsdImport: generated script did not quote the source path')
+assert(contains(str,"'mineral', 'O''Brien phase', 'color', [0.2 0.4 0.6]"), ...
+  'check_ebsdImport: generated script misplaced the mineral name or color')
+assert(contains(str,"plot(ebsd('dominant'),ebsd('dominant').orientations)"), ...
+  'check_ebsdImport: generated script did not plot the dominant mineral by name')
+assert(isempty(regexp(str,'\{[^\n}]+\}','once')), ...
+  'check_ebsdImport: generated script contains an unresolved template token')
 
 end
 
@@ -139,7 +195,7 @@ expect(e, 'ACOM.ang', ...
 expectRow(e, 'ACOM.ang', 'first', 1,   [0 0],     [346.01 144.59 252.14]);
 expectRow(e, 'ACOM.ang', 'last',  225, [28 28],   [264.02 39.57 56.00]);
 
-% 15 x 15 at a 2 um step - if the first row had been dropped the map would
+% 15 × 15 at a 2 um step - if the first row had been dropped the map would
 % not be square any more
 assert(length(e) == 225, ...
   'check_ebsdImport: ACOM.ang has %d pixels, expected 225', length(e))
@@ -200,7 +256,7 @@ end
 
 % =========================================================================
 function f = writeSyntheticAng(flavour,nx,ny)
-% write an nx x ny .ang whose right half was never measured
+% write an nx × ny .ang whose right half was never measured
 %
 % Both flavours write the identical layout - ten columns, phase in column 8 -
 % and differ only in what loadEBSD_ang fingerprints them by: EMSphInx fills

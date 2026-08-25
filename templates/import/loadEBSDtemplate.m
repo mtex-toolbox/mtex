@@ -10,7 +10,7 @@
 csList = {crystal symmetry};
 
 % plotting convention
-pC = plottingConvention({zAxisDirection},{xAxisDirection});
+% Applied after loading so that file metadata cannot override it.
 
 %% Specify File Names
 
@@ -33,8 +33,8 @@ EulerCorrection = {eulerCorrection};
 ebsd = EBSD.load(fname,csList,{options}, ...
   'EulerCorrection',EulerCorrection);
 % the convention applies to the session, not to this one object
-plottingConvention.default(pC);
+plottingConvention.default({plottingConvention});
 
 %% Plot a First Sanity Check
 
-plot(ebsd('{dominantMineral}'),ebsd('{dominantMineral}').orientations)
+{sanityPlot}

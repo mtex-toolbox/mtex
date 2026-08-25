@@ -264,6 +264,17 @@ adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
   template in `templates/import/` from the wizard's own state - the phase list as
   edited, the plotting convention, the Euler correction, the selected data set and a
   closing plot of the dominant phase
+- what is between a double click and the map on screen is only the IPF Z plot now.
+  The tabs of the imported data set are appended after the first paint, and only
+  dropping the previous data set's tabs runs before it - deleting a tab after an
+  MTEX plot has been drawn can invalidate the uifigure canvas and leave intact
+  graphics objects visually blank. So the images tab, which has to stay the last
+  one and could only be kept there by deleting and recreating it, is appended by
+  the first import rather than existing empty from the start
+- the three IPF axes were built together the first time any of them was shown, at
+  0.19 s each. They are built one at a time now, like the map tabs already were,
+  which leaves the warm-up run before the first import with one axes to build
+  instead of three
 
 ### EBSD Import
 
