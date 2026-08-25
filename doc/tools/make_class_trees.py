@@ -134,8 +134,18 @@ def main():
         # MATLAB, so the highlighter tags them .err - which this site styles
         # dark red. A class tree is not code and should not go through a code
         # highlighter.
+        # The blank line between two roots is written as '% &nbsp;', not as
+        # the bare '%' it looks like it should be. publish splits a comment
+        # into paragraphs at every empty comment line, and an <html> block
+        # has to be one paragraph: a '%' in the middle of it ends the block
+        # after the first root, and the rest - '<pre>', '</pre>', '</html>'
+        # - is then read as ordinary text, where <x> is publish's markup for
+        # a link. That is what put four <a href="pre"> into every section
+        # page and ran the whole tree together into one line of prose.
+        # A trailing space does not help, publish trims. Inside a <pre> the
+        # entity renders as the blank line it stands for.
         body = [title, '%', f'% {LEAD}', '%', '% <html>', '% <pre>']
-        body += ['% ' + l if l else '%' for l in lines]
+        body += ['% ' + l if l else '% &nbsp;' for l in lines]
         body += ['% </pre>', '% </html>', '%']
 
         if args.show:
