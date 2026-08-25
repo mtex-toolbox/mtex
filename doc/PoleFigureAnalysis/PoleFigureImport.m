@@ -8,15 +8,10 @@
 % Furthermore, such a PoleFigure object is the starting point for
 % <PoleFigure2ODF.html PoleFigure to ODF estimation>.
 %
-%% Importing pole figure data using the import wizard
+%% Importing Pole Figure Data with the Import Wizard
 %
-% The <import_wizard.html import wizard> can be started either by typing
-% into the command line
-
-import_wizard_old
-
-%%
-% or by using the start menu item *Start/Toolboxes/MTEX/Import Wizard*.
+% The <import_wizard.html import wizard> is started by typing
+% |import_wizard| at the command line,
 % Pole figure data can be also imported via the <matlab:filebrowser file
 % browser> by choosing *Import Data* from the context menu of the selected
 % file if its file extension was previously registered with the
@@ -132,7 +127,7 @@ plot(pf)
 % files and generates a PoleFigure object you can integrate this method
 % into MTEX by copying it into the folder |MTEX/qta/interfaces|. Then it
 % will be automatically called by the methods <PoleFigure.load.html
-% PoleFigure.load> and import_wizard_old. Examples how to write such an
+% PoleFigure.load> and |import_wizard|. Examples how to write such an
 % interface can be found in the directory |MTEX/qta/interfaces|.
 %
 

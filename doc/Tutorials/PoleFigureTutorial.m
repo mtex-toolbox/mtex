@@ -5,10 +5,9 @@
 % and neutron diffraction pole figure data.
 %
 %% Import pole figure diffraction data
-% Click on <matlab:import_wizard_old('PoleFigure') Import pole figure data> to
-% start the import wizard which is a GUI leading you through the import of
-% pole figure data. After finishing the wizard you will end up with a
-% script similar to the following one.
+% Click on <matlab:import_wizard Import pole figure data> to start the
+% <import_wizard.html import wizard>, which leads through the import step by
+% step. It ends with a script like the following one.
 
 % This script was automatically created by the import wizard. You should
 % run the whole script or parts of it in order to import your data. There
