@@ -1,27 +1,26 @@
 %% Subgrain Boundaries
 %
 %%
-% Low-angle grain boundaries (LAGB) or subgrain boundaries are those with a
-% misorientation less than about 15 degrees. Generally speaking they are
-% composed of an array of dislocations and their properties and structure
-% are a function of the misorientation. In contrast the properties of
-% high-angle grain boundaries, whose misorientation is greater than about
-% 15 degrees, are normally found to be independent of the misorientation.
-% However, there are special boundaries at particular orientations whose
-% interfacial energies are markedly lower than those of general high-angle
-% grain boundaries.
+% A grain boundary of a few degrees is a different object from one of fifty.
+% Below about 15 degrees a boundary is still an array of individual
+% dislocations, and its energy and structure change with the misorientation;
+% above it the dislocation cores overlap and the properties stop depending
+% on the misorientation, apart from a few
+% <CSLBoundaries.html special orientations> of markedly lower energy.
 %
-% In order to demonstrate the analysis of subgrain boundaries in MTEX we
-% start by importing an sample EBSD data set
+% Those low angle boundaries are the subgrain boundaries, and they sit
+% inside grains rather than between them. They are how deformation is stored
+% in a material, which is why one wants to see them, count them and measure
+% their density.
 
 % load some test data
 mtexdata ferrite silent
 
 %%
-% For the computation of low-angle boundaries we specify two thresholds
-% during grain reconstruction: the first value controls the low-angle grain
-% boundaries whereas the second is used for the high-angle grain
-% boundaries.
+% A reconstruction with a single threshold has to choose: at 10 degrees the
+% subgrain boundaries are invisible, at 1 degree every grain falls apart.
+% Two thresholds do both at once - the second separates grains, the first
+% marks boundaries within them.
 
 [grains,ebsd] = calcGrains(ebsd,'threshold',[1*degree, 10*degree],'minPixel',5);
 
@@ -29,13 +28,10 @@ mtexdata ferrite silent
 grains = smoothBoundary(grains,5)
 
 %%
-% We observe that we have 12314 high-angle boundary segments and 28501
-% low-angle boundary segments. In order to visualize the the subgrain
-% boundaries we first plot the ebsd data colorized by orientation. On top
-% we plot with solid lines the grain boundaries and with thinner lines the
-% subgrain boundaries. We even make the misorientation angle at the
-% subgrain boundaries visible by setting it as the transparency value of
-% the segments.
+% The display counts both: 15738 boundary segments between grains, and 31037
+% inner boundary segments within them - twice as many. Drawing the
+% second kind with a transparency that follows its misorientation angle
+% keeps the strongest walls visible and lets the weakest fade out.
 
 % plot the ebsd data
 plot(ebsd('indexed'),ebsd('indexed').orientations,'faceAlpha',0.5,'figSize','large')
@@ -55,29 +51,40 @@ plot(grains.innerBoundary,'linewidth',1.5,'edgeAlpha',alpha,'linecolor','b');
 % stop override mode
 hold off
 
-%% Subgrain Boundary Density
+%%
+% The subgrain boundaries are not spread evenly. Some grains are cut through
+% by strong walls, others are almost free of them, and the difference is a
+% difference in how much those grains deformed.
+
+%% How much subgrain boundary a grain contains
 %
-% The number of low-angle  boundary segments inside each grain can be
-% computed by the command <grain2d.subBoundarySize.html |subBoundarySize|>.
-% In the following figure we use it to visualize the density of subgrain
-% boundaries per grain pixel.
+% <grain2d.subBoundarySize.html |subBoundarySize|> counts the inner boundary
+% segments of each grain. Divided by the number of pixels of the grain it
+% becomes a density that can be compared between grains of different size.
 
 plot(grains, grains.subBoundarySize ./ grains.numPixel)
 mtexColorbar
 
-%% 
-% We may compute also the density of low-angle boundaries per grain as the
-% length of the subgrain boundaries divided by the grain area. This can be
-% done using the commands <grain2d.subBoundaryLength.html
-% |subBoundaryLength|> and <grain2d.area.html |area|>
+%%
+% The same in physical units rather than in counts:
+% <grain2d.subBoundaryLength.html |subBoundaryLength|> is the total length
+% of those segments, and dividing by <grain2d.area.html |area|> gives a
+% length per area, in inverse µm.
 
 plot(grains, grains.subBoundaryLength ./ grains.area)
 mtexColorbar
 
-%% Misorientation at Subgrain Boundaries
+%%
+% The two maps single out the same grains, as they should - one is a count
+% of segments and the other their length, and on a regular grid the two are
+% nearly proportional. The second is the one to report, since it does not
+% change when the step size does.
+
+%% The misorientations of the subgrain boundaries
 %
-% Apart from the spatial distribution of the subgrain boundaries we may
-% also analyze the distribution of their misorientations. 
+% Being dislocation walls, subgrain boundaries rotate the lattice about the
+% line directions of the dislocations that build them. So their
+% misorientation axes are not arbitrary.
 
 % extract all subgrain boundary misorientation
 mori = grains.innerBoundary.misorientation;
@@ -87,20 +94,24 @@ plot(mori.axis,'fundamentalRegion','contourf','figSize','small')
 
 mtexColorbar
 
-%% 
-% A more detailed analysis of the misorientation axes at subgrain
-% boundaries can be found in the chapter <TiltAndTwistBoundaries.html Tilt
-% and Twist Boundaries>.
+%%
+% Not here, though: over the whole fundamental sector the density stays
+% between 0.8 and 1.2, which is as good as uniform. This ferrite has no
+% preferred subgrain rotation axis, and that is a result rather than a
+% failure - compare the forsterite of
+% <TiltAndTwistBoundaries.html Tilt and Twist Boundaries>, where two axes
+% stand out clearly. That page also shows the same axes in specimen
+% coordinates.
+
+%% Networks and isolated segments
 %
-%% Connected Components
+% A wall that crosses a whole grain and a handful of segments that happen to
+% exceed one degree are both subgrain boundaries by the threshold, and they
+% mean very different things. |componentSize| tells them apart: it gives,
+% for each segment, the size of the connected group it belongs to.
 %
-% Sometimes one would like to distinguish between large connected networks
-% of low-angle boundaries and singular disconnected segments. This can be
-% done using the property |componentSize|. It returns for each segment the
-% total number of segments it is connected with. In the following figure we
-% use this to
-% plot all low-angle grain boundary networks with more than 50 segments in
-% blue and all remaining segments in red.
+% Here everything in a network of more than 50 segments is drawn blue and
+% everything else red.
 
 % plot the ebsd data
 plot(ebsd('indexed'),ebsd('indexed').orientations,'faceAlpha',0.5,'figSize','large')
@@ -114,3 +125,11 @@ plot(grains.boundary,'linewidth',2)
 plot(grains.innerBoundary(ind),'linewidth',1.5,'edgeAlpha',alpha(ind),'edgeColor','b');
 plot(grains.innerBoundary(~ind),'linewidth',1.5,'edgeAlpha',alpha(~ind),'edgeColor','r');
 hold off
+
+%%
+% Only 31 percent of the inner boundary segments belong to such a network.
+% The blue ones are structures - continuous walls running across a grain,
+% often meeting the grain boundary at both ends. The red is largely
+% orientation noise crossing the one degree threshold here and there. Both
+% are counted by the density maps above, and that is worth remembering
+% before reading much into a small difference between two grains.
