@@ -1,60 +1,81 @@
 %% Plotting Rotations
 %
 %%
-% A single rotation is best drawn by what it does, as the arrows on
-% <RotationDefinition.html Definition> do. A whole set of rotations is drawn
-% by giving each of them a point in a three dimensional space - one point
-% per rotation, one space per parametrisation.
+% A single rotation is best drawn by what it does, as in
+% <RotationDefinition.html Defining Rotations>. A set of rotations needs a
+% different picture. Each rotation becomes one point in a three-dimensional
+% coordinate domain, with the domain determined by the parametrisation.
+%
+% This page assumes the axis--angle and Bunge Euler descriptions introduced
+% in <RotationDefinition.html Defining Rotations>. The geometric trade-offs
+% between coordinate systems are developed in
+% <RotationRepresentations.html Rotation Representations>.
+%
+% The plotting convention controls how the reference frame is laid out on
+% screen. This page uses y north and x east.
 
 plottingConvention.default('y↑→x');
 
-% 500 uniformly distributed rotations
+% use a reproducible sample from the uniform distribution on rotations
+rng(0);
 rot = rotation.rand(500);
 
 %% Euler Angle Space
 %
-% <quaternion.scatter.html |scatter|> puts each rotation at its three Bunge
-% Euler angles. This is the default for rotations without a crystal
-% symmetry, and the box is the range the angles run over: $2\pi$ wide in
-% $\varphi_1$ and $\varphi_2$, $\pi$ deep in $\Phi$.
+% <quaternion.scatter.html |scatter|> places each rotation at its three
+% Bunge Euler angles. This is the default for rotations without crystal
+% symmetry. The complete box spans $0\leq\varphi_1,\varphi_2\leq2\pi$ and
+% $0\leq\Phi\leq\pi$.
 
 scatter(rot,'Bunge')
 
 %%
-% The points are not spread evenly, although the rotations are: they thin
-% out towards the bottom of the box. Euler angle space distorts volume, by a
-% factor $\sin\Phi$ that vanishes at both $\Phi = 0$ and $\Phi = \pi$, so
-% equal boxes near those faces do not hold equal shares of rotations. This
-% is why visual point density in an Euler-angle plot is not itself a texture
-% density.
+% The sample is uniform in rotation space, but its points are not uniform
+% in this box. Notice how the cloud thins near both $\Phi=0$ and $\Phi=\pi$.
+% Equal-sized boxes at different values of $\Phi$ represent different
+% volumes of rotation space. Point density in an Euler plot is therefore
+% not itself a texture density.
 
-%% Axis Angle and Rodrigues Space
+%% Axis--Angle Space
 %
-% The same rotations placed by their axis and angle - the direction of the
-% point is the rotation axis, the distance from the centre the rotation
-% angle.
+% Axis--angle coordinates place a rotation at $\omega\vec n$. The direction
+% $\vec n$ is its rotation axis and the distance from the origin is its
+% principal rotation angle $\omega$.
 
 scatter(rot,'axisAngle')
 
 %%
-% Now the cloud is a ball, and it is denser towards the rim: there are more
-% rotations by a large angle than by a small one. Rodrigues space is the
-% same construction with the distance scaled by $\tan\omega/2$, which pushes
-% the $180^\circ$ rotations out to infinity.
+% The identity is at the centre and half turns lie on the outer sphere. Most
+% of the points lie beyond half the radius, because a uniform sample
+% contains more large-angle rotations than small-angle rotations. Opposite
+% points on the outer sphere describe the same $180^\circ$ rotation.
 
-scatter(rot,'Rodrigues')
+%% Rodrigues--Frank Space
+%
+% Rodrigues--Frank coordinates keep the direction $\vec n$ but change the
+% distance from the origin to $\tan(\omega/2)$.
+
+scatter(rot,'Rodrigues','noBoundary')
 
 %%
-% The trade-offs between the three, and the two constructions that preserve
-% volume instead, are collected in
-% <RotationRepresentations.html Representations>.
-
-%% Colour and Markers
+% Rotations near $180^\circ$ now lie far from the centre, so they stretch
+% the plot and compress the appearance of the remaining cloud. Half turns
+% themselves are at infinity. This domain makes fixed-axis rotations and
+% symmetry boundaries simple, but it does not preserve volume.
 %
-% |scatter| takes the usual options, so a subset is highlighted by drawing
-% it on top.
+% In all three plots, coordinate distance should not be read as the angular
+% distance between arbitrary rotations. Use
+% <quaternion.angle.html |angle|> for that comparison. Homochoric and
+% cubochoric coordinates preserve volume instead; see
+% <RotationRepresentations.html Rotation Representations>.
 
-small = rot(rot.angle < 60*degree);
+%% Highlighting a Subset
+%
+% The usual marker options can distinguish a selected subset. Here the red
+% points are rotations less than $60^\circ$ from the identity.
+
+threshold = 60*degree;
+small = rot(rot.angle < threshold);
 
 scatter(rot,'axisAngle','MarkerFaceColor',[.7 .7 .7],'MarkerSize',4)
 hold on
@@ -62,27 +83,62 @@ scatter(small,'axisAngle','MarkerFaceColor','r')
 hold off
 
 %%
-% The red points sit in a small ball around the centre, and there are few of
-% them.
+% The red points form a ball around the identity. Count them and report the
+% fraction rather than estimating either value from the figure.
 
-100 * length(small) / length(rot)
-
-%%
-% This empirical percentage fluctuates because only 500 rotations were
-% drawn. For uniformly distributed rotations, the exact fraction below an
-% angle $\omega$ is $(\omega - \sin\omega)/\pi$, so at $60^\circ$ it is
-
-100 * (60*degree - sin(60*degree)) / pi
+numSmall = length(small)
+empiricalPercent = 100 * numSmall / length(rot)
 
 %%
-% about 5.77%. What a texture calls nearly identical is therefore a small
-% minority among rotations in general.
+% This reproducible draw contains 20 of 500 rotations, or 4%. Sampling
+% variation explains why it does not equal the population value below.
+
+%% Why Uniform Rotations Look Nonuniform
+%
+% Uniform means uniform with respect to the invariant, or Haar, measure on
+% the rotation group. In Bunge Euler angles its normalized volume element is
+%
+% $$\mathrm{d}g = \frac{1}{8\pi^2}\sin\Phi\,
+% \mathrm{d}\varphi_1\,\mathrm{d}\Phi\,\mathrm{d}\varphi_2.$$
+%
+% The factor $\sin\Phi$ explains the emptying of the Euler box near its two
+% $\Phi$ faces. In axis--angle coordinates the fraction of all rotations
+% with angle at most $\omega$ is
+%
+% $$P(\Omega\leq\omega)=\frac{\omega-\sin\omega}{\pi}.$$
+%
+% At $60^\circ$, this exact fraction is
+
+exactPercent = 100 * (threshold - sin(threshold)) / pi
+
+%%
+% The result is 5.7669%. Even this broad $60^\circ$ ball occupies only a
+% small part of rotation space. A scatter plot shows sampled coordinates;
+% estimating a continuous texture density requires
+% <rotation.calcDensity.html |calcDensity|>.
+
+%% Further Reading
+%
+% * H.-J. Bunge,
+% <https://doi.org/10.1016/C2013-0-11769-2 Texture Analysis in Materials
+% Science: Mathematical Methods>, Butterworths, 1982, develops the invariant
+% measure in Euler space and its use for texture analysis.
+% * A. Morawiec,
+% <https://doi.org/10.1007/978-3-662-09156-2 Orientations and Rotations:
+% Computations in Crystallographic Textures>, Springer, 2004, develops the
+% geometry and parametrisations of rotation space.
+% * P.G. Callahan et al.,
+% <https://doi.org/10.1107/S1600576717001157 Three-dimensional texture
+% visualization approaches: theoretical analysis and examples>, Journal of
+% Applied Crystallography 50 (2017), 430--440, compares three-dimensional
+% coordinate domains for crystallographic orientation data.
 
 %% Next
 %
-% Once rotations carry a crystal symmetry the same plots are restricted to a
-% <OrientationFundamentalRegion.html fundamental region>, and dense sets of
-% orientations are better drawn as sections through it, see
+% An orientation combines a rotation with crystal and specimen symmetry.
+% Its scatter plot is restricted to a
+% <OrientationFundamentalRegion.html fundamental region> by default. Dense
+% orientation sets are usually clearer as sections through that region; see
 % <OrientationVisualizationSections.html Section Plots>.
 
 %#ok<*NOPTS>

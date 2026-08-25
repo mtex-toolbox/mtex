@@ -1,120 +1,193 @@
-%% Fibres
+%% Fibres in Rotation Space
 %
 %%
-% A <fibre.fibre.html |@fibre|> is to rotation space what a straight line is
-% to Euclidean space: the shortest path between two rotations, and the set
-% traced out by continuing along it. Fibres matter because many common
-% textures are concentrated around such curves: all orientations that put
-% one crystal direction along one specimen direction, with the rotation
-% about that direction left free.
+% A fibre is a one-dimensional path through rotation space. A fibre segment
+% joins two orientations along their shortest angular path. A full fibre
+% contains every orientation that maps one fixed crystal direction onto one
+% fixed specimen direction while leaving the rotation about it free.
+%
+% This page assumes the rotation operations introduced in
+% <RotationOperations.html Calculating with Rotations> and the interpretation
+% of an orientation as a map between reference frames from
+% <OrientationDefinition.html Defining Crystal Orientations>. Crystal
+% symmetry and equivalent orientation descriptions are introduced in
+% <OrientationSymmetry.html Orientation Symmetry>.
+%
+% The plotting convention controls how the specimen frame is laid out on
+% screen. This page uses y north and x east.
 
 plottingConvention.default('y↑→x');
 
-% consider cubic symmetry
+% use two reproducible cubic texture components
 cs = crystalSymmetry('432');
+oriA = orientation.goss(cs);
+oriB = orientation.brass(cs);
 
-% two random orientations
-oriA = orientation.rand(cs)
+% select the equivalent of oriB nearest to oriA
+oriB = oriB.project2FundamentalRegion(oriA);
 
-%%
-
-oriB = orientation.rand(cs)
-
-%%
-% Under crystal symmetry an orientation stands for a whole set of
-% equivalent ones, so "the path between A and B" is only well defined once
-% the equivalent of |oriB| closest to |oriA| has been picked out.
-
-oriB = oriB.project2FundamentalRegion(oriA)
-
-%%
-% The connecting fibre is then
-
+% construct the shortest segment between the two representatives
 f = fibre(oriA,oriB)
 
-plot(oriA,'axisAngle','filled','MarkerSize',20)
-hold on
-plot(oriB,'axisAngle','filled','MarkerSize',20)
+%% Reading the Fibre
+%
+% The displayed endpoint row identifies the finite segment. The row containing
+% |h| and |r| gives the crystal and specimen directions that remain aligned
+% along it. The two directions live in different reference frames.
+%
+% The projection above changes only the symmetry-equivalent representative
+% of |oriB|. It does not change the physical crystal orientation. Choosing
+% the nearest representative makes this endpoint segment the shortest one.
+
+%% Plotting the Endpoint Segment
+%
+% The default three-dimensional plot uses Bunge Euler coordinates.
+
 plot(f,'lineWidth',3,'lineColor','red')
+hold on
+plot(oriA,'filled','MarkerSize',20,'MarkerFaceColor','darkred')
+plot(oriB,'filled','MarkerSize',20,'MarkerFaceColor','blue')
 hold off
+axis tight
+
+%% Reading the Endpoint Plot
+%
+% The red segment joins the dark-red Goss endpoint at $(0,45,0)$ degrees to
+% the blue Brass endpoint at $(35,45,0)$ degrees. Only the first Euler angle
+% changes in this example, so the segment looks straight. In general,
+% angular distance is not Euclidean distance in an Euler coordinate plot.
+
+%% The Two Directions That Define a Fibre
+%
+% An orientation maps a direction from the crystal frame into the specimen
+% frame. Every orientation |ori| on the full fibre satisfies
+%
+% $$ \mathtt{ori} * h = r. $$
+%
+% The endpoint constructor has already computed these directions. They are
+% available as the |h| and |r| properties of <fibre.fibre.html |@fibre|>.
+
+h = f.h
+
+%%
+
+r = f.r
+
+%%
+% Both endpoints map |h| exactly onto |r|. The two displayed entries are
+% their mapping errors in degrees.
+
+mappingErrorDegrees = ...
+  [angle(oriA * h,r),angle(oriB * h,r)] ./ degree
+
+%% A Full Fibre
+%
+% The option |'full'| discards the finite endpoint and continues the curve
+% through every rotation about the aligned direction.
+
+fullFibre = fibre(oriA,oriB,'full')
+
+%%
+% A crystal--specimen direction pair constructs the same full fibre
+% directly. The displayed logical value confirms that the two definitions
+% agree.
+
+directionFibre = fibre(h,r);
+sameFullFibre = fullFibre == directionFibre
+
+%% Symmetry Can Split the Plot
+%
+% By default, an orientation plot is folded into a fundamental region.
+
+figure;
+plot(fullFibre,'axisAngle','lineWidth',3,'lineColor','red')
 axis off
 
-%% A Fibre is a Circle
+%% Reading the Symmetry-Reduced Plot
 %
-% Rotation space is curved. In the unit-quaternion representation a fibre is
-% a great circle on the 3-sphere (with antipodal quaternions identified as
-% the same rotation), rather than a straight Euclidean line. Continued past
-% its two endpoints it closes up, which the option |'full'| requests.
+% The red fibre appears as disconnected arcs because it leaves the chosen
+% fundamental region and re-enters through a symmetry-equivalent face.
+% These arcs belong to one fibre, not to several different fibres.
 
-f = fibre(oriA,oriB,'full')
+%% The Complete Axis--Angle Domain
+%
+% The option |'complete'| removes the reduction by crystal symmetry.
 
-hold on
-plot(f,'lineWidth',3,'lineColor','red')
-hold off
-
-%%
-% The result looks like several disconnected arcs, but it is one circle: the
-% plot shows the fundamental region only, and the circle leaves it and
-% re-enters as a symmetrically equivalent piece. Drawn in the complete
-% rotation space, without folding anything back, it is a single closed
-% curve.
-
-plot(oriA,'axisAngle','filled','MarkerSize',20,'complete')
-hold on
-plot(oriB,'axisAngle','filled','MarkerSize',20)
-plot(f,'axisAngle','lineWidth',3,'lineColor','red')
-hold off
+figure;
+plot(fullFibre,'axisAngle','lineWidth',3,'lineColor','red','complete')
 axis off
 
-%% The Two Directions Behind a Fibre
+%% Reading the Complete Plot
 %
-% The other way to describe the same set: a fibre is all rotations that take
-% one crystal direction |h| onto one specimen direction |r|. Both are stored
-% on the fibre and read back as properties.
-
-f.h
-
-%%
-
-f.r
-
-%%
-% These are the axis of the relative rotation, written once in specimen
-% coordinates and once in crystal coordinates. They satisfy
-% |oriA * h = oriB * h = r|: the endpoint orientations send the same crystal
-% direction onto the same specimen direction.
-
-r = axis(oriB,oriA)
-
-%%
-
-h = inv(oriA) * axis(oriB,oriA)
-
-%%
-% Given the pair, the fibre is defined directly, without reference to the
-% two orientations it happened to come from.
-
-f = fibre(h,r)
+% The complete axis--angle ball exposes more of the red curve without the
+% cubic fundamental-region faces. It still has a coordinate seam: opposite
+% points on the outer sphere describe the same half turn. A curve cut at
+% that seam is therefore still one closed fibre in rotation space.
 
 %% Sampling a Fibre
 %
-% <fibre.orientation.html |orientation|> discretises a fibre into a list of
-% orientations, which is what a plot or a calculation along the fibre needs.
-% Specify the number of samples explicitly when it matters.
+% <fibre.orientation.html |orientation|> discretises a fibre for plotting or
+% numerical calculations. Specify the number of samples when it matters.
 
-ori = orientation(f,'points',100);
-
-length(ori)
+sampledOri = orientation(f,'points',12);
+numberOfSamples = length(sampledOri)
 
 %%
+% The markers show the 12 sampled orientations on the finite endpoint
+% segment. The continuous red curve remains the underlying fibre.
 
-figure
-plot(ori,'axisAngle')
+figure;
+plot(f,'lineWidth',3,'lineColor','red')
+hold on
+plot(sampledOri,'filled','MarkerSize',8,'MarkerFaceColor','black')
+hold off
+axis tight
+
+%% Why a Full Fibre Is a Circle
+%
+% Unit quaternions represent rotations with the identification $q=-q$.
+% Starting from a quaternion $q_0$, a spin through the angle $\omega$ about
+% the aligned direction traces
+%
+% $$ q(\omega)=\left(\cos\frac{\omega}{2},
+% \sin\frac{\omega}{2}\,\mathbf{n}\right)q_0. $$
+%
+% As $\omega$ runs from 0 to $2\pi$, this path follows half of a great circle
+% on the unit 3-sphere from $q_0$ to $-q_0$. Those endpoints represent the
+% same rotation, so their projection into rotation space is a closed circle.
+% The finite fibre constructed first is one subarc of this circle.
+
+%% Where Fibres Reappear in MTEX
+%
+% <fibre.angle.html |angle|> measures the distance from an orientation to a
+% fibre. <OrientationFibre.html Fibres of Orientations> develops pole-figure
+% and inverse-pole-figure plots, symmetrisation, and named rolling-texture
+% fibres. <FibreODFs.html Fibre ODFs> spreads a density around a fibre.
+%
+% Pole-figure values integrate an ODF over fibres. This integration is the
+% crystallographic Radon transform developed in the
+% <PoleFigureTutorial.html pole figure tutorial>.
+
+%% Further Reading
+%
+% * A. Morawiec,
+% <https://doi.org/10.1007/978-3-662-09156-2 Orientations and Rotations:
+% Computations in Crystallographic Textures>, Springer, 2004, develops the
+% geometry of rotation space and its symmetry-reduced regions.
+% * H.-J. Bunge,
+% <https://doi.org/10.1016/C2013-0-11769-2 Texture Analysis in Materials
+% Science: Mathematical Methods>, Butterworths, 1982, develops fibre
+% textures and orientation distributions.
+% * D. Chateigner, L. Lutterotti and M. Morales,
+% <https://doi.org/10.1107/97809553602060000968 Quantitative texture analysis
+% and combined analysis>, International Tables for Crystallography, Volume
+% H, 2019, places fibre textures and the Radon transform in diffraction
+% texture analysis.
 
 %% Next
 %
-% Fibres of the standard texture components, and the fibre ODFs built on
-% them, are <OrientationFibre.html Fibres of Orientations> and
-% <FibreODFs.html Fibre ODFs>.
+% Continue with <OrientationFibre.html Fibres of Orientations> for
+% crystallographic plotting and named texture fibres, then
+% <FibreODFs.html Fibre ODFs> for density models around them.
 
 %#ok<*NOPTS>
