@@ -54,7 +54,7 @@ BUDGET = {
     # sixteen pages, counted in each tree root that reaches them
     'toc listed twice': 33,
     'toc entry unresolved': 0,
-    'page unreachable': 6,       # changelog, Contribute2Doc and four others
+    'page unreachable': 5,       # changelog, Contribute2Doc and three others
     'narrative link dangling': 0,
     'chapter stub': 0,
     # the four smorf screenshots live only in web/images, so the offline
