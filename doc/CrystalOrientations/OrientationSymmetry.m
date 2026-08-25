@@ -1,53 +1,63 @@
 %% Symmetrically Equivalent Orientations
 %
 %%
-% A crystal orientation always appears as a class of symmetrically
-% equivalent rotations which all transform the crystal reference frame into
-% the specimen reference frame and are physically not distinguishable. 
-%
-% Lets start by defining some random orientation
+% An orientation never stands alone. Every symmetry operation of the crystal
+% produces a rotation that maps the crystal frame onto the specimen frame
+% just as well, and no measurement can tell them apart. The same is true for
+% symmetry of the specimen. An orientation is therefore a whole class of
+% rotations, and MTEX works with the class rather than with the
+% representative that happened to be written down.
 
-% trigonal crystal symmetry
+plottingConvention.default('y↑→x');
+
+% hexagonal crystal symmetry, 6 rotations about the c axis
 cs = crystalSymmetry('6')
 
-% monoclinic specimen symmetry with respect to the x-axis
+%%
+
+% specimen symmetry with a twofold axis along z
 ss = specimenSymmetry('112')
+
+%%
 
 % a random orientation
 ori = orientation.rand(cs,ss)
 
-
-%%
-% Since orientations transform crystal coordinates into specimen
-% coordinates crystal symmetries will act from the right and specimen
-% symmetries from the left
+%% Which Side Acts
+%
+% An orientation takes crystal coordinates to specimen coordinates, so
+% crystal symmetry acts on its input, from the right, and specimen symmetry
+% on its output, from the left. The six crystal operations give
 
 % symmetrically equivalent orientations with respect to crystal symmetry
 ori * cs
 
 %%
-% We observe that only the third Euler angle phi2 changes as this Euler
-% angle applies first to the crystal coordinates.
+% Only the third Euler angle $\varphi_2$ changes, in steps of $60^\circ$,
+% because $\varphi_2$ is the rotation applied first, i.e. the one acting in
+% crystal coordinates - which is exactly where the crystal symmetry sits.
+%
+% Specimen symmetry produces the other kind of equivalence.
 
 % symmetrically equivalent orientations with respect to specimen symmetry
 ss * ori
 
 %%
-% Combining crystal and specimen symmetry we obtain 6 crystallographically
-% equivalent orientations to |ori|
+% Now $\varphi_1$ moves instead, the angle applied last. Both together give
+% the full class, $2 \times 6 = 12$ orientations.
 
 ss * ori * cs
 
 %%
-% A shortcut for this operation is the command <orientation.symmetrise.html
-% symmetrise>
+% <orientation.symmetrise.html |symmetrise|> is the shortcut for that
+% product.
 
-symmetrise(ori)
+length(symmetrise(ori))
 
-%%
-% The consequence is visible in any pole figure. One orientation and one
-% crystal direction give not one pole but a whole set of them, because the
-% lattice cannot tell its symmetrically equivalent settings apart.
+%% What This Looks Like in a Pole Figure
+%
+% One orientation and one crystal direction give not one pole but a whole
+% set of them.
 
 h = Miller(1,0,0,cs);
 
@@ -55,37 +65,49 @@ plotPDF(ori,h,'MarkerSize',10,'figSize','small')
 
 %%
 % Every dot is the same physical direction of the same crystal. Which of
-% them you happen to compute is an accident of how the orientation was
-% written down, which is why every comparison in MTEX takes all of them into
-% account.
-%
-%%
-% For specific orientations, e.g. for the cube orientations, symmetrisation
-% leads to multiple identical orientations. This can be prevented by
-% passing the option |unique| to the command <orientation.symmetrise.html
-% symmetrise>
+% them a calculation happens to produce is an accident of how the
+% orientation was written down, which is why every comparison in MTEX takes
+% all of them into account.
 
-symmetrise(orientation.id(cs,ss),'unique')
-
-%% Crystal symmetries in computations
+%% Coincidences
 %
-% Note that all operation on orientations are preformed taking all
-% symmetrically equivalent orientations into account. As an example
-% consider the angle between a random orientation and all orientations
-% symmetrically equivalent to the goss orientation
+% For orientations that sit on a symmetry axis, several of the equivalent
+% rotations coincide. The identity orientation is the extreme case: its
+% class has 12 members but only 6 distinct ones, which the option |'unique'|
+% removes.
+
+length(symmetrise(orientation.id(cs,ss),'unique'))
+
+%% Symmetry in Every Computation
+%
+% Because the class is what matters, the angle between two orientations is
+% the smallest angle over all equivalent pairs. Comparing a random
+% orientation with each of the symmetric equivalents of the Goss orientation
+% gives one and the same number.
 
 ori = orientation.rand(cs);
+
 angle(ori,symmetrise(orientation.goss(cs))) ./ degree
 
 %%
-% The value is the same for all orientations and equal to the smallest
-% angle to one of the symmetrically equivalent orientations. This can be
-% verified by computing the rotational angle ignoring symmetry.
+% Switching symmetry off shows what those rotations really are: six
+% different angles, of which the number above is the smallest.
 
 angle(ori,symmetrise(orientation.goss(cs)),'noSymmetry') ./ degree
 
 %%
-% Functions that respect crystal symmetry but allow to switch it off using
-% the flag |noSymmetry| include <orientation.dot.html dot>,
-% <orientation.unique.html unique>, <orientation.calcCluster.html
-% calcCluster>.
+% The |'noSymmetry'| flag is available wherever the distinction matters,
+% among others for <orientation.dot.html |dot|>,
+% <orientation.unique.html |unique|> and
+% <orientation.calcCluster.html |calcCluster|>. Reach for it when a number
+% comes out smaller than expected - and leave it alone otherwise, since the
+% symmetry-aware answer is the physically meaningful one.
+
+%% Next
+%
+% The region of rotation space that holds exactly one member of each class
+% is the <OrientationFundamentalRegion.html Fundamental Region>. Symmetry of
+% the specimen, and when it should be imposed at all, is
+% <SpecimenSymmetry.html Specimen Symmetry>.
+
+%#ok<*NOPTS>
