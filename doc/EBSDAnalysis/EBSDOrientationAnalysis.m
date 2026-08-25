@@ -1,27 +1,33 @@
 %% EBSD Orientation Analysis
 %
-%% 
-% Here we discuss tools for the analysis of EBSD data which are independent
-% of its spatial coordinates. For spatial analysis, we refer to
-% <EBSDProfile.html this page>. Let us first import some EBSD data:
+%%
+% This page throws the map away and works with the orientations alone -
+% what they are, not where they are. For the spatial side see
+% <EBSDProfile.html Profiles>. The example is a question with a wrong
+% answer in it: does this rock have a fibre texture?
 
 plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
 plot(ebsd)
 
-%% Orientation plot
-% We start our investigations of the Forsterite phase by plotting some pole
-% figures
+%% A first look at the pole figures
+%
+% Three pole figures of the forsterite phase, one per crystal axis.
 
 cs = ebsd('Forsterite').CS % the crystal symmetry of the forsterite phase
 h = [Miller(1,0,0,cs),Miller(0,1,0,cs),Miller(0,0,1,cs)];
 plotPDF(ebsd('Forsterite').orientations,h,'antipodal')
 
 %%
-% From the {100} pole figure, we might suspect a fibre texture present in
-% our data. Let's check this. First, we determine the vector orthogonal to
-% fibre in the {100} pole figure
+% The $(100)$ axes lie on a great circle rather than in a spot. That is
+% what a *fibre texture* looks like: all crystals share one direction and
+% are otherwise free to turn about it. The hypothesis is worth testing.
+%
+%% Finding the axis
+%
+% If the $(100)$ axes really lie on a great circle, there is a direction
+% orthogonal to all of them, and |perp| finds the one that comes closest.
 
 % the orientations of the Forsterite phase
 ori = ebsd('Forsterite').orientations
@@ -35,29 +41,39 @@ rOrth = perp(r)
 plot(rOrth,'add2all','Marker','square','markerColor','DarkRed')
 
 %%
-% we can check how large is the number of orientations that are in the
-% (100) pole figure within a 10-degree fibre around the great circle with
-% center |rOrth|, i.e., in the region bounded by the two small circles
+% The square marks that direction in each of the three pole figures. In the
+% $(100)$ figure it lies well away from the data, as the pole of a great
+% circle must - and in the $(010)$ figure it lands in the middle of the
+% densest cluster, which is a hint worth coming back to. Drawing the band
+% that reaches to within 10° of the great circle makes the claim checkable.
 
 nextAxis(1)
 circle(rOrth,80 * degree,'lineColor','darkred','linewidth',5,'EdgeAlpha',0.5)
 
-%% 
-% The following line gives the result in percent
+%%
+% And counting how much of the data falls inside that band turns it into a
+% number, in percent.
 
 100 * sum(angle(r,rOrth)>80*degree) / length(ori)
 
 %%
-% Next, we want to answer the question which crystal direction is mapped to
-% |rOrth|. To this end, we look at the corresponding inverse pole figure
+% Nearly 62% of the measurements have their $a$ axis within 10° of the
+% great circle. For a first test that looks convincing.
+%
+%% Which crystal direction is the fibre axis
+%
+% A fibre needs a crystal direction as well as a specimen direction: it is
+% the set of orientations that map a fixed crystal direction onto a fixed
+% specimen direction. The inverse pole figure of |rOrth| says which crystal
+% direction that would have to be.
 
 plotIPDF(ebsd('Forsterite').orientations,rOrth,'smooth')
 mtexColorbar
 
 %%
-% From the inverse pole figure, it becomes clear that the orientations are
-% close to the fibre |Miller(0,1,0)|, |rOrth|. Let's check this by
-% computing the fibre volume in percent
+% The density piles up near $(010)$, so the candidate is the fibre that
+% takes the crystal $b$ axis to |rOrth|. Its volume is the honest version
+% of the number above.
 
 % define the fibre
 f = fibre(Miller(0,1,0,cs),rOrth);
@@ -66,9 +82,16 @@ f = fibre(Miller(0,1,0,cs),rOrth);
 100 * volume(ebsd('Forsterite').orientations,f,10*degree)
 
 %%
-% Surprisingly this value is significantly lower than the value we obtained
-% we looking only at the 100 pole figure. Finally, let's plot the ODF along
-% this fibre
+% 28%, less than half of the 62%, and the difference is the whole point.
+% Lying in the girdle only says that the $a$ axis avoids |rOrth|; the fibre
+% says in addition that the $b$ axis *points at* it. Every orientation on
+% the fibre is in the girdle, but most of the girdle is not on the fibre.
+%
+%% What the ODF says
+%
+% A fibre texture is constant along its fibre. Estimating a density from
+% the orientations and following it along |f| tests exactly that -
+% see <EBSD2ODF.html ODF Estimation> for what |calcDensity| does.
 
 odf = calcDensity(ebsd('Forsterite').orientations)
 
@@ -77,17 +100,24 @@ plot(odf,f,'linewidth',2)
 ylim([0,26])
 
 %%
-% We see that to ODF is far from being constant along the fibre. Thus,
-% together with an observation about the small fibre volume, we would
-% reject the hypothesis of a fibre texture.
+% A fibre texture would give a flat line. This one swings between 5.5 and
+% 19.6 times uniform, a factor of three and a half, with two peaks in every
+% half turn. Together with the 28% that settles the question: there is no
+% fibre texture here, only a few strong components that happen to share a
+% plane.
 %
-% Let's finally plot the ODF in orientation space to verify our decision
+%% Why the peaks are there
+%
+% Plotting the whole density in sections of orientation space shows where
+% they come from.
 
 plot(odf,'sigma')
 
 %%
-% Here we see the typical large individual spots that are typical for
-% large grains. Thus the ODF estimated from the EBSD data
-% and all our previous analysis suffer from the fact that too few grains
-% have been measured. For texture analysis, it would have been favorable to
-% measure at a lower resolution but a larger region.
+% These are the large isolated spots that a map with few grains always
+% produces: each grain contributes thousands of nearly identical
+% orientations, so one grain becomes one peak, and the estimated density
+% describes the grains that were measured rather than the rock they came
+% from. For texture analysis a coarser step over a larger area would have
+% been the better measurement.
+%
