@@ -15,13 +15,12 @@
 %
 % $$\| D_n^{k,l} \|_2 = 1$$
 %
-% for all $n,k,l$. For more information take a look on 
-% <WignerFunctions.html Wigner-D functions> and 
-% <SO3FunOperations.html#6 Integration of SO3Fun's>.
+% for all $n,k,l$. More on them is in <WignerFunctions.html Wigner-D
+% functions> and <SO3FunOperations.html Operations on SO3Funs>.
 %
 %%
-%
-% We construct an arbitrary ODF which generally is an SO3Fun:
+% Start from an ODF reconstructed from pole figure data - any
+% <SO3FunConcept.html SO3Fun> will do.
 plottingConvention.default('y↑→x');
 mtexdata dubna
 odf = calcODF(pf,'resolution',5*degree,'zero_Range')
@@ -44,8 +43,8 @@ f = SO3FunHarmonic(odf,'bandwidth',32)
 reshape(f.fhat(11:35),5,5)
 
 %%
-% As an additional example lets define a harmonic function by its Fourier
-% coefficients $\hat f_0^{0,0} = 0.5$ and 
+% A harmonic function is equally well defined by writing its coefficients
+% down, here $\hat f_0^{0,0} = 0.5$ and 
 % $\hat f_1 = \left(\begin{array}{rrr} 
 % 1 & 4 & 7 \\ 
 % 2 & 5 & 8 \\ 
@@ -66,7 +65,7 @@ plot(f2)
 %
 % Moreover, the decay of the Fourier coefficients is directly related to
 % the smoothness of the SO3Fun. The decay of the Fourier coefficients might
-% also hint for the presents of a ghost effect. See
+% also indicate the presence of a ghost effect, see
 % <PoleFigure2ODFGhostCorrection.html Ghost Correction>.
 
 %%
@@ -77,9 +76,8 @@ plotSpektra(f)
 
 %% ODFs given by Fourier coefficients
 %
-% In order to define an ODF by it *Fourier coefficients* ${\bf \hat{f}}$, 
-% they has to be given as a literally ordered, complex valued
-% vector of the form
+% To define an ODF by its *Fourier coefficients* ${\bf \hat{f}}$, they are
+% passed as a linearly ordered, complex valued vector of the form
 %
 % $$ {\bf \hat{f}} = [\hat{f}_0^{0,0},\hat{f}_1^{-1,-1},\ldots,\hat{f}_1^{1,1},\hat{f}_2^{-2,-2},\ldots,\hat{f}_N^{N,N}] $$
 %
@@ -143,3 +141,10 @@ mtexColorbar('title','misorientation angle in degree')
 
 %#ok<*NOPTS>
 
+%% Next
+%
+% The functions this series is built from are
+% <WignerFunctions.html Wigner-D Functions>, and what can be computed with
+% a harmonic representation is <SO3FunOperations.html Operations>. The
+% reconstruction that produced the ODF above is
+% <PoleFigure2ODF.html Reconstructing an ODF>.
