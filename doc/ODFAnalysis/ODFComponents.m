@@ -1,12 +1,12 @@
 %% ODF Component Analysis
 %
 %%
-% A common way to interpret ODFs is to think of them as superposition of
-% different components that originate from different deformation processes
-% and describe the texture of the material. In this section we describe how
-% these components can be identified from a given ODF.
+% A texture is usually described as a handful of *components* - preferred
+% orientations that different deformation or recrystallisation processes
+% produced. Reading an ODF means finding those components and saying how
+% much material belongs to each.
 %
-% We start by reconstruction a Quartz ODF from Neutron pole figure data.
+% The example is a quartz ODF reconstructed from neutron pole figure data.
 
 % import Neutron pole figure data from a Quartz specimen
 plottingConvention.default("y↑→x");
@@ -19,104 +19,96 @@ odf = calcODF(pf,'zeroRange');
 plotSection(odf,'sigma','sections',12,'layout',[3,4])
 mtexColorbar
 
-%% The preferred orientation
-% 
-% First of all we observe that the ODF posses a strong maximum. To find
-% this orientation that corresponds to the maximum ODF intensity we use
-% the <SO3Fun.max.html |max|> command. 
+%% The Preferred Orientation
+%
+% The ODF has one strong maximum. <SO3Fun.max.html |max|> returns both its
+% value and where it sits.
 
 [value,ori] = max(odf)
 
 %%
-% Note that, similarly as the MATLAB
-% <https://de.mathworks.com/help/matlab/ref/max.html |max|> command, the
-% second output argument is the position where the maximum is attained. In
-% our case we observe that the maximum value is about |121|. To visualize
-% the corresponding preferred orientation we plot it into the sigma
-% sections of the ODF.
+% As with the MATLAB
+% <https://de.mathworks.com/help/matlab/ref/max.html |max|>, the second
+% output is where the maximum is attained - here 110 times random. Drawn
+% into the sigma sections it lands on the brightest spot.
 
 annotate(ori)
 
 %%
-% We may not only use the command <SO3Fun.max.html |max|> to find the global
-% maximum of an ODF but also to find a certain amount of local maxima. The
-% number of local maxima MTEX should search for, is specified as by the
-% option |'numLocal'|, i.e., to find the three largest local maxima do
+% |max| also finds local maxima, as many as asked for with |'numLocal'| -
+% which is the first step of a component analysis.
 
 [value,ori] = max(odf,'numLocal',3)
 
 annotate(ori(2:end),'MarkerFaceColor','red')
 
 %%
-% Note, that orientations are returned sorted according to their ODF value.
+% The orientations come back sorted by ODF value: 110, 47 and less.
 %
-%% Volume Portions
+%% Volume Fractions
 %
-% It is important to understand, that the value of the ODF at a preferred
-% orientation is in general not sufficient to judge the importance of a
-% component. Very sharp components may result in extremely large ODF values
-% that represent only very little volume. A more robust and physically more
-% relevant quantity is the relative volume of crystal that have an
-% orientation close to the preferred orientation. This volume portion can
-% be computed by the command <SO3Fun.volume.html, |volume(odf,ori,delta)|>
-% where |ori| is a list of preferred orientations and |delta| is the
-% maximum disorientation angle. Multiplying with $100$ the output will be
-% in percent
+% The ODF value at a component is not a measure of its importance. A very
+% sharp component reaches a huge value while occupying almost no volume,
+% see <ODFTheory.html Theory>. What matters is the fraction of material
+% within a given disorientation angle of it, which is
+% <SO3Fun.volume.html |volume(odf,ori,delta)|>.
 
 delta = 10*degree;
 volume(odf,ori,delta) * 100
 
 
 %%
-% We observe that the sum of all volume portions is far from $100$ percent.
-% This is very typical. The reason is that the portion of the full
-% orientations space that is within the $10$ degree disorientation distance
-% from the preferred orientations is very small. More precisely, it
-% represents only
+% 11, 5 and 4 percent - together far short of 100, which is entirely
+% typical. The reason is that a $10^\circ$ ball is a tiny part of
+% orientation space to begin with: in a uniform texture it would hold
 
 volume(uniformODF(odf.CS),ori(1),delta) * 100
 
 %%
-% percent of the entire orientations space. Putting these values in
-% relation it becomes clear, that all the components are multiple times
-% stronger than the uniform distribution. We may compute these factors by
+% only 0.17 percent of the material. Against that reference the components
+% are enormous - the ratio is how many times more material sits there than
+% a uniform texture would put there.
 
 volume(odf,ori,delta) ./ volume(uniformODF(odf.CS),ori,delta)
 
 %%
-% It is important to understand, that all these values above depend
-% significantly from the chosen disorientation angle |delta|. If |delta| is
-% chosen too large
+% 67, 31 and 24 times. Every number in this section depends on the
+% disorientation angle |delta|, and choosing it too large makes the
+% components overlap.
 
 delta = 40*degree
 volume(odf,ori,delta)*100
 
 %%
-% it may even happen that the components overlap and the sum of the volumes
-% exceeds 100 percent.
+% At $40^\circ$ the three balls together account for more than 100 percent
+% of the material, since the same crystals are counted in several of them.
 %
-%% Non circular components
+%% Components That Are Not Balls
 %
-% A disadvantage of the approach above is that one is restricted to
-% circular components with a fixed disorientation angle which makes it hard
-% to analyze components that are close together. In such settings one may
-% want to use the command <SO3Fun.calcComponents.html |calcComponents|>. This
-% command starts with evenly distributed orientations and lets the crawl
-% towards the closest preferred orientation. At the end of this process the
-% command returns these preferred orientation and the percentage of
-% orientations that crawled to each of them.
+% Fixing one radius for every component is the weakness of the approach:
+% real components are not spherical and neighbouring ones run into each
+% other. <SO3Fun.calcComponents.html |calcComponents|> avoids the choice
+% altogether. It starts from evenly distributed orientations and lets each
+% of them crawl uphill to the nearest maximum, then reports the maxima
+% together with the share of orientations that arrived at each.
 
 [ori, vol] = calcComponents(odf);
 ori
 vol * 100
 
 %%
-% These volumes always sums up to approximately 100 percent. While the
-% preferred orientations should be the same as those computed by the |max|
-% command.
+% 48, 22, 21 and 7 percent - these shares always add up to about 100, since
+% every orientation ends up somewhere. The maxima themselves agree with
+% those found by |max|, which the white circles show.
 
 annotate(ori,'MarkerFaceColor','none','MarkerEdgeColor','white',...
   'linewidth',2,'MarkerSize',15,'marker','o')
 
 %#ok<*ASGLU>
 %#ok<*NOPTS>
+
+%% Next
+%
+% Fitting model components to an ODF rather than locating them is
+% <ODFModeling.html Modeling>, and the single numbers that summarise a
+% whole ODF are <ODFCharacteristics.html Properties>.

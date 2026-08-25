@@ -1,20 +1,21 @@
 %% Visualizing ODFs
+%
 %%
+% An ODF is a function on a three dimensional curved space, and a sheet of
+% paper is flat. Every way of drawing one is therefore a compromise, and
+% there are two families of them:
+%
+% # parametrise orientation space by three numbers - the Euler angles, say -
+% and draw a translucent three dimensional contour plot;
+% # cut the space into two dimensional sections and draw the ODF on each.
+%
+% The second is what is normally used, and which sections are cut matters
+% more than it looks.
+
 plottingConvention.default('y↑→x');
+
 %%
-% Since an orientation density function (ODF) is a function on the three
-% dimensional, non Euclidean orientation space its proper visualization is
-% a challenging task. In general one distinguishes two approaches
-%
-% # Choose a parametrization of the orientation space by three variables,
-% e.g., by the Euler angles $\varphi_1$, $\Phi$, $\varphi_2$ and make a
-% three dimensional half translucent contour plot of the function
-% # Choose a series of two dimensional sections through the orientation
-% space and plot the ODF only at the sections.
-%
-%%
-% In order to demonstrate the different visualization techniques let us
-% first define a model ODF.
+% A model ODF to draw: two sharp components and a fibre.
 
 cs = crystalSymmetry('32');
 mod1 = orientation.byEuler(90*degree,40*degree,110*degree,'ZYZ',cs);
@@ -25,7 +26,7 @@ odf = 0.1*unimodalODF(mod1) ...
   + 0.7*fibreODF(Miller(0,0,1,cs),vector3d(1,0,0),'halfwidth',10*degree);
 
 %%
-% and lets switch to the LaboTex colormap
+% and let us switch to the LaboTex colormap
 setMTEXpref('defaultColorMap',LaboTeXColorMap);
 
 %% Three Dimensional Plots
@@ -36,7 +37,11 @@ setMTEXpref('defaultColorMap',LaboTeXColorMap);
 plot3d(odf)
 
 %%
-% By default this command represents the ODF in the Bunge Euler angle space
+% The fibre shows as a tube, the two components as blobs. Rotating such a
+% plot in the figure window is the only way to read it, which is the main
+% argument against it on paper.
+%
+% By default the ODF is drawn in Bunge Euler angle space
 % $\varphi_1$, $\Phi$, $\varphi_2$. The range of the Euler angles depends
 % on the crystal symmetry according to the following table
 %
@@ -45,19 +50,19 @@ plot3d(odf)
 % || $\Phi$       || $180^{\circ}$ || $180^{\circ}$ || $90^{\circ}$  || $180^{\circ}$ || $90^{\circ}$  || $180^{\circ}$ || $90^{\circ}$  || $180^{\circ}$ || $90^{\circ}$  || $90^{\circ}$  || $90^{\circ}$  ||
 % || $\varphi_2$  || $360^{\circ}$ || $180^{\circ}$ || $180^{\circ}$ || $120^{\circ}$ || $120^{\circ}$ || $90^{\circ}$  || $90^{\circ}$  || $60^{\circ}$  || $60^{\circ}$  || $180^{\circ}$ || $90^{\circ}$  ||
 %
-% Note that for the last to symmetries the three fold axis is not taken
-% into account, i.e., each orientation appears three times within the Euler
-% angle region. The first Euler angle is not restricted by any crystal
-% symmetry, but only by specimen symmetry. For an arbitrary symmetry the
-% bounds of the fundamental region can be computed by the command
+% For the last two symmetries the threefold axis is not accounted for, so
+% each orientation appears three times inside the region. The first Euler
+% angle is restricted by specimen symmetry only. These bounds come from
 % <symmetry.fundamentalRegionEuler.html |fundamentalRegionEuler|>
 
 [maxphi1,maxPhi,maxphi2] = fundamentalRegionEuler(crystalSymmetry('432'),specimenSymmetry('222'))
 
 %%
-% This return the common $90^{\circ} \times 90^{\circ} \times 90^{\circ}$
-% cube for cubic crystal and orthorhombic specimen symmetry. For an
-% arbitrary orientation
+% the familiar $90^{\circ} \times 90^{\circ} \times 90^{\circ}$ cube for
+% cubic crystal and orthorhombic specimen symmetry. It is a *bounding box*,
+% not the fundamental region itself - for cubic symmetry the box is about
+% three times too large, which is why an orientation can appear in it more
+% than once. Given an arbitrary orientation
 
 ori = orientation.rand(crystalSymmetry('432'),specimenSymmetry('222'))
 
@@ -70,12 +75,11 @@ ori = orientation.rand(crystalSymmetry('432'),specimenSymmetry('222'))
 [phi1,Phi,phi2] ./degree
 
 %%
-% A big disadvantage of the Euler angle representation of the orientation
-% space is that it very badly follows the curved geometry of the space.
-%
-% Especially for misorientation distribution functions a better alternative
-% is the three dimensional axis angle space. To visualize an ODF with
-% respect to this parametrization simply add the option |'axisAngle'|
+% Euler angle space follows the geometry of orientation space badly: it
+% stretches some regions and squeezes others, so a concentration seen there
+% may be an artefact of the parametrisation. Axis angle space distorts far
+% less, and for misorientations it is the usual choice - the option is
+% |'axisAngle'|.
 
 plot3d(odf,'axisAngle','figSize','large')
 
@@ -88,7 +92,11 @@ plot3d(odf,'axisAngle','figSize','large')
 plotSection(odf)
 
 %%
-% More information how to customize such plots can be found in the chapter
+% Six sections at constant $\varphi_2$, the classical view. The fibre
+% appears as a line wandering from section to section, which is what makes
+% these plots hard to read: one component is spread over several pictures.
+%
+% More on customizing them is in the chapter
 % <EulerAngleSections.html Euler angle sections>. Beside the standard
 % $\varphi_2$ sections MTEX supports also sections according to all other
 % Euler angles.
@@ -99,15 +107,18 @@ plotSection(odf)
 % * $\gamma$ (Matthies Euler angles)
 % * $\sigma = \alpha + \gamma$ (recommended)
 %
-% In fact MTEX highly recommends the so called sigma sections as they
-% provide a much less distorted representation of the orientation space. A
-% detailed description of the sigma sections can be found in the chapter
-% <SigmaSections.html sigma sections>.
+% Sigma sections are the recommended default. They follow the geometry of
+% the space much more closely, and a component that spans several phi2
+% sections usually sits in one sigma section, see
+% <SigmaSections.html Sigma Sections>.
 
 plotSection(odf,'sigma')
 
-%% Plotting the ODF along a fibre
-% For plotting the ODF along a certain fibre we have the command
+%% Along a Fibre
+%
+% A section need not be a plane. Evaluating the ODF along a curve gives the
+% density itself rather than a projection of it, which is the sharpest view
+% available when the curve is the right one.
 
 close all
 
@@ -118,6 +129,16 @@ plot(odf,f,'LineWidth',2);
 
 
 %%
-% Finally, lets set back the default colormap.
+% Finally, set the default colormap back.
 
 setMTEXpref('defaultColorMap',WhiteJetColorMap);
+
+%% Next
+%
+% The two section types have pages of their own,
+% <EulerAngleSections.html Euler Angle Sections> and
+% <SigmaSections.html Sigma Sections>. The projections onto the sphere are
+% <ODFPoleFigure.html Pole Figures> and
+% <ODFInversePoleFigure.html Inverse Pole Figures>.
+
+%#ok<*NOPTS>
