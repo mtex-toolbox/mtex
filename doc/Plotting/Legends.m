@@ -1,11 +1,11 @@
 %% Legends
 %
 %%
-% In order display a legend to your MTEX plots you need to add the option
-% |DisplayName| followed by the text that you would like to be displayed in
-% the legend. Objects that are plotted without this option are not
-% displayed in the legend. Eventually the legend is displayed by the command
-% <https://mathworks.com/help/matlab/ref/legend.html |legend|>
+% A legend is opt in: MTEX puts an entry in it for everything that was
+% plotted with a |DisplayName|, and leaves out everything else. That is the
+% opposite of MATLAB's default and it is deliberate - a figure that
+% superposes markers, circles and a colour coded background would otherwise
+% produce a legend nobody can read.
 
 % this is a point
 plot(vector3d.X,'upper','DisplayName','a point')
@@ -22,7 +22,12 @@ hold off
 legend
 
 %%
-% The <https://mathworks.com/help/matlab/ref/legend.html |legend|> command
-% support a wide variety of
+% Two of the three things in this figure are named, so the legend has two
+% entries. The star at the centre was plotted without a |DisplayName| and is
+% simply not mentioned.
+%
+% From there on it is the ordinary MATLAB
+% <https://mathworks.com/help/matlab/ref/legend.html |legend|> command, with
+% its
 % <https://mathworks.com/help/matlab/ref/matlab.graphics.illustration.legend-properties.html
-% properties> to adjust the position and appearance of the legend.
+% properties> for placing and styling the box.

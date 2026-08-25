@@ -1,15 +1,19 @@
 %% Combined Plots
-%%
-plottingConvention.default('y↑→x');
-%%
-% Explains how to combine several plots, e.g. plotting on the
-% top of an inverse pole figure some important crystal directions.
 %
-%% General Principle
-% In order to tell MATLAB to plot one plot right on the top of an older
-% plot one has to use the commands <matlab:doc('hold') hold on> and
-% <matlab:doc('hold') hold off>. Let's demonstrate this using a simple
-% example.
+%%
+% Most figures worth publishing put two things in one picture: measurements
+% on top of the function they were fitted to, two data sets in the same
+% projection, crystal directions marked on an inverse pole figure. There are
+% three ways to do this in MTEX, and they differ in what they do when a
+% figure has more than one axis.
+
+plottingConvention.default('y↑→x');
+
+%% Holding a plot
+%
+% The MATLAB way. <matlab:doc('hold') |hold on|> keeps what is drawn, so the
+% next command adds to it rather than replacing it, and |hold off| ends
+% that.
 
 close all
 plot([2 2],'LineWidth',2)
@@ -20,8 +24,9 @@ plot([1 3],'LineWidth',2)
 
 hold off
 
-%% Combine Different EBSD Data
-% First, we want to show up two different orientation data sets in one plot
+%% Two data sets in one projection
+%
+% Two sets of orientations, one rotated against the other:
 
 % let's simulate some orientation data
 cs = crystalSymmetry('-3m');
@@ -30,7 +35,7 @@ ori = discreteSample(odf,100);
 ori_rotated = discreteSample(rotate(odf,rotation.byEuler(60*degree,60*degree,0*degree)),100);
 
 %%
-% plot them as a scatter plot in axis/angle space
+% drawn in axis angle space, the second on top of the first:
 
 scatter(ori,'axisAngle')
 hold on % keep plot
@@ -38,19 +43,22 @@ scatter(ori_rotated);
 hold off % next plot command deletes all plots
 
 %%
-% a second way would be to superpose the pole figures of both sets of
-% orientations.
+% The same comparison in pole figures. Note that the second |plotPDF| does
+% not repeat the |'antipodal'| flag - the axes already have it, and what is
+% added has to fit the axes it is added to.
 
 h = [Miller(0,0,0,1,cs),Miller(1,0,-1,0,cs)];
 plotPDF(ori,h,'antipodal','MarkerSize',4)
-hold on 
+hold on
 plotPDF(ori_rotated,h,'MarkerSize',4);
-hold off 
+hold off
 
-
-%% Overlaying contour and scatter plots
-% A more robust way to overlay multiple plots is to use the options
-% |'add2all'| instead of |'hold on'|. This works for pole figure plots
+%% Adding to every axis at once
+%
+% |hold on| adds to the *current* axis. A pole figure figure has one axis
+% per lattice plane, so adding markers to all of them means adding them
+% several times - unless the plot is told to go into all axes at once, which
+% is what |'add2all'| does.
 
 plotPDF(odf,h,'antipodal','contourf','grid')
 mtexColorMap white2black
@@ -64,16 +72,31 @@ plot(ori_rotated,'DisplayName','EBSD 2',...
 legend('show','location','northeast')
 
 %%
-% as well as with ODF section
+% Each set of orientations went into both pole figures, in one command.
+% MTEX projected each of them into each axis according to what that axis
+% shows - which is the second thing |'add2all'| does and |hold on| does
+% not.
+%
+% ODF sections work the same way, and here it matters more: there are eight
+% axes, and every orientation belongs in the section closest to it.
 
 plot(odf,'sections',8,'contourf','sigma')
 mtexColorMap white2black
 plot(ori,'MarkerSize',6,'MarkerColor','b','MarkerEdgeColor','w','add2all')
 plot(ori_rotated,'MarkerSize',6,'MarkerColor','r','MarkerEdgeColor','k','add2all');
 
-%% Add Miller Indices to an Inverse Pole Figure Plot
-% Next, we are going to add some Miller indices to an inverse pole figure
-% plot.
+%%
+% The markers of the unrotated set gather in the first sections, where the
+% contours of the ODF are, and the rotated set appears elsewhere - which is
+% the check that the two are really different orientations and not a
+% different description of the same ones.
+
+%% Marking crystal directions
+%
+% An inverse pole figure is a map of crystal directions, so marking the
+% important ones on it makes it readable. |'symmetrised'| draws every
+% symmetrically equivalent direction, |'labeled'| writes the indices beside
+% them.
 
 plotIPDF(odf,xvector,'noLabel');
 mtexColorMap white2black
@@ -85,21 +108,29 @@ plot(Miller(0,1,-1,0,cs),'symmetrised','labeled','backgroundColor','w')
 plot(Miller(0,1,-1,1,cs),'symmetrised','labeled','backgroundColor','w')
 hold off % next plot command deletes all plots
 
+%%
+% Now the maximum can be named rather than pointed at: it sits at the
+% (0001) pole, which is what a fibre texture about the c axis looks like in
+% an inverse pole figure.
 
-%% Combining different plots in one figure
-% The next example demonstrates how to arrange arbitrary plots into one
-% figure
+%% Different plots side by side
+%
+% The third case is not overlaying but arranging: several independent plots
+% in one figure. Every MTEX plotting command takes |'parent'|, so MATLAB's
+% own <matlab:doc('subplot') |subplot|> does the arranging.
 
 % let us import some pole figure data
 mtexdata dubna
 
 %%
-% next, we compute an ODF out of them
+
 odf = calcODF(pf)
 
 %%
-% now we want to plot the original data alongside with the recalculated
-% pole figures and with a difference plot
+% Measured, recalculated and difference pole figure, side by side - the
+% standard figure for judging a reconstruction, see
+% <PoleFigure2ODF.html ODF Estimation>.
+
 figure('position',[50 50 1200 500])
 
 % set position 1 in a 1x3 matrix as the current plotting position
@@ -119,3 +150,8 @@ axesPos = subplot(1,3,3);
 
 % plot the difference pole figure at this position
 plotDiff(odf,pf({1}),'parent',axesPos)
+
+%%
+% For a grid of MTEX plots of the same kind there is a better tool than
+% |subplot|, which keeps the axes aligned and shares one colorbar between
+% them - see <Multiplot.html Multiplot>.
