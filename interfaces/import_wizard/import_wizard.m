@@ -566,11 +566,13 @@ classdef import_wizard < matlab.apps.AppBase
       if ~isempty(mapIdx)
         if numel(app.MapAxes) < mapIdx || ~isgraphics(app.MapAxes(mapIdx))
           app.MapAxes(mapIdx) = createTabAxes(app, app.MapTabs(mapIdx));
+          drawnow('nocallbacks')
         end
       elseif ~isempty(app.IPFTabs) && any(tab == app.IPFTabs)
         ipfIdx = find(app.IPFTabs == tab,1);
         if numel(app.IPFAxes) < ipfIdx || ~isgraphics(app.IPFAxes(ipfIdx))
           app.IPFAxes(ipfIdx) = createTabAxes(app,app.IPFTabs(ipfIdx));
+          drawnow('nocallbacks')
         end
       elseif ~isempty(app.PFTab) && tab == app.PFTab && isempty(app.PFAxes)
         for i = 1:3
@@ -581,6 +583,7 @@ classdef import_wizard < matlab.apps.AppBase
         drawnow('nocallbacks')
       elseif ~isempty(app.ImagesTab) && tab == app.ImagesTab && isempty(app.ImagesAxes)
         app.ImagesAxes = createTabAxes(app, app.ImagesTab);
+        drawnow('nocallbacks')
       end
     end
 
@@ -639,16 +642,20 @@ classdef import_wizard < matlab.apps.AppBase
       try
         switch app.WarmUpStep
           case 1
-            % the axes of the two tabs every import builds: IPF Z is the
+            % The axes of the two tabs every import builds: IPF Z is the
             % default view, and populateMapTabs forces the phase map one.
-            % Both are parented straight to their tab and are at full size
-            % from the first render, so neither has to be visible first -
-            % see createLazyPlotTab
-            ensureTabAxesBuilt(app, app.IPFTabs(3))
+            % Each is built while its own tab is selected and has been
+            % rendered - an axes created in a tab that was never on screen
+            % keeps the 400x300 default forever, and the map drawn into it
+            % ends up that size in the corner of a full size tab.
+            app.TabGroup.SelectedTab = app.MapTabs(1);
+            drawnow('nocallbacks')
             ensureTabAxesBuilt(app, app.MapTabs(1))
 
             % select IPF Z here rather than on the import path
             app.TabGroup.SelectedTab = app.IPFTabs(3);
+            drawnow('nocallbacks')
+            ensureTabAxesBuilt(app, app.IPFTabs(3))
 
           case 2
             % draw a dummy map once, to load and warm up the plotting stack
@@ -1408,6 +1415,15 @@ classdef import_wizard < matlab.apps.AppBase
       % limits or appdata (mapPlot/sphericalPlot) behind
       cla(ax, 'reset')
       rmallappdata(ax)
+
+      % 'reset' restores the factory geometry, not the one createTabAxes
+      % chose - without this the next map is drawn at the 400x300 default
+      % in the corner of a full size tab. The pole figure axes are grid
+      % children and own no Position, hence the parent test.
+      if isa(ax.Parent,'matlab.ui.container.Tab')
+        ax.Units = 'normalized';
+        ax.Position = [0 0 1 1];
+      end
     end
 
     function s = phaseSig(~, ids)
