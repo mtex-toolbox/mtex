@@ -1,74 +1,124 @@
 %% Vector Operations
+%
 %%
+% Directions are added, scaled and multiplied like ordinary numbers, and
+% every operation works on a whole list of directions at once. That is the
+% reason a loop over vectors is almost never needed in MTEX.
+
 plottingConvention.default('y↑→x');
-%%
-% In MTEX, one can calculate with three dimensional directions as with
-% ordinary numbers, i.e. we can use the predefined vectors  <xvector.html
-% vector3d.X>, <yvector.html vector3d.Y>, and <zvector.html vector3d.Z> and
-% set
+
+%% Building New Directions
+%
+% Sums and multiples of the specimen axes |vector3d.X|, |vector3d.Y| and
+% |vector3d.Z| are directions again.
 
 v = vector3d.X + 2*vector3d.Y
 
 %%
-% Moreover, all basic vector operations as <vector3d.plus.html "+">,
-% <vector3d.minus.html "-">, <vector3d.times.html "*">, <vector3d.dot.html
-% inner product>, <vector3d.cross.html cross product> are implemented in
-% MTEX.
+% <vector3d.plus.html |+|>, <vector3d.minus.html |-|>,
+% <vector3d.times.html |*|>, the inner product <vector3d.dot.html |dot|> and
+% the cross product <vector3d.cross.html |cross|> all behave as in linear
+% algebra.
 
 u = dot(v,vector3d.Y) * vector3d.Y + 2 * cross(v,vector3d.Z)
 
+%% Angles
+%
+% The <vector3d.angle.html |angle|> between two directions is the central
+% measurement in texture analysis - how far a lattice plane is tilted out of
+% the sheet plane, how far two grains are misoriented.
+
+angle(vector3d.X,vector3d.Y) ./ degree
+
 %%
-% Besides the standard linear algebra operations, there are also the
-% following functions available in MTEX.
+% The result is in radians, hence the division by |degree|, and it lies
+% between $0$ and $180^\circ$. If the two directions are axes rather than
+% directions the answer is never obtuse, which is the subject of
+% <VectorsAxes.html Axes and Antipodal Symmetry>.
 %
-% || <vector3d.angle.html angle(v1,v2)>  || angle between two specimen directions ||
-% || <vector3d.dot.html dot(v1,v2)>      || inner product ||
-% || <vector3d.cross.html cross(v1,v2)>  || cross product ||
-% || <vector3d.norm.html norm(v)>        || length of the specimen directions ||
-% || <vector3d.normalize.html normalize(v)> || normalize length to 1 ||
-% || <vector3d.sum.html sum(v)>          || sum over all specimen directions in v ||
-% || <vector3d.mean.html mean(v)>        || mean over all specimen directions in v  ||
-% || <vector3d.polar.html polar(v)>      || conversion to spherical coordinates || 
+%% Length
 %
-% A simple example for applying the norm function is to normalize a set of
-% specimen directions
+% <vector3d.norm.html |norm|> is the length of a direction and
+% <vector3d.normalize.html |normalize|> divides it out.
 
-u = u ./ norm(u)
+norm(u)
 
-%% Lists of vectors
+%%
+
+u = normalize(u)
+
+%%
+% Normalising changes nothing about where the direction points, so it
+% changes nothing about a spherical plot either. It matters when the numbers
+% themselves are used, for instance because |dot| of two unit vectors is the
+% cosine of the angle between them.
+
+dot(normalize(v),vector3d.Y)
+
+%% The Available Operations
 %
-% As any other MTEX variable you can combine several vectors to a list of
-% vectors. Additionally, all the operators operations mentioned before will work
-% elementwise on a list of vectors. See <ListsAndIndexing.html Working with
-% lists> on how to manipulate lists in Matlab.
+% || <vector3d.angle.html angle(v1,v2)> || angle between two directions ||
+% || <vector3d.dot.html dot(v1,v2)> || inner product ||
+% || <vector3d.cross.html cross(v1,v2)> || cross product ||
+% || <vector3d.norm.html norm(v)> || length ||
+% || <vector3d.normalize.html normalize(v)> || length scaled to one ||
+% || <vector3d.orthProj.html orthProj(v,N)> || component orthogonal to |N| ||
+% || <vector3d.perp.html perp(v)> || a direction orthogonal to all of |v| ||
+% || <vector3d.sum.html sum(v)> || sum over the list ||
+% || <vector3d.mean.html mean(v)> || mean direction of the list ||
+% || <vector3d.polar.html polar(v)> || the two spherical angles ||
+% || <vector3d.rotate.html rotate(v,rot)> || turn by a rotation ||
 %
-% Using the brackets |v = [v1,v2]| two lists of vectors can be joined to a
-% single list. Now each single vector is accessible via |v(1)| and |v(2)|.
+%% Lists of Directions
+%
+% Square brackets join directions into one list, and the entries are read
+% back by their index.
 
 w = [v,u];
 w(1)
-w(2)
 
 %%
-% When calculating with concatenated specimen directions all operations are
-% performed componentwise for each specimen direction.
+% Arithmetic on a list is done entry by entry. Adding a single direction to
+% a list of five adds it to each of them, so an operation that looks like it
+% needs a loop usually does not.
 
-w = w + v;
+w = w + v
 
 %%
-% A list of vectors can be indexed directly by specifying the ids of the
-% vectors one is interested in, e.g.
+% Lists are indexed as numeric arrays are, by position or by a logical
+% condition. Here a file of a thousand directions is loaded and only those
+% with a polar angle below $60^\circ$ are kept, see
+% <ListsAndIndexing.html Lists and Indexing>.
 
-% import many vectors from a file
 fname = fullfile(mtexDataPath,'vector3d','vectors.txt');
 v = vector3d.load(fname,'ColumnNames',{'polar angle','azimuth angle'})
 
-% extract vectors 1 to 5
-v(1:5)
+%%
+
+scatter(v(v.theta < 60*degree),'grid','on')
 
 %%
-% gives the first 5 vectors from the list, or by logical indexing. The
-% following command plots all vectors with an polar angle smaller then 60
-% degree
+% The outer ring of the projection is empty now. It held the 236 directions
+% that lie more than $60^\circ$ away from the Z axis.
+%
+%% Averaging a List
+%
+% <vector3d.mean.html |mean|> averages the coordinates entry by entry, so it
+% points into the middle of the list.
 
-scatter(v(v.theta<60*degree),'grid','on')
+mean(v)
+
+%%
+% Its length says how tightly the list is clustered: unit directions all
+% pointing the same way average to length one, a list spread over the sphere
+% to something much shorter - here 0.72. Directions pointing opposite ways
+% cancel outright. For axes, where |v| and |-v| mean the same thing, that
+% cancellation is wrong and the mean has to be taken with the |'antipodal'|
+% flag, see <VectorsAxes.html Axes and Antipodal Symmetry>.
+%
+%% Next
+%
+% Turning a direction into another one is the job of a
+% <Rotations.html rotation>, and
+% <VectorsDensityEstimation.html Density Estimation> replaces a long list of
+% directions by a smooth function on the sphere.

@@ -1,44 +1,61 @@
 %% Spherical Grids
 %
 %%
-% MTEX supports a wide variety of spherical grids. Those include the
-% <regularS2Grid.html |regularS2Grid|>, the <equispacedS2Grid.html MTEX
-% equispaced grid>, the <HEALPixS2Grid.html HealPix grid> and the
-% <fibonacciS2Grid.fibonacciS2Grid.html Fibonacci grid>. Lets define them with an
-% resolution of 7 degrees
+% Numerical work on the sphere needs a set of directions spread over it as
+% evenly as possible - to integrate a spherical function, to sample one, or
+% to draw it. There is no arrangement of more than a handful of points that
+% is perfectly even, which is why several constructions exist and why they
+% do not agree.
 
-% the regular grid
+plottingConvention.default('y↑→x');
+
+%% Four Constructions
+%
+% MTEX offers the <regularS2Grid.html |regularS2Grid|>, the
+% <equispacedS2Grid.html |equispacedS2Grid|>, the
+% <HEALPixS2Grid.html |HEALPixS2Grid|> and the
+% <fibonacciS2Grid.fibonacciS2Grid.html |fibonacciS2Grid|>. All of them are
+% asked for a resolution, i.e. for the mean distance between neighbouring
+% points.
+
+% a regular grid in the two spherical angles
 grid{1} = regularS2Grid('resolution',7*degree);
 
 % the MTEX equispaced grid
 grid{2} = equispacedS2Grid('resolution',7*degree);
 
-% the HealPix grid
+% the HEALPix grid
 grid{3} = HEALPixS2Grid('resolution',7*degree);
 
-% and the Fibonaci Grid
+% the Fibonacci grid
 grid{4} = fibonacciS2Grid('resolution',7*degree);
 
-% store the names of the grids
-names = {'regular','equispaced','HealPix','Fibonaci'};
+names = {'regular','equispaced','HealPix','Fibonacci'};
 
 %%
-% Plotting them indicates that there are quite some differences, especially
-% close to the poles.
+% Seen from above they differ most at the pole.
 
 plot(grid{1},'upper','layout',[1 4])
 mtexTitle(names{1})
 
 for k = 2:4
   nextAxis
-  plot(grid{k},'upper')  
+  plot(grid{k},'upper')
   mtexTitle(names{k})
 end
 
+%%
+% The regular grid takes the same number of azimuth steps on every circle of
+% latitude, so its points crowd together towards the pole and it needs 1404
+% of them where the others need about 800. The other three keep the spacing
+% roughly constant and drop points as the circles get shorter.
+
 %% Comparison of Uniformity
 %
-% In order to compare the uniformity of the different grids we first
-% perform a density estimation.
+% How even a grid really is can be measured rather than eyeballed.
+% <VectorsDensityEstimation.html Density estimation> smooths the points into
+% a function on the sphere, and for a perfectly uniform grid that function
+% would be the constant $1$.
 
 for k = 1:4
   d(k) = calcDensity(grid{k},'halfwidth',5*degree);
@@ -53,16 +70,32 @@ end
 mtexColorbar
 
 %%
-% We visually observe that there are quite some differences between the
-% grids. We may also quantify the different to the uniform distribution by
-% computing
+% The three even grids are almost flat, the regular one carries a hot spot
+% at the pole where its points pile up. The deviation from the constant is
+% the norm of the difference,
 
-norm(d-1).' 
+norm(d-1).'
 
 %%
-% or
+% or, integrating the deviation instead of its square,
 
 sum(abs(d-1)).'
+
+%%
+% Two orders of magnitude separate the regular grid from the other three,
+% and the Fibonacci grid is the most even of them. That does not make the
+% regular grid useless: its points sit on a rectangular mesh in the two
+% spherical angles, which is what a contour or surface plot needs, and what
+% <regularS2Grid.html |regularS2Grid|> exists for. For integration and for
+% sampling, use one of the other three.
+%
+%% Next
+%
+% Grids on the rotation group rather than on the sphere, and grids that
+% respect crystal symmetry, are covered in
+% <OrientationGrid.html Orientation Grids>. Choosing points so that a
+% spherical function is sampled as informatively as possible is a different
+% question, treated in <S2FunSampling.html Sampling>.
 
 %#ok<*NOPTS>
 %#ok<*SAGROW>

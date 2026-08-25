@@ -1,121 +1,146 @@
 %% Axes and Antipodal Symmetry
+%
 %%
+% A *direction* distinguishes its two ends - north is not south. An *axis*
+% does not. The normal of a lattice plane is an axis, because the plane has
+% no preferred side, and so is the axis of a twofold rotation, because
+% turning by $180^\circ$ one way and the other gives the same result.
+%
+% MTEX stores both as a <vector3d.vector3d.html |@vector3d|> and keeps the
+% difference in a single flag, |antipodal|. Setting it means: |v| and |-v|
+% are the same thing.
+
 plottingConvention.default('y↑→x');
-%% Directions vs. Axes
+
+%% Setting the Flag
 %
-% In MTEX it is possible to consider three dimensional vectors either as
-% directions or as axes. The key option to distinguish between both
-% interpretations is |'antipodal'|.
-%
-% Consider a pair of vectors
+% Take a pair of directions that differ only in the sign of their z
+% coordinate.
 
 v1 = vector3d(1,1,2);
 v2 = vector3d(1,1,-2);
 
-%%
-% and plots them in a spherical projection
-
 plot([v1,v2],'label',{'v_1','v_2'},'grid','on')
 
 %%
-% These vectors will appear either on the upper or on the lower hemisphere.
-% In order to treat these vectors as axes, i.e. in order to assume
-% antipodal symmetry - one has to use the keyword |'antipodal'|.
+% They plot on opposite hemispheres, |v1| on the upper one and |v2| on the
+% lower one. Read as axes, |v2| is the same axis as |-v2|, which points
+% upwards, and both mark the same spot.
 
 plot([v1,v2],'label',{'v_1','v_2'},'antipodal','grid','on')
 
-%%
-% Now the direction |v2| is identified with the direction |-v2| which plots
-% at the upper hemisphere.
+%% The Angle Between Axes
 %
-%% The Angle between Directions and Axes
-%
-% As a consequence the angle between two axes |v1|, |v2| will always be the
-% smallest angle between the directions |v1|, |v2| and |v1|, |-v2|, i.e. it
-% will always be smaller than 90 degree. In the absence of antipodal
-% symmetry we obtain
+% Two axes are never more than $90^\circ$ apart, because the angle is
+% measured to whichever end is closer. Without the flag,
 
 angle(v1,v2) / degree
 
 %%
-% whereas, if antipodal symmetry is assumed we obtain
+% and with it
 
 angle(v1,v2,'antipodal') / degree
 
-%% Antipodal Symmetry in Density Estimation
-% 
-% Another example, where antipodal symmetry matters is
-% <VectorsDensityEstimation.html density estimation>. For ordinary
-% directions we obtain an arbitrary spherical function
+%%
+% $180^\circ$ minus the first answer. This is the quiet way to get a
+% plausible wrong number: nothing complains if the flag is missing, the
+% angle simply comes out obtuse where it should not be. The same holds for
+% the <vector3d.mean.html mean> of a list, which cancels itself out if half
+% the axes are written with one sign and half with the other.
+%
+%% Attaching the Flag to the Data
+%
+% Rather than repeating the option at every command, mark the data itself
+% once. Every operation that follows honours the flag.
 
-v = vector3d.rand(100)
+v2.antipodal = true;
+
+angle(v1,v2) / degree
+%
+%% Densities of Axes
+%
+% <VectorsDensityEstimation.html Density estimation> turns a list of
+% directions into a function on the sphere. For directions, that function
+% can be anything.
+
+v = vector3d.rand(100);
 density = v.calcDensity;
 plot(density)
 
 %%
-% Whereas, if antipodal symmetry is present the resulting density function
-% will have antipodal symmetry as well
+% For axes it cannot: a density of axes has to give |v| and |-v| the same
+% value, so it is symmetric under inversion by construction. Note how the
+% lower half of the plot below is the point reflection of the upper one.
 
-density = v.calcDensity('antipodal')
+density = v.calcDensity('antipodal');
 plot(density,'complete')
 
-
-%% Antipodal Symmetry in Experimental Pole Figures
+%% Experimental Pole Figures
 %
-% Due to Friedel's law experimental pole figures always provide antipodal
-% symmetry. One consequence of this fact is that MTEX plots pole figure
-% data always on the upper hemisphere. Moreover if you annotate a certain
-% direction to pole figure data, it is always interpreted as an axis, i.e.
-% projected to the upper hemisphere if necessary
+% Diffraction cannot tell a lattice plane from its back side - this is
+% Friedel's law - so measured pole figures always carry antipodal symmetry.
+% MTEX therefore plots pole figure data on the upper hemisphere only, and
+% reads any direction annotated to such a plot as an axis.
 
 mtexdata dubna
+
 CS = pf.CS;
 
-% plot the first pole figure
 plot(pf({1}))
 
-% annotate a axis on the southern hemisphere
+%%
+% The annotated direction was given pointing downwards, and appears on the
+% upper hemisphere.
+
 annotate(vector3d(1,0,-1),'labeled','backgroundColor','w')
 
-%% Antipodal Symmetry in Recalculated Pole Figures
+%% Pole Figures Computed from an ODF
 %
-% However, in the case of pole figures calculated from an ODF antipodal
-% symmetry is in general not present.
+% A pole figure computed from an ODF is under no such constraint, and in
+% general the two hemispheres differ. Here the |(122)| pole figure and the
+% one of the opposite normal are not the same.
 
-% some preferred orientation
 o = orientation.byEuler(20*degree,30*degree,0,'ZYZ',CS);
 
-% define an unimodal ODF
 odf = unimodalODF(o);
 
-% plot pole figures
 plotPDF(odf,[Miller(1,2,2,CS),-Miller(1,2,2,CS)])
 
 %%
-% Hence, if one wants to compare calculated pole figures with experimental
-% ones, one has to add antipodal symmetry.
+% To compare such a computation with a measurement, add the antipodal
+% symmetry that the measurement has.
 
 plotPDF(odf,Miller(1,2,2,CS),'antipodal')
 
-%% Antipodal Symmetry in Inverse Pole Figures
+%% Inverse Pole Figures
 %
-% The same reasoning as above holds true for inverse pole figures. If we
-% look at complete, inverse pole figures they do not posses antipodal symmetry
-% in general
+% The same reasoning applies to inverse pole figures. A complete one has no
+% antipodal symmetry,
 
-plotIPDF(odf,[yvector,-yvector],'complete','noLabel')
-
-%%
-% However, if we add the keyword antipodal, antipodal symmetry is enforced.
-
-plotIPDF(odf,yvector,'antipodal','complete','noLabel')
+plotIPDF(odf,[vector3d.Y,-vector3d.Y],'complete','noLabel')
 
 %%
-% Notice how MTEX, automatically reduces the fundamental region of inverse
-% pole figures in the case that antipodal symmetry is present.
+% and enforcing the flag makes both halves equal.
 
-plotIPDF(odf,yvector)
+plotIPDF(odf,vector3d.Y,'antipodal','complete','noLabel')
 
 %%
-plotIPDF(odf,yvector,'antipodal')
+% Inverse pole figures are usually not drawn complete but reduced to the
+% <FundamentalSector.html fundamental sector>, the patch of the sphere that
+% crystal symmetry leaves inequivalent. Antipodal symmetry shrinks that
+% sector further, so the two plots below cover different regions of the
+% sphere.
 
+plotIPDF(odf,vector3d.Y)
+
+%%
+
+plotIPDF(odf,vector3d.Y,'antipodal')
+
+%% Next
+%
+% <VectorsDensityEstimation.html Density Estimation> works throughout with
+% the c-axes of an EBSD map, which are axes in exactly this sense.
+% Antipodal symmetry appears again for crystal directions in
+% <CrystalDirections.html Miller indices> and for misorientation axes in
+% <MisorientationTheory.html Misorientations>.
