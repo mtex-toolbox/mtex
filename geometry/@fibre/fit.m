@@ -15,6 +15,7 @@ function [f,lambda,delta] = fit(ori,varargin)
 % Output
 %  f       - @fibre
 %  lambda  - eigenvalues of the orientation tensor
+%  delta   - mean angle between the orientations and the fitted fibre
 %
 % Options
 %  local   - fast approach for locally concentrated orientations 
@@ -62,9 +63,7 @@ elseif check_option(varargin,{'noSymmetry','local'}) || ori.CS.numProper==1
   ori12 = orientation(eigv(4:-1:3),ori.CS,ori.SS);
   f = fibre(ori12(1),ori12(2),'full',varargin{:});
   
-  if nargout == 3
-    delta = norm(angle(f,ori)) / length(ori);
-  end
+  if nargout == 3, delta = mean(angle(f,ori)); end
 
   return
   
@@ -108,7 +107,7 @@ for ih = 1:length(hGrid)
   % maybe we have found a new optimum
   vTmp = mean(angle(fTmp,ori));
   if vTmp < v, f = fTmp; v = vTmp; end
-  
+
 end
 
 function test %#ok<DEFNU>
