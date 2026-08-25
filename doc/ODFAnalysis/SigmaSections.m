@@ -1,12 +1,13 @@
 %% Sigma Sections
+%
 %%
-plottingConvention.default('y↑→x');
-%%
-% Although $\varphi_2$ sections are most common to represent orientation
-% distribution functions they heavily suffer from geometrical distortions
-% of the orientation space. Lets illustrate this at a simple example.
-% The following $\varphi_2$ sections represent a hexagonal ODF composed
-% from several unimodal components
+% $\varphi_2$ sections are the most common way of showing an ODF and one of
+% the hardest to read, because Euler angle space distorts the geometry it
+% cuts through. Sigma sections cut differently and are much easier to
+% interpret - this page is an argument for them, run as an experiment.
+%
+% Below is a hexagonal ODF made of a few unimodal components, in
+% $\varphi_2$ sections.
 
 % the ODF is defined at the bottom of this script to be secret during the first read :)
 cs = crystalSymmetry.load('Ti-Titanium-alpha.cif');
@@ -21,11 +22,11 @@ plotSection(odf)
 % # What would the c-axis pole figure look like?
 % # What would the a-axis pole figure look like?
 %
-% Most people find it difficult to find the correct answer by looking at
-% $\varphi_2$ sections, while it is much more easy by looking at
-% $\sigma$-sections.
+% Few readers get these right from $\varphi_2$ sections. From sigma
+% sections they are almost immediate, and the rest of this page explains
+% why.
 %
-% Lets consider an arbitrary orientation given by its Euler angles
+% Consider an orientation given by its Euler angles
 % $(\varphi_1, \Phi, \varphi_2)$. Then its position in the c-axis pole
 % figure is given by the polar coordinates $(\Phi,\varphi_1)$, i.e. it
 % depends only on the first two Euler angles. The third Euler angle
@@ -75,8 +76,8 @@ hold off
 % arrows indicate the directions of the a-axes and align perfectly with the
 % small background arrows.
 %
-% In order to visualize orientations with different a-axis alignments we
-% need to additional sections with rotated small arrows. 
+% To show orientations whose a-axis points elsewhere, further sections are
+% needed, each with the background arrows rotated.
 
 % a full sigma section plot
 oS = sigmaSections(odf.CS,odf.SS);
@@ -108,8 +109,7 @@ ori = [ori1,ori2,ori3];
 plotSection(ori,0.5.*(ori*cS),oS)
 
 %%
-% Lets come back to our initial secret ODF and visualize it in sigma
-% sections
+% Back to the ODF from the top of the page, now in sigma sections.
 
 plotSection(odf,oS)
 
@@ -118,30 +118,35 @@ plotSection(odf,oS)
 % having its maximum for the c-axis parallel to the z-axis and the a-axis
 % parallel to the y-axis. With the other three components the c-axis
 % rotates toward the x-axis while the a-axis rotates towards the z-axis.
-% Hence, we would expect in the c-axis a girdle from $z$ to $x$ and in the
-% a-axis pole figure ...
+% So the c-axis pole figure should show a girdle from $z$ to $x$, and the
+% a-axis pole figure the complementary girdle. It does:
 
 plotPDF(odf,[cs.cAxis,cs.aAxis])
 
 %%
-
-% They can be seen as the (001) pole figure split according to rotations
-% about the (001) axis. Lets have a look at the (001) pole figure
+% Four components, a girdle, and the direction of the a-axis in each - all
+% read off the sections directly. That is the whole claim of this page.
+%
+%% Why They Are Easier
+%
+% A sigma section is nothing but the c-axis pole figure, split according to
+% the rotation about the c-axis. The pole figure itself:
 
 plotPDF(odf,Miller(0,0,0,1,cs))
 
 %%
-% We observe three spots. Two in the center and one at 100. When splitting
-% the pole figure, i.e. plotting the odf as sigma sections
+% Three spots: two near the centre and one at the rim. Splitting the same
+% pole figure into sections separates them.
 
 plot(odf,'sections',6,'silent','sigma')
 
 %%
-% we can clearly distinguish the two spots in the middle indicating two
-% radial symmetric portions. On the other hand the spots at (001) appear in
-% every section indicating a fiber at position [001](100). Knowing that
-% sigma sections are nothing but the split (001) pole figure they are
-% much more simple to interpret than usual $\phi_2$ sections.
+% The two central spots now sit in different sections, so they are two
+% separate components with different rotations about the c-axis. The spot at
+% the rim appears in *every* section, which is the signature of a fibre -
+% the rotation about that c-axis is free. Neither statement can be made from
+% the pole figure alone, and neither is easy to make from $\varphi_2$
+% sections.
 
 %% Customization
 
@@ -171,6 +176,12 @@ oS.omega = (0:20:340)*degree;
 
 plot(odf,oS)
 
+
+%% Next
+%
+% The other sections, and how to customise them, are
+% <EulerAngleSections.html Euler Angle Sections>. The projections that a
+% sigma section splits are <ODFPoleFigure.html Pole Figures>.
 
 %%
 
