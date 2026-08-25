@@ -54,7 +54,7 @@ plot(grains.boundary,'LineWidth',3,'LineColor','White')
 hold off
 
 %%
-% The same 20 grains. What MCL needs is the soft threshold
+% The same 19 grains. What MCL needs is the soft threshold
 % <gbcSoft.html |gbcSoft|>, whose connectivity falls off gradually around
 % the threshold instead of jumping, and which is passed by the option
 % |'soft'| as a pair |[angle width]|

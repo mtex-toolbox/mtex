@@ -76,7 +76,7 @@ threshold = {10*degree, ...  % notIndexed, never used
 grains = calcGrains(ebsd,'angle',threshold,'minPixel',5)
 
 %%
-% This splits the forsterite into 65 grains instead of the 57 a uniform 10
+% This splits the forsterite into 63 grains instead of the 55 a uniform 10
 % degrees gives, and leaves the other phases as they were.
 %
 % Each entry may itself be a pair |[highAngle lowAngle]|, which is how
@@ -149,8 +149,8 @@ plot(grainsC.boundary,'linewidth',1,'lineColor','red')
 hold off
 
 %%
-% On this sample there are only a few of them - 57 forsterite grains become
-% 55 - since grains that share a c-axis but not the rest of the lattice are
+% On this sample there are only a few of them - 55 forsterite grains become
+% 53 - since grains that share a c-axis but not the rest of the lattice are
 % rare here. In a material with a strong fibre texture there would be many
 % more.
 
