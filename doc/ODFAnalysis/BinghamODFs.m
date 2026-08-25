@@ -1,6 +1,14 @@
-%% Bingham Distribution
+%% Bingham ODFs
+%
 %%
+% The Bingham distribution is the model to reach for when a texture is
+% neither a round peak nor a fibre but something in between - and when
+% there is not enough data for kernel density estimation. It has four shape
+% parameters, and those four cover the unimodal, the fibre and the
+% spherical case in one family.
+
 plottingConvention.default('y↑→x');
+
 %% Theory
 %
 % The Bingham distribution has the density function
@@ -32,17 +40,17 @@ U     = orientation.eye(cs);  % principle axes as orthogonal orientations
 odf = BinghamODF(kappa,U)
 
 %%
-% Lets visualize the ODF as pole figures
+% Visualised as pole figures,
 
 h = Miller({0,0,1},{1,0,0},{1,1,1},cs);
 plotPDF(odf,h,'antipodal','silent','layout',[1 3]);
 
 %%
-% and in Euler angle space
+% and in Euler angle space:
 
 plot(odf,'sections',6)
 
-%% Estimating the parameters of a Bingham distribution
+%% Estimating the Parameters
 %
 % The importance of the Bingham distribution is that it is a quite low
 % dimensional model for an orientation distribution function that still is
@@ -50,10 +58,9 @@ plot(odf,'sections',6)
 % unimodal distributions. Furthermore, we may estimate Bingham distribution
 % from a set of individual orientations, coming e.g. from an EBSD
 % measurement or a plasticity simulation. In contrast to
-% <DensityEstimation.html kernel density estimation> estimating the
-% parameters of the Bingham distributions requires much less data. Lets
-% demonstrate the process of fitting a Bingham ODF to experimental data. To
-% this end we start with a randomly aligned fibre ODF
+% <DensityEstimation.html kernel density estimation>, fitting four
+% parameters needs far fewer measurements. Starting from a randomly aligned
+% fibre ODF:
 
 odfTrue = fibreODF(fibre.rand(cs));
 
@@ -82,7 +89,7 @@ plotPDF(odf,h,'antipodal','silent')
 % of the data - |odf.A| is its matrix of eigenvectors and |odf.kappa| holds
 % the shape parameters associated with them.
 %
-%% Specific Bingham distributions
+%% The Three Corner Cases
 %
 % In the following we present the three corner cases of the Bingham
 % distribution: the unimodal distribution, the fibre distribution, and the
@@ -122,7 +129,7 @@ odf = BinghamODF([10,10,10],quaternion.eye,cs)
 plot(odf,'sections',6,'silent','sigma');
 
 
-%% Reading the estimated parameters
+%% Reading the Estimated Parameters
 %
 % Whichever way the parameters were obtained, |odf.A| holds the four
 % principal axes as orientations and |odf.kappa| the shape parameters
@@ -146,3 +153,10 @@ odf.kappa.'
 % separated by the sums $k_1+k_4$ and $k_2+k_3$.
 
 %#ok<*NOPTS>
+
+%% Next
+%
+% The other model ODFs are <RadialODFs.html Radial ODFs> and
+% <FibreODFs.html Fibre ODFs>. Estimating a density from many measurements
+% instead of fitting four parameters is
+% <DensityEstimation.html Density Estimation>.

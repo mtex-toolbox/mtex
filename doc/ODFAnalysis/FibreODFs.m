@@ -1,4 +1,4 @@
-%% Fiber ODFs
+%% Fibre ODFs
 %
 % A fibre ODF is an ODF that is constant along a
 % <RotationFibre.html fibre> in orientation space and decays away from it.
@@ -7,7 +7,7 @@
 % example being wire drawing, where a $\left<111\right>$ direction aligns
 % with the drawing axis.
 %
-%% Defining a fibre ODF
+%% Defining a Fibre ODF
 %
 % A fibre is represented in MTEX by a variable of type @fibre. Many of the
 % named fibres of rolling textures are built in.
@@ -31,7 +31,7 @@ odf = fibreODF(f,'halfwidth',10*degree)
 
 plot3d(odf)
 
-%% Plotting a fibre ODF
+%% Plotting a Fibre ODF
 %
 % Along the fibre itself the ODF is constant, which is easiest to see in a
 % <SigmaSections.html sigma section> plot - the fibre shows up as a curve
@@ -47,7 +47,7 @@ mtexColorbar
 plotPDF(odf,Miller({1,0,0},{1,1,0},{1,1,1},cs),'contourf')
 mtexColorbar
 
-%% The effect of the halfwidth
+%% The Effect of the Halfwidth
 %
 % The halfwidth is the only shape parameter. Sharper fibres are stronger,
 % which is directly visible in the texture index
@@ -58,7 +58,7 @@ for hw = [5 10 20]*degree
     hw./degree, norm(odfHw)^2, max(odfHw));
 end
 
-%% Fitting a fibre to data
+%% Fitting a Fibre to Data
 %
 % The inverse problem - given an ODF or a set of orientations, which fibre
 % describes it best - is solved by <fibre.fit.html |fibre.fit|>
@@ -89,3 +89,9 @@ fFit = fibre.fit(ori)
 % inspection rather than as an answer.
 
 %#ok<*NOPTS>
+
+%% Next
+%
+% The curves themselves, without a density around them, are
+% <OrientationFibre.html Fibres of Orientations>. The other model textures
+% are <RadialODFs.html Radial ODFs> and <BinghamODFs.html Bingham ODFs>.
