@@ -1,11 +1,12 @@
 %% Operations on Crystal Directions
 %
 %%
-% Crystal directions are calculated with exactly as specimen directions are
-% - angles, cross products, means - with one difference that changes every
-% answer: crystal symmetry. A direction stands for all the directions
-% symmetry cannot distinguish it from, and MTEX takes that into account
-% unless told not to.
+% Crystal directions support the same calculations as specimen directions
+% - angles, cross products and means - with one addition that can change the
+% answer: crystal symmetry. A |Miller| object denotes one indexed vector.
+% Symmetry-aware comparisons such as |angle|, |dot| and |eq| search its
+% equivalent vectors by default; constructions and geometric operations such
+% as |cross| act on the vectors actually supplied.
 
 plottingConvention.default('y↑→x');
 
@@ -33,8 +34,8 @@ mtexColorMap black2white
 cs = pattern.CS;
 
 m = Miller(-1,0,1,0,cs,'hkil'); % hexagonal prism
-r = Miller(0,-1,1,1,cs,'hkil'); % positive rhomboedron
-z = Miller(0,1,-1,1,cs,'hkil'); % negative rhomboedron
+r = Miller(0,-1,1,1,cs,'hkil'); % positive rhombohedron
+z = Miller(0,1,-1,1,cs,'hkil'); % negative rhombohedron
 
 %%
 % Drawn into both plots, a plane is a great circle on the left - the band it
@@ -56,15 +57,19 @@ plot(z,opt{:},'markerEdgeColor','yellow')
 % Only three planes are marked, but the pattern clearly has more bands of
 % each kind. The missing ones are the symmetrically equivalent planes -
 % those the symmetry operations of the crystal map the marked one onto. The
-% class of all directions equivalent to $[uvw]$ is written $<uvw>$, the
+% class of all directions equivalent to $[uvw]$ is written
+% $\langle uvw\rangle$, the
 % class of all planes equivalent to $(hkl)$ is written $\{hkl\}$, and
 % <Miller.symmetrise.html |symmetrise|> lists them.
 
 symmetrise(r)
 
 %%
-% Six planes for quartz, whose point group 321 has six operations. Adding
-% them to both plots covers the remaining bands.
+% The output contains six directed plane normals, one for each operation of
+% quartz point group 321. For this rhombohedral form they make three opposite
+% pairs, because a plane and the negative of its normal describe the same
+% unoriented plane. Adding the families to both plots covers the remaining
+% bands.
 
 hold on
 circle(m.symmetrise,'parent',ax1,'color','lightBlue')
@@ -76,25 +81,78 @@ plot(r,opt{:},'markerEdgeColor','red','symmetrised')
 plot(z,opt{:},'markerEdgeColor','yellow','symmetrised')
 
 %%
-% The option |'symmetrised'| on |plot| does the same in one step. Treating
-% the planes as <VectorsAxes.html axes> doubles the count, since 321
-% contains no inversion and each plane normal then stands for its opposite
-% as well.
+% The option |'symmetrised'| on |plot| does the same in one step. A plain
+% |symmetrise| call returns operation-level entries and may contain repeated
+% vectors or opposite normals. Use |'unique'| when a count is meant. Keeping
+% the signs gives six directed normals here; treating them as
+% <VectorsAxes.html axes> gives three distinct plane axes.
 
-length(symmetrise(r,'antipodal'))
+directedNormalCount = length(symmetrise(r,'unique','noAntipodal'))
+
+%%
+
+planeAxisCount = length(symmetrise(r,'unique','antipodal'))
+
+%% Multiplicity
+%
+% The <Miller.multiplicity.html |multiplicity|> is the number of distinct
+% directed vectors in a symmetry orbit. It is the size returned by
+% |symmetrise(...,'unique','noAntipodal')|. For a Laue group, or when
+% Friedel equivalence is assumed, this is the conventional multiplicity
+% factor for equivalent reflections contributing to a powder peak.
+
+csCubic = crystalSymmetry('m-3m');
+hCubic = Miller({1,0,0},{1,1,0},{1,1,1},csCubic);
+
+multiplicity(hCubic)
+
+%%
+% The cubic $\{100\}$, $\{110\}$ and $\{111\}$ forms have multiplicities
+% 6, 12 and 8. A low-index direction is not necessarily the most numerous;
+% multiplicity is set by how much symmetry leaves that direction fixed.
 
 %% Are Two Directions the Same?
 %
-% Under symmetry the question has two answers, and |==| gives the one that
-% respects the crystal.
+% Under symmetry the question has two answers. Here the two objects are
+% opposite plane normals, and |==| asks whether the point group maps one
+% directed normal onto the other.
 
-Miller(1,1,-2,0,cs) == Miller(-1,-1,2,0,cs)
+r1 = Miller(1,1,-2,0,cs,'hkil');
+r2 = Miller(-1,-1,2,0,cs,'hkil');
+
+r1 == r2
 
 %%
 % Not equivalent - no operation of 321 maps one onto the other. As axes they
 % are, because then the sign no longer matters.
 
-eq(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal')
+eq(r1,r2,'antipodal')
+
+%% Does a Direction Lie in a Plane?
+%
+% A direction $[uvw]$ lies in a plane $(hkl)$ when their scalar product is
+% zero. In three-index notation this is the *zone law*
+%
+% $$hu+kv+lw=0.$$
+%
+% Use |'noSymmetry'| for this test: incidence concerns the two indices that
+% were written, not the closest pair from their symmetry families.
+
+csOrtho = crystalSymmetry('mmm',[4 5 6]);
+plane = Miller(1,1,0,csOrtho);
+directionInPlane = Miller(1,-1,0,csOrtho,'uvw');
+
+dot(plane,directionInPlane,'noSymmetry')
+
+%%
+% Zero confirms that $[1\bar{1}0]$ lies in $(110)$. In contrast, $[100]$
+% does not.
+
+dot(plane,Miller(1,0,0,csOrtho,'uvw'),'noSymmetry')
+
+%%
+% The Cartesian dot-product test also works with four-index trigonal and
+% hexagonal notation, without manually translating the zone law.
 
 %% Zone Axes
 %
@@ -139,19 +197,19 @@ plot(n,opt{:},'MarkerEdgeColor','white')
 % depend on which of the equivalent descriptions happened to be written
 % down.
 
-angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs)) / degree
+symmetryAngle = angle(r1,r2) / degree
 
 %%
 % Read as axes, the two are the same direction, and the angle is zero up to
 % rounding.
 
-angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'antipodal') / degree
+axisAngle = angle(r1,r2,'antipodal') / degree
 
 %%
 % The plain geometric angle, symmetry ignored, is what |'noSymmetry'|
 % returns - the two vectors do point exactly opposite ways.
 
-angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'noSymmetry') / degree
+geometricAngle = angle(r1,r2,'noSymmetry') / degree
 
 %%
 % $60^\circ$, $0^\circ$ and $180^\circ$ for one and the same pair of index
@@ -165,7 +223,7 @@ angle(Miller(1,1,-2,0,cs),Miller(-1,-1,2,0,cs),'noSymmetry') / degree
 % the specimen, so it converts a crystal direction into a specimen
 % direction.
 
-ori = orientation.byEuler(10*degree,20*degree,30*degree,cs)
+ori = orientation.byEuler(10*degree,20*degree,30*degree,'Bunge',cs)
 
 close all
 plot(ori * pattern,'resolution',0.25*degree,'complete','upper')
@@ -209,9 +267,11 @@ vector3d(d1)
 %% Next
 %
 % The patch of the sphere that holds exactly one of each set of equivalent
-% directions is the <FundamentalSector.html Fundamental Sector>. How the
-% crystal axes relate to the Cartesian frame the numbers above are given in
-% is <CrystalReferenceSystem.html Reference System>.
+% directions is the <FundamentalSector.html Fundamental Sector>. Physical
+% lengths and plane spacings are <LatticeMetric.html Lattice Metric and
+% Plane Geometry>. How the crystal axes relate to the Cartesian frame the
+% numbers above are given in is
+% <CrystalReferenceSystem.html Reference System>.
 
 %#ok<*ASGLU>
 %#ok<*VUNUS>

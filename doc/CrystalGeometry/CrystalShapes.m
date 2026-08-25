@@ -115,8 +115,9 @@ hold off
 drawNow(gcm,'final')
 
 %%
-% Neighbouring grains with a similar colour turn out to have their c-axes
-% pointing the same way, which the map colour alone does not say.
+% Neighbouring grains with a similar colour have their c-axes pointing in a
+% similar direction - that is what the IPF colour says. The shapes add the
+% rotation about the c-axis, which a single IPF colour cannot show.
 
 %% The Direct Route
 %
@@ -192,8 +193,8 @@ cs = loadCIF('quartz')
 m = Miller({1,0,-1,0},cs);  % hexagonal prism
 r = Miller({1,0,-1,1},cs);  % positive rhombohedron, usually bigger than z
 z = Miller({0,1,-1,1},cs);  % negative rhombohedron
-s1 = Miller({2,-1,-1,1},cs);% left tridiagonal bipyramid
-s2 = Miller({1,1,-2,1},cs); % right tridiagonal bipyramid
+s1 = Miller({2,-1,-1,1},cs);% left trigonal bipyramid
+s2 = Miller({1,1,-2,1},cs); % right trigonal bipyramid
 x1 = Miller({6,-1,-5,1},cs);% left positive trapezohedron
 x2 = Miller({5,1,-6,1},cs); % right positive trapezohedron
 
@@ -228,7 +229,7 @@ cS = crystalShape(N);
 plot(cS,'colored','figSize','small')
 
 %%
-% Adding the tridiagonal bipyramid and the positive trapezohedron gives the
+% Adding the trigonal bipyramid and the positive trapezohedron gives the
 % small slanted faces that make quartz recognisable, and that break its
 % apparent hexagonal symmetry down to the trigonal one it really has.
 
@@ -255,9 +256,9 @@ cS = crystalShape(N,habitus,extension);
 plot(cS,'colored','figSize','small')
 
 %%
-% *extension* is the inverse extent of the crystal along each axis, so
-% raising the second and third entry makes the crystal longer and the
-% negative rhombohedra smaller.
+% *extension* controls the relative extent along the three lattice axes.
+% Raising its second and third entries moves the corresponding limiting
+% faces outward and changes the crystal proportions as shown below.
 
 extension = [1 1.2 1.1];
 cS = crystalShape(N,habitus,extension);

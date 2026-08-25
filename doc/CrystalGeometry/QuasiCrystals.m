@@ -79,8 +79,9 @@ plot(cs,'symbolSize',0.5,'projection','eangle','grid','on')
 
 %% Adding the Inversion
 %
-% Icosahedral quasicrystals are centrosymmetric, so the group of interest is
-% usually the one with the inversion added - 120 elements instead of 60.
+% Many commonly studied icosahedral quasicrystals are centrosymmetric, so
+% the group of interest often includes inversion - 120 elements instead of
+% 60.
 
 cs = crystalSymmetry.byElements([rot5,rot3,rotation.inversion])
 

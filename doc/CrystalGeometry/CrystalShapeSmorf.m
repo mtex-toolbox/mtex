@@ -46,11 +46,12 @@ N = Miller({0,1,0},{0,0,1},{0,2,1},{1,1,0},{1,0,1},{1,2,0},cs)
 %% Adjusting the Distances
 %
 % Now change the distance of one face at a time - steps of 0.05 work well.
-% A larger distance moves the face away from the origin, so the face becomes
-% smaller and eventually stops cutting the crystal altogether. Fix the
-% largest faces first and keep the overall aspect ratio while moving the
-% others. The drawing does not update by itself; press _Draw crystal_ after
-% each change, and compare against the published crystal until they match.
+% A larger distance moves the face away from the origin, reducing its
+% influence on the shape until it may stop cutting the crystal altogether.
+% Fix the largest faces first and keep the overall aspect ratio while moving
+% the others. The drawing does not update by itself; press _Draw crystal_
+% after each change, and compare against the published crystal until they
+% match.
 %
 % <<smorf_4.png>>
 %

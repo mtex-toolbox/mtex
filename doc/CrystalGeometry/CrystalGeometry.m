@@ -1,23 +1,24 @@
 %% Crystal Geometry
 %
 %%
-% A crystal is a lattice repeated over and over, and a lattice looks the
-% same from more than one point of view. Rotate a cubic crystal by ninety
-% degrees about a cube axis and nothing has changed that any measurement
-% could detect. The set of all such motions is the crystal's *symmetry*,
-% and it is the single most consequential fact about working with crystal
-% data.
+% A crystal structure repeats a motif at the translation points of a
+% lattice, and it can look the same from more than one point of view. For a
+% crystal with point group |m-3m|, a ninety-degree rotation about a cube axis
+% leaves the structure indistinguishable. The operations that do this form
+% the crystal's *symmetry*, and they have to be respected whenever crystal
+% directions or orientations are compared.
 %
-% The consequence is this: inside a crystal there is no such thing as one
-% direction. Ask for the [111] direction of a cubic crystal and you have
-% named eight directions at once, because symmetry cannot tell them apart.
-% Every angle, every average, every distance computed later has to respect
-% that, or it computes something the crystal does not know about.
+% The indices $[111]$ still select one direction relative to the named
+% crystal axes. Symmetry associates it with seven other directions, however;
+% together the eight are the $\langle111\rangle$ family for |m-3m|. Whether
+% a calculation uses the indexed direction or all equivalent members must
+% therefore be explicit.
 
 cs = crystalSymmetry('m-3m');
 
-% the eight directions that the label (111) names in a cubic crystal
-plot(Miller(1,1,1,cs).symmetrise('unique'),'labeled','grid','backgroundColor','w')
+% the eight members of the symmetry-equivalent direction family
+d111 = Miller(1,1,1,cs,'uvw');
+plot(d111.symmetrise('unique'),'labeled','grid','backgroundColor','w')
 
 %%
 % Note the |'unique'| above. Without it |symmetrise| returns one entry per
@@ -25,8 +26,8 @@ plot(Miller(1,1,1,cs).symmetrise('unique'),'labeled','grid','backgroundColor','w
 % directions simply appear repeatedly.
 
 %%
-% Symmetry is also why a direction in a crystal and a plane in a crystal
-% are written differently and behave differently. In a cubic lattice the
+% A direction in a crystal and a plane in a crystal are written differently
+% and belong to dual coordinate systems. In a cubic lattice the
 % [111] direction happens to be perpendicular to the (111) plane, which
 % makes cubic a bad place to learn the difference; in a monoclinic lattice
 % they are not perpendicular at all, and confusing the two silently gives
@@ -41,10 +42,12 @@ plot(Miller(1,1,1,cs).symmetrise('unique'),'labeled','grid','backgroundColor','w
 % planes, giving 230. The *Laue group* is the point group with an inversion
 % centre added, giving 11.
 %
-% Diffraction cannot distinguish a direction from its opposite, so what an
-% EBSD or X-ray measurement actually determines is the Laue group. MTEX
-% works with point groups, and accepts a space group name by reducing it to
-% its point group.
+% Under Friedel's law, conventional diffraction intensities cannot
+% distinguish a reflection from its opposite, so diffraction symmetry is
+% commonly described by the Laue group. Dynamical and resonant diffraction
+% can reveal departures from Friedel's law. MTEX stores point groups and
+% accepts a space-group symbol or number by reducing it to the corresponding
+% point group.
 %
 %% Where to start
 %
@@ -53,13 +56,16 @@ plot(Miller(1,1,1,cs).symmetrise('unique'),'labeled','grid','backgroundColor','w
 %
 % <CrystalDirections.html Miller Indices> covers directions and planes in a
 % crystal and the difference between them raised above.
+% <LatticeMetric.html Lattice Metric and Plane Geometry> covers the unit
+% cell, reciprocal basis, physical lengths, interplanar spacings and the
+% constraints of the seven crystal systems.
 % <CrystalOperations.html Operations> is the arithmetic - angles, symmetric
-% equivalents, zone axes.
+% equivalents, multiplicities, incidence tests and zone axes.
 %
-% Two pages then deal with something that causes more confusion than any
-% other topic here. A point group says which operations exist; it does not
-% say how the crystal's axes are laid onto Cartesian ones, and for
-% everything but cubic there is a choice to make.
+% Two pages then separate conventions that are easily confused. A point
+% group says which operations exist; it does not say how the crystal axes
+% are laid onto Cartesian ones. Nor does it say which physical lattice
+% vectors a particular source calls $\vec a$, $\vec b$ and $\vec c$.
 % <CrystalReferenceSystem.html Reference System> and
 % <SymmetryAlignment.html Crystal Axes Alignment> are where that choice is
 % made explicit. If data imported from two sources disagrees by a rotation
@@ -84,4 +90,10 @@ plot(Miller(1,1,1,cs).symmetrise('unique'),'labeled','grid','backgroundColor','w
 % <CrystalOrientations.html Orientations>. Directions without a crystal
 % attached are <Vectors.html Vectors>. Physical properties that depend on
 % crystal direction are <Tensors.html Tensors>.
+%
+% Geometry used in deformation is developed in
+% <SlipSystems.html Slip Systems> and
+% <DislocationSystems.html Dislocation Systems>. Twin relationships are
+% <Twinning.html Twinning>, and geometry connecting two phases starts with
+% <ParentChildVariants.html Parent-Child Variants>.
 %

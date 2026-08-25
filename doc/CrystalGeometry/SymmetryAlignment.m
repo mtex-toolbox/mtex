@@ -32,8 +32,9 @@ cs = crystalSymmetry('12/m1',[4 5 6],[90 100 90]*degree,'mineral','test')
 %%
 % For orthogonal lattices - orthorhombic, tetragonal and cubic - the direct
 % and the reciprocal axes coincide and the distinction is immaterial. It
-% matters for triclinic, monoclinic, trigonal and hexagonal symmetries,
-% which is exactly where the competing conventions live.
+% matters for triclinic, monoclinic, trigonal and hexagonal symmetries.
+% Separately, different sources may rename or permute lattice axes even when
+% those axes are orthogonal; the olivine example below shows that case.
 %
 % A different alignment is requested by naming it in the constructor, e.g.
 

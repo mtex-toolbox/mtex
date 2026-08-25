@@ -12,7 +12,7 @@
 % $\left<100\right>$, $\left<110\right>$ and $\left<111\right>$ poles.
 
 
-cs = crystalSymmetry('432')
+cs = crystalSymmetry('m-3m')
 
 plot(cs)
 hold on
@@ -55,9 +55,9 @@ sR.checkInside(v)
 v.project2FundamentalRegion
 
 %%
-% $(123)$ - the same three indices, sorted. For the cubic group that is
-% exactly what the sector selects, which is why $\left<123\right>$ and
-% $(231)$ are the same family of directions.
+% $(213)$ - a symmetry-equivalent permutation of the indices. For the cubic
+% Laue group, both belong to the same $\{123\}$ form; the sector selects one
+% representative from that family.
 
 %%
 
@@ -72,7 +72,7 @@ hold off
 % elements the group has the larger the sector is. Only the point group 1
 % leaves the whole sphere; the triclinic Laue group $\bar 1$ already halves
 % it, since the inversion identifies every direction with its opposite. The
-% ten Laue groups below the triclinic one:
+% remaining ten Laue groups are shown below:
 
 newMtexFigure('layout',[2 5],'figSize','medium');
 for lId = 2:11
@@ -98,4 +98,3 @@ end
 % <orientationRegion.orientationRegion.html |@orientationRegion|>. The
 % sector is also what an
 % <OrientationInversePoleFigure.html inverse pole figure> is drawn on.
-

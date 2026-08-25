@@ -1,15 +1,17 @@
 %% Crystal Symmetries
 %
 %%
-% A crystal symmetry is the set of operations - rotations, reflections, the
-% inversion - that leave the lattice looking exactly as it did. Such a set
-% is a group: applying two of its operations one after another gives a third
-% one from the same set.
+% A crystal point symmetry is the set of operations - rotations,
+% reflections and possibly inversion - that leave the crystal structure
+% indistinguishable while keeping one point fixed. The lattice metric alone
+% may allow more operations than the motif, so the symmetry declared for a
+% phase must be the symmetry of that phase. The operations form a group:
+% applying two in succession gives another operation from the same set.
 %
-% This is why an orientation is never a single rotation. Every symmetry
-% operation of the crystal produces an equally valid description of the same
-% physical situation, and everything from the fundamental region to the
-% misorientation angle follows from that.
+% Consequently, one physical orientation has several rotation
+% representatives. Composing a representative with a crystal symmetry
+% operation gives an equally valid description, and everything from the
+% fundamental region to the misorientation angle follows from that.
 %
 % Which operations are counted decides how many groups there are: 230 space
 % groups, 32 point groups, or 11 Laue groups.
@@ -17,9 +19,9 @@
 %% The 11 Groups of Proper Rotations
 %
 % Exactly 11 groups consist of proper rotations only - 1, 2, 222, 3, 23, 4,
-% 422, 6, 622, 32, 432. They are the *enantiomorphic* groups, and they are
-% the symmetries a crystal can be physically turned by. Each is defined by
-% its international notation
+% 422, 6, 622, 32, 432. They are the *enantiomorphic* groups. Their
+% operations can superpose a crystal on itself by rigid rotation, without a
+% reflection or inversion. Each is defined by its international notation
 
 cs = crystalSymmetry('432')
 
@@ -53,7 +55,7 @@ cs.Laue
 
 %%
 % Since every Laue group comes from one of the 11 enantiomorphic groups,
-% there are 11 of them: -1, 2/m, mmm, -3, -3m, -4/m, 4/mmm, 6/m, 6/mmm, m-3,
+% there are 11 of them: -1, 2/m, mmm, -3, -3m, 4/m, 4/mmm, 6/m, 6/mmm, m-3,
 % m-3m. A Laue group has exactly twice as many elements as the group it came
 % from - each rotation appears once with and once without the inversion.
 
@@ -89,7 +91,8 @@ plot(cs)
 % operation is improper, and the small circle at the centre of a Laue
 % group's plot is the inversion. Replacing half the rotations
 % of an enantiomorphic group by their improper versions this way produces
-% the remaining 10 groups: m, mm2, 3m, -4, 4m2, -42m, -6, 6mm, -6m2, -43m.
+% the remaining 10 point-group types: m, mm2, 3m, -4, 4mm, -42m, -6, 6mm,
+% -6m2 and -43m.
 % Together, 11 enantiomorphic + 11 Laue + 10 mixed = 32 point groups.
 
 %% Proper Group and Proper Subgroup
@@ -129,7 +132,7 @@ mtexTitle(char(cs.properSubGroup,'LaTex'))
 %
 % A point group fixes which operations exist, not how they sit with respect
 % to the crystal axes. The three plots below are the same group with three
-% different alignments, and the a-axis points south in all of them.
+% different alignments, and the a-axis points east in all of them.
 
 mtexFigure('layout',[1 3]);
 cs = crystalSymmetry('2mm');
@@ -159,18 +162,25 @@ annotate(cs.aAxis,'labeled')
 %% Space Groups
 %
 % Counting translations as symmetry operations as well gives the 230 space
-% groups of the international tables. MTEX does not support space groups: a
-% space group name passed to |crystalSymmetry| is reduced to the
-% corresponding point group.
+% groups of the international tables. MTEX recognises space-group symbols
+% and numbers as input to |crystalSymmetry|, but it does not retain a full
+% space-group representation: the input is reduced to the corresponding
+% point group.
 
-cs = crystalSymmetry('Td');
+cs = crystalSymmetry('Fm-3m');
 plot(cs)
+
+%%
+% The space-group symbol $Fm\bar{3}m$ is reduced to the cubic point group
+% $m\bar{3}m$. Translational parts of the space-group operations are not
+% retained.
 
 %% Computing with Symmetries
 %
-% <symmetry.union.html |union|> is the smallest group containing two given
-% ones and <symmetry.disjoint.html |disjoint|> the largest group contained
-% in both.
+% <symmetry.union.html |union|> combines the operations of compatible
+% crystallographic symmetries, while <symmetry.disjoint.html |disjoint|>
+% retains their common operations. In the examples below the results are
+% again recognised crystallographic point groups.
 
 union(crystalSymmetry('23'),crystalSymmetry('4'))
 
