@@ -3,10 +3,12 @@
 %%
 % A <fibre.fibre.html |@fibre|> is to rotation space what a straight line is
 % to Euclidean space: the shortest path between two rotations, and the set
-% traced out by continuing along it. Fibres matter because many real
-% textures are exactly of this shape - all orientations that put one crystal
-% direction along one specimen direction, with the rotation about that
-% direction left free.
+% traced out by continuing along it. Fibres matter because many common
+% textures are concentrated around such curves: all orientations that put
+% one crystal direction along one specimen direction, with the rotation
+% about that direction left free.
+
+plottingConvention.default('y↑→x');
 
 % consider cubic symmetry
 cs = crystalSymmetry('432');
@@ -39,9 +41,10 @@ axis off
 
 %% A Fibre is a Circle
 %
-% Rotation space is curved, so a fibre is better thought of as a great
-% circle on a sphere than as a straight line. Continued past its two
-% endpoints it closes up, which the option |'full'| does.
+% Rotation space is curved. In the unit-quaternion representation a fibre is
+% a great circle on the 3-sphere (with antipodal quaternions identified as
+% the same rotation), rather than a straight Euclidean line. Continued past
+% its two endpoints it closes up, which the option |'full'| requests.
 
 f = fibre(oriA,oriB,'full')
 
@@ -76,9 +79,10 @@ f.h
 f.r
 
 %%
-% These are the axis of the rotation from |oriA| to |oriB|, written once in
-% specimen coordinates and once in crystal coordinates. Nothing else could
-% be left fixed by both orientations.
+% These are the axis of the relative rotation, written once in specimen
+% coordinates and once in crystal coordinates. They satisfy
+% |oriA * h = oriB * h = r|: the endpoint orientations send the same crystal
+% direction onto the same specimen direction.
 
 r = axis(oriB,oriA)
 
@@ -96,12 +100,16 @@ f = fibre(h,r)
 %
 % <fibre.orientation.html |orientation|> discretises a fibre into a list of
 % orientations, which is what a plot or a calculation along the fibre needs.
+% Specify the number of samples explicitly when it matters.
 
-ori = orientation(f)
+ori = orientation(f,'points',100);
 
-hold on
-plot(ori)
-hold off
+length(ori)
+
+%%
+
+figure
+plot(ori,'axisAngle')
 
 %% Next
 %

@@ -10,17 +10,19 @@
 %
 % Start from a reference rotation.
 
-rot_ref = rotation.byEuler(10*degree,20*degree,30*degree);
+plottingConvention.default('y↑→x');
+
+rot_ref = rotation.byEuler(10*degree,20*degree,30*degree,'Bunge');
 
 %%
-% Perturb it by a small rotation about the axis $(123)$, by
-% $\delta = 0.01^\circ$. Rotations do not commute, so it matters whether
+% Perturb it by a small rotation about the Cartesian direction $(1,2,3)$,
+% by $\delta = 0.01^\circ$. Rotations do not commute, so it matters whether
 % the perturbation is applied before or after the reference rotation.
 
 delta = 0.01*degree;
 rot_123 = rotation.byAxisAngle(vector3d(1,2,3),delta);
-rot_right = rot_123 * rot_ref;
-rot_left = rot_ref * rot_123;
+rot_left = rot_123 * rot_ref;
+rot_right = rot_ref * rot_123;
 
 %%
 % The first order Taylor coefficient of the perturbation, as $\delta$ goes
@@ -29,8 +31,8 @@ rot_left = rot_ref * rot_123;
 % $$ T = \lim_{\delta \to 0} \frac{\tilde R - R}{\delta} $$
 %
 
-T_right = (rot_right.matrix - rot_ref.matrix) ./ delta
 T_left = (rot_left.matrix - rot_ref.matrix) ./ delta
+T_right = (rot_right.matrix - rot_ref.matrix) ./ delta
 
 %%
 % What such a derivative means is easier to see than to read. Turning a
@@ -53,54 +55,61 @@ hold off
 axis equal off
 
 %%
-% |T_right| and |T_left| live in the tangent space at |rot_ref|. Neither is
+% |T_left| and |T_right| live in the tangent space at |rot_ref|. Neither is
 % skew symmetric by itself - what makes them tangent vectors is that they
 % become skew symmetric once the reference rotation is divided out, from the
 % left or from the right.
 
-S_right_L =  matrix(inv(rot_ref)) * T_right
-S_right_R = T_right * matrix(inv(rot_ref))
-
-S_left_L =  matrix(inv(rot_ref)) * T_left
-S_left_R = T_left * matrix(inv(rot_ref))
-
+S_left = T_left * matrix(inv(rot_ref))
+S_right = matrix(inv(rot_ref)) * T_right
 
 %%
-% Two of the four are skew symmetric, |S_right_R| and |S_left_L|.
+% In the limit $delta \to 0$ both are skew symmetric. At the finite
+% $0.01^\circ$ step used here, the displayed matrices retain a small
+% second-order symmetric residual. |S_left| is the left/specimen-frame
+% representation of the perturbation in |rot_left = rot_123 * rot_ref|;
+% |S_right| is the right/crystal-frame representation of the perturbation in
+% |rot_right = rot_ref * rot_123|. Constructing a |spinTensor| below extracts
+% their antisymmetric parts.
 %
 % A skew symmetric $3 \times 3$ matrix has only three independent entries,
 % $S_{21}$, $S_{31}$ and $S_{32}$, and read as the vector
 % $(S_{32},-S_{31},S_{21})$ they are the axis of the perturbation, scaled by
 % its angle. Undoing the normalisation of the axis returns $(1,2,3)$.
 
-vector3d(spinTensor(S_right_R)) * sqrt(14)
+vector3d(spinTensor(S_left)) * sqrt(14)
 
-vector3d(spinTensor(S_left_L))  * sqrt(14)
+vector3d(spinTensor(S_right)) * sqrt(14)
 
 
 %%
-% The other two give the same axis seen in the other frame, i.e. turned by
-% the reference rotation.
+% The same tangent can be expressed in the opposite representation. A left
+% perturbation transforms into crystal coordinates with |inv(rot_ref)|,
+% while a right perturbation transforms into specimen coordinates with
+% |rot_ref|.
 
-rot_ref * vector3d(spinTensor(S_right_L)) * sqrt(14)
+inv(rot_ref) * vector3d(spinTensor(S_left)) * sqrt(14)
 
-inv(rot_ref) * vector3d(spinTensor(S_left_R)) * sqrt(14)
+rot_ref * vector3d(spinTensor(S_right)) * sqrt(14)
 
 %% The Functions Exp and Log
 %
 % Taking the difference of two rotation matrices is only meaningful while
-% the perturbation is small. For a large one the matrix logarithm
-% <quaternion.log.html |log|> is the correct translation of a rotational
-% change into a skew symmetric matrix - it is exact at any angle.
+% the perturbation is small. For a finite one the logarithm
+% <quaternion.log.html |log|> maps the relative rotation to a skew-symmetric
+% matrix without using a small-angle approximation. As with every rotation
+% logarithm, the principal result is limited to angles up to $180^\circ$.
 
-% define a large perturbation with rotational angle 1 radiant
+% define a large perturbation with rotational angle 1 radian
 delta = 1; 
 rot_123 = rotation.byAxisAngle(vector3d(1,2,3),1);
 
-S = log(rot_ref * rot_123,rot_ref, SO3TangentSpace.rightSpinTensor); S  * sqrt(14)
+S_right = log(rot_ref * rot_123,rot_ref,SO3TangentSpace.rightSpinTensor);
+S_right * sqrt(14)
 
 
-S = log(rot_123 * rot_ref,rot_ref, SO3TangentSpace.leftSpinTensor); S  * sqrt(14)
+S_left = log(rot_123 * rot_ref,rot_ref,SO3TangentSpace.leftSpinTensor);
+S_left * sqrt(14)
 
 
 %%
@@ -110,9 +119,11 @@ S = log(rot_123 * rot_ref,rot_ref, SO3TangentSpace.leftSpinTensor); S  * sqrt(14
 % The same is obtained as a vector directly, with
 % |SO3TangentSpace.rightVector| and |SO3TangentSpace.leftVector|.
 
-v = log(rot_ref * rot_123,rot_ref,SO3TangentSpace.rightVector); v * sqrt(14)
+v_right = log(rot_ref * rot_123,rot_ref,SO3TangentSpace.rightVector);
+v_right * sqrt(14)
 
-v = log(rot_123 * rot_ref,rot_ref,SO3TangentSpace.leftVector); v * sqrt(14)
+v_left = log(rot_123 * rot_ref,rot_ref,SO3TangentSpace.leftVector);
+v_left * sqrt(14)
 
 
 %% The Other Way Round
@@ -126,10 +137,10 @@ v = log(rot_123 * rot_ref,rot_ref,SO3TangentSpace.leftVector); v * sqrt(14)
 rot_ref * rot_123
 
 % using a rotation vector
-exp(vector3d(v),rot_ref,SO3TangentSpace.rightVector)
+exp(vector3d(v_right),rot_ref,SO3TangentSpace.rightVector)
 
 % using a spin tensor
-exp(S,rot_ref,SO3TangentSpace.rightSpinTensor)
+exp(S_right,rot_ref,SO3TangentSpace.rightSpinTensor)
 
 %%
 
@@ -137,10 +148,10 @@ exp(S,rot_ref,SO3TangentSpace.rightSpinTensor)
 rot_123 * rot_ref
 
 % using a rotation vector
-exp(vector3d(v),rot_ref,SO3TangentSpace.leftVector)
+exp(vector3d(v_left),rot_ref,SO3TangentSpace.leftVector)
 
 % using a spin tensor
-exp(S,rot_ref,SO3TangentSpace.leftSpinTensor)
+exp(S_left,rot_ref,SO3TangentSpace.leftSpinTensor)
 
 %% Under Crystal Symmetry
 %
@@ -153,7 +164,7 @@ exp(S,rot_ref,SO3TangentSpace.leftSpinTensor)
 cs = crystalSymmetry('321');
 
 % consider an arbitrary rotation
-ori_ref = orientation.byEuler(10*degree,20*degree,30*degree,cs);
+ori_ref = orientation.byEuler(10*degree,20*degree,30*degree,'Bunge',cs);
 
 % next we disturb rot_ref by a rotation about the axis (123)
 mori_123 = orientation.byAxisAngle(Miller(1,2,-3,3,cs),1);

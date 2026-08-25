@@ -11,31 +11,32 @@
 % SO(3) are written. It is what makes optimisation and interpolation of
 % rotations possible at all, since rotation space is curved and the usual
 % "add a small vector" does not apply to it directly.
+
+plottingConvention.default('y↑→x');
 %
-%% Definition of Tangent Spaces and Tangent Vectors on the Rotation Group
+%% Left and Right Tangent Spaces
 %
-% First we start with a (slightly technical) mathematical description of
-% the tangent space by |@spinTensor's|, which are used to describe small
-% rotational changes. For more information take a look
-% <RotationSpinTensor.html here> in the documentation.
+% The matrix description uses <spinTensor.spinTensor.html spin tensors>,
+% the skew-symmetric matrices that describe small rotational changes. The
+% physical interpretation is developed on the
+% <RotationSpinTensor.html Spin Tensors> page.
 %
-% The tangent space of the rotation group at some rotation $R$ has two
-% different representations. There is a left and a right tangent space 
-% representation.
+% The same tangent at a rotation $R$ can be written in two ways: in a left
+% or a right tangent-space representation.
 %
 % The left tangent space is defined by
 %
 % $$ T_R SO(3) = \{ S \cdot R | S=-S^T  \} = \mathfrak{so}(3) \cdot R, $$
 %
-% where $\mathfrak{so}(3)$ describes the set of all skew symmetric matrices,
-% i.e. @spinTensor's.
+% where $\mathfrak{so}(3)$ is the set of all skew-symmetric matrices - the
+% spin tensors introduced above.
 %
 
 R = rotation.byAxisAngle(vector3d.X,20*degree);
-S1 = spinTensor(vector3d(0,0,1))
+S1 = spinTensor(vector3d(0,0,1));
 
 % left tangent vector at some Rotation R
-TV = matrix(S1) * matrix(R)
+TV = matrix(S1) * matrix(R);
 
 %%
 % The right tangent space is defined analogously:
@@ -45,9 +46,9 @@ TV = matrix(S1) * matrix(R)
 % Again, skew-symmetric matrices describe all possible infinitesimal
 % rotations, but now applied on the right side of R.
 
-S2 = spinTensor(vector3d(0,sin(20*degree),cos(20*degree)))
+S2 = spinTensor(vector3d(0,sin(20*degree),cos(20*degree)));
 % right tangent vector at some rotation R
-TV = matrix(R)*matrix(S2)
+TV = matrix(R)*matrix(S2);
 
 %%
 % The left and the right tangent space contain the same tangent vectors,
@@ -57,11 +58,12 @@ TV = matrix(R)*matrix(S2)
 max(abs(matrix(S1)*matrix(R) - matrix(R)*matrix(S2)),[],'all')
 
 %
-%% Description of Rotational Tangent Vectors in MTEX
+%% Tangent Vectors in MTEX
 % 
-% In MTEX, tangent vectors are represented as objects of the class
-% |@SO3TangentVector|. Therefore the three distinguish entries of the
-% |@spinTensor| $S$ are stored as |@vector3d|, in the following way:
+% MTEX represents a tangent vector by an
+% <SO3TangentVector.SO3TangentVector.html |SO3TangentVector|>. It stores the
+% three independent entries of the spin tensor $S$ as a |vector3d| together
+% with the reference rotation.
 %
 S = spinTensor(0.2*vector3d(1,2,3))
 v1 = SO3TangentVector(S,R)
@@ -88,13 +90,13 @@ hold off
 % 
 % * the rotation $R$ (which defines the tangent space)
 % * the tangent space representation (left or right)
-% * underling symmetries (relevant for orientations)
+% * underlying symmetries (relevant for orientations)
 %
 %%
 % By default, the tangent space representation is left. A right tangent
 % vector can be constructed as follows:
 
-v2 = SO3TangentVector(vector3d(1,2,3),R,SO3TangentSpace.rightVector)
+v2 = SO3TangentVector(vector3d(v1),R,SO3TangentSpace.rightVector)
 
 %%
 % Here |v1| and |v2| have the same coordinates in different bases (tangent 
@@ -114,7 +116,7 @@ v1_left = left(v1_right)
 
 v1 + v1_right
 
-%% Operations of Rotational Tangent Vectors
+%% Computing with Tangent Vectors
 % 
 % The following operations are defined for rotational tangent vectors |TV|, |TV1|, |TV2|
 %
@@ -125,17 +127,15 @@ v1 + v1_right
 % * normalize <vector3d.normalize.html |normalize(TV)|>
 % * average <SO3TangentVector.mean.html |mean(TV)|>
 %
-%%
-% *Exponential and Logarithm Map of Tangent Vectors*
+%% Exponential and Logarithm Maps
 %
 % In the context of the rotation group SO(3), the exponential and 
 % logarithm maps provide the link between tangent vectors and rotations.
 %
 %%
-% The exponential map takes a tangent vector (an infinitesimal rotation)
-% and returns the corresponding finite rotation in SO(3). It is performed
-% onto the tangent vector |v1| with the command <SO3TangentVector.exp.html
-% |exp|>.
+% The exponential map follows a tangent direction for the finite step stored
+% in its vector norm and returns a rotation in SO(3). It is applied to |v1|
+% with <SO3TangentVector.exp.html |exp|>.
 
 rot = exp(v1)
 
@@ -144,10 +144,15 @@ rot = exp(v1)
 % tangent vector at the first that points towards the second. It is
 % <quaternion.log.html |log|>.
 
-log(rot,R)
+vBack = log(rot,R)
 
 %%
-% The vector we started from, to the last digit - |log| and |exp| are
+% The roundtrip error is
+
+norm(vBack - v1)
+
+%%
+% zero to numerical precision: on this principal branch |log| and |exp| are
 % inverse to each other.
 %
 % Together they connect the curved geometry of SO(3) with the flat structure

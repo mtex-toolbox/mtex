@@ -19,13 +19,12 @@
 
 %% Euler Angles
 %
-% The most common description of a rotation is as three consecutive
-% rotations about fixed axes - first about the z axis, then about the x
-% axis, then about z again. The three angles are the *Euler angles*.
+% Euler angles describe a rotation by three successive angular steps. The
+% axes, their order, and whether the description is read actively or as a
+% coordinate transformation are all part of the convention; the three
+% numbers alone are insufficient.
 %
-% Three angles alone do not define a rotation. Which axes they turn about,
-% and in which order, is a convention, and several are in use. Sorted by
-% popularity in the texture analysis community they are
+% Several conventions used in texture analysis are
 %
 % * Bunge (phi1,Phi,phi2)       - ZXZ
 % * Matthies (alpha,beta,gamma) - ZYZ
@@ -33,14 +32,17 @@
 % * Kocks (Psi,Theta,phi)
 % * Canova (omega,Theta,phi)
 %
-% MTEX uses the Bunge convention by default.
+% A new MTEX installation uses Bunge as its preference. Name the convention
+% explicitly in reusable code so that a user's preference cannot change the
+% meaning of the input.
 
-rot = rotation.byEuler(30*degree,50*degree,10*degree)
+rot = rotation.byEuler(30*degree,50*degree,10*degree,'Bunge')
 
 %%
-% Angles are radians throughout MTEX, which is why each of them is written
-% as a multiple of |degree|. The first and the third angle are interchanged
-% with respect to the usual notation, for the reason given in
+% Angles are radians throughout MTEX, which is why each is written as a
+% multiple of |degree|. MTEX reads and reports Bunge Euler angles with the
+% conventional $(\varphi_1,\Phi,\varphi_2)$ names. The separate question of
+% which way an orientation maps coordinates is explained in
 % <MTEXvsBungeConvention.html MTEX vs. Bunge Convention>.
 %
 % A different convention is named as an additional argument. The following
@@ -49,27 +51,29 @@ rot = rotation.byEuler(30*degree,50*degree,10*degree)
 rot = rotation.byEuler(30*degree,50*degree,10*degree,'Roe')
 
 %%
-% What convention the angles are *displayed* in is a separate question, set
-% by <setMTEXpref.html |setMTEXpref|> and stored permanently in
-% |mtex_settings.m|. The same rotation reads
+% The convention used to display an existing rotation can be requested
+% directly. The same rotation reads
 
-setMTEXpref('EulerAngleConvention','Roe')
-rot
+Euler(rot,'Roe')
 
 %%
 
-setMTEXpref('EulerAngleConvention','Bunge')
-rot
+Euler(rot,'Bunge')
 
 %%
-% Same rotation, different numbers. When Euler angles are quoted without
-% their convention, they are ambiguous - this is the single most common
-% source of orientations that are wrong by a fixed transformation.
+% Same rotation, different numbers. For interactive work,
+% <setMTEXpref.html |setMTEXpref|> can change the session's default Euler
+% convention; that preference affects both unqualified construction and
+% display, so library code and reproducible examples should pass the
+% convention explicitly. Euler angles quoted without a convention are
+% ambiguous.
 
 %% Axis and Angle
 %
-% Every rotation turns the sphere about one axis, so an axis and an angle
-% describe it completely.
+% Every non-identity proper rotation in three dimensions turns the sphere
+% about an axis. MTEX represents it with an angle between $0$ and
+% $180^\circ$. The identity has no unique axis, and at $180^\circ$ the two
+% signs of the axis describe the same rotation.
 
 rot = rotation.byAxisAngle(vector3d.X,30*degree)
 
@@ -98,8 +102,8 @@ axis off
 
 %% Rodrigues Frank Vector
 %
-% The Rodrigues Frank vector packs axis and angle into a single vector: the
-% rotational axis, scaled by $\tan \omega/2$.
+% The Rodrigues--Frank vector packs axis and angle into a single vector: the
+% rotation axis scaled by $\tan(\omega/2)$.
 
 R = rot.Rodrigues
 
@@ -126,15 +130,18 @@ M = rot.matrix
 rot * vector3d.X
 
 %%
-% Conversely a matrix defines a rotation.
+% Conversely, an orthogonal $3 \times 3$ matrix defines a proper rotation
+% when its determinant is $+1$. <rotation.byMatrix.html |byMatrix|> also
+% accepts determinant $-1$ and records the result as an improper rotation;
+% an arbitrary non-orthogonal matrix is not a rotation matrix.
 
 rot = rotation.byMatrix(M)
 
 %% Defined by What it Does
 %
 % Often the rotation is not known in any parametrisation, only by what it
-% has to achieve. Given two pairs of directions there is exactly one
-% rotation taking |u1| to |v1| and |u2| to |v2|.
+% has to achieve. Given two non-collinear pairs of directions there is
+% exactly one rotation taking |u1| to |v1| and |u2| to |v2|.
 
 u1 = vector3d.X; v1 = vector3d.Y;
 u2 = vector3d.Z; v2 = vector3d.Z;
@@ -145,7 +152,9 @@ rot = rotation.map(u1,v1,u2,v2)
 % This asks the impossible unless the angle between |u1| and |u2| equals the
 % angle between |v1| and |v2|, and MTEX raises an error if it does not.
 % Given only one pair, the rotation with the smallest angle taking the first
-% direction to the second is returned.
+% direction to the second is returned. For opposite directions that angle is
+% $180^\circ$ but its axis is not unique, so an additional direction is
+% needed if the particular half turn matters.
 
 rot = rotation.map(vector3d.Z,vector3d.Y)
 
@@ -160,17 +169,24 @@ left = vector3d.rand(5);
 % rotate them and perturb them a little
 right = rot * left + 0.1 * vector3d.rand(1,5);
 
-rotation.fit(left,right)
+rotFit = rotation.fit(left,right)
 
 %%
-% The recovered rotation is the one used above, up to the perturbation.
+% Its angular error relative to the rotation used to make the data is
+
+angle(rot,rotFit) ./ degree
+
+%%
+% small but nonzero. Its exact value changes with the random perturbation.
 
 %% Random Rotations
 %
 % <rotation.rand.html |rotation.rand|> draws rotations uniformly, which is
 % the quickest way to try something out on data that has no structure.
 
-rot = rotation.rand(100)
+rot = rotation.rand(100);
+
+length(rot)
 
 %%
 % Rotations following a given distribution rather than a uniform one are the
@@ -178,8 +194,8 @@ rot = rotation.rand(100)
 
 %% Quaternions
 %
-% Finally a rotation is defined by the four quaternion coordinates it is
-% stored in.
+% Finally, a proper rotation is defined by the four coordinates of a *unit*
+% quaternion. The two unit quaternions |q| and |-q| encode the same rotation.
 
 q = quaternion(1,0,0,0)
 

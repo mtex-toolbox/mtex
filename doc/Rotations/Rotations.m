@@ -8,11 +8,11 @@
 % Rotations are worth a chapter of their own because they behave less
 % simply than they look. Applying one after another is not commutative -
 % turn a book about its spine and then about its long edge, then do it the
-% other way round, and the book ends up somewhere else. There is also no
-% way to average two rotations by averaging their numbers, whichever
-% numbers you pick. Almost every subtlety later in MTEX, from Euler angle
-% conventions to the fundamental region, is this chapter's material wearing
-% a crystallographic hat.
+% other way round, and the book ends up somewhere else. Directly averaging
+% the entries of rotation matrices, Euler angles or Rodrigues vectors does
+% not in general produce the geometric mean of the rotations. Almost every
+% subtlety later in MTEX, from Euler-angle conventions to the fundamental
+% region, begins with these properties of rotations.
 %
 % Below, one rotation is applied to a cloud of directions. The open circles
 % are where the directions started and the filled ones are where they
@@ -31,8 +31,9 @@ hold off
 %%
 % Every point has moved along a circle of constant latitude about the
 % rotation axis, and the axis itself - the centre of the plot - has not
-% moved at all. Every rotation has such an axis, which is what makes the
-% axis-and-angle description possible.
+% moved at all. Every non-identity proper rotation in three dimensions has
+% such an axis. For the identity the angle is zero and the axis is not
+% unique.
 %
 %% One rotation, many descriptions
 %
@@ -86,7 +87,8 @@ hold off
 %
 %% Next
 %
-% A rotation together with a crystal symmetry is an *orientation*, and that
+% An *orientation* uses a rotation to map crystal coordinates into specimen
+% coordinates and carries the relevant crystal and specimen symmetries; that
 % is <CrystalOrientations.html Orientations>. The relative rotation between
 % two crystals is a *misorientation*,
 % <Misorientations.html Misorientations>. Functions defined on the set of

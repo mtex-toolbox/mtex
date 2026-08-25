@@ -11,7 +11,7 @@ plottingConvention.default('y↑→x');
 %
 % The product |rot * v| turns the direction |v| by the rotation |rot|.
 
-rot = rotation.byEuler(90*degree,90*degree,0*degree)
+rot = rotation.byEuler(90*degree,90*degree,0*degree,'Bunge')
 
 %%
 
@@ -40,8 +40,8 @@ rot \ v
 % Rotations are composed by multiplication, and the one applied first stands
 % on the right - as with matrices.
 
-rot1 = rotation.byEuler(90*degree,0,0);
-rot2 = rotation.byEuler(0,60*degree,0);
+rot1 = rotation.byEuler(90*degree,0,0,'Bunge');
+rot2 = rotation.byEuler(0,60*degree,0,'Bunge');
 
 rot = rot2 * rot1
 
@@ -84,8 +84,12 @@ angle(rot,rot1) / degree
 %
 %% The Inverse Rotation
 %
-% <quaternion.inv.html |inv|> turns a rotation around: the axis stays, the
-% angle changes sign.
+% <quaternion.inv.html |inv|> reverses a rotation. One may describe this as
+% keeping the axis and changing the sign of the angle. MTEX instead reports
+% the canonical nonnegative angle, so |axis(inv(rot))| normally has the
+% opposite sign while |angle(inv(rot))| equals |angle(rot)|. The identity
+% and half turns retain the axis ambiguities described on the definition
+% page.
 
 inv(rot)
 
@@ -106,9 +110,9 @@ rot * inv(rot)
 % || <quaternion.homochoric.html homochoric(rot)> || the homochoric vector ||
 % || <quaternion.axis.html axis(rot)>, <quaternion.angle.html angle(rot)> || axis and angle ||
 %
-% Euler angles come in whichever convention is asked for, and the answer
-% differs between conventions - the numbers below are not the ones the
-% display shows, which uses Bunge.
+% Euler angles come in whichever convention is requested, and the answer
+% differs between conventions. Here the Matthies convention is explicit,
+% independent of the user's display preference.
 
 [alpha,beta,gamma] = Euler(rot,'Matthies');
 

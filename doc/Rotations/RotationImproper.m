@@ -7,8 +7,8 @@
 % symmetry needs them, since most point groups contain a mirror plane or an
 % inversion centre.
 %
-% MTEX stores improper rotations in the same <rotation.rotation.html
-% |@rotation|> class and marks them with a sign.
+% MTEX stores improper transformations in the same <rotation.rotation.html
+% |@rotation|> class and records their handedness with an inversion flag.
 
 plottingConvention.default('y↑→x');
 
@@ -70,8 +70,10 @@ mir.isImproper
 
 %% Next
 %
-% <RotationOperations.html Operations> covers the arithmetic that applies to
-% proper and improper rotations alike.
+% <RotationOperations.html Operations> covers composition, inversion and
+% action on vectors for both proper and improper transformations. Axis-angle
+% and other proper-rotation parametrisations need separate interpretation
+% when the inversion flag is set.
 
 %#ok<*NASGU>
 %#ok<*NOPTS>

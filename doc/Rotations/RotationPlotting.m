@@ -18,14 +18,15 @@ rot = rotation.rand(500);
 % symmetry, and the box is the range the angles run over: $2\pi$ wide in
 % $\varphi_1$ and $\varphi_2$, $\pi$ deep in $\Phi$.
 
-scatter(rot)
+scatter(rot,'Bunge')
 
 %%
 % The points are not spread evenly, although the rotations are: they thin
 % out towards the bottom of the box. Euler angle space distorts volume, by a
-% factor $\sin\Phi$ that vanishes at $\Phi = 0$, so equal boxes there do not
-% hold equal shares of rotations. This is why a texture that looks
-% concentrated in an Euler angle plot need not be.
+% factor $\sin\Phi$ that vanishes at both $\Phi = 0$ and $\Phi = \pi$, so
+% equal boxes near those faces do not hold equal shares of rotations. This
+% is why visual point density in an Euler-angle plot is not itself a texture
+% density.
 
 %% Axis Angle and Rodrigues Space
 %
@@ -64,11 +65,17 @@ hold off
 % The red points sit in a small ball around the centre, and there are few of
 % them.
 
-length(small)
+100 * length(small) / length(rot)
 
 %%
-% Only $(\omega - \sin\omega)/\pi = 5.8\%$ of all rotations turn by less
-% than $\omega = 60^\circ$. What a texture calls nearly identical is a small
+% This empirical percentage fluctuates because only 500 rotations were
+% drawn. For uniformly distributed rotations, the exact fraction below an
+% angle $\omega$ is $(\omega - \sin\omega)/\pi$, so at $60^\circ$ it is
+
+100 * (60*degree - sin(60*degree)) / pi
+
+%%
+% about 5.77%. What a texture calls nearly identical is therefore a small
 % minority among rotations in general.
 
 %% Next
