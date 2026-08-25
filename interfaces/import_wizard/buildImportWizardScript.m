@@ -152,7 +152,10 @@ end
 % =========================================================================
 function str = plottingConventionLiteral(pC)
 
-[pictogram,isPictogram] = char(pC);
+% the script is read in the editor, not in the console, so the symbols do
+% not follow the UTF8Output preference - it would make the generated text
+% depend on a console font setting
+[pictogram,isPictogram] = char(pC,'UTF8');
 if isPictogram
   % MTEX 7.0 represents the eight axis-aligned conventions by pictograms.
   str = charLiteral(pictogram);

@@ -94,6 +94,17 @@ assert(contains(str,"plot(ebsd('dominant'),ebsd('dominant').orientations)"), ...
 assert(isempty(regexp(str,'\{[^\n}]+\}','once')), ...
   'check_ebsdImport: generated script contains an unresolved template token')
 
+% UTF8Output says what the console can render, so it must not reach a script
+% that is read in the editor - see plottingConvention.arrows
+old = getMTEXpref('UTF8Output',true);
+restore = onCleanup(@() setMTEXpref('UTF8Output',old));
+setMTEXpref('UTF8Output',false)
+ascii = buildImportWizardScript(ebsd,filePath,mapConvention,eulerConvention, ...
+  1,[false true true],["not' indexed" "O'Brien phase" "dominant"]);
+clear restore
+assert(strcmp(ascii,str), ...
+  'check_ebsdImport: generated script follows the UTF8Output preference')
+
 end
 
 % =========================================================================

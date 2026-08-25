@@ -98,18 +98,26 @@ classdef plottingConvention
 
     end
 
-    function [c,isPictogram] = char(pC)
+    function [c,isPictogram] = char(pC,force)
       % pictogram of the convention, e.g. 'y↑→x'
       %
       % The symbols follow the UTF8Output preference - with it switched
       % off the ASCII form 'y^->x' is printed, which is exactly what the
       % constructor parses back
       %
+      % Syntax
+      %   c = char(pC)
+      %   c = char(pC,'UTF8')   % regardless of the UTF8Output preference
+      %
+      % Input
+      %  force - 'UTF8' or 'ASCII', see <plottingConvention.arrows>
+      %
       % Output
       %  c           - char, the pictogram, or 'xyz' if there is none
       %  isPictogram - is the convention axis aligned, i.e. is c a pictogram?
 
-      a = plottingConvention.arrows; xyz = 'xyz';
+      if nargin == 1, force = ''; end
+      a = plottingConvention.arrows(force); xyz = 'xyz';
 
       % which axis points north, which one east - ud and lr say whether it
       % is the axis itself or its negative
@@ -341,7 +349,7 @@ classdef plottingConvention
 
   methods (Static=true)
 
-    function a = arrows
+    function a = arrows(force)
       % the screen direction symbols, in the order
       % {west, east, north, south, intoScreen, outOfScreen}
       %
@@ -351,10 +359,31 @@ classdef plottingConvention
       % all of them. The ASCII forms are the ones str2rot parses back, so
       % a printed convention can always be pasted into the constructor.
       %
+      % The preference is about what the console can render, so a caller
+      % that writes somewhere else - generated code opened in the editor,
+      % a file - states the set it wants instead of following it.
+      %
+      % Syntax
+      %   a = plottingConvention.arrows          % follow UTF8Output
+      %   a = plottingConvention.arrows('UTF8')
+      %   a = plottingConvention.arrows('ASCII')
+      %
+      % Input
+      %  force - 'UTF8' or 'ASCII', '' or omitted to follow the preference
+      %
       % See also
       % plottingConvention
 
-      if getMTEXpref('UTF8Output',true)
+      if nargin == 0 || isempty(force)
+        useUTF8 = getMTEXpref('UTF8Output',true);
+      else
+        useUTF8 = strcmpi(force,'UTF8');
+        assert(useUTF8 || strcmpi(force,'ASCII'), ...
+          'MTEX:plottingConvention:arrows', ...
+          'The symbol set is either ''UTF8'' or ''ASCII'', not ''%s''.',force)
+      end
+
+      if useUTF8
         a = {'←','→','↑','↓','⊗','⊙'};
       else
         a = {'<-','->','^','v','(x)','(.)'};

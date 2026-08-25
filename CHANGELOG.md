@@ -437,6 +437,11 @@ adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
   `@crystalSymmetry/char` honour - with it switched off every convention header
   printed mojibake. `plottingConvention.arrows` is the single source now and
   `str2rot` parses the ASCII forms back, so printed output round trips in both modes
+- `UTF8Output` says what the command window can render, so a caller that writes
+  anywhere else names the set it wants instead of following it:
+  `plottingConvention.arrows('UTF8')` and `char(pC,'UTF8')`. Without that the import
+  script the wizard generates - read in the editor, not the console - stated its
+  convention as `'y^->x'` on a machine with the preference switched off
 - a display states its plotting convention in the header line and, when the
   pictogram describes the convention completely, nowhere else - the
   `outOfScreen`/`north`/`east` listing below only repeated it. A `@crystalSymmetry`
