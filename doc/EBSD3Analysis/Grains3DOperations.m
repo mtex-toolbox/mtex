@@ -1,9 +1,11 @@
 %% Operations with Three-Dimensional Grains
 %
 %%
-% On this page we explain some basic operations with three dimensional
-% grains. Let us start by importing some example data set and plot it from
-% a nice perspective
+% Three dimensional grains support the operations two dimensional ones do,
+% and one they cannot: cutting. A section through a volume is exactly the
+% two dimensional data a polished surface would have given, which makes it
+% the tool for asking what a section does and does not show - see
+% <EBSD3Analysis.html the chapter opener>.
 
 mtexdata NeperGrain3d
 
@@ -12,10 +14,9 @@ plot(grains,grains.meanOrientation)
 setCamera(plottingConvention.default3D)
 
 %% Slicing
-% We can extract from 3d grain data 2d grain data by slicing them along one
-% or multiple planes. This is done using the command <grain3d.slice.html
-% |slice|>. This command requires two inputs to characterize a plane -
-% the plane normal |N| and an arbitrary point |P0| within the plane.
+%
+% <grain3d.slice.html |slice|> cuts the volume with a plane, given by its
+% normal |N| and any point |P0| on it, and returns two dimensional grains.
 
 % a point where the slice should pass through
 P0 = vector3d(50,50,50);
@@ -31,8 +32,9 @@ plot(grains1_10,grains1_10.meanOrientation,'micronbar','off')
 setCamera(plottingConvention.default3D)
 
 %%
-% We may adjust the @plottingConvention such that the normal direction is
-% perpendicular to the screen.
+% The slice is still drawn in the three dimensional scene, seen edge on from
+% the current viewpoint. Turning the camera so that the plane normal points
+% out of the screen gives the view a microscope would have.
 
 how2plot = plottingConvention;
 how2plot.outOfScreen = N;
@@ -40,11 +42,16 @@ how2plot.north = zvector
 setCamera(how2plot)
 
 %%
-% We may use the exact same syntax to generate multiple slices.
+% This is the same specimen a two dimensional analysis would have measured,
+% and comparing it with the volume it came from is the point: the areas seen
+% here are cuts through grains, not grains.
+%
+% Several slices are several calls, and drawing them together shows how
+% little of the volume any one of them represents.
 
 N = vector3d.Z;
 for k = 1:19:99
-  
+
   grainSlice = grains.slice(N, vector3d(0,0,k));
 
   plot(grainSlice,grainSlice.meanOrientation)
@@ -55,24 +62,43 @@ hold off
 
 setCamera(plottingConvention.default3D)
 
+%%
+% Follow one colour from slice to slice: a grain that is large in one
+% section may be absent from the next.
+
 %% Triangulation
-% Some functions are much faster on triangulated meshes. Therefore you can
-% triangulate your grains with the command <grain3d.triangulate.html
-% |triangulate|>.
+%
+% The faces of these grains are polygons with many vertices. Some
+% computations are much faster on triangles, and
+% <grain3d.triangulate.html |triangulate|> converts a grain into an
+% equivalent one built from them.
 
 grainsTri = grains(20:21).triangulate
 
 plot(grainsTri,grainsTri.meanOrientation)
 
+%%
+% The shape is unchanged - the display shows the same two grains with many
+% more faces.
+
 %% Rotation
-% Not surprisingly we can use the command <grain3d.rotate.html |rotate|> to
-% apply any rotation to three dimensional grains. Note that a rotation
-% changes the spatial coordinates as well as the orientation of the grains.
+%
+% <grain3d.rotate.html |rotate|> turns grains in space. Note that it rotates
+% both things a grain carries: its shape and its orientation. Rotating only
+% one of them would describe a different specimen rather than the same
+% specimen seen differently.
 
 rot = rotation.byAxisAngle(vector3d(1,1,1),30*degree);
 grains_rot = rot * grains;   % or rotate(grains3,rot)
 
 % plotting
 plot(grains_rot,grains_rot.meanOrientation)
+
+%%
+% The colours change, and they should. An IPF colour says which crystal
+% direction points along a fixed specimen axis, and it is the specimen that
+% has been turned - every mean orientation now differs from its original by
+% exactly the 30 degrees of the rotation. What a rotation preserves is the
+% relation between the grains, not their relation to the coordinate axes.
 
 %#ok<*NOPTS>
