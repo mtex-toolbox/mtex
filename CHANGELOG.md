@@ -305,6 +305,20 @@ adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
   names the Euler axes A1, A2, A3 in its coordinate settings dialog. No vendor
   gives the *map* a reference system of its own, so that pictogram shows the axes
   names of the frame the data lives in - the very ones the map indicator draws
+- the two dropdowns above the pictograms are written in the same axes names, so an
+  Oxford map offers `Y1↓→X1` and the Euler frame of an EDAX import `A2←A1↑`,
+  instead of a generic `y↓→x` standing next to a picture labelled otherwise. That
+  is `referenceFrame/conventionChar`, which is how a convention is written in
+  frame labels everywhere else in MTEX
+- the generated import script stated its plotting convention only through
+  `plottingConvention.default`, which never reaches data that lands in a named
+  frame - anything from an Oxford instrument does, in `specimenFrame.measurement`,
+  and a named frame carries a convention of its own. So the script ended with a
+  line that did nothing and the map came out the vendor way regardless. The
+  convention goes into `EBSD.load` now, the hook every loader implements, with the
+  session default set alongside it for everything derived later. This also drops a
+  comment claiming the convention had to be applied after loading "so that file
+  metadata cannot override it" - measured both ways, the order makes no difference
 - the three IPF axes were built together the first time any of them was shown, at
   0.19 s each. They are built one at a time now, like the map tabs already were,
   which leaves the warm-up run before the first import with one axes to build

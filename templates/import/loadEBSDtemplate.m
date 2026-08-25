@@ -9,8 +9,8 @@
 % crystal symmetry
 csList = {crystal symmetry};
 
-% plotting convention
-% Applied after loading so that file metadata cannot override it.
+% how the map is aligned on screen
+pC = {plottingConvention};
 
 %% Specify File Names
 
@@ -30,10 +30,14 @@ EulerCorrection = {eulerCorrection};
 
 % create an EBSD variable containing the data
 % The interface (file format) is auto-detected from the file extension.
+% pC goes into the import: data that lands in a named frame - anything from
+% an Oxford instrument does - carries that frame's convention and would not
+% follow the session otherwise.
 ebsd = EBSD.load(fname,csList,{options}, ...
-  'EulerCorrection',EulerCorrection);
-% the convention applies to the session, not to this one object
-plottingConvention.default({plottingConvention});
+  'EulerCorrection',EulerCorrection,pC);
+
+% everything derived later that states no frame of its own follows this
+plottingConvention.default(pC);
 
 %% Plot a First Sanity Check
 

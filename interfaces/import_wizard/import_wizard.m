@@ -1517,12 +1517,7 @@ classdef import_wizard < matlab.apps.AppBase
     end
 
     function syncCoordinateControls(app)
-      labels = cellstr(app.CoordinateSystems.Label);
-      app.MapCoordinatesDropDown.Items = labels;
-      app.EulerCoordinatesDropDown.Items = labels;
-
       mapIdx = closestCoordinateIndex(app, app.ebsd.how2plot.rot);
-      app.MapCoordinatesDropDown.ValueIndex = mapIdx;
 
       eulerIdx = mapIdx;
       try
@@ -1530,8 +1525,8 @@ classdef import_wizard < matlab.apps.AppBase
         eulerIdx = closestCoordinateIndex(app, eulerRot);
       catch
       end
-      app.EulerCoordinatesDropDown.ValueIndex = eulerIdx;
 
+      % this relabels both dropdowns and sets their selection
       refreshCoordinateFrames(app, mapIdx, eulerIdx)
     end
 
@@ -1621,13 +1616,36 @@ classdef import_wizard < matlab.apps.AppBase
     end
 
     function refreshCoordinateFrames(app, mapIdx, eulerIdx)
-      % both pictograms, so that a renamed frame or a new file reaches them
+      % both dropdowns and both pictograms, so that a new file reaches them
       if nargin < 2, mapIdx = app.MapCoordinatesDropDown.ValueIndex; end
       if nargin < 3, eulerIdx = app.EulerCoordinatesDropDown.ValueIndex; end
+
+      mapNames = frameAxesNames(app);
+      eulerNames = eulerAxesNames(app);
+
+      setConventionItems(app, app.MapCoordinatesDropDown, mapNames, mapIdx)
+      setConventionItems(app, app.EulerCoordinatesDropDown, eulerNames, eulerIdx)
+
       drawCoordinateFrame(app, app.MapFrameAxes, mapIdx, ...
-        frameAxesNames(app), app.FrameColors.Map)
+        mapNames, app.FrameColors.Map)
       drawCoordinateFrame(app, app.EulerFrameAxes, eulerIdx, ...
-        eulerAxesNames(app), app.FrameColors.Euler)
+        eulerNames, app.FrameColors.Euler)
+    end
+
+    function setConventionItems(app, dropDown, names, idx)
+      % the eight conventions written in the axes names of the frame -
+      % 'Y1↑→X1' where the pictogram below shows Y1 and X1, and the plain
+      % 'y↑→x' for the canonical frame. referenceFrame/conventionChar is
+      % what writes a convention that way everywhere else in MTEX.
+      %
+      % The frame is constructed rather than looked up on purpose: a named
+      % factory would hand out the registered session instance, and this
+      % one exists only to carry three labels.
+      fr = specimenFrame('','axesNames',names);
+      items = arrayfun(@(pC) {conventionChar(fr,pC)}, ...
+        app.CoordinateSystems.how2plot);
+      dropDown.Items = items(:).';
+      dropDown.ValueIndex = idx;
     end
 
     function idx = closestCoordinateIndex(app, rot)
