@@ -58,7 +58,7 @@ hold off
 %% The threshold angle
 %
 % The option |'angle'| sets the misorientation angle above which two
-% neighbouring measurements are separated by a boundary. Its default is 10
+% neighbouring measurements are separated by a boundary. Its default is 15
 % degrees, and values between 10 and 15 degrees are long habit rather than a
 % measurement - see the discussion in <Grains.html the chapter opener>.
 %
