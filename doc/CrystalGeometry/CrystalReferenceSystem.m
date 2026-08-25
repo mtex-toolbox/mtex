@@ -1,49 +1,39 @@
 %% The Crystal Reference System
+%
 %%
+% A crystal is described by its crystallographic axes $\vec a$, $\vec b$,
+% $\vec c$ - their lengths and the angles between them. That is what
+% <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|> is given.
+
 plottingConvention.default('y↑→x');
-%%
-% Commonly the crystal coordinate system is defined by the crystallographic
-% axes $\vec a$, $\vec b$, $\vec c$, The length |[a,b,c]| and the angles
-% |[alpha,beta,gamma]| between theses axes needs to be specified when
-% defining a variable of type <crystalSymmetry.crystalSymmetry.html
-% crystalSymmetry>.
 
 cs = crystalSymmetry('triclinic',[1,2.2,3.1],[80*degree,85*degree,95*degree])
 
-%% Need of a Euclidean reference system
+%% Why a Cartesian Frame is Needed as Well
 %
-% However, there are many crystal properties, like orientation or tensorial
-% properties, that are described with respect to an Euclidean reference
-% system $\vec x$, $\vec y$, $\vec z$ as opposed to the crystallographic
-% axes $\vec a$, $\vec b$s, $\vec c$. Most importantly, Euler angles
-% describe orientations as subsequent rotations about the $\vec z$, $\vec
-% x$ and $\vec z$ axis. Hence, we need to inscribe an Euclidean reference
-% system $\vec x$, $\vec y$, $\vec z$ into the crystallographic reference
-% system $\vec a$, $\vec b$, $\vec c$.
+% Those axes are in general neither perpendicular nor of equal length, and
+% most of what MTEX computes needs a Cartesian frame: Euler angles are
+% rotations about $\vec z$, $\vec x$ and $\vec z$, and a tensor is a table
+% of numbers in an orthonormal basis. So a Cartesian frame $\vec x$, $\vec
+% y$, $\vec z$ has to be inscribed into the crystal frame $\vec a$, $\vec
+% b$, $\vec c$ - and how that is done is a convention.
 %
-% Note, that also the alignment of the crystal axes $\vec a$, $\vec b$ and
-% $\vec c$ with respect to the atomic lattice, and hence its symmetries,
-% follows different conventions. These are discussed in the section
-% <SymmetryAlignment.html Alignment of the Crystal Axes>.
-% 
-%% Cubic, tetragonal and orthorhombic symmetries
+% This page is about that inscription. Which lattice vectors are called
+% $\vec a$, $\vec b$ and $\vec c$ in the first place is a second convention,
+% treated in <SymmetryAlignment.html Crystal Axes Alignment>.
+
+%% Cubic, Tetragonal and Orthorhombic Symmetry
 %
-% In orthorhombic, tetragonal and cubic crystal symmetry the crystal
-% reference system $\vec a$, $\vec b$, $\vec c$ is itself an Euclidean one
-% and, hence, setting $\vec x$ parallel to $\vec a$, $\vec y$ parallel to
-% $\vec b$ and $\vec z$ parallel to $\vec c$ is a canonical choice.
+% Here the crystal axes are already perpendicular, so $\vec x \parallel \vec
+% a$, $\vec y \parallel \vec b$, $\vec z \parallel \vec c$ is the obvious
+% choice. It is the MTEX default and needs no further specification.
+
+%% Trigonal and Hexagonal Symmetry
 %
-% As for such symmetries this is also the default in MTEX there is no need
-% to specify the alignment separately.
-%
-%% Trigonal and hexagonal materials
-%
-% For trigonal and hexagonal materials the z axis is commonly aligned with
-% the $\vec c$ axis. As for the $\vec x$ and $\vec y$ axes they are either
-% aligned with the $\vec a$ or $\vec b$ axes.
-% 
-% The following command aligns the $\vec x$ axes to the $\vec a$ axes and
-% the $\vec z$ axes to the $\vec c$ axes.
+% Now $\vec a$ and $\vec b$ enclose $120^\circ$, so at most one of them can
+% be a Cartesian axis. Convention puts $\vec z$ along $\vec c$ and then has
+% a choice: $\vec x$ along $\vec a$, or $\vec y$ along $\vec a$. Both are in
+% use, and they differ by $30^\circ$.
 
 cs_x2a = crystalSymmetry('321',[1.7,1.7,1.4],'X||a','Z||c');
 
@@ -55,10 +45,10 @@ annotate(-vector3d.Y,'MarkerFaceColor','green','label','-y','backgroundColor','w
 annotate(-vector3d.X,'MarkerFaceColor','green','label','-x','backgroundColor','w')
 
 %%
-% In contrast the following command aligns the $\vec y$ axes to the $\vec
-% a$ axes and the $\vec z$ axes to the $\vec c$ axes.
+% The other setup, with $\vec y$ along $\vec a$:
 
 cs_y2a = crystalSymmetry('321',[1.7,1.7,1.4],'y||a','Z||c');
+
 plot(cs_y2a,'figSize','small')
 annotate(cs_y2a.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
 annotate(cs_y2a.bAxis,'MarkerFaceColor','r','label','b','backgroundColor','w')
@@ -66,30 +56,30 @@ annotate(-vector3d.Y,'MarkerFaceColor','green','label','-y','backgroundColor','w
 annotate(-vector3d.X,'MarkerFaceColor','green','label','-x','backgroundColor','w')
 
 %%
-% The only difference between the above two plots is the position of the
-% $\vec x$ and $\vec y$ axes. The reason is that visualizations relative to
-% the crystal reference system, e.g., inverse pole figures, are in MTEX
-% aligned on the screen according to the a- or b-axis.
+% The two plots differ only in where the green $\vec x$ and $\vec y$ markers
+% sit - the a-axis stays put. That is because a plot in crystal coordinates,
+% an inverse pole figure for instance, is aligned on screen by the a- or
+% b-axis, not by $\vec x$.
 %
-% This on-screen alignment can be modified individually for each crystal
-% symmetry through the convention of its crystal frame
+% That on-screen alignment belongs to the crystal frame and is changed
+% there.
 
 % change on screen alignment
 cs_y2a.frame.how2plot.east = cs_y2a.bAxis
 
-% redo last plot
+%%
+
 plot(cs_y2a,'figSize','small')
 annotate(cs_y2a.aAxis,'MarkerFaceColor','r','label','a','backgroundColor','w')
 annotate(cs_y2a.bAxis,'MarkerFaceColor','r','label','b','backgroundColor','w')
 annotate(-vector3d.Y,'MarkerFaceColor','green','label','-y','backgroundColor','w')
 annotate(-vector3d.X,'MarkerFaceColor','green','label','-x','backgroundColor','w')
 
-%%
-% It should be stressed that the alignment between the Euclidean crystal
-% axes $\vec x$, $\vec y$, $\vec z$ and the crystallographic axes $\vec a$,
-% $\vec b$ and $\vec c$ is crucial for many computations. The difference
-% between both setups becomes more visible if we plot crystal shapes in the
-% $\vec x$, $\vec y$, $\vec z$ coordinate system
+%% What the Choice Changes
+%
+% Nothing about the crystal - everything about the numbers describing it.
+% Drawn in the Cartesian frame, the same quartz crystal sits differently in
+% the two setups.
 
 cS_x2a = crystalShape.quartz(cs_x2a);
 
@@ -97,7 +87,7 @@ close all
 figure(1)
 plot(cS_x2a,'figSize','small','colored')
 hold on
-arrow3d(0.6*[xvector,yvector,zvector],'labeled')
+arrow3d(0.6*[vector3d.X,vector3d.Y,vector3d.Z],'labeled')
 hold off
 
 %%
@@ -107,59 +97,82 @@ cS_y2a = crystalShape.quartz(cs_y2a);
 figure(2)
 plot(cS_y2a,'figSize','small','colored')
 hold on
-arrow3d(0.6*[xvector,yvector,zvector],'labeled')
+arrow3d(0.6*[vector3d.X,vector3d.Y,vector3d.Z],'labeled')
 hold off
 
 %%
-% Most important is the difference if Euler angles are used to describe
-% orientation. Lets consider the following two orientations
+% The consequence is sharpest for Euler angles, which are angles about the
+% Cartesian axes. The same three numbers describe two different physical
+% orientations in the two setups.
 
 ori_x2a = orientation.byEuler(0,0,0,cs_x2a)
+
+%%
+
 ori_y2a = orientation.byEuler(0,0,0,cs_y2a)
 
 %%
-% and visualize them in a pole figure. 
 
 newMtexFigure('innerPlotSpacing',20,'figSize','small')
 plotPDF(ori_x2a,Miller(1,0,0,cs_x2a),'MarkerSize',20)
-annotate([xvector,yvector],'label',{'x','y'},'backgroundColor','w')
+annotate([vector3d.X,vector3d.Y],'label',{'x','y'},'backgroundColor','w')
 nextAxis
 plotPDF(ori_y2a,Miller(1,0,0,cs_y2a),'MarkerSize',20)
-annotate([xvector,yvector],'label',{'x','y'},'backgroundColor','w')
+annotate([vector3d.X,vector3d.Y],'label',{'x','y'},'backgroundColor','w')
 
 %%
-% We observe that both pole figures are rotated with respect to each other
-% by 30 degree. Indeed computing the misorientation angle between both
-% orientations gives us
+% The two pole figures are the same pattern turned by $30^\circ$, and that
+% is what the misorientation angle between the two orientations says.
 
-angle(ori_x2a, ori_y2a) ./ degree
+angle(ori_x2a,ori_y2a) ./ degree
 
 %%
-% In many cases MTEX automatically recognizes different setups and corrects
-% for this. In order to manually transform orientations or tensors from one
-% reference frame into another reference frame one might use the command
-% <orientation.transformReferenceFrame.html transformReferenceFrame>. The
-% following command transforms the reference frame of orientation |ori_y2a|
-% into the reference frame |cs_x2a|
+% A whole data set imported under the wrong assumption is wrong by exactly
+% this angle - a rotation that is easy to miss and hard to explain later.
+
+%% Converting Between Setups
+%
+% MTEX recognises differing setups in many places and corrects for them. To
+% do it explicitly, <orientation.transformReferenceFrame.html
+% |transformReferenceFrame|> rewrites an orientation in another frame
+% *without* changing the orientation it describes. Here |ori_x2a| is
+% expressed in the |y||a| setup.
 
 ori_x2a.transformReferenceFrame(cs_y2a)
 
-%% Triclinic and monoclinic symmetries
+%%
+% The Euler angles came out different, as they must - the same physical
+% orientation read in a frame turned by $30^\circ$. What has not changed is
+% where the crystal points, so this is not the same orientation as
+% |ori_y2a|, which carries the same Euler angles as |ori_x2a| instead.
+
+%% Triclinic and Monoclinic Symmetry
 %
-% In triclinic and monoclinic symmetries even more different setups are
-% used. As two perpendicular crystal axes are required to align with $\vec
-% x$, $\vec y$ or $\vec z$ one usually chooses one crystal axis from the
-% direct coordinate system, i.e., $\vec a$, $\vec b$ or $\vec c$, and the
-% second crystal axis from the reciprocal axes $\vec a^*$, $\vec b^*$ or
-% $\vec c^*$. Typical examples for such setups are
+% Now no two crystal axes are perpendicular, so a Cartesian axis is aligned
+% with one direct axis and one *reciprocal* axis, which is perpendicular to
+% the other two direct ones by construction. Both of the following setups
+% are found in the wild for the same mineral.
 
 cs = crystalSymmetry('-1', [8.290 12.966 7.151], [91.18 116.31 90.14]*degree,...
   'x||a*','y||b', 'mineral','An0 Albite 2016')
 
 %%
-% or
 
 cs = crystalSymmetry('-1', [8.290 12.966 7.151], [91.18 116.31 90.14]*degree,...
   'x||a','c||c*', 'mineral','An0 Albite 2016')
 
+%%
+% The display of a |crystalSymmetry| always states which setup it uses, so
+% the answer to "which convention is this data in?" is in the printout of
+% the symmetry itself.
+
+%% Next
+%
+% Which lattice vector is called $\vec a$ at all, and the conventions
+% different laboratories use, is <SymmetryAlignment.html Crystal Axes
+% Alignment>. How a reference frame is represented in MTEX is recorded in
+% ADR 0003, and directions written in the crystal frame are
+% <CrystalDirections.html Miller Indices>.
+
 %#ok<*NASGU>
+%#ok<*NOPTS>
