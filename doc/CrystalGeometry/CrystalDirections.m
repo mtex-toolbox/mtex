@@ -1,52 +1,64 @@
 %% Miller Indices
 %
-% Miller indices are used to describe directions with respect to the
-% crystal reference system.
+%%
+% A direction in the specimen is written in the specimen axes X, Y, Z. A
+% direction in the *crystal* is written in the crystal axes $\vec a$, $\vec
+% b$, $\vec c$, and its coordinates are the Miller indices. Both are
+% directions in the same three dimensional space - what differs is the frame
+% the numbers refer to, and for a crystal that frame is in general neither
+% orthogonal nor normalised.
+
+%% The Crystal Reference Frame
 %
-%% Crystal Lattice Directions
-%
-% Since lattice directions are always subject to a certain crystal
-% reference frame, the starting point for any crystal direction is the
-% definition of a variable of type <crystalSymmetry.crystalSymmetry.html
-% |crystalSymmetry|>.
+% Miller indices mean nothing without the lattice they are counted in, so
+% the starting point is always a
+% <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|>.
 
 cs = crystalSymmetry('triclinic',[5.29,9.18,9.42],[90.4,98.9,90.1]*degree,...
   'X||a*','Z||c','mineral','Talc');
 
 %%
-% The variable |cs| contains the geometry of the crystal reference frame
-% and, in particular, the alignment of the crystallographic $\vec a$, $\vec
-% b$, and, $\vec c$ axis.
+% It carries the lengths and the angles of the unit cell, and hence the
+% three crystal axes as directions in the specimen.
 
 a = cs.aAxis
+
+%%
+
 b = cs.bAxis
+
+%%
+
 c = cs.cAxis
 
 %%
+% Talc is triclinic, so these three are not at right angles - $\vec a$ and
+% $\vec c$ enclose $81^\circ$ here. Everything that follows is a consequence
+% of that.
+
+angle(a,c) ./ degree
+
+%% Lattice Directions
+%
 % A lattice direction $\vec m = u \cdot \vec a + v \cdot \vec b + w \cdot
-% \vec c$ is a vector with coordinates $u$, $v$, $w$ with respect to these
-% crystallographic axes. Such a direction is commonly denoted by $[uvw]$
-% with coordinates $u$, $v$, $w$ called Miller indices. In MTEX a lattice
-% direction is represented by a variable of type <Miller.Miller.html
-% |Miller|> which is defined by
+% \vec c$ is the direction from one lattice point to another, written
+% $[uvw]$. In MTEX it is a variable of type <Miller.Miller.html |Miller|>.
 
 m = Miller(1,0,1,cs,'uvw')
 
 %%
-% for values $u = 1$, $v = 0$, and, $w = 1$. To plot a crystal direction as
-% a <SphericalProjections.html spherical projections> do
+% Plotting it draws it as a point on the sphere, alongside the three crystal
+% axes.
 
 plot(m,'labeled','grid')
 
 annotate([a,b,c],'label',{'a','b','c'},'backgroundcolor','w','textAboveMarker')
 
 %%
-% Note that for triclinic and monoclinic symmetries MTEX aligns spherical
-% projections of crystal directions such that the b-axis points towards
-% east and c* points out of the plane. This behavior can be changed by
-% altering the <plottingConvention.html plotting convention> of the
-% crystal frame, |cs.frame.how2plot| - a convention always belongs to a
-% reference frame. E.g. we might want to have the a-axis to point to east
+% For triclinic and monoclinic symmetry MTEX draws the b-axis towards the
+% east and c* out of the plane. That is a
+% <plottingConvention.html plotting convention>, and a convention belongs to
+% a reference frame - here to the frame of the crystal.
 
 % change the plotting convention of the crystal frame
 cs.frame.how2plot.east = cs.aAxis;
@@ -55,40 +67,51 @@ plot(m,'labeled','grid')
 
 annotate([a,b,c],'label',{'a','b','c'},'backgroundcolor','w','textAboveMarker')
 
+%%
+% The same direction, the same crystal, a different view: a now points east.
 
-%% Crystal Lattice Planes
+%% Lattice Planes
 %
-% A crystal lattice plane $(hkl)$ is commonly described by its normal
-% vector $\vec n = h \cdot \vec a^* + k \cdot \vec b^* + \ell \cdot \vec
-% c^*$ where $\vec a^*$, $\vec b^*$ and $\vec c^*$ describe the reciprocal
-% crystal coordinate system. In MTEX a lattice plane is defined by
+% A lattice plane is named by its normal, $\vec n = h \cdot \vec a^* + k
+% \cdot \vec b^* + \ell \cdot \vec c^*$, written $(hkl)$. The starred axes
+% are the reciprocal lattice, defined so that $\vec a^*$ is perpendicular to
+% both $\vec b$ and $\vec c$, and so on.
 
-m = Miller(1,0,1,cs,'hkl')
+n = Miller(1,0,1,cs,'hkl')
 
 %%
-% By default lattice planes are plotted as normal directions. Using the
-% option |'plane'| we may alternatively plot the trace of the lattice plane
-% with the sphere.
+% A plane is drawn as its normal by default, or as the great circle where it
+% cuts the sphere, with the option |'plane'|.
 
 hold on
+
 % the normal direction
-plot(m,'upper','labeled')
+plot(n,'upper','labeled')
 
 % the trace of the corresponding lattice plane
-plot(m,'plane','linecolor','r','linewidth',2,'add2all')
+plot(n,'plane','linecolor','r','linewidth',2,'add2all')
 hold off
 
-%%
-% Note that for non Euclidean crystal frames uvw and hkl notations usually
-% lead to different directions.
+%% Why $[101]$ and $(101)$ Are Not the Same Direction
 %
+% The two directions defined above carry the same three numbers, and the
+% plot shows them at different places. The angle between them is
+
+angle(m,n) ./ degree
+
+%%
+% $32^\circ$ apart. In a cubic lattice they would coincide, because the
+% reciprocal axes are then parallel to the direct ones. In any other lattice
+% they do not, and a plane normal is not the lattice direction with the same
+% indices. This is the single most common way to get a crystal direction
+% wrong, and it is why |Miller| always records which of the two it is.
+
 %% Trigonal and Hexagonal Convention
 %
-% In the case of trigonal and hexagonal crystal symmetry often four digit
-% Miller indices $[UVTW]$ and $(HKIL)$ are used, as they make it more easy
-% to identify symmetrically equivalent directions. This notation is
-% redundant as the first three Miller indices always sum up to zero, i.e.,
-% $U + V + T = 0$ and $H + K + I = 0$. The syntax is
+% Trigonal and hexagonal lattices are usually written with four indices,
+% $[UVTW]$ and $(HKIL)$, because symmetrically equivalent directions are
+% then easy to spot - they are permutations of the first three. The fourth
+% index is redundant, as $U + V + T = 0$ and $H + K + I = 0$.
 
 % import trigonal Quartz lattice structure
 cs = loadCIF('quartz');
@@ -96,8 +119,12 @@ cs = loadCIF('quartz');
 % a four digit lattice direction
 m = Miller(2,1,-3,1,cs,'UVTW')
 
+%%
+
 % a four digit plane normal
 n = Miller(1,1,-2,3,cs,'hkil')
+
+%%
 
 plot(m,'upper','labeled','backgroundColor','white','grid','on')
 hold on
@@ -105,19 +132,26 @@ plot(n,'upper','labeled')
 hold off
 
 %%
-% In order to switch the output format, e.g. from UVTW to uvw do
+% Which notation the indices are *displayed* in is set by |dispStyle|, and
+% changing it changes nothing about the direction itself.
 
 m.dispStyle = 'uvw';
 round(m)
 
 %%
-% or from reciprocal to direct coordinates
 
 n.dispStyle = 'UVTW';
 round(n)
 
 %%
-% Note, that this does not change the vector but only the display of the
-% coefficients. Internally, all vectors are stored with respect to the
-% cartesian coordinate system.
+% Internally every |Miller| is stored in Cartesian coordinates, exactly as a
+% <vector3d.vector3d.html |@vector3d|> is. The indices are a way of reading
+% it, and |round| is needed above because converting between the notations
+% leaves numbers that are integers only up to rounding.
+
+%% Next
 %
+% What crystal symmetry does to a direction - the equivalent directions it
+% has, and how many - is <CrystalOperations.html Operations>. How the
+% crystal axes are attached to the Cartesian frame in the first place is
+% <CrystalReferenceSystem.html Reference System>.
