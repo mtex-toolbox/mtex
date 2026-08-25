@@ -1,33 +1,49 @@
 %% Configuration
 %
 %%
-% MTEX is highly customizable. On a local level this can be done by passing
-% <GeneralConceptsOptions options> to MTEX functions. On a global level
-% this is achieved by editing the file <matlab:edit('mtex_settings.m')
-% mtex_settings.m> via the command
+% An <GeneralConceptsOptions.html option> changes one command. A preference
+% changes the default for the whole session, and the file that sets them all
+% is |mtex_settings.m|:
 %
 %   edit mtex_settings
 %
-% There the following behaviour can be customized
+% It runs at startup, so anything changed there applies to every session
+% from then on. What it sets includes
 %
-% * the orientation of the x and y spatial coordinate axes
-% * the alignment of the a and b crystallographic unit cell axes 
-% * default font size
-% * default figure size
-% * show or hide coordinates / micronbar on EBSD maps
-% * default pole figure annotations
-% * default Euler angle convention
-% * default color map
-% * file extensions associated with EBSD and pole figure files
-% * path to CIF (Crystallographic Information Framework) and other files
-% * the default maximum iteration depth of the function
-% <PoleFigure.calcODF.html calcODF>
-% * the amount of available memory
+% * the font size, figure size and marker size of every plot
+% * whether an EBSD map shows a micron bar, coordinates or a reference frame
+%   indicator
+% * the annotations drawn on spherical plots
+% * the default colormap, and the colour palette phases are coloured from
+% * the Euler angle convention, Bunge by default
+% * which file extensions are offered for EBSD and pole figure files, and
+%   where the import wizard starts looking
+% * the paths to the bundled CIF files, data sets and examples
+% * whether an imported map is <EBSDGrid.html gridified> on import
+% * whether a symmetry mismatch stops with an error or only warns
+% * which of the optional third party solvers are used
 %
-% and many more.
+% and a good deal more. A single preference is read and written from the
+% command line:
 %
-% You can use
+%   getMTEXpref('FontSize')
+%   setMTEXpref('FontSize',14)
 %
-%   getMTEXpref 
+% and with no argument, |getMTEXpref| lists all of them with their current
+% values:
+
+getMTEXpref
+
+%%
+% Two of these are worth a word of warning.
 %
-% to display all mtex_settings.  
+% |setMTEXpref| changes the running session only. To make a change permanent
+% it has to go into |mtex_settings.m|, which also means that a script
+% relying on a changed preference will behave differently on somebody else's
+% machine - so a published script should set what it needs explicitly rather
+% than assume a configuration.
+%
+% And the alignment of the plots is no longer a preference at all. It
+% belongs to the <referenceFrame.referenceFrame.html reference frame> the
+% data lives in, which is what
+% <AxesAlignment.html On Screen Coordinate System Alignment> is about.
