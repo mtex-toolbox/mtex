@@ -29,21 +29,30 @@ odf = 0.2*unimodalODF(mod1) ...
 
 %%
 
-% and let us switch to the LaboTex colormap
-setMTEXpref('defaultColorMap',LaboTeXColorMap);
-
 %%
 % <SO3Fun.plotIPDF.html |plotIPDF|> works exactly as |plotPDF| does, except
 % that it takes specimen directions rather than crystal directions.
 
 plotIPDF(odf,[vector3d.X,vector3d.Z])
+mtexColorMap LaboTeX
 
 %%
-% The fibre component puts the c-axis along X, so the X plot carries
-% density at the $(0001)$ corner of the sector - 2.7 mrd - while the Z plot
-% has essentially none there, 0.02 mrd. The maxima sit elsewhere: the two
-% single-orientation components are sharper than the fibre and dominate both
-% plots, at 7.7 mrd for X and 23 mrd for Z.
+% The fibre component puts the c-axis along X, so the $(0001)$ corner is the
+% maximum of the X inverse pole figure. The same corner is almost empty for
+% Z. These statements can be read from the colours, but evaluating the two
+% inverse pole density functions makes them quantitative.
+
+ipdfX = calcPDF(odf,[],vector3d.X);
+ipdfZ = calcPDF(odf,[],vector3d.Z);
+
+[ipdfX.eval(cs.cAxis),ipdfZ.eval(cs.cAxis); max(ipdfX),max(ipdfZ)]
+
+%%
+% The first row is the density at $(0001)$: about 23 mrd for X and 0.025
+% mrd for Z. The second row contains the maxima. For X the c-axis corner is
+% itself the maximum; for Z the maximum is about 5.4 mrd elsewhere in the
+% sector. This is the distinction an inverse pole figure is good at making:
+% it answers which crystal direction prefers one chosen specimen direction.
 
 %% Antipodal Symmetry
 %
@@ -52,6 +61,7 @@ plotIPDF(odf,[vector3d.X,vector3d.Z])
 % <VectorsAxes.html axes>.
 
 plotIPDF(odf,[vector3d.X,vector3d.Z],'antipodal')
+mtexColorMap LaboTeX
 
 %% The Complete Sphere
 %
@@ -60,6 +70,7 @@ plotIPDF(odf,[vector3d.X,vector3d.Z],'antipodal')
 % option |'complete'| shows the copies too.
 
 plotIPDF(odf,[vector3d.X,vector3d.Z],'complete','upper')
+mtexColorMap LaboTeX
 
 %%
 % The threefold symmetry of the trigonal group is now visible as the
@@ -67,11 +78,7 @@ plotIPDF(odf,[vector3d.X,vector3d.Z],'complete','upper')
 % antipodal symmetry imposed as well:
 
 plotIPDF(odf,[vector3d.X,vector3d.Z],'complete','antipodal','upper')
-
-%%
-% Finally, set the default colormap back.
-
-setMTEXpref('defaultColorMap',WhiteJetColorMap);
+mtexColorMap LaboTeX
 
 %% Next
 %

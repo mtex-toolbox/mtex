@@ -88,18 +88,23 @@ volume(odf,ori,delta)*100
 % Fixing one radius for every component is the weakness of the approach:
 % real components are not spherical and neighbouring ones run into each
 % other. <SO3Fun.calcComponents.html |calcComponents|> avoids the choice
-% altogether. It starts from evenly distributed orientations and lets each
-% of them crawl uphill to the nearest maximum, then reports the maxima
-% together with the share of orientations that arrived at each.
+% altogether. It lets a set of seed orientations climb the ODF gradient to
+% nearby maxima, then groups seeds that arrive at the same place. For a
+% radial-basis ODF such as this one, the seeds are its kernel centres and
+% their weights; for other representations MTEX uses an equispaced
+% orientation grid. The reported shares are the accumulated seed weights,
+% so they are a useful modal partition but not the integral over a uniquely
+% defined geometric boundary.
 
 [ori, vol] = calcComponents(odf);
 ori
 vol * 100
 
 %%
-% 48, 22, 21 and 7 percent - these shares always add up to about 100, since
-% every orientation ends up somewhere. The maxima themselves agree with
-% those found by |max|, which the white circles show.
+% 48, 22, 21 and 7 percent in this example. They add up to about 100 because
+% nearly all positive seed weight reaches one of the retained modes; very
+% small modes may be discarded. The maxima themselves agree with those
+% found by |max|, which the white circles show.
 
 annotate(ori,'MarkerFaceColor','none','MarkerEdgeColor','white',...
   'linewidth',2,'MarkerSize',15,'marker','o')

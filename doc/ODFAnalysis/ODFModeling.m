@@ -67,7 +67,10 @@ odf = 0.73 * uniformODF(cs,ss) + 0.27 * unimodalODF(mod1,psi)
 
 %%
 % The mean is still 1 - the weights are volume fractions and have to add up
-% to one.
+% to one because both component ODFs are individually normalized. The two
+% peaks may overlap in orientation space; the coefficients still describe
+% the fractions assigned to the two terms of the mixture, not disjoint
+% regions cut out around their maxima.
 
 mean(odf)
 
@@ -92,8 +95,13 @@ odfRot = rotate(odf,rotation.byAxisAngle(vector3d.Z,30*degree));
 plotPDF(odfRot,Miller(1,0,0,cs),'antipodal')
 
 %%
-% The pattern has turned by $30^\circ$ about the centre, the orientations
-% themselves are unchanged in the crystal.
+% The pole-figure pattern turns by $30^\circ$ about the centre because the
+% rotation is applied on the specimen side of every component orientation.
+% The original |mmm| specimen symmetry was tied to x, y and z, so it is no
+% longer a coordinate-aligned specimen symmetry after this rotation and
+% MTEX drops that label with a warning. The physical twofold axes have
+% rotated with the texture. A passive change of coordinate frame instead
+% requires the corresponding inverse transformation.
 
 %% Next
 %

@@ -10,6 +10,7 @@
 %
 % The example is a trigonal alpha fibre ODF on a uniform background.
 
+rng(0)
 cs = crystalSymmetry('32');
 fibre_odf = 0.5*uniformODF(cs) + 0.5*fibreODF(fibre.rand(cs),'halfwidth',20*degree);
 
@@ -30,10 +31,10 @@ plot(ori,'MarkerFaceColor','none','all','MarkerEdgeColor','k','MarkerSize',4)
 hold off
 
 %%
-% Whether the points really follow the ODF is impossible to see here,
-% because Bunge sections do not preserve volume - a region that looks
-% crowded may simply be stretched. <SigmaSections.html Sigma sections> do
-% not have this defect.
+% Point crowding in a section plot is not by itself a statistical test:
+% section coordinates and projections distort area, and the ODF lives in
+% three dimensions. Sigma sections nevertheless organize this particular
+% fibre more directly and make the visual comparison easier.
 
 % plot the ODF in sigma sections
 plot(fibre_odf,'sections',6,'silent','sigma','contour','linewidth',2)
@@ -61,9 +62,9 @@ mtexColorbar
 disp("difference between original and reconstructed ODF: " + calcError(odf_rec,fibre_odf))
 
 %%
-% A halfwidth of $10^\circ$ is too small for 500 random orientations - the
-% reconstruction is covered in spurious oscillations. Widening the kernel
-% smooths them away.
+% A halfwidth of $10^\circ$ is too small for this sample of 500 random
+% orientations: individual clusters and gaps remain visible as spurious
+% narrow peaks. Widening the kernel suppresses this sampling noise.
 
 % estimate an ODF from the random orientations
 odf_rec = calcDensity(ori,'halfwidth',20*degree);
@@ -75,9 +76,10 @@ mtexColorbar
 disp("difference between original and reconstructed ODF: " + calcError(odf_rec,fibre_odf))
 
 %%
-% At $20^\circ$ the estimate is much closer to the original and free of the
-% oscillations. The price is sharpness: the wider kernel smooths the true
-% texture as well, and the texture index drops with it.
+% At $20^\circ$ the estimate is smoother and usually closer to the original.
+% The price is sharpness: a wider kernel also broadens real texture
+% features. Compare both the error and the texture index printed below,
+% rather than choosing the most visually pleasing plot.
 
 disp("Texture index original ODF: " + norm(fibre_odf)^2)
 disp("Texture index reconstructed ODF: " + norm(odf_rec)^2)
@@ -107,10 +109,12 @@ mtexColorbar
 disp("difference between original and reconstructed ODF: " + calcError(odf_rec,fibre_odf))
 
 %%
-% A visibly better reconstruction: the error against the original ODF is
-% 0.044, half of the 0.091 the random sample managed at its best halfwidth,
-% and the texture index comes out at 1.73 against 1.61 - closer to the 1.91
-% of the true ODF. Same 500 orientations, placed rather than drawn.
+% The printed error and texture index can now be compared with the random
+% result above. The optimized points usually represent the model more
+% accurately at the same sample size, because they were placed to cover the
+% density rather than drawn as an independent statistical realization.
+% That also means they are not interchangeable: use random samples to model
+% sampling variability, and optimal samples as compact numerical input.
 
 disp("Texture index original ODF: " + norm(fibre_odf)^2)
 disp("Texture index reconstructed ODF: " + norm(odf_rec)^2)

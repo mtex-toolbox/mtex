@@ -1,11 +1,12 @@
 %% Detection of Sample Symmetry
 %
 %%
-% A rolled sheet has orthotropic sample symmetry: mirror planes normal to
-% the rolling, transverse and normal direction. A measurement rarely has
-% the specimen mounted exactly in those axes, and then the symmetry is
-% still there but tilted, which hides it from any calculation that assumes
-% it. <SO3Fun.centerSpecimen.html |centerSpecimen|> finds the tilt.
+% A rolled sheet is often modelled with orthotropic sample symmetry. In
+% MTEX, |specimenSymmetry('222')| represents the three twofold rotations
+% about rolling, transverse and normal direction. In conventional
+% antipodal pole figures this is also seen as mirror symmetry about the
+% specimen axes. A measurement rarely has the specimen mounted exactly in
+% that frame; <SO3Fun.centerSpecimen.html |centerSpecimen|> finds the tilt.
 %
 %% A Synthetic Example
 %
@@ -43,11 +44,13 @@ plotPDF(odf,h,'antipodal','silent','complete','upper')
 % an ODF back. The rotation destroys the symmetry with respect to x, y, z -
 % not the symmetry itself, only its alignment.
 
+rng(0)
+
 % define a sample rotation
 rot = rotation.byEuler(15*degree,12*degree,-5*degree);
 
 % Simulate individual orientations and rotate them.
-% Note that we loose the sample symmetry by rotating the orientations
+% The symmetry is no longer aligned with the coordinate axes.
 ori = rot * discreteSample(odf,1000)
 
 % estimate an ODF from the individual orientations
@@ -74,9 +77,9 @@ plotPDF(odf_corrected,h,'antipodal',8,'silent')
 angle(rot,inv(rot_inv)) / degree
 
 %%
-% Well under a degree from the rotation that was applied. What is left is
-% the noise of 1000 sampled orientations smoothed with a 10 degree kernel,
-% not a failure of the search.
+% The returned angle measures how closely the estimated correction recovers
+% the applied rotation. It will not be exactly zero: 1000 sampled
+% orientations and the subsequent smoothing introduce statistical error.
 
 
 %% On Measured Pole Figure Data

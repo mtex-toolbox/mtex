@@ -1,10 +1,12 @@
 %% Sigma Sections
 %
 %%
-% $\varphi_2$ sections are the most common way of showing an ODF and one of
-% the hardest to read, because Euler angle space distorts the geometry it
-% cuts through. Sigma sections cut differently and are much easier to
-% interpret - this page is an argument for them, run as an experiment.
+% $\varphi_2$ sections are the most common way of showing an ODF. They are
+% compact for many cubic rolling textures, but their Euler coordinates can
+% be difficult to read for crystals with one distinguished axis. Sigma
+% sections reorganize the same three orientation coordinates around that
+% axis. For the hexagonal example on this page, this makes the texture much
+% easier to interpret.
 %
 % Below is a hexagonal ODF made of a few unimodal components, in
 % $\varphi_2$ sections.
@@ -33,7 +35,7 @@ plotSection(odf)
 % $\varphi_2$ controls the rotation of the crystal around this new c-axis.
 % This rotation around the new c-axis can be described by the angle between
 % the a-axis with respect to some fixed reference direction. In the case of
-% hexagonal symmetry this angle may vary between $0$ and $60$ degree.
+% hexagonal symmetry this angle may vary between $0$ and $60$ degrees.
 %
 % The idea of sigma sections is to make a reasonable choice of this
 % reference direction.
@@ -45,10 +47,10 @@ close all
 plot(oS)
 
 %%
-% In the above plot each pixel corresponds to a unique orientation. Which
-% is specified by the position of the c-axis being in the position of the
-% pixel and the a-axis being aligned with the small arrow at this
-% position. As an example lets consider the orientation
+% Within the chosen fundamental region, each pixel represents an
+% orientation: its position gives the specimen direction of the c-axis and
+% the small arrow gives the reference direction for the a-axis. As an
+% example, consider the orientation
 
 ori1 = orientation.map(cs.cAxis,vector3d.Z,cs.aAxis,vector3d.X)
 
@@ -71,7 +73,7 @@ quiver(ori2.symmetrise,ori2.symmetrise*cs.aAxis,'color','green','linewidth',2)
 hold off
 
 %%
-% Accordingly, the first orientations appears right in the center while the
+% Accordingly, the first orientation appears right in the centre while the
 % second one appears at the position of the x-axis. The red and green
 % arrows indicate the directions of the a-axes and align perfectly with the
 % small background arrows.

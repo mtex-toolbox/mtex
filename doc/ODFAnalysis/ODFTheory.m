@@ -14,7 +14,9 @@
 % $$\mathrm{odf}(g) = \frac{1}{V} \frac{\mathrm{d}V(g)}{\mathrm{d}g},$$
 %
 % so a volume fraction is only obtained by integrating over a region of
-% orientations. The normalisation is chosen so that the uniform texture has
+% orientations. Here $\mathrm{d}g$ is the normalized volume measure on the
+% symmetry-reduced orientation space: integrating 1 over the whole space
+% gives 1. With that convention the uniform texture has
 % $\mathrm{odf} \equiv 1$, and values are read as *multiples of a random
 % distribution*, mrd.
 
@@ -106,10 +108,12 @@ plot(ebsd.orientations,'Euler','MarkerEdgeColor','k')
 hold off
 
 %%
-% but Euler angle space distorts volumes, so a concentration there is
-% misleading, and the plot is hard to read besides.
-% <SigmaSections.html Sigma sections> are the geometrically sounder view and
-% the one to prefer.
+% but equal-looking boxes in Euler angle space do not represent equal
+% orientation-space volumes. The plot is useful for locating components,
+% not for estimating their volume by eye. For this hexagonal example,
+% <SigmaSections.html sigma sections> give a more direct view: position in a
+% section fixes the c-axis direction, while the section angle records the
+% remaining rotation about it.
 
 plotSection(odf,'sigma')
 

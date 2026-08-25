@@ -52,21 +52,22 @@ plot(f,'linewidth',2,'add2all')
 % Beside the standard phi2 sections MTEX supports also sections according
 % to all other Euler angles.
 %
-% * |'phi2'| (default) and |'phi1'|, the first and third Bunge angle
+% * |'phi2'| (default), the third Bunge angle, and |'phi1'|, the first
 % * |'Phi'|, the second Bunge angle
 % * |'gamma'| and |'alpha'|, the Matthies Euler angles
 % * |'sigma'|, i.e. $\alpha + \gamma$
 %
-% The last one is special: along a $\sigma$ section the crystal direction
-% that points into the specimen $\vec z$ direction stays fixed, so the
-% sections are inverse pole figures of $\vec z$ and no orientation is torn
-% apart by the sectioning.
+% The last one is special. For the usual choice of its reference axes, the
+% position within a $\sigma$ section identifies the crystal direction
+% parallel to specimen $\vec z$, while the section angle describes the
+% remaining rotation about that direction. Each panel can therefore be read
+% much like an inverse pole figure with one extra angular coordinate.
 
 plotSection(odf,'sigma')
 
 %%
-% The $\varphi_1$ sections put the specimen direction of a fixed crystal
-% direction in the plane instead
+% The other section families slice the same orientation space along
+% different coordinates. For example, $\varphi_1$ sections are
 
 plotSection(odf,'phi1','sections',9,'layout',[3 3],'silent')
 
@@ -104,14 +105,13 @@ plotSection(odf,'gamma','sections',9,'layout',[3 3],'silent')
 %% Specimen Symmetry
 %
 % As we can see from the above table the first Euler angle $\varphi_1$
-% ranges for all symmetries from zero to 360 degree. The only way to
+% ranges for all symmetries from zero to 360 degrees. The only way to
 % restrict this angle is to consider specimen symmetry. In the classical
 % case of orthotropic specimen symmetry the range of the first Euler angle
-% reduces to 90 degree and we obtain the common square shaped ODF section
+% reduces to 90 degrees and we obtain the common square-shaped ODF section
 % plots
 
 odf.SS = specimenSymmetry('222');
 
 plot(odf,'sections',18,'layout',[5 4],...
   'coordinates','off','xlabel','','ylabel','')
-

@@ -12,8 +12,9 @@
 % Like the ODF itself it is a density, in multiples of a random
 % distribution: 2 mrd at a specimen direction means twice as much material
 % has $\vec h$ there as an untextured specimen would. And like the ODF, it
-% is what a diffraction experiment measures - which is why pole figures are
-% the bridge between measurement and texture, see
+% is proportional to what a diffraction experiment measures after
+% background, defocusing and structure-factor corrections - which is why
+% pole figures are the bridge between measurement and texture, see
 % <PoleFigure2ODF.html Reconstructing an ODF>.
 
 plottingConvention.default('y↑→x');
@@ -30,14 +31,12 @@ odf = 0.2*unimodalODF(mod1) ...
   + 0.3*unimodalODF(mod2) ...
   + 0.5*fibreODF(Miller(0,0,1,cs),vector3d(1,0,0),'halfwidth',10*degree);
 
-% and let us switch to the LaboTex colormap
-setMTEXpref('defaultColorMap',LaboTeXColorMap);
-
 %%
 % <SO3Fun.plotPDF.html |plotPDF|> needs the ODF and the crystal directions
 % to compute pole figures for.
 
 plotPDF(odf,Miller({1,0,-1,0},{0,0,0,1},{1,1,-2,1},cs))
+mtexColorMap LaboTeX
 
 %%
 % The two single components show as spots, the fibre as a ring - a fibre
@@ -53,6 +52,7 @@ plotPDF(odf,Miller({1,0,-1,0},{0,0,0,1},{1,1,-2,1},cs))
 % Forcing both to be drawn shows what the check found.
 
 plotPDF(odf,Miller({1,0,-1,0},{0,0,0,1},{1,1,-2,1},cs),'complete')
+mtexColorMap LaboTeX
 
 %%
 % Upper and lower hemisphere agree in exactly three situations:
@@ -61,13 +61,17 @@ plotPDF(odf,Miller({1,0,-1,0},{0,0,0,1},{1,1,-2,1},cs),'complete')
 % - true here for $(10\bar10)$ and for the c-axis $(0001)$, not for
 % $(11\bar21)$;
 % * the symmetry group contains the inversion, i.e. is a Laue group;
-% * antipodal symmetry is assumed, as it must be for measured pole figures
-% under Friedel's law, see <VectorsAxes.html Axes and Antipodal Symmetry>.
+% * antipodal symmetry is assumed, as is conventional for kinematic
+% diffraction under Friedel's law, see <VectorsAxes.html Axes and Antipodal
+% Symmetry>. Dynamical or resonant diffraction may distinguish the two
+% sides, so the assumption belongs to the experiment rather than to the
+% definition of an ODF.
 %
 % The last is the |'antipodal'| flag, and it makes the two halves equal by
 % averaging them.
 
 plotPDF(odf,Miller(1,1,-2,1,cs),'antipodal','complete')
+mtexColorMap LaboTeX
 
 %% Values Rather Than Pictures
 %
@@ -96,10 +100,6 @@ plotFibre(odf,f,'LineWidth',2)
 %%
 % The curve is the density itself, not a projection of it, so its peaks are
 % the components the fibre passes through.
-
-%%
-% Finally, set the default colormap back.
-setMTEXpref('defaultColorMap',WhiteJetColorMap);
 
 %% Next
 %

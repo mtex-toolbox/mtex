@@ -26,15 +26,13 @@ odf = 0.1*unimodalODF(mod1) ...
   + 0.7*fibreODF(Miller(0,0,1,cs),vector3d(1,0,0),'halfwidth',10*degree);
 
 %%
-% and let us switch to the LaboTex colormap
-setMTEXpref('defaultColorMap',LaboTeXColorMap);
-
 %% Three Dimensional Plots
 %
 % Visualizing an ODF in three dimensions is done by the command
 % <SO3Fun.plot3d.html |plot3d|>.
 
 plot3d(odf)
+mtexColorMap LaboTeX
 
 %%
 % The fibre shows as a tube, the two components as blobs. Rotating such a
@@ -75,13 +73,14 @@ ori = orientation.rand(crystalSymmetry('432'),specimenSymmetry('222'))
 [phi1,Phi,phi2] ./degree
 
 %%
-% Euler angle space follows the geometry of orientation space badly: it
-% stretches some regions and squeezes others, so a concentration seen there
-% may be an artefact of the parametrisation. Axis angle space distorts far
-% less, and for misorientations it is the usual choice - the option is
-% |'axisAngle'|.
+% Euler-angle coordinates stretch some regions and squeeze others, so an
+% apparent volume seen there may be an artefact of the parametrisation.
+% Axis--angle coordinates often make rotation axes and angles more
+% intuitive, especially for misorientations, but they are not an
+% equal-volume map either. The option is |'axisAngle'|.
 
 plot3d(odf,'axisAngle','figSize','large')
+mtexColorMap LaboTeX
 
 %% ODF Sections
 %
@@ -90,6 +89,7 @@ plot3d(odf,'axisAngle','figSize','large')
 % the sections are at constant angles of $\varphi_2$.
 
 plotSection(odf)
+mtexColorMap LaboTeX
 
 %%
 % Six sections at constant $\varphi_2$, the classical view. The fibre
@@ -105,14 +105,16 @@ plotSection(odf)
 % * $\varphi_1$
 % * $\alpha$ (Matthies Euler angles)
 % * $\gamma$ (Matthies Euler angles)
-% * $\sigma = \alpha + \gamma$ (recommended)
+% * $\sigma = \alpha + \gamma$
 %
-% Sigma sections are the recommended default. They follow the geometry of
-% the space much more closely, and a component that spans several phi2
-% sections usually sits in one sigma section, see
-% <SigmaSections.html Sigma Sections>.
+% Sigma sections are not a universally superior replacement for the
+% classical view. They are especially compact for trigonal, tetragonal and
+% hexagonal symmetry, where one crystal axis is distinguished. A component
+% that spans several $\varphi_2$ sections may then become easy to follow in
+% one sigma section; <SigmaSections.html Sigma Sections> explains why.
 
 plotSection(odf,'sigma')
+mtexColorMap LaboTeX
 
 %% Along a Fibre
 %
@@ -127,11 +129,6 @@ f = fibre(Miller(1,2,-3,2,cs),vector3d(2,1,1));
 
 plot(odf,f,'LineWidth',2);
 
-
-%%
-% Finally, set the default colormap back.
-
-setMTEXpref('defaultColorMap',WhiteJetColorMap);
 
 %% Next
 %

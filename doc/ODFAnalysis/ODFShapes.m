@@ -6,6 +6,9 @@
 % is passed to <unimodalODF.html |unimodalODF|> or to
 % <fibreODF.html |fibreODF|>, either by its own parameter or, more
 % readably, by its halfwidth.
+% The halfwidth is the angular distance from the centre at which the kernel
+% has fallen to half its maximum. Equal halfwidths therefore align one
+% easily interpreted feature, although the tails may still differ greatly.
 %
 % The choice matters in two places: it is the smoothing applied when a
 % density is estimated from measurements, see
@@ -98,7 +101,7 @@ psi{3}.bandwidth
 
 %%
 % This is why the de la Vallee Poussin kernel is the MTEX default: it is
-% smooth, non negative, and cheap in both representations.
+% smooth, nonnegative, and cheap in both representations.
 
 %% Next
 %

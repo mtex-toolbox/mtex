@@ -1,10 +1,10 @@
 %% ODF
 %
 %%
-% A million measured orientations are not an answer. The orientation
-% distribution function, or ODF, is the answer: a single function that says
-% how much of the material sits at each orientation, in place of the list of
-% individual measurements it was built from.
+% A list of measured orientations tells us what was observed, but not yet
+% how to describe the texture as a whole. The orientation distribution
+% function, or ODF, turns that list into a function: it says how strongly
+% each region of orientation space is represented in the specimen.
 %
 % Being a *density* is the whole point, and it is where most
 % misunderstandings start. An ODF does not assign a volume fraction to one
@@ -16,9 +16,11 @@
 % texture at all, and a peak of 20 means twenty times as much material near
 % that orientation as random chance would put there.
 %
-% Below, the same data as points and as a density. The black dots are
-% individual measured orientations; the colours are the ODF estimated from
-% them, both shown in the same pole figure.
+% Below, the same data appear as points and as a density. The black dots are
+% individual measured orientations; the colours are the pole density
+% calculated from an ODF estimated from them. This is already one step
+% removed from the ODF itself: a pole figure projects the three-dimensional
+% orientation distribution onto the sphere.
 
 mtexdata forsterite silent
 ori = ebsd('Forsterite').orientations;
@@ -40,6 +42,11 @@ hold off
 % that is correct independently of the data, which is why
 % <DensityEstimation.html Density Estimation> is a page of its own rather
 % than a default nobody mentions.
+%
+% There is a second choice hidden in the word "measurement": what should
+% count once? Pixel orientations weight the scanned area, whereas grain mean
+% orientations weight grains equally unless grain areas are supplied as
+% weights. Both can be useful, but they answer different physical questions.
 %
 %% A function on rotations, not on a sphere
 %
@@ -65,10 +72,12 @@ hold off
 % <ODFPoleFigure.html Pole Figures> and
 % <ODFInversePoleFigure.html Inverse Pole Figures> are the two projections;
 % <EulerAngleSections.html Euler Angle Sections> and
-% <SigmaSections.html Sigma Sections> are the two common ways to slice.
-% Sigma sections are usually the more honest of the two, because the
-% distortion of Euler space near the poles makes Euler sections misleading
-% about how concentrated a texture really is.
+% <SigmaSections.html Sigma Sections> are two common ways to slice.
+% Conventional $\varphi_2$ sections are compact and widely used for cubic
+% rolling textures. Sigma sections are particularly intuitive for crystals
+% with a unique axis - trigonal, tetragonal and hexagonal symmetry - because
+% each section can be read as an inverse pole figure plus a rotation about
+% that axis.
 %
 % <ODFComponents.html Components> and
 % <ODFCharacteristics.html Properties> extract numbers - texture index,

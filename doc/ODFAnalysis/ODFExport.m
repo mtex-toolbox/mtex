@@ -1,18 +1,23 @@
 %% ODF Export
 %
 %%
-% MTEX support the following formats for storing and importing of ODFs:
+% Export is a choice about which information the receiving program needs.
+% MTEX supports four common representations:
 %
-% * .mat file - lossless, specific for MTEX, binary format
-% * MTEX file - lossless, specific for MTEX, ASCII format
-% * VPSC file - not lossless, ASCII format
-% * .txt file - not lossless, ASCII format
+% * a |.mat| file with the MTEX object - exact and binary;
+% * an MTEX ASCII file with its components - exact for supported component
+% representations and readable by MTEX;
+% * a generic table of ODF values on an orientation grid;
+% * a VPSC table of weighted discrete orientations.
 %
+% The last two are finite approximations to a continuous ODF. Record the
+% grid resolution or number of orientations whenever results must be
+% reproducible.
 %
-%% Define an Model ODF
+%% Define a Model ODF
 %
-% We will demonstrate the the import and export of ODFs at the following
-% sample ODF which is defined as the superposition of several model ODFs.
+% We demonstrate the formats with a mixture of uniform, fibre and unimodal
+% components.
 
 cs = crystalSymmetry('cubic');
 mod1 = orientation.byAxisAngle(xvector,45*degree,cs);
@@ -44,12 +49,13 @@ save(fname,'model_odf')
 load(fname)
 
 
-%% Export as an generic ASCII file
+%% Export as a Generic ASCII File
 %
-% By default and ODF is exported in an ASCII file which consists of a large
-% table with four columns, where the first three column describe the Euler
-% angles of a regular 5° grid in the orientation space and the fourth
-% column contains the value of the ODF at this specific position.
+% By default an ODF is exported as a table with four columns. The first
+% three contain the Euler angles of a regular $5^\circ$ orientation grid;
+% the fourth contains the ODF value at that location. This samples the
+% function rather than preserving its internal representation, so a grid
+% that is too coarse can miss narrow texture components.
 
 % the filename
 fname = fullfile(tempdir, 'odf.txt');
@@ -58,9 +64,9 @@ fname = fullfile(tempdir, 'odf.txt');
 export(model_odf,fname,'Bunge')
 
 %%
-% Other Euler angle conventions or other resolutions can by specified by
-% options to <SO3Fun.export.html export>. Even more control you have,
-% if you specify the grid in the orientation space directly.
+% Other Euler-angle conventions and resolutions can be specified with
+% options to <SO3Fun.export.html |export|>. For complete control, construct
+% and pass the orientation grid directly.
 
 % define a equispaced grid in orientation space with resolution of 5 degree
 S3G = equispacedSO3Grid(cs,'resolution',5*degree);
@@ -71,9 +77,9 @@ export(model_odf,fname,S3G,'Bunge','generic')
 
 
 %% Export an ODF to an MTEX ASCII File
-% Using the options *MTEX* the ODF is exported to an ASCII file which contains
-% descriptions of all components of the ODF in a human readable fashion.
-% This format can be imported by MTEX without loss.
+% With the |'mtex'| interface the ODF is exported as a human-readable
+% description of its components. MTEX can import this representation again
+% without replacing those components by samples on a grid.
 
 % the filename
 fname = fullfile(tempdir, 'odf.mtex');
@@ -89,13 +95,12 @@ export(model_odf,fname,'Bunge','interface','mtex')
 % the VPSC texture format - a three line header, the number of points, and
 % then one row of Bunge Euler angles plus a weight per orientation.
 %
-% Note that the interface has to be selected explicitly. Writing
-% |export(odf,fname,'VPSC')| is *not* enough - |'VPSC'| would be read as an
-% unknown flag and the generic interface used instead.
+% The shorthand |'VPSC'| selects this interface directly. The number of
+% orientations controls how finely the continuous ODF is represented.
 
 fname = fullfile(tempdir, 'odfvpsc.txt');
 
-export(model_odf,fname,'interface','VPSC','points',5000)
+export(model_odf,fname,'VPSC','points',5000)
 
 %%
 % Let us look at the beginning of the resulting file
@@ -111,6 +116,15 @@ fclose(fid);
 
 delete(fname)
 
+%% Choosing a Format
+%
+% Use |.mat| while continuing an analysis in MTEX, and MTEX ASCII when a
+% readable component description is useful. Use a generic grid when the
+% receiving program expects function values, and VPSC when it expects a
+% synthetic polycrystal. Grid spacing and sample size are accuracy
+% parameters, not merely file-format options. The difference between a
+% random statistical sample and an optimized numerical representation is
+% discussed in <RandomSampling.html Random Sampling>.
 
 
 
