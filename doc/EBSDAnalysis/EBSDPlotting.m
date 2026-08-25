@@ -21,11 +21,11 @@ plot(ebsd)
 
 %%
 % This is a peridotite: a forsterite matrix in light blue with enstatite in
-% green and smaller diopside grains in orange. The white speckle is the
-% fourth entry of the table above, the *notIndexed* points, whose patterns
-% could not be matched to any of the three phases. A quarter of the map is
-% of that kind, and it is not spread evenly - it crowds along the grain
-% boundaries, where the beam sees two crystals at once.
+% green and smaller diopside grains in orange. The white speckle marks the
+% *notIndexed* points, whose patterns could not be matched to any of the
+% three phases. A quarter of the map is of that kind, and it is not spread
+% evenly - it crowds along the grain boundaries, where the beam sees two
+% crystals at once.
 %
 % Each phase carries its own colour, as an RGB triple
 
@@ -50,9 +50,9 @@ ebsd('notIndexed').CS.color = str2rgb('gray');
 plot(ebsd)
 
 %%
-% Now the fourth phase is visible as such, and the pattern it forms - dense
-% along the boundaries, sparse inside the grains - is information about the
-% specimen rather than a gap in it.
+% Now the notIndexed class is visible as such, and the pattern it forms -
+% dense along the boundaries, sparse inside the grains - is information
+% about the specimen rather than a gap in it.
 %
 %% Maps of a measured property
 %

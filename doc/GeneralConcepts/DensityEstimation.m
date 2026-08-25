@@ -1,23 +1,25 @@
 %% Density Estimation
 %
 %%
-% In many cases texture measurements are acquired in the form of a series
-% of points or intensities. EBSD measurements are usually a grid of
-% measurement points, while pole figure measurements are often angular
-% positions combined with intensity values. However, in many cases we want
-% to do analysis that requires a continuous function, in which case we want
-% to determine the continuous function that best represents our data
-% points.  This section discusses the mathematical basis of this
-% calculation and how it is affected by some of the parameters involved.
-% 
-% In mathematical terms, density estimation is a concept that describes
-% estimation of a probability density function $f_N$ from given random
-% samples $x_n$, $n=1,\ldots,N$. In the simplest case the random samples
-% $x_n$ are real numbers and come from an unknown distribution function
-% $f$. The goal is to ensure that $f_N$ approximates $f$ as well as
-% possible.
+% Density estimation turns a finite sample of points into a continuous
+% function. In texture analysis those points may be orientations measured
+% by EBSD, grain mean orientations, misorientation axes or simulated
+% orientations. The input, the modelling assumption and the result should
+% be kept distinct:
 %
-% Lets illustrate this starting with the example of a mixed Gaussian
+% * *input:* samples $x_n$, possibly with statistical weights;
+% * *assumption:* nearby samples belong to a smoothly varying density;
+% * *result:* an estimate $f_N$ of the unknown density $f$.
+%
+% Pole-figure intensities are a different kind of input. They are already
+% sampled values of a projected pole density, not random orientations;
+% recovering an ODF from them is an inverse problem rather than the kernel
+% density estimate described here.
+%
+% We first use real numbers, where the construction is easiest to see, and
+% then carry the same idea to directions and orientations.
+%
+% Let us start with a mixture of two Gaussian densities.
 % distribution
 
 % Define the true density function, in this case made by combining two
@@ -31,6 +33,7 @@ plot(x,f(x),'linewidth',2)
 xlabel('x');ylabel('f(x)')
 
 % generate a random sample of points from the function f(x)
+rng(0)
 N = 20;
 xN = discreteSample(f,N,'range',[0,1]);
 
@@ -40,9 +43,8 @@ plot(xN,zeros(size(xN)),'o','LineWidth',2,'MarkerEdgeColor','r')
 hold off
 
 %%
-% Note that the higher the peak of the original function, the more points
-% randomly generated. Because the red points are randomly generated, your
-% plot will look slightly different.
+% More samples tend to occur where the true density is high, but a sample of
+% only 20 points also contains visible random variation.
 %
 %% The Histogram
 % The easiest way to estimate a density function from the sample $x_n$ is
@@ -78,11 +80,12 @@ for n = 1:N, plot(x,psi(x-xN(n)),'k'); end
 hold off
   
 %%
-% and take the mean 
+% and take their mean,
 %
-% $$ f(x) = \frac{1}{N} \sum_{n=1}^N \psi(x-x_n) $$
+% $$ f_N(x) = \frac{1}{N} \sum_{n=1}^N \psi(x-x_n). $$
 %
-% of all the these shifted kernel functions
+% Each observation contributes the same total mass, while the kernel
+% decides how far that mass is spread.
 
 % take the mean over all shifted kernel functions
 fN = @(x) mean(psi(x-xN),1);
@@ -96,10 +99,9 @@ plot(x,f(x),'linewidth',3,'Color',ind2color(1))
 hold off
 
 %%
-% We observe that this gives a much better approximation to true density
-% function $f$. The most important parameter when computing the kernel
-% density estimate of a random sample is the halfwidth or standard
-% deviation of the corresponding kernel function. Lets repeat the above
+% This is smoother than a histogram, but it is still an estimate rather
+% than the true function. The most important parameter is the halfwidth, or
+% standard deviation here, of the kernel. Let us repeat the above
 % density estimation with three different standard deviations
 
 % plot the true density function
@@ -119,8 +121,9 @@ hold off
 legend('$f$','$f_{0.01}$','$f_{0.05}$','$f_{0.25}$','interpreter','Latex'), 
 
 %%
-% In general a too small halfwidth leads to heavily oscillating functions,
-% while a too large halfwidth will result in excessively smooth functions.
+% A halfwidth that is too small leaves a noisy collection of sample-scale
+% peaks, while one that is too large merges real features and reduces peak
+% height. This is the bias--variance trade-off behind kernel selection.
 % In the case of one dimensional data kernel density estimation MTEX
 % includes automatic optimization of the halfwidth when using the command
 % <calcDensity.html |calcDensity|>.
@@ -144,8 +147,8 @@ hold off
 %
 %% Kernel Density Estimation in d-Dimensions
 % The command <calcDensity.html calcDensity> may also be applied to
-% $d$-dimensional data. For simplicity lets consider a two-dimensional
-% example where both $x$ and $y$ coordinates are distributed according to
+% $d$-dimensional data. For simplicity let us consider a two-dimensional
+% example in which both $x$ and $y$ coordinates are distributed according to
 % the distribution $f$ defined at the very beginning of this section.
 
 % Get a number of random sample points from the function.
@@ -183,8 +186,8 @@ hold off
 %% Density Estimation for Directional Data
 %
 % Kernel density for directional (misorientation/ crystallographic axis)
-% data works analogously as for real valued data. Again we have to choose a
-% kernel function $\psi$ with a certain halfwidth $\delta$. Than the kernel
+% data works analogously to real-valued data. Again we choose a
+% kernel function $\psi$ with a certain halfwidth $\delta$. Then the kernel
 % functions are centered at each direction of our random sampling and
 % summed up. Let us demonstrate this procedure for misorientation axes
 % between two phases in an EBSD map
@@ -251,7 +254,7 @@ hold off
 odf = calcDensity(ebsd('Forsterite').orientations,'halfwidth',10*degree)
 
 %%
-% Lets visualize the ODF in |phi2| sections and plot on top of it the
+% Let us visualize the ODF in |phi2| sections and plot on top of it the
 % individual orientation measurements from the EBSD map
 
 plotSection(odf,'contourf')
@@ -282,11 +285,12 @@ hold off
 %
 %% Density Estimation with Weights
 % In many use cases one has a weighted random sample. A typical example is
-% if one wants to estimate a orientation distribution function from grain
-% orientations. In this cases big grains should contribute more to the ODF
-% than small grains. For that reason the functions |calcDensity| allow for
-% an additional option |'weights'| which will pass weights to the density
-% estimation.
+% when estimating an orientation distribution from grain orientations.
+% Giving every grain mean orientation equal weight answers, "what fraction
+% of grains has this orientation?" Weighting by grain area or pixel count
+% instead approximates, "what fraction of the mapped area has this
+% orientation?" The |'weights'| option passes that physical choice to
+% |calcDensity|.
 
 mtexdata titanium silent
 grains = calcGrains(ebsd);
