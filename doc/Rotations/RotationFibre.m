@@ -1,37 +1,47 @@
-%% Fibers
+%% Fibres
 %
 %%
-% A fibre in orientation space is the equivalent of straight lines in
-% Euclidean space, it is the shortest path between any two orientations. In
-% MTEX it is defined by the command |@fibre|.
+% A <fibre.fibre.html |@fibre|> is to rotation space what a straight line is
+% to Euclidean space: the shortest path between two rotations, and the set
+% traced out by continuing along it. Fibres matter because many real
+% textures are exactly of this shape - all orientations that put one crystal
+% direction along one specimen direction, with the rotation about that
+% direction left free.
 
 % consider cubic symmetry
 cs = crystalSymmetry('432');
 
 % two random orientations
 oriA = orientation.rand(cs)
+
+%%
+
 oriB = orientation.rand(cs)
 
-% this is important to have the pair of orientations with the smallest distance
+%%
+% Under crystal symmetry an orientation stands for a whole set of
+% equivalent ones, so "the path between A and B" is only well defined once
+% the equivalent of |oriB| closest to |oriA| has been picked out.
+
 oriB = oriB.project2FundamentalRegion(oriA)
 
-% define the connecting fibre
+%%
+% The connecting fibre is then
+
 f = fibre(oriA,oriB)
 
 plot(oriA,'axisAngle','filled','MarkerSize',20)
 hold on
 plot(oriB,'axisAngle','filled','MarkerSize',20)
-
-hold on
 plot(f,'lineWidth',3,'lineColor','red')
 hold off
 axis off
 
-%%
-% Due to the curved nature of the orientation space it is better to
-% understand fibers not as straight lines but as big circles on a sphere.
-% That is, if we extend them they will form a loop of length |2*pi|. In
-% MTEX this is done by the option |'full'|.
+%% A Fibre is a Circle
+%
+% Rotation space is curved, so a fibre is better thought of as a great
+% circle on a sphere than as a straight line. Continued past its two
+% endpoints it closes up, which the option |'full'| does.
 
 f = fibre(oriA,oriB,'full')
 
@@ -40,51 +50,63 @@ plot(f,'lineWidth',3,'lineColor','red')
 hold off
 
 %%
-% The strange multiple lines in the above pictures are all from the same
-% circle that has been projected into the fundamental zone by crystal
-% symmetry. If we dismiss crystal symmetry and visualize the complete
-% rotation space we observe that |f| is indeed a circle.
+% The result looks like several disconnected arcs, but it is one circle: the
+% plot shows the fundamental region only, and the circle leaves it and
+% re-enters as a symmetrically equivalent piece. Drawn in the complete
+% rotation space, without folding anything back, it is a single closed
+% curve.
 
 plot(oriA,'axisAngle','filled','MarkerSize',20,'complete')
 hold on
 plot(oriB,'axisAngle','filled','MarkerSize',20)
-
 plot(f,'axisAngle','lineWidth',3,'lineColor','red')
-axis off
 hold off
+axis off
 
-%%
-% Another way of characterizing fibers is that they are the set of all
-% orientations that that align a specific crystal direction |h| with a
-% specific specimen direction |r|. Those directions can be read from the
-% fiber |f| by
+%% The Two Directions Behind a Fibre
+%
+% The other way to describe the same set: a fibre is all rotations that take
+% one crystal direction |h| onto one specimen direction |r|. Both are stored
+% on the fibre and read back as properties.
 
-f.r
 f.h
 
 %%
-% Note that |f.h| and |f.r| are exactly the misorientation axes between the
-% orientations |oriA| and |oriB|
 
-% the axis in specimen symmetry
+f.r
+
+%%
+% These are the axis of the rotation from |oriA| to |oriB|, written once in
+% specimen coordinates and once in crystal coordinates. Nothing else could
+% be left fixed by both orientations.
+
 r = axis(oriB,oriA)
 
-% the axis in crystal symmetry
+%%
+
 h = inv(oriA) * axis(oriB,oriA)
 
 %%
-% We may use |h| and |r| directly to define a @fibre within MTEX by
+% Given the pair, the fibre is defined directly, without reference to the
+% two orientations it happened to come from.
 
 f = fibre(h,r)
 
-%%
-% A discretization of such a fibre can be found using the command
-% <fibre.orientation.html |orientation|>
+%% Sampling a Fibre
+%
+% <fibre.orientation.html |orientation|> discretises a fibre into a list of
+% orientations, which is what a plot or a calculation along the fibre needs.
 
 ori = orientation(f)
 
-% plot the rotations along the fibre
 hold on
 plot(ori)
 hold off
 
+%% Next
+%
+% Fibres of the standard texture components, and the fibre ODFs built on
+% them, are <OrientationFibre.html Fibres of Orientations> and
+% <FibreODFs.html Fibre ODFs>.
+
+%#ok<*NOPTS>
