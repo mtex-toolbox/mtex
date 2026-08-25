@@ -1,230 +1,266 @@
 %% Defining Tensorial Properties
 %
-% Physical laws describe the relationship between physical properties. The
-% simplest laws are linear ones and are of the form
+% A material property is anisotropic when its response depends on direction.
+% A tensor stores that directional dependence and relates physical quantities.
+% For example, elastic stiffness relates strain to stress.
 %
-% $$ y = \mathbf A x $$
+% The *rank* of a tensor is the number of indices needed to name one
+% component. In three dimensions, a rank $r$ tensor has $3^r$ components
+% before physical and crystal symmetries are applied.
+% Rank is therefore not the size of a matrix.
 %
-% where $x$ and $y$ are the physical properties and $\mathbf A$ is a
-% material constant. In a typical example $y$ could be the force applied to
-% a spring, $x$ the displacement and $A$ describes the stiffness of the
-% spring which is essentially Hooks law.
+% MTEX represents every rank with <tensor.tensor.html |tensor|>.
+% Physically specific subclasses add units, conventions, and operations.
+% Read <VectorDefinition.html Vectors> first if vector components are new.
+% <CrystalReferenceSystem.html Crystal Reference System> explains how a
+% crystal lattice is attached to Cartesian axes.
+
+plottingConvention.default('y↑→x');
+
+%% Scalars: rank zero
 %
-% As soon as we consider more general forces and displacements they can not
-% be described anymore by scalar numbers $x$ and $y$ but vectors or
-% matrices are required. In its most general form the displacement is
-% describes by a <strainTensor.strainTensor.html strain matrix> $\sigma_{ij}$ and the
-% force is described by a stiffness matrix $\varepsilon_{kl}$. In this setting
-% the linear relationship between the two matrices is described by the
-% <complianceTensor.complianceTensor.html compliance tensor> $\mathbf
-% C_{ijkl}$ which can be seen as a 4 dimensional generalization of a matrix.
-%
-% More, general a tensor of rank $r$ is a "matrix" of dimension $r$. If
-% $r=0$ we speak of scalars, if $r=1$ these are vectors and for $r=2$ they
-% are classical $3 \times 3$ matrices. 
-%
-% In the following we explain how tensors of arbitrary rank can be defined
-% in MTEX. Independent of the rank any tensor is represented in MTEX by a
-% variable of type <tensor.tensor.html |tensor|>.
-%
-%
-%% Scalars (tensors of zero rank)
-%
-% In physics, properties like temperature or density are not connected 
-% to any specific direction of the body they are measured. These 
-% non-directional physical quantities are called scalars, and they are
-% defined by a single number. In MTEX, a scalar is defined by:
+% A scalar has no directional index.
+% Temperature and density are examples.
+% The displayed object confirms that MTEX stores one coefficient at rank zero.
 
 M = 5;
-t = tensor(M,'rank',0)
+T0 = tensor(M,'rank',0)
 
-%% Vectors (tensors of first rank)
-% 
-% In contrast to scalars, other physical quantities can only be defined in
-% reference to a specific direction. If we need to specify completely the
-% mechanical force acting into a point for example, we need to specify 
-% the magnitude and its direction. As an alternative, we can choose three
-% mutually perpendicular axes (A1,A2 and A3) and give the vector components
-% along them. In MTEX, this is done by:
+%% Vectors: rank one
+%
+% A vector has one component for each axis of its reference frame.
+% The column below contains the components along x, y, and z.
 
-t = tensor([1;2;3],'rank',1)
+T1 = tensor([1;2;3],'rank',1)
 
 %%
-% where 1, 2 and 3 are the components related to the axes A1, A2 and A3.
-% As rank 1 tensors are essentially vectors we can freely convert tensors to
-% @vector3d and vice versa. 
+% Rank one tensors and @vector3d objects can be converted into each other.
+% The output below is a |vector3d| rather than a |tensor|.
 
-% define a tensor from a vector
-t = tensor(vector3d.X)
+T1x = tensor(vector3d.X);
+v = vector3d(T1x)
 
-% convert a tensor into a vector
-vector3d(t)
-
-%% Matrices (tensors of second rank)
+%% Matrices: rank two
 %
-% We have now to expand the idea of a vector to three-dimensional space.
-% Let's take the example of stress (force per unit of area). Imagine a cube
-% of material subjected to load as shown below. As can be seen, one can
-% measure ther stresses in this cube in various directions, and in various
-% planes. These measurements will for a second rank sensor, where each
-% component is associated with a pair of axes, taken in an specific order.
-% The generalized second rank stress tensor can be written as
+% A rank two tensor has two indices and is represented by a $3\times3$
+% component matrix. For the stress tensor, one index selects a traction
+% component and the other identifies the normal to the plane on which it acts.
 %
 % $$
-% \sigma_{ij} = 
+% \sigma_{ij} =
 % \left[\begin{array}{ccc}
-% \sigma_{11} & \sigma_{12} & \sigma_{13}  \\
-% \sigma_{21} & \sigma_{22} & \sigma_{23}  \\
-% \sigma_{31} & \sigma_{32} & \sigma_{33}  \\
-% \end{array}\right]
+% \sigma_{11} & \sigma_{12} & \sigma_{13} \\
+% \sigma_{21} & \sigma_{22} & \sigma_{23} \\
+% \sigma_{31} & \sigma_{32} & \sigma_{33}
+% \end{array}\right].
 % $$
 %
-% In MTEX, a second-rank tensor where only the main diagonal components are
-% of interest is defined as
+% A diagonal rank two tensor has no coupling between different axes.
 
-t = tensor(diag([1,2,3]), 'rank',2)
+T2diagonal = tensor(diag([1,2,3]),'rank',2);
 
 %%
-% If all the components are of interest, the definition is as follow
+% Off-diagonal entries describe coupling between different axes.
+% The display reports both the rank and all nine components.
 
 M = [1     0.75  0.5;...
      0.75  1     0.25;...
      0.5   0.25  1];
 
-t = tensor(M,'rank',2)
+T2 = tensor(M,'rank',2)
 
-%% Tensors (tensors of third rank)
+%% Piezoelectricity: rank three
 %
-% Smart materials are materials that have one or more properties that
-% change significantly under external stimuli. A typical example is the
-% voltage resulting to applied stress that certain materials have, named
-% piezoeletric effect. This property is described as a third rank tensor
-% that relates induced electric displacement vector to the second-order
-% stress tensor. This is expressed in the form $P_i=d_{ijk} \sigma_{jk}$.
-% In MTEX, a third rank tensor can be described as
-
-M =[[-1.9222  1.9222    0   -0.1423     0         0    ];...
-    [   0        0      0       0     0.1423    3.8444];...
-    [   0        0      0       0       0         0    ]];
-
-t = tensor(M,'rank',3)
-    
-%% Tensors (tensors of fourth rank)
+% The direct piezoelectric effect relates a rank two stress to a rank one
+% electric displacement through a rank three tensor $d$:
 %
-% Fourth rank tensors are tensors that describe the relation between 2
-% second rank tensors. A typical example is the tensor describing the
-% elastic properties of materials, which translate the linear relationship
-% between the second rank stress and infinitesimal strain tensors. The
-% Hooke's Law describing the shape changes in a material subject to stress
-% can be written as $\sigma_{ij}=c_{ijkl} \epsilon_{kl}$, where $c_{ijkl}$
-% is a fourth rank tensor.
+% $$ D_i = d_{ijk}\,\sigma_{jk}. $$
 %
-% The four indices (ijkl) of the elastic tensor have values between 1 and
-% 3, so that there are $3^4=81$ coefficients. As the stress and strain
-% tensors are symmetric, both stress and strain second rank tensors only
-% have 6 independent values rather than 9. In addition, crystal symmetry
-% reduces even more the number of independent components on the elastic
-% tensor, from 21 in the case of triclinic phases, to 3 in the case of
-% cubic materials. In MTEX, a fourth rank tensor can be defined as:
+% A general rank three tensor has $3^3=27$ components.
+% Since stress is symmetric, $d_{ijk}=d_{ikj}$ and the last two indices can
+% be stored as six columns rather than a $3\times3\times3$ array.
+%
+% The following coefficients are a compact right-handed $\alpha$-quartz example.
+% |'DoubleConvention'| says that columns 4 to 6 contain twice the corresponding
+% off-diagonal tensor components.
 
-M = [[320   50  50   0     0     0];...
-    [  50  320  50   0     0     0];...
-    [  50   50 320   0     0     0];...
-    [   0    0   0  64     0     0];...
-    [   0    0   0   0    64     0];...
-    [   0    0   0   0     0    64]];
+M = [-1.9222  1.9222    0   -0.1423     0         0;...
+          0        0     0       0     0.1423    3.8444;...
+          0        0     0       0       0         0];
 
-C = tensor(M,'rank',4)  
+csQuartz = crystalSymmetry('32',[4.916 4.916 5.4054],...
+  'X||a','Z||c','mineral','Quartz');
+
+d = tensor(M,csQuartz,'rank',3,'DoubleConvention',...
+  'name','piezoelectric strain','unit','pC/N')
+
+%% Elastic stiffness: rank four
+%
+% Linear elasticity relates the symmetric strain tensor $\varepsilon$ to
+% the symmetric stress tensor $\sigma$ through the stiffness tensor $C$.
+% The inverse relation uses the compliance tensor $S$:
+%
+% $$ \sigma_{ij}=C_{ijkl}\,\varepsilon_{kl}, \qquad
+%    \varepsilon_{ij}=S_{ijkl}\,\sigma_{kl}. $$
+%
+% Four indices give $3^4=81$ components before symmetry is considered.
+% Symmetric stress and strain reduce the component matrix to $6\times6$.
+% An elastic strain-energy function reduces the independent coefficients to
+% 21 for triclinic symmetry, and crystal symmetry can reduce them further.
+% A cubic stiffness has only $C_{11}$, $C_{12}$, and $C_{44}$ independent.
+
+M = [320   50  50   0   0   0;...
+      50  320  50   0   0   0;...
+      50   50 320   0   0   0;...
+       0    0   0  64   0   0;...
+       0    0   0   0  64   0;...
+       0    0   0   0   0  64];
+
+csCubic = crystalSymmetry('m-3m');
+C = stiffnessTensor(M,csCubic)
+
+%% A tensor needs a reference frame
+%
+% A reference frame is the coordinate system in which data are expressed.
+% It is distinct from symmetry and from the plotting convention that lays the
+% frame out on screen.
+%
+% The crystal symmetries supplied to |d| and |C| also carry crystal frames.
+% For |d|, the alignment options state which Cartesian axes the published
+% quartz coefficients use.
+% Crystal symmetry states the point group under which a property is invariant.
+% It is attached to a reference frame but is not the frame itself.
+%
+% Units and compact-matrix conventions are equally part of the data.
+% A plausible component matrix in the wrong frame or convention still gives a
+% plausible but physically wrong result.
+
+%% Seeing the cubic symmetry
+%
+% <stiffnessTensor.YoungsModulus.html |YoungsModulus|> evaluates the tensile
+% stiffness of a rod cut along every crystal direction.
+
+E = C.YoungsModulus;
+plot(E,'complete','upper');
+mtexColorbar('title','Young''s modulus in GPa');
+
+youngsModulusRange = [min(E),max(E)]
 
 %%
-% Note the repetition in values in this matrix is related to crystal
-% symmetry, in this case, a cubic example, where only $C_{11}$, $C_{12}$
-% and $C_{44}$ are independent components.
-%
-%%
-% What those numbers mean is easier to see than to read. Interpreted as a
-% stiffness, this tensor gives the stiffness of a rod cut from the crystal in
-% every possible direction.
+% The printed range is 166.6 to 306.5 GPa for this illustrative tensor.
+% The plot is stiffest along the cube axes and softest along the body diagonals.
+% Its repeated fourfold pattern makes the attached cubic symmetry visible.
 
-plot(stiffnessTensor(C).YoungsModulus,'complete','upper')
-mtexColorbar('title','Young''s modulus')
-
-%%
-% Stiffest along the cube axes and softest along the body diagonals - 307
-% against 167 in whatever unit the matrix was given in - and the four-fold
-% pattern is the cubic symmetry made visible. A tensor has to be invariant
-% under every symmetry operation of its phase, which is what reduces the 81
-% components of a fourth rank tensor to the three independent ones above.
+%% Physically specific tensor classes
 %
-%% Specific tensors
+% A typed class records what a tensor means and exposes only meaningful
+% operations. It may also set a default unit or compact-matrix convention.
 %
-% MTEX includes specific classes for the following tensors.
+% || *class* || *rank* || *physical meaning* ||
+% || <strainTensor.strainTensor.html |strainTensor|> || 2 || strain $\varepsilon$ ||
+% || <stressTensor.stressTensor.html |stressTensor|> || 2 || stress $\sigma$ ||
+% || <strainRateTensor.strainRateTensor.html |strainRateTensor|> || 2 || strain rate $E$ ||
+% || <velocityGradientTensor.velocityGradientTensor.html |velocityGradientTensor|> || 2 || velocity gradient $L$ ||
+% || <deformationGradientTensor.deformationGradientTensor.html |deformationGradientTensor|> || 2 || deformation gradient $F$ ||
+% || <spinTensor.spinTensor.html |spinTensor|> || 2 || spin $\Omega$ ||
+% || <curvatureTensor.curvatureTensor.html |curvatureTensor|> || 2 || lattice curvature $\kappa$ ||
+% || <dislocationDensityTensor.dislocationDensityTensor.html |dislocationDensityTensor|> || 2 || dislocation density $\alpha$ ||
+% || <refractiveIndexTensor.refractiveIndexTensor.html |refractiveIndexTensor|> || 2 || refractive index ||
+% || <ChristoffelTensor.ChristoffelTensor.html |ChristoffelTensor|> || 2 || elastic wave propagation ||
+% || <stiffnessTensor.stiffnessTensor.html |stiffnessTensor|> || 4 || elastic stiffness $C$ ||
+% || <complianceTensor.complianceTensor.html |complianceTensor|> || 4 || elastic compliance $S$ ||
 %
-% || *name* || *rank* || *symbol* || *name* || *rank* || *symbol* ||
-% || @complianceTensor || 4 || $S_{ijkl}$ || @stiffnessTensor || 4 || $C_{ijkl}$ ||
-% || @strainTensor || 2 || $\sigma_{ij}$  || @stressTensor || 2 || $\varepsilon_{ij}$ ||
-% || @strainRateTensor || 2 || $E$ || @velocityGradientTensor || 2 || $L$ ||
-% || @curvatureTensor || 2 || $\kappa_{ij}$ || @deformationGradientTensor || 2 || $F$ ||
-% || @refractiveIndexTensor || 2 || $\chi$ || @ChristoffelTensor || 2 || $M_{ij}$ || 
-% || @dislocationDensityTensor || 2 || $\alpha$  || <SchmidTensor.html |SchmidTensor|> || 2 || $M_{ij}$ ||
-% || <tensor.leviCivita.html |leviCivita|> || 3 || $\varepsilon_{ijk}$ || @spinTensor || 2 || $\Omega$ ||
+% <SchmidTensor.html |SchmidTensor|> is a function rather than a class.
+% It constructs a rank two velocity-gradient tensor from a slip-plane normal
+% and a slip direction.
 %
-% Those specific tensors are defined by the syntax
+% A component matrix constructs a typed tensor directly.
+% The display includes the default Lagrange strain type.
 
 M = [0 0 0;...
-  0 0 0; ...
-  0 0 1];
+     0 0 0;...
+     0 0 1];
 
-e = strainTensor(M)
-
-%%
-% In many cases shortcuts exist like
-
-e = stressTensor.uniaxial(vector3d.Z)
+eps = strainTensor(M)
 
 %%
-% The advantage of using these specific tensor classes is that some tensor
-% operations like <stressTensor.calcShearStress.html |calcShearStress(e)|>
-% are defined only for specific tensor classes.
-%
+% Factory methods provide common physical states.
+% Here the displayed matrix is a unit uniaxial stress along z.
+
+sigma = stressTensor.uniaxial(vector3d.Z)
+
+%%
+% Specialized operations belong to the corresponding class.
+% For example, <stressTensor.calcShearStress.html |calcShearStress|> acts on
+% a stress tensor and a slip system.
+
 %% Predefined tensors
 %
-% For certain applications, one may want to have a tensor where all the
-% components are 1. In MTEX this is computed as
+% MTEX provides constructors for arrays of ones, the rank two identity,
+% random tensors, and the rank three Levi-Civita tensor.
+% Random tensors are useful for numerical experiments, not as material data.
 
-t = tensor.ones('rank',2)
-
-%%
-% *Identity tensor*
-%
-% The Identity tensor is a second order tensor that has ones n the main 
-% diagonal and zeros otherwise. The identity matrix has some special
-% properties, including (i) When multiplied by itself, the result is itself
-% and (ii) rows and columns are linearly independent. In MTEX, this matrix
-% can be computed as
-
-t = tensor.eye('rank',2)
+Tones = tensor.ones('rank',2);
+I = tensor.eye('rank',2);
+Trandom = tensor.rand('rank',2);
+leviCivita = tensor.leviCivita;
 
 %%
-% *Random tensors*
+% The Levi-Civita components are zero when any two indices are equal.
+% They are $+1$ for even permutations of $(1,2,3)$ and $-1$ for odd ones.
+% This tensor represents the cross product in index notation.
+
+%% The maths behind a change of frame
 %
-% One can also define a tensor in which the components are pseudorandom, by
-% using the function |<tensor.rand.html tensor.rand>|
-
-t = tensor.rand('rank',2)
-
-%%
-% *The Levi Civita tensor*
+% The component array is a tensor because it obeys a specific transformation
+% law. If $Q$ changes an orthonormal basis, a rank $r$ tensor transforms as
 %
-% The Levi-Civita symbol $\epsilon_{ijk}$ is a third rank tensor and is
-% defined by 0, if $i=j$, $j=k$ or $k=1$, by 1, if $(i,j,k)=(1,2,3)$,
-% $(2,3,1)$ or $(3,1,2)$ and by $-1$, if $(i,j,k)=(3,2,1)$, $(1,3,2)$ or
-% $(2,1,3)$. The Levi-Civita symbol allows the cross product of two vectors
-% in 3D Euclidean space and the determinant of a square matrix to be
-% expressed in Einstein's index notation. With MTEX the Levi Civita tensor
-% is expressed as
+% $$ T'_{i_1\ldots i_r} =
+% Q_{i_1j_1}\cdots Q_{i_rj_r}T_{j_1\ldots j_r}. $$
+%
+% Repeated indices are summed.
+% This law applies the frame change to every index and distinguishes a tensor
+% from an arbitrary multidimensional array.
+%
+% A frame change re-expresses the same physical object in a different
+% reference frame and leaves the object itself untouched.
+% Rotating a tensor instead moves the physical property relative to the
+% specimen.
+% <TensorArithmetics.html Tensor Arithmetics> demonstrates both operations and
+% the contractions that apply a tensor to vectors or other tensors.
 
-t = tensor.leviCivita
+%% Next
+%
+% Real coefficients usually arrive in a file.
+% Continue with <TensorImport.html Tensor Import> for units, crystal frames,
+% and Voigt conventions.
+% <TensorVisualisation.html Tensor Visualization> develops directional plots,
+% while <TensorAverage.html Tensor Averages> combines single-crystal properties
+% with orientations or an ODF.
+%
+% <PiezoElectricity.html Piezoelectricity> continues the rank three example.
+% <Elasticity.html Elasticity> develops moduli and seismic wave velocities from
+% rank four stiffness tensors.
+% The <ODFTutorial.html ODF tutorial> supplies the orientation distribution
+% needed for aggregate averages.
+
+%% Further reading
+%
+% * R.E. Newnham, <https://doi.org/10.1093/oso/9780198520757.001.0001
+% Properties of Materials: Anisotropy, Symmetry, Structure>, Oxford University
+% Press, 2005, connects tensor rank, crystal symmetry, and physical properties.
+% * A. Authier, editor, <https://doi.org/10.1107/97809553602060000113
+% International Tables for Crystallography, Volume D: Physical Properties of
+% Crystals>, 2nd ed., IUCr, 2014.
+% * D. Mainprice, R. Hielscher and H. Schaeben,
+% <https://doi.org/10.1144/SP360.10 Calculating anisotropic physical properties
+% from texture data using the MTEX open-source package>, Geological Society,
+% London, Special Publications 360 (2011), 175-192.
+% * H. Ogi et al., <https://doi.org/10.1063/1.2335684 Elastic, anelastic, and
+% piezoelectric coefficients of alpha-quartz determined by resonance ultrasound
+% spectroscopy>, Journal of Applied Physics 100 (2006), 053511.
+% * <https://www.iso.org/standard/64973.html ISO 80000-2:2019>, Quantities and
+% units - Part 2: Mathematics, specifies mathematical symbols used for tensors.
 
 %#ok<*NASGU>
 %#ok<*NOPTS>

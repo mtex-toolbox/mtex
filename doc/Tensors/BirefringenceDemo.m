@@ -1,308 +1,437 @@
-%% Birefringence 
+%% Birefringence
 %
-% Birefringence is the optical property of a material having a refractive
-% index that depends on the polarization and propagation direction of
-% light. It is one of the oldest methods to determine orientations of
-% crystals in thin sections of rocks.
+% An anisotropic crystal has two permitted polarization directions for most
+% light-propagation directions. The two waves travel at different speeds.
+% Their refractive-index difference is the *directional birefringence*.
+%
+% Between crossed polarizers, this speed difference becomes a phase lag.
+% Some wavelengths are then transmitted more strongly than others, producing
+% the interference colours seen in a petrographic microscope.
+%
+% This page builds a rank-two refractive-index tensor for olivine. It then
+% predicts birefringence, optical axes, and interference colours from EBSD
+% orientations. The tensor and orientation conventions are introduced in
+% <TensorDefinition.html Tensor Definition> and
+% <OrientationDefinition.html Orientations>. The distinction between crystal
+% symmetry and its frame is explained in <CrystalReferenceSystem.html Crystal
+% Reference Systems>.
 
-%% Import Olivine Data
-% In order to illustrate the effect of birefringence lets consider a
-% olivine data set.
+%% Load an orientation map
+%
+% The olivine data uses transverse direction (TD) upward and rolling direction
+% (RD) to the right. The explicit plotting convention states that specimen
+% frame rather than inheriting the session default.
 
 plottingConvention.default('y↑→x');
-mtexdata olivine
+mtexdata olivine silent
 
-% reconstruct grains
 [grains,ebsd] = calcGrains(ebsd,'minPixel',5);
+olivine = ebsd('olivine');
 
-% some data denoising
-grains = smoothBoundary(grains,5);
+ipfKey = ipfColorKey(olivine);
+ipfColors = ipfKey.orientation2color(olivine.orientations);
 
-F = halfQuadraticFilter;
-ebsd = smooth(ebsd('indexed'),F,'fill',grains);
+plot(olivine,ipfColors);
+hold on
+plot(grains.boundary,'lineWidth',1.5);
+hold off
+drawNow(gcm,'final');
 
 %%
+% This inverse pole figure (IPF) map is the orientation reference for the
+% optical maps below. Neighbouring grains have different colours because
+% their crystal frames have different orientations in the specimen frame.
+% These IPF colours do not represent an optical response.
 
-% plot the olivine phase
-plot(ebsd('olivine'),ebsd('olivine').orientations,'FaceAlpha',0.5);
-hold on
-plot(grains.boundary,'lineWidth',2)
-hold off
-
-% and on top the crystal shapes
-bigGrains = grains(grains.numPixel > 100,'olivine');
-cKey = ipfColorKey(bigGrains);
-color = cKey.orientation2color(bigGrains.meanOrientation);
-hold on
-plot(bigGrains,0.8*crystalShape.olivine,'FaceColor',color,'faceAlpha',0.7)
-hold off
-drawNow(gcm,'final')
-
-%% The refractive index tensor
+%% Build the refractive-index tensor
 %
-% The refractive index of a material describes the dependence of the speed
-% of light with respect to the propagation direction and the polarization
-% direction. In a linear world this relation ship is modeled by a symmetric
-% rank 2 tensor - the so called refractive index tensor, which is usually
-% given by it principle values: n_alpha, n_beta and n_gamma. In
-% orthorhombic minerals such as olivine the principal values are parallel
-% to the crystallographic axes. Care has to be applied when associating the
-% principle values with the correct axes.
+% The refractive index is $n=c/v$, so a larger index means a slower wave.
+% A symmetric rank-two tensor stores its directional dependence.
+% <refractiveIndexTensor.refractiveIndexTensor.html
+% |refractiveIndexTensor|> attaches that tensor to the crystal frame.
+%
+% Orthorhombic olivine is optically biaxial. Its three principal indices are
+% $n_{\alpha}<n_{\beta}<n_{\gamma}$, with $n_{\alpha}$ parallel to b,
+% $n_{\beta}$ parallel to c, and $n_{\gamma}$ parallel to a. The order in
+% the diagonal matrix is therefore a, b, c.
+%
+% The mmm point group forces the off-diagonal components to zero in this
+% symmetry-aligned crystal frame. Symmetry constrains the property, while the
+% frame states which axes its components refer to. MTEX carries both with the
+% tensor.
+
+cs = olivine.CS;
+
+nAlphaFo = 1.635;
+nBetaFo = 1.651;
+nGammaFo = 1.670;
+rIFo = refractiveIndexTensor(...
+  diag([nGammaFo,nAlphaFo,nBetaFo]),cs);
+
+nAlphaFa = 1.827;
+nBetaFa = 1.869;
+nGammaFa = 1.879;
+rIFa = refractiveIndexTensor(...
+  diag([nGammaFa,nAlphaFa,nBetaFa]),cs);
+
+%% An illustrative solid-solution model
+%
+% Olivine forms a solid solution between forsterite and fayalite. For this
+% example, the forsterite mole fraction is fixed at 0.86 and the two end-member
+% tensors are interpolated linearly. This is a modelling assumption, not a
+% composition inferred from the EBSD map.
+
+xFo = 0.86;
+rI = xFo*rIFo + (1-xFo)*rIFa;
+
+principalIndices = array2table(...
+  [diag(rIFo.M).';diag(rIFa.M).';diag(rI.M).'],...
+  'VariableNames',{'n_a','n_b','n_c'},...
+  'RowNames',{'forsterite','fayalite','Fo86_model'})
 
 %%
-% For Forsterite the principle refractive values are 
-n_alpha = 1.635; n_beta = 1.651; n_gamma = 1.670;
+% The rows show why the axis assignment matters. Sorting the three values and
+% placing them on a, b, c in that order would describe a different material.
+% The tensor must also remain attached to the same crystal frame as the
+% orientations that will rotate it.
+
+%% Directional birefringence
+%
+% For a propagation direction |vProp|, MTEX restricts the optical response to
+% the plane perpendicular to that direction. The two eigenvectors in this
+% plane are |pMin| and |pMax|. The former has the lower index and is the fast
+% polarization direction; the latter is the slow direction.
+
+vProp = Miller(1,1,1,cs);
+[deltaN,pMin,pMax] = rI.birefringence(vProp)
 
 %%
-% with the largest refractive index n_gamma being aligned with the
-% a-axis, the intermediate index n_beta with the c-axis and the smallest
-% refractive index n_alpha with the b-axis. Hence, the refractive index
-% tensor for Forsterite takes the form
+% The printed scalar is $\Delta n=n_{\mathrm{slow}}-n_{\mathrm{fast}}$ for
+% the (111) plane normal. The two printed vectors are perpendicular to that
+% direction and to each other. They are polarization directions, not two
+% different propagation rays.
 
-cs = ebsd('olivine').CS;
-rI_Fo = refractiveIndexTensor(diag([ n_gamma  n_alpha  n_beta]),cs)
+%% Birefringence over every propagation direction
+%
+% Omitting |vProp| makes <refractiveIndexTensor.birefringence.html
+% |birefringence|> return a spherical function and two spherical axis fields.
 
-%% 
-% For Fayalite the principle refractive values
+[deltaNSphere,pMinField,pMaxField] = rI.birefringence;
 
-n_alpha = 1.82; n_beta = 1.869; n_gamma = 1.879;
-
-%%
-% are aligned to the crystallographic axes in an analogous way. Which leads
-% to the refractive index tensor
-
-rI_Fa = refractiveIndexTensor(diag([ n_gamma  n_alpha  n_beta]),cs)
-
-
-%%
-% The refractive index of composite materials like Olivine can now be
-% modeled as the weighted sum of the of the refractive index tensors of
-% Forsterite and Fayalite. Lets assume that the relative Forsterite content
-% (atomic percentage) is given my
-
-XFo = 0.86; % 86 percent Forsterite
-
-%%
-% Then is refractive index tensor becomes
-
-rI = XFo*rI_Fo + (1-XFo) * rI_Fa
-
-
-%% Birefringence
-% The birefringence describes the difference |n| in diffraction index
-% between the fastest polarization direction |pMax| and the slowest
-% polarization direction |pMin| for a given propagation direction |vprop|.
-
-% lets define a propagation direction
-vprop = Miller(1,1,1,cs);
-
-% and compute the birefringence
-[dn,pMin,pMax] = rI.birefringence(vprop) 
-
-%%
-% If the polarization direction is omitted the results are spherical
-% functions which can be easily visualized.
-
-% compute the birefringence as a spherical function
-[dn,pMin,pMax] = rI.birefringence
-
-% plot it
-plot3d(dn,'complete')
+plot3d(deltaNSphere,'complete');
 mtexColorMap parula
 mtexColorbar
 
-% and on top of it the polarization directions
 hold on
-quiver3(pMin,'color','white')
-quiver3(pMax)
+quiver3(pMinField,'color','white');
+quiver3(pMaxField);
 hold off
 
-%% The Optical Axis
-% The optical axes are all directions where the birefringence is zero
+%%
+% Colour encodes $\Delta n$ on the unit sphere. The white and black line
+% fields show the fast and slow polarization directions. The response is
+% antipodal: reversing the propagation direction does not change the
+% birefringence.
 
-% compute the optical axes
+%% Optical axes
+%
+% An optical axis is a propagation direction for which the perpendicular
+% section has equal indices and hence zero birefringence. A biaxial crystal
+% has two such axes. Each axis is a line, so its positive and negative senses
+% are physically equivalent.
+
 vOptical = rI.opticalAxis
+opticalAxisResidual = rI.birefringence(vOptical)
 
-% and check the birefringence is zero
-rI.birefringence(vOptical)
-
-% annotate them to the birefringence plot
 hold on
 vOptical.antipodal = false;
-arrow3d([vOptical,-vOptical] ,'facecolor','red')
+arrow3d([vOptical,-vOptical],'faceColor','red');
 hold off
 
-%% Spectral Transmission
-% If white light with a certain polarization is transmitted though a crystal
-% with isotropic refractive index the light changes wavelength and hence
-% appears colored. The resulting color depending on the propagation
-% direction, the polarization direction and the thickness can be computed
-% by
+%%
+% The residual is numerical roundoff rather than physical birefringence.
+% Red arrows mark both senses of both optical axes on the preceding surface.
+% They point at the dark blue minima where $\Delta n$ falls to zero.
 
-vprop = Miller(1,1,1,cs);
+%% Interference colour between polarizers
+%
+% An ideal isotropic crystal remains dark between crossed polarizers because
+% it does not change the state of polarization. An anisotropic crystal splits
+% the incident polarization into fast and slow components. Their retardation
+% depends on $\Delta n$, thickness, and wavelength.
+%
+% <refractiveIndexTensor.spectralTransmission.html |spectralTransmission|>
+% integrates the transmitted visible spectrum into an RGB triplet. Thickness
+% is specified in nanometres, so 30000 corresponds to 30 micrometres.
+
+vProp = Miller(1,1,1,cs);
 thickness = 30000;
-p =  Miller(-1,1,0,cs);
-rgb = rI.spectralTransmission(vprop,thickness,'polarizationDirection',p) 
+[~,pFast] = rI.birefringence(vProp);
+polarizer = rotation.byAxisAngle(vProp,30*degree) * pFast;
+
+rgbFromDirection = rI.spectralTransmission(vProp,thickness,...
+  'polarizationDirection',polarizer)
 
 %%
-% Effectively, the rgb value depend only on the angle tau between the
-% polarization direction and the slowest polarization direction |pMin|.
-% Instead of the polarization direction this angle may be specified
-% directly
+% The polarizer above is 30 degrees from the fast direction in the plane
+% perpendicular to |vProp|. The same calculation can therefore use |tau|,
+% the angle between the polarizer and |pMin|. The RGB values are fractions
+% on the display colour scale, not measured intensities.
 
-rgb = rI.spectralTransmission(vprop,thickness,'tau',30*degree)
+rgbFromTau = rI.spectralTransmission(vProp,thickness,...
+  'tau',30*degree)
 
-%%
-% If the angle tau is fixed and the propagation direction is omitted as
-% input MTEX returns the rgb values as a spherical function. Lets plot
-% these functions for different values of tau.
+%% Vary the polarizer angle
+%
+% With crossed polarizers, the two components have equal magnitude when
+% $\tau=45$ degrees. The three spherical maps show how the colour and
+% intensity change as the input polarization turns away from the fast axis.
 
 newMtexFigure('layout',[1,3]);
 
-mtexTitle('$\tau = 15^{\circ}$')
-plot(rI.spectralTransmission(thickness,'tau',15*degree),'rgb')
+plot(rI.spectralTransmission(thickness,'tau',15*degree),'rgb');
+mtexTitle('$\tau = 15^{\circ}$');
 
 nextAxis
-mtexTitle('$\tau = 30^{\circ}$')
-plot(rI.spectralTransmission(thickness,'tau',30*degree),'rgb')
+plot(rI.spectralTransmission(thickness,'tau',30*degree),'rgb');
+mtexTitle('$\tau = 30^{\circ}$');
 
 nextAxis
-mtexTitle('$\tau = 45^{\circ}$')
-plot(rI.spectralTransmission(thickness,'tau',45*degree),'rgb')
+plot(rI.spectralTransmission(thickness,'tau',45*degree),'rgb');
+mtexTitle('$\tau = 45^{\circ}$');
 
-drawNow(gcm,'figSize','normal')
+drawNow(gcm,'final');
 
 %%
-% Usually, the polarization direction is chosen at angle phi = 90 degree of
-% the analyzer. The following plots demonstrate how to change this angle
+% The 45-degree panel is brightest because both permitted waves are excited
+% equally. Directions near an optical axis remain dark in every panel because
+% their retardation is zero.
+
+%% Vary the analyser angle
+%
+% The option |phi| is the angle from the polarizer to the analyser.
+% Crossed polarizers correspond to $\phi=90$ degrees. Here |tau| stays fixed
+% at 45 degrees while the analyser changes.
 
 newMtexFigure('layout',[1,3]);
 
-mtexTitle('$\tau = 15^{\circ}$')
-plot(rI.spectralTransmission(thickness,'tau',45*degree,'phi',30*degree),'rgb')
+plot(rI.spectralTransmission(thickness,'tau',45*degree,...
+  'phi',30*degree),'rgb');
+mtexTitle('$\phi = 30^{\circ}$');
 
 nextAxis
-mtexTitle('$\tau = 30^{\circ}$')
-plot(rI.spectralTransmission(thickness,'tau',45*degree,'phi',60*degree),'rgb')
+plot(rI.spectralTransmission(thickness,'tau',45*degree,...
+  'phi',60*degree),'rgb');
+mtexTitle('$\phi = 60^{\circ}$');
 
 nextAxis
-mtexTitle('$\tau = 45^{\circ}$')
-plot(rI.spectralTransmission(thickness,'tau',45*degree,'phi',90*degree),'rgb')
+plot(rI.spectralTransmission(thickness,'tau',45*degree,...
+  'phi',90*degree),'rgb');
+mtexTitle('$\phi = 90^{\circ}$');
 
-drawNow(gcm,'figSize','normal')
+drawNow(gcm,'final');
 
-%% Spectral Transmission at Thin Sections
-% All the above computations have been performed in crystal coordinates.
-% However, in practical applications the direction of the polarizer as well
-% as the propagation direction are given in terms of specimen coordinates.
+%%
+% The non-crossed panels retain a bright background that would pass without
+% a crystal. At 90 degrees that background is extinguished, leaving only the
+% wavelength-dependent signal produced by birefringence.
 
-% the propagation direction
-vprop = vector3d.Z;
+%% From the crystal frame to the specimen frame
+%
+% Microscope directions are given in the specimen frame, whereas |rI| is
+% expressed in the crystal frame. There are two equivalent calculations.
+% One can rotate the tensor into every measured crystal orientation, or map
+% the specimen directions back into every crystal frame.
+%
+% The simulated section below is 22800 nm thick. Its light propagates along
+% specimen z and its polarizer points along specimen x.
 
-% the direction of the polarizer
-polarizer = vector3d.X;
-
-% the thickness of the thin section
+vPropSpecimen = vector3d.Z;
+polarizerSpecimen = vector3d.X;
 thickness = 22800;
+ori = olivine.orientations;
 
-%%
-% As usual we have two options: Either we transform the refractive index
-% tensor into specimen coordinates or we transform the polarization
-% direction and the propagation directions into crystal coordinates.
-% Lets start with the first option:
-
-% extract the olivine orientations
-ori = ebsd('olivine').orientations;
-
-% transform the tensor into a list of tensors with respect to specimen
-% coordinates
+% rotate one crystal tensor into every measured orientation
 rISpecimen = ori * rI;
+rgbTensorRoute = rISpecimen.spectralTransmission(...
+  vPropSpecimen,thickness,...
+  'polarizationDirection',polarizerSpecimen);
 
-% compute RGB values
-rgb = rISpecimen.spectralTransmission(vprop,thickness,'polarizationDirection',polarizer);
-
-% colorize the EBSD maps according to spectral transmission
-plot(ebsd('olivine'),rgb)
-
+plot(olivine,rgbTensorRoute);
 
 %%
-% and compare it with option two:
+% Grains that were merely different IPF colours now acquire colours from the
+% optical model. Within-grain variation follows the measured pixel
+% orientations. The EBSD data supplies orientation only; thickness and
+% composition remain explicit model inputs.
 
-% transform the propagation direction and the polarizer direction into a list
-% of directions with respect to crystal coordinates
-vprop_crystal = ori \ vprop;
-polarizer_crystal = ori \ polarizer;
+%% Verify the equivalent direction route
+%
+% An @orientation maps crystal coordinates into specimen coordinates.
+% Left division therefore maps each specimen direction into the corresponding
+% crystal frame before applying the original tensor.
 
-% compute RGB values
-rgb = rI.spectralTransmission(vprop_crystal,thickness,'polarizationDirection',polarizer_crystal);
+vPropCrystal = ori \ vPropSpecimen;
+polarizerCrystal = ori \ polarizerSpecimen;
 
-% colorize the EBSD maps according to spectral transmission
-plot(ebsd('olivine'),rgb)
+rgbDirectionRoute = rI.spectralTransmission(...
+  vPropCrystal,thickness,...
+  'polarizationDirection',polarizerCrystal);
 
-
-%% Spectral Transmission as a color key
-% The above computations can be automated by defining a spectral
-% transmission color key.
-
-% define the colorKey
-colorKey  = spectralTransmissionColorKey(rI,thickness);
-
-% the following are the defaults and can be omitted
-colorKey.propagationDirection = vector3d.Z; 
-colorKey.polarizer = vector3d.X; 
-colorKey.phi = 90 * degree;
-
-% compute the spectral transmission color of the olivine orientations
-rgb = colorKey.orientation2color(ori);
-
-plot(ebsd('olivine'), rgb)
+maxRouteDifference = max(abs(...
+  rgbTensorRoute-rgbDirectionRoute),[],'all')
 
 %%
-% As usual we me visualize the color key as a colorization of the
-% orientation space, e.g., by plotting it in sigma sections:
+% The maximum channel difference is at floating-point roundoff. This check
+% is important because plausible colours do not reveal a reference-frame
+% mistake.
 
-plot(colorKey,'sigma')
+%% Package the model as a colour key
+%
+% A <spectralTransmissionColorKey.html
+% |spectralTransmissionColorKey|> stores the tensor, thickness, propagation
+% direction, polarizer, and analyser angle. Its defaults reproduce the
+% specimen-frame setup above.
 
-%% Circular Polarizer
-% In order to simulate we a circular polarizer we simply set the polarizer
-% direction to empty, i.e.
+colorKey = spectralTransmissionColorKey(rI,thickness);
+colorKey.propagationDirection = vector3d.Z;
+colorKey.polarizer = vector3d.X;
+colorKey.phi = 90*degree;
 
-colorKey.polarizer = []; 
+rgbKey = colorKey.orientation2color(ori);
+maxKeyDifference = max(abs(rgbKey-rgbDirectionRoute),[],'all')
 
-% compute the spectral transmission color of the olivine orientations
-rgb = colorKey.orientation2color(ori);
+%% Visualize the colour key
+%
+% The sigma sections show the colour assigned to orientations throughout
+% orientation space. They are the legend for a map made with this key.
 
-plot(ebsd('olivine'), rgb)
+plot(colorKey,'sigma');
 
-%% Illustrating the effect of rotating polarizer and analyzer simultaneously
+%%
+% Nearby orientations usually have nearby colours. Rapid changes occur where
+% a small orientation change moves a wavelength through an interference
+% minimum or maximum, so this key is not an IPF key with a different palette.
 
-colorKey.polarizer = vector3d.X; 
+%% Circular input polarization
+%
+% Setting |polarizer| to empty selects the circular-polarization branch of
+% the colour key. The response then depends on retardation without selecting
+% one linear input direction in the specimen plane.
+
+colorKey.polarizer = [];
+rgbCircular = colorKey.orientation2color(ori);
+
+plot(olivine,rgbCircular);
+
+%%
+% Compared with the linearly polarized map, the circular-input map removes
+% extinction caused only by alignment with a particular polarizer. No grain
+% in this map is fully dark, because none is viewed close enough to an
+% optical axis for its retardation to vanish.
+
+%% Rotate polarizer and analyser together
+%
+% Rotating both elements preserves their 90-degree separation while changing
+% their orientation in the specimen plane. When this script runs, the map
+% sweeps through a quarter turn. Each grain reaches extinction when a fast or
+% slow direction aligns with the polarizer.
+
+colorKey.polarizer = vector3d.X;
 figure
-plotHandle = plot(ebsd('olivine'),colorKey.orientation2color(ori),...
+plotHandle = plot(olivine,colorKey.orientation2color(ori),...
   'micronbar','off','unitCell');
-hold on
-plot(grains.boundary,'lineWidth',2)
-hold off
-textHandle = text(750,50,[num2str(0,'%10.1f') '\circ'],'fontSize',15,...
-  'color','w','backGroundColor', 'k');
+textHandle = text(750,-50,sprintf('%.1f\\circ',0),...
+  'color','w','backgroundColor','k');
 
-% define the step size in degree
 stepSize = 2.5;
 
-for omega = 0:stepSize:90-stepSize
-    
-  % update polarization direction
-  colorKey.polarizer = rotate(vector3d.X, omega * degree);
-    
-  % update rgb values
+for omega = 0:stepSize:90
+
+  colorKey.polarizer = rotate(vector3d.X,omega*degree);
   plotHandle.FaceVertexCData = colorKey.orientation2color(ori);
-  
-  % update text
-  textHandle.String = [num2str(omega,'%10.1f') '\circ'];
-  
+  textHandle.String = sprintf('%.1f\\circ',omega);
   drawnow
-  
+
 end
+
+% leave the published frame halfway between extinction positions
+omega = 45;
+colorKey.polarizer = rotate(vector3d.X,omega*degree);
+plotHandle.FaceVertexCData = colorKey.orientation2color(ori);
+textHandle.String = sprintf('%.1f\\circ',omega);
+drawNow(gcm,'final');
+
+%%
+% The published frame is left at 45 degrees so the spatial colour variation
+% remains visible. The animation, rather than this final frame alone, shows
+% that different grains reach extinction at different rotation angles.
+
+%% What the colour model leaves out
+%
+% This calculation is a qualitative optical simulation. It uses one
+% wavelength-independent refractive-index tensor, a linear Fo-Fa mixture,
+% ideal polarizers, and a CIE colour conversion. It omits dispersion of the
+% principal indices, absorption, scattering, surface effects, illumination,
+% and camera calibration.
+%
+% Consequently, a matching RGB colour does not by itself validate composition,
+% thickness, or orientation. Those quantities need independent measurements
+% before the result can be compared quantitatively with a microscope image.
+
+%% The maths behind the interference colour
+%
+% For a unit propagation direction $\vec v$, the relevant refractive indices
+% are the two eigenvalues of the tensor section perpendicular to $\vec v$.
+% Their difference is
+%
+% $$ \Delta n(\vec v)=n_{\mathrm{slow}}(\vec v)
+% -n_{\mathrm{fast}}(\vec v). $$
+%
+% A section of thickness $t$ produces retardation
+% $\Gamma=t\Delta n$. At wavelength $\lambda$, the phase lag is
+% $2\pi\Gamma/\lambda$. For ideal crossed polarizers the transmitted
+% intensity is proportional to
+%
+% $$ \sin^2(2\tau)\,
+% \sin^2\left(\frac{\pi t\Delta n}{\lambda}\right). $$
+%
+% This explains all three zeros seen above: $\Delta n=0$ along an optical
+% axis, $t=0$ for no crystal, and $\tau=0$ or 90 degrees at extinction.
+
+%% Next
+%
+% <MagneticAnisotropy.html Magnetic Anisotropy> is the next worked physical
+% property in this chapter. <TensorAverage.html Tensor Averages> combines
+% rotated single-crystal tensors into aggregate properties. For orientation
+% maps without an optical model, continue with <EBSDIPFMap.html IPF Maps>.
+
+%% Further reading
+%
+% * J.F. Nye, <https://search.worldcat.org/title/11114089 Physical Properties
+% of Crystals: Their Representation by Tensors and Matrices>, Oxford
+% University Press, 1985, develops tensor symmetry and optical properties.
+% * W.D. Nesse, <https://search.worldcat.org/search?q=bn%3A9780199846276
+% Introduction to Optical Mineralogy>, 4th ed., Oxford University Press,
+% 2013, develops indicatrices, biaxial optics, extinction, and interference
+% colours.
+% * A. Echalier, R.L. Glazer, V. Fülöp, and M.A. Geday,
+% <https://doi.org/10.1107/S0907444904003154 Assessing crystallization droplets
+% using birefringence>, _Acta Crystallographica D_ 60 (2004), 696-702,
+% relates directional birefringence, retardation, optical axes, and crossed
+% polarizers.
+% * L. Casas, <https://doi.org/10.1107/S1600576718003709 Three-dimensional-
+% printing aids in visualizing the optical properties of crystals>,
+% _Journal of Applied Crystallography_ 51 (2018), 901-908, explains uniaxial
+% and biaxial indicatrices and their optical axes.
+% * <https://www.handbookofmineralogy.org/pdfs/forsterite.pdf Forsterite> and
+% <https://www.handbookofmineralogy.org/pdfs/fayalite.pdf Fayalite>,
+% _Handbook of Mineralogy_, Mineral Data Publishing, 2001, give the principal
+% indices and the assignments $X=b$, $Y=c$, and $Z=a$ used above.
+% * <https://doi.org/10.25039/CIE.DS.xvudnb9b CIE 1931 colour-matching
+% functions, 2 degree observer>, International Commission on Illumination,
+% is the standard-observer dataset underlying spectral-to-colour conversion.
 
 %#ok<*NASGU>
 %#ok<*ASGLU>
+%#ok<*NOPTS>
