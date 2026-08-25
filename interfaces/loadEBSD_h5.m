@@ -332,7 +332,7 @@ function out = rotation_euler(raw_data)
 
   if isempty(fields) || length(fields) > 4 || ~ismember('format', fields)
     error(['Rotation data has type euler but not enough fields or too many' ...
-      'field. You need to give 1-3 Fields and one named format for degree or radiant format.'])
+      'field. You need to give 1-3 Fields and one named format, degree or radian.'])
   end
 
   % Determine format if set
