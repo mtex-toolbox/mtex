@@ -23,7 +23,9 @@ cs = crystalSymmetry('12/m1',[4 5 6],[90 100 90]*degree,'mineral','test')
 %%
 % Note that $\vec a^*$, not $\vec a$, is the direction placed along $\vec
 % x$. For a monoclinic lattice with $\beta = 100^\circ$ the two differ by
-% exactly the deviation of $\beta$ from a right angle
+% exactly the deviation of $\beta$ from a right angle - ten degrees here,
+% which is how far the direct axis $\vec a$ sits from $\vec x$ while
+% $\vec a^*$ sits on it.
 
 [angle(cs.aAxis,vector3d.X), angle(cs.aAxisRec,vector3d.X)] ./ degree
 
@@ -42,16 +44,14 @@ cs2 = crystalSymmetry('12/m1',[4 5 6],[90 100 90]*degree,'X||a','mineral','test'
 % tensor components refer to different Cartesian frames and are therefore
 % *not* interchangeable between them.
 %
-%% Switching between different Alignment Options
+%% Switching Between Alignments
 %
-% Since, especially for lower symmetry groups, different conventions for
-% aligning the crystal axes are used it might be necessary to transform
-% data, e.g, orientations or tensors, from one convention into another.
-% This can be done using the command <tensor.transformReferenceFrame.html
-% transformReferenceFrame> as it illustrated below.
-%
-% First we import the stiffness tensor Forsterite with respect to the axes
-% alignment
+% Data published under one convention has to be transformed before it can
+% be used under another, and
+% <tensor.transformReferenceFrame.html |transformReferenceFrame|> is what
+% does it - for tensors as for
+% <orientation.transformReferenceFrame.html orientations>. Take a
+% published stiffness tensor of olivine, given for the standard setup
 
 cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivin');
 
@@ -62,17 +62,29 @@ C = stiffnessTensor.load(fname,cs)
 plot(C)
 
 %%
-% Let us now consider a different setup of the Forsterite symmetry, where
-% the $\vec a$ axis is the longest and the $\vec c$-axis is the shortest.
+% The plot is the directional stiffness: the crystal is stiffest along the
+% short $\vec a$ axis. Another setup of the same mineral names the axes the
+% other way round, with $\vec a$ the longest and $\vec c$ the shortest.
 
 cs_new = crystalSymmetry('mmm',[10.2296 5.9942 4.7646],'mineral','Olivin')
 
 %%
-% In order to represent the stiffness tensor |C| with respect to this
-% setup we use the command <tensor.transformReferenceFrame.html
-% transformReferenceFrame>.
+% Expressing the same tensor in that setup permutes its components.
 
 C_new = C.transformReferenceFrame(cs_new)
 
 nextAxis
 plot(C_new)
+
+%%
+% The two plots show the same physical crystal - the stiff direction has
+% not moved in the material, only the axis it is called. What would be
+% wrong is to use the published numbers unchanged with |cs_new|: that
+% describes a crystal whose stiff direction points somewhere else.
+
+%% Next
+%
+% How the Cartesian frame is inscribed into the crystal axes, and what
+% depends on it, is <CrystalReferenceSystem.html The Crystal Reference
+% System>. Directions written in the crystal frame are
+% <CrystalDirections.html Miller Indices>.

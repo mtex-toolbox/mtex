@@ -33,24 +33,31 @@ sR = cs.fundamentalSector
 
 sR.N
 
-%% Testing and projecting
+%% Testing and Projecting
 %
-% Let us take an arbitrary crystal direction
+% Take an arbitrary crystal direction.
 
 v = Miller(2,3,1,cs)
 
 %%
-% We may check whether a direction is inside the fundamental region by the
-% command <sphericalRegion.checkInside.html checkInside>
+% <sphericalRegion.checkInside.html |checkInside|> answers whether it is
+% inside the sector.
 
 sR.checkInside(v)
 
+%%
+% It is not.
 
 %%
-% and its symmetrically equivalent representative inside the sector is
-% found by <Miller.project2FundamentalRegion.html project2FundamentalRegion>
+% The equivalent direction that is inside comes from
+% <Miller.project2FundamentalRegion.html |project2FundamentalRegion|>.
 
 v.project2FundamentalRegion
+
+%%
+% $(123)$ - the same three indices, sorted. For the cubic group that is
+% exactly what the sector selects, which is why $\left<123\right>$ and
+% $(231)$ are the same family of directions.
 
 %%
 
@@ -59,11 +66,13 @@ plot(v)
 plot(v.project2FundamentalRegion,'MarkerFaceColor','Red')
 hold off
 
-%% Other symmetries
+%% Other Symmetries
 %
-% The shape of the sector depends on the point group, and it becomes larger
-% the fewer symmetry elements there are. The triclinic group leaves the
-% whole sphere.
+% The shape of the sector follows from the point group, and the fewer
+% elements the group has the larger the sector is. Only the point group 1
+% leaves the whole sphere; the triclinic Laue group $\bar 1$ already halves
+% it, since the inversion identifies every direction with its opposite. The
+% ten Laue groups below the triclinic one:
 
 newMtexFigure('layout',[2 5],'figSize','medium');
 for lId = 2:11
@@ -77,8 +86,16 @@ for lId = 2:11
 end
 
 %%
-% Note that a sector is a purely geometric object - it carries no
-% orientation information. Its counterpart in orientation space is the
-% <MisorientationTheory.html fundamental region>, represented by
-% <orientationRegion.orientationRegion.html orientationRegion>.
+% Each plot shows the symmetry elements of the group with its sector drawn
+% in red. Going from |6/mmm| to |2/m| the red patch grows by exactly the
+% factor by which the number of symmetry elements drops.
+%
+%% Next
+%
+% A sector is a purely geometric object and carries no orientation
+% information. Its counterpart for orientations is the
+% <OrientationFundamentalRegion.html Fundamental Region>, represented by an
+% <orientationRegion.orientationRegion.html |@orientationRegion|>. The
+% sector is also what an
+% <OrientationInversePoleFigure.html inverse pole figure> is drawn on.
 
