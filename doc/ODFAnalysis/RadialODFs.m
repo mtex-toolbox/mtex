@@ -1,12 +1,16 @@
 %% Radial Basis Functions on SO(3)
+%
 %%
+% The most common model textures are built from *radial* functions: a shape
+% that depends only on how far an orientation is from a centre. MTEX
+% represents them by the class |@SO3FunRBF|, and three kinds of ODF are of
+% this form - the uniform one, a single peak, and a sum of peaks.
+%
+% What the peak looks like is the <SO3Kernels.html kernel>, treated in
+% <ODFShapes.html Unimodal ODF Shapes>.
+
 plottingConvention.default('y↑→x');
-%%
-% In MTEX we describe radial basis functions on the rotation group $SO(3)$
-% by the class |@SO3FunRBF|.
-%
-% This includes the following three types of ODFs.
-%
+
 %% The Uniform ODF
 %
 % The uniform ODF
@@ -23,11 +27,11 @@ odf = uniformODF(cs,ss)
 
 %% Unimodal ODFs
 %
-% An unimodal ODF
+% A unimodal ODF
 %
 % $$f(g; x) = \psi (\angle(g,x)),\quad g \in SO(3),$$
 %
-% is specified by a <SO3Kernels.html radial symmetrical function>
+% is a <SO3Kernels.html radially symmetric function>
 % $\psi$ centered at a modal <orientation.orientation.html orientation>,
 % $x\in SO(3)$. In order to define a unimodal ODF one needs
 %
@@ -43,14 +47,13 @@ odf1 = unimodalODF(ori,psi)
 plotPDF(odf1,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 
 %%
-% For simplicity one can also omit the kernel function. In this case the
-% default SO(3) de la Vallee Poussin kernel is chosen with half width of 10 degree.
+% One orientation, and with it one set of symmetrically equivalent spots per
+% pole figure. The kernel may be omitted, in which case MTEX uses the de la
+% Vallee Poussin kernel with a halfwidth of $10^\circ$.
 
 %% Multimodal ODFs
 %
-% We define a second unimodal ODF with same <SO3Kernels.html kernel function>
-% and same <crystalSymmetry.crystalSymmetry.html crystal symmetry> at an 
-% other <orientation.orientation.html orientation>.
+% A second unimodal ODF, same kernel and symmetry, different orientation.
 
 ori2 = orientation.byMiller([1,1,2],[0,2,1],cs)
 odf2 = unimodalODF(ori2,psi)
@@ -58,19 +61,38 @@ odf2 = unimodalODF(ori2,psi)
 plotPDF(odf2,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 
 %%
-% By adding this unimodal ODFs we get an so called multimodal ODF, which by
-% construction is the sum of the <SO3Kernels.html radial symmetrical function>
-% $\psi$ centered at some <orientation.orientation.html orientations>. 
+% Adding them gives a multimodal ODF - a sum of kernels centred at several
+% orientations.
 
 odf3 = odf1 + odf2
 
 plotPDF(odf3,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
 
 %%
-% Its also possible to define an multimodal ODF by more than two 
-% <orientation.orientation.html orientations>, for example
+% Both sets of spots are there, and each is as strong as it was on its own.
+% That is worth watching: a plain sum of two ODFs has mean 2, not 1.
+
+mean(odf3)
+
+%%
+% A texture made of two components with equal shares is |0.5*odf1 +
+% 0.5*odf2|, whose mean is 1 again and whose weights are volume fractions.
+%
+% Any number of orientations may be used, with weights of their own -
 
 odf4 = SO3FunRBF.example
 
 plotPDF(odf4,[Miller(1,0,0,odf4.CS),Miller(1,1,0,odf4.CS)],'antipodal')
 
+%%
+% and the ODF stays a density with mean 1.
+
+mean(odf4)
+
+%% Next
+%
+% The kernels that give these peaks their shape are
+% <ODFShapes.html Unimodal ODF Shapes>. A peak spread along a curve rather
+% than about a point is a <FibreODFs.html Fibre ODF>.
+
+%#ok<*NOPTS>
