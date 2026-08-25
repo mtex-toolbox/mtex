@@ -55,8 +55,12 @@ origin = get_option(varargin,'anchor',0);
 
 if isscalar(origin), origin = repmat(origin,size(vec)); end
 
+% surf replaces the axes content unless it is held, which would leave only the last arrow
+isHeld = ishold(ax);
+hold(ax,'on')
+
 for i = 1:length(vec)
-  
+
   v = vec.subSet(i);
   
   % the center line of the arrow
@@ -79,6 +83,8 @@ for i = 1:length(vec)
     h(i).Annotation.LegendInformation.IconDisplayStyle = "off";
   end
 end
+
+if ~isHeld, hold(ax,'off'); end
 
 
 
