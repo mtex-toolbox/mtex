@@ -1,63 +1,84 @@
 %% Crystal Symmetries
 %
 %%
-% A crystal point symmetry is the set of operations - rotations,
-% reflections and possibly inversion - that leave the crystal structure
-% indistinguishable while keeping one point fixed. The lattice metric alone
-% may allow more operations than the motif, so the symmetry declared for a
-% phase must be the symmetry of that phase. The operations form a group:
-% applying two in succession gives another operation from the same set.
+% A crystal point group is the set of symmetry operations that leave the
+% crystal structure indistinguishable while keeping one point fixed. Its
+% operations form a group: applying any two in succession gives another
+% operation from the same set.
 %
-% Consequently, one physical orientation has several rotation
-% representatives. Composing a representative with a crystal symmetry
-% operation gives an equally valid description, and everything from the
-% fundamental region to the misorientation angle follows from that.
+% The lattice metric may permit more operations than the arrangement of
+% atoms does. The symmetry declared for a phase must therefore describe the
+% phase, not merely the shape of its unit cell.
 %
-% Which operations are counted decides how many groups there are: 230 space
-% groups, 32 point groups, or 11 Laue groups.
+% In MTEX, a symmetry is the point group under which crystal data are
+% invariant. It is attached to a *crystal frame*, but is not itself that
+% frame. The crystal frame is the Cartesian reference frame glued to the
+% lattice basis. This distinction matters when the same abstract symmetry
+% type is used with different axis alignments.
+%
+% Symmetry also makes one physical orientation equivalent to several
+% rotations. This equivalence controls fundamental regions, direction
+% families, and misorientation angles throughout MTEX.
+%
+% Crystallography distinguishes 230 space-group types, 32 crystallographic
+% point-group types, and 11 Laue classes. This page starts with point groups
+% and then shows what MTEX retains from a space group.
 
-%% The 11 Groups of Proper Rotations
+%% The 11 Proper-Rotation Groups
 %
-% Exactly 11 groups consist of proper rotations only - 1, 2, 222, 3, 23, 4,
-% 422, 6, 622, 32, 432. They are the *enantiomorphic* groups. Their
-% operations can superpose a crystal on itself by rigid rotation, without a
-% reflection or inversion. Each is defined by its international notation
+% A <RotationImproper.html proper rotation> preserves handedness.
+%
+% The 11 crystallographic point-group types containing only proper rotations
+% are 1, 2, 222, 3, 32, 4, 422, 6, 622, 23, and 432. They are also called
+% the enantiomorphic point groups.
+%
+% <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|> accepts either a
+% Hermann--Mauguin symbol
 
-cs = crystalSymmetry('432')
+cs = crystalSymmetry('432');
 
 %%
-% or by its Schoenflies notation.
+% or its Schoenflies equivalent. The comparison confirms that both symbols
+% construct the same point-group type.
 
-cs = crystalSymmetry('O')
+csSchoenflies = crystalSymmetry('O');
+cs.id == csSchoenflies.id
+
+%%
+% A symmetry-element plot makes the operations visible.
 
 plot(cs)
 
 %%
-% The plot marks every symmetry axis with a polygon whose number of corners
-% is the order of the axis - a square for a fourfold axis, a triangle for a
-% threefold one, a lens for a twofold one. Group 432 has three fourfold axes
-% along a, b and c, four threefold axes along the body diagonals of the cube
-% and six twofold axes, which together with the identity make 24 operations.
+% The number of corners in a solid symbol gives the order of its proper
+% rotation axis. The plot of 432 shows three fourfold axes along the crystal
+% axes, four threefold axes along cube body diagonals, and six twofold axes.
+% The rotations about these axes, together with the identity, give 24
+% operations.
 
 %% Laue Groups
 %
-% Adding the inversion to a group of proper rotations gives its *Laue
-% group*.
+% Adding <rotation.inversion.html |rotation.inversion|> to a proper-rotation
+% group gives its Laue group. <symmetry.union.html |union|> performs that
+% construction here.
 
-csLaue = union(cs,rotation.inversion)
+csLaue = union(cs,rotation.inversion);
 
 plot(csLaue)
 
 %%
-% The same is reached directly.
+% The hollow circle at the centre is the inversion. The result is also
+% available from the <symmetry.Laue.html |Laue|> property. Its summary shows
+% that 432 has become $m\bar{3}m$ with 48 operations.
 
 cs.Laue
 
 %%
-% Since every Laue group comes from one of the 11 enantiomorphic groups,
-% there are 11 of them: -1, 2/m, mmm, -3, -3m, 4/m, 4/mmm, 6/m, 6/mmm, m-3,
-% m-3m. A Laue group has exactly twice as many elements as the group it came
-% from - each rotation appears once with and once without the inversion.
+% Every Laue group is obtained this way from one of the 11 proper-rotation
+% groups. Its order is twice that of the proper group because every rotation
+% occurs once without inversion and once with inversion.
+%
+% The operation tables make the doubling explicit for 222.
 
 cs = crystalSymmetry('222');
 rotation(cs)
@@ -67,15 +88,17 @@ rotation(cs)
 rotation(cs.Laue)
 
 %%
-% Four operations became eight, and the second four are the first four
-% carrying the |Inv.| flag. Laue groups matter for diffraction, where
-% Friedel's law makes a reflection and its opposite indistinguishable, see
-% <VectorsAxes.html Axes and Antipodal Symmetry>.
+% The first table contains four proper operations. The second contains those
+% four followed by four operations carrying the |Inv.| flag. Laue symmetry
+% is the apparent symmetry of diffraction intensities when Friedel's law
+% applies. Resonant scattering can break that equivalence. See
+% <VectorsAxes.html Axes and Antipodal Symmetry> for the corresponding
+% treatment of opposite directions.
 
-%% Point Groups
+%% Mixed Point Groups
 %
-% Between the two extremes sit groups that contain improper operations but
-% not the inversion itself, such as mm2.
+% The remaining point groups contain improper operations but do not contain
+% inversion itself. The group mm2 is an example.
 
 cs = crystalSymmetry('mm2');
 rotation(cs)
@@ -85,138 +108,180 @@ rotation(cs)
 plot(cs)
 
 %%
-% Its four operations are those of 222, but two of them are improper - the
-% two twofold axes have become mirror planes, drawn as the great circles
-% they cut on the sphere. A hollow symbol likewise marks an axis whose
-% operation is improper, and the small circle at the centre of a Laue
-% group's plot is the inversion. Replacing half the rotations
-% of an enantiomorphic group by their improper versions this way produces
-% the remaining 10 point-group types: m, mm2, 3m, -4, 4mm, -42m, -6, 6mm,
-% -6m2 and -43m.
-% Together, 11 enantiomorphic + 11 Laue + 10 mixed = 32 point groups.
+% The table contains two proper and two improper operations. In the plot,
+% great circles mark the two mirror planes and the solid lens marks the
+% twofold axis. A hollow polygon would mark an improper rotation axis.
+%
+% The 10 mixed point-group types are m, mm2, 3m, -4, 4mm, -42m, -6, 6mm,
+% -6m2, and -43m. Together with the 11 proper-rotation groups and 11 Laue
+% groups, they make the 32 crystallographic point-group types.
 
 %% Proper Group and Proper Subgroup
 %
-% For a mixed group there are two different ways to arrive at proper
-% rotations, and they give different answers.
+% A mixed group has two useful associated groups, and their names are easy
+% to confuse. Consider -4m2.
 
-cs = crystalSymmetry('-4m2')
+cs = crystalSymmetry('-4m2');
 
-mtexFigure('layout',[1 3]);
+%%
+% <symmetry.properGroup.html |properGroup|> replaces every improper
+% operation by the proper rotation with the same stored axis and angle. The
+% result is 422 with eight operations.
+
+properGroup = cs.properGroup
+
+%%
+% <symmetry.properSubGroup.html |properSubGroup|> instead retains only the
+% operations of the original group that are proper. The result is 222 with
+% four operations.
+
+properSubGroup = cs.properSubGroup
+
+%%
+% The four plots compare the original point group with both proper groups
+% and its Laue group.
+
+mtexFigure('layout',[2 2]);
 plot(cs)
-mtexTitle(char(cs,'LaTex'))
+text(gca,0.03,0.97,'-4m2','Units','normalized','VerticalAlignment','top')
+
 nextAxis
-plot(cs.properGroup)
-mtexTitle(char(cs.properGroup,'LaTex'))
+plot(properGroup)
+text(gca,0.03,0.97,'422','Units','normalized','VerticalAlignment','top')
+
+nextAxis
+plot(properSubGroup)
+text(gca,0.03,0.97,'222','Units','normalized','VerticalAlignment','top')
+
 nextAxis
 plot(cs.Laue)
-mtexTitle(char(cs.Laue,'LaTex'))
+text(gca,0.03,0.97,'4/mmm','Units','normalized','VerticalAlignment','top')
 
 %%
-% |cs.properGroup| turns every improper operation into the proper one with
-% the same axis, which for -4m2 gives 422 - eight operations, four of which
-% were not symmetries of -4m2 at all. It is the group the point group is
-% derived *from*, not a part of it.
-%
-% The operations of |cs| that really are proper form |cs.properSubGroup|,
-
-plot(cs.properSubGroup)
-mtexTitle(char(cs.properSubGroup,'LaTex'))
-
-%%
-% which is 222, half of -4m2's eight operations. Use |properGroup| to ask
-% which enantiomorphic group a point group belongs to, and |properSubGroup|
-% to ask which of its operations a crystal can be turned by.
+% The upper-left plot contains the actual operations of -4m2. The upper-right
+% plot is its eight-operation proper group, 422. That group is not a subgroup
+% of -4m2. The lower-left plot is its four-operation proper subgroup, 222.
+% The lower-right plot is the 16-operation Laue group, 4/mmm.
 
 %% Alignment of the Symmetry Operations
 %
-% A point group fixes which operations exist, not how they sit with respect
-% to the crystal axes. The three plots below are the same group with three
-% different alignments, and the a-axis points east in all of them.
+% A point-group type specifies which operations exist, but their alignment
+% belongs to the crystal frame. The following plots show the same abstract
+% group with its twofold axis aligned with a different crystal axis. The
+% a-axis points east in every panel.
 
 mtexFigure('layout',[1 3]);
 cs = crystalSymmetry('2mm');
 plot(cs)
-mtexTitle(char(cs,'LaTex'))
+text(gca,0.03,0.97,'2mm','Units','normalized','VerticalAlignment','top')
 annotate(cs.aAxis,'labeled')
 
 nextAxis
 cs = crystalSymmetry('m2m');
 plot(cs)
-mtexTitle(char(cs,'LaTex'))
+text(gca,0.03,0.97,'m2m','Units','normalized','VerticalAlignment','top')
 annotate(cs.aAxis,'labeled')
 
 nextAxis
 cs = crystalSymmetry('mm2');
 plot(cs)
-mtexTitle(char(cs,'LaTex'))
+text(gca,0.03,0.97,'mm2','Units','normalized','VerticalAlignment','top')
 annotate(cs.aAxis,'labeled')
 
 %%
-% The twofold axis lies along a in the first plot, along b in the second and
-% along c in the third. The same freedom exists for 112, 121, 211, 11m, 1m1,
-% m11, 321, 312, 3m1, 31m and others, and getting it wrong rotates every
-% orientation in a data set. Which alignment a data set uses is discussed in
-% <SymmetryAlignment.html Crystal Axes Alignment>.
+% The twofold axis lies along a in the first panel, b in the second, and c in
+% the third. Similar alternatives occur for 112, 121, 211, 11m, 1m1, m11,
+% 321, 312, 3m1, and 31m. Choosing the wrong alignment changes how every
+% Miller index and orientation is interpreted. See
+% <CrystalReferenceSystem.html Reference System> for the role of the crystal
+% frame and <SymmetryAlignment.html Crystal Axes Alignment> for changing
+% between conventions.
 
 %% Space Groups
 %
-% Counting translations as symmetry operations as well gives the 230 space
-% groups of the international tables. MTEX recognises space-group symbols
-% and numbers as input to |crystalSymmetry|, but it does not retain a full
-% space-group representation: the input is reduced to the corresponding
-% point group.
+% A space group also includes translations and operations with translational
+% parts, such as screw rotations and glide reflections. MTEX accepts a
+% Hermann--Mauguin space-group symbol. A number is passed through the
+% |'SpaceId'| option. In either case, |crystalSymmetry| stores only the
+% corresponding point group.
 
-cs = crystalSymmetry('Fm-3m');
+cs = crystalSymmetry('Fm-3m')
+
+%%
+
 plot(cs)
 
 %%
-% The space-group symbol $Fm\bar{3}m$ is reduced to the cubic point group
-% $m\bar{3}m$. Translational parts of the space-group operations are not
-% retained.
+% The summary identifies $m\bar{3}m$ with 48 operations. The plot likewise
+% contains only point-group symmetry elements. It cannot show the face
+% centring or any translational part of $Fm\bar{3}m$.
 
 %% Computing with Symmetries
 %
-% <symmetry.union.html |union|> combines the operations of compatible
-% crystallographic symmetries, while <symmetry.disjoint.html |disjoint|>
-% retains their common operations. In the examples below the results are
-% again recognised crystallographic point groups.
+% <symmetry.union.html |union|> combines compatible symmetry operations,
+% while <symmetry.disjoint.html |disjoint|> retains the operations common to
+% two symmetries.
 
-union(crystalSymmetry('23'),crystalSymmetry('4'))
-
-%%
-% The 12 operations of 23 together with the fourfold axis of 4 generate all
-% 24 operations of 432.
-
-disjoint(crystalSymmetry('432'),crystalSymmetry('622'))
+combined = union(crystalSymmetry('23'),crystalSymmetry('4'))
 
 %%
-% Cubic and hexagonal symmetry share only the three twofold axes of 222.
+% The operations of 23 together with the fourfold axis of 4 generate the 24
+% operations of 432.
+
+common = disjoint(crystalSymmetry('432'),crystalSymmetry('622'))
+
+%%
+% Cubic 432 and hexagonal 622 have the identity and three twofold rotations
+% in common. Those four operations form 222.
 
 %% Import from CIF and PHL Files
 %
-% Real minerals are not entered by hand but read from a crystallographic
-% information file.
+% <crystalSymmetry.load.html |crystalSymmetry.load|> reads the point group,
+% lattice parameters, and phase name from a crystallographic information
+% file. With no extension, MTEX searches its CIF data path.
 
-cs = crystalSymmetry.load('quartz')
+csQuartz = crystalSymmetry.load('quartz')
 
 %%
-% A Bruker |.phl| file usually holds several phases, so the result is a list
-% of crystal symmetries.
+% A Bruker |.phl| file may contain several phases, so the result is a cell
+% array of crystal symmetries. The first entry in the bundled example is
+% magnetite.
 
-% import a list of crystal symmetries
-cs_list = crystalSymmetry.load('crystal.phl');
+csList = crystalSymmetry.load('crystal.phl');
+csList{1}
 
-% access the first symmetry in list
-cs_list{1}
+%% References
+%
+% * M. I. Aroyo (ed.),
+% <https://doi.org/10.1107/97809553602060000114 International Tables for
+% Crystallography, Volume A: Space-group symmetry>, sixth edition, IUCr,
+% 2016, is the definitive tabulation of the 230 space groups and 32
+% crystallographic point groups.
+% * Th. Hahn, H. Klapper, U. Müller, and M. I. Aroyo,
+% <https://doi.org/10.1107/97809553602060000930 Point groups and crystal
+% classes>, International Tables for Crystallography A, ch. 3.2, 2016,
+% defines the point-group classification and notation used here.
+% * The International Union of Crystallography,
+% <https://dictionary.iucr.org/Friedel%27s_law Friedel's law>, explains the
+% diffraction condition and its exception for resonant scattering.
+% * The International Union of Crystallography,
+% <https://www.iucr.org/resources/cif/dictionaries/browse/cif_core Core CIF
+% dictionary>, defines the space-group and Laue-class data read from CIF
+% files.
+% * A. Morawiec,
+% <https://doi.org/10.1007/978-3-662-09156-2 Orientations and Rotations:
+% Computations in Crystallographic Textures>, Springer, 2004, develops the
+% rotation-group treatment used in texture analysis.
 
 %% Next
 %
-% What symmetry does to a crystal direction - the equivalent directions, and
-% the patch of the sphere that holds one representative of each - is
-% <CrystalOperations.html Operations> and
-% <FundamentalSector.html Fundamental Sector>. A rotation together with a
-% crystal symmetry is an <OrientationDefinition.html orientation>.
+% <CrystalDirections.html Miller Indices> introduces directions and planes
+% in the crystal frame. <CrystalOperations.html Operations> then applies the
+% symmetries defined here to those directions, and
+% <FundamentalSector.html Fundamental Sector> selects one representative
+% from each equivalent family. A rotation together with crystal and specimen
+% symmetry becomes an <OrientationDefinition.html orientation>.
 
 %#ok<*NASGU>
 %#ok<*NOPTS>
+%#ok<*EQEFF>

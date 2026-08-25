@@ -1,17 +1,20 @@
 %% Lattice Metric and Plane Geometry
 %
 %%
-% Miller indices say which lattice direction or plane family is meant. The
-% *lattice metric* supplies the lengths and angles that turn those indices
-% into physical geometry. It determines the length of $[uvw]$, the normal
-% to $(hkl)$ and the spacing between neighbouring $(hkl)$ planes.
+% <CrystalDirections.html Miller indices> identify a lattice direction or
+% plane family. The *lattice metric* supplies the lengths and angles that
+% turn those indices into physical geometry. It determines the length of
+% $[uvw]$, the normal to $(hkl)$, and the spacing between neighbouring
+% $(hkl)$ planes.
 %
-% MTEX stores the metric in the
-% <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|> together with the
-% point group and crystal reference frame.
+% In MTEX, a <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|>
+% bundles point symmetry with a crystal frame. The crystal frame carries
+% the lattice basis and its metric; symmetry states which operations leave
+% crystal data invariant. Keeping those ideas separate matters because a
+% lattice metric can have more symmetry than the atoms placed in its cell.
 
 cs = crystalSymmetry('12/m1',[5.2 6.3 7.1],...
-  [90 106 90]*degree,'X||a','mineral','Example monoclinic crystal')
+  [90 106 90]*degree,'X||a','mineral','Example monoclinic crystal');
 
 %% Reading the Lattice Parameters
 %
@@ -30,16 +33,16 @@ cs.abg ./ degree
 %
 % The unit cell is the parallelepiped spanned by $\vec a$, $\vec b$ and
 % $\vec c$. Repeating it by integer multiples of these three vectors fills
-% the lattice. A |crystalSymmetry| stores the geometry of this cell and its
-% point symmetry, but not the atoms or other motif repeated with it.
+% the lattice. The cell geometry does not say which atoms or other motif are
+% repeated at its translation points.
 
 %% The Seven Crystal Systems
 %
 % A crystal system restricts which lattice parameters may differ. MTEX
-% records the system in |cs.lattice|, supplies its conventional default
-% angles, and checks required equal axis lengths when a |crystalSymmetry| is
-% constructed. It also checks the right-angle condition associated with the
-% selected unique axis of a monoclinic point group.
+% records the system in |cs.lattice| and supplies its conventional default
+% angles. The constructor checks required equal axis lengths. For a
+% monoclinic point group, it also checks the two right angles associated
+% with the selected unique axis.
 %
 % || crystal system || conventional lattice metric ||
 % || triclinic || no required equal lengths or right angles ||
@@ -55,7 +58,7 @@ cs.abg ./ degree
 % symmetries distinguish the systems.
 %
 % The monoclinic point-group symbol also states which axis is unique. The
-% pages on <CrystalReferenceSystem.html reference frames> and
+% pages on <CrystalReferenceSystem.html crystal reference frames> and
 % <SymmetryAlignment.html axis alignment> explain how those lattice axes
 % are placed in MTEX's Cartesian crystal frame.
 
@@ -84,10 +87,10 @@ reciprocalBasis = cs.axesDual;
 cellVolume = abs(det(directBasis))
 
 %%
-% The volume is in the cube of the lattice-parameter unit. The defining
-% duality is seen directly in the matrix of pairwise dot products.
+% The output is 223.5856 in the cube of the lattice-parameter unit. The
+% defining duality is seen directly in the matrix of pairwise dot products.
 
-dot_outer(directBasis,reciprocalBasis,'noSymmetry')
+dot_outer(directBasis,reciprocalBasis)
 
 %%
 % The result is the identity matrix. Reciprocal axes have inverse-length
@@ -96,9 +99,10 @@ dot_outer(directBasis,reciprocalBasis,'noSymmetry')
 % in a monoclinic or triclinic lattice they generally are not.
 %
 % The schematic shows the direct basis at the lower left and the reciprocal
-% basis from a second lattice point. The red points are translation-equivalent
-% positions; the blue points illustrate a repeated motif. Notice in
-% particular that $\vec a$ and $\vec a^*$ are not parallel.
+% basis from a second lattice point. The red points are
+% translation-equivalent positions, while the blue points illustrate a
+% repeated motif. Notice in particular that $\vec a$ and $\vec a^*$ are not
+% parallel.
 %
 % <<latticeReciprocalBasis.png>>
 
@@ -109,24 +113,30 @@ dot_outer(directBasis,reciprocalBasis,'noSymmetry')
 % $$\vec m=u\vec a+v\vec b+w\vec c.$$
 %
 % Its <vector3d.norm.html |norm|> is therefore a physical length, not just a
-% plotting radius. For example, $[101]$ spans one $\vec a$ and one $\vec c$.
+% plotting radius. The indices are coefficients in the generally oblique
+% lattice basis, not Cartesian components. For example, $[101]$ spans one
+% $\vec a$ and one $\vec c$.
 
-m = Miller(1,0,1,cs,'uvw')
+m = Miller(1,0,1,cs,'uvw');
 
 norm(m)
 
 %%
-% The result is in the same units as |cs.abc|. Multiplying all indices by
-% two leaves the geometric direction unchanged, up to rounding, but doubles
-% the vector length.
+% The value 7.5563 is in the same units as |cs.abc|. Multiplying all indices
+% by two leaves the geometric direction unchanged, up to numerical
+% rounding, but doubles the vector length. The option |'noSymmetry'|
+% compares the two vectors as written rather than searching their
+% symmetry-equivalent directions.
 
-angle(m,Miller(2,0,2,cs,'uvw')) ./ degree
+angle(m,Miller(2,0,2,cs,'uvw'),'noSymmetry') ./ degree
 
 %%
 
 norm(Miller(2,0,2,cs,'uvw')) ./ norm(m)
 
 %%
+% The angle is numerically zero, while the length ratio is 2.
+%
 % Use <vector3d.normalize.html |normalize|> when only the direction matters.
 % Keep the original magnitude when the lattice translation or Burgers-vector
 % length is part of the calculation.
@@ -135,18 +145,20 @@ norm(Miller(2,0,2,cs,'uvw')) ./ norm(m)
 %
 % The normal of $(hkl)$ is a reciprocal-lattice vector. MTEX uses the
 % crystallographic convention without a factor $2\pi$, so its length is the
-% inverse of the plane spacing:
+% inverse of the interplanar spacing returned by
+% <Miller.dspacing.html |dspacing|>:
 %
 % $$ d_{hkl}=\frac{1}{\lVert\vec n_{hkl}\rVert}. $$
 
-h = Miller(1,0,0,cs)
+h = Miller(1,0,0,cs);
 
 d100 = dspacing(h)
 
 %%
-% This is smaller than $a=5.2$: in this monoclinic cell, $\vec a$ is not
-% perpendicular to the $(100)$ planes. The spacing is the component of
-% $\vec a$ normal to those planes, not generally the length of $\vec a$.
+% MTEX returns 4.9986, which is smaller than $a=5.2$. In this monoclinic
+% cell, $\vec a$ is not perpendicular to the $(100)$ planes. The spacing is
+% the component of $\vec a$ normal to those planes, not generally the
+% length of $\vec a$.
 %
 % The same command works for a list. For a cubic lattice with parameter
 % $a=3.6$, the familiar result is $d_{hkl}=a/\sqrt{h^2+k^2+l^2}$.
@@ -156,25 +168,76 @@ hCubic = Miller({1,0,0},{1,1,0},{1,1,1},csCubic);
 
 dspacing(hCubic)
 
+%%
+% The $(100)$, $(110)$, and $(111)$ spacings are 3.6000, 2.5456, and
+% 2.0785. In a cubic lattice the spacing decreases as the squared-index sum
+% $h^2+k^2+l^2$ increases.
+
+%% The Maths Behind the Metric
+%
+% Put the direct-basis vectors into $A=[\vec a\ \vec b\ \vec c]$. The
+% *metric matrix* is the matrix of their pairwise dot products,
+%
+% $$G=A^{\mathrm T}A,\qquad G_{ij}=\vec a_i\mathbin{\cdot}\vec a_j.$$
+%
+% MTEX obtains it directly from the basis vectors.
+
+metricMatrix = dot_outer(directBasis,directBasis)
+
+%%
+% The diagonal entries are $a^2$, $b^2$, and $c^2$. The off-diagonal
+% entries contain the interaxial angles, so the nonzero $a$ -- $c$ terms
+% record the monoclinic angle $\beta=106^\circ$.
+%
+% For the direct-index column $\mathbf u=(u,v,w)^{\mathrm T}$ and the
+% reciprocal-index column $\mathbf h=(h,k,l)^{\mathrm T}$,
+%
+% $$\lVert\vec m\rVert^2=\mathbf u^{\mathrm T}G\mathbf u,
+% \qquad G^*=G^{-1},\qquad
+% d_{hkl}=\frac{1}{\sqrt{\mathbf h^{\mathrm T}G^*\mathbf h}}.$$
+%
+% These equations are the matrix form of the |norm| and |dspacing|
+% calculations above. They also give $V=\sqrt{\det G}$ for the unit-cell
+% volume.
+
 %% What a Crystal Symmetry Does Not Store
 %
-% A |crystalSymmetry| contains the point symmetry, lattice metric and frame
-% convention. It does not retain the atomic basis, Wyckoff positions or the
-% translational parts of a space group. In particular, the 14 Bravais
-% lattices distinguish translational centring, whereas |crystalSymmetry|
-% retains the associated crystal system and point group. A CIF or
-% space-group symbol can provide the lattice parameters and point group, but
-% MTEX reduces the space group to that point group. Structure factors and
-% systematic absences therefore require information outside this geometry
-% model.
+% The crystal geometry used here contains point symmetry and a crystal frame
+% with its lattice metric. It does not model an atomic basis, Wyckoff
+% positions, or the translational parts of a space group. In particular,
+% the 14 Bravais lattices distinguish translational centring, whereas
+% |crystalSymmetry| retains the associated crystal system and point group.
+%
+% A CIF can supply lattice parameters and a space-group symbol. When MTEX
+% constructs a |crystalSymmetry| from that information, it reduces the space
+% group to its point group for this geometry. Structure factors and
+% systematic absences therefore require information outside this model.
+
+%% References
+%
+% * A. Authier,
+% <https://www.iucr.org/education/pamphlets/4/full-text The reciprocal
+% lattice>, IUCr Teaching Pamphlet 4, develops the direct and reciprocal
+% bases, plane spacings, and their diffraction interpretation.
+% * H. Wondratschek and M. I. Aroyo,
+% <https://onlinelibrary.wiley.com/iucr/itc/Ac/ch1o5v0001/sec1o5o2o2/
+% Metric tensors of direct and reciprocal lattices>, _International Tables
+% for Crystallography A_, section 1.5.2.2, gives the tensor formulation.
+% * The International Union of Crystallography,
+% <https://www.iucr.org/resources/cif/dictionaries/browse/cif_core1 Core CIF
+% dictionary>, standardises unit-cell lengths, angles, volumes, and
+% reciprocal-cell quantities used by crystallographic files.
+% * C. Giacovazzo, editor,
+% <https://doi.org/10.1093/acprof:oso/9780199573653.001.0001 Fundamentals of
+% Crystallography>, 3rd ed., Oxford University Press, 2011, places lattice
+% geometry within structural crystallography and diffraction.
 
 %% Next
 %
-% <CrystalOperations.html Operations> uses the metric to test whether a
-% direction lies in a plane and to compute zone axes and multiplicities.
-% <CrystalDirections.html Miller Indices> introduces direct and reciprocal
-% notation. <CrystalReferenceSystem.html Reference System> explains how the
-% lattice is embedded in a Cartesian crystal frame.
+% <CrystalOperations.html Operations> uses direct and reciprocal geometry
+% for incidence tests, zone axes, angles, and multiplicities.
+% <CrystalReferenceSystem.html Reference System> explains how the lattice
+% basis is embedded in a Cartesian crystal frame.
 
 %#ok<*NOPTS>
 %#ok<*NASGU>
