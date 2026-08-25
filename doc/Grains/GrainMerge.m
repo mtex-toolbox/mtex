@@ -1,10 +1,15 @@
 %% Merging Grains
 %
 %%
-% Merging grains may be useful when reconstructing parent grain
-% structures, i.e., before phase transition or before twinning. In this
-% section we will use a twinning example for illustration. Lets start by
-% importing some Magnesium data and reconstructing the grain structure:
+% A twin is a grain by every rule the reconstruction uses - it is a
+% connected region of one phase whose orientation differs from its
+% surroundings by far more than any threshold. It is not a grain in the
+% sense the material was made: it grew inside a parent grain and belongs to
+% it. Merging is how the parent is put back together, and the same operation
+% undoes a phase transition, where each parent grain broke up into several
+% child orientations.
+%
+% This page uses twins in magnesium.
 
 % load some example data
 plottingConvention.default('y↑→x');
@@ -21,7 +26,9 @@ grains = grains('indexed');
 plot(grains,grains.meanOrientation)
 
 %%
-% Next we identify all twinning boundaries
+% What tells a twin from a grain boundary is the misorientation across it.
+% Twinning maps two specific pairs of crystal directions onto each other, so
+% the boundaries that do that within 5 degrees are the twin boundaries.
 
 % define twinning misorientation
 CS = grains.CS;
@@ -40,12 +47,15 @@ hold on
 plot(twinBoundary,'linecolor','w','linewidth',4,'displayName','twin boundary')
 hold off
 
-%% Merge grains along boundaries
+%%
+% Half of all boundary segments in this map, 1406 of 2696, are twin
+% boundaries.
+
+%% Merging along a set of boundaries
 %
-% The command <grain2d.merge.html merge> will merge grains together that
-% have a common boundary which is specified as the second argument. In our
-% example we want to merge all grains that have a common twinning boundary
-% so we do
+% <grain2d.merge.html |merge|> joins the grains on the two sides of every
+% boundary it is given. Handed the twin boundaries, it dissolves the twins
+% into their parents and leaves every other boundary standing.
 
 [mergedGrains,parentId] = merge(grains,twinBoundary);
 
@@ -55,25 +65,30 @@ plot(mergedGrains.boundary,'linecolor','k','linewidth',2.5,'linestyle','-',...
   'displayName','merged grains')
 hold off
 
-%% Grain relationships
-% The second output argument |paraentId| of <grain2d.merge.html merge> is a
-% list with the same size as the child grains which indicates for each
-% child grain into which parent grain it has been merged. The id of the
-% common grain is usually different from the ids of the merged grains and
-% can be found by
+%%
+% 91 grains have become 28. The black lines are the parent grain structure;
+% every white line is now inside a parent rather than between two of them.
+
+%% Keeping track of what went where
+%
+% The second output, |parentId|, says for every original grain which merged
+% grain it ended up in - the same bookkeeping that |grainId| does between
+% measurements and grains.
 
 mergedGrains(16).id
 
 %%
-% Hence, we can find all children of grain 16 by 
+% So the grains that were merged into number 16 are
 
 childs = grains(parentId == mergedGrains(16).id)
 
-%% Estimate twin area fraction
-% Determining which of the measured grains are original grains and which are
-% twins is a tough problem. Here we make a very simple assumption by
-% labeling those areas as twins that make up less than half of the merged
-% (original) parent grain
+%% Which of the children were the twins
+%
+% Merging says which grains belong together; it does not say which of them
+% is the parent and which the twin. Deciding that is genuinely hard. A
+% simple rule that works when twinning has not consumed the grain: cluster
+% the children of each parent by orientation, and call the largest cluster
+% by area the original grain.
 
 % extract grain area for faster access
 gArea = grains.area;
@@ -81,7 +96,7 @@ gArea = grains.area;
 % loop over mergedGrains and determine children that are not twins
 isTwin = true(grains.length,1);
 for i = 1:mergedGrains.length
-   
+
   % get child ids
    childId = find(parentId==i);
 
@@ -91,7 +106,7 @@ for i = 1:mergedGrains.length
 
    % compute area of each cluster
    clusterArea = accumarray(fId,gArea(childId));
-   
+
    % label the grains of largest cluster as original grain
    [~,fParent] = max(clusterArea);
    isTwin(childId(fId==fParent)) = false;
@@ -105,16 +120,23 @@ close all
 plot(grains(~isTwin),'FaceColor','darkgray','displayName','not twin')
 hold on
 plot(grains(isTwin),'FaceColor','red','displayName','twin')
-hold on
 plot(mergedGrains.boundary,'linecolor','k','linewidth',2,'linestyle','-',...
   'displayName','merged grains')
 mtexTitle('twin id')
 
 %%
-% The |parentId| may also be used to compute properties of the parent
-% grains by averaging over the corresponding child grain properties. This
-% can be done with the MATLAB command
-% <mathworks.com/help/matlab/ref/accumarray.html accumarray>
+% Seventeen percent of the mapped area is twin. Note where the red regions
+% sit: they are lamellae inside the grey grains, which is what twins look
+% like and a check that the rule did something sensible. It would fail on a
+% grain more than half consumed by its twin, and there is no way to tell
+% from the map alone that it had.
+
+%% Properties of the parent grains
+%
+% A merged grain has a shape and a size of its own, but its orientation
+% properties have to be carried over from the children. |parentId| is the
+% index for that, and MATLAB's
+% <matlab:doc('accumarray') |accumarray|> does the averaging.
 
 % this averages the GOS of the child grains into the parent grains
 mergedGrains.prop.GOS = accumarray(parentId,grains.GOS,size(mergedGrains),@mean);
@@ -133,9 +155,9 @@ mtexColorbar
 setColorRange([0,1.5])
 
 %%
-% The above result is a bit unrealistic since the averages are computed
-% between the children ignoring their relative areas. A better approach is to
-% compute a weighted average by the following lines.
+% This average counts a two pixel twin as much as the grain that contains
+% it, which is rarely what is meant. Weighting each child by its area is one
+% line more and gives a parent value the children actually support.
 
 % extract GOS and area
 childGOS = grains.GOS;
@@ -148,10 +170,18 @@ mergedGrains.prop.GOS = accumarray(parentId,1:length(grains),size(mergedGrains),
 nextAxis(1,3), hold on
 plot(mergedGrains,mergedGrains.GOS  ./ degree)
 
-%% Setting Up the EBSD Data for the Merged Grains
-% Note that the Id's of the merged grains does not fit the grainIds
-% stored in the initial ebsd variable. As a consequence, the following
-% command will not give the right result
+%%
+% The third map is the honest one, and it is mostly brighter than the
+% second: in 24 of the 28 parents the weighted value is the larger, by up to
+% 0.6 degrees. The reason is that orientation spread grows with grain size,
+% so it is the big children that carry the high values and the small twins
+% that were dragging the plain average down.
+
+%% Pointing the measurements at the merged grains
+%
+% The measurements still carry the |grainId| of the original grains, and
+% those ids mean something different now. Indexing the map with a merged
+% grain therefore returns the wrong measurements, silently.
 
 close all
 plot(mergedGrains(22).boundary,'linewidth',2)
@@ -160,8 +190,9 @@ plot(ebsd(mergedGrains(22)),ebsd(mergedGrains(22)).orientations)
 hold off
 
 %%
-% In order to update the grainId in the ebsd variable to the merged grains,
-% we proceed as follows.
+% The data drawn inside that outline is not the data of that grain. Updating
+% the ids is a single assignment: replace each measurement's grain id by the
+% id of the parent that grain went into.
 
 % copy ebsd data into a new variable to not change the old data
 ebsd_merged = ebsd;
@@ -170,10 +201,9 @@ ebsd_merged = ebsd;
 ebsd_merged('indexed').grainId = parentId(grains.id2ind(ebsd('indexed').grainId))
 
 %%
-% Now the variable |ebsd_merged| can be indexed by the merged grains, i.e.
+% Now the merged grains index the map correctly.
 
 plot(ebsd_merged(mergedGrains(22)),ebsd_merged(mergedGrains(22)).orientations)
 hold on
 plot(mergedGrains(22).boundary,'linewidth',3)
 hold off
-
