@@ -1,32 +1,34 @@
 %% Ghost Effect Analysis
 %
 %%
-% A general problem in estimating an ODF from pole figure data is the fact
-% that the odd order Fourier coefficients of the ODF are not present
-% anymore in the pole figure data and therefore it is difficult to estimate
-% them. Artifacts in the estimated ODF that are due to underestimated odd
-% order Fourier coefficients are called *ghost effects*. It is known that
-% for sharp textures the ghost effect is relatively small due to the strict
-% non-negativity condition. For weak textures, however, the ghost effect
-% might be remarkable. For those cases, *MTEX* provides the option
-% *ghost_correction* which tries to determine the uniform portion of the
-% unknown ODF and to transform the unknown weak ODF into a sharp ODF by
-% subtracting this uniform portion. This is almost the approach Matthies
-% proposed in his book (He called the uniform portion *phon*).
-% In this section, we are going to demonstrate the power of ghost correction
-% at a simple, synthetic example.
-
-%% Construct Model ODF
+% The odd order harmonic coefficients of an ODF leave no trace in its pole
+% figures, so a reconstruction has to guess them - see
+% <PoleFigure2ODFAmbiguity.html the ambiguity of the reconstruction
+% problem>. Guessing them as zero is the safe choice and it has a visible
+% cost: the texture components come out too weak and sit on a uniform
+% background that is too high, sometimes with spurious components beside
+% them. Those artefacts are the *ghosts*.
 %
-% A unimodal ODF with a high uniform portion.
+% Matthies' remedy is to determine the uniform portion of the unknown ODF
+% first - he called it the *phon* - subtract it, and reconstruct the sharp
+% remainder, where the non-negativity constraint is strong enough to pin the
+% odd coefficients down. MTEX does this by default.
+%
+% A sharp texture has little to gain, since non-negativity already
+% constrains it. This page therefore takes the opposite case: an ODF that is
+% nine tenths uniform.
+
+%% A deliberately weak model ODF
 
 cs = crystalSymmetry('222');
 mod1 = orientation.byEuler(0,0,0,cs);
 odf = 0.9*uniformODF(cs) + ...
   0.1*unimodalODF(mod1,'halfwidth',10*degree)
 
-%% Simulate pole figures
+%% Simulated pole figures
 %
+% Three lattice planes on a 5 degree grid, computed from the model and used
+% as if they had been measured.
 
 % specimen directions
 r = equispacedS2Grid('resolution',5*degree,'antipodal');
@@ -39,107 +41,144 @@ pf = calcPoleFigure(odf,h,r);
 
 plot(pf)
 
-%% ODF Estimation
-% without ghost correction:
+%% Two reconstructions
+%
+% Without ghost correction:
 
 rec = calcODF(pf,'noGhostCorrection','silent');
 
 %%
-% with ghost correction:
+% and with it:
 
 rec_cor = calcODF(pf,'silent');
 
-%% Compare RP Errors
+%% How well do they fit the data
+%
+% The RP error against the simulated pole figures, without correction:
 
-%%
-% without ghost correction:
 calcError(pf,rec,'RP')
 
 %%
-% with ghost correction:
+% and with correction:
+
 calcError(pf,rec_cor,'RP')
 
-%% Compare Reconstruction Errors
-
 %%
-% without ghost correction:
+% The uncorrected reconstruction fits the data *better* - about 0.009
+% against 0.025 per pole figure. That is not a surprise and not a defect:
+% ghost correction adds an assumption about the uniform portion, and an
+% assumption can only cost fit. Judged on the data alone, the uncorrected
+% reconstruction wins.
+
+%% They are not equally close to the truth
+%
+% Since the model ODF is known here, the reconstructions can be compared
+% with it directly. Without correction:
+
 calcError(rec,odf)
 
 %%
-% with ghost correction:
+% and with correction:
+
 calcError(rec_cor,odf)
 
-
-%% Plot the ODFs
-
 %%
-% without ghost correction:
+% And here it loses by a factor of twenty three: 0.126 against 0.005. This
+% is the whole argument for ghost correction in two pairs of numbers. The
+% reconstruction that fits the measurement three times better is more than
+% twenty times further from the truth.
+
+%% What the difference looks like
+%
+% Without ghost correction:
+
 plot(rec,'sections',9,'silent','sigma')
 
 %%
-% with ghost correction:
+% and with it:
+
 plot(rec_cor,'sections',9,'silent','sigma')
 
 %%
-% radial plot of the true ODF
+% A section through the fibre that contains the component shows the same
+% comparison as a curve. The true ODF first:
+
 close all
 f = fibre(Miller(0,1,0,cs),yvector);
 plot(odf,f,'linewidth',2);
 hold on
 
 %%
-% radial plot without ghost correction:
+% without ghost correction:
+
 plot(rec,f,'linewidth',2);
 
 %%
-% radial plot with ghost correction:
+% and with ghost correction:
+
 plot(rec_cor,f,'linestyle','--','linewidth',2);
 hold off
 legend({'true ODF','without ghost correction','with ghost correction'})
 
-%% Calculate Fourier coefficients
-% Next, we want to analyze the fit of the Fourier coefficients of the
-% reconstructed ODFs. To this end, we first compute Fourier representations
-% for each ODF
+%%
+% Three defects at once in the uncorrected curve. Its peak reaches 25 mrd
+% where the true one reaches 40. The level between the peaks is 3 mrd
+% instead of 1, so the volume the peak lost went into the background. And
+% there are two small bumps at 90 and 270 degrees that the true ODF does not
+% have at all - components conjured out of nothing.
+%
+% The corrected curve, dashed, is on top of the true one everywhere. Those
+% bumps are the ghosts the effect is named after.
+
+%% In the harmonic coefficients
+%
+% The effect lives in the odd order coefficients, so that is where it is
+% clearest. All three functions are first written as harmonic series.
 
 odf = FourierODF(odf,25)
 rec = FourierODF(rec,25)
 rec_cor = FourierODF(rec_cor,25)
 
-%% Calculate Reconstruction Errors from Fourier Coefficients
-
 %%
-% without ghost correction:
-%
+% The L2 error, without ghost correction:
+
 calcError(rec,odf,'L2')
 
 %%
-% with ghost correction:
+% and with it:
+
 calcError(rec_cor,odf,'L2')
 
-
-%% Plot Fourier Coefficients
-%
-% Plotting the Fourier coefficients of the recalculated ODFs shows that the
-% Fourier coefficients without ghost correction oscillates much more than
-% the Fourier coefficients with ghost correction
+%%
+% 0.36 against 0.03 - the same verdict as the L1 comparison above, an order
+% of magnitude apart.
 
 %%
-% true ODF
+% Plotting the coefficient magnitudes degree by degree shows why. The true
+% ODF:
+
 close all;
 plotSpektra(odf,'linewidth',2)
 
 %%
-% keep plotting windows and add next plots
+
 hold on
 
 %%
-% Without ghost correction:
+% without ghost correction - note the zig-zag: the odd degrees are pulled
+% down towards zero while the even ones are right.
+
 plotSpektra(rec,'linewidth',2)
 
 %%
-% with ghost correction
+% and with ghost correction, which follows the true curve smoothly:
+
 plotSpektra(rec_cor,'linewidth',2)
 legend({'true ODF','without ghost correction','with ghost correction'})
 % next plot command overwrites plot window
 hold off
+
+%%
+% A zig-zag in a spectrum is the signature to look for. Whenever the odd
+% degrees of a reconstruction sit systematically below the even ones, the
+% odd order information was guessed rather than measured.
