@@ -17,6 +17,15 @@ function ori = localOrientationGrid(CS,SS,maxAngle,varargin)
 %  ori - @orientation
 %
 
+% localOrientationGrid(center,maxAngle,...) - the center carries both symmetries
+if isa(CS,'orientation')
+  % everything from the third argument on is an option in this syntax
+  if nargin > 2, varargin = [{maxAngle},varargin]; end
+  varargin = [varargin,{'center',CS}];
+  maxAngle = SS;
+  [CS,SS] = deal(CS.CS,CS.SS);
+end
+
 % get resolution
 if check_option(varargin,'points')
   res = maxAngle/(get_option(varargin,'points')/4)^(1/3);
