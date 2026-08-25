@@ -294,14 +294,17 @@ adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
   by `refFrameGeometry`, which is what `@scaleBar` draws the map indicator with -
   moved out of that file into `plotting/plotting_tools/` so both share it. The
   images are gone
-- and the pictograms are labelled by what the file actually calls its axes. An
-  Oxford `.h5oina` names both of its frames itself and AZtec lets the user rename
-  them, so the map takes `Sample Primary Direction Labels` (CS0) and the Euler
-  frame `Sample Surface Direction Labels` (CS1) - X0/Y0/Z0 and X1/Y1/Z1 by
-  default, RD/TD/ND on a rolled sheet. EDAX names no labels in its files but
-  labels the Euler axes A1, A2, A3 in its coordinate settings dialog. Everything
-  else falls back to the axes names of the frame the data lives in, the same ones
-  the map indicator shows
+- and the Euler pictogram is labelled by what the file calls the frame its Euler
+  angles refer to. An Oxford `.h5oina` states them as the orientation of the
+  crystal CS2 to the sample surface CS1 and carries `Sample Surface Direction
+  Labels` for it, X1/Y1/Z1 by default. Not `Sample Primary Direction Labels`:
+  CS0 is a sample frame the user may define on top - the rolling system of a
+  sheet, the foliation system of a layered rock - and the file relates it to CS1
+  by `Specimen Orientation Euler`, which is zero in all nine Oxford files of the
+  corpus because nobody defined one. EDAX carries no labels in its files but
+  names the Euler axes A1, A2, A3 in its coordinate settings dialog. No vendor
+  gives the *map* a reference system of its own, so that pictogram shows the axes
+  names of the frame the data lives in - the very ones the map indicator draws
 - the three IPF axes were built together the first time any of them was shown, at
   0.19 s each. They are built one at a time now, like the map tabs already were,
   which leaves the warm-up run before the first import with one axes to build

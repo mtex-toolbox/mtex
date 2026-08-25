@@ -1574,13 +1574,10 @@ classdef import_wizard < matlab.apps.AppBase
     end
 
     function names = frameAxesNames(app)
-      % The axes of the frame the map is expressed in. An Oxford file names
-      % them itself - CS0, the sample primary frame, which AZtec lets the
-      % user rename to RD/TD/ND for a rolled sheet. Otherwise the frame the
-      % data lives in answers: X/Y/Z generically, RD/TD/ND in a rolling frame.
-      names = headerAxesNames(app,'SamplePrimaryDirectionLabels');
-      if ~isempty(names), return, end
-
+      % The axes of the frame the map is expressed in. No vendor gives the
+      % map a reference system of its own, so this is the frame the data
+      % lives in - X/Y/Z generically, RD/TD/ND in a rolling frame, and the
+      % very names the map's own indicator carries, see refFrameGeometry.
       names = specimenFrame.default.axesNames;
       try
         if ~isempty(app.ebsd), names = app.ebsd.frame.axesNames; end
@@ -1590,10 +1587,12 @@ classdef import_wizard < matlab.apps.AppBase
 
     function names = eulerAxesNames(app)
       % The two vendors that name the Euler reference frame apart from the
-      % map. An Oxford file states the Euler angles as the orientation of
-      % the crystal to the sample surface CS1 and carries its axis labels -
-      % see the H5OINA specification. EDAX labels the Euler axes A1, A2, A3
-      % in its coordinate settings dialog, see EBSDReferenceFrame.
+      % map. An Oxford file states its Euler angles as the orientation of
+      % the crystal CS2 to the sample surface CS1 and carries the labels of
+      % CS1 - not those of CS0, which is a sample frame the user may define
+      % on top, a rolling system say, related to CS1 by "Specimen
+      % Orientation Euler". EDAX labels the Euler axes A1, A2, A3 in its
+      % coordinate settings dialog, see EBSDReferenceFrame.
       names = headerAxesNames(app,'SampleSurfaceDirectionLabels');
       if ~isempty(names), return, end
 
