@@ -1,7 +1,14 @@
 %% Plotting
 %
 %%
-% We start by importing some EBSD data and reconstructing some grains
+% A grain is a polygon, so plotting grains means filling each polygon with a
+% colour. Everything on this page is about where that colour comes from: the
+% phase, the mean orientation of the grain, or any number you have computed
+% for it.
+%
+% Note the difference to plotting an EBSD map, where one colour is drawn per
+% measurement. A grain map has one colour per grain, so it shows what the
+% reconstruction decided and nothing of the scatter inside a grain.
 
 % import a demo data set
 plottingConvention.default('y↑→x');
@@ -11,122 +18,132 @@ mtexdata forsterite silent
 [grains,ebsd] = calcGrains(ebsd,'minPixel',5);
 
 %% Phase maps
-% When using the <grain2d.plot.html |plot|> command without additional
-% argument the associated color is defined by color stored in the crystal
-% symmetry for each phase
+%
+% Called with no second argument, <grain2d.plot.html |plot|> colours each
+% grain by its phase, using the colour stored with the crystal symmetry.
 
 close all
 plot(grains)
 
 %%
-% Accordingly, changing the color stored in the crystal symmetry changes the
-% color in the map
+% That colour is a property of the phase and can be changed, which is the
+% simplest way to make one phase stand out.
 
 grains('Fo').CS.color = "salmon";
 plot(grains)
 
 %%
-% The color can also been specified directly by using the option
-% |FaceColor|.
+% A single grain, or any subset, can be given a colour of its own with the
+% option |'FaceColor'|. Here the largest grain is filled in grey, half
+% transparent so that the boundary underneath stays visible.
 
 % detect the largest grain
 [~,id] = max(grains.area);
 
-% plot the grain in dark black with some transparency
 hold on
 plot(grains(id),'FaceColor','darkgray','FaceAlpha',0.7)
 hold off
 
+%% Orientation maps
+%
+% Passing the mean orientations as the second argument colours every grain
+% by the direction its lattice points in, exactly as an
+% <EBSDIPFMap.html IPF map> does for the measurements. Orientations of
+% different phases are not comparable, so this is done one phase at a time.
 
-%% Orientation Maps
-% Coloring grains according to their mean orientations is very similar to
-% EBSD maps colored by orientations. The most important thing is that the
-% misorientation can only extracted from grains of the same phase.
-
-% the implicit way
-plot(grains('Fo'),grains('fo').meanOrientation)
+plot(grains('Fo'),grains('Fo').meanOrientation)
 
 %%
-% This implicit way gives no control about how the color is computed from
-% the meanorientation. When using the explicit way by defining a
-% orientation to color map
+% MTEX picks a colour key for you here and says so in the command window. To
+% decide yourself which direction the colours refer to, build the key
+% explicitly and ask it for the colours.
 
-% this defines a ipf color key
+% a colour key for the forsterite phase
 ipfKey = ipfColorKey(grains('Fo'));
 
-%%
-% we can set the inverse pole figure direction and many other properties
+% colour by which lattice direction points along x, rather than along z
+ipfKey.ipfDirection = vector3d.X;
 
-ipfKey.ipfDirection = xvector;
-
-% compute the color from the meanorientation
 color = ipfKey.orientation2color(grains('Fo').meanOrientation);
 
-% and use them for plotting
-plot(grains('fo'),color)
+plot(grains('Fo'),color)
 
-%% Plotting arbitrary properties
-% As we have seen in the previous section the |plot| command accepts as
-% second argument any list of RGB values specifying a color. Instead of RGB
-% values the second argument can also be a list of values which are then
-% transformed by a colormap into color.
-%
 %%
-% As an example we colorize the grains according to their aspect ratio.
+% The map has changed completely although the orientations have not. What
+% the colours mean is in the key, which is worth plotting beside any such
+% map.
+
+figure
+plot(ipfKey)
+
+%%
+% Red is [001], yellow is [100] and blue is [010], so a red grain in the map
+% above has its [001] axis close to the x axis of the specimen - and in the
+% figure before it, drawn with the default direction, red meant [001] close
+% to z. A colour means nothing without the key that produced it, which is why
+% <EBSDIPFMap.html IPF maps> should always be published with theirs.
+
+%% Colouring by any property
+%
+% The second argument may also be a list of numbers, one per grain, which a
+% colormap turns into colours. Any property of the grains will do - here the
+% aspect ratio, the length of the grain divided by its width.
 
 plot(grains,grains.aspectRatio)
 
 %%
-% we see that we have a very elongated grain which makes it difficult to
-% distinguish the aspect ration of the other grains. A solution for this is
-% to specify the values of the aspect ration which should mapped to the
-% top and bottom color of the colormap
+% Almost the whole map sits at the bottom of the colour range, because a
+% handful of ribbon shaped grains reach an aspect ratio of 13 and stretch it.
+% Fixing the range to the interval that matters makes the rest visible.
 
 setColorRange([1 5])
 
-%% Colorizing circular properties
-% Sometimes the property we want to display is a circular, e.g., the
-% direction of the grain elongation. In this case it is important to use a
-% circular colormap which assign the same color to high values and low
-% values. In the case of the direction of the grain elongation the angles 0
-% and 180 should get the same color since they represent the same
-% direction.
+%%
+% Now the elongated grains stand out from the equant ones, at the price that
+% the eight grains above an aspect ratio of 5 are no longer distinguishable
+% from each other. Every fixed colour range makes that trade.
+
+%% Colouring a direction
+%
+% A property that is an angle needs a colormap that closes on itself. The
+% direction of the long axis of a grain is such a property: 0 and 180 degrees
+% describe the same direction and must get the same colour, or the map shows
+% a seam where there is none.
 
 % consider only elongated grains
-elongated_grains = grains(grains.aspectRatio > 1.2);
+elongatedGrains = grains(grains.aspectRatio > 1.2);
 
-% angle of the long axis to (1 0 0)
-omega = angle(vector3d.X, elongated_grains.longAxis, grains.N);
+% angle of the long axis to the x axis of the specimen
+omega = angle(vector3d.X, elongatedGrains.longAxis, grains.N);
 
-% plot the direction
-plot(elongated_grains,omega ./ degree,'micronbar','off')
+plot(elongatedGrains,omega ./ degree,'micronbar','off')
 
-% change the default colormap to a circular one
+% a cyclic colormap
 mtexColorMap(colorcet('C2'))
-
-% display the colormap
 mtexColorbar
 
-%% Colorizing two scalar properties
-% Above we plotted the long axis of grains admitting that for low aspect
-% ratio grains, also the long axis is poorly defined. Another way to
-% overcome this situation is to desaturate the color as a function of
-% aspect ratio.
+%%
+% Grains of the same colour are aligned the same way, and green dominates
+% the map: half of the elongated grains have their long axis between 60 and
+% 105 degrees from the x axis, which is close to vertical here. The grain
+% shapes say the same thing at a glance, and a colour that clusters like
+% this is what a shape preferred orientation looks like.
+
+%% Colouring by two properties at once
 %
-% In order to do so, we first define a planar colorkey. Since we want to
-% plot the grain long axis direction, we tell the colorkey that hue-encoded
-% value is periodic. Also we can set ranges for the individual values.
+% The long axis of a nearly round grain is arbitrary, so the previous map
+% gives the same weight to a direction that is well defined and to one that
+% is not. A |planarColorKey| solves this by mapping one property to the hue
+% and a second one to the saturation:
+% direction as colour, aspect ratio as how strong that colour is.
 
-% set up the color key
+% hue from a cyclic colormap, and periodic, since the long axis is an axis
 pK = planarColorKey(colorcet('C2'));
+pK.periode = pi;
 
-% make it periodic in the first argument
-pK.periode  = pi; 
-
-% specify range for the second argument
+% aspect ratio 1 desaturates to grey, 3 and above is fully saturated
 pK.range2 = [1 3];
 
-% now we can derive color from the colorkey.
 prop1 = angle(vector3d.X, grains.longAxis, grains.N);
 prop2 = grains.aspectRatio;
 
@@ -134,9 +151,11 @@ colors = pK.property2color(prop1, prop2);
 plot(grains,colors)
 
 %%
-% Lets visualize our colorkey.
+% The round grains have faded to nearly white and only the elongated ones
+% still carry a direction, so the eye is no longer drawn to angles that mean
+% nothing. The key itself can be plotted, with the data drawn into it, so
+% that the reader can see which combinations actually occur.
 
-% define axes labels
 pK.label1 = 'long axis';
 pK.label2 = 'aspect ratio';
 
@@ -144,73 +163,94 @@ figure
 plot(pK,prop1/degree,prop2)
 
 %%
-% Similarly we can color code any combination of two scalar grain
-% properties.
+% Any pair of scalar grain properties may be combined this way.
+
+%% The measurements inside a grain
 %
-%% Plotting the orientation within a grain
-% In order to plot the orientations of EBSD data within certain grains one
-% first has to extract the EBSD data that belong to the specific grains.
+% A grain map hides the scatter within a grain by construction. To see it,
+% go back to the measurements, which the |grainId| property of the map ties
+% to the grains.
 
-% let have a look at the biggest grain
-[~,id] = max(grains.area)
+% the biggest grain
+[~,id] = max(grains.area);
 
-% and select the corresponding EBSD data
-ebsd_maxGrain = ebsd(ebsd.grainId == id);
+% the measurements inside it
+ebsdMaxGrain = ebsd(ebsd.grainId == id);
 
-% the previous command is equivalent to the more simpler 
-ebsd_maxGrain = ebsd(grains(id));
+% which is what this shorter form does as well
+ebsdMaxGrain = ebsd(grains(id));
 
 %%
+% Colouring them with the key from above puts the measurements and the grain
+% on the same colour scale.
 
-% compute the color out of the orientations
-color = ipfKey.orientation2color(ebsd_maxGrain.orientations);
+color = ipfKey.orientation2color(ebsdMaxGrain.orientations);
 
-% plot it
-plot(ebsd_maxGrain, color,'micronbar','off')
+plot(ebsdMaxGrain, color,'micronbar','off')
 
-% plot the grain boundary on top
 hold on
 plot(grains(id).boundary,'linewidth',2)
 hold off
 
-%% Visualizing directions
-% 
-% We may also visualize directions by arrows placed at the center of the
-% grains using the command <grain2d.quiver.html |quiver|>.
+%%
+% Most of these 2683 measurements are the same shade of blue, but the narrow
+% neck on the left is visibly lighter: the lattice is bent there, and the
+% measurements in it depart from the mean orientation of the grain by up to
+% 6 degrees. <GrainOrientationParameters.html Orientation Parameters> is
+% where that departure is measured rather than eyeballed.
+%
+% The white pixels scattered through the grain are the unindexed
+% measurements that |'alpha'| absorbed into it during the reconstruction:
+% they belong to the grain and have no orientation to draw. The white bay in
+% the middle is something else - the boundary runs around it, so it is not
+% part of this grain at all.
 
-% load some single phase data set
-plottingConvention.default('y↓→x')
-mtexdata csl
+%% Arrows on grains
+%
+% A direction attached to each grain is better drawn than coloured.
+% <grain2d.quiver.html |quiver|> puts one arrow per grain at its centroid.
 
-% compute and plot grains
+% load a single phase data set
+plottingConvention.default('y↓→x');
+mtexdata csl silent
+
 [grains,ebsd] = calcGrains(ebsd,'minPixel',5);
 grains = smoothBoundary(grains,5);
 plot(grains,grains.meanOrientation,'micronbar','off','figSize','large','region',[50 300 100 250])
 
-% next we want to visualize the direction of the 100 axis
+% where the [100] axis of each grain points
 dir = grains.meanOrientation * Miller(1,0,0,grains.CS);
 
-% the length of the vectors should depend on the grain diameter
-len = 0.25*grains.diameter;
-
-% arrows are plotted using the command quiver. We need to switch of auto
-% scaling of the arrow length
 hold on
-quiver(grains,len.*dir,'autoScale','off','color','black')
+quiver(grains,dir,'color','black')
 hold off
 
-%% Labeling Grains
-% In the above example the vectors are centered at the centroids of the
-% grains. We may also use the command <grain2d.text.html |text|> to display
-% an arbitrary text on top of each grain.
+%%
+% Each arrow is one [100] axis seen from above, drawn a fifth of its grain's
+% diameter long. Length therefore carries no information of its own except
+% one: an arrow that comes out short points steeply out of the plane of the
+% section, because what is drawn is its projection into that plane. Pass
+% |'noScaling'| to set the lengths yourself.
+%
+% An axis pointing into the screen would be hidden below the map, so those
+% arrows are drawn tail out, ending at the grain centre. The small dot marks
+% the centre they belong to.
 
-% plot them
+%% Labelling grains
+%
+% <grain2d.text.html |text|> writes an arbitrary string on top of each grain,
+% at the same centroid the arrows started from. Labelling every grain is
+% unreadable, so this is normally done for a selection - here the grains
+% larger than a hundred pixels, labelled with their id.
+
 plot(grains,grains.meanOrientation,'micronbar','off','region',[50 300 100 250])
 
-% only the big grains
 big_grains = grains(grains.numPixel>100);
 
-% plot on top their ids
 text(big_grains,int2str(big_grains.id))
+
+%%
+% Those ids are what <SelectingGrains.html Selecting Grains> uses to pick
+% single grains out of the map.
 
 %#ok<*NASGU>
