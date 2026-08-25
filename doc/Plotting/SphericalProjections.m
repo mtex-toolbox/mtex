@@ -1,78 +1,71 @@
 %% Spherical Projections
-%%
-plottingConvention.default('y↑→x');
-%%
-% MTEX supports four types of spherical projection which are available for
-% all spherical plot, e.g. <SO3Fun.plotPDF.html polefigure plots>,
-% <SO3Fun.plotIPDF.html inverse polefigure plots> or <SO3Fun.plotSection.html
-% ODF plots>. These are the equal area projection (Schmidt projection), the
-% equal distance projection, the stereographic projection (equal angle
-% projection), the three-dimensional projection and the flat projection.
 %
-% In order to demonstrate the different projections we start by defining a
-% model ODF.
+%%
+% A sphere cannot be flattened without distorting something, and which
+% something is given up decides what a figure may be used for. MTEX offers
+% four projections plus a three dimensional view, and they are available on
+% every spherical plot - <SO3Fun.plotPDF.html pole figures>,
+% <SO3Fun.plotIPDF.html inverse pole figures>,
+% <SO3Fun.plotSection.html ODF sections>.
+%
+% Before the projection there are two other decisions: which hemisphere is
+% drawn, and how the axes are aligned on screen.
+
+plottingConvention.default('y↑→x');
 
 cs = crystalSymmetry('321');
 odf = fibreODF(Miller(1,1,0,cs),zvector)
 
-%% Alignment of the Hemispheres
+%% Which hemisphere
 %
-% *Partial Spherical Plots*
-%
-% If an ODF has triclinic specimen symmetry its pole figures differs in
-% general on the upper hemisphere and the lower hemisphere. By
-% default MTEX plots, in this case, both hemispheres. The upper on the
-% left-hand side and the lower on the right-hand side.
+% With triclinic specimen symmetry the two hemispheres of a pole figure
+% differ, so both are drawn: the upper on the left, the lower on the right.
 
 plotPDF(odf,Miller(1,1,0,cs),'minmax')
 
 %%
-%
-% MTEX allows also to plot only the upper or the lower hemisphere by
-% passing the options |'upper'| or |'lower'|.
+% |'upper'| and |'lower'| ask for one of them alone.
 
 plotPDF(odf,Miller(1,1,0,cs),'lower')
 mtexColorbar
 
 %%
-% Due to Friedel's law measured pole figures are a superposition of the
-% upper and the lower hemisphere (since antipodal directions are
-% associated). In order to plot pole figures as a superposition of the
-% upper and lower hemisphere one has to enforce <VectorsAxes.html
-% antipodal symmetry>. This is done by the option |'antipodal'|.
+% A measured pole figure is neither. Friedel's law makes diffraction blind
+% to the difference between a direction and its opposite, so a measurement
+% is the superposition of the two hemispheres - which is what |'antipodal'|
+% produces, and what any figure compared with measured data has to use.
 
 plotPDF(odf,Miller(1,1,0,cs),'antipodal')
 mtexColorbar
 
-%% Alignment of the Coordinate Axes
+%% Alignment on screen
 %
-% The alignment of the plot on the screen is controlled by the
-% @plottingConvention. One can specify any vector to point out of the
-% screen or east, north, west or south.
+% Which specimen direction points where is a property of the reference frame
+% rather than of the plot - <AxesAlignment.html Axes Alignment> covers this
+% in full. For one figure the convention may be passed directly.
 
 how2plot = plottingConvention('z↑→y')
 
 plotPDF(odf,Miller(1,0,0,cs),'antipodal',how2plot)
 
-%% Equal Area Projection (Schmidt Projection)
+%% Equal area, the default
 %
-% Equal area projection is defined by the characteristic that it preserves
-% the spherical area. Since pole figures are defined as relative frequency
-% by area, equal area projection is the default projection in MTEX. It can
-% be set explicitly by the options |'earea'| or |'schmidt'|.
+% The equal area or Schmidt projection preserves area. A pole figure is a
+% density per unit area, so this is the projection in which the eye's
+% impression of how much of the sphere something covers is not misleading -
+% which is why it is the default. |'earea'| or |'schmidt'| ask for it
+% explicitly.
 
 plotPDF(odf,Miller(1,0,0,cs),'antipodal','projection','earea')
 
-%% Equal Distance Projection and Equal Angle (Stereographic) Projection 
+%% Equal distance and equal angle
 %
-% The equal distance projection differs from the equal area projection by
-% the characteristic that it preserves the distances of points to the
-% origin. Hence it might be a more intuitive projection if you look at
-% crystal directions. 
-% Another famous spherical projection is the
-% stereographic projection which preserves the angle between arbitrary
-% great circles. It can be chosen by setting the option |'stereo'| or
-% |'eangle'|.
+% The equal distance projection preserves the distance of a point from the
+% centre, so an angle from the pole can be read off with a ruler. The
+% stereographic or equal angle projection preserves angles between great
+% circles, which is what makes crystallographic constructions work on it.
+%
+% The three side by side, on the crystal directions of a cubic symmetry:
 
 cs = crystalSymmetry('m-3m');
 plotHKL(cs,'projection','earea','upper','grid_res',15*degree,'BackGroundColor','w')
@@ -84,22 +77,30 @@ nextAxis
 plotHKL(cs,'projection','eangle','upper','grid_res',15*degree,'BackGroundColor','w')
 mtexTitle('equal angle')
 
-%% Plain Projection
+%%
+% The same directions in all three, in visibly different places. Compare the
+% spacing of the grid circles from the centre outwards: equal distance keeps
+% it constant, equal area crowds it towards the rim, and equal angle spreads
+% it. A figure without its projection named is therefore not fully specified,
+% and mixing two of them in one comparison is a mistake that is hard to see.
+
+%% Plain projection
 %
-% *Plain* means that the polar angles theta / rho are plotted in a simple
-% rectangular plot. This projection is often chosen for ODF plots, e.g.
+% |'plain'| is not a spherical projection at all: it plots the polar angles
+% theta and rho as rectangular coordinates. Angles are then easy to read off
+% and areas are meaningless - the poles of the sphere are stretched into
+% whole edges. It is the traditional presentation for ODF sections.
 
 plot(SantaFe,'alpha','sections',18,...
   'projection','plain','contourf','FontSize',10,'silent')
 mtexColorMap white2black
 
-
-%% Three-dimensional Plots
+%% Three dimensions
 %
-% MTEX also offers a three-dimensional plot of pole figures which even
-% might be rotated freely in space. Just as on a projected plot the
-% option |'grid'| lays a spherical grid over the data, and |'grid_res'|
-% controls its spacing.
+% The alternative to projecting is not to. A three dimensional plot shows
+% the sphere as a sphere and can be rotated freely, at the price that half
+% the data is behind the other half at any moment. |'grid'| lays a spherical
+% grid over it and |'grid_res'| sets the spacing.
 
 how2plot = plottingConvention;
 how2plot.east = vector3d(9,3,3);
@@ -110,4 +111,6 @@ plotPDF(odf,Miller(1,1,0,odf.CS),'3d',how2plot,'grid','grid_res',10*degree,'noTi
 mtexColorMap LaboTeX
 
 %%
-
+% This is the plot to reach for when the question is where something is on
+% the sphere, and the one to avoid when the question is how much of it there
+% is - nothing about a perspective view preserves area.
