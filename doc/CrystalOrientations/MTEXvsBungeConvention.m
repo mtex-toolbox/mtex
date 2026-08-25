@@ -1,40 +1,53 @@
 %% MTEX vs. Bunge Convention
 %
 %%
-% For historical reasons MTEX defines orientations in a slightly different
-% way than they have been defined by Bunge. As explained in topic
-% <CrystalOrientations.html orientations> MTEX defines them as coordinate
-% transformations from the crystal reference frame into the specimen
-% reference frame. In contrast to this Bunge orientations are coordinate
-% transformations from the specimen reference frame into the crystal
-% reference frame. Lets demonstrate this by a simple example:
+% MTEX defines an orientation as the coordinate transformation from the
+% crystal frame into the specimen frame, see
+% <DefinitionAsCoordinateTransform.html Theory>. Bunge, and much of the
+% literature following him, defines it the other way round: from the
+% specimen frame into the crystal frame.
+%
+% The two are inverses of each other. That single fact explains every
+% difference in the formulas below, and the summary at the end is the list
+% to keep at hand when transcribing a formula from a paper.
+
+plottingConvention.default('y↑→x');
 
 % consider cubic symmetry
 cs = crystalSymmetry('cubic')
 
+%%
+
 % and a random orientation
 ori = orientation.rand(cs)
 
-%%
-% This is now an MTEX orientation and can be used to translate crystal
-% coordinates, i.e., Miller indices into specimen coordinates, 
+%% What Each One Transforms
+%
+% An MTEX orientation takes Miller indices to specimen coordinates.
 
 % either by multiplying from the left
 r = ori * Miller({1,0,0},cs)
+
+%%
 
 % or using the command rotate
 rotate(Miller({1,0,0},cs),ori)
 
 %%
-% A Bunge orientation is exactly the inverse of an MTEX orientation, i.e.,
+% The Bunge orientation with the same three Euler angles is its inverse,
 
 ori_Bunge = inv(ori)
 
 %%
-% The difference is not a matter of bookkeeping. Applied to a crystal, the
-% two put it in different places - the blue crystal is where the MTEX
-% orientation says it is, the orange one where the same three Euler angles
-% read as a Bunge orientation would put it.
+% and takes specimen coordinates back to Miller indices.
+
+ori_Bunge * r
+
+%%
+% The difference is not bookkeeping. Applied to a crystal, the two put it in
+% different places - the blue crystal is where the MTEX orientation says it
+% is, the orange one where the same three Euler angles read as a Bunge
+% orientation would put it.
 
 cS = crystalShape.cube(cs);
 
@@ -42,34 +55,37 @@ plot(ori * cS,'faceColor',[0.35 0.6 0.85])
 nextAxis
 plot(ori_Bunge * cS,'faceColor',[0.85 0.45 0.3])
 
-%%
-% and translates specimen coordinates into Miller indices
-ori_Bunge * r
+%% Euler Angles Are the Same
+%
+% MTEX implements Euler angles so that they agree with the Bunge Euler
+% angles of the same physical orientation. This is deliberate: the numbers
+% MTEX prints are the numbers EBSD systems, simulation packages, textbooks
+% and papers report, and no conversion is needed when reading them in or
+% writing them out.
+%
+% What is inverted is the orientation itself, not the way its angles are
+% written.
 
-%% Euler angles
+%% The Matrix Is Transposed
 %
-% Since the Euler angles are the most common way to describe orientations
-% MTEX implements them such that the Euler angles of an MTEX orientation
-% coincide with the Euler angles of a Bunge orientation. Thus the Euler
-% angles of orientations in MTEX agree with the Euler angles reported by
-% all common EBSD devices, simulation software, text books and paper.
-%
-
-%% Matrix notation
-%
-% Due to the above explained inverse relationship of orientations defined 
-% in MTEX and in Bunge convention, a matrix generated from an orientation 
-% in MTEX is the inverse, or equivalently, the transpose of the matrix in 
-% Bunge notation.
+% Since the two orientations are inverse, and a rotation matrix is
+% orthogonal, the MTEX matrix is the transpose of the Bunge matrix.
 
 ori.matrix
-ori_Bunge.matrix^(-1)
+
+%%
+
 ori_Bunge.matrix'
 
-%% Misorientations
+%%
+% The same numbers, to the last digit.
+
+max(max(abs(ori.matrix - ori_Bunge.matrix')))
+
+%% Misorientations Come Out the Same
 %
-% Since, MTEX orientations translates crystal to specimen coordinates
-% misorientations are defined by the formula
+% A misorientation transforms crystal coordinates of one grain into crystal
+% coordinates of another. With MTEX orientations that is
 
 ori1 = orientation.rand(cs);
 ori2 = orientation.rand(cs);
@@ -77,27 +93,34 @@ ori2 = orientation.rand(cs);
 mori = inv(ori1) * ori2
 
 %%
-% as they are commonly defined coordinate transformations from crystal to
-% crystal coordinates. This formula is different to the misorientation
-% formula for Bunge orientations
-
+% With Bunge orientations the formula reads differently,
 
 ori1_Bunge = inv(ori1);
 ori2_Bunge = inv(ori2);
 
-mori = ori1_Bunge * inv(ori2_Bunge)
+mori_Bunge = ori1_Bunge * inv(ori2_Bunge)
 
 %%
-% However, both formula result in exactly the same misorientation. 
-%
+% but it is the same misorientation - the two inversions cancel.
+
+angle(mori,mori_Bunge) ./ degree
+
 %% Summary
-% 
-% This list summarizes the differences between MTEX orientations and Bunge
-% orientations.
 %
-% * formulas involving orientations - invert orientation
-% * orientation Euler angles - unchanged
-% * orientation matrix - transpose matrix
-% * misorientations - unchanged
-% * misorientation Euler angles - take Euler angles of inverse misorientation
+% || orientation Euler angles || unchanged ||
+% || orientation matrix || transposed ||
+% || any formula involving an orientation || invert the orientation ||
+% || misorientations || unchanged ||
+% || misorientation Euler angles || those of the inverse misorientation ||
 %
+% The practical consequence: Euler angles may be copied between MTEX and
+% the literature without thinking, while a formula may not.
+
+%% Next
+%
+% Where misorientations are defined and what their symmetry does is
+% <MisorientationTheory.html Misorientations>. The other convention that
+% silently rotates a data set - which crystal axes the Cartesian frame is
+% tied to - is <CrystalReferenceSystem.html The Crystal Reference System>.
+
+%#ok<*NOPTS>
