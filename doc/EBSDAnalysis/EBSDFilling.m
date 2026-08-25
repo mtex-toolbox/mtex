@@ -10,9 +10,8 @@
 % because the scan was interrupted or because the map has been cropped to
 % an irregular region.
 %
-% In this section we demonstrate how the orientations at those positions
-% can be recovered by interpolating from the surrounding measurements. Two
-% things should be kept in mind:
+% The orientations at those positions can be recovered by interpolating
+% from the surrounding measurements. Two things should be kept in mind:
 %
 % * the recovered orientations are an interpolation and not a measurement
 % * only the orientations are interpolated - all other properties of the
@@ -24,8 +23,7 @@
 % <EBSDDenoising.html Denoising Orientation Maps>.
 
 %%
-% We demonstrate the filling capabilities of MTEX at the hand of an
-% orientation map of ferrite.
+% The example is an orientation map of ferrite.
 
 % import the data
 mtexdata ferrite
@@ -156,8 +154,8 @@ nnz(ebsdSub_smoothed.quality == 0)
 %
 % Data sets with many missing pixels most often appear when measuring
 % geological samples. The following data set of Forsterite contains about
-% 25 percent missing pixels. Lets start by importing the data and
-% reconstructing the grain structure.
+% 25 percent missing pixels. Importing it and reconstructing the grain
+% structure first,
 
 close all;
 plottingConvention.default('y↑→x');

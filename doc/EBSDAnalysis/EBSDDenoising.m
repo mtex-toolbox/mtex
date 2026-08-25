@@ -1,21 +1,21 @@
 %% Denoising Orientation Maps
 %
-% Orientation maps determined by EBSD or any other technique are, as all
-% experimental data, effected by measurement errors. Those measurement
-% errors can be divided into systematic errors and random errors.
-% Systematic errors mostly occur due to a bad calibration of the EBSD
-% system and require additional knowledge to be corrected. Deviations from
-% the true orientation due to noisy Kikuchi pattern or tolerances of the
-% indexing algorithm can be modeled as random errors. In this section we
-% demonstrate how random errors can be significantly reduced using
-% denoising techniques.
-%
-% Denoising orientation maps may also include filling not indexed pixels.
-% This is explained in the section <EBSDFilling.html Fill Missing Data>.
-%
 %%
-% We shall demonstrate the denoising capabilities of MTEX at the hand of an
-% orientation map of deformed Magnesium.
+% Every measured orientation is a little wrong. Part of that error is
+% systematic - a badly calibrated system turns the whole map the same way -
+% and no filter can find it, because nothing in the data says it is there.
+% The rest is random: a noisy Kikuchi pattern, the tolerance of the
+% indexing algorithm, and each measurement scattered independently of its
+% neighbours. Random error is what this page removes, by using the fact
+% that neighbouring points in a real specimen are nearly always nearly
+% equal.
+%
+% Filling in points that could not be indexed at all is a different
+% operation, described in <EBSDFilling.html Filling Missing Data>.
+%
+%% Making the noise visible
+%
+% The example is a map of deformed magnesium.
 
 % import the data
 plottingConvention.default('y↑→x');
@@ -40,10 +40,11 @@ plot(grains.boundary,'linewidth',2,'linecolor','white')
 hold off
 
 %%
-% At the first glance, the orientation data look not noisy at all. However,
-% if we look at orientation changes within the grains the noise becomes
-% clearly visible. To do so we colorize the orientation data with respect
-% to their misorientation to the grain mean orientation
+% There is no noise to be seen, and that is a property of the colour key
+% rather than of the data: a whole grain is one colour, and an error of a
+% fraction of a degree does not change that colour visibly. Subtracting the
+% grain mean orientation from every point puts what is left on a scale
+% where it can be seen.
 
 % the axisAngleColorKey colorizes misorientation according to their axis and angle
 colorKey = axisAngleColorKey;
@@ -51,36 +52,32 @@ colorKey = axisAngleColorKey;
 % we set the reference orientations as the mean orientation of each grain
 colorKey.oriRef = grains(ebsd.grainId).meanOrientation;
 
-% lets plot the result
 plot(ebsd,colorKey.orientation2color(ebsd.orientations))
 hold on
 plot(grains.boundary,'linewidth',2)
 hold off
 
 %%
-% We clearly observe some deformation gradients within the grains which are
-% superposed by random noise. MTEX comes with a whole collection of filters
-% to remove this noise. All of them are applied by the command
-% <EBSD.smooth.html |smooth|>. For practical work we recommend only the two
-% filters described next - the @halfQuadraticFilter and the @splineFilter.
-% All remaining filters are described at the end of this page and are
-% mainly of technical interest.
+% Two things are in this picture at once. The smooth gradients across the
+% larger grains are real - that is how a deformed crystal bends - and the
+% pixel to pixel speckle laid over them is not. On average a point deviates
+% from its grain mean by 0.70°, and the job of a filter is to take the
+% speckle out of that number while leaving the gradient alone.
 %
-%% The Total Variation Filter
+% All filters are applied by <EBSD.smooth.html |smooth|>. Two of them are
+% worth using in practice, and the rest of this page is about why.
 %
-% The @halfQuadraticFilter is the by far best filter for orientation maps.
-% It belongs to the class of variational filters which determine the
-% denoised orientation map as the solution of a minimization problem that
-% is simultaneously close to the original map and "smooth". The resulting
-% orientation map heavily depends on the specific definition of "smooth"
-% and on the regularization parameter which controls the trade off between
-% fitting the original data and forcing the resulting map to be smooth.
+%% The total variation filter
 %
-% In its default setting the @halfQuadraticFilter uses as definition of
-% smoothness the <https://en.wikipedia.org/wiki/Total_variation_denoising
-% total variation> functional. This functional was developed to preserve
-% subgrain boundaries. Similarly as the @medianFilter it tends to cartoon
-% like images and staircasing.
+% The @halfQuadraticFilter is a variational filter: rather than averaging a
+% window, it looks for the map that is at once close to the measurements
+% and smooth, and a parameter decides which of the two matters more. What
+% "smooth" means is the interesting part. By default it is the
+% <https://en.wikipedia.org/wiki/Total_variation_denoising total variation>,
+% which is small for a map made of flat pieces with jumps between them - so
+% the filter preserves a subgrain boundary instead of averaging across it.
+% The price is the same as for the @medianFilter: a tendency towards
+% cartoon like patches and staircases.
 
 F = halfQuadraticFilter;
 
@@ -96,15 +93,20 @@ hold on
 plot(grains.boundary,'linewidth',2)
 hold off
 
-%% The Smoothing Spline Filter
+%%
+% The speckle is gone and the gradients have survived. The average
+% deviation from the grain mean is now 0.58°, so about a sixth of the
+% scatter was noise; the remainder is the deformation, which is signal and
+% should not go anywhere.
 %
-% The @splineFilter is the filter that is used by the command
-% <EBSD.smooth.html |smooth|> if no filter is specified. It is a variational
-% filter as well, but uses as definition of smoothness the curvature of the
-% orientation map. As a consequence, the denoised images are very "round"
-% and subgrain boundaries will be smoothed away. On the positive side the
-% @splineFilter is up to now the only filter that automatically calibrates
-% the regularization parameter.
+%% The smoothing spline filter
+%
+% The @splineFilter is the one |smooth| uses when no filter is named. It is
+% variational as well, but measures smoothness by the curvature of the
+% orientation map, which makes the result round rather than faceted, and
+% smooths subgrain boundaries away with everything else. Its advantage is
+% practical: it is the only filter that calibrates its own regularization
+% parameter, so there is nothing to tune.
 
 F = splineFilter;
 
@@ -123,21 +125,26 @@ hold off
 % the smoothing parameter determined during smoothing is
 F.alpha
 
-%% Technical Details - Further Filters
+%%
+% For this map it chose about 4.6. The average deviation from the grain
+% mean, 0.59°, is essentially the same as before, but the picture is
+% rounder: the fine structure the total variation filter kept inside the
+% grains has been smoothed over.
 %
-% The remaining filters are included in MTEX mainly for completeness and
-% for comparison. In practical applications they are usually inferior to
-% the two filters described above.
+%% Technical details - further filters
 %
-% The next three filters, the @meanFilter, the @medianFilter and the
-% @KuwaharaFilter, are so called sliding window filters which consider for
-% the denoising operation only neighboring orientations within a certain
-% window.
+% The filters below are kept for comparison and for completeness. In
+% practice they are inferior to the two above, and the sections say in what
+% way.
 %
-%% The Mean Filter
+% The first three - the @meanFilter, the @medianFilter and the
+% @KuwaharaFilter - are sliding window filters: each point is replaced by
+% something computed from the points around it, and nothing else enters.
 %
-% The simplest filter to apply to orientation data is the @meanFilter which
-% replaces all orientations by the mean of all neighboring orientations.
+%% The mean filter
+%
+% The simplest of all: replace each orientation by the mean of its
+% neighbours.
 
 % define the meanFilter
 F = meanFilter;
@@ -156,9 +163,8 @@ plot(grains.boundary,'linewidth',2)
 hold off
 
 %%
-% We clearly see how the noise has been reduces. In order to further reduce
-% the noise we may increase the number of neighbors that are taken into
-% account.
+% The noise is reduced, and a larger window reduces it further - at the
+% cost of blurring everything else by the same amount.
 
 F.numNeighbours = 3;
 
@@ -174,11 +180,11 @@ hold on
 plot(grains.boundary,'linewidth',2)
 hold off
 
-%% The Median Filter
+%% The median filter
 %
-% The disadvantage of the mean filter is that is smoothes away all subgrain
-% boundaries and is quite sensitive against outliers. A more robust filter
-% which also preserves subgrain boundaries is the median filter
+% A mean is pulled by a single bad measurement and averages every subgrain
+% boundary away. A median is not and does not, which makes it the more
+% robust of the two.
 
 F = medianFilter;
 
@@ -198,13 +204,15 @@ plot(grains.boundary,'linewidth',2)
 hold off
 
 %%
-% The disadvantage of the median filter is that it leads to cartoon like
-% images which suffer from the staircase effect.
-
-%% The Kuwahara Filter
-% Another filter that was designed to be robust against outliers and does
-% not smooth away subgrain boundaries is the Kuwahara filter. However, in
-% practical applications the results are often not satisfactory.
+% What it produces instead are cartoon like patches with visible steps
+% between them - the staircase effect, which is what a median does to a
+% gentle gradient.
+%
+%% The Kuwahara filter
+%
+% Also built to survive outliers and to keep subgrain boundaries: it
+% divides the window into quadrants and takes the one that is most uniform.
+% In practice the results are rarely satisfactory.
 
 F = KuwaharaFilter;
 F.numNeighbours = 5;
@@ -221,11 +229,13 @@ hold on
 plot(grains.boundary,'linewidth',2)
 hold off
 
-%% The Infimal Convolution Filter
+%% The infimal convolution filter
 %
-% The infimal convolution filter was designed as a compromise between the
-% @splineFilter and the @halfQuadraticFilter. It is still under development
-% and its use is not recommended.
+% A compromise between the @splineFilter and the @halfQuadraticFilter: it
+% adds a second order term to the total variation, so that a linear
+% gradient survives where plain total variation would turn it into a
+% staircase, while a boundary stays sharp. It is still under development
+% and is not recommended.
 
 F = infimalConvolutionFilter;
 F.lambda = 0.01; % smoothing parameter for the gradient
@@ -242,4 +252,3 @@ plot(ebsdS,colorKey.orientation2color(ebsdS.orientations))
 hold on
 plot(grains.boundary,'linewidth',2)
 hold off
-

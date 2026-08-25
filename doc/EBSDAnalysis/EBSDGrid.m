@@ -168,8 +168,8 @@ ebsdMg = ebsd('Magnesium').gridify
 [nnz(isnan(ebsd.phaseId)), nnz(isnan(ebsdMg.phaseId))]
 
 %%
-% Either way the map is a full rectangle, which is what allows to select and
-% plot subregions of it in a very intuitive way
+% Either way the map is a full rectangle, which is what lets a subregion be
+% selected and plotted by its rows and columns
 
 plot(ebsdMg(50:100,5:100),ebsdMg(50:100,5:100).orientations)
 
@@ -307,10 +307,10 @@ gridify(EBSD(ebsdR))
 % internally, such as <EBSD.calcGrains.html |calcGrains|> or the |surf|
 % plotting backend.
 %
-% We demonstrate this on a real map, rather than a small synthetic one,
-% since the failure mode this guards against only becomes visible once the
-% map is realistically wide - a small toy grid stays safe at distortion
-% levels that already break a real, wide map.
+% The example below is a real map rather than a small synthetic one, since
+% the failure mode this guards against only becomes visible once the map is
+% realistically wide - a small toy grid stays safe at distortion levels that
+% already break a real, wide map.
 
 mtexdata small
 
