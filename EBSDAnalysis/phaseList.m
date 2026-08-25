@@ -274,6 +274,13 @@ classdef phaseList
     end
     
     function pL = set.color(pL,color)
+
+      % pL.CS cannot reach a not indexed phase - checkSinglePhase strips it
+      if ~any(pL.isIndexed)
+        id = unique(pL.phaseId(pL.phaseId > 0));
+        if isscalar(id), pL.CSList(id).color = color; return, end
+      end
+
       pL.CS.color = color;
     end
     
