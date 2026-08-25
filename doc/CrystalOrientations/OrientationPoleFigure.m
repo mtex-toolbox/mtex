@@ -34,9 +34,9 @@ plot(r)
 
 %%
 % Six points, because the trigonal group 321 has six symmetry elements and
-% each of them contributes one equivalent direction, see
-% <OrientationSymmetry.html Symmetry>. All six are the same physical
-% direction of the same crystal.
+% each contributes one crystallographically equivalent direction, see
+% <OrientationSymmetry.html Symmetry>. They are distinct specimen
+% directions belonging to the same crystal-direction family.
 
 %% The Shortcut
 %

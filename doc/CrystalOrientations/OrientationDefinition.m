@@ -42,9 +42,9 @@ M = eye(3)
 ori = orientation.byMatrix(M,cs)
 
 %%
-% The identity matrix gives the orientation in which the crystal axes are
-% aligned with the specimen axes - the reference setting from which the
-% Euler angles of every other orientation are counted.
+% The identity matrix gives the orientation in which the Cartesian crystal
+% frame is aligned with the specimen frame - the reference setting from
+% which the Euler angles of every other orientation are counted.
 
 %% Miller Indices
 %
@@ -57,11 +57,17 @@ ori = orientation.byMatrix(M,cs)
 ori = orientation.byMiller([0 1 1],[1 0 0],cs)
 
 %%
-% A pole figure confirms the reading: the $(011)$ pole sits at the centre,
-% where Z is, and the $[100]$ pole on the X axis at the rim.
+% A spherical plot confirms the reading: the $(011)$ pole sits at the
+% centre, where Z is, and the $[100]$ direction on the X axis at the rim.
 
-plotPDF(ori,[Miller(0,1,1,cs),Miller(1,0,0,cs,'uvw')],'MarkerSize',10,...
-  'figSize','small')
+rPlane = ori * Miller(0,1,1,cs);
+rDirection = ori * Miller(1,0,0,cs,'uvw');
+
+plot([rPlane,rDirection],'upper','grid','MarkerSize',10,...
+  'label',{'(011)','[100]'},'backgroundColor','w','figSize','small')
+hold on
+annotate([vector3d.X,vector3d.Z],'label',{'X','Z'},'backgroundColor','w')
+hold off
 
 %%
 % Goss and the other named textures are predefined, so this one is also
@@ -75,7 +81,9 @@ angle(ori,orientation.goss(cs)) ./ degree
 % As for rotations, uniformly distributed orientations come from |rand|,
 % which needs the symmetry as well.
 
-ori = orientation.rand(100,cs)
+ori = orientation.rand(100,cs);
+
+length(ori)
 
 %% Symmetrically Equivalent Orientations
 %
@@ -94,9 +102,10 @@ nnz(ori.symmetrise.isImproper)
 
 %%
 % Only the 24 proper ones are settings a crystal can be physically turned
-% into. The improper ones are symmetries of the lattice all the same, and
-% they matter for diffraction, where a plane and its back side cannot be
-% told apart. This is why "the angle between two orientations" is always
+% into. The improper ones remain symmetries of the lattice and matter when
+% a calculation treats opposite plane normals as equivalent, as
+% conventional diffraction does under Friedel's law. This is why "the
+% angle between two orientations" is always
 % taken as the smallest over all equivalent pairs, see
 % <OrientationSymmetry.html Symmetry>.
 

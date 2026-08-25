@@ -92,9 +92,9 @@ legend('show','interpreter','LaTeX','location','southoutside','numColumns',3,'Fo
 %% Pole Figures
 %
 % Where each component puts the major lattice planes. This is the view a
-% measured pole figure is compared against - Goss has a $(110)$ pole in the
-% centre, since its $(011)$ plane faces the sheet normal, and Cube has its
-% $(100)$ poles in the centre and on the two axes of the rim.
+% measured pole figure is compared against. For Goss, the $\{110\}$ family
+% has a pole in the centre because the $(011)$ plane faces the sheet normal.
+% Cube puts $\{100\}$ poles in the centre and on the two axes of the rim.
 
 h = Miller({1,0,0},{1,1,0},{1,1,1},{3,1,1},cs);
 
@@ -142,7 +142,7 @@ plotPDF(odf,h,'contour','lineColor','k','linewidth',2)
 hold off
 
 %%
-% What was a single point is now a spread about seven degree wide. The same
+% What was a single point is now a spread about seven degrees wide. The same
 % in the inverse pole figures,
 
 plotIPDF(odf,r)
@@ -166,3 +166,11 @@ for i = 1:length(components)
 end
 
 hold off
+
+%% Next
+%
+% <OrientationFibre.html Fibres of Orientations> follows the named fibre
+% components through orientation space. <ODFModeling.html Modeling ODFs>
+% develops the model textures introduced above.
+
+%#ok<*NOPTS>

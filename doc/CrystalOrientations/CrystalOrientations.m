@@ -2,16 +2,15 @@
 %
 %%
 % An *orientation* answers one question: how is this crystal placed in this
-% specimen? It is the rotation that takes the specimen's coordinate axes
-% onto the crystal's own, so it is the bridge between the two frames that
-% every measurement lives between - the sample sitting on the stage, and
-% the lattice inside it.
+% specimen? In MTEX it is the rotation that takes coordinates in the
+% crystal frame into coordinates in the specimen frame. It is therefore the
+% bridge between the sample sitting on the stage and the lattice inside it.
 %
 % Everything in texture analysis is built on this one idea. A texture is a
-% population of orientations. A pole figure is a projection of one. A
-% misorientation is the difference between two. Get the definition right
-% here and the rest of MTEX follows; get it wrong and every plot afterwards
-% is rotated by something you cannot find.
+% population of orientations. A pole figure shows where selected crystal
+% directions point. A misorientation is the difference between two. Get the
+% definition right here and the rest of MTEX follows; get it wrong and every
+% plot afterwards is rotated by something you cannot find.
 %
 % The most direct way to see an orientation is to draw the crystal where it
 % sits. Below is a cubic crystal at a single orientation, with the specimen

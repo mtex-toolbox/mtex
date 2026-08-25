@@ -64,10 +64,11 @@ h = Miller(1,0,0,cs);
 plotPDF(ori,h,'MarkerSize',10,'figSize','small')
 
 %%
-% Every dot is the same physical direction of the same crystal. Which of
-% them a calculation happens to produce is an accident of how the
-% orientation was written down, which is why every comparison in MTEX takes
-% all of them into account.
+% The dots are distinct specimen directions, but each comes from a member
+% of the same crystallographically equivalent direction family. Which
+% member a calculation produces depends on the representative used for the
+% orientation, so symmetry-aware comparisons take the full family into
+% account.
 
 %% Coincidences
 %

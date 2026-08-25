@@ -6,7 +6,7 @@
 % direction in the specimen, which crystal direction points along it? It is
 % the natural view when the specimen direction is the meaningful one - the
 % normal of a rolled sheet, the axis a load was applied along, the sample
-% surface an EBSD map was measured on.
+% surface normal of an EBSD map.
 
 plottingConvention.default('y↑→x');
 

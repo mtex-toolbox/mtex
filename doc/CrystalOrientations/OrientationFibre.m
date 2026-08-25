@@ -93,18 +93,18 @@ plotIPDF(f.symmetrise,r,'linewidth',3,'lineColor','orange')
 %
 % Alternatively, a fibre can also be defined by a pair of a crystal and a
 % specimen direction. In this case it consists of all orientations that
-% aligns the crystal direction parallel to the specimen direction. As an
-% example we define the fibre of all orientations such that the c-axis
-% (001) is parallel to the z-axis by
+% align the crystal direction with the specimen direction. As an example,
+% the following fibre contains all orientations for which the c-axis
+% $[001]$ is parallel to the specimen Z axis.
 
-f = fibre(Miller(0,0,1,cs),vector3d.Z)
+f = fibre(Miller(0,0,1,cs,'uvw'),vector3d.Z)
 
 plot(f,'linecolor','gold','linewidth',4,'project2FundamentalRegion','axisAngle')
 
 
 %%
-% If both directions of type Miller the fibre corresponds to all
-% misorientations which have these two direction parallel.
+% If both directions are |Miller| variables, the fibre contains all
+% misorientations that bring the two crystal directions into alignment.
 %
 % Finally, a fibre can be defined by an initial orientation |ori1| and a
 % direction |h|, i.e., all orientations |ori| of this fibre satisfy
@@ -112,9 +112,9 @@ plot(f,'linecolor','gold','linewidth',4,'project2FundamentalRegion','axisAngle')
 %   ori * h = ori1 * h
 %
 % The following code defines a fibre that passes through the cube
-% orientation and rotates about the (111) axis.
+% orientation and rotates about the $[111]$ axis.
 
-f = fibre(ori1,Miller(1,1,1,cs))
+f = fibre(ori1,Miller(1,1,1,cs,'uvw'))
 
 plot(f,'linecolor','darkred','linewidth',4,'project2FundamentalRegion','axisAngle')
 
@@ -184,4 +184,3 @@ plot(odf,fibre.eta(cs,ss),'linewidth',2)
 % Fibres of plain rotations, without a crystal symmetry, are
 % <RotationFibre.html Fibres>. Fibre ODFs and the rest of the model textures
 % are <FibreODFs.html Fibre ODFs>.
-

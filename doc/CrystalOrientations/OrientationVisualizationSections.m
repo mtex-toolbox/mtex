@@ -21,9 +21,11 @@ ori = orientation.rand(100,cs,ss)
 plotSection(ori,'phi2')
 
 %%
-% The points scatter evenly here because the orientations are random. Real
-% textures show up as spots or as lines running through several sections -
-% the classical rolling fibres of cubic metals are read exactly this way,
+% The points have no preferred orientation, but they are not uniform in the
+% rectangular Euler coordinates: the volume element contains
+% $\sin\Phi$, so points thin out near $\Phi=0$. Real textures add structure
+% on top of that baseline, as spots or lines running through several
+% sections. The classical rolling fibres of cubic metals are read this way,
 % see <EulerAngleSections.html Euler Angle Sections>.
 
 %% Sigma Sections

@@ -39,9 +39,9 @@ plotPDF(ori,Miller({0,0,0,1},{1,0,-1,0},cs))
 %% Two Conventions to Check Before Trusting the Result
 %
 % A file of Euler angles does not say which convention produced it, and
-% reading it in the wrong one is silent - the orientations are simply all
-% wrong, by a fixed transformation. Two questions have to be answered from
-% outside the file:
+% reading it in the wrong one fails silently: it produces valid-looking but
+% different orientations. Two questions have to be answered from outside
+% the file:
 %
 % * *Which Euler angle convention?* |orientation.load| reads Bunge angles.
 %   Other conventions are converted with

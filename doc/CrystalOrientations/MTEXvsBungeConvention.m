@@ -113,8 +113,10 @@ angle(mori,mori_Bunge) ./ degree
 % || misorientations || unchanged ||
 % || misorientation Euler angles || those of the inverse misorientation ||
 %
-% The practical consequence: Euler angles may be copied between MTEX and
-% the literature without thinking, while a formula may not.
+% The practical consequence: Euler angles may be copied when the source
+% uses the Bunge convention and the same crystal/specimen frames. A formula
+% written for the opposite coordinate-transform direction still has to be
+% translated.
 
 %% Next
 %
