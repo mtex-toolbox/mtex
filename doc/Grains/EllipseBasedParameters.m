@@ -1,23 +1,25 @@
 %% Ellipse Based Shape Parameters
 %
 %%
-% In this section we discuss geometric properties of grains that are
-% related to ellipses fitted to the grains. Most importantly these are the
-% centroid |c|, the long axis |a| and the short axis |b| that are computed
-% by the command <grain2d.fitEllipse.html |[c,a,b] = grains.fitEllipse|>.
-% Based on these quantities the <grain2d.aspectRatio.html |aspectRatio|> is
-% defined as the quotient |a/b| between long and short axis.
+% Fitting an ellipse to a grain replaces an outline of hundreds of vertices
+% by four numbers: where the grain sits, how long it is, how wide, and which
+% way it points. Almost every statement about grain shape fabric is made in
+% those terms, and this page is about how to compute them and what they do
+% and do not capture.
 %
-% In order to demonstrate these properties we start by reconstructing the
-% grain structure from a sample EBSD data set.
+% The command is <grain2d.fitEllipse.html |[c,a,b] = grains.fitEllipse|>,
+% returning the centroid |c| and the long and short half axes |a| and |b| as
+% vectors. Their quotient is the
+% <grain2d.aspectRatio.html |aspectRatio|>.
 
 % load sample EBSD data set
 plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
-% reconstruct grains and smooth them 
+% reconstruct grains and smooth them
 [grains, ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',10);
 
+% a grain cut off by the edge of the map has no shape of its own
 grains(grains.isBoundary) = [];
 
 grains = smoothBoundary(grains('indexed'),10,'moveTriplePoints');
@@ -25,36 +27,29 @@ grains = smoothBoundary(grains('indexed'),10,'moveTriplePoints');
 % plot the grains
 plot(grains,'lineWidth',2)
 
-%% Fit Ellipses
+%% Fitting ellipses
 %
-% The basic command for fitting ellipses is <grain2d.fitEllipse
-% |fitEllipse|>
+% Here are the fitted ellipses of the larger grains, drawn on top of the map.
 
 [c,a,b] = grains(grains.numPixel>200).fitEllipse;
 
 plotEllipse(c,a,b,'lineColor','w','linewidth',2)
 
 %%
-% The returned variable |c| is the centroid of the grains, |a| and |b| are
-% of type |@vector3d| and are longest and shortest half axes. Note, that
-% the ellipses are scaled such that the area of the ellipse coincides with
-% the actual grain area. Alternatively, one can also scale the ellipse to
-% fit the boundary length by using the option |boundary|.
+% Each ellipse has the same area as its grain and the same second moments,
+% so it sits where the grain's mass sits and points the way the grain is
+% drawn out. It says nothing about lobes and inlets - fit an ellipse to a
+% clover leaf and you get a circle. Use |'boundary'| to scale the ellipse to
+% the perimeter of the grain instead of its area.
+
+%% Long and short axes
 %
-%% Long and Short Axes
-%
-% The direction of the long and the short axis of the fitted ellipse can also
-% be obtained by the commands <grain2d.longAxis.html |grains.longAxis|> and
-% <grain2d.shortAxis.html |grains.shortAxis|>. These directions are only
-% well defined if the fitted ellipse is not to close to a perfect circle. A
-% measure for how distinct the ellipse is from a perfect circle is the
-% <grain2d.aspectRatio.html aspect ratio> which is defined as the quotient
-% $a/b$ between the longest and the shortest axis. For a perfect circle
-% the aspect ratio is $1$ and increases to infinity when the ellipse becomes
-% more and more elongated.
-%
-% Lets colorize the grains by their aspect ratio and plot on top the long
-% axis directions:
+% The directions alone are available as
+% <grain2d.longAxis.html |grains.longAxis|> and
+% <grain2d.shortAxis.html |grains.shortAxis|>. They are well defined only
+% when the ellipse is far enough from a circle, and the aspect ratio is what
+% says how far that is: 1 for a circle, growing without bound as the ellipse
+% is drawn out.
 
 % visualize the aspect ratio
 plot(grains,grains.aspectRatio,'linewidth',2,'micronbar','off')
@@ -66,23 +61,30 @@ hold on
 quiver(grains,grains.longAxis,'Color','white')
 hold off
 
+%%
+% Every grain gets an arrow of the same length, including the round ones
+% whose direction means nothing. Reading the two together - only the arrows
+% in the yellow grains - is what the weighting in the next section does
+% arithmetically.
+
 %% Shape preferred orientation
 %
-% If we look at grains, we might wonder if there is a characteristic
-% difference in the grain shape fabric between e.g. Forsterite and
-% Enstatite. In contrast to crystal preferred orientations which which
-% describe on the alignment of the atom lattices the shape preferred
-% orientation (SPO) describes the alignment of the grains by shape in the
-% bulk fabric. 
+% A crystal preferred orientation is an alignment of the lattices. A shape
+% preferred orientation, or SPO, is an alignment of the grains as bodies,
+% independent of what their lattices do. Both can occur without the other:
+% a deformed rock usually has both, a sediment of flat mica flakes has a
+% strong SPO and no CPO at all.
 %
-% *Long Axis Distribution*
-% 
-% The most direct way to analyze shape preferred orientations are rose
-% diagrams of the distribution of the grain long axes. For those diagrams
-% it is useful to weight the long axis by the grain area such that larger
-% grains have a bigger impact on the distribution and by the aspect ratio
-% as for grains with a small aspect ratio the long axis is not so well
-% defined.
+% The question a rose diagram answers is whether the long axes of the grains
+% agree with each other, and here whether the answer differs between two
+% phases of the same rock.
+%
+% *Long axis distribution*
+%
+% A histogram of the long axis directions, one per phase. Each grain is
+% weighted by its area, so that large grains count for more than small ones,
+% and by |aspectRatio - 1|, so that a grain whose long axis is barely defined
+% contributes almost nothing.
 
 numBin = 50;
 
@@ -96,10 +98,10 @@ weights = grains('enstatite').area .* (grains('enstatite').aspectRatio - 1);
 histogram(grains('enstatite').longAxis,numBin,'weights',weights)
 title('Enstatite')
 
-%% 
-% Instead of the histogram we may also fit a circular density distribution
-% to the to the long axes using the command <calcDensity.html
-% |calcDensity|>.
+%%
+% Instead of binning the directions we may fit a density to them with
+% <calcDensity.html |calcDensity|>. Here the weight is the length of the
+% long axis, which the |longAxis| property carries in its norm.
 
 tdfForsterite = calcDensity(grains('forsterite').longAxis,...
   'weights',norm(grains('forsterite').longAxis));
@@ -108,9 +110,9 @@ tdfEnstatite = calcDensity(grains('enstatite').longAxis,...
   'weights',norm(grains('enstatite').longAxis));
 
 %%
-% Since the input was of type |@vector3d|, the result is a spherical
-% function |@S2FunHarmonic|. We can visualize a section using
-% <S2Fun.plotSection.html| plotSection|>.
+% The input was a list of vectors, so the result is a function on the sphere,
+% an |@S2FunHarmonic|. The long axes all lie in the plane of the map, so the
+% section through that plane is what we look at.
 
 close all
 plotSection(tdfForsterite, vector3d.Z, 'linewidth', 3)
@@ -119,9 +121,9 @@ plotSection(tdfEnstatite, vector3d.Z, 'linewidth', 3)
 hold off
 
 %%
-% Alternatively, since all vectors are within the plane, only one angle is
-% relevant, one can also compute an |@S1Fun| using |vector3d.rho| and
-% <calcDensity.html|calcDensity|> with the option |'periodic'|.
+% Since only one angle is in play, the honest object is a function on the
+% circle rather than on the sphere. |calcDensity| returns an |@S1Fun| when
+% given the angles |rho| and the option |'periodic'|.
 
 tdfForsterite = calcDensity(grains('forsterite').longAxis.rho,...
   'weights',norm(grains('forsterite').longAxis), ...
@@ -139,23 +141,23 @@ hold off
 mtexTitle('long axes')
 legend('Forsterite','Enstatite','Location','southoutside','numColumns',2)
 
-% we have to set the plotting convention manually
+% the plot has to be told which way the specimen is oriented
 setView(ebsd.how2plot)
 
-
-%% *Shortest Caliper Distribution*
+%%
+% Both curves have their maximum in the same place, at 74 degrees for
+% forsterite and 79 for enstatite, so as far as the long axes go the two
+% phases share one fabric rather than each having its own.
 %
-% Alternatively, we may wonder if the common long axis of grains is
-% suitably represented by the direction normal to the shortest caliper of
-% the grains. This can particularly be the case for aligned rectangular
-% particles where the long axes often switch between the diagonals of the
-% particle. The <grain2d.caliper.html |caliper|> or Feret of grains represents the
-% projection lengths of grains in relation to a projection direction. With
-% the option |'shortestPerp'|, the function returns the normal to the
-% projection direction with the shortest projection length of a grain. In
-% order to plot the result we could use a <vector3d.histogram.html
-% |histogram|>, compute a density function or use <calcTDF.html |calcTDF|>
-% with a list of angles and a list of weights or lengths as input.
+% *Shortest caliper distribution*
+%
+% The long axis of an ellipse is not the only way to say which way a grain
+% points, and for some shapes it is a poor one: for aligned rectangles the
+% long axis of the fitted ellipse jumps between the two diagonals. The
+% direction in which a grain is thinnest is more stable. The
+% <grain2d.caliper.html |caliper|>, or Feret diameter, is the width of a
+% grain seen from a given direction, and the option |'shortestPerp'| returns
+% the normal to the direction in which that width is smallest.
 
 cPerpF = caliper(grains('fo'),'shortestPerp');
 cPerpE = caliper(grains('en'),'shortestPerp');
@@ -173,10 +175,14 @@ mtexTitle('perpendicular to short axes')
 legend('Forsterite','Enstatite','Location','southoutside','numColumns',2)
 setView(ebsd.how2plot)
 
-
 %%
-% If we consider the function a little to rough, we can smooth the function
-% using a kernel.
+% The maximum sits at 74 degrees for forsterite, exactly where the long axes
+% put it, and at 82 for enstatite. Two different definitions of which way a
+% grain points agree on the fabric, which is the reassuring outcome.
+%
+% The curve is rougher, because a caliper direction is decided by a few
+% extreme points of the outline rather than by the whole of it. Convolving
+% with a kernel smooths it.
 
 psi = S1DeLaValleePoussinKernel('halfwidth',10*degree)
 
@@ -191,18 +197,15 @@ mtexTitle('perpendicular to short axes')
 legend('Forsterite','Enstatite','Location','southoutside','numColumns',2)
 setView(ebsd.how2plot)
 
-%% *SPO defined by grain boundary segments*
+%%
+% *SPO from the boundary segments*
 %
-% Best fit ellipses are always symmetric and the projection
-% function of an entire grain always only consider the convex hull. 
-% Grain shape fabrics can also be characterized by a rose diagram of the 
-% directions of grain boundary segments which can consider the
-% entire shape of the grain defined by the grain boundary segments but also
-% works for non fully enclosed shapes i.e. just a special selection of
-% grains. Here, we can weight each <grainBoundary.grainBoundary.html| direction |>
-% of a grain boundary by its <grainBoundary.segLength.html| segment length|>.
-% 
-% Let's compare different types of boundaries
+% Both measures so far describe a grain by one direction, and both need
+% whole grains. Asking instead which way the boundary segments run uses the
+% entire outline, concave parts included, and works on any selection of
+% boundaries - the boundaries between two particular phases, for instance.
+% Each segment direction is weighted by its
+% <grainBoundary.segLength.html |segLength|>.
 
 gbfun_fofo = calcDensity(grains.boundary('fo','fo').direction.rho, ...
     'weights',grains.boundary('fo','fo').segLength,'periodic','antipodal');
@@ -214,7 +217,6 @@ gbfun_enen = calcDensity(grains.boundary('en','en').direction.rho, ...
 plot(gbfun_fofo,'displayName','Forsterite-Forsterite','linewidth',2);
 hold on
 plot(gbfun_foen,'displayName','Forsterite-Enstatite','linewidth',2);
-hold on
 plot(gbfun_enen,'displayName','Enstatite-Enstatite','linewidth',2);
 hold off
 
@@ -222,21 +224,23 @@ legend('Location','eastoutside','numColumns',1)
 
 setView(ebsd.how2plot)
 
-%% Characteristic Shape
+%%
+% The forsterite-forsterite curve peaks at 75 degrees, agreeing with the two
+% measures before it, and then almost reaches the same value again at
+% exactly 90 degrees. That second peak is the measurement grid showing
+% through: a boundary segment runs between two measurement points, so before
+% smoothing every segment is either horizontal or vertical. Ten smoothing
+% iterations removed most of it and not all. Peaks at exactly 0 and 90
+% degrees are the thing to distrust here.
+
+%% Characteristic shape
 %
-% Note that this distribution is very prone to inherit artifacts based on
-% the fact that most EBSD maps are sampled on a regular grid. We tried to
-% overcome this problem by heavily smoothing the grain boundary. However,
-% if you recognize little peaks at 0 and 90 degree, they are most likely
-% related to this sampling artifact.
-%
-% If we just add up all the individual boundary elements of the rose
-% diagram in order of increasing angles, we derive the characteristic
-% shape. It can be regarded as to represent the average grain shape. The <
-% grainBoundary.characteristicShape.html |characteristicShape|>does not
-% require entire grains as input but works with a list of
-% <BoundarySelect.html grain boundaries>. Many operations such as
-% |aspectRatio| or |longAxis| also work on the characteristic shape.
+% Laying all the boundary segments of a phase end to end, sorted by their
+% direction, closes into a single polygon: the characteristic shape, an
+% average grain outline for that phase.
+% <grainBoundary.characteristicShape.html |characteristicShape|> takes a list
+% of <BoundarySelect.html boundaries> rather than whole grains, and the
+% result answers to |aspectRatio| and |longAxis| like a grain does.
 
 cshapeF = characteristicShape(grains('F').boundary);
 cshapeE = characteristicShape(grains('E').boundary);
@@ -248,7 +252,15 @@ plot(cshapeE, 'linewidth',2);
 hold off
 legend('Forsterite','Enstatite','Location','eastoutside')
 
+%%
+% The two outlines are elongated the same way, which is the same conclusion
+% the rose diagrams reached, now in the shape of a grain.
+
+[cshapeF.aspectRatio cshapeE.aspectRatio]
 
 %%
-% We may wonder if these results are significantly different or not
-% TODO: get deviation from an ellipse etc
+% Whether a difference between two such shapes is more than noise is not
+% something these numbers answer on their own. With one map per specimen
+% there is one measurement of each, and the scatter to compare it against
+% has to come from somewhere else - several maps, or a subdivision of the
+% one map into regions.
