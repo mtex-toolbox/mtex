@@ -1,12 +1,18 @@
 %% Twinning Analysis
 %
 %%
-% In this section we consider the analysis of twining. Therefore lets start
-% by importing some Magnesium data and reconstructing the grain structure.
+% A twin is a part of a crystal that has taken up a mirrored orientation
+% relative to the rest, along a plane the lattice allows. Twins form in
+% magnesium and other hexagonal metals whenever the load cannot be
+% accommodated by slip alone, so counting them is one way of reading what
+% happened to a specimen.
+%
+% This page finds the twin relationship in a map rather than assuming it,
+% then uses it to pick out the twin boundaries.
 
 % load some example data
 plottingConvention.default('y↑→x');
-mtexdata twins
+mtexdata twins silent
 
 % segment grains
 [grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',3);
@@ -21,60 +27,58 @@ plot(grains,grains.meanOrientation)
 CS = grains.CS;
 
 %%
-% Next we extract the grain boundaries and save them to a separate variable
+% The lamellae crossing the larger grains are the twins - the map shows them
+% before any analysis. What follows puts a number on the relationship they
+% have to their host.
 
 gB = grains.boundary
 
 %%
-% The output tells us that we have 3219 Magnesium to Magnesium boundary
-% segments and 606 boundary segments where the grains are cut by the
-% scanning boundary. To restrict the grain boundaries to a specific phase
-% transition you shall do
+% Of these segments, some are boundaries against the edge of the scan, where
+% a grain is cut off and has no neighbour. Only the magnesium to magnesium
+% segments carry a misorientation.
 
 gB_MgMg = gB('Magnesium','Magnesium')
 
-%% Properties of grain boundaries
+%% The misorientation angles
 %
-% A variable of type grain boundary contains the following properties
-%
-% * misorientation
-% * direction
-% * segLength
-%
-% These can be used to colorize the grain boundaries. By the following
-% command, we plot the grain boundaries colorized by the misorientation
-% angle
+% Colouring the boundaries by their misorientation angle already separates
+% two populations.
 
 plot(gB_MgMg,gB_MgMg.misorientation.angle./degree,'linewidth',2)
 mtexColorbar
 
 %%
-% We observe that we have many grain boundaries with misorientation angle
-% larger than 80 degree. In order to investigate the distribution of
-% misorientation angles further we have the look at a misorientation angle
-% histogram.
+% A histogram makes the split explicit.
 
 close all
 histogram(gB_MgMg.misorientation.angle./degree,40)
 xlabel('misorientation angle (degree)')
 
 %%
-% Lets analyze the misorientations corresponding to the peak around 86
-% degree in more detail. Therefore, we consider only those misorientations
-% with misorientation angle between 85 and 87 degree
+% One sharp peak just below 90 degrees holds a third of the segments between
+% 85 and 87 degrees alone, and the rest are spread thinly over everything
+% else. A peak that sharp is not
+% something a random distribution produces: it is one orientation
+% relationship, repeated across the map.
+
+%% Identifying the relationship
+%
+% Take the misorientations in the peak and ask what they are.
 
 ind = gB_MgMg.misorientation.angle>85*degree & gB_MgMg.misorientation.angle<87*degree;
 mori = gB_MgMg.misorientation(ind);
 
 %%
-% and observe that when plotted in axis angle domain they form a strong
-% cluster close to one of the corners of the domain.
+% In the axis angle domain they form a tight cluster in one corner, rather
+% than a spread - one relationship, not a family of them.
 
 scatter(mori)
 
 %%
-% We may determine the center of the cluster and check whether it is close
-% to some special orientation relation ship
+% The centre of that cluster is a single misorientation, and
+% <orientation.round2Miller.html |round2Miller|> reports which crystal
+% directions it maps onto each other.
 
 % determine the mean of the cluster
 mori_mean = mean(mori,'robust')
@@ -83,15 +87,14 @@ mori_mean = mean(mori,'robust')
 round2Miller(mori_mean)
 
 %%
-% Bases on the output above we may now define the special orientation
-% relationship as
+% Those indices define the relationship exactly, without the rounding the
+% measured mean carries.
 
 twinning = orientation.map(Miller(1,-1,0,1,CS),Miller(1,0,-1,-1,CS),...
   Miller(0,1,-1,1,CS,'uvw'),Miller(1,-1,0,1,CS,'uvw'))
 
 %%
-% Considering the disorientation angle we observe that it is 86.3 degree
-% with respect to the axis (-1210)
+% As an axis and an angle it is 86.3 degrees about the (11-20) axis.
 
 % the rotational axis
 round(twinning.axis)
@@ -99,22 +102,28 @@ round(twinning.axis)
 % the rotational angle
 twinning.angle / degree
 
-%% 
-% However, remembering that twinning refers to rotations about 180 degrees
-% we may ask for the symmetrically equivalent misorientation with the
-% maximum misorientation angle. This can be computed using the option
-% |'max'|
+%%
+% That is the disorientation, the representative with the smallest angle.
+% But a twin is a rotation by 180 degrees about the twin axis, and that
+% description is among the symmetrically equivalent ones. Asking for the
+% equivalent with the *largest* angle brings it out.
 
 angle(twinning,'max')/degree
 
-%% 
-% The corresponding rotational axis is 
+%%
+% And its axis is the twin axis:
 
 v = round(Miller(axis(twinning,'max'),'UVTW'))
 
 %%
-% Next, we check for each boundary segment whether it is a twinning boundary,
-% i.e., whether boundary misorientation is close to the twinning.
+% Both descriptions are the same misorientation. Which one appears depends
+% only on which representative is chosen, and it is worth knowing that the
+% 86.3 degrees a program reports and the 180 degrees a textbook quotes are
+% not in conflict.
+
+%% Selecting the twin boundaries
+%
+% With the relationship in hand, every segment can be tested against it.
 
 % restrict to twinnings with threshold 5 degree
 isTwinning = angle(gB_MgMg.misorientation,twinning) < 5*degree;
@@ -122,13 +131,16 @@ twinBoundary = gB_MgMg(isTwinning)
 
 % plot the twinning boundaries
 plot(grains,grains.meanOrientation)
-%plot(ebsd('indexed'),ebsd('indexed').orientations)
 hold on
-%plot(gB_MgMg,angle(gB_MgMg.misorientation,twinning),'linewidth',4)
 plot(twinBoundary,'linecolor','w','linewidth',4,'displayName','twin boundary')
 hold off
 
 %%
-% A common next step is to reconstruct the grain structure parent to
-% twinning by merging the twinned grains. This is explained in detail in
-% the section <GrainMerge.html Merging Grains>.
+% 1406 of the 2696 magnesium to magnesium segments pass the test, and the
+% white lines fall exactly on the lamellae the first figure showed -
+% which is the check that the relationship found from the data is the one
+% actually present.
+%
+% The next step is usually to put the parent grains back together by merging
+% across these boundaries, which is described in
+% <GrainMerge.html Merging Grains>.
