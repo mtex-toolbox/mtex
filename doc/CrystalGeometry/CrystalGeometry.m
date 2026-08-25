@@ -1,15 +1,18 @@
 %% Crystal Geometry
 %
 %%
-% A crystal structure repeats a motif at the translation points of a
-% lattice. Three related descriptions determine how MTEX computes with that
+% A lattice basis is a set of three vectors whose integer combinations
+% generate all translation points. A crystal structure repeats a motif at
+% those points.
+%
+% Three related descriptions determine how MTEX computes with the
 % structure: the lattice metric, the crystal frame, and the crystal
 % symmetry.
 %
 % The *lattice metric* gives the lengths and angles of the lattice basis. A
 % *crystal frame* is the Cartesian reference frame fixed to that basis. A
 % *symmetry* is the point group under which crystal data are invariant.
-% MTEX keeps all three in a
+% MTEX represents all three together in a
 % <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|> object, but they
 % are not interchangeable.
 %
@@ -29,7 +32,10 @@ plottingConvention.default('y↑→x');
 % compared.
 %
 % The indices $[111]$ select one direction relative to the named lattice
-% axes. Symmetry associates it with seven other directions. Together the
+% axes. A <Miller.Miller.html |Miller|> object denotes this one indexed
+% vector, not its whole symmetry family.
+%
+% Symmetry associates $[111]$ with seven other directions. Together the
 % eight are the $\langle111\rangle$ family for |m-3m|.
 
 cs = crystalSymmetry('m-3m');
@@ -39,7 +45,8 @@ family111 = d111.symmetrise('unique')
 %%
 % The output lists eight distinct directed members. A calculation must be
 % explicit about whether it uses the indexed direction or this complete
-% family.
+% family. Opposite members remain different directed vectors unless the
+% calculation explicitly requests antipodal equivalence.
 
 plot(family111,'labeled','grid','backgroundColor','w')
 
@@ -63,9 +70,10 @@ plot(family111,'labeled','grid','backgroundColor','w')
 % Cartesian axes. Two data sources can therefore use the same point group
 % and metric but express their data in differently aligned crystal frames.
 %
-% A *plotting convention* only states how a reference frame is laid out on
-% screen. Changing it moves a drawing; it does not repair a wrong crystal
-% frame or rotate the physical crystal.
+% A *plotting convention* states how a reference frame is laid out on
+% screen. Importers may also use that layout as a relation between frames.
+% Changing only the plotting convention moves a drawing; it does not repair
+% a wrong crystal frame or rotate the physical crystal.
 
 %% Directions and Planes Use Dual Bases
 %
@@ -77,18 +85,23 @@ plot(family111,'labeled','grid','backgroundColor','w')
 % the $(111)$ plane. Cubic geometry is therefore a bad place to learn the
 % difference. In a monoclinic lattice they are not generally perpendicular,
 % and confusing the two silently gives the wrong answer.
+%
+% In the schematic, red points mark lattice translations and the blue motif
+% repeats with them. Notice that the direct axis $\vec a$ and reciprocal axis
+% $\vec a^*$ are not parallel.
+%
+% <<latticeReciprocalBasis.png>>
 
 %% Point Groups, Space Groups, and Laue Groups
 %
-% Three classifications occur throughout crystallography. A *point group*
-% contains symmetry operations that leave at least one point fixed, such as
-% rotations, mirrors, and inversion. There are 32 crystallographic point
-% groups.
+% Three classifications occur throughout crystallography. The operations in
+% a *point group* share a fixed point and may include rotations, mirrors, and
+% inversion. There are 32 crystallographic point-group types.
 %
 % A *space group* also contains translations and operations with
 % translational parts, such as screw rotations and glide reflections. There
 % are 230 space-group types. A *Laue group* is the point group with inversion
-% added, and there are 11 Laue groups.
+% added, and there are 11 Laue classes.
 %
 % Under Friedel's law, conventional diffraction intensities cannot
 % distinguish a reflection from its opposite. Diffraction symmetry is
@@ -97,8 +110,8 @@ plot(family111,'labeled','grid','backgroundColor','w')
 %
 % MTEX stores point groups, and accepts a space-group symbol or number by
 % reducing it to the corresponding point group. A |crystalSymmetry| does not
-% store an atomic motif, structure factors, or the translational parts of a
-% space group.
+% store translational centring, screw or glide components, an atomic motif,
+% or structure factors.
 
 %% Follow the Chapter
 %
@@ -109,9 +122,12 @@ plot(family111,'labeled','grid','backgroundColor','w')
 % <CrystalDirections.html Miller Indices> introduces direct-lattice
 % directions and reciprocal-lattice plane normals.
 % <LatticeMetric.html Lattice Metric and Plane Geometry> adds the unit cell,
-% reciprocal basis, physical lengths, and interplanar spacings.
+% reciprocal basis, the constraints of the seven crystal systems, physical
+% lengths, and interplanar spacings.
 % <CrystalOperations.html Operations> then develops symmetry orbits,
 % multiplicities, angles, incidence tests, and zone axes.
+% Its |'noSymmetry'| option is the one to reach for when an angle looks
+% smaller than the geometry you intended.
 %
 % Two pages separate conventions that are easily confused. A point group
 % says which operations exist; it does not say how lattice axes are embedded
@@ -125,8 +141,13 @@ plot(family111,'labeled','grid','backgroundColor','w')
 %
 % <CrystalShapes.html Crystal Shapes> and
 % <CrystalShapeSmorf.html Advanced Crystal Shapes> construct idealized
-% crystal habits. MTEX also uses these polyhedra as orientation glyphs,
-% which provide a direct way to see how a crystal is placed.
+% crystal habits. MTEX also uses these polyhedra as orientation glyphs.
+% Rotating such a glyph is the most direct way to see what an orientation
+% means: how a crystal is placed in the specimen.
+%
+% Constructing a shape requires only the Miller-index ideas introduced in
+% this chapter. The examples that place shapes as orientation glyphs assume
+% <OrientationDefinition.html Orientations>, which follows this chapter.
 %
 % <FundamentalSector.html Fundamental Sector> is the counterpart of the
 % opening figure. Since symmetry makes many directions equivalent, one patch
@@ -156,6 +177,11 @@ plot(family111,'labeled','grid','backgroundColor','w')
 % <https://doi.org/10.1107/97809553602060000930 Point groups and crystal
 % classes>, _International Tables for Crystallography A_, ch. 3.2, 2016,
 % defines the point-group classification and notation used here.
+% * B. Souvignier,
+% <https://doi.org/10.1107/97809553602060000921 A general introduction to
+% space groups>, _International Tables for Crystallography A_, ch. 1.3,
+% 2016, relates lattices, metrics, point groups, space groups, crystal
+% systems, and Bravais types.
 % * C. Hammond,
 % <https://doi.org/10.1093/acprof:oso/9780198738671.001.0001 The Basics of
 % Crystallography and Diffraction>, 4th ed., Oxford University Press, 2015,
