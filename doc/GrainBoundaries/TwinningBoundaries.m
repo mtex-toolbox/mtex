@@ -56,11 +56,10 @@ histogram(gB_MgMg.misorientation.angle./degree,40)
 xlabel('misorientation angle (degree)')
 
 %%
-% One sharp peak just below 90 degrees holds a third of the segments between
-% 85 and 87 degrees alone, and the rest are spread thinly over everything
-% else. A peak that sharp is not
-% something a random distribution produces: it is one orientation
-% relationship, repeated across the map.
+% One sharp peak just below 90 degrees dominates: a third of all segments
+% lie between 85 and 87 degrees alone, and the rest are spread thinly over
+% everything else. A peak that sharp is not something a random distribution
+% produces. It is one orientation relationship, repeated across the map.
 
 %% Identifying the relationship
 %
