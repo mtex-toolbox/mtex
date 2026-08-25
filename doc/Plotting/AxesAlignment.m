@@ -73,9 +73,11 @@ plot(v2,'label','v_2')
 
 %% Named Reference Frames
 %
-% Frames have an identity and named axes. The frame of the instrument is
+% Frames have an identity and named axes. The frame an Oxford instrument
+% states its Euler angles in is
 % <specimenFrame.specimenFrame.html |specimenFrame.measurement|> with the
-% axes |X1|, |Y1|, |Z1| in Oxford notation. For rolled sheets the frame
+% axes |X1|, |Y1|, |Z1| in Oxford notation - the sample surface CS1. For
+% rolled sheets the frame
 % <specimenFrame.specimenFrame.html |specimenFrame.rolling|> names its axes
 % |RD|, |TD|, |ND| and comes with the typical rolling geometry
 % convention, RD to the north and TD to the west
@@ -115,10 +117,11 @@ plot(v1,'upper','label','v_1','noLabel')
 %% Imported Data
 %
 % Imported data follows the session convention like everything else - a
-% file does not decide how the rest of your session is drawn. What an
-% import may do is state *which frame* the data lives in: data from an
-% Oxford instrument lands in |specimenFrame.measurement|, whose axes appear
-% as |X1|, |Y1|, |Z1| in the display of the object.
+% file does not decide how the rest of your session is drawn, and no vendor
+% gives the map a reference system of its own, so an import lands in the
+% generic specimen frame with the axes |X|, |Y|, |Z|. Move it into a frame
+% that names its axes - |ebsd.frame = specimenFrame.rolling| - when you know
+% what the directions of your specimen are.
 
 plottingConvention.default('y↑→x');
 mtexdata dubna

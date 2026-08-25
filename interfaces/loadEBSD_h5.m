@@ -238,14 +238,9 @@ if check_option(varargin,{'setting','EulerCorrection'}) || ...
   ebsd = applyEulerCorrectionTable(ebsd,ext,varargin{:});
 end
 
-% an Oxford file states its data in the sample frame CS1 - the map lives
-% in the measurement frame with the axes X1, Y1, Z1
-if startsWith(string(Conf.settings.name),"Oxford","IgnoreCase",true)
-  fr = specimenFrame.measurement;
-  pC = getClass(varargin,'plottingConvention');
-  if ~isempty(pC), fr.how2plot = pC; end
-  ebsd.frame = fr;
-end
+% a file does not change how the session plots, but a convention the caller passed does
+pC = getClass(varargin,'plottingConvention');
+if ~isempty(pC), plottingConvention.default(pC); end
 
 end
 

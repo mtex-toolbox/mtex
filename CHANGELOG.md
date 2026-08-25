@@ -326,6 +326,17 @@ adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
 
 ### EBSD Import
 
+- an Oxford import attached `specimenFrame.measurement` to the map, so every `.ctf`,
+  `.cpr` and Oxford HDF5 map came back claiming the axes X1, Y1, Z1. CS1 is the
+  sample surface, the frame Oxford states its *Euler angles* in - the map has no
+  vendor reference system at all, and MTEX rotates the Euler angles into the map
+  frame on import anyway. The three loaders attach no frame now, like every other
+  vendor, so the data follows the session frame and displays X, Y, Z. A convention
+  passed to `EBSD.load` is applied the way `loadEBSD_ang` already did it, by setting
+  the session default - which also fixes it reaching Oxford data at all, since the
+  named frame it used to land in carried a convention of its own and ignored the
+  session. `specimenFrame.measurement` remains as the frame to move data into when
+  CS1 is what you mean
 - `loadEBSD_h5` dropped its options on the branch that applies the default EDAX
   Euler setting, so the note about that assumed setting could not be suppressed by
   `'wizard'` and printed even for the import wizard. The branch cannot carry a

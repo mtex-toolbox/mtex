@@ -58,18 +58,18 @@ classdef specimenFrame < referenceFrame
   methods (Static = true)
 
     function sF = specimen
-      % the generic specimen frame with the canonical axes X, Y, Z - the
-      % session default until the data or the user declares a more
-      % specific frame, e.g. specimenFrame.measurement for Oxford data
-      % or specimenFrame.rolling for a rolled sheet
+      % the generic specimen frame with the canonical axes X, Y, Z - where
+      % an import lands, since no vendor gives the map a reference system
+      % of its own, and the session default until the user declares a more
+      % specific frame such as specimenFrame.rolling for a rolled sheet
       sF = specimenFrame.named('specimen',{'X','Y','Z'});
     end
 
     function sF = measurement
-      % the frame the data was measured in, with its axes named in the
-      % Oxford notation X1, Y1, Z1 - the sample frame CS1, which is what
-      % imported EBSD data refers to (the acquisition surface CS0 is
-      % reported by the Oxford loaders but not applied)
+      % the sample surface CS1 of an Oxford instrument, axes X1, Y1, Z1 -
+      % the frame its Euler angles are stated in, not the one its map
+      % lives in. An import does not attach it: MTEX rotates the Euler
+      % angles into the map frame, and the map has no vendor frame at all
       sF = specimenFrame.named('measurement',{'X1','Y1','Z1'});
       % seeded with the convention of the vendor software - x east, y
       % south, the way an SEM image is displayed

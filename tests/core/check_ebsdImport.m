@@ -137,12 +137,11 @@ expect(e, 'testdata_sqr.ctf', ...
 expectRow(e, 'testdata_sqr.ctf', 'first', 1,   [1 0],       [211.15 30.45 6.13]);
 expectRow(e, 'testdata_sqr.ctf', 'last',  900, [30 29],     [263.31 34.70 45.55]);
 
-% an Oxford format states its data in the sample frame CS1 - the map
-% carries the registered measurement frame X1, Y1, Z1
-assert(e.frame == specimenFrame.measurement, ...
-  'check_ebsdImport: a .ctf import must attach the measurement frame');
-assert(isequal(e.frame.axesNames,{'X1','Y1','Z1'}), ...
-  'check_ebsdImport: the measurement frame must use the Oxford axes X1, Y1, Z1');
+% CS1 is what an Oxford file states its Euler angles in, not what its map
+% lives in - no vendor gives the map a reference system, so the import
+% attaches none and the data follows the session frame, X, Y, Z
+assert(isempty(e.frame), ...
+  'check_ebsdImport: a .ctf import must not attach a reference frame');
 
 end
 

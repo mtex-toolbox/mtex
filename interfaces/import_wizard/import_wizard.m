@@ -1607,7 +1607,10 @@ classdef import_wizard < matlab.apps.AppBase
       names = headerAxesNames(app,'SampleSurfaceDirectionLabels');
       if ~isempty(names), return, end
 
-      if isEDAX(app), names = {'A1','A2','A3'}; return, end
+      % a .ctf or .cpr carries no labels, but CS1 is what Oxford calls the
+      % frame its Euler angles are stated in either way
+      if isVendor(app,'EDAX'), names = {'A1','A2','A3'}; return, end
+      if isVendor(app,'Oxford'), names = {'X1','Y1','Z1'}; return, end
 
       names = frameAxesNames(app);
     end
@@ -1622,11 +1625,11 @@ classdef import_wizard < matlab.apps.AppBase
       end
     end
 
-    function tf = isEDAX(app)
+    function tf = isVendor(app,name)
       tf = false;
       try
         tf = app.LoadedFilePath ~= "" && ~isempty(app.ebsd) && ...
-          contains(vendorLabel(app,app.ebsd,app.LoadedFilePath),'EDAX','IgnoreCase',true);
+          contains(vendorLabel(app,app.ebsd,app.LoadedFilePath),name,'IgnoreCase',true);
       catch
       end
     end
