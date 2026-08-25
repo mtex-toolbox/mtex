@@ -1,9 +1,15 @@
 %% Sharp Color Keys
 %
-%% 
-% In this section we discuss color keys that are particular useful when
-% analyzing data with very small deviation in orientation. Let us consider
-% the following calcite data set
+%%
+% A colour key has to cover every orientation a phase can have, which is
+% the right thing to do for a map of many grains and the wrong thing for a
+% map whose orientations differ by a degree or two. All of them land on
+% almost the same colour, and the picture is flat. A *sharp* colour key
+% spends the whole range of colours on the small region the data actually
+% occupies.
+%
+% The example is a calcite data set of 45451 pixels, of which 20119 are
+% indexed.
 
 mtexdata sharp
 
@@ -13,7 +19,17 @@ plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 xlim(ebsd.extent(1:2)),ylim(ebsd.extent(3:4))
 
 %%
-% and have a look into the 101 inverse pole figure.
+% Nearly one shade of green. Faint diagonal bands can be made out and a
+% few red pixels stand out from them, but a key built to hold every calcite
+% orientation cannot resolve differences of a degree.
+%
+%% Colouring by one number
+%
+% The most direct way to sharpen is to leave orientations aside and colour
+% by a single quantity that varies. In the $(101)$ inverse pole figure the
+% orientations sit at almost the same place, and the azimuth of that place
+% is one such number.
+
 r = vector3d(1,0,1);
 
 % compute the positions in the inverse pole figure
@@ -27,10 +43,11 @@ plotIPDF(ebsd.orientations,r,'property',color,'MarkerSize',3,'grid','points','al
 mtexColorbar
 
 %%
-% We see that all individual orientations are clustered around azimuth
-% angle -20 degrees with some outliers at -35 degree. In order to
-% increase the contrast for the main group, we restrict the color range from
-% -25 degree to -14 degree.
+% The azimuth has a median of -22° and 98% of the measurements lie between
+% -24° and -18°, with a thin tail reaching -42°. The colour bar is set by
+% that tail, so almost all of the data shares one colour. Restricting the
+% range to where the data is, and painting everything outside it purple,
+% puts the contrast back.
 
 setColorRange([-25 -14]);
 
@@ -41,52 +58,58 @@ cmap(1,:) = [1 0 1];   % make first color purple
 colormap(cmap)
 
 %%
-% The same color coding we can now apply to the EBSD map.
+% The same numbers and the same range, now on the map.
 
 % plot the data with the customized color
 plot(ebsd,color)
 xlim(ebsd.extent(1:2)),ylim(ebsd.extent(3:4))
 
-% set scaling of the angles to 110 - 120 degree
+% the colour range where the data is, everything outside it purple
 setColorRange([-25 -15]);
 
-% colorize outliers in purple.
 cmap = colormap;
 cmap(end,:) = [1 0 1];
 cmap(1,:) = [1 0 1];
 colormap(cmap)
 
-%% Sharpening the default color coding
-% Next, we want to apply the same ideas as above to the default MTEX color
-% key, i.e. we want to stretch the colors such that they cover just the
-% orientations of interest.
+%%
+% What was one flat hue is a map of sharp diagonal lamellae, and the purple
+% pixels scattered over it are the tail of the distribution.
+%
+%% Sharpening the orientation colour key
+%
+% The same idea applies to the full orientation key rather than to a single
+% number. Two settings do it: put the white centre of the key at the mean
+% orientation of the data, and say how far from it the colours should
+% saturate.
 
 ipfKey = ipfHSVKey(ebsd.CS.properGroup);
 
-% To this end, we first compute the inverse pole figure direction such that
-% the mean orientation is just at the gray spot of the inverse pole figure
+% put the gray spot of the inverse pole figure at the mean orientation
 ipfKey.ipfDirection = mean(ebsd.orientations,'robust') * ipfKey.whiteCenter;
 
 close all;
 plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 xlim(ebsd.extent(1:2)),ylim(ebsd.extent(3:4))
 
-%% 
-% We observe that the orientation map is almost completely gray, except for
-% the  outliers which appears black. Next, we use the option |'maxAngle'|
-% to increase contrast in the grayish part
+%%
+% Almost everything is grey, since almost everything is at the mean, and
+% the few pixels that are far away come out black. Half the measurements
+% are within 2.6° of the mean, so a saturation distance of that order is
+% what the data asks for.
 
 ipfKey.maxAngle = 7.5*degree;
 plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 xlim(ebsd.extent(1:2)),ylim(ebsd.extent(3:4))
 
 %%
-% You may play around with the option |'maxAngle'| to obtain better
-% results. As for interpretation keep in mind that white color represents
-% the mean orientation and the color becomes more saturated and later dark
-% as the orientation to color diverges from the mean orientation.
+% |maxAngle| is worth varying. White is the mean orientation, and a colour
+% becomes more saturated and finally dark the further an orientation is
+% from it, so a smaller |maxAngle| gives more contrast and saturates
+% earlier.
 %
-% Let's have a look at the corresponding color map.
+% Drawing the key itself, with the orientations plotted into it, shows what
+% has happened.
 
 plot(ipfKey,'resolution',0.25*degree)
 
@@ -94,24 +117,25 @@ plot(ipfKey,'resolution',0.25*degree)
 hold on
 plotIPDF(ebsd.orientations,'points',10,'MarkerSize',1,'MarkerFaceColor','w','MarkerEdgeColor','w')
 hold off
+
 %%
-% observe how in the inverse pole figure the orientations are scattered
-% closely around the white center. Together with the fact that the
-% transition from white to color is quite rapidly, this gives a high
-% contrast.
+% The orientations sit in a tight cloud around the white centre, and the
+% transition from white to full colour happens right there. That is the
+% whole trick: the steep part of the key is where the data is.
 %
-%% The axis angle color key
-% A second option to visualize small orientation deviation, e.g. within a
-% grains is the |@axisAngleColorKey|. In order to demonstrate this color
-% key let us first separate the EBSD into grains.
+%% The axis angle colour key
+%
+% A different approach to the same problem is the @axisAngleColorKey, which
+% colours the deviation from a reference orientation by the axis and angle
+% of that deviation. The natural reference is each grain's own mean, so
+% grains come first.
 
 [grains,ebsd] = calcGrains(ebsd,'angle',1.5*degree,'minPixel',5);
 grains = smoothBoundary(grains,5);
 
 %%
-% In order to apply the @axisAngleColorKey we need to specify the crystal
-% symmetry and a reference orientation |oriRef|. Often the meanorientation
-% of the grains is a good choice.
+% Note the segmentation threshold of 1.5°, an order of magnitude below the
+% usual 10°: these are the differences the page is about.
 
 ipfKey = axisAngleColorKey(ebsd);
 
@@ -126,8 +150,12 @@ plot(grains.boundary,'lineWidth',2,'LineColor','black')
 hold off
 
 %%
-% Being able to visualize very small orientation changes gives us better
-% way to observe how <EBSDDenoising.html EBSD denoising methods> work
+% Each grain is now drawn relative to itself, so the colours say how the
+% orientation varies inside a grain rather than between grains.
+%
+% One thing this makes visible is what a denoising filter does, since the
+% changes it makes are of exactly this size - see
+% <EBSDDenoising.html Denoising>.
 
 F = halfQuadraticFilter;
 
@@ -143,9 +171,15 @@ plot(grains.boundary,'lineWidth',4,'LineColor','white')
 plot(grains.boundary,'lineWidth',2,'LineColor','black')
 hold off
 
-%% 
-% Another application for sharp color keys is the analysis of orientation
-% gradients within grains
+%%
+% The speckle has gone and the gradients within the grains have not, which
+% is what the filter is supposed to do and what no ordinary colour key
+% would have shown.
+%
+%% Orientation gradients inside one grain
+%
+% The last application is a single grain of the forsterite map, the largest
+% one it has.
 
 plottingConvention.default('y↑→x');
 mtexdata forsterite silent
@@ -160,10 +194,9 @@ largeGrains = grains(ind);
 ebsd = ebsd(largeGrains)
 
 %%
-% When plotting one specific grain with its orientations we see that they
-% all are very similar and, hence, get the same color
+% Plotted with the ordinary key it is one colour, as a grain should be.
 
-% plot a grain 
+% plot a grain
 close all
 plot(largeGrains.boundary,'linewidth',2)
 hold on
@@ -171,12 +204,10 @@ plot(ebsd,ebsd.orientations)
 hold off
 
 %%
-% when applying the option sharp MTEX colors the mean orientation as white
-% and scales the maximum saturation to fit the maximum misorientation
-% angle. This way deviations of the orientation within one grain can be
-% visualized.
+% Sharpening the key against the mean orientation of this grain alone
+% reveals the gradient inside it.
 
-% plot a grain 
+% plot a grain
 plot(largeGrains.boundary,'linewidth',2)
 hold on
 ipfKey = ipfHSVKey(ebsd);
@@ -184,3 +215,9 @@ ipfKey.ipfDirection = mean(ebsd.orientations) * ipfKey.whiteCenter;
 ipfKey.maxAngle = 10*degree;
 plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
 hold off
+
+%%
+% At this scale the grain is not uniform at all. It falls into large
+% domains a few degrees apart, with gradual transitions between them, and
+% the single colour of the previous figure hid every bit of it.
+%
