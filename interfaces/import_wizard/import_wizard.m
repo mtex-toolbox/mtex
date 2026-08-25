@@ -62,8 +62,8 @@ classdef import_wizard < matlab.apps.AppBase
     MapCoordinatesDropDown         matlab.ui.control.DropDown
     EulerCoordinatesDropDownLabel  matlab.ui.control.Label
     EulerCoordinatesDropDown       matlab.ui.control.DropDown
-    MapImage                       matlab.ui.control.Image
-    EulerImage                     matlab.ui.control.Image
+    MapFrameAxes                   matlab.ui.control.UIAxes  % the two reference frame pictograms,
+    EulerFrameAxes                 matlab.ui.control.UIAxes  % drawn by refFrameGeometry like the map's
   end
 
   properties (Access = private)
@@ -93,7 +93,6 @@ classdef import_wizard < matlab.apps.AppBase
 
   properties (Constant, Access = private)
     CoordinateSystems = table( ...
-      ["yUxR" "yDxR" "xUyR" "xDyR" "xLyU" "xLyD" "yLxU" "yLxD"]', ...
       ["y↑→x" "y↓→x" "x↑→y" "x↓→y" "x←↑y" "x←↓y" "y←↑x" "y←↓x"]', ...
       [plottingConvention( zvector,  xvector)
       plottingConvention(-zvector,  xvector)
@@ -103,7 +102,7 @@ classdef import_wizard < matlab.apps.AppBase
       plottingConvention( zvector, -xvector)
       plottingConvention( zvector, -yvector)
       plottingConvention(-zvector, -yvector)], ...
-      'VariableNames', {'Key', 'Label', 'how2plot'})
+      'VariableNames', {'Label', 'how2plot'})
 
     % tab label colors: one color per plot category so that map, IPF,
     % pole figure and image tabs are distinguishable at a glance
@@ -113,6 +112,12 @@ classdef import_wizard < matlab.apps.AppBase
       'PF',       [0.49 0.18 0.56], ...
       'Images',   [0.85 0.33 0.10], ...
       'Disabled', [0.60 0.60 0.60])
+
+    % the two reference frame pictograms, told apart by color the way the
+    % old images were
+    FrameColors = struct( ...
+      'Map',   [0 0 0], ...
+      'Euler', [0.85 0.10 0.10])
   end
 
   methods (Access = private)
@@ -335,13 +340,28 @@ classdef import_wizard < matlab.apps.AppBase
       app.EulerCoordinatesDropDown.Layout.Row = 2;
       app.EulerCoordinatesDropDown.Layout.Column = 2;
 
-      app.MapImage = uiimage(app.CoordinateLayout, 'ScaleMethod', 'fit');
-      app.MapImage.Layout.Row = 3;
-      app.MapImage.Layout.Column = 1;
+      app.MapFrameAxes = createFrameAxes(app, 1);
+      app.EulerFrameAxes = createFrameAxes(app, 2);
 
-      app.EulerImage = uiimage(app.CoordinateLayout, 'ScaleMethod', 'fit');
-      app.EulerImage.Layout.Row = 3;
-      app.EulerImage.Layout.Column = 2;
+      % show the session convention until a file states one of its own
+      idx = closestCoordinateIndex(app, plottingConvention.default.rot);
+      app.MapCoordinatesDropDown.ValueIndex = idx;
+      app.EulerCoordinatesDropDown.ValueIndex = idx;
+      refreshCoordinateFrames(app, idx, idx)
+    end
+
+    function ax = createFrameAxes(app, column)
+      % canvas for a reference frame pictogram - the drawing lives in its
+      % own coordinates, so this axes only has to be blank and unsheared
+      ax = uiaxes(app.CoordinateLayout);
+      ax.Layout.Row = 3;
+      ax.Layout.Column = column;
+      axis(ax, 'off', 'equal')
+      % with nothing to label there is no reason to reserve the margin an
+      % axes keeps for its ticks - let the plot box have the whole cell
+      try ax.PositionConstraint = 'innerposition'; catch, end
+      ax.Toolbar.Visible = 'off';
+      disableDefaultInteractivity(ax)
     end
 
     % row 1: import to variable, row 2: generate import script
@@ -1503,7 +1523,6 @@ classdef import_wizard < matlab.apps.AppBase
 
       mapIdx = closestCoordinateIndex(app, app.ebsd.how2plot.rot);
       app.MapCoordinatesDropDown.ValueIndex = mapIdx;
-      setCoordinateImage(app, app.MapImage, mapIdx)
 
       eulerIdx = mapIdx;
       try
@@ -1512,26 +1531,104 @@ classdef import_wizard < matlab.apps.AppBase
       catch
       end
       app.EulerCoordinatesDropDown.ValueIndex = eulerIdx;
-      setCoordinateImage(app, app.EulerImage, eulerIdx)
+
+      refreshCoordinateFrames(app, mapIdx, eulerIdx)
     end
 
-    function setCoordinateImage(app, imageHandle, idx)
-      if isempty(imageHandle) || idx < 1 || idx > height(app.CoordinateSystems)
+    function drawCoordinateFrame(app, ax, idx, labels, color)
+      % The very drawing the map carries in its corner - same arrows, same
+      % circled dot or cross for the axis leaving the screen, same labels.
+      % See refFrameGeometry, which @scaleBar draws the map indicator with.
+      if isempty(ax) || ~isgraphics(ax) || idx < 1 || idx > height(app.CoordinateSystems)
         return
       end
-      
-      % create prefix for map- and euler-images
-      if imageHandle == app.MapImage
-        prefix = '';   
-      elseif imageHandle == app.EulerImage
-        prefix = 'euler_'; 
-      else
-        prefix = '';
+      pC = app.CoordinateSystems.how2plot(idx);
+
+      % the reference frame axes as seen on screen - right, up, out of it
+      dirs = [vector3d.X, vector3d.Y, vector3d.Z];
+      rfScreen = [dot(dirs,pC.east,'noAntipodal').', ...
+        dot(dirs,pC.north,'noAntipodal').', ...
+        dot(dirs,pC.outOfScreen,'noAntipodal').'];
+
+      % one unit of label height, the pictogram is scaled by the axes limits
+      [V,F,L,labPos,labStr,bbox] = refFrameGeometry(rfScreen,labels,1);
+
+      cla(ax)
+      patch(ax,'Faces',F,'Vertices',V,'FaceColor',color,'EdgeColor','none')
+      if ~isempty(L)
+        line(ax,L(:,1),L(:,2),'Color',color,'LineWidth',1.5)
       end
-      
-      % build filename
-      filename = char(prefix + app.CoordinateSystems.Key(idx) + ".png");
-      imageHandle.ImageSource = filename;
+      for k = 1:numel(labStr)
+        if isempty(labStr{k}), continue, end
+        text(ax,labPos(k,1),labPos(k,2),labStr{k}, ...
+          'Color',color,'FontWeight','bold','FontSize',app.FontSize - 2, ...
+          'HorizontalAlignment','center','VerticalAlignment','middle')
+      end
+
+      % Square limits around the drawing, so that the equal aspect ratio
+      % adds no slack of its own and the pictogram fills the cell. The
+      % margin is only what keeps a label off the edge.
+      half = 0.52 * max(bbox(2)-bbox(1), bbox(4)-bbox(3));
+      ax.XLim = mean(bbox(1:2)) + half*[-1 1];
+      ax.YLim = mean(bbox(3:4)) + half*[-1 1];
+    end
+
+    function names = frameAxesNames(app)
+      % The axes of the frame the map is expressed in. An Oxford file names
+      % them itself - CS0, the sample primary frame, which AZtec lets the
+      % user rename to RD/TD/ND for a rolled sheet. Otherwise the frame the
+      % data lives in answers: X/Y/Z generically, RD/TD/ND in a rolling frame.
+      names = headerAxesNames(app,'SamplePrimaryDirectionLabels');
+      if ~isempty(names), return, end
+
+      names = specimenFrame.default.axesNames;
+      try
+        if ~isempty(app.ebsd), names = app.ebsd.frame.axesNames; end
+      catch
+      end
+    end
+
+    function names = eulerAxesNames(app)
+      % The two vendors that name the Euler reference frame apart from the
+      % map. An Oxford file states the Euler angles as the orientation of
+      % the crystal to the sample surface CS1 and carries its axis labels -
+      % see the H5OINA specification. EDAX labels the Euler axes A1, A2, A3
+      % in its coordinate settings dialog, see EBSDReferenceFrame.
+      names = headerAxesNames(app,'SampleSurfaceDirectionLabels');
+      if ~isempty(names), return, end
+
+      if isEDAX(app), names = {'A1','A2','A3'}; return, end
+
+      names = frameAxesNames(app);
+    end
+
+    function names = headerAxesNames(app,field)
+      % the three axis labels an import left in ebsd.opt.header, if any
+      names = {};
+      try
+        v = app.ebsd.opt.header.(field);
+        if numel(v) == 3, names = cellstr(string(v(:)).'); end
+      catch
+      end
+    end
+
+    function tf = isEDAX(app)
+      tf = false;
+      try
+        tf = app.LoadedFilePath ~= "" && ~isempty(app.ebsd) && ...
+          contains(vendorLabel(app,app.ebsd,app.LoadedFilePath),'EDAX','IgnoreCase',true);
+      catch
+      end
+    end
+
+    function refreshCoordinateFrames(app, mapIdx, eulerIdx)
+      % both pictograms, so that a renamed frame or a new file reaches them
+      if nargin < 2, mapIdx = app.MapCoordinatesDropDown.ValueIndex; end
+      if nargin < 3, eulerIdx = app.EulerCoordinatesDropDown.ValueIndex; end
+      drawCoordinateFrame(app, app.MapFrameAxes, mapIdx, ...
+        frameAxesNames(app), app.FrameColors.Map)
+      drawCoordinateFrame(app, app.EulerFrameAxes, eulerIdx, ...
+        eulerAxesNames(app), app.FrameColors.Euler)
     end
 
     function idx = closestCoordinateIndex(app, rot)
@@ -2289,16 +2386,15 @@ classdef import_wizard < matlab.apps.AppBase
       end
 
       mapIdx = app.MapCoordinatesDropDown.ValueIndex;
-      setCoordinateImage(app, app.MapImage, mapIdx)
 
       try
         plottingConvention.default(app.CoordinateSystems.how2plot(mapIdx));
         eulerRot = inv(app.ebsd.EulerCorrection) * app.ebsd.how2plot.rot; %#ok<MINV>
         eulerIdx = closestCoordinateIndex(app, eulerRot);
         app.EulerCoordinatesDropDown.ValueIndex = eulerIdx;
-        setCoordinateImage(app, app.EulerImage, eulerIdx)
       catch
       end
+      refreshCoordinateFrames(app)
 
       % no invalidation, the plotters only realign the view
       updatePlot(app)
@@ -2309,7 +2405,7 @@ classdef import_wizard < matlab.apps.AppBase
         return
       end
 
-      setCoordinateImage(app, app.EulerImage, app.EulerCoordinatesDropDown.ValueIndex)
+      refreshCoordinateFrames(app)
 
       % IPF maps and pole figures pick up the new Euler correction by signature
       updatePlot(app)

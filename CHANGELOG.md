@@ -287,6 +287,21 @@ adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
   were talking past it. It imports with `'silent'` now
 - the coordinate systems panel lost its title bar, which is what set the height of
   the whole top row - the two labels inside it already say what it is
+- the two coordinate system pictograms were 16 committed PNGs of a bent elbow with
+  X, Y and Z painted into the pixels: a different drawing from the reference frame
+  indicator in the corner of the map, with no symbol at all for the axis leaving
+  the screen, and labels that could never be anything but X/Y/Z. They are drawn now
+  by `refFrameGeometry`, which is what `@scaleBar` draws the map indicator with -
+  moved out of that file into `plotting/plotting_tools/` so both share it. The
+  images are gone
+- and the pictograms are labelled by what the file actually calls its axes. An
+  Oxford `.h5oina` names both of its frames itself and AZtec lets the user rename
+  them, so the map takes `Sample Primary Direction Labels` (CS0) and the Euler
+  frame `Sample Surface Direction Labels` (CS1) - X0/Y0/Z0 and X1/Y1/Z1 by
+  default, RD/TD/ND on a rolled sheet. EDAX names no labels in its files but
+  labels the Euler axes A1, A2, A3 in its coordinate settings dialog. Everything
+  else falls back to the axes names of the frame the data lives in, the same ones
+  the map indicator shows
 - the three IPF axes were built together the first time any of them was shown, at
   0.19 s each. They are built one at a time now, like the map tabs already were,
   which leaves the warm-up run before the first import with one axes to build
