@@ -1,121 +1,116 @@
 %% Select EBSD data
 %
 %%
-% In this section we discuss how to select specific EBSD data by certain
-% properties. Let us first import some example EBSD data using the command
-% <mtexdata.html |mtexdata|>.
+% An EBSD variable is a list of measurements, so restricting it to part of
+% the specimen, to one phase, or to the well indexed points is nothing more
+% than taking a sublist. The result is an EBSD variable again and everything
+% that worked on the whole map works on it unchanged. This page shows the
+% three handles: the phase, the position, and any measured quantity.
 
 plottingConvention.default('y↑→x');
 mtexdata forsterite
 
-%%
-% These data consist of three indexed phases, Forsterite, Enstatite and
-% Diopside. The not indexed phase called _not Indexed_. The phases can be
-% visualized by
-
 close all;
 plot(ebsd)
 
-%% Selecting a certain phase
-% After import the EBSD data are stored in the variable |ebsd| which is
-% essentially a long list of x and y values together with phase information
-% and orientations. In order to restrict this list to a certain phase
-% just use the mineral name as an index, i.e.
+%% Selecting a phase
+%
+% A mineral name used as an index restricts the list to that phase.
 
 ebsd('Forsterite')
 
 %%
-% contains only the Forsterite measurements. In order to extract a couple
-% of phases, the mineral names have to be grouped in curled parenthesis.
+% Two things in that display are worth noticing. The list is shorter -
+% 152345 of the 245952 measurements are forsterite - and the class has
+% changed from |EBSDsquare| to |EBSD|. A selection is in general no longer
+% a full grid, and the operations that need one, such as filtering or
+% denoising, ask for the grid back with |gridify|; see
+% <EBSDGrid.html Square and Hex Grids>.
+%
+% An unambiguous abbreviation of the mineral name does as well, and several
+% phases are selected by grouping their names in curly brackets.
 
 ebsd({'Fo','En'})
 
 %%
-% As an example, let us plot the Forsterite data. 
+% Two names are always available whatever the phases are called:
+% |'indexed'| for every point that was matched to a phase, and
+% |'notIndexed'| for the rest.
+
+ebsd('indexed')
+
+%%
+% Plotting a single phase is then the ordinary plot command, applied to the
+% sublist. The colours are those of <EBSDPlotting.html Plot>.
 
 close all
 plot(ebsd('Forsterite'),ebsd('Forsterite').orientations)
 
-%%
-% The data is colorized according to its orientation. By default color of
-% an orientation is determined by its position in the 001 inverse pole
-% figure which itself is colored as
-
-ipfKey = ipfColorKey(ebsd('Forsterite'));
-plot(ipfKey)
-
 %% Restricting to a region of interest
-% If one is not interested in the whole data set but only in those
-% measurements inside a certain polygon, the restriction can be constructed
-% as follows:
-
-%%
-% First define a region by |[xmin ymin xmax-xmin ymax-ymin]|
+%
+% A rectangle is given as |[xmin ymin xmax-xmin ymax-ymin]| in the units of
+% the map, here microns.
 
 region = [5 2 10 5]*10^3;
 
 %%
-% plot the ebsd data together with the region of interest
+% Drawn on top of the map it shows what is about to be kept.
 
 close all
 plot(ebsd)
 rectangle('position',region,'edgecolor','r','linewidth',2)
 
 %%
-% The command <EBSD.inpolygon.html |inpolygon|> checks for each EBSD data
-% point whether it is inside a polygon or not, i.e.
+% <EBSD.inpolygon.html |inpolygon|> tests each measurement against the
+% polygon and returns one |true| or |false| per point.
 
 condition = inpolygon(ebsd,region);
 
 %%
-% results in a large vector of |TRUE| and |FALSE| stating which data points
-% are inside the region. Restricting the EBSD data by this condition is
-% done via
+% Indexing the list with that vector keeps the points inside it - 20301 of
+% the 245952, one twelfth of the map.
 
-ebsd = ebsd(condition)
+ebsd_region = ebsd(condition)
 
 %%
-% plot
+%
 
 close all
-plot(ebsd)
+plot(ebsd_region)
 
 %%
-% Note, that you can also select a polygon by mouse using the command
+% The polygon needs not be a rectangle. Any closed polygon given as a list
+% of vertices works, and one can be drawn with the mouse by
 %
 %   poly = selectPolygon
 %
-%% Remove Inaccurate Orientation Measurements
+%% Removing inaccurate measurements
 %
-% Most EBSD measurements contain quantities indicating inaccurate
-% measurements, e.g. MAD (mean angular deviation) in the case of Oxford
-% Channel programs, or CI (Confidence Index) in the case of OIM-TSL
-% programs.
-% 
+% Indexing software reports how well each pattern was matched, as the mean
+% angular deviation |mad| for Oxford Channel programs or as the confidence
+% index |ci| for OIM-TSL. Either can be plotted like any other property.
 
 close all
-plot(ebsd,ebsd.mad)
+plot(ebsd_region,ebsd_region.mad)
 mtexColorbar
 
 %%
-% or
+% Most of the map sits at about 0.4°. The deep blue patches are the
+% notIndexed points, which report 0, and the yellow speckles - the worst
+% fits in the map - lie along the grain boundaries, where the beam sees two
+% crystals at once. A histogram says where to put a threshold.
 
 close all
-plot(ebsd,ebsd.bc)
-mtexColorbar
+histogram(ebsd_region.mad)
 
 %%
-% Here we will use the MAD to identify and eliminate inaccurate
-% measurements.
+% The tallest bar is at zero, and it is not a population of perfect fits -
+% it is the notIndexed points again. The measurements themselves run from
+% 0.2° to 1.2° with the bulk at 0.4°, so a cut at 0.8° removes the tail and
+% keeps 96% of the points.
 
-% plot a histogram
-close all
-histogram(ebsd.mad)
-
-%%
-
-% take only those measurements with MAD smaller then one
-ebsd_corrected = ebsd(ebsd.mad<0.8)
+% take only those measurements with MAD smaller then 0.8
+ebsd_corrected = ebsd_region(ebsd_region.mad<0.8)
 
 %%
 %
@@ -123,3 +118,17 @@ ebsd_corrected = ebsd(ebsd.mad<0.8)
 close all
 plot(ebsd_corrected)
 
+%%
+% One thing that threshold does *not* do is remove the notIndexed points.
+% They have no fit to report, so their |mad| is stored as 0, and 0 passes
+% every "smaller than" test - all 4052 of them are still in the map above.
+% Dropping them is a separate step, and the name for it is |'indexed'|.
+
+ebsd_corrected('indexed')
+
+%%
+% Whether they should be dropped is a question about the analysis to come.
+% A notIndexed point is a measurement that failed, and where those failures
+% sit is often worth knowing - see <EBSDFilling.html Filling Missing Data>
+% for what else can be done with them.
+%
