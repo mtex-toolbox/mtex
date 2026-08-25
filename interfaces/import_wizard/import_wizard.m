@@ -292,8 +292,9 @@ classdef import_wizard < matlab.apps.AppBase
 
       % top-right corner of the right panel: fixed width/height, alongside
       % the phase table (fixed, left) and the opt tree (flexible, middle)
+      % no panel title - the two labels below say what these are, and the
+      % title bar cost the whole top row its height
       app.CoordinatePanel = uipanel(app.RightLayout, ...
-        'Title', 'Coordinate systems', ...
         'FontWeight', 'bold', ...
         'FontSize', app.FontSize);
       app.CoordinatePanel.Layout.Row = 1;
@@ -385,7 +386,7 @@ classdef import_wizard < matlab.apps.AppBase
       % createCoordinateControls); row 2: TabGroup spanning all 3 columns
       app.RightLayout = uigridlayout(app.RightPanel, ...
         'ColumnWidth', {817,'1x',300}, ...
-        'RowHeight', {230, '1x'}, ...
+        'RowHeight', {208, '1x'}, ...  % the coordinate panel's content height
         'RowSpacing', 8, ...
         'ColumnSpacing', 8, ...
         'Padding', [0 0 0 0]);
@@ -897,7 +898,9 @@ classdef import_wizard < matlab.apps.AppBase
       setImportStatus(app, 'loading', fileName)
       opts = importOptions(app);
       try
-        ebsdData = EBSD.load(filePath, 'wizard', opts{:});
+        % the app says what it found in its own info table, so a loader
+        % writing to the command window would only be talking past it
+        ebsdData = EBSD.load(filePath, 'wizard', 'silent', opts{:});
       catch ME
         setImportStatus(app, 'idle')
         uialert(app.UIFigure, ME.message, 'Could not load EBSD data')
@@ -2363,7 +2366,7 @@ classdef import_wizard < matlab.apps.AppBase
         return
       end
 
-      matlab.desktop.editor.newDocument(str)
+      matlab.desktop.editor.newDocument(str);
     end
   end
   methods (Access = public)

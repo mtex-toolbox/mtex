@@ -50,11 +50,15 @@ cs2 = crystalSymmetry('1',[2 3 4],[75 85 105]*degree, ...
   'Z||b','X||a*','mineral','O''Brien phase','color',[0.2 0.4 0.6]);
 cs3 = crystalSymmetry('m-3m',[3.6 3.6 3.6], ...
   'mineral','name before table edit','color',[0.7 0.3 0.1]);
+% an HDF5 lattice parameter is a float32 widened to double, and this color
+% is exactly CSS LightSkyBlue
+cs4 = crystalSymmetry('m-3m',double(single([4.04 4.04 4.04])), ...
+  'mineral','Al','color',[135 206 250]/255);
 
 phaseId = [1; 2; 2; 3; 3; 3; 3];
 n = numel(phaseId);
 ebsd = EBSD(vector3d((1:n).',zeros(n,1),zeros(n,1)), ...
-  rotation.id(n),phaseId,[ni cs2 cs3],struct());
+  rotation.id(n),phaseId,[ni cs2 cs3 cs4],struct());
 
 mapConvention = plottingConvention('y↑→x');
 eulerConvention = plottingConvention('x↓→y');
@@ -91,6 +95,13 @@ assert(contains(str,"'mineral', 'O''Brien phase', 'color', [0.2 0.4 0.6]"), ...
   'check_ebsdImport: generated script misplaced the mineral name or color')
 assert(contains(str,"plot(ebsd('dominant'),ebsd('dominant').orientations)"), ...
   'check_ebsdImport: generated script did not plot the dominant mineral by name')
+
+% a lattice long enough to push the mineral name off the screen is what the
+% line break is for, so the two are asserted together
+assert(contains(str,['crystalSymmetry(''m-3m'', [4.04 4.04 4.04], ...' newline]), ...
+  'check_ebsdImport: generated script kept float32 noise in a lattice parameter')
+assert(contains(str,"'mineral', 'Al', 'color', 'LightSkyBlue'"), ...
+  'check_ebsdImport: generated script did not name a palette color')
 assert(isempty(regexp(str,'\{[^\n}]+\}','once')), ...
   'check_ebsdImport: generated script contains an unresolved template token')
 

@@ -75,27 +75,29 @@ if isa(cs,'notIndexed') || ischar(cs)
   return
 end
 
-args = {charLiteral(char(cs.pointGroup)),mat2str(double(cs.abc),15)};
+lattice = {charLiteral(char(cs.pointGroup)),latticeLiteral(cs.abc)};
 
 % these lattices determine their angles from the point group
 impliedAngles = ismember(cs.lattice,[latticeType.cubic, ...
   latticeType.orthorhombic,latticeType.trigonal, ...
   latticeType.tetragonal,latticeType.hexagonal]);
 if ~impliedAngles
-  args{end+1} = [mat2str(double(cs.abg / degree),15) ' * degree'];
+  lattice{end+1} = [latticeLiteral(cs.abg / degree) ' * degree'];
 end
 
-% keep the phase metadata together in the conventional option block
-args = [args, {'''mineral''',charLiteral(name)}];
-if ~isempty(color), args = [args, {'''color''',color}]; end
+% what a reader looks for is the mineral name, and a lattice read from an
+% HDF5 file is long enough to push it off the screen - so it starts a line
+opts = {'''mineral''',charLiteral(name)};
+if ~isempty(color), opts = [opts, {'''color''',color}]; end
 
 % preserve the crystal frame edited in the Alignment column
 align = alignment(cs);
 for k = 1:numel(align)
-  args{end+1} = charLiteral(align{k}); %#ok<AGROW>
+  opts{end+1} = charLiteral(align{k}); %#ok<AGROW>
 end
 
-str = ['  crystalSymmetry(' strjoin(args,', ') ')'];
+str = ['  crystalSymmetry(' strjoin(lattice,', ') ', ...' newline ...
+  '    ' strjoin(opts,', ') ')'];
 
 end
 
@@ -117,10 +119,57 @@ end
 function str = colorLiteral(color)
 
 str = '';
-if isnumeric(color) && numel(color) == 3 && all(isfinite(color))
-  str = mat2str(double(color(:).'),15);
-elseif ischar(color) || (isstring(color) && isscalar(color))
+if ischar(color) || (isstring(color) && isscalar(color))
   str = charLiteral(char(color));
+  return
+end
+if ~isnumeric(color) || numel(color) ~= 3 || ~all(isfinite(color))
+  return
+end
+color = double(color(:)).';
+
+% a name says what the color is, an RGB triplet does not - so use one
+% whenever the palette str2rgb reads has this very color
+try
+  palette = getMTEXpref('colorPalette','CSS');
+  [name,rgb] = colornames(palette,color);
+  if max(abs(rgb - color)) < 1e-6
+    str = charLiteral(name{1});
+    return
+  end
+catch
+end
+
+% four decimals are two more than an 8 bit channel can tell apart
+str = ['[' strjoin(arrayfun(@(x) shortNum(x,4),color,'UniformOutput',false),' ') ']'];
+
+end
+
+% =========================================================================
+function str = latticeLiteral(v)
+% Lattice parameters read from an HDF5 file are float32 widened to double,
+% so a is 4.0399999618530273 rather than 4.04. Write the shortest decimal
+% that still reproduces the stored value to single precision.
+v = double(v(:)).';
+parts = cell(1,numel(v));
+for k = 1:numel(v)
+  d = 0;
+  while d < 8 && abs(round(v(k),d) - v(k)) > eps('single')*max(1,abs(v(k)))
+    d = d + 1;
+  end
+  parts{k} = shortNum(v(k),d);
+end
+str = ['[' strjoin(parts,' ') ']'];
+
+end
+
+% =========================================================================
+function str = shortNum(x,decimals)
+% x with at most that many decimals, and no trailing zeros
+str = sprintf('%.*f',decimals,x);
+if contains(str,'.')
+  str = regexprep(str,'0+$','');
+  str = regexprep(str,'\.$','');
 end
 
 end

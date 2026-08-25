@@ -271,6 +271,21 @@ adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
   graphics objects visually blank. So the images tab, which has to stay the last
   one and could only be kept there by deleting and recreating it, is appended by
   the first import rather than existing empty from the start
+- the generated import script reads like something a person would write. A lattice
+  parameter read from an HDF5 file is a float32 widened to double and was spelled
+  `4.03999996185303`, which pushed the mineral name off the screen - it is written
+  to the shortest decimal that still reproduces the stored value, `4.04`, and the
+  mineral name and its color start a line of their own. A color that the palette
+  `str2rgb` reads has a name for is written as that name, `'LightSkyBlue'` rather
+  than `[0.529411764705882 0.807843137254902 0.980392156862745]`
+- generating the script echoed the editor's `Document` object, some forty lines of
+  the script again as one escaped string, into the command window
+- importing wrote to the command window - the HDF5 configuration block, and for an
+  EDAX file the note about the assumed Euler setting. The wizard states what it
+  found in its own info table and offers the Euler alignment as a dropdown, so both
+  were talking past it. It imports with `'silent'` now
+- the coordinate systems panel lost its title bar, which is what set the height of
+  the whole top row - the two labels inside it already say what it is
 - the three IPF axes were built together the first time any of them was shown, at
   0.19 s each. They are built one at a time now, like the map tabs already were,
   which leaves the warm-up run before the first import with one axes to build
@@ -278,6 +293,11 @@ adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
 
 ### EBSD Import
 
+- `loadEBSD_h5` dropped its options on the branch that applies the default EDAX
+  Euler setting, so the note about that assumed setting could not be suppressed by
+  `'wizard'` and printed even for the import wizard. The branch cannot carry a
+  `'setting'` - the one above it caught that case - so forwarding the options only
+  ever reaches the suppression flags
 - a Bruker file was read at two units at once: `Bruker.json` took the position from
   the beam column and row index, step 1, and the unit cell from `XSTEP`/`YSTEP` in
   micrometre. `gridify` then sized its lattice from the micrometre cell - 17.8

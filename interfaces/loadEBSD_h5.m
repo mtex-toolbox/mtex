@@ -230,11 +230,12 @@ end
 % Euler <-> map reference frame -------------------------------------------
 % an explicit 'setting' wins, and if the file states none the user is asked
 [~,~,ext] = fileparts(fname);
-if check_option(varargin,{'setting','EulerCorrection'})
+if check_option(varargin,{'setting','EulerCorrection'}) || ...
+    (startsWith(string(Conf.settings.name),"EDAX","IgnoreCase",true) && ...
+    ebsd.EulerCorrection.angle < 1e-6)
+  % forwarding the options is what lets 'wizard' suppress the note about
+  % the assumed setting - the branch above already ruled out a 'setting'
   ebsd = applyEulerCorrectionTable(ebsd,ext,varargin{:});
-elseif startsWith(string(Conf.settings.name),"EDAX","IgnoreCase",true) && ...
-    ebsd.EulerCorrection.angle < 1e-6
-  ebsd = applyEulerCorrectionTable(ebsd,ext);
 end
 
 % an Oxford file states its data in the sample frame CS1 - the map lives
