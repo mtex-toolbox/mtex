@@ -857,10 +857,12 @@ they are not rediscovered from scratch.
   `numel(nodes) x []` first. `PoleFigureRefinement.m` runs end to end and
   `calcODFIterative` beats plain `calcODF` on dubna (RP 0.17-0.32 vs
   0.26-0.44) with the grid growing 78 -> 205 -> 1170 -> 4605 -> 19848.
-- **`import_wizard_old`** is called from four doc sites — `ODFImport.m:18`,
+- ~~**`import_wizard_old`** is called from four doc sites — `ODFImport.m:18`,
   `PoleFigureImport.m:16` and `:134`, `PoleFigureTutorial.m:8` — but lives
-  only in `obsolete/`. Needs a product decision (point at a current wizard, or
-  rewrite those GUI sections around the load commands).
+  only in `obsolete/`.~~ **Fixed 2026-08-25**: the current `import_wizard`
+  handles EBSD, pole figure and ODF data alike, so all four sites point at
+  it. Two of them *executed* the obsolete wizard, so every doc build opened
+  a GUI window; those sections are prose with a `matlab:` link now.
 - **26 prose TODO markers** ("extend this section", "explain in more detail")
   across the doc pages; six of them sit on stub pages already listed in item
   6. Authoring backlog.
