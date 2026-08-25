@@ -1,45 +1,48 @@
 %% Crystal Orientation as Coordinate Transformation
 %
-%% 
-% In MTEX a crystal orientation is defined as the rotation that transforms
-% <CrystalDirections.html crystal coordinates>, i.e., a description of a
-% vector or a tensor with respect to the <CrystalReferenceSystem.html
-% crystal reference frame>, into specimen coordinates, i.e., a description
-% of the same object with respect to a specimen fixed reference frame.
+%%
+% An orientation in MTEX is the rotation that takes
+% <CrystalDirections.html crystal coordinates> - a direction or a tensor
+% written in the <CrystalReferenceSystem.html crystal reference frame> - to
+% specimen coordinates, the description of the same object in the frame the
+% sample sits in.
 %
-% In MTEX any orientation consists of two ingredients. A
-% <rotation.rotation.html rotation>
+% Everything else on this page follows from that one sentence, including the
+% side an orientation has to be multiplied on and what happens when the
+% specimen is turned.
 
-% lets take a random one
+plottingConvention.default('y↑→x');
+
+%% The Two Ingredients
+%
+% An orientation is a <rotation.rotation.html rotation>
+
 rot = rotation.rand
 
 %%
-% and a description of the crystal lattice, which are represented in MTEX
-% by variables of type <crystalSymmetry.crystalSymmetry.html
-% |crystalSymmetry|>
+% together with a description of the crystal lattice, a
+% <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|>.
 
-% lets take cubic crystal symmetry
 cs = crystalSymmetry.load("Al-Aluminum.cif")
 
 %%
-% Combining both ingredients allows us to define an orientation
+% Combined, they are an orientation.
 
 ori = orientation(rot,cs)
 
 %%
-% As a consequence a variable of type orientation is at the same time of
-% type <rotation.rotation.html |rotation|> and hence allows for all
-% <RotationOperations.html operations> that are available for rotations.
+% An orientation is therefore a rotation as well, and every
+% <RotationOperations.html rotation operation> applies to it.
+
+%% From Crystal Coordinates to Specimen Coordinates
 %
-%% Crystal coordinates to specimen coordinates
-%
-% Let us consider the following crystal direction
+% Take a crystal direction.
 
 h = Miller(1,0,0,cs,'uvw')
 
 %%
-% In a grain with orientation |ori| this direction |h| has the specimen
-% coordinates
+% In a grain of orientation |ori| that direction points here, in specimen
+% coordinates.
 
 r = ori * h
 
@@ -59,9 +62,8 @@ arrow3d(1.6*[vector3d.X,vector3d.Y,vector3d.Z],'faceColor','black')
 hold off
 
 %%
-% Similarly, orientations transform tensors given with respect to the
-% crystal reference frame, e.g., the following single crystal stiffness
-% tensor
+% Tensors transform the same way. A single crystal stiffness tensor given in
+% the crystal frame
 
 C = stiffnessTensor(...
   [[2 1 1 0 0 0];...
@@ -70,15 +72,14 @@ C = stiffnessTensor(...
   [0 0 0 1 0 0];...
   [0 0 0 0 1 0];...
   [0 0 0 0 0 1]],cs)
-    
+
 %%
-% into a stiffness tensor with respect to the specimen reference frame
+% becomes a stiffness tensor in the specimen frame.
 
 ori * C
 
 %%
-% Objects that can be translated by orientations from crystal into specimen
-% coordinates and vice versa include
+% Everything that is defined in the crystal frame travels this way:
 %
 % * <Miller.Miller.html crystal directions>
 % * <tensor.tensor.html tensors>
@@ -87,38 +88,81 @@ ori * C
 % * <dislocationSystem.dislocationSystem.html dislocation systems>
 % * <crystalShape.crystalShape.html crystal shapes>
 %
-%% Specimen coordinates into crystal coordinates
+%% And Back Again
 %
-% Conversely, we can go back from specimen coordinates to crystal
-% coordinates by multiplying with the inverse orientation
+% The inverse orientation takes specimen coordinates to crystal coordinates,
+% so applying it to |r| returns the direction we started from.
 
-inv(ori) * r
+hBack = inv(ori) * r
 
 %%
-% Note, that in literature orientations are often defined to transform
-% specimen coordinates into crystal coordinates, i.e., to coincide with the
-% inverse orientations in MTEX. The consequences of this differences are
-% exhaustively discussed in the topic <MTEXvsBungeConvention.html
-% orientation conventions>.
+% The numbers look nothing like the $[100]$ we started from, because a
+% |Miller| displays as $(hkl)$ unless told otherwise, and $[100]$ for
+% aluminium is the vector of length $a = 4.05$ Angstrom. Asking for the
+% lattice direction notation gives it back.
 
-
-%% Specimen Rotation
-%
-% Rotations of the specimen ,i.e., changing the specimen reference frame,
-% do also change the orientation. Assume the specimen is rotated about the
-% X-axis about 60 degree. We may define this rotation by
-
-rot = rotation.byAxisAngle(vector3d.X,60*degree);
+hBack.dispStyle = 'uvw';
+round(hBack)
 
 %%
-% Then an orientation |ori| is updated to the rotated reference frame by 
+% Much of the literature defines an orientation the other way round, as the
+% transformation from specimen to crystal coordinates - what MTEX calls
+% |inv(ori)|. Both conventions are in use, and reading a table of Euler
+% angles in the wrong one inverts every orientation in it. The consequences
+% are spelled out in <MTEXvsBungeConvention.html MTEX vs. Bunge Convention>.
 
-ori_new = rot * ori
+%% Turning the Specimen
+%
+% Rotating the specimen - putting the sample on the stage the other way
+% round - changes every orientation in it. Such a rotation acts in specimen
+% coordinates, hence from the left.
+
+rotSpecimen = rotation.byAxisAngle(vector3d.X,60*degree);
+
+ori_new = rotSpecimen * ori
 
 %%
-% It should also be noted, that orientations are sensitive with respect to
-% the alignment of the Euclidean reference frame $\vec X$, $\vec Y$, $\vec
-% Z$ with respect to the crystal axes $\vec a$, $\vec b$ and $\vec c$. This
-% issue is discussed in more detail in the topic
-% <CrystalReferenceSystem.html Crystal Reference Frames>.
+% Every crystal direction moves with the specimen, which is what
+% multiplying from the left means:
+
+angle(ori_new * h, rotSpecimen * r) ./ degree
+
+%%
+% Zero - going through the new orientation and turning the old result give
+% the same direction.
 %
+% The same rotation applied on the other side means something else. Used in
+% crystal coordinates it turns the direction inside the lattice, before the
+% orientation maps it out, and the result is a different specimen direction
+% altogether.
+
+angle(ori * (rotSpecimen * h), ori_new * h) ./ degree
+
+%%
+% Right multiplication is nonetheless the meaningful side for one purpose:
+% multiplying by a symmetry operation of the crystal changes nothing at all,
+% because the crystal cannot tell the two settings apart. That is precisely
+% what <orientation.symmetrise.html |symmetrise|> does, and all 48 results
+% are the same orientation - the largest angle between any of them and the
+% original is zero up to rounding.
+
+max(angle(ori.symmetrise,ori)) ./ degree
+
+%%
+% Which side a rotation belongs on is decided by the frame it is given in,
+% and the same question decides the order of a misorientation product, see
+% <MisorientationTheory.html Misorientations>.
+%
+% Orientations also depend on how the Cartesian crystal frame $\vec x$,
+% $\vec y$, $\vec z$ is inscribed into the crystal axes $\vec a$, $\vec b$,
+% $\vec c$, which is <CrystalReferenceSystem.html The Crystal Reference
+% System>.
+
+%% Next
+%
+% <OrientationSymmetry.html Symmetry> adds the fact that an orientation
+% stands for a whole set of equivalent rotations, and
+% <OrientationPoleFigure.html Pole Figures> is the standard way of drawing
+% what this page computes by hand.
+
+%#ok<*NOPTS>
