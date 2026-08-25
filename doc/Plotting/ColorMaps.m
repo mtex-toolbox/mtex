@@ -126,14 +126,18 @@ mtexColorbar
 % initialize an MTEX-figure
 mtexFig = newMtexFigure;
 
+% one data set, drawn three times
+rng(0)
+v = vector3d.rand(100);
+
 % for three different colormaps
 for cm = {'hot', 'cool', 'parula'}
 
   % generate a new axis
   nextAxis
 
-  % plot some random data in different axis
-  plot(vector3d.rand(100),'smooth','grid','grid_res',90*degree,'upper');
+  % plot the same data in every axis
+  plot(v,'smooth','grid','grid_res',90*degree,'upper');
 
   % and apply an individual colormap
   mtexColorMap(mtexFig.gca,char(cm))
