@@ -279,7 +279,8 @@ adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
   `str2rgb` reads has a name for is written as that name, `'LightSkyBlue'` rather
   than `[0.529411764705882 0.807843137254902 0.980392156862745]`
 - generating the script echoed the editor's `Document` object, some forty lines of
-  the script again as one escaped string, into the command window
+  the script again as one escaped string, into the command window - and then opened
+  the script behind the maximized wizard window. The new document is made active
 - importing wrote to the command window - the HDF5 configuration block, and for an
   EDAX file the note about the assumed Euler setting. The wizard states what it
   found in its own info table and offers the Euler alignment as a dropdown, so both

@@ -2366,7 +2366,10 @@ classdef import_wizard < matlab.apps.AppBase
         return
       end
 
-      matlab.desktop.editor.newDocument(str);
+      % the wizard comes up maximized, so the new script opens behind it -
+      % makeActive is what hands the focus over to the editor
+      doc = matlab.desktop.editor.newDocument(str);
+      try doc.makeActive, catch, end
     end
   end
   methods (Access = public)
