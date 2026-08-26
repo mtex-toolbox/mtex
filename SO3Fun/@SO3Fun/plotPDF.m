@@ -53,6 +53,10 @@ if ~isNew && ~check_option(varargin,'parent') && ...
   return
 end
 
+% every plot command below ends by laying the figure out, and each of those
+% is thrown away by the next - hold it until there is something final
+if ~isstruct(mtexFig), holdLayout = mtexFig.layout.hold; end %#ok<NASGU>
+
 for i = 1:length(h)
 
   % create a new axis
@@ -72,6 +76,13 @@ for i = 1:length(h)
   [cax.Tag] = deal('pdf');
   setAllAppdata(cax,'h',h{i},'SS',SO3F.SS);
 
+end
+
+% everything is there now, so let it lay out - a new figure is sized by the
+% drawNow below, one we are adding to keeps the size it has
+if ~isstruct(mtexFig)
+  clear holdLayout
+  if ~isNew, mtexFig.layout.resolve(mtexFig); end
 end
 
 if isNew % finalize plot

@@ -27,7 +27,7 @@ function plan = resolve(lay,mtexFig,override)
 if nargin < 3, override = struct; end
 
 plan = lay.lastPlan;
-if lay.busy || isempty(mtexFig.children), return; end
+if lay.busy || lay.isHeld || isempty(mtexFig.children), return; end
 
 lay.busy = true;
 done = onCleanup(@() lay.clearBusy); %#ok<NASGU>

@@ -20,6 +20,7 @@ classdef mtexLayout < handle
 
 properties (Access = private)
   busy = false            % a layout pass is running
+  held = 0                % suspend depth, see hold
   lastToken               % what the cached measurement was taken under
   lastSpec                % the cached measurement
   lastPlan                % the last plan solved, returned to re-entrant callers
@@ -40,6 +41,36 @@ methods
 
     lay.busy = false;
 
+  end
+
+  function release = hold(lay)
+    % stop laying out until the returned onCleanup goes out of scope
+    %
+    % Building a figure calls drawNow once per plot command, and every one of
+    % them is superseded by the next: plotPDF of three pole figures laid the
+    % figure out four times and measured it seventeen. Hold it while building
+    % and the layout happens once, when there is something final to lay out.
+    %
+    % Syntax
+    %   release = mtexFig.layout.hold;   % released when release is cleared
+    %
+    % See also
+    % mtexLayout/resolve
+
+    lay.held = lay.held + 1;
+    release = onCleanup(@() lay.unhold);
+
+  end
+
+  function unhold(lay)
+    % end one hold, and lay out if it was the last
+
+    lay.held = max(0,lay.held - 1);
+
+  end
+
+  function tf = isHeld(lay)
+    tf = lay.held > 0;
   end
 
   function invalidate(lay)
