@@ -1,214 +1,282 @@
 %% Boundary Plots
 %
 %%
-% A boundary segment is a short line, and drawing it in a colour is how
-% anything measured on it is shown. What the colour stands for is the whole
-% question: the angle of the misorientation is one number and fits a
-% colorbar, its axis is a direction and needs a direction key, and the
-% misorientation as a whole is three numbers and needs a key built for the
-% purpose.
+% A grain boundary is stored as short segments between neighboring EBSD
+% pixels that belong to different grains. A value attached to each segment
+% can therefore be drawn as the colour of that short line.
 %
-% <BoundarySelect.html Select Grain Boundaries> covers which segments to
-% draw; this page is about what to colour them by.
+% The right colour encoding depends on the value. A misorientation angle is
+% one number and needs a colorbar. A misorientation axis is a direction and
+% needs a direction key. The full misorientation has three parameters and
+% needs a key for rotation space.
+%
+% This page assumes that the map has already been divided into
+% <GrainReconstruction.html grains>. See <BoundarySelect.html Select Grain
+% Boundaries> for choosing segments and <MisorientationTheory.html Theory of
+% Misorientations> for the angle-axis description used below.
 
 close all;
 
-% import the data
+% import the data in its specimen reference frame
 plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
-% restrict it to a sub-region of interest.
+% restrict the map to a subregion of interest
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
-% reconstruct grains
-[grains,ebsd] = calcGrains(ebsd,'minPixel',5,'alpha',10);
+% reconstruct grains with an explicit 15 degree threshold
+[grains,ebsd] = calcGrains(ebsd,'angle',15*degree,...
+  'minPixel',5,'alpha',10);
 
-% smooth the grains a bit - ebsdId is read per segment further down, so keep
-% every segment between the pair of pixels it was measured from
-grains = smoothBoundary(grains,4,'noSimplify','noRefine')
+% ebsdId is used below, so keep each segment tied to its measured pixel pair
+grains = smoothBoundary(grains,4,'noSimplify','noRefine');
 
-%%
-% Plain, with no second argument, |plot| draws the segments in one colour on
-% top of the map.
+%% One colour for every boundary
+%
+% With no data argument, <grainBoundary.plot.html |plot|> draws all boundary
+% segments in one colour on top of the phase map.
 
-gB = grains.boundary
+gB = grains.boundary;
 
-plot(ebsd)
+plot(ebsd);
 hold on
-plot(gB,'lineWidth',2)
+plot(gB,'lineWidth',2);
 hold off
 
 %% The misorientation angle
 %
-% The most common thing to colour a boundary by is the angle of its
-% misorientation, the one number that says how differently the two crystals
-% sit. It separates the low angle boundaries inside deformed grains from the
-% high angle boundaries between grains.
+% The misorientation angle is the smallest rotation angle relating the two
+% crystal orientations. It is a useful first separation between low-angle
+% boundaries within deformed grains and high-angle boundaries between
+% grains.
 
-close all
+close all;
 gB_Fo = grains.boundary('Fo','Fo');
-plot(grains,'translucent',1,'micronbar','off')
+
+plot(grains,'translucent',1,'micronbar','off');
 legend off
 hold on
-plot(gB_Fo,gB_Fo.misorientation.angle./degree,'linewidth',4)
+plot(gB_Fo,gB_Fo.misorientation.angle./degree,'linewidth',4);
 hold off
-mtexColorbar('title','misorientation angle')
+mtexColorbar('title','misorientation angle (°)');
 
 %%
-% The angles run from 15.9 to 108.8 degrees with a median of 56. Nothing
-% below 15 degrees appears, and it cannot: that is the threshold this
-% reconstruction used, so every segment here is a high angle boundary by
-% construction. Where the low angle boundaries went, and how to keep them,
-% is the subject of <SubGrainBoundaries.html Subgrain Boundaries>.
+% The colour is nearly constant along each boundary and changes between
+% neighboring grains. The angles run from 15.9 to 108.8 degrees, with a
+% median of 56.4 degrees.
+%
+% Nothing below 15 degrees can appear because grain reconstruction used
+% that threshold. Every segment in |gB_Fo| is therefore a high-angle
+% boundary by construction. <SubGrainBoundaries.html Subgrain Boundaries>
+% shows how to retain and plot the low-angle boundaries inside grains.
 
 %% The misorientation axis in crystal coordinates
 %
-% The axis of the misorientation is a direction rather than a number, so it
-% needs a colour key rather than a colorbar. The first decision is which
-% frame the axis is expressed in, and the crystal frame is the one that says
-% something about the lattices.
+% The axis is a direction, so a colorbar would be meaningless. Expressed in
+% crystal coordinates, it identifies lattice directions about which the
+% neighboring crystals are rotated.
+%
+% Crystal symmetry gives several equivalent descriptions of the same axis.
+% <HSVDirectionKey.html |HSVDirectionKey|> folds them into one fundamental
+% sector and assigns one colour to each direction there.
 
-% the axes in crystal coordinates
-axes = gB_Fo.misorientation.axis
+% axes in the forsterite crystal frame
+axesCrystal = gB_Fo.misorientation.axis;
 
-% define a color key
-colorKey = HSVDirectionKey(axes);
-
-% compute colors
-color = colorKey.direction2color(axes);
+% construct the key and convert each axis to RGB
+axisKey = HSVDirectionKey(axesCrystal);
+axisColor = axisKey.direction2color(axesCrystal);
 
 hold on
-plot(gB_Fo,'lineColor','black','linewidth',6) % some black background for contrast
-plot(gB_Fo,color,'linewidth',4)
+plot(gB_Fo,'lineColor','black','linewidth',6);
+plot(gB_Fo,axisColor,'linewidth',4);
 hold off
-mtexColorbar('visible','off')
+mtexColorbar('visible','off');
 
 %%
-% A colorbar would be meaningless here, so the key itself is plotted
-% instead, with the axes drawn into it - which shows at the same time which
-% part of the key the data actually uses.
+% The black underlay keeps pale colours visible against the map. Read each
+% boundary colour from the direction key below, not from a numerical
+% colorbar.
 
-figure(2)
-plot(colorKey)
+figure(2);
+plot(axisKey);
 hold on
-plot(axes,'MarkerFaceAlpha',0.1,'MarkerEdgeAlpha',0.3,'MarkerColor','black')
+plot(axesCrystal,'MarkerFaceAlpha',0.1,'MarkerEdgeAlpha',0.3,...
+  'MarkerColor','black');
 hold off
+
+%%
+% The black points show which part of the key the measured axes use. Their
+% clusters reveal preferred crystal directions that are difficult to see
+% from the coloured boundary map alone.
 
 %% The misorientation axis in specimen coordinates
 %
-% The same axis can be expressed in the frame of the specimen, where it says
-% how the two crystals are related in space rather than in the lattice. It
-% takes a little more work, because the misorientation stored on a segment
-% is a crystal to crystal rotation and has forgotten the specimen. The two
-% orientations either side are needed, and |ebsdId| is what leads back to
-% them.
+% The same axis can be expressed in the specimen reference frame. It then
+% describes how the two lattices are related in space rather than which
+% crystal direction is involved.
+%
+% The misorientation stored on a segment is a crystal-to-crystal rotation,
+% so it no longer contains the specimen frame. The two measured
+% orientations on either side are needed, and |ebsdId| leads back to them.
 
-figure(1)
+figure(1);
 
-% first we reduce the number of boundary segments a bit
-% in order to avoid that the plot becomes to messy
-gB_red = reduce(gB_Fo,5)
+% boundary segments are in walk order, so sample every fifth one
+gB_sample = gB_Fo(1:5:end);
 
-% next we extract for every boundary segment the two orientations at both
-% sides
-ori = ebsd('id',gB_red.ebsdId).orientations
+% retrieve the two measured orientations beside each sampled segment
+ori = ebsd('id',gB_sample.ebsdId).orientations;
 
-% the two orientations we use to compute the misorientation axis in
-% specimen coordinates
-axes = axis(ori(:,1),ori(:,2))
+% compute the same axes in the specimen reference frame
+axesSpecimen = axis(ori(:,1),ori(:,2),'antipodal');
 
-% plot the projection of the misorientation axis on the measurement surface
 hold on
-quiver(gB_red,axes,'autoScaleFactor',0.4,'color','black')
+quiver(gB_sample,axesSpecimen,'autoScaleFactor',0.4,'color','black');
 hold off
 
 %%
-% Only every fifth segment is drawn, or the arrows would cover the map. As
-% with any arrow on a map, what is drawn is the projection into the plane of
-% the section, so a short arrow is an axis pointing steeply out of it.
+% Sampling every fifth segment keeps the arrows readable without changing
+% the boundary map. Because segments are stored in walk order, the arrows
+% remain distributed along the boundary chains.
+%
+% Each line is the projection of an axis into the measurement surface. A
+% short line is therefore not a small rotation. It is an axis pointing
+% steeply out of the section plane.
+%
+% Symmetry reduction can also make neighboring segments choose different
+% equivalent axes, especially near the largest possible misorientation
+% angle. <BoundaryMisorientations.html Misorientations at Grain Boundaries>
+% explains how to recognize that jump.
 
 %% Colouring the whole misorientation
 %
-% Angle and axis together are three numbers, and a colour key that maps all
-% three at once has to be built for the purpose. MTEX implements the one of
-% S. Patala, J. K. Mason, and C. A. Schuh, |Improved representations of
-% misorientation information for grain boundary|, Prog. Mater. Sci., vol.
-% 57, no. 8, pp. 1383-1425, 2012.
+% Angle and axis together are three parameters. The
+% <PatalaColorKey.PatalaColorKey.html |PatalaColorKey|> maps all three to a
+% single RGB colour using the construction of S. Patala, J. K. Mason and
+% C. A. Schuh, <https://doi.org/10.1016/j.pmatsci.2012.04.002 Improved
+% representations of misorientation information for grain boundary science
+% and engineering>, Prog. Mater. Sci. 57, 1383-1425, 2012.
+%
+% The key includes grain-exchange symmetry: viewing a same-phase boundary
+% from the other side gives the inverse misorientation but not a different
+% boundary. Its implementation is available for the Laue groups |m-3m|,
+% |m-3|, |mmm|, |4/mmm| and |6/mmm|.
 
-% plot the grains
-close all
-plot(grains,'micronbar','off')
+close all;
+plot(grains,'micronbar','off');
 legend off
 
-% define the color key
-colorKey = PatalaColorKey(gB_Fo);
+foKey = PatalaColorKey(gB_Fo);
+foColor = foKey.orientation2color(gB_Fo.misorientation);
 
 hold on
-plot(gB_Fo,'linewidth',7)
-color = colorKey.orientation2color(gB_Fo.misorientation);
-plot(gB_Fo,squeeze(color),'linewidth',4)
+plot(gB_Fo,'lineColor','black','linewidth',7);
+plot(gB_Fo,squeeze(foColor),'linewidth',4);
 hold off
 
 %%
-% Two segments of the same colour now have the same misorientation, axis and
-% angle alike, and not merely the same angle. The key is a colouring of the
-% whole misorientation space, so it can only be displayed section by
-% section - here as axis angle sections, with the measured misorientations
-% drawn in.
+% Two segments with the same colour now have the same misorientation, axis
+% and angle alike, rather than merely the same angle. The black underlay
+% again separates pale boundary colours from the phase map.
+%
+% A three-parameter key cannot be displayed in one flat legend. MTEX shows
+% axis angle sections, each at a fixed misorientation angle, and draws the
+% measured misorientations on top.
 
-figure(2)
-plot(colorKey,'layout',[3,4])
-
-% and plot the misorientations on top
-plot(gB_Fo.misorientation,...
-  'MarkerFacecolor','none','add2all','MarkerSize',4)
+figure(2);
+plot(foKey,'layout',[3,4],'figSize','large');
+plot(gB_Fo.misorientation,'MarkerFaceColor','none','add2all',...
+  'MarkerSize',4);
 
 %%
-% The misorientations of this rock fill the sections at large angles and
-% leave the small angle ones nearly empty. A material with a preferred
-% boundary character would show the opposite: the points gathered in one
-% place, and the map coloured accordingly.
-%
-% An iron sample makes that comparison.
+% The forsterite misorientations fill the large-angle sections and leave
+% the small-angle sections nearly empty. A preferred boundary relationship
+% would instead appear as points gathered in one part of the key, with the
+% corresponding colour repeated across the map.
 
-% import the data
-plottingConvention.default("y↓→x");
+%% A material with preferred boundary relationships
+%
+% The iron sample below provides that comparison. Its plotting convention
+% is reset explicitly because this specimen uses a different reference
+% frame from the forsterite map.
+
+plottingConvention.default('y↓→x');
 mtexdata csl silent
 
-% grain segmentation and smoothing
+% reconstruct and smooth the grains
 [grains,ebsd] = calcGrains(ebsd);
 grains = smoothBoundary(grains,2);
 gB = grains.boundary('iron','iron');
 
-% and plot image quality + orientation
-close all
-plot(ebsd,log(ebsd.prop.iq),'figSize','large')
+% plot image quality beneath a translucent orientation map
+close all;
+plot(ebsd,log(ebsd.prop.iq),'figSize','large');
 mtexColorMap black2white
-setColorRange([.5,5])
-hold on
-plot(grains,grains.meanOrientation,'FaceAlpha',0.4)
+setColorRange([.5,5]);
 
-% define the color key and colorize the grain boundaries
-colorKey = PatalaColorKey(gB)
-color = colorKey.orientation2color(gB.misorientation);
+grainKey = ipfColorKey(grains.meanOrientation);
+grainColor = grainKey.orientation2color(grains.meanOrientation);
+
 hold on
-plot(gB,squeeze(color),'linewidth',4,'smooth')
+plot(grains,grainColor,'FaceAlpha',0.4);
+
+% colour the boundaries by their full misorientation
+ironKey = PatalaColorKey(gB);
+ironColor = ironKey.orientation2color(gB.misorientation);
+plot(gB,squeeze(ironColor),'linewidth',4,'smooth');
 hold off
 
 %%
-% Whole boundaries come out in one colour here rather than changing along
-% their length, and one of those colours, the dark blue, recurs all over the
-% map. Many boundaries of this material share one misorientation, in other
-% words - they are special boundaries, and
-% <CSLBoundaries.html CSL Boundaries> identifies them by name.
+% Whole boundaries now repeat one colour instead of changing continually
+% along their length. Dark blue recurs across the map, so many boundaries
+% share one misorientation. These are special boundaries, and
+% <CSLBoundaries.html CSL Boundaries> identifies their relationships.
 
-plot(colorKey,'axisAngle',(5:5:60)*degree,'layout',[3,4])
+figure(2);
+plot(ironKey,'axisAngle',(5:5:60)*degree,'layout',[4,3],...
+  'figSize','large');
 
-plot(gB.misorientation,'points',300,'add2all',...
-  'MarkerFaceColor','none','MarkerEdgeColor','w')
+% draw a reproducible sample without changing the session random state
+oldRng = rng;
+rng(0);
+moriSample = discreteSample(gB.misorientation,300,'withoutReplacement');
+rng(oldRng);
+
+plot(moriSample,'add2all','MarkerFaceColor','none',...
+  'MarkerEdgeColor','w');
 
 %%
-% The sections confirm it: the misorientations cluster instead of filling
-% the space. Note that a misorientation and its inverse are drawn at the
-% same place in these sections, since they describe the same boundary seen
-% from its two sides.
+% The sections confirm the clustering: 300 measured misorientations occupy
+% a few small parts of the key instead of filling the available space. A
+% misorientation and its inverse are drawn at the same place because they
+% describe the same boundary viewed from opposite sides.
+
+%% What the colours do not describe
+%
+% The Patala colour contains the full three-parameter misorientation, not
+% the full grain-boundary character. Two further parameters specify the
+% boundary-plane orientation. A two-dimensional EBSD map measures only the
+% plane trace and cannot recover its inclination from one boundary.
+%
+% The same colour therefore does not by itself imply the same boundary
+% energy, structure or chemistry. See <GrainBoundaries.html Grain
+% Boundaries> for the five-parameter description and
+% <BoundaryNormalDistribution.html Boundary Normal Distribution> for what
+% can be inferred from many traces.
+
+%% Further reading
+%
+% * A. Morawiec, <https://doi.org/10.1007/978-3-662-09156-2 Orientations
+% and Rotations: Computations in Crystallographic Textures>, Springer, 2004,
+% develops rotation space, crystal symmetry and misorientation axes.
+% * A. P. Sutton, E. P. Banks and A. R. Warwick,
+% <https://doi.org/10.1098/rspa.2015.0442 The five-dimensional parameter
+% space of grain boundaries>, Proc. R. Soc. A 471, 20150442, 2015,
+% separates the three misorientation parameters from the two boundary-plane
+% parameters.
+% * F. Bachmann, R. Hielscher and H. Schaeben,
+% <https://doi.org/10.1016/j.ultramic.2011.08.002 Grain detection from 2d
+% and 3d EBSD data--Specification of the MTEX algorithm>, Ultramicroscopy
+% 111, 1720-1733, 2011, explains how EBSD measurements become grains and
+% boundary segments.
