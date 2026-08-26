@@ -1,12 +1,15 @@
 %% Select Grain Boundaries
 %
 %%
-% The boundaries of a map are a list of short segments, each lying between
-% two neighbouring measurements that ended up in different grains. Any
-% analysis starts by choosing which of them to look at: the boundaries of
-% one grain, those between two particular phases, or those whose
-% misorientation has some character. All of these are an index into that
-% list, and the result is a boundary list again.
+% A grain boundary is stored as a list of short segments. Each segment lies
+% between two neighbouring measurements that belong to different grains.
+% Selecting boundaries therefore means indexing this list, and every
+% selection returns another @grainBoundary list.
+%
+% This page assumes that the map has already been divided into grains as in
+% <GrainReconstruction.html Grain Reconstruction>. The
+% <GrainBoundaries.html Grain Boundaries> overview explains how these
+% segments represent an interface in a two-dimensional section.
 
 close all;
 
@@ -14,104 +17,181 @@ close all;
 plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
-% restrict it to a sub-region of interest.
+% restrict it to a subregion of interest
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
-% and recompute grains
+% reconstruct and smooth the grains
 [grains,ebsd] = calcGrains(ebsd,'minPixel',5,'alpha',10);
-
-% smooth the grains a bit
 grains = smoothBoundary(grains,4);
 
-% visualize as a phase map
+% extract and plot the complete boundary list
+gB = grains.boundary;
 plot(ebsd)
 hold on
-plot(grains.boundary,'linewidth',2)
+plot(gB,'lineWidth',2)
 hold off
+
+%%
+% The black network contains every boundary segment in the cropped map.
+% It includes boundaries between grains of one phase, boundaries between
+% phases, and the outer rim of the scan.
 
 %% What the list contains
 %
-% |grains.boundary| is that list, and displaying it gives the count of
-% segments for each pair of phases that meet anywhere in the map.
+% Displaying |gB| reports the number and total length of the segments for
+% every pair of phases that meets in the map.
 
-grains.boundary
+gB
 
 %%
-% Note the rows involving |notIndexed|. They are two different things at
-% once: boundaries against a region that could not be indexed, and the outer
-% rim of the map, where a grain is cut off by the edge of the scan and has
-% no neighbour at all. <SelectingGrains.html Selecting Grains> shows how to
-% tell the second kind apart.
+% The rows involving |notIndexed| combine two situations. Some segments
+% border a connected |notIndexed| area, whose diffraction patterns could
+% not be indexed. Others lie on the outer rim, where a grain is cut off by
+% the scan and has no neighbour on the other side.
+% <SelectingGrains.html Selecting Grains> shows how to identify grains at
+% that rim.
 
 %% By the phases on either side
 %
-% Two phase names select the segments between those two phases. The
-% forsterite to forsterite boundaries, the grain boundaries proper of the
-% dominant phase:
+% Two phase names select segments between those phases. The first selection
+% contains forsterite to forsterite boundaries, which separate differently
+% oriented grains of the dominant phase.
 
+gB_FoFo = gB('Fo','Fo');
+
+plot(ebsd)
 hold on
-plot(grains.boundary('Fo','Fo'),'lineColor','blue','micronbar','off','lineWidth',4)
+plot(gB_FoFo,'lineColor','blue','micronbar','off','lineWidth',4)
 hold off
 
 %%
-% And the forsterite to enstatite boundaries, which are phase boundaries
-% rather than grain boundaries - two different crystals meeting, not two
-% orientations of the same one:
+% The thick blue segments occur within the forsterite part of the phase
+% map. They do not include its contacts with the other minerals.
 
+%%
+% The next selection contains forsterite to enstatite boundaries. A phase
+% boundary is not a separate object in MTEX. It is a grain boundary whose
+% two neighbouring grains happen to differ in phase.
+
+gB_FoEn = gB('Fo','En');
+
+plot(ebsd)
 hold on
-plot(grains.boundary('Fo','En'),'lineColor','darkgreen','micronbar','off','lineWidth',4)
+plot(gB_FoEn,'lineColor','darkgreen','micronbar','off','lineWidth',4)
 hold off
 
 %%
-% The order of the two names matters, and not only for readability. A
-% misorientation is a rotation *from* one crystal *to* another, so the two
-% orders give misorientations inverse to each other, and any statement about
-% one of them - an axis in crystal coordinates, for instance - refers to
-% whichever crystal was named first.
+% The green segments follow only contacts between the forsterite and
+% enstatite regions. They are two different crystals meeting, rather than
+% two orientations of the same phase.
 
-mori = grains.boundary('Fo','En').misorientation(1)
+%% Why phase order matters
+%
+% The order of the phase names matters for more than readability. A
+% misorientation is a rotation *from* one crystal *to* another, so reversing
+% the names gives inverse misorientations. A misorientation axis expressed
+% in crystal coordinates therefore refers to whichever crystal was named
+% first.
+
+mori = gB('Fo','En').misorientation(1)
 
 inv(mori)
 
 %%
-% One thing to be careful about: the two selections contain the same
-% segments, but not in the same order. Segment by segment the
-% misorientations are exact inverses of each other, while
-% |grains.boundary('En','Fo').misorientation(1)| is simply a different
-% segment from the one above.
+% The two phase orders select the same physical segments, but reversing the
+% sides also reverses the walk along every boundary chain. The segments are
+% consequently not returned in the same row order. Corresponding segments
+% have exactly inverse misorientations, but
+% |gB('En','Fo').misorientation(1)| is a different segment from the first
+% one selected above.
 
 %% By grain
 %
-% A boundary list is also reachable from the grains it belongs to, which is
-% how one asks for the boundary of a single grain or of a selection.
+% A boundary list is also available from the grains it belongs to. This is
+% how to ask for the boundary of one grain or of a grain selection. Here
+% |grains(47)| means the 47th grain in the current list, not necessarily a
+% grain whose ID is 47; <SelectingGrains.html Selecting Grains> explains
+% the distinction between list position and grain ID.
 
 grains(47).boundary
 
+plot(ebsd)
 hold on
 plot(grains(47).boundary,'lineWidth',4,'lineColor','DarkBlue')
 hold off
 
+%%
+% The dark-blue outline includes every phase pair on the boundary of this
+% grain. The displayed boundary summary names the phases on its far side.
+
 %% Boundaries inside a grain
 %
-% |grains.innerBoundary| holds the segments that separate two measurements
-% *of the same grain*. They arise where a grain has an orientation gradient
-% that comes back around: two pixels that are neighbours in space are far
-% apart along the gradient, so the criterion separates them, but a path
-% through the grain still connects them and they stay one grain.
+% |grains.innerBoundary| stores segments between two measurements *of the
+% same grain*. They arise when the segmentation criterion separates two
+% neighbouring pixels, but another path through the map still connects
+% them into one phase-homogeneous grain. An orientation gradient that comes
+% back around can produce exactly this situation.
 
+grains.innerBoundary
+
+plot(ebsd)
 hold on
-plot(grains.innerBoundary,'linecolor','red','linewidth',4)
+plot(grains.innerBoundary,'lineColor','red','lineWidth',4)
 hold off
 
 %%
-% Eleven segments here, in a rock that is barely deformed. In deformed
-% material there are many, and they are the subject of
-% <SubGrainBoundaries.html Subgrain Boundaries>.
+% The display reports 11 inner-boundary segments in this barely deformed
+% rock. The red segments sit inside connected grains rather than tracing
+% complete grain outlines. Deformed material may contain many more, and
+% <SubGrainBoundaries.html Subgrain Boundaries> explains how a two-threshold
+% reconstruction preserves a systematic low-angle population.
 
-%% By misorientation
+%% By misorientation or another property
 %
-% Every segment carries its misorientation, so any condition on it selects
-% segments - a threshold on the angle, a distance from a twin relationship,
-% a coincidence site lattice. Those selections have pages of their own:
-% <TiltAndTwistBoundaries.html Twist and Tilt>,
-% <TwinningBoundaries.html Twinning> and <CSLBoundaries.html CSL>.
+% Every segment carries its misorientation. A logical condition on the
+% misorientation angle therefore selects segments in the same way as any
+% MATLAB logical index. Here the eligible set is first restricted to
+% forsterite to forsterite boundaries, so every angle has one consistent
+% pair of crystal symmetries.
+
+isHighAngle = gB_FoFo.misorientation.angle > 60*degree;
+gB_high = gB_FoFo(isHighAngle)
+
+plot(ebsd)
+hold on
+plot(gB_FoFo,'lineColor','lightgray','lineWidth',2)
+plot(gB_high,'lineColor','red','lineWidth',4)
+hold off
+
+%%
+% The grey segments are all eligible forsterite boundaries, while red marks
+% only those above the chosen angle. The same pattern works with a condition
+% on position, direction, length, or any other per-segment property; see
+% <BoundaryProperties.html Grain Boundary Properties>.
+%
+% More specialised misorientation selections compare an axis, a complete
+% rotation, or a coincidence site lattice relationship. They are developed
+% in <TiltAndTwistBoundaries.html Twist and Tilt>,
+% <TwinningBoundaries.html Twinning>, and <CSLBoundaries.html CSL>.
+
+%% Next
+%
+% <BoundaryPlots.html Boundary Plots> shows how to colour the selected
+% segments by scalar, directional, and full-misorientation data.
+% <BoundaryProperties.html Grain Boundary Properties> then develops the
+% per-segment values from which more selections can be built.
+
+%% Further reading
+%
+% * F. Bachmann, R. Hielscher, and H. Schaeben,
+% <https://doi.org/10.1016/j.ultramic.2011.08.002 Grain detection from 2d
+% and 3d EBSD data - Specification of the MTEX algorithm>,
+% _Ultramicroscopy_ 111 (2011), 1720-1733.
+% * A. P. Sutton and R. W. Balluffi,
+% <https://obnb.uk/p11642002-interfaces-in-crystalline-materials Interfaces
+% in Crystalline Materials>, Clarendon Press, 1995. This is the standard
+% reference for the crystallography and physics of interfaces.
+% * <https://www.iso.org/standard/74309.html ISO 13067:2020>, _Microbeam
+% analysis - Electron backscatter diffraction - Measurement of average
+% grain size_. It defines EBSD grain-size measurements from two-dimensional
+% sections and the cautions needed when interpreting them.
