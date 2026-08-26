@@ -49,7 +49,8 @@ if isempty(ax)
   spec.inset = [0 0 0 0];
 else
   spec.ratio = lay.ratioOf(ax(1));
-  spec.inset = cell2mat(arrayfun(@(a) axesInset(a),ax,'UniformOutput',false));
+  spec.inset = zeros(numel(ax),4);
+  for k = 1:numel(ax), spec.inset(k,:) = lay.insetOf(ax(k)); end
 end
 
 spec.cBar = colorbarSpec(mtexFig);
@@ -76,6 +77,11 @@ token.axes = double(ax);
 token.cBar = double(mtexFig.cBarAxis(:));
 token.legend = double(mtexFig.legendAxis(:));
 token.fontSize = getMTEXpref('FontSize');
+
+% an sgtitle appears without anything else about the figure changing, so
+% nothing else in this token would notice it
+sg = findobj(mtexFig.parent,'Type','subplottext');
+token.sgTitle = [double(sg(:).'), arrayfun(@(h) h.FontSize,sg(:).')];
 token.spacing = mtexFig.innerPlotSpacing;
 token.grid = [mtexFig.ncols mtexFig.nrows];
 token.mode = mtexFig.layoutMode;

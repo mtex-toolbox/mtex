@@ -91,20 +91,23 @@ classdef mtexFigure < handle
     figTightInset = [10,10,10,10] % is added to figSize
     layoutMode = 'auto' % set to user to fix it
     figSizeFactor = 0 % relative to the full screen
+    outerSpacing = 10 % margin around the whole figure
   end
-  
-  properties (Dependent = true)        
+
+  properties (Dependent = true)
     currentAxes       % current axis
     currentId         % current axis id
     axesWidth         %
     axesHeight        %
     outerPlotSpacing  %
-    dataCursorMenu    % handle of the data cursor context menu  
+    dataCursorMenu    % handle of the data cursor context menu
+    layout            % the @mtexLayout that computes the layout
   end
 
   properties (Access = protected)
     cBarShift
     dcmListener % keeps the lazy data cursor listener alive
+    engine      % the @mtexLayout, built on first use
   end
   
   
@@ -250,12 +253,24 @@ classdef mtexFigure < handle
       end      
     end
     
-    function w = get.outerPlotSpacing(mtexFig)  
-      w = min(mtexFig.figTightInset);
+    function w = get.outerPlotSpacing(mtexFig)
+      % the margin that was asked for, not whatever survived in figTightInset:
+      % a colorbar or legend band grows one side of that, and taking the
+      % minimum of it silently threw an asymmetric margin away
+      w = mtexFig.outerSpacing;
     end
-    
-    function set.outerPlotSpacing(mtexFig,w)  
+
+    function set.outerPlotSpacing(mtexFig,w)
+      mtexFig.outerSpacing = w;
       mtexFig.figTightInset = w * [1,1,1,1];
+    end
+
+    function lay = get.layout(mtexFig)
+      % the layout engine, built the first time it is asked for
+
+      if isempty(mtexFig.engine), mtexFig.engine = mtexLayout; end
+      lay = mtexFig.engine;
+
     end
     
     function aw = get.axesWidth(mtexFig)

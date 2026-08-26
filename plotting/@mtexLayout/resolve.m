@@ -1,8 +1,13 @@
-function plan = resolve(lay,mtexFig)
+function plan = resolve(lay,mtexFig,override)
 % lay the figure out: measure, solve, apply, until the inset stops moving
 %
 % Syntax
 %   plan = lay.resolve(mtexFig)
+%   plan = lay.resolve(mtexFig,override)
+%
+% Input
+%  override - spec fields to force, e.g. a pinned axis size, without writing
+%             them onto the @mtexFigure and having them outlive this call
 %
 % Description
 % The decoration band depends on the size of the axes - a wider axes gets
@@ -19,6 +24,8 @@ function plan = resolve(lay,mtexFig)
 % See also
 % mtexLayout/measure mtexLayout/apply mtexLayout/solveLayout
 
+if nargin < 3, override = struct; end
+
 plan = lay.lastPlan;
 if lay.busy || isempty(mtexFig.children), return; end
 
@@ -30,6 +37,8 @@ maxPasses = 3;
 for pass = 1:maxPasses
 
   spec = lay.measure(mtexFig);
+  for f = fieldnames(override).', spec.(f{1}) = override.(f{1}); end
+
   plan = mtexLayout.solveLayout(spec);
   plan.passes = pass;
 
@@ -45,6 +54,16 @@ for pass = 1:maxPasses
 end
 
 lay.lastPlan = plan;
+
+% hand the results back to @mtexFigure, which is what everything outside this
+% class still reads them from - setColorRange, the doc thumbnail generator,
+% doc/Plasticity/TaylorHex and the plotting tests
+mtexFig.ncols = plan.ncols;
+mtexFig.nrows = plan.nrows;
+mtexFig.axisWidth = plan.axisWidth;
+mtexFig.axisHeight = plan.axisHeight;
+mtexFig.tightInset = plan.inset;
+mtexFig.figTightInset = plan.figInset;
 
 end
 
