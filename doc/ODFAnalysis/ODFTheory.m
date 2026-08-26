@@ -1,128 +1,197 @@
 %% The Orientation Distribution Function
 %
 %%
-% A texture is a population of orientations, and the orientation
-% distribution function (ODF) is how that population is described as a
-% whole: not a list of measured orientations, but a *density* over
-% orientation space.
+% A texture is a population of orientations. The orientation distribution
+% function (ODF) describes that population as a *density* over orientation
+% space, rather than as a list of measured orientations.
 %
-% Density is the word to hold on to. The ODF does not say what percentage of
-% the material sits at one exact orientation - that percentage is zero, as
-% for any continuous distribution. It says how much volume is found *per
-% unit of orientation space* near that orientation,
+% This page assumes the crystal-to-specimen map introduced in
+% <DefinitionAsCoordinateTransform.html Orientation Theory> and the
+% symmetry-equivalent representatives from
+% <OrientationSymmetry.html Orientation Symmetry>.
 %
-% $$\mathrm{odf}(g) = \frac{1}{V} \frac{\mathrm{d}V(g)}{\mathrm{d}g},$$
+% Density is the word to hold on to. No finite fraction of a continuous
+% distribution sits at one exact orientation. An ODF instead says how much
+% material occurs per unit of orientation space near that orientation.
+% Values are reported in *multiples of a random distribution*, mrd. A
+% uniform texture is 1 mrd everywhere; 9 mrd means nine times the random
+% density near that orientation, not nine percent of the material.
 %
-% so a volume fraction is only obtained by integrating over a region of
-% orientations. Here $\mathrm{d}g$ is the normalized volume measure on the
-% symmetry-reduced orientation space: integrating 1 over the whole space
-% gives 1. With that convention the uniform texture has
-% $\mathrm{odf} \equiv 1$, and values are read as *multiples of a random
-% distribution*, mrd.
+% A *plotting convention* states how a reference frame is laid out on
+% screen. The following convention draws Y upward and X to the right. It
+% does not rotate the specimen or change any orientation.
 
 plottingConvention.default('y↑→x');
 
-%% From Measured Orientations to a Density
+%% From a Map to Orientations
 %
-% A titanium alloy, measured by EBSD: an orientation at every point of a
-% hexagonal grid. The crystal shapes drawn on the map show what the colours
-% encode.
+% The example is a titanium alloy measured by EBSD on a hexagonal grid. An
+% orientation is stored at every indexed measurement point.
 
-% import the data
-mtexdata titanium
+% import the data without printing its EBSD summary
+mtexdata titanium silent
 
 %%
+% The map below uses an inverse pole figure key for the specimen Z
+% direction. The overlaid hexagonal prisms make the crystal orientation
+% behind selected colours explicit.
 
 % define the habitus of titanium as a sample hexagonal prism
 cS = crystalShape.hex(ebsd.CS);
 
-% plot colored orientations
-plot(ebsd,ebsd.orientations,'micronbar','off')
+% keep a regular spatial subsample for the crystal and orientation plots
+ebsdPlot = reduce(ebsd,4);
 
-% and on top the orientations represented by rotated hexagonal prism
+% plot coloured orientations
+plot(ebsd,ebsd.orientations,'ipfDirection',zvector,'micronbar','off')
+
+% overlay the orientations as rotated hexagonal prisms
 hold on
-plot(reduce(ebsd,4),40*cS)
+plot(ebsdPlot,40*cS)
 hold off
 
 %%
-% Now forget where each measurement was taken. What is left is a cloud of
-% points in orientation space, here drawn in Euler angles.
-
-plot(ebsd.orientations,'Euler')
-
-%%
-% Orientation space is curved, so no drawing of it is canonical; the
-% alternatives are in <OrientationVisualization3d.html 3D Plots>. What
-% matters here is that the cloud is not uniform - it has regions where the
-% points crowd together.
+% Neighbouring points with similar colours have similar orientations, and
+% the prisms show the corresponding lattice directions. This spatial
+% arrangement is useful for EBSD analysis, but an ODF deliberately discards
+% it.
 %
-% <rotation.calcDensity.html |calcDensity|> turns the cloud into the density
-% behind it, by placing a kernel at every measurement and adding them up,
-% see <DensityEstimation.html Density Estimation>.
+% Keep only the orientations and draw the regular subsample in Bunge Euler
+% angle space.
 
-odf = calcDensity(ebsd.orientations)
+oriPlot = ebsdPlot('indexed').orientations;
+plot(oriPlot,'Euler')
 
-%% Reading Values
+%%
+% The same measurements now form a point cloud. Dense clusters and sparse
+% regions reveal the texture, while their former positions in the map are
+% no longer present.
 %
-% The result is a function, so it can be evaluated anywhere - also at
-% orientations that were never measured.
+% Orientation space is curved, so no drawing of it is canonical. The
+% alternatives are compared in <OrientationVisualization3d.html 3D Plots>.
 
-ori = orientation.byEuler(0,0,0,ebsd.CS);
+%% From Orientations to a Density
+%
+% <rotation.calcDensity.html |calcDensity|> places a kernel at every
+% orientation and adds the kernels. The full indexed pixel list is used
+% here, so equal-area pixels have equal statistical weight.
 
-odf.eval(ori)
-
-%%
-% 0.82 mrd: this orientation is slightly *less* common in the specimen than
-% it would be in an untextured one, where the value would be 1 everywhere.
-% The strongest orientation of this texture is nine times as common as
-% random.
-
-max(odf)
+oriData = ebsd('indexed').orientations;
+odf = calcDensity(oriData)
 
 %%
-% The mean of an ODF is 1 by construction, whatever the texture, which is
-% why a single value only means something relative to it.
+% The printed summary identifies the harmonic representation and its
+% bandwidth. Other ODF representations share the same
+% <SO3FunConcept.html |SO3Fun|> interface.
+%
+% This conversion is an estimate, not a unique rewriting of the points.
+% Its most important choice is the kernel halfwidth. A small halfwidth keeps
+% sample-scale peaks. A large one can merge real components; see
+% <DensityEstimation.html Density Estimation>.
+%
+% The weighting also answers a physical question. Pixel orientations
+% describe mapped area, whereas equally weighted grain mean orientations
+% describe the fraction of grains. The |'weights'| option can make grain
+% areas supply the weights when area fraction is wanted instead.
 
-mean(odf)
+%% Reading Density and Volume
+%
+% An ODF is a function, so it can be evaluated at an orientation that was
+% never measured. Here the orientation has zero Bunge Euler angles.
+
+ori0 = orientation.byEuler(0,0,0,ebsd.CS);
+valueAtOri0 = odf.eval(ori0)
 
 %%
-% A volume fraction, the quantity the density is often mistaken for, comes
-% from integrating over a region - here all orientations within $10^\circ$
-% of the strongest one.
+% The value is 0.8166 mrd, slightly less common than the random density of
+% 1 mrd. The strongest density in this texture is about 9.0003 mrd.
 
-[~,oriMax] = max(odf);
-
-volume(odf,oriMax,10*degree)
+[maxValue,oriMax] = max(odf);
+maxValue
 
 %%
-% Two percent of the material, not nine: the 9 mrd above is a density, and
-% the region it applies to is small.
+% The mean is 1 mrd by construction, whatever the texture. This is why an
+% isolated ODF value only has meaning relative to the random density.
+
+meanValue = mean(odf)
+
+%%
+% A volume fraction comes from integrating over a region. The region below
+% contains every orientation within $10^\circ$ of the strongest one.
+
+volumeFraction = volume(odf,oriMax,10*degree)
+
+%%
+% The result is 0.0235, or about 2.35 percent, not nine percent. The 9 mrd
+% value is a density, and the orientation region around the maximum is
+% small.
 
 %% Looking at an ODF
 %
-% Being a function on a three dimensional space, an ODF can be drawn in 3d,
+% An ODF is a function on a three-dimensional curved space. A 3-D plot can
+% show how the measured orientations relate to its high-density regions.
 
 plot3d(odf,'Euler')
 hold on
-plot(ebsd.orientations,'Euler','MarkerEdgeColor','k')
+plot(oriPlot,'Euler','MarkerEdgeColor','k')
 hold off
 
 %%
-% but equal-looking boxes in Euler angle space do not represent equal
-% orientation-space volumes. The plot is useful for locating components,
-% not for estimating their volume by eye. For this hexagonal example,
-% <SigmaSections.html sigma sections> give a more direct view: position in a
-% section fixes the c-axis direction, while the section angle records the
-% remaining rotation about it.
+% The black point clusters pass through the coloured density lobes. This is
+% the visual connection between the discrete measurements and their ODF.
+%
+% Equal-looking boxes in Euler angle space do not represent equal volumes
+% of orientation space. Use this plot to locate components, not to estimate
+% their volume by eye.
+%
+% For hexagonal crystals, <SigmaSections.html sigma sections> often give a
+% more direct view.
 
 plotSection(odf,'sigma')
 
+%%
+% Position within a section fixes the c-axis direction, while the section
+% angle records the remaining rotation about it. The panels separate the
+% components. They do not invite a volume estimate from distorted boxes.
+%
+% Both plots evaluate the ODF itself.
+% A <ODFPoleFigure.html pole density function> instead integrates the ODF
+% along orientation fibres and therefore loses information.
+
+%% The Maths Behind the Normalization
+%
+% For a region $A$ of orientation space, its material volume fraction is
+%
+% $$\frac{V(A)}{V} = \int_A \mathrm{odf}(g)\,\mathrm{d}g.$$
+%
+% In differential form this is
+%
+% $$\mathrm{odf}(g) = \frac{1}{V}\frac{\mathrm{d}V(g)}{\mathrm{d}g}.$$
+%
+% Here $\mathrm{d}g$ is the normalized volume measure on the
+% symmetry-reduced orientation space. Integrating 1 over the whole space
+% gives 1, so the uniform ODF is $\mathrm{odf}(g)=1$ everywhere.
+%
+% Crystal and specimen symmetry identify equivalent numerical rotations.
+% MTEX carries both symmetries with the ODF. Equivalent copies are not
+% counted as distinct material during evaluation or integration.
+
+%% References
+%
+% * H.-J. Bunge, <https://doi.org/10.1016/C2013-0-11769-2 Texture Analysis in Materials Science: Mathematical Methods>,
+% Butterworths, English ed., 1982. It develops orientation distributions, symmetry and Euler sections.
+% * U. F. Kocks, C. N. Tomé and H.-R. Wenk, <https://books.google.com/books?id=vkyU9KZBTioC Texture and Anisotropy>,
+% Cambridge University Press, 2000. It connects quantitative texture to anisotropic material properties.
+% * H. Schaeben, <https://doi.org/10.1107/S0021889892009270 Towards statistics of crystal orientations in quantitative texture analysis>,
+% _Journal of Applied Crystallography_ 26 (1993), 112--121. It introduces kernel density estimation for orientations.
+
 %% Next
 %
-% How a density is estimated from measurements, and what the halfwidth does
-% to it, is <DensityEstimation.html Density Estimation>. Model ODFs, built
-% rather than measured, are <ODFModeling.html Modeling>, and the numbers
-% that summarise an ODF - texture index, entropy, volume fractions - are
-% <ODFCharacteristics.html Properties>.
+% Continue with <DensityEstimation.html Density Estimation> for kernels and
+% halfwidth selection. <ODFModeling.html Modeling> builds known ODFs, and
+% <ODFCharacteristics.html Properties> extracts texture index, entropy and
+% volume fractions. Diffraction projections begin with
+% <ODFPoleFigure.html Pole Figures>. The next chapter continues with
+% <PoleFigureAnalysis.html pole-figure reconstruction>.
 
 %#ok<*NOPTS>
