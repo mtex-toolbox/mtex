@@ -31,10 +31,24 @@ fi
 
 # A shared engine name is a unix socket under $TMPDIR that MATLAB does not clean
 # up when it exits. A leftover one makes shareEngine error and fall back to a
-# default name, which matlab_run.py then cannot find - so drop it up front. Safe
-# because we already established above that our own session is not running.
+# default name, which matlab_run.py then cannot find - so drop it up front.
+#
+# But only when nothing is serving it. The pid file above says whether OUR
+# session is running, not who owns the socket: run this from a second checkout
+# and it used to unlink a live session's socket and register under its name,
+# leaving that session alive but unreachable for good.
 SOCKET="${TMPDIR:-/tmp}/$SESSION_NAME"
 if [[ -S "$SOCKET" ]]; then
+    # match on the binary, not on shareEngine: the grep below carries the name
+    # in its own argv and pgrep would otherwise report that as the owner
+    owner="$(pgrep -a -f glnxa64/MATLAB | grep -F "shareEngine('$SESSION_NAME')" \
+             | awk '{print $1}' | head -1)"
+    if [[ -n "$owner" ]]; then
+        echo "Session name '$SESSION_NAME' is served by a live MATLAB (pid $owner)."
+        echo "Start this one under another name:  SESSION_NAME=<name> $0"
+        echo "Or stop that session first, if it is yours."
+        exit 1
+    fi
     echo "Removing stale session socket $SOCKET."
     rm -f "$SOCKET"
 fi
