@@ -1,119 +1,172 @@
 %% ODF Component Analysis
 %
 %%
-% A texture is usually described as a handful of *components* - preferred
-% orientations that different deformation or recrystallisation processes
-% produced. Reading an ODF means finding those components and saying how
-% much material belongs to each.
+% A texture is often described by a handful of *components*. Each component
+% has a preferred orientation and a surrounding population of similar
+% orientations, usually produced by a deformation or recrystallisation
+% process. Component analysis asks where these populations are and how much
+% material to assign to each one.
 %
-% The example is a quartz ODF reconstructed from neutron pole figure data.
+% This page assumes the normalisation of an orientation distribution
+% function (ODF) introduced in <ODFTheory.html ODF Theory> and the section
+% geometry introduced in <SigmaSections.html Sigma Sections>. It compares
+% three answers that must not be confused: peak density, volume inside a
+% fixed angular radius, and a partition by modes.
 
-% import Neutron pole figure data from a Quartz specimen
-plottingConvention.default("y↑→x");
+plottingConvention.default('y↑→x');
+
+%% A Measured Texture
+%
+% The example is reconstructed from neutron pole figures of a quartz
+% specimen. <PoleFigureDubna.html The Dubna Example> follows the same data
+% from the measured files. Here the zero-range method handles regions where
+% no intensity was measured.
+
 mtexdata dubna silent
+odf = calcODF(pf,'zeroRange','silent');
 
-% reconstruct the ODF
-odf = calcODF(pf,'zeroRange');
-
-% visualize the ODF in sigma sections
-plotSection(odf,'sigma','sections',12,'layout',[3,4])
-mtexColorbar
-
-%% The Preferred Orientation
-%
-% The ODF has one strong maximum. <SO3Fun.max.html |max|> returns both its
-% value and where it sits.
-
-[value,ori] = max(odf)
+plotSection(odf,'sigma','sections',12,'layout',[3,4]);
+mtexColorbar('title','mrd');
 
 %%
-% As with the MATLAB
-% <https://de.mathworks.com/help/matlab/ref/max.html |max|>, the second
-% output is where the maximum is attained - here 110 times random. Drawn
-% into the sigma sections it lands on the brightest spot.
+% The twelve panels are slices through the same three-dimensional
+% orientation space. Bright compact regions are candidate components, but
+% a feature can continue into a neighbouring slice. Symmetry-equivalent
+% appearances also represent the same physical orientation, not additional
+% components.
 
-annotate(ori)
+%% The Strongest Mode
+%
+% A *mode* is a local maximum of the ODF. The largest mode is the preferred
+% orientation of the whole texture. <SO3Fun.max.html |max|> returns its
+% density and its orientation.
+
+[peakValue,peakOri] = max(odf)
 
 %%
-% |max| also finds local maxima, as many as asked for with |'numLocal'| -
-% which is the first step of a component analysis.
+% The maximum is 110 multiples of a random distribution (mrd).
+% This is a density, not a percentage of material. The black marker sits in
+% the brightest region of the section plot.
 
-[value,ori] = max(odf,'numLocal',3)
+annotate(peakOri,'MarkerFaceColor','black');
 
-annotate(ori(2:end),'MarkerFaceColor','red')
+%% Local Modes
+%
+% With |'numLocal'|, |max| returns the requested number of largest local
+% maxima. Their values are sorted from largest to smallest.
+
+[localValue,localOri] = max(odf,'numLocal',3);
+localValue
+
+annotate(localOri(2:end),'MarkerFaceColor','red');
 
 %%
-% The orientations come back sorted by ODF value: 110, 47 and less.
+% The three modes reach 110, 47, and 32 mrd.
+% The black marker is the global mode and the red markers are the next two.
+% Each lies in a bright neighbourhood; the markers locate peaks but do not
+% define the extent of a component.
 %
-%% Volume Fractions
+% These modes belong to the reconstructed ODF, not directly to the measured
+% pole figures. Resolution, kernel halfwidth, and measurement noise can move
+% or merge weak maxima. Check that a small mode persists under reasonable
+% reconstruction or smoothing choices before assigning it to a physical
+% process. <PoleFigure2ODF.html ODF Estimation> explains those choices.
+
+%% Volume Inside a Fixed Radius
 %
-% The ODF value at a component is not a measure of its importance. A very
-% sharp component reaches a huge value while occupying almost no volume,
-% see <ODFTheory.html Theory>. What matters is the fraction of material
-% within a given disorientation angle of it, which is
-% <SO3Fun.volume.html |volume(odf,ori,delta)|>.
+% Peak density is not a measure of component importance. A sharp component
+% can reach a large value while occupying little volume. A reproducible
+% alternative is the fraction of material within a stated disorientation
+% angle of the mode. <SO3Fun.volume.html |volume(odf,ori,delta)|> integrates
+% the ODF over that orientation-space ball.
 
 delta = 10*degree;
-volume(odf,ori,delta) * 100
-
-
-%%
-% 11, 5 and 4 percent - together far short of 100, which is entirely
-% typical. The reason is that a $10^\circ$ ball is a tiny part of
-% orientation space to begin with: in a uniform texture it would hold
-
-volume(uniformODF(odf.CS),ori(1),delta) * 100
+ballPercent = 100 * volume(odf,localOri,delta)
 
 %%
-% only 0.17 percent of the material. Against that reference the components
-% are enormous - the ratio is how many times more material sits there than
-% a uniform texture would put there.
+% The three balls contain 11, 5, and 4
+% percent of the material. Their sum is far below 100 percent because a
+% $10^\circ$ ball is a small part of orientation space, not because the ODF
+% is missing material. In a uniform texture the same ball would contain
 
-volume(odf,ori,delta) ./ volume(uniformODF(odf.CS),ori,delta)
-
-%%
-% 67, 31 and 24 times. Every number in this section depends on the
-% disorientation angle |delta|, and choosing it too large makes the
-% components overlap.
-
-delta = 40*degree
-volume(odf,ori,delta)*100
+uniformPercent = 100 * volume(uniformODF(odf.CS),localOri(1),delta)
 
 %%
-% At $40^\circ$ the three balls together account for more than 100 percent
-% of the material, since the same crystals are counted in several of them.
+% 0.17 percent. Dividing by that reference gives the enrichment over
+% a uniform texture.
+
+enrichment = ballPercent ./ uniformPercent
+
+%%
+% The enrichments are 67, 31, and 24. Every
+% value in this section depends on |delta|. Choosing it too large makes
+% neighbouring balls overlap.
+
+delta = 40*degree;
+overlapPercent = 100 * volume(odf,localOri,delta)
+overlapTotal = sum(overlapPercent)
+
+%%
+% At $40^\circ$ the three balls sum to 137 percent. The same
+% orientations are counted in several balls, so the total can exceed 100
+% percent. These are three separate neighbourhood measurements, not volume
+% fractions of disjoint components.
+
+%% A Modal Partition
 %
-%% Components That Are Not Balls
+% One radius for every component is a strong assumption. Real components
+% need not be spherical, and neighbouring ones can run into each other.
+% <SO3Fun.calcComponents.html |calcComponents|> instead lets seed
+% orientations climb the ODF gradient and groups seeds that reach the same
+% mode.
 %
-% Fixing one radius for every component is the weakness of the approach:
-% real components are not spherical and neighbouring ones run into each
-% other. <SO3Fun.calcComponents.html |calcComponents|> avoids the choice
-% altogether. It lets a set of seed orientations climb the ODF gradient to
-% nearby maxima, then groups seeds that arrive at the same place. For a
-% radial-basis ODF such as this one, the seeds are its kernel centres and
-% their weights; for other representations MTEX uses an equispaced
-% orientation grid. The reported shares are the accumulated seed weights,
-% so they are a useful modal partition but not the integral over a uniquely
-% defined geometric boundary.
+% For this radial-basis ODF, the seeds are its kernel centres and their
+% positive weights. For another representation, MTEX uses an equispaced
+% orientation grid. The shares below are accumulated seed weights. They
+% form a useful modal partition, but they are not integrals over uniquely
+% defined geometric boundaries.
 
-[ori, vol] = calcComponents(odf);
-ori
-vol * 100
+[componentOri,componentFraction] = calcComponents(odf,'silent');
+componentPercent = 100 * componentFraction
+retainedPercent = sum(componentPercent)
 
 %%
-% 48, 22, 21 and 7 percent in this example. They add up to about 100 because
-% nearly all positive seed weight reaches one of the retained modes; very
-% small modes may be discarded. The maxima themselves agree with those
-% found by |max|, which the white circles show.
+% The four modes contain 48, 22, 21, and
+% 7 percent. They sum to 99 percent because nearly all
+% positive seed weight reaches a retained mode. By default, very small modes
+% may be discarded; use |'exact'| when retaining them matters.
+%
+% The open white circles show the modal centres. The leading centres agree
+% with the maxima located by |max|, while the fourth circle appears because
+% the earlier call requested only three local maxima.
 
-annotate(ori,'MarkerFaceColor','none','MarkerEdgeColor','white',...
-  'linewidth',2,'MarkerSize',15,'marker','o')
+annotate(componentOri,'MarkerFaceColor','none',...
+  'MarkerEdgeColor','white','LineWidth',2,'MarkerSize',15,'Marker','o');
 
-%#ok<*ASGLU>
-%#ok<*NOPTS>
+%% Further Reading
+%
+% * H.-J. Bunge,
+% <https://doi.org/10.1016/C2013-0-11769-2 Texture Analysis in Materials Science>,
+% develops the ODF, orientation distance, and symmetry foundations used here.
+% * U. F. Kocks, C. N. Tomé, and H.-R. Wenk,
+% <https://assets.cambridge.org/97805217/94206/excerpt/9780521794206_excerpt.pdf Texture and Anisotropy>,
+% connect preferred orientations and their volume fractions to material
+% anisotropy.
+% * J.-H. Cho, A. D. Rollett, and K. H. Oh,
+% <https://doi.org/10.1007/s11661-004-0033-8 Determination of Volume Fractions of Texture Components with Standard Distributions in Euler Space>,
+% examine component fractions obtained with a misorientation cutoff.
+% * D. Comaniciu and P. Meer,
+% <https://doi.org/10.1109/34.1000236 Mean Shift: A Robust Approach Toward Feature Space Analysis>,
+% give the general mode-seeking background for gradient-based density
+% partitions.
 
 %% Next
 %
-% Fitting model components to an ODF rather than locating them is
-% <ODFModeling.html Modeling>, and the single numbers that summarise a
-% whole ODF are <ODFCharacteristics.html Properties>.
+% Fitting parametric components to an ODF rather than locating them is
+% <ODFModeling.html Modeling>. The single numbers that summarise a whole ODF
+% are <ODFCharacteristics.html Properties>. Those are global descriptors,
+% whereas the quantities on this page describe selected modes or their
+% neighbourhoods.
+
+%#ok<*ASGLU>
+%#ok<*NOPTS>
