@@ -5,12 +5,14 @@ exits non-zero on a MATLAB error - but reuses the already-warm session instead
 of paying startup cost again.
 """
 import io
+import os
 import sys
 import time
 
 import matlab.engine
 
-SESSION_NAME = "mtexcc"
+# must match what start_session.sh was given, see there
+SESSION_NAME = os.environ.get("SESSION_NAME", "mtexcc")
 POLL_INTERVAL = 0.1
 
 

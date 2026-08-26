@@ -10,7 +10,9 @@ REPO_ROOT="$(cd "$BRIDGE_DIR/../../.." && pwd)"
 # Override for your own install: MATLAB_ROOT=/opt/matlab-R20XXx ./start_session.sh
 MATLAB_ROOT="${MATLAB_ROOT:-/opt/matlab-2024b}"
 MATLAB_BIN="$MATLAB_ROOT/bin/matlab"
-SESSION_NAME="mtexcc"
+# the shared engine name is global to the machine, so a second checkout needs its
+# own: SESSION_NAME=mtexfoo ./start_session.sh
+SESSION_NAME="${SESSION_NAME:-mtexcc}"
 PID_FILE="$BRIDGE_DIR/session.pid"
 LOG_FILE="$BRIDGE_DIR/session.log"
 READY_MARKER="MTEX_BRIDGE_READY"

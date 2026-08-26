@@ -6,7 +6,8 @@ set -uo pipefail
 
 BRIDGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PID_FILE="$BRIDGE_DIR/session.pid"
-SESSION_NAME="mtexcc"
+# must match what start_session.sh was given, see there
+SESSION_NAME="${SESSION_NAME:-mtexcc}"
 
 if [[ ! -f "$PID_FILE" ]]; then
     echo "No session.pid found; nothing to stop."
