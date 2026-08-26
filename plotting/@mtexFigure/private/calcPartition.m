@@ -16,6 +16,12 @@ if ~strcmp(mtexFig.layoutMode,'auto')
 elseif isscalar(mtexFig.children)
   ncols = 1; nrows = 1;
   return
+elseif ~isempty(mtexFig.fixedAxisHeight)
+  % with the axis size fixed there is nothing to maximise - go for a single
+  % row and break into a second one only when it gets too long
+  nrows = 1 + (numel(mtexFig.children) > 4);
+  ncols = ceil(numel(mtexFig.children) / nrows);
+  return
 end
 
 % start with one row partition

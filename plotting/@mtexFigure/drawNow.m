@@ -7,6 +7,18 @@ set(mtexFig.children,'units','pixel');
 % update children to be only the axes of mtexFig
 mtexFig.children = flipud(getAllAxes(mtexFig.parent));
 
+% every spherical plot gets the same axis height, whatever it contains and
+% however many of them share the figure - only the width follows the aspect
+% ratio. A size asked for explicitly still wins, see sphericalAxisHeight.
+mtexFig.fixedAxisHeight = [];
+if ~isempty(mtexFig.children) && isappdata(mtexFig.children(1),'sphericalPlot') ...
+    && ~check_option(varargin,'position')
+  reqSize = get_option(varargin,'figSize');
+  if isempty(reqSize) || isequal(reqSize,getMTEXpref('figSize'))
+    mtexFig.fixedAxisHeight = getMTEXpref('sphericalAxisHeight',[]);
+  end
+end
+
 % this seems to be necessary to get tight inset right
 if ~check_option(varargin,'keepAxisSize') 
   updateLayout(mtexFig);
@@ -78,8 +90,10 @@ else
   screenExtent = getScreenExtent;
 end
 
-% resize figure
-if exist('screenExtent','var')
+% resize figure - a fixed axis height grows the figure to fit, so the size the
+% previous plot left behind never enters
+if ~isempty(mtexFig.fixedAxisHeight) || exist('screenExtent','var')
+  screenExtent = getScreenExtent;
   width = mtexFig.axesWidth;
   height = mtexFig.axesHeight;
   position = [(screenExtent(1,3)-width)/2,(screenExtent(1,4)-height)/2,width,height];

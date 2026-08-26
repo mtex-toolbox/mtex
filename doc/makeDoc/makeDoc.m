@@ -1,6 +1,13 @@
 function makeDoc(varargin)
 % build help with the DocHelp Toolbox
 %
+% OBSOLETE - the published documentation is built by
+% <matlab:disp('~/mtex/web/matlab/makeDoc.m') the homepage repository>, and
+% that is where a change to the build belongs. This script still runs, but it
+% is no longer kept in step: it has none of the figure sizing, the image
+% handling or the link checking the website build grew, so its pages differ
+% from what a reader actually sees.
+%
 % Options
 %  clear
 %  force

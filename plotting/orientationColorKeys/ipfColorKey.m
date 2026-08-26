@@ -95,7 +95,7 @@ classdef ipfColorKey < orientationColorKey
         'ipfDirection',oM.ipfDirection);
             
       try
-        mtexFig.drawNow('figSize','small',varargin{:});
+        mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
       end
 
     end

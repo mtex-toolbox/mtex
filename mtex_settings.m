@@ -41,6 +41,11 @@ setMTEXpref('figSize','large');
 % empty means the actual monitor
 setMTEXpref('screenSize',[]);
 
+% fixed height in pixel of a single spherical plot, so that pole figures,
+% inverse pole figures and fundamental sectors all come out the same size
+% whatever they contain - empty derives it from figSize as for any other plot
+setMTEXpref('sphericalAxisHeight',[]);
+
 % whether to show or not to show a micronbar on EBSD maps
 setMTEXpref('showMicronBar','on')
 
