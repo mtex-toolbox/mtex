@@ -14,7 +14,7 @@ checkFixedHeight;
 checkColorbarSides;
 checkGlobalColorbarSingleAxis;
 checkLegendSides;
-checkInsetIsPerAxes;
+checkInsetApplies;
 
 disp('check_mtexLayout: passed');
 
@@ -186,23 +186,31 @@ end
 end
 
 % -------------------------------------------------------------------------
-function checkInsetIsPerAxes
-% the band has to be wide enough for the worst axes, not for the first one -
-% the old calcTightInset measured children(1) and applied it to all
+function checkInsetApplies
+% one band, measured on the reference axes, has to leave room around every
+% axes - decorations included, and still inside the figure
 
-inset = repmat([10 10 10 10],3,1);
-inset(3,:) = [60 60 60 60];   % the last axes carries big labels
+figSize = [900 700];
+band = [40 30 10 20];
 
-plan = mtexLayout.solveLayout(struct('n',3,'inset',inset,'figSize',[900 700]));
+plan = mtexLayout.solveLayout(struct('n',4,'inset',band,'figSize',figSize));
 
+assert(isequal(plan.inset,band), ...
+  'check_mtexLayout: band came out %s, not %s',mat2str(plan.inset),mat2str(band))
+
+grown = plan.pos + [-band(1) -band(2) 0 0] + ...
+  [0 0 band(1)+band(3) band(2)+band(4)];
+assertInside(grown,figSize,'axes with decorations');
+assertNoOverlap(grown,'axes with decorations');
+
+% given several, the widest wins: mtexFigure passes one, but nothing here
+% should quietly under-reserve if it ever passes more
+several = repmat(band,3,1);
+several(3,:) = [60 60 60 60];
+plan = mtexLayout.solveLayout(struct('n',3,'inset',several,'figSize',figSize));
 assert(all(plan.inset == [60 60 60 60]), ...
   'check_mtexLayout: band is %s, not wide enough for the worst axes', ...
   mat2str(plan.inset))
-
-% and with that band every axes still has its decorations inside the figure
-grown = plan.pos + [-plan.inset(1) -plan.inset(2) 0 0] + ...
-  [0 0 plan.inset(1)+plan.inset(3) plan.inset(2)+plan.inset(4)];
-assertInside(grown,[900 700],'axes with decorations');
 
 end
 

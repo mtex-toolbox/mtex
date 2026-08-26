@@ -92,6 +92,7 @@ classdef mtexFigure < handle
     layoutMode = 'auto' % set to user to fix it
     figSizeFactor = 0 % relative to the full screen
     outerSpacing = 10 % margin around the whole figure
+    referenceAxis     % the axes whose decorations decide the margin, [] for the first
   end
 
   properties (Dependent = true)

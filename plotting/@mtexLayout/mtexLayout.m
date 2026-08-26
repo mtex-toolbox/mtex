@@ -26,9 +26,6 @@ properties (Access = private)
   ratioAxes = gobjects(0,1) % axes the cached ratios belong to
   ratioKey = []           % camera state each was measured under
   ratioValue = []         % height/width
-  insetAxes = gobjects(0,1) % axes the cached decoration bands belong to
-  insetKey = {}           % what each was measured under, see insetOf
-  insetValue = zeros(0,4) % the band
 end
 
 methods (Static)

@@ -49,8 +49,15 @@ if isempty(ax)
   spec.inset = [0 0 0 0];
 else
   spec.ratio = lay.ratioOf(ax(1));
-  spec.inset = zeros(numel(ax),4);
-  for k = 1:numel(ax), spec.inset(k,:) = lay.insetOf(ax(k)); end
+
+  % one axes decides the band for all of them. mtexFigure lays out axes of
+  % equal size and is used from inside MTEX, where they are alike - a figure
+  % that mixes a map with a pole figure wants tiledlayout, not this. Where
+  % the reference guesses low, say which axes to take instead: see
+  % mtexFig.referenceAxis and the 'takeThisAsReference' option of drawNow.
+  ref = mtexFig.referenceAxis;
+  if isempty(ref) || ~any(ref == ax), ref = ax(1); end
+  spec.inset = axesInset(ref);
 end
 
 spec.cBar = colorbarSpec(mtexFig);
@@ -85,6 +92,7 @@ token.sgTitle = [double(sg(:).'), arrayfun(@(h) h.FontSize,sg(:).')];
 token.spacing = mtexFig.innerPlotSpacing;
 token.grid = [mtexFig.ncols mtexFig.nrows];
 token.mode = mtexFig.layoutMode;
+token.ref = double(mtexFig.referenceAxis);
 token.aspect = mtexFig.keepAspectRatio;
 token.fixedHeight = mtexFig.fixedAxisHeight;
 

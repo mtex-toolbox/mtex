@@ -8,8 +8,21 @@ function  drawNow(mtexFig, varargin)
 %  keepAxisSize - keep the axes the size they are and grow the figure instead
 %  colorrange   - passed on to setColorRange
 %  final        - antialias, when generating the documentation
+%  takeThisAsReference - measure the margin on this axes rather than the first
+%
+% Description
+% The margin left around the axes is measured on one of them and used for
+% all, which is what mtexFigure is for: axes of equal size, alike enough that
+% one stands for the others. Where that guesses low - a longer colorbar label,
+% an axis label the first axes does not carry - say which axes to measure:
+%
+%   plot(...,'takeThisAsReference')
 
 if check_option(varargin,'doNotDraw'), return;end
+
+if check_option(varargin,'takeThisAsReference')
+  mtexFig.referenceAxis = mtexFig.currentAxes;
+end
 
 % update children to be only the axes of mtexFig
 mtexFig.children = flipud(getAllAxes(mtexFig.parent));
