@@ -131,9 +131,10 @@ cd ~/mtex/web/matlab && matlab -batch "makeDoc('doc','checkLinks')"       # full
 but is no longer kept in step with the website build, so its pages are not what a
 reader sees. Do not preview against it, and do not port a website build change to it.
 
-A rebuild that only changes the *resolution* of a figure needs `'keepImages'`:
-without it the build's revert step scores the new image as unchanged and restores
-the committed one.
+Figures are published at **twice** the size they are shown at, and the CSS halves
+them again — so the size of an image and the page that embeds it belong together.
+The build's revert pass knows this and keeps anything rendered more than 10% away
+from the committed size; `'keepImages'` skips that pass altogether.
 
 A full build takes far longer than five minutes and republishes into `~/mtex/web`, which is
 the live site — ask before starting one.
