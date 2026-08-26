@@ -12,6 +12,19 @@ resizing. Build a new plot type on it rather than on raw `figure`/`axes` handles
 - Layout comes from the axes **camera**, not the data: `private/calcAxesSize.m` shapes the
   axes like the shadow the plot box casts on screen. Set the camera *before* `drawNow`, or
   the axes is shaped for the wrong view (see `geometry/@crystalShape/plot.m`).
+- **Everything the layout manages is pinned to `Units = 'pixels'`** — the figure, its axes,
+  adopted colorbars, adopted legends — at the moment it enters the layout, and nothing ever
+  switches it back (`@mtexLayout/measure.m`). Do not save-and-restore units around layout
+  code: the old `@mtexFigure` did that at twelve sites, and two of the three `TightInset`
+  reads in `calcTightInset.m` skipped it anyway and silently relied on a caller having
+  switched. Read a position, get pixels.
+- `@mtexLayout` splits the layout into **measure → solve → apply**. `solveLayout` is pure
+  arithmetic — a spec struct in, every position out, no handle either way — which is why
+  `tests/core/check_mtexLayout` can test the layout without opening a figure. `measure` is
+  the only step that touches graphics properties, and it caches behind a token, so a
+  `drawNow` that changes nothing costs one comparison. `apply` writes only positions that
+  moved more than half a pixel; that is what keeps `scaleBar`'s `Position` listener from
+  firing on every pass.
 - `sphericalProjections/` holds the sphere→plane projections (stereographic, equal area,
   equal angle, orthographic, gnomonic); `makeSphericalProjection.m` / `screenProjection.m`
   wire a choice into a plot.
