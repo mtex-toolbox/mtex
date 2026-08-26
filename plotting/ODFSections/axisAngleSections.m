@@ -124,7 +124,7 @@ classdef axisAngleSections < ODFSections
         % plot outer boundary
         [~,cax] = plot(fundamentalSector(oS.jointCS,varargin{:}),'hold',...
           'TR',['\omega = ' xnum2str(oS.angles(sec)./degree,'precision',0.1),'^\circ'],'color',[0.8 0.8 0.8],...
-          'doNotDraw','tag','outerBoundary','noLabel',...
+          'tag','outerBoundary','noLabel',...
           'xAxisDirection','east','zAxisDirection','outOfPlane','hitTest','off',oS.jointCS.how2plot);
         
         % for all generated axes
@@ -142,7 +142,7 @@ classdef axisAngleSections < ODFSections
           if isempty(findall(ax,'tag','innerBoundary'))
             opt= extract_option(varargin,{'color'});
             plot(oS.axesSectors{sec},'parent',ax,'color','k',opt{:},...
-              'doNotDraw','tag','innerBoundary','hitTest','off');
+              'tag','innerBoundary','hitTest','off');
           end
         end
         
@@ -156,7 +156,7 @@ classdef axisAngleSections < ODFSections
       % graphics object per axes
       h = gobjects(1,0);
       for k = 1:length(cax)
-        hk = plot(v,data{:},'parent',cax(k),varargin{:},'doNotDraw');
+        hk = plot(v,data{:},'parent',cax(k),varargin{:});
         h = [h,reshape(hk,1,[])]; %#ok<AGROW>
       end
 

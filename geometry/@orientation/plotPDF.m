@@ -149,13 +149,13 @@ for i = 1:length(h)
   if isa(data,'orientation')
     d = repmat(data,[1 numSym(ori.SS)*length(sh) 1]) .* sh(:).';
     [g,cax] = quiver(r, d(:)-r, ...
-      ori.SS.fundamentalSector(hOpt{:}),ori.SS,'doNotDraw',opt{:});
+      ori.SS.fundamentalSector(hOpt{:}),ori.SS,opt{:});
   elseif isa(data,'vector3d')
     [g,cax] = quiver(r,repmat(data,[1 numSym(ori.SS)*length(sh) 1]),...
-      ori.SS.fundamentalSector(hOpt{:}),ori.SS,'doNotDraw',opt{:});
+      ori.SS.fundamentalSector(hOpt{:}),ori.SS,opt{:});
   else
     [g,cax] = r.plot(repmat(data,[1 numSym(ori.SS)*length(sh) 1]),...
-      ori.SS.fundamentalSector(hOpt{:}),ori.SS,'doNotDraw',opt{:});
+      ori.SS.fundamentalSector(hOpt{:}),ori.SS,opt{:});
   end
 
   if ~check_option(varargin,'noTitle'), mtexTitle(cax(1),char(h{i},'LaTeX')); end

@@ -58,7 +58,7 @@ for ir = 1:length(r)
   end
 
   %  plot
-  [~,cax] = h.line('fundamentalRegion','doNotDraw',varargin{:});
+  [~,cax] = h.line('fundamentalRegion',varargin{:});
 
   if isNew, mtexTitle(cax(1),char(r(ir),'LaTeX')); end
 

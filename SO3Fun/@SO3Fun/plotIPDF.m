@@ -49,7 +49,7 @@ for i = 1:length(r)
   ipdf = radon(SO3F,[],r(i),varargin{:});
   
   % plot it
-  [~,cax] = plot(ipdf,'doNotDraw','smooth','ensureNonNeg',varargin{:});
+  [~,cax] = plot(ipdf,'smooth','ensureNonNeg',varargin{:});
   mtexTitle(cax(1),char(r(i),'LaTeX'));
 
   % store geometry

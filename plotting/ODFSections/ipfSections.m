@@ -119,13 +119,13 @@ classdef ipfSections < ODFSections
       % plot data
       h = plot(v,data{:},oS.sR,oS.CS1,...
         'TR',[int2str(oS.omega(sec)./degree),'^\circ'],...
-        'parent',ax,varargin{:},'doNotDraw');
+        'parent',ax,varargin{:});
 
       if ~check_option(varargin,'noGrid')
         hG = holdOn(ax); %#ok<NASGU>
         S2G = equispacedS2Grid(oS.sR,'resolution',7.5*degree);
         vF = oS.vectorField(S2G,oS.omega(sec));
-        h(end+1) = quiver(S2G,vF,'parent',ax,'doNotDraw','color',0.7*[1 1 1],'HitTest','off');
+        h(end+1) = quiver(S2G,vF,'parent',ax,'color',0.7*[1 1 1],'HitTest','off');
         clear hG
       end
     end

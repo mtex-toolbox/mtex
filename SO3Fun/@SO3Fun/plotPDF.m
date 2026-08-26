@@ -69,7 +69,7 @@ for i = 1:length(h)
     
   % plot the pole density function
   % for a misorientation SS is a crystal symmetry, so pass it for the annotation
-  [~,cax] = plot(pdf,'smooth','doNotDraw','ensureNonNeg',SO3F.SS,varargin{:});
+  [~,cax] = plot(pdf,'smooth','ensureNonNeg',SO3F.SS,varargin{:});
 
   if ~check_option(varargin,'noTitle')
     mtexTitle(cax(1),char(h{i},'LaTeX'));

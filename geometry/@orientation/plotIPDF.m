@@ -93,7 +93,7 @@ for ir = 1:length(r)
 
   %  plot
   [g,cax] = h.plot(repmat(data,1,length(rSym)),'symmetrised',...
-    'fundamentalRegion','doNotDraw',varargin{:});
+    'fundamentalRegion',varargin{:});
   if isNew, mtexTitle(cax(1),char(r(ir),'LaTeX')); end
 
   % plot annotations

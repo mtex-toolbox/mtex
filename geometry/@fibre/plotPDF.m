@@ -63,7 +63,7 @@ for i = 1:length(h)
 
   % for a misorientation fibre SS is a crystal symmetry, r are then crystal
   % directions - passing it lets the plot annotate itself accordingly
-  [~,cax] = r.line('fundamentalRegion','parent',mtexFig.gca,f.SS,'doNotDraw',varargin{:});
+  [~,cax] = r.line('fundamentalRegion','parent',mtexFig.gca,f.SS,varargin{:});
   if ~check_option(varargin,'noTitle')
     mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
   end

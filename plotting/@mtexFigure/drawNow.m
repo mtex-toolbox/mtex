@@ -20,6 +20,11 @@ function  drawNow(mtexFig, varargin)
 
 if check_option(varargin,'doNotDraw'), return;end
 
+% a figure whose layout is held is being built, and the drawNow the builder
+% ends with does all of this - leave as early as 'doNotDraw' does, so that
+% saying so per call buys nothing over holding the figure
+if mtexFig.layout.isHeld, return; end
+
 if check_option(varargin,'takeThisAsReference')
   mtexFig.referenceAxis = mtexFig.currentAxes;
 end
@@ -70,11 +75,6 @@ function drawNowLayout(mtexFig,varargin)
 if isempty(mtexFig.children), return; end
 
 lay = mtexFig.layout;
-
-% held while a command builds the figure - the drawNow it ends with does all
-% of this, and measuring for a size that is about to be discarded is the bulk
-% of what holding the layout is there to avoid
-if lay.isHeld, return; end
 
 % a colorbar or a legend put there by a plain colorbar(...) / legend(...) call
 % has to be taken over before anything reserves room for it
