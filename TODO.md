@@ -314,6 +314,9 @@ copy; only what is still open is summarised here.
 | L24 | Streamline plot — example from Björn | 0 | 0 | idea | Björn | — |
 | L25 | Stereographic methods | 2 | 1 | wip | — | — |
 | L26 | 3D-aware `mtexFigure` layout | 1 | 1 | paused | — | br/mtexFigure3dLayout |
+| L27 | `vector3d`'s own plot commands still pass `'doNotDraw'` to `newSphericalPlot` and lay out themselves at the end — the shape the eleven figure-building commands had before they were given a `layoutHold`. Give each a hold instead and drop the option: `plot`, `scatter`, `smooth`, `surf`, `quiver`, `circle`, `text` | 1 | 0 | planned | — | br/mtexLayout, [→](#l27) |
+| L28 | `plotSeismicVelocities` builds five axes and ends in no `drawNow` at all, so it relies on the per-plot layouts and carries 14 `'doNotDraw'` to suppress them. It cannot take a `layoutHold` until it has a final `drawNow` to release into, and adding one changes the size the figure comes out | 1 | 0 | planned | — | br/mtexLayout |
+| L29 | `@mtexLayout` — the `@mtexFigure` layout split into measure/solve/apply, the arithmetic a pure function testable without a figure. **Not verified against the documentation**: no doc page has been rendered under it, and R2026a has not been tried | 2 | 1 | wip | — | br/mtexLayout, [→](#l29) |
 
 ---
 
@@ -1291,6 +1294,51 @@ the crystal frame, the `HSVDirectionKey` or the sector geometry. The
 hexagonal 622 cache (`id36`) written 2026-07-10 was built while `calcAxis`
 still returned X‖a instead of X‖a*, so α-Ti maps came out rotated 30° about c
 with max RGB deviation 0.79. Cubic was unaffected because a*‖a there.
+
+### L27
+Every plot command ends by laying the figure out, so a command that builds a
+figure a plot at a time lays it out once per plot and throws all but the last
+away. `plotPDF` of three pole figures called `drawNow` thirteen times — three
+each from `newSphericalPlot`, `vector3d/smooth`, `vector3d/text` and
+`mtexTitle` — and measured the axes seventeen times to produce one figure.
+`layoutHold(mtexFig)` suspends the layout and returns an `onCleanup` that
+resumes it; holding while building took that to five measurements and 3.88 s
+to 2.16 s. Take the hold **after** any early return, since releasing does not
+lay out — the `drawNow` the command already ends with does.
+
+`vector3d`'s commands are the ones left. They are entry points, so each needs
+its own hold rather than inheriting one, which is why they were not done with
+the other eleven. `crystalShape/plot`, `crystalSymmetry/plotHKL`+`plotUVW`
+and `symmetry/plot` are in the same position. `crystalShape/plot` is the one
+to be careful with: there `'doNotDraw'` also means "you are a guest in this
+axes" and gates `layoutCrystal`, which sets up a standalone 3d view —
+`view(3)`, `vis3d`, axes off, the rotate widget — and must not run when the
+shape is an overlay on a map.
+
+### L29
+Measured on R2024b: `check_mtexLayout` covers the grid, aspect ratio,
+reserved bands and all four colorbar and legend sides in 70 ms with no figure
+open. A settled layout writes nothing — `apply` skips any position within
+half a pixel — so relaying an unchanged figure went 14-107 ms to 0.3-3.1 ms.
+The unconditional second pass in `drawNow` is gone; every fixture converges
+in one.
+
+Against the legacy layout, `tests/lib/layoutFixtures` agrees to 0-4 px on
+axes and legends. Colorbars differ by 3-8 px on purpose: a bar now hangs off
+the bounding box of the axes the way a legend always has, clear of the
+decorations on its side — hung off the axes box itself it drew over the
+title, and `plotPDF` lost its (100)/(110)/(111) labels. `odfSections` comes
+out about 14% larger, which Ralf accepted 2026-08-26.
+
+What is not done is the part that matters most for a layout change: no
+documentation page has been rendered under it. The layout only ever fails in
+ways that show up as a figure, and every doc image so far was produced by the
+old one. Two fixtures shifted 1-2 px in the last commit, so it is not
+bit-identical to the rest of the branch either.
+
+Do not retry replacing the text-extent round trip in `dataTextInset` without
+reading `matlab_tightinset_zero_gotcha`: two arithmetic substitutions were
+tried and both are wrong, one by 60 px and one by 106 px.
 
 ### B1
 The mex CI matrix build (`.github/workflows/build-mex.yml`) works as of
