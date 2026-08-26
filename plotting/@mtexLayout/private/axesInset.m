@@ -90,11 +90,14 @@ s = ensurecell(get(txt,'string'));
 txt = txt(~cellfun(@isempty,s));
 if isempty(txt), return; end
 
-% reading an extent in pixels corrupts the position, so put it back
+% reading an extent in pixels corrupts the position, so put it back. One set
+% for all of them: switching a text object's units forces a graphics update,
+% and doing it per object made this the most expensive thing in the layout.
 pos = ensurecell(get(txt,'position'));
-set(txt,'unit','pixel')
+set(txt,'Units','pixels')
 ext = cell2mat(ensurecell(get(txt,'extent')));
-for i = 1:numel(txt), set(txt(i),'units','data','position',pos{i}); end
+set(txt,'Units','data')
+set(txt,{'Position'},pos(:))
 
 ap = get(ax,'position');
 inset(1:2) = max([0 0; -ext(:,1:2)]);
