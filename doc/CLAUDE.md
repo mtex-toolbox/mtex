@@ -122,11 +122,18 @@ A **new** `.m` file needs a bridge restart before the session can see it.
 Preview in increasing cost — do not skip a rung:
 
 ```
-matlab -batch "run doc/makeDoc/makeDoc.m"          # offline help into doc/html, gitignored
 cd ~/mtex/web && docker-compose up                 # the whole site at localhost:4000
 cd ~/mtex/web/matlab && matlab -batch "makeDoc('doc','file',<pattern>)"   # fast, sidebars untouched
 cd ~/mtex/web/matlab && matlab -batch "makeDoc('doc','checkLinks')"       # full, sidebars rebuilt
 ```
+
+`doc/makeDoc/makeDoc.m`, the offline MATLAB help, is **obsolete** — it still runs
+but is no longer kept in step with the website build, so its pages are not what a
+reader sees. Do not preview against it, and do not port a website build change to it.
+
+A rebuild that only changes the *resolution* of a figure needs `'keepImages'`:
+without it the build's revert step scores the new image as unchanged and restores
+the committed one.
 
 A full build takes far longer than five minutes and republishes into `~/mtex/web`, which is
 the live site — ask before starting one.

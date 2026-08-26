@@ -23,7 +23,8 @@ classdef mtexFigure < handle
 %  nrows = 1         - number of rows
 %  ncols = 1         - number of columns
 %  axisWidth         - width of an individual axis
-%  axisHeight        - height of an individual axis 
+%  axisHeight        - height of an individual axis
+%  fixedAxisHeight   - height every axis is forced to, [] to derive it from figSize
 %  cbx = 0           - colorbar width
 %  cby = 0           - colorbar height
 %  tightInset        - is added to axisSize
@@ -82,7 +83,8 @@ classdef mtexFigure < handle
     nrows = 1         % number of rows
     ncols = 1         % number of columns
     axisWidth         % width of an individual axis
-    axisHeight        % height of an individual axis 
+    axisHeight        % height of an individual axis
+    fixedAxisHeight   % height every axis is forced to
     cbx = 0           % colorbar width
     cby = 0           % colorbar height
     tightInset = [0,0,0,0] % is added to axisSize
