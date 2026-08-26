@@ -51,9 +51,10 @@ function plan = solveLayout(spec)
 
 spec = withDefaults(spec);
 
-% a decoration band wide enough for every axes - the grid cells are uniform,
-% so one axes with big labels must not be allowed to overflow the others
-inset = max(spec.inset,[],1);
+% what the decorations alone need. inset grows below to hold a colorbar as
+% well, but the bar is placed against the decorations, so keep this apart
+decor = max(spec.inset,[],1);
+inset = decor;
 figInset = spec.figInset;
 
 % reserve the band the colorbar sits in: one per axes eats into every cell,
@@ -114,12 +115,12 @@ if spec.cBar.n == spec.n && spec.n > 0
 
   plan.cBarPos = zeros(spec.n,4);
   for i = 1:spec.n
-    plan.cBarPos(i,:) = attach(pos(i,:),spec.cBar);
+    plan.cBarPos(i,:) = attach(pos(i,:),spec.cBar,decor);
   end
 
 elseif spec.cBar.n == 1
 
-  bar = attach(boundingBox(pos),spec.cBar);
+  bar = attach(boundingBox(pos),spec.cBar,decor);
 
   % a ruler exponent is drawn past the end of the bar and needs the room
   isVertical = any(strcmp(spec.cBar.side,{'east','west'}));
@@ -205,18 +206,21 @@ end
 end
 
 % -------------------------------------------------------------------------
-function pos = attach(box,cBar)
-% put a bar of the given thickness against one side of box, gap away
+function pos = attach(box,cBar,inset)
+% put a bar of the given thickness alongside box, clear of its decorations
+%
+% Clear of the decorations, not of the box: a title sits above the axes, so a
+% northoutside bar hung off the box itself lands on top of it.
 
 switch cBar.side
   case 'west'
-    pos = [box(1)-cBar.gap-cBar.thickness, box(2), cBar.thickness, box(4)];
+    pos = [box(1)-inset(1)-cBar.gap-cBar.thickness, box(2), cBar.thickness, box(4)];
   case 'north'
-    pos = [box(1), box(2)+box(4)+cBar.gap, box(3), cBar.thickness];
+    pos = [box(1), box(2)+box(4)+inset(4)+cBar.gap, box(3), cBar.thickness];
   case 'south'
-    pos = [box(1), box(2)-cBar.gap-cBar.thickness, box(3), cBar.thickness];
+    pos = [box(1), box(2)-inset(2)-cBar.gap-cBar.thickness, box(3), cBar.thickness];
   otherwise % east
-    pos = [box(1)+box(3)+cBar.gap, box(2), cBar.thickness, box(4)];
+    pos = [box(1)+box(3)+inset(3)+cBar.gap, box(2), cBar.thickness, box(4)];
 end
 
 end

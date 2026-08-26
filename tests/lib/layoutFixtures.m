@@ -112,6 +112,7 @@ end
 function ebsd = synthEBSD
 % a 24x24 map - enough for shape and layout, nothing spent on data
 
+rng(0);
 [x,y] = ndgrid((0:23)*0.5,(0:23)*0.5);
 bc = reshape(1:numel(x),size(x));
 ebsd = EBSD(vector3d(x(:),y(:),0*x(:)), rotation.rand(numel(x),1), ...
@@ -122,7 +123,10 @@ end
 
 % -------------------------------------------------------------------------
 function odf = synthODF
+% seeded: two renderings of a fixture have to be comparable by eye, not just
+% by their numbers
 
+rng(0);
 odf = SO3FunRBF(orientation.rand(5,crystalSymmetry('m-3m')), ...
   SO3DeLaValleePoussinKernel('halfwidth',15*degree));
 
