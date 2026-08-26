@@ -144,29 +144,5 @@ set(mtexFig.parent,'Units',old_units);
       set(cBar,'position',[axisPos(1),y,mtexFig.axisWidth-1,pos(4)]);
     end
   end
-  
-function testit
-
-close all
-mtexFig = mtexFigure;
-mtexFig.gca
-rectangle('position',[0,0,1,1])
-axis equal  tight
-title('asdsa')
-xlabel('asd')
-mtexFig.nextAxis;
-rectangle('position',[0,0,1,1])
-axis equal tight
-xlabel('asd')
-
-title('asdasd2')
-axis(mtexFig.children(1),'off')
-axis(mtexFig.children(2),'off')
-
-mtexFig.drawNow
 
 end
-
-
-end
-

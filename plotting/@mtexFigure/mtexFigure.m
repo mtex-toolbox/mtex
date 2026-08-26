@@ -25,8 +25,7 @@ classdef mtexFigure < handle
 %  axisWidth         - width of an individual axis
 %  axisHeight        - height of an individual axis
 %  fixedAxisHeight   - height every axis is forced to, [] to derive it from figSize
-%  cbx = 0           - colorbar width
-%  cby = 0           - colorbar height
+%  referenceAxis     - the axes whose decorations decide the margin
 %  tightInset        - is added to axisSize
 %  figTightInset     - is added to figSize
 %  layoutMode        - 'auto' or 'user'
@@ -85,8 +84,6 @@ classdef mtexFigure < handle
     axisWidth         % width of an individual axis
     axisHeight        % height of an individual axis
     fixedAxisHeight   % height every axis is forced to
-    cbx = 0           % colorbar width
-    cby = 0           % colorbar height
     tightInset = [0,0,0,0] % is added to axisSize
     figTightInset = [10,10,10,10] % is added to figSize
     layoutMode = 'auto' % set to user to fix it
@@ -195,8 +192,8 @@ classdef mtexFigure < handle
       function updateChildren(a,b)
         
         % prevent that this is called by colorbar
-        x = dbstack; 
-        if any(strcmpi(x(2).name,{'colorbar','legend'})), return;end
+        x = dbstack;
+        if numel(x) > 1 && any(strcmpi(x(2).name,{'colorbar','legend'})), return;end
         
         mtexFig.children = flipud(getAllAxes(mtexFig.parent));
       end

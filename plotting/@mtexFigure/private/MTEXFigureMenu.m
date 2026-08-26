@@ -180,9 +180,11 @@ for a = 1:numel(ax)
     end
   end
 
-  mtexFig.drawNow
-
 end
+
+% once the axes have all been changed, not once per axes
+mtexFig.drawNow
+
 end
 
 % Grid Visibility
