@@ -1,34 +1,44 @@
 %% ODF Modeling
 %
 %%
-% An ODF does not have to come from a measurement. A *model ODF* is built
-% from a few numbers - a preferred orientation and a spread, a fibre, a
-% mixture - and it serves three purposes: as a reference to compare a
-% measured texture against, as a starting point for simulating how a texture
-% evolves, and as a way of generating test data with a known answer.
+% An orientation distribution function (ODF) does not have to come from a
+% measurement. A *model ODF* is built from a few chosen ingredients: a
+% preferred orientation and its spread, a fibre, or a mixture of these.
+% Because its ingredients are known, a model ODF can serve as a reference
+% for measured textures, as a starting point for texture-evolution
+% simulations, or as test data with a known answer.
 %
-% Every ODF in MTEX is an <SO3FunConcept.html |@SO3Fun|>, a function on the
-% rotation group, and the model ones differ only in how that function is
-% represented:
+% This page assumes the normalization and multiples of a random distribution
+% (mrd) introduced in <ODFTheory.html ODF Theory>. Every ODF in MTEX follows
+% the <SO3FunConcept.html |@SO3Fun|> interface for functions on the rotation
+% group $SO(3)$. The physical model and its numerical representation are
+% related, but they are not the same choice:
 %
+% || construction || meaning ||
 % || <RadialODFs.html uniform> || constant, the untextured reference ||
-% || <RadialODFs.html unimodal> || a peak of given halfwidth about one orientation ||
-% || <RadialODFs.html multimodal> || several such peaks ||
+% || <RadialODFs.html unimodal> || a radial peak about one orientation ||
+% || <RadialODFs.html multimodal> || several radial peaks ||
 % || <FibreODFs.html fibre> || a peak spread along a curve in orientation space ||
-% || <BinghamODFs.html Bingham> || a peak with three different widths ||
-% || <SO3FunHarmonicRepresentation.html harmonic> || a series expansion, the form pole figure inversion produces ||
+% || <BinghamODFs.html Bingham> || a parametric peak with three independent spreads ||
+% || <SO3FunHarmonicRepresentation.html harmonic representation> || a series expansion, the classical form used for pole figure inversion ||
 %
-% They are freely mixed, because ODFs can be scaled and added.
+% Harmonic names a representation, not another physical peak shape. The
+% current <PoleFigure.calcODF.html |calcODF|> normally returns a radial-basis ODF.
+% It can then be converted to a harmonic series. All of these objects share
+% one interface for evaluation, plotting, scaling, and addition. This is why
+% components with different representations can be mixed in one model.
 
 plottingConvention.default('y↑→x');
 
 %% The Uniform ODF
 %
-% The simplest model is the constant one,
+% The simplest model is the constant function
 %
-% $$f(g) = 1,\quad  g \in SO(3),$$
+% $$f(g) = 1,\quad g \in SO(3).$$
 %
-% which needs nothing but the two symmetries.
+% It needs only the crystal and specimen symmetries. The returned summary is
+% useful here: it records both symmetries and identifies the constant
+% component.
 
 cs = crystalSymmetry('cubic');
 ss = specimenSymmetry('orthorhombic');
@@ -36,13 +46,15 @@ ss = specimenSymmetry('orthorhombic');
 odf = uniformODF(cs,ss)
 
 %%
-% It is the texture a specimen has when it has no texture, and the reference
-% every mrd value is measured against.
+% A value of 1 mrd everywhere is an untextured specimen. This uniform ODF is
+% the reference against which every other mrd value is measured.
 
 %% A Single Component
 %
-% A unimodal ODF is a peak about one orientation, with a shape given by a
-% <SO3Kernels.html kernel> and a width given by its halfwidth.
+% A unimodal ODF is a peak about one preferred orientation. A
+% <SO3Kernels.html kernel> sets the shape, and its halfwidth sets the angular
+% distance at which the kernel falls to half its maximum. The halfwidth is a
+% spread parameter, not a cutoff: the component continues beyond that angle.
 
 psi = SO3vonMisesFisherKernel('halfwidth',10*degree);
 
@@ -51,65 +63,95 @@ mod1 = orientation.byMiller([1,2,2],[2,2,1],cs,ss);
 odf1 = unimodalODF(mod1,psi)
 
 %%
-% Its maximum sits where the component does, and the value there says how
-% concentrated the peak is - a narrower halfwidth means a higher maximum,
-% since the total is fixed at a mean of one.
+% The summary records the kernel, centre, and component weight. The maximum
+% sits at the preferred orientation and its symmetry-equivalent copies. Its
+% value measures concentration rather than volume fraction. A narrower
+% normalized peak has a higher maximum because its mean must remain one.
 
-max(odf1)
+odfMax = max(odf1)
+
+%%
+
+plotPDF(odf1,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal',...
+  'colorRange','equal')
+mtexColorbar('title','mrd')
+
+%%
+% The localized spots are projections of one preferred orientation and its
+% symmetry-equivalent copies. They are not separate components.
 
 %% Mixtures
 %
-% ODFs are added and scaled like functions, so a texture with a background
-% is a weighted sum. The classical Santa Fe example is 27 percent of the
-% component above on top of a uniform background.
+% ODFs are added and scaled like functions, so a textured component can sit
+% on a uniform background. The classical Santa Fe standard is 27 percent of
+% the component above and 73 percent uniform background.
 
 odf = 0.73 * uniformODF(cs,ss) + 0.27 * unimodalODF(mod1,psi)
 
 %%
-% The mean is still 1 - the weights are volume fractions and have to add up
-% to one because both component ODFs are individually normalized. The two
-% peaks may overlap in orientation space; the coefficients still describe
-% the fractions assigned to the two terms of the mixture, not disjoint
-% regions cut out around their maxima.
+% The printed summary separates the uniform and unimodal terms. Both are
+% individually normalized, so their coefficients act as mixture volume
+% fractions. They must add up to one if the mixture is to remain normalized.
 
 mean(odf)
 
 %%
+% The mean is 1. The component peaks may overlap in orientation space, but
+% the coefficients still describe the fractions assigned to the two terms.
+% They are not volumes of disjoint regions drawn around the maxima.
 
 close all
-plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal')
+plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal',...
+  'colorRange','equal')
+mtexColorbar('title','mrd')
 
 %%
-% Against the uniform background, the component shows as the discrete spots.
-% This is the ODF that pole figure inversion is usually tested on: the
-% answer is known, so a reconstruction can be scored against it, see
-% <PoleFigure2ODF.html Reconstructing an ODF>.
+% The uniform term contributes a 0.73 mrd background, while the unimodal
+% term produces the spots. This known model is commonly used to test pole
+% figure inversion; <PoleFigureSantaFe.html The Santa Fe Example> simulates
+% pole figures from it and scores the reconstruction against the answer.
 
 %% Rotating a Model
 %
-% A model built in one frame is moved to another by rotating it, which is
-% how a component is placed relative to the specimen axes.
+% <SO3Fun.rotate.html |rotate|> actively moves a model relative to the
+% specimen axes. By default, the rotation acts on the specimen side of every
+% component orientation.
 
 odfRot = rotate(odf,rotation.byAxisAngle(vector3d.Z,30*degree));
 
-plotPDF(odfRot,Miller(1,0,0,cs),'antipodal')
+plotPDF(odfRot,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal',...
+  'colorRange','equal')
+mtexColorbar('title','mrd')
 
 %%
-% The pole-figure pattern turns by $30^\circ$ about the centre because the
-% rotation is applied on the specimen side of every component orientation.
-% The original |mmm| specimen symmetry was tied to x, y and z, so it is no
-% longer a coordinate-aligned specimen symmetry after this rotation and
-% MTEX drops that label with a warning. The physical twofold axes have
-% rotated with the texture. A passive change of coordinate frame instead
-% requires the corresponding inverse transformation.
+% Compared with the preceding pole figures, every feature turns by
+% $30^\circ$ about the centre. The original |mmm| specimen symmetry was tied
+% to x, y, and z. It is no longer coordinate-aligned after this rotation, so
+% MTEX drops the specimen-symmetry label and issues a warning. The physical
+% twofold axes have rotated with the texture.
+%
+% A frame change is different: it re-expresses the same physical texture in
+% another reference frame and leaves the texture itself untouched. Use
+% <SO3Fun.transformReferenceFrame.html |transformReferenceFrame|> when the
+% crystal frame changes. The corresponding coordinate transformation is
+% inverse to an active rotation.
+
+%% Further Reading
+%
+% * <https://doi.org/10.1016/C2013-0-11769-2 Bunge, Texture Analysis in Materials Science> develops the mathematical foundations of ODFs and their representations.
+% * <https://doi.org/10.1515/9783112736173 Matthies, Vinel, and Helming, Standard Distributions in Texture Analysis> is an atlas of cubic-orthorhombic model textures.
+% * <https://doi.org/10.1063/1.1714396 Roe (1965)> gives the classical harmonic solution of the pole figure inversion problem.
+% * <https://doi.org/10.1023/B:MATG.0000048799.56445.59 Kunze and Schaeben (2004)> develop quaternion Bingham distributions for texture analysis.
 
 %% Next
 %
-% The individual model types have pages of their own, starting with
-% <RadialODFs.html Radial ODFs>. What such a model looks like once it is
-% sampled back into discrete orientations is
-% <RandomSampling.html Random Sampling>, and the numbers that describe any
-% ODF are <ODFCharacteristics.html Properties>.
+% <ODFPlot.html Plotting an ODF> compares the views used to inspect these
+% models. The model-family pages begin with <RadialODFs.html Radial ODFs>.
+% <FibreODFs.html Fibre ODFs> and <BinghamODFs.html Bingham ODFs> cover the
+% other shapes listed above.
+% <RandomSampling.html Random Sampling> turns a model back into discrete
+% orientations, while <ODFCharacteristics.html Properties> extracts the
+% numbers that describe any ODF.
 
 %#ok<*NASGU>
 %#ok<*NOPTS>
