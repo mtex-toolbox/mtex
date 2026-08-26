@@ -28,12 +28,18 @@ end
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
+
+
 % maybe we should call this function with add2all
 if ~isNew && ~check_option(varargin,'parent') && ...
     ((ishold(mtexFig.gca) && length(r)>1) || check_option(varargin,'add2all'))
   plot(SO3F,varargin{:},'add2all');
   return
 end
+
+% every plot command below lays the figure out and the next throws that
+% away - hold it until the figure is finished, see layoutHold
+layoutRelease = layoutHold(mtexFig); %#ok<NASGU>
 
 for i = 1:length(r)
 
@@ -54,6 +60,9 @@ for i = 1:length(r)
 end
 
 if isNew % finalize plot
+
+  % the figure is finished - lay it out, once
+  clear layoutRelease
 
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
   set(gcf,'Name',['Inverse Pole Figures of ',inputname(1)]);

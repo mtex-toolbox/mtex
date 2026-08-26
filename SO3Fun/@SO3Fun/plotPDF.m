@@ -46,6 +46,8 @@ if ~iscell(h), h = mat2cell(h,1,cellfun(@length,c)); end
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
+
+
 % maybe we should call this function with the option add2all
 if ~isNew && ~check_option(varargin,'parent') && ...
     ((ishold(mtexFig.gca) && length(h)>1) || check_option(varargin,'add2all'))
@@ -53,9 +55,9 @@ if ~isNew && ~check_option(varargin,'parent') && ...
   return
 end
 
-% every plot command below ends by laying the figure out, and each of those
-% is thrown away by the next - hold it until there is something final
-if ~isstruct(mtexFig), holdLayout = mtexFig.layout.hold; end %#ok<NASGU>
+% every plot command below lays the figure out and the next throws that
+% away - hold it until the figure is finished, see layoutHold
+layoutRelease = layoutHold(mtexFig); %#ok<NASGU>
 
 for i = 1:length(h)
 
@@ -78,12 +80,8 @@ for i = 1:length(h)
 
 end
 
-% everything is there now, so let it lay out - a new figure is sized by the
-% drawNow below, one we are adding to keeps the size it has
-if ~isstruct(mtexFig)
-  clear holdLayout
-  if ~isNew, mtexFig.layout.resolve(mtexFig); end
-end
+% everything is there now, so let it lay out - once
+clear layoutRelease
 
 if isNew % finalize plot
   set(gcf,'Name',['Pole figures of "',inputname(1),'"']);

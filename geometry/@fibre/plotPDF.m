@@ -27,6 +27,11 @@ function plotPDF(f,varargin)
 % generate a new figure
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
+% every plot command below lays the figure out and the next throws that
+% away - hold it until the figure is finished, see layoutHold
+layoutRelease = layoutHold(mtexFig); %#ok<NASGU>
+
+
 % extract crystal directions
 h = [];
 try h = getappdata(mtexFig.currentAxes,'h'); end %#ok<TRYNC>
@@ -68,6 +73,9 @@ for i = 1:length(h)
 end
 
 if isNew || check_option(varargin,'figSize')
+  % the figure is finished - lay it out, once
+  clear layoutRelease
+
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 

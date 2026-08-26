@@ -21,6 +21,11 @@ function plot(pf,varargin)
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
+% every plot command below lays the figure out and the next throws that
+% away - hold it until the figure is finished, see layoutHold
+layoutRelease = layoutHold(mtexFig); %#ok<NASGU>
+
+
 if nargin > 1 && isnumeric(varargin{1})
   data = mat2cell(varargin{1}(:),cellfun('prodofsize',pf.allI));
 else
@@ -49,6 +54,9 @@ gList = findall(gList,'tag','dynamicMarkerSize');
 try [gList.UserData] = deal(min([gList.UserData])); end %#ok<TRYNC>
 
 if isNew || check_option(varargin,'figSize')
+  % the figure is finished - lay it out, once
+  clear layoutRelease
+
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 
