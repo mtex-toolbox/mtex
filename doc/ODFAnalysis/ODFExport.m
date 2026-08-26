@@ -1,23 +1,26 @@
 %% ODF Export
 %
 %%
-% Export is a choice about which information the receiving program needs.
-% MTEX supports four common representations:
+% Exporting an orientation distribution function (ODF) means choosing what
+% the receiving program needs. MTEX supports four common representations:
 %
-% * a |.mat| file with the MTEX object - exact and binary;
-% * an MTEX ASCII file with its components - exact for supported component
-% representations and readable by MTEX;
+% * a |.mat| file containing the MTEX object, which preserves it as a
+% MATLAB variable;
+% * an MTEX ASCII file describing supported ODF components in readable
+% text;
 % * a generic table of ODF values on an orientation grid;
-% * a VPSC table of weighted discrete orientations.
+% * a VPSC table of discrete orientations and their volume fractions.
 %
-% The last two are finite approximations to a continuous ODF. Record the
-% grid resolution or number of orientations whenever results must be
-% reproducible.
+% The last two are finite approximations to the continuous ODF introduced
+% in <ODFTheory.html ODF Theory>. Record the Euler-angle convention, angle
+% units, grid resolution or number of orientations, crystal symmetry and
+% specimen symmetry whenever the result must be reproducible.
 %
 %% Define a Model ODF
 %
-% We demonstrate the formats with a mixture of uniform, fibre and unimodal
-% components.
+% The examples use one mixture of uniform, fibre and unimodal components.
+% Keeping the ODF fixed makes the differences between the file formats
+% visible.
 
 cs = crystalSymmetry('cubic');
 mod1 = orientation.byAxisAngle(xvector,45*degree,cs);
@@ -30,101 +33,149 @@ model_odf = 0.5*uniformODF(cs) + ...
   0.3*unimodalODF(mod2,'halfwidth',25*degree);
 plot(model_odf,'sections',6,'silent')
 
-%% Save as .mat file
-%
-% The simplest way to store an ODF is to store the corresponding
-% variable |model_odf| as any other MATLAB variable using the command
-% |save|. Note that you have to specify the variable name as a string.
+%%
+% The six sections show a smooth density with localized maxima and fibre
+% ridges on a uniform background. The grid and VPSC exports below replace
+% this continuous function by finitely many rows.
 
-% the filename - all files on this page are written into the temporary
-% directory, so that running it does not overwrite the ODF files shipped
-% with MTEX
-fname = fullfile(tempdir, 'odf.mat');
-save(fname,'model_odf')
+%% Save a MATLAB Object
+%
+% Use MATLAB's |save| when the next step also runs in MATLAB with MTEX.
+% Unlike a table export, this stores |model_odf| itself. Pass the variable
+% name to |save| as text.
+
+matName = fullfile(tempdir,'odf.mat');
+save(matName,'model_odf')
 
 %%
+% Loading the file returns the stored ODF object rather than reconstructing
+% one from sampled values. The assertion makes that round trip executable.
+
+saved = load(matName,'model_odf');
+assert(isa(saved.model_odf,'SO3FunComposition') && ...
+  isequal(eval(saved.model_odf,[mod1,mod2]),eval(model_odf,[mod1,mod2])))
+
+%% Export Values on a Generic Grid
 %
-% Importing a .mat file is done simply by
-
-load(fname)
-
-
-%% Export as a Generic ASCII File
+% By default, <SO3Fun.export.html |export|> writes four columns. The first
+% three are <RotationRepresentations.html Bunge Euler angles> on a regular
+% $5^\circ$ grid, in degrees, and the fourth is the ODF value at that
+% orientation. These values are density values in multiples of a uniform
+% distribution, not volume fractions.
 %
-% By default an ODF is exported as a table with four columns. The first
-% three contain the Euler angles of a regular $5^\circ$ orientation grid;
-% the fourth contains the ODF value at that location. This samples the
-% function rather than preserving its internal representation, so a grid
-% that is too coarse can miss narrow texture components.
+% Sampling does not preserve the internal ODF representation. A grid that
+% is too coarse can miss a narrow component, so choose the resolution from
+% the smallest feature that the receiving calculation must resolve. Here we
+% request $10^\circ$ to keep the example file compact.
 
-% the filename
-fname = fullfile(tempdir, 'odf.txt');
-
-% export the ODF
-export(model_odf,fname,'Bunge')
+genericName = fullfile(tempdir,'odf-generic.txt');
+export(model_odf,genericName,'Bunge','resolution',10*degree)
 
 %%
-% Other Euler-angle conventions and resolutions can be specified with
-% options to <SO3Fun.export.html |export|>. For complete control, construct
-% and pass the orientation grid directly.
+% The header records the symmetries and names the four columns. The first
+% data rows then contain angles and the sampled ODF value.
 
-% define a equispaced grid in orientation space with resolution of 5 degree
-S3G = equispacedSO3Grid(cs,'resolution',5*degree);
-
-% export the ODF by values at these locations
-export(model_odf,fname,S3G,'Bunge','generic')
-
-
-
-%% Export an ODF to an MTEX ASCII File
-% With the |'mtex'| interface the ODF is exported as a human-readable
-% description of its components. MTEX can import this representation again
-% without replacing those components by samples on a grid.
-
-% the filename
-fname = fullfile(tempdir, 'odf.mtex');
-
-% export the ODF
-export(model_odf,fname,'Bunge','interface','mtex')
-
-%%  Export to VPSC format
-%
-% <https://public.lanl.gov/lebenso/ VPSC> and other crystal plasticity
-% codes do not read an ODF but a list of weighted orientations. The VPSC
-% interface therefore draws a discrete sample from the ODF and writes it in
-% the VPSC texture format - a three line header, the number of points, and
-% then one row of Bunge Euler angles plus a weight per orientation.
-%
-% The shorthand |'VPSC'| selects this interface directly. The number of
-% orientations controls how finely the continuous ODF is represented.
-
-fname = fullfile(tempdir, 'odfvpsc.txt');
-
-export(model_odf,fname,'VPSC','points',5000)
-
-%%
-% Let us look at the beginning of the resulting file
-
-fid = fopen(fname);
+disp('Beginning of the generic grid file:')
+fid = fopen(genericName);
 for k = 1:6, disp(fgetl(fid)); end
 fclose(fid);
 
-%%
-% The number of orientations is controlled by the option |'points'|, which
-% defaults to 10000. The counterpart, reading such a file back, is
-% described in <VPSCImport.html Import from VPSC>.
+%% Pass a Grid Directly
+%
+% Other Euler-angle conventions and resolutions are available as options
+% to |export|. For complete control, construct an orientation grid and pass
+% it directly. This example uses an equispaced grid with a nominal
+% resolution of $10^\circ$.
 
-delete(fname)
+S3G = equispacedSO3Grid(cs,'resolution',10*degree);
+gridName = fullfile(tempdir,'odf-equispaced.txt');
+export(model_odf,gridName,S3G,'Bunge','generic')
+
+%% Export an MTEX Component Description
+%
+% The |'mtex'| interface writes a human-readable description of the ODF
+% components. It is intended for re-import into MTEX without replacing
+% supported components by grid samples. It is not a general interchange
+% format, and not every representation is supported: the current exporter
+% records that harmonic components cannot be written in this format.
+
+mtexName = fullfile(tempdir,'odf.mtex');
+export(model_odf,mtexName,'Bunge','interface','mtex')
+
+%%
+% The beginning of the file identifies the symmetries and the uniform
+% component. Later blocks describe the fibre and radial components.
+
+disp('Beginning of the MTEX component file:')
+fid = fopen(mtexName);
+for k = 1:8, disp(fgetl(fid)); end
+fclose(fid);
+
+%% Export a Synthetic Polycrystal for VPSC
+%
+% The <https://github.com/lanl/VPSC_code VPSC code> and other crystal
+% plasticity programs operate on discrete crystal orientations rather than
+% directly on an ODF. The |'VPSC'| interface therefore draws orientations
+% from the ODF and writes their Bunge Euler angles and volume fractions.
+% Seeding MATLAB's random number generator makes that draw reproducible.
+
+rng(0)
+vpscName = fullfile(tempdir,'odf-vpsc.txt');
+export(model_odf,vpscName,'VPSC','points',5000)
+
+%%
+% A VPSC block has four header lines. Its fourth line gives the Euler-angle
+% convention and orientation count: |B| means Bunge. Each following row
+% contains three Euler angles in degrees and one volume fraction.
+
+disp('Beginning of the VPSC file:')
+fid = fopen(vpscName);
+for k = 1:6, fprintf('%s\n',fgetl(fid)); end
+fclose(fid);
+
+%%
+% The |'points'| option controls the number of orientations and defaults to
+% 10000. More orientations usually represent the continuous density more
+% finely, but they also make the receiving calculation larger. A VPSC file
+% carries no crystal symmetry, so pass that information separately when it
+% is read. <VPSCImport.html Import from VPSC> shows the return path.
+
+%% Clean Up
+%
+% All examples wrote to MATLAB's temporary directory. Remove every file now
+% that the previews and round-trip check are complete.
+
+delete(matName)
+delete(genericName)
+delete(gridName)
+delete(mtexName)
+delete(vpscName)
 
 %% Choosing a Format
 %
-% Use |.mat| while continuing an analysis in MTEX, and MTEX ASCII when a
-% readable component description is useful. Use a generic grid when the
-% receiving program expects function values, and VPSC when it expects a
-% synthetic polycrystal. Grid spacing and sample size are accuracy
-% parameters, not merely file-format options. The difference between a
-% random statistical sample and an optimized numerical representation is
-% discussed in <RandomSampling.html Random Sampling>.
+% Use |.mat| while continuing an analysis in MATLAB and MTEX. Use MTEX
+% ASCII when a readable description of supported components is useful. Use
+% a generic grid when the receiving program expects function values, and
+% use VPSC when it expects a synthetic polycrystal.
+%
+% Grid spacing and sample size are accuracy parameters, not merely
+% file-format options. <RandomSampling.html Random Sampling> explains why
+% a random statistical sample and an optimized numerical representation
+% are not interchangeable. <ODFImport.html ODF Import> explains how MTEX
+% interprets tabulated values and weights when files are read back.
+% <OrientationExport.html Orientation Export> is the corresponding page
+% when the starting data are already individual orientations rather than
+% an ODF.
 
-
-
+%% References
+%
+% * H.-J. Bunge, <https://doi.org/10.1016/C2013-0-11769-2 Texture Analysis
+% in Materials Science: Mathematical Methods>,
+% Butterworths, 1982. This is the standard reference for ODFs and the Bunge
+% Euler-angle convention.
+% * R. A. Lebensohn and C. N. Tomé,
+% <https://doi.org/10.1016/0956-7151(93)90130-K A self-consistent
+% anisotropic approach for the simulation of plastic deformation and
+% texture development of polycrystals>, _Acta Metallurgica et Materialia_
+% 41 (1993), 2611--2624. This paper introduces the VPSC formulation used by
+% the discrete-orientation export.
