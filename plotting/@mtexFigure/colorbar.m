@@ -71,9 +71,7 @@ if nargout == 1, h = mtexFig.cBarAxis; end
 
     % remember which side was asked for, read off the colorbar and before any
     % Position assignment switches its Location to 'manual'
-    if endsWith(h.Location,'outside')
-      mtexFig.cBarSide = extractBefore(h.Location,'outside');
-    end
+    mtexFig.cBarSide = cBarSideOf(h,mtexFig.cBarSide);
 
     if check_option(varargin,'title')
       h.Label.String = get_option(varargin,'title');

@@ -49,9 +49,7 @@ if ~isempty(found)
 
   % take the side from the colorbar itself, before the layout's Position
   % assignments switch its Location to 'manual'
-  if endsWith(found(1).Location,'outside')
-    mtexFig.cBarSide = extractBefore(found(1).Location,'outside');
-  end
+  mtexFig.cBarSide = cBarSideOf(found(1),mtexFig.cBarSide);
 
   set(found,'Units','pixels');
 
