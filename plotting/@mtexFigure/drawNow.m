@@ -69,12 +69,17 @@ function drawNowLayout(mtexFig,varargin)
 
 if isempty(mtexFig.children), return; end
 
+lay = mtexFig.layout;
+
+% held while a command builds the figure - the drawNow it ends with does all
+% of this, and measuring for a size that is about to be discarded is the bulk
+% of what holding the layout is there to avoid
+if lay.isHeld, return; end
+
 % a colorbar or a legend put there by a plain colorbar(...) / legend(...) call
 % has to be taken over before anything reserves room for it
 adoptColorbars(mtexFig);
 adoptLegend(mtexFig);
-
-lay = mtexFig.layout;
 
 % 'keepAxisSize' means what it says: pin the axes and let the figure grow
 % around them. That is the same problem a fixed axis height poses, so it is
