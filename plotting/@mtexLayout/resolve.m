@@ -34,10 +34,9 @@ done = onCleanup(@() lay.clearBusy); %#ok<NASGU>
 
 maxPasses = 3;
 
-for pass = 1:maxPasses
+spec = withOverride(lay.measure(mtexFig),override);
 
-  spec = lay.measure(mtexFig);
-  for f = fieldnames(override).', spec.(f{1}) = override.(f{1}); end
+for pass = 1:maxPasses
 
   plan = mtexLayout.solveLayout(spec);
   plan.passes = pass;
@@ -45,11 +44,13 @@ for pass = 1:maxPasses
   if ~lay.apply(mtexFig,plan), break; end
 
   % the axes moved, so the decorations may want different room than they did
-  % when they were measured - the token carries the positions, so this reads
-  % them again rather than answering from the cache
-  after = lay.measure(mtexFig);
+  % when they were measured. Measuring is the expensive part of a layout - on
+  % a contour plot every text object touched costs a contour recompute - so
+  % this measurement is the next pass's, not an extra one to confirm with.
+  before = max(spec.inset,[],1);
+  spec = withOverride(lay.measure(mtexFig),override);
 
-  if max(abs(max(after.inset,[],1) - max(spec.inset,[],1))) <= 1, break; end
+  if max(abs(max(spec.inset,[],1) - before)) <= 1, break; end
 
 end
 
@@ -68,6 +69,8 @@ mtexFig.figTightInset = plan.figInset;
 end
 
 % -------------------------------------------------------------------------
-function setBusy(lay,tf)
-lay.busy = tf;
+function spec = withOverride(spec,override)
+
+for f = fieldnames(override).', spec.(f{1}) = override.(f{1}); end
+
 end
