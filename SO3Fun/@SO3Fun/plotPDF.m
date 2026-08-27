@@ -46,12 +46,18 @@ if ~iscell(h), h = mat2cell(h,1,cellfun(@length,c)); end
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
+
+
 % maybe we should call this function with the option add2all
 if ~isNew && ~check_option(varargin,'parent') && ...
     ((ishold(mtexFig.gca) && length(h)>1) || check_option(varargin,'add2all'))
   plot(SO3F,varargin{:},'add2all');
   return
 end
+
+% every plot command below lays the figure out and the next throws that
+% away - hold it until the figure is finished, see layoutHold
+layoutRelease = layoutHold(mtexFig); %#ok<NASGU>
 
 for i = 1:length(h)
 
@@ -63,7 +69,7 @@ for i = 1:length(h)
     
   % plot the pole density function
   % for a misorientation SS is a crystal symmetry, so pass it for the annotation
-  [~,cax] = plot(pdf,'smooth','doNotDraw','ensureNonNeg',SO3F.SS,varargin{:});
+  [~,cax] = plot(pdf,'smooth','ensureNonNeg',SO3F.SS,varargin{:});
 
   if ~check_option(varargin,'noTitle')
     mtexTitle(cax(1),char(h{i},'LaTeX'));
@@ -73,6 +79,9 @@ for i = 1:length(h)
   setAllAppdata(cax,'h',h{i},'SS',SO3F.SS);
 
 end
+
+% everything is there now, so let it lay out - once
+clear layoutRelease
 
 if isNew % finalize plot
   set(gcf,'Name',['Pole figures of "',inputname(1),'"']);

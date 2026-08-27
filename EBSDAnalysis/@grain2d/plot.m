@@ -124,7 +124,10 @@ elseif nargin>1 && isa(varargin{1},'crystalShape')
   cS = scaling .* rotate(varargin{1},grains.meanOrientation); 
   pos = grains.centroid + ...
     1.1 * max(abs(dot(cS.V,grains.N))).' * grains.N * sign(dot(grains.N,pC.outOfScreen));
-    h = plot(pos + cS,'parent', mP.ax,varargin{:});
+
+  % from varargin{2}: the shape is already in pos + cS, passing it on as well
+  % handed crystalShape/plot the same shape twice
+  h = plot(pos + cS,'parent',mP.ax,varargin{2:end});
   
   plotBoundary = false;
   

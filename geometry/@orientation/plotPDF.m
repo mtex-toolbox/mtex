@@ -44,6 +44,8 @@ end
 
 [mtexFig,isNew] = newMtexFigure(dcMode{:},varargin{:});
 
+
+
 h = [];
 if nargin > 1
   if isa(varargin{1},'Miller')
@@ -59,6 +61,10 @@ if ~isNew && ~check_option(varargin,'parent') && ...
   plot(ori,varargin{:},'add2all');
   return
 end
+
+% every plot command below lays the figure out and the next throws that
+% away - hold it until the figure is finished, see layoutHold
+layoutRelease = layoutHold(mtexFig); %#ok<NASGU>
 
 % extract data
 if check_option(varargin,'property')
@@ -143,13 +149,13 @@ for i = 1:length(h)
   if isa(data,'orientation')
     d = repmat(data,[1 numSym(ori.SS)*length(sh) 1]) .* sh(:).';
     [g,cax] = quiver(r, d(:)-r, ...
-      ori.SS.fundamentalSector(hOpt{:}),ori.SS,'doNotDraw',opt{:});
+      ori.SS.fundamentalSector(hOpt{:}),ori.SS,opt{:});
   elseif isa(data,'vector3d')
     [g,cax] = quiver(r,repmat(data,[1 numSym(ori.SS)*length(sh) 1]),...
-      ori.SS.fundamentalSector(hOpt{:}),ori.SS,'doNotDraw',opt{:});
+      ori.SS.fundamentalSector(hOpt{:}),ori.SS,opt{:});
   else
     [g,cax] = r.plot(repmat(data,[1 numSym(ori.SS)*length(sh) 1]),...
-      ori.SS.fundamentalSector(hOpt{:}),ori.SS,'doNotDraw',opt{:});
+      ori.SS.fundamentalSector(hOpt{:}),ori.SS,opt{:});
   end
 
   if ~check_option(varargin,'noTitle'), mtexTitle(cax(1),char(h{i},'LaTeX')); end
@@ -166,6 +172,9 @@ gList = findall(gList,'tag','dynamicMarkerSize');
 try [gList.UserData] = deal(min([gList.UserData])); end %#ok<TRYNC>
 
 if isNew || check_option(varargin,'figSize')
+  % the figure is finished - lay it out, once
+  clear layoutRelease
+
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 

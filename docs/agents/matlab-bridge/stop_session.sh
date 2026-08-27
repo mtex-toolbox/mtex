@@ -6,7 +6,8 @@ set -uo pipefail
 
 BRIDGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PID_FILE="$BRIDGE_DIR/session.pid"
-SESSION_NAME="mtexcc"
+# must match what start_session.sh was given, see there
+SESSION_NAME="${SESSION_NAME:-mtexcc}"
 
 if [[ ! -f "$PID_FILE" ]]; then
     echo "No session.pid found; nothing to stop."
@@ -30,4 +31,15 @@ fi
 # remove it on exit, so the next start_session.sh fails with "MATLAB session
 # 'mtexcc' already exists" and silently falls back to a default name that
 # matlab_run.py cannot connect to.
-rm -f "${TMPDIR:-/tmp}/$SESSION_NAME"
+#
+# Unless somebody else is serving it - without a pid file to go on, the name
+# alone says nothing about whose socket this is.
+# match on the binary, not on shareEngine: the grep below carries the name in
+# its own argv and pgrep would otherwise report that as the owner
+owner="$(pgrep -a -f glnxa64/MATLAB | grep -F "shareEngine('$SESSION_NAME')" \
+         | awk '{print $1}' | head -1)"
+if [[ -n "$owner" ]]; then
+    echo "Leaving $SESSION_NAME alone: still served by a live MATLAB (pid $owner)."
+else
+    rm -f "${TMPDIR:-/tmp}/$SESSION_NAME"
+fi

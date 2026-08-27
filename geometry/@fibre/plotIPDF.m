@@ -27,12 +27,18 @@ function plotIPDF(f,varargin)
 
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
+
+
 % maybe we should call this function with the option add2all
 if ~isNew && ~check_option(varargin,'parent') && ...
     ((((ishold(mtexFig.gca) && nargin > 1 && isa(varargin{1},'vector3d') && length(varargin{1})>1))) || check_option(varargin,'add2all'))
   plot(ori,varargin{:},'add2all');
   return
 end
+
+% every plot command below lays the figure out and the next throws that
+% away - hold it until the figure is finished, see layoutHold
+layoutRelease = layoutHold(mtexFig); %#ok<NASGU>
 
 % find inverse pole figure direction
 r = [];
@@ -52,7 +58,7 @@ for ir = 1:length(r)
   end
 
   %  plot
-  [~,cax] = h.line('fundamentalRegion','doNotDraw',varargin{:});
+  [~,cax] = h.line('fundamentalRegion',varargin{:});
 
   if isNew, mtexTitle(cax(1),char(r(ir),'LaTeX')); end
 
@@ -63,6 +69,9 @@ for ir = 1:length(r)
 end
 
 if isNew || check_option(varargin,'figSize')
+  % the figure is finished - lay it out, once
+  clear layoutRelease
+
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 

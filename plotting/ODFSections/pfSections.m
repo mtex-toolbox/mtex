@@ -139,13 +139,13 @@ classdef pfSections < ODFSections
       % plot data
       % a section is a pole figure of h1, so it lives in the reference frame of SS
       h = plot(v,data{:},oS.sR,oS.SS,'TR',[int2str(oS.omega(sec)./degree),'^\circ'],...
-        'parent',ax,varargin{:},'doNotDraw');
+        'parent',ax,varargin{:});
 
       if ~check_option(varargin,'noGrid')
         hG = holdOn(ax); %#ok<NASGU>
         r = equispacedS2Grid(oS.sR,'resolution',15*degree);
         vF = oS.vectorField(r,oS.omega(sec));
-        h(end+1) = quiver(r,vF,'parent',ax,'doNotDraw','color',0.7*[1 1 1],'HitTest','off');
+        h(end+1) = quiver(r,vF,'parent',ax,'color',0.7*[1 1 1],'HitTest','off');
         clear hG
       end
 
@@ -163,7 +163,7 @@ classdef pfSections < ODFSections
       
       % plot data
       h = quiver(v,data{:},oS.sR,'TR',[int2str(oS.omega(sec)./degree),'^\circ'],...
-        'parent',ax,varargin{:},'doNotDraw');
+        'parent',ax,varargin{:});
 
     end
 

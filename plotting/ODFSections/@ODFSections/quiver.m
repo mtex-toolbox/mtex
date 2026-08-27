@@ -17,6 +17,11 @@ function quiver(oS,varargin)
 
 [mtexFig,isNew] = newMtexFigure('ensureAppdata',{{'ODFSections',oS}},varargin{:});
 
+% every plot command below lays the figure out and the next throws that
+% away - hold it until the figure is finished, see layoutHold
+layoutRelease = layoutHold(mtexFig); %#ok<NASGU>
+
+
 add2all = check_option(varargin,'add2all') || ...
   (numSections(oS)>1 && length(mtexFig.children)>1);
 
@@ -100,6 +105,9 @@ end
 setColorRange(mtexFig,'equal');
 
 %if isNew || check_option(varargin,'figSize')
+% the figure is finished - lay it out, once
+clear layoutRelease
+
 mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
   
 dcm = datacursormode(mtexFig.parent);

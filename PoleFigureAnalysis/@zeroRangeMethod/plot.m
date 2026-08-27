@@ -16,7 +16,7 @@ for i = 1:length(zrm.density)
   % compute zero range
   isZero = double(zrm.checkZeroRange(S2G,i));
     
-  S2G.plot(isZero,'parent',mtexFig.gca,'contourf','colorRange',[0,1],'doNotDraw',varargin{:});
+  S2G.plot(isZero,'parent',mtexFig.gca,'contourf','colorRange',[0,1],varargin{:});
 
   mtexTitle(mtexFig.gca,char(zrm.pf.allH{i},'LaTeX'));
   

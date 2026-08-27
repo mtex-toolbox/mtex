@@ -124,6 +124,7 @@ budget, trim from outside these first.
 | `holdOn`/`holdRelease` semantics | `core/check_holdGuard` |
 | `setMTEXpref`/`getMTEXpref` round trip | `core/check_mtexPref` |
 | command window text wrapping, hyperlink integrity | `core/check_wraptext` |
+| the layout arithmetic itself — grid, aspect ratio, reserved bands, all four colorbar and legend sides — no figure involved | `core/check_mtexLayout` |
 | `mtexFigure` layout, colorbar placement | `plotting/check_colorbarLocation` |
 | micron bar, reference frame indicator | `plotting/check_scaleBar` |
 | polar histogram of directions, `setView` on a polaraxes | `plotting/check_polarHistogram` |

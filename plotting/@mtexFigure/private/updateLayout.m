@@ -6,8 +6,14 @@ if isempty(mtexFig.children), return;end
 % adopt colorbars and legends added by a plain colorbar(...) call, otherwise the
 % layout hands the axes the whole figure and pushes them off it - the tight
 % inset has to be recomputed on any such change, it reserves the band
-changed = adoptColorbars;
+changed = adoptColorbars(mtexFig);
 changed = adoptLegend(mtexFig) || changed;
+
+if getMTEXpref('newLayout',true)
+  mtexFig.layout.resolve(mtexFig);
+  return
+end
+
 if changed
   [mtexFig.tightInset,mtexFig.figTightInset] = calcTightInset(mtexFig);
 end
@@ -117,64 +123,6 @@ end
 set(mtexFig.parent,'Units',old_units);
 
 
-  function changed = adoptColorbars
-    % sync mtexFig.cBarAxis with the colorbars actually present - see above
-
-    cBar = findobj(mtexFig.parent,'Type','colorbar');
-
-    % order them like mtexFig.children, the layout pairs cBarAxis(i) with children(i)
-    found = gobjects(0,1);
-    if ~isempty(cBar)
-      peer = gobjects(numel(cBar),1);
-      for k = 1:numel(cBar)
-        try peer(k) = cBar(k).Axes; catch, end %#ok<TRYNC>
-      end
-      for k = 1:numel(mtexFig.children)
-        found = [found; cBar(peer == mtexFig.children(k))]; %#ok<AGROW>
-      end
-    end
-
-    old = reshape(mtexFig.cBarAxis(:),[],1);
-
-    % the empty cases are spelled out separately: cBarAxis starts out as []
-    % (a double), so comparing it to a graphics array with == would throw
-    if isempty(old) || isempty(found)
-      changed = ~(isempty(old) && isempty(found));
-    else
-      % a stale handle - the colorbar was deleted meanwhile - counts as a
-      % change too, and has to be caught before == sees it
-      changed = numel(old) ~= numel(found) || ~all(isgraphics(old)) || ...
-        ~all(found == old);
-    end
-
-    if changed
-      % all colorbar geometry here is in pixels, a plain colorbar(...) is normalized
-      if ~isempty(found)
-
-        % take the side from the colorbar itself, before the Position
-        % assignments below switch its Location to 'manual'
-        if endsWith(found(1).Location,'outside')
-          mtexFig.cBarSide = extractBefore(found(1).Location,'outside');
-        end
-
-        set(found,'Units','pixels');
-
-        % give them the thickness mtexFig.colorbar uses, before the inset is recomputed
-        for k = 1:numel(found)
-          pos = found(k).Position;
-          if pos(3) < pos(4)  % vertical bar
-            pos(3) = getMTEXpref('FontSize');
-          else                % horizontal bar
-            pos(4) = getMTEXpref('FontSize');
-          end
-          found(k).Position = pos;
-        end
-      end
-      mtexFig.cBarAxis = found;
-    end
-
-  end
-
   function resizeColorBar(cBar)
 
     pos = get(cBar,'position');
@@ -196,29 +144,5 @@ set(mtexFig.parent,'Units',old_units);
       set(cBar,'position',[axisPos(1),y,mtexFig.axisWidth-1,pos(4)]);
     end
   end
-  
-function testit
-
-close all
-mtexFig = mtexFigure;
-mtexFig.gca
-rectangle('position',[0,0,1,1])
-axis equal  tight
-title('asdsa')
-xlabel('asd')
-mtexFig.nextAxis;
-rectangle('position',[0,0,1,1])
-axis equal tight
-xlabel('asd')
-
-title('asdasd2')
-axis(mtexFig.children(1),'off')
-axis(mtexFig.children(2),'off')
-
-mtexFig.drawNow
 
 end
-
-
-end
-

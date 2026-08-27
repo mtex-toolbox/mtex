@@ -27,6 +27,11 @@ function plotPDF(f,varargin)
 % generate a new figure
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
+% every plot command below lays the figure out and the next throws that
+% away - hold it until the figure is finished, see layoutHold
+layoutRelease = layoutHold(mtexFig); %#ok<NASGU>
+
+
 % extract crystal directions
 h = [];
 try h = getappdata(mtexFig.currentAxes,'h'); end %#ok<TRYNC>
@@ -58,7 +63,7 @@ for i = 1:length(h)
 
   % for a misorientation fibre SS is a crystal symmetry, r are then crystal
   % directions - passing it lets the plot annotate itself accordingly
-  [~,cax] = r.line('fundamentalRegion','parent',mtexFig.gca,f.SS,'doNotDraw',varargin{:});
+  [~,cax] = r.line('fundamentalRegion','parent',mtexFig.gca,f.SS,varargin{:});
   if ~check_option(varargin,'noTitle')
     mtexTitle(mtexFig.gca,char(h{i},'LaTeX'));
   end
@@ -68,6 +73,9 @@ for i = 1:length(h)
 end
 
 if isNew || check_option(varargin,'figSize')
+  % the figure is finished - lay it out, once
+  clear layoutRelease
+
   mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:});
 end
 

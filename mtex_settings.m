@@ -63,6 +63,10 @@ pfAnnotations = @(varargin) feval(specimenFrame.default.pfAnnotations,varargin{:
 %pfAnnotations = @(varargin) [];
 setMTEXpref('pfAnnotations',pfAnnotations);
 
+% lay figures out with @mtexLayout; false falls back to the layout @mtexFigure
+% used to do itself, which is there to compare the two against each other
+setMTEXpref('newLayout',true);
+
 % default spacing between multiple plots
 setMTEXpref('outerPlotSpacing',10);
 % setMTEXpref('innerPlotSpacing',10);

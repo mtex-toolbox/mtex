@@ -119,7 +119,7 @@ classdef phi1Sections < ODFSections
       % plot data
       h = plot(v,data{:},oS.sR,'TR',[int2str(oS.phi1(sec)./degree),'^\circ'],...
         'xlabel','$\varphi_2$','ylabel','$\Phi$','dynamicMarkerSize',...
-        'parent',ax,'projection','plain', varargin{:},'doNotDraw');
+        'parent',ax,'projection','plain', varargin{:});
 
       h.Parent.YDir = "reverse";
 
@@ -139,7 +139,7 @@ classdef phi1Sections < ODFSections
       h = quiver(v,data{:},oS.sR,'TR',[int2str(oS.phi1(sec)./degree),'^\circ'],...
       'parent',ax,'projection','plain','xAxisDirection','east',...
         'xlabel','$\varphi_2$','ylabel','$\Phi$',...
-        'zAxisDirection','intoPlane',varargin{:},'doNotDraw');
+        'zAxisDirection','intoPlane',varargin{:});
 
     end
 

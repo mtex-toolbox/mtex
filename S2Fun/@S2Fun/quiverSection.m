@@ -21,6 +21,11 @@ if ~sF.isReal
 end
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
+
+% every plot command below lays the figure out and the next throws that
+% away - hold it until the figure is finished, see layoutHold
+layoutRelease = layoutHold(mtexFig); %#ok<NASGU>
+
 pC = getClass(varargin,'plottingConvention',sF.how2plot);
 
 omega = linspace(0,2*pi,36);
@@ -70,6 +75,9 @@ for j = 1:length(sF)
   optiondraw(h{j},varargin{:});
 
 end
+
+% the figure is finished - lay it out, once
+clear layoutRelease
 
 if isNew, mtexFig.drawNow('figSize',getMTEXpref('figSize'),varargin{:}); end
 

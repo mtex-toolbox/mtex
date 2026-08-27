@@ -107,7 +107,12 @@ elseif nargin>1 && isa(varargin{1},'crystalShape')
   if s == 0, s = 1; end % the map is seen edge on - either side will do
 
   pos = ebsd.pos + s * cS.diameter * ebsd.N;
-  plot(pos.x,pos.y,pos.z,ebsd.orientations * cS,varargin{2:end});
+
+  % into the map axes, not a figure of its own: say so rather than leaving it
+  % to whether one happened to exist. crystalShape/plot sets up a standalone
+  % 3d view - camera, vis3d, the rotate widget - and none of that belongs on
+  % a map, which has a plotting convention of its own
+  h = plot(pos.x,pos.y,pos.z,ebsd.orientations * cS,'parent',mP.ax,varargin{2:end});
   
 else % phase plot
 
