@@ -191,6 +191,9 @@ switch method
       '''steepestDescent''.'],method)
 end
 warmUp = get_option(varargin,'warmUp',ceil(maxIter/5));
+
+% the warm up has to leave one iteration for the weights, see above
+warmUp = min(warmUp,maxIter-1);
 tolWeights = get_option(varargin,'tolWeights',1e-3/M);
 tolJ = get_option(varargin,'tolJ',1e-4);
 minWeight = get_option(varargin,'minWeight',0);
@@ -285,8 +288,12 @@ for i = 1:maxIter
   % the weights join the iteration once the points have settled, see above
   moveWeights = ~isempty(z) && i > warmUp;
 
-  % a gradient carried over from the warm up has no weight block yet
-  if moveWeights && ~moveWeightsOld, gValid = false; end
+  % The iteration that lets the weights in starts a new problem: the gradient
+  % carried over from the warm up has no weight block yet, the secant pairs
+  % describe the directions alone, and the step size the line search shrank
+  % for them is orders of magnitude too small for the softmax block.
+  weightsEnter = moveWeights && ~moveWeightsOld;
+  if weightsEnter, gValid = false; S = []; Y = []; end
   moveWeightsOld = moveWeights;
 
   % ------------------------------ gradient -------------------------------
@@ -342,8 +349,10 @@ for i = 1:maxIter
   cap = pi/max(norm(dir));
   if any(dZ ~= 0), cap = min(cap, 1/max(abs(dZ))); end
 
-  % line search with Armijo
-  if isempty(S)
+  % line search with Armijo - a restart starts at the largest admissible step
+  if weightsEnter
+    stepSize = cap;
+  elseif isempty(S)
     stepSize = min(2*stepSize, cap);
   else
     stepSize = min(1, cap);
@@ -378,7 +387,10 @@ for i = 1:maxIter
   % of convergence: the weights approach their optimum in many steps that are
   % individually below tolWeights, and whether the very first of them happens
   % to fall under it is a matter of luck. Ask the functional itself instead.
-  converged = max(angle(v,vNew)) < tol && max(abs(cNew-c)) < tolWeights;
+  % The iteration that lets the weights in is a restart with an empty memory,
+  % hence its step says nothing about convergence either.
+  converged = ~weightsEnter && ...
+    max(angle(v,vNew)) < tol && max(abs(cNew-c)) < tolWeights;
   if ~isempty(z)
     converged = converged && resOld - resNew < tolJ * resOld;
   end
