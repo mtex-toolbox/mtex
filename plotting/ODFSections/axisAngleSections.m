@@ -96,9 +96,9 @@ classdef axisAngleSections < ODFSections
     
     function [S2Pos,secPos] = project(oS,ori,varargin)
     
-      % symmetrise
+      % symmetrise - ori x sym, as the other section classes return it
       if check_option(varargin,'complete')
-        ori = quaternion(ori.symmetrise('proper'));
+        ori = quaternion(ori.symmetrise('proper')).';
       else
         ori = quaternion(ori.project2FundamentalRegion);
       end
