@@ -19,7 +19,7 @@ function varargout = shearModulus(C,varargin)
 % $$G = \frac{1}{4 S_{ijkl} h_i u_j h_k u_l}$$
 %
 % See also
-% tensor/YoungsModulus tensor/volumeCompressibility tensor/ChristoffelTensor
+% tensor.tensor tensor.tensor tensor.tensor
 
 % take formula using complience
 [varargout{1:nargout}] = shearModulus(inv(C),varargin{:});

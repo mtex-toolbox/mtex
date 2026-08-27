@@ -31,7 +31,7 @@ function f = evalEquispacedFFT(SO3F,rot,varargin)
 %   v = evalEquispacedFFT(SO3F,rot);
 %
 % See also
-% SO3FunHarmonic/eval SO3FunHarmonic/evalNFSOFT SO3FunHarmonic/evalSectionsEquispacedFFT
+% SO3FunHarmonic/eval SO3FunHarmonic/evalNFSOFT SO3FunHarmonic.SO3FunHarmonic
 
 % TODO: Extend to general equispaced grids and usage by plotting allows to
 % plot SO3FunHarmonics of high bandwidth
@@ -66,7 +66,7 @@ H = [2,4,2]*rot.bandwidth + [2,0,2];
 
 
 % 2) Transform harmonic/Wigner coefficients to Fourier coefficients
-% create ghat -> k x j x l
+% create ghat -> k × j × l
 % flags: 2^0 -> use L_2-normalized Wigner-D functions
 %        2^2 -> fhat are the Fourier coefficients of a real valued function
 %        2^4 -> use right and left symmetry

@@ -20,27 +20,27 @@ function [reconstructPos,idealFun,isRigid] = latticeModel(pos,ij,isIndexed,dxy)
 %   [reconstructPos,idealFun] = latticeModel(pos,ij,isIndexed,dxy)
 %
 % Input
-%  pos       - nEbsd x 2 measured positions (map plane only)
-%  ij        - nEbsd x 2 integer lattice index, from ebsd.lattice
-%  isIndexed - nEbsd x 1 logical, which rows carry a real measurement
+%  pos       - nEbsd × 2 measured positions (map plane only)
+%  ij        - nEbsd × 2 integer lattice index, from ebsd.lattice
+%  isIndexed - nEbsd × 1 logical, which rows carry a real measurement
 %  dxy       - representative grid spacing, from ebsd.lattice
 %
 % Output
-%  reconstructPos - @(IJ) m x 2 positions for any integer index IJ
+%  reconstructPos - @(IJ) m × 2 positions for any integer index IJ
 %  idealFun       - @(IJ) the affine part alone, without the deformation
 %                   correction. spatialDecompositionAlpha wants it for the
 %                   dummy ring, where a regular polygon is the point and
 %                   following the local distortion would only roughen it.
 %  isRigid        - whether the affine fit alone was used
 %
-% See also
-% EBSD/lattice EBSD/private/calcMesh
-%
 % Note calcMesh solves the same problem but is deliberately NOT routed
 % through here: it works in 3d (it carries a z interpolant), it materialises
 % the whole mesh instead of returning a closure, and it scales its rigidity
 % test by mean(norm(unitCell)) where this one uses dxy. Sharing the code
 % would mean changing one of the two criteria.
+%
+% See also
+% EBSD/lattice EBSD/private/calcMesh
 
 % scatteredInterpolant requires double; ij/pos can come in as single
 % (e.g. real imported EBSD data)

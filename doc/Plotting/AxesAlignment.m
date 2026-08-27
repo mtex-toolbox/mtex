@@ -74,9 +74,9 @@ plot(v2,'label','v_2')
 %% Named Reference Frames
 %
 % Frames have an identity and named axes. The frame of the instrument is
-% <specimenFrame.measurement.html |specimenFrame.measurement|> with the
+% <specimenFrame.specimenFrame.html |specimenFrame.measurement|> with the
 % axes |X1|, |Y1|, |Z1| in Oxford notation. For rolled sheets the frame
-% <specimenFrame.rolling.html |specimenFrame.rolling|> names its axes
+% <specimenFrame.specimenFrame.html |specimenFrame.rolling|> names its axes
 % |RD|, |TD|, |ND| and comes with the typical rolling geometry
 % convention, RD to the north and TD to the west
 

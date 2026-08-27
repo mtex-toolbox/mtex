@@ -5,7 +5,7 @@ classdef specimenFrame < referenceFrame
 % operation: the measurement frame of the instrument (X, Y, Z), the
 % rolling frame (RD, TD, ND), the geological frame. The named factories
 % return the one session instance from the register
-% (<referenceFrame.byName.html |referenceFrame.byName|>); calling the
+% (<referenceFrame.referenceFrame.html |referenceFrame.byName|>); calling the
 % constructor directly always makes a fresh, unregistered frame. The axes
 % names are identity and display only for now - nothing else consumes
 % them yet.

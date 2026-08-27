@@ -5,24 +5,24 @@ function out = scatterProp(v,ind,sGrid,n)
 %   out = scatterProp(v,ind,sGrid,n)
 %
 % Input
-%  v     - the property as the source holds it: n x 1 or n x k from a list,
-%          r x c or r x c x k if the source was already a grid
+%  v     - the property as the source holds it: n × 1 or n × k from a list,
+%          r × c or r × c × k if the source was already a grid
 %  ind   - grid point each of the n measurements lands on
 %  sGrid - [r c] of the grid being built
 %  n     - number of measurements in the source
 %
 % Output
-%  out   - r x c, or r x c x k for a multi channel property
+%  out   - r × c, or r × c × k for a multi channel property
 %
 % Description
-% An ordinary property is one value per measurement and lands on the (r x c)
+% An ordinary property is one value per measurement and lands on the (r × c)
 % matrix of the map. A multi channel one - a 5 diode forescatter image, an
-% RGB image - has k values per measurement and lands on r x c x k, one plane
+% RGB image - has k values per measurement and lands on r × c × k, one plane
 % per channel, which is the layout @dynProp indexes. Grid points with no
 % measurement stay NaN.
 %
 % n has to be passed rather than read off size(v,1): gridify is also called
-% on a map that is already a grid, whose properties are the (r x c) matrix,
+% on a map that is already a grid, whose properties are the (r × c) matrix,
 % and there size(v,1) is the row count rather than the measurement count.
 %
 % See also

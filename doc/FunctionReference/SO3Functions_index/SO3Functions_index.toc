@@ -1,4 +1,3 @@
-SO3FunctionsOverview Overview
 SO3Fun_index
 SO3FunHandle_index
 SO3FunBingham_index

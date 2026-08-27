@@ -20,15 +20,15 @@ function [u,peak,pos] = xcfShift(A,B,varargin)
 %   [u,peak,pos] = xcfShift(A,B,'ROISize',64,'numROI',[24 18])
 %
 % Input
-%  A, B     - r x c images, the same size
+%  A, B     - r × c images, the same size
 %  mgA, mgB - @mapImage on the same grid, in which case u and pos are in
 %             specimen units rather than pixels
 %
 % Output
-%  u    - n x 1 @vector3d, the displacement from A to B at each tile: the
+%  u    - n × 1 @vector3d, the displacement from A to B at each tile: the
 %         feature at pos in A is at pos + u in B
-%  peak - n x 1 correlation peak height, the fit weight
-%  pos  - n x 1 @vector3d, the tile centres, in A
+%  peak - n × 1 correlation peak height, the fit weight
+%  pos  - n × 1 @vector3d, the tile centres, in A
 %
 % Options
 %  ROISize    - tile width in pixels, default 2^ceil(log2(rows/4))

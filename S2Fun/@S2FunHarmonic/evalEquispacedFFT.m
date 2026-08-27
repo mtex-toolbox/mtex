@@ -60,7 +60,7 @@ Hrho = 2*v.bandwidth+2;
 
 
 % 2) Transform spherical coefficients to Fourier coefficients
-% create ghat -> k x j
+% create ghat -> k × j
 % flags: 2^0 -> use L_2-normalized Wigner-D functions
 %        2^2 -> fhat are the spherical coefficients of a real valued function
 %        2^3 -> fhat are the spherical coefficients of a antipodal function

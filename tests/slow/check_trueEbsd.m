@@ -10,9 +10,9 @@ function check_trueEbsd(varargin)
 % what was chosen is reported so it can be overridden.
 %
 % Real data, so this is a slow-tier test: mtexdata trueEbsdWCCoSmall is the
-% centre half of the WC-Co field of view coarsened 4x, 192 x 256. checkLargeGrid
+% centre half of the WC-Co field of view coarsened 4×, 192 × 256. checkLargeGrid
 % covers what that leaves out - edgeWidth is measured over a centred 512 px
-% window, so on a 192 x 256 map the window is the whole image and the crop that
+% window, so on a 192 × 256 map the window is the whole image and the crop that
 % used to raise MTEX:mapImage:notContiguous never runs.
 %
 % checkSelfSufficient is here because @trueEbsd2 was copied in from the TrueEBSD
@@ -113,7 +113,7 @@ function checkLargeGrid
 %
 % The window used to be taken by striding, and subGrid refuses a stride, so
 % auto edgeWidth raised MTEX:mapImage:notContiguous on every full-size map -
-% invisible at 192 x 256, where the stride is 1. Padding the same content out
+% invisible at 192 × 256, where the stride is 1. Padding the same content out
 % symmetrically leaves the centred window byte for byte identical, so the
 % measured width must be identical too; a stride fails that even without the
 % error, because it grows with the grid.

@@ -13,11 +13,11 @@ function [ij2ebsd,ij2slot,ijMin,ijSize] = latticeLookup(ij)
 % Shared by @EBSD/KAM.m and @EBSD/curvature.m.
 %
 % Input
-%  ij - nEbsd x 2 integer lattice indices
+%  ij - nEbsd × 2 integer lattice indices
 %
 % Output
 %  ij2ebsd - lookup table
-%  ij2slot - function handle, flattens n x 2 integer (i,j) pairs into
+%  ij2slot - function handle, flattens n × 2 integer (i,j) pairs into
 %            linear slots into ij2ebsd
 %  ijMin   - 1x2 minimum (i,j) of the bounding box
 %  ijSize  - 1x2 size of the bounding box

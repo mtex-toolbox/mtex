@@ -4,7 +4,7 @@ function v = nan(varargin)
 % Syntax
 %   v = nan              % a nan vector 
 %   v = nan('antipodal') % a nan axis
-%   v = nan(m,n)         % a m x n matric of nan vectors
+%   v = nan(m,n)         % a m × n matric of nan vectors
 %
 % Input
 %  m,n - double

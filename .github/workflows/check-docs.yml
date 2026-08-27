@@ -1,0 +1,26 @@
+name: documentation structure
+
+# Structural checks only: no MATLAB, so this runs on every push in seconds.
+# It cannot tell whether a page still executes - that needs the toolbox and
+# belongs to the scheduled build.
+
+on:
+  push:
+    paths: ['doc/**', '.github/workflows/check-docs.yml']
+  pull_request:
+    paths: ['doc/**']
+
+jobs:
+  structure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: check the documentation structure
+        run: python3 doc/tools/check_doc_structure.py
+
+      # The published html and the website image directory live in the
+      # mtex-toolbox.github.io repository, so the reference link scan and half
+      # of the image check are skipped here rather than failing. Run
+      #   python3 doc/tools/check_doc_structure.py --published ~/mtex/web/pages
+      # locally to get those two.

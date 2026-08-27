@@ -37,7 +37,7 @@ classdef mapImage
 %   mg = mapImage(img,'dxy',0.05,'name','bse')
 %
 % Input
-%  img  - r x c x k numeric, integer types scaled to [0,1]
+%  img  - r × c × k numeric, integer types scaled to [0,1]
 %  ebsd - @EBSD, gridded and square
 %
 % Output
@@ -50,14 +50,14 @@ classdef mapImage
 %  scanUnit - unit of the positions, default 'um' or the map's own
 %
 % Class Properties
-%  img        - r x c x k values
+%  img        - r × c × k values
 %  name       - what this image is called
 %  ebsd       - @EBSD on the same grid, empty if there is none
 %  origin     - @vector3d, the position of pixel (1,1)
 %  d1, d2     - @vector3d, the step from row to row and column to column
 %  frame      - @referenceFrame the geometry is expressed in
 %  scanUnit   - unit of the positions, taken from the map. Default 'um'
-%  pos        - r x c @vector3d, derived from origin, d1 and d2
+%  pos        - r × c @vector3d, derived from origin, d1 and d2
 %  layout     - @gridLayout the array is stored in, derived from d1 and d2
 %
 % See also
@@ -76,7 +76,7 @@ classdef mapImage
   end
 
   properties (Dependent = true)
-    pos        % r x c @vector3d, one per pixel
+    pos        % r × c @vector3d, one per pixel
     layout     % @gridLayout the array is stored in
     how2plot   % plotting convention - read only, carried by the frame
     dx         % column step length
@@ -147,7 +147,7 @@ classdef mapImage
       end
 
       assert(ndims(mg.img) <= 3,'MTEX:mapImage:tooManyDimensions',...
-        'An image is r x c x k, got %s.',mat2str(size(mg.img)));
+        'An image is r × c × k, got %s.',mat2str(size(mg.img)));
 
       assert(abs(dot(normalize(mg.d1),normalize(mg.d2))) < 1e-6,...
         'MTEX:mapImage:notOrthogonal',...
@@ -220,9 +220,9 @@ classdef mapImage
     function s = char(mg)
 
       sz = gridSize(mg);
-      s = sprintf('%d x %d',sz(1),sz(2));
-      if mg.nChannel > 1, s = sprintf('%s x %d',s,mg.nChannel); end
-      s = sprintf('%s  step %.4g x %.4g',s,mg.dx,mg.dy);
+      s = sprintf('%d × %d',sz(1),sz(2));
+      if mg.nChannel > 1, s = sprintf('%s × %d',s,mg.nChannel); end
+      s = sprintf('%s  step %.4g × %.4g',s,mg.dx,mg.dy);
       if ~isempty(mg.name), s = sprintf('%s  "%s"',s,mg.name); end
       if ~isempty(mg.ebsd), s = [s '  + map']; end
 

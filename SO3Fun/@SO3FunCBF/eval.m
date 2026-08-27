@@ -13,7 +13,7 @@ rot = rot(:);
 
 h = symmetrise(SO3F.h.normalize,'unique');
 
-% rot x SS x CS x h
+% rot × SS × CS × h
 gh = reshape((SO3F.SS.properGroup * rot).' * h, length(rot),[],length(SO3F.h));
 
 f = mean(SO3F.psi.eval(dot(gh,reshape(normalize(SO3F.r),1,1,[]),'noSymmetry')),2);

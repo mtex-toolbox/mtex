@@ -13,8 +13,8 @@ function check_grainMerge
 % merge(grains,twinBoundary,'inclusions','maxSize',5) returned 86 grains
 % where the twin merge alone returns 28.
 % # the value of an option is not a criterion. The dispatch classifies
-% every entry of varargin by type and shape, so an n x 2 numeric value was
-% read as a list of grain pairs - and on a two grain map a 2 x 2 value was
+% every entry of varargin by type and shape, so an n × 2 numeric value was
+% read as a list of grain pairs - and on a two grain map a 2 × 2 value was
 % read as an adjacency matrix. merge(grains,gB,'someOption',[5 10]) merged
 % grains 5 and 10 and dropped gB.
 %

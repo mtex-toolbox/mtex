@@ -65,18 +65,18 @@ eps =  strainTensor(RD * RD) - rho .* strainTensor(TD*TD) ...
 if isa(ori,"orientation")
 
   % rotate the tensile axis within the rolling plane by angle theta
-  % eps -> theta x rho
+  % eps -> theta × rho
   eps =  rotation.byAxisAngle(ND,-theta) *eps;
 
   % the Taylor factor for all strains and all orientations
-  % Taylor factor M = ori x theta x rho
+  % Taylor factor M = ori × theta × rho
   M = calcTaylor(inv(ori) * eps,sS); %#ok<MINV>
 
-  % average the Taylor factor over the texture (ori) -> M = theta x rho
+  % average the Taylor factor over the texture (ori) -> M = theta × rho
   weights = get_option(varargin,'weights',ones(size(ori)));
   weights = weights ./ sum(weights);
   M = weights(:).' * reshape(M,length(ori),[]);
-  % transpose M -> rho x theta
+  % transpose M -> rho × theta
   M = reshape(M,length(theta),length(rho)).';
 
 else

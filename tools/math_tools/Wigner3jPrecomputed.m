@@ -16,7 +16,7 @@ end
 
 disp(['I''m going to compute the Wigner 3j coefficients for l=' int2str(l)]);
 
-% precompute w3j{l} -> (m1 x m2 x L)
+% precompute w3j{l} -> (m1 × m2 × L)
 tmp = zeros(2*l+1,2*l+1,2*l);
 
 for mm1 = -l:l

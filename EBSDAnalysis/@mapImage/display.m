@@ -39,15 +39,15 @@ end
 
 % =========================================================================
 function s = sizeStr(img)
-% r x c, with the channel count only when there is more than one
+% r × c, with the channel count only when there is more than one
 
 if isempty(img), s = '-'; return; end
 
 sz = size(img);
 if numel(sz) > 2 && sz(3) > 1
-  s = sprintf('%d x %d x %d',sz(1),sz(2),sz(3));
+  s = sprintf('%d × %d × %d',sz(1),sz(2),sz(3));
 else
-  s = sprintf('%d x %d',sz(1),sz(2));
+  s = sprintf('%d × %d',sz(1),sz(2));
 end
 
 end
@@ -72,7 +72,7 @@ if dx == 0 || isnan(dx), s = '-'; return; end
 if isnan(dy) || abs(dy-dx) <= 1e-3*max(abs(dx),abs(dy))
   s = [xnum2str(dx) ' ' m.scanUnit];
 else
-  s = [xnum2str(dx) ' x ' xnum2str(dy) ' ' m.scanUnit];
+  s = [xnum2str(dx) ' × ' xnum2str(dy) ' ' m.scanUnit];
 end
 
 end

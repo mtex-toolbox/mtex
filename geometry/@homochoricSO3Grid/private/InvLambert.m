@@ -6,10 +6,10 @@ function q = InvLambert(xyz)
 % quaternions function is an approximization with error <= ~10^(-7)
 % 
 % Input
-%  xyz - ball coordinates N x (x,y,z)
+%  xyz - ball coordinates N × (x,y,z)
 %
 % Output
-%  q - quaternion coordniates N x (a,b,c,d)s
+%  q - quaternion coordniates N × (a,b,c,d)s
 %
 
 

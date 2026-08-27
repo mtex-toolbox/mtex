@@ -21,7 +21,7 @@ function setColorRange(varargin)
 %  zero2white  - color zero values white
 %
 % See also
-% multiplot S2Grid/plot
+% multiplot vector3d.plot
 
 % which figures to touch
 if check_option(varargin,'all')  

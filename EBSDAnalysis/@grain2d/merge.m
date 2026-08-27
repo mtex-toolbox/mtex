@@ -32,7 +32,7 @@ function [grainsMerged,parentId,newInd] = merge(grains,varargin)
 %  boundary - @grainBoundary
 %  M        - merge matrix M(i,j)==1 indicates the grains to be merged
 %  tpList   - @triplePointList
-%  gid      - n x 2 list of grainIds
+%  gid      - n × 2 list of grainIds
 %
 % Output
 %  grainsMerged - @grain2d
@@ -91,7 +91,7 @@ for k = 1:length(varargin)
       && isArgument(varargin,k)
     % adjacency matrix
 
-    % this supindexing is required as varargin{k} is only maxId x maxId
+    % this supindexing is required as varargin{k} is only maxId × maxId
     A(1:maxId,1:maxId) = A(1:maxId,1:maxId) + varargin{k};
 
   elseif  isnumeric(varargin{k}) && size(varargin{k},2) == 2 ...
@@ -336,8 +336,8 @@ function tf = isArgument(varargin_,k)
 %
 % The dispatch above classifies every entry of varargin by its type and
 % shape, which cannot by itself tell a list of grain pairs from the value
-% of some option that happens to be an n x 2 numeric array - and what it
-% mistakes it for depends on the map: on a two grain map any 2 x 2 numeric
+% of some option that happens to be an n × 2 numeric array - and what it
+% mistakes it for depends on the map: on a two grain map any 2 × 2 numeric
 % matches the adjacency matrix, on a larger one it matches the pair list.
 % merge(grains,gB,'someOption',[5 10]) therefore used to merge grains 5 and
 % 10 and, before the fix above, to discard the boundaries as well.

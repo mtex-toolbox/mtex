@@ -62,7 +62,7 @@ if check_option(varargin,'noPseudoDiagonal')
   indV1(end) = [];
   indV1 = indV1(job.isChild);
   
-  % a numV x numV matrix without diagonal
+  % a numV × numV matrix without diagonal
   [i,j] = meshgrid(1:numV,1:numV);
   i(eye(numV)==1) = [];
   j(eye(numV)==1) = [];
@@ -126,7 +126,7 @@ end
 minCluster = get_option(varargin,'minCluster',4);
 s = s .* (full(sum(A>0,2))>=minCluster);
 
-% store in numGrains x numVariant matrix
+% store in numGrains × numVariant matrix
 isVGChild = job.isChild(VG2ind); % isChild in variant graph
 pIdP = nan(length(job.grains),numV);
 pIdP(job.isChild,:) = reshape(s(isVGChild),numV,[]).';

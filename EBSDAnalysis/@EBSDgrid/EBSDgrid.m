@@ -2,8 +2,8 @@ classdef EBSDgrid < EBSD
 % EBSD data stored as a matrix rather than as a list
 %
 % The shared base of @EBSDsquare and @EBSDhex. It carries the matrix layout
-% and nothing else: id, rotations, pos and every prop are (r x c) instead of
-% (n x 1), so the data can be handed to image processing and registration
+% and nothing else: id, rotations, pos and every prop are (r × c) instead of
+% (n × 1), so the data can be handed to image processing and registration
 % tools directly, and ebsd(i,j) addresses a scan position.
 %
 % It is deliberately NOT a capability tier. Everything an EBSD can be asked

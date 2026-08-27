@@ -11,9 +11,9 @@ function [pairs,ori,weights] = getC2CPairs(job,varargin)
 %  average the orientations along the grain boundaries
 %
 % Output
-%  pairs - N x 2 list of grainIds
-%  ori   - N x 2 list of grain orientations
-%  weights - N x 1 list of boundary weights (1 if curvature is not considered)
+%  pairs - N × 2 list of grainIds
+%  ori   - N × 2 list of grain orientations
+%  weights - N × 1 list of boundary weights (1 if curvature is not considered)
 %
 
 % all child to child pairs

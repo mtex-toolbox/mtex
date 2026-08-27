@@ -13,12 +13,12 @@ function [ind,d] = find(v,w,epsilon_or_k,varargin)
 %  k            - int32
 %
 % Output
-%  ind          - numel(w) x k array of *distinct* indices into v for k
+%  ind          - numel(w) × k array of *distinct* indices into v for k
 %                 nearest neighbors,
-%               - numel(w) x numel(v) sparse logical incidence matrix for
+%               - numel(w) × numel(v) sparse logical incidence matrix for
 %                 region search
-%  d            - numel(w) x k double array for k nearest neighbors,
-%               - numel(w) x numel(v) sparse double array for region search
+%  d            - numel(w) × k double array for k nearest neighbors,
+%               - numel(w) × numel(v) sparse double array for region search
 %                 (0 whenever ind is 0)
 %
 % Note that antipodal symmetry is taken from v.antipodal, there is no
@@ -150,10 +150,10 @@ end
 if numSym(cs) >= numSym(ss)
   % fold the specimen symmetry into the data, search with the crystal one
   nRep = numSym(ss);
-  vs = ss*v;                     % numSym(ss) x N
+  vs = ss*v;                     % numSym(ss) × N
 
   if v.antipodal
-    vs = [vs; ss*vi];            % 2*numSym(ss) x N
+    vs = [vs; ss*vi];            % 2*numSym(ss) × N
     nRep = 2*nRep;
   end
 
@@ -163,12 +163,12 @@ if numSym(cs) >= numSym(ss)
 else
   % fold the crystal symmetry into the data, search with the specimen one
   nRep = numSym(cs);
-  vs = (v*cs).';                 % (N x numSym(cs)).' = numSym(cs) x N
+  vs = (v*cs).';                 % (N × numSym(cs)).' = numSym(cs) × N
   triv = crystalSymmetry('1');
   vs.CS = triv; ws.CS = triv;
 end
 
-% both branches are numSym x N, so the column major linearisation groups the
+% both branches are numSym × N, so the column major linearisation groups the
 % nRep copies of each point of v together
 assert(numel(vs) == nRep*N && size(vs,1) == nRep,'MTEX:find:layout',...
   'unexpected layout of the symmetrised orientations')

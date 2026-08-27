@@ -15,7 +15,7 @@ function f = eval(SO3F,rot,varargin)
 %  rot - @rotation (evaluation nodes)
 %
 % Output
-%  f - double [numrot x size(SO3F)]
+%  f - double [numrot × size(SO3F)]
 %
 % Options
 %  bandwidth - cut bandwidth of the harmonic series in evaluation process
@@ -27,7 +27,7 @@ function f = eval(SO3F,rot,varargin)
 %  noNFFT - do direct evaluation of the harmonic series for every orientation (Works for very high bandwidth if the nfft runs out of memory, but gets expensive for many orientations. Hence number of orientations should be less than 100)
 %
 % See also
-% SO3FunHarmonic/evalNFSOFT SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic/evalSectionsEquispacedFFT
+% SO3FunHarmonic/evalNFSOFT SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic.SO3FunHarmonic
 
 if check_option(varargin,'nfsoft')
   f = evalNFSOFT(SO3F,rot,varargin{:});

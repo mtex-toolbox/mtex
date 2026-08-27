@@ -169,7 +169,7 @@ classdef phaseList
       phase(isIndex) = pL.phaseMap(pL.phaseId(isIndex));
 
       % a per entry view takes the shape of the object, while phaseId stays a
-      % column (#2128) - guarded, a @grainBoundary has an n x 2 phaseId
+      % column (#2128) - guarded, a @grainBoundary has an n × 2 phaseId
       if numel(phase) == prod(size(pL)) %#ok<PSIZE>
         phase = reshape(phase,size(pL));
       end
@@ -332,7 +332,7 @@ classdef phaseList
     function varargout = size(pL,varargin)
       % a phase list is always a column vector - note that phaseId itself
       % may have two columns, e.g. for boundaries which store the phases on
-      % both sides. For an empty phase list phaseId is 0 x 0, hence indexing
+      % both sides. For an empty phase list phaseId is 0 × 0, hence indexing
       % its first column would fail.
       if isempty(pL.phaseId)
         [varargout{1:nargout}] = size(zeros(0,1),varargin{:});

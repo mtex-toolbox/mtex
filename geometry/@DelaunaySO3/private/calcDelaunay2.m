@@ -13,7 +13,7 @@ sori = symmetrise(ori).';
 q = reshape(double(sori),[],4);
 q = [q;-q];
 
-% output K is a list of M tetrahegons, i.e., it is a M x 4 matrix
+% output K is a list of M tetrahegons, i.e., it is a M × 4 matrix
 % where the m-th line contains the indices of the points of the m-th
 % tetrahegon
 K = int32(convhulln(q));

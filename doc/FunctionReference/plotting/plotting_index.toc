@@ -1,4 +1,3 @@
-plottingOverview           Overview
 mapPlot                    mapPlot
 scaleBar                   scaleBar
 sphericalPlot              sphericalPlot

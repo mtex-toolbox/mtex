@@ -11,7 +11,7 @@ function pf = loadPoleFigure_xrdml(fname,varargin)
 %  pf    - @PoleFigure
 %
 % See also
-% ImportPoleFigureData
+% PoleFigureImport
 
 assertExtension(fname,'.xml','.xrdml');
 

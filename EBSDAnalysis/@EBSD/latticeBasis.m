@@ -10,8 +10,8 @@ function [A,stencil,dxy] = latticeBasis(ebsd)
 %   [A,stencil,dxy] = ebsd.latticeBasis
 %
 % Output
-%  A       - 2 x 2 basis, columns a1,a2 (physical units)
-%  stencil - k x 2 integer neighbour offsets (k = 4 square, 6 hex)
+%  A       - 2 × 2 basis, columns a1,a2 (physical units)
+%  stencil - k × 2 integer neighbour offsets (k = 4 square, 6 hex)
 %  dxy     - representative cell size
 %
 % See also

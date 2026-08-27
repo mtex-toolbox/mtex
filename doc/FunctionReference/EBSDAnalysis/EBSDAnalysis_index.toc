@@ -1,4 +1,3 @@
-EBSDOverview
 EBSD_index              EBSD
 EBSDsquare_index        EBSDsquare
 EBSDhex_index           EBSDhex

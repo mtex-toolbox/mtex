@@ -8,7 +8,7 @@ function pf = loadPoleFigure_labotex(fname,varargin)
 % pf    - @PoleFigure
 %
 % See also
-% ImportPoleFigureData loadPoleFigure
+% PoleFigureImport PoleFigure.load
 
 % open the file
 fid = efopen(fname);

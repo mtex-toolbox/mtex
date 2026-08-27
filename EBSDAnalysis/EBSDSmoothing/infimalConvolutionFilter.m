@@ -21,26 +21,20 @@ classdef infimalConvolutionFilter < EBSDFilter
   %  method  - inner solver, 'CG' by default
   %  isHex   - is the map on a hexagonal grid
   %
-  % See also
-  % EBSDFilter EBSD/smooth halfQuadraticFilter l1TVFilter
+  % The filter minimises a matrix-valued image against the TV-norm,
   %
-  % matrix-valued image with the TV-norm.
   % \argmin_u{\|u-u_0\|_2^2 + \lambda \|\nabla u\|_{2,1} + \mu \|H u\|_{2,1}},
   % \lambda,\mu > 0
-  % Written by Johannes Persch, Ronny Bergmann, 09.06.2015
-  % function ma_val_im_reg_2nd_ord minimzes the second order model of a
-  % OUTPUT:
-  %  u_hat:       computed minimizer
-  %  diff:        differences of u and v between two successive iterations
   %
-  % 12.05.15 by Markus Loeckel
-  % 25.05.15 substituted gauss seidel by mldivide
-  % 26.05.15 modified SPD by not deleting half of the entries
-  % 30.06.15 projection onto sphere added
-  % 01.07.15 mask added
-  % 14.07.15 alternative minimzation w.r.t. u via preconditioned cg added
-  % 16.07.15 first-and second-order combined
-  % 16.07.15 stopping criterion added
+  % Authors
+  % Johannes Persch, Ronny Bergmann, 09.06.2015, on the second order model
+  % of Markus Loeckel, 12.05.15. Later: gauss seidel replaced by mldivide,
+  % SPD no longer built by deleting half the entries, projection onto the
+  % sphere, a mask, an alternative minimisation in u by preconditioned CG,
+  % first and second order combined, and a stopping criterion.
+  %
+  % See also
+  % EBSDFilter EBSD/smooth halfQuadraticFilter l1TVFilter
   
   properties
     lambda = 0.005 % first-order regularization parameter [0,1]
@@ -244,7 +238,7 @@ classdef infimalConvolutionFilter < EBSDFilter
       
       function v = projection_sphere(u)
         % function projections_sphere projects the rows of a given matrix u onto
-        % the sphere. u is the M*N x m matrix, where every row consists of values
+        % the sphere. u is the M*N × m matrix, where every row consists of values
         % that will be projected onto S^m.
         %
 

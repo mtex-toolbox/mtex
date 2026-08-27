@@ -104,7 +104,7 @@ function checkNamingDoesNotAlign
 % Regression: every string option reached the alignment machinery, which
 % found no axis to align, silently added Z||c and multiplied by the
 % identity. Harmless in the result but it made naming a phase pay for the
-% whole computation - and it is what pushed a 3 x 3 matrix through the
+% whole computation - and it is what pushed a 3 × 3 matrix through the
 % vector3d constructor on every call, see check_vector3d.
 
 for pg = {'m-3m','321','2/m','1'}

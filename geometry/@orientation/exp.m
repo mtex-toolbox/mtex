@@ -13,7 +13,7 @@ function ori = exp(ori,v,varargin)
 %  ori_2 - @orientation rotate ori_1 about axis v with angle norm(v) 
 %
 % See also
-% vector3d/exp spinTensor/exp SO3TangentVector/exp Miller/exp
+% vector3d/exp spinTensor.spinTensor SO3TangentVector/exp Miller/exp
 %
 
 ori = exp(v,ori,varargin{:});

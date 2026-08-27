@@ -3,7 +3,7 @@ function ebsd = EBSDGrainBenchmark(colAngles,rowAngles,varargin)
 % prescribed boundary misorientation angles, for benchmarking noise-robust
 % grain reconstruction
 %
-% The grains are laid out as a (numel(rowAngles)+1) x (numel(colAngles)+1)
+% The grains are laid out as a (numel(rowAngles)+1) × (numel(colAngles)+1)
 % array of square blocks. Grain orientations follow the product structure
 %
 %   ori(i,j) = u_i * v_j
@@ -76,7 +76,7 @@ function ebsd = EBSDGrainBenchmark(colAngles,rowAngles,varargin)
 %    pixel, for EVERY pixel including wild and notIndexed ones: it is the
 %    grain the pixel geometrically belongs to. Grain row i and grain column
 %    j have the index i + (j-1)*numGrainRows, i.e. the linear index into
-%    the numGrainRows x numGrainCols array opt.trueMeanOrientation.
+%    the numGrainRows × numGrainCols array opt.trueMeanOrientation.
 %  ebsd.prop.isWild        - mis indexed pixels
 %  ebsd.prop.isUnindexed   - notIndexed pixels
 %  ebsd.opt                - colAngles, rowAngles, grainSize, numGrainRows,
@@ -147,7 +147,7 @@ for i = 1:nGR-1
   grainRow = grainRow + ((1:nRows).' > (i*grainSize + d));
 end
 
-% grain (i,j) gets the MATLAB linear index of an nGR x nGC array, so that
+% grain (i,j) gets the MATLAB linear index of an nGR × nGC array, so that
 % opt.trueMeanOrientation(trueGrainId) is the orientation of that grain
 trueGrainId = grainRow + (grainCol - 1)*nGR;
 

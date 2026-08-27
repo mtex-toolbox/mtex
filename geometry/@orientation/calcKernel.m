@@ -20,7 +20,7 @@ function psi = calcKernel(ori,varargin)
 %  BCV         - biased cross validation
 %
 % See also
-% EBSD/calcODF orientation/BCV orientation/KLCV orientation/LSCV
+% EBSD.EBSD orientation/BCV orientation/KLCV orientation/LSCV
 
 % consider only orientations that not nan
 ori = ori.subSet(~ori.isnan);

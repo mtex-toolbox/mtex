@@ -27,6 +27,26 @@ T_right = (rot_right.matrix - rot_ref.matrix) ./ delta
 T_left = (rot_left.matrix - rot_ref.matrix) ./ delta
 
 %%
+% What such a derivative means is easier to see than to read. Turning a
+% direction steadily about an axis sends it round a circle; the spin tensor
+% is the velocity it sets off with. Below, the red arrow is the axis, the
+% grey arrow a direction, the black circle the path it travels, and the blue
+% arrow the velocity at the instant shown.
+
+om = normalize(vector3d(1,2,3));
+v0 = normalize(vector3d(1,0,0));
+t = linspace(0,2*pi,300);
+tr = rotation.byAxisAngle(om,t) * v0;
+
+plot3(tr.x,tr.y,tr.z,'k','linewidth',1.5)
+hold on
+arrow3d(1.5*om,'faceColor','red')
+arrow3d(v0,'faceColor',[.45 .45 .45])
+arrow3d(v0 + 0.6*normalize(cross(om,v0)),'faceColor','blue')
+hold off
+axis equal off
+
+%%
 % Both matrices |T_right| and |T_left| are elements of the tangential space
 % attached to the reference rotation rot_ref. Those matrices are
 % characterized by the fact that they becomes skew symmetric matrices when

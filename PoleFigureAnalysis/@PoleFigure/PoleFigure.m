@@ -32,10 +32,11 @@ classdef PoleFigure < dynProp & dynOption
 %  intensities - diffraction intensities
 %  antipodal - 
 %
-% See also
-% ImportPoleFigureData loadPoleFigure loadPoleFigure_generic
 % This section describes the class *PoleFigure* and gives an overview of
 % the functionality MTEX offers to analyze pole figure data.
+%
+% See also
+% PoleFigureImport PoleFigure.load loadPoleFigure_generic
 
   properties
     allH = {}           % crystal directions

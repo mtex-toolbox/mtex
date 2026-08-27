@@ -22,7 +22,7 @@ if SO3F.subsample
   nn = SO3F.dim;
 end
 
-% ind is N x nn, the local systems are the pages of nn x ... x N books
+% ind is N × nn, the local systems are the pages of nn × ... × N books
 nn_total = nn * N;
 grid_id = reshape(ind', nn_total, 1);
 center_id = repelem((1:N)', nn);
@@ -33,7 +33,7 @@ if SO3F.subsample
 end
 
 
-% local basis values, as nn_total x dim
+% local basis values, as nn_total × dim
 if ~SO3F.centered
   % without crystal symmetry no neighbor has to be projected to the
   % fundamental region of its center, so the basis can be reused
@@ -125,7 +125,7 @@ else
   candidateLimit = false(N, 1);
 end
 
-% ind has the N x nn layout of the weights, no reordering is needed here
+% ind has the N × nn layout of the weights, no reordering is needed here
 weights = weights .* SO3F.vor_weights(ind) * pi^2 / numel(SO3F.nodes);
 
 if SO3F.detectOutliers

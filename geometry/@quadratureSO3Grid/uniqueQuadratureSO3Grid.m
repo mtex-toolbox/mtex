@@ -18,7 +18,7 @@ function [u,inodes,iu] = uniqueQuadratureSO3Grid(N,scheme,varargin)
 %  inodes - index vector such that    u = nodes(inodes)
 %
 % See also
-% orientation.unique SO3FunHarmonic.quadrature SO3FunHarmonic.quadratureNFSOFT
+% orientation.unique SO3FunHarmonic.quadrature SO3FunHarmonic.SO3FunHarmonic
 
 
 % Note that specimenSymmetry('23') does not exist and consequently does not work

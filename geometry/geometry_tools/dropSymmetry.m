@@ -42,7 +42,7 @@ function sym = dropSymmetry(sym,rot,side,what)
 % claim survived untouched.
 %
 % See also
-% symmetry/stripSym SO3Fun/rotate SO3VectorField/rotate orientation/mtimes
+% symmetry.symmetry SO3Fun/rotate SO3VectorField/rotate orientation/mtimes
 
 if numSym(sym.Laue) > 2 && ~all(any(rot(:).' == sym.rot(:)))
 

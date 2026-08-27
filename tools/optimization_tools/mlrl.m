@@ -7,9 +7,9 @@ function [chat,k] = mlrl(Psi,I,c0,itermax,tol)
 %   [c,k] = mlrl(Psi,I,c0,itermax,tol)
 %
 % Input
-%  Psi     - system matrix (N x M)
-%  I       - intensities (N x 1)
-%  c0      - initial coefficients (M x 1), real valued
+%  Psi     - system matrix (N × M)
+%  I       - intensities (N × 1)
+%  c0      - initial coefficients (M × 1), real valued
 %  itermax - maximum number of iterations
 %  tol     - abort if change smaller than tolerance
 %

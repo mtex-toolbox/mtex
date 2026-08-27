@@ -1,7 +1,7 @@
 %% Defining Tensorial Properties
 %
 % Physical laws describe the relationship between physical properties. The
-% most simplest laws are linear ones and are of the form
+% simplest laws are linear ones and are of the form
 %
 % $$ y = \mathbf A x $$
 %
@@ -141,6 +141,21 @@ C = tensor(M,'rank',4)
 % symmetry, in this case, a cubic example, where only $C_{11}$, $C_{12}$
 % and $C_{44}$ are independent components.
 %
+%%
+% What those numbers mean is easier to see than to read. Interpreted as a
+% stiffness, this tensor gives the stiffness of a rod cut from the crystal in
+% every possible direction.
+
+plot(stiffnessTensor(C).YoungsModulus,'complete','upper')
+mtexColorbar('title','Young''s modulus')
+
+%%
+% Stiffest along the cube axes and softest along the body diagonals - 307
+% against 167 in whatever unit the matrix was given in - and the four-fold
+% pattern is the cubic symmetry made visible. A tensor has to be invariant
+% under every symmetry operation of its phase, which is what reduces the 81
+% components of a fourth rank tensor to the three independent ones above.
+%
 %% Specific tensors
 %
 % MTEX includes specific classes for the following tensors.
@@ -169,7 +184,7 @@ e = stressTensor.uniaxial(vector3d.Z)
 
 %%
 % The advantage of using these specific tensor classes is that some tensor
-% operations like <stressTensor/calcShearStress.html |calcShearStress(e)|>
+% operations like <stressTensor.calcShearStress.html |calcShearStress(e)|>
 % are defined only for specific tensor classes.
 %
 %% Predefined tensors

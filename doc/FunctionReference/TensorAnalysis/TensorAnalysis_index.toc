@@ -1,4 +1,3 @@
-TensorAnalysisOverview            Overview
 tensor_index                      tensor
 stressTensor_index                stressTensor
 strainTensor_index                strainTensor

@@ -2,7 +2,7 @@ function r = subSet(r,varargin)
 % indexing of rotation
 %
 % Syntax
-%   subSet(q,ind) % 
+%   subSet(q,ind)
 %
 
 r = subSet@quaternion(r,varargin{:});

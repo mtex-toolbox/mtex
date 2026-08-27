@@ -99,7 +99,7 @@ mtexColorbar
 % done using the property |componentSize|. It returns for each segment the
 % total number of segments it is connected with. In the following figure we
 % use this to
-% plot all low-angle grain boundary networks with more then 50 segments in
+% plot all low-angle grain boundary networks with more than 50 segments in
 % blue and all remaining segments in red.
 
 % plot the ebsd data

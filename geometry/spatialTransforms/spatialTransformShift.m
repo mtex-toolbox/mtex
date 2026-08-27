@@ -89,7 +89,7 @@ classdef spatialTransformShift < spatialTransform
 
       [sx,sy,rot,shear] = parts(T);
 
-      s = sprintf('scale %.4g x %.4g, rotate %.3g°, shear %.3g°, move (%.4g, %.4g)',...
+      s = sprintf('scale %.4g × %.4g, rotate %.3g°, shear %.3g°, move (%.4g, %.4g)',...
         sx,sy,rot,shear,T.M(1,3),T.M(2,3));
 
     end

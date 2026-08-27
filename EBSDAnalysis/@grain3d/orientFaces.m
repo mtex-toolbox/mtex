@@ -26,7 +26,7 @@ function grains = orientFaces(grains)
 % surface patches are oriented independently of each other.
 %
 % See also
-% grain3d/volume grain3Boundary/N
+% grain3d/volume grain3Boundary.grain3Boundary
 %
 
 I_GF = grains.I_GF;

@@ -14,8 +14,8 @@ function [ij,A,stencil,dxy] = gridIndex(ebsd)
 %   [ij,A,stencil,dxy] = ebsd.gridIndex
 %
 % Output
-%  ij      - nEbsd x 2 integer lattice indices [i j]
-%  A       - 2 x 2 lattice basis (see latticeBasis)
+%  ij      - nEbsd × 2 integer lattice indices [i j]
+%  A       - 2 × 2 lattice basis (see latticeBasis)
 %  stencil - neighbour stencil
 %  dxy     - cell size
 %

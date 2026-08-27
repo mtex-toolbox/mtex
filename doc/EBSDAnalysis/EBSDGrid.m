@@ -12,7 +12,7 @@ mtexdata twins
 
 %%
 % This is an @EBSDsquare, i.e. the 22879 measurements are stored as a
-% 137 x 167 matrix, one entry per scan position and arranged the way the map
+% 137 × 167 matrix, one entry per scan position and arranged the way the map
 % is. Apart from that it behaves like any other @EBSD variable
 
 plot(ebsd('Magnesium'),ebsd('Magnesium').orientations)
@@ -317,7 +317,7 @@ mtexdata small
 %%
 % The command <EBSD.transform.html |transform|> moves every pixel of a map,
 % and its unit cell with it, leaving orientations and all other properties
-% untouched. It takes a <spatialTransform.spatialTransform.html
+% untouched. It takes a <spatialTransform.html
 % |spatialTransform|>, so the distortion is written down as an object rather
 % than as a closure - see <EBSDSpatialTransform.html Spatial Transforms>.
 %
@@ -331,7 +331,7 @@ mtexdata small
 %
 % This is the tilt one *knows*, written down to impose it. Recovering one
 % that was only measured is the other direction, and is what
-% <spatialTransformTilt.spatialTransformTilt.html |spatialTransformTilt|>
+% <spatialTransformTilt.html |spatialTransformTilt|>
 % fits in stages from two images.
 
 theta  = 20*degree;                             % surface tilt

@@ -11,7 +11,7 @@ function rot = byRodrigues(v,varargin)
 %  rot - @rotation
 %
 % See also
-% rotation/rotentation rotation/byEuler rotation/byMatrix rotation/map
+% rotation.rotation rotation/byEuler rotation/byMatrix rotation/map
 
 if ~isa(v,'vector3d'), v = vector3d.byXYZ(v); end
 

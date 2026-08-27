@@ -37,10 +37,10 @@ function [out, bestFriends] = variants(p2c,varargin)
 %
 % Output
 %  p2cVariants - parent to child variants
-%  oriParent - parent @orientation (numOri x numVariants)
-%  hklParent - parent directions (numOri x numVariants)
-%  oriChild  - child @orientation  (numOri x numVariants)
-%  hklChild  - child directions (numOri x numVariants)
+%  oriParent - parent @orientation (numOri × numVariants)
+%  hklParent - parent directions (numOri × numVariants)
+%  oriChild  - child @orientation  (numOri × numVariants)
+%  hklChild  - child directions (numOri × numVariants)
 %  odfPChild - child ODF @SO3Fun
 %
 % Example

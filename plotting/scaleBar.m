@@ -9,9 +9,9 @@ classdef scaleBar < handle
 % |setMTEXpref('showRefFrame','off')|.
 %
 % The scale bar reads the plotting convention back from the axes camera
-% via <plottingConvention.getView.html plottingConvention.getView> and
+% via <plottingConvention.html plottingConvention.getView> and
 % realigns itself whenever the map is reoriented, e.g. via
-% <plottingConvention.setView.html plottingConvention.setView> or one of
+% <plottingConvention.html plottingConvention.setView> or one of
 % <plotx2north.html plotx2north>, <plotzOutOfPlane.html plotzOutOfPlane>,
 % etc. - this works no matter which @plottingConvention object was used to
 % apply the view, since it never relies on a cached reference to it. The
@@ -457,7 +457,7 @@ function [V, F, L, labPos, labStr, bbox] = refFrameGeometry(rfScreen, labels, t)
 % around its own origin - u to the right, v upwards, both unsigned
 %
 % Input
-%  rfScreen - n x 3 matrix of the (right, up, outOfScreen) components
+%  rfScreen - n × 3 matrix of the (right, up, outOfScreen) components
 %  labels   - cell of char, one per direction
 %  t        - the measured text height, used as the length unit
 %
@@ -467,7 +467,7 @@ function [V, F, L, labPos, labStr, bbox] = refFrameGeometry(rfScreen, labels, t)
 %             differ in length, hence F is NaN padded
 %  L        - polyline of the circle and, for a direction pointing into the
 %             screen, of the cross inside it
-%  labPos   - n x 2 label positions, NaN for directions that are not drawn
+%  labPos   - n × 2 label positions, NaN for directions that are not drawn
 %  labStr   - the labels belonging to them
 %  bbox     - [minU maxU minV maxV] of everything drawn
 

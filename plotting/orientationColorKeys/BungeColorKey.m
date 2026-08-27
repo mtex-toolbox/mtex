@@ -22,7 +22,7 @@ classdef BungeColorKey < orientationColorKey
   %  phi1Range, PhiRange, phi2Range - the Euler angle ranges mapped to 0..1
   %
   % See also
-  % orientationColorKey ipfColorKey EBSDColorCoding
+  % orientationColorKey ipfColorKey EBSDIPFMap
   %
   
   

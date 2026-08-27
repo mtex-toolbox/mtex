@@ -106,7 +106,7 @@ classdef spatialTransformProjective < spatialTransform
       %
       % This is the tilt one KNOWS, to state a distortion. To recover one
       % that was measured, see
-      % <spatialTransformTilt.spatialTransformTilt.html
+      % <spatialTransformTilt.html
       % |spatialTransformTilt|>, which fits it in stages from two images.
       %
       % Syntax

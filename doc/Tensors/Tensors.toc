@@ -1,6 +1,6 @@
 TensorDefinition    Definition
 TensorImport        Import
-TensorArithmetics   Arithmethics
+TensorArithmetics   Arithmetics
 TensorVisualisation Plotting
 TensorAverage       Averages
 PiezoElectricity    Piezo Electricity

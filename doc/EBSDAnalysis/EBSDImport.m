@@ -2,7 +2,7 @@
 %
 %%
 % MTEX allows you to import EBSD data from a wide variety of file formats.
-% In the most simplest case import can be done by the command
+% In the simplest case import can be done by the command
 % <EBSD.load.html |EBSD.load|>
 
 fileName = [mtexEBSDPath filesep 'EMSphinx.h5'];

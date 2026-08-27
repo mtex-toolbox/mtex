@@ -19,7 +19,7 @@ function dir = calcMeanDirection(gB,n)
 %  dir - @vector3d
 %
 % See also
-% grainBoundary/direction grainBoundary/chainId
+% grainBoundary.grainBoundary grainBoundary.grainBoundary
 
 if nargin == 1, n = 1; end
 

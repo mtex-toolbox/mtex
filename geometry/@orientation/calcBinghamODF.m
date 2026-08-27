@@ -8,7 +8,7 @@ function odf = calcBinghamODF(ori,varargin)
 %  odf - @SO3FunBingham
 %
 % See also
-% EBSD2odf EBSD/load
+% EBSD2ODF EBSD/load
 
 % maybe there is nothing to do
 if isempty(ori), odf = ODF; return, end

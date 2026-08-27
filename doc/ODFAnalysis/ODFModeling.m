@@ -23,7 +23,7 @@
 %
 %% The Uniform ODF
 %
-% The most simplest case of a model ODF is the uniform ODF
+% The simplest case of a model ODF is the uniform ODF
 %
 % $$f(g) = 1,\quad  g \in SO(3),$$
 %

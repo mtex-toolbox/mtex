@@ -19,7 +19,7 @@ plot(pf)
 
 %% ODF Estimation
 % ODF estimation from a pole figure object is done by the function 
-% <PoleFigure.calcODF.html |calcODF|>. The most simplest
+% <PoleFigure.calcODF.html |calcODF|>. The simplest
 % syntax is
 
 odf = calcODF(pf)

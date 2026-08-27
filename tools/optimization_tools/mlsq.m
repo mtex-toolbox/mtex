@@ -7,9 +7,9 @@ function [chat,k] = mlsq(Psi,I,c0,itermax,tol)
 %   [c,k] = mlsq(Psi,I,c0,itermax,tol)
 %
 % Input
-%  Psi     - system matrix (N x M), can be complex
-%  I       - intensities (N x 1), can be complex
-%  c0      - initial coefficients (M x 1), real valued
+%  Psi     - system matrix (N × M), can be complex
+%  I       - intensities (N × 1), can be complex
+%  c0      - initial coefficients (M × 1), real valued
 %  itermax - maximum number of iterations
 %  tol     - abort if change smaller than tolerance
 %

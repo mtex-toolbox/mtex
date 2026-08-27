@@ -18,8 +18,8 @@
 function sphcoord = polarcoord(v)
 
 %%%%% Cartesian to spherical coordinates
-%%%%% v = n x 3 array of pts
-%%%%% output is n x 3 array of spherical coordinates
+%%%%% v = n × 3 array of pts
+%%%%% output is n × 3 array of spherical coordinates
 %%%%% [r theta phi] 
 
 r = sqrt(v(:,1).^2 + v(:,2).^2 + v(:,3).^2);

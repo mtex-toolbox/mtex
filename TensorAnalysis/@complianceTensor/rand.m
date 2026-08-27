@@ -24,7 +24,7 @@ function C = rand(varargin)
 %  S - @complianceTensor
 %
 % See also
-% complianceTensor/eye stiffnessTensor/rand
+% complianceTensor.complianceTensor stiffnessTensor/rand
 
 [cs,varargin] = getClass(varargin,'symmetry');
 

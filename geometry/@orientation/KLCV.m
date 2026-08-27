@@ -13,7 +13,7 @@ function c = KLCV(ori,psi,varargin)
 %  c - 
 %
 % See also
-% orientation/calcODF orientation/calcKernel orientation/BCV
+% orientation.orientation orientation/calcKernel orientation/BCV
 
 % partition data set
 sN = ceil(min(length(ori),get_option(varargin,'SamplingSize',1000)));

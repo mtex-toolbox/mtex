@@ -143,6 +143,13 @@ plot(job.resizedList,'edge')
 % is left over. That residual is how you tell whether it worked: around a
 % pixel or less is good.
 %
+% Both columns read as a length followed by the signed x and y behind it, in
+% pixels of the common grid: how far the step moved the map, and which way.
+% Where the two agree the correction was one coherent movement - a specimen
+% drift or a camera offset has a direction. Where the pair falls to nearly
+% zero against a large length, the boxes disagree with each other and the
+% correlation found no common direction.
+%
 % If a residual comes out above two pixels, TrueEBSD doubles the box size and
 % tries again, repeating until it comes down or the box outgrows the image.
 % The boxes set above are large enough that this does not happen here.
@@ -210,7 +217,7 @@ end
 % turning a thresholded image into a phase.
 %
 % |trueEbsdWCCoSmall| is the centre half of the full WC-Co field of view
-% coarsened by four: a 20.4 x 15.3 µm area with WC grains about 12 px across,
+% coarsened by four: a 20.4 × 15.3 µm area with WC grains about 12 px across,
 % small enough to be quick and still large enough for every distortion to be
 % measurable. The full dataset is |trueEbsdWCCo|, and the same script runs on
 % it unchanged - it simply takes minutes rather than seconds.

@@ -97,7 +97,7 @@ function [a,bMin,bMax] = buildStrips(a,bMin,bMax,lowerPole,upperPole)
 % split a region given as intervals [bMin,bMax] over the grid lines a into
 % strips of one interval per grid line, separated by NaN
 %
-% bMin, bMax are nInt x numel(a) and padded with NaN
+% bMin, bMax are nInt × numel(a) and padded with NaN
 
 % an interval collapsed onto a pole is no region, it would glue all strips together
 degenerated = (bMax < lowerPole + 1e-5) | (bMin > upperPole - 1e-5);

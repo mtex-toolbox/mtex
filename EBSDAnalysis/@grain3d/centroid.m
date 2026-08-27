@@ -12,7 +12,7 @@ function c = centroid(grains, varargin)
 %  c - @vector3d
 %
 % See also
-% grain3d/fitEllipse
+% grain3d.grain3d
 %
 
 

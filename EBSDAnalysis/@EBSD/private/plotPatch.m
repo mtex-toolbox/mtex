@@ -18,8 +18,8 @@ if numel(d) == numel(pos) || numel(d) == 3*numel(pos)
   if numel(alpha) == numel(pos)
     varargin = delete_option(varargin,'faceAlpha');
 
-    % read both off the reshaped data - on a gridded map d is (r x c) or
-    % (r x c x 3), while FaceVertexAlphaData is a column
+    % read both off the reshaped data - on a gridded map d is (r × c) or
+    % (r × c × 3), while FaceVertexAlphaData is a column
     cData = obj.FaceVertexCData;
     alpha = reshape(alpha,[],1);
 

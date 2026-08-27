@@ -14,7 +14,7 @@ function export_VPSC(ori,filename,varargin)
 %  Bunge, Kocks, Roe - Euler angle convention, Bunge by default
 %
 % See also
-% quaternion/export SO3Fun/export_VPSC interfaces/loadODF_VPSC
+% quaternion/export SO3Fun/export_VPSC loadODF_VPSC
 
 % VPSC knows three Euler angle conventions and names the one in use on the
 % fourth header line. Default to Bunge rather than to the MTEX preference:

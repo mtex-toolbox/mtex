@@ -10,7 +10,7 @@ function h = plot(grains,varargin)
 %
 % Input
 %  grains   - @grain3d
-%  property - n x 1 numeric or orientation
+%  property - n × 1 numeric or orientation
 %
 % See also
 % grain2d/plot grain3Boundary/plot

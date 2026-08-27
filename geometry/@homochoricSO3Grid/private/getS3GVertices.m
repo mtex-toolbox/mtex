@@ -5,9 +5,9 @@ function ind = getS3GVertices(S3G, xyz)
 %   points of a homochoricSO3Grid
 %
 % Input:    S3G - @homochoricSO3Grid
-%           xyz - N x 3 coordinates of N cubochoric points 
+%           xyz - N × 3 coordinates of N cubochoric points 
 % 
-% Output:   ind - N x 8 grid-indice of surrounding vertices for each point
+% Output:   ind - N × 8 grid-indice of surrounding vertices for each point
 %                     in xyz
 
 % NOTE: ind is 0 if the corner points isnt in the fundamentalRegion of

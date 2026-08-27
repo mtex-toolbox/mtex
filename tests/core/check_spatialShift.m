@@ -2,14 +2,14 @@ function check_spatialShift
 % checks that shifting a spatial object by plus/minus really translates it
 %
 % grainBoundary and triplePointList shifted their vertices through
-% [v.x,v.y] + repmat(...), written when allV / V were an n x 2 double. They
-% are a vector3d now, and against a vector3d that route adds an n x 2 matrix
-% to each n x 1 coordinate array, so implicit expansion turns them into
-% n x 2. The result is a silently nonsensical object - no error anywhere, and
+% [v.x,v.y] + repmat(...), written when allV / V were an n × 2 double. They
+% are a vector3d now, and against a vector3d that route adds an n × 2 matrix
+% to each n × 1 coordinate array, so implicit expansion turns them into
+% n × 2. The result is a silently nonsensical object - no error anywhere, and
 % the damage only surfaces much later.
 %
 % The obsolete numeric form, obj + [100,0], expands in exactly the same way
-% (a 1 x 2 row against the coordinate arrays) and is now rejected outright
+% (a 1 × 2 row against the coordinate arrays) and is now rejected outright
 % rather than accepted and misread; it is what made issue #1722 look like a
 % calcUnitCell bug, since gridify of such an object tries to build a lattice
 % spanning the fake coordinate range and runs the machine out of memory.

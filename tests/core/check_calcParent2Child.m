@@ -79,7 +79,7 @@ function mori = c2cData(p2c,csP,csC,n,noise,outlierFraction)
 
 oriParent = orientation.rand(n,csP);
 
-% variants is a row, so index it as a column or the product expands to n x n
+% variants is a row, so index it as a column or the product expands to n × n
 V = reshape(p2c.variants,[],1);
 o1 = oriParent .* inv(V(randi(length(V),n,1)));
 o2 = oriParent .* inv(V(randi(length(V),n,1)));
@@ -90,7 +90,7 @@ k = round(outlierFraction*n);
 mori(1:k) = orientation.rand(k,csC,csC);
 mori(mori.angle < 5*degree) = [];
 
-% a row times a column expands to n x n, and the fit then runs on n^2 pairs
+% a row times a column expands to n × n, and the fit then runs on n^2 pairs
 assert(length(mori) <= n,'c2cData produced %d misorientations for n = %d',length(mori),n);
 
 end

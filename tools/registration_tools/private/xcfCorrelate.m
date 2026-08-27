@@ -4,7 +4,7 @@ function [dx,dy,peak] = xcfCorrelate(A,B,cx,cy,roiSize,fPass,mesh,window,bandPas
 % The shift of each tile is the peak of a band pass filtered, windowed phase
 % correlation, located to sub pixel accuracy by the upsampled matrix DFT of
 % Guizar-Sicairos et al. Every tile is processed at once: the tiles are
-% gathered by linear indexing into a roiSize x roiSize x nROI array, and
+% gathered by linear indexing into a roiSize × roiSize × nROI array, and
 % fft2/ifft2/pagemtimes run batched over the third dimension.
 %
 % The upsampled DFT kernels are hoisted out of the per tile work. Written
@@ -31,13 +31,13 @@ function [dx,dy,peak] = xcfCorrelate(A,B,cx,cy,roiSize,fPass,mesh,window,bandPas
 %   [dx,dy,peak] = xcfCorrelate(A,B,cx,cy,roiSize,fPass,mesh,window,bandPass)
 %
 % Input
-%  A, B     - r x c images
+%  A, B     - r × c images
 %  cx, cy   - tile centres in pixels
 %  roiSize  - tile width
 %  fPass    - band pass settings, as given to xcfFilters
 %  mesh     - peak upsampling factor
-%  window   - roiSize x roiSize taper
-%  bandPass - roiSize x roiSize filter, fft order
+%  window   - roiSize × roiSize taper
+%  bandPass - roiSize × roiSize filter, fft order
 %
 % Output
 %  dx, dy - shift of each tile, in pixels, shaped like cx
@@ -70,7 +70,7 @@ batchSize = max(1,floor(2^21/max(rs^2,1)));
 %
 % This is not the reduction it looks like. With the shipped settings nKeep is
 % 3/4 of roiSize, so the two blocks overlap and a third of the indices appear
-% twice - for a 64 pixel tile the "reduced" 96 x 96 spectrum covers all 64
+% twice - for a 64 pixel tile the "reduced" 96 × 96 spectrum covers all 64
 % frequencies with 32 duplicated. The duplicates cost 2.25x in every matrix
 % product and, because a doubled index is doubled on both axes, weight those
 % frequency pairs four times. 'dedupeBand' drops them, which is cheaper and

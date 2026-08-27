@@ -67,7 +67,7 @@ if isa(q,'orientation')
 
 end
 
-% normal result is length(q) x length(v)
+% normal result is length(q) × length(v)
 % special cases are when length(q) == 1 or length(v)==1
 if isscalar(x) && ~isscalar(a)
   v = reshape(v,size(a));

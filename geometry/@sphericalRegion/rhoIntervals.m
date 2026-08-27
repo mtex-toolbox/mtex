@@ -12,8 +12,8 @@ function [rhoMin,rhoMax] = rhoIntervals(sR,theta,rhoWindow)
 %  rhoWindow - [rhoMin,rhoMax] the azimuth angles are searched in
 %
 % Output
-%  rhoMin - nInt x numel(theta), padded with NaN
-%  rhoMax - nInt x numel(theta), padded with NaN
+%  rhoMin - nInt × numel(theta), padded with NaN
+%  rhoMax - nInt × numel(theta), padded with NaN
 %
 % Description
 % This is the counterpart of <sphericalRegion.thetaIntervals.html

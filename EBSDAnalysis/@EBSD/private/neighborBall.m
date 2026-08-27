@@ -7,11 +7,11 @@ function offs = neighborBall(stencil, order)
 % independent of the number of EBSD pixels.
 %
 % Input
-%  stencil - k x 2 integer 1-hop neighbour offsets
+%  stencil - k × 2 integer 1-hop neighbour offsets
 %  order   - number of hops
 %
 % Output
-%  offs - n x 2 integer offsets, graph-distance 1..order, excluding (0,0)
+%  offs - n × 2 integer offsets, graph-distance 1..order, excluding (0,0)
 
 ball = zeros(1,2);
 frontier = zeros(1,2);

@@ -15,9 +15,9 @@ function [dx,dy,w,x,y] = transformFitData(posA,posB,varargin)
 %  posA, posB - @vector3d, the same points in the two frames
 %
 % Output
-%  dx, dy - n x 1 displacement from posA to posB
-%  w      - n x 1 weights, all ones if none were given
-%  x, y   - n x 1 positions in frame A
+%  dx, dy - n × 1 displacement from posA to posB
+%  w      - n × 1 weights, all ones if none were given
+%  x, y   - n × 1 positions in frame A
 %
 % Options
 %  weights - one per point

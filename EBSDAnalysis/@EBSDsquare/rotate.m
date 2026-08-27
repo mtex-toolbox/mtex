@@ -39,8 +39,8 @@ function ebsd = rotate(ebsd,rot,varargin)
 % back on the rule exactly. One that does not, say 30 degrees, is put as close
 % to it as a permutation can get, which is what gridify itself would do.
 %
-% NB this changes the SHAPE of the map for a quarter turn: an r x c map comes
-% back c x r. That is the honest answer - the sample really did turn - and it
+% NB this changes the SHAPE of the map for a quarter turn: an r × c map comes
+% back c × r. That is the honest answer - the sample really did turn - and it
 % is what keeps size(ebsd) meaning the same thing before and after.
 %
 % See also

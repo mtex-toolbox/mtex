@@ -24,7 +24,7 @@ function [ebsd,newId] = transformReferenceFrame(ebsd,gL)
 % does.
 %
 % NB this changes the SHAPE of the map whenever the two layouts differ by a
-% quarter turn - an r x c map comes back c x r.
+% quarter turn - an r × c map comes back c × r.
 %
 % See also
 % EBSD/gridify gridLayout/layoutIndex EBSDsquare/rotate

@@ -12,9 +12,9 @@ function isInside = checkInside(grains, xy, varargin)
 %  [x,y] - list of [x(:) y(:)] coordinates
 %
 % Output
-%  isInside - numInclusionGrains x numHostGrains matrix
-%  isInside - numEBSD x numHostGrains matrix
-%  isInside - numXY x numHostGrains matrix
+%  isInside - numInclusionGrains × numHostGrains matrix
+%  isInside - numEBSD × numHostGrains matrix
+%  isInside - numXY × numHostGrains matrix
 %
 % Options
 %  includeBoundary - points on the boundary are considered as inside
@@ -82,7 +82,7 @@ incl = grains.inclusionId;
 
 % make sure xy is vector3d
 % byXYZ reads one coordinate per row unconditionally and supplies z = 0 itself,
-% where the constructor cannot tell an n x 3 from a 3 x N
+% where the constructor cannot tell an n × 3 from a 3 × N
 if ~isa(xy,'vector3d'), xy = vector3d.byXYZ(xy); end
 
 % use internal or external inpolygon engine?

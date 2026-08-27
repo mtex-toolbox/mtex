@@ -8,7 +8,7 @@ function ori = byScreenAlignment(frA,frB)
 %
 % This is an inference from a user assertion, not a geometric fact about the
 % two bases. It reads |how2plot| and never touches |basis|, so it can be
-% used to *establish* a basis - see <gridLayout.assumedFor.html
+% used to *establish* a basis - see <gridLayout.gridLayout.html
 % |gridLayout.assumedFor|>. Once a basis has been set from it,
 % <referenceFrame.transformationMatrix.html |transformationMatrix|>
 % reproduces the same rotation from the bases alone, which is the invariant

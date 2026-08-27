@@ -13,7 +13,7 @@ function m = matrix(T,varargin)
 %  m - matrix
 %
 % Options
-%  Voigt - give a 4 rank tensor in Voigt notation, i.e. as a 6 x 6 matrix
+%  Voigt - give a 4 rank tensor in Voigt notation, i.e. as a 6 × 6 matrix
 %  Kelvin - same as above but with Kelvin normalization
 %
 % See also

@@ -19,7 +19,7 @@ function [data,interface,options,idata] = loadData(fname,type,varargin)
 %  data - @EBSD, @PoleFigure, @SO3Fun, @tensor, @vector3d, @orientation
 %
 % See also
-% ImportEBSDData EBSD/calcODF ebsd_demo loadEBSD_generic
+% EBSDImport EBSD.EBSD EBSDTutorial loadEBSD_generic
 
 % process input arguments
 

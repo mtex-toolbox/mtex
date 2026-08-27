@@ -55,7 +55,7 @@ if isa(v,'SO3TangentVector'), v = vector3d(v); end
 if ~isa(v,'vector3d')
   % numeric list of coordinates, one row per rotation
   if isempty(q), return; end
-  v = vector3d(v.');
+  v = vector3d.byXYZ(v);
 end
 
 if ~isempty(q), v = q .* v; end

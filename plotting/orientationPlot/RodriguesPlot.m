@@ -21,7 +21,7 @@ classdef RodriguesPlot < axisAnglePlot
 %  ax       - the axes handle
 %
 % See also
-% orientationPlot axisAnglePlot orientation/plot orientation/Rodrigues
+% orientationPlot axisAnglePlot orientation/plot quaternion.Rodrigues
 %
   
   methods

@@ -29,7 +29,7 @@ function removed = minPixelMask(ebsd,gbc,varargin)
 %  gbc  - grain boundary criterion
 %
 % Output
-%  removed - nEbsd x 1 logical, true for undersized indexed pixels
+%  removed - nEbsd × 1 logical, true for undersized indexed pixels
 
 removed = false(length(ebsd),1);
 

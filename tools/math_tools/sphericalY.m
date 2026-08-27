@@ -13,7 +13,7 @@ function Y = sphericalY(l, v, varargin)
 %  v - @vector3d
 %
 % Output
-%  Y - (2l+1) x length(v) matrix of function values
+%  Y - (2l+1) × length(v) matrix of function values
 %
 % See also
 % WignerD
@@ -49,7 +49,7 @@ if check_option(varargin,'nfsft') && l > 0
 end
 
 % calculate assoziated legendre functions
-L = sqrt(2/(2*l+1))*reshape(legendre(l,cos(theta(:)),'norm').',numel(theta),l+1); % nodes x order
+L = sqrt(2/(2*l+1))*reshape(legendre(l,cos(theta(:)),'norm').',numel(theta),l+1); % nodes × order
 
 % expand to negative order
 if l>0

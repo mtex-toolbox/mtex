@@ -12,7 +12,7 @@ function ids = sharedBoundaryV(grains)
 % would happily dissolve it - leaving the other boundary hanging off a vertex
 % that is no longer on the walk. Pass these ids as 'protect' to keep them.
 %
-% grain2d/smoothBoundary gets at the same set through I_VF, which costs an nV x nF
+% grain2d/smoothBoundary gets at the same set through I_VF, which costs an nV × nF
 % sparse matrix product; marking the face list directly is O(nF).
 %
 % Input

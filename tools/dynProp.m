@@ -82,8 +82,8 @@ classdef dynProp
         if k > 1
           % index the objects and take every channel along. Flattening to
           % one row per object first makes this the same operation whether
-          % the property is stored as N x k or, on a grid class, as
-          % r x c x k - the result is a list either way, and a caller that
+          % the property is stored as N × k or, on a grid class, as
+          % r × c × k - the result is a list either way, and a caller that
           % wants the map shape back reshapes (EBSDsquare/subGrid does).
           v = reshape(v,n,k);
           dp.prop.(fn{i}) = v(ind(:),:);
@@ -266,9 +266,9 @@ function k = nChannels(dp,value)
 % how many channels a property carries; 1 for an ordinary one
 %
 % A property holds one entry per object, or k of them. On a list that is an
-% N x k matrix - a 5 diode forescatter image, say, or an RGB image. On a
-% grid class, whose properties are stored as the (r x c) matrix of the map,
-% the same image is r x c x k, one plane per channel. Either way the leading
+% N × k matrix - a 5 diode forescatter image, say, or an RGB image. On a
+% grid class, whose properties are stored as the (r × c) matrix of the map,
+% the same image is r × c × k, one plane per channel. Either way the leading
 % dimensions are the shape of the object and the channels are whatever is
 % left over once the object count is divided out.
 %
@@ -276,7 +276,7 @@ function k = nChannels(dp,value)
 % classes that matter here it resolves to phaseList/length, which returns
 % size(phaseId,1) and so stays the pixel count even for a grid class. The
 % size(value,1) == size(dp,1) test is what keeps a square map's ordinary
-% (r x c) property from being read as c channels.
+% (r × c) property from being read as c channels.
 
 k = 1;
 
@@ -292,9 +292,9 @@ end
 function sz = objShape(dp)
 % the object's own shape, with the channel dimension to be appended behind it
 %
-% A column shaped object stores a multi channel property as n x k, not
-% n x 1 x k, so its trailing singleton has to go before the channels are
-% appended. A grid keeps both of its dimensions and takes r x c x k.
+% A column shaped object stores a multi channel property as n × k, not
+% n × 1 × k, so its trailing singleton has to go before the channels are
+% appended. A grid keeps both of its dimensions and takes r × c × k.
 
 sz = size(dp);
 if numel(sz) == 2 && sz(2) == 1, sz = sz(1); end
@@ -307,7 +307,7 @@ function target = assignRows(dp,target,s,v)
 %
 % A multi channel property is flattened to one row per object first, so that
 % a single linear or logical subscript addresses pixels rather than rows of
-% the (r x c) matrix a grid class stores, and the shape is put back
+% the (r × c) matrix a grid class stores, and the shape is put back
 % afterwards. Deleting removes objects, so there is no shape left to put
 % back and the result stays a list.
 
@@ -343,7 +343,7 @@ function s = rowSubs(dp,s,value)
 % as a second property is multi channel.
 %
 % Appending one ':' is right when the subscript already addresses the
-% object's own dimensions: (ind) on an N x k list, (i,j) on an r x c x k
+% object's own dimensions: (ind) on an N × k list, (i,j) on an r × c × k
 % grid. A single linear subscript into a grid would need the property
 % flattened to one row per object instead - subSet does that, and @EBSD and
 % @grain2d route all of their () indexing through it rather than through

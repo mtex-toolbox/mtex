@@ -29,7 +29,7 @@ classdef spatialTransformComposite < spatialTransform
 %  stages - @spatialTransform array, stages(1) applied first
 %
 % See also
-% spatialTransform spatialTransform/plus spatialTransform/mtimes
+% spatialTransform spatialTransform spatialTransform
 
   properties
     stages = spatialTransformId.empty

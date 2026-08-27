@@ -30,7 +30,7 @@ classdef spotColorKey < orientationColorKey
   %  psi    - the @SO3Kernel defining the fade
   %
   % See also
-  % orientationColorKey ipfColorKey EBSDColorCoding
+  % orientationColorKey ipfColorKey EBSDIPFMap
   %
   
   properties

@@ -16,7 +16,7 @@ function  [maxPhi1,maxPhi,maxPhi2] = fundamentalRegionEuler(cs,ss,varargin)
 %  maxPhi2 - maximum Euler angle phi_2
 %
 % See also
-% symmetry/FundamentalRegion symmetry/FundamentalSector
+% symmetry.fundamentalRegion symmetry.fundamentalSector
 
 
 if check_option(varargin,'complete')

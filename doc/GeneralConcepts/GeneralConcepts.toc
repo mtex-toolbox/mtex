@@ -3,6 +3,8 @@ ListsAndIndexing
 GeneralConceptsConfiguration
 GeneralConceptsOptions
 Properties
+Glossary
+NotationAndConventions
 DensityEstimation
 OptimalKernel
 ClusterDemo

@@ -1,4 +1,3 @@
-GeometryOverview             Overview
 vector3d_index               vector3d  
 Miller_index                 Miller 
 symmetry_index               symmetry 

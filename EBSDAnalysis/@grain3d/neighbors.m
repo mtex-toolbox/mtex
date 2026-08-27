@@ -17,7 +17,7 @@ function pairs = neighbors(grains,varargin)
 %  matrix - get adjacency matrix
 %
 % Output
-%  pairs  - index list of size N x 2
+%  pairs  - index list of size N × 2
 %
 % See also
 % grain3d/numNeighbors

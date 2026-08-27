@@ -112,7 +112,7 @@ hold off
 %%
 % Once we have extracted the boundary segments adjacent to a triple point
 % we may also extract the corresponding misorientations. The following
-% command gives a n x 3 list of misorientations where n is the number of
+% command gives a n × 3 list of misorientations where n is the number of
 % triple points
 
 mori = gB.misorientation

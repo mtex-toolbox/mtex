@@ -186,7 +186,7 @@ hold off
 % data works analogously as for real valued data. Again we have to choose a
 % kernel function $\psi$ with a certain halfwidth $\delta$. Than the kernel
 % functions are centered at each direction of our random sampling and
-% summed up. Lets us demonstrate this procedure for misorientation axes
+% summed up. Let us demonstrate this procedure for misorientation axes
 % between two phases in an EBSD map
 
 % import ebsd data

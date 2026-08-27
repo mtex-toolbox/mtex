@@ -9,7 +9,7 @@ classdef BungePlot < orientationPlot
 %   plot(ori,'Bunge')
 %
 % Options
-%  ignoreFundamentalRegion    - plot the full 360 x 180 x 360 box
+%  ignoreFundamentalRegion    - plot the full 360 × 180 × 360 box
 %  project2FundamentalRegion  - project into the fundamental region, default
 %  restrict2FundamentalRegion - drop orientations outside it
 %

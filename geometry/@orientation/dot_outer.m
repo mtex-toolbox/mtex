@@ -113,7 +113,7 @@ end
 function d = dot_outer_quat_cs(g1,g2,cs,ss)
 % quick version that ignores inversion
 
-g2rot = symmetrise(g2,cs,ss).'; % g2 x CS x SS
+g2rot = symmetrise(g2,cs,ss).'; % g2 × CS × SS
 
 q1 = [g1.a(:) g1.b(:) g1.c(:) g1.d(:)];
 a2 = g2rot.a; b2 = g2rot.b; c2 = g2rot.c; d2 = g2rot.d;
@@ -121,7 +121,7 @@ a2 = g2rot.a; b2 = g2rot.b; c2 = g2rot.c; d2 = g2rot.d;
 % this is implicite dot_outer
 d = abs(q1 * [a2(:,1).';b2(:,1).';c2(:,1).';d2(:,1).']); 
 for k= 2 : size(a2,2)
-  d = max(d,abs(q1 * [a2(:,k).';b2(:,k).';c2(:,k).';d2(:,k).'])); % g1 x g2 x CS * SS
+  d = max(d,abs(q1 * [a2(:,k).';b2(:,k).';c2(:,k).';d2(:,k).'])); % g1 × g2 × CS * SS
 end
 
 end
@@ -129,7 +129,7 @@ end
 function d = dot_outer_i(g1,g2,cs,ss)
 % quick version that includes inversion
 
-g2rot = symmetrise(g2,cs,ss).'; % g2 x CS x SS
+g2rot = symmetrise(g2,cs,ss).'; % g2 × CS × SS
 
 q1 = [g1.a(:) g1.b(:) g1.c(:) g1.d(:)];
 i1 = g1.i(:);
@@ -142,7 +142,7 @@ d = ~xor(i1,i2(:,1).') .* ...
   abs(q1 * [a2(:,1).';b2(:,1).';c2(:,1).';d2(:,1).']);
 
 for k=2 : size(a2,2)  
-  d = max(d,...                       % g1 x g2 x CS * SS
+  d = max(d,...                       % g1 × g2 × CS * SS
     ~xor(i1,i2(:,k).') .* ...
     abs(q1 * [a2(:,k).';b2(:,k).';c2(:,k).';d2(:,k).'])); 
 end

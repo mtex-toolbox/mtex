@@ -77,7 +77,7 @@ d  = zeros(n, nf + 2*params.cells);
 for j = 1:nf
   off = ndx(j);
   if type(j) == 4
-    b = data(off+1:off+4, :);            % 4 x n, small temporary
+    b = data(off+1:off+4, :);            % 4 × n, small temporary
     d(:,j) = typecast(b(:), 'single');   % contiguous column write
   else
     d(:,j) = data(off+1, :);
@@ -129,7 +129,7 @@ job = cpr.job;
     
 param = struct('cells',false,...
   'unitCell',[],...
-  'm',[],'n',[],... % number of datatyped cols x rows
+  'm',[],'n',[],... % number of datatyped cols × rows
   'x',[],'y',[],...
   'ColumnNames',{{'Phase'}},...
   'ColumnType',1);

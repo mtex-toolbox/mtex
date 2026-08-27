@@ -21,7 +21,7 @@ function varargout = quiver(ori,varargin)
 %  labeled -
 %
 % See also
-% orientation/scatter orientation/plotPDF orientation/plotODF
+% orientation/scatter orientation/plotPDF orientation.orientation
 % orientation/plotIPDF vector3d/text
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});

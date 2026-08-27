@@ -93,7 +93,7 @@ mtexColorbar
 job.calcParentFromVote('minProb',0.7)
 
 %%
-% We observe that after this step more then 66 percent of the grains became
+% We observe that after this step more than 66 percent of the grains became
 % parent grains. Lets visualize these reconstructed beta grains
 
 % define a color key

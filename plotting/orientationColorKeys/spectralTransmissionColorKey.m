@@ -33,7 +33,7 @@ classdef spectralTransmissionColorKey < orientationColorKey
   %   oM = spectralTransmissionColorKey(rI,30000)
   %
   % See also
-  % orientationColorKey refractiveIndexTensor tensor/spectralTransmission
+  % orientationColorKey refractiveIndexTensor tensor.tensor
   %
 
   properties

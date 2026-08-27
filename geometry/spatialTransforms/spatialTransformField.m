@@ -4,7 +4,7 @@ classdef spatialTransformField < spatialTransform
 % The free form transform: no model, just where things moved. Used to mop
 % up whatever structure a fitted model leaves in its residual, and as the
 % common currency any chain can be collapsed into by
-% <spatialTransform.discretize.html |discretize|>.
+% <spatialTransform.html |discretize|>.
 %
 % The sample points need not lie on a grid and the query points need not
 % either, so a field fitted on one data set can be evaluated on another.
@@ -39,7 +39,7 @@ classdef spatialTransformField < spatialTransform
 %  u   - @vector3d, the displacement at each
 %
 % See also
-% spatialTransform spatialTransform/discretize spatialTransformDrift
+% spatialTransform spatialTransform spatialTransformDrift
 
   properties
     pos = vector3d.empty

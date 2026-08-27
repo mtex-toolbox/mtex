@@ -22,12 +22,14 @@ function [v,S] = loadVector3d_generic(fname,varargin)
 %  RADIANS           - treat input in radiand
 %  DELIMITER         - delimiter between numbers
 %
+% The column names understood for the polar angles are
+%
+%  azimuth, longitude       - angle in the xy plane
+%  polar angle, colatitude  - angle from the z axis
+%  latitude                 - angle from the xy plane
+%
 % See also
-% 
-% azimuth, longitude - angle in the xy plane
-% polar angle, colatitude
-% latitude
-% 
+% loadPoleFigure_generic vector3d.byPolar
 
 isCheck = check_option(varargin,'check');
 

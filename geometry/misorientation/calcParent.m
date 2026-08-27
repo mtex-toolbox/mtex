@@ -77,7 +77,7 @@ if setting == 1  % child + parent orientation
 elseif setting == 2     % child + child orientation, aka grain boundaries
   
   % compute all parent variants to child ori
-  % this will result in a size(childOri) x number_of_variant table.
+  % this will result in a size(childOri) × number_of_variant table.
   pVariants = reshape(childOri * p2c,[size(childOri),numV]);
 
   fit = zeros(size(childOri,1),numV,numV);
@@ -113,7 +113,7 @@ elseif setting == 2     % child + child orientation, aka grain boundaries
 elseif setting == 3 % child + child + child -> triple points
 
   % compute all parent variants to child ori
-  % this will result in a size(childOri) x number_of_variant table.
+  % this will result in a size(childOri) × number_of_variant table.
   pVariants = reshape(childOri * p2c,[size(childOri),numV]);
 
   

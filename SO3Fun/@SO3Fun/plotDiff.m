@@ -15,9 +15,9 @@ function plotDiff(SO3F1,SO3F2,varargin)
 %  l2 - calculate $|pf1--pf2|^2$ error (only for SO3Fun -- pole figure)
 %
 % See also
-% S2Grid/plot PoleFigure/calcError SO3Fun/calcError savefigure
-% Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
-% SphericalProjection_demo 
+% vector3d.plot PoleFigure/calcError SO3Fun/calcError saveFigure
+% Plotting Annotations ColorMaps PlotTypes
+% SphericalProjections 
 
 if isa(SO3F2,'PoleFigure')
   plot(calcErrorPF(SO3F2,SO3F1,varargin{:}),'colorrange','equal',varargin{:})

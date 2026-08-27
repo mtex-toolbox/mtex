@@ -10,7 +10,7 @@ function [psi,c] = crossCorrelation(ori,varargin)
 %  PartitionSize - 
 %
 % See also
-% ori/calcKernel
+% orientation.calcKernel
 
 for k = 1:15
   psi(k) = SO3DeLaValleePoussinKernel('halfwidth',40*degree/2^(k/4)); %#ok<AGROW>

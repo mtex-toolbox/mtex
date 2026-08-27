@@ -97,7 +97,7 @@ for o = 1:size(orders,1)
   ebsd = orders{o,2};
 
   % (:) is load bearing: forsterite imports as an @EBSDsquare, so pos.x is
-  % the (r x c) matrix of the map and min/max would reduce it per column
+  % the (r × c) matrix of the map and min/max would reduce it per column
   x = ebsd.pos.x(:); xCenter = (min(x) + max(x)) / 2;
   y = ebsd.pos.y(:); yCenter = (min(y) + max(y)) / 2; yHalf = (max(y) - min(y)) / 2;
   distort = @(trapFrac) @(pos) vector3d( ...

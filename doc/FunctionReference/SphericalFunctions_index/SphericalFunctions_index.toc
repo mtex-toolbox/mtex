@@ -1,4 +1,3 @@
-SphericalFunctionsOverview Overview
 S2Fun_index
 S2FunHandle_index
 S2FunTri_index

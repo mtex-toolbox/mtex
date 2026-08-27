@@ -21,8 +21,8 @@ function plotPDF(SO3F,h,varargin)
 %  complete  - plot entire (hemi)--sphere
 %
 % See also
-% S2Grid/plot annotate savefigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
-% SphericalProjection_demo
+% vector3d.plot annotate saveFigure Plotting Annotations ColorMaps PlotTypes
+% SphericalProjections
 
 if ~SO3F.isReal
   if ~getMTEXpref('generatingHelpMode')

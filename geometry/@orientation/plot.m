@@ -26,7 +26,7 @@ function varargout = plot(ori,varargin)
 %  filled  - MarkerFaceColor is MarkerEdgeColor
 %
 % See also
-% orientation/scatter orientation/plotPDF orientation/plotODF
+% orientation/scatter orientation/plotPDF orientation.orientation
 % orientation/plotIPDF vector3d/text
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});

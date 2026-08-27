@@ -20,7 +20,7 @@ if isa(sAF2,'vector3d')
   [x,y,z] = double(sAF2);
   v = [x*x,x*y,y*y,x*y,x*z,z*z];
     
-  % [a,b,c] x [x,y,z] = [bz - cy, cx - az, ay - bx]
+  % [a,b,c] × [x,y,z] = [bz - cy, cx - az, ay - bx]
   % 
   % bbzz + ccyy -2 bcyz
   % 2bczx + 2acyz -2abzz -2ccxy 

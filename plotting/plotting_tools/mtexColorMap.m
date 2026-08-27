@@ -6,12 +6,12 @@ function mtexColorMap(arg1,varargin)
 %   mtexColorMap white2black       % every axes of the current figure
 %   mtexColorMap(gcf,'white2black')
 %   mtexColorMap(ax,'white2black') % one axes only
-%   mtexColorMap(ax,map)           % an n x 3 matrix of rgb values
+%   mtexColorMap(ax,map)           % an n × 3 matrix of rgb values
 %
 % Input
 %  ax   - @axis or figure handle, defaults to the current figure
 %  name - name of the colormap, with or without the |ColorMap| suffix
-%  map  - n x 3 rgb, as returned by |colormap|
+%  map  - n × 3 rgb, as returned by |colormap|
 %
 % Description
 % Without a handle, or with a figure handle, the colormap is applied to

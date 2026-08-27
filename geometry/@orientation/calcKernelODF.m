@@ -35,7 +35,7 @@ function odf = calcKernelODF(ori,varargin)
 %  exact      - no approximation to a corser grid
 %
 % See also
-% ebsd_demo EBSD2odf EBSDSimulation_demo EBSD/load EBSD/calcKernel kernel/kernel
+% EBSDTutorial EBSD2ODF EBSDSimulation_demo EBSD/load EBSD.EBSD SO3Kernel.SO3Kernel
 
 % extract weights
 if check_option(varargin,'weights')

@@ -8,7 +8,7 @@
 % surface.
 %
 % A bare function handle does that much too. A
-% <spatialTransform.spatialTransform.html |spatialTransform|> also composes,
+% <spatialTransform.html |spatialTransform|> also composes,
 % inverts, displays itself, fits itself to measured data, and can be stored
 % and applied to a second data set - which is what turns a one-off
 % correction into something reusable.
@@ -43,24 +43,24 @@ posMoved = T * pos;
 % Each class is named for the distortion it models, from the most rigid to
 % the most free:
 %
-% * <spatialTransformId.spatialTransformId.html |spatialTransformId|> -
+% * <spatialTransformId.html |spatialTransformId|> -
 % nothing separates the two frames
-% * <spatialTransformRigid.spatialTransformRigid.html
+% * <spatialTransformRigid.html
 % |spatialTransformRigid|> - one displacement, the same everywhere
-% * <spatialTransformShift.spatialTransformShift.html
+% * <spatialTransformShift.html
 % |spatialTransformShift|> - a 2D affine as a homogeneous matrix, i.e.
 % translation, rotation, scale and shear together
-% * <spatialTransformProjective.spatialTransformProjective.html
+% * <spatialTransformProjective.html
 % |spatialTransformProjective|> - a homography, what a tilted specimen does
-% * <spatialTransformPoly.spatialTransformPoly.html |spatialTransformPoly|>
+% * <spatialTransformPoly.html |spatialTransformPoly|>
 % - a displacement varying polynomially across the frame
-% * <spatialTransformDrift.spatialTransformDrift.html
+% * <spatialTransformDrift.html
 % |spatialTransformDrift|> - a displacement varying only along the slow scan
 % direction, a rolling shutter rather than a smooth field
-% * <spatialTransformField.spatialTransformField.html
+% * <spatialTransformField.html
 % |spatialTransformField|> - no model at all, just where things moved,
 % interpolated between the points it was measured at
-% * <spatialTransformHandle.spatialTransformHandle.html
+% * <spatialTransformHandle.html
 % |spatialTransformHandle|> - the escape hatch, a function handle
 %
 % They share a base, so differently modelled hops may sit in one array
@@ -150,7 +150,7 @@ inv(T)
 %%
 % A polynomial, a spline or a scattered field maps positions perfectly well
 % but cannot be solved backwards in closed form. Their inverse is a
-% <spatialTransformInverse.spatialTransformInverse.html
+% <spatialTransformInverse.html
 % |spatialTransformInverse|>, which iterates - and converges as long as the
 % displacement field does not fold
 
@@ -170,9 +170,9 @@ max(norm(eval(Pinv,P*posA) - posA))
 %
 % A composite evaluates every stage in turn, which is wasted work if it is
 % about to be applied to a million pixels many times over.
-% <spatialTransform.discretize.html |discretize|> samples a chain of any
+% <spatialTransform.html |discretize|> samples a chain of any
 % length at given positions and returns the single
-% <spatialTransformField.spatialTransformField.html |spatialTransformField|>
+% <spatialTransformField.html |spatialTransformField|>
 % that reproduces it
 
 F = discretize(R + S, posA)

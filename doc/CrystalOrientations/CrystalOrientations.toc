@@ -7,7 +7,7 @@ OrientationPoleFigure            Pole Figures
 OrientationInversePoleFigure     Inverse Pole Figure
 OrientationVisualization3d       3D Plots
 OrientationVisualizationSections Section Plots
-OrientationFundamentalRegion     Fundamenal Region
+OrientationFundamentalRegion     Fundamental Region
 SpecimenSymmetry                 Specimen Symmetry
 OrientationGrid                  Grids 
 OrientationFibre                 Fibres

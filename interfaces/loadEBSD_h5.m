@@ -315,12 +315,12 @@ function out = rotation_byMatrix(M)
         return
     end
     if h == 9 && w > 1
-        % 9 x N: each COLUMN is one pixel's 9 values
+        % 9 × N: each COLUMN is one pixel's 9 values
         M3 = reshape(M, 3, 3, []);
         return
     end
     if w == 9 && h > 1
-        % N x 9: each ROW is one pixel's 9 values
+        % N × 9: each ROW is one pixel's 9 values
         M3 = reshape(M', 3, 3, []);
         return
     end

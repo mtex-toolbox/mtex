@@ -15,7 +15,7 @@ function ebsd = plus(ebsd,v)
 
 if isa(v,'EBSD'), [v,ebsd] = deal(ebsd,v); end
 
-% a numeric shift is added to x, y and z separately, so a 1 x 2 row expands them
+% a numeric shift is added to x, y and z separately, so a 1 × 2 row expands them
 if ~isa(v,'vector3d')
   error('MTEX:shift:invalidShift','An EBSD map can only be shifted by a vector3d.');
 end

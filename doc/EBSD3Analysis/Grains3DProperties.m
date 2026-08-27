@@ -87,7 +87,7 @@ scatter(grains.volume.^(1/3), grains.diameter)
 [a,b,c] = principalComponents(grains);
 
 %%
-% Lets use these half-axes to visualize the 3d-grains as ellipsoids
+% Let us use these half-axes to visualize the 3d-grains as ellipsoids
 % colorized by the grain orientation. This is done using the command
 % <plotEllipsoid.html |plotEllipsoid|>
 

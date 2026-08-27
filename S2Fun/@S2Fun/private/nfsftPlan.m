@@ -143,7 +143,7 @@ T = struct('setNodes',@setNodes,'adjoint',@adjoint,'trafo',@trafo, ...
     %
     % Output
     %  g - @vector3d, the spherical gradient in the nodes
-    %  S - M x 6, the symmetric part of the ambient matrix A(k,l) = (grad
+    %  S - M × 6, the symmetric part of the ambient matrix A(k,l) = (grad
     %      G_k)_l with G = grad sF, stored as [11 22 33 12 13 23]
     %
     % For an orthonormal tangent frame E = [e1 e2] at a node, the Riemannian

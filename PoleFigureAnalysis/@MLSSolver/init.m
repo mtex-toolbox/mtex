@@ -38,7 +38,7 @@ for i = 1:pf.numPF
   end
 
   % compute points in the pole figure
-  gh = solver.S3G * vertcat(h{:}); % S3G x SS x h
+  gh = solver.S3G * vertcat(h{:}); % S3G × SS × h
   
   solver.nfft_gh(i) = nfsftmex('init_advanced', bw, length(gh), 1);
   nfsftmex('set_x', solver.nfft_gh(i), double([gh.rho(:)'; gh.theta(:)'])); % set vertices

@@ -11,7 +11,7 @@ function pf = loadPoleFigure_xrd(fname,varargin)
 %  pf - @PoleFigure
 %
 % See also
-% ImportPoleFigureData loadPoleFigure
+% PoleFigureImport PoleFigure.load
 
 pf = PoleFigure;
 

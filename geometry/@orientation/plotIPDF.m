@@ -28,8 +28,8 @@ function plotIPDF(ori,varargin)
 %  filled    - fill the marker with current color
 %
 % See also
-% S2Grid/plot saveFigure Plotting Annotations_demo ColorCoding_demo PlotTypes_demo
-% SphericalProjection_demo
+% vector3d.plot saveFigure Plotting Annotations ColorMaps PlotTypes
+% SphericalProjections
 
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 

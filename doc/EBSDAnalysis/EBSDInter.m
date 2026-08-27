@@ -7,7 +7,7 @@
 % grid before and after the operations is the same. 
 %
 % In this section we explain how to interpolate an EBSD map at positions
-% that do not belong to the grid. Lets us consider a simple example
+% that do not belong to the grid. Let us consider a simple example
 
 plottingConvention.default('y↑→x');
 mtexdata twins;

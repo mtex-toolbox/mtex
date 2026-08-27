@@ -51,11 +51,11 @@ if nargin == 4
 
   % define the transformation matrix
 
-  %A = reshape([double(v1); double(v2t); double(v3)],3,3,1,[]); % 3(xyz) x 3 x 1 x N
-  %B = reshape([double(u1); double(u2t); double(u3)],3,1,3,[]); % 3(xyz) x 1 x 3 x N
+  %A = reshape([double(v1); double(v2t); double(v3)],3,3,1,[]); % 3(xyz) × 3 × 1 × N
+  %B = reshape([double(u1); double(u2t); double(u3)],3,1,3,[]); % 3(xyz) × 1 × 3 × N
 
-  A = permute(fullDouble([vector3d(v1(:)),v2t(:),v3(:)]),[2 3 4 1]); %  3 x 3(xyz) x 1 x N
-  B = permute(fullDouble([vector3d(u1(:)),u2t(:),u3(:)]),[2 4 3 1]); %  3 x 1 x 3(xyz) x N
+  A = permute(fullDouble([vector3d(v1(:)),v2t(:),v3(:)]),[2 3 4 1]); %  3 × 3(xyz) × 1 × N
+  B = permute(fullDouble([vector3d(u1(:)),u2t(:),u3(:)]),[2 4 3 1]); %  3 × 1 × 3(xyz) × N
 
   M = squeeze(sum(A .* B,1));
 

@@ -30,6 +30,19 @@ sSBasal = slipSystem(b,n)
 sSBasal = slipSystem.basal(cs)
 
 %%
+% Drawn inside the crystal, a slip system is a plane and an arrow in it. The
+% plane is where the lattice shears and the arrow is the direction it shears
+% along, so both are needed - the same plane with a different direction in it
+% is a different slip system.
+
+cS = crystalShape.hex(cs);
+
+plot(cS,'faceAlpha',0.4,'faceColor',[0.7 0.8 0.9])
+hold on
+plot(cS,sSBasal,'faceColor','red')
+hold off
+
+%%
 % Obviously, this is not the only basal slip system in hexagonal lattices.
 % There are also symmetrically equivalent ones, which can be computed by
 

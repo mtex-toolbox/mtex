@@ -18,7 +18,7 @@ if isempty(ax), ax=gca; end
 
 alpha = get_option(varargin,'faceAlpha');
 
-% build the (m x n) grid of pixel positions from a flat list
+% build the (m × n) grid of pixel positions from a flat list
 isCell = get_option(varargin,'isCell',[]);
 
 if size(pos,2) == 1 || isvector(pos)
@@ -45,7 +45,7 @@ else
   d = reshape(d,size(pos,1),size(pos,2),[]);
 end
 
-% surf needs an (m+1) x (n+1) grid of cell corners, so that every face is centred
+% surf needs an (m+1) × (n+1) grid of cell corners, so that every face is centred
 % on its pixel - pad the centre grid by one row and column and average the four
 % centres around every corner, which also tracks a locally varying step
 if size(pos,1) >= 2

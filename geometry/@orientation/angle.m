@@ -10,7 +10,7 @@ function omega = angle(o1,varargin)
 %  o1, o2 - @orientation
 % 
 % Output
-%  o1 x o2 - angle (double)
+%  o1 × o2 - angle (double)
 %
 % Options
 %  noSymmetry - do ignore symmetry

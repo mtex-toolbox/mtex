@@ -33,6 +33,15 @@ global mtex_progress; mtex_progress = 0; %#ok<GVMIS>
 
 options.outDir = fullfile(mtex_path,'doc','html');
 options.tmpDir = fullfile(mtex_path,'doc','makeDoc','tmp');
+
+% The overview page writes its own html and so refers to images/<file>, the
+% path the website serves them from. Mirror that here, or its thumbnails
+% resolve on the website and nowhere else.
+if ~exist(fullfile(options.outDir,'images'),'dir')
+  mkdir(fullfile(options.outDir,'images'));
+end
+copyfile(fullfile(mtex_path,'doc','makeDoc','general','chapter_*.png'),...
+  fullfile(options.outDir,'images'));
 options.publishSettings.stylesheet = fullfile(pwd,'general','publish2.xsl');
 %options.publishSettings.stylesheet = fullfile(matlabroot, "/toolbox/matlab/codetools/private/mxdom2simplehtml.xsl"); 
 options.xml = [];

@@ -25,16 +25,16 @@ classdef spatialTransformDrift < spatialTransform
 %   T = spatialTransformDrift.fit(posA,posB,'slowScan',xvector,'extrapolate')
 %
 % Input
-%  s          - n x 1 knot coordinates along the slow scan direction
-%  u          - n x 2 displacement at each knot
+%  s          - n × 1 knot coordinates along the slow scan direction
+%  u          - n × 2 displacement at each knot
 %  posA, posB - @vector3d, the same points in the two frames
 %
 % Output
 %  T - @spatialTransformDrift
 %
 % Class Properties
-%  s           - n x 1 knots, ascending
-%  u           - n x 2 displacement at the knots
+%  s           - n × 1 knots, ascending
+%  u           - n × 2 displacement at the knots
 %  slowScan    - @vector3d, the direction the spline runs along
 %  extrapolate - continue the end segments instead of returning NaN
 %
@@ -56,7 +56,7 @@ classdef spatialTransformDrift < spatialTransform
 
       s = s(:);
       assert(isequal(size(u),[numel(s) 2]),'MTEX:spatialTransform:badKnots',...
-        'Expected %d x 2 displacements to go with %d knots, got %s.',...
+        'Expected %d × 2 displacements to go with %d knots, got %s.',...
         numel(s),numel(s),mat2str(size(u)));
 
       [T.s,ord] = sort(s);

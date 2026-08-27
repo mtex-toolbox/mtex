@@ -163,7 +163,7 @@ if dimension == 3
    
   % each line of contains
   % grainId numFaces FaceId1 FaceId2 FaceId2 ... FaceId1
-  % we store these data in a grains x faces incidence matrix
+  % we store these data in a grains × faces incidence matrix
   % with values +-1 indicting whether the face normal points out of the grain
   grainId = cellfun(@(x) x(1),grains);
   numFaces = cellfun(@(x) x(2),grains);

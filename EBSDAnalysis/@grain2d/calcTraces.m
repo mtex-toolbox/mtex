@@ -11,7 +11,7 @@ function [traces, rel, cSize] = calcTraces(grains, clusterId, varargin)
 %  cId  - cluster Id
 %
 % Output
-%  traces - @vector3d, size max(clusterId(:,1)) x max(clusterId(:,2)) ....
+%  traces - @vector3d, size max(clusterId(:,1)) × max(clusterId(:,2)) ....
 %  rel    - relyability index, same size as traces
 %  cSize  - cluster size, , same size as traces
 %

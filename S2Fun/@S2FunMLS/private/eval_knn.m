@@ -22,7 +22,7 @@ if S2F.subsample
   nn = S2F.dim;
 end
 
-% ind is N x nn, the local systems are the pages of nn x ... x N books
+% ind is N × nn, the local systems are the pages of nn × ... × N books
 nn_total = nn * N;
 grid_id = reshape(ind', nn_total, 1);
 center_id = repelem((1:N)', nn);
@@ -32,7 +32,7 @@ if S2F.subsample
   dist = reshape(dist, nn, N)';
 end
 
-% local basis values, as nn_total x dim
+% local basis values, as nn_total × dim
 if ~S2F.centered
   if nn_total > numel(S2F.nodes)
     G = eval_basis_functions(S2F);
@@ -113,7 +113,7 @@ else
   candidateLimit = false(N, 1);
 end
 
-% ind has the N x nn layout of the weights, no reordering is needed here
+% ind has the N × nn layout of the weights, no reordering is needed here
 weights = weights .* S2F.vor_weights(ind) * 4*pi / numel(S2F.nodes);
 
 if S2F.detectOutliers

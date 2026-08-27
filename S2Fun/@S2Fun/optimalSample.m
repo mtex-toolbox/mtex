@@ -145,7 +145,7 @@ function [v,c] = optimalSample(sF,n,varargin)
 %  minWeight  - discard directions with a smaller weight (default = 0, i.e. keep all)
 %
 % See also
-% S2Fun/discreteSample S2RestrictedDistanceKernel
+% S2Fun/discrepancy S2Fun/discreteSample S2RestrictedDistanceKernel
 
 % TODO: Symmetries, i.e. S2FunHarmonicSym
 
@@ -324,8 +324,9 @@ for i = 1:maxIter
   dir = vector3d(d(1:M),d(M+1:2*M),d(2*M+1:3*M));
 
   % the two loop recursion mixes in transported gradients and gives away a
-  % little of the tangentiality the geodesic step below relies on
-  dir = dir - dot(dir,v).*v;
+  % little of the tangentiality the geodesic step below relies on. The nodes
+  % carry the antipodal flag of sF, for which dot returns |v.dir|.
+  dir = dir - dot(dir,v,'noAntipodal').*v;
 
   dZ = d(3*M+1:end);
   if ~moveWeights, dZ = zeros(numel(z),1); end
@@ -560,7 +561,7 @@ function W = transport(W,V,U,sinT,cosT1)
 % Parallel transport of tangent vectors along the geodesics of a step. Every
 % column of W holds one tangent vector per node, stacked as [x;y;z], followed
 % by the softmax block, and V and U hold the nodes and the unit directions of
-% the step as M x 3 matrices. For the geodesic that leaves v in direction u
+% the step as M × 3 matrices. For the geodesic that leaves v in direction u
 % by the angle t parallel transport is
 %
 %   P(w) = w - (u.w) ( sin(t) v + (1-cos(t)) u ) ,

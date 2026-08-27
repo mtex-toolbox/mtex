@@ -4,7 +4,7 @@ function check_ebsdGrid
 % Owns three things that all live on the grid: that unitCell stays consistent
 % with pos under a transformation, so lattice.ij keeps indexing the right
 % pixel, that the unitCell property itself accepts what calcUnitCell hands
-% back, and that an N x k property survives indexing and assignment.
+% back, and that an N × k property survives indexing and assignment.
 %
 % Merged from check_ebsdTransform and check_dynProp, two of the files that
 % one bug-fixing session in August 2026 produced one-per-bug. Both cases are
@@ -36,7 +36,7 @@ function checkUnitCellProperty
 % calcUnitCell's output has to be usable as ebsd.unitCell, and has to be
 % finite even for a degenerate map
 %
-% Two regressions, both silent. calcUnitCell returns an n x 2 list of
+% Two regressions, both silent. calcUnitCell returns an n × 2 list of
 % coordinates while the property is a vector3d, so the documented recompute
 % ebsd.unitCell = calcUnitCell(xy) stored a raw double (#2531) that every
 % later reader of the property - plot, lattice, calcGrains - then tripped
@@ -72,7 +72,7 @@ uCLine = calcUnitCell([line.pos.x(:), line.pos.y(:)]);
 assert(all(isfinite(uCLine),'all'), ...
   'check_ebsdGrid: calcUnitCell on a single scan line returned %s', mat2str(uCLine,4));
 assert(abs(range(uCLine(:,1)) - d) < 1e-12 && abs(range(uCLine(:,2)) - d) < 1e-12, ...
-  'check_ebsdGrid: the single scan line cell is %g x %g, expected %g x %g', ...
+  'check_ebsdGrid: the single scan line cell is %g × %g, expected %g × %g', ...
   range(uCLine(:,1)),range(uCLine(:,2)),d,d);
 
 assert(all(isfinite(line.unitCell.xyz),'all'), ...
@@ -93,8 +93,8 @@ function checkUnitCellHint
 % 1 is an ordinary answer, and it is precisely what a file whose positions
 % are beam column/row indices produces. A Bruker map hit that - positions
 % in beam indices, header step in micrometre - and ended up with the two
-% in different units, claiming an extent of 1999 x 1331 um for a
-% 778 x 510 um scan. gridify then built a lattice 6.7 times too large,
+% in different units, claiming an extent of 1999 × 1331 um for a
+% 778 × 510 um scan. gridify then built a lattice 6.7 times too large,
 % 85% of it empty, taking 65 s.
 %
 % The other way round, the agreement test compared mean(norm(uC)), which
@@ -588,9 +588,9 @@ end
 
 % =========================================================================
 function checkGridShapes
-% every per pixel view of a gridded map is the (r x c) matrix of the map
+% every per pixel view of a gridded map is the (r × c) matrix of the map
 %
-% Regression (#2128): phase came back as an (r*c) x 1 list while id,
+% Regression (#2128): phase came back as an (r*c) × 1 list while id,
 % rotations, pos, isIndexed and every prop were the matrix, so the one
 % property a sliding window analysis indexes by (row,col) was the one that
 % could not be. phaseId itself is the storage and stays a column - as it
@@ -602,7 +602,7 @@ ebsd = makeMap(sz,d);
 grid = ebsd.gridify;
 
 assert(isequal(size(grid),[sz sz]), ...
-  'check_ebsdGrid: the fixture did not gridify to %d x %d but to %s', ...
+  'check_ebsdGrid: the fixture did not gridify to %d × %d but to %s', ...
   sz,sz,mat2str(size(grid)));
 
 for fn = {'id','phase','isIndexed','rotations','pos','bc'}
@@ -638,12 +638,12 @@ assert(isequal(size(ebsd.phase),size(ebsd)), ...
   'check_ebsdGrid: phase of a plain list is %s, expected %s', ...
   mat2str(size(ebsd.phase)), mat2str(size(ebsd)));
 
-% a grainBoundary carries a phase on each side - n x 2 against an n x 1
+% a grainBoundary carries a phase on each side - n × 2 against an n × 1
 % object, so it is the one per entry view that must keep its columns
 grains = calcGrains(ebsd,'threshold',5*degree);
 gB = grains.boundary;
 assert(isequal(size(gB.phase),size(gB.phaseId)) && size(gB.phase,2) == 2, ...
-  'check_ebsdGrid: grainBoundary phase is %s, expected the n x 2 of phaseId %s', ...
+  'check_ebsdGrid: grainBoundary phase is %s, expected the n × 2 of phaseId %s', ...
   mat2str(size(gB.phase)), mat2str(size(gB.phaseId)));
 
 end
@@ -688,16 +688,16 @@ end
 
 % =========================================================================
 function checkMultiColumnProps
-% check that multi channel (N x k) properties survive indexing and assignment
+% check that multi channel (N × k) properties survive indexing and assignment
 %
 % A property does not have to be one number per object - a forescatter image
-% is 5 channels, so it is stored as one N x 5 property rather than 5 separate
+% is 5 channels, so it is stored as one N × 5 property rather than 5 separate
 % ones. dynProp/subSet has always known that, but its two siblings did not:
 %
 %  - subsasgn appended the ':' that keeps the columns to the SHARED subscript
-%    inside the per property loop, so a second N x k property appended a
+%    inside the per property loop, so a second N × k property appended a
 %    second ':', and it wrote s.subs instead of s(1).subs
-%  - the delete branch of subsasgn had no N x k case at all, so ebsd(ind)=[]
+%  - the delete branch of subsasgn had no N × k case at all, so ebsd(ind)=[]
 %    hit A(ind)=[] on a matrix, which MATLAB rejects
 %  - subsref's '()' branch had none either. That branch is currently dead -
 %    every MTEX class strips '()' in its own subsref and routes it through
@@ -722,19 +722,19 @@ end
 
 % =========================================================================
 function checkChannelsOnAGrid
-% the same property on a grid class, where it is stored as r x c x k
+% the same property on a grid class, where it is stored as r × c × k
 %
-% A grid holds one entry per pixel as the (r x c) matrix of the map, so a
-% k channel property is r x c x k, not N x k. Nothing knew that:
+% A grid holds one entry per pixel as the (r × c) matrix of the map, so a
+% k channel property is r × c × k, not N × k. Nothing knew that:
 %
-%  - dynProp decided "multi channel" from size(value,2) > 1, which an r x c
-%    property satisfies on its own. An r x c x k one therefore came out the
+%  - dynProp decided "multi channel" from size(value,2) > 1, which an r × c
+%    property satisfies on its own. An r × c × k one therefore came out the
 %    other side as an ordinary property indexed linearly, so ebsd(i,j) and
 %    subGrid returned channel 1 with the values of the wrong pixels, and
 %    said nothing
 %  - EBSD/reshape reshaped to the map shape alone, dropping the channels
-%  - squarify wrote every property into an r x c matrix, so gridify of a
-%    list carrying an N x k property errored on the element count
+%  - squarify wrote every property into an r × c matrix, so gridify of a
+%    list carrying an N × k property errored on the element count
 %
 % Values here encode both pixel and channel, so a flattened or misindexed
 % result is visible in the numbers rather than only in the size.
@@ -758,10 +758,10 @@ assertChannels(sub.rgb,base(2:5,2:4),'ebsd(i,j)');
 mask = false(r,c); mask(3:r,:) = true;
 assertChannels(subGrid(ebsd,mask).rgb,base(3:r,:),'subGrid');
 
-% a mask that does not, so the map becomes a list - then N x k
+% a mask that does not, so the map becomes a list - then N × k
 lin = ebsd(mask);
 assert(isequal(size(lin.rgb),[nnz(mask) 3]), ...
-  'check_ebsdGrid: a grid reduced to a list must hold N x k, got %s', ...
+  'check_ebsdGrid: a grid reduced to a list must hold N × k, got %s', ...
   mat2str(size(lin.rgb)));
 assert(isequal(lin.rgb(:,3),100*base(mask)), ...
   'check_ebsdGrid: the list lost track of which pixel a channel value belongs to');
@@ -769,7 +769,7 @@ assert(isequal(lin.rgb(:,3),100*base(mask)), ...
 % and back again
 reGrid = gridify(lin);
 assert(ndims(reGrid.rgb)==3 && size(reGrid.rgb,3)==3, ...
-  'check_ebsdGrid: gridify of a list carrying N x k must give r x c x k, got %s', ...
+  'check_ebsdGrid: gridify of a list carrying N × k must give r × c × k, got %s', ...
   mat2str(size(reGrid.rgb)));
 c1 = reGrid.rgb(:,:,1); c3 = reGrid.rgb(:,:,3); known = ~isnan(c1);
 assert(isequal(c3(known),100*c1(known)), ...
@@ -840,7 +840,7 @@ end
 
 % =========================================================================
 function checkAssignment(ebsd)
-% writing a subset back. With two N x k properties the old code appended a
+% writing a subset back. With two N × k properties the old code appended a
 % second ':' to the shared subscript while handling the second one
 
 ind = [2 5 9 14];
@@ -854,10 +854,10 @@ e = ebsd;
 e(ind) = b;
 
 assert(isequal(e.fs(ind,:),-ebsd.fs(ind,:)), ...
-  'check_dynProp: assigning a subset did not write the first N x k property');
+  'check_dynProp: assigning a subset did not write the first N × k property');
 
 assert(isequal(e.im(ind,:),-ebsd.im(ind,:)), ...
-  'check_dynProp: assigning a subset did not write the second N x k property');
+  'check_dynProp: assigning a subset did not write the second N × k property');
 
 assert(isequal(e.bc(ind),-ebsd.bc(ind)), ...
   'check_dynProp: assigning a subset did not write an ordinary property');
@@ -878,7 +878,7 @@ end
 % =========================================================================
 function checkAssignmentNewField(ebsd)
 % the target does not carry the multi channel property yet, so a placeholder
-% is created for it - it has to be N x k, not N x 1
+% is created for it - it has to be N × k, not N × 1
 
 ind = [4 8 12];
 
@@ -899,7 +899,7 @@ end
 
 % =========================================================================
 function checkDeletion(ebsd)
-% ebsd(ind) = [] used to hit A(ind) = [] on an N x k property
+% ebsd(ind) = [] used to hit A(ind) = [] on an N × k property
 
 ind = [1 6 13];
 keep = true(length(ebsd),1); keep(ind) = false;
@@ -946,7 +946,7 @@ function checkLatticeBasisCanonical
 % out one order and squarify sorts the corners by angle before gridding,
 % which on a square cell also reverses the winding. latticeBasis used to
 % take a1 = trans(1,:) and a2 = the first orthogonal entry, so the same
-% 50 x 50 square gave A = [50 0; 0 50] one way and A = [-50 0; 0 50] the
+% 50 × 50 square gave A = [50 0; 0 50] one way and A = [-50 0; 0 50] the
 % other - a MIRRORED, left handed (i,j) frame. That propagated through
 % assignGridIndex into the spatial decomposition and changed the
 % reconstruction from identical measurements: on forsterite 2931 grains and

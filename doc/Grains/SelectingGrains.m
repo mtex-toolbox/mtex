@@ -239,8 +239,8 @@ plot(grains(grain_id))
 %
 %   grains(grain_id) = []
 %
-% However, boundary grains can be selected more easily be the command
-% |<grain2d/isBoundary.html |isBoundary|>|. 
+% However, boundary grains can be selected more easily by the command
+% <grain2d.isBoundary.html |isBoundary|>.
 
 plot(grains(~grains.isBoundary))
 

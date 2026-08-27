@@ -51,7 +51,7 @@ function [pf,varargin] = loadPoleFigure_generic(fname,varargin)
 %        'Columns',[1 2 3])
 %
 % See also
-% ImportPoleFigureData loadPoleFigure
+% PoleFigureImport PoleFigure.load
 
 % an explicitly given crystal direction wins over the guess from the file
 % name. Take it out of the list as well - Miller is a vector3d, and the

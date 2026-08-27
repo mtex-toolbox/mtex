@@ -15,7 +15,7 @@ function [cx,cy] = xcfROIGrid(roiSize,numROI,region)
 %  region  - [left top width height], as imcrop
 %
 % Output
-%  cx, cy - ny x nx tile centres, in pixels
+%  cx, cy - ny × nx tile centres, in pixels
 %
 % See also
 % xcfShift
@@ -25,7 +25,7 @@ h = roiSize/2;
 % linspace happily runs backwards, so a tile that cannot fit has to be
 % refused here rather than caught as a bad subscript further down
 assert(region(3) >= roiSize && region(4) >= roiSize,'MTEX:xcfShift:noROI',...
-  ['A tile of %d pixels does not fit inside the %g x %g region the two '...
+  ['A tile of %d pixels does not fit inside the %g × %g region the two '...
   'images share. Use a smaller ROISize, or check that they overlap.'],...
   roiSize,region(3),region(4));
 
@@ -37,7 +37,7 @@ while ~isempty(x) && x(end) + h > region(1) + region(3), x(end) = []; end
 while ~isempty(y) && y(end) + h > region(2) + region(4), y(end) = []; end
 
 assert(~isempty(x) && ~isempty(y),'MTEX:xcfShift:noROI',...
-  ['No tile of %d pixels fits inside the %g x %g region the two images '...
+  ['No tile of %d pixels fits inside the %g × %g region the two images '...
   'share. Use a smaller ROISize, or check that they overlap at all.'],...
   roiSize,region(3),region(4));
 

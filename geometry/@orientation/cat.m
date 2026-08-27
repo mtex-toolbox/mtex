@@ -12,7 +12,7 @@ function ori = cat(dim,varargin)
 %  ori - @orientation
 %
 % See also
-% rotation/horzcat, rotation/vertcat
+% quaternion.horzcat, quaternion.vertcat
 
 if ~isempty(varargin{1}) && ~isempty(varargin{2})
   if varargin{1}.CS ~= varargin{2}.CS

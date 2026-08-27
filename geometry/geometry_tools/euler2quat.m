@@ -23,8 +23,8 @@ function q = euler2quat(alpha,beta,gamma,varargin)
 %  BUNGE, ZXZ - Bunge (phi1,Phi,phi2) convention
 %
 % See also
-% quaternion/quaternion quaternion/quaternion axis2quat Miller2quat
-% vec42quat hr2quat
+% quaternion/quaternion quaternion/quaternion axis2quat
+% hr2quat
 
 % maybe euler angles are given as a matrix
 if nargin == 1 || (size(alpha,2)==3 && (~isnumeric(beta) || ~all(size(alpha)==size(beta))))

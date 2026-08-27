@@ -8,10 +8,10 @@ function [sumdetector,sumphi,sumspectr,peaks,bgpeaks] = proceed_spectra(spec,bg,
 %  peakpositions - double
 %
 % Output
-%  sumdetector - sum over all detectors (range x 72)
-%  sumphi      - sum over all phi (range x 19)
-%  sumspectr   - sum over all spectra (72 x 19)
-%  peaks       - peak sums (peaks x 72 x 19)
+%  sumdetector - sum over all detectors (range × 72)
+%  sumphi      - sum over all phi (range × 19)
+%  sumspectr   - sum over all spectra (72 × 19)
+%  peaks       - peak sums (peaks × 72 × 19)
 %
 
 coeff = fclencurt(19+18,0,1);

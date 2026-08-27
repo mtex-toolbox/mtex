@@ -28,7 +28,7 @@ function [mesh,ind,model] = calcMesh(pos,uC,varargin)
 % which all place a pixel on the same virtual lattice this way.
 A = latticeBasis(uC);
 
-% the caller may hand over pos in any shape, e.g. map shaped (r x c) - the
+% the caller may hand over pos in any shape, e.g. map shaped (r × c) - the
 % lattice fit and all the indexing below operate on a flat list of points
 pos = pos(:);
 

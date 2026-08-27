@@ -15,7 +15,7 @@ function f =  evalNFSOFT(F,rot,varargin)
 %   f - double
 %
 % See also
-% SO3FunHarmonic/eval SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic/evalSectionsEquispacedFFT 
+% SO3FunHarmonic/eval SO3FunHarmonic/evalEquispacedFFT SO3FunHarmonic.SO3FunHarmonic 
 
 % if isa(rot,'orientation')
 %   ensureCompatibleSymmetries(F,rot)

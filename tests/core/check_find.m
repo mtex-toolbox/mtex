@@ -4,7 +4,7 @@ function check_find
 % The two symmetry branch of @orientation/find used to
 %
 %  (a) re-index with the wrong modulus when numSym(CS) < numSym(SS) - v*cs
-%      has layout N x numSym(cs), so the original index is mod(ind-1,N)+1,
+%      has layout N × numSym(cs), so the original index is mod(ind-1,N)+1,
 %      not mod(ind-1,numSym(cs))+1
 %  (b) apply the k-nearest re-indexing to the sparse incidence matrix of the
 %      epsilon mode - leaving it uncollapsed in one branch and densifying it
@@ -26,12 +26,12 @@ N = 120;  M = 10;
 
 % cs, ss, label - the last column names the fold branch that is exercised
 cases = { ...
-  crystalSymmetry('1')  , specimenSymmetry('1')  , 'triv x triv', 'none'  ; ...
-  crystalSymmetry('321'), specimenSymmetry('1')  , '321 x triv' , 'none'  ; ...
-  crystalSymmetry('1')  , specimenSymmetry('mmm'), 'triv x mmm' , 'none'  ; ...
-  crystalSymmetry('432'), specimenSymmetry('mmm'), '432 x mmm'  , 'foldSS'; ...
-  crystalSymmetry('321'), specimenSymmetry('mmm'), '321 x mmm'  , 'foldSS'; ...
-  crystalSymmetry('2')  , specimenSymmetry('mmm'), '2 x mmm'    , 'foldCS'};
+  crystalSymmetry('1')  , specimenSymmetry('1')  , 'triv × triv', 'none'  ; ...
+  crystalSymmetry('321'), specimenSymmetry('1')  , '321 × triv' , 'none'  ; ...
+  crystalSymmetry('1')  , specimenSymmetry('mmm'), 'triv × mmm' , 'none'  ; ...
+  crystalSymmetry('432'), specimenSymmetry('mmm'), '432 × mmm'  , 'foldSS'; ...
+  crystalSymmetry('321'), specimenSymmetry('mmm'), '321 × mmm'  , 'foldSS'; ...
+  crystalSymmetry('2')  , specimenSymmetry('mmm'), '2 × mmm'    , 'foldCS'};
 
 for i = 1:size(cases,1)
 
@@ -121,7 +121,7 @@ w = orientation.rand(1,cs,ss);
 ind = find(v,w,20*degree);
 assert(islogical(ind),'the epsilon mode must return a sparse LOGICAL matrix')
 assert(isequal(size(ind),[1 N]),...
-  'the epsilon mode must return a numel(w) x numel(v) matrix')
+  'the epsilon mode must return a numel(w) × numel(v) matrix')
 volume(v,w,20*degree,'weights',ones(1,N)/N);
 
 disp('check_find passed')
@@ -141,8 +141,8 @@ function checkKResult(ind,d,dRef,k,lbl,tol)
 
 [M,N] = size(dRef);
 
-assert(isequal(size(ind),[M k]),'%s, k=%d: ind must be %d x %d',lbl,k,M,k)
-assert(isequal(size(d),[M k]),'%s, k=%d: d must be %d x %d',lbl,k,M,k)
+assert(isequal(size(ind),[M k]),'%s, k=%d: ind must be %d × %d',lbl,k,M,k)
+assert(isequal(size(d),[M k]),'%s, k=%d: d must be %d × %d',lbl,k,M,k)
 assert(all(ind(:) >= 1 & ind(:) <= N),...
   '%s, k=%d: the returned index is out of range',lbl,k)
 
@@ -171,7 +171,7 @@ function checkClosest(v,w,dRef,lbl,tol)
 M = size(dRef,1);
 
 assert(isequal(size(ind),[M 1]),...
-  '%s: the two argument syntax must return a numel(w) x 1 index',lbl)
+  '%s: the two argument syntax must return a numel(w) × 1 index',lbl)
 assert(max(abs(double(d(:)) - min(dRef,[],2))) < tol,...
   '%s: the two argument syntax did not return the closest point',lbl)
 
@@ -188,8 +188,8 @@ function checkEps(v,w,dRef,epsilon,lbl,tol)
 [ind,d] = find(v,w,epsilon);
 
 assert(isequal(size(ind),[M N]),...
-  '%s, eps: ind must be numel(w) x numel(v)',lbl)
-assert(isequal(size(d),[M N]),'%s, eps: d must be numel(w) x numel(v)',lbl)
+  '%s, eps: ind must be numel(w) × numel(v)',lbl)
+assert(isequal(size(d),[M N]),'%s, eps: d must be numel(w) × numel(v)',lbl)
 assert(issparse(ind) && issparse(d),'%s, eps: both outputs must be sparse',lbl)
 assert(islogical(ind),'%s, eps: ind must be a sparse LOGICAL matrix',lbl)
 

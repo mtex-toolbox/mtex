@@ -129,7 +129,7 @@ V = [uC.x(:), uC.y(:)];
 V = V - mean(V,1);
 
 mids  = 0.5 * (V + V([2:end 1],:));
-trans = 2 * mids;                       % 6 x 2, one per shared edge
+trans = 2 * mids;                       % 6 × 2, one per shared edge
 
 ang = atan2(trans(:,2),trans(:,1));
 

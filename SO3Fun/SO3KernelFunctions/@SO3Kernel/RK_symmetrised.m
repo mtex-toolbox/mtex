@@ -26,7 +26,7 @@ function M = RK_symmetrised(psi,g,h,r,c,CS,SS,varargin)
 % $$ \mathcal{R}K((h,r);g) = \sum_l A_l P_l(gh, r)$$
 %
 % See also
-% kernel/k kernel/rkk
+% SO3Kernel.SO3Kernel SO3Kernel.SO3Kernel
 
 % compute the radon transformed kernel
 Rpsi = psi.radon;

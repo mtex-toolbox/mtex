@@ -82,7 +82,7 @@ if isa(oS,'sigmaSections')
     Z = evalODFSections(SO3F,oS,varargin{:},'check');
   end
   
-  % transform ghat to k x l x j
+  % transform ghat to k × l × j
   ghat = permute(ghat,[1,3,2]);
 
   % evaluate section wise
@@ -94,7 +94,7 @@ if isa(oS,'sigmaSections')
     hhat = ghat .* exp(-1i*(-N:N)'*(shift+pi/6+sec(ind)) -1i*(0:N)*shift);
     
     % transform rank-1 lattice based bivariate Fourier series 
-    % (along alpha x gamma) into univariate Fourier series of length H(1)
+    % (along alpha × gamma) into univariate Fourier series of length H(1)
     [l,k] = meshgrid(0:N,-N:N);
     indSet = mod(l-k,H(1));
     ahat = zeros(H(1),2*N+1);
@@ -132,21 +132,21 @@ if isa(oS,'phi2Sections')
   sec = oS.phi2;
   % transform to Bunge
   ghat = ghat .* 1i.^(-(-N:N)'+reshape(0:N,1,1,[]));
-  % permute to Phi x phi1 x phi2
+  % permute to Phi × phi1 × phi2
   ghat = permute(ghat,[2,3,1]);
 elseif isa(oS,'phi1Sections')
   sec = oS.phi1;
   % transform to Bunge
   ghat = ghat .* 1i.^(-(-N:N)'+reshape(0:N,1,1,[]));
-  % permute to Phi x phi2 x phi1
+  % permute to Phi × phi2 × phi1
   ghat = permute(ghat,[2,1,3]);
 elseif isa(oS,'gammaSections')
   sec = oS.gamma;
-  % permute to beta x alpha x gamma
+  % permute to beta × alpha × gamma
   ghat = permute(ghat,[2,3,1]);
 elseif isa(oS,'alphaSections')
   sec = oS.alpha;
-  % permute to beta x gamma x alpha
+  % permute to beta × gamma × alpha
   ghat = permute(ghat,[2,1,3]);
 end
 

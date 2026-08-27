@@ -8,7 +8,7 @@ function fV = faceVolume(grains)
 %  grains - @grain3d
 %
 % Output
-%  fV - numFaces x 1 list of signed volumes (times 6)
+%  fV - numFaces × 1 list of signed volumes (times 6)
 %
 % Description
 %

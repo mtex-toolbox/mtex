@@ -10,7 +10,7 @@ classdef S2FunGrid < S2Fun
   %   sF = S2FunGrid(fun)
   %
   % Input
-  %  values - nTheta x nRho matrix of function values
+  %  values - nTheta × nRho matrix of function values
   %  fun    - @function_handle, sampled on a 1 degree grid
   %
   % Output
@@ -28,7 +28,7 @@ classdef S2FunGrid < S2Fun
   %
 
   properties
-    values % [0,pi] x [0,2*pi]
+    values % [0,pi] × [0,2*pi]
     gSize  % grid size
     s = specimenSymmetry % symmetry / reference system
     isReal
@@ -40,7 +40,7 @@ classdef S2FunGrid < S2Fun
     function S2F = S2FunGrid(values, varargin)
 
       if isnumeric(values)
-        % nTheta x nRho grid of scalars, or of vectors along the trailing
+        % nTheta × nRho grid of scalars, or of vectors along the trailing
         % dimensions - flattened the same way as the function handle branch
         s = size(values);
         S2F.gSize = s(1:2);

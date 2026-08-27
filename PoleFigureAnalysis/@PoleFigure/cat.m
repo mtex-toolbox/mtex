@@ -12,7 +12,7 @@ function pf = cat(dim,varargin)
 %  pf - @PoleFigure
 %
 % See also
-% PoleFigure/horzcat, PoleFigure/vertcat
+% PoleFigure.PoleFigure, PoleFigure.PoleFigure
 
 % concatenate properties
 pf = cat@dynProp(dim,varargin{:});

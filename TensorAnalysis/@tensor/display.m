@@ -24,7 +24,7 @@ end
 
 % add rank
 props{end+1} = 'rank'; 
-propV{end+1} = [num2str(T.rank),' (' strrep(int2str(tensorSize(T)),'  ',' x ') ')'];
+propV{end+1} = [num2str(T.rank),' (' strrep(int2str(tensorSize(T)),'  ',' × ') ')'];
 
 % add double convention
 if T.doubleConvention

@@ -44,7 +44,7 @@ classdef (InferiorClasses = {?vector3d}) SO3TangentVector < vector3d
 %  that it multiplies from the left.
 %
 % See also
-% vector3d.vector3d SO3VectorField.eval SO3VectorFieldHarmonic.eval
+% vector3d.vector3d SO3VectorField.SO3VectorField SO3VectorFieldHarmonic.eval
 % SO3Fun.grad SO3FunHarmonic.grad
 
 % t_left * ori_ref = ori_ref * t_right
@@ -161,7 +161,7 @@ methods
   % -----------------------------------------------------------------------
 
   % rotate is inherited from vector3d - a rotated tangent vector is again one at
-  % the same reference; rotate_outer is not, its n x m result has no reference
+  % the same reference; rotate_outer is not, its n × m result has no reference
   function v = rotate_outer(v,q,varargin)
     v = rotate_outer@vector3d(vector3d(v),q,varargin{:});
   end

@@ -219,7 +219,7 @@ end
 %% removeQuadruplePoints must not depend on the order of the measurements
 % the pairing at a quadruple point was taken from an angular sort sitting on atan2's branch cut
 
-% a 4 x 4 block layout, so that many quadruple points have a pair within the threshold
+% a 4 × 4 block layout, so that many quadruple points have a pair within the threshold
 oq = [orientation.id(cs), ...
       orientation.byAxisAngle(xvector,90*degree,cs), ...
       orientation.byAxisAngle(yvector,90*degree,cs), ...
@@ -317,10 +317,10 @@ function checkInsideEmptyQuery(cs, thr)
 % grain2d/checkInside must accept an empty set of query points
 %
 % It built its query as vector3d.byXYZ([xy zeros(size(xy,1),1)]), i.e. it
-% appended a zero column - to an n x 3 in the EBSD branch, which took byXYZ
+% appended a zero column - to an n × 3 in the EBSD branch, which took byXYZ
 % into its non-three-column path and dropped z, and which for an EMPTY query
 % threw "Coordinates have different size" because the scalar z there could
-% not be repmat-ed to a 0 x 1. EBSD/fill hits this by an entirely ordinary
+% not be repmat-ed to a 0 × 1. EBSD/fill hits this by an entirely ordinary
 % route: it collects the pixels it could interpolate, and hands checkInside
 % whatever that is - including nothing, on a map with nothing to fill.
 %
@@ -366,7 +366,7 @@ end
 
 % ===========================================================================
 function ebsd = buildSquareBlockGrid(cs, blk, nb, oris, dxy)
-% nb x nb grid of blk x blk pixel blocks on a square lattice, one
+% nb × nb grid of blk × blk pixel blocks on a square lattice, one
 % orientation per block, with a few notIndexed holes and a cropped corner
 % to also exercise the exterior dummy ring / map edge
 %
@@ -397,7 +397,7 @@ end
 
 % ===========================================================================
 function ebsd = buildHexBlockGrid(cs, blk, nb, oris)
-% nb x nb grid of blk x blk pixel blocks on a hexagonal (triangular
+% nb × nb grid of blk × blk pixel blocks on a hexagonal (triangular
 % lattice) grid, one orientation per block; built from an unstructured
 % point set and gridify-ed, since calcUnitCell auto-detects the hex unit
 % cell from the point spacing (see EBSD/gridify)
@@ -480,7 +480,7 @@ end
 
 % ===========================================================================
 function ebsd = buildQuadPointGrid(cs, blk, oris)
-% 2x2 grid of blk x blk pixel blocks meeting at one quadruple point in the
+% 2x2 grid of blk × blk pixel blocks meeting at one quadruple point in the
 % center
 
 n = 2*blk;

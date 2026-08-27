@@ -971,7 +971,7 @@ end
 A3 = cat(3,A,10*A);
 B3 = A3(layoutIndex(rm,[yvector xvector],size(A3)));
 assert(isequal(B3(:,:,1),A.') && isequal(B3(:,:,2),(10*A).'), ...
-  'check_referenceFrame: layoutIndex lost the channels of an r x c x k array');
+  'check_referenceFrame: layoutIndex lost the channels of an r × c × k array');
 
 % only a signed permutation can be applied by reindexing, so a layout half
 % way between two axes is refused rather than approximated

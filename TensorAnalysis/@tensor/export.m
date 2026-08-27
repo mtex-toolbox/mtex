@@ -12,7 +12,7 @@ function export(t,fname,varargin)
 %  m - matrix
 %
 % Options
-%  voigt - give a 4 rank tensor in voigt notation, i.e. as a 6 x 6 matrix
+%  voigt - give a 4 rank tensor in voigt notation, i.e. as a 6 × 6 matrix
 %
 % See also
 %

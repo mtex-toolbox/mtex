@@ -15,7 +15,7 @@ function registerHemispheres(ax)
 %  ax - the axes the halves are drawn into
 %
 % See also
-% sphericalPlot/allHemispheres newSphericalPlot
+% sphericalPlot newSphericalPlot
 
 ax = ax(isgraphics(ax,'axes'));
 ax = ax(arrayfun(@(a) isappdata(a,'sphericalPlot'),ax));

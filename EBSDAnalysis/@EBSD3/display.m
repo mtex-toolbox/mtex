@@ -55,7 +55,7 @@ disp(char(dynProp(ebsd.prop),'Id',ebsd.id,'Phase',ebsd.phase,...
   'orientation',ebsd.rotations));
 disp([' Scan unit : ',ebsd.scanUnit]);
 ext = ebsd.extent;
-disp([' X x Y x Z : [' xnum2str(ext(1:2)) '] x [' xnum2str(ext(3:4)) '] x [' xnum2str(ext(5:6)) ']' ]);
+disp([' X × Y × Z : [' xnum2str(ext(1:2)) '] × [' xnum2str(ext(3:4)) '] × [' xnum2str(ext(5:6)) ']' ]);
 
 if min(ebsd.size) > 1
   if length(ebsd.unitCell) == 6

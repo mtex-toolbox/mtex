@@ -31,7 +31,7 @@ function [gB,p] = order(gB,varargin)
 %  p  - the applied permutation, gB_ordered = gB_old.subSet(p)
 %
 % See also
-% chainOrder grainBoundary/chainId grainBoundary/chainV grainBoundary/junctionId
+% chainOrder grainBoundary.grainBoundary grainBoundary.grainBoundary grainBoundary.grainBoundary
 
 F  = gB.F;
 nF = size(F,1);

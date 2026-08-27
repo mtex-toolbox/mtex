@@ -184,7 +184,7 @@ switch rot.type
 
   case 'byMatrix'
 
-    M = matrix(reshape(raw.rotations,[],1)); % 3 x 3 x N, one pixel per page
+    M = matrix(reshape(raw.rotations,[],1)); % 3 × 3 × N, one pixel per page
     M = reshape(M,9,[]).';
     M = M(keep,:);
     ok = all(~isnan(M),2);
@@ -528,7 +528,7 @@ elseif ismatrix(raw) && sz(1) == nFile && sz(2) == k
 
 elseif numel(raw) == k*nFile && sz(1) == k
 
-  % 3 x nx x ny, or 3 x 3 x n - the components come first either way
+  % 3 × nx × ny, or 3 × 3 × n - the components come first either way
   tmp = reshape(raw,k,[]);
   tmp(:,idx) = vals.';
   raw = reshape(tmp,sz);

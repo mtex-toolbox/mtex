@@ -57,7 +57,7 @@ function job = calcDistortion(job,varargin)
 % how the resampling is done, and the two ways are interchangeable:
 %
 %  'inverse'   - invert the fitted displacement field and sample on the
-%                regular grid. About 30x faster at full map size, and the
+%                regular grid. About 30× faster at full map size, and the
 %                default
 %  'scattered' - a forward scatteredInterpolant, what TrueEBSD 2.1.0 ran
 %
@@ -136,7 +136,7 @@ chainAt = '';
 
 % the table columns, as widths, so the rule and the rows cannot drift apart
 % from the header
-colw = [12 13 8 9 9];
+colw = [12 13 8 18 18];
 
 sayAuto(autoNotes)
 sayHeader
@@ -204,7 +204,7 @@ sayFooter
           zeros(size(ref.img,1),size(ref.img,2)), ...
           zeros(size(ref.img,1),size(ref.img,2)), ...
           [],[],[],[],[],[],[],ref.dx,ref.dy);
-        sayRow(dist,'·','·','0.00 px','');
+        sayRow(dist,'·','·',pxStr([0 0 0]),'');
         dist = '';
       else
         % stack the distortion models, each fitted on the residual
@@ -266,7 +266,7 @@ sayFooter
       if isTrue, what = '↳ difference'; else, what = '↳ residual'; end
       sayRow(dist,what,'','',pxStr(residPix));
 
-      if isTrue || residPix <= 2, break; end
+      if isTrue || residPix(1) <= 2, break; end
 
       [xcf,grown] = growROI(xcf,nStage,gridSize(test));
       if ~grown, break; end
@@ -327,11 +327,14 @@ sayFooter
 % The marks are all BMP text-presentation characters, so they stay one column
 % wide in a terminal: ◆ section, ● map, │ hop body, ▼ hop, ↳ summary of the
 % hop above, ↻ retry, ⚠ gave up retrying, · not applicable.
+%
+% shift and residual are each a length and the signed x and y behind it, see
+% pxStr - how far the hop moved, and which way.
 
   function sayHeader
     if ~verbose, return; end
     fprintf('\n ◆ distortion across %d maps, %d hops\n\n',nImg,nImg-1);
-    fprintf('    %s\n',rowStr({'distortion','stage','ROI','shift','residual'}));
+    fprintf('    %s\n',rowStr({'distortion','stage','ROI','shift, px','residual, px'}));
     fprintf('    %s\n',rowStr(arrayfun(@(w) repmat('─',1,w),colw, ...
       'UniformOutput',false)));
   end
@@ -433,17 +436,21 @@ end
 
 %% =========================================================================
 function v = roiShift(ps)
-% mean length of the per-ROI displacements in a @pairShifts, in pixels
+% the per-ROI displacements in a @pairShifts as [mean length, mean x, mean y],
+% in pixels
 %
 % This is the as-measured cross-correlation result, not the fitted surface,
 % which is what makes it comparable between a fit stage and the residual
 % measured after it.
 
-v = 0;
+v = [0 0 0];
 if isempty(ps.xShiftsXcf), return; end
 
-len = sqrt((ps.xShiftsXcf(:)/ps.dx).^2 + (ps.yShiftsXcf(:)/ps.dy).^2);
-v   = mean(len(~isnan(len)));
+x  = ps.xShiftsXcf(:)/ps.dx;
+y  = ps.yShiftsXcf(:)/ps.dy;
+ok = ~isnan(x) & ~isnan(y);
+
+v = [mean(sqrt(x(ok).^2 + y(ok).^2)) mean(x(ok)) mean(y(ok))];
 
 end
 
@@ -457,13 +464,6 @@ for k = 1:numel(v)
   if isnan(v(k)), c{k} = '·'; else, c{k} = sprintf('%.*f',dec,v(k)); end
 end
 s = strjoin(c,' ');
-
-end
-
-%% =========================================================================
-function s = pxStr(v)
-
-if isempty(v) || isnan(v), s = '·'; else, s = sprintf('%.2f px',v); end
 
 end
 

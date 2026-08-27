@@ -23,7 +23,7 @@ function T = rand(varargin)
 %  T - @tensor
 %
 % See also
-% tensor/eye tensor/zeros
+% tensor.tensor tensor.tensor
 
 r = get_option(varargin,'rank',2);
 varargin = delete_option(varargin,'rank',1);

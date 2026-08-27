@@ -3,13 +3,13 @@ function job = pixelSizeMatch(job, varargin)
 % resize all job.interImgs images to the same pixel size
 %
 % Syntax
-% job = pixelSizeMatch(job, pixelsize)
-% job = pixelSizeMatch(job) % default pixel size = smallest of job.imgList{:}.dx
-% job = pixelSizeMatch(job, 0) % pixelsize = 0 - use default pixel size
-% job = pixelSizeMatch(job,pixelsize,'offsetMatch','centre','extentMatch','largest');
-% job = pixelSizeMatch(job,pixelsize,'offsetMatch','centre','extentMatch','smallest');
-% job = pixelSizeMatch(job,pixelsize,'offsetMatch','topLeft','extentMatch','largest');
-% job = pixelSizeMatch(job,pixelsize,'offsetMatch','topLeft','extentMatch','smallest');
+%   job = pixelSizeMatch(job, pixelsize)
+%   job = pixelSizeMatch(job) % default pixel size = smallest of job.imgList{:}.dx
+%   job = pixelSizeMatch(job, 0) % pixelsize = 0 - use default pixel size
+%   job = pixelSizeMatch(job,pixelsize,'offsetMatch','centre','extentMatch','largest');
+%   job = pixelSizeMatch(job,pixelsize,'offsetMatch','centre','extentMatch','smallest');
+%   job = pixelSizeMatch(job,pixelsize,'offsetMatch','topLeft','extentMatch','largest');
+%   job = pixelSizeMatch(job,pixelsize,'offsetMatch','topLeft','extentMatch','smallest');
 %
 %
 % Inputs

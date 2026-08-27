@@ -5,7 +5,7 @@ function d = dot_outer(v1,v2,varargin)
 %  v1, v2 - @vector3d
 %
 % Output
-%  d - double of size length(v1) x length(v2)
+%  d - double of size length(v1) × length(v2)
 %
 % Options
 %  antipodal - consider smallest angle, i.e., consider vectors as axes

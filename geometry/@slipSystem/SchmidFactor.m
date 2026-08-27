@@ -14,8 +14,8 @@ function SF = SchmidFactor(sS,sigma,varargin)
 %  sigma - @stressTensor
 %
 % Output
-%  SFfun - size(sS) x 1 list of @S2FunHarmonic
-%  SF - size(sS) x size(sigma) matrix of Schmid factors
+%  SFfun - size(sS) × 1 list of @S2FunHarmonic
+%  SF - size(sS) × size(sigma) matrix of Schmid factors
 %
 % Description
 % The slip systems and the stress state have to be given with respect to

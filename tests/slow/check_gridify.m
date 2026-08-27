@@ -95,7 +95,7 @@ eLog = ebsd.subGrid(mask);
 eNum = ebsd.subGrid(find(mask)); %#ok<FNDSB> - the numeric branch is the point
 
 assert(all(size(eLog) == [numel(rows) numel(cols)]), ...
-  'check_gridify: subGrid(logical) returned a %s block, expected %d x %d', ...
+  'check_gridify: subGrid(logical) returned a %s block, expected %d × %d', ...
   xnum2str(size(eLog)),numel(rows),numel(cols));
 
 assert(all(size(eNum) == size(eLog)), ...
@@ -143,14 +143,14 @@ end
 
 % =========================================================================
 function checkMapShapedInput
-% an EBSD built from map shaped (r x c) input is flat and gridifies
+% an EBSD built from map shaped (r × c) input is flat and gridifies
 %
 % Regression, two layers. The constructor flattened phaseId and id but
 % stored pos and rotations exactly as handed over, so the object looked
 % valid while size(ebsd) - which is size(ebsd.id) - contradicted the data
 % it held. It then detonated inside gridify, where calcMesh compared an
 % explicitly flattened ideal grid against pos in the callers shape: an
-% (N x 1) minus (r x c) subtraction, which used to hang forever in
+% (N × 1) minus (r × c) subtraction, which used to hang forever in
 % vector3d/plus. A map shaped @EBSD is what @EBSDsquare / @EBSDhex are
 % for, so the constructor normalizes to a flat list.
 
@@ -178,7 +178,7 @@ assert(numel(ebsdGrid) == sz^2, ...
 assert(max(norm(ebsdGrid.pos(newId) - ebsd.pos(:))) < 1e-10 * d, ...
   'check_gridify: a map shaped pos does not survive gridify');
 
-% a genuine N x k property is not a map and keeps its columns
+% a genuine N × k property is not a map and keeps its columns
 N = 50; fse = rand(N,5);
 ebsd = EBSD(vector3d((0:N-1).'*d,zeros(N,1),zeros(N,1)), rotation.rand(N,1), ...
   ones(N,1), {crystalSymmetry('m-3m')}, struct('fse',fse));
@@ -370,8 +370,8 @@ function checkInterp
 ebsd = EBSD(mtexdata('twins','silent'));
 x = linspace(5,40,20); y = linspace(5,30,20);
 
-% row vector query: the result must be a flat list of 20, not a 1 x 20
-% pos against a 20 x 1 id, which reported length 1
+% row vector query: the result must be a flat list of 20, not a 1 × 20
+% pos against a 20 × 1 id, which reported length 1
 r = interp(ebsd,x,y);
 assert(length(r) == 20 && all(size(r.pos) == [20 1]) && all(size(r.phaseId) == [20 1]), ...
   ['check_gridify: interp(ebsd,x,y) with row vectors returned an ' ...

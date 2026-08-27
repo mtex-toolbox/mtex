@@ -13,7 +13,7 @@ function T = logm(q,varargin)
 %  T - @spinTensor
 %
 % See also
-% spinTensor/exp 
+% spinTensor.spinTensor 
 
 tq = log(q,varargin{:});
 

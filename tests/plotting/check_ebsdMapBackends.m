@@ -5,7 +5,7 @@ function check_ebsdMapBackends
 % graphics object it becomes. Everything a caller hands over per pixel -
 % the data, an rgb colour, a 'faceAlpha' - may arrive either as a flat list
 % or with the shape of the map, since a gridded @EBSD stores its per pixel
-% properties as the (r x c) matrix. The graphics object wants columns, so
+% properties as the (r × c) matrix. The graphics object wants columns, so
 % each backend has to flatten, and it has to flatten every one of them.
 %
 % Also owns what the axis ends up showing: the surf backend paints the whole
@@ -94,8 +94,8 @@ function checkPaddedAxisLimits
 % far outside the measured region to close its rectangular raster. The surf
 % backend paints that raster as one surface, with the padding cells merely
 % coloured NaN, so 'axis tight' followed the padding and left the map a
-% small island in a much larger white box: 200 x 100 of measurements inside
-% a 300 x 300 axis. The limits have to come from EBSD/extent, widened by the
+% small island in a much larger white box: 200 × 100 of measurements inside
+% a 300 × 300 axis. The limits have to come from EBSD/extent, widened by the
 % unit cell that is drawn around every position.
 
 ebsd = makeRotatedLatticeMap;

@@ -2,7 +2,7 @@ classdef spatialTransformPoly < spatialTransform
 % a displacement that varies polynomially across the frame
 %
 % Degree 1 is an affine and could equally be a
-% <spatialTransformShift.spatialTransformShift.html |spatialTransformShift|>
+% <spatialTransformShift.html |spatialTransformShift|>
 % - inv converts to one, since a matrix has an exact inverse where a
 % polynomial does not. Degree 2 is what mops up the residual curvature a
 % projective stage leaves behind.
@@ -17,7 +17,7 @@ classdef spatialTransformPoly < spatialTransform
 %   T = spatialTransformPoly.fit(posA,posB,'degree',2,'weights',w)
 %
 % Input
-%  c          - m x 2 coefficients, one column per displacement component
+%  c          - m × 2 coefficients, one column per displacement component
 %  degree     - 1 or 2
 %  posA, posB - @vector3d, the same points in the two frames
 %  w          - double, one weight per point
@@ -48,7 +48,7 @@ classdef spatialTransformPoly < spatialTransform
       m = size(polyBasis(0,0,degree),2);
 
       assert(isequal(size(c),[m 2]),'MTEX:spatialTransform:badCoefficients',...
-        'A degree %d polynomial displacement has %d x 2 coefficients, got %s.',...
+        'A degree %d polynomial displacement has %d × 2 coefficients, got %s.',...
         degree,m,mat2str(size(c)));
 
       T.c = c; T.degree = degree;

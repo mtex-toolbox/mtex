@@ -25,7 +25,7 @@ if sVF.values.antipodal
     [xyz(i,:),~,~] = svds(MLocal,1);
   end
   
-  v = vector3d(xyz.','antipodal');
+  v = vector3d.byXYZ(xyz,'antipodal');
   
 else
   v = bario * sVF.values(:);

@@ -25,7 +25,7 @@ function [SO3F,interface,options] = load(fname,varargin)
 %  SO3F - @SO3Fun
 %
 % See also
-% ImportEBSDData EBSD/calcODF ebsd_demo loadEBSD_generic
+% EBSDImport EBSD.EBSD EBSDTutorial loadEBSD_generic
 
 %  determine interface 
 if ~check_option(varargin,'interface')

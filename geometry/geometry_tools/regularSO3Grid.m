@@ -110,7 +110,7 @@ nsec = length(sec);
 S2G = regularS2Grid('maxTheta',max_theta,'maxRho',max_rho,'restrict2MinMax',varargin{:});
 [theta,rho] = polar(S2G);
 
-% build size(S2G) x nsec matrix of Euler angles
+% build size(S2G) × nsec matrix of Euler angles
 sec_angle = repmat(reshape(sec,[1,1,nsec]),[size(S2G),1]);
 theta  = reshape(repmat(theta ,[1,1,nsec]),[size(S2G),nsec]);
 rho = reshape(repmat(rho,[1,1,nsec]),[size(S2G),nsec]);

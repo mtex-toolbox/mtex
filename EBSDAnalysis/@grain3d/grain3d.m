@@ -12,8 +12,8 @@ classdef grain3d < phaseList & dynProp
   %
   % Input
   %  V         - @vector3d, the vertices
-  %  F         - faces, as a cell array or an n x 3 array
-  %  I_GF      - incidence matrix grains x faces, -1 for an inward normal
+  %  F         - faces, as a cell array or an n × 3 array
+  %  I_GF      - incidence matrix grains × faces, -1 for an inward normal
   %  ori       - mean @orientation of each grain
   %  CSList    - cell list of @crystalSymmetry
   %  phaseList - phase of each grain
@@ -24,7 +24,7 @@ classdef grain3d < phaseList & dynProp
   % Class Properties
   %  id              - unique identifier of each grain
   %  boundary        - @grain3Boundary
-  %  I_GF            - incidence matrix grains x faces
+  %  I_GF            - incidence matrix grains × faces
   %  numPixel        - number of measurements per grain
   %  numFaces        - number of boundary faces per grain
   %  V, allV         - @vector3d, the vertices
@@ -43,7 +43,7 @@ classdef grain3d < phaseList & dynProp
 
   properties  % with as many rows as data
     id = []
-    I_GF            % incidence matrix grains x face 
+    I_GF            % incidence matrix grains × face 
                     % for -1 face normals are pointing inside
     numPixel = []  % number of measurements per grain
   end
@@ -55,7 +55,7 @@ classdef grain3d < phaseList & dynProp
   properties (Dependent)
     V     % vertices
     allV  % all vertices
-    F     % n x 1 cell array or n x 3 array with all faces
+    F     % n × 1 cell array or n × 3 array with all faces
     meanOrientation
     numFaces  % number of boundary faces per grain
     extent   %

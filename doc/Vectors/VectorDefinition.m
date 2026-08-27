@@ -28,7 +28,7 @@ plot(v,'how2plot',pC,'grid')
 %%
 % Nothing about |v| has changed - the next plot is aligned as before. To
 % change the alignment of the whole session use
-% <plottingConvention.default.html |plottingConvention.default|>.
+% <plottingConvention.html |plottingConvention.default|>.
 
 %%
 % One can easily access the coordinates of any vector by

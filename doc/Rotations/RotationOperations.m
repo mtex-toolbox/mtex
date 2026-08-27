@@ -12,6 +12,17 @@ o = rotation.byEuler(90*degree,90*degree,0*degree)
 v = o * xvector
 
 %%
+% The grey arrows are the specimen axes, the black arrow is the direction we
+% started from and the red arrow is where the rotation sent it.
+
+arrow3d(1.2*[vector3d.X,vector3d.Y,vector3d.Z],'faceColor',[.75 .75 .75])
+hold on
+arrow3d(1.05*xvector,'faceColor','black')
+arrow3d(1.05*v,'faceColor','red')
+hold off
+axis off
+
+%%
 % The inverse rotation is computed via the <rotation.mldivide.html
 % backslash operator>
 

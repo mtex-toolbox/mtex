@@ -60,7 +60,7 @@ max(abs(pf.intensities(:) - pf2.intensities(:)))
 
 %%
 % What is lost is the grid structure - the specimen directions come back as
-% a plain list of |72 x 19 = 1368| points rather than as a regular
+% a plain list of |72 × 19 = 1368| points rather than as a regular
 % $\theta$/$\rho$ grid. For all computations in MTEX this makes no
 % difference.
 

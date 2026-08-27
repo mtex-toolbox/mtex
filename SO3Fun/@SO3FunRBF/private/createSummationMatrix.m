@@ -1,5 +1,5 @@
 function M = createSummationMatrix(psi,S3G,ori,varargin)
-% creates system matrix Psi, length(S3G) x length(ori) to solve a system of
+% creates system matrix Psi, length(S3G) × length(ori) to solve a system of
 % linear equations Psi*c = I, where c are the weights for the kernels psi
 % and I is the intensity to fit.
 

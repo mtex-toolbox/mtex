@@ -1,7 +1,7 @@
 function geometryScore = local_geometry_score_SO3(xloc, yloc, zloc, weights, sizes)
 
 % local geometric badness of the weighted tangent node cloud
-% 4 inputs: constant-size neighborhoods, all inputs are nn x N
+% 4 inputs: constant-size neighborhoods, all inputs are nn × N
 % 5 inputs: variable-size neighborhoods, entries are ordered center-by-center
 %
 % The score is based on the centered weighted covariance in T_x SO(3).

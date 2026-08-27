@@ -15,7 +15,7 @@ function f = eval(sF,v,varargin)
 %  v - @vector3d (evaluation nodes)
 %
 % Output
-%  f - double [numrot x size(sF)]
+%  f - double [numrot × size(sF)]
 %
 % Options
 %  bandwidth - cut bandwidth of the harmonic series in evaluation process

@@ -48,7 +48,7 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 %     'Bands' 'Error' 'ReliabilityIndex'}, 'Bunge')
 %
 % See also
-% ImportEBSDData loadEBSD ebsd_demo
+% EBSDImport EBSD.load EBSDTutorial
 
 max_num_phases = 40;
 

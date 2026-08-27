@@ -5,7 +5,7 @@ function M = matrix(varargin)
 %  v - @vector3d
 %
 % Output
-%  M - double matrix of size 3 x length(v)
+%  M - double matrix of size 3 × length(v)
 
 if nargin > 1
   v = vertcat(varargin{:});

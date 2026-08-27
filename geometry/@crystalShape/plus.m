@@ -6,7 +6,8 @@ if ~isa(cS,'crystalShape'), [cS,v] = deal(v,cS); end
 % shift should be vector3d
 if isa(v,'double')  
   if size(v,2)==2, v = [v,ones(size(v,1),1)]; end
-  v = vector3d(v.');
+  % one shift per row, and the list has to stay a row vector
+  v = vector3d.byXYZ(v).';
 else
   v = v(:).';
 end

@@ -20,7 +20,7 @@ function [h,ax] = plot3d(v,data,varargin)
 %  noLabel - do not annotate the axes of the reference frame
 %
 % See also
-% vector3d/scatter3d plotSphericalGrid savefigure
+% vector3d/scatter3d plotSphericalGrid saveFigure
 
 % -------------------- GET OPTIONS ----------------------------------------
 

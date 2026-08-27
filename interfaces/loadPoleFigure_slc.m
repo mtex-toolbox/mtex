@@ -8,7 +8,7 @@ function pf = loadPoleFigure_slc(fname,varargin)
 % pf    - @PoleFigure
 %
 % See also
-% ImportPoleFigureData loadPoleFigure
+% PoleFigureImport PoleFigure.load
 
 % ensure right extension
 
