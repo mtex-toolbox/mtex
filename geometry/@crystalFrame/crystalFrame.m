@@ -9,14 +9,26 @@ classdef crystalFrame < referenceFrame
 %
 % Syntax
 %
-%   cF = crystalFrame(axes)
-%   cF = crystalFrame(axes,'name','Forsterite')
+%   % by point group and lattice parameters - the usual way to name a phase
+%   cF = crystalFrame('cubic')
+%   cF = crystalFrame('2/m',[8.6 13 7.2],[90 116 90]*degree,'mineral','orthoclase')
+%   cF = crystalFrame('O')
+%   cF = crystalFrame('LaueId',9)
+%   cF = crystalFrame('SpaceId',153)
+%   rot = rotation.map(vector3d(1,1,1),vector3d.Z,vector3d(0,-1,1),vector3d.X);
+%   cF = crystalFrame('432','rotAxes',rot)
 %
-%   % by lattice parameters and alignment, the default is X||a*, Z||c
+%   % by lattice parameters and alignment alone, the default is X||a*, Z||c
 %   cF = crystalFrame([1 2 3],[70 80 120]*degree,'Z||a*')
 %   cF = crystalFrame([3 3 5],'X||a')
 %
+%   % by the axes themselves, and the trivial group carrying another frame
+%   cF = crystalFrame(axes)
+%   cF = crystalFrame(axes,'name','Forsterite')
+%   cF = crystalFrame(otherFrame)
+%
 % Input
+%  name - Schoenflies or International notation of the point group
 %  axes - 1x3 @vector3d, the crystal axes a, b, c
 %  abc  - length of the crystal axes
 %  abg  - angles between the crystal axes alpha, beta, gamma
@@ -24,7 +36,10 @@ classdef crystalFrame < referenceFrame
 % Options
 %  X||a, X||a*, Z||c, ... - alignment of the Cartesian axes
 %  EDAX                   - vendor alignment convention of EDAX / TSL / OIM
+%  mineral                - name of the phase, which is the frame's identity
+%  color                  - colour of the phase in a map
 %  pointId                - point group id, for the lattice consistency checks
+%  noIntern               - do not unify with the session instance of this frame
 %
 % Dependent Class Properties
 %  abc   - length of the crystal axes
@@ -58,34 +73,18 @@ classdef crystalFrame < referenceFrame
 
     function cF = crystalFrame(varargin)
 
-      % lattice parameters given - without a point group treat them as triclinic
-      if ~isempty(varargin) && isnumeric(varargin{1})
+      % this is for compatibility with using "strings" as input
+      try varargin = controllib.internal.util.hString2Char(varargin); catch, end
 
-        abc = varargin{1};
-        varargin(1) = [];
+      % every way of naming a frame resolves to the arguments the frame
+      % itself takes, so the superclass constructor is called once and
+      % unconditionally - MATLAB does not allow it inside a branch
+      [args,post] = readSyntax(varargin);
 
-        id = get_option(varargin,'pointId',1);
+      cF = cF@referenceFrame(args{:});
+      cF.axesNames = get_option(args,'axesNames',{'a','b','c'});
 
-        if ~isempty(varargin) && isnumeric(varargin{1})
-          angles = varargin{1};
-          if any(angles > 2*pi), angles = angles * degree; end
-          varargin(1) = [];
-        else
-          angles = symmetry.pointGroups(id).lattice.defaultAngles;
-        end
-
-        varargin = [{calcAxis(id,abc,angles,varargin{:})}, varargin];
-
-      end
-
-      cF = cF@referenceFrame(varargin{:});
-      cF.axesNames = get_option(varargin,'axesNames',{'a','b','c'});
-
-      % the group is written in these axes, so the frame states it - the
-      % elements of a trigonal or monoclinic group depend on where a and c
-      % point, which is this frame's business and not the group's
-      id = get_option(varargin,'pointId',1);
-      if id ~= 1, cF.sym = symmetry(id,symmetry.calcQuat(id,cF.basis)); end
+      cF = applySyntax(cF,post);
 
     end
 
