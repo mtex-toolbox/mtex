@@ -33,39 +33,30 @@ classdef (InferiorClasses = {?rotation,?quaternion}) orientation < rotation
 
 properties
 
-  CS = crystalSymmetry('1');   % crystal symmetry
-  SS = specimenFrame.default;  % specimen symmetry or crystal symmetry
+  % the two frames an orientation relates, named by position rather than by
+  % kind: it maps a direction given in A into coordinates of B, so for an
+  % ordinary orientation A is the crystal and B the specimen, and for a
+  % misorientation both are crystal frames. inv swaps them
+  frameA = crystalSymmetry('1');   % the frame it maps FROM
+  frameB = specimenFrame.default;  % the frame it maps INTO
   antipodal = false
 
 end
 
 properties (Dependent = true)
-  frameLeft  % the reference frame of SS - the specimen side of an orientation
-  frameRight % the reference frame of CS - the crystal side of an orientation
+  CS % the frame of the crystal side - positionally A, see frameA
+  SS % the frame of the specimen side - positionally B, see frameB
 end
 
 methods
 
-  % the two frames of an orientation are the frames of its symmetries, resolved live
-  function fr = get.frameLeft(o)
-    fr = o.SS;
-  end
+  % CS and SS resolve positionally, which is what they have always meant:
+  % inv(ori) swaps the two, so inv(ori).CS is the specimen side
+  function fr = get.CS(o), fr = o.frameA; end
+  function fr = get.SS(o), fr = o.frameB; end
 
-  function fr = get.frameRight(o)
-    fr = o.CS;
-  end
-
-  function o = set.frameLeft(o,~)
-    error('MTEX:orientation:fixedFrame',...
-      ['The frames of an orientation are the frames of its symmetries - ' ...
-      'assign SS / CS instead.']);
-  end
-
-  function o = set.frameRight(o,~)
-    error('MTEX:orientation:fixedFrame',...
-      ['The frames of an orientation are the frames of its symmetries - ' ...
-      'assign SS / CS instead.']);
-  end
+  function o = set.CS(o,fr), o.frameA = fr; end
+  function o = set.SS(o,fr), o.frameB = fr; end
 
 end
 

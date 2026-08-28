@@ -18,8 +18,8 @@ function ori = byScreenAlignment(frA,frB)
 %
 %   ori = orientation.byScreenAlignment(imgFrame,specimenFrame.default)
 %
-%   ori.frameRight   % frA, the source
-%   ori.frameLeft    % frB, the target
+%   ori.frameA       % the source
+%   ori.frameB       % the target
 %
 % Input
 %  frA - @referenceFrame, the source

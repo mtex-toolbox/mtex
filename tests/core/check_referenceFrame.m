@@ -515,29 +515,28 @@ function checkTwoFrames
 cs = crystalSymmetry('m-3m');
 ss = specimenSymmetry('222');
 ori = orientation.rand(cs,ss);
-assert(ori.frameRight == cs && ori.frameLeft == ss, ...
-  'check_referenceFrame: the orientation frames are not its symmetries'' frames');
+% the two frames are named by position: A is what the orientation maps from,
+% B what it maps into, and CS/SS resolve onto them
+assert(ori.frameA == cs && ori.frameB == ss, ...
+  'check_referenceFrame: the orientation does not name both its frames');
+assert(ori.CS == ori.frameA && ori.SS == ori.frameB, ...
+  'check_referenceFrame: CS and SS do not resolve positionally');
+
+% inv swaps them, which is what makes the resolution positional rather than
+% by kind - inv(ori).CS is the specimen side
+assert(inv(ori).frameA == ss && inv(ori).CS == ss, ...
+  'check_referenceFrame: inv did not swap the two frames');
 
 % a misorientation has two crystal frames
 cs2 = crystalSymmetry('6/mmm',[3 3 5]);
 mori = orientation.rand(cs,cs2);
-assert(isa(mori.frameLeft,'crystalFrame') && mori.frameLeft == cs2, ...
-  'check_referenceFrame: the misorientation left frame is not the crystal frame');
+assert(isa(mori.frameB,'crystalFrame') && mori.frameB == cs2, ...
+  'check_referenceFrame: the misorientation B frame is not the crystal frame');
 
 % replacing a symmetry moves the frame with it
 ori.CS = cs2;
-assert(ori.frameRight == cs2, ...
-  'check_referenceFrame: replacing CS left a stale frameRight');
-
-% assigning a frame directly is refused
-try
-  ori.frameLeft = specimenFrame.rolling;
-  failed = false;
-catch e
-  failed = strcmp(e.identifier,'MTEX:orientation:fixedFrame');
-end
-assert(failed, ...
-  'check_referenceFrame: assigning a frame to an orientation must error');
+assert(ori.frameA == cs2, ...
+  'check_referenceFrame: replacing CS left a stale frameA');
 
 % same for SO3Fun
 odf = unimodalODF(orientation.rand(cs,ss));
@@ -1151,7 +1150,7 @@ assert(angle(ori) < tol, ...
   'check_referenceFrame: ij must give the identity, it gave %.3f degrees',angle(ori)./degree);
 
 % the orientation names both frames rather than only carrying a number
-assert(isa(ori.frameRight,'specimenFrame') && isa(ori.frameLeft,'specimenFrame'), ...
+assert(isa(ori.frameA,'specimenFrame') && isa(ori.frameB,'specimenFrame'), ...
   'check_referenceFrame: byScreenAlignment must name both frames on the orientation');
 
 % an empty convention means "follows the session default", so inferring

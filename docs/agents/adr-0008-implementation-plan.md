@@ -71,7 +71,7 @@ The facade decided above means red is scoped to the carrier being converted, nev
 | 2A | the frame carries the group | **done**, `722b259f3` |
 | 2B | `crystalSymmetry`/`specimenSymmetry` become functions returning frames | red: the flip |
 | 3 | interning on the full key, immutability, colour rule | **done**, `591a9380e` `1d2d9774a` |
-| 4 | `orientation`/`rotation` — `CS`/`SS` return frames | red: `geometry/` |
+| 4 | `orientation`/`rotation` — `CS`/`SS` return frames | **done**, `frameA`/`frameB` |
 | 5 | `vector3d` absorbs `Miller` | red: `geometry/` |
 | 6 | `S2Fun`, `SO3Fun`, `tensor` | red: function spaces |
 | 7 | phase identity — `phaseItem` absorbed, `CSList` holds frames | red: `EBSDAnalysis/` |
@@ -204,16 +204,20 @@ Two things to know:
 
 ### 4 — `orientation` and `rotation`
 
-`rotation` stays frameless. `orientation` stores two frames under directional names;
-`CS`/`SS` become dependent, resolving **positionally** to source and target, and return
-frames. The frame forwards group queries: `id`, `rot`, `numSym`, `isLaue` pass through, while
-`Laue` and `properGroup` return the **sibling frame** carrying that group — rule 7's sibling
-made reachable, and what rule 9's `symmetrise` moves between.
+`rotation` stays frameless. `orientation` stores its two frames as **`frameA` and `frameB`**,
+settling ADR open item 3: named by position rather than by kind, because an orientation maps a
+direction given in A into coordinates of B, and for a misorientation both are crystal frames.
+`CS` and `SS` are dependent and resolve onto them, which is what they have always meant —
+`inv(ori)` swaps the two, so `inv(ori).CS` is the specimen side. Writing `ori.CS` still writes
+the frame through silently; the warning the ADR wants belongs with the deprecated shell at
+increment 9.
 
-Choke points, all small: `geometry/@symmetry/ensureCS.m` (55 lines),
-`geometry/@orientation/private/ensureSym.m` (59), `.../private/extractSym.m` (23),
-`tools/option_tools/extractSym.m` (32), `EBSDAnalysis/specimenSymmetryFor.m` (41). ~210 lines
-carry the semantics.
+Most of this arrived with increment 2: `.CS` already returned a frame, and the frame already
+forwarded `id`, `rot`, `numSym` and `isLaue` while `Laue` and `properGroup` returned the
+sibling. What was left was where the two frames sit.
+
+`frameLeft`/`frameRight` survive on `SO3Fun` and `SO3VectorField` until increment 6 renames
+them with the rest of the function spaces, so two spellings coexist until then.
 
 ### 5 — `vector3d` absorbs `Miller`
 
