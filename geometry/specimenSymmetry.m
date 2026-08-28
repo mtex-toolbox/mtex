@@ -67,7 +67,8 @@ end
 if isempty(how2plot), how2plot = plottingConvention.default; end
 
 if frameAdopted
-  sF = varargin{1};
+  % the trivial group carrying that frame - its group-stripped sibling
+  sF = stripSym(varargin{1});
 else
   % the session frame carrying that convention, in the group that was asked
   % for - a group of its own means a sibling of it, never the frame itself

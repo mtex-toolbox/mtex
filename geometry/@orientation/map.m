@@ -60,16 +60,13 @@ end
 if isa(varargin{2},'Miller')
   ori.SS = varargin{2}.CS;
 elseif isa(varargin{2}.frame,'specimenFrame')
-  % the input carries a frame - adopt the handle itself, so the result
-  % follows that frame's convention like the input does
-  if varargin{2}.frame ~= ori.SS
-    ori.SS = copy(ori.SS);
-    ori.SS = varargin{2}.frame;
-  end
+  % the input states a specimen frame - the result is expressed in it, in
+  % the group the orientation already claims
+  ori.SS = sibling(varargin{2}.frame,ori.SS.sym);
 elseif ori.SS.how2plot ~= varargin{2}.how2plot
-  % never write the convention through the shared SS handle, copy it instead
-  ori.SS = copy(ori.SS);
-  ori.SS = varargin{2}.frame;
+  % the input follows a different convention - take the frame that carries
+  % it rather than writing the convention through a shared handle
+  ori.SS = sibling(specimenFrame.frameFor(varargin{2}.how2plot),ori.SS.sym);
 end
 
 if length(sym) == 2

@@ -47,7 +47,8 @@ end
 
 if frameAdopted
 
-  cF = varargin{1};
+  % the trivial group carrying that frame - its group-stripped sibling
+  cF = stripSym(varargin{1});
   varargin(1) = [];
   id = 1;
   rot = rotation.id;

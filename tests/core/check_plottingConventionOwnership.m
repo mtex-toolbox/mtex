@@ -249,9 +249,10 @@ assert(ori.SS.how2plot == pC, ...
 assert(ss.how2plot == ssPC, ...
   'check_plottingConventionOwnership: orientation.map wrote the convention onto the caller''s ss')
 
-% the fork still compares equal to what was passed - @symmetry/eq is id based
-assert(ori.SS == ss, ...
-  'check_plottingConventionOwnership: the forked SS no longer compares equal to ss')
+% the result is a frame of its own - a different convention is a different
+% frame - but it claims the same symmetry
+assert(eqTol(ori.SS,ss) || ori.SS.id == ss.id, ...
+  'check_plottingConventionOwnership: the forked SS lost the group of ss')
 
 end
 

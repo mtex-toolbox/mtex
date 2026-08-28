@@ -52,9 +52,11 @@ classdef referenceFrame < matlab.mixin.Copyable
     multiplicityPerpZ % highest order of an axis perpendicular to it
   end
 
-  properties (Access = protected)
+  properties (Access = protected, Transient = true)
     % the siblings minted from this frame, as a struct array of id and
-    % frame - one entry per group, so asking twice returns one handle
+    % frame - one entry per group, so asking twice returns one handle.
+    % Never saved: a sibling is reachable from the group it carries, and
+    % storing the web would drag every relative of a frame into the file
     siblingRef = struct('id',{},'fr',{})
   end
 
@@ -287,6 +289,12 @@ classdef referenceFrame < matlab.mixin.Copyable
 
     end
 
+    function rf = loadobj(rf)
+      % a deserialized frame joins the session register when it agrees by
+      % value, so separately saved datasets share one frame handle again
+      rf = referenceFrame.reintern(rf);
+    end
+
     function rf = reintern(rf)
       % swap a deserialized frame for the registered instance of its name
       % when the two agree by value - so separately saved datasets share
@@ -305,7 +313,9 @@ classdef referenceFrame < matlab.mixin.Copyable
       if ~isempty(reg) && strcmp(class(reg),class(rf)) && ...
           isAligned(rf,reg) && ~isempty(rf.how2plot) && ...
           ~isempty(reg.how2plot) && isapprox(rf.how2plot,reg.how2plot)
-        rf = reg;
+        % the registered instance in the group that was loaded - itself when
+        % the groups agree, its sibling otherwise
+        rf = sibling(reg,rf.sym);
       end
 
     end

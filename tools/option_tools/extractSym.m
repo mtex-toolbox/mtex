@@ -24,7 +24,8 @@ if any(isSym)
 end
 
 if ~check_option(varargin,'empty')
-  % fill only what is genuinely missing, and with two separate objects
+  % fill only what is genuinely missing, from the session frame - both
+  % slots then hold one handle, which is what a registered frame is for
   if isempty(SRight), SRight = specimenSymmetry; end
   if isempty(SLeft), SLeft = specimenSymmetry; end
 end
