@@ -31,57 +31,12 @@ function sF = specimenSymmetry(varargin)
 % See also
 % specimenFrame crystalSymmetry symmetry
 
-% any frame that is not a crystalFrame may be adopted: a crystal frame holds
-% a lattice a specimen group knows nothing about
-frameAdopted = nargin > 0 && isa(varargin{1},'referenceFrame') && ...
-  ~isa(varargin{1},'crystalFrame');
-
-if frameAdopted || nargin == 0 || isa(varargin{1},'plottingConvention')
-
-  id = 1;
-  rot = rotation.id;
-
-elseif isa(varargin{1},'quaternion')  % the group given by its elements
-
-  rot = varargin{1};
-
-  if check_option(varargin,'pointId')
-    id = get_option(varargin,'pointId');
-  else
-    id = symmetry.rot2pointId(rot,varargin{:});
-  end
-
+% every way of naming a specimen frame lives in the constructor of
+% <specimenFrame.specimenFrame.html |specimenFrame|> now
+if nargin == 0
+  sF = specimenFrame('1');
 else
-
-  id = symmetry.extractPointId(varargin{:});
-  rot = symmetry.calcQuat(id,varargin{:});
-
+  sF = specimenFrame(varargin{:});
 end
-
-how2plot = getClass(varargin,'plottingConvention');
-if frameAdopted && ~isempty(how2plot)
-  error('MTEX:specimenSymmetry:frameAndConvention',...
-    ['A reference frame carries its own plotting convention - pass '...
-    'either a frame or a convention, not both.'])
-end
-if isempty(how2plot), how2plot = plottingConvention.default; end
-
-if frameAdopted
-  % the trivial group carrying that frame - its group-stripped sibling
-  sF = stripSym(varargin{1});
-else
-  % the session frame carrying that convention, in the group that was asked
-  % for - a group of its own means a sibling of it, never the frame itself
-  sF = specimenFrame.frameFor(how2plot);
-  if id ~= sF.sym.id, sF = sibling(sF,symmetry(id,rot)); end
-end
-
-if sF.id > 16
-  warning(sF.pointGroup + " is not a suitable specimen symmetry!")
-end
-
-% the session instance of this frame - a file that lists two phases has two
-% phases whatever their names and lattices, so an importer says 'noIntern'
-if ~check_option(varargin,'noIntern'), sF = referenceFrame.intern(sF); end
 
 end

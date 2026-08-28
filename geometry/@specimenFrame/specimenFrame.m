@@ -5,10 +5,13 @@ classdef specimenFrame < referenceFrame
 % operation: the measurement frame of the instrument (X, Y, Z), the
 % rolling frame (RD, TD, ND), the geological frame. The named factories
 % return the one session instance from the register
-% (<referenceFrame.referenceFrame.html |referenceFrame.byName|>); calling the
-% constructor directly always makes a fresh, unregistered frame. The axes
-% names are identity and display only for now - nothing else consumes
-% them yet.
+% (<referenceFrame.referenceFrame.html |referenceFrame.byName|>); naming a
+% frame here makes a fresh, unregistered one. The axes names are identity
+% and display only for now - nothing else consumes them yet.
+%
+% The frame also carries the sample symmetry (ADR 0008), which is what a
+% point group asks for: that is a lookup rather than a construction, since
+% the frame it names is the session's, in the group asked for.
 %
 % Syntax
 %
@@ -19,11 +22,22 @@ classdef specimenFrame < referenceFrame
 %   sF = specimenFrame.default              % supplies the default convention
 %   specimenFrame.rolling.makeDefault       % the session plots RD north
 %
+%   % the session frame in the sample symmetry asked for
+%   sF = specimenFrame('mmm')
+%   sF = specimenFrame('orthorhombic')
+%   sF = specimenFrame(pC)                  % ... drawn that way
+%   sF = specimenFrame(otherFrame)          % ... that frame, claiming nothing
+%
 %   % a fresh frame, name first, optionally with axes names and convention
 %   sF = specimenFrame('rolling','axesNames',{'RD','TD','ND'},how2plot)
 %
 % Input
+%  name     - Schoenflies or International notation of the point group, or
+%             the name of a frame - a point group symbol is read as the group
 %  how2plot - @plottingConvention
+%
+% Options
+%  noIntern - do not unify with the session instance of this frame
 %
 % Class Properties
 %  axesNames - names of the three axes, default {'X','Y','Z'}
@@ -34,11 +48,19 @@ classdef specimenFrame < referenceFrame
   methods
 
     function sF = specimenFrame(varargin)
-      % the name may be given as the first argument
-      if ~isempty(varargin) && (ischar(varargin{1}) || isstring(varargin{1}))
-        varargin = [varargin(2:end),{'name',char(varargin{1})}];
-      end
-      sF = sF@referenceFrame(varargin{:});
+
+      % this is for compatibility with using "strings" as input
+      try varargin = controllib.internal.util.hString2Char(varargin); catch, end
+
+      % every way of naming a frame resolves to the arguments the frame
+      % itself takes, so the superclass constructor is called once and
+      % unconditionally - MATLAB does not allow it inside a branch
+      [args,post] = readSyntax(varargin);
+
+      sF = sF@referenceFrame(args{:});
+
+      sF = applySyntax(sF,post);
+
     end
 
     function makeDefault(sF)
