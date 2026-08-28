@@ -32,8 +32,8 @@ classdef SO3FunCBF < SO3Fun
   end
 
   properties (Dependent = true)
-    SLeft
-    SRight
+    frameB
+    frameA
     bandwidth % harmonic degree
     isReal
   end
@@ -67,44 +67,44 @@ classdef SO3FunCBF < SO3Fun
                   
     end
     
-    function SO3F = set.SRight(SO3F,SRight)
-      if isa(SRight,'crystalFrame')
-        SO3F.h = Miller(SO3F.h,SRight);
+    function SO3F = set.frameA(SO3F,frameA)
+      if isa(frameA,'crystalFrame')
+        SO3F.h = Miller(SO3F.h,frameA);
       else
         SO3F.h = vector3d(SO3F.h);
-        SO3F.h.opt.sym = SRight;
+        SO3F.h.opt.sym = frameA;
       end
     end
     
-    function SRight = get.SRight(SO3F)
+    function frameA = get.frameA(SO3F)
       if isCrystalDirection(SO3F.h)
-        SRight = SO3F.h.CS;
+        frameA = SO3F.h.CS;
       else
         try
-          SRight = SO3F.h.opt.sym;
+          frameA = SO3F.h.opt.sym;
         catch
-          SRight = specimenFrame.default;
+          frameA = specimenFrame.default;
         end
       end
     end
     
-    function SO3F = set.SLeft(SO3F,SLeft)
-      if isa(SLeft,'crystalFrame')
-        SO3F.r = Miller(SO3F.r,SLeft);
+    function SO3F = set.frameB(SO3F,frameB)
+      if isa(frameB,'crystalFrame')
+        SO3F.r = Miller(SO3F.r,frameB);
       else
         SO3F.r = vector3d(SO3F.r);
-        SO3F.r.opt.sym = SLeft;
+        SO3F.r.opt.sym = frameB;
       end      
     end
     
-    function SLeft = get.SLeft(SO3F)
+    function frameB = get.frameB(SO3F)
       if isCrystalDirection(SO3F.r)
-        SLeft = SO3F.r.CS;
+        frameB = SO3F.r.CS;
       else
         try
-          SLeft = SO3F.r.opt.sym;
+          frameB = SO3F.r.opt.sym;
         catch
-          SLeft = specimenFrame.default;
+          frameB = specimenFrame.default;
         end
       end
     end

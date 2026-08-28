@@ -30,8 +30,8 @@ classdef SO3FunBingham < SO3Fun
  
   properties (Dependent = true)    
     bandwidth % harmonic degree
-    SLeft
-    SRight
+    frameB
+    frameA
     isReal
   end
   
@@ -65,19 +65,19 @@ classdef SO3FunBingham < SO3Fun
       SO3F.kappa = kappa;      
     end
     
-    function SO3F = set.SRight(SO3F,S)
+    function SO3F = set.frameA(SO3F,S)
       SO3F.A.CS = S;
     end
     
-    function S = get.SRight(SO3F)
+    function S = get.frameA(SO3F)
       S = SO3F.A.CS;      
     end
     
-    function SO3F = set.SLeft(SO3F,S)
+    function SO3F = set.frameB(SO3F,S)
       SO3F.A.SS = S;
     end
     
-    function S = get.SLeft(SO3F)
+    function S = get.frameB(SO3F)
       S = SO3F.A.SS;
     end
   

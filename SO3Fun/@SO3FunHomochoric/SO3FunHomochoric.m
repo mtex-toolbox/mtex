@@ -21,8 +21,8 @@ classdef SO3FunHomochoric < SO3Fun
 %  S3G        - @homochoricSO3Grid
 %  c          - coefficients
 %  bandwidth  - harmonic degree used when converting to @SO3FunHarmonic
-%  SRight, CS - @symmetry of the grid, acting from the right
-%  SLeft, SS  - @symmetry of the grid, acting from the left
+%  frameA, CS - the frame of the grid, acting from the right
+%  frameB, SS - the frame of the grid, acting from the left
 %
 % See also
 % SO3Fun homochoricSO3Grid SO3FunRBF
@@ -35,8 +35,8 @@ classdef SO3FunHomochoric < SO3Fun
 
   properties (Dependent = true)
     antipodal
-    SLeft
-    SRight
+    frameB
+    frameA
     isReal
   end
   
@@ -52,11 +52,11 @@ classdef SO3FunHomochoric < SO3Fun
     end
 
     
-    function SO3F = set.SRight(SO3F,S)
+    function SO3F = set.frameA(SO3F,S)
       SO3F.S3G.CS = S;
     end
     
-    function S = get.SRight(SO3F)
+    function S = get.frameA(SO3F)
       try
         S = SO3F.S3G.CS;
       catch
@@ -64,11 +64,11 @@ classdef SO3FunHomochoric < SO3Fun
       end
     end
     
-    function SO3F = set.SLeft(SO3F,S)
+    function SO3F = set.frameB(SO3F,S)
       SO3F.S3G.SS = S;
     end
     
-    function S = get.SLeft(SO3F)
+    function S = get.frameB(SO3F)
       try
         S = SO3F.S3G.SS;
       catch

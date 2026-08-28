@@ -18,8 +18,8 @@ classdef SO3FunHandle < SO3Fun
 %
 properties
   fun
-  SLeft  = specimenFrame.default
-  SRight = specimenFrame.default
+  frameB = specimenFrame.default % the frame acting from the left
+  frameA = specimenFrame.default % the frame acting from the right
   bandwidth = getMTEXpref('maxSO3Bandwidth');
   antipodal = false
 end
@@ -34,16 +34,16 @@ methods
 
     if isa(fun,'SO3Fun')
       SO3F.fun = @(rot) fun.eval(rot);
-      SO3F.SRight = fun.SRight;
-      SO3F.SLeft = fun.SLeft;
+      SO3F.frameA = fun.frameA;
+      SO3F.frameB = fun.frameB;
       return
     end
     
     SO3F.fun = fun;
 
-    [SRight,SLeft] = extractSym(varargin);
-    SO3F.SRight = SRight;
-    SO3F.SLeft = SLeft;
+    [frameA,frameB] = extractSym(varargin);
+    SO3F.frameA = frameA;
+    SO3F.frameB = frameB;
 
     if check_option(varargin,'antipodal')
       SO3F.antipodal = true;

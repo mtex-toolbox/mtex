@@ -28,8 +28,8 @@ classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
 
 properties
   fhat   = [];              % harmonic coefficients
-  SLeft  = specimenFrame.default % symmetry from the left
-  SRight = specimenFrame.default % symmetry from the right
+  frameB = specimenFrame.default % the frame acting from the left
+  frameA = specimenFrame.default % the frame acting from the right
 end
 
 properties (Dependent=true)  
@@ -48,8 +48,8 @@ methods
     
     % a function handle becomes an SO3FunHandle and is then converted like any other
     if isa(fhat,'function_handle')
-      [SRight,SLeft] = extractSym(varargin);
-      fhat = SO3FunHandle(fhat,SRight,SLeft);
+      [frameA,frameB] = extractSym(varargin);
+      fhat = SO3FunHandle(fhat,frameA,frameB);
     end
 
     % convert arbitrary SO3Fun to SO3FunHarmonic
@@ -58,7 +58,7 @@ methods
       return
     elseif isa(fhat,'SO3Fun')
       f_hat = calcFourier(fhat,varargin{:});
-      SO3F = SO3FunHarmonic(f_hat,fhat.SRight,fhat.SLeft,varargin{:});
+      SO3F = SO3FunHarmonic(f_hat,fhat.frameA,fhat.frameB,varargin{:});
       return
     end
     
@@ -78,7 +78,7 @@ methods
     
     % extract symmetries
     [CS,SS] = extractSym(varargin);
-    SO3F.SRight = CS; SO3F.SLeft = SS;
+    SO3F.frameA = CS; SO3F.frameB = SS;
     
     if norm(SO3F.fhat(:))==0
       SO3F.bandwidth=0;

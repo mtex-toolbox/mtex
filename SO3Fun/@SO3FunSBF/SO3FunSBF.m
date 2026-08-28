@@ -18,8 +18,8 @@ classdef SO3FunSBF < SO3Fun
 % Class Properties
 %  sS         - @slipSystem
 %  E          - @strainTensor
-%  SRight, CS - @symmetry of the slip system, acting from the right
-%  SLeft, SS  - @symmetry acting from the left, taken from the frame of E
+%  frameA, CS - the frame of the slip system, acting from the right
+%  frameB, SS - the frame acting from the left, taken from the frame of E
 %
 % References
 %
@@ -35,12 +35,12 @@ classdef SO3FunSBF < SO3Fun
     sS = slipSystem  % slip system
     E  = tensor      % strain tensor
     antipodal = false;
-    SLeft = specimenFrame.default
+    frameB = specimenFrame.default
     isReal = true;
   end
   
   properties (Dependent = true)
-    SRight    % crystal symmetry
+    frameA    % the crystal frame
     bandwidth % harmonic degree (always inf)
   end
  
@@ -59,15 +59,15 @@ classdef SO3FunSBF < SO3Fun
     function SO3F = set.E(SO3F,E)
       SO3F.E = E;
 
-      % take the convention from the frame of the strain tensor, but do not write SLeft
-      if isa(E,'tensor'), SO3F.SLeft = specimenSymmetryFor(E.frame); end
+      % take the convention from the frame of the strain tensor, but do not write frameB
+      if isa(E,'tensor'), SO3F.frameB = specimenSymmetryFor(E.frame); end
     end
 
-    function SO3F = set.SRight(SO3F,CS)
+    function SO3F = set.frameA(SO3F,CS)
       SO3F.sS.CS = CS;
     end
     
-    function CS = get.SRight(SO3F)
+    function CS = get.frameA(SO3F)
       CS = SO3F.sS.CS;      
     end
 

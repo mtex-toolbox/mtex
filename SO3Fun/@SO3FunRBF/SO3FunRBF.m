@@ -38,8 +38,8 @@ properties (Dependent = true)
   bandwidth % harmonic degree
   antipodal
   isReal
-  SLeft
-  SRight
+  frameB
+  frameA
 end
 
 % In case of vector Valued SO3FunRBFs, we store c0 with the array size of
@@ -114,11 +114,11 @@ methods
   end
 
     
-  function SO3F = set.SRight(SO3F,S)
+  function SO3F = set.frameA(SO3F,S)
     SO3F.center.CS = S;
   end
     
-  function S = get.SRight(SO3F)
+  function S = get.frameA(SO3F)
     try
       S = SO3F.center.CS;
     catch
@@ -126,11 +126,11 @@ methods
     end
   end
     
-  function SO3F = set.SLeft(SO3F,S)
+  function SO3F = set.frameB(SO3F,S)
     SO3F.center.SS = S;
   end
     
-  function S = get.SLeft(SO3F)
+  function S = get.frameB(SO3F)
     try
       S = SO3F.center.SS;
     catch

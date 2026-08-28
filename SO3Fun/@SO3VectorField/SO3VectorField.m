@@ -9,11 +9,11 @@ classdef SO3VectorField
 % Deriving classes only have to implement the method eval.
 %
 % Class Properties
-%  SRight, CS   - @symmetry acting from the right, the crystal side
-%  SLeft, SS    - @symmetry acting from the left, the specimen side
+%  frameA       - @referenceFrame of the crystal side, acting from the right
+%  frameB       - @referenceFrame of the specimen side, acting from the left
+%  SRight, CS   - the frame of the crystal side, positionally A
+%  SLeft, SS    - the frame of the specimen side, positionally B
 %  tangentSpace - @SO3TangentSpace of the evaluations
-%  frameLeft    - @referenceFrame of SLeft, read only
-%  frameRight   - @referenceFrame of SRight, read only
 %
 % Derived Classes
 %  @SO3VectorFieldHarmonic - harmonic series of the components
@@ -23,13 +23,9 @@ classdef SO3VectorField
 % See also
 % SO3Fun SO3TangentSpace SO3TangentVector
 
-% properties
-%   SLeft = specimenSymmetry  % symmetry that acts from the left
-% end
-
 properties (Abstract = true)
-  SRight % symmetry that acts from the right
-  SLeft % symmetry that acts from the left
+  frameA % the frame the argument is given in, acting from the right
+  frameB % the frame the argument maps into, acting from the left
   tangentSpace SO3TangentSpace % classify whether left or right sided tangent space is asumed in evaluation
 end
 
@@ -59,52 +55,25 @@ end
 
 
 properties (Dependent = true)
-  CS
-  SS
-  frameLeft  % the reference frame of SLeft - the specimen side
-  frameRight % the reference frame of SRight - the crystal side
+  CS     % the frame of the crystal side - positionally A, see frameA
+  SS     % the frame of the specimen side - positionally B, see frameB
+  SRight % the frame acting from the right, which is A
+  SLeft  % the frame acting from the left, which is B
 end
 
 methods
 
-  function CS = get.CS(SO3VF)
-    CS = SO3VF.SRight;
-  end
+  % the four older names resolve positionally, as on SO3Fun
+  function fr = get.CS(SO3VF), fr = SO3VF.frameA; end
+  function fr = get.SS(SO3VF), fr = SO3VF.frameB; end
+  function fr = get.SRight(SO3VF), fr = SO3VF.frameA; end
+  function fr = get.SLeft(SO3VF), fr = SO3VF.frameB; end
 
-  function SS = get.SS(SO3VF)
-    SS = SO3VF.SLeft;
-  end
+  function SO3VF = set.CS(SO3VF,fr), SO3VF.frameA = fr; end
+  function SO3VF = set.SS(SO3VF,fr), SO3VF.frameB = fr; end
+  function SO3VF = set.SRight(SO3VF,fr), SO3VF.frameA = fr; end
+  function SO3VF = set.SLeft(SO3VF,fr), SO3VF.frameB = fr; end
 
-  % the frames are the frames of the symmetries, resolved live - exactly
-  % as on SO3Fun ('must have two' in the cardinality table of ADR 0003)
-  function fr = get.frameLeft(SO3VF)
-    fr = SO3VF.SLeft;
-  end
-
-  function fr = get.frameRight(SO3VF)
-    fr = SO3VF.SRight;
-  end
-
-  function SO3VF = set.frameLeft(SO3VF,~)
-    error('MTEX:SO3Fun:fixedFrame',...
-      ['The frames of an SO3VectorField are the frames of its symmetries - ' ...
-      'assign SLeft / SRight instead.']);
-  end
-
-  function SO3VF = set.frameRight(SO3VF,~)
-    error('MTEX:SO3Fun:fixedFrame',...
-      ['The frames of an SO3VectorField are the frames of its symmetries - ' ...
-      'assign SLeft / SRight instead.']);
-  end
-
-  function SO3VF = set.CS(SO3VF,CS)
-    SO3VF.SRight = CS;
-  end
-  
-  function SO3VF = set.SS(SO3VF,SS)
-    SO3VF.SLeft = SS;
-  end
- 
 end
 
 methods (Hidden = true)

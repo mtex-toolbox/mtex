@@ -27,8 +27,8 @@ classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
 %  x, y, z      - the individual components
 %  bandwidth    - maximum harmonic degree
 %  tangentSpace - @SO3TangentSpace of the evaluations
-%  SRight, CS   - @symmetry acting from the right
-%  SLeft, SS    - @symmetry acting from the left
+%  frameA, CS   - the frame acting from the right, the crystal side
+%  frameB, SS   - the frame acting from the left, the specimen side
 %
 % See also
 % SO3VectorField SO3FunRBF SO3TangentSpace
@@ -39,8 +39,8 @@ properties
 end
 
 properties(Dependent = true)
-  SRight
-  SLeft
+  frameA
+  frameB
   bandwidth
   x
   y
@@ -99,19 +99,19 @@ methods
     % get symmetries - absence is empty, never a fabricated default, so a
     % passed triclinic symmetry survives with its frame (ADR 0003)
     [cs,ss] = extractSym(varargin,'empty');
-    if isempty(cs), cs = SO3F.SRight; end
-    if isempty(ss), ss = SO3F.SLeft; end
+    if isempty(cs), cs = SO3F.frameA; end
+    if isempty(ss), ss = SO3F.frameB; end
 
     % set the symmetries (one of the symmetries have to be ignored,
     % dependent on the intern tangent space representation)
     SO3VF.hiddenCS = cs;
     SO3VF.hiddenSS = ss;
     if tS.isLeft
-      SO3F.SRight = cs;
-      SO3F.SLeft = stripSym(ss);
+      SO3F.frameA = cs;
+      SO3F.frameB = stripSym(ss);
     else
-      SO3F.SRight = stripSym(cs);
-      SO3F.SLeft = ss;
+      SO3F.frameA = stripSym(cs);
+      SO3F.frameB = ss;
     end
 
     % extract SO3Fun-structure
@@ -123,32 +123,32 @@ methods
 
 
   % Get and Set outer symmetries dependent of the tangent space representation
-  function SO3VF = set.SRight(SO3VF,SRight)
+  function SO3VF = set.frameA(SO3VF,frameA)
     if sign(SO3VF.tangentSpace)<0
       error('The right symmetry may not be changed as long as the tangential space representation is on the left.')
     end
-    SO3VF.hiddenCS = SRight;
+    SO3VF.hiddenCS = frameA;
     if sign(SO3VF.internTangentSpace)>0
-      SO3VF.SO3F.CS = SRight;
+      SO3VF.SO3F.CS = frameA;
     end
   end
-  function SO3VF = set.SLeft(SO3VF,SLeft)
+  function SO3VF = set.frameB(SO3VF,frameB)
     if sign(SO3VF.tangentSpace)>0
       error('The left symmetry may not be changed as long as the tangential space representation is on the right.')
     end
-    SO3VF.hiddenSS = SLeft;
+    SO3VF.hiddenSS = frameB;
     if sign(SO3VF.internTangentSpace)<0
-      SO3VF.SO3F.SS = SLeft;
+      SO3VF.SO3F.SS = frameB;
     end
   end
-  function cs = get.SRight(SO3VF)
+  function cs = get.frameA(SO3VF)
     if sign(SO3VF.tangentSpace)>0
       cs = SO3VF.hiddenCS;
     else
       cs = stripSym(SO3VF.hiddenCS);
     end
   end
-  function ss = get.SLeft(SO3VF)
+  function ss = get.frameB(SO3VF)
     if sign(SO3VF.tangentSpace)>0
       ss = stripSym(SO3VF.hiddenSS);
     else

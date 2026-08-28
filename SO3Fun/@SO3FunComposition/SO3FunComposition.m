@@ -28,8 +28,8 @@ properties (Dependent = true)
   bandwidth % harmonic degree
   % TODO: antipodal wird nicht gesetzt/verwendet
   antipodal
-  SLeft
-  SRight
+  frameB
+  frameA
   weights
   isReal
 end
@@ -131,24 +131,24 @@ methods
   end
   
   
-  function out = get.SLeft(S3F)
-    out = S3F.components{1}.SLeft;
+  function out = get.frameB(S3F)
+    out = S3F.components{1}.frameB;
   end
 
-  function out = get.SRight(S3F)
-    out = S3F.components{1}.SRight;
+  function out = get.frameA(S3F)
+    out = S3F.components{1}.frameA;
   end
 
     
-  function SO3F = set.SRight(SO3F,CS)
+  function SO3F = set.frameA(SO3F,CS)
    for k=1:length(SO3F.components)
-     SO3F.components{k}.SRight = CS;
+     SO3F.components{k}.frameA = CS;
    end
   end
 
-  function SO3F = set.SLeft(SO3F,SS)
+  function SO3F = set.frameB(SO3F,SS)
     for k=1:length(SO3F.components)
-     SO3F.components{k}.SLeft = SS;
+     SO3F.components{k}.frameB = SS;
    end
   end
 

@@ -506,8 +506,8 @@ end
 
 % -------------------------------------------------------------------------
 function checkTwoFrames
-% orientation and SO3Fun have exactly two frames - the frames of their
-% symmetries, resolved live and never assignable directly
+% orientation and SO3Fun have exactly two frames, named by position, and
+% the older names of their sides resolve onto them
 
 cs = crystalSymmetry('m-3m');
 ss = specimenSymmetry('222');
@@ -535,19 +535,18 @@ ori.CS = cs2;
 assert(ori.frameA == cs2, ...
   'check_referenceFrame: replacing CS left a stale frameA');
 
-% same for SO3Fun
+% same for SO3Fun, where A is the side acting from the right
 odf = unimodalODF(orientation.rand(cs,ss));
-assert(odf.frameRight == cs && odf.frameLeft == ss, ...
-  'check_referenceFrame: the SO3Fun frames are not its symmetries'' frames');
+assert(odf.frameA == cs && odf.frameB == ss, ...
+  'check_referenceFrame: the SO3Fun does not name both its frames');
+assert(odf.CS == odf.frameA && odf.SRight == odf.frameA && ...
+  odf.SS == odf.frameB && odf.SLeft == odf.frameB, ...
+  'check_referenceFrame: the SO3Fun sides do not resolve positionally');
 
-try
-  odf.frameLeft = specimenFrame.rolling;
-  failed = false;
-catch e
-  failed = strcmp(e.identifier,'MTEX:SO3Fun:fixedFrame');
-end
-assert(failed, ...
-  'check_referenceFrame: assigning a frame to an SO3Fun must error');
+% assigning a frame moves that side
+odf.frameB = specimenFrame.rolling;
+assert(odf.frameB == specimenFrame.rolling && odf.SS == specimenFrame.rolling, ...
+  'check_referenceFrame: assigning frameB did not move the specimen side');
 
 end
 
@@ -827,10 +826,10 @@ assert(isempty(getFrame(q)), ...
 oriF = orientation.rand(10,cs);
 oriF.SS = fr;
 odfF = calcDensity(oriF,'halfwidth',20*degree);
-assert(odfF.frameLeft == fr, ...
+assert(odfF.frameB == fr, ...
   'check_referenceFrame: calcDensity must keep the specimen frame');
 gF = odfF.grad;
-assert(gF.frameLeft == fr, ...
+assert(gF.frameB == fr, ...
   'check_referenceFrame: SO3Fun/grad must keep the specimen frame');
 
 referenceFrame.reset;
@@ -842,7 +841,7 @@ function checkTangentVectorFrames
 % conversion. eval runs through transformTangentSpace, which used to
 % downcast the reference to a bare rotation and refabricate the dropped
 % triclinic specimen symmetry from the session default - the main way
-% frameLeft flipped to the session frame while running a doc page
+% frameB flipped to the session frame while running a doc page
 % (ADR 0003: absence is empty, never fabricated)
 
 referenceFrame.reset;
@@ -854,7 +853,7 @@ ori = orientation.rand(20,cs);
 ori.SS = fr;
 odf = calcDensity(ori,'halfwidth',20*degree);
 G = SO3FunHarmonic(odf).grad;
-assert(G.frameLeft == fr, ...
+assert(G.frameB == fr, ...
   'check_referenceFrame: grad must keep the specimen frame');
 
 % the tangent vector keeps the pair; its own frame is derived from the
@@ -877,7 +876,7 @@ assert(ref.SS == fr, ...
 % converting the intern representation rebuilds the inner harmonic from
 % Wigner-D products - the components lose the groups but keep the frames
 GR = right(G,'internTangentSpace');
-assert(GR.frameLeft == fr, ...
+assert(GR.frameB == fr, ...
   'check_referenceFrame: transformInternTangentSpace must keep the specimen frame');
 
 referenceFrame.reset;
@@ -910,10 +909,10 @@ assert(s.id == 1 && s == sF, ...
 % "absent" by its id, so it must survive construction with its frame
 fr = sF;
 VF = SO3VectorFieldHandle(@(r) vector3d.X .* angle(r), cs, specimenSymmetry(fr));
-assert(VF.frameLeft == fr, ...
+assert(VF.frameB == fr, ...
   'check_referenceFrame: a passed trivial specimen symmetry must survive the Handle ctor');
 VFH = SO3VectorFieldHarmonic(VF,'bandwidth',16);
-assert(VFH.frameLeft == fr, ...
+assert(VFH.frameB == fr, ...
   'check_referenceFrame: the trivial symmetry frame must survive quadrature into a harmonic field');
 
 % extractSym: absence is representable

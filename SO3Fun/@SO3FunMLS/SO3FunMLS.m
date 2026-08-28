@@ -115,8 +115,8 @@ classdef SO3FunMLS < SO3Fun
     nn                    % number of neighbors
     antipodal             % inherited from the nodes
     isReal                % = isReal(SO3F.values)
-    SLeft                 % left symmetry of the nodes
-    SRight                % right symmetry of the nodes
+    frameB                % the frame of the nodes acting from the left
+    frameA                % the frame of the nodes acting from the right
 
     % properties of the underlying nodes
     fill_distance         % fill distance
@@ -219,12 +219,12 @@ classdef SO3FunMLS < SO3Fun
         specimenFrame.default, 'crystalSymmetry');
 
       % optional explicit left/right symmetries
-      SLeft = get_option(varargin, ...
+      frameB = get_option(varargin, ...
         {'SLeft', 'sLeft', 'leftSymmetry', 'left symmetry'}, []);
-      SRight = get_option(varargin, ...
+      frameA = get_option(varargin, ...
         {'SRight', 'sRight', 'rightSymmetry', 'right symmetry'}, []);
-      if ~isempty(SLeft), SO3F.SLeft = SLeft; end
-      if ~isempty(SRight), SO3F.SRight = SRight; end
+      if ~isempty(frameB), SO3F.frameB = frameB; end
+      if ~isempty(frameA), SO3F.frameA = frameA; end
 
       % basis options
       SO3F.monomials = get_option(varargin, 'monomials', true, 'logical');
@@ -346,7 +346,7 @@ classdef SO3FunMLS < SO3Fun
       %   2 - take into account symmetries
       %         (each node in the fundamentalRegion corresponds to
       %           <symmetry_factor> many nodes on SO(3))
-      symmetry_factor = numProper(SO3F.SLeft) * numProper(SO3F.SRight);
+      symmetry_factor = numProper(SO3F.frameB) * numProper(SO3F.frameA);
       target = pi / 2 * SO3F.nn / numel(SO3F.nodes) / symmetry_factor;
 
       % phi - sin(phi)*cos(phi) increases monotonically from 0 to pi/2 on
@@ -380,19 +380,19 @@ classdef SO3FunMLS < SO3Fun
       SO3F.nodes.antipodal = value;
     end
 
-    function SO3F = set.SRight(SO3F, S)
+    function SO3F = set.frameA(SO3F, S)
       SO3F.nodes.CS = S;
     end
 
-    function S = get.SRight(SO3F)
+    function S = get.frameA(SO3F)
       S = SO3F.nodes.CS;
     end
 
-    function SO3F = set.SLeft(SO3F, S)
+    function SO3F = set.frameB(SO3F, S)
       SO3F.nodes.SS = S;
     end
 
-    function S = get.SLeft(SO3F)
+    function S = get.frameB(SO3F)
       S = SO3F.nodes.SS;
     end
 
@@ -530,7 +530,7 @@ classdef SO3FunMLS < SO3Fun
       ballFraction = 2 / pi * (phi - sin(phi) * cos(phi));
 
       % relative to the fundamental region, the same ball occupies a larger fraction
-      symmetryFactor = numProper(SO3F.SLeft) * numProper(SO3F.SRight);
+      symmetryFactor = numProper(SO3F.frameB) * numProper(SO3F.frameA);
       domainFraction = symmetryFactor * ballFraction;
       domainFraction = min(max(domainFraction, realmin), 1);
 
@@ -571,7 +571,7 @@ classdef SO3FunMLS < SO3Fun
       q = randn(stream, n, 4);
       q = q ./ sqrt(sum(q.^2, 2));
       SO3F.reg_auxgrid = orientation(q(:,1), q(:,2), q(:,3), q(:,4), ...
-        SO3F.SRight, SO3F.SLeft);
+        SO3F.frameA, SO3F.frameB);
     end
 
     % the center amplification a perfectly distributed node cloud produces with
@@ -583,7 +583,7 @@ classdef SO3FunMLS < SO3Fun
 
       key = sprintf('%d|%g|%s|%d%d%d|%d|%d', SO3F.degree, SO3F.oF, ...
         func2str(SO3F.w), SO3F.centered, SO3F.tangent, SO3F.monomials, ...
-        SO3F.SLeft.id, SO3F.SRight.id);
+        SO3F.frameB.id, SO3F.frameA.id);
       if isKey(cache, key)
         chi0 = cache(key);
         return;
@@ -602,7 +602,7 @@ classdef SO3FunMLS < SO3Fun
       ref.delta = 0;
       ref.auxgrid = [];
 
-      refnodes = equispacedSO3Grid(SO3F.SRight, SO3F.SLeft, ...
+      refnodes = equispacedSO3Grid(SO3F.frameA, SO3F.frameB, ...
         'points', max(4000, 8 * SO3F.nn));
       refnodes = reshape(refnodes, [], 1);
       ref.nodes = refnodes;
@@ -615,7 +615,7 @@ classdef SO3FunMLS < SO3Fun
       q = randn(stream, 250, 4);
       q = q ./ sqrt(sum(q.^2, 2));
       centers = orientation(q(:,1), q(:,2), q(:,3), q(:,4), ...
-        SO3F.SRight, SO3F.SLeft);
+        SO3F.frameA, SO3F.frameB);
 
       [~, ~, info, ~] = ref.eval(centers);
 
