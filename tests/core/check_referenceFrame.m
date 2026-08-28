@@ -193,16 +193,22 @@ assert(abs(cs.alpha-pi/2) + abs(cs.beta-pi/2) + abs(cs.gamma-pi/2) < 1e-10, ...
 assert(cs.id == 16 && numSym(cs) == 8, ...
   'check_referenceFrame: the frame does not carry the group it was asked for');
 
-% a copy is a frame of its own, and writing its axes leaves the original alone
-pC = cs.how2plot;
-cs2 = copy(cs);
-cs2.axes = 2 * cs.axes;
-assert(cs2 ~= cs, ...
-  'check_referenceFrame: a copy is not a frame of its own');
+% a registered frame refuses to have its lattice rewritten - every dataset
+% holding it would change with it. A different lattice is a different frame
+try
+  cs.axes = 2 * cs.axes;
+  error('check_referenceFrame: a registered frame accepted new axes');
+catch e
+  assert(strcmp(e.identifier,'MTEX:referenceFrame:sealed'), ...
+    'check_referenceFrame: rewriting the axes of a registered frame must be refused');
+end
 assert(all(abs(norm(cs.axes) - [2 3 4]) < 1e-10), ...
-  'check_referenceFrame: setting axes on a copy changed the original');
-assert(cs2.how2plot == pC && strcmp(cs2.name,'TestMineral'), ...
-  'check_referenceFrame: the copy dropped the convention or the name');
+  'check_referenceFrame: the refused assignment changed the axes anyway');
+
+% the frame with the doubled lattice is asked for, not carved out of this one
+cs2 = crystalSymmetry('mmm',2*[2 3 4],'mineral','TestMineral');
+assert(cs2 ~= cs && strcmp(cs2.name,'TestMineral'), ...
+  'check_referenceFrame: a different lattice must be a different frame');
 
 end
 
@@ -702,8 +708,7 @@ pC0e = plottingConvention.default;
 restoreDefault = onCleanup(@() plottingConvention.default(pC0e));
 ebsd = EBSD(vector3d.rand(4),rotation.rand(4,1),ones(4,1), ...
   {crystalSymmetry('m-3m')},struct());
-frF = copy(specimenFrame.default); frF.how2plot = pCF;
-ebsd.frame = frF;
+ebsd.frame = specimenFrame.frameFor(pCF);
 save(fname,'ebsd');
 S = load(fname);
 delete(fname);
@@ -824,7 +829,6 @@ assert(isempty(getFrame(q)), ...
 
 % the gradient of an ODF keeps the specimen frame, stripSym drops only the point group
 oriF = orientation.rand(10,cs);
-oriF.SS = copy(oriF.SS);
 oriF.SS = fr;
 odfF = calcDensity(oriF,'halfwidth',20*degree);
 assert(odfF.frameLeft == fr, ...
@@ -851,7 +855,6 @@ cs = crystalSymmetry('321');
 fr = specimenFrame('lab','axesNames',{'A','B','C'},plottingConvention('y←↑x'));
 
 ori = orientation.rand(20,cs);
-ori.SS = copy(ori.SS);
 ori.SS = fr;
 odf = calcDensity(ori,'halfwidth',20*degree);
 G = SO3FunHarmonic(odf).grad;
@@ -1130,8 +1133,10 @@ for pC = axisAlignedConventions
   % rotations and so are their own inverse, which hides the difference -
   % only the two 90 degree cases show it, so asserting equality would pass
   % six times and mean nothing
-  imgF.basis = b;
-  assert(norm(M.' - transformationMatrix(imgF,sF)) < tol, ...
+  % a frame of its own for the inferred basis: imgF was interned by
+  % byScreenAlignment above, and a registered frame does not change
+  bF = specimenFrame('inferred'); bF.basis = b;
+  assert(norm(M.' - transformationMatrix(bF,sF)) < tol, ...
     'check_referenceFrame: the basis disagrees with the inference it was set from (%s)',...
     char(pC{1}));
 

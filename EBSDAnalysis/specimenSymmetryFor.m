@@ -26,10 +26,7 @@ ss = specimenFrame.default;
 
 % a data class that knows its frame passes the frame itself, and it is adopted
 if isa(pC,'referenceFrame')
-  if ss ~= pC
-    ss = copy(ss);
-    ss = pC;
-  end
+  ss = pC;
   return
 end
 

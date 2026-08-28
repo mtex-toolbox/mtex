@@ -640,9 +640,7 @@ function out = ebsd_default(raw_data)
 
   % put the map into a frame carrying the convention, do not repoint the session
   if isfield(raw_data, 'how2plot')
-    fr = copy(specimenFrame.default);
-    fr.how2plot = raw_data.how2plot;
-    ebsd.frame = fr;
+    ebsd.frame = specimenFrame.frameFor(raw_data.how2plot);
   end
 
   out = ebsd;

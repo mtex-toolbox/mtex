@@ -109,13 +109,12 @@ classdef mapImage
 
         mg.scanUnit = mg.ebsd.scanUnit;
 
-        % a COPY, not the handle - mg.frame.how2plot = ... is the natural way
-        % to frame an image, and on a shared handle that would silently
-        % restate the caller's own map
+        % the map's own frame - registered frames are shared by design, so
+        % an image and the map it came from state the same one
         if isempty(mg.ebsd.frame)
-          mg.frame = copy(specimenFrame.default);
+          mg.frame = specimenFrame.default;
         else
-          mg.frame = copy(mg.ebsd.frame);
+          mg.frame = mg.ebsd.frame;
         end
 
       else

@@ -136,11 +136,10 @@ classdef PoleFigure < dynProp & dynOption
       for k=1:length(pf.allR)
         pf.allR{k}.frame = fr;
       end
-      % the symmetry has to move with the data - fork it, an unset SS is shared
-      if ~isempty(fr) && (isempty(pf.SSprivate) || pf.SSprivate.frame ~= fr)
-        ss = copy(pf.SS);
-        ss = fr;
-        pf.SSprivate = ss;
+      % the symmetry has to move with the data - it is the frame now, in the
+      % group this pole figure already claims
+      if ~isempty(fr) && (isempty(pf.SSprivate) || pf.SSprivate ~= fr)
+        pf.SSprivate = sibling(fr,pf.SS.sym);
       end
     end
 

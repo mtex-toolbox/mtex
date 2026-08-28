@@ -138,8 +138,9 @@ classdef specimenFrame < referenceFrame
 
       fr = specimenFrame.default;
       if pC ~= fr.how2plot
-        fr = copy(fr);
+        fr = clone(fr);
         fr.how2plot = pC;
+        fr = referenceFrame.intern(fr);
       end
     end
 

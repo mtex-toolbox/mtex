@@ -5,10 +5,11 @@ function out = sameEntity(fr1,fr2)
 % plotting convention. Colour is deliberately absent - two labs colour
 % forsterite differently and it is the same forsterite.
 %
-% The cell is compared by SHAPE, not by size: uniform scaling of a, b, c
-% scales every reciprocal vector by the inverse and moves no
-% crystallographic direction, so a literature 2.87 against a measured 2.866
-% is a deviation of zero.
+% The cell is compared RELATIVELY, so a literature lattice constant of 2.87
+% against a measured 2.866 is a deviation of 0.14% and the two are one
+% phase. Scale itself is not free: uniform scaling moves no crystallographic
+% direction, but it scales every d-spacing, so a unit cube and a 3.52 A cell
+% are different lattices however alike their shape.
 
 out = false;
 
@@ -24,8 +25,8 @@ if isa(fr1,'crystalFrame')
 
   tol = getMTEXpref('frameShapeTolerance',1e-2);
 
-  a1 = fr1.abc ./ fr1.abc(1); a2 = fr2.abc ./ fr2.abc(1);
-  out = all(abs(a1 - a2) < tol) && all(abs(fr1.abg - fr2.abg) < tol) && ...
+  out = all(abs(fr1.abc - fr2.abc) ./ fr1.abc < tol) && ...
+    all(abs(fr1.abg - fr2.abg) < tol) && ...
     isequal(alignment(fr1),alignment(fr2));
 
 else

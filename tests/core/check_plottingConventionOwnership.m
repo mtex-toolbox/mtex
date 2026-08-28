@@ -53,12 +53,10 @@ assert(dflt ~= pC, ...
   ['check_plottingConventionOwnership: the test convention equals the ' ...
   'default one, so it cannot detect a leak - pick another one'])
 
-% the fork idiom: the copy shares the frame, the override stays local
+% asking for a convention gives the frame that carries it, and leaves the
+% one that was asked from alone
 ss = specimenSymmetry('222');
 before = ss.how2plot;
-ss2 = copy(ss);
-assert(ss2 == ss, ...
-  'check_plottingConventionOwnership: copy(ss) does not share the frame handle')
 
 ss2 = specimenFrame.frameFor(pC);
 assert(ss2.how2plot == pC, ...

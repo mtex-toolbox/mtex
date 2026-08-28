@@ -1,4 +1,4 @@
-classdef referenceFrame < matlab.mixin.Copyable
+classdef referenceFrame < handle
 % a reference frame - an identity, a basis and a default plotting convention
 %
 % A reference frame answers "what coordinate system is this data expressed
@@ -60,6 +60,15 @@ classdef referenceFrame < matlab.mixin.Copyable
     siblingRef = struct('id',{},'fr',{})
   end
 
+  properties (Hidden = true)
+    % a registered frame is sealed: what its identity is keyed on can no
+    % longer be written, since an in place change would reach every dataset
+    % sharing it. Name, colour and plotting convention stay open - nothing
+    % numeric depends on them, and the session convention is meant to reach
+    % the data that follows it
+    sealed = false
+  end
+
   properties (Hidden = true, Transient = true)
     % memo for WignerD: the coefficients follow from the group, and a group
     % is a value with nowhere to keep them. Never saved
@@ -98,9 +107,20 @@ classdef referenceFrame < matlab.mixin.Copyable
     end
 
     function set.basis(rf,v)
+      rf.assertOpen('basis');
       assert(isa(v,'vector3d') && length(v) == 3,...
         'The basis of a reference frame has to be three vector3d.');
       rf.basis = reshape(v,1,3);
+    end
+
+    function set.sym(rf,s)
+      rf.assertOpen('point group');
+      rf.sym = s;
+    end
+
+    function set.axesNames(rf,n)
+      rf.assertOpen('axes names');
+      rf.axesNames = n;
     end
 
     function set.how2plot(rf,pC)
@@ -134,6 +154,34 @@ classdef referenceFrame < matlab.mixin.Copyable
         'BackgroundColor','w','tag','axesLabels',varargin{:});
     end
 
+    function assertOpen(rf,what)
+      % a registered frame may not have its identity rewritten
+      if rf.sealed
+        error('MTEX:referenceFrame:sealed',...
+          ['The %s of a registered reference frame cannot be changed - ' ...
+          'every dataset holding it would change with it. Construct the ' ...
+          'frame you want and let the register answer.'],what);
+      end
+    end
+
+    function fr = clone(rf)
+      % an unsealed frame with the same content, for the register to judge
+      %
+      % Not a public copy: a handle-distinct twin with identical numbers is
+      % the fragmentation the register exists to prevent, so this is only
+      % ever a step on the way to referenceFrame.intern.
+
+      fr = feval(class(rf));
+      fr.basis = rf.basis;
+      fr.axesNames = rf.axesNames;
+      fr.name = rf.name;
+      fr.how2plot = rf.how2plot;
+      fr.sym = rf.sym;
+      fr.opt = rf.opt;
+      if isprop(rf,'color'), fr.color = rf.color; end
+
+    end
+
     function fr = sibling(rf,s)
       % this frame with s in it instead of its own group
       %
@@ -148,9 +196,9 @@ classdef referenceFrame < matlab.mixin.Copyable
       hit = find([rf.siblingRef.id] == s.id,1);
       if ~isempty(hit), fr = rf.siblingRef(hit).fr; return; end
 
-      fr = copy(rf);
+      fr = clone(rf);
       fr.sym = s;
-      fr.siblingRef = struct('id',rf.sym.id,'fr',rf);
+      fr = referenceFrame.intern(fr);
 
       rf.siblingRef(end+1) = struct('id',s.id,'fr',fr);
 
@@ -259,6 +307,7 @@ classdef referenceFrame < matlab.mixin.Copyable
         if sameEntity(store{k},rf), rf = store{k}; return; end
       end
 
+      rf.sealed = true;
       store{end+1} = rf;
 
     end

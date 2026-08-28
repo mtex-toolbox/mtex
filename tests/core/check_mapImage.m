@@ -313,10 +313,12 @@ ebsd = makeMap(6,0.3);
 ebsd.pos.frame = specimenFrame;
 mg = mapImage(ebsd.bc,ebsd);
 
-assert(mg.frame ~= ebsd.frame,'the frame handle was adopted rather than copied')
+% registered frames are shared by design, so the image states the frame its
+% map does - a private convention is asked for through specimenFrame.frameFor
+assert(mg.frame == ebsd.frame,'the image does not state the frame of its map')
 
 before = char(ebsd.how2plot);
-mg.frame.how2plot = other;
+mg.frame = specimenFrame.frameFor(other);
 assert(strcmp(char(ebsd.how2plot),before),...
   'framing the image restated the map''s own convention')
 
@@ -326,8 +328,8 @@ fr.how2plot = plottingConvention(vector3d.X,vector3d.Y);
 assert(strcmp(char(mg.how2plot),char(other)),...
   'reframing the map changed the image')
 
-% a frame free map has nothing to copy and follows the session default,
-% which must also be a copy rather than the default itself
+% a frame free map follows the session default, and asking the image for a
+% convention of its own must not restate that default
 bare = makeMap(4,0.3);
 assert(isempty(bare.frame),'the bare fixture unexpectedly carries a frame')
 
@@ -335,7 +337,7 @@ mb = mapImage(bare.bc,bare);
 assert(~isempty(mb.frame),'a frame free map produced a frame free image')
 
 sessionBefore = char(specimenFrame.default.how2plot);
-mb.frame.how2plot = other;
+mb.frame = specimenFrame.frameFor(other);
 assert(strcmp(char(specimenFrame.default.how2plot),sessionBefore),...
   'framing the image restated the session default')
 

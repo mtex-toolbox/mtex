@@ -122,7 +122,7 @@ classdef tensor < dynOption
         varargin = delete_option(varargin,'rank',1);
         [pC,varargin] = getClass(varargin,'plottingConvention');
         % an own frame for this tensor - not a session change
-        if ~isempty(pC), T.framePrivate = specimenFrame.default.copy; T.framePrivate.how2plot = pC; end
+        if ~isempty(pC), T.framePrivate = specimenFrame.frameFor(pC); end
         T = T.setOption(varargin{:});
         return
       end
@@ -207,7 +207,7 @@ classdef tensor < dynOption
       % extract plotting convention
       [pC,varargin] = getClass(varargin,'plottingConvention');
       % an own frame for this tensor - not a session change
-      if ~isempty(pC), T.framePrivate = specimenFrame.default.copy; T.framePrivate.how2plot = pC; end
+      if ~isempty(pC), T.framePrivate = specimenFrame.frameFor(pC); end
 
       options = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel','noCheck'});
       options = delete_option(options,'rank',1);
