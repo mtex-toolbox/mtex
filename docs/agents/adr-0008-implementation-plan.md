@@ -216,8 +216,7 @@ Most of this arrived with increment 2: `.CS` already returned a frame, and the f
 forwarded `id`, `rot`, `numSym` and `isLaue` while `Laue` and `properGroup` returned the
 sibling. What was left was where the two frames sit.
 
-`frameLeft`/`frameRight` survive on `SO3Fun` and `SO3VectorField` until increment 6 renames
-them with the rest of the function spaces, so two spellings coexist until then.
+`SO3Fun` and `SO3VectorField` carry the same pair under the same names, from increment 6.
 
 ### 5 — `vector3d` absorbs `Miller`
 
