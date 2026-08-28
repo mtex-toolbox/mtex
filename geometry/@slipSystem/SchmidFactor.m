@@ -43,9 +43,11 @@ end
 if nargin == 1 || (isnumeric(sigma) && isempty(sigma))
   
   % the quadrature nodes are frame free, hence checkFrame stays silent -
-  % they are directions of whatever frame sS is given in
+  % they are directions of whatever frame sS is given in. One slip system
+  % is not invariant under the group of that frame, only the whole family
+  % is, so the result is written in the group free sibling.
   SF = S2FunHarmonic.quadrature(@(v) sS.SchmidFactor(v,varargin{:}),...
-    'bandwidth',4,sS.CS);
+    'bandwidth',4,stripSym(sS.CS));
 
 elseif isa(sigma,'vector3d')
 

@@ -166,19 +166,34 @@ assert(cs.how2plot ~= pCs && before ~= pCs, ...
   ['check_tensorFactories: the second test convention collides with the ' ...
   'crystal or the specimen default - pick another one'])
 
-T = tensor(M,'rank',2,cs,pCs,'name','foo');
+% a crystal frame states its convention through its own axes, so a tensor
+% written in one has no room for another - ADR 0008, one frame per tensor
+try
+  tensor(M,'rank',2,cs,pCs);
+  id = '';
+catch e
+  id = e.identifier;
+end
+assert(strcmp(id,'MTEX:tensor:fixedConvention'), ...
+  'check_tensorFactories: a crystal frame tensor accepted a plotting convention')
+
+% beside a specimen frame and a named option the convention survives
+sf = specimenFrame.rolling;
+T = tensor(M,'rank',2,sf,pCs,'name','foo');
 assert(T.how2plot == pCs && strcmp(T.opt.name,'foo'), ...
-  'check_tensorFactories: convention, symmetry and name do not survive together')
+  'check_tensorFactories: convention, frame and name do not survive together')
 
-% the symmetry is neither copied nor written to, other users share that handle
-assert(T.CS == cs, ...
-  'check_tensorFactories: tensor(M,...,cs,pC) no longer holds cs itself')
+% the caller's frame is neither copied nor written to
+assert(sf.how2plot ~= pCs, ...
+  'check_tensorFactories: the convention was written onto the caller''s frame')
 
-assert(cs.how2plot ~= pCs, ...
-  'check_tensorFactories: the convention was written onto the caller''s cs')
-
-% and through the copy constructor
+% and the convention survives the copy constructor
 assert(tensor(T).how2plot == pCs, ...
   'check_tensorFactories: the copy constructor dropped the convention')
+
+% a frame the tensor is given is the frame it holds, under either name
+T = tensor(M,'rank',2,cs);
+assert(T.CS == cs && T.frame == cs, ...
+  'check_tensorFactories: tensor(M,...,cs) no longer holds cs itself')
 
 end
