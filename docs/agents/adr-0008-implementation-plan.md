@@ -436,8 +436,17 @@ Landed so far:
   frame's name otherwise — exactly, because `findsymmetry` also matches a substring and
   `specimenFrame.measurement` would have become the point group `m`.
 
-Left to do: the sweep (642 `crystalSymmetry(`, 110 `specimenSymmetry(`, 10 `notIndexed(`
-across source, tests and `doc/`), then the three tombstones and the proof that
+- `362a969ba` — everything outside `doc/` calls the frame by its own name: 513 lines over
+  209 files, plus the ten places that name the class as a string and the script the import
+  wizard writes. Both spellings still work, so nothing changed today.
+
+**`doc/` is deliberately not swept.** The documentation rewrite on `feature/docRewrite`
+merges first, and sweeping the same 187 pages twice would collide with it. So the order is:
+the doc branch merges, `doc/` is swept (160 `crystalSymmetry(`, 26 `specimenSymmetry(`, 1
+`notIndexed(`), and only then do the tombstones take the names — until they do, old `.mat`
+files stay broken and the answer to a user who hits one is still "convert under 7.0".
+
+Left to do: sweep `doc/` after the merge, then the three tombstones and the proof that
 `data/testgrains.mat` comes back with its five phases.
 
 ### 10 — outer ring
