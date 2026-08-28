@@ -123,8 +123,10 @@ classdef orientationPlot < handle
       if (length(ori) > 2000 && ~check_option(varargin,'all')) || check_option(varargin,'points')
         
         points = fix(get_option(varargin,'points',2000));
-        disp(['plot ', int2str(points) ,' random orientations out of ', ...
-          int2str(length(ori)),' given orientations']);
+        if ~check_option(varargin,'points')
+          disp(['plot ', int2str(points) ,' random orientations out of ', ...
+            int2str(length(ori)),' given orientations']);
+        end
         [ori,ind] = discreteSample(ori,fix(points),'withoutReplacement');
         if ~isempty(data), data = data(ind,:); end
       end

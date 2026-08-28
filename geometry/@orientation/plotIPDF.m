@@ -68,7 +68,9 @@ if (length(ori)*numSym(ori.CS)*numSym(ori.SS) > 100000 || check_option(varargin,
     && ~check_option(varargin,{'all','contourf','smooth','contour','pcolor'})
 
   points = fix(get_option(varargin,'points',100000/numSym(ori.CS)/numSym(ori.SS)));
-  disp(['  I''m plotting ', int2str(points) ,' random orientations out of ', int2str(length(ori)),' given orientations']);
+  if ~check_option(varargin,'points')
+    disp(['  I''m plotting ', int2str(points) ,' random orientations out of ', int2str(length(ori)),' given orientations']);
+  end
 
   samples = discretesample(length(ori),points);
   ori = ori.subSet(samples);

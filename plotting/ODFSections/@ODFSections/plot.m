@@ -68,8 +68,10 @@ if exist('ori','var') || isempty(oS.plotGrid)
       ~check_option(varargin,{'smooth','contourf','contour','pcolor'})) || ...
       check_option(varargin,'points')
     points = fix(get_option(varargin,'points',2000));
-    disp(['  plotting ', int2str(points) ,' random orientations out of ', ...
-      int2str(length(ori)),' given orientations']);
+    if ~check_option(varargin,'points')
+      disp(['  plotting ', int2str(points) ,' random orientations out of ', ...
+        int2str(length(ori)),' given orientations']);
+    end
 
     samples = discretesample(length(ori),points);
     ori = ori(samples);
