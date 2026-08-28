@@ -45,6 +45,11 @@ classdef vector3d < dynOption
     z = []; % z coordinate
     antipodal = false;
     isNormalized = false;
+
+    % how the coordinates are named when the vector is written down: xyz for
+    % a direction that has no index basis, hkl / uvw and their four index
+    % forms for one given in a crystal frame (ADR 0008 rule 6)
+    dispStyle = MillerConvention.xyz
   end
 
   properties (Hidden = true)
@@ -59,6 +64,28 @@ classdef vector3d < dynOption
     frame    % the referenceFrame this vector is expressed in
     how2plot % plotting convention - read only
     % a convention belongs to a reference frame, see plottingConvention.default
+
+    % the crystal indices, defined only for a direction in a crystal frame -
+    % ask isCrystalDirection before reading them
+    CS          % the crystal frame these indices are written in
+    convention  % same as dispStyle
+    coordinates % the coordinates in the convention set above
+    lattice     % the lattice type of the crystal frame
+    hkl         % reciprocal coordinates
+    hkil        % reciprocal coordinates, four index
+    h
+    k
+    i
+    l
+    uvw         % direct coordinates
+    UVTW        % direct coordinates, Weber indices
+    u
+    v
+    w
+    U
+    V
+    T
+    W
   end
 
   methods
@@ -231,6 +258,126 @@ classdef vector3d < dynOption
         'The frame of a vector3d has to be a referenceFrame or empty.');
       v.framePrivate = fr;
     end
+
+
+    % --- the crystal indices, when the frame is a crystal one ------------
+
+    function cs = get.CS(v)
+      cs = v.framePrivate;
+      if ~isa(cs,'crystalFrame'), cs = crystalFrame.empty; end
+    end
+
+    function v = set.CS(v,cs)
+      % assigning a crystal frame keeps the INDICES, so the Cartesian
+      % coordinates are recomputed - which is what distinguishes it from
+      % assigning frame, where the components are what is kept
+      if isa(v.framePrivate,'crystalFrame') && v.framePrivate ~= cs
+        coord = v.coordinates;
+        v.framePrivate = cs;
+        v.coordinates = coord;
+      else
+        v.framePrivate = cs;
+      end
+    end
+
+    function l = get.lattice(v)
+      cs = v.CS;
+      if isempty(cs), l = latticeType.none; else, l = cs.lattice; end
+    end
+
+    function out = get.convention(v), out = v.dispStyle; end
+    function v = set.convention(v,dS), v.dispStyle = dS; end
+
+    function c = get.coordinates(v), c = v.(char(v.dispStyle)); end
+    function v = set.coordinates(v,c), v.(char(v.dispStyle)) = c; end
+
+    function hkl = get.hkl(v)
+      M = double(axesDual(v.CS));
+      hkl = (M \ v.xyz.').';
+    end
+
+    function hkil = get.hkil(v)
+      hkl = v.hkl;
+      hkil = [hkl(:,1:2),-hkl(:,1)-hkl(:,2),hkl(:,3)];
+    end
+
+    function h = get.h(v), h = v.hkl(:,1); end
+    function k = get.k(v), k = v.hkl(:,2); end
+    function i = get.i(v), i = v.hkil(:,3); end
+    function l = get.l(v), l = v.hkl(:,end); end
+
+    function v = set.hkl(v,hkl)
+      % hkl must have the format [h,k,l] or [h k i l]
+      hkl = hkl(:,[1:2,end]);
+
+      M = axesDual(v.CS).xyz;
+      v.x = hkl * M(:,1);
+      v.y = hkl * M(:,2);
+      v.z = hkl * M(:,3);
+
+      if v.lattice.isTriHex
+        v.dispStyle = 'hkil';
+      else
+        v.dispStyle = 'hkl';
+      end
+    end
+
+    function v = set.hkil(v,hkil), v.hkl = hkil; end
+
+    function v = set.h(v,h), v.hkl = [h v.k v.l]; end
+    function v = set.k(v,k), v.hkl = [v.h k v.l]; end
+    function v = set.l(v,l), v.hkl = [v.h v.k l]; end
+
+    function uvw = get.uvw(v)
+      M = double(v.CS.axes);
+      uvw = (M \ double(v)).';
+    end
+
+    function UVTW = get.UVTW(v)
+      % U = 2u - v, V = 2v - u, T = -(u+v), W = 3w
+      uvw = v.uvw; %#ok<*PROP>
+      UVTW = [2*uvw(:,1)-uvw(:,2), 2*uvw(:,2)-uvw(:,1), ...
+        -uvw(:,1)-uvw(:,2), 3*uvw(:,3)];
+    end
+
+    function u = get.u(v), u = v.uvw(:,1); end
+    function vv = get.v(v), vv = v.uvw(:,2); end
+    function w = get.w(v), w = v.uvw(:,3); end
+    function U = get.U(v), U = v.UVTW(:,1); end
+    function V = get.V(v), V = v.UVTW(:,2); end
+    function T = get.T(v), T = v.UVTW(:,3); end
+    function W = get.W(v), W = v.UVTW(:,4); end
+
+    function v = set.uvw(v,uvw)
+      % uvw must be of format [u v w] or [u v t w]
+      if size(uvw,2) == 4, error('Use UVTW to set four Miller indice!'); end
+
+      M = v.CS.axes.xyz;
+      v.x = uvw * M(:,1);
+      v.y = uvw * M(:,2);
+      v.z = uvw * M(:,3);
+
+      v.dispStyle = 'uvw';
+    end
+
+    function v = set.UVTW(v,UVTW)
+      % U = 2u - v, V = 2v - u, T = -(u+v), W = 3w
+      if size(UVTW,2) == 4
+        v.uvw = [UVTW(:,1)-UVTW(:,3),UVTW(:,2)-UVTW(:,3),UVTW(:,4)]./3;
+      elseif v.lattice.isTriHex
+        v.uvw = [2*UVTW(:,1) + UVTW(:,2),2*UVTW(:,2) + UVTW(:,1),UVTW(:,3)]./3;
+      end
+
+      v.dispStyle = 'UVTW';
+    end
+
+    function v = set.u(v,u), v.uvw = [u v.v v.w]; end
+    function v = set.v(v,vv), v.uvw = [v.u vv v.w]; end
+    function v = set.w(v,w), v.uvw = [v.u v.v w]; end
+    function v = set.U(v,U), v.UVTW = [U v.V v.T v.W]; end
+    function v = set.V(v,V), v.UVTW = [v.U V v.T v.W]; end
+    function v = set.T(v,T), v.UVTW = [v.U v.V T v.W]; end
+    function v = set.W(v,W), v.UVTW = [v.U v.V v.T W]; end
 
     function xyz = xyz(v)
       xyz = [v.x(:),v.y(:),v.z(:)];      

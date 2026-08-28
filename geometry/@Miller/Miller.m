@@ -33,36 +33,6 @@ classdef Miller < vector3d
   % CrystalSymmetries FundamentalSector vector3d.vector3d
   % crystalSymmetry.crystalSymmetry
   
-  properties
-    dispStyle = MillerConvention.hkl % output convention hkl or uvw
-  end
-  
-  properties (Access = private)
-    CSprivate % the crystal frame these indices are written in
-  end
-  
-  properties (Dependent = true)
-    CS          % crystal symmetry
-    convention  % convention of the Miller indices
-    coordinates % Miller coordinates according to the convention set above
-    lattice     % type of crystal lattice -> CS.lattice
-    hkl         % direct coordinates
-    hkil        % direct coordinates
-    h
-    k
-    i
-    l
-    uvw       % reciprocal coordinates
-    UVTW      % reciprocal coordinates / Weber indices
-    u
-    v
-    w
-    U
-    V
-    T
-    W
-  end
-  
   methods
     
     function m = Miller(varargin)
@@ -76,15 +46,15 @@ classdef Miller < vector3d
       if isa(varargin{1},'Miller') 
   
         m = varargin{1};
-        m.CSprivate = getClass(varargin,'crystalFrame',m.CSprivate);
+        m.framePrivate = getClass(varargin,'crystalFrame',m.framePrivate);
         m.dispStyle = get_flag(varargin,{'uvw','UVTW','hkl','hkil','xyz'},m.dispStyle);
         
         return;
       end
 
       % check for symmetry
-      m.CSprivate = getClass(varargin,'crystalFrame',[]);
-      assert(isa(varargin{1},'Miller') || ~isempty(m.CSprivate),...
+      m.framePrivate = getClass(varargin,'crystalFrame',[]);
+      assert(isa(varargin{1},'Miller') || ~isempty(m.framePrivate),...
         'No crystal symmetry has been specified when defining a crystal direction!');
 
       % extract disp style
@@ -166,233 +136,7 @@ classdef Miller < vector3d
 
     end        
     
-    % -----------------------------------------------------------
-    
-    function cs = get.CS(m)
-      cs = m.CSprivate;
-    end
-    
-    function m = set.CS(m,cs)             
-      % recompute representation in cartesian coordinates
-      if ~isempty(m.CSprivate) && m.CSprivate ~= cs
-
-        coord = m.coordinates;
-        m.CSprivate = cs;
-        m.coordinates = coord;
-        
-      else
-        m.CSprivate = cs;
-      end      
-    end
-    
-    function fr = getFrame(m)
-      % the frame of a Miller is the crystal frame of its symmetry -
-      % resolved live, so it can never go stale when CS is replaced
-      % (e.g. by transformReferenceFrame)
-      if isempty(m.CSprivate)
-        fr = m.framePrivate; % degenerate machinery state without a CS
-      else
-        fr = m.CSprivate;
-      end
-    end
-
-    function m = setFrame(m,fr) %#ok<INUSD>
-      error('MTEX:Miller:fixedFrame',...
-        ['The frame of a Miller is the crystal frame of its crystal ' ...
-        'symmetry - assign m.CS instead.']);
-    end
-
-    function l = get.lattice(m)
-      l = m.CS.lattice;
-    end
-    
-    function out = get.convention(m)
-      out = m.dispStyle;
-    end
-    
-    function m = set.convention(m,dS)
-      m.convention = dS;
-    end
-        
-    function c = get.coordinates(m)
-      c = m.(char(m.dispStyle));
-    end
-    
-    function m = set.coordinates(m,hkl)
-      m.(char(m.dispStyle)) = hkl;
-    end
-
-    function hkl = get.hkl(m)
-      
-      % get reciprocal axes
-      M = double(m.CS.axesDual);
-      
-      % compute reciprocal coordinates
-      hkl = (M \ m.xyz.')';
-      
-    end
-
-    function hkil = get.hkil(m)
-            
-      hkl = m.hkl;
-
-      % add fourth component for trigonal and hexagonal systems
-      hkil = [hkl(:,1:2),-hkl(:,1)-hkl(:,2),hkl(:,3)];
-      
-    end
-    
-    function h = get.h(m), h = m.hkl(:,1);end
-    function k = get.k(m), k = m.hkl(:,2);end
-    function i = get.i(m), i = m.hkil(:,3);end
-    function l = get.l(m), l = m.hkl(:,end);end
-        
-    % ------------------------------------------------------------
-    function m = set.hkl(m,hkl)
-      % 
-      % hkl must have the format [h,k,l] or [h k i l]
-      
-      % remove i 
-      hkl = hkl(:,[1:2,end]);
-      
-      % get reciprocal axes
-      M = m.CS.axesDual.xyz;
-      
-      % compute x, y, z coordinates
-      m.x = hkl * M(:,1);
-      m.y = hkl * M(:,2);
-      m.z = hkl * M(:,3); 
-      
-      % set default display style
-      if m.lattice.isTriHex
-        m.dispStyle = 'hkil';
-      else
-        m.dispStyle = 'hkl';
-      end
-    end
-    
-    function m = set.hkil(m,hkil)
-      m.hkl = hkil;
-    end
-    
-    function m = set.h(m,h)
-      m.hkl = [h m.k m.l];
-    end
-    
-    function m = set.k(m,k)
-      m.hkl = [m.h k m.l];
-    end
-    
-    function m = set.l(m,l)
-      m.hkl = [m.h m.k l];
-    end
-    
-    function m = set.u(m,u)
-      m.uvw = [u m.v m.w];
-    end
-    
-    function m = set.v(m,v)
-      m.uvw = [m.u v m.w];
-    end
-    
-    function m = set.w(m,w)
-      m.uvw = [m.u m.v w];
-    end
-    
-    function m = set.U(m,U)
-      m.UVTW = [U m.V m.T m.T];
-    end
-    
-    function m = set.V(m,V)
-      m.UVTW = [m.U V m.T m.W];
-    end
-    
-    function m = set.T(m,T)
-      m.UVTW = [m.U m.V T m.W];
-    end
-    
-    function m = set.W(m,W)
-      m.UVTW = [m.U m.V m.T W];
-    end
-        
-    % -----------------------------------------------------------            
-    function uvw = get.uvw(m)
-    
-      % get crystal coordinate system (a,b,c)
-      M = double(m.CS.axes);
-
-      % get x, y, z coordinates
-      xyz = double(m);
-
-      % compute u, v, w coordinates
-      uvw = (M \ xyz)';
-     
-    end
-      
-    function UVTW = get.UVTW(m)
-      %U = 2u -v, V = 2v - u, T = - (u+v), W = 3w
-
-      uvw = m.uvw; %#ok<*PROP>
-      
-      UVTW = [2*uvw(:,1)-uvw(:,2),...
-        2*uvw(:,2)-uvw(:,1),...
-        -uvw(:,1)-uvw(:,2),...
-        3*uvw(:,3)];
-            
-    end
-    
-    
-    function u = get.u(m), u = m.uvw(:,1);end
-    function v = get.v(m), v = m.uvw(:,2);end
-    function w = get.w(m), w = m.uvw(:,3);end
-    function U = get.U(m), U = m.UVTW(:,1);end
-    function V = get.V(m), V = m.UVTW(:,2);end
-    function T = get.T(m), T = m.UVTW(:,3);end
-    function W = get.W(m), W = m.UVTW(:,4);end
-    
-    
-        
-    % ------------------------------------------------------------
-    
-    function m = set.uvw(m,uvw)
-      %
-      % uvw must be of format [u v w] or [u v t w] 
-      
-      % correct for 4 component vectors
-      if size(uvw,2) == 4, error('Use UVTW to set four Miller indice!'); end
-               
-      % get direct axes 
-      M = m.CS.axes.xyz;
-      
-      % compute x, y, z coordinates
-      m.x = uvw * M(:,1);
-      m.y = uvw * M(:,2);
-      m.z = uvw * M(:,3);
-      
-      % set default display style
-      m.dispStyle = 'uvw';
-      
-    end
-    
-    function m = set.UVTW(m,UVTW)
-      %    
-      %U = 2u -v, V = 2v - u, T = - (u+v), W = 3w
-      
-      % correct for 4 component vectors
-      if size(UVTW,2) == 4
-        
-        m.uvw = [UVTW(:,1)-UVTW(:,3),UVTW(:,2)-UVTW(:,3),UVTW(:,4)]./3;
-        
-      elseif m.lattice.isTriHex
-        
-        m.uvw = [2*UVTW(:,1) + UVTW(:,2),2*UVTW(:,2) + UVTW(:,1),UVTW(:,3)]./3;
-        
-      end
-      
-      % set default display style
-      m.dispStyle = 'UVTW';
-      
-    end        
-end
+  end
   
   methods (Static = true)
 
@@ -404,7 +148,13 @@ end
       if isa(s,'Miller'), m = s; return; end
 
       % a pre-frame Miller arrives as a struct, its frame comes from the symmetry
-      m = Miller(vector3d(s.x,s.y,s.z),s.CSprivate);
+      % a pre-merge Miller kept its frame in CSprivate of its own
+      if isfield(s,'CSprivate') && isa(s.CSprivate,'crystalFrame')
+        fr = s.CSprivate;
+      else
+        fr = s.framePrivate;
+      end
+      m = Miller(vector3d(s.x,s.y,s.z),fr);
       if isfield(s,'dispStyle'),    m.dispStyle = s.dispStyle; end
       if isfield(s,'antipodal'),    m.antipodal = s.antipodal; end
       if isfield(s,'isNormalized'), m.isNormalized = s.isNormalized; end

@@ -412,31 +412,33 @@ m.CS = cs2;
 assert(m.frame == cs2, ...
   'check_referenceFrame: setting CS left a stale frame');
 
-% the convention of a Miller is the one of its crystal frame - assigning
-% one directly is refused, like assigning a frame
-try
-  m.frame = specimenFrame.frameFor(plottingConvention('z↑→x'));
-  failed = false;
-catch e
-  failed = strcmp(e.identifier,'MTEX:Miller:fixedFrame');
-end
-assert(failed, ...
-  'check_referenceFrame: assigning a convention to a Miller must error');
+% the two assignments say different things, which is why both exist:
+% .CS keeps the INDICES and recomputes the components, .frame keeps the
+% COMPONENTS and restates which frame they are in
+mIdx = Miller(1,2,3,cs);
+mIdx.CS = cs2;
+assert(all(abs(mIdx.hkl - [1 2 3]) < 1e-10), ...
+  'check_referenceFrame: assigning CS must keep the indices');
 
-% assigning a frame directly is refused
-try
-  m.frame = specimenFrame.rolling;
-  failed = false;
-catch e
-  failed = strcmp(e.identifier,'MTEX:Miller:fixedFrame');
-end
-assert(failed, ...
-  'check_referenceFrame: assigning a frame to a Miller must error');
+mCmp = Miller(1,2,3,cs);
+xyzBefore = squeeze(double(mCmp));
+mCmp.frame = cs2;
+assert(norm(squeeze(double(mCmp)) - xyzBefore) < 1e-10, ...
+  'check_referenceFrame: assigning frame must keep the components');
 
-% casting to vector3d drops the crystal frame
+% and a crystal direction put into a specimen frame stops being one - it
+% still has coordinates, it just has no indices any more
+mSpec = Miller(1,2,3,cs);
+mSpec.frame = specimenFrame.rolling;
+assert(~isCrystalDirection(mSpec) && isempty(mSpec.CS), ...
+  'check_referenceFrame: a specimen framed direction must have no indices');
+
+% casting to vector3d keeps the crystal frame: the frame says where the
+% coordinates live, and a cast does not move them. Dropping it would
+% silently reinterpret the numbers as specimen coordinates
 v = vector3d(Miller(1,0,0,cs));
-assert(isempty(v.frame), ...
-  'check_referenceFrame: vector3d(m) must drop the crystal frame');
+assert(v.frame == cs && isCrystalDirection(v), ...
+  'check_referenceFrame: vector3d(m) must keep the crystal frame');
 
 % save / load keeps the coupling
 fname = [tempname '.mat'];
