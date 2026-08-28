@@ -116,6 +116,15 @@ classdef sphericalRegion
       
     end
             
+    function sR = set.N(sR,N)
+      % a bounding normal is one plane of the region, not a direction
+      % standing for its symmetrically equivalent ones - two of those bound
+      % different sides. It keeps where it is written, not the group claim.
+
+      if ~isempty(N) && ~isempty(N.frame), N.frame = stripSym(N.frame); end
+      sR.N = N;
+    end
+
     function h2p = get.how2plot(sR)
       h2p = sR.N.how2plot;
     end

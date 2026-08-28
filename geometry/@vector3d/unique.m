@@ -20,10 +20,25 @@ function [v,iv,iu] = unique(v,varargin)
 %  stable      - prevent sorting
 %  antipodal   - tread vectors as axes
 %  noAntipodal - ignore antipodal symmetry
+%  noSymmetry  - ignore crystal symmetry
 %
 % See also
 % unique
 %
+
+% under a group two directions are the same when they are symmetrically
+% equivalent, so the symmetrised sets are compared and not the directions
+if hasSymmetry(v) && ~check_option(varargin,'noSymmetry')
+
+  vSym = symmetrise(v,varargin{:});
+
+  [~,~,iu] = unique(vSym,varargin{:},'noSymmetry');
+
+  [~,iv,iu] = unique(min(reshape(iu,size(vSym)),[],1));
+
+  v = v.subSet(iv);
+  return
+end
 
 x = v.x(:);
 y = v.y(:);

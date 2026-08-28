@@ -12,7 +12,7 @@ function check_Miller
 % default it is the display convention of the input.
 %
 % See also
-% Miller Miller/round MillerConvention
+% Miller vector3d/round MillerConvention
 
 cs = crystalSymmetry('6/mmm',[3 3 5]);       % hexagonal, a != c
 csT = crystalSymmetry('-3m',[4.9 4.9 5.4]);  % trigonal, quartz-like
@@ -123,7 +123,7 @@ end
 
 % =========================================================================
 function checkRoundConvention(cs)
-% the case from the help text of Miller/round
+% the case from the help text of vector3d/round
 
 h = Miller(1,3,-4,8,cs,'UVTW');
 

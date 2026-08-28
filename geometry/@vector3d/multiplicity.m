@@ -1,5 +1,5 @@
-function n = multiplicity(m,varargin)
-% number of directions symmetrically equivalent to m
+function n = multiplicity(v,varargin)
+% number of directions symmetrically equivalent to v
 %
 % Description
 % The multiplicity of a crystal direction is the size of its orbit under the
@@ -15,10 +15,10 @@ function n = multiplicity(m,varargin)
 % the order of the group, so the old value is numSym(m.CS) ./ multiplicity(m).
 %
 % Syntax
-%   n = multiplicity(m) % number of @Miller indices equivalent to m
+%   n = multiplicity(m) % number of directions equivalent to m
 %
 % Input
-%  m - @Miller
+%  m - @vector3d in a @crystalFrame
 %
 % Output
 %  n - integer
@@ -26,5 +26,4 @@ function n = multiplicity(m,varargin)
 % See also
 % vector3d/symmetrise orientation/multiplicity fibre/multiplicity
 
-
-[~,n] = symmetrise(m,'unique','noAntipodal');
+[~,n] = symmetrise(v,varargin{:},'unique','noAntipodal');

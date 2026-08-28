@@ -21,5 +21,9 @@ if check_option(varargin,'robust')
   delta = pi/2-angle(N,v);
   id = delta < quantile(delta,0.8)*(1+1e-5);
   
-  if any(id), N = perp(v.subSet(id)); end   
+  if any(id), N = perp(v.subSet(id)); end
 end
+
+% a normal to a set of plane normals is a lattice direction and a normal to
+% a set of directions a plane normal, so the indices switch sides
+N.dispStyle = MillerConvention(-MillerConvention(v.dispStyle));

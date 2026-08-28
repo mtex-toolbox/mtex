@@ -27,6 +27,20 @@ for i = 1:numel(varargin)
     vy{i} = vs.y;
     vz{i} = vs.z;
     v.isNormalized = v.isNormalized & vs.isNormalized;
+
+    % indices are comparable only within one crystal frame, and one list is
+    % written in one convention
+    if isCrystalDirection(v) && isCrystalDirection(vs)
+
+      if vs.CS ~= v.CS
+        error('I can not store Miller indices with respect to different crystal symmetries within one list');
+      end
+
+      if v.dispStyle ~= MillerConvention.xyz && vs.dispStyle ~= MillerConvention.xyz && ...
+          MillerConvention(vs.dispStyle) ~= MillerConvention(v.dispStyle)
+        warning(['Miller indices are converted to ' char(v.dispStyle)]);
+      end
+    end
   end
 end
 

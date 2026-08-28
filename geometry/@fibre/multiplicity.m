@@ -19,7 +19,7 @@ function m = multiplicity(f,varargin)
 %  m - integer
 %
 % See also
-% Miller/multiplicity orientation/multiplicity
+% vector3d/multiplicity orientation/multiplicity
 
 
 [~,m] = symmetrise(f,'unique');

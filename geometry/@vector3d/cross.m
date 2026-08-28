@@ -19,4 +19,8 @@ else
   v.z = v1.x.*v2.y-v1.y.*v2.x;
   v.isNormalized = false;
   v.antipodal = v1.antipodal | v2.antipodal;
+
+  % the cross product of two plane normals is a lattice direction and the
+  % one of two directions a plane normal, so the indices switch sides
+  v.dispStyle = MillerConvention(-MillerConvention(v.dispStyle));
 end

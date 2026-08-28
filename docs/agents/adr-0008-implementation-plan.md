@@ -72,7 +72,7 @@ The facade decided above means red is scoped to the carrier being converted, nev
 | 2B | `crystalSymmetry`/`specimenSymmetry` become functions returning frames | red: the flip |
 | 3 | interning on the full key, immutability, colour rule | **done**, `591a9380e` `1d2d9774a` |
 | 4 | `orientation`/`rotation` — `CS`/`SS` return frames | **done**, `frameA`/`frameB` |
-| 5 | `vector3d` absorbs `Miller` | red: `geometry/` |
+| 5 | `vector3d` absorbs `Miller` | the methods moved; the class is constructor and `loadobj` |
 | 6 | `S2Fun`, `SO3Fun`, `tensor` | red: function spaces |
 | 7 | phase identity — `phaseItem` absorbed, `CSList` holds frames | red: `EBSDAnalysis/` |
 | 8 | `transformReferenceFrame` takes a rule; `orientation.align` | red shrinking |
@@ -221,13 +221,43 @@ them with the rest of the function spaces, so two spellings coexist until then.
 
 ### 5 — `vector3d` absorbs `Miller`
 
-`dispStyle` (`MillerConvention`) moves to `vector3d` unchanged; `Miller(h,k,l,cf)` survives
-as a constructor function returning a framed `vector3d`; the 25 methods in `geometry/@Miller/`
-mostly evaporate rather than migrate. `vector3d` branches on `isa(frame,'crystalFrame')` for
-index display, `symmetrise` and `dspacing` — or better, delegates to the frame, which is what
-increment 1.4 sets up.
+`dispStyle` and the indices moved down with `ca7172f30`, the 25 methods followed. What
+`@Miller` still holds is its constructor and `loadobj`.
 
-Ship the replacement for `isa(x,'Miller')` in the same increment: 54 sites here plus user
+**A direction stands for its symmetrically equivalent set when the frame it is written in
+carries a group** — `geometry/hasSymmetry.m`, not the class and not crystal against
+specimen: a specimen frame with a sample symmetry says the same thing. That decides the
+default in `symmetrise`, `unique`, `dot`, `dot_outer`, `mean`, `project2FundamentalRegion`,
+`region`, `gridify` and `calcDensity`. The indices themselves, and with them `char`,
+`display`, `round` and `dspacing`, follow the frame being a crystal one —
+`isCrystalDirection`.
+
+In `dot` and `dot_outer` **one of the two sides carrying a group is enough** — the symmetrised
+side goes first and `dot_outer` transposes its result back. That is wider than `@Miller/dot`,
+which needed a `Miller` on both sides.
+
+The rule reaches further than the class did, because vectors inside MTEX carry frames that
+were never `Miller`. Where such an element is one plane, or one representative already
+reduced into a sector, rather than a direction standing for its equivalents, it takes the
+frame **without** the group: `sphericalRegion` strips it in `set.N`, which is what keeps the
+cubic fundamental sector at its three bounding normals, and `HSVDirectionKey` strips it after
+projecting into the sector, where one direction gets one colour. Making those call sites say
+`'noSymmetry'` is the wrong way round — `crystalFrame.aAxis` is the next candidate to be
+written group-free.
+
+**Open:** whether `dot(v1,v2)` really needs the two groups to fit, or whether one being a
+subgroup of the other is enough. `symFits(...,'compatible')` decides it today and only warns.
+
+Two defects fixed while passing through: `Miller(v,cs)` built from a `vector3d` came out
+`xyz` styled, since the property default now lives on `vector3d` where `xyz` is right, so the
+constructor sets `hkl`, or `hkil` where the lattice asks for it; and `ori * m` into a
+specimen frame returned a `Miller` sitting in a specimen frame — `rotate` and `rotate_outer`
+read `q.frameB` and hand back a `vector3d`.
+
+`gridify` returns its `S2Grid` in the crystal frame instead of a `Miller` copy of it.
+
+What is left of the increment: `Miller` becomes a constructor function returning a framed
+`vector3d`, and the replacement for `isa(x,'Miller')` ships with it — 52 sites here plus user
 code, and it fails silently.
 
 ### 6 — function spaces and tensors

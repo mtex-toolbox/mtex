@@ -19,7 +19,7 @@ function rot = expRight(v,rot_ref)
 %  ori  - @orientation
 %
 % See also
-% Miller/exp orientation/log
+% vector3d/exp orientation/log
 
 % norm of the vector is rotational angle
 omega = norm(v);

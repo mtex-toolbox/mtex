@@ -57,8 +57,13 @@ classdef Miller < vector3d
       assert(isa(varargin{1},'Miller') || ~isempty(m.framePrivate),...
         'No crystal symmetry has been specified when defining a crystal direction!');
 
-      % extract disp style
-      if m.lattice.isTriHex, m.dispStyle = 'hkil'; end
+      % a crystal direction is written in indices, four of them where the
+      % lattice asks for it
+      if m.lattice.isTriHex
+        m.dispStyle = MillerConvention.hkil;
+      else
+        m.dispStyle = MillerConvention.hkl;
+      end
       m.dispStyle = get_flag(varargin,{'uvw','UVTW','hkl','hkil','xyz'},m.dispStyle);
 
       if isa(varargin{1},'referenceFrame')

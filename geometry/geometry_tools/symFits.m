@@ -27,7 +27,7 @@ function ok = symFits(s1,s2,level)
 %
 % Open: the mineral name is compared at |'same'| and not at |'compatible'|,
 % which is where each of the two predicates this replaces stood. Making it
-% uniform would change what @Miller/dot warns about and is a decision about
+% uniform would change what @vector3d/dot warns about and is a decision about
 % phase identity, not a consolidation.
 %
 % Syntax

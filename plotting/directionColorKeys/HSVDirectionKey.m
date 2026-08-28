@@ -107,8 +107,13 @@ classdef HSVDirectionKey < directionColorKey
       h = vector3d(h);
       h.antipodal = false;
       h = h.project2FundamentalRegion(dM.sym);
-      
+
+      % one direction out of the sector gets one colour, so from here it
+      % stands for itself and not for its symmetrically equivalent set
+      if ~isempty(h.frame), h.frame = stripSym(h.frame); end
+
       wC = vector3d(project2FundamentalRegion(dM.whiteCenter,dM.sym));
+      if ~isempty(wC.frame), wC.frame = stripSym(wC.frame); end
       
       if dM.maxAngle < inf
         

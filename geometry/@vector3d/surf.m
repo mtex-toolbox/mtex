@@ -14,6 +14,9 @@ function [h,ax] = surf(v,cdata,varargin)
 % See also
 %
 
+% a crystal direction is drawn in its own frame and convention
+if isCrystalDirection(v), varargin = [varargin,{v.CS,v.how2plot}]; end
+
 % initialize spherical plot
 sP = newSphericalPlot(v,varargin{:},'doNotDraw');
 

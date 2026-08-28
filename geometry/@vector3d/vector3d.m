@@ -248,12 +248,10 @@ classdef vector3d < dynOption
     end
 
     function fr = getFrame(v)
-      % overloaded by Miller, whose frame is the one of its symmetry
       fr = v.framePrivate;
     end
 
     function v = setFrame(v,fr)
-      % overloaded by Miller, where assigning a frame is an error
       assert(isempty(fr) || isa(fr,'referenceFrame'), ...
         'The frame of a vector3d has to be a referenceFrame or empty.');
       v.framePrivate = fr;

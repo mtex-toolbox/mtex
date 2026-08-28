@@ -30,6 +30,48 @@ function [h,ax] = scatter(v,varargin)
 % See also
 % vector3d/text
 
+% a crystal direction may be drawn at all its symmetrically equivalent
+% directions, and is drawn in its own frame and convention
+if isCrystalDirection(v)
+
+  if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetrise')
+
+    % symmetrise data with repetition
+    if numel(varargin) > 0 && ~isempty(varargin{1}) && ...
+        (isnumeric(varargin{1}) || isa(varargin{1},'crystalShape'))
+
+      % first dimension cs - second dimension v
+      v = symmetrise(v,varargin{:});
+
+      varargin{1} = repmat(varargin{1}(:)',size(v,1),1);
+
+      varargin = replicateMarkerSize(varargin,size(v,1));
+
+    elseif length(v) < 100 || check_option(varargin,{'labeled','label'})
+
+      % plot only unique points
+      [v,l] = symmetrise(v,'unique','noAntipodal',varargin{:}); % symmetrise without repetition
+
+      if check_option(varargin,'label')
+        label = ensurecell(get_option(varargin,'label'));
+        label = repelem(label,l);
+        varargin = set_option(varargin,'label',label);
+      end
+
+    else
+
+      v = symmetrise(v,varargin{:}); % symmetrise with repetition
+      varargin = replicateMarkerSize(varargin,size(v,1));
+
+    end
+
+    % we do not need to symmtrise twice
+    varargin = [varargin,{'skipSymmetrise','noAntipodal'}];
+  end
+
+  varargin = [varargin,{v.CS,v.how2plot}];
+end
+
 % initialize spherical plots
 opt = delete_option(varargin,...
   {'lineStyle','lineColor','lineWidth','color','edgeColor','MarkerSize','Marker','MarkerFaceColor','MarkerEdgeColor','MarkerColor'},1);
@@ -371,6 +413,18 @@ for it = 1:length(t)
   t(it).Position(2) = xy(2) + dir * ...
     (t(it).Extent(4)/2 + t(it).Margin + p2dy * (markerSize/2 + 4*(dir>0)));
   
+end
+
+end
+
+% -----------------------------------------------------------------
+
+function opt = replicateMarkerSize(opt,n)
+
+ms = get_option(opt,'MarkerSize');
+if length(ms)>1 && n > 1
+  ms = repmat(ms(:).',n,1);
+  opt = set_option(opt,'MarkerSize',ms);
 end
 
 end

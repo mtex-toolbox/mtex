@@ -48,20 +48,22 @@ if ~isempty(fieldnames(v.opt)), v = rmOption(v,'theta','rho'); end
 % if q is orientation change reference frame / plottingConvention
 if isa(q,'orientation')
   
-  % if output has symmetry convert to Miller
-  if isa(q.SS,'crystalFrame')
-    v = Miller(v,q.SS);
-    v.dispStyle = MillerConvention(v.dispStyle);
-    v.dispStyle = make4Digit(v.dispStyle,q.SS);
-    
+  % rotating with an orientation changes the reference frame - see
+  % vector3d/rotate
+  v.frame = q.frameB;
+
+  % a direction in a crystal frame is written in indices
+  if isa(q.frameB,'crystalFrame')
+
+    if v.dispStyle == MillerConvention.xyz, v.dispStyle = MillerConvention.hkl; end
+    v.dispStyle = make4Digit(MillerConvention(v.dispStyle),q.frameB);
+
   else
 
-    % convert to vector3d
-    if isa(v,"Miller"), v = vector3d(v); end
-
-    % rotating with an orientation changes the reference frame - see
-    % vector3d/rotate
-    v.frame = q.SS;
+    % leaving the crystal frame the direction is no longer written in indices
+    if isa(v,'Miller'), v = vector3d(v); end
+    v.frame = q.frameB;
+    v.dispStyle = MillerConvention.xyz;
 
   end
 

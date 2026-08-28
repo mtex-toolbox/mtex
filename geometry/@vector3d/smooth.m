@@ -15,6 +15,13 @@ function [h,ax] = smooth(v,varargin)
 
 h = [];
 
+% a crystal direction is smoothed over the region of its own group, drawn
+% in its frame and convention, and read out in indices by the data cursor
+if isCrystalDirection(v)
+  mtexFig = newMtexFigure('datacursormode',@tooltip,varargin{:});
+  varargin = [varargin,{region(v,varargin{:}),v.CS,v.how2plot}];
+end
+
 % initialize spherical plot
 opt = delete_option(varargin,{'lineStyle','lineColor','lineWidth','color'},1);
 sP = newSphericalPlot(v,opt{:},'doNotDraw');
@@ -143,10 +150,23 @@ if isappdata(sP(1).parent,'mtexFig')
 end
 
 if nargout == 0
-  clear h; 
+  clear h;
 else
   ax = [sP.ax];
 end
+
+  function txt = tooltip(varargin)
+    % the value under the cursor, at the crystal direction it belongs to
+
+    [hLocal,~,value] = getDataCursorPos(mtexFig);
+
+    hLocal.frame = v.CS;
+    hLocal.dispStyle = 'uvw';
+    hLocal = round(hLocal,'tolerance',3*degree);
+
+    txt = [xnum2str(value) ' at ' char(hLocal)];
+
+  end
 
 end
 

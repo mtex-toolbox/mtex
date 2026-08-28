@@ -22,9 +22,18 @@ function [v,sym] = project2FundamentalRegion(v,cs,varargin)
 %  v - @vector3d
 
 
-if nargin==1 || ~isa(cs,'referenceFrame') % no symmetry is provided
+% a direction is projected into the sector of the group its frame carries
+if nargin == 1
+  cs = [];
+elseif ~isa(cs,'referenceFrame')
+  varargin = [{cs},varargin];
+  cs = [];
+end
+if isempty(cs) && hasSymmetry(v), cs = v.frame; end
 
-  if v.antipodal || (nargin>1 && check_option([cs,varargin],'antipodal'))
+if isempty(cs) % no symmetry is provided
+
+  if v.antipodal || check_option(varargin,'antipodal')
 
     ind = v.z<0;
     v.x(ind) = -v.x(ind);
@@ -49,7 +58,7 @@ if cs.id == 1, return; end
 % and then consider the problem reduced to the point group 3. Maybe this is
 % a general idea to reduce computational cost ...
 
-if nargin >= 3 && isa(varargin{1},'vector3d')
+if ~isempty(varargin) && isa(varargin{1},'vector3d')
   
   symCenter = cs * varargin{1};
   cs = cs.rot;

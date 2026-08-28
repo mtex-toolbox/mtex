@@ -39,7 +39,7 @@ function v = log(ori,varargin)
 %   round(Miller(v,mori.CS))
 %
 % See also
-% orientation/logm quaternion/log vector3d/exp Miller/exp
+% orientation/logm quaternion/log vector3d/exp
 
 if check_option(varargin,'noSymmetry')
   v = log@quaternion(ori,varargin{:});

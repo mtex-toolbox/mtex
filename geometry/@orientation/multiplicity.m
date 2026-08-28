@@ -19,6 +19,6 @@ function m = multiplicity(mori,varargin)
 %  m - integer
 %
 % See also
-% Miller/multiplicity fibre/multiplicity
+% vector3d/multiplicity fibre/multiplicity
 
 m = length(unique(symmetrise(mori),'noSymmetry'));

@@ -24,6 +24,7 @@ function sF = calcDensity(v,varargin)
 %  halfwidth - halfwidth of a kernel
 %  kernel    - specify a S2Kernel
 %  weights   - vector of weights, with same length as v
+%  noSymmetry - do not symmetrise a density of crystal directions
 %
 
 % determine kernel function
@@ -46,6 +47,15 @@ end
 
 % convolution with kernel function
 sF = conv(sF,psi);
+
+% a density of directions is written in their frame, and carries the group
+% that frame holds unless that is switched off
+if ~isempty(v.frame), sF.frame = v.frame; end
+
+if hasSymmetry(v) && ~check_option(varargin,'noSymmetry')
+  sF = S2FunHarmonicSym(sF,v.frame);
+  sF = sF.symmetrise;
+end
 
 % if required compute function values
 if nargin > 1 && isa(varargin{1},'vector3d')

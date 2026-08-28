@@ -18,6 +18,34 @@ function h = text(v,varargin)
 %
 % See also
 
+% a crystal direction may be labelled at all its symmetrically equivalent
+% directions, and is drawn in its own convention
+if isCrystalDirection(v)
+
+  if check_option(varargin,'symmetrised') && ~check_option(varargin,'skipSymmetrise')
+
+    [v,l] = symmetrise(v,varargin{:},'unique','noAntipodal');
+
+    % symmetrise labels
+    if ~check_option(varargin,'labeled') && ~isempty(varargin)
+      strings = ensurecell(varargin{1});
+      if iscellstr(varargin{1}) && ~isempty(strings)
+
+        if isscalar(strings)
+          strings = repcell(strings{1},length(v),1);
+        else
+          strings = strings(repelem(1:numel(strings),l));
+        end
+        varargin{1} = strings;
+      end
+    end
+
+    varargin = [varargin,{'skipSymmetrise','noAntipodal'}];
+  end
+
+  varargin = [varargin,{v.how2plot}];
+end
+
 if check_option(varargin,'add2all')
 
   ax = get_option(varargin,'parent');

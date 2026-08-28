@@ -19,7 +19,7 @@ function rot = exp(v,varargin)
 %  ori  - @orientation
 %
 % See also
-% Miller/exp orientation/log
+% orientation/log
 
 
 % -------------------------------------------------------------------------
@@ -51,6 +51,24 @@ ind = omega ~=0;
 alpha(ind) = sin(omega(ind)/2) ./ omega(ind);
 
 rot = quaternion(cos(omega/2),alpha .* v.x,alpha .* v.y,alpha .* v.z);
+
+% a rotation vector given in a crystal frame is a misorientation of that
+% frame with itself, and it updates a reference orientation from the right -
+% a tangent vector brings its own reference and is handled by SO3TangentVector/exp
+if isCrystalDirection(v) && ~isa(v,'SO3TangentVector')
+
+  rot = orientation(rot,v.CS,v.CS);
+
+  if nargin > 1 && isa(varargin{1},'quaternion')
+    tSc = SO3TangentSpace.extract(SO3TangentSpace.rightVector,varargin{:});
+    if tSc.isLeft
+      rot = rot * varargin{1};
+    else
+      rot = varargin{1} .* rot;
+    end
+  end
+  return
+end
 
 % rotate tangent space to reference rotation
 if tS.isLeft

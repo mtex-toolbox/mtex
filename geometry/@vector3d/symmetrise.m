@@ -18,7 +18,7 @@ function [v,l,sym] = symmetrise(v,varargin)
 %
 % Input
 %  v - @vector3d
-%  S - @symmetry
+%  S - @referenceFrame, the frame of a crystal direction if it is omitted
 %
 % Output
 %  vSym - S * v  @vector3d
@@ -47,6 +47,8 @@ function [v,l,sym] = symmetrise(v,varargin)
 if nargin > 1 && isa(varargin{1},'referenceFrame')
   S = varargin{1};
   varargin(1) = [];
+elseif ~isempty(v.frame) % a direction knows the frame it is written in
+  S = v.frame;
 else
   S = specimenFrame.default;
 end
@@ -105,10 +107,10 @@ if check_option(varargin,'unique')
 end
 
 % where it is used
-% calcPDF              ->  
-% Miller/scatter       -> noAntipodal   as antipodal is treated by vector3d/scatter
-% checkZeroRange       ->  
-% Miller/multiplicity  ->
-% Miller/text          -> noAntipodal
-% fibre/symmetrise     -> 
-% SO3FunRBF/calcPDF    -> noAntipodal
+% calcPDF                ->
+% vector3d/scatter       -> noAntipodal   as antipodal is treated by vector3d/scatter
+% checkZeroRange         ->
+% vector3d/multiplicity  ->
+% vector3d/text          -> noAntipodal
+% fibre/symmetrise       ->
+% SO3FunRBF/calcPDF      -> noAntipodal

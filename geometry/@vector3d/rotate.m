@@ -61,18 +61,23 @@ v = rmOption(v,'theta','rho');
 
 
 if isa(q,'orientation')
-  
-  if isa(q.SS,'crystalFrame')    
-    v = Miller(v,q.SS);
-    v.dispStyle = MillerConvention(v.dispStyle);
-    v.dispStyle = make4Digit(v.dispStyle,q.SS);
-  else % convert to vector3d
 
-    % convert to vector3d
-    if isa(v,"Miller"), v = vector3d(v); end
+  % an orientation takes the result into the frame it maps into, a rotation
+  % keeps it where it was
+  v.frame = q.frameB;
 
-    % an orientation takes the result into the specimen frame, a rotation keeps it
-    v.frame = q.SS;
+  % a direction in a crystal frame is written in indices
+  if isa(q.frameB,'crystalFrame')
+
+    if v.dispStyle == MillerConvention.xyz, v.dispStyle = MillerConvention.hkl; end
+    v.dispStyle = make4Digit(MillerConvention(v.dispStyle),q.frameB);
+
+  else
+
+    % leaving the crystal frame the direction is no longer written in indices
+    if isa(v,'Miller'), v = vector3d(v); end
+    v.frame = q.frameB;
+    v.dispStyle = MillerConvention.xyz;
 
   end
 
