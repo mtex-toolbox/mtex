@@ -21,6 +21,13 @@ if isa(R,'orientation') && nargin == 2
   % the rotated tensor takes the specimen frame, but not the specimen
   % symmetry - the group-stripped sibling is that frame without the claim
   T.CS = stripSym(R.SS);
+
+elseif ~inGroup(R,T.frame)
+
+  % turned by anything but an element of its own group, the tensor is no
+  % longer invariant under it - so the frame it is written in claims none
+  T.frame = stripSym(T.frame);
+
 end
 
 % convert rotation to 3 × 3 matrix - (3 × 3 × N) for many rotation

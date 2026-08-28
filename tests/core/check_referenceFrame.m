@@ -34,6 +34,8 @@ checkProductDropsSymmetry;
 checkPlotS2GridFrame;
 checkSchmidFactorFrames;
 checkFrameGroup;
+checkFrameTransitionRule;
+checkTensorGroupAfterRotation;
 
 disp('check_referenceFrame: passed');
 
@@ -1487,5 +1489,72 @@ if got ~= expected
   if expected, verb = 'did not warn'; else, verb = 'warned'; end
   error('check_referenceFrame: SchmidFactor %s for %s',verb,name);
 end
+
+end
+
+% =========================================================================
+function checkFrameTransitionRule
+% transformReferenceFrame takes the relation between two frames three ways,
+% and orientation.align is the one that reads the bases
+%
+% The three are not interchangeable - they answer different questions - but
+% naming the rotation the other two derive has to give the same result.
+
+fa = specimenFrame('transitionA','axesNames',{'A','B','C'}, ...
+  plottingConvention('y↑→x'));
+fb = specimenFrame('transitionB','axesNames',{'A','B','C'}, ...
+  plottingConvention('x↑→y'));
+
+v = vector3d(1,2,3); v.frame = fa;
+
+byPlot = transformReferenceFrame(v,fb,'byScreenAlignment');
+byOri  = transformReferenceFrame(v,fb,orientation.byScreenAlignment(fa,fb));
+assert(angle(byPlot,byOri) < 1e-10, ...
+  'check_referenceFrame: naming the rotation disagrees with byScreenAlignment');
+assert(byPlot.frame == fb, ...
+  'check_referenceFrame: the transformed direction is not in the target frame');
+
+% reading the bases is what happens when no rule is named, and align is
+% that reading given a name
+cs1 = crystalSymmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||a*');
+cs2 = crystalSymmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||b','X||a*');
+m = Miller(1,0,0,cs1);
+o = orientation.align(cs1,cs2);
+assert(o.frameA == stripSym(cs1) && o.frameB == stripSym(cs2), ...
+  'check_referenceFrame: align does not name both its frames, group free');
+assert(angle(o * m, transformReferenceFrame(m,cs2),'noSymmetry') < 1e-10, ...
+  'check_referenceFrame: align disagrees with transformReferenceFrame');
+
+% two frames of different cell shape are not related by a rotation at all
+try
+  orientation.align(cs1,crystalSymmetry('m-3m',[4 4 4]));
+  id = '';
+catch e
+  id = e.identifier;
+end
+assert(strcmp(id,'MTEX:orientation:noRotation'), ...
+  'check_referenceFrame: align accepted two frames of different cell shape');
+
+referenceFrame.reset;
+
+end
+
+% =========================================================================
+function checkTensorGroupAfterRotation
+% a tensor turned by anything but an element of its own group stops being
+% invariant under it, and the frame it is written in stops claiming so
+
+cs = crystalSymmetry('m-3m',[3.6 3.6 3.6]);
+C = stiffnessTensor(diag([168.4 168.4 168.4 75.4 75.4 75.4]) + ...
+  (ones(6)-eye(6)) .* [ones(3) zeros(3); zeros(3,6)] * 121.4, cs);
+
+assert(rotate(C,C.CS.rot(7)).frame == cs, ...
+  'check_referenceFrame: rotating by a symmetry element must keep the group');
+
+assert(rotate(C,rotation.byAxisAngle(vector3d(1,2,3),20*degree)).frame.id == 1, ...
+  'check_referenceFrame: rotating by a plain rotation must drop the group');
+
+assert(symmetrise(C).frame == cs, ...
+  'check_referenceFrame: symmetrise must keep the group it symmetrised under');
 
 end

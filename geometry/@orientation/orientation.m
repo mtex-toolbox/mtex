@@ -113,6 +113,9 @@ methods (Static = true)
   % the orientation implied by two reference frames rendering alike
   ori = byScreenAlignment(frA,frB);
 
+  % the orientation two reference frames stand in by their axes
+  ori = align(frA,frB,varargin);
+
   function ori = nan(varargin)
     s = varargin(cellfun(@isnumeric,varargin));
     q = quaternion.nan(s{:});

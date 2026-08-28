@@ -1,4 +1,4 @@
-function ori = transformReferenceFrame(ori,cs1,cs2)
+function ori = transformReferenceFrame(ori,cs1,cs2,varargin)
 % change reference frame of an orientation
 %
 % Orientations are always described with respect to a cartesian reference
@@ -9,13 +9,28 @@ function ori = transformReferenceFrame(ori,cs1,cs2)
 %
 % Syntax
 %   ori = ori.transformReferenceFrame(cs)
+%   ori = ori.transformReferenceFrame(cs,ori)
+%   ori = ori.transformReferenceFrame(cs,'byScreenAlignment')
 %   mori = mori.transformReferenceFrame(cs1,cs2)
 %
 % Input
 %  ori - @orientation
 %  mori - misorientation
-%  cs, cs1, cs2 - @crystalSymmetry
+%  cs, cs1, cs2 - @crystalFrame
 %
+% Options
+%  byScreenAlignment - take the relation from the two frames being drawn alike
+%  tolerance         - how far from a rotation reading the bases may come out
+%
+% See also
+% frameTransition vector3d/transformReferenceFrame
+%
+
+% a rule may stand where the second frame would - only a misorientation is
+% given two of them
+if nargin >= 3 && ~isa(cs2,'referenceFrame')
+  varargin = [{cs2},varargin]; cs2 = [];
+end
 
 % only applicable for crystal symmetry
 if ~isa(cs1,'crystalFrame')
@@ -25,10 +40,10 @@ if ~isa(cs1,'crystalFrame')
 end
 
 % basis transformation into reference frame
-M = transformationMatrix(ori.CS,cs1);
+M = matrix(frameTransition(ori.CS,cs1,varargin{:}));
 
 % check symmetries are compatible
-if ori.CS.id ~= cs1.id || norm(eye(3)-M*M.')>0.01 || ...
+if ori.CS.id ~= cs1.id || ...
     all(norm(ori.CS.axes - cs1.axes)./norm(cs1.axes)<10^-2) || ...
     (~isempty(ori.CS.mineral) && ~isempty(cs1.mineral) && ~strcmpi(ori.CS.mineral,cs1.mineral))
   warning('Symmetry missmatch! The following crystal frames seem to be different\n\n  %s\n  %s \n',char(ori.CS,'verbose'),char(cs1,'verbose'));
@@ -40,7 +55,9 @@ if det(M)>10*eps
 end
 
 % do the same for the second symmetry
-if nargin == 3, ori = inv(transformReferenceFrame(inv(ori),cs2)); end
+if nargin >= 3 && ~isempty(cs2)
+  ori = inv(transformReferenceFrame(inv(ori),cs2,varargin{:}));
+end
 
 % this is some testing code
 % cs1 = crystalSymmetry('triclinic',[1 2 3],[70 80 120]*degree,'Z||a*')

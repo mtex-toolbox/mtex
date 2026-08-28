@@ -1,12 +1,25 @@
-function SO3F = transformReferenceFrame(SO3F,cs)
-% change reference frame of an ODF
+function SO3F = transformReferenceFrame(SO3F,cs,varargin)
+% express an ODF in another crystal reference frame
+%
+% Syntax
+%   odf = transformReferenceFrame(odf,cs)
+%   odf = transformReferenceFrame(odf,cs,ori)
+%   odf = transformReferenceFrame(odf,cs,'byScreenAlignment')
 %
 % Input
 %  odf - @SO3Fun
-%  cs  - new @crystalSymmetry
+%  cs  - @referenceFrame to express the ODF in
+%  ori - @orientation from the frame of odf to cs, when it is known
+%
+% Options
+%  byScreenAlignment - take the relation from the two frames being drawn alike
+%  tolerance         - how far from a rotation reading the bases may come out
 %
 % Output
 %  odf - @SO3Fun
+%
+% See also
+% frameTransition vector3d/transformReferenceFrame
 %
 % Example
 %
@@ -26,7 +39,7 @@ function SO3F = transformReferenceFrame(SO3F,cs)
 
 if SO3F.CS ~= cs
     
-  M = transformationMatrix(SO3F.CS,cs);
+  M = matrix(frameTransition(SO3F.CS,cs,varargin{:}));
   mori = orientation.byMatrix(M,SO3F.CS,cs);
   
   SO3F = rotate(SO3F,inv(mori),'right');
