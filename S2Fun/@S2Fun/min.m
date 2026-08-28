@@ -90,8 +90,8 @@ else % detect local or global minima
       res0 = max(res0,1*degree / max(4,sF.bandwidth) *128);
     end
 
-    if isa(sF,'S2FunHarmonicSym')
-      sym =  sF.s;
+    if hasSymmetry(sF)
+      sym = sF.frame;
       if isAntipodal, sym = sym.Laue; end
       sR = sym.fundamentalSector;
     else

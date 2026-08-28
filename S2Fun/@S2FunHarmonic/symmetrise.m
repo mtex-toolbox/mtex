@@ -31,8 +31,11 @@ if isa(varargin{1},'vector3d')
 
   center = vector3d(varargin{1});
 
-  if isa(sF,'S2FunHarmonicSym') && center ~= zvector
+  % about any axis but z nothing of the group survives, so the frame the
+  % result is written in must not claim one
+  if hasSymmetry(sF) && center ~= zvector
     sF = S2FunHarmonic(sF);
+    sF.framePrivate = stripSym(sF.frame);
   end
 
   % start with a zero function

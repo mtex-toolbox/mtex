@@ -36,8 +36,8 @@ v = S2G(discretesample(d,n));
 v = rotation.rand(n,'maxAngle',res*1.5) .* v(:);
 
 % the sample lives in the reference frame of the function
-if isa(S2F,'S2FunHarmonicSym') && isa(S2F.CS,'crystalFrame')
-  v = Miller(v,S2F.CS);
+if hasSymmetry(S2F) && isa(S2F.frame,'crystalFrame')
+  v = Miller(v,S2F.frame);
 elseif isa(S2F.frame,'crystalFrame')
   v = Miller(v, crystalSymmetry(S2F.frame));
 else

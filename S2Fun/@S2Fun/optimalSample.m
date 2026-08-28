@@ -484,8 +484,8 @@ if optWeights && minWeight > 0
 end
 
 % return the sample in the reference frame of the function
-if isa(sF,'S2FunHarmonicSym') && isa(sF.CS,'crystalFrame')
-  v = Miller(v,sF.CS);
+if hasSymmetry(sF) && isa(sF.frame,'crystalFrame')
+  v = Miller(v,sF.frame);
 elseif ~isCrystalDirection(v)
   if isa(sF.frame,'crystalFrame')
     v = Miller(v, crystalSymmetry(sF.frame));

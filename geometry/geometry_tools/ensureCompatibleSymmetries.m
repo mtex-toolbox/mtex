@@ -54,10 +54,10 @@ end
 
 % compare symmetries in case of convolution of SO3Fun with S2Fun
 if isa(obj1,'SO3Fun') && isa(obj2,'S2Fun')
-  if isa(obj2,'S2FunHarmonicSym')
-    ok = symFits(obj1.SLeft,obj2.s);
+  if hasSymmetry(obj2)
+    ok = symFits(obj1.SLeft,obj2.frame);
   else
-    % a plain S2Fun carries at most a frame, so the left side has to be group free
+    % a group free frame says nothing about symmetry, so the left side has to be group free
     ok = obj1.SLeft.Laue.id == 2;
     if ok, ok = framesFit(obj2.frame,obj1.SLeft); end
   end

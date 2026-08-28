@@ -36,10 +36,10 @@ if nargin > 3 && isa(varargin{1},'vector3d')
   
   S2G = varargin{1};
 
-elseif isa(sF,'S2FunHarmonicSym')
-  
+elseif hasSymmetry(sF)
+
   % get fundamental sector
-  cs = sF.s;
+  cs = sF.frame;
   a=[];
   if sF.antipodal
     a = 'antipodal';

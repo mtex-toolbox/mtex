@@ -48,7 +48,7 @@ if isa(psi2,'S2Fun')
     fhat(l^2+1:(l+1)^2) = psi1.A(l+1) * sF.fhat(l^2+1:(l+1)^2) ./ (2*l+1);
   end
 
-  if isa(psi2,'S2FunHarmonicSym')
+  if hasSymmetry(psi2)
     warning(['There is no symmetry given for the SO3Kernel function. But for convolution the ' ...
       'right symmetry of the SO3Fun has to be compatible with the symmetry of the S2Fun.'])
   end

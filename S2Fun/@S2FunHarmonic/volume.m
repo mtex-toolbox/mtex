@@ -26,7 +26,7 @@ function v = volume(sF,center,radius,varargin)
 
 % In case of symmetries the computation of the volume by the chebychev 
 % series only works for a small radius
-if isa(sF,'S2FunHarmonicSym')
+if hasSymmetry(sF)
   v = volume@S2Fun(sF,center,radius);
   return
 end
