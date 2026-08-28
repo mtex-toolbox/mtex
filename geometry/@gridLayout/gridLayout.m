@@ -35,6 +35,7 @@ classdef gridLayout < matlab.mixin.Copyable
 %  name      - what the layout is called, when it is a named one
 %  basis     - 1x3 @vector3d, [row, col, row × col]
 %  axesNames - {'row','col'}
+%  frame     - @referenceFrame the two directions are given in, read only
 %
 % See also
 % gridLayout/layoutIndex EBSD/gridify referenceFrame
@@ -45,6 +46,11 @@ classdef gridLayout < matlab.mixin.Copyable
     basis = []
     % the axis normal to the grid carries no index and so gets no name
     axesNames = {'row','col'}
+  end
+
+  properties (Dependent = true)
+    % the frame the two directions are given in, empty = the canonical one
+    frame
   end
 
   methods
@@ -114,6 +120,11 @@ classdef gridLayout < matlab.mixin.Copyable
       assert(isa(v,'vector3d') && length(v) == 3,...
         'The basis of a grid layout has to be three vector3d.');
       gL.basis = reshape(v,1,3);
+    end
+
+    function fr = get.frame(gL)
+      % the directions are vectors and a vector states its own frame
+      fr = gL.basis(1).frame;
     end
 
   end
@@ -203,7 +214,12 @@ classdef gridLayout < matlab.mixin.Copyable
       rot = fr.how2plot.rot * inv(plottingConvention.ij.rot); %#ok<MINV>
 
       gL = gridLayout;
-      gL.basis = rotate(gL.basis,rot);
+
+      % the layout is read off this frame, so it is stated in it
+      b = rotate(gL.basis,rot);
+      b.frame = fr;
+
+      gL.basis = b;
       gL.name = 'assumed from plot';
 
     end

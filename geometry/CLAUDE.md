@@ -17,8 +17,11 @@ The core class hierarchy. Every object holds an array of many entities, never on
   a basis is not a basis, so it is not a frame and **rejects** a plotting convention: the
   only screen it could mean is the one `imagesc` imposes, which `gridLayout.assumedFor`
   names outright. `ebsd.layout`/`mg.layout` read it off `d1` and `d2`; `gridify` and
-  `transformReferenceFrame` take one as a target. See
-  `docs/adr/0008-frames-carry-symmetry.md`.
+  `transformReferenceFrame` take one as a target. The frame rides on the two directions —
+  they are `vector3d`, so `gL.frame` is a read of `gL.basis(1).frame`, the way `ebsd.frame`
+  reads `ebsd.pos.frame`. **Two layouts in different frames are never `isAligned`**: their
+  components are in different spaces. A frame-free layout is the canonical one and compares
+  against either. See `docs/adr/0008-frames-carry-symmetry.md`.
 - `conventionChar` is a plain function rather than a method, because both a frame and a
   `gridLayout` write a convention in their own axes names. `@crystalFrame` overrides it.
 - `spatialTransforms/` holds `spatialTransform` and its subclasses — a map from position to

@@ -1,12 +1,15 @@
 function display(gL,varargin)
 % standard output
 %
-% A layout is two directions and nothing else, so it fits in the header -
-% written the way a crystal alignment is, |row||y, col||x|, since that is
-% the same kind of statement: which named axis a thing runs along.
+% A layout is two directions and the frame they are stated in, so it fits in
+% the header - written the way a crystal alignment is, |row||y, col||x|,
+% since that is the same kind of statement: which named axis a thing runs
+% along. The frame is named because two layouts in different frames are
+% never aligned, and the header is where that gets diagnosed.
 
 info = {};
 if ~isempty(gL.name), info{end+1} = gL.name; end
+if ~isempty(gL.frame), info{end+1} = char(gL.frame); end
 
 b = gL.basis;
 info{end+1} = [gL.axesNames{1} '||' axisChar(b(1)) ', ' ...

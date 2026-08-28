@@ -906,6 +906,33 @@ end
 assert(strcmp(caught,'MTEX:gridLayout:noConvention'), ...
   'check_referenceFrame: a gridLayout must not carry a plotting convention');
 
+% the two directions are vectors, so they state their own frame and the
+% layout reads it off them rather than storing a second copy
+fr = specimenFrame('layoutTest',plottingConvention.ij);
+v1 = yvector; v1.frame = fr;
+v2 = xvector; v2.frame = fr;
+framed = gridLayout(v1,v2);
+assert(framed.frame == fr, ...
+  'check_referenceFrame: a gridLayout did not read its frame off its directions');
+assert(isempty(gridLayout.columnMajor.frame), ...
+  'check_referenceFrame: a layout built from bare directions must have no frame');
+
+% directions in different frames are stated in different spaces, so the
+% components cannot be compared - while a frame free layout compares to both
+other = specimenFrame('layoutTest2',plottingConvention.ij);
+w1 = yvector; w1.frame = other;
+w2 = xvector; w2.frame = other;
+assert(~isAligned(framed,gridLayout(w1,w2)), ...
+  'check_referenceFrame: layouts in different frames were called aligned');
+assert(isAligned(framed,gridLayout.columnMajor) && ...
+    isAligned(gridLayout.columnMajor,framed), ...
+  'check_referenceFrame: a frame free layout did not compare against a framed one');
+
+% assumedFor reads the order off a frame, so the layout it returns is stated
+% in that frame
+assert(gridLayout.assumedFor(fr).frame == fr, ...
+  'check_referenceFrame: assumedFor did not state the layout in the frame it read');
+
 % rows and columns of an array are perpendicular; anything else is a
 % mistake rather than a shear to be accommodated
 try
