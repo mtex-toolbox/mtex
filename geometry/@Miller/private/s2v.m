@@ -1,20 +1,23 @@
 function m = s2v(s,m)
-  %'[uvw]'
-  %'(hkl)'
+  %'[uvw]'  '<uvw>'
+  %'(hkl)'  '{hkl}'
   %'[u1v1w1]\[u2v2w2]->'(hkl)'  a.k. zonen gleichung
   %'(h1k1l1)\(h1k1l1)->'[uvw]'
   %'[hkl](uww) ?
-   
+
 try
   i = @(str)  str2double(  regexp((char(str)),'-?\d','match'));
   token = '([,\\-\d]*)';
   braces  = regexp(s,token,'split');
   indices = regexp(s,token,'match');
-    
+
+  % both direct brackets say uvw, both reciprocal ones hkl - which of a pair
+  % is written says whether the set or one of it is meant, and the point
+  % group decides that
   isuvw = false;
   if ~mod(numel(braces),2)
-    s1 = strcmp('[',braces);
-    s2 = strcmp(']',braces);
+    s1 = strcmp('[',braces) | strcmp('<',braces);
+    s2 = strcmp(']',braces) | strcmp('>',braces);
     isuvw = all(s1(1:2:end) == 1 & s2(2:2:end) == 1);
   end
       

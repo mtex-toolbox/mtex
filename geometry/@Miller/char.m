@@ -1,10 +1,15 @@
 function c = char(m,varargin)
 % Miller indices to string
 %
+% A point group makes the indices stand for the whole symmetrically
+% equivalent set, so they are written in the family brackets - {hkl} and
+% <uvw> - while the trivial group leaves one plane or one direction, (hkl)
+% and [uvw].
+%
 % Flags
-%  no_scopes - 
-%  latex - 
-%  commasep - 
+%  no_scopes -
+%  latex -
+%  commasep -
 
 c = cell(length(m),1);
 
@@ -12,8 +17,9 @@ c = cell(length(m),1);
 format = get_flag(varargin,{'hkl','hkil','uvw','UVTW'});
 if ~isempty(format), m.dispStyle = format; end
 
+isFamily = ~isempty(m.CS) && m.CS.id ~= 1;
 
-[leftBracket, rightBracket] = brackets(MillerConvention(m.dispStyle));
+[leftBracket, rightBracket] = brackets(MillerConvention(m.dispStyle),isFamily);
 
 abc = m.coordinates;
 % prevent bar{0}

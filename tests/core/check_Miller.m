@@ -28,8 +28,58 @@ checkDispStyleSurvives(cs);
 checkCubicHklUvw(csC);
 checkSymmetriseMultiplicity(cs);
 checkSymmetriseMultiplicity(csC,[6 12 8 48]);  % the m-3m powder values
+checkFamilyBrackets(csC);
+checkParsedBrackets(csC);
 
 disp('check_Miller: passed');
+
+end
+
+% =========================================================================
+function checkFamilyBrackets(cs)
+% a point group makes the indices stand for the whole equivalent set, and
+% the literature writes that in the family brackets - so the brackets are
+% what tell a reader that == and angle reduce over the group
+
+assert(strcmp(char(Miller(1,1,1,cs,'hkl')),'{111}'), ...
+  'check_Miller: a plane in a point group is not written {111}, but %s', ...
+  char(Miller(1,1,1,cs,'hkl')))
+assert(strcmp(char(Miller(1,0,0,cs,'uvw')),'<100>'), ...
+  'check_Miller: a direction in a point group is not written <100>, but %s', ...
+  char(Miller(1,0,0,cs,'uvw')))
+
+% the trivial group leaves one plane and one direction
+cs1 = crystalSymmetry('1',cs.axes);
+assert(strcmp(char(Miller(1,1,1,cs1,'hkl')),'(111)'), ...
+  'check_Miller: a plane under the trivial group is not written (111), but %s', ...
+  char(Miller(1,1,1,cs1,'hkl')))
+assert(strcmp(char(Miller(1,0,0,cs1,'uvw')),'[100]'), ...
+  'check_Miller: a direction under the trivial group is not written [100], but %s', ...
+  char(Miller(1,0,0,cs1,'uvw')))
+
+% the bracket follows the sign of the convention, so the four index forms
+% take the same pair
+csH = crystalSymmetry('6/mmm',[3 3 5]);
+c = char(Miller(1,0,-1,0,csH,'hkil'),'noUTF8');
+assert(c(1) == '{' && c(end) == '}', ...
+  'check_Miller: a four index plane family is not written in braces, but %s',c)
+
+end
+
+% =========================================================================
+function checkParsedBrackets(cs)
+% both direct brackets mean uvw and both reciprocal ones hkl - <100> read as
+% a plane normal for as long as the parser tested for '[' alone
+
+assertParallel(Miller('<100>',cs),Miller('[100]',cs),'<100> against [100]')
+assertParallel(Miller('{110}',cs),Miller('(110)',cs),'{110} against (110)')
+
+m = Miller('<100>',cs);
+assert(m.dispStyle == MillerConvention.uvw, ...
+  'check_Miller: <100> did not parse as a direction')
+m = Miller('{110}',cs);
+assert(m.dispStyle == MillerConvention.hkl, ...
+  'check_Miller: {110} did not parse as a plane normal')
 
 end
 

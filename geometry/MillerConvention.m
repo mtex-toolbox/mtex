@@ -6,6 +6,12 @@ classdef MillerConvention < int32
 % UVTW, and plain Cartesian xyz. It also carries which brackets belong to
 % each, and the sign tells reciprocal from direct.
 %
+% Each form has two bracket pairs, the single one and the family one the
+% literature uses for the symmetrically equivalent set - (hkl) against
+% {hkl}, [uvw] against <uvw>. Which of the two is written is not part of the
+% convention: it follows from whether a point group is there to make a
+% family, see <MillerConvention.brackets.html brackets>.
+%
 % Syntax
 %   c = MillerConvention.hkil
 %   m.dispStyle = 'uvw'
@@ -33,20 +39,27 @@ classdef MillerConvention < int32
       
     end
     
-    function [left,right] = brackets(this)
-      
+    function [left,right] = brackets(this,isFamily)
+      % the brackets this form is written in
+      %
+      % Syntax
+      %   [l,r] = brackets(c)        % (hkl) and [uvw], one plane or direction
+      %   [l,r] = brackets(c,true)   % {hkl} and <uvw>, the equivalent set
+
+      if nargin < 2, isFamily = false; end
+
       if this > 0
 
-        left= '['; right = ']';
+        if isFamily, left = '<'; right = '>'; else, left = '['; right = ']'; end
 
       elseif this < 0
 
-        left= '('; right= ')';
+        if isFamily, left = '{'; right = '}'; else, left = '('; right = ')'; end
 
       else
-        
+
         left = ''; right= '';
-      
+
       end
     end
     
