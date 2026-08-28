@@ -3,9 +3,8 @@ classdef S2Fun
 %
 % A spherical function carries the referenceFrame it is expressed in -
 % empty means frame-free, resolved against the session default at render
-% time. Symmetry is deliberately not part of this class: only
-% @S2FunHarmonicSym represents a symmetrised function and holds a
-% symmetry, whose frame it exposes here.
+% time. A frame that carries a point group says the function is symmetric
+% under it, which is what hasSymmetry and getSym read.
 %
 % Deriving classes only have to implement the method eval, everything else
 % - arithmetics, plotting, integration, extrema - is inherited from here.
@@ -17,7 +16,6 @@ classdef S2Fun
 %
 % Derived Classes
 %  @S2FunHarmonic    - spherical harmonic series
-%  @S2FunHarmonicSym - symmetrised spherical harmonic series
 %  @S2FunTri         - piecewise linear on a spherical triangulation
 %  @S2FunHandle      - function given by a function handle
 %  @S2FunBingham     - spherical Bingham distribution
@@ -66,22 +64,22 @@ methods
   end
 
   function fr = getFrame(sF)
-    % overloaded by S2FunHarmonicSym, whose frame is the one of its
-    % symmetry
+    % overloaded by S2FunMLS, whose frame is the one of its symmetry
     fr = sF.framePrivate;
   end
 
   function sF = setFrame(sF,fr)
-    % overloaded by S2FunHarmonicSym, where assigning a frame is an error
+    % overloaded by S2FunMLS, where assigning a frame is an error
     assert(isempty(fr) || isa(fr,'referenceFrame'), ...
       'The frame of an S2Fun has to be a referenceFrame or empty.');
     sF.framePrivate = fr;
   end
 
-  function s = getSym(sF) %#ok<MANU>
-    % the symmetry of a symmetrised function, empty for everything else -
-    % overloaded by S2FunHarmonicSym
+  function s = getSym(sF)
+    % the group a symmetric function is invariant under - the group its
+    % frame carries, empty for a function written in a group free frame
     s = [];
+    if hasSymmetry(sF), s = sF.frame; end
   end
 
   function n = numel(sF)
@@ -121,6 +119,18 @@ methods
    function fr = extractFrame(varargin)
      % the frame named by the arguments, empty when they name none
      fr = getClass(varargin,'referenceFrame');
+   end
+
+   function fr = jointFrame(sF1,sF2,fr)
+     % the frame a binary operation writes its result in: the given frame,
+     % carrying a group only where both operands are invariant under one
+
+     sym = S2Fun.jointSym(sF1,sF2);
+     if ~isempty(sym)
+       fr = sym;
+     elseif ~isempty(fr)
+       fr = stripSym(fr);
+     end
    end
 
    function s = jointSym(sF1,sF2)

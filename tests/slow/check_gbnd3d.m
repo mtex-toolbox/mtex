@@ -7,10 +7,10 @@ function check_gbnd3d
 % slow/ because it needs the 169 MB SmallIN100_MeshStats.dream3d.
 %
 % The two differ in a way worth knowing. In crystal coordinates the 3d
-% version returns an S2FunHarmonicSym and is exactly symmetric under the
-% crystal group - measured 1.85e-11 over all 24 rotations of 432. The 2d
-% version returns a plain S2FunHarmonic with a crystalSymmetry merely
-% attached, because it builds the density with 'noSymmetry', and evaluating
+% version returns a function in a frame carrying the crystal group, and it
+% is exactly symmetric under that group - measured 1.85e-11 over all 24
+% rotations of 432. The 2d version returns a function whose frame carries
+% no group, because it builds the density with 'noSymmetry', and evaluating
 % it at symmetrically equivalent directions differs by more than the function
 % varies. So symmetry is asserted here and deliberately not there.
 %
@@ -65,9 +65,9 @@ gbnd = calcGBND(gB);
 
 assert(isa(gbnd,'S2FunHarmonic'), ...
   'check_gbnd3d: the specimen form returned a %s', class(gbnd))
-assert(isa(gbnd.CS,'specimenFrame'), ...
+assert(isa(gbnd.frame,'specimenFrame'), ...
   'check_gbnd3d: the specimen form carries a %s, expected a specimenSymmetry', ...
-  class(gbnd.CS))
+  class(gbnd.frame))
 
 checkIsADensity(gbnd,'specimen frame');
 
@@ -87,18 +87,17 @@ function gbnd = checkCrystalForm(gB,grains)
 
 gbnd = calcGBND(gB,grains);
 
-assert(isa(gbnd,'S2FunHarmonicSym'), ...
-  ['check_gbnd3d: the crystal form returned a %s - it is expected to be an ' ...
-   'S2FunHarmonicSym, i.e. symmetrised rather than merely carrying a symmetry'], ...
-  class(gbnd))
-assert(isa(gbnd.CS,'crystalFrame'), ...
+assert(hasSymmetry(gbnd), ...
+  ['check_gbnd3d: the crystal form came back in a group free frame - it is ' ...
+   'expected to be symmetrised, so its frame has to carry the crystal group'])
+assert(isa(gbnd.frame,'crystalFrame'), ...
   'check_gbnd3d: the crystal form carries a %s, expected a crystalSymmetry', ...
-  class(gbnd.CS))
+  class(gbnd.frame))
 
 checkIsADensity(gbnd,'crystal frame');
 
 % the symmetry has to hold on evaluation - the function only varies by 7% here
-rots = gbnd.CS.rot;
+rots = gbnd.frame.rot;
 v = vector3d.rand(100);
 ref = gbnd.eval(v);
 

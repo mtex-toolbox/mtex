@@ -18,9 +18,9 @@ function T = directionalMagnitude(T,v)
 % return a function if required
 if nargin == 1 || isempty(v)
   fr = T.framePrivate;
-  T = S2FunHarmonicSym.quadrature(@(x) directionalMagnitude(T,x),'bandwidth',4,T.CS);
+  T = S2FunHarmonic.quadrature(@(x) directionalMagnitude(T,x),'bandwidth',4,T.CS);
   % an own frame of the tensor rides along - only frames carry conventions
-  T.framePrivate = fr;
+  if ~isempty(fr), T.framePrivate = fr; end
 
   return
 end

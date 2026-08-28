@@ -188,8 +188,8 @@ end
 % -------------------------------------------------------------------------
 function checkTensorToS2Fun
 % the convention has to reach the S2Fun a tensor turns into, since that is
-% what plotting reads - @S2FunHarmonicSym/plot used to override it with the
-% one of the symmetry
+% what plotting reads - the plot of a symmetric function used to override it
+% with the one of the group
 
 pC = plottingConvention('z↑→x');
 T = tensor(diag([3 1 -1]),'rank',2,pC);

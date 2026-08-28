@@ -14,7 +14,9 @@ if isnumeric(sF1)
 elseif isnumeric(sF2)
   sF = S2FunHandle(@(v) sF1.eval(v) + sF2,sF1.frame);
 else
-  sF = S2FunHandle(@(v) sF1.eval(v) + sF2.eval(v),sF1.frame);
+  % the sum is symmetric only under what both summands share
+  sF = S2FunHandle(@(v) sF1.eval(v) + sF2.eval(v), ...
+    S2Fun.jointFrame(sF1,sF2,sF1.frame));
 end
 
 end

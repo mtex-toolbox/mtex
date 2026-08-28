@@ -143,7 +143,7 @@ end
 % function must not override that with the one it appends for its own data
 d3 = plottingConvention.default3D;
 for f = {@() plot(sf3d,'3d'), ...
-    @() plot(S2FunHarmonicSym.quadrature(@(w) exp(-4*angle(w,zvector).^2),cs),'3d')}
+    @() plot(S2FunHarmonic.quadrature(@(w) exp(-4*angle(w,zvector).^2),cs),'3d')}
   close all
   f{1}();
   camPos = get(gca,'CameraPosition');

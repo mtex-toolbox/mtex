@@ -52,7 +52,7 @@ if isPF % pole figure
 
     % determine S2fun by quadrature
     if angle(h(k),-h(k)) < 1e-5, flag = 'antipodal'; else, flag = []; end
-    S2F(k) = S2FunHarmonicSym.quadrature(S2G(:),pdf,...
+    S2F(k) = S2FunHarmonic.quadrature(S2G(:),pdf,...
       'bandwidth',bw,'weights',S2G.weights(:),SO3F.SS,flag); %#ok<AGROW>
 
   end
@@ -69,7 +69,7 @@ else % inverse pole figure
 
     % take the integral over the fibers
     pdf = mean(reshape(f,size(ori)),2);
-    S2F(k) = S2FunHarmonicSym.quadrature(S2G(:),pdf,'bandwidth',bw,'weights',S2G.weights(:),SO3F.CS); %#ok<AGROW>
+    S2F(k) = S2FunHarmonic.quadrature(S2G(:),pdf,'bandwidth',bw,'weights',S2G.weights(:),SO3F.CS); %#ok<AGROW>
 
   end
   

@@ -43,7 +43,8 @@ if ( nargin > 1 ) && ( isa(varargin{1}, 'S2Fun') )
   else
     value = S2FunHarmonic.quadrature(f);
   end
-  value.frame = sF.frame;
+  % the minimum is symmetric only under what both functions share
+  value.frame = S2Fun.jointFrame(sF,varargin{1},sF.frame);
 
 % pointwise minimum of spherical harmonics
 elseif ( nargin > 1 ) && ~isempty(varargin{1}) && ( isa(varargin{1}, 'double') )

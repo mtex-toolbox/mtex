@@ -37,7 +37,7 @@ if ~isempty(varargin) && isa(varargin{1},'vector3d')
 else
   
   f = @(h) getValue(h);
-  x = S2FunHarmonicSym.quadrature(f,dcs,'bandwidth',256,varargin{:});
+  x = S2FunHarmonic.quadrature(f,dcs,'bandwidth',256,varargin{:});
   
 end
 

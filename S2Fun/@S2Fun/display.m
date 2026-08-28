@@ -1,7 +1,7 @@
 function display(sF,varargin)
 % standard output
 
-% sF.how2plot, not sF.s.how2plot - the convention lives on the function
+% sF.how2plot, not the frame's - the convention lives on the function
 displayClass(sF,inputname(1),'moreInfo',...
   referenceFrame.headerChar(sF.frame,sF.how2plot),varargin{:});
 

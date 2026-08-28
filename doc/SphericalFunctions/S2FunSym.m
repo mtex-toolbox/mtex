@@ -72,11 +72,11 @@ valueFunction = @(v) 0.1*(v.theta+sin(8*v.x).*sin(8*v.y));
 cs = crystalSymmetry('6/m');
 
 %%
-% <S2FunHarmonicSym.quadrature.html |quadrature|> computes the harmonic
+% <S2FunHarmonic.quadrature.html |quadrature|> computes the harmonic
 % coefficients and enforces the supplied symmetry. The |'bandwidth'|
 % option keeps spherical harmonic degrees through 16.
 
-sFs2 = S2FunHarmonicSym.quadrature(valueFunction,cs,'bandwidth',16);
+sFs2 = S2FunHarmonic.quadrature(valueFunction,cs,'bandwidth',16);
 
 clf;
 contour(sFs2,'linewidth',2);

@@ -40,8 +40,8 @@ if nargin == 1 || isempty(vprop)
 
   [n,pMin,pMax] = birefringence(rI,vprop);
 
-  n = S2FunHarmonicSym.quadrature(vprop,n,rI.CS,'bandwidth',M,'weights',W);
-  n.framePrivate = rI.framePrivate;
+  n = S2FunHarmonic.quadrature(vprop,n,rI.CS,'bandwidth',M,'weights',W);
+  if ~isempty(rI.framePrivate), n.framePrivate = rI.framePrivate; end
   pMin = S2AxisFieldHarmonic.quadrature(vprop,pMin,'bandwidth',M,'weights',W);
   pMax = S2AxisFieldHarmonic.quadrature(vprop,pMax,'bandwidth',M,'weights',W);
 

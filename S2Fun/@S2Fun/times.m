@@ -29,6 +29,8 @@ if isa(sF2,'S2FunHarmonic')
   return
 end
 
-sF = S2FunHandle(@(v) sF1.eval(v) .* sF2.eval(v),sF1.frame);
+% the product is symmetric only under what both factors share
+sF = S2FunHandle(@(v) sF1.eval(v) .* sF2.eval(v), ...
+  S2Fun.jointFrame(sF1,sF2,sF1.frame));
 
 end

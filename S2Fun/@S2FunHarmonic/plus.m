@@ -7,9 +7,6 @@ function sF = plus(sF1, sF2)
 %   sF = sF1+a
 %
 
-% the symmetry both sides share survives the sum
-sym = S2Fun.jointSym(sF1,sF2);
-
 if isnumeric(sF1) && isscalar(sF1)
   s = size(sF2);
   sF = sF2.subSet(':');
@@ -38,6 +35,8 @@ else
 
 end
 
-if ~isempty(sym), sF = S2FunHarmonicSym(sF.fhat,sym); end
+% a sum of functions invariant under a group is invariant under it, so the
+% frame is set rather than the coefficients symmetrised again
+sF.framePrivate = S2Fun.jointFrame(sF1,sF2,sF.frame);
 
 end

@@ -41,7 +41,7 @@ function x = calcAxisDistribution(S3F,varargin)
 
 if nargin == 1 || ~isa(varargin{1},'vector3d')
   adf = @(h) calcAxisDistribution(S3F,h,varargin{:});
-  x = S2FunHarmonicSym.quadrature(adf,dcs,'bandwidth',64,varargin{:});
+  x = S2FunHarmonic.quadrature(adf,dcs,'bandwidth',64,varargin{:});
   return
 end
 

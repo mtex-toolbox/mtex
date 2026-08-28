@@ -454,24 +454,18 @@ end
 
 % -------------------------------------------------------------------------
 function checkS2FunFrame
-% a plain S2Fun carries only a reference frame; the symmetry lives on
-% S2FunHarmonicSym alone, which exposes its symmetry's frame
+% a spherical function carries one reference frame, and a frame that
+% carries a group says the function is symmetric under that group
 
 cs = crystalSymmetry('m-3m');
 sF = S2FunHarmonic.quadrature(@(v) v.x.^2);
 sFs = S2FunHarmonicSym(sF,cs);
 
-assert(sFs.frame == cs && sFs.CS == cs, ...
-  'check_referenceFrame: a symmetrised S2Fun does not expose its symmetry''s frame');
+assert(sFs.frame == cs && hasSymmetry(sFs), ...
+  'check_referenceFrame: a symmetrised S2Fun does not carry the group of its frame');
 
-try
-  sFs.frame = specimenFrame.rolling;
-  failed = false;
-catch e
-  failed = strcmp(e.identifier,'MTEX:S2Fun:fixedFrame');
-end
-assert(failed, ...
-  'check_referenceFrame: assigning a frame to a symmetrised S2Fun must error');
+assert(~hasSymmetry(sF), ...
+  'check_referenceFrame: a function in the session frame must claim no group');
 
 % arithmetic keeps the frame
 sFa = 2*sFs + 1;
@@ -481,11 +475,11 @@ assert(sFa.frame == cs, ...
 % rotating with an orientation moves the function into the specimen
 % frame and strips the symmetry
 r = rotate(sFs,orientation.rand(cs,specimenFrame.default));
-assert(~isa(r,'S2FunHarmonicSym') && r.frame == specimenFrame.default, ...
+assert(~hasSymmetry(r) && r.frame == specimenFrame.default, ...
   'check_referenceFrame: rotating by an orientation must land in the specimen frame');
 
-% casting a symmetrised function to a plain harmonic keeps the crystal
-% frame, and with it the convention
+% the cast to the base representation keeps the frame, and with it both the
+% group and the convention
 p = S2FunHarmonic(sFs);
 assert(p.frame == cs && p.how2plot == cs.how2plot, ...
   'check_referenceFrame: the cast to S2FunHarmonic lost the crystal frame');
@@ -495,8 +489,9 @@ assert(p.frame == cs && p.how2plot == cs.how2plot, ...
 assert(isCrystalDirection(pos) && pos.CS == cs, ...
   'check_referenceFrame: extrema of a symmetrised S2Fun are not crystal directions');
 
-% an unsymmetrised function claims no symmetry, so its extrema come back on
-% the group-stripped sibling of the frame - rule 9 of ADR 0008
+% a function written in a group free frame claims no symmetry, so its
+% extrema come back on that frame - rule 9 of ADR 0008
+p.frame = stripSym(cs);
 [~,pos] = max(p);
 assert(isCrystalDirection(pos) && pos.CS.id == 1 && pos.CS == stripSym(cs), ...
   ['check_referenceFrame: extrema of a plain crystal-framed S2Fun must be ' ...

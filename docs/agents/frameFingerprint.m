@@ -359,7 +359,7 @@ fpProbe('s2fun.harm.bandwidth',@() sF.bandwidth);
 fpProbe('s2fun.harm.fhat',@() real(fpFirst(sF.fhat,25)));
 
 cs = fpCubic;
-sFsym = fpQuiet(@() S2FunHarmonicSym.quadrature(@(x) exp(-2*angle(x,zvector).^2),cs));
+sFsym = fpQuiet(@() S2FunHarmonic.quadrature(@(x) exp(-2*angle(x,zvector).^2),cs));
 fpProbe('s2fun.sym.eval',@() sFsym.eval(v));
 fpProbe('s2fun.sym.mean',@() mean(sFsym));
 

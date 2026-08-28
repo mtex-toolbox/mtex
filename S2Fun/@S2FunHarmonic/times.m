@@ -37,11 +37,9 @@ if isa(sF1,'S2VectorField') || isa(sF2,'S2VectorField')
 elseif isa(sF1,'S2AxisField') || isa(sF2,'S2AxisField')
   sF = S2AxisFieldHarmonic.quadrature(f, 'bandwidth', bw);
 else
-  sF = S2FunHarmonic.quadrature(f, 'bandwidth', bw, sF1.frame);
-
-  % the symmetry both sides share survives the product
-  sym = S2Fun.jointSym(sF1,sF2);
-  if ~isempty(sym), sF = S2FunHarmonicSym(sF.fhat,sym); end
+  % the product is symmetric only under what both factors share
+  sF = S2FunHarmonic.quadrature(f, 'bandwidth', bw, ...
+    S2Fun.jointFrame(sF1,sF2,sF1.frame));
 end
 
 end

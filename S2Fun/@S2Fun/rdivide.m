@@ -22,7 +22,8 @@ end
 if isa(sF2,'S2FunHarmonic')
   f = @(v) sF1.eval(v)./sF2.eval(v);
   sF = S2FunHarmonic.quadrature(f);
-  sF.framePrivate = sF1.frame;
+  % the quotient is symmetric only under what both sides share
+  sF.framePrivate = S2Fun.jointFrame(sF1,sF2,sF1.frame);
   return
 end
 

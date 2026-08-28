@@ -30,12 +30,12 @@ end
 
 if isempty(h)
 %   S2F = S2FunHandle(@(h) radon(SO3F,v,r,varargin{:}));
-  S2F = S2FunHarmonicSym.quadrature(@(v) radon(SO3F,v,r,varargin{:}),SO3F.CS,varargin{:});
+  S2F = S2FunHarmonic.quadrature(@(v) radon(SO3F,v,r,varargin{:}),SO3F.CS,varargin{:});
   return
 end
 if isempty(r)
 %  S2F = S2FunHandle(@(r) radon(SO3F,h,v,varargin{:}));
-  S2F = S2FunHarmonicSym.quadrature(@(v) radon(SO3F,h,v,varargin{:}),SO3F.SS,varargin{:});
+  S2F = S2FunHarmonic.quadrature(@(v) radon(SO3F,h,v,varargin{:}),SO3F.SS,varargin{:});
   return
 end
 

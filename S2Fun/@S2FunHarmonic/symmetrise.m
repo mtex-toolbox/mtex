@@ -86,10 +86,14 @@ end
 f = @(v) sF.eval(v);
 fsym = @(v) mean(reshape(f(symX * v),numSym(symX),[]));
 
-% compute Fourier coefficients by quadrature
-sFsym = S2FunHarmonic.quadrature(fsym, 'bandwidth', sF.bandwidth,varargin{:});
+% compute Fourier coefficients by quadrature - naming the group here would
+% send the quadrature back into this function, which is doing the work
+[~,args] = getClass(varargin,'referenceFrame');
+sFsym = S2FunHarmonic.quadrature(fsym, 'bandwidth', sF.bandwidth,args{:});
+
 sFs = sF;
 sFs.fhat = sFsym.fhat;
+sFs.framePrivate = sym;
 
 
 end

@@ -31,7 +31,7 @@ if isempty(h)
   % as a function of the crystal direction the inverse pole figure is even
   % whenever -r is symmetrically equivalent to r
   ap = isAntipodal(r,SO3F.SS,varargin{:});
-  Z = S2FunHarmonicSym.quadrature(@(v) radon(SO3F,v,r,varargin{:}),...
+  Z = S2FunHarmonic.quadrature(@(v) radon(SO3F,v,r,varargin{:}),...
     SO3F.CS,varargin{:},ap{:});
   return
 end
@@ -39,7 +39,7 @@ if isempty(r)
   % as a function of the specimen direction the pole figure is even
   % whenever -h is symmetrically equivalent to h
   ap = isAntipodal(h,SO3F.CS,varargin{:});
-  Z = S2FunHarmonicSym.quadrature(@(v) radon(SO3F,h,v,varargin{:}),...
+  Z = S2FunHarmonic.quadrature(@(v) radon(SO3F,h,v,varargin{:}),...
     SO3F.SS,varargin{:},ap{:});
   return
 end

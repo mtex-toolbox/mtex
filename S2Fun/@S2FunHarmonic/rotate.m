@@ -16,9 +16,13 @@ function sF = rotate(sF, rot)
 % the symmetries need not agree, only the frames have to fit
 if isa(rot,"orientation"), rot = fitFrame(rot,sF.frame); end
 
+% a rotated function is invariant under the rotated group rather than under
+% the one it came with, so the frame it is written in keeps no group
 if sF.bandwidth ~= 0
+  fr = sF.frame;
+  if ~isempty(fr), fr = stripSym(fr); end
   f = @(v) sF.eval(rotate(v, inv(rot)));
-  sF = S2FunHarmonic.quadrature(f, 'bandwidth', sF.bandwidth, sF.frame);
+  sF = S2FunHarmonic.quadrature(f, 'bandwidth', sF.bandwidth, fr);
 end
 
 % rotating with an orientation changes the reference frame - the result
