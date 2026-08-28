@@ -46,6 +46,12 @@ setMTEXpref('screenSize',[]);
 % whatever they contain - empty derives it from figSize as for any other plot
 setMTEXpref('sphericalAxisHeight',[]);
 
+% how far two lattices may differ in SHAPE - axial ratios and angles, never
+% size - and still be registered as one crystal frame. Uniform scaling moves
+% no crystallographic direction, so a literature lattice constant against a
+% measured one is a deviation of zero. See docs/adr/0008-frames-carry-symmetry.md
+setMTEXpref('frameShapeTolerance',1e-2);
+
 % whether to show or not to show a micronbar on EBSD maps
 setMTEXpref('showMicronBar','on')
 

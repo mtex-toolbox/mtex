@@ -80,4 +80,8 @@ if sF.id > 16
   warning(sF.pointGroup + " is not a suitable specimen symmetry!")
 end
 
+% the session instance of this frame - a file that lists two phases has two
+% phases whatever their names and lattices, so an importer says 'noIntern'
+if ~check_option(varargin,'noIntern'), sF = referenceFrame.intern(sF); end
+
 end

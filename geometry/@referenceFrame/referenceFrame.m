@@ -229,6 +229,40 @@ classdef referenceFrame < matlab.mixin.Copyable
 
     end
 
+    function rf = intern(rf)
+      % the session instance of this frame, which is this one when it is new
+      %
+      % Frame identity is provenance (ADR 0008 rule 2): two constructions
+      % unify only when cell shape, alignment, group, name and convention all
+      % agree. Anything else is a different frame, because a false merge of
+      % two phases is invisible in the phase map while a false split surfaces
+      % at the first attempt to combine them.
+      %
+      % Syntax
+      %   rf = referenceFrame.intern(rf)
+      %
+      % See also
+      % referenceFrame/byName referenceFrame/reintern
+
+      % a cell array, not a frame array: assigning a crystalFrame into an
+      % array typed referenceFrame slices it down to the base class, which
+      % is the same constraint that makes the phase list heterogeneous
+      persistent store
+
+      if isempty(store), store = {}; end
+
+      if ischar(rf) && strcmp(rf,'-reset-')
+        store = {}; rf = []; return
+      end
+
+      for k = 1:numel(store)
+        if sameEntity(store{k},rf), rf = store{k}; return; end
+      end
+
+      store{end+1} = rf;
+
+    end
+
     function c = headerChar(fr,pC)
       % the string data class displays show: the frame together with the
       % plotting convention the data is drawn in
@@ -285,6 +319,7 @@ classdef referenceFrame < matlab.mixin.Copyable
       % referenceFrame.referenceFrame specimenFrame.specimenFrame
 
       referenceFrame.byName('-reset-');
+      referenceFrame.intern('-reset-');
       specimenFrame.default([]);
 
     end

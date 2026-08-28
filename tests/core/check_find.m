@@ -57,9 +57,12 @@ for i = 1:size(cases,1)
 end
 
 % --- equal but independently constructed symmetry handles ----------------
+% the register unifies two equal constructions, so the distinct handle this
+% check needs is asked for explicitly - which is what 'noIntern' is for
 cs = crystalSymmetry('321');  ss = specimenSymmetry('mmm');
 v = orientation.rand(N,cs,ss);
-w = orientation(orientation.rand(M,cs,ss),crystalSymmetry('321'),specimenSymmetry('mmm'));
+w = orientation(orientation.rand(M,cs,ss), ...
+  crystalSymmetry('321','noIntern'),specimenSymmetry('mmm','noIntern'));
 
 assert(v.CS ~= w.CS,'this check needs two DISTINCT crystal symmetry handles')
 assert(eqTol(v.CS,w.CS),'the two crystal symmetry handles must be eqTol equal')

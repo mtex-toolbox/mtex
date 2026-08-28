@@ -118,6 +118,7 @@ mineral = strtrim(regexprep(mineral,char(0),' '));
 cF.mineral = mineral;
 cF.color = get_option(varargin,'color','');
 if ~frameAdopted, cF.name = mineral; end
+askedColor = get_option(varargin,'color','');
 
 if check_option(varargin,'density')
   cF.opt.density = get_option(varargin,'density','');
@@ -130,6 +131,17 @@ if ~frameAdopted || isempty(cF.how2plot)
   else
     cF.how2plot = plottingConvention(cF.cAxisRec,cF.bAxis);
   end
+end
+
+% the session instance of this frame - a file that lists two phases has two
+% phases whatever their names and lattices, so an importer says 'noIntern'
+if ~check_option(varargin,'noIntern')
+  registered = referenceFrame.intern(cF);
+  % colour is not in the key, and the registered instance keeps the one it
+  % was first given: loading a second file must not restyle data already in
+  % the workspace. A colour asked for explicitly still wins
+  if registered ~= cF && ~isempty(askedColor), registered.color = askedColor; end
+  cF = registered;
 end
 
 end
