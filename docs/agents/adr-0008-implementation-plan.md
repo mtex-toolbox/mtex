@@ -68,7 +68,8 @@ The facade decided above means red is scoped to the carrier being converted, nev
 | --- | --- | --- |
 | 0 | fingerprint + develop baseline | **done**, `6663d1e9a` |
 | 1 | the two consolidations from `frameSimplification.md` | **done**, `f901995af` `70ca81df4` |
-| 2 | group moves onto the frame, `symmetry` becomes a facade | green |
+| 2A | the frame carries the group | **done**, `722b259f3` |
+| 2B | `crystalSymmetry`/`specimenSymmetry` become functions returning frames | red: the flip |
 | 3 | interning on the full key, immutability, colour rule | green |
 | 4 | `orientation`/`rotation` — `CS`/`SS` return frames | red: `geometry/` |
 | 5 | `vector3d` absorbs `Miller` | red: `geometry/` |
@@ -96,14 +97,85 @@ flip has to touch. The fingerprint is unchanged across both.
 
 ### 2 — the group moves onto the frame
 
-`referenceFrame` gains the group (`id`, `rot`); `symmetry` keeps its class and its 31
-methods but reads them from its frame. `crystalSymmetry`/`specimenSymmetry` keep working
-unchanged for every caller. Nothing outside `geometry/@symmetry/` and
-`geometry/@referenceFrame/` should need an edit, and the fingerprint must be byte-identical.
+The frame carries the group **as a `symmetry` object**, `frame.sym`. There is no cycle,
+because the group loses its back-pointer: `frame → sym` is one way. That keeps the 31
+methods of `@symmetry` operating on a real object instead of two loose fields, and makes
+`frame.name` and `frame.sym.name` read as the phase and the group side by side.
 
-Store the group on the frame as `id` + `rot` directly, **not** as a `symmetry` object — the
-frame holding a symmetry that holds the frame is a cycle, and `symmetry` is only those two
-fields plus the back-pointer being removed.
+The decisions behind it, taken 2026-08-28:
+
+- **`crystalSymmetry` and `specimenSymmetry` stop being classes.** `symmetry` is enough;
+  whether a group acts on a crystal or a specimen is what the frame says. The two names
+  survive as **functions returning a frame**.
+- **`sym.name` is the point group symbol**, not the mineral. The mineral is the frame's name.
+- **`sym` is per frame and a value**, like `plottingConvention`.
+- **`Laue` and `properGroup` are frames**, cached on the frame, so `ori.CS.Laue` keeps
+  working. They cannot be precomputed inside a `symmetry`: a Laue group's Laue is itself, and
+  a value cannot contain itself.
+
+A group does not change after it is built, so everything derived from it is computed with
+it rather than cached lazily — `multiplicityZ` and `multiplicityPerpZ` are properties set by
+`set.rot`, and `@symmetry/multiplicityZ.m` is gone.
+
+**2A landed** (`722b259f3`): the frame carries `sym`, `Laue` and `properGroup`, and
+`symmetry` became instantiable. Nothing reads the new path, so the fingerprint is unchanged.
+
+#### 2B — the flip, and why it has no green intermediate
+
+Measured on the tree, excluding `.claude/worktrees/`:
+
+| | |
+| --- | --- |
+| constructor calls, keep working untouched | 748 |
+| `isa` sites needing edits | 179 |
+| class-level uses needing edits | 138, of which `specimenSymmetry.default` is 96 |
+| method files to relocate | 12 |
+
+Two splits look attractive and are **not** available:
+
+- Renaming `specimenSymmetry.default` to `specimenFrame.default` first. Those 96 sites want a
+  symmetry until the flip; a frame does not substitute for one.
+- Moving the `WignerD` memo and the `fundamentalRegion` cache onto the frame first. Today one
+  frame handle serves a group, its Laue class, its proper group **and** its group-stripped
+  stand-in, so a frame-keyed memo would hand `WignerD(stripSym(cs))` the coefficients of
+  `cs`. The caches can only move once each group has its own frame, which is the flip itself.
+
+So the flip is one commit, with the fingerprint as the closing gate.
+
+#### 2B — the work list
+
+**The 31 `@symmetry` methods.** 19 are pure group and stay: `check`, `display`, `dispLine`,
+`elements`, `eq`, `ne`, `isLaue`, `isProper`, `Laue`, `LaueName`, `numProper`, `numSym`,
+`properGroup`, `properSubGroup`, `quaternion`, `rotation`, `nfold`, `factor`, `mtimes`.
+
+8 must move to `@referenceFrame`, each because it needs to know where the group lives:
+`fundamentalSector` (reads `how2plot`, tilts by `aAxis.rho`, stamps `N.frame`), `plot`
+(draws in the group's convention), `ensureCS` (a transition between two crystal frames),
+`union` and `disjoint` (every branch mints a frame-carrying object), `rotation_special`
+(reads `cs.axes` — and takes `symAxis` from `@symmetry/private/`, which has to be promoted),
+`maxAngle` and `calcAxisDistribution` (both through `fundamentalRegion`).
+
+4 are surgical: `fundamentalRegion` (only the `dcs.fundamentalSector` call and the `symKey`
+helper, whose own comment says the key must include the axes and the convention — the
+argument that it belongs on the frame), `fundamentalRegionEuler` (three `isa` guards
+disambiguating the 312/321 setting, plus one default), `calcAngleDistribution` (two lines),
+`WignerD` (its `cs.opt.fhat` memo).
+
+**Three things the value-class conversion breaks, to fix in the same commit.**
+
+- `fundamentalRegion.m:71,137` call `.copy` on a symmetry. The cache hands out copies only
+  because a symmetry is a handle; as a value both lines delete.
+- `WignerD.m:56,73` write the Fourier memo to `cs.opt`. Under value semantics those become
+  silent no-ops and the coefficients are recomputed on every call. **The memo moves to the
+  frame**, which stays a handle.
+- `phaseItem` supplies `mineral`, `color`, `isIndexed` and the sealed `eq`/`eqTol`/`sim`.
+  `crystalFrame` takes them by becoming `< referenceFrame & phaseItem`, exactly as
+  `crystalSymmetry` does today. Phase identity proper is increment 7.
+
+**Two defects to fix while passing through.** `crystalSymmetry.byElements` holds a pure
+group-closure algorithm in the wrong class — it wants to be `symmetry.closure(rot)` with the
+frame wrapped round the result. And `@crystalSymmetry/add.m` re-runs that closure passing
+only the mineral name, silently dropping the lattice axes.
 
 ### 3 — interning and immutability
 
