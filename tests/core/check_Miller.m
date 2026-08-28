@@ -30,6 +30,7 @@ checkSymmetriseMultiplicity(cs);
 checkSymmetriseMultiplicity(csC,[6 12 8 48]);  % the m-3m powder values
 checkFamilyBrackets(csC);
 checkParsedBrackets(csC);
+checkCrystalDirection;
 
 disp('check_Miller: passed');
 
@@ -269,5 +270,33 @@ dev = 1 - abs(dot(na(:),nb(:)));
 assert(max(dev) < 1e-10, ...
   'check_Miller: %s is not the same direction, 1 - |dot| up to %.3g', ...
   what, max(dev))
+
+end
+
+% =========================================================================
+function checkCrystalDirection
+% isCrystalDirection asks the object, not its class - which is what lets it
+% survive @Miller becoming an ordinary framed @vector3d
+
+cs = crystalSymmetry('m-3m',[4.05 4.05 4.05],'mineral','Al');
+
+assert(isCrystalDirection(Miller(1,0,0,cs)), ...
+  'check_Miller: a Miller is a crystal direction')
+assert(~isCrystalDirection(xvector), ...
+  'check_Miller: a frame-free vector is not a crystal direction')
+
+% a specimen frame has no indices to give
+v = xvector; v.frame = specimenFrame.rolling;
+assert(~isCrystalDirection(v), ...
+  'check_Miller: a specimen framed vector is not a crystal direction')
+
+% and it is the frame that decides, not the class - a plain vector3d put in
+% a crystal frame answers the same as the Miller does
+w = xvector; w.frame = cs;
+assert(isCrystalDirection(w), ...
+  'check_Miller: a crystal framed vector3d is a crystal direction')
+
+assert(~isCrystalDirection(cs) && ~isCrystalDirection('hkl'), ...
+  'check_Miller: only a vector can be a crystal direction')
 
 end
