@@ -20,8 +20,9 @@ answers group questions; an empty convention in an old `.mat` means none was rec
 colour is out of the register key, first import wins; the input bracket says direct or
 reciprocal only.
 
-Three increments have landed on `feature/frameSymmetry` (`45080e0c0`, `d8bb811fa`,
-`6ab4e81a0`, `556e25581`): `gridLayout` out of the frame hierarchy, and rule 11's brackets.
+Increments 0 and 1 have landed on `feature/frameSymmetry`, on top of the three that
+preceded this plan (`45080e0c0`, `d8bb811fa`, `6ab4e81a0`): `gridLayout` out of the frame
+hierarchy, rule 11's brackets, the fingerprint, and the two consolidations.
 
 **The starting position is far better than the ADR implies.** `symmetry` stores exactly
 three things — `id`, `rot`, `frame` (`geometry/@symmetry/symmetry.m:19-21`) — and
@@ -34,26 +35,29 @@ moving two properties inward and inverting one pointer.
 The test suite cannot be the safety net, because `.CS` changes type and the tiers go red by
 design. The net is a numeric fingerprint, which is type-agnostic by construction.
 
-**`docs/agents/frameFingerprint.m`** — evaluates a few hundred expressions across every
-carrier path and prints `name = %.12g` lines: orientation angles and `symmetrise` counts,
-`Miller` coordinates and `dspacing`, ODF values at fixed nodes, pole figure intensities,
-tensor entries after rotation, EBSD/grain scalar summaries. Deterministic — no
-`Date.now`-style inputs, fixed `mtexdata` sets, seeded random via a fixed `rng`.
+**`docs/agents/frameFingerprint.m`** — 4215 observables across `symmetry`, `referenceFrame`,
+`Miller`, `vector3d`, `orientation`, `SO3Fun`, `S2Fun`, `tensor`, `PoleFigure` and
+`EBSD`/`grain2d`, printed as `name = %.12g`. It runs in about eight seconds on a warm
+session. Nothing whose value is a class name or a handle is emitted — frame identity appears
+as a 0/1 comparison — and every observable is probed on its own, printing `name = ERROR` when
+it throws, so a carrier that is mid-conversion does not blind the rest.
+
+Run it by **absolute path** from both worktrees, which is what guarantees the two sides
+execute identical script text; `docs/agents/` is not on the MTEX path. The shared engine
+name is global to the machine, so the second worktree needs its own:
 
 ```
-# baseline, once, from the develop worktree that already exists
-cd /home/hielscher/mtex/develop && matlab_run "frameFingerprint" > fp-develop.txt
-# after every increment
-cd /home/hielscher/mtex/frameSymmetry && matlab_run "frameFingerprint" > fp-branch.txt
-diff fp-develop.txt fp-branch.txt
+SESSION_NAME=mtexdev /home/hielscher/mtex/develop/docs/agents/matlab-bridge/start_session.sh
+SESSION_NAME=mtexdev matlab_run.py \
+  "run('/home/hielscher/mtex/frameSymmetry/docs/agents/frameFingerprint.m')" > fp-develop.txt
 ```
 
-Any moved digit is a defect until proven otherwise. Where an increment *intends* a change,
-the expected diff goes in the commit message.
+then the same line against `mtexcc` in the branch worktree, and `diff`. Any moved digit is a
+defect until proven otherwise. Where an increment *intends* a change, the expected diff goes
+in the commit message.
 
-Two caveats to build in: exclude anything whose value is a class name or a handle, and keep
-the corpus runnable when a carrier is mid-conversion (wrap each block in try/catch and print
-`name = ERROR`, so a red carrier does not blind you to the rest).
+The baseline against `develop` `8f8eb3524` is byte-identical to the branch, and stayed so
+through both consolidations.
 
 ## Order of work
 
@@ -62,8 +66,8 @@ The facade decided above means red is scoped to the carrier being converted, nev
 
 | # | increment | state |
 | --- | --- | --- |
-| 0 | fingerprint + develop baseline | green |
-| 1 | the two consolidations from `frameSimplification.md` | green |
+| 0 | fingerprint + develop baseline | **done**, `6663d1e9a` |
+| 1 | the two consolidations from `frameSimplification.md` | **done**, `f901995af` `70ca81df4` |
 | 2 | group moves onto the frame, `symmetry` becomes a facade | green |
 | 3 | interning on the full key, immutability, colour rule | green |
 | 4 | `orientation`/`rotation` — `CS`/`SS` return frames | red: `geometry/` |
@@ -76,18 +80,19 @@ The facade decided above means red is scoped to the carrier being converted, nev
 
 ### 1 — the consolidations (behaviour-preserving)
 
-`docs/agents/frameSimplification.md` leaves two items OPEN, both of which shrink what the
-flip has to touch. Do them first, with the fingerprint proving they changed nothing.
+The two items `docs/agents/frameSimplification.md` left open, both of which shrink what the
+flip has to touch. The fingerprint is unchanged across both.
 
-- **1.3** — `fitSym`, `fitFrames`, `symMatches`, `symMismatch` are four spellings of "are
-  these the same?" at different leniency, and have already drifted once. One function with a
-  leniency argument. This is also where the ADR's "one tolerance in one place" lands.
-- **1.4** — frame ownership has two idioms: overridable `getFrame`/`setFrame` (`vector3d`,
-  `Miller`, `S2Fun`, `SO3TangentVector`; `framePrivate` in 24 files) and plain
-  `get.frame`/`set.frame` (`EBSD`, `grain2d`, `grain3d`, `grainBoundary`, `triplePointList`,
-  `PoleFigure`). Unify on the first — it already expresses "derived, refuses assignment".
-  19 classes carry a frame; after this they carry it the same way, so increments 4–7 repeat
-  one pattern instead of two.
+- **1.3** — the four sameness predicates became `framesFit` for the frame half and `symFits`
+  for the group half, in `geometry/geometry_tools/`, with `'strict'`, `'same'` and
+  `'compatible'` as the leniency. The ADR's "one tolerance in one place" is not yet landed:
+  `referenceFrame.tolAligned` and `tolCompatible` are still two, and `eqTol`, `sim` and
+  `eqLazy` still read them separately. That collapses at increment 3, where the register door
+  absorbs them.
+- **1.4** — frame ownership had three idioms and now has one, `getFrame`/`setFrame` over a
+  `Hidden framePrivate`. Ten classes plus `tensor` were converted; `symmetry`, `mapImage`
+  and the `frameLeft`/`frameRight` trio stay as they are because increments 2, 4 and 6 remove
+  or rewrite them. So increments 4–7 repeat one pattern instead of three.
 
 ### 2 — the group moves onto the frame
 

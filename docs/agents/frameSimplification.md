@@ -80,7 +80,7 @@ The membership test generalises cleanly: `~all(any(rot(:).' == sym.rot(:)))`
 reduces to `~any(rot == sym.rot(:))` for a single rotation, so `rotate` and
 `rotate_outer` share one expression.
 
-## 1.3 Four "are these the same?" predicates that want to be one — OPEN
+## 1.3 Four "are these the same?" predicates that want to be one — DONE
 
 All minted on this branch, all the same question at different leniency, in three
 different files:
@@ -92,24 +92,64 @@ different files:
 | `symMatches` | handle eq, or id eq + same frame handle |
 | `symMismatch` | frames fit, group only when both non-trivial |
 
-They have already drifted once: the `SO3Fun × S2Fun` branch of
+They had already drifted once: the `SO3Fun × S2Fun` branch of
 `ensureCompatibleSymmetries` carried an inline copy of the frame test **without**
 the frame-kind guard until it was consolidated on 2026-08-16.
 
+They do not collapse to **one** function, because the frame half is orthogonal to
+the group half — two call sites want the frame test with no group test at all.
+Resolved onto two: `geometry/geometry_tools/framesFit.m` for the frame half, and
+`geometry/geometry_tools/symFits.m` for the group half, whose leniency argument
+takes `'strict'`, `'same'` or `'compatible'`. Each level fixes group identity,
+frame comparison and the reading of an absent frame together, since those three
+axes only ever occur in three combinations.
+
+Behaviour-preserving, with the fingerprint of `docs/agents/frameFingerprint.m`
+unchanged across it. The one convergence: `@Miller` now reaches the frame test
+through `framesFit` and so gains its crystal/specimen kind guard, which inside
+`@Miller` cannot change an answer.
+
+The mineral name is compared at `'same'` and not at `'compatible'`, which is where
+each of the two predicates it replaces stood. Making it uniform would change what
+`@Miller/dot` warns about; that is a decision about phase identity and is recorded
+as open in the function's own help.
+
 The wider zoo is 14 predicates over ~138 call sites, but `eqTol`, `sim` and
-`eqLazy` are pre-existing public API and stay. It is specifically these four that
-should be one function with a leniency argument.
+`eqLazy` are pre-existing public API and stay.
 
-## 1.4 Two idioms for "who owns the frame" — OPEN
+## 1.4 Two idioms for "who owns the frame" — DONE
 
-- **overridable `getFrame`/`setFrame`** — `vector3d`, `Miller`, `S2Fun`,
-  `SO3TangentVector`; `framePrivate` in 24 files
-- **plain `get.frame`/`set.frame`** — `EBSD`, `grain2d`, `grain3d`,
-  `grainBoundary`, `triplePointList`, `PoleFigure`
+Three, in fact:
 
-Same concept, two spellings, and reasoning does not carry from one family to the
-other. The first is strictly better: it already expresses "derived, refuses
-assignment" (`Miller`, `SO3TangentVector`). Unifying is mechanical.
+- **overridable `getFrame`/`setFrame`** over a `Hidden framePrivate` — `vector3d`,
+  `S2Fun`, overridden by `Miller`, `SO3TangentVector`, `S2FunHarmonicSym`,
+  `S2FunMLS`
+- **plain `get.frame`/`set.frame`**, each deriving from a sub-object and cascading
+  on set — `EBSD`, `grain2d`, `grain3d`, `grainBoundary`, `grain3Boundary`,
+  `triplePointList`, `PoleFigure`, `sphericalRegion`, `S2Triangulation`,
+  `gridLayout`
+- **a hybrid** — `tensor`, with the storage of the first and the accessors of the
+  second
+
+The second and third are now the first. `framePrivate` keeps its `Hidden` access:
+nineteen files write it directly to get past the erroring setters, so tightening it
+is what would break them, and the change is to the accessors, not the storage.
+
+Three asymmetries went with it, being the inconsistency itself: `gridLayout` had no
+setter at all, so read-only was implied rather than stated; `S2FunMLS` derived its
+frame but inherited the base setter, so an assignment silently shadowed the
+derivation where `S2FunHarmonicSym` errors; and `grain2d` declared `frame`
+protected where its three siblings declare it public.
+
+`symmetry`, `mapImage` and the `frameLeft`/`frameRight` trio (`orientation`,
+`SO3Fun`, `SO3VectorField`) are out of it: the ADR 0008 increments remove or
+rewrite each of them.
+
+Two things found and deliberately left: `tensor` declares `framePrivate` but has no
+`loadobj` re-intern hook where `vector3d` and `S2FunHarmonic` do, which is a
+load-path defect and is issue #2609; and every frame carrier also carries a
+`how2plot` dependent with a verbatim-duplicated body, which belongs with the
+increment that gives the frame the group.
 
 ---
 
@@ -222,5 +262,5 @@ would still switch RD/TD/ND and the convention together, just never two at once.
 1. **1.2** — a correctness convergence, not a refactor. Done.
 2. **1.1** — removes a live bug family. Done.
 3. **1.3 / 1.4** — structural; they get more expensive the more code lands on the
-   branch. Do before the next increment.
+   branch. Done, as increment 1 of `docs/agents/adr-0008-implementation-plan.md`.
 4. **Part 2** — a design decision, to be discussed.
