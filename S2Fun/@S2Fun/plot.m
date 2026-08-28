@@ -18,10 +18,19 @@ if ~sF.isReal
   sF.isReal=1;
 end
 
+cs = getSym(sF); % nonempty only for a symmetrised function
+
+% a symmetrised function repeats itself outside the fundamental sector of
+% its group, so that sector is the region it is drawn on
+if ~isempty(cs)
+  if sF.antipodal, varargin = [varargin,'antipodal']; end
+  varargin = [{cs.fundamentalSector(varargin{:}),cs},varargin,...
+    {'how2plotFallback',sF.how2plot}];
+end
+
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
-cs = getSym(sF); % nonempty only for a symmetrised function
 if isa(cs,'crystalFrame')
   tooltipFormat = cs.lattice.hklForm;
 else

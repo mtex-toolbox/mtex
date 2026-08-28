@@ -123,6 +123,22 @@ methods
      fr = getClass(varargin,'referenceFrame');
    end
 
+   function s = jointSym(sF1,sF2)
+     % the symmetry a binary operation may keep: the largest group both
+     % operands are invariant under, empty as soon as one of them is not
+     % symmetrised
+
+     s = [];
+     if isnumeric(sF1) && isa(sF2,'S2Fun')
+       s = getSym(sF2);
+     elseif isa(sF1,'S2Fun') && isnumeric(sF2)
+       s = getSym(sF1);
+     elseif isa(sF1,'S2Fun') && isa(sF2,'S2Fun')
+       s1 = getSym(sF1); s2 = getSym(sF2);
+       if ~isempty(s1) && ~isempty(s2), s = disjoint(s1,s2); end
+     end
+   end
+
  end
 
 end
