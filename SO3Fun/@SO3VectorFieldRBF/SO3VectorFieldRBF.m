@@ -162,13 +162,13 @@ methods
     % check whether the symmetries of the inner SO3Fun are suitable to the 
     % symmetries of the vector field w.r.t. the tangent space
     % representations
-    % see SO3VectorField.symMatches for why this is not simply ==
+    % strict: an equal valued fork is a different symmetry, see symFits
     if sign(SO3VF.internTangentSpace)>0
-      E(1) = SO3VectorField.symMatches(SO3VF.SO3F.CS, SO3VF.hiddenCS);
+      E(1) = symFits(SO3VF.SO3F.CS,SO3VF.hiddenCS,'strict');
       E(2) = SO3VF.SO3F.SS.id == 1;
     else
       E(1) = SO3VF.SO3F.CS.id == 1;
-      E(2) = SO3VectorField.symMatches(SO3VF.SO3F.SS, SO3VF.hiddenSS);
+      E(2) = symFits(SO3VF.SO3F.SS,SO3VF.hiddenSS,'strict');
     end
     if ~all(E)
       error(['The symmetries of the underlying SO3Fun do not match to the ' ...

@@ -34,7 +34,7 @@ function ensureCompatibleSymmetries(obj1,varargin)
 
 % check necessary symmetry condition for antipodal
 if check_option(varargin,'antipodal')
-  if ~fitSym(obj1.CS,obj1.SS)
+  if ~symFits(obj1.CS,obj1.SS)
     error('ODF can only be antipodal if both symmetries coincide!')
   end
   return
@@ -55,11 +55,11 @@ end
 % compare symmetries in case of convolution of SO3Fun with S2Fun
 if isa(obj1,'SO3Fun') && isa(obj2,'S2Fun')
   if isa(obj2,'S2FunHarmonicSym')
-    ok = fitSym(obj1.SLeft,obj2.s);
+    ok = symFits(obj1.SLeft,obj2.s);
   else
     % a plain S2Fun carries at most a frame, so the left side has to be group free
     ok = obj1.SLeft.Laue.id == 2;
-    if ok, ok = fitFrames(obj2.frame,obj1.SLeft.frame); end
+    if ok, ok = framesFit(obj2.frame,obj1.SLeft.frame); end
   end
   if ~ok
     error('When convoluting @SO3Fun''s the symmetries have to be compatible.')
@@ -70,8 +70,8 @@ end
 % two spherical functions - what always has to fit is the frame they are expressed in
 if isa(obj1,'S2Fun') && isa(obj2,'S2Fun')
   s1 = getSym(obj1); s2 = getSym(obj2);
-  ok = isempty(s1) || isempty(s2) || fitSym(s1,s2);
-  if ok, ok = fitFrames(obj1.frame,obj2.frame); end
+  ok = isempty(s1) || isempty(s2) || symFits(s1,s2);
+  if ok, ok = framesFit(obj1.frame,obj2.frame); end
   if ~ok
     error('The symmetries are not compatible. (Calculations with @S2Fun''s need suitable symmetries.)')
   end
@@ -80,7 +80,7 @@ end
 
 % compare symmetries in case of convolution of SO3Funs, only the inner pair has to fit
 if check_option(varargin,'conv')
-  if ~fitSym(obj1.SRight,obj2.SLeft)
+  if ~symFits(obj1.SRight,obj2.SLeft)
     error('When convoluting @SO3Fun''s the symmetries have to be compatible.')
   end
   return
@@ -101,7 +101,7 @@ elseif isa(obj1,'SO3Fun') && isa(obj2,'orientation')
 end
 
 
-em = ~fitSym(obj1.CS,obj2.CS) || ~fitSym(obj1.SS,obj2.SS);
+em = ~symFits(obj1.CS,obj2.CS) || ~symFits(obj1.SS,obj2.SS);
 if em
   error(s)
 end
@@ -119,41 +119,5 @@ if isa(obj,'SO3TangentVector')
 else
   cs = obj.hiddenCS; ss = obj.hiddenSS;
 end
-
-end
-
-function ok = fitSym(s1,s2)
-% two sides fit when they carry the same group in the same reference
-% frame. On a crystal side the frame handle alone would already decide -
-% every crystalSymmetry mints its own frame and stripSym keeps it - but on
-% the specimen side every group shares the session frame, so the group is
-% compared always; by Laue id, never by handle (ADR 0003).
-
-if s1.Laue.id ~= s2.Laue.id, ok = false; return; end
-
-% phase identity - two minerals may share a Laue class and a lattice and still differ
-if isa(s1,'crystalSymmetry') && isa(s2,'crystalSymmetry') && ...
-    ~isempty(s1.mineral) && ~isempty(s2.mineral) && ...
-    ~strcmpi(s1.mineral,s2.mineral)
-  ok = false; return
-end
-
-ok = fitFrames(s1.frame,s2.frame);
-
-end
-
-function ok = fitFrames(fr1,fr2)
-% two reference frames fit when they are the same handle or aligned
-%
-% Never across kinds: a symmetry built without lattice parameters has the
-% canonical basis, so the alignment test alone would accept a crystal frame
-% against a specimen one. A frame-free object states nothing and fits
-% anything - that is how legacy data keeps working.
-
-if isempty(fr1) || isempty(fr2), ok = true; return; end
-
-if isa(fr1,'crystalFrame') ~= isa(fr2,'crystalFrame'), ok = false; return; end
-
-ok = fr1 == fr2 || isAligned(fr1,fr2);
 
 end

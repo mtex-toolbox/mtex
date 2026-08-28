@@ -25,8 +25,8 @@ if check_option(varargin,'noSymmetry') || ~isa(m2,'Miller')
   return
 end
 
-% if we should consider symmetry - the frames must fit, see symMismatch
-if symMismatch(m1,m2), warning('Symmetry mismatch'); end
+% if we should consider symmetry - the frames must fit, see symFits
+if ~symFits(m1.CS,m2.CS,'compatible'), warning('Symmetry mismatch'); end
 
 % maybe we should return a full matrix of dot products to all symmetrically
 % equivalent directions
