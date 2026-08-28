@@ -30,7 +30,7 @@ classdef S2FunGrid < S2Fun
   properties
     values % [0,pi] × [0,2*pi]
     gSize  % grid size
-    s = specimenSymmetry % symmetry / reference system
+    s = specimenFrame('1') % symmetry / reference system
     isReal
     antipodal = false
   end

@@ -124,7 +124,7 @@ if check_option(varargin,'gridded') && ~isa(rot,'quadratureSO3Grid')
   % 'bandwidth' option in the constructor). The cap bounds the memory
   % of the FFT over the full Euler angle tensor.
   NG = min(2*N, max(N,128));
-  SO3G = quadratureSO3Grid(NG,'ClenshawCurtis',crystalSymmetry,specimenSymmetry);
+  SO3G = quadratureSO3Grid(NG,'ClenshawCurtis',crystalFrame('1'),specimenFrame('1'));
 
   % accumulate the values at the nearest grid nodes - a non finite node has
   % no nearest node, but its value is zero, so any index will do

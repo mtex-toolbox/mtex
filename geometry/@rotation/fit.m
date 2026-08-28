@@ -93,7 +93,7 @@ angle(r,rec)./degree %#ok<NOPRT>
 f = sum(dot(rec * u,vn.'));
 
 % check for local minimum
-S3G = localOrientationGrid(specimenSymmetry,specimenSymmetry,1*degree,'resolution',0.5*degree);
+S3G = localOrientationGrid(specimenFrame('1'),specimenFrame('1'),1*degree,'resolution',0.5*degree);
 all(f > sum(dot(rec * S3G * u,vn.'),2))
 
 end

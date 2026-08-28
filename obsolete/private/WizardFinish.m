@@ -248,7 +248,7 @@ end
           
           if isempty(cs{i})
             
-            tmpString = 'crystalSymmetry()';
+            tmpString = 'crystalFrame()';
             
           elseif ischar(cs{i})
             
@@ -276,7 +276,7 @@ end
               opt = [opt,{'color',cs{i}.color}];  %#ok<AGROW>
             end
             
-            tmpString = strcat('crystalSymmetry(''', cs{i}.pointGroup,'''',option2str(opt,'quoted'),')');
+            tmpString = strcat('crystalFrame(''', cs{i}.pointGroup,'''',option2str(opt,'quoted'),')');
             
           end
           
@@ -290,7 +290,7 @@ end
     
     function str = getSpecimenSymmetry()
       
-      str = ['specimenSymmetry(''',strrep(data.SS.char,'"',''), ''')'];
+      str = ['specimenFrame(''',strrep(data.SS.char,'"',''), ''')'];
       
     end
     

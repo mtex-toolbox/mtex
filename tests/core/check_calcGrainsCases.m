@@ -19,7 +19,7 @@ function check_calcGrainsCases
 % See also
 % check_grainReconstructionBenchmark
 
-cs = crystalSymmetry('1','mineral','test');
+cs = crystalFrame('1','mineral','test');
 thr = 5*degree;
 
 %% square grid: plain reconstruction + transform/rotate commutation
@@ -130,7 +130,7 @@ end
 %% removeQuadruplePoints: two quadruple points sharing an edge
 % #2590: two neighbouring quadruple points share an edge, and the repeated row kept only the last write
 
-csQP3 = crystalSymmetry('m-3m','mineral','test');
+csQP3 = crystalFrame('m-3m','mineral','test');
 [xQP,yQP] = meshgrid(0:3,0:3);
 keepQP = logical([1 1 1 1; 0 1 1 1; 1 1 1 0; 0 1 1 1]);
 oriQP3 = orientation.byEuler((1:16).'*11*degree,0,0,csQP3);
@@ -180,7 +180,7 @@ checkMinPixel(calcGrains(mtexdata('small','silent'),'minPixel',3), 3, 24, ...
 %% every grain polygon must be a closed ring enclosing a positive area
 % a negative area means the ring was traced inside out, i.e. the boundary graph did not close
 
-csRing = crystalSymmetry('432','mineral','test');
+csRing = crystalFrame('432','mineral','test');
 rng(3);
 ebsdRing = EBSDsquare([],rotation.rand(30,30),2*ones(30,30),[0 1], ...
   {'notIndexed',csRing},'dxy',[0.3 0.3]);

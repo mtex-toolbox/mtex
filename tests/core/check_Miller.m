@@ -14,9 +14,9 @@ function check_Miller
 % See also
 % Miller vector3d/round MillerConvention
 
-cs = crystalSymmetry('6/mmm',[3 3 5]);       % hexagonal, a != c
-csT = crystalSymmetry('-3m',[4.9 4.9 5.4]);  % trigonal, quartz-like
-csC = crystalSymmetry('m-3m');               % cubic
+cs = crystalFrame('6/mmm',[3 3 5]);       % hexagonal, a != c
+csT = crystalFrame('-3m',[4.9 4.9 5.4]);  % trigonal, quartz-like
+csC = crystalFrame('m-3m');               % cubic
 
 checkFourIndexConstraint(cs);
 checkFourIndexConstraint(csT);
@@ -50,7 +50,7 @@ assert(strcmp(char(Miller(1,0,0,cs,'uvw')),'<100>'), ...
   char(Miller(1,0,0,cs,'uvw')))
 
 % the trivial group leaves one plane and one direction
-cs1 = crystalSymmetry('1',cs.axes);
+cs1 = crystalFrame('1',cs.axes);
 assert(strcmp(char(Miller(1,1,1,cs1,'hkl')),'(111)'), ...
   'check_Miller: a plane under the trivial group is not written (111), but %s', ...
   char(Miller(1,1,1,cs1,'hkl')))
@@ -60,7 +60,7 @@ assert(strcmp(char(Miller(1,0,0,cs1,'uvw')),'[100]'), ...
 
 % the bracket follows the sign of the convention, so the four index forms
 % take the same pair
-csH = crystalSymmetry('6/mmm',[3 3 5]);
+csH = crystalFrame('6/mmm',[3 3 5]);
 c = char(Miller(1,0,-1,0,csH,'hkil'),'noUTF8');
 assert(c(1) == '{' && c(end) == '}', ...
   'check_Miller: a four index plane family is not written in braces, but %s',c)
@@ -278,7 +278,7 @@ function checkCrystalDirection
 % isCrystalDirection asks the object, not its class - which is what lets it
 % survive @Miller becoming an ordinary framed @vector3d
 
-cs = crystalSymmetry('m-3m',[4.05 4.05 4.05],'mineral','Al');
+cs = crystalFrame('m-3m',[4.05 4.05 4.05],'mineral','Al');
 
 assert(isCrystalDirection(Miller(1,0,0,cs)), ...
   'check_Miller: a Miller is a crystal direction')

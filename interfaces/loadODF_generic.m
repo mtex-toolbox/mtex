@@ -94,7 +94,7 @@ else
 end
 
 if isempty(cs)
-  ori = orientation(rot,crystalSymmetry,ss);
+  ori = orientation(rot,crystalFrame('1'),ss);
   odf = unimodalODF(ori,'weights',weights);
   return
 else

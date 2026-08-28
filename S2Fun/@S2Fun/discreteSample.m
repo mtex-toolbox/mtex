@@ -39,7 +39,7 @@ v = rotation.rand(n,'maxAngle',res*1.5) .* v(:);
 if hasSymmetry(S2F) && isa(S2F.frame,'crystalFrame')
   v = Miller(v,S2F.frame);
 elseif isa(S2F.frame,'crystalFrame')
-  v = Miller(v, crystalSymmetry(S2F.frame));
+  v = Miller(v, crystalFrame(S2F.frame));
 else
   v.frame = S2F.frame;
 end

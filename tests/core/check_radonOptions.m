@@ -15,7 +15,7 @@ function check_radonOptions
 
 rng(0)
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 h = Miller(1,0,0,cs);
 r = vector3d.rand(7);
 
@@ -101,7 +101,7 @@ function checkCompositionAntipodal(cs,h)
 % what @SO3FunCBF was until 2026-08-06.
 
 % a Laue group makes every pole figure even
-csLaue = crystalSymmetry('m-3m');
+csLaue = crystalFrame('m-3m');
 assert(csLaue.isLaue,'check_radonOptions: m-3m is expected to be a Laue group')
 
 odf = 0.5*unimodalODF(orientation.rand(csLaue)) + 0.5*fibreODF(fibre.rand(csLaue));

@@ -86,7 +86,7 @@ end
 
 function crystalShapeCam
 % a placed camera, where MATLAB reports TightInset as [0 0 0 0]
-cs = crystalSymmetry('6/mmm',[3.2 3.2 5.2],'mineral','Mg');
+cs = crystalFrame('6/mmm',[3.2 3.2 5.2],'mineral','Mg');
 plot(crystalShape.hex(cs));
 end
 
@@ -116,7 +116,7 @@ rng(0);
 [x,y] = ndgrid((0:23)*0.5,(0:23)*0.5);
 bc = reshape(1:numel(x),size(x));
 ebsd = EBSD(vector3d(x(:),y(:),0*x(:)), rotation.rand(numel(x),1), ...
-  ones(numel(x),1), {crystalSymmetry('m-3m','mineral','testPhase')}, ...
+  ones(numel(x),1), {crystalFrame('m-3m','mineral','testPhase')}, ...
   struct('bc',bc(:)));
 
 end
@@ -127,7 +127,7 @@ function odf = synthODF
 % by their numbers
 
 rng(0);
-odf = SO3FunRBF(orientation.rand(5,crystalSymmetry('m-3m')), ...
+odf = SO3FunRBF(orientation.rand(5,crystalFrame('m-3m')), ...
   SO3DeLaValleePoussinKernel('halfwidth',15*degree));
 
 end

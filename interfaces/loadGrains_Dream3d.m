@@ -71,7 +71,7 @@ crysm = h5read_multi(fname,crysmPath);
 csList = repmat(notIndexed,1,length(crysm));
 for k = 1:length(crysm)
   if crysm(k) >= 0 && crysm(k) < length(dream3dCS)
-    csList(k) = crystalSymmetry(dream3dCS{crysm(k)+1},'mineral','unknown');
+    csList(k) = crystalFrame(dream3dCS{crysm(k)+1},'mineral','unknown');
   end
 end
 

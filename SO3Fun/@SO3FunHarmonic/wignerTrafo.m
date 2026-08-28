@@ -78,7 +78,7 @@ end
 function test
 
 N = 4;
-cs = crystalSymmetry('1');
+cs = crystalFrame('1');
 SO3F = SO3FunHarmonic(rand(deg2dim(N+1),2)*[2;2i]-1-1i,cs);
 SO3F.CS = cs;
 SO3F = SO3F.symmetrise;

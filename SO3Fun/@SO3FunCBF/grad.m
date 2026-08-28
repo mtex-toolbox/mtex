@@ -75,7 +75,7 @@ end
 
 function test %#ok<DEFNU>
 
-cs = crystalSymmetry('1');
+cs = crystalFrame('1');
 odf = fibreODF(Miller(0,0,1,cs),vector3d.Z);
 %omega = linspace(-20,20)*degree;
 omega = 15 *degree;
@@ -102,7 +102,7 @@ end
 
 function test2 %#ok<DEFNU>
 
-  cs = crystalSymmetry('321');
+  cs = crystalFrame('321');
   odf = fibreODF(Miller(1,2,3,cs),vector3d(-1,3,2));
   
   ref = orientation.rand(1000,cs)  %#ok<NOPRT>

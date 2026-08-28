@@ -45,8 +45,8 @@ end
 
 function check_unimodal(c,s,p)
 
-cs = crystalSymmetry(c);
-ss = specimenSymmetry(s);
+cs = crystalFrame(c);
+ss = specimenFrame(s);
 psi = SO3DeLaValleePoussinKernel(p);
 
 qr = rotation.byEuler(354.263*degree, 131.733*degree, 38.2379*degree,'ZXZ');
@@ -62,8 +62,8 @@ end
 
 function check_multimodal(c,bandwidth)
 
-cs = crystalSymmetry(c);
-ss = specimenSymmetry('-1');
+cs = crystalFrame(c);
+ss = specimenFrame('-1');
 psi = SO3DirichletKernel(bandwidth);
 
 n = 100;

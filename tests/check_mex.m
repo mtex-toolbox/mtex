@@ -530,7 +530,7 @@ end
 
 function out = check_SO3Grid_dist_region
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 S3G = equispacedSO3Grid(cs,'resolution',2*degree);
 
 ori = orientation.rand(cs);
@@ -544,7 +544,7 @@ end
 
 function out = check_SO3Grid_find_region
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 S3G = equispacedSO3Grid(cs,'resolution',2*degree);
 
 ori = orientation.rand(cs);
@@ -559,7 +559,7 @@ end
 
 function out = check_SO3Grid_find
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 S3G = equispacedSO3Grid(cs);
 
 ori = orientation.byEuler(41*degree,31*degree,40*degree,cs);
@@ -577,8 +577,8 @@ out = 1;
 end
 
 function xxxx
-cs = crystalSymmetry('trigonal');
-ss = specimenSymmetry('1');
+cs = crystalFrame('trigonal');
+ss = specimenFrame('1');
 
 x = equispacedSO3Grid(cs,ss,'points',100000);
 y = equispacedSO3Grid(cs,ss,'points',100000);
@@ -599,7 +599,7 @@ q = quaternion.id;
 
 sx = quaternion(subGrid(x,find(x,q,10*degree)));
 
-dist(cs,specimenSymmetry,q,sx) / degree
+dist(cs,specimenFrame('1'),q,sx) / degree
 
 
 plot(inv(sx)*xvector)

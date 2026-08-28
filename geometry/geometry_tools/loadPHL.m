@@ -40,7 +40,7 @@ for i = 1:phaseList.getLength
   abc = str2num(phaseEntry.getElementsByTagName('Dim').item(0).getFirstChild.getNodeValue);
   angles = str2num(phaseEntry.getElementsByTagName('Angles').item(0).getFirstChild.getNodeValue);  
   
-  cs{end+1} = crystalSymmetry('spaceId',IT,abc,angles,'density',density,'mineral',mineral);  
+  cs{end+1} = crystalFrame('spaceId',IT,abc,angles,'density',density,'mineral',mineral);
   
 end
 

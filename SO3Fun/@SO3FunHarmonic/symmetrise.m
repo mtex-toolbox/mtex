@@ -115,8 +115,8 @@ N = 12;
 for k=1:45
   
   rng(0)
-  CS = crystalSymmetry(S{k});
-  SS = specimenSymmetry(S{k});
+  CS = crystalFrame(S{k});
+  SS = specimenFrame(S{k});
   fhat = rand(deg2dim(N+1),1)+rand(deg2dim(N+1),1)*1i-0.5-0.5i;
   F = SO3FunHarmonic(fhat,CS,CS); F.antipodal = 1;
   G = SO3FunHarmonic(fhat,SS,SS); G.antipodal = 1;

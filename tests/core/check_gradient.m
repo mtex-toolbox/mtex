@@ -35,7 +35,7 @@ end
 function checkLinearField
 % o(x) = exp(skew(kappa*x)) has a constant, known specimen gradient
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 k1 = 0.002; k2 = 0.0035;          % 1/um, small enough to stay linear
 
 geom = {'square axis aligned', 'square rotated 30', 'square rotated 45', ...
@@ -92,7 +92,7 @@ function checkSymmetricEquivalents
 % is what made the GND density of #194 depend on the file rather than on
 % the material.
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 k1 = 0.002; k2 = 0.0035;
 
 pos = makePositions('square axis aligned');
@@ -164,7 +164,7 @@ end
 function checkEdgeAndHoles
 % a hole yields NaN and does NOT trigger the backward fallback
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 pos = makePositions('square axis aligned');
 ori = orientation.byAxisAngle(zvector,0.002*pos.x,cs);
 ebsd = EBSD(pos,ori,ones(length(pos),1),{cs},struct);
@@ -209,7 +209,7 @@ function checkLeastSquaresOnLinear
 % so this pins that all three implement the same derivative - it cannot,
 % by construction, tell the stencils apart. checkStencilChoice does that.
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 
 for geom = {'square rotated 30','hex'}
 
@@ -266,7 +266,7 @@ function checkStencilChoice
 % using (1,-1),(-1,1) but not (1,1),(-1,-1) rescues the pixel in one case
 % and not in the mirrored one.
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 pos = makePositions('square axis aligned');
 ori = orientation.byAxisAngle(zvector,0.002*pos.x + 0.001*pos.y,cs);
 
@@ -337,7 +337,7 @@ function checkOffPlaneMap
 % tensor carries a NaN column, which rotate() then smears over every entry -
 % NaN*0 is NaN - so comparing rotated tensors is vacuously true.
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 pos = makePositions('square axis aligned');
 ori = orientation.byAxisAngle(zvector,0.002*pos.x + 0.0035*pos.y,cs);
 ebsd = EBSD(pos,ori,ones(length(pos),1),{cs},struct);

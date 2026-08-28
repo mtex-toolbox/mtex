@@ -118,7 +118,7 @@ v = v.subSet(sub2ind(size(v),(1:size(v,1)).',col)); %#ok<NASGU>
 % plot(v_proj), hold on, plot(sR), hold off
 % all(sR.checkInside(v_proj))
 %
-cs = crystalSymmetry('321');
+cs = crystalFrame('321');
 h = plotS2Grid(cs.fundamentalSector);
 plot(project2FundamentalRegion(h,cs))
 

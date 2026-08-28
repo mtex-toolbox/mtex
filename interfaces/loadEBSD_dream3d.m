@@ -10,7 +10,7 @@ end
 [opts,data]     = localGetFields(api,opts);
 
 uphases = unique(data.Phases);
-CS = get_option(varargin,'CS',repmat({crystalSymmetry('cubic')},numel(uphases),1));
+CS = get_option(varargin,'CS',repmat({crystalFrame('cubic')},numel(uphases),1));
 
 ebsd = EBSD(data.Rotations,data.Phases,CS,opts,'unitCell', unitCell);
 

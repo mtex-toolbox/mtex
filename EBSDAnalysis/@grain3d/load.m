@@ -48,7 +48,7 @@ function grains = load(filepath,varargin)
 
       phaseList = 2*ones(size(I_GF,1),1);
 
-      CSList = get_option(varargin,'CS',crystalSymmetry(crysym));
+      CSList = get_option(varargin,'CS',crystalFrame(crysym));
       
       if CSList(1).isIndexed, CSList = [notIndexed,CSList]; end
       

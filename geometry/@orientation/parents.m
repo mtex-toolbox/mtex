@@ -46,6 +46,6 @@ mori = CS_child * mori;
 
 % ignore all variants symmetrically equivalent 
 % with respect to the parent symmetry
-mori.SS = crystalSymmetry('1');
+mori.SS = crystalFrame('1');
 mori = unique(mori);
 mori.SS = CS_child;

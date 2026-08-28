@@ -64,7 +64,7 @@ function v = mean2(v1,v2)
 % compute the mean of two orientations
 
 dv = inv(v1) .* v2;
-dv.SS = specimenSymmetry;
+dv.SS = specimenFrame('1');
 
 [dv,omega] = dv.project2FundamentalRegion;
 

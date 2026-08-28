@@ -11,7 +11,7 @@ function check_logColorScale
 % optionplot and setColorRange, which is why the long one was written in the
 % first place.
 
-odf = SO3FunRBF(orientation.rand(5,crystalSymmetry('m-3m')), ...
+odf = SO3FunRBF(orientation.rand(5,crystalFrame('m-3m')), ...
   SO3DeLaValleePoussinKernel('halfwidth',15*degree));
 
 old = get(0,'DefaultFigureVisible');
@@ -60,7 +60,7 @@ end
 function checkSetColorRange
 % setColorRange documents 'log' and now takes the long spelling as well
 
-odf = SO3FunRBF(orientation.rand(3,crystalSymmetry('m-3m')), ...
+odf = SO3FunRBF(orientation.rand(3,crystalFrame('m-3m')), ...
   SO3DeLaValleePoussinKernel('halfwidth',20*degree));
 
 for flag = {'log','logarithmic'}

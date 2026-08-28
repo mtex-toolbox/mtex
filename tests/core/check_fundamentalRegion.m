@@ -33,7 +33,7 @@ tol = 1e-10;
 
 % -- same symmetry, all 11 classes ----------------------------------------
 for k = 1:numel(laue)
-  cs = crystalSymmetry(laue{k});
+  cs = crystalFrame(laue{k});
   checkPair(cs,cs,N,tol,laue{k});
 end
 
@@ -42,8 +42,8 @@ end
 cross = {'m-3m','-3m'; '6/mmm','2/m'; '4/mmm','-1'; 'mmm','m-3'};
 
 for k = 1:size(cross,1)
-  cs1 = crystalSymmetry(cross{k,1});
-  cs2 = crystalSymmetry(cross{k,2});
+  cs1 = crystalFrame(cross{k,1});
+  cs2 = crystalFrame(cross{k,2});
   checkPair(cs1,cs2,N,tol,[cross{k,1} ' x ' cross{k,2}]);
 end
 
@@ -61,7 +61,7 @@ function checkSectorAtFixedAngle
 % Restricting to an angle excludes a small circle around every rotational
 % axis of the group, so the sector gains normals over the plain one.
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 
 sR = cs.fundamentalSector('angle',60*degree);
 assert(length(sR.N) > length(cs.fundamentalSector.N), ...
@@ -73,7 +73,7 @@ assert(all(isfinite(sR.alpha)), ...
   'check_fundamentalRegion: the sector has a non-finite small circle radius')
 
 % and the whole thing is reachable from a plotting grid
-assert(~isempty(plotSO3Grid(cs,specimenSymmetry,'resolution',20*degree,'sections',3)), ...
+assert(~isempty(plotSO3Grid(cs,specimenFrame('1'),'resolution',20*degree,'sections',3)), ...
   'check_fundamentalRegion: plotSO3Grid produced no orientations')
 
 end
@@ -97,7 +97,7 @@ opt = { {}, {'antipodal'}, {'pointGroup'}, {'axisAngle','Sections',6} };
 for i = 1:numel(pg)
   for k = 1:numel(opt)
 
-    cs = crystalSymmetry(pg{i},'mineral','A');
+    cs = crystalFrame(pg{i},'mineral','A');
 
     clear fundamentalRegion % cold
     [oR1,dcs1,n1] = fundamentalRegion(cs,cs,opt{k}{:});
@@ -117,19 +117,19 @@ for i = 1:numel(pg)
       'check_fundamentalRegion: the memo changed the region for %s, one symmetry',lbl);
 
     clear fundamentalRegion
-    b = fpRegion(fundamentalRegion(cs,specimenSymmetry,opt{k}{:}));
-    assert(isequal(b,fpRegion(fundamentalRegion(cs,specimenSymmetry,opt{k}{:}))), ...
+    b = fpRegion(fundamentalRegion(cs,specimenFrame('1'),opt{k}{:}));
+    assert(isequal(b,fpRegion(fundamentalRegion(cs,specimenFrame('1'),opt{k}{:}))), ...
       'check_fundamentalRegion: the memo changed the region for %s, specimen symmetry',lbl);
   end
 end
 
 % symmetries that differ must not share an entry - each region has to equal
 % the one computed for it alone
-variants = {crystalSymmetry('321',[1 1 2],'mineral','Quartz'), ...
-  crystalSymmetry('321',[1 1 2],'X||a','mineral','Quartz'), ...
-  crystalSymmetry('321',[1 1 2],'mineral','Other'), ...
-  crystalSymmetry('321',[1 1 3],'mineral','Quartz'), ...
-  crystalSymmetry('622',[1 1 2],'mineral','Quartz')};
+variants = {crystalFrame('321',[1 1 2],'mineral','Quartz'), ...
+  crystalFrame('321',[1 1 2],'X||a','mineral','Quartz'), ...
+  crystalFrame('321',[1 1 2],'mineral','Other'), ...
+  crystalFrame('321',[1 1 3],'mineral','Quartz'), ...
+  crystalFrame('622',[1 1 2],'mineral','Quartz')};
 
 clear fundamentalRegion
 shared = cellfun(@(cs) {fpRegion(fundamentalRegion(cs,cs))},variants);
@@ -168,8 +168,8 @@ function checkPair(cs1,cs2,N,tol,lbl)
 q1 = quaternion.rand(N);
 q2 = quaternion.rand(N);
 
-o1 = orientation(q1,cs1,specimenSymmetry);
-o2 = orientation(q2,cs2,specimenSymmetry);
+o1 = orientation(q1,cs1,specimenFrame('1'));
+o2 = orientation(q2,cs2,specimenFrame('1'));
 
 % @quaternion/project2FundamentalRegion returns one output, take the angle from it
 q = project2FundamentalRegion(inv(q1).*q2,cs2,cs1);

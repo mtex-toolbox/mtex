@@ -57,8 +57,8 @@ F2.eval(r)
 clear 
 rng('default')
 
-F1 = SO3FunHarmonic(rand(1e3,1),specimenSymmetry('1'),specimenSymmetry('222'))
-F2 = SO3FunHarmonic(rand(1e2,1),crystalSymmetry('4'),specimenSymmetry('1'))
+F1 = SO3FunHarmonic(rand(1e3,1),specimenFrame('1'),specimenFrame('222'))
+F2 = SO3FunHarmonic(rand(1e2,1),crystalFrame('4'),specimenFrame('1'))
 r = rotation.rand
 
 % Left sided convolution
@@ -67,7 +67,7 @@ C.eval(r)
 mean(SO3FunHandle(@(rot) F1.eval(rot).*F2.eval(inv(rot).*r)))
 
 % calcMDF
-F1 = SO3FunHarmonic(rand(1e3,1),crystalSymmetry('3'),specimenSymmetry('1'))
+F1 = SO3FunHarmonic(rand(1e3,1),crystalFrame('3'),specimenFrame('1'))
 F1.fhat = conj(F1.fhat);
 C = conv(inv(conj(F1)),F2)
 C.eval(r)
@@ -75,8 +75,8 @@ cF1 = conj(F1);
 mean(SO3FunHandle(@(rot) cF1.eval(rot).*F2.eval(rot.*r)))
 
 % right sided convolution
-F1 = SO3FunHarmonic(rand(1e3,1),crystalSymmetry('4'),specimenSymmetry('622'))
-F2 = SO3FunHarmonic(rand(1e2,1),crystalSymmetry('622'),specimenSymmetry('3'))
+F1 = SO3FunHarmonic(rand(1e3,1),crystalFrame('4'),specimenFrame('622'))
+F2 = SO3FunHarmonic(rand(1e2,1),crystalFrame('622'),specimenFrame('3'))
 C = conv(F1,F2,'Right');
 C.eval(r)
 mean(SO3FunHandle(@(rot) F1.eval(rot).*F2.eval(r.*inv(rot))))
@@ -87,9 +87,9 @@ mean(SO3FunHandle(@(rot) F1.eval(rot).*F2.eval(r.*inv(rot))))
 rng('default')
 p = vector3d.rand;
 
-F1 = SO3FunHarmonic(rand(1e5,1)+rand(1e5,1)*1i,crystalSymmetry('432'),specimenSymmetry('222'));
+F1 = SO3FunHarmonic(rand(1e5,1)+rand(1e5,1)*1i,crystalFrame('432'),specimenFrame('222'));
 %F1.isReal=1
-F2 = S2FunHarmonicSym(rand(40^2,1)+1i*rand(40^2,1),specimenSymmetry('222'));
+F2 = S2FunHarmonicSym(rand(40^2,1)+1i*rand(40^2,1),specimenFrame('222'));
 
 C = conv(F1,F2);
 C.eval(p)
@@ -196,11 +196,11 @@ plot(C2)
 %% convolution SO3FunRBF with SO3FunRBF
 % problems with symmetries
 rng(0)
-ori = orientation.rand(1,crystalSymmetry('2'),specimenSymmetry('2'));
+ori = orientation.rand(1,crystalFrame('2'),specimenFrame('2'));
 F1 = SO3FunRBF(ori,SO3DeLaValleePoussinKernel('halfwidth',10*degree));
 %F1 = SO3FunRBF.example;
 %F1.CS = crystalSymmetry('2');
-ori = orientation.rand(1,crystalSymmetry('432'),specimenSymmetry('2'));
+ori = orientation.rand(1,crystalFrame('432'),specimenFrame('2'));
 F2 = SO3FunRBF(ori,SO3DeLaValleePoussinKernel('halfwidth',5*degree));
 
 C3 = conv(F1,F2)

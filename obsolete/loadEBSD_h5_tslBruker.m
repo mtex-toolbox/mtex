@@ -195,7 +195,7 @@ for iphase = 1:numel(group.Groups)
   end
 
   try
-    CS{iphase} = crystalSymmetry(spaceGroup,double(lattice(1:3)),double(lattice(4:6))*degree,'mineral',mineral);
+    CS{iphase} = crystalFrame(spaceGroup,double(lattice(1:3)),double(lattice(4:6))*degree,'mineral',mineral);
   catch
     CS{iphase} = 'notIndexed';
   end

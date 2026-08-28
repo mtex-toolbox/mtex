@@ -53,8 +53,8 @@ end
 
 %% Approximate SO3FunRBF - mixed +/-I - should use interpolation method
 
-cs = crystalSymmetry('m-3m');
-ss = specimenSymmetry();
+cs = crystalFrame('m-3m');
+ss = specimenFrame();
 
 o1 = orientation.byAxisAngle(vector3d(1,1,1),60*degree,cs,ss);
 o2 = orientation.byAxisAngle(vector3d(0,0,1),36.8699*degree,cs,ss);

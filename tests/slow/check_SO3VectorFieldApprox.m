@@ -23,7 +23,7 @@ function check_SO3VectorFieldApprox
 rng(0)
 
 f = SO3Fun.dubna;
-f.SS = specimenSymmetry('222');
+f.SS = specimenFrame('222');
 
 fix.f  = f;
 fix.cs = f.CS;
@@ -89,7 +89,7 @@ d = norm(norm(h-g1)) / norm(norm(g1));
 assert(d < 1e-2, ...
   'check_SO3VectorFieldApprox: the RBF interpolation round trip is off by %.3g',d)
 
-r1 = orientation.rand(crystalSymmetry,fix.ss);
+r1 = orientation.rand(crystalFrame('1'),fix.ss);
 r2 = orientation.rand(fix.cs);
 
 e = r1.symmetrise.inv .* g1.eval(r1.symmetrise);

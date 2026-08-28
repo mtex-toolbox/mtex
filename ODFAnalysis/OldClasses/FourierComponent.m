@@ -8,8 +8,8 @@ methods (Static = true, Hidden=true)
     CS = s.CS;
     SS = s.SS;
     if isempty(fhat), fhat = 0; end
-    if isempty(CS), CS = crystalSymmetry; end
-    if isempty(SS), SS = specimenSymmetry; end
+    if isempty(CS), CS = crystalFrame('1'); end
+    if isempty(SS), SS = specimenFrame('1'); end
     odf = SO3FunHarmonic(fhat);
     % We use L2-normalized Wigner-D functions since MTEX Version 5.9.
     odf = L2normalizeFourierCoefficients(odf);

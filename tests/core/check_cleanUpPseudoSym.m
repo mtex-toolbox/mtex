@@ -137,8 +137,8 @@ function [ebsd,grains,psSym,nPatch,cs] = pseudoSymMap(solution)
 % to be corrected - this is the case the command used to get wrong. Solution
 % 2 puts it at ori * inv(mori), which it always got right.
 
-cs = crystalSymmetry('mmm',[4.8 10.2 6.0],'mineral','pseudoHex');
-csOther = crystalSymmetry('m-3m','mineral','other');
+cs = crystalFrame('mmm',[4.8 10.2 6.0],'mineral','pseudoHex');
+csOther = crystalFrame('m-3m','mineral','other');
 
 n = 24;
 o0 = orientation.byEuler(20*degree,30*degree,10*degree,cs);

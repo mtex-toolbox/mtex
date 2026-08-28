@@ -79,7 +79,7 @@ for i = 1:length(phasePos)
   nFamilies(i) = nFam;
 
   % setup crystal symmetry - the symmetry is stored as a TSL code
-  cs(phase+1) = crystalSymmetry(TSL2pointGroup(laue,pointGroup),lattice(1:3)',...
+  cs(phase+1) = crystalFrame(TSL2pointGroup(laue,pointGroup),lattice(1:3)',...
     lattice(4:6)'*degree,'mineral',mineral,'EDAX');
 
 end

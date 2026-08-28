@@ -2,7 +2,7 @@ function cS = tourmaline(varargin)
 
 if nargin == 0 || ~isa(varargin{1},'referenceFrame')
   
-  cs = crystalSymmetry('3m',[1 1 0.452],'mineral','tourmaline');
+  cs = crystalFrame('3m',[1 1 0.452],'mineral','tourmaline');
 else
   cs = varargin{1};
 end

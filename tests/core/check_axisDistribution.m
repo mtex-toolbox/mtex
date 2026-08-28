@@ -16,7 +16,7 @@ function check_axisDistribution
 % See also
 % SO3Fun/calcAxisDistribution symmetry/calcAxisDistribution
 
-cs = crystalSymmetry('mmm');
+cs = crystalFrame('mmm');
 res = {'resolution',1*degree};
 w = 60*degree;
 

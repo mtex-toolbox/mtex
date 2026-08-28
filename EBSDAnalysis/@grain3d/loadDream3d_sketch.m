@@ -18,7 +18,7 @@ abcd = h5read(fname, QuatsPath)';
 q = quaternion(abcd(activeGrains,1),abcd(activeGrains,2),abcd(activeGrains,3),abcd(activeGrains,4));
 
 crysm = h5read(fname,crysmPath);      % not helpful
-csList = {'notIndexed',crystalSymmetry("432")};
+csList = {'notIndexed',crystalFrame("432")};
 
 phaseList = h5read(fname,phasePath)' + 1;
 phaseList = phaseList(activeGrains,:);

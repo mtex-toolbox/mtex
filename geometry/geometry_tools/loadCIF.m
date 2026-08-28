@@ -88,7 +88,7 @@ end
 
 assert(~isempty(group));
 
-cs = crystalSymmetry(group,axis,angles*degree,'mineral',mineral);
+cs = crystalFrame(group,axis,angles*degree,'mineral',mineral);
 
 end
 

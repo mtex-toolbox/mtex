@@ -233,7 +233,7 @@ classdef S2FunMLS < S2Fun
         {'string','function_handle','char'});
       S2F.distance = get_option(varargin, 'distance', 'euclidean', 'char');
       S2F.s = get_option(varargin, {'symmetry', 'cs', 's', 'ss'}, ...
-        specimenFrame.default, 'crystalSymmetry');
+        specimenFrame.default, 'crystalFrame');
 
       % basis options
       S2F.monomials = get_option(varargin, 'monomials', true, 'logical');

@@ -275,7 +275,7 @@ function test %#ok<DEFNU>
 % setDouble() should exactly invert double(), i.e. e.M = double(e) should
 % reproduce e itself
 
-cs = crystalSymmetry('6/mmm');
+cs = crystalFrame('6/mmm');
 ori = orientation.rand(20,cs);
 
 e = embedding(ori);

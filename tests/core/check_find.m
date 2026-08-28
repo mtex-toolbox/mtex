@@ -26,12 +26,12 @@ N = 120;  M = 10;
 
 % cs, ss, label - the last column names the fold branch that is exercised
 cases = { ...
-  crystalSymmetry('1')  , specimenSymmetry('1')  , 'triv × triv', 'none'  ; ...
-  crystalSymmetry('321'), specimenSymmetry('1')  , '321 × triv' , 'none'  ; ...
-  crystalSymmetry('1')  , specimenSymmetry('mmm'), 'triv × mmm' , 'none'  ; ...
-  crystalSymmetry('432'), specimenSymmetry('mmm'), '432 × mmm'  , 'foldSS'; ...
-  crystalSymmetry('321'), specimenSymmetry('mmm'), '321 × mmm'  , 'foldSS'; ...
-  crystalSymmetry('2')  , specimenSymmetry('mmm'), '2 × mmm'    , 'foldCS'};
+  crystalFrame('1')  , specimenFrame('1')  , 'triv × triv', 'none'  ; ...
+  crystalFrame('321'), specimenFrame('1')  , '321 × triv' , 'none'  ; ...
+  crystalFrame('1')  , specimenFrame('mmm'), 'triv × mmm' , 'none'  ; ...
+  crystalFrame('432'), specimenFrame('mmm'), '432 × mmm'  , 'foldSS'; ...
+  crystalFrame('321'), specimenFrame('mmm'), '321 × mmm'  , 'foldSS'; ...
+  crystalFrame('2')  , specimenFrame('mmm'), '2 × mmm'    , 'foldCS'};
 
 for i = 1:size(cases,1)
 
@@ -59,10 +59,10 @@ end
 % --- equal but independently constructed symmetry handles ----------------
 % the register unifies two equal constructions, so the distinct handle this
 % check needs is asked for explicitly - which is what 'noIntern' is for
-cs = crystalSymmetry('321');  ss = specimenSymmetry('mmm');
+cs = crystalFrame('321');  ss = specimenFrame('mmm');
 v = orientation.rand(N,cs,ss);
 w = orientation(orientation.rand(M,cs,ss), ...
-  crystalSymmetry('321','noIntern'),specimenSymmetry('mmm','noIntern'));
+  crystalFrame('321','noIntern'),specimenFrame('mmm','noIntern'));
 
 assert(v.CS ~= w.CS,'this check needs two DISTINCT crystal symmetry handles')
 assert(eqTol(v.CS,w.CS),'the two crystal symmetry handles must be eqTol equal')
@@ -71,7 +71,7 @@ assert(eqTol(v.CS,w.CS),'the two crystal symmetry handles must be eqTol equal')
 checkKResult(ind,d,angle(w,v.'),3,'distinct handles',tol)
 
 % --- a genuine mismatch must still be rejected ---------------------------
-u = orientation.rand(M,crystalSymmetry('432'),ss);
+u = orientation.rand(M,crystalFrame('432'),ss);
 failed = false;
 try %#ok<TRYNC>
   find(v,u,3);
@@ -80,7 +80,7 @@ end
 assert(~failed,'find must reject orientations with different crystal symmetries')
 
 % --- misorientations, i.e. SS is a crystalSymmetry -----------------------
-cs = crystalSymmetry('321');
+cs = crystalFrame('321');
 v = orientation.rand(N,cs,cs);
 w = orientation.rand(M,cs,cs);
 dRef = angle(w,v.');
@@ -104,7 +104,7 @@ checkK(v,w,dRef,3,'antipodal 321',tol);
 checkEps(v,w,dRef,15*degree,'antipodal 321',tol);
 
 % --- exact hits: d == 0 must survive the sparse round trip ---------------
-cs = crystalSymmetry('321');  ss = specimenSymmetry('mmm');
+cs = crystalFrame('321');  ss = specimenFrame('mmm');
 v = orientation.rand(N,cs,ss);
 w = v.subSet(1:5);
 [ind,d] = find(v,w,5*degree);

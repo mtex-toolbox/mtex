@@ -44,7 +44,7 @@ else
   minAngle = pi;
 end
 minAngle = min(minAngle(minAngle>0.01));
-if (cs ~= crystalSymmetry && ss ~= specimenFrame.default) || ...
+if (cs ~= crystalFrame('1') && ss ~= specimenFrame.default) || ...
     radius>minAngle || SO3F.antipodal
   v = volume@SO3Fun(SO3F,center,radius);
   return

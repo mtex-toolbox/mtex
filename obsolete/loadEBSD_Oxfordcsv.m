@@ -19,7 +19,7 @@ try
     hl = hl + 1;
     phase = textscan(s,'%s%d','WhiteSpace',',');
     if phase{2}
-      cs{hl} = crystalSymmetry('cubic','mineral',phase{1}{1});     %#ok<AGROW>
+      cs{hl} = crystalFrame('cubic','mineral',phase{1}{1});     %#ok<AGROW>
     else
       cs{hl} = phase{1}{1};     %#ok<AGROW>
     end

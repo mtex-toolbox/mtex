@@ -20,7 +20,7 @@ function [grains] = load(filepath)
     error 'Wrong dimension. Try grain2d.load instead.'
   end
 
-  CSList = {'notIndexed',crystalSymmetry(crysym)};
+  CSList = {'notIndexed',crystalFrame(crysym)};
   phaseList = 2*ones(size(poly));
 
   grains = grain2d(V, poly, ori, CSList, phaseList, 'id', cell_ids);

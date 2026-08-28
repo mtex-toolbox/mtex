@@ -135,7 +135,7 @@ else % detect local or global minima
   elseif ~isCrystalDirection(pos)
     if isa(sF.frame,'crystalFrame')
       % a plain function in a crystal frame, e.g. the GBND - return Miller
-      pos = Miller(pos, crystalSymmetry(sF.frame));
+      pos = Miller(pos, crystalFrame(sF.frame));
     else
       pos.frame = sF.frame;
     end

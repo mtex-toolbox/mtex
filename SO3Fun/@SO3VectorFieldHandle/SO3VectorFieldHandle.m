@@ -90,8 +90,8 @@ methods
     % set symmetries - a bare function handle has nothing to inherit from,
     % so an absent symmetry genuinely means the session default
     [frameA,frameB] = extractSym(varargin,'empty');
-    if isempty(frameA), frameA = specimenSymmetry; end
-    if isempty(frameB), frameB = specimenSymmetry; end
+    if isempty(frameA), frameA = specimenFrame('1'); end
+    if isempty(frameB), frameB = specimenFrame('1'); end
     SO3VF.hiddenCS = frameA;
     SO3VF.hiddenSS = frameB;
     

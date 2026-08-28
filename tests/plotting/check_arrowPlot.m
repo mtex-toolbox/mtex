@@ -21,7 +21,7 @@ oldVis = get(0,'DefaultFigureVisible');
 set(0,'DefaultFigureVisible','off');
 cleanUp = onCleanup(@() cleanup(oldVis)); %#ok<NASGU>
 
-cs = crystalSymmetry('432','mineral','Austenite');
+cs = crystalFrame('432','mineral','Austenite');
 
 % the two nearly identical orientations of #2072
 near = orientation.byEuler([70.6491 41.3549 5.15433; ...

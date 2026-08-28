@@ -488,7 +488,7 @@ if hasSymmetry(sF) && isa(sF.frame,'crystalFrame')
   v = Miller(v,sF.frame);
 elseif ~isCrystalDirection(v)
   if isa(sF.frame,'crystalFrame')
-    v = Miller(v, crystalSymmetry(sF.frame));
+    v = Miller(v, crystalFrame(sF.frame));
   else
     v.frame = sF.frame;
   end

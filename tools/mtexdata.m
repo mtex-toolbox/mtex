@@ -138,14 +138,14 @@ catch
           c = {1,1,[0.52 ,1.23],1,1,1,1};
           out = PoleFigure.load(fName,'superposition',c,CS);
         case 'geesthacht'
-          CS = crystalSymmetry('m-3m');
+          CS = crystalFrame('m-3m');
           h = Miller({1 0 4},{1 0 4},{1 1 0},{1 1 0},CS);
           out = PoleFigure.load(fName,h);
         case 'ptx'
-          CS = crystalSymmetry('mmm');
+          CS = crystalFrame('mmm');
           out = PoleFigure.load(fName,CS);
         case 'steel'
-          CS = crystalSymmetry('m-3m');
+          CS = crystalFrame('m-3m');
           h = Miller({1 1 0},{2 0 0},{2 1 1},CS);
           out = PoleFigure.load(fName,h,'interface','rw1');
           out = rotate(out,90*degree);
@@ -156,8 +156,8 @@ catch
         case 'aachen'
           CS = {...
             'notIndexed',...
-            crystalSymmetry('m-3m','mineral','Fe'),...
-            crystalSymmetry('m-3m','mineral','Mg')};
+            crystalFrame('m-3m','mineral','Fe'),...
+            crystalFrame('m-3m','mineral','Mg')};
 
           out = EBSD.load(fName,...
             'CS',CS,'ColumnNames', { 'Index' 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'MAD' 'BC' 'BS' 'Bands' 'Error' 'ReliabilityIndex'});
@@ -165,24 +165,24 @@ catch
         case  'sharp'
           CS = {...
             'notIndexed',...
-            crystalSymmetry('-3m',[5,5,17],'mineral','calcite')};
+            crystalFrame('-3m',[5,5,17],'mineral','calcite')};
 
           out = EBSD.load(fName,'CS',CS,...
             'ColumnNames', {'Euler 1' 'Euler 2' 'Euler 3' 'Phase' 'x' 'y' });
 
         case 'csl'
           
-          CS = crystalSymmetry('m-3m','mineral','iron');
+          CS = crystalFrame('m-3m','mineral','iron');
           out = loadEBSD_generic(fName,'CS',CS,...
             'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3' 'IQ' 'CI' 'Error'});
           
         case 'mylonite'
 
           CS = {...
-            crystalSymmetry('-1',[8.169,12.851,7.1124],[93.63,116.4,89.46]*degree,'mineral','Andesina'),...
-            crystalSymmetry('-3m',[4.913,4.913,5.504],'mineral','Quartz'),...
-            crystalSymmetry('2/m11',[5.339,9.249,20.196],[95.06,90,90]*degree,'mineral','Biotite'),...
-            crystalSymmetry('12/m1',[8.5632,12.963,7.2099],[90,116.07,90]*degree,'mineral','Orthoclase')};
+            crystalFrame('-1',[8.169,12.851,7.1124],[93.63,116.4,89.46]*degree,'mineral','Andesina'),...
+            crystalFrame('-3m',[4.913,4.913,5.504],'mineral','Quartz'),...
+            crystalFrame('2/m11',[5.339,9.249,20.196],[95.06,90,90]*degree,'mineral','Biotite'),...
+            crystalFrame('12/m1',[8.5632,12.963,7.2099],[90,116.07,90]*degree,'mineral','Orthoclase')};
 
           out = loadEBSD_generic(fName,'CS',CS, ...
             'ColumnNames', { 'Phase' 'x' 'y' 'Euler 1' 'Euler 2' 'Euler 3'});
@@ -209,7 +209,7 @@ catch
 
         case 'single'
 
-          CS = crystalSymmetry('Fm3m',[4.04958 4.04958 4.04958],'mineral','Al');
+          CS = crystalFrame('Fm3m',[4.04958 4.04958 4.04958],'mineral','Al');
 
           out = EBSD.load(fName, 'CS', CS, ...
             'RADIANS','ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y'},...
@@ -217,7 +217,7 @@ catch
           
         case 'alu'
 
-          CS = crystalSymmetry('Fm3m',[4.04958 4.04958 4.04958],'mineral','Al');
+          CS = crystalFrame('Fm3m',[4.04958 4.04958 4.04958],'mineral','Al');
 
           out = EBSD.load(fName,'CS', CS,...
             'RADIANS','ColumnNames', { 'Euler 1' 'Euler 2' 'Euler 3' 'x' 'y'},...
@@ -225,7 +225,7 @@ catch
 
         case 'titanium'
 
-          CS = crystalSymmetry('622',[3,3,4.7],'x||a','mineral','Titanium (Alpha)');
+          CS = crystalFrame('622',[3,3,4.7],'x||a','mineral','Titanium (Alpha)');
           out = EBSD.load(fName,'CS', CS,...
             'ColumnNames', {'phi1' 'Phi' 'phi2' 'phase' 'ci' 'iq' 'sem_signal' 'x' 'y' 'grainId'});
 

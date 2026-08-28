@@ -69,7 +69,7 @@ function [pos,box] = draw(nPF,opts)
 % position of the first colorbar and the bounding box of all axes, read
 % before the figure is closed - closing it deletes the handles
 
-odf = SO3FunRBF(orientation.rand(5,crystalSymmetry('m-3m')), ...
+odf = SO3FunRBF(orientation.rand(5,crystalFrame('m-3m')), ...
   SO3DeLaValleePoussinKernel('halfwidth',15*degree));
 
 hkl = {Miller(1,0,0,odf.CS), Miller({1,0,0},{1,1,0},{1,1,1},odf.CS)};

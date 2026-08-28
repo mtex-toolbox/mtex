@@ -86,7 +86,7 @@ if all(strcmp(fieldnames(phases),requiredFields))
       eval(phases(k).Gamma)]*degree;
     
     SpaceGroup = regexprep(phases(k).Spacegroup,'#ovl|#sub|\(|\)|\*','');
-    CS{k+1}= crystalSymmetry(SpaceGroup,ax,om,'mineral',phases(k).Name);
+    CS{k+1}= crystalFrame(SpaceGroup,ax,om,'mineral',phases(k).Name);
     
   end
   

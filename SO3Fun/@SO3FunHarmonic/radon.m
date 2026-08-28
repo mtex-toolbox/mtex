@@ -66,7 +66,7 @@ end
 % setup a spherical harmonic function
 if isPF, sym = SO3F.SS; else, sym = SO3F.CS; end
 
-if isa(sym,"specimenSymmetry") && numSym(sym)==1
+if isa(sym,"specimenFrame") && numSym(sym)==1
   S2F = S2FunHarmonic(conj(Rf_hat),sym);
 else
   S2F = S2FunHarmonicSym(conj(Rf_hat),sym);

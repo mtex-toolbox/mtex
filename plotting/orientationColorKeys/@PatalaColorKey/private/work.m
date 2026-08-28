@@ -2,7 +2,7 @@
 
 
 
-cs = crystalSymmetry('m-3m')
+cs = crystalFrame('m-3m')
 
 plot(cs)
 
@@ -30,7 +30,7 @@ hold off
 
 plotx2east
 
-cs = crystalSymmetry('m-3m')
+cs = crystalFrame('m-3m')
 
 
 q = SO3Grid(5000,cs)

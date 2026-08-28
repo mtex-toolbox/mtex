@@ -24,14 +24,14 @@ rng(0)
 N = 500;
 
 % unimodal, low symmetry crystal against cubic specimen symmetry
-cs1 = crystalSymmetry('-3m1');
-cs2 = crystalSymmetry('m-3m');
+cs1 = crystalFrame('-3m1');
+cs2 = crystalFrame('m-3m');
 checkGrad(unimodalODF(orientation.rand(20,cs1,cs2)), N, 1e-3, 'unimodal');
 
 % the SO3FunCBF branch - #2586, where grad symmetrised over the crystal symmetry
 % only, which a non trivial specimen symmetry exposes
-cs = crystalSymmetry('432');
-ss = specimenSymmetry('222');
+cs = crystalFrame('432');
+ss = specimenFrame('222');
 fibre = fibreODF(Miller(vector3d.rand,cs),vector3d.rand,ss);
 checkGrad(fibre, N, 1e-3, 'fibre');
 checkGrad(fibre, N, 1e-3, 'fibre, right tangent space', 'right');

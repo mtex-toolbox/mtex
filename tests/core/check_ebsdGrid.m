@@ -66,7 +66,7 @@ assert(isequal(size(ebsd.lattice.ij),[length(ebsd) 2]), ...
 % a single scan line - the y coordinate never varies
 n = 24;
 line = EBSD(vector3d((0:n-1).'*d,zeros(n,1),zeros(n,1)), rotation.rand(n,1), ...
-  ones(n,1), {crystalSymmetry('m-3m')}, struct());
+  ones(n,1), {crystalFrame('m-3m')}, struct());
 
 uCLine = calcUnitCell([line.pos.x(:), line.pos.y(:)]);
 assert(all(isfinite(uCLine),'all'), ...
@@ -240,7 +240,7 @@ x = (I(:) + 0.5*mod(J(:),2)) * d;
 y = J(:) * d * sqrt(3)/2;
 
 ebsd = EBSD(vector3d(x,y,zeros(numel(x),1)), rotation.rand(numel(x),1), ...
-  ones(numel(x),1), {crystalSymmetry('m-3m')}, struct());
+  ones(numel(x),1), {crystalFrame('m-3m')}, struct());
 
 end
 
@@ -493,7 +493,7 @@ function ebsd = makeMap(sz,d)
 [Y,X] = ndgrid((0:sz-1)*d,(0:sz-1)*d);
 
 ebsd = EBSD(vector3d(X(:),Y(:),zeros(numel(X),1)), rotation.rand(numel(X),1), ...
-  ones(numel(X),1), {crystalSymmetry('m-3m')}, struct('bc',rand(numel(X),1)));
+  ones(numel(X),1), {crystalFrame('m-3m')}, struct('bc',rand(numel(X),1)));
 
 end
 
@@ -743,7 +743,7 @@ r = 7; c = 5; n = r*c; d = 0.3;
 [Y,X] = ndgrid((0:r-1)*d,(0:c-1)*d);
 
 ebsd = gridify(EBSD(vector3d(X(:),Y(:),zeros(n,1)), rotation.rand(n,1), ...
-  ones(n,1), {crystalSymmetry('m-3m')}, struct('bc',(1:n).')));
+  ones(n,1), {crystalFrame('m-3m')}, struct('bc',(1:n).')));
 
 assert(isequal(size(ebsd),[r c]),'check_ebsdGrid: the fixture did not grid');
 
@@ -1024,7 +1024,7 @@ im = -reshape(1:3*n,n,3);         % is obvious from the numbers themselves
 bc = (1:n).';
 
 ebsd = EBSD(vector3d((0:n-1).'*d,zeros(n,1),zeros(n,1)), rotation.rand(n,1), ...
-  ones(n,1), {crystalSymmetry('m-3m')}, struct('fs',fs,'im',im,'bc',bc));
+  ones(n,1), {crystalFrame('m-3m')}, struct('fs',fs,'im',im,'bc',bc));
 
 assert(isequal(size(ebsd.fs),[n 5]) && isequal(size(ebsd.im),[n 3]), ...
   'check_dynProp: the constructor already flattened the multi channel properties');
@@ -1097,7 +1097,7 @@ function ij = latticeIndexOf(pos)
 
 n = size(pos,1);
 ebsd = EBSD(vector3d(pos(:,1),pos(:,2),zeros(n,1)), rotation.rand(n,1), ...
-  ones(n,1), {crystalSymmetry('m-3m')}, struct());
+  ones(n,1), {crystalFrame('m-3m')}, struct());
 
 ij = ebsd.lattice.ij;
 
@@ -1167,6 +1167,6 @@ for j = 0:nRow-1
 end
 
 ebsd = EBSD(vector3d(x(:),y(:),0), rotation.rand(numel(x),1), ...
-  ones(numel(x),1), {'notIndexed',crystalSymmetry('m-3m')}, struct());
+  ones(numel(x),1), {'notIndexed',crystalFrame('m-3m')}, struct());
 
 end

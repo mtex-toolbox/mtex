@@ -128,7 +128,7 @@ end
 
 function test %#ok<DEFNU>
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 ori = orientation.rand(10,cs);
 
 emb = mean(embedding(ori));

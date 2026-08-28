@@ -103,8 +103,8 @@ if isa(rot,'orientation')
   if isempty(SRight), SRight = rot.CS; end
   if isempty(SLeft), SLeft = rot.SS; end
 else
-  if isempty(SRight), SRight = specimenSymmetry; end
-  if isempty(SLeft), SLeft = specimenSymmetry; end
+  if isempty(SRight), SRight = specimenFrame('1'); end
+  if isempty(SLeft), SLeft = specimenFrame('1'); end
   rot = orientation(rot,SRight,SLeft);
 end
 

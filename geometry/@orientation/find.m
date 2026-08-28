@@ -157,14 +157,14 @@ if numSym(cs) >= numSym(ss)
     nRep = 2*nRep;
   end
 
-  triv = specimenSymmetry;       % not specimenFrame.default - that one
+  triv = specimenFrame('1');       % not specimenFrame.default - that one
   vs.SS = triv; ws.SS = triv;    % is a singleton the user may have changed
   vs.antipodal = false; ws.antipodal = false;
 else
   % fold the crystal symmetry into the data, search with the specimen one
   nRep = numSym(cs);
   vs = (v*cs).';                 % (N × numSym(cs)).' = numSym(cs) × N
-  triv = crystalSymmetry('1');
+  triv = crystalFrame('1');
   vs.CS = triv; ws.CS = triv;
 end
 
@@ -270,8 +270,8 @@ end
 function test
 
 % construct data
-cs = crystalSymmetry('321');
-ss = crystalSymmetry('222');
+cs = crystalFrame('321');
+ss = crystalFrame('222');
 ap = {};
 
 omega = 1*degree;

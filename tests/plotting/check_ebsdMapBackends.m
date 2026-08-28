@@ -158,7 +158,7 @@ for j = 0:nRow-1
 end
 
 ebsd = EBSD(vector3d(x(:),y(:),0), rotation.rand(numel(x),1), ...
-  ones(numel(x),1), {'notIndexed',crystalSymmetry('m-3m')}, struct());
+  ones(numel(x),1), {'notIndexed',crystalFrame('m-3m')}, struct());
 
 end
 
@@ -166,7 +166,7 @@ end
 function ebsd = makeMap(type)
 % a small gridded map of the requested grid type
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 n = 6;
 
 if strcmp(type,'square')

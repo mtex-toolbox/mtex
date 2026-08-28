@@ -59,7 +59,7 @@ function fix = fixture
 % of this file, and every section below wants the same four fields
 
 f = SO3Fun.dubna;
-f.SS = specimenSymmetry('222');
+f.SS = specimenFrame('222');
 
 fix.f  = f;
 fix.cs = f.CS;
@@ -84,7 +84,7 @@ function checkTangentSpaces(fix)
 % and h2 have to agree exactly; likewise g2 against h1. Measured 3.9e-13.
 
 r1 = orientation.rand(fix.cs);
-r2 = orientation.rand(crystalSymmetry,fix.ss);
+r2 = orientation.rand(crystalFrame('1'),fix.ss);
 
 d = max(norm(fix.g1.eval(r1.symmetrise) - fix.h2.eval(r1.symmetrise)));
 assert(d < 1e-10, ...
@@ -105,7 +105,7 @@ function checkEvalSymmetry(fix)
 % for a right field the right one. Both measured exactly 0.
 
 r1 = orientation.rand(fix.cs);
-r2 = orientation.rand(crystalSymmetry,fix.ss);
+r2 = orientation.rand(crystalFrame('1'),fix.ss);
 
 e = r2.symmetrise.inv .* fix.g1.eval(r2.symmetrise);
 d = max(norm(e-e(1)));
@@ -202,7 +202,7 @@ fr.CS = fix.cs;
 fr = fr.symmetrise;
 
 q = rotation.byAxisAngle(vector3d(1,2,3),37*degree);
-r = orientation.rand(5,1,fix.cs,specimenSymmetry);
+r = orientation.rand(5,1,fix.cs,specimenFrame('1'));
 
 GL = fr.grad;
 GR = right(GL,'internTangentSpace');
@@ -300,7 +300,7 @@ function checkEvalOnGrid(fix)
 
 gr = fix.g20.right;
 
-q = quadratureSO3Grid(23,crystalSymmetry,fix.ss);
+q = quadratureSO3Grid(23,crystalFrame('1'),fix.ss);
 
 d = max(norm(vector3d(gr.eval(q)) - vector3d(gr.eval(q(:)))));
 assert(d < 1e-5, ...

@@ -339,6 +339,6 @@ for k = 1:nPhase
   symCode = typecast(phaseBytes(257:260),'int32');
   laueGroup = TSL2pointGroup(symCode,symCode);
 
-  CS(k) = crystalSymmetry(laueGroup,axLength,axAngle,'mineral',PhaseName{k},'EDAX');
+  CS(k) = crystalFrame(laueGroup,axLength,axAngle,'mineral',PhaseName{k},'EDAX');
 
 end

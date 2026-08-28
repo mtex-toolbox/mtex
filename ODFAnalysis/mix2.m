@@ -1,8 +1,8 @@
 function odf = mix2
 % mix2 sample ODF
 
-CS = crystalSymmetry('cubic');
-SS = specimenSymmetry('222');
+CS = crystalFrame('cubic');
+SS = specimenFrame('222');
 
 psi = SO3vonMisesFisherKernel('halfwidth',17*degree);
 ori1 = orientation.byEuler(54.736*degree, 45.0*degree, 0.0*degree,CS,SS);

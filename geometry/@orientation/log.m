@@ -65,11 +65,11 @@ if isRef
     if isa(ori,'orientation'), ori = project2FundamentalRegion(ori,ori_ref); end
     orin = ori .* inv(ori_ref);
     % we should not change the reference frame of the reference orientation
-    ori = orientation(orin,specimenSymmetry,ori.SS);
+    ori = orientation(orin,specimenFrame('1'),ori.SS);
   else
     orin = inv(ori_ref) .* ori;
     % we should not change the reference frame of the reference orientation
-    ori = orientation(orin,ori.CS,specimenSymmetry);
+    ori = orientation(orin,ori.CS,specimenFrame('1'));
   end
 end
 

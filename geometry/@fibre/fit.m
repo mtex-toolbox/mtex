@@ -112,7 +112,7 @@ end
 
 function test %#ok<DEFNU>
     
-  cs = crystalSymmetry('432');
+  cs = crystalFrame('432');
   f = fibre.rand(cs);
   odf = fibreODF(f,'halfwidth',20*degree);
   

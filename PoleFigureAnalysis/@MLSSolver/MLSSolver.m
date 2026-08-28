@@ -157,7 +157,7 @@ classdef MLSSolver < pf2odfSolver
     
     function check
       
-      cs = crystalSymmetry('222');
+      cs = crystalFrame('222');
       odf = unimodalODF(orientation.id(cs));
       r = equispacedS2Grid('upper','antipodal','resolution',5*degree);
       h = Miller({1,0,0},{1,1,1},{1,1,0},cs);

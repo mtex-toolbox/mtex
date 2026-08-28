@@ -407,7 +407,7 @@ classdef embedding
     
     function testMean(cs,n)
       
-      if nargin == 0, cs = crystalSymmetry('432'); end
+      if nargin == 0, cs = crystalFrame('432'); end
       if nargin < 2, n = 1; end
       ori = orientation.rand(cs);
       odf = unimodalODF(ori,'halfwidth',20*degree);
@@ -484,7 +484,7 @@ classdef embedding
       if nargin == 0
         disp(' ');
         for k = 1:11
-          embedding.checkProjection(crystalSymmetry('laueId',k));
+          embedding.checkProjection(crystalFrame('laueId',k));
         end
         return
       elseif isa(ori,'referenceFrame')
@@ -525,7 +525,7 @@ classdef embedding
       if nargin == 0
         disp(' ');
         for k = 1:11
-          embedding.checkDouble(crystalSymmetry('laueId',k));
+          embedding.checkDouble(crystalFrame('laueId',k));
         end
         return
       elseif isa(ori,'referenceFrame')

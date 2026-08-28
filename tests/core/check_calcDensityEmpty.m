@@ -10,7 +10,7 @@ function check_calcDensityEmpty
 % The two are the same situation: after the nan orientations are dropped
 % there is nothing left to estimate from. Both now return the uniform ODF.
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 
 checkUniform('orientations, empty',   orientation.rand(0,cs));
 checkUniform('orientations, all nan', orientation.nan(5,1,cs));
@@ -56,7 +56,7 @@ end
 function checkNotUniform
 % a few nan orientations among real ones must not swallow the real ones
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 rng(0)
 ori = [orientation.nan(3,1,cs); orientation.rand(50,cs)];
 

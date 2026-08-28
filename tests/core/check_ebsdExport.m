@@ -212,8 +212,8 @@ function ebsd = makeMap
 % cubic and one monoclinic
 
 cs = {'notIndexed', ...
-  crystalSymmetry('m-3m',[2.87 2.87 2.87],'mineral','Iron'), ...
-  crystalSymmetry('12/m1',[5.2 9.0 20.1],[90 95.8 90]*degree,'mineral','Biotite')};
+  crystalFrame('m-3m',[2.87 2.87 2.87],'mineral','Iron'), ...
+  crystalFrame('12/m1',[5.2 9.0 20.1],[90 95.8 90]*degree,'mineral','Biotite')};
 
 [X,Y] = meshgrid((0:11)*0.5,(0:8)*0.5);
 n = numel(X);
@@ -251,7 +251,7 @@ n = numel(x);
 rng(1);
 
 ebsd = EBSD(vector3d(x,y,0),rotation.rand(n,1),ones(n,1), ...
-  {crystalSymmetry('m-3m','mineral','Iron')},struct);
+  {crystalFrame('m-3m','mineral','Iron')},struct);
 
 ebsd = ebsd.gridify;
 

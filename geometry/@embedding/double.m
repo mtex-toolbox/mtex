@@ -238,7 +238,7 @@ function test %#ok<DEFNU>
 % double() should be an isometry: Euclidean distance between packed
 % vectors should equal the tensorial distance between the embeddings
 
-cs = crystalSymmetry('6/mmm');
+cs = crystalFrame('6/mmm');
 ori = orientation.rand(20,cs);
 
 e = embedding(ori);

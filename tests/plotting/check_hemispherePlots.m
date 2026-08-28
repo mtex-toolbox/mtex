@@ -21,7 +21,7 @@ cleanUp = onCleanup(@() cleanup(oldVis)); %#ok<NASGU>
 
 % the triclinic pair of #330 - one axis just above, one well below the
 % equator, both cones wide enough to cross it
-cs = crystalSymmetry('1',[8.1 13 7.2],[94.23 116.64 87.72]*degree,'X||a*','Z||c');
+cs = crystalFrame('1',[8.1 13 7.2],[94.23 116.64 87.72]*degree,'X||a*','Z||c');
 o  = orientation.byEuler([322.049 87.7868 226.876; 50.0499 105.209 49.6594]*degree, cs);
 h  = Miller(0,0,1,'uvw',cs);
 v  = o*h;

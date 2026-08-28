@@ -94,7 +94,7 @@ if size(d,2)>15 || ...
   % crystal direction
   if isempty(h), h = string2Miller(fname); end
 
-  pf = PoleFigure(h,r,d,crystalSymmetry('cubic'));
+  pf = PoleFigure(h,r,d,crystalFrame('cubic'));
   
   return
   

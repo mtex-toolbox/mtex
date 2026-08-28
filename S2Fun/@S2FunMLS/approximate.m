@@ -20,7 +20,7 @@ function S2F = approximate(f, varargin)
 
 
 if isa(f,'function_handle')
-  sym = get_option(varargin, 'symmetry', crystalSymmetry, 'crystalSymmetry');
+  sym = get_option(varargin, 'symmetry', crystalFrame('1'), 'crystalFrame');
   f = S2FunHandle(f, sym);
 end
 

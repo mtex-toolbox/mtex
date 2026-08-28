@@ -2,8 +2,8 @@ function check_calcParent2Child
 % fitting a parent to child orientation relationship to c2c misorientations
 
 rng(0);
-csP = crystalSymmetry('432',[3.66 3.66 3.66],'mineral','fcc');
-csC = crystalSymmetry('432',[2.87 2.87 2.87],'mineral','bcc');
+csP = crystalFrame('432',[3.66 3.66 3.66],'mineral','fcc');
+csC = crystalFrame('432',[2.87 2.87 2.87],'mineral','bcc');
 p2c = orientation.KurdjumovSachs(csP,csC);
 
 mori = c2cData(p2c,csP,csC,1500,1*degree,0.2);

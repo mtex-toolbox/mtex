@@ -23,7 +23,7 @@ function check_grainMerge
 % See also
 % check_calcGrainsCases
 
-cs = crystalSymmetry('1','mineral','test');
+cs = crystalFrame('1','mineral','test');
 
 %% a map with two things to merge: a weak stripe boundary and an inclusion
 % left and right half are ten degrees apart, and the left carries a 2x2 inclusion

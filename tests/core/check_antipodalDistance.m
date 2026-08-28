@@ -118,7 +118,7 @@ function checkShapes
 % the flag must not change the size of the result, and the single argument
 % syntax stays untouched since angle(o) == angle(inv(o)) anyway
 
-cs = crystalSymmetry('321');
+cs = crystalFrame('321');
 [v,w] = samples(cs);
 
 assert(isequal(size(angle(w,v.')),[length(w) length(v)]),...
@@ -146,8 +146,8 @@ end
 % =========================================================================
 function cs = symmetries
 
-cs = {crystalSymmetry('321'), crystalSymmetry('m-3m'), ...
-  crystalSymmetry('1'), crystalSymmetry('622')};
+cs = {crystalFrame('321'), crystalFrame('m-3m'), ...
+  crystalFrame('1'), crystalFrame('622')};
 
 end
 

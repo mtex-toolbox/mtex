@@ -46,7 +46,7 @@ classdef refractiveIndexTensor < tensor
   
   methods (Static = true)
     function rI = calcite
-      cs = crystalSymmetry('-3m1',[5,5,17],'mineral','Calcite','X||a');
+      cs = crystalFrame('-3m1',[5,5,17],'mineral','Calcite','X||a');
       rI = refractiveIndexTensor(diag([1.66 1.66 1.486]),cs);
     end
     

@@ -25,7 +25,7 @@ oldVis = get(0,'DefaultFigureVisible');
 set(0,'DefaultFigureVisible','off');
 cleanUp = onCleanup(@() cleanup(oldVis)); %#ok<NASGU>
 
-cs = crystalSymmetry('1','mineral','test');
+cs = crystalFrame('1','mineral','test');
 
 n = 12;
 [c,r] = meshgrid(1:n,1:n);

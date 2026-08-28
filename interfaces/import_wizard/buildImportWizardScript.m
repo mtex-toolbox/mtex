@@ -64,13 +64,13 @@ function str = phaseLiteral(cs,name)
 name = char(name);
 color = colorLiteral(cs.color);
 
-if isa(cs,'notIndexed') || ischar(cs)
+if isa(cs,'notIndexedFrame') || ischar(cs)
   if strcmpi(name,'notIndexed') && isempty(color)
-    str = '  notIndexed()';
+    str = '  notIndexedFrame()';
   elseif isempty(color)
-    str = ['  notIndexed(' charLiteral(name) ')'];
+    str = ['  notIndexedFrame(' charLiteral(name) ')'];
   else
-    str = ['  notIndexed(' charLiteral(name) ', ' color ')'];
+    str = ['  notIndexedFrame(' charLiteral(name) ', ' color ')'];
   end
   return
 end
@@ -96,7 +96,7 @@ for k = 1:numel(align)
   opts{end+1} = charLiteral(align{k}); %#ok<AGROW>
 end
 
-str = ['  crystalSymmetry(' strjoin(lattice,', ') ', ...' newline ...
+str = ['  crystalFrame(' strjoin(lattice,', ') ', ...' newline ...
   '    ' strjoin(opts,', ') ')'];
 
 end

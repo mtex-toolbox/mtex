@@ -216,7 +216,7 @@ classdef SO3FunMLS < SO3Fun
         {'string','function_handle','char'});
       SO3F.distance = get_option(varargin, 'distance', 'euclidean', 'char');
       SO3F.s = get_option(varargin, {'symmetry', 'cs', 's', 'ss'}, ...
-        specimenFrame.default, 'crystalSymmetry');
+        specimenFrame.default, 'crystalFrame');
 
       % optional explicit left/right symmetries
       frameB = get_option(varargin, ...

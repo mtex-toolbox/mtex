@@ -36,7 +36,7 @@ csList = {'m-3','mmm','-3m1','m-3m'};
 
 for k = 1:numel(csList)
 
-  cs = crystalSymmetry(csList{k});
+  cs = crystalFrame(csList{k});
   oR = fundamentalRegion(cs,cs);
 
   % only the upper half of the angle range - below it the sector is simply
@@ -67,7 +67,7 @@ csList = {'1','222','23','6/mmm','m-3m'};
 
 for k = 1:numel(csList)
 
-  sR = crystalSymmetry(csList{k}).fundamentalSector;
+  sR = crystalFrame(csList{k}).fundamentalSector;
 
   % one grid line, and the same angle as part of many
   [t1,t2] = sR.thetaIntervals(0.3);

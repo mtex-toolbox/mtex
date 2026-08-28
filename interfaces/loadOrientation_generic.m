@@ -86,7 +86,7 @@ try
   S = loader.getOptions();
 
   % set up ori variable
-  CS = getClass(varargin,'crystalFrame',crystalSymmetry);
+  CS = getClass(varargin,'crystalFrame',crystalFrame('1'));
   SS = getClass(varargin,'specimenFrame',specimenFrame.default);
   ori = orientation(q,CS,SS);
 

@@ -218,7 +218,7 @@ classdef crystalShape
     function demo
       
       % import some data
-      CS = crystalSymmetry('622',[3,3,4.7],'x||a','mineral','Titanium (Alpha)');
+      CS = crystalFrame('622',[3,3,4.7],'x||a','mineral','Titanium (Alpha)');
 
       fname = fullfile(mtexDataPath,'EBSD','titanium.txt');
       ebsd = EBSD.load(fname, 'CS', CS,...

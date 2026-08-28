@@ -9,7 +9,7 @@ function check_logReference
 % element made log silently return the logarithms taken at the identity - for
 % every element.
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 rng(0)
 N = 100;
 ori = orientation.rand(N,cs);
@@ -58,7 +58,7 @@ end
 
 % without a reference the logarithm is taken in the fundamental region with
 % respect to both symmetries
-oriSS = orientation.rand(N,cs,specimenSymmetry('222'));
+oriSS = orientation.rand(N,cs,specimenFrame('222'));
 v = vector3d(log(oriSS));
 vRef = vector3d(log(project2FundamentalRegion(oriSS),'noSymmetry'));
 
@@ -87,8 +87,8 @@ function checkSymmetryCarriage
 % indistinguishable from an absent symmetry; once absence became empty
 % (ADR 0003) every log and exp silently returned triclinic.
 
-cs = crystalSymmetry('321');
-ss = specimenSymmetry('222');
+cs = crystalFrame('321');
+ss = specimenFrame('222');
 ori_ref = orientation.byEuler(10*degree,20*degree,30*degree,cs,ss);
 ori = ori_ref * orientation.byAxisAngle(Miller(1,2,-3,3,cs),1,cs,cs);
 
@@ -140,7 +140,7 @@ function checkSymmetryReduction
 % degree, and every EBSD gradient, curvature and GND density inherited it.
 
 rng(0)
-for cs = {crystalSymmetry('m-3m'),crystalSymmetry('622'),crystalSymmetry('2/m')}
+for cs = {crystalFrame('m-3m'),crystalFrame('622'),crystalFrame('2/m')}
 
   cs = cs{1}; %#ok<FXSET>
   symOps = cs.properGroup.rot;
@@ -194,9 +194,9 @@ function v = refLog(ori,ref,tS)
 if isa(ori,'orientation'), ori = project2FundamentalRegion(ori,ref); end
 
 if tS.isRight
-  m = orientation(itimes(ref,ori,true),ori.CS,specimenSymmetry);
+  m = orientation(itimes(ref,ori,true),ori.CS,specimenFrame('1'));
 else
-  m = orientation(itimes(ori,ref,false),specimenSymmetry,ori.SS);
+  m = orientation(itimes(ori,ref,false),specimenFrame('1'),ori.SS);
 end
 
 v = vector3d(log(project2FundamentalRegion(m),'noSymmetry'));

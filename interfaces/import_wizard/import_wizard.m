@@ -661,7 +661,7 @@ classdef import_wizard < matlab.apps.AppBase
             % draw a dummy map once, to load and warm up the plotting stack
             ax = app.IPFAxes(3);
             ebsdWarm = EBSD(vector3d([0 1 0 1], [0 0 1 1], zeros(1,4)), ...
-              rotation.id(4), ones(4,1), {crystalSymmetry('m-3m')}, struct());
+              rotation.id(4), ones(4,1), {crystalFrame('m-3m')}, struct());
             plot(ebsdWarm, 0.5*ones(4,3), 'parent', ax)
             resetAxes(app, ax)
         end
@@ -1926,7 +1926,7 @@ classdef import_wizard < matlab.apps.AppBase
 
       % a notIndexed phase has no lattice, put the row back as it was
       pg = char(data.Symmetry(row));
-      if ~isa(cs, 'crystalSymmetry') || strcmp(pg, 'None')
+      if ~isa(cs, 'crystalFrame') || strcmp(pg, 'None')
         refreshPhaseRow(app, row); return
       end
 
@@ -1975,7 +1975,7 @@ classdef import_wizard < matlab.apps.AppBase
       end
 
       try
-        newCS = crystalSymmetry('PointId', id, abc, abg * degree, ...
+        newCS = crystalFrame('PointId', id, abc, abg * degree, ...
           al{:}, 'mineral', asChar(app, data.Mineral(row)));
       catch ME
         uialert(app.UIFigure, ME.message, 'Invalid crystal symmetry')
@@ -2017,7 +2017,7 @@ classdef import_wizard < matlab.apps.AppBase
       % selection back to the largest phase.
 
       cs = app.ebsd.CSList(row);
-      if isa(cs, 'crystalSymmetry')
+      if isa(cs, 'crystalFrame')
         pg = asChar(app, cs.pointGroup);
         [abc, abg] = displayLattice(app, cs);
         al = closestSetup(app, cs);
@@ -2105,7 +2105,7 @@ classdef import_wizard < matlab.apps.AppBase
       for k = 1:numel(setups)
         try
           parts = strsplit(setups{k}, ', ');
-          ref = crystalSymmetry('PointId', cs.id, abc, abg * degree, parts{:});
+          ref = crystalFrame('PointId', cs.id, abc, abg * degree, parts{:});
           if max(angle(cs.axes, ref.axes)) < 1e-4 * degree
             name = setups{k}; return
           end

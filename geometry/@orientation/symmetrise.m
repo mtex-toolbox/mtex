@@ -22,7 +22,7 @@ function o = symmetrise(o,varargin)
 
 if nargin > 1 && isa(varargin{1},'referenceFrame')
   CS = varargin{1};
-  SS = getClass(varargin(2:end),'referenceFrame',specimenSymmetry);
+  SS = getClass(varargin(2:end),'referenceFrame',specimenFrame('1'));
 else
   CS = o.CS;
   SS = o.SS;

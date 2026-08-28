@@ -2,7 +2,7 @@ function [m,r] = string2Miller(s,CS)
 % converts string to Miller indices
 
 r = 1;
-if nargin == 1, CS = crystalSymmetry('m-3m'); end
+if nargin == 1, CS = crystalFrame('m-3m'); end
 
 try
   % extract filename

@@ -103,7 +103,7 @@ end
 % -------------------------------------------------------------------------
 function checkSymmetryArgument
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 C = stiffnessTensor.rand(cs);
 
 assert(C.CS == cs, ...
@@ -160,7 +160,7 @@ assert(T.how2plot == pC, ...
   char(T.how2plot))
 
 % mmm derives y↑→x from its axes, so pick one differing from it and from the default
-cs = crystalSymmetry('mmm');
+cs = crystalFrame('mmm');
 pCs = plottingConvention('z↑→x');
 assert(cs.how2plot ~= pCs && before ~= pCs, ...
   ['check_tensorFactories: the second test convention collides with the ' ...

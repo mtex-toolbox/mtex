@@ -23,7 +23,7 @@ assert(inv.isImproper,'rotation.inversion improper')
 assert(isequal(round(double(inv*vector3d(1,2,3))),[-1;-2;-3]),'rotation.inversion action')
 
 % subclasses still inherit / override correctly
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 o = orientation.rand(10,cs);
 assert(isa(o,'orientation') && isequal(size(o),[10 1]),'orientation.rand')
 assert(isa(orientation.id(cs),'orientation'),'orientation.id')

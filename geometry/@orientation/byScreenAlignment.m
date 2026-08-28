@@ -57,6 +57,6 @@ rot = frB.how2plot.rot * inv(frA.how2plot.rot); %#ok<MINV>
 % so each side is wrapped in the trivial group carrying it. CS is the source
 % and SS the target, matching the convention that an orientation maps right
 % to left
-ori = orientation(rot, specimenSymmetry(frA), specimenSymmetry(frB));
+ori = orientation(rot, specimenFrame(frA), specimenFrame(frB));
 
 end

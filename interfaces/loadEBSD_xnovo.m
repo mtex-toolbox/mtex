@@ -80,7 +80,7 @@ end
 function cs = loadSymmetry(fname,varargin)
 
 try
-  if check_option(varargin,'CS','crystalSymmetry')
+  if check_option(varargin,'CS','crystalFrame')
     cs = {'notIndexed',get_option(varargin,'CS')};
   else
     h5phase = h5info(fname,'/PhaseInfo');
@@ -121,13 +121,13 @@ try
         if ~isempty(s), sym = strip(sym(1:s(1)-1)); end
         
         try
-          cs{i+1} = Laue(crystalSymmetry(sym,uc(1:3),uc(4:6)*degree,info{:}));
+          cs{i+1} = Laue(crystalFrame(sym,uc(1:3),uc(4:6)*degree,info{:}));
         catch
           s = regexprep(sym,' ','');
-          cs{i+1} = Laue(crystalSymmetry(s,uc(1:3),uc(4:6)*degree,info{:}));
+          cs{i+1} = Laue(crystalFrame(s,uc(1:3),uc(4:6)*degree,info{:}));
         end
       catch
-        cs{i+1} = Laue(crystalSymmetry('SpaceId',sp,uc(1:3),uc(4:6)*degree,info{:}));
+        cs{i+1} = Laue(crystalFrame('SpaceId',sp,uc(1:3),uc(4:6)*degree,info{:}));
       end
       
     end

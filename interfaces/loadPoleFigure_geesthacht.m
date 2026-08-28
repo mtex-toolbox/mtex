@@ -37,7 +37,7 @@ try
     r{end+1} = vector3d.byPolar(pi/2-d{2}(pos:npos)*degree,d{3}(pos:npos)*degree); %#ok<AGROW>
     assert(length(r{1})>=5);
     intensities{end+1} = d{4}(pos:npos); %#ok<AGROW>
-    h{end+1} = Miller(1,0,0,crystalSymmetry('m-3m')); %#ok<AGROW>
+    h{end+1} = Miller(1,0,0,crystalFrame('m-3m')); %#ok<AGROW>
         
     pos = npos+1;
     

@@ -38,7 +38,7 @@ function test %#ok<DEFNU>
 
 [x,y] = meshgrid(1:3);
 
-cs = crystalSymmetry('1');
+cs = crystalFrame('1');
 
 ori = orientation.byAxisAngle(xvector,[0,90*degree],cs);
 

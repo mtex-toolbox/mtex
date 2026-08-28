@@ -15,7 +15,7 @@ function check_calcPoleFigureSuperposition
 
 rng(0)
 
-cs = crystalSymmetry('321');
+cs = crystalFrame('321');
 odf = unimodalODF(orientation.rand(cs),'halfwidth',15*degree);
 
 h = {Miller(1,0,0,cs); [Miller(1,0,-1,1,cs); Miller(0,1,-1,1,cs)]};

@@ -15,9 +15,9 @@ oldVis = get(0,'DefaultFigureVisible');
 set(0,'DefaultFigureVisible','off');
 cleanup = onCleanup(@() set(0,'DefaultFigureVisible',oldVis));
 
-cs = crystalSymmetry('432');
-csHex = crystalSymmetry('6/mmm',[1 1 1.6]);
-ss = specimenSymmetry('222');
+cs = crystalFrame('432');
+csHex = crystalFrame('6/mmm',[1 1 1.6]);
+ss = specimenFrame('222');
 odf = unimodalODF(orientation.byEuler(30*degree,40*degree,10*degree,cs));
 mdf = unimodalODF(orientation.byEuler(30*degree,40*degree,10*degree,cs,cs));
 f = fibre.beta(cs);
@@ -38,7 +38,7 @@ labeled = {
   'PoleFigure'          , @() plot(calcPoleFigure(odf,Miller(1,0,0,cs),equispacedS2Grid('resolution',10*degree)))
   'sigmaSections'       , @() plot(odf,'sigma','sections',2)
   'pfSections'          , @() plot(odf,'pf','sections',2)
-  'specimenSymmetry'    , @() plot(ss)
+  'specimenFrame'    , @() plot(ss)
   };
 
 % --- plots in crystal coordinates - must not be annotated ---------------
@@ -51,7 +51,7 @@ unlabeled = {
   'plotPDF misorientation',@() plotPDF(mdf,Miller(1,0,0,cs))
   'ipfSections'          , @() plot(odf,'ipf','sections',2)
   'axisAngleSections'    , @() plot(mdf,'axisAngle','sections',2)
-  'crystalSymmetry'      , @() plot(cs)
+  'crystalFrame'      , @() plot(cs)
   'ipfHSVKey'            , @() plot(ipfHSVKey(csHex))
   'HSVDirectionKey'      , @() plot(HSVDirectionKey(cs))
   'tensor'               , @() plot(stiffnessTensor([...

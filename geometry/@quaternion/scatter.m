@@ -9,6 +9,6 @@ function varargout = scatter(q,varargin)
 %  axisAngle - plot in axis / angle
 %
 
-oP = newOrientationPlot(specimenSymmetry,specimenSymmetry,varargin{:});
+oP = newOrientationPlot(specimenFrame('1'),specimenFrame('1'),varargin{:});
 
 [varargout{1:nargout}] = oP.plot(q,varargin{:});

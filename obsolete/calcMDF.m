@@ -55,7 +55,7 @@ function mdf = calcMDF(mori,varargin)
 warning('The command calcODF is depreciated! Please use calcDensity instead.')
 
 % if orientations have been specified
-if isa(mori.SS,'specimenSymmetry')
+if isa(mori.SS,'specimenFrame')
   
   % compute an ODF first
   odf1 = calcFourierODF(mori,varargin{:});

@@ -55,7 +55,7 @@ assert(dflt ~= pC, ...
 
 % asking for a convention gives the frame that carries it, and leaves the
 % one that was asked from alone
-ss = specimenSymmetry('222');
+ss = specimenFrame('222');
 before = ss.how2plot;
 
 ss2 = specimenFrame.frameFor(pC);
@@ -70,7 +70,7 @@ assert(specimenFrame.default.how2plot == dflt, ...
 
 % same on the crystal side, incl. the cached Laue group sharing the frame
 % (a non-centrosymmetric group, so that Laue is a copy and not cs itself)
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 csBefore = cs.how2plot;
 csL = cs.Laue;
 assert(csL ~= cs, ...
@@ -86,7 +86,7 @@ assert(cs.how2plot == csBefore && cs.how2plot == csBefore, ...
 pCd0 = plottingConvention.default;   % a value snapshot
 restoreDefault = onCleanup(@() plottingConvention.default(pCd0));
 
-ssd = specimenSymmetry;
+ssd = specimenFrame('1');
 assert(ssd == specimenFrame.default, ...
   'check_plottingConventionOwnership: a fresh specimenSymmetry does not hold the session frame')
 
@@ -127,7 +127,7 @@ assert(T.CS == T.frame && T.CS.how2plot == pC, ...
   'check_plottingConventionOwnership: T.CS is not the frame T was given')
 
 % (2) a tensor that was never given one follows its frame
-cs = crystalSymmetry('mmm');
+cs = crystalFrame('mmm');
 assert(tensor(M,'rank',2,cs).how2plot == cs.how2plot, ...
   'check_plottingConventionOwnership: a tensor without its own convention ignores CS')
 
@@ -168,7 +168,7 @@ assert(specimenFrame.default.how2plot == dflt, ...
 
 % (2) attaching a symmetry puts the function into the frame of that
 % symmetry - a crystalSymmetry derives its own convention from its axes
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 assert(cs.how2plot ~= dflt, ...
   ['check_plottingConventionOwnership: m-3m has the default convention, ' ...
   'so this cannot tell the two apart'])
@@ -237,9 +237,9 @@ assert(specimenFrame.default.how2plot == dflt, ...
   'check_plottingConventionOwnership: orientation.map repointed specimenFrame.default')
 
 % a caller-passed symmetry must not be written on either
-ss = specimenSymmetry('222');
+ss = specimenFrame('222');
 ssPC = ss.how2plot;
-h = Miller(1,0,0,crystalSymmetry('m-3m'));
+h = Miller(1,0,0,crystalFrame('m-3m'));
 ori = orientation.map(h,v,ss);
 
 assert(ori.SS.how2plot == pC, ...
@@ -262,7 +262,7 @@ function checkPoleFigure
 % reaching every pole figure that never set an SS of its own
 
 pC = plottingConvention('z↑→x');
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 h = Miller(1,0,0,cs);
 r = vector3d.rand(10);
 pf = PoleFigure(h,r,ones(10,1));
@@ -410,7 +410,7 @@ assert(follows(), ...
 
 % an explicitly given symmetry still wins over the session, and a crystal
 % framed tensor keeps the convention of its crystal frame
-cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942]);
+cs = crystalFrame('mmm',[4.7646 10.2296 5.9942]);
 T = tensor.eye(cs);
 assert(T.CS.id == cs.id, ...
   'check_plottingConventionOwnership: an explicit symmetry must survive');
@@ -418,12 +418,12 @@ assert(T.how2plot == cs.how2plot, ...
   'check_plottingConventionOwnership: a crystal framed tensor follows its crystal frame');
 
 % a tensor built from crystal data is in crystal coordinates and keeps that symmetry
-m = Miller(1,1,0,crystalSymmetry('432'));
+m = Miller(1,1,0,crystalFrame('432'));
 assert(isa(tensor(m).CS,'crystalFrame'), ...
   'check_plottingConventionOwnership: tensor(Miller) must keep the crystal symmetry');
 assert(isa(dyad(m.normalize,Miller(1,-1,1,m.CS).normalize).frame,'crystalFrame'), ...
   'check_plottingConventionOwnership: dyad of Miller directions must be crystal framed');
-sS = slipSystem.bcc(crystalSymmetry('432'));
+sS = slipSystem.bcc(crystalFrame('432'));
 assert(isa(sS.deformationTensor.frame,'crystalFrame'), ...
   'check_plottingConventionOwnership: a slip system deformation tensor is crystal framed');
 

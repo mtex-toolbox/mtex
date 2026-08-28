@@ -7,7 +7,7 @@ function check_odfExport
 % the doc pages wrote it - was ignored. An unknown interface used to reach
 % feval as export_<whatever> and fail with an undefined function message.
 
-odf = SO3FunRBF(orientation.rand(3,crystalSymmetry('m-3m')), ...
+odf = SO3FunRBF(orientation.rand(3,crystalFrame('m-3m')), ...
   SO3DeLaValleePoussinKernel('halfwidth',20*degree));
 
 checkFlagMatchesOption(odf,'VPSC');
@@ -84,7 +84,7 @@ function checkVPSCRoundTrip
 % MTEX export nor a hand written weight file has it - so the round trip
 % failed outright for eight years, issue #297.
 
-cs = crystalSymmetry('mmm');
+cs = crystalFrame('mmm');
 ori = orientation.byEuler(rand(50,3).*[2*pi pi/2 pi/2],cs);
 
 fname = [tempname '.txt'];
@@ -112,7 +112,7 @@ function checkVPSCConvention
 % EulerAngleConvention resolved to, so a Kocks export was silently labelled
 % Bunge and read back as a different texture.
 
-cs = crystalSymmetry('mmm');
+cs = crystalFrame('mmm');
 ori = orientation.byEuler(rand(50,3).*[2*pi pi/2 pi/2],cs);
 
 for convention = {'Bunge','Kocks','Roe'}
@@ -146,7 +146,7 @@ fprintf(fid,'a comment\nanother one\n\nB 3\n');
 fprintf(fid,'%7.2f %7.2f %7.2f %11.7f\n',[10 20 30 1/3; 40 50 60 1/3; 70 80 10 1/3].');
 fclose(fid);
 
-odf = loadODF_VPSC(fname,'cs',crystalSymmetry('mmm'));
+odf = loadODF_VPSC(fname,'cs',crystalFrame('mmm'));
 assert(length(odf.opt.orientations) == 3, ...
   'check_odfExport: a VPSC weight file without the strain marker was not read')
 
@@ -156,7 +156,7 @@ fprintf(fid,'%% MTEX ODF\n%% phi1 Phi phi2 value\n0 0 0 1\n10 10 10 2\n');
 fclose(fid);
 
 try
-  loadODF_VPSC(fname,'cs',crystalSymmetry('mmm'));
+  loadODF_VPSC(fname,'cs',crystalFrame('mmm'));
   error('check_odfExport:noError', ...
     'check_odfExport: the VPSC interface accepted a generic ODF file')
 catch ME

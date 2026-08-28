@@ -169,10 +169,10 @@ set(gui.hSearchCIF,'CallBack',@lookupMineral);
       end
       
       try
-        CS = crystalSymmetry(cs,[axis{:}],[angle{:}]*degree,al{al1},al{al2},...
+        CS = crystalFrame(cs,[axis{:}],[angle{:}]*degree,al{al1},al{al2},...
           'mineral',mineral,'color',rgb);
       catch %#ok<CTCH>
-        CS = crystalSymmetry(cs,[axis{:}],[angle{:}]*degree,'mineral',mineral,'color',rgb);
+        CS = crystalFrame(cs,[axis{:}],[angle{:}]*degree,'mineral',mineral,'color',rgb);
       end
     end
     

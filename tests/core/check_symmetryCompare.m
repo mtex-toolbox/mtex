@@ -8,9 +8,9 @@ function check_symmetryCompare
 % SO3Funs with different specimen symmetries was silently accepted.
 
 % --- specimen symmetry: equal to itself, and to an equal point group
-triclinic = specimenSymmetry('1');
-ortho     = specimenSymmetry('mmm');
-ortho2    = specimenSymmetry('mmm');
+triclinic = specimenFrame('1');
+ortho     = specimenFrame('mmm');
+ortho2    = specimenFrame('mmm');
 
 assert(eqTol(triclinic,triclinic),'a specimen symmetry must equal itself')
 assert(eqTol(ortho,ortho2),'equal point groups must compare equal')
@@ -22,13 +22,13 @@ assert(~sim(triclinic,ortho),'''1'' and ''mmm'' must not be similar')
 assert(~eqTol(ortho,triclinic),'the comparison must be symmetric')
 
 % --- crystal symmetry path is unaffected
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 assert(eqTol(cs,cs),'a crystal symmetry must equal itself')
-assert(~eqTol(cs,crystalSymmetry('222')),'different Laue groups must differ')
+assert(~eqTol(cs,crystalFrame('222')),'different Laue groups must differ')
 
 % --- the consequence: SO3Fun arithmetic must reject mismatched SS
 odf = unimodalODF(orientation.rand(cs),'halfwidth',10*degree);
-odfOrtho = odf; odfOrtho.SS = specimenSymmetry('mmm');
+odfOrtho = odf; odfOrtho.SS = specimenFrame('mmm');
 
 ok = false;
 try %#ok<TRYNC>
@@ -59,10 +59,10 @@ function checkPhaseIdentity
 % shadowed the free function; deleting that method let two ODFs of
 % different phases combine silently.
 
-ss = specimenSymmetry('222');
+ss = specimenFrame('222');
 abc = [3.52 3.52 3.52];
-csA = crystalSymmetry('m-3m',abc,'mineral','Nickel');
-csB = crystalSymmetry('m-3m',abc,'mineral','Iron fcc');
+csA = crystalFrame('m-3m',abc,'mineral','Nickel');
+csB = crystalFrame('m-3m',abc,'mineral','Iron fcc');
 
 a = unimodalODF(orientation.rand(csA,ss),'halfwidth',10*degree);
 b = unimodalODF(orientation.rand(csB,ss),'halfwidth',10*degree);
@@ -77,11 +77,11 @@ assert(~ok,['check_symmetryCompare: two minerals that share a lattice are ' ...
 
 % an unnamed symmetry makes no phase claim, so it still combines - the same
 % rule the trivial group follows for the symmetry claim itself (ADR 0003)
-csU = crystalSymmetry('m-3m',abc);
+csU = crystalFrame('m-3m',abc);
 a + unimodalODF(orientation.rand(csU,ss),'halfwidth',10*degree); %#ok<VUNUS>
 
 % and one phase on two independently built handles still combines
-csA2 = crystalSymmetry('m-3m',abc,'mineral','Nickel');
+csA2 = crystalFrame('m-3m',abc,'mineral','Nickel');
 a + unimodalODF(orientation.rand(csA2,ss),'halfwidth',10*degree); %#ok<VUNUS>
 
 end

@@ -114,7 +114,7 @@ methods (Static = true)
     
     numGrains=100;
     ori=orientation.rand();
-    ori.CS=crystalSymmetry('mmm');
+    ori.CS=crystalFrame('mmm');
     ori = unimodalODF(ori).discreteSample(numGrains);
 
     n=vector3d(1,1,1);

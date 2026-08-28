@@ -37,7 +37,7 @@ properties
   % kind: it maps a direction given in A into coordinates of B, so for an
   % ordinary orientation A is the crystal and B the specimen, and for a
   % misorientation both are crystal frames. inv swaps them
-  frameA = crystalSymmetry('1');   % the frame it maps FROM
+  frameA = crystalFrame('1');   % the frame it maps FROM
   frameB = specimenFrame.default;  % the frame it maps INTO
   antipodal = false
 
@@ -408,7 +408,7 @@ methods (Static = true, Hidden = true)
   function check_dot
   
     % first setting
-    cs = crystalSymmetry('m-3m');
+    cs = crystalFrame('m-3m');
     n = 10000000;
     ori1 = orientation.rand(n,cs);
     ori2 = orientation.rand(n,cs);

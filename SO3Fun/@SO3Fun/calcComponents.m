@@ -131,7 +131,7 @@ end
 function test
 % testing code
  
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 cs2 = specimenFrame.default;
 center = orientation.rand(5,cs,cs2);
 odf = unimodalODF(center,'halfwidth',5*degree) %#ok<NOPRT
@@ -140,7 +140,7 @@ odf2 = calcDensity(ori,'noFourier','exact','halfwidth',2.5*degree);
 disp(odf2)
 
 
-cs2 = crystalSymmetry('432');
+cs2 = crystalFrame('432');
 center = orientation.rand(5,cs,cs2);
 odf = unimodalODF(center,'halfwidth',2.5*degree);
 ori = discreteSample(odf,1000);

@@ -77,7 +77,7 @@ end
 function checkKnownComponents
 % the components of a model ODF are what comes back out
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 c1 = orientation.byEuler(0,0,0,cs);
 c2 = orientation.byEuler(30*degree,40*degree,50*degree,cs);
 odf = 0.6*unimodalODF(c1,'halfwidth',7*degree) ...
@@ -108,7 +108,7 @@ function odf = twoComponentODF
 % sharp enough that the gradient ascent finds several spurious modes too -
 % which is what makes the seed bookkeeping above worth checking
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 odf = 0.6*unimodalODF(orientation.byEuler(0,0,0,cs),'halfwidth',6*degree) ...
     + 0.4*unimodalODF(orientation.byEuler(30*degree,40*degree,50*degree,cs),...
       'halfwidth',6*degree);

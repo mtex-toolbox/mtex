@@ -37,7 +37,7 @@ if numel(is2) == length(s2) && isa(s2,'referenceFrame'), s1 = s2; return; end
 rot = s1.rot(sort(is1));
 
 if isa(s1,'specimenFrame') || isa(s2,'specimenFrame')
-  s1 = specimenSymmetry(rot);
+  s1 = specimenFrame(rot);
 else
-  s1 = crystalSymmetry(rot);
+  s1 = crystalFrame(rot);
 end

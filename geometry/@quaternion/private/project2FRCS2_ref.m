@@ -53,8 +53,8 @@ end
 % some testing code
 function test %#ok<DEFNU>
 
-cs1 = crystalSymmetry('432');
-cs2 = crystalSymmetry('32');
+cs1 = crystalFrame('432');
+cs2 = crystalFrame('32');
 
 ori_ref = orientation.rand(cs1,cs2);
 ori = orientation.rand(1000 ,cs1,cs2);

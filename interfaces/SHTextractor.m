@@ -30,7 +30,7 @@ end
 
 try
   % Get Symmetry
-  cs = crystalSymmetry('SpaceId',sym.SpaceId,sym.LatticeParameters(1:3),...
+  cs = crystalFrame('SpaceId',sym.SpaceId,sym.LatticeParameters(1:3),...
     sym.LatticeParameters(4:6)*degree,'mineral',sym.Mineral,'x||a');
   % Construct Function
   sF = S2FunHarmonicSym(fhat,cs,'skipSymmetrise');

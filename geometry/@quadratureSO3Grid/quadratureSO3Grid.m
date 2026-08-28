@@ -134,14 +134,14 @@ methods
     % (only use cyclic symmetry axis)
     sym = {'1','112','3','4','','6'};
     if isa(SRight,'crystalFrame')
-      SRightNew = crystalSymmetry(sym{SRight.multiplicityZ});
+      SRightNew = crystalFrame(sym{SRight.multiplicityZ});
     else
-      SRightNew = specimenSymmetry(sym{SRight.multiplicityZ});
+      SRightNew = specimenFrame(sym{SRight.multiplicityZ});
     end
     if isa(SLeft,'crystalFrame')
-      SLeftNew = crystalSymmetry(sym{SLeft.multiplicityZ});
+      SLeftNew = crystalFrame(sym{SLeft.multiplicityZ});
     else
-      SLeftNew = specimenSymmetry(sym{SLeft.multiplicityZ});
+      SLeftNew = specimenFrame(sym{SLeft.multiplicityZ});
     end
   
     % Construct quadrature nodes

@@ -367,7 +367,7 @@ function checkNamedNotIndexedColor
 % phase by grains.subSet(ind).color, drew nothing for it and left it out of
 % the legend. Silent: no error, just a phase missing from the picture.
 
-cs = crystalSymmetry('m-3m','mineral','Copper','color','LightSkyBlue');
+cs = crystalFrame('m-3m','mineral','Copper','color','LightSkyBlue');
 n = 6;
 rot = rotation.byAxisAngle(zvector,reshape((1:n*n)*2*degree,n,n));
 
@@ -377,7 +377,7 @@ phaseId(end,:) = 1;              % a row of plain, unnamed notIndexed
 ebsd = EBSDsquare([],rot,phaseId,[0 1],{'notIndexed',cs},'dxy',[1 1]);
 
 voidColor = str2rgb('DarkBlue');
-ebsd.CSList(end+1)   = notIndexed('voids',voidColor);
+ebsd.CSList(end+1)   = notIndexedFrame('voids',voidColor);
 ebsd.phaseMap(end+1) = max(ebsd.phaseMap) + 1;
 
 mask = false(n,n); mask(1:2,:) = true;
@@ -435,7 +435,7 @@ d = 0.3;
 n = numel(X);
 
 ebsd = EBSD(vector3d(X(:),Y(:),zeros(n,1)), rotation.rand(n,1), ...
-  ones(n,1), {crystalSymmetry('m-3m')}, prop);
+  ones(n,1), {crystalFrame('m-3m')}, prop);
 
 end
 
@@ -448,7 +448,7 @@ d = 0.3; sz = 12; n = sz^2;
 [Y,X] = ndgrid((0:sz-1)*d,(0:sz-1)*d);
 
 list = EBSD(vector3d(X(:),Y(:),zeros(n,1)), rotation.rand(n,1), ones(n,1), ...
-  {crystalSymmetry('m-3m')}, struct('bc',rand(n,1)));
+  {crystalFrame('m-3m')}, struct('bc',rand(n,1)));
 
 grid = gridify(list);
 rot  = rotate(grid,27*degree,'keepEuler');
@@ -477,7 +477,7 @@ function checkIndexing
 % the file it was given. The coordinate lookup now has to be asked for by
 % name, ebsd('xy',x,y), which means the same on a grid and on a list.
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 n = 6;
 rot = rotation.byAxisAngle(zvector,reshape((1:n*n)*2*degree,n,n));
 
@@ -539,7 +539,7 @@ function checkEulerCorrectionSurvives
 % the orientations by the difference - the copy already carries corrected
 % orientations. So the orientations are checked to be untouched here too.
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 [x,y] = meshgrid(1:8,1:6);
 ebsd = EBSD(vector3d(x(:),y(:),0),orientation.rand(numel(x),cs), ...
   ones(numel(x),1),{cs},struct());

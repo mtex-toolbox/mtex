@@ -1,8 +1,8 @@
 function odf = SantaFe
 % the famous SantaFe-sample ODF
 
-CS = crystalSymmetry('cubic');
-SS = specimenSymmetry('222');
+CS = crystalFrame('cubic');
+SS = specimenFrame('222');
 SS = specimenFrame.frameFor(plottingConvention('y↑→x'));
 
 psi = SO3vonMisesFisherKernel('HALFWIDTH',10*degree);

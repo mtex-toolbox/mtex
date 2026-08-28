@@ -119,7 +119,7 @@ end
 function test %#ok<DEFNU>
   
 % generate orientation clustered around 5 centers
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 center = orientation.rand(5,cs);
 odf = unimodalODF(center,'halfwidth',5*degree);
 ori = odf.discreteSample(1500);

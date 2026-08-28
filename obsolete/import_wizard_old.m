@@ -59,7 +59,7 @@ switch lower(get_option(varargin,'test',''))
     
     data = api.getData();
     
-    data{1} = set(data{1},'CS',crystalSymmetry('trigonal'));
+    data{1} = set(data{1},'CS',crystalFrame('trigonal'));
     
     api.setData(data);
     

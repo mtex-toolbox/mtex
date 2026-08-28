@@ -32,7 +32,7 @@ textscan(fid,'%s',3,'delimiter','\n','whitespace','');
 d = textscan(fid,'%d %f %f %f %f %f %f %f %d %d %d\n',1);
 
 % define symmetry
-cs = crystalSymmetry(spacegroup{d{1}},[d{2:4}],[d{5:7}]*degree);
+cs = crystalFrame(spacegroup{d{1}},[d{2:4}],[d{5:7}]*degree);
 
 if d{9}==0
   options = {'ColumnNames',{'Euler1','Euler2','Euler3'}};

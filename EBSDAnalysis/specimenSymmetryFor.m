@@ -33,6 +33,6 @@ end
 % == is equal alignment, so reuse the default symmetry for the default plotting
 if isempty(pC) || ss.how2plot == pC, return; end
 
-ss = specimenSymmetry(pC);
+ss = specimenFrame(pC);
 
 end

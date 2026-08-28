@@ -117,7 +117,7 @@ deformation = get_option(varargin,'deformation',0);
 roughness   = get_option(varargin,'roughness',0);
 wildFrac    = get_option(varargin,'wildFraction',0);
 unindFrac   = get_option(varargin,'unindexedFraction',0);
-CS          = get_option(varargin,'CS',crystalSymmetry('cubic'));
+CS          = get_option(varargin,'CS',crystalFrame('cubic'));
 
 colAngles = colAngles(:).';
 rowAngles = rowAngles(:).';

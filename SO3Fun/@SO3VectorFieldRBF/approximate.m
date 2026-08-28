@@ -21,8 +21,8 @@ function SO3VF = approximate(f, varargin)
 % absent symmetry genuinely means the session default
 tS = SO3TangentSpace.extract(varargin{:});
 [SRight,SLeft] = extractSym(varargin,'empty');
-if isempty(SRight), SRight = specimenSymmetry; end
-if isempty(SLeft), SLeft = specimenSymmetry; end
+if isempty(SRight), SRight = specimenFrame('1'); end
+if isempty(SLeft), SLeft = specimenFrame('1'); end
 
 
 if isa(f,'SO3VectorFieldRBF')

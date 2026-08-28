@@ -10,7 +10,7 @@ classdef orientationColorKey < handle
   % BungeColorKey, ipfColorKey, ipfHSVKey, ipfTSLKey, ipfHKLKey, ipfSpotKey
   
   properties
-    CS1 = crystalSymmetry % crystal symmetry
+    CS1 = crystalFrame('1') % crystal symmetry
     CS2 = specimenFrame.default % crystal symmetry of a second phase for misorientations
     antipodal = false
   end

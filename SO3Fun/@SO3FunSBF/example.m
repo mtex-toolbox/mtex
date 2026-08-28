@@ -1,7 +1,7 @@
 function [SO3F1,SO3F2,SO3F3] = example(varargin)
 
 % In this example we consider Olivine with has orthorhombic symmetry
-csOli = crystalSymmetry('222',[4.779 10.277 5.995],'mineral','olivine');
+csOli = crystalFrame('222',[4.779 10.277 5.995],'mineral','olivine');
 
 % and the basic slip systems in olivine
 sSOli = slipSystem(Miller({1,0,0},{1,0,0},{0,0,1},csOli,'uvw'),...

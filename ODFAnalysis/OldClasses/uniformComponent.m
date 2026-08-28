@@ -6,8 +6,8 @@ methods (Static = true, Hidden=true)
   function odf = loadobj(s)
     CS = s.CS;
     SS = s.SS;
-    if isempty(CS), CS = crystalSymmetry; end
-    if isempty(SS), SS = specimenSymmetry; end
+    if isempty(CS), CS = crystalFrame('1'); end
+    if isempty(SS), SS = specimenFrame('1'); end
     ori = orientation(CS,SS);
     psi = SO3DeLaValleePoussinKernel;
     if s.antipodal==1, ori.antipodal=1; end

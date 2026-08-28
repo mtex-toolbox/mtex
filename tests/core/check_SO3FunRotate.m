@@ -35,9 +35,9 @@ function check_SO3FunRotate
 % symmetry question to #2585.
 rng(0)
 
-CS = crystalSymmetry('1');
-SS = crystalSymmetry('1');
-A  = crystalSymmetry('1');
+CS = crystalFrame('1');
+SS = crystalFrame('1');
+A  = crystalFrame('1');
 
 RBF = SO3FunRBF(orientation.rand(200,CS,SS), ...
   SO3DeLaValleePoussinKernel('halfwidth',20*degree));

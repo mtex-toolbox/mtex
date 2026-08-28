@@ -24,7 +24,7 @@ oldVis = get(0,'DefaultFigureVisible');
 set(0,'DefaultFigureVisible','off');
 cleanUp = onCleanup(@() cleanup(oldVis)); %#ok<NASGU>
 
-cs = crystalSymmetry('6/mmm',[3 3 5],'mineral','test');
+cs = crystalFrame('6/mmm',[3 3 5],'mineral','test');
 
 % four blocks, so that there are a few grains to carry an overlay
 n = 8;

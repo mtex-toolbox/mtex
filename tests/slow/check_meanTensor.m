@@ -17,7 +17,7 @@ o = rotation.byEuler(150*degree,40*degree,35*degree);
 
 %% do the same by an ODF
 
-odf = unimodalODF(o,crystalSymmetry("1"),specimenSymmetry("1"),'halfwidth',1*degree);
+odf = unimodalODF(o,crystalFrame("1"),specimenFrame("1"),'halfwidth',1*degree);
 
 T_odf_f = calcTensor(odf,T,'Fourier');
 T_odf_q = calcTensor(odf,T,'quadrature');
@@ -39,7 +39,7 @@ o = rotation.byEuler(150*degree,40*degree,35*degree);
 
 %% do the same by an ODF
 
-odf = unimodalODF(o,crystalSymmetry("1"),specimenSymmetry("1"),'halfwidth',1*degree);
+odf = unimodalODF(o,crystalFrame("1"),specimenFrame("1"),'halfwidth',1*degree);
 
 
 T_odf = calcTensor(odf,T,'Fourier');
@@ -63,7 +63,7 @@ o = rotation.byEuler(150*degree,40*degree,35*degree);
 
 %% do the same by an ODF
 
-odf = unimodalODF(o,crystalSymmetry("1"),specimenSymmetry("1"),'halfwidth',1*degree);
+odf = unimodalODF(o,crystalFrame("1"),specimenFrame("1"),'halfwidth',1*degree);
 
 
 T_odf = calcTensor(odf,T,'Fourier');
@@ -73,7 +73,7 @@ assert(mean(abs(reshape(matrix(T_odf-rotate(T,o)),[],1)))<2e-3,'Error checking t
 
 %% do the same by an ODF with quadrature
 
-odf = unimodalODF(o,crystalSymmetry("1"),specimenSymmetry("1"),'halfwidth',2*degree);
+odf = unimodalODF(o,crystalFrame("1"),specimenFrame("1"),'halfwidth',2*degree);
 
 
 T_odf_q = calcTensor(odf,T,'quadrature');
@@ -105,7 +105,7 @@ rotate(T,o)
 
 %psi = SO3Kernel([1 0 0 0 0]);
 
-odf = unimodalODF(o,crystalSymmetry("1"),specimenSymmetry("1"),'halfwidth',0.1*degree);
+odf = unimodalODF(o,crystalFrame("1"),specimenFrame("1"),'halfwidth',0.1*degree);
 %odf = unimodalODF(o,crystalSymmetry("1"),specimenSymmetry("1"),psi);
 
 

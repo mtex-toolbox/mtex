@@ -40,7 +40,7 @@ function [p2c, omega] = calcParent2Child(mori,p2c,varargin)
 %
 
 % compute misorientations if pairs of orientations are given
-if isa(mori.SS, 'specimenSymmetry'), mori = inv(mori(:,1)) .* mori(:,2); end
+if isa(mori.SS, 'specimenFrame'), mori = inv(mori(:,1)) .* mori(:,2); end
 
 threshold = get_option(varargin,'threshold',inf);
 quant = get_option(varargin,'quantile',0.9);

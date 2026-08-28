@@ -3,8 +3,8 @@ function check
 
 %%
 
-cs = crystalSymmetry('-3m',[1.4 1.4 1.5])
-ori = equispacedSO3Grid(cs,specimenSymmetry,'resolution',20*degree)
+cs = crystalFrame('-3m',[1.4 1.4 1.5])
+ori = equispacedSO3Grid(cs,specimenFrame('1'),'resolution',20*degree)
 %ori = orientation.rand(100,cs);
 %ori = orientation(rotation(crystalSymmetry('O')),cs)
 
@@ -122,7 +122,7 @@ toc
 
 %
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 
 
 for k = 1:numel(cs)
@@ -134,7 +134,7 @@ end
 
 %% define an
 
-cs = crystalSymmetry('O');
+cs = crystalFrame('O');
 
 x = linspace(-pi,pi,56);
 y = linspace(-pi,pi,56);
@@ -170,8 +170,8 @@ M = pdfMatrix(DSO3,h,r);
 
 %%
 
-cs = crystalSymmetry('-3m',[1.4 1.4 1.5])
-ori = equispacedSO3Grid(cs,specimenSymmetry,'resolution',5*degree)
+cs = crystalFrame('-3m',[1.4 1.4 1.5])
+ori = equispacedSO3Grid(cs,specimenFrame('1'),'resolution',5*degree)
 DSO3 = DelaunaySO3(ori)
 
 %%

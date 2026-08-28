@@ -158,7 +158,7 @@ sz = 20; d = 0.3;
 [Y,X] = ndgrid((0:sz-1)*d,(0:sz-1)*d);
 
 ebsd = EBSD(vector3d(X,Y,zeros(sz)), rotation.rand(sz,sz), ones(sz,sz), ...
-  {crystalSymmetry('m-3m')}, struct('bc',rand(sz,sz)));
+  {crystalFrame('m-3m')}, struct('bc',rand(sz,sz)));
 
 s = size(ebsd);
 assert(isequal(s,[sz^2 1]), ...
@@ -181,7 +181,7 @@ assert(max(norm(ebsdGrid.pos(newId) - ebsd.pos(:))) < 1e-10 * d, ...
 % a genuine N × k property is not a map and keeps its columns
 N = 50; fse = rand(N,5);
 ebsd = EBSD(vector3d((0:N-1).'*d,zeros(N,1),zeros(N,1)), rotation.rand(N,1), ...
-  ones(N,1), {crystalSymmetry('m-3m')}, struct('fse',fse));
+  ones(N,1), {crystalFrame('m-3m')}, struct('fse',fse));
 
 assert(isequal(ebsd.fse,fse), ...
   'check_gridify: a multi column property was flattened to %s',...
@@ -521,7 +521,7 @@ assert(abs(g.dx - sqrt(3)*g.dHex) < 1e-3*g.dx && abs(g.dy - 1.5*g.dHex) < 1e-3*g
   'check_gridify: dx/dy do not reproduce the row aligned spacings');
 
 % a flat top grid is recognised the other way round
-e = EBSDhex([],rotation.nan(8,9),ones(72,1),1,{crystalSymmetry},1,0);
+e = EBSDhex([],rotation.nan(8,9),ones(72,1),1,{crystalFrame('1')},1,0);
 assert(e.isRowAlignment == false, ...
   'check_gridify: a flat top grid was read as row aligned');
 assert(abs(e.dx - 1.5*e.dHex) < 1e-3*e.dx && abs(e.dy - sqrt(3)*e.dHex) < 1e-3*e.dy, ...

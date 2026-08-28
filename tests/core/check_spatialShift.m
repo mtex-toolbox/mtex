@@ -141,7 +141,7 @@ wedge = min(floor(mod(angleAround,2*pi) / (2*pi/3)) + 1, 3);
 rot = rotation.byAxisAngle(vector3d.Z, (wedge-1)*20*degree);
 
 ebsd = EBSD(vector3d(X(:),Y(:),zeros(n*n,1)), rot, ...
-  ones(n*n,1), {crystalSymmetry('m-3m')}, struct('bc',rand(n*n,1)));
+  ones(n*n,1), {crystalFrame('m-3m')}, struct('bc',rand(n*n,1)));
 
 grains = calcGrains(ebsd,'threshold',5*degree);
 

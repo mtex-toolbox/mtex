@@ -73,7 +73,7 @@ for k = 1:numel(names)
   fpProbe([p '.subGroupOfCubic'],@() double(s <= fpCubic));
 end
 
-ss = {specimenSymmetry('1'),specimenSymmetry('mmm'),specimenSymmetry('222')};
+ss = {specimenFrame('1'),specimenFrame('mmm'),specimenFrame('222')};
 for k = 1:numel(ss)
   p = ['symmetry.specimen' int2str(k)];
   fpProbe([p '.id'],@() ss{k}.id);
@@ -136,24 +136,24 @@ fpProbe('frame.twoConstructions.isAligned',@() double(isAligned(frA,frB)));
 
 % the register key of rule 2: what unifies two constructions and what does
 % not. Colour is deliberately absent from it
-iA = crystalSymmetry('m-3m',[4.05 4.05 4.05],'mineral','Interned');
+iA = crystalFrame('m-3m',[4.05 4.05 4.05],'mineral','Interned');
 fpProbe('frame.intern.same',@() double(iA == ...
-  crystalSymmetry('m-3m',[4.05 4.05 4.05],'mineral','Interned')));
+  crystalFrame('m-3m',[4.05 4.05 4.05],'mineral','Interned')));
 fpProbe('frame.intern.scaledCell',@() double(iA == ...
-  crystalSymmetry('m-3m',[4.06 4.06 4.06],'mineral','Interned')));
+  crystalFrame('m-3m',[4.06 4.06 4.06],'mineral','Interned')));
 fpProbe('frame.intern.otherColour',@() double(iA == ...
-  crystalSymmetry('m-3m',[4.05 4.05 4.05],'mineral','Interned','color','green')));
+  crystalFrame('m-3m',[4.05 4.05 4.05],'mineral','Interned','color','green')));
 fpProbe('frame.intern.otherMineral',@() double(iA == ...
-  crystalSymmetry('m-3m',[4.05 4.05 4.05],'mineral','Other')));
+  crystalFrame('m-3m',[4.05 4.05 4.05],'mineral','Other')));
 fpProbe('frame.intern.otherGroup',@() double(iA == ...
-  crystalSymmetry('432',[4.05 4.05 4.05],'mineral','Interned')));
+  crystalFrame('432',[4.05 4.05 4.05],'mineral','Interned')));
 fpProbe('frame.intern.otherShape',@() double( ...
-  crystalSymmetry('mmm',[4.7 10.2 6.0],'mineral','Shape') == ...
-  crystalSymmetry('mmm',[4.7 10.6 6.0],'mineral','Shape')));
+  crystalFrame('mmm',[4.7 10.2 6.0],'mineral','Shape') == ...
+  crystalFrame('mmm',[4.7 10.6 6.0],'mineral','Shape')));
 fpProbe('frame.intern.bypass',@() double(iA == ...
-  crystalSymmetry('m-3m',[4.05 4.05 4.05],'mineral','Interned','noIntern')));
+  crystalFrame('m-3m',[4.05 4.05 4.05],'mineral','Interned','noIntern')));
 fpProbe('frame.intern.specimen',@() double( ...
-  specimenSymmetry('mmm') == specimenSymmetry('mmm')));
+  specimenFrame('mmm') == specimenFrame('mmm')));
 
 % how many groups one frame handle carries. A symmetry, its Laue class, its
 % proper group and its group-stripped stand-in all point at one frame today,
@@ -176,7 +176,7 @@ for k = 1:numel(names)
   end
 end
 
-ss = {specimenSymmetry('1'),specimenSymmetry('mmm'),specimenSymmetry('222')};
+ss = {specimenFrame('1'),specimenFrame('mmm'),specimenFrame('222')};
 for k = 1:numel(ss)
   for l = 1:numel(ss)
     p = sprintf('frame.sharing.specimen%d%d',k,l);
@@ -265,7 +265,7 @@ euler = [10 20 30; 155 65 20; 0 0 0; 90 90 90; 37 12 199];
 
 for k = 1:numel(names)
   s = cs.(names{k});
-  ss = specimenSymmetry('1');
+  ss = specimenFrame('1');
   p = ['ori.' names{k}];
 
   ori = orientation.byEuler(euler(:,1)*degree,euler(:,2)*degree,euler(:,3)*degree,s,ss);
@@ -304,7 +304,7 @@ end
 % -------------------------------------------------------------------------
 function fpSO3Fun
 
-cs = fpCubic; ss = specimenSymmetry('1');
+cs = fpCubic; ss = specimenFrame('1');
 nodes = orientation.byEuler([0 25 80 130]*degree,[0 40 15 70]*degree, ...
   [0 10 55 95]*degree,cs,ss);
 
@@ -368,7 +368,7 @@ end
 % -------------------------------------------------------------------------
 function fpTensor
 
-cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Forsterite');
+cs = crystalFrame('mmm',[4.7646 10.2296 5.9942],'mineral','Forsterite');
 M = [[320.5 68.15 71.6 0 0 0];...
   [68.15 196.5 76.8 0 0 0];...
   [71.6 76.8 233.5 0 0 0];...
@@ -401,7 +401,7 @@ end
 % -------------------------------------------------------------------------
 function fpPoleFigure
 
-cs = fpCubic; ss = specimenSymmetry('1');
+cs = fpCubic; ss = specimenFrame('1');
 odf = unimodalODF(orientation.byEuler(15*degree,30*degree,45*degree,cs,ss), ...
   'halfwidth',10*degree);
 r = regularS2Grid('resolution',15*degree,'antipodal');
@@ -478,20 +478,20 @@ function cs = fpCrystalSymmetries
 % one representative of each lattice type, with real lattice parameters -
 % the cubic one is where a canonical basis would hide a frame defect
 
-cs.cubic = crystalSymmetry('m-3m',[4.05 4.05 4.05],'mineral','Aluminium');
-cs.cubic23 = crystalSymmetry('23',[5.43 5.43 5.43],'mineral','Cubic23');
-cs.hex = crystalSymmetry('6/mmm',[2.95 2.95 4.686],'mineral','Titanium');
-cs.trigonal = crystalSymmetry('-3m',[4.913 4.913 5.405],'mineral','Quartz');
-cs.tetra = crystalSymmetry('4/mmm',[4.594 4.594 2.959],'mineral','Rutile');
-cs.ortho = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Forsterite');
-cs.mono = crystalSymmetry('2/m',[9.746 8.99 5.27],[90 105.63 90]*degree,'mineral','Diopside');
-cs.tric = crystalSymmetry('-1',[8.17 12.87 7.11],[93.1 116.0 89.5]*degree,'mineral','Albite');
-cs.triv = crystalSymmetry('1',[4.05 4.05 4.05],'mineral','Trivial');
+cs.cubic = crystalFrame('m-3m',[4.05 4.05 4.05],'mineral','Aluminium');
+cs.cubic23 = crystalFrame('23',[5.43 5.43 5.43],'mineral','Cubic23');
+cs.hex = crystalFrame('6/mmm',[2.95 2.95 4.686],'mineral','Titanium');
+cs.trigonal = crystalFrame('-3m',[4.913 4.913 5.405],'mineral','Quartz');
+cs.tetra = crystalFrame('4/mmm',[4.594 4.594 2.959],'mineral','Rutile');
+cs.ortho = crystalFrame('mmm',[4.7646 10.2296 5.9942],'mineral','Forsterite');
+cs.mono = crystalFrame('2/m',[9.746 8.99 5.27],[90 105.63 90]*degree,'mineral','Diopside');
+cs.tric = crystalFrame('-1',[8.17 12.87 7.11],[93.1 116.0 89.5]*degree,'mineral','Albite');
+cs.triv = crystalFrame('1',[4.05 4.05 4.05],'mineral','Trivial');
 
 end
 
 function cs = fpCubic
-cs = crystalSymmetry('m-3m',[4.05 4.05 4.05],'mineral','Aluminium');
+cs = crystalFrame('m-3m',[4.05 4.05 4.05],'mineral','Aluminium');
 end
 
 function v = fpDirections

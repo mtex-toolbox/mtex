@@ -11,7 +11,7 @@ names = {'-1','2/m','mmm','-3','-3m','4/m','4/mmm','6/m','6/mmm','m-3','m-3m'};
 
 for k = 1:numel(names)
 
-  cs = crystalSymmetry(names{k});
+  cs = crystalFrame(names{k});
   ori = orientation.rand(50,cs);
 
   e = embedding(ori);

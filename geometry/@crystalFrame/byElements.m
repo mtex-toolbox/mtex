@@ -14,4 +14,4 @@ for k = 1:100
       
 end
   
-cs = crystalSymmetry(rot);
+cs = crystalFrame(rot);

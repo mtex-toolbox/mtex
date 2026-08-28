@@ -81,7 +81,7 @@ properties
   gradDir = xvector;          % gradient direction
   mori_angle = 0.0017;        % misorientation angle increment per unit step
   % initial orientation
-  ori0 = orientation.id(crystalSymmetry('1','mineral','kryptonite'));
+  ori0 = orientation.id(crystalFrame('1','mineral','kryptonite'));
     
 end
 

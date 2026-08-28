@@ -43,9 +43,9 @@ while ~feof(fid)
     %  003 hxxxx  5.00 5.00 90.00    1    0  (12f6.0)
     l = fgetl(fid);
     try
-      cs = crystalSymmetry(strtrim(l(6:10)),'silent');
+      cs = crystalFrame(strtrim(l(6:10)),'silent');
     catch %#ok<CTCH>
-      cs = crystalSymmetry('m-3m');
+      cs = crystalFrame('m-3m');
     end
     h{ih} = string2Miller(l(1:5),cs);
     

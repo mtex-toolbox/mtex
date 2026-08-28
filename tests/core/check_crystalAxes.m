@@ -37,7 +37,7 @@ for pg = {'mmm','422','m-3m'}
   if ~strcmp(pg{1},'mmm'), abc = [2 2 3]; end
   if strcmp(pg{1},'m-3m'), abc = [2 2 2]; end
 
-  ref = axesOf(crystalSymmetry(pg{1},abc));
+  ref = axesOf(crystalFrame(pg{1},abc));
   assert(max(abs(ref - diag(abc)),[],'all') < 1e-12, ...
     'check_crystalAxes: %s gives %s, expected diag(%s)', ...
     pg{1}, mat2str(ref,4), mat2str(abc));
@@ -45,7 +45,7 @@ for pg = {'mmm','422','m-3m'}
   % naming either of a/a* and c/c* is the same request
   for opt = {{'X||a'},{'X||a*'},{'X||a','Z||c'},{'X||a*','Z||c'}, ...
       {'X||a','Z||c*'},{'EDAX'}}
-    got = axesOf(crystalSymmetry(pg{1},abc,opt{1}{:}));
+    got = axesOf(crystalFrame(pg{1},abc,opt{1}{:}));
     assert(max(abs(got - ref),[],'all') < 1e-12, ...
       'check_crystalAxes: %s with %s differs from the default frame by %g', ...
       pg{1}, strjoin(opt{1},','), max(abs(got - ref),[],'all'));
@@ -65,28 +65,28 @@ wantA     = [a 0 0; -a/2 a*sqrt(0.75) 0; 0 0 c];   % X||a,  EDAX / TSL
 
 for pg = {'321','6/mmm','3','-6m2'}
 
-  got = axesOf(crystalSymmetry(pg{1},[a a c]));
+  got = axesOf(crystalFrame(pg{1},[a a c]));
   assert(max(abs(got - wantAStar),[],'all') < 1e-12, ...
     'check_crystalAxes: %s default frame is %s, expected %s', ...
     pg{1}, mat2str(got,4), mat2str(wantAStar,4));
 
   for opt = {{'X||a*'},{'X||a*','Z||c'}}
-    got = axesOf(crystalSymmetry(pg{1},[a a c],opt{1}{:}));
+    got = axesOf(crystalFrame(pg{1},[a a c],opt{1}{:}));
     assert(max(abs(got - wantAStar),[],'all') < 1e-12, ...
       'check_crystalAxes: %s with %s is not the X||a* frame', ...
       pg{1}, strjoin(opt{1},','));
   end
 
   for opt = {{'X||a'},{'X||a','Z||c'},{'EDAX'},{'TSL'}}
-    got = axesOf(crystalSymmetry(pg{1},[a a c],opt{1}{:}));
+    got = axesOf(crystalFrame(pg{1},[a a c],opt{1}{:}));
     assert(max(abs(got - wantA),[],'all') < 1e-12, ...
       'check_crystalAxes: %s with %s is %s, expected the X||a frame %s', ...
       pg{1}, strjoin(opt{1},','), mat2str(got,4), mat2str(wantA,4));
   end
 
   % the two differ by exactly 30 degree about c
-  cs1 = crystalSymmetry(pg{1},[a a c]);
-  cs2 = crystalSymmetry(pg{1},[a a c],'X||a');
+  cs1 = crystalFrame(pg{1},[a a c]);
+  cs2 = crystalFrame(pg{1},[a a c],'X||a');
   % as plain vectors - the two aAxis are Miller indices of different
   % symmetries, which angle would rightly complain about
   om = angle(vector3d(cs1.aAxis),vector3d(cs2.aAxis));
@@ -116,8 +116,8 @@ for pg = {'m-3m','321','2/m','1'}
     case '2/m',  ang = [90 100 90]*degree;
   end
 
-  ref = axesOf(crystalSymmetry(pg{1},abc,ang));
-  got = axesOf(crystalSymmetry(pg{1},abc,ang,'mineral','Test','color','red'));
+  ref = axesOf(crystalFrame(pg{1},abc,ang));
+  got = axesOf(crystalFrame(pg{1},abc,ang,'mineral','Test','color','red'));
 
   assert(isequal(got,ref), ...
     'check_crystalAxes: %s - naming the phase changed the axes by %g', ...
@@ -134,8 +134,8 @@ function checkGeneralPath
 % no-op it is for the orthogonal lattices - the fast paths must not swallow
 % it. An over determined request still has to be rejected.
 
-cs = crystalSymmetry('2/m',[1 2 3],[90 100 90]*degree);
-csA = crystalSymmetry('2/m',[1 2 3],[90 100 90]*degree,'X||a');
+cs = crystalFrame('2/m',[1 2 3],[90 100 90]*degree);
+csA = crystalFrame('2/m',[1 2 3],[90 100 90]*degree,'X||a');
 
 assert(max(abs(axesOf(cs) - axesOf(csA)),[],'all') > 0.1, ...
   'check_crystalAxes: monoclinic X||a did not change the frame');
@@ -151,7 +151,7 @@ assert(angle(cs.aAxisRec,vector3d.X) < 1e-10, ...
 
 % an alignment that cannot be realised is still an error
 try
-  crystalSymmetry('1',[1 2 3],[80 95 110]*degree,'X||a','Z||c');
+  crystalFrame('1',[1 2 3],[80 95 110]*degree,'X||a','Z||c');
   error('check_crystalAxes:noError', ...
     'triclinic X||a together with Z||c was accepted');
 catch ME

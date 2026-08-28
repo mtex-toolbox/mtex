@@ -104,11 +104,11 @@ cases = {{'432','mineral','Austenite'}, {'m-3m','mineral','X'}, ...
 
 for k = 1:numel(cases)
   try
-    cs = crystalSymmetry(cases{k}{:});
+    cs = crystalFrame(cases{k}{:});
     v = cs.aAxis + cs.bAxis + cs.cAxis; %#ok<NASGU>
   catch ME
     if strcmp(ME.identifier,'MTEX:vector3d:ambiguousMatrix')
-      error(['check_vector3d: crystalSymmetry(''%s'',...) reaches the 3 × 3 '...
+      error(['check_vector3d: crystalFrame(''%s'',...) reaches the 3 × 3 '...
         'ambiguity warning - slice the matrix explicitly at that call site '...
         'instead of letting the constructor guess'], cases{k}{1});
     end

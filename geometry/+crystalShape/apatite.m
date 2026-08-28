@@ -1,7 +1,7 @@
 function cS = apatite(varargin)
 
 if nargin == 0 || ~isa(varargin{1},'referenceFrame')
-  cs = crystalSymmetry('6/m',[1,1,0.7346],'mineral','apatite');
+  cs = crystalFrame('6/m',[1,1,0.7346],'mineral','apatite');
 else
   cs = varargin{1};
 end

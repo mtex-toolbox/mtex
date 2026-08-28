@@ -48,10 +48,10 @@ for K = 1:nphase
   % Laue group (class) number
   try % some ctf files might be broken
     laue = Laue{sscanf(mpara{4},'%u')};
-    cs(K+1) = crystalSymmetry(laue,abc(:)',abg(:)','mineral',mineral);
+    cs(K+1) = crystalFrame(laue,abc(:)',abg(:)','mineral',mineral);
   catch
     spaceId = sscanf(mpara{5},'%u'); % try spaceid
-    cs(K+1) = crystalSymmetry('SpaceId',spaceId,',abc(:)',abg(:)','mineral',mineral);     
+    cs(K+1) = crystalFrame('SpaceId',spaceId,',abc(:)',abg(:)','mineral',mineral);
   end
 
 end

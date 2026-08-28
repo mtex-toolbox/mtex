@@ -42,7 +42,7 @@ if isa(hkl,'double')
 end
 
 if iscell(hkl)
-  CS = getClass(varargin,'crystalFrame',crystalSymmetry('cubic'));
+  CS = getClass(varargin,'crystalFrame',crystalFrame('cubic'));
   
   hkl = Miller(hkl{:},CS);
   uvw = Miller(uvw{:},CS,'uvw');
@@ -51,7 +51,7 @@ else
   CS = hkl.CS;
 end
 
-SS = getClass(varargin,'specimenFrame',specimenSymmetry);
+SS = getClass(varargin,'specimenFrame',specimenFrame('1'));
 
 hkl = normalize(hkl(:));
 uvw = normalize(uvw);

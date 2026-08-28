@@ -300,9 +300,9 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
 
         langle = double(EBSDphases.(pN).Lattice_Angles');
         try ~isempty(EBSDphases.(pN).Space_Group) & EBSDphases.(pN).Space_Group ~= 0;
-            csm = crystalSymmetry('SpaceId',EBSDphases.(pN).Space_Group);
+            csm = crystalFrame('SpaceId',EBSDphases.(pN).Space_Group);
         catch
-            csm = crystalSymmetry(EBSDphases.(pN).Laue_Group);
+            csm = crystalFrame(EBSDphases.(pN).Laue_Group);
         end
         if strcmp(csm.lattice,'trigonal') | strcmp(csm.lattice,'hexagonal')
             langle(isnull(langle-2/3*pi,1e-7))=2/3*pi;
@@ -310,7 +310,7 @@ for k = 1 :length(EBSD_index) % TODO: find a good way to write out multiple data
             langle(isnull(langle-pi/2,1e-7))=pi/2;
         end
 
-        CS{phaseN+1} = crystalSymmetry(csm.pointGroup, ...
+        CS{phaseN+1} = crystalFrame(csm.pointGroup, ...
             double(EBSDphases.(pN).Lattice_Dimensions'),...
             langle,...
             'Mineral',char(EBSDphases.(pN).Phase_Name));
