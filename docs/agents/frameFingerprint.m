@@ -134,6 +134,39 @@ frB = crystalFrame(cubicAxes,'name','fp');
 fpProbe('frame.twoConstructions.eq',@() double(frA == frB));
 fpProbe('frame.twoConstructions.isAligned',@() double(isAligned(frA,frB)));
 
+% how many groups one frame handle carries. A symmetry, its Laue class, its
+% proper group and its group-stripped stand-in all point at one frame today,
+% and every specimen symmetry points at the session default - which is what
+% has to give when the group moves onto the frame. Whether the predicates
+% built on that sharing still answer the same is the question this asks
+for k = 1:numel(names)
+  s = cs.(names{k});
+  p = ['frame.sharing.' names{k}];
+  rel = {'Laue',s.Laue; 'proper',s.properGroup; 'stripped',stripSym(s)};
+  for l = 1:size(rel,1)
+    o = rel{l,2}; q = [p '.' rel{l,1}];
+    fpProbe([q '.eq'],@() double(s.frame == o.frame));
+    fpProbe([q '.isAligned'],@() double(isAligned(s.frame,o.frame)));
+    fpProbe([q '.isCompatible'],@() double(isCompatible(s.frame,o.frame)));
+    fpProbe([q '.eqTol'],@() double(eqTol(s,o)));
+    fpProbe([q '.sim'],@() double(sim(s,o)));
+    fpProbe([q '.id'],@() [o.id,o.Laue.id,numSym(o)]);
+  end
+end
+
+ss = {specimenSymmetry('1'),specimenSymmetry('mmm'),specimenSymmetry('222')};
+for k = 1:numel(ss)
+  for l = 1:numel(ss)
+    p = sprintf('frame.sharing.specimen%d%d',k,l);
+    fpProbe([p '.eq'],@() double(ss{k}.frame == ss{l}.frame));
+    fpProbe([p '.isAligned'],@() double(isAligned(ss{k}.frame,ss{l}.frame)));
+    fpProbe([p '.eqTol'],@() double(eqTol(ss{k},ss{l})));
+    fpProbe([p '.sim'],@() double(sim(ss{k},ss{l})));
+  end
+  fpProbe(sprintf('frame.sharing.specimen%d.isDefault',k), ...
+    @() double(ss{k}.frame == specimenFrame.default));
+end
+
 end
 
 % -------------------------------------------------------------------------
@@ -477,8 +510,13 @@ evalc('out = f();');
 end
 
 function fpEmit(name,value)
+% snapped to an absolute grid of 1e-12 before printing. Some observables are
+% evaluations near a zero of the function, so a computation whose own scale is
+% one lands at 1e-6 and its last digits are summation-order noise that moves
+% between processes. The grid is three orders above that noise and leaves every
+% digit of anything larger
 value = double(value);
-value = value(:);
+value = round(value(:),12);
 if isscalar(value)
   fprintf('%s = %.12g\n',name,value);
 else
