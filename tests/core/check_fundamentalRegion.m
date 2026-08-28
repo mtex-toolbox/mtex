@@ -103,7 +103,7 @@ for i = 1:numel(pg)
     [oR1,dcs1,n1] = fundamentalRegion(cs,cs,opt{k}{:});
     [oR2,dcs2,n2] = fundamentalRegion(cs,cs,opt{k}{:}); % from the memo
 
-    % eqTol, not == : phaseItem seals eq to handle identity, so two equal
+    % eqTol, not == : referenceFrame seals eq to handle identity, so two equal
     % symmetries are never == unless they are the same object
     lbl = [pg{i} ' ' strjoin(cellfun(@num2str,opt{k},'uniformOutput',false),' ')];
     assert(isequal(fpRegion(oR1),fpRegion(oR2)) && n1 == n2 && eqTol(dcs1,dcs2), ...

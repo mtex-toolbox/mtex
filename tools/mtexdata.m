@@ -271,7 +271,7 @@ catch
           % plus alpha cobalt, the last of which collects what neither iron fits
           out = EBSD.load(fName,'silent');
 
-          % phaseItem is a handle class, so naming them through a local
+          % a frame is a handle class, so naming them through a local
           % copy of the list names the ones the EBSD object holds
           CS = out.CSList;
           CS(2).mineral = 'Iron bcc';

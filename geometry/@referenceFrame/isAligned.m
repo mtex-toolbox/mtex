@@ -1,7 +1,7 @@
 function out = isAligned(rf1,rf2,tol)
 % whether two frames have the same basis, i.e. no transition is needed
 %
-% This is the criterion phaseItem/eqTolPair and crystalSymmetry/eqLazy use
+% This is the criterion referenceFrame/eqTol and crystalSymmetry/eqLazy use
 % today (not yet rerouted here - the default tolerance is theirs).
 %
 % Syntax

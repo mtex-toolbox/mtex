@@ -42,7 +42,7 @@ function ok = symFits(s1,s2,level)
 %  ok - logical
 %
 % See also
-% framesFit symmetry/eqTol crystalSymmetry/eqLazy phaseItem/sim
+% framesFit referenceFrame/eqTol crystalSymmetry/eqLazy referenceFrame/sim
 
 if nargin < 3, level = 'same'; end
 

@@ -477,7 +477,7 @@ classdef phaseList
               " Please provide the full phase name.");
         end
         
-      elseif isa(phName,'phaseItem')
+      elseif isa(phName,'referenceFrame')
         phId = find(pL.CSList == phName); % TODO!!
       else
         phId = find(phName == pL.phaseMap);

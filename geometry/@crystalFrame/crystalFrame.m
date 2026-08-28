@@ -1,4 +1,4 @@
-classdef crystalFrame < referenceFrame & phaseItem
+classdef crystalFrame < referenceFrame
 % the reference frame glued to the lattice basis of a phase
 %
 % The basis are the crystal axes a, b, c in canonical Euclidean

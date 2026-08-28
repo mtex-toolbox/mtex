@@ -1,4 +1,4 @@
-classdef referenceFrame < handle
+classdef (Abstract) referenceFrame < handle & matlab.mixin.Heterogeneous
 % a reference frame - an identity, a basis and a default plotting convention
 %
 % A reference frame answers "what coordinate system is this data expressed
@@ -8,25 +8,30 @@ classdef referenceFrame < handle
 % this frame on screen. The transition between two frames is computed by
 % <referenceFrame.transformationMatrix.html |transformationMatrix|>.
 %
-% See docs/adr/0003-reference-frame-vs-symmetry.md for the model:
-% @crystalSymmetry and @specimenSymmetry keep their public API and delegate
-% their frame data (|axes|, |how2plot|) to a frame they hold.
+% A phase of a map is such a frame: the CSList of a @phaseList mixes the
+% @crystalFrame of every indexed phase with a @notIndexedFrame for the
+% measurements that could not be indexed. That is what makes this class
+% heterogeneous, and why the comparisons a phase list rests on - |eq|,
+% |eqTol|, |sim| and the list display - are sealed here.
 %
-% Syntax
-%
-%   rf = referenceFrame(basis)
-%   rf = referenceFrame(basis,'name','measurement')
-%
-% Input
-%  basis - 1x3 @vector3d, the basis vectors, not necessarily normalized
+% See docs/adr/0008-frames-carry-symmetry.md for the model: a frame carries
+% the point group, and objects carry frames.
 %
 % Class Properties
-%  name     - identity of the frame: 'measurement', 'rolling', a mineral, ...
-%  basis    - 1x3 @vector3d in canonical coordinates, lengths are meaningful
-%  how2plot - the default @plottingConvention of this frame
+%  name      - identity of the frame: 'measurement', 'rolling', a mineral, ...
+%  mineral   - the name, under the name a phase list uses for it
+%  color     - color used in an EBSD phase plot
+%  basis     - 1x3 @vector3d in canonical coordinates, lengths are meaningful
+%  how2plot  - the default @plottingConvention of this frame
+%  isIndexed - whether this frame stands for measurements that were indexed
+%
+% Derived Classes
+%  @crystalFrame    - the frame glued to the lattice of a phase
+%  @specimenFrame   - the frame a sample is expressed in
+%  @notIndexedFrame - the placeholder for unindexed measurements
 %
 % See also
-% crystalFrame specimenFrame crystalSymmetry specimenSymmetry plottingConvention
+% crystalFrame specimenFrame notIndexedFrame crystalSymmetry plottingConvention
 
   properties
     name = ''      % identity of the frame
@@ -35,10 +40,14 @@ classdef referenceFrame < handle
     axesNames = {'X','Y','Z'}  % names of the three basis axes
     how2plot = []  % default plottingConvention (a value)
     sym = symmetry % the point group this frame carries
+    color = []     % color used in an EBSD phase plot
     opt = struct   % free-form extras, e.g. the density of a phase
   end
 
   properties (Dependent = true)
+    mineral   % the name, under the name a phase list uses for it
+    isIndexed % whether this frame stands for measurements that were indexed
+
     % the default pole figure annotation of this frame, e.g. RD, TD, ND
     pfAnnotations
 
@@ -78,7 +87,7 @@ classdef referenceFrame < handle
   properties (Constant, Hidden)
     % the tolerances currently scattered over the tree - named here so the
     % comparisons can be rerouted onto one definition step by step
-    tolAligned    = 5e-2   % same frame: phaseItem/eqTolPair, crystalSymmetry/eqLazy
+    tolAligned    = 5e-2   % same frame: eqTolPair, crystalSymmetry/eqLazy
     tolCompatible = 1e-1   % transformable frame: symmetry/ensureCS
   end
 
@@ -128,6 +137,13 @@ classdef referenceFrame < handle
       if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
       rf.how2plot = pC;
     end
+
+    % a phase list calls the identity of a frame its mineral
+    function v = get.mineral(rf), v = rf.name; end
+    function set.mineral(rf,v), rf.name = v; end
+
+    % what a frame stands for is what it is, not something it stores
+    function v = get.isIndexed(rf), v = ~isa(rf,'notIndexedFrame'); end
 
     function v = get.id(rf), v = rf.sym.id; end
     function v = get.rot(rf), v = rf.sym.rot; end
@@ -238,6 +254,98 @@ classdef referenceFrame < handle
 
   end
 
+  methods (Static, Sealed, Access = protected)
+
+    function fr = getDefaultScalarElement
+      % what fills the gaps of a frame array - an unindexed phase, since
+      % that is the only frame that stands for the absence of one
+      fr = notIndexedFrame;
+    end
+
+  end
+
+  % a method used on a mixed array of frames - which is what a phase list
+  % is - has to be sealed here, at the root of the hierarchy
+  methods (Sealed = true)
+
+    function out = eq(fr1,fr2)
+      % two frames are the same frame only if they are the same object -
+      % see eqTol and sim for the comparisons by value
+      out = eq@handle(fr1,fr2);
+    end
+
+    function out = eqTol(fr1,fr2)
+      % whether two frames may be treated as one
+      %
+      % A crystal frame needs the same mineral, Laue class and alignment, a
+      % specimen frame the same Laue class and alignment, an unindexed one
+      % only the same name.
+      %
+      % Note: for arrays this exits as soon as any element pair matches by
+      % object identity, returning the raw identity-comparison array for
+      % all elements. Safe when aggregated with any(...) (the common "does
+      % X match anything in this list" pattern), but the returned array is
+      % not reliable per-index if a call mixes an identical pair with a
+      % merely-similar-but-not-identical one.
+
+      out = fr1 == fr2;
+      if any(out(:)), return; end
+
+      n = max(length(fr1),length(fr2));
+      out = false(1,n);
+      for k = 1:n
+        out(k) = eqTolPair(fr1(min(k,length(fr1))),fr2(min(k,length(fr2))));
+      end
+
+    end
+
+    function out = sim(fr1,fr2)
+      % whether two frames describe the same symmetry
+      %
+      % Unlike eqTol this does not require the bases to be aligned - for a
+      % crystal frame the cell shape still has to agree, for a specimen
+      % frame only the group does.
+      %
+      % The same array note as on eqTol applies.
+
+      out = fr1 == fr2;
+      if any(out(:)), return; end
+
+      n = max(length(fr1),length(fr2));
+      out = false(1,n);
+      for k = 1:n
+        out(k) = simPair(fr1(min(k,length(fr1))),fr2(min(k,length(fr2))));
+      end
+
+    end
+
+    function disp(frList)
+      % the phase table a list of frames prints
+
+      for k = 1:length(frList)
+
+        d{k,1} = frList(k).mineral; %#ok<AGROW>
+        d{k,2} = rgb2str(frList(k).color); %#ok<AGROW>
+
+        % only a lattice has a cell and an alignment to state
+        if isa(frList(k),'crystalFrame')
+          d{k,3} = frList(k).pointGroup; %#ok<AGROW>
+          d{k,4} = option2str(vec2cell(norm(frList(k).axes))); %#ok<AGROW>
+          if ~frList(k).lattice.isEucledean
+            d{k,5} = option2str(frList(k).alignment); %#ok<AGROW>
+          end
+        else
+          [d{k,3:5}] = deal(''); %#ok<AGROW>
+        end
+
+      end
+      cprintf(d,'-L',' ','-Lc',...
+        {'mineral' 'color','symmetry','a, b, c','reference frame'},...
+        '-d','  ','-ic',true);
+    end
+
+  end
+
   methods (Static = true)
 
     function rf = byName(name,rf)
@@ -292,9 +400,6 @@ classdef referenceFrame < handle
       % See also
       % referenceFrame/byName referenceFrame/reintern
 
-      % a cell array, not a frame array: assigning a crystalFrame into an
-      % array typed referenceFrame slices it down to the base class, which
-      % is the same constraint that makes the phase list heterogeneous
       persistent store
 
       if isempty(store), store = {}; end

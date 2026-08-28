@@ -20,7 +20,7 @@ if strcmp(s(1).type,'()')
     if ischar(subs{k}) || isstring(subs{k})
       phId = gB.name2id(subs{k});
       if phId > 0, subs{k} = gB.CSList(phId); end
-    elseif isa(subs{k},'phaseItem')
+    elseif isa(subs{k},'referenceFrame')
       phId = find(gB.CSList == subs{k});
     end
   end

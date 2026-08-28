@@ -51,7 +51,7 @@ end
 function checkPhaseIdentity
 % two phases that share a lattice are still two phases
 %
-% Regression test: phaseItem/eqTolPair opened with
+% Regression test: eqTolPair opened with
 % strcmpi(obj1.mineral,obj2.mineral). The fitSym that replaced it in
 % ensureCompatibleSymmetries compares the Laue class and the reference
 % frame, neither of which can tell two minerals apart when they share a
