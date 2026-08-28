@@ -28,7 +28,7 @@ function sF = interp(v,y,varargin)
 y = reshape(y, length(v), []);
 
 % set harmonic approximation default for symmetric data 
-if isa(v,'Miller') && ~check_option(varargin,{'linear','nearest','inverseDistance','noSymmetry'}) 
+if hasSymmetry(v) && ~check_option(varargin,{'linear','nearest','inverseDistance','noSymmetry'}) 
   varargin = [varargin,'harmonic'];
 end
 

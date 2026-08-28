@@ -14,7 +14,7 @@ function [sS,id] = symmetrise(sS,varargin)
 %  id    - id of the slipSystem before symmetrisation
 %
 
-if ~isa(sS.b,'Miller'), return; end
+if ~isCrystalDirection(sS.b), return; end
 
 b = [];
 n =  [];

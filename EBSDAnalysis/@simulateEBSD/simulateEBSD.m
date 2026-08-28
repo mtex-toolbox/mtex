@@ -237,7 +237,7 @@ function ori_new = updateOri(ebsd, job)
 % be involved, everythign else comes from the job
 
 % in case axS comes in crystal coords
-if isa(job.axS,'Miller'), job.axS = inv(ebsd.orientations).* job.axS; end
+if isCrystalDirection(job.axS), job.axS = inv(ebsd.orientations).* job.axS; end
 
 % 1) define misorientation vector in specimen coordinates
 % direction of the vector is the misorientation axis, angle it's length

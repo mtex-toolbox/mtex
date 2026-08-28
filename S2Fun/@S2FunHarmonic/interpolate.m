@@ -40,7 +40,7 @@ for k = 1:size(y,2)
 end
 
 % consider the case of symmetry
-if isa(nodes,'Miller')
+if hasSymmetry(nodes)
   nodes = nodes.symmetrise('noAntipodal').';
   nodes.antipodal = nodes.CS.isLaue;
   yy = repmat(yy,size(nodes,2),1);
@@ -127,7 +127,7 @@ sF = S2FunHarmonic(fhat);
 sF.frame = getClass(varargin,'referenceFrame',nodes.frame);
 
 % ensure symmetry if required
-if isa(nodes,'Miller')
+if hasSymmetry(nodes)
   sF = sF.symmetrise(nodes.CS); 
 end
 

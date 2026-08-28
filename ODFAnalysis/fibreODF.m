@@ -38,7 +38,7 @@ else
   r = varargin{2};
   
   % get specimen symmetry
-  if isa(r,'Miller')
+  if isCrystalDirection(r)
     SS = r.CS;
   else
     SS = getClass(varargin,'specimenFrame',specimenFrame.default);

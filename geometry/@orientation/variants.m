@@ -100,7 +100,7 @@ elseif nargin>1 && isa(varargin{1},'orientation')
     error('Symmetry mismatch!')
   end
  
-elseif nargin>1 && isa(varargin{1},'Miller')
+elseif nargin>1 && isCrystalDirection(varargin{1})
   
   if varargin{1}.CS.Laue == p2c.CS.Laue
     

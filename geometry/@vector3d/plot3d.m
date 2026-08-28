@@ -31,8 +31,8 @@ else
   ax = gca;
 end
 
-% a Miller index marks the plot as living in crystal coordinates, note it before scaling
-if isa(v,'Miller'), csArg = {v.CS}; else, csArg = {}; end
+% a direction in a crystal frame marks the plot as living in crystal coordinates, note it before scaling
+if isCrystalDirection(v), csArg = {v.CS}; else, csArg = {}; end
 
 % scale and shift if required
 scale = get_option(varargin,'scale',1);

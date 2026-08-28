@@ -486,7 +486,7 @@ end
 % return the sample in the reference frame of the function
 if isa(sF,'S2FunHarmonicSym') && isa(sF.CS,'crystalFrame')
   v = Miller(v,sF.CS);
-elseif ~isa(v,'Miller')
+elseif ~isCrystalDirection(v)
   if isa(sF.frame,'crystalFrame')
     v = Miller(v, crystalSymmetry(sF.frame));
   else

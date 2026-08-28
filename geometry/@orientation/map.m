@@ -45,7 +45,7 @@ varargin(args) = [];
    
 ori = orientation(rotation.map(varargin{:}));
         
-if isa(varargin{1},'Miller')
+if isCrystalDirection(varargin{1})
   ori.CS = varargin{1}.CS; 
   if ~isempty(sym), ori.SS = sym{1}; end
 else
@@ -57,7 +57,7 @@ else
   end
 end
 
-if isa(varargin{2},'Miller')
+if isCrystalDirection(varargin{2})
   ori.SS = varargin{2}.CS;
 elseif isa(varargin{2}.frame,'specimenFrame')
   % the input states a specimen frame - the result is expressed in it, in

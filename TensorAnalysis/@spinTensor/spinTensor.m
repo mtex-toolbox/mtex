@@ -48,7 +48,7 @@ classdef spinTensor < velocityGradientTensor
         Omega.M(1,3,:,:,:) =  y;
         Omega.M(2,3,:,:,:) = -x;
         
-        if isa(in,'Miller')
+        if isCrystalDirection(in)
           Omega.CS = in.CS;
         elseif isa(in,'SO3TangentVector')
           

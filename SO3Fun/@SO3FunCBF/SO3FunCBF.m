@@ -77,7 +77,7 @@ classdef SO3FunCBF < SO3Fun
     end
     
     function SRight = get.SRight(SO3F)
-      if isa(SO3F.h,'Miller')
+      if isCrystalDirection(SO3F.h)
         SRight = SO3F.h.CS;
       else
         try
@@ -98,7 +98,7 @@ classdef SO3FunCBF < SO3Fun
     end
     
     function SLeft = get.SLeft(SO3F)
-      if isa(SO3F.r,'Miller')
+      if isCrystalDirection(SO3F.r)
         SLeft = SO3F.r.CS;
       else
         try

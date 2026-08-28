@@ -26,14 +26,14 @@ varargin(args) = [];
    
 ori = orientation(rotation.fit(varargin{:}));
         
-if isa(varargin{1},'Miller')
+if isCrystalDirection(varargin{1})
   ori.CS = varargin{1}.CS; 
   if ~isempty(sym), ori.SS = sym{1}; end
 else
   if ~isempty(sym), ori.CS = sym{1}; end
 end
 
-if isa(varargin{2},'Miller'), ori.SS = varargin{2}.CS; end
+if isCrystalDirection(varargin{2}), ori.SS = varargin{2}.CS; end
 
 if length(sym) == 2
   ori.CS = sym{1};

@@ -58,7 +58,7 @@ classdef slipSystem
     end
     
     function CS = get.CS(sS)
-      if isa(sS.b,'Miller')
+      if isCrystalDirection(sS.b)
         CS = sS.b.CS;
       else
         CS = specimenFrame.default;
@@ -82,7 +82,7 @@ classdef slipSystem
 
       % a slip system in the crystal frame shows its symmetry, a rotated
       % one - plain vector3d directions - the frame it landed in
-      if isa(sS.b,'Miller')
+      if isCrystalDirection(sS.b)
         info = char(sS.CS,'compact');
       else
         info = referenceFrame.headerChar(sS.b.frame,sS.b.how2plot);

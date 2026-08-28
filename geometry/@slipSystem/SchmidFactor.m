@@ -101,7 +101,7 @@ refFrame = ref.frame;
 % a frame free direction states nothing, so take it at face value
 if isempty(refFrame), return; end
 
-if isa(n,'Miller') % slip systems in crystal coordinates
+if isCrystalDirection(n) % slip systems in crystal coordinates
   isMismatch = ~isa(refFrame,'crystalFrame') || ~isAligned(refFrame,n.CS);
 else % slip systems in specimen coordinates
   isMismatch = isa(refFrame,'crystalFrame');

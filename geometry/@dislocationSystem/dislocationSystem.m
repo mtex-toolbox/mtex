@@ -90,7 +90,7 @@ classdef dislocationSystem
     end
     
     function CS = get.CS(sS)
-      if isa(sS.b,'Miller')
+      if isCrystalDirection(sS.b)
         CS = sS.b.CS;
       else
         CS = specimenFrame.default;

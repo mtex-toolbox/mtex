@@ -8,7 +8,7 @@ if isa(obj,'referenceFrame')
 elseif isa(obj,'orientation')
   sym1 = obj.SS;
   sym2 = obj.CS;
-elseif isa(obj,'Miller')
+elseif isCrystalDirection(obj)
   sym1 = obj.CS;
 elseif isa(obj,'quaternion') || isa(obj,'vector3d')
   sym1 = [];

@@ -27,7 +27,7 @@ function pdf = calcPDF(SO3F,h,varargin)
 % SO3Fun/plotPDF SO3Fun/plotIPDF SO3Fun/calcPoleFigure
 
 % check crystal symmetry
-if isa(h,'Miller')
+if isCrystalDirection(h)
   h = SO3F.CS.ensureCS(h); 
 elseif ~isempty(h)
   h = Miller(h,SO3F.CS);

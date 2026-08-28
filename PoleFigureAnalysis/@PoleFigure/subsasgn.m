@@ -13,7 +13,7 @@ switch s(1).type
   
     if numel(s)>1, b =  subsasgn(subsref(pf,s(1)),s(2:end),b); end
     
-    if isa(s(1).subs{1},'cell') || ischar(s(1).subs{1}) || isa(s(1).subs{1},'Miller')
+    if isa(s(1).subs{1},'cell') || ischar(s(1).subs{1}) || isCrystalDirection(s(1).subs{1})
   
       ind = subsind(pf,s(1).subs);
   

@@ -20,7 +20,7 @@ rot = orientation.map(xvector,d);
 F = deformationGradientTensor(diag([rate,1./sqrt(rate),1./sqrt(rate)]));
 
 F = rotate(F,inv(rot));
-if isa(d,'Miller')
+if isCrystalDirection(d)
   F.CS = d.CS;
 else
   F.CS = specimenFrame.default;

@@ -54,7 +54,7 @@ if nargout >= 2
   if ~isempty(varargin) && any(strcmpi(varargin,'packet')) % definition given
     h1 = varargin{find(strcmpi('packet',varargin)==1)+1};
     h2 = varargin{find(strcmpi('packet',varargin)==1)+2};
-    if ~isa(h1,'Miller') || ~isa(h2,'Miller')
+    if ~isCrystalDirection(h1) || ~isCrystalDirection(h2)
       error('Input for packet ID calculation must be Miller.');
     end
   else % definition assumed
@@ -75,7 +75,7 @@ if nargout >= 3
   if ~isempty(varargin) && any(strcmpi(varargin,'bain')) % definition given
     h1 = varargin{find(strcmpi('bain',varargin)==1)+1};
     h2 = varargin{find(strcmpi('bain',varargin)==1)+2};
-    if ~isa(h1,'Miller') || ~isa(h2,'Miller')
+    if ~isCrystalDirection(h1) || ~isCrystalDirection(h2)
       error('Input for bain ID calculation must be Miller.');
     end
   else % definition assumed

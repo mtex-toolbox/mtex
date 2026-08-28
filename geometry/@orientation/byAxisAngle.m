@@ -22,4 +22,4 @@ function ori = byAxisAngle(axis,angle,varargin)
 ori = orientation(axis2quat(axis,angle),varargin{:});
 
 % copy crystal symmetry if possible
-if isa(axis,'Miller'), ori.CS = axis.CS; ori.SS = axis.CS; end
+if isCrystalDirection(axis), ori.CS = axis.CS; ori.SS = axis.CS; end

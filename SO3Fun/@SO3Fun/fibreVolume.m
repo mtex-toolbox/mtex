@@ -32,7 +32,7 @@ end
 
 % check input
 argin_check(h,{'Miller','vector3d'});
-if isa(h,'Miller'), h = odf.CS.ensureCS(h);end
+if isCrystalDirection(h), h = odf.CS.ensureCS(h);end
 argin_check(r,'vector3d');
 argin_check(radius,'double');
 

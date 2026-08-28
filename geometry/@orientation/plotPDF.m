@@ -48,9 +48,9 @@ end
 
 h = [];
 if nargin > 1
-  if isa(varargin{1},'Miller')
+  if isCrystalDirection(varargin{1})
     h = varargin{1};
-  elseif iscell(varargin{1}) && isa(varargin{1}{1},'Miller')
+  elseif iscell(varargin{1}) && isCrystalDirection(varargin{1}{1})
     h = varargin{1};
   end
 end
@@ -70,8 +70,8 @@ layoutRelease = layoutHold(mtexFig); %#ok<NASGU>
 if check_option(varargin,'property')
   data = get_option(varargin,'property');
   data = reshape(data,[length(ori) 1 numel(data)/length(ori)]);
-elseif (nargin > 1 && ~(isa(varargin{1},'Miller')) || ...
-    (nargin > 2 && iscell(varargin{2}) && isa(varargin{2}{1},'Miller')))
+elseif (nargin > 1 && ~isCrystalDirection(varargin{1}) || ...
+    (nargin > 2 && iscell(varargin{2}) && isCrystalDirection(varargin{2}{1})))
   [data,varargin] = extract_data(length(ori),varargin);
   data = reshape(data,[length(ori) 1 numel(data)/length(ori)]);
 else

@@ -84,7 +84,7 @@ end
 %% Set Display Style of Miller objects
 function m = setDisplayStyle(millerObj,mode)
 m = millerObj;
-if isa(m,'Miller')
+if isCrystalDirection(m)
   if any(strcmpi(m.CS.lattice,{'hexagonal','trigonal'}))
     if strcmpi(mode,'direction')
       m.dispStyle = 'UVTW';

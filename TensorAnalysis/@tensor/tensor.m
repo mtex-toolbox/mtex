@@ -138,7 +138,7 @@ classdef tensor < dynOption
       if isa(M,'vector3d') % conversion from vector3d
         T.M = shiftdim(fullDouble(M),ndims(M));
         T.rank = 1;
-        if isa(M,'Miller'), T.CS = M.CS; csGiven = true; end
+        if isCrystalDirection(M), T.CS = M.CS; csGiven = true; end
       
       elseif isa(M,'quaternion') % conversion from quaternion
 

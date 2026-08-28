@@ -19,7 +19,7 @@ function v = fibreVolume(ori,h,r,radius,varargin)
 
 % check input
 argin_check(h,{'Miller','vector3d'});
-if isa(h,'Miller')
+if isCrystalDirection(h)
   h = ori.CS.ensureCS(h);
 else
   h = Miller(h,ori.CS);

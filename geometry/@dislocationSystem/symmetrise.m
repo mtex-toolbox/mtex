@@ -1,7 +1,7 @@
 function dS = symmetrise(dS,varargin)
 % find all symmetrically equivalent slips systems
 
-if ~isa(dS.b,'Miller'), return; end
+if ~isCrystalDirection(dS.b), return; end
 
 b = [];
 l =  [];
