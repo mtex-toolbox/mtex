@@ -94,7 +94,9 @@ classdef crystalShape
           (abs(N.l) * cS.extension(3)).^cS.habitus).^(1/cS.habitus);
       end
       
-      N = unique(vector3d(N.symmetrise),'stable');
+      % the equivalents are the distinct faces of the shape from here on, so
+      % the group goes - kept, unique would collapse the orbit back to one
+      N = unique(stripSym(N.symmetrise),'stable');
             
       tol = 1e-5;
 
