@@ -69,13 +69,13 @@ The facade decided above means red is scoped to the carrier being converted, nev
 | 0 | fingerprint + develop baseline | **done**, `6663d1e9a` |
 | 1 | the two consolidations from `frameSimplification.md` | **done**, `f901995af` `70ca81df4` |
 | 2A | the frame carries the group | **done**, `722b259f3` |
-| 2B | `crystalSymmetry`/`specimenSymmetry` become functions returning frames | red: the flip |
+| 2B | `crystalSymmetry`/`specimenSymmetry` become functions returning frames | **done**, `12df3545c` |
 | 3 | interning on the full key, immutability, colour rule | **done**, `591a9380e` `1d2d9774a` |
 | 4 | `orientation`/`rotation` — `CS`/`SS` return frames | **done**, `frameA`/`frameB` |
 | 5 | `vector3d` absorbs `Miller` | **done**, `668b4a379` `c173b7c80` + the flip |
-| 6 | `S2Fun`, `SO3Fun`, `tensor` | red: function spaces |
-| 7 | phase identity — `phaseItem` absorbed, `CSList` holds frames | red: `EBSDAnalysis/` |
-| 8 | `transformReferenceFrame` takes a rule; `orientation.align` | red shrinking |
+| 6 | `S2Fun`, `SO3Fun`, `tensor` | **done**, `c13453691`…`c18d995eb` |
+| 7 | phase identity — `phaseItem` absorbed, `CSList` holds frames | **done**, `a8c841399` |
+| 8 | `transformReferenceFrame` takes a rule; `orientation.align` | **done**, `00553b095` |
 | 9 | the facade becomes the deprecated shell; `loadobj` migration | green |
 | 10 | outer ring — plotting, interfaces, doc sweep, changelog | green |
 
