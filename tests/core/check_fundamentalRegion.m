@@ -48,8 +48,33 @@ for k = 1:size(cross,1)
 end
 
 checkMemo;
+checkSectorAtFixedAngle;
 
 disp('check_fundamentalRegion: passed')
+
+end
+
+% =========================================================================
+function checkSectorAtFixedAngle
+% the sector of misorientation axes at a fixed rotational angle
+%
+% Restricting to an angle excludes a small circle around every rotational
+% axis of the group, so the sector gains normals over the plain one.
+
+cs = crystalSymmetry('432');
+
+sR = cs.fundamentalSector('angle',60*degree);
+assert(length(sR.N) > length(cs.fundamentalSector.N), ...
+  'check_fundamentalRegion: the fixed angle added no restriction')
+
+% the identity carries no axis and a zero angle, so it must never reach the
+% nfold that sets the radius of those circles
+assert(all(isfinite(sR.alpha)), ...
+  'check_fundamentalRegion: the sector has a non-finite small circle radius')
+
+% and the whole thing is reachable from a plotting grid
+assert(~isempty(plotSO3Grid(cs,specimenSymmetry,'resolution',20*degree,'sections',3)), ...
+  'check_fundamentalRegion: plotSO3Grid produced no orientations')
 
 end
 

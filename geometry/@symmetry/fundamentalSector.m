@@ -145,8 +145,10 @@ if check_option(varargin,'angle')
 
   omega = get_option(varargin,'angle');
 
-  % the rotational axes of the symmetry
-  v = unique(sym.axis); v = [v(:).',-v(:).'];
+  % the rotational axes of the symmetry - the identity contributes no axis,
+  % and nfold would divide by its zero angle
+  v = unique(sym.rot(sym.rot.angle > 1*degree).axis);
+  v = [v(:).',-v(:).'];
 
   % the radius of the small circles to excluded
   alpha = min(1,cot(omega./2) .* tan(pi/2 ./ sym.nfold(v)));
