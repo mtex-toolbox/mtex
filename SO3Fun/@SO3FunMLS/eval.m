@@ -39,8 +39,8 @@ if cs.id ~= 1 && ss.id ~= 1
       SO3F.outlierIndicators = ...
         kron(SO3F.outlierIndicators, ones(numSym(ss),1));
     end
-    SO3F.SS = specimenSymmetry.default;
-    ori.SS = specimenSymmetry.default;
+    SO3F.SS = specimenFrame.default;
+    ori.SS = specimenFrame.default;
   else
     SO3F.nodes = SO3F.nodes * cs;
     SO3F.values = repmat(SO3F.values, numSym(cs), 1);
@@ -49,8 +49,8 @@ if cs.id ~= 1 && ss.id ~= 1
       SO3F.outlierIndicators = ...
         repmat(SO3F.outlierIndicators, numSym(cs), 1);
     end
-    SO3F.CS = specimenSymmetry.default;
-    ori.CS = specimenSymmetry.default;
+    SO3F.CS = specimenFrame.default;
+    ori.CS = specimenFrame.default;
   end
 
   if SO3F.use_smooth_delta && (SO3F.delta == 0)

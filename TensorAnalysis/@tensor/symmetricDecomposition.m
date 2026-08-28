@@ -36,7 +36,7 @@ function varargout = symmetricDecomposition(T,varargin)
 % Geophysical Journal International (2004).
 %
 
-csList = varargin(cellfun(@(x) isa(x,'symmetry'),varargin));
+csList = varargin(cellfun(@(x) isa(x,'referenceFrame'),varargin));
 
 varargout{1} = symmetrise(T,'iso');
 if check_option(varargin,'ensureSPD')

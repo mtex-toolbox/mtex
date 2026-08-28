@@ -110,7 +110,7 @@ else % detect local or global minima
   pos = pos(isLocalMinD(value,pos,res0,varargin{:}));
 
   % turn into Miller if needed
-  if exist('sym','var') && isa(sym,'crystalSymmetry'), pos = Miller(pos, sym); end
+  if exist('sym','var') && isa(sym,'crystalFrame'), pos = Miller(pos, sym); end
 
   % perform local search
   [pos, value] = steepestDescent(sF, pos, varargin{:}, 'maxTravel',2*res0);
@@ -129,7 +129,7 @@ else % detect local or global minima
 
   % return the positions in the reference frame of the function
   sym = getSym(sF);
-  if isa(sym,'crystalSymmetry')
+  if isa(sym,'crystalFrame')
     pos = Miller(pos,sym);
   elseif ~isa(pos,'Miller')
     if isa(sF.frame,'crystalFrame')

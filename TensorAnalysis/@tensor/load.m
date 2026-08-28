@@ -31,6 +31,6 @@ end
 % load tensor
 T = feval(['loadTensor_',char(interface)],fname,options{:});
 
-if nargin>1 && isa(varargin{1},'crystalSymmetry')
+if nargin>1 && isa(varargin{1},'crystalFrame')
   T.CS = varargin{1};
 end

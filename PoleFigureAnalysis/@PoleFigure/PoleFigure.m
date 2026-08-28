@@ -89,10 +89,10 @@ classdef PoleFigure < dynProp & dynOption
       %pf.c = cellfun(@(x) x./sum(x),pf.c,'uniformOutput',false);
             
       % extract symmetries
-      pf.CS = getClass(varargin,'crystalSymmetry',pf.CS);
+      pf.CS = getClass(varargin,'crystalFrame',pf.CS);
       % only a symmetry that was actually given is stored - otherwise SS
       % keeps following the session default
-      pf.SSprivate = getClass(varargin,'specimenSymmetry',pf.SSprivate);
+      pf.SSprivate = getClass(varargin,'specimenFrame',pf.SSprivate);
       
     end
 
@@ -113,7 +113,7 @@ classdef PoleFigure < dynProp & dynOption
     
     function ss = get.SS(pf)
       ss = pf.SSprivate;
-      if isempty(ss), ss = specimenSymmetry.default; end
+      if isempty(ss), ss = specimenFrame.default; end
     end
 
     function pf = set.SS(pf,ss)
@@ -139,7 +139,7 @@ classdef PoleFigure < dynProp & dynOption
       % the symmetry has to move with the data - fork it, an unset SS is shared
       if ~isempty(fr) && (isempty(pf.SSprivate) || pf.SSprivate.frame ~= fr)
         ss = copy(pf.SS);
-        ss.frame = fr;
+        ss = fr;
         pf.SSprivate = ss;
       end
     end

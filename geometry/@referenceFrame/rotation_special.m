@@ -11,7 +11,7 @@ function rot = rotation_special(cs,varargin)
 ll0axis = vector3d(1,1,0);
 lllaxis = vector3d(1,1,1);
 
-if isa(cs,'crystalSymmetry')
+if isa(cs,'crystalFrame')
   a1 = cs.axes(1);
   a2 = cs.axes(2);
   m = a1 - a2;

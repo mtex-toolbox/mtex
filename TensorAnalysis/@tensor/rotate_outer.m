@@ -16,16 +16,11 @@ function T = rotate_outer(T,R,varargin)
 % the orientation has to act on the frame the tensor is expressed in -
 % the symmetries need not agree, only the frames have to fit
 if isa(R,'orientation') && nargin == 2
-  R = fitFrame(R,T.CS.frame);
+  R = fitFrame(R,T.CS);
 
-  % the rotated tensor takes the specimen frame, but not the specimen symmetry
-  if R.SS.id == 1
-    T.CS = R.SS;
-  else
-    ss = specimenSymmetry;
-    ss.frame = R.SS.frame;
-    T.CS = ss;
-  end
+  % the rotated tensor takes the specimen frame, but not the specimen
+  % symmetry - the group-stripped sibling is that frame without the claim
+  T.CS = stripSym(R.SS);
 end
 
 % convert rotation to 3 × 3 matrix - (3 × 3 × N) for many rotation

@@ -62,12 +62,12 @@ else
   if isempty(fr)
     pC = getClass(varargin,'plottingConvention');
     if ~isempty(pC)
-      fr = specimenSymmetry.frameFor(pC);
+      fr = specimenFrame.frameFor(pC);
     else
       fr = getFrame(nodes);
     end
   end
-  if isempty(getClass(varargin,'symmetry')) && ~isempty(fr)
+  if isempty(getClass(varargin,'referenceFrame')) && ~isempty(fr)
     sF = setFrame(sF,fr);
   end
 end

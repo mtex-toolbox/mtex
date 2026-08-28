@@ -456,7 +456,7 @@ end
     qpSame = qpPhase(qpD(:,1)) == qpPhase(qpD(:,2)) & ~isnan(qpPhase(qpD(:,1)));
     for qpP = reshape(unique(qpPhase(qpD(qpSame,1))),1,[])
       qpCS = ebsd.CSList(qpP);
-      if ~isa(qpCS,'symmetry') || ~qpCS.isIndexed, continue; end
+      if ~isa(qpCS,'referenceFrame') || ~qpCS.isIndexed, continue; end
       qpSel = qpSame & qpPhase(qpD(:,1)) == qpP;
       qpOm(qpSel) = angle(orientation(ebsd.rotations(qpD(qpSel,1)),qpCS), ...
                       orientation(ebsd.rotations(qpD(qpSel,2)),qpCS));

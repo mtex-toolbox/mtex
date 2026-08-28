@@ -18,8 +18,8 @@ classdef SO3FunHandle < SO3Fun
 %
 properties
   fun
-  SLeft  = specimenSymmetry.default
-  SRight = specimenSymmetry.default
+  SLeft  = specimenFrame.default
+  SRight = specimenFrame.default
   bandwidth = getMTEXpref('maxSO3Bandwidth');
   antipodal = false
 end

@@ -59,16 +59,16 @@ methods
   end
 
   function fr = getFrame(sF)
-    % the frame of a symmetrised function is the frame of its symmetry -
-    % resolved live, so it can never go stale when s is replaced. An own
-    % frame, set internally when e.g. a tensor carrying one turns into a
-    % spherical function, wins - the public setter still refuses.
+    % the frame of a symmetrised function is the frame its symmetry names,
+    % which is that symmetry. An own frame, set internally when e.g. a
+    % tensor carrying one turns into a spherical function, wins - the
+    % public setter still refuses.
     if ~isempty(sF.framePrivate)
       fr = sF.framePrivate;
     elseif isempty(sF.s)
       fr = [];
     else
-      fr = sF.s.frame;
+      fr = sF.s;
     end
   end
 

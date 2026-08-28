@@ -15,7 +15,7 @@ function t = tensor(ori)
 
 t = tensor(matrix(ori),'rank',2);
 
-if isa(ori.CS,'crystalSymmetry') && isa(ori.SS,'crystalSymmetry') && ...
+if isa(ori.CS,'crystalFrame') && isa(ori.SS,'crystalFrame') && ...
     ori.CS ~= ori.SS
 
   ref1 = [ori.CS.aAxis, ori.CS.bAxis, ori.CS.cAxis];

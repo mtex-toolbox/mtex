@@ -22,7 +22,7 @@ function [v,sym] = project2FundamentalRegion(v,cs,varargin)
 %  v - @vector3d
 
 
-if nargin==1 || ~isa(cs,'symmetry') % no symmetry is provided
+if nargin==1 || ~isa(cs,'referenceFrame') % no symmetry is provided
 
   if v.antipodal || (nargin>1 && check_option([cs,varargin],'antipodal'))
 

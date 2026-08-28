@@ -132,7 +132,7 @@ tauRelative = sSAll.SchmidFactor(r,'relative');
 % The same vectorized calculation accepts many crystal directions. Rows of
 % |tau| correspond to directions and columns correspond to slip systems.
 
-rGrid = plotS2Grid('resolution',0.5*degree,'upper',cs.frame);
+rGrid = plotS2Grid('resolution',0.5*degree,'upper',cs);
 tau = sSAll.SchmidFactor(rGrid);
 [tauMax,id] = max(abs(tau),[],2);
 

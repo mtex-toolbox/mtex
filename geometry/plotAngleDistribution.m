@@ -20,7 +20,7 @@ mtexFig.keepAspectRatio = false;
 
 % compute angles
 plotType = 'line';
-if isa(obj,'symmetry')
+if isa(obj,'referenceFrame')
   maxOmega = maxAngle(obj,varargin{:});
 else
   maxOmega = maxAngle(obj.CS,obj.SS);
@@ -83,7 +83,7 @@ end
 
 
 % compute angle distribution
-if isa(obj,'symmetry') || isa(obj,'SO3Fun')
+if isa(obj,'referenceFrame') || isa(obj,'SO3Fun')
   [density,omega] = calcAngleDistribution(obj,varargin{:});
 else  
   d = histcounts(obj.angle,bins).';

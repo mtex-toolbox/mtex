@@ -20,9 +20,9 @@ function o = symmetrise(o,varargin)
 %  unique - return unique list of symmetrically equivalent orientations
 %
 
-if nargin > 1 && isa(varargin{1},'symmetry')
+if nargin > 1 && isa(varargin{1},'referenceFrame')
   CS = varargin{1};
-  SS = getClass(varargin(2:end),'symmetry',specimenSymmetry);
+  SS = getClass(varargin(2:end),'referenceFrame',specimenSymmetry);
 else
   CS = o.CS;
   SS = o.SS;

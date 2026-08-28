@@ -15,7 +15,7 @@
 % crystal-information file. |properGroup| keeps the rotational part of the
 % point group used to generate oriented slip and twinning systems.
 
-cs = crystalSymmetry.load('Mg-Magnesium.cif')
+cs = crystalFrame.load('Mg-Magnesium.cif')
 cs = cs.properGroup;
 
 %%

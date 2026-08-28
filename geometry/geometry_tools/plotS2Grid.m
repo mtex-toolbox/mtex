@@ -5,7 +5,7 @@ function v = plotS2Grid(varargin)
 %   plotS2Grid('resolution',[5*degree 2.5*degree])
 %
 %   % a grid of directions of the crystal reference frame
-%   plotS2Grid('resolution',0.5*degree,'upper',cs.frame)
+%   plotS2Grid('resolution',0.5*degree,'upper',cs)
 %
 % Input
 %  frame - @referenceFrame the resulting directions are expressed in

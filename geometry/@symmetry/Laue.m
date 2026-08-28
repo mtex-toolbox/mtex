@@ -1,17 +1,16 @@
 function sL = Laue(s)
-% return the corresponding Laue group 
+% the smallest Laue group containing s
 
-% maybe we have already computed the Laue group
-if ~isempty(s.LaueRef)
+if isLaue(s), sL = s; return; end
 
-  sL = s.LaueRef;
+id = 0;
+if s.id > 0, id = symmetry.pointGroups(s.id).LaueId; end
 
-elseif s.isLaue % if it is already a Laue group then there is nothing to do
-  
-  sL = s;
+% every element once proper and once improper
+rot = s.rot;
+rot = [rot(:),rot(:)];
+rot.i = repmat([0,1],size(rot,1),1);
 
-else % in the meantime isLaue has computed the Laue group :)
-
-  sL = s.LaueRef;
+sL = symmetry(id,rot);
 
 end

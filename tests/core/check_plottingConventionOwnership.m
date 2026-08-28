@@ -2,7 +2,7 @@ function check_plottingConventionOwnership
 % who owns how2plot, and that setting it never reaches anything else
 %
 % symmetry is a handle class, and the classes that carry data take one as a
-% property default - specimenSymmetry.default, a single object shared by
+% property default - specimenFrame.default, a single object shared by
 % every instance. So any class that stores its plotting convention *on* its
 % symmetry silently repoints the frame of every other object holding that
 % same symmetry. This has been found and fixed at least five times now, in
@@ -48,7 +48,7 @@ function checkSymmetryOverride
 % is exactly the leak family this file guards against.
 
 pC = plottingConvention('z↑→x');
-dflt = specimenSymmetry.default.how2plot;
+dflt = specimenFrame.default.how2plot;
 assert(dflt ~= pC, ...
   ['check_plottingConventionOwnership: the test convention equals the ' ...
   'default one, so it cannot detect a leak - pick another one'])
@@ -57,18 +57,18 @@ assert(dflt ~= pC, ...
 ss = specimenSymmetry('222');
 before = ss.how2plot;
 ss2 = copy(ss);
-assert(ss2.frame == ss.frame, ...
+assert(ss2 == ss, ...
   'check_plottingConventionOwnership: copy(ss) does not share the frame handle')
 
-ss2.frame = specimenSymmetry.frameFor(pC);
+ss2 = specimenFrame.frameFor(pC);
 assert(ss2.how2plot == pC, ...
   'check_plottingConventionOwnership: giving ss2 a frame did not take')
-assert(ss2.frame ~= ss.frame, ...
+assert(ss2 ~= ss, ...
   'check_plottingConventionOwnership: setting the convention must fork the frame')
-assert(ss.how2plot == before && ss.frame.how2plot == before, ...
+assert(ss.how2plot == before && ss.how2plot == before, ...
   'check_plottingConventionOwnership: ss2.how2plot wrote through the shared frame')
-assert(specimenSymmetry.default.how2plot == dflt, ...
-  'check_plottingConventionOwnership: ss2.how2plot changed specimenSymmetry.default')
+assert(specimenFrame.default.how2plot == dflt, ...
+  'check_plottingConventionOwnership: ss2.how2plot changed specimenFrame.default')
 
 % same on the crystal side, incl. the cached Laue group sharing the frame
 % (a non-centrosymmetric group, so that Laue is a copy and not cs itself)
@@ -77,11 +77,11 @@ csBefore = cs.how2plot;
 csL = cs.Laue;
 assert(csL ~= cs, ...
   'check_plottingConventionOwnership: pick a group that is not its own Laue group')
-assert(csL.frame == cs.frame, ...
+assert(csL == cs, ...
   'check_plottingConventionOwnership: the Laue group does not share the frame')
 
-csL.frame = specimenSymmetry.frameFor(pC);
-assert(cs.how2plot == csBefore && cs.frame.how2plot == csBefore, ...
+csL = specimenFrame.frameFor(pC);
+assert(cs.how2plot == csBefore && cs.how2plot == csBefore, ...
   'check_plottingConventionOwnership: cs.Laue.how2plot wrote through the shared frame')
 
 % a symmetry without an override holds the session frame and follows plotx2north
@@ -89,7 +89,7 @@ pCd0 = plottingConvention.default;   % a value snapshot
 restoreDefault = onCleanup(@() plottingConvention.default(pCd0));
 
 ssd = specimenSymmetry;
-assert(ssd.frame == specimenFrame.default, ...
+assert(ssd == specimenFrame.default, ...
   'check_plottingConventionOwnership: a fresh specimenSymmetry does not hold the session frame')
 
 plotx2north
@@ -114,15 +114,15 @@ assert(dflt ~= pC, ...
 % (1) nothing else may see it, neither a later tensor, nor the shared
 % default, nor this tensor's own CS
 T = tensor(M,'rank',2);
-T.frame = specimenSymmetry.frameFor(pC);
+T.frame = specimenFrame.frameFor(pC);
 assert(T.how2plot == pC, ...
   'check_plottingConventionOwnership: giving T a frame did not take')
 
 assert(tensor(M,'rank',2).how2plot == dflt, ...
   'check_plottingConventionOwnership: T.how2plot leaked into the next tensor')
 
-assert(specimenSymmetry.default.how2plot == dflt, ...
-  'check_plottingConventionOwnership: T.how2plot changed specimenSymmetry.default')
+assert(specimenFrame.default.how2plot == dflt, ...
+  'check_plottingConventionOwnership: T.how2plot changed specimenFrame.default')
 
 assert(T.CS.how2plot == dflt, ...
   'check_plottingConventionOwnership: T.how2plot was written through to T.CS')
@@ -153,7 +153,7 @@ assert(dflt ~= pC, ...
 
 % (1) setting the convention forks the function's frame and must not
 % touch the session frame or the default
-sF.frame = specimenSymmetry.frameFor(pC);
+sF.frame = specimenFrame.frameFor(pC);
 assert(sF.how2plot == pC, ...
   'check_plottingConventionOwnership: giving sF a frame did not take')
 
@@ -164,8 +164,8 @@ assert(sF.frame ~= specimenFrame.default && ...
 assert(S2FunHarmonic.quadrature(@(v) v.x).how2plot == dflt, ...
   'check_plottingConventionOwnership: sF.how2plot leaked into the next S2Fun')
 
-assert(specimenSymmetry.default.how2plot == dflt, ...
-  'check_plottingConventionOwnership: sF.how2plot changed specimenSymmetry.default')
+assert(specimenFrame.default.how2plot == dflt, ...
+  'check_plottingConventionOwnership: sF.how2plot changed specimenFrame.default')
 
 % (2) attaching a symmetry puts the function into the frame of that
 % symmetry - a crystalSymmetry derives its own convention from its axes
@@ -214,17 +214,17 @@ end
 function checkOrientationMap
 % orientation.map translates the conventions of its vector arguments onto
 % the orientation (a20c992ee) - but it used to do so by writing through
-% shared symmetry handles: through specimenSymmetry.default when no
+% shared symmetry handles: through specimenFrame.default when no
 % symmetry was passed, and through the caller's own symmetry when one was
 
 pC = plottingConvention('z↑→x');
-dflt = specimenSymmetry.default.how2plot;
+dflt = specimenFrame.default.how2plot;
 assert(dflt ~= pC, ...
   ['check_plottingConventionOwnership: the test convention equals the ' ...
   'default one, so it cannot detect a leak - pick another one'])
 
 % two plain vector3d arguments carrying a non-default convention
-fr = specimenSymmetry.frameFor(pC);
+fr = specimenFrame.frameFor(pC);
 u = vector3d.X; u.frame = fr;
 v = vector3d.Z; v.frame = fr;
 ori = orientation.map(u,v);
@@ -234,8 +234,8 @@ assert(ori.CS.how2plot == pC && ori.SS.how2plot == pC, ...
   'check_plottingConventionOwnership: orientation.map dropped the convention')
 
 % ...and the shared default is untouched
-assert(specimenSymmetry.default.how2plot == dflt, ...
-  'check_plottingConventionOwnership: orientation.map repointed specimenSymmetry.default')
+assert(specimenFrame.default.how2plot == dflt, ...
+  'check_plottingConventionOwnership: orientation.map repointed specimenFrame.default')
 
 % a caller-passed symmetry must not be written on either
 ss = specimenSymmetry('222');
@@ -277,7 +277,7 @@ assert(~(pC0 == pC), ...
 
 lastwarn('','');
 ws = warning('off','all');
-pf.frame = specimenSymmetry.frameFor(pC);
+pf.frame = specimenFrame.frameFor(pC);
 warning(ws);
 [~,id] = lastwarn;
 
@@ -380,7 +380,7 @@ function checkTensorFollowsSession
 % a freshly built tensor follows the CURRENT session frame
 %
 % @tensor declared its reference system as a property default,
-% CS = specimenSymmetry.default. MATLAB evaluates a property default
+% CS = specimenFrame.default. MATLAB evaluates a property default
 % expression ONCE, when the class is first loaded, so that froze whichever
 % symmetry handle was the default at the time. Every later
 % specimenFrame.default / referenceFrame.reset installs a new session
@@ -419,7 +419,7 @@ assert(T.how2plot == cs.how2plot, ...
 
 % a tensor built from crystal data is in crystal coordinates and keeps that symmetry
 m = Miller(1,1,0,crystalSymmetry('432'));
-assert(isa(tensor(m).CS,'crystalSymmetry'), ...
+assert(isa(tensor(m).CS,'crystalFrame'), ...
   'check_plottingConventionOwnership: tensor(Miller) must keep the crystal symmetry');
 assert(isa(dyad(m.normalize,Miller(1,-1,1,m.CS).normalize).frame,'crystalFrame'), ...
   'check_plottingConventionOwnership: dyad of Miller directions must be crystal framed');

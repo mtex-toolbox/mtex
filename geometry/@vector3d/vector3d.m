@@ -177,7 +177,7 @@ classdef vector3d < dynOption
        if ~isempty(fr), v.frame = fr; end
 
        pC = getClass(varargin,'plottingConvention');
-       if ~isempty(pC), v.frame = specimenSymmetry.frameFor(pC); end
+       if ~isempty(pC), v.frame = specimenFrame.frameFor(pC); end
 
       end
     end

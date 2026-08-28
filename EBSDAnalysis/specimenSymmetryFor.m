@@ -5,13 +5,13 @@ function ss = specimenSymmetryFor(pC)
 % An orientation keeps its plotting convention in its specimen symmetry.
 % Writing it there after the fact - ori.SS.how2plot = pC - is not an option:
 % @symmetry is a handle class and @orientation initialises SS with the very
-% instance returned by specimenSymmetry.default, so such an assignment does
+% instance returned by specimenFrame.default, so such an assignment does
 % not attach the convention to this orientation at all.
 %
 % The default instance is therefore reused only while it already carries
 % this convention, and a private specimen symmetry is created otherwise.
 % Both are triclinic, and @symmetry/eq compares point group ids next to
-% handle identity, so ss == specimenSymmetry.default either way.
+% handle identity, so ss == specimenFrame.default either way.
 %
 % Input
 %  pC - @plottingConvention, or the @referenceFrame the data lives in
@@ -22,13 +22,13 @@ function ss = specimenSymmetryFor(pC)
 % See also
 % EBSD/subsref grain2d/subsref plottingConvention
 
-ss = specimenSymmetry.default;
+ss = specimenFrame.default;
 
 % a data class that knows its frame passes the frame itself, and it is adopted
 if isa(pC,'referenceFrame')
-  if ss.frame ~= pC
+  if ss ~= pC
     ss = copy(ss);
-    ss.frame = pC;
+    ss = pC;
   end
   return
 end

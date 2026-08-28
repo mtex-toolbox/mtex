@@ -22,7 +22,7 @@
 % We use a random sample of 100 orientations from a model orientation
 % distribution function (ODF).
 
-cs = crystalSymmetry.load('quartz.cif');
+cs = crystalFrame.load('quartz.cif');
 
 odf = unimodalODF(orientation.byEuler(30*degree,50*degree,10*degree,cs), ...
   'halfwidth',10*degree);

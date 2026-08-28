@@ -36,7 +36,7 @@ for ip = 1:numel(ebsd.phaseMap)
   matrix{ip,4} = rgb2str(CS.color);
   
   % symmetry group and reference frame
-  if isa(CS,'symmetry')
+  if isa(CS,'referenceFrame')
     matrix{ip,5} = CS.pointGroup;
     matrix{ip,6} = option2str(CS.alignment);
   end

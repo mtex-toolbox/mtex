@@ -16,14 +16,14 @@ if ~isempty(oS)
   return; 
 end
 
-if nargin > 1 && isa(varargin{1},'symmetry')
+if nargin > 1 && isa(varargin{1},'referenceFrame')
   SS = varargin{1};
   varargin(1) = [];
 else
-  SS = specimenSymmetry.default;
+  SS = specimenFrame.default;
 end
 
-if nargin > 0 && (isa(CS,'specimenSymmetry') || isa(SS,'specimenSymmetry'))
+if nargin > 0 && (isa(CS,'specimenFrame') || isa(SS,'specimenFrame'))
   default = 'phi2';
 else
   default = 'axisAngle';

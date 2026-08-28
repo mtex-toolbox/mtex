@@ -75,7 +75,7 @@ classdef spinTensor < velocityGradientTensor
         v = vector3d@tensor(Omega);
       else
         v = vector3d(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:));
-        if isa(Omega.CS,'crystalSymmetry')
+        if isa(Omega.CS,'crystalFrame')
           v = Miller(v,Omega.CS);
         end
         v = reshape(v,size(Omega));
@@ -85,7 +85,7 @@ classdef spinTensor < velocityGradientTensor
     
     function v = SO3TangentVector(Omega,rot)
 
-      if isa(Omega.CS,'crystalSymmetry')
+      if isa(Omega.CS,'crystalFrame')
         v = SO3TangentVector(vector3d(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:)),rot,'right');
       else
         v = SO3TangentVector(vector3d(Omega.M(3,2,:),-Omega.M(3,1,:),Omega.M(2,1,:)),rot,'left');
@@ -101,7 +101,7 @@ classdef spinTensor < velocityGradientTensor
     
     function rot = orientation(Omega)
       
-      if isa(Omega.CS,'crystalSymmetry')
+      if isa(Omega.CS,'crystalFrame')
         rot = orientation(expquat(Omega),Omega.CS,Omega.CS);
       else
         rot = rotation(expquat(Omega));

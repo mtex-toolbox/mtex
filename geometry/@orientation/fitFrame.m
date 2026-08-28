@@ -28,7 +28,7 @@ function R = fitFrame(R,fr)
 % frame-free data passes
 if isempty(fr), return; end
 
-frR = R.CS.frame;
+frR = R.CS;
 
 % an orientation whose symmetry carries no frame at all - a legacy .mat -
 % would otherwise be reported as acting on a 'double'

@@ -29,7 +29,7 @@ for conv = {'y↑→x','y↓→x','x←↑y','x↑→y'}
 
     % a tight cluster around one axis, so the peak bin is unambiguous
     v = normalize(d{1} + 0.02*vector3d.rand(300,1));
-    v.frame = specimenSymmetry.frameFor(pC);
+    v.frame = specimenFrame.frameFor(pC);
 
     h = histogram(v);
     drawnow

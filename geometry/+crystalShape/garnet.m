@@ -2,7 +2,7 @@ function cS = garnet(varargin)
 % simple morphology
 %
 
-if nargin == 0 || ~isa(varargin{1},'symmetry')
+if nargin == 0 || ~isa(varargin{1},'referenceFrame')
   cs = crystalSymmetry('m3m','mineral','garnet');
 else
   cs = varargin{1};

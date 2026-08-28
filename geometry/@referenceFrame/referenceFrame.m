@@ -35,21 +35,33 @@ classdef referenceFrame < matlab.mixin.Copyable
     axesNames = {'X','Y','Z'}  % names of the three basis axes
     how2plot = []  % default plottingConvention (a value)
     sym = symmetry % the point group this frame carries
+    opt = struct   % free-form extras, e.g. the density of a phase
   end
 
   properties (Dependent = true)
     % the default pole figure annotation of this frame, e.g. RD, TD, ND
     pfAnnotations
 
-    % the sibling frames - this frame with a different group in it, see
-    % rule 7 of docs/adr/0008-frames-carry-symmetry.md
-    Laue        % the sibling carrying the Laue group
-    properGroup % the sibling carrying the proper rotation group
+    % the group this frame carries, read through the frame - the reads that
+    % used to go to a symmetry land here unchanged
+    id          % point group id
+    rot         % the symmetry elements
+    pointGroup  % international symbol of the group
+    lattice     % the lattice type the group implies
+    multiplicityZ     % order of the symmetry axis along Z
+    multiplicityPerpZ % highest order of an axis perpendicular to it
   end
 
   properties (Access = protected)
-    LaueRef = []
-    properRef = []
+    % the siblings minted from this frame, as a struct array of id and
+    % frame - one entry per group, so asking twice returns one handle
+    siblingRef = struct('id',{},'fr',{})
+  end
+
+  properties (Hidden = true, Transient = true)
+    % memo for WignerD: the coefficients follow from the group, and a group
+    % is a value with nowhere to keep them. Never saved
+    fhatRef = []
   end
 
   properties (Constant, Hidden)
@@ -95,14 +107,20 @@ classdef referenceFrame < matlab.mixin.Copyable
       rf.how2plot = pC;
     end
 
-    function fr = get.Laue(rf)
-      if isempty(rf.LaueRef), rf.LaueRef = sibling(rf,Laue(rf.sym)); end
-      fr = rf.LaueRef;
-    end
+    function v = get.id(rf), v = rf.sym.id; end
+    function v = get.rot(rf), v = rf.sym.rot; end
+    function v = get.pointGroup(rf), v = rf.sym.pointGroup; end
+    function v = get.lattice(rf), v = rf.sym.lattice; end
+    function v = get.multiplicityZ(rf), v = rf.sym.multiplicityZ; end
+    function v = get.multiplicityPerpZ(rf), v = rf.sym.multiplicityPerpZ; end
 
-    function fr = get.properGroup(rf)
-      if isempty(rf.properRef), rf.properRef = sibling(rf,properGroup(rf.sym)); end
-      fr = rf.properRef;
+    function fr = stripSym(rf)
+      % the same frame with no symmetry claim in it
+      %
+      % Where the data lives is not dropped, only what is claimed about it -
+      % the sibling of rule 7 that carries the trivial group.
+
+      fr = sibling(rf,symmetry);
     end
 
     function f = get.pfAnnotations(rf)
@@ -118,17 +136,21 @@ classdef referenceFrame < matlab.mixin.Copyable
       % this frame with s in it instead of its own group
       %
       % The basis and the identity are the same, so the two are the pair
-      % rule 7 calls siblings. Minted here and cached on the frame it came
+      % rule 7 calls siblings. Minted once and cached on the frame it came
       % from, so asking twice gives one handle and the two stay comparable
       % - which is what the register takes over once its key carries the
       % group.
 
       if s.id == rf.sym.id, fr = rf; return; end
 
+      hit = find([rf.siblingRef.id] == s.id,1);
+      if ~isempty(hit), fr = rf.siblingRef(hit).fr; return; end
+
       fr = copy(rf);
       fr.sym = s;
-      fr.LaueRef = [];
-      fr.properRef = [];
+      fr.siblingRef = struct('id',rf.sym.id,'fr',rf);
+
+      rf.siblingRef(end+1) = struct('id',s.id,'fr',fr);
 
     end
 

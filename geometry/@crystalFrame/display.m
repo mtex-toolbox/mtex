@@ -1,28 +1,74 @@
-function display(cF,varargin)
+function display(cs,varargin)
 % standard output
 
-% the mineral and the convention go in the header, as for every other
-% reference frame - the lattice below is the detail
-info = {};
-if ~isempty(cF.name), info{end+1} = cF.name; end %#ok<AGROW>
-if isa(cF.how2plot,'plottingConvention')
-  info{end+1} = conventionChar(cF); %#ok<AGROW>
+% the plotting convention goes into the header, the way a specimen symmetry
+% shows it - see @specimenSymmetry/display. For a crystal it is stated in
+% crystal directions, e.g. '⊙c*→a', which is how a crystallographer names
+% a setting; conventionChar falls back to the Cartesian pictogram when no
+% crystal axis points out of the screen or east
+if isscalar(cs) && isa(cs.how2plot,'plottingConvention')
+  displayClass(cs,inputname(1),'moreInfo',conventionChar(cs),varargin{:});
+else
+  displayClass(cs,inputname(1),varargin{:});
 end
 
-displayClass(cF,inputname(1),'moreInfo',strjoin(info,', '),varargin{:});
-
-disp(['  ' strjoin(cF.axesNames,', ') '  : ' xnum2str(cF.abc)]);
-
-abg = cF.abg;
-if any(abs(abg - pi/2) > 1e-6)
-  disp(['  α, β, γ  : ' xnum2str(abg./degree) '°']);
-end
-
-align = alignment(cF);
-if ~isempty(align)
-  disp(['  alignment: ' strjoin(align,', ')]);
+if ~isscalar(cs)
+  disp(cs);
+  return
 end
 
 disp(' ');
 
+props = {}; propV = {};
+
+% add mineral name if given
+if ~isempty(cs.mineral)
+  props{end+1} = 'mineral'; 
+  propV{end+1} = cs.mineral;
 end
+
+if ~isempty(cs.color)
+  props{end+1} = 'color'; 
+  propV{end+1} = rgb2str(cs.color);
+end
+
+% add symmetry
+props{end+1} = 'symmetry'; 
+if cs.id>0
+  propV{end+1} = symmetry.pointGroups(cs.id).Inter;
+  if getMTEXpref("UTF8Output")
+    ov = char(hex2dec('0305'));   % U+0305 COMBINING OVERLINE
+    propV{end} = regexprep(propV{end}, '-([A-Za-z0-9])', ['$1' ov]);
+  end
+else
+  propV{end+1} = 'unknown';
+end
+
+% add symmetry
+props{end+1} = 'elements'; 
+propV{end+1} = numSym(cs);
+
+
+
+% add axis length
+props{end+1} = 'a, b, c';
+propV{end+1} = option2str(vec2cell(norm(cs.axes)));
+
+% add axis angle
+if cs.id < 12
+  props{end+1} = 'alpha, beta, gamma';
+  propV{end+1} = [num2str(cs.alpha./degree) mtexdegchar ', ' ...
+    num2str(cs.beta./degree) mtexdegchar ', ' ...
+    num2str(cs.gamma./degree) mtexdegchar];
+end
+
+% add the alignment, which only a non Euclidean lattice has a choice about
+if ~cs.lattice.isEucledean
+  props{end+1} = 'reference frame';
+  propV{end+1} = option2str(cs.alignment);
+end
+
+% display all properties
+cprintf(propV(:),'-L','  ','-ic','L','-la','L','-Lr',props,'-d',': ');
+
+disp(' ');

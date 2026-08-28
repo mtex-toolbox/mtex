@@ -20,7 +20,7 @@ function ori = fit(varargin)
 % orientation/byEuler orientation.map
 
 % find and remove symmetries
-args  = cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true);
+args  = cellfun(@(s) isa(s,'referenceFrame'),varargin,'uniformoutput',true);
 sym = varargin(args);
 varargin(args) = [];
    

@@ -50,7 +50,7 @@ str = file2cell(fname);
 try
   cs = mpod2symmetry(str,varargin{:});
 catch
-  cs = specimenSymmetry.default;
+  cs = specimenFrame.default;
 end
 
 T = {};

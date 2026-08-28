@@ -62,7 +62,7 @@ classdef S2FunTri < S2Fun
       if isa(nodes,'S2Triangulation')
         sF.tri = nodes;
       else
-        if nargin==2, s = specimenSymmetry.default; end
+        if nargin==2, s = specimenFrame.default; end
         nodes = symmetrise(nodes(:)',s);
         values = repmat(values(:)',size(nodes,1),1);
         nodes.antipodal = false;

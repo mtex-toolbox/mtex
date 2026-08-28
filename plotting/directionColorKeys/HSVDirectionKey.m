@@ -146,7 +146,7 @@ classdef HSVDirectionKey < directionColorKey
       
         % compute angle of the points "sh" relative to the center point "center"
         % this should be between 0 and 1
-        if isa(dM.sym,'crystalSymmetry')
+        if isa(dM.sym,'crystalFrame')
           ref = vector3d(dM.sym.how2plot.east);
         else
           ref = xvector;
@@ -220,7 +220,7 @@ classdef HSVDirectionKey < directionColorKey
           sR = oM.sym.Laue.fundamentalSector;
           oM.refl = setdiff(sR.N,oM.sR.N);
         case 1                                                   % 1
-          if isa(oM.sym,'crystalSymmetry')                     
+          if isa(oM.sym,'crystalFrame')                     
             oM.refl = oM.sym.rot.axis;
           else
             oM.refl = vector3d.Z;
@@ -256,7 +256,7 @@ classdef HSVDirectionKey < directionColorKey
       oM.sR.N = [oM.sR.N(:);oM.refl(:)];
       oM.sR.alpha = [oM.sR.alpha(:);zeros(length(oM.refl),1)];
 
-      if isa(oM.sym,'crystalSymmetry')
+      if isa(oM.sym,'crystalFrame')
         oM.whiteCenter = Miller(oM.sR.center,oM.sym);
       else
         oM.whiteCenter = oM.sR.center;

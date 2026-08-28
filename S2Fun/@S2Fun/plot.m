@@ -22,7 +22,7 @@ end
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});
 
 cs = getSym(sF); % nonempty only for a symmetrised function
-if isa(cs,'crystalSymmetry')
+if isa(cs,'crystalFrame')
   tooltipFormat = cs.lattice.hklForm;
 else
   tooltipFormat = 'xyz';
@@ -36,7 +36,7 @@ S2Proj = makeSphericalProjection(varargin{:},sF.how2plot);
 
 % a crystal symmetry annotates the plot with Miller indices, a crystal frame
 % with its own axes a, b, c
-if isa(cs,'crystalSymmetry')
+if isa(cs,'crystalFrame')
   symArg = {cs};
 elseif isa(getFrame(sF),'crystalFrame')
   symArg = {getFrame(sF)};

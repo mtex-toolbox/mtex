@@ -11,7 +11,7 @@ classdef orientationColorKey < handle
   
   properties
     CS1 = crystalSymmetry % crystal symmetry
-    CS2 = specimenSymmetry.default % crystal symmetry of a second phase for misorientations
+    CS2 = specimenFrame.default % crystal symmetry of a second phase for misorientations
     antipodal = false
   end
    
@@ -32,11 +32,11 @@ classdef orientationColorKey < handle
         oCK.CS2 = cs(2);
         
         oCK.antipodal = all(diff(ebsd.phaseId,[],2)==0);
-      elseif isa(ebsd,'symmetry')
+      elseif isa(ebsd,'referenceFrame')
         oCK.CS1 = ebsd;
       end
       
-      if nargin > 1 && isa(varargin{1},'symmetry')
+      if nargin > 1 && isa(varargin{1},'referenceFrame')
         oCK.CS2 = varargin{1};
       end
 

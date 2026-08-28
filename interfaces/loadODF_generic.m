@@ -51,8 +51,8 @@ function [odf,opt] = loadODF_generic(fname,varargin)
 % get options
 ischeck = check_option(varargin,'check');
 cs = get_option(varargin,'cs');
-ss = get_option(varargin,'ss',specimenSymmetry.default);
-if ~isa(cs,'crystalSymmetry') && ~ischeck && ~check_option(varargin,'wizard')
+ss = get_option(varargin,'ss',specimenFrame.default);
+if ~isa(cs,'crystalFrame') && ~ischeck && ~check_option(varargin,'wizard')
   error('\nNo crystal Symmetry specified!\n','')
 end
 

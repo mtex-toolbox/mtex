@@ -157,7 +157,7 @@ if numSym(cs) >= numSym(ss)
     nRep = 2*nRep;
   end
 
-  triv = specimenSymmetry;       % not specimenSymmetry.default - that one
+  triv = specimenSymmetry;       % not specimenFrame.default - that one
   vs.SS = triv; ws.SS = triv;    % is a singleton the user may have changed
   vs.antipodal = false; ws.antipodal = false;
 else

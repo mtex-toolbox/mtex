@@ -16,7 +16,7 @@ function h = plotSlipSystem(cS, sS, varargin)
 %
 % Example
 %
-%   cs = crystalSymmetry.load('Mg-Magnesium.cif');
+%   cs = crystalFrame.load('Mg-Magnesium.cif');
 %   cS = crystalShape.hex(cs)
 %   sS = [slipSystem.pyramidal2CA(cs), ...
 %         slipSystem.pyramidalA(cs)];

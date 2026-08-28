@@ -55,12 +55,12 @@ fr = getClass(varargin,'referenceFrame');
 if isempty(fr)
   pC = getClass(varargin,'plottingConvention');
   if ~isempty(pC)
-    fr = specimenSymmetry.frameFor(pC);
+    fr = specimenFrame.frameFor(pC);
   else
     fr = getFrame(v);
   end
 end
-applyFrame = isempty(getClass(varargin,'symmetry')) && ~isempty(fr);
+applyFrame = isempty(getClass(varargin,'referenceFrame')) && ~isempty(fr);
 
 % multivariate case
 y = reshape(y,length(v),[]);

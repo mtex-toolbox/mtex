@@ -18,7 +18,7 @@ function ori = transformReferenceFrame(ori,cs1,cs2)
 %
 
 % only applicable for crystal symmetry
-if ~isa(cs1,'crystalSymmetry')
+if ~isa(cs1,'crystalFrame')
   warning('Symmetry missmatch!')
   ori.CS = cs1;
   return

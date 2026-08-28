@@ -23,7 +23,7 @@
 plottingConvention.default('y↑→x');
 
 % load the crystal symmetry and reference frame from a CIF file
-cs = crystalSymmetry.load('Cu-Copper.cif');
+cs = crystalFrame.load('Cu-Copper.cif');
 
 %% Euler Angles
 %

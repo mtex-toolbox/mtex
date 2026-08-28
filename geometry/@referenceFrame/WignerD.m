@@ -30,14 +30,15 @@ L = get_option(varargin,'bandwidth',getMTEXpref('maxSO3Bandwidth'));
 l = get_option(varargin,{'order','degree'},0:L);
 L = max(l);
 
-% check storage
-if isfield(cs.opt,'fhat') && length(cs.opt.fhat)>=deg2dim(L+1)
+% check storage - the memo lives on the frame, which is a handle; a group
+% is a value and could not keep one
+if ~isempty(cs.fhatRef) && length(cs.fhatRef)>=deg2dim(L+1)
 
   ind = [];
   for i=l
     ind = [ind,deg2dim(i)+1:deg2dim(i+1)];
   end
-  fhat = cs.opt.fhat(ind);
+  fhat = cs.fhatRef(ind);
   return
 
 end
@@ -53,7 +54,7 @@ if check_option(varargin,'quadrature') % use quadrature
   fhat = sparse(fhat);
 
   % write to storage
-  cs.opt.fhat = fhat;
+  cs.fhatRef = fhat;
   
   if length(l)~=L+1 || any(l~=0:L)
     for i=l
@@ -70,7 +71,7 @@ else % direct computation by matrix exponential
 
   % write to storage
   if length(l)==L+1 && all(l==0:L)
-    cs.opt.fhat = fhat;
+    cs.fhatRef = fhat;
   end
 
 end

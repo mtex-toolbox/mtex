@@ -470,7 +470,7 @@ classdef plottingConvention
       % new default replaces the convention of that frame; symmetries and
       % data holding the frame follow, data holding the old convention
       % handle keeps it (as before). The point group of
-      % specimenSymmetry.default is untouched.
+      % specimenFrame.default is untouched.
 
       if nargin == 1 % new default
         if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end

@@ -35,7 +35,7 @@ classdef SO3FunSBF < SO3Fun
     sS = slipSystem  % slip system
     E  = tensor      % strain tensor
     antipodal = false;
-    SLeft = specimenSymmetry.default
+    SLeft = specimenFrame.default
     isReal = true;
   end
   

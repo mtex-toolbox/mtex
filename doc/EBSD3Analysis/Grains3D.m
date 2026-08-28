@@ -121,7 +121,7 @@ else
 end
 hasNeper = neperStatus == 0;
 
-cs = crystalSymmetry.load('quartz.cif','color','lightblue');
+cs = crystalFrame.load('quartz.cif','color','lightblue');
 odf = fibreODF(cs.cAxis,vector3d(1,1,1));
 
 numGrains = 300;

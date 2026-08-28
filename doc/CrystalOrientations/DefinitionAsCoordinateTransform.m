@@ -26,7 +26,7 @@ plottingConvention.default('y↑→x');
 
 rot = rotation.byEuler(10*degree,20*degree,30*degree,'Bunge');
 
-cs = crystalSymmetry.load("Al-Aluminum.cif")
+cs = crystalFrame.load("Al-Aluminum.cif")
 
 %%
 % The summary identifies aluminium, its point group, lattice parameters,

@@ -213,7 +213,7 @@ classdef phaseList
     
     function pL = set.CS(pL,cs)
           
-      if isa(cs,'symmetry')
+      if isa(cs,'referenceFrame')
         
         id = cs2phaseId(pL,cs);
         
@@ -437,7 +437,7 @@ classdef phaseList
           isa(cs,'notIndexed')
         id = 1;
         return;
-      elseif ~isa(cs,'crystalSymmetry')
+      elseif ~isa(cs,'crystalFrame')
         id = 0;
         return;
       end

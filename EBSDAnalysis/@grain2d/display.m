@@ -35,7 +35,7 @@ for ip = 1:numel(grains.phaseMap)
   matrix{ip,6} = rgb2str(CS.color);
   
   % symmetry
-  if isa(CS,'symmetry'), matrix{ip,5} = CS.pointGroup; end
+  if isa(CS,'referenceFrame'), matrix{ip,5} = CS.pointGroup; end
 
   % reference frame
   %matrix{ip,6} = option2str(CS.alignment);

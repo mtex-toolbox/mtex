@@ -14,7 +14,7 @@
 plottingConvention.default('y↑→x');
 
 % load the quartz symmetry and its crystal reference frame from a CIF file
-cs = crystalSymmetry.load('quartz.cif');
+cs = crystalFrame.load('quartz.cif');
 
 %% Name the Columns
 %

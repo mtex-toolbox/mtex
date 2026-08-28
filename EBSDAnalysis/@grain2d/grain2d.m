@@ -18,7 +18,7 @@ classdef grain2d < phaseList & dynProp
   %   V = [0 0; 1 0; 2 0; 0 1; 1 1; 2 1];
   %   poly = {[1 2 5 4 1];[2 3 6 5 2]};
   %   rot = rotation.rand(2,1);
-  %   grains = grain2d(V,poly,rot,crystalSymmetry.load('quartz'))
+  %   grains = grain2d(V,poly,rot,crystalFrame.load('quartz'))
   %   plot(grains,grains.meanOrientation)
   %
   % Class Properties

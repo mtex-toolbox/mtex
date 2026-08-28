@@ -43,8 +43,8 @@ if nargin >= 2 && isa(varargin{1},'orientation')
 
   o2 = varargin{1};
   
-  assert(isa(o1.CS,'crystalSymmetry') && isa(o2.CS,'crystalSymmetry') && ...
-    isa(o1.SS,'specimenSymmetry') && isa(o2.SS,'specimenSymmetry'),...
+  assert(isa(o1.CS,'crystalFrame') && isa(o2.CS,'crystalFrame') && ...
+    isa(o1.SS,'specimenFrame') && isa(o2.SS,'specimenFrame'),...
     'The first two input arguments should be orientations.');
  
   if o1.CS == o1.SS
@@ -93,7 +93,7 @@ if nargin >= 2 && isa(varargin{1},'orientation')
     a = times(o2, l(row), 1) .* axis(pMori);
     % the axis lives in specimen coordinates - carry the frame handle, not
     % a copy of its convention, so it follows the session like o2 does
-    a.frame = o2.SS.frame;
+    a.frame = o2.SS;
         
   end
 
@@ -102,7 +102,7 @@ if nargin >= 2 && isa(varargin{1},'orientation')
 else
 
   % crystal symmetry specified -> apply it
-  if nargin >= 2 && isa(varargin{1},'crystalSymmetry')
+  if nargin >= 2 && isa(varargin{1},'crystalFrame')
     cs = varargin{1};
   else  % no symmetry specified - take the disjoint
     cs = properGroup(disjoint(o1.CS,o1.SS));
@@ -132,6 +132,6 @@ else
   a = axis@quaternion(o1);
 
   % add symmetry to axis
-  if isa(cs,'crystalSymmetry'), a = Miller(a,cs); end
+  if isa(cs,'crystalFrame'), a = Miller(a,cs); end
 
 end

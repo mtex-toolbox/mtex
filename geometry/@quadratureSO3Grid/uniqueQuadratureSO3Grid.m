@@ -96,11 +96,11 @@ if MirrorG == 2 % only if SLeft is '211' or '321' or '312'
 
   values_right = fftshift(values_right,3);
   if (ismember(RId,6:8)) ...
-      || (ismember(RId,19:21) && isa(SRight,'crystalSymmetry'))
+      || (ismember(RId,19:21) && isa(SRight,'crystalFrame'))
     values_right = flip(values_right,2);
   elseif (ismember(RId,3:5)) ...
-      || ( ismember(RId,19:21) && isa(SRight,'specimenSymmetry') ) ...
-      || ( ismember(RId,22:24) && isa(SRight,'crystalSymmetry') )
+      || ( ismember(RId,19:21) && isa(SRight,'specimenFrame') ) ...
+      || ( ismember(RId,22:24) && isa(SRight,'crystalFrame') )
     values_right = flip(values_right,3);
     values_right = circshift(values_right,1,3);
   end
@@ -119,13 +119,13 @@ if MirrorG >= 1 % only if SLeft is '211' or '321' or '312'
 
   values_below = flip(values_below,3);
   if (ismember(RId,3:8)) ...
-      || ( ismember(RId,19:21) && isa(SRight,'specimenSymmetry') ) ...
-      || ( ismember(RId,22:24) && isa(SRight,'crystalSymmetry') )
+      || ( ismember(RId,19:21) && isa(SRight,'specimenFrame') ) ...
+      || ( ismember(RId,22:24) && isa(SRight,'crystalFrame') )
     values_below = circshift(values_below,1,3);
     values_below = flip(values_below,2);
   elseif ismember(RId,[12:16,28:32,36:45])
     values_below = flip(values_below,1);
-  elseif ismember(RId,19:21) && isa(SRight,'crystalSymmetry')
+  elseif ismember(RId,19:21) && isa(SRight,'crystalFrame')
     values_below = fftshift(values_below,3);
     values_below = circshift(values_below,1,3);
     values_below = flip(values_below,1);
@@ -157,13 +157,13 @@ if MirrorB
 
   if ( ismember(LId,[1:2,17:18]) ) ...
       || ( ismember(LId,6:8) && SRight.multiplicityPerpZ==1 ) ...
-      || ( ismember(LId,19:21) && isa(SLeft,'crystalSymmetry') && SRight.multiplicityPerpZ==1 )
+      || ( ismember(LId,19:21) && isa(SLeft,'crystalFrame') && SRight.multiplicityPerpZ==1 )
     values_right = fftshift(values_right,3);
   end
 
   if ( ismember(RId,[1:2,6:8,17:18]) ) ...
       || ( ismember(RId,[3:5,19:24]) && ismember(LId,[6:8,19:21]) ) ...
-      || ( ismember(RId,19:21) && isa(SRight,'crystalSymmetry') && ismember(LId,[1:2,9:18,25:45]) )
+      || ( ismember(RId,19:21) && isa(SRight,'crystalFrame') && ismember(LId,[1:2,9:18,25:45]) )
     values_right = fftshift(values_right,1);
   end
 
@@ -185,7 +185,7 @@ if MirrorA
   if ismember(LId,[3:5,22:24])
     values_below = flip(values_below,2);
     values_below = flip(circshift(values_below,-1,1),1);
-  elseif isa(SLeft,'specimenSymmetry') && ismember(LId,19:21)
+  elseif isa(SLeft,'specimenFrame') && ismember(LId,19:21)
     values_below = flip(values_below,2);
     values_below = flip(circshift(values_below,-1,1),1);
   else
@@ -194,8 +194,8 @@ if MirrorA
   end
 
   if ( ismember(RId,3:5) ) ...
-      || ( ismember(RId,19:21) && isa(SRight,'specimenSymmetry') ) ...
-      || ( ismember(RId,22:24) && isa(SRight,'crystalSymmetry') )
+      || ( ismember(RId,19:21) && isa(SRight,'specimenFrame') ) ...
+      || ( ismember(RId,22:24) && isa(SRight,'crystalFrame') )
     values_below = fftshift(values_below,1);
   end
 

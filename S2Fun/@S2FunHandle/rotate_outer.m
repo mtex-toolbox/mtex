@@ -22,7 +22,7 @@ sF.fun = @(v) fun(inv(rot)*v);
 % rotating with an orientation changes the reference frame - the result
 % adopts the specimen frame; a plain rotation keeps the current frame
 if isa(rot,"orientation")
-  sF.framePrivate = rot.SS.frame;
+  sF.framePrivate = rot.SS;
 end
 
 end

@@ -26,7 +26,7 @@ function C = rand(varargin)
 % See also
 % complianceTensor.complianceTensor stiffnessTensor/rand
 
-[cs,varargin] = getClass(varargin,'symmetry');
+[cs,varargin] = getClass(varargin,'referenceFrame');
 
 % dispatch is on the argument class, so rand(6) below is the builtin and
 % not this method

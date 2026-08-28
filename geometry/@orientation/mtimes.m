@@ -25,7 +25,7 @@ if isnumeric(a) || isnumeric(b)
   % special case multiplication with +-1
   r = mtimes@rotation(a,b);
   return
-elseif isa(b,'symmetry') 
+elseif isa(b,'referenceFrame') 
   % orientation times symmetry
   r = mtimes@quaternion(a,b.rot,0);
   return
@@ -41,7 +41,7 @@ end
 r = mtimes@quaternion(a,b,isa(b,'orientation'));
 
 % convert back to orientation
-if isa(right,'crystalSymmetry') || isa(left,'crystalSymmetry')
+if isa(right,'crystalFrame') || isa(left,'crystalFrame')
   r.CS = right;
   r.SS = left;
 else % otherwise it is only a rotation anymore

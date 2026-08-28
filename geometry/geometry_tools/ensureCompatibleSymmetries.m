@@ -59,7 +59,7 @@ if isa(obj1,'SO3Fun') && isa(obj2,'S2Fun')
   else
     % a plain S2Fun carries at most a frame, so the left side has to be group free
     ok = obj1.SLeft.Laue.id == 2;
-    if ok, ok = framesFit(obj2.frame,obj1.SLeft.frame); end
+    if ok, ok = framesFit(obj2.frame,obj1.SLeft); end
   end
   if ~ok
     error('When convoluting @SO3Fun''s the symmetries have to be compatible.')

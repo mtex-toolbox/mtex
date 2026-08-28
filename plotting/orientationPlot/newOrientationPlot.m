@@ -57,7 +57,7 @@ end
 plotTypes = {'axisAngle','Bunge','Rodrigues','Rodriguez','homochoric','quaternion','conformal','cubochoric'};
 plotType = extract_option(varargin,plotTypes);
 if isempty_cell(plotType)
-  if isa(CS1,'crystalSymmetry') && isa(CS2,'crystalSymmetry')
+  if isa(CS1,'crystalFrame') && isa(CS2,'crystalFrame')
     plotType = 'axisAngle';
   else
     plotType = 'Bunge';

@@ -26,7 +26,7 @@ elseif isempty(inner2) % e.g. ori * rot, ori * vector3d
     % on the RIGHT it acts in the crystal frame
     inner1 = dropSymmetry(inner1,b,'crystal','orientation');
 
-  elseif isa(inner1.frame,'crystalFrame') && isempty(frameOf(b))
+  elseif isa(inner1,'crystalFrame') && isempty(frameOf(b))
 
     % framed data is gated by fitFrame inside rotate - only frame-free
     % data cannot be checked there
@@ -38,9 +38,9 @@ elseif isempty(inner2) % e.g. ori * rot, ori * vector3d
 elseif isa(b,'quaternion') && isa(a,'orientation')
   % ori * ori: the frames have to fit - for a non-quaternion b the gate inside rotate takes over
 
-  fr1 = inner1.frame; fr2 = inner2.frame;
-  if ~(~isempty(fr1) && ~isempty(fr2) && fr1 == fr2) % same handle passes cheaply
-    a = fitFrame(a,fr2);
+  % the symmetries are the frames now, so the cheap pass is handle identity
+  if ~(~isempty(inner1) && ~isempty(inner2) && inner1 == inner2)
+    a = fitFrame(a,inner2);
   end
 
 end

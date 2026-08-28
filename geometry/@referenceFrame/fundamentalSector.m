@@ -49,7 +49,7 @@ if numSym(sym) > 1+length(N)
   N = [N,vector3d.byPolar(90*degree,[90*degree,drho-90*degree])];
 end
 
-if isa(sym,'crystalSymmetry'), N = rotate(N,sym.aAxis.rho); end
+if isa(sym,'crystalFrame'), N = rotate(N,sym.aAxis.rho); end
 
 % some special cases
 switch sym.id
@@ -131,10 +131,10 @@ end
 
 % the sector is a region of the symmetry's frame and has to say so - a frame free
 % one resolves against the session default, which would flip the ipf colour key
-if isempty(pCopt) && ~isempty(sym.frame)
-  N.frame = sym.frame;
+if isempty(pCopt)
+  N.frame = sym;
 else
-  N.frame = specimenSymmetry.frameFor(pC);
+  N.frame = specimenFrame.frameFor(pC);
 end
 
 sR = sphericalRegion(N,zeros(size(N)),varargin{:});

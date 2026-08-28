@@ -27,7 +27,7 @@ function T = rand(varargin)
 
 r = get_option(varargin,'rank',2);
 varargin = delete_option(varargin,'rank',1);
-[cs,varargin] = getClass(varargin,'symmetry');
+[cs,varargin] = getClass(varargin,'referenceFrame');
 d = [repmat(3,1,r),varargin{:},1];
 T = tensor(rand(d),'rank',r);
 if ~isempty(cs), T.CS = cs; end

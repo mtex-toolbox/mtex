@@ -19,9 +19,9 @@ function [sFs,psi] = symmetrise(sF, varargin)
 %  sFs - @S2FunHarmonic
 %  psi - @S2Kernel
 
-if (nargin==1 || ~isa(varargin{1},'vector3d')) && isempty(getClass(varargin,'symmetry'))
+if (nargin==1 || ~isa(varargin{1},'vector3d')) && isempty(getClass(varargin,'referenceFrame'))
   sym = getSym(sF);
-  if isempty(sym), sym = specimenSymmetry.default; end
+  if isempty(sym), sym = specimenFrame.default; end
   sFs = sF.symmetrise(sym);
   return
 end
@@ -63,7 +63,7 @@ end
 
 
 % extract symmetry
-sym = getClass(varargin,'symmetry');
+sym = getClass(varargin,'referenceFrame');
 
 % maybe we can set antipodal and save some time
 if sym.isLaue

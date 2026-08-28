@@ -68,7 +68,7 @@ methods
       g = varargin{1};
       
       % extract symmetry
-      isSym = cellfun(@(x) isa(x,'symmetry'),varargin,'UniformOutput',true);
+      isSym = cellfun(@(x) isa(x,'referenceFrame'),varargin,'UniformOutput',true);
       if any(isSym)
         CS = varargin{find(isSym,1)};
         isSym(find(isSym,1)) = 0;
@@ -133,12 +133,12 @@ methods
     % The quadrature method itself only uses Z-fold rotational symmetry axis
     % (only use cyclic symmetry axis)
     sym = {'1','112','3','4','','6'};
-    if isa(SRight,'crystalSymmetry')
+    if isa(SRight,'crystalFrame')
       SRightNew = crystalSymmetry(sym{SRight.multiplicityZ});
     else
       SRightNew = specimenSymmetry(sym{SRight.multiplicityZ});
     end
-    if isa(SLeft,'crystalSymmetry')
+    if isa(SLeft,'crystalFrame')
       SLeftNew = crystalSymmetry(sym{SLeft.multiplicityZ});
     else
       SLeftNew = specimenSymmetry(sym{SLeft.multiplicityZ});

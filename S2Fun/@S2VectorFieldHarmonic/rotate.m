@@ -24,7 +24,7 @@ end
 
 % an orientation takes the result into the specimen frame, a rotation keeps it
 if isa(rot,'orientation')
-  sVF.sF = setFrame(sVF.sF,rot.SS.frame);
+  sVF.sF = setFrame(sVF.sF,rot.SS);
 elseif ~isempty(fr)
   sVF.sF = setFrame(sVF.sF,fr);
 end

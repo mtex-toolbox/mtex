@@ -13,7 +13,7 @@ function [SRight,SLeft] = extractSym(list,varargin)
 SRight = [];
 SLeft = [];
 
-isSym = cellfun(@(x) isa(x,'symmetry'),list,'UniformOutput',true);
+isSym = cellfun(@(x) isa(x,'referenceFrame'),list,'UniformOutput',true);
 
 if any(isSym)
   pos = find(isSym,1);

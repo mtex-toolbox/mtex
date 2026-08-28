@@ -57,9 +57,9 @@ end
 %     ghat(k,j,l) = (-1)^(j) * ghat(-k,j,l)
 % Note that in case of '211', '321', '312' this property changes slightly
 if sym(1)==2
-  if ismember(CS.id,3:5) || (ismember(CS.id,22:24) && isa(CS,'crystalSymmetry')) || (ismember(CS.id,19:21) &&(isa(CS,'specimenSymmetry')))
+  if ismember(CS.id,3:5) || (ismember(CS.id,22:24) && isa(CS,'crystalFrame')) || (ismember(CS.id,19:21) &&(isa(CS,'specimenFrame')))
     ind = (-1).^((-N:N)+(-N:-1)');
-  elseif ismember(CS.id,22:24) && isa(CS,'specimenSymmetry')
+  elseif ismember(CS.id,22:24) && isa(CS,'specimenFrame')
     ind = (-1).^(-N:N).*1i.^(-N:-1)';
   else
     ind = (-1).^(-N:N);
@@ -73,18 +73,18 @@ end
 %     ghat(k,j,l) = (-1)^(k+j) * ghat(-k,j,l)
 % Note that in case of '211', '321', '312' this properties change slightly
 if sym(3)==2 && ~flags(3)
-  if ismember(SS.id,3:5) || (ismember(SS.id,22:24) && isa(SS,'crystalSymmetry')) || (ismember(SS.id,19:21) && isa(SS,'specimenSymmetry'))
+  if ismember(SS.id,3:5) || (ismember(SS.id,22:24) && isa(SS,'crystalFrame')) || (ismember(SS.id,19:21) && isa(SS,'specimenFrame'))
     ind = (-1).^((-N:N)+reshape(-N:-1,1,1,[]));
-  elseif (ismember(SS.id,22:24) && isa(SS,'specimenSymmetry'))
+  elseif (ismember(SS.id,22:24) && isa(SS,'specimenFrame'))
     ind = (-1).^(-N:N).*(1i).^(reshape(-N:-1,1,1,[]));
   else
     ind = (-1).^(-N:N);
   end
   ghat(1+flags(2):end,1+flags(2):end,(1:N)+flags(2)) = ind .* flip(ghat(1+flags(2):end,1+flags(2):end,flags(2)+(N+2):end),3) ;
 elseif sym(3)==2 && flags(3) && sym(1)~=2
-  if ismember(SS.id,6:9) ||  (ismember(SS.id,19:21) && isa(SS,'crystalSymmetry'))
+  if ismember(SS.id,6:9) ||  (ismember(SS.id,19:21) && isa(SS,'crystalFrame'))
     ind = (-1).^((-N:N)+(-N:-1)'+reshape(0:N,1,1,[]));
-  elseif ismember(SS.id,22:24) && isa(SS,'specimenSymmetry')
+  elseif ismember(SS.id,22:24) && isa(SS,'specimenFrame')
     ind = (-1).^((-N:-1)'+(-N:N)).*(1i).^(-reshape(0:N,1,1,[]));
   else
     ind = (-1).^((-N:N)+(-N:-1)');

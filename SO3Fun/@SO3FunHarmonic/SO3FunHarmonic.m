@@ -28,8 +28,8 @@ classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
 
 properties
   fhat   = [];              % harmonic coefficients
-  SLeft  = specimenSymmetry.default % symmetry from the left
-  SRight = specimenSymmetry.default % symmetry from the right
+  SLeft  = specimenFrame.default % symmetry from the left
+  SRight = specimenFrame.default % symmetry from the right
 end
 
 properties (Dependent=true)  

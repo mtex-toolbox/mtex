@@ -31,13 +31,13 @@ function h = plotAxisDistribution(obj,varargin)
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 
 res = 2.5 * degree;
-if isa(obj,'symmetry')
+if isa(obj,'referenceFrame')
   res = .5 * degree;
   cs1 = obj;
-  if nargin > 1 && isa(varargin{1},'symmetry')
+  if nargin > 1 && isa(varargin{1},'referenceFrame')
     cs2 = varargin{1};
   else
-    cs2 = specimenSymmetry.default;
+    cs2 = specimenFrame.default;
   end
 elseif isa(obj,'orientation')
 
@@ -55,7 +55,7 @@ if isa(obj,'vector3d')
 
 else
 
-  if isa(obj,'orientation') && isa(varargin{1},'crystalSymmetry')
+  if isa(obj,'orientation') && isa(varargin{1},'crystalFrame')
     dcs = varargin{1};
   else
     dcs = calcDisjoint(cs1,cs2,varargin{:});
@@ -67,7 +67,7 @@ else
 
   % plot
   varargin = [delete_option(varargin,'complete'),{dcs.how2plot}];
-  if isa(obj,'symmetry')
+  if isa(obj,'referenceFrame')
     density = pos(calcAxisDistribution(cs1,cs2,h,varargin{:}));
   else
     density = pos(calcAxisDistribution(obj,h,varargin{:}));

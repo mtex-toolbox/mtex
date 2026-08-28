@@ -146,9 +146,9 @@ methods
     % right vector in the crystal frame
     ref = SO3TV.oriRef;
     if SO3TV.tangentSpace.isLeft
-      fr = ref.SS.frame;
+      fr = ref.SS;
     else
-      fr = ref.CS.frame;
+      fr = ref.CS;
     end
   end
 

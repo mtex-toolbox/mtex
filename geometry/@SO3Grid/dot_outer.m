@@ -69,7 +69,7 @@ if check_option(varargin,'epsilon') && ~check_option(varargin,{'full','all'})
 else
 
   if check_option(varargin,'nospecimensymmetry')
-    S3G.SS = specimenSymmetry.default;
+    S3G.SS = specimenFrame.default;
   end
   d = dot_outer@orientation(S3G,q,varargin{:});
 

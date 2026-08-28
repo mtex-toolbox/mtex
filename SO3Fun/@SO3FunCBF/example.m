@@ -2,7 +2,7 @@ function f = example(varargin)
 % example of and FibreODF
 %
 
-cs = crystalSymmetry.load('Ti-Titanium-alpha.cif');
+cs = crystalFrame.load('Ti-Titanium-alpha.cif');
 
 % define the fibre to be the beta fibre
 warning off

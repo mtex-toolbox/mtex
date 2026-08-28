@@ -1,16 +1,11 @@
 function sP = properSubGroup(s)
-% return the corresponding Laue group 
+% the subgroup of proper rotations of s
 
-% if it is already a proper group there is nothing to do
-if s.isProper, sP = s; return; end
+if isProper(s), sP = s; return; end
 
-sP = s.copy;
+id = 0;
+if s.id > 0, id = symmetry.pointGroups(s.id).properId; end
 
-% remove all improper rotations
-sP.rot = s.rot(~s.rot.i);
+sP = symmetry(id,s.rot(~s.rot.i));
 
-% new id
-if s.id > 0
-  sP.id = symmetry.pointGroups(s.id).properId;
 end
-  

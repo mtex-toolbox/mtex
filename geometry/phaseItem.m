@@ -129,9 +129,7 @@ classdef (Abstract) phaseItem < handle & matlab.mixin.Heterogeneous %& matlab.mi
 
     case "notIndexed"
       out = strcmpi(obj1.mineral,obj2.mineral);
-    %case "specimenSymmetry"
-    %  out = obj1.Laue.id == obj2.Laue.id;
-    case "crystalSymmetry"
+    case "crystalFrame"
 
       % check mineral name
       out = strcmpi(obj1.mineral,obj2.mineral);
@@ -148,6 +146,9 @@ classdef (Abstract) phaseItem < handle & matlab.mixin.Heterogeneous %& matlab.mi
       
       out = all(abs(obj1.abc - obj2.abc)/max(obj1.abc)<1e-2) && ...
           all(abs(obj1.abg - obj2.abg)<1e-2);
+
+    otherwise
+      out = false;
   end
 
   end
@@ -161,7 +162,7 @@ classdef (Abstract) phaseItem < handle & matlab.mixin.Heterogeneous %& matlab.mi
 
     case "notIndexed"
       out = strcmpi(obj1.mineral,obj2.mineral);
-    case "crystalSymmetry"
+    case "crystalFrame"
 
       % check mineral name
       out = strcmpi(obj1.mineral,obj2.mineral);
@@ -178,7 +179,12 @@ classdef (Abstract) phaseItem < handle & matlab.mixin.Heterogeneous %& matlab.mi
 
       % check the reference frames are aligned - same 5e-2 rule as always,
       % now defined in one place (referenceFrame.tolAligned)
-      out = isAligned(obj1.frame,obj2.frame);
+      out = isAligned(obj1,obj2);
+
+    otherwise
+      % a class this does not know about is only equal to itself, which the
+      % identity test above has already ruled out
+      out = false;
   end
 
   end

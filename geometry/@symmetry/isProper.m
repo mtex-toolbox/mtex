@@ -1,12 +1,6 @@
-function res = isProper(sym) 
+function res = isProper(sym)
 % does it contain only proper rotations
 
-if ~isempty(sym.properRef)
+res = ~any(sym.rot.i(:));
 
-  res = sym.properRef == sym;
-  
-else
-  
-  res = ~any(sym.rot.i(:));
-  
 end

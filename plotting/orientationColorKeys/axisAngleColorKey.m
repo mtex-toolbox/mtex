@@ -71,8 +71,8 @@ classdef axisAngleColorKey < orientationColorKey
         oM.antipodal = oM.oriRef.antipodal;
       end
       
-      if isa(oM.CS2,'specimenSymmetry')
-        sym = specimenSymmetry.default;
+      if isa(oM.CS2,'specimenFrame')
+        sym = specimenFrame.default;
       elseif oM.antipodal
         sym = Laue(disjoint(oM.CS1,oM.CS2));
       else

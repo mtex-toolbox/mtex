@@ -103,7 +103,7 @@ for tS = [SO3TangentSpace.rightVector,SO3TangentSpace.leftVector]
 
   % the frames ride along with the groups - a refabricated symmetry would
   % carry the session frame instead of the one of the data
-  if ref.CS.frame ~= cs.frame || ref.SS.frame ~= ss.frame
+  if ref.CS ~= cs || ref.SS ~= ss
     error('log dropped a reference frame, tangentSpace %d',double(tS));
   end
 

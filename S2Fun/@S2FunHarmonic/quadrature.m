@@ -44,7 +44,7 @@ end
 
 if isa(f,'function_handle')
   % only hand over a symmetry that was given, extractSym would fabricate one
-  f = S2FunHandle(f,getClass(varargin,'symmetry'));
+  f = S2FunHandle(f,getClass(varargin,'referenceFrame'));
 end
 
 % commented out - seems to be obsolete and leads to misbehaviour for S2FunMLS

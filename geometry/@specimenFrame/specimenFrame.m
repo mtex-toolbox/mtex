@@ -44,7 +44,7 @@ classdef specimenFrame < referenceFrame
     function makeDefault(sF)
       % make this frame the session default
       %
-      % plottingConvention.default, specimenSymmetry.default and every
+      % plottingConvention.default, specimenFrame.default and every
       % frame-free or default-framed object follow it from now on
       %
       % Syntax
@@ -94,7 +94,7 @@ classdef specimenFrame < referenceFrame
       % get or set the frame that supplies the session default
       %
       % plottingConvention.default reads and writes through this frame,
-      % and specimenSymmetry.default's singleton holds it. Initially it
+      % and specimenFrame.default's singleton holds it. Initially it
       % is the generic specimen frame X, Y, Z, seeded with
       % plottingConvention.ij - x to east, y to south, z into the
       % screen, the convention of SEM images and of most EBSD imports.
@@ -121,6 +121,25 @@ classdef specimenFrame < referenceFrame
         % the default frame always carries a convention
         if isempty(def.how2plot), def.how2plot = plottingConvention.ij; end
         sF = def;
+      end
+    end
+
+    function fr = frameFor(pC)
+      % the session frame carrying pC - the registered one when it already
+      % carries that convention, an unregistered fork otherwise, keeping the
+      % name and the axes names of the session frame
+      %
+      % Accepts a string like 'y↑→x', and reports no frame for no convention,
+      % so that every set.how2plot is one line through here instead of
+      % repeating the normalisation
+
+      if ischar(pC) || isstring(pC), pC = plottingConvention(pC); end
+      if isempty(pC), fr = []; return; end
+
+      fr = specimenFrame.default;
+      if pC ~= fr.how2plot
+        fr = copy(fr);
+        fr.how2plot = pC;
       end
     end
 

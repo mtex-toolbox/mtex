@@ -69,8 +69,8 @@ end
 
 properties (Hidden = true)
   internTangentSpace SO3TangentSpace = SO3TangentSpace.leftVector;
-  hiddenCS symmetry = crystalSymmetry.default;
-  hiddenSS symmetry = specimenSymmetry.default;
+  hiddenCS referenceFrame = crystalFrame;
+  hiddenSS referenceFrame = specimenFrame.default;
 end
 
 methods

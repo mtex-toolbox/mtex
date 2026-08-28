@@ -86,7 +86,7 @@ classdef S2FunMLS < S2Fun
     distance    = 'euclidean'; % metric for neighbor search
 
     % the symmetry used by the approximation machinery, the frame is s.frame
-    s = specimenSymmetry.default;
+    s = specimenFrame.default;
 
     monomials   = true;   % use monomial basis?
     centered    = true;   % use local coordinates centered at evaluation point?
@@ -121,14 +121,14 @@ classdef S2FunMLS < S2Fun
   methods
 
     function fr = getFrame(S2F)
-      % the frame of an MLS function is the frame of its symmetry; an
+      % the frame of an MLS function is the frame its symmetry names; an
       % own frame, set internally, wins
       if ~isempty(S2F.framePrivate)
         fr = S2F.framePrivate;
       elseif isempty(S2F.s)
         fr = [];
       else
-        fr = S2F.s.frame;
+        fr = S2F.s;
       end
     end
 
@@ -233,7 +233,7 @@ classdef S2FunMLS < S2Fun
         {'string','function_handle','char'});
       S2F.distance = get_option(varargin, 'distance', 'euclidean', 'char');
       S2F.s = get_option(varargin, {'symmetry', 'cs', 's', 'ss'}, ...
-        specimenSymmetry.default, 'crystalSymmetry');
+        specimenFrame.default, 'crystalSymmetry');
 
       % basis options
       S2F.monomials = get_option(varargin, 'monomials', true, 'logical');

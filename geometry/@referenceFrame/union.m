@@ -3,15 +3,15 @@ function s = union(s1,s2)
 %
 % 
 
-if ~isa(s2,'symmetry')
+if ~isa(s2,'referenceFrame')
   
   s = crystalSymmetry(unique(s1.rot * [rotation.id; s2(:)]),s1.axes);
   
-elseif ~isa(s1,'symmetry')
+elseif ~isa(s1,'referenceFrame')
 
   s = crystalSymmetry(unique([rotation.id;s1(:)] * s2.rot),s2.axes);
    
-elseif s1 == s2
+elseif s1.sym == s2.sym
   
   s = s1;
   

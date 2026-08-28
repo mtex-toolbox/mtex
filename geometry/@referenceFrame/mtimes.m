@@ -1,7 +1,7 @@
 function r = mtimes(a,b,varargin)
 % maximal n-fold of symmetry axes
 
-if isa(a,'symmetry')
+if isa(a,'referenceFrame')
 
   if a.id == 1
     

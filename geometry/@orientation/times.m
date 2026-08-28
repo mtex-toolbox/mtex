@@ -37,7 +37,7 @@ end
 r = times@rotation(a,b,isa(b,'orientation'));
 
 % convert back to orientation
-if isa(right,'crystalSymmetry') || isa(left,'crystalSymmetry')
+if isa(right,'crystalFrame') || isa(left,'crystalFrame')
 
   r.CS = right;
   r.SS = left;

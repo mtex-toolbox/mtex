@@ -171,7 +171,7 @@ function Out = calcTaylorFun(rot,eps,sS,numOut,varargin)
 end
 
 function checkHex %#ok<DEFNU>
-cs = crystalSymmetry.load('Mg-Magnesium.cif');
+cs = crystalFrame.load('Mg-Magnesium.cif');
 cs = cs.properGroup;
 
 sScold = [slipSystem.basal(cs,1),...

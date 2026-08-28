@@ -60,7 +60,7 @@ classdef SO3FunHomochoric < SO3Fun
       try
         S = SO3F.S3G.CS;
       catch
-        S = specimenSymmetry.default;
+        S = specimenFrame.default;
       end
     end
     
@@ -72,7 +72,7 @@ classdef SO3FunHomochoric < SO3Fun
       try
         S = SO3F.S3G.SS;
       catch
-        S = specimenSymmetry.default;
+        S = specimenFrame.default;
       end
     end
     

@@ -228,7 +228,7 @@ classdef embedding
       %  obj - @embedding
       %
           
-      cs = getClass(varargin,'symmetry');
+      cs = getClass(varargin,'referenceFrame');
       obj = embedding.id(cs);
       
       % get size
@@ -487,7 +487,7 @@ classdef embedding
           embedding.checkProjection(crystalSymmetry('laueId',k));
         end
         return
-      elseif isa(ori,'symmetry')
+      elseif isa(ori,'referenceFrame')
         ori = orientation.rand(1000,ori);
       end
       cs  = ori.CS;
@@ -528,7 +528,7 @@ classdef embedding
           embedding.checkDouble(crystalSymmetry('laueId',k));
         end
         return
-      elseif isa(ori,'symmetry')
+      elseif isa(ori,'referenceFrame')
         ori = orientation.rand(1000,ori);
       end
       cs  = ori.CS;

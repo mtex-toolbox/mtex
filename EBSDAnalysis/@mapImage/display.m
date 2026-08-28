@@ -114,7 +114,7 @@ if isempty(ebsd) || isempty(ebsd.pos), s = '-'; return; end
 mins = {};
 for k = 1:numel(ebsd.CSList)
   cs = ebsd.CSList(k);
-  if isa(cs,'crystalSymmetry'), mins{end+1} = char(cs.mineral); end %#ok<AGROW>
+  if isa(cs,'crystalFrame'), mins{end+1} = char(cs.mineral); end %#ok<AGROW>
 end
 
 if isempty(mins), s = class(ebsd); else, s = strjoin(mins,', '); end

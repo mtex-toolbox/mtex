@@ -2,7 +2,7 @@ function [sym1,sym2] = extractSym(obj)
 % extract left and right symmetry from various objects
 
 sym2 = [];
-if isa(obj,'symmetry')
+if isa(obj,'referenceFrame')
   sym1 = obj;
   sym2 = obj;
 elseif isa(obj,'orientation')

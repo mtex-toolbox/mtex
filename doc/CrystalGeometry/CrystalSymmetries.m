@@ -236,18 +236,18 @@ common = disjoint(crystalSymmetry('432'),crystalSymmetry('622'))
 
 %% Import from CIF and PHL Files
 %
-% <crystalSymmetry.load.html |crystalSymmetry.load|> reads the point group,
+% <crystalFrame.load.html |crystalFrame.load|> reads the point group,
 % lattice parameters, and phase name from a crystallographic information
 % file. With no extension, MTEX searches its CIF data path.
 
-csQuartz = crystalSymmetry.load('quartz')
+csQuartz = crystalFrame.load('quartz')
 
 %%
 % A Bruker |.phl| file may contain several phases, so the result is a cell
 % array of crystal symmetries. The first entry in the bundled example is
 % magnetite.
 
-csList = crystalSymmetry.load('crystal.phl');
+csList = crystalFrame.load('crystal.phl');
 csList{1}
 
 %% References

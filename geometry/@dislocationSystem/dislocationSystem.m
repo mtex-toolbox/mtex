@@ -93,7 +93,7 @@ classdef dislocationSystem
       if isa(sS.b,'Miller')
         CS = sS.b.CS;
       else
-        CS = specimenSymmetry.default;
+        CS = specimenFrame.default;
       end
     end
     
@@ -112,7 +112,7 @@ classdef dislocationSystem
       displayClass(dS,inputname(1),varargin{:});
 
       % display symmetry
-      if isa(dS.CS,'crystalSymmetry')
+      if isa(dS.CS,'crystalFrame')
         if ~isempty(dS.CS.mineral)
           disp([' mineral: ',char(dS.CS,'verbose')]);
         else
@@ -126,7 +126,7 @@ classdef dislocationSystem
         
         disp([' edge dislocations : ',size2str(submatrix(ones(size(dS)),dS.isEdge))]);
         
-        if isa(dS.CS,'crystalSymmetry')
+        if isa(dS.CS,'crystalFrame')
           matrix = [arrayfun(toChar,dS.b(dS.isEdge),'UniformOutput',false),...
             arrayfun(toChar,dS.l(dS.isEdge),'UniformOutput',false),...
             vec2cell(dS.u(dS.isEdge)), vec2cell(round(norm(dS.b(dS.isEdge)),2))];
@@ -144,7 +144,7 @@ classdef dislocationSystem
         
         disp([' screw dislocations: ',size2str(submatrix(ones(size(dS)),dS.isScrew))]);
         
-        if isa(dS.CS,'crystalSymmetry')
+        if isa(dS.CS,'crystalFrame')
           matrix = [arrayfun(toChar,dS.b(dS.isScrew),'UniformOutput',false),...
             vec2cell(dS.u(dS.isScrew)), vec2cell(round(norm(dS.b(dS.isScrew)),2))];
         

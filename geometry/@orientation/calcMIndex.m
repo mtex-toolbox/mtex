@@ -35,7 +35,7 @@ function m = calcMIndex(ori,varargin)
 % ODF.ODF
 
 %
-if ~isa(ori.SS,'crystalSymmetry') % check if input is a misorientation
+if ~isa(ori.SS,'crystalFrame') % check if input is a misorientation
     % derive some uncorrelated misorientations
     if length(ori)>1e4
     ori = inv(ori).*subSet(ori,randperm(length(ori)));

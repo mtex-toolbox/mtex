@@ -46,7 +46,7 @@ end
 
 % convolution with kernel function
 sF = conv(sF,psi);
-sF.frame = h.CS.frame;
+sF.frame = h.CS;
 
 % symmetrise with respect to crystal symmetry
 if ~check_option(varargin,'noSymmetry')

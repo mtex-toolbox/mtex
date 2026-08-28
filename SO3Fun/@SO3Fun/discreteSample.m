@@ -37,7 +37,7 @@ rot = rotation.rand(n,'maxAngle',res*1.5) .* rot(:);
 if SO3F.antipodal == 1; rot.antipodal = 1; end
 
 % if there is no crystal symmetry cast to rotation
-if ~isa(SO3F.SLeft,'crystalSymmetry') && ~isa(SO3F.SRight,'crystalSymmetry')
+if ~isa(SO3F.SLeft,'crystalFrame') && ~isa(SO3F.SRight,'crystalFrame')
   rot = rotation(rot);
 else % random symmetry elements
   rot = rot .* SO3F.CS.rot(randi(SO3F.CS.numSym,length(rot),1));

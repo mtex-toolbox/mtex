@@ -50,18 +50,18 @@ switch lower(level)
 
   case 'strict'
 
-    ok = s1 == s2 || (s1.id == s2.id && ...
-      ~isempty(s1.frame) && ~isempty(s2.frame) && s1.frame == s2.frame);
+    ok = s1 == s2 || (s1.id == s2.id && framesFit(s1,s2) && ...
+      strcmp(class(s1),class(s2)));
 
   case 'same'
 
     ok = s1.Laue.id == s2.Laue.id && sameMineral(s1,s2) && ...
-      framesFit(s1.frame,s2.frame);
+      framesFit(s1,s2);
 
   case 'compatible'
 
     % id 1 and 2 are the trivial groups, which claim nothing
-    ok = framesFit(s1.frame,s2.frame) && ...
+    ok = framesFit(s1,s2) && ...
       (s1.id <= 2 || s2.id <= 2 || s1.Laue.id == s2.Laue.id);
 
   otherwise
@@ -76,7 +76,7 @@ end
 
 function ok = sameMineral(s1,s2)
 % a name only decides when both sides carry one
-ok = ~(isa(s1,'crystalSymmetry') && isa(s2,'crystalSymmetry') && ...
+ok = ~(isa(s1,'crystalFrame') && isa(s2,'crystalFrame') && ...
   ~isempty(s1.mineral) && ~isempty(s2.mineral) && ...
   ~strcmpi(s1.mineral,s2.mineral));
 end

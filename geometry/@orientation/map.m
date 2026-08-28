@@ -39,7 +39,7 @@ function ori = map(varargin)
 % orientation/byEuler
 
 % find and remove symmetries
-args  = cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true);
+args  = cellfun(@(s) isa(s,'referenceFrame'),varargin,'uniformoutput',true);
 sym = varargin(args);
 varargin(args) = [];
    
@@ -62,14 +62,14 @@ if isa(varargin{2},'Miller')
 elseif isa(varargin{2}.frame,'specimenFrame')
   % the input carries a frame - adopt the handle itself, so the result
   % follows that frame's convention like the input does
-  if varargin{2}.frame ~= ori.SS.frame
+  if varargin{2}.frame ~= ori.SS
     ori.SS = copy(ori.SS);
-    ori.SS.frame = varargin{2}.frame;
+    ori.SS = varargin{2}.frame;
   end
 elseif ori.SS.how2plot ~= varargin{2}.how2plot
   % never write the convention through the shared SS handle, copy it instead
   ori.SS = copy(ori.SS);
-  ori.SS.frame = varargin{2}.frame;
+  ori.SS = varargin{2}.frame;
 end
 
 if length(sym) == 2

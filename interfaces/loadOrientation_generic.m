@@ -86,8 +86,8 @@ try
   S = loader.getOptions();
 
   % set up ori variable
-  CS = getClass(varargin,'crystalSymmetry',crystalSymmetry);
-  SS = getClass(varargin,'specimenSymmetry',specimenSymmetry.default);
+  CS = getClass(varargin,'crystalFrame',crystalSymmetry);
+  SS = getClass(varargin,'specimenFrame',specimenFrame.default);
   ori = orientation(q,CS,SS);
 
   if isCheck, S = options; end

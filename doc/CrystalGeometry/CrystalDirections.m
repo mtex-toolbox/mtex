@@ -73,7 +73,7 @@ annotate(directAxes,'label',{'a','b','c'},...
 % alter its indices.
 
 % point the a-axis east in this crystal frame
-cs.frame.how2plot.east = cs.aAxis;
+cs.how2plot.east = cs.aAxis;
 
 plot(m,'labeled','grid')
 annotate(directAxes,'label',{'a','b','c'},...

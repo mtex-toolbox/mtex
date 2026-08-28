@@ -2,15 +2,15 @@ function s1 = disjoint(s1,s2)
 % returns the disjoint of two symmetry groups
 
 % first argument should be symmetry
-if ~isa(s1,'symmetry'), [s1,s2] = deal(s2,s1); end
+if ~isa(s1,'referenceFrame'), [s1,s2] = deal(s2,s1); end
 
-if ~isa(s2,'symmetry')
+if ~isa(s2,'referenceFrame')
   
   rot2 = s2;
   
-elseif s1 == s2
+elseif s1.sym == s2.sym
   % both symmetries are equal -> nothing is to do
-  if isa(s2,'specimenSymmetry'), s1 = s2; end    
+  if isa(s2,'specimenFrame'), s1 = s2; end    
   return
 else
   
@@ -23,20 +23,20 @@ end
 
 % the trivial cases 
 if isscalar(is1)
-  if isa(s1,'specimenSymmetry') || isa(s2,'specimenSymmetry')
-    s1 = specimenSymmetry.default;
+  if isa(s1,'specimenFrame') || isa(s2,'specimenFrame')
+    s1 = specimenFrame.default;
   else
-    s1 = crystalSymmetry.default;
+    s1 = crystalFrame;
   end
   return; 
 end
 if numel(is1) == length(s1), return; end
-if numel(is2) == length(s2) && isa(s2,'symmetry'), s1 = s2; return; end
+if numel(is2) == length(s2) && isa(s2,'referenceFrame'), s1 = s2; return; end
 
 % take the equal ones
 rot = s1.rot(sort(is1));
 
-if isa(s1,'specimenSymmetry') || isa(s2,'specimenSymmetry')
+if isa(s1,'specimenFrame') || isa(s2,'specimenFrame')
   s1 = specimenSymmetry(rot);
 else
   s1 = crystalSymmetry(rot);

@@ -17,7 +17,7 @@ classdef SO3FunCBF < SO3Fun
 %
 % Example
 %
-%   cs = crystalSymmetry.load("Mg-Magnesium.cif");
+%   cs = crystalFrame.load("Mg-Magnesium.cif");
 %   fibre = fibre.beta(cs);
 %   SO3F = SO3FunCBF(fibre,'halfwidth',10*degree)
 %
@@ -63,12 +63,12 @@ classdef SO3FunCBF < SO3Fun
 
       hw = get_option(varargin,'halfwidth',10*degree);
       SO3F.psi = getClass(varargin,'S2Kernel',S2DeLaValleePoussinKernel('halfwidth',hw));
-      SO3F.SS = getClass(varargin,'specimenSymmetry',specimenSymmetry.default);
+      SO3F.SS = getClass(varargin,'specimenFrame',specimenFrame.default);
                   
     end
     
     function SO3F = set.SRight(SO3F,SRight)
-      if isa(SRight,'crystalSymmetry')
+      if isa(SRight,'crystalFrame')
         SO3F.h = Miller(SO3F.h,SRight);
       else
         SO3F.h = vector3d(SO3F.h);
@@ -83,13 +83,13 @@ classdef SO3FunCBF < SO3Fun
         try
           SRight = SO3F.h.opt.sym;
         catch
-          SRight = specimenSymmetry.default;
+          SRight = specimenFrame.default;
         end
       end
     end
     
     function SO3F = set.SLeft(SO3F,SLeft)
-      if isa(SLeft,'crystalSymmetry')
+      if isa(SLeft,'crystalFrame')
         SO3F.r = Miller(SO3F.r,SLeft);
       else
         SO3F.r = vector3d(SO3F.r);
@@ -104,7 +104,7 @@ classdef SO3FunCBF < SO3Fun
         try
           SLeft = SO3F.r.opt.sym;
         catch
-          SLeft = specimenSymmetry.default;
+          SLeft = specimenFrame.default;
         end
       end
     end

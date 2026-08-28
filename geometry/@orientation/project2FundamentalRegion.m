@@ -32,8 +32,8 @@ if nargout >= 2
   ind1 = min(omega,[],1) < 1e-5;
   ind2 = min(omega,[],2) < 1e-5;
   
-  dSym1 = crystalSymmetry.byElements(sym1(ind1));
-  dSym2 = crystalSymmetry.byElements(sym2(ind2));
+  dSym1 = crystalFrame.byElements(sym1(ind1));
+  dSym2 = crystalFrame.byElements(sym2(ind2));
 
   rSym1 = factor(moriRef.CS.properGroup,dSym1);
   rSym2 = factor(moriRef.SS.properGroup,dSym2);

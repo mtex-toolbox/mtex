@@ -264,7 +264,7 @@ function m = mineralOf(ebsd)
 names = strings(1,numel(ebsd.CSList));
 for i = 1:numel(ebsd.CSList)
   cs = csOfPhase(ebsd,i);
-  if isa(cs,'crystalSymmetry'), names(i) = string(cs.mineral); else, names(i) = "notIndexed"; end
+  if isa(cs,'crystalFrame'), names(i) = string(cs.mineral); else, names(i) = "notIndexed"; end
 end
 
 m = names(ebsd.phaseId(:));
@@ -288,7 +288,7 @@ function id = idOfMineral(ebsd,mineral)
 id = [];
 for i = 1:numel(ebsd.CSList)
   cs = csOfPhase(ebsd,i);
-  if isa(cs,'crystalSymmetry') && strcmp(cs.mineral,mineral), id = i; return; end
+  if isa(cs,'crystalFrame') && strcmp(cs.mineral,mineral), id = i; return; end
 end
 
 end

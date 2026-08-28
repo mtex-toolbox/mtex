@@ -38,7 +38,7 @@ classdef Miller < vector3d
   end
   
   properties (Access = private)
-    CSprivate % crystal symmetry
+    CSprivate % the crystal frame these indices are written in
   end
   
   properties (Dependent = true)
@@ -76,14 +76,14 @@ classdef Miller < vector3d
       if isa(varargin{1},'Miller') 
   
         m = varargin{1};
-        m.CSprivate = getClass(varargin,'crystalSymmetry',m.CSprivate);
+        m.CSprivate = getClass(varargin,'crystalFrame',m.CSprivate);
         m.dispStyle = get_flag(varargin,{'uvw','UVTW','hkl','hkil','xyz'},m.dispStyle);
         
         return;
       end
 
       % check for symmetry
-      m.CSprivate = getClass(varargin,'crystalSymmetry',[]);
+      m.CSprivate = getClass(varargin,'crystalFrame',[]);
       assert(isa(varargin{1},'Miller') || ~isempty(m.CSprivate),...
         'No crystal symmetry has been specified when defining a crystal direction!');
 
@@ -91,7 +91,7 @@ classdef Miller < vector3d
       if m.lattice.isTriHex, m.dispStyle = 'hkil'; end
       m.dispStyle = get_flag(varargin,{'uvw','UVTW','hkl','hkil','xyz'},m.dispStyle);
 
-      if isa(varargin{1},'symmetry')
+      if isa(varargin{1},'referenceFrame')
 
         if nargin > 1
           m.x = varargin{2};
@@ -192,7 +192,7 @@ classdef Miller < vector3d
       if isempty(m.CSprivate)
         fr = m.framePrivate; % degenerate machinery state without a CS
       else
-        fr = m.CSprivate.frame;
+        fr = m.CSprivate;
       end
     end
 

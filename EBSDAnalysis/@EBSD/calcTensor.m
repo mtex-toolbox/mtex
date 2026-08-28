@@ -87,7 +87,7 @@ msg = sprintf('\nMissing tensor for phase: %s\n',cs.mineral);
 for k = 1:numel(args)
 
   T = args{k};
-  if ~isa(T,'tensor') || ~isa(T.CS,'crystalSymmetry'), continue; end
+  if ~isa(T,'tensor') || ~isa(T.CS,'crystalFrame'), continue; end
   if ~strcmpi(T.CS.mineral,cs.mineral) || T.CS.Laue.id ~= cs.Laue.id, continue; end
 
   dAxes = max(abs(T.CS.abc - cs.abc) / max(T.CS.abc));

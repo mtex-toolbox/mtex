@@ -16,7 +16,7 @@ function  [mori,hkl,omega,sigma] = CSL(sigma,CS,varargin)
 %  o - @orientation
 %
 
-if nargin < 2 || ~isa(CS,'crystalSymmetry')
+if nargin < 2 || ~isa(CS,'crystalFrame')
   error('Starting with MTEX 4.2 the second argument to CSL should be crystal symmetry.')
 end
 

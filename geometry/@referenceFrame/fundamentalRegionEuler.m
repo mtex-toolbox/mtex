@@ -28,7 +28,7 @@ end
 
 % Note that specimenSymmetry('23') does not exist and consequently does not work
 
-if nargin == 1, ss = specimenSymmetry.default; end
+if nargin == 1, ss = specimenFrame.default; end
 
 % phi1
 maxPhi1 = 2*pi/ss.multiplicityZ;
@@ -70,8 +70,8 @@ if check_option(varargin,{'ABG','Matthies','ZYZ','nfft'})
     end
   end
   % correct if left symmetry is '312' or  '321'
-  if (ss.properGroup.id == 22 && isa(ss,'crystalSymmetry')) || ...
-      (ss.properGroup.id == 19 && isa(ss,'specimenSymmetry'))
+  if (ss.properGroup.id == 22 && isa(ss,'crystalFrame')) || ...
+      (ss.properGroup.id == 19 && isa(ss,'specimenFrame'))
     if ismember(cs.properGroup.id,[12,28,36,41,43])
       maxPhi = pi;
       maxPhi2 = maxPhi2/2;
@@ -96,7 +96,7 @@ else
     end
   end
   % correct if left symmetry is '321'
-  if ss.properGroup.id == 19 && isa(ss,'crystalSymmetry')
+  if ss.properGroup.id == 19 && isa(ss,'crystalFrame')
     if ismember(cs.properGroup.id,[3,12,22,28,36,41,43])
       maxPhi = pi;
       maxPhi2 = maxPhi2/2;

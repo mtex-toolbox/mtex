@@ -122,7 +122,7 @@ methods
     try
       S = SO3F.center.CS;
     catch
-      S = specimenSymmetry.default;
+      S = specimenFrame.default;
     end
   end
     
@@ -134,7 +134,7 @@ methods
     try
       S = SO3F.center.SS;
     catch
-      S = specimenSymmetry.default;
+      S = specimenFrame.default;
     end
   end
     

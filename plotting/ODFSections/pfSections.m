@@ -46,7 +46,7 @@ classdef pfSections < ODFSections
 
       oS = oS@ODFSections(CS1,varargin{:});
 
-      if isa(CS1,'crystalSymmetry')
+      if isa(CS1,'crystalFrame')
         oS.h1 = CS1.cAxisRec; % c*
         oS.h2 = CS1.aAxis; % a
       else

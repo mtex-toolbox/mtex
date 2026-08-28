@@ -16,7 +16,7 @@ function [ori,omega] = orientation(f,varargin)
 
 [ori,omega] = rotation(f,'points',2000,varargin{:});
 
-if isa(f.CS,'crystalSymmetry') || isa(f.SS,'crystalSymmetry')
+if isa(f.CS,'crystalFrame') || isa(f.SS,'crystalFrame')
   ori = orientation(ori,f.CS,f.SS);
 end
 

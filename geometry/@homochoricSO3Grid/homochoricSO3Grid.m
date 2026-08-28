@@ -35,11 +35,11 @@ classdef (InferiorClasses = {?rotation,?quaternion}) homochoricSO3Grid < orienta
     
     function S3G = homochoricSO3Grid(varargin)
       
-      if ~isempty(varargin) && isa(varargin{1},'symmetry')
+      if ~isempty(varargin) && isa(varargin{1},'referenceFrame')
         S3G.CS = varargin{1};
         varargin(1) = [];
       end
-      if ~isempty(varargin) && isa(varargin{1},'symmetry')
+      if ~isempty(varargin) && isa(varargin{1},'referenceFrame')
         S3G.SS = varargin{1};
         varargin(1) = [];
       end

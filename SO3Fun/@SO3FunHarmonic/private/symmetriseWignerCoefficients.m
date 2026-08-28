@@ -31,8 +31,8 @@ for n=2:N
   if sym(1)+sym(3)~=2
     % There is a 2-fold crystal symmetry Y-axis
     if ismember(CS.id,3:5) || ...
-        (ismember(CS.id,19:21) && isa(CS,'specimenSymmetry')) || ...
-        (ismember(CS.id,22:24) && isa(CS,'crystalSymmetry'))
+        (ismember(CS.id,19:21) && isa(CS,'specimenFrame')) || ...
+        (ismember(CS.id,22:24) && isa(CS,'crystalFrame'))
       A(n+2:end,:,:) = (-1).^(n+(1:n)').*flip(A(1:n,:,:),1);
     elseif CS.multiplicityPerpZ~=1
       A(n+2:end,:,:) = (-1)^n *flip(A(1:n,:,:),1);
@@ -40,8 +40,8 @@ for n=2:N
   
     % There is a 2-fold specimen symmetry Y-axis
     if ismember(SS.id,3:5) ||...
-        (ismember(SS.id,19:21) && isa(SS,'specimenSymmetry')) || ...
-        (ismember(SS.id,22:24) && isa(SS,'crystalSymmetry'))      
+        (ismember(SS.id,19:21) && isa(SS,'specimenFrame')) || ...
+        (ismember(SS.id,22:24) && isa(SS,'crystalFrame'))      
       A(:,n+2:end,:) = (-1).^(n+(1:n)) .* flip(A(:,1:n,:),2);
     elseif SS.multiplicityPerpZ~=1
       A(:,n+2:end,:) = (-1)^n * flip(A(:,1:n,:),2);

@@ -73,7 +73,7 @@ for i = 1:length(subs)
     
     ind = ind & phases(phaseId);
     
-  elseif isa(subs{i},'symmetry')
+  elseif isa(subs{i},'referenceFrame')
     
     phaseId = ebsd.cs2phaseId(subs{i});
     ind = ind(:) & ebsd.phaseId == phaseId;

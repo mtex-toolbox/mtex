@@ -37,7 +37,7 @@ rot5 = rotation.byAxisAngle(fiveFoldAxis,72*degree);
 threeFoldAxis = normalize(vector3d(1/phi^2,0,1));
 rot3 = rotation.byAxisAngle(threeFoldAxis,120*degree);
 
-cs = crystalSymmetry.byElements([rot5,rot3])
+cs = crystalFrame.byElements([rot5,rot3])
 
 %%
 % The summary reports 60 elements. These are all proper rotations, so this
@@ -113,7 +113,7 @@ rot5 = rotation.byAxisAngle(vector3d.Z,72*degree);
 rot3 = rotation.byAxisAngle(...
   vector3d.byPolar(37.377*degree,0),120*degree);
 
-cs = crystalSymmetry.byElements([rot5,rot3])
+cs = crystalFrame.byElements([rot5,rot3])
 
 %%
 % The summary still reports 60 elements, confirming that only the alignment
@@ -132,7 +132,7 @@ plot(cs,'symbolSize',0.5,'projection','eangle','grid','on')
 % Adding <rotation.inversion.html |rotation.inversion|> combines every
 % proper rotation with inversion.
 
-cs = crystalSymmetry.byElements([rot5,rot3,rotation.inversion])
+cs = crystalFrame.byElements([rot5,rot3,rotation.inversion])
 
 %%
 % The summary now reports 120 elements: 60 proper and 60 improper

@@ -1,6 +1,6 @@
 function cS = topaz(varargin)
 
-if nargin == 0 || ~isa(varargin{1},'symmetry')
+if nargin == 0 || ~isa(varargin{1},'referenceFrame')
   cs = crystalSymmetry('mmm',[0.52854,1,0.47698],'mineral','topaz');
 else
   cs = varargin{1};

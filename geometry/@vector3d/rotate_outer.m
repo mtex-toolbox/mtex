@@ -49,7 +49,7 @@ if ~isempty(fieldnames(v.opt)), v = rmOption(v,'theta','rho'); end
 if isa(q,'orientation')
   
   % if output has symmetry convert to Miller
-  if isa(q.SS,'crystalSymmetry')
+  if isa(q.SS,'crystalFrame')
     v = Miller(v,q.SS);
     v.dispStyle = MillerConvention(v.dispStyle);
     v.dispStyle = make4Digit(v.dispStyle,q.SS);
@@ -61,7 +61,7 @@ if isa(q,'orientation')
 
     % rotating with an orientation changes the reference frame - see
     % vector3d/rotate
-    v.frame = q.SS.frame;
+    v.frame = q.SS;
 
   end
 

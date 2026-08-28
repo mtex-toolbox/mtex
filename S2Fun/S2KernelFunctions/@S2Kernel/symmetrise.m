@@ -18,7 +18,7 @@ if check_option(varargin,'antipodal')
   psi.A(2:2:end) = 0;
 end
 
-cs = getClass(varargin,'symmetry');
+cs = getClass(varargin,'referenceFrame');
 
 if isempty(cs)
   return

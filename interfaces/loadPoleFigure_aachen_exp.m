@@ -65,7 +65,7 @@ end
 fclose(fid);
 
 try
-  pf = PoleFigure(h,r,d,crystalSymmetry('cubic'),specimenSymmetry.default);
+  pf = PoleFigure(h,r,d,crystalSymmetry('cubic'),specimenFrame.default);
 catch
   interfaceError(fname,fid);
 end

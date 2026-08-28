@@ -73,7 +73,7 @@ if ~isempty(moriRef) && ~isempty(grains)
     gbnd = symmetrise(gbnd,csRed);
   end
   % the distribution lives in the crystal frame and claims no symmetry beyond csRed
-  gbnd.frame = moriRef.CS.frame;
+  gbnd.frame = moriRef.CS;
 
   if check_option(varargin,'total')
     gbnd = gbnd * (sum(weights)/sum(gB3.area)/length(weights));

@@ -57,7 +57,7 @@ classdef tensor < dynOption
   properties
     M = []        % the tensor coefficients
     rank = 0      % tensor rank
-    CS = specimenSymmetry.default % reference system an crystal symmetry
+    CS = specimenFrame.default % reference system an crystal symmetry
     doubleConvention = false %
   end
 
@@ -194,14 +194,14 @@ classdef tensor < dynOption
       end
   
       % extract symmetry
-      args = find(cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true));
+      args = find(cellfun(@(s) isa(s,'referenceFrame'),varargin,'uniformoutput',true));
       if ~isempty(args)
         T.CS = varargin{args};
         varargin(args) = [];
       elseif ~csGiven
         % resolve the session default here, a property default is evaluated once
         % when the class is loaded and would freeze the frame of that moment
-        T.CS = specimenSymmetry.default;
+        T.CS = specimenFrame.default;
       end
 
       % extract plotting convention
@@ -249,7 +249,7 @@ classdef tensor < dynOption
       % a tensor that was not given a frame of its own follows its
       % reference system, so setting the frame of CS keeps working
       fr = T.framePrivate;
-      if isempty(fr), fr = T.CS.frame; end
+      if isempty(fr), fr = T.CS; end
     end
 
     function T = setFrame(T,fr)
@@ -294,7 +294,7 @@ classdef tensor < dynOption
 
     function T = eye(varargin)
       r = get_option(varargin,'rank',2);
-      [cs,varargin] = getClass(varargin,'symmetry');
+      [cs,varargin] = getClass(varargin,'referenceFrame');
       varargin = delete_option(varargin,'rank',1);
       switch r
         case 2
@@ -311,7 +311,7 @@ classdef tensor < dynOption
     function T = zeros(varargin)
       r = get_option(varargin,'rank',2);
       varargin = delete_option(varargin,'rank',1);
-      [cs,varargin] = getClass(varargin,'symmetry');
+      [cs,varargin] = getClass(varargin,'referenceFrame');
       d = [repmat(3,1,r),varargin{:},1];
       T = tensor(zeros(d),'rank',r);
       if ~isempty(cs), T.CS = cs; end
@@ -320,7 +320,7 @@ classdef tensor < dynOption
     function T = ones(varargin)
       r = get_option(varargin,'rank',2);
       varargin = delete_option(varargin,'rank',1);
-      [cs,varargin] = getClass(varargin,'symmetry');
+      [cs,varargin] = getClass(varargin,'referenceFrame');
       d = [repmat(3,1,r),varargin{:},1];
       T = tensor(ones(d),'rank',r);
       if ~isempty(cs), T.CS = cs; end
@@ -329,7 +329,7 @@ classdef tensor < dynOption
     function T = nan(varargin)
       r = get_option(varargin,'rank',2);
       varargin = delete_option(varargin,'rank',1);
-      [cs,varargin] = getClass(varargin,'symmetry');
+      [cs,varargin] = getClass(varargin,'referenceFrame');
       d = [repmat(3,1,r),varargin{:},1];
       T = tensor(nan(d),'rank',r);
       if ~isempty(cs), T.CS = cs; end

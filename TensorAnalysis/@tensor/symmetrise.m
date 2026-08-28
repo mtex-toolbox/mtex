@@ -31,7 +31,7 @@ if ischar(cs) && any(strcmpi(cs,{'iso','isotropic'}))
   %rot2 = rotation.byAxisAngle(vector3d.Z,180*degree);
   %a5 = normalize(vector3d(0,2/(1+sqrt(5)),1));
   %rot5 = rotation.byAxisAngle(a5,72*degree);
-  %cs = crystalSymmetry.byElements([rot5,rot2]);
+  %cs = crystalFrame.byElements([rot5,rot2]);
   %cs2 = crystalSymmetry('432');
   %T = mean(cs2.rot*mean(cs.rot*T));
 

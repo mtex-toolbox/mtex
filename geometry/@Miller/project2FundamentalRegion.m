@@ -12,7 +12,7 @@ function varargout = project2FundamentalRegion(h, varargin)
 %  sym - @rotation the symmetry element used for the projection
 %
 
-if nargin>1 && isa(varargin{1},'symmetry')
+if nargin>1 && isa(varargin{1},'referenceFrame')
   [varargout{1:nargout}] = project2FundamentalRegion@vector3d(h,varargin{:});
 else
   [varargout{1:nargout}] = project2FundamentalRegion@vector3d(h,h.CS,varargin{:});

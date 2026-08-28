@@ -23,7 +23,7 @@ if nargin == 2, epsilon = 1*degree; end
 
 % restrict to the right phase
 if isa(ori,'orientation') || isa(ori,'fibre')
-  phaseId = cellfun(@(cs) isa(cs,'crystalSymmetry') & ori.CS == cs, ebsd.CSList);
+  phaseId = cellfun(@(cs) isa(cs,'crystalFrame') & ori.CS == cs, ebsd.CSList);
   ebsd = subSet(ebsd,ismember(ebsd.phaseId,find(phaseId)));
 end
 

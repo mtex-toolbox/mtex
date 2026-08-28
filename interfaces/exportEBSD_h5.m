@@ -244,7 +244,7 @@ for i = 1:numel(items)
   for k = 1:min(numel(ids),numel(it.path))
 
     cs = csOf(ebsd,ids(k));
-    if ~isa(cs,'crystalSymmetry'), continue; end
+    if ~isa(cs,'crystalFrame'), continue; end
 
     switch it.what
       case 'name',     val = cs.mineral;

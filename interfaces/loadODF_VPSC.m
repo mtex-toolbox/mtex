@@ -49,7 +49,7 @@ if check_option(varargin,'check')
   return;
 end
 
-cs = getClass(varargin,'crystalSymmetry',crystalSymmetry('432'));
+cs = getClass(varargin,'crystalFrame',crystalSymmetry('432'));
 
 odf = cell(1,numel(isHead));
 

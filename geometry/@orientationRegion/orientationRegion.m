@@ -62,7 +62,7 @@ classdef orientationRegion
       %
 
       if nargin > 0 
-        if isa(varargin{1},'quaternion') && ~isa(varargin{1},'symmetry') && ~check_option(varargin,'complete') 
+        if isa(varargin{1},'quaternion') && ~isa(varargin{1},'referenceFrame') && ~check_option(varargin,'complete') 
           oR.N = varargin{1};
           varargin{1} = [];
         end

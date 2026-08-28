@@ -74,7 +74,7 @@ for i = 1:length(subs)
     
     ind = ind & inpolygon(grains,subs{i})';
     
-  elseif isa(subs{i},'crystalSymmetry')
+  elseif isa(subs{i},'crystalFrame')
     
     phaseId = grains.cs2phaseId(subs{i});
     ind = ind & grains.phaseId == phaseId;

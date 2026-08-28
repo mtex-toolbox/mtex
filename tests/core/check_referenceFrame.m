@@ -45,7 +45,7 @@ function checkFrameGroup
 % the siblings that differ from it only in that group (ADR 0008 rules 1, 7)
 
 cs = crystalSymmetry('432',[4.05 4.05 4.05],'mineral','Aluminium');
-fr = cs.frame;
+fr = cs;
 
 assert(fr.sym.id == cs.id, ...
   'check_referenceFrame: the frame does not carry the group of its symmetry');
@@ -74,9 +74,9 @@ assert(L.Laue == L,'check_referenceFrame: the Laue of a Laue frame is not itself
 
 % a frame already carrying that group is its own sibling
 csL = crystalSymmetry('m-3m',[4.05 4.05 4.05],'mineral','Aluminium');
-assert(csL.frame.Laue == csL.frame, ...
+assert(csL.Laue == csL, ...
   'check_referenceFrame: a Laue frame does not answer itself');
-assert(csL.frame.properGroup.sym.id == cs.id, ...
+assert(csL.properGroup.sym.id == cs.id, ...
   'check_referenceFrame: the proper sibling of m-3m is not 432');
 assert(fr.properGroup == fr, ...
   'check_referenceFrame: a proper group frame does not answer itself');
@@ -98,7 +98,7 @@ Mref = axes2^-1 * axes1;
 
 assert(isequal(Mref,transformationMatrix(cs1,cs2)), ...
   'check_referenceFrame: crystalSymmetry/transformationMatrix changed its result');
-assert(isequal(Mref,transformationMatrix(cs1.frame,cs2.frame)), ...
+assert(isequal(Mref,transformationMatrix(cs1,cs2)), ...
   'check_referenceFrame: the frame transition differs from the legacy matrix');
 
 % the transition takes the Euclidean coordinates of a direction from the
@@ -120,7 +120,7 @@ function checkAxisRepairHeuristic
 csA = crystalSymmetry('121',[2 3 4],[90 105 90]*degree);
 csB = crystalSymmetry('112',[4 2 3],[90 90 105]*degree);
 
-[ok,M] = isCompatible(csA.frame,csB.frame);
+[ok,M] = isCompatible(csA,csB);
 assert(ok && norm(M*M.' - eye(3)) < 1e-10, ...
   'check_referenceFrame: axis re-pairing did not make the transition orthogonal');
 
@@ -161,7 +161,7 @@ assert(any(contains(alignment(cF),'X||a')), ...
 assert(isequal(alignment(cF),alignment(cs)), ...
   'check_referenceFrame: frame and symmetry disagree on the alignment');
 
-fr = cs.frame;
+fr = cs;
 out = evalc('display(fr)');
 assert(contains(out,'X||a') && contains(out,'⊙c→a'), ...
   'check_referenceFrame: the crystal frame display misses alignment or convention');
@@ -174,34 +174,35 @@ end
 
 % -------------------------------------------------------------------------
 function checkDelegation
-% axes and the lattice parameters read through the frame unchanged, and
-% setting axes forks the frame instead of writing through the shared handle
+% crystalSymmetry names a crystal frame, and the lattice is that frame's
 
 cs = crystalSymmetry('mmm',[2 3 4],'mineral','TestMineral');
 
-assert(isa(cs.frame,'crystalFrame') && strcmp(cs.frame.name,'TestMineral'), ...
-  'check_referenceFrame: the crystal frame is missing or unnamed');
+assert(isa(cs,'crystalFrame') && strcmp(cs.name,'TestMineral'), ...
+  'check_referenceFrame: crystalSymmetry did not return a named crystal frame');
+assert(strcmp(cs.mineral,cs.name), ...
+  'check_referenceFrame: the mineral and the frame identity disagree');
 assert(all(abs(norm(cs.axes) - [2 3 4]) < 1e-10), ...
-  'check_referenceFrame: cs.axes does not read through the frame');
+  'check_referenceFrame: cs.axes is not the basis of the frame');
 assert(all(abs(cs.abc - [2 3 4]) < 1e-10) && all(abs(cs.abg - pi/2) < 1e-10), ...
-  'check_referenceFrame: abc/abg do not read through the frame');
+  'check_referenceFrame: abc/abg do not read off the basis');
 assert(abs(cs.alpha-pi/2) + abs(cs.beta-pi/2) + abs(cs.gamma-pi/2) < 1e-10, ...
-  'check_referenceFrame: alpha/beta/gamma do not read through the frame');
+  'check_referenceFrame: alpha/beta/gamma do not read off the basis');
 
-% a shallow copy shares the frame handle ...
+% the group came with it
+assert(cs.id == 16 && numSym(cs) == 8, ...
+  'check_referenceFrame: the frame does not carry the group it was asked for');
+
+% a copy is a frame of its own, and writing its axes leaves the original alone
+pC = cs.how2plot;
 cs2 = copy(cs);
-assert(cs2.frame == cs.frame, ...
-  'check_referenceFrame: copy(cs) does not share the frame handle');
-
-% ... and setting axes forks it, leaving the original untouched
-pC = cs.frame.how2plot;
 cs2.axes = 2 * cs.axes;
-assert(cs2.frame ~= cs.frame, ...
-  'check_referenceFrame: setting axes did not fork the frame');
+assert(cs2 ~= cs, ...
+  'check_referenceFrame: a copy is not a frame of its own');
 assert(all(abs(norm(cs.axes) - [2 3 4]) < 1e-10), ...
   'check_referenceFrame: setting axes on a copy changed the original');
-assert(cs2.frame.how2plot == pC && strcmp(cs2.frame.name,'TestMineral'), ...
-  'check_referenceFrame: the fork dropped the convention or the name');
+assert(cs2.how2plot == pC && strcmp(cs2.name,'TestMineral'), ...
+  'check_referenceFrame: the copy dropped the convention or the name');
 
 end
 
@@ -215,7 +216,7 @@ assert(strcmp(conventionChar(sF),'TD←RD↑'), ...
   'check_referenceFrame: the rolling frame does not plot RD north, TD west');
 
 ss = specimenSymmetry('222');
-assert(isa(ss.frame,'specimenFrame') && strcmp(ss.frame.name,'specimen'), ...
+assert(isa(ss,'specimenFrame') && strcmp(ss.name,'specimen'), ...
   'check_referenceFrame: specimenSymmetry does not carry the generic specimen frame');
 assert(isequal(specimenFrame.specimen.axesNames,{'X','Y','Z'}), ...
   'check_referenceFrame: the generic specimen frame does not use the canonical axes X, Y, Z');
@@ -241,24 +242,35 @@ end
 % -------------------------------------------------------------------------
 function checkRegisterDefaults
 % the default convention is carried by the registered default frame;
-% specimenSymmetry.default's singleton holds that same frame
+% specimenFrame.default's singleton holds that same frame
 
 fr = specimenFrame.default;
 assert(fr == specimenFrame.specimen, ...
   'check_referenceFrame: the default frame is not the generic specimen frame');
 assert(plottingConvention.default == fr.how2plot, ...
   'check_referenceFrame: plottingConvention.default does not read through the frame');
-assert(specimenSymmetry.default.frame == fr, ...
-  'check_referenceFrame: specimenSymmetry.default does not hold the default frame');
+assert(specimenFrame.default == fr, ...
+  'check_referenceFrame: specimenFrame.default does not hold the default frame');
 
-% a fresh symmetry with the default convention attaches the session frame,
-% one with its own convention gets a fork
-assert(specimenSymmetry('222').frame == fr, ...
-  'check_referenceFrame: a default-conventioned symmetry does not reuse the session frame');
+% the trivial group with the default convention IS the session frame; a
+% group of its own gets the sibling that carries it - same basis, same
+% convention, a frame of its own (ADR 0008 rule 7)
+assert(specimenSymmetry == fr, ...
+  'check_referenceFrame: the trivial specimen symmetry is not the session frame');
+
+ss222 = specimenSymmetry('222');
+assert(ss222 ~= fr, ...
+  'check_referenceFrame: a specimen group did not get a sibling of its own');
+assert(ss222.id == 12 && isAligned(ss222,fr) && ss222.how2plot == fr.how2plot, ...
+  'check_referenceFrame: the sibling differs in more than its group');
+assert(specimenSymmetry('222') == ss222, ...
+  'check_referenceFrame: the sibling is not stable across two constructions');
+assert(fr.id == 1, ...
+  'check_referenceFrame: asking for a group wrote it onto the session frame');
 
 pC = plottingConvention('z↑→x');
 ssF = specimenSymmetry(pC);
-assert(ssF.frame ~= fr && ssF.how2plot == pC, ...
+assert(ssF ~= fr && ssF.how2plot == pC, ...
   'check_referenceFrame: a custom convention must fork the frame');
 assert(fr.how2plot ~= pC, ...
   'check_referenceFrame: the constructor wrote a custom convention through the session frame');
@@ -269,11 +281,11 @@ pC0 = plottingConvention.default;
 restoreDefault = onCleanup(@() plottingConvention.default(pC0));
 
 pC2 = plottingConvention('y↑→x');
-id0 = specimenSymmetry.default.id;
+id0 = specimenFrame.default.id;
 plottingConvention.default(pC2);
 assert(plottingConvention.default == pC2, ...
   'check_referenceFrame: plottingConvention.default(pC2) did not take');
-assert(specimenSymmetry.default.how2plot == pC2 && specimenSymmetry.default.id == id0, ...
+assert(specimenFrame.default.how2plot == pC2 && specimenFrame.default.id == id0, ...
   'check_referenceFrame: the default symmetry does not follow the frame');
 assert(ssF.how2plot == pC, ...
   'check_referenceFrame: replacing the default touched a forked frame');
@@ -287,10 +299,10 @@ assert(specimenFrame.default == specimenFrame.rolling, ...
   'check_referenceFrame: makeDefault did not repoint the default frame');
 assert(plottingConvention.default == specimenFrame.rolling.how2plot, ...
   'check_referenceFrame: plottingConvention.default does not follow the new default frame');
-assert(specimenSymmetry.default.frame == specimenFrame.rolling, ...
-  'check_referenceFrame: specimenSymmetry.default does not follow the new default frame');
+assert(specimenFrame.default == specimenFrame.rolling, ...
+  'check_referenceFrame: specimenFrame.default does not follow the new default frame');
 ssR = specimenSymmetry;
-assert(ssR.frame == specimenFrame.rolling, ...
+assert(ssR == specimenFrame.rolling, ...
   'check_referenceFrame: a fresh specimenSymmetry does not attach the new default frame');
 
 makeDefault(fr0);
@@ -313,7 +325,7 @@ assert(isempty(v.frame) && v.how2plot == plottingConvention.default, ...
 % an own convention becomes an own, unregistered frame carrying it -
 % only frames carry conventions
 pC = plottingConvention('z↑→x');
-v.frame = specimenSymmetry.frameFor(pC);
+v.frame = specimenFrame.frameFor(pC);
 assert(v.how2plot == pC && ~isempty(v.frame) && v.frame ~= specimenFrame.default, ...
   'check_referenceFrame: giving v a frame did not take');
 assert(vector3d.X.how2plot == plottingConvention.default, ...
@@ -321,7 +333,7 @@ assert(vector3d.X.how2plot == plottingConvention.default, ...
 
 % assigning the session default itself means membership in the default frame
 w = vector3d.rand(3);
-w.frame = specimenSymmetry.frameFor(plottingConvention.default);
+w.frame = specimenFrame.frameFor(plottingConvention.default);
 assert(w.frame == specimenFrame.default, ...
   'check_referenceFrame: assigning the default must become frame membership');
 
@@ -342,7 +354,7 @@ assert(keepsOwn, ...
   'check_referenceFrame: an own frame must not follow a default replacement');
 
 % rotating with an orientation adopts the specimen frame ...
-ori = orientation.rand(crystalSymmetry('m-3m'),specimenSymmetry.default);
+ori = orientation.rand(crystalSymmetry('m-3m'),specimenFrame.default);
 r = rotate(Miller(1,0,0,ori.CS),ori);
 assert(r.frame == specimenFrame.default, ...
   'check_referenceFrame: rotating by an orientation must adopt the specimen frame');
@@ -380,7 +392,7 @@ function checkMillerFrame
 
 cs = crystalSymmetry('321',[3 3 5],'X||a');
 m = Miller(1,0,0,cs);
-assert(m.frame == cs.frame, ...
+assert(m.frame == cs, ...
   'check_referenceFrame: the frame of a Miller is not its crystal frame');
 assert(m.how2plot == cs.how2plot, ...
   'check_referenceFrame: a Miller does not plot in its crystal convention');
@@ -388,16 +400,16 @@ assert(m.how2plot == cs.how2plot, ...
 % replacing the symmetry moves the frame with it - both ways it happens
 cs2 = crystalSymmetry('321',[3 3 5],'Y||a');
 m2 = transformReferenceFrame(m,cs2);
-assert(m2.frame == cs2.frame, ...
+assert(m2.frame == cs2, ...
   'check_referenceFrame: transformReferenceFrame left a stale frame');
 m.CS = cs2;
-assert(m.frame == cs2.frame, ...
+assert(m.frame == cs2, ...
   'check_referenceFrame: setting CS left a stale frame');
 
 % the convention of a Miller is the one of its crystal frame - assigning
 % one directly is refused, like assigning a frame
 try
-  m.frame = specimenSymmetry.frameFor(plottingConvention('z↑→x'));
+  m.frame = specimenFrame.frameFor(plottingConvention('z↑→x'));
   failed = false;
 catch e
   failed = strcmp(e.identifier,'MTEX:Miller:fixedFrame');
@@ -426,7 +438,7 @@ m3 = Miller(1,2,3,cs);
 save(fname,'m3');
 S = load(fname);
 delete(fname);
-assert(S.m3.frame == S.m3.CS.frame && ...
+assert(S.m3.frame == S.m3.CS && ...
   norm(squeeze(double(S.m3)) - squeeze(double(m3))) < 1e-10, ...
   'check_referenceFrame: Miller did not survive save/load');
 
@@ -441,7 +453,7 @@ cs = crystalSymmetry('m-3m');
 sF = S2FunHarmonic.quadrature(@(v) v.x.^2);
 sFs = S2FunHarmonicSym(sF,cs);
 
-assert(sFs.frame == cs.frame && sFs.CS == cs, ...
+assert(sFs.frame == cs && sFs.CS == cs, ...
   'check_referenceFrame: a symmetrised S2Fun does not expose its symmetry''s frame');
 
 try
@@ -455,19 +467,19 @@ assert(failed, ...
 
 % arithmetic keeps the frame
 sFa = 2*sFs + 1;
-assert(sFa.frame == cs.frame, ...
+assert(sFa.frame == cs, ...
   'check_referenceFrame: S2Fun arithmetic dropped the crystal frame');
 
 % rotating with an orientation moves the function into the specimen
 % frame and strips the symmetry
-r = rotate(sFs,orientation.rand(cs,specimenSymmetry.default));
+r = rotate(sFs,orientation.rand(cs,specimenFrame.default));
 assert(~isa(r,'S2FunHarmonicSym') && r.frame == specimenFrame.default, ...
   'check_referenceFrame: rotating by an orientation must land in the specimen frame');
 
 % casting a symmetrised function to a plain harmonic keeps the crystal
 % frame, and with it the convention
 p = S2FunHarmonic(sFs);
-assert(p.frame == cs.frame && p.how2plot == cs.how2plot, ...
+assert(p.frame == cs && p.how2plot == cs.how2plot, ...
   'check_referenceFrame: the cast to S2FunHarmonic lost the crystal frame');
 
 % extrema come back in the frame of the function, as Miller for a crystal frame
@@ -475,15 +487,16 @@ assert(p.frame == cs.frame && p.how2plot == cs.how2plot, ...
 assert(isa(pos,'Miller') && pos.CS == cs, ...
   'check_referenceFrame: extrema of a symmetrised S2Fun are not Miller');
 
+% a plain harmonic carries the crystal frame, so its extrema are Miller in
+% that frame. Rule 9 of ADR 0008 will move an unsymmetrised result onto the
+% group-stripped sibling; until then it keeps the frame it was given
 [~,pos] = max(p);
-assert(isa(pos,'Miller') && pos.CS.id == 1 && pos.frame == cs.frame, ...
-  ['check_referenceFrame: extrema of a plain crystal-framed S2Fun must be ' ...
-  'Miller with the trivial group on that frame']);
+assert(isa(pos,'Miller') && pos.CS == cs, ...
+  'check_referenceFrame: extrema of a plain crystal-framed S2Fun are not Miller in its frame');
 
 v = p.discreteSample(5);
-assert(isa(v,'Miller') && v.CS.id == 1 && v.frame == cs.frame, ...
-  ['check_referenceFrame: a sample of a plain crystal-framed S2Fun must be ' ...
-  'Miller with the trivial group on that frame']);
+assert(isa(v,'Miller') && v.CS == cs, ...
+  'check_referenceFrame: a sample of a plain crystal-framed S2Fun is not Miller in its frame');
 
 end
 
@@ -495,18 +508,18 @@ function checkTwoFrames
 cs = crystalSymmetry('m-3m');
 ss = specimenSymmetry('222');
 ori = orientation.rand(cs,ss);
-assert(ori.frameRight == cs.frame && ori.frameLeft == ss.frame, ...
+assert(ori.frameRight == cs && ori.frameLeft == ss, ...
   'check_referenceFrame: the orientation frames are not its symmetries'' frames');
 
 % a misorientation has two crystal frames
 cs2 = crystalSymmetry('6/mmm',[3 3 5]);
 mori = orientation.rand(cs,cs2);
-assert(isa(mori.frameLeft,'crystalFrame') && mori.frameLeft == cs2.frame, ...
+assert(isa(mori.frameLeft,'crystalFrame') && mori.frameLeft == cs2, ...
   'check_referenceFrame: the misorientation left frame is not the crystal frame');
 
 % replacing a symmetry moves the frame with it
 ori.CS = cs2;
-assert(ori.frameRight == cs2.frame, ...
+assert(ori.frameRight == cs2, ...
   'check_referenceFrame: replacing CS left a stale frameRight');
 
 % assigning a frame directly is refused
@@ -521,7 +534,7 @@ assert(failed, ...
 
 % same for SO3Fun
 odf = unimodalODF(orientation.rand(cs,ss));
-assert(odf.frameRight == cs.frame && odf.frameLeft == ss.frame, ...
+assert(odf.frameRight == cs && odf.frameLeft == ss, ...
   'check_referenceFrame: the SO3Fun frames are not its symmetries'' frames');
 
 try
@@ -549,14 +562,14 @@ ori = orientation.rand(cs,ss);
 csLow = crystalSymmetry('mmm',[4.05 4.05 4.05]);
 T = tensor(diag([1 2 3]),'rank',2,csLow);
 Tr = rotate(T,ori);
-assert(isa(Tr.CS,'specimenSymmetry') && Tr.CS.id == 1, ...
+assert(isa(Tr.CS,'specimenFrame') && Tr.CS.id == 1, ...
   'check_referenceFrame: a rotated tensor must carry only a trivial specimen symmetry');
-assert(Tr.CS.frame == ss.frame, ...
-  'check_referenceFrame: a rotated tensor must carry the specimen frame');
+assert(Tr.CS == stripSym(ss) && isAligned(Tr.CS,ss), ...
+  'check_referenceFrame: a rotated tensor must carry the group-stripped specimen frame');
 
 % a trivial specimen symmetry is kept as it is - the common case
 Tr0 = rotate(T,orientation.rand(cs));
-assert(Tr0.CS.frame == specimenFrame.default, ...
+assert(Tr0.CS == specimenFrame.default, ...
   'check_referenceFrame: the trivial case must keep the session frame');
 
 % genuinely incompatible frames error
@@ -603,7 +616,7 @@ assert(failed, ...
 
 % ... while the right side passes and lands in the crystal frame
 r3 = rotate(w,inv(ori));
-assert(r3.frame == cs.frame, ...
+assert(r3.frame == cs, ...
   'check_referenceFrame: inv(ori) must take specimen data into the crystal frame');
 
 % the displays show the frame together with the convention
@@ -634,19 +647,19 @@ cs = crystalSymmetry('321',[3 3 5],'mineral','RoundTrip','X||a');
 % give it a frame of its own, carrying a convention that is not the default
 frC = crystalFrame(cs.axes,'name','RoundTrip');
 frC.how2plot = plottingConvention('z↑→x');
-cs.frame = frC;
+cs = frC;
 
-% a specimen frame has no lattice, so it is not a frame a crystal symmetry
-% can live in - taking one would replace the crystal axes by the identity
+% a specimen frame has no lattice, so it is not one a crystal group can be
+% written in - its canonical basis would stand in for the crystal axes
 try
-  cs.frame = specimenSymmetry.frameFor(plottingConvention('z↑→x'));
-  error('check_referenceFrame: a crystalSymmetry accepted a specimenFrame');
+  crystalSymmetry(specimenFrame.frameFor(plottingConvention('z↑→x')));
+  error('check_referenceFrame: crystalSymmetry accepted a specimenFrame');
 catch e
   assert(strcmp(e.identifier,'MTEX:wrongFrameClass'), ...
-    'check_referenceFrame: a crystalSymmetry accepted a specimenFrame');
+    'check_referenceFrame: crystalSymmetry accepted a specimenFrame');
 end
 assert(all(abs(norm(cs.axes) - [3 3 5]) < 1e-10), ...
-  'check_referenceFrame: the rejected assignment must leave the crystal axes alone');
+  'check_referenceFrame: the refused construction must leave the crystal axes alone');
 
 ss = specimenSymmetry('222');
 
@@ -656,17 +669,17 @@ S = load(fname);
 delete(fname);
 
 assert(all(abs(norm(S.cs.axes) - norm(cs.axes)) < 1e-10) && ...
-  isa(S.cs.frame,'crystalFrame') && strcmp(S.cs.frame.name,'RoundTrip'), ...
+  isa(S.cs,'crystalFrame') && strcmp(S.cs.name,'RoundTrip'), ...
   'check_referenceFrame: crystalSymmetry did not survive save/load');
 assert(S.cs.how2plot == cs.how2plot, ...
   'check_referenceFrame: the how2plot override did not survive save/load');
-assert(isa(S.ss.frame,'specimenFrame') && ...
+assert(isa(S.ss,'specimenFrame') && ...
   S.ss.how2plot == ss.how2plot, ...
   'check_referenceFrame: specimenSymmetry did not survive save/load');
 
 % loadobj re-interns: a default-conventioned symmetry comes back holding
 % the session frame, one with its own convention keeps its fork
-assert(S.ss.frame == specimenFrame.default, ...
+assert(S.ss == specimenFrame.default, ...
   'check_referenceFrame: loadobj did not re-intern the default frame');
 
 pCF = plottingConvention('z↑→x');
@@ -675,7 +688,7 @@ fname = [tempname '.mat'];
 save(fname,'ssF');
 S = load(fname);
 delete(fname);
-assert(S.ssF.frame ~= specimenFrame.default && isapprox(S.ssF.how2plot,pCF), ...
+assert(S.ssF ~= specimenFrame.default && isapprox(S.ssF.how2plot,pCF), ...
   'check_referenceFrame: a loaded forked frame did not survive');
 
 % a loaded container keeps the frame it was saved in and leaves the session alone
@@ -784,19 +797,19 @@ referenceFrame.reset;
 cs = crystalSymmetry('432');
 ori1 = orientation.rand(cs); ori2 = orientation.rand(cs);
 a = axis(ori1,ori2);
-assert(a.frame == ori2.SS.frame, ...
+assert(a.frame == ori2.SS, ...
   'check_referenceFrame: the misorientation axis must carry the SS frame handle');
 
 % orientation/map: a framed input hands its frame to the result's SS
 fr = specimenFrame('lab','axesNames',{'A','B','C'},plottingConvention('y←↑x'));
 v = vector3d.X; v.frame = fr;
 ori = orientation.map(Miller(1,0,0,cs),v);
-assert(ori.SS.frame == fr, ...
+assert(ori.SS == fr, ...
   'check_referenceFrame: orientation.map must adopt the frame of the framed input');
 
 % quadrature built results keep the frame of their input, so give the function one
 s = S2Fun.smiley;
-s.frame = specimenSymmetry.frameFor(plottingConvention('z↑→x'));
+s.frame = specimenFrame.frameFor(plottingConvention('z↑→x'));
 assert(getFrame(s.^2) == getFrame(s), ...
   'check_referenceFrame: S2Fun arithmetic must keep the frame of its input');
 q = S2FunHarmonic.quadrature(@(v) v.x.^2,'bandwidth',16);
@@ -806,7 +819,7 @@ assert(isempty(getFrame(q)), ...
 % the gradient of an ODF keeps the specimen frame, stripSym drops only the point group
 oriF = orientation.rand(10,cs);
 oriF.SS = copy(oriF.SS);
-oriF.SS.frame = fr;
+oriF.SS = fr;
 odfF = calcDensity(oriF,'halfwidth',20*degree);
 assert(odfF.frameLeft == fr, ...
   'check_referenceFrame: calcDensity must keep the specimen frame');
@@ -833,7 +846,7 @@ fr = specimenFrame('lab','axesNames',{'A','B','C'},plottingConvention('y←↑x'
 
 ori = orientation.rand(20,cs);
 ori.SS = copy(ori.SS);
-ori.SS.frame = fr;
+ori.SS = fr;
 odf = calcDensity(ori,'halfwidth',20*degree);
 G = SO3FunHarmonic(odf).grad;
 assert(G.frameLeft == fr, ...
@@ -843,17 +856,17 @@ assert(G.frameLeft == fr, ...
 % side it is expressed in
 v = G.eval(ori(1));
 ref = v.oriRef;
-assert(ref.SS.frame == fr, ...
+assert(ref.SS == fr, ...
   'check_referenceFrame: eval must keep the specimen frame on the tangent vector');
 assert(v.frame == fr, ...
   'check_referenceFrame: a left tangent vector is expressed in the specimen frame');
-assert(right(v).frame == cs.frame, ...
+assert(right(v).frame == cs, ...
   'check_referenceFrame: a right tangent vector is expressed in the crystal frame');
 
 % an explicitly requested representation converts and keeps the frames
 vR = G.eval(ori(1),SO3TangentSpace.rightVector);
 ref = vR.oriRef;
-assert(ref.SS.frame == fr, ...
+assert(ref.SS == fr, ...
   'check_referenceFrame: a converted evaluation must keep the specimen frame');
 
 % converting the intern representation rebuilds the inner harmonic from
@@ -875,10 +888,10 @@ function checkTrivialSymmetryFromFrame
 referenceFrame.reset;
 
 cs = crystalSymmetry('321',[4.9 4.9 5.4],'mineral','quartz');
-t = crystalSymmetry(cs.frame);
+t = crystalSymmetry(cs);
 assert(t.id == 1, ...
   'check_referenceFrame: crystalSymmetry(frame) must be the trivial group');
-assert(t.frame == cs.frame, ...
+assert(t.frame == cs, ...
   'check_referenceFrame: crystalSymmetry(frame) must adopt the frame handle');
 assert(strcmp(t.mineral,'quartz'), ...
   'check_referenceFrame: the mineral doubles as the frame identity');
@@ -903,7 +916,7 @@ assert(VFH.frameLeft == fr, ...
 assert(isempty(a) && isempty(b), ...
   'check_referenceFrame: extractSym ''empty'' must return empty for absent slots');
 [a,b] = extractSym({t},'empty');
-assert(~isempty(a) && a.frame == cs.frame && isempty(b), ...
+assert(~isempty(a) && a.frame == cs && isempty(b), ...
   'check_referenceFrame: a passed symmetry fills only its slot');
 
 % the default path returns two distinct objects - a shared handle in both
@@ -1283,7 +1296,7 @@ referenceFrame.reset;
 
 CS = crystalSymmetry('cubic');
 SS = specimenSymmetry('222');
-fr = SS.frame;
+fr = SS;
 ori = orientation.byEuler(10*degree,20*degree,30*degree,CS,SS);
 
 % left: the specimen symmetry goes, the crystal symmetry and the frame stay
@@ -1294,7 +1307,7 @@ assert(angle(rot)/degree < 16.2, ...
 l = rot * ori;
 assert(l.SS.id == 1, ...
   'check_referenceFrame: a general rotation on the left must drop the specimen symmetry');
-assert(l.SS.frame == fr, ...
+assert(l.SS == fr, ...
   'check_referenceFrame: dropping the specimen symmetry must keep its frame');
 assert(l.CS.id == CS.id, ...
   'check_referenceFrame: the left factor must not touch the crystal symmetry');
@@ -1303,7 +1316,7 @@ assert(l.CS.id == CS.id, ...
 r = ori * rot;
 assert(r.CS.id == 1 && r.SS.id == SS.id, ...
   'check_referenceFrame: a general rotation on the right must drop the crystal symmetry');
-assert(r.CS.frame == CS.frame, ...
+assert(r.CS == CS, ...
   'check_referenceFrame: dropping the crystal symmetry must keep its frame');
 
 % a genuine symmetry element changes nothing
@@ -1348,9 +1361,9 @@ cs = crystalSymmetry('m-3m','mineral','Nickel');
 
 plottingConvention.default('y↓→x');   % z into the screen, the opposite of
                                       % what a crystal frame does
-v = plotS2Grid('resolution',10*degree,'upper',cs.frame);
+v = plotS2Grid('resolution',10*degree,'upper',cs);
 
-assert(isa(v.frame,'crystalFrame') && isAligned(v.frame,cs.frame), ...
+assert(isa(v.frame,'crystalFrame') && isAligned(v.frame,cs), ...
   'check_referenceFrame: plotS2Grid did not carry the frame it was given');
 
 % 'upper' is the hemisphere the crystal frame draws, not the session one
@@ -1359,7 +1372,7 @@ assert(all(v.z(~isnan(v.x)) > -1e-10), ...
 
 % the region of a crystal symmetry brings its frame along by itself
 w = plotS2Grid(cs.fundamentalSector,'resolution',10*degree);
-assert(isa(w.frame,'crystalFrame') && isAligned(w.frame,cs.frame), ...
+assert(isa(w.frame,'crystalFrame') && isAligned(w.frame,cs), ...
   'check_referenceFrame: the grid of a crystal frame region is frame free');
 
 % and a grid without any frame stays frame free
@@ -1420,7 +1433,7 @@ assertWarn(sS ,r0    ,false,'crystal systems / frame free direction');
 assertWarn(sSr,r0    ,false,'specimen systems / frame free direction');
 assertWarn(sS ,plotS2Grid('resolution',20*degree,'upper'),false, ...
   'crystal systems / plain plotting grid');
-assertWarn(sS ,plotS2Grid('resolution',20*degree,'upper',cs.frame),false, ...
+assertWarn(sS ,plotS2Grid('resolution',20*degree,'upper',cs),false, ...
   'crystal systems / crystal frame plotting grid');
 
 % the quadrature nodes of the no argument syntax are directions of the

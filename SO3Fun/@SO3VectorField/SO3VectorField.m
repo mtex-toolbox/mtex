@@ -53,8 +53,8 @@ end
 
 properties (Abstract = true,Hidden = true)
   internTangentSpace SO3TangentSpace % classify whether left or right sided tangent space is used by definition of the object
-  hiddenCS symmetry
-  hiddenSS symmetry
+  hiddenCS referenceFrame
+  hiddenSS referenceFrame
 end
 
 
@@ -78,11 +78,11 @@ methods
   % the frames are the frames of the symmetries, resolved live - exactly
   % as on SO3Fun ('must have two' in the cardinality table of ADR 0003)
   function fr = get.frameLeft(SO3VF)
-    fr = SO3VF.SLeft.frame;
+    fr = SO3VF.SLeft;
   end
 
   function fr = get.frameRight(SO3VF)
-    fr = SO3VF.SRight.frame;
+    fr = SO3VF.SRight;
   end
 
   function SO3VF = set.frameLeft(SO3VF,~)

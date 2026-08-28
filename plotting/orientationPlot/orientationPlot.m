@@ -61,7 +61,7 @@ classdef orientationPlot < handle
     function oP = orientationPlot(ax,CS1,varargin)
       oP.ax = ax;
       oP.CS1 = CS1.properGroup;
-      CS2 = getClass(varargin,'symmetry',specimenSymmetry.default);
+      CS2 = getClass(varargin,'referenceFrame',specimenFrame.default);
       oP.CS2 = CS2.properGroup;
       
       if oP.CS1 == oP.CS2

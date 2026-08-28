@@ -54,7 +54,7 @@ if ~newFigure
     for i = 1:length(ad)
       if isappdata(gcf,ad{i}{1}) && ~isempty(ad{i}{2})
         ad_stored = getappdata(gcf,ad{i}{1});
-        if isa(ad{i}{2},'symmetry')
+        if isa(ad{i}{2},'referenceFrame')
           ad{i}{2} = ad{i}{2}.Laue;
           ad_stored = ad_stored.Laue;
         end

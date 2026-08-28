@@ -23,7 +23,7 @@ plottingConvention.default('y↑→x');
 % fibre. The coefficients 0.2, 0.3, and 0.5 are mixture fractions of
 % normalized components. They are not the peak heights seen in a section.
 
-cs = crystalSymmetry.load('Al-Aluminum.cif');
+cs = crystalFrame.load('Al-Aluminum.cif');
 
 ori1 = orientation.brass(cs);
 ori2 = orientation.copper(cs);

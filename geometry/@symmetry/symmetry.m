@@ -1,4 +1,4 @@
-classdef symmetry < matlab.mixin.Copyable
+classdef symmetry
 %
 % a point group - the symmetry elements and the id that names them
 %
@@ -37,7 +37,6 @@ classdef symmetry < matlab.mixin.Copyable
 
   properties
     opt = struct
-    frame = []       % the referenceFrame this symmetry is attached to
   end
 
 
@@ -45,19 +44,6 @@ classdef symmetry < matlab.mixin.Copyable
     lattice          % type of crystal lattice
     pointGroup       % point group name
     name             % international symbol of the point group
-    how2plot         % plotting convention - read only
-    % a convention belongs to a reference frame, see plottingConvention.default
-  end
-
-  properties (Access = protected)
-    LaueRef = []
-    properRef = []
-  end
-
-  properties (Access = protected, Transient = true)
-    % cache for stripSym: the trivial stand-in must be a stable handle, since
-    % crystalSymmetry equality is sealed to handle identity - never saved
-    stripSymRef = []
   end
 
   properties (Constant = true)
@@ -66,18 +52,13 @@ classdef symmetry < matlab.mixin.Copyable
 
   methods
 
-    function s = symmetry(id,rot,pC)
+    function s = symmetry(id,rot)
       % constructor
 
       if nargin == 0, return; end
 
       s.id = id;
-      if ~isempty(rot), s.rot = rot; end
-
-      % kept for backward compatibility, an explicit convention gets a frame carrying it
-      if nargin == 3 && ~isempty(pC)
-        s.frame = specimenSymmetry.frameFor(pC);
-      end
+      if nargin > 1 && ~isempty(rot), s.rot = rot; end
 
     end
 
@@ -87,30 +68,6 @@ classdef symmetry < matlab.mixin.Copyable
       s.rot = rot;
       s.multiplicityZ = axisOrder(rot,true);
       s.multiplicityPerpZ = axisOrder(rot,false);
-    end
-
-
-    function set.frame(s,fr)
-      % a crystal symmetry keeps its lattice in its frame - the axes are
-      % read straight off frame.basis - so a specimen frame, which has no
-      % lattice, would silently replace the crystal axes by the identity
-      if isa(s,'crystalSymmetry') && ~isempty(fr) && ~isa(fr,'crystalFrame')
-        error('MTEX:wrongFrameClass',...
-          ['A crystalSymmetry needs a crystalFrame, not a ' class(fr) '. ' ...
-          'To give it a convention of its own fork its frame:\n' ...
-          '  fr = crystalFrame(cs.axes,''name'',cs.mineral);\n' ...
-          '  fr.how2plot = plottingConvention(...);\n' ...
-          '  cs.frame = fr;']);
-      end
-      s.frame = fr;
-    end
-
-
-    function pC = get.how2plot(s)
-      % only frames carry conventions - a symmetry shows the one of its
-      % reference frame
-      pC = [];
-      if ~isempty(s.frame), pC = s.frame.how2plot; end
     end
 
 
@@ -157,40 +114,6 @@ classdef symmetry < matlab.mixin.Copyable
       out = lt(cs2,cs1);
     end
 
-    function out = stripSym(sym)
-      % the trivial group in the reference frame of the input - the
-      % symmetry is dropped, where the data lives is not
-      %
-      % the stand-in is cached on the input handle: crystalSymmetry
-      % equality is sealed to handle identity, so repeated drops of the
-      % same symmetry must return the same handle to stay comparable
-
-      if sym.id == 1, out = sym; return; end
-
-      out = sym.stripSymRef;
-
-      % invalidate when the frame was replaced - handle identity, since
-      % an equal-valued fork is a different frame
-      if ~isempty(out)
-        sameFrame = (isempty(sym.frame) && isempty(out.frame)) || ...
-          (~isempty(sym.frame) && ~isempty(out.frame) && out.frame == sym.frame);
-        if ~sameFrame, out = []; end
-      end
-
-      if isempty(out)
-        if isa(sym,'crystalSymmetry')
-          out = crystalSymmetry;
-          % the mineral doubles as the frame identity, so displays keep
-          % saying whose frame the data lives in
-          out.mineral = sym.mineral;
-        elseif isa(sym,'specimenSymmetry')
-          out = specimenSymmetry;
-        end
-        out.frame = sym.frame;
-        sym.stripSymRef = out;
-      end
-    end
-    
   end
 
   methods (Hidden = true, Static = true)

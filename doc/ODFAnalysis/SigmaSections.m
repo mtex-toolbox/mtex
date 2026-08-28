@@ -23,7 +23,7 @@ plottingConvention.default('y↑→x');
 % unknown texture. The plot uses classical sections of constant third Bunge
 % angle $\varphi_2$.
 
-cs = crystalSymmetry.load('Ti-Titanium-alpha.cif');
+cs = crystalFrame.load('Ti-Titanium-alpha.cif');
 odf = secretODF(cs);
 
 plotSection(odf);

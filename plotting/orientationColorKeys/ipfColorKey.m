@@ -55,7 +55,7 @@ classdef ipfColorKey < orientationColorKey
       oM.dirMap = getClass(varargin,'directionColorKey',[]);
       if isempty(oM.dirMap), oM.dirMap = HSVDirectionKey(oM.CS1); end
 
-      if isa(oM.CS2,'crystalSymmetry')
+      if isa(oM.CS2,'crystalFrame')
         try
           oM.ipfDirection = Miller(oM.dirMap.whiteCenter,oM.CS2);
         catch

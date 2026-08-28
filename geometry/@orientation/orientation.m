@@ -34,7 +34,7 @@ classdef (InferiorClasses = {?rotation,?quaternion}) orientation < rotation
 properties
 
   CS = crystalSymmetry('1');   % crystal symmetry
-  SS = specimenSymmetry.default;  % specimen symmetry or crystal symmetry
+  SS = specimenFrame.default;  % specimen symmetry or crystal symmetry
   antipodal = false
 
 end
@@ -48,11 +48,11 @@ methods
 
   % the two frames of an orientation are the frames of its symmetries, resolved live
   function fr = get.frameLeft(o)
-    fr = o.SS.frame;
+    fr = o.SS;
   end
 
   function fr = get.frameRight(o)
-    fr = o.CS.frame;
+    fr = o.CS;
   end
 
   function o = set.frameLeft(o,~)
@@ -74,14 +74,14 @@ methods
   function o = orientation(varargin)    
 
     % find and remove symmetries
-    args  = find(cellfun(@(s) isa(s,'symmetry'),varargin,'uniformoutput',true));
+    args  = find(cellfun(@(s) isa(s,'referenceFrame'),varargin,'uniformoutput',true));
 
     % set crystal symmetries
     if ~isempty(args), o.CS = varargin{args(1)}; end
     if length(args) > 1
       o.SS = varargin{args(2)}; 
     else
-      o.SS = specimenSymmetry.default;
+      o.SS = specimenFrame.default;
     end
     
     varargin(args) = [];

@@ -119,13 +119,8 @@ methods
    s2F = unimodal(v,varargin)
 
    function fr = extractFrame(varargin)
-     % the frame named by the arguments: a referenceFrame wins, a
-     % symmetry contributes its frame, otherwise empty (frame-free)
+     % the frame named by the arguments, empty when they name none
      fr = getClass(varargin,'referenceFrame');
-     if isempty(fr)
-       sym = getClass(varargin,'symmetry');
-       if ~isempty(sym), fr = sym.frame; end
-     end
    end
 
  end

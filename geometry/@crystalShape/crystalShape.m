@@ -70,7 +70,7 @@ classdef crystalShape
     
     function cS = crystalShape(N,habitus,extension)
       
-      if isa(N,'crystalSymmetry')
+      if isa(N,'crystalFrame')
         N = basicHKL(cs);
         N = N .* N.dspacing;
       else

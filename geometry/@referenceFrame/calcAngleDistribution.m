@@ -20,7 +20,7 @@ function [ad,omega] = calcAngleDistribution(cs,varargin)
 
 oR = fundamentalRegion(cs,varargin{:});
 
-if ~isempty(varargin) && isa(varargin{1},'symmetry')
+if ~isempty(varargin) && isa(varargin{1},'referenceFrame')
   cs = union(cs,varargin{1});
   varargin(1) = [];
 end

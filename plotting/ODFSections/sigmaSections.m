@@ -38,7 +38,7 @@ classdef sigmaSections < pfSections
     
     function oS = sigmaSections(CS1,CS2,varargin)
             
-      if nargin == 1, CS2 = specimenSymmetry.default; end
+      if nargin == 1, CS2 = specimenFrame.default; end
 
       oS = oS@pfSections(CS1,CS2);
                 

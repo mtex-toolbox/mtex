@@ -27,7 +27,7 @@ function x = calcAxisDistribution(cs,varargin)
 
 [oR,dcs,nSym] = fundamentalRegion(cs,varargin{:});
 varargin = delete_option(varargin,'complete');
-if ~isempty(varargin) && isa(varargin{1},'symmetry'), varargin(1) = []; end
+if ~isempty(varargin) && isa(varargin{1},'referenceFrame'), varargin(1) = []; end
   
 
 if ~isempty(varargin) && isa(varargin{1},'vector3d')

@@ -44,11 +44,11 @@ function [v,l,sym] = symmetrise(v,varargin)
 % m = Miller({1,0,0},{0,0,1},cs)
 % symmetrise(m)
 
-if nargin > 1 && isa(varargin{1},'symmetry')
+if nargin > 1 && isa(varargin{1},'referenceFrame')
   S = varargin{1};
   varargin(1) = [];
 else
-  S = specimenSymmetry.default;
+  S = specimenFrame.default;
 end
 
 

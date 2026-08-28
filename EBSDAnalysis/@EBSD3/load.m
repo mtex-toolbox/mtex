@@ -56,7 +56,7 @@ function [ebsd,interface,options] = load(fname,varargin)
 % extract file names
 fname = getFileNames(fname);
 
-if nargin > 1 && (isa(varargin{1},'crystalSymmetry') || ...(
+if nargin > 1 && (isa(varargin{1},'crystalFrame') || ...(
     iscell(varargin{1}))
   varargin = [{'CS'},varargin];
 end

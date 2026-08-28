@@ -39,7 +39,7 @@ function [n1,n2,d1,d2] = round2Miller(mori,varargin)
 % See also
 % CSL
 
-if isa(mori.SS,'specimenSymmetry')
+if isa(mori.SS,'specimenFrame')
   
   hkl = mori \ vector3d.Z;
   hkl = round(hkl,varargin{:});

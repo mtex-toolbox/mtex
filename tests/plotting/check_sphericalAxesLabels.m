@@ -157,7 +157,7 @@ end
 % --- a plain function on a crystal frame annotates a, b, c --------------
 % the specimen X / Y / Z would be meaningless there
 sFc = calcDensity(v);
-sFc = setFrame(sFc,csHex.frame);
+sFc = setFrame(sFc,csHex);
 close all
 plot(sFc);
 str = string(get(findobj(gcf,'type','text','tag','axesLabels'),'String'));

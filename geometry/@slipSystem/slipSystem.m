@@ -61,7 +61,7 @@ classdef slipSystem
       if isa(sS.b,'Miller')
         CS = sS.b.CS;
       else
-        CS = specimenSymmetry.default;
+        CS = specimenFrame.default;
       end
     end
     
@@ -105,7 +105,7 @@ classdef slipSystem
       
       function dispData(sS)
       % display coordinates  
-      if isa(sS.CS,'crystalSymmetry')
+      if isa(sS.CS,'crystalFrame')
         if sS.b.lattice.isTriHex
           d = [sS.b.UVTW sS.n.hkil];
           d(abs(d) < 1e-10) = 0;

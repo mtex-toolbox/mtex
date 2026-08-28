@@ -52,8 +52,8 @@ if isa(psi,'S2Fun')
   end
   
   % an SO3Fun needs two symmetries - a plain S2Fun contributes none
-  s1 = getSym(sF);  if isempty(s1), s1 = specimenSymmetry.default; end
-  s2 = getSym(sF2); if isempty(s2), s2 = specimenSymmetry.default; end
+  s1 = getSym(sF);  if isempty(s1), s1 = specimenFrame.default; end
+  s2 = getSym(sF2); if isempty(s2), s2 = specimenFrame.default; end
   sF = SO3FunHarmonic(fhat,s1,s2,varargin{:});
     
   return

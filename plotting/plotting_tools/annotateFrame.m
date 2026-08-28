@@ -39,7 +39,7 @@ h = gobjects(0,1);
 % crystal coordinates are annotated by the Miller indices of the sector
 % vertices, not by the axes of the specimen reference frame
 if check_option(varargin,'noLabel') || ...
-    ~isempty(getClass(varargin,'crystalSymmetry',[])), return; end
+    ~isempty(getClass(varargin,'crystalFrame',[])), return; end
 
 fr = getClass(varargin,'referenceFrame');
 if isa(fr,'crystalFrame')

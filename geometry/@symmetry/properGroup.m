@@ -1,36 +1,21 @@
 function sP = properGroup(s)
-% return the corresponding Laue group 
+% the proper rotation group of the Laue group of s
 
-if ~isempty(s.properRef)
+if isProper(s), sP = s; return; end
 
-  sP = s.properRef;
+id = 0;
+if s.id > 0
+  pG = symmetry.pointGroups;
+  id = pG(pG(s.id).LaueId).properId;
+end
 
-% if it is already a Laue group there is nothing to do
-elseif s.isProper
-  
-  sP = s; 
-  s.properRef = s;
-  
+rot = s.rot;
+if isLaue(s)
+  rot = rot(~rot.i);        % drop the improper rotations
 else
+  rot.i = zeros(size(rot)); % make them all proper
+end
 
-  sP = s.copy;
+sP = symmetry(id,rot);
 
-  % new id
-  if s.id > 0
-    pG = symmetry.pointGroups;
-    sP.id = pG(pG(s.id).LaueId).properId;
-  end
-
-  % compute symmetry elements
-  rot = s.rot;
-  if s.isLaue
-    rot = rot(~rot.i); % remove all improper rotations
-  else
-    rot.i = zeros(size(rot));   % make all rotations proper
-  end
-  sP.rot = rot;
-  sP.LaueRef = s.Laue;
-  sP.properRef = sP;
-  s.properRef = sP;
- 
 end

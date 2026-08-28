@@ -1,4 +1,4 @@
-classdef crystalFrame < referenceFrame
+classdef crystalFrame < referenceFrame & phaseItem
 % the reference frame glued to the lattice basis of a phase
 %
 % The basis are the crystal axes a, b, c in canonical Euclidean
@@ -42,6 +42,16 @@ classdef crystalFrame < referenceFrame
     alpha       % angle between b and c
     beta        % angle between c and a
     gamma       % angle between a and b
+    axes        % the crystal axes a, b, c - the basis of this frame
+    aAxis       % a-axis
+    bAxis       % b-axis
+    cAxis       % c-axis
+    aAxisRec    % a*-axis of the reciprocal coordinate system
+    bAxisRec    % b*-axis of the reciprocal coordinate system
+    cAxisRec    % c*-axis of the reciprocal coordinate system
+    X           % x-axis
+    Y           % y-axis
+    Z           % z-axis
   end
 
   methods
@@ -98,6 +108,38 @@ classdef crystalFrame < referenceFrame
     function gamma = get.gamma(cF)
       gamma = angle(cF.basis(1),cF.basis(2));
     end
+
+    % the crystal axes are the basis under the name crystallography uses
+    function v = get.axes(cF), v = cF.basis; end
+    function set.axes(cF,v), cF.basis = v; end
+
+    function a = get.aAxis(cF), a = Miller(1,0,0,cF,'uvw'); end
+    function b = get.bAxis(cF), b = Miller(0,1,0,cF,'uvw'); end
+    function c = get.cAxis(cF), c = Miller(0,0,1,cF,'uvw'); end
+
+    function a = get.aAxisRec(cF), a = Miller(1,0,0,cF); end
+
+    function b = get.bAxisRec(cF)
+      d = basisDual(cF);
+      b = Miller(d(2),cF);
+    end
+
+    function c = get.cAxisRec(cF)
+      d = basisDual(cF);
+      c = Miller(d(3),cF);
+    end
+
+    function x = get.X(cF), x = Miller(vector3d.X,cF,'xyz'); end
+    function y = get.Y(cF), y = Miller(vector3d.Y,cF,'xyz'); end
+    function z = get.Z(cF), z = Miller(vector3d.Z,cF,'xyz'); end
+
+  end
+
+  methods (Static = true)
+
+    cF = load(fname,varargin)
+
+    cF = byElements(rot,varargin)
 
   end
 

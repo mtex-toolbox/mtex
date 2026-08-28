@@ -1,7 +1,7 @@
 function cS = quartz(varargin)
 %
 
-if nargin == 0 || ~isa(varargin{1},'symmetry')
+if nargin == 0 || ~isa(varargin{1},'referenceFrame')
   cs = loadCIF('quartz');
 else
   cs = varargin{1};

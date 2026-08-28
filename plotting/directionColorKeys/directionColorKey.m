@@ -51,20 +51,20 @@ classdef directionColorKey < handle
     
     function dM = directionColorKey(sym,varargin)
       
-      if nargin == 0, sym = specimenSymmetry.default; end
+      if nargin == 0, sym = specimenFrame.default; end
       
-      if isa(sym,'symmetry')
+      if isa(sym,'referenceFrame')
         dM.sym = sym;
       else
         try
           dM.sym = sym.CS;
         catch
-          dM.sym = specimenSymmetry.default;
+          dM.sym = specimenFrame.default;
           try %#ok<TRYNC>
-            % fork first, specimenSymmetry.default is the shared session symmetry
-            if ~isempty(sym.frame)
+            % fork first, specimenFrame.default is the shared session symmetry
+            if ~isempty(sym)
               dM.sym = copy(dM.sym);
-              dM.sym.frame = sym.frame;
+              dM.sym = sym;
             end
           end
           %error('No symmetry specified!')
@@ -88,7 +88,7 @@ classdef directionColorKey < handle
       v = plotS2Grid(dM.sym.fundamentalSector,'resolution',1*degree,varargin{:});
       
       % make it Miller for crystal symmetry
-      if isa(dM.sym,'crystalSymmetry'), v = Miller(v,dM.sym); end
+      if isa(dM.sym,'crystalFrame'), v = Miller(v,dM.sym); end
             
       % compute colors
       d = dM.direction2color(v);
@@ -113,7 +113,7 @@ classdef directionColorKey < handle
         if ~check_option(varargin,'noLabel')
           hG = holdOn(gca); %#ok<NASGU>
           
-          if isa(dM.sym,'crystalSymmetry')
+          if isa(dM.sym,'crystalFrame')
             axes = normalize(Miller({1,0,0},{0,1,0},{0,0,1},dM.sym,'uvw'));
             labels = {'$a$' '$b$' '$c$'};  
           else

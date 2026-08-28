@@ -146,7 +146,7 @@ elseif nargin>1 && (isa(varargin{1},'S2Fun') || isa(varargin{1},'ipfColorKey'))
   ori = grains.meanOrientation;
 
   % the overlay is crystal data, so put a function without a crystal claim into that frame
-  if ~isa(getFrame(S2F),'crystalFrame'), S2F.frame = ori.CS.frame; end
+  if ~isa(getFrame(S2F),'crystalFrame'), S2F.frame = ori.CS; end
 
   for k = 1:length(grains)
 

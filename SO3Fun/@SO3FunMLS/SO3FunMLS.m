@@ -87,7 +87,7 @@ classdef SO3FunMLS < SO3Fun
     w           = [];     % compactly supported weight function
     distance    = 'euclidean'; % metric for neighbor search
 
-    s = specimenSymmetry.default;  % symmetry
+    s = specimenFrame.default;  % symmetry
 
     monomials   = true;   % ignored, only the monomial basis is implemented
     centered    = true;   % use local coordinates centered at evaluation point?
@@ -216,7 +216,7 @@ classdef SO3FunMLS < SO3Fun
         {'string','function_handle','char'});
       SO3F.distance = get_option(varargin, 'distance', 'euclidean', 'char');
       SO3F.s = get_option(varargin, {'symmetry', 'cs', 's', 'ss'}, ...
-        specimenSymmetry.default, 'crystalSymmetry');
+        specimenFrame.default, 'crystalSymmetry');
 
       % optional explicit left/right symmetries
       SLeft = get_option(varargin, ...

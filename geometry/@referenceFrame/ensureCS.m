@@ -7,14 +7,14 @@ csOld = obj.CS;
 if eqTol(csOld,csNew), return; end
 
 % a frame transition is only defined between two crystal symmetries
-if ~isa(csOld,'crystalSymmetry') || ~isa(csNew,'crystalSymmetry')
+if ~isa(csOld,'crystalFrame') || ~isa(csNew,'crystalFrame')
   warning('MTEX:symmetry:missmatch',...
     'The symmetries %s and %s do not match!',char(csNew),char(csOld));
   return
 end
 
 % if the frames are compatible transform to the new reference frame
-[compatible,M] = isCompatible(csOld.frame,csNew.frame);
+[compatible,M] = isCompatible(csOld,csNew);
 if csNew.id == csOld.id && compatible
   if norm(M - eye(3)) > 1e-1
     disp(' ');

@@ -67,11 +67,11 @@ classdef SO3Fun < dynOption
 
     % the two frames of an SO3Fun are the frames of its symmetries, resolved live
     function fr = get.frameLeft(SO3F)
-      fr = SO3F.SLeft.frame;
+      fr = SO3F.SLeft;
     end
 
     function fr = get.frameRight(SO3F)
-      fr = SO3F.SRight.frame;
+      fr = SO3F.SRight;
     end
 
     function SO3F = set.frameLeft(SO3F,~)

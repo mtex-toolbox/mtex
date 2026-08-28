@@ -23,7 +23,7 @@ F = rotate(F,inv(rot));
 if isa(d,'Miller')
   F.CS = d.CS;
 else
-  F.CS = specimenSymmetry.default;
+  F.CS = specimenFrame.default;
   F.frame = d.frame;
 end
 

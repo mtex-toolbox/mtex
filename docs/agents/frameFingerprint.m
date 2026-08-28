@@ -90,7 +90,7 @@ cs = fpCrystalSymmetries;
 names = fieldnames(cs);
 
 for k = 1:numel(names)
-  fr = cs.(names{k}).frame;
+  fr = cs.(names{k});
   p = ['frame.' names{k}];
 
   fpProbe([p '.basis'],@() fpXYZ(fr.basis));
@@ -103,7 +103,7 @@ end
 % most sensitive frame observable there is
 for k = 1:numel(names)
   for l = 1:numel(names)
-    fr1 = cs.(names{k}).frame; fr2 = cs.(names{l}).frame;
+    fr1 = cs.(names{k}); fr2 = cs.(names{l});
     p = ['frame.' names{k} '2' names{l}];
     fpProbe([p '.M'],@() transformationMatrix(fr1,fr2));
     fpProbe([p '.isAligned'],@() double(isAligned(fr1,fr2)));
@@ -145,9 +145,9 @@ for k = 1:numel(names)
   rel = {'Laue',s.Laue; 'proper',s.properGroup; 'stripped',stripSym(s)};
   for l = 1:size(rel,1)
     o = rel{l,2}; q = [p '.' rel{l,1}];
-    fpProbe([q '.eq'],@() double(s.frame == o.frame));
-    fpProbe([q '.isAligned'],@() double(isAligned(s.frame,o.frame)));
-    fpProbe([q '.isCompatible'],@() double(isCompatible(s.frame,o.frame)));
+    fpProbe([q '.eq'],@() double(s == o));
+    fpProbe([q '.isAligned'],@() double(isAligned(s,o)));
+    fpProbe([q '.isCompatible'],@() double(isCompatible(s,o)));
     fpProbe([q '.eqTol'],@() double(eqTol(s,o)));
     fpProbe([q '.sim'],@() double(sim(s,o)));
     fpProbe([q '.id'],@() [o.id,o.Laue.id,numSym(o)]);
@@ -159,13 +159,13 @@ ss = {specimenSymmetry('1'),specimenSymmetry('mmm'),specimenSymmetry('222')};
 for k = 1:numel(ss)
   for l = 1:numel(ss)
     p = sprintf('frame.sharing.specimen%d%d',k,l);
-    fpProbe([p '.eq'],@() double(ss{k}.frame == ss{l}.frame));
-    fpProbe([p '.isAligned'],@() double(isAligned(ss{k}.frame,ss{l}.frame)));
+    fpProbe([p '.eq'],@() double(ss{k} == ss{l}));
+    fpProbe([p '.isAligned'],@() double(isAligned(ss{k},ss{l})));
     fpProbe([p '.eqTol'],@() double(eqTol(ss{k},ss{l})));
     fpProbe([p '.sim'],@() double(sim(ss{k},ss{l})));
   end
   fpProbe(sprintf('frame.sharing.specimen%d.isDefault',k), ...
-    @() double(ss{k}.frame == specimenFrame.default));
+    @() double(ss{k} == specimenFrame.default));
 end
 
 end

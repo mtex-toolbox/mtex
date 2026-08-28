@@ -89,7 +89,7 @@ classdef fibre
 
     function f = set.CS(f,cs)
       f.o1.CS = cs;
-      if isa(cs,'crystalSymmetry')
+      if isa(cs,'crystalFrame')
         f.h = Miller(f.h,cs);
       else
         f.h = vector3d(f.h);
@@ -132,7 +132,7 @@ classdef fibre
     function f = rand(varargin)
       
       n = varargin(cellfun(@isnumeric,varargin));
-      sym = varargin(cellfun(@(x) isa(x,'symmetry'),varargin));
+      sym = varargin(cellfun(@(x) isa(x,'referenceFrame'),varargin));
       
       h = vector3d.rand(n{:});
       r = vector3d.rand(n{:});
@@ -202,8 +202,8 @@ classdef fibre
     function f = theta(varargin)
       % the theta fibre
       
-      CS = getClass(varargin,'crystalSymmetry',crystalSymmetry('432'));
-      SS = getClass(varargin,'specimenSymmetry',specimenSymmetry.default);
+      CS = getClass(varargin,'crystalFrame',crystalSymmetry('432'));
+      SS = getClass(varargin,'specimenFrame',specimenFrame.default);
       
       f = fibre(Miller(1,0,0,CS),vector3d.Z,SS);
       

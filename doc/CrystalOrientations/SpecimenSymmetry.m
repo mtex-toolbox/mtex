@@ -60,7 +60,7 @@ numberInTriclinicGroup = numSym(specimenSymmetry('triclinic'))
 % density over orientations. We begin with one smooth component and trivial
 % specimen symmetry.
 
-cs = crystalSymmetry.load('quartz.cif');
+cs = crystalFrame.load('quartz.cif');
 odf = unimodalODF(orientation.byEuler(30*degree,50*degree,10*degree,cs), ...
   'halfwidth',15*degree);
 
@@ -122,7 +122,7 @@ ss = specimenSymmetry('112')
 % convention. Attaching it therefore declares that the twofold $z$ axis is
 % ND, and those names appear in summaries and plots.
 
-ss.frame = specimenFrame.rolling;
+ss = specimenFrame.rolling;
 ss
 
 %%

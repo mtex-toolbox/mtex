@@ -190,12 +190,12 @@ methods (Static = true)
     sF = S2FunHarmonic(s.fhat);
     if isfield(s,'framePrivate') && ~isempty(s.framePrivate)
       sF.framePrivate = referenceFrame.reintern(s.framePrivate);
-    elseif isfield(s,'s') && isa(s.s,'symmetry')
-      sF.framePrivate = s.s.frame;
+    elseif isfield(s,'s') && isa(s.s,'referenceFrame')
+      sF.framePrivate = s.s;
     elseif isfield(s,'how2plotPrivate') && ~isempty(s.how2plotPrivate)
       % a pre-frame file stored a bare convention - give it a frame
       sF.framePrivate = referenceFrame.reintern( ...
-        specimenSymmetry.frameFor(s.how2plotPrivate));
+        specimenFrame.frameFor(s.how2plotPrivate));
     end
 
   end

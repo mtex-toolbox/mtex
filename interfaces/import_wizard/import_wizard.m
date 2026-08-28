@@ -1123,7 +1123,7 @@ classdef import_wizard < matlab.apps.AppBase
         app.Color{pId} = cs.color;
         if isnan(app.Color{pId}), app.Color{pId} = [1 1 1]; end
         mineral = asChar(app, cs.mineral);
-        if isa(cs,'symmetry')
+        if isa(cs,'referenceFrame')
           pg = asChar(app, cs.pointGroup);
           [abc, abg] = displayLattice(app, cs);
           al = closestSetup(app, cs);
@@ -1188,7 +1188,7 @@ classdef import_wizard < matlab.apps.AppBase
           'FontColor', readableOn(app, rgb)), 'cell', [row 2])
 
         cs = app.ebsd.CSList(row);
-        if ~isa(cs,'crystalSymmetry')
+        if ~isa(cs,'crystalFrame')
           addStyle(app.PhaseTable, fixed, 'cell', [repmat(row,8,1), (6:13).'])
           continue
         end

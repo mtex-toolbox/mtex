@@ -28,7 +28,7 @@ function  [oR,dcs,nSym] = fundamentalRegion(cs,varargin)
 % color key cache went stale.
 persistent cache
 
-if nargin >= 2 && (isa(varargin{1},'symmetry')||isa(varargin{1},'rotation'))
+if nargin >= 2 && (isa(varargin{1},'referenceFrame')||isa(varargin{1},'rotation'))
   csOther = varargin{1}; opt = varargin(2:end);
 else
   csOther = []; opt = varargin;
@@ -46,7 +46,7 @@ for k = 1:numel(opt)
     key = [key; NaN; 1; double(char(o)).']; %#ok<AGROW>
   elseif isnumeric(o) || islogical(o)
     key = [key; NaN; 2; double(o(:))]; %#ok<AGROW>
-  elseif isa(o,'symmetry') || isa(o,'rotation')
+  elseif isa(o,'referenceFrame') || isa(o,'rotation')
     % the symmetries are passed along by the callers, e.g. the ODF section
     % classes hand their whole option list down
     key = [key; NaN; 3; symKey(o)]; %#ok<AGROW>
@@ -68,8 +68,8 @@ if ~isempty(key)
   if ~isempty(hit) && (nargout < 2 || ~isempty(cache(hit).dcs))
     oR = cache(hit).oR;
     if nargout > 1
-      dcs = cache(hit).dcs.copy; % a symmetry is a handle - never hand out
-      nSym = cache(hit).nSym;    % the cached one, a caller may change it
+      dcs = cache(hit).dcs;
+      nSym = cache(hit).nSym;
     end
     return
   end
@@ -79,7 +79,7 @@ if ~check_option(varargin,'pointGroup'), cs = cs.properGroup; end
 
 rot = cs.rot;
 N0 = quaternion;
-if nargin >= 2 && (isa(varargin{1},'symmetry')||isa(varargin{1},'rotation'))
+if nargin >= 2 && (isa(varargin{1},'referenceFrame')||isa(varargin{1},'rotation'))
 
   cs2 = varargin{1};
   varargin(1) = [];
@@ -134,7 +134,7 @@ oR = orientationRegion([Nq(:).',N0(:).'],cs,cs2,varargin{:});
 
 if ~isempty(key)
   entry = struct('key',key,'oR',oR,'dcs',[],'nSym',nSym);
-  if exist('dcs','var'), entry.dcs = dcs.copy; end
+  if exist('dcs','var'), entry.dcs = dcs; end
   cache = [entry,cache];
   if numel(cache) > 12, cache(13:end) = []; end
 end
@@ -151,13 +151,13 @@ function key = symKey(cs)
 if isempty(cs), key = []; return; end
 
 % the second argument may also be a plain list of rotations
-if isa(cs,'symmetry'), q = quaternion(cs.rot); else, q = quaternion(cs); end
-key = [double(isa(cs,'crystalSymmetry')); q.a(:); q.b(:); q.c(:); q.d(:)];
+if isa(cs,'referenceFrame'), q = quaternion(cs.rot); else, q = quaternion(cs); end
+key = [double(isa(cs,'crystalFrame')); q.a(:); q.b(:); q.c(:); q.d(:)];
 
-if ~isa(cs,'symmetry'), return; end
+if ~isa(cs,'referenceFrame'), return; end
 
 % only a crystal symmetry has a lattice
-if isa(cs,'crystalSymmetry')
+if isa(cs,'crystalFrame')
   a = cs.axes;
   key = [key; a.x(:); a.y(:); a.z(:)];
 end

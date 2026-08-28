@@ -21,7 +21,7 @@ BS2.a = rot.*BS2.a;
 % rotating with an orientation changes the reference frame - the result
 % adopts the specimen frame; a plain rotation keeps the current frame
 if isa(rot,'orientation')
-  BS2.framePrivate = rot.SS.frame;
+  BS2.framePrivate = rot.SS;
 end
 
 end

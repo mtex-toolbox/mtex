@@ -84,7 +84,7 @@ classdef sphericalPlot < handle
       % the boundary, the grid and all the labels have to accumulate into ax
       hG = holdOn(ax); %#ok<NASGU>
 
-      CS = getClass(varargin,'crystalSymmetry',[]);
+      CS = getClass(varargin,'crystalFrame',[]);
       
       if isa(sP.proj,'plainProjection')
         
