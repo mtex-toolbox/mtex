@@ -395,6 +395,47 @@ The facade from increment 2 becomes the shipped deprecated shell. `loadobj` on
 convention stays empty. `ori.CS = cs` keeps working with a once-per-call-site warning naming
 `transformReferenceFrame`.
 
+**The shell cannot be a facade, and that decided the shape of the increment.** Measured on
+R2024b: a constructor may not return another class, **not even a subclass of itself**
+(`MATLAB:class:mustReturnObject`), and a `@crystalSymmetry` class folder always beats a
+`crystalSymmetry.m` function on the path. So the name is either the class or the factory,
+never both. Worse, when the class is missing there is no hook at all: MATLAB substitutes the
+unloadable objects while rebuilding the property, and `grain2d/loadobj` receives a finished
+grain2d whose `CSList` has already collapsed to one `notIndexedFrame` — which is what
+`data/testgrains.mat` and `data/EBSD/trueEbsdWCCoSmall.mat` do today.
+
+**Ralf's answer, 2026-08-28: the name goes to a tombstone.** The factory syntax moves into
+`crystalFrame`, the function `crystalSymmetry` goes, and `@crystalSymmetry` becomes a class
+that exists only to be found by `load` — a constructor that errors naming `crystalFrame`,
+and a `loadobj` that converts. Measured that this works: the tombstone's `loadobj` receives
+a struct carrying every saved field and may return an object of another class. So old files
+convert by themselves, and a script calling the old name gets an exact error rather than
+silence. Same for `specimenSymmetry` and `notIndexed`.
+
+A plain tombstone, not a base class: `isa(x,'crystalSymmetry')` becomes false everywhere,
+which is silent, but the class genuinely is gone and a vestigial ancestor would claim
+otherwise forever. **`Miller` keeps its function** and gets no tombstone — 663 call sites,
+no better name, and what has to survive a load is EBSD and grain data, which carries no
+crystal directions.
+
+Landed so far:
+
+- `93de59f90` — **a loaded frame joins the register through the same door.**
+  `referenceFrame/loadobj` always called `reintern`, but `reintern` searched the *name* map
+  and required a stated convention on both sides, so only named specimen frames ever
+  re-unified. Every carrier came back from a file with a frame that was not the one it was
+  saved with; all seven do now. That is also issue #2609, which asked for a `loadobj` on
+  `@tensor`: the frame is the single point of repair, so no carrier needs one.
+- `32b7648df` — `ori.CS = cs` tells the line that wrote it, once, through `mtexWarnOnce`.
+  The note hangs off `@orientation/subsasgn` rather than the setter, because a property
+  written inside a class method never goes through `subsasgn` — so MTEX's own bookkeeping
+  neither warns nor pays the 40 microseconds that reading the stack costs.
+- `b31f6d0ee` — `crystalFrame` takes the whole `crystalSymmetry` syntax.
+
+Left to do: the same absorption for `specimenFrame`, the sweep (642 `crystalSymmetry(`, 110
+`specimenSymmetry(`, 10 `notIndexed(` across source, tests and `doc/`), then the three
+tombstones and the proof that `data/testgrains.mat` comes back with its five phases.
+
 ### 10 — outer ring
 
 `plotting/`, `interfaces/` (including the import wizard's `newCS.color` and
