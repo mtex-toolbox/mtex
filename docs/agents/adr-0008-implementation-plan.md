@@ -280,6 +280,49 @@ Three things the flip turned up:
 placeholder; its own invariance group becomes derivable rather than conflated with the
 crystal's.
 
+Done in five commits, each with the fingerprint byte-identical at 4532 observables.
+
+**A spherical function written in a frame that carries a group is symmetric under that
+group** — the rule increment 5 gave a direction, and Ralf's call for `quadrature`. So
+`S2FunHarmonic.quadrature(f,cs)` spreads the input over the group on request, buys
+antipodal from a Laue group, and symmetrises; the 14 callers of the class static are a
+rename. `S2FunHarmonicSym` is a constructor function returning a framed `S2FunHarmonic`,
+and the methods that used to key on the class ask `hasSymmetry`, which now covers an
+`S2Fun` as it covers a `vector3d`.
+
+The frame being the only place a symmetry can hide is what forces the rest: `plus`,
+`times`, `rdivide`, `power` and `min` write their result in `S2Fun.jointFrame`, which
+carries a group only where both operands do, and `rotate` and `symmetrise` about an
+off-z axis write the group free sibling. A sum of invariant functions is invariant, so
+`plus` sets the frame rather than symmetrising again. `symmetrise` must not name the
+group to the quadrature it drives — that would send it straight back into `symmetrise`.
+
+**The tensor's two frames were the one contradiction the flip could not encode.** It
+stored a reference system and, beside it, a frame of its own for the plotting convention,
+so the function it turns into had to carry one of each. Now `CS` is the single frame under
+its older name, and a `plottingConvention` handed to a tensor already in a crystal frame is
+refused (`MTEX:tensor:fixedConvention`) rather than forking a second frame. Where the
+derived function really is invariant — `directionalMagnitude`, `linearCompressibility`,
+`birefringence`, the wave velocities — it says so through its frame; `PoissonRatio` and
+`shearModulus` with one direction held fixed write the group free sibling.
+
+**`SO3Fun` and `SO3VectorField` store `frameA`/`frameB`**, Ralf's call over renaming the
+two aliases only: A the crystal side acting from the right, B the specimen side acting
+from the left, the same pair an `orientation` has. `CS`, `SS`, `SRight` and `SLeft` are
+dependent on them and keep working everywhere, including as assignment targets. The
+twelve subclasses store or derive the pair under the new names; `frameLeft`/`frameRight`
+are gone, since the frame is the property now.
+
+Left open, each in the increment that owns it:
+
+- rotating a **tensor** by a plain rotation keeps the frame it was written in, group and
+  all, where the rotated tensor is invariant under the rotated group — increment 8, with
+  the rest of `transformReferenceFrame`.
+- the `doc/` pages still describe `S2FunHarmonicSym` as a class — increment 10.
+- a saved `.mat` holding an `S2FunHarmonicSym`, a stored `SLeft`/`SRight`, or a stored
+  tensor `CS` no longer loads into the property it came from — increment 9, together with
+  `crystalSymmetry` and `Miller`.
+
 ### 7 — phase identity
 
 `referenceFrame` becomes abstract and `matlab.mixin.Heterogeneous`; `phaseItem` is absorbed
