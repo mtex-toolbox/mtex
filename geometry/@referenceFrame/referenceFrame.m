@@ -485,27 +485,25 @@ classdef (Abstract) referenceFrame < handle & matlab.mixin.Heterogeneous
     end
 
     function rf = reintern(rf)
-      % swap a deserialized frame for the registered instance of its name
-      % when the two agree by value - so separately saved datasets share
-      % one frame handle again after loading. A frame with a different
-      % convention keeps its own fork: applying a loaded convention to
-      % the whole session is the business of the CONTAINER (EBSD,
-      % PoleFigure) whose positions state the intent - the individual
-      % vectors of a file carry incidental conventions of the saving
-      % session, and letting each of them repoint the register would make
-      % the outcome depend on the load order within the file.
+      % a deserialized frame joins the session register
+      %
+      % It goes through the same door a newly constructed frame does, so
+      % two datasets saved apart share one frame handle again once both are
+      % loaded - and a phase that was never seen this session becomes the
+      % session instance of itself.
+      %
+      % What the door lets through is <sameEntity.html |sameEntity|>: cell
+      % shape, alignment, group, name and convention. So a frame whose
+      % convention differs from the registered one is a fork of its own and
+      % stays one - applying a loaded convention to the whole session is
+      % the business of the CONTAINER (EBSD, PoleFigure) whose positions
+      % state the intent, not of every vector in the file, which carries
+      % the incidental convention of the session that saved it.
       %
       % See also
-      % referenceFrame.referenceFrame specimenSymmetry/loadobj vector3d/loadobj
+      % referenceFrame.intern referenceFrame/loadobj vector3d/loadobj
 
-      reg = referenceFrame.byName(rf.name);
-      if ~isempty(reg) && strcmp(class(reg),class(rf)) && ...
-          isAligned(rf,reg) && ~isempty(rf.how2plot) && ...
-          ~isempty(reg.how2plot) && isapprox(rf.how2plot,reg.how2plot)
-        % the registered instance in the group that was loaded - itself when
-        % the groups agree, its sibling otherwise
-        rf = sibling(reg,rf.sym);
-      end
+      rf = referenceFrame.intern(rf);
 
     end
 

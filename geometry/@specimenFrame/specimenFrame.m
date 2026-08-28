@@ -150,9 +150,13 @@ classdef specimenFrame < referenceFrame
 
     function sF = named(name,axesNames)
       % the interned session instance, constructed on first use
+      %
+      % It goes into both registers: the name map answers the factories,
+      % and the entity register is what a loaded frame is matched against,
+      % so a saved 'rolling' comes back as this handle rather than a twin
       sF = referenceFrame.byName(name);
       if isempty(sF)
-        sF = specimenFrame(name,'axesNames',axesNames);
+        sF = referenceFrame.intern(specimenFrame(name,'axesNames',axesNames));
         referenceFrame.byName(name,sF);
       end
     end
