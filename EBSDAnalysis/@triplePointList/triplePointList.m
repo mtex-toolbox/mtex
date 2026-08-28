@@ -78,10 +78,18 @@ classdef triplePointList < phaseList & dynProp
     end
     
     function fr = get.frame(tP)
-      fr = tP.allV.frame;
+      fr = getFrame(tP);
     end
 
     function tP = set.frame(tP,fr)
+      tP = setFrame(tP,fr);
+    end
+
+    function fr = getFrame(tP)
+      fr = tP.allV.frame;
+    end
+
+    function tP = setFrame(tP,fr)
       % the normal direction lives in the very same frame as the vertices
       tP.allV.frame = fr;
       tP.N.frame = fr;

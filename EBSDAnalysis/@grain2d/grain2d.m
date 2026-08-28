@@ -62,12 +62,12 @@ classdef grain2d < phaseList & dynProp
     x                % x coordinates of the vertices of the grains
     y                % y coordinates of the vertices of the grains
     triplePoints     % triple points
+    frame            % the specimen reference frame (carried by allV)
   end
   
   properties (Dependent = true, Access = protected)
     idV        % active vertices
     rot2Plane  % rotation to xy plane
-    frame      % the specimen reference frame (carried by allV)
     how2plot   % plotting convention - read only
     % a convention belongs to a reference frame, see plottingConvention.default
     N          % normal direction of the pseudo3d data    
@@ -236,10 +236,18 @@ classdef grain2d < phaseList & dynProp
     end
 
     function fr = get.frame(grains)
-      fr = grains.allV.frame;
+      fr = getFrame(grains);
     end
 
     function grains = set.frame(grains,fr)
+      grains = setFrame(grains,fr);
+    end
+
+    function fr = getFrame(grains)
+      fr = grains.allV.frame;
+    end
+
+    function grains = setFrame(grains,fr)
       grains.allV.frame = fr;
       % the boundary carries its own vertices, triple points and normal
       grains.boundary.frame = fr;

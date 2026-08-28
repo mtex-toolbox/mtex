@@ -122,10 +122,18 @@ classdef sphericalRegion
 
 
     function fr = get.frame(sR)
-      fr = sR.N.frame;
+      fr = getFrame(sR);
     end
 
     function sR = set.frame(sR,fr)
+      sR = setFrame(sR,fr);
+    end
+
+    function fr = getFrame(sR)
+      fr = sR.N.frame;
+    end
+
+    function sR = setFrame(sR,fr)
       sR.N.frame = fr;
     end
 

@@ -132,6 +132,12 @@ classdef S2FunMLS < S2Fun
       end
     end
 
+    function S2F = setFrame(S2F,fr) %#ok<INUSD>
+      error('MTEX:S2Fun:fixedFrame',...
+        ['The frame of an MLS S2Fun is the frame of its symmetry ' ...
+        '- assign S2F.s instead.']);
+    end
+
     function s = getSym(S2F)
       s = S2F.s;
     end
@@ -281,7 +287,9 @@ classdef S2FunMLS < S2Fun
         S2F = S2F.init_reg_params;
       end
 
-      S2F.frame = nodes.frame;
+      % the own frame getFrame prefers over the symmetry's - written directly,
+      % since the public setter refuses assignment
+      S2F.framePrivate = nodes.frame;
     end
 
     function S2F = set.w(S2F, weightfun)

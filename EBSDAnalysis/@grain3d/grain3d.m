@@ -153,10 +153,18 @@ classdef grain3d < phaseList & dynProp
     end
 
     function fr = get.frame(grains)
-      fr = grains.allV.frame;
+      fr = getFrame(grains);
     end
 
     function grains = set.frame(grains,fr)
+      grains = setFrame(grains,fr);
+    end
+
+    function fr = getFrame(grains)
+      fr = grains.allV.frame;
+    end
+
+    function grains = setFrame(grains,fr)
       grains.allV.frame = fr;
       grains.boundary.frame = fr;
     end

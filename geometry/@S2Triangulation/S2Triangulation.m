@@ -128,10 +128,18 @@ classdef S2Triangulation
     end
 
     function fr = get.frame(sT)
-      fr = sT.vertices.frame;
+      fr = getFrame(sT);
     end
 
     function sT = set.frame(sT,fr)
+      sT = setFrame(sT,fr);
+    end
+
+    function fr = getFrame(sT)
+      fr = sT.vertices.frame;
+    end
+
+    function sT = setFrame(sT,fr)
       sT.vertices.frame = fr;
     end
 

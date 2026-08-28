@@ -226,10 +226,18 @@ classdef grainBoundary < phaseList & dynProp
     end
     
     function fr = get.frame(gB)
-      fr = gB.allV.frame;
+      fr = getFrame(gB);
     end
 
     function gB = set.frame(gB,fr)
+      gB = setFrame(gB,fr);
+    end
+
+    function fr = getFrame(gB)
+      fr = gB.allV.frame;
+    end
+
+    function gB = setFrame(gB,fr)
       gB.allV.frame = fr;
       % the triple points carry their own vertices and the normal
       gB.triplePoints.frame = fr;

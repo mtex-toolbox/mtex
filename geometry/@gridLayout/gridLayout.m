@@ -123,8 +123,22 @@ classdef gridLayout < matlab.mixin.Copyable
     end
 
     function fr = get.frame(gL)
+      fr = getFrame(gL);
+    end
+
+    function gL = set.frame(gL,fr)
+      gL = setFrame(gL,fr);
+    end
+
+    function fr = getFrame(gL)
       % the directions are vectors and a vector states its own frame
       fr = gL.basis(1).frame;
+    end
+
+    function gL = setFrame(gL,fr) %#ok<INUSD>
+      error('MTEX:gridLayout:fixedFrame',...
+        ['The frame of a grid layout is the frame of its directions ' ...
+        '- assign gL.basis instead.']);
     end
 
   end

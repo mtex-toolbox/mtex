@@ -104,10 +104,18 @@ methods
   end
 
   function fr = get.frame(gB3)
-    fr = gB3.allV.frame;
+    fr = getFrame(gB3);
   end
 
   function gB3 = set.frame(gB3,fr)
+    gB3 = setFrame(gB3,fr);
+  end
+
+  function fr = getFrame(gB3)
+    fr = gB3.allV.frame;
+  end
+
+  function gB3 = setFrame(gB3,fr)
     gB3.allV.frame = fr;
   end
 

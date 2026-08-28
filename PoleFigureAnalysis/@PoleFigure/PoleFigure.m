@@ -121,10 +121,18 @@ classdef PoleFigure < dynProp & dynOption
     end
 
     function fr = get.frame(pf)
-      fr = pf.allR{1}.frame;
+      fr = getFrame(pf);
     end
 
     function pf = set.frame(pf,fr)
+      pf = setFrame(pf,fr);
+    end
+
+    function fr = getFrame(pf)
+      fr = pf.allR{1}.frame;
+    end
+
+    function pf = setFrame(pf,fr)
       for k=1:length(pf.allR)
         pf.allR{k}.frame = fr;
       end

@@ -238,13 +238,21 @@ classdef tensor < dynOption
     end
 
     function fr = get.frame(T)
+      fr = getFrame(T);
+    end
+
+    function T = set.frame(T,fr)
+      T = setFrame(T,fr);
+    end
+
+    function fr = getFrame(T)
       % a tensor that was not given a frame of its own follows its
       % reference system, so setting the frame of CS keeps working
       fr = T.framePrivate;
       if isempty(fr), fr = T.CS.frame; end
     end
 
-    function T = set.frame(T,fr)
+    function T = setFrame(T,fr)
       assert(isempty(fr) || isa(fr,'referenceFrame'), ...
         'The frame of a tensor has to be a referenceFrame or empty.');
       T.framePrivate = fr;

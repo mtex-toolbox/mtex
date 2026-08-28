@@ -367,10 +367,18 @@ classdef EBSD < phaseList & dynProp & dynOption
 
 
     function fr = get.frame(ebsd)
-      fr = ebsd.pos.frame;
+      fr = getFrame(ebsd);
     end
 
     function ebsd = set.frame(ebsd,fr)
+      ebsd = setFrame(ebsd,fr);
+    end
+
+    function fr = getFrame(ebsd)
+      fr = ebsd.pos.frame;
+    end
+
+    function ebsd = setFrame(ebsd,fr)
       % unitCell and N live in the very same frame as the positions
       ebsd.pos.frame = fr;
       ebsd.unitCell.frame = fr;
