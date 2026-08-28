@@ -70,7 +70,7 @@ The facade decided above means red is scoped to the carrier being converted, nev
 | 1 | the two consolidations from `frameSimplification.md` | **done**, `f901995af` `70ca81df4` |
 | 2A | the frame carries the group | **done**, `722b259f3` |
 | 2B | `crystalSymmetry`/`specimenSymmetry` become functions returning frames | red: the flip |
-| 3 | interning on the full key, immutability, colour rule | green |
+| 3 | interning on the full key, immutability, colour rule | **done**, `591a9380e` `1d2d9774a` |
 | 4 | `orientation`/`rotation` — `CS`/`SS` return frames | red: `geometry/` |
 | 5 | `vector3d` absorbs `Miller` | red: `geometry/` |
 | 6 | `S2Fun`, `SO3Fun`, `tensor` | red: function spaces |
@@ -179,14 +179,28 @@ only the mineral name, silently dropping the lattice axes.
 
 ### 3 — interning and immutability
 
-Register key becomes cell + alignment + group + mineral + convention, with the shape
-tolerance of rule 2. Colour stays out of the key, first import wins. Frames drop
-`matlab.mixin.Copyable`. Importers get the documented bypass so one file's two phases stay
-two.
+The register key is cell + alignment + group + mineral + convention; colour is out of it and
+the registered instance keeps the colour it was first given, while a colour asked for
+explicitly still wins. `crystalSymmetry` and `specimenSymmetry` ask the register; an importer
+says `'noIntern'`. Frames dropped `matlab.mixin.Copyable`, and a frame is **sealed** when the
+register stores it — cell, alignment, group and axes names refuse assignment, while name,
+colour and convention stay open so `plottingConvention.default` still reaches the data that
+follows it.
 
-The fingerprint stays identical but *identity* changes: constructions that produced separate
-handles now unify. Grep handle-equality sites before and after — `==` on frames, `sim`,
-`eqTol`, `eqLazy` — since more of them will now answer true.
+**The ADR's "shape not size" rule did not survive contact.** Uniform scaling moves no
+crystallographic *direction*, but it scales every *d-spacing*, so a scale-free key unified a
+unit cube with a 3.52 Å cell and `crystalSymmetry('432').Laue` acquired another phase's
+lattice constants. The key compares the cell **relatively** instead: 2.87 against 2.866 is
+0.14% and one phase, 1 against 3.52 is two lattices. The tolerance is the new
+`frameShapeTolerance` setting.
+
+Two things to know:
+
+- The register store is a **cell array**. Assigning a `crystalFrame` into an array typed
+  `referenceFrame` slices it to the base class, which made the register answer "new frame" to
+  everything until it was found — the same constraint that makes the phase list heterogeneous.
+- **Sealing happens on use.** Passing a frame into an API that interns it — `byScreenAlignment`
+  does — seals it there and then. A frame is configured before it is used, not after.
 
 ### 4 — `orientation` and `rotation`
 
