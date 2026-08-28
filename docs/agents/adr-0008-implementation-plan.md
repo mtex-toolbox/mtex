@@ -329,6 +329,32 @@ into it and `notIndexed` re-parented as `notIndexedFrame`; `isIndexed` becomes d
 the class. `CSList` keeps its name and holds frames. `eqTol` and `sim` are absorbed into the
 register door.
 
+Done in one commit. `notIndexed` survives as the **function** that builds a
+`notIndexedFrame`, so the importers keep their line, the way `crystalSymmetry` did at
+increment 2. `isIndexed` is `~isa(fr,'notIndexedFrame')` and `mineral` is the frame's
+`name`, which removes the second copy of the same string that `crystalSymmetry` used to
+keep in step by hand. `eqTol` and `sim` are one implementation each in
+`@referenceFrame/private`, beside `sameEntity`, with a branch per kind of frame — the
+crystal branch from `phaseItem`, the specimen branch from the two files `@specimenFrame`
+held.
+
+**One answer moves, in twelve observables.** A frame and its Laue, proper or stripped
+sibling now compare `eqTol` and `sim` **equal**. They did not before, and the reason was
+not a rule: `clone` copies a frame's `name` but never copied its `mineral`, so the sibling
+of Forsterite was a frame with no mineral and the mineral test failed on it. With `mineral`
+being the name, both predicates rest on the group and the alignment, which is what they say
+they compare.
+
+Two things the increment ran into, neither of them the design:
+
+- **the `data/*.mat` caches go stale on a class change.** A cached `mtexdata` set holds the
+  saved `CSList`; once `phaseItem` was gone the property came back `[]`, and the whole EBSD
+  block of the fingerprint went red while the import itself was fine. `rm data/*.mat` and
+  they re-import — the same footgun increment 5 hit with saved `Miller` objects.
+- **`ebsd.CSList.isIndexed` in one expression returns only the first element**, where
+  `L = ebsd.CSList; [L.isIndexed]` returns all five. That is `@EBSD/subsref` not passing a
+  comma separated list out of a chained reference, and it predates this work.
+
 Sealing has to be designed in, not retrofitted: a method dispatches across a heterogeneous
 array only if `Sealed` on the root, `handle.eq` does not come free, and the gap only shows on
 a dataset carrying an unindexed phase — which most real ones do.
