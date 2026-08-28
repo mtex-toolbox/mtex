@@ -37,7 +37,7 @@ function [lin,doTranspose] = layoutIndex(gL,dims,sz,varargin)
 % gridLayout referenceFrame/transformationMatrix EBSDsquare/transformReferenceFrame
 
 % a layout states the same thing, dimension 1 first
-if isa(dims,'referenceFrame'), dims = dims.basis(1:2); end
+if isa(dims,'gridLayout'), dims = dims.basis(1:2); end
 
 d = normalize(reshape(dims,1,2));
 t = normalize(gL.basis(1:2));

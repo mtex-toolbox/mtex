@@ -18,6 +18,8 @@
 % &nbsp;
 % fibre
 % &nbsp;
+% gridLayout
+% &nbsp;
 % latticeType
 % &nbsp;
 % orientationRegion
@@ -37,7 +39,6 @@
 % &nbsp;
 % referenceFrame
 % ├── crystalFrame
-% ├── gridLayout
 % └── specimenFrame
 % &nbsp;
 % slipSystem

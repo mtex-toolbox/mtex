@@ -1,7 +1,7 @@
 function c = conventionChar(cF,pC)
 % the plotting convention expressed in crystal directions, e.g. '⊙c*→a'
 %
-% Overrides the generic @referenceFrame version, which writes the screen
+% Overrides the generic conventionChar, which writes the screen
 % layout in the frame's axes names ('c↑→a'). That form does not fit a
 % crystal: the crystal axes are in general not orthogonal, so the axis
 % pointing north usually is none of them and the generic version falls
@@ -24,7 +24,7 @@ function c = conventionChar(cF,pC)
 %  c - char
 %
 % See also
-% referenceFrame/conventionChar plottingConvention
+% conventionChar plottingConvention
 
 if nargin < 2, pC = cF.how2plot; end
 if isempty(pC), c = ''; return; end

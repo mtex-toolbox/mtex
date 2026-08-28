@@ -12,14 +12,15 @@ function c = conventionChar(rf,pC)
 %   c = conventionChar(rf,pC)   % a resolved convention, in frame labels
 %
 % Input
-%  rf - @referenceFrame
+%  rf - anything that names its axes over a basis: a @referenceFrame, or a
+%       @gridLayout, whose axes are row and col
 %  pC - @plottingConvention
 %
 % Output
 %  c - char
 %
 % See also
-% plottingConvention
+% plottingConvention crystalFrame/conventionChar
 
 if nargin < 2, pC = rf.how2plot; end
 if isempty(pC), c = ''; return; end

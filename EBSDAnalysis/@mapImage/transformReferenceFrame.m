@@ -48,7 +48,7 @@ function mg = transformReferenceFrame(mg,target,varargin)
 
 if isa(target,'mapImage'), target = target.layout; end
 
-argin_check(target,'referenceFrame');
+argin_check(target,{'referenceFrame','gridLayout'});
 
 ori = getClass(varargin,'orientation',[]);
 byPlot = check_option(varargin,'byScreenAlignment');

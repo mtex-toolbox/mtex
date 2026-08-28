@@ -897,7 +897,13 @@ assert(isAligned(gridLayout,gridLayout.columnMajor) && ...
 
 % a layout carries no plotting convention of its own - the only screen it
 % could mean is the one imagesc imposes, which is not a property of the data
-assert(isempty(gridLayout.columnMajor.how2plot), ...
+try
+  gridLayout(yvector,xvector,plottingConvention.ij);
+  caught = '';
+catch ME
+  caught = ME.identifier;
+end
+assert(strcmp(caught,'MTEX:gridLayout:noConvention'), ...
   'check_referenceFrame: a gridLayout must not carry a plotting convention');
 
 % rows and columns of an array are perpendicular; anything else is a
@@ -910,12 +916,6 @@ catch ME
 end
 assert(strcmp(caught,'MTEX:gridLayout:notOrthogonal'), ...
   'check_referenceFrame: non-perpendicular row/col directions were accepted');
-
-% a layout can be carried by the trivial group, which is what lets an
-% orientation name one on a side. A crystalFrame still may not be
-ss = specimenSymmetry(gL);
-assert(ss.id == 1 && ss.frame == gL, ...
-  'check_referenceFrame: specimenSymmetry must adopt a gridLayout handle');
 
 % assumedFor recovers the relation from a frame's convention - the
 % backwards compatible path, for data that predates the relation having a
@@ -1071,17 +1071,6 @@ catch ME
 end
 assert(strcmp(caught,'MTEX:orientation:noConvention'), ...
   'check_referenceFrame: a frame without a convention of its own was accepted');
-
-% a layout is not something that gets plotted, so it carries no convention
-% and cannot be a side of this inference either
-try
-  orientation.byScreenAlignment(gridLayout.columnMajor,specimenFrame.default);
-  caught = '';
-catch ME
-  caught = ME.identifier;
-end
-assert(strcmp(caught,'MTEX:orientation:noConvention'), ...
-  'check_referenceFrame: a gridLayout was accepted as a plotted frame');
 
 referenceFrame.reset;
 

@@ -7,8 +7,7 @@ classdef specimenSymmetry < symmetry
 % carries no lattice, only the group and the specimen @referenceFrame.
 %
 % Passing a reference frame gives the trivial group carrying that frame,
-% which is how a plotting convention or a @gridLayout enters an
-% @orientation, see ADR 0003.
+% which is how a plotting convention enters an @orientation, see ADR 0003.
 %
 % Syntax
 %   ss = specimenSymmetry
@@ -51,10 +50,8 @@ methods
     
     % the trivial group carrying a given frame, see ADR 0003. Any frame
     % that is not a crystalFrame may be carried: a crystal frame holds a
-    % lattice this group knows nothing about, while a specimen frame or a
-    % grid layout is just an identity plus a basis. That is what lets an
-    % orientation name a @gridLayout on one side - see
-    % orientation/byScreenAlignment
+    % lattice this group knows nothing about, while a specimen frame is
+    % just an identity plus a basis
     frameAdopted = nargin > 0 && isa(varargin{1},'referenceFrame') && ...
       ~isa(varargin{1},'crystalFrame');
 

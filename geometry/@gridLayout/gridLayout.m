@@ -1,4 +1,4 @@
-classdef gridLayout < referenceFrame
+classdef gridLayout < matlab.mixin.Copyable
 % the order a grid is stored in - which directions the matrix indices run along
 %
 % An array is indexed (i,j). Which specimen directions those two indices
@@ -32,19 +32,25 @@ classdef gridLayout < referenceFrame
 %  ebsd   - @EBSDgrid, read as row along d1 and col along d2
 %
 % Class Properties
+%  name      - what the layout is called, when it is a named one
 %  basis     - 1x3 @vector3d, [row, col, row × col]
 %  axesNames - {'row','col'}
 %
 % See also
-% referenceFrame specimenFrame gridLayout/layoutIndex EBSD/gridify
+% gridLayout/layoutIndex EBSD/gridify referenceFrame
+
+  properties
+    name = ''                  % identity of the layout
+    % row and column direction, empty = the canonical triad, see get.basis
+    basis = []
+    % the axis normal to the grid carries no index and so gets no name
+    axesNames = {'row','col'}
+  end
 
   methods
 
     function gL = gridLayout(varargin)
 
-      % the row and column directions may be given as two separate vector3d
-      % - the superclass takes a ready made 1x3 basis instead, so pull them
-      % out and build the basis here before handing the rest over
       % a gridified map states its layout outright - the row index advances
       % along d1 and the column index along d2
       if nargin >= 1 && isa(varargin{1},'EBSDgrid')
@@ -74,13 +80,21 @@ classdef gridLayout < referenceFrame
 
       end
 
-      % a basis may also arrive ready made, which the superclass takes
+      % a basis may also arrive ready made, as one 1x3 vector3d
       given = ~isempty(b) || any(cellfun(@(x) isa(x,'vector3d'),varargin));
 
-      gL = gL@referenceFrame(varargin{:});
+      if ~isempty(varargin) && isa(varargin{1},'vector3d')
+        gL.basis = varargin{1};
+        varargin(1) = [];
+      end
 
-      % the axis normal to the grid carries no index and so gets no name
-      gL.axesNames = {'row','col'};
+      assert(isempty(getClass(varargin,'plottingConvention')),...
+        'MTEX:gridLayout:noConvention',...
+        ['A layout says which way round an array is stored, which holds '...
+        'whether or not anything is ever plotted. It takes no plotting '...
+        'convention.']);
+
+      gL.name = get_option(varargin,'name','');
 
       if ~isempty(b)
         gL.basis = b;
@@ -89,6 +103,17 @@ classdef gridLayout < referenceFrame
         gL.basis = [yvector, xvector, -zvector];
       end
 
+    end
+
+    function v = get.basis(gL)
+      v = gL.basis;
+      if isempty(v), v = [xvector,yvector,zvector]; end
+    end
+
+    function set.basis(gL,v)
+      assert(isa(v,'vector3d') && length(v) == 3,...
+        'The basis of a grid layout has to be three vector3d.');
+      gL.basis = reshape(v,1,3);
     end
 
   end

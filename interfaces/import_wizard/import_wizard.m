@@ -1654,8 +1654,8 @@ classdef import_wizard < matlab.apps.AppBase
     function setConventionItems(app, dropDown, names, idx)
       % the eight conventions written in the axes names of the frame -
       % 'Y1↑→X1' where the pictogram below shows Y1 and X1, and the plain
-      % 'y↑→x' for the canonical frame. referenceFrame/conventionChar is
-      % what writes a convention that way everywhere else in MTEX.
+      % 'y↑→x' for the canonical frame. conventionChar is what writes a
+      % convention that way everywhere else in MTEX.
       %
       % The frame is constructed rather than looked up on purpose: a named
       % factory would hand out the registered session instance, and this

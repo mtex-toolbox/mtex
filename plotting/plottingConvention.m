@@ -354,7 +354,7 @@ classdef plottingConvention
       % {west, east, north, south, intoScreen, outOfScreen}
       %
       % Everything that prints a convention - <plottingConvention.char>,
-      % <referenceFrame.conventionChar>, <crystalFrame.conventionChar> -
+      % <conventionChar>, <crystalFrame.conventionChar> -
       % takes its symbols from here, so the UTF8Output preference reaches
       % all of them. The ASCII forms are the ones str2rot parses back, so
       % a printed convention can always be pasted into the constructor.
