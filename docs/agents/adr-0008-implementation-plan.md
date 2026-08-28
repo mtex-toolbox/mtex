@@ -431,10 +431,14 @@ Landed so far:
   written inside a class method never goes through `subsasgn` — so MTEX's own bookkeeping
   neither warns nor pays the 40 microseconds that reading the stack costs.
 - `b31f6d0ee` — `crystalFrame` takes the whole `crystalSymmetry` syntax.
+- `eb95a2d4f` — `specimenFrame` takes the whole `specimenSymmetry` syntax. The two meet in
+  the first argument, so a string is a point group when it **names one exactly** and the
+  frame's name otherwise — exactly, because `findsymmetry` also matches a substring and
+  `specimenFrame.measurement` would have become the point group `m`.
 
-Left to do: the same absorption for `specimenFrame`, the sweep (642 `crystalSymmetry(`, 110
-`specimenSymmetry(`, 10 `notIndexed(` across source, tests and `doc/`), then the three
-tombstones and the proof that `data/testgrains.mat` comes back with its five phases.
+Left to do: the sweep (642 `crystalSymmetry(`, 110 `specimenSymmetry(`, 10 `notIndexed(`
+across source, tests and `doc/`), then the three tombstones and the proof that
+`data/testgrains.mat` comes back with its five phases.
 
 ### 10 — outer ring
 
