@@ -62,7 +62,9 @@ dParent = Miller({-1 0 1},{0 1 -1},{1 -1 0},csParent);
 rot2p1 = orientation.map(nParent(1),nParent, ...
   dParent(1),Miller({-1 0 1},{1 0 -1},{0 -1 1},{-1 1 0},csParent));
 
-p2cp1 = p2cV .* rot2p1(packetId);
+% rot2p1 is a row, so indexing it with the column packetId keeps a row and
+% the product would broadcast to 24 x 24 rather than pair the two up
+p2cp1 = p2cV .* reshape(rot2p1(packetId),size(packetId));
 
 % step 3
 % determine lathId in packet 1
