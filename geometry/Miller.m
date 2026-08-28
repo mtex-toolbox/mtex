@@ -3,8 +3,9 @@ function m = Miller(varargin)
 %
 % A crystal direction is a <vector3d.vector3d.html vector3d> written in a
 % <crystalFrame.crystalFrame.html crystalFrame>: it has the Miller indices
-% hkl and uvw, a d-spacing, and it stands for its whole symmetrically
-% equivalent set. Internally it is stored in Euclidean coordinates.
+% hkl and uvw, a d-spacing, and where that frame carries a point group it
+% stands for its whole symmetrically equivalent set. Internally it is stored
+% in Euclidean coordinates.
 %
 % Syntax
 %   m = Miller(h,k,l,cs)
@@ -12,8 +13,10 @@ function m = Miller(varargin)
 %   m = Miller(u,v,w,cs,'uvw')
 %   m = Miller(U,V,T,W,cs,'UVTW')
 %   m = Miller({h1 k1 l1},{h2 k2 l2},{h3 k3 l3},cs) % list of indices
-%   m = Miller('(hkl)',cs)
-%   m = Miller('[uvw]',cs)
+%   m = Miller('(hkl)',cs)   % one lattice plane
+%   m = Miller('{hkl}',cs)   % all planes symmetrically equivalent to it
+%   m = Miller('[uvw]',cs)   % one crystal direction
+%   m = Miller('<uvw>',cs)   % all directions symmetrically equivalent to it
 %   m = Miller('[uvw]\[uvw],cs)
 %   m = Miller('(hkl)\(hkl),cs)
 %   m = Miller(x,cs)
@@ -80,7 +83,11 @@ m.dispStyle = get_flag(varargin,{'uvw','UVTW','hkl','hkil','xyz'},dS);
 
 if ischar(varargin{1})
 
-  m = s2v(varargin{1},m);
+  [m,isSingle] = s2v(varargin{1},m);
+
+  % (hkl) and [uvw] stand for themselves, so what they get is the frame with
+  % no group in it - the lattice stays, the claim on the whole set goes
+  if isSingle, m.framePrivate = stripSym(fr); end
 
 elseif iscell(varargin{1}) && ~isempty(varargin{1}) % list of Miller indices
 

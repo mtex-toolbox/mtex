@@ -82,6 +82,23 @@ m = Miller('{110}',cs);
 assert(m.dispStyle == MillerConvention.hkl, ...
   'check_Miller: {110} did not parse as a plane normal')
 
+% the other half of the pair says how many directions are meant
+for form = {'(100)','[100]'}
+  m = Miller(form{1},cs);
+  assert(m.CS.id == 1 && isscalar(symmetrise(m)), ...
+    'check_Miller: %s is a single direction, but carries %s', ...
+    form{1}, m.CS.pointGroup)
+end
+
+for form = {'{100}','<100>'}
+  m = Miller(form{1},cs);
+  assert(m.CS.id == cs.id && numel(symmetrise(m)) == numSym(cs), ...
+    'check_Miller: %s is a family, but carries %s',form{1},m.CS.pointGroup)
+end
+
+% the lattice survives the dropped group, so the indices still read back
+assertParallel(Miller('(110)',cs),Miller(1,1,0,cs),'(110) against Miller(1,1,0)')
+
 end
 
 % =========================================================================

@@ -1,4 +1,4 @@
-function m = s2v(s,m)
+function [m,isSingle] = s2v(s,m)
   %'[uvw]'  '<uvw>'
   %'(hkl)'  '{hkl}'
   %'[u1v1w1]\[u2v2w2]->'(hkl)'  a.k. zonen gleichung
@@ -11,16 +11,18 @@ try
   braces  = regexp(s,token,'split');
   indices = regexp(s,token,'match');
 
-  % both direct brackets say uvw, both reciprocal ones hkl - which of a pair
-  % is written says whether the set or one of it is meant, and the point
-  % group decides that
+  % both direct brackets say uvw, both reciprocal ones hkl
   isuvw = false;
   if ~mod(numel(braces),2)
     s1 = strcmp('[',braces) | strcmp('<',braces);
     s2 = strcmp(']',braces) | strcmp('>',braces);
     isuvw = all(s1(1:2:end) == 1 & s2(2:2:end) == 1);
   end
-      
+
+  % {hkl} and <uvw> name the whole symmetrically equivalent set, (hkl) and
+  % [uvw] a single direction - written with no bracket at all it is the set
+  isSingle = any(strcmp('(',braces) | strcmp('[',braces));
+
   if  numel(indices)>2
     d = cross(i(indices{1}),i(indices{3}));
     isuvw = ~isuvw;
