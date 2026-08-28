@@ -196,7 +196,12 @@ classdef crystalSymmetry < symmetry & phaseItem
       s.color = get_option(varargin,'color','');
 
       % the reference frame carries the axes, the mineral doubles as its identity
-      if ~frameAdopted, fr.name = s.mineral; end
+      if ~frameAdopted
+        fr.name = s.mineral;
+        % and the group, which this class still holds a second copy of. An
+        % adopted frame states its own and must not be overwritten
+        fr.sym = symmetry(id,rot);
+      end
       s.frame = fr;
 
       if check_option(varargin,'density')

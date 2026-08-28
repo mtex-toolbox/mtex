@@ -33,8 +33,53 @@ checkHemisphereSectorHue;
 checkProductDropsSymmetry;
 checkPlotS2GridFrame;
 checkSchmidFactorFrames;
+checkFrameGroup;
 
 disp('check_referenceFrame: passed');
+
+end
+
+% =========================================================================
+function checkFrameGroup
+% a frame carries the point group its axes are written in, and hands out
+% the siblings that differ from it only in that group (ADR 0008 rules 1, 7)
+
+cs = crystalSymmetry('432',[4.05 4.05 4.05],'mineral','Aluminium');
+fr = cs.frame;
+
+assert(fr.sym.id == cs.id, ...
+  'check_referenceFrame: the frame does not carry the group of its symmetry');
+assert(all(isappr(abs(dot(fr.sym.rot(:),cs.rot(:))),1)), ...
+  'check_referenceFrame: the frame carries different group elements');
+assert(strcmp(fr.sym.name,'432'), ...
+  'check_referenceFrame: a group is not named by its international symbol');
+
+% the group of a trigonal or monoclinic cell depends on where a and c
+% point, so a frame built from lattice parameters alone still gets it
+bare = crystalFrame([2.95 2.95 4.68],'pointId',40);
+assert(bare.sym.id == 40 && numSym(bare.sym) == 24, ...
+  'check_referenceFrame: a crystalFrame does not build the group of its pointId');
+
+% the Laue sibling is a different frame with the same basis and name
+L = fr.Laue;
+assert(L ~= fr,'check_referenceFrame: the Laue sibling is the frame itself');
+assert(L.sym.id == cs.Laue.id, ...
+  'check_referenceFrame: the Laue sibling carries the wrong group');
+assert(isAligned(L,fr) && strcmp(L.name,fr.name) && isa(L,class(fr)), ...
+  'check_referenceFrame: the Laue sibling differs in more than its group');
+
+% asking twice gives one handle, or the two would not compare
+assert(fr.Laue == L,'check_referenceFrame: the Laue sibling is not stable');
+assert(L.Laue == L,'check_referenceFrame: the Laue of a Laue frame is not itself');
+
+% a frame already carrying that group is its own sibling
+csL = crystalSymmetry('m-3m',[4.05 4.05 4.05],'mineral','Aluminium');
+assert(csL.frame.Laue == csL.frame, ...
+  'check_referenceFrame: a Laue frame does not answer itself');
+assert(csL.frame.properGroup.sym.id == cs.id, ...
+  'check_referenceFrame: the proper sibling of m-3m is not 432');
+assert(fr.properGroup == fr, ...
+  'check_referenceFrame: a proper group frame does not answer itself');
 
 end
 

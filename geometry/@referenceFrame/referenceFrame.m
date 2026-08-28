@@ -34,11 +34,22 @@ classdef referenceFrame < matlab.mixin.Copyable
     basis = []
     axesNames = {'X','Y','Z'}  % names of the three basis axes
     how2plot = []  % default plottingConvention (a value)
+    sym = symmetry % the point group this frame carries
   end
 
   properties (Dependent = true)
     % the default pole figure annotation of this frame, e.g. RD, TD, ND
     pfAnnotations
+
+    % the sibling frames - this frame with a different group in it, see
+    % rule 7 of docs/adr/0008-frames-carry-symmetry.md
+    Laue        % the sibling carrying the Laue group
+    properGroup % the sibling carrying the proper rotation group
+  end
+
+  properties (Access = protected)
+    LaueRef = []
+    properRef = []
   end
 
   properties (Constant, Hidden)
@@ -84,6 +95,16 @@ classdef referenceFrame < matlab.mixin.Copyable
       rf.how2plot = pC;
     end
 
+    function fr = get.Laue(rf)
+      if isempty(rf.LaueRef), rf.LaueRef = sibling(rf,Laue(rf.sym)); end
+      fr = rf.LaueRef;
+    end
+
+    function fr = get.properGroup(rf)
+      if isempty(rf.properRef), rf.properRef = sibling(rf,properGroup(rf.sym)); end
+      fr = rf.properRef;
+    end
+
     function f = get.pfAnnotations(rf)
       % a frame may name fewer axes than it has - annotate only the named ones
       names = rf.axesNames;
@@ -91,6 +112,24 @@ classdef referenceFrame < matlab.mixin.Copyable
       b = b(1:numel(names));
       f = @(varargin) text(b,names,...
         'BackgroundColor','w','tag','axesLabels',varargin{:});
+    end
+
+    function fr = sibling(rf,s)
+      % this frame with s in it instead of its own group
+      %
+      % The basis and the identity are the same, so the two are the pair
+      % rule 7 calls siblings. Minted here and cached on the frame it came
+      % from, so asking twice gives one handle and the two stay comparable
+      % - which is what the register takes over once its key carries the
+      % group.
+
+      if s.id == rf.sym.id, fr = rf; return; end
+
+      fr = copy(rf);
+      fr.sym = s;
+      fr.LaueRef = [];
+      fr.properRef = [];
+
     end
 
     function c = char(rf)

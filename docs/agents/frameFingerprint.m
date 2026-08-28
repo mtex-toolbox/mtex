@@ -62,7 +62,7 @@ for k = 1:numel(names)
   fpProbe([p '.numProper'],@() numProper(s));
   fpProbe([p '.isLaue'],@() double(isLaue(s)));
   fpProbe([p '.isProper'],@() double(isProper(s)));
-  fpProbe([p '.multiplicityZ'],@() multiplicityZ(s));
+  fpProbe([p '.multiplicityZ'],@() s.multiplicityZ);
   fpProbe([p '.multiplicityPerpZ'],@() s.multiplicityPerpZ);
   fpProbe([p '.nfold'],@() nfold(s));
   fpProbe([p '.maxAngle'],@() maxAngle(s)./degree);
@@ -151,6 +151,7 @@ for k = 1:numel(names)
     fpProbe([q '.eqTol'],@() double(eqTol(s,o)));
     fpProbe([q '.sim'],@() double(sim(s,o)));
     fpProbe([q '.id'],@() [o.id,o.Laue.id,numSym(o)]);
+    fpProbe([q '.multiplicity'],@() [o.multiplicityZ,o.multiplicityPerpZ]);
   end
 end
 

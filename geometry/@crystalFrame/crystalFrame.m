@@ -71,6 +71,12 @@ classdef crystalFrame < referenceFrame
       cF = cF@referenceFrame(varargin{:});
       cF.axesNames = get_option(varargin,'axesNames',{'a','b','c'});
 
+      % the group is written in these axes, so the frame states it - the
+      % elements of a trigonal or monoclinic group depend on where a and c
+      % point, which is this frame's business and not the group's
+      id = get_option(varargin,'pointId',1);
+      if id ~= 1, cF.sym = symmetry(id,symmetry.calcQuat(id,cF.basis)); end
+
     end
 
     function abc = get.abc(cF)

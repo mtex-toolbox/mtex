@@ -1,21 +1,40 @@
 classdef symmetry < matlab.mixin.Copyable
 %
-% symmetry is an abstract class for crystal and specimen symmetries
+% a point group - the symmetry elements and the id that names them
+%
+% A group says nothing about where it acts. Which coordinate system its
+% elements are written in, and whether that system is a crystal or a
+% specimen, is the business of the @referenceFrame that carries the group,
+% see docs/adr/0008-frames-carry-symmetry.md.
+%
+% Class Properties
+%  id         - point group id, compare to symmetry.pointGroups
+%  rot        - the symmetry elements as @rotation
+%  name       - international symbol of the point group
+%  lattice    - the lattice type the group implies
 %
 % Derived Classes
-%  @crystalSymmetry - 
-%  @specimenSymmetry - 
+%  @crystalSymmetry -
+%  @specimenSymmetry -
+%
+% See also
+% referenceFrame crystalSymmetry specimenSymmetry
 %
 
   properties %(SetAccess = immutable)
-    id = 1;               % point group id, compare to symList    
+    id = 1;               % point group id, compare to symList
     rot = rotation.id     % the symmetry elements
   end
-  
+
   properties
+    % the order of the symmetry axis along Z, and the highest order of an
+    % axis perpendicular to it. Both follow from rot and are computed with
+    % it, since a group does not change after it is built and the Wigner
+    % transform asks for them once per call
+    multiplicityZ = 1
     multiplicityPerpZ = 1
   end
-  
+
   properties
     opt = struct
     frame = []       % the referenceFrame this symmetry is attached to
@@ -25,10 +44,11 @@ classdef symmetry < matlab.mixin.Copyable
   properties (Dependent = true)
     lattice          % type of crystal lattice
     pointGroup       % point group name
+    name             % international symbol of the point group
     how2plot         % plotting convention - read only
     % a convention belongs to a reference frame, see plottingConvention.default
   end
-  
+
   properties (Access = protected)
     LaueRef = []
     properRef = []
@@ -38,28 +58,19 @@ classdef symmetry < matlab.mixin.Copyable
     % cache for stripSym: the trivial stand-in must be a stable handle, since
     % crystalSymmetry equality is sealed to handle identity - never saved
     stripSymRef = []
-
-    % cache for multiplicityZ: computing it builds the axes of the whole
-    % group, and the Wigner transform asks for it on every single call.
-    % Cleared by set.rot, since the multiplicity follows the group elements
-    multiplicityZRef = []
   end
-    
+
   properties (Constant = true)
     pointGroups = pointGroupList % list of all point groups
   end
 
-  % this is an abstract class
-  methods (Abstract = true)
-    display(s)
-    dispLine(s)
-  end
-  
   methods
-       
+
     function s = symmetry(id,rot,pC)
       % constructor
-      
+
+      if nargin == 0, return; end
+
       s.id = id;
       if ~isempty(rot), s.rot = rot; end
 
@@ -68,23 +79,14 @@ classdef symmetry < matlab.mixin.Copyable
         s.frame = specimenSymmetry.frameFor(pC);
       end
 
-      if s.id == 1, return; end
-        
-      isPerpZ = isnull(dot(rot.axis,zvector),1e-4) & ~isnull(rot.angle,1e-4);
-
-      if any(isPerpZ(:))
-        s.multiplicityPerpZ = round(2*pi/min(abs(angle(rot(isPerpZ)))));
-      else
-        s.multiplicityPerpZ = 1;
-      end
-
     end
-    
-    
+
+
     function s = set.rot(s,rot)
-      % replacing the group elements invalidates everything derived from them
+      % everything derived from the group elements is computed with them
       s.rot = rot;
-      s.multiplicityZRef = [];
+      s.multiplicityZ = axisOrder(rot,true);
+      s.multiplicityPerpZ = axisOrder(rot,false);
     end
 
 
@@ -118,6 +120,13 @@ classdef symmetry < matlab.mixin.Copyable
       else
         pg = 'unknown';
       end
+    end
+
+    function n = get.name(sym)
+      % a group is named by its international symbol, the way a frame is
+      % named by its mineral - so frame.name and frame.sym.name are the
+      % phase and the group side by side
+      n = sym.pointGroup;
     end
         
     function lattice = get.lattice(sym)
@@ -365,3 +374,23 @@ list = { 1,    '1';
 end
 
 
+
+% ---------------------------------------------------------------
+
+function n = axisOrder(rot,alongZ)
+% the order of the highest symmetry axis parallel or perpendicular to Z
+
+d = dot(rot.axis,zvector);
+if alongZ
+  sel = isnull(1-abs(d)) & ~isnull(rot.angle);
+else
+  sel = isnull(d,1e-4) & ~isnull(rot.angle,1e-4);
+end
+
+if any(sel(:))
+  n = round(2*pi/min(abs(angle(rot(sel)))));
+else
+  n = 1;
+end
+
+end
