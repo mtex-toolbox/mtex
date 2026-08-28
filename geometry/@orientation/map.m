@@ -45,8 +45,10 @@ varargin(args) = [];
    
 ori = orientation(rotation.map(varargin{:}));
         
+% a direction naming one plane is written group-free, and the orientation it
+% defines still belongs to the phase - ask the register for the group back
 if isCrystalDirection(varargin{1})
-  ori.CS = varargin{1}.CS; 
+  ori.CS = fullSym(varargin{1}.CS);
   if ~isempty(sym), ori.SS = sym{1}; end
 else
   if ~isempty(sym)
@@ -58,7 +60,7 @@ else
 end
 
 if isCrystalDirection(varargin{2})
-  ori.SS = varargin{2}.CS;
+  ori.SS = fullSym(varargin{2}.CS);
 elseif isa(varargin{2}.frame,'specimenFrame')
   % the input states a specimen frame - the result is expressed in it, in
   % the group the orientation already claims

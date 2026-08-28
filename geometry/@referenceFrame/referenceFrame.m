@@ -385,7 +385,7 @@ classdef (Abstract) referenceFrame < handle & matlab.mixin.Heterogeneous
 
     end
 
-    function rf = intern(rf)
+    function rf = intern(rf,varargin)
       % the session instance of this frame, which is this one when it is new
       %
       % Frame identity is provenance (ADR 0008 rule 2): two constructions
@@ -396,9 +396,10 @@ classdef (Abstract) referenceFrame < handle & matlab.mixin.Heterogeneous
       %
       % Syntax
       %   rf = referenceFrame.intern(rf)
+      %   frs = referenceFrame.intern(rf,'-siblings-')
       %
       % See also
-      % referenceFrame/byName referenceFrame/reintern
+      % referenceFrame/byName referenceFrame/reintern referenceFrame/fullSym
 
       persistent store
 
@@ -406,6 +407,16 @@ classdef (Abstract) referenceFrame < handle & matlab.mixin.Heterogeneous
 
       if ischar(rf) && strcmp(rf,'-reset-')
         store = {}; rf = []; return
+      end
+
+      % the registered frames that differ from this one in their group alone
+      if nargin > 1 && ischar(varargin{1}) && strcmp(varargin{1},'-siblings-')
+        keep = false(1,numel(store));
+        for k = 1:numel(store)
+          keep(k) = sameBasis(store{k},rf);
+        end
+        rf = store(keep);
+        return
       end
 
       for k = 1:numel(store)
