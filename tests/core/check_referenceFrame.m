@@ -36,6 +36,7 @@ checkSchmidFactorFrames;
 checkFrameGroup;
 checkFrameTransitionRule;
 checkTensorGroupAfterRotation;
+checkFrameAssignedNote;
 
 disp('check_referenceFrame: passed');
 
@@ -1557,4 +1558,58 @@ assert(rotate(C,rotation.byAxisAngle(vector3d(1,2,3),20*degree)).frame.id == 1, 
 assert(symmetrise(C).frame == cs, ...
   'check_referenceFrame: symmetrise must keep the group it symmetrised under');
 
+end
+
+% =========================================================================
+function checkFrameAssignedNote
+% assigning a frame tells the line that wrote it, once, and says nothing
+% while MTEX assigns frames during its own bookkeeping
+%
+% The note is about the caller, so it can only be provoked from a file
+% outside the MTEX install - which is what the temporary function is for.
+
+cs = crystalSymmetry('m-3m');
+ori = orientation.rand(cs);
+
+d = fullfile(tempdir,'mtexFrameNoteProbe');
+if ~isfolder(d), mkdir(d); end
+fid = fopen(fullfile(d,'frameNoteProbe.m'),'w');
+fprintf(fid,'%s\n',...
+  'function o = frameNoteProbe(o,cs)','for k = 1:3','  o.CS = cs;','end','end');
+fclose(fid);
+addpath(d); rehash path
+cleanUp = onCleanup(@() cleanProbe(d));
+
+state = warning('on','MTEX:orientation:frameAssigned');
+mtexWarnOnce('-reset-');
+
+% evalc so the note the probe provokes does not land in the test output
+lastwarn('');
+evalc('ori = frameNoteProbe(ori,cs);');
+[~,first] = lastwarn;
+
+lastwarn('');
+evalc('ori = frameNoteProbe(ori,cs);');
+[~,again] = lastwarn;
+
+% MTEX writing frames of its own says nothing, whoever called it
+lastwarn('');
+o2 = orientation.rand(10,cs);
+r = rotate(Miller(1,0,0,cs),o2); %#ok<NASGU>
+[~,internal] = lastwarn;
+
+warning(state);
+
+assert(strcmp(first,'MTEX:orientation:frameAssigned'), ...
+  'check_referenceFrame: assigning a frame from a user file said nothing');
+assert(isempty(again), ...
+  'check_referenceFrame: the frame note repeated at a site it had already told');
+assert(isempty(internal), ...
+  'check_referenceFrame: MTEX assigning its own frames raised the note');
+
+end
+
+function cleanProbe(d)
+rmpath(d);
+delete(fullfile(d,'frameNoteProbe.m'));
 end
