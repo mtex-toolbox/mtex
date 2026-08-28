@@ -314,9 +314,6 @@ are gone, since the frame is the property now.
 
 Left open, each in the increment that owns it:
 
-- rotating a **tensor** by a plain rotation keeps the frame it was written in, group and
-  all, where the rotated tensor is invariant under the rotated group — increment 8, with
-  the rest of `transformReferenceFrame`.
 - the `doc/` pages still describe `S2FunHarmonicSym` as a class — increment 10.
 - a saved `.mat` holding an `S2FunHarmonicSym`, a stored `SLeft`/`SRight`, or a stored
   tensor `CS` no longer loads into the property it came from — increment 9, together with
@@ -366,6 +363,30 @@ The verb gains an explicit rule (`byScreenAlignment` / `byAxes` / components) an
 larger-group case of the same transform. Existing implementations to extend:
 `TensorAnalysis/@tensor`, `SO3Fun/@SO3Fun`, `geometry/@orientation`, `geometry/@Miller`,
 `EBSDAnalysis/@mapImage`, `@EBSDsquare`, `@EBSDhex`.
+
+Done in one commit. **`@mapImage` already had the rule**, grown while raster images were
+being made comparable, so the increment was to lift its three ways into
+`geometry/geometry_tools/frameTransition.m` and put `vector3d`, `orientation`, `tensor` and
+`SO3Fun` through it: an orientation given outright, `'byScreenAlignment'`, or the bases.
+Ralf's call was that reading the bases stays the default, so no existing call changes and
+`'tolerance'` simply reaches the reading.
+
+`orientation.align(frA,frB)` is that reading under a name — the geometric sibling of
+`byScreenAlignment` and the rotation the verb applies. It **errors** where the two frames
+are not related by a rotation at all, at `referenceFrame.tolCompatible`, which is the
+tolerance `ensureCS` already decides transformability by; the orientation method used to
+warn about the same thing after applying the matrix anyway.
+
+**A tensor turned by anything but an element of its own group now drops the claim** —
+`rotate` and `rotate_outer` write the group free sibling. That is increment 6's open item,
+and Ralf's call over deriving the invariance from the coefficients. The membership test
+costs `numSym` comparisons and is skipped for lists longer than the group, where the caller
+is turning a tensor into the orientations of a map and the answer is always to drop it.
+`symmetrise` and `checkSymmetry` rotate by the group's own elements and are untouched.
+
+`symmetrise` keeps its own name and signature — Ralf's call. What it shares with the
+transform is that both are stated in frames and their groups, not that one is a case of the
+other; a transform never changes how many elements there are.
 
 ### 9 — compatibility
 
