@@ -101,11 +101,14 @@ if nargin >= 2 && isa(varargin{1},'orientation')
 
 else
 
-  % crystal symmetry specified -> apply it
+  % the axis is only reduced by the rotations both groups have in common,
+  % and an improper element conjugates like its proper part - a frame given
+  % here says which lattice to read the axis in, not which group reduces it
+  dcs = properGroup(disjoint(o1.CS,o1.SS));
   if nargin >= 2 && isa(varargin{1},'crystalFrame')
-    cs = varargin{1};
-  else  % no symmetry specified - take the disjoint
-    cs = properGroup(disjoint(o1.CS,o1.SS));
+    cs = sibling(varargin{1},dcs.sym);
+  else
+    cs = dcs;
   end
   if o1.antipodal, cs = cs.Laue; end
   
