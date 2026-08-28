@@ -74,7 +74,7 @@ function W = wbvIntegral(ebsd,varargin)
   fY([1 end],end) = 0.5;
   fX = -fY.';
 
-  W = Miller.nan(size(ebsd),ebsd.CS);
+  W = Miller(vector3d.nan(size(ebsd)),ebsd.CS);
   W.x = filter2(fX,oriX.x) + filter2(fY,oriY.x);
   W.y = filter2(fX,oriX.y) + filter2(fY,oriY.y);
   W.z = filter2(fX,oriX.z) + filter2(fY,oriY.z);

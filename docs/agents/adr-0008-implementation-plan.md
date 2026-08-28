@@ -72,7 +72,7 @@ The facade decided above means red is scoped to the carrier being converted, nev
 | 2B | `crystalSymmetry`/`specimenSymmetry` become functions returning frames | red: the flip |
 | 3 | interning on the full key, immutability, colour rule | **done**, `591a9380e` `1d2d9774a` |
 | 4 | `orientation`/`rotation` — `CS`/`SS` return frames | **done**, `frameA`/`frameB` |
-| 5 | `vector3d` absorbs `Miller` | the methods moved; the class is constructor and `loadobj` |
+| 5 | `vector3d` absorbs `Miller` | **done**, `668b4a379` `c173b7c80` + the flip |
 | 6 | `S2Fun`, `SO3Fun`, `tensor` | red: function spaces |
 | 7 | phase identity — `phaseItem` absorbed, `CSList` holds frames | red: `EBSDAnalysis/` |
 | 8 | `transformReferenceFrame` takes a rule; `orientation.align` | red shrinking |
@@ -256,9 +256,22 @@ read `q.frameB` and hand back a `vector3d`.
 
 `gridify` returns its `S2Grid` in the crystal frame instead of a `Miller` copy of it.
 
-What is left of the increment: `Miller` becomes a constructor function returning a framed
-`vector3d`, and the replacement for `isa(x,'Miller')` ships with it — 52 sites here plus user
-code, and it fails silently.
+`Miller` is a **constructor function** in `geometry/Miller.m` returning a framed `vector3d`,
+and the 41 `isa(x,'Miller')` guards ask `isCrystalDirection` or `hasSymmetry` instead. The
+class-name lookups went with them: `getClass` takes a predicate, and `argin_check(...,'Miller')`
+became an assert naming the frame.
+
+Three things the flip turned up:
+
+- **Writing `x`, `y` or `z` from outside the class leaves a `vector3d` empty**, because
+  `numArgumentsFromSubscript` is 0 — inside a classdef the same line writes the property
+  directly, which is why the constructor never had to care. The components go through
+  `vector3d(x,y,z)`.
+- **Keeping the input object would keep its class**, so `Miller(log(...),cs)` handed
+  `SO3FunRBF/grad` an `SO3TangentVector` where the class used to flatten it. Every branch
+  builds a plain `vector3d`.
+- **A saved `Miller` no longer loads.** `data/ptx.mat`, `dubna.mat` and `dubnaodf.mat` held
+  them and were deleted, so `mtexdata` re-imports; user `.mat` files wait for increment 9.
 
 ### 6 — function spaces and tensors
 

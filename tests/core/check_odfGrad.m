@@ -32,7 +32,7 @@ checkGrad(unimodalODF(orientation.rand(20,cs1,cs2)), N, 1e-3, 'unimodal');
 % only, which a non trivial specimen symmetry exposes
 cs = crystalSymmetry('432');
 ss = specimenSymmetry('222');
-fibre = fibreODF(Miller.rand(cs),vector3d.rand,ss);
+fibre = fibreODF(Miller(vector3d.rand,cs),vector3d.rand,ss);
 checkGrad(fibre, N, 1e-3, 'fibre');
 checkGrad(fibre, N, 1e-3, 'fibre, right tangent space', 'right');
 

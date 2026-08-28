@@ -14,7 +14,7 @@ function plotVariants(p2c, varargin)
 %
 
 oriParent = getClass(varargin,'orientation',orientation.id(p2c.CS));
-hChild = getClass(varargin,'Miller',Miller({0,0,1},{1,1,0},{1,1,1},p2c.SS,'hkl'));
+hChild = getClass(varargin,@isCrystalDirection,Miller({0,0,1},{1,1,0},{1,1,1},p2c.SS,'hkl'));
 
 % compute variants
 vars = variants(p2c,oriParent,varargin{:});

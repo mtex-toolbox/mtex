@@ -18,7 +18,7 @@ function v = fibreVolume(ori,h,r,radius,varargin)
 % SO3Fun/volume
 
 % check input
-argin_check(h,{'Miller','vector3d'});
+argin_check(h,'vector3d');
 if isCrystalDirection(h)
   h = ori.CS.ensureCS(h);
 else

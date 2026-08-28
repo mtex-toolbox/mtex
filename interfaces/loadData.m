@@ -45,7 +45,7 @@ if ischar(fname)
 end
 
 % get crystal directions
-if ~isempty(varargin) && checkClass(varargin{1},'Miller')
+if ~isempty(varargin) && checkCrystalDirection(varargin{1})
   h = vec2cell(varargin{1});
   varargin = varargin(2:end);
 end
@@ -171,6 +171,17 @@ if iscell(var) && ~isempty(var)
   v = any(cellfun('isclass',var,className));
 else
   v = isa(var,className);
+end
+
+end
+
+% --------------------------------------------------------------
+function v = checkCrystalDirection(var)
+
+if iscell(var) && ~isempty(var)
+  v = any(cellfun(@isCrystalDirection,var));
+else
+  v = isCrystalDirection(var);
 end
 
 

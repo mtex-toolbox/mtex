@@ -1,14 +1,21 @@
 function [out,list] = getClass(list,className,default,varargin)
 % returns the first element of the requested class from a list
-% the class can also be a list of classes
+%
+% The class can also be a list of classes, or a predicate - what an object
+% is rather than which class it is, which is the only way to ask for a
+% crystal direction, see isCrystalDirection.
 
 if nargin == 2, default = [];end
 
-if iscell(className)
-  match = find(cellfun(@(x) isInClasses(x,className),list),1,varargin{:});
+if isa(className,'function_handle')
+  isWanted = className;
+elseif iscell(className)
+  isWanted = @(x) isInClasses(x,className);
 else
-  match = find(cellfun(@(x) isa(x,className),list),1,varargin{:});
+  isWanted = @(x) isa(x,className);
 end
+
+match = find(cellfun(isWanted,list),1,varargin{:});
 
 if isempty(match)
   out = default;
@@ -18,7 +25,7 @@ end
 
 % remove all occurrence of this class in the list
 if nargout > 1
-  list(cellfun(@(x) isa(x,className),list)) = [];
+  list(cellfun(isWanted,list)) = [];
 end
 
 end

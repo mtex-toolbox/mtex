@@ -35,7 +35,7 @@ if strcmp(char(root.getTagName()),'xrdMeasurements')
   
   % check if Miller was supplied
   if length(varargin) >= 1
-     pM = cellfun('isclass', varargin, 'Miller')
+     pM = cellfun(@isCrystalDirection, varargin)
      if any(pM)
      allH = ensurecell(varargin{pM});
      end

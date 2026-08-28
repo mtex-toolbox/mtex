@@ -16,7 +16,7 @@ function k = calcKearnsFactor(pdf,varargin)
 
 % if ODF is provided compute pole figure
 if isa(pdf,'SO3Fun')
-  h = getClass(varargin,'Miller',Miller(0,0,0,1,pdf.CS));
+  h = getClass(varargin,@isCrystalDirection,Miller(0,0,0,1,pdf.CS));
   pdf = pdf.calcPDF(h);
 end
 

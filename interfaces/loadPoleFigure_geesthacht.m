@@ -43,7 +43,7 @@ try
     
   end
   
-  hh = getClass(varargin,'Miller');
+  hh = getClass(varargin,@isCrystalDirection);
   if length(hh) == length(h)
     if iscell(hh)
       h = hh; 

@@ -56,7 +56,7 @@ function [pf,varargin] = loadPoleFigure_generic(fname,varargin)
 % an explicitly given crystal direction wins over the guess from the file
 % name. Take it out of the list as well - Miller is a vector3d, and the
 % specimen directions below are detected by class.
-[h,varargin] = getClass(varargin,'Miller');
+[h,varargin] = getClass(varargin,@isCrystalDirection);
 
 % load data
 [d,varargin,header,columns] = load_generic(fname,varargin{:});

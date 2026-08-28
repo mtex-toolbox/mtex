@@ -32,7 +32,8 @@ if ~iscell(h), h = vec2cell(h);end
 % ensure crystal symmetry - check the entries one by one, superposed pole
 % figures give cells of different length that can not be concatenated
 for i = 1:length(h)
-  argin_check(h{i},'Miller');
+  assert(isCrystalDirection(h{i}),...
+    'The pole figure directions have to be given in a crystal frame.');
   h{i} = odf.CS.ensureCS(h{i});
 end
 

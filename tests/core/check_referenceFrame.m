@@ -490,22 +490,22 @@ p = S2FunHarmonic(sFs);
 assert(p.frame == cs && p.how2plot == cs.how2plot, ...
   'check_referenceFrame: the cast to S2FunHarmonic lost the crystal frame');
 
-% extrema come back in the frame of the function, as Miller for a crystal frame
+% extrema come back in the frame of the function, with indices for a crystal frame
 [~,pos] = max(sFs);
-assert(isa(pos,'Miller') && pos.CS == cs, ...
-  'check_referenceFrame: extrema of a symmetrised S2Fun are not Miller');
+assert(isCrystalDirection(pos) && pos.CS == cs, ...
+  'check_referenceFrame: extrema of a symmetrised S2Fun are not crystal directions');
 
 % an unsymmetrised function claims no symmetry, so its extrema come back on
 % the group-stripped sibling of the frame - rule 9 of ADR 0008
 [~,pos] = max(p);
-assert(isa(pos,'Miller') && pos.CS.id == 1 && pos.CS == stripSym(cs), ...
+assert(isCrystalDirection(pos) && pos.CS.id == 1 && pos.CS == stripSym(cs), ...
   ['check_referenceFrame: extrema of a plain crystal-framed S2Fun must be ' ...
-  'Miller on the group-stripped sibling of that frame']);
+  'written on the group-stripped sibling of that frame']);
 
 v = p.discreteSample(5);
-assert(isa(v,'Miller') && v.CS.id == 1 && v.CS == stripSym(cs), ...
+assert(isCrystalDirection(v) && v.CS.id == 1 && v.CS == stripSym(cs), ...
   ['check_referenceFrame: a sample of a plain crystal-framed S2Fun must be ' ...
-  'Miller on the group-stripped sibling of that frame']);
+  'written on the group-stripped sibling of that frame']);
 
 end
 
@@ -603,10 +603,10 @@ r2 = rotate(transformReferenceFrame(m,csB),oriB);
 assert(all(norm(r1 - r2) < 1e-8), ...
   'check_referenceFrame: the absorbed frame transition disagrees with transformReferenceFrame');
 
-% slipSystem rotates componentwise through Miller and inherits the rules
+% slipSystem rotates its directions componentwise and inherits the rules
 sS = slipSystem.fcc(cs);
 sSr = rotate(sS,orientation.rand(cs));
-assert(~isa(sSr.b,'Miller') && sSr.b.frame == specimenFrame.default, ...
+assert(~isCrystalDirection(sSr.b) && sSr.b.frame == specimenFrame.default, ...
   'check_referenceFrame: a rotated slip system must land in the specimen frame');
 
 % a crystal frame never fits a specimen frame - a wrong sided rotation
@@ -1401,11 +1401,11 @@ function checkSchmidFactorFrames
 % slipSystem/SchmidFactor warns exactly when the slip systems and the
 % stress state live in different reference frames
 %
-% The guard used to test isa(n,'Miller') only, so it caught a specimen
-% stress tensor against crystal slip systems but was silent the other way
-% round: rotating the systems (ori * sS) drops the Miller index, and a
-% crystal frame tensor then went through unnoticed and returned a Schmid
-% factor computed across two frames. The tension direction branch had no
+% The guard used to ask for a crystal direction on one side only, so it
+% caught a specimen stress tensor against crystal slip systems but was
+% silent the other way round: rotating the systems (ori * sS) takes them
+% into the specimen frame, and a crystal frame tensor then went through
+% unnoticed and returned a Schmid factor computed across two frames. The tension direction branch had no
 % check at all, so the same computation warned or not depending on whether
 % it was written as a direction or as a uniaxial tensor.
 %
@@ -1418,9 +1418,9 @@ referenceFrame.reset;
 cs = crystalSymmetry('m-3m');
 sS = slipSystem.fcc(cs);          % crystal frame
 ori = orientation.byEuler(20*degree,30*degree,40*degree,cs);
-sSr = ori * sS;                   % specimen frame - no longer Miller
-assert(~isa(sSr.n,'Miller'), ...
-  'check_referenceFrame: rotating slip systems is expected to drop the Miller index');
+sSr = ori * sS;                   % specimen frame - no longer indexed
+assert(~isCrystalDirection(sSr.n), ...
+  'check_referenceFrame: rotating slip systems is expected to leave the crystal frame');
 
 sigmaS = stressTensor.uniaxial(vector3d.Z);   % specimen frame
 sigmaC = rotate(sigmaS,inv(ori));             % crystal frame

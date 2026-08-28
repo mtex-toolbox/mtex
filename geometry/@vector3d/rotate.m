@@ -75,8 +75,6 @@ if isa(q,'orientation')
   else
 
     % leaving the crystal frame the direction is no longer written in indices
-    if isa(v,'Miller'), v = vector3d(v); end
-    v.frame = q.frameB;
     v.dispStyle = MillerConvention.xyz;
 
   end

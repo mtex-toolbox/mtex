@@ -31,7 +31,7 @@ if isa(h,'fibre')
 end
 
 % check input
-argin_check(h,{'Miller','vector3d'});
+argin_check(h,'vector3d');
 if isCrystalDirection(h), h = odf.CS.ensureCS(h);end
 argin_check(r,'vector3d');
 argin_check(radius,'double');

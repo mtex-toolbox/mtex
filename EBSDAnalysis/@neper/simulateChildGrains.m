@@ -28,7 +28,7 @@ odfParent = getClass(varargin,'SO3Fun');
 oriP = discreteSample(odfParent,numParents);
 
 % habit plane
-habitPlane = getClass(varargin,'Miller',Miller(1,1,1,p2c.CS));
+habitPlane = getClass(varargin,@isCrystalDirection,Miller(1,1,1,p2c.CS));
 
 % compute habit planes from parent orientations
 nA = oriP .* habitPlane.normalize;

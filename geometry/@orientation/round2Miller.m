@@ -70,8 +70,8 @@ end
 
 % maybe more then one orientation should be transformed
 if length(mori) > 1
-  n1 = Miller.nan(size(mori),mori.CS); d1 = n1;
-  n2 = Miller.nan(size(mori),mori.SS); d2 = n2;
+  n1 = Miller(vector3d.nan(size(mori)),mori.CS); d1 = n1;
+  n2 = Miller(vector3d.nan(size(mori)),mori.SS); d2 = n2;
   d1.dispStyle = MillerConvention(-MillerConvention(n1.dispStyle));
   d2.dispStyle = MillerConvention(-MillerConvention(n2.dispStyle));
 

@@ -23,7 +23,7 @@ function S2G = neuralgas(odf,h,varargin)
 
 
 argin_check(odf,'ODF');
-argin_check(h,'Miller');
+assert(isCrystalDirection(h),'The direction has to be given in a crystal frame.');
 
 if length(h)>1, warning('only perceeding with first Miller indice'), end
 

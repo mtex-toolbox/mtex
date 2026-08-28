@@ -91,8 +91,9 @@ else
   h = {h};
 end
 
-% all h should by Miller and have the right symmetry
-argin_check([h{:}],{'Miller'});
+% all h have to be crystal directions and have the right symmetry
+assert(all(cellfun(@isCrystalDirection,h)),...
+  'The pole figure directions have to be given in a crystal frame.');
 for i = 1:length(h), h{i} = ori.CS.ensureCS(h{i}); end
 
 if isNew

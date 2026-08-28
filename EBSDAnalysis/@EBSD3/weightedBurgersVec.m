@@ -46,7 +46,7 @@ if check_option(varargin,'integral') % the integral method
   fY = repmat([-1 zeros(1,2*wS-1) 1],1+2*wS,1);
   fX = -fY.';
 
-  W = Miller.nan(size(ebsd),ebsd.CS);
+  W = Miller(vector3d.nan(size(ebsd)),ebsd.CS);
   W.x = filter2(fX,oriX.x) + filter2(fY,oriY.x);
   W.y = filter2(fX,oriX.y) + filter2(fY,oriY.y);
   W.z = filter2(fX,oriX.z) + filter2(fY,oriY.z);
