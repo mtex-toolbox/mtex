@@ -29,8 +29,8 @@ classdef tensor < dynOption
 % Class Properties
 %  M                - the tensor coefficients
 %  rank             - tensor rank
-%  CS               - @symmetry the coefficients refer to
-%  frame            - @referenceFrame the tensor is expressed in
+%  frame            - @referenceFrame the coefficients refer to
+%  CS               - that frame, under its older name
 %  how2plot         - @plottingConvention, read only
 %  doubleConvention - Voigt convention of a rank 4 tensor
 %  isSymmetric      - is the tensor symmetric
@@ -57,20 +57,21 @@ classdef tensor < dynOption
   properties
     M = []        % the tensor coefficients
     rank = 0      % tensor rank
-    CS = specimenFrame.default % reference system an crystal symmetry
     doubleConvention = false %
   end
 
   properties (Hidden = true)
-    % the referenceFrame of this tensor, empty means follow the one of CS
-    % - see get.frame; only frames carry plotting conventions
-    framePrivate = []
+    % the referenceFrame the coefficients refer to - the one frame a tensor
+    % has, carrying the group it is invariant under and the convention it
+    % is drawn in
+    framePrivate = specimenFrame.default
   end
 
   properties (Dependent = true)
     isSymmetric
     isSkewSymmetric
     frame    % the referenceFrame this tensor is expressed in
+    CS       % that frame, under the name the reference system had
     how2plot % plotting convention - read only
     % a convention belongs to a reference frame, see plottingConvention.default
   end
@@ -113,16 +114,12 @@ classdef tensor < dynOption
           T.doubleConvention = M.doubleConvention;
         end
         T.opt = M.opt;
-        % an own frame lives on the tensor, so it has to be copied over -
-        % it does not ride along on CS
-        T.framePrivate = M.framePrivate;
 
         % extract additional properties
         varargin = delete_option(varargin,'doubleConvention');
         varargin = delete_option(varargin,'rank',1);
         [pC,varargin] = getClass(varargin,'plottingConvention');
-        % an own frame for this tensor - not a session change
-        if ~isempty(pC), T.framePrivate = specimenFrame.frameFor(pC); end
+        if ~isempty(pC), T = conventionFrame(T,pC); end
         T = T.setOption(varargin{:});
         return
       end
@@ -193,21 +190,20 @@ classdef tensor < dynOption
   
       end
   
-      % extract symmetry
+      % extract the frame the coefficients refer to
       args = find(cellfun(@(s) isa(s,'referenceFrame'),varargin,'uniformoutput',true));
       if ~isempty(args)
-        T.CS = varargin{args};
+        T.frame = varargin{args};
         varargin(args) = [];
       elseif ~csGiven
         % resolve the session default here, a property default is evaluated once
         % when the class is loaded and would freeze the frame of that moment
-        T.CS = specimenFrame.default;
+        T.frame = specimenFrame.default;
       end
 
       % extract plotting convention
       [pC,varargin] = getClass(varargin,'plottingConvention');
-      % an own frame for this tensor - not a session change
-      if ~isempty(pC), T.framePrivate = specimenFrame.frameFor(pC); end
+      if ~isempty(pC), T = conventionFrame(T,pC); end
 
       options = delete_option(varargin,{'doubleconvention','singleconvention','InfoLevel','noCheck'});
       options = delete_option(options,'rank',1);
@@ -245,11 +241,11 @@ classdef tensor < dynOption
       T = setFrame(T,fr);
     end
 
+    function fr = get.CS(T), fr = getFrame(T); end
+    function T = set.CS(T,fr), T = setFrame(T,fr); end
+
     function fr = getFrame(T)
-      % a tensor that was not given a frame of its own follows its
-      % reference system, so setting the frame of CS keeps working
       fr = T.framePrivate;
-      if isempty(fr), fr = T.CS; end
     end
 
     function T = setFrame(T,fr)
@@ -258,9 +254,18 @@ classdef tensor < dynOption
       T.framePrivate = fr;
     end
 
+    function T = conventionFrame(T,pC)
+      % a convention belongs to a frame, so a tensor given one is written
+      % in the specimen frame that states it - a crystal frame derives its
+      % convention from its own axes and cannot be given another
+      assert(~isa(T.frame,'crystalFrame'),'MTEX:tensor:fixedConvention',...
+        ['A tensor in a crystal frame is drawn in the convention of that ' ...
+        'frame - it cannot be given a plotting convention.']);
+      T.frame = specimenFrame.frameFor(pC);
+    end
+
     function pC = get.how2plot(T)
-      % only frames carry conventions - the tensor's own frame wins, then
-      % the one of its reference system
+      % only frames carry conventions
       pC = [];
       if ~isempty(T.frame), pC = T.frame.how2plot; end
       if isempty(pC), pC = plottingConvention.default; end

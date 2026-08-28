@@ -62,14 +62,9 @@ vp = D(3,:); vs1 = D(2,:); vs2 = D(1,:);
 pp = V(3,:); ps1 = V(2,:); ps2 = V(1,:);
 
 if generateFun == 1
-  vp  = S2FunHarmonic.quadrature(x,vp,S.CS,'bandwidth',M,'weights',W,'antipodal');
-  vs1 = S2FunHarmonic.quadrature(x,vs1,S.CS,'bandwidth',M,'weights',W,'antipodal');
-  vs2 = S2FunHarmonic.quadrature(x,vs2,S.CS,'bandwidth',M,'weights',W,'antipodal');
-
-  if ~isempty(S.framePrivate)
-    vp.framePrivate = S.framePrivate; vs1.framePrivate = S.framePrivate;
-    vs2.framePrivate = S.framePrivate;
-  end
+  vp  = S2FunHarmonic.quadrature(x,vp,S.frame,'bandwidth',M,'weights',W,'antipodal');
+  vs1 = S2FunHarmonic.quadrature(x,vs1,S.frame,'bandwidth',M,'weights',W,'antipodal');
+  vs2 = S2FunHarmonic.quadrature(x,vs2,S.frame,'bandwidth',M,'weights',W,'antipodal');
 
   pp = S2AxisFieldHarmonic.quadrature(x,pp,'bandwidth',M,'weights',W,'antipodal');
   ps1 = S2AxisFieldHarmonic.quadrature(x,ps1,'bandwidth',M,'weights',W,'antipodal');
@@ -79,10 +74,8 @@ elseif generateFun == 2
   vs1 = S2FunTri(vp.tri,vs1.');
   vs2 = S2FunTri(vp.tri,vs2.');
 
-  if ~isempty(S.framePrivate)
-    vp.framePrivate = S.framePrivate; vs1.framePrivate = S.framePrivate;
-    vs2.framePrivate = S.framePrivate;
-  end
+  vp.framePrivate = S.frame; vs1.framePrivate = S.frame;
+  vs2.framePrivate = S.frame;
 
   pp = S2AxisFieldTri(vp.tri,pp.');
   ps1 = S2AxisFieldTri(vp.tri,ps1.');

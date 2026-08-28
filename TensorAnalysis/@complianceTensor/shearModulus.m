@@ -54,13 +54,13 @@ elseif nargin == 2 || isempty(u)
 
   % the shear direction is left open: a function of u with h held fixed
   E = S2FunHarmonic.quadrature(@(v) shearModulus(S,h,v),'bandwidth',16);
-  E.framePrivate = S.frame;
+  E.framePrivate = stripSym(S.frame);
 
 elseif isempty(h)
 
   % the shear plane is left open: a function of h with u held fixed
   E = S2FunHarmonic.quadrature(@(v) shearModulus(S,v,u),'bandwidth',16);
-  E.framePrivate = S.frame;
+  E.framePrivate = stripSym(S.frame);
 
 else
 

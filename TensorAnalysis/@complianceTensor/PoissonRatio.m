@@ -31,12 +31,12 @@ end
 if nargin == 1 || isempty(x)
   
   nu = S2FunHarmonic.quadrature(@(v) PoissonRatio(S,v,y),'bandwidth',16);
-  nu.framePrivate = S.frame;
+  nu.framePrivate = stripSym(S.frame);
 
 elseif nargin <= 2 || isempty(y)
 
   nu = S2FunHarmonic.quadrature(@(v) PoissonRatio(S,x,v),'bandwidth',16);
-  nu.framePrivate = S.frame;
+  nu.framePrivate = stripSym(S.frame);
 
 else
 
