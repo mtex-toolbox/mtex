@@ -20,9 +20,12 @@ scaling = get_option(varargin,'scaling',1.3);
 v = scaling.*v;
 
 if check_option(varargin,'labeled')
+  % a label sits next to one marker, so it names that direction and not the
+  % family the marker was symmetrised out of
+  lv = stripSym(v);
   strings = cell(1,length(v));
   for i = 1:length(v)
-    strings{i} = char(v.subSet(i),getMTEXpref('textInterpreter')); 
+    strings{i} = char(lv.subSet(i),getMTEXpref('textInterpreter'));
   end
 else
   strings = ensurecell(varargin{1});

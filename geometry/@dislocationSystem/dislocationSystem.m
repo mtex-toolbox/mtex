@@ -120,7 +120,9 @@ classdef dislocationSystem
         end
       end
       
-      toChar = @(x) char(round(x),'spaceSep','noUTF8');
+      % one row is one dislocation with its own energy and length, so the
+      % vectors in it name themselves rather than the set they come from
+      toChar = @(x) char(stripSym(round(x)),'spaceSep','noUTF8');
       
       if any(dS.isEdge(:))
         

@@ -125,8 +125,10 @@ classdef slipSystem
     
     function str = char(sS,varargin)
       
+      % one slip system is one plane and one direction in it
       for i = 1:length(sS)
-        str{i} = [char(sS.n(i),varargin{:}),char(sS.b(i),varargin{:})]; %#ok<AGROW>
+        str{i} = [char(stripSym(sS.n(i)),varargin{:}),...
+          char(stripSym(sS.b(i)),varargin{:})]; %#ok<AGROW>
         str{i} = strrep(str{i},'$$',''); %#ok<AGROW>
       end
       if i == 1, str = char(str); end

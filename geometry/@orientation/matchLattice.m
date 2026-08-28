@@ -53,8 +53,10 @@ n2 = n2(fit<=delta);
 fit = fit(fit<=delta);
 
 [fit, order] = sort(fit);
-n1 = n1(order);
-n2 = n2(order);
+
+% each row is one plane taken onto one other plane, not the two families
+n1 = stripSym(n1(order));
+n2 = stripSym(n2(order));
 
 if nargout == 0
 
@@ -92,9 +94,13 @@ fit = fit(fit<=delta);
 d1 = d1(order);
 d2 = d2(order);
 
-% switch to UVTW for trigonal and hexagonal materials
+% switch to UVTW for trigonal and hexagonal materials - the lattice follows
+% from the group, so this has to be read before the group goes
 if d1.lattice.isTriHex, d1.dispStyle = 'UVTW'; end
 if d2.lattice.isTriHex, d2.dispStyle = 'UVTW'; end
+
+d1 = stripSym(d1);
+d2 = stripSym(d2);
 
 if nargout == 0
 

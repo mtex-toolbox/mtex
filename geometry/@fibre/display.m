@@ -17,7 +17,8 @@ disp(' ');
 
 if length(f)~=1, return; end
 
-disp(['  h || r: ' char(round(f.h)) ' || (' char(round(f.r)) ')']);
+% a fibre is pinned by the one crystal direction it holds parallel to r
+disp(['  h || r: ' char(stripSym(round(f.h))) ' || (' char(round(f.r)) ')']);
 
 % display starting and end orientation
 if angle(f.o2,f.o1,'noSymmetry')>0

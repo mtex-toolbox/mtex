@@ -22,6 +22,10 @@ p2cV = p2c.variants;
 % TODO: make this work for OR other than Kurdjumov Sachs
 [nParent,nChild] = round2Miller(p2cV(1));
 
+% both are matched against a family and symmetrised below
+nParent = fullSym(nParent);
+nChild = fullSym(nChild);
+
 csParent = p2cV.CS;
 csChild = p2cV.SS;
 

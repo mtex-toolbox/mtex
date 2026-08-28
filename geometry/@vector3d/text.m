@@ -110,8 +110,11 @@ for j = 1:numel(sP)
   % special option -> labeled
   if check_option(varargin,'labeled')
 
+    % a label sits next to one marker, so it names that direction and not
+    % the family the marker was symmetrised out of
+    lv = stripSym(v);
     strings = cell(1,length(v));
-    for i = 1:length(v), strings{i} = char(v.subSet(i),getMTEXpref('textInterpreter')); end
+    for i = 1:length(v), strings{i} = char(lv.subSet(i),getMTEXpref('textInterpreter')); end
 
   elseif isnumeric(varargin{1})  % ensure cell as input
     

@@ -126,10 +126,12 @@ fit_sorted = sort(fit(:));
 ind = find(fit(:)==fit_sorted(nextFit));
 [ih,id] = ind2sub(size(fit),ind(1));
 
-n1 = n1(ih);
-d1 = d1(id);
-n2 = rn2(ih);
-d2 = rd2(id);
+% the four winners are the planes and directions this one rotation takes onto
+% each other, not the families they come from
+n1 = stripSym(n1(ih));
+d1 = stripSym(d1(id));
+n2 = stripSym(rn2(ih));
+d2 = stripSym(rd2(id));
 
 if nargout == 0
   
