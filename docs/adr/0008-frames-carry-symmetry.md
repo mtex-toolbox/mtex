@@ -9,7 +9,12 @@ increments can be cut against it, and so that nothing is built in the meantime o
 ownership it reverses.
 
 Names given with a file path exist today; everything else is proposed. Counts are of the
-live tree, excluding `worktrees/`, `obsolete/`, `old/`, `compatibility/` and `extern/`.
+live tree, excluding `.claude/worktrees/`, `obsolete/`, `old/`, `compatibility/` and
+`extern/` — the agent worktree holds a second copy of the tree and doubles any count taken
+without it.
+
+Landed on `feature/frameSymmetry`: `gridLayout` out of the hierarchy (`45080e0c0`) and
+stating its frame (`d8bb811fa`), rule 11 (this commit). The ownership itself is untouched.
 
 ADR 0003 separated the plotting convention, the reference frame and the symmetry as
 *concepts*, but left the symmetry as the *carrier*: a frame reaches the rest of the
@@ -109,6 +114,24 @@ Uniform scaling of `a,b,c` scales every reciprocal vector by the inverse and mov
 crystallographic direction, so a literature lattice constant of 2.87 against a measured
 2.866 is a shape deviation of zero.
 
+**Colour is not in the key.** Two labs colour forsterite differently and it is the same
+forsterite, so a colour must never split a phase. The registered instance keeps the colour it
+was first given and a later import's vendor colour is discarded — loading a second file does
+not restyle data already in the workspace.
+
+**Loading an old file interns what it can and forks the rest.**
+`geometry/@referenceFrame/referenceFrame.m` already has `reintern`, which swaps a
+deserialized frame for the registered instance when the two agree by value; the key it
+matches against gains the cell, the alignment and the group along with everything else. An
+old frame therefore joins the register only on a full match, and failing to join costs
+*sharing, not correctness* — a private instance behaves identically, it merely does not
+unify with a later construction. An **empty plotting convention means none was recorded**,
+never the default of the saving session: the frame stays convention-free and resolves at
+render time, because a convention the file never stated is a guess and a wrong guess turns
+the map. Old `crystalSymmetry`, `specimenSymmetry` and `notIndexed` objects convert on the
+way in through their own `loadobj`, which is what keeps those classes alive as loadable
+shells for as long as a file may hold one.
+
 **3. Frames are immutable except for mineral name and colour.** This revisits 0003's
 "registered instances stay mutable": with crystal frames interned as well, an in-place
 write reaches every dataset sharing the frame, which is the leak family 0003 opens with,
@@ -129,6 +152,15 @@ frames are stored under directional names; `CS` and `SS` are dependent propertie
 **positionally** to source and target. That is what they already mean — `inv(ori)` swaps
 them, so `inv(ori).CS` holds a specimen symmetry today — and resolving them by *type*
 instead would answer differently for a misorientation, where both sides are crystal frames.
+
+**`ori.CS` is a frame, and the frame answers group questions.** `symmetry` survives as the
+group a frame carries: a real point group was never the fake one, only a group manufactured
+to give a frame a home. So the reads keep working through the frame. `id`, `rot`, `numSym`
+and `isLaue` forward to the group unchanged; the group-valued `Laue` and `properGroup` return
+the **sibling frame** carrying that group, which is rule 7's sibling made reachable and what
+rule 9's `symmetrise` already moves between. `mineral`, `lattice`, `axes` and `how2plot` are
+frame content already and only become more direct, and every `ori.CS.frame` collapses to
+`ori.CS`.
 
 **6. `vector3d` carries an optional frame, and `Miller` is dropped as a class.** After the
 flip `Miller` adds exactly one field over a framed `vector3d`, and it is one that already
@@ -210,6 +242,13 @@ the two are siblings differing only in the group, so rule 7 hands back their int
 and `[{111}; (111)]` is two `(111)`. The family reading is dropped, and the printed form
 says so.
 
+**On input the bracket says direct or reciprocal, and nothing else.** Both `[uvw]` and
+`<uvw>` are directions, both `(hkl)` and `{hkl}` plane normals, and which of a pair was
+typed does not select a group: the frame does. So `Miller('(111)',cs)` under a
+group-carrying frame is the family and prints `{111}`, and the round trip is deliberately
+not symmetric — the bracket the user wrote is shorthand for the indices, while the printed
+one states what the object turned out to be.
+
 **12. What the three motivating classes get.** `tensor` keeps one frame and loses the
 triclinic placeholder for sample coordinates; its own invariance group becomes derivable
 rather than conflated with the crystal's, which is what an even-rank tensor's forced
@@ -263,6 +302,32 @@ over a product set belonging to neither operand (`geometry/@orientation/dot.m`) 
 single group to hand over. Splitting `dot(v1,v2)` from `angle(ori1,ori2)` for a uniformity
 only the vector side can have costs more than the ambiguity it removes.
 
+We chose **`CS` returning the frame** over returning a symmetry view onto frame-plus-group.
+The view is tempting because it keeps all 1834 `.CS`/`.SS` reads type-identical, and that is
+exactly its defect: it reinstates the object this ADR exists to remove, a group-shaped thing
+standing in front of the frame, and every later reader has to learn that the symmetry they
+are holding is a facade. Returning the frame changes the type at those reads and leaves the
+group queries working by forwarding.
+
+We chose **an empty convention meaning none was recorded** over repairing it to the session
+default at load. The two senses are indistinguishable in an existing `.mat`, so one of them
+has to be assumed; assuming a convention nobody wrote down is the one that can turn a map,
+and it freezes the guess into the file's frame where the render-time resolution of rule 7
+would have kept it honest.
+
+We chose **colour out of the register key** over splitting a phase on it. The two errors are
+not symmetric here in the way they are for the cell: a merged colour is visible in the phase
+map and costs one assignment to change, while a phase split in two because two vendors
+disagreed about a swatch fragments every downstream operation over an attribute no number
+depends on.
+
+We chose **the frame deciding on input as well** over letting the typed bracket select the
+group, so that `Miller('(111)',cs)` gives the group-stripped sibling and `{111}` the parent.
+Selecting by notation at the call site is the move rule 10 already rejected for `dot`, one
+layer down. It is also unreachable from the constructor that matters: the numeric form
+`Miller(1,1,1,cs)` carries no bracket and is used 384 times against 7 for the string form, so
+the distinction would exist only in a spelling the toolbox itself barely uses.
+
 We chose **stripping the group and requiring `symmetrise`** over symmetrising implicitly
 whenever the target frame carries a group. The implicit form makes one expression mean two
 mathematically different things depending on frame metadata.
@@ -310,6 +375,12 @@ dispatch on every Miller-preserving operation — for a distinction the frame al
 - `isa(x,'Miller')` goes silently **false**, in 54 places in this tree plus user scripts and
   third-party code. A replacement predicate has to ship in the same release for the note to
   point at.
+- `.CS` and `.SS` change type, at 1175 and 659 reads. Most survive untouched: 58 ask for
+  `Laue` or `properGroup` and get a sibling frame where they got a symmetry, 57 ask for `id`,
+  `rot`, `numSym` or `isLaue` and are forwarded, and the rest were reading frame content
+  through a symmetry all along. What breaks is code that stores the result and then tests
+  `isa(cs,'crystalSymmetry')` — the same shape of failure as the `Miller` predicate, and it
+  wants the same replacement shipped alongside.
 - Every `dot`, `angle`, `dot_outer` and `angle_outer` call that reaches a group-carrying
   operand without a `noSym*` flag has to say on the line that the symmetry is intended. The
   opt-out marks itself, so the silent reduction is the one load-bearing state nothing on the
@@ -332,6 +403,13 @@ dispatch on every Miller-preserving operation — for a distinction the frame al
 - The register acquires a second tolerance question distinct from the first: *are these the
   same frame* (identity, tight) versus *how different may they be to reinterpret one as the
   other* (permission, per call, and legitimately larger).
+- A file saved under a non-default session and reloaded under another renders under the
+  **new** session's convention, because the old one was never written down. That is the price
+  of reading an empty convention as none, and it is paid only by files that never stated one.
+- Setting a phase colour reaches every dataset over that frame. `cs.color` already does this
+  on a shared handle today; what interning changes is the reach, since constructions that
+  currently produce separate handles unify. Two maps of one material come to share a colour
+  where they previously did not, which is the intent — one material, one swatch.
 - Two frames that print identically can be distinct, because the mineral name is in the key
   and mutable. The state is reachable by renaming one of them, and the display is exactly
   what someone would use to diagnose a failed join.
@@ -358,24 +436,17 @@ dispatch on every Miller-preserving operation — for a distinction the frame al
 
 ## Open
 
-1. Loading old `.mat` files. ADR 0003 already flags it: `loadobj` currently *repairs* an
-   empty convention into the shared default, and under the register it must re-intern
-   non-empty frames instead — but "in an existing `.mat` the two senses of empty are
-   indistinguishable", and this model adds a third state, `notIndexedFrame`, that older
-   files encode as a `notIndexed` phaseItem. The migration needs a deliberate answer.
-2. The deprecation path for `crystalSymmetry`/`specimenSymmetry`: how long they stay, and
-   whether they warn.
-3. Colour in the register key, so that importing one phase from two files with different
-   vendor colours splits it, or out of the key and therefore shared across every dataset
-   over that frame.
-4. Whether the `transformReferenceFrame` rule is always required, or omittable when every
+1. How long `crystalSymmetry` and `specimenSymmetry` stay, and whether they warn. The floor
+   is set rather than chosen: rule 2 converts an old object through its own `loadobj`, so
+   both classes have to remain loadable for as long as a `.mat` may hold one. What is open
+   is everything above that floor — whether constructing one warns, and when the shells go.
+2. Whether the `transformReferenceFrame` rule is always required, or omittable when every
    candidate rule agrees.
-5. `from`/`to` versus `source`/`target` for the stored frame names.
-6. Whether `cross` propagates the index basis crystallographically — two directions giving
+3. `from`/`to` versus `source`/`target` for the stored frame names.
+4. Whether `cross` propagates the index basis crystallographically — two directions giving
    a plane normal, two normals giving the zone axis.
-7. Brackets on input. `geometry/@Miller/private/s2v.m` reads `(hkl)`, `[uvw]` and the zone
-   forms by testing for `[` alone, so `<100>` parses as a plane normal today and the family
-   brackets carry no meaning. Whether `{111}` and `(111)` against one frame select the
-   parent and its group-stripped sibling, or the bracket is decorative on input and only the
-   frame decides, is open. The first makes the sibling reachable by notation, which is
-   otherwise the one part of rule 7 with no user-facing door.
+5. Whether `Miller('(111)',cs)` should warn when the frame's group makes those indices a
+   family. It stays silent until the group-stripped sibling exists, because until then the
+   warning has no alternative to name and an unactionable warning is noise. Once the sibling
+   is reachable it fires once per call site, states what the object is, and points at the
+   spelling for the single plane.
