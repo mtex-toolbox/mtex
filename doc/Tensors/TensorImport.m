@@ -26,7 +26,7 @@
 % by the source. The alignment belongs to the frame, not to point group |32|.
 
 % define the quartz crystal symmetry and frame
-csQuartz = crystalSymmetry('32',[4.916 4.916 5.4054],...
+csQuartz = crystalFrame('32',[4.916 4.916 5.4054],...
   'X||a*','Z||c','mineral','Quartz');
 
 % define the file name
@@ -76,7 +76,7 @@ P = tensor.load(quartzFile,csQuartz,...
 olivineFile = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
 % define the olivine crystal symmetry and frame
-csOlivine = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],...
+csOlivine = crystalFrame('mmm',[4.7646 10.2296 5.9942],...
   'mineral','Olivine');
 
 % import and display the elastic stiffness tensor

@@ -167,8 +167,8 @@ mtexColorbar('title','recalculated intensity')
 % Define both symmetries explicitly so this model does not inherit anything
 % from the orthorhombic diffraction example.
 
-cs = crystalSymmetry('cubic');
-ss = specimenSymmetry('orthorhombic');
+cs = crystalFrame('cubic');
+ss = specimenFrame('orthorhombic');
 gammaFibre = fibre.gamma(cs,ss);
 
 % spread density by 10 degrees around the ideal gamma fibre

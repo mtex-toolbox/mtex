@@ -19,7 +19,7 @@
 plottingConvention.default('y↑→x');
 
 % use two reproducible cubic texture components
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 oriA = orientation.goss(cs);
 oriB = orientation.brass(cs);
 

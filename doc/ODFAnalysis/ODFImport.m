@@ -37,8 +37,8 @@
 plottingConvention.default('y↑→x');
 
 % define the crystal and specimen symmetries named in the file header
-cs = crystalSymmetry('m-3m');
-ss = specimenSymmetry('1');
+cs = crystalFrame('m-3m');
+ss = specimenFrame('1');
 
 % the file name
 fname = fullfile(mtexDataPath,'ODF','odf.txt');

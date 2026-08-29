@@ -18,7 +18,7 @@
 
 plottingConvention.default('y↑→x');
 
-cs = crystalSymmetry('321');
+cs = crystalFrame('321');
 odf = fibreODF(Miller(1,1,0,cs),zvector);
 
 %% Choosing a hemisphere
@@ -103,7 +103,7 @@ plotPDF(odf,Miller(1,0,0,cs),'antipodal','projection','earea')
 % directions from a cubic symmetry. Their shared 15 degree grid provides the
 % scale for the comparison.
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 newMtexFigure('layout',[1,3])
 plotHKL(cs,'projection','earea','upper','grid_res',15*degree,...
   'backgroundColor','w')

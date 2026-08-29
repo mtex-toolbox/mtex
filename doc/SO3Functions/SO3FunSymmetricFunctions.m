@@ -75,11 +75,11 @@ plot(SO3F,'sigma')
 % evaluation. For a harmonic model it leaves the Fourier coefficients
 % untouched until the function is explicitly symmetrised.
 %
-% On an ODF, assign a @specimenSymmetry to the left side. A general
+% On an ODF, assign a @specimenFrame to the left side. A general
 % rotational function may instead describe a relation between two crystal
 % sides, for which an assignment such as the following is meaningful:
 %
-%   SO3F.SLeft = crystalSymmetry('432');
+%   SO3F.SLeft = crystalFrame('432');
 %
 % Applying that line to the Dubna ODF would change its physical meaning. It
 % would no longer describe quartz orientations relative to an unsymmetric
@@ -96,7 +96,7 @@ SO3F2 = SO3FunHarmonic(randn(1000,1));
 SO3F2.isReal = true;
 coefficientsBefore = SO3F2.fhat;
 
-twoFold = crystalSymmetry('2');
+twoFold = crystalFrame('2');
 SO3F2.SRight = twoFold;
 coefficientChangeAfterRelabelling = ...
   norm(SO3F2.fhat - coefficientsBefore)

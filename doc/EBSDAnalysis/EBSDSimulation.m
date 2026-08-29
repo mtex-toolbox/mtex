@@ -43,7 +43,7 @@ eS = simulateEBSD
 % The method |makeMap| then creates the @EBSD variable in |eS.EBSDsim|.
 
 eS.xdim = 200;
-eS.CS = crystalSymmetry('mmm','Mineral','Kryptonite');
+eS.CS = crystalFrame('mmm','Mineral','Kryptonite');
 eS.ori0 = orientation.byEuler([0,pi/4,0]*degree,eS.CS);
 
 eS.makeMap;

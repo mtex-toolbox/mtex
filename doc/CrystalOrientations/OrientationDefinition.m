@@ -12,7 +12,7 @@
 % direction notation from <CrystalDirections.html Miller Indices>, and basic
 % matrix algebra. The constructors are the same as on
 % <RotationDefinition.html Defining Rotations>, with a
-% <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|> supplied as an
+% <crystalFrame.crystalFrame.html |crystalFrame|> supplied as an
 % extra argument.
 %
 % What this mapping means is developed in
@@ -141,10 +141,10 @@ length(ori.symmetrise('proper'))
 % commonly modelled with orthorhombic symmetry: three mutually perpendicular
 % twofold axes, or equivalently three mirror planes in the full point group.
 % It is represented by a
-% <specimenSymmetry.specimenSymmetry.html |specimenSymmetry|> and passed
+% <specimenFrame.specimenFrame.html |specimenFrame|> and passed
 % alongside the crystal symmetry.
 
-ss = specimenSymmetry('orthorhombic');
+ss = specimenFrame('orthorhombic');
 
 %%
 

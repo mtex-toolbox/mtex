@@ -22,7 +22,7 @@ plottingConvention.default('y↑→x');
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
 % orthorhombic crystal symmetry and crystal frame
-cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],...
+cs = crystalFrame('mmm',[4.7646 10.2296 5.9942],...
   'mineral','Olivine');
 
 % stiffness tensor in GPa

@@ -20,7 +20,7 @@
 % The examples use a trigonal ODF made from a randomly chosen fibre on a
 % uniform background.
 
-cs = crystalSymmetry('32');
+cs = crystalFrame('32');
 fibre_odf = 0.5*uniformODF(cs) + ...
   0.5*fibreODF(fibre.rand(cs),'halfwidth',20*degree);
 

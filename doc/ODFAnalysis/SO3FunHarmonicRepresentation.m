@@ -116,7 +116,7 @@ f2.isReal
 % Identity matrices satisfy the reality relation and give a small example
 % through degree two. The vector order is degree first, then $l$, then $k$.
 
-cs = crystalSymmetry('1');
+cs = crystalFrame('1');
 fhat = [1;reshape(eye(3),[],1);reshape(eye(5),[],1)];
 fExample = SO3FunHarmonic(fhat,cs)
 
@@ -170,7 +170,7 @@ plotSpektra(f);
 % It is nonnegative, but it is not normalized to mean one and is therefore
 % not an ODF.
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 oriRef = orientation.byEuler(30*degree,50*degree,10*degree,cs);
 fAngle = SO3FunHandle(@(ori) angle(ori,oriRef)./degree,cs);
 

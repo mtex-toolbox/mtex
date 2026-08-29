@@ -16,14 +16,14 @@ plottingConvention.default('y↑→x');
 %% The Lattice and Its Crystal Frame
 %
 % Miller indices have meaning only together with the lattice they refer to.
-% A <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|> stores the
+% A <crystalFrame.crystalFrame.html |crystalFrame|> stores the
 % point symmetry, lattice metric and crystal frame of a phase.
 %
 % A reference frame is the coordinate system in which data are expressed.
 % The crystal frame is the Cartesian frame fixed to the lattice basis. Its
 % basis and default plotting convention are distinct from point symmetry.
 
-cs = crystalSymmetry('triclinic',[5.29,9.18,9.42],...
+cs = crystalFrame('triclinic',[5.29,9.18,9.42],...
   [90.4,98.9,90.1]*degree,'X||a*','Z||c','mineral','Talc');
 
 %%
@@ -51,7 +51,7 @@ metricAngleAC = angle(directAxes(1),directAxes(3),'noSymmetry') ./ degree
 % $$\vec m=u\vec a+v\vec b+w\vec c.$$
 %
 % Its direction is written $[uvw]$. In MTEX it is represented by a
-% <Miller.Miller.html |Miller|> with display style |'uvw'|.
+% <Miller.html |Miller|> with display style |'uvw'|.
 
 m = Miller(1,0,1,cs,'uvw')
 
@@ -167,7 +167,7 @@ m.dispStyle = 'uvw';
 mThreeIndex = m
 
 %%
-% <Miller.round.html |round|> rescales the same direction to an equivalent
+% <vector3d.round.html |round|> rescales the same direction to an equivalent
 % small integer triplet.
 
 mIntegerIndices = round(mThreeIndex)
@@ -211,7 +211,7 @@ nThreeIndex = n
 %
 % Multiplying all indices by a common factor leaves the plotted normal
 % direction unchanged, but it changes the reciprocal-vector length.
-% Consequently, $(200)$ has half the <Miller.dspacing.html |dspacing|> of
+% Consequently, $(200)$ has half the <vector3d.dspacing.html |dspacing|> of
 % $(100)$. Conventional Miller indices are usually reduced to relatively
 % prime integers, with additional care required for centred cells and
 % diffraction reflections.

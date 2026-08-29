@@ -33,7 +33,7 @@ plottingConvention.default('y↑→x');
 % Its printed summary gives the endpoint orientations.
 % It also gives the crystal and specimen directions that remain parallel.
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 f = fibre.beta(cs)
 
 %%
@@ -144,7 +144,7 @@ drawNow(mtexFig);
 % the orientation tensor without a global grid search. The sampling step is
 % developed separately in <RandomSampling.html Random Sampling>.
 
-csFit = crystalSymmetry('1');
+csFit = crystalFrame('1');
 fTrue = fibre(Miller(1,1,1,csFit),vector3d.Z);
 odfFit = fibreODF(fTrue,'halfwidth',10*degree);
 ori = discreteSample(odfFit,1000);

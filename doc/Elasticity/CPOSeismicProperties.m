@@ -57,7 +57,7 @@ plot(ebsd,'refFrame','on')
 % in $\mathrm{g/cm}^3$ so that <stiffnessTensor.velocity.html |velocity|>
 % returns km/s.
 
-CS_Tensor_Fo = crystalSymmetry('222',[4.762 10.225 5.994],...
+CS_Tensor_Fo = crystalFrame('222',[4.762 10.225 5.994],...
   'mineral','Forsterite','color','light red');
 
 rho_Fo = 3.3550;
@@ -82,7 +82,7 @@ C_Fo = stiffnessTensor(Cij,CS_Tensor_Fo,'density',rho_Fo);
 % Chai et al. (1997). The explicit alignment states that $x$ is parallel to
 % the $a$-axis and $z$ is parallel to the $c$-axis.
 
-cs_Tensor_opx = crystalSymmetry('mmm',[18.2457 8.7984 5.1959],...
+cs_Tensor_opx = crystalFrame('mmm',[18.2457 8.7984 5.1959],...
   [90 90 90]*degree,'x||a','z||c','mineral','Enstatite');
 
 rho_opx = 3.3060;
@@ -102,7 +102,7 @@ C_opx = stiffnessTensor(Cij,cs_Tensor_opx,'density',rho_opx);
 % in 2005. Their table uses $x$ parallel to the $a^{*}$-axis and $z$ parallel
 % to the $c$-axis.
 
-cs_Tensor_cpx = crystalSymmetry('121',[9.585 8.776 5.26],...
+cs_Tensor_cpx = crystalFrame('121',[9.585 8.776 5.26],...
   [90 105.86 90]*degree,'x||a*','z||c','mineral','Diopside');
 
 rho_cpx = 3.2860;

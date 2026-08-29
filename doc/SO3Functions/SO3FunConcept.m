@@ -21,7 +21,7 @@
 % Dividing by |degree| makes the function value a number in degrees.
 
 % define cubic crystal symmetry
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 
 % wrap the angle formula in an SO3Fun
 SO3F = SO3FunHandle(@(ori) angle(ori) ./ degree,cs)

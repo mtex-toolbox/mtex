@@ -20,7 +20,7 @@ plottingConvention.default('y↑→x');
 % Point group 321 is trigonal, so the code and its resulting fundamental
 % region must be read as a trigonal example.
 
-cs = crystalSymmetry('321');
+cs = crystalFrame('321');
 
 %%
 % Combine a uniform background, one localized component, and one fibre.

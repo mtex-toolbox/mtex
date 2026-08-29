@@ -113,7 +113,7 @@ angle(mirrorX*mirrorY,...
 % operations, the number of proper operations, and the number of improper
 % operations.
 
-cs = crystalSymmetry('-4m2');
+cs = crystalFrame('-4m2');
 ops = rotation(cs);
 improperFlags = isImproper(ops);
 

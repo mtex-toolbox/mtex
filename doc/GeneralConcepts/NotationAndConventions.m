@@ -32,7 +32,7 @@ plottingConvention.default('y↑→x');
 % uses the *Bunge* convention by default: rotate about Z, then about the new
 % X, and finally about the new Z. The angles are written phi1, Phi, phi2.
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 ori = orientation.byEuler(30*degree,50*degree,10*degree,cs);
 
 round(Euler(ori,'Bunge')./degree)
@@ -96,7 +96,7 @@ hold off;
 % coincide in a cubic lattice, which makes cubic crystals a poor test of
 % whether the correct object was constructed.
 
-csQuartz = crystalSymmetry('321',[4.9 4.9 5.4],...
+csQuartz = crystalFrame('321',[4.9 4.9 5.4],...
   'mineral','Quartz');
 
 plane = Miller(1,0,0,csQuartz);

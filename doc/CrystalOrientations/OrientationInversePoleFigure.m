@@ -20,7 +20,7 @@
 plottingConvention.default('y↑→x');
 
 rng(635);
-cs = crystalSymmetry('321');
+cs = crystalFrame('321');
 
 ori = orientation.rand(cs)
 
@@ -38,7 +38,7 @@ h = inv(ori) * r
 
 %%
 % The displayed Miller indices are the crystal-frame coordinates of the
-% specimen Z direction. <Miller.symmetrise.html |symmetrise|> applies the
+% specimen Z direction. <vector3d.symmetrise.html |symmetrise|> applies the
 % crystal point group. It returns every equivalent description.
 
 hSym = h.symmetrise;

@@ -17,7 +17,7 @@
 
 plottingConvention.default('y↑→x');
 
-cs = crystalSymmetry('622');
+cs = crystalFrame('622');
 
 %% Without Grain Exchange Symmetry
 %

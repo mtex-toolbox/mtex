@@ -4,12 +4,12 @@
 % related by a point group. Inverse pole figures and directional
 % properties of a single crystal are common examples. MTEX represents a
 % harmonic function with this constraint as
-% <S2FunHarmonicSym.S2FunHarmonicSym.html |S2FunHarmonicSym|>.
+% <S2FunHarmonicSym.html |S2FunHarmonicSym|>.
 %
 % Symmetry is the point group under which the data is invariant. It is
 % attached to a reference frame rather than being a reference frame
-% itself. Use a @specimenSymmetry for directions in the specimen frame and
-% a @crystalSymmetry for directions in a crystal frame.
+% itself. Use a @specimenFrame for directions in the specimen frame and
+% a @crystalFrame for directions in a crystal frame.
 
 plottingConvention.default('y↑→x');
 
@@ -25,7 +25,7 @@ sF = S2Fun.smiley;
 % the plotting convention of the function when the symmetry creates its
 % reference frame.
 
-ss = specimenSymmetry('222',sF.how2plot);
+ss = specimenFrame('222',sF.how2plot);
 
 %%
 % For an existing harmonic function, the constructor first attaches the
@@ -69,7 +69,7 @@ plot(sFs1,'complete','upper');
 % crystal frame, so the requested point group is crystal symmetry |6/m|.
 
 valueFunction = @(v) 0.1*(v.theta+sin(8*v.x).*sin(8*v.y));
-cs = crystalSymmetry('6/m');
+cs = crystalFrame('6/m');
 
 %%
 % <S2FunHarmonic.quadrature.html |quadrature|> computes the harmonic

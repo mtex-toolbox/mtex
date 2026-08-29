@@ -26,7 +26,7 @@ plottingConvention.default('y↑→x');
 % distance from the centre is the rotation angle.
 
 % triclinic crystal symmetry
-cs = crystalSymmetry('triclinic');
+cs = crystalFrame('triclinic');
 
 % the corresponding orientation space
 oR_all = fundamentalRegion(cs);
@@ -84,7 +84,7 @@ hold off
 % <fundamentalRegion.html |fundamentalRegion|> uses the proper rotation
 % group by default.
 
-cs = crystalSymmetry('222');
+cs = crystalFrame('222');
 
 oR = fundamentalRegion(cs);
 

@@ -12,13 +12,13 @@
 % <LatticeMetric.html Lattice Metric and Plane Geometry> first if direct and
 % reciprocal lattice axes are new to you.
 %
-% A <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|> stores the point
+% A <crystalFrame.crystalFrame.html |crystalFrame|> stores the point
 % symmetry and lattice metric of a phase and carries its crystal frame. The
 % display below therefore reports both the metric and the frame alignment.
 
 plottingConvention.default('y↑→x');
 
-cs = crystalSymmetry('triclinic',[1,2.2,3.1],...
+cs = crystalFrame('triclinic',[1,2.2,3.1],...
   [80*degree,85*degree,95*degree])
 
 %% Why an Orthonormal Frame Is Needed
@@ -48,7 +48,7 @@ cs = crystalSymmetry('triclinic',[1,2.2,3.1],...
 %
 % MTEX's general defaults are $X\parallel a^*$ and
 % $Z\parallel c$. For these orthogonal lattices they reduce to the same
-% alignment, so no special alignment appears in the |crystalSymmetry|
+% alignment, so no special alignment appears in the |crystalFrame|
 % display.
 
 %% Trigonal and Hexagonal Crystal Frames
@@ -58,7 +58,7 @@ cs = crystalSymmetry('triclinic',[1,2.2,3.1],...
 % choices put $\vec z$ along $\vec c$ and then put either $\vec x$ or
 % $\vec y$ along $\vec a$.
 
-cs_x2a = crystalSymmetry('321',[1.7,1.7,1.4],'X||a','Z||c');
+cs_x2a = crystalFrame('321',[1.7,1.7,1.4],'X||a','Z||c');
 
 plot(cs_x2a)
 annotate(cs_x2a.aAxis,'MarkerFaceColor','r','label','a',...
@@ -75,7 +75,7 @@ annotate(-vector3d.X,'MarkerFaceColor','green','label','-x',...
 % the green $-\vec x$ marker at the left. This is the $X\parallel a$
 % alignment.
 
-cs_y2a = crystalSymmetry('321',[1.7,1.7,1.4],'Y||a','Z||c');
+cs_y2a = crystalFrame('321',[1.7,1.7,1.4],'Y||a','Z||c');
 
 plot(cs_y2a)
 annotate(cs_y2a.aAxis,'MarkerFaceColor','r','label','a',...
@@ -92,7 +92,7 @@ annotate(-vector3d.X,'MarkerFaceColor','green','label','-x',...
 % green Cartesian markers move. Each crystal frame supplies a plotting
 % convention that lays out a crystal plot by its lattice axes.
 %
-% The <crystalSymmetry.transformationMatrix.html |transformationMatrix|>
+% The <crystalFrame.transformationMatrix.html |transformationMatrix|>
 % between the two frames exposes the Cartesian offset.
 
 frameOffset = angle(rotation.byMatrix(...
@@ -108,7 +108,7 @@ frameOffset = angle(rotation.byMatrix(...
 % screen. Changing it moves the markers on the page, but does not change the
 % frame basis, the lattice, or any orientation.
 
-cs_y2a.frame.how2plot.east = cs_y2a.bAxis;
+cs_y2a.how2plot.east = cs_y2a.bAxis;
 
 plot(cs_y2a)
 annotate(cs_y2a.aAxis,'MarkerFaceColor','r','label','a',...
@@ -228,7 +228,7 @@ sameSpecimenDirection = angle(...
 % The following two alignments use the same lattice metric. Their displays
 % make the convention part of the audit trail.
 
-cs_aStar2x = crystalSymmetry('-1',[8.290 12.966 7.151],...
+cs_aStar2x = crystalFrame('-1',[8.290 12.966 7.151],...
   [91.18 116.31 90.14]*degree,'X||a*','Y||b',...
   'mineral','An0 Albite 2016')
 
@@ -236,7 +236,7 @@ cs_aStar2x = crystalSymmetry('-1',[8.290 12.966 7.151],...
 % The first summary reports $X\parallel a^*$ and
 % $Y\parallel b$.
 
-cs_a2x = crystalSymmetry('-1',[8.290 12.966 7.151],...
+cs_a2x = crystalFrame('-1',[8.290 12.966 7.151],...
   [91.18 116.31 90.14]*degree,'X||a','Z||c*',...
   'mineral','An0 Albite 2016')
 

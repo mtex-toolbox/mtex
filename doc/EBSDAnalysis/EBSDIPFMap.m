@@ -238,7 +238,7 @@ plot(ipfHKLKey(ebsd('olivine').CS))
 % The resulting map can contain a colour edge that is not a grain boundary.
 % MTEX prints a warning when such a key is constructed.
 
-plot(ipfTSLKey(crystalSymmetry('-3m')),'complete','upper')
+plot(ipfTSLKey(crystalFrame('-3m')),'complete','upper')
 
 %%
 % The warning is intentional, but the drawn hemisphere looks perfectly
@@ -246,7 +246,7 @@ plot(ipfTSLKey(crystalSymmetry('-3m')),'complete','upper')
 % in RGB. The jump is not inside the disc, it is on its rim. Plot the other
 % hemisphere and compare the two rims.
 
-plot(ipfTSLKey(crystalSymmetry('-3m')),'complete','lower')
+plot(ipfTSLKey(crystalFrame('-3m')),'complete','lower')
 
 %%
 % At $[01\bar{1}0]$ the upper hemisphere ends in green and the lower one

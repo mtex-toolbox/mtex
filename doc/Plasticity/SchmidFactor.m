@@ -10,7 +10,7 @@
 % $[01\bar1](111)$ and a uniaxial tension direction $\mathbf r=[001]$.
 % All three directions are initially expressed in the crystal frame.
 
-cs = crystalSymmetry('cubic',[3.523,3.523,3.523], ...
+cs = crystalFrame('cubic',[3.523,3.523,3.523], ...
   'mineral','Nickel');
 sS = slipSystem.fcc(cs)
 r = Miller(0,0,1,cs);

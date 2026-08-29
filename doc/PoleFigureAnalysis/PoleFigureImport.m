@@ -45,7 +45,7 @@
 
 plottingConvention.default('y↑→x');
 
-cs = crystalSymmetry('32',[1.4,1.4,1.5]);
+cs = crystalFrame('32',[1.4,1.4,1.5]);
 
 %%
 % The |cs| definition pairs trigonal symmetry with a crystal frame. That

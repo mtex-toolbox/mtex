@@ -33,7 +33,7 @@
 
 %% Build a deliberately weak ODF
 
-cs = crystalSymmetry('222');
+cs = crystalFrame('222');
 mod1 = orientation.byEuler(0,0,0,cs);
 odf = 0.9*uniformODF(cs) + ...
   0.1*unimodalODF(mod1,'halfwidth',10*degree);

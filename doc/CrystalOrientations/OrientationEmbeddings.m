@@ -27,7 +27,7 @@
 % cubic orientations.
 
 % cubic proper rotation symmetry
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 
 % select representatives in the fundamental region
 ori1 = project2FundamentalRegion(orientation.rand(20000,cs));

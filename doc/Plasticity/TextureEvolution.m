@@ -17,7 +17,7 @@
 % <SlipSystems.html Slip Systems> explains the plane, direction, and
 % symmetrization represented by this list.
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 sS = symmetrise(slipSystem.fcc(cs));
 
 %%

@@ -40,7 +40,7 @@ hold off
 % Start with a compact set of orientations and rotate a copy of its parent
 % distribution.
 
-cs = crystalSymmetry('-3m');
+cs = crystalFrame('-3m');
 odf = unimodalODF(orientation.byEuler(0,0,0,cs));
 ori = discreteSample(odf,100);
 oriRotated = discreteSample(...

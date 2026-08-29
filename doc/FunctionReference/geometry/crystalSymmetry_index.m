@@ -1,4 +1,0 @@
-%% The class crystalSymmetry
-%
-%%
-%

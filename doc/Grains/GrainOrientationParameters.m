@@ -228,7 +228,7 @@ grainsLarge = grains(grains.isIndexed & grains.numPixel > 50);
 nLarge = length(grainsLarge);
 lambda = nan(nLarge,4);
 fit = nan(nLarge,1);
-GAX_C = Miller.nan(nLarge,1,ebsd.CS);
+GAX_C = Miller(vector3d.nan(nLarge,1),ebsd.CS);
 GAX_S = vector3d.nan(nLarge,1);
 
 % fit one fibre per grain and store its axes in both frames

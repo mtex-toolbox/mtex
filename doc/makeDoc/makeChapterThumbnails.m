@@ -133,7 +133,7 @@ function rotationTile(f)
 % cubes to the square crop.
 
 col = [0.85 0.33 0.25; 0.35 0.62 0.85; 0.45 0.75 0.45];
-cS = crystalShape.cube(crystalSymmetry('m-3m'));
+cS = crystalShape.cube(crystalFrame('m-3m'));
 tmp = cell(1,3);
 
 for j = 1:3
@@ -161,7 +161,7 @@ function plottingTile(f)
 % the Plotting chapter is about the choice of rendering, so the tile shows
 % one data set drawn four ways rather than one more pole figure
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 odf = unimodalODF(orientation.byEuler(30*degree,50*degree,10*degree,cs),'halfwidth',15*degree);
 h = Miller(1,0,0,cs);
 
@@ -246,7 +246,7 @@ switch name
     hold off
 
   case 'CrystalOrientations'
-    cs = crystalSymmetry('m-3m');
+    cs = crystalFrame('m-3m');
     ori = orientation.byEuler(30*degree,50*degree,10*degree,cs);
     plot(ori * crystalShape.cube(cs),'faceColor',[0.3 0.6 0.85])
     hold on
@@ -266,7 +266,7 @@ switch name
   case 'ODFAnalysis'
     % inverse pole figures: triangular sectors, not the round discs the pole
     % figure chapter uses
-    cs = crystalSymmetry('432');
+    cs = crystalFrame('432');
     odf = unimodalODF(orientation.byEuler(30*degree,50*degree,10*degree,cs),'halfwidth',15*degree);
     plotIPDF(odf,[vector3d.X,vector3d.Z],'contourf','figSize','small')
 
@@ -312,13 +312,13 @@ switch name
 
   case 'Tensors'
     % as a 3d surface, so it is not another coloured disc like Elasticity
-    cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivine');
+    cs = crystalFrame('mmm',[4.7646 10.2296 5.9942],'mineral','Olivine');
     C = stiffnessTensor.load(fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa'),cs);
     plot(C.YoungsModulus,'3d')
     view(115,20); camlight('headlight'); axis off
 
   case 'Elasticity'
-    cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivine');
+    cs = crystalFrame('mmm',[4.7646 10.2296 5.9942],'mineral','Olivine');
     C = stiffnessTensor.load(fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa'),cs);
     C = addOption(C,'density',3.355);
     plot(velocity(C),'complete','upper')
@@ -326,7 +326,7 @@ switch name
   case 'Plasticity'
     % a hexagonal crystal with its basal plane: a stronger silhouette than a
     % cube, and not the same solid as the Orientations tile
-    cs = crystalSymmetry('6/mmm',[3.2 3.2 5.2],'mineral','Magnesium');
+    cs = crystalFrame('6/mmm',[3.2 3.2 5.2],'mineral','Magnesium');
     cS = crystalShape.hex(cs);
     plot(cS,'faceColor',[0.62 0.74 0.86],'faceAlpha',0.75)
     hold on
@@ -337,8 +337,8 @@ switch name
   case 'PhaseTransitions'
     % one colour per variant, so the tile shows that one parent gives many
     % children rather than showing an anonymous scatter
-    csP = crystalSymmetry('m-3m',[3.65 3.65 3.65],'mineral','Austenite');
-    csC = crystalSymmetry('m-3m',[2.87 2.87 2.87],'mineral','Ferrite');
+    csP = crystalFrame('m-3m',[3.65 3.65 3.65],'mineral','Austenite');
+    csC = crystalFrame('m-3m',[2.87 2.87 2.87],'mineral','Ferrite');
     p2c = orientation.KurdjumovSachs(csP,csC);
     oriChild = variants(p2c,orientation.byEuler(0,0,0,csP));
     plotPDF(oriChild,Miller(0,0,1,csC),'property',1:length(oriChild),...
@@ -349,12 +349,12 @@ switch name
     plot(S2Fun.smiley,'upper')
 
   case 'SO3Functions'
-    cs = crystalSymmetry('432');
+    cs = crystalFrame('432');
     odf = unimodalODF(orientation.byEuler(30*degree,50*degree,10*degree,cs),'halfwidth',15*degree);
     plot(odf,'sigma','sections',3,'figSize','small')
 
   case 'Plotting'
-    cs = crystalSymmetry('432');
+    cs = crystalFrame('432');
     odf = unimodalODF(orientation.byEuler(30*degree,50*degree,10*degree,cs),'halfwidth',15*degree);
     h = [Miller(1,0,0,cs),Miller(1,1,0,cs),Miller(1,1,1,cs)];
     plotPDF(odf,h,'contourf','figSize','small')

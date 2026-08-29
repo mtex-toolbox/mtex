@@ -17,7 +17,7 @@
 % In a pure edge dislocation, the Burgers vector is perpendicular to the line
 % vector. Start with a cubic crystal frame and two crystal directions.
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 bEdge = Miller(1,1,0,cs,'uvw')
 lEdge = Miller(1,-1,-2,cs,'uvw')
 

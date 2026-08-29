@@ -19,7 +19,7 @@ plottingConvention.default('y↑→x');
 % The tensor is in GPa and is expressed in the olivine crystal frame.
 
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
-cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],...
+cs = crystalFrame('mmm',[4.7646 10.2296 5.9942],...
   'mineral','Olivine');
 C = stiffnessTensor.load(fname,cs)
 

@@ -95,9 +95,9 @@ fprintf('pole figure difference min / mean / max : %.2f / %.2f / %.2f\n', ...
 % validation strategy. Here the model has two sharp components, and pole
 % figures can be evaluated at whichever specimen directions are selected.
 
-cs = crystalSymmetry('cubic');
+cs = crystalFrame('cubic');
 plottingConvention.default('y↑→x');
-ss = specimenSymmetry;
+ss = specimenFrame;
 
 q = rotation.byEuler(10*degree,10*degree,10*degree,'ABG');
 q2 = rotation.byEuler(10*degree,30*degree,10*degree,'ABG');

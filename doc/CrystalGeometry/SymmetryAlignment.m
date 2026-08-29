@@ -20,13 +20,13 @@ plottingConvention.default('y↑→x');
 
 %% Read the Crystal Frame from the Summary
 %
-% <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|> stores the point
+% <crystalFrame.crystalFrame.html |crystalFrame|> stores the point
 % group, lattice metric and crystal frame together. Its printed summary is
 % therefore the first place to check a convention. For this monoclinic
 % example, MTEX uses $\vec x\parallel\vec a^*$ and
 % $\vec z\parallel\vec c$ by default.
 
-cs = crystalSymmetry('12/m1',[4 5 6],[90 100 90]*degree,...
+cs = crystalFrame('12/m1',[4 5 6],[90 100 90]*degree,...
   'mineral','example')
 
 %%
@@ -42,7 +42,7 @@ axisAngles = [angle(cs.aAxis,vector3d.X,'noSymmetry'),...
 % A different Cartesian embedding is requested by naming the parallel axes
 % in the constructor.
 
-csAlternative = crystalSymmetry('12/m1',[4 5 6],...
+csAlternative = crystalFrame('12/m1',[4 5 6],...
   [90 100 90]*degree,'X||a','mineral','example')
 
 %%
@@ -60,7 +60,7 @@ csAlternative = crystalSymmetry('12/m1',[4 5 6],...
 % lengths $a=4.7646$, $b=10.2296$ and $c=5.9942$, with tensor axes
 % $X_1\parallel[100]$ and $X_3\parallel[001]$.
 
-csSource = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],...
+csSource = crystalFrame('mmm',[4.7646 10.2296 5.9942],...
   'mineral','Olivine');
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 C = stiffnessTensor.load(fname,csSource)
@@ -79,7 +79,7 @@ plot(C)
 % becomes new $\vec a$, old $\vec c$ becomes new $\vec b$, and old $\vec a$
 % becomes new $\vec c$. The reordered lattice lengths state that mapping.
 
-csTarget = crystalSymmetry('mmm',[10.2296 5.9942 4.7646],...
+csTarget = crystalFrame('mmm',[10.2296 5.9942 4.7646],...
   'mineral','Olivine')
 
 %% Change the Frame, Do Not Rotate the Tensor

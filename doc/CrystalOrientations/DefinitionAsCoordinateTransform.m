@@ -22,7 +22,7 @@ plottingConvention.default('y↑→x');
 %
 % An orientation combines a <rotation.rotation.html rotation> with the
 % symmetry, lattice metric, and crystal frame stored by a
-% <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|>.
+% <crystalFrame.crystalFrame.html |crystalFrame|>.
 
 rot = rotation.byEuler(10*degree,20*degree,30*degree,'Bunge');
 
@@ -91,7 +91,7 @@ Cspecimen = ori * C
 %%
 % Everything defined in the crystal frame travels in the same direction:
 %
-% * <Miller.Miller.html crystal directions>
+% * <Miller.html crystal directions>
 % * <tensor.tensor.html tensors>
 % * <slipSystem.slipSystem.html slip systems>
 % * <twinningSystem.twinningSystem.html twinning systems>

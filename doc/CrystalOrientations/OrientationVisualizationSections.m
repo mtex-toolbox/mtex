@@ -21,8 +21,8 @@
 
 plottingConvention.default('y↑→x');
 
-cs = crystalSymmetry('432');
-ss = specimenSymmetry('222');
+cs = crystalFrame('432');
+ss = specimenFrame('222');
 
 ori = orientation.rand(100,cs,ss);
 

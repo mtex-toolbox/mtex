@@ -23,7 +23,7 @@
 
 plottingConvention.default('y↑→x');
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 reportedEuler = [10,50,20] * degree;
 ori = orientation.byEuler(reportedEuler,'Bunge',cs);
 h = Miller(1,0,0,cs,'uvw');
@@ -36,7 +36,7 @@ h = Miller(1,0,0,cs,'uvw');
 r = ori * h
 
 %%
-% <Miller.rotate.html |rotate|> performs the same operation. The zero angular
+% <vector3d.rotate.html |rotate|> performs the same operation. The zero angular
 % residual confirms that the two forms agree.
 
 rotateResidual = angle(r,rotate(h,ori)) ./ degree

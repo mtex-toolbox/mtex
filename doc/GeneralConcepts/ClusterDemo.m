@@ -92,7 +92,7 @@ annotate(center)
 % unimodal component. <OptimalKernel.html Kernel selection> explains how the
 % halfwidth controls smoothing when an ODF is estimated from observations.
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 odf = 0.7*fibreODF(fibre.gamma(cs),'halfwidth',10*degree) + ...
   0.3*unimodalODF(orientation.byEuler(30*degree,10*degree,60*degree,cs));
 

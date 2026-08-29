@@ -5,7 +5,7 @@
 % <SpecimenSymmetry.html specimen symmetry>. Its texture is unchanged by a
 % $180^\circ$ rotation about the rolling direction (RD), transverse
 % direction (TD), or normal direction (ND). The MTEX expression
-% |specimenSymmetry('222')| represents these three twofold rotations.
+% |specimenFrame('222')| represents these three twofold rotations.
 %
 % The symmetry is easy to recognize only when its axes agree with the
 % <AxesAlignment.html specimen frame>. In conventional antipodal
@@ -29,8 +29,8 @@
 
 specimenFrame.rolling.makeDefault;
 plottingConvention.default('y←↑x');
-CS = crystalSymmetry('cubic');
-SS = specimenSymmetry('222');
+CS = crystalFrame('cubic');
+SS = specimenFrame('222');
 
 % component centres
 ori = [orientation.byEuler(135*degree,45*degree,120*degree,CS,SS) ...

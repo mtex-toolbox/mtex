@@ -38,10 +38,9 @@
 
 plottingConvention.default('y←↑x');
 
-% use cubic crystal symmetry and orthorhombic specimen symmetry
-cs = crystalSymmetry('m-3m');
-ss = specimenSymmetry('orthorhombic');
-ss.frame = specimenFrame.rolling;
+% cubic crystal symmetry, and orthorhombic specimen symmetry in the rolling frame
+cs = crystalFrame('m-3m');
+ss = specimenFrame.rolling('orthorhombic');
 
 %% A Representative Selection
 %

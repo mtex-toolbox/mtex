@@ -20,7 +20,7 @@
 plottingConvention.default('y↑→x');
 
 % cubic crystal symmetry and trivial specimen symmetry
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 
 %% The Equispaced Grid
 %

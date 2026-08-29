@@ -21,7 +21,7 @@ plottingConvention.default('y↑→x');
 % densities have recognisable maxima.
 
 % define a two-component model ODF
-cs = crystalSymmetry('-3m');
+cs = crystalFrame('-3m');
 
 mod1 = orientation.byEuler(110*degree,30*degree,80*degree,cs);
 mod2 = orientation.byEuler(310*degree,70*degree,40*degree,cs);

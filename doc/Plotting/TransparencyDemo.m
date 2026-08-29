@@ -22,7 +22,7 @@
 % Project the same sample onto three pole figures, one for each crystal
 % direction.
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 odf = unimodalODF(orientation.id(cs),'halfwidth',10*degree);
 ori = odf.discreteSample(2000);
 
@@ -161,8 +161,8 @@ plot(cS,'faceAlpha',0.2)
 % object. In this cubic example, transparency keeps the slip-system geometry
 % visible without hiding the crystal outline.
 
-sS = slipSystem.fcc(crystalSymmetry('432'));
-cSfcc = crystalShape.cube(crystalSymmetry('432'));
+sS = slipSystem.fcc(crystalFrame('432'));
+cSfcc = crystalShape.cube(crystalFrame('432'));
 
 plot(cSfcc,'faceAlpha',0.2)
 hold on

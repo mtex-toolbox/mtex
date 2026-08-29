@@ -28,7 +28,7 @@ plottingConvention.default('y↑→x');
 % inversion deliberately difficult because independently scaled pole
 % figures constrain that portion least.
 
-cs = crystalSymmetry('orthorhombic');
+cs = crystalFrame('orthorhombic');
 mod1 = orientation.byAxisAngle(xvector,45*degree,cs);
 mod2 = orientation.byAxisAngle(yvector,65*degree,cs);
 model_odf = 0.5*uniformODF(cs) + ...

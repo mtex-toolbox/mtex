@@ -27,7 +27,7 @@ plottingConvention.default('y↑→x');
 % as well as the metric used to interpret the four-index notation introduced
 % in <CrystalDirections.html Miller Indices>.
 
-CS = crystalSymmetry('-3m',[4.9 4.9 5.4]);
+CS = crystalFrame('-3m',[4.9 4.9 5.4]);
 
 fname = {...
   fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-10)_amp.cnv'),...

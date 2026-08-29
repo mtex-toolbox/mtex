@@ -22,7 +22,7 @@
 % Keeping the ODF fixed makes the differences between the file formats
 % visible.
 
-cs = crystalSymmetry('cubic');
+cs = crystalFrame('cubic');
 mod1 = orientation.byAxisAngle(xvector,45*degree,cs);
 mod2 = orientation.byAxisAngle(yvector,65*degree,cs);
 model_odf = 0.5*uniformODF(cs) + ...

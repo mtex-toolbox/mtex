@@ -26,9 +26,9 @@
 % This reference curve is often called the Mackenzie distribution. Strictly,
 % Mackenzie's result is for cubic symmetry. MTEX computes the analogous
 % random-disorientation baseline for any pair of crystal symmetries with
-% <symmetry.calcAngleDistribution.html |calcAngleDistribution|>.
+% <referenceFrame.calcAngleDistribution.html |calcAngleDistribution|>.
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 [density,omega] = calcAngleDistribution(cs);
 
 close all
@@ -41,7 +41,7 @@ ylabel('relative frequency (mrd)')
 % little rotation space. It terminates well below $180^\circ$ because cubic
 % symmetry supplies a smaller equivalent rotation beyond that limit.
 %
-% <symmetry.maxAngle.html |maxAngle|> returns the largest angle in the
+% <referenceFrame.maxAngle.html |maxAngle|> returns the largest angle in the
 % fundamental region. For cubic symmetry it is
 
 cubicMaxAngle = maxAngle(cs) ./ degree
@@ -52,10 +52,10 @@ cubicMaxAngle = maxAngle(cs) ./ degree
 % permit larger distinct disorientation angles.
 
 close all
-plotAngleDistribution(crystalSymmetry('1'),'linewidth',2)
+plotAngleDistribution(crystalFrame('1'),'linewidth',2)
 hold on
-plotAngleDistribution(crystalSymmetry('622'),'linewidth',2)
-plotAngleDistribution(crystalSymmetry('432'),'linewidth',2)
+plotAngleDistribution(crystalFrame('622'),'linewidth',2)
+plotAngleDistribution(crystalFrame('432'),'linewidth',2)
 hold off
 legend('1','622','432','Location','northwest')
 
@@ -69,8 +69,8 @@ legend('1','622','432','Location','northwest')
 % fundamental region.
 
 close all
-plotAngleDistribution(crystalSymmetry('222'),...
-  crystalSymmetry('12/m1'),'linewidth',2)
+plotAngleDistribution(crystalFrame('222'),...
+  crystalFrame('12/m1'),'linewidth',2)
 
 %%
 % This curve is the random reference for an orthorhombic-to-monoclinic

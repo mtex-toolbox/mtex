@@ -261,7 +261,7 @@ switch name
   case 'Elasticity'
     % The radial Young's-modulus surface is the standard elasticity image:
     % its radius and colour both encode the directional stiffness.
-    cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942], ...
+    cs = crystalFrame('mmm',[4.7646 10.2296 5.9942], ...
       'mineral','Olivine');
     C = stiffnessTensor.load(fullfile(mtexDataPath,'tensor', ...
       'Olivine1997PC.GPa'),cs);
@@ -272,7 +272,7 @@ switch name
   case 'Plasticity'
     % Follow the Schmid-factor figure: a skew {111} plane inside the cube,
     % with slip, plane-normal and loading arrows all visible.
-    cs = crystalSymmetry('m-3m');
+    cs = crystalFrame('m-3m');
     cS = crystalShape.cube(cs);
     sS = slipSystem.fcc(cs); sS = sS(1);
     loadDirection = normalize(vector3d(.35,.55,1));

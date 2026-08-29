@@ -1,8 +1,8 @@
 vector3d_index               vector3d  
 Miller_index                 Miller 
 symmetry_index               symmetry 
-crystalSymmetry_index        crystalSymmetry
-specimenSymmetry_index       specimenSymmetry
+crystalFrame_index           crystalFrame
+specimenFrame_index          specimenFrame
 crystalShape_index           crystalShape
 rotation_index               rotation
 orientation_index            orientation

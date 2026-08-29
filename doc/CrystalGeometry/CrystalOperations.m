@@ -1,7 +1,7 @@
 %% Operations on Crystal Directions and Planes
 %
 %%
-% A <Miller.Miller.html |Miller|> represents either a direct-lattice vector
+% A <Miller.html |Miller|> represents either a direct-lattice vector
 % $[uvw]$ or a reciprocal-lattice normal $(hkl)$ in a crystal frame. It
 % supports ordinary vector geometry, but comparisons have one extra input:
 % crystal symmetry.
@@ -77,7 +77,7 @@ plot(z,opt{:},'markerEdgeColor','yellow')
 %
 % The family of directions equivalent to $[uvw]$ is written
 % $\langle uvw\rangle$. The family of planes equivalent to $(hkl)$ is written
-% $\{hkl\}$. <Miller.symmetrise.html |symmetrise|> lists the orbit as directed
+% $\{hkl\}$. <vector3d.symmetrise.html |symmetrise|> lists the orbit as directed
 % vectors.
 
 symmetrise(r)
@@ -121,7 +121,7 @@ planeAxisCount = length(symmetrise(r,'unique','antipodal'))
 
 %% Multiplicity
 %
-% The <Miller.multiplicity.html |multiplicity|> is the number of distinct
+% The <vector3d.multiplicity.html |multiplicity|> is the number of distinct
 % directed vectors in a symmetry orbit. It is the count returned by
 % |symmetrise(...,'unique','noAntipodal')|. A direction on a symmetry axis
 % has lower multiplicity because some operations leave it fixed.
@@ -130,7 +130,7 @@ planeAxisCount = length(symmetrise(r,'unique','antipodal'))
 % contribute together. Using a Laue group includes that equivalence in the
 % conventional multiplicity factor for a powder reflection.
 
-csCubic = crystalSymmetry('m-3m');
+csCubic = crystalFrame('m-3m');
 hCubic = Miller({1,0,0},{1,1,0},{1,1,1},csCubic);
 
 multiplicity(hCubic)
@@ -171,7 +171,7 @@ eq(r1,r2,'antipodal')
 % Incidence concerns the two indices that were written. Use |'noSymmetry'|
 % so that |dot| does not substitute a symmetry-equivalent vector.
 
-csOrtho = crystalSymmetry('mmm',[4 5 6]);
+csOrtho = crystalFrame('mmm',[4 5 6]);
 plane = Miller(1,1,0,csOrtho,'hkl');
 directionInPlane = Miller(1,-1,0,csOrtho,'uvw');
 
@@ -200,7 +200,7 @@ circle(d1,'parent',ax2,'linecolor','lightgreen')
 
 %%
 % The output uses |UVTW| because a cross product of two reciprocal normals is
-% a direct-lattice direction. <Miller.round.html |round|> rescales it to
+% a direct-lattice direction. <vector3d.round.html |round|> rescales it to
 % small integer indices.
 %
 % The green square lies where the two corresponding bands cross in the

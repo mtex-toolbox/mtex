@@ -24,18 +24,18 @@ plottingConvention.default('y↑→x');
 
 %% Defining a Specimen Symmetry
 %
-% An @specimenSymmetry is defined by its point group. Only a small number of
+% An @specimenFrame is defined by its point group. Only a small number of
 % point groups occur in practice. The trivial group is the default when no
 % specimen symmetry is specified.
 
-ss = specimenSymmetry('1')
+ss = specimenFrame('1')
 
 %%
 % Orthorhombic specimen symmetry is the common choice for rolled material.
 % It may be specified by its point group |'mmm'| or by the name
 % |'orthorhombic'|.
 
-ss = specimenSymmetry('mmm')
+ss = specimenFrame('mmm')
 
 %%
 % The full point group |mmm| has eight operations. Its proper subgroup has
@@ -51,8 +51,8 @@ numberOfProperRotations = numProper(ss)
 % the identity alone. The lattice-type name |'triclinic'| selects the point
 % group $\bar 1$, which also contains inversion.
 
-numberInIdentityGroup = numSym(specimenSymmetry('1'))
-numberInTriclinicGroup = numSym(specimenSymmetry('triclinic'))
+numberInIdentityGroup = numSym(specimenFrame('1'))
+numberInTriclinicGroup = numSym(specimenFrame('triclinic'))
 
 %% The Effect on an ODF
 %
@@ -86,7 +86,7 @@ textureIndexTrivial = norm(odf)^2
 % its proper rotations. This changes the represented function rather than
 % merely changing its plot.
 
-odf.SS = specimenSymmetry('mmm');
+odf.SS = specimenFrame('mmm');
 
 %%
 
@@ -115,15 +115,14 @@ textureIndexOrthorhombic = norm(odf)^2
 % frame. The point group |'112'| has its twofold rotation about the $z$
 % axis.
 
-ss = specimenSymmetry('112')
+ss = specimenFrame('112')
 
 %%
 % The rolling frame names its axes RD, TD, and ND and supplies their plotting
-% convention. Attaching it therefore declares that the twofold $z$ axis is
-% ND, and those names appear in summaries and plots.
+% convention. Asking it for the same point group therefore declares that the
+% twofold $z$ axis is ND, and those names appear in summaries and plots.
 
-ss = specimenFrame.rolling;
-ss
+ss = specimenFrame.rolling('112')
 
 %%
 % Assigning a frame does not rotate an ODF or correct a mounting error. Use

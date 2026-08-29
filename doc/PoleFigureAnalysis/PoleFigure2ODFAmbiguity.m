@@ -40,7 +40,7 @@
 % axes:
 
 plottingConvention.default('y↑→x');
-cs = crystalSymmetry('mmm');
+cs = crystalFrame('mmm');
 
 orix = orientation.byAxisAngle(xvector,90*degree,cs);
 oriy = orientation.byAxisAngle(yvector,90*degree,cs);
@@ -152,7 +152,7 @@ densityAtModes12 = [mean(odf.eval([orix,oriy,oriz])), ...
 % Consider point group -43m, which has no fourfold axis, and two
 % orientations that differ by 90 degrees about the third Euler axis.
 
-cs = crystalSymmetry('-43m');
+cs = crystalFrame('-43m');
 
 %%
 
@@ -215,7 +215,7 @@ hold off
 % centrosymmetric crystal. Consider triclinic symmetry and a weak unimodal
 % ODF at the identity:
 
-cs = crystalSymmetry('-1');
+cs = crystalFrame('-1');
 
 odf1 = 2/3 * uniformODF(cs) + 1/3 * ...
   unimodalODF(orientation.id(cs),'halfwidth',30*degree);

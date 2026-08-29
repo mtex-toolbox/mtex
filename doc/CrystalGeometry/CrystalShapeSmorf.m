@@ -41,7 +41,7 @@ plottingConvention.default('y↑→x');
 % parameters and highlights the required distance convention. The same
 % crystal symmetry in MTEX is
 
-cs = crystalSymmetry('mmm',[4.756 10.207 5.98], ...
+cs = crystalFrame('mmm',[4.756 10.207 5.98], ...
   'mineral','Forsterite');
 
 %% Enter the Crystal Forms
@@ -60,7 +60,7 @@ cs = crystalSymmetry('mmm',[4.756 10.207 5.98], ...
 % only a starting block: at distance 1 the (010), (001) and (110) forms do
 % not reach the surface at all.
 % The same six plane normals are a list of
-% <Miller.Miller.html |Miller|> indices in MTEX.
+% <Miller.html |Miller|> indices in MTEX.
 
 N = Miller({0,1,0},{0,0,1},{0,2,1}, ...
   {1,1,0},{1,0,1},{1,2,0},cs);

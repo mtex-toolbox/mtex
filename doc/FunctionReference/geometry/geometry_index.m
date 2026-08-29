@@ -24,9 +24,6 @@
 % &nbsp;
 % orientationRegion
 % &nbsp;
-% notIndexedFrame
-% └── notIndexed
-% &nbsp;
 % plane3d
 % &nbsp;
 % quaternion
@@ -39,6 +36,7 @@
 % &nbsp;
 % referenceFrame
 % ├── crystalFrame
+% ├── notIndexedFrame
 % └── specimenFrame
 % &nbsp;
 % slipSystem
@@ -59,11 +57,8 @@
 % sphericalRegion
 % &nbsp;
 % symmetry
-% ├── crystalSymmetry
-% └── specimenSymmetry
 % &nbsp;
 % vector3d
-% ├── Miller
 % ├── S2Grid
 % ├── SO3TangentVector
 % ├── fibonacciS2Grid

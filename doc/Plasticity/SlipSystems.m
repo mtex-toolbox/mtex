@@ -14,7 +14,7 @@
 % The four-index notation used below is introduced with
 % <CrystalDirections.html crystal directions>.
 
-cs = crystalSymmetry('622',[3,3,4.7],'x||a', ...
+cs = crystalFrame('622',[3,3,4.7],'x||a', ...
   'mineral','Titanium (Alpha)')
 
 %%

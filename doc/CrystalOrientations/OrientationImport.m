@@ -102,7 +102,7 @@ plotPDF(ori,Miller({0,0,0,1},{1,0,-1,0},cs));
 %   convention check establishes that the stored map is the inverse.
 %
 % * *Which crystal and specimen frames?* The alignment between Cartesian
-%   crystal axes and lattice axes belongs to the |crystalSymmetry| loaded
+%   crystal axes and lattice axes belongs to the |crystalFrame| loaded
 %   above; see <CrystalReferenceSystem.html The Crystal Reference System>.
 %   The file documentation must also say which physical specimen directions
 %   its axes denote. The explicit plotting convention on this page states

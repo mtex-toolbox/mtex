@@ -72,7 +72,7 @@ hold off
 nextAxis(2,1)
 
 hold on
-plot(crystalSymmetry('432'))
+plot(crystalFrame('432'))
 hold off
 
 %%

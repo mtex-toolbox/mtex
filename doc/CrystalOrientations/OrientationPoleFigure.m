@@ -21,7 +21,7 @@
 
 plottingConvention.default('y↑→x');
 
-cs = crystalSymmetry('321');
+cs = crystalFrame('321');
 
 ori = orientation.rand(cs);
 
@@ -34,7 +34,7 @@ ori = orientation.rand(cs);
 h = Miller({1,0,0},cs);
 
 %%
-% <Miller.symmetrise.html |symmetrise|> applies the crystal point group to
+% <vector3d.symmetrise.html |symmetrise|> applies the crystal point group to
 % the pole. The orientation then maps every returned pole into the specimen
 % frame.
 

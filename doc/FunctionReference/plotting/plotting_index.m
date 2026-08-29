@@ -25,6 +25,8 @@
 % &nbsp;
 % mtexFigure
 % &nbsp;
+% mtexLayout
+% &nbsp;
 % orientationColorKey
 % ├── BungeColorKey
 % ├── PatalaColorKey

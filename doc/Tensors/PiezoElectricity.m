@@ -17,7 +17,7 @@
 plottingConvention.default('y↑→x');
 
 % define the quartz crystal symmetry and crystal frame
-csQuartz = crystalSymmetry('32',[4.916 4.916 5.4054],...
+csQuartz = crystalFrame('32',[4.916 4.916 5.4054],...
   'X||a*','Z||c','mineral','Quartz');
 
 % load the right-handed quartz piezoelectric strain tensor

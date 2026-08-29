@@ -40,7 +40,7 @@ K1 = 4.77 - 0.21256*siliconContent - 0.03816*aluminiumContent;
 Js = 2.162 - 0.043*siliconContent - 0.0625*aluminiumContent;
 
 % cubic crystal symmetry and a Goss-centred model ODF
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 goss = orientation.goss(cs);
 halfwidth = 10*degree;
 odf = unimodalODF(goss,'halfwidth',halfwidth);
@@ -164,7 +164,7 @@ grid on;
 % invariant when cubic symmetry permutes or reverses those axes.
 %
 % The three cosines still have to be evaluated separately. Without
-% |'noSymmetry'|, <Miller.dot.html |dot|> compares a direction with
+% |'noSymmetry'|, <vector3d.dot.html |dot|> compares a direction with
 % symmetrically equivalent Miller directions and returns the best match.
 % That would replace the three components required by the equation with
 % three symmetry-reduced comparisons.

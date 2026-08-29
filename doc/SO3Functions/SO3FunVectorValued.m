@@ -55,7 +55,7 @@
 % crystal and specimen symmetries determine the fundamental region sampled
 % by the grid.
 
-nodes = equispacedSO3Grid(crystalSymmetry,specimenSymmetry,'points',1e5);
+nodes = equispacedSO3Grid(crystalFrame,specimenFrame,'points',1e5);
 nodes = nodes(:);
 
 %%
@@ -196,7 +196,7 @@ min(SO3F4,[],1)
 % arrays. Both operands must have compatible symmetries, so the symmetry of
 % |SO3F1| is set explicitly before multiplication.
 
-SO3F1.CS = specimenSymmetry;
+SO3F1.CS = specimenFrame;
 SO3F1 .* SO3F4
 
 %% Inspect all components

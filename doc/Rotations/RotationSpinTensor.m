@@ -175,14 +175,14 @@ roundTripError = angle(rotEnd,[rotFromRightVector,rotFromLeftVector,...
 % Define a one-radian perturbation about the trigonal crystal direction
 % $(1,2,\bar3,3)$ and apply it on the right.
 
-cs = crystalSymmetry('321');
+cs = crystalFrame('321');
 oriRef = orientation.byEuler(10*degree,20*degree,30*degree,'Bunge',cs);
 crystalIncrement = orientation.byAxisAngle(Miller(1,2,-3,3,cs),1);
 oriEnd = oriRef * crystalIncrement;
 
 %%
 % The right tangent is expressed in crystal coordinates. Converting it to
-% <Miller.Miller.html |Miller|> indices recovers the direction used above.
+% <Miller.html |Miller|> indices recovers the direction used above.
 
 crystalAxis = Miller(log(oriEnd,oriRef,...
   SO3TangentSpace.rightVector),oriEnd.CS);

@@ -182,7 +182,7 @@ plot(SO3FRBF,'sigma')
 % through |interp|. The following controlled example begins with a fibre ODF
 % and samples it on a coarse grid.
 
-cs = crystalSymmetry("1");
+cs = crystalFrame("1");
 odf = fibreODF(fibre.rand(cs));
 S3G = equispacedSO3Grid(cs,'resolution',15*degree);
 v = odf.eval(S3G);

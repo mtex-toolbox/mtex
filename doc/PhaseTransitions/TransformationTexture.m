@@ -19,8 +19,8 @@ rng(1)
 % Here both phases are cubic, and the Nishiyama-Wassermann (NW) OR relates
 % austenite to ferrite.
 
-csP = crystalSymmetry('432','mineral','Austenite');
-csC = crystalSymmetry('432','mineral','Ferrite');
+csP = crystalFrame('432','mineral','Austenite');
+csC = crystalFrame('432','mineral','Ferrite');
 p2c = orientation.NishiyamaWassermann(csP,csC)
 
 %% Transform one parent orientation

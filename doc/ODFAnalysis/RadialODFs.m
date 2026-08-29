@@ -35,8 +35,8 @@ plottingConvention.default('y↑→x');
 % are needed by <uniformODF.html |uniformODF|>. The printed summary is
 % useful here because it records both.
 
-cs = crystalSymmetry('cubic');
-ss = specimenSymmetry('orthorhombic');
+cs = crystalFrame('cubic');
+ss = specimenFrame('orthorhombic');
 
 odf = uniformODF(cs,ss)
 
@@ -47,8 +47,8 @@ odf = uniformODF(cs,ss)
 % symmetries carried by that orientation. This example uses trivial specimen
 % symmetry rather than assuming a sample symmetry that has not been shown.
 
-cs = crystalSymmetry('432');
-ss = specimenSymmetry;
+cs = crystalFrame('432');
+ss = specimenFrame;
 mod1 = orientation.byMiller([1,2,2],[2,2,1],cs,ss);
 psi = SO3vonMisesFisherKernel('halfwidth',10*degree);
 

@@ -21,10 +21,10 @@
 plottingConvention.default('y↑→x');
 
 % hexagonal crystal symmetry, with 6 rotations about the c axis
-cs = crystalSymmetry('6');
+cs = crystalFrame('6');
 
 % specimen symmetry with a twofold axis along z
-ss = specimenSymmetry('112');
+ss = specimenFrame('112');
 
 % a generic orientation carrying both symmetries
 ori = orientation.byEuler(10*degree,20*degree,30*degree,...
@@ -74,7 +74,7 @@ classSize = length(symmetrise(ori))
 % representatives, while the |'proper'| flag retains the 24 that are rigid
 % rotations.
 
-cubicOri = orientation.id(crystalSymmetry('m-3m'));
+cubicOri = orientation.id(crystalFrame('m-3m'));
 
 cubicCounts = [length(symmetrise(cubicOri)),...
   length(symmetrise(cubicOri,'proper'))]

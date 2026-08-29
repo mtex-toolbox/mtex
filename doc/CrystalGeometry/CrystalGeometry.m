@@ -13,7 +13,7 @@
 % *crystal frame* is the Cartesian reference frame fixed to that basis. A
 % *symmetry* is the point group under which crystal data are invariant.
 % MTEX represents all three together in a
-% <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|> object, but they
+% <crystalFrame.crystalFrame.html |crystalFrame|> object, but they
 % are not interchangeable.
 %
 % This chapter assumes the vector and spherical-plot ideas introduced in
@@ -32,13 +32,13 @@ plottingConvention.default('y↑→x');
 % compared.
 %
 % The indices $[111]$ select one direction relative to the named lattice
-% axes. A <Miller.Miller.html |Miller|> object denotes this one indexed
+% axes. A <Miller.html |Miller|> object denotes this one indexed
 % vector, not its whole symmetry family.
 %
 % Symmetry associates $[111]$ with seven other directions. Together the
 % eight are the $\langle111\rangle$ family for |m-3m|.
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 d111 = Miller(1,1,1,cs,'uvw');
 family111 = d111.symmetrise('unique')
 
@@ -109,7 +109,7 @@ plot(family111,'labeled','grid','backgroundColor','w')
 % diffraction can reveal departures from Friedel's law.
 %
 % MTEX stores point groups, and accepts a space-group symbol or number by
-% reducing it to the corresponding point group. A |crystalSymmetry| does not
+% reducing it to the corresponding point group. A |crystalFrame| does not
 % store translational centring, screw or glide components, an atomic motif,
 % or structure factors.
 

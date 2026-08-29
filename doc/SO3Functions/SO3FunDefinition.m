@@ -46,7 +46,7 @@ angleFormula = @(ori) angle(ori) ./ degree
 % @SO3FunHandle. Dividing by |degree| makes the returned values numerical
 % angles in degrees.
 
-cs = crystalSymmetry('cubic');
+cs = crystalFrame('cubic');
 SO3FHandle = SO3FunHandle(angleFormula,cs)
 
 close all

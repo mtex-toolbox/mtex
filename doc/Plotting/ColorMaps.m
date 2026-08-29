@@ -19,7 +19,7 @@ plottingConvention.default('y↑→x');
 % two simulated <PoleFigureAnalysis.html pole figures> whose densities can
 % be compared.
 
-cs = crystalSymmetry('-3m');
+cs = crystalFrame('-3m');
 odf = fibreODF(Miller(1,1,0,cs),zvector)
 pf = calcPoleFigure(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
   equispacedS2Grid('points',500,'antipodal'));

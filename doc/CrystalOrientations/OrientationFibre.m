@@ -24,8 +24,8 @@
 plottingConvention.default('y↑→x');
 
 % define crystal and specimen symmetry
-cs = crystalSymmetry('432');
-ss = specimenSymmetry('1');
+cs = crystalFrame('432');
+ss = specimenFrame('1');
 
 % define two ideal orientations
 ori1 = orientation.cube(cs,ss);
@@ -172,7 +172,7 @@ plotIPDF(symFibre,vector3d.Z,'complete',...
 
 %% Defining a Fibre by Directions
 %
-% A <Miller.Miller.html |Miller|> direction and a
+% A <Miller.html |Miller|> direction and a
 % <vector3d.vector3d.html |vector3d|> specimen direction define the full
 % fibre directly. The next fibre contains every orientation that makes the
 % crystal c-axis $[001]$ parallel to specimen Z.
@@ -231,7 +231,7 @@ plot(cube111Fibre,'lineColor','darkred','lineWidth',4,...
 % static |fibre| constructor. These names assume the conventional rolling
 % frame and orthorhombic specimen symmetry.
 
-ss = specimenSymmetry('orthorhombic');
+ss = specimenFrame('orthorhombic');
 beta = fibre.beta(cs,ss);
 
 %%

@@ -27,7 +27,7 @@
 
 plottingConvention.default('y↑→x');
 
-cs = crystalSymmetry('m-3m','mineral','Aluminium');
+cs = crystalFrame('m-3m','mineral','Aluminium');
 cS = crystalShape.cube(cs);
 sS = slipSystem.fcc(cs);
 

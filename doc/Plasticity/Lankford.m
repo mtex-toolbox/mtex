@@ -51,7 +51,7 @@
 % slip family. The critical resolved shear stress (CRSS) is one for every
 % system, so only crystallographic geometry distinguishes them.
 
-CS = crystalSymmetry('m-3m',[1 1 1],'mineral','fcc');
+CS = crystalFrame('m-3m',[1 1 1],'mineral','fcc');
 sS = slipSystem.fcc(CS)
 ori = orientation.brass(CS);
 

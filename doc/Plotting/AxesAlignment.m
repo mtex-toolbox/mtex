@@ -170,7 +170,7 @@ plotPDF(odf,pf.allH{1:4})
 % convention in crystal directions, for example |⊙c→a| means c points out
 % of the screen and a points east.
 
-cs = crystalSymmetry('321','X||a')
+cs = crystalFrame('321','X||a')
 
 %%
 % The summary reports the crystal-frame alignment. A pole figure itself is

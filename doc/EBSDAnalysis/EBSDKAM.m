@@ -223,7 +223,7 @@ N = [4 3 2 3 4;...
 
 colors = getMTEXpref('PhaseColorOrder');
 for k = 1:5
-  csList(k) = crystalSymmetry;
+  csList(k) = crystalFrame;
   csList(k).color = colors{k};
 end
 ebsd = EBSDsquare([],rotation.nan(5,5),N,0:4,csList,'dxy',[10 10]);
@@ -245,7 +245,7 @@ N = [3 2 2 2 3;...
 
 colors = getMTEXpref('PhaseColorOrder');
 for k = 1:5
-  csList(k) = crystalSymmetry;
+  csList(k) = crystalFrame;
   csList(k).color = colors{k};
 end
 ebsd = EBSDhex([],rotation.nan(6,5),N,0:4,csList,10,1,1);

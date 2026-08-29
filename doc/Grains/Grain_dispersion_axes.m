@@ -191,7 +191,7 @@ fprintf(['Distance from fibre: median %.2f degree, 90th percentile ' ...
 grainsLarge = grains('fo');
 grainsLarge = grainsLarge(grainsLarge.numPixel > 100);
 
-axisCrystal = Miller.nan(length(grainsLarge),1,grainsLarge.CS);
+axisCrystal = Miller(vector3d.nan(length(grainsLarge),1),grainsLarge.CS);
 axisSpecimen = vector3d.nan(length(grainsLarge),1);
 fibreRatio = nan(length(grainsLarge),1);
 

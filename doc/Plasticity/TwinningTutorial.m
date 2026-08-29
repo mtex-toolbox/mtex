@@ -23,7 +23,7 @@
 % its shear direction in |b|, its plane normal in |n|, and its critical
 % resolved shear stress (CRSS) in |CRSS|.
 
-cs = crystalSymmetry('622',[3.2 3.2 5.2], ...
+cs = crystalFrame('622',[3.2 3.2 5.2], ...
   'mineral','Magnesium');
 sSTwin = slipSystem.twinT1(cs,1)
 

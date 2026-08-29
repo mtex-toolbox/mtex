@@ -15,7 +15,7 @@
 % one block of weighted orientations for each recorded strain level.
 % It does not contain crystal symmetry, so supply that information first.
 
-cs = crystalSymmetry('222',[4.762 10.225 5.994],...
+cs = crystalFrame('222',[4.762 10.225 5.994],...
   'mineral','olivine');
 
 %%

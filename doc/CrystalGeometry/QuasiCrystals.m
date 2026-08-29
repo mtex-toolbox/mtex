@@ -20,7 +20,7 @@ plottingConvention.default('y↑→x');
 
 %% Build the Proper Icosahedral Group
 %
-% <crystalSymmetry.byElements.html |crystalSymmetry.byElements|> repeatedly
+% <crystalFrame.byElements.html |crystalFrame.byElements|> repeatedly
 % composes the supplied operations until they close into a group. The
 % generators must describe a finite group; arbitrary rotations need not do
 % so.

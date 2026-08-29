@@ -20,7 +20,7 @@ plottingConvention.default('y↑→x');
 % sampled from it. The ODF is a function. The other two objects contain
 % discrete values derived from that function.
 
-cs = crystalSymmetry('-3m');
+cs = crystalFrame('-3m');
 odf = fibreODF(Miller(1,1,0,cs),zvector);
 pf = calcPoleFigure(odf,Miller(1,0,0,cs),equispacedS2Grid('antipodal'));
 

@@ -20,10 +20,10 @@
 % largest permitted angle depends on the axis direction, so some axes
 % represent more rotations than others.
 %
-% <symmetry.calcAxisDistribution.html |calcAxisDistribution|> computes this
+% <referenceFrame.calcAxisDistribution.html |calcAxisDistribution|> computes this
 % symmetry-only reference. Point group |432| gives the cubic example.
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 
 adf = calcAxisDistribution(cs)
 

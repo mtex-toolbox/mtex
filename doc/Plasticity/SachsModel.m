@@ -26,7 +26,7 @@
 % one system; the absolute Schmid factor below makes their activation
 % equivalent.
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 sS = symmetrise(slipSystem.fcc(cs),'antipodal')
 
 sigma = stressTensor.uniaxial(vector3d.Z)

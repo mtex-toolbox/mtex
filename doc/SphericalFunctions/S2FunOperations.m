@@ -204,7 +204,7 @@ plot(rotate(combined,rot),'upper')
 % twofold axis in the $z$ direction.
 
 % define the symmetry
-cs = crystalSymmetry('112');
+cs = crystalFrame('112');
 
 % compute the symmetrised function
 sFs = symmetrise(sF1,cs)

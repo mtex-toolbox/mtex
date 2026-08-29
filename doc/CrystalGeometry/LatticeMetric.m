@@ -7,13 +7,13 @@
 % $[uvw]$, the normal to $(hkl)$, and the spacing between neighbouring
 % $(hkl)$ planes.
 %
-% In MTEX, a <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|>
+% In MTEX, a <crystalFrame.crystalFrame.html |crystalFrame|>
 % bundles point symmetry with a crystal frame. The crystal frame carries
 % the lattice basis and its metric; symmetry states which operations leave
 % crystal data invariant. Keeping those ideas separate matters because a
 % lattice metric can have more symmetry than the atoms placed in its cell.
 
-cs = crystalSymmetry('12/m1',[5.2 6.3 7.1],...
+cs = crystalFrame('12/m1',[5.2 6.3 7.1],...
   [90 106 90]*degree,'X||a','mineral','Example monoclinic crystal');
 
 %% Reading the Lattice Parameters
@@ -79,7 +79,7 @@ cs.lattice
 %
 % The direct and reciprocal bases are dual: each direct axis has dot product
 % one with its matching reciprocal axis and zero with the other two. MTEX
-% provides them as |axes| and <crystalSymmetry.axesDual.html |axesDual|>.
+% provides them as |axes| and <crystalFrame.axesDual.html |axesDual|>.
 
 directBasis = cs.axes;
 reciprocalBasis = cs.axesDual;
@@ -146,7 +146,7 @@ norm(Miller(2,0,2,cs,'uvw')) ./ norm(m)
 % The normal of $(hkl)$ is a reciprocal-lattice vector. MTEX uses the
 % crystallographic convention without a factor $2\pi$, so its length is the
 % inverse of the interplanar spacing returned by
-% <Miller.dspacing.html |dspacing|>:
+% <vector3d.dspacing.html |dspacing|>:
 %
 % $$ d_{hkl}=\frac{1}{\lVert\vec n_{hkl}\rVert}. $$
 
@@ -163,7 +163,7 @@ d100 = dspacing(h)
 % The same command works for a list. For a cubic lattice with parameter
 % $a=3.6$, the familiar result is $d_{hkl}=a/\sqrt{h^2+k^2+l^2}$.
 
-csCubic = crystalSymmetry('m-3m',[3.6 3.6 3.6]);
+csCubic = crystalFrame('m-3m',[3.6 3.6 3.6]);
 hCubic = Miller({1,0,0},{1,1,0},{1,1,1},csCubic);
 
 dspacing(hCubic)
@@ -206,10 +206,10 @@ metricMatrix = dot_outer(directBasis,directBasis)
 % with its lattice metric. It does not model an atomic basis, Wyckoff
 % positions, or the translational parts of a space group. In particular,
 % the 14 Bravais lattices distinguish translational centring, whereas
-% |crystalSymmetry| retains the associated crystal system and point group.
+% |crystalFrame| retains the associated crystal system and point group.
 %
 % A CIF can supply lattice parameters and a space-group symbol. When MTEX
-% constructs a |crystalSymmetry| from that information, it reduces the space
+% constructs a |crystalFrame| from that information, it reduces the space
 % group to its point group for this geometry. Structure factors and
 % systematic absences therefore require information outside this model.
 

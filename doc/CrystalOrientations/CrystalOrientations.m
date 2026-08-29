@@ -23,7 +23,7 @@
 % The most direct picture of an orientation is the crystal where it sits.
 % This example uses one cubic crystal and one Bunge Euler-angle triplet.
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 cS = crystalShape.cube(cs);
 ori = orientation.byEuler(30*degree,50*degree,10*degree,'Bunge',cs);
 

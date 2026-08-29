@@ -18,7 +18,7 @@
 
 plottingConvention.default('y↑→x');
 
-cs = crystalSymmetry('cubic');
+cs = crystalFrame('cubic');
 
 ori = orientation.rand(100,cs);
 

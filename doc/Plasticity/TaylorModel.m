@@ -18,7 +18,7 @@ specimenFrame.rolling.makeDefault
 % them to 96 systems because both signs of each Burgers vector are needed to
 % represent signed slip with nonnegative coefficients.
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 sSRepresentative = slipSystem.bcc(cs)
 sS = sSRepresentative.symmetrise;
 length(sS)

@@ -166,7 +166,7 @@ plot(odf2,'sigma')
 % following rule uses the rotation axis multiplied by the rotation angle,
 % with cubic symmetry on both sides.
 
-cs = crystalSymmetry('432')
+cs = crystalFrame('432')
 f = @(mori) axis(mori) .* angle(mori);
 VF = SO3VectorFieldHandle(f,cs,cs)
 
@@ -198,7 +198,7 @@ SO3VectorFieldHarmonic(VF)
 % A second construction starts from rotations and one @vector3d value at
 % each rotation. The first array dimension again corresponds to nodes.
 
-nodes = equispacedSO3Grid(specimenSymmetry('1'),'points',1e3);
+nodes = equispacedSO3Grid(specimenFrame('1'),'points',1e3);
 nodes = nodes(:);
 y = vector3d.byPolar(sin(3*nodes.angle),nodes.phi2+pi/2);
 
@@ -234,7 +234,7 @@ SO3VF3 = SO3VectorFieldHarmonic(SO3F)
 % orientation, <strainTensor.calcTaylor.html |calcTaylor|> returns this
 % spin as an @SO3VectorField.
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 sS = slipSystem.bcc(cs)
 
 %%
@@ -248,7 +248,7 @@ epsilon = strainTensor(diag([1 -q -(1-q)]))
 %%
 % Display the spin directions in four Euler-angle sections.
 
-sP = phi1Sections(cs,specimenSymmetry('222'));
+sP = phi1Sections(cs,specimenFrame('222'));
 sP.phi1 = (10:20:70)*degree;
 plot(W,sP,'resolution',7.5*degree,'layout',[2 2])
 

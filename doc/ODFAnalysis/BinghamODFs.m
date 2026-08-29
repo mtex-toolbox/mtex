@@ -29,7 +29,7 @@ plottingConvention.default('y↑→x');
 % space; they are not four physical specimen directions. The example uses
 % the identity quaternion basis as the axes.
 
-cs = crystalSymmetry('1');
+cs = crystalFrame('1');
 
 kappa = [100 90 80 0];
 U = orientation.eye(cs);
@@ -118,7 +118,7 @@ plotPDF(odf,h,'antipodal','silent');
 % |20| to |[20 0 0 0]|. The reference orientation is the unique maximum,
 % apart from its antipode and symmetry-equivalent descriptions.
 
-cs = crystalSymmetry('321');
+cs = crystalFrame('321');
 oriRef = orientation.byEuler(45*degree,0*degree,0*degree,cs);
 
 odf = BinghamODF(20,oriRef)

@@ -19,7 +19,7 @@ plottingConvention.default('y↑→x');
 % The first example is a bimodal ODF. Its two normalized components have
 % equal mixture weights, so the mixture also has mean 1.
 
-cs = crystalSymmetry('mmm');
+cs = crystalFrame('mmm');
 odfBimodal = 0.5*unimodalODF(orientation.byEuler(0,0,0,cs)) + ...
   0.5*unimodalODF(orientation.byEuler(30*degree,0,0,cs));
 

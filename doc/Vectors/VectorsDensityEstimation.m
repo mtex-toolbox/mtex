@@ -246,7 +246,7 @@ h = inv(ebsd('Fo').orientations) .* vector3d.Z;
 
 %%
 % The result is a |Miller| array carrying the Forsterite crystal symmetry.
-% <Miller.calcDensity.html |Miller.calcDensity|> transfers that symmetry to
+% <vector3d.calcDensity.html |Miller.calcDensity|> transfers that symmetry to
 % the density automatically.
 
 ipdf = calcDensity(h)

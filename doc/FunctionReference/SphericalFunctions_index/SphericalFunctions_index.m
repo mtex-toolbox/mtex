@@ -22,7 +22,6 @@
 % ├── S2FunGrid
 % ├── S2FunHandle
 % ├── S2FunHarmonic
-% │   └── S2FunHarmonicSym
 % ├── S2FunMLS
 % └── S2FunTri
 % &nbsp;

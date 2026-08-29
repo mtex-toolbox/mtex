@@ -40,8 +40,8 @@ plottingConvention.default('y↑→x');
 % useful here: it records both symmetries and identifies the constant
 % component.
 
-cs = crystalSymmetry('cubic');
-ss = specimenSymmetry('orthorhombic');
+cs = crystalFrame('cubic');
+ss = specimenFrame('orthorhombic');
 
 odf = uniformODF(cs,ss)
 

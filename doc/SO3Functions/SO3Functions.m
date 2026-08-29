@@ -30,7 +30,7 @@
 
 plottingConvention.default('y↑→x');
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 mode = orientation.byEuler(30*degree,50*degree,10*degree,cs);
 odf = unimodalODF(mode,'halfwidth',15*degree);
 

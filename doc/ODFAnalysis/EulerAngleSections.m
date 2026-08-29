@@ -168,7 +168,7 @@ plotSection(odf,'gamma','sections',6,'layout',[3 2],'silent',...
 % and 432, this rectangular box does not account for the threefold axis.
 % Each orientation consequently appears three times within the box.
 %
-% <symmetry.fundamentalRegionEuler.html |fundamentalRegionEuler|> returns
+% <referenceFrame.fundamentalRegionEuler.html |fundamentalRegionEuler|> returns
 % these upper bounds for an arbitrary pair of crystal and specimen
 % symmetries. They describe a plotting box, not necessarily a compact
 % fundamental region with exactly one representative. The latter is
@@ -188,7 +188,7 @@ plotSection(odf,'gamma','sections',6,'layout',[3 2],'silent',...
 % bounds while keeping this executable page practical.
 
 odfOrtho = odf;
-odfOrtho.SS = specimenSymmetry('222');
+odfOrtho.SS = specimenFrame('222');
 
 [maxPhi1,maxPhi,maxPhi2] = ...
   fundamentalRegionEuler(odfOrtho.CS,odfOrtho.SS);

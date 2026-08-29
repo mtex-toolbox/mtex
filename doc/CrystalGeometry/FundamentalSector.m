@@ -17,7 +17,7 @@
 % For the cubic Laue group |m-3m|, the sector is the familiar spherical
 % triangle with corners at $[001]$, $[101]$, and $[111]$.
 
-cs = crystalSymmetry('m-3m');
+cs = crystalFrame('m-3m');
 corners = Miller({0,0,1},{1,0,1},{1,1,1},cs,'uvw');
 
 plot(cs)
@@ -66,7 +66,7 @@ isInside = sR.checkInside(v)
 % The false result means that $(231)$ is outside the chosen sector. It does
 % not mean that its symmetry-equivalent family is absent.
 %
-% <Miller.project2FundamentalRegion.html |project2FundamentalRegion|>
+% <vector3d.project2FundamentalRegion.html |project2FundamentalRegion|>
 % selects an equivalent representative inside the sector.
 
 vFundamental = v.project2FundamentalRegion
@@ -99,7 +99,7 @@ hold off
 mtexFig = newMtexFigure('layout',[2 5],'figSize','medium');
 for lId = 2:11
   ax = mtexFig.nextAxis(lId-1);
-  cs = crystalSymmetry('LaueId',lId);
+  cs = crystalFrame('LaueId',lId);
   plot(cs,'parent',ax,'doNotDraw')
   hold(ax,'on')
   plot(cs.fundamentalSector,'parent',ax,'color','red',...

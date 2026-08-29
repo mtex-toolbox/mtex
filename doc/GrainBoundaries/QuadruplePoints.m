@@ -33,7 +33,7 @@ plottingConvention.default('y↓→x');
 % pixels selected by |id| form a ring whose ends touch diagonally at its
 % lower corner.
 
-cs = crystalSymmetry('1','mineral','test');
+cs = crystalFrame('1','mineral','test');
 
 id = [...
   0 0 0 0 0 0; ...

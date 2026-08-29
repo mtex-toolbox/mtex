@@ -30,8 +30,8 @@ plottingConvention.default('y↑→x');
 
 g = SO3FunHarmonic.example;
 
-ss1 = specimenSymmetry;
-ss2 = specimenSymmetry('222');
+ss1 = specimenFrame;
+ss2 = specimenFrame('222');
 centre = orientation.rand(1,ss1,ss2);
 kernel = SO3DeLaValleePoussinKernel('halfwidth',15*degree);
 f = SO3FunRBF(centre,kernel);
@@ -104,7 +104,7 @@ rightCheckDifference = abs(rightConvolutionValue - ...
 % overlap for every relative orientation. Its right symmetry comes from the
 % first spherical function and its left symmetry from the second.
 
-cs = crystalSymmetry;
+cs = crystalFrame;
 sphereF = S2FunHarmonicSym(S2Fun.smiley,cs);
 sphereG = S2FunHarmonic(S2DeLaValleePoussinKernel);
 sphereCorrelation = conv(sphereF,sphereG)
@@ -138,7 +138,7 @@ rotF = SO3FunHarmonic.example;
 sphereH = S2FunHarmonicSym(S2Fun.smiley,rotF.SLeft);
 directionF = conv(rotF,sphereH)
 
-vCrystal = Miller(1,0,0,directionF.CS);
+vCrystal = Miller(1,0,0,directionF.frame);
 directionValue = directionF.eval(vCrystal)
 
 rng(7)

@@ -39,7 +39,7 @@ plottingConvention.default('y↑→x');
 % localized components and one fibre component, with mixture fractions
 % 0.1, 0.2, and 0.7.
 
-cs = crystalSymmetry('32');
+cs = crystalFrame('32');
 mod1 = orientation.byEuler(90*degree,40*degree,110*degree,'ZYZ',cs);
 mod2 = orientation.byEuler(50*degree,30*degree,-30*degree,'ZYZ',cs);
 
@@ -164,11 +164,11 @@ plot(odf,f,'LineWidth',2);
 % symmetry can restrict this angle, with the final bound depending on the
 % symmetry pair. For point groups 23 and 432, this box does not account for
 % the threefold axis. Each orientation can therefore appear three times
-% within the box. <symmetry.fundamentalRegionEuler.html
+% within the box. <referenceFrame.fundamentalRegionEuler.html
 % |fundamentalRegionEuler|> returns these plotting bounds.
 
-csCubic = crystalSymmetry('432');
-ssOrtho = specimenSymmetry('222');
+csCubic = crystalFrame('432');
+ssOrtho = specimenFrame('222');
 [maxPhi1,maxPhi,maxPhi2] = fundamentalRegionEuler(csCubic,ssOrtho);
 eulerBounds = [maxPhi1,maxPhi,maxPhi2] ./ degree
 

@@ -25,14 +25,14 @@
 % and alignment options state how its lattice is expressed in the crystal
 % frame. That alignment belongs to the frame, not to the symmetry itself.
 
-CS = crystalSymmetry('6/mmm',[2.633 2.633 4.8],...
+CS = crystalFrame('6/mmm',[2.633 2.633 4.8],...
   'X||a*','Y||b','Z||c');
 
 %%
 % Specimen symmetry describes a physical invariance of the specimen.
 % Choosing |1| imposes no such invariance on this reconstruction.
 
-SS = specimenSymmetry('1');
+SS = specimenFrame('1');
 
 % plotting convention: z out of the screen, x pointing north
 plottingConvention.default('y←↑x');

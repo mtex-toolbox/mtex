@@ -38,7 +38,7 @@ plottingConvention.default('y↑→x');
 % combines two localized components with a fibre component that aligns the
 % crystal c-axis with specimen X.
 
-cs = crystalSymmetry('32');
+cs = crystalFrame('32');
 mod1 = orientation.byEuler(90*degree,40*degree,110*degree,'ZYZ',cs);
 mod2 = orientation.byEuler(50*degree,30*degree,-30*degree,'ZYZ',cs);
 

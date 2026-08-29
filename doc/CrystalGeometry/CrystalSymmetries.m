@@ -32,16 +32,16 @@
 % are 1, 2, 222, 3, 32, 4, 422, 6, 622, 23, and 432. They are also called
 % the enantiomorphic point groups.
 %
-% <crystalSymmetry.crystalSymmetry.html |crystalSymmetry|> accepts either a
+% <crystalFrame.crystalFrame.html |crystalFrame|> accepts either a
 % Hermann--Mauguin symbol
 
-cs = crystalSymmetry('432');
+cs = crystalFrame('432');
 
 %%
 % or its Schoenflies equivalent. The comparison confirms that both symbols
 % construct the same point-group type.
 
-csSchoenflies = crystalSymmetry('O');
+csSchoenflies = crystalFrame('O');
 cs.id == csSchoenflies.id
 
 %%
@@ -59,7 +59,7 @@ plot(cs)
 %% Laue Groups
 %
 % Adding <rotation.inversion.html |rotation.inversion|> to a proper-rotation
-% group gives its Laue group. <symmetry.union.html |union|> performs that
+% group gives its Laue group. <referenceFrame.union.html |union|> performs that
 % construction here.
 
 csLaue = union(cs,rotation.inversion);
@@ -80,7 +80,7 @@ cs.Laue
 %
 % The operation tables make the doubling explicit for 222.
 
-cs = crystalSymmetry('222');
+cs = crystalFrame('222');
 rotation(cs)
 
 %%
@@ -100,7 +100,7 @@ rotation(cs.Laue)
 % The remaining point groups contain improper operations but do not contain
 % inversion itself. The group mm2 is an example.
 
-cs = crystalSymmetry('mm2');
+cs = crystalFrame('mm2');
 rotation(cs)
 
 %%
@@ -121,7 +121,7 @@ plot(cs)
 % A mixed group has two useful associated groups, and their names are easy
 % to confuse. Consider -4m2.
 
-cs = crystalSymmetry('-4m2');
+cs = crystalFrame('-4m2');
 
 %%
 % <symmetry.properGroup.html |properGroup|> replaces every improper
@@ -171,19 +171,19 @@ text(gca,0.03,0.97,'4/mmm','Units','normalized','VerticalAlignment','top')
 % a-axis points east in every panel.
 
 mtexFigure('layout',[1 3]);
-cs = crystalSymmetry('2mm');
+cs = crystalFrame('2mm');
 plot(cs)
 text(gca,0.03,0.97,'2mm','Units','normalized','VerticalAlignment','top')
 annotate(cs.aAxis,'labeled')
 
 nextAxis
-cs = crystalSymmetry('m2m');
+cs = crystalFrame('m2m');
 plot(cs)
 text(gca,0.03,0.97,'m2m','Units','normalized','VerticalAlignment','top')
 annotate(cs.aAxis,'labeled')
 
 nextAxis
-cs = crystalSymmetry('mm2');
+cs = crystalFrame('mm2');
 plot(cs)
 text(gca,0.03,0.97,'mm2','Units','normalized','VerticalAlignment','top')
 annotate(cs.aAxis,'labeled')
@@ -202,10 +202,10 @@ annotate(cs.aAxis,'labeled')
 % A space group also includes translations and operations with translational
 % parts, such as screw rotations and glide reflections. MTEX accepts a
 % Hermann--Mauguin space-group symbol. A number is passed through the
-% |'SpaceId'| option. In either case, |crystalSymmetry| stores only the
+% |'SpaceId'| option. In either case, |crystalFrame| stores only the
 % corresponding point group.
 
-cs = crystalSymmetry('Fm-3m')
+cs = crystalFrame('Fm-3m')
 
 %%
 
@@ -218,17 +218,17 @@ plot(cs)
 
 %% Computing with Symmetries
 %
-% <symmetry.union.html |union|> combines compatible symmetry operations,
-% while <symmetry.disjoint.html |disjoint|> retains the operations common to
+% <referenceFrame.union.html |union|> combines compatible symmetry operations,
+% while <referenceFrame.disjoint.html |disjoint|> retains the operations common to
 % two symmetries.
 
-combined = union(crystalSymmetry('23'),crystalSymmetry('4'))
+combined = union(crystalFrame('23'),crystalFrame('4'))
 
 %%
 % The operations of 23 together with the fourfold axis of 4 generate the 24
 % operations of 432.
 
-common = disjoint(crystalSymmetry('432'),crystalSymmetry('622'))
+common = disjoint(crystalFrame('432'),crystalFrame('622'))
 
 %%
 % Cubic 432 and hexagonal 622 have the identity and three twofold rotations
