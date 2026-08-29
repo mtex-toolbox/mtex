@@ -56,14 +56,14 @@ for k = 1:length(SO3F.h)
     for j = 1:length(sr)
       dr = dot_outer(sr(j),r,'noSymmetry');
 
-      if length(dr)~=1
-        s = dr;
-        dr = dh.';
-        dh = s.';
-      end
-      Plr = legendre0(length(SO3F.psi.A)-1,dr);
+      % one of the two is a single direction: it enters the Legendre
+      % expansion, and the kernel is evaluated in the free one
+      if isscalar(dr), x = dr; v = dh; else, x = dh; v = dr.'; end
+
+      Plr = legendre0(length(SO3F.psi.A)-1,x);
       psi = conv(SO3F.psi,Plr);
-      Z = Z + SO3F.weights(k) * psi.eval(dh.') / length(sh);
+      % the ODF is the mean over both orbits, so the transform is too
+      Z = Z + SO3F.weights(k) * psi.eval(v.') / (length(sh) * length(sr));
     end
   end
 end
