@@ -87,7 +87,7 @@ classdef grain3d < phaseList & dynProp
       if nargin>=5
         grains.CSList = ensureCSArray(CSList);
       else
-        grains.CSList = notIndexed;
+        grains.CSList = notIndexedFrame;
       end
 
       if nargin>=6
@@ -241,7 +241,7 @@ classdef grain3d < phaseList & dynProp
       CSList = grains.CSList;
       if iscell(CSList)       
         ind = cellfun(@ischar,CSList);
-        CSList(ind) = repcell(notIndexed,1,nnz(ind));
+        CSList(ind) = repcell(notIndexedFrame,1,nnz(ind));
         grains.CSList = [CSList{:}];
       end
 

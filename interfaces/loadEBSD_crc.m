@@ -222,7 +222,7 @@ end
 function CS = getCS(cpr)
 
 % [Phases] Count may exceed the [PhaseN] sections, so start from notIndexed
-CS = repmat(notIndexed,1,cpr.phases.count);
+CS = repmat(notIndexedFrame,1,cpr.phases.count);
 missing = false(1,cpr.phases.count);
 
 % the crystallography a phase section has to state to be usable
@@ -259,7 +259,7 @@ if any(missing)
     strjoin(arrayfun(@num2str,find(missing),'UniformOutput',false),', '));
 end
 
-CS = [notIndexed,CS];
+CS = [notIndexedFrame,CS];
 
 end
 

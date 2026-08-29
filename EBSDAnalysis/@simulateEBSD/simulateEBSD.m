@@ -120,7 +120,7 @@ methods
     phases = ones(sizeX*sizeY,1);
     
     % set a CSList
-    CSList = [notIndexed, job.CS];
+    CSList = [notIndexedFrame, job.CS];
     prop.emptyProp = ones(sizeX*sizeY,1); % one never knows
     
     % assemble ESBD

@@ -17,7 +17,7 @@ CSList = ensureCSArray(CSList);
 % mirror phaseList.init's behaviour of ensuring at least one notIndexed
 % phase is present, since that path is bypassed below
 if all([CSList.isIndexed])
-  CSList = [notIndexed, CSList(:).'];
+  CSList = [notIndexedFrame, CSList(:).'];
 end
 
 % bypass phaseList.init (it mishandles an empty phase list together with

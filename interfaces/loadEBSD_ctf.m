@@ -31,7 +31,7 @@ nphase = nphase(end);
 % Crystallographic Parameters of all phases
 Laue = {'-1','2/m','mmm','4/m','4/mmm','-3','-3m','6/m','6/mmm','m-3','m-3m'};
   
-cs(1) = notIndexed;
+cs(1) = notIndexedFrame;
 for K = 1:nphase
     
   % load phase

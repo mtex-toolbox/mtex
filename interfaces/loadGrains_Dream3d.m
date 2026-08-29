@@ -68,7 +68,7 @@ q = quaternion(abcd(activeGrains,1),abcd(activeGrains,2),...
 % CrystalStructure enum, anything unknown stays notIndexed
 dream3dCS = {'622','432','6','23','1','121','222','4','422','3','322','1'};
 crysm = h5read_multi(fname,crysmPath);
-csList = repmat(notIndexed,1,length(crysm));
+csList = repmat(notIndexedFrame,1,length(crysm));
 for k = 1:length(crysm)
   if crysm(k) >= 0 && crysm(k) < length(dream3dCS)
     csList(k) = crystalFrame(dream3dCS{crysm(k)+1},'mineral','unknown');

@@ -251,7 +251,7 @@ methods (Static = true)
     CSList = gB.CSList;
     if iscell(CSList)
       ind = cellfun(@ischar,CSList);
-      CSList(ind) = repcell(notIndexed,1,nnz(ind));
+      CSList(ind) = repcell(notIndexedFrame,1,nnz(ind));
       gB.CSList = [CSList{:}];
     end
 

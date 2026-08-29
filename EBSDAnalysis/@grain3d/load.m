@@ -50,7 +50,7 @@ function grains = load(filepath,varargin)
 
       CSList = get_option(varargin,'CS',crystalFrame(crysym));
       
-      if CSList(1).isIndexed, CSList = [notIndexed,CSList]; end
+      if CSList(1).isIndexed, CSList = [notIndexedFrame,CSList]; end
       
       grains = grain3d(V, F, I_GF, ori, CSList, phaseList);
 

@@ -92,13 +92,13 @@ classdef phaseList
         % apply this symmetry to all phases except a zero phase
         pL.CSList = repmat(pL.CSList,numel(pL.phaseMap),1);
           
-        if pL.phaseMap(1) <= 0, pL.CSList(1) = notIndexed; end
+        if pL.phaseMap(1) <= 0, pL.CSList(1) = notIndexedFrame; end
 
       elseif numel(pL.phaseMap) > length(pL.CSList)
         
         % if to few symmetries have been specified
         % prepend as many  not indexed phases as required
-        pL.CSList = [repmat(notIndexed,1,numel(pL.phaseMap)-length(pL.CSList)),pL.CSList];
+        pL.CSList = [repmat(notIndexedFrame,1,numel(pL.phaseMap)-length(pL.CSList)),pL.CSList];
         
       elseif numel(pL.phaseMap) < length(pL.CSList) 
         
@@ -140,7 +140,7 @@ classdef phaseList
       % by prepending it !! TODO
       % this probably requires to specify phaseMap as an option    
       if all([pL.CSList.isIndexed])
-        pL.CSList = [notIndexed, pL.CSList(:).'];
+        pL.CSList = [notIndexedFrame, pL.CSList(:).'];
         pL.phaseId = pL.phaseId + 1;
         if  ismember(0,pL.phaseMap)
           pL.phaseMap = [-1;pL.phaseMap(:)];
@@ -238,7 +238,7 @@ classdef phaseList
         if length(cs) == numel(pL.phaseMap)
           pL.CSList = cs;
         elseif length(cs) == numel(pL.indexedPhasesId)
-          pL.CSList = repmat(notIndexed,1,numel(pL.phaseMap));
+          pL.CSList = repmat(notIndexedFrame,1,numel(pL.phaseMap));
           pL.CSList(pL.indexedPhasesId) = cs;
         else
           error('The number of symmetries specified is less than the largest phase id.')

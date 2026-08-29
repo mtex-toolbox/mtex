@@ -324,7 +324,7 @@ if nPhase==0
     end
   end
 end
-CS = repmat(notIndexed,1,nPhase); %if nPhase is zero then interface catches the error
+CS = repmat(notIndexedFrame,1,nPhase); %if nPhase is zero then interface catches the error
 
 for k = 1:nPhase
 

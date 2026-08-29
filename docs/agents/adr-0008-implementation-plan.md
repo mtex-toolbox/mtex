@@ -440,14 +440,42 @@ Landed so far:
   209 files, plus the ten places that name the class as a string and the script the import
   wizard writes. Both spellings still work, so nothing changed today.
 
-**`doc/` is deliberately not swept.** The documentation rewrite on `feature/docRewrite`
-merges first, and sweeping the same 187 pages twice would collide with it. So the order is:
-the doc branch merges, `doc/` is swept (160 `crystalSymmetry(`, 26 `specimenSymmetry(`, 1
-`notIndexed(`), and only then do the tombstones take the names — until they do, old `.mat`
-files stay broken and the answer to a user who hits one is still "convert under 7.0".
+**`doc/` swept 2026-08-29**, once the documentation rewrite had merged to develop and the
+branch was rebased onto it. 171 `crystalSymmetry(`, 26 `specimenSymmetry(` and 1
+`notIndexed(` over 111 files, plus the eight no-argument uses. The prose went with the
+calls: 40 `<Class.method.html>` links that no longer resolved — `crystalSymmetry.*` to
+`crystalFrame.*`, `symmetry.*` to `referenceFrame.*`, `Miller.*` to `vector3d.*` — the
+`|crystalSymmetry|` spans, the `@crystalSymmetry` references, and the two class landing
+pages under `FunctionReference/`. `doc/tools/check_doc_structure.py` reports 0 dangling
+against its budget of 0. `changelog.m` is left in the spelling of the release it describes.
 
-Left to do: sweep `doc/` after the merge, then the three tombstones and the proof that
-`data/testgrains.mat` comes back with its five phases.
+Three pages needed more than a rename: `Miller.nan` has no home now that `@Miller` is not a
+class folder (`Miller(vector3d.nan(n,1),cs)`), `S2FunHarmonic` answers `.frame` and must not
+gain a `.CS` (Ralf, 2026-08-29), and `ss.frame = specimenFrame.rolling` becomes
+`specimenFrame.rolling.makeDefault` followed by asking for the group.
+
+**The three tombstones landed 2026-08-29.** `@crystalSymmetry`, `@specimenSymmetry` and
+`@notIndexed` are classes again, holding nothing: a constructor that errors naming the frame,
+and a `loadobj` declared `Static` in the classdef with its body in the class folder. The
+three functions are gone, so the name is the class, as measured. What a file carries decided
+the conversion: a saved `crystalSymmetry` has `axes` (a 1x3 `vector3d`), `id`, `rot`,
+`mineral`, `color` and `how2plot`, and `crystalFrame(pointGroup,axes)` **ignores** the axes —
+so the frame is built from the axes and then given its group through `sibling`, which
+reproduces the lattice exactly and interns to the same handle the session already had.
+
+Measured after: `data/testgrains.mat` comes back with the same two phases develop reads from
+it, byte for byte on point group, mineral, colour and lattice — five was the wrong number for
+that file. The five-phase proof is `mtexdata small`, which round trips through `save`/`load`
+with notIndexed, Forsterite, Enstatite, Diopside and Silicon intact and segments into 76
+grains. The Zenodo file behind `mtexdata trueEbsdWCCoSmall`, which used to load with an
+**empty** `CSList`, now gives notIndexed, W C, Co-fcc and Co-hcp.
+
+Two things this left open. Loading an old file still warns `Cannot load an object of class
+'Miller'` — something in `testgrains.mat` stores one where the public API shows none, and
+`Miller` deliberately has no tombstone because a `@Miller` folder would shadow the
+constructor 663 sites call. And `notIndexed` needed a sweep of its own: the earlier pass
+renamed `notIndexed(` but not the bare `notIndexed`, which is how all 20 of its call sites in
+the library were spelt.
 
 ### 10 — outer ring
 

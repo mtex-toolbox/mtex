@@ -102,7 +102,7 @@ end
 opt = loader.getOptions('ignoreColumns','Phase');
 
 % set up EBSD variable
-CSList(1) = notIndexed;
+CSList(1) = notIndexedFrame;
 for k = 1:max(1,length(unique(phase))-1)
   CSList(k+1) = crystalFrame('432','mineral',['unknown' int2str(k)]);
 end

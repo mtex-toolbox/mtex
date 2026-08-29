@@ -35,7 +35,7 @@ function ebsd = loadEBSD_ang(fname,varargin)
 assertExtension(fname,'.ang');
 
 % maybe we need to introduce a notIndexed phase
-cs = notIndexed;
+cs = notIndexedFrame;
 
 % read file header - lines staring with #
 nh = 1000;
@@ -261,7 +261,7 @@ ebsd.prop = rmfield(ebsd.prop,'emsphinxphase');
 
 % the list starts with the notIndexed phase - unless a file numbered one of
 % its phase blocks 0 and overwrote it, then it has to be put back
-if cs(1).isIndexed, cs = [notIndexed, reshape(cs,1,[])]; end
+if cs(1).isIndexed, cs = [notIndexedFrame, reshape(cs,1,[])]; end
 nPhases = numel(cs) - 1;
 
 phaseId = p + 2;

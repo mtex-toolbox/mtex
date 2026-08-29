@@ -1,6 +1,6 @@
 %% calcLankford uses CRSS-weighted plastic work
 
-CS = crystalSymmetry('6/mmm',[3.2 3.2 5.2]);
+CS = crystalFrame('6/mmm',[3.2 3.2 5.2]);
 sS = [slipSystem.basal(CS,1), ...
   slipSystem.prismatic2A(CS,4), ...
   slipSystem.pyramidalCA(CS,7)];

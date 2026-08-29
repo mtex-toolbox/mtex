@@ -574,7 +574,7 @@ function out = ebsd_default(raw_data)
 
   % check if cs is set --> if not create simple
   if ~isfield(raw_data, 'cs') || isempty(raw_data.cs)
-    raw_data.cs = notIndexed;
+    raw_data.cs = notIndexedFrame;
   end
 
   header = struct();
@@ -612,7 +612,7 @@ function out = ebsd_default(raw_data)
     phases = p + 2;    % CSList(1) is the notIndexed phase prepended below
     phases(p < 0 | p >= nPhases | p == sentinel) = 1;
 
-    raw_data.cs = [notIndexed, reshape(csList, 1, [])];
+    raw_data.cs = [notIndexedFrame, reshape(csList, 1, [])];
     phaseMapOpt = {'phaseMap', [-1; (0:nPhases-1).']};
   end
 

@@ -115,7 +115,7 @@ classdef grain2d < phaseList & dynProp
       if length(varargin)>=2
         grains.CSList = varargin{2};
       else
-        grains.CSList = notIndexed;
+        grains.CSList = notIndexedFrame;
       end
 
       if length(varargin)>=3
