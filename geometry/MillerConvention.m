@@ -39,7 +39,7 @@ classdef MillerConvention < int32
       
     end
     
-    function [left,right] = brackets(this,isFamily)
+    function [left,right] = brackets(this,isFamily,varargin)
       % the brackets this form is written in
       %
       % Syntax
@@ -60,6 +60,12 @@ classdef MillerConvention < int32
 
         left = ''; right= '';
 
+      end
+      if check_option(varargin,'LaTex') && this ~= 0
+        left = strrep(left,'{','\{');
+        right = strrep(right,'}','\}');
+        left = strrep(left,'<','\left<');
+        right = strrep(right,'>','\right>');
       end
     end
     

@@ -74,7 +74,7 @@ if ~isempty(format), m.dispStyle = format; end
 
 isFamily = ~isempty(m.CS) && m.CS.id ~= 1;
 
-[leftBracket, rightBracket] = brackets(MillerConvention(m.dispStyle),isFamily);
+[leftBracket, rightBracket] = brackets(MillerConvention(m.dispStyle),isFamily,varargin{:});
 
 abc = m.coordinates;
 % prevent bar{0}

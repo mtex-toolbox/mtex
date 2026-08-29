@@ -14,9 +14,9 @@
 plottingConvention.default('y↑→x');
 %#ok<*MINV>
 
-csBeta = crystalSymmetry('432',[3.3 3.3 3.3],...
+csBeta = crystalFrame('432',[3.3 3.3 3.3],...
   'mineral','Ti (beta)');
-csAlpha = crystalSymmetry('622',[3 3 4.7],...
+csAlpha = crystalFrame('622',[3 3 4.7],...
   'mineral','Ti (alpha)');
 
 %% The Burgers orientation relationship
@@ -62,7 +62,7 @@ plotPDF(oriParent,Miller(1,1,0,csBeta),...
   'MarkerSize',20,'MarkerFaceColor','none','linewidth',4,'layout',[1,2])
 hold on
 plot(oriChild.symmetrise * Miller(0,0,0,1,csAlpha),'MarkerSize',12)
-xlabel(char(Miller(0,0,0,1,csAlpha)),'color',ind2color(2))
+xlabel(char(Miller(0,0,0,1,csAlpha),'latex'),'color',ind2color(2),'Interpreter','latex')
 hold off
 
 % [111] / [2-1-10] pole figure
@@ -73,7 +73,7 @@ plotPDF(oriParent,Miller(1,1,1,csBeta,'uvw'),'upper',...
 dAlpha = Miller(2,-1,-1,0,csAlpha,'uvw');
 hold on
 plot(oriChild.symmetrise * dAlpha,'MarkerSize',12)
-xlabel(char(dAlpha),'color',ind2color(2))
+xlabel(char(dAlpha,'LaTeX'),'color',ind2color(2),'Interpreter','latex')
 hold off
 drawNow(gcm)
 
