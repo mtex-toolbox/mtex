@@ -1,168 +1,249 @@
 %% Spin Tensors as Infinitesimal Changes of Rotations
 %
 %%
-% Spin tensors are skew symmetric tensors that can be used to describe
-% small rotational changes. Let us consider an arbitrary reference rotation
+% A spin tensor is a skew-symmetric matrix that describes an infinitesimal
+% rotation. Its three independent entries give an axis scaled by an angle,
+% or by an angular rate when the independent variable is time.
+%
+% This page assumes the active rotations introduced in
+% <RotationDefinition.html Defining Rotations>, the multiplication order in
+% <RotationOperations.html Calculating with Rotations>, and the tangent
+% vectors introduced in <RotationTangentSpace.html Tangent Spaces>.
+%
+% MTEX uses a <spinTensor.spinTensor.html |spinTensor|> as the matrix form of
+% a tangent vector on the rotation group SO(3). MTEX calls its two coordinate
+% representations left and right.
 
-rot_ref = rotation.byEuler(10*degree,20*degree,30*degree);
+plottingConvention.default('y↑→x');
 
-%%
-% and perturb it by a rotation about the axis (123) and angle delta=0.01
-% degree. Since multiplication of rotations is not commutative we have to
-% distinguish between left and right perturbations
+%% A Small Rotation
+%
+% Start from a reference rotation and perturb it on the right about the
+% Cartesian direction $(1,2,3)$. The constructor normalizes the axis, and
+% the small angle is $\delta=0.01^\circ$.
 
+rotRef = rotation.byEuler(10*degree,20*degree,30*degree,'Bunge');
+axis123 = vector3d(1,2,3);
 delta = 0.01*degree;
-rot_123 = rotation.byAxisAngle(vector3d(1,2,3),delta);
-rot_right = rot_123 * rot_ref;
-rot_left = rot_ref * rot_123;
+increment = rotation.byAxisAngle(axis123,delta);
+rotNext = rotRef * increment;
 
 %%
-% We may now ask for the first order Taylor coefficients of the
-% perturbation as delta goes to zero which we find by the formula
+% For the path $R(\delta)=R\,P(\delta)$, a finite-difference approximation
+% to the tangent matrix is
 %
-% $$ T = \lim_{\delta \to 0} \frac{\tilde R - R}{\delta} $$
-%
+% $$ T = \left.\frac{\mathrm d R(\delta)}{\mathrm d\delta}\right|_{0}
+%      \simeq \frac{R(\delta)-R}{\delta}. $$
 
-T_right = (rot_right.matrix - rot_ref.matrix) ./ delta
-T_left = (rot_left.matrix - rot_ref.matrix) ./ delta
+T = (rotNext.matrix-rotRef.matrix) ./ delta
 
 %%
-% What such a derivative means is easier to see than to read. Turning a
-% direction steadily about an axis sends it round a circle; the spin tensor
-% is the velocity it sets off with. Below, the red arrow is the axis, the
-% grey arrow a direction, the black circle the path it travels, and the blue
-% arrow the velocity at the instant shown.
+% The tangent matrix |T| is not itself skew symmetric. Dividing out the
+% reference rotation from the right or left gives two skew representations
+% of the same tangent:
+%
+% $$ S_{\rm left}=T R^{-1}, \qquad S_{\rm right}=R^{-1}T. $$
 
-om = normalize(vector3d(1,2,3));
-v0 = normalize(vector3d(1,0,0));
+invR = matrix(inv(rotRef));
+SLeft = T * invR
+SRight = invR * T
+
+%%
+% The small diagonal entries are a second-order finite-difference residual.
+% Constructing a |spinTensor| extracts the antisymmetric part. Its axial
+% vector uses the convention
+%
+% $$ S\,x = \omega \mathbin{\times} x. $$
+%
+% Multiplication by $\sqrt{14}$ undoes the normalization of $(1,2,3)$.
+% The right coordinates recover the input axis, while the left coordinates
+% are that axis expressed after the reference rotation.
+
+scaledAxisRight = vector3d(spinTensor(SRight)) * sqrt(14)
+scaledAxisLeft = vector3d(spinTensor(SLeft)) * sqrt(14)
+
+%% Seeing the Instantaneous Motion
+%
+% A spin tensor is easier to read through its action on a direction. The
+% red arrow is the rotation axis, and the grey arrow is a direction on the
+% black orbit. The blue arrow is its instantaneous velocity.
+
+rotationAxis = normalize(axis123);
+v0 = rotation.byAxisAngle(rotationAxis,pi/2) * ...
+  normalize(vector3d(1,-2,1));
 t = linspace(0,2*pi,300);
-tr = rotation.byAxisAngle(om,t) * v0;
+orbit = rotation.byAxisAngle(rotationAxis,t) * v0;
+velocity = cross(rotationAxis,v0);
 
-plot3(tr.x,tr.y,tr.z,'k','linewidth',1.5)
+plot3(orbit.x,orbit.y,orbit.z,'k','linewidth',1.5)
 hold on
-arrow3d(1.5*om,'faceColor','red')
-arrow3d(v0,'faceColor',[.45 .45 .45])
-arrow3d(v0 + 0.6*normalize(cross(om,v0)),'faceColor','blue')
+arrow3d(1.25*rotationAxis,'faceColor','red')
+arrow3d(0.999*v0,'faceColor',[.45 .45 .45])
+arrow3d(0.9*normalize(velocity),'anchor',v0,'faceColor','blue',...
+  'arrowWidth',0.035)
 hold off
 axis equal off
 
-%%
-% Both matrices |T_right| and |T_left| are elements of the tangential space
-% attached to the reference rotation rot_ref. Those matrices are
-% characterized by the fact that they becomes skew symmetric matrices when
-% multiplied from the left or from the right with the inverse of the
-% reference rotation
-
-S_right_L =  matrix(inv(rot_ref)) * T_right
-S_right_R = T_right * matrix(inv(rot_ref))
-
-S_left_L =  matrix(inv(rot_ref)) * T_left
-S_left_R = T_left * matrix(inv(rot_ref))
-
+% look at the orbit plane from above, so the three arrows do not overlap
+view(-180,25)
 
 %%
-% A skew symmetric 3x3 matrix |S| is essentially determined by its entries
-% $S_{21}$, $S_{31}$ and $S_{32}$. Writing these values as a vector
-% $(S_32,-S_{31},S_{21})$ we obtain for the matrices |S_right_R| and
-% |S_left_L| exactly the rotational axis of our perturbation
+% Notice that the blue arrow is tangent to the black orbit. It is also
+% perpendicular to both the red axis and the grey direction, as the cross
+% product in $Sx=\omega\mathbin{\times}x$ requires.
 
-vector3d(spinTensor(S_right_R)) * sqrt(14)
-
-vector3d(spinTensor(S_left_L))  * sqrt(14)
-
-
-%%
-% For the other two matrices those vectors are related to the rotational
-% axis by the reference rotation |rot_ref|
-
-rot_ref * vector3d(spinTensor(S_right_L)) * sqrt(14)
-
-inv(rot_ref) * vector3d(spinTensor(S_left_R)) * sqrt(14)
-
-%% The Functions Exp and Log
+%% When a Spin Tensor Is a Rate
 %
-% The above definition of the spin tensor works well only if the
-% perturbation has small rotational angle. For large perturbations the
-% matrix logarithm <quaternion.log.html |log|> provides the correct way
-% to translate rotational changes into skew symmetric matrices
-
-% define a large perturbation with rotational angle 1 radiant
-delta = 1; 
-rot_123 = rotation.byAxisAngle(vector3d(1,2,3),1);
-
-S = log(rot_ref * rot_123,rot_ref, SO3TangentSpace.rightSpinTensor); S  * sqrt(14)
-
-
-S = log(rot_123 * rot_ref,rot_ref, SO3TangentSpace.leftSpinTensor); S  * sqrt(14)
-
-
-%%
-% Again the entries $S_{21}$, $S_{31}$ and $S_{32}$ exactly coincide with
-% the rotational axis multiplied with the rotational angle.
+% The matrices above are derivatives with respect to rotation angle, not
+% time. They become angular-velocity tensors only for a time-dependent
+% rotation $R(t)$:
 %
-% More directly this disorientation vector may be computed from two
-% rotations using the options |SO3TangentSpace.rightVector| and
-% |SO3TangentSpace.leftVector|
+% $$ W_{\rm left}=\dot R R^{-1}, \qquad
+%    W_{\rm right}=R^{-1}\dot R. $$
+%
+% In continuum mechanics the spatial velocity gradient $L=\nabla v$ splits
+% into a symmetric rate of deformation and a spin tensor,
+%
+% $$ L=D+W, \qquad D=\tfrac12(L+L^T), \qquad
+%    W=\tfrac12(L-L^T). $$
+%
+% Thus |spinTensor| can store either a finite rotation increment or a rate.
+% Its units and physical meaning come from the quantity used to construct
+% it.
 
-v = log(rot_ref * rot_123,rot_ref,SO3TangentSpace.rightVector); v * sqrt(14)
+%% Finite Changes with Log and Exp
+%
+% Matrix subtraction is useful only for a small perturbation. For a finite
+% change, <quaternion.log.html |log|> returns the exact tangent generator at
+% a reference rotation. Here the perturbation angle is one radian.
 
-v = log(rot_123 * rot_ref,rot_ref,SO3TangentSpace.leftVector); v * sqrt(14)
+finiteAngle = 1;
+finiteIncrement = rotation.byAxisAngle(axis123,finiteAngle);
+rotEnd = rotRef * finiteIncrement;
 
-
-%% The other way round
-% Given a skew symmetric matrix |S| or a disorientation vector |v| we may
-% use the command <vector3d.exp.html |exp|> to apply this rotational
-% perturbation to a reference rotation |rot_ref|
-
-% the truth
-rot_ref * rot_123
-
-% using a disorientation vector
-exp(vector3d(v),rot_ref,SO3TangentSpace.rightVector)
-
-% using a spin tensor
-exp(S,rot_ref,SO3TangentSpace.rightSpinTensor)
+SRight = log(rotEnd,rotRef,SO3TangentSpace.rightSpinTensor)
+SLeft = log(rotEnd,rotRef,SO3TangentSpace.leftSpinTensor)
 
 %%
+% Unlike the finite-difference matrices, the displayed results are exactly
+% skew symmetric. Their axial vectors point along the right and left
+% coordinate triplets shown above, with length equal to the one-radian
+% angle.
+%
+% The vector forms contain the same three components without the
+% skew-symmetric matrix wrapper.
 
-% the other truth
-rot_123 * rot_ref
+vRight = log(rotEnd,rotRef,SO3TangentSpace.rightVector);
+vLeft = log(rotEnd,rotRef,SO3TangentSpace.leftVector);
 
-% using a disorientation vector
-exp(vector3d(v),rot_ref,SO3TangentSpace.leftVector)
+spinVectorResidual = [norm(vector3d(SRight)-vector3d(vRight)),...
+  norm(vector3d(SLeft)-vector3d(vLeft))]
 
-% using a spin tensor
-exp(S,rot_ref,SO3TangentSpace.leftSpinTensor)
+%%
+% Both zero residuals confirm that spin tensors and rotation vectors are
+% two representations of the same tangent coordinates.
+%
+% <vector3d.exp.html |exp|> and the |spinTensor| form of |exp| apply those
+% coordinates back at the reference rotation. All four reconstructions
+% below should return |rotEnd|.
 
-%% Disorientations under the presence of crystal symmetry
-% Under the presence of crystal symmetry the order whether a rotational
-% perturbation is applied from the left or from the right. Lets perform the
-% above calculations step by step in the presence of trigonal crystal
-% symmetry
+rotFromRightVector = exp(vector3d(vRight),rotRef,...
+  SO3TangentSpace.rightVector);
+rotFromLeftVector = exp(vector3d(vLeft),rotRef,...
+  SO3TangentSpace.leftVector);
+rotFromRightSpin = exp(SRight,rotRef,...
+  SO3TangentSpace.rightSpinTensor);
+rotFromLeftSpin = exp(SLeft,rotRef,...
+  SO3TangentSpace.leftSpinTensor);
+
+roundTripError = angle(rotEnd,[rotFromRightVector,rotFromLeftVector,...
+  rotFromRightSpin,rotFromLeftSpin]) ./ degree
+
+%%
+% The displayed errors are at floating-point level. Rotation logarithms use
+% a principal branch with angles up to $180^\circ$. At exactly $180^\circ$
+% the two signs of the axis describe the same rotation, so the logarithm is
+% not unique.
+
+%% Under Crystal Symmetry
+%
+% For an orientation, right coordinates belong to the crystal frame and
+% left coordinates belong to the specimen frame. The crystal frame is the
+% Cartesian reference frame glued to the phase's lattice basis. The
+% specimen frame is the reference frame in which the sample is expressed.
+%
+% Define a one-radian perturbation about the trigonal crystal direction
+% $(1,2,\bar3,3)$ and apply it on the right.
 
 cs = crystalSymmetry('321');
-
-% consider an arbitrary rotation
-ori_ref = orientation.byEuler(10*degree,20*degree,30*degree,cs);
-
-% next we disturb rot_ref by a rotation about the axis (123)
-mori_123 = orientation.byAxisAngle(Miller(1,2,-3,3,cs),1);
-
-% first we multiply from the right
-ori = ori_ref * mori_123
+oriRef = orientation.byEuler(10*degree,20*degree,30*degree,'Bunge',cs);
+crystalIncrement = orientation.byAxisAngle(Miller(1,2,-3,3,cs),1);
+oriEnd = oriRef * crystalIncrement;
 
 %%
-% Computing the right tangential vector gives us the disorientation vector
-% in crystal coordinates
+% The right tangent is expressed in crystal coordinates. Converting it to
+% <Miller.Miller.html |Miller|> indices recovers the direction used above.
 
-v = Miller(log(ori,ori_ref,SO3TangentSpace.rightVector),ori.CS); round(v)
-
-exp(v,ori_ref,SO3TangentSpace.rightVector)
+crystalAxis = Miller(log(oriEnd,oriRef,...
+  SO3TangentSpace.rightVector),oriEnd.CS);
+recoveredCrystalAxis = round(crystalAxis)
 
 %%
-% computing the left tangential vector gives us the disorientation vector
-% in specimen coordinates
+% The left tangent gives the same change in specimen coordinates.
 
-v = log(ori,ori_ref,SO3TangentSpace.leftVector)
-S = log(ori,ori_ref,SO3TangentSpace.leftSpinTensor)
-exp(v,ori_ref,SO3TangentSpace.leftVector)
+specimenVector = log(oriEnd,oriRef,SO3TangentSpace.leftVector)
+
+%%
+% Applying the crystal-frame tangent returns the endpoint. The displayed
+% value is the angular round-trip error in degrees.
+
+oriFromCrystalVector = exp(crystalAxis,oriRef,...
+  SO3TangentSpace.rightVector);
+orientationRoundTripError = angle(oriEnd,oriFromCrystalVector) ./ degree
+
+%%
+% <orientation.log.html |orientation.log|> first chooses the shortest
+% symmetry-equivalent change. This makes the tangent describe the two
+% crystal orientations rather than their stored representatives. Pass
+% |'noSymmetry'| only when the unreduced rotation representatives are the
+% intended objects.
+
+%% The Maths Behind Left and Right Coordinates
+%
+% Let $[\omega]_\times$ denote the skew matrix whose axial vector is
+% $\omega$. For the right-perturbed path
+% $R(\delta)=R\exp(\delta[\omega]_{\times})$,
+%
+% $$ T=R[\omega]_{\times}, \qquad
+%    S_{\rm right}=[\omega]_{\times}, \qquad
+%    S_{\rm left}=R[\omega]_{\times}R^{-1}. $$
+%
+% Conjugating a skew matrix rotates its axial vector. Therefore
+% $\omega_{\rm left}=R\omega_{\rm right}$. Left and right describe one
+% tangent at one base rotation; only the coordinate frame changes.
+
+%% References
+%
+% * A. Morawiec,
+% <https://doi.org/10.1007/978-3-662-09156-2 Orientations and Rotations:
+% Computations in Crystallographic Textures>, Springer, 2004, develops the
+% geometry of rotation space and small orientation changes.
+% * A. Morawiec,
+% <https://doi.org/10.1107/S002188989000512X The rotation rate field and
+% geometry of orientation space>, Journal of Applied Crystallography 23
+% (1990) 374--377, relates infinitesimal rotations to texture evolution.
+% * M. E. Gurtin, E. Fried, and L. Anand,
+% <https://doi.org/10.1017/CBO9780511762956 The Mechanics and
+% Thermodynamics of Continua>, Cambridge University Press, 2010, develops
+% stretching and spin in continuum kinematics.
+
+%% Next
+%
+% <TensorDefinition.html Tensors> introduces the typed tensors used in the
+% material description, including
+% <velocityGradientTensor.velocityGradientTensor.html |velocityGradientTensor|>.
+% <TaylorModel.html Taylor Model> computes crystallographic spin, and
+% <TextureEvolution.html Texture Evolution> applies those increments to a
+% population of crystal orientations.
+
+%#ok<*NOPTS>

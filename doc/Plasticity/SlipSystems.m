@@ -1,39 +1,46 @@
 %% Slip Systems
 %
-%%
-% Plastic deformation in crystalline materials almost exclusively appears
-% as dislocation along lattice planes. Such deformations are described by
-% the normal vector *n* of the lattice plane and direction *b* of the slip.
-% In the case of hexagonal alpha-Titanium with
+% Crystal slip shears one part of a crystal past another by dislocation
+% motion on a lattice plane. A *slip system* specifies the plane and the
+% direction of that shear. This page constructs one system, generates its
+% symmetry-equivalent family, and assigns strengths to several families.
 
-cs = crystalSymmetry('622',[3,3,4.7],'x||a','mineral','Titanium (Alpha)')
+%% Define one slip system
+% A slip system combines a Burgers vector $\mathbf b$, which gives the slip
+% direction and displacement, with a slip-plane normal $\mathbf n$.
+% The direction must lie in the plane, so $\mathbf b\cdot\mathbf n=0$.
+%
+% Start with the lattice and crystal frame of hexagonal alpha-titanium.
+% The four-index notation used below is introduced with
+% <CrystalDirections.html crystal directions>.
+
+cs = crystalSymmetry('622',[3,3,4.7],'x||a', ...
+  'mineral','Titanium (Alpha)')
 
 %%
-% basal slip is defined by the Burgers vector (or slip direction)
+% One first-order prismatic $\langle a\rangle$ system has Burgers vector
+% $[2\bar1\bar10]$ and plane normal $(01\bar10)$.
 
 b = Miller(2,-1,-1,0,cs,'UVTW')
-
-%%
-% and the slip plane normal
-
 n = Miller(0,1,-1,0,cs,'HKIL')
 
 %%
-% Putting both ingredients together we can define a slip system in MTEX by
+% Passing the two directions to the
+% <slipSystem.slipSystem.html |slipSystem|> constructor keeps them together
+% as one physical shear mode. The constructor also checks orthogonality.
 
-sSBasal = slipSystem(b,n)
+sSPrismatic = slipSystem(b,n)
 
 %%
-% The most important slip systems for cubic, hexagonal and trigonal crystal
-% lattices are already implemented into MTEX. Those can be accessed by
+% Common families also have named constructors. For example, this creates
+% one representative of the basal $\langle11\bar20\rangle\{0001\}$ family.
 
 sSBasal = slipSystem.basal(cs)
 
-%%
-% Drawn inside the crystal, a slip system is a plane and an arrow in it. The
-% plane is where the lattice shears and the arrow is the direction it shears
-% along, so both are needed - the same plane with a different direction in it
-% is a different slip system.
+%% Draw the plane and direction
+% Drawn inside the crystal, the plane shows where the lattice shears and the
+% arrow shows the direction of shear. The same plane with another in-plane
+% direction is therefore a different slip system.
 
 cS = crystalShape.hex(cs);
 
@@ -43,24 +50,30 @@ plot(cS,sSBasal,'faceColor','red')
 hold off
 
 %%
-% Obviously, this is not the only basal slip system in hexagonal lattices.
-% There are also symmetrically equivalent ones, which can be computed by
+% The red disk is the basal plane. The red arrow lies in that disk, which
+% makes the required orthogonality of $\mathbf b$ and $\mathbf n$ visible.
+
+%% Generate the complete family
+% A representative does not describe every basal system in a hexagonal
+% crystal. Crystal symmetry generates the equivalent systems.
+% The option |'antipodal'| identifies opposite Burgers-vector signs, because
+% they describe the two shear senses of the same geometric system.
 
 sSBasalSym = sSBasal.symmetrise('antipodal')
 
 %%
-% The length of the burgers vector, i.e., the amount of displacement is
+% Alpha-titanium has three such basal systems. The norm of each Burgers
+% vector is 3 in the lattice units selected in |cs|.
 
+length(sSBasalSym)
 sSBasalSym.b.norm
 
-%% Predefined slip systems
-% For cubic lattices the whole set of slip systems comes as one command,
-% |slipSystem.fcc(cs)| and |slipSystem.bcc(cs)|. For hexagonal lattices
-% there is deliberately no |slipSystem.hcp|: which families carry the
-% deformation, and at which critical resolved shear stress (CRSS), is a
-% property of the material and of the experiment rather than of the
-% lattice. The families are predefined individually and are meant to be
-% combined as the material at hand asks for
+%% Choose families and their CRSS
+% For cubic lattices, |slipSystem.fcc(cs)| and |slipSystem.bcc(cs)| provide
+% standard sets. Hexagonal lattices deliberately have no |slipSystem.hcp|.
+% The active families and their *critical resolved shear stress* (CRSS)
+% depend on the material, temperature, and loading rather than on the
+% lattice alone. MTEX therefore provides each family separately:
 %
 %   slipSystem.basal(cs)          <11-20>{0001}
 %   slipSystem.prismaticA(cs)     <2-1-10>{01-10}
@@ -73,35 +86,46 @@ sSBasalSym.b.norm
 %   slipSystem.twinC1(cs)         <-110-2>{-1101}     compressive twinning
 %   slipSystem.twinC2(cs)         <2-1-1-3>{2-1-12}   compressive twinning
 %
-% The second argument of each is the CRSS of that family, which is what
-% makes the families comparable to each other
+% The second argument sets the CRSS of a family. This illustrative set makes
+% the basal systems easiest to activate and makes the families comparable.
+% Use values measured for the material and conditions in a real model.
 
 sS = [slipSystem.basal(cs,1), slipSystem.prismatic2A(cs,66), ...
   slipSystem.pyramidalCA(cs,80), slipSystem.twinC1(cs,100)]
 
-%% Displacement
-% In linear theory the displacement of a slip system is described by the
-% strain tensor 
+%% Deformation and Schmid tensors
+% In linearized kinematics, a unit shear on a slip system contributes the
+% displacement gradient $\mathbf b\otimes\mathbf n$ after both vectors are
+% normalized. Its symmetric part is strain and its antisymmetric part is
+% lattice spin. MTEX returns this quantity as the deformation tensor.
 
-sSBasal.deformationTensor
+L = sSBasal.deformationTensor
 
 %%
-% This displacement tensor is exactly the same as the so called Schmid
-% tensor
+% MTEX uses exactly the same normalized dyad as the Schmid tensor. The next
+% page contracts it with a stress tensor to obtain resolved shear stress.
 
-sSBasal.SchmidTensor
+S = sSBasal.SchmidTensor
 
-%% Rotating slip systems
-% By definition the slip system and accordingly the deformation tensor are
-% with the respect to the crystal coordinate system. In order to transform
-% the quantities into specimen coordinates we have to multiply with some
-% grain orientation
+%% Express a system in the specimen frame
+% A newly constructed slip system is expressed in the crystal frame.
+% An <OrientationDefinition.html orientation> maps the crystal frame into a
+% specimen frame. Multiplication applies that map to both $\mathbf b$ and
+% $\mathbf n$.
 
-% some random grain orientation
 ori = orientation.rand(cs)
-
-% transfer slip system into specimen coordinates
-ori * sSBasal
+sSSpecimen = ori * sSBasal
 
 %#ok<*NASGU>
 
+%% References
+%
+% * U. F. Kocks, C. N. Tomé and H.-R. Wenk,
+% <https://books.google.com/books?id=vkyU9KZBTioC Texture and Anisotropy>,
+% Cambridge University Press, 1998, develops slip-system geometry and the
+% crystal-plasticity kinematics used here.
+
+%% Next
+%
+% Continue with <SchmidFactor.html Schmid Factor> to relate the plane and
+% direction of each slip system to an applied stress.

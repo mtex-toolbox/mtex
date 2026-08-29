@@ -4,6 +4,7 @@ function [M,b,spin] = calcTaylor(eps,sS,varargin)
 % Syntax
 %   [MFun,~,spinFun] = calcTaylor(eps,sS,'SO3Fun','bandwidth',32)
 %   [M,b,W] = calcTaylor(eps,sS)
+%   work = calcTaylor(eps,sS,'plasticWork')
 %
 % Input
 %  eps - @strainTensor list in crystal coordinates
@@ -12,9 +13,12 @@ function [M,b,spin] = calcTaylor(eps,sS,varargin)
 % Output
 %  Mfun    - @SO3FunHarmonic (orientation dependent Taylor factor)
 %  spinFun - @SO3VectorFieldHarmonic
-%  M - taylor factor
+%  M - Taylor factor
 %  b - vector of slip rates for all slip systems 
 %  W - @spinTensor
+%
+% Options
+%  plasticWork - return CRSS-weighted slip activity instead of geometric M
 %
 % Example
 %   
@@ -65,7 +69,6 @@ if ~isa(eps.frame,'crystalFrame')
       % to be comparable set output to rightSpinTensor      
       spin.tangentSpace  = SO3TangentSpace.rightSpinTensor;
     end
-
     pC.show(k);
 
   end
@@ -90,9 +93,8 @@ sSeps = sS.deformationTensor;
 % initialize the coefficients
 b = zeros(length(eps),length(sS));
 
-% critical resolved shear stress - CRSS
-% by now assumed to be identical - might also be stored in sS
-CRSS = sS.CRSS(:);%ones(length(sS),1);
+% critical resolved shear stress (CRSS) weights
+CRSS = sS.CRSS(:);
 
 % decompose eps into sum of dislocation tensors, that is we look for
 % coefficients b such that sSepsSym * b = eps
@@ -136,8 +138,14 @@ for i = 1:size(y,2)
   
 end
 
-% the Taylor factor is simply the sum of the coefficients
-M = reshape(sum(b,2),size(eps)) ./ norm(eps);
+% The geometric Taylor factor is the total slip activity. With unequal
+% CRSS, the plasticWork option returns the corresponding generalized factor
+% that is proportional to plastic dissipation.
+if check_option(varargin,'plasticWork')
+  M = reshape(b * CRSS,size(eps)) ./ norm(eps);
+else
+  M = reshape(sum(b,2),size(eps)) ./ norm(eps);
+end
 
 % maybe there is nothing more to do
 if nargout <=2, return; end
@@ -150,7 +158,11 @@ end
 
 function Out = calcTaylorFun(rot,eps,sS,numOut,varargin)
   ori = orientation(rot,sS.CS,eps.CS);
-  [Taylor,~,spin] = calcTaylor(inv(ori)*eps,sS,varargin{:}); %#ok<MINV>
+  if numOut>1
+    [Taylor,~,spin] = calcTaylor(inv(ori)*eps,sS,varargin{:}); %#ok<MINV>
+  else
+    Taylor = calcTaylor(inv(ori)*eps,sS,varargin{:}); %#ok<MINV>
+  end
   Out(:,1) = Taylor(:);
   if numOut>1
     v = ori .* vector3d(spin);
@@ -186,5 +198,3 @@ ori0 .* vector3d(Wori) %#ok<NOPRT>
 ori0 .* vector3d(W.eval(ori0)) %#ok<NOPRT>
 
 end
-
-

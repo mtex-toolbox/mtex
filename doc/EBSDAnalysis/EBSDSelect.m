@@ -1,125 +1,227 @@
 %% Select EBSD data
 %
 %%
-% In this section we discuss how to select specific EBSD data by certain
-% properties. Let us first import some example EBSD data using the command
-% <mtexdata.html |mtexdata|>.
+% An EBSD variable is a list of measurements. Selecting part of the
+% specimen, one phase, or measurements that satisfy a quality condition is
+% therefore ordinary list indexing. The result is another EBSD variable,
+% so the same phase, position, orientation, and plotting operations apply
+% to it. This is the EBSD version of <ListsAndIndexing.html Lists and
+% Indexing>.
+%
+% Each measurement may also carry a per-pixel *property*, such as mean
+% angular deviation |mad| or band contrast |bc|. A property has one value
+% per measurement and is selected in lockstep with the map; see
+% <Properties.html Properties>.
 
 plottingConvention.default('y↑→x');
-mtexdata forsterite
-
-%%
-% These data consist of three indexed phases, Forsterite, Enstatite and
-% Diopside. The not indexed phase called _not Indexed_. The phases can be
-% visualized by
+mtexdata forsterite silent
 
 close all;
-plot(ebsd)
+plot(ebsd);
 
-%% Selecting a certain phase
-% After import the EBSD data are stored in the variable |ebsd| which is
-% essentially a long list of x and y values together with phase information
-% and orientations. In order to restrict this list to a certain phase
-% just use the mineral name as an index, i.e.
+%%
+% The phase map contains three indexed phases. The white points belong to
+% the |notIndexed| phase, where a diffraction pattern was recorded but
+% could not be indexed.
+
+%% Selecting a phase
+%
+% A mineral name used as an index restricts the list to that phase.
 
 ebsd('Forsterite')
 
 %%
-% contains only the Forsterite measurements. In order to extract a couple
-% of phases, the mineral names have to be grouped in curled parenthesis.
+% Two things in that display are worth noticing. The list is shorter:
+% 152345 of the 245952 measurements are forsterite. Its class has also
+% changed from |EBSDsquare| to |EBSD|. A selection is generally not a full
+% rectangular grid, although every retained measurement still has its
+% original position.
+%
+% Use <EBSD.gridify.html |gridify|> when later code explicitly needs a
+% matrix-shaped map. Many spatial MTEX operations reconstruct the virtual
+% lattice internally; <EBSDGrid.html Square and Hex Grids> explains when
+% the stored grid shape matters.
+%
+% A prefix of a mineral name works as an abbreviation. MTEX does not check
+% that a prefix is unique, so use the full name when two phase names begin
+% alike. Several phases are selected by grouping their names in curly
+% brackets.
 
 ebsd({'Fo','En'})
 
 %%
-% As an example, let us plot the Forsterite data. 
+% Two names are available whatever the minerals are called. The name
+% |'indexed'| selects every point matched to a phase. The degenerate phase
+% |'notIndexed'| selects points whose diffraction pattern could not be
+% indexed.
 
-close all
-plot(ebsd('Forsterite'),ebsd('Forsterite').orientations)
+ebsd('indexed')
 
 %%
-% The data is colorized according to its orientation. By default color of
-% an orientation is determined by its position in the 001 inverse pole
-% figure which itself is colored as
+% Plotting a phase selection uses the ordinary plot command.
 
-ipfKey = ipfColorKey(ebsd('Forsterite'));
-plot(ipfKey)
+close all;
+plot(ebsd('Forsterite'),ebsd('Forsterite').orientations, ...
+  'ipfDirection',zvector);
+
+%%
+% Only the forsterite footprint remains. Its colour still varies with
+% orientation because selection changes the list, not the plotting rule;
+% see <EBSDPlotting.html Plot>.
 
 %% Restricting to a region of interest
-% If one is not interested in the whole data set but only in those
-% measurements inside a certain polygon, the restriction can be constructed
-% as follows:
+%
+% A rectangle is specified as |[xmin ymin width height]| in the map units,
+% here microns.
+
+region = [5 2 10 5] * 10^3;
 
 %%
-% First define a region by |[xmin ymin xmax-xmin ymax-ymin]|
+% Draw the rectangle on the phase map before applying it.
 
-region = [5 2 10 5]*10^3;
-
-%%
-% plot the ebsd data together with the region of interest
-
-close all
-plot(ebsd)
-rectangle('position',region,'edgecolor','r','linewidth',2)
+close all;
+plot(ebsd);
+rectangle('Position',region,'EdgeColor','red','LineWidth',2);
 
 %%
-% The command <EBSD.inpolygon.html |inpolygon|> checks for each EBSD data
-% point whether it is inside a polygon or not, i.e.
+% The red rectangle crosses all three indexed phases and many notIndexed
+% points. <EBSD.inpolygon.html |inpolygon|> tests every measurement and
+% returns one |true| or |false| for each point.
 
 condition = inpolygon(ebsd,region);
 
 %%
-% results in a large vector of |TRUE| and |FALSE| stating which data points
-% are inside the region. Restricting the EBSD data by this condition is
-% done via
+% Logical indexing keeps the points for which the condition is |true|:
+% 20301 of the 245952 measurements, about one twelfth of the map.
 
-ebsd = ebsd(condition)
-
-%%
-% plot
-
-close all
-plot(ebsd)
+ebsdRegion = ebsd(condition)
 
 %%
-% Note, that you can also select a polygon by mouse using the command
+% Plot the selected region with the same phase colours.
+
+close all;
+plot(ebsdRegion);
+
+%%
+% The cropped map keeps its specimen coordinates rather than being moved
+% to the origin. Only its extent and list membership have changed.
+%
+% A region need not be rectangular. |inpolygon| also accepts the vertices
+% of any closed polygon. Draw those vertices with the mouse using
 %
 %   poly = selectPolygon
 %
-%% Remove Inaccurate Orientation Measurements
+%% Screening measurements by fit quality
 %
-% Most EBSD measurements contain quantities indicating inaccurate
-% measurements, e.g. MAD (mean angular deviation) in the case of Oxford
-% Channel programs, or CI (Confidence Index) in the case of OIM-TSL
-% programs.
-% 
-
-close all
-plot(ebsd,ebsd.mad)
-mtexColorbar
-
-%%
-% or
-
-close all
-plot(ebsd,ebsd.bc)
-mtexColorbar
-
-%%
-% Here we will use the MAD to identify and eliminate inaccurate
-% measurements.
-
-% plot a histogram
-close all
-histogram(ebsd.mad)
-
-%%
-
-% take only those measurements with MAD smaller then one
-ebsd_corrected = ebsd(ebsd.mad<0.8)
-
-%%
+% Indexing software stores quantities that describe the pattern solution.
+% Oxford Channel maps commonly provide the mean angular deviation |mad|,
+% for which lower values mean a closer angular fit. EDAX OIM maps commonly
+% provide a confidence index |ci|, for which higher values mean that the
+% winning indexed solution is better separated from the runner-up.
 %
+% These quantities are not interchangeable measures of orientation error.
+% A threshold flags measurements for scrutiny; it does not prove that an
+% orientation is wrong. Inspect the spatial map and the distribution before
+% choosing a data-dependent threshold.
 
-close all
-plot(ebsd_corrected)
+close all;
+plot(ebsdRegion, ebsdRegion.mad);
+mtexColorbar('title','mean angular deviation (degree)');
+setColorRange([0 1.2]);
 
+%%
+% Most of the map sits at about 0.4°. The deep blue patches are the
+% notIndexed points, which report 0. The yellow speckles are the worst fits
+% in this map and lie mainly along grain boundaries, where the interaction
+% volume can contain signal from two crystals. A histogram shows the
+% populations more clearly.
+
+close all;
+histogram(ebsdRegion.mad);
+xlabel('mean angular deviation (degree)');
+
+%%
+% The tallest bar is at zero. It is not a population of perfect fits but
+% the notIndexed points again. The indexed measurements run from 0.1° to
+% 1.2°, with the bulk at 0.4°. A cut at 0.8° removes the tail and
+% keeps 96% of all points in the region.
+
+% take measurements with MAD smaller than 0.8 degrees
+ebsdCorrected = ebsdRegion(ebsdRegion.mad < 0.8)
+
+%%
+% Plot the screened map with the same property on the same colour scale, so
+% that it can be compared with the map above.
+
+close all;
+plot(ebsdCorrected, ebsdCorrected.mad);
+mtexColorbar('title','mean angular deviation (degree)');
+setColorRange([0 1.2]);
+
+%%
+% The yellow speckles have gone, because every measurement above 0.8° was
+% removed. Those 881 positions are now empty and render as background.
+%
+% The deep blue patches are still there, and that is the point to take from
+% this figure. This threshold does *not* remove notIndexed points: they have
+% no fit to report, so their |mad| is stored as 0 and passes every
+% smaller-than test. All 4052 notIndexed points are still in the map above.
+%
+% Dropping them is a separate phase selection. The deliberate output below
+% shows how many indexed measurements remain.
+
+ebsdCorrected('indexed')
+
+%% Combining selections
+%
+% Conditions combine with MATLAB's elementwise AND and OR operators, or a
+% phase name can narrow a logical selection. This example applies the
+% region and MAD conditions together, then keeps only forsterite.
+
+keep = inpolygon(ebsd,region) & ebsd.mad < 0.8;
+goodForsterite = ebsd(keep);
+goodForsterite = goodForsterite('Forsterite')
+
+%%
+% Whether notIndexed points should be dropped depends on the analysis that
+% follows. Their locations often record cracks, poor surface preparation,
+% unresolved phases, or difficult grain boundaries. Keep the raw variable
+% and assign a selection to a new name so that this information is not
+% overwritten. <EBSDFilling.html Filling Missing Data> explains how
+% missing orientations can be treated without pretending they were
+% measured.
+
+%% Further reading
+%
+% * A. J. Schwartz, M. Kumar, B. L. Adams and D. P. Field, editors,
+% <https://doi.org/10.1007/978-0-387-88136-2 Electron Backscatter
+% Diffraction in Materials Science>, second edition, Springer, 2009,
+% develops the experimental and analytical background to EBSD maps.
+% * V. Randle, <https://doi.org/10.1016/j.matchar.2009.05.011 Electron
+% backscatter diffraction: strategies for reliable data acquisition and
+% processing>, _Materials Characterization_ 60, 913-922, 2009, reviews
+% acquisition, cleanup, and microstructure analysis choices.
+% * S. I. Wright et al.,
+% <https://doi.org/10.1016/j.ultramic.2015.07.017 Introduction and
+% comparison of new EBSD post-processing methodologies>, _Ultramicroscopy_
+% 159, 81-94, 2015, compares indexing success criteria and shows why their
+% threshold directions depend on the property.
+% * V. S. Tong et al.,
+% <https://doi.org/10.1016/j.ultramic.2015.04.019 The effect of pattern
+% overlap on the accuracy of high resolution electron backscatter
+% diffraction measurements>, _Ultramicroscopy_ 155, 62-73, 2015, measures
+% the loss of accuracy caused by overlapping patterns near grain
+% boundaries.
+% * <https://www.iso.org/standard/82749.html ISO 24173:2024>, _Microbeam
+% analysis - Guidelines for orientation measurement using electron
+% backscatter diffraction_, gives current guidance for reliable and
+% reproducible EBSD orientation measurements.
+
+%% Next
+%
+% <EBSDIndex.html Select by Index> distinguishes list position, persistent
+% measurement id, map coordinates, and grid indices. <EBSDGrid.html Square
+% and Hex Grids> explains when to restore matrix shape. Continue with
+% <GrainReconstruction.html Grain Reconstruction> before selecting whole
+% grains rather than individual measurements.
+%

@@ -1,143 +1,193 @@
 %% Texture Evolution
 %
-%%
-% Plastic deformation does not only change the shape of a polycrystal, it
-% also rotates its crystals. The <TaylorModel.html Taylor model> tells us,
-% for a given strain and a given family of <SlipSystems.html slip systems>,
-% by how much a crystal in a given orientation has to rotate. Applying that
-% rotation to every orientation of a sample and iterating over small strain
-% increments is the simplest possible simulation of texture evolution, and
-% that is what this page does.
+% Plastic deformation changes both the shape and the crystallographic
+% texture of a polycrystal. Under the <TaylorModel.html Taylor model>, each
+% crystal accommodates the same imposed strain by slip and rotates as it
+% does so. Repeating that rotation for small strain increments produces a
+% simple simulation of texture evolution.
 %
-% Two related pages take different routes to the same question - the
-% <SingleSlipModel.html single slip model> solves the continuity equation
-% for the ODF analytically, and <VPSCImport.html VPSC> results computed
-% outside of MTEX can be imported and analyzed here.
+% <VPSCImport.html Import from VPSC> showed how to read a deformation
+% history computed outside MTEX. Here the history is computed inside MTEX.
+% The <SingleSlipModel.html Single Slip Model> instead solves the ODF
+% continuity equation for independently slipping crystals.
+
+%% Define the deformation model
 %
-%% The crystallographic spin
-%
-% We consider fcc slip and plane strain, i.e. rolling.
+% We use the {111}<110> slip systems of a face-centred cubic crystal.
+% <SlipSystems.html Slip Systems> explains the plane, direction, and
+% symmetrization represented by this list.
 
 cs = crystalSymmetry('432');
-sS = symmetrise(slipSystem.fcc(cs))
+sS = symmetrise(slipSystem.fcc(cs));
 
 %%
+% Plane strain is a simple model for rolling. The strain extends the first
+% specimen axis, leaves the second unchanged, and shortens the third by the
+% same amount. The parameter $q$ can distribute the shortening between the
+% second and third axes; here $q=0$ gives plane strain.
 
 q = 0;
-epsTotal = 0.6 * strainTensor(diag([1 -q -(1-q)]))
+epsTotal = 0.6 * strainTensor(diag([1 -q -(1-q)]));
 
-%%
-% For a single crystal <strainTensor.calcTaylor.html |calcTaylor|> returns,
-% besides the Taylor factor, the spin tensor |W| that the crystal
-% experiences
-
-ori = orientation.byEuler(0,30*degree,15*degree,cs);
-
-eps1 = 0.01 * strainTensor(diag([1 -q -(1-q)]));
-
-[M,~,W] = calcTaylor(inv(ori) * eps1, sS);
-
-M, W
-
-%%
-% and the updated orientation is obtained by applying it
-
-oriNew = exp(ori,-W);
-
-angle(ori,oriNew) ./ degree
-
-%%
-% One percent of strain rotates this crystal by about half a degree. Since
-% the spin depends on the orientation, the crystals of a polycrystal drift
-% apart at different rates and the texture sharpens.
+%% Rotate one crystal
 %
-%% Iterating over a polycrystal
+% A <RotationSpinTensor.html spin tensor> describes an infinitesimal
+% rotation. For one oriented crystal, <strainTensor.calcTaylor.html
+% |calcTaylor|> returns the Taylor factor |M|, the slip amounts, and the
+% crystallographic spin |W| required by the imposed strain increment.
 %
-% Evaluating |calcTaylor| separately for every orientation would be far too
-% slow. Called without an orientation it instead returns the Taylor factor
-% and the spin as <SO3FunConcept.html orientation dependent functions>,
-% which are then cheap to evaluate on a whole list of orientations. We
-% compute this spin field once, for a single strain increment.
+% Slip systems live in the crystal frame. The inverse orientation therefore
+% expresses the specimen strain in that frame before the Taylor solve.
+
+oriSingle = orientation.byEuler(0,30*degree,15*degree,cs);
+epsStep = 0.01 * strainTensor(diag([1 -q -(1-q)]));
+
+[M,~,W] = calcTaylor(inv(oriSingle) * epsStep,sS);
+M
+W
+
+%%
+% Applying the negative crystallographic spin updates the orientation.
+% The angle below measures the resulting orientation change.
+
+oriNew = exp(oriSingle,-W);
+rotationAngle = angle(oriSingle,oriNew) ./ degree
+
+%%
+% One percent strain gives a Taylor factor of 2.3153 and rotates this
+% crystal by 0.4975 degrees. Spin depends on orientation, so crystals in a
+% polycrystal follow different paths and this example develops texture.
+
+%% Compute an orientation-dependent spin field
+%
+% Solving the Taylor problem separately at every sampled orientation would
+% be slow. When the strain remains in the specimen frame, |calcTaylor|
+% returns the Taylor factor and spin as <SO3FunConcept.html
+% orientation-dependent functions>. The expensive field can then be
+% evaluated cheaply at an entire list of orientations.
+%
+% Divide the total strain into 60 increments and compute the corresponding
+% spin field once. The Taylor solution is positively homogeneous in strain,
+% so the same incremental field is used at every step.
 
 numIter = 60;
-
-[~,~,spin] = calcTaylor(epsTotal ./ numIter, sS)
+[~,~,spin] = calcTaylor(epsTotal ./ numIter,sS)
 
 %%
-% Note that this step takes the bulk of the computing time, and its cost
-% depends only on the bandwidth of the harmonic representation, not on the
-% number of orientations. Passing |'bandwidth',16| makes it noticeably
-% faster at the price of a relative error of a few percent in the spin.
+% This calculation takes most of the page's run time. Its cost depends on
+% the bandwidth of the harmonic representation rather than on the later
+% number of sampled orientations. Passing |'bandwidth',16| is noticeably
+% faster, at the price of a relative spin-field error of a few percent.
+
+%% Start from a uniform texture
 %
-% We start from a uniform texture
+% The 20,000 random orientations approximate a uniform texture, whose
+% texture index $\lVert f\rVert^2$ is close to 1.
 
-rng(0)
 ori = orientation.rand(2e4,cs);
-
 odf0 = calcDensity(ori,'halfwidth',10*degree);
+initialTextureIndex = norm(odf0)^2
 
-norm(odf0)^2
+%% Step through the strain history
+%
+% At every increment, evaluate the spin at the current orientations and
+% move them by that rotation. The spin field returns right-sided spin
+% tensors in crystal coordinates, which fixes the order and sign in |exp|.
+% We retain the orientations after 20, 40, and 60 steps so their texture
+% indices can be compared later.
 
-%%
-% and step through the deformation
-
+oriAtStep = cell(1,3);
 pC = progressCounter(numIter);
 for k = 1:numIter
-
-  % the spin experienced by each individual orientation, in crystal
-  % coordinates - the field was set to return a right sided spin tensor
   W = spin.eval(ori);
-
-  % update the orientations
   ori = exp(ori,-W);
 
+  if mod(k,20) == 0
+    oriAtStep{k/20} = ori;
+  end
   pC.show(k);
 end
 
-%% The resulting rolling texture
+%% Read the resulting rolling texture
+%
+% The result lives in the rolling specimen frame. This frame names the
+% axes rolling direction (RD), transverse direction (TD), and normal
+% direction (ND). Its plotting convention places RD north, TD west, and
+% ND out of the page.
 
-% the resulting texture lives in the rolling frame - RD to the north, TD
-% to the west and ND out of the page; the frame also annotates the pole
-% figures with RD, TD, ND
+previousFrame = specimenFrame.default;
 specimenFrame.rolling.makeDefault
 
 plotPDF(ori,Miller({0,0,1},{1,1,1},cs),'contourf')
 mtexColorbar
 
 %%
-% The initially uniform texture has developed the familiar fcc rolling
-% components. How strong the texture has become is best measured by the
-% texture index $\lVert f \rVert^2$
+% The initially diffuse poles have gathered into several symmetry-related
+% maxima. Their concentrated contours are the pole-figure signature of the
+% fcc rolling components generated by the Taylor rotations.
 
-odf = calcDensity(ori,'halfwidth',10*degree);
-
-norm(odf)^2
-
-%%
-% For reference, the same computation stopped at 20 and at 40 percent
-% strain gives 1.15 and 1.50 - the texture index grows steadily but the
-% texture is still far from being sharp at 60 percent.
+%% Measure texture strength
 %
-%%
+% The texture index is 1 for a uniform ODF and grows as orientation density
+% becomes more concentrated. Compute it at 0, 20, 40, and 60 percent strain
+% with the same density-estimation halfwidth, so the values are comparable.
 
+textureIndex = initialTextureIndex;
+for k = 1:3
+  odfAtStep = calcDensity(oriAtStep{k},'halfwidth',10*degree);
+  textureIndex(k+1) = norm(odfAtStep)^2;
+end
+
+strainPercent = [0 20 40 60];
+table(strainPercent.',textureIndex.',...
+  'VariableNames',{'StrainPercent','TextureIndex'})
+
+%%
+% The index rises from 1.0010 initially to 1.1499, 1.4984, and 1.9160.
+% This steady increase quantifies the sharpening seen in the pole figures,
+% although the ODF is not yet extremely concentrated at 60 percent strain.
+
+odf = odfAtStep;
 plotSection(odf,'phi2',[0 45 65]*degree,'contourf')
 mtexColorbar
 
-%% Things worth knowing
+%%
+% The same orientation-density maxima now appear in three phi2 sections.
+% Their compact patches, separated by broad low-density regions, show where
+% the rolling texture is concentrated in the three-dimensional ODF.
+
+% Restore the incoming session frame after the published figures are made.
+specimenFrame.default(previousFrame);
+
+%% Numerical and physical limits
 %
-% * The step size matters. The spin field is computed for one strain
-% increment and then applied |numIter| times, which is an explicit Euler
-% scheme - too few steps and the trajectories are wrong, too many and the
-% computation is needlessly slow.
-% * The model deforms every crystal by exactly the same strain, which is
-% the defining Taylor assumption. It over predicts the sharpness of real
-% textures, because in a real material grains accommodate each other.
-% * Nothing here depends on the strain being plane strain. Changing
-% |epsTotal| to |strainTensor(diag([-0.5 -0.5 1]))| gives axisymmetric
-% tension, and the same loop produces the corresponding fibre texture.
-% * The slip systems enter only through |sS|. Replacing
-% |slipSystem.fcc| by |slipSystem.bcc| or by a hexagonal family, see
-% <TaylorHex.html Taylor Model for Hexagonal Materials>, changes the
-% predicted texture completely.
+% * The step size matters. The spin field is computed for one increment and
+% applied |numIter| times. This is a first-order explicit update: too few
+% steps give inaccurate trajectories, while too many are needlessly slow.
+% * The model deforms every crystal by exactly the same strain. This is the
+% defining Taylor assumption, and it overpredicts the sharpness of real
+% textures because real grains accommodate one another.
+% * Nothing here depends on plane strain. Setting |epsTotal| to
+% |strainTensor(diag([-0.5 -0.5 1]))| gives axisymmetric tension, and the
+% same loop produces the corresponding fibre texture.
+% * The slip systems enter only through |sS|. Replacing |slipSystem.fcc|
+% with |slipSystem.bcc| or a hexagonal family changes the prediction.
+
+%% References
+%
+% * G. I. Taylor, _Plastic Strain in Metals_, _Journal of the Institute of
+% Metals_ 62 (1938), 307--324. This paper introduces the equal-strain
+% polycrystal model used for every orientation update.
+% * H.-J. Bunge,
+% <https://doi.org/10.1002/crat.19700050112 Some applications of the Taylor
+% theory of polycrystal plasticity>, _Kristall und Technik_ 5 (1970),
+% 145--175. This paper develops the orientation-dependent Taylor factor and
+% crystallographic spin used here.
+
+%% Next
+%
+% <TaylorHex.html Taylor Model for Hexagonal Materials> applies the same
+% Taylor rotation to magnesium in a single large step. It adds slip families
+% with unequal critical resolved shear stresses and compares two temperatures.
 
 %#ok<*NOPTS,*ASGLU>

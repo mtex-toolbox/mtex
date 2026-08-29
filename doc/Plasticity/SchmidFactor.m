@@ -1,105 +1,110 @@
 %% The Schmid Factor
 %
-%%
-% The Schmid factor $\tau$ is a purely geometric quantity that describes
-% how well a slip system is aligned to a specific tension direction or
-% stress tensor. A Schmid factor $\tau=0$ indicates that the slip system
-% can not be active since either the tension direction is perpendicular to
-% the slip direction or the normal direction of the slip plane.
-%
-% In order to investigate this quantity in more detail lets consider an fcc
-% material with its dominant $[0 1 \bar{1}](1 1 1)$ slip system and tension
-% in direction $r = (001)$
+% An applied tension does not shear every <SlipSystems.html slip system>
+% equally. The *Schmid factor* measures how much of that loading geometry
+% acts along a slip direction within its slip plane. This page starts with
+% one crystal and then applies the same calculation to every grain in a map.
 
-% define symmetry and slip system
-cs = crystalSymmetry('cubic',[3.523,3.523,3.523],'mineral','Nickel');
+%% Read the loading geometry
+% Consider nickel with one representative fcc slip system
+% $[01\bar1](111)$ and a uniaxial tension direction $\mathbf r=[001]$.
+% All three directions are initially expressed in the crystal frame.
+
+cs = crystalSymmetry('cubic',[3.523,3.523,3.523], ...
+  'mineral','Nickel');
 sS = slipSystem.fcc(cs)
-
-% the tension direction, as a crystal direction - the crystal is not
-% oriented yet, so its frame and the specimen frame coincide
 r = Miller(0,0,1,cs);
 
 %%
-% Lets visualize the situation
+% The blue arrow is the Burgers vector $\mathbf b$, the black arrow is the
+% plane normal $\mathbf n$, and the red arrow is the tension direction.
 
-% define and plot the crystal shape
 cS = crystalShape.cube(cs);
 plot(cS,'faceAlpha',0.5)
 hold on
 plot(cS,sS,'facecolor','blue','label','b')
-% normalize - the length of a Miller is a reciprocal lattice spacing, not a
-% length in the plot
-arrow3d(-0.4*normalize(sS.n),'faceColor','black','linewidth',2,'label','n')
+arrow3d(0.4*normalize(sS.n),'faceColor','black', ...
+  'linewidth',2,'label','n')
 plottingConvention.default3D().setView
-
-arrow3d(0.4*normalize(r),'faceColor','red','linewidth',2,'label','r')
+arrow3d(0.4*normalize(r),'faceColor','red', ...
+  'linewidth',2,'label','r')
 hold off
 
-%% Definition of the Schmid factor
-%
-% The Schmid factor $\tau$ is defined as the product of the cosines of the
-% angles between the tension direction $\vec r$ with the normal direction
-% $\vec n=(1 1 1)$ and the Burgers vector $\vec b=[0 1 \bar{1}]$ of the
-% slip system:
-% 
-% $$\tau = \cos \angle(\vec r,\vec n) \cdot \cos \angle(\vec r,\vec b) $$
-% 
+%%
+% The red arrow is perpendicular to neither the blue arrow nor the black
+% arrow. The loading therefore has a nonzero component that shears this
+% plane along $\mathbf b$.
 
-tau = cos(angle(r,sS.n,'noSymmetry')) * cos(angle(r,sS.b,'noSymmetry'))
+%% Define the Schmid factor
+% For uniaxial tension, the signed Schmid factor $m$ is the product of two
+% direction cosines:
+%
+% $$m = \cos\angle(\mathbf r,\mathbf n)\,
+%       \cos\angle(\mathbf r,\mathbf b).$$
+%
+% A zero factor means that $\mathbf r$ is perpendicular to either
+% $\mathbf b$ or $\mathbf n$. The system then receives no resolved shear.
+% The sign selects the shear sense; activation comparisons usually use
+% $|m|$ when opposite Burgers-vector signs are identified.
+
+m = cos(angle(r,sS.n,'noSymmetry')) * ...
+  cos(angle(r,sS.b,'noSymmetry'))
 
 %%
-% The same computation can be performed more comfortably using the command
-% |<slipSystem.SchmidFactor.html SchmidFactor>|
+% The <slipSystem.SchmidFactor.html |SchmidFactor|> method performs the same
+% calculation. Both routes give $m=-0.4082$ for this signed system.
 
 sS.SchmidFactor(r)
 
-%%
-% Omitting the tension direction |r| the command
-% |<slipSystem.SchmidFactor.html SchmidFactor>| returns the Schmid factor
-% as a spherical function of type @S2FunHarmonic which can be used for
-% visualization or detecting the tension directions with highest / lowest
-% Schmid factor.
+%% Map one system over every tension direction
+% If the tension direction is omitted, |SchmidFactor| returns an
+% @S2FunHarmonic spherical function. It can be plotted or searched without
+% first constructing a direction grid.
 
 SF = sS.SchmidFactor
-
-% plot the Schmid factor in dependency of the tension direction
 plot(SF)
 
-% find the tension directions with the maximum Schmid factor
 [SFMax,pos] = max(SF)
-
-% and annotate them
 annotate(pos)
 
-%% The Schmid factor for general stress tensors
-%
-% Instead by the tension direction |r| the stress might be specified by a
-% @stressTensor |sigma|
+%%
+% The positive and negative lobes record opposite shear senses. The
+% annotated direction has the theoretical maximum $m=0.5$: it lies halfway
+% between the slip direction and the plane normal.
+
+%% Use a general stress tensor
+% A loading state may instead be supplied as a @stressTensor. Here the
+% uniaxial tensor is expressed in the same crystal frame as the system.
 
 sigma = stressTensor.uniaxial(r)
-
-%%
-% Then the Schmid factor for the slip system |sS| and the stress tensor
-% |sigma| is computed by
-
 sS.SchmidFactor(sigma)
 
-%% Multiple Slip Systems
-% In general a crystal contains not only one slip system but at least all
-% symmetrically equivalent ones. Those can be computed with
+%%
+% For a stress tensor, |SchmidFactor| contracts the Schmid tensor with the
+% stress after normalizing by the difference between its largest and
+% smallest principal stresses. The result is dimensionless and lies between
+% $-0.5$ and $0.5$. Multiplying by that stress difference gives the resolved
+% shear stress $\tau$.
+
+%% Compare all equivalent systems
+% A crystal contains the symmetry-equivalent systems, not only the chosen
+% representative. The |'antipodal'| option identifies opposite Burgers
+% vectors as the two shear senses of the same geometric system.
 
 sSAll = sS.symmetrise('antipodal')
 
 %%
-% The option |'antipodal'| indicates that Burgers vectors in opposite
-% direction should not be distinguished. Lets visualize the situation
+% The twelve panels show the twelve geometric fcc systems for the fixed red
+% loading direction. Only the plane and Burgers vector change between them.
 
 close all
-t = tiledlayout(3,4,'TileSpacing','tight','Padding','tight', 'TileIndexing', 'columnmajor');
+t = tiledlayout(3,4,'TileSpacing','tight','Padding','tight', ...
+  'TileIndexing','columnmajor');
 for k = 1:length(sSAll)
   ax = nexttile;
   plot(cS,'faceAlpha',0.5,'parent',ax)
-  title(ax,['\textbf{' int2str(k) '}:' char(sSAll(k),'latex')],'Interpreter','latex')
+  title(ax,['\textbf{' int2str(k) '}:' char(sSAll(k),'latex')], ...
+    'Interpreter','latex')
   axis off
   hold on
   plot(cS,sSAll(k),'facecolor','blue','parent',ax)
@@ -109,92 +114,77 @@ for k = 1:length(sSAll)
 end
 
 %%
-% Computing the Schmid factors for all those slip systems simultaneously by
+% A vectorized call returns one signed factor per system. Taking the largest
+% absolute value finds the system best aligned with this tension axis.
 
 tau = sSAll.SchmidFactor(r)
-
-%%
-% returns a list of Schmid factors and we can find the slip system with the
-% largest Schmid factor using
-
 [tauMax,id] = max(abs(tau))
-
 sSAll(id)
 
 %%
-% The above computation can be easily extended to a list of tension
-% directions. This allows us to display the maximum Schmid factor over all
-% slip systems as a function of the tension direction.
+% The maximum is $0.4082$ for tension along $[001]$. If systems have
+% different critical resolved shear stresses (CRSS), the option |'relative'|
+% divides each factor by its CRSS before the comparison.
 
-% define a grid of tension directions - passing the crystal reference frame
-% makes them directions of the crystal, as the slip systems are
-r = plotS2Grid('resolution',0.5*degree,'upper',cs.frame);
+tauRelative = sSAll.SchmidFactor(r,'relative');
 
-% compute the Schmid factors for all slip systems and all tension
-% directions
-tau = sSAll.SchmidFactor(r);
+%% Map the preferred system
+% The same vectorized calculation accepts many crystal directions. Rows of
+% |tau| correspond to directions and columns correspond to slip systems.
 
-% tau is a matrix with columns representing the Schmid factors for the
-% different slip systems. Lets take the maximum row-wise
+rGrid = plotS2Grid('resolution',0.5*degree,'upper',cs.frame);
+tau = sSAll.SchmidFactor(rGrid);
 [tauMax,id] = max(abs(tau),[],2);
 
-% visualize the maximum Schmid factor as a function of the tension
-% direction
-contourf(r,tauMax)
+contourf(rGrid,tauMax)
 mtexColorbar
 
 %%
-% We may also plot the index of the active slip system as a function of the
-% tension direction
+% The maximum factor repeats with cubic symmetry. Each curved region is the
+% set of tension directions that selects one member of the slip family.
 
-pcolor(r,id)
-
+pcolor(rGrid,id)
 mtexColorMap(vega20(12))
 
 %%
-% and observe that within the fundamental sectors the active slip system
-% remains the same. Lets annotate which are the active slip systems
+% Colour now identifies the selected system rather than the factor itself.
+% The selected index remains constant within each fundamental region.
+% Label the symmetry-related sector centres with their active systems.
 
-% take as directions the centers of the fundamental regions
 rCenter = symmetrise(cs.fundamentalSector.center,cs);
 rCenter = rCenter(rCenter.z>=0);
-
-% compute the Schmid factor
 tau = sSAll.SchmidFactor(rCenter);
+[~,idCenter] = max(abs(tau),[],2);
 
-% find the slip system with the maximum Schmid factor
-[~,id] = max(abs(tau),[],2);
-
-% display the slip system with the maximum Schmid factor
 hold on
 for k = 1:length(rCenter)
- text(rCenter(k),char(sSAll(id(k)),'latex'),'Interpreter','latex','fontsize',10)
+  text(rCenter(k),char(sSAll(idCenter(k)),'latex'), ...
+    'Interpreter','latex','fontsize',10)
 end
 hold off
 
 %%
-% If we perform this computation in terms of spherical functions we obtain
+% Spherical-function arithmetic gives the same maximum-factor map directly.
+% Omitting |r| returns one function for each of the twelve systems.
 
-% omitting |r| gives us a list of 12 spherical functions
-tau = sSAll.SchmidFactor
-
-% now we take the max of the absolute value over all these functions
-contourf(max(abs(tau),[],1),'upper')
+tauFun = sSAll.SchmidFactor
+contourf(max(abs(tauFun),[],1),'upper')
 mtexColorbar
 
+%%
+% This plot has the same symmetry and extrema as the explicit grid map.
+% Use the grid when the individual direction samples are needed, and use the
+% spherical function for evaluation, plotting, or further arithmetic.
 
-%% The Schmid factor for EBSD data
-% So far we have always assumed that the stress tensor is already given
-% relatively to the crystal coordinate system. Next, we want to examine the
-% case where the stress is given in specimen coordinates and we know the
-% orientation of the crystal. Let's import some EBSD data and compute the
-% grains
+%% Apply specimen stress to an EBSD map
+% So far, the stress and slip systems have shared the crystal frame. In an
+% EBSD map, the applied stress is usually expressed in the specimen frame,
+% while each slip system starts in its phase's crystal frame. An orientation
+% maps between those frames.
 
 mtexdata csl
 
-% take some subset
-ebsd = ebsd(ebsd.inpolygon([0,0,200,50]))
-
+ebsd = ebsd(ebsd.inpolygon([0,0,200,50]));
 grains = calcGrains(ebsd);
 grains = smoothBoundary(grains,5);
 
@@ -204,114 +194,85 @@ plot(grains.boundary,'linewidth',2)
 hold off
 
 %%
-% We want to consider the following slip systems
+% The black outlines delimit grains. Each grain has one mean orientation,
+% which is the frame map used for its Schmid-factor calculation.
 
-sS = slipSystem.fcc(ebsd.CS)
+sS = slipSystem.fcc(ebsd.CS);
 sS = sS.symmetrise;
 
-%%
-% Since, those slip systems are in crystal coordinates but the stress
-% tensor is in specimen coordinates we either have to rotate the slip
-% systems into specimen coordinates or the stress tensor into crystal
-% coordinates. In the following sections we will demonstrate both ways.
-% Lets start with the first one
+%% Rotate the systems into the specimen frame
+% Calling |symmetrise| without |'antipodal'| retains both Burgers-vector
+% signs. The following product makes one row per grain and one column per
+% symmetrically equivalent slip system, all expressed in the specimen frame.
 
-% rotate slip systems into specimen coordinates
-sSLocal = grains.meanOrientation * sS
+sSLocal = grains.meanOrientation * sS;
 
-%%
-% These slip systems are now arranged in matrix form where the rows
-% correspond to the crystal reference frames of the different grains and
-% the columns are the symmetrically equivalent slip systems. Computing the
-% Schmid factor we end up with a matrix of the same size
-
-% compute Schmid factor
 sigma = stressTensor.uniaxial(vector3d.Z)
-SF = sSLocal.SchmidFactor(sigma);
+SFSpecimen = sSLocal.SchmidFactor(sigma);
+[SFMax,active] = max(SFSpecimen,[],2);
 
-% take the maximum along the rows
-[SFMax,active] = max(SF,[],2);
-
-% plot the maximum Schmid factor
 plot(grains,SFMax,'micronbar','off','linewidth',2)
 mtexColorbar southoutside
 
 %%
-% Next we want to visualize the active slip systems.
+% Bright grains have a slip system well aligned with specimen $z$ tension.
+% Dark grains require more applied stress to reach the same CRSS.
 
-% take the active slip system and rotate it in specimen coordinates
-sSactive = grains.meanOrientation .* sS(active);
+sSActive = grains.meanOrientation .* sS(active);
 
 hold on
-% visualize the trace of the slip plane
-quiver(grains,sSactive.trace,'color','b')
-
-% and the slip direction
-quiver(grains,sSactive.b,'color','r')
+quiver(grains,sSActive.trace,'color','b')
+quiver(grains,sSActive.b,'color','r')
 hold off
 
 %%
-% We observe that the Burgers vector is in most case aligned with the
-% trace. In those cases where trace and Burgers vector are not aligned the
-% slip plane is not perpendicular to the surface and the Burgers vector
-% sticks out of the surface.
+% Blue arrows show the surface traces of the active slip planes, and red
+% arrows show the Burgers vectors. They align when the Burgers vector lies
+% in the map surface. A mismatch shows that the slip direction has a
+% component out of the surface.
+
+%% Alternatively, rotate the stress into each crystal frame
+% The equivalent route leaves the systems in their crystal frame and maps
+% the specimen stress back with the inverse grain orientations.
+
+sigmaLocal = inv(grains.meanOrientation) * sigma;
+SFCrystal = sS.SchmidFactor(sigmaLocal);
 
 %%
-% Next we want to demonstrate the alternative route
+% Both inputs now share a crystal frame. The two routes agree to numerical
+% roundoff, so either may be chosen according to the next calculation.
 
-% rotate the stress tensor into crystal coordinates
-sigmaLocal = inv(grains.meanOrientation) * sigma
+max(abs(SFCrystal-SFSpecimen),[],'all')
 
-%%
-% This becomes a list of stress tensors with respect to crystal coordinates
-% - one for each grain. Now we have both the slip systems as well as the
-% stress tensor in crystal coordinates and can compute the Schmid factor
-
-% the resulting matrix is the same as above
-SF = sS.SchmidFactor(sigmaLocal);
-
-% and hence we may proceed analogously
-% take the maximum along the rows
-[SFMax,active] = max(SF,[],2);
-
-% plot the maximum Schmid factor
-plot(grains,SFMax)
+[SFMax,active] = max(SFCrystal,[],2);
+plot(grains,SFMax,'micronbar','off','linewidth',2)
 mtexColorbar southoutside
 
-% take the active slip system and rotate it in specimen coordinates
-sSactive = grains.meanOrientation .* sS(active);
-
+sSActive = grains.meanOrientation .* sS(active);
 hold on
-% visualize the trace of the slip plane
-quiver(grains,sSactive.trace,'color','b')
-
-% and the slip direction
-quiver(grains,sSactive.b,'color','r')
-
+quiver(grains,sSActive.trace,'color','b')
+quiver(grains,sSActive.b,'color','r')
 hold off
-
-%% Strain-based analysis on the same data set
-
-eps = strainTensor(diag([1,0,-1]))
-
-epsCrystal = inv(grains.meanOrientation) * eps
-
-[M, b] = calcTaylor(epsCrystal, sS);
-
-plot(grains,M,'micronbar','off')
-mtexColorbar southoutside
 
 %%
-
-[ bMax , bMaxId ] = max( b , [ ] , 2 ) ;
-sSGrains = grains.meanOrientation .* sS(bMaxId) ;
-hold on
-bVec = sSGrains.b; bVec.z = 0;
-quiver ( grains , sSGrains.trace)
-quiver ( grains , bVec)
-hold off
+% This final map and its arrows reproduce the specimen-frame result.
+% A frame mismatch instead triggers an |MTEX:frameMismatch| warning, because
+% the resulting factors would have no physical meaning.
 
 %#ok<*ASGLU>
 %#ok<*NASGU>
 %#ok<*NOPTS>
 %#ok<*MINV>
+
+%% References
+%
+% * U. F. Kocks, C. N. Tomé and H.-R. Wenk,
+% <https://books.google.com/books?id=vkyU9KZBTioC Texture and Anisotropy>,
+% Cambridge University Press, 1998, derives Schmid's law and relates
+% resolved shear stress to slip-system activation.
+
+%% Next
+%
+% Schmid analysis selects systems under an imposed stress. Continue with
+% <TaylorModel.html Taylor Model> to find the combination of slip systems
+% that accommodates an imposed strain.

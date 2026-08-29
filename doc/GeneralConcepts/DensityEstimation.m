@@ -1,294 +1,371 @@
 %% Density Estimation
 %
 %%
-% In many cases texture measurements are acquired in the form of a series
-% of points or intensities. EBSD measurements are usually a grid of
-% measurement points, while pole figure measurements are often angular
-% positions combined with intensity values. However, in many cases we want
-% to do analysis that requires a continuous function, in which case we want
-% to determine the continuous function that best represents our data
-% points.  This section discusses the mathematical basis of this
-% calculation and how it is affected by some of the parameters involved.
-% 
-% In mathematical terms, density estimation is a concept that describes
-% estimation of a probability density function $f_N$ from given random
-% samples $x_n$, $n=1,\ldots,N$. In the simplest case the random samples
-% $x_n$ are real numbers and come from an unknown distribution function
-% $f$. The goal is to ensure that $f_N$ approximates $f$ as well as
-% possible.
+% Density estimation turns a finite sample into a continuous function.
+% In texture analysis, the samples may be EBSD orientations, grain mean
+% orientations, misorientation axes, or simulated orientations.
 %
-% Lets illustrate this starting with the example of a mixed Gaussian
-% distribution
+% Keep three parts of the calculation distinct:
+%
+% * *input:* samples $x_n$, possibly with statistical weights;
+% * *assumption:* nearby samples belong to a smoothly varying density;
+% * *result:* an estimate $f_N$ of an unknown density $f$.
+%
+% Pole-figure intensities are different input. They are sampled values of a
+% projected pole density rather than random orientations. Recovering an ODF
+% from them is an inverse problem, not the kernel estimate described here.
+%
+% The worked sequence starts with real numbers. It then applies the same
+% construction to directions and orientations.
 
-% Define the true density function, in this case made by combining two
-% Gaussians
+plottingConvention.default('y↑→x');
+
+%% Begin with a finite sample
+%
+% Use a mixture of two Gaussian densities as a known reference.
+% The second argument of |Gaussian| is a width parameter $\delta$.
+% The profile is $\exp(-(x-m)^2/\delta^2)$, so $\delta$ is the standard
+% deviation times $\sqrt{2}$.
+
 f = @(x) (Gaussian(0.2,0.05,x) + Gaussian(0.5,0.2,x))/2;
-
-% generate 1000 points linearly spaced between 0 and 1
 x = linspace(0,1,1000);
-% use these points to plot the true density function as blue lines
-plot(x,f(x),'linewidth',2)
-xlabel('x');ylabel('f(x)')
 
-% generate a random sample of points from the function f(x)
+% draw a sample from the density on [0,1]
 N = 20;
 xN = discreteSample(f,N,'range',[0,1]);
 
-% plot the random sample as red circles
-hold on
-plot(xN,zeros(size(xN)),'o','LineWidth',2,'MarkerEdgeColor','r')
-hold off
+plot(x,f(x),'LineWidth',2);
+hold on;
+plot(xN,zeros(size(xN)),'o','LineWidth',2,...
+  'MarkerEdgeColor','r');
+hold off;
+xlabel('x');
+ylabel('density');
+legend('true density','sample');
 
 %%
-% Note that the higher the peak of the original function, the more points
-% randomly generated. Because the red points are randomly generated, your
-% plot will look slightly different.
-%
-%% The Histogram
-% The easiest way to estimate a density function from the sample $x_n$ is
-% with a histogram
+% The blue curve has a narrow mode near 0.2 and a broad mode near 0.5.
+% More red samples occur where that curve is high. With only 20 samples,
+% random gaps and clusters are still prominent.
 
-histogram(xN,10)
-hold on
-plot(x,f(x),'linewidth',2)
-plot(xN,zeros(size(xN)),'o','LineWidth',2,'MarkerEdgeColor','r')
-hold off
+%% A histogram depends on its bins
+%
+% A histogram is the simplest density estimate. The |'pdf'| normalization
+% puts the bar areas on the same scale as the reference density.
+
+histogram(xN,10,'Normalization','pdf');
+hold on;
+plot(x,f(x),'LineWidth',2);
+plot(xN,zeros(size(xN)),'o','LineWidth',2,...
+  'MarkerEdgeColor','r');
+hold off;
+xlabel('x');
+ylabel('density');
+legend('histogram','true density','sample');
 
 %%
-% However, since the histogram always leads to a piecewise constant
-% function (step function) the fit to the true density function $f$ is
-% usually not so good. A better alternative is kernel density estimation.
+% The estimate is piecewise constant, and changing the bin edges changes
+% its steps. The bars hint at two modes, but they do not follow either
+% mode smoothly. Kernel density estimation removes the bin edges.
+
+%% Replace each sample by a kernel
 %
-%% Kernel Density Estimation 
-%
-% The idea of kernel density estimation is to pick some kernel function
-% $\psi$, e.g. a Gaussian with mean $0$ and standard deviation $0.05$,
+% A *kernel* is a small density profile placed at one observation. Start
+% with a Gaussian of mean 0 and width 0.05.
 
 psi = Gaussian(0,0.05);
 
+plot(xN,zeros(size(xN)),'o','LineWidth',2,...
+  'MarkerEdgeColor','r');
+hold on;
+for n = 1:N
+  plot(x,psi(x-xN(n)),'k');
+end
+hold off;
+xlabel('x');
+ylabel('kernel contribution');
+
 %%
-% shift its center to the position of each sample points $x_n$
+% Every black curve has the same shape and total mass. Only its centre
+% changes. Their mean is the kernel density estimate.
 
-% plot the random sample
-plot(xN,zeros(size(xN)),'o','LineWidth',2,'MarkerEdgeColor','r')
-hold on
-
-% for each random sample plot a centered Gaussian
-for n = 1:N, plot(x,psi(x-xN(n)),'k'); end
-hold off
-  
-%%
-% and take the mean 
-%
-% $$ f(x) = \frac{1}{N} \sum_{n=1}^N \psi(x-x_n) $$
-%
-% of all the these shifted kernel functions
-
-% take the mean over all shifted kernel functions
 fN = @(x) mean(psi(x-xN),1);
 
-hold on
-% plot the resulting estimate of the original function
-plot(x,fN(x),'linewidth',3,'Color',ind2color(2))
-
-% plot the "true" density function
-plot(x,f(x),'linewidth',3,'Color',ind2color(1))
-hold off
-
-%%
-% We observe that this gives a much better approximation to true density
-% function $f$. The most important parameter when computing the kernel
-% density estimate of a random sample is the halfwidth or standard
-% deviation of the corresponding kernel function. Lets repeat the above
-% density estimation with three different standard deviations
-
-% plot the true density function
-plot(x,f(x),'linewidth',3)
-hold on
-
-% and on top the kernel density estimates with different halfwidth
-delta = [0.01 0.05 0.25];
-for d = delta
-
-  psi = Gaussian(0,d);
-  fN = @(x) mean(psi(x-xN),1);
-  plot(x,fN(x),'linewidth',3)
-  
-end
-hold off
-legend('$f$','$f_{0.01}$','$f_{0.05}$','$f_{0.25}$','interpreter','Latex'), 
+plot(x,f(x),'LineWidth',3,'Color',ind2color(1));
+hold on;
+plot(x,fN(x),'LineWidth',3,'Color',ind2color(2));
+hold off;
+xlabel('x');
+ylabel('density');
+legend('true density','kernel estimate');
 
 %%
-% In general a too small halfwidth leads to heavily oscillating functions,
-% while a too large halfwidth will result in excessively smooth functions.
-% In the case of one dimensional data kernel density estimation MTEX
-% includes automatic optimization of the halfwidth when using the command
-% <calcDensity.html |calcDensity|>.
+% The estimate is smooth, but it is not the true function. Its small peaks
+% record the finite sample as well as the two features of the source.
 
-fN = calcDensity(xN,'range',[0;1]);
-
-%%
-% Optionally, we may control the halfwidth by the option |'bandwidth'|,
-% i.e.,
-% |fN = calcDensity(xN,'range',[0;1],'bandwidth',0.004)|
-
-plot(x,f(x),'linewidth',2)
-hold on
-plot(x,fN(x),'linewidth',2)
-hold off
-
-%% Optimal Halfwidth Selection
-% Selecting an optimal kernel halfwidth is a tough problem. MTEX provides a
-% couple of methods for this purpose which are explained in detail in the
-% section <OptimalKernel.html Optimal Kernel Selection>.
+%% Kernel width decides which detail survives
 %
-%% Kernel Density Estimation in d-Dimensions
-% The command <calcDensity.html calcDensity> may also be applied to
-% $d$-dimensional data. For simplicity lets consider a two-dimensional
-% example where both $x$ and $y$ coordinates are distributed according to
-% the distribution $f$ defined at the very beginning of this section.
+% Repeat the estimate with widths 0.01, 0.05, and 0.25.
 
-% Get a number of random sample points from the function.
-N = 100;
-xN = discreteSample(f,N);
-yN = discreteSample(f,N);
+delta = [0.01 0.05 0.25];
 
-% plot the random sample as red circles
-scatter(xN,yN,'o','LineWidth',2,'MarkerEdgeColor','r')
-axis equal tight
-xlim([0,1])
-ylim([0,1])
-box on
+plot(x,f(x),'LineWidth',3);
+hold on;
+for d = delta
+  psiTrial = Gaussian(0,d);
+  fTrial = @(x) mean(psiTrial(x-xN),1);
+  plot(x,fTrial(x),'LineWidth',2);
+end
+hold off;
+xlabel('x');
+ylabel('density');
+legend('$f$','$f_{0.01}$','$f_{0.05}$','$f_{0.25}$',...
+  'Interpreter','latex');
 
 %%
-% Similarly to the one dimensional example we need to specify the range of
-% the $x$ and $y$ coordinates for the estimated density function. The
-% format is |[xMin yMin; xMax yMax]|.
+% The 0.01 estimate retains a noisy peak for almost every observation.
+% The 0.25 estimate merges the two source modes and lowers their peaks.
+% The middle curve balances sample-scale variation against lost structure.
+% This is the bias--variance trade-off behind kernel selection.
+%
+% For one-dimensional real data, <calcDensity.html |calcDensity|> selects a
+% smoothing width automatically.
 
-% compute the two dimensional density function based on the random points
+[fAuto,autoBandwidth] = calcDensity(xN,'range',[0;1]);
+autoBandwidth
+
+plot(x,f(x),'LineWidth',2);
+hold on;
+plot(x,fAuto(x),'LineWidth',2);
+hold off;
+xlabel('x');
+ylabel('density');
+legend('true density','automatic estimate');
+
+%%
+% The automatic estimate smooths the sample without reproducing every
+% observation as a separate peak.
+% Its left mode sits on the true one at $x = 0.2$.
+% Its right mode sits near $x = 0.67$, well to the right of the true mode
+% at $x = 0.5$, and it is the taller of the two.
+%
+% The bandwidth is estimated from the same twenty samples, and twenty
+% samples do not locate the broad component of the mixture.
+% Read the estimate as one draw rather than as the density itself.
+%
+% For one-dimensional data, the |'bandwidth'| option fixes the smoothing
+% parameter instead.
+
+fFixed = calcDensity(xN,'range',[0;1],'bandwidth',0.004); %#ok<NASGU>
+
+%%
+% <OptimalKernel.html Optimal Kernel Selection> explains why no single
+% width is best for every sample.
+
+%% The construction also works in several dimensions
+%
+% Draw 100 independent pairs whose x and y coordinates follow the same
+% mixture. A row of |[xN,yN]| is now one two-dimensional observation.
+
+N = 100;
+xN = discreteSample(f,N,'range',[0,1]);
+yN = discreteSample(f,N,'range',[0,1]);
+
+scatter(xN,yN,'o','LineWidth',2,'MarkerEdgeColor','r');
+axis equal tight;
+xlim([0,1]);
+ylim([0,1]);
+box on;
+xlabel('x');
+ylabel('y');
+
+%%
+% The sample cloud is concentrated near combinations of the two
+% one-dimensional modes. The empty space between points is not assigned
+% zero density; the next step estimates it from neighbouring observations.
+%
+% For $d$-dimensional data, the range has one column per coordinate. The
+% first row contains the minima, and the second contains the maxima.
+
 fN = calcDensity([xN,yN],'range',[0 0;1 1]);
 
-% plot the two dimensional density function
-[x,y] = ndgrid(linspace(0,1));
-contourf(x,y,fN(x,y),'LevelStep',2)
-mtexColorMap LaboTeX
-shading interp
-axis equal tight
+[xGrid,yGrid] = ndgrid(linspace(0,1));
+contourf(xGrid,yGrid,fN(xGrid,yGrid),'LevelStep',2);
+mtexColorMap LaboTeX;
+shading interp;
+axis equal tight;
+hold on;
+scatter(xN,yN,'.','r');
+hold off;
+xlabel('x');
+ylabel('y');
 
-% plot the original random sample on top
-hold on
-scatter(xN,yN,'.','r')
-hold off
-
-%% Density Estimation for Directional Data
+%%
+% The estimate is positive everywhere, but most of the square carries very
+% little of it. The |LaboTeX| colour map starts at white, and most of the
+% grid falls in the lowest contour band, so the field reads as a few pink
+% islands on a white ground.
 %
-% Kernel density for directional (misorientation/ crystallographic axis)
-% data works analogously as for real valued data. Again we have to choose a
-% kernel function $\psi$ with a certain halfwidth $\delta$. Than the kernel
-% functions are centered at each direction of our random sampling and
-% summed up. Let us demonstrate this procedure for misorientation axes
-% between two phases in an EBSD map
+% White here means density below the first contour, not zero.
+% The islands sit at the four combinations of the two one-dimensional
+% modes. The pair of narrow modes near $x = 0.2$, $y = 0.2$ is by far the
+% densest, and the pair of broad modes near $x = 0.5$, $y = 0.5$ is the
+% faintest.
 
-% import ebsd data
-plottingConvention.default('y↑→x');
+%% Directions need kernels on the sphere
+%
+% A directional kernel uses angular distance on the sphere rather than
+% ordinary distance on a line. As a crystallographic example, estimate the
+% distribution of misorientation axes along one phase boundary population.
+% A misorientation axis is the direction about which one crystal must be
+% rotated to match the other.
+
 mtexdata forsterite silent
-
-% reconstruct grains
 grains = calcGrains(ebsd);
 
-% extract Forsterite to Enstatite grain boundaries
+% Select boundaries between forsterite and enstatite grains.
 gB = grains.boundary('Forsterite','Enstatite');
+misAxes = gB.misorientation.axis;
 
-% plot misorientation axes of the data over the fundamental region of orientation space
-plot(gB.misorientation.axis,'fundamentalRegion','MarkerFaceAlpha',0.1)
-
-%%
-% The distribution of the misorientation axes may be analyzed in more
-% detail by computing the misorientation axis distribution function
-
-% compute the misorientation axis distribution function
-axisDensity = calcDensity(gB.misorientation.axis);
-
-% plot the density function 
-contourf(axisDensity)
-mtexColorMap LaboTeX
-mtexColorbar
-
-% and on top of it the misorientation axes
-hold on
-plot(gB.misorientation.axis,'MarkerEdgeAlpha',0.25,...
-  'MarkerFaceColor','none','MarkerEdgeColor','k')
-hold off
+plot(misAxes,'fundamentalRegion','MarkerFaceAlpha',0.1);
 
 %%
-% Note that the resulting variable |axisDensity| is of type
-% @S2FunHarmonicSym and allows for all the operations as explained in the
-% section <S2FunOperations.html Operations on Spherical Functions>. In
-% order to stress once again the importance of the choice of the halfwidth
-% of the kernel function we perform the same calculation as above but with
-% the halfwidth set to 5 degree
+% Symmetry maps equivalent axes into the same fundamental region. The
+% points cluster instead of covering that region uniformly, so a density
+% can summarize their preferred directions.
 
-axisDensity = calcDensity(gB.misorientation.axis,'halfwidth',5*degree);
+axisDensity = calcDensity(misAxes);
 
-contourf(axisDensity)
-mtexColorMap LaboTeX
-mtexColorbar
+contourf(axisDensity);
+mtexColorMap LaboTeX;
+mtexColorbar;
+hold on;
+plot(misAxes,'MarkerEdgeAlpha',0.25,...
+  'MarkerFaceColor','none','MarkerEdgeColor','k');
+hold off;
 
-hold on
-plot(gB.misorientation.axis,'MarkerEdgeAlpha',0.25,...
-  'MarkerFaceColor','none','MarkerEdgeColor','k')
-hold off
-
-
-%% Density Estimation for Orientation Data
+%%
+% The contours join nearby black observations into broad maxima. The result
+% is an @S2FunHarmonicSym and supports the operations in
+% <S2FunOperations.html Spherical Function Operations>.
 %
-% Density estimation from orientations sets the connection between
-% individual crystal orientations, as e.g. measured by EBSD, and the
-% orientation distribution function of a specimen. Considering the
-% Forsterite orientations from the above EBSD map the corresponding ODF
-% computes to
+% Repeat the calculation with a 5 degree halfwidth.
 
-odf = calcDensity(ebsd('Forsterite').orientations,'halfwidth',10*degree)
+axisDensity5 = calcDensity(misAxes,'halfwidth',5*degree);
 
-%%
-% Lets visualize the ODF in |phi2| sections and plot on top of it the
-% individual orientation measurements from the EBSD map
-
-plotSection(odf,'contourf')
-mtexColorMap LaboTeX
-
-hold on
-plot(ebsd('Forsterite').orientations,'MarkerEdgeAlpha',0.25,...
-  'MarkerFaceColor','none','MarkerEdgeColor','k','MarkerSize',10)
-hold off
+contourf(axisDensity5);
+mtexColorMap LaboTeX;
+mtexColorbar;
+hold on;
+plot(misAxes,'MarkerEdgeAlpha',0.25,...
+  'MarkerFaceColor','none','MarkerEdgeColor','k');
+hold off;
 
 %%
-% A more detailed description of ODF estimation from individual orientation
-% measurements can be found in the section <EBSD2ODF.html ODF Estimation
-% from EBSD data>.
+% The smaller halfwidth keeps narrower, more fragmented maxima around the
+% observations. That extra detail is not automatically extra information;
+% it may be sampling variation.
+
+%% Orientations need kernels in orientation space
 %
-%% Parametric Density Estimation
-% 
-% In contrast to kernel density estimation, parametric density estimation
-% makes the assumption that the true distribution function belongs to a
-% parametric distribution family, e.g. the Gaussian. In this case it
-% estimates the parameters of this distribution from the random sample. In
-% the case of the Gaussian distribution these parameters are the mean value
-% and the standard deviation. On spheres and in orientation space, the
-% analogous functions to the Gaussian are the Bingham distributions. The
-% estimation of Bingham parameters from directional and rotational data is
-% explained in the sections <S2Bingham.html The Spherical Bingham
-% Distribution> and <BinghamODFs.html The Rotational Bingham Distribution>.
+% Applying the construction to orientations produces an *orientation
+% distribution function* (ODF). An ODF is a density over the possible
+% crystal orientations of one phase in the specimen.
+
+forsteriteOri = ebsd('Forsterite').orientations;
+odf = calcDensity(forsteriteOri,'halfwidth',10*degree)
+
+plotSection(odf,'contourf');
+mtexColorMap LaboTeX;
+hold on;
+plot(forsteriteOri,'MarkerEdgeAlpha',0.25,...
+  'MarkerFaceColor','none','MarkerEdgeColor','k','MarkerSize',10);
+hold off;
+
+%%
+% Each section cuts through the continuous ODF. The black measurements
+% concentrate around the same section maxima, while the kernel fills the
+% space between them. <EBSD2ODF.html ODF Estimation from EBSD Data> treats
+% phase selection, correlated EBSD pixels, and ODF interpretation in detail.
+
+%% Weights decide what population the density describes
 %
-%% Density Estimation with Weights
-% In many use cases one has a weighted random sample. A typical example is
-% if one wants to estimate a orientation distribution function from grain
-% orientations. In this cases big grains should contribute more to the ODF
-% than small grains. For that reason the functions |calcDensity| allow for
-% an additional option |'weights'| which will pass weights to the density
-% estimation.
+% A weighted sample gives some observations more mass than others. Grain
+% orientations make the physical choice clear. Equal weights answer "what
+% fraction of grains has this orientation?" Pixel-count weights approximate
+% "what fraction of the mapped area has this orientation?"
 
 mtexdata titanium silent
 grains = calcGrains(ebsd);
+indexedGrains = grains('indexed');
 
-odf = calcDensity(grains.meanOrientation,'weights',grains.numPixel)
+odfEqual = calcDensity(indexedGrains.meanOrientation,'silent');
+odfByPixel = calcDensity(indexedGrains.meanOrientation,...
+  'weights',indexedGrains.numPixel,'silent');
+
+weighting = ["equal grains";"grain pixel count"];
+peakMRD = [max(odfEqual);max(odfByPixel)];
+table(weighting,peakMRD)
+
+%%
+% The unequal peaks show that weighting changes the estimated population,
+% not just the plotting style. On a regular map, pixel count is proportional
+% to mapped area. State the sampling unit before interpreting an ODF.
+
+%% Parametric estimation answers a different question
+%
+% Kernel estimation assumes smoothness but does not prescribe one global
+% shape. *Parametric density estimation* instead assumes that the unknown
+% density belongs to a chosen family and estimates that family's parameters.
+%
+% For a Gaussian, those parameters are the mean and standard deviation.
+% The analogous models on spheres and in orientation space are Bingham
+% distributions. See <S2Bingham.html Spherical Bingham Distribution> and
+% <BinghamODFs.html Bingham ODFs> for fitting and checking those models.
+
+%% The maths behind kernel density estimation
+%
+% For equally weighted samples $x_1,\ldots,x_N$ and a normalized kernel
+% $\psi$, the estimate is
+%
+% $$ f_N(x) = \frac{1}{N} \sum_{n=1}^N \psi(x-x_n). $$
+%
+% Each observation contributes the same total mass. The kernel decides how
+% far that mass spreads. For non-negative weights $w_n$, MTEX replaces the
+% equal average by a normalized weighted sum.
+%
+% On the rotation group, let $o_n$ be orientations and let $\psi$ be a
+% radially symmetric kernel. The weighted ODF estimate is
+%
+% $$ f(o) = \frac{1}{\sum_{j=1}^{N} w_j}
+% \sum_{n=1}^{N} w_n \psi(o o_n^{-1}). $$
+%
+% MTEX also accounts for the symmetry-equivalent representatives carried by
+% each orientation. Different phases generally have different crystal
+% symmetries, so estimate an EBSD-derived ODF from one selected phase at a
+% time. <SO3Kernels.html Kernels on SO(3)> compares the kernel families.
+
+%% References
+%
+% * Z. I. Botev, J. F. Grotowski, and D. P. Kroese,
+% <https://doi.org/10.1214/10-AOS799 Kernel density estimation via
+% diffusion>, _The Annals of Statistics_ 38 (2010), 2916--2957, gives the
+% automatic estimator used by |calcDensity| for one-dimensional real data.
+%
+% * R. Hielscher,
+% <https://doi.org/10.1016/j.jmva.2013.03.014 Kernel density estimation on
+% the rotation group and its application to crystallographic texture
+% analysis>, _Journal of Multivariate Analysis_ 119 (2013), 119--143,
+% derives the orientation-space estimator and its fast algorithms.
+%
+% * C. Bingham,
+% <https://doi.org/10.1214/aos/1176342874 An antipodally symmetric
+% distribution on the sphere>, _The Annals of Statistics_ 2 (1974),
+% 1201--1225, introduces the parametric directional model used here as the
+% alternative to a kernel estimate.
+
+%% Next
+%
+% <OptimalKernel.html Optimal Kernel Selection> turns the visual
+% bias--variance trade-off into practical choices for directional and
+% orientation data. It also explains when automatic selection is reliable.

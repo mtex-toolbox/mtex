@@ -1,121 +1,133 @@
 %% Spherical Approximation and Interpolation
-%%
+% A set of measured directions and values does not yet define a function
+% between the measurements. Interpolation fills those gaps while preserving
+% every measured value. Approximation permits small residuals at the measured
+% directions in exchange for a simpler or smoother function.
+
 plottingConvention.default('y↑→x');
-%%
-% On this page, we want to cover the topic of function approximation from
-% discrete values on the sphere. To simulate this, we have stored some
-% nodes and corresponding function values which we can load. The csv-file
-% contains the $x$-, $y$-, and $z$-component of the nodes and the function
-% value in the fourth column. Lets import these data using the function
-% <vector3d.load.html |load|> 
-
-fname = fullfile(mtexDataPath, 'vector3d', 'smiley.csv');
-[nodes, S] = vector3d.load(fname,'columnNames',{'x','y','z','values'});
-
-%%
-% The second output |S| is a struct that contains a field |S.values| with
-% the function values from the fourth column. Next, we can make a scatter
-% plot to see, what we are dealing with
-
-scatter(nodes, S.values, 'upper');
-
-%%
-% Now, we want to find a function which coincides with the given function
-% values in the nodes reasonably well.
-%
-%% Interpolation
-%
-% The idea of the first approach is fairly simple. We create a function
-% which has *exactly* the value of the given data in the nodes. But we
-% still have to decide what happens inbetween these nodes. For that, we
-% linearly interpolate between them, similarly as Matlab plots a
-% one-dimensional function
-
 close all
-plot(rand(10,1), '-s','linewidth',2)
+
+%% Load scattered values
+% The example data contain directions on the sphere and one scalar value at
+% each direction. The first three columns are Cartesian components of the
+% directions. The fourth column contains the values. We import them with
+% <vector3d.load.html |load|>, whose second output |S| is a struct with a
+% field |S.values| holding that fourth column.
+
+fname = fullfile(mtexDataPath,'vector3d','smiley.csv');
+[nodes,S] = vector3d.load(fname,'columnNames', ...
+  {'x','y','z','values'});
+values = S.values;
 
 %%
-% With some mathematics we can lift this concept to the sphere. This is
-% done by the <vector3d.interp |interp|> command of the class |@vector3d|
-% when the argument |'linear'| is given
+% A scatter plot shows only the measured directions. It does not make any
+% claim about the values between them.
 
-sFTri = interp(nodes, S.values, 'linear');
-
-%%
-% To see that we really have the exact function values, we can evaluate
-% |sFTri| of type |@S2FunTri| and compare it with the original data values.
-
-norm(eval(sFTri, nodes) - S.values)
+scatter(nodes,values,'upper');
 
 %%
-% Indeed, the error is within machine precision. Now we can work with the
-% function defined on the whole sphere. We can, for instance, plot it
+% Notice the eyes and curved mouth encoded by the coloured samples. Large
+% spaces between samples are precisely where a reconstruction method must
+% supply information that was not measured.
 
-contourf(sFTri, 'upper');
+%% Exact interpolation
+% An interpolant agrees exactly with every supplied value. With the
+% |'linear'| method, MTEX triangulates the directions and varies the value
+% linearly over each spherical triangle. This is the spherical counterpart
+% of joining samples in a one-dimensional MATLAB plot by straight segments.
 
-%%
-% That does not look like the happy smiley face we had in mind. There are
-% other variants to fill the gaps between the data nodes, still preserving
-% the interpolation property, which may improve the result. But if we don't
-% restrict ourselves to the given function values in the nodes, we have
-% more freedom, which can be seen in the case of approximation.
-
-%% Approximation
-%
-% In contrast to interpolation we are now not restricted to the function
-% values in the nodes but still want to keep the error reasonably small.
-% One way to achieve this is to approximate it with a series of spherical
-% harmonics. We don't take as many spherical harmonics as there are nodes,
-% such that we are in the overdetermined case. In that way we don't have a
-% chance of getting the error in the nodes zero but hope for a smoother
-% approximation. This can be achieved by the <vector3d.interp |interp|>
-% command of the class |@vector3d| when the argument |'harmonic'|
-
-sF = interp(nodes, S.values, 'harmonic');
-contourf(sF, 'upper');
+sFTri = interp(nodes,values,'linear');
 
 %%
-% Plotting this function, we can immediately see, that we have a much
-% smoother function. But one has to keep in mind that the error in the data
-% nodes is not zero as in the case of interpolation.
+% The result is an @S2FunTri. Evaluate it at the original directions to test
+% the defining interpolation property.
 
-norm(eval(sF, nodes) - S.values)
+linearError = norm(eval(sFTri,nodes) - values)
 
 %%
-% But this may not be of great importance like in the case of function
-% approximation from noisy function values, where we don't know the exact
-% function values anyways.
-%
+% The residual norm is at machine precision. The function therefore matches
+% the data at the nodes, but this test says nothing about the gaps.
+
+newMtexFigure;
+contourf(sFTri,'upper');
+
 %%
+% The triangulated surface does not recover the intended happy face cleanly.
+% Exact agreement at the nodes has not guaranteed a plausible shape between
+% them. Other gap-filling variants can preserve the interpolation property
+% and may improve the result, but they must make a different local choice.
+
+%% Smooth harmonic approximation
+% An approximation is not constrained to reproduce every supplied value.
+% Here a truncated series of spherical harmonics
+% (<S2FunHarmonicRepresentation.html Basics of spherical harmonics>)
+% describes the whole sphere
+% with fewer coefficients than there are samples. The resulting least-squares
+% problem is overdetermined, so the fit generally has nonzero residuals.
+
+sF = interp(nodes,values,'harmonic');
+
+%%
+% The |'harmonic'| option returns an @S2FunHarmonic. Its default bandwidth is
+% chosen from the number of nodes.
+
+newMtexFigure;
+contourf(sF,'upper');
+
+%%
+% The harmonic plot is much smoother, and the eyes and smile form coherent
+% features rather than following individual triangles. Smoothing has traded
+% exact agreement at the data nodes for a simpler global description.
+
+harmonicError = norm(eval(sF,nodes) - values)
+
+%%
+% This residual is not zero, unlike the interpolation residual. Such a trade
+% can be useful when the measured values contain noise and the unknown exact
+% function values should not be reproduced point for point.
+
+%% Choosing between the two results
+% Use interpolation when each supplied value is authoritative and values at
+% unsampled directions should be inferred locally. Use harmonic approximation
+% when the data are noisy or when a smooth global representation is the goal.
+% In either case, inspect both the residuals at the nodes and the behaviour
+% between them. A small residual alone does not validate the reconstructed
+% shape.
+
+%% The maths behind harmonic approximation
+% Let $x_n$, $n=1,\ldots,N$, denote the data directions and let $f(x_n)$ be
+% their values. A harmonic approximation of maximum degree $M$ has the form
 %
-% The strategy underlying the |interp(...,'harmonicApproximation')|-command
-% to obtain such an approximation works via spherical harmonics
-% (<S2FunHarmonicRepresentation.html Basics of spherical harmonics>). For that,
-% we seek for so-called Fourier-coefficients ${\bf \hat f} = (\hat
-% f_0^0,\dots,\hat f_M^M)^T$ such that
+% $$ g(x) = \sum_{m=0}^M \sum_{l=-m}^m \hat f_m^l Y_m^l(x). $$
 %
-% $$ g(x) = \sum_{m=0}^M\sum_{l = -m}^m \hat f_m^l Y_m^l(x) $$
+% The values $\hat f_m^l$ are the Fourier coefficients. With fewer harmonic
+% coefficients than data values, they can be found from the least-squares
+% problem
 %
-% approximates our function. A basic strategy to achieve this is through
-% least squares, where we minimize the functional 
+% $$ \min_g \sum_{n=1}^N \left|f(x_n)-g(x_n)\right|^2. $$
 %
-% $$ \sum_{n=1}^N|f(x_n)-g(x_n)|^2 $$
+% This equation states the basic unweighted strategy. By default,
+% <S2FunHarmonic.interpolate.html |S2FunHarmonic.interpolate|> applies
+% spherical Voronoi weights so that densely sampled areas do not dominate the
+% fit merely because they contain more nodes.
 %
-% for the data nodes $x_n$, $n=1,\dots,N$, $f(x_n)$ the target function
-% values and $g(x_n)$ our approximation evaluated in the given data nodes.
+% MATLAB's |lsqr| solver obtains the coefficients iteratively. The optimality
+% condition is the normal equation, but MTEX need not store the Fourier matrix
+% explicitly. That matrix would be
 %
-% This can be done by the |lsqr| function of Matlab, which efficiently
-% seeks for roots of the derivative of the given functional (also known as
-% normal equation). In the process we compute the matrix-vector product
-% with the Fourier-matrix multiple times, where the Fourier-matrix is given
-% by
+% $$ F = [Y_m^l(x_n)]_{n=1,\ldots,N;\,m=0,\ldots,M;\,l=-m,\ldots,m}. $$
 %
-% $$ F = [Y_m^l(x_n)]_{n = 1,\dots,N;m = 0,\dots,M,l = -m,\dots,m}. $$
-%
-% This matrix-vector product can be computed efficiently with the use of
-% the nonequispaced spherical Fourier transform
-% <https://www-user.tu-chemnitz.de/~potts/nfft/nfsft.php NFSFT>.
-%
-% We end up with the Fourier-coefficients of our approximation $g$, which
-% describe our approximation.
-%
+% Each solver iteration needs products with this matrix or its adjoint. MTEX
+% evaluates these products efficiently with the nonequispaced spherical
+% Fourier transform (NFSFT). The final Fourier coefficients completely
+% describe the approximation $g$.
+
+%% References
+% * J. Keiner, S. Kunis and D. Potts,
+% <https://www-user.tu-chemnitz.de/~potts/nfft/nfsft.php NFSFT software and
+% documentation>, describes the nonequispaced spherical Fourier transform
+% used for the harmonic matrix-vector products.
+
+%% Next
+% Continue with <S2FunSampling.html Sampling> to learn how a continuous
+% spherical function is replaced by weighted values at selected directions.

@@ -1,304 +1,299 @@
-%% Low Level Parent Phase Reconstruction
+%% Low-Level Parent Phase Reconstruction
 %
-%%
-% In this section we discuss parent grain reconstruction at the example of
-% a titanium alloy. Lets start by importing a sample data set
+% This page rebuilds the triple-point workflow from
+% <TriplePointBasedReconstruction.html Triple-Point-Based Parent Phase
+% Reconstruction> with low-level functions. It exposes the candidate variant
+% IDs, vote counts, grain-ID remapping, and per-pixel parent calculation that
+% the |parentGrainReconstructor| normally manages.
+%
+% Use this route when you need to inspect or replace one of those operations.
+% For a routine reconstruction, the higher-level workflow is shorter and less
+% vulnerable to inconsistent bookkeeping.
 
 mtexdata alphaBetaTitanium
 
-% the phase names for the alpha and beta phases
-alphaName = 'Ti (alpha)'; 
+alphaName = 'Ti (alpha)';
 betaName = 'Ti (Beta)';
 
-% and plot the alpha phase as an inverse pole figure map
 plot(ebsd(alphaName),ebsd(alphaName).orientations,'figSize','large')
 
 %%
-% The data set contains 99.8 percent alpha titanium and 0.2 percent beta
-% titanium. Our goal is to reconstruct the original beta phase. The
-% original grain structure appears almost visible for human eyes.
-% Our computations will be based on the Burgers orientation relationship
+% The preceding page measures the same 99.8% alpha and 0.2% beta phase
+% fractions and explains what to notice in this map. It also defines the
+% Burgers OR and the required parent-to-child direction. We reuse that OR
+% without redefining it here.
 
-beta2alpha = orientation.Burgers(ebsd(betaName).CS,ebsd(alphaName).CS)
+beta2alpha = orientation.Burgers(...
+  ebsd(betaName).CS,ebsd(alphaName).CS)
 
-%%
-% that aligns (110) plane of the beta phase with the (0001) plane of the
-% alpha phase and the [1-11] direction of the beta phase with the [2110]
-% direction of the alpha phase.
+%% Segment grains for triple-point analysis
 %
-% Note that all MTEX functions for parent grain reconstruction expect the
-% orientation relationship as parent to child and not as child to parent.
-%
-%% Detecting triple points that belong to the same parent orientation
-%
-% In a first step we want to identify triple junctions that have
-% misorientations that are compatible with a common parent orientations. To
-% this end we first compute alpha grains using the option
-% <QuadruplePoints.html |removeQuadruplePoints|> which turn all quadruple
-% junctions into 2 triple junctions. Furthermore, we choose a very small
-% threshold of 1.5 degree for the identification of grain boundaries to
-% avoid alpha orientations that belong to different beta grains get merged
-% into the same alpha grain.
+% The preceding page defines a triple point and explains why this workflow
+% uses a 1.5-degree segmentation threshold with
+% <QuadruplePoints.html |removeQuadruplePoints|>.
+% We add one boundary-smoothing iteration while keeping the triple points
+% attached to the boundary network.
 
-% reconstruct grains
-[grains,ebsd] = calcGrains(ebsd,'threshold',1.5*degree,'removeQuadruplePoints');
+[grains,ebsd] = calcGrains(ebsd,'threshold',1.5*degree,...
+  'removeQuadruplePoints');
 grains = smoothBoundary(grains,1,'moveTriplePoints');
 
-% plot all alpha pixels
 region = [299 401 440 500];
 plot(ebsd(alphaName),ebsd(alphaName).orientations,...
-  'region',region,'micronbar','off','figSize','large');
+  'region',region,'micronbar','off','figSize','large')
 
-% and on top the grain boundaries
 hold on
-plot(grains.boundary,'linewidth',2 ,'region',region);
+plot(grains.boundary,'lineWidth',2,'region',region)
 hold off
 
 %%
-% Above we have plotted only a very small subregion of the original data
-% set to make the separation of the quadruple junctions better visible.
-%
-% Next we extract all alpha - alpha - alpha triple junctions and use the
-% command <calcParent.html |calcParent|> to find for each of these triple
-% junctions the best fitting parent orientations. 
+% The black lines show how finely the 1.5-degree threshold partitions the
+% alpha map. Each former four-way junction is now a pair of three-segment
+% junctions. Smoothing has turned the network into free-form polygons, so
+% those pairs are not something to pick out by eye here; the next step
+% counts them instead.
 
-% extract all alpha - alpha - alpha triple points
+%% Compute two parent candidates at every triple point
+%
+% Extract only alpha-alpha-alpha triple points. The high-level
+% |calcTPVotes| call performed this phase selection internally.
+
 tP = grains.triplePoints(alphaName,alphaName,alphaName)
 
-% compute for each triple point the best fitting parentId and how well the fit is
+%%
+% <calcParent.html |calcParent|> tests the three mean alpha orientations at
+% each point against all Burgers variants. The |'id'| flag returns variant
+% IDs instead of parent orientations. The |'numFit',2| option retains the
+% best and second-best combinations.
+
 tPori = grains(tP.grainId).meanOrientation;
-[parentId, fit] = calcParent(tPori,beta2alpha,'numFit',2,'id','threshold',5*degree);
+[tripleParentId,tripleFit] = calcParent(tPori,beta2alpha,...
+  'numFit',2,'id','threshold',5*degree);
 
-%%
-% The command |calcParent| returns for each child orientation a |parentId|
-% which allows us later to compute the parent orientation from the child
-% orientation. Furthermore, the command return for each triple junction the
-% misfit between the adjacent parent orientations in radiant. Finally, the
-% option |'numFit',2| causes |calcParent| to return not only the best fit
-% but also the second best fit. This will be used later. First we simple
-% colorize the triple junctions according to the best fit.
+tripleFitQuantiles = quantile(tripleFit(:,1)./degree,...
+  [0.25 0.5 0.75])
 
 hold on
-plot(tP,fit(:,1) ./ degree,'MarkerEdgecolor','k','MarkerSize',10,'region',region)
+plot(tP,tripleFit(:,1)./degree,'MarkerEdgeColor','k',...
+  'MarkerSize',10,'region',region)
 setColorRange([0,5])
-mtexColorMap LaboTeX
-mtexColorbar
+mtexColorMap('LaboTeX')
+mtexColorbar('title','best fit (degrees)')
 hold off
 
 %%
-% Next we select those triple junctions as reliable that have a fit less
-% than 2.5 degree and second best fit that is larger than  2.5 degree
+% The first fit is the largest pairwise mismatch among the three candidate
+% parent orientations, reported in radians by |calcParent| and converted to
+% degrees here. Its quartiles are 1.156, 1.531, and 2.038 degrees.
+% The colour map runs from white at zero to dark red at five degrees, so the
+% palest markers are the triples compatible with one beta orientation and
+% the dark ones are the misfits the next section rejects.
 
-consistenTP = fit(:,1) < 2.5*degree & fit(:,2) > 2.5*degree;
-
-% mark these triple points by a red circle
-hold on
-plot(tP(consistenTP),'MarkerEdgecolor','r','MarkerSize',10,...
-  'MarkerFaceColor','none','linewidth',2,'region',region)
-hold off
-
-%% Recover beta grains from consistent triple junctions
+%% Reject ambiguous triple points
 %
-% We observe that despite the quite sharp threshold we have many consistent
-% triple points. In the next step we check whether all consistent triple
-% junctions of a grain vote for the same parent orientation. Such a check
-% for consistent votes can be computed by the command <majorityVote.html
-% |majorityVote|> using the option |strict|.
+% Keep a triple point when its best fit is below 2.5 degrees and its
+% second-best fit is above 2.5 degrees. This low-level example uses the same
+% value on both sides of the decision. The preceding high-level page imposed
+% a wider ambiguity gap by requiring its second-best fit to exceed 5 degrees.
 
-% get a unique parentId vote for each grain
-[parentId, numVotes] = majorityVote( tP(consistenTP).grainId, ...
-  parentId(consistenTP,:,1), max(grains.id),'strict');
+consistentTP = tripleFit(:,1) < 2.5*degree & ...
+  tripleFit(:,2) > 2.5*degree;
+numConsistentTriplePoints = nnz(consistentTP)
+
+hold on
+plot(tP(consistentTP),'MarkerEdgeColor','r','MarkerSize',10,...
+  'MarkerFaceColor','none','lineWidth',2,'region',region)
+hold off
 
 %%
-% The command |majorityVote| returns for each grain with consistent
-% parentId votes this unique parentId and for all other grains |NaN|.
-% The second  output argument gives the number of these votes
-% 
-% For all grains with at least 3 unique vote we now use the command
-% <orientation.variants.html |variants|> to compute the parent orientation
-% corresponding to the |parentId|. This parent orientations we assign as
-% new |meanOrientation| to our grains.
+% Red circles mark 54,868 retained seeds. Many survive even though the
+% best-fit cutoff is sharp. The next check asks whether a grain receives
+% compatible variant IDs from all of its retained triple points.
 
-% lets store the parent grains into a new variable
+%% Require consistent votes within each child grain
+%
+% Each retained triple point casts one variant-ID vote for each of its three
+% grains. <majorityVote.html |majorityVote|> with |'strict'| returns an ID only
+% when every vote received by that grain is identical. Conflicting grains
+% receive |NaN|.
+
+[seedParentId,numVotes] = majorityVote(...
+  tP(consistentTP).grainId,tripleParentId(consistentTP,:,1),...
+  max(grains.id),'strict');
+
+%%
+% |numVotes| is the number of agreeing triple-point votes, not the number of
+% unique IDs. Requiring |numVotes>2| therefore means at least three votes.
+
+hasSeed = numVotes > 2;
+numSeedGrains = nnz(hasSeed)
+
 parentGrains = grains;
-
-% change orientations of consistent grains from child to parent
-parentGrains(numVotes>2).meanOrientation = ...
-  variants(beta2alpha,grains(numVotes>2).meanOrientation,parentId(numVotes>2));
-
-% update all grain properties that are related to the mean orientation
+parentGrains(hasSeed).meanOrientation = variants(beta2alpha,...
+  grains(hasSeed).meanOrientation,seedParentId(hasSeed));
 parentGrains = parentGrains.update;
 
-%%
-% Lets plot map of these reconstructed beta grains
-
-% define a color key
 ipfKey = ipfColorKey(ebsd(betaName));
 ipfKey.ipfDirection = vector3d.Y;
 
-% and plot
-plot(parentGrains(betaName), ...
-  ipfKey.orientation2color(parentGrains(betaName).meanOrientation),'figSize','large')
+parentColor = ipfKey.orientation2color(...
+  parentGrains(betaName).meanOrientation);
+plot(parentGrains(betaName),parentColor,'figSize','large')
 
 %%
-% We observe that this first step already results in many Beta grains.
-% However, the grain boundaries are still the boundaries of the original
-% alpha grains. To overcome this, we merge all Beta grains that have a
-% misorientation angle smaller then 2.5 degree.
+% The vote requirement transforms 26,828 child grains into coloured beta
+% fragments. Their footprints still follow the original alpha boundaries
+% because no merge has occurred.
+
+%% Reject isolated seeds before merging
 %
-% As an additional consistency check we verify that each parent grain has
-% been reconstructed from at least 2 child grains. To this end we first
-% make a test run the merge operation and then revert all parent grains that
-% that have less then two children. This step may not necessary in many case.
+% As an additional consistency check, require every proposed parent component
+% to contain at least two measured child grains. A test run of
+% <grain2d.merge.html |merge|> returns the proposed old-to-new grain IDs
+% without modifying the map.
 
-% test run of the merge operation
-[~,parentId] = merge(parentGrains,'threshold',2.5*degree,'testRun');
+[~,trialMergeId] = merge(parentGrains,'threshold',2.5*degree,...
+  'testRun');
+trialComponentSize = accumarray(trialMergeId,1);
 
-% count the number of neighboring child that would get merged with each child
-counts = accumarray(parentId,1);
+setBack = trialComponentSize(trialMergeId) < 2 & hasSeed;
+numIsolatedSeeds = nnz(setBack)
 
-% revert all beta grains back to alpha grains if they would get merged with
-% less then 1 other child grains
-setBack = counts(parentId) < 2 & grains.phaseId == grains.name2id(alphaName);
 parentGrains(setBack).meanOrientation = grains(setBack).meanOrientation;
 parentGrains = parentGrains.update;
 
 %%
-% Now we perform the actual merge and the reconstruction of the parent
-% grain boundaries.
+% Only the seeded grains can be set back, so |hasSeed| restricts the test to
+% them. This check reverts the 9 seeds that would have stood alone and leaves
+% 26,819 of the 26,828 in place. It can be omitted when independent
+% single-grain parents are plausible.
 
-% merge beta grains
-[parentGrains,parentId] = merge(parentGrains,'threshold',2.5*degree);
+%% Merge the accepted seed fragments
+%
+% Neighbouring beta fragments within 2.5 degrees are now merged. The returned
+% |seedMergeId| maps every original grain to its current grain ID.
 
-% set up a EBSD map for the parent phase
+[parentGrains,seedMergeId] = merge(parentGrains,...
+  'threshold',2.5*degree);
+numSeedParentGrains = length(parentGrains(betaName))
+
+%%
+% The EBSD map needs the same ID change. A connected notIndexed area can be a
+% grain, so all pixels must be remapped rather than only indexed pixels.
+% The leading zero preserves pixels whose grain ID is zero.
+
 parentEBSD = ebsd;
-
-% and store there the grainIds of the parent grains - all pixels have to be
-% remapped, not only the indexed ones, since the not indexed pixels belong
-% to grains as well. The leading zero keeps pixels without a grain at 0.
-old2new = [0; parentId];
+old2new = [0;seedMergeId];
 parentEBSD.grainId = old2new(1 + ebsd.grainId);
 
-plot(parentGrains(betaName), ...
-  ipfKey.orientation2color(parentGrains(betaName).meanOrientation),'figSize','large')
+parentColor = ipfKey.orientation2color(...
+  parentGrains(betaName).meanOrientation);
+plot(parentGrains(betaName),parentColor,'figSize','large')
 
+%%
+% Compatible fragments now form 114 beta-grain footprints. Remaining alpha
+% grains are candidates for growth from a reconstructed neighbour.
 
-%% Merge alpha grains to beta grains
+%% Find alpha grains next to reconstructed beta grains
 %
-% After the first two steps we have quite some alpha grains have not yet
-% transformed into beta grains. In order to merge those left over alpha
-% grains we check whether their misorientation with one of the neighboring
-% beta grains coincides with the parent to grain orientation relationship
-% and if yes merge them eventually with the already reconstructed beta
-% grains.
+% <grain2d.neighbors.html |neighbors|> returns the IDs of neighbouring alpha
+% and beta grains. For every pair, |calcParent| compares the measured alpha
+% orientation with the reconstructed beta orientation.
+
+grainPairs = neighbors(parentGrains(alphaName),parentGrains(betaName));
+
+oriAlpha = parentGrains(grainPairs(:,1)).meanOrientation;
+oriBeta = parentGrains(grainPairs(:,2)).meanOrientation;
+
+[pairParentId,pairFit] = calcParent(oriAlpha,oriBeta,beta2alpha,...
+  'numFit',2,'id');
+
+pairFitQuantiles = quantile(pairFit(:,1)./degree,[0.25 0.5 0.75])
+
+%%
+% The first returned ID selects the alpha variant compatible with its beta
+% neighbour. Its fit quartiles are 0.966, 1.427, and 2.129 degrees.
+% The second fit exposes whether that choice is unambiguous.
+
+%% Transform alpha grains supported by boundary pairs
 %
-% First extract a list of all neighboring alpha - beta grains
+% The executable criterion keeps pairs whose best fit is below 5 degrees and
+% whose second-best fit is above 5 degrees. Earlier prose and its threshold
+% summary called this a 2.5-degree step, but that did not match the code.
 
-% all neighboring alpha - beta grains
-grainPairs = neighbors(parentGrains(alphaName), parentGrains(betaName));
-
-%%
-% and check how well they fit to a common parent orientation
-
-% extract the corresponding mean orientations
-oriAlpha = parentGrains( grainPairs(:,1) ).meanOrientation;
-oriBeta = parentGrains( grainPairs(:,2) ).meanOrientation;
-
-% compute for each alpha / beta pair of grains the best fitting parentId
-[parentId, fit] = calcParent(oriAlpha,oriBeta,beta2alpha,'numFit',2,'id');
+consistentPairs = pairFit(:,1) < 5*degree & ...
+  pairFit(:,2) > 5*degree;
+numConsistentPairs = nnz(consistentPairs)
 
 %%
-% Similarly, as in the first step the command <calcParent.html
-% |calcParent|> returns a list of |parentId| that allows the convert the
-% child orientations into parent orientations using the command
-% <orientation.variants.html |variants|> and the fitting to the given parent
-% orientation. Similarly, as for the triple point we select only those
-% alpha beta pairs such that the fit is below the threshold of 2.5 degree
-% and at the same time the second best fit is above 2.5 degree.
+% Here |majorityVote| is used without |'strict'|. An alpha grain with
+% conflicting neighbours therefore takes its most frequent candidate rather
+% than being rejected outright.
 
-% consistent pairs are those with a very small misfit
-consistenPairs = fit(:,1) < 5*degree & fit(:,2) > 5*degree;
+growthParentId = majorityVote(grainPairs(consistentPairs,1),...
+  pairParentId(consistentPairs,1),max(parentGrains.id));
 
-%%
-% Next we compute for all alpha grains the majority vote of the surrounding
-% beta grains and change their orientation from alpha to beta
+hasGrowthVote = ~isnan(growthParentId);
+numGrownAlphaGrains = nnz(hasGrowthVote)
 
-parentId = majorityVote( grainPairs(consistenPairs,1), ...
-  parentId(consistenPairs,1), max(parentGrains.id));
-
-% change grains from child to parent
-hasVote = ~isnan(parentId);
-parentGrains(hasVote).meanOrientation = ...
-  variants(beta2alpha, parentGrains(hasVote).meanOrientation, parentId(hasVote));
-
-% update grain boundaries
+parentGrains(hasGrowthVote).meanOrientation = variants(beta2alpha,...
+  parentGrains(hasGrowthVote).meanOrientation,...
+  growthParentId(hasGrowthVote));
 parentGrains = parentGrains.update;
 
-% merge new beta grains into the old beta grains
-[parentGrains,parentId] = merge(parentGrains,'threshold',5*degree);
+[parentGrains,growthMergeId] = merge(parentGrains,...
+  'threshold',5*degree);
 
-% update grainId in the ebsd map
-old2new = [0; parentId];
+old2new = [0;growthMergeId];
 parentEBSD.grainId = old2new(1 + parentEBSD.grainId);
 
-% plot the result
-color = ipfKey.orientation2color(parentGrains(betaName).meanOrientation);
-plot(parentGrains(betaName),color,'linewidth',2)
+remainingAlphaPercent = 100 * sum(parentGrains(alphaName).numPixel) ./ ...
+  sum(parentGrains.numPixel)
+
+parentColor = ipfKey.orientation2color(...
+  parentGrains(betaName).meanOrientation);
+plot(parentGrains(betaName),parentColor,'lineWidth',2,...
+  'figSize','large')
 
 %%
-% The above step has merged 
-
-sum(hasVote)
-
-%%
-% alpha grains into the already reconstructed beta grain. This reduces the
-% amount of grains not yet reconstructed to
-
-sum(parentGrains(alphaName).numPixel) ./ sum(parentGrains.numPixel)*100
-
-%%
-% percent. One way to proceed would be to repeat the steps of this section
-% multiple time, maybe with increasing threshold, until the percentage of
-% reconstructed beta grains is sufficiently high. Another approach in to
-% consider the left over alpha grains as noise and use denoising techniques
-% to replace them with beta orientations. This will be done in the last
-% section.
-
-%% Reconstruct beta orientations in EBSD map
+% Of 16,251 consistent pairs, the majority vote transforms 16,205 alpha
+% grains. The unreconstructed alpha area is then 1.207%.
+% Repeating the pair-vote step with gradually increasing thresholds can grow
+% the reconstruction further, but each relaxation also accepts weaker fits.
 %
-% Until now we have only recovered the beta orientations as the mean
-% orientations of the beta grains. In this section we want to set up the
-% EBSD variable |parentEBSD| to contain for each pixel a reconstruction of
-% the parent phase orientation.
+% The original page also proposed treating the remaining alpha grains as
+% noise and replacing them during denoising. The closing denoising step below
+% fills only sites with missing orientations; indexed alpha pixels remain
+% alpha unless they are first removed from the map.
+
+%% Reconstruct a beta orientation at each transformed pixel
 %
-% Therefore, we first identify all pixels that previously have been alpha
-% titanium but now belong to a beta grain.
+% The grain means are beta orientations, but the EBSD pixels still store their
+% measured alpha orientations. Select original alpha pixels whose remapped
+% grain now has the beta phase.
 
-% consider only original alpha pixels that now belong to beta grains
-
-% the (:) matter: on a gridded map every per pixel property has the shape of
-% the map, but phaseId is the storage and stays a column, so combining the
-% two without flattening compares an (r × c) against an (r*c × 1)
-isNowBeta = parentGrains.phaseId(max(1,parentEBSD.grainId(:))) == ebsd.name2id(betaName) &...
+isNowBeta = parentGrains.phaseId(...
+  max(1,parentEBSD.grainId(:))) == ebsd.name2id(betaName) & ...
   parentEBSD.phaseId(:) == ebsd.name2id(alphaName);
 
 %%
-% Next we can use once again the function <calcParent.html |calcParent|> to
-% recover the original beta orientation from the measured alpha orientation
-% giving the mean beta orientation of the grain.
+% The |(:)| conversions are essential on a gridded map. Per-pixel properties
+% have the map shape, while the stored |phaseId| is a column. Flattening both
+% prevents an unintended row-by-column comparison.
+%
+% With a measured child orientation and a reconstructed parent grain,
+% <calcParent.html |calcParent|> returns the compatible beta orientation and
+% its angular fit.
 
-% update beta orientation
-[parentEBSD(isNowBeta).orientations, fit] = calcParent(parentEBSD(isNowBeta).orientations,...
-  parentGrains(parentEBSD(isNowBeta).grainId).meanOrientation,beta2alpha);
+[parentEBSD(isNowBeta).orientations,pixelFit] = calcParent(...
+  parentEBSD(isNowBeta).orientations,...
+  parentGrains(parentEBSD(isNowBeta).grainId).meanOrientation,...
+  beta2alpha);
 
-%%
-% We obtain even a measure |fit| for the correspondence between the beta
-% orientation reconstructed for a single pixel and the beta orientation of
-% the grain. Lets visualize this measure of fit
+pixelFitQuantiles = quantile(pixelFit./degree,[0.5 0.9 0.99])
 
-% the beta phase
-plot(parentEBSD(isNowBeta),fit ./ degree,'figSize','large')
-mtexColorbar
+plot(parentEBSD(isNowBeta),pixelFit./degree,'figSize','large')
+mtexColorbar('title','fit (degrees)')
 setColorRange([0,5])
 mtexColorMap('LaboTeX')
 
@@ -306,68 +301,118 @@ hold on
 plot(parentGrains.boundary,'lineWidth',2)
 hold off
 
-%% 
-% Lets finally plot the reconstructed beta phase
+%%
+% The median pixel fit is 1.183 degrees, 90% are below 2.087 degrees, and 99%
+% are below 3.209 degrees. Low values indicate agreement with the Burgers
+% variant predicted by the beta grain. The boundary overlay shows whether
+% high fits concentrate near reconstructed grain edges.
 
-plot(parentEBSD(betaName),ipfKey.orientation2color(parentEBSD(betaName).orientations),'figSize','large')
+parentColor = ipfKey.orientation2color(...
+  parentEBSD(betaName).orientations);
+plot(parentEBSD(betaName),parentColor,'figSize','large')
 
-%% Denoising of the reconstructed beta phase
-% As promised we end our discussion by applying denoising techniques to
-% fill the remaining holes of alpha grains. To this end we first
-% reconstruct grains from the parent orientations and throw away all small
-% grains
+%%
+% The beta pixel map follows the merged parent footprints while preserving
+% intra-grain orientation variation that was absent from the grain-mean map.
 
-[parentGrains,parentEBSD] = calcGrains(parentEBSD,'angle',5*degree,'minPixel',15);
+%% Denoise the reconstructed beta phase
+%
+% Segment the current parent map at 5 degrees and mark indexed grains smaller
+% than 15 pixels as notIndexed. Five smoothing iterations regularize the
+% retained boundaries.
 
-% smooth the grains a bit
+[parentGrains,parentEBSD] = calcGrains(parentEBSD,...
+  'angle',5*degree,'minPixel',15);
 parentGrains = smoothBoundary(parentGrains,5);
 
 %%
-% Finally, we denoise the remaining beta orientations and at the same time
-% fill the empty holes. We choose a very small smoothing parameter |alpha|
-% to keep as many details as possible.
+% A <halfQuadraticFilter.html |halfQuadraticFilter|> with a small |alpha|
+% preserves more local detail. The |'fill'| option interpolates missing
+% orientations inside the supplied grain boundaries.
 
-F= halfQuadraticFilter;
+F = halfQuadraticFilter;
 F.alpha = 0.1;
 parentEBSD = smooth(parentEBSD,F,'fill',parentGrains);
 
-% plot the resulting beta phase
-plot(parentEBSD(betaName),ipfKey.orientation2color(parentEBSD(betaName).orientations),'figSize','large')
+parentColor = ipfKey.orientation2color(...
+  parentEBSD(betaName).orientations);
+plot(parentEBSD(betaName),parentColor,'figSize','large')
 
 hold on
 plot(parentGrains.boundary,'lineWidth',3)
 hold off
 
 %%
-% For comparison the map with original alpha phase and on top the recovered
-% beta grain boundaries
+% The filter reduces pixel-scale colour variation without blurring across the
+% supplied grain boundaries. It can fill small grains that |minPixel| changed
+% to notIndexed, but it does not overwrite larger indexed alpha grains.
+
+%% Compare the final boundaries with the measured child map
+%
+% Return to the measured alpha orientations and overlay the reconstructed
+% grain boundaries.
 
 plot(ebsd(alphaName),ebsd(alphaName).orientations,'figSize','large')
 
 hold on
-plot(parentGrains.boundary,'lineWidth',3)
+plot(parentGrains.boundary,'lineWidth',3,'lineColor','white')
 hold off
 
-%% Summary of relevant thresholds
-%
-% In parent grain reconstruction several parameters are involve are
-% decisive for the success of the reconstruction
-%
-% * threshold for initial grain segmentation (1.5*degree)
-% * maximum misfit at triple junctions (2.5 degree)
-% * minimal misfit of the second best solution at triple junctions (2.5 degree)
-% * minimum number of consistent votes (2)
-% * threshold for merging beta grains (can be skipped)
-% * threshold for merging alpha and beta grains (2.5 degree)
 %%
+% The white outlines should enclose groups of related alpha colours.
+% Boundaries that cut through a visually coherent group are candidates for
+% revisiting the vote or merge thresholds.
+
+%% Read the intra-grain orientation structure
 %
-% Visualize the misorientation to the mean reveals quite some fine
-% structure in the reconstructed parent orientations.
+% The final diagnostic colours every beta pixel by the axis and angle of its
+% misorientation from the mean orientation of its grain.
+
+betaPixels = parentEBSD(betaName);
+betaMean = parentGrains(betaPixels.grainId).meanOrientation;
+mis2MeanDegree = angle(betaPixels.orientations,betaMean)./degree;
+mis2MeanQuantiles = quantile(mis2MeanDegree,[0.5 0.9 0.99])
 
 cKey = axisAngleColorKey;
-color = cKey.orientation2color(parentEBSD(betaName).orientations, parentGrains(parentEBSD(betaName).grainId).meanOrientation);
-plot(parentEBSD(betaName),color)
+deviationColor = cKey.orientation2color(...
+  betaPixels.orientations,betaMean);
+plot(betaPixels,deviationColor,'figSize','large')
 
 hold on
 plot(parentGrains.boundary,'lineWidth',3)
 hold off
+
+%%
+% The median deviation from the grain mean is 1.160 degrees, 90% are below
+% 2.054 degrees, and 99% are below 3.147 degrees. Colour changes inside a
+% boundary reveal structure that an IPF map of grain means would hide.
+% Large coherent deviations can indicate deformation or an over-merged grain.
+
+%% Thresholds used on this page
+%
+% * Initial child-grain segmentation: 1.5 degrees.
+% * Best triple-point fit: below 2.5 degrees.
+% * Second-best triple-point fit: above 2.5 degrees.
+% * Strict seed support: at least three agreeing votes.
+% * Seed-fragment merge: below 2.5 degrees and at least two child grains per
+% proposed parent component. The merge may be skipped if the separate
+% fragments are needed.
+% * Parent-child pair fit and growth merge: 5 degrees.
+%
+% The earlier summary listed a minimum of two consistent votes and a
+% 2.5-degree alpha-beta threshold. The executable conditions are three votes
+% and 5 degrees, respectively.
+
+%% References
+%
+% * F. Niessen, T. Nyyssönen, A. A. Gazder, and R. Hielscher,
+% <https://doi.org/10.1107/S1600576721011560 Parent grain reconstruction
+% from partially or fully transformed microstructures in MTEX>, _Journal
+% of Applied Crystallography_ 55 (2022), 180-194, gives the parent-candidate,
+% voting, transformation, and merging framework implemented manually here.
+
+%% Next
+%
+% Continue with <MaParentGrainReconstructionAdvanced.html Advanced Low-Level
+% Parent Grain Reconstruction> to apply low-level candidate fitting and graph
+% clustering to a martensitic steel map.

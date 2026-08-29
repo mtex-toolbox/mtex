@@ -1,110 +1,136 @@
 %% General Concepts
 %
-%%
-% MTEX has a small number of habits that run through everything in it.
-% Learning them once saves a great deal of confusion later, because they
-% are assumed everywhere and explained almost nowhere else.
+% A few habits recur in almost every MTEX analysis. The first is to think of a
+% variable as holding many things, not one. MTEX operations usually act on the
+% complete collection at once.
 %
-% The first and most important: *a variable holds many things, not one*. A
-% |vector3d| is not a direction, it is a list of directions. An |EBSD|
-% variable is a whole scan. A |grain2d| is every grain in a map. Operations
-% apply to the whole list at once and return a whole list, so the loop you
-% were about to write is almost always unnecessary and much slower than the
-% expression that replaces it.
+% The usual workflow is short. First calculate one value per element and
+% compare those values with a condition. The result is a logical mask: one true
+% or false value per element. Use that mask to select the elements of interest
+% without changing their class.
+
+%% Work with collections
 %
-% The second follows from the first: *selecting a subset is how you narrow
-% a question*. Indexing a list with a condition gives a shorter list of the
-% same kind, which every later operation then accepts unchanged.
+% In MATLAB, a variable is a name for stored data. Its class determines which
+% operations are available. An MTEX variable can contain one object or many
+% objects of the same class.
+%
+% For example, a |vector3d| variable may hold one direction or a list of
+% directions. An @EBSD variable represents a scan as a list of measurements.
+% An @grain2d variable may contain every grain in a map or a selected subset.
+%
+% Most elementwise operations apply to the complete list. They return one
+% result per element. This is called vectorization. It usually makes an
+% explicit loop unnecessary and is much faster than processing elements one by
+% one.
 
 plottingConvention.default('y↑→x');
 
 % one variable, five hundred directions
 v = vector3d.rand(500);
 
-% one condition, applied to all of them at once
+% one condition, applied to all directions at once
 isSteep = angle(v,vector3d.Z) < 30*degree;
 
-plot(v(~isSteep),'upper','grid','MarkerSize',4,'MarkerFaceColor','gray')
+plot(v(~isSteep),'upper','grid','MarkerSize',4, ...
+  'MarkerFaceColor','gray')
 hold on
 plot(v(isSteep),'upper','MarkerSize',5,'MarkerFaceColor','red')
 hold off
 
-%%
-% No loop appears anywhere in that. |angle| compared five hundred
-% directions with one, and |v(isSteep)| kept the ones that passed. The same
-% two steps select grains above a size, pixels of one phase, or boundaries
-% above a misorientation.
+%% Read the selection
 %
-%% Options, flags, and a trap
+% The red directions lie within 30 degrees of the positive $z$ axis. The gray
+% directions shown in the upper hemisphere lie outside that angular cap.
 %
-% Most MTEX commands take extra arguments in two forms. A *flag* is a bare
-% word - |'silent'|, |'antipodal'|, |'contourf'| - and an *option* is a name
-% followed by a value, as in |'halfwidth',10*degree|. They may be given in
-% any order, after the required arguments.
+% No loop appears in the calculation. |angle| compares all five hundred
+% directions with |vector3d.Z|. The comparison returns one true or false value
+% per direction. The expression |v(isSteep)| keeps the true entries. It returns
+% another |vector3d| list, so any later vector operation accepts it.
 %
-% The trap is that a repeated option is not an error. If the same name
-% appears twice, the *last* one wins, and nothing is reported. Building an
-% argument list programmatically and appending a default at the end will
-% therefore silently override what the caller asked for.
+% The same two steps select grains above a chosen size, pixels of one phase, or
+% boundaries above a chosen <Misorientations.html misorientation> angle.
+% <ListsAndIndexing.html Lists and Indexing> develops this pattern with
+% positional and logical selections.
+
+%% Control one command with optional inputs
 %
-% A related and more common trap: a misspelt option name is simply not
-% recognised, so it is ignored rather than rejected. The command then runs
-% with its default and produces a plausible result. Copy option names
-% rather than typing them.
+% Most MTEX commands take required arguments followed by optional inputs. A
+% *flag* is a bare word such as |'silent'|, |'antipodal'|, or |'contourf'|.
+% An *option* is a name followed by a value. For example,
+% |'halfwidth',10*degree| sets a smoothing halfwidth of 10 degrees. Flags and
+% options may be given in any order after the required arguments.
 %
-%% Two kinds of extra data
+% If an option name appears twice, the last value wins and MTEX reports no
+% error. A program that appends a default argument at the end can therefore
+% override a value that its caller supplied.
 %
-% Objects carry additional data in two places that are easy to confuse, and
-% the difference is about size rather than importance.
+% A misspelt option name is also silently ignored. The command then uses its
+% default and can produce a plausible result. Copy option names from the
+% command's documentation rather than typing them from memory.
+% <GeneralConceptsOptions.html Options> gives a worked example and shows how to
+% find the names a command accepts.
+
+%% Do not confuse command options with stored scan options
 %
-% A *property* has one value per element, so it is indexed and cut down
-% alongside the object - the |mad| of each EBSD measurement, the |GOS| of
-% each grain. An *option* is data about the whole object that does not have
-% one value per element, such as the header a file was imported with, and it
-% survives subsetting untouched.
+% MTEX also uses the word *option* for whole-scan data stored in |ebsd.opt|.
+% This scan option is not an optional input to a command. The distinction from
+% a property is determined by how many values the data contains.
 %
-% Putting scan-level information where per-element data belongs is a
-% recurring mistake, and it shows up as a length mismatch the first time
-% anyone takes a subset.
+% A *property* has one value per list element. For an EBSD map, per-pixel data
+% such as |mad| belongs in |ebsd.prop|. MTEX subsets it in lockstep with the
+% map. Grain orientation spread, |GOS|, likewise has one value per grain.
 %
-%% Where to start
+% A *scan option* describes the complete EBSD object. It does not have one value
+% per measurement point. An imported file header containing instrument and
+% acquisition settings is one example. Scan options remain unchanged when
+% |ebsd(ind)| selects part of the map.
 %
-% <MTEXScripts.html MTEX Scripts> and
-% <ListsAndIndexing.html Lists and Indexing> cover everything above in
-% detail, and are the two pages worth reading before writing any script of
-% your own. <Properties.html Properties> covers the distinction just made.
+% Putting scan-level information in |prop| creates a length mismatch when the
+% map is subset. <Properties.html Properties> shows how to inspect, add, select,
+% and plot per-element data.
+
+%% Follow the chapter in order
 %
-% <GeneralConceptsOptions.html Options> is the full account of flags and
-% options, and <GeneralConceptsConfiguration.html Configuration> covers the
-% settings that persist across a session - default fonts, figure sizes,
-% and the plotting convention that decides which specimen direction points
-% where on screen. That last one changes every plot you make, so it is worth
-% knowing where it is set.
+% <MTEXScripts.html MTEX Scripts> starts with a complete import, inspection,
+% grain reconstruction, and plotting sequence. <ListsAndIndexing.html Lists
+% and Indexing> then explains the collection operations used in that sequence.
 %
-% Two pages are for looking things up rather than reading through.
-% <Glossary.html Glossary> defines the vocabulary used across the whole
-% documentation, with the pairs that are easy to confuse placed side by
-% side - misorientation and disorientation, halfwidth and bandwidth, hole
-% and inclusion. <NotationAndConventions.html Notation and Conventions>
-% states the choices MTEX makes that a result depends on: radians, the
-% Bunge Euler convention, the direction an orientation acts in, planes
-% against directions, and the crystal axis alignment. When a figure comes
-% out mirrored or a number is wrong by a factor nobody can place, that page
-% is where to look first.
+% <GeneralConceptsConfiguration.html Configuration> distinguishes a setting
+% for one session from an option for one command. It also explains persistent
+% defaults for fonts, figure sizes, and plotting conventions.
+% <GeneralConceptsOptions.html Options> gives the full account of flags and
+% options. <Properties.html Properties> covers per-element and whole-scan data.
 %
-% Two further pages are methods rather than mechanics.
-% <DensityEstimation.html Density Estimation> is the step from a list of
-% measurements to a smooth distribution, and
-% <OptimalKernel.html Optimal Kernel> is about choosing how much to smooth -
-% the halfwidth question that recurs in every density in MTEX.
-% <ClusterDemo.html Clustering> groups orientations that lie close together,
-% which is a different way of summarising a population from fitting a
-% density to it.
+% Two pages are intended mainly for lookup. <Glossary.html Glossary> defines
+% vocabulary used across the documentation. It places easily confused terms
+% side by side. These include misorientation and disorientation, halfwidth and
+% bandwidth, and hole and inclusion.
+% <NotationAndConventions.html Notation and Conventions> records choices that
+% affect results. These include radians, Bunge Euler angles, the direction in
+% which an orientation acts, planes versus directions, and crystal-axis
+% alignment.
+% Consult it first when a figure is mirrored or a number differs by an
+% unexplained factor.
 %
+% The final pages introduce ways to summarize a population.
+% <DensityEstimation.html Density Estimation> turns discrete measurements into
+% a smooth distribution. <OptimalKernel.html Optimal Kernel> explains how to
+% choose the amount of smoothing. This is the recurring halfwidth question in
+% MTEX density estimates. <ClusterDemo.html Clustering> instead groups nearby
+% orientations without fitting a density.
+%
+% After these foundations, <Tutorials.html Tutorials> is the fastest route into
+% a complete application. <Plotting.html Plotting> explains how MTEX figures
+% are assembled. <Vectors.html Vectors> begins the reference material for the
+% basic object types.
+
+%% References
+%
+% This overview documents MTEX collection and calling conventions. It does not
+% rely on an external method or definition.
+
 %% Next
 %
-% With the habits above in place, <Tutorials.html Tutorials> is the fastest
-% route into real work. <Plotting.html Plotting> covers how figures are put
-% together, and the object types themselves begin at
-% <Vectors.html Vectors>.
-%
+% Continue with <MTEXScripts.html MTEX Scripts> to build and inspect a short,
+% reproducible analysis from import through grain-boundary plotting.

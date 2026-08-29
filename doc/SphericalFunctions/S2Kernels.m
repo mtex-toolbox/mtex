@@ -1,8 +1,18 @@
 %% Spherical Kernel Functions
+%#ok<*NOPTS>
 %
-%%
-% A spherical kernel $\psi$ is a spherical function that depends only on
-% the angle towards the north pole $e_3$, 
+% A spherical kernel is a scalar function whose value depends only on
+% angular distance from the north pole $\vec e_3$. It is therefore radial:
+% directions on the same circle around $\vec e_3$ have the same value.
+%
+% Kernels set the shape of localized spherical peaks. Their real-space
+% profile controls locality, while their Legendre coefficients control
+% harmonic cost and smoothing behaviour.
+%
+%% Reading a kernel in real space
+%
+% Begin with a de la Vallee Poussin kernel whose halfwidth is $10$ degree.
+% The halfwidth is the angle at which the value falls to half of its peak.
 
 psi = S2DeLaValleePoussinKernel('halfwidth',10*degree)
 
@@ -12,164 +22,222 @@ arrow3d(2.4*zvector,'labeled','arrowwidth',0.01)
 hold off
 axis off
 
-%% 
-% The dependency of the angle becomes more when plot along meridian
+%%
+% The peak is centred on $\vec e_3$, marked by the arrow. Concentric colour
+% bands show that changing azimuth while keeping angular distance fixed
+% does not change the value.
+%
+% A meridian profile makes the angular dependence easier to read.
 
 close all
 plot(psi,'linewidth',2,'symmetric')
 
 %%
-% Examples of spherical kernel functions are
+% The mirrored curve shows the same radial profile on either side of the
+% north pole. The halfwidth is a half-maximum location, not a hard cutoff:
+% this kernel remains positive beyond $10$ degree.
 %
-% * the de la Vallee Poussin kernel @S2DeLaValleePoussinKernel
-% * the Schulz defocusing kernel @SchulzDefocusingKernel
-% * the Dirichlet kernel @S2DirichletKernel
-% * the Bump kernel @S2BumpKernel
-% * the restricted distance kernel @S2RestrictedDistanceKernel
+%% Halfwidth and bandwidth answer different questions
 %
-%% Fourier coefficients
+% *Halfwidth* describes the visible angular spread of a profile.
+% *Bandwidth* is the largest Legendre degree stored by the kernel. A narrow
+% or abruptly cut off profile usually needs a higher bandwidth.
 %
-% Using mathematical notation we define this spherical kernel functions in 
-% the following way:
+% The main kernel families emphasize different properties:
 %
-% Every spherical kernel function $\Psi\colon \mathcal{S}_2 \to \mathbb{R}$ 
-% can be associated with a function $\psi \colon [-1,1] \to \mathbb R$ 
-% defined on the interval $[-1,1]$ by $\Psi(\vec v) = \psi(t)$ with 
-% $t=\cos(\sphericalangle(\vec v,\vec e_3)) = \vec v \cdot \vec e_3$. 
-% It turns out to be useful to approximate $\psi$ by a expansion into 
-% Legendre polynomials $P_n\colon[-1,1]\to\IR$ of degree $n$, i.e.,
-% 
-% $$ \psi(t) = \sum\limits_{n=0}^{\infty} (2n+1)\,\hat\psi_n \, \mathcal P_{n}(t). $$
+% || family || main characteristic || typical use ||
+% || <S2DeLaValleePoussinKernel.html de la Vallee Poussin> || nonnegative and finite for integer $\kappa$ || directional density estimation and texture analysis ||
+% || <S2DirichletKernel.html Dirichlet> || exact cutoff with unit Fourier coefficients || physical-property calculations ||
+% || <S2BumpKernel.html bump> || constant inside a strict angular cutoff || compact spatial support ||
+% || <SchulzDefocusingKernel.html Schulz defocusing> || diffraction-instrument correction profile || XRD defocusing correction ||
+% || <S2RestrictedDistanceKernel.html restricted distance> || negative distance-based interaction || point repulsion in spherical sampling ||
 %
-% Here, $\hat\psi_n$ is called the Fourier coefficient or spherical harmonic
-% coefficient of degree $n$. These are the same coefficients that are used for representing 
-% |S2FunHarmonic's|. 
-% Note, that in general, a |S2FunHarmonic| has $(2n+1)$ Fourier coefficients 
-% for every degree $n$. Here we have only one coefficient, due to
-% the radial symmetry of the |S2Kernel|. The others are zero.
+% MTEX uses these kernels for several tasks. Pass one to
+% <vector3d.calcDensity.html |calcDensity|> for directional density
+% estimation or to <S2Fun.smooth.html |smooth|> for spherical smoothing.
+% The Schulz kernel corrects XRD defocusing. The
+% <grainBoundary.calcGBND.html |calcGBND|> method uses a kernel to estimate
+% a habit-plane normal distribution, and <fibreODF.html |fibreODF|> uses one
+% to set the profile around a fibre.
 %
-% The Fourier coefficients of an |S2Kernel| can be
-% easily visualized using the command <S2Kernel.plotSpektra.html
-% |plotSpectra|>.
+%% De la Vallee Poussin: a nonnegative peak
+%
+% Compare two
+% <S2DeLaValleePoussinKernel.html de la Vallee Poussin kernels>. The
+% constructor converts each requested halfwidth to its concentration
+% parameter $\kappa$.
 
-plotSpektra(psi,'linewidth',2)
+psi15 = S2DeLaValleePoussinKernel('halfwidth',15*degree)
+psi20 = S2DeLaValleePoussinKernel('halfwidth',20*degree)
+
+fprintf('kappa(15 deg) = %.2f; kappa(20 deg) = %.2f\n', ...
+  psi15.kappa,psi20.kappa)
 
 %%
-% However, within the class |@S2Kernel|, kernel functions are represented 
-% by their Legendre coefficients $(2n+1)\,\hat\psi_n$, which are stored in 
-% the field |psi.A|. 
-%
-%% Applications
-%
-% Spherical kernel functions have different applications in MTEX. Those
-% include
-%
-% * kernel density estimation of directional data using the command
-% <vector3d.calcDensity.html |calcDensity|>
-% * defocusing correction of XRD data
-% * estimation of the habit plane normal distribution using the command
-% <grainBoundary.calcGBND.html |calcGBND|>
-% * definition of fibre ODFs using the command <fibreODF.html |fibreODF|>
-%
-%
-%% The de la Vallee Poussin Kernel
-% The <S2DeLaValleePoussinKernel.html spherical de la Vallee Poussin kernel>
-% is defined by 
-% 
-% $$ K(t) = (1+\kappa)\,(\frac{1+t}{2})^{\kappa}$$ 
-% 
-% for $t\in[0,1]$. The de la Vallee Poussin kernel additionally has the 
-% unique property that for a given halfwidth it can be described exactly 
-% by a finite number of Fourier coefficients. This kernel is recommended
-% for Texture analysis as it is always positive and there is no truncation 
-% error in Fourier space.
-%
-% Hence we can define the de la Vallee Poussin kernel $\psi_{\kappa}$ 
-% depending on a parameter $\kappa \in \mathbb N \setminus \{0\}$ by its 
-% finite Legendre polynomial expansion
-%
-% $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{L} (2n+1)\,\hat\psi_n(\kappa)\,\mathcal P_{n}(t).$$
-%
-% We obtain the Fourier coefficients $\hat\psi_n(\kappa)$ by $\hat\psi_0=1$, 
-% $\hat\psi_1=\frac{\kappa}{6+3\kappa}$ and the three term recurrence relation
-%
-% $$ (\kappa+l+2)(2l+3)\, \hat\psi_{l+1} = -(2l+1)^2\,\hat\psi_l + (\kappa-l+1)(2l-1)\,\hat\psi_{l-1}.$$
-%
-% Lets construct two of this kernels.
+% The parameters are $40.34$ and $22.64$, respectively. Compare each
+% real-space profile with its Fourier coefficients.
 
-psi1 = S2DeLaValleePoussinKernel('halfwidth',15*degree)
-psi2 = S2DeLaValleePoussinKernel('halfwidth',20*degree)
-
-plot(psi1,'linewidth',2,'symmetric')
+figure
+subplot(1,2,1)
+plot(psi15,'linewidth',2,'symmetric')
 hold on
-plot(psi2,'linewidth',2,'symmetric')
+plot(psi20,'linewidth',2,'symmetric')
+hold off
+legend('halfwidth = 15°','halfwidth = 20°')
+subplot(1,2,2)
+plotSpektra(psi15,'linewidth',2)
+hold on
+plotSpektra(psi20,'linewidth',2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
 %%
-% Here the parameter $\kappa$ is $40.34$ for function $\psi_1$ and $22.64$ 
-% in function $\psi_2$.
+% The $15$ degree kernel is narrower and taller. Its coefficients remain
+% significant to higher degrees, which is the harmonic cost of resolving
+% the sharper peak. Both profiles remain nonnegative.
 %
-% We also take a look at the Fourier coefficients
+%% Dirichlet: an exact spectral cutoff
+%
+% The <S2DirichletKernel.html Dirichlet kernel> keeps every Fourier
+% coefficient through its requested bandwidth. Compare bandwidths 10 and
+% 5 in real and harmonic space.
 
-plotSpektra(psi1,'linewidth',2)
+dirichlet10 = S2DirichletKernel(10)
+dirichlet5 = S2DirichletKernel(5)
+
+figure
+subplot(1,2,1)
+plot(dirichlet10,'linewidth',2,'symmetric')
 hold on
-plotSpektra(psi2,'linewidth',2)
+plot(dirichlet5,'linewidth',2,'symmetric')
 hold off
-legend('halfwidth = 15°','halfwidth = 20°')
-
-%% The Dirichlet Kernel
-% The <S2DirichletKernel.html spherical Dirichlet or
-% Christoffel-Darboux kernel> is recommended for calculating physical
-% properties as the Fourier coefficients always have a value of one up to
-% the specified bandwidth:
-%
-% $$ \psi_N(t) = \sum\limits_{n=0}^N (2n+1) \, \mathcal P_{n}(t).$$
-%
-% Lets construct two of them.
-
-psi1 = S2DirichletKernel(10)
-psi2 = S2DirichletKernel(5)
-
-plot(psi1,'linewidth',2,'symmetric')
+legend('bandwidth = 10','bandwidth = 5')
+subplot(1,2,2)
+plotSpektra(dirichlet10,'linewidth',2)
 hold on
-plot(psi2,'linewidth',2,'symmetric')
+plotSpektra(dirichlet5,'linewidth',2)
 hold off
 legend('bandwidth = 10','bandwidth = 5')
 
 %%
-% By looking at the Fourier coefficients we see, that they are exactly 1.
+% The bandwidth-10 kernel has a narrower central lobe and more side lobes.
+% It crosses below zero, so it is not a nonnegative density kernel. The
+% spectra verify that every retained Fourier coefficient is exactly one.
+% This exact cutoff is why the family is recommended for calculating
+% physical properties.
+%
+%% Bump: an exact spatial cutoff
+%
+% The <S2BumpKernel.html bump kernel> is constant inside its halfwidth and
+% zero outside. Compare two cutoffs using bandwidth 128 for their stored
+% Legendre expansions.
 
-plotSpektra(psi1,'linewidth',2)
+bump30 = S2BumpKernel(30*degree,'bandwidth',128)
+bump50 = S2BumpKernel(50*degree,'bandwidth',128)
+
+figure
+subplot(1,2,1)
+plot(bump30,'linewidth',2,'symmetric')
 hold on
-plotSpektra(psi2,'linewidth',2)
+plot(bump50,'linewidth',2,'symmetric')
 hold off
-legend('bandwidth = 10','bandwidth = 5')
-
-%% The Bump kernel
-% The <S2BumpKernel.html spherical bump kernel> is a radial
-% symmetric kernel function depending on the halfwidth $r\in (0,pi)$. The
-% function value is 0, if the angle is greater then the halfwidth $r$.
-% Otherwise it is 1.
-%
-% The main problem of the bump kernel is that we need lots of Fourier
-% coefficients to describe it. That possibly can result in high runtimes.
-%
-
-psi1 = S2BumpKernel(30*degree)
-psi2 = S2BumpKernel(50*degree)
-
-plot(psi1,'linewidth',2,'symmetric')
+legend('halfwidth = 30°','halfwidth = 50°')
+subplot(1,2,2)
+plotSpektra(bump30,'linewidth',2)
 hold on
-plot(psi2,'linewidth',2,'symmetric')
+plotSpektra(bump50,'linewidth',2)
 hold off
 legend('halfwidth = 30°','halfwidth = 50°')
 
 %%
-% We also take a look at the Fourier coefficients
-
-plotSpektra(psi1,'linewidth',2)
-hold on
-plotSpektra(psi2,'linewidth',2)
-hold off
-legend('halfwidth = 30°','halfwidth = 50°')
+% The flat tops and abrupt cutoffs give exact compact support in real space.
+% The oscillating spectra decay slowly, so many coefficients are needed to
+% represent that discontinuity. This can produce high runtimes.
+%
+% Earlier documentation stated that the value inside the cap was 1. The
+% current kernel instead divides by the cap's relative area. This gives the
+% kernel mean value one, consistent with the other normalized families.
+%
+%% The maths behind radial kernels
+%
+% Let $\theta$ be the angle from $\vec v$ to $\vec e_3$ and set
+% $t=\cos\theta=\vec v\cdot\vec e_3$. A kernel $\Psi$ on the sphere is then
+% represented by a one-variable function $\psi$:
+%
+% $$ \Psi(\vec v)=\psi(t), \qquad t\in[-1,1]. $$
+%
+% MTEX expands this function in Legendre polynomials $\mathcal P_n$,
+%
+% $$ \psi(t)=\sum_{n=0}^{\infty}(2n+1)\,\widehat\psi_n\,
+% \mathcal P_n(t). $$
+%
+% A general @S2FunHarmonic has $2n+1$ spherical harmonic coefficients at
+% degree $n$. Radial symmetry leaves only the zonal coefficient. An
+% <S2Kernel.S2Kernel.html |S2Kernel|> stores the scaled coefficients
+% $(2n+1)\widehat\psi_n$ in its |A| property. The
+% <S2Kernel.plotSpektra.html |plotSpektra|> method divides by $2n+1$ and
+% plots $\widehat\psi_n$.
+%
+% This degree-by-degree representation makes radial convolution cheap. The
+% <S2FunRadon.html spherical Radon transform> earlier in this chapter is
+% another radial convolution, with zero coefficients at every odd degree.
+%
+%% Formulae for the three examples
+%
+% On the full interval $t\in[-1,1]$, the de la Vallee Poussin profile is
+%
+% $$ K(t)=(1+\kappa)\left(\frac{1+t}{2}\right)^\kappa. $$
+%
+% Earlier documentation restricted this formula to $t\in[0,1]$. The class
+% evaluates it on the full cosine interval. For positive integer
+% $\kappa\in\mathbb N\setminus\{0\}$, the profile is a polynomial and has
+% an exact finite Legendre expansion. A requested halfwidth generally gives
+% a noninteger $\kappa$, so its stored finite expansion is a truncation.
+%
+% With the normalization above, the first coefficients are
+% $\widehat\psi_0=1$ and
+% $\widehat\psi_1=\kappa/(\kappa+2)$. The implementation continues them with
+%
+% $$ (\kappa+l+2)\widehat\psi_{l+1}=-(2l+1)\widehat\psi_l
+% +(\kappa-l+1)\widehat\psi_{l-1}. $$
+%
+% Earlier documentation instead gave
+% $\widehat\psi_1=\kappa/(6+3\kappa)$ and the recurrence
+%
+% $$ (\kappa+l+2)(2l+3)\widehat\psi_{l+1}
+% =-(2l+1)^2\widehat\psi_l
+% +(\kappa-l+1)(2l-1)\widehat\psi_{l-1}. $$
+%
+% Those factors do not match the coefficients returned by the current
+% constructor.
+%
+% The bandwidth $N$ Dirichlet kernel is
+%
+% $$ \psi_N(t)=\sum_{n=0}^{N}(2n+1)\mathcal P_n(t). $$
+%
+% Hence $\widehat\psi_n=1$ for $0\leq n\leq N$ and zero above $N$.
+% For bump halfwidth $r\in(0,\pi)$, the normalized profile is
+%
+% $$ \psi_r(\cos\theta)=
+% \begin{cases}
+% \displaystyle\frac{2}{1-\cos r}, & 0\leq\theta<r,\\
+% 0, & r\leq\theta\leq\pi.
+% \end{cases} $$
+%
+%% References
+%
+% * W. Freeden and M. Schreiner,
+% <https://doi.org/10.1007/978-3-540-85112-7 Spherical Functions of
+% Mathematical Geosciences: A Scalar, Vectorial, and Tensorial Setup>,
+% Springer, 2009, develops scalar zonal kernels and their spherical harmonic
+% representations.
+% * H. Schaeben,
+% <https://doi.org/10.1155/TSM.33.365 The de la Vallee Poussin Standard
+% Orientation Density Function>, _Textures and Microstructures_ 33 (1999),
+% 365--373, relates kernel halfwidth to the finite harmonic representation
+% used in texture analysis.
+%
+%% Next
+%
+% <SphericalHarmonics.html Spherical Harmonics> develops the basis functions
+% whose zonal coefficients reduce to one value per degree for a kernel.

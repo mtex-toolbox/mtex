@@ -1,174 +1,258 @@
 %% Anisotropic Elasticity
+%
 %%
-plottingConvention.default('y↑→x');
-%%
-% The linear theory of elasticity in anisotropic materials is essentially
-% based on the fourth order stiffness tensor |C|. Such a tensor is
-% represented in MTEX by a variable of type
-% <stiffnessTensor.stiffnessTensor.html |stiffnessTensor|>. Such a variable
-% can either by set up using a symmetric 6x6 matrix or by importing it from
-% an external file. The following examples does so for the stiffness tensor
-% for Olivine
+% An anisotropic material responds differently when the loading direction
+% changes. A single elastic modulus can therefore describe only one loading
+% geometry.
+%
+% The fourth-order stiffness tensor $C$ collects the complete linear elastic
+% response. MTEX represents it as a
+% <stiffnessTensor.stiffnessTensor.html |stiffnessTensor|>.
+% This page loads one measured tensor, applies Hooke's law, and then queries
+% its response for chosen directions and planes.
 
-% file name
+plottingConvention.default('y↑→x');
+
+%% Load the olivine stiffness tensor
+%
+% A stiffness tensor can be constructed from a symmetric 6-by-6 matrix.
+% It can also be imported from a file, as in this example.
+% The data are the olivine measurements of Abramson et al. (1997).
+
 fname = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');
 
-% crystal symmetry
-cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivin');
+% orthorhombic crystal symmetry and crystal frame
+cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],...
+  'mineral','Olivine');
 
-% define the tensor
+% stiffness tensor in GPa
 C = stiffnessTensor.load(fname,cs)
 
-%% Hooke's Law
-% The stiffness tensor tensor of a material is defined as the stress the
-% material experiences for a given strain
+%%
+% A general anisotropic stiffness has as many as 21 independent numbers.
+% The orthorhombic symmetry of olivine reduces this matrix to nine.
+% The zero entries in the displayed matrix are imposed by that symmetry.
+% The two-number isotropic limit was developed in
+% <IsotropicTheory.html Isotropic Theory>.
+
+%% Apply Hooke's law
+%
+% Stress is force per unit area, including its direction on each plane.
+% Strain records the corresponding fractional change of shape.
+% Linear elasticity maps a given strain to stress with $C$.
+%
+% Start with a diagonal strain tensor.
 
 eps = strainTensor(diag([1,1.1,0.9]),cs)
 
 %%
-% Now Hooke's law states that the resulting stress can be computed by
+% Hooke's law is the double contraction of stiffness and strain.
 
 sigma = C : eps
 
+%%
+% The compliance tensor $S=C^{-1}$ performs the reverse mapping.
+% Applying it to the stress recovers the original strain.
+
+S = inv(C);
+eps_recovered = S : sigma
+
+%% Compute the elastic energy
+%
+% The elastic energy of this strain can be computed in three equivalent
+% ways. The first contracts the stress with the strain.
+
+U_contraction = sigma : eps
 
 %%
-% The other way the compliance tensor |S = inv(C)| translates stress into
-% strain
+% The second writes every contraction index explicitly.
 
-inv(C) : sigma 
+U_Einstein = EinsteinSum(C,[-1 -2 -3 -4],...
+  eps,[-1 -2],eps,[-3 -4])
 
 %%
-% The elastic energy of the strain |eps| can be computed equivalently by
-% the following equations
+% The third applies Hooke's law first and then contracts with the strain.
 
-% the elastic energy
-U = sigma : eps
-U = EinsteinSum(C,[-1 -2 -3 -4],eps,[-1 -2],eps,[-3 -4]);
+U_Hooke = (C : eps) : eps
 
-U = (C : eps) : eps;
-
-%% Young's Modulus
-% Young's modulus is also known as the tensile modulus and measures the
-% stiffness of elastic materials. It is computed for a specific direction
-% |d| by the command <stiffnessTensor.YoungsModulus.html YoungsModulus>.
+%% Young's modulus by loading direction
+%
+% <IsotropicTheory.html Isotropic Theory> defines Young's modulus as the
+% ratio of axial stress to axial strain.
+% In an anisotropic crystal it depends on the loading direction $d$.
+% Passing one direction to
+% <stiffnessTensor.YoungsModulus.html |YoungsModulus|> returns one value.
 
 d = vector3d.X;
-E = C.YoungsModulus(d)
+E_x = C.YoungsModulus(d)
 
 %%
-% If the direction |d| is omitted Young's modulus is returned as a
-% <S2FunHarmonic.S2FunHarmonic.html spherical function>.
+% Omitting $d$ returns the complete directional dependence as an
+% <S2FunHarmonic.S2FunHarmonic.html |S2FunHarmonic|>.
 
-% compute Young's modulus as a directional dependent function
 E = C.YoungsModulus
 
-% which can be evaluated at any direction
+% evaluate the same spherical function along x
 E.eval(d)
 
-% or plot it
-setMTEXpref('defaultColorMap',blue2redColorMap);
-plot(C.YoungsModulus,'complete','upper')
-
-%% Linear Compressibility
-% The linear compressibility is the deformation of an arbitrarily shaped
-% specimen caused by an increase in hydrostatic pressure and can be
-% described by a second rank tensor. Similar to the Young's modulus it can
-% be computed by the command <stiffnessTensor.linearCompressibility.html
-% linearCompressibility> for specific directions |d| or as a spherical
-% function
-
-% compute as a spherical function
-beta = linearCompressibility(C)
-
-% plot it
-plot(beta,'complete','upper')
-
-% evaluate the function at a specific direction
-beta.eval(d)
-
-%% Poisson Ratio 
-% The rate of compression / decompression in a direction |n| normal to the
-% pulling direction |p| is called Poisson ratio.
-
-% the pulling direction
-p = vector3d.Z;
-
-% two orthogonal directions
-n = [vector3d.X,vector3d.Y];
-
-% the Poisson ratio
-nu = C.PoissonRatio(p,n)
-
+% plot every loading direction
+newMtexFigure
+plot(E,'complete','upper')
+mtexColorMap blue2red
+mtexColorbar('title','Young''s modulus in GPa')
 
 %%
-% If we omit in the call to <stiffnessTensor.PoissonRatio.html
-% |PoissonRatio|> the last argument 
+% Each point on the hemisphere is a possible loading direction.
+% The changing colours and non-circular contours show why one Young's
+% modulus cannot describe this crystal.
+
+%% Linear compressibility by direction
+%
+% Linear compressibility is the fractional length change along a direction
+% caused by an increase in hydrostatic pressure.
+% Contracting the compliance tensor with the pressure gives a second-rank
+% tensor, whose directional values form another spherical function.
+%
+% <stiffnessTensor.linearCompressibility.html |linearCompressibility|>
+% returns that function when the direction is omitted.
+
+beta = linearCompressibility(C)
+
+newMtexFigure
+plot(beta,'complete','upper')
+mtexColorMap blue2red
+mtexColorbar('title','linear compressibility in 1/GPa')
+
+%%
+% The map answers a different question from Young's modulus.
+% It shows the length response to pressure applied from every direction,
+% rather than the axial response to one uniaxial load.
+%
+% Evaluate the function along the same $x$ direction.
+
+beta_x = beta.eval(d)
+
+%% Poisson's ratio around a pulling direction
+%
+% <IsotropicTheory.html Isotropic Theory> defines Poisson's ratio from the
+% axial and transverse strains.
+% An anisotropic value needs a pulling direction $p$ and a transverse
+% direction $n$ perpendicular to it.
+
+% pulling direction
+p = vector3d.Z;
+
+% two transverse directions
+n = [vector3d.X,vector3d.Y];
+
+% one value for each transverse direction
+nu_xy = C.PoissonRatio(p,n)
+
+%%
+% Omitting $n$ from <stiffnessTensor.PoissonRatio.html |PoissonRatio|>
+% leaves a spherical function of possible transverse directions.
 
 nu = C.PoissonRatio(p)
 
 %%
-% we again obtain a spherical function. However, this time it is only
-% meaningful to evaluate this function at directions perpendicular to the
-% pulling direction |p|. Hence, a good way to visualize this function is to
-% plot it as a <S2Fun.plotSection.html section> in the x/y plane
+% Only directions perpendicular to $p$ are physically meaningful.
+% A <S2Fun.plotSection.html section plot> restricts the function to that
+% plane, which is the $xy$ plane for the chosen $z$ pulling direction.
 
+newMtexFigure
 plotSection(nu,p,'color','interp','linewidth',5)
 axis off
-mtexColorbar
-
-%% Shear Modulus
-% The shear modulus $G$ relates a shear stress to the resulting shear
-% strain. It depends on two directions - the normal $\vec h$ of the shear
-% plane and the shear direction $\vec u$ within that plane - and is given
-% in terms of the compliance tensor $S = C^{-1}$ by
-%
-% $$ G = \frac{1}{4\, S_{ijkl}\, h_i u_j h_k u_l}. $$
-%
-% Passing both directions to
-% <stiffnessTensor.shearModulus.html |shearModulus|> gives a number
-
-% shear plane
-n = Miller(0,0,1,cs);
-
-% shear direction
-d = Miller(1,0,0,cs);
-
-G = C.shearModulus(n,d)
+mtexColorMap blue2red
+mtexColorbar('title','Poisson''s ratio')
 
 %%
-% Omitting the shear direction leaves a spherical function which, like the
-% Poisson ratio above, is only meaningful within the shear plane. Hence it
-% is again plotted as a section - here for three different shear planes.
+% Read around the circle rather than across its interior.
+% The colour change around the circle shows that transverse contraction
+% depends on which perpendicular direction is observed.
+
+%% Shear modulus for a plane and direction
+%
+% <IsotropicTheory.html Isotropic Theory> defines the shear modulus as the
+% ratio of shear stress to shear strain.
+% An anisotropic value needs the normal $h$ of the shear plane and a shear
+% direction $u$ within that plane.
+%
+% Passing both directions to
+% <stiffnessTensor.shearModulus.html |shearModulus|> returns one number.
+
+% unit shear-plane normal
+h = Miller(0,0,1,cs).normalize;
+
+% unit shear direction within that plane
+u = Miller(1,0,0,cs,'uvw').normalize;
+
+G = C.shearModulus(h,u)
+
+%%
+% Omitting the shear direction leaves a spherical function of $u$.
+% Only directions within the shear plane are meaningful.
+% Plot a section for each of three different plane normals.
 
 newMtexFigure('layout',[1,3])
 
-% shear plane
-n = Miller(1,0,0,cs);
-plotSection(C.shearModulus(n),n,'color','interp','linewidth',5)
-mtexTitle(char(n))
+hMiller = Miller(1,0,0,cs);
+h = hMiller.normalize;
+plotSection(C.shearModulus(h),h,'color','interp','linewidth',5)
+mtexTitle(char(hMiller))
 axis off
 
 nextAxis
-n = Miller(1,1,0,cs);
-plotSection(C.shearModulus(n),n,'color','interp','linewidth',5)
-mtexTitle(char(n))
+hMiller = Miller(1,1,0,cs);
+h = hMiller.normalize;
+plotSection(C.shearModulus(h),h,'color','interp','linewidth',5)
+mtexTitle(char(hMiller))
+axis off
 
 nextAxis
-n = Miller(1,1,1,cs)
-plotSection(C.shearModulus(n),n,'color','interp','linewidth',5)
-mtexTitle(char(n))
-hold off
+hMiller = Miller(1,1,1,cs);
+h = hMiller.normalize;
+plotSection(C.shearModulus(h),h,'color','interp','linewidth',5)
+mtexTitle(char(hMiller))
+axis off
 
 setColorRange('equal')
-mtexColorbar
+mtexColorMap blue2red
+mtexColorbar('title','shear modulus in GPa')
 drawNow(gcm,'figSize','large')
 
-%% Wave Velocities
-% Since elastic compression and decompression is mechanics of waves
-% traveling through a medium anisotropic compressibility causes also
-% anisotropic waves speeds. The analysis of this anisotropy is explained in
-% the section <WaveVelocities.html wave velocities>.
+%%
+% The common colour range makes the three sections directly comparable.
+% Both the colour variation within a circle and the differences between
+% circles belong to the anisotropic shear response.
+
+%% The maths behind the shear modulus
 %
-%#ok<*BDSCI> 
+% Write the compliance tensor as $S=C^{-1}$.
+% For a unit plane normal $h$ and a perpendicular unit direction $u$, the
+% directional shear modulus is
+%
+% $$G(h,u)=\frac{1}{4\,S_{ijkl}\,h_i u_j h_k u_l}.$$
+%
+% Fixing $h$ while varying $u$ gives the section plots above.
+% Passing both directions evaluates the same expression as a number.
+
+%#ok<*BDSCI>
 %#ok<*NASGU>
 %#ok<*BDSCA>
+
+%% References
+%
+% * E. H. Abramson, J. M. Brown, L. J. Slutsky, and J. Zaug,
+% <https://doi.org/10.1029/97JB00682 The elastic constants of San Carlos
+% olivine to 17 GPa>, _Journal of Geophysical Research_ 102(B6) (1997),
+% 12253-12263, provides the olivine stiffness tensor used here.
+% * J. F. Nye, <https://search.worldcat.org/title/11114089 Physical
+% Properties of Crystals: Their Representation by Tensors and Matrices>,
+% Oxford University Press, 1985, develops the symmetry constraints and
+% tensor contractions used for anisotropic physical properties.
+
+%% Next
+%
+% <WaveVelocities.html Wave Velocities> combines this stiffness tensor with
+% density. It solves for the three wave speeds and their polarisation
+% directions for every propagation direction.

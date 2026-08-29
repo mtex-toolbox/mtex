@@ -1,132 +1,187 @@
-%% Neper
+%% Neper Interface
 %
-%% General
-% Neper is an open source software package for polycrystal generation and
-% meshing developed by Romain Quey. It can be obtained from
-% https://neper.info, where also the documentation is located.
+% <https://neper.info Neper> is an open-source package developed by Romain
+% Quey for generating and meshing polycrystals. MTEX can configure a Neper
+% tessellation, run it, and load the result as a @grain3d collection.
+% <Grains3D.html Three-Dimensional Grains> defines that representation and
+% introduces selection and sectioning.
 %
-% This module provides an comfortable interface to Neper. It is used 
-% to simulate microstructures with certain parameters and load them back
-% into MTEX for analysis and further investigation with the various tools 
-% provided by MTEX.
-%
-% In order to do this, a slicing of the 3-dimensional tessellation is 
-% necessary after the simulation. The obtained 2-dimensional tessellation 
-% is processed as an object from the class |grain2d|. 
-%
-%
-%% Setting-up the Neper
-% If you do not want to make any further adjustments to the default values,
-% this step could be done very easily. In this case please skip to chapter
-% "Simulating a microstructure with Neper"
+% A planar section is useful when the three-dimensional microstructure must
+% be compared with a two-dimensional map. It is not required for analysing
+% the original @grain3d collection.
 
-neper.init;
+plottingConvention.default('y↑→x');
 
-%% 
-% File options:
-% By default your Neper will work under the temporary folder of your MATLAB
-% (MATLAB command |tempdir|). If you want to do your tessellations elsewhere or
-% your tessellations are already located under another path, you can change
-% it:
+%% Check the external program
+%
+% Install Neper separately and make its executable available on the system
+% path. Its <https://neper.info/doc/ documentation> gives platform-specific
+% installation instructions. On Windows, the MTEX interface calls Neper
+% through the Windows Subsystem for Linux.
+%
+% The check below keeps this page executable on systems without Neper. In
+% that case, the simulation section loads a bundled tessellation explicitly.
+% This avoids mistaking an old output file for a successful new simulation.
 
-% for example
-% job.filePath = 'C:\Users\user\Documents\work\MtexWork\neper';
-% or
- neper.filePath = [mtexDataPath filesep 'Neper'];
+if ispc
+  [neperStatus,~] = system('wsl neper --version');
+else
+  [neperStatus,~] = system('neper --version');
+end
+hasNeper = neperStatus == 0;
+
+%% Choose files and geometry
+%
+% <neper.neper.html |neper.init|> creates the interface object. By default,
+% Neper works in |fullfile(tempdir,'neper')|. Keeping generated files under
+% the temporary directory prevents a documentation run from overwriting a
+% project tessellation.
+%
+% The default three-dimensional base name is |allgrains|, and the default
+% two-dimensional base name is |2dslice|. Neper adds |.tess| and |.ori|;
+% three-dimensional output may also include |.stpoly|. Assign |filePath|,
+% |fileName3d|, or |fileName2d| when these defaults are unsuitable.
+
+if hasNeper
+  neper.init;
+  neper.filePath = fullfile(tempdir,'mtex-neper-doc');
+  neper.fileName3d = 'my100grains';
+  neper.fileName2d = 'my100GrSlice';
+end
 
 %%
-% By default the 3d tesselation data will be named "allgrains" with the
-% endings .tess and .ori and the 2d slices will be named "2dslice" with the
-% ending .tess and .ori . You can change the file names in variables
-% |fileName3d| and |fileName2d|.
-
-neper.fileName3d = 'my100grains';
-
-%% Tessellation options
-% The outer geometry of the volume can be controlled by the field
-% |neper.geometry|. Default is |"cube(1,1,1)"|. Other option are
-% |"cylinder(h,d,numFaces)"| and |"sphere(d,numFaces)"|.
-
-neper.geometry = "cube(4,4,2)";
-
-%%
-% Neper uses an id to identify the tessellation. This integer value "is
-% used as seed of the random number generator to compute the (initial) 
-% seed positions" (neper.info/doc/neper_t.html#cmdoption-id) By default the
-% tessellation id is always |1|.
-
-neper.id = 529;
-
-%%
-% Neper allows to specify the morphological properties of the cells. See
-% <https://neper.info/doc/neper_t.html#cmdoption-morpho> for more
-% information. By default grain growth is used, that is an alias for:
-
-neper.morpho = 'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
-
-%% Simulating a microstructure with Neper
+% For example, an existing project directory could be selected with
 %
-% The tessellation is executed by the command |simulateGrains|. There are
-% two option to call it.
+%   neper.filePath = 'C:\Users\user\Documents\work\MtexWork\neper';
 %
-% # by an <ODFTheory.html ODF> and the number of grains
-% # by a list of orientations. In this case the length of the list
-% determines the number of grains.
-%
+% The |geometry| property controls the outer domain. Its default is
+% |"cube(1,1,1)"|. Cuboids use |"cube(x,y,z)"|; cylinders use
+% |"cylinder(h,d,numFaces)"|; spheres use |"sphere(d,numFaces)"|.
 
-odf = SO3Fun.dubna
+if hasNeper
+  neper.geometry = "cube(4,4,2)";
+end
+
+%% Control repeatability and morphology
+%
+% Neper uses the integer |id| as the seed for the initial seed positions.
+% Reusing it makes the initial tessellation repeatable. The default is |1|.
+%
+% The |morpho| string sets the target cell morphology. The default
+% |'graingrowth'| is an alias for the lognormal equivalent-diameter and
+% sphericity distributions below. Neper documents further choices under
+% <https://neper.info/doc/neper_t.html#cmdoption-morpho morphology options>.
+
+if hasNeper
+  neper.id = 529;
+  neper.morpho = ...
+    'diameq:lognormal(1,0.35),1-sphericity:lognormal(0.145,0.03)';
+end
+
+%% Simulate a textured microstructure
+%
+% <neper.simulateGrains.html |simulateGrains|> accepts either an orientation
+% distribution function (<ODFTheory.html ODF>) and a grain count, or a list
+% of orientations.
+% For a list, its length determines the grain count. The |'silent'| option
+% writes Neper's console output to |neper.log| in |filePath|.
+
+odf = SO3Fun.dubna;
 numGrains = 1000;
 
-grains = neper.simulateGrains(numGrains,odf,'silent')
+if hasNeper
+  grains = neper.simulateGrains(numGrains,odf,'silent');
+else
+  tessFile = fullfile(mtexDataPath,'Neper','my100grains.tess');
+  grains = grain3d.load(tessFile,'CS',odf.CS);
+end
+grains
 
-%% plot the grains
-% Lets visualize the grains and adjust a nice view point.
+%%
+% To prescribe every orientation rather than sample the ODF internally, use
+%
+%   ori = odf.discreteSample(numGrains);
+%   grains = neper.simulateGrains(ori,'silent');
+%
+% The summary confirms that the result is a three-dimensional grain
+% collection. When the bundled fallback is used, its stored orientations
+% replace a newly sampled list.
 
 clf
-plot(grains,grains.meanOrientation)
-
+plot(grains,grains.meanOrientation,'micronbar','off')
 how2plot = plottingConvention.default3D;
 setCamera(how2plot)
 
+%%
+% The colours encode one mean orientation per polyhedral grain. The outer
+% envelope follows the cuboid selected by the simulation that created this
+% tessellation.
 
-%% Slicing
-% We may generate arbitrary slices of the three dimensional grains using
-% the command <grain3d.slice.html |slice|>. It is called by giving the
-% normal vector |[a,b,c]| of the plane and either a point that lies in the
-% plane or the distance of the plane to the origin.
+%% Compare planar sections
+%
+% The earlier <Grains3D.html sectioning example> defines
+% <grain3d.slice.html |slice|>. A slice normal and either a point in the plane
+% or its signed distance from the origin specify the cutting plane. Here all
+% three sections pass through the centre of the collection.
 
-% the normals of the slices
 N = [vector3d(0,0,1),vector3d(1,-1,0),vector3d(2,2,4)];
-
-% make all slices passing through this point
 A = grains.midPoint;
 
 grains001 = grains.slice(N(1),A);
-grains1_10= grains.slice(N(2),A);
+grains1_10 = grains.slice(N(2),A);
 grains224 = grains.slice(N(3),A)
 
-%%
-% the resulting slices are grain maps which we can visualize in 3d
-
+newMtexFigure('layout',[1,3],'figSize','large');
 plot(grains001,grains001.meanOrientation,'micronbar','off');
-hold on
-plot(grains1_10,grains1_10.meanOrientation);
-hold on
-plot(grains224,grains224.meanOrientation);
-hold off
-
-% set camera
-setCamera(how2plot)
+mtexTitle('(001) normal')
+nextAxis
+plot(grains1_10,grains1_10.meanOrientation,'micronbar','off');
+mtexTitle('(1 -1 0) normal')
+nextAxis
+plot(grains224,grains224.meanOrientation,'micronbar','off');
+mtexTitle('(2 2 4) normal')
 
 %%
-% plot all grains intersecting a plane
+% The three panels show differently oriented planes. Their unequal outlines
+% show how the same cuboid and its grains are sampled by horizontal and
+% oblique sections.
+%
+% <neper.getSlice.html |neper.getSlice|> is a separate route that asks Neper
+% to write a two-dimensional |.tess| file. Use |grain3d.slice| when the
+% three-dimensional collection is already loaded and no external file is
+% needed.
+
+%% Relate a section to its parent grains
+%
+% <grain3d.intersected.html |intersected|> selects the full polyhedra crossed
+% by a plane. Overlaying those grains on the horizontal section connects each
+% planar polygon to the three-dimensional material that produced it.
 
 inPlane = grains.intersected(N(1),A);
 
 plot(grains001,grains001.meanOrientation,'micronbar','off');
 hold on
-plot(grains(inPlane),grains(inPlane).meanOrientation)
+plot(grains(inPlane),grains(inPlane).meanOrientation,'faceAlpha',0.55)
 hold off
-
-% set camera
 setCamera(how2plot)
+
+%%
+% The opaque polygons are the section itself. The translucent polyhedra
+% extend to both sides of the plane and are the corresponding parent grains.
+
+%% References
+%
+% * R. Quey, P. R. Dawson and F. Barbe,
+% <https://doi.org/10.1016/j.cma.2011.01.002 Large-scale 3D random
+% polycrystals for the finite element method: Generation, meshing and
+% remeshing>, _Computer Methods in Applied Mechanics and Engineering_ 200
+% (2011), 1729--1745, presents the generation and meshing methods implemented
+% in Neper.
+
+%% Next
+%
+% Continue with
+% <Grains3DProperties.html Properties of Three-Dimensional Grains> to measure
+% the faces, surface area, volume, and shape of the generated collection.
+
+%#ok<*NOPTS>

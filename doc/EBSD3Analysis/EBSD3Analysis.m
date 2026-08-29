@@ -1,85 +1,140 @@
-%% 3D - EBSD
+%% Three-Dimensional EBSD Analysis
 %
-%%
 % Everything measured on a polished surface is a section through something
-% three-dimensional, and a section is a biased witness. Cut a box of grains
-% with a plane and the circles you see are almost never through the middle
-% of a grain, so the sizes are systematically too small. Cut an elongated
-% grain across rather than along and it looks equiaxed. The boundary you
-% measure is a line where a surface met your section, and its inclination
-% is simply gone.
+% three-dimensional, and a section is a biased witness. A section through a
+% grain almost never passes through its widest part, so its apparent size is
+% smaller than that grain's full extent. An elongated grain can also look
+% equiaxed when it is cut across rather than along its long direction.
 %
-% Three-dimensional data removes these compromises. It comes from serial
-% sectioning - polish, map, repeat - from diffraction techniques that see
-% into the volume, or from simulated microstructures generated for
-% modelling.
+% A grain boundary is a physical interface between two grains. A polished
+% section shows only the line where that interface meets the section, called
+% its trace. The inclination of the interface away from the section is lost.
+%
+% Three-dimensional data removes these compromises. It can come from serial
+% sectioning, where the specimen is polished and mapped repeatedly. It can
+% also come from diffraction techniques that probe a volume, or from a
+% simulated microstructure generated for modelling.
 
 plottingConvention.default('y↑→x');
+
+%% Measurements and grains are different representations
+%
+% MTEX uses two data models for different stages of a three-dimensional
+% analysis. An <EBSD3.EBSD3.html |EBSD3|> object stores one row per volume
+% measurement, including its $x$, $y$, and $z$ position, phase, orientation,
+% and optional properties. It is the volume counterpart of an @EBSD map.
+%
+% A grain is a phase-homogeneous, spatially connected region of EBSD pixels
+% produced by segmentation. A <grain3d.grain3d.html |grain3d|> object stores
+% the resulting region as a closed polyhedron. Its faces provide the
+% geometry, while phase and mean orientation describe the material inside.
+%
+% <<ebsd3-data-models.svg>>
+
+%%
+% The left-hand model retains measurement-scale variation inside a grain.
+% The right-hand model replaces those measurements by a region and its
+% boundary mesh. Choose the representation according to whether the question
+% concerns local measurements or whole-grain geometry.
+%
+% This chapter works with precomputed grain meshes imported from DREAM.3D or
+% Neper. Code written for two-dimensional pixel maps does not carry over
+% unchanged to a surface mesh.
+
+%% Read a three-dimensional microstructure
+%
+% The <Grains3D.html Three-Dimensional Grains> page explains the DREAM.3D
+% importer and the contents of the returned collection. Here the same data
+% provides a first view of the volume.
 
 fname = fullfile(mtexDataPath,'EBSD','SmallIN100_MeshStats.dream3d');
 grains = grain3d.load(fname);
 
 plot(grains,grains.meanOrientation,'LineStyle','none','micronbar','off')
+setCamera(plottingConvention.default3D)
 
 %%
-% What is drawn is the outside of the volume. The grains behind it are
-% present in the data, which is the point, and also the reason a
-% three-dimensional data set takes more care to look at than a map.
+% The plot shows the outside of the reconstructed volume. Each colour is one
+% grain mean orientation. Grains behind the visible surface are present in
+% the collection, which is why a three-dimensional data set takes more care
+% to inspect than a map.
+
+%% What three dimensions add
 %
-%% What three dimensions actually buy
+% Three gains should be separated because they answer different questions
+% and require different parts of the data.
 %
-% Three things, and they are worth separating because they need different
-% amounts of data.
+% *Volume instead of area.* A three-dimensional grain has a volume rather
+% than only a section area. Its size distribution therefore needs no
+% stereological correction or assumed grain shape when the full grain
+% geometry has been measured.
 %
-% *Volume instead of area.* A grain has a real size rather than a sectioned
-% one, so the size distribution needs no stereological correction and no
-% assumption about shape.
+% *The whole boundary.* The crystallographic character of a boundary has
+% five parameters. Three describe the misorientation between the two
+% crystals, and two describe the interface-plane normal. A section trace
+% constrains the plane but leaves its inclination unknown. A measured
+% three-dimensional face supplies the complete normal, so all five
+% parameters are available for that boundary. For boundary analysis, this
+% is the principal gain over a single section.
 %
-% *The whole boundary.* The interface between two grains is a surface, so
-% the two numbers that a section could not give - the inclination of the
-% boundary plane - are measured rather than inferred. All five parameters of
-% a boundary become available at once, per boundary, which is the single
-% biggest gain.
+% *The real neighbourhood.* Two grains that appear to touch in one section
+% may not be neighbours in the volume. Two grains that do touch may also be
+% absent from the same section. The three-dimensional face network records
+% the actual contacts.
+
+%% Practical consequences of a surface mesh
 %
-% *Real neighbourhood.* Two grains that appear to touch in a section may
-% not, and two that do touch may not appear to. Only in three dimensions is
-% the contact network of the grains the actual one.
+% Faces are polygons bounded by edges, and the geometry is carried by
+% vertices. The order of a face's vertices determines the sign of its
+% normal, so face winding may need to be corrected during import. The
+% <Grains3D.html Three-Dimensional Grains> page demonstrates that correction.
+% The mesh is not a stack of pixels.
 %
-%% The data is shaped differently
+% Plotting also requires a decision about what to hide because exterior
+% faces obscure interior grains. Meshes are larger than planar grain maps,
+% so select a relevant subset before an expensive calculation. The
+% <Grains3DProperties.html Properties> page lists which two-dimensional
+% grain measures have three-dimensional counterparts and which do not.
+
+%% Use this chapter in teaching order
 %
-% A 2D map is a list of measurements on a grid. A 3D grain structure is
-% usually a *mesh*: grains bounded by faces, faces bounded by edges, with
-% the geometry carried by vertices. It is not a stack of pixels, and code
-% written for maps does not carry over unchanged.
+% Start with <Grains3D.html Three-Dimensional Grains> to import a DREAM.3D
+% mesh, select grains, make a section, and inspect face normals.
 %
-% The practical consequences are that faces have an orientation which may
-% need fixing on import, that plotting means deciding what to hide, and
-% that everything is larger - which is why a subset is usually selected
-% before anything expensive.
+% Continue with <NeperInterface.html Neper Interface> to configure Neper,
+% generate a synthetic polycrystal, or import an existing |.tess| file. A
+% simulated microstructure has a known construction and can provide a known
+% answer for a controlled test of whether an analysis behaves as intended.
 %
-%% Where to start
+% Use <Grains3DProperties.html Properties> to measure volume, surface area,
+% shape, neighbourhood, and boundary-face properties. Then use
+% <Grains3DOperations.html Operations> to trace planar sections back to their
+% parent grains, triangulate polygonal faces, and rotate the collection.
 %
-% <Grains3D.html 3D-Grains> is the entry point: importing a volume, what the
-% resulting <grain3d.grain3d.html |grain3d|> object contains, and how to
-% draw it.
+% The two-dimensional foundations are developed in
+% <EBSDAnalysis.html EBSD>, <Grains.html Grains>, and
+% <GrainBoundaries.html Grain Boundaries>. The
+% <BoundaryNormalDistribution.html Boundary Normal Distribution> page
+% contrasts stereological estimates from boundary traces with normals
+% measured directly from three-dimensional faces.
+
+%% References
 %
-% <Grains3DProperties.html Properties> and
-% <Grains3DOperations.html Operations> are the three-dimensional
-% counterparts of the measuring and selecting pages in
-% <Grains.html Grains>. Not everything has a counterpart yet, and those
-% pages say which.
+% * F. Bachmann, R. Hielscher, and H. Schaeben,
+% <https://doi.org/10.1016/j.ultramic.2011.08.002 Grain Detection from 2d
+% and 3d EBSD Data - Specification of the MTEX Algorithm>,
+% _Ultramicroscopy_ 111 (2011), 1720--1733, develops the spatial cells and
+% connectivity used to define grains from two- and three-dimensional data.
 %
-% <NeperInterface.html Neper Interface> connects MTEX to Neper, which
-% generates synthetic polycrystals. This is more useful than it may sound:
-% a simulated microstructure has a known answer, which makes it the honest
-% way to test whether an analysis does what you think.
-%
+% * M. A. Groeber and M. A. Jackson,
+% <https://doi.org/10.1186/2193-9772-3-5 DREAM.3D: A Digital Representation
+% Environment for the Analysis of Microstructure in 3D>, _Integrating
+% Materials and Manufacturing Innovation_ 3 (2014), 56--72, describes the
+% data environment and surface-mesh representation used by the example.
+
 %% Next
 %
-% The two-dimensional case is <EBSDAnalysis.html EBSD>,
-% <Grains.html Grains> and <GrainBoundaries.html Grain Boundaries>, and
-% those chapters are where the concepts are introduced. The boundary
-% character that three dimensions finally makes fully measurable is
-% discussed under
-% <BoundaryNormalDistribution.html Boundary Normal Distribution>.
-%
+% Continue with <Grains3D.html Three-Dimensional Grains> to import a volume
+% mesh and connect its faces, grains, and planar sections.
+
+%#ok<*NOPTS>

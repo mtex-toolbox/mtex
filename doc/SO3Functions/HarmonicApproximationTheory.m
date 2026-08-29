@@ -1,213 +1,133 @@
 %% Harmonic Approximation from Discrete Data
 %
-%%
-% On this page we consider the problem of determining the harmonic 
-% expansion (|@SO3FunHarmonic|) of a smooth orientation dependent function 
-% $f(\mathtt{ori})$ given a list of orientations $\mathtt{ori}_m$ and a 
-% list of corresponding values $v_m$. These values may be the volume of 
-% crystals with a specific orientation, as in the case of an ODF, or any 
-% other orientation dependent physical property.
+% <SO3FunApproximationTheory.html Approximating Orientation-Dependent
+% Functions from Discrete Data> defines the approximation problem and
+% compares the available models. This page assumes that a harmonic model is
+% appropriate and shows how to control its bandwidth, regularization,
+% sample weights, and iterative solver.
 %
-% A more general documentation about approximation of discrete data in MTEX
-% can be found in the section <SO3FunApproximationTheory.html Approximating 
-% Orientation Dependent Functions from Discrete Data>.
+% Harmonic approximation is particularly useful for a general physical
+% response that is not a density function. It also handles large numbers of
+% sample orientations without placing one kernel at every observation.
+% Noisy experimental data should be approximated rather than interpolated
+% exactly, because an exact fit would reproduce the noise.
+
+%% A noisy data set
 %
-%%
-% In general we should favor harmonic approximation, if the underlying
-% function comes from some physical experiment and is no density function 
-% or if we have a very big number of nodes and function values given. 
-%
-%%
-% Exact interpolation is computational hard if we have a high number of 
-% nodes and function values given. We have more freedom, if we do not 
-% restrict ourselves to much to the given function values. 
-% The same happen, if the data are noisy or not exact, as it is often the 
-% case in physical experiments, where exact interpolation makes no sense, 
-% since it would result into overfitting.
-%
-% In exchange we want the approximated function to be reasonably smooth.
-% Therefore we can choose sparser interpolation matrices which reduce the 
-% computational costs.
-%
-%%
-% In the following we take a look on the approximation problem from
-% <SO3FunApproximationTheory.html general approximation theory>,
-% where we compared the  harmonic approximation with kernel approximation.
-%
-% Here we additionally assume that our function values are noisy.
+% Start with the same orientation-dependent data as on the overview page.
+% The standard deviation of the added noise is 5 percent of the standard
+% deviation of the supplied values.
 
 fname = fullfile(mtexDataPath, 'orientation', 'dubna.csv');
-[ori, S] = orientation.load(fname,'columnNames',{'phi1','Phi','phi2','values'});
-
+[ori, S] = orientation.load(fname, ...
+  'columnNames',{'phi1','Phi','phi2','values'});
 val = S.values + randn(size(S.values)) * 0.05 * std(S.values);
 
 plotSection(ori,val,'all','sigma')
 
-%% Harmonic Approximation (without Regularization)
-%
-% The basic strategy is to approximate the 
-% data by a |@SO3FunHarmonic| (Harmonic series), i.e. a series of 
-% <WignerFunctions.html Wigner-D functions>, see 
-% <SO3FunHarmonicRepresentation.html SO3FunHarmonicSeries Basics of rotational harmonics>. 
-% 
-% For that, we seek the so-called Fourier coefficients 
-% ${\bf \hat f} = (\hat f^{0,0}_0,\dots,\hat f^{N,N}_N)^T$ such that
-%
-% $$ f(x) = \sum_{n=0}^N\sum_{k,l = -n}^n \hat f_n^{k,l} D_n^{k,l}(x) $$
-%
-% approximates our data reasonable well. A basic strategy to achieve this 
-% is through least squares approximation, where we compute the Fourier 
-% coefficients of $f$ by minimizing the functional 
-%
-% $$ \sum_{m=1}^M|f(x_m)-v_m|^2 $$
-%
-% for the given data points $(x_m,v_m)$, $m=1,\dots,M$. Here $x_m$ denotes
-% the given orientations and $v_m$ the corresponding function values.
-%
-% This least squares problem can be solved by the |lsqr| method from MATLAB,
-% which efficiently seeks for roots of the derivative of the given 
-% functional (also known as normal equation). In the process we compute the 
-% matrix-vector product with the Fourier-matrix multiple times, where the 
-% Fourier-matrix is given by
-%
-% $$ F = [D_n^{k,l}(x_m)]_{m = 1,\dots,M;~n = 0,\dots,N,\,k,l = -n,\dots,n}. $$
-%
-% This matrix-vector product can be computed efficiently with the use of
-% the nonequispaced SO(3) Fourier transform
-% <https://www-user.tu-chemnitz.de/~potts/nfft/nfsoft.php NSOFT>
-% or faster by the combination of a so-called Wigner-transform together with a 
-% <https://www-user.tu-chemnitz.de/~potts/nfft/index.php NFFT>.
-%
-% However, we end up with the Fourier coefficients of our approximation $f$.
-%
 %%
-% In MTEX approximation by harmonic expansion is computed by the command
-% <rotation.interp.html |interp|> with the flag |'harmonic'|. 
-% Here MTEX internally call the underlying
-% <SO3FunHarmonic.interpolate |SO3FunHarmonic.interpolate|> command of the 
-% class <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|>.
-%
-% The approximation process described above does not use regularization. 
-% Therefore, for demonstration purposes, we'll set the parameter 
-% |'regularization'| to $0$ for the moment. More on this topic later.
-%
-% We can specify the desired bandwidth of the resulting @SO3FunHarmonic by
-% the parameter bandwidth.
+% The strongest regions still occupy the same sections as in the original
+% data, but neighbouring markers now fluctuate. A fitted surface should
+% recover the broad regions without chasing those point-to-point changes.
 
-SO3F1 = interp(ori, val,'harmonic','regularization',0,'bandwidth',17)
-% SO3F1 = SO3FunHarmonic.interpolate(ori, val,'regularization',0,'bandwidth',17)
+%% Start with bandwidth
+%
+% <rotation.interp.html |interp|> selects a harmonic fit with the flag
+% |'harmonic'|. Internally it calls
+% <SO3FunHarmonic.interpolate.html |SO3FunHarmonic.interpolate|>. The
+% bandwidth is the largest harmonic degree in the fitted series. A low
+% bandwidth limits the number of unknown coefficients and therefore limits
+% how quickly the function can vary.
+%
+% Set |'regularization'| to zero temporarily so that the effect of bandwidth
+% is visible on its own.
+
+SO3F1 = interp(ori,val,'harmonic', ...
+  'regularization',0,'bandwidth',17)
+numberOfSamples = numel(ori)
+numberOfCoefficients17 = numel(SO3F1.fhat)
+relativeError17 = norm(SO3F1.eval(ori) - val) / norm(val)
+
 plot(SO3F1,'sigma')
 
 %%
-% The choice of a low bandwidth yields a smooth approximation.
-% One has to keep in mind that we can not expect the error in the data 
-% nodes to be zero, as this would mean overfitting to the noisy input data.
+% There are more samples than coefficients in this bandwidth-17 fit, so the
+% least-squares system is overdetermined. The fit is smooth and does not
+% pass through every noisy sample. Its nonzero residual is expected, not a
+% defect.
+%
+% Raising the bandwidth to 32 introduces more coefficients than samples.
+% This makes the system underdetermined. It is the opposite of oversampling:
+% oversampling means having more independent samples than unknowns.
 
-norm(eval(SO3F1, ori) - val) / norm(val)
+SO3F2 = interp(ori,val,'harmonic', ...
+  'regularization',0,'bandwidth',32)
+numberOfCoefficients32 = numel(SO3F2.fhat)
+relativeError32 = norm(SO3F2.eval(ori) - val) / norm(val)
 
-%%
-% If we choose the bandwidth to high and try to compute more Fourier 
-% coefficients as there are data points given, then we are in the 
-% overdetermined case and obtain oversampling.  
-
-SO3F2 = interp(ori, val,'harmonic','regularization',0,'bandwidth',32)
 plot(SO3F2,'sigma')
 
 %%
-% Here the error is much smaller, since we did overfitting to the noisy 
-% input data.
+% The higher-bandwidth surface follows the samples more closely, so its
+% residual is smaller. The narrow peaks and alternating ripples between
+% them are evidence of overfitting. If LSQR reaches its iteration limit,
+% treat the displayed residual as an unconverged value rather than the
+% optimum of the least-squares problem.
 
-norm(eval(SO3F2, ori) - val) / norm(val)
-
-%%
-% Lets take a look on the Fourier coefficients of this approximations.
+%% Read the spectrum
+%
+% <SO3Fun.plotSpektra.html |plotSpektra|> summarizes the coefficient energy
+% at each harmonic degree. It reveals high-frequency content that can be
+% difficult to distinguish in a section plot.
 
 plotSpektra([SO3F1,SO3F2])
 legend('Bandwidth 17','Bandwidth 32')
 
 %%
-% We can see that they do not converge to zero, as it would be the case 
-% if the approximation is continuous. 
-% The increasing behavior of the Fourier coefficients is a consequence of 
-% overfitting, which can also be seen from the oscillations in the above 
-% plots.
-%
-% We will overcome this effects in the following by regularization.
-%
-%% Harmonic Approximation with Regularization
-%
-% Lets assume we have a low number of data points given, but the desired 
-% function is relatively sharp. Then we will try to compute a 
-% |@SO3FunHarmonic| with high bandwidth and we are in the underdetermined 
-% case, since we try to compute many Fourier coefficients from a lower 
-% number of data points, which results into overfitting. We can overcome
-% this by additionally demanding that the approximation $f$ should be smooth.
-%
-% Therefore we do so-called Tikhonov regularization, which means that we penalize 
-% oscillations by adding the norm of $f$ to the energy functional, which is 
-% minimized by the |lsqr| solver. Hence we now minimize the functional 
-%
-% $$ \sum_{m=1}^M|f(x_m)-v_m|^2 + \lambda \|f\|^2_{H^s}$$
-%
-% where $\lambda$ is the regularization parameter. The Sobolev norm 
-% $\|.\|_{H^s}$ of an |@SO3FunHarmonic| $f$ with Fourier coefficients 
-% $\hat{f}$ reads as
-%
-% $$\|f\|^2_{H^s} = \sum_{n=0}^N (1+n(n+1))^{s} \, \sum_{k,l=-n}^n|\hat{f}_n^{k,l}|^2.$$
-%
-% The Sobolev index $s$ describes how smooth our approximation $f$ should 
-% be, because the larger $s$ is, the faster the Fourier coefficients 
-% $\hat{f}_n^{k,l}$ converge towards 0 and the smoother is the
-% approximation $f$.
-%
-%%
-% The command <SO3FunHarmonic.interpolate |SO3FunHarmonic.interpolate|> 
-% of the class <SO3FunHarmonic.SO3FunHarmonic |SO3FunHarmonic|> applies
-% regularization by default. The default regularization parameter is 
-% $\lambda = 5\cdot 10^{-7}$ and the default Sobolev index $s=2$.
-% Note that you have to decide for a regularization parameter dependent on
-% your data. There is no predefined one. You may have to try different
-% parameters and look on the result.
+% The bandwidth-17 spectrum stops before the high degrees are available.
+% For bandwidth 32, the energy fails to decay towards the cutoff and even
+% increases at high degrees. That high-degree tail matches the oscillations
+% in the preceding section plot and is a practical overfitting diagnostic.
 
-SO3F3 = interp(ori, val,'harmonic','bandwidth',32)
-% SO3F3 = SO3FunHarmonic.interpolate(ori,val,'bandwidth',32)
+%% Add regularization
+%
+% Tikhonov regularization penalizes high-degree coefficient energy. It lets
+% you retain a bandwidth high enough for sharp real features while making
+% oscillatory solutions more expensive.
+%
+% Current MTEX uses $\lambda=10^{-8}$ by default and a Sobolev index $s=2$.
+% Older versions of this example documented $5\mathbin{\cdot}10^{-7}$ as the
+% default. That value is retained here as an explicit smoothing choice, not
+% as the current default. A suitable value depends on the data and should
+% be checked rather than accepted automatically.
+
+SO3F3 = interp(ori,val,'harmonic','bandwidth',32, ...
+  'regularization',5e-7)
+relativeErrorReg = norm(SO3F3.eval(ori) - val) / norm(val)
+
 plot(SO3F3,'sigma')
 
 %%
-% We can immediately see, that we have a much smoother function.
+% The bandwidth remains 32, but the unsupported narrow peaks are suppressed.
+% The residual at the noisy samples is larger because the fit now balances
+% agreement with smoothness. That residual is only the data term; it is not
+% the complete regularized objective minimized by LSQR.
 
-%% 
-% This smoothing results in a larger error in the data points,
-% which may not be much important since we had noisy function values given,
-% where we don't know the exact values anyways. 
-
-norm(eval(SO3F3, ori) - val) / norm(val)
-
-%%
-% Note that this Error is not the value of the above energy functional 
-% which is minimized by lsqr.
+%% Sweep the regularization parameter
 %
-%%
-% It is not easy to specify the parameter $\lambda$, which describes
-% the intensity of regularization.
-% If we choose a value that is too large, we smooth the function too much. 
-% If $\lambda$ is chosen too small, there is almost no regularization and 
-% we get oscillations.
-%
-% Lets try to regularize with different regularization parameters $\lambda$
-% and plot the sigma sections of $0^{\circ}$:
+% A very large $\lambda$ drives the fitted function towards zero. A very
+% small value approaches the unregularized, oscillatory solution. The sweep
+% below spans both failures so that the useful transition can be seen.
 
-% approximation
-reg = [1,1e-1,1e-2,1e-3,1e-4,1e-5,1e-6,1e-7,1e-8,1e-9,1e-10,1e-11,1e-12,1e-13,1e-14];
-for i=1:15
-  SO3F4(i) = interp(ori,val,'harmonic','bandwidth',32,'regularization',reg(i));
+reg = [1,1e-1,1e-2,1e-3,1e-4,1e-5,1e-6,1e-7, ...
+  1e-8,1e-9,1e-10,1e-11,1e-12,1e-13,1e-14];
+for i = 1:numel(reg)
+  SO3F4(i) = interp(ori,val,'harmonic','bandwidth',32, ...
+    'regularization',reg(i));
 end
 
-% plotting
-plot(SO3F4(1),'sigma',0*degree)
-legend(['\lambda = ',num2str(reg(1))])
-for i=2:15
-  nextAxis
+for i = 1:numel(reg)
+  if i > 1, nextAxis; end
   plot(SO3F4(i),'sigma',0*degree)
   legend(['\lambda = ',num2str(reg(i))])
 end
@@ -215,61 +135,151 @@ setColorRange('tight')
 mtexColorbar
 
 %%
-% For large regularization parameters the function is almost 0. The
-% regularization term has to much impact on the energy functional, compared 
-% to the error term.
-% As the regularization parameter is gradually reduced, the influence of 
-% the error term increases. Higher frequencies and stronger changes in the 
-% function values are no longer penalized as much. 
-% However, as soon as the regularization parameter becomes too small, the 
-% noise increases, which leads to overfitting. Ultimately, we see 
-% oversampling again when $\lambda$ approaches 0.
+% Read the panels from left to right and top to bottom as $\lambda$
+% decreases. The first panels are almost zero because the penalty dominates.
+% Structure appears at intermediate values. At the smallest values, sharp
+% fluctuations return because agreement with the noisy samples dominates.
 %
-% Lets take a look on the spectra.
+% The corresponding spectra make that transition quantitative. The selected
+% indices represent $\lambda=10^{-2}$, $10^{-4}$, $10^{-8}$, and $10^{-12}$.
 
 ind = [3,5,9,13];
 plotSpektra(SO3F4(ind))
-legend(['\lambda = ',num2str(reg(ind(1)))],['\lambda = ',num2str(reg(ind(2)))],['\lambda = ',num2str(reg(ind(3)))],['\lambda = ',num2str(reg(ind(4)))])
+legend('\lambda = 10^{-2}','\lambda = 10^{-4}', ...
+  '\lambda = 10^{-8}','\lambda = 10^{-12}')
 
 %%
-% We can also choose another Sobolev index $s=1$, which means that the
-% Fourier coefficients should decrease more slowly.
+% Strong regularization removes almost all high-degree energy. As $\lambda$
+% decreases, the tail rises. Choose a value before the tail becomes dominated
+% by high-degree energy, then confirm the choice against held-out data or
+% independent physical expectations.
 
-SO3F5 = interp(ori, val,'harmonic','bandwidth',32,'regularization',0.001,'SobolevIndex',1)
-% SO3F5 = SO3FunHarmonic.interpolate(ori,val,'bandwidth',32,'regularization',0.001,'SobolevIndex',1)
-plot(SO3F5,'sigma')
+%% Change the Sobolev index
+%
+% The Sobolev index controls how quickly the penalty grows with harmonic
+% degree. A smaller index penalizes high degrees less strongly. The value of
+% $\lambda$ must therefore be reconsidered whenever $s$ changes.
+
+SO3F5 = interp(ori,val,'harmonic','bandwidth',32, ...
+  'regularization',0.001,'SobolevIndex',1)
+
+plot(SO3F4(4),'sigma',0*degree)
+legend('s = 2')
+nextAxis
+plot(SO3F5,'sigma',0*degree)
+legend('s = 1')
+setColorRange('equal')
+mtexColorbar
 
 %%
-% Note that we have to adapt the regularization parameter $\lambda$.
-%
-%% LSQR-Parameters
-%
-% Note that the |lsqr| solver from Matlab, which is used to minimize the least
-% squares problem from above has some termination conditions.
-% We can specify the method tolerance of |lsqr| with the option |'tol'| 
-% (default 1e-3) and the maximum number of iterations by the option 
-% |'maxit'| (default 100).
-%
-% Thus we are able to control the precision of the result and computational 
-% time of the lsqr-method in the approximation process.
-%
-% Note, that the usage of a to small maximum number of iterations could 
-% also yields to a regularization effect.
-%
-% Moreover we obtain the |lsqr| parameters in a second output argument in the
-% <SO3FunHarmonic.interpolate |SO3FunHarmonic.interpolate|>-command.
-%
+% Both panels use $\lambda=0.001$. The $s=1$ panel retains more fine-scale
+% variation because its high-degree penalty grows more slowly. Matching
+% $\lambda$ numerically does not mean that the two fits have equal smoothing.
 
-% default Parameters
-tic
-[f1,p1] = SO3FunHarmonic.interpolate(ori, val);
-toc
-fprintf(['Number of iterations = ',num2str(p1{3}),'\n', ...
-         'Value of energy functional = ',num2str(norm(f1.eval(ori)-val)+5e-7*norm(f1,2)),'\n\n'])
+%% Weight nonuniform or unequal samples
+%
+% Weighted least squares controls how strongly each sample contributes to
+% the data residual. Use |'weights','equal'| when every observation should
+% count equally. Use |'weights','Voronoi'| to compensate for nonuniform
+% sampling by orientation-space cell volume, or pass one numeric weight per
+% sample when measurement uncertainties are known.
+%
+% MTEX computes Voronoi weights by default for fewer than 10,000 samples.
+% It uses equal weights for larger sets because the Voronoi calculation is
+% time-consuming. This data set has slightly more than that threshold, so
+% its default weights are equal. The explicit forms are:
+%
+%   SO3F = interp(ori,val,'harmonic','weights','equal');
+%   SO3F = interp(ori,val,'harmonic','weights','Voronoi');
+%   SO3F = interp(ori,val,'harmonic','weights',measurementWeights);
+%
+% Numeric weights describe relative confidence or integration volume. They
+% do not impose nonnegativity and do not turn a harmonic fit into a density.
 
-% new termination conditions
-tic
-[f2,p2] = SO3FunHarmonic.interpolate(ori, val,'tol',1e-15);
-toc
-fprintf(['Number of iterations = ',num2str(p2{3}),'\n', ...
-         'Value of energy functional = ',num2str(norm(f2.eval(ori)-val)+5e-7*norm(f2,2)),'\n'])
+%% Control LSQR convergence
+%
+% MATLAB's |lsqr| stops when it reaches its tolerance |'tol'| or iteration
+% limit |'maxit'|. Their defaults are |1e-3| and |100|. A smaller tolerance
+% requests a more accurate iterative solution, but the iteration limit may
+% stop the solver first. Premature stopping can itself have a regularizing
+% effect, so it must not be confused with convergence.
+%
+% The direct interpolation method returns LSQR diagnostics as a second
+% output. The first entry is the exit flag, the second the relative residual,
+% and the third the number of iterations.
+
+[f1,p1] = SO3FunHarmonic.interpolate(ori,val);
+fprintf('default: flag %d, relative residual %.6g, iterations %d\n', ...
+  p1{1},p1{2},p1{3})
+
+[f2,p2] = SO3FunHarmonic.interpolate(ori,val,'tol',1e-15);
+fprintf('tight tol: flag %d, relative residual %.6g, iterations %d\n', ...
+  p2{1},p2{2},p2{3})
+
+%%
+% Compare the flags before comparing the residuals. If the tight-tolerance
+% run stops at 100 iterations, increase |'maxit'| deliberately and check
+% whether the fit and validation error materially change.
+%
+% Earlier code on this page printed
+% |norm(f.eval(ori)-val)+5e-7*norm(f,2)| as the "energy functional". That
+% expression is not the minimized objective: it omits the squared norms,
+% uses a fixed historical $\lambda$, and does not reproduce the coefficient
+% weights used internally.
+
+%% The maths behind harmonic approximation
+%
+% A bandlimited harmonic function is a finite series of
+% <WignerFunctions.html Wigner-D functions>:
+%
+% $$ f(x) = \sum_{n=0}^N \sum_{k,l=-n}^n
+% \hat f_n^{k,l} D_n^{k,l}(x). $$
+%
+% The coefficient vector $\mathbf{\hat f}$ is chosen to minimize the data
+% residual at the $M$ sample pairs $(x_m,v_m)$. Without regularization, the
+% problem is
+%
+% $$ \min_f \sum_{m=1}^M \lvert f(x_m)-v_m \rvert^2. $$
+%
+% With Tikhonov regularization, MTEX minimizes
+%
+% $$ \min_f \left[\sum_{m=1}^M \lvert f(x_m)-v_m \rvert^2
+% + \lambda \lVert f\rVert_{H^s}^2\right], $$
+%
+% where the implemented Sobolev penalty is
+%
+% $$ \lVert f\rVert_{H^s}^2 = \sum_{n=0}^N
+% (1+n(n+1))^s \sum_{k,l=-n}^n
+% \lvert\hat f_n^{k,l}\rvert^2. $$
+%
+% Larger $s$ increases the relative cost of high-degree coefficients. Larger
+% $\lambda$ increases the overall influence of that cost.
+%
+% The Fourier matrix has entries
+% $F_{m,(n,k,l)}=D_n^{k,l}(x_m)$. MTEX does not need to form this dense
+% matrix explicitly. LSQR repeatedly applies the matrix and its adjoint,
+% and MTEX evaluates those products with Wigner transforms and the
+% nonequispaced fast Fourier transform (NFFT). This is why lowering bandwidth
+% reduces the number of unknowns and the computational cost; it does not
+% make the mathematical Fourier matrix sparse.
+
+%% References
+%
+% * C. C. Paige and M. A. Saunders,
+% <https://doi.org/10.1145/355984.355989 LSQR: An algorithm for sparse linear
+% equations and sparse least squares>, _ACM Transactions on Mathematical
+% Software_ 8 (1982), 43-71, introduces the iterative solver and its
+% convergence diagnostics.
+% * J. Keiner, S. Kunis, and D. Potts,
+% <https://doi.org/10.1145/1555386.1555388 Using NFFT 3: A software library
+% for various nonequispaced fast Fourier transforms>, _ACM Transactions on
+% Mathematical Software_ 36 (2009), Article 19, describes the transforms
+% used for fast matrix-vector products at nonequispaced orientations.
+
+%% Next
+%
+% Continue with <RBFApproximationTheory.html RBF-Kernel Interpolation> to
+% replace the global harmonic series by local kernels and to compare the
+% available constrained and unconstrained least-squares solvers.
+
+%#ok<*NOPTS>

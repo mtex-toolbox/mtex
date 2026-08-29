@@ -1,135 +1,309 @@
-%% Using fibers to evaluate grain dispersion axes
-
+%% Using fibres to evaluate grain dispersion axes
+%
 %%
-% We will prepare some data to evaluate grain dispersion axes.
+% A grain is a phase-homogeneous, spatially connected part of an EBSD map.
+% It contains many measured orientations rather than one exact orientation.
+% When those orientations follow one dominant rotation, they trace a fibre
+% in orientation space. The axis of that fibre is the grain's dispersion
+% axis.
+%
+% This page develops the construction for one grain and then repeats it over
+% a map. Read <GrainReconstruction.html Grain Reconstruction> and
+% <SelectingGrains.html Selecting Grains> first if grains and grain ids are
+% new to you. <GrainOrientationParameters.html Orientation Parameters>
+% introduces the grain mean, GROD, and grain orientation spread.
+%
+% A dispersion axis is an axis, not a directed vector. Its two ends are
+% equivalent. Its crystal-frame representation can constrain a deformation
+% mechanism, while its specimen-frame representation can constrain the
+% kinematics. Neither interpretation follows from the fit alone.
 
 plottingConvention.default('y↑→x');
-mtexdata forsterite
+mtexdata forsterite silent
 [grains,ebsd] = calcGrains(ebsd,'minPixel',5);
 
-
-%%
-% We colorize axes of the misorientation to the grain mean orientation
-% in specimen coordinates  
+%% Find a grain with coherent intragranular rotation
+%
+% First colour each forsterite measurement by its misorientation from the
+% mean orientation of its own grain. The hue gives the misorientation axis
+% in the specimen frame, and the saturation gives the angle. The reference
+% orientation is supplied per measurement through |ck.oriRef|.
 
 ck = axisAngleColorKey(ebsd('f').CS);
-ck.oriRef=grains('id',ebsd('f').grainId).meanOrientation;
-plot(ebsd('f'), ck.orientation2color(ebsd('f').orientations))
+ck.oriRef = grains('id',ebsd('f').grainId).meanOrientation;
+plot(ebsd('f'),ck.orientation2color(ebsd('f').orientations))
 
 hold on
 plot(grains.boundary,'lineWidth',2)
-
-hold on
 plot(grains({'En','Di'}),'FaceAlpha',0.7)
 hold off
 
-%% Visualizing dispersion of orientations via directions
+%%
+% Pale grains have little rotation relative to their means. A grain with one
+% strong hue has rotated mainly about one specimen axis. Bands of two or
+% three hues instead warn that more than one axis may be active.
+%
+% The white outline selects one large, strongly coloured grain. The rest of
+% the single-grain analysis asks whether its apparent axis survives a
+% quantitative fit.
 
-% First, we will inspect a selected grain
-grain_selected = grains(5095, 7803);
+grainSelected = grains(5095,7803);
 hold on
-plot(grain_selected.boundary,'linewidth',3,'linecolor','w')
+plot(grainSelected.boundary,'lineWidth',3,'lineColor','w')
 hold off
 
-%%
-% and examine the spread of orientations in terms of its pole figure. In
-% order to do so, we can define a grid of crystal direction and compute the
-% corresponding specimen directions for each orientation within the grain.
+%% See the dispersion in a pole figure
+%
+% Start with a grid of crystal directions. Every orientation in the selected
+% grain maps every grid direction into the specimen frame. Each grid
+% direction becomes a small cloud, and how far that cloud spreads measures
+% how much the intragranular rotation moves the direction.
 
-% Let's define a grid of directions
 s2G = equispacedS2Grid('resolution',15*degree);
-s2G = Miller(s2G,ebsd('f').CS)
+s2G = Miller(s2G,ebsd('f').CS);
+ori = ebsd(grainSelected).orientations;
+directions = ori .* s2G;
 
-% use the orientations of points belonging to the grain
-o = ebsd(grain_selected).orientations;
-
-% and compute the corresponding specimen directions
-d = o .* s2G;
-
-% and plot them 
-plot(d,'MarkerSize',3,'upper')
-% We can observe, that certain grid points are smeared out more than others
+plot(directions,'MarkerSize',3,'upper')
 
 %%
-%Next, we compute the mean angular deviation for each group of grid points
-vd = mean(angle(mean(d),d),'omitmissing');
-% and plot those
-plot(d,repmat(vd,length(o),1)/degree,'MarkerSize',3)
-mtexColorbar('title','avergage pole dispersion')
+% At this scale the clouds all look alike. What separates them is how far
+% each one spreads, so colour every cloud by its mean angular deviation.
 
+poleDispersion = mean(angle(mean(directions),directions),'omitmissing');
 
-% and we can ask which grid point is the one with the smallest dispersion
-[~,id_min] = min(vd);
-disp_ax_grid = grain_selected.meanOrientation .* s2G(id_min);
-annotate(disp_ax_grid)
-annotate(disp_ax_grid,'plane','linestyle','--','linewidth',2)
+plot(directions,repmat(poleDispersion,length(ori),1)./degree,...
+  'MarkerSize',3)
+mtexColorbar('title','average pole dispersion in degree')
 
-% While we might have guessed the result by eye, it is not too satisfying since 
-% the direction of the estimated dispersion axis will always be located 
-% on a grid point
 %%
-% If we assume, the orientations are dispersed along one single axis, we
-% can fit an orientation fibre <fibre.fibre.html |fibre|>
+% The darkest blue cloud moves least. A rotation leaves its own axis fixed,
+% so that crystal direction gives a grid-based estimate of the dispersion
+% axis in the specimen frame.
 
-% This can be accomplished by |fibre.fit|
-fib = fibre.fit(o,'local')
+[~,idMin] = min(poleDispersion);
+axisGrid = grainSelected.meanOrientation .* s2G(idMin);
+annotate(axisGrid)
+annotate(axisGrid,'plane','lineStyle','--','lineWidth',2)
 
-% the fibre has an axis in specimen coordinates |fib.r| and in crystal
-% coordinates |fib.h|.
-fib.r
+%%
+% The dashed great circle is normal to the black axis. The streaks follow
+% that circle, as rotation about the axis requires. This construction is
+% deliberately coarse: it can return only one of the 15 degree grid nodes.
+% The spacing is a sampling resolution, not a 15 degree uncertainty bound.
+
+%% Fit a fibre without a direction grid
+%
+% Orientations produced by one continuous rotation lie on an
+% <OrientationFibre.html orientation fibre>. <fibre.fit.html |fibre.fit|>
+% fits that curve directly. The |'local'| algorithm is intended for a
+% concentrated orientation cloud such as the orientations inside one grain.
+
+fib = fibre.fit(ori,'local')
+
+%%
+% The fitted fibre reports the same physical axis in two reference frames.
+% |fib.h| is the crystal direction and |fib.r| is the specimen direction.
+% <EBSDReferenceFrame.html Reference Frame Alignment> explains why the
+% specimen interpretation depends on a correctly calibrated frame.
+
 fib.h
+fib.r
 
-% and we can visualize those also in our previous plot
 annotate(fib.r,'MarkerFaceColor','r')
-annotate(fib.r,'plane','linestyle','-.','linewidth',2,'lineColor','r')
+annotate(fib.r,'plane','lineStyle','-.','lineWidth',2,'lineColor','r')
 
+gridFitDifference = angle(axisGrid,fib.r,'antipodal')./degree;
+fprintf('Grid axis to fitted axis: %.1f degree\n',gridFitDifference)
 
 %%
-% We can also inspect in orientation space, how well the fibre fits the
-% orientations of the grain
+% The printed separation is smaller than the grid spacing. The black and red
+% estimates therefore agree at the resolution of the grid, while the fitted
+% result is not restricted to a grid node.
 
-% The angle between each orientation and the fibre gives a measure how well
-% it is fitted by the fibre
-fd = angle(fib,o)/degree;
-plot(o,fd)
+%% Decide whether the grain really has one axis
+%
+% A best fit always exists, even for a round cloud with no meaningful axis.
+% The two additional outputs from |fibre.fit| diagnose that case. |lambda|
+% contains the four eigenvalues of the quaternion orientation tensor in
+% ascending order. |fitAngle| is the mean angular distance from the fitted
+% fibre.
+
+[fib,lambda,fitAngle] = fibre.fit(ori,'local');
+
+lambda
+fitAngle./degree
+
+%%
+% The largest eigenvalue, $\lambda_4$, records overall concentration.
+% The next, $\lambda_3$, records extension along the fibre, while
+% $\lambda_2$ records scatter away from it. Their ratio is a useful
+% screening statistic for this example.
+
+fibreRatio = lambda(3)./lambda(2)
+
+%%
+% Here the printed ratio is well above one, so the cloud is more line-like
+% than round. The cutoff of three used below is a heuristic for this page,
+% not a universal MTEX threshold. A defensible cutoff also depends on EBSD
+% angular precision, grain size, cleaning, and the deformation expected.
+%
+% Small-angle rotation axes are especially sensitive to EBSD error. Do not
+% interpret a stable-looking axis from a nearly uniform grain without first
+% checking the angle scale and the fit.
+
+%% Locate departures from the fitted fibre
+%
+% The distance from each orientation to the fibre shows where the one-axis
+% model works and where it fails. The left panel shows the line in
+% orientation space. The right panel returns the same residual to the map.
+
+distanceFromFibre = angle(fib,ori)./degree;
+plot(ori,distanceFromFibre,'all')
 xlim([0 30]); ylim([20 70]); zlim([80 120])
 grid minor
 hold on
-plot(fib,'linewidth',2)
+plot(fib,'lineWidth',2)
 hold off
 
 nextAxis
-% we can also inspect the distance of each orientation within the grains
-% to the fitted fibre with the grains
-plot(ebsd(grain_selected),fd)
-mtexColorbar('title', 'distance from fibre')
+plot(ebsd(grainSelected),distanceFromFibre)
+mtexColorbar('title','distance from fibre in degree')
 
+fprintf(['Distance from fibre: median %.2f degree, 90th percentile ' ...
+  '%.2f degree, maximum %.2f degree\n'],...
+  median(distanceFromFibre,'omitmissing'),...
+  quantile(distanceFromFibre,0.9),...
+  max(distanceFromFibre,[],'omitmissing'))
 
 %%
-% TODO: use eigenvalues of fibre.fit  to give measure of "fibryness"
-% [fib, lambda] = fibre.fit(o,'local')
-% lambda(2)/lambda(3)
+% Most points lie close to the fitted line. A band across the middle and the
+% tail at the bottom lie farther away. Those coherent residuals are where a
+% single dispersion axis is least adequate; they may record a second
+% rotation or a subgrain boundary.
 
-%% Bulk evaluation
-% We can fit a fibre for each grain and write out the axes in crystal as 
-% well as in specimen coordinates
+%% Fit all sufficiently sampled grains
+%
+% A fit is made separately for every forsterite grain with more than 100
+% measurements. Small grains are excluded because their orientation clouds
+% do not sample a fibre well enough for this comparison.
 
-%ids = grains('f').id;
-%clear fib_axSC fib_axCC
-%for i = 1:length(ids)
-%        o = ebsd(grains('id',ids(i))).orientations;     
-%        fib = fibre.fit(o);
-%        fib_axCC(i) = fib.h;
-%        fib_axSC(i) = fib.r;
-%end
+grainsLarge = grains('fo');
+grainsLarge = grainsLarge(grainsLarge.numPixel > 100);
 
-% plot fibre axes in specimen coordinates
-%opts= {'contourf','antipodal','halfwidth', 10*degree,'contours',[1:10]};
-%plot(fib_axSC,opts{:})
-%nextAxis
-% plot fibre axes in crystal coordinates
-%plot(fib_axCC,opts{:},'fundamentalRegion')
-%mtexColorbar
+axisCrystal = Miller.nan(length(grainsLarge),1,grainsLarge.CS);
+axisSpecimen = vector3d.nan(length(grainsLarge),1);
+fibreRatio = nan(length(grainsLarge),1);
 
-% Now we can start to wonder whether the distribution of fibre axes relates
-% to e.g. the kinematic during deformation of the sample.
+for k = 1:length(grainsLarge)
+
+  [fib,lambda] = fibre.fit(ebsd(grainsLarge(k)).orientations,'local');
+
+  axisCrystal(k) = fib.h;
+  axisSpecimen(k) = fib.r;
+  fibreRatio(k) = lambda(3)./lambda(2);
+
+end
+
+isFibre = fibreRatio > 3;
+fprintf(['Large forsterite grains: %d; ratio above three: %d ' ...
+  '(%.1f percent)\n'],length(grainsLarge),nnz(isFibre),...
+  100*nnz(isFibre)./length(grainsLarge))
+
+%%
+% Only the grains that pass the stated screen enter the aggregate plots.
+% The others are not proved to have no physical rotation axis; this
+% orientation data simply do not support reporting one by this criterion.
+
+%% Compare axes in the specimen frame
+%
+% The dots show individual antipodal axes. The contours show a kernel
+% density estimate with a 15 degree halfwidth. Its units are multiples of a
+% uniform distribution, so one is the uniform reference.
+
+specimenDensity = calcDensity(axisSpecimen(isFibre),...
+  'halfwidth',15*degree,'antipodal');
+[maxSpecimenDensity,peakSpecimenAxis] = max(specimenDensity);
+
+plot(axisSpecimen(isFibre),'contourf','antipodal','upper',...
+  'halfwidth',15*degree)
+hold on
+plot(axisSpecimen(isFibre),'antipodal','upper','MarkerSize',4)
+hold off
+mtexColorbar
+
+fprintf('Maximum specimen-axis density: %.2f multiples of uniform\n',...
+  maxSpecimenDensity)
+peakSpecimenAxis
+
+%%
+% The preference is mild rather than uniform. The axes avoid the centre of
+% the projection, which is the section normal, and gather near the rim
+% towards X. They therefore tend to lie in the section and point roughly
+% east--west. Such a specimen-frame cluster can indicate a common
+% kinematic rotation axis, but calling it a vorticity axis requires the
+% geological and deformation context.
+
+%% Compare axes in the crystal frame
+%
+% The crystal-frame plot asks a different question. A preferred crystal
+% direction can constrain a common rotation mechanism across differently
+% oriented grains.
+
+crystalDensity = calcDensity(axisCrystal(isFibre),...
+  'halfwidth',15*degree);
+[maxCrystalDensity,peakCrystalAxis] = max(crystalDensity);
+
+plot(axisCrystal(isFibre),'contourf','antipodal','fundamentalRegion',...
+  'halfwidth',15*degree)
+mtexColorbar
+
+fprintf('Maximum crystal-axis density: %.2f multiples of uniform\n',...
+  maxCrystalDensity)
+peakCrystalAxis = Miller(peakCrystalAxis,grainsLarge.CS)
+
+%%
+% This maximum is stronger and lies near [010], with density falling towards
+% [100]. The forsterite grains therefore bend about their own [010] direction
+% more often than about other crystal directions in this map. A rotation
+% axis can narrow the candidate slip mechanisms, but it does not identify a
+% unique slip system without boundary geometry or dislocation evidence.
+%
+% Keep the two frames separate. A specimen-frame cluster supports a shared
+% kinematic frame, while a crystal-frame cluster supports a shared
+% crystallographic mechanism. This data set shows both preferences, with
+% the crystal-frame preference the stronger of the two.
+
+%% References
+%
+% * Z. D. Michels, B. Tikoff, S. C. Kruckenberg and J. R. Davis,
+% "Determining vorticity axes from grain-scale dispersion of
+% crystallographic orientations", _Geology_ 43 (2015), 803--806,
+% <https://doi.org/10.1130/G36868.1 doi:10.1130/G36868.1>. This paper
+% develops crystallographic vorticity-axis analysis from grain-scale
+% dispersion axes.
+%
+% * S. M. Reddy and C. Buchan, "Constraining kinematic rotation axes in
+% high-strain zones: a potential microstructural method", _Geological
+% Society, London, Special Publications_ 243 (2005), 1--10,
+% <https://doi.org/10.1144/GSL.SP.2005.243.01.02
+% doi:10.1144/GSL.SP.2005.243.01.02>.
+%
+% * D. J. Prior, "Problems in determining the misorientation axes, for small
+% angular misorientations, using electron backscatter diffraction in the
+% SEM", _Journal of Microscopy_ 195 (1999), 217--225,
+% <https://doi.org/10.1046/j.1365-2818.1999.00572.x
+% doi:10.1046/j.1365-2818.1999.00572.x>. This is the measurement-precision
+% caution behind the small-angle warning above.
+
+%% Next
+%
+% <EBSDGROD.html Grain Reference Orientation Deviation> develops the angle
+% and axis of every measurement relative to its grain reference.
+% <AxisDistributionFunction.html Axis Distribution Function> treats axes of
+% grain-boundary misorientations and explains their symmetry and random
+% references. The next page in this chapter, <GrainNeighbours.html Grain
+% Neighbours>, changes from intragranular orientation structure to the
+% network formed by adjacent grains.
+
+%#ok<*NASGU>

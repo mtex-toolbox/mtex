@@ -1,85 +1,111 @@
 %% Defining Rotations
 %
-% MTEX offers the following functions to define rotations
+%%
+% A reference frame is the coordinate system in which data are expressed.
+% A rotation moves a geometric object within a fixed reference frame. In
+% MTEX, |rot * v| is the active rotation that moves the direction |v|.
+% This is different from a frame change, which describes the same object in
+% another reference frame without moving it. Orientations use rotations as
+% coordinate mappings, as explained in
+% <DefinitionAsCoordinateTransform.html Crystal Orientation as Coordinate
+% Transformation>.
 %
-% || <rotation.byEuler.html |rotation.byEuler|> || <rotation.byAxisAngle.html |rotation.byAxisAngle|> || <rotation.byMatrix.html |rotation.byMatrix|> ||
-% || <rotation.byRodrigues.html |rotation.byRodrigues|> || <rotation.byHomochoric.html |rotation.byHomochoric|> || <rotation.rotation.html |rotation(quat)|> ||
-% || <rotation.id.html |rotation.id|> || <rotation.map.html |rotation.map|> || <rotation.fit.html |rotation.fit|> || 
-% || <rotation.rand.html |rotation.rand|> || <SO3Fun.discreteSample.html |odf.discreteSample|> || <rotation.nan.html |rotation.nan|> ||
-% || <rotation.load.html |rotation.load|> || || <rotation.inversion.html |rotation.inversion|> || <reflection.html |reflection|>  ||
+% This page assumes the three-dimensional directions introduced in
+% <VectorDefinition.html Defining Three-Dimensional Vectors> and basic
+% matrix algebra.
 %
-% At the end all functions return a variable of type
-% <rotation.rotation.html |rotation|> which represents a list of rotations
-% that are internally stored as <quaternion.quaternion.html quaternions>. An
-% overview of different rotation representations by three dimensional
-% vectors and their properties can be found in the section
-% <RotationRepresentations.html Representations>.
-%
+% MTEX can build a rotation from Euler angles, an axis and angle, a matrix,
+% or the action on directions. Every constructor returns a
+% <rotation.rotation.html |rotation|> array. MTEX stores its proper part
+% internally as a <quaternion.quaternion.html unit quaternion>.
+
+plottingConvention.default('y↑→x');
+
 %% Euler Angles
 %
-% One of the most common ways to describe a rotation is as three subsequent
-% rotations about fixed axes, e.g., first around the z axis, second around
-% the x axis and third again around the z. The corresponding rotational
-% angles are commonly called Euler angles. Beside the most common |ZXZ|
-% convention other choices of the axes are sometimes used. Sorted by
-% popularity in the texture analysis community these are
+% Euler angles describe a rotation by three successive angular steps. The
+% axes, their order, and the direction of the mapping belong to the
+% convention. Three numbers without that convention are therefore
+% ambiguous.
 %
-% * Bunge (phi1,Phi,phi2)       - ZXZ
-% * Matthies (alpha,beta,gamma) - ZYZ
-% * Roe (Psi,Theta,Phi)
-% * Kocks (Psi,Theta,phi)
-% * Canova (omega,Theta,phi)
+% Texture analysis commonly uses the following names:
 %
-% The default Euler angle convention in MTEX are the Bunge Euler angles,
-% with axes Z, X, and Z. The following command defines a rotation by its
-% three Bunge Euler angles
+% * Bunge $(\varphi_1,\Phi,\varphi_2)$, with the ZXZ axis sequence
+% * Matthies $(\alpha,\beta,\gamma)$, with the ZYZ axis sequence
+% * Roe $(\Psi,\Theta,\Phi)$
+% * Kocks $(\Psi,\Theta,\varphi)$
+% * Canova $(\omega,\Theta,\varphi)$
+%
+% A new MTEX installation uses Bunge as its preference. Reusable code
+% should name the convention so that a user's preference cannot change the
+% input.
 
-rot = rotation.byEuler(30*degree,50*degree,10*degree)
+rotBunge = rotation.byEuler(30*degree,50*degree,10*degree,'Bunge');
+rotRoe = rotation.byEuler(30*degree,50*degree,10*degree,'Roe');
+
+angle(rotBunge,rotRoe) ./ degree
 
 %%
-% Note that the angles needs to be multiplied with *degree* since all
-% commands in MTEX expect the input in radiant. Furthermore, the order of
-% the first and the third Euler angle are interchanged in comparison to
-% standard notation for reasons explained <MTEXvsBungeConvention.html
-% here>.
+% The nonzero angle confirms that equal triplets in different conventions
+% need not describe the same rotation. Angles are radians throughout MTEX,
+% which is why values in degrees are multiplied by |degree|.
 %
-% In order to define a rotation by a Euler angle convention different to
-% the default Euler angle convention you to specify the convention as an
-% additional parameter, e.g.
+% The convention used to display an existing rotation can also be named.
+% The rotation constructed with the Roe triplet above reads
 
-rot = rotation.byEuler(30*degree,50*degree,10*degree,'Roe')
-
-%%
-% This does not change the way MTEX displays the rotation on the screen.
-% The default Euler angle convention for displaying a rotation can be
-% changed by the command <setMTEXpref.html |setMTEXpref|>, for a permanent
-% change the file |mtex_settings.m| should be edited. Compare
-
-setMTEXpref('EulerAngleConvention','Roe')
-rot
+Euler(rotRoe,'Roe')
 
 %%
-setMTEXpref('EulerAngleConvention','Bunge')
-rot
 
-%% Axis angle parametrization and Rodrigues Frank vector
+Euler(rotRoe,'Bunge')
+
+%%
+% These are two descriptions of the same rotation. The separate question of
+% which way an orientation maps coordinates is covered in
+% <MTEXvsBungeConvention.html MTEX vs. Bunge Convention>.
 %
-% A very simple possibility to specify a rotation is to specify the
-% rotation axis and the rotation angle.
+% For interactive work, <setMTEXpref.html |setMTEXpref|> changes the
+% session's default Euler convention. Explicit conventions remain safer in
+% files that must be reproducible.
 
-rot = rotation.byAxisAngle(xvector,30*degree)
+%% Euler Angles Are Not Unique
+%
+% Even after the convention is fixed, Euler angles are not always unique.
+% In the Bunge convention, when the middle angle $\Phi$ is zero, only the
+% sum of the first and third angles is determined. These two triplets
+% therefore describe the same rotation.
+
+rotA = rotation.byEuler(10*degree,0,20*degree,'Bunge');
+rotB = rotation.byEuler(15*degree,0,15*degree,'Bunge');
+
+angle(rotA,rotB) ./ degree
 
 %%
-% Conversely, we can extract the rotational axis and the rotation angle of
-% a rotation by
+% The zero angular difference is the Euler-angle singularity. It is a
+% property of the representation, not an additional physical freedom of
+% the rotation.
+
+%% Axis and Angle
+%
+% Every non-identity proper rotation in three dimensions turns about an
+% axis. MTEX reports an angle between $0$ and $180^\circ$. The identity has
+% no unique axis. At $180^\circ$, the two signs of the axis describe the
+% same rotation.
+
+rot = rotation.byAxisAngle(vector3d.X,30*degree);
+
+%%
+% The axis and angle can be read from any rotation, however it was defined.
 
 rot.axis
-rot.angle ./degree
 
 %%
-% Drawn, that is all a rotation is: an axis, and everything else swung about
-% it. The blue arrow is the axis, the grey arrow a direction before the
-% rotation and the red arrow the same direction afterwards.
+
+rot.angle ./ degree
+
+%%
+% The following figure draws the axis in blue, a direction before the
+% rotation in grey, and the rotated direction in red.
 
 v = normalize(vector3d(0.2,0.3,1));
 
@@ -91,98 +117,188 @@ hold off
 axis off
 
 %%
-% Closely related to the axis angle parametrization of a rotation is the
-% Rodriguez Frank vector. 
+% Notice that the blue axis stays fixed while the red direction has turned
+% around it. This fixed direction is the defining axis of the rotation.
+
+%% Rodrigues--Frank Vector
+%
+% The Rodrigues--Frank vector packs axis and angle into one vector. It is
+% the rotation axis scaled by $\tan(\omega/2)$.
 
 R = rot.Rodrigues
 
 %%
-% This is the rotational axis scaled by $\tan \omega/2$, where $\omega$ is
-% the rotational angle.
+% Its length recovers the rotation angle.
 
-2 * atan(norm(R))./degree
+2 * atan(norm(R)) ./ degree
 
 %%
-% We can also define a rotation by a Rodrigues Frank vector by
+% Constructing a rotation from the vector returns the original rotation, as
+% shown by their zero angular difference.
 
-rotation.byRodrigues(R)
-
+rotFromR = rotation.byRodrigues(R);
+angle(rot,rotFromR) ./ degree
 
 %% Rotation Matrix
 %
-% Another common way to represent rotations is by 3x3 matrices. The column
-% of such a rotation matrix coincide with the new positions of the x, y and
-% z vector after the rotation. For a given rotation we may compute the
-% matrix by
+% A proper rotation is also represented by an orthogonal $3 \times 3$
+% matrix with determinant $+1$.
 
 M = rot.matrix
 
 %%
-% Conversely, we may define a rotation by its matrix with the command
+% Its columns are the rotated basis directions X, Y, and Z. Rotating Y gives
+% the second column of |M|.
 
-rot = rotation.byMatrix(M)
+rot * vector3d.Y
 
+%%
+% <rotation.byMatrix.html |rotation.byMatrix|> reconstructs the rotation.
 
-%% Four vectors defining a rotation
+rotFromM = rotation.byMatrix(M);
+angle(rot,rotFromM) ./ degree
+
+%%
+% The constructor assumes that its input is orthogonal; it does not validate
+% a matrix imported from another program. A matrix with determinant $-1$
+% is accepted and stored as an improper rotation, as discussed in
+% <RotationImproper.html Improper Rotations>.
+
+%% Defined by What It Does
 %
-% Another useful method to define a rotation is by describing how in acts
-% on two given directions. More precisely, given four vectors |u1|, |v1|,
-% |u2|, |v2| there is a unique rotation |rot| such that |rot * u1 = v1| and
-% |rot * u2 = v2|. E.g., to find the rotation the maps the x-axis onto the
-% y-axis and keeps the z-axis we do
+% Often the rotation is known only through the directions it must map. Two
+% non-collinear pairs determine exactly one rotation when the angle within
+% the first pair equals the angle within the second pair.
 
-u1 = vector3d.X;
-v1 = vector3d.Y;
-u2 = vector3d.Z;
-v2 = vector3d.Z;
+u1 = vector3d.X; v1 = vector3d.Y;
+u2 = vector3d.Z; v2 = vector3d.Z;
 
-
-rot = rotation.map(u1,v1,u2,v2)
+rot = rotation.map(u1,v1,u2,v2);
+[rot*u1,rot*u2]
 
 %%
-% The above definition require that the angle between u1 and u2 is the same
-% as between v1 and v2. The function gives an error if this condition is
-% not meet. If only two vectors are specified, then the rotation with the
-% smallest angle is returned that rotates the first vector onto the second
-% one.
+% The output reproduces the two target directions Y and Z. MTEX raises an
+% error if the angles within the pairs disagree or if the input directions
+% are collinear.
+%
+% One pair leaves a rotation about the target direction undetermined.
+% <rotation.map.html |rotation.map|> then returns the smallest-angle
+% rotation taking the first direction to the second.
 
-rot = rotation.map(zvector,yvector)
+rot = rotation.map(vector3d.Z,vector3d.Y);
+rot * vector3d.Z
 
 %%
-% More generally, one can fit a rotation |rot| to a list of left and right
-% vectors |l| and |r| such that |rot * l| is the best approximation of |r|.
-% This is done by the function <rotation.fit.html |rotation.fit|>
+% For opposite directions this smallest angle is $180^\circ$, but its axis
+% is not unique. Supply a second pair when the particular half turn matters.
 
-% take five random left vectors
+%% Fitting Measured Directions
+%
+% More than two measured pairs will usually not agree exactly. The
+% least-squares solution from <rotation.fit.html |rotation.fit|> makes
+% |rotFit * left| as close as possible to |right|.
+
 left = vector3d.rand(5);
-
-% rotate them by rot and perturb them a little bit
 right = rot * left + 0.1 * vector3d.rand(1,5);
 
-% recover the rotation rot
-rotation.fit(left,right)
+rotFit = rotation.fit(left,right);
+angle(rot,rotFit) ./ degree
 
+%%
+% The nonzero error comes from the added perturbations. By default,
+% |rotation.fit| uses Horn's unit-quaternion method. The option
+% |'method','kabsch'| selects the Kabsch matrix method.
 
 %% Random Rotations
 %
-% MTEX offers several ways for generating random rotations. The most
-% easiest way is to use the command <rotation.rand.html |rotation.rand|>
-% which generates an arbitrary number of random rotations
+% <rotation.rand.html |rotation.rand|> samples the uniform, or Haar,
+% distribution on the rotation group. Its size arguments create an array of
+% rotations, just as size arguments do for MATLAB numeric arrays.
 
-rotation.rand(100)
+rotations = rotation.rand(100);
+length(rotations)
 
 %%
-% If you are interested in random rotations that follow a certain
-% distribution have a look at <RandomSampling.html random sampling>.
+% The output confirms that the array contains 100 rotations. The
+% |'maxAngle'| option restricts samples to a ball around the identity.
+% Sampling from a nonuniform distribution is covered in
+% <RandomSampling.html Random Sampling>.
 
 %% Quaternions
 %
-% A last possibility to define a rotation is by <quaternion.quaternion.html
-% quaternion coordinates> a, b, c, d.
+% A proper rotation is defined by the four coordinates of a unit quaternion.
+% The quaternion and its negative encode the same rotation.
 
-q = quaternion(1,0,0,0)
+q = quaternion(0.5,0.5,0.5,0.5);
+norm(q)
 
-rot = rotation(q)
+%%
+% The norm is one, so |q| can be passed to the rotation constructor.
+
+rotQ = rotation(q);
+rotMinusQ = rotation(-q);
+
+angle(rotQ,rotMinusQ) ./ degree
+
+%%
+% The zero difference demonstrates the double representation directly.
+% <RotationRepresentations.html Rotation Representations> explains the
+% geometry and numerical trade-offs of quaternions and rotation vectors.
+
+%% Constructor Index
+%
+% The constructors above cover the usual inputs. The complete set also
+% includes generated, imported, and improper rotations.
+%
+% || *input* || *constructor* ||
+% || Euler angles || <rotation.byEuler.html |rotation.byEuler|> ||
+% || axis and angle || <rotation.byAxisAngle.html |rotation.byAxisAngle|> ||
+% || matrix || <rotation.byMatrix.html |rotation.byMatrix|> ||
+% || Rodrigues--Frank vector || <rotation.byRodrigues.html |rotation.byRodrigues|> ||
+% || homochoric vector || <rotation.byHomochoric.html |rotation.byHomochoric|> ||
+% || unit quaternion || <rotation.rotation.html |rotation(q)|> ||
+% || exact direction pairs || <rotation.map.html |rotation.map|> ||
+% || noisy direction pairs || <rotation.fit.html |rotation.fit|> ||
+% || identity, random, or missing || <rotation.id.html |rotation.id|>, <rotation.rand.html |rotation.rand|>, <rotation.nan.html |rotation.nan|> ||
+% || file || <rotation.load.html |rotation.load|> ||
+% || distribution || <SO3Fun.discreteSample.html |odf.discreteSample|> ||
+% || inversion or reflection || <rotation.inversion.html |rotation.inversion|>, <reflection.html |reflection|> ||
+
+%% References
+%
+% * H.-J. Bunge, <https://doi.org/10.1016/C2013-0-11769-2 Texture Analysis
+% in Materials Science: Mathematical Methods>, Butterworths, English ed.,
+% 1982, establishes the Euler-angle convention used in texture analysis.
+% * S. I. Wright and M. De Graef,
+% <https://doi.org/10.1107/S1574870722004554 Electron backscatter
+% diffraction>, International Tables for Crystallography C, ch. 1.6, 2022,
+% records the Bunge convention and the main rotation representations used
+% for EBSD.
+% * A. Morawiec, <https://doi.org/10.1007/978-3-662-09156-2 Orientations
+% and Rotations: Computations in Crystallographic Textures>, Springer,
+% 2004, develops the geometry and parametrisations of rotation space.
+% * D. Rowenhorst et al.,
+% <https://doi.org/10.1088/0965-0393/23/8/083501 Consistent
+% representations of and conversions between 3D rotations>, Modelling and
+% Simulation in Materials Science and Engineering 23 (2015) 083501,
+% compares conventions and conversion formulas.
+% * W. Kabsch, <https://doi.org/10.1107/S0567739476001873 A solution for
+% the best rotation to relate two sets of vectors>, Acta Crystallographica
+% A32 (1976) 922--923, gives the matrix fitting method available through
+% |'method','kabsch'|.
+% * B. K. P. Horn,
+% <https://doi.org/10.1364/JOSAA.4.000629 Closed-form solution of absolute
+% orientation using unit quaternions>, Journal of the Optical Society of
+% America A 4 (1987) 629--642, gives the default quaternion method.
+
+%% Next
+%
+% <RotationRepresentations.html Representations> compares the coordinate
+% descriptions of rotation space. <RotationImproper.html Improper
+% Rotations> then treats inversion and reflection, and
+% <RotationOperations.html Operations> composes, inverts, and applies
+% rotations. A rotation carrying crystal and specimen symmetry becomes an
+% <OrientationDefinition.html orientation>.
 
 %#ok<*NASGU>
 %#ok<*NOPTS>

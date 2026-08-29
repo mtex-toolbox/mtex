@@ -7,7 +7,7 @@ function v = Gaussian(m,delta,x)
 %
 % Input
 %  m - mean
-%  delta - standard deviation
+%  delta - width, the standard deviation times sqrt(2)
 %  x - evaluation point
 %
 % Output

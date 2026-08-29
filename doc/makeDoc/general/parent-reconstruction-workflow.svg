@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="420" viewBox="0 0 1100 420">
+  <defs>
+    <style>
+      .title { font: 24px Arial, sans-serif; font-weight: 600; fill: #24292f; text-anchor: middle; }
+      .label { font: 19px Arial, sans-serif; fill: #57606a; text-anchor: middle; }
+      .grain { stroke: #24292f; stroke-width: 3; stroke-linejoin: round; }
+      .candidate { fill: #dcecf7; stroke: #3979a8; stroke-width: 3; stroke-linejoin: round; }
+      .parent { fill: #dcecf7; stroke: #3979a8; stroke-width: 4; stroke-linejoin: round; }
+      .axis { stroke: #24292f; stroke-width: 4; marker-end: url(#axisHead); }
+      .parentAxis { stroke: #27618b; stroke-width: 4; marker-end: url(#blueHead); }
+      .flow { fill: none; stroke: #6e7781; stroke-width: 4; marker-end: url(#flowHead); }
+    </style>
+    <marker id="axisHead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#24292f"/>
+    </marker>
+    <marker id="blueHead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#27618b"/>
+    </marker>
+    <marker id="flowHead" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#6e7781"/>
+    </marker>
+  </defs>
+
+  <text class="title" x="185" y="45">Measured child grains</text>
+  <text class="title" x="550" y="45">Transform each grain</text>
+  <text class="title" x="915" y="45">Merge compatible neighbours</text>
+
+  <g transform="translate(45 82)">
+    <polygon class="grain" fill="#f4a582" points="0,25 105,0 130,105 45,135"/>
+    <polygon class="grain" fill="#92c5de" points="105,0 245,20 220,115 130,105"/>
+    <polygon class="grain" fill="#b8e186" points="45,135 130,105 125,245 10,225"/>
+    <polygon class="grain" fill="#d5b0e3" points="130,105 220,115 275,225 125,245"/>
+    <polygon class="grain" fill="#ffd166" points="245,20 290,75 275,225 220,115"/>
+    <line class="axis" x1="55" y1="65" x2="85" y2="37"/>
+    <line class="axis" x1="167" y1="67" x2="207" y2="77"/>
+    <line class="axis" x1="63" y1="190" x2="42" y2="158"/>
+    <line class="axis" x1="181" y1="181" x2="213" y2="153"/>
+    <line class="axis" x1="253" y1="110" x2="264" y2="151"/>
+  </g>
+
+  <path class="flow" d="M355,205 L405,205"/>
+
+  <g transform="translate(410 82)">
+    <polygon class="candidate" points="0,25 105,0 130,105 45,135"/>
+    <polygon class="candidate" points="105,0 245,20 220,115 130,105"/>
+    <polygon class="candidate" points="45,135 130,105 125,245 10,225"/>
+    <polygon class="candidate" points="130,105 220,115 275,225 125,245"/>
+    <polygon class="candidate" points="245,20 290,75 275,225 220,115"/>
+    <line class="parentAxis" x1="55" y1="70" x2="88" y2="42"/>
+    <line class="parentAxis" x1="167" y1="68" x2="201" y2="39"/>
+    <line class="parentAxis" x1="63" y1="190" x2="98" y2="161"/>
+    <line class="parentAxis" x1="181" y1="181" x2="215" y2="152"/>
+    <line class="parentAxis" x1="253" y1="110" x2="286" y2="82"/>
+  </g>
+
+  <path class="flow" d="M720,205 L770,205"/>
+
+  <g transform="translate(775 82)">
+    <polygon class="parent" points="0,25 105,0 245,20 290,75 275,225 125,245 10,225 45,135"/>
+    <line class="parentAxis" x1="125" y1="150" x2="190" y2="95"/>
+  </g>
+
+  <text class="label" x="185" y="375">different child orientations</text>
+  <text class="label" x="550" y="375">one candidate parent per grain</text>
+  <text class="label" x="915" y="375">one reconstructed parent footprint</text>
+</svg>

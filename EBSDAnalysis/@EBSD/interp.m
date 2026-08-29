@@ -5,7 +5,7 @@ function ebsdNew = interp(ebsd, newPos, varargin)
 %
 %   ebsdNew = interp(ebsd,pos)
 %
-%   ebsdNew = interp(ebsd,xNew,yNew,'method','invDist')
+%   ebsdNew = interp(ebsd,xNew,yNew)
 %
 % Input
 %  ebsd - @EBSD
@@ -14,9 +14,6 @@ function ebsdNew = interp(ebsd, newPos, varargin)
 %
 % Output
 %  ebsdNew - @EBSD with coordinates (xNew,yNew)
-%
-% Options
-%  method - 'invDist', 'nearest'
 %
 % Description
 % A query point takes the data of the measurement it is nearest to, as long

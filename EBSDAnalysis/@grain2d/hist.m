@@ -64,7 +64,6 @@ for id = 1:numel(idList)
   b(id).CData = str2rgb(grains.CSList(idList(id)).color);
 end
 
-b.CData
 xlim([bins(1),bins(end)])
 if all(prop == area)
   title('grain size distribution')

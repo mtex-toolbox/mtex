@@ -1,146 +1,214 @@
 %% Texture evolution in rolled magnesium during uniaxial tension
 %
-% This examples models the texture evolution of rolled magnesium under
-% uniaxial tension using the Taylor model. The undeformed material is
-% assumed to have a basal fibre texture perpendicular to tension direction.
-% Then tension experiment has been performed twice: at room temperature and
-% at 250 degree Celsius. The strain at fracture was approx. 30 percent and
-% 70 percent, respectively.
+% This page compares two Taylor-model predictions for rolled magnesium
+% pulled along its rolling direction. The starting sheet has a basal fibre
+% texture, but the two temperatures use different slip resistances and
+% reach different strains. The calculation shows how those choices change
+% both the texture and the activity assigned to each deformation family.
+%
+% The motivating tension experiments reached approximately 30 percent
+% strain at room temperature and 70 percent at 250 degrees Celsius.
 
-%% Setting up hexagonal crystal symmetry
-% First we need to set up hexagonal crystal symmetry.
+%% Set the crystal and specimen frames
+%
+% Load the lattice parameters and hexagonal symmetry from the magnesium
+% crystal-information file. |properGroup| keeps the rotational part of the
+% point group used to generate oriented slip and twinning systems.
 
 cs = crystalSymmetry.load('Mg-Magnesium.cif')
 cs = cs.properGroup;
 
-%% Setting up the basal fibre texture
-% 
-% Second, we set up the initial fibre texture which has the c-axis
-% perpendicular to the (x,y)-sheet plane and the a-axes are randomized.
-% This is typical for rolled Mg-sheet
+%%
+% A rolling frame names the specimen axes rolling direction (RD), transverse
+% direction (TD), and normal direction (ND). Here the tension axis is RD.
+% Save the incoming frame so the example can restore the session afterwards.
 
-odf = fibreODF(cs.cAxis, vector3d.Z);
-%odf = uniformODF(cs)
-
-%% Plot polefigures of generated initial state without strains
-% define crystal orientations of interest for polefigures and plot figure
-
-h = Miller({0,0,0,1},{1,0,-1,0},{1,0,-1,1},cs);
-
-% the rolled sheet lives in the rolling frame - the tension of this
-% example is applied along RD
+previousFrame = specimenFrame.default;
 specimenFrame.rolling.makeDefault
 
-% the pfAnnotations preference is a global setting - store it such that we
-% can restore it at the end of this page
-storepfA = getMTEXpref('pfAnnotations');
-pfAnnotations = @(varargin) text([-vector3d.X,vector3d.Y],{'Tension','TD'},...
-  'BackgroundColor','w','tag','axesLabels',varargin{:});
-setMTEXpref('pfAnnotations',pfAnnotations);
+%% Build the initial basal fibre texture
+%
+% In an ideal rolled magnesium sheet, the crystal c-axes are parallel to ND
+% while rotations about that axis are random. A fibre ODF represents that
+% basal fibre texture directly.
+
+odf = fibreODF(cs.cAxis,vector3d.Z);
+
+%%
+% Plot the basal pole, a prismatic pole, and a pyramidal pole. Pole figures are
+% antipodal here, so opposite directions are drawn as the same pole.
+
+h = Miller({0,0,0,1},{1,0,-1,0},{1,0,-1,1},cs);
 plotPDF(odf,h,'antipodal','contourf','figSize','small')
-mtexColorbar;
+mtexColorbar
 
-%% Setting up the slip systems
-%
-% The critical resolved shear stresses (CRSS) needed to activate certain
-% slip systems is temperature AND material dependant. As it is not trivial
-% to measure/define CRSS, there are many different values in literature.
-%
-% In practise, at room temperature basal slip dominates and commonly simple
-% tension twins are activated as well (they have very low CRSS). During
-% tension stress perpendicular to the c-axis tension twinning cannot occur.
-% Thats why it is sensible to only define compression twins (which in Mg
-% have a very high CRSS)
+%%
+% The basal poles form one maximum at ND. The prismatic poles form a ring
+% because the initial model contains every rotation about the c-axis with
+% equal probability. RD is also the tension direction in all three plots.
 
-% second argument is CRSS normalized to basal slip
+%% Choose temperature-dependent families
+%
+% The <SlipSystems.html Slip Systems> page defines critical resolved shear
+% stress (CRSS) and explains why hexagonal materials have no universal slip
+% set. CRSS depends on material, temperature, and experiment, and published
+% values vary widely. The dimensionless values below are illustrative ratios
+% normalized to basal slip, not a universal magnesium parameter set.
+%
+% At room temperature, basal slip commonly dominates magnesium deformation
+% and extension twins can also have a low CRSS. For this basal texture,
+% tension perpendicular to the c-axis does not activate extension twinning.
+% The model therefore includes only compression twins and assigns them the
+% largest CRSS.
+
 sScold = [slipSystem.basal(cs,1),...
   slipSystem.prismatic2A(cs,66),...
   slipSystem.pyramidalCA(cs,80),...
   slipSystem.twinC1(cs,100)];
 
-% consider all symmetrically equivalent slip systems
+% Generate all symmetry-related systems and remember their family ids.
 [sScold,slipId] = sScold.symmetrise;
 
 %%
-% At higher temperatures the CRSS of non-basal slip systems decreases.
+% At higher temperature, the assumed CRSS of both non-basal slip families
+% decreases. The compression-twin CRSS remains high in this comparison.
 
-% second argument is CRSS normalized to basal slip
 sSwarm = [slipSystem.basal(cs,1),...
   slipSystem.prismatic2A(cs,15),...
   slipSystem.pyramidalCA(cs,10),...
   slipSystem.twinC1(cs,100)];
-
-% consider all symmetrically equivalent slip systems
 sSwarm = sSwarm.symmetrise;
 
-%% Defining strain tensors
-% Due to constant volume law, the sum of all strains must equal zero. Here
-% slightly anisotropic strain is assumed at room temperature, with more
-% thinning in y-direction than in z-direction. In practise the anisotropy
-% of Mg at high temperatures becomes negligible.
+%% Define the two strain states
+%
+% Plastic incompressibility requires each infinitesimal strain tensor to
+% have zero trace. The room-temperature case assumes unequal contraction
+% along TD and ND. The 250-degree case assumes that this transverse
+% anisotropy is negligible, so both directions contract equally.
 
 epsCold = 0.3 * strainTensor(diag([1 -0.6 -0.4]))
 epsWarm = 0.7 * strainTensor(diag([1 -0.5 -0.5]))
 
-%% Calculate texture evolution
-% The Tayor calculation is used to get the resulting spin of each vector as
-% well as the coefficients for each slip system for cold and hot state
+%% Solve the Taylor model for the starting texture
+%
+% Draw 100,000 orientations from the initial ODF. Both simulations start
+% from this same synthetic polycrystal.
 
-% simulated an initial orientation distribution of 10000 grains
 ori = odf.discreteSample(100000);
 
-% apply the Taylor model 
-[~,bCold,WcoldD] = calcTaylor( inv(ori) .* epsCold, sScold);
-[~,bWarm,WwarmD] = calcTaylor( inv(ori) .* epsWarm, sSwarm);
+%%
+% Express each strain in each crystal frame and solve the Taylor problem.
+% The columns of |bCold| and |bWarm| are slip or twin amounts for the
+% symmetrized systems. The spin tensors describe the corresponding lattice
+% rotations.
+
+[~,bCold,Wcold] = calcTaylor(inv(ori) .* epsCold,sScold);
+[~,bWarm,Wwarm] = calcTaylor(inv(ori) .* epsWarm,sSwarm);
 
 %%
-% Apply the Taylor spin to the initial orientation distribution
+% Apply each crystallographic spin to the initial orientations.
 
-oriCold = ori .* orientation(-WcoldD);
-oriWarm = ori .* orientation(-WwarmD);
+oriCold = ori .* orientation(-Wcold);
+oriWarm = ori .* orientation(-Wwarm);
+
+meanRotation = [mean(angle(ori,oriCold)),...
+  mean(angle(ori,oriWarm))] ./ degree
 
 %%
+% The mean orientation changes are 7.9155 degrees at room temperature and
+% 17.9343 degrees at 250 degrees Celsius. The larger warm value reflects
+% both its larger imposed strain and its different CRSS ratios.
 
-nextAxis %create a new axis on the existing figure and put along side
-plotPDF(oriCold,h,'antipodal','contourf','grid','grid_res',30*degree)
-mtexColorbar;
+%% One-step approximation
+%
+% This page evaluates the spin only at the starting orientations and applies
+% the entire 30 or 70 percent strain in one update. It is therefore an
+% illustrative one-step approximation, especially at the larger strain.
+% <TextureEvolution.html Texture Evolution> shows the more accurate
+% incremental calculation in which orientations are updated repeatedly.
 
-nextAxis %create a new axis on the existing figure and put along side
-plotPDF(oriWarm,h,'antipodal','contourf','grid','grid_res',30*degree)
-mtexColorbar;
+%% Compare the pole figures
+%
+% Add the room-temperature and 250-degree results beneath the initial pole
+% figures, then arrange the three states as rows on common specimen axes.
 
-% get figure handle and set correct layout
+nextAxis
+plotPDF(oriCold,h,'antipodal','contourf','grid',...
+  'grid_res',30*degree)
+mtexColorbar
+
+nextAxis
+plotPDF(oriWarm,h,'antipodal','contourf','grid',...
+  'grid_res',30*degree)
+mtexColorbar
+
 mtexFig = gcm;
-mtexFig.ncols = 3; mtexFig.nrows = 3; mtexFig.layoutMode = 'user';
-drawNow(gcm)
-
-
-%% Statistics on activated slip systems
-% By adding up the coefficients of the taylor calculation and grouping them
-% according to their slip system type, a bar chart can be plotted
-
-% ensure slipId has the same size as |bCold|
-slipId = repmat(slipId.',length(ori),1);
-
-% sum up the sliprates of symmetrically equivalent slip systems, i.e.,
-% those that have the same |slipId|
-statSsCold = accumarray(slipId(:),bCold(:));
-statSsWarm = accumarray(slipId(:),bWarm(:));
+mtexFig.ncols = 3;
+mtexFig.nrows = 3;
+mtexFig.layoutMode = 'user';
+drawNow(mtexFig)
 
 %%
-% The results can be plotted with logarithmic scale for better
-% visualization
+% Compare each column from top to bottom: initial, room temperature, then
+% 250 degrees Celsius. Both deformed rows depart from the ideal basal fibre,
+% and they differ from one another because their CRSS ratios, strain shapes,
+% and total strains are different. The plot cannot attribute a difference
+% to temperature alone because all three inputs change together.
+
+%% Summarize deformation-family activity
+%
+% Sum the Taylor coefficients of symmetry-related systems using |slipId|.
+% Dividing by the number of sampled crystals gives the mean amount assigned
+% to each family per crystal.
+
+slipId = repmat(slipId.',length(ori),1);
+statSsCold = accumarray(slipId(:),bCold(:)) ./ length(ori);
+statSsWarm = accumarray(slipId(:),bWarm(:)) ./ length(ori);
+
+familyActivity = array2table([statSsCold.';statSsWarm.'],...
+  'VariableNames',{'Basal','Prismatic','Pyramidal','CompressionTwin'},...
+  'RowNames',{'RoomTemperature','250DegreesC'})
+
+%%
+% Use a logarithmic scale because the active family totals span several
+% orders of magnitude.
 
 figure(2)
 bar([statSsCold.';statSsWarm.'])
-set(gca, 'YScale', 'log','XTickLabel', {'RT' '250 °C'})
-legend({'Basal slip','Prismatic slip','Pyramidal slip','Comp. Twin'},...
-    'Location','eastoutside')
+set(gca,'YScale','log','XTickLabel',{'RT','250 degrees C'})
+ylabel('Mean deformation amount per crystal')
+legend({'Basal slip','Prismatic slip','Pyramidal slip','Comp. twin'},...
+  'Location','eastoutside')
 legend('boxoff')
 
 %%
-% finally we restore the pole figure annotations we changed above
+% Prismatic and pyramidal slip carry almost all deformation in this example.
+% The warm CRSS ratios favour pyramidal slip over prismatic slip, whereas
+% the order is reversed at room temperature. Compression-twin activity is
+% below $3 \times 10^{-10}$ per crystal, nine to ten orders of magnitude
+% under prismatic and pyramidal slip. Because the imposed total strains
+% differ, compare the family ranking within a row rather than absolute bar
+% heights between temperatures.
 
-setMTEXpref('pfAnnotations',storepfA);
+% Restore the session state before the closing sections.
+specimenFrame.default(previousFrame);
 
-%%
+%% References
+%
+% * G. I. Taylor, _Plastic Strain in Metals_, _Journal of the Institute of
+% Metals_ 62 (1938), 307--324. This paper introduces the equal-strain
+% polycrystal model used to select the deformation-system amounts.
+% * A. Jain and S. R. Agnew,
+% <https://doi.org/10.1016/j.msea.2006.03.160 Modeling the temperature
+% dependent effect of twinning on the behavior of magnesium alloy AZ31B
+% sheet>, _Materials Science and Engineering A_ 462 (2007), 29--36. This
+% paper documents the strong temperature dependence of non-basal slip CRSS
+% and the sensitivity of magnesium predictions to the chosen CRSS values.
+
+%% Next
+%
+% <Lankford.html Lankford> uses Taylor factors to predict the plastic strain
+% ratio of a sheet as its loading direction changes. It turns the same
+% orientation-dependent deformation model into a measure of sheet anisotropy.
+
+%#ok<*ASGLU,*NOPTS>

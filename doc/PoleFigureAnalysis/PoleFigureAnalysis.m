@@ -1,90 +1,151 @@
 %% Pole Figures
 %
 %%
-% X-ray and neutron diffraction do not see individual crystals. They see
-% the whole illuminated volume at once, and what they measure is how much
-% of it happens to have a chosen lattice plane facing a chosen direction.
-% Rotate the sample, record the intensity of one diffraction peak at every
-% setting, and the result is a *pole figure*: the density of one crystal
-% direction over all specimen directions.
+% Diffraction pole figures describe crystallographic texture without locating
+% individual crystals. A pole figure is the distribution of normals to one
+% family of lattice planes over directions in the specimen reference frame.
 %
-% This is the older road into texture analysis and still the right one for
-% many problems. It averages over a volume rather than a polished surface,
-% it needs no vacuum and no conductive sample, and the counting statistics
-% come from far more crystals than any map contains. What it cannot tell
-% you is where anything is.
+% An X-ray or neutron experiment first records diffraction intensity. After
+% background and defocusing corrections and normalization, that intensity is
+% a quantitative pole density. Keeping these two stages separate prevents raw
+% counts from being mistaken for multiples of a random distribution (mrd).
+%
+% Diffraction averages all illuminated crystals at once. It can probe a bulk
+% volume without a vacuum or a conductive sample, and it often counts many
+% more crystals than an orientation map. The price is spatial information: a
+% pole figure says which orientations occur, not where they occur.
+%
+% This chapter assumes the Miller-index notation introduced in
+% <CrystalDirections.html Miller Indices>. Before reconstructing an
+% orientation distribution function (ODF), review its definition and units in
+% <ODFTheory.html ODF Theory>.
 
 plottingConvention.default('y↑→x');
 mtexdata dubna silent
 
+pf
+
+%%
+% The summary lists seven measured pole figures from one quartz specimen.
+% One entry contains two lattice planes because their diffraction peaks were
+% too close to separate. Its intensity is the weighted sum of both pole
+% figures, so the reconstruction must include both planes and their
+% coefficients rather than treating the entry as a single reflection.
+%
+% The plotting convention draws specimen Y upwards and specimen X to the
+% right. It changes the screen layout, not the specimen reference frame or the
+% measured directions.
+
 plot(pf,'figSize','small')
 
 %%
-% Seven pole figures are shown because one is not enough, and that is the
-% central difficulty of this chapter rather than an incidental detail.
+% Notice that the bands and maxima occupy different specimen directions in
+% different panels. Each lattice-plane family therefore supplies a different
+% projection of the same texture, and the projections constrain one another.
+% Superposed reflections are common measurements rather than errors; the
+% two-plane title identifies the one in this data set.
 %
-% One of the seven is labelled with two lattice planes rather than one.
-% Their diffraction peaks fall too close together to separate, so what was
-% recorded is the sum of two pole figures. This is common, it is not an
-% error, and a reconstruction has to be told about it rather than left to
-% treat the measurement as a single plane.
+%% What one pole-figure value means
 %
-%% Why one pole figure is not enough
+% An ODF is a density over the three-dimensional space of orientations. For a
+% lattice-plane normal $h$ and a specimen direction $r$, one pole-figure value
+% sums the ODF over every orientation that maps $h$ onto $r$.
 %
-% Orientations live in a three-dimensional space; a pole figure is a
-% two-dimensional picture. Each point of it collects every orientation that
-% puts the chosen crystal direction along that specimen direction - a whole
-% curve of orientations, added together and reported as one number. The
-% information lost is exactly the position along that curve.
+% Those orientations form a one-dimensional fibre in orientation space. The
+% integral along that fibre is the pole-figure transform of the ODF, also
+% called its Radon transform. <ODFPoleFigure.html Pole Figures of an ODF>
+% develops this forward projection, while <S2FunRadon.html The Spherical Radon
+% Transform> introduces the underlying operation on the sphere.
 %
-% Reconstructing an ODF therefore means combining several pole figures,
-% measured for different lattice planes, and solving for the function
-% consistent with all of them. That problem is solvable but it is not a
-% simple inversion, and it does not have a unique answer.
+% A pole figure is therefore a two-dimensional projection of a
+% three-dimensional distribution. Measuring several lattice-plane families
+% reduces the ambiguity caused by having too few projections, but the inverse
+% problem still does not have a unique answer.
 %
-%% The ghost effect
+%% What ordinary diffraction cannot determine
 %
-% There is a further loss that no amount of extra measurement repairs.
-% Diffraction cannot distinguish a lattice plane's two sides, so a pole
-% figure is always centrosymmetric even when the material is not. Written
-% as a series expansion, the measurement determines the even-order terms of
-% the ODF and says nothing whatever about the odd-order ones.
+% Under Friedel's law, ordinary diffraction cannot distinguish the two sides
+% of a lattice plane. Its pole figures are antipodally symmetric even when the
+% material's orientation distribution is not. In a harmonic expansion, the
+% measurements determine the even-degree terms of the ODF but not the
+% odd-degree terms.
 %
-% The missing part has to be supplied by an assumption, and different
-% assumptions give visibly different ODFs - typically spurious peaks where
-% the material has none, which is where the name *ghost* comes from. This
-% is not a numerical artefact to be tuned away. It is a genuine gap in what
-% the experiment can know, and the pages below are about making a defensible
-% choice rather than a hidden one.
+% Anomalous-scattering experiments can break this equivalence, but additional
+% conventional pole figures cannot. This is a different limitation from
+% measuring too few lattice-plane families, so the two should not be confused.
 %
-%% Where to start
+% A reconstruction must choose the missing odd part by an assumption.
+% Different choices can weaken real components, raise the uniform background,
+% or create spurious peaks where the material has none. These inversion
+% artefacts are called *ghosts*.
 %
-% <PoleFigureImport.html Import> and <PoleFigurePlot.html Plot> get data in
-% and on screen. <PoleFigureCorrection.html Modify> covers the corrections
-% that come before anything else - background, defocusing, normalisation,
-% and removing points you have reason to distrust.
+% Ghost correction makes that choice more defensible, but it does not turn an
+% assumption into measured information. A close match between measured and
+% recalculated pole figures is necessary validation; it is not proof that the
+% reconstructed ODF is unique or correct.
 %
-% <PoleFigure2ODF.html ODF Reconstruction> is the heart of the chapter, and
-% <PoleFigureRefinement.html Iterative ODF Reconstruction> controls it in
-% more detail. Read <PoleFigure2ODFAmbiguity.html The Ghost Effect> and
-% <PoleFigure2ODFGhostCorrection.html Ghost Correction> alongside them
-% rather than afterwards - they say what the reconstruction cannot do, which
-% is the part that determines how far the result can be trusted.
+%% Recommended reading order
 %
-% <PoleFigureSimulation.html Simulation> goes the other way, computing pole
-% figures from a known ODF. This is the most reliable way to develop
-% judgement here: reconstruct an ODF you already know and see what survives.
+% Start with <PoleFigureImport.html Import> and <PoleFigurePlot.html Plot> to
+% bring measured data into MTEX and inspect it. Continue with
+% <PoleFigureCorrection.html Modify> for background subtraction, defocusing,
+% normalization, incomplete coverage, outliers, and justified rotations.
 %
-% Two worked examples follow the whole chain on real and standard data,
-% <PoleFigureSantaFe.html Santa Fe Example> and
-% <PoleFigureDubna.html Dubna Example>, and
-% <PoleFigureExport.html Export> handles files.
+% <PoleFigure2ODF.html ODF Reconstruction> develops the direct inversion, and
+% <PoleFigureRefinement.html Iterative ODF Reconstruction> changes its
+% representation scale or measurement density. The latter assumes the direct
+% workflow and cannot remove its non-uniqueness.
+%
+% <PoleFigureSimulation.html Simulation> then runs the forward and inverse
+% problems with a known ODF. It also assumes <ODFModeling.html ODF Modelling>
+% and <ODFPoleFigure.html Pole Figures of an ODF>. This controlled experiment
+% is the most reliable way to see what a reconstruction preserves.
+%
+% Next read <PoleFigure2ODFAmbiguity.html The Ghost Effect> and
+% <PoleFigure2ODFGhostCorrection.html Ghost Correction>. They separate the
+% limitations caused by too few pole figures from information that ordinary
+% diffraction never measured.
+%
+% <PoleFigureSantaFe.html Santa Fe Example> tests the choices on a standard
+% model whose true ODF is known. <PoleFigureDubna.html Dubna Example> applies
+% the validation sequence to measured neutron data, where no true ODF is
+% available. <PoleFigureExport.html Export> closes the route by exchanging
+% measured or recalculated pole figures with other software.
+%
+%% Further reading
+%
+% * H.-J. Bunge,
+% <https://doi.org/10.1016/C2013-0-11769-2 Texture Analysis in Materials
+% Science: Mathematical Methods>, Butterworths, English ed., 1982. This is
+% the classical textbook treatment of pole figures and ODF reconstruction.
+% * ASTM International,
+% <https://doi.org/10.1520/E0081-96R24 ASTM E81-96(2024): Standard Test Method
+% for Preparing Quantitative Pole Figures>. It covers experimental procedures
+% for complete and partial quantitative X-ray pole figures.
+% * D. Chateigner, L. Lutterotti and M. Morales,
+% <https://doi.org/10.1107/97809553602060000968 Quantitative texture analysis
+% and combined analysis>, _International Tables for Crystallography_, Volume
+% H, chapter 5.3, 2019. It connects diffraction intensity, corrections,
+% normalized pole density and the fundamental equation of texture analysis.
+% * H.-J. Bunge and C. Esling,
+% <https://doi.org/10.1107/S0021889881009308 Determination of the odd part of
+% the texture function by anomalous scattering>, _Journal of Applied
+% Crystallography_ 14, 253--255, 1981. It explains the experimental exception
+% to the ordinary Friedel limitation.
+% * R. Hielscher and H. Schaeben,
+% <https://doi.org/10.1107/S0021889808030112 A novel pole figure inversion
+% method: specification of the MTEX algorithm>, _Journal of Applied
+% Crystallography_ 41, 1024--1037, 2008. It specifies the estimator and
+% numerical reconstruction used by MTEX.
 %
 %% Next
 %
-% What a reconstruction produces is an <ODFAnalysis.html ODF>. The same
-% quantity measured one crystal at a time is <EBSDAnalysis.html EBSD>. The
-% mathematics of the inversion belongs to
-% <SphericalFunctions.html Spherical Functions> and
-% <SO3Functions.html Orientation Functions>.
+% A reconstructed ODF can be explored with <ODFAnalysis.html ODF Analysis>.
+% In the main documentation route that chapter supplies the theory used here;
+% the next measurement chapter is <EBSDAnalysis.html EBSD Analysis>. EBSD
+% assigns orientations point by point on a polished surface and retains the
+% spatial information that a bulk diffraction pole figure averages away.
 %
+% <SphericalFunctions.html Spherical Functions> and
+% <SO3Functions.html Orientation Functions> develop the mathematical function
+% spaces behind pole figures and ODFs.

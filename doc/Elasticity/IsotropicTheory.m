@@ -1,202 +1,153 @@
 %% Isotropic Theory
 %
-% While the linear elastic model for anisotropic materials is based on the
-% fourth order elastic stiffness tensor |C| the linear elastic model for
-% isotropic models is most often developed in terms of the elastic moduli
-% shear, bulk, Youngs modulus and the Poisson ratio.
+%%
+% An isotropic material has the same elastic response in every direction.
+% Its stiffness therefore needs only two independent numbers.
+% A general anisotropic stiffness tensor needs as many as 21.
 %
-%% The single crystal stiffness tensor
+% The engineering moduli are different ways to choose those two numbers.
+% They include the shear and bulk moduli, Young's modulus, Poisson's ratio,
+% and the Lame constants.
 %
-% Lets start our discussion with a single crystal stiffness tensor of 
-% Albite.
+% This page starts from one anisotropic crystal and makes an isotropic
+% aggregate from randomly oriented copies. It then shows how to read,
+% compare, and convert the resulting moduli.
 
-% density (g/cm3)
- rho= 2.6230;
+%% Start with an anisotropic crystal
 %
-% crystal symmetry & frame
-cs = crystalSymmetry('-1', [8.290 12.966 7.151], [91.18 116.31 90.14]*degree,...
-  'x||a*','y||b', 'mineral','An0 Albite 2016');
+% Albite is triclinic and is about as anisotropic as a common mineral gets.
+% Its density is in g/cm3, and its stiffness entries are in GPa.
 
-% the stiffness tensor C in (GPa)
+rho = 2.6230;
+
+% crystal symmetry and crystal frame
+cs = crystalSymmetry('-1',[8.290 12.966 7.151],...
+  [91.18 116.31 90.14]*degree,'x||a*','y||b',...
+  'mineral','An0 Albite 2016');
+
+% stiffness tensor
 C = stiffnessTensor(...
   [[  68.30   32.20   30.40    4.90   -2.30  -0.90];...
   [   32.20  184.30    5.00   -4.40   -7.70  -6.40];...
   [   30.40    5.00  180.00   -9.20    7.50  -9.40];...
   [    4.90   -4.40   -9.20   25.00   -2.40  -7.20];...
-  [   -2.30   -7.70    7.50   -2.40   26.90   0.60];...
-  [   -0.90   -6.40   -9.40   -7.20    0.60  33.60]],...
-  cs,'density',rho)
+  [   -2.30   -7.70    7.50   -2.40   26.90    0.60];...
+  [   -0.90   -6.40   -9.40   -7.20    0.60   33.60]],...
+  cs,'density',rho);
 
-%% The effective isotropic stiffness tensor
+%% Average a random aggregate
 %
-% An isotropic Albite material we assume here to consist of randomly
-% oriented grains forming an uniform (isotropic) texture. In this case the
-% Voigt and Reuss averages provide upper and lower bounds for the elastic
-% properties of the material. 
+% A material made of these crystals in random orientations is isotropic.
+% The <ODFAnalysis.html orientation distribution function (ODF)> records
+% the volume fraction at each orientation.
+% A uniform ODF represents the random orientation distribution used here.
+%
+% Random orientations do not determine one exact aggregate stiffness.
+% The result also depends on how the grains are arranged.
+% The Voigt model assumes uniform strain and gives an upper bound.
+% The Reuss model assumes uniform stress and gives a lower bound.
+% The Hill estimate is the arithmetic mean of those two tensors.
 
-[C_iso_Voigt,C_iso_Reuss,C_iso_Hill] = mean(C,uniformODF(C.CS))
+[C_iso_Voigt,C_iso_Reuss,C_iso_Hill] = ...
+  mean(C,uniformODF(C.CS))
 
-%% The elastic moduli
+%% See what the average changed
 %
-% The actual elastic properties of the material depend on the geometric
-% microstructure and can not be computed without additional knowledge.
+% Young's modulus measures axial stiffness in a chosen loading direction.
+% Compare its directional variation before and after averaging.
+
+newMtexFigure('layout',[1,2]);
+nextAxis
+plot(C.YoungsModulus,'complete','upper')
+title('single albite crystal')
+
+nextAxis
+plot(C_iso_Hill.YoungsModulus,'complete','upper')
+title('random aggregate, Hill estimate')
+
+% a common colour range, otherwise the constant map is stretched over noise
+setColorRange('equal')
+mtexColorbar('title','Young''s modulus in GPa')
+
+%%
+% The single-crystal map changes strongly with direction.
+% The aggregate map is constant because the random orientations remove the
+% directional preference.
+
+%% Read the elastic moduli
 %
-% Based on the Voigt effective stiffness tensor we may now compute upper,
-% directional independent bounds for all elastic moduli:
+% Read four familiar moduli from the Voigt tensor.
+% This tensor is the upper bound for the random aggregate.
 
 G = C_iso_Voigt.shearModulus
 K = C_iso_Voigt.bulkModulus
 E = C_iso_Voigt.YoungsModulus(xvector)
 nu = C_iso_Voigt.PoissonRatio
 
-%% From the elastic moduli to the elastic tensors
-%
-% Furthermore, any two of them entirely describe the linear elastic
-% behavior of the material. In particular, we may recover the isotropic
-% stiffness tensor from the bulk and shear moduli alone:
-
-% the matrix entries
-C11 = K+(4/3)*G ; C12=C11-2*G; C44=(C11-C12)/2;
-
-% this gives exactly the effective Voigt stiffness tensor as computed above
-stiffnessTensor(...
-  [[  C11     C12    C12    0.0     0.0    0.0];...
-  [   C12     C11    C12    0.0     0.0    0.0];...
-  [   C12     C12    C11    0.0     0.0    0.0];...
-  [   0.0     0.0    0.0    C44     0.0    0.0];...
-  [   0.0     0.0    0.0    0.0     C44    0.0];...
-  [   0.0     0.0    0.0    0.0     0.0    C44]],cs)
-
 %%
-% or from the Youngs modulus and the Poisson ratio
-
-S11 = (1/E); S12 = (-nu/E); S44 = 2*(S11-S12);
-
-inv(complianceTensor(...
- [[  S11     S12    S12    0.0     0.0    0.0];...
- [   S12     S11    S12    0.0     0.0    0.0];...
- [   S12     S12    S11    0.0     0.0    0.0];...
- [   0.0     0.0    0.0    S44     0.0    0.0];...
- [   0.0     0.0    0.0    0.0     S44    0.0];...
- [   0.0     0.0    0.0    0.0     0.0    S44]],cs))
-
-%% Formulas between the elastic moduli
-% As a consequence, Young's modulus and the Poisson ratio can be
-% computed directly from the bulk and shear modulus (and vice versa)
-
-% formulae for the Poisson ratio
-(E/G-2)/2
-(3*K-E)/(6*K)
-
-% formulae for the Young's modulus
-2*G*(1+nu)
-3*K*(1-2*nu)
-
-%% Lame constants
+% The shear modulus $G$ measures resistance to shape change at fixed volume.
+% The bulk modulus $K$ measures resistance to a uniform volume change.
+% Young's modulus $E$ relates axial stress to axial strain.
+% Poisson's ratio $\nu$ is minus transverse strain divided by axial strain.
 %
-% The second way to represent the elastic behavior of an isotropic medium
-% is by means of the Lame constants
+% <stiffnessTensor.YoungsModulus.html |YoungsModulus|> asks for a direction.
+% An isotropic tensor gives the same answer in every direction.
+% That equality is a useful check that the average really is isotropic.
 
-lambda = nu/(1-2*nu) /(1+nu) * E;
-mu = G;
+E_direction_check = C_iso_Voigt.YoungsModulus([xvector,zvector])
 
-%%
-% In terms of the Lame constants the stiffness tensor is given by
-
-2 * mu * stiffnessTensor.eye(cs) + lambda * dyad(tensor.eye,tensor.eye)
-
-%%
-% and we may directly formulate Hooks law
-
-eps = strainTensor.rand(cs);
-
-sigma = C_iso_Voigt : eps
-
-%%
-% in terms of the Lame constants by
-
-sigma = stressTensor(2 * mu * eps + lambda * trace(eps) * tensor.eye)
-
-
-%% Hashin Shtrikman Bounds
+%% Tighter bounds from a microstructure assumption
 %
-% While the Voigt and Reuss bounds are tight without additional
-% assumptions, the extreme cases require a very specific layered
-% microstructure. If one additionally assumes that the material is
-% quasihomogeneous, i.e., it is constant elastic properties within each
-% subregion that is significantly larger then the grain size, then the
-% Voigt and Reuss bounds are to wide. More narrow bounds for this settings
-% have been established by Hashin and Shtrikman in 1962.
-% 
-% The following deviation follows the paper by J.M. Brown (2015)
-% _Determination of Hashin-Shtrikman bounds on the isotropic effective
-% elastic moduli of polycrystals of any symmetry_, Computers & Geosciences,
-% 80 (2015) 95-99.
+% The Voigt and Reuss bounds cannot be improved without more information
+% about the material. The microstructures that attain them are extreme:
+% they are layers of aligned crystals.
 %
-%% 
-% The upper and lower Hashin-Shtrikman bounds for the bulk and shear
-% moduli are found as a solution of an optimization problem. Lets first set
-% up the search domain
+% A quasihomogeneous material has the same elastic properties in any region
+% much larger than a grain. This extra assumption admits narrower bounds.
+% The bounds are due to Hashin and Shtrikman (1962).
+% The computation below follows Brown (2015).
+%
+% The calculation searches over isotropic comparison materials.
+% Each candidate is specified by a bulk modulus and a shear modulus.
 
-% define a 2 dimensional domain of bulk and shear moduli
 KMin = 1; KMax = 150; % minimum and maximum bulk moduli
 GMin = 1; GMax = 150; % minimum and maximum shear moduli
 Ko = linspace(KMin,KMax,300);
 Go = linspace(GMin,GMax,300);
 [G0Mesh,K0Mesh] = meshgrid(Go,Ko);
 
-%% 
-% Next the initial stiffness tensor is updated such that the residual
-% stiffness tensor |R| remains either positive or negative definite.
-% 
+%%
+% For every candidate, <stiffnessTensor.HashinShtrikmanModulus.html
+% |HashinShtrikmanModulus|> computes effective bulk and shear moduli.
+% It also tests the residual stiffness tensor.
+% A positive definite residual identifies a lower-bound candidate.
+% A negative definite residual identifies an upper-bound candidate.
 
-[khs, ghs, def] = HashinShtrikmanModulus(C,K0Mesh,G0Mesh);
+[khs,ghs,def] = HashinShtrikmanModulus(C,K0Mesh,G0Mesh);
+
+% largest value in the positive definite region: lower bound
+khsLower = max(khs(def==1));
+ghsLower = max(ghs(def==1));
+
+% smallest value in the negative definite region: upper bound
+khsUpper = min(khs(def==-1));
+ghsUpper = min(ghs(def==-1));
+
+%% Locate the Hashin-Shtrikman bounds
+%
+% Plot the computed effective modulus for every comparison material.
+% The white circles mark the lower and upper optima.
+
+figure('Position',[100 100 1000 500])
 
 subplot(1,2,1)
 imagesc(Go,Ko,khs)
 set(gca,'YDir','normal')
-title('khs')
-xlabel('shear modulus')
-ylabel('bulk modulus')
-colorbar%('location','southoutside')
+title('effective bulk modulus')
+xlabel('comparison shear modulus')
+ylabel('comparison bulk modulus')
+colorbar
 axis equal tight
-
-subplot(1,2,2)
-imagesc(Go,Ko,ghs)
-set(gca,'YDir','normal')
-xlabel('shear modulus')
-ylabel('bulk modulus')
-title('ghs')
-colorbar%('location','southoutside')
-axis equal tight
-
-%subplot(1,3,3)
-%imagesc(G0,K0,minmax)
-%set(gca,'YDir','normal')
-%title('minmax')
-%colorbar('location','southoutside')
-%xlabel('shear modulus')
-%ylabel('bulk modulus')
-%axis equal tight
-
-
-%% lower and upper Hashin Shtrikman bulk and shear modulus bounds
-%
-% We find the lower Hashin Shtrikman bound of the bulk modulus by
-% minimizing the effective Hashin Shtrikman bulk modulus over the positive
-% definite domains of the residual stiffness tensor |R|. Accordingly we
-% find the upper bound as the maximum over the negative definite domain.
-
-khsLower = max(khs(def==1));
-khsUpper = min(khs(def==-1));
-
-ghsLower = max(ghs(def==1));
-ghsUpper = min(ghs(def==-1));
-
-%%
-% Lower and upper bounds are marked in the plots below.
-
-subplot(1,2,1)
 hold on
 [i,j] = find(khs == khsLower);
 plot(Go(j),Ko(i),'o','MarkerEdgeColor','w','linewidth',2)
@@ -205,6 +156,13 @@ plot(Go(j),Ko(i),'o','MarkerEdgeColor','w','linewidth',2)
 hold off
 
 subplot(1,2,2)
+imagesc(Go,Ko,ghs)
+set(gca,'YDir','normal')
+title('effective shear modulus')
+xlabel('comparison shear modulus')
+ylabel('comparison bulk modulus')
+colorbar
+axis equal tight
 hold on
 [i,j] = find(ghs == ghsLower);
 plot(Go(j),Ko(i),'o','MarkerEdgeColor','w','linewidth',2)
@@ -212,10 +170,14 @@ plot(Go(j),Ko(i),'o','MarkerEdgeColor','w','linewidth',2)
 plot(Go(j),Ko(i),'o','MarkerEdgeColor','w','linewidth',2)
 hold off
 
-%% Comparison of the bounds
+%%
+% Only the positive and negative definite regions contain valid candidates.
+% The circles sit at the extrema of those two regions, not at arbitrary
+% extrema of the coloured maps.
+
+%% Compare all three estimates
 %
-% Finally we compare the upper and lower Hashin Shtrikman bounds with the
-% Voigt and Reuss bounds.
+% Collect the Voigt, Reuss, Hill, and Hashin-Shtrikman results.
 
 KReuss = C_iso_Reuss.bulkModulus;
 KHill = C_iso_Hill.bulkModulus;
@@ -226,16 +188,112 @@ GHill = C_iso_Hill.shearModulus;
 disp(' ')
 disp('bulk modulus')
 cprintf([K,khsUpper,KHill,khsLower,KReuss],...
-  '-Lc',{'Voigt' '+HS' 'Hill' '-HS' 'Reus'})
+  '-Lc',{'Voigt' '+HS' 'Hill' '-HS' 'Reuss'})
 disp(' ')
 disp('shear modulus')
 cprintf([GVoigt,ghsUpper,GHill,ghsLower,GReuss],...
-  '-Lc',{'Voigt' '+HS' 'Hill' '-HS' 'Reus'}) 
+  '-Lc',{'Voigt' '+HS' 'Hill' '-HS' 'Reuss'})
 disp(' ')
 
+%%
+% Read the two rows from outside towards the centre.
+% For the bulk modulus, the Voigt and Reuss bounds are 63.1 and 54.1 GPa.
+% They are nine GPa apart.
+% The Hashin-Shtrikman bounds are 60.3 and 57.1 GPa.
+% They are only three GPa apart.
+%
+% For the shear modulus, the broad interval runs from 41.4 to 29.8 GPa.
+% The Hashin-Shtrikman interval runs from 36.8 to 32.8 GPa.
+% In both rows the Hill average sits inside the narrower pair.
+% This is the reason the Hill estimate usually works.
+%
+% Bounds on every other modulus follow from these values.
+% Two moduli determine an isotropic material.
+
+%% The maths behind isotropic stiffness
+%
+% Any two elastic moduli determine the complete isotropic tensor.
+% Start with the bulk and shear moduli from the Voigt estimate.
+
+C11 = K + (4/3)*G;
+C12 = C11 - 2*G;
+C44 = (C11-C12)/2;
+
+C_from_KG = stiffnessTensor(...
+  [[  C11     C12    C12    0.0     0.0    0.0];...
+  [   C12     C11    C12    0.0     0.0    0.0];...
+  [   C12     C12    C11    0.0     0.0    0.0];...
+  [   0.0     0.0    0.0    C44     0.0    0.0];...
+  [   0.0     0.0    0.0    0.0     C44    0.0];...
+  [   0.0     0.0    0.0    0.0     0.0    C44]],cs)
 
 %%
-% Note, that upper and lower bounds for all other elastic moduli can be
-% computed from these upper and lower bounds of the bulk and shear modulus.
+% Young's modulus and Poisson's ratio give the same tensor through its
+% inverse, the compliance tensor.
+
+S11 = 1/E;
+S12 = -nu/E;
+S44 = 2*(S11-S12);
+
+C_from_Enu = inv(complianceTensor(...
+ [[  S11     S12    S12    0.0     0.0    0.0];...
+ [   S12     S11    S12    0.0     0.0    0.0];...
+ [   S12     S12    S11    0.0     0.0    0.0];...
+ [   0.0     0.0    0.0    S44     0.0    0.0];...
+ [   0.0     0.0    0.0    0.0     S44    0.0];...
+ [   0.0     0.0    0.0    0.0     0.0    S44]],cs))
+
+%%
+% Both constructions reproduce the averaged tensor above entry for entry.
+% The same equivalence gives direct conversion formulas between moduli.
+
+% two formulas for Poisson's ratio
+nu_from_EG = (E/G-2)/2
+nu_from_KE = (3*K-E)/(6*K)
+
+% two formulas for Young's modulus
+E_from_Gnu = 2*G*(1+nu)
+E_from_Knu = 3*K*(1-2*nu)
+
+%% Lame constants and Hooke's law
+%
+% The Lame constants are the pair usually preferred in theoretical work.
+% They make isotropic Hooke's law especially short.
+
+lambda = nu/(1-2*nu)/(1+nu)*E;
+mu = G;
+
+% rebuild the stiffness tensor from the Lame constants
+C_from_Lame = 2*mu*stiffnessTensor.eye(cs) + ...
+  lambda*dyad(tensor.eye,tensor.eye)
+
+%%
+% Apply Hooke's law to a random strain, first by tensor contraction.
+
+eps = strainTensor.rand(cs);
+sigma_contraction = C_iso_Voigt : eps
+
+%%
+% The Lame form gives exactly the same stress.
+
+sigma_Lame = stressTensor(2*mu*eps + lambda*trace(eps)*tensor.eye)
 
 %#ok<*NASGU>
+
+%% References
+%
+% * J. M. Brown, <https://doi.org/10.1016/j.cageo.2015.03.009
+% Determination of Hashin-Shtrikman bounds on the isotropic effective
+% elastic moduli of polycrystals of any symmetry>, _Computers & Geosciences_
+% 80 (2015), 95-99, gives the numerical search used in this page.
+% * Z. Hashin and S. Shtrikman,
+% <https://doi.org/10.1016/0022-5096(63)90060-7 A variational approach to
+% the theory of the elastic behaviour of multiphase materials>, _Journal of
+% the Mechanics and Physics of Solids_ 11 (1963), 127-140, develops the
+% variational bounds and the quasihomogeneous-material assumption.
+
+%% Next
+%
+% <AnisotropicTheory.html Anisotropic Theory> removes the directional
+% equality used here. It shows how crystal symmetry constrains a full
+% stiffness tensor and how to read its directional elastic response.

@@ -1,97 +1,150 @@
 %% Orientations
 %
 %%
-% An *orientation* answers one question: how is this crystal placed in this
-% specimen? It is the rotation that takes the specimen's coordinate axes
-% onto the crystal's own, so it is the bridge between the two frames that
-% every measurement lives between - the sample sitting on the stage, and
-% the lattice inside it.
+% An <orientation.orientation.html |orientation|> answers one question: how
+% is this crystal placed in this specimen? In MTEX it maps coordinates from
+% the crystal frame into the specimen frame. It is the bridge between the
+% sample sitting on the stage and the lattice inside it.
 %
-% Everything in texture analysis is built on this one idea. A texture is a
-% population of orientations. A pole figure is a projection of one. A
-% misorientation is the difference between two. Get the definition right
-% here and the rest of MTEX follows; get it wrong and every plot afterwards
-% is rotated by something you cannot find.
+% A *reference frame* is the coordinate system in which data are expressed.
+% The crystal frame is fixed to the lattice, while the specimen frame is
+% fixed to the sample. An orientation relates those frames and carries the
+% symmetry attached to each one. It is therefore more than three Euler
+% angles or a bare rotation matrix.
 %
-% The most direct way to see an orientation is to draw the crystal where it
-% sits. Below is a cubic crystal at a single orientation, with the specimen
-% axes marked.
+% Everything in texture analysis builds on this idea. A texture is a
+% population of orientations. A pole figure shows where selected crystal
+% directions point. A misorientation is the relative map between two
+% crystal frames. Get the definition right here and the rest of MTEX follows.
+% Get it wrong and every later plot is rotated by something you cannot find.
+
+%% A Crystal Placed in the Specimen
+%
+% The most direct picture of an orientation is the crystal where it sits.
+% This example uses one cubic crystal and one Bunge Euler-angle triplet.
 
 cs = crystalSymmetry('m-3m');
 cS = crystalShape.cube(cs);
+ori = orientation.byEuler(30*degree,50*degree,10*degree,'Bunge',cs);
 
-ori = orientation.byEuler(30*degree,50*degree,10*degree,cs);
-
-plot(ori * cS,'colored')
+plot(ori * cS,'colored','faceAlpha',0.35);
+hold on;
+arrow3d(0.62*[vector3d.X,vector3d.Y,vector3d.Z],...
+  'faceColor','black','label',{'X','Y','Z'});
+hold off;
+camzoom(0.8);
 
 %%
-% Two conventions are hiding in that picture, and both matter. One is
-% whether the rotation is understood to turn the crystal or to turn the
-% coordinate axes - the *active* and *passive* readings, which are inverses
-% of each other. The other is which of the several Euler angle conventions
-% those three numbers follow. MTEX is explicit about both, on the pages
-% below, and the reason it is explicit is that most disagreements between
-% two people's results come from here.
+% The blue cube and its $(100)$ face-family label remain fixed to the
+% crystal. The black X, Y and Z arrows remain fixed to the specimen. The
+% orientation is the relationship between them, not either frame by itself.
 %
-%% Symmetry makes an orientation a set
+% Three independent choices can change the numbers or the picture. An active
+% rotation turns an object, while a passive rotation changes coordinates.
+% The two maps are inverses. Second, several Euler-angle conventions use the
+% same three symbols in different ways. Third, the Cartesian crystal frame
+% can be aligned with the lattice axes in different ways. Most disagreements
+% between two people's orientation results begin with one of these choices.
 %
-% A crystal cannot tell its symmetrically equivalent settings apart, so an
-% orientation is never really one rotation. A cubic crystal has 24 of them,
-% and all 24 describe the same physical placement. You will sometimes see 48
-% listed instead: the point group m-3m contains 24 rotations and 24 improper
-% operations, and only the rotations can actually reorient a crystal.
+% MTEX makes the map direction and Euler convention explicit. The
+% <CrystalReferenceSystem.html Crystal Reference System> explains the
+% independent crystal-frame alignment. A *plotting convention* describes
+% how a reference frame is laid out on screen; it is not the orientation or
+% the symmetry.
+
+%% Symmetry Makes an Orientation a Set
 %
-% This is why an orientation carries its symmetry with it. It is also why
-% "the angle between two orientations" needs care: the honest answer is the
-% smallest angle over all equivalent pairs, and computing it any other way
-% gives a number that depends on which of the equivalent labels each
-% orientation happened to be written with. The *fundamental region* is the
-% patch of rotation space holding exactly one representative of each, and
-% it is the orientation counterpart of the fundamental sector for
-% directions.
+% A crystal cannot distinguish settings related by its point-group
+% symmetry. One physical orientation therefore has many equivalent
+% descriptions. A cubic crystal has 24 proper symmetry rotations, and all
+% 24 describe the same physical placement.
 %
-%% Where to start
+% The full point group |m-3m| also contains 24 improper operations, so MTEX
+% can list 48 symmetry-related orthogonal transformations. Only the 24
+% proper operations can reorient a rigid crystal. The distinction matters
+% when a calculation separates rotations from reflections or inversion.
 %
-% <OrientationDefinition.html Definition> shows how to build one - from
-% Euler angles, from a matrix, from crystal directions, or at random.
-% <DefinitionAsCoordinateTransform.html Theory> then says what an
-% orientation actually is, as a change between two coordinate frames, and
-% <MTEXvsBungeConvention.html MTEX vs. Bunge Convention> spells out where
-% MTEX sits relative to the convention most textbooks use. Read those two
-% before trusting any Euler angles you did not produce yourself.
+% Symmetry is also why "the angle between two orientations" needs care.
+% MTEX compares their proper-symmetry descriptions and returns the smallest
+% rotation angle. Comparing only the stored representatives makes the result
+% depend on how the same physical orientations happened to be labelled.
 %
-% <OrientationSymmetry.html Symmetry> and
-% <OrientationFundamentalRegion.html Fundamental Region> develop the point
-% made above. <SpecimenSymmetry.html Specimen Symmetry> covers the other
-% kind - symmetry of the sample rather than of the crystal, which rolling
-% and other processes impose.
+% A *fundamental region* is the part of rotation space used to retain one
+% representative from each equivalence class. Representatives on its
+% boundary can be tied, so MTEX also needs a consistent boundary convention.
+% The corresponding construction for crystal directions is the fundamental
+% sector.
+
+%% Prerequisites
 %
-% <OrientationStandard.html Standard Orientations> lists the named textures
-% such as Goss, Brass and Cube, so you can name what you see.
+% Start with <VectorDefinition.html Defining Three-Dimensional Vectors>.
+% Then read the plane and direction notation in
+% <CrystalDirections.html Miller Indices> and the Euler-angle representations
+% in <RotationDefinition.html Defining Rotations>.
+% <CrystalSymmetries.html Crystal Symmetries> supplies the point-group
+% background. The plotting pages also use
+% <SphericalProjections.html Spherical Projections>.
+
+%% Recommended Reading Order
 %
-% Four pages are about looking at orientations, and they differ in what
-% they sacrifice. <OrientationPoleFigure.html Pole Figures> fixes a crystal
-% direction and asks where it points in the specimen;
-% <OrientationInversePoleFigure.html Inverse Pole Figure> does the reverse.
-% Both are projections and both lose information.
-% <OrientationVisualization3d.html 3D Plots> and
-% <OrientationVisualizationSections.html Section Plots> show the full
-% rotation space instead, at the cost of being harder to read.
+% The chapter contents give the recommended core route.
+% <OrientationDefinition.html Definition> constructs orientations from
+% Euler angles, matrices, crystal directions, and random samples.
+% <DefinitionAsCoordinateTransform.html Theory> then develops the
+% crystal-to-specimen map. <OrientationSymmetry.html Symmetry> explains the
+% equivalent descriptions. <OrientationStandard.html Standard Orientations>
+% introduces named components such as Goss, Brass, and Cube.
+% <MTEXvsBungeConvention.html MTEX vs. Bunge Convention> completes this
+% foundation. Read it before trusting Euler angles you did not produce yourself.
 %
-% <OrientationGrid.html Grids> and <OrientationFibre.html Fibres> deal with
-% sets of orientations - evenly spread ones, and the curves that many real
-% textures follow. <OrientationEmbeddings.html Embeddings> is for readers
-% who need orientations as points in a linear space, which is what makes
-% averaging and machine learning well behaved.
+% The next four pages compare ways to look at orientations.
+% <OrientationPoleFigure.html Pole Figures> fix a crystal direction and ask
+% where it points in the specimen. <OrientationInversePoleFigure.html Inverse
+% Pole Figures> ask which crystal direction lies along a specimen direction.
+% Both are projections and discard information.
+% <OrientationVisualization3d.html 3D Plots> retain all three rotational
+% degrees of freedom. <OrientationVisualizationSections.html Section Plots>
+% cut that space into two-dimensional slices. They retain more information
+% than projections but are harder to read.
 %
-% <OrientationImport.html Import> and <OrientationExport.html Export> handle
-% files.
+% <OrientationFundamentalRegion.html Fundamental Regions> explains the
+% symmetry-dependent domains in those plots. <SpecimenSymmetry.html Specimen
+% Symmetry> covers invariance of the sample texture. That differs from
+% symmetry of the crystal lattice. Rolling and other processes may impose it.
 %
+% The remaining pages treat sets and workflows. <OrientationGrid.html Grids>
+% constructs finite samples of orientation space.
+% <OrientationFibre.html Fibres> constructs the curves followed by many real
+% textures. <OrientationImport.html Import> and
+% <OrientationExport.html Export> handle files and their conventions.
+%
+% <OrientationEmbeddings.html Embeddings> represents orientations as points
+% in a linear space so that averaging and machine learning are well behaved.
+% It is last in the chapter contents, but it assumes
+% <MisorientationTheory.html misorientation theory>. Read that page before
+% returning to Embeddings.
+
+%% References
+%
+% * H.-J. Bunge, <https://doi.org/10.1016/C2013-0-11769-2 Texture Analysis
+% in Materials Science: Mathematical Methods>, Butterworths, 1982.
+% It establishes the orientation and Euler-angle conventions of texture analysis.
+% * A. Morawiec, <https://doi.org/10.1007/978-3-662-09156-2 Orientations
+% and Rotations: Computations in Crystallographic Textures>, Springer, 2004.
+% It develops rotation space, symmetry, and orientation statistics.
+% * D. Rowenhorst et al.,
+% <https://doi.org/10.1088/0965-0393/23/8/083501 Consistent representations
+% of and conversions between 3D rotations>, _Modelling and Simulation in
+% Materials Science and Engineering_ 23, 083501, 2015.
+% It compares rotation conventions and gives reproducible conversion rules.
+% * <https://www.iso.org/standard/82749.html ISO 24173:2024>, _Microbeam
+% analysis - Guidelines for orientation measurement using electron
+% backscatter diffraction_. It gives current guidance for reproducible EBSD
+% orientation measurements.
+
 %% Next
 %
 % The relative orientation of two crystals is
-% <Misorientations.html Misorientations>. A whole population of
-% orientations, described as a density rather than a list, is
-% <ODFAnalysis.html ODF>. Orientations measured on a grid across a sample
-% are <EBSDAnalysis.html EBSD>.
-%
+% <Misorientations.html Misorientations>. A whole population described as a
+% density rather than a list is <ODFAnalysis.html an ODF>. Orientations
+% measured on a grid across a sample are <EBSDAnalysis.html EBSD>.

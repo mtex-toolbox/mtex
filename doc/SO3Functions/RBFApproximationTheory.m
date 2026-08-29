@@ -1,157 +1,140 @@
 %% RBF-Kernel Approximation from Discrete Data
 %
-%%
-% On this page we consider the problem of determining the Radial Basis
-% Function (@SO3FunRBF) of a smooth orientation dependent function
-% $f(\mathtt{ori})$ given a list of orientations $\mathtt{ori}_m$ and a
-% list of corresponding values $v_m$. These values may be the volume of
-% crystals with a specific orientation, as in the case of an ODF, or any
-% other orientation dependent physical property.
+% <SO3FunApproximationTheory.html Approximating Orientation-Dependent
+% Functions from Discrete Data> defines the shared approximation problem
+% and compares harmonic, RBF, and Bingham models. This page assumes that an
+% RBF model is appropriate and shows how to choose density constraints,
+% kernel halfwidth, centre orientations, and a least-squares solver.
 %
-% A more general documentation about approximation of discrete data in MTEX
-% can be found in the section <SO3FunApproximationTheory.html Approximating 
-% Orientation Dependent Functions from Discrete Data>.
-%
-%%
-% In general we should favor RBF-kernel approximation, if the data coincide
-% to an underlying density function (odf,mdf,...) or if the number of data
-% points (given rotations and function values) and the noise ratio are not
-% too large.
-%
-%%
-% In the following we take a look on the approximation problem from
-% <SO3FunApproximationTheory.html general approximation theory>,
-% where we compared the  harmonic approximation with kernel approximation.
-%
-% Here we additionally assume that our function values are noisy.
+% RBF approximation is often useful for an ODF or another density when the
+% number of observations and their noise level are not too large. It can
+% also fit a general scalar response, but only |'density'| imposes the
+% nonnegativity and mean-1 constraints required of a density.
 
 plottingConvention.default('y↑→x');
-fname = fullfile(mtexDataPath, 'orientation', 'dubna.csv');
-[ori, S] = orientation.load(fname,'columnNames',{'phi1','Phi','phi2','values'});
 
+%% A noisy density data set
+%
+% Start with the data used on the preceding two pages. This time the noise
+% standard deviation is 20 percent of the standard deviation of the
+% supplied values.
+
+fname = fullfile(mtexDataPath, 'orientation', 'dubna.csv');
+[ori, S] = orientation.load(fname, ...
+  'columnNames',{'phi1','Phi','phi2','values'});
 val = S.values + randn(size(S.values)) * 0.2 * std(S.values);
 
 plotSection(ori,val,'all','sigma')
 
 %%
-% The basic strategy is to approximate the data by a |@SO3FunRBF|, see
-% <RadialODFs.html Radial Basis Functions on SO(3)>.
-%
-% Hence we determine rotations $R_1,\dots,R_N$ and seek the corresponding 
-% coefficients $\vec c=(c_1,\dots,c_N)$ such that
-%
-% $$ f(x) = \sum_{n=1}^N c_n \, \Psi(\cos\frac{\omega(x,R_n)}{2}) $$
-% 
-% approximates our data reasonable well. In this formula, $\Psi$ describes
-% a <SO3Kernels.html SO(3)-Kernel Function>. Hence, $f$ is a superposition
-% of one rotational kernel function centered on the orientations
-% $R_1,\dots,R_N$ and weighted by the coefficients $c_1,\dots,c_N$.
-% 
-% A basic strategy is to apply least squares approximation, where we 
-% compute the coefficients $c_n$ by minimizing the functional 
-%
-% $$ \sum_{m=1}^M|f(x_m)-v_m|^2 $$
-%
-% for the given data points $(x_m,v_m)$, $m=1,\dots,M$. Here $x_m$ denotes
-% the given orientations and $v_m$ the corresponding function values.
-%
-% This least squares problem can also be written in matrix vector notation
-% $ \mathrm{argmin}\limits_{c} \| K \cdot c - v \|, $
-% where $c=(c_1,\dots,c_N)^T$, $v=(v_1,\dots,v_M)^T$ and $K$ is the kernel
-% matrix $[\Psi(\cos\frac{\omega(x_m,R_n)}{2})]_{m,n}$.
-%
-% This least squares problem can be solved by the |lsqr| method from
-% MATLAB, which efficiently seeks for roots of the derivative of the given
-% functional (also known as normal equation).
-%
-% Alternatively there is also a modified least square method |mlsq|, which
-% search for a solution $c_1,\dots,c_N$ that satisfies $c>0$ and 
-% $\sum\limits_{n=1}^N c_n = 1$. This method can be used if the underlying
-% function is a density, i.e. it is nonnegative and has mean 1.
-%
-%%
-% In MTEX the command <rotation.interp.html |interp|> computes by default
-% computes an approximation by a superposition of radial functions.
+% The broad high-value regions remain visible, but individual markers vary
+% much more than on the harmonic page. The noise-free values |S.values| are
+% retained only so that this controlled example can later measure recovery
+% error. They would not be available for an unknown experimental response.
 
-SO3F = interp(ori,val,'density')
-plot(SO3F,'sigma')
+%% Fit a density
+%
+% <rotation.interp.html |interp|> uses an RBF model by default and calls
+% <SO3FunRBF.interpolate.html |SO3FunRBF.interpolate|>. The |'density'|
+% flag selects modified least squares, |'mlsq'|. This solver constrains the
+% kernel weights to be nonnegative, and MTEX normalizes the fitted function
+% to mean 1.
+
+SO3FDensity = interp(ori,val,'density')
+minimumDensityValue = min(SO3FDensity)
+meanDensityValue = mean(SO3FDensity)
+relativeDataResidual = ...
+  norm(SO3FDensity.eval(ori) - val) / norm(val)
+
+plot(SO3FDensity,'sigma')
 mtexColorbar
 
 %%
-% The flag |'density'| tells MTEX to use the |mlsq| solver, which ensures
-% that the resulting function is nonnegative and normalized to mean $1$.
-% This yields also a denoising effect.
+% The fit retains the broad peaks while smoothing the marker-to-marker
+% fluctuations. Its printed minimum and mean verify the density constraints.
+% A nonzero residual is expected because a smooth constrained model cannot
+% reproduce every noisy value. This run reaches the 100-iteration |'mlsq'|
+% limit, so its coefficients may not yet be optimal.
 
-minValue = min(SO3F)
-meanValue = mean(SO3F)
+%% Fit without density constraints
+%
+% Omitting |'density'| selects unconstrained LSQR. The kernel grid still
+% smooths the data, so the result is not literally "undenoised." It simply
+% has more freedom to reduce the sample residual, including by using
+% negative weights or changing the mean.
 
-%%
-% One has to keep in mind that we can not expect the error in the data
-% nodes to be zero, because we compute a smooth function from the noisy
-% input data.
+SO3FFree = interp(ori,val)
+minimumFreeValue = min(SO3FFree)
+meanFreeValue = mean(SO3FFree)
+relativeFreeResidual = norm(SO3FFree.eval(ori) - val) / norm(val)
 
-norm(SO3F.eval(ori) - val) / norm(val)
-
-
-%%
-% In contrast, if we do not tell MTEX, that we try to approximate a density
-% function, the solver has less information and the result is not denoised.
-
-SO3F = interp(ori,val)
-plot(SO3F,'sigma')
+plot(SO3FFree,'sigma')
 mtexColorbar
 
 %%
-% Hence the result is not automatically a density function (nonnegative and
-% mean 1).
+% The unconstrained residual is smaller, but the printed minimum and mean
+% show that this fit is not automatically a density. Fine-scale features
+% that only reduce the training residual are possible overfitting, not
+% evidence that the unconstrained model is physically better.
 
-minValue = min(SO3F)
-meanValue = mean(SO3F)
-
-%%
-% But since it is not denoised, it is overfitted and the error becomes small.
-
-norm(SO3F.eval(ori) - val) / norm(val)
-
-%% Adjustment of the Kernel Function
+%% Separate halfwidth from centre spacing
 %
-% The key parameter when approximating by radial basis functions is the
-% halfwidth of the kernel function $\Psi$. This can be set by the option
-% |'halfwidth'|. A large halfwidth results in a very smooth approximated
-% function whereas a very small halfwidth - in relation to the grid of the
-% input data - may result in overfitting. 
-
-SO3F = interp(ori,val,'halfwidth',2*degree,'density')
-plot(SO3F,'sigma')
-
-%%
-% A a rule of thumb the halfwidth of the kernel function should be at least
-% the resolution of the data points. Note that the option 'halfwidth' also
-% adjusts the resolution of the center orientation grid of the rotational
-% kernel functions of the approximated |@SO3FunRBF|, i.e. the resolution of
-% the grid of $R_1,\dots,R_N$ in the above formulas.
+% The kernel halfwidth controls how far each centre influences neighbouring
+% orientations. A large halfwidth produces a smooth fit. A halfwidth that is
+% small relative to the data spacing can reproduce noise.
 %
-% We can preserve the resolution of this grid by adding the option
-% |'resolution'|. Therefore we obtain a smoothed function of |SO3F1|.
+% By default, the |'halfwidth'| option also sets the resolution of the
+% equispaced centre grid. That coupling changes both the kernel shape and
+% the number of unknown weights. Specify |'resolution'| separately when the
+% aim is to isolate the effect of halfwidth.
 
-SO3F = interp(ori,val,'halfwidth',10*degree,'resolution',5*degree,'density')
-plot(SO3F,'sigma')
-
-%%
-% We can also input centers $R_1,\dots,R_N$ for the rotational kernel 
-% functions by the option |'SO3Grid'|.
-
-S3G = equispacedSO3Grid(crystalSymmetry,'resolution',5*degree)
-SO3F = interp(ori,val,'SO3Grid',S3G,'density')
-plot(SO3F,'sigma')
+SO3FNarrow = interp(ori,val,'halfwidth',2*degree, ...
+  'resolution',5*degree,'density')
+plot(SO3FNarrow,'sigma')
 
 %%
-% Lets study the effect of adjusting the kernel halfwidth to the error.
+% The 2 degree kernels are narrower than the fixed 5 degree centre spacing.
+% The resulting small-scale peaks track local samples rather than the broad
+% structure. As a rule of thumb, start with a halfwidth at least as large as
+% the resolution of the data, then validate that choice.
+
+SO3FSmooth = interp(ori,val,'halfwidth',10*degree, ...
+  'resolution',5*degree,'density')
+plot(SO3FSmooth,'sigma')
+
+%%
+% The 10 degree kernels overlap much more. The broad peaks remain while
+% narrow fluctuations merge into a smoother surface.
+%
+% The two fits chose their own centres, and the printed counts differ, so
+% this compares two complete fits rather than halfwidth alone. The next
+% section supplies the centres explicitly.
+
+%% Supply the centre orientations
+%
+% Use |'SO3Grid'| when the centre grid must be controlled directly. Its
+% symmetry should match the sample orientations.
+
+S3G = equispacedSO3Grid(ori.CS,'resolution',5*degree)
+SO3FGrid = interp(ori,val,'SO3Grid',S3G,'density')
+plot(SO3FGrid,'sigma')
+
+%%
+% The fitted function reports the supplied 5 degree centre grid. The plot
+% resembles the default density fit because that fit makes the same grid
+% choice; the explicit form is useful when several fits must share centres.
+
+%% Measure a halfwidth sweep
+%
+% Keep the centre resolution at 5 degrees while changing only halfwidth.
+% The error is measured against the noise-free values in this simulation,
+% not against the noisy training values.
 
 hw = [20,15,12.5,10,7.5,5,2.5];
 err = zeros(size(hw));
 for k = 1:numel(hw)
-  SO3Fhw = interp(ori,val,'halfwidth',hw(k)*degree,'density');
+  SO3Fhw = interp(ori,val,'halfwidth',hw(k)*degree, ...
+    'resolution',5*degree,'density');
   err(k) = norm(SO3Fhw.eval(ori) - S.values) / norm(S.values);
 end
 
@@ -159,83 +142,172 @@ close all
 plot(hw,err,'o--')
 set(gca,'xdir','reverse')
 xlabel('halfwidth [deg]')
-ylabel('relative error')
+ylabel('relative recovery error')
 
 %%
-% We may find the best fit with a halfwidth of 7.5°. If the system is
-% underdetermined using a too small halfwidth, we may not be able to fit
-% kernel weights without additional assumptions about the smoothness of the
-% data.
+% Read the curve from broad kernels on the left towards narrow kernels on
+% the right. The minimum balances smoothing bias against sensitivity to
+% noise. An earlier version of this example reported 7.5 degrees as the
+% best fit, but that sweep also changed the centre-grid resolution. The
+% fixed-grid sweep also selects 7.5 degrees, with a recovery error of 0.0556.
+% Every fit reached the 100-iteration cap, so this is the best of the capped
+% fits rather than a claim that every solver reached its optimum.
 
-SO3F = interp(ori,val,'halfwidth',7.5*degree,'density')
-plot(SO3F,'sigma')
+[bestError,bestIndex] = min(err);
+bestHalfwidth = hw(bestIndex)
+bestRecoveryError = bestError
+
+SO3FBest = interp(ori,val,'halfwidth',bestHalfwidth*degree, ...
+  'resolution',5*degree,'density')
+plot(SO3FBest,'sigma')
 
 %%
-% Note that the option |'halfwidth'| tells MTEX to use the 
-% |@SO3DeLaValleePoussinKernel| of this specific halfwidth. But we can also
-% choose a different <SO3Kernels.html rotational kernel function> by the
-% option |'kernel'|.
+% The selected fit retains the broad regions while suppressing much of the
+% added noise. A small training residual alone could not select it; the
+% known noise-free target makes this a validation experiment. With real
+% data, use held-out samples or independent physical knowledge instead.
+%
+% If too few observations constrain too many centre weights, the system is
+% underdetermined. A small halfwidth does not supply the missing information;
+% use fewer centres, a stronger constraint, or additional smoothness
+% assumptions.
+
+%% Choose another kernel
+%
+% |'halfwidth'| constructs a
+% <SO3DeLaValleePoussinKernel.html |SO3DeLaValleePoussinKernel|>. Pass
+% |'kernel'| to use another <SO3Kernels.html rotational kernel function>.
 
 psi = SO3AbelPoissonKernel('halfwidth',5*degree)
-SO3F = interp(ori,val,'kernel',psi,'density')
-plot(SO3F,'sigma')
-
-%% Exact Interpolation
-%
-% Assume, that our function values are not noisy. Then we may want to do
-% exact interpolation, i.e. we want the error to be almost 0.
-% 
-% Up to now we used a special rotational grid for the centers of rotational 
-% kernel function the approximated |@SO3FunRBF|.
-% Now we can add the flag |'exact'| to use the input nodes as centers for 
-% the rotational kernel functions. Therefore the kernel matrix $K$ becomes
-% symmetric, positive definite and the above linear system $K\cdot c=v$ has
-% a solution, i.e the error in lsqr may becomes 0.
-% The disadvantage is that the kernel matrix is no longer sparse. Hence the
-% computational costs may explode.
-
-tic
-SO3F = SO3FunRBF.interpolate(ori, S.values,'exact','halfwidth',7.5*degree);
-toc
-plot(SO3F,'sigma')
+SO3FAbel = interp(ori,val,'kernel',psi, ...
+  'resolution',5*degree,'density')
+plot(SO3FAbel,'sigma')
 
 %%
-% Note that future computations with this |@SO3FunRBF| are also very time 
-% consuming, since most methods are faster if the center orientations 
-% build a specific grid, which is not the case here.
-%
-% The interpolation is done by |lsqr|. Hence the error is dependent from 
-% the termination conditions and not in machine precision.
+% The Abel-Poisson fit places its peaks in the same broad regions, but its
+% tails and peak shapes differ from the de la Vallee Poussin result. Kernel
+% family and halfwidth are separate modelling choices.
 
-norm(SO3F.eval(ori) - S.values) / norm(S.values)
+%% Exact interpolation
+%
+% If the values are noise-free, the input orientations themselves can be
+% used as kernel centres with |'exact'|. For distinct nodes and a
+% positive-definite kernel, the resulting kernel matrix is symmetric and
+% positive definite, so the linear system has a unique exact solution.
+%
+% That matrix is generally dense. Construction, solution, and later
+% evaluation can therefore become prohibitively expensive for the complete
+% data set. The example uses a reproducible subset to make the cost visible
+% without attempting the original all-node dense system.
+
+exactNodes = ori(1:20:end);
+exactValues = S.values(1:20:end);
+numberOfExactNodes = numel(exactNodes)
+
+tic
+SO3FExact = SO3FunRBF.interpolate(exactNodes,exactValues, ...
+  'exact','halfwidth',7.5*degree);
+exactFitTime = toc
+
+plot(SO3FExact,'sigma')
 
 %%
-% Also, interpolation might not guarantee non-negativity of the function
-
-minValue = min(SO3F)
-
-%% LSQR-Parameters
+% The exact-centre fit follows the noise-free subset closely. The many local
+% peaks also show why exact interpolation is unsuitable for noisy values.
+% Because these centres are not a structured grid, later evaluations are
+% slower than for a grid-centred RBF model.
 %
-% The |lsqr| solver and the |mlsq| solver, which are used to minimize the least
-% squares problem from above has some predefined termination conditions.
-% We can specify the method tolerance with the option |'tol'| 
-% (default 1e-3) and the maximum number of iterations by the option 
-% |'maxit'| (default 30/100).
-%
-% Thus we are able to control the precision of the result and computational 
-% time of the least squares methods in the approximation process.
-%
+% LSQR stops at a requested tolerance or iteration limit, so its computed
+% residual need not reach machine precision. Exact centres make an exact
+% solution available; they do not force the iterative solver to reach it.
 
-% default Parameters
-tic
-[f1,iter1] = SO3FunRBF.interpolate(ori, val);
-toc
-fprintf(['Number of iterations = ',num2str(iter1),'\n', ...
-         'Value of energy functional = ',num2str(norm(f1.eval(ori)-val)),'\n\n'])
+relativeExactResidual = ...
+  norm(SO3FExact.eval(exactNodes) - exactValues) / norm(exactValues)
+minimumExactValue = min(SO3FExact)
 
-% new termination conditions
-tic
-[f2,iter2] = SO3FunRBF.interpolate(ori, val,'tol',1e-15,'maxit',100);
-toc
-fprintf(['Number of iterations = ',num2str(iter2),'\n', ...
-         'Value of energy functional = ',num2str(norm(f2.eval(ori)-val)+5e-7*norm(f2,2)),'\n'])
+%%
+% The printed residual checks how closely this run solved the system. Its
+% minimum happens to be positive. That outcome does not create a guarantee:
+% exact interpolation is unconstrained and may become negative even when
+% every supplied value is nonnegative.
+
+%% Choose a least-squares solver
+%
+% The harmonic page introduces LSQR stopping conditions. RBF interpolation
+% uses |'tol'| and |'maxit'| in the same spirit, but its defaults depend on
+% the solver: unconstrained |'lsqr'| uses at most 30 iterations, whereas
+% density-constrained |'mlsq'| uses at most 100. Both default to |tol=1e-3|.
+%
+% The available choices serve different constraints:
+%
+% * |'lsqr'| is the fast default for an unconstrained least-squares fit.
+% * |'mlsq'| enforces positive normalized weights and is selected by
+%   |'density'|. |'mlrl'| is the corresponding maximum-likelihood option.
+% * |'lsqnonneg'|, |'lsqlin'|, and |'nnls'| are alternative nonnegative
+%   solvers. |'lsqlin'| requires Optimization Toolbox, while the dense
+%   alternatives are practical only for small systems.
+%
+% The second output of |SO3FunRBF.interpolate| is the iteration count, not
+% a convergence flag. Compare residuals and fits when the count reaches the
+% selected limit.
+
+[f1,iter1] = SO3FunRBF.interpolate(ori,val);
+residualNorm1 = norm(f1.eval(ori) - val);
+fprintf('default: iterations %d, residual norm %.6g\n', ...
+  iter1,residualNorm1)
+
+[f2,iter2] = SO3FunRBF.interpolate(ori,val, ...
+  'tol',1e-15,'maxit',100);
+residualNorm2 = norm(f2.eval(ori) - val);
+fprintf('tight tol: iterations %d, residual norm %.6g\n', ...
+  iter2,residualNorm2)
+
+%%
+% If the second run reaches 100 iterations, it has stopped at |'maxit'|
+% rather than satisfying the very small tolerance. Increase the limit only
+% when the additional accuracy matters to validation or interpretation.
+%
+% Earlier code labelled |norm(f.eval(ori)-val)| as the "energy functional"
+% and added |5e-7*norm(f,2)| in the second run. The first expression is only
+% an unscaled residual norm. The added harmonic-style penalty is not part of
+% the RBF solver's objective and must not be reported as such.
+
+%% The maths behind RBF approximation
+%
+% An RBF model places one rotational kernel $\Psi$ at each centre $R_n$:
+%
+% $$ f(x) = \sum_{n=1}^N c_n\,
+% \Psi\!\left(\cos\frac{\omega(x,R_n)}{2}\right). $$
+%
+% Here $\omega(x,R_n)$ is the rotation angle between the evaluation
+% orientation and the centre. The coefficients $c_n$ are the unknown
+% weights. With sample pairs $(x_m,v_m)$, unconstrained fitting solves
+%
+% $$ \min_c \lVert Kc-v\rVert_2^2, \qquad
+% K_{mn}=\Psi\!\left(\cos\frac{\omega(x_m,R_n)}{2}\right). $$
+%
+% The kernel matrix is sparse in the usual grid-centred approximation
+% because MTEX neglects interactions outside a halfwidth-dependent angular
+% neighbourhood. The |'exact'| flag evaluates every interaction, which is
+% why that matrix loses the computational advantage.
+%
+% For a density fit, modified least squares additionally requires
+% nonnegative coefficients with a prescribed sum. MTEX then normalizes the
+% resulting RBF function to mean 1. These constraints explain why a density
+% fit can have a larger sample residual than unconstrained LSQR.
+
+%% References
+%
+% * H. Schaeben, F. Bachmann, and J.-J. Fundenberger,
+% <https://doi.org/10.1007/s10853-016-0496-1 Construction of weighted
+% crystallographic orientations capturing a given orientation density
+% function>, _Journal of Materials Science_ 52 (2017), 2077-2090, develops
+% the positive normalized RBF approximation implemented by |'mlsq'|.
+
+%% Next
+%
+% Continue with <SO3FunQuadrature.html Approximation and Quadrature> to
+% replace scattered observations by values on a quadrature grid and compute
+% a harmonic representation of a known orientation-dependent function.
+
+%#ok<*NOPTS>

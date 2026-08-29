@@ -1,213 +1,227 @@
 %% Lankford parameter
 %
-% The Lankford parameter, also referred to as the Lankford coefficient, the
-% R-value or plastic strain ratio, is an important material property in the
-% field of mechanical metallurgy, particularly in the study of sheet metal
-% forming processes. It is often used to optimize manufacturing processes,
-% especially in industries like automotive and aerospace, where sheet metal
-% components are extensively utilized.
-% 
-% The Lankford parameter quantifies the anisotropy of a material's plastic
-% deformation behavior. It is the ratio of the true width strain to the
-% true thickness strain at a particular value of length strain. This scalar
-% quantity is used extensively as an indicator of formability.
-% 
-% R-values can vary widely depending on the material and its processing
-% history:
+% A tensile specimen cut from a rolled sheet can contract differently in
+% its width and thickness directions. The *Lankford parameter*, also called
+% the Lankford coefficient, R-value, or plastic strain ratio, measures this
+% difference after plastic flow has begun:
 %
-% * Materials with high R-values, typically ranging from ~1 to 2.5 
-%   or higher, exhibit a strong degree of anisotropy in their deformation 
-%   behavior. This means they deform significantly more in one direction 
-%   compared to perpendicular directions. 
+% $$R(\theta) = \frac{\epsilon_{\mathrm{width}}^{\mathrm p}}
+%                         {\epsilon_{\mathrm{thickness}}^{\mathrm p}}.$$
 %
-% * Alternatively, materials with low R-values, typically close to zero or 
-%   even slightly negative, exhibit more isotropic deformation 
-%   characteristics such that they tend to deform relatively uniformly in 
-%   all directions.
+% Here $\theta$ is the angle between the tensile direction and the rolling
+% direction. Both transverse strains are usually negative, so their ratio
+% is positive. An isotropic incompressible material has $R=1$, not $R=0$.
+% A value near zero means that contraction occurs mainly through the sheet
+% thickness, while a large value means that the sheet resists thinning.
 %
-% The R-value is highly relevant to forming operations:
-%
-% * Materials with high R-values are often preferred for forming processes.
-%   This is because they exhibit a strong tendency to elongate in one 
-%   direction while constraining deformation in the perpendicular 
-%   directions. This can lead to improved formability and allows for more 
-%   complex shapes to be produced without causing defects like cracks or 
-%   wrinkles.
-%
-% * On the other hand, materials with low R-values may be less suitable for
-%   certain forming operations. Since they tend to be less anisotropic, it
-%   results in more uniform deformation but that in turn may limit the 
-%   complexity of shapes that can be produced without defects.
-%
-% Understanding the R-value of a material is crucial in sheet metal forming
-% processes as it helps manufacturers select the right material for a
-% specific application.
-% 
-% For example, in the automotive industry, materials with high R-values are 
-% often chosen for parts like car body panels, where complex shapes are 
-% common. 
-%
-% On the other hand, materials with lower R-values may be more suitable for
-% applications where uniformity of deformation is critical. An example is
-% the production of deep drawn parts, such as cylindrical containers or
-% cans. In deep drawing, a flat sheet of metal is formed into a
-% three-dimensional shape by being drawn into a die cavity. This process
-% requires uniform deformation of the material to avoid wrinkles, or uneven
-% thickness distribution (thinning) in areas around the drawn part.
-% Consequently, materials with lower r-values, which exhibit more isotropic
-% deformation behavior, are better suited for deep drawing applications
-% since they are less likely to show preferential deformation in one
-% direction. Instead, they are more likely to deform uniformly in all
-% directions, ensuring a consistent shape is produced.
-% 
-% To experimentally calculate the Lankford parameter, uniaxial tensile 
-% tests at different angles to the rolling direction are required. The 
-% R-value is then calculated as the ratio of the transverse strain 
-% (i.e. - perpendicular to the loading direction) to the axial strain 
-% (i.e. - along the loading direction).
-%
-% In the context of crystallography and electron backscattering diffraction
-% (EBSD) analysis, understanding the Lankford parameter is crucial for 
-% predicting how a material will deform under different loading conditions. 
-% 
-% In terms of MATLAB and the MTEX toolbox, the the Lankford parameter or 
-% R-value is modeled or estimated on the basis of crystallographic 
-% orientations and the Taylor theory as demonstrated below.
+% Engineering sheets commonly have R-values from about 1 to 2.5 or higher.
+% Values close to zero, or even slightly negative, can also be reported.
+% These ranges are not universal material classes, and a low R-value should
+% not be interpreted as more isotropic deformation. |calcLankford| searches
+% the ordinary tensile-contraction range $0\leq\rho\leq1$, corresponding to
+% nonnegative model R-values.
 
-%% Example 1: The Lankford parameter (or R-value) of a single orientation
+%% Why the R-value matters
+% A high average R-value generally improves resistance to thinning during
+% cup drawing, hole expansion, and other sheet-forming operations. This is
+% useful for complex automotive and aerospace parts such as body panels.
+% Variation of $R(\theta)$ within the sheet plane is a different effect.
+% It promotes nonuniform flow and can produce ears around a drawn cup.
 %
-% In this example, a single (1 1 0)[1 -1 2] Brass orientation is used.
+% It is sometimes claimed that a low R-value is preferable when uniform
+% deformation is needed, for example when deep drawing cylindrical
+% containers or cans. That claim confuses normal and planar anisotropy.
+% A high average R-value resists thinning, while small directional variation
+% is what helps a cylindrical cup draw without pronounced ears or uneven
+% thickness that would require trimming.
+%
+% Experimentally, tensile specimens are cut at several angles to the rolling
+% direction. Width and thickness strains are measured at a specified length
+% strain in the uniform plastic regime. Using transverse strain divided by
+% axial strain would not give the Lankford parameter.
+%
+% MTEX estimates $R(\theta)$ from crystallographic orientations and a
+% deformation-system model. The calculation uses the equal-strain Taylor
+% theory introduced in <TaylorModel.html Taylor Model>. It predicts a
+% texture contribution to plastic anisotropy rather than replacing a
+% tensile test or accounting for every source of formability.
 
-% define an fcc crystal system
-CS = crystalSymmetry('m-3m', [1 1 1], 'mineral', 'fcc');
+%% One ideal Brass orientation
+% Start with the ideal fcc Brass component $(110)[1\bar{1}2]$ and the fcc
+% slip family. The critical resolved shear stress (CRSS) is one for every
+% system, so only crystallographic geometry distinguishes them.
 
-% define the fcc slip system
+CS = crystalSymmetry('m-3m',[1 1 1],'mineral','fcc');
 sS = slipSystem.fcc(CS)
-
-% use MTEX's pre-defined (1 1 0)[1 -1 2] Brass orientation
 ori = orientation.brass(CS);
 
-% compute the Lankford parameter
+%%
+% The Taylor strain path is parameterized by
+% $\rho=-\epsilon_{\mathrm{width}}^{\mathrm p}/
+% \epsilon_{\mathrm{length}}^{\mathrm p}$. Plastic incompressibility gives
+% $R=\rho/(1-\rho)$. The finite grid below therefore tests eleven possible
+% transverse contractions rather than solving for a continuous R-value.
+% Values outside $0\leq\rho\leq1$ would make one transverse direction
+% extend during the tensile increment and are not accepted by this model.
+
 rho = linspace(0,1,11);
-[R, M, minM] = calcLankford(ori,sS,'verbose','rho',rho);
+[R,M,minM] = calcLankford(ori,sS,'silent','rho',rho);
 
 %%
-% The summary results show that for the Brass orientation, it is not always
-% possible to predict the R-value as Inf values are predicted at 45° and 
-% 90° to the nominal rolling direction (or in this case, x). 
-%
-% The computed Taylor factor allows us to recreates Fig. 3.10 on page 74
-% of: [William F. Hosford, The mechanics of crystals and textured
-% polycrystals]
-% (https://onlinelibrary.wiley.com/doi/epdf/10.1002/crat.2170290414) It
-% shows the dependence of $M$ on $\rho = -d_{\epsilon}_Y / d_{\epsilon}_X =
-% \frac{R}{1+R}$ for rolling and transverse direction tension tests for an
-% ideal Brass orientation. In the rolling direction test, x = [1 -1 2], and
-% in the transverse test x = [-1 1 1].
+% By default, |calcLankford| evaluates tensile directions from 0 to 90
+% degrees in 5 degree steps. Rows of |M| correspond to |rho| and columns to
+% tensile directions. Plot three columns to compare rolling-direction,
+% diagonal, and transverse-direction tension with Fig. 3.10 of Hosford.
 
+plot(rho,M(:,[1 10 19]).','-s','lineWidth',2);
+xlabel('{\rho} = -{\epsilon}_w^p / {\epsilon}_l^p');
+ylabel('Taylor factor, M');
+legend('\theta=0^\circ','\theta=45^\circ','\theta=90^\circ', ...
+  'Location','northeast');
 
-plot(rho, M(:,[1,10,19]).','-s','lineWidth',2);
-xlabel('{\rho} = -d{\epsilon}_Y / d{\epsilon}_X');
-ylabel('Relative strength, M = {\sigma}_x / {\tau}');
-legend('\theta=0^\circ','\theta=45^\circ','\theta=90^\circ','Location','northeast');
+%%
+% The three curves have different minima, so changing the in-plane tensile
+% direction changes the preferred contraction path. At 45 and 90 degrees,
+% the minimum lies at $\rho=1$ and MTEX reports $R=\mathrm{Inf}$. This is a
+% boundary result of the sampled strain paths: the model selects zero
+% thickness strain, rather than failing to return a prediction.
 
-%% Example 2: The Lankford parameters from an ODF
-%
-% In the previous chapter we have assumed a perfectly Brass oriented
-% texture. Lets next assume a slight deviation around the preferred
-% orientation of about 10 degree modeled by the ODF
+%% Broaden the ideal texture
+% A real sheet does not contain one exact orientation. Model a 10 degree
+% spread around the Brass component with a unimodal orientation distribution
+% function (ODF), which describes the orientation density of the texture.
 
 odf = unimodalODF(ori,'halfwidth',10*degree)
+[ROdf,MOdf,minMOdf] = calcLankford(odf,sS,'silent','rho',rho);
+
+plot(rho,MOdf(:,[1 10 19]).','-s','lineWidth',2);
+xlabel('{\rho} = -{\epsilon}_w^p / {\epsilon}_l^p');
+ylabel('Texture-averaged Taylor factor, M');
+legend('\theta=0^\circ','\theta=45^\circ','\theta=90^\circ', ...
+  'Location','northeast');
 
 %%
-% Performing, the Lankford factor analysis on the ODF results in  
+% The ODF averages the response of nearby orientations. Compare these
+% curves with the sharp-component curves above: their positions and depths
+% change because the minimum now represents the whole texture, not only the
+% ideal Brass orientation.
 
-[R, M, minM] = calcLankford(odf,sS,'silent','rho',rho);
+%% Estimate the R-value from an EBSD map
+% The final example uses an hcp titanium EBSD map. An EBSD orientation map
+% supplies a texture estimate resolved in space, but this calculation uses
+% one mean orientation and one area weight per reconstructed grain.
 
-plot(rho, M(:,[1,10,19]).','-s','lineWidth',2);
-xlabel('{\rho} = -d{\epsilon}_Y / d{\epsilon}_X');
-ylabel('Relative strength, M = {\sigma}_x / {\tau}');
-legend('\theta=0^\circ','\theta=45^\circ','\theta=90^\circ','Location','northeast');
-
-
-%% Example 3: The Lankford parameter of an EBSD map
-% In this demonstration an hcp titanium dataset is used
-
-% load an MTEX ebsd map
 mtexdata titanium
-
-% define the crystal system
 CS = ebsd.CS;
-
-% reconstruct the grains
 [grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',6);
 
-% plot the orientations
-plot(ebsd,ebsd.orientations);
+plot(ebsd,ebsd.orientations)
 hold on
-plot(grains.boundary,'lineWidth',2);
+plot(grains.boundary,'lineWidth',2)
 hold off
 
-%% define the hcp slip systems
-% Since Taylor theory is used to compute the Lankford parameter, multiple
-% slip systems and their corresponding critical resolved shear stresses
-% <slipSystem.slipSystem.html slip systems> can be employed.
+%%
+% Colour changes show the measured orientation variation, while the black
+% lines show the grains whose mean orientations enter the calculation.
+% Intragranular orientation spread is therefore not represented below.
 
-sS = [slipSystem.basal(CS,1),...
-  slipSystem.prismatic2A(CS,66),...
-  slipSystem.pyramidalCA(CS,80),...
+%% Choose the hcp deformation systems
+% Taylor theory needs enough independent deformation systems to reproduce
+% an imposed strain. Combine basal, prismatic, and pyramidal slip with
+% compressive twinning. The second argument of each constructor is its
+% relative CRSS, so the values 1, 66, 80, and 100 strongly affect the
+% prediction.
+%
+% TODO: MTEX currently symmetrises every deformation system with both shear
+% senses. Consequently, |twinC1| acts here as a reversible pseudo-slip
+% family. A polarity-aware implementation is still needed for one-way
+% twinning and detwinning.
+
+sS = [slipSystem.basal(CS,1), ...
+  slipSystem.prismatic2A(CS,66), ...
+  slipSystem.pyramidalCA(CS,80), ...
   slipSystem.twinC1(CS,100)]
 
-%% compute the Lankford parameter
-% The Lankford parameter is computed using the command <calcLankford.html
-% |calcLankford|>. It solely depends on the texture provided by the mean
-% orientations of the grains, weighted by the area of the grains and the
-% angle $\theta$ between the tensile direction and the rolling direction.
-% In the case of the latter, the default reference direction is $x$.
+%% Compute the directional response
+% Evaluate tensile directions every 5 degrees from the notional rolling
+% direction, which is the specimen x-axis by default. The specimen z-axis
+% is the sheet normal. Pixel counts provide area weights on this regular
+% map, so larger grains contribute proportionally more to the texture.
 
 theta = linspace(0,90*degree,19);
-[R, M, minM] = calcLankford(grains.meanOrientation,sS,theta,'weights',grains.numPixel,'verbose');
+[R,M,minM] = calcLankford(grains.meanOrientation,sS,theta, ...
+  'weights',grains.numPixel,'silent');
+
+plot(theta./degree,R,'o-r','lineWidth',1.5)
+xlabel('Angle from rolling direction, \theta (degrees)')
+ylabel('Lankford parameter, R')
 
 %%
-% The following plot shows the Lankford parameter, as a function
-% of the angle $\theta$ between the tensile direction and the notional 
-% rolling direction (in this case - x).
-
-clf
-plot(theta ./ degree,R,'o-r','lineWidth',1.5);
-xlabel('Angle to tensile direction, {\theta} (in degrees)');
-ylabel('R @ M_m_i_n, R = {\rho} / (1 - {\rho}) = -d{\epsilon}_Y / d{\epsilon}_Z');
-
-%%
-% Similarly, the next plot shows the Taylor factor as a function of the 
-% angle $\theta$ between the tensile direction and the notional 
-% rolling direction (in this case - x).
-
-plot(theta ./ degree,minM,'o-b','lineWidth',1.5);
-xlabel('Angle to tensile direction, {\theta} (in degrees)');
-ylabel('Min. relative strength, min(M) = min({\sigma}_x / {\tau}min(M))');
-
-%%
-% The R-value can also be used to compute two additional values that are of
-% importance to sheet metal operations:
+% $R$ changes in abrupt steps because of the finite $\rho$ grid that
+% |calcLankford| searches. A finer grid resolves the preferred contraction
+% path more closely but costs additional Taylor solves.
 %
-% * The normal anisotropy ratio (Rbar, or Ravg, or rm) defines the ability 
-%   of the metal to deform in the thickness direction relative to 
-%   deformation in the plane of the sheet. For Rbar values >= 1, the sheet 
-%   metal resists thinning, improves cup drawing, hole expansion, and other
-%   forming modes where metal thinning is detrimental. For Rbar < 1, 
-%   thinning becomes the preferential metal flow direction, increasing the 
-%   risk of failure in drawing operations.
+% The change between levels is planar anisotropy: specimens cut at different
+% in-plane angles are predicted to contract by different width to thickness
+% ratios. Here $R_0=0.25$, $R_{45}=0.66667$, and $R_{90}=0.42857$.
+% Read these values together with the assumed CRSS values.
 
-Rbar = 0.5 * (R(1) + R(19) + 2*R(10))
+plot(theta./degree,minM,'o-b','lineWidth',1.5)
+xlabel('Angle from rolling direction, \theta (degrees)')
+ylabel('Minimum normalized plastic work, min(M)')
 
 %%
-% * A related parameter is the planar anisotropy parameter (deltaR) which 
-%   is an indicator of the ability of a material to demonstrate non-earing
-%   behavior. A deltaR value = 0 is ideal for can-making or deep drawing of
-%   cylinders, as this indicates equal metal flow in all directions; thus
-%   eliminating the need to trim ears during subsequent processing.
+% |M| is the CRSS-weighted slip activity per unit imposed strain. It is the
+% normalized plastic work used to select the contraction path. When every
+% CRSS is one, as in the Brass example, it equals the geometric Taylor
+% factor. Its angular variation need not follow $R(\theta)$ because the path
+% and the work needed to achieve it are different outputs.
+
+%% Average and planar anisotropy
+% Three standard values summarize the 0, 45, and 90 degree predictions.
+% The normal anisotropy ratio, also written $\bar R$, |Ravg|, or $r_m$,
+% measures resistance to thickness contraction. Values at or above one
+% indicate resistance to thinning; values below one indicate that thinning
+% is the preferred transverse flow direction and raise the risk of failure
+% in drawing operations.
+%
+% A normalization pitfall is to multiply the weighted sum by one half. The
+% following expression gives 1.0060 for this map, which is twice the
+% standard average and must not be used as $\bar R$.
+
+twiceRbar = 0.5 * (R(1) + R(19) + 2*R(10))
+
+%%
+% Divide the weighted sum by four. For this map, the correctly normalized
+% value is $\bar R=0.50298$.
+
+Rbar = 0.25 * (R(1) + R(19) + 2*R(10))
+
+%%
+% The planar anisotropy parameter $\Delta R$ measures the difference between
+% the 0/90 degree response and the 45 degree response. A value of zero is
+% commonly used as an indicator of the fourfold earing tendency in an
+% orthotropic rolled sheet. A value near zero suppresses that contribution,
+% but it neither requires equal R-values at every angle nor guarantees an
+% ear-free cup.
 
 deltaR = 0.5 * (R(1) + R(19) - 2*R(10))
 
-%#ok<*ASGLU>
+%%
+% Here $\Delta R=-0.32738$. Its sign says that the predicted 45 degree
+% R-value is larger than the average of the 0 and 90 degree values.
+
+% Close generated figures before the reference section.
+close all
+
+%#ok<*ASGLU,*NOPTS>
+
+%% References
+%
+% * W. T. Lankford, S. C. Snyder, and J. A. Bauscher, _New criteria for
+% predicting the press performance of deep drawing sheets_, _Transactions
+% of the American Society for Metals_ 42 (1950), 1197--1231, introduces the
+% plastic strain ratio as a criterion for sheet drawability.
+% * W. F. Hosford, _The Mechanics of Crystals and Textured Polycrystals_,
+% Oxford University Press, 1993, develops the Taylor-model construction and
+% gives the ideal-Brass curves reproduced in the first example.

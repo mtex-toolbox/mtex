@@ -65,6 +65,19 @@ following section loses its title entirely; and the website has no CSS rule for
 `div.note`, so it renders unstyled. Put optional theory in a plain `%%` section instead,
 titled so a reader can skip it — "The maths behind this".
 
+### Markup traps
+
+Four ways to write markup that publishes as something other than what it says:
+
+- **`||` inside a `|…|` span eats itself.** `publish` reads every `|` as a delimiter, so
+  `|X||a*, Y||b|` publishes as `Xa*, Yb`. Write it as plain text, or use `&#124;&#124;`.
+- **Maths must survive `publish`, not just MathJax.** `\mathsf` and `\boldsymbol` come out as
+  red error boxes; use `\mathrm` and `\mathbf`.
+- **An opening `$` must follow whitespace.** `$a$--$c$` prints the second term literally — put
+  a space before it.
+- **`publish` attaches code to the heading above it**, so end-of-page cleanup must not sit under
+  `%% Further reading` or `%% Next`.
+
 ### Link traps
 
 Three ways to write a link that publishes as a dead one, all of which have shipped:
@@ -78,6 +91,32 @@ Three ways to write a link that publishes as a dead one, all of which have shipp
 An `@Class/method.m` file publishes as `Class.method.html`; anything else publishes as
 `basename.html`. `SO3BumpKernel.m` is not in an `@` folder, so it is `SO3BumpKernel.html`,
 not `SO3BumpKernel.SO3BumpKernel.html`.
+
+## How a page ends
+
+Two closing `%%` sections, in this order.
+
+**`%% References`** — the literature the page rests on. Include a reference where it gives an
+important definition, an algorithm or a method the page uses; not general background, and not
+something turned up by searching the web for the topic. One bullet each: authors, the title as
+a DOI link where a DOI exists, journal or publisher and year, and **a sentence saying what that
+reference gives the reader**.
+
+```
+% * R. Panozzo, <https://doi.org/10.1016/0040-1951(83)90073-2 Two-dimensional analysis
+% of shape-fabric using projections of digitized lines in a plane>, _Tectonophysics_ 95
+% (1983), 279-294, introduces the PAROR construction.
+```
+
+Older pages call this section `%% Further reading`. It is the same section — write
+`%% References`, and never both on one page.
+
+**`%% Next`** — where to read on, as prose rather than a list. Name each page by link,
+`<Misorientations.html Misorientations>`, and say what it adds. Follow the chapter's teaching
+order and its `.toc`. A page with nothing to hand off to may leave this out.
+
+Both are ordinary `%%` sections, so the trap above applies: no page cleanup may sit under
+either heading.
 
 ## Writing
 
@@ -97,6 +136,10 @@ and no prior MTEX.
   clearly marked closing `%%` section.
 - **Every key concept gets a picture** — a generated figure where MTEX can draw the thing,
   a hand-authored SVG where it cannot.
+- **Correct a page, do not debate it.** When you replace a wrong reading, write what the
+  figure shows; never write against the sentence you deleted ("mirrored *rather than*
+  turned", "the mismatch does *not simply* accumulate"). The reader never saw it. See
+  "Every edit reads as if the previous version never existed" in the root `CLAUDE.md`.
 
 Phrases that keep reappearing and should not: *most simplest*, *nothing else then*, *more
 then*, *lets us* (for *let us*), *allows to* (for *allows you to*).
@@ -150,3 +193,11 @@ the live site — ask before starting one.
 - **A `.toc` title is only a label.** Changing it changes the sidebar, never a URL.
 - **`makeDoc('doc','file',...)` leaves the sidebars alone** by design — they can only be
   generated from the complete page list. A tree change needs a full build to show up.
+- **Do not set global figure preferences with `setMTEXpref`** — `makeDoc.m` fixes those. This
+  does not apply to a `'figSize'` argument passed to `newMtexFigure`, which is per-figure;
+  removing one of those collapses the layout.
+- **A `plottingConvention.default(...)` call in a page is deliberate.** It fixes the frame the
+  page's figures are drawn in, so removing one changes every figure below it. Write it in the
+  string form — `plottingConvention.default('y↑→x')`, `('y←↑x')`, `('y↓→x')` — never as an
+  object plus `makeDefault`. Add one only where the page's data needs a frame that its
+  reference frame does not already supply.

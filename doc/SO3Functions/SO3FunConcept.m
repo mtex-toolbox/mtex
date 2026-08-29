@@ -1,107 +1,136 @@
-%% Orientation Dependent Functions
+%% Orientation-Dependent Functions
 %
-%%
-% An orientation dependent function is a function that assigns to each
-% rotation or orientation a numerical value. An import example of a
-% rotational function is the <ODFTheory.html orientation density function
-% (ODF)> that assigns to each crystal orientation the probability of its
-% occurrence within a specimen. Other examples are the Schmidt or the Taylor
-% factor as a function of the crystal orientation.
+% An orientation-dependent function assigns a numerical value to every
+% rotation or crystal orientation. The set of rotations is the rotation
+% group $SO(3)$, which gives the MTEX class @SO3Fun its name.
 %
-%% Definition of an Orientation Dependent Function
+% An important example is the <ODFTheory.html orientation density function
+% (ODF)>. It assigns a density to each crystal orientation in a specimen.
+% Other examples include the Schmid factor and the Taylor factor as functions
+% of crystal orientation.
 %
-% Within MTEX a rotational function is represented by a variable of type
-% <SO3Fun.SO3Fun.html |SO3Fun|>. Let us consider as an example the function
-% that takes an orientation and returns it rotational angle modulo cubic
-% crystal symmetry. In MTEX the rotational angle is computed by the command
-% <orientation.angle.html |angle(ori)|>. In order to turn this
-% correspondence into a |SO3Fun| we use the command @SO3FunHandle and pass
-% the angle command as an
-% <https://de.mathworks.com/help/matlab/matlab_prog/anonymous-functions.html
-% anonymous function>.
+%% A First Orientation-Dependent Function
+%
+% MTEX represents a scalar function on $SO(3)$ by an object of type
+% <SO3Fun.SO3Fun.html |SO3Fun|>. Its symmetries determine which rotations
+% represent the same argument.
+%
+% Consider the smallest rotational angle between an orientation and the
+% identity, including its cubic symmetry equivalents. The
+% <orientation.angle.html |angle|> command returns this angle in radians.
+% Dividing by |degree| makes the function value a number in degrees.
 
-% define the crystal symmetry
+% define cubic crystal symmetry
 cs = crystalSymmetry('432');
 
-% construct the SO3Fun
-SO3F = SO3FunHandle(@(ori) angle(ori) ./ degree, cs)
+% wrap the angle formula in an SO3Fun
+SO3F = SO3FunHandle(@(ori) angle(ori) ./ degree,cs)
 
-%% 
-% Many more methods for defining orientation dependent functions are
-% discussed <SO3FunDefinition.html here>. 
-% 
-%%
-% The entire information about the orientation dependent function is now
-% stored in the variable |SO3F|. In order to determine its value for a
-% specific orientation |ori| the function <SO3FunHandle.eval.html |eval(ori)|> is
-% used.
+%% Evaluate the Function
+%
+% @SO3FunHandle turns an
+% <https://www.mathworks.com/help/matlab/matlab_prog/anonymous-functions.html
+% anonymous function> into an @SO3Fun. The variable |SO3F| now stores the
+% formula together with its symmetry.
+%
+% Use <SO3FunHandle.eval.html |eval|> to evaluate it at one or many
+% orientations. Here the input is fixed so that the result is reproducible.
 
-ori = orientation.rand(cs)
-SO3F.eval(ori)
-
-%% Plotting an Orientation Dependent Function
-% 
-% Orientation dependent functions are most often visualized by sections
-% according to the third Euler angle $\varphi_2$.
-% 
-
-plotSection(SO3F)
+ori = orientation.byEuler(20*degree,30*degree,10*degree,cs)
+angleInDegrees = SO3F.eval(ori)
 
 %%
-% The plot tells us for which Euler angles the resulting rotational
-% angle is large and for which Euler angles it is low. The plot of this
-% "angle function" |SO3F| becomes trivial if represented in an axis angle
-% sections
+% The returned scalar is the smallest angle, in degrees, among the
+% symmetrically equivalent representatives of |ori|. The next page develops
+% this construction and the other ways to define an @SO3Fun.
 
-plotSection(SO3F,'axisAngle','upper')
+%% Plot Euler-Angle Sections
+%
+% A scalar function on $SO(3)$ depends on three coordinates. MTEX can show
+% it as a stack of sections at fixed third Euler angle $\varphi_2$.
+
+plotSection(SO3F,'sections',4)
+mtexColorbar
+
+%%
+% Each panel covers the first two Euler angles at one value of $\varphi_2$.
+% The colour changes within and between panels because the smallest
+% symmetry-reduced angle depends on all three Euler angles.
+%
+%% Plot Axis--Angle Sections
+%
+% The same function is especially simple in axis--angle coordinates. Each
+% section fixes the rotational angle and varies the rotational axis.
+
+constantContourWarning = warning('off','MATLAB:contour:ConstantData');
+plotSection(SO3F,'axisAngle',(15:15:60)*degree,'upper')
+warning(constantContourWarning)
 mtexColorbar
 mtexColorMap parula
 
 %%
-% as obviously, the function value is constant in each section. 
-% Many more methods for visualizing orientation dependent functions are
-% discussed <ODFPlot.html here>. 
-% 
-%% Computing with Orientation Dependent Functions
-%
-% The power of representing an orientation dependent functions as a
-% variables of type @SO3Fun is that we may apply to it a
-% <SO3FunOperations.html large number of analysis tools>. In particular,
-% one can add, subtract and multiply orientation dependent functions, plot
-% them in various projections or detect the local minima or maxima. In the
-% case of our example function the local maxima refers to the orientations
-% with maximum rotational angle in cubic symmetry. We may compute them by
-% the command <SO3Fun.max.html |max|>.
+% Every panel has one colour because |SO3F| returns the angle that labels
+% that panel. The two section plots show the same function in different
+% coordinates; neither changes the underlying data.
 
-[value,ori] = max(SO3F,'numLocal',10,'accuracy',0.001*degree)
+%% Analyse an Orientation-Dependent Function
+%
+% The common @SO3Fun interface provides arithmetic, integration,
+% differentiation and searches for extrema. For this angle function, a
+% local maximum is an orientation farthest from a cubic symmetry equivalent
+% of the identity.
+%
+% The <SO3Fun.max.html |max|> command below requests up to ten distinct local
+% maxima. The |accuracy| option controls the final angular search tolerance.
+
+[value,oriMax] = max(SO3F,'numLocal',10,'accuracy',0.001*degree)
 
 %%
-% We observe that there are exactly six symmetrically not equivalent
-% orientations that realize an orientation angle of about 62.994 degree and
-% form the vertices of the fundamental region in orientation space
+% The calculation finds exactly six symmetrically inequivalent maxima. Their
+% function values are about 62.799 degrees, and their positions are the
+% vertices of the fundamental region in orientation space.
 
-color = ind2color(repmat(1:length(ori),numSym(cs),1));
-plot(ori.symmetrise,color,'axisAngle','filled','markerSize',20,'restrict2FundamentalRegion')
+close all
+color = ind2color(repmat(1:length(oriMax),numSym(cs),1));
+plot(oriMax.symmetrise,color,'axisAngle','filled','markerSize',20,...
+  'restrict2FundamentalRegion')
 
-%% Representations of Rotational Functions
+%%
+% The six colours distinguish the six maxima. The markers lie on the outer
+% vertices because those points have the greatest possible distance from
+% the identity after cubic symmetry has been taken into account.
+
+%% Representations of Orientation-Dependent Functions
 %
-% Internally MTEX represents rotational functions in different ways:
+% MTEX can store a function in several ways. The representation controls
+% how the function is constructed and how expensive an operation is, but
+% all representations share the @SO3Fun interface.
 %
-% || by a harmonic series expansion || <SO3FunHarmonicRepresentation.html SO3FunHarmonic> ||
-% || as superposition of radial functions || <RadialODFs.html SO3FunRBF> ||
-% || as superposition of fiber elements || <FibreODFs.html SO3FunCBF> ||
-% || as a Bingham distribution || <BinghamODFs.html SO3FunBingham> ||
-% || as a sum of different components || @SO3FunComposition ||
-% || explicitly given by a formula || @SO3FunHandle ||
+% || representation || MTEX class or documentation ||
+% || harmonic series expansion || <SO3FunHarmonicRepresentation.html SO3FunHarmonic> ||
+% || superposition of radial functions || <RadialODFs.html SO3FunRBF> ||
+% || superposition of fibre elements || <FibreODFs.html SO3FunCBF> ||
+% || Bingham distribution || <BinghamODFs.html SO3FunBingham> ||
+% || sum of different components || @SO3FunComposition ||
+% || formula evaluated on demand || @SO3FunHandle ||
 %
-% All representations allow the same operations which are specified for
-% the abstract class |@SO3Fun|. In particular it is possible
-% to calculate with $SO(3)$ functions as with ordinary numbers, i.e., you
-% can add, multiply arbitrary functions, take the mean, integrate them or
-% compute gradients, see <SO3FunOperations.html Operations>.
+% Thus functions with different internal representations can be added,
+% multiplied, averaged, integrated or differentiated through the same API.
+
+%% Related Function Types
 %
-%% Generalizations of Rotational Functions
+% <SO3FunVectorField.html SO3VectorField> assigns a vector instead of a
+% scalar to each rotation. <SO3Kernels.html SO3Kernel> represents a radial
+% function whose value depends only on rotational angle.
+
+%% References
 %
-% || rotational vector fields || <SO3FunVectorField.html SO3VectorField> ||
-% || radial rotational functions || <SO3Kernels.html SO3Kernel> ||
+% * H.-J. Bunge, <https://doi.org/10.1016/C2013-0-11769-2 Texture Analysis
+% in Materials Science: Mathematical Methods>, Butterworths, 1982, develops
+% the orientation-space and ODF framework used here.
+
+%% Next
 %
+% Continue with <SO3FunDefinition.html Defining Orientation-Dependent
+% Functions> to construct functions from formulas, harmonic coefficients
+% and sampled values.

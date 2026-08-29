@@ -1,5 +1,6 @@
 CrystalSymmetries       Crystal Symmetries
 CrystalDirections       Miller Indices
+LatticeMetric           Lattice Metric and Plane Geometry
 CrystalOperations       Operations
 CrystalReferenceSystem  Reference System
 SymmetryAlignment       Crystal Axes Alignment

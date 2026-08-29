@@ -29,9 +29,10 @@ function pf = calcPoleFigure(odf,h,varargin)
 % convert to cell
 if ~iscell(h), h = vec2cell(h);end
 
-% ensure crystal symmetry
-argin_check(cat(1,h{:}),'Miller');
+% ensure crystal symmetry - check the entries one by one, superposed pole
+% figures give cells of different length that can not be concatenated
 for i = 1:length(h)
+  argin_check(h{i},'Miller');
   h{i} = odf.CS.ensureCS(h{i});
 end
 

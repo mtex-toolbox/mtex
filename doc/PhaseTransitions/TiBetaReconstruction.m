@@ -1,175 +1,246 @@
 %% Parent Beta Phase Reconstruction in Titanium Alloys
 %
-%%
-% In this section we discuss parent grain reconstruction at the example of
-% a titanium alloy. Lets start by importing a sample data set
+% This page reconstructs the former beta-grain map of a titanium alloy from
+% a nearly complete alpha-phase EBSD map. It continues the Burgers-variant
+% example in <ParentChildVariants.html Parent and Child Variants> and uses
+% the reconstruction ideas prepared by
+% <MartensiteVariants.html Martensite Variants>.
 
 mtexdata alphaBetaTitanium
 
-% and plot the alpha phase as an inverse pole figure map
-plot(ebsd('Ti (alpha)'),ebsd('Ti (alpha)').orientations,'figSize','large')
+% Plot the measured alpha phase with inverse pole figure colours.
+plot(ebsd('Ti (alpha)'),ebsd('Ti (alpha)').orientations,...
+  'figSize','large')
 
 %%
-% The data set contains 99.8 percent alpha titanium and 0.2 percent beta
-% titanium. Our goal is to reconstruct the original beta phase. The
-% original grain structure appears almost visible for human eyes.
-% Our computations will be based on the Burgers orientation relationship
+% The map contains 99.8% alpha titanium and 0.2% beta titanium among its
+% indexed measurements. The goal is to recover the original beta phase.
 
-beta2alpha = orientation.Burgers(ebsd('Ti (beta)').CS,ebsd('Ti (alpha)').CS)
-
-%%
-% that aligns (110) plane of the beta phase with the (0001) plane of the
-% alpha phase and the [1-11] direction of the beta phase with the [-2110]
-% direction of the alpha phase.
-%
-% Note that all MTEX functions for parent grain reconstruction expect the
-% orientation relationship as parent to child and not as child to parent.
-%
-%% Setting up the parent grain reconstructor
-% 
-% Grain reconstruction is guided in MTEX by a variable of type
-% <parentGrainReconstructor.parentGrainReconstructor.html
-% |parentGrainReconstructor|>. During the reconstruction process this class
-% keeps track about the relationship between the measured child grains and
-% the recovered parent grains. In order to set this variable up we first
-% need to compute the initial child grains from out EBSD data set.
-
-% reconstruct grains
-[grains,ebsd] = calcGrains(ebsd,'threshold',1.5*degree,'removeQuadruplePoints');
+phaseFraction = 100 .* ...
+  [length(ebsd('Ti (alpha)')),length(ebsd('Ti (beta)'))] ./ ...
+  length(ebsd('indexed'))
 
 %%
-% We choose a very small threshold of 1.5 degree for the identification of
-% grain boundaries to avoid alpha orientations that belong to different
-% beta grains get merged into the same alpha grain.
-%
-% Now we are ready to set up the parent grain reconstruction job.
+% The former beta-grain structure is almost visible by eye. Groups of alpha
+% regions with related colours form larger blocks, but colour alone does
+% not decide which regions came from the same beta grain.
 
-job = parentGrainReconstructor(ebsd, grains);
+%% Set the parent-to-child relationship
+%
+% We use the Burgers OR introduced on the first page. It aligns a beta
+% $(110)$ plane with an alpha $(0001)$ plane and a beta $[1\bar{1}1]$
+% direction with an alpha $[\bar{2}110]$ direction.
+
+beta2alpha = orientation.Burgers(...
+  ebsd('Ti (beta)').CS,ebsd('Ti (alpha)').CS)
+
+%%
+% Every parent grain reconstruction method expects the OR in the
+% parent-to-child direction. Passing its inverse would make all candidate
+% parent orientations wrong even though their number still looked
+% plausible.
+
+%% Segment the child grains
+%
+% A grain is a phase-homogeneous, spatially connected region of EBSD pixels
+% produced by segmentation. A small angular threshold keeps alpha regions
+% from different beta grains separate at this stage.
+
+[grains,ebsd] = calcGrains(ebsd,'threshold',1.5*degree,...
+  'removeQuadruplePoints');
+
+%%
+% The 1.5-degree threshold is deliberately small. If two alpha orientations
+% from different beta grains were merged now, reconstruction could not
+% separate them later.
+
+%% Set up the reconstruction job
+%
+% A <parentGrainReconstructor.parentGrainReconstructor.html
+% |parentGrainReconstructor|> stores the input, the current reconstruction,
+% and the relation between them. Assigning |p2c| tells it which phase is the
+% parent and which phase is the child.
+
+job = parentGrainReconstructor(ebsd,grains);
 job.p2c = beta2alpha
 
 %%
-% The output of the |job| variable allows you to keep track of the amount
-% of already recovered parent grains. Using the variable |job| you have
-% access to the following properties
+% The displayed |job| summary reports the current parent and child grain
+% counts, areas, and reconstructed fraction. The most useful properties
+% are grouped below.
 %
-% * |job.grainsIn| - the input grains
-% * |job.grains| - the grains at the current stage of reconstruction
-% * |job.ebsdIn| - the input EBDS data
-% * |job.ebsd| - the ebsd data at the current stage of reconstruction
-% * |job.mergeId| - the relationship between the input grains
-% |job.grainsIn| and the current grains |job.grains|, i.e.,
-% |job.grainsIn(ind)| goes into the merged grain
-% |job.grains(job.mergeId(ind))|
-% * |job.numChilds| - number of children of each current parent grain
-% * |job.parenGrains| - the current parent grains
-% * |job.childGrains| - the current child grains
-% * |job.isTransformed| - which of the |grainsMeasured| have a computed
-% parent
-% * |job.isMerged| - which of the |grainsMeasured| have been merged into a parent grain
-% * |job.transformedGrains| - child grains in |grainsMeasured| with computed
-% parent grain
+% * |job.grainsPrior| and |job.ebsdPrior| preserve the input grains and EBSD
+% data.
+% * |job.grains| and |job.ebsd| expose the current grains and reconstructed
+% EBSD data.
+% * |job.mergeId| maps each input grain |job.grainsPrior(ind)| to the current
+% grain |job.grains(job.mergeId(ind))|.
+% * |job.numChilds| counts the input grains represented by each current
+% grain.
+% * |job.parentGrains| and |job.childGrains| select the current parent and
+% child grains.
+% * |job.isTransformed| marks input child grains assigned a parent
+% orientation.
+% * |job.isMerged| marks input grains that have been combined into a current
+% grain.
+% * |job.transformedGrains| selects the input child grains with a computed
+% parent orientation.
 %
-% Additionally, the <parentGrainReconstructor.parentGrainReconstructor.html
-% |parentGrainReconstructor|> class provides the following operations for
-% parent grain reconstruction. These operators can be applied multiple
-% times and in any order to achieve the best possible reconstruction.
+% The class also provides several reconstruction routes and cleanup
+% operations.
 %
-% * |job.calcVariantGraph| - compute the variant graph
-% * |job.clusterVariantGraph| - compute votes from the variant graph
-% * |job.calcGBVotes| - detect child/child and parent/child grain boundaries
-% * |job.calcTPVotes| - detect child/child/child triple points
-% * |job.calcParentFromVote| - recover parent grains from votes
-% * |job.calcParentFromGraph| - recover parent grains from graph clustering
-% * |job.mergeSimilar| - merge similar parent grains
-% * |job.mergeInclusions| - merge inclusions
+% * <parentGrainReconstructor.calcVariantGraph.html |calcVariantGraph|>
+% constructs a variant graph.
+% * <parentGrainReconstructor.clusterVariantGraph.html
+% |clusterVariantGraph|> converts graph clusters into parent votes.
+% * <parentGrainReconstructor.calcGBVotes.html |calcGBVotes|> obtains votes
+% from child-child and parent-child grain boundaries.
+% * <parentGrainReconstructor.calcTPVotes.html |calcTPVotes|> obtains votes
+% from child-child-child triple points.
+% * <parentGrainReconstructor.calcParentFromVote.html
+% |calcParentFromVote|> transforms grains selected by votes.
+% * <parentGrainReconstructor.calcParentFromGraph.html
+% |calcParentFromGraph|> transforms and merges graph clusters.
+% * <parentGrainReconstructor.mergeSimilar.html |mergeSimilar|> merges
+% neighbouring parent grains with similar orientations.
+% * <parentGrainReconstructor.mergeInclusions.html |mergeInclusions|> merges
+% small enclosed grains into parent hosts.
 %
-%%
-% The main line of the variant graph based reconstruction algorithm is as
-% follows. First we compute the variant graph using the command
-% <parentGrainReconstructor.calcVariantGraph |job.calcVariantGraph|>
+% These operations can be repeated while refining a reconstruction. They
+% are not arbitrary in order: graph clustering needs a graph, and
+% vote-based transformation needs votes.
+
+%% Build the variant graph
+%
+% A *variant graph* has one node for every combination of child grain and
+% candidate parent variant. Its edges connect compatible candidate variants
+% of neighbouring grains.
+%
+% <parentGrainReconstructor.calcVariantGraph.html |calcVariantGraph|>
+% converts angular fit into edge probability. Here 1.5 degrees is the
+% misfit at which the default probability model gives an edge weight of
+% one half.
 
 job.calcVariantGraph('threshold',1.5*degree)
 
-%%
-% In a second step we cluster the variant graph and at the same time
-% compute probabilities for potential parent orientations using the command
-% <parentGrainReconstructor.clusterVariantGraph |job.clusterVariantGraph|>
+%% Cluster candidate variants
+%
+% <parentGrainReconstructor.clusterVariantGraph.html
+% |clusterVariantGraph|> propagates compatibility through the graph. Three
+% iterations produce probabilities for the candidate parents of each child
+% grain.
 
 job.clusterVariantGraph('numIter',3)
 
 %%
-% The probabilities are stored in |job.votes.prob| and the corresponding
-% variant ids in |job.votes.parentId|. In order to use the parent
-% orientation with the highest probability for the reconstruction we use
-% the command <parentGrainReconstructor.calcParentFromVote
-% |job.calcParentFromVote|>
+% The rows of |job.votes.prob| contain the candidate probabilities. The
+% matching columns of |job.votes.parentId| contain their parent-variant IDs.
+% The first column is the highest-ranked candidate for each grain.
+
+%% Transform child grains to candidate parents
+%
+% *Transform* is the first reconstruction step. Each selected child grain
+% is assigned one candidate parent orientation and changes from the child
+% phase to the parent phase.
+%
+% <parentGrainReconstructor.calcParentFromVote.html
+% |calcParentFromVote|> accepts the highest-probability candidate here.
 
 job.calcParentFromVote
 
-%%
-% We observe that after this step more than 99 percent of the grains became
-% parent grains. Lets visualize these reconstructed beta grains
+reconstructedFraction = 100 * nnz(job.isTransformed) ./ ...
+  nnz(job.grainsPrior.phaseId == job.childPhaseId)
 
-% define a color key
+%%
+% At this stage, 96.10% of the input child grains have parent orientations.
+%
+% The displayed fraction reaches 99% after the inclusion cleanup below.
+% Neighbouring candidates have not yet all been merged into their shared
+% beta-grain footprints.
+
+% Define a beta-phase IPF colour key.
 ipfKey = ipfColorKey(ebsd('Ti (Beta)'));
 ipfKey.ipfDirection = vector3d.Y;
 
-% plot the result
-color = ipfKey.orientation2color(job.parentGrains.meanOrientation);
-plot(job.parentGrains, color, 'figSize', 'large')
+% Plot the transformed beta grains.
+parentColor = ipfKey.orientation2color(...
+  job.parentGrains.meanOrientation);
+plot(job.parentGrains,parentColor,'figSize','large')
 
-%% Merge parent grains
+%%
+% The map now contains many small regions with almost identical colours.
+% Those regions are compatible parent candidates that still need the merge
+% step.
+
+%% Merge similar parent grains
 %
-% After the previous steps we are left with many very similar parent
-% grains. In order to merge all similarly oriented grains into large parent
-% grains one can use the command
-% <parentGrainReconstructor.mergeSimilar.html |mergeSimilar|>. It takes as
-% an option the threshold below which two parent grains should be
-% considered a a single grain.
+% *Merge* is the second reconstruction step. Neighbouring transformed
+% grains with compatible parent orientations are combined into one grain
+% footprint.
+%
+% <parentGrainReconstructor.mergeSimilar.html |mergeSimilar|> uses an
+% angular threshold. Here neighbours within 5 degrees are treated as one
+% parent grain.
 
 job.mergeSimilar('threshold',5*degree)
 
-% plot the result
-color = ipfKey.orientation2color(job.parentGrains.meanOrientation);
-plot(job.parentGrains, color, 'figSize', 'large')
+parentColor = ipfKey.orientation2color(...
+  job.parentGrains.meanOrientation);
+plot(job.parentGrains,parentColor,'figSize','large')
 
-%% Merge inclusions
-% 
-% We may be still a bit unsatisfied with the result as the large parent
-% grains contain a lot of poorly indexed inclusions where we failed to
-% assign a parent orientation. We use the command
-% <parentGrainReconstructor.mergeInclusions.html |mergeInclusions|> to
-% merge all inclusions that have fever pixels then a certain threshold into
-% the surrounding parent grains.
+%%
+% The many similarly coloured fragments have coalesced into a small number
+% of large beta grains. Their remaining enclosed specks require a separate
+% topological cleanup.
+
+%% Merge small inclusions
+%
+% An inclusion is a grain entirely enclosed by another grain. Some small
+% child grains remain as inclusions because no parent orientation was
+% assigned to them confidently.
+%
+% <parentGrainReconstructor.mergeInclusions.html |mergeInclusions|> merges
+% inclusions of at most 10 pixels into their surrounding parent grains.
 
 job.mergeInclusions('maxSize',10)
 
-% plot the result
-color = ipfKey.orientation2color(job.parentGrains.meanOrientation);
-plot(job.parentGrains, color, 'figSize', 'large')
-
-%% Reconstruct beta orientations in EBSD map
-%
-% Until now we have only recovered the beta orientations as the mean
-% orientations of the beta grains. In this section we want to set up the
-% EBSD variable |parentEBSD| to contain for each pixel a reconstruction of
-% the parent phase orientation. This is done by the command
-% |<parentGrainReconstructor.calcParentEBSD.html calcParentEBSD>|
-
-parentEBSD = job.ebsd;
-
-% plot the result
-color = ipfKey.orientation2color(parentEBSD('Ti (Beta)').orientations);
-plot(parentEBSD('Ti (Beta)'),color,'figSize','large')
+parentColor = ipfKey.orientation2color(...
+  job.parentGrains.meanOrientation);
+plot(job.parentGrains,parentColor,'figSize','large')
 
 %%
-% The recovered EBSD variable |parentEBSD| contains a measure
-% |parentEBSD.fit| for the correspondence between the beta orientation
-% reconstructed for a single pixel and the beta orientation of the grain.
-% Lets visualize this
+% The large parent-grain shapes remain, while the small enclosed fragments
+% no longer interrupt them. This operation changes topology rather than
+% choosing another orientation variant.
 
-% the beta phase
-plot(parentEBSD, parentEBSD.fit ./ degree,'figSize','large')
+%% Reconstruct a parent orientation at every pixel
+%
+% So far, parent orientations have been stored as grain means.
+% <parentGrainReconstructor.calcParentEBSD.html |calcParentEBSD|> transfers
+% the reconstruction to an EBSD variable and assigns a parent orientation
+% to every transformed child pixel.
+
+parentEBSD = job.calcParentEBSD;
+
+parentColor = ipfKey.orientation2color(...
+  parentEBSD('Ti (Beta)').orientations);
+plot(parentEBSD('Ti (Beta)'),parentColor,'figSize','large')
+
+%%
+% The pixel map is piecewise consistent with the reconstructed grain map.
+% It can now be analysed with ordinary EBSD tools while retaining the
+% reconstructed beta phase and parent grain IDs.
+
+%% Check the per-pixel reconstruction fit
+%
+% |parentEBSD.fit| is a per-pixel property. It is the angular mismatch
+% between the measured alpha orientation and the child variant predicted
+% from its reconstructed beta-grain orientation.
+
+fitDegree = parentEBSD('Ti (Beta)').fit ./ degree;
+fitQuantiles = quantile(fitDegree(~isnan(fitDegree)),[0.5 0.9 0.99])
+
+plot(parentEBSD,parentEBSD.fit ./ degree,'figSize','large')
 mtexColorbar
 setColorRange([0,5])
 mtexColorMap('LaboTeX')
@@ -179,13 +250,45 @@ plot(job.grains.boundary,'lineWidth',2)
 hold off
 
 %%
-% For comparison the map with original alpha phase and on top the recovered
-% beta grain boundaries
+% Low values indicate pixels consistent with the assigned Burgers variant.
+% The median is 1.19 degrees, 90% are below 2.10 degrees, and 99% are below
+% 3.58 degrees.
+%
+% The black outlines show whether larger mismatches collect at reconstructed
+% parent boundaries rather than filling a grain interior.
 
-plot(ebsd('Ti (Alpha)'),ebsd('Ti (Alpha)').orientations,'figSize','large')
+%% Compare reconstructed boundaries with the child map
+%
+% The final plot returns to the measured alpha orientations. White lines
+% show the smoothed reconstructed beta-grain boundaries.
+
+plot(ebsd('Ti (Alpha)'),ebsd('Ti (Alpha)').orientations,...
+  'figSize','large')
 
 hold on
-parentGrains = smoothBoundary(job.grains,5);
+parentGrains = smoothBoundary(job.parentGrains,5);
 plot(parentGrains.boundary,'lineWidth',3,'lineColor','White')
 hold off
 
+%%
+% The white boundaries enclose the large alpha-variant groups that were
+% only hinted at by colour in the first map. The overlay is the final visual
+% check that graph compatibility recovered the structure visible by eye.
+
+%% References
+%
+% * F. Niessen, T. Nyyssönen, A. A. Gazder, and R. Hielscher,
+% <https://doi.org/10.1107/S1600576721011560 Parent grain reconstruction
+% from partially or fully transformed microstructures in MTEX>, _Journal
+% of Applied Crystallography_ 55 (2022), 180-194, defines the generic MTEX
+% reconstruction framework and the |parentGrainReconstructor| class.
+% * R. Hielscher, T. Nyyssönen, F. Niessen, and A. A. Gazder,
+% <https://doi.org/10.1016/j.mtla.2022.101399 The variant graph approach to
+% improved parent grain reconstruction>, _Materialia_ 22 (2022), 101399,
+% gives the graph construction and clustering algorithm used here.
+
+%% Next
+%
+% Continue with <MaParentGrainReconstruction.html Parent Austenite
+% Reconstruction> for a steel workflow that first fits the OR and then
+% combines variant-graph reconstruction with further cleanup strategies.

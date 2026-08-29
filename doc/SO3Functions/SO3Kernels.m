@@ -1,390 +1,439 @@
-%% SO(3)-Kernel Functions
+%% Kernel Functions on SO(3)
 %
-%%
-% Also take a look at the page <ODFShapes.html ODF Shapes>.
+% A kernel on the rotation group is a radially symmetric scalar function:
 %
-% An SO(3) kernel is a radially symmetric function
+% $$ \widetilde\psi\colon\mathrm{SO}(3)\to\mathbb R. $$
 %
-% $$\tilde\psi\colon\mathcal{SO}(3)\to\mathbb R.$$
+% Radial symmetry means that the value depends only on the rotation angle
+% $\omega(R)\in[0,\pi]$, not on the rotation axis. With
+% $t=\cos(\omega(R)/2)$, MTEX writes
 %
-% This means that the kernel depends only on the rotation angle
-% $\omega({\bf R})\in[0,\pi]$ of a rotation ${\bf R}$. Using
-% $t=\cos\frac{\omega({\bf R})}{2},$ we write
+% $$ \widetilde\psi(R)=\psi(t). $$
 %
-% $$\tilde\psi({\bf R})=\psi(t).$$
+% Kernels set the shape of localized peaks in orientation space. Read
+% <ODFShapes.html Unimodal ODF Shapes> for a direct comparison of their
+% halfwidths, profiles and pole-figure projections. This page explains the
+% series representation and the constructor for every kernel family.
+
+%% One coefficient per harmonic degree
 %
-% In Fourier space, an SO3Kernel is described by one coefficient
-% $\hat\psi_n$ for each degree $n$.
-% These are the same coefficients that are used for representing 
-% |SO3FunHarmonic's| and they are called Fourier coefficients, Wigner-D 
-% coefficients, or C-coefficients. 
-% Note, that for general |SO3FunHarmonic's| we have $(2n+1)^2$  Fourier
-% coefficients for degree $n$. Here we have only one coefficient, due to
-% the radial symmetry of the |SO3Kernel|.
+% A general @SO3FunHarmonic has $(2n+1)^2$ Fourier, Wigner-D or
+% C-coefficients at degree $n$. Radial symmetry reduces this entire block to
+% one coefficient $\widehat\psi_n$. MTEX uses the Chebyshev expansion
 %
-% In MTEX an |SO3Kernel| is represented in the (Chebyshev series) expansion
+% $$ \psi(t)=\sum_{n=0}^{\infty}(2n+1)\widehat\psi_n
+% \mathcal U_{2n}(t), $$
 %
-% $$\psi(t)=\sum_{n=0}^{\infty}(2n+1)\,\hat\psi_n\, \mathcal U_{2n}(t),$$
+% where $\mathcal U_{2n}$ is the Chebyshev polynomial of the second kind
+% and degree $2n$. An @SO3Kernel stores the scaled coefficients
+% $a_n=(2n+1)\widehat\psi_n$ in its |A| property.
 %
-% where $\mathcal U_{2n}$ denotes the Chebyshev polynomial of the second
-% kind and degree $2n$. 
-% 
-% Exactly, as for |SO3FunHarmonic's|, the Fourier coefficients of a 
-% |SO3Kernel| can be displayed using |plotSpektra|.
-%
-%%
-% The class |@SO3Kernel| is needed in MTEX to define the specific form of
-% unimodal ODFs. It has to be passed as an argument when calling the
-% methods <uniformODF.html uniformODF> or <unimodalODF.html unimodalODF>.
-% Furthermore |SO3Kernel's| are also used for computing an ODF from EBSD data.
-%
-%%
-% Within the class |@SO3Kernel|, kernel functions are represented by
-% their Chebyshev coefficients $a_n=(2n+1)\,\hat\psi_n$, which are stored in 
-% the field |fun.A|. 
-% As an example lets define an |SO3Kernel| with
-% Chebyshev coefficients $a_0 = 1$, $a_1 = 0$, $a_2 = 3$ and $a_3 = 1$
+% A custom kernel can therefore be constructed directly from its $a_n$.
+% The following values are $a_0=1$, $a_1=0$, $a_2=3$ and $a_3=1$.
 
 psi = SO3Kernel([1;0;3;1])
-%%
-% We plot this function by evaluation of its Chebyshev series in 
-% $\cos(\frac{\omega}{2})$ for $\omega \in [-\pi,\pi]$.
-%
-
 plot(psi)
 
 %%
-% We can define an <SO3Fun.SO3Fun.html |SO3Fun|> from a kernel function $\psi$ at a specific
-% orientation $\bf R$ by using the class <SO3FunRBF.SO3FunRBF.html |SO3FunRBF|>, i.e.
+% The oscillating curve is the Chebyshev series evaluated from
+% $-180^\circ$ to $180^\circ$. Arbitrary coefficients need not define a
+% nonnegative or normalized density.
+
+%% From a kernel to a radial orientation function
+%
+% An <SO3FunRBF.SO3FunRBF.html |SO3FunRBF|> places a copy of a kernel at a
+% chosen centre orientation. Here a de la Vallee Poussin kernel with
+% $20^\circ$ halfwidth produces one localized rotational function.
 
 psi = SO3DeLaValleePoussinKernel('halfwidth',20*degree)
 SO3F = SO3FunRBF(orientation.rand,psi)
 plot(SO3F)
 
 %%
-% The following kernel function are predefined in MTEX
+% The sections show one peak about the sampled centre. The kernel controls
+% how its value falls with angular distance; the @SO3FunRBF supplies the
+% centre and any symmetry-equivalent copies.
 %
-% * <SO3Kernels.html#8 de la Vallee Poussin kernel> (used for ODF, MODF, Pole figures, etc)
-% * <SO3Kernels.html#10 Dirichlet kernel> (used for physical properties)
-% * <SO3Kernels.html#12 Abel Poisson kernel>
-% * <SO3Kernels.html#14 von Mises Fisher kernel>
-% * <SO3Kernels.html#16 Gauss Weierstrass kernel>
-% * <SO3Kernels.html#18 Sobolev kernel>
-% * <SO3Kernels.html#20 Laplace kernel>
-% * <SO3Kernels.html#22 Square Singularity kernel>
-% * <SO3Kernels.html#24 Bump kernel>
+% Pass a kernel to <unimodalODF.html |unimodalODF|> to choose the profile of
+% a model ODF. <uniformODF.html |uniformODF|> uses a kernel internally to
+% represent its constant value, but does not require a kernel argument.
+% Kernels are also used when estimating an ODF from EBSD orientations.
+
+%% Halfwidth and bandwidth answer different questions
 %
-%%
-% A specific |SO3Kernel| like the de la Vallee Poussin kernel
-% is specified by a half-width angle in orientation space ($\mathcal{SO}(3)$) 
-% or bandwidth in Fourier space, which is the maximum development in Fourier coefficients.
+% The *halfwidth* is the angular distance at which the profile has fallen
+% to half its maximum. It describes spread and is not normally a cutoff.
+% The *bandwidth* is the largest stored harmonic degree. It describes
+% spectral cost, not visible width.
+%
+% Many constructors accept a halfwidth or bandwidth in addition to their
+% native parameter, but support differs by family. This constructor chooses
+% a $30^\circ$ de la Vallee Poussin halfwidth.
 
 psi = SO3DeLaValleePoussinKernel('halfwidth',30*degree)
-
 close all
 plot(psi)
 
 %%
-% In the following we want to look at the different types of |SO3Kernels| 
-% defined in MTEX.
-%
+% The curve crosses half its peak at $30^\circ$. It remains positive beyond
+% that angle, so the halfwidth should not be read as a hard boundary.
 
-%% The de La Vallee Poussin Kernel
-% The <SO3DeLaValleePoussinKernel.html de la Vallee Poussin kernel> on
-% $\mathcal{SO}(3)$ is defined by 
-% 
-% $$ K(t) = \frac{B(\frac32,\frac12)}{B(\frac32,\kappa+\frac12)}\,t^{2\kappa}$$ 
-% 
-% for $t\in[0,1]$, where $B$ denotes the Beta function. The de la Vallee 
-% Poussin kernel additionally has the unique property that for
-% a given halfwidth it can be described exactly by a finite number of 
-% Fourier coefficients. This kernel is recommended for Texture analysis as 
-% it is always positive in orientation space and there is no truncation 
-% error in Fourier space.
-% Hence we can define the de la Vallee Poussin kernel $\psi_{\kappa}$ depending 
-% on a parameter $\kappa \in \mathbb N \setminus \{0\}$ by its finite 
-% Chebyshev expansion
+%% Choosing a family
 %
-% $$ \psi_{\kappa}(t) = \frac{(\kappa+1)\,2^{2\kappa-1}}{\binom{2\kappa-1}{\kappa}}
-% \, t^{2\kappa}  = \binom{2\kappa+1}{\kappa}^{-1} \, 
-% \sum\limits_{n=0}^{\kappa} (2n+1)\,\binom{2\kappa+1}{\kappa-n} \,
-% \mathcal U_{2n}(t).$$
+% The available families emphasize different properties:
 %
-% Lets construct two of them.
+% || family || main characteristic || typical use ||
+% || <SO3DeLaValleePoussinKernel.html de la Vallee Poussin> || nonnegative and finite for integer $\kappa$ || ODFs, misorientation distributions and pole figures ||
+% || <SO3DirichletKernel.html Dirichlet> || exact spectral cutoff with unit Fourier coefficients || physical-property calculations ||
+% || <SO3AbelPoissonKernel.html Abel--Poisson> || nonnegative with geometric spectral decay || smooth radial peaks ||
+% || <SO3vonMisesFisherKernel.html von Mises--Fisher> || nonnegative exponential angular profile || smooth radial peaks ||
+% || <SO3GaussWeierstrassKernel.html Gauss--Weierstrass> || heat-kernel spectral decay || smoothing by harmonic degree ||
+% || <SO3SobolevKernel.html Sobolev> || coefficients weighted by derivative order || Sobolev operators rather than densities ||
+% || <SO3LaplaceKernel.html Laplace> || inverse-power spectral decay || inverse differential operators ||
+% || <SO3SquareSingularityKernel.html squared singularity> || nonnegative rational singularity family || alternative radial profile ||
+% || <SO3BumpKernel.html bump> || constant inside a strict angular cutoff || compact support ||
+%
+% The profile plot in each section answers what the kernel looks like in
+% orientation space. The spectrum beside it shows
+% $\widehat\psi_n=a_n/(2n+1)$ and therefore its harmonic cost.
+
+%% The de la Vallee Poussin kernel
+%
+% For $t\in[0,1]$, the de la Vallee Poussin kernel is
+%
+% $$ K(t)=\frac{B(\frac32,\frac12)}
+% {B(\frac32,\kappa+\frac12)}t^{2\kappa}, $$
+%
+% where $B$ is the beta function. For positive integer
+% $\kappa\in\mathbb N\setminus\{0\}$ it has the finite expansion
+%
+% $$ \psi_\kappa(t)=
+% \frac{(\kappa+1)2^{2\kappa-1}}{\binom{2\kappa-1}{\kappa}}t^{2\kappa}
+% =\binom{2\kappa+1}{\kappa}^{-1}
+% \sum_{n=0}^{\kappa}(2n+1)\binom{2\kappa+1}{\kappa-n}
+% \mathcal U_{2n}(t). $$
+%
+% This family is recommended for texture analysis because it is positive
+% in orientation space and, for integer $\kappa$, has no Fourier truncation
+% error. A requested halfwidth generally gives a noninteger $\kappa$;
+% MTEX then stores coefficients down to its numerical cutoff.
 
 psi1 = SO3DeLaValleePoussinKernel('halfwidth',15*degree)
 psi2 = SO3DeLaValleePoussinKernel('halfwidth',20*degree)
 
+%%
+% The corresponding parameters are $\kappa=40.34$ and $22.64$.
+% Compare their profiles and spectra in one figure.
+
+figure
+subplot(1,2,1)
 plot(psi1)
 hold on
 plot(psi2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
-
-%%
-% Here the parameter $\kappa$ is $40.34$ for function $\psi_1$ and $22.64$ 
-% in function $\psi_2$.
-%
-% We also take a look at the Fourier coefficients
-
+subplot(1,2,2)
 plotSpektra(psi1)
 hold on
 plotSpektra(psi2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
-%% The Dirichlet Kernel
-% The <SO3DirichletKernel.html Dirichlet kernel> has the 
-% unique property of being a convergent finite series in Fourier coefficients 
-% with an integral of one. This kernel is recommended for calculating 
-% physical properties as the Fourier coefficients always have a value of one
-% for a given bandwidth.
-% 
-% On the rotation group $\mathcal{SO}(3)$ the Dirichlet kernel 
-% $\psi_N \in L^2(\mathcal{SO}(3))$ is defined by its Chebyshev series
+%%
+% The $15^\circ$ kernel is narrower and taller. Its coefficients persist to
+% higher degrees, illustrating the cost of resolving a sharper peak.
+
+%% The Dirichlet kernel
 %
-% $$ \psi_N(t) = \sum\limits_{n=0}^N (2n+1) \, \mathcal U_{2n}(t).$$
+% The Dirichlet kernel is the finite series
 %
-% Lets construct two of them.
+% $$ \psi_N(t)=\sum_{n=0}^{N}(2n+1)\mathcal U_{2n}(t). $$
+%
+% It integrates to one. Its Fourier coefficients equal one through
+% bandwidth $N$ and are zero above it. This exact cutoff is useful for
+% calculating physical properties, although the orientation-space profile
+% oscillates and can be negative.
 
 psi1 = SO3DirichletKernel(10)
 psi2 = SO3DirichletKernel(5)
 
+figure
+subplot(1,2,1)
 plot(psi1)
 hold on
 plot(psi2)
 hold off
 legend('bandwidth = 10','bandwidth = 5')
-
-%%
-% By looking at the fourier coefficients we see, that they are exactly 1.
-
+subplot(1,2,2)
 plotSpektra(psi1)
 hold on
 plotSpektra(psi2)
 hold off
 legend('bandwidth = 10','bandwidth = 5')
 
-%% The Abel Poisson Kernel
-% The <SO3AbelPoissonKernel.html Abel Poisson kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
-% is a nonnegative function depending on a parameter $\kappa \in (0,1)$ and 
-% is defined by its Chebyshev series
+%%
+% The bandwidth-10 profile has a sharper central lobe and more side lobes.
+% The spectrum verifies that every retained Fourier coefficient is exactly
+% one for both kernels.
+
+%% The Abel--Poisson kernel
 %
-% $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{\infty} (2n+1) \, \kappa^{2n} \,
-% \mathcal U_{2n}(t).$$
+% The nonnegative Abel--Poisson kernel uses
+% $\kappa\in(0,1)$ and the series
 %
-% Lets construct two of them.
+% $$ \psi_\kappa(t)=\sum_{n=0}^{\infty}(2n+1)\kappa^{2n}
+% \mathcal U_{2n}(t). $$
 
 psi1 = SO3AbelPoissonKernel('halfwidth',15*degree)
 psi2 = SO3AbelPoissonKernel('halfwidth',20*degree)
 
+%%
+% These halfwidths give $\kappa=0.82$ and $0.76$, respectively.
+
+figure
+subplot(1,2,1)
 plot(psi1)
 hold on
 plot(psi2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
-
-%%
-% Here the parameter $\kappa$ is $0.82$ for function $\psi_1$ and $0.76$ 
-% in function $\psi_2$.
-%
-% We also take a look at the Fourier coefficients
-
+subplot(1,2,2)
 plotSpektra(psi1)
 hold on
 plotSpektra(psi2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
-%% The von Mises Fisher Kernel
-% The <SO3vonMisesFisherKernel.html von Mises Fisher kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
-% is a nonnegative function depending on a parameter $\kappa>0$ and 
-% is defined by its Chebyshev series
+%%
+% Both profiles remain nonnegative and have long tails. The narrower kernel
+% has the larger $\kappa$, so its geometrically decaying coefficients remain
+% significant to higher degree.
+
+%% The von Mises--Fisher kernel
 %
-% $$ \psi_{\kappa}(t) = \sum_{n=0}^{\infty} 
-% \frac{\mathcal{I}_n(\kappa)-\mathcal{I}_{n+1}(\kappa)}{\mathcal{I}_0(\kappa)-\mathcal{I}_1(\kappa)}
-% \, \mathcal U_{2n}(t)$$ 
+% For $\kappa>0$, the von Mises--Fisher kernel has the series
 %
-% or directly by
+% $$ \psi_\kappa(t)=\sum_{n=0}^{\infty}
+% \frac{\mathcal I_n(\kappa)-\mathcal I_{n+1}(\kappa)}
+% {\mathcal I_0(\kappa)-\mathcal I_1(\kappa)}\mathcal U_{2n}(t), $$
 %
-% $$ \psi_{\kappa}(\cos\frac{\omega({\bf R})}2) = \frac1{\mathcal{I}_0(\kappa)-\mathcal{I}_1(\kappa)}
-% \, \mathrm{e}^{\kappa \cos\omega({\bf R})}$$
-% 
-% while $\mathcal I_n,\,n \in \mathbb N_0$ denotes the the modified Bessel 
-% functions of first kind
+% and the direct angular form
 %
-% $$ \mathcal I_n (\kappa) = \frac1{\pi} \int_0^{\pi} \mathrm e^{\kappa \,
-% \cos \omega} \, \cos n\omega \, \mathrm d\omega. $$
+% $$ \psi_\kappa\!\left(\cos\frac{\omega(R)}2\right)=
+% \frac{\mathrm e^{\kappa\cos\omega(R)}}
+% {\mathcal I_0(\kappa)-\mathcal I_1(\kappa)}. $$
 %
-% Lets construct two of this kernels.
+% Here $\mathcal I_n$ is the modified Bessel function of the first kind,
+%
+% $$ \mathcal I_n(\kappa)=\frac1\pi\int_0^\pi
+% \mathrm e^{\kappa\cos\omega}\cos(n\omega)\,\mathrm d\omega. $$
 
 psi1 = SO3vonMisesFisherKernel('halfwidth',15*degree)
 psi2 = SO3vonMisesFisherKernel('halfwidth',20*degree)
 
+%%
+% These halfwidths give $\kappa=20.34$ and $11.49$, respectively.
+
+figure
+subplot(1,2,1)
 plot(psi1)
 hold on
 plot(psi2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
-
-%%
-% Here the parameter $\kappa$ is $20.34$ for function $\psi_1$ and $11.49$ 
-% in function $\psi_2$.
-%
-% We also take a look at the Fourier coefficients
-
+subplot(1,2,2)
 plotSpektra(psi1)
 hold on
 plotSpektra(psi2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
-%% The Gauss Weierstrass Kernel
-% The <SO3GaussWeierstrassKernel.html Gauss Weierstrass kernel> $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$ 
-% is a nonnegative function depending on a parameter $\kappa>0$ and 
-% is defined by its Chebyshev series
+%%
+% The exponential profiles are smooth and nonnegative. As before, the
+% narrower peak requires appreciable coefficients at higher degrees.
+
+%% The Gauss--Weierstrass kernel
 %
-% $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{\infty} (2n+1) \, 
-% \mathrm e^{-n(n+1)\kappa} \, \mathcal U_{2n}(t).$$
+% The nonnegative Gauss--Weierstrass kernel uses $\kappa>0$ and
 %
-% Lets construct two of them by the parameter $\kappa$.
+% $$ \psi_\kappa(t)=\sum_{n=0}^{\infty}(2n+1)
+% \mathrm e^{-n(n+1)\kappa}\mathcal U_{2n}(t). $$
 
 psi1 = SO3GaussWeierstrassKernel(0.025)
 psi2 = SO3GaussWeierstrassKernel(0.045)
 
+figure
+subplot(1,2,1)
 plot(psi1)
 hold on
 plot(psi2)
 hold off
-legend('halfwidth = 15°','halfwidth = 20°')
-
-%%
-% We also take a look at the Fourier coefficients
-
+legend('\kappa = 0.025 (15.14°)','\kappa = 0.045 (20.33°)')
+subplot(1,2,2)
 plotSpektra(psi1)
 hold on
 plotSpektra(psi2)
 hold off
-legend('halfwidth = 15°','halfwidth = 20°')
+legend('\kappa = 0.025','\kappa = 0.045')
 
-%% The Sobolev Kernel
-% The <SO3SobolevKernel.html Sobolev kernel> $\psi_{s}\in L^2(\mathcal{SO}(3))$ 
-% is a radial symmetric kernel function depending on a parameter $s$ and 
-% is defined by its Chebyshev series
+%%
+% The measured halfwidths are $15.14^\circ$ and $20.33^\circ$, rather than
+% exactly $15^\circ$ and $20^\circ$. Larger $\kappa$ damps high degrees more
+% strongly and therefore produces the broader profile.
+
+%% The Sobolev kernel
 %
-% $$ \psi_s(t) = \sum\limits_{n=0}^{\infty} (2n+1)\, (n(n+1))^s \, \mathcal
-% U_{2n}(t). $$
+% A Sobolev kernel of order $s$ and bandwidth $N$ is
 %
-% Lets construct two of them by the parameter $s$ and bandwidth 15.
+% $$ \psi_s(t)=\sum_{n=0}^{N}(2n+1)(n(n+1))^s
+% \mathcal U_{2n}(t). $$
+%
+% The coefficient at $n=0$ is zero. Positive $s$ amplifies high harmonic
+% degrees, so this family represents a differential weighting rather than
+% a nonnegative density kernel.
 
 psi1 = SO3SobolevKernel(1,'bandwidth',15)
 psi2 = SO3SobolevKernel(1.2,'bandwidth',15)
 
+figure
+subplot(1,2,1)
 plot(psi1)
 hold on
 plot(psi2)
 hold off
 legend('s = 1','s = 1.2')
-
-%%
-% We also take a look at the Fourier coefficients
-
+subplot(1,2,2)
 plotSpektra(psi1)
 hold on
 plotSpektra(psi2)
 hold off
 legend('s = 1','s = 1.2')
 
-%% The Laplace Kernel
-% The <SO3LaplaceKernel.html Laplace kernel> $\psi\in L^2(\mathcal{SO}(3))$ 
-% is a radial symmetric kernel function which is defined by its Chebyshev series
+%%
+% Both profiles oscillate because they are truncated at bandwidth 15. The
+% spectrum for $s=1.2$ rises faster, placing more weight on fine angular
+% variation.
+
+%% The Laplace kernel
 %
-% $$ \psi(t) = \sum\limits_{n=0}^{\infty} \frac{(2n+1)}{4\,n^2\,(2n+2)^2}
-% \, \mathcal U_{2n}(t). $$
+% The Laplace kernel sets its degree-zero coefficient to zero and uses
 %
+% $$ \psi(t)=\sum_{n=1}^{\infty}
+% \frac{2n+1}{4n^2(2n+2)^2}\mathcal U_{2n}(t). $$
 
 psi = SO3LaplaceKernel
 
+figure
+subplot(1,2,1)
 plot(psi)
-
-%%
-% We also take a look at the Fourier coefficients
-
+subplot(1,2,2)
 plotSpektra(psi)
 
-%% The Squared Singularity Kernel
-% The <SO3SquareSingularityKernel.html squared singularity kernel> 
-% $\psi_{\kappa}\in L^2(\mathcal{SO}(3))$  is a nonnegative function 
-% depending on a parameter $\kappa\in(0,1)$ and is defined by its Chebyshev series
+%%
+% The profile is not a normalized density because its mean, the degree-zero
+% coefficient, is zero. MTEX stores this kernel only to bandwidth 4, so the
+% spectrum panel is four markers falling steeply and then stopping. The
+% series itself continues past them with inverse-power decay.
+
+%% The squared singularity kernel
 %
-% $$ \psi_{\kappa}(t) = \sum\limits_{n=0}^{\infty} \hat{f}_n(\kappa)
-% \, \mathcal U_{2n}(t). $$
+% The nonnegative squared singularity kernel depends on
+% $\kappa\in(0,1)$ and has the series
 %
-% where the Chebyshev coefficients follows a 3-term recursion
+% $$ \psi_\kappa(t)=\sum_{n=0}^{\infty}
+% \widehat f_n(\kappa)\mathcal U_{2n}(t). $$
 %
-% $\hat{f}_0 = 1$
+% Its Chebyshev coefficients follow the three-term recursion
 %
-% $\hat{f}_1 = \frac{1+\kappa^2}{2\kappa}-\frac1{\log\frac{1+\kappa}{1-\kappa}}$
+% $$ \widehat f_0=1, $$
 %
-% $\hat{f}_n = \frac{(2n-3)(2n+1)(1+\kappa^2)}{(2n-1)(n-1)2\kappa} \,
-% \hat{f}_{n-1}(\kappa)-\frac{2\kappa(n-2)(2n+1)}{2n-3} \,
-% \hat{f}_{n-2}(\kappa)$.
+% $$ \widehat f_1=\frac{1+\kappa^2}{2\kappa}
+% -\frac1{\log\frac{1+\kappa}{1-\kappa}}, $$
 %
-% Lets construct two of them by the parameter $\kappa$.
+% $$ \widehat f_n=
+% \frac{(2n-3)(2n+1)(1+\kappa^2)}
+% {(2n-1)(n-1)2\kappa}\widehat f_{n-1}(\kappa)
+% -\frac{2\kappa(n-2)(2n+1)}{2n-3}\widehat f_{n-2}(\kappa). $$
 
 psi1 = SO3SquareSingularityKernel(0.2)
 psi2 = SO3SquareSingularityKernel(0.3)
 
+figure
+subplot(1,2,1)
 plot(psi1)
 hold on
 plot(psi2)
 hold off
 legend('\kappa = 0.2','\kappa = 0.3')
-
-%%
-% We also take a look at the Fourier coefficients
-
+subplot(1,2,2)
 plotSpektra(psi1)
 hold on
 plotSpektra(psi2)
 hold off
 legend('\kappa = 0.2','\kappa = 0.3')
 
-%% The Bump kernel
-% The <SO3BumpKernel.html bump kernel> $\tilde\psi_r\in
-% L^2(\mathcal{SO}(3))$ is a radial symmetric kernel function depending on
-% a parameter $r\in (0,\pi)$. The function value is 0, if the angle is
-% greater then the halfwidth $r$. Otherwise it is has a constant value,
-% such that the mean of $\psi_r$ on $\mathcal{SO}(3)$ is 1. Hence we use
-% the open set
+%%
+% The two parameters change both the central concentration and the rate of
+% spectral decay. Unlike the Dirichlet and Sobolev profiles, both curves
+% remain nonnegative.
+
+%% The bump kernel
 %
-% $$U_r = \{ {\bf R} \in \mathcal{SO}(3) \,\vert ~ \lvert \omega( {\bf R})\rvert <r \}$$
-% 
-% and define the bump kernel by
+% The bump kernel depends on a radius $r\in(0,\pi)$. It is constant inside
+% that radius and exactly zero outside it. With
 %
-% $$ \tilde\psi_r( {\bf R}) = \frac1{\lvert U_r \rvert } \mathbf{1}_{ \{ {\bf R} \in U_r \} } $$
+% $$ U_r=\{R\in\mathrm{SO}(3)\mid\lvert\omega(R)\rvert<r\}, $$
 %
-% where $\mathbf{1}$ is the indicator function.
+% the normalized indicator is
 %
-% The main problem of the bump kernel is that we need a lot of Chebyshev
-% coefficients to describe it. That possibly can result in high runtimes. 
+% $$ \widetilde\psi_r(R)=\frac1{\lvert U_r\rvert}
+% \mathbf 1_{\{R\in U_r\}}. $$
 %
+% The constant is chosen so that the mean on $\mathrm{SO}(3)$ is one.
 
 psi1 = SO3BumpKernel(30*degree)
 psi2 = SO3BumpKernel(40*degree)
 
+figure
+subplot(1,2,1)
 plot(psi1)
 hold on
 plot(psi2)
 hold off
 legend('halfwidth = 30°','halfwidth = 40°')
-
-%%
-% We also take a look at the Fourier coefficients
-
+subplot(1,2,2)
 plotSpektra(psi1)
 hold on
 plotSpektra(psi2)
 hold off
 legend('halfwidth = 30°','halfwidth = 40°')
 
+%%
+% The flat tops and abrupt cutoffs distinguish the bump kernels from every
+% smooth family above. Representing that discontinuity requires many
+% Chebyshev coefficients; both objects store bandwidth 1024. This can lead
+% to high runtimes even though the real-space definition is simple.
+
+close all
+
+%% References
+%
+% * H. Schaeben,
+% <https://doi.org/10.1155/TSM.33.365 The de la Vallee Poussin Standard
+% Orientation Density Function>, _Textures and Microstructures_ 33 (1999),
+% 365--373, relates kernel halfwidth to the finite harmonic representation
+% used for texture analysis.
+% * R. Hielscher,
+% <https://doi.org/10.1016/j.jmva.2013.03.014 Kernel density estimation on
+% the rotation group and its application to crystallographic texture
+% analysis>, _Journal of Multivariate Analysis_ 119 (2013), 119--143,
+% compares kernel families on $\mathrm{SO}(3)$ and develops their use in
+% crystallographic density estimation.
+
+%% Next
+%
+% Continue with <WignerFunctions.html Wigner-D Functions> to see the
+% harmonic basis whose radial coefficient blocks collapse to the single
+% coefficient per degree used on this page.
+
+%#ok<*NOPTS>

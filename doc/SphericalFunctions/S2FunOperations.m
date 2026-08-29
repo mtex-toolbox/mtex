@@ -1,145 +1,234 @@
 %% Operations on Spherical Functions
-%%
+%
+% A spherical function can be evaluated, combined, searched, integrated,
+% differentiated and rotated. The <S2FunConcept.html Concept> page
+% introduces their common @S2Fun interface and evaluates one function at a
+% chosen direction. This page builds on that step with two functions.
+
+%% Two functions to compare
+%
+% The examples use one patterned function and one narrow peak. Both are
+% harmonic spherical functions and therefore support the same operations.
+
 plottingConvention.default('y↑→x');
-%%
-% Spherical functions offers a wide range of analysis methods. You can
-% perform almost arbitrary computations with them: add, multiply, detect
-% local extrema, integrate and much more. Here we give a basic overview
-% about what is possible. We start by defining the following two spherical
-% functions
 
+% a patterned function and one narrow peak
 sF1 = S2Fun.smiley;
-sF2 = S2FunHarmonic.unimodal('halfwidth',10*degree,sF1.how2plot)
+sF2 = S2FunHarmonic.unimodal('halfwidth',10*degree,sF1.how2plot);
 
+newMtexFigure('layout',[1,2]);
 plot(sF1,'upper')
+mtexTitle('Patterned function')
 nextAxis
 plot(sF2,'upper')
-
-%% Basic arithmetic operations
-% Now the sum of these two spherical functions is again a spherical
-% function
-
-1 + 15 * sF1 + sF2
-
-plot(15 * sF1 + sF2,'upper')
+mtexTitle('Narrow peak')
 
 %%
-% Accordingly, one can use all basic operations like |-|, |*|, |.^|, |/|,
-% <S2Fun.min.html |min|>, <S2Fun.max.html |max|>, <S2Fun.abs.html |abs|>,
-% <S2FunHarmonic.sqrt.html |sqrt|> to calculate with variables of type
-% @S2Fun.
+% The first function has several broad features. The second concentrates
+% its values around one direction. This contrast makes the effect of each
+% operation visible.
+
+%% Basic arithmetic
+%
+% Adding functions or multiplying them by scalars produces another
+% spherical function. Adding the constant one shifts every value equally.
+
+combined = 15 * sF1 + sF2;
+shifted = 1 + combined;
+
+% check the shift at one direction
+shiftAtX = shifted.eval(xvector) - combined.eval(xvector);
+fprintf('Shift at specimen X: %.1f\n',shiftAtX)
+
+plot(combined,'upper')
+
+%%
+% The combined plot retains the pattern of the first function and adds the
+% sharp peak of the second. The scalar factor makes the broad pattern
+% visible on the same colour scale as that peak. The printed difference of
+% 1.0 confirms that adding one shifts the value without changing the
+% pattern.
+
+%% Pointwise operations
+%
+% The basic operations |-|, |*|, |.^| and |/| also work with @S2Fun
+% objects. Functions such as <S2Fun.min.html |min|>,
+% <S2Fun.max.html |max|>, <S2Fun.abs.html |abs|> and
+% <S2Fun.sqrt.html |sqrt|> likewise return spherical functions when used
+% pointwise.
+%
+% For two functions, pointwise multiplication and division use |.*| and
+% |./|. Plain |*| scales a function, while |sF / a| divides it by a scalar.
+
+newMtexFigure('layout',[1,2]);
 
 % the maximum between two functions
-plot(max(15*sF1,sF2),'upper');
+plot(max(15*sF1,sF2),'upper')
+mtexTitle('Pointwise maximum')
 
 nextAxis
+
 % the minimum between two functions
-plot(min(15*sF1,sF2),'upper');
+plot(min(15*sF1,sF2),'upper')
+mtexTitle('Pointwise minimum')
 
-%% Local Extrema
-% 
-% The above mentioned functions <S2Fun.min.html |min|> and <S2Fun.max.html
-% |max|> have very different use cases
+%%
+% The pointwise maximum keeps whichever surface is higher at each
+% direction. The pointwise minimum keeps the lower surface. The two plots
+% therefore partition the same pair of functions in complementary ways.
+
+%% Global and local extrema
 %
-% * if two spherical functions are passed as arguments a spherical
-% function defined as the pointwise min/max between these two functions is
-% computed
-% * if a spherical function and a single number are passed as arguments a
-% spherical function defined as the pointwise min/max between the
-% function and the value is computed
-% * if only a single spherical function is provided the global maximum /
-% minimum of the function is returned
-% * if additionally the option 'numLocal' is provided the certain number of
-% local minima / maxima is computed
+% <S2Fun.min.html |min|> and <S2Fun.max.html |max|> select their behaviour
+% from their inputs:
+%
+% * Two spherical functions produce their pointwise minimum or maximum.
+% * A spherical function and one number produce its pointwise minimum or
+% maximum with that value.
+% * One spherical function returns its global minimum or maximum.
+% * The additional |'numLocal'| option requests several local extrema.
+%
+% As the <S2FunConcept.html Concept example> shows, |'numLocal'| is an
+% upper limit rather than a promise that the requested number exists.
 
-plot(15 * sF1 + sF2,'upper')
+newMtexFigure;
+plot(combined,'upper')
 
 % compute and mark the global maximum
-[maxvalue, maxnodes] = max(15 * sF1 + sF2);
-annotate(maxnodes)
+[maxValue,maxNodes] = max(combined);
+annotate(maxNodes)
 
-% compute and mark the local minimum
-[minvalue, minnodes] = min(15 * sF1 + sF2,'numLocal',2);
-annotate(minnodes)
+% compute and mark up to two local minima
+[minValue,minNodes] = min(combined,'numLocal',2);
+annotate(minNodes)
 
-
-%% Integration
-% The surface integral of a spherical function can be computed by either
-% <S2Fun.mean.html |mean|> or <S2Fun.sum.html |sum|>. The difference
-% between both commands is that <S2Fun.sum.html |sum|> normalizes the
-% integral of the identical function on the sphere to $4 \pi$, the command
-% <S2Fun.mean.html |mean|> normalizes it to one. Compare
-
-mean(sF1)
-
-sum(sF1) / ( 4 * pi )
+fprintf('Global maximum: %.3f; local minima: %.3f and %.3f\n',...
+  maxValue,minValue(1),minValue(2))
 
 %%
-% A practical application of integration is the computation of the
-% $L^2$-norm which is defined for a spherical function $f$ by
-%
-% $$ \| f \|_2 = \left(\int_{\mathrm{sphere}} \lvert f(\xi)\rvert^2 \,\mathrm d\xi\right)^{1/2} $$
-%
-% accordingly we can compute it by
+% The maximum marker sits on the highest feature of the combined function.
+% The minimum markers identify separate basins instead of merely the lowest
+% sampled pixels in the plot. The maximum is 15.716, while the two basins
+% have nearly equal minima of -7.204.
 
-sqrt(sum(sF1.^2))
+%% Integration and norms
+%
+% <S2Fun.sum.html |sum|> returns the surface integral over the sphere. Thus
+% the constant function one integrates to $4\pi$.
+% <S2Fun.mean.html |mean|> divides that integral by $4\pi$, so the constant
+% function one has mean value one. These two normalisations therefore give
+% the same result for any function.
+
+meanValue = mean(sF1);
+normalisedIntegral = sum(sF1) / (4*pi);
+
+fprintf('Mean: %.4f; integral/(4*pi): %.4f\n',...
+  meanValue,normalisedIntegral)
 
 %%
-% or more efficiently by the command <S2Fun.norm.html |norm|>
+% Both values are 0.0064. This agreement checks the $4\pi$
+% normalisation rather than asserting that |sF1| itself is normalized to
+% mean one.
+%
+% Integration also defines the $L^2$ norm of a spherical function $f$:
+%
+% $$\Vert f\Vert_2 = \left(\int_{\mathrm{sphere}} \vert f(\xi)\vert^2\,\mathrm d\xi\right)^{1/2}.$$
+%
+% It can be assembled directly from the surface integral.
 
-norm(sF1)
+normFromIntegral = sqrt(sum(sF1.^2));
+
+%%
+% <S2Fun.norm.html |norm|> computes the same quantity more efficiently.
+
+directNorm = norm(sF1);
+fprintf('From integral: %.4f; norm: %.4f\n',...
+  normFromIntegral,directNorm)
+
+%%
+% Both routes give 0.4229. The result is a single measure of the function's
+% overall magnitude, not its maximum value.
 
 %% Differentiation
 %
-% The differential of a spherical function in a specific point is a
-% gradient, i.e., a <vector3d.vector3d.html three-dimensional vector> which
-% can be computed by the command <S2Fun.grad.html |grad|>
+% The differential at one direction is the tangential gradient. MTEX
+% returns it as a <vector3d.vector3d.html three-dimensional vector> with
+% <S2Fun.grad.html |grad|>.
 
-grad(sF1,xvector)
+gradientAtX = grad(sF1,xvector)
+gradientMagnitude = norm(gradientAtX)
 
 %%
-% The gradients of a spherical function in all points form a spherical
-% vector field and are returned by the function <S2Fun.grad.html |grad|> as a
-% variable of type @S2VectorFieldHarmonic.
+% At specimen X the gradient magnitude is 0.0012. Its vector lies in the
+% plane tangent to the sphere at X, so its X component is zero.
+
+%%
+% Gradients at all directions form a spherical vector field. Calling
+% <S2Fun.grad.html |grad|> without an evaluation direction returns an
+% @S2VectorFieldHarmonic.
 
 % compute the gradient as a vector field
-G = grad(sF1)
+G = grad(sF1);
 
 % plot the gradient on top of the function
+newMtexFigure;
 plot(sF1,'upper')
 hold on
 plot(G)
 hold off
 
 %%
-% We observe long arrows at the positions of big changes in intensity and
-% almost invisible arrows in regions of constant intensity.
+% Long arrows mark large changes in intensity. Arrows become almost
+% invisible where the function is nearly constant.
+
+%% Rotate a function
 %
-%% Rotating spherical functions
-% Rotating a spherical function works with the command <S2Fun.rotate.html
-% |rotate|>
+% <S2Fun.rotate.html |rotate|> moves a spherical function by a specified
+% rotation.
 
 % define a rotation
-rot = rotation.byAxisAngle(yvector,-30*degree)
+rot = rotation.byAxisAngle(yvector,-30*degree);
 
 % plot the rotated spherical function
-plot(rotate(15 * sF1 + sF2,rot),'upper')
-
+newMtexFigure;
+plot(rotate(combined,rot),'upper')
 
 %%
+% The entire pattern, including its maxima and minima, moves together by
+% $-30$ degrees about the $y$ axis.
+
+%% Symmetrise a function
+%
 % A special case of rotation is symmetrising it with respect to some
-% symmetry. The following example symmetrises our smiley with respect to
-% a two fold axis in $z$-direction 
+% symmetry. The next example symmetrises the smiley with respect to a
+% twofold axis in the $z$ direction.
 
 % define the symmetry
 cs = crystalSymmetry('112');
 
 % compute the symmetrised function
-sFs = symmetrise(sF1, cs)
+sFs = symmetrise(sF1,cs)
 
 % plot it
+newMtexFigure;
 plot(sFs,'upper','complete')
 
 %%
-% The resulting function is of type |S2FunHarmonicSym| and knows about its
-% symmetry.
+% The result is an @S2FunHarmonicSym and carries its symmetry. The complete
+% plot shows that the original pattern has been repeated by the twofold
+% symmetry operation.
+
+close all
+
+%% References
+%
+% * F. Bachmann, R. Hielscher and H. Schaeben,
+% <https://doi.org/10.4028/www.scientific.net/SSP.160.63 Texture Analysis
+% with MTEX - Free and Open Source Software Toolbox>, _Solid State
+% Phenomena_ 160, 63--68, 2010. This article connects MTEX spherical
+% calculations to pole figures and orientation distributions.
+
+%% Next
+%
+% Continue with <S2FunPlotting.html Plotting> to choose a spherical
+% projection, plot style, hemisphere and colour scale for these functions.

@@ -1,105 +1,149 @@
 %% Phase Transitions
 %
-%%
-% When a material changes phase in the solid state, the new crystals do not
-% appear at random angles. The old lattice is still there while the new one
-% forms, and the cheapest way to build it is to keep as many atomic planes
-% as possible in place. The result is an *orientation relationship*: a fixed
-% angular relation between parent and child lattices, the same at every
-% place the transformation happened.
+% During a solid-state phase transition, new crystals do not appear at random
+% orientations.
+% The old lattice remains while the new one forms, so a low-energy change keeps
+% as many atomic planes and directions aligned as possible.
+% The result is the fixed angular relation between parent and child lattices
+% developed in <OrientationRelationshipFit.html Fitting the Orientation
+% Relationship>.
+% The same OR applies wherever that transformation occurs.
 %
-% Symmetry then does what it always does. If the parent lattice has 24
-% rotations that leave it unchanged, the one relationship can be satisfied
-% in many distinct ways, and each way gives a differently oriented child
-% crystal. These are the *variants*, and one parent grain typically
-% transforms into several of them at once.
-%
-% Below are the child orientations that a single parent grain can produce
-% under the Kurdjumov-Sachs relationship, in a pole figure.
+% Symmetry turns that one relation into several possible child orientations.
+% A parent lattice with 24 proper rotations can satisfy the same relation in
+% distinct ways.
+% These possibilities are the variants defined on the fitting page, and one
+% parent grain commonly transforms into several variants at once.
 
 plottingConvention.default('y↑→x');
 
-csParent = crystalSymmetry('m-3m',[3.65 3.65 3.65],'mineral','Austenite');
-csChild  = crystalSymmetry('m-3m',[2.87 2.87 2.87],'mineral','Ferrite');
+%% See the variants from one parent
+%
+% The example uses a Kurdjumov-Sachs (KS) relationship between parent
+% austenite and child ferrite.
+% The pole figure shows the child orientations that one parent orientation can
+% produce.
+
+csParent = crystalSymmetry('m-3m',[3.65 3.65 3.65],...
+  'mineral','Austenite');
+csChild = crystalSymmetry('m-3m',[2.87 2.87 2.87],...
+  'mineral','Ferrite');
 
 p2c = orientation.KurdjumovSachs(csParent,csChild);
 
-% one parent grain, and the child orientations it can produce
 oriParent = orientation.byEuler(0,0,0,csParent);
 oriChild = variants(p2c,oriParent);
 
-plotPDF(oriChild,Miller(0,0,1,csChild),'MarkerSize',8,'figSize','small')
+plotPDF(oriChild,Miller(0,0,1,csChild),...
+  'MarkerSize',8,'figSize','small')
 
 %%
-% Twenty-four variants from one parent, all from a single relationship.
-% Kurdjumov-Sachs gives 24; the Nishiyama-Wassermann relationship gives 12.
-% Which of them a real steel follows, and whether it follows one exactly, is
-% a question the data has to answer rather than something to assume.
+% Notice the 24 variants produced from one parent orientation.
+% Each contributes three symmetrically equivalent (001) poles, so the figure
+% carries 72 pole positions.
+% KS gives 24 variants, whereas the Nishiyama-Wassermann relationship gives 12.
+% A real steel may follow neither ideal relationship exactly.
+% The measured data must determine which relationship and variants are present.
+
+%% Read the transformation backwards
 %
-%% Reading the transformation backwards
+% In many experiments only the child phase survives to be measured.
+% Examples include martensite, ferrite, and alpha titanium.
+% The former parent-grain structure may nevertheless control the material's
+% properties, so the metallurgist wants to recover it.
 %
-% The practical problem is usually the reverse of the picture above. What
-% survives to be measured is the child phase - martensite, ferrite, alpha
-% titanium - while the parent that produced it has gone. Yet the parent
-% grain structure is what controls the properties, and it is what a
-% metallurgist wants to know.
+% Parent grain reconstruction solves this inverse problem.
+% Children from one parent are variants of a common parent orientation.
+% Neighbouring child grains that are mutually consistent with the OR can
+% therefore be traced back to one parent.
 %
-% *Parent grain reconstruction* recovers it. Because all the children of one
-% parent are variants of a single orientation, a group of neighbouring child
-% grains whose orientations are mutually consistent with the relationship
-% can be traced back to a common parent. It works in two steps that are
-% worth keeping distinct: each child grain is first *transformed* to a
-% candidate parent orientation, and neighbouring candidates that agree are
-% then *merged* into one parent grain.
+% The reconstruction has two steps that must remain distinct.
+% First, each child grain is transformed individually to a candidate parent
+% orientation.
+% Second, neighbouring candidates with compatible parent orientations are
+% merged into one parent-grain footprint.
 %
-% The difficulty is that the first step is ambiguous. A single child grain is
-% consistent with several possible parents, and choosing between them
-% requires looking at the neighbours - which is why the algorithms below are
-% graph problems rather than per-grain calculations.
+% <<parent-reconstruction-workflow.svg>>
 %
-%% Variants, packets and Bain groups
+% The middle panel keeps the child-grain footprints separate while their
+% candidate parent orientations align.
+% Only the final merge removes the internal boundaries and creates the
+% reconstructed parent grain.
 %
-% Variants are often grouped, and two groupings are in common use. A
-% *packet* collects variants sharing a habit plane - the parent plane the
-% child lattice lines up with. A *Bain group* collects variants sharing a
-% Bain correspondence, that is, which parent cube axis the child aligns to.
+% A single child grain is compatible with several possible parents.
+% Choosing among them requires evidence from neighbouring grains.
+% Reconstruction methods are therefore graph problems rather than independent
+% calculations for each grain.
+
+%% Relate variants, packets, and Bain groups
 %
-% These are two independent classifications of the same 24 variants, not two
-% levels of one hierarchy. A variant belongs to a packet and to a Bain
-% group, and neither is a subdivision of the other.
+% A *packet* is a coarse grouping of variants that share the same habit plane.
+% For KS-type martensite, this is the parent {111} plane to which a variant's
+% child lattice aligns.
 %
-%% Where to start
+% A *Bain group* is a coarse grouping by Bain correspondence.
+% It records which parent {001} cube-axis plane a variant's child lattice
+% aligns to.
 %
-% <ParentChildVariants.html Parent Child Variants> and
-% <MartensiteVariants.html Martensite Variants> introduce relationships and
-% variants, and are the pages the rest depend on.
-% <OrientationRelationshipFit.html Fitting the Orientation Relationship>
-% comes next in practice: the relationship in your material is probably not
-% exactly the textbook one, and fitting it to the data before reconstructing
-% makes a visible difference.
+% Packet and Bain group are independent classifications of the same variants.
+% A variant belongs to one packet and one Bain group, but neither grouping is a
+% subdivision of the other.
+
+%% Follow the chapter
 %
-% Two complete worked reconstructions follow, one for steel and one for
-% titanium: <MaParentGrainReconstruction.html Parent Austenite
-% Reconstruction> and <TiBetaReconstruction.html Parent Beta
-% Reconstruction>. Start with whichever matches your material.
+% Begin with <ParentChildVariants.html Parent and Child Variants> for the
+% forward and inverse variant calculations.
+% <MartensiteVariants.html Martensite Variants> then fits a measured OR and
+% assigns variant, packet, and Bain group IDs.
 %
-% The algorithms behind them are described separately.
-% <GrainGraphBasedReconstruction.html Grain Graph Based Reconstruction>
-% reasons about grain-to-grain compatibility;
-% <TriplePointBasedReconstruction.html Triple Point Based Reconstruction>
-% uses the extra constraint available where three grains meet.
-% <LowLevelParentGrainReconstruction.html Low Level Reconstruction> and
-% <MaParentGrainReconstructionAdvanced.html Low Level Reconstruction 2>
-% open up the individual steps for cases the automatic route handles badly.
+% Two complete reconstructions follow.
+% <TiBetaReconstruction.html Parent Beta Phase Reconstruction> treats titanium,
+% and <MaParentGrainReconstruction.html Parent Austenite Reconstruction> treats
+% steel.
+% Start with the material system closest to your own.
 %
 % <TransformationTexture.html Transformation Texture> asks the forward
-% question instead: given a parent texture and a relationship, what texture
-% does the product phase have?
+% question: given a parent texture and an OR, what child texture results?
 %
+% The remaining pages expose the reconstruction algorithms.
+% <GrainGraphBasedReconstruction.html Grain Graph Based Reconstruction> uses
+% grain-to-grain compatibility.
+% <TriplePointBasedReconstruction.html Triple Point Based Reconstruction> uses
+% the stronger constraint where three grains meet.
+% <LowLevelParentGrainReconstruction.html Low Level Reconstruction> and
+% <MaParentGrainReconstructionAdvanced.html Low Level Reconstruction 2> show the
+% individual steps for cases the automatic workflow handles poorly.
+%
+% The chapter ends with <OrientationRelationshipFit.html Fitting the
+% Orientation Relationship>, which explains the fitting objective and its
+% local and global solutions.
+% In an applied reconstruction, fit the material's OR before committing parent
+% variants; the worked reconstruction pages demonstrate that sequence first.
+% A measured OR may differ from a textbook relation enough to change the
+% reconstructed result visibly.
+
+%% Connect to the prerequisite chapters
+%
+% An OR is a <Misorientations.html misorientation> with the additional parent
+% and child phase symmetries.
+% Reconstructed grains use the segmentation model introduced in
+% <Grains.html Grains>.
+% Their measurements and maps come from <EBSDAnalysis.html EBSD Analysis>.
+
+%% References
+%
+% * F. Niessen, T. Nyyssönen, A. A. Gazder, and R. Hielscher,
+% <https://doi.org/10.1107/S1600576721011560 Parent grain reconstruction from
+% partially or fully transformed microstructures in MTEX>, _Journal of Applied
+% Crystallography_ 55 (2022), 180-194, defines the generic MTEX reconstruction
+% framework and its transform-and-merge workflow.
+% * S. Morito, X. Huang, T. Furuhara, T. Maki, and N. Hansen,
+% <https://doi.org/10.1016/j.actamat.2006.07.009 The morphology and
+% crystallography of lath martensite in alloy steels>, _Acta Materialia_ 54
+% (2006), 5323-5331, gives the variant and packet crystallography summarized
+% here.
+
 %% Next
 %
-% The relationships here are <Misorientations.html Misorientations> with
-% extra structure. The grains being reconstructed come from
-% <Grains.html Grains>, and the maps they come from are
-% <EBSDAnalysis.html EBSD>.
-%
+% Continue with <ParentChildVariants.html Parent and Child Variants> to compute
+% the child variants of one parent and the candidate parents of one child.

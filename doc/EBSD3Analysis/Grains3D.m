@@ -1,152 +1,228 @@
-%% 3D Grains
+%% Three-Dimensional Grains
 %
-%%
-% Grains as three dimensional objects are stored in MTEX as variables of
-% type |@grain3d|. Basic properties and operations are described in the
-% sections <Grains3DProperties.html Properties of Three-Dimensional Grains>
-% and <Grains3DOperations.html Operations with Three-Dimensional Grains>.
+% In EBSD grain segmentation, a grain is a phase-homogeneous, spatially
+% connected region of pixels produced by segmentation. In three dimensions,
+% MTEX represents its counterpart by the faces of a closed polyhedron and
+% stores a collection as a @grain3d object. The faces provide the geometry;
+% phase and mean orientation describe the material inside each polyhedron.
 %
-% In this section we discuss how to import three dimensional grains from
-% Dream3d and Neper.
-%
-%% Import Grains from Dream3d
-% In order to import grain data we use the command <grain3d.load.html
-% |grain3d.load|>
+% This page follows one collection from import through selection, sectioning,
+% and inspection of its boundary normals. The following pages explain the
+% <NeperInterface.html Neper workflow>,
+% <Grains3DProperties.html geometric properties>, and
+% <Grains3DOperations.html operations on three-dimensional grains> in detail.
 
-% specify the file name
-fname = fullfile(mtexDataPath,'EBSD','SmallIN100_MeshStats.dream3d');
-grains = grain3d.load(fname);
-
-% for triangulated data sets it may be useful to plot them without lines
-plot(grains,grains.meanOrientation,'LineStyle','none','micronbar','off')
-
-% use a nice plotting convention
+plottingConvention.default('y↑→x');
 how2plot = plottingConvention.default3D;
+
+%% Import a DREAM.3D surface mesh
+%
+% <grain3d.load.html |grain3d.load|> reads a DREAM.3D triangle mesh into a
+% @grain3d collection. A voxel-only file does not contain the boundary faces
+% needed for this representation.
+
+fname = fullfile(mtexDataPath,'EBSD','SmallIN100_MeshStats.dream3d');
+grains = grain3d.load(fname)
+
+%% Read the imported microstructure
+%
+% The command-window summary reports the phases, number of grains, total
+% volume, boundary faces, and attached properties. The example contains 794
+% grains. Plotting the mean orientation assigns one orientation colour to
+% each polyhedron; it does not display pointwise orientation variation.
+
+plot(grains,grains.meanOrientation,'LineStyle','none','micronbar','off')
 setCamera(how2plot)
 
 %%
-% Dream3d stores the boundary faces with an arbitrary winding, i.e., the
-% normal computed from the vertex order points randomly into or out of the
-% grain. MTEX therefore runs <grain3d.orientFaces.html |orientFaces|> as
-% part of the import, so that face normals, grain volumes and
-% |boundary.grainId| are directly usable. Should you need the raw winding
-% as stored in the file, switch this off with
+% The colour changes sharply at grain faces, while suppressing mesh lines
+% makes the outer shape of the reconstructed volume easier to see.
+
+%% Why face winding matters
+%
+% A face normal is perpendicular to one boundary face. Its sign follows from
+% the order of the face vertices, called the face winding. DREAM.3D stores
+% faces with arbitrary winding, so the stored normal may point into or out of
+% a grain.
+%
+% By default, the importer calls <grain3d.orientFaces.html |orientFaces|>.
+% MTEX then uses |I_GF| to record which direction is outward for each grain.
+% This makes signed volumes and |boundary.grainId| directly usable.
+% Request the raw DREAM.3D winding only when that order is itself needed.
 
 grainsRaw = grain3d.load(fname,'noOrientFaces');
 
 %%
-% Without oriented faces, more than half of the grains of this data set
-% come out with a negative volume, since their normals point inwards
+% The first value below counts negative raw volumes; the second checks the
+% oriented import. Before orientation, 419 of the 794 grains have negative
+% volume because their corresponding normals point inwards.
 
 [nnz(grainsRaw.volume < 0), nnz(grains.volume < 0)]
 
-%%
-% Similarly as with two dimensional grains we can select individual grains
-% by arbitrary constraints. For instance we can find the largest grain by
+%% Select a grain
+%
+% A collection can be indexed by any logical condition. The following code
+% finds the array position of the largest grain and then plots that grain.
+% Grain IDs and array positions can differ after subsetting, so use an ID
+% query when the persistent identity matters.
 
-% index of the grain with the largest volume
 [~,id] = max(grains.volume)
 
 plot(grains(id),'edgeAlpha',0.15,'micronBar','off')
 setCamera(how2plot)
 
-%% 
-% Slicing the 3d grains by a <plane3d.plane3d.html |plane|> using the
-% command <grain3d.slice.html |slice|> results in 2d grains comparable to
-% what can be reconstructed from 2d EBSD maps.
+%%
+% The translucent edges expose the triangular boundary mesh of the selected
+% polyhedron. The result is one three-dimensional grain, not a planar section.
 
-% define the plane by a normal direction and a point 
+%% Cut a planar section
+%
+% A <plane3d.plane3d.html |plane3d|> is defined by a normal direction and a
+% point in the plane. <grain3d.slice.html |slice|> intersects that plane with
+% every grain and returns the resulting polygons as a @grain2d collection,
+% comparable to what can be reconstructed from a two-dimensional EBSD map.
+
 plane = plane3d(vector3d(1,1,1),vector3d(-20,20,-15));
-
-% compute the sliced grains
 grains2 = slice(grains,plane)
 
-% plot them
 plot(grains2,grains2.meanOrientation,'micronbar','off')
-
 setCamera(how2plot)
 
 %%
-% It might be reasonable to adjust the plotting convention such that
-% the normal direction |grains2.N| points out of screen.
+% The plot contains only grains crossed by the plane. Each polygon inherits
+% the mean orientation of its parent three-dimensional grain.
+%
+% For a face-on view, use a plotting convention whose out-of-screen direction
+% is the section normal. The east direction fixes the remaining in-plane
+% freedom.
 
 how2plot2 = plottingConvention;
-how2plot2.outOfScreen = grains2.N; 
+how2plot2.outOfScreen = grains2.N;
 how2plot2.east = vector3d(1,-1,0);
+setCamera(how2plot2), axis off, xlabel(''), ylabel('')
 
-setCamera(how2plot2), axis off, xlabel('') , ylabel('')
-
-%% Import Grains from Neper
+%% Generate a synthetic collection with Neper
 %
-% <https://neper.info Neper> is a software package for the simulation of
-% three dimensional microstructures. After installation it can be directly
-% called by MTEX. The general workflow is explained <NeperInterface.html
-% here>. Here we use it to quickly generate a copper microstructure with
-% specific texture and specific distribution of boundary normals.
+% <https://neper.info Neper> is a package for simulating three-dimensional
+% microstructures. After Neper is installed, MTEX can call it directly.
+% <NeperInterface.html The next page> explains setup, tessellation, and
+% importing an existing |.tess| file.
+%
+% This example has previously been described as copper with a specified
+% boundary-normal distribution. The commands instead assign quartz symmetry
+% and a fibre orientation distribution; they do not pass a boundary-normal
+% distribution to Neper. If Neper is unavailable, the code loads the bundled
+% quartz tessellation explicitly rather than reusing an old output file.
 
-% set up the communication with Neper
-neper.init;
-neper.geometry = "cube(2,2,1)";
+if ispc
+  [neperStatus,~] = system('wsl neper --version');
+else
+  [neperStatus,~] = system('neper --version');
+end
+hasNeper = neperStatus == 0;
 
-% define a texture 
 cs = crystalSymmetry.load('quartz.cif','color','lightblue');
 odf = fibreODF(cs.cAxis,vector3d(1,1,1));
 
 numGrains = 300;
-grains = neper.simulateGrains(numGrains,odf,'silent')
-% or you can load an existing tessellation file
-%grains = grain3d.load('allgrains.tess','CS',cs)
+
+if hasNeper
+  neper.init;
+  neper.filePath = fullfile(tempdir,'mtex-neper-doc-intro');
+  neper.geometry = "cube(2,2,1)";
+  grains = neper.simulateGrains(numGrains,odf,'silent');
+else
+  tessFile = fullfile(mtexDataPath,'Neper','my100grains.tess');
+  grains = grain3d.load(tessFile,'CS',cs);
+end
+grains
+
+% Alternatively, import an existing Neper tessellation.
+% grains = grain3d.load('allgrains.tess','CS',cs)
+
+plot(grains,grains.meanOrientation,'micronbar','off', ...
+  'faceAlpha',0.5)
+setCamera(how2plot)
 
 %%
+% The semi-transparent plot reveals grains inside the cuboid. When Neper ran,
+% their colours follow mean orientations drawn from the fibre distribution.
+% The bundled fallback retains the orientations stored in its file.
 
-% colorize by mean orientation
-plot(grains,grains.meanOrientation,'micronbar','off','faceAlpha',0.5)
-setCamera(how2plot)
-
-%% Slicing
+%% Slice the synthetic microstructure
 %
-% Let us slice this 3d data set as well
+% The two-argument form of |slice| accepts a normal and a point directly.
+% Here the plane is horizontal and passes through the centre of the cuboid.
 
-% make all slices passing through the center point of the cube
-P0 = vector3d(0.5,0.5,0.5);
-
-% with normal (0,0,1)
+P0 = grains.midPoint;
 N = vector3d(0,0,1);
-
 grains_2d = grains.slice(N,P0)
 
-plot(grains_2d,grains_2d.meanOrientation,'micronbar','off','linewidth',3)
+plot(grains_2d,grains_2d.meanOrientation,'micronbar','off', ...
+  'linewidth',3)
 setCamera(how2plot)
 
-%% Grains intersecting a slice
+%%
+% The thick outlines show the polygons produced where the horizontal plane
+% crosses the synthetic grains.
+
+%% Find the grains crossed by a plane
 %
-% Using the function <grain3d.intersected |intersected|> we can identify
-% all grains that intersect a given plane. Lets simply add 3d the shapes of
-% all grains intersecting the plane.
+% <grain3d.intersected.html |intersected|> returns one logical value per
+% three-dimensional grain. Use that mask when the full polyhedra crossing a
+% section are needed rather than only their section polygons.
 
 isInter = grains.intersected(N,P0);
 
 hold on
-plot(grains(isInter),grains(isInter).meanOrientation,'faceAlpha',0.6,'linewidth',0.5)
-
-%[a,b,c] = grains(isInter).principalComponents;
-%plotEllipsoid(grains(isInter).centroid,a,b,c,'faceAlpha',0.5)
+plot(grains(isInter),grains(isInter).meanOrientation, ...
+  'faceAlpha',0.6,'linewidth',0.5)
 hold off
-
 setCamera(plottingConvention.default3D)
 
-%% Plot the normal directions of a single grain
+%%
+% The overlaid translucent polyhedra are precisely the parents of the planar
+% polygons. They extend above and below the slice, which distinguishes this
+% selection from the @grain2d result returned by |slice|.
 %
-% The following code shows how to visualize the face normals
+% Principal-component ellipsoids can be added when a shape summary is useful:
+%
+%   [a,b,c] = grains(isInter).principalComponents;
+%   plotEllipsoid(grains(isInter).centroid,a,b,c,'faceAlpha',0.5)
 
-% multiplication with I_GF flips the boundary normals to point out of the
-% grain
+%% Plot outward normals for one grain
+%
+% A shared face has only one stored normal, so that normal cannot point
+% outwards from both adjacent grains. The corresponding row of |I_GF| contains
+% the sign needed for the selected grain. Multiplying by that sign produces
+% outward directions.
+
 id = 3;
-dir = full(grains(id).I_GF(1,:)).' .* grains(id).boundary.N 
+dir = full(grains(id).I_GF(1,:)).' .* grains(id).boundary.N;
 
 plot(grains(id))
 hold on
 quiver(grains(id).boundary,dir)
 hold off
+setCamera(plottingConvention.default3D)
+
+%%
+% The arrows point away from the selected polyhedron. They represent face
+% normals, not the misorientation between neighbouring grain orientations.
+
+%% References
+%
+% * M. A. Groeber and M. A. Jackson,
+% <https://doi.org/10.1186/2193-9772-3-5 DREAM.3D: A Digital Representation
+% Environment for the Analysis of Microstructure in 3D>, _Integrating
+% Materials and Manufacturing Innovation_ 3 (2014), 56--72, describes the
+% data environment and surface-mesh representation used by the importer.
+
+%% Next
+%
+% Continue with <NeperInterface.html Neper Interface> to configure Neper and
+% control a synthetic tessellation. Then use
+% <Grains3DProperties.html Properties of Three-Dimensional Grains> to measure
+% the faces and polyhedra introduced here.
 
 %#ok<*NOPTS>

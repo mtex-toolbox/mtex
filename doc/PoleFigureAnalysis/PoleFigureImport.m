@@ -1,138 +1,204 @@
 %% Import Pole Figure Data
 %
 %%
-% Importing pole figure data in MTEX means to create a
-% <PoleFigure.PoleFigure.html PoleFigure> object from data files containing
-% diffraction data. Once such an object has been created the data can be
-% <PoleFigureCorrection.html analyzed and processed> in many ways.
-% Furthermore, such a PoleFigure object is the starting point for
-% <PoleFigure2ODF.html PoleFigure to ODF estimation>.
+% A pole-figure file brings three pieces of information into one object.
+% They are the measured specimen directions, the intensity at each direction
+% and the lattice plane whose diffraction peak was measured.
+% Importing is therefore more than reading a numeric table. The crystal
+% symmetry, Miller indices and angular units have to be stated correctly.
+% So does the specimen frame, before an ODF can be reconstructed.
 %
-%% Importing pole figure data using the import wizard
+% MTEX stores the result in a <PoleFigure.PoleFigure.html |PoleFigure|>
+% object. Its entries are one or more measured pole figures, not pixels or
+% individual orientations. The imported values are diffraction intensities.
+% They are not yet normalized pole densities in multiples of a random
+% distribution (mrd).
 %
-% The <import_wizard.html import wizard> can be started either by typing
-% into the command line
+% This page assumes the pole-figure idea from
+% <PoleFigureAnalysis.html Pole Figures>. Miller-index notation is introduced
+% in <CrystalDirections.html Miller Indices>. Review it if unfamiliar.
 
-import_wizard_old
+%% Start with the import wizard
+%
+% For an unfamiliar format, start the graphical wizard by entering
+%
+%   import_wizard
+%
+% and select *Pole Figure Data*. The preview makes it possible to identify
+% columns, angular units and the specimen axes before importing. The wizard
+% can put the result in the workspace. Its more valuable output is an import
+% script. Save that script with the analysis so the choices can be checked
+% and the import repeated.
+%
+% The wizard asks for the <CrystalSymmetries.html crystal symmetry>, the
+% Miller index of every measured reflection, and the specimen convention.
+% These are scientific inputs, not display preferences. A plotting convention
+% changes only where a direction is drawn. Correcting a wrong specimen frame
+% changes what the data mean. The same distinction is explained in
+% <EBSDReferenceFrame.html Reference Frames> for EBSD.
 
-%%
-% or by using the start menu item *Start/Toolboxes/MTEX/Import Wizard*.
-% Pole figure data can be also imported via the <matlab:filebrowser file
-% browser> by choosing *Import Data* from the context menu of the selected
-% file if its file extension was previously registered with the
-% <matlab:opentoline(fullfile(mtex_path,'mtex_settings.m'),25,1)
-% |mtex_settings.m|>
+%% A reproducible import script
 %
-%%
-% The import wizard guides through the correct setup of:
-%
-% * <CrystalSymmetries.html crystal symmetries> associated with phases 
-% * specimen symmetry and plotting conventions
-% * <Miller.Miller.html Miller indices> of pole figures.
-% 
-% In the end, the imported wizard creates a workspace variable or generates
-% a m-file loading the data automatically. Furthermore appending a template
-% script allows radip data processing.
-%
-%% Supported Data Formats
-%
-% The import wizard currently supports following pole figure formats:
-%
-% || <loadPoleFigure_ana.html **.ana*>            || EMSE ASCII pole figure format            || 
-% || <loadPoleFigure_dubna.html **.cns*>          || Dubna ASCII pole figure format, regular grid ||
-% || <loadPoleFigure_dubna.html **.cnv*>          || Dubna ASCII pole figure format, experimental grid ||
-% || <loadPoleFigure_geesthacht.html **.dat*>     || Geesthacht ASCII pole figure format.     ||
-% || <loadPoleFigure_popla.html **.epf*, **.gpf*> || Popla ASCII pole figure format.          ||
-% || <loadPoleFigure_labotex.html **.epf*, **.ppf*, **.pow **> || LaboTEX ASCII pole figure format ||
-% || <loadPoleFigure_aachen_exp.html **.exp*>     || Aachen ASCII pole figure format.         ||
-% || <loadPoleFigure_ibm.html **.ibm*>            || IBM ASCII pole figure format.            ||
-% || <loadPoleFigure_juelich.html **.jul*>        || Juelich ASCII pole figure format.        ||
-% || <loadPoleFigure_nja.html **.nja*>            || Seifert ASCII pole figure format.        ||
-% || <loadPoleFigure_out1.html **.out*>           || Graz ASCII pole figure format.           ||
-% || <loadPoleFigure_plf.html **.plf*>            || Queens Univ. ASCII pole figure format.   ||
-% || <loadPoleFigure_siemens.html **.ptx, *.rpf*> || Siemens ASCII pole figure format.    ||
-% || <loadPoleFigure_philips.html **.txt*>        || Philips ASCII pole figure format.        ||
-% || <loadPoleFigure_beartex.html **.xpe, *.xpf*> || BearTex ASCII pole figure format.        ||
-% || <loadPoleFigure_slc.html **.slc*>            || SLC ASCII pole figure format.            ||
-% || <loadPoleFigure_uxd.html **.uxd*>            || Bruker UXD ASCII pole figure format.     ||
-% || <loadPoleFigure_xrd.html **.xrd, *.ras*>     || Bruker XRD ASCII pole figure format.     ||
-% || <loadPoleFigure_xrdml.html **.xrdml*>        || PANalytical XML data format.             ||
-% || <loadPoleFigure_aachen.html **.**>           || Aachen ASCII pole figure format.         ||
-%
-% See <PoleFigure.load.html PoleFigure.load> for further information or follow
-% the hyperlinks of the table above for an example.
-%
-% If the interface is not automatically recognized, but the data has the
-% form of an ASCII list:
-%  
-%  polar_1 azimuthal_1 intensity_1
-%  polar_2 azimuthal_2 intensity_2
-%  polar_3 azimuthal_3 intensity_3
-%  .       .           .
-%  .       .           .
-%  .       .           .
-%  polar_n azimuthal_n intensity_n
-%
-% an additional tool asks you to associate the columns with the
-% corresponding property. See also <loadPoleFigure_generic.html
-% loadPoleFigure_generic>, which provides an easy way to import diffraction
-% data from such an ASCII list. The list may contain an arbitrary number of
-% header lines, columns or comments and the actual order of the columns may
-% be specified by options.
-%
-% If you have any comments, remarks or request on interfaces please contact
-% us.
-%
-%% The Import Script
-%
-% Diffraction data stored in one of the formats above can also be imported
-% using the command <PoleFigure.load.html PoleFigure.load>. It automatically
-% detects the data format and imports the data. In dependency of the data
-% format, it might be necessary to specify the Miller indices and the
-% structure coefficients. The general syntax is
-%
-%%
-% An import script generated by the |import wizard| has the following form:
+% The following is the essential script for the bundled Dubna quartz data.
+% Declare the plotting convention before loading so the specimen directions
+% enter the intended frame.
 
 plottingConvention.default('y↑→x');
-cs = crystalSymmetry('32',[1.4,1.4,1.5]); % crystal symmetry
 
-% location of the data files
+cs = crystalSymmetry('32',[1.4,1.4,1.5]);
+
+%%
+% The |cs| definition pairs trigonal symmetry with a crystal frame. That
+% frame holds the relative lattice parameters and interprets Miller indices.
+% Both must describe the measured phase. The default frame is X||a*, Z||c.
+
 fnames = {...
   fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-10)_amp.cnv'),...
   fullfile(mtexDataPath,'PoleFigure','dubna','Q(10-11)(01-11)_amp.cnv')};
 
-% crystal directions
-h = {Miller(1,0,-1,0,cs),[Miller(0,1,-1,1,cs),Miller(1,0,-1,1,cs)]};
+%%
+% The two cells below correspond one for one to the two filenames. The first
+% file measures one reflection, $(10\bar{1}0)$. The peak in the second file
+% contains two reflections. The instrument could not resolve them, so its
+% cell contains two Miller indices.
 
-% structure coefficients
-c = {1,[0.52 ,1.23]};
-
-% load data
-pf = PoleFigure.load(fnames,h,cs,'superposition',c)
+h = {Miller(1,0,-1,0,cs),...
+  [Miller(0,1,-1,1,cs),Miller(1,0,-1,1,cs)]};
 
 %%
-% Once such a import script for pole figure data has been created, it can
-% be easily modified and extend, e.g.:
+% A combined peak is a weighted sum. Its relative structure coefficients
+% must be supplied in the same order as its Miller indices. The first pole
+% figure has only one contribution and therefore weight 1.
 
-% plot the data
+c = {1,[0.52,1.23]};
+
+%%
+% <PoleFigure.load.html |PoleFigure.load|> detects the file format and
+% joins the files, reflections and weights into one object.
+
+pf = PoleFigure.load(fnames,h,cs,'superposition',c)
+
+%% What was imported
+%
+% The display reports the crystal symmetry and one line per measured pole
+% figure. Here both files contain a $72 \times 19$ grid of specimen
+% directions. The double Miller label on the second line is deliberate.
+% It records the superposed peak rather than pretending it was one reflection.
+%
+% The four parts of the object can be inspected directly:
+%
+% * |pf.allH| contains the crystal plane normals;
+% * |pf.allR| contains the specimen directions at which intensities were
+%   measured;
+% * |pf.allI| contains those intensities; and
+% * |pf.c| contains the structure coefficients.
+%
+% The cell structure matters because different pole figures may have
+% different grids and different numbers of contributing reflections.
+
+pf.allH
+pf.c
+
+%%
+% Plot the raw measurements immediately. This catches transposed polar and
+% azimuth columns or degrees read as radians. A flipped specimen axis and
+% missing values are also visible. So are implausible intensity ranges,
+% before any of them is mistaken for an ODF problem.
+
 plot(pf)
+mtexColorbar
 
-%% Writing your own interface
+%%
+% Both panels use the same $72 \times 19$ direction grid, but their strong
+% spots occupy different regions. The title of the second panel contains two
+% Miller indices because it is the unresolved peak. Notice also that its raw
+% intensity scale is much larger than the first. Raw scales must not be
+% compared as mrd before correction and normalization.
+
+%% Superposed reflections are part of the measurement model
 %
-% MTEX also provides a way to import data from formats currently not
-% supported directly. Therefore you can to use all standard MATLAB input
-% and output commands to read the pole figure information, e.g. intensities,
-% specimen directions, crystal directions directly from the data files.
-% Then you have to call the constructor
-% <PoleFigure.PoleFigure.html PoleFigure> with these data to generate
-% a PoleFigure object.
+% The coefficients in |pf.c| are not optional cosmetic weights. For the
+% second file the forward model used during reconstruction is the sum
 %
-% Once you have written an interface that reads data from certain data
-% files and generates a PoleFigure object you can integrate this method
-% into MTEX by copying it into the folder |MTEX/qta/interfaces|. Then it
-% will be automatically called by the methods <PoleFigure.load.html
-% PoleFigure.load> and import_wizard_old. Examples how to write such an
-% interface can be found in the directory |MTEX/qta/interfaces|.
+% $$I(r) = 0.52\,P_{(01\bar{1}1)}(r)
+%          + 1.23\,P_{(10\bar{1}1)}(r).$$
+%
+% Replacing that pair by one Miller index asks the inversion to explain a
+% measured sum as a single pole figure. This generally biases the recovered
+% ODF. If peaks overlap, record every contributing reflection. Use relative
+% coefficients appropriate to the radiation and measured phase.
+
+%% Generic text files
+%
+% When no dedicated reader matches, MTEX falls back to the
+% <loadPoleFigure_generic.html generic ASCII reader>. A common file is one
+% row per measurement,
+%
+%   polar_angle  azimuth_angle  intensity
+%
+% with any number of header or unused columns. State the column meanings and
+% positions explicitly when they cannot be inferred safely. State the
+% angular unit as well. For example:
+%
+%   pf = PoleFigure.load(fname,Miller(1,1,1,cs),cs,...
+%     'interface','generic','ColumnNames',...
+%     {'polar angle','azimuth angle','intensity'},...
+%     'Columns',[1 2 3],'degree','Header',21);
+%
+% Supplying the Miller index is safer than relying on a filename. A name with
+% an unrelated number can otherwise be mistaken for a reflection. If
+% auto-detection chooses the wrong reader, select one with |'interface'|.
+% For example, use |'interface','dubna'| for this format.
+
+%% Supported formats and custom readers
+%
+% MTEX ships readers for common text and vendor formats. Interface names
+% include |dubna|, |popla|, |labotex|, |beartex| and |siemens|. Others include
+% |philips|, |rigaku|, |nja|, |juelich|, |uxd| and |xrdml|. Together they
+% cover Dubna, PopLA, LaboTEX, BearTex, Siemens and Philips data. Rigaku,
+% Seifert, Juelich, Bruker and PANalytical data are covered too.
+%
+% <PoleFigure.load.html |PoleFigure.load|> tries the installed
+% |loadPoleFigure_*| readers and then the generic reader. Its reference page
+% is version-specific. So are the reader files in the repository's
+% |interfaces| directory.
+%
+% A format-specific reader is an ordinary function named
+% |loadPoleFigure_name| that returns a |PoleFigure| object. Put it on the
+% MATLAB path and call
+%
+%   pf = PoleFigure.load(fname,...,'interface','name');
+%
+% during development. Install it in MTEX's |interfaces| directory only when
+% it should participate in automatic format detection. The
+% <loadPoleFigure_dubna.html |loadPoleFigure_dubna|> reader is a compact
+% format-specific template. The
+% <loadPoleFigure_generic.html |loadPoleFigure_generic|> reader is the
+% corresponding generic template.
+
+%% Before reconstructing an ODF
+%
+% Confirm the phase, lattice parameters and reflection assigned to every
+% file. Confirm all superposition coefficients, the angular unit, specimen
+% axes, intensity range and angular coverage. Apply only justified background,
+% defocusing and normalization corrections. They are explained in
+% <PoleFigureCorrection.html Modify Pole Figures>. Continue afterwards to
+% <PoleFigure2ODF.html ODF Reconstruction>.
 %
 
+%% Further reading
+%
+% * ASTM International,
+% <https://doi.org/10.1520/E0081-96R24 ASTM E81-96(2024): Standard Test
+% Method for Preparing Quantitative Pole Figures>. It distinguishes complete,
+% partial and calculated X-ray pole figures and describes their preparation.
+% * D. Chateigner, L. Lutterotti and M. Morales,
+% <https://doi.org/10.1107/97809553602060000968 Quantitative texture analysis
+% and combined analysis>, _International Tables for Crystallography_, Volume
+% H, chapter 5.3, 2019. It connects measured intensity, experimental
+% corrections, normalized pole density and overlapping reflections.
+% * H.-J. Bunge,
+% <https://doi.org/10.1016/C2013-0-11769-2 Texture Analysis in Materials
+% Science: Mathematical Methods>, Butterworths, English ed., 1982. It gives
+% the classical treatment of pole figures and ODF reconstruction.
+%

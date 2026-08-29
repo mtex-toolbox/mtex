@@ -1,225 +1,236 @@
 %% Gridded EBSD Data
 %
 %%
-% EBSD data is measured on a square or a hexagonal grid, and MTEX keeps it
-% on that grid: <EBSD.load.html |EBSD.load|> returns an @EBSDsquare or an
-% @EBSDhex whenever the measurements really do sit on one lattice, and falls
-% back to a plain list of pixels only when they do not. Which of the two you
-% have got is stated by the class of the variable
+% Most EBSD maps are measured on a square or hexagonal scan lattice. By
+% default, <EBSD.load.html |EBSD.load|> keeps that structure: it returns an
+% @EBSDsquare or @EBSDhex whenever every measurement fits on one lattice.
+% Otherwise it keeps the measurements as a plain @EBSD list and explains why.
+%
+% This page assumes basic <EBSDSelect.html EBSD selection> and
+% <EBSDPlotting.html plotting>. See <EBSDIndex.html Select by Index> first if
+% MATLAB row and column indexing is unfamiliar.
+%
+% A scan lattice, a matrix layout, and a reference frame answer different
+% questions. The lattice says which measurements are neighbours. The layout
+% says which specimen directions the matrix indices follow. The reference
+% frame says which axes the positions and orientations are expressed in.
 
 plottingConvention.default('y↑→x');
 mtexdata twins
 
 %%
-% This is an @EBSDsquare, i.e. the 22879 measurements are stored as a
-% 137 × 167 matrix, one entry per scan position and arranged the way the map
-% is. Apart from that it behaves like any other @EBSD variable
+% The summary identifies |ebsd| as an @EBSDsquare. Its 22879 measurements
+% form a 137 by 167 matrix, with one entry per scan position. Apart from its
+% matrix shape, it behaves like any other @EBSD variable.
 
 plot(ebsd('Magnesium'),ebsd('Magnesium').orientations)
 
 %%
-% and a look at the unit cell confirms the square grid
+% The rectangular outline follows the square measurement grid. The four
+% corners of one pixel give the same information directly.
 
 ebsd.unitCell
 
 %% What a Grid Is Good For
 %
-% * the data can be handed to image processing and registration tools as a
-% matrix, and |ebsd(i,j)| addresses a scan position
-% * <EBSDPlotting.html plotting> and <EBSDDenoising.html denoising> are
-% considerably faster, as the raster does not have to be reconstructed first
+% * Per-pixel data can be handed to image-processing and registration tools
+% as a matrix, and |ebsd(i,j)| addresses one scan position.
+% * <EBSDPlotting.html Plotting> and <EBSDDenoising.html denoising> are
+% considerably faster because the raster does not have to be reconstructed.
 %
-% Matrix indexing means what it says - the measurement in row 50 and column
-% 100 of the map is
+% Matrix indexing means what it says. The measurement in row 50 and column
+% 100 is
 
 ebsd(50,100)
 
 %%
-% In the default layout the first matrix dimension is the grid direction
-% closest to y and the second one the grid direction closest to x, both
-% oriented such that the coordinates increase. Accordingly |ebsd(1,1)| is the
-% corner with the smallest coordinates and |ebsd(i,j)| is the j-th pixel of
-% the i-th scan row. This is a property of the map and not of the file - it
-% is the same whichever corner the acquisition started from and whichever
-% direction it scanned in. Pass |'rowMajor'| to <EBSD.gridify.html
-% |gridify|> if you want the transposed layout.
+% In the default layout, the first matrix dimension follows the grid
+% direction closest to y. The second follows the direction closest to x.
+% Both indices advance towards increasing coordinates. Thus |ebsd(1,1)| is
+% the corner with the smallest coordinates, and |ebsd(i,j)| is the j-th
+% pixel in the i-th scan row.
 %
-% A grid is not required nearly as often as it used to be. The
+% This layout belongs to the map, not to the file traversal order. It is the
+% same whichever corner the acquisition started from. Pass |'rowMajor'| to
+% <EBSD.gridify.html |gridify|> for the transposed layout.
+%
+% A stored matrix is not required nearly as often as it once was. The
 % <EBSD.gradientX.html orientation gradient>, <EBSD.curvature.html
-% curvature>, <EBSD.calcGND.html GND> and <EBSD.fill.html fill> are computed
-% on the virtual lattice that <EBSD.lattice.html |lattice|> derives from the
-% unit cell, and therefore work on arbitrarily aligned data just as well.
+% curvature>, <EBSD.calcGND.html GND>, and <EBSD.fill.html fill> operate on
+% the virtual lattice derived by <EBSD.lattice.html |lattice|>. They also
+% work on plain lists, phase subsets, and arbitrarily aligned maps.
 
 %% Choosing the Layout
 %
-% The first bullet above - hand the data to image processing as a matrix -
-% only pays off if the matrix is the way round the picture is. A forescatter
-% or BSE image of the same area is stored the way its detector wrote it, and
-% that need not be the way MTEX stores a map. Correlating the two, or using
-% one as a mask on the other, then needs the map in the image's layout -
-% <EBSDMapsAndImages.html Maps and Images> does that with a real map and the
-% SEM images taken of the same area.
+% A matrix is useful for image processing only when it is stored the same
+% way round as the image. A forescatter or BSE image follows the order in
+% which its detector wrote the pixels. That order need not match the map.
+% <EBSDMapsAndImages.html Maps and Images> compares a real map with SEM
+% images of the same area.
 %
-% |'columnMajor'| and |'rowMajor'| are the two layouts aligned with x and y,
-% and they are <gridLayout.gridLayout.html |gridLayout|>s like any other. Hand
-% |gridify| a different one and the map is stored that way instead. A layout
-% names the row direction first, the order |size(A)| is written in. Say the
-% picture's rows run against x and its columns along y - a detector mounted a
-% quarter turn from the scan
+% |'columnMajor'| and |'rowMajor'| are the two layouts aligned with x and y.
+% Both are <gridLayout.gridLayout.html |gridLayout|> objects. A layout names
+% the row direction first, in the same order as |size(A)|. Suppose an
+% image's rows run against x and its columns run along y, as for a detector
+% mounted a quarter turn from the scan.
 
 gL = gridLayout(-xvector,yvector)
 
 %%
-% Then the map goes into that layout, and its shape follows
+% Handing that layout to |gridify| changes the matrix shape and ordering.
 
 ebsdI = gridify(ebsd,gL)
 
 %%
-% Nothing was resampled and no value invented: a transpose and two flips are
-% all that is ever applied, which is why this is safe to do to orientation
-% data. A map states the layout it is in, so it can be read back off
+% The map records the layout in which it is stored.
 
 ebsdI.layout
 
 %%
-% Every per pixel property comes out in that layout, so band contrast is now
-% a matrix that can be put beside an image stored the same way with nothing in
-% between. For this particular pair of layouts that is a quarter turn, and it
-% really is only that - reindexed, not resampled
+% Every per-pixel property follows the same layout. For this pair of
+% layouts, band contrast is related by a quarter turn.
 
 isequal(ebsdI.bc, rot90(ebsd.bc))
 
 %%
-% Putting it back is therefore exact. The two layouts are a conversion, not a
-% transformation, and |ebsd.layout| names the one to come back to
+% No value was resampled or invented. A transpose and flips are sufficient,
+% so conversion back to the original layout is exact.
 
 isequal(gridify(ebsdI,ebsd.layout).bc, ebsd.bc)
 
 %%
-% Note what has *not* changed. The layout is how the measurements are stored,
-% not where the specimen is, so the map still plots the same way up - MTEX
-% moves the camera for the screen, never the data
+% Layout changes storage, not the specimen. The positions and orientations
+% are unchanged, and the plotting convention still draws both maps in the
+% same specimen frame.
 
-nextAxis
+newMtexFigure('layout',[1,2])
 plot(ebsd,ebsd.bc), mtexColorMap gray
 title('columnMajor')
 nextAxis
 plot(ebsdI,ebsdI.bc), mtexColorMap gray
-title('row ||-x, col ||y')
+title('row against x, column along y')
 
 %%
-% A grid that is rotated or sheared cannot land on an axis aligned layout
-% exactly, and is put as close to it as a permutation can get - the same
-% best effort |gridify| has always made for the two flags.
-% <EBSDsquare.transformReferenceFrame.html |transformReferenceFrame|> is this
-% step under its own name, for a map that is already gridded.
-
-%% Data That Can Not Be Put on a Grid
+% The same features occupy the same screen positions in both panels. Only
+% the labels describe a different order in memory.
 %
-% Gridding writes the measurements into a rectangular raster, which is
-% faithful only if they really do sit on one lattice. Should two of them
-% land in the same cell, one would be lost - so MTEX keeps such a data set
-% as a plain list instead, and says why
+% A rotated or sheared grid cannot match an axis-aligned layout exactly.
+% |gridify| chooses the nearest transpose-and-flip permutation, just as it
+% does for the two named flags. For an already gridded map,
+% <EBSDsquare.transformReferenceFrame.html |transformReferenceFrame|>
+% performs the same reindexing. Despite that method name, this operation is
+% not a frame change: it does not re-express the specimen in different axes.
+
+%% Data That Cannot Be Put on a Grid
+%
+% A rectangular raster is faithful only when every measurement occupies a
+% distinct site of one lattice. If two measurements land in the same cell,
+% one would be lost. MTEX therefore keeps such data as a list and reports
+% the collision rather than silently dropping a measurement.
 
 ebsd = EBSD.load([mtexEBSDPath filesep 'eclogite.ctf'],...
   'EulerCorrection', rotation.byAxisAngle(zvector,180*degree))
 
 %%
-% The same happens for a scan whose positions are too irregular to span a
-% sensible raster at all. Independently of the data you may always ask for a
-% plain list, either for a single import
+% The warning above gives the number of colliding measurements. MTEX also
+% keeps a list when the positions are too irregular to span a sensible
+% raster. You may request a list independently of the data, either for one
+% import,
 %
 %   ebsd = EBSD.load(fname,'noGrid')
 %
-% or for the whole session
+% or for the whole session.
 %
 %   setMTEXpref('gridifyOnImport',false)
 %
-% and you may always change your mind afterwards: |EBSD(ebsd)| flattens a
-% gridded map into a list, <EBSD.gridify.html |gridify|> puts a list onto its
-% grid.
+% You may change representation later. |EBSD(ebsd)| flattens a gridded map
+% into a list, while <EBSD.gridify.html |gridify|> puts a list on its grid.
 
 %% Selecting a Subset Drops the Matrix Shape
 %
-% It is important to understand that the property of being shaped as a
-% matrix is lost as soon as we <EBSDSelect.html select> a subset of the data
-% - a phase, a region, the indexed measurements - since what is left is in
-% general not a rectangle any more
+% Selecting a phase, region, or indexed measurements usually leaves a shape
+% that is not rectangular. The result is therefore a plain list, although
+% every retained measurement still lies on the original lattice.
 
 mtexdata twins silent
 
 ebsdMg = ebsd('Magnesium')
 
 %%
-% We may always force it back into matrix form by reapplying the command
-% <EBSD.gridify.html |gridify|>
+% Reapplying <EBSD.gridify.html |gridify|> restores the matrix shape.
 
 ebsdMg = ebsd('Magnesium').gridify
 
 %%
-% The two matrix shaped variables |ebsd| and |ebsdMg| differ in what sits at
-% the 46 positions that were not indexed. In |ebsd| those are measurements
-% like any other, belonging to the separate phase |'notIndexed'|. In
-% |ebsdMg| they were never part of the selection, so |gridify| had nothing
-% to put there and left the lattice site empty - its orientation is |NaN|
-% and it belongs to no phase at all, which is what an empty |phaseId|
-% distinguishes
+% The variables |ebsd| and |ebsdMg| differ at the 46 positions that were not
+% indexed. In |ebsd| those are real measurements in the separate
+% |'notIndexed'| phase: a diffraction pattern was recorded but could not be
+% indexed. Selecting magnesium removes those measurements and creates gaps,
+% meaning missing sites within scan lines.
+%
+% After |gridify|, each gap is an empty lattice site in |ebsdMg|. Its
+% orientation and |phaseId| are |NaN| because no selected measurement
+% belongs there. It is not a notIndexed measurement.
 
 [nnz(isnan(ebsd.phaseId)), nnz(isnan(ebsdMg.phaseId))]
 
 %%
-% Either way the map is a full rectangle, which is what allows to select and
-% plot subregions of it in a very intuitive way
+% The empty sites complete the rectangle. Row and column ranges can
+% therefore select and plot a rectangular subregion.
 
 plot(ebsdMg(50:100,5:100),ebsdMg(50:100,5:100).orientations)
 
 %% Gridding Reorders the Measurements
 %
-% <EBSD.gridify.html |gridify|> does not preserve the order in which the
-% measurements arrive, and can not: the layout described above fixes the
-% first matrix dimension to y, while a |.ctf| or |.ang| file is written with
-% x varying fastest, so MATLAB's column major linear indexing runs down the
-% map where the file runs across it. After gridding, |ebsd(k)| is therefore
-% in general not the measurement in line k of the file any more.
+% <EBSD.gridify.html |gridify|> does not preserve input order, and generally
+% cannot. The layout fixes the first matrix dimension to y, whereas |.ctf|
+% and |.ang| files usually write x fastest. MATLAB linear indexing runs down
+% a matrix column, while such a file runs across the map. Consequently,
+% |ebsd(k)| after gridding is generally not line k of the input file.
 %
-% Nothing is lost by that. The original ids are kept as the property
-% |oldId|, and looking at its top left corner shows the effect directly -
-% consecutive ids run along a matrix row, i.e. across the map, while
-% MATLAB's linear index runs down a column
+% Nothing is lost. The property |oldId| keeps the original ids. Its upper
+% left corner shows consecutive ids running along matrix rows, while MATLAB
+% linear indices run down columns.
 
 ebsd.oldId(1:3,1:4)
 
 %%
-% and the second output of |gridify| is the translation in the other
-% direction, i.e. |ebsdGrid.pos(newId)| are the positions of the list in the
-% order of the list
+% The second output of |gridify| translates in the other direction. In
+% particular, |ebsdGrid.pos(newId)| returns the gridded positions in the
+% order of the input list.
 
 [ebsdGrid,newId] = gridify(EBSD(ebsd));
 
 isequal(ebsdGrid.pos(newId), EBSD(ebsd).pos)
 
 %%
-% This matters only for code that depends on the order of its input, and
-% grain reconstruction does not - <EBSD.calcGrains.html |calcGrains|>
-% returns the same grains whether it is handed the list or the map.
+% This distinction matters only to code that depends on input order. Grain
+% reconstruction does not: <EBSD.calcGrains.html |calcGrains|> returns the
+% same grains from the list and from the map.
 
 %% The Gradient
 %
-% The orientation gradient, the incomplete Nye tensor and the weighted
-% Burgers vector are computed on the virtual lattice and therefore do not
-% require a grid. A grid does not hurt either, so we simply continue with
-% the map we already have - the result then comes back in the shape of the
-% map.
+% The orientation gradient, the incomplete Nye tensor, and the gradient
+% form of the weighted Burgers vector are computed on the virtual lattice.
+% They therefore do not require a stored matrix. The default integral form
+% of the weighted Burgers vector is a raster algorithm and grids internally.
+%
+% A grid does no harm, so this example continues with |ebsdMg|. The result
+% has the same matrix shape as the map.
 
 gradX = ebsdMg.gradientX;
 
 plot(ebsdMg,norm(gradX))
 setColorRange([0,4*degree])
 
+%%
+% The colour field follows the same rectangular raster, including its empty
+% sites. No separate gridding step was needed for the derivative itself.
+
 %% Hexagonal Grids
 %
-% Nothing above is specific to square grids. Data measured on a hexagonal
-% grid is imported as an @EBSDhex and indexed in exactly the same way
+% The same principles apply to a hexagonal scan. MTEX imports it as an
+% @EBSDhex and provides the same row and column indexing.
 
 mtexdata copper silent
 
@@ -229,13 +240,19 @@ ebsd
 
 %%
 
-plot(ebsd(1:20,1:40),ebsd(1:20,1:40).orientations,'micronbar','off','edgeColor','black')
+plot(ebsd(1:20,1:40),ebsd(1:20,1:40).orientations,...
+  'micronbar','off','edgeColor','black')
 
-%% Switching from Hexagonal to Square Grid
+%%
+% The black cell edges reveal the alternating half-step offset between scan
+% rows. The matrix is rectangular even though its pixel footprints are
+% hexagons.
+
+%% Switching from a Hexagonal to a Square Grid
 %
-% Sometimes it is required to resample EBSD data measured on a hex grid onto
-% a square grid. This can be accomplished by passing to the command
-% <EBSD.gridify.html |gridify|> a square unit cell by the option |unitCell|.
+% Some external image-processing tools require square pixels. Passing a
+% square |unitCell| to <EBSD.gridify.html |gridify|> resamples the hexagonal
+% measurements onto such a grid.
 
 % define a square unit cell
 unitCell = 2.5 * vector3d([-1 -1 1 1].',[-1 1 1 -1].',0);
@@ -246,18 +263,19 @@ ebsdS = ebsd.gridify('unitCell',unitCell)
 % visualize the result
 plot(ebsd,ebsd.orientations,'layout',[1,2])
 nextAxis
-plot(ebsdS, ebsdS.orientations)
+plot(ebsdS,ebsdS.orientations)
 
 %%
-% Note the difference to gridding a map onto its own lattice: a custom unit
-% cell defines a grid the measurements do not lie on, so the values of the
-% new pixels are interpolated from the nearest measurements - see
-% <EBSD.interp.html |interp|>. The resampled map is complete, but it can
-% only be as good as its resolution allows. In the example above we have
-% chosen the square unit cell to have approximately the same size as the
-% hexagonal one, and since squares can not reproduce the shapes of hexagons
-% the grain boundaries come out visibly stair cased. We reduce this by
-% choosing the square unit cell significantly smaller than the hexagonal one.
+% This operation differs fundamentally from restoring a map's own lattice.
+% The new grid sites do not coincide with the measured ones, so
+% <EBSD.interp.html |interp|> copies values from the nearest measurements.
+% The left panel shows the measured hexagons; the right shows the square
+% pixels after resampling.
+%
+% The square cell above has approximately the same size as the hexagonal
+% one. Squares cannot reproduce hexagonal outlines, so grain boundaries in
+% the right panel are visibly staircased. A smaller square cell reduces the
+% size of the steps.
 
 % a smaller unit cell
 unitCell = 0.5*vector3d([-1 -1 1 1].',[-1 1 1 -1].',0);
@@ -271,17 +289,21 @@ plot(grains.boundary,'lineWidth',2)
 hold off
 
 %%
-% What is left not indexed in the resampled map are the pixels that were not
-% indexed in the source map. Those may be interpolated as well, either by
-% <EBSD.fill.html |fill|>, which performs nearest neighbor interpolation, or
-% by <EBSD.smooth.html |smooth|>, which allows for more sophisticated
-% methods - see <EBSDFilling.html Filling Missing Data>.
+% The smaller cells follow the original boundary more closely. They do not
+% add spatial resolution: every new orientation still comes from a nearest
+% measured hexagon. <EBSDInter.html Regridding and Interpolation> develops
+% this distinction in detail.
+%
+% Pixels that remain notIndexed correspond to measurements that were not
+% indexed in the source map. <EBSD.fill.html |fill|> may replace them by
+% nearest-neighbour interpolation. <EBSD.smooth.html |smooth|> offers more
+% sophisticated methods; see <EBSDFilling.html Filling Missing Data>.
 
 %% Rotated Grids
 %
-% Rotating a map rotates its unit cell along with the positions, so the grid
-% survives the rotation and the map remains an @EBSDsquare or an @EBSDhex.
-% There is nothing to repair and no data to interpolate.
+% Rotating a map rotates its unit cell together with its positions. The
+% lattice therefore survives, and the map remains an @EBSDsquare or
+% @EBSDhex. Nothing needs repair or interpolation.
 
 ebsdR = rotate(ebsd,20*degree)
 
@@ -290,49 +312,56 @@ ebsdR = rotate(ebsd,20*degree)
 plot(ebsdR,ebsdR.orientations)
 
 %%
-% The same holds if such data reaches MTEX as a plain list - |gridify|
-% recovers the rotated lattice, it does not require an axis aligned one
+% The map is turned on screen, while the object summary still identifies a
+% hexagonal grid. If the same data arrives as a plain list, |gridify|
+% recovers the rotated lattice without requiring axis alignment.
 
 gridify(EBSD(ebsdR))
 
 %% Robustness to Distorted Grids
 %
-% EBSD is measured on a tilted specimen, and a tilted surface is not imaged
-% rigidly: seen from a finite working distance its far edge is further away
-% and comes out smaller, so the scan positions no longer sit on a rigid
-% lattice. MTEX reconstructs the underlying grid indices of an
-% <EBSD.EBSD.html |EBSD|> object robustly under this kind of smooth,
-% non-rigid distortion - which matters for <EBSD.gridify.html |gridify|>
-% above, but also for any operation that needs the map's grid structure
-% internally, such as <EBSD.calcGrains.html |calcGrains|> or the |surf|
-% plotting backend.
+% EBSD is measured on a tilted specimen. Seen from a finite working
+% distance, the far edge is farther away and appears smaller. The measured
+% positions can therefore depart smoothly from any single rigid lattice.
+% MTEX still reconstructs the underlying grid indices of an
+% <EBSD.EBSD.html |EBSD|> object. This matters to |gridify| and to every
+% operation that needs neighbours, including <EBSD.calcGrains.html
+% |calcGrains|> and the |surf| plotting backend.
 %
-% We demonstrate this on a real map, rather than a small synthetic one,
-% since the failure mode this guards against only becomes visible once the
-% map is realistically wide - a small toy grid stays safe at distortion
-% levels that already break a real, wide map.
+% Grid reconstruction uses a local deformation model. MTEX first fits an
+% ideal affine grid. It then interpolates the local deviation between the
+% measured positions and that grid wherever a cell has no measurement.
+% Thus a gap, a notIndexed hole, and the dummy cells used to bound the map
+% follow the measured distortion rather than an unrelated rigid lattice.
+%
+% These terms are distinct. A gap is a run of measurements removed from a
+% scan line, such as by selecting one phase. A hole is a connected
+% notIndexed area inside the scanned region. A dummy cell is a synthetic
+% cell beyond the scanned edge; it has no id and never becomes a grain.
+%
+% The example uses a real map because the failure appears only when the map
+% is realistically wide. A small synthetic grid remains safe at distortion
+% levels that already misindex a wide map.
 
 mtexdata small
 
 %%
-% The command <EBSD.transform.html |transform|> moves every pixel of a map,
-% and its unit cell with it, leaving orientations and all other properties
-% untouched. It takes a <spatialTransform.html
-% |spatialTransform|>, so the distortion is written down as an object rather
-% than as a closure - see <EBSDSpatialTransform.html Spatial Transforms>.
+% <EBSD.transform.html |transform|> moves every pixel and its unit cell. It
+% leaves orientations and all other per-pixel properties untouched. The
+% command takes a <spatialTransform.html |spatialTransform|>, which records
+% the mapping as an object; see <EBSDSpatialTransform.html Spatial
+% Transforms>.
 %
-% A tilt is a projective transform: the surface is seen obliquely, so
-% straight lines stay straight but parallel ones need not and the scale
-% varies across the frame. Three things state it - how far the surface is
-% tilted, how far away it is seen from, and the point it is tilted about.
-% The tilt angle foreshortens along the tilt axis, the working distance sets
-% how much the scale varies across the frame, and as it grows the
-% perspective vanishes and only the foreshortening is left.
+% A tilt is a projective transform. Straight lines remain straight, but
+% parallel lines need not, and scale varies across the frame. Three values
+% specify it: the surface tilt, the working distance, and the point left in
+% place. |byTilt| tilts about the x axis, so the tilt angle foreshortens the
+% map across that axis, along y. The working distance controls perspective,
+% which vanishes as that distance grows.
 %
-% This is the tilt one *knows*, written down to impose it. Recovering one
-% that was only measured is the other direction, and is what
-% <spatialTransformTilt.html |spatialTransformTilt|>
-% fits in stages from two images.
+% Here the tilt is known and imposed. Recovering an unknown tilt from two
+% measured images is the inverse problem. <spatialTransformTilt.html
+% |spatialTransformTilt|> fits it in stages.
 
 theta  = 20*degree;                             % surface tilt
 wd     = 8*(max(ebsd.pos.y) - min(ebsd.pos.y)); % working distance
@@ -341,10 +370,11 @@ centre = mean(ebsd.pos);                        % what the tilt leaves in place
 distort = spatialTransformProjective.byTilt(theta,wd,centre)
 
 %%
-% The map is foreshortened along the tilt axis and tapers towards the edge
-% that is further away
+% The map is compressed along y, from 3000 to 2820 micrometres, while the x
+% extent is left alone by the tilt and only stretched by perspective. It
+% tapers towards the edge that is farther away.
 
-ebsdDistorted = transform(ebsd, distort);
+ebsdDistorted = transform(ebsd,distort);
 
 plot(ebsdDistorted('Fo'),ebsdDistorted('Fo').orientations)
 hold on
@@ -353,39 +383,90 @@ plot(ebsdDistorted('Di'),ebsdDistorted('Di').orientations)
 hold off
 
 %%
-% Every pixel has moved, by up to two and a half cells and by a different
-% amount at each end of the map. Most of that is the foreshortening, which
-% is affine and which a lattice absorbs without noticing; what a grid
-% reconstruction has to survive is the three quarters of a cell that is left
-% once the best affine is taken out - more than enough to round a pixel onto
-% its neighbour's site. Even so, MTEX recovers exactly the same grid indices
-% as for the undistorted map
+% The following pair measures the imposed distortion in cell units. Its
+% first value is the maximum pixel displacement. Its second is the largest
+% residual after the best affine grid has been removed.
+
+pos0 = [ebsd.pos.x(:),ebsd.pos.y(:)];
+posD = [ebsdDistorted.pos.x(:),ebsdDistorted.pos.y(:)];
+ijD = double(ebsdDistorted.lattice.ij);
+isIndexed = ebsdDistorted.isIndexed(:);
+affineDesign = [ones(size(ijD,1),1),ijD];
+affineFit = affineDesign(isIndexed,:) \ posD(isIndexed,:);
+cellSize = ebsd.lattice.dxy;
+distortionInCells = [max(vecnorm(posD-pos0,2,2)),...
+  max(vecnorm(posD-affineDesign*affineFit,2,2))] / cellSize
+
+%%
+% Every pixel has moved by up to 2.48 cells. Once the affine foreshortening
+% is removed, 0.80 cell remains. That is enough for a rigid reconstruction
+% to round a pixel onto its neighbour's site. Even so, MTEX recovers the
+% same grid indices as for the undistorted map.
 
 isequal(ebsdDistorted('Fo').lattice.ij, ebsd('Fo').lattice.ij)
 
 %%
-% Drawing the pixels as their unit cells shows what that buys. The cells are
-% those of one lattice, followed through the distortion: a mesh that closes
-% up, with no cell sheared against its neighbour. A map indexed against a
-% rigid lattice instead comes out visibly wavy here, and would hand
-% <EBSD.calcGrains.html |calcGrains|> the wrong neighbours with it.
+% Drawing each measurement as its unit cell shows the result. The cells form
+% one continuous deformed mesh, with no cell sheared independently of its
+% neighbours. A rigid reconstruction would make the mesh wavy and would
+% give <EBSD.calcGrains.html |calcGrains|> the wrong neighbours.
 
-plot(ebsdDistorted('Fo'),ebsdDistorted('Fo').orientations,'unitCell','EdgeColor','black')
+plot(ebsdDistorted('Fo'),ebsdDistorted('Fo').orientations,...
+  'unitCell','EdgeColor','black')
 hold on
-plot(ebsdDistorted('En'),ebsdDistorted('En').orientations,'unitCell','EdgeColor','black')
-plot(ebsdDistorted('Di'),ebsdDistorted('Di').orientations,'unitCell','EdgeColor','black')
+plot(ebsdDistorted('En'),ebsdDistorted('En').orientations,...
+  'unitCell','EdgeColor','black')
+plot(ebsdDistorted('Di'),ebsdDistorted('Di').orientations,...
+  'unitCell','EdgeColor','black')
 hold off
 
 %%
-% so grain reconstruction runs on the distorted map as it would on the
-% undistorted one
+% Grain reconstruction consequently sees the distorted map as the same
+% neighbourhood graph as the original.
 
 grains = calcGrains(ebsdDistorted,'minPixel',3)
-grains = smoothBoundary(grains,'noSimplify')
+grains = smoothBoundary(grains,'noSimplify');
 
 hold on
 plot(grains.boundary,'lineWidth',2)
 hold off
+
+%%
+% The boundary overlay remains closed and follows the tapered map. No
+% duplicated or missing grain strips appear along its edges.
+
+%% Further Reading
+%
+% * R. C. Staunton,
+% <https://doi.org/10.1016/S1076-5670(08)70188-5 _Hexagonal Sampling in
+% Image Processing_>, Advances in Imaging and Electron Physics 107,
+% 231--307 (1999), reviews the geometry and image-processing consequences
+% of hexagonal sampling.
+% * V. S. Tong and T. B. Britton,
+% <https://doi.org/10.1016/j.ultramic.2020.113130 _TrueEBSD: Correcting
+% spatial distortions in electron backscatter diffraction maps_>,
+% Ultramicroscopy 221, 113130 (2021), separates tilt and drift distortion
+% and demonstrates pixel-scale correction.
+% * Y. B. Zhang, A. Elbrønd and F. X. Lin,
+% <https://doi.org/10.1016/j.matchar.2014.08.003 _A method to correct
+% coordinate distortion in EBSD maps_>, Materials Characterization 96,
+% 158--165 (2014), treats nonlinear drift by registering an EBSD map to a
+% reference image.
+% * <https://www.iso.org/standard/74309.html ISO 13067:2020>, _Microbeam
+% analysis - Electron backscatter diffraction - Measurement of average
+% grain size_, defines EBSD grain-size measurement on two-dimensional
+% sections. Consult it before treating a resampled raster as quantitative
+% evidence about spatial resolution or grain size.
+
+%% Next
+%
+% <EBSDMapsAndImages.html Maps and Images> uses layouts to compare an EBSD
+% map with detector images pixel by pixel. <EBSDInter.html Regridding and
+% Interpolation> develops resampling onto a different lattice.
+% <EBSDSpatialTransform.html Spatial Transforms> introduces the transform
+% models used above, and <EBSDTrueEbsd.html TrueEBSD Distortion Correction>
+% fits them to measured images. Continue with <GrainReconstruction.html
+% Grain Reconstruction> when the goal is to turn measurements into grains.
 
 %%
 %#ok<*NASGU>

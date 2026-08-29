@@ -1,75 +1,65 @@
 %% Spherical Density Estimation
 %
 %%
-% Directional data usually comes as a large list of individual directions -
-% think of the c-axes of all the pixels of an EBSD map. Density estimation
-% is the process of turning such a discrete list into a continuous function
-% on the sphere, the so called density function, which tells us how likely
-% it is to observe a direction within a certain region of the sphere.
+% A long list of measured directions is often easier to interpret as a
+% smooth density on the sphere. High values identify directions that occur
+% more often than they would in a uniform population.
 %
-% The general concept of density estimation is explained in the section
-% <DensityEstimation.html Density Estimation>. On this page we focus on
-% directional data, i.e., on variables of type <vector3d.vector3d.html
-% |@vector3d|>, and on the command <vector3d.calcDensity.html
-% |calcDensity|>.
+% This page applies kernel density estimation to |vector3d| data. It assumes
+% the vector construction from <VectorDefinition.html Defining
+% Three-Dimensional Vectors>, the direction-axis distinction from
+% <VectorsAxes.html Axes and Antipodal Symmetry>, and the plots introduced in
+% <SphericalProjections.html Spherical Projections>. The general statistical
+% idea is developed in <DensityEstimation.html Density Estimation>.
 
 plottingConvention.default('y↑→x');
 
-%% The Example Data
+%% From Measured Axes to a Density
 %
-% Throughout this page we use the c-axes of the Forsterite phase of the
-% following EBSD map as our random sample
+% The forsterite example map supplies one crystallographic c-axis for every
+% indexed Forsterite pixel.
 
 mtexdata forsterite silent
 
-% the c-axis of each Forsterite pixel
-cAxes = ebsd('Fo').orientations * ebsd('Fo').CS.cAxis
+cAxes = ebsd('Fo').orientations * ebsd('Fo').CS.cAxis;
+numCAxes = numel(cAxes)
 
 %%
-% Since we do not want to distinguish between the direction |c| and the
-% direction |-c| we consider these vectors as axes and not as directions,
-% see <VectorsAxes.html Axes and Antipodal Symmetry>
+% The calculation uses 152345 axes. One |vector3d| variable holds the entire
+% list, which is why the object summary itself is suppressed above.
+%
+% A crystallographic c-axis is an unoriented line: |c| and |-c| represent the
+% same physical axis. The |antipodal| flag records that assumption.
 
 cAxes.antipodal = true;
-
-%%
-% The classical way of visualizing such a data set is a scatter plot in a
-% spherical projection
 
 plot(cAxes,'upper','MarkerFaceColor','none',...
   'MarkerEdgeAlpha',0.01,'MarkerSize',4)
 
 %%
-% With more than hundred thousand data points such a plot is not very
-% conclusive - most of the sphere is covered with markers and it is hard to
-% tell where the data are actually concentrated. This is exactly the
-% situation where density estimation helps.
+% The projected sphere is almost covered by markers. Some concentrations are
+% visible, but their relative strengths cannot be read from this overlap.
 %
-%% Kernel Density Estimation
-%
-% The idea of kernel density estimation is to place a bell shaped function
-% $\psi$, the so called <S2Kernels.html kernel function>, at each data
-% point $\vec v_n$ and to sum up all these shifted kernels
-%
-% $$ f(\vec v) = \frac{1}{N} \sum_{n=1}^{N} \psi(\vec v \cdot \vec v_n). $$
-%
-% In MTEX this is done by the command <vector3d.calcDensity.html
-% |calcDensity|>
+% <vector3d.calcDensity.html |calcDensity|> replaces the point cloud by a
+% continuous spherical function.
 
 pdf = calcDensity(cAxes)
 
 %%
-% The result is a spherical function of type <S2FunHarmonic.S2FunHarmonic.html
-% |@S2FunHarmonic|> which we may plot as any other spherical function, see
-% <S2FunPlotting.html Plotting Spherical Functions>
+% The summary identifies a harmonic spherical function with bandwidth 25.
+% It also reports |antipodal: true| because the estimate inherited the axis
+% symmetry of |cAxes|.
 
 plot(pdf,'complete')
 mtexColorbar
 
 %%
-% Note that the antipodal symmetry of the input data has been passed on to
-% the density function. Lets plot the density function and the raw data on
-% top of each other
+% The upper- and lower-hemisphere patterns repeat through the centre of the
+% sphere. Their unequal colour levels show the concentrations hidden by the
+% scatter plot.
+%
+% Overlaying the observations checks that the high-density regions coincide
+% with the most crowded parts of the point cloud.
 
 contourf(pdf)
 mtexColorMap LaboTeX
@@ -80,27 +70,27 @@ plot(cAxes,'upper','MarkerFaceColor','none','MarkerEdgeColor','k',...
 hold off
 
 %%
-% The density function is normalized such that its mean value over the
-% sphere is one
+% The darkest clusters of points lie inside the highest filled contours.
+% The estimate summarizes their concentration without inventing a new
+% location for a peak.
+%
+% MTEX normalizes the density to have mean value one.
 
-mean(pdf)
+pdfMean = mean(pdf)
 
 %%
-% Accordingly, the values of the density function are to be read as
-% multiples of a uniform distribution (m.u.d.). A value of $3$ means that
-% in this region of the sphere we find three times as many c-axes as we
-% would expect for randomly distributed axes.
+% Values are therefore multiples of uniform density (m.u.d.). A value of 3
+% means three times the density expected from uniformly distributed axes.
+% It is not the fraction of axes at one exact direction; fractions require
+% integration over a finite region.
+
+%% Choosing the Halfwidth
 %
-%% The Halfwidth
-%
-% By far the most important parameter of kernel density estimation is the
-% halfwidth of the kernel function. It controls how far the influence of a
-% single data point reaches and hence how much the estimated function is
-% smoothed. In MTEX it is set by the option |'halfwidth'| and defaults to
-% $10^{\circ}$.
+% The kernel halfwidth controls how far each observation is spread. The
+% |'halfwidth'| option defaults to 10 degrees for |vector3d.calcDensity|.
+% Compare four choices on the same axes.
 
 hw = [2.5 5 10 20] * degree;
-
 mtexFig = newMtexFigure('layout',[1 4]);
 
 for k = 1:length(hw)
@@ -113,20 +103,13 @@ end
 mtexFig.drawNow
 
 %%
-% A too small halfwidth results in a spiky function that mainly reproduces
-% the noise of the individual measurements, while a too large halfwidth
-% oversmooths the data and may hide relevant details. As a rule of thumb,
-% the more data points we have, the smaller the halfwidth may be chosen.
+% At 2.5 degrees the estimate contains many narrow peaks. At 20 degrees
+% those peaks have merged into broad regions. A small halfwidth can preserve
+% measurement-scale variation, while a large one can erase real structure.
+% Neither choice is automatically more accurate.
 %
-% In contrast to the estimation of an orientation density function, cf.
-% <OptimalKernel.html Optimal Kernel Selection>, MTEX does not perform an
-% automatic halfwidth selection for directional data. It is up to the user
-% to choose a reasonable value.
-%
-% Note how the maximum density decreases with increasing halfwidth. The
-% halfwidth also determines the harmonic bandwidth of the resulting
-% function - the smaller the halfwidth, the more spherical harmonic
-% coefficients are required to represent the density function
+% The halfwidth also sets the harmonic bandwidth needed to represent the
+% kernel. Print both the peak density and bandwidth for the four estimates.
 
 for k = 1:length(hw)
   pdfK = calcDensity(cAxes,'halfwidth',hw(k));
@@ -135,51 +118,23 @@ for k = 1:length(hw)
     ', bandwidth: ' xnum2str(pdfK.bandwidth)])
 end
 
-%% Choosing a Different Kernel Function
-%
-% By default MTEX uses the <S2DeLaValleePoussinKernel.html de la Vallee
-% Poussin kernel>. Any other <S2Kernels.html spherical kernel function> may
-% be passed by the option |'kernel'|. Lets compare the default kernel with
-% the <S2DirichletKernel.html Dirichlet kernel>, which simply truncates the
-% harmonic series at a given bandwidth
-
-psi1 = S2DeLaValleePoussinKernel('halfwidth',10*degree)
-psi2 = S2DirichletKernel(12)
-
-plot(psi1,'linewidth',2)
-hold on
-plot(psi2,'linewidth',2)
-hold off
-xlim([0,60])
-legend('de la Vallee Poussin','Dirichlet')
-
 %%
-% In contrast to the de la Vallee Poussin kernel the Dirichlet kernel
-% oscillates and takes negative values. These oscillations are inherited by
-% the estimated density function
-
-pdf2 = calcDensity(cAxes,'kernel',psi2);
-
-plot(pdf2,'upper')
-mtexColorbar
-
-%%
-% which, in particular, becomes negative in some regions
-
-min(pdf2)
-
-%%
-% This is the reason why kernels with non negative values, like the de la
-% Vallee Poussin kernel, are the better choice for density estimation.
+% Across this sweep the maximum falls from 14 to 2.5 m.u.d., while the
+% bandwidth falls from 92 to 13. A sharper estimate is more expensive as
+% well as more sensitive to fine-scale variation.
 %
-%% Weighted Density Estimation
+% The relevant sample size is the number of independent observations, not
+% merely the number of pixels. Neighbouring EBSD pixels are spatially
+% correlated because many sample the same grain. MTEX does not select a
+% halfwidth automatically for directional data. For orientation data,
+% <EBSD2ODF.html ODF Estimation from EBSD Data> explains this dependence and
+% <OptimalKernel.html Optimal Kernel Selection> describes automatic methods.
+
+%% Weighting Changes the Question
 %
-% In many situations the data points should not all contribute equally to
-% the density function. The classical example is the computation of a
-% texture from grain data, where large grains should have more impact than
-% small ones. Such weights are passed by the option |'weights'|.
-%
-% Lets reconstruct the grains of our EBSD map
+% A grain is a phase-homogeneous, spatially connected region of EBSD pixels
+% produced by segmentation. Reconstruct the indexed map with an example
+% 10 degree misorientation threshold, then keep the Forsterite grains.
 
 [grains,ebsd] = calcGrains(ebsd('indexed'),'angle',10*degree);
 grains = grains('Fo');
@@ -187,13 +142,21 @@ grains = grains('Fo');
 % one c-axis per grain
 cAxesGrains = grains.meanOrientation * grains.CS.cAxis;
 cAxesGrains.antipodal = true;
+numGrainAxes = numel(cAxesGrains)
 
 %%
-% and compare the unweighted density function of the grain c-axes with the
-% one weighted by grain area
+% The reconstruction gives 1151 Forsterite grain axes instead of 152345
+% pixel axes. Giving each grain one vote describes the distribution of
+% grains. Weighting by sectional grain area describes the mapped material
+% area, which is the question answered by equal pixel weights on this
+% regular scan.
 
-mtexFig = newMtexFigure('layout',[1 2]);
+mtexFig = newMtexFigure('layout',[1 3]);
 
+plot(pdf,'upper')
+mtexTitle('one pixel - one vote')
+
+nextAxis
 plot(calcDensity(cAxesGrains),'upper')
 mtexTitle('one grain - one vote')
 
@@ -206,130 +169,188 @@ mtexColorbar
 mtexFig.drawNow
 
 %%
-% Giving every grain the same vote, the result is dominated by the large
-% number of tiny grains and is much flatter than the pixel based density
-% function we computed at the beginning of this page. Weighting by grain
-% area gives a result that is very close to it - which is not surprising,
-% as the number of pixels of a grain is essentially its area.
-%
-%% Antipodal Symmetry
-%
-% Whether the input data are interpreted as directions or as axes has a
-% direct impact on the resulting density function. Without antipodal
-% symmetry we obtain an arbitrary spherical function
+% With a common colour range, equal grain weights give the flattest panel.
+% Area weighting restores the main concentrations of the pixel estimate,
+% although replacing every grain by its mean orientation removes the
+% within-grain spread. The scientifically correct weights depend on whether
+% the population of interest is grains, mapped area, or something else.
 
-v = vector3d.rand(1000);
-plot(calcDensity(v),'complete')
-
-%%
-% Assuming antipodal symmetry, either by setting the flag on the data or by
-% passing the option |'antipodal'| to |calcDensity|, the resulting density
-% function is antipodally symmetric as well, i.e., the upper and the lower
-% hemisphere carry the same information
-
-plot(calcDensity(v,'antipodal'),'complete')
-
-%%
-% A more detailed discussion can be found in the section
-% <VectorsAxes.html Axes and Antipodal Symmetry>.
-%
 %% Working with the Density Function
 %
-% Once the density function is computed we may analyze it with all the
-% tools available for spherical functions, cf. <S2FunOperations.html
-% Operations on Spherical Functions>. The most obvious question is where
-% the c-axes are concentrated, i.e., where the density function attains its
-% maximum
-
-[density,pos] = max(pdf)
-
-%%
-% We may also ask for a certain number of local maxima
-
-[density,pos] = max(pdf,'numLocal',3)
-
-%%
-% Next we may ask which portion of the c-axes is located within a
-% $20^{\circ}$ ball around the strongest maximum. This is exactly what the
-% command <S2Fun.volume.html |volume|> computes
-
-volume(pdf,pos(1),20*degree)
-
-%%
-% Counting the c-axes directly gives a slightly larger value
-
-mean(angle(cAxes,pos(1)) < 20*degree)
-
-%%
-% The difference is a consequence of the smoothing - the kernel spreads a
-% sharp maximum out and thereby moves some density out of the ball.
-% Reducing the halfwidth reduces the difference.
+% A density is an <S2FunConcept.html |S2Fun|>, so it can be evaluated,
+% integrated, searched for peaks, combined with other spherical functions,
+% and sampled. <S2FunOperations.html Operations on Spherical Functions>
+% develops that common interface.
 %
-% We may also evaluate the density function at arbitrary directions
+% First find the global maximum.
 
-pdf.eval([xvector,yvector,zvector])
+[globalDensity,globalPos] = max(pdf)
 
 %%
-% If one is interested in the function values only, and not in the density
-% function itself, the evaluation points may be passed directly to
-% |calcDensity|
+% The output gives both the density and the specimen direction where it is
+% attained. The |'numLocal'| option requests several distinct local maxima.
+
+[localDensity,localPos] = max(pdf,'numLocal',3)
+
+%%
+% The first local maximum is the global one. Integrate the density within
+% 20 degrees of that axis using <S2Fun.volume.html |volume|>.
+
+smoothedFraction = volume(pdf,localPos(1),20*degree)
+
+%%
+% The smoothed estimate assigns 0.1723, or 17.23 percent, of the population
+% to that axial neighbourhood. Count the original axes in the same region.
+
+observedFraction = mean(angle(cAxes,localPos(1)) < 20*degree)
+
+%%
+% The direct count is 0.1890, or 18.90 percent. Smoothing moves some density
+% across the boundary of the 20 degree neighbourhood, so the two questions
+% do not have to give the same answer.
+%
+% Evaluate the density at the three specimen basis directions.
+
+basisDensities = pdf.eval([xvector,yvector,zvector])
+
+%%
+% Among X, Y and Z, the Y direction has the largest density in this example.
+% If only these values are needed, pass the evaluation directions directly:
 %
 %   f = calcDensity(cAxes,[xvector,yvector,zvector])
 %
-% Finally, we may draw a random sample from the estimated density function,
-% e.g. in order to reduce a huge data set to a manageable number of
-% representative directions
+% A random sample from the estimate can replace the large point cloud in a
+% simulation or exploratory plot.
 
-vRand = discreteSample(pdf,500)
+vRand = discreteSample(pdf,500);
 
 plot(pdf,'upper')
 hold on
 plot(vRand,'MarkerFaceColor','k','MarkerSize',4)
 hold off
 
-%% Density Estimation for Crystal Directions
-%
-% If the input data are of type <Miller.Miller.html |@Miller|>, i.e., if
-% they are directions with respect to a crystal reference frame, the
-% command <Miller.calcDensity.html |calcDensity|> automatically symmetrizes
-% the resulting density function according to the crystal symmetry. A
-% typical application is the computation of an inverse pole figure, i.e.,
-% the distribution of a specimen direction with respect to the crystal
-% coordinate system
+%%
+% The 500 black points follow the same broad concentrations as the coloured
+% density, but retain the sampling variation expected from a finite draw.
+% They are simulated representatives, not a lossless compression of the
+% original 152345 measurements.
 
-% the specimen direction z in crystal coordinates
-h = inv(ebsd('Fo').orientations) .* vector3d.Z
+%% Crystal Directions and Symmetry
+%
+% The previous density lives in the specimen reference frame. An inverse
+% pole density instead fixes a specimen direction and asks which crystal
+% directions are parallel to it. Express specimen Z in the crystal frame of
+% every Forsterite orientation.
+
+h = inv(ebsd('Fo').orientations) .* vector3d.Z;
 
 %%
-% Since |h| is of type |@Miller| the density function inherits the crystal
-% symmetry and is of type <S2FunHarmonicSym.S2FunHarmonicSym.html
-% |@S2FunHarmonicSym|>
+% The result is a |Miller| array carrying the Forsterite crystal symmetry.
+% <Miller.calcDensity.html |Miller.calcDensity|> transfers that symmetry to
+% the density automatically.
 
 ipdf = calcDensity(h)
 
 %%
-% Accordingly, it is sufficient to plot it within the fundamental sector of
-% the crystal symmetry
+% The summary identifies an antipodal |S2FunHarmonicSym|. Plotting only the
+% fundamental sector shows every symmetry-inequivalent crystal direction
+% once.
 
 plot(ipdf,'contourf')
 mtexColorbar
 
 %%
-% The symmetrization may be switched off by the option |'noSymmetry'|.
+% The coloured sector contains the complete inverse pole density without
+% repeating symmetry-related directions. The |'noSymmetry'| option disables
+% crystal symmetrization when that is deliberately required.
+
+%% Choosing a Different Kernel
 %
-%% Density Estimation on the Fly
+% The default is the non-negative
+% <S2DeLaValleePoussinKernel.html de la Vallee Poussin kernel>. Its finite
+% harmonic expansion avoids truncation ringing. The |'kernel'| option also
+% accepts other <S2Kernels.html spherical kernels>.
 %
-% Whenever a large set of directions is plotted with one of the smooth
-% plotting options, e.g. |'contourf'|, |'smooth'| or |'pcolor'|, MTEX
-% silently performs a kernel density estimation with a halfwidth of
-% $5^{\circ}$ and displays the result. Hence,
+% Compare the default 10 degree kernel with a
+% <S2DirichletKernel.html Dirichlet kernel> truncated at bandwidth 12.
+
+psi1 = S2DeLaValleePoussinKernel('halfwidth',10*degree);
+psi2 = S2DirichletKernel(12);
+
+plot(psi1,'linewidth',2)
+hold on
+plot(psi2,'linewidth',2)
+hold off
+xlim([0,60])
+legend('de la Vallee Poussin','Dirichlet')
+
+%%
+% The de la Vallee Poussin curve decreases without crossing zero. The
+% Dirichlet curve oscillates above and below zero, and those negative lobes
+% pass into a density estimate made with it.
+
+pdf2 = calcDensity(cAxes,'kernel',psi2);
+
+plot(pdf2,'upper')
+mtexColorbar
+
+minimumDirichletDensity = min(pdf2)
+
+%%
+% The minimum is -0.4029, which is not a valid probability density.
+% Non-negative kernels are therefore the appropriate default for density
+% estimation. A Dirichlet kernel remains useful for operations where exact
+% harmonic truncation, rather than non-negativity, is the objective.
+
+%% Density Estimation While Plotting
+%
+% Smooth plotting options for a large |vector3d| list perform density
+% estimation internally. The |'contourf'|, |'smooth'| and |'pcolor'| modes
+% use a 5 degree halfwidth when none is supplied.
 
 plot(cAxes,'contourf','upper')
 mtexColorMap LaboTeX
 mtexColorbar
 
 %%
-% is a shortcut for computing the density function first and plotting it
-% afterwards. As soon as one wants to control the halfwidth, use weights,
-% or do any computation with the density function, the explicit call to
-% <vector3d.calcDensity.html |calcDensity|> is the way to go.
+% This 5 degree plot is sharper than the explicit 10 degree estimate |pdf|.
+% Use <vector3d.calcDensity.html |calcDensity|> explicitly when the density
+% itself, its weights, its kernel, or a reproducible smoothing choice matters.
+
+%% The Maths Behind the Estimate
+%
+% Let $v_n$ be unit directions with non-negative weights $w_n$, and let
+% $\psi$ be a normalized radial kernel. MTEX computes the weighted kernel
+% estimate
+%
+% $$f(v) = \frac{1}{\sum_{n=1}^{N}w_n}
+%   \sum_{n=1}^{N} w_n\,\psi(v\mathbin{\cdot}v_n).$$
+%
+% Equal weights reduce the denominator to $N$. For axial input, the result
+% is symmetrized so that $f(v)=f(-v)$. The normalization makes the mean of
+% $f$ equal to one under MTEX's uniform spherical measure.
+%
+% The estimate is a model of an unknown population density, not the unknown
+% density itself. Decreasing the halfwidth reduces smoothing bias but raises
+% sampling variation; increasing it does the reverse.
+
+%% Further Reading
+%
+% * K. V. Mardia and P. E. Jupp,
+% <https://doi.org/10.1002/9780470316979 Directional Statistics>, Wiley,
+% 1999, treats probability models and inference for both directions and axes.
+% * P. Hall, G. S. Watson and J. Cabrera,
+% <https://doi.org/10.1093/biomet/74.4.751 Kernel density estimation with
+% spherical data>, _Biometrika_ 74 (1987), 751-762, develops the bias,
+% variance and loss of spherical kernel estimators.
+% * H. Schaeben and K. G. van den Boogaart,
+% <https://doi.org/10.1016/S0040-1951(03)00190-2 Spherical harmonics in
+% texture analysis>, _Tectonophysics_ 370 (2003), 253-268, connects
+% spherical kernels, harmonic representations and texture analysis.
+
+%% Next
+%
+% Continue with <SphericalFunctions.html Spherical Functions> to work with
+% densities as mathematical objects. Use <EBSD2ODF.html ODF Estimation from
+% EBSD Data> when the input is a list of orientations rather than directions,
+% and <ODFTutorial.html the ODF tutorial> for the complete texture workflow.

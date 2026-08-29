@@ -108,7 +108,7 @@ if ~check_option(varargin,{'all','contour','contourf','smooth','pcolor'}) && ...
   points = fix(get_option(varargin,'points',10000/numSym(ori.CS)/numSym(ori.SS)));
   if ~check_option(varargin,'points')
     disp(['  I''m plotting ', int2str(points) ,' random orientations out of ', int2str(length(ori)),' given orientations']);
-    disp('  You can specify the the number points by the option "points".');
+    disp('  You can specify the number of points by the option "points".');
     disp('  The option "all" ensures that all data are plotted');
   end
 

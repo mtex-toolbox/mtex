@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="430" viewBox="0 0 1100 430">
+  <defs>
+    <style>
+      .title { font: 25px Arial, sans-serif; font-weight: 600; fill: #24292f; text-anchor: middle; }
+      .label { font: 19px Arial, sans-serif; fill: #57606a; text-anchor: middle; }
+      .axis { stroke: #57606a; stroke-width: 3; marker-end: url(#head); }
+      .cell { stroke: #ffffff; stroke-width: 2; }
+      .face { stroke: #24292f; stroke-width: 3; stroke-linejoin: round; }
+      .edge { fill: none; stroke: #24292f; stroke-width: 3; stroke-linejoin: round; }
+    </style>
+    <marker id="head" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#57606a"/>
+    </marker>
+  </defs>
+
+  <text class="title" x="275" y="42">Volume measurements</text>
+  <text class="title" x="825" y="42">Three-dimensional grains</text>
+
+  <g transform="translate(112 145) skewY(-10)">
+    <rect class="cell" fill="#92c5de" x="0" y="0" width="65" height="65"/>
+    <rect class="cell" fill="#92c5de" x="65" y="0" width="65" height="65"/>
+    <rect class="cell" fill="#f4a582" x="130" y="0" width="65" height="65"/>
+    <rect class="cell" fill="#f4a582" x="195" y="0" width="65" height="65"/>
+    <rect class="cell" fill="#92c5de" x="0" y="65" width="65" height="65"/>
+    <rect class="cell" fill="#b8e186" x="65" y="65" width="65" height="65"/>
+    <rect class="cell" fill="#b8e186" x="130" y="65" width="65" height="65"/>
+    <rect class="cell" fill="#f4a582" x="195" y="65" width="65" height="65"/>
+    <rect class="cell" fill="#ffd166" x="0" y="130" width="65" height="65"/>
+    <rect class="cell" fill="#b8e186" x="65" y="130" width="65" height="65"/>
+    <rect class="cell" fill="#d5b0e3" x="130" y="130" width="65" height="65"/>
+    <rect class="cell" fill="#d5b0e3" x="195" y="130" width="65" height="65"/>
+  </g>
+  <g transform="translate(150 190) skewY(-10)" opacity="0.72">
+    <rect class="cell" fill="#92c5de" x="0" y="0" width="65" height="65"/>
+    <rect class="cell" fill="#f4a582" x="65" y="0" width="65" height="65"/>
+    <rect class="cell" fill="#f4a582" x="130" y="0" width="65" height="65"/>
+    <rect class="cell" fill="#f4a582" x="195" y="0" width="65" height="65"/>
+    <rect class="cell" fill="#ffd166" x="0" y="65" width="65" height="65"/>
+    <rect class="cell" fill="#b8e186" x="65" y="65" width="65" height="65"/>
+    <rect class="cell" fill="#d5b0e3" x="130" y="65" width="65" height="65"/>
+    <rect class="cell" fill="#d5b0e3" x="195" y="65" width="65" height="65"/>
+    <rect class="cell" fill="#ffd166" x="0" y="130" width="65" height="65"/>
+    <rect class="cell" fill="#ffd166" x="65" y="130" width="65" height="65"/>
+    <rect class="cell" fill="#d5b0e3" x="130" y="130" width="65" height="65"/>
+    <rect class="cell" fill="#d5b0e3" x="195" y="130" width="65" height="65"/>
+  </g>
+
+  <line class="axis" x1="100" y1="355" x2="155" y2="355"/>
+  <line class="axis" x1="100" y1="355" x2="100" y2="300"/>
+  <line class="axis" x1="100" y1="355" x2="70" y2="382"/>
+  <text class="label" x="169" y="361">x</text>
+  <text class="label" x="93" y="289">z</text>
+  <text class="label" x="57" y="398">y</text>
+
+  <g transform="translate(635 78)">
+    <polygon class="face" fill="#92c5de" points="15,80 135,20 160,145 65,190"/>
+    <polygon class="face" fill="#f4a582" points="135,20 285,55 270,165 160,145"/>
+    <polygon class="face" fill="#b8e186" points="65,190 160,145 155,285 30,260"/>
+    <polygon class="face" fill="#d5b0e3" points="160,145 270,165 320,275 155,285"/>
+    <polygon class="face" fill="#ffd166" points="285,55 335,115 320,275 270,165"/>
+    <path class="edge" d="M15,80 L55,35 L135,20 M55,35 L170,65 L285,55 M30,260 L0,215 L15,80 M0,215 L65,190"/>
+  </g>
+
+  <text class="label" x="275" y="410">position, phase, orientation, properties</text>
+  <text class="label" x="825" y="410">polyhedra, faces, edges, vertices</text>
+</svg>

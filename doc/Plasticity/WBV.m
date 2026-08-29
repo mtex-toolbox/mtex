@@ -1,277 +1,329 @@
 %% Weighted Burgers Vector Analysis
 %
-% The "Weighted Burgers Vector" is a method to analyze geometrically
-% necessary dislocations from EBSD maps, complementary (or alternatively)
-% to <GND.html GND analysis>. The reference description is in
-% <https://doi.org/10.1111/j.1365-2818.2009.03136.x Wheeler et. al., The weighted
-% Burgers vector: a new quantity for constraining dislocation densities and
-% types using electron backscatter diffraction on 2D sections through
-% crystalline materials>
+% The *weighted Burgers vector* (WBV) describes the net Burgers-vector
+% content that crosses an EBSD section. Each dislocation line is weighted by
+% the cosine of its angle to the map normal. Parallel Burgers vectors add,
+% while opposing ones can cancel.
 %
-% The "Weighted Burgers Vector" is a moving window technique interpreting
-% the orientation gradient in a given neighborhood and at a given distance
-% to be caused by dislocation lines which crosscut the observation surface.
-% It is weighted/biased by the cosine of the angle between the map-normal
-% the dislocation line direction.
+% WBV analysis is complementary to, and can be used as an alternative to,
+% <GND.html geometrically necessary dislocation analysis>. The GND workflow
+% fits densities of chosen crystallographic systems. WBV analysis returns one
+% vector without choosing systems, but it cannot by itself separate the
+% contributing dislocation types or their cancelling densities.
 %
-% In MTEX the weighted Burgers vector is computed by the function
-% <EBSD.weightedBurgersVec.html |ebsd.weightedBurgersVec|>, which offers two
-% methods. This page is in two parts, one for each.
-%
-% The *integral method* is the default. It derives the WBV from the
-% orientation gradient in x- and y- direction, obtained using a convolution
-% kernel similar to a Prewitt operator, except that the corners are weighted
-% by 0.5. This is comparable to what is termed the "integral method" by
-% other implementations. The size of the kernel can be adjusted in order to
-% cope with noisy data.
-%
-% The *gradient method* derives the WBV from the last column of the
-% <curvatureTensor.dislocationDensity.html dislocation density tensor>.
-% It resolves finer detail, but it differentiates the data directly and so
-% amplifies whatever noise is in it - high angular resolution EBSD data, or
-% denoising prior to the analysis, is required. Which neighbours enter that
-% derivative can be chosen, and that choice is what the second half of this
-% page is about.
-%
-%%
-% We start by importing the same data as for the <GND.html GND example>.
+% <EBSD.weightedBurgersVec.html |weightedBurgersVec|> offers an integral
+% method and a gradient method. This page computes both, shows their noise
+% controls, and explains what their different spatial scales mean.
 
-% import the EBSD data
+%% Prepare a single-grain map
+% Load the bundled single-phase aluminium map. Earlier wording called this
+% the same data as the preceding GND example, but |mtexdata single| is a
+% 101-by-101 aluminium map rather than the DC06 steel map used there.
+
 mtexdata single
 
 %%
-% We reconstruct grains because later on, we do not want to compute the WBV
-% across grain boundaries
+% Reconstruct grains because neither method should compare orientations
+% across a grain boundary. Regions smaller than six pixels become
+% |notIndexed|, as on the preceding page.
 
 [grains,ebsd] = calcGrains(ebsd,'angle',2.5*degree,'minPixel',6);
 
-% we will use the noisy data later on
-ebsdN = ebsd;
+% retain the unfiltered map for the window-size comparison
+ebsdNoisy = ebsd;
 
-% denoise the data
+% denoise without smoothing across grain boundaries
 F = halfQuadraticFilter;
 ebsd = smooth(ebsd,F,'fill',grains);
 
-%% Part 1: the integral method
-% The default integral method is a moving window over the map, so it needs
-% the data in matrix form. Our map already is - that is how it was imported,
-% see <EBSDGrid.html Square and Hex Grids> - and for a map that is not,
-% <EBSD.gridify.html |gridify|> is called internally. The gradient method in
-% part 2 has no such requirement, see there.
+% the integral implementation uses ordfilt2 from Image Processing Toolbox
+hasIntegralMethod = ~isempty(which('ordfilt2'));
 
-wbv = weightedBurgersVec(ebsd)
+%% Integral method: compute the default WBV
+% The default integral method evaluates a square loop around every pixel.
+% It uses a Prewitt-like convolution kernel whose four corner weights are
+% one half. The default |'windowSize',1| gives a 3-by-3 loop.
+%
+% A raster loop needs matrix-form data. This map is already gridded; for a
+% plain @EBSD map, <EBSD.gridify.html |gridify|> is called internally and the
+% result is mapped back to the original measurements.
+%
+% The current integral implementation uses |ordfilt2| to reject loops that
+% cross a grain or map boundary. It therefore requires Image Processing
+% Toolbox. This page skips the integral figures when that function is not
+% available and continues with the toolbox-independent gradient method.
 
-%%
-% The WBV is returned in specimen coordinates as a list of @vector3d. We
-% can inspect its magnitude (in 1/scanunit) and direction.
-
-plot(ebsd,wbv.norm,'refFrame','on')
-mtexColorbar
-mtexTitle('WBV magnitude')
-
-%% Visualizing the WBV
-% In order to visualize the direction of the WBV in specimen coordinates,
-% we can use a directional color key.
-
-cK = HSVDirectionKey(wbv);
-plot(ebsd,cK.direction2color(wbv),'FaceAlpha',wbv.norm/0.22)
-mtexTitle('WBV in specimen coordinates')
-
-nextAxis
-plot(cK,'figSize','tiny')
-mtexTitle('directional color key')
+if hasIntegralMethod
+  wbvIntegral = weightedBurgersVec(ebsd)
+else
+  warning(['Integral WBV examples skipped: ordfilt2 from Image ' ...
+    'Processing Toolbox is not available.'])
+end
 
 %%
-% We could also display the WBV as small arrows. If we allow for any
-% magnitude, the plot would become quite cluttered. Hence, we will only
-% display those vectors which have a reasonably large magnitude.
-% Next to it we plot the distributions of WBV in a spherical projection. 
+% The result is a @vector3d at every EBSD pixel, expressed in the specimen
+% frame. Its norm has units of inverse scan length, here $1/\mathrm{\mu m}$.
 
-cond = wbv.norm > quantile(wbv.norm,0.85);
+if hasIntegralMethod
+  plot(ebsd,wbvIntegral.norm,'refFrame','on')
+  mtexColorbar
+  mtexTitle('WBV magnitude')
+end
 
-plot(ebsd,cK.direction2color(wbv),'FaceAlpha',wbv.norm/0.22)
-hold on
-quiver(ebsd(cond),wbv(cond),'color','k','autoScaleFactor', 2, 'antipodal','linewidth',0.5);
-hold off
-mtexTitle('WBV in specimen coordinates')
+%%
+% Bright pixels have a larger net Burgers-vector content through the local
+% loop. A small norm does not prove that few dislocations are present,
+% because vectors of opposite sign can cancel.
 
-nextAxis
-plot(wbv,'weights',wbv.norm,'contourf')
-mtexTitle('WBV density distribution')
+%% Show direction and magnitude together
+% A directional key assigns hue from vector direction. Opacity carries the
+% norm, with values at and above 0.22 rendered fully opaque.
 
-%% The WBV in crystal coordinates
-% In order to inspect the WBV in crystal coordinates we transform them
-% using the orientations and choose a fitting directional color key
+if hasIntegralMethod
+  cK = HSVDirectionKey(wbvIntegral);
+  alphaIntegral = min(wbvIntegral.norm/0.22,1);
 
-% transform to crystal reference frame
-wbvC = inv(ebsd.orientations) .* wbv;
+  plot(ebsd,cK.direction2color(wbvIntegral), ...
+    'FaceAlpha',alphaIntegral)
+  mtexTitle('WBV in specimen coordinates')
 
-% define a directional color key respecting crystal symmetry
-cKC = HSVDirectionKey(wbvC);
+  nextAxis
+  plot(cK,'figSize','tiny')
+  mtexTitle('directional color key')
+end
 
-% plot the data
-plot(ebsd,cKC.direction2color(wbvC),'FaceAlpha',wbv.norm/0.22)
-mtexTitle('WBV in crystal coordinates')
+%%
+% Read hue only where the map is sufficiently opaque. Hue in nearly
+% transparent regions represents a poorly constrained direction of a small
+% vector and should not dominate the interpretation.
 
-% plot the color key
-nextAxis
-plot(cKC)
-mtexTitle('directional color key')
+%% Plot only the strongest vectors
+% Arrows at every pixel would hide the map. The 85th percentile is a display
+% threshold, not a physical division between low and high dislocation
+% content, so the arrows show only the strongest 15 percent of WBVs.
 
-% overlaid with the contour lines of its density distribution
-hold on
-plot(wbvC,'weights',wbvC.norm,'contour', ...
+if hasIntegralMethod
+  cond = wbvIntegral.norm > quantile(wbvIntegral.norm,0.85);
+
+  plot(ebsd,cK.direction2color(wbvIntegral), ...
+    'FaceAlpha',alphaIntegral)
+  hold on
+  quiver(ebsd(cond),wbvIntegral(cond),'color','k', ...
+    'autoScaleFactor',2,'antipodal','linewidth',0.5);
+  hold off
+  mtexTitle('strongest WBVs in specimen coordinates')
+
+  nextAxis
+  plot(wbvIntegral,'weights',wbvIntegral.norm,'contourf')
+  mtexTitle('magnitude-weighted direction distribution')
+end
+
+%%
+% The arrows identify the local directions behind the map colors. The
+% spherical plot summarizes those directions over the whole map, weighted by
+% magnitude, so it does not preserve their spatial locations.
+
+%% Express the WBV in each crystal frame
+% The same physical vector can be re-expressed in the crystal frame of each
+% pixel by applying the inverse orientation. This is a frame change, not a
+% rotation of the dislocation content.
+
+if hasIntegralMethod
+  wbvCrystal = inv(ebsd.orientations) .* wbvIntegral;
+  cKCrystal = HSVDirectionKey(wbvCrystal);
+
+  plot(ebsd,cKCrystal.direction2color(wbvCrystal), ...
+    'FaceAlpha',alphaIntegral)
+  mtexTitle('WBV in crystal coordinates')
+
+  nextAxis
+  plot(cKCrystal)
+  mtexTitle('directional color key')
+  hold on
+  plot(wbvCrystal,'weights',wbvCrystal.norm,'contour', ...
     'contours',0.2:0.1:2,'linecolor','k','ShowText','on', ...
     'linewidth',2)
-hold off
-
-%% Effect of windowSize
-% In case there are reasons why the EBSD data cannot be denoised, the WBV
-% can also be computed with respect to a larger neighborhood. The integer
-% specified with with |'windowSize'| gives a 2*n+1 square across which the
-% WBV is computed. The default is a 3-by-3 box.
-
-close all
-newMtexFigure('layout',[2,4])
-
-% first we plot again the WBV form the denoised dataset
-wbv = weightedBurgersVec(ebsd);
-nextAxis(1,1)
-plot(ebsd,wbv.norm); hold on
-mtexTitle('WBV norm (denoised) / box = 3')
-
-nextAxis(2,1)
-plot(wbv,'weights',wbv.norm,'contourf','antipodal')
-mtexTitle('density distribution')
-
-% next we plot the WBV form the noisy dataset
-
-for ws = [1 2 3]
-
-  wbv = weightedBurgersVec(ebsdN,'windowSize',ws);
-  nextAxis(1,ws+1)
-  plot(ebsdN,wbv.norm); hold on
-  mtexTitle(['WBV norm / box =' num2str(2*ws+1)])
-
-  nextAxis(2,ws+1)
-  plot(wbv,'weights',wbv.norm,'contourf','antipodal')
-  mtexTitle('density distribution')
-
+  hold off
 end
-mtexColorbar
 
 %%
-% Here we see that there is some difference between the noisy and the
-% denoised data in a 3-by-3 and larger neighborhoods. For larger window
-% sizes, we see that there is of course a loss of detail (and empty spaces
-% appear around unfilled points) and a decrease in the norm of WBV, since
-% high orientation gradients are spread by the larger window size. At the
-% other hand, the distribution of the WBV in the pole figures becomes
-% sharper, because there is less scatter in the WBV over larger areas.
+% Directions that differ in the specimen frame can cluster in the crystal
+% frame. The black contours show the magnitude-weighted direction density on
+% the crystal-symmetry color key.
 
-%% Part 2: the gradient method
-% The second method takes the WBV from the last column of the dislocation
-% density tensor, i.e. from the <EBSD.curvature.html curvature tensor> and
-% ultimately from <EBSD.gradient.html |ebsd.gradient|>. Unlike the integral
-% method it is computed on the virtual lattice and needs no grid at all - it
-% works on a plain @EBSD, on a phase subset, on rotated or sheared grids,
-% and on maps that do not lie in the xy plane. |ebsd| happens to be
-% gridified here, which changes nothing.
+%% Increase the integral window
+% If denoising is undesirable, enlarge the loop instead. An integer
+% |'windowSize',n| selects a $(2n+1)$-by-$(2n+1)$ loop, so the values 1, 2,
+% and 3 below produce 3-by-3, 5-by-5, and 7-by-7 loops.
+
+if hasIntegralMethod
+  close all
+  newMtexFigure('layout',[2,4])
+
+  wbvDenoised = weightedBurgersVec(ebsd);
+  nextAxis(1,1)
+  plot(ebsd,wbvDenoised.norm)
+  mtexTitle('denoised / box = 3')
+
+  nextAxis(2,1)
+  plot(wbvDenoised,'weights',wbvDenoised.norm,'contourf','antipodal')
+  mtexTitle('direction distribution')
+
+  for ws = [1 2 3]
+    wbvWindow = weightedBurgersVec(ebsdNoisy,'windowSize',ws);
+
+    nextAxis(1,ws+1)
+    plot(ebsdNoisy,wbvWindow.norm)
+    mtexTitle(['noisy / box = ' num2str(2*ws+1)])
+
+    nextAxis(2,ws+1)
+    plot(wbvWindow,'weights',wbvWindow.norm,'contourf','antipodal')
+    mtexTitle('direction distribution')
+  end
+  mtexColorbar
+end
+
+%%
+% The noisy 3-by-3 result differs visibly from the denoised result. Larger
+% loops suppress local scatter and sharpen the direction distribution, but
+% they also spread sharp gradients and reduce the WBV norm.
 %
-% We use the *denoised* map throughout this part. Differentiating a noisy
-% map point by point is exactly what this method must not be given.
+% Notice also the widening empty margins at the map border and around the
+% unfilled points. A value is undefined wherever its loop crosses a point
+% with no data, so increasing the window sacrifices both detail and
+% coverage. A grain boundary interrupts a loop the same way; this map
+% reconstructs to a single grain, so only the unfilled points do it here.
 
-wbv = weightedBurgersVec(ebsd,'gradient');
+%% Gradient method
+% The gradient method takes the map-normal column of the
+% <GND.html dislocation-density tensor> described on the preceding page. It
+% resolves finer detail than a finite integration loop, but pointwise
+% differentiation amplifies orientation noise. Use high-angular-resolution
+% data or denoise the map first, as done here.
+%
+% This method uses the virtual measurement lattice and does not require
+% matrix-form data. It works on a plain @EBSD map, a phase subset, and a
+% rotated or sheared grid. The current implementation extracts the third
+% Cartesian tensor column, so use it for a section whose normal is specimen
+% $z$. Earlier wording also claimed arbitrary non-$xy$ sections; that case is
+% not represented by the current extraction.
+
+wbvGradientDefault = weightedBurgersVec(ebsd,'gradient');
 
 close all
-cK = HSVDirectionKey(wbv);
-plot(ebsd,cK.direction2color(wbv),'FaceAlpha',wbv.norm/0.2)
-mtexTitle('WBV in specimen coordinates' )
+cKGradient = HSVDirectionKey(wbvGradientDefault);
+plot(ebsd,cKGradient.direction2color(wbvGradientDefault), ...
+  'FaceAlpha',min(wbvGradientDefault.norm/0.2,1))
+mtexTitle('gradient WBV in specimen coordinates')
 
-nextAxis(1,2) 
-
-plot(wbv,'weights',wbv.norm,'antipodal','contourf')
-mtexTitle('density distribution')
+nextAxis(1,2)
+plot(wbvGradientDefault,'weights',wbvGradientDefault.norm, ...
+  'antipodal','contourf')
+mtexTitle('direction distribution')
 
 %%
-% Comparing this with the map from part 1 we observe that for denoised data
-% the gradient based method results in a more detailed map.
+% Compared with the denoised integral map, the gradient map retains sharper
+% pixel-scale structures. Some of that extra detail may be noise, so the
+% derivative stencil must be chosen with the spatial resolution in mind.
 
-%% Choosing the stencil
-% Which neighbours enter the derivative is selected with the |'stencil'|
-% option, passed straight through to <EBSD.gradient.html |ebsd.gradient|>.
-% There are three choices, and they trade detail against robustness in the
-% same way |'windowSize'| does for the integral method - only at the scale
-% of a single pixel.
+%% Choose the gradient stencil
+% The |'stencil'| option is passed to
+% <EBSD.gradient.html |ebsd.gradient|>. All choices use only the immediate
+% lattice neighbourhood, but trade locality against robustness.
 %
-% * |'oneSided'| (the default) uses the neighbour in +a1 and +a2 only,
-% falling back to the other side just at the border of the map. It is a
-% forward difference: the most local answer, and the noisiest.
-% * |'1hop'| fits the gradient by least squares over the lattice's own
-% neighbourhood - the 4 axial neighbours of a square grid, the 6 neighbours
-% of a hexagonal one. In the interior of a square map that is exactly the
-% central difference.
-% * |'full'| fits over all eight surrounding pixels, i.e. the 1-hop
-% neighbours plus the diagonals. Most averaging, and best conditioned: a
-% pixel needs two independent neighbour directions before the gradient is
-% defined at all, so the wider stencil also leaves fewer holes. That last
-% point does not show on this map, which is dense and single phase - it
-% matters on maps broken up by notIndexed regions, phase boundaries or grain
-% boundaries, where the three stencils can differ by a factor of twenty in
-% how many pixels they define the gradient at.
+% * |'oneSided'| is the default. It uses the neighbours in the positive two
+% lattice directions and falls back to the opposite side at the map border.
+% This forward difference is the most local and the most noise-sensitive.
+% * |'1hop'| fits a least-squares gradient over the lattice's axial
+% neighbours: four on a square grid and six on a hexagonal grid. In the
+% interior of a square map this is the central difference.
+% * |'full'| fits all eight surrounding pixels on a square grid, including
+% the diagonals. It averages most and is best conditioned. A pixel needs two
+% independent neighbour directions, so this stencil can also leave fewer
+% undefined values on an interrupted map.
 %
-% The default is |'oneSided'| so that existing numbers do not move. Let us
-% compute all three on the denoised map.
+% Where a map is broken up by |notIndexed| areas, phase boundaries, or grain
+% boundaries, the three stencils differ in how many pixels they can still
+% define. This map is dense and single-phase, so the difference here is only
+% a couple of pixels at the border.
 
 stencils = {'oneSided','1hop','full'};
+wbvGradient = cell(size(stencils));
+
+for k = 1:numel(stencils)
+  wbvGradient{k} = weightedBurgersVec(ebsd,'gradient', ...
+    'stencil',stencils{k});
+end
 
 close all
 newMtexFigure('layout',[2,3])
 
-for k = 1:3
-
-  wbv = weightedBurgersVec(ebsd,'gradient','stencil',stencils{k});
-
+for k = 1:numel(stencils)
   nextAxis(1,k)
-  plot(ebsd,wbv.norm,'micronbar','off')
+  plot(ebsd,wbvGradient{k}.norm,'micronbar','off')
   mtexTitle(['WBV norm / ' stencils{k}])
-  
-  nextAxis(2,k)
-  plot(wbv,'weights',wbv.norm,'contourf','antipodal')
-  mtexTitle('density distribution')
 
+  nextAxis(2,k)
+  plot(wbvGradient{k},'weights',wbvGradient{k}.norm, ...
+    'contourf','antipodal')
+  mtexTitle('direction distribution')
 end
 mtexColorbar
 
 %%
-% The three maps show the same structures, but progressively smoothed. The
-% effect is easiest to read off the extremes rather than the mean, since
-% widening the stencil averages the sharpest gradients away first.
+% The three maps contain the same broad structures but become progressively
+% smoother. The extrema expose the change better than the mean because the
+% wider stencil averages the sharpest gradients first.
 
-for k = 1:3
-  wbv = weightedBurgersVec(ebsd,'gradient','stencil',stencils{k});
-  notNan = ~isnan(wbv);
-  fprintf('%-9s  defined at %d of %d pixels,  mean |W| = %.4f,  max |W| = %.4f\n',...
-    stencils{k}, nnz(notNan), numel(wbv), mean(wbv(notNan).norm), max(wbv(notNan).norm));
+for k = 1:numel(stencils)
+  wbvK = wbvGradient{k};
+  isDefined = ~isnan(wbvK);
+  fprintf(['%-9s  defined at %d of %d pixels,  mean |W| = %.4f,  ' ...
+    'max |W| = %.4f\n'],stencils{k},nnz(isDefined),numel(wbvK), ...
+    mean(wbvK(isDefined).norm),max(wbvK(isDefined).norm));
 end
 
 %%
-% The mean barely moves - 0.029 to 0.027 - while the maximum drops by half,
-% which says the stencil is acting on the sharpest gradients and leaving the
-% bulk of the map alone. Whether that is noise being removed or structure
-% being lost is a question about the data, not about the method.
+% |'oneSided'| is defined at 10,198 of the 10,201 pixels and the other two at
+% 10,200. The mean changes only from 0.0288 to 0.0271, while the maximum
+% falls from 0.4340 to 0.2169, almost exactly by half. The stencil therefore
+% acts most strongly on the sharpest gradients and leaves the bulk of this
+% map comparatively stable.
 %
-% So the choice is the familiar one between locality and noise. |'oneSided'|
-% keeps the sharpest features and the largest magnitudes, but a forward
-% difference over one pixel is the least robust estimator of a derivative
-% there is. |'full'| is the most stable, at the price of smoothing genuine
-% short range structure. |'1hop'| sits between the two and is symmetric,
-% which |'oneSided'| is not.
+% Whether that change removes noise or erases structure is a question about
+% the data. |'oneSided'| preserves the most local features, |'full'| is the
+% most stable, and the symmetric |'1hop'| choice lies between them.
 %
-% Note that this is a different knob from |'windowSize'| in part 1, even
-% though both trade detail for stability. |'windowSize'| enlarges the
-% integration loop and can be pushed to 5-by-5, 7-by-7 and beyond to cope
-% with genuinely noisy data; the stencil only ever reaches the immediate
-% neighbours of a pixel. If your data is noisy enough that |'full'| is not
-% sufficient, denoise it or use the integral method, rather than expecting
-% the stencil to make up the difference.
+% This control is distinct from integral |'windowSize'|. A stencil reaches
+% only immediate neighbours; an integral loop can expand to 5-by-5, 7-by-7,
+% and beyond. If |'full'| does not sufficiently stabilize noisy data, denoise
+% it or use a larger integral loop.
+
+%% Why the two methods measure the same vector
+% If $\boldsymbol\alpha$ is the Nye tensor and $\mathbf n$ is the map normal,
+% the weighted Burgers vector is
+%
+% $$ \mathbf W = \boldsymbol\alpha\,\mathbf n
+%    = \sum_s \rho_s\,\mathbf b_s
+%      (\hat{\mathbf l}_s\cdot\mathbf n). $$
+%
+% The second form shows the cosine weighting by line direction. The gradient
+% method evaluates $\boldsymbol\alpha\mathbf n$ locally. The integral method
+% estimates the same net content from the orientation change around a finite
+% loop, using a larger spatial support to reduce noise.
+
+%#ok<*NASGU>
+
+%% References
+%
+% * J. Wheeler, D. J. Prior, Z. Jiang, R. Spiess and P. W. Trimby,
+% <https://doi.org/10.1111/j.1365-2818.2009.03136.x The weighted Burgers
+% vector: a new quantity for constraining dislocation densities and types
+% using electron backscatter diffraction on 2D sections through crystalline
+% materials>, _Journal of Microscopy_ 233 (2009), 482-494, introduces the
+% WBV definition and its integral evaluation on EBSD sections.
+
+%% Next
+%
+% Continue with <VPSCImport.html VPSC Import> to bring the output of a
+% viscoplastic self-consistent simulation into MTEX for texture analysis.

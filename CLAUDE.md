@@ -80,19 +80,42 @@ Class-per-folder: `@ClassName/` holds a class's methods as separate `.m` files, 
 `data/**` are marked `-text` and keep their bytes, because importers parse fixtures byte by
 byte and some carry deliberately odd endings — never "fix" a line ending under `data/`.
 
+## Every edit reads as if the previous version never existed
+
+This is the rule agents break most often here, in code and in prose alike. **Change the
+line, the number, the sentence — and stop.** What the previous version said, why it was
+wrong, how the new value was measured, what would break without it: all of that belongs in
+the commit message, an issue, or an ADR under `docs/adr/`. None of it belongs in the file.
+
+It takes two shapes, and the second is harder to catch because it sounds like precision.
+
+- **A comment justifying the edit.** What the previous implementation did, which MTEX
+  version changed it, which commit or dataset a number was measured on, how many grains
+  some map gained. None of it helps the next reader and all of it ages badly — the
+  repository was swept once to remove ~2800 such lines.
+- **Prose arguing with the text it replaced.** A doc page that said "the map has turned by a
+  quarter turn" was corrected to "The picture is mirrored rather than turned" — but the
+  reader never saw the quarter turn, so the sentence contradicts nobody and reads as a non
+  sequitur. From the same sweep: "Take the number rather than the crowding", "The mismatch
+  does not simply accumulate", "this figure has no single largest grain to point at", "since
+  a phase map would not show what the threshold did". Every one had to be rewritten as a
+  plain statement of what is there now.
+
+**The test:** read the new text as someone who has never seen the old one. If a sentence only
+works for a reader who has, rewrite it. A negation is fine when it heads off a misreading
+available from what is in front of the reader — "it is not a percentage of the specimen",
+"this threshold does not remove notIndexed points" — and wrong when its referent is a
+sentence you have just deleted.
+
+The same holds for an edit that reverts or supersedes earlier work: the file ends in its new
+state, not in its new state plus a record of the detour.
+
 ## Comments
 
 **One line, saying what the next lines do.** Match the surrounding style: lowercase, terse,
 no full stop, above the statement or trailing on it. If the code is self-explanatory, write
-no comment.
-
-Do **not** write the multi-line justification blocks an agent tends to produce: what the
-previous implementation did, which MTEX version changed it, which commit or dataset a number
-was measured on, what would go wrong if the line were removed, how many grains some map
-gained. None of that helps the next reader, and it ages badly — the repository was swept
-once to remove ~2800 such lines. A single line is the budget; two or three only for a
-genuinely non-obvious invariant or a formula. Where the reasoning is worth keeping it belongs
-in the commit message, an issue, or an ADR under `docs/adr/` — not in the source.
+no comment. A single line is the budget; two or three only for a genuinely non-obvious
+invariant or a formula.
 
 ## Architecture
 

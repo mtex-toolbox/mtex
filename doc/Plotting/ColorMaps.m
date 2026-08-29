@@ -1,120 +1,180 @@
 %% Color Mapping
-%%
+%
+% A colour range is the numerical interval represented by a plot's colours.
+% Its lower and upper limits receive the end colours of the colormap. Two
+% plots can be compared by colour only when they use the same range and the
+% same colormap.
+%
+% This page shows how MTEX chooses the range, how to fix it, and how a
+% colormap translates values within that range into colours. Legends for
+% discrete objects and colour keys for directions were distinguished on
+% <Legends.html Legends>.
+
 plottingConvention.default('y↑→x');
-%%
-% A central issue when interpreting plots is to have a consistent color
-% coding among all plots. In MTEX this can be achieved in two ways. If the
-% the minimum and maximum value are known then one can specify the color
-% range directly using the options |'colorrange'| or |'contourf'|, or the
-% command <setColorRange.html setColorRange> is used which allows to set
-% the color range afterwards.
+
+%% Create two quantities to compare
 %
-%% A sample ODFs and Simulated Pole Figure Data
-%
-% Let us first define some model <SO3Fun.SO3Fun.html ODFs> to be plotted later
-% on.
+% An <ODFAnalysis.html orientation distribution function (ODF)> describes
+% the relative frequency of crystal orientations. This model ODF supplies
+% two simulated <PoleFigureAnalysis.html pole figures> whose densities can
+% be compared.
 
 cs = crystalSymmetry('-3m');
 odf = fibreODF(Miller(1,1,0,cs),zvector)
 pf = calcPoleFigure(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
   equispacedS2Grid('points',500,'antipodal'));
 
-%% Tight Colorcoding
+%% The default range is tight and per axis
 %
-% When <PoleFigure.plot.html plot> is called without any colorcoding
-% option, the plots are constructed using the option |'tight'| to the range
-% of the data independently from the other plots. This means that different
-% pole figures may have different color coding and in principle cannot be
-% compared to each other.
+% Without a |'colorRange'| option, MTEX uses |'tight'|. Each axis spans the
+% range of its own data. This uses the available colours fully, but it does
+% not guarantee that colours are comparable between axes.
 
 close all
 plot(pf)
 mtexColorbar
 
-%% Equal Colorcoding
+%%
+% Read the two colour bars before comparing the patterns. The $(100)$ panel
+% reaches approximately 3.5 multiples of a uniform distribution (mrd),
+% whereas the $(111)$ panel reaches approximately 2.1 mrd. The same colour
+% therefore denotes a different pole density in each panel. Nothing in the
+% maps alone warns about that mismatch.
+
+%% Use one range for one figure
 %
-% The |'tight'| colorcoding can make the reading and comparison of two pole
-% figures a bit hard. If you want to have one colorcoding for all plots
-% within one figure set the option |'colorrange'| to |'equal'|.
+% |'colorRange','equal'| chooses the smallest common range containing the
+% tight range of every axis in the figure.
 
 plot(pf,'colorRange','equal')
 mtexColorbar
 
-%% Setting an Explicit Colorrange
+%%
+% One colour bar now serves the figure, and both panels run to approximately
+% 3.5 mrd. The $(111)$ panel is visibly paler. The common range reveals its
+% lower density, which the separate tight ranges hid.
+
+%% Fix one range across separate figures
 %
-% If you want to have a unified colorcoding for several figures you can set
-% the colorrange directly in the <SO3Fun.plotPDF.html plot command>
+% Separate figures cannot discover each other's limits. State the same
+% numerical range in each plotting command. Here the original ODF and a
+% mixture containing half uniform ODF both use the interval from 0 to 4 mrd.
 
 close all
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
-  'colorrange',[0 4],'antipodal');
+  'colorRange',[0 4],'antipodal');
 mtexColorbar
 
 figure
-plotPDF(.5*odf+.5*uniformODF(cs),[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
-  'colorrange',[0 4],'antipodal');
+odfMixed = 0.5 * odf + 0.5 * uniformODF(cs);
+plotPDF(odfMixed,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
+  'colorRange',[0 4],'antipodal');
 mtexColorbar
 
-%% Setting the Contour Levels
+%%
+% Mixing with the uniform ODF halves the density contrast above 1 mrd.
+% Because the figures share a range, the second texture looks weaker. Tight
+% ranges would map these two affinely related fields to the same colours and
+% make them look identical.
+
+%% Use explicit contour levels
 %
-% In the case of contour plots you can also specify the *contour levels*
-% directly
+% A contour level is a value at which a contour line or colour boundary is
+% drawn. Explicit levels take the place of an explicit colour range for a
+% contour plot. Reusing the levels makes separate contour plots comparable.
 
 close all
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
   'contourf',0:1:5,'antipodal')
 mtexColorbar
 
-%% Modifying the Colorrange After Plotting
+%% Change the range after plotting
 %
-% The color range of the figures can also be adjusted afterwards using the
-% command <setColorRange.html |setColorRange|>
+% <setColorRange.html |setColorRange|> adjusts a figure that has already
+% been drawn. This is convenient when the useful limits become clear only
+% after inspecting the data.
 
-setColorRange([0.38,3.9])
+setColorRange([0.38 3.9])
 
-%% Logarithmic Plots
+%%
+% The colour bar now spans 0.38 to 3.9 mrd. Values outside that interval use
+% an end colour. Existing contour boundaries stay at their original levels;
+% changing the colour range does not recompute the contours.
+
+%% Use a logarithmic scale
 %
-% Sometimes logarithmic scaled plots are of interest. For this case all
-% plots commands in MTEX understand the option |'logarithmic'|, e.g.
+% A sharp texture puts most values near zero and a few at much larger
+% values. A linear scale can then show one small bright area against an
+% almost empty background. |'logarithmic'| spreads the positive low values
+% across more colours. Its lower colour-range limit must be positive.
 
-close all;
-plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal','logarithmic')
+close all
+plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],...
+  'antipodal','logarithmic')
 setColorRange([0.01 12]);
 mtexColorbar
 
+%%
+% Weak parts of the pole figures now show structure. The colour bar is no
+% longer linear, so equal distances in colour no longer represent equal
+% differences in density. That loss of linear distance is the trade-off for
+% making weak structure visible.
 
-%% Changing the Colormap
+%% Choose a colormap
 %
-% The colormap can be changed by the command mtexColorMap, e.g., in order
-% to set a white to black colormap one has the commands
+% A colormap is the ordered set of colours assigned across the colour range.
+% <mtexColorMap.html |mtexColorMap|> sets it for a figure. MTEX supplies
+% |white2black|, |blue2red|, and |LaboTeX| in addition to MATLAB colormaps.
 
 plotPDF(odf,[Miller(1,0,0,cs),Miller(1,1,1,cs)],'antipodal')
 mtexColorMap white2black
 mtexColorbar
 
-%% Multiple Colormaps
-%
-% One can even use different colormaps within one figure
+%%
+% Colormap choice is not decoration. A monotone map such as |white2black|
+% is an honest default for a density, which has no natural middle. A
+% diverging map such as |blue2red| suits a quantity with a meaningful middle,
+% such as signed curvature or the difference between two pole figures. Its
+% neutral colour lies at the middle of the range. Set that range symmetrically,
+% or the neutral colour marks a meaningless value.
 
-% initialize an MTEX-figure
+%% Use different colormaps in one figure
+%
+% Without an axes handle, |mtexColorMap| changes every axis in the figure.
+% Pass an axes handle to colour only that axis. Independent colormaps are
+% appropriate when the axes show different quantities rather than repeated
+% views of one quantity.
+
 mtexFig = newMtexFigure;
 
-% for three different colormaps 
-for cm = {'hot', 'cool', 'parula'}
-  
-  % generate a new axis
+v = vector3d.rand(100);
+
+for cm = {'hot','cool','parula'}
+
   nextAxis
-  
-  % plot some random data in different axis
-  plot(vector3d.rand(100),'smooth','grid','grid_res',90*degree,'upper');
-  
-  % and apply an individual colormap
+  plot(v,'smooth','grid','grid_res',90*degree,'upper');
+
   mtexColorMap(mtexFig.gca,char(cm))
-  
-  % set the title to be the name of the colormap
   mtexTitle(char(cm))
 end
 
-% plot a colorbar for each plot
-mtexColorbar
+mtexColorbar('multiple')
 
+%%
+% These are three plots of the same random directions, yet each colormap
+% gives a different visual impression. Independent colormaps need one colour
+% bar each, which is what |'multiple'| asks for. A single bar carries one
+% colormap and would describe only one of the three axes. That is the cost
+% of using several colour mappings in one figure.
+
+%% References
+%
+% * S. R. Midway,
+% <https://doi.org/10.1016/j.patter.2020.100141 Principles of Effective Data
+% Visualization>, _Patterns_ 1 (2020), 100141, explains how colour scales
+% support honest comparisons between plots.
+
+%% Next
+%
+% Continue with <ContourPlots.html Contour Plots> to choose filled or line
+% contours and to apply the levels introduced here.

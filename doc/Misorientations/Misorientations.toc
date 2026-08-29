@@ -1,4 +1,5 @@
 MisorientationTheory Theory
+MisorientationGrainExchangeSym  Grain Exchange Symmetry
 Twinning
 MisorientationDistributionFunction
 AxisDistributionFunction

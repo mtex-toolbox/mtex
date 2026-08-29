@@ -1,89 +1,129 @@
 %% Elasticity
 %
-%%
-% Elasticity is the part of deformation a material takes back. Load it,
-% and it changes shape; unload it, and it returns. The relationship between
-% the load and the shape change is linear for small strains, and the
-% constant of proportionality is the stiffness tensor.
+% Elasticity is the reversible part of deformation. Apply a load and the
+% material changes shape; remove the load and it returns. Strain measures
+% that relative change in shape, while stress measures force per unit area.
+% For small strains, the stiffness tensor maps strain linearly to stress.
 %
-% In a crystal that constant depends on direction, so an elastic answer is
-% never a single number. It also propagates: an elastic disturbance travels
-% as a wave, and its speed is set by the same tensor. This is why elasticity
-% is the bridge between a laboratory measurement on a crystal and a seismic
-% observation of the Earth - the two are the same physics at different
-% scales.
+% A crystal generally responds differently in different directions, so its
+% elastic behavior cannot be summarized by one modulus. The same directional
+% stiffness controls how an elastic disturbance travels through the crystal.
+% Elasticity therefore connects laboratory measurements of crystals to
+% seismic observations of rocks.
+
+%% A directional elastic response
 %
-% Below, the speed of a compressional wave through olivine, in every
-% direction.
+% The first example maps compressional-wave speed through an olivine crystal.
+% It loads a stiffness tensor in GPa and attaches a density in
+% $\mathrm{g/cm}^3$.
 
 plottingConvention.default('y↑→x');
 
-cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],'mineral','Olivine');
-C = stiffnessTensor.load(fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa'),cs);
+cs = crystalSymmetry('mmm',[4.7646 10.2296 5.9942],...
+  'mineral','Olivine');
+C = stiffnessTensor.load( ...
+  fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa'),cs);
 
-% a velocity is a stiffness divided by a density, so the density is required
 C = addOption(C,'density',3.355);
 
-% compressional wave velocity over all directions
 [vp,~,~] = velocity(C);
+[vpMax,vpMaxDirection] = max(vp);
+[vpMin,vpMinDirection] = min(vp);
+vpRange = [vpMin,vpMax]
 
-plot(vp,'complete','upper')
+plot(vp,'complete','upper','noLabel')
 mtexColorbar('title','v_p in km/s')
+hold on
+plot(vpMaxDirection(1),'Marker','s','MarkerEdgeColor','white',...
+  'MarkerFaceColor','black')
+plot(vpMinDirection(1),'Marker','o','MarkerEdgeColor','black',...
+  'MarkerFaceColor','white')
+hold off
 
 %%
-% The fastest direction is close to thirty per cent faster than the slowest,
-% in a single crystal. In a rock whose olivine grains have been aligned by
-% flow, that anisotropy survives the averaging and becomes measurable
-% hundreds of kilometres away.
+% Red directions are fast and blue directions are slow. The black square
+% marks the 9.77 km/s maximum, and the white circle marks the 7.65 km/s
+% minimum. The maximum is 27.7% faster than the minimum, which is close to a
+% thirty per cent contrast in a single crystal.
 %
-% Note that the density had to be supplied. A stiffness on its own does not
-% determine a speed - the wave equation divides it by density - so a
-% velocity computed from a tensor carrying no density is not in km/s and is
-% not a velocity.
+% If flow aligns olivine grains in a rock, part of this anisotropy survives
+% orientation averaging. The resulting directional contrast can influence a
+% seismic signal measured hundreds of kilometres away.
+
+%% Why density is required
 %
+% It is common shorthand to say that a velocity is a stiffness divided by a
+% density. More precisely, let $L$ be the directional stiffness eigenvalue
+% and let $r$ be density. Their relation is $v^2=L/r$, so squared speed,
+% rather than speed, scales as stiffness divided by density.
+%
+% A stiffness tensor carrying no density does not determine a physical wave
+% speed. In that case MTEX warns and uses |rho=1|, so the returned values are
+% not velocities in km/s. Storing the density on the tensor keeps every later
+% velocity calculation consistent.
+
 %% Three waves, not one
 %
-% An isotropic solid carries two kinds of elastic wave: one compressional
-% and one shear, the latter with any polarisation you like. Anisotropy
-% breaks that tie. In a crystal there are three waves in every direction -
-% one roughly compressional and two shear waves with definite and mutually
-% perpendicular polarisations - and the two shear waves generally travel at
-% different speeds.
+% An isotropic solid supports two elastic wave types: one compressional mode
+% and one shear speed with no preferred shear polarization. Elastic anisotropy
+% splits the shear mode. A crystal consequently has three modes for each
+% propagation direction: one quasi-compressional mode and two shear modes.
 %
-% This splitting is the most useful thing in the chapter, because it is
-% directly observable. A shear wave entering an aligned rock leaves as two
-% pulses separated in time, and the size and orientation of that separation
-% is a measurement of the texture along the path.
+% The three particle-motion directions are mutually perpendicular. Away from
+% a symmetry direction, the quasi-compressional polarization need not be
+% exactly parallel to propagation. The two shear modes also generally travel
+% at different speeds and have definite polarizations.
 %
-% "Roughly compressional" is meant literally: away from symmetry directions
-% the particle motion of the fast wave is not exactly along the propagation
-% direction. The pages below keep track of the polarisation as well as the
-% speed for this reason.
+% This shear-wave splitting is directly observable. A shear wave entering an
+% aligned rock can leave as two pulses separated in time. Their delay and
+% polarization constrain the anisotropy accumulated along the path and,
+% together with mineral physics, the rock texture that produced it.
+
+%% Route through this chapter
 %
-%% Where to start
+% <IsotropicTheory.html Isotropic Theory> begins with the familiar
+% direction-independent case. It defines the usual elastic moduli and gives
+% the reference against which anisotropic results are compared.
 %
-% <IsotropicTheory.html Isotropic Theory> is the familiar case, and worth
-% reading first even if your material is anisotropic - it fixes what the
-% usual moduli mean and gives the reference the anisotropic results are
-% compared against.
+% <AnisotropicTheory.html Anisotropic Theory> introduces Hooke's law with the
+% full tensor. It then computes directional Young's modulus, linear
+% compressibility, Poisson's ratio, and shear modulus.
 %
-% <AnisotropicTheory.html Anisotropic Theory> is the general case: Hooke's
-% law with the full tensor, the directional Young's modulus, and how
-% symmetry reduces the number of independent constants.
+% <WaveVelocities.html Wave Velocities> solves the Christoffel equation for
+% the three wave modes. It makes their speeds, polarizations, and splitting
+% quantitative.
 %
-% <WaveVelocities.html Wave Velocities> computes the three waves and their
-% polarisations, and is where the splitting above is made quantitative.
+% <CPOSeismicProperties.html CPO Seismic Properties> completes the workflow.
+% It combines measured orientations, phase proportions, stiffness tensors,
+% and densities into the seismic anisotropy of an aggregate.
+
+%% Related chapters
 %
-% <CPOSeismicProperties.html CPO Seismic Properties> is the whole chain end
-% to end: measured orientations, an averaged tensor for the aggregate, and
-% the seismic anisotropy that follows. It is the natural place to see how
-% much of the chapter fits together.
+% <Tensors.html Tensors> develops the tensor operations and averaging schemes
+% used here. <ODFAnalysis.html ODFs> and <EBSDAnalysis.html EBSD> supply the
+% crystal-orientation data required by aggregate averages. Deformation that
+% is not recovered on unloading is treated in <Plasticity.html Plasticity>.
+
+%#ok<*NOPTS>
+
+%% References
 %
+% * E. H. Abramson, J. M. Brown, L. J. Slutsky, and J. Zaug,
+% <https://doi.org/10.1029/97JB00682 The elastic constants of San Carlos
+% olivine to 17 GPa>, _Journal of Geophysical Research_ 102 (1997),
+% 12253-12263, supplies the olivine stiffness tensor used in the example.
+% * J. F. Nye, <https://search.worldcat.org/title/11114089 Physical
+% Properties of Crystals: Their Representation by Tensors and Matrices>,
+% Oxford University Press, 1985, develops the tensor description of elastic
+% anisotropy and its dependence on direction.
+% * D. Mainprice, R. Hielscher, and H. Schaeben,
+% <https://doi.org/10.1144/SP360.10 Calculating anisotropic physical
+% properties from texture data using the MTEX open-source package>,
+% _Geological Society, London, Special Publications_ 360 (2011), 175-192,
+% connects crystal orientations to aggregate elastic and seismic properties.
+
 %% Next
 %
-% The tensor machinery underneath is <Tensors.html Tensors>, including the
-% averaging schemes that turn single-crystal constants into aggregate ones.
-% The orientation distributions those averages need come from
-% <ODFAnalysis.html ODF> or from <EBSDAnalysis.html EBSD>. Deformation that
-% is not recovered on unloading is <Plasticity.html Plasticity>.
-%
+% Continue with <IsotropicTheory.html Isotropic Theory> to learn how two
+% elastic moduli describe a direction-independent material and how MTEX
+% obtains an isotropic aggregate from randomly oriented crystals.

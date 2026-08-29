@@ -1,135 +1,248 @@
 %% ODF Estimation from Pole Figure Data
 %
 %%
-% This page describes how to use MTEX to estimate an ODF from pole figure
-% data. Starting point of any ODF reconstruction is a
-% <PoleFigure.PoleFigure.html |PoleFigure|> object which can be created
-% e.g. by
+% A pole figure does not measure individual orientations. Each value sums
+% every orientation that places one lattice plane in one specimen direction.
+% Those orientations form a one-dimensional fibre in orientation space.
+% One pole figure therefore cannot be inverted by itself.
+%
+% Combining several pole figures adds constraints, but it still does not
+% make the inverse problem unique. The practical task is to find an
+% orientation distribution function (ODF) whose recalculated pole figures
+% agree with the measurements, and then to inspect where they do not agree.
+%
+% This page assumes the pole-figure idea from
+% <PoleFigureAnalysis.html Pole Figures> and corrected measurements from
+% <PoleFigureCorrection.html Data Correction>. The definition and units of
+% an ODF are introduced in <ODFTheory.html ODF Theory>.
+% Here the reconstruction uses <PoleFigure.calcODF.html |calcODF|>.
+% <PoleFigure2ODFAmbiguity.html The Ghost Effect> explains what the
+% measurements can never determine.
 
-plottingConvention.default("y↑→x");
-mtexdata dubna
+plottingConvention.default('y↑→x');
+mtexdata dubna silent
 
-%%
-% See <PoleFigureImport.html Import> for more information how to import
-% pole figure data and to create a pole figure object.
+%% Inspect the measurements first
+%
+% The data contain seven neutron-diffraction pole figures from a quartz
+% specimen. One measurement is a superposition of two unresolved
+% reflections. <PoleFigureImport.html Import> explains how the Miller
+% indices and their structure coefficients enter that measurement model.
 
-% plot pole figures
 plot(pf)
 
+%%
+% The seven panels contain sharp maxima at different specimen directions.
+% The superposed reflection has two Miller indices in its title. Look for
+% missing coverage, isolated points, or a pattern that is inconsistent with
+% the other panels before asking an ODF to explain the data.
 
-%% ODF Estimation
-% ODF estimation from a pole figure object is done by the function 
-% <PoleFigure.calcODF.html |calcODF|>. The simplest
-% syntax is
+%% Reconstruct an ODF
+%
+% With no options, |calcODF| uses MTEX's modified least-squares solver and
+% automatic ghost correction.
 
+tic
 odf = calcODF(pf)
+defaultTime = toc;
 
-%% 
-% There are a lot of options to the function <PoleFigure.calcODF.html
-% |calcODF|>. You can specify the discretization, the functional to
-% minimize, the number of iteration or regularization to be applied.
-% Furthermore, you can specify ghost correction or the zero range method to
-% be applied. These options are discussed below.
+%%
+% The result is an <SO3FunRBF.SO3FunRBF.html |SO3FunRBF|>. It represents
+% the ODF as a weighted superposition of unimodal kernel functions on a grid
+% in orientation space. The display reports 19,848 grid centres for this
+% reconstruction. The object can be analysed like any other ODF; continue
+% to <ODFAnalysis.html ODF Analysis> after validating the reconstruction.
+
+%% Compare recalculated and measured pole figures
 %
-%% 
-% You may want to verify that the pole figures are reproduced. Here is a
-% plot of the computed pole figures.
+% The first validation is visual. Recalculate exactly the lattice planes
+% and superpositions that were measured.
 
 plotPDF(odf,pf.allH,'antipodal','silent','superposition',pf.c)
 
-
-%% Error analysis
+%%
+% The maxima appear in the same regions and reach comparable intensities.
+% The recalculated pole figures are smoother because the finite-width
+% kernels do not reproduce every fluctuation in the measurement.
 %
-% For a more quantitative description of the reconstruction quality, one
-% can use the function <PoleFigure.calcError.html |calcError|> to compute
-% the fit between the reconstructed ODF and the measured pole figure
-% intensities. The following measured are available:
-%
-% * RP - error
-% * L1 - error
-% * L2 - error
+% <PoleFigure.calcError.html |calcError|> makes the same comparison one pole
+% figure at a time. The |'RP'| measure divides the absolute difference by
+% the recalculated intensity, but only where that intensity exceeds the
+% threshold supplied after |'RP'|. The default threshold is 1.
 
-calcError(pf,odf,'RP',1)
+rpError = calcError(pf,odf,'RP','silent')
 
 %%
-% In order to recognize bad pole figure intensities, it is often useful to
-% plot difference pole figures between the normalized measured intensities
-% and the recalculated ODF. This can be done by the command
-% <PoleFigure.plotDiff.html |plotDiff|>.
-
-plotDiff(pf,odf)
-
-%%
-% Assuming you have driven two ODFs from different pole figure measurements
-% or by ODF modeling. Then one can ask for the difference between both.
-% This difference is computed by the command <SO3Fun.calcError.html
-% |calcError|>.
-
-% define a unimodal ODF with the same preferred orientation 
-[~,ori_pref] = max(odf);
-odf_model = unimodalODF(ori_pref,'halfwidth',15*degree)
-
-% plot the pole figures
-plotPDF(odf_model,pf.allH,'antipodal','superposition',pf.c)
-
-% compute the difference
-calcError(odf_model,odf)
-
-%% Discretization
+% The seven RP values range from 0.36 to 0.86. Because RP is relative, weak
+% regions can dominate even when their absolute differences are small.
 %
-% In MTEX the ODF is approximated by a superposition of up to 10,000,000
-% unimodal components. By exact number and position of these  components,
-% as well as its shape can be specified by the user. By default, the
-% positions are chosen equispaced in the orientation space with 1.5 times
-% the resolution of the pole figures and the components are de la Vallee
-% Poussin shaped with the same halfwidth as the resolution of the
-% positions.
-%
-% Next an example how to change the default resolution:
+% Called without a measure, |calcError| uses a regularised relative error.
+% It divides by the larger intensity plus half the scale factor, so it does
+% not divide by a value near zero.
 
-odf = calcODF(pf,'resolution',15*degree)
-plotPDF(odf,pf.allH,'antipodal','silent','superposition',pf.c)
+regularisedError = calcError(pf,odf,'silent')
 
 %%
-% Beside the resolution you can use the following options to change the
-% default discretization:
+% The regularised values range from 0.24 to 0.40. They are not smaller RP
+% values; they answer a different question. Compare reconstructions with
+% the same measure and threshold throughout. The other available measures
+% are |'l1'| and |'l2'|.
 %
-% * |'kernel'| to specify a specific kernel function
-% * |'halfwidth'| to take the default kernel with a specific halfwidth
-%
-%% Zero Range Method
-%
-% If the flag |'zero_range'| is set the ODF is forced to be zero at
-% all orientation where there is a corresponding zero in the pole figure.
-% This technique is especially useful for sharp ODF with large areas in the
-% pole figure being zero. In this case, the calculation time is greatly
-% improved and much higher resolution of the ODF can be achieved.
-%
-% In the following example, the zero range method is applied with a
-% threshold 100. For more options to control the zero range method see the
-% documentation of <zeroRangeMethod.zeroRangeMethod.html zero_range> or
-% <zeroRangeMethod.plot.html |zeroRangeMethod.plot|>.
+% A single error vector hides where the mismatch occurs.
+% <PoleFigure.plotDiff.html |plotDiff|> plots the regularised relative
+% difference for every measured direction.
 
-odf = calcODF(pf,'zero_range')
-plotPDF(odf,pf.allH,'antipodal','silent','superposition',pf.c)
+plotDiff(pf,odf,'silent')
 
-%% Ghost Corrections
+%%
+% These residuals are not scattered. In every one of the seven panels the
+% mean residual grows from the centre of the disc outward, roughly doubling
+% by the rim.
 %
-% <PoleFigure2ODFGhostCorrection.html Ghost correction> is a technique
-% first introduced by Matthies that increases the uniform portion of the
-% estimated ODF to reduce the so called _ghost error_. It applies
-% especially useful in the case of week ODFs. The classical example is the
-% <SantaFe.html Santa Fe model ODF>. An analysis of the approximation error
-% under ghost correction can be found <PoleFigureSantaFe.html here>
+% Scattered residuals would be consistent with measurement noise. A pattern
+% this orderly points to a systematic cause worth checking, and one that
+% grows with specimen tilt is the signature of an omitted defocusing
+% correction. An incorrect background or a pole figure that does not belong
+% with the others would also leave structure. The pattern is a diagnostic
+% clue, not proof of any one cause.
+
+%% Comparing two ODFs
 %
-%% Theory
+% The <SO3Fun.calcError.html |calcError|> overload also compares two ODFs.
+% This is a different calculation from comparing an ODF with pole-figure
+% measurements. To make the distinction visible, build one broad component
+% at the strongest orientation of the reconstruction.
+
+[~,oriPref] = max(odf);
+odfModel = unimodalODF(oriPref,'halfwidth',15*degree);
+
+plotPDF(odfModel,pf.allH,'antipodal','superposition',pf.c)
+
+odfDifference = calcError(odfModel,odf)
+
+%%
+% The model pole figures retain the main maxima and omit the weaker
+% components. The large ODF difference is therefore expected: one
+% unimodal component cannot represent this multi-component texture.
+
+%% Control the discretization
 %
-% ODF estimation in MTEX is based upon the modified least squares
-% estimator. The functional that is minimized is
+% The solver places unimodal components on a grid in orientation space.
+% The |'resolution'| option sets the grid spacing, while each default de la
+% Vallee Poussin kernel has the same halfwidth as that spacing.
 %
-% $$f_{est} = argmin \sum_{i=1}^N \sum_{j=1}^{N_i}\frac{|\alpha_i R f(h_i,r_{ij}) - I_{ij})|^2}{I_{ij}  }$$
-% 
-% A precise description of the estimator and the algorithm can be found in
-% the paper _Pole Figure Inversion - The MTEX Algorithm_.
+% The |calcODF| reference describes its default grid as 1.5 times the pole-
+% figure resolution. The current |MLSSolver| constructor instead uses the
+% stored resolution of the first pole figure. Pass |'resolution'| explicitly
+% when that distinction matters to reproducibility.
+%
+% A 15 degree grid demonstrates the speed-resolution trade-off.
+
+tic
+odfCoarse = calcODF(pf,'resolution',15*degree,'silent');
+coarseTime = toc;
+
+plotPDF(odfCoarse,pf.allH,'antipodal','silent','superposition',pf.c)
+
+defaultPeak = max(odf);
+coarsePeak = max(odfCoarse);
+meanDefaultRP = mean(rpError);
+meanCoarseRP = mean(calcError(pf,odfCoarse,'RP','silent'));
+fprintf(['Default: %.2f s, peak %.1f mrd, mean RP %.2f; ',...
+  '15 degree: %.2f s, peak %.1f mrd, mean RP %.2f\n'],...
+  defaultTime,defaultPeak,meanDefaultRP,...
+  coarseTime,coarsePeak,meanCoarseRP);
+
+%%
+% The 15 degree result keeps the main maxima but broadens them. The timing
+% printed above shows the speed-up. Its peak is 27.1 mrd instead of
+% 94.0 mrd, and the mean RP error rises from 0.59 to 0.75.
+% A coarse grid cannot represent a sharp texture. A finer grid costs more
+% time and, once it exceeds the information in the measurements, can give a
+% false impression of resolved detail.
+%
+% Two options control the kernel directly. The |'kernel'| option accepts an
+% |SO3Kernel| object. The |'halfwidth'| option keeps the default de la Vallee
+% Poussin kernel and changes its width.
+
+%% The zero range method
+%
+% If a measured pole figure is genuinely zero in a region, every
+% orientation contributing there must also have zero density. The zero
+% range method removes those orientation-grid nodes before solving. It can
+% make a sharp reconstruction with large empty regions both faster and
+% finer.
+
+tic
+odfZero = calcODF(pf,'zeroRange','silent');
+zeroTime = toc;
+
+plotPDF(odfZero,pf.allH,'antipodal','silent','superposition',pf.c)
+
+zeroPeak = max(odfZero);
+meanZeroRP = mean(calcError(pf,odfZero,'RP','silent'));
+fprintf(['Zero range: %.2f s, peak %.1f mrd, mean RP %.2f; ',...
+  'default: %.2f s, peak %.1f mrd, mean RP %.2f\n'],...
+  zeroTime,zeroPeak,meanZeroRP,...
+  defaultTime,defaultPeak,meanDefaultRP);
+
+%%
+% On this data set the method does change the reconstruction. The peak rises
+% from 94.0 to 110.4 mrd and the mean RP error falls from 0.59 to 0.51.
+% The timings printed above show that it also runs faster here, because the
+% solver keeps far fewer grid nodes. The sharper recalculated
+% maxima are the visible difference to look for. Try the method rather than
+% assuming it will help. The
+% <zeroRangeMethod.zeroRangeMethod.html |zeroRangeMethod|> reference lists
+% the threshold and smoothing options that decide what counts as zero.
+
+%% Ghost correction
+%
+% The odd-order harmonic coefficients of an ODF do not appear in its pole
+% figures, so the measurements do not determine them. Setting them to zero
+% produces the *ghost effect*: a raised uniform background, weakened real
+% components, and sometimes spurious components.
+%
+% <PoleFigure2ODFGhostCorrection.html Ghost Correction> explains Matthies'
+% remedy, which MTEX applies by default and which matters most for weak
+% textures. <PoleFigureSantaFe.html The Santa Fe Example> measures the
+% benefit on a model ODF for which the true answer is known. A good fit to
+% the pole figures alone does not establish that a reconstructed ODF is
+% unique or true.
+
+%% The maths behind the estimator
+%
+% In simplified notation, |calcODF| minimises a modified least-squares
+% functional over non-negative combinations of the kernel components:
+%
+% $$f_{\mathrm{est}} = \mathrm{argmin}_{f} \sum_{i=1}^{N} \sum_{j=1}^{N_i} \frac{|\alpha_i Rf(h_i,r_{ij}) - I_{ij}|^2}{I_{ij}}.$$
+%
+% Dividing by $I_{ij}$ makes the functional modified least squares. It
+% weights each measurement by its own intensity, so a bright point cannot
+% dominate a dark one. The factor $\alpha_i$ absorbs the unknown scale of
+% each pole figure, which allows unnormalised intensity data to be used.
+
+%% Further reading
+%
+% * R. Hielscher and H. Schaeben,
+% <https://doi.org/10.1107/S0021889808030112 A novel pole figure inversion
+% method: specification of the MTEX algorithm>, _Journal of Applied
+% Crystallography_ 41, 1024-1037, 2008. This is the complete specification
+% of the estimator and numerical algorithm used here.
+% * R.-J. Roe,
+% <https://doi.org/10.1063/1.1714396 Description of crystallite orientation
+% in polycrystalline materials. III. General solution to pole figure
+% inversion>, _Journal of Applied Physics_ 36, 2024-2031, 1965. This is the
+% classical harmonic treatment of the inverse problem.
+% * H.-J. Bunge,
+% <https://doi.org/10.1016/C2013-0-11769-2 Texture Analysis in Materials
+% Science: Mathematical Methods>, Butterworths, English ed., 1982. This is
+% the standard textbook treatment of pole figures and ODF reconstruction.
+% * S. Matthies and G. W. Vinel,
+% <https://doi.org/10.1002/pssb.2221120254 On the reproduction of the
+% orientation distribution function of texturized samples from reduced pole
+% figures using the conception of a conditional ghost correction>,
+% _physica status solidi (b)_ 112, K111-K114, 1982. This introduces the
+% conditional ghost correction used by MTEX.
 
 %#ok<*NOPTS>

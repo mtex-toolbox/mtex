@@ -1,183 +1,230 @@
 %% Single Slip Model
 %
-% Details to this model can be found in
+%%
+% The <SachsModel.html Sachs Model> selects one slip system in each grain
+% but describes only a strength bound. A *single-slip texture model* follows
+% the next consequence: slip rotates every crystal, so the population of
+% orientations changes during deformation.
 %
-% * <https://doi.org/10.1093/gji/ggy442 An analytical finite-strain
-% parametrization for texture evolution in deforming olivine polycrystals>,
-% Geoph. J. Intern. 216, 2019.
-%
-%% The Continuity Equation
-%
-% The evolution of the orientation distribution function (ODF) $f(g)$ with
-% respect to a crystallographic spin $\Omega(g)$ is governed by the
-% continuity equation
-% 
-% $$\frac{\partial}{\partial t} f + \nabla f \cdot \Omega + f \text{ div } \Omega = 0$$
-% 
-% The solution of this equation depends on the initial texture $f_0(g)$ at
-% time zero and the crystallographic spin $\Omega(g)$. In this model we
-% assume the initial texture to be isotropic, i.e., $f_0 = 1$ and the
-% crystallographic spin be associated with a single slip system. The full
-% ODF will be later modeled as a superposition of the single slip models.
-%
-%% 
-% In this example we consider Olivine with has orthorhombic symmetry
+% This page starts from an isotropic texture, which assigns equal density to
+% every orientation. One prescribed slip system supplies the entire lattice
+% spin. The worked sequence predicts the resulting orientation distribution
+% function (ODF), reads its pole figures, and checks the analytical result
+% against numerical time stepping.
+
+%% Choose the crystal, slip system, and strain
+% Use olivine with its three orthorhombic basis slip systems. A slip system
+% is a lattice plane together with a direction in that plane along which the
+% crystal shears plastically.
 
 plottingConvention.default('y↑→x');
-csOli = crystalSymmetry('222',[4.779 10.277 5.995],'mineral','olivine');
-csOrtho = crystalSymmetry('222',[18.384, 8.878, 5.226],'mineral','orthopyroxene');
+csOli = crystalSymmetry('222',[4.779 10.277 5.995], ...
+  'mineral','olivine');
 
-%%
-% and the basic slip systems in olivine and orthopyroxene
-
-sSOli = slipSystem(Miller({1,0,0},{1,0,0},{0,0,1},csOli,'uvw'),...
+sSOli = slipSystem( ...
+  Miller({1,0,0},{1,0,0},{0,0,1},csOli,'uvw'), ...
   Miller({0,1,0},{0,0,1},{0,1,0},csOli,'hkl'))
 
-sSOrtho = slipSystem(Miller({0,0,1},csOrtho,'uvw'),...
-  Miller({1,0,0},csOrtho,'hkl'))
-
 %%
-% To each of the slip systems we can associate an orientation dependent
-% Schmid or deformation tensor $S(g)$
-
-S = sSOli.deformationTensor
-
-%%
-% and make for the orientation dependent strain rate tensor $e(g)$ the
-% ansatz $e_{ij}(g) = \gamma(g) S_{ij}(g)$. Fitting this ansatz to a given
-% a macroscopic strain tensor
+% Rows of the display pair each slip direction $\mathbf b$ with its plane
+% normal $\mathbf n$. The example below follows the second system,
+% $[100](001)$.
+%
+% Impose extension along specimen $x$, no strain along $y$, and equal
+% shortening along $z$. The factor 0.3 is the finite strain magnitude.
 
 E = 0.3 * strainRateTensor([1 0 0; 0 0 0; 0 0 -1])
 
-%%
-% via minimizing the square difference
-% 
-% $$\int_{SO(3)} \sum_{i,j} (e_{i,j}(g) - E_{i,j})^2 dg \to \text{min}$$
-% 
-% the orientation dependent strain rate tensor is identified as
-%
-% $$e(g) = 2 \left< S(g), E \right> S(g)$$
-%
-% and the corresponding crystallographic spin tensor as
-%
-% $$\Omega_i(g) = \epsilon_{ijk} e_{jk}(g)$$
-%
-% This can be modeled in MTEX via
-
-% this is in crystal coordinates
-% Omega = @(ori) SO3TangentVector(spinTensor(((ori * S(2)) : E) .* S(2)),ori);
-% Omega = @(ori) 0.5 * EinsteinSum(tensor.leviCivita,[1 -1 -2],(ori * S(1) : E) .* (S(2)),[-1 -2])
-
-% this is in specimen coordinates
-Omega = @(ori) -SO3TangentVector(spinTensor(((ori * S(2)) : E) .* (ori * S(2))),ori);
-
-% turn in into a harmonic function
-Omega = SO3VectorFieldHarmonic.quadrature(Omega,csOli)
-
-%%
-% We may visualize the orientation dependence of the spin tensor by plotting
-% its divergence in sigma sections and on top of it the spin tensors as a
-% quiver plot
-
-plotSection(div(Omega),'sigma','noGrid')
-mtexColorMap blue2red
-mtexColorbar
-
-hold on
-plot(Omega,'add2all','linewidth',1,'color','k')
-hold off
-
-%% 
-% The divergence plots can be read as follows. Negative (blue) regions
-% indicate orientations that increase in volume, whereas positive regions
-% indicate orientations that decrease in volume. Accordingly, we expect the
-% texture to become more and more concentrated within the blue regions. In
-% the example example illustrated above with only the second slip system
-% being active, we would expect the c-axis to align more and more with the
-% the z-direction. 
-%
-
-%% Solutions of the Continuity Equation
-% The solutions of the continuity equation can be analytically computed and
-% are available via the command <SO3FunSBF.SO3FunSBF.html |SO3FunSBF|>.
-% This command takes as input the specific slips system |sS| and the
-% macroscopic strain tensor |E|
+%% Compute the analytical texture
+% <SO3FunSBF.SO3FunSBF.html |SO3FunSBF|> evaluates the analytical ODF for
+% one slip system and the imposed strain. Compute one structural basis
+% function for each of the three olivine systems.
 
 odf1 = SO3FunSBF(sSOli(1),E)
 odf2 = SO3FunSBF(sSOli(2),E)
 odf3 = SO3FunSBF(sSOli(3),E)
-odf4 = SO3FunSBF(sSOrtho,E)
 
 %%
-% Lets check our expectation from the last paragraph by visualizing the
-% odf corresponding to the second slip system in sigma sections
+% Sigma sections expose the full three-dimensional orientation dependence
+% of the second basis function.
 
-figure(1)
 plotSection(odf2,'sigma')
 mtexColorbar
 
 %%
-% We observe exactly the concentration of the c-axis around z as predicted
-% by the model. This can be seen even more clear when looking a the pole
-% figures
+% High density is concentrated at orientations that align the olivine
+% $c$-axis with specimen $z$. This is the preferred orientation predicted
+% for $[100](001)$ slip under the imposed extension and shortening.
+
+%% Read the same result in pole figures
+% Pole figures show which crystal axes develop preferred specimen
+% directions. Plot the $a$-, $b$-, and $c$-axis distributions together.
 
 h = Miller({1,0,0},{0,1,0},{0,0,1},csOli);
 
 plotPDF(odf2,h,'resolution',2*degree,'colorRange','equal')
 mtexColorbar
 
-%% 
-% We could also have computed the solution of the continuity equation
-% numerically. To this end we utilize the command <doEulerStep.html
-% |doEulerStep|> which takes as input the crystallographic spin tensor
-% |Omega|, the initial odf |odf0| and the number of iterations to be
-% performed.
-
-% the starting ODF
-odf0 = uniformODF(csOli);
-
-% the transformed ODF
-odf = doEulerStep(2*Omega,odf0,40)
-
-figure(2)
-plot(odf,'sigma')
-mtexColorbar
-
 %%
-% Indeed the error between the numerical solution and the theoretical
-% solution is negligible small. We may quantify the difference by
+% The $c$-axis pole figure has its strongest maximum at specimen $z$, as
+% anticipated from the sigma sections. The $a$-axis panel shows how that
+% axis is arranged around the preferred direction. The $b$-axis panel is
+% flat and featureless: this single system leaves the $b$-axis with no
+% preferred specimen direction at all.
 
-mean(abs(odf - odf2))
-
-%%
-% For completeness the pole figures of the other two basis functions.
+%% Compare the other basis functions
+% Each active system produces its own basis texture. The first and third
+% systems provide the two remaining olivine end members.
 
 plotPDF(odf1,h,'resolution',2*degree,'colorRange','equal')
 mtexColorbar
 
 %%
+% This is the texture generated by the first system, $[100](010)$.
 
 plotPDF(odf3,h,'resolution',2*degree,'colorRange','equal')
 mtexColorbar
 
-%% 
-% We observe that the pole figure with respect to $n \times b$ is always
-% uniform, where $n$ is the slip normal and $b$ is the slip direction.
-%
 %%
-% Since in practice all three slip systems are active we can model the
-% resulting ODF as a linear combination of the different basis functions
+% This is the texture generated by the third system, $[001](010)$. In each
+% single-slip solution, the pole figure for $\mathbf n\times\mathbf b$ is
+% uniform. That direction is unchanged by shear on the chosen system.
 
-plotPDF(odf1 + odf2 + odf3,h,'resolution',2*degree,'colorRange','equal')
+%% Combine active systems
+% A practical model can represent simultaneous activity as a linear
+% combination of the single-slip basis functions. Convert each analytical
+% function to the same harmonic representation before combining it. Equal
+% weights give the normalized mixture below; measured or modelled
+% activities may be used instead.
+
+odfMix = (SO3FunHarmonic(odf1,'bandwidth',24) + ...
+  SO3FunHarmonic(odf2,'bandwidth',24) + ...
+  SO3FunHarmonic(odf3,'bandwidth',24)) ./ 3;
+plotPDF(odfMix,h,'resolution',2*degree,'colorRange','equal')
 mtexColorbar
 
-%% Checking the for steady state
-% We may also check for which orientations an ODF is already in a steady
-% state of the continuity equation, i.e., the time derivative $\text{div}(f
-% \Omega) = 0$ is zero.
+%%
+% The mixed pole figures retain features from all three end members and are
+% less concentrated than any one-system prediction. This superposition is
+% how the analytical model builds a full ODF from its basis textures.
+
+%% Apply the construction to another phase
+% The same constructor accepts a phase-specific system. For example,
+% orthopyroxene $[001](100)$ slip under the same strain gives another basis
+% function without changing the workflow.
+
+csOrtho = crystalSymmetry('222',[18.384,8.878,5.226], ...
+  'mineral','orthopyroxene');
+sSOrtho = slipSystem(Miller(0,0,1,csOrtho,'uvw'), ...
+  Miller(1,0,0,csOrtho,'hkl'));
+odfOrtho = SO3FunSBF(sSOrtho,E)
+
+%% Construct the orientation-dependent spin
+% The deformation tensor describes the shear generated by each olivine
+% slip system. Select the second tensor to match |odf2|.
+
+S = sSOli.deformationTensor;
+
+%%
+% The function below rotates that tensor into the specimen frame, fits its
+% activity to |E|, and converts the result into crystallographic spin. The
+% minus sign follows the tangent-vector convention used for ODF transport.
+
+spinFun = @(ori) -2 * SO3TangentVector(spinTensor( ...
+  ((ori * S(2)) : E) .* (ori * S(2))),ori);
+
+Omega = SO3VectorFieldHarmonic.quadrature(spinFun,csOli)
+
+%% See where orientation density moves
+% The divergence of $\Omega$ measures whether the orientation flow expands
+% or contracts locally. Arrows show the direction of that flow.
+
+plotSection(div(Omega),'sigma','noGrid')
+mtexColorMap blue2red
+mtexColorbar
+hold on
+plot(Omega,'add2all','linewidth',1,'color','k')
+hold off
+
+%%
+% Negative blue regions gain orientation density, while positive red
+% regions lose it. The arrows feed the blue regions whose orientations
+% place the $c$-axis near specimen $z$, predicting the concentration already
+% seen in |odf2|.
+
+%% Check the analytical result numerically
+% <doEulerStep.html |doEulerStep|> transports an initial ODF through an
+% orientation-dependent spin field. Start from the uniform ODF and use 40
+% explicit steps over the same total deformation.
+
+odf0 = uniformODF(csOli);
+odfNumeric = doEulerStep(Omega,odf0,40)
+
+plotSection(odfNumeric,'sigma')
+mtexColorbar
+
+%%
+% The numerical sections reproduce the analytical concentration. Their
+% mean absolute difference is 0.0011. This small value quantifies the
+% remaining discretization error.
+
+meanError = mean(abs(odfNumeric - odf2))
+
+%% Check for steady state
+% An ODF is stationary under this spin when the divergence of its density
+% flux, $\mathrm{div}(f\Omega)$, is zero. Plot that residual for the
+% analytical solution.
 
 plotSection(div(odf2 .* Omega),'sigma')
 mtexColorMap blue2red
 mtexColorbar
 setColorRange(max(abs(clim))*[-1,1])
 
+%%
+% Values near zero show where |odf2| is already stationary. Positive and
+% negative lobes identify orientations at which the chosen spin would still
+% remove or add density.
+
+%% The maths behind the model
+% Let $f(g,t)$ be the ODF at orientation $g$ and time $t$, and let
+% $\Omega(g)$ be the crystallographic spin. Conservation of orientation
+% density gives the continuity equation
+%
+% $$\frac{\partial f}{\partial t} + \nabla f\cdot\Omega
+%   + f\,\mathrm{div}\,\Omega = 0.$$
+%
+% The initial isotropic texture is $f(g,0)=1$. For deformation tensor $S(g)$
+% and scalar slip activity $\gamma(g)$, the single-slip ansatz is
+%
+% $$e(g)=\gamma(g)S(g).$$
+%
+% Fitting this local strain rate to the macroscopic tensor $E$ minimizes
+%
+% $$\int_{SO(3)}\sum_{i,j}\left(e_{ij}(g)-E_{ij}\right)^2\,dg.$$
+%
+% The minimizing field and its crystallographic spin are
+%
+% $$e(g)=2\langle S(g),E\rangle S(g), \qquad
+%   \Omega_i(g)=\epsilon_{ijk}e_{jk}(g).$$
+%
+% These equations are the specimen-coordinate construction implemented by
+% |spinFun| above. An equivalent implementation can map the spin into each
+% crystal frame instead. |SO3FunSBF| supplies the finite-strain analytical
+% solution, while |doEulerStep| integrates the same continuity equation.
+
+%#ok<*NOPTS>
+
+%% References
+%
+% * N. M. Ribe, R. Hielscher and O. Castelnau,
+% <https://doi.org/10.1093/gji/ggy442 An Analytical Finite-Strain
+% Parametrization for Texture Evolution in Deforming Olivine
+% Polycrystals>, _Geophysical Journal International_ 216 (2019), 486--514,
+% derives the single-slip structural basis functions and their analytical
+% finite-strain ODFs.
+
+%% Next
+%
+% This page treats orientation evolution inside independently slipping
+% crystals. Continue with <SlipTransmission.html Slip Transmission> to ask
+% whether a slip system can transfer deformation across a grain boundary.

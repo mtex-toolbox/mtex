@@ -1,21 +1,35 @@
 %% Properties
 %
-%%
-% Most list like MTEX classes - <EBSD.EBSD.html EBSD>,
-% <grain2d.grain2d.html grain2d>, <grainBoundary.grainBoundary.html
-% grainBoundary>, <PoleFigure.PoleFigure.html PoleFigure> - carry, besides
-% their orientations and their geometry, an open ended list of *properties*.
-% A property is nothing but a numeric array that has one entry for every
-% element of the list, and that is carried along whenever the list is
-% indexed, subsetted, concatenated or sorted. This is what makes it
-% possible to write |ebsd(condition).mad| and get exactly the MAD values of
-% the selected pixels.
+% A property stores one value for every element of an MTEX list. When you
+% select, sort, or concatenate the list, MTEX carries those values along in
+% lockstep. This link between an object and its per-element data makes a
+% property useful for filtering, colouring, and later calculations.
 %
-%% Which properties are there
+% List-like classes include <EBSD.EBSD.html |EBSD|>,
+% <grain2d.grain2d.html |grain2d|>,
+% <grainBoundary.grainBoundary.html |grainBoundary|>, and
+% <PoleFigure.PoleFigure.html |PoleFigure|>. For an EBSD map, a property has
+% one value per measurement point. The expression |ebsd(condition).mad|
+% therefore returns exactly the MAD values at the selected points.
+
+%% Properties are not options
 %
-% Which properties an object has depends on where its data came from. An
-% EBSD file usually contributes at least the confidence index and the
-% error of the fit. All properties are collected in the struct |prop|
+% A <GeneralConceptsOptions.html command option> changes one command call.
+% It is not stored as per-element data. By contrast, EBSD properties live in
+% |ebsd.prop| and are resized whenever |ebsd(ind)| selects part of the map.
+%
+% Scan-level values live in |ebsd.opt|. They do not have one value per
+% measurement point and are not resized when the map is subset. This
+% distinction is the test to use: per-point data belongs in |prop|, while
+% whole-scan data belongs in |opt|.
+
+%% Inspecting imported properties
+%
+% The available properties depend on the data source. An EBSD file usually
+% contributes a confidence measure and an error-of-fit measure. Importers
+% also preserve unrecognised per-point columns as properties.
+%
+% Load the forsterite example and display the fields collected in |prop|.
 
 plottingConvention.default('y↑→x');
 mtexdata forsterite silent
@@ -23,52 +37,58 @@ mtexdata forsterite silent
 ebsd.prop
 
 %%
-% and each of them is at the same time accessible as if it was a regular
-% field of the object
+% Each property may also be read as though it were a regular field of the
+% object. Here the first five MAD values are read as |ebsd.mad|.
 
 ebsd.mad(1:5)
 
-%%
-% The single most important thing about a property is that it is in
-% lockstep with the list. Selecting a subset selects the corresponding
-% property values
+%% Subsetting keeps values aligned
+%
+% Select every measurement whose MAD is below one. The two lengths printed
+% below are equal because selecting EBSD points also selects the matching
+% property values.
 
 ebsdSub = ebsd(ebsd.mad < 1);
 
 length(ebsdSub)
-
-%%
-
 length(ebsdSub.mad)
 
-%% Adding your own properties
+%% Adding a property
 %
-% A new property is created by assigning to a field of |prop|. Note that
-% the |prop| is required here - writing |ebsd.myQuality = ...| directly
-% would try to set a class property of |EBSD| and fail, since MTEX has no
-% way of telling a typo from a new property.
+% Create a property by assigning to a new field of |prop|. The |prop| part
+% is required for the first assignment. Writing |ebsd.myQuality = ...|
+% directly would try to set a class property of |EBSD| and fail because
+% MTEX cannot distinguish a new name from a typo.
+%
+% This example turns MAD into a quality score that decreases as MAD grows.
 
 ebsd.prop.myQuality = 1 ./ (1 + ebsd.mad);
 
 ebsd.prop
 
 %%
-% From now on |myQuality| behaves exactly like any built in property - it
-% can be read and overwritten as |ebsd.myQuality| without the |prop|, and
-% it survives indexing
+% Once the field exists, it can be read or overwritten as
+% |ebsd.myQuality| without writing |prop|. It also survives indexing. The
+% following values belong only to the selected forsterite points.
 
 ebsd('Forsterite').myQuality(1:5)
 
-%%
-% and it can be used for plotting
+%% Plotting a property
+%
+% A numeric property can supply one colour value per point. The map shows
+% lower |myQuality| where MAD is larger and higher |myQuality| where MAD is
+% smaller; the colours remain attached to the correct measurement points.
 
+newMtexFigure
 plot(ebsd('Forsterite'),ebsd('Forsterite').myQuality)
 mtexColorbar('title','my quality')
 
-%%
-% A property does not have to be numeric. Anything that supports indexing
-% works, for instance a <vector3d.vector3d.html vector3d> per pixel - here
-% the specimen direction of the crystallographic $c$ axis.
+%% Properties may store MTEX objects
+%
+% A property does not have to be numeric. Any value that supports indexing
+% can be stored. The next property contains one
+% <vector3d.vector3d.html |vector3d|> per forsterite point. Each vector is
+% the specimen direction of that point's crystallographic $c$ axis.
 
 ebsdFo = ebsd('Forsterite');
 ebsdFo.prop.myAxis = ebsdFo.orientations .* Miller(0,0,1,ebsdFo.CS);
@@ -77,28 +97,36 @@ ebsdFo.prop
 
 %% Properties of grains
 %
-% Grains work the same way. In addition to the properties MTEX computes
-% itself, such as |GOS| or |meanRotation|, one can attach anything that has
-% one value per grain.
+% Grains use the same mechanism. MTEX supplies derived grain properties such
+% as |GOS| and |meanRotation|. You may add any other value that has one entry
+% per grain.
 
 grains = calcGrains(ebsd('indexed'),'angle',10*degree);
 
 grains.prop
 
 %%
-% A typical use is to store a derived quantity so that it can be plotted
-% and selected on later without recomputing it
+% Store the ratio of the long-axis length to the short-axis length. Keeping
+% this derived quantity as a property makes it available for later plotting
+% and selection without recomputing it.
 
 grains.prop.myRatio = grains.longAxis.norm ./ grains.shortAxis.norm;
 
+newMtexFigure
 plot(grains('Forsterite'),grains('Forsterite').myRatio)
 setColorRange([1 5])
 mtexColorbar('title','aspect ratio')
 
 %%
-% One caveat: MTEX does not verify that the value you assign has the right
-% length. A property that is too short is accepted silently and only fails
-% later, when the object is indexed
+% Elongated grains appear at the high end of the colour range, whereas
+% nearly equiaxed grains appear near one. Values above five share the top
+% colour because |setColorRange([1 5])| clips the displayed range.
+
+%% Check the length yourself
+%
+% MTEX does not verify that a newly assigned property has the correct
+% length. A property that is too short is accepted silently and fails only
+% when later indexing requests an entry that does not exist.
 
 grains.prop.nonsense = [1 2 3];
 
@@ -108,15 +136,25 @@ catch e
   disp(e.message)
 end
 
-%% Where properties come from
+%% How properties are implemented
 %
-% Technically all of this is implemented by the class |dynProp|
-% (|tools/dynProp.m|), from which |EBSD|, |grain2d| and the other list
-% classes inherit. It provides the |prop| struct together with overloaded
-% indexing, concatenation and subsetting, so that a new property
-% automatically takes part in all of them. The
-% <EBSDImport.html import interfaces> use exactly the same mechanism -
-% every column of a |.ang| or |.ctf| file that MTEX does not recognize as
-% position, phase or orientation ends up as a property.
+% The <dynProp.html |dynProp|> class implements the |prop| structure and the
+% overloaded indexing, concatenation, and subsetting used here. Classes such
+% as |EBSD| and |grain2d| inherit that mechanism, so a new property
+% automatically participates in those operations.
+%
+% <EBSDImport.html Import interfaces> use the same mechanism. Every column
+% of an |.ang| or |.ctf| file that MTEX does not recognise as position,
+% phase, or orientation becomes a property.
+
+%% References
+%
+% This page documents MTEX's per-element storage mechanism and does not rely
+% on an external method or definition.
+
+%% Next
+%
+% <Glossary.html Glossary> gives concise definitions of the data types and
+% conventions used throughout MTEX documentation.
 
 %#ok<*NOPTS>

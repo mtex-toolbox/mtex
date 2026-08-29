@@ -1,144 +1,193 @@
-%% Vector Valued S2Fun
+%% Vector-valued spherical functions
 %
-%% Structural conventions of the input and output of vector valued S2FunHarmonic
+% A vector-valued spherical function collects several scalar functions on
+% the sphere in one MATLAB array,
 %
-% In this part we deal with vector valued functions of the form
+% $$ f\colon \mathrm{S}^2\to\mathbb{R}^n. $$
 %
-% $$ f\colon \bf{S}^2\to \bf{R}^n $$.
-%
-% * the structure of the nodes is always interpreted as a column vector
-% * the node index is the first dimension
-% * the dimensions of the |S2FunHarmonic| itself is counted from the second dimension
-%
-% For example we got four nodes $v_1, v_2, v_3$ and $v_4$ and six functions 
-% $f_1, f_2, f_3, f_4, f_5$ and $f_6$, which we want to store in a 3x2 array, 
-% then the following scheme applies to function evaluations:
-%
-% $$ F(:, :, 1) = \pmatrix{f_1(v_1) & f_2(v_1) & f_3(v_1) \cr 
-% f_1(v_2) & f_2(v_2) & f_3(v_2) \cr 
-% f_1(v_3) & f_2(v_3) & f_3(v_3) \cr 
-% f_1(v_4) & f_2(v_4) & f_3(v_4)} \quad\mathrm{and}\quad 
-% F(:, :, 2) = \pmatrix{f_4(v_1) & f_5(v_1) & f_6(v_1) \cr 
-% f_4(v_2) & f_5(v_2) & f_6(v_2) \cr 
-% f_4(v_3) & f_5(v_3) & f_6(v_3) \cr 
-% f_4(v_4) & f_5(v_4) & f_6(v_4)}. $$
-%
-% For the intern Fourier-coefficient matrix the first dimension is reserved 
-% for the Fourier-coefficients of a single function; the dimension of the 
-% functions itself begins again with the second dimension.
-%
-% If $\bf{\hat f}_1, \bf{\hat f}_2, \bf{\hat f}_3, \bf{\hat f}_4, \bf{\hat f}_5$
-% and $\bf{\hat f}_6$ would be the column vectors of the Fourier-coefficients 
-% of the functions above, internally they would be stored in $\hat F$ as follows.
-% $$ \hat F(:, :, 1) = \pmatrix{\bf{\hat f}_1 & \bf{\hat f}_2 & \bf{\hat f}_3} 
-% \quad\mathrm{and}\quad 
-% \hat F(:, :, 2) = \pmatrix{\bf{\hat f}_4 & \bf{\hat f}_5 & \bf{\hat f}_6}. $$
-%
-%% Defining a vector valued S2FunHarmonic
-%
-%%
-% *Definition via function values*
-%
-% At first we need some vertices
+% Its output components are numerical values. This differs from a
+% <S2FunVectorField.html spherical vector field>, whose output is a
+% geometric vector, and from a <S2FunAxisField.html spherical axis field>,
+% whose output is unchanged when its representative is reversed. Use a
+% vector-valued @S2Fun when the components should support MATLAB array
+% indexing, concatenation and reduction.
+% Component shape is independent of point-group invariance. Use
+% <S2FunSym.html symmetric spherical functions> when all components share
+% one symmetry.
+
 plottingConvention.default('y↑→x');
-nodes = equispacedS2Grid('points', 1e5);
+
+%#ok<*NASGU>
+
+%% How component arrays are laid out
+%
+% MTEX always interprets the evaluation nodes as a column. The node index
+% is the first dimension of the returned values. The dimensions of the
+% spherical-function array begin with the second dimension.
+%
+% For example, suppose four nodes $v_1,\ldots,v_4$ are evaluated by six
+% scalar functions stored as a $3\times2$ spherical-function array. The
+% returned array |F| has size $4\times3\times2$, with
+%
+% $$ F(i,:,1)=[f_1(v_i),f_2(v_i),f_3(v_i)] $$
+%
+% and
+%
+% $$ F(i,:,2)=[f_4(v_i),f_5(v_i),f_6(v_i)]. $$
+
+fourNodes = [xvector;yvector;zvector; ...
+  vector3d.byPolar(60*degree,45*degree)];
+sixValueFunction = @(v) reshape([v.x,v.y,v.z,v.x.^2,v.y.^2,v.z.^2], ...
+  length(v),3,2);
+F = sixValueFunction(fourNodes);
+valueArraySize = size(F);
+
+%%
+% Accordingly, |valueArraySize| is |[4 3 2]|. Index |F(i,j,k)| is the
+% value at node |i| of component |(j,k)|. This rule lets one evaluation
+% retain both the node layout and the component-array layout.
+
+%% Interpolate sampled component values
+%
+% The same convention applies when fitting a harmonic representation.
+% Here the two columns of |sampleValues| define two scalar functions at
+% every node.
+
+nodes = equispacedS2Grid('points',800);
 nodes = nodes(:);
+sampleValues = [S2Fun.smiley(nodes),nodes.x.*nodes.y];
 
 %%
-% Next we define function values for the vertices
+% <S2FunHarmonic.interpolate.html |interpolate|> places the two component
+% dimensions after its hidden coefficient dimension. The resulting |sF1|
+% has size $2\times1$.
 
-y = [S2Fun.smiley(nodes), (nodes.x.*nodes.y).^(1/4)];
+sF1 = S2FunHarmonic.interpolate(nodes,sampleValues,'bandwidth',12, ...
+  'weights','equal');
+componentArraySize = size(sF1);
 
-%%
-% Now the actual command to get a 2x1 |sF1| of type 
-% <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>
-
-sF1 = S2FunHarmonic.interpolate(nodes, y)
-
-%%
-% *Definition via function handle*
+%% Plot the components
 %
-% If we have a function handle for the function we could create a
-% |S2FunHarmonic| via quadrature. At first let us define a function handle
-% which takes <vector3d.vector3d.html |vector3d|> as an argument and returns
-% double:
+% The scalar plotting commands also accept a vector-valued function. MTEX
+% draws one panel per component rather than combining their values.
 
-f = @(v) [exp(v.x+v.y+v.z)+50*(v.y-cos(pi/3)).^3.*(v.y-cos(pi/3) > 0), v.x, v.y, v.z];
-
-%% 
-% Next we convert this function handle into a 
-% <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|> of size $4 \times 1$
-
-sF2 = S2FunHarmonic(f, 'bandwidth', 50)
+plot(sF1,'upper');
 
 %%
-% *Definition via Fourier-coefficients*
+% The first panel contains the smiley. The second has four lobes because
+% the sign of $xy$ alternates between neighboring quadrants. Separate
+% panels are essential here: the two values are components, not the
+% coordinates of arrows.
+
+%% Construct from a function handle
 %
-% If we already know the Fourier-coefficients, we can simply hand them in 
-% the format above to the constructor of |S2FunHarmonic|.
+% A handle must return one row per input direction and one column per
+% component. This example retains the original peaked scalar component and
+% appends the Cartesian coordinate functions $x$, $y$ and $z$.
 
-sF3 = S2FunHarmonic(eye(9))
+fourComponentFunction = @(v) [exp(v.x+v.y+v.z) + ...
+  50*(v.y-cos(pi/3)).^3.*(v.y-cos(pi/3)>0),v.x,v.y,v.z];
 
 %%
-% * This command stores the nine first spherical harmonics in |sF3|
+% Passing the handle to the constructor applies quadrature. The harmonic
+% cutoff is degree 50, and the resulting |sF2| has size $4\times1$.
 
+sF2 = S2FunHarmonic(fourComponentFunction,'bandwidth',50);
+handleArraySize = size(sF2);
 
-%% Operations which differ from an univariate S2FunHarmonic
+%% Construct from harmonic coefficients
 %
-%%
-% *Some default matrix and vector operations*
+% If the coefficients are already known, pass them directly to the
+% <S2FunHarmonic.S2FunHarmonic.html |S2FunHarmonic|> constructor. The first
+% dimension of |fhat| is reserved for the coefficients of one scalar
+% function. Component-array dimensions begin with its second dimension.
 %
-% You can concatenate and refer to functions as MATLAB does with vectors and matrices
-
-sF4 = [sF1; sF2];
-sF4(2:3);
-
-%%
-% You can conjugate the Fourier-coefficients and transpose/ctranspose the 
-% vector valued <S2FunHarmonic.S2FunHarmonic |S2FunHarmonic|>.
-
-conj(sF1);
-sF1.';
-sF1';
-
-%%
-% Some other operations
-
-length(sF1);
-size(sF2);
-sF3 = reshape(sF3, 3, []);
-
-%%
-% *|sum| and |mean|*
+% Thus, if $\widehat f_1,\ldots,\widehat f_6$ are coefficient columns for
+% the $3\times2$ example above, their internal arrangement is
 %
-% If we do not specify further options to |sum| or |mean| they give we the 
-% integral or the mean value back for each function.
-% You could also calculate the conventional sum or the mean value over a 
-% dimension of a vector valued |S2FunHarmonic|.
+% $$ \widehat F(:,:,1)=[\widehat f_1,\widehat f_2,\widehat f_3] $$
+%
+% and
+%
+% $$ \widehat F(:,:,2)=[\widehat f_4,\widehat f_5,\widehat f_6]. $$
 
-sum(sF1, 1);
-sum(sF3, 2);
+sF3 = S2FunHarmonic(eye(9));
 
 %%
-% *min/max*
-%
-% If the |min| or |max| command gets a vector valued |S2FunHarmonic| the
-% pointwise minimum or maximum can calculated along the dimension specified 
-% as third argument.
+% Each column of the identity selects one coefficient. Consequently, |sF3|
+% stores the first nine spherical harmonics as nine component functions.
+% Most applications construct functions from values and never need to
+% access this coefficient layout directly.
 
-% this computes the minimum along the first dimension
-min(sF3,[],1);
+%% Index, concatenate and reshape components
+%
+% Component arrays follow ordinary MATLAB indexing. Vertical
+% concatenation combines the two functions in |sF1| with the four in
+% |sF2|, while indexing selects components.
+
+sF4 = [sF1;sF2];
+selectedFunctions = sF4(2:3);
 
 %%
-% *Remark on the matrix product*
-%
-% At this point the matrix product is implemented per element and not as 
-% the usual matrix product.
+% Conjugation acts on the coefficients. Transpose and conjugate transpose
+% rearrange the component dimensions in the usual MATLAB way.
 
-%% Visualization of vector valued S2FunHarmonic
-%
-% The same plot commands as for univariate |S2FunHarmonic| work on
-% vector valued as well. The difference is that, now, each component is
-% plotted next to one another.
+conjugatedFunctions = conj(sF1);
+transposedFunctions = sF1.';
+conjugateTransposedFunctions = sF1';
 
-%#ok<*VUNUS>
+%%
+% |length| and |size| inspect the component array rather than the hidden
+% coefficient dimension. Reshaping the nine functions in |sF3| produces a
+% $3\times3$ spherical-function array.
+
+numberOfFunctions = length(sF1);
+shapeOfHandleFunctions = size(sF2);
+sF3 = reshape(sF3,3,[]);
+
+%% Integrate or reduce components
+%
+% With no dimension argument, |sum| integrates every component over the
+% sphere and |mean| returns the spherical mean of every component. Their
+% outputs are numerical arrays with |size(sF)|.
+
+componentIntegrals = sum(sF1);
+componentMeans = mean(sF1);
+
+%%
+% With a dimension argument, the same commands perform pointwise array
+% reductions and return another spherical function.
+
+rowSums = sum(sF3,2);
+columnMeans = mean(sF3,1);
+
+%% Pointwise minima and maxima
+%
+% For a vector-valued function, pass an empty second argument and the
+% component dimension as the third argument. The result is the pointwise
+% minimum or maximum along that component dimension.
+
+columnMinima = min(sF3,[],1);
+
+%% A note on products
+%
+% An older implementation note states that the matrix product is
+% implemented per element and not as the usual matrix product. In the
+% current implementation, a product between two |S2FunHarmonic| arrays is
+% not implemented. Use |.*| for pointwise multiplication. Multiplication
+% by a compatible numerical matrix uses the overloaded |*| operator.
+
+close all
+
+%% References
+%
+% * J. R. Driscoll and D. M. Healy,
+% <https://doi.org/10.1006/aama.1994.1008 Computing Fourier transforms and
+% convolutions on the 2-sphere>, _Advances in Applied Mathematics_ 15
+% (1994), 202--250, gives the spherical Fourier framework applied
+% component by component in a vector-valued harmonic function.
+
+%% Next
+%
+% Continue with <S2Kernels.html Spherical kernel functions> to construct
+% radially symmetric building blocks for spherical functions.

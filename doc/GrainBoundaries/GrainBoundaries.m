@@ -1,111 +1,181 @@
 %% Grain Boundaries
 %
-%%
-% Once a map has been divided into grains, the interesting part is often
-% not the grains but what lies between them. A grain boundary is where two
-% crystals meet, and its character - how the two lattices are related, and
-% which way the interface faces - controls a great deal of how the material
-% behaves: how it fractures, how it corrodes, how easily an atom or a
-% dislocation crosses.
+%% From grains to a boundary network
 %
-% In a map, a boundary is a set of short segments, each lying between two
-% neighbouring measurements that ended up in different grains. Those
-% segments are objects with their own properties, not decoration drawn on
-% top of the grains.
+% A *grain* is a phase-homogeneous, spatially connected region of EBSD
+% pixels produced by segmentation.
+% Begin this chapter after <GrainReconstruction.html Grain Reconstruction>
+% has divided a map into those regions.
+%
+% The interface between two grains often matters as much as either grain.
+% Its character influences how a material fractures and corrodes.
+% It also affects how readily an atom or dislocation crosses the interface.
+%
+% MTEX represents a grain boundary as short segments. Each segment lies
+% between neighbouring measurements that were assigned to different grains.
+% One <grainBoundary.grainBoundary.html |grainBoundary|> object holds the
+% whole segment list, and its methods act across that list.
+% The segments have properties; they are not decoration drawn over the grains.
 
+close all;
+
+% load and crop the example map in its specimen plotting frame
 plottingConvention.default('y↑→x');
 mtexdata forsterite silent
-
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
-grains = calcGrains(ebsd('indexed'),'threshold',10*degree);
+
+% reconstruct and smooth the grains
+grains = calcGrains(ebsd('indexed'),'angle',10*degree);
 grains = smoothBoundary(grains,5);
 
-% the boundary network, with the points where three grains meet
-plot(grains,'micronbar','off')
+% display the boundary list
+gB = grains.boundary
+
+% draw the grains, boundary network, and strict triple points
+plot(grains,'noBoundary','micronbar','off')
 hold on
-plot(grains.boundary,'lineWidth',1.5)
+plot(gB,'lineWidth',1.5)
 plot(grains.triplePoints,'color','r','MarkerSize',4)
 hold off
 
-%%
-% The red points are *triple points*, where three grains meet. They are not
-% merely where lines cross: the angles at a triple point are set by the
-% relative energies of the three boundaries, so they carry information that
-% no single boundary does.
+%% Reading the boundary object and figure
+% The displayed summary groups the segments by the phases on their two
+% sides. Each row reports a segment count and the total trace length.
+% |notIndexed| normally denotes pixels whose patterns could not be indexed.
+% In this indexed-only example, a |notIndexed| side in that table marks the
+% outer scan rim, where no neighbouring grain exists beyond the map.
 %
-%% Five numbers, and how many you can have
+% The coloured regions in the figure are grains, and the black lines are
+% their boundary network. The red markers are *triple points*.
+% A *junction* is a vertex where the number of meeting segments is not two.
+% A triple point is a junction where exactly three segments meet and separate
+% three distinct real grains.
+% They are not merely places where two plotted lines cross.
 %
-% Describing an interface completely takes five numbers. Three fix the
-% misorientation between the two crystals, and two more fix the direction
-% the interface plane faces. Boundaries with the same misorientation but
-% different planes are genuinely different objects, and often behave
-% differently.
+% At equilibrium, the angles at a triple point reflect interfacial force
+% balance.
+% That balance depends on the relative energies and their anisotropy.
+% A junction therefore carries information that no single segment does.
+% A two-dimensional section also depends on how the specimen was cut.
+% Its angles are not a direct energy measurement without equilibrium and
+% section-geometry assumptions.
 %
-% A polished surface gives you the first three and only part of the last
-% two. What a map records is the *trace* of the boundary plane - the line
-% where it meets the surface - and a trace is consistent with any plane
-% containing it. The inclination is unmeasured. Getting the full five needs
-% either <EBSD3Analysis.html 3D data> or a statistical argument over many
-% boundaries at once, which is what
-% <BoundaryNormalDistribution.html Distribution> is for.
+%% Five macroscopic parameters
 %
-%% Boundaries are not all the same kind
+% Describing a grain boundary completely at a macroscopic scale takes five
+% independent parameters.
+% Three specify the misorientation between the two crystal lattices.
+% Two specify the direction of the interface-plane normal.
+% Boundaries with the same misorientation but different planes are different
+% interfaces and can behave differently.
 %
-% Two distinctions run through the chapter. A *phase boundary* is not a
-% separate type of object - it is simply a boundary whose two grains happen
-% to differ in phase, and it is a way of filtering rather than a class of
-% its own.
+% A polished two-dimensional section supplies four of these five parameters.
+% The crystal orientations give the misorientation, while the boundary
+% *trace* gives the line where the interface plane meets the section.
+% The inclination of that plane remains unknown, because a trace is
+% consistent with any plane that contains it.
 %
-% More consequential is the split between high-angle boundaries, which are
-% what grain reconstruction produced, and *subgrain* boundaries, whose
-% misorientation falls below the threshold and which therefore lie inside
-% grains rather than between them. They are real features, usually walls of
-% dislocations, and they are invisible to any analysis that only looks at
-% grain outlines.
+% <EBSD3Analysis.html 3D EBSD> can resolve the plane of an individual
+% interface.
+% From two-dimensional data, <BoundaryNormalDistribution.html Boundary Normal
+% Distribution> estimates a population of plane orientations from many traces.
+% It does not recover the missing inclination of every individual segment.
 %
-%% Where to start
+%% Boundary categories are queries, not new classes
 %
-% <BoundarySelect.html Select> and <BoundaryPlots.html Plot> come first, and
-% between them do most of the routine work: picking out the boundaries
-% between two particular phases, or above a misorientation, and colouring
-% them by whatever you picked.
+% A *phase boundary* is not a separate type of object in MTEX.
+% It is a grain boundary whose two neighbouring grains differ in phase.
+% Selecting phase boundaries is a query on the same |grainBoundary| list.
 %
-% <BoundaryProperties.html Properties> and
-% <BoundaryMisorientations.html Misorientations> are the measurements -
-% length, direction, and the crystallographic relationship across each
-% segment.
+% A phase change always separates neighbouring pixels into different grains.
+% For one phase, the usual one-threshold reconstruction separates neighbours
+% whose misorientation exceeds the segmentation angle.
+% Their segments appear in |grains.boundary|.
+% A two-threshold reconstruction can also preserve lower-angle walls within
+% grains in |grains.innerBoundary|.
 %
-% Then the pages on character.
-% <TiltAndTwistBoundaries.html Twist and Tilt> classifies a boundary by how
-% the misorientation axis sits relative to the boundary plane, which is the
-% oldest and most physical distinction here.
-% <CSLBoundaries.html CSL> covers coincidence site lattice relationships,
-% where the two lattices share a fraction of their points and the boundary
-% is correspondingly low in energy, and
-% <TwinningBoundaries.html Twinning> covers the special case that dominates
-% many real microstructures.
+% A *low-angle boundary* is defined by its misorientation angle. A *subgrain
+% boundary* lies inside a grain. The two populations usually overlap, but
+% they are not synonyms. Subgrain boundaries are real features, commonly
+% dislocation walls, and an analysis of grain outlines alone cannot see them.
 %
-% <SubGrainBoundaries.html Subgrain Boundaries> handles the low-angle
-% population described above, and <BoundaryCurvature.html Curvature> and
-% <BoundaryIntersections.html Intersections> treat the boundary network as
-% geometry.
+%% Recommended reading order
 %
-% Two pages concern the junctions rather than the segments:
+% Follow the order in the chapter contents.
+% Begin with <BoundarySelect.html Select>.
+% It filters the boundary list by phase, grain, or property.
+% <BoundaryPlots.html Plot> then colours those selected segments by scalar,
+% directional, or full-misorientation data.
+%
+% <BoundaryProperties.html Properties> introduces two-sided IDs, length,
+% direction, and the network connections of each segment.
+% Read it before <BoundaryMisorientations.html Misorientations>.
+% That page develops the relationship across a segment and the reference
+% frame of its misorientation axis.
+%
+% <SubGrainBoundaries.html Subgrain Boundaries> comes next because it explains
+% the two thresholds used by <TiltAndTwistBoundaries.html Twist and Tilt>.
+% The latter compares the misorientation axis with the boundary trace, the
+% classic physical distinction between tilt, twist, and mixed character.
+% <CSLBoundaries.html CSL> then introduces coincidence site lattice
+% relationships. At such a relationship, the lattices share some sites.
+% Coincidence is a geometric classification.
+% It does not by itself guarantee a low-energy boundary.
+% Some boundaries with low $\Sigma$ values and suitable planes are nevertheless
+% especially low in energy.
+%
+% The geometry route begins with <BoundaryCurvature.html Curvature>, which
+% shows why a pixel staircase cannot be interpreted as a smooth interface.
+% <GrainSmoothing.html Smoothing> explains the measurement decision.
+% <GrainSmoothingAdvanced.html Smoothing Algorithms> compares the filters.
+% Raw staircases corrupt length, direction, and curvature.
+% Smoothing is therefore not cosmetic, but it moves the boundary.
+% The method and smoothing scale are analysis decisions.
+%
+% <TwinningBoundaries.html Twinning> returns to crystallographic character
+% and infers a repeated twin relationship from a real microstructure.
+% Twins are a special boundary population that dominates many materials.
+%
 % <TriplePoints.html Triple Points> and
-% <QuadruplePoints.html Quadruple Points>. Four grains meeting at a point is
-% unstable in a real microstructure and usually means the segmentation put
-% two triple points on top of each other, so it is worth knowing they exist.
+% <QuadruplePoints.html Quadruple Points> treat the network junctions.
+% Exact four-way contacts are generally unstable in a physical
+% two-dimensional network. On a square measurement grid they also arise as
+% a digital-connectivity ambiguity during segmentation.
+% An apparent four-way contact may therefore represent two physical triple
+% points that the section or segmentation has placed at the same location.
 %
-% Finally, <GrainSmoothing.html Smoothing> and
-% <GrainSmoothingAdvanced.html Smoothing Algorithms>. Raw boundaries follow
-% the measurement grid and so run in staircases, which corrupts any length,
-% direction or curvature computed from them. Smoothing is not cosmetic - but
-% it does move the boundary, so how much of it to apply is a real decision.
+% <BoundaryIntersections.html Intersections> treats the network as geometry
+% crossed by a test line.
+% Finish with <BoundaryNormalDistribution.html Distribution>, which estimates
+% boundary-plane populations.
+% That page also assumes the kernel-density ideas introduced in
+% <DensityEstimation.html Density Estimation>.
+%
+%% References
+%
+% * A. P. Sutton and R. W. Balluffi,
+% <https://obnb.uk/p11642002-interfaces-in-crystalline-materials Interfaces in Crystalline Materials>, Clarendon Press, 1995.
+% This textbook develops interface structure, thermodynamics, and kinetics.
+% * F. Bachmann, R. Hielscher, and H. Schaeben,
+% <https://doi.org/10.1016/j.ultramic.2011.08.002 Grain Detection from 2d and 3d EBSD Data - Specification of the MTEX Algorithm>, _Ultramicroscopy_ 111 (2011), 1720--1733.
+% This paper derives the reconstructed boundary network.
+% * A. P. Sutton, E. P. Banks, and A. R. Warwick,
+% <https://doi.org/10.1098/rspa.2015.0442 The Five-Dimensional Parameter Space of Grain Boundaries>, _Proceedings of the Royal Society A_ 471 (2015), 20150442.
+% This paper separates misorientation from plane orientation.
+% * D. M. Saylor, B. S. El-Dasher, B. L. Adams, and G. S. Rohrer,
+% <https://doi.org/10.1007/s11661-004-0147-z Measuring the Five-Parameter Grain-Boundary Distribution from Observations of Planar Sections>, _Metallurgical and Materials Transactions A_ 35 (2004), 1981--1989.
+% * G. S. Rohrer,
+% <https://doi.org/10.1007/s10853-011-5677-3 Grain Boundary Energy Anisotropy: A Review>, _Journal of Materials Science_ 46 (2011), 5881--5895.
+% This review relates the five parameters and junction geometry to energy.
 %
 %% Next
 %
-% The regions these boundaries separate are <Grains.html Grains>. The
-% relationships across them are <Misorientations.html Misorientations>.
-% Boundaries created by a phase transformation are the subject of
+% The regions separated here are introduced in <Grains.html Grains>, and the
+% lattice relationships across them in <Misorientations.html Misorientations>.
+% Selected relationships created by a solid-state transformation feed into
 % <PhaseTransitions.html Phase Transitions>.
 %
+% The next top-level chapter is <EBSD3Analysis.html 3D EBSD>. Its interface
+% faces supply the inclination that a two-dimensional boundary trace lacks.
+
+%#ok<*NOPTS>

@@ -1,135 +1,223 @@
 %% Tensor Arithmetic
+%
 %%
+% This page assumes the tensor ranks and physical classes introduced in
+% <TensorDefinition.html Defining Tensorial Properties>. It shows how MTEX
+% applies arithmetic to one tensor or a list without loops. The central
+% operation is a *contraction*: a sum over selected component indices.
+%
+% The rotation examples also assume the active rotations introduced in
+% <RotationDefinition.html Defining Rotations>.
+
 plottingConvention.default('y↑→x');
-%%
-% MTEX offers powerful functionalities to calculate with tensors and lists
-% of tensors without the need of many nested loops. 
-% 
+
 %% Basic algebra
 %
-% First of all, all basic operations like |*|, |.*|, |+|, |-|, |.^| known
-% from linear algebra work also on lists of tensors.
+% Addition, scalar multiplication, and elementwise operations follow MATLAB
+% array notation. These variables each contain three random rank 2 tensors,
+% so every line below acts on all three at once.
 
-T1 = tensor.rand('rank',2);
-T2 = tensor.rand('rank',2);
+T1 = tensor.rand(3,'rank',2);
+T2 = tensor.rand(3,'rank',2);
 
-% addition and multiplication
+% addition and scalar multiplication
 T = T1 + 2 * T2;
 
-% point-wise product
+% componentwise multiplication
 T = T1 .* T2;
 
-%% Tensor Products
-% 
-% Tensor product are the canonical way how tensors interact with each
-% other. As an example consider a rank 4 stiffness tensor
+%%
+% The operator |.*| multiplies corresponding components. It is not an outer
+% product and does not change the rank. The random tensors are algebraic
+% examples rather than tensors with the symmetries of a physical property.
 
-C = stiffnessTensor.load(fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa'))
+%% Contractions with EinsteinSum
+%
+% Hooke's law is a useful model for reading a contraction. The following
+% rank 4 stiffness tensor contains room-temperature measurements for San
+% Carlos olivine from
+% <https://doi.org/10.1029/97JB00682 Abramson et al. (1997)>.
+% <TensorImport.html Importing Tensor Data> explains the loading step and
+% the reference-frame information that must accompany published components.
+
+C = stiffnessTensor.load(fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa'));
 
 %%
-% Then by Hooks law the stiffness tensor acts on a strain tensor, e.g.,
+% The data are in GPa. Apply a strain that stretches along x and compresses
+% along z.
 
 eps = strainTensor(diag([1 0 -1]))
 
 %%
-% according to the formula
+% Hooke's law contracts the last two indices of the stiffness with the two
+% indices of the strain,
 %
-% $$\sigma_{ij} =\sum_{k,l} C_{ijkl} \epsilon_{kl}$$
+% $$\sigma_{ij} = \sum_{k,l} C_{ijkl} \epsilon_{kl}.$$
 %
-% and turns it into the stress tensor $\sigma$. In MTEX such tensor
-% products can be computed in its most general form by the command
-% <EinsteinSum.html |EinsteinSum|>.
+% <EinsteinSum.html |EinsteinSum|> takes each tensor followed by one label
+% for each of its indices. Equal negative labels mark indices to sum over.
+% Positive labels survive, and their values set the index order in the
+% result. The signs are MTEX syntax; the physical indices are not negative.
 
 sigma = EinsteinSum(C,[1 2 -1 -2],eps,[-1 -2])
 
 %%
-% here the negative numbers indicate the indices which are summed up.
-% Each pair of equal negative numbers corresponds to one sum. The
-% positive numbers indicate the order of the dimensions of the resulting
-% tensor. Accordingly we can compute the outer product 
+% Labels 1 and 2 leave a rank 2 result. Its diagonal normal stresses are
+% 248.9, -8.65, and -161.9 GPa; all shear components are zero.
+%
+% The same notation describes elementary products. The outer product
 %
 % $$ (a \otimes b)_{ij} = a_i b_j $$
 %
-% between two rank one tensors
+% has two free indices and no summation.
 
 a = tensor([1;2;3],'rank',1);
 b = tensor([0;2;1],'rank',1);
 
 %%
-% by the command
 
-EinsteinSum(a,1,b,2)
-
-%%
-% and the inner product 
-%
-% $$ a \cdot b = \sum_i a_i b_i $$
-%
-% by
-
-EinsteinSum(a,-1,b,-1)
+ab = EinsteinSum(a,1,b,2)
 
 %%
-% As a final example we consider the linear compressibility in a certain
-% direction |v| which can be computed by the formula
+% The inner product
 %
-% $$ c = \sum_{i,j,k} S_{ijkk} v_i v_j $$
+% $$ a \mathbin{\cdot} b = \sum_i a_i b_i $$
 %
-% where $C = S^{-1}$ is the inverse of the compliance tensor, i.e. the
-% stiffness tensor
+% instead repeats one negative label and leaves no free index. Its result is
+% the scalar 7.
+
+aDotB = EinsteinSum(a,-1,b,-1)
+
+%% Stiffness is not compliance
+%
+% Linear compressibility is the relative shortening along a direction |v|
+% under unit hydrostatic pressure. It is a contraction of the *compliance*
+% $S=C^{-1}$,
+%
+% $$ \beta(v) = \sum_{i,j,k} S_{ijkk} v_i v_j.$$
+%
+% <tensor.inv.html |inv|> turns the stiffness into a compliance tensor. The
+% data file identifies x with [100], the crystallographic a direction.
 
 v = xvector;
-S = inv(C)
-c = EinsteinSum(C,[-1 -2 -3 -3],v,-1,v,-2)
+S = inv(C);
+beta = EinsteinSum(S,[-1 -2 -3 -3],v,-1,v,-2)
 
 %%
-% Here we used the command <tensor.inv.html |inv|> to compute the inverse
-% of any rank 2 or rank 4 tensor. There are shortcuts in MTEX for specific
-% tensor products. E.g. the relation between stress and strain can be more
-% compactly written as a <tensor.colon.html double dot product>
+% The result is 0.0018 GPa$^{-1}$. It is the same contraction used by
+% <stiffnessTensor.linearCompressibility.html |linearCompressibility|>.
 
-C * eps
-C : eps
+betaDirect = C.linearCompressibility(v);
 
-%% 
-% The double dot product between two rank two tensors is essentially their
-% inner product and can be equivalently computed from the
-% |<tensor.trace.html |trace|>| of their matrix product
+%%
+% Contracting the stiffness in the same way is dimensionally wrong. The
+% result is 460.25 GPa, not a compressibility.
 
-T1 : T2
-trace(T1 * T2')
-trace(T1' * T2)
+wrongUnits = EinsteinSum(C,[-1 -2 -3 -3],v,-1,v,-2)
 
-%% Determinant
-% For rank two tensors we can compute the determinant of the tensor by the
-% command <tensor.det.html |det|>
+%% Named contractions
+%
+% Frequently used contractions have operators. For a stiffness and a
+% strain, both |*| and |:| apply Hooke's law. They also preserve the physical
+% result class, so the first command displays a |stressTensor| rather than
+% the generic |tensor| returned by |EinsteinSum|.
 
-det(T1)
+sigmaTimes = C * eps
+sigmaColon = C : eps;
+
+%%
+% Between two rank 2 tensors, the double dot product is their inner product.
+% It is also the trace of either matrix product below. Each result here is a
+% list of three scalars because |T1| and |T2| are lists.
+
+inner = T1 : T2
+innerFromLeftTrace = trace(T1 * T2');
+innerFromRightTrace = trace(T1' * T2);
+
+%% Rank 2 matrix operations
+%
+% <tensor.det.html |det|> returns one determinant for each rank 2 tensor in
+% the list. The same function also supports rank 4 tensors.
+
+d = det(T1)
 
 %% Rotating a tensor
-% Rotation a tensor is done by the command <tensor.rotate.html |rotate|>.
-% Let's define a rotation
+%
+% <tensor.rotate.html |rotate|> actively rotates a physical property. The
+% workshop example below starts with a second-rank thermal-conductivity
+% tensor whose largest value, 10.5 W m$^{-1}$ K$^{-1}$, is along x. The
+% rotation moves that preferred direction 45 degrees about z.
 
-r = rotation.byEuler(45*degree,0*degree,0*degree);
+K = tensor(diag([10.5 6.2 6.2]),'rank',2,...
+  'propertyname','thermal conductivity','unit','W m^-1 K^-1');
+r = rotation.byAxisAngle(zvector,45*degree);
+Krot = rotate(K,r);
+
+newMtexFigure('layout',[1 2]);
+plot(K,'complete','upper')
+mtexTitle('before rotation')
+
+nextAxis
+plot(Krot,'complete','upper')
+mtexTitle('after rotation')
+
+setColorRange('equal')
+mtexColorbar('title','thermal conductivity (W m^{-1} K^{-1})')
 
 %%
-% Then the rotated tensor is given by
+% The high-conductivity region turns in the right plot, while its maximum
+% stays 10.5. A rank 2 tensor receives one rotation matrix per index,
+%
+% $$ K'_{ij} = \sum_{p,q} R_{ip} R_{jq} K_{pq}. $$
+%
+% Rotating the property is not a *frame change*. A frame change re-expresses
+% the same physical object in another reference frame. Use
+% <tensor.transformReferenceFrame.html |transformReferenceFrame|> for that
+% operation; <SymmetryAlignment.html Reference Frame Alignment> shows why
+% the distinction matters for published crystal properties.
 
-Trot = rotate(T1,r);
-plot(Trot)
-
-%%
-% Here is another example from Nye (Physical Properties of Crystals,
-% p.120-121) for a third-rank tensor
+%% A third-rank example
+%
+% Nye gives the following piezoelectric modulus for a crystal with one
+% threefold axis. The two printed component tables show the same property
+% before and after an active rotation of -45 degrees about z.
 
 P = [ 0 0 0 .17 0   0;
       0 0 0 0   .17 0;
       0 0 0 0   0   5.17]*10^-11;
 
-T = tensor(P,'rank',3,'propertyname','piezoelectric modulus')
+P0 = tensor(P,'rank',3,'propertyname','piezoelectric modulus')
 
-r = rotation.byAxisAngle(zvector,-45*degree);
-T = rotate(T,r)
+rPiezo = rotation.byAxisAngle(zvector,-45*degree);
+P45 = rotate(P0,rPiezo)
+
+%%
+% Components that were zero before the rotation are nonzero afterwards.
+% Nothing about the crystal changed internally: the component table changed
+% because the property now points in different specimen directions.
+
+%% Next
+%
+% <TensorVisualisation.html Tensor Visualization> explains the directional
+% plot used above and the specialized plots for physical tensor classes.
+% <AnisotropicTheory.html Anisotropic Elasticity> applies these contractions
+% to elastic moduli, energy, and wave propagation. The polycrystal step is
+% <TensorAverage.html Tensor Averages>.
+
+%% Further reading
+%
+% * J. F. Nye, <https://search.worldcat.org/title/11114089 Physical
+%   Properties of Crystals: Their Representation by Tensors and Matrices>,
+%   Oxford University Press, 1985. Pages 120-121 contain the third-rank
+%   rotation example above.
+% * C. Hammond,
+%   <https://doi.org/10.1093/acprof:oso/9780198738671.003.0014 The physical
+%   properties of crystals and their description by tensors>, in _The
+%   Basics of Crystallography and Diffraction_, 4th edition, 2015.
+% * E. H. Abramson, J. M. Brown, L. J. Slutsky, and J. Zaug,
+%   <https://doi.org/10.1029/97JB00682 The elastic constants of San Carlos
+%   olivine to 17 GPa>, _Journal of Geophysical Research_ 102(B6),
+%   12253-12263, 1997.
 
 %#ok<*NASGU>
 %#ok<*ASGLU>

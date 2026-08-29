@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360">
+  <defs>
+    <style>
+      .title { font: 24px Arial, sans-serif; font-weight: bold; fill: #24292f; text-anchor: middle; }
+      .code { font: 16px Consolas, monospace; fill: #24292f; text-anchor: middle; }
+      .text { font: 20px Arial, sans-serif; fill: #24292f; text-anchor: middle; }
+      .note { font: 17px Arial, sans-serif; fill: #57606a; text-anchor: middle; }
+      .local { fill: #eef5fb; stroke: #3979a8; stroke-width: 3; rx: 12; }
+      .session { fill: #fff1cc; stroke: #b7791f; stroke-width: 3; rx: 12; }
+      .startup { fill: #e8f5e9; stroke: #3b7d44; stroke-width: 3; rx: 12; }
+      .arrow { stroke: #57606a; stroke-width: 2.5; marker-end: url(#head); }
+    </style>
+    <marker id="head" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#57606a"/>
+    </marker>
+  </defs>
+
+  <rect class="local" x="25" y="55" width="250" height="220"/>
+  <text class="title" x="150" y="95">Option</text>
+  <text class="code" x="150" y="143">plot(...,'lineWidth',2)</text>
+  <line class="arrow" x1="150" y1="164" x2="150" y2="206"/>
+  <text class="text" x="150" y="238">one command</text>
+  <text class="note" x="150" y="305">most reproducible in a script</text>
+
+  <rect class="session" x="325" y="55" width="250" height="220"/>
+  <text class="title" x="450" y="95">Preference</text>
+  <text class="code" x="450" y="143">setMTEXpref(...)</text>
+  <line class="arrow" x1="450" y1="164" x2="450" y2="206"/>
+  <text class="text" x="450" y="238">current session</text>
+  <text class="note" x="450" y="305">not saved by the command</text>
+
+  <rect class="startup" x="625" y="55" width="250" height="220"/>
+  <text class="title" x="750" y="95">Settings file</text>
+  <text class="code" x="750" y="143">mtex_settings.m</text>
+  <line class="arrow" x1="750" y1="164" x2="750" y2="206"/>
+  <text class="text" x="750" y="238">future sessions</text>
+  <text class="note" x="750" y="305">runs when MTEX starts</text>
+</svg>
