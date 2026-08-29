@@ -35,17 +35,14 @@ elseif ~isa(b,'quaternion')
 end
 
 % ensure inner symmetries coincide
-[a, left, right] = ensureSym(a,b);
+[a, frameB, frameA] = ensureSym(a,b);
 
 % rotation multiplication
+% the second argument ensures the result is an orientation again
 r = mtimes@quaternion(a,b,isa(b,'orientation'));
 
-% convert back to orientation
-if isa(right,'crystalFrame') || isa(left,'crystalFrame')
-  r.CS = right;
-  r.SS = left;
-else % otherwise it is only a rotation anymore
-  r = rotation(r);
-end
+% a .* b is b.frameA -> a.frameB
+r.frameA = frameA;
+r.frameB = frameB;
 
 end

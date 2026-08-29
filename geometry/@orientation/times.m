@@ -25,7 +25,7 @@ if isnumeric(a) || isnumeric(b)
 end
  
 % ensure inner symmetries coincide
-[a, left, right] = ensureSym(a,b);
+[a, frameB, frameA] = ensureSym(a,b);
 
 % consider the cases ori * Miller, ori * tensor, ori * slipSystem
 if ~isa(b,'quaternion')
@@ -34,18 +34,11 @@ if ~isa(b,'quaternion')
 end
 
 % rotation multiplication
+% the second argument ensures the result is an orientation again
 r = times@rotation(a,b,isa(b,'orientation'));
 
-% convert back to orientation
-if isa(right,'crystalFrame') || isa(left,'crystalFrame')
-
-  r.CS = right;
-  r.SS = left;
-
-else % otherwise it is only a rotation
-
-  r = rotation(r);
-
-end
+% a .* b is b.frameA -> a.frameB
+r.frameA = frameA;
+r.frameB = frameB;
 
 end
