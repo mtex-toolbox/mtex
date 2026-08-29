@@ -33,7 +33,9 @@ end
 inside = true(size(v));
 v = normalize(vector3d(v));
 for i = 1:length(sR.N)
-  inside = inside & (dot(subSet(sR.N,i),v) >= sR.alpha(i)-1e-4);
+  % the question is about the direction that is written, not about its
+  % symmetrically equivalent set - the sector holds one of them
+  inside = inside & (dot(subSet(sR.N,i),v,'noSymmetry') >= sR.alpha(i)-1e-4);
 end
  
 end

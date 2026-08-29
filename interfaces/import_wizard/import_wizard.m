@@ -1123,7 +1123,7 @@ classdef import_wizard < matlab.apps.AppBase
         app.Color{pId} = cs.color;
         if isnan(app.Color{pId}), app.Color{pId} = [1 1 1]; end
         mineral = asChar(app, cs.mineral);
-        if isa(cs,'referenceFrame')
+        if isa(cs,'crystalFrame')
           pg = asChar(app, cs.pointGroup);
           [abc, abg] = displayLattice(app, cs);
           al = closestSetup(app, cs);
@@ -1284,7 +1284,7 @@ classdef import_wizard < matlab.apps.AppBase
 
       % color a not indexed phase with its own color, if one was chosen
       for phaseId = 1:numel(app.ebsd.CSList)
-        if isa(app.ebsd.CSList(phaseId), 'symmetry'), continue; end
+        if isa(app.ebsd.CSList(phaseId), 'crystalFrame'), continue; end
         rgb = app.Color{phaseId};
         if numel(rgb) ~= 3 || any(isnan(rgb)) || isequal(rgb(:).', [1 1 1])
           continue
@@ -1296,7 +1296,7 @@ classdef import_wizard < matlab.apps.AppBase
       noKey = {};
       for phaseId = enabledPhaseIds(:)'
         % skip not indexed "phases" - they carry no orientations
-        if ~isa(app.ebsd.CSList(phaseId), 'symmetry'), continue; end
+        if ~isa(app.ebsd.CSList(phaseId), 'crystalFrame'), continue; end
         mask = app.ebsd.phaseId == phaseId;
         if ~any(mask), continue; end
         % one precomputed color key per phase - only the direction differs
@@ -1497,7 +1497,7 @@ classdef import_wizard < matlab.apps.AppBase
       counts = phaseCounts(app);
       for k = ids(:)'
         if k >= 1 && k <= numel(app.ebsd.CSList) && ...
-            isa(app.ebsd.CSList(k), 'symmetry') && counts(k) > best
+            isa(app.ebsd.CSList(k), 'crystalFrame') && counts(k) > best
           best = counts(k); pid = k;
         end
       end

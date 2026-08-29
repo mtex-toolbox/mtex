@@ -225,7 +225,8 @@ grains = calcGrains(ebsd);
 
 % Select boundaries between forsterite and enstatite grains.
 gB = grains.boundary('Forsterite','Enstatite');
-misAxes = gB.misorientation.axis;
+% the axes are taken with respect to the forsterite frame
+misAxes = gB.misorientation.axis(ebsd.CSList(2));
 
 plot(misAxes,'fundamentalRegion','MarkerFaceAlpha',0.1);
 
