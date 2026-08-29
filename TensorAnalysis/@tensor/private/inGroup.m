@@ -14,6 +14,9 @@ out = false;
 
 if ~isa(R,'rotation') || isempty(fr) || fr.id == 1, return; end
 
+% rotating by nothing takes nothing out of the group
+if isempty(R), out = true; return; end
+
 s = fr.rot;
 if length(R) > length(s), return; end
 

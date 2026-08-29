@@ -68,7 +68,9 @@ classdef fibre
         if ~isempty(varargin) && isa(varargin{1},'vector3d')
           f.h = Miller(varargin{1},o1.CS);
         else
-          f.h = axis(inv(o1) .* f.o2,o1.CS,'noSymmetry');
+          % the axis comes back in the common proper group - the fibre is
+          % written in the frame it was asked for
+          f.h = Miller(axis(inv(o1) .* f.o2,o1.CS,'noSymmetry'),o1.CS);
         end
       end
 

@@ -261,7 +261,8 @@ classdef vector3d < dynOption
     % --- the crystal indices, when the frame is a crystal one ------------
 
     function cs = get.CS(v)
-      cs = v.framePrivate;
+      % ask getFrame, not the property - a subclass may derive its frame
+      cs = v.frame;
       if ~isa(cs,'crystalFrame'), cs = crystalFrame.empty; end
     end
 

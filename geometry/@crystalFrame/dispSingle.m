@@ -1,20 +1,15 @@
-function display(cs,varargin)
-% standard output
+function dispSingle(cs,name,varargin)
+% standard output for one crystal frame
 
-% the plotting convention goes into the header, the way a specimen symmetry
-% shows it - see @specimenSymmetry/display. For a crystal it is stated in
+% the plotting convention goes into the header, the way a specimen frame
+% shows it - see @referenceFrame/dispSingle. For a crystal it is stated in
 % crystal directions, e.g. '⊙c*→a', which is how a crystallographer names
 % a setting; conventionChar falls back to the Cartesian pictogram when no
 % crystal axis points out of the screen or east
-if isscalar(cs) && isa(cs.how2plot,'plottingConvention')
-  displayClass(cs,inputname(1),'moreInfo',conventionChar(cs),varargin{:});
+if isa(cs.how2plot,'plottingConvention')
+  displayClass(cs,name,'moreInfo',conventionChar(cs),varargin{:});
 else
-  displayClass(cs,inputname(1),varargin{:});
-end
-
-if ~isscalar(cs)
-  disp(cs);
-  return
+  displayClass(cs,name,varargin{:});
 end
 
 disp(' ');

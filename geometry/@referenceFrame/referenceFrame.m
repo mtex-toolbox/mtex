@@ -228,7 +228,13 @@ classdef (Abstract) referenceFrame < handle & matlab.mixin.Heterogeneous
       end
     end
 
-    function display(rf,varargin)
+    function dispLine(rf)
+      % what this frame is, in one line - the fallback for a frame with no
+      % lattice and no point group to name
+      disp([' ' char(rf)]);
+    end
+
+    function dispSingle(rf,name,varargin)
       % the identity and the convention go in the header - together they
       % are what tells one frame from another, the way a symmetry shows
       % its point group there. The basis is the detail below
@@ -239,7 +245,7 @@ classdef (Abstract) referenceFrame < handle & matlab.mixin.Heterogeneous
         info{end+1} = conventionChar(rf); %#ok<AGROW>
       end
 
-      displayClass(rf,inputname(1),'moreInfo',strjoin(info,', '),varargin{:});
+      displayClass(rf,name,'moreInfo',strjoin(info,', '),varargin{:});
 
       % a basis that is the canonical one says nothing the header does not -
       % only a frame that sits somewhere else is worth spelling out
@@ -267,6 +273,20 @@ classdef (Abstract) referenceFrame < handle & matlab.mixin.Heterogeneous
   % a method used on a mixed array of frames - which is what a phase list
   % is - has to be sealed here, at the root of the hierarchy
   methods (Sealed = true)
+
+    function display(fr,varargin)
+      % one frame writes its full block, a list one line each - dispSingle
+      % is where a subclass says what its own block looks like
+
+      if isscalar(fr)
+        dispSingle(fr,inputname(1),varargin{:});
+      else
+        displayClass(fr,inputname(1),varargin{:});
+        disp(' ');
+        for k = 1:numel(fr), dispLine(fr(k)); end
+        disp(' ');
+      end
+    end
 
     function out = eq(fr1,fr2)
       % two frames are the same frame only if they are the same object -

@@ -190,6 +190,10 @@ classdef tensor < dynOption
   
       end
   
+      % a frame that was never set is passed on as [], and an empty
+      % placeholder in the argument list would shift every option after it
+      varargin(cellfun(@(s) isnumeric(s) && isempty(s),varargin)) = [];
+
       % extract the frame the coefficients refer to
       args = find(cellfun(@(s) isa(s,'referenceFrame'),varargin,'uniformoutput',true));
       if ~isempty(args)

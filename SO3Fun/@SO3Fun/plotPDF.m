@@ -40,8 +40,8 @@ else
   c = num2cell(ones(size(h)));
 end
 
-% ensure h is a cell array
-if ~iscell(h), h = mat2cell(h,1,cellfun(@length,c)); end
+% ensure h is a cell array - a list of directions may come either way round
+if ~iscell(h), h = mat2cell(h(:).',1,cellfun(@length,c)); end
 
 % create a new figure if needed
 [mtexFig,isNew] = newMtexFigure('datacursormode',@tooltip,varargin{:});

@@ -71,6 +71,10 @@ classdef directionColorKey < handle
         end
       end
             
+      % a frame free direction answers CS with an empty frame - that is no
+      % symmetry given, not a symmetry that is empty
+      if isempty(dM.sym), dM.sym = specimenFrame.default; end
+
       if check_option(varargin,'antipodal'), dM.sym = dM.sym.Laue; end
       
       dM.sR = dM.sym.fundamentalSector;
