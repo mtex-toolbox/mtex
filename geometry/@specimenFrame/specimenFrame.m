@@ -22,6 +22,10 @@ classdef specimenFrame < referenceFrame
 %   sF = specimenFrame.default              % supplies the default convention
 %   specimenFrame.rolling.makeDefault       % the session plots RD north
 %
+%   % a named frame in the sample symmetry asked for
+%   sF = specimenFrame.rolling('mmm')
+%   sF = specimenFrame.rolling('orthotropic')
+%
 %   % the session frame in the sample symmetry asked for
 %   sF = specimenFrame('mmm')
 %   sF = specimenFrame('orthorhombic')
@@ -79,15 +83,16 @@ classdef specimenFrame < referenceFrame
 
   methods (Static = true)
 
-    function sF = specimen
+    function sF = specimen(varargin)
       % the generic specimen frame with the canonical axes X, Y, Z - where
       % an import lands, since no vendor gives the map a reference system
       % of its own, and the session default until the user declares a more
       % specific frame such as specimenFrame.rolling for a rolled sheet
       sF = specimenFrame.named('specimen',{'X','Y','Z'});
+      sF = withGroup(sF,varargin);
     end
 
-    function sF = measurement
+    function sF = measurement(varargin)
       % the sample surface CS1 of an Oxford instrument, axes X1, Y1, Z1 -
       % the frame its Euler angles are stated in, not the one its map
       % lives in. An import does not attach it: MTEX rotates the Euler
@@ -96,20 +101,23 @@ classdef specimenFrame < referenceFrame
       % seeded with the convention of the vendor software - x east, y
       % south, the way an SEM image is displayed
       if isempty(sF.how2plot), sF.how2plot = plottingConvention.ij; end
+      sF = withGroup(sF,varargin);
     end
 
-    function sF = rolling
+    function sF = rolling(varargin)
       % rolling direction, transverse direction, normal direction,
       % seeded with the typical rolling convention - RD to the north,
       % TD to the west and hence ND out of the page
       sF = specimenFrame.named('rolling',{'RD','TD','ND'});
       if isempty(sF.how2plot), sF.how2plot = plottingConvention('y←↑x'); end
+      sF = withGroup(sF,varargin);
     end
 
-    function sF = geological
+    function sF = geological(varargin)
       % north, east, down - the lower hemisphere convention of structural
       % geology; the names are display only and may still change
       sF = specimenFrame.named('geological',{'N','E','D'});
+      sF = withGroup(sF,varargin);
     end
 
     function sF = default(sF)
