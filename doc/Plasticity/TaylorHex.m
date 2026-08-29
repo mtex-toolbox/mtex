@@ -23,8 +23,7 @@ cs = cs.properGroup;
 % direction (TD), and normal direction (ND). Here the tension axis is RD.
 % Save the incoming frame so the example can restore the session afterwards.
 
-previousFrame = specimenFrame.default;
-specimenFrame.rolling.makeDefault
+ss = specimenFrame.rolling('orthorhombic')
 
 %% Build the initial basal fibre texture
 %
@@ -32,14 +31,14 @@ specimenFrame.rolling.makeDefault
 % while rotations about that axis are random. A fibre ODF represents that
 % basal fibre texture directly.
 
-odf = fibreODF(cs.cAxis,vector3d.Z);
+odf = fibreODF(cs.cAxis,vector3d.Z,ss);
 
 %%
 % Plot the basal pole, a prismatic pole, and a pyramidal pole. Pole figures are
 % antipodal here, so opposite directions are drawn as the same pole.
 
 h = Miller({0,0,0,1},{1,0,-1,0},{1,0,-1,1},cs);
-plotPDF(odf,h,'antipodal','contourf','figSize','small')
+plotPDF(odf,h,'antipodal','contourf','upper','complete')
 mtexColorbar
 
 %%
@@ -86,15 +85,15 @@ sSwarm = sSwarm.symmetrise;
 % along TD and ND. The 250-degree case assumes that this transverse
 % anisotropy is negligible, so both directions contract equally.
 
-epsCold = 0.3 * strainTensor(diag([1 -0.6 -0.4]))
-epsWarm = 0.7 * strainTensor(diag([1 -0.5 -0.5]))
+epsCold = 0.3 * strainTensor(diag([1 -0.6 -0.4]),ss)
+epsWarm = 0.7 * strainTensor(diag([1 -0.5 -0.5]),ss)
 
 %% Solve the Taylor model for the starting texture
 %
 % Draw 100,000 orientations from the initial ODF. Both simulations start
 % from this same synthetic polycrystal.
 
-ori = odf.discreteSample(100000);
+ori = odf.optimalSample(1000)
 
 %%
 % Express each strain in each crystal frame and solve the Taylor problem.
@@ -132,21 +131,18 @@ meanRotation = [mean(angle(ori,oriCold)),...
 % Add the room-temperature and 250-degree results beneath the initial pole
 % figures, then arrange the three states as rows on common specimen axes.
 
+newMtexFigure('layout',[3 3])
+plotPDF(odf,h,'antipodal','contourf')
+
 nextAxis
 plotPDF(oriCold,h,'antipodal','contourf','grid',...
-  'grid_res',30*degree)
-mtexColorbar
+  'grid_res',30*degree,'complete','upper')
 
 nextAxis
 plotPDF(oriWarm,h,'antipodal','contourf','grid',...
-  'grid_res',30*degree)
+  'grid_res',30*degree,'complete','upper')
 mtexColorbar
 
-mtexFig = gcm;
-mtexFig.ncols = 3;
-mtexFig.nrows = 3;
-mtexFig.layoutMode = 'user';
-drawNow(mtexFig)
 
 %%
 % Compare each column from top to bottom: initial, room temperature, then
@@ -189,9 +185,6 @@ legend('boxoff')
 % under prismatic and pyramidal slip. Because the imposed total strains
 % differ, compare the family ranking within a row rather than absolute bar
 % heights between temperatures.
-
-% Restore the session state before the closing sections.
-specimenFrame.default(previousFrame);
 
 %% References
 %
