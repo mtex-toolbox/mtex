@@ -149,8 +149,10 @@ classdef PoleFigure < dynProp & dynOption
 
 
     function h = get.h(pf)
-      h = pf.allH;
-      h = horzcat(h{:});
+      % a superposition contributes several directions, so the entries are
+      % ragged - column them first
+      h = cellfun(@(x) x(:),pf.allH,'UniformOutput',false);
+      h = vertcat(h{:});
     end
     
     function r = get.r(pf)
