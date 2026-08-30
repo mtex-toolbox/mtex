@@ -90,18 +90,72 @@ s = ensurecell(get(txt,'string'));
 txt = txt(~cellfun(@isempty,s));
 if isempty(txt), return; end
 
-% reading an extent in pixels corrupts the position, so put it back. One set
-% for all of them: switching a text object's units forces a graphics update,
-% and doing it per object made this the most expensive thing in the layout.
-pos = ensurecell(get(txt,'position'));
-set(txt,'Units','pixels')
-ext = cell2mat(ensurecell(get(txt,'extent')));
-set(txt,'Units','data')
-set(txt,{'Position'},pos(:))
-
 ap = get(ax,'position');
+
+if isPlainView(ax)
+
+  % on an axes seen straight on, pixels are data units times the axes scale,
+  % and an extent read this way is free - switching a text object to pixel
+  % units costs a graphics update per object, 20 ms each over a contour
+  [sx,sy] = dataScale(ax,ap);
+  xl = get(ax,'XLim'); yl = get(ax,'YLim');
+  ext = cell2mat(ensurecell(get(txt,'Extent')));
+  ext = [(ext(:,1)-xl(1))*sx+1, (ext(:,2)-yl(1))*sy+1, ext(:,3)*sx, ext(:,4)*sy];
+
+else
+
+  % reading an extent in pixels corrupts the position, so put it back. One set
+  % for all of them: switching a text object's units forces a graphics update,
+  % and doing it per object made this the most expensive thing in the layout.
+  pos = ensurecell(get(txt,'position'));
+  set(txt,'Units','pixels')
+  ext = cell2mat(ensurecell(get(txt,'extent')));
+  set(txt,'Units','data')
+  set(txt,{'Position'},pos(:))
+
+end
+
 inset(1:2) = max([0 0; -ext(:,1:2)]);
 inset(3:4) = max([0 0; ext(:,1:2)+ext(:,3:4)-repmat(ap(3:4),size(ext,1),1)]);
+
+end
+
+% -------------------------------------------------------------------------
+function tf = isPlainView(ax)
+% true if the data to pixel map is the axis aligned scale
+%
+% A two dimensional spherical plot qualifies whatever its plotting
+% convention, because the convention lives in the projection and never
+% reaches the camera - a plot(...,'3d'), which turns the camera and reverses
+% XDir and YDir, does not.
+
+d = ax.CameraPosition - ax.CameraTarget;
+up = ax.CameraUpVector;
+
+tf = d(3) > 0 && norm(d(1:2)) <= 1e-9 * d(3) && ...
+  up(2) > 0 && norm(up([1 3])) <= 1e-9 * up(2) && ...
+  strcmp(get(ax,'XDir'),'normal') && strcmp(get(ax,'YDir'),'normal');
+
+end
+
+% -------------------------------------------------------------------------
+function [sx,sy] = dataScale(ax,ap)
+% pixels per data unit along x and y
+%
+% A pinned data aspect ratio ties the two together, and the axes is then
+% only as wide as the aspect allows - whichever direction runs out first
+% sets the scale for both.
+
+xl = get(ax,'XLim'); yl = get(ax,'YLim');
+sx = ap(3) / diff(xl);
+sy = ap(4) / diff(yl);
+
+if strcmp(get(ax,'DataAspectRatioMode'),'manual')
+  dar = get(ax,'DataAspectRatio');
+  s = min(sx * dar(1), sy * dar(2));
+  sx = s / dar(1);
+  sy = s / dar(2);
+end
 
 end
 
