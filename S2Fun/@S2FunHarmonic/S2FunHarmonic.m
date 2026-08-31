@@ -58,8 +58,6 @@ methods
     if isa(fhat,'S2FunHarmonic')
 
       sF.fhat = fhat.fhat;
-      % the resolved frame, so casting a symmetrised function to a plain
-      % harmonic one keeps its crystal frame and with it the convention
       sF.framePrivate = fhat.frame;
       sF = truncate(sF);
 
@@ -93,8 +91,6 @@ methods
 
       sF.framePrivate = S2Fun.extractFrame(varargin{:});
 
-      % truncate zeros
-      %sF = sF.truncate;
     end
   end
   

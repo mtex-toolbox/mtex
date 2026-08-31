@@ -54,28 +54,12 @@ keepPlan = check_option(varargin,'keepPlan');
 if keepPlan
   sF = S2FunHarmonic([]);
 else
-  sF = S2FunHarmonic([],varargin{:});
-
-  % the frame of the result: an explicit frame wins, then an explicit convention,
-  % then the frame of the nodes
-  fr = getClass(varargin,'referenceFrame');
-  if isempty(fr)
-    pC = getClass(varargin,'plottingConvention');
-    if ~isempty(pC)
-      fr = specimenFrame.frameFor(pC);
-    else
-      fr = getFrame(nodes);
-    end
-  end
-  if isempty(getClass(varargin,'referenceFrame')) && ~isempty(fr)
-    sF = setFrame(sF,fr);
-  end
+  sF = S2FunHarmonic([],varargin{:},getFrame(nodes));  
 end
 
 sz = size(values);
 len = prod(sz(2:end)); % multivariate case
 values = reshape(values, [], len);
-
 
 % --------------- (1) get weights and values for quadrature ---------------
 

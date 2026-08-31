@@ -1,4 +1,4 @@
-function [sFs,psi] = symmetrise(sF, varargin)
+function [sF, psi] = symmetrise(sF, sym)
 % symmetrises a function with respect to a symmetry or a direction
 %
 % Syntax
@@ -12,88 +12,59 @@ function [sFs,psi] = symmetrise(sF, varargin)
 %
 % Input
 %  sF    - @S2FunHarmonic
-%  cs,ss - @crystalSymmetry, @specimenSymmetry
+%  cs,ss - @crystalFrame, @specimenFrame
 %  d     - @vector3d
 %
 % Output
 %  sFs - @S2FunHarmonic
 %  psi - @S2Kernel
 
-if (nargin==1 || ~isa(varargin{1},'vector3d')) && isempty(getClass(varargin,'referenceFrame'))
-  sym = getSym(sF);
-  if isempty(sym), sym = specimenFrame.default; end
-  sFs = sF.symmetrise(sym);
-  return
-end
+% the frame the function is written in already names the group
+if nargin==1, sym = sF.frame; end
 
 % symmetrise with respect to an axis
-if isa(varargin{1},'vector3d')
-
-  center = vector3d(varargin{1});
-
-  % about any axis but z nothing of the group survives, so the frame the
-  % result is written in must not claim one
-  if hasSymmetry(sF) && center ~= zvector
-    sF = S2FunHarmonic(sF);
-    sF.framePrivate = stripSym(sF.frame);
-  end
-
-  % start with a zero function
-  sFs = sF; sFs.fhat = 0;
+if isa(sym,'vector3d')
   
-  % rotate sF such that varargin{1} -> z
-  if center ~= zvector
-    rot = rotation.byAxisAngle(cross(center,zvector),angle(center,zvector));
+  % rotate sF such that the axis points to z
+  if ~eq(sym,zvector,'antipodal')
+    rot = rotation.byAxisAngle(cross(sym,zvector),angle(sym,zvector));
     sF = rotate(sF,rot);
   end
   
   % set all Fourier coefficients f_hat(l,k)=0 for k ~= 0
   M = sF.bandwidth;
-  sFs.bandwidth = M;
-  sFs.fhat((0:M).^2+(1:M+1)) = sF.fhat((0:M).^2+(1:M+1));
-  %psi = S2Kernel(real(sF.fhat((0:M).^2+(1:M+1))));
-  m = 0:M;
-  psi = S2Kernel(sqrt((2*m.'+1)).*real(sF.fhat((0:M).^2+(1:M+1)))./sqrt(4*pi));
+
+  fhatTrace = sF.fhat((0:M).^2+(1:M+1),:,:);
+  sF.fhat = zeros(size(sF.fhat));
+  sF.fhat((0:M).^2+(1:M+1),:,:) = fhatTrace;
+    
+  psi = S2Kernel(sqrt((2*(0:M).'+1)).*real(fhatTrace)./sqrt(4*pi));
   
   % rotate sF back
-  if center ~= zvector
-    sFRot = rotate(sFs,inv(rot));
-    sFs.fhat = sFRot.fhat;
+  if ~eq(sym,zvector,'antipodal'), sF = rotate(sF,inv(rot)); end
+
+  % strip symmetry
+  if hasSymmetry(sF) && sym ~= zvector
+    sF.framePrivate = stripSym(sF.framePrivate);
   end
     
   return;
 end
 
-
-% extract symmetry
-sym = getClass(varargin,'referenceFrame');
-
-% maybe we can set antipodal and save some time
-if sym.isLaue
-  symX = sym.properSubGroup;
-  varargin = [varargin,'antipodal'];
-else
-  symX = sym;
-end
+% the function is stated in the given frame
+if isa(sym,'referenceFrame'), sF.framePrivate = sym; end
 
 % maybe there is nothing to do
-if sF.bandwidth == 0 || numSym(symX) == 1
-  sFs = S2FunHarmonicSym(sF.fhat, sym,'skipSymmetrise');
-  return;
+if isempty(sym) || sF.bandwidth == 0 || numSym(sym) == 1, return; end
+
+% the symmetrised function as handle
+if sym.isLaue % maybe we can set antipodal and save some time
+  fsym = S2FunHandle(@sF.eval,sym.properSubGroup,'antipodal','symmetrise');
+else
+  fsym = S2FunHandle(@sF.eval,sym,'symmetrise');
 end
 
-% define a symmetrised evaluation function
-f = @(v) sF.eval(v);
-fsym = @(v) mean(reshape(f(symX * v),numSym(symX),[]));
-
-% compute Fourier coefficients by quadrature - naming the group here would
-% send the quadrature back into this function, which is doing the work
-[~,args] = getClass(varargin,'referenceFrame');
-sFsym = S2FunHarmonic.quadrature(fsym, 'bandwidth', sF.bandwidth,args{:});
-
-sFs = sF;
-sFs.fhat = sFsym.fhat;
-sFs.framePrivate = sym;
-
+% turn back into a harmonic function, written in the frame it is symmetric in
+sF = S2FunHarmonic.quadrature(fsym,'bandwidth',sF.bandwidth,sym);
 
 end

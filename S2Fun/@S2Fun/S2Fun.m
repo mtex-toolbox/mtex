@@ -117,8 +117,9 @@ methods
    s2F = unimodal(v,varargin)
 
    function fr = extractFrame(varargin)
-     % the frame named by the arguments, empty when they name none
-     fr = getClass(varargin,'referenceFrame');
+     % the frame the arguments name: a frame, or the frame of a convention
+     fr = getClass(varargin,{'referenceFrame','plottingConvention'});
+     if isa(fr,'plottingConvention'), fr = specimenFrame.frameFor(fr); end
    end
 
    function fr = jointFrame(sF1,sF2,fr)

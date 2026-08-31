@@ -36,6 +36,7 @@ classdef S2FunHandle < S2Fun
 properties
   fun
   antipodal = false
+  doSymmetrise = false; % ensures the frame symmetry by averaging
   bandwidth = getMTEXpref('maxS2Bandwidth')
 end
 
@@ -48,12 +49,11 @@ methods
   function S2F = S2FunHandle(fun,varargin)
     S2F.fun = fun;
 
-    % a referenceFrame argument wins, a symmetry contributes its frame
+    % the frame the arguments name, a plotting convention naming one too
     S2F.framePrivate = S2Fun.extractFrame(varargin{:});
-
-    if check_option(varargin,'antipodal')
-      S2F.antipodal = true;
-    end
+   
+    S2F.antipodal = check_option(varargin,'antipodal');
+    S2F.doSymmetrise = check_option(varargin,'symmetrise');
 
   end
   
@@ -74,7 +74,12 @@ methods
 
   function f = eval(S2F,v)
     
-    f = S2F.fun(v);
+    if S2F.doSymmetrise && ~isempty(S2F.frame) && numSym(S2F.frame)>1
+      rot = S2F.frame.sym.rot;
+      f = mean(reshape(S2F.fun(rot * v),numel(rot),[]));
+    else
+      f = S2F.fun(v);
+    end    
     f = reshape(f,numel(v),[]);
 
   end

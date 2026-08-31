@@ -26,11 +26,32 @@ function sF = adjoint(v,y, varargin)
 % Flags
 %  'nfsft'             - use (mostly slower) NFSFT algorithm
 %  'directComputation' - direct evaluation of Fourier sums (no nfft)
+%  'symmetrise'        - spread nodes and values over the group of the frame
 %
 % See also
 % S2FunHarmonic/quadrature S2FunHarmonic/adjointNFSFT 
 % S2FunHarmonic/approximate S2FunHarmonic/interpolate
 
+
+fr = getClass(varargin,'referenceFrame');
+
+if check_option(varargin,'symmetrise') && ~isempty(fr) && numSym(fr)>1
+
+  nS = numSym(fr); nV = numel(v);
+
+  % spreading the nodes leaves plain directions, without the grid's weights
+  w = get_option(varargin,'weights',1);
+  if isa(v,'quadratureS2Grid')
+    w = v.weights;
+    varargin = set_option(varargin,'bandwidth',get_option(varargin,'bandwidth',v.bandwidth));
+  end
+
+  % spread nodes, values and weights over the group
+  v = fr.rot * v;
+  y = reshape(repmat(reshape(y,1,[]),nS,1),nS*nV,[]);
+  varargin = set_option(varargin,'weights',ones(nS,nV).*reshape(w,1,[])./nS);
+
+end
 
 % Use NFSFT of nfft toolbox
 if ~check_option(varargin,'nfft')
@@ -49,18 +70,9 @@ if check_option(varargin,'killPlan')
   return
 end
 
-% the frame of the result: an explicit frame wins, then an explicit convention,
-% then the frame of the nodes
-fr = getClass(varargin,'referenceFrame');
-if isempty(fr)
-  pC = getClass(varargin,'plottingConvention');
-  if ~isempty(pC)
-    fr = specimenFrame.frameFor(pC);
-  else
-    fr = getFrame(v);
-  end
-end
-applyFrame = isempty(getClass(varargin,'referenceFrame')) && ~isempty(fr);
+% the frame of the result: what the arguments name, else the frame of the nodes
+if isempty(S2Fun.extractFrame(varargin{:})), fr = getFrame(v); else, fr = []; end
+applyFrame = ~isempty(fr);
 
 % multivariate case
 y = reshape(y,length(v),[]);
