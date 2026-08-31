@@ -14,7 +14,6 @@ if getMTEXpref('newLayout',true)
   if changed || ~mtexFig.layout.isSettled(mtexFig)
     mtexFig.layout.resolve(mtexFig);
   end
-  matchPaper(mtexFig.parent);
   return
 end
 
