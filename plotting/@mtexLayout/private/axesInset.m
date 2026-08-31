@@ -11,8 +11,9 @@ function inset = axesInset(ax)
 % TightInset is the only thing MATLAB measures - OuterPosition is always the
 % plot box plus a fixed LooseInset, so it reports the same numbers whatever
 % the axes carries. TightInset in turn reports [0 0 0 0] for an axes whose
-% camera has been placed, so a placed camera is measured a second time with
-% the camera mode on auto and the larger of the two is taken.
+% camera has been placed, so an axes that draws rulers under a placed camera
+% is measured a second time with the camera on auto and the larger of the two
+% is taken. An invisible axes draws no rulers and is measured by its texts.
 %
 % See also
 % mtexLayout/measure
@@ -20,9 +21,8 @@ function inset = axesInset(ax)
 inset = baseInset(ax);
 
 % a placed camera makes TightInset lie - measure again without one
-if isa(ax,'matlab.graphics.axis.Axes') && ...
-    strcmp(ax.PlotBoxAspectRatioMode,'manual') && ...
-    strcmp(ax.CameraPositionMode,'manual')
+if isa(ax,'matlab.graphics.axis.Axes') && strcmpi(ax.Visible,'on') && ...
+    any(strcmp(get(ax,{'CameraPositionMode','CameraViewAngleMode'}),'manual'))
 
   inset = max(inset,autoCameraInset(ax));
 
@@ -166,15 +166,16 @@ function inset = autoCameraInset(ax)
 % The numbers describe the auto projection rather than the placed one, so
 % this is a good proxy and not the truth - but the truth is [0 0 0 0].
 
-camPos = ax.CameraPosition; camTgt = ax.CameraTarget;
-camUp = ax.CameraUpVector; pbar = ax.PlotBoxAspectRatio;
+props = {'CameraPosition','CameraTarget','CameraUpVector','CameraViewAngle',...
+  'PlotBoxAspectRatio','DataAspectRatio'};
+modes = strcat(props,'Mode');
+val = get(ax,props); mode = get(ax,modes);
 
-ax.CameraPositionMode = 'auto';
+set(ax,modes,repmat({'auto'},1,numel(modes)));
 drawnow limitrate
 inset = baseInset(ax);
 
-ax.CameraPosition = camPos; ax.CameraTarget = camTgt;
-ax.CameraUpVector = camUp;  ax.PlotBoxAspectRatio = pbar;
-ax.CameraPositionMode = 'manual';
+% the values first, since assigning one switches its mode back to manual
+set(ax,props,val); set(ax,modes,mode);
 
 end
