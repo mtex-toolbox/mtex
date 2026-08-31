@@ -110,6 +110,18 @@ sentence you have just deleted.
 The same holds for an edit that reverts or supersedes earlier work: the file ends in its new
 state, not in its new state plus a record of the detour.
 
+## The shorter version is the fix
+
+**A change is measured by the file it leaves behind, not by the diff.** Before adding a
+branch, a helper, a flag or a guard, look for the version where the defect cannot happen and
+the file is shorter: one expression covering both cases instead of an `isscalar` branch, a
+value carried along instead of recomputed, a special case folded into the general one, the
+decision made once in the place that already makes it rather than at every call site.
+
+Where a shorter version drops an edge case, say so in one sentence and offer it anyway —
+less functionality is an acceptable price for significantly shorter and clearer code. Report
+what the file lost or gained.
+
 ## Comments
 
 **One line, saying what the next lines do.** Match the surrounding style: lowercase, terse,
