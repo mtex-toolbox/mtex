@@ -163,9 +163,13 @@ end
 
 % -------------------------------------------------------------------------
 function position = onScreen(figSize)
-% centred on the first monitor
+% centred on the first monitor, and no larger than it
+%
+% The caller resolves again against the size it gets, so capping here fits the
+% axes into the screen rather than letting the outer ones hang off the edges.
 
 screenExtent = getScreenExtent;
+figSize = min(figSize,screenExtent(1,3:4) - [0,120]);
 position = [(screenExtent(1,3)-figSize(1))/2, ...
   (screenExtent(1,4)-figSize(2))/2, figSize];
 
