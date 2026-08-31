@@ -120,8 +120,6 @@ if refit && ~isempty(plan)
   end
 end
 
-matchPaper(mtexFig.parent);
-
 % while publishing, flush the resize before the snapshot: it puts the paper
 % back on auto, and auto reports the size the figure was last drawn at
 if getMTEXpref('generatingHelpMode',false), drawnow; end
