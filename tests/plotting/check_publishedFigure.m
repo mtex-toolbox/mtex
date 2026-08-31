@@ -7,9 +7,9 @@ function check_publishedFigure
 % Every check here is one of those, as seen on a page:
 %
 %  * a grid of sections whose top row was cut off
-%  * a pole figure gallery whose titles and row labels were sliced away
+%  * a gallery whose titles and row labels were sliced away
 %  * axes jumping while the snapshot was taken
-%  * a single pole figure printed into the frame of the two before it
+%  * a single plot printed into the frame of the two before it
 %
 % See also
 % mtexFigure/drawNow mtexLayout/solveLayout check_mtexLayout
@@ -26,28 +26,33 @@ set(0,'DefaultFigureVisible','off');
 % is what makes a grid overflow, and what stops an axes following a resize.
 setMTEXpref('screenSize',[1920 1080]);
 
-cs = crystalFrame('432');
-odf = unimodalODF(orientation.byEuler(10*degree,20*degree,30*degree,cs), ...
-  'halfwidth',15*degree);
+% a spherical function, so that nothing here depends on crystallography - the
+% layout does not know what it is drawing
+sF = S2FunHarmonic.quadrature(@(v) exp(-3*angle(v,vector3d(1,2,3)).^2), ...
+  'bandwidth',16);
 
-checkNothingOutside(odf);
-checkBandsReserved(odf,cs);
-checkResizeReLaysOut(odf,cs);
-checkCaptureIsFaithful(odf,cs);
+checkNothingOutside(sF);
+checkBandsReserved(sF);
+checkResizeReLaysOut(sF);
+checkCaptureIsFaithful(sF);
 
 disp('check_publishedFigure: passed');
 
 end
 
 % =========================================================================
-function checkNothingOutside(odf)
-% twelve pinned sections fit into their figure, and the figure onto the screen
+function checkNothingOutside(sF)
+% twelve pinned plots fit into their figure, and the figure onto the screen
 
 close all
 setMTEXpref('sphericalAxisHeight',370);
 unpin = onCleanup(@() setMTEXpref('sphericalAxisHeight',[])); %#ok<NASGU>
 
-plotSection(odf,'sigma','sections',12,'layout',[3,4]);
+newMtexFigure('layout',[3,4]);
+for i = 1:12
+  plot(sF,'doNotDraw')
+  if i < 12, nextAxis; end
+end
 mtexColorbar
 drawnow
 
@@ -58,12 +63,12 @@ assert(all(figSize <= bound + 1), ...
   'check_publishedFigure: figure %s does not fit the screen %s', ...
   mat2str(round(figSize)),mat2str(bound))
 
-assertInside(pos,figSize,'twelve sigma sections');
+assertInside(pos,figSize,'the pinned grid');
 
 end
 
 % -------------------------------------------------------------------------
-function checkBandsReserved(odf,cs)
+function checkBandsReserved(sF)
 % a title above a spherical plot and a row label beside it stay in the figure
 %
 % Both hang off an axes that is invisible, so MATLAB reports no TightInset for
@@ -76,13 +81,16 @@ setMTEXpref('sphericalAxisHeight',370);
 unpin = onCleanup(@() setMTEXpref('sphericalAxisHeight',[])); %#ok<NASGU>
 
 mtexFig = newMtexFigure('layout',[4,4]);
-h = Miller({1,0,0},{1,1,1},cs);
 
 for i = 1:8
-  plotPDF(odf,h,'doNotDraw');
-  mtexTitle(['$\varepsilon = ' num2str(i) '$'])
-  ylabel(mtexFig.children(end-1),'row label');
+  plot(sF,'doNotDraw')
   if i < 8, nextAxis; end
+end
+
+% every axes, including the one the margin is measured on
+for i = 1:numel(mtexFig.children)
+  mtexTitle(mtexFig.children(i),['$\varepsilon = ' num2str(i) '$'],'doNotDraw')
+  ylabel(mtexFig.children(i),'row label');
 end
 mtexFig.drawNow
 drawnow
@@ -101,11 +109,11 @@ end
 end
 
 % -------------------------------------------------------------------------
-function checkResizeReLaysOut(odf,cs)
+function checkResizeReLaysOut(sF)
 % the axes follow a resize, and ignore the nudge a print gives the figure
 
 close all
-plotPDF(odf,Miller({1,0,0},{1,1,1},cs));
+plot(sF)
 drawnow
 
 f = gcf;
@@ -142,17 +150,19 @@ assert(isequal(round(get(gca,'Position')),round(shrunk)), ...
 end
 
 % -------------------------------------------------------------------------
-function checkCaptureIsFaithful(odf,cs)
+function checkCaptureIsFaithful(sF)
 % while publishing, a print reproduces the figure it is given
 %
-% Two pole figures, then one into the same figure: the shape changes, and a
-% snapshot that prints the previous geometry draws the disc as an ellipse.
+% Two plots, then one into the same figure: the shape changes, and a snapshot
+% that prints the previous geometry draws the disc as an ellipse.
 
 close all
 setMTEXpref('generatingHelpMode',true);
 
-plotPDF(odf,Miller({1,0,0},{1,1,1},cs));
-plotPDF(odf,Miller(1,0,0,cs));
+newMtexFigure('layout',[1,2]);
+plot(sF,'doNotDraw'); nextAxis; plot(sF,'doNotDraw');
+drawNow(gcm)
+plot(sF)
 drawnow
 
 f = gcf;
