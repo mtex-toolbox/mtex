@@ -36,6 +36,7 @@ figPos = get(mtexFig.parent,'Position');
 spec = struct;
 spec.n = numel(ax);
 spec.figSize = figPos(3:4);
+spec.maxSize = mtexFig.screenExtent;
 spec.spacing = mtexFig.innerPlotSpacing;
 spec.keepAspectRatio = mtexFig.keepAspectRatio;
 spec.fixedAxisHeight = mtexFig.fixedAxisHeight;

@@ -80,6 +80,20 @@ methods
     tf = lay.held > 0;
   end
 
+  function tf = isSettled(lay,mtexFig)
+    % the figure still has the size it was last measured at
+    %
+    % Printing nudges a figure by a pixel or two and the resize callback comes
+    % straight back here, in the middle of the capture. The comparison is
+    % against what was measured, not against what the plan asked for: the two
+    % differ whenever the ask was refused, and resizing a figure to the size
+    % the layout wanted has to lay it out, not be taken for a nudge.
+
+    pos = get(mtexFig.parent,'Position');
+    tf = ~isempty(lay.lastSpec) && all(abs(pos(3:4) - lay.lastSpec.figSize) <= 4);
+
+  end
+
   function invalidate(lay)
     % forget the cached measurement, so the next resolve reads the figure again
 

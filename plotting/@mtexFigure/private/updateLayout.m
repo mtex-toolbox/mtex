@@ -10,7 +10,11 @@ changed = adoptColorbars(mtexFig);
 changed = adoptLegend(mtexFig) || changed;
 
 if getMTEXpref('newLayout',true)
-  mtexFig.layout.resolve(mtexFig);
+  % a resize of a pixel or two is a print or the window manager, not a user
+  if changed || ~mtexFig.layout.isSettled(mtexFig)
+    mtexFig.layout.resolve(mtexFig);
+  end
+  matchPaper(mtexFig.parent);
   return
 end
 
