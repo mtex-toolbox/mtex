@@ -2,8 +2,11 @@ function MTEXFigureMenu(mtexFig,varargin)
 
 %if strcmpi(isVisible(mtexFig.parent),'off'), return; end
 
-try
-  if isempty(mtexFig.parent.MenuBar), return; end
+% adding a menu makes MATLAB show a menu bar even where the figure asks for
+% none, and a published figure is then snapshotted against a window that is a
+% menu bar taller than its canvas
+if strcmp(mtexFig.parent.MenuBar,'none') || getMTEXpref('generatingHelpMode',false)
+  return
 end
 
 % create a menu MTEX

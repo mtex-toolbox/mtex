@@ -120,6 +120,12 @@ if refit && ~isempty(plan)
   end
 end
 
+matchPaper(mtexFig.parent);
+
+% while publishing, flush the resize before the snapshot: it puts the paper
+% back on auto, and auto reports the size the figure was last drawn at
+if getMTEXpref('generatingHelpMode',false), drawnow; end
+
 end
 
 % -------------------------------------------------------------------------
@@ -163,13 +169,16 @@ end
 
 % -------------------------------------------------------------------------
 function position = onScreen(figSize)
-% centred on the first monitor, and no larger than it
+% centred on the first monitor, and no larger than the area a figure may have
 %
-% The caller resolves again against the size it gets, so capping here fits the
-% axes into the screen rather than letting the outer ones hang off the edges.
+% This is where the layout decides a size rather than being given one, so it is
+% where the bound belongs. It is the same bound the solver lays out under, see
+% getScreenExtent: the caller resolves again against the size it gets, and a
+% figure larger than the screen is one the window manager shrinks and the
+% snapshot then squeezes.
 
 screenExtent = getScreenExtent;
-figSize = min(figSize,screenExtent(1,3:4) - [0,120]);
+figSize = min(figSize,screenExtent(1,3:4));
 position = [(screenExtent(1,3)-figSize(1))/2, ...
   (screenExtent(1,4)-figSize(2))/2, figSize];
 

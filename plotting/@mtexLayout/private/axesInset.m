@@ -56,6 +56,7 @@ if strcmpi(get(ax,'visible'),'off') || strcmpi(get(ax,'XColor'),'none')
   end
 
   inset = max(inset,dataTextInset(ax));
+  inset = max(inset,labelInset(ax));
 
 elseif all(get(ax,'ticklength') == 0)
 
@@ -74,6 +75,32 @@ else
   inset = get(ax,'tightInset');
 
 end
+
+end
+
+% -------------------------------------------------------------------------
+function inset = labelInset(ax)
+% how far the title and the axis labels stick out of an axes that draws
+% nothing else
+%
+% TightInset reports them only for an axes that is drawn itself, and a
+% spherical plot is an invisible axes carrying its own decorations - a title
+% above a pole figure and a row label beside it are the two that show.
+
+inset = [0 0 0 0];
+ap = get(ax,'Position');
+
+for h = [ax.Title, ax.XLabel, ax.YLabel, ax.ZLabel]
+
+  if ~strcmpi(h.Visible,'on') || isempty(h.String), continue; end
+
+  u = h.Units; h.Units = 'pixels'; e = h.Extent; h.Units = u;
+
+  inset = max(inset,[-e(1), -e(2), e(1)+e(3)-ap(3), e(2)+e(4)-ap(4)]);
+
+end
+
+inset = max(inset,0);
 
 end
 

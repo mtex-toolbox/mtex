@@ -78,6 +78,10 @@ end
 
 avail = spec.figSize - [figInset(1)+figInset(3), figInset(2)+figInset(4)];
 
+% a fixed axis height grows the figure, and a figure the screen cannot hold is
+% a figure the window manager shrinks and the snapshot then squeezes
+spec.maxAvail = spec.maxSize - [figInset(1)+figInset(3), figInset(2)+figInset(4)];
+
 [nc,nr] = partition(spec,avail,inset);
 [aw,ah] = axesSize(spec,avail,inset,nc,nr);
 
@@ -163,11 +167,6 @@ if ~strcmp(spec.layoutMode,'auto')
 elseif spec.n <= 1
   nc = max(spec.n,1); nr = 1;
   return
-elseif ~isempty(spec.fixedAxisHeight)
-  % nothing to maximise once the size is fixed - one row, two if it gets long
-  nr = 1 + (spec.n > 4);
-  nc = ceil(spec.n / nr);
-  return
 end
 
 % plain arithmetic per candidate; the axes ratio is a constant here, so
@@ -190,7 +189,12 @@ function [w,h] = axesSize(spec,avail,inset,nc,nr)
 % size of one axes on an nc x nr grid
 
 if ~isempty(spec.fixedAxisHeight)
-  h = spec.fixedAxisHeight;
+
+  % the room one cell has on this grid, decorations and gaps taken off
+  room = (spec.maxAvail + spec.spacing) ./ [nc nr] - spec.spacing - ...
+    [inset(1)+inset(3), inset(2)+inset(4)];
+
+  h = floor(min([spec.fixedAxisHeight, room(2), room(1)*spec.ratio]));
   w = h / spec.ratio;
   return
 end
@@ -253,7 +257,7 @@ end
 function spec = withDefaults(spec)
 
 def = struct('n',0,'ratio',1,'inset',[0 0 0 0],'figInset',[10 10 10 10], ...
-  'spacing',10,'figSize',[560 420],'keepAspectRatio',true, ...
+  'spacing',10,'figSize',[560 420],'keepAspectRatio',true,'maxSize',[Inf Inf], ...
   'fixedAxisHeight',[],'layoutMode','auto','ncols',1,'nrows',1);
 
 for f = fieldnames(def).'

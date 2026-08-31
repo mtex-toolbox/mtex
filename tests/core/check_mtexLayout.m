@@ -11,6 +11,8 @@ checkAspectRatio;
 checkFitsInFigure;
 checkUserLayout;
 checkFixedHeight;
+checkMaxSize;
+checkGridUnderBound;
 checkColorbarSides;
 checkGlobalColorbarSingleAxis;
 checkLegendSides;
@@ -120,6 +122,67 @@ for n = [1 3 6]
   assertInside(plan.pos,plan.figSize,sprintf('fixed height, n=%d',n));
 
 end
+
+end
+
+% -------------------------------------------------------------------------
+function checkMaxSize
+% a fixed height is a maximum: a grid that would not fit the screen scales down
+%
+% A figure larger than the screen is one the window manager shrinks, and a
+% snapshot taken of that squeezes the figure into the wrong shape - which is
+% how it reaches a published page.
+
+h = 370;
+
+% room enough: the height is honoured to the pixel
+roomy = mtexLayout.solveLayout(struct('n',6,'ratio',1,'fixedAxisHeight',h, ...
+  'figSize',[400 300],'maxSize',[1920 1120]));
+
+assert(all(roomy.pos(:,4) == h), ...
+  'check_mtexLayout: fixed height %g not honoured although it fits, got %g', ...
+  h,roomy.axisHeight)
+
+% too little room: the axes give way, and the figure stays inside the bound
+for maxSize = {[900 700],[1920 500],[600 1200]}
+
+  m = maxSize{1};
+  plan = mtexLayout.solveLayout(struct('n',6,'ratio',1,'fixedAxisHeight',h, ...
+    'figSize',[400 300],'maxSize',m));
+
+  assert(plan.axisHeight <= h, ...
+    'check_mtexLayout: axes grew past the fixed height %g to %g',h,plan.axisHeight)
+
+  assert(all(plan.figSize <= m + 1), ...
+    'check_mtexLayout: figure %s exceeds the bound %s', ...
+    mat2str(round(plan.figSize)),mat2str(m))
+
+  assertInside(plan.pos,plan.figSize,sprintf('bounded by %s',mat2str(m)));
+
+end
+
+end
+
+% -------------------------------------------------------------------------
+function checkGridUnderBound
+% under a bound the grid is the one that keeps the axes largest
+%
+% Wide axes in one long row make every one of them small, so four sections of
+% ratio 1:4 belong on two rows. Square ones do not gain from stacking.
+
+wide = mtexLayout.solveLayout(struct('n',4,'ratio',0.25,'fixedAxisHeight',370, ...
+  'figSize',[400 300],'maxSize',[1920 1120]));
+
+assert(wide.nrows > 1, ...
+  'check_mtexLayout: four axes of ratio 1:4 came out %dx%d, one row of them ', ...
+  wide.ncols,wide.nrows)
+
+square = mtexLayout.solveLayout(struct('n',6,'ratio',1,'fixedAxisHeight',370, ...
+  'figSize',[400 300],'maxSize',[1920 1120]));
+
+assert(square.ncols == 3 && square.nrows == 2, ...
+  'check_mtexLayout: six square axes came out %dx%d rather than 3x2', ...
+  square.ncols,square.nrows)
 
 end
 

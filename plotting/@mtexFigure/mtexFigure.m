@@ -251,6 +251,18 @@ classdef mtexFigure < handle
       end      
     end
     
+    function ext = screenExtent(mtexFig) %#ok<MANU>
+      % the area a figure may occupy, width and height
+      %
+      % Every layout is bounded by it, whichever way in: a figure the screen
+      % cannot hold is one the window manager shrinks, and a snapshot taken of
+      % that squeezes the figure into the wrong shape.
+
+      ext = getScreenExtent;
+      ext = ext(1,3:4);
+
+    end
+
     function w = get.outerPlotSpacing(mtexFig)
       % the margin that was asked for, not whatever survived in figTightInset:
       % a colorbar or legend band grows one side of that, and taking the
