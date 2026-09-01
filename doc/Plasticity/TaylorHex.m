@@ -11,6 +11,16 @@
 
 %% Set the crystal and specimen frames
 %
+% The sheet is orthotropic, so its specimen symmetry is the orthorhombic
+% group 222. Expressing it in a rolling frame names the specimen axes
+% rolling direction (RD), transverse direction (TD), and normal direction
+% (ND), and every pole figure below is drawn and annotated in those axes.
+% Here the tension axis is RD.
+
+ss = specimenSymmetry('222');
+ss.frame = specimenFrame.rolling
+
+%%
 % Load the lattice parameters and hexagonal symmetry from the magnesium
 % crystal-information file. |properGroup| keeps the rotational part of the
 % point group used to generate oriented slip and twinning systems.
@@ -18,28 +28,21 @@
 cs = crystalSymmetry.load('Mg-Magnesium.cif')
 cs = cs.properGroup;
 
-%%
-% A rolling frame names the specimen axes rolling direction (RD), transverse
-% direction (TD), and normal direction (ND). Here the tension axis is RD.
-% Save the incoming frame so the example can restore the session afterwards.
-
-previousFrame = specimenFrame.default;
-specimenFrame.rolling.makeDefault
-
 %% Build the initial basal fibre texture
 %
 % In an ideal rolled magnesium sheet, the crystal c-axes are parallel to ND
 % while rotations about that axis are random. A fibre ODF represents that
 % basal fibre texture directly.
 
-odf = fibreODF(cs.cAxis,vector3d.Z);
+odf = fibreODF(cs.cAxis,vector3d.Z,ss);
+odf = FourierODF(odf);
 
 %%
 % Plot the basal pole, a prismatic pole, and a pyramidal pole. Pole figures are
 % antipodal here, so opposite directions are drawn as the same pole.
 
 h = Miller({0,0,0,1},{1,0,-1,0},{1,0,-1,1},cs);
-plotPDF(odf,h,'antipodal','contourf','figSize','small')
+plotPDF(odf,h,'contourf','complete','upper')
 mtexColorbar
 
 %%
@@ -91,10 +94,12 @@ epsWarm = 0.7 * strainTensor(diag([1 -0.5 -0.5]))
 
 %% Solve the Taylor model for the starting texture
 %
-% Draw 100,000 orientations from the initial ODF. Both simulations start
-% from this same synthetic polycrystal.
+% Draw a synthetic polycrystal from the initial ODF. |optimalSample| places
+% the orientations so that they reproduce the ODF as closely as possible,
+% which needs far fewer of them than a random draw. Both simulations start
+% from this same polycrystal.
 
-ori = odf.discreteSample(100000);
+ori = odf.optimalSample(5000)
 
 %%
 % Express each strain in each crystal frame and solve the Taylor problem.
@@ -115,8 +120,8 @@ meanRotation = [mean(angle(ori,oriCold)),...
   mean(angle(ori,oriWarm))] ./ degree
 
 %%
-% The mean orientation changes are 7.9155 degrees at room temperature and
-% 17.9343 degrees at 250 degrees Celsius. The larger warm value reflects
+% The mean orientation changes are 8.3179 degrees at room temperature and
+% 15.4162 degrees at 250 degrees Celsius. The larger warm value reflects
 % both its larger imposed strain and its different CRSS ratios.
 
 %% One-step approximation
@@ -132,21 +137,18 @@ meanRotation = [mean(angle(ori,oriCold)),...
 % Add the room-temperature and 250-degree results beneath the initial pole
 % figures, then arrange the three states as rows on common specimen axes.
 
-nextAxis
-plotPDF(oriCold,h,'antipodal','contourf','grid',...
-  'grid_res',30*degree)
-mtexColorbar
+newMtexFigure('layout',[3,3])
+plotPDF(odf,h,'contourf','complete','upper','grid','grid_res',30*degree)
 
 nextAxis
-plotPDF(oriWarm,h,'antipodal','contourf','grid',...
-  'grid_res',30*degree)
+plotPDF(oriCold,h,'contourf','upper','complete',...
+  'grid','grid_res',30*degree,'noLabel','noTitle')
+
+nextAxis
+plotPDF(oriWarm,h,'contourf','upper','complete',...
+  'grid','grid_res',30*degree,'noLabel','noTitle')
 mtexColorbar
 
-mtexFig = gcm;
-mtexFig.ncols = 3;
-mtexFig.nrows = 3;
-mtexFig.layoutMode = 'user';
-drawNow(mtexFig)
 
 %%
 % Compare each column from top to bottom: initial, room temperature, then
@@ -189,9 +191,6 @@ legend('boxoff')
 % under prismatic and pyramidal slip. Because the imposed total strains
 % differ, compare the family ranking within a row rather than absolute bar
 % heights between temperatures.
-
-% Restore the session state before the closing sections.
-specimenFrame.default(previousFrame);
 
 %% References
 %
