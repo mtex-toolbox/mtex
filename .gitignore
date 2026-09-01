@@ -12,6 +12,7 @@ help/tmp/*
 /myToken.txt
 resources/*
 *.asv
+__pycache__/
 myScripts
 /data/Neper/neper.log
 /data/Neper/ori_in.txt
