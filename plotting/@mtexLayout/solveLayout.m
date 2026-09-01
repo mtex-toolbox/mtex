@@ -33,6 +33,7 @@ function plan = solveLayout(spec)
 %  fixedAxisHeight - force this height and grow the figure instead
 %  layoutMode      - 'auto' to choose the grid, 'user' to be told it
 %  ncols, nrows    - the grid, when layoutMode is 'user'
+%  plotBox         - where an axes draws in its rectangle, as fractions of it
 %  cBar            - .n (0, 1 or n), .side, .thickness, .gap, .labelRoom, .drop
 %  legend          - .size [w h], .side, .spacing
 %
@@ -114,17 +115,21 @@ plan.pos = pos;
 % ---- the colorbars -------------------------------------------------------
 % everything below hangs off the bounding box of the axes, the way the
 % legend always did - the grid is uniform, so one rule covers all four sides
+% a 3d axes draws in a box smaller than the rectangle it was given, so the
+% bar goes on what is drawn - for everything else the two are the same
+drawn = [pos(:,1:2) + spec.plotBox(1:2).*pos(:,3:4), spec.plotBox(3:4).*pos(:,3:4)];
+
 plan.cBarPos = zeros(0,4);
 if spec.cBar.n == spec.n && spec.n > 0
 
   plan.cBarPos = zeros(spec.n,4);
   for i = 1:spec.n
-    plan.cBarPos(i,:) = attach(pos(i,:),spec.cBar,decor);
+    plan.cBarPos(i,:) = attach(drawn(i,:),spec.cBar,decor);
   end
 
 elseif spec.cBar.n == 1
 
-  bar = attach(boundingBox(pos),spec.cBar,decor);
+  bar = attach(boundingBox(drawn),spec.cBar,decor);
 
   % a ruler exponent is drawn past the end of the bar and needs the room
   isVertical = any(strcmp(spec.cBar.side,{'east','west'}));
@@ -137,7 +142,7 @@ end
 plan.legendPos = zeros(0,4);
 if ~isempty(spec.legend.size)
 
-  box = boundingBox(pos);
+  box = boundingBox(drawn);
   w = spec.legend.size(1); h = spec.legend.size(2);
   s = spec.legend.spacing;
 
@@ -258,7 +263,8 @@ function spec = withDefaults(spec)
 
 def = struct('n',0,'ratio',1,'inset',[0 0 0 0],'figInset',[10 10 10 10], ...
   'spacing',10,'figSize',[560 420],'keepAspectRatio',true,'maxSize',[Inf Inf], ...
-  'fixedAxisHeight',[],'layoutMode','auto','ncols',1,'nrows',1);
+  'fixedAxisHeight',[],'layoutMode','auto','ncols',1,'nrows',1, ...
+  'plotBox',[0 0 1 1]);
 
 for f = fieldnames(def).'
   if ~isfield(spec,f{1}) || isempty(spec.(f{1})) && ~strcmp(f{1},'fixedAxisHeight')

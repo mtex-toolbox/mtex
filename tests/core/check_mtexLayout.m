@@ -15,6 +15,7 @@ checkMaxSize;
 checkGridUnderBound;
 checkColorbarSides;
 checkGlobalColorbarSingleAxis;
+checkPlotBox;
 checkLegendSides;
 checkInsetApplies;
 
@@ -229,6 +230,38 @@ assert(~isempty(plan.cBarPos), ...
   'check_mtexLayout: a single axes got no global colorbar')
 
 assertSide(plan.cBarPos,plan.pos,'east','single axis global bar');
+
+end
+
+% -------------------------------------------------------------------------
+function checkPlotBox
+% a bar hangs on what the axes draws, not on the rectangle it was given
+%
+% A 3d axes inscribes its plot box in that rectangle and leaves a margin all
+% around it, so a bar hung on the rectangle stands off the plot and is drawn
+% to the height of the rectangle rather than of the plot.
+
+frac = [0.19 0.19 0.62 0.62];
+
+plan = mtexLayout.solveLayout(struct('n',1,'figSize',[900 800],'plotBox',frac, ...
+  'cBar',struct('n',1,'side','east','thickness',15,'gap',10)));
+
+box = [plan.pos(1:2) + frac(1:2).*plan.pos(3:4), frac(3:4).*plan.pos(3:4)];
+
+assert(abs(plan.cBarPos(4) - box(4)) <= 1, ...
+  'check_mtexLayout: the bar is %.0f high beside a plot of %.0f', ...
+  plan.cBarPos(4),box(4))
+
+assert(abs(plan.cBarPos(1) - (box(1)+box(3)+10)) <= 1, ...
+  'check_mtexLayout: the bar stands %.0f px off the plot it belongs to', ...
+  plan.cBarPos(1)-box(1)-box(3))
+
+% an axes that draws in the whole rectangle keeps its bar where it was
+plain = mtexLayout.solveLayout(struct('n',1,'figSize',[900 800], ...
+  'cBar',struct('n',1,'side','east','thickness',15,'gap',10)));
+
+assert(isequal(round(plain.cBarPos([2 4])),round(plain.pos([2 4]))), ...
+  'check_mtexLayout: a bar without a plot box left its axes')
 
 end
 
