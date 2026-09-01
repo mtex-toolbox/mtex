@@ -18,9 +18,9 @@ function  sR = fundamentalSector(sym,varargin)
 %  antipodal - include <VectorsAxes.html antipodal symmetry>
 %
 
-% maybe there is nothing to do
+% maybe there is nothing to do - the frame decides which half is the upper one
 if check_option(varargin,'complete')
-  sR = sphericalRegion(varargin{:});
+  sR = sphericalRegion(varargin{:},sym.frame);
   return
 end
 
