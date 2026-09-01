@@ -64,6 +64,10 @@ if check_option(varargin,'points')
 
   points = get_option(varargin,'points');
 
+  % the grid fills alpha, beta and gamma, but the resolution below is
+  % calibrated on the two latter - a specimen symmetry narrows alpha
+  points = points * 2*pi / maxAlpha;
+
   switch CS.LaueName  % special case: cubic symmetry
     case 'm-3'
       points = 3*points;
