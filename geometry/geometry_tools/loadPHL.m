@@ -44,5 +44,5 @@ for i = 1:phaseList.getLength
   
 end
 
-% fname = '/home/hielscher/mtex/master/data/cif/crystal.phl';
+% fname = fullfile(mtexDataPath,'cif','crystal.phl');
 % 

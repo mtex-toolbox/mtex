@@ -44,27 +44,23 @@ rDir = fullfile(mtex_path,'..','releases',ver);
 zipName = [rDir,'.zip'];
 
 unix(['rm -rf ',rDir]);
-unix(['cp -R ' mtex_path ' ' rDir]);
 
-% cp -R copies the untracked files too, so drop what a working session leaves behind
-rmList = {'doc/makeDoc/tmp', 'myToken.txt', 'data/*.mat' '.git*' ...
-  'data/EBSD/*' '.mailmap' 'gitTricks.md' 'makeRelease.m' ...
-  'mex/*.mex*' '.claude' 'docs/agents/matlab-bridge/.venv' ...
-  'docs/agents/matlab-bridge/session.*' 'CLAUDE.local.md' '*.mat'};
-for rd = rmList 
-  unix(['rm -rf ' rDir filesep char(rd)]); 
+% the release is what the tag tracks. Anything a working session leaves in the
+% folder - a built binary, a downloaded dataset, an editor backup, a virtualenv -
+% is not in the tag and so cannot reach the zip.
+unix(['mkdir -p ' rDir ' && git archive --format=tar ' ver ' | tar -x -C ' rDir]);
+
+% of what is tracked, what a user of the zip has no use for: the datasets, which
+% mtexdata downloads on demand, the mex binaries, which the build workflow
+% attaches to the release, and the notes that name one machine
+rmList = {'.github' '.gitignore' '.gitattributes' '.mailmap' 'gitTricks.md' ...
+  'makeRelease.m' 'data/*.mat' 'data/EBSD/*' 'mex/*.mex*' ...
+  'docs/agents' 'docs/doc-audit-plan.md' 'interfaces/import_wizard/TODO.md'};
+for rd = rmList
+  unix(['rm -rf ' rDir filesep char(rd)]);
 end
 
-% the built HTML documentation does not ship, mtexShowDoc falls back online -
-% the empty helpsearch-v3 has to stay, startup_mtex builds it whenever it is gone
-unix(['rm -rf ' rDir filesep 'doc/html']);
-mkdir([rDir filesep 'doc/html/helpsearch-v3/']);
-
 unix(['chmod -R a+rX ' rDir]);
-
-% delete backup files
-unix(['find ' rDir ' -name ''*~'' -or -name ''*.log'' -or -name ''*.o'' '...
-  '-or -name ''*.orig'' -or -name ''.directory'' | xargs /bin/rm -rf']);
 
 % delete old zip
 unix(['rm -rf ' rDir '.zip']);
@@ -111,17 +107,17 @@ end
 function ensureClean
 % pull, and refuse to build a release out of a dirty working tree
 %
-% The zip is a copy of the working tree, so an uncommitted edit would be
-% shipped without ever having been pushed. Reporting that here beats finding
-% it in the released zip. Checked before the pull, because a dirty tree is
-% also what makes the pull itself fail under pull.rebase.
+% The zip is built from the tag, so an uncommitted edit is left out of it
+% silently - a fix that was meant to be in the release and is not. Checked
+% before the pull, because a dirty tree is also what makes the pull itself
+% fail under pull.rebase.
 
 [~,out] = system('git status --porcelain');
 if ~isempty(strtrim(out))
   error('makeRelease:dirtyTree', ...
     ['the MTEX working tree has uncommitted changes:\n\n%s\n' ...
-    'Commit or stash them before releasing - the release zip is a copy ' ...
-    'of this tree.'],out);
+    'Commit them before releasing - the release zip is built from the ' ...
+    'tag, so anything uncommitted is left out of it.'],out);
 end
 
 sh('git pull','updating the repository');
