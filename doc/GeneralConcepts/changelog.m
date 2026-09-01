@@ -20,7 +20,7 @@
 % distorted first and the undistorted image last, and it puts them all on
 % one grid, so every image becomes a property of the map:
 %
-%   job = trueEbsd2([mapImage(ebsd.bc,ebsd), mapImage(bse,'dxy',0.05)]);
+%   job = trueEbsd([mapImage(ebsd.bc,ebsd), mapImage(bse,'dxy',0.05)]);
 %   job.pixelSizeMatch
 %   job.calcDistortion
 %   job.undistort

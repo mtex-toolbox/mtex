@@ -15,7 +15,7 @@ function check_trueEbsd(varargin)
 % window, so on a 192 × 256 map the window is the whole image and the crop that
 % used to raise MTEX:mapImage:notContiguous never runs.
 %
-% checkSelfSufficient is here because @trueEbsd2 was copied in from the TrueEBSD
+% checkSelfSufficient is here because @trueEbsd was copied in from the TrueEBSD
 % add-on, which is normally on the path alongside MTEX and shadows it. It pins
 % the property the copy exists to have: everything the workflow needs resolves
 % inside MTEX.
@@ -24,7 +24,7 @@ function check_trueEbsd(varargin)
 %   check_trueEbsd
 %
 % See also
-% trueEbsd2 mapImage spatialTransform xcfShift
+% trueEbsd mapImage spatialTransform xcfShift
 
 checkSelfSufficient
 checkAutoAgainstHandTuned
@@ -41,7 +41,7 @@ function checkSelfSufficient
 
 root = mtex_path;
 
-for f = {'trueEbsd2','pairShifts','remapShifted','mapImage','xcfShift', ...
+for f = {'trueEbsd','pairShifts','remapShifted','mapImage','xcfShift', ...
     'spatialTransformShift','spatialTransformDrift','spatialTransformTilt'}
   w = which(f{1});
   assert(~isempty(w),'%s is not on the path',f{1});
@@ -152,7 +152,7 @@ px = 0.05;
 
 L = [mapImage(im,'dxy',px,'name','a'), mapImage(im,'dxy',px,'name','b')];
 
-job = trueEbsd2(L,spatialTransformId);
+job = trueEbsd(L,spatialTransformId);
 job.pixelSizeMatch(px);
 evalc('job.calcDistortion');
 
@@ -227,7 +227,7 @@ L(2:end) = rescale(imboxfilt(L(2:end),3));
 
 % + and not *: an unfitted prototype has zero coefficients, so it reports
 % itself as the identity and mtimes would absorb the shift away
-job = trueEbsd2(L,[spatialTransformShift + spatialTransformDrift, ...
+job = trueEbsd(L,[spatialTransformShift + spatialTransformDrift, ...
   spatialTransformId, spatialTransformShift, spatialTransformTilt]);
 
 end

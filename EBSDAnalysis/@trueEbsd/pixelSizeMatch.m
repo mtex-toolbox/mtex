@@ -1,5 +1,5 @@
 function job = pixelSizeMatch(job, varargin)
-% @trueEbsd2 method
+% @trueEbsd method
 % resize all job.interImgs images to the same pixel size
 %
 % Syntax

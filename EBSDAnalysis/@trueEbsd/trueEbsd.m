@@ -1,4 +1,4 @@
-classdef trueEbsd2 < handle
+classdef trueEbsd < handle
 % align a sequence of images and EBSD maps of one specimen area
 %
 % Two pictures of the same area rarely overlay: the EBSD map is taken at a
@@ -30,11 +30,11 @@ classdef trueEbsd2 < handle
 %
 % Syntax
 %
-%   job = trueEbsd2(imgList)
-%   job = trueEbsd2(imgList,T)
+%   job = trueEbsd(imgList)
+%   job = trueEbsd(imgList,T)
 %
 %   imgList = [mapImage(ebsd.bc,ebsd), mapImage(img,'dxy',0.05)]
-%   job = trueEbsd2(imgList, spatialTransformShift + spatialTransformDrift)
+%   job = trueEbsd(imgList, spatialTransformShift + spatialTransformDrift)
 %   job.pixelSizeMatch
 %   job.calcDistortion('fitErr')
 %   job.undistort
@@ -47,7 +47,7 @@ classdef trueEbsd2 < handle
 %            Unfitted prototypes. May also be set afterwards as job.T
 %
 % Output
-%  job - @trueEbsd2
+%  job - @trueEbsd
 %
 % Class Properties
 %  imgList         - @mapImage array as imported, differing pixel sizes and
@@ -82,8 +82,8 @@ classdef trueEbsd2 < handle
 % microscopy applications, <https://arxiv.org/abs/2605.00703 arXiv 2605.00703>
 %
 % See also
-% mapImage spatialTransform pairShifts trueEbsd2/pixelSizeMatch
-% trueEbsd2/calcDistortion trueEbsd2/undistort trueEbsd2/setOptions
+% mapImage spatialTransform pairShifts trueEbsd/pixelSizeMatch
+% trueEbsd/calcDistortion trueEbsd/undistort trueEbsd/setOptions
 % parentGrainReconstructor
 
   properties % one per workflow stage
@@ -98,9 +98,9 @@ classdef trueEbsd2 < handle
 
   methods
     % constructor
-    function job = trueEbsd2(imgListIn,T)
+    function job = trueEbsd(imgListIn,T)
       % a handle class has to be constructible without arguments,
-      % for trueEbsd2.empty and for preallocation
+      % for trueEbsd.empty and for preallocation
       if nargin == 0, return; end
 
       job.imgList = argin_check(imgListIn,{'mapImage'});

@@ -32,12 +32,12 @@ Six stages, each independently revertible, on paired branches in MTEX and the ad
 |---|---|
 | 0 | the A/B harness gained assertions — it had none |
 | 1 | `@pairShifts` and `remapShifted` **copied** into `tools/registration_tools/` |
-| 2 | `@trueEbsd2` copied into `EBSDAnalysis/`, byte-identical |
+| 2 | `@trueEbsd` copied into `EBSDAnalysis/`, byte-identical |
 | 3 | the add-on deleted its copy, so MTEX's became load-bearing |
 | 4 | `tests_autoTune` became `tests/slow/check_trueEbsd` |
 | 5 | error ids namespaced, classdef header reshaped |
 
-The class kept the transitional name `trueEbsd2` throughout. Renaming it to `trueEbsd` on
+The class kept the transitional name `trueEbsd` throughout. Renaming it to `trueEbsd` on
 arrival would collide with the add-on's own `@trueEbsd` whenever both are on the path —
 which is the normal state, and is required by the A/B harness that compares them.
 
@@ -104,10 +104,10 @@ come back, it belongs as a cheap check built on `xcfShift`, which is already in
 ### 3. Numerical neutrality — exact
 
 `tests_migrationAB` pins both columns and every value is unchanged across all six stages,
-including after the error-id sweep. Since Stage 3 it compares MTEX's `@trueEbsd2` against
+including after the error-id sweep. Since Stage 3 it compares MTEX's `@trueEbsd` against
 the add-on's `@trueEbsd`, so the reproduction is genuinely cross-repository.
 
-| | `@trueEbsd` | `@trueEbsd2` |
+| | `@trueEbsd` | `@trueEbsd` |
 |---|---|---|
 | hop 1–4 residual (px) | 1.32538 / 1.19196 / 0.287235 / 0.316595 | 1.40711 / 1.19196 / 0.286432 / 0.280595 |
 | indexed | 45644 | 44832 |
@@ -145,7 +145,7 @@ It is not a mechanical delete. Three sampled blocks, and none of them is simply 
 - **`calcDistortion.m:487`, 12 lines** — justifies the 1.5× threshold with the measured
   margins it was chosen from. → **compress to one line, numbers to the ADR.** Deleting it
   outright would leave a magic number with no reason.
-- **`trueEbsd2.m:144`, 14 lines** — what the `opt` settings are and why they live on the job
+- **`trueEbsd.m:144`, 14 lines** — what the `opt` settings are and why they live on the job
   rather than on `@mapImage`. → **move into a header**, where it is interface documentation
   rather than a body comment.
 
@@ -187,7 +187,7 @@ Six public methods (`pixelSizeMatch`, `calcDistortion`, `undistort`, `setOptions
 `display`, the constructor) and seven properties. One divergence is a real design question
 rather than a detail:
 
-**MTEX passes options as `varargin` through `get_option`/`check_option`. `@trueEbsd2` uses a
+**MTEX passes options as `varargin` through `get_option`/`check_option`. `@trueEbsd` uses a
 per-map struct array set through `setOptions`.** That is not laziness — the settings are
 per-map and per-fit-stage, they are lengths in the sequence's `scanUnit` so they survive
 `pixelSizeMatch`, and most default to `'auto'` and are *measured* rather than defaulted. A
@@ -202,7 +202,7 @@ holds, and MATLAB still resolves `interfaces/private/` against the calling file.
 
 ## Corroborating evidence
 
-All four `@trueEbsd2` doc pages in the examples repository (`TrueEBSD/example_*_2.m`)
+All four `@trueEbsd` doc pages in the examples repository (`TrueEBSD/example_*_2.m`)
 reference only names that resolve inside MTEX after this move. They run on MTEX alone, and
 their install blocks — telling the reader to `addpath` an external toolbox — become false.
 

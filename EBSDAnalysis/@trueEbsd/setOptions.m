@@ -12,7 +12,7 @@ function job = setOptions(job,varargin)
 %   job.setOptions(1,'roiSize',[4 8])         % per fit stage of hop 1
 %
 % Input
-%  job - @trueEbsd2
+%  job - @trueEbsd
 %  n   - which map the settings apply to, all of them if omitted
 %
 % Options
@@ -42,7 +42,7 @@ function job = setOptions(job,varargin)
 % here is used untouched and nothing is measured for it.
 %
 % See also
-% trueEbsd2 trueEbsd2/calcDistortion mapImage/edgeMap
+% trueEbsd trueEbsd/calcDistortion mapImage/edgeMap
 
 % an index may lead, otherwise every map
 if ~isempty(varargin) && isnumeric(varargin{1})

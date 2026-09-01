@@ -22,7 +22,7 @@ function s = pxStr(v)
 % correlation looks like.
 %
 % See also
-% trueEbsd2/calcDistortion trueEbsd2/display
+% trueEbsd/calcDistortion trueEbsd/display
 
 if isempty(v) || isnan(v(1))
   s = '·';

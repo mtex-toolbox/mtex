@@ -55,7 +55,7 @@ ordered by *composition* rather than by index.
   scalar implementations in all eleven subclasses to hooks the sealed wrapper loops over —
   a sealed method cannot be overridden, so the two cannot share a name. Now is the cheap
   time: nothing outside the repo subclasses these yet.
-- `job.T = inv(job.T)` would then pass `trueEbsd2/set.T`, which checks only the count, and
+- `job.T = inv(job.T)` would then pass `trueEbsd/set.T`, which checks only the count, and
   leave a job whose hops run against its `imgList`. Reversal is a chain-level operation and
   the job's sequence is not reversed with it, so the setter should say so.
 - Until it is implemented: `arrayfun(@inv,T,'UniformOutput',false)` inverts hop by hop

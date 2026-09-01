@@ -7,10 +7,10 @@ function job = calcDistortion(job,varargin)
 %   job = calcDistortion(job,'fitErr','backend','legacy')   % old resampling
 %
 % Input
-%  job - @trueEbsd2, after pixelSizeMatch
+%  job - @trueEbsd, after pixelSizeMatch
 %
 % Output
-%  job - the same @trueEbsd2 (a handle), with shifts and job.T fitted and,
+%  job - the same @trueEbsd (a handle), with shifts and job.T fitted and,
 %        under 'fitErr', fitError filled in
 %
 % Options
@@ -65,7 +65,7 @@ function job = calcDistortion(job,varargin)
 % nearest neighbour ties at a cell boundary.
 %
 % See also
-% trueEbsd2/pixelSizeMatch trueEbsd2/undistort spatialTransform xcfShift
+% trueEbsd/pixelSizeMatch trueEbsd/undistort spatialTransform xcfShift
 
 % -- options -------------------------------------------------------------
 fitErr   = check_option(varargin,'fitErr');

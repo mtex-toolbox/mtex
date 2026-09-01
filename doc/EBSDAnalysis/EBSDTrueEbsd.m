@@ -16,7 +16,7 @@
 % a minute. First read <EBSDMapsAndImages.html Maps and Images> to prepare a
 % common specimen frame, array layout and length unit. See
 % <EBSDSpatialTransform.html Spatial Transforms> for choosing a distortion
-% model, <trueEbsd2.trueEbsd2.html |trueEbsd2|> for the workflow class and
+% model, <trueEbsd.trueEbsd.html |trueEbsd|> for the workflow class and
 % <mapImage.mapImage.html |mapImage|> for its image container.
 %
 % TrueEBSD corrects map positions. It does not repair an incorrect relation
@@ -92,7 +92,7 @@ T = [spatialTransformShift + spatialTransformDrift, ...
 % it also checks that the sequence really is stored one consistent way round,
 % and that every entry measures the sample in the same unit.
 
-job = trueEbsd2(imgList,T)
+job = trueEbsd(imgList,T)
 
 %%
 % Plot the sequence to check the images really do cover the same area. Note

@@ -15,7 +15,7 @@ The EBSD → grains pipeline, plus parent-phase reconstruction.
   nothing on the class declares what to register on, since that is a fact about a
   comparison. `edgeMap` is a **method, not a property**: it normalises and differences the
   whole image, so compute once and keep it rather than reading it in a loop.
-- `@trueEbsd2` aligns a sequence of `@mapImage`s of one specimen area — the TrueEBSD method,
+- `@trueEbsd` aligns a sequence of `@mapImage`s of one specimen area — the TrueEBSD method,
   [arXiv 2605.00703](https://arxiv.org/abs/2605.00703). No single distortion relates an EBSD
   map to an electron image, so the sequence is a **chain**: each consecutive pair is separated
   by one distortion simple enough to fit, and the hops compose. A handle class guiding a

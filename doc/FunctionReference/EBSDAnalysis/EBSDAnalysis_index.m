@@ -48,7 +48,7 @@
 % &nbsp;
 % simulateEBSD
 % &nbsp;
-% trueEbsd2
+% trueEbsd
 % </pre>
 % </html>
 %

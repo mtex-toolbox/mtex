@@ -10,7 +10,7 @@ function [opt,regImg,notes] = autoTune(job)
 %   [opt,regImg,notes] = autoTune(job)
 %
 % Input
-%  job - @trueEbsd2, after pixelSizeMatch
+%  job - @trueEbsd, after pixelSizeMatch
 %
 % Output
 %  opt    - job.opt with every 'auto' replaced by a measured value
@@ -37,7 +37,7 @@ function [opt,regImg,notes] = autoTune(job)
 % the backstop for that.
 %
 % See also
-% trueEbsd2/setOptions trueEbsd2/calcDistortion xcfShift
+% trueEbsd/setOptions trueEbsd/calcDistortion xcfShift
 
 opt = job.opt;
 nImg = numel(job.resizedList);

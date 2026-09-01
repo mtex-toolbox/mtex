@@ -31,7 +31,7 @@ function [ps,T] = fitHopStage(imRef,imTest,proto,xcf,dx,dy)
 % way round is a sign flip away and belongs with retiring @pairShifts.
 %
 % See also
-% trueEbsd2/calcDistortion xcfShift spatialTransform
+% trueEbsd/calcDistortion xcfShift spatialTransform
 
 % The peak upsampling is not a user setting - 250 is a resolution, not a
 % trade off anybody tunes, and xcfShift's own default is the same.
