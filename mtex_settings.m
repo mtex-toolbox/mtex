@@ -46,6 +46,15 @@ setMTEXpref('screenSize',[]);
 % whatever they contain - empty derives it from figSize as for any other plot
 setMTEXpref('sphericalAxisHeight',[]);
 
+% [width height] in pixel a single non spherical axis has to fit into, keeping
+% its aspect ratio - a wide map is stopped by the width and a tall one by the
+% height. Empty derives the size from figSize as for a spherical plot
+setMTEXpref('axisBox',[]);
+
+% the area in square pixel such an axis may cover, so that a wide map does not
+% carry more of the page than a square one of the same height
+setMTEXpref('axisArea',[]);
+
 % whether to show or not to show a micronbar on EBSD maps
 setMTEXpref('showMicronBar','on')
 

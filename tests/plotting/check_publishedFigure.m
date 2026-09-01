@@ -36,6 +36,7 @@ checkBandsReserved(sF);
 checkLateLabel(sF);
 checkResizeReLaysOut(sF);
 checkCaptureIsFaithful(sF);
+checkPinnedToPreference(sF);
 
 disp('check_publishedFigure: passed');
 
@@ -231,6 +232,77 @@ assert(all(abs(img([2 1]) - figSize) <= 2), ...
   mat2str(round(figSize)),mat2str(img([2 1])))
 
 setMTEXpref('generatingHelpMode',false);
+
+end
+
+% -------------------------------------------------------------------------
+function checkPinnedToPreference(sF)
+% the preferences decide the axis height, and figSize scales it
+%
+% What the published page rests on: a plot that asks for no size at all is the
+% size the preferences state, a keyword is a multiple of that size rather than
+% a fraction of whichever screen ran the build, and an axes wide enough is
+% bound by the width of the box instead of its height.
+
+close all
+old = {getMTEXpref('figSize'),getMTEXpref('axisBox'),getMTEXpref('axisArea')};
+restore = onCleanup(@() restorePins(old)); %#ok<NASGU>
+
+setMTEXpref('figSize',0.5);
+setMTEXpref('sphericalAxisHeight',370);
+setMTEXpref('axisBox',[1096 480]);
+setMTEXpref('axisArea',368000);
+
+% a spherical plot by its own height, a 3d one by the height of the box - the
+% two are stated separately and neither may drift into the other
+assertHeight(@() plot(sF),370,'a spherical plot');
+assertHeight(@() plot(sF,'3d'),480,'a 3d plot');
+
+% the keywords are multiples of that, 0.8/0.5 for 'large'
+assertHeight(@() plot(sF,'figSize','large'),370*1.6,'a large spherical plot');
+assertHeight(@() plot(sF,'3d','figSize','large'),480*1.6,'a large 3d plot');
+
+% a box too narrow for the plot binds before its height does
+setMTEXpref('axisBox',[100 480]);
+close all
+plot(sF,'3d')
+drawnow
+
+assert(axisHeight < 480, ...
+  'check_publishedFigure: a 100 px wide box left the axes %.0f px high', ...
+  axisHeight)
+
+end
+
+% -------------------------------------------------------------------------
+function assertHeight(plotIt,expected,what)
+
+close all
+plotIt();
+drawnow
+
+assert(abs(axisHeight - expected) <= 1, ...
+  'check_publishedFigure: %s is %.0f px high, not %.0f', ...
+  what,axisHeight,expected)
+
+end
+
+% -------------------------------------------------------------------------
+function h = axisHeight
+% the layout keeps every axes in pixels, so this is one already
+
+pos = get(gca,'Position');
+h = pos(4);
+
+end
+
+% -------------------------------------------------------------------------
+function restorePins(old)
+
+setMTEXpref('figSize',old{1});
+setMTEXpref('axisBox',old{2});
+setMTEXpref('axisArea',old{3});
+setMTEXpref('sphericalAxisHeight',[]);
 
 end
 

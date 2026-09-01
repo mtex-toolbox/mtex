@@ -147,20 +147,7 @@ classdef mtexFigure < handle
         mtexFig.layoutMode = 'user';
       end
            
-      switch get_option(varargin,'figSize','','char')
-        case 'huge'
-          mtexFig.figSizeFactor = 1;
-        case 'large'
-          mtexFig.figSizeFactor = 0.8;
-        case {'normal','medium'}
-          mtexFig.figSizeFactor = 0.5;
-        case 'small'
-          mtexFig.figSizeFactor = 0.35;
-        case 'tiny'
-          mtexFig.figSizeFactor =  0.25;
-        otherwise
-          mtexFig.figSizeFactor = get_option(varargin,'figSize',0,'double');
-      end
+      mtexFig.figSizeFactor = figSizeFactor(get_option(varargin,'figSize',0));
             
       set(mtexFig.parent,'color',[1 1 1],'nextPlot','replaceChildren');
       setappdata(mtexFig.parent,'mtexFig',mtexFig);

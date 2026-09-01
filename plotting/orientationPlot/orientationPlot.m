@@ -225,10 +225,17 @@ classdef orientationPlot < handle
 
       end
 
+      % lay the figure out now that the plot box is filled - axesRatio reads
+      % the camera, so this cannot happen before the data is there
+      mtexFig = getappdata(get(oP.ax,'parent'),'mtexFig');
+      if ~isempty(mtexFig)
+        drawNow(mtexFig,'figSize',getMTEXpref('figSize'),varargin{:});
+      end
+
       if nargout == 0, clear h;end
-      
+
     end
-    
+
     function  varargout = contour3s(oP,data,varargin)
       
       % get contours

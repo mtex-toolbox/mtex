@@ -32,15 +32,27 @@ end
 % update children to be only the axes of mtexFig
 mtexFig.children = flipud(getAllAxes(mtexFig.parent));
 
-% every spherical plot gets the same axis height, whatever it contains and
-% however many of them share the figure - only the width follows the aspect
-% ratio. A size asked for explicitly still wins, see sphericalAxisHeight.
+% an axis is sized from a preference rather than from the screen: a spherical
+% plot by one height, everything else by a box it has to fit into, so that the
+% dimension which binds is the one the plot is long in. A figSize asked for
+% scales that size rather than replacing it, so 'large' stays a fixed multiple
+% of the page and not a fraction of whichever monitor built it.
 mtexFig.fixedAxisHeight = [];
-if ~isempty(mtexFig.children) && isappdata(mtexFig.children(1),'sphericalPlot') ...
-    && ~check_option(varargin,'position')
-  reqSize = get_option(varargin,'figSize');
-  if isempty(reqSize) || isequal(reqSize,getMTEXpref('figSize'))
-    mtexFig.fixedAxisHeight = getMTEXpref('sphericalAxisHeight',[]);
+if ~isempty(mtexFig.children) && ~check_option(varargin,'position')
+
+  if isappdata(mtexFig.children(1),'sphericalPlot')
+    pinned = getMTEXpref('sphericalAxisHeight',[]);
+  else
+    pinned = boxedHeight(axesRatio(mtexFig.children(1)));
+  end
+
+  % a plot that asks for no size at all is the size the preference asks for
+  ref = figSizeFactor(getMTEXpref('figSize'));
+  fac = figSizeFactor(get_option(varargin,'figSize',mtexFig.figSizeFactor),0);
+  if fac <= 0, fac = ref; end
+
+  if ~isempty(pinned) && ref > 0
+    mtexFig.fixedAxisHeight = pinned * fac / ref;
   end
 end
 
@@ -128,6 +140,26 @@ if getMTEXpref('generatingHelpMode',false), drawnow; end
 end
 
 % -------------------------------------------------------------------------
+function h = boxedHeight(ratio)
+% the tallest axes of this ratio that fits the box and stays within the area
+%
+% Three bounds, whichever bites first: a wide axes is stopped by the width, a
+% tall one by the height, and one that is neither by the area it may cover.
+
+h = [];
+box = getMTEXpref('axisBox',[]);
+area = getMTEXpref('axisArea',[]);
+if isempty(box) && isempty(area), return; end
+
+w = inf;
+if ~isempty(box), w = min(box(1),box(2) / ratio); end
+if ~isempty(area), w = min(w,sqrt(area / ratio)); end
+
+h = w * ratio;
+
+end
+
+% -------------------------------------------------------------------------
 function tf = isPinned(mtexFig,override)
 tf = ~isempty(mtexFig.fixedAxisHeight) || isfield(override,'fixedAxisHeight');
 end
@@ -139,15 +171,8 @@ function figSize = requestedSize(mtexFig,spec,varargin)
 screenExtent = getScreenExtent;
 figSize = screenExtent(1,3:4) - [0,120];
 
-switch get_option(varargin,'figSize','','char')
-  case 'huge',              fac = 1;
-  case 'large',             fac = 0.8;
-  case {'normal','medium'}, fac = 0.5;
-  case 'small',             fac = 0.35;
-  case 'tiny',              fac = 0.25;
-  otherwise
-    fac = get_option(varargin,'figSize',mtexFig.figSizeFactor,'double');
-end
+fac = figSizeFactor(get_option(varargin,'figSize',mtexFig.figSizeFactor), ...
+  mtexFig.figSizeFactor);
 figSize = figSize .* fac;
 
 n = numel(mtexFig.children);
@@ -239,20 +264,8 @@ elseif check_option(varargin,'figSize') || mtexFig.figSizeFactor > 0
   mtexFig.keepAspectRatio = true;
   figSize = screenExtent(1,3:4) - [0,120]; % consider only the first monitor
 
-  switch get_option(varargin,'figSize','','char')
-    case 'huge'
-      fac = 1;
-    case 'large'
-      fac = 0.8;
-    case {'normal','medium'}
-      fac = 0.5;
-    case 'small'
-      fac = 0.35;
-    case 'tiny'
-      fac =  0.25;
-    otherwise
-      fac = get_option(varargin,'figSize',mtexFig.figSizeFactor,'double');
-  end
+  fac = figSizeFactor(get_option(varargin,'figSize',mtexFig.figSizeFactor), ...
+    mtexFig.figSizeFactor);
   figSize = figSize .* fac;
 
   n = numel(mtexFig.children);
