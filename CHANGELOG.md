@@ -8,7 +8,7 @@ The changelog for users is `doc/GeneralConcepts/changelog.m`, published as
 [Changelog](https://mtex-toolbox.github.io/changelog.html). Releases up to and
 including 6.1 have one combined list there and no entry here.
 
-## develop
+## MTEX 7.1 - 09/2026
 
 ### Reference Frames
 
@@ -136,6 +136,162 @@ including 6.1 have one combined list there and no entry here.
   normalized now
 - a compact grain boundary plot showed spiky joins under R2024b and later. The patch
   path uses round joins now
+- `annotateFrame` took the axes names from the session default unless the data lived
+  in a crystal frame, so a pole figure of a rolled sheet was labelled X / Y / Z while
+  its data was expressed in RD / TD / ND. It reads the frame off whatever names it -
+  a frame handed in directly, the frame of a symmetry in the argument list, or the
+  `'dataFrame'` option a spherical plot carries over from the data - and annotates
+  from it whenever that frame names its axes differently from the session frame. A
+  frame that agrees with the session goes on through the `pfAnnotations` preference,
+  which is what keeps that preference able to replace the labels or switch them off
+- `'complete'` answered with a `@sphericalRegion` built from the option list alone, so
+  an `'upper'` in that same list was resolved against the session default rather than
+  against the frame the data lives in. With a rolling frame - z out of the screen -
+  against the default z into the screen that is the hemisphere the projection does not
+  show, and `plotPDF(...,'contourf','complete','upper')` drew a contour whose XData
+  was NaN outside the equator: empty axes under a colorbar still showing the range of
+  the data
+- `axisAngleSections` did not transpose its symmetrised orientations, where every
+  other section class does. `ODFSections/plot` and `quiver` recover the data index of
+  a plotted point with `1+mod(ind-1,length(ori))`, which needs the orientation index
+  to run fastest, so plotting data with `'complete'` coloured the markers by the wrong
+  orientation
+- `arrow3d` called a bare `surf` per iteration, which replaces the axes content unless
+  it is held, so a list of arrows left only the last one -
+  `arrow3d([X,Y,Z],'label',{'x','y','z'})` drew one arrow and three labels, two of
+  them next to nothing. An antipodal vector is doubled internally and lost half of
+  itself the same way
+- `EBSD/plot` passed neither `'parent'` nor `'doNotDraw'` to `crystalShape/plot`,
+  which sets up a standalone 3d view - `view(3)`, `vis3d`, axes off, the rotate widget
+  - when it creates the figure. Nothing of that belongs on a map, which has a plotting
+  convention of its own; it was avoided only by the map figure happening to exist
+  already. The axes is named now, as `grain2d/plot` and the pole figure route always
+  did, and the branch assigns the output handle the other branches assign
+- `plotPDF`, `plotIPDF`, the two `ODFSections` methods and `orientationPlot` draw a
+  random subset once the orientation list passes their threshold, and say so. Passing
+  `'points'` is that same subsampling asked for deliberately, so the notice and its
+  two lines of advice appear only when the decision was the function's own
+
+### Figure Layout
+
+- the `@mtexFigure` layout is a pure function of a spec struct in `@mtexLayout`:
+  `measure` reads the geometry off the figure and is the only step that touches a
+  graphics property, `solveLayout` is arithmetic from a struct to every position, and
+  `apply` writes back. `resolve` drives the three until the reserved decoration band
+  stops moving. `@mtexFigure` keeps its name, its appdata key and every property
+  external code reads - `ncols`, `nrows`, `axisWidth`, `axisHeight`, `tightInset` and
+  `figTightInset` are written back onto it. The engine is on by default;
+  `setMTEXpref('newLayout',false)` selects the previous code, kept as `drawNowLegacy`
+- a settled layout writes nothing at all - `apply` skips any position within half a
+  pixel of where it already is - so the scale bar listener and the resize callback
+  stop being fed work that changes nothing. Relaying an unchanged figure went from
+  14-107 ms to 0.3-3.1 ms. The unconditional second pass is gone: the band really does
+  depend on the axes size, so it is a fixed point, but every fixture converges after
+  one pass
+- a command that builds a figure a plot at a time laid it out after every plot
+  command, each layout invalidated by the next command. `plotPDF` of three pole
+  figures called `drawNow` thirteen times and measured the axes seventeen times.
+  `mtexLayout.hold` suspends the layout and returns an `onCleanup` that resumes it,
+  wrapped as `layoutHold` for the eleven commands that need it - `plotPDF` and
+  `plotIPDF` on `@SO3Fun`, `@orientation` and `@fibre`, `PoleFigure/plot`,
+  `zeroRangeMethod/plot`, `ODFSections` plot and quiver, and the `@S2Fun` section
+  commands. 3.88 s to 2.11 s for three pole figures, with the layout unchanged. The 26
+  `'doNotDraw'` flags those commands passed per call are gone; holding the figure
+  covers them. `plotSeismicVelocities` is not held - it ends in no `drawNow` to
+  release into
+- `dataTextInset` read the extent of every text object by switching its units to
+  pixels and back, and each switch forces a graphics update: on an axes holding a
+  contour about 20 ms per object, and `measure` runs it five times per plot. On an
+  axes seen straight down z the data to pixel map is the axis aligned scale, so the
+  extent is read in data units and mapped - checked at 0.000 px against the pixel read
+  over 76 text objects in ten plot types. Measured over a thirteen case suite: -24%
+  overall, -43% on a contoured three pole figure plot, -49% on six. A `'3d'` plot
+  turns the camera and keeps the round trip
+- the colorbar hung off the axes box itself, so a `northoutside` bar landed on top of
+  the title and `plotPDF` lost its (100), (110), (111) labels. It clears the
+  decorations on its side now, measured separately from the band reserved for the bar
+  itself. On a 3d axes it hangs on the plot box rather than on the rectangle the axes
+  was given - a 3d axes inscribes its box in that rectangle so that no rotation can
+  take it out of it, and a bar hung on the rectangle stood off the plot by that margin
+  and was drawn to the height of the rectangle: 780 px beside a plot of 484
+- MATLAB has two `Location` values per side, `'south'` inside the axes and
+  `'southoutside'` beside it, and only the second was read, so
+  `mtexColorbar('location','south')` put the bar on the east, standing up. The
+  trailing `outside` is stripped and the rest is the side, `'manual'` excepted.
+  `AxisLocation` follows, since `@mtexFigure` places every bar it owns beside the axes
+  and an inside location still drew the numbers inward, on top of the spheres
+- MATLAB reports `TightInset` `[0 0 0 0]` for an axes whose camera has been placed, so
+  the layout reserved nothing for the rulers of a 3d orientation plot and handed it the
+  whole figure - in a Bunge box the phi2 label sat 29 px left of the figure and Phi 17
+  px below it. Such an axes is measured a second time with every camera mode on auto,
+  the values put back before the modes. Only an axes that draws rulers takes that
+  measurement; a spherical plot or a crystal shape draws none and is laid out as before
+- a figure is capped at the screen it is centred on. Six phi2 sections of aspect 4:1
+  ask for a figure 1290 px wide, which centred on a 1024 px screen starts at -133 with
+  both outer columns off the edges - and on 1440, 1920 and 2560 the same figure asks
+  for at least the full width. With the bound reaching the solver through the
+  measurement, a pinned axis height became a maximum and the grid is chosen the way it
+  is for free axes, on which arrangement keeps them largest, so four sections of ratio
+  1:4 stack instead of standing in one long row
+- three ways a published page came back cropped, all of them a figure that ends up
+  smaller than what it draws: `xlabel` writes into a text object the axes has carried
+  since it was created, so the measurement token never noticed it; the figure was
+  resized to the plan once, and resizing invalidates the measurement, so the layout
+  that followed asked for a wider band with nothing left to grow the figure to; and a
+  resize cannot grow the figure at all, so a pinned axis height took the room the
+  screen would allow and drew over the edge
+- a published figure gets no MTEX menu - adding one makes MATLAB show a menu bar the
+  figure did not ask for, and the snapshot then measures the window against a canvas a
+  menu bar shorter. The paper follows the canvas and the resize is flushed, so a print
+  reproduces the figure rather than the geometry of the one before it, and a resize
+  that leaves the figure the size it was last measured at is ignored - that is a print
+  rearranging the window mid capture, not a user resizing it
+- the decoration band is measured on one reference axes, and `plot(...,
+  'takeThisAsReference')` says which one where the first guesses low - a longer
+  colorbar label, an axis label the first axes does not carry. Measuring every axes
+  was fixing a problem `@mtexFigure` does not have: it lays out axes of equal size for
+  MTEX's own plot commands, and three pole figures, the case that occurs, differ by
+  half a pixel
+- `adjustFigurePosition` called `calcBestFit`, which exists nowhere in the repository,
+  and had no callers itself; `private/cBarSize` duplicated the colorbar band with a
+  different fallback constant and had none either; `getPixelPos` documented
+  `TightInset` as normalized, which it is not. All three are gone, with `cbx`, `cby`
+  and a nested test script. Two fixes alongside: the `DefaultAxesCreateFcn` guard
+  indexed `dbstack` at 2 without checking the stack was that deep, and the MTEX menu's
+  visibility toggles called `drawNow` inside the per axes loop, so one click on Grid
+  or Labels cost a full relayout per axes
+- `tests/core/check_mtexLayout` asserts about numbers rather than graphics objects and
+  runs in 70 ms; `tests/plotting/check_publishedFigure` states the invariants a page
+  rests on. `tests/plotting/figureZoo` draws one plot of every kind the published pages
+  contain and `publishFigureZoo` publishes it under the preferences the website build
+  sets, so a change to the sizing is looked at across all of them at once
+
+### Figure Size
+
+- the size of a published figure was decided by three things that have nothing to do
+  with the plot: the fraction of the screen `figSize` asks for, how many axes share
+  the figure, and the tight inset, which was added on top of the axes rather than
+  taken out of them. On top of that `clf('reset')` keeps a figure's Position, so a
+  plot inherited the size of the one before it. `setMTEXpref('sphericalAxisHeight',h)`
+  pins the height of a single spherical axes to `h` pixels; the width follows the axes
+  aspect ratio and the figure grows to fit
+- `setMTEXpref('axisBox',[w h])` states the rectangle every other kind of axes has to
+  fit into and `setMTEXpref('axisArea',a)` the area it may cover, whichever binds
+  first: a wide map is stopped by the width, a tall one by the height, and a square one
+  by the area, so it does not carry more of the page than a wide one of the same
+  height. Empty, the default for all three, is the layout as it was
+- a `'figSize'` keyword scales the size the preferences state rather than replacing it,
+  so `'large'` is a fixed multiple of the page instead of 0.8 of whichever monitor
+  built the figure. The five keywords were spelt out at three call sites and are one
+  `figSizeFactor`. `ipfColorKey` stops forcing `'small'` and follows the rule
+- `'keepAxisSize'` is expressed as a pinned axis height rather than as a branch of its
+  own - it asks for exactly what a pinned height asks for, that the figure grow around
+  the axes instead of the axes shrinking to fit
+- `outerPlotSpacing` is a stored scalar. It was read back out of the same field the
+  colorbar and legend bands grow, so an asymmetric margin could not survive a layout
+  pass
+- an `@orientationPlot` lays out after its plot box is filled, since the aspect ratio
+  it is sized from is read off the camera
 
 ### Orientation Gradients, Curvature and GND
 
@@ -200,6 +356,15 @@ dataset had a mean norm of 15.7 against the 0.127 it has now, on all three stenc
   same test, and the warning carries the identifier `MTEX:frameMismatch` so it can
   be switched off. A crystal direction has to be stated as a `@Miller`, since a
   plain `@vector3d` is taken to be a specimen direction
+- `calcTaylor(eps,sS,'plasticWork')` returns the sum of the slip amounts weighted by
+  their critical resolved shear stresses. The Taylor factor `calcTaylor` returns
+  otherwise is the total slip activity, which equals the work only when every CRSS is
+  one - so a set of slip systems with differing CRSS was being ranked by the wrong
+  quantity
+- `calcLankford` selects the contraction path by minimising that work rather than the
+  slip activity, prints `Rbar` and `deltaR` under their own names, compares angles
+  with `isnull` instead of exact equality, and validates RD, ND, theta, rho and the
+  weights. Covered by `tests/core/check_calcLankford.m`
 
 ### VPSC Files
 
@@ -441,6 +606,13 @@ adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
   3.63 to 40.8 on SO(3) for degree 2 to 6 - so a flawless equispaced SO(3) grid
   regularized 95 percent of its pages at degree 6 with nothing to correct. The onset
   is placed relative to that floor now, measured once per ansatz space and cached
+- `equispacedSO3Grid` took its resolution from `maxBeta` and `maxGamma` alone, so a
+  specimen symmetry, which narrows alpha, delivered fewer orientations than were asked
+  for - a quarter of them for 222 or mmm, an eighth for a 432/432 misorientation grid.
+  Every triclinic call is bit identical; over eleven symmetry pairs the delivered count
+  is 0.94 to 1.20 of what was asked, the spread the triclinic cases always had. A
+  caller passing a non-triclinic specimen symmetry now gets four times the points and
+  four times the work - the auxiliary grid of `SO3FunMLS` goes from 2472 to 9709 nodes
 
 ### Orientation and Spherical Functions
 
@@ -466,6 +638,20 @@ adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
   the number of array elements": `accumarray` sizes its output by the largest
   subscript it is handed, so every mode no seed came close enough to was missing
   from the end of the weights
+- a fibre ODF is the mean over the crystal orbit of `h` and the specimen orbit of `r`,
+  so its Radon transform is too, but `SO3FunCBF/radon` normalised by the crystal orbit
+  alone. With a nontrivial specimen symmetry the pole densities came out too large by
+  a factor - measured against the harmonic transform of the same ODF, 321 with 222 was
+  7 times the correct value and is now equal to it to machine precision. A trivial
+  specimen symmetry is one orbit either way and is unaffected. Which of the two
+  directions is the single one is chosen by name rather than by swapping the pair,
+  which left the caller's shapes behind
+- `SO3FunRBF/calcFourier` repeated the whole weight vector where `symmetrise` returns
+  `(CS x SS) x nCenter`, running the symmetries fastest - so every center but the
+  first got another center's weight. Visible with non uniform weights and few centers,
+  where the symmetrised path is taken
+- the `delta` of a `Gaussian` is the width of `exp(-(x-m)^2/delta^2)`, not the standard
+  deviation, which is `delta/sqrt(2)`
 
 ### Color Keys
 
@@ -485,6 +671,12 @@ adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
   was called unconditionally. It falls back to the HSV key now, which is what a bare
   `directionColorKey` shows when it is plotted. This closes [issue
   #2515](https://github.com/mtex-toolbox/mtex/issues/2515)
+- `ebsd('notIndexed').color = 'blue'` was refused with "There are no indexed data in
+  this variable!": the setter went through `pL.CS`, whose getter strips every not
+  indexed phase and then errors. A not indexed phase is a phase like any other and is
+  drawn on every phase map; the getter right beside it already carried the case, only
+  the assignment was missed. Same for `grains('notIndexed')`. This closes [issue
+  #2604](https://github.com/mtex-toolbox/mtex/issues/2604)
 
 ### Tensors
 
@@ -620,6 +812,17 @@ gL = ebsd.layout                         % read the layout back off a map
 - `SchmidtFactor.m` is spelt `SchmidFactor.m`
 - a structural checker for the documentation runs in CI, so a `See also` entry or a
   link pointing at a page that does not exist is caught before it is published
+- every page of `doc/` was run and read back, so the prose describes the figures, the
+  numbers and the console output the code on the page actually produces. Twenty
+  chapters and the diagrams they link to, together with the smaller corrections the
+  pages exposed in `calcPoleFigure`, `fibre/fit`, `EBSD/interp`, `grain2d/hist`,
+  `localOrientationGrid`, `SO3TangentVector/display`, `loadEBSD_h5` and
+  `applyEulerCorrectionTable`. `CLAUDE.md` states the rule that an edit leaves no
+  trace of itself, and `doc/CLAUDE.md` the markup traps a published page falls into
+- `docs/adr/0008-frames-carry-symmetry.md` reverses the carrier choice of ADR 0003:
+  the point group moves onto the reference frame and objects carry frames, so the
+  symmetries that exist only to give a frame somewhere to live disappear. It is a
+  design decision, not yet an implementation
 
 
 ## MTEX 7.0 - 08/2026

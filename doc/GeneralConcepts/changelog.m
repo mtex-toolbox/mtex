@@ -10,7 +10,7 @@
 % measured against, and which issue it closes--is in |CHANGELOG.md| in the
 % MTEX folder.
 %
-%% Unreleased changes (develop)
+%% MTEX 7.1 09/2026
 %
 % *Aligning Maps and Images of the Same Area*
 %
@@ -73,6 +73,85 @@
 % <NotationAndConventions.html notation page>, and the
 % <Documentation.html front page> is a visual index. The class diagrams
 % are generated from the sources now, so they cannot go stale.
+%
+% Every page was run and read back while it was written, so the prose describes
+% the figures, the numbers and the console output the code on the page actually
+% produces.
+%
+% *Figures That Come Out the Size You Asked For*
+%
+% The figure layout was rewritten. What a reader sees:
+%
+% * a plot is laid out once, when it is finished, rather than after every
+% command that adds to it. Drawing three pole figures is about twice as fast,
+% and redrawing a figure that has not changed costs nothing at all
+% * a figure never grows beyond the screen it is centred on, and a grid of
+% sections is arranged the way that keeps the sections largest - four wide
+% sections stack instead of standing in one long row
+% * a colorbar clears the title, the labels and the tick marks on its side
+% instead of landing on top of them, and |mtexColorbar('location','south')|
+% puts a horizontal bar below the plot
+% * a three dimensional plot reserves room for its axis labels, so a Bunge box
+% no longer writes them off the edge of the figure
+%
+% The size of an axes is a preference rather than a fraction of the screen, so
+% a figure looks the same wherever it was made:
+%
+%   setMTEXpref('sphericalAxisHeight',370)   % height of one pole figure, in pixel
+%   setMTEXpref('axisBox',[1096 480])        % box any other axes fits into
+%   setMTEXpref('axisArea',368000)           % area it may cover
+%
+% A |'figSize'| of |'large'|, |'small'| and the rest now scales that size
+% instead of naming a fraction of the monitor. Where the first axes of a
+% figure is not the one with the longest labels, the option
+% |takeThisAsReference| says which axes the margins are measured on.
+%
+% *Pole Figures Labelled in Your Own Axes*
+%
+% A plot is annotated with the axes of the reference frame its data lives in.
+% Data expressed in a rolling frame is labelled RD, TD and ND, a plain
+% spherical function living in a crystal frame with a, b and c, and only data
+% that states no frame of its own falls back to the session convention:
+%
+%   ss = specimenSymmetry('222');
+%   ss.frame = specimenFrame.rolling;
+%   plotPDF(fibreODF(cs.cAxis,vector3d.Z,ss),Miller(0,0,0,1,cs))
+%
+% *Plastic Work in the Taylor Model*
+%
+% <strainTensor.calcTaylor.html |calcTaylor|> returns the plastic work, the slip
+% amounts weighted by their critical resolved shear stresses:
+%
+%   work = calcTaylor(eps,sS,'plasticWork')
+%
+% The Taylor factor it returns beside it is the total slip activity, which
+% equals the work only when every critical resolved shear stress is one. So for
+% a set of slip systems with differing strengths, compare the work.
+% <calcLankford.html |calcLankford|> chooses the contraction path by
+% minimising the work for that reason, and reports Rbar and deltaR under their
+% own names. See <Plasticity.html Plasticity>.
+%
+% *Corrections Worth Knowing*
+%
+% Results that change:
+%
+% * the Radon transform of a fibre ODF averages over the specimen orbit as well
+% as the crystal orbit. With a nontrivial specimen symmetry the pole densities
+% of a <SO3FunCBF.SO3FunCBF.html |SO3FunCBF|> came out too large by a factor -
+% for 321 with 222, seven times too large
+% * <equispacedSO3Grid.html |equispacedSO3Grid|> counts the range of
+% the first Euler angle, which a specimen symmetry narrows. Asking for a number
+% of points under a symmetry other than triclinic delivered a quarter of them
+% for 222 or mmm, an eighth for a 432/432 misorientation grid - and now costs
+% the work those points take
+% * the weights of an <SO3FunRBF.SO3FunRBF.html |SO3FunRBF|> follow its
+% symmetrised centers, where every center but the first used to be given
+% another center's weight
+% * the |delta| of a <Gaussian.html |Gaussian|> is the width of
+% $\exp(-(x-m)^2/\delta^2)$; the standard deviation is $\delta/\sqrt{2}$
+% * a not indexed phase can be given a colour. Assigning to
+% |ebsd('notIndexed').color| was refused with "There are no indexed data in
+% this variable!"
 %
 %% MTEX 7.0 08/2026
 %
