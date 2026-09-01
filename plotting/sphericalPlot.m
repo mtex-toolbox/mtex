@@ -3,7 +3,7 @@ classdef sphericalPlot < handle
   %
   % One per axes, stored in its appdata. It owns everything around the data -
   % the projection, the outer boundary, the grid, the tick and Miller labels
-  % and the X / Y / Z annotation of the reference frame - so that a second
+  % and the axes annotation of the reference frame - so that a second
   % plot into the same axes reuses them instead of drawing them again.
   %
   % Note that plot(...,'3d') builds no sphericalPlot at all; annotateFrame is

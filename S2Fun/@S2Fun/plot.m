@@ -34,11 +34,11 @@ if sF.antipodal, varargin = [varargin,'antipodal']; end
 
 S2Proj = makeSphericalProjection(varargin{:},sF.how2plot);
 
-% a crystal symmetry annotates the plot with Miller indices, a crystal frame
-% with its own axes a, b, c
+% a crystal symmetry annotates the plot with Miller indices, the frame the
+% function lives in with its own axes - a, b, c or RD, TD, ND
 if isa(cs,'crystalSymmetry')
   symArg = {cs};
-elseif isa(getFrame(sF),'crystalFrame')
+elseif ~isempty(getFrame(sF))
   symArg = {getFrame(sF)};
 else
   symArg = {};

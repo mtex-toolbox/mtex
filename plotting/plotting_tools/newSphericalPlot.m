@@ -14,6 +14,13 @@ end
 % plottingConvention is a value class - this is already a private copy
 how2plot = plottingConvention.fromOption(varargin,how2plot);
 
+% the frame of the data names the axes of the annotation, see annotateFrame
+frameArg = {};
+try
+  if ~isempty(v.frame), frameArg = {'dataFrame',v.frame}; end
+catch
+end
+
 % case 1: predefined axis
 % -----------------------
 if check_option(varargin,'parent')
@@ -38,7 +45,7 @@ if check_option(varargin,'parent')
     proj = getProjection(sR,how2plot,varargin{:});
     
     % create a new spherical plot
-    sP = sphericalPlot(ax,proj(1),varargin{:});
+    sP = sphericalPlot(ax,proj(1),varargin{:},frameArg{:});
     isNew = true;
             
   end    
@@ -88,7 +95,7 @@ if isNew || ~isappdata(mtexFig.currentAxes,'sphericalPlot')
     end
     
     % create a new spherical plot
-    sP(i) = sphericalPlot(mtexFig.gca,proj(i),tr{:},varargin{:});         %#ok<AGROW>
+    sP(i) = sphericalPlot(mtexFig.gca,proj(i),tr{:},varargin{:},frameArg{:}); %#ok<AGROW>
 
   end
 

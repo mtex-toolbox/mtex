@@ -26,8 +26,9 @@ if isNew
   plotEmptySphere(ax,varargin{:});
 end
 
-% a Miller index marks the plot as living in crystal coordinates, note it before normalizing
-if isa(v,'Miller'), csArg = {v.CS}; else, csArg = {}; end
+% a Miller index marks the plot as living in crystal coordinates, any other
+% frame names the axes of the annotation - note it before normalizing
+if isa(v,'Miller'), csArg = {v.CS}; else, csArg = {'dataFrame',v.frame}; end
 
 % normalize vectors
 v = reshape(v,[],1);
