@@ -12,13 +12,13 @@
 %
 %% MTEX 7.1 09/2026
 %
-% *Aligning Maps and Images of the Same Area*
+% *True EBSD - Aligning EBSD Maps with SEM Images*
 %
-% An electron image and an EBSD map of the same area rarely overlay. The map is
-% taken at a tilt and drifts as it scans. MTEX corrects that now. Hand the
-% TrueEBSD workflow a sequence of pictures, the most distorted first and the
-% undistorted image last, and it puts them all on one grid, so every image
-% becomes a property of the map:
+% Electron images and EBSD maps of the same area rarely overlay. The map is
+% taken at a tilt and drifts as it scans. MTEX now includes trueEBSD to
+% correct that. Hand the TrueEBSD workflow a sequence of pictures, the most
+% distorted first and the undistorted image last, and it puts them all on
+% one grid, so every image becomes a property of the map:
 %
 %   job = trueEbsd2([mapImage(ebsd.bc,ebsd), mapImage(bse,'dxy',0.05)]);
 %   job.pixelSizeMatch
@@ -26,96 +26,34 @@
 %   job.undistort
 %
 % The pieces it is built from are useful on their own. A
-% <mapImage.mapImage.html |mapImage|> is a raster that knows which part of the
-% specimen each pixel covers, a <spatialTransform.html |spatialTransform|> is a
-% distortion that composes and inverts like a <rotation.rotation.html
-% |rotation|>, <xcfShift.html |xcfShift|> cross correlates two images tile by
-% tile, and <EBSD.gridify.html |gridify|> takes a <gridLayout.gridLayout.html
-% |gridLayout|>, so a map can be stored in the same array order as the image it
-% is to be compared with.
+% <mapImage.mapImage.html |mapImage|> is a raster that knows which part of
+% the specimen each pixel covers, a <spatialTransform.html
+% |spatialTransform|> is a distortion that composes and inverts like a
+% <rotation.rotation.html |rotation|>, <xcfShift.html |xcfShift|> cross
+% correlates two images tile by tile, and <EBSD.gridify.html |gridify|>
+% takes a <gridLayout.gridLayout.html |gridLayout|>, so a map can be stored
+% in the same array order as the image it is to be compared with.
 %
 % See <EBSDMapsAndImages.html Maps and Images>, <EBSDSpatialTransform.html
-% Spatial Transforms> and <EBSDTrueEbsd.html TrueEBSD>. The method is by Tong
-% et al., <https://arxiv.org/abs/2605.00703 arXiv 2605.00703>.
+% Spatial Transforms> and <EBSDTrueEbsd.html TrueEBSD>. The method is by
+% Tong et al., <https://arxiv.org/abs/2605.00703 arXiv 2605.00703>.
 %
 % *EBSD Export That Keeps the File*
 %
-% Exporting to HDF5 copies the file the data was imported from and writes only
-% the changed data into the copy, so the result is still a file of the vendor's
-% own format - patterns, acquisition settings and all the rest are passed
-% through untouched, and what MTEX computed is added beside them:
+% Exporting to HDF5 copies the file the data was imported from and writes
+% only the changed data into the copy, so the result is still a file of the
+% vendor's own format - patterns, acquisition settings and all the rest are
+% passed through untouched, and what MTEX computed is added beside them:
 %
 %   ebsd = EBSD.load('myfile.h5oina')
 %   ebsd = ebsd.denoise(halfQuadraticFilter)
 %   export(ebsd,'denoised.h5oina')
 %
-% *Edit a Phase While You Import It*
+% *Update Documentation* 
 %
-% The phase table of the <matlab:import_wizard import wizard> carries the full
-% crystal symmetry: point group, lattice parameters and the alignment of the
-% crystal axes are edited in place, next to the mineral name and the colour,
-% and the plots follow the edit. So a file that states an incomplete or a wrong
-% crystallography is corrected before the map is imported rather than
-% afterwards.
-%
-% *Fewer Orientations for the Same Accuracy*
-%
-% <SO3Fun.optimalSample.html |optimalSample|> and its spherical sibling now
-% move their points by L-BFGS rather than by gradient descent, which is about
-% an order of magnitude faster to the same discrepancy, and optimize the
-% weights in the same iteration. See <S2FunSampling.html Sampling a Spherical
-% Function> and <RandomSampling.html Random Sampling>.
-%
-% *A Guided Documentation*
-%
-% Every chapter of the documentation opens with a page that says what the
-% chapter is for and where to start, there is a <Glossary.html glossary> and a
-% <NotationAndConventions.html notation page>, and the
-% <Documentation.html front page> is a visual index. The class diagrams
-% are generated from the sources now, so they cannot go stale.
-%
-% Every page was run and read back while it was written, so the prose describes
-% the figures, the numbers and the console output the code on the page actually
-% produces.
-%
-% *Figures That Come Out the Size You Asked For*
-%
-% The figure layout was rewritten. What a reader sees:
-%
-% * a plot is laid out once, when it is finished, rather than after every
-% command that adds to it. Drawing three pole figures is about twice as fast,
-% and redrawing a figure that has not changed costs nothing at all
-% * a figure never grows beyond the screen it is centred on, and a grid of
-% sections is arranged the way that keeps the sections largest - four wide
-% sections stack instead of standing in one long row
-% * a colorbar clears the title, the labels and the tick marks on its side
-% instead of landing on top of them, and |mtexColorbar('location','south')|
-% puts a horizontal bar below the plot
-% * a three dimensional plot reserves room for its axis labels, so a Bunge box
-% no longer writes them off the edge of the figure
-%
-% The size of an axes is a preference rather than a fraction of the screen, so
-% a figure looks the same wherever it was made:
-%
-%   setMTEXpref('sphericalAxisHeight',370)   % height of one pole figure, in pixel
-%   setMTEXpref('axisBox',[1096 480])        % box any other axes fits into
-%   setMTEXpref('axisArea',368000)           % area it may cover
-%
-% A |'figSize'| of |'large'|, |'small'| and the rest now scales that size
-% instead of naming a fraction of the monitor. Where the first axes of a
-% figure is not the one with the longest labels, the option
-% |takeThisAsReference| says which axes the margins are measured on.
-%
-% *Pole Figures Labelled in Your Own Axes*
-%
-% A plot is annotated with the axes of the reference frame its data lives in.
-% Data expressed in a rolling frame is labelled RD, TD and ND, a plain
-% spherical function living in a crystal frame with a, b and c, and only data
-% that states no frame of its own falls back to the session convention:
-%
-%   ss = specimenSymmetry('222');
-%   ss.frame = specimenFrame.rolling;
-%   plotPDF(fibreODF(cs.cAxis,vector3d.Z,ss),Miller(0,0,0,1,cs))
+% We and AI put a lot of work in improving the documentation. It reads now
+% more like a textbook in crystallographic texture analysis that uses MTEX
+% to explain concepts and methods in a practical and illustrative way.
 %
 % *Plastic Work in the Taylor Model*
 %
@@ -149,9 +87,9 @@
 % another center's weight
 % * the |delta| of a <Gaussian.html |Gaussian|> is the width of
 % $\exp(-(x-m)^2/\delta^2)$; the standard deviation is $\delta/\sqrt{2}$
-% * a not indexed phase can be given a colour. Assigning to
-% |ebsd('notIndexed').color| was refused with "There are no indexed data in
-% this variable!"
+% * a not indexed phase can be given a colour -
+% |ebsd('notIndexed').color = 'blue'| was refused with "There are no indexed
+% data in this variable!"
 %
 %% MTEX 7.0 08/2026
 %
