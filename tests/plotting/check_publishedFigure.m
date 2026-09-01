@@ -33,6 +33,7 @@ sF = S2FunHarmonic.quadrature(@(v) exp(-3*angle(v,vector3d(1,2,3)).^2), ...
 
 checkNothingOutside(sF);
 checkBandsReserved(sF);
+checkLateLabel(sF);
 checkResizeReLaysOut(sF);
 checkCaptureIsFaithful(sF);
 
@@ -109,6 +110,33 @@ end
 end
 
 % -------------------------------------------------------------------------
+function checkLateLabel(sF)
+% a label written after the figure was laid out still gets its band
+%
+% xlabel writes into a text object the axes has carried since it was created,
+% so nothing about the figure changes and a measurement kept from the first
+% layout never learns that there is anything to reserve room for.
+
+close all
+plot(sF)
+drawnow
+
+mtexFig = gcm;
+ax = mtexFig.children(1);
+mtexTitle(ax,'a title above')
+xlabel(ax,'a label below')
+drawNow(mtexFig)
+drawnow
+
+[figSize,pos] = geometry;
+
+for h = [ax.Title, ax.XLabel]
+  assertInside(extentInFigure(h,pos(1,:)),figSize,['late ' h.Type]);
+end
+
+end
+
+% -------------------------------------------------------------------------
 function checkResizeReLaysOut(sF)
 % the axes follow a resize, and ignore the nudge a print gives the figure
 
@@ -146,6 +174,27 @@ set(f,'Position',settled + [0 0 2 2]); onResize(f,[]); drawnow
 assert(isequal(round(get(gca,'Position')),round(shrunk)), ...
   'check_publishedFigure: a two pixel nudge moved the axes from %s to %s', ...
   mat2str(round(shrunk)),mat2str(round(get(gca,'Position'))))
+
+% a resize cannot grow the figure back, so a pinned height that no longer fits
+% has to give way rather than draw over the edge. The pin has to be in place
+% when the plot is drawn: drawNow is what reads it.
+close all
+setMTEXpref('sphericalAxisHeight',370);
+unpin = onCleanup(@() setMTEXpref('sphericalAxisHeight',[])); %#ok<NASGU>
+
+plot(sF)
+drawnow
+
+f = gcf;
+onResize = get(f,'ResizeFcn');
+p = get(f,'Position');
+set(f,'Position',[p(1:2) 340 300]); onResize(f,[]); drawnow
+
+axPos = get(gca,'Position');
+
+assert(axPos(2) + axPos(4) <= 301, ...
+  'check_publishedFigure: a pinned axes reaches %.0f in a 300 px figure', ...
+  axPos(2)+axPos(4))
 
 end
 
