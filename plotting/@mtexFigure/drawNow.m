@@ -111,13 +111,14 @@ plan = lay.resolve(mtexFig,override);
 
 % keeping the aspect ratio leaves space over on one side, and a pinned axis
 % size needs more than there is - either way the figure ends up the size the
-% layout asked for, so the size the previous plot left behind never carries over
-if refit && ~isempty(plan)
+% layout asked for, so the size the previous plot left behind never carries
+% over. Resizing invalidates the measurement, and the band the new one asks
+% for can be wider, so this is a fixed point like the one resolve iterates to.
+for pass = 1:3
   pos = get(mtexFig.parent,'Position');
-  if any(abs(plan.figSize - pos(3:4)) > 1)
-    setFigurePosition(mtexFig,onScreen(plan.figSize));
-    plan = lay.resolve(mtexFig,override);
-  end
+  if ~refit || isempty(plan) || all(abs(plan.figSize - pos(3:4)) <= 1), break; end
+  setFigurePosition(mtexFig,onScreen(plan.figSize));
+  plan = lay.resolve(mtexFig,override);
 end
 
 % while publishing, flush the resize before the snapshot: it puts the paper

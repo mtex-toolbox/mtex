@@ -49,15 +49,8 @@ if isempty(ax)
   spec.ratio = 1;
   spec.inset = [0 0 0 0];
 else
+  ref = referenceAxes(mtexFig,ax);
   spec.ratio = lay.ratioOf(ax(1));
-
-  % one axes decides the band for all of them. mtexFigure lays out axes of
-  % equal size and is used from inside MTEX, where they are alike - a figure
-  % that mixes a map with a pole figure wants tiledlayout, not this. Where
-  % the reference guesses low, say which axes to take instead: see
-  % mtexFig.referenceAxis and the 'takeThisAsReference' option of drawNow.
-  ref = mtexFig.referenceAxis;
-  if isempty(ref) || ~any(ref == ax), ref = ax(1); end
   spec.inset = axesInset(ref);
 end
 
@@ -90,6 +83,15 @@ token.fontSize = getMTEXpref('FontSize');
 % nothing else in this token would notice it
 sg = findobj(mtexFig.parent,'Type','subplottext');
 token.sgTitle = [double(sg(:).'), arrayfun(@(h) h.FontSize,sg(:).')];
+
+% a title or an axis label is written into a text object the axes already
+% carries, so nothing else here notices the band it asks for
+token.text = {};
+if ~isempty(ax)
+  txt = findall(referenceAxes(mtexFig,ax),'type','text');
+  token.text = {double(txt(:).'), get(txt,'String')};
+end
+
 token.spacing = mtexFig.innerPlotSpacing;
 token.grid = [mtexFig.ncols mtexFig.nrows];
 token.mode = mtexFig.layoutMode;
@@ -105,6 +107,20 @@ for k = 1:numel(ax)
   token.camera(k,:) = cameraState(ax(k));
   token.pos(k,:) = get(ax(k),'Position');
 end
+
+end
+
+% -------------------------------------------------------------------------
+function ref = referenceAxes(mtexFig,ax)
+% the axes whose decorations decide the band for all of them
+%
+% mtexFigure lays out axes of equal size and is used from inside MTEX, where
+% they are alike - a figure that mixes a map with a pole figure wants
+% tiledlayout, not this. Where the reference guesses low, say which axes to
+% take instead: mtexFig.referenceAxis, or 'takeThisAsReference' on drawNow.
+
+ref = mtexFig.referenceAxis;
+if isempty(ref) || ~any(ref == ax), ref = ax(1); end
 
 end
 

@@ -12,7 +12,10 @@ changed = adoptLegend(mtexFig) || changed;
 if getMTEXpref('newLayout',true)
   % a resize of a pixel or two is a print or the window manager, not a user
   if changed || ~mtexFig.layout.isSettled(mtexFig)
-    mtexFig.layout.resolve(mtexFig);
+    % only drawNow grows the figure, so here a pinned axis height is bounded
+    % by the room there is rather than by the room the screen would allow
+    figSize = get(mtexFig.parent,'Position');
+    mtexFig.layout.resolve(mtexFig,struct('maxSize',figSize(3:4)));
   end
   return
 end
