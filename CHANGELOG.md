@@ -192,10 +192,8 @@ including 6.1 have one combined list there and no entry here.
   command, each layout invalidated by the next command. `plotPDF` of three pole
   figures called `drawNow` thirteen times and measured the axes seventeen times.
   `mtexLayout.hold` suspends the layout and returns an `onCleanup` that resumes it,
-  wrapped as `layoutHold` for the eleven commands that need it - `plotPDF` and
-  `plotIPDF` on `@SO3Fun`, `@orientation` and `@fibre`, `PoleFigure/plot`,
-  `zeroRangeMethod/plot`, `ODFSections` plot and quiver, and the `@S2Fun` section
-  commands. 3.88 s to 2.11 s for three pole figures, with the layout unchanged. The 26
+  wrapped as `layoutHold` for the eleven commands that build a figure this way.
+  3.88 s to 2.11 s for three pole figures, with the layout unchanged. The 26
   `'doNotDraw'` flags those commands passed per call are gone; holding the figure
   covers them. `plotSeismicVelocities` is not held - it ends in no `drawNow` to
   release into
@@ -287,9 +285,8 @@ including 6.1 have one combined list there and no entry here.
 - `'keepAxisSize'` is expressed as a pinned axis height rather than as a branch of its
   own - it asks for exactly what a pinned height asks for, that the figure grow around
   the axes instead of the axes shrinking to fit
-- `outerPlotSpacing` is a stored scalar. It was read back out of the same field the
-  colorbar and legend bands grow, so an asymmetric margin could not survive a layout
-  pass
+- `outerPlotSpacing` is a stored scalar rather than the minimum of the field the
+  colorbar and legend bands grow, where an asymmetric margin could not survive a pass
 - an `@orientationPlot` lays out after its plot box is filled, since the aspect ratio
   it is sized from is read off the camera
 

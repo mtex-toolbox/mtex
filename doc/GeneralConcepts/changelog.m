@@ -32,7 +32,7 @@
 % <rotation.rotation.html |rotation|>, <xcfShift.html |xcfShift|> cross
 % correlates two images tile by tile, and <EBSD.gridify.html |gridify|>
 % takes a <gridLayout.gridLayout.html |gridLayout|>, so a map can be stored
-% in the same array order as the image it is to be compared with.
+% in the array order of the image it is compared with.
 %
 % See <EBSDMapsAndImages.html Maps and Images>, <EBSDSpatialTransform.html
 % Spatial Transforms> and <EBSDTrueEbsd.html TrueEBSD>. The method is by
@@ -41,9 +41,9 @@
 % *EBSD Export That Keeps the File*
 %
 % Exporting to HDF5 copies the file the data was imported from and writes
-% only the changed data into the copy, so the result is still a file of the
-% vendor's own format - patterns, acquisition settings and all the rest are
-% passed through untouched, and what MTEX computed is added beside them:
+% only the changed data into the copy. The result is still a file of the
+% vendor's own format - patterns and acquisition settings pass through
+% untouched, and what MTEX computed is added beside them:
 %
 %   ebsd = EBSD.load('myfile.h5oina')
 %   ebsd = ebsd.denoise(halfQuadraticFilter)
@@ -63,28 +63,25 @@
 %   work = calcTaylor(eps,sS,'plasticWork')
 %
 % The Taylor factor it returns beside it is the total slip activity, which
-% equals the work only when every critical resolved shear stress is one. So for
-% a set of slip systems with differing strengths, compare the work.
-% <calcLankford.html |calcLankford|> chooses the contraction path by
-% minimising the work for that reason, and reports Rbar and deltaR under their
-% own names. See <Plasticity.html Plasticity>.
+% equals the work only when every critical resolved shear stress is one - so
+% with slip systems of differing strengths, compare the work.
+% <calcLankford.html |calcLankford|> chooses the contraction path by minimising
+% it for that reason, and reports Rbar and deltaR under their own names. See
+% <Plasticity.html Plasticity>.
 %
 % *Corrections Worth Knowing*
 %
-% Results that change:
-%
 % * the Radon transform of a fibre ODF averages over the specimen orbit as well
 % as the crystal orbit. With a nontrivial specimen symmetry the pole densities
-% of a <SO3FunCBF.SO3FunCBF.html |SO3FunCBF|> came out too large by a factor -
-% for 321 with 222, seven times too large
-% * <equispacedSO3Grid.html |equispacedSO3Grid|> counts the range of
-% the first Euler angle, which a specimen symmetry narrows. Asking for a number
-% of points under a symmetry other than triclinic delivered a quarter of them
-% for 222 or mmm, an eighth for a 432/432 misorientation grid - and now costs
-% the work those points take
+% of a <SO3FunCBF.SO3FunCBF.html |SO3FunCBF|> came out too large - for 321 with
+% 222, seven times
+% * <equispacedSO3Grid.html |equispacedSO3Grid|> counts the range of the first
+% Euler angle, which a specimen symmetry narrows. Under 222 or mmm it delivered
+% a quarter of the points asked for, under a 432/432 misorientation grid an
+% eighth - and now costs the work those points take
 % * the weights of an <SO3FunRBF.SO3FunRBF.html |SO3FunRBF|> follow its
-% symmetrised centers, where every center but the first used to be given
-% another center's weight
+% symmetrised centers, where every center but the first was given another
+% center's weight
 % * the |delta| of a <Gaussian.html |Gaussian|> is the width of
 % $\exp(-(x-m)^2/\delta^2)$; the standard deviation is $\delta/\sqrt{2}$
 % * a not indexed phase can be given a colour -
