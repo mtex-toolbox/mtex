@@ -48,10 +48,12 @@ spec.figInset = mtexFig.outerPlotSpacing * [1 1 1 1];
 if isempty(ax)
   spec.ratio = 1;
   spec.inset = [0 0 0 0];
+  spec.plotBox = [0 0 1 1];
 else
   ref = referenceAxes(mtexFig,ax);
   spec.ratio = lay.ratioOf(ax(1));
   spec.inset = axesInset(ref);
+  spec.plotBox = plotBoxOf(ref);
 end
 
 spec.cBar = colorbarSpec(mtexFig);
@@ -121,6 +123,24 @@ function ref = referenceAxes(mtexFig,ax)
 
 ref = mtexFig.referenceAxis;
 if isempty(ref) || ~any(ref == ax), ref = ax(1); end
+
+end
+
+% -------------------------------------------------------------------------
+function frac = plotBoxOf(ax)
+% where the axes draws inside the rectangle it is given, as fractions of it
+%
+% A 3d axes inscribes its plot box so that no rotation can take it out of the
+% rectangle, which leaves a wide margin at any one view. Everything hung on
+% the outside of the axes goes on the box rather than on the rectangle, or it
+% stands off the plot by that margin.
+
+frac = [0 0 1 1];
+if ~isa(ax,'matlab.graphics.axis.Axes'), return; end
+
+pos = get(ax,'Position');
+box = tightPosition(ax);
+frac = [(box(1:2)-pos(1:2))./pos(3:4), box(3:4)./pos(3:4)];
 
 end
 
