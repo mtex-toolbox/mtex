@@ -154,7 +154,7 @@ legend show
 % fibre ODF through their power at each harmonic degree.
 %
 close all
-plotSpektra(FourierODF(odf,32),'DisplayName','Two-component ODF')
+plotSpektra(FourierODF(odf,32),'DisplayName','Two-component ODF','figSize','small')
 hold on
 fodf = fibreODF(Miller(1,0,0,cs),zvector);
 plotSpektra(FourierODF(fodf,32),'DisplayName','Fibre ODF');

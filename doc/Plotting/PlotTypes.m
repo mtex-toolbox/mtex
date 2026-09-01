@@ -132,7 +132,7 @@ plotPDF(odf,Miller(1,0,0,cs),'antipodal','resolution',10*degree)
 
 f = fibre(Miller(1,0,0,cs),xvector);
 
-plot(odf,f,'linewidth',2,'linestyle','-.')
+plot(odf,f,'linewidth',2,'linestyle','-.','figSize','small')
 
 %%
 % The horizontal coordinate follows the fibre and the vertical coordinate

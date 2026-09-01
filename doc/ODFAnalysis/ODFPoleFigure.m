@@ -135,7 +135,7 @@ pdfPeak = calcPDF(odf,h(3));
 f = fibre(h(3),rPeak);
 
 close all;
-plotFibre(odf,f,'LineWidth',2);
+plotFibre(odf,f,'LineWidth',2,'figSize','small');
 
 %%
 % The line is the ODF density itself, not another projection. Its peaks

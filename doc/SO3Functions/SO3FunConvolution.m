@@ -216,7 +216,7 @@ smoothF = conv(smoothSource,psi);
 smoothFReverse = conv(psi,smoothSource);
 kernelCommutationError = calcError(smoothF,smoothFReverse)
 
-plotSpektra([smoothSource,smoothF])
+plotSpektra([smoothSource,smoothF],'figSize','small')
 legend('before convolution','after convolution')
 
 %%

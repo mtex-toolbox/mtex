@@ -249,7 +249,7 @@ specimenSummary = table(min(gbndSpecimen),max(gbndSpecimen),...
 
 gbndCrystal = calcGBND(gB3,grains3);
 
-plot(gbndCrystal,'contourf')
+plot(gbndCrystal,'contourf','complete','upper')
 mtexTitle('crystal GBND')
 mtexColorMap parula
 mtexColorbar

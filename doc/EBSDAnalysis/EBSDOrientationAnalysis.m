@@ -139,7 +139,7 @@ fibreFraction = 100 * volume(ori,f,10*degree)
 odf = calcDensity(ori,'silent');
 
 % plot the ODF along the candidate fibre
-plot(odf,f,'lineWidth',2)
+plot(odf,f,'lineWidth',2,'figSize','small')
 ylim([0,26])
 
 % evaluate the same fibre points to report the plotted range

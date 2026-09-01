@@ -205,7 +205,7 @@ SO3F1 .* SO3F4
 % of every component. The four curves show that components of one function
 % array may have different distributions over harmonic degree.
 
-plotSpektra(SO3F3,'linewidth',2)
+plotSpektra(SO3F3,'linewidth',2,'figSize','small')
 
 %%
 % An orientation-space section plot displays only the first component of a

@@ -90,7 +90,7 @@ h = [Miller(1,0,0,cs),Miller(1,1,0,cs)];
 odfParts = {odf1,odf2,odf3};
 partName = {'first component','second component','sum'};
 
-mtexFig = newMtexFigure('layout',[2,3],'figSize','large');
+mtexFig = newMtexFigure('layout',[2,3]);
 for i = 1:numel(h)
   for j = 1:numel(odfParts)
     plotPDF(odfParts{j},h(i),'antipodal','noTitle')

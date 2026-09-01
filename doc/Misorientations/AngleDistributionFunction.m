@@ -52,7 +52,7 @@ cubicMaxAngle = maxAngle(cs) ./ degree
 % permit larger distinct disorientation angles.
 
 close all
-plotAngleDistribution(crystalSymmetry('1'),'linewidth',2)
+plotAngleDistribution(crystalSymmetry('1'),'linewidth',2,'figSize','small')
 hold on
 plotAngleDistribution(crystalSymmetry('622'),'linewidth',2)
 plotAngleDistribution(crystalSymmetry('432'),'linewidth',2)
@@ -70,7 +70,7 @@ legend('1','622','432','Location','northwest')
 
 close all
 plotAngleDistribution(crystalSymmetry('222'),...
-  crystalSymmetry('12/m1'),'linewidth',2)
+  crystalSymmetry('12/m1'),'linewidth',2,'figSize','small')
 
 %%
 % This curve is the random reference for an orthorhombic-to-monoclinic
@@ -103,7 +103,7 @@ mori = grains.boundary('Magnesium','Magnesium').misorientation
 % symmetry alone visible.
 
 close all
-plotAngleDistribution(mori)
+plotAngleDistribution(mori,'figSize','small')
 hold on
 plotAngleDistribution(mori.CS,mori.SS,'linewidth',2)
 hold off
@@ -153,7 +153,7 @@ mdf = calcMDF(SO3FunHarmonic(odf));
 % and the symmetry-only reference.
 
 close all
-plotAngleDistribution(mori)
+plotAngleDistribution(mori,'figSize','small')
 hold on
 plotAngleDistribution(mdf,'linewidth',2)
 plotAngleDistribution(mori.CS,mori.SS,'linewidth',2)

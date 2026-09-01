@@ -167,7 +167,7 @@ mtexColorMap white2black
 % even--odd defect.
 
 close all;
-plotSpektra(odf,'bandwidth',32,'linewidth',2)
+plotSpektra(odf,'bandwidth',32,'linewidth',2,'figSize','small')
 hold on
 plotSpektra(rec,'bandwidth',32,'linewidth',2)
 plotSpektra(rec2,'bandwidth',32,'linewidth',2)

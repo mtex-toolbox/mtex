@@ -80,7 +80,7 @@ plot(SO3F2,'sigma')
 % at each harmonic degree. It reveals high-frequency content that can be
 % difficult to distinguish in a section plot.
 
-plotSpektra([SO3F1,SO3F2])
+plotSpektra([SO3F1,SO3F2],'figSize','small')
 legend('Bandwidth 17','Bandwidth 32')
 
 %%
@@ -144,7 +144,7 @@ mtexColorbar
 % indices represent $\lambda=10^{-2}$, $10^{-4}$, $10^{-8}$, and $10^{-12}$.
 
 ind = [3,5,9,13];
-plotSpektra(SO3F4(ind))
+plotSpektra(SO3F4(ind),'figSize','small')
 legend('\lambda = 10^{-2}','\lambda = 10^{-4}', ...
   '\lambda = 10^{-8}','\lambda = 10^{-12}')
 

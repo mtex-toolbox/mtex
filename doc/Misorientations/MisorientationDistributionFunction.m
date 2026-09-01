@@ -161,7 +161,7 @@ mdf_fo = calcMDF(odf_fo)
 % misorientation axis leaves the one-dimensional angle distribution.
 
 close all
-plotAngleDistribution(mori_boundary)
+plotAngleDistribution(mori_boundary,'figSize','small')
 hold on
 plotAngleDistribution(mdf_from_odfs)
 hold off
@@ -179,7 +179,7 @@ legend('boundary','uncorrelated')
 % is illustrated in <RotationPlotting.html Plotting Rotations>.
 
 close all
-plotAngleDistribution(mdf_from_odfs)
+plotAngleDistribution(mdf_from_odfs,'figSize','small')
 hold on
 plotAngleDistribution(ebsd('fo').CS,ebsd('en').CS)
 hold off

@@ -31,7 +31,7 @@ scatter(v,'MarkerAlpha',0.2,'MarkerSize',2)
 % more important than cluster 2. We use the labels only to assign colors and
 % then mark each returned center.
 
-[cInd,center] = calcCluster(v,'radius',0.12,'minPoints',100);
+[cInd,center] = calcCluster(v);
 
 plot(v,ind2color(cInd),'MarkerAlpha',0.2,'MarkerSize',2)
 annotate(center)
@@ -60,9 +60,9 @@ annotate(center)
 
 vSym = [v(:); -v(:)];
 
-[cInd,center] = calcCluster(vSym,'radius',0.12,'minPoints',100);
+[cInd,center] = calcCluster(vSym);
 
-plot(vSym,ind2color(cInd),'MarkerAlpha',0.2,'MarkerSize',2)
+plot(vSym,ind2color(cInd))
 annotate(center)
 
 %%
@@ -71,7 +71,7 @@ annotate(center)
 % smiley and every one of their opposites carries a color of its own.
 
 vSym.antipodal = true;
-[cInd,center] = calcCluster(vSym,'radius',0.12,'minPoints',100);
+[cInd,center] = calcCluster(vSym);
 
 plot(vSym,ind2color(cInd),'MarkerAlpha',0.2,'MarkerSize',2)
 annotate(center)
@@ -117,8 +117,7 @@ plot(ori,'add2all','MarkerSize',3,'MarkerAlpha',0.25,'all')
 % symmetry, so symmetrically equivalent representations of an orientation
 % receive the same cluster label.
 
-[cId,center] = calcCluster(ori,'method','classix', ...
-  'radius',0.12,'minPoints',100);
+[cId,center] = calcCluster(ori,'method','classix');
 
 plotSection(ori,ind2color(cId),'markerSize',3, ...
   'MarkerAlpha',0.25,'all')

@@ -43,7 +43,7 @@ cS = crystalShape.hex(ebsd.CS);
 ebsdPlot = reduce(ebsd,4);
 
 % plot coloured orientations
-plot(ebsd,ebsd.orientations,'ipfDirection',zvector,'micronbar','off')
+plot(ebsd,ebsd.orientations,'ipfDirection',zvector,'micronbar','off','figSize','large')
 
 % overlay the orientations as rotated hexagonal prisms
 hold on
@@ -148,6 +148,7 @@ hold off
 % more direct view.
 
 plotSection(odf,'sigma')
+mtexColorMap LaboTeX
 
 %%
 % Position within a section fixes the c-axis direction, while the section

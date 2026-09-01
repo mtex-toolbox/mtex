@@ -80,7 +80,7 @@ mtexColorbar
 % to each harmonic degree.
 
 close all
-plotSpektra(SO3FHarmonic,'linewidth',2)
+plotSpektra(SO3FHarmonic,'linewidth',2,'figSize','small')
 
 %%
 % The plotted spectrum stops at degree 16 because higher coefficients were

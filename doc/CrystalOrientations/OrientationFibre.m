@@ -293,7 +293,7 @@ hold off
 % <SO3Fun.plotFibre.html |plotFibre|> evaluates an ODF along a chosen curve.
 % Here the beta-fibre ODF is read along the eta fibre.
 
-plotFibre(odf,fibre.eta(cs,ss),'lineWidth',2);
+plotFibre(odf,fibre.eta(cs,ss),'lineWidth',2,'figSize','small');
 
 %%
 % The vertical axis is density in multiples of a random distribution. The

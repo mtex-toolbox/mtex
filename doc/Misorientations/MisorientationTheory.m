@@ -120,7 +120,7 @@ m = Miller({1,-1,0,0},{1,1,-2,0},{-1,0,1,1},{0,0,0,1},CS);
 close all
 for im = 1:length(m)
   plot(mori * m(im).symmetrise,'MarkerSize',10,...
-    'DisplayName',char(m(im),'LaTex'),'figSize','large','noLabel',...
+    'DisplayName',char(m(im),'LaTex'),'noLabel',...
     'upper','textBelowMarker')
   hold on
 end
@@ -128,9 +128,9 @@ hold off
 
 % label the corresponding planes of grain 1
 mm = round(unique(mori*m.symmetrise,'noSymmetry'),'maxHKL',6);
-annotate(mm,'labeled','MarkerSize',5,'figSize','large','textBelowMarker')
+annotate(mm,'labeled','MarkerSize',5,'textBelowMarker')
 
-legend({},'location','NorthEast','FontSize',13,'Interpreter','latex');
+legend({},'location','southoutside','FontSize',13,'Interpreter','latex','numColumns',4);
 
 %%
 % Two pairs lie almost on top of each other: $\{11\bar20\}$ on
@@ -178,16 +178,16 @@ coincidenceAngle = coincidenceMori.angle ./ degree
 close all
 for im = 1:length(m)
   plot(coincidenceMori * m(im).symmetrise,'MarkerSize',10,...
-    'DisplayName',char(m(im),'LaTex'),'figSize','large','noLabel','upper')
+    'DisplayName',char(m(im),'LaTex'),'noLabel','upper')
   hold on
 end
 hold off
 
 % label the corresponding planes in the other crystal
 mm = round(unique(coincidenceMori*m.symmetrise,'noSymmetry'),'maxHKL',6);
-annotate(mm,'labeled','MarkerSize',5,'figSize','large')
+annotate(mm,'labeled','MarkerSize',5)
 
-legend({},'location','NorthWest','FontSize',13,'Interpreter','latex');
+legend({},'location','southoutside','FontSize',13,'Interpreter','latex','numColumns',4);
 
 %% The Magnesium Extension Twin
 %
@@ -258,7 +258,7 @@ twinLengthFraction = sum(gB(isTwinning).segLength) ./ sum(gB.segLength)
 % found above.
 
 close all
-plotAngleDistribution(gB.misorientation)
+plotAngleDistribution(gB.misorientation,'figSize','small')
 
 %%
 % This boundary distribution is correlated because only neighbouring grains

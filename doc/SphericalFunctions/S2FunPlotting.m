@@ -125,7 +125,7 @@ mtexTitle('Section in the xy plane')
 % than position on the sphere.
 
 close all
-plotSpektra(sF1,'FontSize',15,'linewidth',2)
+plotSpektra(sF1,'FontSize',15,'linewidth',2,'figSize','small')
 xlim([0,40])
 
 %%

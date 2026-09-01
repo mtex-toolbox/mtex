@@ -53,7 +53,7 @@ odf = 0.1*unimodalODF(mod1) ...
 % <SO3Fun.plot3d.html |plot3d|> with |'Bunge'| uses the Euler angles
 % $(\varphi_1,\Phi,\varphi_2)$ as Cartesian plot coordinates.
 
-plot3d(odf,'Bunge','figSize','large');
+plot3d(odf,'Bunge');
 mtexColorMap('LaboTeX');
 mtexColorbar('title','mrd');
 
@@ -75,7 +75,7 @@ mtexColorbar('title','mrd');
 % where $\mathbf{n}$ is the rotation axis and $\omega$ is the rotation
 % angle of a symmetry-reduced representative.
 
-plot3d(odf,'axisAngle','figSize','large');
+plot3d(odf,'axisAngle');
 mtexColorMap('LaboTeX');
 mtexColorbar('title','mrd');
 
@@ -95,7 +95,7 @@ mtexColorbar('title','mrd');
 % sections of constant third Bunge Euler angle $\varphi_2$. By default the
 % sections are at constant angles of $\varphi_2$.
 
-plotSection(odf,'phi2','figSize','large');
+plotSection(odf,'phi2');
 mtexColorMap('LaboTeX');
 mtexColorbar('title','mrd');
 
@@ -117,7 +117,7 @@ mtexColorbar('title','mrd');
 % $\sigma=\alpha+\gamma$. Do not identify it with the informal Bunge-angle
 % expression $\varphi_1-\varphi_2$ sometimes attached to these plots.
 
-plotSection(odf,'sigma','figSize','large');
+plotSection(odf,'sigma');
 mtexColorMap('LaboTeX');
 mtexColorbar('title','mrd');
 
@@ -141,7 +141,7 @@ close all;
 % select a fibre of interest
 f = fibre(Miller(1,2,-3,2,cs),vector3d(2,1,1));
 
-plot(odf,f,'LineWidth',2);
+plot(odf,f,'LineWidth',2,'figSize','small');
 
 %%
 % The curve contains two pronounced peaks separated by low-density

@@ -153,7 +153,7 @@ plotPDF(fExample,[Miller(1,0,0,cs),Miller(1,1,0,cs)],'antipodal');
 % magnitudes, not the individual coefficients.
 
 close all;
-plotSpektra(f);
+plotSpektra(f,'figSize','small');
 
 %%
 % Read the curve from left to right as the amount of progressively finer
@@ -196,7 +196,7 @@ maxApproximationError = max(abs(fAngle.eval(ori) - fAngleHarm.eval(ori)))
 % decay slowly and the finite cutoff is felt away from the cusps as well.
 
 close all;
-plotSpektra(fAngleHarm);
+plotSpektra(fAngleHarm,'figSize','small');
 
 %%
 % Unlike the reconstructed ODF spectrum, this spectrum retains appreciable

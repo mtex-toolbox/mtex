@@ -240,7 +240,7 @@ plotPDF(odf1,Miller({1,0,0},{0,1,0},{0,0,1},cs))
 % 10 loses nothing here.
 
 close all
-plotSpektra(odf1,'linewidth',2)
+plotSpektra(odf1,'linewidth',2,'figSize','small')
 
 %%
 % The spectrum falls rapidly towards zero by degree 10.
@@ -252,7 +252,7 @@ A = mod(1:11,2)';
 odf2 = conv(odf1,A);
 
 hold on
-plotSpektra(odf2,'linewidth',2)
+plotSpektra(odf2,'linewidth',2,'figSize','small')
 
 hold off
 legend('odf1','odf2')
@@ -354,7 +354,7 @@ xlim([-180,180])
 % are far too small.
 
 close all
-plotSpektra(odf1,'linewidth',2,'bandwidth',10)
+plotSpektra(odf1,'linewidth',2,'bandwidth',10,'figSize','small')
 hold on
 plotSpektra(odf2,'linewidth',2)
 plotSpektra(odf_rec1,'linewidth',2)
@@ -422,12 +422,12 @@ mtexColorMap parula
 
 close all
 figure(1)
-plot(rec,'gray','contourf')
+plot(rec,'gray','contourf','figSize','small')
 mtexColorMap white2black
 
 %%
 figure(2)
-plot(rec2,'gray','contourf')
+plot(rec2,'gray','contourf','figSize','small')
 mtexColorMap white2black
 
 %%
@@ -437,7 +437,7 @@ mtexColorMap white2black
 
 close all;
 % the harmonic coefficients of the sample ODF
-plotSpektra(SantaFe,'bandwidth',32,'linewidth',2,'MarkerSize',10)
+plotSpektra(SantaFe,'bandwidth',32,'linewidth',2,'MarkerSize',10,'figSize','small')
 
 % keep plot for adding the next plots
 hold on

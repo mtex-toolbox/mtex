@@ -25,7 +25,7 @@ odf = unimodalODF(...
   'halfwidth',15*degree);
 h = Miller(1,0,0,cs);
 
-newMtexFigure('layout',[1,2],'figSize','small')
+newMtexFigure('layout',[1,2])
 
 % equal area: areas are preserved, so densities can be compared by eye
 plotPDF(odf,h,'contourf','projection','earea')

@@ -46,7 +46,7 @@ hold off
 % relationship directly.
 
 close all
-plotAngleDistribution(gB.misorientation)
+plotAngleDistribution(gB.misorientation,'figSize','small')
 
 %%
 % The sharp population near $86^\circ$ is the signature of the extension twin

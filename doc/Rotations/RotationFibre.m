@@ -48,7 +48,7 @@ hold on
 plot(oriA,'filled','MarkerSize',20,'MarkerFaceColor','darkred')
 plot(oriB,'filled','MarkerSize',20,'MarkerFaceColor','blue')
 hold off
-axis tight
+xlim([0 90])
 
 %% Reading the Endpoint Plot
 %
@@ -136,12 +136,11 @@ numberOfSamples = length(sampledOri)
 % The markers show the 12 sampled orientations on the finite endpoint
 % segment. The continuous red curve remains the underlying fibre.
 
-figure;
-plot(f,'lineWidth',3,'lineColor','red')
+plot(f,'lineWidth',2,'lineColor','red')
+xlim([0 90])
 hold on
-plot(sampledOri,'filled','MarkerSize',8,'MarkerFaceColor','black')
+plot(sampledOri,'MarkerSize',8,'MarkerEdgeColor','darkblue','linewidth',2)
 hold off
-axis tight
 
 %% Why a Full Fibre Is a Circle
 %

@@ -127,15 +127,14 @@ psi2 = SO3DeLaValleePoussinKernel('halfwidth',20*degree)
 
 figure
 subplot(1,2,1)
-plot(psi1)
+plot(psi1,'linewidth',2)
 hold on
-plot(psi2)
+plot(psi2,'linewidth',2)
 hold off
-legend('halfwidth = 15°','halfwidth = 20°')
 subplot(1,2,2)
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
@@ -159,15 +158,14 @@ psi2 = SO3DirichletKernel(5)
 
 figure
 subplot(1,2,1)
-plot(psi1)
+plot(psi1,'linewidth',2)
 hold on
-plot(psi2)
+plot(psi2,'linewidth',2)
 hold off
-legend('bandwidth = 10','bandwidth = 5')
 subplot(1,2,2)
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('bandwidth = 10','bandwidth = 5')
 
@@ -192,15 +190,14 @@ psi2 = SO3AbelPoissonKernel('halfwidth',20*degree)
 
 figure
 subplot(1,2,1)
-plot(psi1)
+plot(psi1,'linewidth',2)
 hold on
-plot(psi2)
+plot(psi2,'linewidth',2)
 hold off
-legend('halfwidth = 15°','halfwidth = 20°')
 subplot(1,2,2)
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
@@ -236,15 +233,14 @@ psi2 = SO3vonMisesFisherKernel('halfwidth',20*degree)
 
 figure
 subplot(1,2,1)
-plot(psi1)
+plot(psi1,'linewidth',2)
 hold on
-plot(psi2)
+plot(psi2,'linewidth',2)
 hold off
-legend('halfwidth = 15°','halfwidth = 20°')
 subplot(1,2,2)
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
@@ -264,17 +260,16 @@ psi2 = SO3GaussWeierstrassKernel(0.045)
 
 figure
 subplot(1,2,1)
-plot(psi1)
+plot(psi1,'linewidth',2)
 hold on
-plot(psi2)
+plot(psi2,'linewidth',2)
+hold off
+subplot(1,2,2)
+plotSpektra(psi1,'linewidth',2)
+hold on
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('\kappa = 0.025 (15.14°)','\kappa = 0.045 (20.33°)')
-subplot(1,2,2)
-plotSpektra(psi1)
-hold on
-plotSpektra(psi2)
-hold off
-legend('\kappa = 0.025','\kappa = 0.045')
 
 %%
 % The measured halfwidths are $15.14^\circ$ and $20.33^\circ$, rather than
@@ -297,15 +292,14 @@ psi2 = SO3SobolevKernel(1.2,'bandwidth',15)
 
 figure
 subplot(1,2,1)
-plot(psi1)
+plot(psi1,'linewidth',2)
 hold on
-plot(psi2)
+plot(psi2,'linewidth',2)
 hold off
-legend('s = 1','s = 1.2')
 subplot(1,2,2)
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('s = 1','s = 1.2')
 
@@ -325,9 +319,9 @@ psi = SO3LaplaceKernel
 
 figure
 subplot(1,2,1)
-plot(psi)
+plot(psi,'linewidth',2)
 subplot(1,2,2)
-plotSpektra(psi)
+plotSpektra(psi,'linewidth',2)
 
 %%
 % The profile is not a normalized density because its mean, the degree-zero
@@ -360,15 +354,14 @@ psi2 = SO3SquareSingularityKernel(0.3)
 
 figure
 subplot(1,2,1)
-plot(psi1)
+plot(psi1,'linewidth',2)
 hold on
-plot(psi2)
+plot(psi2,'linewidth',2)
 hold off
-legend('\kappa = 0.2','\kappa = 0.3')
 subplot(1,2,2)
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('\kappa = 0.2','\kappa = 0.3')
 
@@ -396,15 +389,14 @@ psi2 = SO3BumpKernel(40*degree)
 
 figure
 subplot(1,2,1)
-plot(psi1)
+plot(psi1,'linewidth',2)
 hold on
-plot(psi2)
+plot(psi2,'linewidth',2)
 hold off
-legend('halfwidth = 30°','halfwidth = 40°')
 subplot(1,2,2)
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('halfwidth = 30°','halfwidth = 40°')
 

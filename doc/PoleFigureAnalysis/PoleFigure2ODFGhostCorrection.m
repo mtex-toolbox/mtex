@@ -133,7 +133,7 @@ plot(recCor,'sections',9,'silent','sigma');
 
 close all;
 f = fibre(Miller(0,1,0,cs),yvector);
-plot(odf,f,'linewidth',2);
+plot(odf,f,'linewidth',2,'figSize','small');
 hold on;
 
 %%
@@ -201,7 +201,7 @@ l2Corrected = calcError(recCor,odf,'L2')
 % true ODF first.
 
 close all;
-plotSpektra(odf,'linewidth',2);
+plotSpektra(odf,'linewidth',2,'figSize','small');
 hold on;
 
 %%

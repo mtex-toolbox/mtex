@@ -88,7 +88,7 @@ mtexColorbar
 % $\left(\sum_{k=-m}^{m}|\hat f_m^k|^2\right)^{1/2}$.
 
 close all
-plotSpektra(S2F)
+plotSpektra(S2F,'figSize','small')
 
 %% Read the spectrum
 % Only odd degrees through 9 carry visible power. The earlier statement that
@@ -104,7 +104,7 @@ plotSpektra(S2F)
 S2F = S2F.truncate
 truncatedBandwidth = S2F.bandwidth
 
-plotSpektra(S2F,'linewidth',2)
+plotSpektra(S2F,'linewidth',2,'figSize','small')
 
 %% Read the truncated spectrum
 % The same five nonzero odd degrees remain, while the empty high-degree tail
@@ -118,7 +118,7 @@ plotSpektra(S2F,'linewidth',2)
 % To conclude, the following command plots the first ten spherical
 % harmonics. Each column of the identity matrix selects one basis function.
 
-surf(S2FunHarmonic(eye(10)))
+surf(S2FunHarmonic(eye(10)),'figSize','small')
 
 %%
 % Constant, dipolar, and progressively finer angular patterns appear as the
