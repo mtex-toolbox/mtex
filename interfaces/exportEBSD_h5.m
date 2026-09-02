@@ -41,6 +41,7 @@ function exportEBSD_h5(ebsd,fName,varargin)
 %
 % Flags
 %  noProp      - write orientations and phases only, leave properties alone
+%  silent      - do not print what is being written
 %
 % See also
 % EBSD.load exportEBSD_ctf exportEBSD_ang
@@ -68,6 +69,8 @@ end
 % ------------------------------------------------------------------------
 function exportByReference(ebsd,fName,refFile,varargin)
 
+silent = check_option(varargin,'silent');
+
 if ~exist(refFile,'file')
   error('MTEX:exportEBSD_h5:noReference',...
     ['The reference file\n\n  %s\n\nwas not found. Name an existing one\n\n'...
@@ -91,8 +94,8 @@ if isSameFile(refFile,fName)
     'the reference - choose a different output file.'],fName);
 end
 
-scrPrnt('SegmentStart','Exporting HDF5 file');
-scrPrnt('Step',sprintf('Copying reference file %s',refFile));
+scrPrnt(silent,'SegmentStart','Exporting HDF5 file');
+scrPrnt(silent,'Step',sprintf('Copying reference file %s',refFile));
 
 [ok,msg] = copyfile(refFile,fName);
 if ~ok
@@ -122,7 +125,7 @@ if numel(unique(idx)) < numel(idx)
     'those separately, each against its own reference.']);
 end
 
-scrPrnt('Step',sprintf('Writing %d of %d measurements',numel(idx),nFile));
+scrPrnt(silent,'Step',sprintf('Writing %d of %d measurements',numel(idx),nFile));
 
 % undo the correction the import applied, the file states its own reference frame
 raw = ebsd;
@@ -150,9 +153,9 @@ if ~check_option(varargin,'noProp')
   written = [written, writeProps(fName,prov,ebsd,keep,idx,nFile)];
 end
 
-for i = 1:numel(written), scrPrnt('SubStep',written{i}); end
+for i = 1:numel(written), scrPrnt(silent,'SubStep',written{i}); end
 
-scrPrnt('Step',sprintf('All done, wrote %s',fName));
+scrPrnt(silent,'Step',sprintf('All done, wrote %s',fName));
 
 end
 
@@ -243,7 +246,7 @@ for i = 1:numel(items)
 
   for k = 1:min(numel(ids),numel(it.path))
 
-    cs = csOf(ebsd,ids(k));
+    cs = ebsd.CSList(ids(k));
     if ~isa(cs,'crystalSymmetry'), continue; end
 
     switch it.what
@@ -295,16 +298,7 @@ try
 
   if ischar(val) || isstring(val)
 
-    try
-      if iscell(raw)
-        h5write(fName,path,{char(val)});
-      else
-        h5write(fName,path,string(val));
-      end
-    catch
-      % only the low level interface can fill a fixed length string field
-      writeFixedString(fName,path,char(val));
-    end
+    writeFixedString(fName,path,char(val));
 
   else
 
@@ -625,20 +619,5 @@ w = what(d);
 if ~isempty(w), d = w(1).path; end
 
 p = fullfile(d,[n e]);
-
-end
-% ------------------------------------------------------------------------
-function scrPrnt(mode,varargin)
-
-switch mode
-  case 'SegmentStart'
-    fprintf('\n------------------------------------------------------');
-    fprintf(['\n     ',varargin{1},' \n']);
-    fprintf('------------------------------------------------------\n');
-  case 'Step'
-    fprintf([' -> ',varargin{1},'\n']);
-  case 'SubStep'
-    fprintf(['    - ',varargin{1},'\n']);
-end
 
 end

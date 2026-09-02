@@ -58,29 +58,13 @@ if check_option(varargin,'fliplr')
   scrPrnt(silent,'SubStep','flipping EBSD spatial data left right');
 end
 
-% the MTEX point group id of every Channel Laue group
-mtexId2ctfId = [1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,3,6,6,7,7,7,7,7,7,4,4,...
-  4,5,5,5,5,5,8,8,8,9,9,9,9,9,10,10,11,11,11];
-
 % undo the Euler correction loadEBSD_ctf applies, the file states its own frame
 cor = get_option(varargin,'EulerCorrection',rotation.byEuler(pi,0,0));
 ebsd.rotations = inv(cor) .* ebsd.rotations;
 
-% a ctf states every position, so it can also hold a map that is no axis aligned grid
-isGrid = true;
-try
-  [g,keep] = gridCells(ebsd);
-  [xStep,yStep] = gridSteps(g,'ctf');
-catch
-  isGrid = false;
-  g = ebsd;
-  keep = true(size(ebsd));
-  uc = ebsd.unitCell;
-  xStep = max(uc.x) - min(uc.x);
-  yStep = max(uc.y) - min(uc.y);
-end
-
-hdr = importedHeader(ebsd);
+% the map on its grid, and which of its cells the file lists
+[g,keep] = gridCells(ebsd);
+[xStep,yStep] = gridSteps(g);
 
 % -- acquisition parameters ----------------------------------------------
 % names and formats as a Channel text file states them, see loadEBSD_ctf
@@ -126,11 +110,11 @@ else
   fromHeader = false;
   for i = 1:numel(AcquParam.Str)
     if strcmp(AcquParam.Fmt{i},'%s')
-      AcquParam.Data{i} = hdrGet(hdr,AcquParam.Str(i),'');
+      AcquParam.Data{i} = hdrGet(ebsd,AcquParam.Str(i),'');
     else
-      AcquParam.Data{i} = hdrGet(hdr,AcquParam.Str(i),0);
+      AcquParam.Data{i} = hdrGet(ebsd,AcquParam.Str(i),0);
     end
-    fromHeader = fromHeader || ~isempty(hdrGet(hdr,AcquParam.Str(i),''));
+    fromHeader = fromHeader || ~isempty(hdrGet(ebsd,AcquParam.Str(i),''));
   end
 
   if fromHeader
@@ -151,25 +135,20 @@ end
 cleanup = onCleanup(@() fclose(filePh));
 
 fprintf(filePh,'Channel Text File\r\n');
-fprintf(filePh,'Prj %s\r\n',hdrGet(hdr,{'Prj'},fName));
-fprintf(filePh,'Author\t%s\r\n',hdrGet(hdr,{'Author'},getenv('USERNAME')));
-fprintf(filePh,'JobMode\t%s\r\n',hdrGet(hdr,{'JobMode'},'Grid'));
+fprintf(filePh,'Prj %s\r\n',hdrGet(ebsd,{'Prj'},fName));
+fprintf(filePh,'Author\t%s\r\n',hdrGet(ebsd,{'Author'},getenv('USERNAME')));
+fprintf(filePh,'JobMode\t%s\r\n',hdrGet(ebsd,{'JobMode'},'Grid'));
 
-if isGrid
-  fprintf(filePh,'XCells\t%.0f\r\n',size(keep,2));
-  fprintf(filePh,'YCells\t%.0f\r\n',size(keep,1));
-else
-  fprintf(filePh,'XCells\t%.0f\r\n',numel(unique(g.pos.x)));
-  fprintf(filePh,'YCells\t%.0f\r\n',numel(unique(g.pos.y)));
-end
+fprintf(filePh,'XCells\t%.0f\r\n',size(keep,2));
+fprintf(filePh,'YCells\t%.0f\r\n',size(keep,1));
 fprintf(filePh,'XStep\t%.4f\r\n',xStep);
 fprintf(filePh,'YStep\t%.4f\r\n',yStep);
 
 % the acquisition surface orientation - reported by the file, not applied
 % to the data, see applyEulerCorrectionFixed
-fprintf(filePh,'AcqE1\t%.4f\r\n',hdrGet(hdr,{'AcqE1'},0));
-fprintf(filePh,'AcqE2\t%.4f\r\n',hdrGet(hdr,{'AcqE2'},0));
-fprintf(filePh,'AcqE3\t%.4f\r\n',hdrGet(hdr,{'AcqE3'},0));
+fprintf(filePh,'AcqE1\t%.4f\r\n',hdrGet(ebsd,{'AcqE1'},0));
+fprintf(filePh,'AcqE2\t%.4f\r\n',hdrGet(ebsd,{'AcqE2'},0));
+fprintf(filePh,'AcqE3\t%.4f\r\n',hdrGet(ebsd,{'AcqE3'},0));
 
 fprintf(filePh,'Euler angles refer to Sample Coordinate system (CS0)!\t');
 for i = 1:length(AcquParam.Str)
@@ -184,15 +163,18 @@ fprintf(filePh,'\r\n');
 
 % -- phases --------------------------------------------------------------
 % Channel numbers the phases 1 to N in the order of this table, 0 is not indexed
-phaseId = ebsd.indexedPhasesId;
+phaseNr = zeros(1,numel(ebsd.CSList));
+phaseNr(ebsd.indexedPhasesId) = 1:numel(ebsd.indexedPhasesId);
 
-fprintf(filePh,'Phases\t%.0f\r\n',numel(phaseId));
+fprintf(filePh,'Phases\t%.0f\r\n',numel(ebsd.indexedPhasesId));
 
-for i = 1:numel(phaseId)
+Laue = laueGroups;
+for i = ebsd.indexedPhasesId
 
-  cs = csOf(ebsd,phaseId(i));
+  cs = ebsd.CSList(i);
 
-  laueGr = mtexId2ctfId(cs.id);
+  laueGr = find(strcmp(Laue(:,1),...
+    foldAlignment(symmetry.pointGroups(symmetry.pointGroups(cs.id).LaueId).Inter)),1);
   spaceGr = 0;                       % not modelled by MTEX
   if isfield(cs.opt,'spaceId'), spaceGr = double(cs.opt.spaceId); end
 
@@ -209,20 +191,10 @@ scrPrnt(silent,'Step','Assembling data array');
 fprintf(filePh,'Phase\tX\tY\tBands\tError\tEuler1\tEuler2\tEuler3\tMAD\tBC\tBS\r\n');
 
 % gridify orders y then x, so the file order - x fastest - is the transposed matrix
-if isGrid
-  ordAll = reshape(reshape(1:numel(g),size(g)).',[],1);
-  sel = ordAll(reshape(keep.',[],1));
-else
-  [~,sel] = sortrows([g.pos.y(:),g.pos.x(:)]);
-end
+ordAll = reshape(reshape(1:numel(g),size(g)).',[],1);
+sel = ordAll(reshape(keep.',[],1));
 
 notes = {};
-if ~isGrid
-  notes{end+1} = sprintf(...
-    ['the map is no grid aligned with x and y - the measurements are '...
-    'written as they are and XStep/YStep state the unit cell (%.4g, %.4g)'],...
-    xStep,yStep);
-end
 [bands,notes] = getColumn(g,{'bands','nindexedbands','radonbandcount'},0,'Bands',notes);
 [err,notes] = getColumn(g,{'error'},0,'Error',notes);
 [mad,notes] = getColumn(g,{'mad','meanangulardeviation','fit'},0,'MAD',notes);
@@ -230,7 +202,7 @@ end
 [bs,notes] = getColumn(g,{'bs','bandslope','semsignal','sem_signal'},0,'BS',notes);
 
 A = zeros(numel(sel),11);
-A(:,1) = fileOrder(phaseColumn(g,phaseId),sel);
+A(:,1) = fileOrder(phaseColumn(g,phaseNr),sel);
 A(:,2) = fileOrder(g.pos.x,sel);
 A(:,3) = fileOrder(g.pos.y,sel);
 A(:,4) = fileOrder(bands,sel);
@@ -254,37 +226,6 @@ scrPrnt(silent,'Step',sprintf('Writing %d measurements to ''%s''',size(A,1),fNam
 fprintf(filePh,'%.0f\t%.4f\t%.4f\t%.0f\t%.0f\t%.4f\t%.4f\t%.4f\t%.4f\t%.0f\t%.0f\r\n',A.');
 
 scrPrnt(silent,'Step','All done');
-
-end
-
-% ------------------------------------------------------------------------
-function p = phaseColumn(g,phaseId)
-% the phase column: the position in the phase table written above, 0 for
-% not indexed
-
-p = zeros(size(g));
-
-for k = 1:numel(phaseId)
-  p(reshape(g.phaseId,size(g)) == phaseId(k)) = k;
-end
-
-end
-
-% ------------------------------------------------------------------------
-function scrPrnt(silent,mode,varargin)
-
-if silent, return; end
-
-switch mode
-  case 'SegmentStart'
-    fprintf('\n------------------------------------------------------');
-    fprintf(['\n     ',varargin{1},' \n']);
-    fprintf('------------------------------------------------------\n');
-  case 'Step'
-    fprintf([' -> ',varargin{1},'\n']);
-  case 'SubStep'
-    fprintf(['    - ',varargin{1},'\n']);
-end
 
 end
 

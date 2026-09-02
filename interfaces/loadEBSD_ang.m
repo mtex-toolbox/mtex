@@ -102,9 +102,9 @@ unitCellHint = {};
 if isfield(header,'XSTEP') && isfield(header,'YSTEP')
   xs = header.XSTEP; ys = header.YSTEP;
   if isfield(header,'GRID') && strcmpi(header.GRID,'HexGrid')
-    headerCell = vector3d([-xs/2,-xs/2,0,xs/2,xs/2,0],[-ys/3,ys/3,2*ys/3,ys/3,-ys/3,-2*ys/3],0);
+    headerCell = regularPoly(6,xs,0);
   else
-    headerCell = vector3d([xs,xs,-xs,-xs]/2,[-ys,ys,ys,-ys]/2,0);
+    headerCell = regularPoly(4,[xs ys],0);
   end
   unitCellHint = {'unitCellHint',headerCell};
 end

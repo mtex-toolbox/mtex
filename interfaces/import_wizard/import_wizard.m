@@ -2161,20 +2161,13 @@ classdef import_wizard < matlab.apps.AppBase
       % asserts on, read out rather than discovered by trial and error
 
       lat = symmetry.pointGroups(id).lattice;
-      isTri  = lat == latticeType.triclinic;
-      isMono = lat == latticeType.monoclinic;
-
-      % b is independent only where a and b are not tied together;
-      % c only where it is not tied to a as well
-      free.len = [true, ...
-        isTri || isMono || lat == latticeType.orthorhombic, ...
-        ~(lat == latticeType.cubic || lat == latticeType.icosahedral)];
+      free.len = freeLengths(lat);
 
       % triclinic leaves all three angles free, monoclinic the one about its axis
       free.ang = false(1,3);
-      if isTri
+      if lat == latticeType.triclinic
         free.ang(:) = true;
-      elseif isMono
+      elseif lat == latticeType.monoclinic
         free.ang(floor(double(id)/3)) = true;
       end
 

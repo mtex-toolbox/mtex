@@ -43,7 +43,10 @@ including 6.1 have one combined list there and no entry here.
   "No Manufacturer config found for: unknown". A `.mat` file is the way to carry a
   map between MTEX sessions
 - the text exporters are interfaces like the loaders they mirror, `exportEBSD_ang`
-  and `exportEBSD_ctf`, with `export_ang` and `export_ctf` kept as wrappers
+  and `exportEBSD_ctf`, with `export_ang` and `export_ctf` kept as wrappers. The
+  symmetry codes of a TSL and of a Channel file are one table, `laueGroups`, read
+  by the loaders and looked up by the exporters, and `TSL2pointGroup` answers both
+  ways
 - neither the ang nor the ctf exporter undid the Euler angle correction its loader
   applies, so importing an exported map turned it by 180 degree. An import/export
   cycle now reproduces the angles of the original file

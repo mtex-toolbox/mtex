@@ -1,5 +1,5 @@
-function v = hdrGet(hdr,names,default)
-% one value of an imported file header, or a default
+function v = hdrGet(ebsd,names,default)
+% one value of the header of the file a map was imported from, or a default
 %
 % Description
 %
@@ -10,10 +10,10 @@ function v = hdrGet(hdr,names,default)
 % number or a string is wanted.
 %
 % Syntax
-%   v = hdrGet(hdr,{'x_star','xstar'},0)
+%   v = hdrGet(ebsd,{'x_star','xstar'},0)
 %
 % Input
-%  hdr     - struct, as kept in ebsd.opt.header
+%  ebsd    - @EBSD
 %  names   - cell array of possible keys
 %  default - value to return when none of them is there
 %
@@ -22,35 +22,25 @@ function v = hdrGet(hdr,names,default)
 
 v = default;
 
-if ~isstruct(hdr) || isempty(fieldnames(hdr)), return; end
-
-wantChar = ischar(default) || isstring(default);
+if ~isfield(ebsd.opt,'header'), return; end
+hdr = ebsd.opt.header;
 fn = fieldnames(hdr);
 
 for i = 1:numel(names)
 
   j = find(strcmpi(fn,names{i}),1);
   if isempty(j), continue; end
-
   val = hdr.(fn{j});
 
-  if wantChar
-
-    if ischar(val) || isstring(val)
-      v = char(val); return
-    elseif isnumeric(val) && isscalar(val)
-      v = num2str(val); return
-    end
-
+  if ischar(default) || isstring(default)
+    v = char(string(val));
+  elseif isnumeric(val)
+    v = double(val);
   else
-
-    if isnumeric(val) && isscalar(val)
-      v = double(val); return
-    elseif (ischar(val) || isstring(val)) && ~isnan(str2double(val))
-      v = str2double(val); return
-    end
-
+    v = str2double(string(val));
+    if isnan(v), v = default; end
   end
+  return
 
 end
 

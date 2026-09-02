@@ -77,11 +77,7 @@ end
 
 lattice = {charLiteral(char(cs.pointGroup)),latticeLiteral(cs.abc)};
 
-% these lattices determine their angles from the point group
-impliedAngles = ismember(cs.lattice,[latticeType.cubic, ...
-  latticeType.orthorhombic,latticeType.trigonal, ...
-  latticeType.tetragonal,latticeType.hexagonal]);
-if ~impliedAngles
+if hasFreeAngles(cs.lattice)
   lattice{end+1} = [latticeLiteral(cs.abg / degree) ' * degree'];
 end
 

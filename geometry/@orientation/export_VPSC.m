@@ -23,14 +23,7 @@ function export_VPSC(ori,filename,varargin)
 % file - see issue #297
 % note that get_flag keeps the *last* match, so the default goes first
 convention = EulerAngleConvention('Bunge',varargin{:});
-switch lower(convention)
-  case {'bunge','zxz'}, letter = 'B';
-  case 'kocks', letter = 'K';
-  case 'roe', letter = 'R';
-  otherwise
-    error('MTEX:export_VPSC',['VPSC stores Euler angles in the Bunge, the ' ...
-      'Kocks or the Roe convention. %s is none of them.'],convention);
-end
+letter = vpscEulerConvention(convention);
 
 % allocate memory
 d = zeros(length(ori),4);

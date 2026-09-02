@@ -57,6 +57,18 @@ classdef latticeType < int32
       
     end
 
+    function out = freeLengths(this)
+      % which of a, b and c the lattice leaves independent
+      out = [true, ...
+        any(this == [latticeType.triclinic, latticeType.monoclinic, latticeType.orthorhombic]), ...
+        ~any(this == [latticeType.cubic, latticeType.icosahedral])];
+    end
+
+    function out = hasFreeAngles(this)
+      % whether a lattice angle has to be stated with the point group
+      out = any(this == [latticeType.triclinic, latticeType.monoclinic]);
+    end
+
     function out = hklForm(this)
       if isTriHex(this)
         out = 'hkil';

@@ -394,7 +394,7 @@ function out = unitCell_fromStep(raw_data)
 % it has been observed to collapse to a meaningless placeholder value
   xs = double(raw_data.step_size_x);
   ys = double(raw_data.step_size_y);
-  out = vector3d([xs,xs,-xs,-xs]/2,[-ys,ys,ys,-ys]/2,0);
+  out = regularPoly(4,[xs ys],0);
 end
 
 function out = cs_default(raw_data)
@@ -448,15 +448,6 @@ function out = space_group_default(raw_data)
     id = symmetry.extractPointId(clean);
   end
   out = symmetry.pointGroups(id).Inter;
-
-end
-
-function out = space_group_TSLNumber(raw_data)
-% EDAX / TSL store the symmetry as a numeric code, e.g. 43 for cubic -
-% the very same codes as in the .ang / .osc header. It only distinguishes
-% the 11 Laue groups.
-
-  out = TSL2pointGroup(raw_data);
 
 end
 

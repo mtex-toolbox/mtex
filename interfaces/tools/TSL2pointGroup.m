@@ -1,5 +1,5 @@
-function pointGroup = TSL2pointGroup(sym,pointGroup)
-% translate the symmetry entries of an EDAX / TSL file into a point group
+function varargout = TSL2pointGroup(sym,pointGroup)
+% translate the symmetry entries of an EDAX / TSL file into a point group, and back
 %
 % EDAX files describe the symmetry of a phase twice. The "Symmetry" code is
 % the one every EDAX format has, but it only distinguishes the 11 Laue
@@ -11,29 +11,41 @@ function pointGroup = TSL2pointGroup(sym,pointGroup)
 % The point group is used whenever it is available and consistent with the
 % Laue group, otherwise the Laue group is returned.
 %
+% Given a crystal symmetry, the two codes an .ang states for it come back:
+% the Laue code, and the point group id where the group is one of the 32.
+%
 % Syntax
 %   pointGroup = TSL2pointGroup(43)
 %   pointGroup = TSL2pointGroup(62,126)
 %   pointGroup = TSL2pointGroup(22,'Orthorhombic (D2h) [mmm]')
+%   [laueCode,pgId] = TSL2pointGroup(cs)
 %
 % Input
-%  sym        - TSL symmetry code, numeric or char
+%  sym        - TSL symmetry code, numeric or char, or a @crystalSymmetry
 %  pointGroup - EDAX point group id (>= 100) or name, optional
 %
 % Output
 %  pointGroup - point group name as understood by @crystalSymmetry
+%  laueCode   - TSL symmetry code, 1 to 43
+%  pgId       - EDAX point group id, 100 to 131, empty for a group EDAX does
+%               not number
 %
 % See also
-% loadEBSD_ang loadEBSD_osc loadEBSD_h5
+% loadEBSD_ang loadEBSD_osc loadEBSD_h5 exportEBSD_ang laueGroups
+
+if isa(sym,'symmetry')
+  [varargout{1:2}] = codesOf(sym);
+  return
+end
 
 laueGroup = TSL2laueGroup(sym);
 
-if nargin == 1, pointGroup = laueGroup; return; end
+if nargin == 1, varargout{1} = laueGroup; return; end
 
 pointGroup = pointGroupName(pointGroup);
 
 % no point group stated - the Laue group is all we know
-if isempty(pointGroup), pointGroup = laueGroup; return; end
+if isempty(pointGroup), varargout{1} = laueGroup; return; end
 
 % both should describe the same Laue class, if they do not the point group
 % was not understood and the Laue group is the safer choice
@@ -47,6 +59,23 @@ catch
   pointGroup = laueGroup;
 end
 
+varargout{1} = pointGroup;
+
+end
+
+function [laueCode,pgId] = codesOf(cs)
+% the codes an .ang states for cs
+
+pg = symmetry.pointGroups(cs.id);
+laue = foldAlignment(symmetry.pointGroups(pg.LaueId).Inter);
+
+t = laueGroups;
+i = find(strcmp(t(:,1),laue),1);
+laueCode = 1;   % unknown, the least committal answer
+if ~isempty(i), laueCode = t{i,2}; end
+
+pgId = 99 + find(strcmp(pointGroupList,foldAlignment(pg.Inter)),1);
+
 end
 
 function laueGroup = TSL2laueGroup(sym)
@@ -55,25 +84,18 @@ function laueGroup = TSL2laueGroup(sym)
 if iscell(sym), sym = sym{1}; end
 laueGroup = strtrim(char(string(sym)));
 
-% for monoclinic crystalSymmetry decides from the lattice angles whether
-% 2/m means 12/m1, 112/m or 2/m11
-switch laueGroup
-  case '1',   laueGroup = '-1';     % triclinic
-  case {'2','20'}, laueGroup = '2/m';   % monoclinic
-  case '22',  laueGroup = 'mmm';    % orthorhombic
-  case '3',   laueGroup = '-3';     % trigonal
-  case '32',  laueGroup = '-3m';    % trigonal
-  case '4',   laueGroup = '4/m';    % tetragonal
-  case '42',  laueGroup = '4/mmm';  % tetragonal
-  case '6',   laueGroup = '6/m';    % hexagonal
-  case '62',  laueGroup = '6/mmm';  % hexagonal
-  case '23',  laueGroup = 'm-3';    % cubic
-  case '43',  laueGroup = 'm-3m';   % cubic
-  otherwise
-    % .osc files store the point group id in the very same field
-    pg = pointGroupName(laueGroup);
-    if ~isempty(pg), laueGroup = pg; end
-end
+% an older file writes 2 for 2/m; crystalSymmetry then decides from the
+% lattice angles whether that means 12/m1, 112/m or 2/m11
+code = str2double(laueGroup);
+if code == 2, code = 20; end
+
+t = laueGroups;
+i = find([t{:,2}] == code,1);
+if ~isempty(i), laueGroup = t{i,1}; return; end
+
+% .osc files store the point group id in the very same field
+pg = pointGroupName(laueGroup);
+if ~isempty(pg), laueGroup = pg; end
 
 end
 

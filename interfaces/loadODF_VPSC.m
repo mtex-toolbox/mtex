@@ -57,7 +57,7 @@ for k = 1:numel(isHead)
 
   h = isHead(k);
   nOri = str2double(head{h}{2});
-  convention = eulerAngleConvention(head{h}{1});
+  convention = vpscEulerConvention(head{h}{1});
 
   % the data lines of this block
   block = sprintf('%s\n',lines{h+(1:nOri)});
@@ -91,19 +91,6 @@ end
 if numel(odf) == 1, odf = odf{1}; end
 
 end
-
-% ---------------------------------------------------------------------------
-function convention = eulerAngleConvention(letter)
-% the fourth header line names the Euler angle convention of the file
-
-switch upper(letter)
-  case 'B', convention = 'Bunge';
-  case 'K', convention = 'Kocks';
-  case 'R', convention = 'Roe';
-end
-
-end
-
 % ---------------------------------------------------------------------------
 function num = readNumbers(line,n)
 % the leading numbers of a free format header line, padded with NaN

@@ -66,18 +66,13 @@ ebsd.rotations = inv(cor) .* ebsd.rotations;
 
 % the map on its grid, and which of its cells the file lists
 [g,keep] = gridCells(ebsd);
-[xStep,yStep] = gridSteps(g,'ang');
+[xStep,yStep] = gridSteps(g);
 isHex = isa(g,'EBSDhex');
 
-% header values the file states but MTEX does not model - taken over from
-% the file the data came from wherever it stated them
-hdr = importedHeader(ebsd);
-
-% a file numbers its phases from 1 and keeps 0 for not indexed, so renumber if needed
-[phaseNr,renumbered] = angPhaseNumbers(ebsd);
-if renumbered
-  scrPrnt(silent,'SubStep','phases renumbered from 1, 0 is not indexed');
-end
+% the file numbers the indexed phases from 1 in the order of its header, 0
+% is not indexed
+phaseNr = zeros(1,numel(ebsd.CSList));
+phaseNr(ebsd.indexedPhasesId) = 1:numel(ebsd.indexedPhasesId);
 
 % Open ang file
 scrPrnt(silent,'Step','Writing file header');
@@ -88,27 +83,26 @@ end
 cleanup = onCleanup(@() fclose(filePh));
 
 % -- SEM / acquisition info ----------------------------------------------
-fprintf(filePh,'# %-22s%.6f\n','TEM_PIXperUM',hdrGet(hdr,{'TEM_PIXperUM'},1));
-fprintf(filePh,'# %-22s%.6f\n','x-star',hdrGet(hdr,{'x_star','xstar'},0));
-fprintf(filePh,'# %-22s%.6f\n','y-star',hdrGet(hdr,{'y_star','ystar'},0));
-fprintf(filePh,'# %-22s%.6f\n','z-star',hdrGet(hdr,{'z_star','zstar'},0));
-fprintf(filePh,'# %-22s%.6f\n','WorkingDistance',hdrGet(hdr,{'WorkingDistance'},0));
+fprintf(filePh,'# %-22s%.6f\n','TEM_PIXperUM',hdrGet(ebsd,{'TEM_PIXperUM'},1));
+fprintf(filePh,'# %-22s%.6f\n','x-star',hdrGet(ebsd,{'x_star','xstar'},0));
+fprintf(filePh,'# %-22s%.6f\n','y-star',hdrGet(ebsd,{'y_star','ystar'},0));
+fprintf(filePh,'# %-22s%.6f\n','z-star',hdrGet(ebsd,{'z_star','zstar'},0));
+fprintf(filePh,'# %-22s%.6f\n','WorkingDistance',hdrGet(ebsd,{'WorkingDistance'},0));
 fprintf(filePh,'#\n');
 
 % -- phase blocks --------------------------------------------------------
 for k = 1:numel(ebsd.indexedPhasesId)
 
-  phaseId = ebsd.indexedPhasesId(k);
-  cs = csOf(ebsd,phaseId);
+  cs = ebsd.CSList(ebsd.indexedPhasesId(k));
 
-  fprintf(filePh,'# %s %.0f\n','Phase',phaseNr(k));
+  fprintf(filePh,'# %s %.0f\n','Phase',k);
   fprintf(filePh,'# %s  \t%s\n','MaterialName',cs.mineral);
   fprintf(filePh,'# %s     \t%s\n','Formula','');
   fprintf(filePh,'# %s \t\t%s\n','Info','');
 
   % the Laue code every .ang has, plus the point group id newer ones state
   % - the former alone would lose e.g. the difference between 622 and 6/mmm
-  [laueCode,pgId] = tslSymmetryCodes(cs);
+  [laueCode,pgId] = TSL2pointGroup(cs);
   fprintf(filePh,'# %-22s%d\n','Symmetry',laueCode);
   if ~isempty(pgId)
     fprintf(filePh,'# %-22s%d\n','PointGroupID',pgId);
@@ -143,11 +137,11 @@ fprintf(filePh,'# %s: %.0f\n','NCOLS_ODD',nCols(1));
 fprintf(filePh,'# %s: %.0f\n','NCOLS_EVEN',nCols(min(2,end)));
 fprintf(filePh,'# %s: %.0f\n','NROWS',size(keep,1));
 fprintf(filePh,'#\n');
-fprintf(filePh,'# %s: \t%s\n','OPERATOR',hdrGet(hdr,{'OPERATOR'},'Administrator'));
+fprintf(filePh,'# %s: \t%s\n','OPERATOR',hdrGet(ebsd,{'OPERATOR'},'Administrator'));
 fprintf(filePh,'#\n');
-fprintf(filePh,'# %s: \t%s\n','SAMPLEID',hdrGet(hdr,{'SAMPLEID'},''));
+fprintf(filePh,'# %s: \t%s\n','SAMPLEID',hdrGet(ebsd,{'SAMPLEID'},''));
 fprintf(filePh,'#\n');
-fprintf(filePh,'# %s: \t%s\n','SCANID',hdrGet(hdr,{'SCANID'},''));
+fprintf(filePh,'# %s: \t%s\n','SCANID',hdrGet(ebsd,{'SCANID'},''));
 fprintf(filePh,'#\n');
 
 % the column layout is stated rather than left to be guessed on import
@@ -175,7 +169,7 @@ A(:,4) = fileOrder(g.pos.x,sel);
 A(:,5) = fileOrder(g.pos.y,sel);
 A(:,6) = fileOrder(iq,sel);
 A(:,7) = fileOrder(ci,sel);
-A(:,8) = fileOrder(phaseColumn(g,ebsd,phaseNr),sel);
+A(:,8) = fileOrder(phaseColumn(g,phaseNr),sel);
 A(:,9) = fileOrder(sem,sel);
 A(:,10) = fileOrder(fit,sel);
 
@@ -195,52 +189,5 @@ scrPrnt(silent,'Step',sprintf('Writing %d measurements to ''%s''',size(A,1),fNam
 fprintf(filePh,'%9.5f %9.5f %9.5f %12.5f %12.5f %6.1f %6.3f %2.0f %6.0f %6.3f \n',A.');
 
 scrPrnt(silent,'Step','All done');
-
-end
-
-% ------------------------------------------------------------------------
-function [nr,renumbered] = angPhaseNumbers(ebsd)
-% the number every indexed phase gets in the file
-%
-% Kept as the file the data came from stated them wherever that is a valid
-% .ang numbering - phases counted from 1, 0 reserved for not indexed.
-
-nr = double(ebsd.phaseMap(ebsd.indexedPhasesId));
-nr = nr(:).';
-
-% OIM numbers the phases by their position in the header table, so renumber if needed
-renumbered = ~isequal(nr,1:numel(nr));
-
-if renumbered, nr = 1:numel(ebsd.indexedPhasesId); end
-
-end
-
-% ------------------------------------------------------------------------
-function p = phaseColumn(g,ebsd,phaseNr)
-% the phase column, in the numbering of the header written above
-
-p = zeros(size(g));
-
-for k = 1:numel(ebsd.indexedPhasesId)
-  p(g.phaseId == ebsd.indexedPhasesId(k)) = phaseNr(k);
-end
-
-end
-
-% ------------------------------------------------------------------------
-function scrPrnt(silent,mode,varargin)
-
-if silent, return; end
-
-switch mode
-  case 'SegmentStart'
-    fprintf('\n------------------------------------------------------');
-    fprintf(['\n     ',varargin{1},' \n']);
-    fprintf('------------------------------------------------------\n');
-  case 'Step'
-    fprintf([' -> ',varargin{1},'\n']);
-  case 'SubStep'
-    fprintf(['    - ',varargin{1},'\n']);
-end
 
 end

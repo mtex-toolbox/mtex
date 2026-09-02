@@ -29,7 +29,7 @@ nphase = sscanf(hl{phase_line},'%s\t%u');
 nphase = nphase(end);
   
 % Crystallographic Parameters of all phases
-Laue = {'-1','2/m','mmm','4/m','4/mmm','-3','-3m','6/m','6/mmm','m-3','m-3m'};
+Laue = laueGroups;
   
 cs(1) = notIndexed;
 for K = 1:nphase
@@ -47,7 +47,7 @@ for K = 1:nphase
     
   % Laue group (class) number
   try % some ctf files might be broken
-    laue = Laue{sscanf(mpara{4},'%u')};
+    laue = Laue{sscanf(mpara{4},'%u'),1};
     cs(K+1) = crystalSymmetry(laue,abc(:)',abg(:)','mineral',mineral);
   catch
     spaceId = sscanf(mpara{5},'%u'); % try spaceid
@@ -64,7 +64,7 @@ header = ctfHeaderStruct(hl,phase_line);
 unitCellHint = {};
 if isfield(header,'XStep') && isfield(header,'YStep')
   xs = header.XStep; ys = header.YStep;
-  unitCellHint = {'unitCellHint',vector3d([xs,xs,-xs,-xs]/2,[-ys,ys,ys,-ys]/2,0)};
+  unitCellHint = {'unitCellHint',regularPoly(4,[xs ys],0)};
 end
 
 if check_option(varargin,'headerOnly')

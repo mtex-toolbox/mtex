@@ -37,7 +37,10 @@
       "multiple": true,
       "default": {
         "reference_frame": { "data": "EDAX"},
-        "space_group": { "mode": "search_root", "value": "Symmetry", "type": "TSLNumber" },
+        "space_group": {
+          "type": "EDAX",
+          "laue_code": { "mode": "search_root", "value": "Symmetry"}
+        },
         "name": { "mode": "search_root", "value": "MaterialName"},
         "lattice": {
           "angle": {

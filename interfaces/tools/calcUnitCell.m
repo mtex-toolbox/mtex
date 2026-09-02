@@ -194,13 +194,6 @@ switch lower(cellType)
 end
 
 
-% a regular polygon with s vertices, diameter d, and rotation rot
-function unitCell = regularPoly(s,d,rot)
-
-c = exp(1i*((pi/s:pi/(s/2):2*pi)+rot))./sqrt((s/2));
-unitCell = [real(c(:)),imag(c(:))].*d;
-
-
 function isRegular = isRegularPoly(unitCell)
 
 sideLength = sqrt(sum((unitCell).^2,2));

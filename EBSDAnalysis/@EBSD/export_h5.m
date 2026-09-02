@@ -15,12 +15,6 @@ function export_h5(ebsd,fname,varargin)
 % See also
 % exportEBSD_h5 EBSD.export
 
-% the root group used to be given as a bare third argument
-if ~isempty(varargin) && (ischar(varargin{1}) || isstring(varargin{1})) ...
-    && startsWith(char(varargin{1}),'/')
-  varargin = [{'root'},varargin];
-end
-
 exportEBSD_h5(ebsd,fname,varargin{:});
 
 end
