@@ -41,7 +41,11 @@ classdef TSLDirectionKey < directionColorKey
   
       % project to fundamental region
       h = h.project2FundamentalRegion(dM.sym);
-      
+
+      % one direction out of the sector gets one colour, so from here it
+      % stands for itself and not for its symmetrically equivalent set
+      if ~isempty(h.frame), h.frame = stripSym(h.frame); end
+
       % this should become white if not stated differently
       center = dM.sR.center;
 

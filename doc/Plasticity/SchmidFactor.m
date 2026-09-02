@@ -105,7 +105,7 @@ for k = 1:length(sSAll)
   plot(cS,'faceAlpha',0.5,'parent',ax)
   title(ax,['\textbf{' int2str(k) '}:' char(sSAll(k),'latex')], ...
     'Interpreter','latex')
-  axis off
+  axis off equal tight
   hold on
   plot(cS,sSAll(k),'facecolor','blue','parent',ax)
   plottingConvention.default3D().setView

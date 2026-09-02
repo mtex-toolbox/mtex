@@ -67,7 +67,7 @@ sectionAngles = [25 30 35 40]*degree;
 oS = phi2Sections(odf.CS,odf.SS,'phi2',sectionAngles);
 
 close all;
-plotSection(odf,oS,'silent','figSize','large');
+plotSection(odf,oS,'silent','figSize','large','layout',[2 2]);
 annotate(ori1,'MarkerSize',15);
 annotate(ori2,'Marker','v','MarkerSize',15);
 plot(f,'LineWidth',2,'add2all');

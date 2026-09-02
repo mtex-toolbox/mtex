@@ -102,7 +102,7 @@ annotate(maxNodes)
 [minValue,minNodes] = min(combined,'numLocal',2);
 annotate(minNodes)
 
-fprintf('Global maximum: %.3f; local minima: %.3f and %.3f\n',...
+fprintf('Global maximum: %.3f\nlocal minima  : %.3f and %.3f\n',...
   maxValue,minValue(1),minValue(2))
 
 %%
@@ -122,7 +122,7 @@ fprintf('Global maximum: %.3f; local minima: %.3f and %.3f\n',...
 meanValue = mean(sF1);
 normalisedIntegral = sum(sF1) / (4*pi);
 
-fprintf('Mean: %.4f; integral/(4*pi): %.4f\n',...
+fprintf('Mean: %.4f\nintegral/(4*pi): %.4f\n',...
   meanValue,normalisedIntegral)
 
 %%
@@ -204,10 +204,10 @@ plot(rotate(combined,rot),'upper')
 % twofold axis in the $z$ direction.
 
 % define the symmetry
-cs = crystalFrame('112');
+sym = specimenFrame('112');
 
 % compute the symmetrised function
-sFs = symmetrise(sF1,cs)
+sFs = symmetrise(sF1,sym)
 
 % plot it
 newMtexFigure;

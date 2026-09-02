@@ -7,8 +7,32 @@ classdef symmetry
 % specimen, is the business of the @referenceFrame that carries the group,
 % see docs/adr/0008-frames-carry-symmetry.md.
 %
+% Syntax
+%
+%   % by name - Schoenflies, International, a lattice or a common alias
+%   s = symmetry('222')
+%   s = symmetry('orthotropic')
+%   s = symmetry('D2')
+%   s = symmetry('SpaceId',153)
+%
+%   % in the axes of a frame, where the elements are not along X, Y, Z
+%   s = symmetry('321',cF)
+%
+%   % by the elements themselves, with the id that names them
+%   s = symmetry(id,rot)
+%
+% Input
+%  name - Schoenflies or International symbol, a lattice name or an alias
+%  cF   - @referenceFrame whose axes the elements are written in
+%  id   - point group id, compare to symmetry.pointGroups
+%  rot  - the symmetry elements as @rotation
+%
+% Options
+%  PointId, LaueId, SpaceId - name the group by a table index
+%
 % Class Properties
 %  id         - point group id, compare to symmetry.pointGroups
+%  groupKey   - session key of a group with no point group id
 %  rot        - the symmetry elements as @rotation
 %  name       - international symbol of the point group
 %  lattice    - the lattice type the group implies
@@ -23,6 +47,9 @@ classdef symmetry
 
   properties %(SetAccess = immutable)
     id = 1;               % point group id, compare to symList
+    % what tells two groups apart when neither is one of the 45, minted from
+    % the elements by symmetry.intern and 0 for every group that has an id
+    groupKey = 0
     rot = rotation.id     % the symmetry elements
   end
 
@@ -52,13 +79,32 @@ classdef symmetry
 
   methods
 
-    function s = symmetry(id,rot)
+    function s = symmetry(varargin)
       % constructor
 
       if nargin == 0, return; end
 
-      s.id = id;
-      if nargin > 1 && ~isempty(rot), s.rot = rot; end
+      if isnumeric(varargin{1})
+
+        % the group as it is stored: the id that names it and its elements
+        s.id = varargin{1};
+        if nargin > 1 && ~isempty(varargin{2}), s.rot = varargin{2}; end
+
+      else
+
+        % named, and built in the axes of the frame it is written in
+        [id,varargin] = symmetry.extractPointId(varargin{:});
+        fr = getClass(varargin,'referenceFrame');
+        if ~isempty(fr), varargin = {fr.basis}; end
+
+        s.id = id;
+        s.rot = symmetry.calcQuat(id,varargin{:});
+
+      end
+
+      % a group outside the list of 45 is told from another one by its
+      % elements, and the register turns that into a number once
+      if s.id == 0, s.groupKey = symmetry.intern(s.rot); end
 
     end
 
@@ -185,7 +231,46 @@ classdef symmetry
       end
       id = 0;
     end
-    
+
+
+    function key = intern(rot)
+      % the session key of a group that rot2pointId could not name
+      %
+      % Where the point group id names a group, this only tells it apart:
+      % the elements are compared once, here, and everything downstream
+      % compares two integers. The store is never emptied, since a key
+      % handed out has to keep meaning the same group for as long as any
+      % data holds it.
+      %
+      % Syntax
+      %   key = symmetry.intern(rot)
+      %
+      % See also
+      % symmetry/eq symmetry/loadobj referenceFrame.intern
+
+      persistent store
+
+      if isempty(store), store = {}; end
+
+      rot = rot(:);
+      for key = 1:numel(store)
+        if numel(store{key}) == numel(rot) && ...
+            all(max(dot_outer(store{key},rot),[],2) > 1-1e-4)
+          return
+        end
+      end
+
+      store{end+1} = rot;
+      key = numel(store);
+
+    end
+
+
+    function s = loadobj(s)
+      % a key is minted per session, so a loaded group asks for its own
+      if isa(s,'symmetry') && s.id == 0, s.groupKey = symmetry.intern(s.rot); end
+    end
+
     
     function rot = calcQuat(id,varargin)
       % calculate symmetry elements

@@ -62,16 +62,16 @@ mtexColorbar
 % The same function is especially simple in axis--angle coordinates. Each
 % section fixes the rotational angle and varies the rotational axis.
 
-constantContourWarning = warning('off','MATLAB:contour:ConstantData');
-plotSection(SO3F,'axisAngle',(15:15:60)*degree,'upper')
-warning(constantContourWarning)
+plotSection(SO3F,'axisAngle',(15:15:60)*degree,'pcolor')
 mtexColorbar
 mtexColorMap parula
 
 %%
 % Every panel has one colour because |SO3F| returns the angle that labels
-% that panel. The two section plots show the same function in different
-% coordinates; neither changes the underlying data.
+% that panel. A rotation by one of these angles may have any axis, so each
+% angle fills the whole sphere and needs an upper and a lower panel. The two
+% section plots show the same function in different coordinates; neither
+% changes the underlying data.
 
 %% Analyse an Orientation-Dependent Function
 %

@@ -44,11 +44,11 @@ axMori = axis(mori,'noSymmetry');
 axInverse = axis(inv(mori),'noSymmetry');
 
 plot(axMori,'complete','MarkerSize',12,'DisplayName','m',...
-  'figSize','small')
+  'figSize','small','grid','on')
 hold on
 plot(axInverse,'complete','MarkerSize',12,'DisplayName','inverse(m)')
 hold off
-legend('show','Location','southoutside');
+legend('show','Location','southeast');
 
 %%
 % The blue and orange points are antipodal: they mark the same $40^\circ$

@@ -26,8 +26,10 @@ if isNew
   plotEmptySphere(ax,varargin{:});
 end
 
-% a direction in a crystal frame marks the plot as living in crystal coordinates, note it before normalizing
-if isCrystalDirection(v), csArg = {v.CS}; else, csArg = {}; end
+% a direction in a crystal frame marks the plot as living in crystal
+% coordinates, any other frame names the axes of the annotation - note it
+% before normalizing
+if isCrystalDirection(v), csArg = {v.CS}; else, csArg = {'dataFrame',v.frame}; end
 
 % normalize vectors
 v = reshape(v,[],1);

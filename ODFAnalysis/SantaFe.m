@@ -2,15 +2,12 @@ function odf = SantaFe
 % the famous SantaFe-sample ODF
 
 CS = crystalFrame('cubic');
-SS = specimenFrame('222');
-SS = specimenFrame.frameFor(plottingConvention('y↑→x'));
+SS = specimenFrame('mmm',plottingConvention('y↑→x'));
 
 psi = SO3vonMisesFisherKernel('HALFWIDTH',10*degree);
 ori = orientation.byMiller(Miller(1,2,2,CS),Miller(2,2,1,CS),CS,SS);
 
 odf =  0.73 + 0.27 * unimodalODF(ori,CS,SS,psi);
-
-
 
 % 3,7
 % SANTA FE

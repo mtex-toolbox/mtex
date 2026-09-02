@@ -36,9 +36,6 @@ ebsdNoisy = ebsd;
 F = halfQuadraticFilter;
 ebsd = smooth(ebsd,F,'fill',grains);
 
-% the integral implementation uses ordfilt2 from Image Processing Toolbox
-hasIntegralMethod = ~isempty(which('ordfilt2'));
-
 %% Integral method: compute the default WBV
 % The default integral method evaluates a square loop around every pixel.
 % It uses a Prewitt-like convolution kernel whose four corner weights are
@@ -48,27 +45,16 @@ hasIntegralMethod = ~isempty(which('ordfilt2'));
 % plain @EBSD map, <EBSD.gridify.html |gridify|> is called internally and the
 % result is mapped back to the original measurements.
 %
-% The current integral implementation uses |ordfilt2| to reject loops that
-% cross a grain or map boundary. It therefore requires Image Processing
-% Toolbox. This page skips the integral figures when that function is not
-% available and continues with the toolbox-independent gradient method.
 
-if hasIntegralMethod
-  wbvIntegral = weightedBurgersVec(ebsd)
-else
-  warning(['Integral WBV examples skipped: ordfilt2 from Image ' ...
-    'Processing Toolbox is not available.'])
-end
+wbvIntegral = weightedBurgersVec(ebsd)
 
 %%
 % The result is a @vector3d at every EBSD pixel, expressed in the specimen
 % frame. Its norm has units of inverse scan length, here $1/\mathrm{\mu m}$.
 
-if hasIntegralMethod
-  plot(ebsd,wbvIntegral.norm,'refFrame','on')
-  mtexColorbar
-  mtexTitle('WBV magnitude')
-end
+plot(ebsd,wbvIntegral.norm,'refFrame','on')
+mtexColorbar
+mtexTitle('WBV magnitude')
 
 %%
 % Bright pixels have a larger net Burgers-vector content through the local
@@ -79,18 +65,18 @@ end
 % A directional key assigns hue from vector direction. Opacity carries the
 % norm, with values at and above 0.22 rendered fully opaque.
 
-if hasIntegralMethod
-  cK = HSVDirectionKey(wbvIntegral);
-  alphaIntegral = min(wbvIntegral.norm/0.22,1);
+cK = HSVDirectionKey(wbvIntegral);
+alphaIntegral = min(wbvIntegral.norm/0.22,1);
 
-  plot(ebsd,cK.direction2color(wbvIntegral), ...
-    'FaceAlpha',alphaIntegral)
-  mtexTitle('WBV in specimen coordinates')
+newMtexFigure('layout',[1 3],'figSize','large')
+plot(ebsd,cK.direction2color(wbvIntegral), ...
+  'FaceAlpha',alphaIntegral)
+mtexTitle('WBV in specimen coordinates')
 
-  nextAxis
-  plot(cK,'figSize','tiny')
-  mtexTitle('directional color key')
-end
+nextAxis
+plot(cK,'figSize','tiny')
+mtexTitle('directional color key')
+
 
 %%
 % Read hue only where the map is sufficiently opaque. Hue in nearly
@@ -102,21 +88,20 @@ end
 % threshold, not a physical division between low and high dislocation
 % content, so the arrows show only the strongest 15 percent of WBVs.
 
-if hasIntegralMethod
-  cond = wbvIntegral.norm > quantile(wbvIntegral.norm,0.85);
+cond = wbvIntegral.norm > quantile(wbvIntegral.norm,0.85);
 
-  plot(ebsd,cK.direction2color(wbvIntegral), ...
-    'FaceAlpha',alphaIntegral)
-  hold on
-  quiver(ebsd(cond),wbvIntegral(cond),'color','k', ...
-    'autoScaleFactor',2,'antipodal','linewidth',0.5);
-  hold off
-  mtexTitle('strongest WBVs in specimen coordinates')
+newMtexFigure('layout',[1 3],'figSize','large')
+plot(ebsd,cK.direction2color(wbvIntegral), ...
+  'FaceAlpha',alphaIntegral)
+hold on
+quiver(ebsd(cond),wbvIntegral(cond),'color','k', ...
+  'autoScaleFactor',2,'antipodal','linewidth',0.5);
+hold off
+mtexTitle('strongest WBVs in specimen coordinates')
 
-  nextAxis
-  plot(wbvIntegral,'weights',wbvIntegral.norm,'contourf')
-  mtexTitle('magnitude-weighted direction distribution')
-end
+nextAxis
+plot(wbvIntegral,'weights',wbvIntegral.norm,'contourf')
+mtexTitle('magnitude-weighted direction distribution')
 
 %%
 % The arrows identify the local directions behind the map colors. The
@@ -128,23 +113,22 @@ end
 % pixel by applying the inverse orientation. This is a frame change, not a
 % rotation of the dislocation content.
 
-if hasIntegralMethod
-  wbvCrystal = inv(ebsd.orientations) .* wbvIntegral;
-  cKCrystal = HSVDirectionKey(wbvCrystal);
+wbvCrystal = inv(ebsd.orientations) .* wbvIntegral;
+cKCrystal = HSVDirectionKey(wbvCrystal);
 
-  plot(ebsd,cKCrystal.direction2color(wbvCrystal), ...
-    'FaceAlpha',alphaIntegral)
-  mtexTitle('WBV in crystal coordinates')
+newMtexFigure('layout',[1 2])
+plot(ebsd,cKCrystal.direction2color(wbvCrystal), ...
+  'FaceAlpha',alphaIntegral)
+mtexTitle('WBV in crystal coordinates')
 
-  nextAxis
-  plot(cKCrystal)
-  mtexTitle('directional color key')
-  hold on
-  plot(wbvCrystal,'weights',wbvCrystal.norm,'contour', ...
-    'contours',0.2:0.1:2,'linecolor','k','ShowText','on', ...
-    'linewidth',2)
-  hold off
-end
+nextAxis
+plot(cKCrystal)
+mtexTitle('directional color key')
+hold on
+plot(wbvCrystal,'weights',wbvCrystal.norm,'contour', ...
+  'contours',0.2:0.1:2,'linecolor','k','ShowText','on', ...
+  'linewidth',2)
+hold off
 
 %%
 % Directions that differ in the specimen frame can cluster in the crystal
@@ -156,32 +140,31 @@ end
 % |'windowSize',n| selects a $(2n+1)$-by-$(2n+1)$ loop, so the values 1, 2,
 % and 3 below produce 3-by-3, 5-by-5, and 7-by-7 loops.
 
-if hasIntegralMethod
-  close all
-  newMtexFigure('layout',[2,4])
+close all
+newMtexFigure('layout',[2,4])
 
-  wbvDenoised = weightedBurgersVec(ebsd);
-  nextAxis(1,1)
-  plot(ebsd,wbvDenoised.norm)
-  mtexTitle('denoised / box = 3')
+wbvDenoised = weightedBurgersVec(ebsd);
+nextAxis(1,1)
+plot(ebsd,wbvDenoised.norm)
+mtexTitle('denoised / box = 3')
 
-  nextAxis(2,1)
-  plot(wbvDenoised,'weights',wbvDenoised.norm,'contourf','antipodal')
+nextAxis(2,1)
+plot(wbvDenoised,'weights',wbvDenoised.norm,'contourf','antipodal')
+mtexTitle('direction distribution')
+
+for ws = [1 2 3]
+  wbvWindow = weightedBurgersVec(ebsdNoisy,'windowSize',ws);
+  
+  nextAxis(1,ws+1)
+  plot(ebsdNoisy,wbvWindow.norm)
+  mtexTitle(['noisy / box = ' num2str(2*ws+1)])
+  
+  nextAxis(2,ws+1)
+  plot(wbvWindow,'weights',wbvWindow.norm,'contourf','antipodal')
   mtexTitle('direction distribution')
-
-  for ws = [1 2 3]
-    wbvWindow = weightedBurgersVec(ebsdNoisy,'windowSize',ws);
-
-    nextAxis(1,ws+1)
-    plot(ebsdNoisy,wbvWindow.norm)
-    mtexTitle(['noisy / box = ' num2str(2*ws+1)])
-
-    nextAxis(2,ws+1)
-    plot(wbvWindow,'weights',wbvWindow.norm,'contourf','antipodal')
-    mtexTitle('direction distribution')
-  end
-  mtexColorbar
 end
+mtexColorbar
+
 
 %%
 % The noisy 3-by-3 result differs visibly from the denoised result. Larger

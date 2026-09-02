@@ -68,6 +68,12 @@ if err > 1*degree
   warning(['Miller indece are not orthogonal. Maximum deviation is ' xnum2str(max(err)) ' degree']);
 end
 
+% the pair is settled, so from here each direction stands for itself - dot
+% over the crystal group would take the orbit maximum and lose the sign
+uvw = vector3d(uvw);
+if ~isempty(hkl.frame), hkl.frame = stripSym(hkl.frame); end
+if ~isempty(uvw.frame), uvw.frame = stripSym(uvw.frame); end
+
 % hkl -> e3
 q1 = hr2quat(hkl,zvector);
 

@@ -127,12 +127,12 @@ gbnd2 = calcGBND(gB(~cond),ebsd,'halfwidth',5*degree,'nonneg');
 tp = Miller(1,0,-1,2,CS,'hkil');
 
 % use one colour range so weak structure is not visually amplified
-contourf(gbnd1,'colorrange',[0.5 1.5])
+contourf(gbnd1,'colorrange',[0.5 1.5],'complete','upper','nolabel')
 mtexTitle('GBND for $\omega > 80^{\circ}$')
 mtexColorMap parula
 annotate(symmetrise(tp),'labeled','backgroundColor','w')
 nextAxis
-contourf(gbnd2,'colorrange',[0.5 1.5])
+contourf(gbnd2,'colorrange',[0.5 1.5],'complete','upper','noLabel')
 mtexTitle('GBND for $\omega < 80^{\circ}$')
 mtexColorMap parula
 mtexColorbar
@@ -249,7 +249,7 @@ specimenSummary = table(min(gbndSpecimen),max(gbndSpecimen),...
 
 gbndCrystal = calcGBND(gB3,grains3);
 
-plot(gbndCrystal,'contourf')
+plot(gbndCrystal,'contourf','complete','upper')
 mtexTitle('crystal GBND')
 mtexColorMap parula
 mtexColorbar

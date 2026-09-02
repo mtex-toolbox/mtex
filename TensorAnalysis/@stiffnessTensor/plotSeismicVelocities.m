@@ -77,7 +77,7 @@ mtexFig = newMtexFigure('figSize','huge','layout',[2 3]);
 %**************************************************************************
 
 % Plot P-wave velocity (km/s)
-plot(vp,'contourf','complete','doNotDraw',varargin{:})
+plot(vp,'contourf','complete','doNotDraw',varargin{:},'noLabel')
 mtexTitle('Vp (km/s)','doNotDraw',titleOpt{:})
 
 % extrema
@@ -110,7 +110,7 @@ nextAxis(1,2)
 
 % Plot S-wave anisotropy (percent)
 AVs = 200*(vs1-vs2)./(vs1+vs2);
-plot(AVs,'contourf','complete','doNotDraw',varargin{:});
+plot(AVs,'contourf','complete','doNotDraw',varargin{:},'noLabel');
 mtexTitle('S-wave anisotropy (%)','doNotDraw',titleOpt{:})
 
 % Max percentage anisotropy
@@ -136,7 +136,7 @@ clear hG
 % create a new axis
 nextAxis(1,3)
 
-plot(vs1,'contourf','doNotDraw','complete',varargin{:});
+plot(vs1,'contourf','doNotDraw','complete',varargin{:},'noLabel');
 mtexTitle('Vs1 (km/s)','doNotDraw',titleOpt{:})
 
 % Percentage anisotropy
@@ -165,7 +165,7 @@ clear hG
 % create a new axis
 nextAxis(2,1)
 
-plot(vs2,'contourf','doNotDraw','complete',varargin{:});
+plot(vs2,'contourf','doNotDraw','complete',varargin{:},'noLabel');
 mtexTitle('Vs2 (km/s)','doNotDraw',titleOpt{:})
 
 % Percentage anisotropy
@@ -194,7 +194,7 @@ clear hG
 nextAxis
 
 vpvs1 = vp./vs1;
-plot(vpvs1,'contourf','complete','doNotDraw',varargin{:});
+plot(vpvs1,'contourf','complete','doNotDraw',varargin{:},'noLabel');
 mtexTitle('Vp/Vs1','doNotDraw',titleOpt{:})
 
 % Percentage anisotropy
@@ -221,7 +221,7 @@ clear hG
 nextAxis
 
 vpvs2 = vp./vs2;
-plot(vpvs2,'contourf','complete','doNotDraw',varargin{:});
+plot(vpvs2,'contourf','complete','doNotDraw',varargin{:},'noLabel');
 mtexTitle('Vp/Vs2','doNotDraw',titleOpt{:})
 
 % Percentage anisotropy

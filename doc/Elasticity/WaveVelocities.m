@@ -98,7 +98,7 @@ vpHarm = velocity(C,'harmonic')
 % Overlay its polarisation axes at sampled propagation directions.
 
 newMtexFigure
-plot(vp,'upper')
+plot(vp,'upper','complete')
 hold on
 plot(pp)
 hold off
@@ -120,7 +120,7 @@ mtexColorbar('title','P-wave speed in km/s')
 deltaVs = vs1-vs2;
 
 newMtexFigure
-plot(deltaVs,'upper')
+plot(deltaVs,'upper','complete')
 hold on
 plot(ps1)
 hold off
@@ -158,7 +158,7 @@ AVs = 200*(vs1-vs2)./(vs1+vs2);
 
 newMtexFigure('layout',[1,3])
 
-plot(vp,'upper','noLabel')
+plot(vp,'upper','noLabel','complete')
 hold on
 plot(maxPos(1),'Marker','s','MarkerSize',10,...
   'MarkerFaceColor','k','MarkerEdgeColor','w')
@@ -168,11 +168,11 @@ hold off
 mtexTitle('P-wave speed')
 
 nextAxis
-plot(AVs,'upper','noLabel')
+plot(AVs,'upper','noLabel','complete')
 mtexTitle('S-wave anisotropy')
 
 nextAxis
-plot(vp./vs1,'upper','noLabel')
+plot(vp./vs1,'complete','upper','noLabel')
 mtexTitle('Vp/Vs1')
 
 mtexColorMap blue2red

@@ -68,7 +68,7 @@ valueFunction = @(v) dot(v,vector3d.X).^9;
 %%
 % <S2FunHarmonic.quadrature.html |S2FunHarmonic.quadrature|> evaluates this
 % handle on a weighted spherical grid and computes its coefficients. Without
-% an explicit |'bandwidth'| option, it computes through degree 128.
+% an explicit |'bandwidth'| option, it computes through degree 250.
 
 S2F = S2FunHarmonic.quadrature(valueFunction)
 defaultBandwidth = S2F.bandwidth
@@ -118,7 +118,7 @@ plotSpektra(S2F,'linewidth',2)
 % To conclude, the following command plots the first ten spherical
 % harmonics. Each column of the identity matrix selects one basis function.
 
-surf(S2FunHarmonic(eye(10)))
+surf(S2FunHarmonic(eye(10)),'layout',[2 5])
 
 %%
 % Constant, dipolar, and progressively finer angular patterns appear as the

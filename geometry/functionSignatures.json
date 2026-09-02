@@ -5,6 +5,19 @@
 
 "_comment2": "crystalSymmetry has two signatures: the group given by its symbol (always the first argument, never an alignment flag) or by a numerical id. The alignment of the Cartesian to the crystal coordinate system is given by one flag per Cartesian axis, e.g. crystalSymmetry('2/m',...,'X||a','Z||c*').",
 
+"symmetry":
+{
+    "inputs":
+    [
+      {"name":"pointGroup", "kind":"required", "type":["char","choices=unique([{symmetry.pointGroups.Inter},{symmetry.pointGroups.Schoen},[symmetry.pointGroups.altNames],cellfun(@char,{symmetry.pointGroups.lattice},'UniformOutput',false)])"], "purpose":"point group (International or Schoenflies) or space group symbol"},
+      {"name":"frame", "kind":"ordered", "type":["referenceFrame"], "purpose":"frame whose axes the elements are written in"}
+    ],
+    "outputs":
+    [
+      {"name":"s", "type":"symmetry"}
+    ]
+},
+
 "crystalSymmetry":
 {
     "inputs":

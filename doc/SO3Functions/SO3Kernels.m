@@ -131,11 +131,11 @@ plot(psi1)
 hold on
 plot(psi2)
 hold off
-legend('halfwidth = 15°','halfwidth = 20°')
+%legend('halfwidth = 15°','halfwidth = 20°')
 subplot(1,2,2)
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
@@ -165,9 +165,9 @@ plot(psi2)
 hold off
 legend('bandwidth = 10','bandwidth = 5')
 subplot(1,2,2)
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('bandwidth = 10','bandwidth = 5')
 
@@ -198,9 +198,9 @@ plot(psi2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 subplot(1,2,2)
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
@@ -242,9 +242,9 @@ plot(psi2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 subplot(1,2,2)
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('halfwidth = 15°','halfwidth = 20°')
 
@@ -270,9 +270,9 @@ plot(psi2)
 hold off
 legend('\kappa = 0.025 (15.14°)','\kappa = 0.045 (20.33°)')
 subplot(1,2,2)
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('\kappa = 0.025','\kappa = 0.045')
 
@@ -303,9 +303,9 @@ plot(psi2)
 hold off
 legend('s = 1','s = 1.2')
 subplot(1,2,2)
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('s = 1','s = 1.2')
 
@@ -327,7 +327,7 @@ figure
 subplot(1,2,1)
 plot(psi)
 subplot(1,2,2)
-plotSpektra(psi)
+plotSpektra(psi,'linewidth',2)
 
 %%
 % The profile is not a normalized density because its mean, the degree-zero
@@ -366,9 +366,9 @@ plot(psi2)
 hold off
 legend('\kappa = 0.2','\kappa = 0.3')
 subplot(1,2,2)
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('\kappa = 0.2','\kappa = 0.3')
 
@@ -402,9 +402,9 @@ plot(psi2)
 hold off
 legend('halfwidth = 30°','halfwidth = 40°')
 subplot(1,2,2)
-plotSpektra(psi1)
+plotSpektra(psi1,'linewidth',2)
 hold on
-plotSpektra(psi2)
+plotSpektra(psi2,'linewidth',2)
 hold off
 legend('halfwidth = 30°','halfwidth = 40°')
 

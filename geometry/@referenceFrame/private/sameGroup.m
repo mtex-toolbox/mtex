@@ -3,11 +3,11 @@ function out = sameGroup(fr1,fr2)
 %
 % A group MTEX has an id for is compared by its Laue class, since a phase
 % is identified by the diffraction symmetry it shows. A group given by its
-% elements has no id, so the elements themselves are compared.
+% elements has no id and no Laue class to name, so it is compared as the
+% group it is.
 
 if fr1.id == 0
-  out = fr2.id == 0 && numSym(fr1) == numSym(fr2) && ...
-    max(angle(fr1.rot(:),fr2.rot(:))) < 0.1*degree;
+  out = fr1.sym == fr2.sym;
 else
   out = fr1.Laue.id == fr2.Laue.id;
 end

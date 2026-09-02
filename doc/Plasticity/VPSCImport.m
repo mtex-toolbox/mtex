@@ -76,9 +76,8 @@ odf{1}.opt
 h = Miller({1,0,0},{0,1,0},{0,0,1},cs,'uvw');
 
 fig = newMtexFigure('layout',[4,3],'figSize','huge');
-subSet = 1:4;
 
-for n = subSet
+for n = 1:4
   nextAxis
   plotPDF(odf{n},h,'lower','contourf','doNotDraw');
   ylabel(fig.children(end-2),...
@@ -88,7 +87,7 @@ setColorRange('equal')
 mtexColorbar
 
 %%
-% Read the rows from top to bottom as strain increases from 0.25 to 1.00.
+% Read the rows from top to bottom as strain increases from 0.25 to 0.75.
 % The shared colour range makes intensities comparable between rows; the
 % changing peak positions and strengths are therefore texture evolution,
 % not independent plot scaling.

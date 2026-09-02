@@ -29,7 +29,7 @@ else
   % the session frame carrying that convention, in the group that was asked
   % for - a group of its own means a sibling of it, never the frame itself
   sF = specimenFrame.frameFor(how2plot);
-  if post.id ~= sF.sym.id, sF = sibling(sF,symmetry(post.id,post.rot)); end
+  sF = sibling(sF,symmetry(post.id,post.rot));
 
 end
 

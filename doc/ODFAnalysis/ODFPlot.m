@@ -53,7 +53,7 @@ odf = 0.1*unimodalODF(mod1) ...
 % <SO3Fun.plot3d.html |plot3d|> with |'Bunge'| uses the Euler angles
 % $(\varphi_1,\Phi,\varphi_2)$ as Cartesian plot coordinates.
 
-plot3d(odf,'Bunge','figSize','large');
+plot3d(odf,'Bunge');
 mtexColorMap('LaboTeX');
 mtexColorbar('title','mrd');
 

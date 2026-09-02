@@ -77,7 +77,7 @@ if ~isempty(moriRef) % GBCD
     
   end
 
-  cs = moriRef.CS;
+  cs = moriRef.frameA.stripSym;
 
 else
 
@@ -114,7 +114,9 @@ if ~isempty(moriRef) && takeBoth
   
   [sym1,sym2,dSym1] = project2FundamentalRegion(mori,moriRef);
 
-  ori = rotation([ori1(ind) .* sym1; ori2(ind) .* sym2]);
+  ori = [ori1(ind) .* sym1; ori2(ind) .* sym2];
+  ori.frameA = ori.frameA.stripSym;
+  
   l = [l(ind);l(ind)];
   weights = [weights(ind);weights(ind)];
 
@@ -126,7 +128,8 @@ elseif ~isempty(moriRef) % use only ori1
   doInclude = d > cos(2*hw);
   
   % update ori
-  ori = rotation(ori1(doInclude) .* inv(csRot(idCS(doInclude))));
+  ori = ori1(doInclude) .* inv(csRot(idCS(doInclude)));
+  ori.frameA = ori.frameA.stripSym;
   
   % restrict weights and traces
   weights = weights(doInclude) .* psi.eval(d(doInclude));

@@ -48,7 +48,7 @@ hold on
 plot(oriA,'filled','MarkerSize',20,'MarkerFaceColor','darkred')
 plot(oriB,'filled','MarkerSize',20,'MarkerFaceColor','blue')
 hold off
-axis tight
+xlim([0,90])
 
 %% Reading the Endpoint Plot
 %

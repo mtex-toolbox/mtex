@@ -63,10 +63,8 @@ for k2 = kappa
       plot(bFun,'colorRange',[0,25],'noLabel')
       mtexTitle(['$\kappa_1=$' num2str(k1) '  ' ...
         '$\kappa_2=$' num2str(k2)],'FontSize',12)
-      nextAxis
-    else
-      nextAxis
     end
+    if k1 < kappa(end) || k2 < kappa(end), nextAxis; end
   end
 end
 setColorRange('equal')

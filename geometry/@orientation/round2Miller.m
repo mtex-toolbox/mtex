@@ -42,12 +42,12 @@ function [n1,n2,d1,d2] = round2Miller(mori,varargin)
 if isa(mori.SS,'specimenFrame')
   
   hkl = mori \ vector3d.Z;
-  hkl = round(hkl,varargin{:});
+  hkl = stripSym(round(hkl,varargin{:}));
 
   uvw = mori \ vector3d.X;
   uvw.dispStyle = MillerConvention(-MillerConvention(uvw.dispStyle)); % direct lattice
-  uvw = round(uvw);
-     
+  uvw = stripSym(round(uvw));
+  
   if nargout == 0
     
     d = [hkl.coordinates uvw.coordinates];

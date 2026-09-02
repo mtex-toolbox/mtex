@@ -54,6 +54,7 @@ classdef (Abstract) referenceFrame < handle & matlab.mixin.Heterogeneous
     % the group this frame carries, read through the frame - the reads that
     % used to go to a symmetry land here unchanged
     id          % point group id
+    groupKey    % session key of a group with no point group id
     rot         % the symmetry elements
     pointGroup  % international symbol of the group
     lattice     % the lattice type the group implies
@@ -62,11 +63,11 @@ classdef (Abstract) referenceFrame < handle & matlab.mixin.Heterogeneous
   end
 
   properties (Access = protected, Transient = true)
-    % the siblings minted from this frame, as a struct array of id and
+    % the siblings minted from this frame, as a struct array of group and
     % frame - one entry per group, so asking twice returns one handle.
     % Never saved: a sibling is reachable from the group it carries, and
     % storing the web would drag every relative of a frame into the file
-    siblingRef = struct('id',{},'fr',{})
+    siblingRef = struct('sym',{},'fr',{})
   end
 
   properties (Hidden = true)
@@ -146,6 +147,7 @@ classdef (Abstract) referenceFrame < handle & matlab.mixin.Heterogeneous
     function v = get.isIndexed(rf), v = ~isa(rf,'notIndexedFrame'); end
 
     function v = get.id(rf), v = rf.sym.id; end
+    function v = get.groupKey(rf), v = rf.sym.groupKey; end
     function v = get.rot(rf), v = rf.sym.rot; end
     function v = get.pointGroup(rf), v = rf.sym.pointGroup; end
     function v = get.lattice(rf), v = rf.sym.lattice; end
@@ -207,16 +209,17 @@ classdef (Abstract) referenceFrame < handle & matlab.mixin.Heterogeneous
       % - which is what the register takes over once its key carries the
       % group.
 
-      if s.id == rf.sym.id, fr = rf; return; end
+      if s == rf.sym, fr = rf; return; end
 
-      hit = find([rf.siblingRef.id] == s.id,1);
-      if ~isempty(hit), fr = rf.siblingRef(hit).fr; return; end
+      for k = 1:numel(rf.siblingRef)
+        if s == rf.siblingRef(k).sym, fr = rf.siblingRef(k).fr; return; end
+      end
 
       fr = clone(rf);
       fr.sym = s;
       fr = referenceFrame.intern(fr);
 
-      rf.siblingRef(end+1) = struct('id',s.id,'fr',fr);
+      rf.siblingRef(end+1) = struct('sym',s,'fr',fr);
 
     end
 
@@ -463,9 +466,11 @@ classdef (Abstract) referenceFrame < handle & matlab.mixin.Heterogeneous
       %  pC - @plottingConvention, the resolved convention of the data
 
       if isa(fr,'crystalFrame')
-        c = char(fr);
+        % the mineral names a crystal frame, the way vector3d and
+        % S2FunHarmonic head their displays with it
+        c = fr.mineral;
         % an unnamed crystal frame has no identity, so name the coordinate system
-        if isempty(fr.name), c = 'crystal'; end
+        if isempty(c), c = 'crystal'; end
       else
         if ~isa(fr,'referenceFrame')
           % frame-free data resolves against the session default frame at

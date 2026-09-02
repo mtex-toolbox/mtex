@@ -8,6 +8,6 @@ function out = sameEntity(fr1,fr2)
 % See also
 % referenceFrame/intern
 
-out = fr1.sym.id == fr2.sym.id && sameBasis(fr1,fr2);
+out = fr1.sym == fr2.sym && sameBasis(fr1,fr2);
 
 end

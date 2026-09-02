@@ -36,7 +36,7 @@ n = sS.n.normalize;
 % compute the relative Schmid factor by dividing by the critical resolved
 % shear stress for every slip system
 if check_option(varargin,'relative')
-   b = b./ sS.CRSS;
+  b = b./ sS.CRSS;
 end
 
 % Schmid factor with respect to a tension direction

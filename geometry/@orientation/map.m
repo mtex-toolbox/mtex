@@ -48,7 +48,7 @@ ori = orientation(rotation.map(varargin{:}));
 % a direction naming one plane is written group-free, and the orientation it
 % defines still belongs to the phase - ask the register for the group back
 if isCrystalDirection(varargin{1})
-  ori.CS = fullSym(varargin{1}.CS);
+  ori.CS = phaseOf(varargin{1});
   if ~isempty(sym), ori.SS = sym{1}; end
 else
   if ~isempty(sym)
@@ -60,7 +60,7 @@ else
 end
 
 if isCrystalDirection(varargin{2})
-  ori.SS = fullSym(varargin{2}.CS);
+  ori.SS = phaseOf(varargin{2});
 elseif isa(varargin{2}.frame,'specimenFrame')
   % the input states a specimen frame - the result is expressed in it, in
   % the group the orientation already claims
@@ -75,5 +75,18 @@ if length(sym) == 2
   ori.CS = sym{1};
   ori.SS = sym{2};
 end
-    
+
+end
+
+function fr = phaseOf(m)
+% the frame of a direction, in the group of the phase it belongs to
+%
+% Only a direction that was written group-free has a group to ask back for.
+% One that still states its phase keeps it: the register would answer with
+% the largest group over that basis, which is the Laue class as soon as
+% anything in the session has asked for it.
+
+fr = m.CS;
+if numSym(fr) == 1, fr = fullSym(fr); end
+
 end

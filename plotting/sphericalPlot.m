@@ -3,7 +3,7 @@ classdef sphericalPlot < handle
   %
   % One per axes, stored in its appdata. It owns everything around the data -
   % the projection, the outer boundary, the grid, the tick and Miller labels
-  % and the X / Y / Z annotation of the reference frame - so that a second
+  % and the axes annotation of the reference frame - so that a second
   % plot into the same axes reuses them instead of drawing them again.
   %
   % Note that plot(...,'3d') builds no sphericalPlot at all; annotateFrame is
@@ -407,6 +407,9 @@ classdef sphericalPlot < handle
       hasVertices = ~isempty(h);
       if ~hasVertices
         h = fundamentalSector(CS).vertices;
+        % a frame claiming no group has no sector either - its own axes are
+        % then the directions worth naming
+        if isempty(h) && isa(CS,'crystalFrame'), h = CS.axes; end
         if isempty(h), return; end
         h = Miller(unique(h),CS);
         h.antipodal = false;
