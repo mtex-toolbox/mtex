@@ -8,3 +8,4 @@ NotationAndConventions
 DensityEstimation
 OptimalKernel
 ClusterDemo
+Contribute2Doc

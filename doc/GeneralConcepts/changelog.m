@@ -822,7 +822,7 @@
 % * <spinTensor.spinTensor.html spin tensor>
 %
 % The relationships between those tensors are explained in the section
-% <PlasticDeformation.html plastic deformations>.
+% <SchmidFactor.html plastic deformations>.
 %
 %
 % *Spherical Bingham Distribution*
@@ -1316,7 +1316,7 @@
 %
 % * <slipSystem.SchmidFactor.html Schmid factor>
 % * <TaylorModel.html Taylor factor>
-% * <StrainAnalysis.html Strain transmission through grain boundaries>
+% * <SlipTransmission.html Strain transmission through grain boundaries>
 %
 % *Fibres*
 %

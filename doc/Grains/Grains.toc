@@ -12,4 +12,5 @@ GrainMerge                     Merge
 GrainReconstructionAdvanced    Advanced Reconstruction
 GrainReconstructionMCL         Markovian Clustering
 GrainExport                    Export
+Dream3dGrains                  DREAM.3D Grain Meshes
 NeperInterface                 Neper Interface
