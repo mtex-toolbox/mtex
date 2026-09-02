@@ -119,6 +119,28 @@ mtexTitle('normal || (1,1,1)')
 % A section normal to $z$ needs no new convention and keeps the one the
 % volume already carries, so it is drawn exactly as an imported map is.
 
+%% Several sections at once
+%
+% A section keeps the position its measurements have in the specimen, so
+% drawing more than one into the same axes assembles them where they
+% belong. Three orthogonal cuts seen from an angle give the picture the
+% volume viewer shows, in a figure that can be published.
+
+plot(slice(ebsd,plane3d(vector3d.Z,vector3d(0,0,0))),'micronbar','off')
+hold on
+plot(slice(ebsd,plane3d(vector3d.X,vector3d(0,0,0))),'micronbar','off')
+plot(slice(ebsd,plane3d(vector3d.Y,vector3d(0,0,0))),'micronbar','off')
+hold off
+
+setCamera(plottingConvention.default3D)
+
+%%
+% The convention a single section carries decides how that section alone is
+% seen. Once several are combined there is one camera for all of them, and
+% <plottingConvention.html |plottingConvention.default3D|> is the
+% oblique view this chapter uses. The three planes meet at the centre of the
+% specimen, so a grain crossed by two of them appears in both.
+
 %% Colour a slice
 %
 % A slice carries the orientations, phases and properties of the voxels it
