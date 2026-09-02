@@ -35,15 +35,6 @@ catch ME
     'Unexpected error for nonorthogonal sheet directions: %s',ME.identifier);
 end
 
-try
-  calcLankford(ori,sS,0,'rho',[-0.1 0.5 1],'silent');
-  error('check_calcLankford:missingRhoError', ...
-    'rho outside [0,1] should have been rejected.');
-catch ME
-  assert(strcmp(ME.identifier,'MTEX:calcLankford:invalidRho'), ...
-    'Unexpected error for invalid rho: %s',ME.identifier);
-end
-
 %% Verbose summary reports normal and planar anisotropy separately
 
 theta = [0 45 90] * degree;

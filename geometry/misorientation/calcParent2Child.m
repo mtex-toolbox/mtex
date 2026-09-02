@@ -29,6 +29,7 @@ function [p2c, omega] = calcParent2Child(mori,p2c,varargin)
 %  maxSample    - fit on at most this many misorientations (default - 50000)
 %  searchResolution - grid resolution of the global scan (default - 4*degree)
 %  scanSample   - misorientations used to rank basins during the scan (default - 250)
+%  numLocal     - basins of the scan that are fitted locally (default - 5)
 %
 % References
 %
@@ -75,7 +76,7 @@ for k = 1:maxIt
   % ties are accepted, otherwise rounding at a flat minimum stops the step test early
   s = 1; ok = fitState.fit * (1 + 1e-9);
   while true
-    if s == 1, pNew = pTrial; else, pNew = mean([p2c,pTrial],'weights',[1-s s]); end
+    pNew = mean([p2c,pTrial],'weights',[1-s s]);
     newState = misfit(mori,pNew,h,tau);
     if newState.fit <= ok || s < 2^-6, break; end
     s = s/2;
@@ -170,7 +171,7 @@ end
 
 % iterating a candidate only has to reach its basin, so it may use a subsample - but
 % every candidate is scored on all the data, and the caller refines the winner there
-opt = [delete_option(varargin,'global'),{'local','silent'}];
+opt = [varargin,{'local','silent'}];
 pSub = subSample(mori,3000);
 
 best = inf;

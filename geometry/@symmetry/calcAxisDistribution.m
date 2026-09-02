@@ -42,15 +42,7 @@ else
 end
 
 function value = getValue(h)
-  h = project2FundamentalRegion(h,dcs);
-  maxOmega = oR.maxAngle(h);
-
-  % the requested angle window, clipped to the fundamental region
-  a = min(max(get_option(varargin,'minAngle',0),0),maxOmega);
-  b = max(min(get_option(varargin,'maxAngle',inf),maxOmega),a);
-
-  % 2/pi * int_a^b sin(omega/2)^2 domega, per symmetry element
-  value = nSym * (b - a - sin(b) + sin(a)) ./ pi;
+  value = 2*nSym/pi * calcAxisDistribution(oR,project2FundamentalRegion(h,dcs),varargin{:});
 end
 
 end

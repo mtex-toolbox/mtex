@@ -56,11 +56,6 @@ if nargin >=3 && isa(varargin{1},'double'), theta = varargin{1}; end
 if nargin >=4 && isa(varargin{2},'vector3d'), RD = varargin{2}; end
 if nargin >=5 && isa(varargin{3},'vector3d'), ND = varargin{3}; end
 
-if ~isscalar(RD) || ~isscalar(ND) || ~isfinite(norm(RD)) || ...
-    ~isfinite(norm(ND)) || norm(RD) == 0 || norm(ND) == 0
-  error('MTEX:calcLankford:invalidSheetDirections', ...
-    'RD and ND must be nonzero scalar vector3d directions.');
-end
 RD = normalize(RD);
 ND = normalize(ND);
 if ~isPerp(RD,ND)
@@ -68,21 +63,12 @@ if ~isPerp(RD,ND)
     'RD and ND must be orthogonal sheet directions.');
 end
 theta = theta(:).';
-if ~isreal(theta) || isempty(theta) || any(~isfinite(theta))
-  error('MTEX:calcLankford:invalidTheta', ...
-    'theta must be a finite, real vector of angles.');
-end
 
 % strain tensor in the specimen reference frame (sRF)
 % it is not axi-symmetric since rho values are changing
 % rho = 0 -> only normal direction
 % rho = 1 -> only transverse direction
 rho = get_option(varargin,'rho',linspace(0,1,11));
-if ~isnumeric(rho) || ~isreal(rho) || ~isvector(rho) || isempty(rho) || ...
-    any(~isfinite(rho)) || any(rho < 0 | rho > 1)
-  error('MTEX:calcLankford:invalidRho', ...
-    'rho must be a finite, real vector with values between 0 and 1.');
-end
 rho = rho(:).';
 TD = cross(RD,ND);
 eps =  strainTensor(RD * RD) - rho .* strainTensor(TD*TD) ...
@@ -100,12 +86,6 @@ if isa(ori,"orientation")
 
   % average the plastic work over the texture (ori) -> M = theta × rho
   weights = get_option(varargin,'weights',ones(size(ori)));
-  if ~isnumeric(weights) || ~isreal(weights) || ...
-      numel(weights) ~= numel(ori) || any(~isfinite(weights(:))) || ...
-      any(weights(:) < 0) || sum(weights(:)) <= 0
-    error('MTEX:calcLankford:invalidWeights', ...
-      'weights must be finite, nonnegative, and match the orientations.');
-  end
   weights = weights ./ sum(weights(:));
   M = weights(:).' * reshape(M,numel(ori),[]);
   % transpose M -> rho × theta

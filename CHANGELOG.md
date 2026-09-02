@@ -586,7 +586,8 @@ adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
   on the sphere they are parallel transported along the geodesic of every step
 - the descent method is selectable, `'method','lbfgs'` (the default) or
   `'method','steepestDescent'`, following the convention of `calcKernel` and
-  `calcCluster`. `'memory'` goes back to meaning the depth of the L-BFGS memory
+  `calcCluster`. `'memory'` goes back to meaning the depth of the L-BFGS memory,
+  and steepest descent is that iteration with an empty memory
 - the weights are a softmax block of the same quasi Newton iteration rather than an
   alternating inner solve, which drops the simplex constraint, `mlsq` and
   `innerIter` and lets the memory see the coupling between where a point sits and

@@ -15,10 +15,6 @@ function x = calcAxisDistribution(oR,h,varargin)
 % See also
 % SO3Fun/calcAxisDistribution symmetry/calcAxisDistribution
 
-maxOmega = oR.maxAngle(h);
-
-% the requested angle window, clipped to what the region holds for each axis
-a = min(max(get_option(varargin,'minAngle',0),0),maxOmega);
-b = max(min(get_option(varargin,'maxAngle',inf),maxOmega),a);
+[a,b] = angleWindow(oR,h,varargin{:});
 
 x = (b - a - sin(b) + sin(a)) ./ 2;

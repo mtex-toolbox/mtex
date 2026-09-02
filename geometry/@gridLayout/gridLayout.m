@@ -168,14 +168,9 @@ classdef gridLayout < referenceFrame
         if isempty(fr), fr = specimenFrame(obj.how2plot); end
       end
 
-      assert(~isempty(fr.how2plot),'MTEX:gridLayout:noConvention',...
-        ['The frame needs a plotting convention of its own. An empty one '...
-        'follows the session default, so the layout inferred from it would '...
-        'change when the session default changes.']);
-
       % an array is drawn in the ij convention, so the two conventions being
       % the same picture is what relates the array axes to the frame's
-      rot = fr.how2plot.rot * inv(plottingConvention.ij.rot); %#ok<MINV>
+      rot = rotation(orientation.byScreenAlignment(specimenFrame(plottingConvention.ij),fr));
 
       gL = gridLayout;
       gL.basis = rotate(gL.basis,rot);

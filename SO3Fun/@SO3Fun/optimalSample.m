@@ -35,15 +35,12 @@ function [ori,c] = optimalSample(f,n,varargin)
 % orientations, so it is a dense $3M \times 3M$ matrix, and in a measurement
 % its iteration count was no better than the one of L-BFGS.
 %
-% Both descent methods are available and are selected by |method|,
+% Plain gradient descent, the method of the cited literature, is the same
+% iteration with an empty memory,
 %
-%   ori = optimalSample(f,n,'method','lbfgs')            % the default
-%   ori = optimalSample(f,n,'method','steepestDescent')
+%   ori = optimalSample(f,n,'memory',0)
 %
-% where |'steepestDescent'| is the plain gradient descent described above.
-% It is kept because it is the method the cited literature uses and because
-% it is the reference the L-BFGS iteration is compared against; there is no
-% reason to prefer it in production.
+% which |'method','steepestDescent'| says as well.
 %
 % Note that the sum above starts at degree 1. The restricted distance kernel
 % is only conditionally positive definite, its Chebyshev coefficient of
@@ -129,7 +126,7 @@ function [ori,c] = optimalSample(f,n,varargin)
 %  bandwidth  - harmonic degree to approximate (default = 32), see above
 %  maxIter    - number of (outer) iterations (default = 100)
 %  tol        - termination tolerance for the orientations (default = 0.1*degree)
-%  method     - 'lbfgs' (default) or 'steepestDescent', see above
+%  method     - 'lbfgs' (default), or 'steepestDescent' for an empty memory
 %  memory     - secant pairs kept by the L-BFGS iteration (default = 5)
 %  weights    - starting weights, fixed if they are not optimized (default = ones(M,1)/M)
 %
@@ -173,13 +170,12 @@ maxIter = get_option(varargin,'maxIter',100);
 tol = get_option(varargin,'tol',0.1*degree);
 mem = get_option(varargin,'memory',5);
 
-% which descent method moves the orientations, see above
+% plain gradient descent is the iteration with an empty memory, see above
 method = lower(get_option(varargin,'method','lbfgs'));
 switch method
   case {'lbfgs','l-bfgs','quasinewton'}
-    useLBFGS = true;
   case {'steepestdescent','gradientdescent','gradient','steepest'}
-    useLBFGS = false;
+    mem = 0;
   otherwise
     error(['Unknown method ''%s''. optimalSample knows ''lbfgs'' and ' ...
       '''steepestDescent''.'],method)
@@ -189,14 +185,6 @@ warmUp = get_option(varargin,'warmUp',0);
 tolWeights = get_option(varargin,'tolWeights',1e-3/M);
 minWeight = get_option(varargin,'minWeight',0);
 
-if ~optWeights && ( check_option(varargin,'warmUp') || ...
-    check_option(varargin,'innerIter') || check_option(varargin,'tolWeights') ...
-    || check_option(varargin,'minWeight') )
-  warning(['The options warmUp, innerIter, tolWeights and minWeight apply ' ...
-    'only if the weights are optimized. Ask for them as a second output, ' ...
-    'i.e. [ori,c] = optimalSample(f,n).'])
-end
-
 % Define Restricted Distance Kernel
 psi = SO3RestrictedDistanceKernel(bw+1);
 
@@ -204,15 +192,7 @@ psi = SO3RestrictedDistanceKernel(bw+1);
 lambda = sum(f);
 
 % starting weights - they have to form a probability distribution, see above
-c = get_option(varargin,'weights',ones(M,1)/M);
-c = c(:);
-if numel(c)~=M
-  error('The number of weights does not match the number of orientations.')
-end
-if any(c<0)
-  error('The weights have to be non negative.')
-end
-c = c/sum(c);
+c = sampleWeights(M,varargin{:});
 
 % J is the squared euclidean norm of the Wigner coefficients of mu - f,
 % weighted by w.^2 = 8*pi^2*A_n/(2n+1) - degree 0 is dropped, it does not contribute
@@ -284,11 +264,7 @@ for i = 1:maxIter
   if gNorm == 0, break, end
 
   % L-BFGS direction - with an empty memory this is the negative gradient
-  if useLBFGS
-    d = twoLoop(gVec,S,Y);
-  else
-    d = -gVec;
-  end
+  d = lbfgsTwoLoop(gVec,S,Y);
 
   % the directional derivative of J along d
   slope = d.' * gVec;
@@ -349,27 +325,25 @@ for i = 1:maxIter
     end
   end
 
-  if useLBFGS
-    % The gradient in the new orientations. It is taken under the same
-    % weights as gVec above, hence the two form a secant pair of one and the
-    % same functional - which is what the memory has to consist of. It is
-    % carried over to the next iteration, so this costs nothing extra.
-    gNew = grad_J(oriNew,c,DNew,psi0,lambda);
+  % The gradient in the new orientations. It is taken under the same
+  % weights as gVec above, hence the two form a secant pair of one and the
+  % same functional - which is what the memory has to consist of. It is
+  % carried over to the next iteration, so this costs nothing extra.
+  gNew = grad_J(oriNew,c,DNew,psi0,lambda);
 
-    sVec = stepSize*d;
-    yVec = [gNew.x(:);gNew.y(:);gNew.z(:)] - gVec;
+  sVec = stepSize*d;
+  yVec = [gNew.x(:);gNew.y(:);gNew.z(:)] - gVec;
 
-    % Keep the pair only if it carries positive curvature. Otherwise the
-    % inverse Hessian approximation would lose its positive definiteness and
-    % with it the guarantee that the next direction is one of descent.
-    if sVec.'*yVec > 1e-12 * norm(sVec) * norm(yVec)
-      S = [S,sVec]; Y = [Y,yVec]; %#ok<AGROW>
-      if size(S,2) > mem, S(:,1) = []; Y(:,1) = []; end
-    end
-
-    g = gNew;
-    gValid = true;
+  % Keep the pair only if it carries positive curvature. Otherwise the
+  % inverse Hessian approximation would lose its positive definiteness and
+  % with it the guarantee that the next direction is one of descent.
+  if sVec.'*yVec > 1e-12 * norm(sVec) * norm(yVec)
+    S = [S,sVec]; Y = [Y,yVec]; %#ok<AGROW>
+    if size(S,2) > mem, S(:,1) = []; Y(:,1) = []; end
   end
+
+  g = gNew;
+  gValid = true;
 
   % update
   ori = oriNew;
@@ -445,41 +419,6 @@ D.bandwidth = bw;
 res = sum(abs(w.*D.fhat).^2);
 
 end
-
-
-function d = twoLoop(g,S,Y)
-% The two loop recursion of L-BFGS. It applies the inverse Hessian
-% approximation built from the secant pairs in S and Y to the gradient g,
-% without ever forming a matrix - only inner products of the stored vectors
-% are needed. An empty memory gives the negative gradient.
-
-k = size(S,2);
-
-if k == 0, d = -g; return, end
-
-rho = zeros(k,1);
-a = zeros(k,1);
-
-q = g;
-for j = k:-1:1
-  rho(j) = 1./(Y(:,j).'*S(:,j));
-  a(j) = rho(j)*(S(:,j).'*q);
-  q = q - a(j)*Y(:,j);
-end
-
-% initial inverse Hessian, scaled by the most recent pair - this is the step
-% length that makes the unit trial step of the line search the right one
-q = q * (S(:,k).'*Y(:,k))/(Y(:,k).'*Y(:,k));
-
-for j = 1:k
-  b = rho(j)*(Y(:,j).'*q);
-  q = q + S(:,j)*(a(j)-b);
-end
-
-d = -q;
-
-end
-
 
 function tanV = grad_J(ori,c,D,psi0,lambda)
 % gradient of the discrepancy with respect to the orientations

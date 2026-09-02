@@ -38,12 +38,11 @@ function [v,c] = optimalSample(sF,n,varargin)
 % stored steps have to be parallel transported along every step before they
 % may be used again.
 %
-% Both descent methods are available and are selected by |method|,
+% Plain gradient descent is the same iteration with an empty memory,
 %
-%   v = optimalSample(sF,n,'method','lbfgs')            % the default
-%   v = optimalSample(sF,n,'method','steepestDescent')
+%   v = optimalSample(sF,n,'memory',0)
 %
-% where |'steepestDescent'| is the plain gradient descent described above.
+% which |'method','steepestDescent'| says as well.
 %
 % Note that the sum above starts at degree 1. The restricted distance kernel
 % is only conditionally positive definite, its Legendre coefficient of degree
@@ -133,7 +132,7 @@ function [v,c] = optimalSample(sF,n,varargin)
 %  bandwidth  - harmonic degree to approximate (default = 128), see above
 %  maxIter    - number of iterations (default = 1000)
 %  tol        - termination tolerance for the directions (default = 0.01*degree)
-%  method     - 'lbfgs' (default) or 'steepestDescent', see above
+%  method     - 'lbfgs' (default), or 'steepestDescent' for an empty memory
 %  memory     - secant pairs kept by the L-BFGS iteration (default = 5)
 %  weights    - starting weights, fixed if they are not optimized (default = ones(M,1)/M)
 %
@@ -179,13 +178,12 @@ maxIter = get_option(varargin,'maxIter',1000);
 tol = get_option(varargin,'tol',0.01*degree);
 mem = get_option(varargin,'memory',5);
 
-% which descent method moves the unknowns, see above
+% plain gradient descent is the iteration with an empty memory, see above
 method = lower(get_option(varargin,'method','lbfgs'));
 switch method
   case {'lbfgs','l-bfgs','quasinewton'}
-    useLBFGS = true;
   case {'steepestdescent','gradientdescent','gradient','steepest'}
-    useLBFGS = false;
+    mem = 0;
   otherwise
     error(['Unknown method ''%s''. optimalSample knows ''lbfgs'' and ' ...
       '''steepestDescent''.'],method)
@@ -198,24 +196,8 @@ tolWeights = get_option(varargin,'tolWeights',1e-3/M);
 tolJ = get_option(varargin,'tolJ',1e-4);
 minWeight = get_option(varargin,'minWeight',0);
 
-if check_option(varargin,'innerIter')
-  warning(['innerIter has no meaning any more. The weights are no longer ' ...
-    'optimized in an inner iteration of their own, but by the same descent ' ...
-    'method as the directions.'])
-end
-
-if ~optWeights && ( check_option(varargin,'warmUp') || check_option(varargin,'tolJ') ...
-    || check_option(varargin,'tolWeights') || check_option(varargin,'minWeight') )
-  warning(['The options warmUp, tolWeights, tolJ and minWeight apply only if ' ...
-    'the weights are optimized. Ask for them as a second output, i.e. ' ...
-    '[v,c] = optimalSample(sF,n).'])
-end
-
-% Define Restricted Distance Kernel
-psi = S2RestrictedDistanceKernel(bw+1);
-
-% for antipodal functions the odd degrees vanish anyway
-if sF.antipodal, psi.A(2:2:end) = 0; end
+% the kernel, and the weights its discrepancy puts on the harmonic coefficients
+[w,psi] = kernelWeights(bw,sF.antipodal);
 
 % The mass lambda of the density. Scaling f multiplies J by lambda^2 and
 % leaves its minimizer where it is, so the sample does not depend on how f is
@@ -227,29 +209,13 @@ if ~(lambda > 0)
     'integral, this one integrates to %g.'],lambda)
 end
 sF.fhat = sF.fhat / lambda;
-lambda = 1;
 
 % starting weights - they have to form a probability distribution, see above
-c = get_option(varargin,'weights',ones(M,1)/M);
-c = c(:);
-if numel(c)~=M
-  error('The number of weights does not match the number of points.')
-end
-if any(c<0)
-  error('The weights have to be non negative.')
-end
-c = c/sum(c);
+c = sampleWeights(M,varargin{:});
 
 % the softmax variables behind the weights - the block is empty and the
 % iteration is the one over the directions alone if the weights are fixed
 if optWeights && M > 1, z = log(c); else, z = zeros(0,1); end
-
-% J is the squared euclidean norm of the harmonic coefficients of mu - sF,
-% weighted by w.^2 = 4*pi*A_n/(2n+1) - degree 0 is dropped, it does not contribute
-w = zeros((bw+1)^2,1);
-for l = 1:bw
-  w(l^2+1:(l+1)^2) = sqrt( 4*pi * psi.A(l+1)/(2*l+1) );
-end
 
 % the same kernel without its degree 0 part, used for the gradient w.r.t. v
 psi0 = S2Kernel([0;psi.A(2:end)]);
@@ -273,7 +239,7 @@ stepSize = 1;
 S = []; Y = [];
 
 % harmonic coefficients D of mu - sF and the resulting discrepancy
-[resOld,D] = J(nfsft,v,c,sF,w,lambda);
+[resOld,D] = J(nfsft,v,c,sF,w);
 
 % whether g and gZ below still are the gradient in the current point. L-BFGS
 % needs the gradient in the new point anyway, to form the secant pair, and
@@ -298,9 +264,9 @@ for i = 1:maxIter
 
   % ------------------------------ gradient -------------------------------
   if ~gValid
-    g = grad_J(nfsft,v,c,D,psi0,lambda);
+    g = grad_J(nfsft,v,c,D,psi0);
     if moveWeights
-      gZ = grad_z(nfsft,c,D,w,lambda);
+      gZ = grad_z(nfsft,c,D,w);
     else
       gZ = zeros(numel(z),1);
     end
@@ -315,11 +281,7 @@ for i = 1:maxIter
   if gNorm == 0, break, end
 
   % L-BFGS direction - with an empty memory this is the negative gradient
-  if useLBFGS
-    d = twoLoop(gVec,S,Y);
-  else
-    d = -gVec;
-  end
+  d = lbfgsTwoLoop(gVec,S,Y);
 
   dir = vector3d(d(1:M),d(M+1:2*M),d(2*M+1:3*M));
 
@@ -367,7 +329,7 @@ for i = 1:maxIter
     zNew = z + stepSize*dZ;
     cNew = softmax(zNew,c);
 
-    [resNew,DNew] = J(nfsft,vNew,cNew,sF,w,lambda);
+    [resNew,DNew] = J(nfsft,vNew,cNew,sF,w);
 
     if resNew < resOld + 1e-4*stepSize*slope % Armijo Condition
       break;
@@ -406,7 +368,7 @@ for i = 1:maxIter
     % long. End the warm up instead and let the weights in.
     if ~isempty(z) && i <= warmUp
       warmUp = i;
-      [resOld,D] = J(nfsft,v,c,sF,w,lambda);
+      [resOld,D] = J(nfsft,v,c,sF,w);
       % the nodes moved, hence the gradient carried over refers to the old ones
       gValid = false;
       continue
@@ -415,13 +377,11 @@ for i = 1:maxIter
     end
   end
 
-  if useLBFGS
-
-    % The gradient in the new point. It is carried over to the next
-    % iteration, so forming the secant pair costs nothing extra.
-    gNew = grad_J(nfsft,vNew,cNew,DNew,psi0,lambda);
+  % The gradient in the new point. It is carried over to the next
+  % iteration, so forming the secant pair costs nothing extra.
+    gNew = grad_J(nfsft,vNew,cNew,DNew,psi0);
     if moveWeights
-      gZNew = grad_z(nfsft,cNew,DNew,w,lambda);
+      gZNew = grad_z(nfsft,cNew,DNew,w);
     else
       gZNew = zeros(numel(z),1);
     end
@@ -457,7 +417,6 @@ for i = 1:maxIter
     g = gNew;
     gZ = gZNew;
     gValid = true;
-  end
 
   % update
   v = vNew;
@@ -522,41 +481,6 @@ vNew(ind) = normalize( cos(t(ind)).*v(ind) + sin(t(ind)).*d(ind)./norm(d(ind)) )
 
 end
 
-
-function d = twoLoop(g,S,Y)
-% The two loop recursion of L-BFGS. It applies the inverse Hessian
-% approximation built from the secant pairs in S and Y to the gradient g,
-% without ever forming a matrix - only inner products of the stored vectors
-% are needed. An empty memory gives the negative gradient.
-
-k = size(S,2);
-
-if k == 0, d = -g; return, end
-
-rho = zeros(k,1);
-a = zeros(k,1);
-
-q = g;
-for j = k:-1:1
-  rho(j) = 1./(Y(:,j).'*S(:,j));
-  a(j) = rho(j)*(S(:,j).'*q);
-  q = q - a(j)*Y(:,j);
-end
-
-% initial inverse Hessian, scaled by the most recent pair - this is the step
-% length that makes the unit trial step of the line search the right one
-q = q * (S(:,k).'*Y(:,k))/(Y(:,k).'*Y(:,k));
-
-for j = 1:k
-  b = rho(j)*(Y(:,j).'*q);
-  q = q + S(:,j)*(a(j)-b);
-end
-
-d = -q;
-
-end
-
-
 function W = transport(W,V,U,sinT,cosT1)
 % Parallel transport of tangent vectors along the geodesics of a step. Every
 % column of W holds one tangent vector per node, stacked as [x;y;z], followed
@@ -588,7 +512,7 @@ W = [reshape(W,3*M,k);WZ];
 end
 
 
-function [res,D] = J(nfsft,v,c,sF,w,lambda)
+function [res,D] = J(nfsft,v,c,sF,w)
 % harmonic coefficients D of mu - sF and the resulting discrepancy. D is
 % reused by the gradients below.
 
@@ -597,14 +521,14 @@ nfsft.setNodes(v);
 % adjoint NFSFT gives the harmonic coefficients of the discrete measure mu.
 % Use sF as a template to keep bandwidth, symmetry and plotting convention.
 D = sF;
-D.fhat = lambda * nfsft.adjoint(c) - sF.fhat;
+D.fhat = nfsft.adjoint(c) - sF.fhat;
 
 res = sum(abs(w.*D.fhat).^2);
 
 end
 
 
-function tanV = grad_J(nfsft,v,c,D,psi0,lambda)
+function tanV = grad_J(nfsft,v,c,D,psi0)
 % gradient of the discrepancy with respect to the directions v
 
 % convolute with the Distance kernel, degree 0 excluded. Since conv
@@ -613,17 +537,17 @@ C = conv(D,(4*pi)*psi0);
 
 % evaluate spherical gradient on v
 nfsft.setNodes(v);
-tanV = 2*lambda*nfsft.grad(C).*c;
+tanV = 2*nfsft.grad(C).*c;
 
 end
 
 
-function gZ = grad_z(nfsft,c,D,w,lambda)
+function gZ = grad_z(nfsft,c,D,w)
 % gradient with respect to the softmax variables. The nodes are the ones D
 % was taken at, hence no setNodes is needed here.
 
 % dJ/dc is the same convolution grad_J differentiates, evaluated at the nodes
-gC = 2*lambda*real(nfsft.trafo(w.^2.*D.fhat));
+gC = 2*real(nfsft.trafo(w.^2.*D.fhat));
 
 % chain rule of the softmax
 gZ = c .* (gC - c.'*gC);

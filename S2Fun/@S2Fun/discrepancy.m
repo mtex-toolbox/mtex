@@ -57,26 +57,9 @@ bw = get_option(varargin,'bandwidth',bw);
 sF = S2FunHarmonic(sF,'bandwidth',bw);
 sF.bandwidth = bw;
 
-M = numel(v);
-c = get_option(varargin,'weights',ones(M,1)/M);
-c = c(:);
-if numel(c) ~= M
-  error('The number of weights does not match the number of directions.')
-end
-if any(c<0)
-  error('The weights have to be non negative.')
-end
-c = c/sum(c);
+c = sampleWeights(numel(v),varargin{:});
 
-psi = S2RestrictedDistanceKernel(bw+1);
-
-% for antipodal functions the odd degrees vanish anyway
-if sF.antipodal, psi.A(2:2:end) = 0; end
-
-w = zeros((bw+1)^2,1);
-for l = 1:bw
-  w(l^2+1:(l+1)^2) = sqrt( 4*pi * psi.A(l+1)/(2*l+1) );
-end
+w = kernelWeights(bw,sF.antipodal);
 
 % harmonic coefficients of the discrete measure mu, restore the bandwidth in
 % case its highest degrees vanish

@@ -158,11 +158,7 @@ end
 
 function Out = calcTaylorFun(rot,eps,sS,numOut,varargin)
   ori = orientation(rot,sS.CS,eps.CS);
-  if numOut>1
-    [Taylor,~,spin] = calcTaylor(inv(ori)*eps,sS,varargin{:}); %#ok<MINV>
-  else
-    Taylor = calcTaylor(inv(ori)*eps,sS,varargin{:}); %#ok<MINV>
-  end
+  [Taylor,~,spin] = calcTaylor(inv(ori)*eps,sS,varargin{:}); %#ok<MINV>
   Out(:,1) = Taylor(:);
   if numOut>1
     v = ori .* vector3d(spin);

@@ -47,13 +47,8 @@ end
 
 h = varargin{1};
 
-maxOmega = oR.maxAngle(project2FundamentalRegion(h,dcs));
-
-% the requested angle window, clipped to what the fundamental region holds
-% for each axis - it may be empty for some axes and full for others
-omegaMin = min(max(get_option(varargin,'minAngle',0),0),maxOmega(:));
-omegaMax = min(get_option(varargin,'maxAngle',inf),maxOmega(:));
-width = max(omegaMax - omegaMin,0);
+[omegaMin,omegaMax] = angleWindow(oR,project2FundamentalRegion(h,dcs),varargin{:});
+omegaMin = omegaMin(:); width = omegaMax(:) - omegaMin;
 
 res = get_option(varargin,'resolution',2.5*degree);
 nOmega = max(2,round(max(width(:))/res));

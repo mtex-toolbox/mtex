@@ -28,10 +28,10 @@ function  [oR,dcs,nSym] = fundamentalRegion(cs,varargin)
 % color key cache went stale.
 persistent cache
 
+% the second argument may also be a plain list of rotations
+csOther = [];
 if nargin >= 2 && (isa(varargin{1},'symmetry')||isa(varargin{1},'rotation'))
-  csOther = varargin{1}; opt = varargin(2:end);
-else
-  csOther = []; opt = varargin;
+  csOther = varargin{1}; varargin(1) = [];
 end
 
 % every option goes into the key verbatim rather than a list of the ones
@@ -40,8 +40,8 @@ end
 % would have to track them. Options that are objects are not hashed, those
 % calls simply do not cache
 key = [symKey(cs); NaN; symKey(csOther)];
-for k = 1:numel(opt)
-  o = opt{k};
+for k = 1:numel(varargin)
+  o = varargin{k};
   if ischar(o) || isstring(o)
     key = [key; NaN; 1; double(char(o)).']; %#ok<AGROW>
   elseif isnumeric(o) || islogical(o)
@@ -79,10 +79,10 @@ if ~check_option(varargin,'pointGroup'), cs = cs.properGroup; end
 
 rot = cs.rot;
 N0 = quaternion;
-if nargin >= 2 && (isa(varargin{1},'symmetry')||isa(varargin{1},'rotation'))
+dcs = [];
+if ~isempty(csOther)
 
-  cs2 = varargin{1};
-  varargin(1) = [];
+  cs2 = csOther;
   % in the usual setting we don't care about reflections
   if ~check_option(varargin,'pointGroup'), cs2 = cs2.properGroup; end
   
@@ -134,7 +134,7 @@ oR = orientationRegion([Nq(:).',N0(:).'],cs,cs2,varargin{:});
 
 if ~isempty(key)
   entry = struct('key',key,'oR',oR,'dcs',[],'nSym',nSym);
-  if exist('dcs','var'), entry.dcs = dcs.copy; end
+  if isa(dcs,'symmetry'), entry.dcs = dcs.copy; end
   cache = [entry,cache];
   if numel(cache) > 12, cache(13:end) = []; end
 end
