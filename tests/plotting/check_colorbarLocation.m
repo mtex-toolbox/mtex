@@ -1,5 +1,5 @@
 function check_colorbarLocation
-% check that a colorbar ends up on the side it was asked for
+% check where mtexColorbar puts its bars, and how many it draws
 %
 % mtexFigure owns the axes position, so it repositions any colorbar on every
 % layout pass. That code knew only two places to put one: a vertical bar to
@@ -12,6 +12,10 @@ function check_colorbarLocation
 % already worked, read off the colorbar before any Position assignment
 % switches its Location to 'manual'. The layout reserves the band there
 % and puts the bar into it.
+%
+% How many bars is the other half of that decision. One shared bar describes
+% every axes only when they agree on the colour range and on the colormap,
+% so panels carrying different colormaps get one bar each.
 
 old = get(0,'DefaultFigureVisible');
 cleanup = onCleanup(@() set(0,'DefaultFigureVisible',old));
@@ -20,6 +24,7 @@ set(0,'DefaultFigureVisible','off');
 checkSingleAxis;
 checkSeveralAxes;
 checkOptionAndFlagAgree;
+checkOneBarPerColormap;
 
 disp('check_colorbarLocation: passed');
 
@@ -60,6 +65,41 @@ for side = {'east','west','south','north'}
     side{1}, mat2str(round(byOption)), mat2str(round(byFlag)))
 
 end
+
+end
+
+% -------------------------------------------------------------------------
+function checkOneBarPerColormap
+% the axes share a colour range, so only the colormap decides the count
+
+v = vector3d.rand(100);
+opts = {'smooth','grid','grid_res',90*degree,'upper','doNotDraw'};
+
+close all
+mtexFig = newMtexFigure;
+for cm = {'hot','cool','parula'}
+  nextAxis
+  plot(v,opts{:});
+  mtexColorMap(mtexFig.gca,char(cm))
+end
+setColorRange('equal');
+assertBars(mtexColorbar,3,'three colormaps');
+
+close all
+newMtexFigure;
+for k = 1:3, nextAxis; plot(v,opts{:}); end
+setColorRange('equal');
+assertBars(mtexColorbar,1,'one colormap');
+
+close all force
+
+end
+
+% -------------------------------------------------------------------------
+function assertBars(cb,n,what)
+
+assert(numel(cb) == n, ...
+  'check_colorbarLocation: %s gave %d colour bars, expected %d',what,numel(cb),n)
 
 end
 

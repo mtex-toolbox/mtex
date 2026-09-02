@@ -158,14 +158,14 @@ for cm = {'hot','cool','parula'}
   mtexTitle(char(cm))
 end
 
-mtexColorbar('multiple')
+mtexColorbar
 
 %%
 % These are three plots of the same random directions, yet each colormap
-% gives a different visual impression. Independent colormaps need one colour
-% bar each, which is what |'multiple'| asks for. A single bar carries one
-% colormap and would describe only one of the three axes. That is the cost
-% of using several colour mappings in one figure.
+% gives a different visual impression. Every panel gets a colour bar of its
+% own, because one bar carries a single colormap and would describe only one
+% of the three axes. That is the cost of using several colour mappings in
+% one figure.
 
 %% References
 %

@@ -80,11 +80,13 @@ if nargout == 1, h = mtexFig.cBarAxis; end
   end  
 
   function eq = equalScale
+    % one bar describes every axes only if range and colormap agree
     
     if numel(mtexFig.children) <= 1, eq = true; return; end
     cl = cell2mat(get(mtexFig.children,'CLim'));
+    cm = get(mtexFig.children,'Colormap');
     
-    eq = all(cl(1,1)==cl(:,1) & cl(1,2)==cl(:,2));
+    eq = all(cl(1,1)==cl(:,1) & cl(1,2)==cl(:,2)) && isequal(cm{:});
     
   end
 

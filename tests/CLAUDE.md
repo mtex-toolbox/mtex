@@ -127,7 +127,7 @@ budget, trim from outside these first.
 | `setMTEXpref`/`getMTEXpref` round trip | `core/check_mtexPref` |
 | command window text wrapping, hyperlink integrity | `core/check_wraptext` |
 | the layout arithmetic itself — grid, aspect ratio, reserved bands, all four colorbar and legend sides — no figure involved | `core/check_mtexLayout` |
-| `mtexFigure` layout, colorbar placement | `plotting/check_colorbarLocation` |
+| `mtexFigure` colorbars: which side they sit on, and how many are drawn | `plotting/check_colorbarLocation` |
 | micron bar, reference frame indicator | `plotting/check_scaleBar` |
 | polar histogram of directions, `setView` on a polaraxes | `plotting/check_polarHistogram` |
 | `'arrow'` option of `vector3d/scatter` (e.g. `plotIPDF`) | `plotting/check_arrowPlot` |
