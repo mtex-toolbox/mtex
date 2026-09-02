@@ -45,6 +45,17 @@ assert(abs(length(grainsId) - numel(unique(stored))) <= 20, ...
   '%d grains from %d stored ids',length(grainsId),numel(unique(stored)))
 assert(abs(sum(grainsId.volume) - box) < 1e-6 * box,'volumes from grainId fill the box')
 
+% the boundary operations stay in the budget of a few seconds each
+tic; grainsC = reduceBoundary(grains,2,'quadric'); tC = toc;
+tic; grainsS = smoothBoundary(grainsC,taubinFilter(10)); tS = toc;
+assert(tC < 10 && tS < 10,'reduce %.1f s, smooth %.1f s',tC,tS)
+assert(abs(sum(grainsS.volume) - box) < 1e-6 * box,'smoothing keeps the total volume')
+assert(length(grainsC.boundary) < length(grains.boundary) / 2,'reduce halves the faces')
+
+% the staircase normals sit on the axes, the smoothed ones do not
+N = grainsS.boundary.N;
+assert(mean(max(abs(N.xyz),[],2) > 0.999) < 0.5,'smoothed normals left the axes')
+
 disp('check_calcGrains3dData: passed');
 
 end

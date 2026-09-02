@@ -26,10 +26,9 @@ classdef grain3Boundary < phaseList & dynProp
 %  misorientation - disorientation between neighboring ebsd data to a boundary segment
 %  N              - normal of the boundary face as @vector3d
 %  centroid       - centroid of the boundary face as @vector3d
-%  I_VF           - incidence matrix vertices - edges
-%  I_FG           - incidence matrix edges - grains
-%  A_F            - adjacency matrix edges - edges
-%  A_V            - adjacency matrix vertices - vertices
+%  I_VF           - incidence matrix vertices - faces
+%  I_FG           - incidence matrix faces - grains
+%  I_VG           - incidence matrix vertices - grains
 %
 
 properties  % with as many rows as data
@@ -192,10 +191,9 @@ methods
       F = repelem(1:length(gB3.F),1,numV); %#ok<PROP>
     else
       V = gB3.F; %#ok<PROP>
-      F = repmat(uint64(1:length(gB3.F)),3,1).'; %#ok<PROP>
+      F = repmat(1:length(gB3.F),3,1).'; %#ok<PROP>
     end
-    I_VF = sparse(V,F,1); %#ok<PROP>
-    I_VF = I_VF ~= 0;
+    I_VF = sparse(double(V),double(F),1,length(gB3.allV),length(gB3.F)) ~= 0; %#ok<PROP>
     
   end
   

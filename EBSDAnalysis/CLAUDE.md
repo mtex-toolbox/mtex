@@ -37,6 +37,10 @@ The EBSD → grains pipeline, plus parent-phase reconstruction.
   boundary graph weighted by orientation-relationship fit (`calcGraph.m`, `calcGBVotes.m`,
   `private/calcBndWeights.m`), then `calcVariantGraph.m` resolves which parent variant each
   child grain belongs to.
+- `grain3d/smoothBoundary`, `reduceBoundary`, `refineBoundary` work on the shared vertex
+  list of the whole network, stratum by stratum: `grain3Boundary/nodeType` classifies a
+  vertex by the grains meeting there (DREAM.3D numbering, +10 on the hull), `edges` gives
+  the edge list. The filters are the 2D `boundaryFilter` objects; `docs/adr/0009`.
 - `@grain3Boundary`/`calcGBND.m` is a **distinct code path** from the 2D `@grainBoundary`,
   not a generalization. They differ observably: in crystal coordinates the 3D one returns an
   `S2FunHarmonicSym`, exactly symmetric under the crystal group; the 2D one builds with

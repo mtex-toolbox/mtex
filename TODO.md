@@ -138,7 +138,7 @@ The multi-release work. Everything here is bigger than one branch.
 | D4 | `characteristicShape` in 3D | 1 | 1 | planned | — | — |
 | D5 | `grain3d.orientFaces` does not detect cavities — a grain enclosing another gets its surface oriented outwards; detected and warned about, not solved | 1 | 1 | bug | — | tests/check_orientFaces.m |
 | D6 | 3D visualization | 2 | 2 | planned | — | #2256 |
-| D7 | 3D boundary smoothing | 1 | 1 | planned | — | — |
+| D7 | 3D boundary smoothing — **done 2026-09-02**: `grain3d/smoothBoundary` (hierarchical, the 2D filters), `reduceBoundary` (label-aware clustering), `refineBoundary`; open: a face-normal filter through `boundaryFilter/prepare` | 1 | 1 | done | — | docs/adr/0009 |
 | D8 | Cubit export | 0 | 1 | idea | — | — |
 | D9 | `slice`, nearest neighbours on 3D data | 1 | 1 | planned | — | — |
 | D10 | `grains.volume` is slow when called from `grain3d/display` | 1 | 0 | bug | — | #2092 |

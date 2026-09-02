@@ -27,7 +27,7 @@ classdef boundaryFilter < handle
 %   grains = smoothBoundary(grains,F)
 %
 % See also
-% grain2d/smoothBoundary laplaceFilter taubinFilter curvatureFilter huberFilter
+% grain2d/smoothBoundary grain3d/smoothBoundary laplaceFilter taubinFilter curvatureFilter huberFilter
 
 methods (Abstract = true)
 
@@ -37,6 +37,21 @@ methods (Abstract = true)
   % isFixed - vertices that may not move, e.g. the junctions
   % h       - the spacing the vertices are sampled at
   V = smooth(F,V,A_V,isFixed,h)
+
+end
+
+methods
+
+  function F = prepare(F,mesh) %#ok<INUSD>
+    % optional hook, called by grain3d/smoothBoundary before smooth
+    %
+    % mesh - struct with the vertices V, the faces F, the edges E and the
+    %        faces to edges map F2E, the nodeType, the grainId per face
+    %        and the face normals N
+    %
+    % A filter that works on faces rather than on the vertex adjacency
+    % keeps what it needs here and ignores A_V in smooth.
+  end
 
 end
 

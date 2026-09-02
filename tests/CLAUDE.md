@@ -89,6 +89,7 @@ budget, trim from outside these first.
 | `gridify` on real data | `slow/check_gridify` |
 | `calcGrains` | `core/check_calcGrainsCases` |
 | `calcGrains` on 3d voxel data, `grain3d` from voxels | `core/check_calcGrains3d`, real data in `slow/check_calcGrains3dData` |
+| `grain3d` boundary smoothing, reduce, refine, `nodeType` | `core/check_boundary3d` |
 | `grain2d/merge` argument dispatch | `core/check_grainMerge` |
 | grain boundary walk order | `core/check_boundaryChains` |
 | `chainOrder` mex vs MATLAB | `core/check_chainOrder` |
