@@ -50,4 +50,12 @@ newPos = pos0 + ebsd3.dPos .* ...
 ebsd = interp(ebsd3,newPos);
 ebsd.N = plane.N;
 
+% the section is seen face on, keeping the default up direction as far as
+% the plane allows - a section normal to it keeps the default convention
+north = plottingConvention.default.north;
+north = north - dot(north,plane.N) .* plane.N;
+if norm(north) < 1e-6, north = v; end
+ebsd.pos.frame = specimenSymmetry.frameFor(...
+  plottingConvention(plane.N,cross(north,plane.N)));
+
 end

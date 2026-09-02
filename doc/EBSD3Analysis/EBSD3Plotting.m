@@ -95,20 +95,19 @@ end
 
 %% An arbitrary plane
 %
-% The normal is unrestricted. A map is drawn from the $x$ and $y$
-% coordinates of its measurements, so a section that does not lie in the
-% $xy$ plane has to be turned into it first. Every EBSD map knows the
-% rotation that does this as |rot2Plane|, and |'keepEuler'| turns the
-% coordinates while leaving the orientations alone.
-
-inPlane = @(ebsd) rotate(ebsd,ebsd.rot2Plane,'keepEuler');
+% The normal is unrestricted. The measurements of a section keep their
+% position in the specimen, so a section that does not lie in the $xy$
+% plane would be seen edge on from the default viewing direction. |slice|
+% therefore gives the section a @plottingConvention of its own that looks
+% along the plane normal, and the map is drawn face on without moving any
+% data.
 
 newMtexFigure('layout',[1,2],'figSize','large');
 
-plot(inPlane(slice(ebsd,plane3d(vector3d.X,vector3d(0,0,0)))),'micronbar','off')
+plot(slice(ebsd,plane3d(vector3d.X,vector3d(0,0,0))),'micronbar','off')
 mtexTitle('normal || x')
 nextAxis
-plot(inPlane(slice(ebsd,plane3d(vector3d(1,1,1),vector3d(0,0,0)))),'micronbar','off')
+plot(slice(ebsd,plane3d(vector3d(1,1,1),vector3d(0,0,0))),'micronbar','off')
 mtexTitle('normal || (1,1,1)')
 
 %%
@@ -116,6 +115,9 @@ mtexTitle('normal || (1,1,1)')
 % cylinder. The oblique section is the larger of the two because that plane
 % crosses more of the specimen; its grid is regular within the plane, not in
 % the specimen axes.
+%
+% A section normal to $z$ needs no new convention and keeps the one the
+% volume already carries, so it is drawn exactly as an imported map is.
 
 %% Colour a slice
 %
