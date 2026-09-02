@@ -85,8 +85,7 @@
       {"name":"dimT1", "kind":"required", "type":["numeric","vector"], "purpose":"negative indices are summed over"},
       {"name":"T2", "kind":"ordered", "type":[["tensor"],["vector3d"]]},
       {"name":"dimT2", "kind":"ordered", "type":["numeric","vector"]},
-      {"name":"name", "kind":"namevalue", "type":["char"]},
-      {"name":"unit", "kind":"namevalue", "type":["char"]}
+      {"name":"keepClass", "kind":"flag", "type":["char","choices={'keepClass'}"]}
     ]
 },
 

@@ -54,10 +54,6 @@ p();
 mtex_settings;
 p();
 
-% old MATLAB version
-global useBSXFUN;
-useBSXFUN = MATLABverLessThan('9.6');
-
 % make help search-able
 if ~isdeployed
   if isempty(dir(fullfile(local_path,'doc','html','helpsearch*')))

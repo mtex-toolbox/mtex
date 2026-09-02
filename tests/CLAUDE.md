@@ -118,6 +118,7 @@ budget, trim from outside these first.
 | `calcPoleFigure` superposition | `core/check_calcPoleFigureSuperposition` |
 | pole figure → ODF inversion | `slow/check_poleFigureInversion` |
 | tensor factories, `tensor` constructor arguments | `core/check_tensorFactories` |
+| `EinsteinSum` contraction semantics, self traces, tensor array alignment | `core/check_EinsteinSum` |
 | which object owns `how2plot`, and that setting it does not leak into a shared symmetry | `core/check_plottingConventionOwnership` |
 | `calcTensor` averaging | `slow/check_meanTensor` |
 | ODF export interfaces | `core/check_odfExport` |
