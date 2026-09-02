@@ -43,10 +43,6 @@ classdef directionColorKey < handle
     dir2color % function handle
   end
 
-  properties (Access = private)
-    hsvFallback = [] % HSVDirectionKey used when dir2color is not set
-  end
-  
   methods
     
     function dM = directionColorKey(sym,varargin)
@@ -140,14 +136,6 @@ classdef directionColorKey < handle
     end        
    
     function rgb = direction2color(oM,h,varargin)
-
-      % fall back to the HSV key, which is what a bare directionColorKey shows
-      if isempty(oM.dir2color)
-        if isempty(oM.hsvFallback), oM.hsvFallback = HSVDirectionKey(oM.sym); end
-        rgb = oM.hsvFallback.direction2color(h,varargin{:});
-        return
-      end
-
       rgb = oM.dir2color(h,varargin{:});
     end
 

@@ -32,7 +32,7 @@ tooltipFormat = get_flag(varargin,{'hkl','uvw','xyz','UVTW','hkil'},tooltipForma
 %
 if sF.antipodal, varargin = [varargin,'antipodal']; end
 
-S2Proj = makeSphericalProjection(varargin{:},sF.how2plot);
+S2Proj = makeSphericalProjection([],varargin{:},sF.how2plot);
 
 % a crystal symmetry annotates the plot with Miller indices, the frame the
 % function lives in with its own axes - a, b, c or RD, TD, ND

@@ -208,7 +208,7 @@ methods (Static = true)
     if isfield(s,'how2plot') && isa(s.how2plot,'plottingConvention')
       % reuse-or-fork - the frame the constructor attached may be the
       % shared session frame, so never write the loaded convention there
-      cs.frame = specimenSymmetry.frameFor(matchDefault(s.how2plot));
+      cs.frame = specimenSymmetry.frameFor(s.how2plot);
     end
             
   end

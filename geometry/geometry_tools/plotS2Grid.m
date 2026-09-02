@@ -52,28 +52,10 @@ end
 
 % the polar angles need not form a single interval, so assemble the grid from strips
 [thetaMin,thetaMax] = thetaIntervals(sRRot,rho);
-[rho,thetaMin,thetaMax] = buildStrips(rho,thetaMin,thetaMax,0,pi);
+[rho,thetaMin,thetaMax] = buildStrips(rho,thetaMin,thetaMax);
 
-% sweep along the polar angle instead whenever that gives fewer strips
-nStrips = 1 + nnz(isnan(rho));
-sweepTheta = false;
-if nStrips > 1 && isscalar(rhoMin)
-
-  % the hull of the strips already found is the polar angle range
-  tMin = min(thetaMin); tMax = max(thetaMax);
-  theta = linspace(tMin,tMax,round(1+(tMax-tMin)/res));
-  [rMin,rMax] = rhoIntervals(sRRot,theta,[rhoMin,rhoMax]);
-  % in azimuth direction there is no pole all grid lines share
-  [theta,rMin,rMax] = buildStrips(theta,rMin,rMax,-Inf,Inf);
-
-  sweepTheta = ~isempty(theta) && 1 + nnz(isnan(theta)) < nStrips;
-end
-
-if sweepTheta
-  [rho,theta] = fillStrips(rMin,rMax,theta,res);
-  v = vector3d.byPolar(theta,rho);
-elseif isempty(rho)
-  v = vector3d; theta = []; rho = [];
+if isempty(rho)
+  v = vector3d; theta = [];
 else
   [theta,rho] = fillStrips(thetaMin,thetaMax,rho,res);
   v = vector3d.byPolar(theta,rho);
@@ -86,21 +68,21 @@ v = inv(rot) .* v;
 v.frame = sR.frame;
 
 v = v.setOption('plot',true,'resolution',res,'region',sR,'theta',theta,'rho',rho);
-% safety net - drop whatever ended up outside of the region nevertheless
-v(~sR.checkInside(v)) = nan;
 
 end
 
 % ------------------------------------------------------------------------
 
-function [a,bMin,bMax] = buildStrips(a,bMin,bMax,lowerPole,upperPole)
+function [a,bMin,bMax] = buildStrips(a,bMin,bMax)
 % split a region given as intervals [bMin,bMax] over the grid lines a into
 % strips of one interval per grid line, separated by NaN
 %
-% bMin, bMax are nInt × numel(a) and padded with NaN
+% bMin, bMax are nInt × numel(a) and padded with NaN. Where an interval
+% splits in two, or two merge into one, the strips share that grid line, so
+% that the cells between them are drawn as well.
 
 % an interval collapsed onto a pole is no region, it would glue all strips together
-degenerated = (bMax < lowerPole + 1e-5) | (bMin > upperPole - 1e-5);
+degenerated = (bMax < 1e-5) | (bMin > pi - 1e-5);
 
 % at the first and the last grid line a sector may legitimately close in a
 % vertex - keep those, so that the grid extends up to it
@@ -109,7 +91,8 @@ if size(degenerated,2) > 1
   degenerated(1,end) = degenerated(1,end-1);
 end
 
-todo = ~isnan(bMin) & ~degenerated;
+valid = ~isnan(bMin) & ~degenerated;
+todo = valid;
 [nInt,nA] = size(todo);
 
 aOut = []; minOut = []; maxOut = [];
@@ -120,15 +103,25 @@ while any(todo(:))
   sA = a(i); sMin = bMin(j,i); sMax = bMax(j,i);
   todo(j,i) = false;
 
-  % and follow it along the grid lines as long as the intervals overlap
+  % where it branches off another strip, share that grid line
+  if i > 1
+    j = find(valid(:,i-1) & bMin(:,i-1) <= sMax & bMax(:,i-1) >= sMin,1);
+    if ~isempty(j)
+      sA = [a(i-1),sA]; sMin = [bMin(j,i-1),sMin]; sMax = [bMax(j,i-1),sMax];
+    end
+  end
+
+  % and follow it along the grid lines as long as the intervals overlap,
+  % one line into a strip already built where the two join
   while i < nA
-    j = find(todo(:,i+1) & bMin(:,i+1) <= sMax(end) & ...
+    j = find(valid(:,i+1) & bMin(:,i+1) <= sMax(end) & ...
       bMax(:,i+1) >= sMin(end),1);
     if isempty(j), break; end
     i = i + 1;
     sA(end+1) = a(i); %#ok<AGROW>
     sMin(end+1) = bMin(j,i); %#ok<AGROW>
     sMax(end+1) = bMax(j,i); %#ok<AGROW>
+    if ~todo(j,i), break; end
     todo(j,i) = false;
   end
 

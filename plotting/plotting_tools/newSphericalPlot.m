@@ -5,21 +5,9 @@ function [sP, isNew] = newSphericalPlot(v,varargin)
 % 2: axis is hold and has sphericalRegion -> use multiplot
 % 3: new multiplot
 
-% get plotting convention
-try
-  how2plot = v.how2plot;
-catch ME
-  how2plot = plottingConvention.default;
-end
-% plottingConvention is a value class - this is already a private copy
-how2plot = plottingConvention.fromOption(varargin,how2plot);
-
 % the frame of the data names the axes of the annotation, see annotateFrame
 frameArg = {};
-try
-  if ~isempty(v.frame), frameArg = {'dataFrame',v.frame}; end
-catch
-end
+if ~isempty(v.frame), frameArg = {'dataFrame',v.frame}; end
 
 % case 1: predefined axis
 % -----------------------
@@ -37,13 +25,9 @@ if check_option(varargin,'parent')
     
   else % set up a new spherical axes if required
     
-    % extract spherical region
     % TODO: it might happen that the spherical region needs two axes
-    sR = getPlotRegion(v,how2plot,varargin{:});
-    
-    % extract projection
-    proj = getProjection(sR,how2plot,varargin{:});
-    
+    proj = makeSphericalProjection(v,varargin{:});
+
     % create a new spherical plot
     sP = sphericalPlot(ax,proj(1),varargin{:},frameArg{:});
     isNew = true;
@@ -59,19 +43,9 @@ end
 
 if isNew || ~isappdata(mtexFig.currentAxes,'sphericalPlot')
 
-  % maybe the spherical projection is already given - it must not share its
-  % plotting convention with the data, see ownConvention
-  proj = ownConvention(getClass(varargin,'sphericalProjection'));
+  % one projection, or two for the upper and the lower hemisphere
+  proj = makeSphericalProjection(v,varargin{:});
 
-  if isempty(proj)
-    % get spherical region
-    sR = getPlotRegion(v,how2plot,varargin{:});
-  
-    % extract projection(s)
-    % this might return two projections for upper and lower hemisphere
-    proj = getProjection(sR,how2plot,varargin{:});
-  end
-  
   % the new axes start out in the hold state of the current one, as a baseline
   srcAx = mtexFig.gca;
 
@@ -123,96 +97,5 @@ else
   end
 
 end
-
-end
-
-% ---------------------------------------------------------
-function sR = getPlotRegion(sR,how2plot,varargin)
-% returns spherical region to be plotted
-
-% default values from the vectors to plot
-if isa(sR,'vector3d')
-  sR = getClass(varargin,'sphericalRegion',sR.region(varargin{:}));
-elseif ~isa(sR,'sphericalRegion')
-  sR = getClass(varargin,'sphericalRegion',sphericalRegion);
-end
-
-% check for simple options
-if check_option(varargin,'complete')
-  sR = sphericalRegion;
-end
-
-% upper and lower at once asks for both halves, and overrules the reduction below (#330)
-bothHemispheres = check_option(varargin,'upper') && check_option(varargin,'lower');
-
-if ~bothHemispheres
-  if check_option(varargin,'upper')
-    sR = sR.restrict2Upper(how2plot);
-  elseif check_option(varargin,'lower')
-    sR = sR.restrict2Lower(how2plot);
-  end
-end
-
-% extract antipodal
-sR.antipodal = sR.antipodal || check_option(varargin,'antipodal');
-
-% for antipodal symmetry reduce to halfsphere
-if sR.antipodal && sR.isUpper(how2plot) && sR.isLower(how2plot) &&...
-    ~check_option(varargin,'complete') && ~bothHemispheres
-  sR = sR.restrict2Upper(how2plot);
-end
-
-end
-% ---------------------------------------------------------
-function proj = getProjection(sR,pC,varargin)
-
-proj = get_option(varargin,'projection','earea');
-
-if isa(proj,'sphericalProjection')
-
-  proj = ownConvention(proj);
-
-else
-
-  switch proj
-    case 'plain', proj = plainProjection(sR);
-    
-    case {'stereo','eangle'}, proj = eangleProjection(sR,pC); % equal angle
-      
-    case 'edist', proj = edistProjection(sR,pC); % equal distance
-
-    case {'earea','schmidt'}, proj = eareaProjection(sR,pC); % equal area
-        
-    case 'orthographic',  proj = orthographicProjection(sR,pC);
-    
-    case 'square',  proj = squareProjection(sR,pC);
-      
-    case 'gnonomic', proj = gnonomicProjection(sR,pC);
-      
-    otherwise
-    
-      error('%s\n%s','Unknown projection specified! Valid projections are:',...
-        'plain, stereo, eangle, edist, earea, schmidt, orthographic','square')
-  end
-end
-
-if ~isa(proj,'plainProjection') && sR.isUpper(pC) && sR.isLower(pC)  
-  proj = [proj,proj];
-  proj(1).sR = proj(1).sR.restrict2Upper(pC);
-  proj(2).sR = proj(2).sR.restrict2Lower(pC);
-end
-
-
-end
-% ---------------------------------------------------------
-function proj = ownConvention(proj)
-% let the axis own the plotting convention of a projection handed in
-
-% align all projections on the value of the first one
-
-if isempty(proj), return; end
-
-pC = proj(1).pC;
-for i = 2:numel(proj), proj(i).pC = pC; end
 
 end

@@ -25,7 +25,7 @@ function check_plotS2Grid
 % as one connected patch.
 %
 % See also
-% plotS2Grid sphericalRegion/thetaIntervals sphericalRegion/rhoIntervals
+% plotS2Grid sphericalRegion/thetaIntervals
 
 rng(0)
 
@@ -73,10 +73,6 @@ for k = 1:numel(csList)
   [t1,t2] = sR.thetaIntervals(0.3);
   [T1,T2] = sR.thetaIntervals([0.1 0.3 0.5]);
   compare(t1,t2,T1(:,2),T2(:,2),'thetaIntervals',csList{k});
-
-  [r1,r2] = sR.rhoIntervals(0.6);
-  [R1,R2] = sR.rhoIntervals([0.4 0.6 0.8]);
-  compare(r1,r2,R1(:,2),R2(:,2),'rhoIntervals',csList{k});
 
 end
 

@@ -330,21 +330,6 @@ classdef plottingConvention
       out = ~eq(pC,pC2);
     end
 
-    function pC = matchDefault(pC)
-      % normalize to the default convention if it describes the same
-      % alignment
-      %
-      % Historically this re-aliased to the default handle; since
-      % plottingConvention is a value class it merely returns an equal
-      % value, and what makes data follow the default is membership in
-      % the default frame - see vector3d/set.how2plot. Kept for
-      % compatibility.
-
-      pCd = plottingConvention.default;
-      if isapprox(pC,pCd), pC = pCd; end
-
-    end
-
   end
 
   methods (Static=true)

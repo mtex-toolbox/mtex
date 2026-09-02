@@ -1,15 +1,13 @@
-function [aMin,aMax] = intervalsFromBreaks(sR,breaks,lo,hi,gridLine,mkVec)
-% turn the crossings of the bounding circles into intervals
+function [aMin,aMax] = intervalsFromBreaks(sR,breaks,rho)
+% turn the crossings of the bounding circles into intervals of the polar angle
 %
 % Syntax
-%   [aMin,aMax] = intervalsFromBreaks(sR,breaks,lo,hi,gridLine,mkVec)
+%   [aMin,aMax] = intervalsFromBreaks(sR,breaks,rho)
 %
 % Input
-%  sR       - @sphericalRegion
-%  breaks   - nB × n, the angles where a bounding circle is crossed
-%  lo, hi   - the range the angle is searched in
-%  gridLine - 1 × n, the value of the other angle
-%  mkVec    - @(angle,gridLine) the @vector3d those two stand for
+%  sR     - @sphericalRegion
+%  breaks - nB × n, the polar angles where a bounding circle is crossed
+%  rho    - 1 × n, the azimuth of each grid line
 %
 % Output
 %  aMin - nInt × n, padded with NaN
@@ -23,11 +21,11 @@ function [aMin,aMax] = intervalsFromBreaks(sR,breaks,lo,hi,gridLine,mkVec)
 % than cross it - the region is then a single point there, which is what
 % makes the grid reach into a vertex of a sector.
 
-n = numel(gridLine);
+n = numel(rho);
 
-% only crossings within the range are breaks, and lo and hi always are
-breaks(breaks < lo | breaks > hi) = NaN;
-breaks = [repmat([lo;hi],1,n); breaks];
+% only crossings within the range are breaks, and the poles always are
+breaks(breaks < 0 | breaks > pi) = NaN;
+breaks = [repmat([0;pi],1,n); breaks];
 
 % sort each grid line and merge crossings that coincide
 b = cell(1,n); mid = cell(1,n);
@@ -42,10 +40,10 @@ end
 nMid = reshape(cellfun(@numel,mid),[],1);
 nB = reshape(cellfun(@numel,b),[],1);
 
-% note repelem returns a row for a scalar gridLine, so reshape is required
-inside = sR.checkInside(mkVec(...
+% note repelem returns a row for a scalar rho, so reshape is required
+inside = sR.checkInside(vector3d.byPolar(...
   [vertcat(mid{:});vertcat(b{:})],...
-  [reshape(repelem(gridLine(:),nMid),[],1);reshape(repelem(gridLine(:),nB),[],1)]));
+  [reshape(repelem(rho(:),nMid),[],1);reshape(repelem(rho(:),nB),[],1)]));
 
 inMid = reshape(inside(1:sum(nMid)),[],1);
 inB = reshape(inside(sum(nMid)+1:end),[],1);

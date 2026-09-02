@@ -22,7 +22,7 @@ function [thetaMin,thetaMax] = thetaIntervals(sR,rho)
 % are cut open at the corners of the sector, e.g. for the point group 23.
 %
 % See also
-% sphericalRegion/rhoIntervals
+% plotS2Grid sphericalRegion/thetaRange
 
 % antipodal should not increase the spherical region
 sR.antipodal = false;
@@ -45,7 +45,6 @@ breaks = [as - phi; pi - as - phi];
 % both branches repeat with a period of 2*pi
 breaks = [breaks;breaks + 2*pi;breaks - 2*pi];
 
-[thetaMin,thetaMax] = intervalsFromBreaks(sR,breaks,0,pi,rho,...
-  @(theta,rho) vector3d.byPolar(theta,rho));
+[thetaMin,thetaMax] = intervalsFromBreaks(sR,breaks,rho);
 
 end

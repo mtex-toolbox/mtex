@@ -85,12 +85,13 @@ including 6.1 have one combined list there and no entry here.
   groups `m-3`, `23` and `mmm`. `plotS2Grid` kept the bounding box of such a region
   and punched NaN holes into it, which a surface survives but `contourf` does not -
   it draws straight across the gap. The grid is now assembled from strips that have
-  one interval per grid line, swept along whichever of the two angles gives fewer of
-  them, and each strip is contoured on its own. This is [issue
-  #209](https://github.com/mtex-toolbox/mtex/issues/209). The two new methods
-  `thetaIntervals` and `rhoIntervals` return the components, where `thetaRange`
-  returns only their hull. Both solve for the crossings with the bounding circles in
-  closed form, where `thetaRange` used to walk a discretisation of ten thousand
+  one interval per grid line, and each strip is contoured on its own; where an
+  interval splits in two or two merge into one, the strips share that grid line, so
+  the cells between them are drawn as well. This is [issue
+  #209](https://github.com/mtex-toolbox/mtex/issues/209). The new method
+  `thetaIntervals` returns the components, where `thetaRange` returns only their
+  hull. It solves for the crossings with the bounding circles in closed form, where
+  `thetaRange` used to walk a discretisation of ten thousand
   polar angles per grid line - a spherical plotting grid is built about four times
   faster now, and its boundary is exact rather than snapped to that discretisation.
   As a further side effect the grid of a disconnected region is no longer padded out
