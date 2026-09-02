@@ -1,88 +1,60 @@
 function ebsd = loadEBSD_dream3d(fname,varargin)
+% import 3d EBSD voxel data from a DREAM.3D file
+%
+% Syntax
+%   ebsd = loadEBSD_dream3d(fname)
+%   ebsd = EBSD3.load(fname)
+%
+% Input
+%  fname - file name
+%
+% Output
+%  ebsd - @EBSD3square, every further scalar cell array of the file is a property
+%
+% Options
+%  CS - list of @crystalSymmetry replacing the one read from the file
+%
+% See also
+% loadGrains_Dream3d EBSD3square EBSD3square/calcGrains
+
+root = '/DataStructure/DataContainer';
+cellData = [root '/CellData/'];
 
 try
-  api = localGetApi(fname);
-catch %#ok<CTCH>
+  sz     = double(h5readatt(fname,root,'_DIMENSIONS')).';
+  dxyz   = double(h5readatt(fname,root,'_SPACING')).';
+  origin = double(h5readatt(fname,root,'_ORIGIN')).';
+  info   = h5info(fname,cellData);
+catch
   interfaceError(fname);
 end
 
-[opts,unitCell] = localGetGrid(api);
-[opts,data]     = localGetFields(api,opts);
+% h5read returns the arrays with x running fastest, the ndgrid order
+eul = double(h5read(fname,[cellData 'EulerAngles']));
+rot = reshape(rotation.byEuler(eul(1,:).',eul(2,:).',eul(3,:).','ZXZ'),sz);
 
-uphases = unique(data.Phases);
-CS = get_option(varargin,'CS',repmat({crystalSymmetry('cubic')},numel(uphases),1));
+% phases count from zero, with the unmeasured voxels not indexed
+phaseId = double(h5read(fname,[cellData 'Phases']));
+phaseId = phaseId(:) + 1;
+if any(strcmp({info.Datasets.Name},'Mask'))
+  phaseId(~h5read(fname,[cellData 'Mask'])) = 1;
+end
 
-ebsd = EBSD(data.Rotations,data.Phases,CS,opts,'unitCell', unitCell);
+csList = get_option(varargin,'CS',...
+  dream3dCrystalSymmetry(h5read(fname,[root '/CellEnsembleData/CrystalStructures'])));
 
+% every other scalar cell array becomes a property, the feature ids the grainId
+prop = struct;
+for ds = info.Datasets.'
+  data = h5read(fname,[cellData ds.Name]);
+  if size(data,1) > 1 || any(strcmp(ds.Name,{'Phases','Mask'})), continue; end
+  prop.(regexprep(ds.Name,{'FeatureIds','\s'},{'grainId',''})) = double(data(:));
+end
 
-function api = localGetApi(fname)
+[x,y,z] = ndgrid(origin(1) + (0:sz(1)-1)*dxyz(1), ...
+  origin(2) + (0:sz(2)-1)*dxyz(2), origin(3) + (0:sz(3)-1)*dxyz(3));
 
-hInfo = h5info(fname);
-
-dataContainer    = hInfo.Groups;
-dataGroups       = dataContainer.Groups;
-
-cellDataGroupNdx = ~cellfun('isempty',strfind({dataGroups.Name},'CELL_DATA'));
-cellData         = dataGroups(cellDataGroupNdx);
-
-cellDataSpace    = [cellData.Datasets.Dataspace];
-n                = max([cellDataSpace.Size]);
-
-api.readProperty = @(propName) double(h5read(fname,[ dataContainer.Name '/' propName]));
-api.readCellData = @(cellName) double(reshape(h5read(fname,[ cellData.Name '/' cellName])',n,[]));
-api.fieldNames   = {cellData.Datasets.Name};
-
-api.GoodVoxels   = logical(api.readCellData('GoodVoxels'));
-
-
-function [opts, unitCell] = localGetGrid(api)
-
-X  = api.readProperty('DIMENSIONS');
-dX = api.readProperty('SPACING');
-X0 = api.readProperty('ORIGIN');
-
-sX = (dX.*(X-1))+X0;
-
-[y,x,z] = meshgrid(...
-  X0(2):dX(2):sX(2),...
-  X0(1):dX(1):sX(1),...
-  X0(3):dX(3):sX(3));
-
-opts.x = x(api.GoodVoxels)+X0(1);
-opts.y = y(api.GoodVoxels)+X0(2);
-opts.z = z(api.GoodVoxels)+X0(3);
-
-unitCell =  [ ...
-  -dX(1)/2   -dX(2)/2
-  -dX(1)/2    dX(2)/2
-   dX(1)/2    dX(2)/2
-   dX(1)/2   -dX(2)/2
-  -dX(1)/2   -dX(3)/2
-   dX(1)/2   -dX(3)/2
-   dX(1)/2    dX(3)/2
-  -dX(1)/2    dX(3)/2
-  -dX(2)/2   -dX(3)/2
-  -dX(2)/2    dX(3)/2
-   dX(2)/2    dX(3)/2
-   dX(2)/2   -dX(3)/2];
-
-
-function [opts,e] = localGetFields(api,opts)
-
-for k=1:numel(api.fieldNames)
-
-  data = api.readCellData(api.fieldNames{k});
-  data = data(api.GoodVoxels,:);
-
-  switch api.fieldNames{k}
-    case 'EulerAngles'
-      e.Rotations = rotation.byEuler(data(:,1),data(:,2),data(:,3),'ZXZ');
-    case 'Phases'
-      e.Phases = data;
-    case {'GoodVoxels','Quats'}
-    otherwise
-      prop = regexprep(api.fieldNames{k},' ','');
-      opts.(prop) = data;
-  end
+ebsd = EBSD3square(vector3d(x,y,z),rot,phaseId,0:numel(csList)-1,csList,dxyz,'prop',prop);
+ebsd.scanUnit = 'um';
 
 end

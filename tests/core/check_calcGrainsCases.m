@@ -307,8 +307,32 @@ if numel(niA) >= nPad
 end
 
 checkInsideEmptyQuery(cs, thr);
+checkGrainIdRoundTrip(ebsdSq, thr);
 
 disp('calcGrains cases: all checks passed');
+
+end
+
+% ===========================================================================
+function checkGrainIdRoundTrip(ebsd, thr)
+% calcGrains(ebsd,'grainId') gives the partition stored in ebsd.grainId,
+% up to the numbering of the grains
+
+[grains,ebsd] = calcGrains(ebsd,'threshold',thr);
+[grains2,ebsd2] = calcGrains(ebsd,'grainId');
+
+isIn = ebsd.grainId(:) > 0;
+pairs = unique([ebsd.grainId(isIn), ebsd2.grainId(isIn)],'rows');
+if size(pairs,1) ~= length(grains) || length(grains2) ~= length(grains)
+  error('grains from grainId: %d grains from %d stored ids, %d pairs of ids', ...
+    length(grains2), length(grains), size(pairs,1));
+end
+% the pixels each grain owns, absorbed holes included, come back unchanged
+n1 = accumarray(ebsd.grainId(isIn),1);
+n2 = accumarray(ebsd2.grainId(ebsd2.grainId(:) > 0),1);
+if ~isequal(sort(n1), sort(n2))
+  error('grains from grainId own different pixels than the stored grainId');
+end
 
 end
 

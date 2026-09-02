@@ -50,7 +50,8 @@ else
 
   out0  = spatialDecompositionGrid(ebsd,varargin{:});
   I_FD0 = remapIFD(out0,ebsd);
-  [~,I_DG0] = doSegmentation(I_FD0,ebsd,gbc,varargin{:});
+  [Dl,Dr] = find(triu(I_FD0'*I_FD0==1,1));
+  [~,I_DG0] = gbc.segment(ebsd,Dl,Dr,varargin{:});
   gid0 = full(I_DG0 * (1:size(I_DG0,2)).');       % grain id per pixel (0 = none)
 end
 

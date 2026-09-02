@@ -37,9 +37,11 @@ plottingConvention.default('y↑→x');
 % boundary mesh. Choose the representation according to whether the question
 % concerns local measurements or whole-grain geometry.
 %
-% This chapter works with precomputed grain meshes imported from DREAM.3D or
-% Neper. Code written for two-dimensional pixel maps does not carry over
-% unchanged to a surface mesh.
+% A grain mesh comes either precomputed, imported from DREAM.3D or Neper, or
+% from <EBSD3square.calcGrains.html |calcGrains|> applied to the measured
+% voxels, see <Grains3DReconstruction.html Grain Reconstruction>. Code
+% written for two-dimensional pixel maps does not carry over unchanged to a
+% surface mesh.
 
 %% Read a three-dimensional microstructure
 %

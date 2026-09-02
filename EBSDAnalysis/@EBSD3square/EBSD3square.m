@@ -5,13 +5,14 @@ classdef EBSD3square < EBSD3
   % along all three axes.
   %
   % Syntax
-  %   ebsd = EBSD3square(pos,rot,phases,CSList,[dx dy dz])
+  %   ebsd = EBSD3square(pos,rot,phaseId,phaseMap,CSList,[dx dy dz])
   %
   % Input
   %  pos        - @vector3d, one per voxel
   %  rot        - @rotation, in array layout
-  %  phases     - phase of each voxel
-  %  CSList     - cell list of @crystalSymmetry
+  %  phaseId    - phase of each voxel as index into CSList
+  %  phaseMap   - convert between phase = phaseMap(phaseId)
+  %  CSList     - list of @crystalSymmetry
   %  dx, dy, dz - voxel size
   %
   % Output
@@ -50,11 +51,11 @@ classdef EBSD3square < EBSD3
   
   methods
       
-    function ebsd = EBSD3square(pos,rot,phases,CSList,dxyz,varargin)
+    function ebsd = EBSD3square(pos,rot,phaseId,phaseMap,CSList,dxyz,varargin)
       % generate a EBSD object
       %
       % Syntax 
-      %   EBSD3square(rot,phases,CSList)
+      %   EBSD3square(pos,rot,phaseId,phaseMap,CSList,[dx dy dz])
       
       if nargin == 0, return; end            
       
@@ -62,8 +63,10 @@ classdef EBSD3square < EBSD3
       
       ebsd.pos = pos;
       ebsd.rotations = rotation(rot);
-      ebsd = ebsd.init(phases,CSList);
-      ebsd.id = (1:numel(phases)).';
+      ebsd.phaseId = phaseId(:);
+      ebsd.phaseMap = phaseMap;
+      ebsd.CSList = ensureCSArray(CSList);
+      ebsd.id = (1:prod(sGrid)).';
       
       % extract additional properties
       ebsd.prop = get_option(varargin,'prop',struct);
@@ -84,7 +87,7 @@ classdef EBSD3square < EBSD3
       end
       
       if isempty(pos)        
-        [x,y,z] = meshgrid(1:size(rot,2),1:size(rot,1),1:size(rot,3));
+        [x,y,z] = ndgrid(1:size(rot,1),1:size(rot,2),1:size(rot,3));
         ebsd.pos = vector3d((x-1) * dxyz(1),(y-1) * dxyz(2),(z-1) * dxyz(3));
       end
            
@@ -109,60 +112,33 @@ classdef EBSD3square < EBSD3
       out = ebsd.pos(1,1,2) - ebsd.pos(1,1,1);
     end
            
-    function gX = get.gradientX(ebsd)
-      % gives the gradient in X direction with respect to specimen
-      % coordinate system
-      
-      % extract orientations
-      ori = ebsd.orientations;
-      
-      ori_right = ori(:,[2:end end-1],:);
-      gX = log(ori_right,ori, SO3TangentSpace.leftVector) ./ ebsd.dx;
-      gX(:,end) = - gX(:,end);
-      
-      % ignore grain boundaries if possible
-      if isfield(ebsd.prop.grainId)
-        gX(ebsd.prop.grainId ~= ebsd.prop.grainId(:,[2:end end-1],:)) = NaN;
-      end
-      
-    end
-    
-    function gY = get.gradientY(ebsd)
-      % gives the gradient in Y direction with respect to specimen
-      % coordinate system
-      
-      % extract orientations
-      ori = ebsd.orientations;
-          
-      ori_up = ori([2:end end-1],:,:);
-      gY = log(ori_up,ori, SO3TangentSpace.leftVector) ./ ebsd.dy;
-      gY(end,:) = - gY(end,:);
-      
-      % ignore grain boundaries if possible
-      if isfield(ebsd.prop.grainId)
-        gY(ebsd.prop.grainId ~= ebsd.prop.grainId([2:end end-1],:,:)) = NaN;
-      end
-      
-    end
-   
+    function g = gradientDim(ebsd,dim)
+      % forward difference of the orientations along array dimension dim,
+      % backward in the last layer
 
-    function gZ = get.gradientZ(ebsd)
-      % gives the gradient in Z direction with respect to specimen
-      % coordinate system
-      
-      % extract orientations
       ori = ebsd.orientations;
-          
-      ori_out = ori(:,:,[2:end end-1]);
-      gZ = log(ori_out,ori, SO3TangentSpace.leftVector) ./ ebsd.dz;
-      gZ(end,:) = - gZ(end,:);
-      
+
+      fwd = repmat({':'},1,3);
+      fwd{dim} = [2:size(ori,dim), size(ori,dim)-1];
+
+      d = [norm(ebsd.d1) norm(ebsd.d2) norm(ebsd.d3)];
+      g = log(ori(fwd{:}),ori,SO3TangentSpace.leftVector) ./ d(dim);
+
+      last = repmat({':'},1,3);
+      last{dim} = size(ori,dim);
+      g(last{:}) = - g(last{:});
+
       % ignore grain boundaries if possible
-      if isfield(ebsd.prop.grainId)
-        gZ(ebsd.prop.grainId ~= ebsd.prop.grainId(:,:,[2:end end-1])) = NaN;
+      if isfield(ebsd.prop,'grainId')
+        g(ebsd.prop.grainId ~= ebsd.prop.grainId(fwd{:})) = NaN;
       end
-      
+
     end
+
+    % the array dimensions carry x, y and z - see the constructor
+    function gX = get.gradientX(ebsd), gX = gradientDim(ebsd,1); end
+    function gY = get.gradientY(ebsd), gY = gradientDim(ebsd,2); end
+    function gZ = get.gradientZ(ebsd), gZ = gradientDim(ebsd,3); end
 
     function e = end(ebsd3,i,n)
       if n==1

@@ -10,6 +10,9 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %   hagb = 10*degree;
 %   grains = calcGrains(ebsd,'angle',[hagb lagb])
 %
+%   % grains from a grainId stored with the data, e.g. imported from a file
+%   grains = calcGrains(ebsd,'grainId')
+%
 %   % specify phase dependent thresholds
 %   % thresholds follow the same order as ebsd.CSList and should have the same length
 %   grains = calcGrains(ebsd,'angle',{angl_1 angle_2 angle_3})
@@ -39,6 +42,8 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %  custom    - use a custom property for grain separation
 %
 % Flags
+%  grainId  - connect pixels with the same ebsd.grainId instead of a
+%             criterion on the orientations
 %  verbose  - report what the criterion did, if it has anything to say -
 %             currently only |'fmc'|, which prints its cluster hierarchy
 %  delaunay - use a true circumradius-based alpha-complex (exact, not a
@@ -63,22 +68,10 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 
 % TODO: we have to rotate everything to xy plane to do the reconstruction
 
-% extract grain boundary criterion
-%
-% A criterion object passed in always wins. Otherwise 'fmc' selects the
-% fast multiscale clustering criterion, as this function's own help and
-% GrainReconstructionAdvanced have documented all along - without this the
-% documented call silently fell through to plain angle thresholding and
-% returned a different segmentation without saying so.
-if check_option(varargin,{'fmc','FMC'})
-  gbc = getClass(varargin,'grainBoundaryCriterion',gbcFMC(varargin{:}));
-elseif check_option(varargin,'soft')
-  gbc = getClass(varargin,'grainBoundaryCriterion',gbcSoft(varargin{:}));
-elseif check_option(varargin,'variants')
-    gbc = getClass(varargin,'grainBoundaryCriterion',gbcVariants(varargin{:}));
-else
-  gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
-end
+gbc = grainBoundaryCriterion.byOptions(varargin{:});
+
+% a stored grainId of 0 means no grain, as it does for the output
+if check_option(varargin,'grainId'), ebsd.phaseId(ebsd.grainId == 0) = 1; end
 
 % first pass:
 % mark pixels that would become grains smaller than minPixel as notIndexed
@@ -110,7 +103,8 @@ F = out.F;
 I_FD = remapIFD(out,ebsd);
 
 % determine which cells to connect
-[A_Db,I_DG] = doSegmentation(I_FD,ebsd,gbc,varargin{:});
+[Dl,Dr] = find(triu(I_FD'*I_FD==1,1));
+[A_Db,I_DG] = gbc.segment(ebsd,Dl,Dr,varargin{:});
 % A_db - neighboring cells with (inner) grain boundary
 % I_DG - incidence matrix cells to grains
 

@@ -20,7 +20,9 @@ classdef (Abstract) grainBoundaryCriterion
 %
 % Syntax
 %   grains = calcGrains(ebsd,gbcAngle(10*degree))
-%   out = criterion.evaluate(ebsd,i,j)
+%   out = criterion.eval(ebsd,i,j)
+%   gbc = grainBoundaryCriterion.byOptions(varargin{:})
+%   [A_Db,I_DG] = gbc.segment(ebsd,Dl,Dr)
 %
 % Input
 %  ebsd - @EBSD
@@ -95,6 +97,75 @@ methods
     %
     % Does nothing by default, so a criterion only has to override this
     % together with handlesMinPixel.
+  end
+
+end
+
+methods
+
+  function [A_Db,I_DG] = segment(gbc,ebsd,Dl,Dr,varargin)
+    % segment pairs of neighbouring cells into grains
+    %
+    % Input
+    %  ebsd   - @EBSD
+    %  Dl, Dr - index lists of neighbouring cells
+    %
+    % Output
+    %  A_Db - adjacency matrix of cells with a grain boundary in between
+    %  I_DG - incidence matrix cells -> grains
+    %
+    % Options
+    %  mcl - [p maxIt] Markovian clustering of the connection weights
+
+    connect = gbc.eval(ebsd,Dl,Dr);
+
+    % adjacency of cells that have no common boundary
+    ind = connect>0;
+    A_Do = sparse(double(Dl(ind)),double(Dr(ind)),connect(ind),length(ebsd),length(ebsd));
+    if check_option(varargin,'mcl')
+
+      param = get_option(varargin,'mcl');
+      if isempty(param), param = 1.4; end
+      if isscalar(param), param = [param,4]; end
+
+      A_Do = mclComponents(A_Do,param(1),param(2));
+      A_Db = sparse(double(Dl),double(Dr),true,length(ebsd),length(ebsd));
+      A_Db(A_Do~=0) = false;
+
+    else
+
+      % a boundary is drawn where the criterion says 0.5 or less - connect < 1 also
+      % works for a criterion answering 0, 0.5 and 1, but not for a continuous one
+      isBnd = connect <= 0.5;
+      A_Db = sparse(double(Dl(isBnd)),double(Dr(isBnd)),true,...
+        length(ebsd),length(ebsd));
+
+    end
+    A_Do = A_Do | A_Do.';
+    A_Db = A_Db | A_Db.';
+
+    I_DG = sparse(1:length(ebsd),double(connectedComponents(A_Do)),1);
+
+  end
+
+end
+
+methods (Static)
+
+  function gbc = byOptions(varargin)
+    % the criterion selected by the calcGrains options - a criterion object
+    % passed in always wins
+    if check_option(varargin,{'fmc','FMC'})
+      gbc = getClass(varargin,'grainBoundaryCriterion',gbcFMC(varargin{:}));
+    elseif check_option(varargin,'soft')
+      gbc = getClass(varargin,'grainBoundaryCriterion',gbcSoft(varargin{:}));
+    elseif check_option(varargin,'variants')
+      gbc = getClass(varargin,'grainBoundaryCriterion',gbcVariants(varargin{:}));
+    elseif check_option(varargin,'grainId')
+      gbc = getClass(varargin,'grainBoundaryCriterion',gbcCustom('grainId',0.5));
+    else
+      gbc = getClass(varargin,'grainBoundaryCriterion',gbcAngle(varargin{:}));
+    end
   end
 
 end

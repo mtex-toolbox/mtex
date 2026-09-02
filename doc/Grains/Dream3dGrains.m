@@ -9,8 +9,9 @@
 % See <Grains3D.html 3D-Grains> for an introduction to this representation.
 %
 % The importer expects the DREAM.3D triangle-mesh datasets described by
-% <loadGrains_Dream3d.html |loadGrains_Dream3d|>. A voxel-only volume does not
-% provide the faces required by a <grain3d.grain3d.html |grain3d|> object.
+% <loadGrains_Dream3d.html |loadGrains_Dream3d|>. The voxel data of a
+% DREAM.3D file is read by <EBSD3.load.html |EBSD3.load|> instead and
+% segmented into grains by <EBSD3square.calcGrains.html |calcGrains|>.
 
 plottingConvention.default('y↑→x');
 

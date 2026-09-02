@@ -8,7 +8,7 @@ classdef grain3d < phaseList & dynProp
   %
   % Syntax
   %   grains = calcGrains(ebsd3)
-  %   grains = grain3d(V,F,I_GF,ori,CSList,phaseList)
+  %   grains = grain3d(V,F,I_GF,ori,CSList,phaseList,phaseMap)
   %
   % Input
   %  V         - @vector3d, the vertices
@@ -68,7 +68,7 @@ classdef grain3d < phaseList & dynProp
 
   methods
 
-    function grains = grain3d(V, F, I_GF, ori, CSList, phaseList)
+    function grains = grain3d(V, F, I_GF, ori, CSList, phaseList, phaseMap)
       % constructor
 
       if nargin >= 3

@@ -4,16 +4,17 @@ classdef gbcCustom < grainBoundaryCriterion
 % Separates two neighbouring measurements by a grain boundary when a
 % user-supplied property differs by more than a threshold. The property may be
 % numeric (scalar per pixel), a vector3d or a quaternion (then the angle
-% between the two is used).
+% between the two is used), or the name of a property of the EBSD data.
 %
 % Syntax
 %
 %   criterion = gbcCustom(ebsd.bc,10);
+%   criterion = gbcCustom('grainId',0.5);
 %   criterion = gbcCustom(myAxes,5*degree,'antipodal');
 %   out = criterion.eval(ebsd,i,j);
 %
 % Input
-%   values    - per-pixel property, one entry per measurement
+%   values    - per-pixel property, one entry per measurement, or its name
 %   threshold - largest difference that still counts as the same grain
 %
 % Any further arguments are passed on to |angle|, so an axial property is
@@ -24,7 +25,7 @@ classdef gbcCustom < grainBoundaryCriterion
 %   out = 0   grain boundary
 
 properties
-  values = []   % per-pixel property (numeric, vector3d or quaternion)
+  values = []   % per-pixel property (numeric, vector3d or quaternion) or its name
   threshold  = 0.5
   opt = {}      % further arguments for angle, e.g. 'antipodal'
 end
@@ -44,6 +45,7 @@ methods (Access = protected)
   function out = doEvaluate(obj,ebsd,i,j)
 
     custom = obj.values;
+    if ischar(custom), custom = ebsd.(custom); end
     delta  = obj.threshold;
     if ~isscalar(delta), delta = 0.5; end
 

@@ -143,7 +143,7 @@ The multi-release work. Everything here is bigger than one branch.
 | D9 | `slice`, nearest neighbours on 3D data | 1 | 1 | planned | — | — |
 | D10 | `grains.volume` is slow when called from `grain3d/display` | 1 | 0 | bug | — | #2092 |
 | D11 | 3D orientation analysis crashes | 2 | 1 | triage | — | #2377 |
-| D12 | `loadEBSD_dream3d` and `loadEBSD_xnovo` are not functional yet — blocked on 3D support itself | 1 | 1 | blocked | — | [→](#d12) |
+| D12 | `loadEBSD_dream3d` and `loadEBSD_xnovo` return an `EBSD3square`, and `calcGrains` segments it into a `grain3d` — **done 2026-09-02**; grains do not yet grow across unindexed voxels (no `alpha` closing) | 1 | 1 | done | — | [→](#d12) |
 | D13 | The 3D classes were absent from the function-reference sidebar — **done** in the 2026-08-10 pass, all three are in `doc/FunctionReference/EBSDAnalysis/EBSDAnalysis_index.toc` (checked 2026-08-11) | 1 | 0 | done | — | docs/doc-audit-plan.md item 4 |
 
 ---
@@ -774,10 +774,11 @@ inherent per-pair cost.
 reminder. Shape metrics and `fitEllipse` are done.
 
 ### D12
-`interfaces/loadEBSD_dream3d.m` and `interfaces/loadEBSD_xnovo.m` target 3D
-data and are not functional (per Ralf, 2026-07-23). Failures from them are
-expected, not regressions. Do not add header-only support to them before 3D
-support itself is finished.
+`interfaces/loadEBSD_dream3d.m` and `interfaces/loadEBSD_xnovo.m` return an
+`EBSD3square`; `EBSDAnalysis/@EBSD3square/calcGrains.m` reconstructs a
+`grain3d` from it on the 6-connected voxel graph, with triangle faces. Open:
+a morphological closing so grains grow across unindexed voxels, and header-only
+support for the two loaders.
 
 ### E10
 Kept verbatim from the old file as the list to review together:

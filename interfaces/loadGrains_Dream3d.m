@@ -64,16 +64,7 @@ end
 q = quaternion(abcd(activeGrains,1),abcd(activeGrains,2),...
   abcd(activeGrains,3),abcd(activeGrains,4));
 
-% import crystal symmetry - the list is indexed by the zero based Dream3d
-% CrystalStructure enum, anything unknown stays notIndexed
-dream3dCS = {'622','432','6','23','1','121','222','4','422','3','322','1'};
-crysm = h5read_multi(fname,crysmPath);
-csList = repmat(notIndexed,1,length(crysm));
-for k = 1:length(crysm)
-  if crysm(k) >= 0 && crysm(k) < length(dream3dCS)
-    csList(k) = crystalSymmetry(dream3dCS{crysm(k)+1},'mineral','unknown');
-  end
-end
+csList = dream3dCrystalSymmetry(h5read_multi(fname,crysmPath));
 
 phaseList = h5read_multi(fname,phasePath)' + 1;
 phaseList = phaseList(activeGrains,:);

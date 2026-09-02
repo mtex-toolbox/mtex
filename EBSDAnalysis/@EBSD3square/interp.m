@@ -47,7 +47,9 @@ switch nnz(sizeNew>1)
   case 2
     ebsdNew = EBSDsquare(newPos,rot,phaseId,ebsd3.phaseMap,ebsd3.CSList,'prop',prop,'opt',ebsd3.opt);
   case 3
-    ebsdNew = EBSD3square(newPos,rot,phaseId,ebsd3.phaseMap,ebsd3.CSList,[1 1 1],prop);
+    ebsdNew = EBSD3square(newPos,rot,phaseId,ebsd3.phaseMap,ebsd3.CSList,[1 1 1],'prop',prop);
 end
+
+ebsdNew.scanUnit = ebsd3.scanUnit;
 
 end

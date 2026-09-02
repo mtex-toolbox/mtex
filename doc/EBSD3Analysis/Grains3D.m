@@ -18,8 +18,10 @@ how2plot = plottingConvention.default3D;
 %% Import a DREAM.3D surface mesh
 %
 % <grain3d.load.html |grain3d.load|> reads a DREAM.3D triangle mesh into a
-% @grain3d collection. A voxel-only file does not contain the boundary faces
-% needed for this representation.
+% @grain3d collection. The voxel data of the same file is read by
+% <EBSD3.load.html |EBSD3.load|> and segmented by
+% <EBSD3square.calcGrains.html |calcGrains|>, see
+% <Grains3DReconstruction.html Grain Reconstruction>.
 
 fname = fullfile(mtexDataPath,'EBSD','SmallIN100_MeshStats.dream3d');
 grains = grain3d.load(fname)

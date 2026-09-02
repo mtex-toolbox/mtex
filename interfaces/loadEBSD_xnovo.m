@@ -60,7 +60,7 @@ end
 
 if hasData('GrainId')
   gid = getData([datagroup '/GrainId']);
-  opt.GrainId = gid(:);
+  opt.grainId = double(gid(:));
 end
 
 center = getData([map '/Center']);   % or use h5group2struct(fname,h5info(fname,map));
@@ -71,7 +71,7 @@ numvox = size(phaseId);
 dpos = @(ndx) (0:numvox(ndx)-1)*voxsiz(ndx) - (numvox(ndx)-1)*voxsiz(ndx)/2 + center(ndx);
 [x,y,z] = ndgrid(dpos(1),dpos(2),dpos(3));
 
-ebsd = EBSD3square(vector3d(x,y,z),q,phaseId,CSList,voxsiz,'prop',opt);
+ebsd = EBSD3square(vector3d(x,y,z),q,phaseId+1,(0:numel(CSList)-1).',CSList,voxsiz,'prop',opt);
 ebsd.scanUnit = 'mm';
 
 end
