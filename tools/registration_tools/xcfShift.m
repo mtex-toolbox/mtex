@@ -35,10 +35,6 @@ function [u,peak,pos] = xcfShift(A,B,varargin)
 %  numROI     - tiles across, scalar or [nx ny]. A scalar is scaled by the
 %               aspect ratio to give ny. Default 24
 %  XCFMesh    - peak upsampling, default 250
-%  coarseMesh - resolution of the first refinement pass, default 48
-%
-% Flags
-%  dedupeBand - drop the duplicated band pass indices, see xcfCorrelate
 %
 % Description
 % Only the region where both images are finite is tiled, so the padding an
@@ -56,25 +52,15 @@ function [u,peak,pos] = xcfShift(A,B,varargin)
 % spatialTransform mapImage/edgeMap
 
 % a @mapImage pair carries its own geometry, so answer in specimen units
-isMap = isa(A,'mapImage');
+% a bare image is a map whose pixel (i,j) sits at (j,i)
+if ~isa(A,'mapImage'), A = mapImage(A,'origin',vector3d(1,1,0)); end
+if ~isa(B,'mapImage'), B = mapImage(B,'origin',vector3d(1,1,0)); end
 
-assert(isMap == isa(B,'mapImage'),'MTEX:xcfShift:mixedInput',...
-  'Give two images or two mapImages, not one of each.');
-
-if isMap
-  assert(isequal(gridSize(A),gridSize(B)),'MTEX:xcfShift:sizeMismatch',...
-    ['The two images have to be on one grid before they can be correlated. '...
-    'They are %s and %s.'],mat2str(gridSize(A)),mat2str(gridSize(B)));
-  mg = A;
-  A = A.img; B = B.img;
-end
-
-if size(A,3) > 1, A = mean(A,3); end
-if size(B,3) > 1, B = mean(B,3); end
-
-assert(isequal(size(A),size(B)),'MTEX:xcfShift:sizeMismatch',...
-  'The two images have to be the same size, got %s and %s.',...
-  mat2str(size(A)),mat2str(size(B)));
+assert(isequal(gridSize(A),gridSize(B)),'MTEX:xcfShift:sizeMismatch',...
+  ['The two images have to be on one grid before they can be correlated. '...
+  'They are %s and %s.'],mat2str(gridSize(A)),mat2str(gridSize(B)));
+mg = A;
+A = mean(A.img,3); B = mean(B.img,3);
 
 [nRows,nCols] = size(A);
 
@@ -117,14 +103,8 @@ dx = -dx; dy = -dy;
 
 peak = peak(:);
 
-if isMap
-  % pixel steps into specimen displacement, and tile centres into positions
-  u = dx(:).*mg.d2 + dy(:).*mg.d1;
-  pos = mg.origin + (cy(:)-1).*mg.d1 + (cx(:)-1).*mg.d2;
-else
-  z = zeros(numel(dx),1);
-  u = vector3d(dx(:),dy(:),z);
-  pos = vector3d(cx(:),cy(:),z);
-end
+% pixel steps into specimen displacement, and tile centres into positions
+u = dx(:).*mg.d2 + dy(:).*mg.d1;
+pos = mg.origin + (cy(:)-1).*mg.d1 + (cx(:)-1).*mg.d2;
 
 end

@@ -1,65 +1,53 @@
 classdef pairShifts
-    % @pairShifts class constructor
-    % class to store local XY shifts between test and ref images
-    % also stores cross-correlation function (XCF) parameters and
-    % region of interest (ROI) positions used to calculate shifts
+% the shifts one cross correlation pass measured between two images
+%
+% Syntax
+%   ps = pairShifts(pos,u,peak,roiSize)
+%   v = meanShift(ps,px)
+%
+% Input
+%  pos     - @vector3d, the tile centres
+%  u       - @vector3d, how far each tile of the test image has to move to
+%            sit on the reference
+%  peak    - the height of the correlation peak at each tile, which is the
+%            weight of the measurement
+%  roiSize - the tile size in pixels
+%  px      - the pixel size, to state the shifts in pixels
+%
+% Output
+%  v - [mean length, mean x, mean y] in pixels
+%
+% See also
+% xcfShift trueEbsd/calcDistortion
 
+  properties
+    pos = vector3d   % default constructed, so that isempty answers
+    u = vector3d
+    peak = []
+    roiSize = []
+  end
 
-    properties % related to shifts
-        % xy units should be in um lengths, not pixels
-        xShiftsMap = [] % renamed from shifts.x;] 2D array, 1 value per pixel, x shifts
-        yShiftsMap = [] % renamed from shifts.y;] 2D array, 1 value per pixel, y shifts
- 
-        xShiftsFit = [] % [renamed from shifts.xshiftsROI;] column vector, 1 value per ROI, x shifts after surface fit
-        yShiftsFit = [] % [renamed from shifts.yshiftsROI;]  column vector, 1 value per ROI, y shifts after surface fit
+  methods
 
-        xShiftsXcf = [] % [renamed from ROI.Shift_X_1] column vector, 1 value per ROI, x shifts measured from cross-correlation
-        yShiftsXcf = [] % [renamed from ROI.Shift_Y_1] column vector, 1 value per ROI, x shifts measured from cross-correlation
+    function ps = pairShifts(pos,u,peak,roiSize)
 
-        % add pixel dimensions here to enable conversions
-        dx = [] % pixel length in um
-        dy = [] % pixel length in um
+      if nargin == 0, return; end
+
+      ps.pos = pos(:); ps.u = u(:); ps.peak = peak(:); ps.roiSize = roiSize;
+
     end
 
-    properties % related to ROI
-        % these are in pixel units
-        roiPosX % ROI centre positions (x == columns) in image [renamed from ROI.position_X_pass_1]
-        roiPosY % ROI centre positions (y == rows) in image [renamed from ROI.position_Y_pass_1]
-        roiSize % ROI side length [renamed from ROI.size_pass_1]
+    function v = meanShift(ps,px)
+      % the measured shifts as [mean length, mean x, mean y], in pixels
+
+      x = ps.u.x / px; y = ps.u.y / px;
+      ok = isfinite(x) & isfinite(y);
+
+      if ~any(ok), v = [0 0 0]; return; end
+      v = [mean(hypot(x(ok),y(ok))) mean(x(ok)) mean(y(ok))];
+
     end
 
+  end
 
-    methods
-        function shifts = pairShifts(x,y,xshiftsROI,yshiftsROI,...
-                xShiftsXcf, yShiftsXcf, roiPosX, roiPosY, roiSize, dx, dy, varargin)
-            % Construct an instance of this class
-            % inputs / outputs described in script header
-            %TODO - check input types
-            if nargin == 0, return; end
-
-            % copy constructor
-            if isa(x,'pairShifts')
-                props=properties(x);
-                for i = 1:numel(props)
-                    shifts.(props{i}) = x.(props{i});
-                end
-                return
-            end
-
-            shifts.xShiftsMap = x;
-            shifts.yShiftsMap = y;
-            shifts.xShiftsFit = xshiftsROI(:);
-            shifts.yShiftsFit = yshiftsROI(:);
-            shifts.xShiftsXcf = xShiftsXcf(:);
-            shifts.yShiftsXcf = yShiftsXcf(:);
-
-            shifts.dx = dx;
-            shifts.dy = dy;
-
-            shifts.roiSize = roiSize;           
-            shifts.roiPosX = roiPosX;
-            shifts.roiPosY = roiPosY;
-
-        end
-    end
 end

@@ -46,52 +46,10 @@ for n = 1:numel(mg)
   if isempty(mg(n).img), continue; end
 
   for c = 1:mg(n).nChannel
-    mg(n).img(:,:,c) = boxMean(mg(n).img(:,:,c),k);
+    % a box that shrinks at the border and around a missing value
+    mg(n).img(:,:,c) = movmean(movmean(mg(n).img(:,:,c),k(1),1,'omitnan'),k(2),2,'omitnan');
   end
 
-end
-
-end
-
-% =========================================================================
-function v = boxMean(v,k)
-% the mean of the finite values under a k(1) × k(2) box, border replicated
-
-ok = isfinite(v);
-
-% sum and count separately, so the mean is over what was actually there
-s = v; s(~ok) = 0;
-
-s = boxSum(s,k);
-n = boxSum(double(ok),k);
-
-v = s ./ n;
-v(n == 0) = NaN;
-
-end
-
-% =========================================================================
-function s = boxSum(s,k)
-% a separable box sum with the border replicated
-
-p = (k-1)/2;
-
-s = padReplicate(s,p);
-
-% ones(1,k)/1 along each axis in turn - conv2 takes the two 1-D kernels
-s = conv2(ones(k(1),1),ones(1,k(2)),s,'valid');
-
-end
-
-% =========================================================================
-function A = padReplicate(A,p)
-% repeat the border rows and columns p(1) and p(2) deep
-
-if p(1) > 0
-  A = A([ones(1,p(1)), 1:size(A,1), size(A,1)*ones(1,p(1))], :);
-end
-if p(2) > 0
-  A = A(:, [ones(1,p(2)), 1:size(A,2), size(A,2)*ones(1,p(2))]);
 end
 
 end

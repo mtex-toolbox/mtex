@@ -205,106 +205,26 @@ for n = 1:numel(job.imgList)
   d2New = pixelsize*gL.basis(2);              % column step
   originNew = vc{2}(1)*gL.basis(2) + vc{1}(1)*gL.basis(1);
 
-  % handle ebsd variables too
+  % the map goes with its image: the common grid, in the map's own
+  % coordinates, is looked up point by point. Pixel (i,j) of the image sits
+  % at v{n}{1}(i), v{n}{2}(j), and pixel (1,1) is where the map begins
   if ~isempty(job.imgList(n).ebsd)
-    %construct new EBSD position vectors
-    %
-    % pos.x is the column coordinate of the common image grid and pos.y
-    % the row coordinate, both in um. The entry's layout says which
-    % directions those two advance along, so the conversion is just
-    % their sum along its axes. Read off the grid rather than off a
-    % plotting convention, so a map that has been rotated converts
-    % correctly instead of by the convention it happens to be drawn in.
-    posEbsd  = gn{2}(:,:,1) .* gL.basis(2) + gn{1}(:,:,1) .* gL.basis(1);
-    posEbsdX = posEbsd.x;
-    posEbsdY = posEbsd.y;
 
-    % Everything from here to the @EBSD constructor stays in the image
-    % array order gL, and is flattened with (:) before the map is built,
-    % so gridify re-derives the layout from the positions. The order the
-    % three arrays are stored in therefore cannot be observed downstream
-    % as long as they agree with each other.
-    %
-    % find the nearest ebsd point on sampled grid
-    %
-    % linear indices, not ebsd.id: an entry that has been through
-    % transformReferenceFrame carries a map whose ids were permuted with
-    % it and so no longer number the array, and what the lookup below
-    % needs is a position in the array
-    intpi{n}.Values = reshape(1:numel(job.imgList(n).ebsd), ...
-      size(job.imgList(n).ebsd));
-    intpi{n}.Method = 'nearest';
-    % resample EBSD map on the original common sampling grid
-    ebsdNewId = intpi{n}(gn{1}(:,:,1),gn{2}(:,:,1));
-    %remove nan and zeros (only positive integers)
-    ix = ~isnan(ebsdNewId) & ebsdNewId>0;
+    ebsd = job.imgList(n).ebsd;
+    src = ebsd.pos(1,1) + (gn{1}(:,:,1) - v{n}{1}(1)) .* gL.basis(1) + ...
+      (gn{2}(:,:,1) - v{n}{2}(1)) .* gL.basis(2);
 
-    % resize / resample EBSD map
-    % don't use EBSDsquare/interp because that assumes everything is on a
-    % regular grid, which is sometimes ok but grabbing grabbing ebsd.id from the
-    %griddedInterpolant intpi (i.e. the method in undistort(job)) is
-    %more general.
-    %
-    %create EBSD fields with just 0 values, then repopulate
-    %with the correct fields
-    ebsdMap0 = zeros(size(ebsdNewId)); %zeros matrix
-    prop1 = job.imgList(n).ebsd.prop; %struct containing map props
-    for fn = fieldnames(prop1)'
-      prop1.(char(fn))= ebsdMap0;
-      prop1.(char(fn))(ix)= job.imgList(n).ebsd(ebsdNewId(ix)).prop.(char(fn));
-    end
-    rot1 = rotation.nan(size(ebsdMap0));
-    rot1(ix) = job.imgList(n).ebsd(ebsdNewId(ix)).rotations;
-    phase1 = ebsdMap0;
-    phase1(ix) = job.imgList(n).ebsd(ebsdNewId(ix)).phase;
-    % recreate EBSD object
-    % everything above is built map-shaped (r*c) because that is how the
-    % image grid is indexed, but the @EBSD constructor wants one point
-    % per row -- MTEX 7's gridify hangs on a map-shaped @EBSD instead of
-    % rejecting it, so flatten explicitly here. gridify below restores
-    % the r*c shape.
-    prop1 = structfun(@(v) v(:), prop1, 'UniformOutput', false);
-    ebsd1 = EBSD(vector3d(posEbsdX(:), posEbsdY(:), ebsdMap0(:)), ...
-      rot1(:), phase1(:), ...
-      job.imgList(n).ebsd.CSList, prop1);
-    % the positions above are built fresh, so they carry no reference
-    % frame and the map would fall back to the session default. Hand it
-    % the frame the image is aligned in - the same handle, so the two
-    % cannot drift apart. gridify carries the frame through, so this is
-    % the only place the alignment has to be stated.
-    ebsd1.frame = job.imgList(n).frame;
+    ebsdNew = interp(ebsd,src(:));
 
-    % write to output, in the array order the entry's image is in -
-    % without the layout gridify would canonicalise the map to d1 along y
-    % and every read of a map property would need permuting back
-    ebsdNew = gridify(ebsd1,gL);
+    % on the common grid, in the frame the image is aligned in - the same
+    % handle, so the two cannot drift apart
+    ebsdNew.pos = reshape(gn{2}(:,:,1) .* gL.basis(2) + gn{1}(:,:,1) .* gL.basis(1),[],1);
+    ebsdNew.frame = job.imgList(n).frame;
+    ebsdNew = updateUnitCell(ebsdNew);
 
-    %NOTE: don't try to use @EBSDsquare/interp because it only handles indexed EBSD
-    %points when interpolating the map, this leads to e.g. ebsd.bc disappearing from unindexed
-    %points
-    % this will not work: job.resizedList(n).ebsd = gridify(interp(job.resizedList(n).ebsd,ebsdPosX, ebsdPosY));
-
-
-    % translate ebsd object to match map image offset
-    % offsetPos(1) = row shift, offsetPos(2) = column shift
-    % @EBSD/plus takes a vector3d, so build the offset along the
-    % layout's own axes and add it
-    ebsdNew = ebsdNew + (offsetPos(2)*gL.basis(2) + offsetPos(1)*gL.basis(1));
-
-    job.resizedList(n) = mapImage(imgNew,ebsdNew,'name',job.imgList(n).name);
-
-    % Take the geometry from the IMAGE grid, not from the map.
-    %
-    % vc already carries offsetPos, and the block above adds it to the
-    % map a second time, so a map entry's positions sit one offsetPos
-    % away from its own image. @distortedImg had the same split - pos
-    % from the image grid, ebsd.pos from the map - and the shifts are
-    % expressed against the image grid, so that is what has to be here.
-    % Reproduced deliberately: it looks like a latent bug in the double
-    % offset, but stage 1 changes no numbers. See MIGRATION-mapImage.md.
-    job.resizedList(n).origin = originNew;
-    job.resizedList(n).d1 = d1New;
-    job.resizedList(n).d2 = d2New;
+    % in the array order the entry's image is in - without the layout
+    % gridify would canonicalise the map to d1 along y
+    job.resizedList(n) = mapImage(imgNew,gridify(ebsdNew,gL),'name',job.imgList(n).name);
 
   else
 

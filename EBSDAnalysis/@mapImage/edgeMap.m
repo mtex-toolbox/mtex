@@ -48,7 +48,7 @@ img = mg.img;
 % contrast normalise each channel over its 2nd..98th percentile
 for k = 1:nChan
   ch = img(:,:,k);
-  lim = percentileOf(ch,[2 98]);
+  lim = prctile(ch(:),[2 98]);
   if lim(2) > lim(1), img(:,:,k) = (ch - lim(1)) ./ (lim(2) - lim(1)); end
 end
 

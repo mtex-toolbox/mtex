@@ -68,15 +68,8 @@ classdef spatialTransformShift < spatialTransform
       tf = norm(T.M - eye(3),'fro') < 1e-12;
     end
 
-    function T = absorb(T1,T2)
-
-      T = absorb@spatialTransform(T1,T2);
-      if ~isempty(T), return; end
-
-      if isa(T2,'spatialTransformShift')
-        T = spatialTransformShift(T1.M * T2.M);
-      end
-
+    function H = matrix(T)
+      H = T.M;
     end
 
     function s = paramChar(T)
@@ -92,10 +85,6 @@ classdef spatialTransformShift < spatialTransform
       s = sprintf('scale %.4g × %.4g, rotate %.3g°, shear %.3g°, move (%.4g, %.4g)',...
         sx,sy,rot,shear,T.M(1,3),T.M(2,3));
 
-    end
-
-    function s = char(T)
-      s = ['affine  ' paramChar(T)];
     end
 
   end
@@ -148,27 +137,11 @@ classdef spatialTransformShift < spatialTransform
       %  T - @spatialTransformShift
       %
       % See also
-      % spatialTransformShift rotation/fit
+      % spatialTransformShift spatialTransformPoly/fit
 
-      assert(length(posA) == length(posB),'MTEX:spatialTransform:sizeMismatch',...
-        'The two point sets have to be the same length.');
-
-      assert(length(posA) >= 3,'MTEX:spatialTransform:tooFewPoints',...
-        'An affine needs at least three non collinear points, got %d.',length(posA));
-
-      A = [posA.x(:), posA.y(:), ones(length(posA),1)];
-      b = [posB.x(:), posB.y(:)];
-
-      w = get_option(varargin,'weights');
-      if ~isempty(w)
-        sw = sqrt(w(:));
-        A = A .* sw; b = b .* sw;
-      end
-
-      % one right hand side per output coordinate, so p is 3x2
-      p = A \ b;
-
-      T = spatialTransformShift([p.'; 0 0 1]);
+      % a degree one polynomial displacement is an affine, and this one is the
+      % plain weighted least squares fit
+      T = shiftMatrix(spatialTransformPoly.fit(posA,posB,varargin{:},'degree',1,'noRobust'));
 
     end
 

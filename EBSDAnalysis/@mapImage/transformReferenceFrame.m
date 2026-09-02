@@ -88,7 +88,7 @@ for n = 1:numel(mg)
     R = matrix(orientation.byScreenAlignment(drawnIn,target));
   end
 
-  b = rotateBasis(b,R);
+  b = turned(b,R);
 
   % dimension 1 first, as layoutIndex takes its source
   src = b(1:2);
@@ -96,8 +96,7 @@ for n = 1:numel(mg)
   posOld = mg(n).pos;
 
   linImg = layoutIndex(tgt,src,size(mg(n).img));
-  linPos = layoutIndex(tgt,src,size(posOld));
-  [~,doTranspose] = layoutIndex(tgt,src,size(posOld));
+  [linPos,doTranspose] = layoutIndex(tgt,src,size(posOld));
 
   mg(n).img = mg(n).img(linImg);
   posNew = posOld(linPos);
@@ -117,7 +116,7 @@ for n = 1:numel(mg)
 
   % whichever corner the flips brought to the front, carried into the frame
   % the entry is now stated in
-  mg(n).origin = rotateVector(posNew(1,1),R);
+  mg(n).origin = turned(posNew(1,1),R);
 
   % only a frame target restates where the entry sits - a layout leaves it
   % where it was and merely reorders the array
@@ -127,19 +126,11 @@ end
 
 end
 
-% =========================================================================
-function b = rotateBasis(b,R)
-% apply a rotation matrix to the three axes of a basis
+% -------------------------------------------------------------------------
+function v = turned(v,R)
+% the vectors rotated by the matrix R, shape kept
 
-B = R * [b.x(:).'; b.y(:).'; b.z(:).'];
-b = vector3d(B(1,:),B(2,:),B(3,:));
-
-end
-
-% =========================================================================
-function v = rotateVector(v,R)
-
-xyz = R * [v.x; v.y; v.z];
-v = vector3d(xyz(1),xyz(2),xyz(3));
+xyz = R * [v.x(:).'; v.y(:).'; v.z(:).'];
+v = reshape(vector3d(xyz(1,:),xyz(2,:),xyz(3,:)),size(v));
 
 end

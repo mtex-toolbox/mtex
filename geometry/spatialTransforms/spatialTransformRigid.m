@@ -1,4 +1,4 @@
-classdef spatialTransformRigid < spatialTransform
+classdef spatialTransformRigid < spatialTransformShift
 % one displacement, the same everywhere
 %
 % The whole frame moved and nothing within it changed shape. Fitted as the
@@ -25,8 +25,8 @@ classdef spatialTransformRigid < spatialTransform
 % See also
 % spatialTransform spatialTransformShift
 
-  properties
-    u = vector3d(0,0,0)
+  properties (Dependent = true)
+    u
   end
 
   methods
@@ -38,40 +38,16 @@ classdef spatialTransformRigid < spatialTransform
       assert(isa(u,'vector3d') && isscalar(u),'MTEX:spatialTransform:notAVector',...
         'A rigid transform is given by one @vector3d displacement.');
 
-      T.u = u;
+      T.M(1:2,3) = [u.x; u.y];
 
     end
 
-    function pos = eval(T,pos)
-      pos.x = pos.x + T.u.x;
-      pos.y = pos.y + T.u.y;
-    end
-
-    function T = inv(T)
-      T.u = -T.u;
-    end
-
-    function tf = isid(T)
-      tf = norm(T.u) < 1e-12;
-    end
-
-    function T = absorb(T1,T2)
-
-      T = absorb@spatialTransform(T1,T2);
-      if ~isempty(T), return; end
-
-      if isa(T2,'spatialTransformRigid')
-        T = spatialTransformRigid(T1.u + T2.u);
-      end
-
+    function u = get.u(T)
+      u = vector3d(T.M(1,3),T.M(2,3),0);
     end
 
     function s = paramChar(T)
-      s = sprintf('move (%.4g, %.4g)',T.u.x,T.u.y);
-    end
-
-    function s = char(T)
-      s = ['rigid  ' paramChar(T)];
+      s = sprintf('move (%.4g, %.4g)',T.M(1,3),T.M(2,3));
     end
 
   end
@@ -86,9 +62,6 @@ classdef spatialTransformRigid < spatialTransform
       %   T = spatialTransformRigid.fit(posA,posB,'weights',w)
 
       [dx,dy,w] = transformFitData(posA,posB,varargin{:});
-
-      w = max(real(w),0);
-      if sum(w) == 0, w = ones(size(w)); end
 
       T = spatialTransformRigid(vector3d(...
         sum(w.*dx)/sum(w), sum(w.*dy)/sum(w), 0));

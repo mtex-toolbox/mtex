@@ -190,26 +190,9 @@ classdef mapImage
     function d = get.dy(mg), d = norm(mg.d1); end
     function k = get.nChannel(mg), k = size(mg.img,3); end
 
-    function varargout = gridSize(mg,dim)
-      % the size of the grid this image is on
-      %
-      % NOT size(mg): a sequence of images is a @mapImage array, so size,
-      % numel and length have to keep describing that array. @EBSD can
-      % overload them to mean the map because nobody builds an array of EBSD
-      % objects; here the array is the point.
-
-      sz = size(mg.img,[1 2]);
-
-      if nargin > 1
-        sz = [sz, ones(1,max(0,max(dim(:))-2))];
-        varargout{1} = sz(dim);
-      elseif nargout <= 1
-        varargout{1} = sz;
-      else
-        sz = [sz, ones(1,max(0,nargout-2))];
-        varargout = num2cell(sz(1:nargout));
-      end
-
+    function varargout = gridSize(mg,varargin)
+      % the size of the grid, as size answers it for one image plane
+      [varargout{1:max(1,nargout)}] = size(mg.img(:,:,1),varargin{:});
     end
 
     function v = double(mg)

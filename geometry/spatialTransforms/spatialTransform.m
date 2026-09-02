@@ -85,7 +85,6 @@ classdef spatialTransform < matlab.mixin.Heterogeneous
 
     pos = eval(T,pos)
     T = inv(T)
-    s = char(T)
     s = paramChar(T)
 
   end
@@ -207,6 +206,20 @@ classdef spatialTransform < matlab.mixin.Heterogeneous
 
     end
 
+    function s = char(T)
+      s = [shortChar(T) '  ' paramChar(T)];
+    end
+
+    function opt = fitOptions(~)
+      % what the static fit of this class has to be told to fit one like it
+      opt = {};
+    end
+
+    function H = matrix(~)
+      % the homogeneous matrix, for a transform that is one
+      H = [];
+    end
+
     function stages = stageList(T)
       % what a multi stage transform is built from, itself if it has none
       %
@@ -250,13 +263,24 @@ classdef spatialTransform < matlab.mixin.Heterogeneous
 
     function T = absorb(T1,T2)
       % the product as a single transform, or empty if it needs a composite
+      %
+      % Two transforms given by homogeneous matrices multiply into a third,
+      % which is an affine when its last row says so and a projective
+      % otherwise.
 
-      if isid(T1)
-        T = T2;
-      elseif isid(T2)
-        T = T1;
+      if isid(T1), T = T2; return; end
+      if isid(T2), T = T1; return; end
+
+      T = spatialTransform.empty;
+
+      H1 = matrix(T1); H2 = matrix(T2);
+      if isempty(H1) || isempty(H2), return; end
+
+      H = H1 * H2;
+      if norm(H(3,:) - [0 0 1]) < 1e-12
+        T = spatialTransformShift(H);
       else
-        T = spatialTransform.empty;
+        T = spatialTransformProjective(H);
       end
 
     end

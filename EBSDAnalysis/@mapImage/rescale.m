@@ -59,18 +59,10 @@ for k = 1:numel(mg)
 end
 
 end
-
-% =========================================================================
+% -------------------------------------------------------------------------
 function v = stretch(v,lo,hi)
+% a constant image has nothing to stretch and is left alone
 
-ok = isfinite(v);
-if ~any(ok(:)), return; end
-
-vMin = min(v(ok)); vMax = max(v(ok));
-
-% nothing to stretch, and nothing to divide by
-if vMax <= vMin, return; end
-
-v(ok) = lo + (hi-lo) * (v(ok) - vMin) ./ (vMax - vMin);
+if max(v(:)) > min(v(:)), v = rescale(v,lo,hi); end
 
 end

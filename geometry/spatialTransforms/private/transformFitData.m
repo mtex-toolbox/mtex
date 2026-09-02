@@ -36,8 +36,9 @@ assert(length(posA) == length(posB),'MTEX:spatialTransform:sizeMismatch',...
 x = posA.x(:); y = posA.y(:);
 dx = posB.x(:) - x; dy = posB.y(:) - y;
 
+% a negative weight is no weight
 w = get_option(varargin,'weights');
-if isempty(w), w = ones(size(x)); else, w = w(:); end
+if isempty(w), w = ones(size(x)); else, w = max(w(:),0); end
 
 assert(numel(w) == numel(x),'MTEX:spatialTransform:weightSize',...
   'Expected %d weights, got %d.',numel(x),numel(w));

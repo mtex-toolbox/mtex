@@ -120,7 +120,7 @@ pos = mg.pos;
 [lo,hi] = deal(NaN);
 if size(d,3) == 1
   if check_option(varargin,'edge')
-    lim = percentileOf(d,[2 98]);
+    lim = prctile(d(:),[2 98]);
     lo = lim(1); hi = lim(2);
   else
     lo = min(d,[],'all'); hi = max(d,[],'all');

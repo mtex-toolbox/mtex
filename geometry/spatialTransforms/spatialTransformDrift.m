@@ -106,8 +106,8 @@ classdef spatialTransformDrift < spatialTransform
         numel(T.s),T.s(1),T.s(end),max(hypot(T.u(:,1),T.u(:,2))));
     end
 
-    function s = char(T)
-      s = ['drift  ' paramChar(T)];
+    function opt = fitOptions(T)
+      opt = {'slowScan',T.slowScan};
     end
 
   end

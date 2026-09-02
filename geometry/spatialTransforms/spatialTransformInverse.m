@@ -108,10 +108,6 @@ classdef spatialTransformInverse < spatialTransform
       s = paramChar(Ti.T);
     end
 
-    function s = char(Ti)
-      s = ['inverse of  ' char(Ti.T)];
-    end
-
   end
 
 end

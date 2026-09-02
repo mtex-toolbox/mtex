@@ -54,14 +54,13 @@ function [dx,dy,peak] = xcfCorrelate(A,B,cx,cy,roiSize,fPass,mesh,window,bandPas
 % second, and narrows the window the second pass searches, so it also
 % decides how often the two pass search can settle in a different lobe than
 % a single pass would.
-coarse = get_option(varargin,'coarseMesh',48);
+coarse = min(48,mesh);
 
 rs = roiSize;
 h = round(rs/2);
 nRows = size(A,1);
 nR = numel(cx);
 
-if mesh <= coarse, coarse = mesh; end
 
 % Tiles per batch, holding the coarse correlation array near 128 MB
 batchSize = max(1,floor(2^21/max(rs^2,1)));
@@ -78,7 +77,6 @@ batchSize = max(1,floor(2^21/max(rs^2,1)));
 % measurably for the worse on a known shift, so it is off by default.
 nKeep = fPass(3) + fPass(4);
 band = [1:nKeep, rs-(nKeep-1):rs]';
-if check_option(varargin,'dedupeBand'), band = unique(band); end
 
 bandFilt = bandPass(band,band);
 

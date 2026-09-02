@@ -66,10 +66,6 @@ classdef spatialTransformHandle < spatialTransform
       if isempty(T.funInv), s = [s '  (no inverse)']; end
     end
 
-    function s = char(T)
-      s = ['handle  ' paramChar(T)];
-    end
-
   end
 
 end

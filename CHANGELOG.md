@@ -790,6 +790,20 @@ gL = ebsd.layout                         % read the layout back off a map
 - a `@spatialTransform` sequence displays as a table, stage by stage. Why an array
   of them is a chain rather than a collection is
   `docs/adr/0007-transform-array-is-a-chain.md`
+- a hop of the TrueEBSD workflow is measured, fitted and applied as its
+  `@spatialTransform`, in specimen units. `job.shifts{n}(m)` is the measurement
+  stage m was fitted to - tile centres, shifts and peak heights - and `undistort`
+  composes the hops between a map and the reference and reads map and image once,
+  at where the inverse sends each pixel of the common grid. A resampled map sits
+  on its image grid. On the WC-Co example the affine hops are unchanged, the tilt
+  hop moves by 0.01 px median, and the residuals agree to two decimals
+- the base class of the transforms carries `char`, the product of two matrix
+  transforms and the fit of a stage, so `spatialTransformTilt` is a composite with
+  a default stage list and `spatialTransformRigid` an affine that only moves. The
+  projective stage of a tilt is weighted by the correlation peaks like every other
+  stage
+- `imboxfilt` averages over the pixels that exist at the border and around a
+  missing value, where the box used to repeat the border pixel
 
 ### Build and Housekeeping
 

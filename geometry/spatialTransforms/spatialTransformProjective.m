@@ -70,25 +70,12 @@ classdef spatialTransformProjective < spatialTransform
       tf = norm(T.H - eye(3),'fro') < 1e-12;
     end
 
-    function T = absorb(T1,T2)
-
-      T = absorb@spatialTransform(T1,T2);
-      if ~isempty(T), return; end
-
-      if isa(T2,'spatialTransformProjective')
-        T = spatialTransformProjective(T1.H * T2.H);
-      elseif isa(T2,'spatialTransformShift')
-        T = spatialTransformProjective(T1.H * T2.M);
-      end
-
+    function H = matrix(T)
+      H = T.H;
     end
 
     function s = paramChar(T)
       s = sprintf('perspective (%.3g, %.3g)',T.H(3,1),T.H(3,2));
-    end
-
-    function s = char(T)
-      s = ['projective  ' paramChar(T)];
     end
 
   end

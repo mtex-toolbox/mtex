@@ -10,7 +10,7 @@ function [p,wFinal] = robustLsq(A,b,w,varargin)
 %
 %   p = robustLsq(A,b)
 %   p = robustLsq(A,b,w)
-%   p = robustLsq(A,b,w,'tune',4.685,'iterMax',50)
+%   p = robustLsq(A,b,w,'iterMax',50)
 %
 % Input
 %  A - n × m design matrix
@@ -22,24 +22,16 @@ function [p,wFinal] = robustLsq(A,b,w,varargin)
 %  wFinal - n × 1 weights of the last iteration, prior times bisquare
 %
 % Options
-%  tune    - bisquare tuning constant, default 4.685 for 95% efficiency
 %  iterMax - default 50
 %
 % See also
 % spatialTransform
 
-tune = get_option(varargin,'tune',4.685);
+% the bisquare tuning constant, 95% efficiency
+tune = 4.685;
 iterMax = get_option(varargin,'iterMax',50);
 
-n = size(A,1);
-if nargin < 3 || isempty(w), w = ones(n,1); end
-
 w = w(:);
-assert(numel(w) == n,'MTEX:spatialTransform:weightSize',...
-  'Expected %d weights, got %d.',n,numel(w));
-
-% a negative correlation peak is not evidence against, it is no evidence
-w = max(real(w),0);
 
 sw = sqrt(w);
 p = (A .* sw) \ (b .* sw);

@@ -4,7 +4,6 @@ function job = calcDistortion(job,varargin)
 % Syntax
 %   job = calcDistortion(job)
 %   job = calcDistortion(job,'fitErr')
-%   job = calcDistortion(job,'fitErr','backend','legacy')   % old resampling
 %
 % Input
 %  job - @trueEbsd, after pixelSizeMatch
@@ -26,11 +25,6 @@ function job = calcDistortion(job,varargin)
 %                         after the first doubles the ROI width. Counts
 %                         total attempts, not extra ones, so 1 means a
 %                         single pass; values below 1 are clamped to 1.
-%  backend              - 'fast' (default) or 'legacy', see below
-%  remapBackend         - 'inverse' or 'scattered' for the resampling,
-%                         overriding 'backend'. Picking the halves
-%                         apart is how you tell which of the two a
-%                         difference between runs came from.
 %
 % Description
 % job.T(n) is the unfitted @spatialTransform separating map n from map n+1,
@@ -52,48 +46,15 @@ function job = calcDistortion(job,varargin)
 % redone with the ROI width doubled, until it converges or the ROI no longer
 % fits the image.
 %
-% Backends
-% There is one cross correlation, MTEX's xcfShift. 'backend' now chooses only
-% how the resampling is done, and the two ways are interchangeable:
-%
-%  'inverse'   - invert the fitted displacement field and sample on the
-%                regular grid. About 30× faster at full map size, and the
-%                default
-%  'scattered' - a forward scatteredInterpolant, what TrueEBSD 2.1.0 ran
-%
-% They differ on a few hundredths of a percent of pixels, all of them
-% nearest neighbour ties at a cell boundary.
-%
 % See also
 % trueEbsd/pixelSizeMatch trueEbsd/undistort spatialTransform xcfShift
 
-% -- options -------------------------------------------------------------
 fitErr   = check_option(varargin,'fitErr');
 verbose  = ~check_option(varargin,'silent');
-backend  = get_option(varargin,'backend','fast',{'char'});
 
 % retryMax counts attempts, so it has to be at least one or nothing is
 % calculated at all
-retryMax = get_option(varargin,'retryMax',100, ...
-  {'double';'single';'uint8';'uint16';'uint32'});
-retryMax = max(retryMax,1);
-
-switch lower(backend)
-  case 'fast',   remapBackend = 'inverse';
-  case 'legacy', remapBackend = 'scattered';
-  otherwise
-    error('MTEX:trueEbsd:unknownBackend', ...
-      'backend is ''%s'', expected ''fast'' or ''legacy''',backend);
-end
-
-remapBackend = get_option(varargin,'remapBackend',remapBackend,{'char'});
-
-if check_option(varargin,'xcfBackend')
-  warning('MTEX:trueEbsd:xcfBackendGone', ...
-    ['xcfBackend is gone - the cross correlation is MTEX''s xcfShift and '...
-    'there is only one of it. backend and remapBackend now choose the '...
-    'resampling alone.']);
-end
+retryMax = max(get_option(varargin,'retryMax',100),1);
 
 nImg = numel(job.resizedList);
 if nImg < 2
@@ -189,7 +150,6 @@ sayFooter
     for attempt = 1:retryMax
 
       imTest = imTest0;
-      imRef  = imRef0;
       job.shifts{n} = createArray(max(nStage,1),1,'pairShifts');
       fitted = spatialTransform.empty;
 
@@ -198,12 +158,7 @@ sayFooter
       dist = shortChar(job.T(n));
 
       if isTrue
-        % nothing separates this pair, so there is nothing to
-        % correlate - write zero shifts and move on
-        job.shifts{n}(1) = pairShifts( ...
-          zeros(size(ref.img,1),size(ref.img,2)), ...
-          zeros(size(ref.img,1),size(ref.img,2)), ...
-          [],[],[],[],[],[],[],ref.dx,ref.dy);
+        % nothing separates this pair, so there is nothing to correlate
         sayRow(dist,'·','·',pxStr([0 0 0]),'');
         dist = '';
       else
@@ -211,20 +166,20 @@ sayFooter
         % the previous one left
         for m = 1:nStage
           k = min(numel(xcf),m);
-          [job.shifts{n}(m),fitted(m)] = fitHopStage(imRef,imTest, ...
-            stages(m),xcf(k),test.dx,test.dy);
+          job.shifts{n}(m) = measureShift(ref,imRef0,test,imTest,xcf(k));
+          fitted(m) = fitTo(stages(m),job.shifts{n}(m));
 
           % the FITTED stage, because that is what knows its own
           % degree - an unfitted poly cannot say whether it is a
           % poly11 or a poly22
           sayRow(dist,shortChar(fitted(m)), ...
             sprintf('%d px',xcf(k).ROISize), ...
-            pxStr(roiShift(job.shifts{n}(m))),'');
+            pxStr(meanShift(job.shifts{n}(m),test.dx)),'');
           dist = '';
 
-          if m < nStage
-            imTest = remap(imageGrid(test),job.shifts{n}(m),imTest,'test2ref');
-          end
+          % the test image corrected by this stage, for the next to be
+          % fitted on what it leaves
+          imTest = resample(test,imTest,inv(fitted(m)));
         end
 
         % the hop's transform, now fitted, and still the class it
@@ -236,18 +191,11 @@ sayFooter
       end
 
       % hand the well-contrasted image on to the next hop, in the
-      % frame of the poorly-contrasted one. Going forward that is the
-      % test image corrected by the shifts just fitted, which is also
-      % what the residual measurement below needs, so it is computed
-      % once rather than twice.
-      handOn = isForward && ~job.opt(n+1).highContrast;
-      if handOn || fitErr
-        imTestFit = remap(imageGrid(test),job.shifts{n}(end),imTest,'test2ref');
-      end
-      if handOn
-        carryOut = imTestFit;
+      % frame of the poorly-contrasted one
+      if isForward && ~job.opt(n+1).highContrast
+        carryOut = imTest;
       elseif ~isForward && ~job.opt(n).highContrast
-        carryOut = remap(imageGrid(ref),job.shifts{n}(end),imRef,'ref2test');
+        carryOut = resample(ref,imRef0,job.T(n));
       end
 
       % Residual shifts. Not used downstream - this is the measure of
@@ -255,10 +203,9 @@ sayFooter
       % decided on, which is why there is no retry without it.
       if ~fitErr, break; end
 
-      job.fitError(n) = fitHopStage(imRef,imTestFit, ...
-        spatialTransformShift,xcf(end),test.dx,test.dy);
+      job.fitError(n) = measureShift(ref,imRef0,test,imTest,xcf(end));
 
-      residPix = roiShift(job.fitError(n));
+      residPix = meanShift(job.fitError(n),test.dx);
 
       % on an identity hop nothing was fitted, so the number is not a
       % fit error - it is what the pair happens to differ by, and the
@@ -274,12 +221,6 @@ sayFooter
     end
 
     sayTo(n+1)
-  end
-
-%% ------------------------------------------------------------------------
-  function img = remap(posGrid,shifts,img,shiftdir)
-    % resample img in its partner's frame, see remapShifted
-    img = remapShifted(posGrid,shifts,img,shiftdir,'backend',remapBackend);
   end
 
 %% ------------------------------------------------------------------------
@@ -372,11 +313,8 @@ sayFooter
   end
 
   function s = nameOf(n)
-    % what undistort will write this map's image under, which is the
-    % name the user already knows it by
-    s = job.resizedList(n).name;
-    if isempty(s), s = sprintf('img%d',n); end
-    s = char(s);
+    % what undistort writes this map's image under
+    s = char(job.resizedList(n).name);
   end
 
   function sayRow(dist,stage,roi,shift,resid)
@@ -422,35 +360,13 @@ end
 
 %% =========================================================================
 function T = refitted(proto,fitted)
-% the fitted stages, wrapped back into the class the hop was declared as
+% the fitted stages, in the class the hop was declared as
 
-if isa(proto,'spatialTransformTilt')
-  T = spatialTransformTilt(fitted);
-elseif isscalar(fitted)
-  T = fitted;
+if isa(proto,'spatialTransformComposite')
+  T = proto; T.stages = fitted;
 else
-  T = spatialTransformComposite(fitted);
+  T = fitted;
 end
-
-end
-
-%% =========================================================================
-function v = roiShift(ps)
-% the per-ROI displacements in a @pairShifts as [mean length, mean x, mean y],
-% in pixels
-%
-% This is the as-measured cross-correlation result, not the fitted surface,
-% which is what makes it comparable between a fit stage and the residual
-% measured after it.
-
-v = [0 0 0];
-if isempty(ps.xShiftsXcf), return; end
-
-x  = ps.xShiftsXcf(:)/ps.dx;
-y  = ps.yShiftsXcf(:)/ps.dy;
-ok = ~isnan(x) & ~isnan(y);
-
-v = [mean(sqrt(x(ok).^2 + y(ok).^2)) mean(x(ok)) mean(y(ok))];
 
 end
 

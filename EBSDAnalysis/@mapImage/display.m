@@ -20,7 +20,7 @@ for n = 1:numel(mg)
   m = mg(n);
 
   matrix{n,1} = int2str(n);
-  matrix{n,2} = sizeStr(m.img);
+  matrix{n,2} = size2str(m.img);
   matrix{n,3} = pixelStr(m);
   matrix{n,4} = frameStr(m.frame,m.how2plot);
   matrix{n,5} = frameStr(layoutOf(m),m.how2plot);
@@ -37,22 +37,6 @@ disp(' ')
 
 end
 
-% =========================================================================
-function s = sizeStr(img)
-% r × c, with the channel count only when there is more than one
-
-if isempty(img), s = '-'; return; end
-
-sz = size(img);
-if numel(sz) > 2 && sz(3) > 1
-  s = sprintf('%d × %d × %d',sz(1),sz(2),sz(3));
-else
-  s = sprintf('%d × %d',sz(1),sz(2));
-end
-
-end
-
-% =========================================================================
 function s = pixelStr(m)
 % one number for a square pixel, two only for a genuinely rectangular one
 %

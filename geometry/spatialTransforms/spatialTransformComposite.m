@@ -17,10 +17,13 @@ classdef spatialTransformComposite < spatialTransform
 %
 %   T = spatialTransformComposite(T1,T2)   % apply T1, then T2 - i.e. T1+T2
 %   T = spatialTransformComposite(TArray)
+%   T = fitStage(T,s,posA,posB,'weights',w)
 %
 % Input
-%  T1, T2 - @spatialTransform, in the order they are applied
-%  TArray - @spatialTransform array, likewise
+%  T1, T2     - @spatialTransform, in the order they are applied
+%  TArray     - @spatialTransform array, likewise
+%  s          - which stage to fit
+%  posA, posB - @vector3d, the residual measured after the previous stages
 %
 % Output
 %  T - @spatialTransformComposite
@@ -94,12 +97,19 @@ classdef spatialTransformComposite < spatialTransform
 
     end
 
-    function s = char(T)
-      s = ['composite  ' paramChar(T)];
-    end
-
     function stages = stageList(T)
       stages = T.stages;
+    end
+
+    function T = fitStage(T,s,posA,posB,varargin)
+      % fit stage s to the residual left by the stages before it
+
+      assert(s >= 1 && s <= length(T.stages),'MTEX:spatialTransform:badStage',...
+        'This transform has %d stages, asked for %d.',length(T.stages),s);
+
+      p = T.stages(s); opt = fitOptions(p);
+      T.stages(s) = p.fit(posA,posB,opt{:},varargin{:});
+
     end
 
   end

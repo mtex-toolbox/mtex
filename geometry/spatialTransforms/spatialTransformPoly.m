@@ -100,8 +100,8 @@ classdef spatialTransformPoly < spatialTransform
       s = sprintf('|c| = %.4g',norm(T.c,'fro'));
     end
 
-    function s = char(T)
-      s = [shortChar(T) '  ' paramChar(T)];
+    function opt = fitOptions(T)
+      opt = {'degree',T.degree};
     end
 
   end

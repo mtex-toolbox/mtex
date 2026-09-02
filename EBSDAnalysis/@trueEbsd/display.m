@@ -31,8 +31,8 @@ matrix = cell(n,6);
 for k = 1:n
 
   matrix{k,1} = int2str(k);
-  matrix{k,2} = nameStr(list(k),k);
-  matrix{k,3} = sizeStr(list(k).img);
+  matrix{k,2} = char(list(k).name);
+  matrix{k,3} = size2str(list(k).img);
   % the hop's transform, not a name on the image - the reference has none
   if k <= numel(job.T)
     matrix{k,4} = shortChar(job.T(k));
@@ -55,7 +55,7 @@ disp(' ')
 % the grid every map was put on, once there is one
 if ~isempty(job.resizedList)
   d = job.resizedList(1);
-  disp([' common grid: ' sizeStr(d.img) ' at ' xnum2str(d.dx) ' µm'])
+  disp([' common grid: ' size2str(d.img) ' at ' xnum2str(d.dx) ' µm'])
   disp(' ')
 end
 
@@ -93,52 +93,15 @@ if k >= numel(job.imgList), return; end   % the reference has no hop
 
 switch what
   case 'shifts'
-    if isempty(job.shifts) || ~iscell(job.shifts) || k > numel(job.shifts), return; end
-    ps = job.shifts{k};
-    if isempty(ps), return; end
-    ps = ps(end);
-    x = ps.xShiftsMap; y = ps.yShiftsMap;
+    if k > numel(job.shifts) || isempty(job.shifts{k}), return; end
+    ps = job.shifts{k}(end);
   case 'fitError'
-    if isempty(job.fitError) || k > numel(job.fitError), return; end
+    if k > numel(job.fitError), return; end
     ps = job.fitError(k);
-    x = ps.xShiftsXcf; y = ps.yShiftsXcf;
 end
 
-if isempty(x) || isempty(ps.dx) || isempty(ps.dy), return; end
+if isempty(ps.u), return; end
 
-x  = x(:)./ps.dx;
-y  = y(:)./ps.dy;
-ok = ~isnan(x) & ~isnan(y);
-if ~any(ok), return; end
-
-s = pxStr([mean(sqrt(x(ok).^2 + y(ok).^2)) mean(x(ok)) mean(y(ok))]);
-
-end
-
-% =========================================================================
-function s = nameStr(mg,k)
-% what the aligned image will be called, which is what undistort writes it
-% under. An unnamed entry falls back to img<k>, as undistort does, so the
-% table says what to reach for either way
-
-if isempty(mg.name)
-  s = sprintf('img%d',k);
-else
-  s = char(mg.name);
-end
-
-end
-
-% =========================================================================
-function s = sizeStr(img)
-% r × c, with the channel count only when there is more than one
-
-if isempty(img), s = '-'; return; end
-sz = size(img);
-if numel(sz) > 2 && sz(3) > 1
-  s = sprintf('%d × %d × %d',sz(1),sz(2),sz(3));
-else
-  s = sprintf('%d × %d',sz(1),sz(2));
-end
+s = pxStr(meanShift(ps,job.resizedList(k).dx));
 
 end

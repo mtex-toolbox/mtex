@@ -56,9 +56,10 @@ classdef trueEbsd < handle
 %  resizedList     - @mapImage array on one common pixel grid, filled by
 %                    pixelSizeMatch
 %  shifts          - cell, one entry per hop, each a @pairShifts array with
-%                    one entry per fit stage, the last being the final fit
-%  fitError        - @pairShifts array, one per hop: the residual shifts
-%                    measured AFTER correction, which is what says whether
+%                    one entry per fit stage: the shifts that stage was
+%                    fitted to
+%  fitError        - @pairShifts array, one per hop: the shifts measured
+%                    AFTER correction, which is what says whether
 %                    registration worked. Needs the 'fitErr' flag
 %  undistortedList - @mapImage array, aligned, filled by undistort
 %  opt             - struct array, one per map, the registration settings.
@@ -107,15 +108,14 @@ classdef trueEbsd < handle
       job.imgList = shareOneFrame(job.imgList);
       shareOneUnit(job.imgList);
 
+      % the name an aligned image is written under, so every map has one
+      for k = find(cellfun(@isempty,{job.imgList.name}))
+        job.imgList(k).name = sprintf('img%d',k);
+      end
+
       job.opt = defaultOptions(job.imgList);
 
-      if nargin >= 2
-        job.T = T;
-      else
-        % nothing said about any hop yet, so nothing is assumed -
-        % calcDistortion refuses rather than guessing a model
-        job.T = repmat(spatialTransform.empty,1,0);
-      end
+      if nargin >= 2, job.T = T; end
 
     end % constructor function
 

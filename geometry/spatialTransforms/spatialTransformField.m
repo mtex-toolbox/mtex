@@ -96,10 +96,6 @@ classdef spatialTransformField < spatialTransform
       s = sprintf('%d points, |u| <= %.4g',length(T.pos),max(norm(T.u)));
     end
 
-    function s = char(T)
-      s = ['field  ' paramChar(T)];
-    end
-
   end
 
   methods (Access = private)

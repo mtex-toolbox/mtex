@@ -41,7 +41,7 @@ function checkSelfSufficient
 
 root = mtex_path;
 
-for f = {'trueEbsd','pairShifts','remapShifted','mapImage','xcfShift', ...
+for f = {'trueEbsd','pairShifts','mapImage','xcfShift', ...
     'spatialTransformShift','spatialTransformDrift','spatialTransformTilt'}
   w = which(f{1});
   assert(~isempty(w),'%s is not on the path',f{1});
@@ -235,6 +235,6 @@ end
 % =========================================================================
 function r = residOf(job,n,px)
 fe = job.fitError(n);
-if isempty(fe.xShiftsXcf), r = NaN; return; end
-r = mean(sqrt((fe.xShiftsXcf(:)/px).^2 + (fe.yShiftsXcf(:)/px).^2),'omitnan');
+if isempty(fe.u), r = NaN; return; end
+r = mean(norm(fe.u),'omitnan') / px;
 end
