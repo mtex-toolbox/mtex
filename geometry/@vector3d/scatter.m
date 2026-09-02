@@ -139,6 +139,7 @@ for i = 1:numel(sP)
     if numel(cdata) == length(v)
       cdata = reshape(cdata,[],1);
       sP(i).updateMinMax(cdata);
+      mtexColorMap(sP(i).ax,getMTEXpref('defaultColorMap'));
     else
       cdata = reshape(cdata,[],3);
     end

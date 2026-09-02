@@ -38,8 +38,9 @@ for i = 1:length(pf.allH)
   if isempty(pf.allI{i}), continue; end
   if i>1, mtexFig.nextAxis; end
   
-  [g,cax] = pf.allR{i}.plot(data{i},...
-    'dynamicMarkerSize','parent',mtexFig.gca,varargin{:});
+  [g,cax] = pf.allR{i}.plot(data{i},'dynamicMarkerSize',...
+    'MarkerEdgeColor','black','MarkerEdgeAlpha',0.2,...
+    'parent',mtexFig.gca,varargin{:});
   mtexTitle(mtexFig.gca,char(pf.allH{i},'LaTeX'));
 
   set(cax,'tag','pdf');
