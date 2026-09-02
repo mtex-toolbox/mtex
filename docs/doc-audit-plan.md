@@ -44,7 +44,6 @@ Items 1-10 and the 2026-08-10 pass below are closed except for:
   that guard to re-derive them.
 - **13 dead `code.google.com` links** in `changelog.m`, archive material.
 - **33 `toc listed twice` instances**, carried at budget rather than fixed.
-- The `plotSection(mdf,'axisAngle')` **segfault** (item 6, in `TODO.md`).
 
 **Link status 2026-09-02: no dangling instance outside `changelog.m`, seven
 inside it.** Re-derive with the recipe at the top of this file rather than
@@ -655,18 +654,16 @@ in the `makeHelpToc` calls.
 
 ### A segfault found by merging the MDF pages
 
-`plotSection(mdf,'axisAngle')` **crashes MATLAB** — a segmentation violation,
-not a catchable error. It needs both a cross-phase misorientation (differing
-left and right symmetry) *and* bandwidth ≥ 32:
+`plotSection(mdf,'axisAngle')` crashed MATLAB with a segmentation violation on
+a cross-phase misorientation at bandwidth ≥ 32:
 
     mdf = calcDensity(grains.boundary('Fo','En').misorientation,'halfwidth',5*degree);
-    mdf.bandwidth = 25;  plotSection(mdf,'axisAngle')   % fine
-    mdf.bandwidth = 32;  plotSection(mdf,'axisAngle')   % segmentation violation
+    mdf.bandwidth = 32;  plotSection(mdf,'axisAngle')
 
-Same-phase MDFs (`CS == SS`) are fine at bandwidth 25, 32 and 48, and
-`plotPDF` is fine on the crashing object, so it is specific to the axis-angle
-sections. Recorded in `TODO.md` under Fixes. The merged page shows the
-axis-angle sections of a same-phase MDF instead.
+**Fixed**, see `TODO.md` F4: it draws on 2026-09-02 at bandwidth 25, 32 and 48,
+and at the `mtex-7.0.0` tag too. `MisorientationDistributionFunction.m` builds
+`mdf_boundary` from `grains.boundary('Fo','En')` and plots its 90 degree
+axis-angle section.
 
 This is why the five pages above were run *before* being wired into a TOC:
 `calcDensity` on a cross-phase boundary misorientation is a completely routine

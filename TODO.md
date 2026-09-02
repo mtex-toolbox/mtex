@@ -248,7 +248,7 @@ copy; only what is still open is summarised here.
 | F1 | Contoured pole figures differ between an ODF and the orientations it came from | 3 | 1 | triage | — | #172 |
 | F2 | `calcODF` / `plotPDF` produce different results than 5.11.1 | 2 | 1 | triage | — | #2285, #2148 |
 | F3 | `calcDensity` crashes MATLAB when producing a pole figure | 3 | 1 | crash | — | #1464, #580 |
-| F4 | `plotSection(mdf,'axisAngle')` segfaults — needs differing left/right symmetry and bandwidth ≥ 32 | 3 | 1 | crash | — | [→](#f4) |
+| F4 | `plotSection(mdf,'axisAngle')` segfaults on a cross-phase misorientation at bandwidth ≥ 32 — **fixed**, does not reproduce on 2026-09-02 | 3 | 1 | done | — | [→](#f4) |
 | F5 | `'logarithmic'` was ignored by `plotPDF` — **fixed 2026-08-12**, `@vector3d/smooth` tested only for the short spelling `'log'` | 2 | 0 | done | — | #1691 |
 | F6 | Filled contours extend past the edge of the pole figure — **reproduced and half diagnosed 2026-08-12**; the `'cutOutside'` guard is inert, for two independent reasons, and the second needs a decision on how far a partial pole figure may be extrapolated | 1 | 0 | decide | — | #707, [→](#f6) |
 | F7 | `plotSection` glitch for m-3 | 1 | 0 | triage | — | #209 |
@@ -1250,19 +1250,19 @@ independent per-candidate results; that would need custom code at the
 `radon.m` Fourier-coefficient level.
 
 ### F4
-Hard crash, not a MATLAB error. Needs both a differing left/right symmetry
-(a cross-phase misorientation) and bandwidth ≥ 32. Reproduced on R2024b:
+Fixed. The recipe below was a hard crash, not a MATLAB error, needing both a
+differing left/right symmetry and bandwidth ≥ 32:
 
 ```matlab
 ebsd = mtexdata('forsterite'); grains = calcGrains(ebsd);
 mdf = calcDensity(grains.boundary('Fo','En').misorientation,'halfwidth',5*degree);
-mdf.bandwidth = 25;  plotSection(mdf,'axisAngle')   % fine
-mdf.bandwidth = 32;  plotSection(mdf,'axisAngle')   % segmentation violation
+mdf.bandwidth = 32;  plotSection(mdf,'axisAngle')
 ```
 
-Same-phase (Fo→Fo, `CS == SS`) is fine at bandwidth 25, 32 and 48, so it is
-the combination that matters. Found 2026-07-28 while merging the MDF doc
-pages; that page now plots axis-angle sections of a same-phase MDF instead.
+It draws on 2026-09-02, at bandwidth 25, 32 and 48, over 11751 Fo-En segments
+on R2024b - and at the `mtex-7.0.0` tag as well, so the fix predates that tag
+and no commit here can be named for it. `MisorientationDistributionFunction.m`
+plots the cross-phase MDF at a 90 degree section and passes the doc sweep.
 
 ### X15
 Two tolerances answer the same question an order of magnitude apart.
