@@ -8,7 +8,7 @@ function out = layoutFixtures(name)
 % Description
 % One entry per layout path in @mtexFigure: a single axes and a raster, a
 % global colorbar and one per axes, all four colorbar and all four legend
-% sides, the three branches of calcTightInset, a polar axes and a placed
+% sides, the three branches of axesInset, a polar axes and a placed
 % camera. Synthetic throughout - mtexdata would dominate the runtime and
 % adds nothing to a layout question.
 %
@@ -74,7 +74,7 @@ plot(synthODF,'sections',6,'contourf');
 end
 
 function sphereScatter
-% the calcTightInset 'visible off' branch, with labels in data units
+% the axesInset 'visible off' branch, with labels in data units
 plot(vector3d.rand(200),'upper','grid');
 end
 

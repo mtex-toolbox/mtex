@@ -3,7 +3,7 @@ function fac = figSizeFactor(figSize,fallback)
 %
 % Input
 %  figSize  - 'huge'|'large'|'normal'|'medium'|'small'|'tiny' or a fraction
-%  fallback - what a missing or unknown value means, 0 by default
+%  fallback - what a missing, zero or unknown value means, 0 by default
 %
 % Output
 %  fac - fraction of the screen
@@ -13,7 +13,7 @@ function fac = figSizeFactor(figSize,fallback)
 
 if nargin < 2, fallback = 0; end
 
-if isnumeric(figSize) && ~isempty(figSize), fac = figSize; return; end
+if isnumeric(figSize) && ~isempty(figSize) && figSize > 0, fac = figSize; return; end
 
 switch char(figSize)
   case 'huge',              fac = 1;

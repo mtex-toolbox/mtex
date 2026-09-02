@@ -11,7 +11,7 @@ function ratio = axesRatio(ax)
 %  ratio - height / width
 %
 % See also
-% mtexLayout/measure mtexLayout/solveLayout
+% mtexLayout/measure mtexFigure/drawNow
 
 % polar axes are circular and have no camera to derive a ratio from
 if isa(ax,'matlab.graphics.axis.PolarAxes'), ratio = 1; return; end

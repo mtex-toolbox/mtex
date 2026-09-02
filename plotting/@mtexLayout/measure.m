@@ -51,7 +51,7 @@ if isempty(ax)
   spec.plotBox = [0 0 1 1];
 else
   ref = referenceAxes(mtexFig,ax);
-  spec.ratio = lay.ratioOf(ax(1));
+  spec.ratio = axesRatio(ax(1));
   spec.inset = axesInset(ref);
   spec.plotBox = plotBoxOf(ref);
 end
@@ -176,18 +176,13 @@ cBar.thickness = pos(4 - isVertical); % the short side: width if it stands up
 cBar.gap = fs / 2;
 
 % room past the bar for its own ticks and label
-try
-  ti = get(h(1),'TightInset');
-  ti = ti(1:2) + ti(3:4);
-catch
-  l = get(h(1),'Label');
-  if isempty(get(l,'String'))
-    ti = [3.5 1.5] * fs;
-  elseif get(l,'Rotation') == 0
-    ti = [3.5 3.5] * fs;
-  else
-    ti = [5.5 1.5] * fs;
-  end
+l = get(h(1),'Label');
+if isempty(get(l,'String'))
+  ti = [3.5 1.5] * fs;
+elseif get(l,'Rotation') == 0
+  ti = [3.5 3.5] * fs;
+else
+  ti = [5.5 1.5] * fs;
 end
 cBar.labelRoom = ti(2 - isVertical) + fs/2;
 

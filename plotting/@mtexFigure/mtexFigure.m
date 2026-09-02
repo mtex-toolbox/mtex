@@ -29,34 +29,20 @@ classdef mtexFigure < handle
 %  tightInset        - is added to axisSize
 %  figTightInset     - is added to figSize
 %  layoutMode        - 'auto' or 'user'
+%  outerPlotSpacing  - margin around the whole figure
 %
 % Dependent Class Properties
 %   currentAxes      - handle of the current axis
 %   currentId        - id of the current axis 
 %   axesWidth        - 
 %   axesHeight       -
-%   outerPlotSpacing -
 %   dataCursorMenu   - handle of the data cursor context menu  
 %
 % Description
 % 
-% The calculation of the layout is initiated by the command
-% <mtexFigure.drawNow.html drawNow>. This involves calls to the following
-% functions:
-%
-%  drawNow
-%    |  |
-%    V  |
-%  calcTightInset -> compute width of boundary around each axis
-%       |
-%       V
-%  updateLayout
-%       |
-%       V
-%  calcPartition -> compute partition (nrows, ncols)
-%       |
-%       V
-%  calcAxesSize  -> compute axes size
+% The layout is computed by <mtexFigure.drawNow.html drawNow>, which sizes
+% the figure and hands the rest to <mtexLayout.mtexLayout.html mtexLayout>:
+% measure the decorations, solve every position, write back what moved.
 %
 % A mtexFigure may have the following children
 %
@@ -72,9 +58,9 @@ classdef mtexFigure < handle
   properties
     parent            % the parent figure
     children          % the axes
-    cBarAxis          % the colorbar axes
+    cBarAxis = gobjects(0,1) % the colorbar axes
     cBarSide = 'east' % side the colorbar is placed at
-    legendAxis        % the legend, if it is placed outside the axes
+    legendAxis = gobjects(0,1) % the legend, if it is placed outside the axes
     legendSide = 'east' % side the legend is placed at
     legendSpacing     % spacing between the axes and the legend
     innerPlotSpacing  %
@@ -88,7 +74,7 @@ classdef mtexFigure < handle
     figTightInset = [10,10,10,10] % is added to figSize
     layoutMode = 'auto' % set to user to fix it
     figSizeFactor = 0 % relative to the full screen
-    outerSpacing = 10 % margin around the whole figure
+    outerPlotSpacing = 10 % margin around the whole figure
     referenceAxis     % the axes whose decorations decide the margin, [] for the first
   end
 
@@ -97,13 +83,11 @@ classdef mtexFigure < handle
     currentId         % current axis id
     axesWidth         %
     axesHeight        %
-    outerPlotSpacing  %
     dataCursorMenu    % handle of the data cursor context menu
     layout            % the @mtexLayout that computes the layout
   end
 
   properties (Access = protected)
-    cBarShift
     dcmListener % keeps the lazy data cursor listener alive
     engine      % the @mtexLayout, built on first use
   end
@@ -243,23 +227,16 @@ classdef mtexFigure < handle
       %
       % Every layout is bounded by it, whichever way in: a figure the screen
       % cannot hold is one the window manager shrinks, and a snapshot taken of
-      % that squeezes the figure into the wrong shape.
+      % that squeezes the figure into the wrong shape. The preference
+      % screenSize pins it to a virtual screen, which makes figure exports
+      % reproducible across machines - the documentation build sets it.
 
-      ext = getScreenExtent;
-      ext = ext(1,3:4);
+      ext = getMTEXpref('screenSize');
+      if isempty(ext)
+        ext = get(0,'MonitorPositions');
+        ext = ext(1,3:4);
+      end
 
-    end
-
-    function w = get.outerPlotSpacing(mtexFig)
-      % the margin that was asked for, not whatever survived in figTightInset:
-      % a colorbar or legend band grows one side of that, and taking the
-      % minimum of it silently threw an asymmetric margin away
-      w = mtexFig.outerSpacing;
-    end
-
-    function set.outerPlotSpacing(mtexFig,w)
-      mtexFig.outerSpacing = w;
-      mtexFig.figTightInset = w * [1,1,1,1];
     end
 
     function lay = get.layout(mtexFig)

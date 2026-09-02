@@ -10,8 +10,8 @@ function check_colorbarLocation
 %
 % The side is now kept in mtexFig.cBarSide, the way mtexFig.legendSide
 % already worked, read off the colorbar before any Position assignment
-% switches its Location to 'manual'. calcTightInset reserves the band there
-% and updateLayout puts the bar into it.
+% switches its Location to 'manual'. The layout reserves the band there
+% and puts the bar into it.
 
 old = get(0,'DefaultFigureVisible');
 cleanup = onCleanup(@() set(0,'DefaultFigureVisible',old));

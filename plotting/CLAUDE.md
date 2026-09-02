@@ -6,18 +6,16 @@ resizing. Build a new plot type on it rather than on raw `figure`/`axes` handles
 - `mtexFigure` owns the axes position, so anything MATLAB glues to the outside of an axes —
   a colorbar, a legend with an `...outside` location — has to be **adopted**, or the two
   fight over the position and the result depends on the number of resize events.
-  `private/adoptLegend.m`, `adoptColorbars` in `private/updateLayout.m`. Both work the same
-  way: reserve a band in `calcTightInset`, position explicitly in `updateLayout`. Legend gap
-  is `mtexFig.legendSpacing`, per plot via `'legendSpacing'` or `setMTEXpref`.
-- Layout comes from the axes **camera**, not the data: `private/calcAxesSize.m` shapes the
-  axes like the shadow the plot box casts on screen. Set the camera *before* `drawNow`, or
+  `private/adoptLegend.m`, `private/adoptColorbars.m`. Both work the same way: `measure`
+  reserves a band for it, `solveLayout` positions it explicitly. Legend gap is
+  `mtexFig.legendSpacing`, per plot via `'legendSpacing'` or `setMTEXpref`.
+- Layout comes from the axes **camera**, not the data: `plotting_tools/axesRatio.m` shapes
+  the axes like the shadow the plot box casts on screen. Set the camera *before* `drawNow`, or
   the axes is shaped for the wrong view (see `geometry/@crystalShape/plot.m`).
 - **Everything the layout manages is pinned to `Units = 'pixels'`** — the figure, its axes,
   adopted colorbars, adopted legends — at the moment it enters the layout, and nothing ever
   switches it back (`@mtexLayout/measure.m`). Do not save-and-restore units around layout
-  code: the old `@mtexFigure` did that at twelve sites, and two of the three `TightInset`
-  reads in `calcTightInset.m` skipped it anyway and silently relied on a caller having
-  switched. Read a position, get pixels.
+  code. Read a position, get pixels.
 - `@mtexLayout` splits the layout into **measure → solve → apply**. `solveLayout` is pure
   arithmetic — a spec struct in, every position out, no handle either way — which is why
   `tests/core/check_mtexLayout` can test the layout without opening a figure. `measure` is

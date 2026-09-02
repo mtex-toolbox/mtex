@@ -2,18 +2,17 @@ classdef mtexLayout < handle
 % the layout engine behind @mtexFigure
 %
 % Description
-% Splits what @mtexFigure used to do in a single interleaved pass into three
-% steps, so that the arithmetic can be computed - and tested - without a
-% figure:
+% Three steps, so that the arithmetic can be computed - and tested - without
+% a figure:
 %
 %  <mtexLayout.measure.html measure>          read the geometry off the graphics objects
 %  <mtexLayout.solveLayout.html solveLayout>  pure arithmetic, no handles in and none out
 %  <mtexLayout.apply.html apply>              write back only what actually moved
 %
-% <mtexLayout.resolve.html resolve> drives the three until the decoration
-% band stops moving. solveLayout is static: give it a spec struct and it
-% returns every position with no figure existing anywhere, which is what
-% tests/core/check_mtexLayout exercises.
+% <mtexLayout.resolve.html resolve> drives the three until nothing moves.
+% solveLayout is static: give it a spec struct and it returns every position
+% with no figure existing anywhere, which is what tests/core/check_mtexLayout
+% exercises.
 %
 % See also
 % mtexFigure mtexFigure/drawNow
@@ -21,13 +20,9 @@ classdef mtexLayout < handle
 properties (Access = private)
   busy = false            % a layout pass is running
   held = 0                % suspend depth, see hold
-  heldFig                 % the @mtexFigure to lay out when the last hold ends
   lastToken               % what the cached measurement was taken under
   lastSpec                % the cached measurement
   lastPlan                % the last plan solved, returned to re-entrant callers
-  ratioAxes = gobjects(0,1) % axes the cached ratios belong to
-  ratioKey = []           % camera state each was measured under
-  ratioValue = []         % height/width
 end
 
 methods (Static)
@@ -44,7 +39,7 @@ methods
 
   end
 
-  function release = hold(lay,mtexFig)
+  function release = hold(lay)
     % stop laying out until the returned onCleanup goes out of scope
     %
     % Building a figure calls drawNow once per plot command, and every one of
@@ -57,23 +52,18 @@ methods
     % layout. So take the hold after any early return, not before it.
     %
     % Syntax
-    %   release = mtexFig.layout.hold(mtexFig);  % released when cleared
+    %   release = mtexFig.layout.hold;  % released when cleared
     %
     % See also
     % layoutHold mtexLayout/resolve
 
     lay.held = lay.held + 1;
-    lay.heldFig = mtexFig;
     release = onCleanup(@() lay.unhold);
 
   end
 
   function unhold(lay)
-    % end one hold, and lay the figure out if it was the last
-
     lay.held = max(0,lay.held - 1);
-    if lay.held == 0, lay.heldFig = []; end
-
   end
 
   function tf = isHeld(lay)
@@ -102,43 +92,32 @@ methods
 
   end
 
-  function ratio = ratioOf(lay,ax)
-    % height/width to shape an axes with, remembered per camera
+  function resize(lay,mtexFig,position)
+    % give the figure a size, without the resize callback coming straight back
     %
-    % axesRatio projects the eight corners of the plot box onto the camera.
-    % calcPartition used to ask for it once per candidate grid and drawNow
-    % about 3n times in all, always with the camera untouched in between.
+    % A [w h] is centred on the screen and capped at it: a figure larger than
+    % the screen is one the window manager shrinks and the snapshot then
+    % squeezes. An [x y w h] is taken as given.
 
-    % a polar axes is circular and has no camera to derive a ratio from
-    if isa(ax,'matlab.graphics.axis.PolarAxes'), ratio = 1; return; end
+    fig = mtexFig.parent;
+    if fig.WindowStyle == "docked", return; end
 
-    key = [ax.CameraPosition ax.CameraTarget ax.CameraUpVector ...
-      ax.PlotBoxAspectRatio ax.DataAspectRatio];
-
-    hit = lay.ratioAxes == ax;
-    if any(hit) && isequal(lay.ratioKey(hit,:),key)
-      ratio = lay.ratioValue(hit);
-      return
+    if numel(position) == 2
+      screen = mtexFig.screenExtent;
+      position = min(position,screen);
+      position = [(screen - position)/2, position];
     end
 
-    ratio = axesRatio(ax);
+    % onCleanup rather than a plain restore: an error in between used to leave
+    % the figure with no ResizeFcn at all, i.e. permanently deaf to being resized
+    old = fig.ResizeFcn;
+    fig.ResizeFcn = [];
+    restore = onCleanup(@() set(fig,'ResizeFcn',old)); %#ok<NASGU>
 
-    if any(hit)
-      lay.ratioKey(hit,:) = key;
-      lay.ratioValue(hit) = ratio;
-    else
-      lay.ratioAxes = [lay.ratioAxes; ax];
-      lay.ratioKey = [lay.ratioKey; key];
-      lay.ratioValue = [lay.ratioValue; ratio];
-    end
+    fig.Position = position;
 
-    % drop entries whose axes have gone
-    alive = isgraphics(lay.ratioAxes);
-    if ~all(alive)
-      lay.ratioAxes = lay.ratioAxes(alive);
-      lay.ratioKey = lay.ratioKey(alive,:);
-      lay.ratioValue = lay.ratioValue(alive);
-    end
+    % the space to lay out in just changed
+    lay.invalidate;
 
   end
 

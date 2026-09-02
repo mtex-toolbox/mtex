@@ -1,21 +1,22 @@
-function plan = resolve(lay,mtexFig,override)
-% lay the figure out: measure, solve, apply, until the inset stops moving
+function plan = resolve(lay,mtexFig,override,refit)
+% lay the figure out: measure, solve, apply, until nothing moves
 %
 % Syntax
 %   plan = lay.resolve(mtexFig)
 %   plan = lay.resolve(mtexFig,override)
+%   plan = lay.resolve(mtexFig,override,refit)
 %
 % Input
 %  override - spec fields to force, e.g. a pinned axis size, without writing
 %             them onto the @mtexFigure and having them outlive this call
+%  refit    - resize the figure to what the layout needs
 %
 % Description
 % The decoration band depends on the size of the axes - a wider axes gets
-% different tick labels - so the layout is a fixed point rather than a
-% single pass. @mtexFigure used to settle that by running the whole layout
-% twice unconditionally, whatever the figure held. This iterates instead:
-% the usual case converges after one pass and stops, and a case that would
-% oscillate stops too.
+% different tick labels - and a refit changes the space to lay out in, so
+% the layout is a fixed point rather than a single pass. The usual case
+% converges after one pass and stops, and a case that would oscillate stops
+% too.
 %
 % Re-entrant calls return the plan in hand. Writing an axes Position while
 % laying out can bring the figure resize callback straight back round here,
@@ -25,9 +26,10 @@ function plan = resolve(lay,mtexFig,override)
 % mtexLayout/measure mtexLayout/apply mtexLayout/solveLayout
 
 if nargin < 3, override = struct; end
+if nargin < 4, refit = false; end
 
 plan = lay.lastPlan;
-if lay.busy || lay.isHeld || isempty(mtexFig.children), return; end
+if lay.busy || isempty(mtexFig.children), return; end
 
 lay.busy = true;
 done = onCleanup(@() lay.clearBusy); %#ok<NASGU>
@@ -41,7 +43,16 @@ for pass = 1:maxPasses
   plan = mtexLayout.solveLayout(spec);
   plan.passes = pass;
 
-  if ~lay.apply(mtexFig,plan), break; end
+  moved = lay.apply(mtexFig,plan);
+
+  % keeping the aspect ratio leaves space over on one side, and a pinned axis
+  % size needs more than there is - either way the figure ends up the size the
+  % layout asked for, so the size the previous plot left behind never carries
+  % over. A figure the screen cannot hold stays capped, so do not insist.
+  grow = refit && pass < maxPasses && any(abs(plan.figSize - spec.figSize) > 1);
+  if grow, lay.resize(mtexFig,plan.figSize); end
+
+  if ~moved && ~grow, break; end
 
   % the axes moved, so the decorations may want different room than they did
   % when they were measured. Measuring is the expensive part of a layout - on
@@ -50,7 +61,7 @@ for pass = 1:maxPasses
   before = max(spec.inset,[],1);
   spec = withOverride(lay.measure(mtexFig),override);
 
-  if max(abs(max(spec.inset,[],1) - before)) <= 1, break; end
+  if ~grow && max(abs(max(spec.inset,[],1) - before)) <= 1, break; end
 
 end
 

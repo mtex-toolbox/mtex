@@ -180,8 +180,7 @@ including 6.1 have one combined list there and no entry here.
   `apply` writes back. `resolve` drives the three until the reserved decoration band
   stops moving. `@mtexFigure` keeps its name, its appdata key and every property
   external code reads - `ncols`, `nrows`, `axisWidth`, `axisHeight`, `tightInset` and
-  `figTightInset` are written back onto it. The engine is on by default;
-  `setMTEXpref('newLayout',false)` selects the previous code, kept as `drawNowLegacy`
+  `figTightInset` are written back onto it
 - a settled layout writes nothing at all - `apply` skips any position within half a
   pixel of where it already is - so the scale bar listener and the resize callback
   stop being fed work that changes nothing. Relaying an unchanged figure went from

@@ -30,18 +30,9 @@ if ~isempty(cBar)
   end
 end
 
-old = reshape(mtexFig.cBarAxis(:),[],1);
-
-% the empty cases are spelled out separately: cBarAxis starts out as [] (a
-% double), so comparing it to a graphics array with == would throw
-if isempty(old) || isempty(found)
-  changed = ~(isempty(old) && isempty(found));
-else
-  % a stale handle - the colorbar was deleted meanwhile - counts as a change
-  % too, and has to be caught before == sees it
-  changed = numel(old) ~= numel(found) || ~all(isgraphics(old)) || ...
-    ~all(found == old);
-end
+% a stale handle - the colorbar was deleted meanwhile - counts as a change too
+old = mtexFig.cBarAxis(:);
+changed = ~isequal(old,found) || ~all(isgraphics(old));
 
 if ~changed, return; end
 

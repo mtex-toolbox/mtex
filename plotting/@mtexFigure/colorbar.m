@@ -48,7 +48,7 @@ if isempty(mtexFig.cBarAxis) % create some new colorbars
   
 else % remove old colorbars
   delete(mtexFig.cBarAxis);
-  mtexFig.cBarAxis = [];
+  mtexFig.cBarAxis = gobjects(0,1);
 end
 
 mtexFig.drawNow('keepAxisSize',varargin{:});

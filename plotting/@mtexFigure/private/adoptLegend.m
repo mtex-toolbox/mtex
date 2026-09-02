@@ -9,17 +9,17 @@ function changed = adoptLegend(mtexFig)
 % out differently on every run.
 %
 % Taking the legend over settles this: we remember which side it was asked
-% for, from then on reserve a band for it in the tight inset
-% (calcTightInset) and position it ourselves (updateLayout). Assigning a
-% Position switches the legend to manual placement, so MATLAB stops
-% resizing the axes behind our back. Legends inside the axes are left alone.
+% for, from then on reserve a band for it and position it ourselves.
+% Assigning a Position switches the legend to manual placement, so MATLAB
+% stops resizing the axes behind our back. Legends inside the axes are left
+% alone.
 %
 % Output
 %  changed - whether the adopted legend changed, i.e. the tight inset has to
 %            be recomputed
 
 old = mtexFig.legendAxis;
-if ~isempty(old) && ~all(isgraphics(old)), old = []; end % deleted meanwhile
+if ~all(isgraphics(old)), old = gobjects(0,1); end % deleted meanwhile
 
 new = old;
 side = mtexFig.legendSide;
@@ -48,14 +48,7 @@ if isempty(new)
   end
 end
 
-% the empty cases are spelled out separately: legendAxis starts out as []
-% (a double), so comparing it to a graphics handle with == would throw
-if isempty(old) || isempty(new)
-  changed = ~(isempty(old) && isempty(new));
-else
-  changed = old ~= new;
-end
-changed = changed || ~strcmp(side,mtexFig.legendSide);
+changed = ~isequal(old,new) || ~strcmp(side,mtexFig.legendSide);
 
 if changed
   % all legend geometry below is computed in pixels

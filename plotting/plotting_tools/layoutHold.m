@@ -4,7 +4,8 @@ function release = layoutHold(mtexFig)
 % Syntax
 %   release = layoutHold(mtexFig);
 %   ...                              % many plot commands
-%   clear release                    % lays the figure out, once
+%   clear release
+%   mtexFig.drawNow                  % lays the figure out, once
 %
 % Input
 %  mtexFig - @mtexFigure, or the plain struct newMtexFigure falls back to
@@ -20,9 +21,9 @@ function release = layoutHold(mtexFig)
 % axes seventeen times to produce one figure; holding the layout while it
 % builds made that five measurements and took 46% off the wall time.
 %
-% Releasing lays the figure out, so it is safe to take the hold before any
-% early return: whichever way the command leaves, the figure ends up laid out
-% exactly once.
+% Releasing does not lay the figure out - the drawNow the command ends with
+% does, so release before it. Take the hold after any early return, or the
+% figure is left as it was.
 %
 % See also
 % mtexLayout/hold mtexFigure/drawNow
@@ -33,6 +34,6 @@ release = [];
 % mtexFigure at all - nothing to hold then
 if isempty(mtexFig) || isstruct(mtexFig), return; end
 
-release = mtexFig.layout.hold(mtexFig);
+release = mtexFig.layout.hold;
 
 end
