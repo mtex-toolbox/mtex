@@ -27,35 +27,49 @@ does not prove a missing target — always re-check against the source tree.
 
 Items 1-10 and the 2026-08-10 pass below are closed except for:
 
-- **Item 10** — deferred by decision on 2026-07-28, revisit much later. One of
-  its entries (`SO3FunRBF/interpolate`) was fixed on 2026-08-06; the rest
-  stand, minus the two whose *prose* was reworded on 2026-08-10 so the pages no
-  longer read as unfinished (`interp(...,'bingham')` and the
-  `SO3FunVectorField` quiver plot — the underlying questions are unchanged).
-- **Twinning**, excluded by request on 2026-08-10: the `twinningSystem`
-  dangling link, the empty `Misorientations/Twinning` chapter and the
-  `Plasticity/TwinningTutorial` placeholder.
-- **`EBSDGradient`**, still deliberately dangling — the page should be written
-  against the non gridded gradient API that is in progress.
-- **Four open questions** that no amount of editing can answer, left in place
-  as `TODO` markers and listed in `TODO.md` C2: the (001)/(071) axes in
-  `TiltAndTwistBoundaries.m`, the commented out Bingham test in
-  `GrainOrientationParameters.m`, "deviation from an ellipse" in
-  `EllipseBasedParameters.m`, and the "fibryness" measure in
-  `Grain_dispersion_axes.m`.
-- **`Plasticity/SachsModel`**, kept as an empty stub by decision on
-  2026-08-10 even though `SingleSlipModel.m` covers the same physics.
-- **Four content orphans** from item 6: `Dream3dGrains`, `S2FunQuadrature`,
-  `MisorientationGrainExchangeSym`, `changelog`. `Contribute2Doc` is a fifth,
-  prose only and reachable from the website.
-- The `plotSection(mdf,'axisAngle')` **segfault** (item 6, in `TODO.md`) and
-  the dead external links of `TODO.md` C5, including the `t.co` shortener on
-  `HullBasedParameters.m:18`, which could not be resolved from this machine.
+- **Item 10** — deferred by decision on 2026-07-28, revisit much later. Two
+  entries stand: `interp(...,'bingham')` is wrong under symmetry, and the
+  `SO3FunVectorField` quiver plot needs a visual check. The prose of both pages
+  was reworded on 2026-08-10, so they state the limitation rather than reading
+  as unfinished; the underlying questions are unchanged.
+- **Twinning**, excluded by request on 2026-08-10: the `twinningSystem` link on
+  `DefinitionAsCoordinateTransform.m:97` dangles until the class exists, kept
+  by decision on 2026-09-02 because it records the intent and resolves itself.
+- **`changelog` is unreachable** through the `.toc` tree, by decision on
+  2026-09-02 — the website links it from its navigation rather than from the
+  documentation body.
+- **Seven dangling links inside `changelog.m`**, naming functions that no
+  longer exist, which is what an archive entry is for. `check_doc_structure.py`
+  skips that file (`if name == 'changelog'`), so they never reach CI — remove
+  that guard to re-derive them.
+- **13 dead `code.google.com` links** in `changelog.m`, archive material.
+- **33 `toc listed twice` instances**, carried at budget rather than fixed.
+- The `plotSection(mdf,'axisAngle')` **segfault** (item 6, in `TODO.md`).
 
-**Link status after the 2026-08-10 pass: 28 dangling instances, 26 of them
-inside `changelog.m`.** The two live ones are `twinningSystem` and
-`EBSDGradient`, both listed above. Re-derive with the recipe at the top of this
-file rather than quoting older counts, which never added up.
+**Link status 2026-09-02: no dangling instance outside `changelog.m`, seven
+inside it.** Re-derive with the recipe at the top of this file rather than
+quoting older counts, which never added up.
+
+### Closed by the 2026-08-29 documentation rewrite and the 2026-09-02 pass
+
+- the four open questions of `TODO.md` C2 are answered in the pages, none of
+  which carries a `TODO` marker now: the (001)/(071) maxima are named in
+  `TiltAndTwistBoundaries.m:102`, and `Grain_dispersion_axes.m` speaks of a
+  dispersion axis throughout rather than of "fibryness"
+- `Misorientations/Twinning`, `Plasticity/TwinningTutorial` and
+  `Plasticity/SachsModel` are written pages, 144 to 180 lines each
+- `EBSDGradient` is referenced by no page
+- the `t.co` shortener on `HullBasedParameters.m:18` is gone
+- 26 prose `TODO` markers are down to one, `Plasticity/Lankford.m:135`, kept by
+  decision on 2026-09-02: MTEX symmetrises every deformation system with both
+  shear senses, so `twinC1` acts there as a reversible pseudo-slip family
+- `S2FunQuadrature`, `Contribute2Doc`, `Dream3dGrains` and `TwinningTutorial`
+  hold `.toc` entries, and `MisorientationGrainExchangeSym` was wired in by the
+  rewrite, so `changelog` is the only page outside the tree
+- `ebsd3-data-models.svg` is in both image directories, so the website build
+  shows the EBSD3 diagram
+- `PlasticDeformation` and `StrainAnalysis` in `changelog.m` point at
+  `SchmidFactor` and `SlipTransmission`, the pages that replaced them
 
 ## 2026-08-10 pass
 
@@ -821,7 +835,10 @@ they are not rediscovered from scratch.
   page runs, and the arrow count is consistent with the small cubic
   fundamental zone, so the complaint is about arrow directions and needs a
   visual check.
-- **`latticeBasis.m:38` "Index exceeds array bounds"** via
+- ~~**`latticeBasis.m:38` "Index exceeds array bounds"** via~~ **Fixed by
+  2026-09-02**: `doc/EBSDAnalysis/EBSDGrid.m` runs end to end. The description
+  below is kept because the degenerate unit cell it analyses is the thing to
+  look for should the crash return. Original report: via
   `doc/EBSDAnalysis/EBSDGrid.m:141` → `EBSD/plot:93` → `EBSD/plotUnitCells:51`
   → `plotSurf:15` → `calcMesh:29`. The unguarded `cand(1)` is only the
   symptom. At the crash site the `EBSDsquare` carries a degenerate,
@@ -840,11 +857,10 @@ they are not rediscovered from scratch.
   `@EBSDhex/plotUnitCells.m` are deleted in the working tree (in-flight
   plotting refactor) — the deleted override dispatched straight to `plotSurf`
   and never entered `latticeBasis`.
-- **`@EBSDsquare/interp.m:31`** — `doc/EBSDAnalysis/EBSDInter.m:32` does
+- ~~**`@EBSDsquare/interp.m:31`** — `doc/EBSDAnalysis/EBSDInter.m:32` does
   `interp(ebsd,30.5,5.5)` on a gridified EBSD and dies in
   `griddedInterpolant` with "Data is in MESHGRID format, NDGRID format is
-  required". The function wraps the call in try/catch with a transposed
-  fallback; both orientations fail. Committed, clean code.
+  required".~~ **Fixed by 2026-09-02**: `EBSDInter.m` runs end to end.
 - ~~**`SO3FunRBF/private/spatialMethod.m:37`** — `doc/PoleFigureAnalysis/
   PoleFigureRefinement.m:21` calls `calcODFIterative(pf,'nothinning')` and
   dies at `y = reshape(y,numel(nodes),[])` with "Product of known dimensions,
@@ -863,12 +879,12 @@ they are not rediscovered from scratch.
   handles EBSD, pole figure and ODF data alike, so all four sites point at
   it. Two of them *executed* the obsolete wizard, so every doc build opened
   a GUI window; those sections are prose with a `matlab:` link now.
-- **26 prose TODO markers** ("extend this section", "explain in more detail")
-  across the doc pages; six of them sit on stub pages already listed in item
-  6. Authoring backlog.
-- **Dead external links**: 13 `code.google.com` in `changelog.m` (archive
-  material), and a `t.co` shortener on a live page,
-  `doc/Grains/HullBasedParameters.m:18`.
-- **18 of the 48 remaining dangling link instances are inside `changelog.m`**
-  — archive entries naming functions that were later removed or renamed.
-  Probably out of scope for link repair.
+- ~~**26 prose TODO markers** across the doc pages.~~ **Closed 2026-08-29** by
+  the documentation rewrite; the one that remains is kept by decision, see the
+  top of this file.
+- **Dead external links**: 13 `code.google.com` in `changelog.m`, archive
+  material. ~~A `t.co` shortener on `doc/Grains/HullBasedParameters.m:18`.~~
+  Gone with the rewrite.
+- **Seven dangling link instances inside `changelog.m`** — archive entries
+  naming functions that were later removed or renamed. Out of scope for link
+  repair by decision on 2026-09-02.
