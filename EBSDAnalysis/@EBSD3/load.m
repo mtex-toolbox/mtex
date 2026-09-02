@@ -125,10 +125,9 @@ for k = 2:length(csList)
   
   % look for old elements
   for l = 1:k-1     
-    if (ischar(csList{k}) && ischar(csList{l}) && strcmpi(csList{k},csList{l})) || ...
-        (eq(csList{k},csList{l}) && strcmpi(csList{k}.mineral,csList{l}.mineral))
+    if csList(k) == csList(l) && strcmpi(csList(k).mineral,csList(l).mineral)
       
-      IC(k) = l;
+      IC(k) = IC(l);
       break
     end
   end

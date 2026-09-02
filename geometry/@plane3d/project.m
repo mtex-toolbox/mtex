@@ -8,4 +8,4 @@ function v = project(plane,v)
 % Output
 %  v - @vector3d
 
-v = v - dot(v,plane.N) .* plane.N;
+v = v - dist(plane,v) .* plane.N;

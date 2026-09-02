@@ -65,23 +65,50 @@ if nargin>1 && islogical(varargin{1}), varargin{1} = double(varargin{1}); end
 if nargin>1 && isnumeric(varargin{1})
   
   property = varargin{1};
+  varargin(1) = [];
     
   assert(any(numel(property) == length(ebsd) * [1,3]),...
     'The number of values should match the number of ebsd data!')
-  
-  warning('not yet implemented')
 
+  sz = size(ebsd);
+  assert(numel(sz)==3,'volume plotting requires the data in a 3d array, see @EBSD3square')
+
+  % a scalar volume or an m x n x p x 3 rgb volume
+  data = reshape(property,[sz,numel(property)/length(ebsd)]);
+
+  isBad = ~reshape(ebsd.isIndexed,sz) | any(isnan(data),4);
+  opt = {'AlphaData',double(~isBad)};
+
+  if size(data,4) == 1
+    opt = [opt,{'Colormap',getMTEXpref('defaultColorMap')}];
+    fill = min(data(~isBad));
+    if isempty(fill), fill = 0; end
+  else
+    fill = 1;
+  end
+
+  % slice planes have no per voxel transparency and volshow rejects NaN, so
+  % unindexed voxels are painted in the background colour
+  data(repmat(isBad,[1 1 1 size(data,4)])) = fill;
+
+  % nearest neighbour keeps grain boundaries sharp
+  viewer = viewer3d(BackgroundColor='w',BackgroundGradient='off');
+  vol = optiondraw(volshow(data,opt{:},'Interpolation','nearest',...
+    'RenderingStyle','SlicePlanes','Parent',viewer),varargin{:});
+
+  set(viewer.Parent,'name','ebsd plot');
   
 else % phase plot
 
-  viewer = viewer3d;
+  viewer = viewer3d(BackgroundColor='w',BackgroundGradient='off');
 
-  value = double(ebsd.isIndexed);
+  % the base volume is only seen where no phase label covers it - white there
+  value = double(~ebsd.isIndexed);
   label = uint8(reshape(ebsd.phaseId,size(ebsd)))-1;
   cmap = single(ebsd.colorList);
   vol = volshow(value,OverlayData = label,...
     RenderingStyle="SlicePlanes",Parent=viewer,...
-    OverlayAlpha = 1);
+    Interpolation = "nearest", OverlayAlpha = 1);
   %OverlayColormap=cmap
   %OverlayDisplayRange = [1,255],...
   %vol.OverlayColormap(1:size(ebsd.colorList,1),:) = cmap;

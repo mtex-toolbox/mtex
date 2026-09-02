@@ -29,15 +29,16 @@ corners = vector3d(ext([1 3 5; 2 3 5; 2 4 5; 1 4 5; ...
 % reference point in the plane
 pos0 = plane.project(corners(1));
 
-% select an orthonormal basin in the plane
-ext = vector3d(-diag(diff(reshape(ebsd3.extent,2,3)).'));
-d2 = plane.project(ext);
+% select an orthonormal basis in the plane - the box edges are directions,
+% so only the normal component is removed
+ext = vector3d.byXYZ(-diag(diff(reshape(ebsd3.extent,2,3)).'));
+d2 = ext - dot(ext,plane.N) .* plane.N;
 [~,ind] =  max(norm(d2));
 u = normalize(d2(ind));
 v = cross(plane.N,u);
 
 % compute u,v coordinates of the corners
-coords = dot(corners - pos0,[u,v])./ ebsd3.dPos;
+coords = dot_outer(corners - pos0,[u,v])./ ebsd3.dPos;
 
 % minimal and maximal coordinates 
 ijmin = floor(min(coords)) - 1;
