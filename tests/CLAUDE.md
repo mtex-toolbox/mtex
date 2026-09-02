@@ -88,6 +88,7 @@ budget, trim from outside these first.
 | `EBSD/gradient`, KAM | `core/check_gradient` |
 | `gridify` on real data | `slow/check_gridify` |
 | `calcGrains` | `core/check_calcGrainsCases` |
+| `calcGrains` on 3d voxel data, `grain3d` from voxels | `core/check_calcGrains3d`, real data in `slow/check_calcGrains3dData` |
 | `grain2d/merge` argument dispatch | `core/check_grainMerge` |
 | grain boundary walk order | `core/check_boundaryChains` |
 | `chainOrder` mex vs MATLAB | `core/check_chainOrder` |
@@ -134,6 +135,7 @@ budget, trim from outside these first.
 | overlays on a map (crystal shapes, S2Fun) sit on the viewer's side | `plotting/check_mapOverlays` |
 | spherical axes labels | `plotting/check_sphericalAxesLabels` |
 | how many axes a spherical plot spans, and which of them data added with `hold on` reaches | `plotting/check_hemispherePlots` |
+| which cell of a multiplot a plot lands in after `nextAxis` | `plotting/check_nextAxis` |
 | what a figure has to satisfy for MATLAB's publish to capture it: fits the screen, reserves its decoration bands, follows a resize, prints as it looks | `plotting/check_publishedFigure` |
 | color scale options | `plotting/check_logColorScale` |
 | plots leave hold state untouched | `plotting/check_holdStatePlots` |

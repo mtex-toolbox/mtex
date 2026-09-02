@@ -35,6 +35,15 @@ end
 
 mtexFig = gcm;
 
+% an axes picked by nextAxis is emptied, so that the plot repaints that cell
+if ~isempty(mtexFig)
+  if isequal(mtexFig.selectedAxes,mtexFig.currentAxes) && strcmp(getHoldState,'off') ...
+      && ~check_option(varargin,{'hold','parent','add2all'})
+    cla(mtexFig.currentAxes); rmallappdata(mtexFig.currentAxes);
+  end
+  mtexFig.selectedAxes = gobjects(0,1);
+end
+
 % check hold state
 newFigure = isempty(mtexFig) || check_option(varargin,'newFigure') || ...
   (strcmp(getHoldState,'off') && ~check_option(varargin,{'hold','parent','add2all'}) ...

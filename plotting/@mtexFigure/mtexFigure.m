@@ -30,6 +30,7 @@ classdef mtexFigure < handle
 %  figTightInset     - is added to figSize
 %  layoutMode        - 'auto' or 'user'
 %  outerPlotSpacing  - margin around the whole figure
+%  selectedAxes      - the axes nextAxis picked
 %
 % Dependent Class Properties
 %   currentAxes      - handle of the current axis
@@ -76,6 +77,7 @@ classdef mtexFigure < handle
     figSizeFactor = 0 % relative to the full screen
     outerPlotSpacing = 10 % margin around the whole figure
     referenceAxis     % the axes whose decorations decide the margin, [] for the first
+    selectedAxes = gobjects(0,1) % the axes nextAxis picked, repainted by the next plot
   end
 
   properties (Dependent = true)
