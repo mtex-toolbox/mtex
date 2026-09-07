@@ -13,11 +13,9 @@ function check_eulerquat
 % homochoric, which has its own file (check_homochoric). Each is checked
 % elementwise, not on average.
 %
-% q and -q are the same rotation, so nothing is compared componentwise.
-% Comparison is by |dot| rather than by angle(): angle = 2*acos(|dot|) loses
-% half its significant digits next to dot == 1, so a round trip that is exact
-% to the last bit still measures as about 3e-8 rad and no honest angle
-% tolerance can tell it from a real error of that size.
+% q and -q are the same rotation, so nothing is compared componentwise but
+% by 1 - |dot|. The angle of a small rotation is checked on its own, since
+% it is the one quantity a round trip cannot measure that way.
 %
 % See also
 % quaternion/Euler rotation/byEuler quaternion/matrix rotation/byMatrix
@@ -44,6 +42,7 @@ checkMatrix(r,tol);
 checkAxisAngle(r,tol);
 checkRodrigues(r,tol);
 checkImproper(tol);
+checkSmallAngle;
 
 disp('check_eulerquat: passed')
 
@@ -125,13 +124,35 @@ assertSame(r,back,tol,'the improper matrix')
 end
 
 % =========================================================================
+function checkSmallAngle
+% angle keeps every digit of a small rotation, from one quaternion and from
+% the chord between two, and so near pi, at the identity and for q against -q
+
+omega = [1e-12 1e-9 1e-6 1e-3 1e-1];
+ax = normalize(vector3d(1,2,3));
+r = rotation.byAxisAngle(ax,omega);
+
+assert(all(abs(angle(r) - omega) <= 1e-12*omega), ...
+  'check_eulerquat: angle(r) loses a small angle')
+assert(all(abs(angle(r,rotation.id) - omega) <= 1e-12*omega), ...
+  'check_eulerquat: angle(r1,r2) loses a small angle')
+assert(all(abs(angle(r,-r)) <= 1e-15), ...
+  'check_eulerquat: angle(q,-q) is not zero')
+
+r = rotation.byAxisAngle(ax,pi - omega);
+assert(all(abs(angle(r) - (pi - omega)) <= 1e-12), ...
+  'check_eulerquat: angle(r) is off near pi')
+assert(all(abs(angle(r,rotation.id) - (pi - omega)) <= 1e-12), ...
+  'check_eulerquat: angle(r1,r2) is off near pi')
+
+assert(angle(rotation.id) == 0 && angle(rotation.id,rotation.id) == 0, ...
+  'check_eulerquat: the identity has a nonzero angle')
+
+end
+
+% =========================================================================
 function assertSame(r,back,tol,what)
-% compare two rotations by 1 - |dot|
-%
-% |dot| because q and -q are the same rotation, and not angle() because
-% 2*acos of something within eps of 1 is only accurate to about sqrt(eps):
-% measured that way an exact Euler round trip already looks like a 6e-8 rad
-% error, which is where this file's first tolerance went wrong.
+% compare two rotations by 1 - |dot|, as q and -q are the same rotation
 
 dev = 1 - abs(dot(r(:),back(:)));
 

@@ -44,12 +44,10 @@ if isRef
   end
 end
 
-% the logarithm with respect to the identity 
-a = min(q.a,1);
-omega = 2 * sign(a) .* acos(abs(a));
-denum = sqrt(1-a.^2);
-denum(denum == 0) = inf;
-omega = omega ./ denum;
+% the logarithm with respect to the identity, omega/|v| through atan for accuracy near 0
+n = sqrt(q.b.^2 + q.c.^2 + q.d.^2);
+omega = 2 * (1 - 2*(q.a < 0)) .* atan2(n,abs(q.a)) ./ n;
+omega(n == 0) = 0;
 
 % make it askew symmetric matrix / spin tensor
 if tS.isSpinTensor

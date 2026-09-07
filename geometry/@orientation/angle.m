@@ -72,7 +72,7 @@ else
   % may be we can skip something
   minAngle = reshape(abs(idSym.angle),[],1);
   minAngle = min([inf;minAngle(minAngle > 1e-3)]);
-  omega = 2 * real(acos(abs(o1.a)));
+  omega = angle@quaternion(o1);
   notInside = omega > minAngle/2;
   
   % angle is minimum distance to idSym

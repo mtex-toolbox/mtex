@@ -18,7 +18,7 @@ function v = homochoric(q)
 v = vector3d(q.b,q.c,q.d);
 
 % scaling
-omega = 2 * real(acos(abs(q.a)));
+omega = 2 * atan2(norm(v),abs(q.a));
 f = sign(q.a) ./ norm(v);
 f(abs(omega) < 1e-10) = 0;
 f = f .* (0.75 * ( omega - sin(omega) )).^(1/3) ;

@@ -24,7 +24,7 @@ q.a = q.a*s;
 q.b = q.b*s;
 q.c = q.c*s;
 q.d = q.d*s;
-omega = 2*acos(q.a);
+omega = 2*atan2(sqrt(q.b.^2 + q.c.^2 + q.d.^2),q.a);
 
 q.a = cos(n*omega/2);
 

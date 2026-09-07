@@ -68,8 +68,25 @@ end
 
 checkSymmetryCarriage;
 checkSymmetryReduction;
+checkSmallRotation;
 
 disp('check_logReference: ok')
+
+end
+
+% ------------------------------------------------------------------------
+
+function checkSmallRotation
+% log keeps every digit of a small rotation, and is pi times the axis for a
+% half turn
+
+omega = [1e-12 1e-9 1e-6 1e-3 pi];
+ax = normalize(vector3d(1,2,3));
+v = vector3d(log(rotation.byAxisAngle(ax,omega)));
+
+if any(norm(v - omega .* ax) > 1e-12*omega) || norm(vector3d(log(rotation.id))) ~= 0
+  error('log loses a small rotation');
+end
 
 end
 
