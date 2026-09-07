@@ -33,6 +33,7 @@ classdef embedding
   
   properties (Hidden = true)
     rho % radius of the embedding befor normalization
+    B   % orthonormal basis of the space the embedding moves in
   end
   
   properties (Dependent = true)
@@ -170,7 +171,7 @@ classdef embedding
     end
     
     function d = dim(obj)
-      d = size(obj.M,2);
+      d = size(obj.B,2);
     end
     
     
@@ -211,6 +212,7 @@ classdef embedding
       %
       % should be approximately zero            
       obj = obj - embedding.zero(obj,weights);
+      obj.B = orbitBasis(flatten(obj),obj.rank);
       
       obj.rho = norm(obj);
       
@@ -272,6 +274,7 @@ classdef embedding
       
       % define the embedding
       t = embedding(u,cs,id.l);
+      t.B = id.B;
       
       t = t ./ norm(t);
       t.rho = id.rho;
