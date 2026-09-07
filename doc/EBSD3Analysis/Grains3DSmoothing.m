@@ -20,7 +20,7 @@ grains = calcGrains(ebsd,'angle',5*degree)
 % |nodeType|> counts the grains at every vertex and adds 10 on the outer
 % hull of the measured volume, where a vertex inside a single grain also
 % occurs. The counts show how much of the network is junction: about one
-% vertex in seven lies on a triple line.
+% vertex in eight lies on a triple line.
 
 t = nodeType(grains.boundary);
 n = accumarray(t(t>0),1);

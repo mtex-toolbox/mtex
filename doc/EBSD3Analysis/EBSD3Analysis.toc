@@ -2,6 +2,7 @@ EBSD3Plotting        Volume Data and Slices
 Grains3D             3D-Grains
 Grains3DReconstruction Grain Reconstruction
 Grains3DSmoothing    Smoothing
+Grains3DBoundaries   Boundary Network
 NeperInterface       Neper Interface
 Grains3DProperties   Properties
 Grains3DOperations   Operations

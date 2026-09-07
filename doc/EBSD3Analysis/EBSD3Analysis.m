@@ -100,8 +100,15 @@ setCamera(plottingConvention.default3D)
 
 %% Use this chapter in teaching order
 %
-% Start with <Grains3D.html Three-Dimensional Grains> to import a DREAM.3D
-% mesh, select grains, make a section, and inspect face normals.
+% Start with <EBSD3Plotting.html Volume Data and Slices> to load a measured
+% volume, look at it and cut a section. Then reconstruct its grains with
+% <Grains3DReconstruction.html Grain Reconstruction>, take the voxel surface
+% to a smooth one with <Grains3DSmoothing.html Smoothing>, and read the
+% faces, triple lines and quadruple points in
+% <Grains3DBoundaries.html Boundary Network>.
+%
+% <Grains3D.html Three-Dimensional Grains> imports a DREAM.3D mesh instead,
+% selects grains, makes a section, and inspects face normals.
 %
 % Continue with <NeperInterface.html Neper Interface> to configure Neper,
 % generate a synthetic polycrystal, or import an existing |.tess| file. A
