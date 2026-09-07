@@ -40,6 +40,7 @@
 % axes:
 
 plottingConvention.default('y↑→x');
+setMTEXpref('defaultColorMap','LaboTeX')
 cs = crystalSymmetry('mmm');
 
 orix = orientation.byAxisAngle(xvector,90*degree,cs);
@@ -59,13 +60,11 @@ odf2 = unimodalODF(ori);
 % The two share no component. Their sigma sections make the different peak
 % positions visible.
 
-figure(1)
 plot(odf1,'sigma')
-mtexColorMap LaboTeX
 
-figure(2)
+%%
+
 plot(odf2,'sigma')
-mtexColorMap LaboTeX
 
 %%
 % Both textures put their bright peaks in the sigma = 0 and sigma = 90
@@ -80,11 +79,10 @@ mtexColorMap LaboTeX
 figure(1)
 h = Miller({1,0,0},{0,1,0},{0,0,1},{1,1,0},{1,0,1},{0,1,1},{1,1,1},{1,2,0},cs);
 plotPDF(odf1,h,'contourf')
-mtexColorMap LaboTeX
+
 
 figure(2)
 plotPDF(odf2,h,'contourf')
-mtexColorMap LaboTeX
 
 %%
 % The first seven panels have the same maxima and contours in both figures.
@@ -370,7 +368,6 @@ legend('odf1','odf2','odf rec1','odf rec2')
 
 odf = SantaFe;
 plot(odf,'contourf')
-mtexColorMap white2black
 
 %%
 % The sections show several broad components on a nonzero background. That
@@ -405,12 +402,10 @@ rec2 = calcODF(pf,'noGhostCorrection','silent');
 
 figure(1)
 plotPDF(rec,pf.h,'antipodal','complete','upper')
-mtexColorMap parula
 
 %%
 figure(2)
 plotPDF(rec2,pf.h,'antipodal','complete','upper')
-mtexColorMap parula
 
 %%
 % The same maxima and contour shapes appear in both sets of recalculated
@@ -423,12 +418,10 @@ mtexColorMap parula
 close all
 figure(1)
 plot(rec,'gray','contourf','figSize','small')
-mtexColorMap white2black
 
 %%
 figure(2)
 plot(rec2,'gray','contourf','figSize','small')
-mtexColorMap white2black
 
 %%
 % Extra maxima appear in the uncorrected sections even though they did not
@@ -451,6 +444,7 @@ plotSpektra(rec2,'bandwidth',32,'linewidth',2,'MarkerSize',10)
 legend({'true ODF','with ghost correction','without ghost correction'})
 % next plot command overwrites plot
 hold off
+setMTEXpref('defaultColorMap','WhiteJet')
 
 %%
 % Cubic crystal and orthorhombic sample symmetry leave degree 9 as the only
