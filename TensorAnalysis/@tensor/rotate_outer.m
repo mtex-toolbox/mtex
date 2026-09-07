@@ -28,18 +28,26 @@ if isa(R,'orientation') && nargin == 2
   end
 end
 
-% convert rotation to 3 × 3 matrix - (3 × 3 × N) for many rotation
 if ~isnumeric(R), R = matrix(R); end
-
-T = reshape(T,1,[]);
 R = reshape(R,3,3,[]);
 
-% multiply the tensor with respect to every dimension with the rotation
-% matrix
-for d = 1:T.rank
-  
-  ind = 1:T.rank;
-  ind(d) = -d;
-  T = EinsteinSum(T,ind,R,[d -d],'keepClass');
-        
+% the leading half of the indices is contracted from the left by a Kronecker
+% power of R, the trailing half from the right, so no index has to move
+p = floor(T.rank/2);
+Kp = kronPower(ones(1,1,size(R,3)),R,p);
+Kq = kronPower(Kp,R,T.rank-2*p);
+M = pagemtimes(pagemtimes(Kp,reshape(T.M,3^p,3^(T.rank-p),1,[])),'none',Kq,'transpose');
+T.M = reshape(M,[3*ones(1,T.rank) size(R,3) length(T)]);
+
+end
+
+function K = kronPower(K,R,p)
+% append p Kronecker factors of R to K, page by page
+
+N = size(R,3);
+for k = 1:p
+  m = size(K,1);
+  K = reshape(reshape(K,[m 1 m 1 N]) .* reshape(R,[1 3 1 3 N]),[3*m 3*m N]);
+end
+
 end

@@ -91,7 +91,6 @@ if check_option(varargin,'nesterov')
     
     % stop if gradient is sufficiently small
     if all(norm(g)<1e-10), break; end
-    disp([xnum2str(i,'fixedWidth',3) ' ' xnum2str(max(norm(g)),'fixedWidth',8) ' ' char(ori(1)) ' ' char(g(1))]);
       
   end
   ori = xOri;
@@ -115,7 +114,6 @@ else
   
     % stop if gradient is sufficiently small
     if all(norm(g)<1e-10), break; end
-    disp([xnum2str(i,'fixedWidth',3) ' ' xnum2str(max(norm(g)),'fixedWidth',8) ' ' char(ori(1)) ' ' char(g(1))]);
   
     % update ori
     ori = exp(ori, g, SO3TangentSpace.leftVector);
