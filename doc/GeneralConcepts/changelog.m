@@ -87,6 +87,19 @@
 % * a not indexed phase can be given a colour -
 % |ebsd('notIndexed').color = 'blue'| was refused with "There are no indexed
 % data in this variable!"
+% * the <quaternion.angle.html |angle|> of a rotation and its
+% <quaternion.log.html |log|> keep every digit of a small rotation. They were
+% computed from the real quaternion component and floored at about 2e-6
+% degree, so a rotation by 1e-9 degree reported the angle zero
+% * the Siemens D5000 pole figure reader merged two neighbouring counts
+% whenever a five digit count filled its field, and the Seifert |.nja| reader
+% skipped the first measurement of every file
+% * <embedding.double.html |double|> of an <embedding.embedding.html
+% |embedding|> takes its coordinates from an orthonormal basis of the space
+% the embedding moves in, computed from the symmetry group. The dimension is
+% unchanged for every Laue class but |mmm|, which has 10 coordinates instead
+% of 15. <embedding.embedding.html |embedding(ori)|> of a large list is about
+% twice as fast for cubic and four times for hexagonal symmetry
 %
 %% MTEX 7.0 08/2026
 %

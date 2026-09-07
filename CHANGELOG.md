@@ -543,6 +543,24 @@ adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
   sets, evaluated only where nothing is measured; a complete grid skips the
   interpolation entirely
 
+### Pole Figure Import
+
+- `loadPoleFigure_siemens` split the counts at blanks, but a D5000 file writes them
+  in eight character fields and a five digit count fills its field, so two
+  neighbours like `9512.0011184.40` were read as one number and the ring lost a
+  value. The fields are cut by width now: on `data/PoleFigure/siemens.dat` the mean
+  intensity of the 111 pole figure goes from 406.9 to 1975.2 and its maximum from
+  19092.6 to 22885.6, while the first count, which had no neighbour to merge with,
+  stays the same
+- `loadPoleFigure_nja` read the data block from a fixed line number with a zero
+  based offset, which skipped the first measurement of every file, and the
+  reflection from fixed header token positions. The block is located after the
+  `&NoValues=` line and the reflection read from `&H=`, `&K=`, `&L=`; the count is
+  checked against what the header announces. `seifert-111.nja` keeps all 2121
+  values
+- both are pinned by `tests/core/check_poleFigureImport`, the first test of the
+  pole figure readers
+
 ### Grain Reconstruction
 
 - `calcGrains` could return an indexed grain below `'minPixel'`. The culling happens
@@ -679,8 +697,41 @@ adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
   the assignment was missed. Same for `grains('notIndexed')`. This closes [issue
   #2604](https://github.com/mtex-toolbox/mtex/issues/2604)
 
+### Rotation Angles and Embeddings
+
+- the angle of a rotation was `2*acos(|a|)` of the real quaternion component, which
+  loses a small angle through cancellation next to `a == 1` and floors at about
+  `sqrt(eps)`, i.e. 2e-6 degree - a `rotation.byAxisAngle(v,1e-9)` had angle zero.
+  A single rotation takes its angle from the vector component norm with `atan2`
+  now, in `quaternion/angle`, `log`, `logRight`, `homochoric` and `power`; two
+  quaternions take the signed chord `4*asin(|q1 -+ q2|/2)`; and the symmetric
+  `angle(ori)` of one argument uses the same form for every orientation close
+  enough to the identity that the symmetric equivalents cannot compete, which is
+  exactly where `acos` was inaccurate. `log` of an exact half turn is pi times the
+  axis, where `sign(0)` made it the zero vector. Still on `acos` of the maximal dot:
+  `angle(o1,o2)` under symmetry, `angle_outer` and the `'max'` branch, since
+  `orientation/dot` would have to hand back the winning equivalent
+- `embedding/double` and `setDouble` packed the tensor components by hand, with an
+  index list, scale factors and a Cholesky factor per Laue class, about 540 lines
+  that had to be extended for every new class. `embedding.id` now closes the span
+  of the identity embedding under the three spin matrices by Gram-Schmidt and
+  keeps that orthonormal basis on the object; `double` projects onto it and
+  `setDouble` is its exact inverse, and nothing branches on a Laue id. The
+  dimension agrees with the old packing for every Laue class except `mmm`, whose
+  three rank two tensors sum to an isotropic one, so 15 coordinates become 10.
+  Invariance under the proper group, the inverse and the isometry hold at 1e-15 on
+  all eleven classes. Ported from the Julia implementation
+- `embedding/project` printed one line per descent iteration
+
 ### Tensors
 
+- `tensor/rotate_outer` contracted one index per pass through `EinsteinSum`, each
+  pass a permute of the whole array. The leading half of the indices is now
+  contracted from the left by a Kronecker power of the rotation matrices and the
+  trailing half from the right, two `pagemtimes` and no permute, which is what
+  `embedding(ori)` spends its time in. At a million rotations rank 4 goes from
+  1.59 s to 0.94 s and rank 6 (at 1e5) from 2.55 s to 0.66 s; rank 3 pays for a
+  Kronecker square it does not fill and goes from 0.40 s to 0.52 s
 - a right sided tangent space is expressed in crystal coordinates and a left sided
   one in specimen coordinates, but a `@spinTensor` came out of the conversion with
   the constructor default `specimenSymmetry('1')` either way - correct by accident
