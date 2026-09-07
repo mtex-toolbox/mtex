@@ -117,6 +117,7 @@ budget, trim from outside these first.
 | MLS subsampling | `slow/check_MLSSubsample` |
 | `radon` options | `core/check_radonOptions` |
 | RBF approximation, every route into it | `slow/check_SO3FunRBFApproximation` |
+| **pole figure import**, the text formats under `data/PoleFigure` | `core/check_poleFigureImport` |
 | `calcPoleFigure` superposition | `core/check_calcPoleFigureSuperposition` |
 | pole figure → ODF inversion | `slow/check_poleFigureInversion` |
 | tensor factories, `tensor` constructor arguments | `core/check_tensorFactories` |

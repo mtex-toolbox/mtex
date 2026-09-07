@@ -1,31 +1,33 @@
-function pf =loadPoleFigure_nja(fname,varargin)
-
+function pf = loadPoleFigure_nja(fname,varargin)
+% load Seifert nja pole figure file
+%
+% Syntax
+%   pf = loadPoleFigure_nja(fname)
+%
+% Input
+%  fname - file name
+%
+% Output
+%  pf    - @PoleFigure
+%
+% See also
+% PoleFigure.load PoleFigureImport
 
 assertExtension(fname,'.nja');
 
-comment = '';
-fid = efopen(fname);
 try
-  % read header
-  comment = textscan(fid,'%s',45,'delimiter','&','whitespace','');
-  fclose(fid);
-catch
-  interfaceError(fname,fid);
-end
+  txt = fileread(fname);
 
+  % the header names the reflection and how many values follow
+  key = @(name) str2double(regexp(txt,['&' name '=(\S+)'],'tokens','once'));
+  h = Miller(key('H'),key('K'),key('L'),crystalSymmetry('m-3m'));
 
-try
-  % read data
-  d = dlmread(fname,'',21,0);
-  th = d(:,1)*degree;
-  rh = d(:,2)*degree;
-  bg  = d(:,4);
-  d  = d(:,3);
-  
-  h = string2Miller(regexprep([comment{1}{19:21}], '[A-Z=\s]', '', 'ignorecase'));
-  r = vector3d.byPolar(th,rh,'antipodal');
-  
-  pf = PoleFigure(h,r,d,'BACKGROUND',bg,varargin{:});
+  % the data block starts after the &NoValues line
+  d = sscanf(txt(regexp(txt,'&NoValues=\d+','end','once')+1:end),'%f',[4 inf]).';
+  assert(size(d,1) == key('NoValues'));
+
+  r = vector3d.byPolar(d(:,1)*degree,d(:,2)*degree,'antipodal');
+  pf = PoleFigure(h,r,d(:,3),'BACKGROUND',d(:,4),varargin{:});
 catch
   interfaceError(fname);
 end

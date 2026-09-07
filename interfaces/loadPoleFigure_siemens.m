@@ -44,7 +44,8 @@ try
             
     else % load intensities
       
-      dd = cell2mat(textscan(line,'%n'));
+      % eight character fields, a five digit count fills its field entirely
+      dd = str2double(cellstr(reshape(line(1:8*floor(end/8)),8,[])'))';
       if ~isempty(bg), dd = dd - bg; end
       d{p} = [d{p},dd];
     end
