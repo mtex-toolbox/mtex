@@ -561,6 +561,72 @@ adf = calcAxisDistribution(mdf,'minAngle',20*degree,'maxAngle',40*degree)
 - both are pinned by `tests/core/check_poleFigureImport`, the first test of the
   pole figure readers
 
+### 3D EBSD and Grains
+
+- `calcGrains` on an `EBSD3square`: 6-connected voxel pairs, the boundary criteria of
+  the planar case, `minPixel` by culling and one re-segmentation, and a closed
+  triangle surface with analytically signed `I_GF`, two triangles per voxel face.
+  Triangles rather than quads because vertex-moving smoothing keeps them planar.
+  The face between voxels `a < b` sits on the far side of `a`, so its corner
+  lattice index comes from `a`'s subscript; taking `max(a,b)` shifts every inner
+  face by one voxel and leaves the total volume exactly right. No morphological
+  closing yet, so grains do not grow across unindexed voxels and `'alpha'` is not
+  accepted. SmallIN100, 100^3 voxels: 6 s, 812 grains against the file's 794
+  feature ids at an adjusted Rand index of 0.9994, 757562 triangles against its
+  757564; xnovo t1, 1.2M voxels, 2.6 s, ARI 0.9988 against the vendor grain id
+- the criterion selection and the segmentation core are `grainBoundaryCriterion.
+  byOptions` and `segment`, since `@EBSD/private` is unreachable from a subclass
+  method folder; `doSegmentation` is gone and the 2D callers build the pair list
+  themselves
+- `calcGrains(ebsd,'grainId')`, 2D and 3D, connects pixels with the same stored id -
+  `gbcCustom` takes a property name and reads it at evaluation time - and treats an
+  id of 0 as no grain. Ids are renumbered by connectivity: 794 DREAM.3D ids give
+  813 grains
+- `loadEBSD_dream3d` is rewritten for the `DataStructure/DataContainer` layout and
+  returns an `EBSD3square`; it and `loadEBSD_xnovo` store the vendor label as
+  `grainId`. `grain3d`'s `phaseMap` argument is live, xnovo's map being `0:n-1`
+- `EBSD3/plot` fills in the orientation and property branch: the values reshape to
+  the voxel grid and reach `volshow` as a scalar or an rgb volume, sampled nearest
+  neighbour so a boundary stays where the measurement puts it. Unindexed voxels
+  take the white background, since slice planes carry no per voxel transparency
+  and `volshow` rejects NaN
+- `EBSD3/slice` returned the plane through the origin whatever plane it was given,
+  because `plane3d/project` dropped the plane's offset. And a section keeps its
+  measurements where the specimen has them, so one not in the xy plane was seen
+  edge on; `slice` now hands the section a frame whose plotting convention looks
+  along the plane normal, and no data is rotated to suit the picture
+- `uniqueCS` indexed the CS list with braces although it is an object array, so
+  `EBSD3.load` raised on every file it detected
+- `vector3d/round2zero` reduced `all(all(..))` over two dimensions only, so `rotate`
+  failed on any 3D array
+- `grain3d/smoothBoundary`, `reduceBoundary` and `refineBoundary`, designed against
+  the literature survey in `docs/adr/0009`. The boundary network is a stratified
+  complex, so smoothing goes stratum by stratum (Maddali, Ta'asan, Suter 2016):
+  quadruple points and the hull fixed, triple lines smoothed as curves between
+  their quadruple points, then the faces between the triple lines. The filter is
+  any `boundaryFilter` of the 2D pipeline, unchanged; `'scheme','coupled'` is the
+  DREAM.3D behaviour, and a `prepare` hook leaves room for face-normal filters.
+  `reduceBoundary` is label-aware vertex clustering on a coarser lattice
+  (Rossignac and Borrel 1993; `'quadric'` for Lindstrom's placement): the key
+  carries the grains at a vertex and its hull planes, so triple lines, quadruple
+  points and the hull survive by construction. Two triangles folded onto one
+  vertex triple with opposite winding cancel as a chain, so faces are kept by the
+  net orientation sign per key, never by dropping duplicates. `refineBoundary` is
+  1-to-4 midpoint subdivision
+- `grain3Boundary` gains `edges` and `nodeType` in DREAM.3D numbering, +10 on the
+  hull, 11 for a hull vertex inside one grain; `I_VF` is sized by `allV`. On
+  SmallIN100, 757k triangles: edges 0.18 s, node types 0.16 s, reduce by 2 to
+  293k faces 0.57 s (quadric 0.91 s), ten Laplace or Taubin iterations 1 s. The
+  largest grain keeps its volume to 0.02% under the quadric placement and 0.3%
+  under Taubin; the median per-grain change is 11% for Laplace and 4.6% for
+  Taubin; the total is exact, the hull being fixed
+- tests: `core/check_calcGrains3d`, `core/check_boundary3d`,
+  `slow/check_calcGrains3dData` on the LFS dream3d file, a `grainId` round trip in
+  `check_calcGrainsCases`. `slow/check_gbnd3d` fails before and after on
+  `gbnd.CS`, which an `S2FunHarmonic` no longer has
+- the chapter: Volume Data and Slices, Grain Reconstruction, Smoothing and
+  Boundary Network are new pages, and the opener orders them
+
 ### Grain Reconstruction
 
 - `calcGrains` could return an indexed grain below `'minPixel'`. The culling happens

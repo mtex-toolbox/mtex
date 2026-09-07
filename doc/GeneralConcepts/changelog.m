@@ -69,6 +69,48 @@
 % it for that reason, and reports Rbar and deltaR under their own names. See
 % <Plasticity.html Plasticity>.
 %
+% *Three-Dimensional EBSD*
+%
+% A measured volume loads into an |EBSD3| object and is analysed with the
+% commands of the two-dimensional case. DREAM.3D and Xnovo GrainMapper3D
+% files are read, the grains they carry included:
+%
+%   ebsd = EBSD3.load('SmallIN100_MeshStats.dream3d')
+%   [grains,ebsd] = calcGrains(ebsd,'angle',5*degree)
+%   grainsStored = calcGrains(ebsd,'grainId')
+%
+% <EBSD3square.calcGrains.html |calcGrains|> reconstructs the grains from the
+% voxels with the misorientation criteria of the planar case, |'minPixel'|
+% included, and returns a <grain3d.grain3d.html |grain3d|> whose boundary is a
+% closed triangle surface with the voxel pair and the misorientation on every
+% face. |'grainId'| connects voxels that carry the same stored grain id, in
+% two and three dimensions alike, so the segmentation of a vendor file can be
+% compared with one made in MTEX.
+%
+% The voxel surface is a staircase. <grain3d.reduceBoundary.html
+% |reduceBoundary|> coarsens it and <grain3d.smoothBoundary.html
+% |smoothBoundary|> smooths it with the filters of the planar case, keeping
+% quadruple points, triple lines and the outer hull where they are:
+%
+%   grains = smoothBoundary(reduceBoundary(grains,2,'quadric'),taubinFilter(20))
+%
+% <grain3Boundary.edges.html |edges|> and <grain3Boundary.nodeType.html
+% |nodeType|> give the triple lines and quadruple points of the boundary
+% network, and <grain3Boundary.calcGBND.html |calcGBND|> its plane
+% distribution.
+%
+% A volume is plotted with <EBSD3.plot.html |plot|> and cut with
+% <EBSD3.slice.html |slice|>; the section is an ordinary EBSD map seen along
+% the normal of the plane it was cut with:
+%
+%   ebsd = mtexdata('xnovo')
+%   plot(slice(ebsd,plane3d(vector3d(1,1,1),vector3d(0,0,0))))
+%
+% See <EBSD3Analysis.html Three-Dimensional EBSD Analysis> for the chapter,
+% and <Grains3DReconstruction.html Grain Reconstruction>,
+% <Grains3DSmoothing.html Smoothing>, <Grains3DBoundaries.html Boundary
+% Network> and <EBSD3Plotting.html Volume Data and Slices> for the pages.
+%
 % *Corrections Worth Knowing*
 %
 % * the Radon transform of a fibre ODF averages over the specimen orbit as well
@@ -87,6 +129,9 @@
 % * a not indexed phase can be given a colour -
 % |ebsd('notIndexed').color = 'blue'| was refused with "There are no indexed
 % data in this variable!"
+% * |slice| of a volume returned the plane through the origin whatever
+% plane it was given, and a section that does not lie in the xy plane was
+% plotted edge on
 % * the <quaternion.angle.html |angle|> of a rotation and its
 % <quaternion.log.html |log|> keep every digit of a small rotation. They were
 % computed from the real quaternion component and floored at about 2e-6
