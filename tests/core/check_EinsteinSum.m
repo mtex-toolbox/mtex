@@ -95,4 +95,9 @@ assert(isequal(size(RT.M),[3 3 M N]) && ...
   max(abs(reshape(RT.M(:,:,3,2) - R(:,:,3) * T.M(:,:,2),[],1))) < 1e-12, ...
   'check_EinsteinSum: singleton expansion of tensor arrays is wrong')
 
+% an empty array expands the singleton to nothing
+E = EinsteinSum(T1N,[-1 2],R(:,:,1:0),[1 -1]);
+assert(isequal(size(E.M),[3 3 0 N]), ...
+  'check_EinsteinSum: empty tensor array does not stay empty')
+
 end

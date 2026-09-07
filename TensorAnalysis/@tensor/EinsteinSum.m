@@ -97,9 +97,9 @@ c = intersect(i,j);
 nc = nnz(c<0);
 fi = setdiff(1:numel(i),ci); fj = setdiff(1:numel(j),cj);
 
-% array dimensions padded to a common length
+% array dimensions, pagemtimes expands the singletons
 aM = sM(numel(i)+1:end); aB = sB(numel(j)+1:end);
-na = max(numel(aM),numel(aB)); aM(end+1:na) = 1; aB(end+1:na) = 1;
+na = max(numel(aM),numel(aB));
 
 M = permute(M,[fi ci numel(i)+(1:na)]);
 M = reshape(M,[prod(sM(fi)) prod(sM(ci(1:nc))) sM(ci(nc+1:end)) aM]);
@@ -107,7 +107,7 @@ B = permute(B,[cj fj numel(j)+(1:na)]);
 B = reshape(B,[prod(sB(cj(1:nc))) prod(sB(fj)) sB(cj(nc+1:end)) aB]);
 
 M = pagemtimes(M,B);
-M = reshape(M,[sM(fi) sB(fj) sM(ci(nc+1:end)) max(aM,aB) 1 1]);
+M = reshape(M,[sM(fi) sB(fj) size(M,3:max(ndims(M),3)) 1 1]);
 i = [i(fi) j(fj) c(nc+1:end)];
 
 end
