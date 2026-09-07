@@ -25,6 +25,11 @@ ignoring `'bandwidth'` once it reached them. A third pass closed E1 and E2 —
 neither was the `calcUnitCell` bug it was filed as; the real defect is the
 new E15, a shift that expands the vertex list instead of translating it.
 
+Updated 2026-09-07: added the [Julia backport shortlist](#julia-backport-shortlist)
+from the source comparison with `../mtexJulia`, complementing the embedding
+backport already recorded as [O29](#o29). G24, D10/R6, E13, O19, X8 and C9
+found to be already done.
+
 ## Legend
 
 **U — urgency**
@@ -107,7 +112,7 @@ The multi-release work. Everything here is bigger than one branch.
 | G21 | Grain volume distribution | 1 | 0 | idea | — | #281 |
 | G22 | Median grain orientation next to the mean, via `cluster` | 1 | 1 | idea | — | #265 |
 | G23 | Boundary density | 1 | 1 | idea | — | — |
-| G24 | `gB.V` — expose boundary vertices as a first-class property | 1 | 0 | idea | — | — |
+| G24 | `gB.V` — expose boundary vertices as a first-class property — **done**, `V` is a dependent property of `grainBoundary` (checked 2026-09-07) | 1 | 0 | done | — | — |
 | G25 | `calcGrains` should also produce `variantId` and `parentGrainId` | 1 | 1 | idea | — | — |
 | G26 | `calcGBND` for traces | 1 | 1 | idea | — | — |
 | G27 | Better default parameters for parent grain reconstruction | 2 | 1 | planned | — | #644, br/betterParentGrain |
@@ -141,7 +146,7 @@ The multi-release work. Everything here is bigger than one branch.
 | D7 | 3D boundary smoothing — **done 2026-09-02**: `grain3d/smoothBoundary` (hierarchical, the 2D filters), `reduceBoundary` (label-aware clustering), `refineBoundary`; open: a face-normal filter through `boundaryFilter/prepare` | 1 | 1 | done | — | docs/adr/0009 |
 | D8 | Cubit export | 0 | 1 | idea | — | — |
 | D9 | `slice`, nearest neighbours on 3D data | 1 | 1 | planned | — | — |
-| D10 | `grains.volume` is slow when called from `grain3d/display` | 1 | 0 | bug | — | #2092 |
+| D10 | `grains.volume` is slow when called from `grain3d/display` — **done**, `grain3d/volume` is one vectorised divergence-theorem product over all grains (checked 2026-09-07) | 1 | 0 | done | — | #2092 |
 | D11 | 3D orientation analysis crashes | 2 | 1 | triage | — | #2377 |
 | D12 | `loadEBSD_dream3d` and `loadEBSD_xnovo` return an `EBSD3square`, and `calcGrains` segments it into a `grain3d` — **done 2026-09-02**; grains do not yet grow across unindexed voxels (no `alpha` closing) | 1 | 1 | done | — | [→](#d12) |
 | D13 | The 3D classes were absent from the function-reference sidebar — **done** in the 2026-08-10 pass, all three are in `doc/FunctionReference/EBSDAnalysis/EBSDAnalysis_index.toc` (checked 2026-08-11) | 1 | 0 | done | — | docs/doc-audit-plan.md item 4 |
@@ -164,7 +169,7 @@ The multi-release work. Everything here is bigger than one branch.
 | E10 | `EBSD3.xy2ind` needs a review — `gradientX`/`gradientY` are done, and the `EBSDsquare/interp` half of this row is obsolete with E11 | 2 | 1 | planned | — | [→](#e10) |
 | E11 | `@EBSDsquare/interp` died in `griddedInterpolant` with "Data is in MESHGRID format" — **gone**, the `@EBSD` merge deleted that file and `@EBSD/interp` makes no grid assumption (checked 2026-08-11) | 2 | 0 | done | — | docs/doc-audit-plan.md item 10 |
 | E12 | `latticeBasis:38` "Index exceeds array bounds" — the real defect is a degenerate, self-intersecting unit cell reaching it, not the unguarded index | 2 | 1 | bug | — | [→](#e12) |
-| E13 | `gridify` transposes the map at a 45° grid rotation — the layout tie-break is decided by float noise | 1 | 0 | bug | — | [→](#e13) |
+| E13 | `gridify` transposes the map at a 45° grid rotation — **done**, `@EBSD/private/orientBasis.m` states the tie-break at 45° explicitly (checked 2026-09-07) | 1 | 0 | done | — | [→](#e13) |
 | E14 | `gridify` cannot place a rotated hexagonal grid — **fixed**, hexify is lattice based and @EBSDhex stores no geometry | 2 | 1 | done | — | [→](#e14) |
 | E15 | Shifting a `grainBoundary` / `triplePointList` silently expanded its vertex list instead of translating it — **fixed 2026-08-12**; the obsolete `obj + [x,y]` form, which expands the same way, is now rejected and gone from the docs | 3 | 0 | done | — | [→](#e15) |
 
@@ -228,7 +233,7 @@ copy; only what is still open is summarised here.
 | O16 | Sub-regions of ODF space | 0 | 1 | idea | — | — |
 | O17 | Inner product of one ODF against several reference ODFs | 1 | 0 | idea | — | — |
 | O18 | Axis/angle distribution normalization | 1 | 0 | idea | — | — |
-| O19 | Angle range as an option for `odf/calcAxisDistribution` | 1 | 0 | idea | — | #385 |
+| O19 | Angle range as an option for `odf/calcAxisDistribution` — **done**, `'minAngle'` / `'maxAngle'` (checked 2026-09-07) | 1 | 0 | done | — | #385 |
 | O20 | Index a polygon on the sphere | 1 | 1 | idea | — | #299 |
 | O21 | `cmeans` for `vector3d` | 0 | 0 | idea | — | #361 |
 | O22 | Fit an `SO3VectorField` | 1 | 1 | idea | Mathew Bolan | — |
@@ -238,6 +243,7 @@ copy; only what is still open is summarised here.
 | O26 | `circle(ori,radius)` should work in pole figures and ODF sections | 1 | 0 | idea | — | — |
 | O27 | 17 class-qualified doc links dangle, eleven of which name API that exists nowhere | 2 | 1 | planned | — | docs/doc-audit-plan.md item 2e |
 | O28 | `SO3FunMLS` needs the Symbolic Math Toolbox — `SO3FunMLS.m:319` calls `syms`, so the whole class is unavailable, and untestable, without that licence | 2 | 1 | bug | — | [→](#o28) |
+| O29 | Backport the Julia embedding — **done 2026-09-07**: `embedding.id` computes an orthonormal basis of the invariant subspace from the spin generators (`@embedding/private/orbitBasis.m`), `double` and `setDouble` are the projection onto it and its exact inverse, no Laue-id table left; `mmm` drops from 15 to 10 coordinates, every other dimension unchanged | 1 | 1 | done | — | [→](#o29) |
 
 ---
 
@@ -272,7 +278,7 @@ copy; only what is still open is summarised here.
 | X5 | `calcTensor` runs out of memory on large EBSD files | 2 | 1 | bug | — | #2002 |
 | X6 | Nye tensor calculation is wrong | 2 | 1 | triage | — | #194 |
 | X7 | `vector3d` and Schmid-factor commands disagree | 2 | 1 | triage | — | #1672 |
-| X8 | `SchmidFactor(sS,sigma)` should warn when the reference systems differ | 1 | 0 | planned | — | — |
+| X8 | `SchmidFactor(sS,sigma)` should warn when the reference systems differ — **done**, warns `MTEX:frameMismatch` (checked 2026-09-07) | 1 | 0 | done | — | — |
 | X9 | Schmid factor for twinning, plotted on the IPF | 1 | 1 | idea | — | #1488 |
 | X10 | Pre-defined twin systems, like the pre-defined slip systems | 1 | 1 | idea | — | #367, [→](#p2) |
 | X11 | Plane atomic density | 1 | 0 | idea | — | #2266 |
@@ -329,7 +335,7 @@ copy; only what is still open is summarised here.
 | R3 | Out of memory in `calcTensor` on large maps | 2 | 1 | bug | — | #2002, see X5 |
 | R4 | Single-precision variables to cut runtime and RAM | 1 | 2 | idea | — | #2466, see P13 |
 | R5 | Possible memory leak in mex initialisation on macOS | 1 | 1 | triage | — | #1392 |
-| R6 | `grain3d/display` calling `grains.volume` is slow | 1 | 0 | bug | — | #2092, see D10 |
+| R6 | `grain3d/display` calling `grains.volume` is slow — **done**, see D10 | 1 | 0 | done | — | #2092, see D10 |
 
 ---
 
@@ -383,7 +389,7 @@ copy; only what is still open is summarised here.
 | C6 | 26 of the 28 remaining dangling links are inside `changelog.m` — archive material, probably out of scope. The two live ones are `twinningSystem` and `EBSDGradient`, both deliberate | 0 | 0 | decide | — | — |
 | C7 | Document the weighted Burgers vector | 1 | 1 | planned | — | — |
 | C8 | Document transformation textures | 1 | 1 | planned | — | — |
-| C9 | `calcCluster` / `calcComponents` / `max` documentation still uses the "hikers" phrasing | 1 | 0 | planned | — | — |
+| C9 | `calcCluster` / `calcComponents` / `max` documentation still uses the "hikers" phrasing — **done**, no source file carries it (checked 2026-09-07) | 1 | 0 | done | — | — |
 | C10 | Document `SHExtractor` | 1 | 0 | planned | — | — |
 | C11 | Put the different hexagonal conventions on the homepage, and cover low symmetry | 2 | 1 | planned | — | — |
 | C12 | Geometry talk: lattice directions vs lattice normals via Kikuchi patterns, with Nolze's picture | 1 | 0 | idea | — | — |
@@ -1392,6 +1398,233 @@ Symbolic Math Toolbox. On a machine without that licence every
 of type 'char'", which is also why the SO3 half of T3 could not be verified.
 Found 2026-08-11. Either replace the symbolic step with a numeric one, or
 declare the dependency and fail with a message that names the toolbox.
+
+### O29
+**Done 2026-09-07.** `@embedding/private/orbitBasis.m` closes the span of
+the identity embedding under the three spin matrices by Gram-Schmidt, and
+`embedding.id` stores that basis on the object; `double` is `flatten(E)' * B`
+and `setDouble` is `B * d'`, 20 and 30 lines in place of about 540. The
+dimensions agree with the old packing for every Laue class except `mmm`,
+where 15 coordinates become 10. Measured on all eleven classes: invariance
+under the proper group, `setDouble(double(e)) == e` and the isometry all at
+1e-15; building the basis costs 3 to 25 ms per class inside `embedding.id`.
+`check_embedding`, `calcCluster`, `embedding.rand`, `orientation(mean(e))`
+and `splineFilter(...,'useEmbedding')` were run on the result. The notes the
+work was done from follow.
+
+Written 2026-09-04 out of the Julia port (`../mtexJulia/src/tensors/embedding.jl`,
+subplan `docs/plans/polefigures-tensors.md`, step P4f). Worth backporting to
+MATLAB, since both sides then read the same way and the MATLAB tables lose
+their maintenance cost.
+
+**What MATLAB does.** `geometry/@embedding/double.m` and `setDouble.m` switch
+on `E.CS.Laue.id` and, per class, pick the independent components out of the
+flattened tensors by a hand written index list (`ind2`, `ind3`, `ind4`,
+`ind6`, `indT`, `ind43`), multiply them by hand tuned factors
+(`sqrt(2)`, `sqrt(6)`, `sqrt(12)`, `sqrt(30)`, `sqrt(60)`), fold pairs with
+`isometricdot`/`isometricdot3d`, and finish with `traceFix`/`traceUnfix`, a
+Cholesky factor of `diag(mult) + C'*C`. Together that is about 400 lines whose
+only job is to make the coordinates isometric, and it has to be extended by
+hand for every new class.
+
+**What the port does instead.** The images of the orientations move in the
+invariant subspace that the three rotation generators build from the image of
+the identity, and that subspace is computed from the group: start with the
+identity embedding, apply the generators (`sum_d S_i` on the d-th index, which
+is exactly what `embedding.tangential` already builds), orthonormalise, repeat
+until closed. `double` is then `B' * u` and `setDouble` is `B * d` in that
+basis, so
+
+* the isometry is not a property to be repaired by factors — an orthonormal
+  basis has it by construction;
+* `setDouble` inverts `double` exactly, with no second table;
+* the dimension comes out minimal, and the terms need not be independent: the
+  basis is taken of the whole tuple at once, which is what MATLAB's `D4` and
+  `D6` cases hand-fold with the comment "no independent second tensor";
+* nothing branches on a Laue id.
+
+Measured on all eleven Laue classes: isometry and inverse to 1e-16, invariance
+under every group element to 1e-15. The dimensions agree with MATLAB's
+everywhere except `mmm`, where MATLAB packs 15 coordinates and the space has
+10 — the three rank two tensors of `222` sum to an isotropic tensor, so five of
+MATLAB's coordinates are redundant.
+
+**The rest of the class.** `embedding.coefficients` stays a table, but it can
+be selected by the structure of the group rather than by `cs.Laue.id`: the
+power is the order of the principal axis, the vectors are that axis and a two
+fold axis across it where the group has one, three coordinate directions when
+there is no rotation at all. The identity tensors are the group averages of
+`(s l)^alpha` minus their mean over SO(3), which is their projection onto
+`sym(delta^(alpha/2))` — that replaces `embedding.zero` with its meaning.
+
+**Effort.** The Julia file is 260 lines including the docstrings and covers
+what MATLAB spreads over `double.m`, `setDouble.m` and the static methods of
+`embedding.m`. A MATLAB version needs the same three pieces: the generator
+application, the Gram-Schmidt closure, and a cache of the basis per symmetry.
+`tests/core/check_embedding.m` is the acceptance test and needs no change.
+
+**Two smaller things found while benchmarking against the port** (sample an
+ODF, embed, mean, project back; MATLAB 2.90 s at a million orientations
+against 0.96 s single threaded and 0.58 s on twelve cores, numbers in
+`../mtexJulia/docs/research/matlab-comparison.md`), **both done 2026-09-07**:
+
+* `@embedding/project.m` printed one line per iteration with `disp(...)` from
+  inside both descent loops, up to 200 per call. Removed.
+* `embedding(ori)` for a list is `tensor/rotate_outer` of one tensor by many
+  rotations. It contracted one index per pass through `EinsteinSum`, each pass
+  a permute of the whole array. Now the leading half of the indices is
+  contracted from the left by a Kronecker power of the rotation matrices and
+  the trailing half from the right, two `pagemtimes` and no permute. Measured
+  at a million rotations in one session, old against new: rank 4 (cubic)
+  1.59 s to 0.94 s, rank 6 (hexagonal, at 1e5) 2.55 s to 0.66 s, rank 2
+  0.09 s to 0.05 s; rank 3 (trigonal) is the one loser, 0.40 s to 0.52 s,
+  since its odd index has to pay for a Kronecker square anyway. Shapes and
+  values agree with the old code to 1e-13 for single tensors, lists, improper
+  rotations and orientations with a frame; `check_embedding` passes.
+
+### Julia backport shortlist
+
+Recorded 2026-09-07 from the 2026-09-05 comparison of the Julia implementation
+with this MATLAB tree. These are candidates, not completed fixes. No fresh
+MATLAB regression or benchmark run was made for this comparison. Performance
+figures below are existing measurements against `../frameSymmetry`, not
+measured speedups of a MATLAB backport on `master`.
+
+The embedding redesign remains [O29](#o29). The additional candidates, in
+recommended order, are:
+
+| Priority | Candidate | Benefit | Estimated effort |
+|---|---|---|---|
+| 1 | Stable quaternion angles and logarithms — **single-rotation forms done 2026-09-07**: `angle`, `log`, `logRight`, `homochoric`, `power` and the symmetric `orientation/angle` of one argument; open: `angle(o1,o2)` under symmetry, `angle_outer`, the `'max'` branch | Small-angle accuracy, especially in single precision | Small–medium |
+| 2 | Siemens and Seifert pole-figure readers — **done 2026-09-07**, pinned in `tests/core/check_poleFigureImport.m` | Correct intensities and preserve every measurement | Small |
+| 3 | GBND symmetry and pixel-pair validation | Physically consistent distributions and checked inputs | Medium |
+| 4 | Exact SO(3) nearest-grid search | Exact nearest neighbours without exhaustive search | Medium |
+| 5 | Memory-bounded symmetry reduction | Smaller temporary arrays in orientation comparisons | Medium |
+| 6 | Local lattice decomposition | Potential grain-reconstruction speedup | Large |
+
+**1. Stable angles and logarithms.** **Partly done 2026-09-07.** A single
+rotation now takes its angle from the vector-component norm with `atan2`
+(`@quaternion/angle`, `log`, `logRight`, `homochoric`, `power`), two
+quaternions from the signed chord `4*asin(norm(q1 - s*q2)/2)`, and the
+symmetric `angle(ori)` of one argument goes through the stable form for every
+orientation close enough to the identity that the symmetric equivalents cannot
+compete, which is exactly where `acos` was inaccurate. Pinned in
+`check_eulerquat/checkSmallAngle` and `check_logReference/checkSmallRotation`.
+Also changed: `log` of an exact half turn is `pi` times the axis, where
+`sign(0)` used to make it the zero vector.
+
+Open: `angle(o1,o2)` under symmetry, `angle_outer` and the `'max'` branch
+still take `2*acos` of the maximal dot, so a symmetric distance floors at about
+`sqrt(eps)`, i.e. 2e-6 degree. To fix it, `@orientation/dot` has to hand back
+the winning equivalent so its chord can be taken; changing only the final
+`acos` cannot recover information already lost in the dot product.
+`getFundamentalRegion` and `quaternion/accumarray` carry the same `acos`.
+
+Julia sources: `../mtexJulia/src/geometry/quaternion.jl` and
+`../mtexJulia/src/geometry/symreduce.jl`; evidence in
+`../mtexJulia/docs/research/benchmark-orientation-dot.md`.
+Acceptance: tiny angles in single and double precision, identity, `q` versus
+`-q`, rotations near pi, and symmetry-equivalent orientations. Preserve the
+existing tangent-space conventions and orientation options.
+
+**2. Pole-figure reader corrections.** **Done 2026-09-07.** Two particularly small, concrete fixes:
+
+- `interfaces/loadPoleFigure_siemens.m` reads intensities with
+  `textscan(line,'%n')`, although the file uses eight-character fields. The
+  fixture contains `9512.0011184.40`: two adjacent counts without a separating
+  blank. Cut fields by width. The recorded comparison gives mean intensity
+  1975.22 from the fields against MATLAB's 406.94.
+- `interfaces/loadPoleFigure_nja.m` uses `dlmread(fname,'',21,0)` and reads
+  Miller indices from header-token positions 19–21. The inspected Seifert
+  fixture declares 2121 values and starts its data on line 21; the zero-based
+  row offset skips the first measurement. Locate the data block and parse
+  named `H`, `K`, `L` and `NoValues` fields instead.
+
+Julia implementation: `../mtexJulia/src/interfaces/polefigureformats.jl`;
+fixtures `../mtexJulia/test/fixtures/polefigures/siemens.dat` and
+`seifert-111.nja`; regression coverage in `../mtexJulia/test/interfaces.jl`
+(I31). Acceptance: exact count, first and last measurements, reflection,
+directions and background-corrected intensities. Rigaku's inferred polar
+ladder is another candidate, but files without a stated polar range need an
+explicit policy before changing their interpretation.
+
+**3. GBND symmetry and pixel-pair validation.**
+`EBSDAnalysis/@grainBoundary/calcGBND.m` builds the density with `noSymmetry`
+and finally attaches `cs`; this does not symmetrise its coefficients.
+`tests/core/check_gbnd.m` explicitly records a deviation between `f(v)` and
+`f(S*v)` of 22.9 on a scale of 16.4 and omits the symmetry assertion.
+Port actual crystal-group symmetrisation for the unconditioned GBND. Keep
+misorientation-conditioned GBCD separate: full crystal-group projection
+would generally be incorrect there; its invariance depends on the fixed
+misorientation.
+
+Also validate the documented pixel-pair precondition when the second input
+is EBSD: coarsening/resampling can leave a segment's `ebsdId` unrelated to
+the pixels along that segment. Offer grain-mean orientations as the
+alternative. Preserve supported smoothing modes that intentionally retain
+pixel associations; a blanket rejection of all smoothed boundaries is not
+the intended change. Julia source: `../mtexJulia/src/map/gbnd.jl`; tests:
+`../mtexJulia/test/gbnd.jl`. Acceptance: invariance under the crystal group,
+mean-one normalization, independence of orientation representatives, and
+pixel/grain routes agreeing for constant orientations within each grain.
+Retain MATLAB's deconvolution kernel and GBCD functionality, which the Julia
+implementation does not yet cover.
+
+**4. Exact SO(3) nearest-grid search.**
+`geometry/@SO3Grid/private/SO3Grid.c` first selects one nearest spherical
+node and then its best gamma. Julia uses that result as a first candidate,
+then searches every spherical node whose image of z is close enough to
+contain a better rotation. The current best rotational distance bounds this
+refinement, across all symmetry copies.
+
+The recorded comparison found MATLAB's result nearest for 1802 of 2000
+queries, with discrepancies up to 35 degrees; Julia's exact search cost
+1.4–1.7 times as much per query. Source:
+`../mtexJulia/src/geometry/grids/so3grid.jl` (`firstCandidate`, `refine`,
+`nearest`); measurements: `../mtexJulia/docs/research/benchmark-so3grid.md`.
+Port into the existing MEX search. Acceptance: compare with exhaustive
+search on the same MATLAB grid, across symmetry pairs, centres, poles and
+fundamental-region boundaries; benchmark the added cost independently.
+
+**5. Memory-bounded symmetry reduction.** The array/array branch of
+`geometry/@orientation/dot.m` expands both lists over their symmetry groups
+and forms a large intermediate dot array. Julia's pairwise formulation
+uses `<q1,l*q2*r> = <inv(q2)*inv(l)*q1,r>` and accumulates the best result.
+Evaluate a blocked MATLAB implementation or a compact MEX kernel, avoiding
+the full symmetry-pair temporary. Sources:
+`../mtexJulia/src/geometry/symreduce.jl` and
+`../mtexJulia/docs/research/benchmark-orientation-dot.md`.
+Acceptance: exhaustive agreement for both elementwise and outer shapes,
+grain exchange and improper-element behavior, plus peak-memory and runtime
+measurements. The scalar-reference branches already precompute equivalent
+references in MATLAB; that is not a new backport opportunity. Generic Julia
+timing advantages alone do not establish a MATLAB speedup.
+
+**6. Local lattice decomposition.** Julia clips each cell against nearby
+sites with geometric stopping bounds instead of constructing a general
+Voronoi diagram. The recorded decomposition benchmark shows about a factor
+of two on one Julia thread against the reference C Voronoi implementation;
+larger threaded gains are not a promise for a MATLAB version. Sources:
+`../mtexJulia/src/map/decomposition.jl`,
+`../mtexJulia/docs/research/benchmark-decomposition.md` and
+`../mtexJulia/docs/research/benchmark-map.md`.
+
+Prototype clipping while preserving the existing site classification in
+`EBSDAnalysis/@EBSD/private/spatialDecompositionGrid.m`. Evaluate Julia's
+distance-based closing separately from clipping: replacing both together
+would obscure the cause of differences at holes and map edges. Acceptance:
+square and hex grids, missing measurements, distorted positions, holes,
+open boundaries, exact adjacency on complete grids, and end-to-end grain
+and boundary comparisons. Existing large-map comparisons still have small
+count differences; resolve those before making this the default. Keep a
+general fallback for cases outside the lattice method's assumptions.
+
+**Lower priority.** A wholesale harmonic-transform replacement is not
+justified by this comparison: MATLAB already has coefficient-to-Fourier
+transforms, reusable NFFT plans and an equispaced FFT path. Any additional
+symmetry-support or buffer optimization needs a specific measured bottleneck.
+Likewise, the Julia frame/type redesign is a separate architectural decision,
+not a prerequisite for the six changes above.
 
 ### C0
 Done 2026-08-13. Beyond the gridify-by-default material itself, running the
