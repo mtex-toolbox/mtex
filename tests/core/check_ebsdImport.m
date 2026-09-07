@@ -31,6 +31,7 @@ checkSquareCtf;
 checkHexCtf;
 checkMultiPhaseCtf;
 checkAng;
+checkOscPhaseOrder;
 checkEMSphInxAngROI;
 checkCprMissingPhase;
 checkGridDispatch;
@@ -670,5 +671,38 @@ got = [a b c]/degree;
 assert(max(abs(got - eulerDeg)) < 0.01, ...
   'check_ebsdImport: %s - the %s orientation is (%.2f,%.2f,%.2f), expected (%.2f,%.2f,%.2f)', ...
   name, which, got, eulerDeg)
+
+end
+
+% =========================================================================
+function checkOscPhaseOrder
+% the phase records pair with the phase numbers in the order the file lists them
+
+% a 4 by 3 map of two phases, Zinc as phase 1 and Aluminum as phase 2, whose
+% records the header lists in that order though Aluminum sorts first
+name = @(s) uint8([s repmat(' ',1,256-numel(s))]);
+record = @(s,a) [name(s) typecast(int32(43),'uint8') ...
+  typecast(single([a a a 90 90 90]),'uint8') typecast(int32(0),'uint8')];
+n = 12;
+x = repmat(0:3,1,3).'; y = kron((0:2).',ones(4,1));
+phase = [ones(8,1); 2*ones(4,1)];
+rows = [0.1*(1:n).' 0.2*ones(n,1) 0.3*ones(n,1) x y 80*ones(n,1) 0.5*ones(n,1) ...
+  phase zeros(n,1) 0.1*ones(n,1)];
+b = [typecast(uint32([0 0 0 0 4 3 n 0]),'uint8') zeros(1,2000,'uint8') ...
+  uint8([185 11 239 255 1 0 0 0]) uint8(0) record('Zinc',3.61) record('Aluminum',4.05) uint8(0) ...
+  uint8([185 11 239 255 2 0 0 0]) typecast(single([1 1]),'uint8') ...
+  typecast(single(reshape(rows.',1,[])),'uint8')];
+fname = [tempname '.osc'];
+fid = fopen(fname,'wb'); fwrite(fid,b); fclose(fid);
+
+w = warning('off','all');
+ebsd = EBSD.load(fname);
+warning(w); delete(fname);
+
+names = arrayfun(@(c) c.mineral, ebsd.CSList, 'UniformOutput', false);
+assert(isequal(names(2:end),{'Zinc','Aluminum'}), 'checkOscPhaseOrder: the phase list follows the file');
+assert(length(ebsd('Zinc')) == 8 && length(ebsd('Aluminum')) == 4, ...
+  'checkOscPhaseOrder: the measurements belong to the record their number names');
+assert(abs(norm(ebsd('Zinc').CS.aAxis) - 3.61) < 1e-3, 'checkOscPhaseOrder: the record keeps its cell');
 
 end

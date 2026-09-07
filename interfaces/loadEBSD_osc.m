@@ -106,6 +106,7 @@ ebsd = applyEulerCorrectionTable(ebsd,'.osc',varargin{:});
 %  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 %
 
+
 % Osc2Ang( OscFile )
 function [data, Xstep, Ystep] = oscData( file )
 %  [RelevantData,Xstep,Ystep ] = Osc2Ang(OscFile) reads the *.osc file
@@ -304,41 +305,35 @@ headerBytes = data(headerStart+8:headerStop);
 % keep the raw bytes, the rest of the header is not self describing
 header.rawBytes = headerBytes;
 
-osc_phases = file2cell([mtex_path filesep 'interfaces' filesep 'osc_phases.txt']);
-nPhase=0;
-for i=1:length(osc_phases)
-  phaseLoc=strfind(lower(char(headerBytes)),[char(0) lower(osc_phases{i}) char(32) char(32) char(32)]);
-  if ~isempty(phaseLoc)
-    nPhase=nPhase+1;
-    PhaseStart(nPhase)=phaseLoc(1)+1;
-    PhaseName{nPhase}=osc_phases{i};
+% one record per phase, in the order the file numbers them
+CS = repmat(notIndexed,1,0);
+o = 1;
+while o + 287 <= numel(headerBytes)
+  cs = phaseRecord(headerBytes,o);
+  if isempty(cs)
+    o = o + 1;
+  else
+    CS(end+1) = cs; %#ok<AGROW>
+    o = o + 288;
   end
 end
-if nPhase==0
-  for i=1:length(osc_phases)
-    phaseLoc=strfind(lower(char(headerBytes)),[char(0) lower(osc_phases{i}) char(0)]);
-    if ~isempty(phaseLoc)
-      nPhase=nPhase+1;
-      PhaseStart(nPhase)=phaseLoc(1)+1;
-      PhaseName{nPhase}=osc_phases{i};
-    end
-  end
-end
-CS = repmat(notIndexed,1,nPhase); %if nPhase is zero then interface catches the error
 
-for k = 1:nPhase
-
-  phaseBytes = headerBytes(PhaseStart(k):PhaseStart(k)+288);
-
-  cellBytes = phaseBytes(261:284);
-  axLength  = double(typecast(cellBytes(1:12),'single'));
-  axAngle   = double(typecast(cellBytes(13:end),'single'))*degree;
-  numHKL    = typecast(phaseBytes(285:288),'int32');
-
+function cs = phaseRecord(bytes,pos)
+% the phase a record at pos describes: a name that reads as one, a symmetry
+% code and a cell the crystal symmetry accepts; empty where the bytes are none
+cs = [];
+field = bytes(pos:pos+255);
+stop = find(field == 0,1);
+if isempty(stop), stop = 257; end
+field = field(1:stop-1);
+if isempty(field) || any(field < 32 | field > 126) || ~any(isletter(char(field))), return; end
+symCode = typecast(bytes(pos+256:pos+259),'int32');
+cell = double(typecast(bytes(pos+260:pos+283),'single'));
+if ~(symCode > 0 && symCode < 100 && all(cell(1:3) > 0 & cell(1:3) < 1000) && ...
+    all(cell(4:6) > 0 & cell(4:6) < 180)), return; end
+try
   % the crystal reference frame follows the EDAX convention, as for .ang files
-  symCode = typecast(phaseBytes(257:260),'int32');
-  laueGroup = TSL2pointGroup(symCode,symCode);
-
-  CS(k) = crystalSymmetry(laueGroup,axLength,axAngle,'mineral',PhaseName{k},'EDAX');
-
+  cs = crystalSymmetry(TSL2pointGroup(symCode,symCode),cell(1:3),cell(4:6)*degree, ...
+    'mineral',strtrim(char(field)),'EDAX');
+catch
 end
