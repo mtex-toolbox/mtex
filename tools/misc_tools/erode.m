@@ -21,7 +21,7 @@ function ebsd = erode(ebsd,count, varargin)
 % Examples
 %
 % mtexdata small
-% plot(ebsd); hold on
+% plot(ebsd,'layout',[1 4]); hold on
 % plot(ebsd('n'),'FaceColor','k'); hold off;
 % mtexTitle('original');  nextAxis
 % 
@@ -33,7 +33,7 @@ function ebsd = erode(ebsd,count, varargin)
 % 
 % % erode isolated, nonIndexed points
 % for i=1:10
-% ebsd = erode(ebsd,1,{'n' 'D' 'E'});
+%   ebsd = erode(ebsd,1,{'n' 'D' 'E'});
 % end
 % 
 % plot(ebsd); hold on
@@ -44,8 +44,8 @@ function ebsd = erode(ebsd,count, varargin)
 % % erode isolated, nonIndexed points
 % 
 % for i=1:10
-% ebsd = erode(ebsd,2,{'n' 'D' 'E','F'});
-% ebsd = ebsd.fill;
+%   ebsd = erode(ebsd,2,{'n' 'D' 'E','F'});
+%   ebsd = ebsd.fill;
 % end
 % 
 % plot(ebsd); hold on
