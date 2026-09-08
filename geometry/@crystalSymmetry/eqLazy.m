@@ -13,7 +13,7 @@ elseif isa(S1,'char') && isa(S2,'char')
   
 end
 
-out = eq@handle(S1,S2);
+out = S1 == S2;
 
 % just compare handles -> this is fastest
 if out || (nargin == 3 && islogical(varargin{1}) && varargin{1}), return; end
