@@ -69,25 +69,21 @@ if any(strcmpi(ext,{'.pdf','.eps','.ps'}))
   
 else % use export_fig with 50% magnification
 
-  try
-    oldColor = get(gcf,'color');
-    set(gcf,'color',get(gca,'color'));
-    % prevent smoothing and aliasing on map plot: no new colors should be generated
-    if isa(getappdata(gca,'mapPlot'),'mapPlot')
-      set(gcf,'GraphicsSmoothing','off');
-      export_fig(gcf,fname,'-m2.5','-a1');
-    else
-      export_fig(gcf,fname,'-m1.5');
-    end
-    if exist(fname,'file')
-      set(gcf,'color',oldColor);
-      return;
-    end
-  catch
+  assert(any(strcmpi(ext,{'.png','.jpg','.jpeg','.tif','.tiff','.bmp'})), ...
+    'saveFigure: %s is not a supported format, use pdf, eps, png, jpg, tif or bmp',ext)
+
+  oldColor = get(gcf,'color');
+  set(gcf,'color',get(gca,'color'));
+  restoreColor = onCleanup(@() set(gcf,'color',oldColor));
+
+  % prevent smoothing and aliasing on map plot: no new colors should be generated
+  if isa(getappdata(gca,'mapPlot'),'mapPlot')
+    set(gcf,'GraphicsSmoothing','off');
+    export_fig(gcf,fname,'-m2.5','-a1');
+  else
+    export_fig(gcf,fname,'-m1.5');
   end
 
-  set(gcf,'color',oldColor);
-  
 end
 end
 
