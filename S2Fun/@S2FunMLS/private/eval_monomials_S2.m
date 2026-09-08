@@ -45,19 +45,4 @@ for k = 0 : deg
   idx = idx + k + 1;
 end
 
-% For odd non-tangent spaces, improve the first local constant surrogate.
-% The truncated expansion approximates 1/z near the north pole.
-if mod(deg,2) == 1 && ~tangent
-  m = (deg - 1) / 2;
-  r2 = x.^2 + y.^2;
-  p0 = ones(N,1);
-  term = ones(N,1);
-  for j = 1:m
-    term = term .* r2;
-    cj = nchoosek(2*j,j) / 4^j;
-    p0 = p0 + cj .* term;
-  end
-  vals(:,1) = z .* p0;
-end
-
 end

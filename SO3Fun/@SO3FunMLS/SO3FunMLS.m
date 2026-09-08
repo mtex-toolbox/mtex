@@ -52,6 +52,7 @@ classdef SO3FunMLS < SO3Fun
   %  s        - symmetry of the nodes
   %
   %  regularize - use goal-oriented regularization of the local systems
+  %               automatically enables tangent monomials for every degree
   %  mincond    - center-amplification threshold where regularization starts
   %  maxcond    - center-amplification threshold where full correction is used
   %  targetcond - inverse-amplification bound at full correction;
@@ -230,6 +231,7 @@ classdef SO3FunMLS < SO3Fun
       SO3F.monomials = get_option(varargin, 'monomials', true, 'logical');
       SO3F.tangent = get_option(varargin, 'tangent', false, 'logical');
       SO3F.centered = get_option(varargin, 'centered', true, 'logical');
+      if SO3F.regularize, SO3F.tangent = true; end
       if SO3F.tangent, SO3F.centered = true; end
       if SO3F.centered, SO3F.monomials = true; end
 
@@ -246,14 +248,6 @@ classdef SO3FunMLS < SO3Fun
       % optimal subsampling (minimizes the Lebesgue constant)
       SO3F.subsample = check_option(varargin, {'subsampling', 'subsample'});
       if SO3F.subsample, SO3F.centered = true; end
-
-      if SO3F.regularize && SO3F.centered && ...
-          mod(SO3F.degree, 2) == 1 && ~SO3F.tangent && ...
-          ~getMTEXpref('generatingHelpMode')
-        warning(['For odd non-tangent ansatz spaces the first basis function is ' ...
-          'only a local constant surrogate. Exact constant preservation is not ' ...
-          'available. Tangent monomials are usually preferable.']);
-      end
 
       SO3F.use_smooth_delta = get_option(varargin, {'use_smooth_delta', ...
         'use smooth delta', 'smooth_delta', 'smooth delta'}, true);

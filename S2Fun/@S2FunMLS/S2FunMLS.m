@@ -50,6 +50,7 @@ classdef S2FunMLS < S2Fun
   %  s        - symmetry of the nodes
   %
   %  regularize - use goal-oriented regularization of the local systems
+  %               automatically enables tangent monomials for every degree
   %  mincond    - center-amplification threshold where regularization starts
   %  maxcond    - center-amplification threshold where full correction is used
   %  targetcond - inverse-amplification bound at full correction;
@@ -233,6 +234,7 @@ classdef S2FunMLS < S2Fun
       S2F.monomials = get_option(varargin, 'monomials', true, 'logical');
       S2F.tangent = get_option(varargin, 'tangent', false, 'logical');
       S2F.centered = get_option(varargin, 'centered', true, 'logical');
+      if S2F.regularize, S2F.tangent = true; end
       if S2F.tangent, S2F.centered = true; end
       if S2F.centered, S2F.monomials = true; end
 
@@ -249,14 +251,6 @@ classdef S2FunMLS < S2Fun
       % optimal subsampling (minimizes the Lebesgue constant)
       S2F.subsample = check_option(varargin, {'subsampling', 'subsample'});
       if S2F.subsample, S2F.centered = true; end
-
-      if S2F.regularize && S2F.centered && ...
-          mod(S2F.degree, 2) == 1 && ~S2F.tangent && ...
-          ~getMTEXpref('generatingHelpMode')
-        warning(['For odd non-tangent ansatz spaces the first basis function is ' ...
-          'only a local constant surrogate. Exact constant preservation is not ' ...
-          'available. Tangent monomials are usually preferable.']);
-      end
 
       S2F.use_smooth_delta = get_option(varargin, {'use_smooth_delta', ...
         'use smooth delta', 'smooth_delta', 'smooth delta'}, true);
