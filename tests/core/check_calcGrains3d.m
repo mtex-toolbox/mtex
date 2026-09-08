@@ -24,6 +24,7 @@ assert(isequal(accumarray(ebsd.grainId(:),1),grains.numPixel),'grainId agrees wi
 
 checkSurface(grains,sz,dxyz)
 checkBoundary(grains,ebsd,sz)
+checkPhaseSubset(ebsd,grains)
 
 % orientations are recovered exactly, so the spread vanishes
 assert(all(grains.prop.GOS < 1e-10),'GOS of a uniform grain')
@@ -96,5 +97,34 @@ assert(isequal(gid,gB.grainId(isInner,:)),'ebsdId and grainId agree')
 isIdx = isInner & all(gB.isIndexed,2);
 planted = angle(grains.meanOrientation(gB.grainId(isIdx,1)),grains.meanOrientation(gB.grainId(isIdx,2)));
 assert(max(abs(gB.misorientation(isIdx).angle - planted)) < 1e-8,'misorientation across the face')
+
+end
+
+% =========================================================================
+function checkPhaseSubset(ebsd,grains)
+% a selection is a list that keeps the lattice, and whatever needs the
+% grid puts the list back onto it
+
+e = ebsd('indexed');
+assert(isa(e,'EBSD3') && ~isa(e,'EBSD3square') && length(e) == nnz(ebsd.isIndexed), ...
+  'a selection is a list of the selected voxels')
+assert(length(e.unitCell) == 8,'the list keeps the unit cell')
+
+[eGrid,newId] = gridify(e);
+assert(isa(eGrid,'EBSD3square') && max(norm(eGrid.pos(newId) - e.pos)) < 1e-10, ...
+  'gridify puts every voxel back where it was')
+
+[g,e2] = calcGrains(e,'angle',5*degree);
+assert(isequal(sort(g('indexed').numPixel),sort(grains('indexed').numPixel)), ...
+  'the grains of a selection are those of the whole volume')
+assert(isequal(size(e2.grainId),size(e.id)) && all(e2.grainId > 0), ...
+  'the list comes back with its grainId')
+
+one = ebsd(ebsd.grainId == grains('indexed').id(1));
+g1 = calcGrains(one,'angle',5*degree);
+assert(length(g1('indexed')) == 1 && g1('indexed').numPixel == length(one), ...
+  'one grain reconstructs from its own voxels')
+
+assert(isequal(size(ebsd(2:5,3:6,1:4)),[4 4 4]),'a block of subscripts crops')
 
 end

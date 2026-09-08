@@ -52,6 +52,9 @@ gbc = grainBoundaryCriterion.byOptions(varargin{:});
 % a stored grainId of 0 means no grain, as it does for the output
 if check_option(varargin,'grainId'), ebsd.phaseId(ebsd.grainId == 0) = 1; end
 
+% a lattice cell gridify padded is not indexed
+ebsd.phaseId(isnan(ebsd.phaseId)) = 1;
+
 minPixel = get_option(varargin,'minPixel',1);
 if gbc.handlesMinPixel && minPixel > 1, gbc = gbc.setMinPixel(minPixel); end
 

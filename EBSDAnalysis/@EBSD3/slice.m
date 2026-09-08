@@ -20,6 +20,7 @@ function ebsd = slice(ebsd3,plane,varargin)
 % EBSD grain3d/slice
 
 if ~isa(plane,'plane3d'), plane = plane3d(plane,varargin{:}); end
+if ~isa(ebsd3,'EBSD3square'), ebsd3 = gridify(ebsd3); end
 
 ext = ebsd3.extent;
 

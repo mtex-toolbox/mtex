@@ -70,8 +70,14 @@ if nargin>1 && isnumeric(varargin{1})
   assert(any(numel(property) == length(ebsd) * [1,3]),...
     'The number of values should match the number of ebsd data!')
 
+  % a list of voxels is put back onto its lattice, its values with it
+  if ~isa(ebsd,'EBSD3square')
+    [ebsd,newId] = gridify(ebsd);
+    p = nan(length(ebsd),numel(property)/numel(newId));
+    p(newId,:) = reshape(property,numel(newId),[]);
+    property = p;
+  end
   sz = size(ebsd);
-  assert(numel(sz)==3,'volume plotting requires the data in a 3d array, see @EBSD3square')
 
   % a scalar volume or an m x n x p x 3 rgb volume
   data = reshape(property,[sz,numel(property)/length(ebsd)]);
@@ -100,6 +106,7 @@ if nargin>1 && isnumeric(varargin{1})
   
 else % phase plot
 
+  if ~isa(ebsd,'EBSD3square'), ebsd = gridify(ebsd); end
   viewer = viewer3d(BackgroundColor='w',BackgroundGradient='off');
 
   % the base volume is only seen where no phase label covers it - white there

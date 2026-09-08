@@ -36,7 +36,23 @@ ebsd = mtexdata('xnovo')
 % The voxel is 10 micron on a side and the volume spans about half a
 % millimetre in each direction.
 
+[ebsd.dx, ebsd.dy, ebsd.dz]
 ebsd.extent
+
+%% Select voxels
+%
+% A phase or a condition selects voxels the way it selects the pixels of a
+% map. The result is a list of the selected voxels, shorter than the
+% volume, that still carries the unit cell of the grid it came from.
+
+ebsdQuartz = ebsd('Quartz')
+
+%%
+% Whatever needs the grid rebuilds it in place: <EBSD3.calcGrains.html
+% |calcGrains|>, |plot| and |slice| put the list back onto its lattice,
+% with the cells nobody occupies not indexed, and <EBSD3.gridify.html
+% |gridify|> does so explicitly. A block of subscripts,
+% |ebsd(10:20,10:20,10:20)|, keeps the grid and crops it.
 
 %% Display the volume
 %
