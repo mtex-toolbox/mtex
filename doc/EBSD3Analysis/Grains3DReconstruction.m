@@ -4,8 +4,9 @@
 % from serial sectioning or from a diffraction technique that probes the
 % volume. Each voxel carries a position, a phase and an orientation. A grain
 % is a phase-homogeneous, spatially connected region of such voxels. This
-% page reconstructs the grains of a measured volume and looks at what comes
-% out.
+% page asks how the segmentation criterion changes the grains we measure.
+% Unlike the simulated multiphase volume in the overview, this example uses
+% the DREAM.3D IN100 data so that one phase can be coloured by orientation.
 
 plottingConvention.default('y↑→x');
 how2plot = plottingConvention.default3D;
@@ -18,7 +19,8 @@ how2plot = plottingConvention.default3D;
 % them. Every further scalar array of the file becomes a property.
 
 fname = fullfile(mtexDataPath,'EBSD','SmallIN100_MeshStats.dream3d');
-ebsd = EBSD3.load(fname)
+ebsdImported = EBSD3.load(fname);
+ebsd = ebsdImported
 
 %% Reconstruct the grains
 %
@@ -35,7 +37,7 @@ ebsd = EBSD3.load(fname)
 % second output is the same voxel data with a |grainId| per voxel. Plotting
 % the mean orientation colours every face on the outside of the volume.
 
-plot(grains,grains.meanOrientation,'LineStyle','none','micronbar','off')
+plot(grains,grains.meanOrientation,'edgeAlpha',0.1,'micronbar','off')
 setCamera(how2plot)
 
 %%
@@ -55,10 +57,12 @@ setCamera(how2plot)
 % Most grains are small. The largest grain is worth a look on its own.
 
 histogram(grains.volume)
+xlabel('grain volume (length units^3)')
+ylabel('number of grains')
 
 %%
 [~,id] = max(grains.volume);
-plot(grains(id),'micronbar','off')
+plot(grains(id),'micronbar','off','edgeAlpha',0.2)
 setCamera(how2plot)
 
 %% Grains stored in the file
@@ -69,12 +73,33 @@ setCamera(how2plot)
 % orientations, so the stored segmentation becomes a @grain3d with the same
 % closed surfaces, volumes and boundary as a reconstruction of our own.
 
-grainsStored = calcGrains(ebsd,'grainId')
+grainsStored = calcGrains(ebsdImported,'grainId')
 
 %%
-% The two segmentations agree on most voxels. Where they differ, the
-% threshold decided about a low angle boundary that the stored ids
-% either keep or drop.
+% The second output of |calcGrains| replaces |ebsd.grainId|, so the stored
+% segmentation must be read from |ebsdImported|. Grain labels are arbitrary:
+% subtracting the two ID arrays would not measure agreement. First compare
+% a physically meaningful quantity, the equivalent-sphere diameter,
+% $d_V=(6V/\pi)^{1/3}$, for indexed grains in each reconstruction.
+
+gMTEX = grains('indexed');
+gStored = grainsStored('indexed');
+dMTEX = (6*gMTEX.volume/pi).^(1/3);
+dStored = (6*gStored.volume/pi).^(1/3);
+diameterEdges = linspace(0,max([dMTEX;dStored]),25);
+
+histogram(dMTEX,diameterEdges,'DisplayName','MTEX, 5 degrees')
+hold on
+histogram(dStored,diameterEdges,'DisplayName','stored segmentation')
+hold off
+legend('Location','best')
+xlabel('equivalent-sphere diameter (length units)')
+ylabel('number of grains')
+
+%%
+% Similar distributions do not establish voxel-by-voxel agreement. They do
+% show whether the two segmentations give similar grain sizes. To locate
+% discrepancies, compare their |grainId| properties on the same slice.
 
 %% Small grains
 %
@@ -83,7 +108,18 @@ grainsStored = calcGrains(ebsd,'grainId')
 % voxels are marked notIndexed and form notIndexed grains, exactly as in two
 % dimensions.
 
-grains = calcGrains(ebsd,'angle',5*degree,'minPixel',10)
+[grainsClean,ebsdClean] = calcGrains(ebsdImported,'angle',5*degree,'minPixel',10);
+[length(grains('indexed')), length(grainsClean('indexed'))]
+
+%%
+% A cutoff is a choice of minimum resolved volume: ten voxels correspond to
+% the volume below. It can suppress isolated indexing errors, but also remove
+% real small grains. Check the affected regions before interpreting a loss
+% of fine grains as a material feature.
+
+minimumVolume = 10 * ebsd.dx * ebsd.dy * ebsd.dz
+removedFraction = nnz(ebsdImported.isIndexed & ~ebsdClean.isIndexed) / ...
+  nnz(ebsdImported.isIndexed)
 
 %% The grain boundary
 %
@@ -94,14 +130,18 @@ grains = calcGrains(ebsd,'angle',5*degree,'minPixel',10)
 % faces shows where the low angle boundaries are.
 
 gB = grains.boundary;
-isInner = all(gB.grainId > 0,2);
+isInner = all(gB.grainId > 0,2) & all(gB.isIndexed,2);
 histogram(gB.misorientation(isInner).angle ./ degree)
-xlabel('misorientation angle in degree')
+xlabel('local misorientation angle (degrees)')
+ylabel('number of mesh faces')
 
 %% Next
 %
-% <Grains3DProperties.html Properties> lists the geometric properties of the
-% reconstructed grains, and <Grains3DOperations.html Operations> covers
-% selection, slicing and the boundary normal distribution. The
-% <Grains3D.html 3D-Grains> page reads the same microstructure from the
+% <Grains3DSmoothing.html Smoothing> removes voxel steps before surface
+% measurements. <Grains3DProperties.html Properties> measures the reconstructed
+% grains, and <Grains3DOperations.html Operations> relates sections to their
+% parent grains. <Grains3DBoundaries.html Boundary Network> measures internal
+% interfaces. The <Grains3D.html Three-Dimensional Grains> page reads the
 % surface mesh DREAM.3D stored alongside the voxels.
+
+%#ok<*NOPTS>

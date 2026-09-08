@@ -2,7 +2,10 @@
 %
 % <https://neper.info Neper> is an open-source package developed by Romain
 % Quey for generating and meshing polycrystals. MTEX can configure a Neper
-% tessellation, run it, and load the result as a @grain3d collection.
+% tessellation, run it, and load the result as a @grain3d collection. A
+% synthetic volume lets us vary morphology and texture independently, test
+% how sectioning changes a measured distribution, or prepare grain geometry
+% for a simulation.
 % <Grains3D.html Three-Dimensional Grains> defines that representation and
 % introduces selection and sectioning.
 %
@@ -54,7 +57,9 @@ end
 %
 %   neper.filePath = 'C:\Users\user\Documents\work\MtexWork\neper';
 %
-% The |geometry| property controls the outer domain. Its default is
+% Neper coordinates set relative lengths; choose their physical scale for
+% the intended material or simulation. The |geometry| property controls the
+% outer domain. Its default is
 % |"cube(1,1,1)"|. Cuboids use |"cube(x,y,z)"|; cylinders use
 % |"cylinder(h,d,numFaces)"|; spheres use |"sphere(d,numFaces)"|.
 
@@ -85,9 +90,12 @@ end
 % of orientations.
 % For a list, its length determines the grain count. The |'silent'| option
 % writes Neper's console output to |neper.log| in |filePath|.
+% Both the generated grains and the imported example use the ODF's trigonal
+% quartz symmetry, also used on the Properties and Operations pages.
 
+% The Dubna ODF has trigonal quartz symmetry.
 odf = SO3Fun.dubna;
-numGrains = 1000;
+numGrains = 100;
 
 if hasNeper
   grains = neper.simulateGrains(numGrains,odf,'silent');
@@ -104,11 +112,13 @@ grains
 %   grains = neper.simulateGrains(ori,'silent');
 %
 % The summary confirms that the result is a three-dimensional grain
-% collection. When the bundled fallback is used, its stored orientations
-% replace a newly sampled list.
+% collection. The fallback is an existing example, not a realization of the
+% settings above: it retains its stored geometry and orientations. The ODF
+% controls grain orientations, not a boundary-normal distribution or a
+% constitutive law.
 
 clf
-plot(grains,grains.meanOrientation,'micronbar','off')
+plot(grains,grains.meanOrientation,'micronbar','off','edgeAlpha',0.1)
 how2plot = plottingConvention.default3D;
 setCamera(how2plot)
 
@@ -116,6 +126,25 @@ setCamera(how2plot)
 % The colours encode one mean orientation per polyhedral grain. The outer
 % envelope follows the cuboid selected by the simulation that created this
 % tessellation.
+
+%% Check the generated size distribution
+%
+% A morphology string specifies a target, not the measured outcome of a
+% finite tessellation. Check the resulting equivalent-sphere diameters before
+% treating the volume as a representative microstructure. Normalizing by the
+% mean separates the spread from the chosen length scale.
+
+diameter = (6*grains.volume/pi).^(1/3);
+figure
+histogram(diameter/mean(diameter),15)
+xlabel('equivalent-sphere diameter / mean diameter')
+ylabel('number of grains')
+
+%%
+% Use several seeds and, when needed, more grains to assess sampling
+% variability. A prescribed list of orientations gives one orientation per
+% grain; unequal grain volumes mean its volume-weighted texture can differ
+% from the number-weighted orientation sample.
 
 %% Compare planar sections
 %
@@ -133,13 +162,13 @@ grains224 = grains.slice(N(3),A)
 
 newMtexFigure('layout',[1,3],'figSize','large');
 plot(grains001,grains001.meanOrientation,'micronbar','off');
-mtexTitle('(001) normal')
+mtexTitle('normal || specimen z')
 nextAxis
 plot(grains1_10,grains1_10.meanOrientation,'micronbar','off');
-mtexTitle('(1 -1 0) normal')
+mtexTitle('normal || (1,-1,0)')
 nextAxis
 plot(grains224,grains224.meanOrientation,'micronbar','off');
-mtexTitle('(2 2 4) normal')
+mtexTitle('normal || (2,2,4)')
 
 %%
 % The three panels show differently oriented planes. Their unequal outlines
@@ -161,13 +190,21 @@ inPlane = grains.intersected(N(1),A);
 
 plot(grains001,grains001.meanOrientation,'micronbar','off');
 hold on
-plot(grains(inPlane),grains(inPlane).meanOrientation,'faceAlpha',0.55)
+plot(grains(inPlane),grains(inPlane).meanOrientation, ...
+  'faceAlpha',0.55,'edgeAlpha',0.1)
 hold off
 setCamera(how2plot)
 
 %%
 % The opaque polygons are the section itself. The translucent polyhedra
 % extend to both sides of the plane and are the corresponding parent grains.
+
+%% Function reference
+%
+% || Function || Purpose || Function || Purpose ||
+% || <neper.neper.html |neper.init|> || initialize the interface || <neper.simulateGrains.html |simulateGrains|> || generate a textured polycrystal ||
+% || <grain3d.load.html |load|> || import an existing 3D tessellation || <neper.getSlice.html |getSlice|> || write a section through Neper ||
+% || <grain3d.slice.html |slice|> || cut a loaded collection in MTEX || <grain3d.intersected.html |intersected|> || select the parent polyhedra ||
 
 %% References
 %

@@ -5,23 +5,10 @@
 % material properties such as |meanOrientation|, but their size and shape
 % require volume and surface measures rather than planar area and perimeter.
 %
-% The main whole-grain properties are
-%
-% || Property || Meaning ||
-% || |numPixel| || number of measured volume elements assigned to the grain ||
-% || |numFaces| || number of boundary faces belonging to the grain ||
-% || <grain3d.volume.html |volume|> || enclosed volume ||
-% || <grain3d.surface.html |surface|> || total area of all boundary faces ||
-% || <grain3d.diameter.html |diameter|> || greatest distance between two grain vertices ||
-% || <grain3d.principalComponents.html |principalComponents|> || three principal half-axes of a volume-matched ellipsoid ||
-% || <grain3d.numNeighbors.html |numNeighbors|> || number of neighbouring grains ||
-% || <grain3Boundary.grain3Boundary.html |boundary|> || boundary faces of the grain ||
-% || |V| || vertices used by the grain ||
-% || <grain3d.centroid.html |centroid|> || volume centroid of the grain ||
-%
-% Several @grain2d shape properties do not yet have three-dimensional
-% counterparts: |caliper|, |equivalentRadius|, |equivalentPerimeter|,
-% |shapeFactor|, |isBoundary|, |hasHole|, and |isInclusion|.
+% Start with size: how much material belongs to the large grains? Then
+% distinguish elongated grains from compact ones, and identify shapes cut
+% short by the measurement boundary. These questions need different measures
+% and different statistical weights.
 
 plottingConvention.default('y↑→x');
 
@@ -29,11 +16,16 @@ plottingConvention.default('y↑→x');
 %
 % The bundled data set is a Neper tessellation. The previous
 % <NeperInterface.html Neper Interface> page explains how such a collection
-% is generated or imported.
+% is generated or imported. Loading the existing file needs no Neper
+% installation. Its lengths are expressed in the tessellation coordinate
+% units; assign a physical scale before comparing with an experiment.
 
-mtexdata NeperGrain3d
+% Assign trigonal quartz symmetry, as on the Neper Interface page.
+cs = crystalSymmetry.load('quartz.cif');
+tessFile = fullfile(mtexDataPath,'Neper','my100grains.tess');
+grains = grain3d.load(tessFile,'CS',cs)
 
-plot(grains,grains.meanOrientation,'micronbar','off')
+plot(grains,grains.meanOrientation,'micronbar','off','edgeAlpha',0.1)
 setCamera(plottingConvention.default3D)
 
 %%
@@ -45,8 +37,8 @@ setCamera(plottingConvention.default3D)
 % Diameter, surface area, and volume answer different questions. The diameter
 % spans the two most distant vertices. Surface sums the areas of all faces,
 % while volume measures the enclosed polyhedron. Their units follow the mesh
-% coordinates; for this data set they are micrometres, square micrometres,
-% and cubic micrometres.
+% coordinates: length, length squared, and length cubed. A tessellation has
+% no experimental length calibration merely because it can be plotted.
 %
 % Select by grain ID so the choice remains meaningful after subsetting.
 
@@ -64,19 +56,41 @@ grain.surface
 grain.volume
 
 %%
-% Grain 9 has diameter 19.456 micrometres, surface area 765.91 square
-% micrometres, and volume 1431.84 cubic micrometres. The three values cannot
-% be substituted for one another because grains with equal volume can have
-% very different elongation and surface roughness.
-%
+% Equal volumes need not mean equal elongation or equal surface area.
+% The equivalent-sphere diameter provides a size measure independent of
+% surface roughness; sphericity compares the measured surface with that of
+% a sphere enclosing the same volume. A sphere has sphericity one.
+
+equivalentDiameter = (6*grains.volume/pi).^(1/3);
+sphericity = (36*pi)^(1/3) * grains.volume.^(2/3) ./ grains.surface;
+
+%%
 % Face and neighbourhood counts provide complementary structural measures.
 
 [grain.numFaces, grain.numNeighbors]
 
 %%
-% Grain 9 has 18 boundary faces and 17 neighbouring grains. Its face on the
-% outside of the tessellated volume contributes to |numFaces| but does not
-% introduce a neighbouring grain.
+% A triangulated interface can contain many mesh faces but still separate
+% only two grains. |numFaces| depends on the mesh; |numNeighbors| describes
+% grain connectivity. A face on the outside has no neighbouring grain.
+
+%% Which grains are completely inside the measurement?
+%
+% A grain meeting the measurement hull is truncated: its measured volume
+% is only the part inside the box. The zero grain ID identifies the exterior
+% and lets us find these grains without relying on a bounding-box tolerance.
+% Make this selection on the full collection, before selecting a phase.
+
+gB = grains.boundary;
+hullIds = unique(gB.grainId(any(gB.grainId == 0,2),:));
+isInterior = ~ismember(grains.id,hullIds);
+[length(grains), nnz(isInterior)]
+
+%%
+% Interior grains have complete measured shapes. Excluding hull grains also
+% preferentially excludes large grains, which are more likely to meet the
+% box. Report the selection with a size distribution. Below we retain the
+% whole synthetic tessellation so that the two weightings use the same set.
 
 %% Number-weighted and volume-weighted distributions
 %
@@ -89,7 +103,7 @@ grain.volume
 volumeEdges = linspace(0,max(grains.volume)+eps,21);
 newMtexFigure('layout',[1,2]);
 histogram(grains.volume,volumeEdges,'FaceColor',grains.color)
-xlabel('grain volume (µm³)')
+xlabel('grain volume (length units^3)')
 ylabel('number of grains')
 mtexTitle('Number weighted')
 
@@ -108,13 +122,13 @@ mtexTitle('Volume weighted')
 surfaceEdges = linspace(0,max(grains.surface)+eps,16);
 newMtexFigure('layout',[1,2]);
 histogram(grains.surface,surfaceEdges,'FaceColor',grains.color)
-xlabel('surface area (µm²)')
+xlabel('surface area (length units^2)')
 ylabel('number of grains')
 mtexTitle('Number weighted')
 
 nextAxis
 histogram(grains,grains.surface,surfaceEdges)
-xlabel('surface area (µm²)')
+xlabel('surface area (length units^2)')
 mtexTitle('Volume weighted')
 
 %%
@@ -127,10 +141,10 @@ mtexTitle('Volume weighted')
 % volume puts both axes in units of length. Similar grain shapes should lie
 % near a common trend; elongated or irregular grains can depart from it.
 
-close all
+figure
 scatter(grains.volume.^(1/3),grains.diameter,18,grains.color,'filled')
-xlabel('cube root of volume (µm)')
-ylabel('diameter (µm)')
+xlabel('cube root of volume (length units)')
+ylabel('diameter (length units)')
 
 %%
 % The overall increase confirms that larger volumes usually have larger
@@ -151,7 +165,7 @@ ylabel('diameter (µm)')
 cKey = ipfColorKey(grains.CS);
 color = cKey.orientation2color(grains.meanOrientation);
 
-close all
+figure
 plotEllipsoid(grains.centroid,a,b,c,'faceColor',color);
 setCamera(plottingConvention.default3D)
 
@@ -159,6 +173,27 @@ setCamera(plottingConvention.default3D)
 % The ellipsoids preserve centroid, principal directions, and volume, while
 % discarding individual facets. Long thin ellipsoids therefore identify
 % anisotropic shape without reproducing every boundary face.
+
+%% Is shape anisotropy associated with grain size?
+%
+% The ratio of the longest to the shortest ellipsoid half-axis separates
+% elongation from size. Colouring by sphericity adds a surface measure:
+% grains can have similar aspect ratios yet differ in how faceted they are.
+
+axisLengths = [norm(a), norm(b), norm(c)];
+aspectRatio = max(axisLengths,[],2) ./ min(axisLengths,[],2);
+figure
+scatter(equivalentDiameter,aspectRatio,24,sphericity,'filled')
+xlabel('equivalent-sphere diameter (length units)')
+ylabel('longest / shortest principal half-axis')
+cb = colorbar;
+cb.Label.String = 'sphericity';
+
+%%
+% The ellipsoid reduces each grain to a few shape descriptors. It cannot
+% resolve narrow necks or individual facets. For voxel reconstructions,
+% <Grains3DSmoothing.html compare smoothing choices> before interpreting
+% sphericity, because staircase surfaces inflate the denominator.
 
 %% Vertices and three kinds of centre
 %
@@ -168,7 +203,7 @@ setCamera(plottingConvention.default3D)
 
 grain = grains('id',5);
 
-plot(grain,'FaceAlpha',0.5,'linewidth',2)
+plot(grain,'FaceAlpha',0.5,'edgeAlpha',0.2,'micronbar','off')
 hold on
 plot(grain.centroid)
 plot(grain.V)
@@ -181,19 +216,31 @@ setCamera(plottingConvention.default3D)
 % polygon corners, while the face-centroid markers lie within the boundary
 % faces. These point sets describe different levels of the same geometry.
 
+%% Whole-grain property reference
+%
+% The main whole-grain properties are
+%
+% || Property || Purpose || Property || Purpose ||
+% || <grain3d.volume.html |volume|> || enclosed volume || <grain3d.surface.html |surface|> || enclosing surface area ||
+% || <grain3d.diameter.html |diameter|> || largest vertex-to-vertex distance || <grain3d.principalComponents.html |principalComponents|> || volume-matched ellipsoid half-axes ||
+% || <grain3d.centroid.html |centroid|> || volume centroid || |V| || grain vertices ||
+% || |numPixel| || voxel count after reconstruction || |numFaces| || number of mesh faces ||
+% || <grain3d.numNeighbors.html |numNeighbors|> || number of neighbouring grains || <grain3Boundary.grain3Boundary.html |boundary|> || enclosing boundary faces ||
+%
+% Several @grain2d shape properties do not yet have three-dimensional
+% counterparts: |caliper|, |equivalentRadius|, |equivalentPerimeter|,
+% |shapeFactor|, |isBoundary|, |hasHole|, and |isInclusion|.
+
 %% Boundary-face properties
 %
 % A three-dimensional grain boundary stores one entry per polygonal face.
 % Its principal geometric and crystallographic properties are
 %
-% || Property || Meaning ||
-% || |area| || face area in square micrometres ||
-% || |N| || stored face-normal direction ||
-% || |diameter| || greatest distance between two face vertices ||
-% || |perimeter| || length around the face ||
-% || |centroid| || area centroid of the face ||
-% || |grainId| || IDs of the neighbouring grains ||
-% || |misorientation| || misorientation between their mean orientations ||
+% || Property || Purpose || Property || Purpose ||
+% || <grain3Boundary.area.html |area|> || face area (length squared) || |N| || stored normal direction ||
+% || <grain3Boundary.diameter.html |diameter|> || largest vertex-to-vertex distance || <grain3Boundary.perimeter.html |perimeter|> || length around the face ||
+% || <grain3Boundary.centroid.html |centroid|> || area centroid || |grainId| || IDs of adjacent grains ||
+% || |misorientation| || orientation difference across the face || |ebsdId| || adjacent voxel IDs after reconstruction ||
 %
 % The stored normal has one direction for a shared face. The
 % <Grains3D.html outward-normal example> explains how |I_GF| changes that
@@ -214,11 +261,13 @@ hold off
 % An indexed face separates two grains whose mean orientations are known.
 % Filtering with |'indexed'| excludes faces for which that crystallographic
 % comparison is unavailable. The colour below is the misorientation angle
-% across each remaining face.
+% across each remaining face. In this tessellation it comes from grain mean
+% orientations; a voxel reconstruction instead stores the difference between
+% the neighbouring voxel orientations.
 
 indexedBoundary = grains.boundary('indexed');
 plot(indexedBoundary,indexedBoundary.misorientation.angle./degree, ...
-  'micronbar','off')
+  'micronbar','off','edgeAlpha',0.1)
 setCamera(plottingConvention.default3D)
 cb = colorbar('location','southoutside');
 cb.Label.String = 'misorientation angle (degrees)';

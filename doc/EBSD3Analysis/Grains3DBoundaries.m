@@ -4,8 +4,10 @@
 % the whole volume. Every face separates two grains and, when the grains
 % were reconstructed from voxels, knows the two voxels it separates. Along
 % the edges where three grains meet run the triple lines, and where four
-% grains meet sits a quadruple point. This page reads the network of a
-% reconstructed volume face by face, edge by edge and vertex by vertex.
+% grains meet sits a quadruple point. These contacts constrain grain growth
+% and provide possible paths for intergranular transport or damage. This
+% page measures how much interface is present and shows how the junctions
+% connect it, using the IN100 volume of the reconstruction page.
 
 plottingConvention.default('y↑→x');
 how2plot = plottingConvention.default3D;
@@ -21,15 +23,21 @@ gB = grains.boundary
 % it separates, with the face normal pointing from the first into the
 % second. |ebsdId| holds the two voxels on either side, and |misorientation|
 % the misorientation between their orientations, computed from the voxels
-% rather than from the grain means. Faces on the outer hull of the volume
-% have a zero in the second column of both.
+% rather than from the grain means. Faces on the outer hull of this voxel
+% reconstruction have a zero in the second column of both. In a general
+% imported mesh the zero can occur on either side, so test both columns.
 
 [gB.grainId(1:5,:), gB.ebsdId(1:5,:)]
 
 %%
-% The share of faces on the hull, and the share between indexed grains.
+% Count area, not triangles: refining a face changes its mesh count without
+% adding any physical interface. The following fractions distinguish the
+% measurement hull from contacts between indexed grains.
 
-[mean(any(gB.grainId == 0,2)), mean(all(gB.isIndexed,2))]
+faceArea = gB.area;
+isHull = any(gB.grainId == 0,2);
+isIndexed = all(gB.isIndexed,2) & ~isHull;
+[sum(faceArea(isHull)), sum(faceArea(isIndexed))] / sum(faceArea)
 
 %% Select faces
 %
@@ -38,7 +46,8 @@ gB = grains.boundary
 % two grains, and the faces above a misorientation angle are three common
 % selections.
 
-[~,id] = max(grains.volume);
+[~,largestIndex] = max(grains.volume);
+id = grains(largestIndex).id;
 gBid = gB(any(gB.grainId == id,2));
 neighbours = setdiff(unique(gBid.grainId(:)),[0 id]).';
 gBpair = gB(any(gB.grainId == id,2) & any(gB.grainId == neighbours(1),2));
@@ -48,11 +57,12 @@ gBhigh = gB(gB.misorientation.angle > 30*degree & all(gB.grainId > 0,2));
 
 %%
 % The largest grain, with its faces coloured by the misorientation angle
-% across them. The angle is uniform on each face between two grains and
-% changes where a neighbour changes, so the colour draws the faces of the
-% polyhedron.
+% across them. Each triangle has one value, but the values may vary over a
+% contact between the same two grains: they come from the local voxel
+% orientations. Missing orientations and the measurement hull do not supply
+% a meaningful misorientation angle.
 
-plot(gBid,gBid.misorientation.angle./degree,'LineStyle','none','micronbar','off')
+plot(gBid,gBid.misorientation.angle./degree,'edgeAlpha',0.1,'micronbar','off')
 setCamera(how2plot)
 mtexColorbar('title','misorientation angle in degree')
 
@@ -78,12 +88,14 @@ t = nodeType(gB);
 
 V = gB.allV.xyz;
 onGrain = false(size(V,1),1); onGrain(gBid.F(:)) = true;
-Eid = E(isTripleLine & all(onGrain(E),2),:);
+onGrainEdge = false(size(E,1),1);
+onGrainEdge(F2E(any(gB.grainId == id,2),:)) = true;
+Eid = E(isTripleLine & onGrainEdge,:);
 X = [V(Eid(:,1),1), V(Eid(:,2),1), nan(size(Eid,1),1)].';
 Y = [V(Eid(:,1),2), V(Eid(:,2),2), nan(size(Eid,1),1)].';
 Z = [V(Eid(:,1),3), V(Eid(:,2),3), nan(size(Eid,1),1)].';
 
-plot(gBid,'FaceColor',[0.85 0.85 0.85],'LineStyle','none','micronbar','off')
+plot(gBid,'FaceColor',[0.85 0.85 0.85],'edgeAlpha',0.1,'micronbar','off')
 hold on
 line(X(:),Y(:),Z(:),'Color','r','LineWidth',1.5)
 isQuad = mod(t,10) >= 4 & onGrain;
@@ -92,9 +104,9 @@ hold off
 setCamera(how2plot)
 
 %%
-% The node types say how much of the network is junction. Most vertices lie
-% inside a face, one in eight on a triple line, and about one in a hundred
-% at a quadruple point; the classes above 10 are the same on the hull.
+% The counts describe mesh vertices, not numbers of physical junctions.
+% A triple line has many vertices, and voxel corners can join more than four
+% grains. Types above 10 identify junctions on the measurement hull.
 
 n = accumarray(t(t>0),1);
 [find(n), n(n>0)]
@@ -114,6 +126,49 @@ gBS = grainsS.boundary('indexed');
 plot(calcGBND(gBS),'upper','micronbar','off')
 mtexColorbar
 
+%% How much internal boundary is there per unit volume?
+%
+% Boundary area per specimen volume is a useful geometric input when
+% comparing interfacial storage or transport between microstructures. Each
+% shared face appears once in |grains.boundary|. Summing |grains.surface|
+% instead would count an internal interface twice and include the hull.
+
+internal = all(grainsS.boundary.grainId > 0,2);
+internalArea = sum(grainsS.boundary(internal).area);
+boundaryAreaDensity = internalArea / sum(grainsS.volume)
+
+%%
+% The unit is inverse length. This value uses all internal contacts and the
+% full reconstructed volume. To report only indexed grain boundaries, use
+% |grainsS.boundary('indexed')| and state the corresponding volume denominator.
+
+%% What fraction of indexed boundary area has a low angle?
+%
+% Use a stated angle threshold and weight by face area. This describes the
+% local misorientation stored on the reconstructed faces, rather than a
+% count of low-angle grain pairs. After coarsening, the retained faces carry
+% inherited misorientations; remeasure from the original data if local
+% orientation gradients are the quantity of interest.
+
+angleLimit = 15*degree;
+lowAngle = gBS.misorientation.angle < angleLimit;
+lowAngleAreaFraction = sum(gBS(lowAngle).area) / sum(gBS.area)
+
+%%
+% A low-angle fraction alone does not establish a connected boundary path.
+% Connectivity also requires the grain pairs and junction network. Likewise,
+% the specimen-frame normal distribution above describes preferred interface
+% inclinations, not preferred crystallographic planes. For one selected phase,
+% |calcGBND(gBS,grainsS('phase name'))| transforms normals into the crystal
+% frame; see <BoundaryNormalDistribution.html Boundary Normal Distribution>.
+
+%% Function reference
+%
+% || Function || Purpose || Function || Purpose ||
+% || <grain3Boundary.edges.html |edges|> || list mesh edges and face incidence || <grain3Boundary.nodeType.html |nodeType|> || classify junction vertices ||
+% || <grain3Boundary.plot.html |plot|> || colour boundary faces || <grain3Boundary.quiver.html |quiver|> || draw face-normal directions ||
+% || <grain3Boundary.calcGBND.html |calcGBND|> || estimate the normal distribution || <grain3d.neighbors.html |neighbors|> || list adjacent grain pairs ||
+
 %% References
 %
 % * G. S. Rohrer, <https://doi.org/10.1111/j.1551-2916.2011.04384.x
@@ -128,6 +183,9 @@ mtexColorbar
 %
 %% Next
 %
-% <Grains3DSmoothing.html Smoothing> turns the voxel surface into one whose
-% normals mean something, and <Grains3DProperties.html Properties> measures
-% the grains it bounds.
+% Continue with <NeperInterface.html Neper Interface> to construct a
+% synthetic comparison, or go to <Grains3DProperties.html Properties> to
+% measure grain size and shape. <Grains3DSmoothing.html Smoothing> explains
+% the geometric treatment used before the surface measurements above.
+
+%#ok<*NOPTS>

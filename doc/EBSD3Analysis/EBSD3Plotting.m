@@ -175,6 +175,31 @@ hold off
 % Each phase is coloured by its own inverse pole figure key, so colours are
 % comparable within a phase but not between phases.
 
+%% Separate orientation from measurement quality
+%
+% A dark or abruptly changing orientation colour does not by itself indicate
+% a poor measurement. Compare a stored quality field with orientation on the
+% same plane. |Completeness| is supplied by this Xnovo file; other importers
+% may provide different quality measures.
+
+newMtexFigure('layout',[1,2],'figSize','large');
+plot(ebsdZ,ebsdZ.prop.Completeness,'micronbar','off')
+mtexTitle('Completeness')
+mtexColorbar
+nextAxis
+quartz = ebsdZ('Quartz');
+ipfKey = ipfColorKey(quartz.CS);
+ipfKey.inversePoleFigureDirection = vector3d.Z;
+plot(quartz,ipfKey.orientation2color(quartz.orientations),'micronbar','off')
+mtexTitle('Quartz: IPF along specimen z')
+
+%%
+% The IPF reference is a specimen direction. It stays along $z$ even when
+% the cutting plane or camera changes. Reuse the same key when comparing
+% orientations on several sections. Interpret completeness using the
+% acquisition method; this simulated example does not establish a cutoff
+% for experimental data.
+
 %% A slice is an ordinary EBSD map
 %
 % Nothing distinguishes the result of |slice| from an imported map, so the
@@ -189,13 +214,21 @@ plot(grains.boundary,'lineWidth',2)
 hold off
 
 %%
-% These grains are the sections of the three-dimensional grains, not the
-% grains themselves, and they inherit the bias any single section carries.
+% These are grains reconstructed independently in two dimensions. A grain
+% connected outside this plane can appear as separate regions here, so this
+% segmentation need not match a slice of the three-dimensional grains.
 % This data set also ships the segmentation of the full volume as the voxel
 % property |grainId|, which the slice carries along.
 %
 % Reconstructing grains in the volume as closed polyhedra is described in
 % <Grains3D.html Three-Dimensional Grains>.
+
+%% Function reference
+%
+% || Function || Purpose || Function || Purpose ||
+% || <EBSD3.load.html |load|> || import volume measurements || <EBSD3.plot.html |plot|> || open the volume viewer ||
+% || <EBSD3.slice.html |slice|> || extract a planar EBSD map || <EBSD.plot.html |plot|> || colour a section ||
+% || <EBSD.calcGrains.html |calcGrains|> || segment one section || <EBSD3square.calcGrains.html |calcGrains|> || segment the full volume ||
 
 %% References
 %

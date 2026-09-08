@@ -15,9 +15,12 @@ plottingConvention.default('y↑→x');
 
 %% Load the example microstructure
 
-mtexdata NeperGrain3d
+% Assign trigonal quartz symmetry, as on the Neper Interface page.
+cs = crystalSymmetry.load('quartz.cif');
+tessFile = fullfile(mtexDataPath,'Neper','my100grains.tess');
+grains = grain3d.load(tessFile,'CS',cs)
 
-plot(grains,grains.meanOrientation,'micronbar','off')
+plot(grains,grains.meanOrientation,'micronbar','off','edgeAlpha',0.1)
 setCamera(plottingConvention.default3D)
 
 %%
@@ -33,7 +36,7 @@ setCamera(plottingConvention.default3D)
 % and any point |P0| in the plane.
 
 % Point through which the plane passes.
-P0 = vector3d(50,50,50);
+P0 = grains.midPoint;
 
 % Plane normal.
 N = vector3d(1,-1,1);
@@ -71,7 +74,7 @@ setCamera(sectionView)
 mtexTitle('Planar sections')
 
 nextAxis
-plot(parentGrains,parentGrains.meanOrientation,'micronbar','off')
+plot(parentGrains,parentGrains.meanOrientation,'micronbar','off','edgeAlpha',0.1)
 setCamera(plottingConvention.default3D)
 mtexTitle('Parent grains')
 
@@ -79,13 +82,40 @@ mtexTitle('Parent grains')
 % The left panel contains only the section polygons. The right panel shows
 % their parent polyhedra extending on both sides of the cutting plane.
 
+%% How representative is a grain's section size?
+%
+% Compare each section's equal-area-circle diameter with the equivalent-
+% sphere diameter of its parent. |Id3d| is an array position in the collection
+% passed to |slice|, not a persistent grain ID; retain that collection until
+% the correspondence has been used.
+
+dSection = 2*sqrt(grainSlice.area/pi);
+dParent = (6*grains(grainSlice.Id3d).volume/pi).^(1/3);
+figure
+scatter(dParent,dSection,24,'filled')
+hold on
+limit = max([dParent;dSection]);
+plot([0 limit],[0 limit],'k--')
+hold off
+axis equal
+xlabel('parent equivalent-sphere diameter (length units)')
+ylabel('section equal-area-circle diameter (length units)')
+
+%%
+% The dashed line marks equal diameters. The spread reflects both the
+% cutting position and grain shape. It is not a calibration curve: a
+% differently placed plane samples different grains, and elongated grains
+% can have section diameters above the line.
+
 %% Compare several parallel sections
 %
 % Several slices require several calls to |slice|. Drawing horizontal cuts
 % together shows how little of the volume any single section represents.
 
+figure
 N = vector3d.Z;
-for k = 1:19:99
+zLevels = linspace(min(grains.V.z),max(grains.V.z),7);
+for k = zLevels(2:end-1)
 
   grainSlice = grains.slice(N,vector3d(0,0,k));
   plot(grainSlice,grainSlice.meanOrientation)
@@ -113,12 +143,11 @@ grainsTri = selectedGrains.triangulate
 
 full([sum(selectedGrains.numFaces), sum(grainsTri.numFaces)])
 
-plot(grainsTri,grainsTri.meanOrientation,'micronbar','off')
+plot(grainsTri,grainsTri.meanOrientation,'micronbar','off','edgeAlpha',0.1)
 setCamera(plottingConvention.default3D)
 
 %%
-% The two grains have 34 polygonal faces before triangulation and 112
-% triangular faces afterwards. The displayed shape is unchanged because the
+% The face count increases while the displayed shape is unchanged: the
 % new triangles cover the same boundary polygons.
 % Triangulation changes the mesh representation, not the physical grains or
 % their stored mean orientations.
@@ -133,15 +162,16 @@ setCamera(plottingConvention.default3D)
 rot = rotation.byAxisAngle(vector3d(1,1,1),30*degree);
 grainsRotated = rot * grains;
 
-plot(grainsRotated,grainsRotated.meanOrientation,'micronbar','off')
+plot(grainsRotated,grainsRotated.meanOrientation,'micronbar','off','edgeAlpha',0.1)
 setCamera(plottingConvention.default3D)
 
 %%
 % The shape has turned about the coordinate origin, and the colours change.
 % An IPF colour says which crystal direction points along a fixed specimen
-% axis. Every mean orientation now differs from its original by exactly the
-% 30 degree rotation. A rigid rotation preserves the relation between the
-% grains, not their relation to the coordinate axes.
+% axis. The same rotation is applied to all orientations; symmetry-reduced
+% orientation differences need not equal that rotation angle. A rigid
+% rotation preserves the relation between grains, while changing their
+% relation to the coordinate axes.
 %
 % The method form provides a |'center'| option when the spatial rotation
 % should use a point other than the origin.
@@ -170,6 +200,13 @@ orientationOnly = rotate(grains,rot,'keepXY');
 % corrections. They do not represent a rigid rotation of the whole
 % specimen. The |'center'| option affects only a spatial rotation, so it has
 % no effect when |'keepXY'| leaves the geometry unchanged.
+
+%% Function reference
+%
+% || Function || Purpose || Function || Purpose ||
+% || <grain3d.slice.html |slice|> || cut planar grain polygons || <grain3d.intersected.html |intersected|> || find grains crossed by a plane ||
+% || <grain3d.triangulate.html |triangulate|> || divide polygonal faces into triangles || <grain3d.rotate.html |rotate|> || rotate geometry and orientations ||
+% || <grain3d.neighbors.html |neighbors|> || list adjacent grain IDs || <grain3d.id2ind.html |id2ind|> || map persistent IDs to array positions ||
 
 %% References
 %
