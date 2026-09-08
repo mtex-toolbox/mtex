@@ -195,14 +195,14 @@ function [scale, slope] = fitCellSize(colMid, rowMid, isSingleCell, obs)
 n = nnz(isSingleCell);
 slope = 0;
 
-if n >= 3 && range(colMid(isSingleCell)) > 0
+if n >= 3 && spans(colMid(isSingleCell)) && spans(rowMid(isSingleCell))
   % in double throughout - real imported maps arrive as single, and the fit
   % is what the integrated step size below is most sensitive to
   X = double([ones(n,1), colMid(isSingleCell).', rowMid(isSingleCell).']);
   p = X \ double(obs(:));
   slope = p(2);
   scale = p(1) + p(2)*colMid + p(3)*rowMid;
-elseif n >= 2 && range(rowMid(isSingleCell)) > 0
+elseif n >= 2 && spans(rowMid(isSingleCell))
   coeffs = [ones(n,1), rowMid(isSingleCell).'] \ obs(:);
   scale = coeffs(1) + coeffs(2) * rowMid;
 elseif n >= 1
@@ -262,7 +262,7 @@ function val = fitAcrossMap(rowMid, isSingleCell, obs, fallback)
 
 rows = rowMid(isSingleCell);
 
-if nnz(isSingleCell) >= 2 && range(rows) > 0
+if nnz(isSingleCell) >= 2 && spans(rows)
   coeffs = [ones(numel(rows),1), rows(:)] \ obs(:);  % [intercept; slope]
   val = coeffs(1) + coeffs(2) * rowMid;
 elseif nnz(isSingleCell) >= 1
@@ -270,6 +270,15 @@ elseif nnz(isSingleCell) >= 1
 else
   val = repmat(fallback, 1, numel(rowMid));
 end
+end
+
+% =========================================================================
+function tf = spans(c)
+% whether a lattice coordinate varies by more than rounding noise, so that a
+% regression on it is determined
+
+tf = range(c) > 1e-6;
+
 end
 
 % =========================================================================
