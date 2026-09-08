@@ -13,6 +13,7 @@ else
 end
 
 mtexFig.parent.CurrentAxes = mtexFig.gca;
+mtexFig.selectedAxes = mtexFig.gca;
 
 if nargout > 0, ax = mtexFig.gca;end
 
