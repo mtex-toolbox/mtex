@@ -281,6 +281,13 @@ classdef tensor < dynOption
   methods (Static = true)
 
     T = load(fname,varargin)
+
+    function T = loadobj(T)
+      % re-intern a deserialized frame against the register, see referenceFrame/reintern
+      if ~isempty(T.framePrivate)
+        T.framePrivate = referenceFrame.reintern(T.framePrivate);
+      end
+    end
     
     eps = leviCivita()
 
