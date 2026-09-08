@@ -124,7 +124,8 @@ Pymax = max(Py);
 
 % Select the tolerance for determining on-boundary points
 %if isequal(options.tol,'auto')
-    ontol = 1e-9*max(Pxmax-Pxmin,Pymax-Pymin);
+    ontol = max(1e-9*max(Pxmax-Pxmin,Pymax-Pymin), ...
+      8*eps(class(Px))*max(abs([Pxmin Pxmax Pymin Pymax])));
 %else
 %    ontol = options.tol;
 %end
