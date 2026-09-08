@@ -182,7 +182,7 @@ surfaceArea = [sum(grains.surface), sum(grainsC.surface), ...
 % || Function || Purpose || Function || Purpose ||
 % || <grain3d.reduceBoundary.html |reduceBoundary|> || coarsen a triangular mesh || <grain3d.refineBoundary.html |refineBoundary|> || subdivide triangles ||
 % || <grain3d.smoothBoundary.html |smoothBoundary|> || smooth the boundary network || <grain3Boundary.calcGBND.html |calcGBND|> || measure the normal distribution ||
-% || <laplaceFilter.laplaceFilter.html |laplaceFilter|> || average neighbouring vertices || <taubinFilter.taubinFilter.html |taubinFilter|> || smooth with reduced shrinkage ||
+% || <laplaceFilter.html |laplaceFilter|> || average neighbouring vertices || <taubinFilter.html |taubinFilter|> || smooth with reduced shrinkage ||
 
 %% References
 %
