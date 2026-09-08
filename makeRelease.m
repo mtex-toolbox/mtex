@@ -50,15 +50,30 @@ unix(['rm -rf ',rDir]);
 % is not in the tag and so cannot reach the zip.
 unix(['mkdir -p ' rDir ' && git archive --format=tar ' ver ' | tar -x -C ' rDir]);
 
+% git archive leaves every submodule empty, so each is archived on its own
+[~,subs] = system('git submodule status');
+for sub = strsplit(strtrim(subs),newline)
+  tok = regexp(strtrim(sub{1}),'^\+?(\w+)\s+(\S+)','tokens','once');
+  unix(['git -C ' tok{2} ' archive --format=tar ' tok{1} ' | tar -x -C ' fullfile(rDir,tok{2})]);
+end
+
+% what the tag does not track but a user of the zip needs: chebfun for
+% calcGBND and S2Kernel.quadrature, and the Neper output the NeperInterface
+% page loads where neper is not installed
+unix(['cp -r ' fullfile(mtex_path,'extern','chebfun') ' ' fullfile(rDir,'extern')]);
+unix(['cp -r ' fullfile(mtex_path,'data','Neper') ' ' fullfile(rDir,'data')]);
+
 % of what is tracked, what a user of the zip has no use for: the datasets, which
 % mtexdata downloads on demand, the mex binaries, which the build workflow
-% attaches to the release, and the notes that name one machine
+% attaches to the release, and the notes that name one machine. testgrains
+% and the quartz pattern are the two .mat files nothing downloads
 rmList = {'.github' '.gitignore' '.gitattributes' '.mailmap' 'gitTricks.md' ...
-  'makeRelease.m' 'data/*.mat' 'data/EBSD/*' 'mex/*.mex*' ...
+  'makeRelease.m' 'data/EBSD/*' 'mex/*.mex*' ...
   'docs/agents' 'docs/doc-audit-plan.md' 'interfaces/import_wizard/TODO.md'};
 for rd = rmList
   unix(['rm -rf ' rDir filesep char(rd)]);
 end
+unix(['cd ' fullfile(rDir,'data') ' && ls *.mat | grep -v "testgrains\|quartzPattern" | xargs rm -f']);
 
 unix(['chmod -R a+rX ' rDir]);
 
