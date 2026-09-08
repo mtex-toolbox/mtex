@@ -102,6 +102,8 @@ if nargin >= 2 && isa(varargin{1},'orientation')
 else
 
   % crystal symmetry specified -> apply it
+  assert(nargin < 2 || ~isnumeric(varargin{1}), ...
+    'axis(ori,n) does not select an element, index the orientation instead: axis(ori(n))')
   if nargin >= 2 && isa(varargin{1},'crystalSymmetry')
     cs = varargin{1};
   else  % no symmetry specified - take the disjoint
