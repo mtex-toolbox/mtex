@@ -31,6 +31,16 @@ classdef (Abstract) phaseItem < handle & matlab.mixin.Heterogeneous %& matlab.mi
       end
    end
 
+  methods
+
+    function obj = set.color(obj,color)
+      % a colour name is stored as the triple it stands for
+      if ~isempty(color), color = str2rgb(color); end
+      obj.color = color;
+    end
+
+  end
+
   methods (Sealed = true)
 
     function out = eq(obj1,obj2)
