@@ -19,6 +19,9 @@ function check_optimalSample
 % See also
 % SO3Fun/optimalSample S2Fun/optimalSample SO3RestrictedDistanceKernel
 
+checkS2Discrepancy;
+checkStandardDiscrepancies;
+
 rng(0)
 
 bw = 10;
@@ -30,8 +33,8 @@ opt = {'bandwidth',bw};
 oriGD = optimalSample(f,20,opt{:},'maxIter',10,'method','steepestDescent');
 oriQN = optimalSample(f,20,opt{:},'maxIter',10);
 
-resGD = discrepancy(f,oriGD,[],bw);
-resQN = discrepancy(f,oriQN,[],bw);
+resGD = discrepancySO3(f,oriGD,[],bw);
+resQN = discrepancySO3(f,oriQN,[],bw);
 
 % The measured ratio is 0.67 to 0.75 here and stays around 0.7 for every
 % larger bandwidth and iteration budget tried, so 0.9 is a threshold that
@@ -58,7 +61,7 @@ assert(abs(sum(c)-1) < 1e-10, ...
 
 % the weighted sample has to be the better one - that is what the weights
 % are optimized for
-assert(discrepancy(f,ori,c,bw) < discrepancy(f,ori,[],bw), ...
+assert(discrepancySO3(f,ori,c,bw) < discrepancySO3(f,ori,[],bw), ...
   'The optimized weights of optimalSample do not decrease the discrepancy.')
 
 % ------------- a warm up must not swallow the weight step ----------------
@@ -177,7 +180,7 @@ assert(max(abs(cWarmS2-1/numel(cWarmS2))) > 1e-6, ...
 end
 
 
-function res = discrepancy(f,ori,c,bw)
+function res = discrepancySO3(f,ori,c,bw)
 % the functional optimalSample minimizes: the squared norm of mu - f, taken
 % degreewise in the Chebyshev coefficients of the restricted distance kernel
 % and with degree 0 - the one with a negative coefficient - dropped
@@ -202,6 +205,119 @@ res = sum(abs(w.*D.fhat).^2);
 
 end
 
+function checkS2Discrepancy
+% The public pairwise API agrees with independent spectral/spatial formulas.
+rng(23);
+bw = 6;
+v = reshape(vector3d.rand(12,1),3,4);
+u = vector3d.rand(7,1);
+c = (1:12).'; d = (7:-1:1).';
+c = c/sum(c); d = d/sum(d);
+opts = {'bandwidth',bw,'weights',c,'weights2',d};
+actual = legacyMetric(v,u,opts{:});
+expected = c.'*restrictedKernel(dot(v(:),v(:).'),bw)*c + ...
+  d.'*restrictedKernel(dot(u,u.'),bw)*d - ...
+  2*c.'*restrictedKernel(dot(v(:),u.'),bw)*d;
+assert(abs(actual-expected)<1e-10,'Point discrepancy differs from its spatial kernel.');
+assert(abs(actual-legacyMetric(u,v,'weights',d,'weights2',c,'bandwidth',bw))<1e-12);
+assert(abs(actual-legacyMetric(v,u,'weights',10*c,'weights2',3*d,'bandwidth',bw))<1e-12);
+assert(legacyMetric(v,v,'bandwidth',bw)<1e-20);
+assert(abs(legacyMetric(v,u)-legacyMetric(v,u,'bandwidth',128))<1e-12);
+
+mu = S2FunHarmonic.adjointNFSFT(v(:),c,'bandwidth',bw); mu.bandwidth = bw;
+nu = S2FunHarmonic.adjointNFSFT(u,d,'bandwidth',bw); nu.bandwidth = bw;
+assert(abs(actual-legacyMetric(mu,nu,'bandwidth',bw))<1e-10);
+assert(abs(actual-legacyMetric(mu,u,'weights',d,'bandwidth',bw))<1e-10);
+assert(abs(actual-legacyMetric(u,mu,'weights',d,'bandwidth',bw))<1e-10);
+
+% The maximum of the two bandwidths is the symmetric default for functions.
+f = S2FunHarmonic([1/sqrt(4*pi);0;0.03;0]);
+g = f; g.bandwidth = 4; g.fhat(21) = 0.02;
+expected = 16*pi/(7*9*11)*0.02^2;
+assert(abs(legacyMetric(f,g)-expected)<1e-14);
+assert(abs(legacyMetric(g,f)-expected)<1e-14);
+assert(legacyMetric(f,g,'bandwidth',1)<1e-20);
+assert(legacyMetric(f,f)<1e-20);
+assert(abs(legacyMetric(3*f,3*g)-9*expected)<1e-13);
+fHandle = S2FunHandle(@(x) f.eval(x));
+assert(abs(legacyMetric(fHandle,g,'bandwidth',4)-expected)<1e-10);
+assert(abs(legacyMetric(fHandle,g)-legacyMetric(fHandle,g,'bandwidth',128))<1e-12);
+
+% Normalized handles remain comparable even if coarse quadrature changes
+% their constant terms by different amounts.
+p = S2FunHandle(@(x) exp(3*x.z)); p = p/sum(p);
+q = S2FunHandle(@(x) exp(3*x.x)); q = q/sum(q);
+coarse = legacyMetric(p,q,'bandwidth',4);
+assert(isfinite(coarse) && coarse>0);
+assert(abs(coarse-legacyMetric(q,p,'bandwidth',4))<1e-10);
+
+% An even target must not hide the odd part of another function.
+uniform = S2FunHarmonic(1/sqrt(4*pi));
+assert(abs(legacyMetric(uniform,f)-16*pi/15*0.03^2)<1e-14);
+assert(abs(legacyMetric(f,uniform)-legacyMetric(uniform,f))<1e-14);
+
+% Preserve the old density/sample functional, scaling, and antipodal behavior.
+for target = {f,uniform}
+  sF = target{1};
+  old = discrepancyS2(sF,v,c,bw);
+  assert(abs(legacyMetric(sF,v,'weights',c,'bandwidth',bw)-old)<1e-12);
+  assert(abs(legacyMetric(v,sF,'weights',c,'bandwidth',bw)-old)<1e-12);
+  assert(abs(legacyMetric(3*sF,v,'weights',c,'bandwidth',bw)-9*old)<1e-11);
+end
+
+% Antipodal point measures equal explicit +/- copies of their support.
+va = v(:); ua = u; va.antipodal = true; ua.antipodal = true;
+axial = legacyMetric(va,ua,'weights',c,'weights2',d,'bandwidth',bw);
+copies = legacyMetric([v(:);-v(:)],[u;-u], ...
+  'weights',[c;c]/2,'weights2',[d;d]/2,'bandwidth',bw);
+assert(abs(axial-copies)<1e-10);
+rot = rotation.rand;
+assert(abs(actual-legacyMetric(rot.*v,rot.*u,opts{:}))<1e-10);
+assert(legacyMetric(v,u,'bandwidth',0)==0);
+
+% Equal spectral weights give the genuine squared norm of the bandlimited
+% difference, including odd degrees when a directed sample meets an even f.
+assert(abs(legacyMetric(f,g,'metric','L2','squared')-norm(f-g)^2)<1e-14);
+l2 = sum(abs(mu.fhat(2:end)-nu.fhat(2:end)).^2);
+assert(abs(legacyMetric(v,u,opts{:},'metric','L2','squared')-l2)<1e-10);
+assert(abs(legacyMetric(mu,nu,'metric','L2','squared','bandwidth',bw)-l2)<1e-10);
+assert(abs(legacyMetric(mu,u,'weights',d,'metric','L2','squared','bandwidth',bw)-l2)<1e-10);
+assert(abs(legacyMetric(u,mu,'weights',d,'metric','L2','squared','bandwidth',bw)-l2)<1e-10);
+assert(abs(legacyMetric(uniform,vector3d.Z,'metric','L2','squared','bandwidth',1)-3/(4*pi))<1e-12);
+assert(legacyMetric(uniform,vector3d.Z,'metric','kernel','bandwidth',1)==0);
+assert(legacyMetric(v,u,opts{:},'metric','kernel')==actual);
+assert(legacyMetric(v,u,'metric','L2','squared','bandwidth',0)==0);
+assert(legacyMetric(f,f,'metric','L2','squared')==0);
+mustReject(@() legacyMetric(f,g,'metric','unknown'),'S2Fun:discrepancy:metric');
+mustReject(@() legacyMetric(v,u,'metric','unknown','bandwidth',0), ...
+  'S2Fun:discrepancy:metric');
+
+mustReject(@() legacyMetric(f,2*g),'S2Fun:discrepancy:massMismatch');
+mustReject(@() legacyMetric(v,u,'bandwidth',-1),'S2Fun:discrepancy:bandwidth');
+mustReject(@() legacyMetric(v,u,'weights',zeros(12,1)), ...
+  'S2Fun:discrepancy:weights');
+mustReject(@() legacyMetric(v,vector3d),'S2Fun:discrepancy:emptySample');
+end
+
+function k = restrictedKernel(t,bw)
+% Independent finite Legendre expansion, with the negative constant omitted.
+previous = ones(size(t)); current = t; k = zeros(size(t));
+for l = 1:bw
+  k = k + 4/((2*l-1)*(2*l+3))*current;
+  next = ((2*l+1)*t.*current-l*previous)/(l+1);
+  previous = current; current = next;
+end
+end
+
+function mustReject(fun,id)
+try
+  fun();
+catch err
+  assert(strcmp(err.identifier,id),'Unexpected error: %s',err.message);
+  return
+end
+error('Expected error %s.',id);
+end
 
 function res = discrepancyS2(sF,v,c,bw)
 % the same functional on the sphere, see S2Fun/optimalSample. S2Fun/discrepancy
@@ -230,4 +346,83 @@ D.fhat = lambda * mu.fhat - sF.fhat;
 
 res = sum(abs(w.*D.fhat).^2);
 
+end
+
+function res = legacyMetric(a,b,varargin)
+if ~check_option(varargin,'metric'), varargin = [varargin,{'metric','kernel'}]; end
+res = discrepancy(a,b,varargin{:});
+end
+
+function checkStandardDiscrepancies
+% Analytic cases fix the cap measure, square-root convention and atomic tail.
+u = S2FunHarmonic(1/sqrt(4*pi));
+z = vector3d.Z; x = vector3d.X;
+assert(abs(discrepancy(u,z)-sqrt(1/3))<1e-12);
+assert(abs(discrepancy(u,z,'squared')-1/3)<1e-12);
+assert(abs(discrepancy(z,-z)-1)<1e-12);
+assert(abs(discrepancy(z,x,'squared')-sqrt(2)/2)<1e-12);
+assert(abs(discrepancy(z,x,'bandwidth',0)-discrepancy(z,x,'bandwidth',8))<1e-12);
+assert(discrepancy(z,z)==0);
+a = z; a.antipodal = true;
+assert(abs(discrepancy(u,a,'squared')-1/12)<1e-12);
+assert(abs(discrepancy(u,a)-discrepancy(u,[z;-z]))<1e-12);
+assert(abs(discrepancy(3*u,z)-3*discrepancy(u,z))<1e-12);
+
+% f-u = alpha*z: cap integral is pi*alpha*m.z*(1-t^2).
+alpha = 0.03;
+f = S2FunHarmonic([1/sqrt(4*pi);0;alpha*sqrt(4*pi/3);0]);
+assert(abs(discrepancy(f,u,'squared')-16*pi^2*alpha^2/45)<1e-12);
+assert(abs(discrepancy(f,u,'metric','L2')-alpha*sqrt(4*pi/3))<1e-12);
+assert(abs(discrepancy(f,u,'metric','L2','degreeWeights',[0;4])- ...
+  2*discrepancy(f,u,'metric','L2'))<1e-12);
+assert(abs(discrepancy(f,u,'metric','E_L','degreeWeights',@(l) 1./(1+l.*(l+1)))- ...
+  discrepancy(f,u,'metric','L2')/sqrt(3))<1e-12);
+% Mixed D2 agrees with an independent continuous-discrete calculation.
+expected = 1/3 + 16*pi^2*alpha^2/45 - 8*pi*alpha/15;
+assert(abs(discrepancy(f,z,'squared')-expected)<1e-12);
+assert(abs(discrepancy(z,f)-discrepancy(f,z))<1e-12);
+
+cap = {'metric','D_cap','numCenters',17,'numHeights',17};
+[d,info] = discrepancy(f,u,cap{:});
+assert(abs(d-pi*alpha)<1e-12 && ~info.isExact);
+assert(abs(info.signedDifference)==d);
+assert(abs(discrepancy(u,z,cap{:})-1)<1e-12);
+assert(abs(discrepancy(z,-z,cap{:})-1)<1e-12);
+assert(discrepancy(z,z,cap{:})==0);
+assert(abs(discrepancy(u,a,cap{:})-0.5)<1e-12);
+assert(abs(discrepancy(3*f,3*u,cap{:})-3*d)<1e-12);
+assert(abs(discrepancy(f,u,cap{:},'squared')-d^2)<1e-12);
+assert(abs(discrepancy(u,f,cap{:})-d)<1e-12);
+assert(discrepancy(f,u,'metric','D_cap','centers',x)<1e-12);
+% Tied atoms must move together, so interleaving + and - weights cannot
+% create a discrepancy between identical weighted measures.
+assert(discrepancy([z;z;x],[x;z],cap{:},'weights',[1;1;2],'weights2',[1;1])<1e-12);
+
+rng(42); v = vector3d.rand(8,1); w = vector3d.rand(6,1);
+c = (1:8).'; c = c/sum(c); e = (1:6).'; e = e/sum(e);
+opts = {'weights',c,'weights2',e};
+actual = discrepancy(v,w,opts{:},'squared');
+spatial = @(a,b) sqrt(max(0,2-2*dot(a,b.')));
+vv = spatial(v,v); vv(1:9:end) = 0;
+ww = spatial(w,w); ww(1:7:end) = 0;
+expected = (2*c.'*spatial(v,w)*e-c.'*vv*c-e.'*ww*e)/4;
+assert(abs(actual-expected)<1e-12);
+r = rotation.rand;
+assert(abs(actual-discrepancy(r.*v,r.*w,opts{:},'squared'))<1e-12);
+assert(abs(actual-discrepancy(w,v,'weights',e,'weights2',c,'squared'))<1e-12);
+assert(abs(discrepancy(v,w,opts{:},cap{:})- ...
+  discrepancy(w,v,'weights',e,'weights2',c,cap{:}))<1e-12);
+% Truncated kernel converges to full point energy from below, without its
+% factor four; a finite truncation must not be labelled exact atomic D2.
+k4 = discrepancy(v,w,opts{:},'metric','kernel','bandwidth',4)/4;
+k16 = discrepancy(v,w,opts{:},'metric','kernel','bandwidth',16)/4;
+assert(k4<k16 && k16<actual);
+for metric = {'D_2','D_cap','L2'}
+  mustReject(@() discrepancy(f,2*u,'metric',metric{1}), ...
+    'S2Fun:discrepancy:massMismatch');
+end
+mustReject(@() discrepancy(f,u,'metric','L2','degreeWeights',[1;-1]), ...
+  'S2Fun:discrepancy:degreeWeights');
+mustReject(@() discrepancy(v,w,'metric','D_cap','numHeights',1), ...
+  'S2Fun:discrepancy:capGrid');
 end
