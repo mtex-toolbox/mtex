@@ -82,6 +82,28 @@ plot(regularGrid,'axisAngle','all','MarkerSize',1);
 % compressed. This is the three-dimensional counterpart of longitude lines
 % meeting at the poles of a spherical grid.
 
+%% The Fibonacci Grid
+%
+% <fibonacciSO3Grid.fibonacciSO3Grid.html |fibonacciSO3Grid|> places its
+% nodes along a spiral through orientation space. There are no coordinate
+% steps to be rounded, so the number of nodes is a free parameter.
+
+fibGrid = fibonacciSO3Grid(cs,'resolution',5*degree);
+
+fibCounts = [length(fibGrid),length(fibonacciSO3Grid(cs,'points',5000))]
+
+%%
+% The two entries are 4994 and 5034, so the spiral meets a requested node
+% count to within one percent. It is the construction to reach for when a
+% fixed budget of orientations is the constraint.
+
+plot(fibGrid,'axisAngle','all','MarkerSize',2);
+
+%%
+% The spiral is generated over all of $\mathrm{SO}(3)$ and then restricted
+% to the fundamental region, so the nodes fill the same region as the
+% equispaced grid. They carry no bands and no shell structure.
+
 %% An Equal-Weight Uniformity Diagnostic
 %
 % A practical diagnostic treats every node as the centre of an equally
@@ -117,6 +139,16 @@ mtexColorbar;
 % The regular grid develops a strong peak. Its (100) pole figure spans 0.79
 % to 2.62, and the three pole figures together span 0.75 to 2.62. The extra
 % points therefore do not buy equal-weight uniformity.
+
+fibOdf = unimodalODF(fibGrid,'halfwidth',10*degree);
+
+plotPDF(fibOdf,h);
+setColorRange([0.7 2.7]);
+mtexColorbar;
+
+%%
+% The Fibonacci grid spans 0.99 to 1.02, within about 2 percent of 1, at
+% the same node count as the equispaced grid.
 
 %% Choosing a Global Grid
 %
@@ -183,6 +215,11 @@ mtexColorbar('title','angle to centre in degree');
 % Texture Analysis>, _Modelling and Simulation in Materials Science and
 % Engineering_ 22, 075013, 2014. This paper develops a volume-preserving
 % cubochoric construction for texture analysis.
+% * M. Alexa, <https://doi.org/10.1109/CVPR52688.2022.00811
+% Super-Fibonacci Spirals: Fast, Low-Discrepancy Sampling of SO(3)>,
+% _Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern
+% Recognition_, 8291--8300, 2022. This paper gives the spiral construction
+% behind |fibonacciSO3Grid| and the two irrational ratios it uses.
 
 %% Next
 %

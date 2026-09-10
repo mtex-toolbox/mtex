@@ -32,6 +32,7 @@
 %     └── orientation
 %         ├── DelaunaySO3
 %         ├── SO3Grid
+%         ├── fibonacciSO3Grid
 %         ├── homochoricSO3Grid
 %         └── quadratureSO3Grid
 % &nbsp;
