@@ -27,6 +27,7 @@ function SO3F = adjoint(rot,values, varargin)
 %
 % Flags
 %  'nfsoft'            - use (mostly slower) NFSOFT algorithm
+%  'silent'            - suppress transform progress output
 %  'directComputation' - direct evaluation of Fourier sums (no nfft)
 %  'gridded'           - round the rotations onto a regular Clenshaw Curtis
 %                        quadrature grid and use the plain FFT instead of
@@ -315,7 +316,7 @@ if ~isa(rot,'quadratureSO3Grid') || strcmp(rot.scheme,'GaussLegendre')
 end
 % use adjoint Wigner transform
 fhat = zeros(deg2dim(N+1),len);
-pC = progressCounter(len);
+pC = progressCounter(len,varargin{:});
 for i=1:len
   fhat(:,i) = wignerTrafoAdjointmex(N,double(ghat(:,:,:,i)),flags,sym);
   pC.show(i);
