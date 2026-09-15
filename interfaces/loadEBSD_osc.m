@@ -2,10 +2,11 @@ function ebsd = loadEBSD_osc(fname,varargin)
 %
 % Options
 %  headerOnly - return only phase/header metadata, skip reading the data
+%  debugPhases - print every candidate phase record found/rejected and why
 
 assertExtension(fname,'.osc');
 
-[CSdefault,header] = oscHeader(fname);
+[CSdefault,header] = oscHeader(fname,check_option(varargin,'debugPhases'));
 CS = get_option(varargin,'CS',CSdefault);
 
 if check_option(varargin,'headerOnly')
@@ -220,7 +221,8 @@ end
 % original file was Decode_Header(OscFile, foutname)
 % I (florian) rewrote it a little.
 %
-function [CS,header] = oscHeader(file)
+function [CS,header] = oscHeader(file,debugPhases)
+if nargin < 2, debugPhases = false; end
 % some remarksAdam Shiveley
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %So, the file is structured like this:
@@ -305,35 +307,146 @@ headerBytes = data(headerStart+8:headerStop);
 % keep the raw bytes, the rest of the header is not self describing
 header.rawBytes = headerBytes;
 
-% one record per phase, in the order the file numbers them
+% one record per phase, in the order the file numbers them.
+% Each record is NOT a fixed 288 bytes long: after the fixed-size name/
+% symmetry/cell block, it carries numHKL hklFamily entries (variable
+% count) plus a formula/name tail, so records must be advanced by their
+% own true length or the scan drifts off alignment after the first phase.
 CS = repmat(notIndexed,1,0);
 o = 1;
 while o + 287 <= numel(headerBytes)
-  cs = phaseRecord(headerBytes,o);
+  [cs,recLen,reason,symCode] = phaseRecord(headerBytes,o);
   if isempty(cs)
+    if debugPhases && ~strcmp(reason,'no name')
+      fprintf('oscHeader: rejected candidate at byte %d (%s)\n',o,reason);
+    end
     o = o + 1;
   else
+    if debugPhases
+      try
+        pgStr = char(cs.pointGroup);
+      catch
+        pgStr = '?';
+      end
+      fprintf('oscHeader: accepted phase "%s" at byte %d, symCode=%d, resolved symmetry=%s, record length=%d\n',...
+        cs.mineral,o,symCode,pgStr,recLen);
+    end
     CS(end+1) = cs; %#ok<AGROW>
-    o = o + 288;
+    o = o + recLen;
   end
 end
 
-function cs = phaseRecord(bytes,pos)
+function [cs,recLen,reason,symCode] = phaseRecord(bytes,pos)
 % the phase a record at pos describes: a name that reads as one, a symmetry
 % code and a cell the crystal symmetry accepts; empty where the bytes are none
 cs = [];
+recLen = 288;
+reason = 'no name';
+symCode = [];
 field = bytes(pos:pos+255);
 stop = find(field == 0,1);
 if isempty(stop), stop = 257; end
 field = field(1:stop-1);
 if isempty(field) || any(field < 32 | field > 126) || ~any(isletter(char(field))), return; end
+
+% symCode is a single 4-byte field that TSL/EDAX overload two ways: a
+% small value (1..43) is a "Symmetry" code naming one of 11 Laue classes,
+% a value >=100 (100..131) is an EDAX PointGroupID naming one of the 32
+% point groups directly (131 = m-3m, the code cubic phases report). See
+% symCodeToGroup below for the full table; it mirrors MTEX's own
+% interfaces/tools/TSL2pointGroup.m, reproduced here in case that
+% function isn't on the path for a given MTEX install.
 symCode = typecast(bytes(pos+256:pos+259),'int32');
-cell = double(typecast(bytes(pos+260:pos+283),'single'));
-if ~(symCode > 0 && symCode < 100 && all(cell(1:3) > 0 & cell(1:3) < 1000) && ...
-    all(cell(4:6) > 0 & cell(4:6) < 180)), return; end
+cellBytes = double(typecast(bytes(pos+260:pos+283),'single'));
+if ~(all(cellBytes(1:3) > 0 & cellBytes(1:3) < 1000) && ...
+    all(cellBytes(4:6) > 0 & cellBytes(4:6) < 180))
+  reason = 'cell constants out of range';
+  return
+end
+if pos+287 > numel(bytes)
+  reason = 'truncated record';
+  return
+end
+numHKL = double(typecast(bytes(pos+284:pos+287),'int32'));
+if numHKL < 0 || numHKL > 10000
+  reason = 'numHKL out of range';
+  return
+end
+
+laueGroup = symCodeToGroup(symCode);
+if isempty(laueGroup)
+  reason = sprintf('unrecognized symmetry code %d',symCode);
+  return
+end
+
+% trigonal/hexagonal/monoclinic groups need an explicit crystal-axis
+% alignment; MTEX's own loadEBSD_osc.m uses 'X||a' for all of these
+% (cubic, tetragonal and orthorhombic groups are unambiguous without it)
+switch laueGroup
+  case {'2','m','2/m',...
+      '3','-3','32','3m','-3m',...
+      '6','-6','6/m','622','6mm','-62m','6/mmm'}
+    options = {'X||a'};
+  otherwise
+    options = {''};
+end
+
 try
   % the crystal reference frame follows the EDAX convention, as for .ang files
-  cs = crystalSymmetry(TSL2pointGroup(symCode,symCode),cell(1:3),cell(4:6)*degree, ...
-    'mineral',strtrim(char(field)),'EDAX');
-catch
+  if exist('TSL2pointGroup','file')
+    % prefer MTEX's own resolver when it is on the path - it also cross
+    % -checks against an EDAX PointGroupID when one is available and
+    % falls back to the Laue class alone otherwise
+    resolved = TSL2pointGroup(double(symCode));
+    if ~isempty(resolved), laueGroup = resolved; end
+  end
+  cs = crystalSymmetry(laueGroup,cellBytes(1:3),cellBytes(4:6)*degree, ...
+    'mineral',strtrim(char(field)),options{:});
+catch err
+  cs = [];
+  reason = ['crystalSymmetry failed: ' err.message];
+  return
+end
+
+% each hklFamily entry is 4 ints + 1 single = 20 bytes (matching TSL's osc
+% layout); the record also carries a trailing formula/name block, so keep
+% the original fixed 288-byte block only as a floor when numHKL is 0
+recLen = max(288, 288 + numHKL*20);
+
+function pointGroup = symCodeToGroup(symCode)
+% .osc stores ONE numeric field per phase that is overloaded two ways,
+% matching MTEX's own TSL2pointGroup.m (interfaces/tools/TSL2pointGroup.m):
+%
+%  - a value 1..43 is a TSL "Symmetry" code naming one of the 11 Laue
+%    classes (NOT a point-group symbol directly - code 3 is the Laue
+%    class "-3", not the point group "3"):
+%      '-1',1  '2/m',20 (or plain '2' on older files)  'mmm',22
+%      '4/m',4  '4/mmm',42  '-3',3  '-3m',32  '6/m',6  '6/mmm',62
+%      'm-3',23  'm-3m',43
+%  - a value 100..131 is an EDAX PointGroupID, 100 + position in the 32
+%    crystallographic point groups in this order:
+%      1,-1,2,m,2/m,222,mm2,mmm, 4,-4,4/m,422,4mm,-42m,4/mmm,
+%      3,-3,32,3m,-3m, 6,-6,6/m,622,6mm,-62m,6/mmm, 23,m-3,432,-43m,m-3m
+%    so 131 (100+31) is the last entry, m-3m - exactly what a cubic
+%    ferrite/austenite phase reports.
+persistent laueCodes laueNames pgList
+if isempty(laueCodes)
+  laueNames = {'-1','2/m','mmm','4/m','4/mmm','-3','-3m','6/m','6/mmm','m-3','m-3m'};
+  laueCodes = [1,20,22,4,42,3,32,6,62,23,43];
+  pgList = {'1','-1','2','m','2/m','222','mm2','mmm',...
+    '4','-4','4/m','422','4mm','-42m','4/mmm',...
+    '3','-3','32','3m','-3m',...
+    '6','-6','6/m','622','6mm','-62m','6/mmm',...
+    '23','m-3','432','-43m','m-3m'};
+end
+code = double(symCode);
+pointGroup = '';
+if code >= 100 && code <= 99+numel(pgList)
+  pointGroup = pgList{code-99};
+  return
+end
+if code == 2, code = 20; end
+i = find(laueCodes == code,1);
+if ~isempty(i)
+  pointGroup = laueNames{i};
 end
