@@ -327,9 +327,9 @@ stop = find(field == 0,1);
 if isempty(stop), stop = 257; end
 field = field(1:stop-1);
 if isempty(field) || any(field < 32 | field > 126) || ~any(isletter(char(field))), return; end
-symCode = typecast(bytes(pos+256:pos+259),'int32');
+symCode = typecast(bytes(pos+256:pos+259),'int32'); % a laue code 1-43 or a point group id 100-131
 cell = double(typecast(bytes(pos+260:pos+283),'single'));
-if ~(symCode > 0 && symCode < 100 && all(cell(1:3) > 0 & cell(1:3) < 1000) && ...
+if ~(symCode > 0 && symCode <= 131 && all(cell(1:3) > 0 & cell(1:3) < 1000) && ...
     all(cell(4:6) > 0 & cell(4:6) < 180)), return; end
 try
   % the crystal reference frame follows the EDAX convention, as for .ang files
