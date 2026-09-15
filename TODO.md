@@ -130,6 +130,7 @@ The multi-release work. Everything here is bigger than one branch.
 | G39 | Analytic Voronoi decomposition for gap-free regular grids — 43 % of `calcGrains` runtime is Fortune's sweep | 1 | 1 | paused | — | br/analytic-voronoi-grid, [→](#g39) |
 | G40 | Speed up the segmentation criterion `gbcAngle.doEvaluate` — 0.71 s of `doSegmentation`'s 1.47 s | 1 | 1 | paused | — | [→](#g39) |
 | G41 | `assignGridIndex` was order dependent on a distorted map — **fixed 2026-08-13**: the walk trusted the outer component of a step outright, so a line change carried a whole line's worth of accumulated drift into it. The outer step is now measured against a drift model, the mirror of the inner one. Grid order goes from exact at 0.05% distortion to exact at 10%; file order and every undistorted map are bit identical | 3 | 0 | done | — | [→](#g41) |
+| G42 | **Seeded grain reconstruction (`gbcWatershed`)** — grows grains from seeds instead of cutting a pixel graph, so a wall that crosses only part of a grain still closes one; no criterion deciding pair by pair can. Opt in as `calcGrains(ebsd,'watershed')`. Implemented and measured, **not merged** | 1 | 2 | wip | — | br/seededReconstruction, [→](#g42) |
 
 ---
 
@@ -772,6 +773,42 @@ adjacency-only first pass was closed separately by the `'delaunayOnly'` flag
 (commit `13db5772a`). Second lead: `gbc.eval` inside `doSegmentation` costs
 0.71 s of 1.47 s — unclear whether there is real redundancy there or just
 inherent per-pair cost.
+
+### G42
+On `feature/seededReconstruction` (`e28d01195`, `b6cad699e`), branched from
+`cd411a786` and not merged. **The documentation is on that branch**:
+
+- `EBSDAnalysis/grainBoundaryCriteria/@gbcWatershed/gbcWatershed.m` — the class
+  help: what it does, every option, and the headline numbers
+- `docs/adr/0010-seeded-grain-reconstruction.md` — the design record: what
+  each parameter *means*, the three merge schemes that were implemented and
+  the measurements that killed two of them, the
+  noise floor on the wall angle, the verified invariants, the limit, and the
+  one open failure
+- `doc/Grains/GrainReconstructionAdvanced.m`, section *Growing grains from
+  seeds* — the user-facing page, with the KAM overlay that separates measured
+  boundary from invented
+- `tests/core/check_calcGrainsCases.m`, local `checkWatershed` — a partial
+  wall must split a grain where a threshold criterion cannot, **and** a line
+  of noise of the same amplitude must not
+
+Why it exists, in one measurement: cutting *every* pixel pair above 1, 2 and 3
+degree on top of a finished reconstruction of the EMSphInx austenite leaves the
+region count at 155 → 155. An open wall cannot bound a region when grains are
+the connected components of a cut graph, and merging afterwards only coarsens.
+Against the Markovian clustering reconstruction of that map: 88 % of the stubs
+above 2 degree separated, 99 % of the boundary it did find kept, recall
+65 → 95 % and precision 48 → 87 %, 13 % of the drawn boundary invented against
+its 52 %. 2.7 s on the full 478k pixel phase, against 9.9 s for `gbcFMC`.
+
+Not a replacement for `gbcFMC` and not proposed as a default: it cannot see a
+wall *below* the pixel noise, where multiscale averaging can. On
+`EBSDGrainBenchmark` `gbcFMC` reaches ARI 0.99 and finds the 1 degree
+boundaries; this reaches 0.53 and finds from 3 degree up. Both are kept.
+
+Open before merging: decide whether the full-length-noise-line case (see the
+ADR's *Still open*) blocks, and whether `slow/check_grainBenchmark` should
+carry the criterion in its baseline table.
 
 ### D
 `doc/EBSD3Analysis/Grains3DProperties.m` advertises four methods that
