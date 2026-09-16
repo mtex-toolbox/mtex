@@ -357,9 +357,6 @@ classdef import_wizard < matlab.apps.AppBase
       ax.Layout.Row = 3;
       ax.Layout.Column = column;
       axis(ax, 'off', 'equal')
-      % with nothing to label there is no reason to reserve the margin an
-      % axes keeps for its ticks - let the plot box have the whole cell
-      try ax.PositionConstraint = 'innerposition'; catch, end
       ax.Toolbar.Visible = 'off';
       disableDefaultInteractivity(ax)
     end
@@ -2176,17 +2173,25 @@ classdef import_wizard < matlab.apps.AppBase
     end
 
     function pos = screenArea(~)
-      % the primary monitor as a figure Position, i.e. the size the
-      % wizard comes up at (see createComponents)
+      % the primary monitor's work area as a figure Position, i.e. the
+      % size a maximized window gets (see createComponents)
       %
       % Not ScreenSize: that spans every monitor of a multi head setup,
       % which would open the wizard across all of them. Row 1 of
       % MonitorPositions is the primary monitor, in the same bottom left
-      % origin convention a figure Position uses.
+      % origin convention a figure Position uses. The insets are the
+      % desktop's own panels and bars.
       pos = get(groot, 'ScreenSize');
       try
         monitors = get(groot, 'MonitorPositions');
         if ~isempty(monitors), pos = monitors(1,:); end
+      catch
+      end
+      try
+        gc = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment ...
+          .getDefaultScreenDevice.getDefaultConfiguration;
+        in = java.awt.Toolkit.getDefaultToolkit.getScreenInsets(gc);
+        pos = pos + [in.left, in.bottom, -in.left-in.right, -in.top-in.bottom];
       catch
       end
     end
@@ -2316,7 +2321,7 @@ classdef import_wizard < matlab.apps.AppBase
 
     function FileTreeNodeExpanded(app, event)
       node = event.Node;
-      if isempty(node.NodeData) || ~strcmp(node.NodeData.Type, 'Folder')
+      if ~isscalar(node) || isempty(node.NodeData) || ~strcmp(node.NodeData.Type, 'Folder')
         return
       end
       populateFolderNode(app, node, node.NodeData.Path)
