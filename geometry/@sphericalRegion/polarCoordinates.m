@@ -34,16 +34,9 @@ else
   end
 end
 
-% a reference direction for rho = 0 - for a hemisphere sector the barycenter is
-% the pole itself, where the difference to the center collapses to zero
-if center == zvector
-  rx = ref - center;
-else
-  rx = sR.how2plot.outOfScreen - center;
-end
-
-% fall back to the frame's east, and only then to an arbitrary tangent, so the
-% hue stays tied to the convention wherever the convention still determines it
+% a reference direction for rho = 0: the frame's out-of-screen axis, its east
+% once the center is that pole itself, and only then an arbitrary tangent
+rx = sR.how2plot.outOfScreen - center;
 if tangentIsNull(rx,center), rx = ref - center; end
 if tangentIsNull(rx,center), rx = orth(center); end
 
