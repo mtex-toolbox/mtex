@@ -1290,32 +1290,19 @@ classdef import_wizard < matlab.apps.AppBase
         color(mask,:) = repmat(rgb(:).', nnz(mask), 1);
       end
 
-      noKey = {};
       for phaseId = enabledPhaseIds(:)'
         % skip not indexed "phases" - they carry no orientations
         if ~isa(app.ebsd.CSList(phaseId), 'symmetry'), continue; end
         mask = app.ebsd.phaseId == phaseId;
         if ~any(mask), continue; end
-        % one precomputed color key per phase - only the direction differs
-        % between the IPF tabs and switching it costs nothing
         ipfKey = ipfKeyForPhase(app, phaseId);
-        if isempty(ipfKey)
-          % no color key exists for this crystal frame - say so rather
-          % than draw the phase in a color that means nothing
-          noKey{end+1} = asChar(app, app.ebsd.CSList(phaseId).mineral); %#ok<AGROW>
-          continue
-        end
         ipfKey.ipfDirection = direction;
         ori = orientation(app.ebsd.rotations(mask), app.ebsd.CSList(phaseId));
         color(mask,:) = ipfKey.orientation2color(ori);
       end
 
       if all(isnan(color(:)))
-        if isempty(noKey)
-          title(ax, 'No phase selected')
-        else
-          title(ax, ['No IPF color key for ' strjoin(noKey, ', ')])
-        end
+        title(ax, 'No phase selected')
         return
       end
 
@@ -1442,35 +1429,13 @@ classdef import_wizard < matlab.apps.AppBase
     end
 
     function key = ipfKeyForPhase(app, phaseId)
-      % lazily create and precompute one ipfColorKey per phase, or [] if
-      % MTEX cannot build one for that crystal frame. The expensive
-      % precomputation depends only on the crystal symmetry, so the key
-      % is shared by the IPF X/Y/Z tabs - they merely set their
-      % ipfDirection before use (ipfColorKey is a handle
-      % class, so mutating the direction on the cached key is fine).
-      %
-      % Not every valid crystal symmetry has a color key:
-      % HSVDirectionKey/updatesR picks bounding normals of the
-      % fundamental sector out at fixed positions (sR.N(2), sR.N(2:3)),
-      % and for six point groups - 112/m, 222, -3, -3m1, 312, -31m -
-      % those positions do not exist once Z is aligned with a, so it
-      % errors with "Index exceeds the number of array elements". The
-      % symmetry itself is perfectly usable, so this must not take the
-      % app down with it: the failure is cached as false and the IPF
-      % tabs simply leave that phase uncolored.
-      if numel(app.IPFKeys) >= phaseId && ~isempty(app.IPFKeys{phaseId})
-        key = app.IPFKeys{phaseId};
-      else
-        try
-          key = ipfColorKey(app.ebsd.CSList(phaseId));
-          key.precompute;
-        catch
-          key = false;
-        end
-        app.IPFKeys{phaseId} = key;
+      % one precomputed ipfColorKey per phase, shared by the IPF X/Y/Z tabs,
+      % which only set its ipfDirection - ipfColorKey is a handle class
+      if numel(app.IPFKeys) < phaseId || isempty(app.IPFKeys{phaseId})
+        app.IPFKeys{phaseId} = ipfColorKey(app.ebsd.CSList(phaseId));
+        app.IPFKeys{phaseId}.precompute;
       end
-
-      if isequal(key, false), key = []; end
+      key = app.IPFKeys{phaseId};
     end
 
     function counts = phaseCounts(app)
