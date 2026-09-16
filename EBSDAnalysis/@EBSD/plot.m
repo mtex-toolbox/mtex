@@ -12,6 +12,9 @@ function [h,mP] = plot(ebsd,varargin)
 %   % colorize according to orientation
 %   plot(ebsd('phaseName'),ebsd('phaseName').orientation)
 %
+%   % colorize every phase by its ipf key for the direction x, y or z
+%   plot(ebsd,'ipfx')
+%
 %   % colorize according to custom color
 %   oM = ipfColorKey(ebsd('phaseName'))
 %   color = oM.orientation2color(ebsd('phaseName').orientations);
@@ -41,6 +44,7 @@ function [h,mP] = plot(ebsd,varargin)
 %  region      - [xmin, xmax, ymin, ymax] plotting region
 %
 % Flags
+%  ipfx, ipfy, ipfz - colorize the orientations by the ipf key for this direction
 %  points   - plot dots instead of unitcells
 %  exact    - plot exact unitcells, even for large maps
 %
@@ -67,22 +71,37 @@ mtexFig = newMtexFigure('datacursormode',{@tooltip,ebsd},varargin{:});
   'parent',mtexFig.gca,varargin{:},ebsd.how2plot,ebsd.pos.frame);
 
 % transform orientations to color
+ipfDir = get_option(varargin,{'ipfDirection','inversePoleFigureDirection','ipfd'},zvector);
+flag = get_flag(varargin,{'ipfx','ipfy','ipfz'},'');
+if ~isempty(flag)
+  dirs = [xvector,yvector,zvector];
+  ipfDir = dirs(lower(flag(end)) == 'xyz');
+end
+
 if nargin>1 && isa(varargin{1},'orientation')
 
-  oM = ipfColorKey(varargin{1});
-  oM.ipfDirection = ...
-    get_option(varargin,{'ipfDirection','inversePoleFigureDirection','ipfd'},zvector);
+  varargin{1} = ipfColor(varargin{1},ipfDir);
   
-  oM.precompute;
-  varargin{1} = oM.orientation2color(varargin{1});
-  
-  if ~getMTEXpref('generatingHelpMode') && ~check_option(varargin,{'ipfDirection','inversePoleFigureDirection','ipfd'})
+  if ~getMTEXpref('generatingHelpMode') && isempty(flag) && ...
+      ~check_option(varargin,{'ipfDirection','inversePoleFigureDirection','ipfd'})
     disp('  I''m going to colorize the orientation data with the ');
     disp('  standard MTEX ipf-Z colorkey. To view the colorkey do:');
     disp(' ');
     disp('  colorKey = ipfColorKey(ori_variable_name)')
     disp('  plot(colorKey)')
   end
+
+elseif ~isempty(flag)
+
+  % the orientations of the map itself, each phase by its own key
+  color = NaN(length(ebsd),3);
+  for k = reshape(unique(ebsd.phaseId(ebsd.isIndexed)),1,[])
+    ind = ebsd.phaseId == k;
+    ori = orientation(ebsd.rotations(ind),ebsd.CSList(k),specimenSymmetryFor(ebsd.pos.frame));
+    color(ind,:) = ipfColor(ori,ipfDir);
+  end
+  varargin = [{color}, varargin];
+
 end
 
 % translate logical into numerical data
@@ -222,6 +241,16 @@ mP.micronBar.setOnTop
 if ~isstruct(mtexFig)  && isscalar(mtexFig.children)
   mtexFig.keepAspectRatio = false; 
 end
+
+end
+
+% ----------------------------------------------------------------------
+function rgb = ipfColor(ori,ipfDir)
+
+oM = ipfColorKey(ori);
+oM.ipfDirection = ipfDir;
+oM.precompute;
+rgb = oM.orientation2color(ori);
 
 end
 
