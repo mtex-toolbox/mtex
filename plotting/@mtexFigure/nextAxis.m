@@ -13,7 +13,9 @@ else
 end
 
 mtexFig.parent.CurrentAxes = mtexFig.gca;
-mtexFig.selectedAxes = mtexFig.gca;
+
+% an explicitly addressed cell is the one the next plot paints
+if nargin > 1, mtexFig.selectedAxes = mtexFig.gca; end
 
 if nargout > 0, ax = mtexFig.gca;end
 

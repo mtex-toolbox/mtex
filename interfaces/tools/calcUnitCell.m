@@ -219,21 +219,18 @@ unitCell = []; dxy = []; rot = 0;
 q = subSample(xy,5000);
 if size(q,1) < 30, return; end
 
-% 7 nearest neighbors (including self)
-[idx,d] = knnsearch(q,q,'K',7);
-idx = idx(:,2:end); d = d(:,2:end);
+% the nearest shell of a lattice is among the Delaunay edges
+dt = delaunayTriangulation(q);
+e = edges(dt); q = dt.Points;
+vx = q(e(:,2),1) - q(e(:,1),1);
+vy = q(e(:,2),2) - q(e(:,1),2);
+len = hypot(vx,vy);
 
 % keep only the true nearest shell (drop 2nd shell picked up for square,
 % whose diagonal neighbors sit at sqrt(2)*dxy =~ 1.41*dxy)
-med1 = median(d(:,1));
-keep = d < 1.25*med1;
-
-nq = size(q,1);
-ref = repmat((1:nq)',1,6);
-vx = q(idx(keep),1) - q(ref(keep),1);
-vy = q(idx(keep),2) - q(ref(keep),2);
-
-len = hypot(vx,vy);
+med1 = median(accumarray(e(:),[len;len],[size(q,1) 1],@min));
+keep = len < 1.25*med1;
+vx = vx(keep); vy = vy(keep); len = len(keep);
 lenSpread = std(len)/median(len);
 
 % doubling the angle identifies v with -v, as MTEX does for antipodal axes

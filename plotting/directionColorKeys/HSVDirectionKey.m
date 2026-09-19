@@ -212,7 +212,15 @@ classdef HSVDirectionKey < directionColorKey
       % spherical region to be colorized
 
       oM.sR = oM.sym.fundamentalSector;
-      r30 = rotation.byAxisAngle(zvector,[30,-30]*degree);
+
+      % the reflector turns about c*, the axis the sector is built around
+      if isa(oM.sym,'crystalSymmetry')
+        ax = normalize(vector3d(oM.sym.cAxisRec));
+      else
+        ax = zvector;
+      end
+      turn = @(v,omega) rotate(v,rotation.byAxisAngle(ax,omega));
+      r30 = rotation.byAxisAngle(ax,[30,-30]*degree);
 
       % symmetry dependent settings
       switch oM.sym.id
@@ -231,23 +239,23 @@ classdef HSVDirectionKey < directionColorKey
           oM.refl = rotate(oM.sR.N,rotation.byAxisAngle(-oM.sym.rot(2).axis,90*degree));
         case {5}, oM.refl = axis2quat(oM.sR.N(1),-90*degree)*oM.sR.N(2); % 2/m11
         case {8}, oM.refl = axis2quat(oM.sR.N(1),90*degree)*oM.sR.N(2); % 12/m1
-        case {11,12}, oM.refl = rotate(oM.sR.N(2),-90*degree); % 222
-        case 17, oM.refl = -rotate(sum(oM.sR.N),90*degree);      % 3        
-        case 18, oM.refl = -rotate(sum(oM.sR.N(2:3)),90*degree); % -3
+        case {11,12}, oM.refl = turn(oM.sR.N(2),-90*degree); % 222
+        case 17, oM.refl = -turn(sum(oM.sR.N),90*degree);      % 3        
+        case 18, oM.refl = -turn(sum(oM.sR.N(2:3)),90*degree); % -3
         case 19
           oM.refl = r30 .* oM.sR.N(end-1:end);                   % 321
           if angle(oM.refl(1),oM.refl(2)) < 1*degree
             oM.refl = inv(r30) .* oM.sR.N(end-1:end);
           end
-        case 21, oM.refl =  rotate(sum(oM.sR.N(2:3)),90*degree);    % -31m, -3m1
-        case 22, oM.refl =  -rotate(sum(oM.sR.N(2:3)),90*degree);   % 312
-        case 24, oM.refl =  -rotate(sum(oM.sR.N(2:3)),90*degree);   % -31m, -3m1
-        case {25,27,28}, oM.refl = rotate(oM.sR.N(end),-45*degree); % 4,4/m,422
-        case 26, oM.refl = rotate(oM.sR.N(end),-90*degree);      % -4
-        case 30, oM.refl = rotate(oM.sR.N(2),45*degree);            % -42m
-        case 31, oM.refl = -rotate(oM.sR.N(2),45*degree);        % -4m2
-        case {33,35,36}, oM.refl = rotate(oM.sR.N(end),-30*degree); % 6,6/m, 622,  
-        case 34, oM.refl = rotate(oM.sR.N(end),-60*degree);            % -6
+        case 21, oM.refl =  turn(sum(oM.sR.N(2:3)),90*degree);    % -31m, -3m1
+        case 22, oM.refl =  -turn(sum(oM.sR.N(2:3)),90*degree);   % 312
+        case 24, oM.refl =  -turn(sum(oM.sR.N(2:3)),90*degree);   % -31m, -3m1
+        case {25,27,28}, oM.refl = turn(oM.sR.N(end),-45*degree); % 4,4/m,422
+        case 26, oM.refl = turn(oM.sR.N(end),-90*degree);      % -4
+        case 30, oM.refl = turn(oM.sR.N(2),45*degree);            % -42m
+        case 31, oM.refl = -turn(oM.sR.N(2),45*degree);        % -4m2
+        case {33,35,36}, oM.refl = turn(oM.sR.N(end),-30*degree); % 6,6/m, 622,  
+        case 34, oM.refl = turn(oM.sR.N(end),-60*degree);            % -6
         case {41}, oM.refl = sum(oM.sR.N(3:4))- sum(oM.sR.N(1:2));  % 23
         case {42,43}, oM.refl = oM.sR.N(end-2) - oM.sR.N(end-1);      % 432, m-3            
       end

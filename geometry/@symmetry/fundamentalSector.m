@@ -35,21 +35,29 @@ if check_option(varargin,'antipodal'), sym = sym.Laue; end
 
 % a first very simple rule for the fundamental region
 
-% if we have an inversion or some symmetry operation no parallel to z
-if any(angle(pC.outOfScreen,symmetrise(pC.outOfScreen,sym))>pi/2+1e-4)
-  N = pC.outOfScreen; % then we can map everything on the upper hemisphere
+% a symmetry operation that flips the out-of-screen axis maps everything
+% onto the upper hemisphere
+if any(angle(pC.outOfScreen,symmetrise(pC.outOfScreen,sym))>pi-1e-4)
+  N = pC.outOfScreen;
 else
   N = vector3d;
 end
+
+% the wedge is built around c* with a at azimuth zero - the conventional
+% alignment, turned to wherever the lattice actually points
+if isa(sym,'crystalSymmetry')
+  r = rotation.map(zvector,vector3d(sym.cAxisRec),xvector,vector3d(sym.aAxis));
+else
+  r = rotation.id;
+end
+turn = @(N,omega) rotate(N,rotation.byAxisAngle(r*zvector,omega));
 
 % the region on the northern hemisphere now depends just on the
 % number of symmetry operations
 if numSym(sym) > 1+length(N)
   drho = 2*pi * (1+length(N)) / numSym(sym);
-  N = [N,vector3d.byPolar(90*degree,[90*degree,drho-90*degree])];
+  N = [N,r * vector3d.byPolar(90*degree,[90*degree,drho-90*degree])];
 end
-
-if isa(sym,'crystalSymmetry'), N = rotate(N,sym.aAxis.rho); end
 
 % some special cases
 switch sym.id
@@ -104,24 +112,24 @@ switch sym.id
   case 17 % 3
   case 18 % -3
   case {19,20,21} % 321, 3m1, -3m1
-    N = rotate(N,-30*degree);
+    N = turn(N,-30*degree);
   case {22} % 312
-    N = rotate(N,-30*degree);
+    N = turn(N,-30*degree);
   case {23,24} % -31m    
   case 30 %-42m
-    N = rotate(N,-45*degree);
+    N = turn(N,-45*degree);
   case {33,34,35,36} % 6, 622
   case 38 % -62m
   case 39 % -6m2
-    N = rotate(N,-30*degree);
+    N = turn(N,-30*degree);
   case 41 % 23
-    N = vector3d([1 1 0 0],[1 -1 1 -1],[0 0 1 1]);
+    N = r * vector3d([1 1 0 0],[1 -1 1 -1],[0 0 1 1]);
   case {42,43} % m-3, 432
-    N = [vector3d(0,-1,1),vector3d(-1,0,1),xvector,yvector,zvector];
+    N = r * [vector3d(0,-1,1),vector3d(-1,0,1),xvector,yvector,zvector];
   case 44 % -43m
-    N = [vector3d(1,-1,0),vector3d(1,1,0),vector3d(-1,0,1)];
+    N = r * [vector3d(1,-1,0),vector3d(1,1,0),vector3d(-1,0,1)];
   case 45 % m-3m
-    N = [vector3d(1,-1,0),vector3d(-1,0,1),yvector];
+    N = r * [vector3d(1,-1,0),vector3d(-1,0,1),yvector];
 end
 
 % this will be restricted later anyway

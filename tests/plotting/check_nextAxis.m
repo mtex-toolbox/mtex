@@ -17,6 +17,7 @@ checkRepaintsSelectedCell
 checkHoldOnOverlays
 checkSelectionIsConsumed
 checkUnselectedPlotReplacesFigure
+checkHemispheresDoNotSelect
 
 disp('check_nextAxis: passed');
 
@@ -72,6 +73,21 @@ plot(vector3d(0,0,1),'upper','doNotDraw');
 f = gcm;
 if numel(f.children) ~= 1
   error('check_nextAxis: an unselected plot kept %d axes',numel(f.children));
+end
+
+end
+
+% =========================================================================
+function checkHemispheresDoNotSelect
+% the second axes a full sphere plot opens for itself is no selected cell
+
+close all
+plot(vector3d(1,1,1),'doNotDraw');
+plot(vector3d(1,1,2),'doNotDraw');
+
+f = gcm;
+if numel(f.children) ~= 2
+  error('check_nextAxis: a second full sphere plot left %d axes',numel(f.children));
 end
 
 end

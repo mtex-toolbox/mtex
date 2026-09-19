@@ -58,15 +58,18 @@ else
 
   % get fundamental region
   sR = fundamentalSector(cs,varargin{:});
+
+  % the hemisphere these groups fold onto is the sector's first normal
+  n = subSet(sR.N,1);
   
   switch cs.id
     case {19,22,26}
-      ind = v.z < 0;
+      ind = v.x*n.x + v.y*n.y + v.z*n.z < 0;
       vv = cs.rot(2) * subSet(v,ind);
       v.x(ind) = vv.x; v.y(ind) = vv.y; v.z(ind) = vv.z;
       cs = cs.rot(1:2:end);
     case 18
-      ind = v.z < 0;
+      ind = v.x*n.x + v.y*n.y + v.z*n.z < 0;
       vv = cs.rot(4) * subSet(v,ind);
       v.x(ind) = vv.x; v.y(ind) = vv.y; v.z(ind) = vv.z;
       cs = cs.rot(1:3);

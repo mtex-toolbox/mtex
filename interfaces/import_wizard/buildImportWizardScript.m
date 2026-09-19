@@ -219,17 +219,18 @@ plotMask = logical(plotMask(:));
 n = numel(ebsd.CSList);
 if numel(plotMask) < n, plotMask(end+1:n) = false; end
 
-counts = zeros(n,1);
-for k = 1:n, counts(k) = nnz(ebsd.phaseId == k); end
-counts(~plotMask(1:n)) = 0;
-counts(~[ebsd.CSList.isIndexed].') = 0;
+% the indexed phases with data, and those of them the wizard shows
+indexed = find(arrayfun(@(k) isa(ebsd.CSList(k),'crystalSymmetry') && any(ebsd.phaseId == k),1:n));
+selected = indexed(plotMask(indexed));
 
-[best,phaseId] = max(counts);
-if isempty(best) || best == 0
+if isempty(selected)
   str = '% No indexed phase selected for the sanity-check plot';
+elseif numel(selected) == numel(indexed)
+  str = 'plot(ebsd,''ipfz'')';
 else
-  mineral = charLiteral(phaseName(ebsd,phaseNames,phaseId));
-  str = sprintf('plot(ebsd(%s),ebsd(%s).orientations)',mineral,mineral);
+  names = arrayfun(@(k) charLiteral(phaseName(ebsd,phaseNames,k)),selected,'UniformOutput',false);
+  if ~isscalar(names), names = {['{' strjoin(names,',') '}']}; end
+  str = sprintf('plot(ebsd(%s),''ipfz'')',names{1});
 end
 
 end
