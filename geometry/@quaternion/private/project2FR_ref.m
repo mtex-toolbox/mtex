@@ -14,8 +14,7 @@ function q = project2FR_ref(q,qCS,q_ref)
 %  omega - rotational angle to reference quaternion
 %
 
-qCS = qCS.rot;
-qCS = qCS.subSet(~qCS.i);
+qCS = qCS.properGroup.rot;
 
 s = size(q);
 q.a = q.a(:); q.b = q.b(:); q.c = q.c(:); q.d = q.d(:);
