@@ -18,23 +18,21 @@ assert(isnumeric(bw) && isscalar(bw) && isreal(bw) && isfinite(bw) && ...
   bw>=0 && bw==fix(bw),'S2Fun:discrepancy:bandwidth', ...
   'The bandwidth must be a nonnegative integer.');
 
-mass = 1;
-if isa(a,'S2Fun'), mass = functionMass(a); end
-if isa(b,'S2Fun')
-  massB = functionMass(b);
-  if isa(a,'S2Fun')
-    assert(abs(mass-massB)<=1e-10*max(abs([mass,massB])), ...
-      'S2Fun:discrepancy:massMismatch','Functions must have equal integrals.');
-  end
-  mass = massB;
-end
+% Each function keeps its own integral; a point set takes the one of the
+% function it is compared with, and mass one against another point set or
+% a function that integrates to zero.
+massA = []; massB = [];
+if isa(a,'S2Fun'), massA = functionMass(a); end
+if isa(b,'S2Fun'), massB = functionMass(b); end
+if isempty(massA), massA = sampleMass(massB); end
+if isempty(massB), massB = sampleMass(massA); end
 
 % Represent nu as a signed harmonic density plus signed atoms. Point sets
 % retain their full measure for cap metrics, not a harmonic approximation.
-[hA,xA,cA,exactA] = representation(a,bw,mass,'weights',varargin{:});
+[hA,xA,cA,exactA] = representation(a,bw,massA,'weights',varargin{:});
 weightName = 'weights';
 if isa(a,'vector3d') && isa(b,'vector3d'), weightName = 'weights2'; end
-[hB,xB,cB,exactB] = representation(b,bw,mass,weightName,varargin{:});
+[hB,xB,cB,exactB] = representation(b,bw,massB,weightName,varargin{:});
 fhat = hA-hB;
 x = [xA;xB]; c = [cA;-cB];
 info = struct('method','','isExact',exactA && exactB,'bandwidth',bw);
@@ -50,9 +48,11 @@ switch metric
     if check_option(varargin,'squared'), res = res^2; end
     return
   case {'d_2','d2'}
-    % Stolarsky: D_2^2(nu) = -1/4 integral |x-y| dnu(x) dnu(y).
-    % The atomic nonconstant energy includes its complete spectral tail.
-    energy = sum(c)^2/3;
+    % Stolarsky: D_2^2(nu) = nu(S^2)^2 - 1/4 integral |x-y| dnu(x) dnu(y).
+    % The chordal energy carries the mass with a negative weight, the cap
+    % integral with a positive one, hence the two constants below. The atomic
+    % nonconstant energy includes its complete spectral tail.
+    energy = 8*pi/3*abs(fhat(1)+sum(c)/sqrt(4*pi))^2 + sum(c)^2/3;
     for first = 1:512:numel(c)
       id = first:min(first+511,numel(c));
       distances = sqrt((x.x(id)-x.x.').^2 + (x.y(id)-x.y.').^2 + ...
@@ -79,7 +79,7 @@ switch metric
       all(isfinite(degreeWeights(:))) && all(degreeWeights(:)>=0), ...
       'S2Fun:discrepancy:degreeWeights', ...
       'degreeWeights must contain L+1 finite nonnegative energy weights.');
-    energy = 0;
+    energy = degreeWeights(1)*abs(difference(1))^2;
     for l = 1:bw
       energy = energy + degreeWeights(l+1)*sum(abs(difference(l^2+1:(l+1)^2)).^2);
     end
@@ -99,6 +99,12 @@ assert(isscalar(f),'S2Fun:discrepancy:scalarFunction', ...
 mass = sum(f);
 assert(isreal(mass) && isfinite(mass),'S2Fun:discrepancy:mass', ...
   'The function integral must be real and finite.');
+end
+
+function mass = sampleMass(partner)
+% a sample represents the function it is compared with, hence carries its
+% integral - but a vanishing one represents nothing
+if isempty(partner) || partner == 0, mass = 1; else, mass = partner; end
 end
 
 function [h,x,c,exact] = representation(a,bw,mass,weightName,varargin)

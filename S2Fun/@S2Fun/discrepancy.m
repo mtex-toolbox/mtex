@@ -9,7 +9,7 @@ function [res,info] = discrepancy(sF,v,varargin)
 %   [d,info] = discrepancy(f,v,'metric','D_cap')
 %
 % Input
-%  f,g - scalar real @S2Fun with equal integrals
+%  f,g - scalar real @S2Fun
 %  v   - @vector3d, representing a weighted probability measure
 %
 % Output
@@ -24,7 +24,8 @@ function [res,info] = discrepancy(sF,v,varargin)
 %                  functions or point/point pairs). D_2 and D_cap retain
 %                  all atomic mass, including modes above this bandwidth.
 %  degreeWeights - L2 energy weights for degrees 0:L, numeric or function
-%                  handle of degree; default one. Degree zero is omitted.
+%                  handle of degree; default one. Degree zero weights the
+%                  difference in total mass.
 %  numCenters    - D_cap search centers, default 2049, plus coordinate axes
 %                  and point supports; use 'centers',vector3d to supply them
 %  numHeights    - D_cap uniform height grid size, default 257; all atomic
@@ -36,12 +37,18 @@ function [res,info] = discrepancy(sF,v,varargin)
 % Description
 % C(m,t) = {x : dot(m,x) >= t}. D_cap is sup |(mu-eta)(C(m,t))|.
 % D_2^2 integrates this squared difference against normalized center area
-% dS(m)/(4*pi) and height dt on [-1,1] (angular radius: sin(r) dr).
+% dS(m)/(4*pi) and height dt on [-1,1] (angular radius: sin(r) dr), which
+% Stolarsky's identity turns into
+%
+%   D_2^2(nu) = nu(S^2)^2 - 1/4 integral integral |x-y| dnu(x) dnu(y) .
+%
 % L2^2 sums squared area-orthonormal harmonic moments through bandwidth L.
-% Functions are projected to bandwidth; increase it to check convergence.
-% Equal original masses are required and preserved during projection.
-% A sample compared with f is scaled to integral(f); two samples each have
-% mass one. An antipodal point set represents half mass at each +/- point.
+% All three measure a difference in total mass as well, so nothing has to be
+% normalized and two densities that differ only in their integral have a
+% positive discrepancy. Functions keep their own integral through the
+% projection; increase the bandwidth to check convergence.
+% A sample compared with f is scaled to integral(f), and keeps mass one if
+% that integral vanishes; two samples each have mass one. An antipodal point set represents half mass at each +/- point.
 % An even function does not suppress odd moments of a directed sample.
 %
 % D_cap uses a finite search: it is a lower-bound approximation for the
@@ -52,7 +59,9 @@ function [res,info] = discrepancy(sF,v,varargin)
 % and harmonic coefficients for continuous terms.
 %
 % 'kernel' preserves the historical squared, truncated optimalSample
-% objective and its antipodal convention. Without that odd-mode projection,
+% objective and its antipodal convention. Its degree zero coefficient is
+% negative, so it drops the mass term and takes two functions of equal
+% integral only. Without the odd-mode projection,
 % it equals four times the squared D_2 of the harmonically projected
 % difference. It is NOT maximum cap discrepancy. 'squared' is redundant
 % for this legacy metric. See tests/S2Discrepancies.md for details.
@@ -89,9 +98,13 @@ if isa(v,'S2Fun')
   % Low-bandwidth quadrature of a nonharmonic function can change its mass.
   % Check the original integrals, before projecting to the comparison space.
   masses = [sum(sF),sum(v)];
-  assert(all(isfinite(masses)) && abs(diff(masses))<=1e-10*max(abs(masses)), ...
+  % the integral of a nonharmonic function comes from a quadrature grid, so
+  % the tolerance is the one of that grid, not of the arithmetic
+  assert(all(isfinite(masses)) && abs(diff(masses))<=1e-6*max(abs(masses)), ...
     'S2Fun:discrepancy:massMismatch', ...
-    'The functions must have equal integrals. Normalize probability densities to integral one.');
+    ['Dropping degree zero only measures a difference if the integrals ' ...
+    'agree, these are %g and %g - scale one of them, or use a metric ' ...
+    'that keeps the mass.'],masses(1),masses(2));
 end
 
 sF = S2FunHarmonic(sF,'bandwidth',bw);

@@ -138,7 +138,7 @@ function [ori,c] = optimalSample(f,n,varargin)
 %  minWeight  - discard orientations with a smaller weight (default = 0, i.e. keep all)
 %
 % See also
-% SO3Fun/discreteSample mlsq SO3RestrictedDistanceKernel
+% SO3Fun/discrepancy SO3Fun/discreteSample mlsq SO3RestrictedDistanceKernel
 
 % TODO: Symmetries and input is orientation
 % TODO: antipodal
@@ -185,21 +185,14 @@ warmUp = get_option(varargin,'warmUp',0);
 tolWeights = get_option(varargin,'tolWeights',1e-3/M);
 minWeight = get_option(varargin,'minWeight',0);
 
-% Define Restricted Distance Kernel
-psi = SO3RestrictedDistanceKernel(bw+1);
+% the kernel, and the weights its discrepancy puts on the Wigner coefficients
+[w,psi] = kernelWeights(bw);
 
 % get integral (mean) weight lambda
 lambda = sum(f);
 
 % starting weights - they have to form a probability distribution, see above
 c = sampleWeights(M,varargin{:});
-
-% J is the squared euclidean norm of the Wigner coefficients of mu - f,
-% weighted by w.^2 = 8*pi^2*A_n/(2n+1) - degree 0 is dropped, it does not contribute
-w = zeros(deg2dim(bw+1),1);
-for l = 1:bw
-  w(deg2dim(l)+1:deg2dim(l+1)) = sqrt( 8*pi^2 * psi.A(l+1)/(2*l+1) );
-end
 
 % right hand side of the linear system Psi*c = I solved in the weight step
 I = w .* ((sqrt(8)*pi) * f.fhat);

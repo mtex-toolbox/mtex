@@ -9,12 +9,15 @@ function [res,info] = discrepancy(v,w,varargin)
 %   d = discrepancy(v,f,'weights',c,'metric','D_2')
 %
 % Point weights are nonnegative and normalized independently to mass one.
-% A point set paired with a function is scaled to the function's integral.
+% A point set paired with a function is scaled to the function's integral,
+% and keeps mass one if that integral vanishes.
 % Antipodal points split mass equally between both signs. D_2 is the
 % standard root cap L2 discrepancy, evaluated without truncating point
-% measures. L2 is the root bandlimited norm. Use 'squared' for their squares.
+% measures and counting a difference in total mass. L2 is the root
+% bandlimited norm. Use 'squared' for their squares.
 % D_cap is a finite cap-search approximation; info.isExact is false.
-% 'kernel' is the historical squared truncated optimization objective.
+% 'kernel' is the historical squared truncated optimization objective and
+% takes two functions of equal integral only.
 % See S2Fun/discrepancy for all options and normalization conventions.
 %
 % See also
