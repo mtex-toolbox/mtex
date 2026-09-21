@@ -3,13 +3,19 @@ classdef dislocationSystem
 %
 % Syntax
 %   dS = dislocationSystem(b,l)
+%   dS = dislocationSystem(b,l,u)
+%   dS = dislocationSystem(b,l,'nu',nu)
 %   dS = dislocationSystem(sS)
+%   dS = dislocationSystem(sS,'nu',nu)
 %
 % Input
-%  b  - @Miller Burgers vector
-%  l  - @Miller line vector
-%  sS - @slipSystem
-%  pr - poisson ratio
+%  b   - @Miller Burgers vector
+%  l   - @Miller line vector
+%  sS  - @slipSystem
+%  u   - energy
+%
+% Options
+%  nu  - Poisson ratio (default: 0.3)
 %
 % Class Properties
 %  b  - @Miller Burgers vector
@@ -18,6 +24,11 @@ classdef dislocationSystem
 %  CS - @crystalSymmetry
 %  isEdge  - is edge dislocation
 %  isScrew - is screw dislocation
+%
+% References
+%  J.P. Hirth, J. Lothe, Theory of Dislocations, Wiley, 1982
+%  W. Pantleon, Resolving the geometrically necessary dislocation content by
+%    conventional electron backscattering diffraction, Scripta Materialia, 2008
 %
 % See also
 % DislocationSystems SlipSystems GND
@@ -35,12 +46,9 @@ classdef dislocationSystem
   end
   
   methods
-    function dS = dislocationSystem(sS,l,u)
+    function dS = dislocationSystem(sS,varargin)
             
       if nargin == 0, return; end
-    
-      % adjust length burger vector edge dislocation a/2
-      % for screw dislocations ??
       
       if isa(sS,'slipSystem')
         
@@ -67,24 +75,41 @@ classdef dislocationSystem
 
         dS.b = [dS.b(:);b(:)];
         dS.l = [dS.l(:);b(:)];
-        
-        % line energy
-        dS.u = 1 + dS.isEdge;
+        opt = varargin;
         
       else
         
-        b = sS;
-        omega = angle(b,l,'noSymmetry');
+        l = varargin{1};
+        omega = angle(sS,l,'noSymmetry');
         assert(all(omega > pi/2-1e-5 | omega<1e-5),...
-          'line vector and burgers vector should be either be orthogonal! or identical')
+          'line vector and burgers vector should be either orthogonal or identical')
       
         dS.b = sS;
         l.antipodal = true;
         dS.l = l;
-        if nargin < 3, u = 1; end
-        if numel(u) ~= length(dS.b), u = repmat(u,size(dS.b)); end
-        dS.u = u;
+        opt = varargin(2:end);
         
+      end
+      
+      % line energy based on Frank's rule (u ~ b^2) and isotropic elasticity
+      % (Hirth & Lothe 1982, Pantleon 2008)
+      nu = get_option(opt,'nu',0.3);
+      nu = get_option(opt,'pr',nu);
+      beta = angle(dS.b,dS.l,'noSymmetry');
+      % u = b^2 for edge (beta = pi/2) and b^2*(1-nu) for screw (beta = 0)
+      dS.u = dS.b.norm.^2 .* (1 - nu .* cos(beta).^2);
+      
+      if ~isempty(opt) && isnumeric(opt{1})
+        if isa(sS,'slipSystem') && isscalar(opt{1})
+          nu = opt{1};
+          dS.u = dS.b.norm.^2 .* (1 - nu .* cos(beta).^2);
+        else
+          u = opt{1};
+          if numel(u) ~= length(dS.b), u = repmat(u,size(dS.b)); end
+          dS.u = u;
+        end
+      elseif check_option(opt,'energy')
+        dS.u = get_option(opt,'energy');
       end
       
     end
@@ -169,11 +194,11 @@ classdef dislocationSystem
   
   methods (Static = true)
     function dS = fcc(cs,varargin)
-      dS = dislocationSystem(symmetrise(slipSystem.fcc(cs),'antipodal'));
+      dS = dislocationSystem(symmetrise(slipSystem.fcc(cs),'antipodal'),varargin{:});
     end
     
     function dS = bcc(cs,varargin)
-      dS = dislocationSystem(symmetrise(slipSystem.bcc(cs),'antipodal'));
+      dS = dislocationSystem(symmetrise(slipSystem.bcc(cs),'antipodal'),varargin{:});
     end
     
     function dS = hcp(varargin) %#ok<STOUT>
