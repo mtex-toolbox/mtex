@@ -147,17 +147,6 @@ if check_option(varargin,'createPlan')
   return
 end
 
-% The Wigner transform writes the Fourier coefficients straight into the nfft
-% lattice (flag 2^5), using L2-normalized Wigner-D functions (2^0), the
-% symmetries (2^4) and, if SO3F is real valued, the properties (*) and (**)
-flags = 2^0+isReal*2^2+2^4+2^5;
-kk = k1(ind1(1)) + (0:sz(1)-1)'*rZ(1);
-ll = reshape(k3(ind3(1)) + (0:sz(3)-1)*rZ(2),1,1,[]);
-% exact i^(k-l) and the sign of the symmetry ghat(k,-j,l) = (-1)^(k+l) ghat(k,j,l)
-ipow = [1;1i;-1;-1i];
-phase = ipow(mod(kk-ll,4)+1);
-pm = 1-2*mod(kk+ll,2);
-
 % the kept frequencies start at index 0, which shifts them by s against the
 % centered frequencies of the nfft
 shift = exp(-2*pi*1i*(s1*abg(1,:)+s3*abg(3,:))).';
@@ -165,10 +154,8 @@ shift = exp(-2*pi*1i*(s1*abg(1,:)+s3*abg(3,:))).';
 f = zeros([length(rot) size(SO3F)]);
 for k = 1:length(SO3F)
 
-  g = wignerTrafomex(N,double(SO3F.fhat(1:deg2dim(N+1),k)),flags,[1,rZ(1),1,rZ(2)]);
-  if isReal, g(:,:,1-ll(1)/rZ(2)) = g(:,:,1-ll(1)/rZ(2))/2; end
-  g(:,N+2:end,:) = phase .* g(:,N+2:end,:);
-  g(:,2:N+1,:) = pm .* flip(g(:,N+3:end,:),2);
+  % the Fourier coefficients straight on the nfft lattice
+  g = foldedWignerTrafo(SO3F.fhat(:,k),N,isReal,rZ);
 
   % set Fourier coefficients
   nfftmex('set_f_hat',plan,g(:));

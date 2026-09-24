@@ -65,37 +65,17 @@ isReal = SO3F.isReal;
 H = [2,4,2]*rot.bandwidth + [2,0,2];
 
 
-% 2) Transform harmonic/Wigner coefficients to Fourier coefficients
-% create ghat -> k × j × l
-% flags: 2^0 -> use L_2-normalized Wigner-D functions
-%        2^2 -> fhat are the Fourier coefficients of a real valued function
-%        2^4 -> use right and left symmetry
-if isReal
-  flags = 2^0+2^2+2^4;
-else
-  flags = 2^0+2^4;
-end
-ghat = wignerTrafo(SO3F,flags,'bandwidth',N);
-
-
-% 4) use rotational symmetries around Z-axis to speed up 
-% (cut zeros in ghat)
+% 2) Transform harmonic/Wigner coefficients to Fourier coefficients on the
+% lattice of the rotational symmetries around the Z-axis, ghat -> k x j x l
 SRightZ = SO3F.SRight.multiplicityZ;
 SLeftZ = SO3F.SLeft.multiplicityZ;
 H(1) = H(1) / SRightZ;
 H(3) = H(3) / SLeftZ;
-if SLeftZ>1 || SRightZ>1
-  ind1 =  [-flip(SRightZ:SRightZ:N),(0:SRightZ:N)] + (N+1);
-  if isReal
-    ind3 =  (0:SLeftZ:N)+1;
-  else
-    ind3 =  [-flip(SLeftZ:SLeftZ:N),(0:SLeftZ:N)] + (N+1);
-  end
-  ghat = ghat(ind1,:,ind3);
-end
+[ghat,k,l] = foldedWignerTrafo(SO3F.fhat,N,isReal,[SRightZ,SLeftZ]);
+ghat = ghat(abs(k)<=N,2:end,l>=-N*(1-isReal) & l<=N);
 
 
-% 5) For small H we go through a smaller FFT(H) several times
+% 3) For small H we go through a smaller FFT(H) several times
 % Hence we reduce the size of the fourier coefficient matrix ghat by adding 
 % the coefficients with same complex exponentials.
 sz = size(ghat,1,2,3);
@@ -110,8 +90,10 @@ if any(H<sz)
 end
 
 
-% 6) Do FFT
-f = fftn(ghat,H);
+% 4) Do FFT
+% the FFTs in k and l run only on the 2N+1 planes of j that hold data
+f = fft(fft(ghat,H(1),1),H(3),3);
+f = fft(f,H(2),2);
 % cut beta to [0,pi]
 f = f(:,1:H(2)/2+1,:);
 % shift the summation of fft from [-|_N/r_|:|_N/r_|]x[-N:N]x[-|_N/s_|:|_N/s_|] to

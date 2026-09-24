@@ -30,6 +30,11 @@ function sF = quadrature(f, varargin)
 % Options
 %  bandwidth - minimal degree of the spherical harmonic (default: 128)
 %
+% Flags
+%  ClenshawCurtis - quadrature grid (default)
+%  GaussLegendre  - quadrature grid
+%  optimal        - precomputed quadrature design, see @quadratureS2Grid
+%
 % See also
 % S2FunHarmonic/approximate S2FunHarmonic
 
@@ -58,6 +63,9 @@ bw = get_option(varargin,'bandwidth', 128);
 if check_option(varargin,'S2Grid')
   S2G = get_option(varargin,'S2Grid');
 else
+  % Clenshaw Curtis unless another scheme is asked for: the grid is exact up
+  % to the bandwidth and its adjoint is a plain FFT
+  if ~check_option(varargin,{'GaussLegendre','optimal','gauss'}), varargin{end+1} = 'ClenshawCurtis'; end
   S2G = quadratureS2Grid(bw,varargin{:});
 end
 
