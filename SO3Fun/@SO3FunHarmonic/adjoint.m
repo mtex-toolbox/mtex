@@ -226,7 +226,7 @@ if folded
 
 end
 % TODO: Probably use limit 1e-5 because this is precision m of nfft
-isReal = isalmostreal(values,'precision',10,'norm',1);
+isReal = isreal(values) || isalmostreal(values,'precision',10,'norm',1);
 if useNFFT
 
   % for real values the Wigner transform reads only the orders k <= 1 of the
@@ -313,14 +313,17 @@ if isCC
 
   % The grid covers only the fundamental region of the Z-axis symmetries in
   % the first and third Euler angle, so inverse FFTs of its length give
-  % exactly the multiples of the symmetries, beta takes the length 4N.
-  x = W.* reshape(values,[size(W),len]);
-  n = size(x,[1 3]);
-  x = ifft(ifft(ifft(x,[],1),4*N,2),[],3) * (n(1)*4*N*n(2));
+  % exactly the multiples of the symmetries, beta takes the length 4N. Every
+  % FFT keeps only the orders the Wigner transform reads - of a real valued
+  % function no k > 1 - and the one in beta comes last.
+  n = size(W,[1 3]);
   b1 = mod((-(N+1)+ind1-1)/rZ(1),n(1)) + 1;
+  if isReal, b1 = b1(1:numel(foldZ(-(N+1):1,rZ(1),0))); end
   b3 = mod((-(N+1)+ind3-1)/rZ(2),n(2)) + 1;
-  ghat = zeros([szG,len]);
-  ghat(1:numel(ind1),2:end,1:numel(ind3),:) = x(b1,mod(-N:N,4*N)+1,b3,:);
+  x = ifft((n(1)*4*N*n(2)) * W .* reshape(values,[size(W),len]),[],1);
+  x = ifft(x(b1,:,:,:),[],3);
+  x = ifft(x(:,:,b3,:),4*N,2);
+  ghat = x(:,mod(-N:N,4*N)+1,:,:);
 
 elseif check_option(varargin,'directComputation')
   % TODO: use symmetries
@@ -350,8 +353,10 @@ for i=1:len
     nfftmex('set_f', plan, double(W(:) .* values(:,i)) .* shift);
     nfftmex('adjoint', plan);
     g = reshape(nfftmex('get_f_hat', plan),szN);
-  else
+  elseif len > 1
     g = ghat(:,:,:,i);
+  else
+    g = ghat;
   end
   fhat(:,i) = wignerTrafoAdjointmex(N,double(g),flags+folded*2^5,symLattice);
   pC.show(i);

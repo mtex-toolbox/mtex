@@ -48,7 +48,9 @@
  *             2^3 -> antipodal
  *             2^4 -> use right and left symmetry
  *             2^5 -> ghat on the nfft lattice of SO3FunHarmonic/adjoint, whose
- *                    first dimension may end early, the missing orders are zero
+ *                    first and third dimension may end early, the missing
+ *                    orders being zero, and whose second may leave out the
+ *                    zero j = -N-1
  *  sym_axis - vector [SRight-Y,SRight-Z,SLeft-Y,SLeft-Z] where SRight-Y,SLeft-Y are in {1,2,3} and 
  *             SRight-Z,SLeft-Z are in {1,2,3,4,6} and describes the countability of the symmetry axis,
  *             Y = 2 or 3 is a two fold axis perpendicular to Z along y or x, i.e.
@@ -89,9 +91,9 @@ static void order_bounds(int n, int rZ, int halve, int *min, int *max, int *step
 }
 
 // Where ghat(k,j,l) is stored: at base[(k-k0)/rk + (j+j0)*sj + (l-l0)/rl*sl]
-// for the multiples k-k0 of rk up to kmax and l-l0 of rl, all other entries
-// are zero
-typedef struct { int k0, rk, kmax, j0, l0, rl; size_t sj, sl; } lattice;
+// for the multiples k-k0 of rk up to kmax and l-l0 of rl up to lmax, all
+// other entries are zero
+typedef struct { int k0, rk, kmax, j0, l0, rl, lmax; size_t sj, sl; } lattice;
 
 // The computational routine
 //   fhat(n,k,l) = sum_{j=0}^n H(k,j,l) d^n(k,-j) d^n(l,-j),
@@ -132,7 +134,7 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, const mxComplexDou
     for (int l = 1-n1; l < n1; l++)
       for (int j = 0; j < n1; j++)
       {
-        if ((l-G.l0) % G.rl) continue;
+        if ((l-G.l0) % G.rl || l > G.lmax) continue;
         const mxComplexDouble *gp = ghat + (j+G.j0)*G.sj + (l-G.l0)/G.rl*G.sl - G.k0;
         const mxComplexDouble *gm = ghat + (G.j0-j)*G.sj + (l-G.l0)/G.rl*G.sl - G.k0;
         const int nmin = (j > abs(l)) ? j : abs(l);
@@ -326,8 +328,12 @@ void mexFunction( int nlhs, mxArray *plhs[],
       G.k0 = -rk*((N+1)/rk); G.l0 = -rl*((N+1)/rl);
       const int nk = N/rk - G.k0/rk + 1, nl = N/rl - G.l0/rl + 1;
       len[0] = nk + nk % 2; len[1] = 2*N+2; len[2] = nl + nl % 2;
-      if (mxGetM(prhs[1]) < len[0]) len[0] = mxGetM(prhs[1]);
-      G.rk = rk; G.rl = rl; G.j0 = N+1;
+      const mwSize *sz = mxGetDimensions(prhs[1]);
+      const mwSize sz2 = (mxGetNumberOfDimensions(prhs[1]) > 2) ? sz[2] : 1;
+      if (sz[0] < len[0]) len[0] = sz[0];
+      if (sz[1] == 2*N+1) len[1] = 2*N+1;
+      if (sz2 < len[2]) len[2] = sz2;
+      G.rk = rk; G.rl = rl; G.j0 = len[1]-N-1;
     }
     else
     {
@@ -335,6 +341,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
       G.k0 = G.l0 = -N; G.rk = G.rl = 1; G.j0 = N;
     }
     G.kmax = G.k0 + ((int)len[0]-1)*G.rk;
+    G.lmax = G.l0 + ((int)len[2]-1)*G.rl;
     G.sj = len[0]; G.sl = len[0]*len[1];
     if( mxGetNumberOfElements(prhs[1]) != len[0]*len[1]*len[2] || mxGetM(prhs[1]) != len[0] )
       mexErrMsgIdAndTxt( "wignerTrafoAdjointmex:falseDim","Second input argument coefficient array must have size %dx%dx%d.",

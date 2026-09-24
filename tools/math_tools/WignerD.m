@@ -184,6 +184,7 @@ C = zeros(Nc,length(ori));
 
 [alpha,beta,gamma] = Euler(ori,'abg');
 [ubeta,~,ub] = unique(round(beta*1e12)*1e-12);
+dHalf = wignerdHalfPi(max(L));
 
 for l=1:numel(L)
   m = -L(l):L(l);
@@ -195,9 +196,8 @@ for l=1:numel(L)
   Jalpha(:,sign) = -Jalpha(:,sign);
   Jgamma(sign,:) = -Jgamma(sign,:);
 
-  v = sqrt(cumsum((L(l):-1:1)./2));
-  v = [v fliplr(v)];
-  Jy_l = diag(v,1)+diag(-v,-1);
+  D = dHalf{L(l)+1};
+  sgn = (-1).^floor((m.'-m)/2);
 
   ndx = cs(l)+1:cs(l+1);
   if do_conv
@@ -212,7 +212,8 @@ for l=1:numel(L)
   end
 
   for k=1:numel(ubeta)
-    Jbeta = expm(-ubeta(k)*Jy_l);
+    % the Wigner-d matrix from the one at pi/2, see wignerdHalfPi
+    Jbeta = sgn .* (D.' * ((cos(m.'*ubeta(k))+sin(m.'*ubeta(k))) .* D));
 
     % convolve, see also SO3FunHarmonic\conv
     for kk = find(ub==k).'

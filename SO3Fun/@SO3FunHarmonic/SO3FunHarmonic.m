@@ -101,9 +101,11 @@ methods
       SO3F = SO3F.symmetrise;
     end
     
-    % truncate zeros
-    A = reshape(SO3F.power,size(SO3F.power,1),numel(SO3F));
-    SO3F.bandwidth = max([0,find(sum(A,2) > 1e-10,1,'last')-1]);
+    % truncate the zero degrees at the end
+    bw = SO3F.bandwidth;
+    f = reshape(SO3F.fhat,size(SO3F.fhat,1),[]);
+    while bw > 0 && sum(vecnorm(f(deg2dim(bw)+1:deg2dim(bw+1),:),2,1)) <= 1e-10, bw = bw-1; end
+    SO3F.bandwidth = bw;
 
   end
      
@@ -122,7 +124,7 @@ methods
      
     if newLength > oldLength % add some zeros
       F.fhat(oldLength+1:newLength,:)=0;
-    else % delete zeros
+    elseif newLength < oldLength % delete zeros
       F.fhat = F.fhat(1:newLength,:);
       F = reshape(F,s);
     end
@@ -170,26 +172,19 @@ methods
       out = isalmostreal(F.fhat,'precision',4);
       return
     end
+    % test whether fhat is symmetric fhat_nkl = conj(fhat_n-k-l), by
+    % |f - conj(f(ind))|^2 = 2|f|^2 - 2 real(f.' f(ind))
     F=reshape(F,numel(F));
-    ind=zeros(deg2dim(F.bandwidth+1),1);
-    for l = 0:F.bandwidth
-      ind(deg2dim(l)+1:deg2dim(l+1))=deg2dim(l+1):-1:deg2dim(l)+1;
-    end
-    dd = sum(abs(F.fhat-conj(F.fhat(ind,:))).^2);
     nF = norm(F)';
+    dd = max(0,2*nF.^2 - 2*real(sum(F.fhat .* F.fhat(reversedDegrees(F.bandwidth),:),1)));
     out = all(sqrt(dd(nF>0)) ./ nF((nF>0)) <1e-4);
-    % test whether fhat is symmetric fhat_nkl = conj(fhat_n-k-l)
   end
   
   function F = set.isReal(F,value)
     if ~value, return; end
     s=size(F);
     F=reshape(F,prod(s));
-    ind=zeros(deg2dim(F.bandwidth+1),1);
-    for l = 0:F.bandwidth
-      ind(deg2dim(l)+1:deg2dim(l+1))=deg2dim(l+1):-1:deg2dim(l)+1;
-    end
-    F.fhat = 0.5*(F.fhat+conj(F.fhat(ind,:)));
+    F.fhat = 0.5*(F.fhat+conj(F.fhat(reversedDegrees(F.bandwidth),:)));
     F=reshape(F,s);
   end
   
@@ -219,4 +214,11 @@ methods (Static = true)
 end
 
 
+end
+
+
+function ind = reversedDegrees(L)
+% the index of fhat_n^{-k,-l} for every fhat_n^{k,l} up to degree L
+d = (0:L+1).*(4*(0:L+1).^2-1)/3;
+ind = repelem(d(1:end-1)+d(2:end)+1,diff(d)).' - (1:d(end)).';
 end
