@@ -11,6 +11,7 @@ function fhat = WignerD(cs,varargin)
 % Options
 %  bandwidth - harmonic degree of series expansion
 %  degree    - number or array, single degree reshapes result
+%  rotations - average these rotations instead of the proper group
 %
 % Flags
 %  quadrature - use quadrature (nfsoft) based method
@@ -31,8 +32,14 @@ L = get_option(varargin,'bandwidth',getMTEXpref('maxSO3Bandwidth'));
 l = get_option(varargin,{'order','degree'},0:L);
 L = max(l);
 
+% the rotations whose Wigner-D matrices are averaged, by default those of
+% the proper group
+rot = get_option(varargin,'rotations',[]);
+own = isempty(rot);
+if own, rot = cs.properGroup.rot; end
+
 % check storage
-if isfield(cs.opt,'fhat') && length(cs.opt.fhat)>=deg2dim(L+1)
+if own && isfield(cs.opt,'fhat') && length(cs.opt.fhat)>=deg2dim(L+1)
   fhat = degrees(cs.opt.fhat,l);
   return
 
@@ -58,11 +65,11 @@ else % direct computation
   % symmetry objects are created anew all the time, so the sums are also
   % stored by the rotations of the group
   if isempty(store), store = containers.Map; end
-  key = groupKey(CS);
+  key = groupKey(rot);
   if isKey(store,key) && length(store(key)) >= deg2dim(L+1)
     fhat = store(key);
   else
-    fhat = wignerDmatrixSum(CS.rot,0:L)./numSym(CS);
+    fhat = wignerDmatrixSum(rot,0:L)./length(rot);
     fhat(abs(fhat)<1e-12) = 0;
     fhat = sparse(fhat);
     if store.Count >= 32, remove(store,keys(store)); end
@@ -70,7 +77,7 @@ else % direct computation
   end
 
   % write to storage
-  cs.opt.fhat = fhat;
+  if own, cs.opt.fhat = fhat; end
   fhat = degrees(fhat,l);
 
 end
@@ -186,11 +193,11 @@ end
 end
 
 
-function key = groupKey(CS)
-% the rotations of a group as a string, independent of their order and of
-% the sign of the quaternions
+function key = groupKey(rot)
+% the rotations as a string, independent of their order and of the sign of
+% the quaternions
 
-Q = [CS.rot.a(:) CS.rot.b(:) CS.rot.c(:) CS.rot.d(:)];
+Q = [rot.a(:) rot.b(:) rot.c(:) rot.d(:)];
 [~,j] = max(abs(Q) > 1e-9,[],2);
 Q = Q .* sign(Q(sub2ind(size(Q),(1:size(Q,1))',j)));
 key = sprintf('%d,',sortrows(round(Q*1e9)));

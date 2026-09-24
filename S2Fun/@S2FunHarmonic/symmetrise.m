@@ -65,28 +65,31 @@ end
 % extract symmetry
 sym = getClass(varargin,'symmetry');
 
-% maybe we can set antipodal and save some time
-if sym.isLaue
-  symX = sym.properSubGroup;
-  varargin = [varargin,'antipodal'];
-else
-  symX = sym;
-end
-
 % maybe there is nothing to do
-if sF.bandwidth == 0 || numSym(symX) == 1
+if sF.bandwidth == 0 || numSym(sym) == 1
   sFs = S2FunHarmonicSym(sF.fhat, sym,'skipSymmetrise');
   return;
 end
 
-% define a symmetrised evaluation function
-f = @(v) sF.eval(v);
-fsym = @(v) mean(reshape(f(symX * v),numSym(symX),[]));
+% The mean of f(g v) over the group is, degree by degree, the projection
+% P_l of the rotations R_g applied to the coefficients. An improper element
+% acts as v -> -R_g v and contributes (-1)^l, so in odd degrees the proper
+% elements H count once and all rotation parts K once negatively:
+%   P_l = P_l(K) for even l,  P_l = 2|H|/|G| P_l(H) - P_l(K) for odd l
+R = rotation(sym.rot);
+isImproper = R.i(:);
+R.i = false(size(R));
+L = sF.bandwidth;
+K = degreeBlocks(sym.WignerD('bandwidth',L,'rotations',R(:)),L);
+if any(isImproper)
+  H = degreeBlocks(sym.WignerD('bandwidth',L,'rotations',R(~isImproper)),L);
+end
 
-% compute Fourier coefficients by quadrature
-sFsym = S2FunHarmonic.quadrature(fsym, 'bandwidth', sF.bandwidth,varargin{:});
 sFs = sF;
-sFs.fhat = sFsym.fhat;
-
+for l = 0:L
+  P = K{l+1};
+  if any(isImproper) && mod(l,2), P = 2*mean(~isImproper) * H{l+1} - P; end
+  sFs.fhat(l^2+1:(l+1)^2,:) = (P./sqrt(2*l+1)) * sF.fhat(l^2+1:(l+1)^2,:);
+end
 
 end

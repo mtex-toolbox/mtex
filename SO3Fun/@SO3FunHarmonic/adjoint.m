@@ -225,7 +225,18 @@ if folded
   szG = [2*ceil(numel(ind1)/2),NN,2*ceil(numel(ind3)/2)];
 
 end
+% TODO: Probably use limit 1e-5 because this is precision m of nfft
+isReal = isalmostreal(values,'precision',10,'norm',1);
 if useNFFT
+
+  % for real values the Wigner transform reads only the orders k <= 1 of the
+  % first dimension, which the nfft then computes alone - unless the plan is
+  % kept for later values
+  szN = szG;
+  if isReal && ~check_option(varargin,{'createPlan','keepPlan'})
+    [ind1n,s3] = foldZ(-(N+1):1,rZ(1),0);
+    szN(1) = 2*ceil(numel(ind1n)/2);
+  end
 
   % the nfft gets the smaller lattice from stretched nodes, and the kept
   % frequencies start at index 0, which shifts them by s against the
@@ -249,10 +260,10 @@ if isempty(plan) && useNFFT
     fftw_flags = int8(64);
     nfft_flags = 1+2^12+2^4+2^10+2^13; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT | NFFT_PRUNED_FFT
   % window cutoff m and oversampling sigma - see SO3FunHarmonic/eval
-    [m,sigma] = nfftParameters(length(rot),szG,varargin{:});
-    fftw_size = fftLength(sigma*szG);
+    [m,sigma] = nfftParameters(length(rot),szN,varargin{:});
+    fftw_size = fftLength(sigma*szN);
   % initialize nfft plan
-  plan = nfftmex('init_guru',{3,szG(3),szG(2),szG(1),length(rot),fftw_size(3),fftw_size(2),fftw_size(1),m,nfft_flags,fftw_flags});
+  plan = nfftmex('init_guru',{3,szN(3),szN(2),szN(1),length(rot),fftw_size(3),fftw_size(2),fftw_size(1),m,nfft_flags,fftw_flags});
 
   % set rotations as nodes in plan
   nfftmex('set_x',plan,nodes);
@@ -306,7 +317,7 @@ else
   for i=1:len
     nfftmex('set_f', plan, double(W(:) .* values(:,i)) .* shift);
     nfftmex('adjoint', plan);
-    ghat(:,:,:,i) = reshape(nfftmex('get_f_hat', plan),szG);
+    ghat(1:szN(1),:,:,i) = reshape(nfftmex('get_f_hat', plan),szN);
   end
 
 end
@@ -329,8 +340,7 @@ if SLeft.id==0 || SRight.id==0 % do not use symmetry properties, if symmetries a
 else
   flags = 2^0+2^4;  % use L2-normalized Wigner-D functions and symmetry properties
 end
-% TODO: Probably use limit 1e-5 because this is precision m of nfft
-if isalmostreal(values,'precision',10,'norm',1) % real valued
+if isReal % real valued
   flags = flags+2^2;
 end
 sym = [min(SRight.multiplicityPerpZ,2),SRight.multiplicityZ,...

@@ -17,8 +17,8 @@ s = max([s1(2:end),ones(1,l);s2(2:end),ones(1,-l)]);
 
 % compute Fourier coefficients of the convolution degree by degree
 d = (0:L+1).*(4*(0:L+1).^2-1)/3;   % deg2dim(0:L+1)
-A1 = degreeBlocks(fhat1,L,d);
-A2 = degreeBlocks(fhat2,L,d);
+A1 = degreeBlocks(fhat1,L);
+A2 = degreeBlocks(fhat2,L);
 fhat = zeros([d(end),s]);
 for l = 0:L
   ind = d(l+1)+1:d(l+2);
@@ -31,30 +31,3 @@ end
 
 end
 
-
-function A = degreeBlocks(x,L,d)
-% the (2l+1) x (2l+1) x ... blocks of the degrees l = 0..L; the entries of a
-% sparse vector are sorted into their blocks at once
-
-A = cell(1,L+1);
-if issparse(x) && size(x,2) == 1
-  [i,~,v] = find(x(1:d(end)));
-  i = i(:); v = v(:); d = d(:);
-  l = discretize(i,d+1) - 1;
-  p = i - d(l+1) - 1;
-  for lk = 0:L, A{lk+1} = sparse(2*lk+1,2*lk+1); end
-  if isempty(l), return, end
-  edges = [0; find(diff(l)); numel(l)];
-  for k = 1:numel(edges)-1
-    sel = edges(k)+1:edges(k+1);
-    n = 2*l(sel(1))+1;
-    A{l(sel(1))+1} = sparse(mod(p(sel),n)+1,floor(p(sel)/n)+1,v(sel),n,n);
-  end
-else
-  sz = size(x);
-  for lk = 0:L
-    A{lk+1} = reshape(x(d(lk+1)+1:d(lk+2),:),[2*lk+1,2*lk+1,sz(2:end)]);
-  end
-end
-
-end
