@@ -72,14 +72,9 @@ end
 % extract bandwidth
 N = min(sF.bandwidth,get_option(varargin,'bandwidth',inf));
 
-% theta,rho
-[theta,rho] = polar(v);
-tr = [theta,rho].'./(2*pi);
-
-% a non finite node makes nfft write outside its buffers and crash MATLAB, so
-% replace it by a valid one and set its function value to NaN afterwards
-isBadNode = any(~isfinite(tr),1);
-tr(:,isBadNode) = 0;
+% theta, rho / (2 pi); a non finite node makes nfft write outside its buffers
+% and crash MATLAB, so it becomes 0 and its function value NaN afterwards
+[tr,isBadNode,shift] = nfftNodesmex(double(v.x),double(v.y),double(v.z),-ceil(N/2));
 
 % create plan
 if check_option(varargin,'keepPlan')
@@ -92,13 +87,16 @@ end
 % for later functions has to take complex ones
 realF = sF.isReal;
 isReal = realF && ~check_option(varargin,{'createPlan','keepPlan'});
+% a real valued function takes the real nfft of its orders k2 >= 0
+direct = check_option(varargin,'direct');
+realN = isReal && ~direct;
 
 if isempty(plan)
 
   % nfft size
     N1 = 2*N+2;
     N2 = 2*N+2;
-    if isReal
+    if isReal && direct
       N2 = N+1+mod(N+1,2); 
     end
   % {FFTW_ESTIMATE} or 64 - Specifies that, instead of actual measurements of different algorithms, 
@@ -117,14 +115,14 @@ if isempty(plan)
     fftw_size1 = fftLength(sigma*N1);
     fftw_size2 = fftLength(sigma*N2);
   % initialize nfft plan
-  if check_option(varargin,'direct')
+  if direct
     plan = nfftmex('init_2d',N1,N2,M);
   else
-    plan = nfftmex('init_guru',{2,N1,N2,M,fftw_size1,fftw_size2,m,nfft_flags,fftw_flags});
+    plan = nfftmex('init_guru',{2,N1,N2,M,fftw_size1,fftw_size2,m,nfft_flags+realN*2^14,fftw_flags});
   end
   
   % set rotations as nodes in plan
-  nfftmex('set_x',plan,double(tr));
+  nfftmex('set_x',plan,tr);
 
   % node-dependent precomputation
   nfftmex('precompute_psi',plan);
@@ -152,10 +150,12 @@ for k = 1:length(sF)
 
   % coefficient transform
   ghat = sphericalHarmonicTrafo(sF.subSet(k),flags,'bandwidth',N); % ghat ist genau gleich
+  % the orders k2 >= 0 of a real valued function, the first row is k2 = -1 for even N
+  if realN, ghat = ghat(1+mod(N+1,2):end,:); end
   % set Fourier coefficients
   nfftmex('set_f_hat',plan,double(ghat(:)));
 
-  if check_option(varargin,'direct')
+  if direct
     % direct Fourier transform
     nfftmex('trafo_direct',plan);
   else
@@ -164,9 +164,11 @@ for k = 1:length(sF)
   end
 
   % get function values from plan
-  if isReal
+  if realN
+    f(:,k) = nfftmex('get_f',plan);
+  elseif isReal
     % use (**) and shift summation in 2nd index
-    f(:,k) = 2*real( exp(-1i*rho*ceil((N)/2))  .* (nfftmex('get_f',plan)) );
+    f(:,k) = 2*real(shift .* nfftmex('get_f',plan));
   else
     f(:,k) = nfftmex('get_f',plan);
   end

@@ -118,6 +118,9 @@ else
   plan = [];
 end
 
+% real values take the real nfft, which gives the orders k2 >= 0
+realN = isreal(y) && isreal(W) && ~check_option(varargin,{'createPlan','keepPlan'});
+
 % initialize nfft plan
 if isempty(plan) && ~(isa(v,'quadratureS2Grid') && strcmp(v.scheme,'ClenshawCurtis')) && ~check_option(varargin,'directComputation')
 
@@ -129,18 +132,20 @@ if isempty(plan) && ~(isa(v,'quadratureS2Grid') && strcmp(v.scheme,'ClenshawCurt
   % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
   %                         measuring their execution time. This can take some time (often a few seconds).
     fftw_flags = int8(64);
-    nfft_flags = 1+2^12+2^4+2^10+2^13; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT | NFFT_PRUNED_FFT
+    nfft_flags = 1+2^12+2^10+2^13; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | FFTW_INIT | NFFT_PRUNED_FFT
+    % PRE_PSI pays only for a plan that is kept for later functions
+    if check_option(varargin,{'createPlan','keepPlan'}), nfft_flags = nfft_flags + 2^4; end
   % nfft cutoff and oversampling, the pair S2FunHarmonic/eval uses
     m = get_option(varargin,'cutoffParameter',6);
     sigma = get_option(varargin,'oversampling',2);
     fftw_size = fftLength(sigma*NN);
   % initialize nfft plan
-  plan = nfftmex('init_guru',{2,NN,NN,length(v),fftw_size,fftw_size,m,nfft_flags,fftw_flags});
+  plan = nfftmex('init_guru',{2,NN,NN,length(v),fftw_size,fftw_size,m,nfft_flags+realN*2^14,fftw_flags});
 
-  % set vector3d as nodes in plan
-  [theta,rho] = polar(v(:));
-  tr = [theta,rho].'./(2*pi);
-  nfftmex('set_x',plan,double(tr));
+  % set vector3d as nodes in plan, a non finite one as 0 with value 0
+  [tr,isBadNode] = nfftNodesmex(double(v.x),double(v.y),double(v.z));
+  y(isBadNode,:) = 0;
+  nfftmex('set_x',plan,tr);
 
   % node-dependent precomputation
   nfftmex('precompute_psi',plan);
@@ -178,15 +183,19 @@ elseif check_option(varargin,'directComputation')
 
 else
 
-  ghat = zeros((2*N+2)^2,len);
+  ghat = zeros(2*N+1,2*N+1,len);
   for m=1:len
     nfftmex('set_f', plan, double(W(:) .* y(:,m)));
     nfftmex('adjoint', plan);
-    % adjoint Fourier transform
-    ghat(:,m) = nfftmex('get_f_hat', plan);
+    % adjoint Fourier transform, of real values k2 >= 0 and k2 < 0 conjugated at -k1
+    if realN
+      h = reshape(nfftmex('get_f_hat', plan),N+1,2*N+2);
+      ghat(:,:,m) = [conj(h(N+1:-1:2,end:-1:2));h(:,2:end)];
+    else
+      h = reshape(nfftmex('get_f_hat', plan),2*N+2,2*N+2);
+      ghat(:,:,m) = h(2:end,2:end);
+    end
   end
-  ghat = reshape(ghat,2*N+2,2*N+2,len);
-  ghat = ghat(2:end,2:end,:);
 
 end
 

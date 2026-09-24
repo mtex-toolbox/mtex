@@ -78,14 +78,6 @@ end
 % extract bandwidth
 N = min(SO3F.bandwidth,get_option(varargin,'bandwidth',inf));
 
-% alpha, beta, gamma
-abg = Euler(rot,'nfft').'./(2*pi);
-
-% a non finite node makes nfft write outside its buffers and crash MATLAB, so
-% replace it by a valid one and set its function value to NaN afterwards
-isBadNode = any(~isfinite(abg),1);
-abg(:,isBadNode) = 0;
-
 % create plan
 if check_option(varargin,'keepPlan')
   plan = keepPlanNFFT;
@@ -99,6 +91,7 @@ end
 kept = check_option(varargin,{'createPlan','keepPlan'});
 realF = SO3F.isReal;
 isReal = realF && ~kept;
+direct = check_option(varargin,'direct');
 NN = 2*N+2;
 k1 = -(N+1):N;
 if isReal, N2 = N+1+mod(N+1,2); k3 = (1:N2) - N2 + N; else, k3 = k1; end
@@ -109,9 +102,24 @@ rZ = [1,1];
 if SO3F.SRight.id~=0 && SO3F.SLeft.id~=0 && ~kept
   rZ = [SO3F.SRight.multiplicityZ,SO3F.SLeft.multiplicityZ];
 end
-[ind1,s3,abg(3,:)] = foldZ(k1,rZ(1),abg(3,:));
-[ind3,s1,abg(1,:)] = foldZ(k3,rZ(2),abg(1,:));
+[ind1,s3] = foldZ(k1,rZ(1),0);
+[ind3,s1] = foldZ(k3,rZ(2),0);
 sz = [2*ceil(numel(ind1)/2),NN,2*ceil(numel(ind3)/2)];
+
+% the nodes alpha, beta, gamma / (2 pi), alpha and gamma folded; a non finite
+% node makes nfft write outside its buffers and crash MATLAB, so it becomes 0
+% and its function value NaN afterwards
+[abg,isBadNode] = nfftNodesmex(double(rot.a),double(rot.b),double(rot.c),double(rot.d),rZ([2 1]));
+
+% a real valued function takes the real nfft of its orders l >= 0, with the
+% dimensions reversed so that l comes last and k at its centered position
+if isReal && ~direct
+  kr = k1(ind1(1))/rZ(1) + (0:numel(ind1)-1);
+  Nk = 2*max(-kr(1),kr(end)+1);
+  lr = find(k3(ind3) >= 0);
+  szR = [numel(lr),NN,Nk];
+  abg = abg([3 2 1],:);
+end
 
 if isempty(plan)
 
@@ -129,14 +137,18 @@ if isempty(plan)
     [m,sigma] = nfftParameters(M,sz,varargin{:});
     fftw_size = fftLength(sigma*sz);
   % initialize nfft plan
-  if check_option(varargin,'direct')
+  if direct
     plan = nfftmex('init_3d',sz(3),sz(2),sz(1),M);
+  elseif isReal
+    nR = [Nk,NN,2*szR(1)];
+    fftw_size = fftLength(sigma*nR);
+    plan = nfftmex('init_guru',{3,nR(1),nR(2),nR(3),M,fftw_size(1),fftw_size(2),fftw_size(3),m,nfft_flags+2^14,fftw_flags});
   else
     plan = nfftmex('init_guru',{3,sz(3),sz(2),sz(1),M,fftw_size(3),fftw_size(2),fftw_size(1),m,nfft_flags,fftw_flags});
   end
 
   % set rotations as nodes in plan
-  nfftmex('set_x',plan,double(abg));
+  nfftmex('set_x',plan,abg);
 
   % node-dependent precomputation
   nfftmex('precompute_psi',plan);
@@ -150,19 +162,26 @@ if check_option(varargin,'createPlan')
 end
 
 % the kept frequencies start at index 0, which shifts them by s against the
-% centered frequencies of the nfft
-shift = exp(-2*pi*1i*(s1*abg(1,:)+s3*abg(3,:))).';
+% centered frequencies of the complex nfft
+if ~isReal || direct
+  shift = exp(-2*pi*1i*(s1*abg(1,:)+s3*abg(3,:))).';
+end
 
 f = zeros([length(rot) size(SO3F)]);
 for k = 1:length(SO3F)
 
   % the Fourier coefficients straight on the nfft lattice
   g = foldedWignerTrafo(SO3F.fhat(:,k),N,isReal,rZ);
+  if isReal && ~direct
+    gR = zeros(szR);
+    gR(:,:,kr(1)+Nk/2+(1:numel(ind1))) = permute(g(1:numel(ind1),:,lr),[3 2 1]);
+    g = gR;
+  end
 
   % set Fourier coefficients
   nfftmex('set_f_hat',plan,g(:));
 
-  if check_option(varargin,'direct')
+  if direct
     % direct Fourier transform
     nfftmex('trafo_direct',plan);
   else
@@ -171,7 +190,9 @@ for k = 1:length(SO3F)
   end
 
   % get function values from plan, using (**) if SO3F is real valued
-  if isReal
+  if isReal && ~direct
+    f(:,k) = nfftmex('get_f',plan);
+  elseif isReal
     f(:,k) = 2*real(shift .* nfftmex('get_f',plan));
   else
     f(:,k) = shift .* nfftmex('get_f',plan);

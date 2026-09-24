@@ -230,10 +230,10 @@ isReal = isreal(values) || isalmostreal(values,'precision',10,'norm',1);
 if useNFFT
 
   % for real values the Wigner transform reads only the orders k <= 1 of the
-  % first dimension, which the nfft then computes alone - unless the plan is
-  % kept for later values
+  % first dimension - unless the plan is kept for later values
   szN = szG;
-  if isReal && ~check_option(varargin,{'createPlan','keepPlan'})
+  realN = isReal && ~check_option(varargin,{'createPlan','keepPlan'});
+  if realN
     [ind1n,s3] = foldZ(-(N+1):1,rZ(1),0);
     szN(1) = 2*ceil(numel(ind1n)/2);
   end
@@ -241,11 +241,18 @@ if useNFFT
   % the nfft gets the smaller lattice from stretched nodes, and the kept
   % frequencies start at index 0, which shifts them by s against the
   % centered frequencies of the nfft
-  nodes = double(Euler(rot(:),'nfft').')/(2*pi);
-  nodes(:,isBadNode) = 0;
-  nodes(3,:) = mod(rZ(1)*nodes(3,:)+0.5,1)-0.5;
-  nodes(1,:) = mod(rZ(2)*nodes(1,:)+0.5,1)-0.5;
-  shift = exp(2*pi*1i*(s1*nodes(1,:)+s3*nodes(3,:))).';
+  [nodes,~,shift] = nfftNodesmex(double(rot.a),double(rot.b),double(rot.c),double(rot.d),rZ([2 1]),[s1 s3]);
+
+  % Real values take the real nfft at -gamma, whose orders k' >= 0 are the
+  % orders k = -k' <= 0 of the first dimension, and k = 1 is the conjugate of
+  % k = -1 at -j, -l. The third dimension goes to its centered position.
+  if realN
+    kr = -floor((N+1)/rZ(1));
+    lr = (-(N+1)+ind3(1)-1)/rZ(2) + (0:numel(ind3)-1);
+    Nl = 2*max(-lr(1),lr(end)+1);
+    nR = [Nl,NN,2*(1-kr)];
+    nodes(3,:) = mod(-nodes(3,:),1);
+  end
 
 end
 
@@ -258,12 +265,19 @@ if isempty(plan) && useNFFT
   % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and
   %                         measuring their execution time. This can take some time (often a few seconds).
     fftw_flags = int8(64);
-    nfft_flags = 1+2^12+2^4+2^10+2^13; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT | NFFT_PRUNED_FFT
+    nfft_flags = 1+2^12+2^10+2^13; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | FFTW_INIT | NFFT_PRUNED_FFT
+    % PRE_PSI pays only for a plan that is kept for later functions
+    if check_option(varargin,{'createPlan','keepPlan'}), nfft_flags = nfft_flags + 2^4; end
   % window cutoff m and oversampling sigma - see SO3FunHarmonic/eval
     [m,sigma] = nfftParameters(length(rot),szN,varargin{:});
     fftw_size = fftLength(sigma*szN);
   % initialize nfft plan
-  plan = nfftmex('init_guru',{3,szN(3),szN(2),szN(1),length(rot),fftw_size(3),fftw_size(2),fftw_size(1),m,nfft_flags,fftw_flags});
+  if realN
+    fftw_size = fftLength(sigma*nR);
+    plan = nfftmex('init_guru',{3,nR(1),nR(2),nR(3),length(rot),fftw_size(1),fftw_size(2),fftw_size(3),m,nfft_flags+2^14,fftw_flags});
+  else
+    plan = nfftmex('init_guru',{3,szN(3),szN(2),szN(1),length(rot),fftw_size(3),fftw_size(2),fftw_size(1),m,nfft_flags,fftw_flags});
+  end
 
   % set rotations as nodes in plan
   nfftmex('set_x',plan,nodes);
@@ -349,7 +363,18 @@ end
 fhat = zeros(deg2dim(N+1),len);
 pC = progressCounter(len,varargin{:});
 for i=1:len
-  if useNFFT
+  if useNFFT && realN
+    nfftmex('set_f', plan, double(W(:) .* values(:,i)));
+    nfftmex('adjoint', plan);
+    h = reshape(nfftmex('get_f_hat', plan),nR(3)/2,NN,Nl);
+    g = zeros(szN);
+    g(1-kr:-1:1,:,1:numel(ind3)) = h(:,:,lr(1)+Nl/2+(1:numel(ind3)));
+    if rZ(1) == 1
+      jm = NN+2 - (1:NN); lm = Nl/2+1 - lr;
+      ok = jm <= NN; okl = lm >= 1 & lm <= Nl;
+      g(2-kr,ok,okl) = conj(h(2,jm(ok),lm(okl)));
+    end
+  elseif useNFFT
     nfftmex('set_f', plan, double(W(:) .* values(:,i)) .* shift);
     nfftmex('adjoint', plan);
     g = reshape(nfftmex('get_f_hat', plan),szN);
