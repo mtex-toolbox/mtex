@@ -15,24 +15,12 @@ function f_hat = calcFourier(SO3F,varargin)
 
 L = get_option(varargin,'bandwidth',min(SO3F.bandwidth,getMTEXpref('maxSO3Bandwidth')));
 
-cs = SO3F.CS.properGroup;
-ss = SO3F.SS.properGroup;
-
 % the weights
 c = SO3F.weights;
 
-% the center orientations
+% the center orientations, the adjoint projects onto the symmetric functions
 ori = SO3F.center;
 
-% for a few center symmetrise before computing c_hat
-symCenter = 10*length(SO3F.center) * numSym(cs) * numSym(ss) < max(L^3,100);
-if symCenter && ~check_option(varargin,'noSymmetry')
-  ori = symmetrise(SO3F.center,'proper');
-  % ori is (CS x SS) x nCenter, so ori(:) runs the symmetries fastest
-  c = repelem(c,size(ori,1),1) / numSym(cs) / numSym(ss);
-  ori = ori(:);
-end
- 
 varargin = delete_option(varargin,'weights',1);
 
 % For many center orientations round them onto a regular quadrature grid
@@ -50,10 +38,6 @@ SO3FH = SO3FunHarmonic.adjoint(ori,c,varargin{:},'bandwidth',L);
 SO3FH = reshape(SO3FH,size(SO3F));
 
 SO3FH = conv(SO3FH,SO3F.psi);
-
-if ~symCenter && ~check_option(varargin,'noSymmetry')
-  SO3FH = symmetrise(SO3FH); 
-end
 
 % add constant portion
 SO3FH = SO3FH + SO3F.c0;
