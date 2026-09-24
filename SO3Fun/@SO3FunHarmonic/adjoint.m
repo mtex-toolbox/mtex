@@ -156,7 +156,7 @@ if check_option(varargin,'gridded') && ~isa(rot,'quadratureSO3Grid')
   SO3F = SO3FunHarmonic.adjoint(SO3G,v,varargin{:});
 
   % restore the symmetries of the input rotations and project onto the
-  % symmetric subspace, as symmetriseWignerCoefficients does below
+  % symmetric subspace, as the constructor does below
   SO3F.CS = SRight; SO3F.SS = SLeft;
   SO3F = symmetrise(SO3F);
   SO3F.antipodal = isAntipodal;
@@ -288,11 +288,19 @@ end
 if isReal % real valued
   flags = flags+2^2;
 end
-sym = [min(SRight.multiplicityPerpZ,2),SRight.multiplicityZ,...
-       min(SLeft.multiplicityPerpZ,2),SLeft.multiplicityZ];
-% if random samples the symmetry properties do not fit
-if ~isa(rot,'quadratureSO3Grid') || strcmp(rot.scheme,'GaussLegendre')
+% two fold axes perpendicular to Z, 2 for one along y and 3 for one along x,
+% only fit the samples of the Clenshaw Curtis grid
+alongX = @(G) ismember(G.id,3:5) || (ismember(G.id,19:21) && isa(G,'specimenSymmetry')) || ...
+  (ismember(G.id,22:24) && isa(G,'crystalSymmetry'));
+perpY = @(G) max(1+(G.multiplicityPerpZ~=1),3*alongX(G));
+sym = [perpY(SRight),SRight.multiplicityZ,perpY(SLeft),SLeft.multiplicityZ];
+if ~isCC || SLeft.id==0 || SRight.id==0 || (SRight.multiplicityPerpZ==1 && SLeft.multiplicityPerpZ==1)
   sym([1,3]) = 1;
+end
+% if the Z-axes the lattice is folded by make up the whole groups, the result
+% is symmetric already
+if folded && numProper(SRight) == rZ(1) && numProper(SLeft) == rZ(2)
+  varargin{end+1} = 'skipSymmetrise';
 end
 % the folded lattice has the Z-axis symmetries rZ
 symLattice = sym;
@@ -348,7 +356,6 @@ for i=1:len
   fhat(:,i) = wignerTrafoAdjointmex(N,double(g),flags+folded*2^5,symLattice);
   pC.show(i);
 end
-fhat = symmetriseWignerCoefficients(fhat,flags,SRight,SLeft,sym);
 
 % kill plan
 if check_option(varargin,'keepPlan')

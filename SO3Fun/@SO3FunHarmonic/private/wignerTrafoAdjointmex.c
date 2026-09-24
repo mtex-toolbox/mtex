@@ -49,11 +49,14 @@
  *             2^4 -> use right and left symmetry
  *             2^5 -> ghat on the nfft lattice of SO3FunHarmonic/adjoint, whose
  *                    first dimension may end early, the missing orders are zero
- *  sym_axis - vector [SRight-Y,SRight-Z,SLeft-Y,SLeft-Z] where SRight-Y,SLeft-Y are in {1,2} and 
- *             SRight-Z,SLeft-Z are in {1,2,3,4,6} and describes the countability of the symmetry axis
+ *  sym_axis - vector [SRight-Y,SRight-Z,SLeft-Y,SLeft-Z] where SRight-Y,SLeft-Y are in {1,2,3} and 
+ *             SRight-Z,SLeft-Z are in {1,2,3,4,6} and describes the countability of the symmetry axis,
+ *             Y = 2 or 3 is a two fold axis perpendicular to Z along y or x, i.e.
+ *             fhat(n,k,l) = (-1)^n fhat(n,-k,l) or (-1)^(n+k) fhat(n,-k,l) on the right
  *
  * Output
- *  fhat - SO(3) Fourier coefficient vector, including the factor i^(l-k)
+ *  fhat - SO(3) Fourier coefficient vector, including the factor i^(l-k), with
+ *         the orders skipped by the symmetries filled in
  *
  *
  * This is a MEX-file for MATLAB.
@@ -103,13 +106,13 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, const mxComplexDou
 {
   const int N = bandwidth;
   const size_t ld = N+1;
-  const int SRightY = sym_axis[0], SRightZ = sym_axis[1];
-  const int SLeftY = sym_axis[2], SLeftZ = sym_axis[3];
-  const int SY = SRightY*SLeftY;
+  const int yR = sym_axis[0] >= 2, SRightZ = sym_axis[1];
+  const int yL = sym_axis[2] >= 2, SLeftZ = sym_axis[3];
+  const int SY = (1+yR)*(1+yL);
 
   // halve the orders k, l by the symmetries - see the flags above
-  const int halveK = (SRightY==2) || ((SY==2) && isReal) || ((SY==1) && isReal && !isAntipodal);
-  const int halveL = (SLeftY==2) || ((SY==2) && isReal);
+  const int halveK = yR || ((SY==2) && isReal) || ((SY==1) && isReal && !isAntipodal);
+  const int halveL = yL || ((SY==2) && isReal);
 
   // quadrants of one block of degrees and of the two before, and of the block
   // D(k,j,n) = d^n(k,-j) for k = -n..n
@@ -171,6 +174,44 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, const mxComplexDou
   }
   free(D);
   free(S);
+}
+
+// The orders of the degrees n >= 2 the transform skipped: the rows k > 0 from
+// fhat(n,k,l) = s fhat(n,-k,l) of a two fold axis perpendicular to Z in the
+// right symmetry, s = (-1)^n for yR = 2 and (-1)^(n+k) for yR = 3, the columns
+// l > 0 likewise for the left one, then the zeros of a real valued function
+// from fhat(n,k,l) = conj(fhat(n,-k,-l))
+static void fill_symmetric(const int N, const int yR, const int yL, const int isReal, mxComplexDouble *fhat)
+{
+  for (int n = 2; n <= N; n++)
+  {
+    const int w = 2*n+1;
+    mxComplexDouble *f = fhat + (size_t)n*(2*n-1)*(2*n+1)/3 + n*w + n;   // f[k+l*w]
+    if (yR >= 2)
+      for (int l = -n; l <= n; l++)
+        for (int k = 1; k <= n; k++)
+        {
+          const double s = (((yR == 3) ? n+k : n) & 1) ? -1 : 1;
+          f[k+l*w].real = s*f[l*w-k].real;
+          f[k+l*w].imag = s*f[l*w-k].imag;
+        }
+    if (yL >= 2)
+      for (int l = 1; l <= n; l++)
+        for (int k = -n; k <= n; k++)
+        {
+          const double s = (((yL == 3) ? n+l : n) & 1) ? -1 : 1;
+          f[k+l*w].real = s*f[k-l*w].real;
+          f[k+l*w].imag = s*f[k-l*w].imag;
+        }
+    if (isReal)
+      for (int l = -n; l <= n; l++)
+        for (int k = -n; k <= n; k++)
+          if (f[k+l*w].real == 0 && f[k+l*w].imag == 0)
+          {
+            f[k+l*w].real = f[-k-l*w].real;
+            f[k+l*w].imag = -f[-k-l*w].imag;
+          }
+  }
 }
 
 // fhat(n,k,l) times i^(l-k), and times sqrt(2n+1) for L2-normalized Wigner-D functions
@@ -312,6 +353,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     calculate_ghat_adjoint(bandwidth,inCoeff,isReal,isAntipodal,sym_axis,outFourierCoeff,G);
 
     phase_and_normalize(N,flags[0],outFourierCoeff);
+    fill_symmetric(N,sym_axis[0],sym_axis[2],isReal,outFourierCoeff);
 
   // free the storage
   if (zeiger) mxDestroyArray(zeiger);
