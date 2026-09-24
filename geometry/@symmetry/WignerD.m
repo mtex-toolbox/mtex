@@ -19,6 +19,7 @@ function fhat = WignerD(cs,varargin)
 % sphericalY WignerD
 
 assert(nargin>2,'Not enough input arguments.')
+persistent store
 % if nargin<2
 %   varargin={2};
 % end
@@ -52,16 +53,25 @@ if check_option(varargin,'quadrature') % use quadrature
   
   fhat = degrees(fhat,l);
 
-else % direct computation by matrix exponential
-  
-  fhat = wignerDmatrixSum(CS.rot,l)./numSym(CS);
-  fhat(abs(fhat)<1e-5) = 0;
-  fhat = sparse(fhat);
+else % direct computation
+
+  % symmetry objects are created anew all the time, so the sums are also
+  % stored by the rotations of the group
+  if isempty(store), store = containers.Map; end
+  key = groupKey(CS);
+  if isKey(store,key) && length(store(key)) >= deg2dim(L+1)
+    fhat = store(key);
+  else
+    fhat = wignerDmatrixSum(CS.rot,0:L)./numSym(CS);
+    fhat(abs(fhat)<1e-12) = 0;
+    fhat = sparse(fhat);
+    if store.Count >= 32, remove(store,keys(store)); end
+    store(key) = fhat;
+  end
 
   % write to storage
-  if length(l)==L+1 && all(l==0:L)
-    cs.opt.fhat = fhat;
-  end
+  cs.opt.fhat = fhat;
+  fhat = degrees(fhat,l);
 
 end
 
@@ -84,6 +94,7 @@ end
 
 
 function C = wignerDmatrixSum(q,L)
+% sum of the L2-normalized Wigner-D matrices of the rotations q for the degrees L
 
 d = (2*L+1).^2;
 cs = [0 cumsum(d)];
@@ -91,6 +102,12 @@ C = zeros(cs(end),1);
 
 [alpha,beta,gamma] = Euler(q,'abg');
 [ubeta,~,ub] = unique(round(beta*1e12)*1e-12);
+
+% the angles of the point groups are multiples of pi/2, for which the
+% Wigner-d matrices come exactly from the recursion at pi/2
+k = round(ubeta/(pi/2));
+onGrid = abs(ubeta - k*pi/2) < 1e-10;
+if any(onGrid), dHalf = wignerdHalfPi(max(L)); end
 
 for l=1:numel(L)
     m = -L(l):L(l);
@@ -107,15 +124,76 @@ for l=1:numel(L)
     Jy_l = diag(v,1)+diag(-v,-1);
 
     ndx = cs(l)+1:cs(l+1);
-    for k=1:numel(ubeta)
-        Jbeta = expm(-ubeta(k)*Jy_l).*sqrt(n);
-
-        for kk = find(ub(:).'==k)
-            A = Jgamma(:,kk).*Jbeta.*Jalpha(kk,:);
-            C(ndx) = C(ndx) + A(:);
+    for kb=1:numel(ubeta)
+        if onGrid(kb)
+          Jbeta = dHalf{L(l)+1}^k(kb) .* sqrt(n);
+        else
+          Jbeta = expm(-ubeta(kb)*Jy_l).*sqrt(n);
         end
+
+        % the rotations with this beta at once: their outer products summed
+        kk = ub(:).'==kb;
+        A = Jbeta .* (Jgamma(:,kk) * Jalpha(kk,:));
+        C(ndx) = C(ndx) + A(:);
     end
 end
+
+end
+
+
+function d = wignerdHalfPi(L)
+% the Wigner-d matrices expm(-pi/2*Jy_l) of the degrees l = 0..L from the
+% three term recursion of the quadrant S(a,b) = d_l(-a,-b), a,b >= 0, see
+% SO3Fun/@SO3FunHarmonic/private/wigner_d_quadrant_at_pi_half.cpp
+
+Q = cell(1,L+1);
+Q{1} = 1;
+if L >= 1, Q{2} = [0, sqrt(0.5); -sqrt(0.5), 0.5]; end
+for l = 2:L
+  a = (0:l-1).';
+  inv = 1./(l^2 - a.^2);
+  p = -a.*sqrt(inv);
+  q = sqrt(((l-1)^2 - a.^2).*inv);
+  S1 = Q{l}(1:l,1:l);
+  S2 = zeros(l); S2(1:l-1,1:l-1) = Q{l-1};
+  S = zeros(l+1);
+  S(1:l,1:l) = (-(2*l-1)/(l-1))*(p*p.').*S1 + (-l/(l-1))*(q*q.').*S2;
+  % frame: column l is sqrt(binom(2l,l-a)) 2^-l, kept as mantissa and exponent
+  S(l+1,l+1) = pow2(1,-l);
+  mant = 1; ex = 0;
+  for it = 1:l
+    [mant,e] = log2(mant*sqrt((2*l+1-it)/it));
+    ex = ex + e;
+    S(l+1-it,l+1) = pow2(mant,ex-l);
+  end
+  S(l+1,1:l) = (1-2*mod(l+(0:l-1),2)) .* S(1:l,l+1).';
+  Q{l+1} = S;
+end
+
+% the whole matrix from d(-r,c) = (-1)^(l+r+c) d(r,c) in both indices, and
+% the sign (-1)^x of every positive row and column index x of expm(-pi/2*Jy_l)
+d = cell(1,L+1);
+for l = 0:L
+  r = (-l:l).'; c = -l:l;
+  D = zeros(2*l+1);
+  D(1:l+1,1:l+1) = rot90(Q{l+1},2);
+  D(l+2:end,1:l+1) = (1-2*mod(l+r(l+2:end)+c(1:l+1),2)) .* D(l:-1:1,1:l+1);
+  D(:,l+2:end) = (1-2*mod(l+r+c(l+2:end),2)) .* D(:,l:-1:1);
+  sigma = 1 - 2*(r > 0 & mod(r,2)==1);
+  d{l+1} = (sigma*sigma.') .* D;
+end
+
+end
+
+
+function key = groupKey(CS)
+% the rotations of a group as a string, independent of their order and of
+% the sign of the quaternions
+
+Q = [CS.rot.a(:) CS.rot.b(:) CS.rot.c(:) CS.rot.d(:)];
+[~,j] = max(abs(Q) > 1e-9,[],2);
+Q = Q .* sign(Q(sub2ind(size(Q),(1:size(Q,1))',j)));
+key = sprintf('%d,',sortrows(round(Q*1e9)));
 
 end
 
