@@ -171,7 +171,7 @@ classdef grain2d < phaseList & dynProp
       end
 
       % determine a normal direction such that the area is positive
-      if all(grains.allV.z==grains.allV.z(1))
+      if all(grains.allV.z==min(grains.allV.z))
         grains.N = zvector;
       else
         grains.N = perp(discreteSample(grains.allV,100) - grains.allV(1));
