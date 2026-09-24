@@ -210,21 +210,30 @@ else
   plan = [];
 end
 
-useNFFT = ~(isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')) && ~check_option(varargin,'directComputation');
+% only the multiples of the rotational symmetries around the Z-axis are
+% needed, which the Wigner transform reads from a smaller lattice
+isCC = isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis');
+folded = ~check_option(varargin,'directComputation');
+useNFFT = folded && ~isCC;
+if folded
+
+  NN = 2*N+2;
+  rZ = [1,1];
+  if (SRight.id~=0 && SLeft.id~=0) || isCC, rZ = [SRight.multiplicityZ,SLeft.multiplicityZ]; end
+  [ind1,s3] = foldZ(-(N+1):N,rZ(1),0);
+  [ind3,s1] = foldZ(-(N+1):N,rZ(2),0);
+  szG = [2*ceil(numel(ind1)/2),NN,2*ceil(numel(ind3)/2)];
+
+end
 if useNFFT
 
-  % only the multiples of the rotational symmetries around the Z-axis are
-  % needed, which the nfft gets on a smaller lattice from stretched nodes
-  NN = 2*N+2;
+  % the nfft gets the smaller lattice from stretched nodes, and the kept
+  % frequencies start at index 0, which shifts them by s against the
+  % centered frequencies of the nfft
   nodes = double(Euler(rot(:),'nfft').')/(2*pi);
   nodes(:,isBadNode) = 0;
-  rZ = [1,1];
-  if SRight.id~=0 && SLeft.id~=0, rZ = [SRight.multiplicityZ,SLeft.multiplicityZ]; end
-  [ind1,s3,nodes(3,:)] = foldZ(-(N+1):N,rZ(1),nodes(3,:));
-  [ind3,s1,nodes(1,:)] = foldZ(-(N+1):N,rZ(2),nodes(1,:));
-  szG = [2*ceil(numel(ind1)/2),NN,2*ceil(numel(ind3)/2)];
-  % the kept frequencies start at index 0, which shifts them by s against
-  % the centered frequencies of the nfft
+  nodes(3,:) = mod(rZ(1)*nodes(3,:)+0.5,1)-0.5;
+  nodes(1,:) = mod(rZ(2)*nodes(1,:)+0.5,1)-0.5;
   shift = exp(2*pi*1i*(s1*nodes(1,:)+s3*nodes(3,:))).';
 
 end
@@ -262,18 +271,18 @@ end
 % use trivariate inverse equispaced fft in case of Clenshaw Curtis
 % quadrature grid and nfft otherwise 
 % TODO: Do FFT × NFFT × FFT in case of GaussLegendre-Quadrature
-if isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')
+if isCC
 
-  % Possibly use smaller input matrix by using the symmetries
-  if len==1
-    ghat = ifftn( W.* reshape(values,[size(W),len]) ,[2*N+2,4*N,2*N+2]);
-    ghat = ifftshift(ghat);
-  else % multivariate
-    ghat = ifft(ifft(ifft(W.*reshape(values,[size(W),len]),2*N+2,1),4*N,2),2*N+2,3);
-    ghat = ifftshift(ifftshift(ifftshift(ghat,1),2),3);
-  end
-
-  ghat = 16*N*(N+1)^2 * ghat(2:end,N+1:3*N+1,2:end,:);
+  % The grid covers only the fundamental region of the Z-axis symmetries in
+  % the first and third Euler angle, so inverse FFTs of its length give
+  % exactly the multiples of the symmetries, beta takes the length 4N.
+  x = W.* reshape(values,[size(W),len]);
+  n = size(x,[1 3]);
+  x = ifft(ifft(ifft(x,[],1),4*N,2),[],3) * (n(1)*4*N*n(2));
+  b1 = mod((-(N+1)+ind1-1)/rZ(1),n(1)) + 1;
+  b3 = mod((-(N+1)+ind3-1)/rZ(2),n(2)) + 1;
+  ghat = zeros([szG,len]);
+  ghat(1:numel(ind1),2:end,1:numel(ind3),:) = x(b1,mod(-N:N,4*N)+1,b3,:);
 
 elseif check_option(varargin,'directComputation')
   % TODO: use symmetries
@@ -306,7 +315,7 @@ end
 
 % shift rotational grid by the exact i^(l-k)
 ipow = [1;1i;-1;-1i];
-if useNFFT
+if folded
   kk = -(N+1) + ind1(1)-1 + (0:szG(1)-1)'*rZ(1);
   ll = reshape(-(N+1) + ind3(1)-1 + (0:szG(3)-1)*rZ(2),1,1,[]);
 else
@@ -330,11 +339,14 @@ sym = [min(SRight.multiplicityPerpZ,2),SRight.multiplicityZ,...
 if ~isa(rot,'quadratureSO3Grid') || strcmp(rot.scheme,'GaussLegendre')
   sym([1,3]) = 1;
 end
+% the folded lattice has the Z-axis symmetries rZ
+symLattice = sym;
+if folded, symLattice([2,4]) = rZ; end
 % use adjoint Wigner transform
 fhat = zeros(deg2dim(N+1),len);
 pC = progressCounter(len,varargin{:});
 for i=1:len
-  fhat(:,i) = wignerTrafoAdjointmex(N,double(ghat(:,:,:,i)),flags+useNFFT*2^5,sym);
+  fhat(:,i) = wignerTrafoAdjointmex(N,double(ghat(:,:,:,i)),flags+folded*2^5,symLattice);
   pC.show(i);
 end
 fhat = symmetriseWignerCoefficients(fhat,flags,SRight,SLeft,sym);

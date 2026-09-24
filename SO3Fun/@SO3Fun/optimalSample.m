@@ -368,7 +368,7 @@ function y = Psi(x,flag,ori,f,w,lambda,bw)
 % expected by mlsq. It maps the weights to the kernel weighted Wigner
 % coefficients of the discrete measure mu,
 %
-%   Psi = diag(w) * lambda/(sqrt(8)*pi) * adjointNFSOFT ,
+%   Psi = diag(w) * lambda/(sqrt(8)*pi) * adjoint ,
 %
 % such that J = norm(Psi*c-I)^2. Note that Psi is never set up as a matrix -
 % mlsq only needs its two directions, which are exactly the adjoint and the
@@ -376,8 +376,8 @@ function y = Psi(x,flag,ori,f,w,lambda,bw)
 
 if strcmp(flag,'notransp')
 
-  % adjoint NFSOFT
-  mu = SO3FunHarmonic.adjointNFSOFT(ori,x,'bandwidth',bw);
+  % adjoint Wigner transform
+  mu = SO3FunHarmonic.adjoint(ori,x,'bandwidth',bw);
   % the constructor truncates vanishing coefficients, so restore the length
   mu.bandwidth = bw;
 
@@ -400,8 +400,8 @@ function [res,D] = J(ori,c,f,w,lambda,bw)
 % Wigner coefficients D of mu - f and the resulting discrepancy. D is reused
 % by the gradient below.
 
-% adjoint NFSOFT
-mu = SO3FunHarmonic.adjointNFSOFT(ori,c,'bandwidth',bw);
+% adjoint Wigner transform
+mu = SO3FunHarmonic.adjoint(ori,c,'bandwidth',bw);
 mu.bandwidth = bw;
 % In case of symmetries: The output SO3FunHarmonic has to be symmetrised,
 % which is already internally done in the construction of the SO3FunHarmonic.

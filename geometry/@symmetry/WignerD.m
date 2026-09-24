@@ -32,12 +32,7 @@ L = max(l);
 
 % check storage
 if isfield(cs.opt,'fhat') && length(cs.opt.fhat)>=deg2dim(L+1)
-
-  ind = [];
-  for i=l
-    ind = [ind,deg2dim(i)+1:deg2dim(i+1)];
-  end
-  fhat = cs.opt.fhat(ind);
+  fhat = degrees(cs.opt.fhat,l);
   return
 
 end
@@ -55,12 +50,7 @@ if check_option(varargin,'quadrature') % use quadrature
   % write to storage
   cs.opt.fhat = fhat;
   
-  if length(l)~=L+1 || any(l~=0:L)
-    for i=l
-      ind = [ind,deg2dim(i)+1:deg2dim(i+1)];
-    end
-    fhat = fhat(ind);
-  end
+  fhat = degrees(fhat,l);
 
 else % direct computation by matrix exponential
   
@@ -125,6 +115,18 @@ for l=1:numel(L)
             C(ndx) = C(ndx) + A(:);
         end
     end
+end
+
+end
+
+
+function fhat = degrees(fhat,l)
+% the coefficients of the degrees l, a leading block 0:L without indexing
+
+if isequal(l(:)',0:max(l))
+  fhat = fhat(1:deg2dim(max(l)+1));
+else
+  fhat = fhat(cell2mat(arrayfun(@(i) deg2dim(i)+1:deg2dim(i+1),l(:)','UniformOutput',false)));
 end
 
 end

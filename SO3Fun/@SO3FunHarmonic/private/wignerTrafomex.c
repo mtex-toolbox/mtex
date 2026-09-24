@@ -275,7 +275,8 @@ void mexFunction( int nlhs, mxArray *plhs[],
       // Z-axis symmetries rk, rl, starting at -N-1 (at -1 or 0 if isReal),
       // zero padded to even length, and all orders, since ghat is not
       // reconstructed from the Y-axis symmetries afterwards
-      const int rk = sym_axis[1], rl = sym_axis[3];
+      const double *lat = (nrhs>=4) ? mxGetDoubles(prhs[3]) : sym_axis;
+      const int rk = lat[1], rl = lat[3];
       const int lmin = isReal ? -((N+1) % 2) : -(N+1);
       G.k0 = -rk*((N+1)/rk);
       G.l0 = (lmin < 0 && rl == 1) ? lmin : -rl*((-lmin)/rl);

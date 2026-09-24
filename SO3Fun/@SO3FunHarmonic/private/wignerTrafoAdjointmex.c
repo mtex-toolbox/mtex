@@ -257,7 +257,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
     mwSize len[3];
     if (flags[5])
     {
-      const int rk = sym_axis[1], rl = sym_axis[3];
+      // the Z-axis symmetries of the lattice, also if flag 2^4 is not set
+      const double *lat = (nrhs>=4) ? mxGetDoubles(prhs[3]) : sym_axis;
+      const int rk = lat[1], rl = lat[3];
       G.k0 = -rk*((N+1)/rk); G.l0 = -rl*((N+1)/rl);
       const int nk = N/rk - G.k0/rk + 1, nl = N/rl - G.l0/rl + 1;
       len[0] = nk + nk % 2; len[1] = 2*N+2; len[2] = nl + nl % 2;
