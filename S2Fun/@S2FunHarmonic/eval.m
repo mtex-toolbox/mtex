@@ -29,7 +29,7 @@ function f = eval(sF,v,varargin)
 
 % TODO: adjoint method and quadrature
 
-if ~check_option(varargin,'nfft')
+if check_option(varargin,'nfsft')
   f = evalNFSFT(sF,v,varargin{:});
   return
 end
@@ -88,14 +88,17 @@ else
   plan = [];
 end
 
-if isempty(plan)
+% a real valued function needs only half the lattice, but a plan that is kept
+% for later functions has to take complex ones
+realF = sF.isReal;
+isReal = realF && ~check_option(varargin,{'createPlan','keepPlan'});
 
-  % TODO: Heuristic for selection of oversampling Factor sigma and cut-off Parameter m
+if isempty(plan)
 
   % nfft size
     N1 = 2*N+2;
     N2 = 2*N+2;
-    if sF.isReal
+    if isReal
       N2 = N+1+mod(N+1,2); 
     end
   % {FFTW_ESTIMATE} or 64 - Specifies that, instead of actual measurements of different algorithms, 
@@ -104,13 +107,13 @@ if isempty(plan)
   % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
   %                         measuring their execution time. This can take some time (often a few seconds).
     fftw_flags = int8(64);
-    nfft_flags = 1+2^12+2^4+2^10; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT
+    nfft_flags = 1+2^12+2^4+2^10+2^13; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT | NFFT_PRUNED_FFT
   % nfft_cutoff parameter 
     m = get_option(varargin,'cutoffParameter',6);
   % oversampling factor
     sigma = 2;
-    fftw_size1 = 2*ceil(sigma/2*N1);
-    fftw_size2 = 2*ceil(sigma/2*N2);
+    fftw_size1 = fftLength(sigma*N1);
+    fftw_size2 = fftLength(sigma*N2);
   % initialize nfft plan
   if check_option(varargin,'direct')
     plan = nfftmex('init_2d',N1,N2,M);
@@ -135,7 +138,7 @@ end
 % If sF is real valued we have the symmetry properties (*) and (**) for
 % the Fourier coefficients. We will use this to speed up computation.
 flags = 2^0+2^1;
-if sF.isReal
+if isReal
   flags = flags + 2^2;
 end
 if sF.antipodal
@@ -159,13 +162,14 @@ for k = 1:length(sF)
   end
 
   % get function values from plan
-  if sF.isReal
+  if isReal
     % use (**) and shift summation in 2nd index
     f(:,k) = 2*real( exp(-1i*v.rho*ceil((N)/2))  .* (nfftmex('get_f',plan)) );
   else
     f(:,k) = nfftmex('get_f',plan);
   end
 end
+if realF, f = real(f); end
 
 
 % kill plan

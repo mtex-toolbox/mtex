@@ -68,219 +68,62 @@
 #include <omp.h>
 #endif
 #include "get_flags.c"  // transform number which includes the flags to boolean vector
-#include "wigner_d_recursion_at_pi_half.cpp"   // use three term recurrence relation to compute Wigner-d matrices
+#include <algorithm>
+#include <vector>
+#include "wigner_d_quadrant_at_pi_half.cpp"   // three term recurrence relation for the Wigner-d matrices at pi/2
 #include "L2_normalized_sphericalHarmonics.c"  // use L_2-normalized Spherical Harmonics by scaling the fourier coefficients
 
 
 
 // The computational routine
+//   ghat(k,j) = sum_n fhat(n,-k) d^n(-k,-j) d^n(0,-j)
+// for j = 0..N and k = -N..N, or k = 0..N if isReal. Only even n+j contribute,
+// since d^n(0,-j) = 0 otherwise. The Wigner-d matrices of a block of degrees
+// are computed first and then every column of ghat takes the whole block,
+// which keeps the column in cache.
 template<typename T>
 static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
-                            const int makeEven, const int isReal, const int isAntipodal, 
+                            const int makeEven, const int isReal, const int isAntipodal,
                             std::complex<T> *ghat )
 {
-
-  // define usefull variables
-    int k,l,j,n;                                   // running indices
-    const int N = bandwidth;                       // integer bandwidth
-         
-    const int col_len = (isReal == 0)
+  const int N = bandwidth;
+  const size_t ld = N+1;
+  const int col_len = (isReal == 0)
     ? (2*N + 1 + makeEven)
     : (N + 1 + makeEven * ((N + 1) % 2));
 
-    const int JIter = (isAntipodal == 0)
-    ? 1
-    : 2;
+  // ghat(0,0), columns j = 0..N follow with stride col_len
+  std::complex<T> *ghat00 = ghat + col_len*N + (1-isReal)*N;
 
+  // quadrants S(a,b) = d^n(-a,-b) of one block of degrees and of the two before
+  const int B = 4;
+  std::vector<T> S((B+2)*ld*ld, 0);
+  auto quadrant = [&](int n) { return S.data() + (n % (B+2))*ld*ld; };
 
-  // Be shure N>0. Otherwise return the trivial solution.
-    if(N==0)
+  for (int n0 = 0; n0 <= N; n0 += B)
+  {
+    const int n1 = std::min(n0+B,N+1);
+    for (int n = n0; n < n1; n++)
+      wigner_d_quadrant_at_pi_half<T>(N,n,n>=2 ? quadrant(n-2) : nullptr,n>=1 ? quadrant(n-1) : nullptr,quadrant(n));
+
+    #pragma omp parallel for schedule(dynamic) if(N >= 64)
+    for (int j = 0; j < n1; j++)
     {
-      // ghat[0].real = fhat[0].real;
-      // ghat[0].imag = fhat[0].imag;
-      ghat[0].real(fhat[0].real);
-      ghat[0].imag(fhat[0].imag);
-      return;
-    }
-    
-    
-  // Idea: Calculate Wigner-d matrix by recurrence formula from last two
-  // Wigner-d matrices. 
-  // Because of symmetry only the left parts of the rows are needed.
-  //       (  A  | A'  )        + (the cross) represents row and column with index 0
-  //   d = ( ----+---- )        ' corresponds to flip(.,2)
-  //       (  A* | A*' )        * corresponds to flip(.,1)
-    // Create 3 Wigner-d matrices for recurrence relation (2 as input and 1
-    // as output). Also get an auxiliary pointer to the matrices in each case.
-    std::vector<T> D_min2((2*N+1)*(N+1));
-    T* wigd_min2 = D_min2.data();
-    T* start_wigd_min2 = wigd_min2;
-
-    std::vector<T> D_min1((2*N+1)*(N+1));
-    T* wigd_min1 = D_min1.data();
-    T* start_wigd_min1 = wigd_min1;
-
-    std::vector<T> D((2*N+1)*(N+1));
-    T* wigd = D.data();
-    T* start_wigd = wigd;
-    
-    
-    // Set start values for recurrence relations to compute Wigner-d matrices
-    // Wigner_d(0,pi/2)
-    wigd_min2[2*(N+1)*N] = 1;         // go to last column and center row of matrix
-    
-    // Wigner_d(1,pi/2)
-    wigd_min1 += (2*N+1)*(N-1)+N;               // go to Wigner_d(1,pi/2) at matrixposition [-1,-1]
-    const double sqrt_1_2 = sqrt(0.5);
-    const double wigd_harmonicdegree1[3][3] = { // values of Wigner_d(1,pi/2)
-                                                  {   0.5  ,-sqrt_1_2,  -0.5  },
-                                                  {sqrt_1_2,     0   ,sqrt_1_2},
-                                                  {  -0.5  ,-sqrt_1_2,   0.5  }};
-    for (k=0; k<2; k++)
-    {
-      for (l = -1; l<=1; l++)
+      std::complex<T> *g = ghat00 + (size_t)j*col_len;
+      for (int n = std::max(n0,j); n < n1; n++)
       {
-        wigd_min1[l] = wigd_harmonicdegree1[l+1][k];  // fill with values
+        if ((n+j) % 2 || (isAntipodal && n % 2)) continue;
+        const T *d = quadrant(n) + j*ld;          // d[k] = d^n(-k,-j)
+        const mxComplexDouble *f = fhat + n*n + n; // f[m] = fhat(n,m)
+        for (int k = 0; k <= n; k++)
+          g[k] += std::complex<T>(f[-k].real,f[-k].imag) * (d[k]*d[0]);
+        // rows -k: d^n(k,-j) = (-1)^k d^n(-k,-j) for even n+j
+        if (!isReal)
+          for (int k = 1; k <= n; k++)
+            g[-k] += std::complex<T>(f[k].real,f[k].imag) * ((k % 2 ? -d[k] : d[k])*d[0]);
       }
-      wigd_min1 += 2*N+1;                             // go to next column
     }
-    wigd_min1 = start_wigd_min1;                      // reset pointer to matrix start
-    
-
-  // Compute ghat by iterating over harmonic degree n of Wigner-d matrices
-  // in outermost loop. Start with n=0 and n=1 manually and use a loop for
-  // the remaining indices n > 1. It is sufficient to compute only one of 
-  // the symmetric values in ghat.
-  // Afterwards we fill the symmetric values of ghat insids Matlab.
-    // Create pointers for help. One saves the starting position of ghat
-    // and the other one saves the starting position of fhat in current
-    // iteration of harmonic degree n.
-    std::complex<T> *start_ghat;
-    // mxComplexDouble *start_ghat;
-    start_ghat = ghat;
-    mxComplexDouble *iter_fhat;
-    std::complex<T> *ghat00;
-    // mxComplexDouble *ghat00;
-    T* iter_wigd;
-
-    // set pointer to ghat(0,0)
-    ghat00 = ghat + col_len*N + (1-isReal)*N;
-
-
-  // Do recursion for n = 0.
-    // Write first value of fhat in ghat(0,0) , since Wigner_d(0,pi/2)=1.
-    // ghat00[0] = *fhat;
-    ghat00[0] = std::complex<T>(fhat->real, fhat->imag);  
-    // Set pointer fhat to next harmonic degree (to the 2nd value of fhat)
-    fhat ++;
-    
-  
-  // Do recursion for n = 1.
-    // jump to ghat(0,-1)
-    ghat = ghat00 - col_len;
-    // fill ghat with values := fhat(1,k) * d^1(j,k) * d^1(j,0)
-    T value;
-    for (j= -1; j<= 1; j++)
-    {
-      for (k= -1+isReal; k<=1; k++)
-      {
-        value = wigd_harmonicdegree1[j+1][-k+1] * wigd_harmonicdegree1[j+1][1];
-        ghat[k] += std::complex<T>(fhat[-k+1].real, fhat[-k+1].imag) * value;
-        // ghat[k].real += fhat[-k+1].real* value;
-        // ghat[k].imag += fhat[-k+1].imag* value;
-      }
-      // jump to next column
-      ghat += col_len;
-    }
-    // Set pointer fhat to central value of 1st harmonic degree (to the 3rd value of fhat)
-    iter_fhat = fhat + 1;
-    
-    
-    // Be shure N>1, otherwise STOP.
-    if (N==1) 
-      return;
-    
-    
-    // define some usefull variables
-    const int shift_tocenterwigner = (2*N+1)*N+N;
-
-    
-
-  // Do recursion for 1 < n <= N:
-    for (n=2; n<=N; n++)
-    {
-
-      // Calculate Wigner-d matrix
-      wigner_d_recursion_at_pi_half<T>(N,n,wigd_min2,wigd_min1,wigd);
-      
-      
-      // jump to the center of Wigner-d matrix and save this position
-      wigd +=  shift_tocenterwigner;
-      iter_wigd = wigd;
-      
-      // Set pointer ghat to the central value ghat(0,0) 
-      // and save this position for further iterations
-      //      Note: ghat = start_ghat  would reset pointer ghat to ghat(-N,0) 
-      //            if F is real valued and ghat(-N,-N) otherwise [if ghat is fullsized]
-      ghat = ghat00;
-      // Set pointer of fhat to the central value fhat(n,0) 
-      // and save this position for further iterations
-      iter_fhat = iter_fhat+2*n;
-      fhat = iter_fhat;
-
-      // Compute ghat by adding over all summands of current harmonic 
-      // degree n. Therefore it is sufficient to compute ghat only for 
-      // j>=0, since we have the BMC property (Double Fourier Sphere Method)
-      //             ghat(j,k) = (-1)^(k) * ghat(-j,k).
-      // Moreover we have additional symmetry properties if 
-      //    - S2FunHarmonic is real valued
-      //    - S2FunHarmonic is antipodal (fhat=0 for odd degrees n)
-      // we use them by only computing one of the symmetric coefficients 
-      // and skipping zeros.
-      if((isAntipodal==0) || (n%2==0)){
-        
-        // Iteration:
-        // The Wigner-d functions satisfy the symmetry property
-        //          d_n(j,k)*d_n(j,l) = d_n(k,-j)*d_n(l,-j)
-        // in MTEX. We use this in the following.
-        #pragma omp parallel for firstprivate(ghat,fhat,wigd) private(value,k)        // Parallelization
-        for (j= 0; j<=n; j+=JIter)
-        {
-          // jump to actual column --> ghat(0,j)
-          ghat = ghat00 + j*col_len;
-          // use column -j of the Wigner-d matrix
-          wigd = iter_wigd - j*(2*N+1);
-
-          for (k= -n*(1-isReal); k<=n; k++)
-          {
-            // compute value
-            value = wigd[-k]*wigd[0];
-
-            // set value
-            ghat[k] += std::complex<T>(fhat[-k].real, fhat[-k].imag) * value;
-            // ghat[k].real += fhat[-k].real*value;
-            // ghat[k].imag += fhat[-k].imag*value;
-          }
-        }
-
-      }
-      
-      // permute the pointers (wigd, wigdmin1 and wigdmin2) for the next
-      // recursions step for the calculation of the Wigner-d matrices.
-      // Therefore the two most recently computed Wigner-d matrices are
-      // preserved for next recursion step.
-      // The other matrix will be overwritten in the next step.
-      // Use wigd as exchange variable.
-      wigd = start_wigd_min2;
-      
-      start_wigd_min2 = start_wigd_min1;
-      start_wigd_min1 = start_wigd;
-      start_wigd = wigd;
-      
-      wigd_min1 = start_wigd_min1;
-      wigd_min2 = start_wigd_min2;
-    }
-    
+  }
 }
 
 

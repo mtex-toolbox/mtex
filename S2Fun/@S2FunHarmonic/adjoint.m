@@ -33,7 +33,7 @@ function sF = adjoint(v,y, varargin)
 
 
 % Use NFSFT of nfft toolbox
-if ~check_option(varargin,'nfft')
+if check_option(varargin,'nfsft')
   sF = S2FunHarmonic.adjointNFSFT(v,y,varargin{:});
   return
 end
@@ -129,12 +129,11 @@ if isempty(plan) && ~(isa(v,'quadratureS2Grid') && strcmp(v.scheme,'ClenshawCurt
   % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
   %                         measuring their execution time. This can take some time (often a few seconds).
     fftw_flags = int8(64);
-    nfft_flags = 1+2^12+2^4+2^10; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT
-  % nfft_cutoff parameter
-    m = get_option(varargin,'cutoffParameter',4);
-  % oversampling factor
-    sigma = 3;
-    fftw_size = 2*ceil(sigma/2*NN);
+    nfft_flags = 1+2^12+2^4+2^10+2^13; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT | NFFT_PRUNED_FFT
+  % nfft cutoff and oversampling, the pair S2FunHarmonic/eval uses
+    m = get_option(varargin,'cutoffParameter',6);
+    sigma = get_option(varargin,'oversampling',2);
+    fftw_size = fftLength(sigma*NN);
   % initialize nfft plan
   plan = nfftmex('init_guru',{2,NN,NN,length(v),fftw_size,fftw_size,m,nfft_flags,fftw_flags});
 
@@ -223,7 +222,7 @@ for m = 1:len
 end
 
 if flags(3)
-  for n=2:N
+  for n=1:N
     ind = n^2+1 : (n+1)^2;
     A = fhat(ind,:);
     fhat(ind,:) = A + (A==0).*conj(flip(A,1)); 

@@ -93,257 +93,91 @@
 #include <omp.h>
 #endif
 #include "get_flags.c"  // transform number which includes the flags to boolean vector
-#include "wigner_d_recursion_at_pi_half.c"   // use three term recurrence relation to compute Wigner-d matrices
+#include "wigner_d_quadrant_at_pi_half.c"   // three term recurrence relation for the Wigner-d matrices at pi/2
 #include "L2_normalized_WignerD_functions.c"  // use L_2-normalized Wigner-D functions by scaling the fourier coefficients
 
 
 
-// The computational routine
-static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
-                            const int makeEven, const int isReal, const int isAntipodal, 
-                            mxDouble *sym_axis, mxComplexDouble *ghat, const mwSize nrows )
+// loop bounds of the orders k (right, rZ-fold) or l (left) of degree n, halve
+// drops the negative ones; degrees 0 and 1 ignore the symmetries and are only
+// halved by halve1
+static void order_bounds(int n, int rZ, int halve, int halve1, int *min, int *max, int *step)
 {
+  if (n <= 1) { *min = halve1 ? 0 : -n; *max = n; *step = 1; return; }
+  *min = -n + n % rZ;
+  *max = n - n % rZ;
+  *step = rZ;
+  if (halve) *min = 0;
+}
 
-  // define usefull variables
-    int k,l,j,n;                                      // running indices
-    const int N = bandwidth;                          // integer bandwidth
-    const int rowcol_len = (2*N+1+makeEven);          // length of a row and a column [ ghat(1,:,1) and ghat(:,1,1)]
-    const int matrix_size = rowcol_len*rowcol_len;    // size of one matrix [ ghat(:,:,1) ]
-    const int SRightY = sym_axis[0];                  // {1,2} - fold rotation around Y-axis in right symmetry
-    const int SRightZ = sym_axis[1];                  // {1,2,3,4,6} - fold rotation around Z-axis in right symmetry
-    const int SLeftY = sym_axis[2];                   // {1,2} - fold rotation around Y-axis in left symmetry
-    const int SLeftZ = sym_axis[3];                   // {1,2,3,4,6} - fold rotation around Z-axis in left symmetry
-    
-    
-  // Be shure N>0. Otherwise return the trivial solution.
-    if(N==0)
-    {
-      ghat[0].real = fhat[0].real;
-      ghat[0].imag = fhat[0].imag;
-      return;
-    }
-    
-    
-  // Idea: Calculate Wigner-d matrix by recurrence formula from last two
-  // Wigner-d matrices. 
-  // Because of symmetry only the left parts of the rows are needed.
-  //       (  A  | A'  )        + (the cross) represents row and column with index 0
-  //   d = ( ----+---- )        ' corresponds to flip(.,2)
-  //       (  A* | A*' )        * corresponds to flip(.,1)
-    // Create 3 Wigner-d matrices for recurrence relation (2 as input and 1
-    // as output). Also get an auxiliary pointer to the matrices in each case.
-    mxArray *D_min2 = mxCreateDoubleMatrix(2*N+1,N+1,mxREAL);
-    mxDouble *wigd_min2 = mxGetDoubles(D_min2);
-    mxDouble *start_wigd_min2;
-    start_wigd_min2 = wigd_min2;
-    
-    mxArray *D_min1 = mxCreateDoubleMatrix(2*N+1,N+1,mxREAL);
-    mxDouble *wigd_min1 = mxGetDoubles(D_min1);
-    mxDouble *start_wigd_min1;
-    start_wigd_min1 = wigd_min1;
-    
-    mxArray *D = mxCreateDoubleMatrix(2*N+1,N+1,mxREAL);
-    mxDouble *wigd = mxGetDoubles(D);
-    mxDouble *start_wigd;
-    start_wigd = wigd;
-    
-    
-    // Set start values for recurrence relations to compute Wigner-d matrices
-    // Wigner_d(0,pi/2)
-    wigd_min2[2*(N+1)*N] = 1;         // go to last column and center row of matrix
-    
-    // Wigner_d(1,pi/2)
-    wigd_min1 += (2*N+1)*(N-1)+N;               // go to Wigner_d(1,pi/2) at matrixposition [-1,-1]
-    const double sqrt_1_2 = sqrt(0.5);
-    const double wigd_harmonicdegree1[3][3] = { // values of Wigner_d(1,pi/2)
-                                                  {   0.5  ,-sqrt_1_2,  -0.5  },
-                                                  {sqrt_1_2,     0   ,sqrt_1_2},
-                                                  {  -0.5  ,-sqrt_1_2,   0.5  }};
-    for (k=0; k<2; k++)
-    {
-      for (l = -1; l<=1; l++)
+// Where ghat(k,j,l) is stored: at base[(k-k0)/rk + (j+j0)*sj + (l-l0)/rl*sl]
+// for the multiples k-k0 of rk and l-l0 of rl
+typedef struct { int k0, rk, j0, l0, rl; size_t sj, sl; } lattice;
+
+// The computational routine
+//   ghat(k,j,l) = sum_n fhat(n,k,l) d^n(k,-j) d^n(l,-j)
+// for j >= 0 with the quadrant S(a,b) = d^n(-a,-b), from which
+//   d^n(k,-j) = S(-k,j) for k <= 0,  (-1)^(n+k+j) S(k,j) for k > 0.
+// The Wigner-d matrices of a block of degrees are computed first and then
+// every row ghat(:,j,l) takes the whole block, which keeps it in cache.
+static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
+                            const int isReal, const int isAntipodal, mxDouble *sym_axis,
+                            mxComplexDouble *ghat, const lattice G )
+{
+  const int N = bandwidth;
+  const size_t ld = N+1;
+  const int SRightY = sym_axis[0], SRightZ = sym_axis[1];
+  const int SLeftY = sym_axis[2], SLeftZ = sym_axis[3];
+
+  // halve the orders k, l by the symmetries - a real valued ghat does not
+  // even store the negative l
+  const int halveK = (SRightY==2) || ((SRightY*SLeftY==2) && isReal);
+  const int halveL = (SLeftY==2) || isReal;
+
+  // quadrants of one block of degrees and of the two before, and of the block
+  // D(k,j,n) = d^n(k,-j) for k = -n..n
+  const int B = 4;
+  const size_t ldD = 2*N+1;
+  double *S = calloc((B+2)*ld*ld,sizeof(double));
+  double *D = malloc(B*ld*ldD*sizeof(double));
+
+  for (int n0 = 0; n0 <= N; n0 += B)
+  {
+    const int n1 = (n0+B < N+1) ? n0+B : N+1;
+    for (int n = n0; n < n1; n++)
+      wigner_d_quadrant_at_pi_half(N,n,S+((n+B)%(B+2))*ld*ld,S+((n+B+1)%(B+2))*ld*ld,S+(n%(B+2))*ld*ld);
+    fill_wigner_d_columns(N,n0,n1,B,S,D);
+
+    #pragma omp parallel for schedule(dynamic) if(N >= 16)
+    for (int j = 0; j < n1; j++)
+      for (int l = 1-n1; l < n1; l++)
       {
-        wigd_min1[l] = wigd_harmonicdegree1[l+1][k];  // fill with values
-      }
-      wigd_min1 += 2*N+1;                             // go to next column
-    }
-    wigd_min1 = start_wigd_min1;                      // reset pointer to matrix start
-    
-
-  // Compute ghat by iterating over harmonic degree n of Wigner-d matrices
-  // in outermost loop. Start with n=0 and n=1 manually and use a loop for
-  // the remaining indices n > 1, except the last one. It is sufficient to
-  // compute only one of the symmetric values in ghat.
-  // Do the last iteration n=N seperately and use symmetry in 3rd dimension 
-  // of ghat to fill the symmetric values.
-    // Create pointers for help. One saves the starting position of ghat
-    // and the other one saves the starting position of fhat in current
-    // iteration of harmonic degree n.
-    mxComplexDouble *start_ghat;
-    start_ghat = ghat;
-    mxComplexDouble *iter_fhat;
-    mxComplexDouble *iter_ghat;
-    mxDouble *iter_wigd;
-    
-
-  // Do recursion for n = 0.
-    // Write first value of fhat in ghat(0,0,0) , since Wigner_d(0,pi/2)=1.
-    ghat[(1-isReal)*matrix_size*N + rowcol_len*N + N] = *fhat;
-    // Set pointer fhat to next harmonic degree (to the 2nd value of fhat)
-    fhat ++;
-    
-  
-  // Do recursion for n = 1.
-    // jump to ghat(-1,-1,-1)
-    ghat += (1-isReal)*matrix_size*(N-1) + rowcol_len*(N-1) + (N-1);
-    // if ghat is halfsized skip 3 values of fhat
-    fhat += 3*isReal;
-    iter_fhat = fhat;
-    // fill ghat with values := fhat(1,k,l) * d^1(j,k) * d^1(j,l)
-    double value;
-    for (j= -1; j<= 1; j++)
-    {
-      for (l= -1+isReal; l<=1; l++)
-      {
-        for (k= -1; k<=1; k++)
+        if ((l-G.l0) % G.rl) continue;
+        mxComplexDouble *g = ghat + (j+G.j0)*G.sj + (l-G.l0)/G.rl*G.sl;
+        const int nmin = (j > abs(l)) ? j : abs(l);
+        for (int n = (n0 > nmin) ? n0 : nmin; n < n1; n++)
         {
-          value = wigd_harmonicdegree1[k+1][-j+1] * wigd_harmonicdegree1[l+1][-j+1];
-          ghat[k+1].real += fhat[k+1].real* value;
-          ghat[k+1].imag += fhat[k+1].imag* value;
-        }
-        // jump to next matrix (3rd dimension)
-        ghat += matrix_size;
-        fhat += 3;
-      }
-      // jump to next column
-      ghat += -matrix_size*(3-isReal)+rowcol_len;
-      // reset pointer fhat
-      fhat = iter_fhat;
-    }
-    // Set pointer fhat to next harmonic degree (to the 11th value of fhat)
-    fhat += 9 - 3*isReal;
-    
-    
-    // Be shure N>1, otherwise STOP.
-    if (N==1) 
-      return;
-    
-    
-    // define some usefull variables
-    const int shift_tocenterwigner = (2*N+1)*N+N;
-    int L_min, L_max, K_min, K_max, K_shift, L_shift;
+          int kmin, kmax, kstep, lmin, lmax, lstep;
+          order_bounds(n,SLeftZ,halveL,isReal,&lmin,&lmax,&lstep);
+          if (l < lmin || l > lmax || (l-lmin) % lstep) continue;
+          order_bounds(n,SRightZ,halveK,0,&kmin,&kmax,&kstep);
 
-
-  // Do recursion for 1 < n <= N:
-    for (n=2; n<=N; n++)
-    {
-
-      // Calculate Wigner-d matrix
-      wigner_d_recursion_at_pi_half(N,n,wigd_min2,wigd_min1,wigd);
-      
-      // jump to the center of Wigner-d matrix and save this position
-      wigd +=  shift_tocenterwigner;
-      iter_wigd = wigd;
-      
-      // Compute ghat by adding over all summands of current harmonic 
-      // degree n. Therefore it is sufficient to compute ghat only for 
-      // j>=0, since
-      //             ghat(k,j,l) = (-1)^(k+l) * ghat(k,-j,l).
-      // Moreover we have additional symmetry properties if 
-      //    - SO3FunHarmonic is real valued
-      //    - SO3FunHarmonic is antipodal
-      //    - SO3FunHarmonic has non trivial right and left symmetry
-      // We use this to speed up by only computing one of the symmetrical 
-      // coefficients. Hence we set the left and right loop bounds:
-      L_shift = n % SLeftZ;
-      L_min = -n+L_shift;
-      L_max = n-L_shift;
-      if(SLeftY==2)
-        L_min=0;
-      K_shift = n % SRightZ;
-      K_min = -n+K_shift;
-      K_max = n-K_shift;
-      if(SRightY==2)
-        K_min=0;
-      if((SRightY*SLeftY==2) && (isReal==1)) 
-      {
-        K_min=0;
-        L_min=0;
-      }
-      if((SRightY*SLeftY==1) && (isReal==1) && (isAntipodal==0))
-        L_min=0;
-
-
-      // Set pointer ghat to ghat(0,0,0) if F is real valued and to
-      // ghat(0,0,-n) otherwise (if ghat is fullsized matrix)
-      // Moreover save this position for further iterations
-      //      Note: ghat = start_ghat  would reset pointer ghat to ghat(-N,-N,0) 
-      //            if F is real valued and ghat(-N,-N,-N) otherwise [if ghat is fullsized]
-      ghat = start_ghat + (1-isReal)*matrix_size*(N+L_min) + rowcol_len*N + N;
-      iter_ghat = ghat;
-      // Set pointer of fhat to the central value fhat(n,0,-n) or fhat(n,0,0) 
-      // and save this position for further iterations
-      fhat += n + (L_min+n)*(2*n+1) ;
-      iter_fhat = fhat;
-
-
-      // Iteration:
-      // The Wigner-d functions satisfy the symmetry property
-      //          d_n(j,k)*d_n(j,l) = d_n(k,-j)*d_n(l,-j)
-      // in MTEX. We use this in the following.
-      #pragma omp parallel for firstprivate(ghat,fhat,wigd) private(value)        // Parallelization
-      for (j=0; j<=n; j++)
-      {
-        // jump to actual column
-        ghat = iter_ghat + j*rowcol_len;
-        // reset pointer fhat
-        fhat = iter_fhat;
-        // use column -j of the Wigner-d matrix
-        wigd = iter_wigd - j*(2*N+1);
-
-        for (l= L_min; l<=L_max; l+=SLeftZ)
-        {
-          for (k= K_min; k<=K_max; k+=SRightZ)
+          const double *d = D + ((n-n0)*ld + j)*ldD + N;   // d[k] = d^n(k,-j)
+          const double dl = d[l];
+          const mxComplexDouble *f = fhat + (size_t)n*(2*n-1)*(2*n+1)/3 + (l+n)*(2*n+1) + n;
+          for (int k = kmin; k <= kmax; k += kstep)
           {
-            // compute value
-            value = wigd[k]*wigd[l];
-
-            // set value
-            ghat[k].real += fhat[k].real*value;
-            ghat[k].imag += fhat[k].imag*value;
-
+            if ((k-G.k0) % G.rk) continue;
+            const double v = d[k] * dl;
+            mxComplexDouble *gk = g + (k-G.k0)/G.rk;
+            gk->real += f[k].real * v;
+            gk->imag += f[k].imag * v;
           }
-          // jump to next matrix (along 3rd dimension)
-          ghat += SLeftZ*matrix_size;
-          fhat += SLeftZ*(2*n+1);
         }
       }
-
-      // Set pointer fhat back to the first value fhat(n+1,-n-1,-n-1) of next harmonic degree
-      fhat = iter_fhat -n + (2*n+1)*(n+1-L_min);
-
-      // permute the pointers (wigd, wigdmin1 and wigdmin2) for the next
-      // recursions step for the calculation of the Wigner-d matrices.
-      // Therefore the two most recently computed Wigner-d matrices are
-      // preserved for next recursion step.
-      // The other matrix will be overwritten in the next step.
-      // Use wigd as exchange variable.
-      wigd = start_wigd_min2;
-      
-      start_wigd_min2 = start_wigd_min1;
-      start_wigd_min1 = start_wigd;
-      start_wigd = wigd;
-      
-      wigd_min1 = start_wigd_min1;
-      wigd_min2 = start_wigd_min2;
-    }
-    
-
-    // free the storage of the Wigner-d matrices
-    mxDestroyArray(D);
-    mxDestroyArray(D_min1);
-    mxDestroyArray(D_min2);
-
+  }
+  free(D);
+  free(S);
 }
 
 
@@ -417,7 +251,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
     // if exists and the flag implies we want to use right and left 
     // symmetries to speed up --> get sym_axis of input
-    double s[4] = {1,1,1,1};
+    double s[4] = {1,1,1,1}, ys[4];
     if( (nrhs>=4) && (flags[4]) )
       sym_axis = mxGetDoubles(prhs[3]);
     else
@@ -430,45 +264,50 @@ void mexFunction( int nlhs, mxArray *plhs[],
     const int makeEven = flags[1];
     const int isReal = flags[2];
     const int isAntipodal = flags[3];
+    const int N = bandwidth;
 
-  
-  // define length of the 3 dimensions of ghat
-    // If f is a real valued function, then half size in 3rd dimension of
-    // ghat is sufficient. Sometimes it is necessary to add zeros in some
-    // dimensions to get even size for nfft.
+  // define the lattice ghat is written to
     mwSize dims[3];
-    dims[0] = 2*bandwidth+1+makeEven;
-    dims[1] = 2*bandwidth+1+makeEven;
-    int start_shift;
-    if (isReal == 0){
-      dims[2] = 2*bandwidth+1+makeEven;
-      start_shift = makeEven*(dims[0]*dims[1] + dims[0] + 1);
+    lattice G;
+    if (flags[5])
+    {
+      // the nfft lattice of SO3FunHarmonic/eval: only the multiples of the
+      // Z-axis symmetries rk, rl, starting at -N-1 (at -1 or 0 if isReal),
+      // zero padded to even length, and all orders, since ghat is not
+      // reconstructed from the Y-axis symmetries afterwards
+      const int rk = sym_axis[1], rl = sym_axis[3];
+      const int lmin = isReal ? -((N+1) % 2) : -(N+1);
+      G.k0 = -rk*((N+1)/rk);
+      G.l0 = (lmin < 0 && rl == 1) ? lmin : -rl*((-lmin)/rl);
+      const int nk = N/rk - G.k0/rk + 1, nl = N/rl - G.l0/rl + 1;
+      dims[0] = nk + nk % 2; dims[1] = 2*N+2; dims[2] = nl + nl % 2;
+      G.rk = rk; G.rl = rl; G.j0 = N+1; G.sj = dims[0]; G.sl = dims[0]*dims[1];
+      ys[0] = 1; ys[1] = rk; ys[2] = 1; ys[3] = rl;
+      sym_axis = ys;
     }
-    else if (bandwidth % 2 == 0){
-      dims[2] = bandwidth+1+makeEven;
-      start_shift = makeEven*(dims[0]*dims[1] + dims[0] + 1);
+    else
+    {
+      // If f is a real valued function, then half size in 3rd dimension of
+      // ghat is sufficient. Sometimes it is necessary to add zeros in some
+      // dimensions to get even size for nfft.
+      dims[0] = 2*N+1+makeEven;
+      dims[1] = 2*N+1+makeEven;
+      dims[2] = isReal ? N+1+makeEven*((N+1)%2) : 2*N+1+makeEven;
+      G.k0 = -N-makeEven; G.rk = 1; G.j0 = N+makeEven; G.rl = 1;
+      G.l0 = isReal ? -makeEven*((N+1)%2) : -N-makeEven;
+      G.sj = dims[0]; G.sl = dims[0]*dims[1];
     }
-    else{
-      dims[2] = bandwidth+1;
-      start_shift = makeEven*(dims[0] + 1);
-    }
-    
- 
+
   // create output data
     plhs[0] = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxCOMPLEX);
-    
-    // create a pointer to the data in the output array (outFourierCoeff)
     outFourierCoeff = mxGetComplexDoubles(plhs[0]);
-    // set pointer to skip first index
-    outFourierCoeff += start_shift;
-    
   
   // use L2-normalize Wigner-D functions by scaling the fourier coefficients
   if(flags[0])
     L2_normalized_WignerD_functions(bandwidth,inCoeff);
   
   // call the computational routine
-    calculate_ghat(bandwidth,inCoeff,makeEven,isReal,isAntipodal,sym_axis,outFourierCoeff,(mwSize)nrows);
+    calculate_ghat(bandwidth,inCoeff,isReal,isAntipodal,sym_axis,outFourierCoeff,G);
 
   // free the storage
   mxDestroyArray(zeiger);

@@ -22,8 +22,8 @@ function SO3F = adjoint(rot,values, varargin)
 % Options
 %  bandwidth - maximal harmonic degree (default: 64)
 %  weights   - quadrature weights
-%  cutOffParameter - set parameter precision parameter m for nfft
-%  oversampling - NFFT oversampling factor sigma (default: 2)
+%  cutOffParameter - NFFT window cutoff m (default: 6 for few nodes on a large lattice, 4 otherwise)
+%  oversampling - NFFT oversampling factor sigma (default: 1.25 for few nodes on a large lattice, 2 otherwise)
 %
 % Flags
 %  'nfsoft'            - use (mostly slower) NFSOFT algorithm
@@ -210,29 +210,42 @@ else
   plan = [];
 end
 
-% initialize nfft plan
-if isempty(plan) && ~(isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')) && ~check_option(varargin,'directComputation')
+useNFFT = ~(isa(rot,'quadratureSO3Grid') && strcmp(rot.scheme,'ClenshawCurtis')) && ~check_option(varargin,'directComputation');
+if useNFFT
 
-  % nfft size
-    NN = 2*N+2;
-  % {FFTW_ESTIMATE} or 64 - Specifies that, instead of actual measurements of different algorithms, 
-  %                         a simple heuristic is used to pick a (probably sub-optimal) plan quickly. 
-  %                         It is the default value
-  % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
-  %                         measuring their execution time. This can take some time (often a few seconds).
-    fftw_flags = int8(64);
-    nfft_flags = 1+2^12+2^4+2^10; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT
-  % nfft_cutoff parameter
-    m = get_option(varargin,'cutoffParameter',4);
-  % oversampling factor - see SO3FunHarmonic/eval, the forward transform
-    sigma = get_option(varargin,'oversampling',2);
-    fftw_size = 2*ceil(sigma/2*NN);
-  % initialize nfft plan
-  plan = nfftmex('init_guru',{3,NN,NN,NN,length(rot),fftw_size,fftw_size,fftw_size,m,nfft_flags,fftw_flags});
-
-  % set rotations as nodes in plan
+  % only the multiples of the rotational symmetries around the Z-axis are
+  % needed, which the nfft gets on a smaller lattice from stretched nodes
+  NN = 2*N+2;
   nodes = double(Euler(rot(:),'nfft').')/(2*pi);
   nodes(:,isBadNode) = 0;
+  rZ = [1,1];
+  if SRight.id~=0 && SLeft.id~=0, rZ = [SRight.multiplicityZ,SLeft.multiplicityZ]; end
+  [ind1,s3,nodes(3,:)] = foldZ(-(N+1):N,rZ(1),nodes(3,:));
+  [ind3,s1,nodes(1,:)] = foldZ(-(N+1):N,rZ(2),nodes(1,:));
+  szG = [2*ceil(numel(ind1)/2),NN,2*ceil(numel(ind3)/2)];
+  % the kept frequencies start at index 0, which shifts them by s against
+  % the centered frequencies of the nfft
+  shift = exp(2*pi*1i*(s1*nodes(1,:)+s3*nodes(3,:))).';
+
+end
+
+% initialize nfft plan
+if isempty(plan) && useNFFT
+
+  % {FFTW_ESTIMATE} or 64 - Specifies that, instead of actual measurements of different algorithms,
+  %                         a simple heuristic is used to pick a (probably sub-optimal) plan quickly.
+  %                         It is the default value
+  % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and
+  %                         measuring their execution time. This can take some time (often a few seconds).
+    fftw_flags = int8(64);
+    nfft_flags = 1+2^12+2^4+2^10+2^13; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT | NFFT_PRUNED_FFT
+  % window cutoff m and oversampling sigma - see SO3FunHarmonic/eval
+    [m,sigma] = nfftParameters(length(rot),szG,varargin{:});
+    fftw_size = fftLength(sigma*szG);
+  % initialize nfft plan
+  plan = nfftmex('init_guru',{3,szG(3),szG(2),szG(1),length(rot),fftw_size(3),fftw_size(2),fftw_size(1),m,nfft_flags,fftw_flags});
+
+  % set rotations as nodes in plan
   nfftmex('set_x',plan,nodes);
 
   % node-dependent precomputation
@@ -279,24 +292,27 @@ elseif check_option(varargin,'directComputation')
 
 else
 
-  % adjoint nfft
-  ghat = zeros(8*(N+1)^3,len);
+  % adjoint nfft, the Wigner transform reads its lattice directly
+  ghat = zeros([szG,len]);
   for i=1:len
-    nfftmex('set_f', plan, double(W(:) .* values(:,i)));
+    nfftmex('set_f', plan, double(W(:) .* values(:,i)) .* shift);
     nfftmex('adjoint', plan);
-    % adjoint Fourier transform
-    ghat(:,i) = nfftmex('get_f_hat', plan);
+    ghat(:,:,:,i) = reshape(nfftmex('get_f_hat', plan),szG);
   end
-  ghat = reshape(ghat,2*N+2,2*N+2,2*N+2,len);
-  ghat = ghat(2:end,2:end,2:end,:);
 
 end
 
 % --------------------- (3) adjoint Wigner transform ----------------------
 
-% shift rotational grid
-z = (1i).^(reshape(-N:N,1,1,[]) - (-N:N).');
-ghat = z .* ghat;
+% shift rotational grid by the exact i^(l-k)
+ipow = [1;1i;-1;-1i];
+if useNFFT
+  kk = -(N+1) + ind1(1)-1 + (0:szG(1)-1)'*rZ(1);
+  ll = reshape(-(N+1) + ind3(1)-1 + (0:szG(3)-1)*rZ(2),1,1,[]);
+else
+  kk = (-N:N)'; ll = reshape(-N:N,1,1,[]);
+end
+ghat = ipow(mod(ll-kk,4)+1) .* ghat;
 
 % set flags and symmetry axis
 if SLeft.id==0 || SRight.id==0 % do not use symmetry properties, if symmetries are not standardized
@@ -318,7 +334,7 @@ end
 fhat = zeros(deg2dim(N+1),len);
 pC = progressCounter(len,varargin{:});
 for i=1:len
-  fhat(:,i) = wignerTrafoAdjointmex(N,double(ghat(:,:,:,i)),flags,sym);
+  fhat(:,i) = wignerTrafoAdjointmex(N,double(ghat(:,:,:,i)),flags+useNFFT*2^5,sym);
   pC.show(i);
 end
 fhat = symmetriseWignerCoefficients(fhat,flags,SRight,SLeft,sym);

@@ -10,6 +10,8 @@
  *         2^2 -> fhat are the coefficients of a real valued function
  *         2^3 -> fhat are the coefficients of an antipodal function
  *         2^4 -> use right and left symmetry
+ *         2^5 -> read or write the nfft lattice of SO3FunHarmonic/eval and
+ *                adjoint (Wigner transforms only)
  *
  * The previous implementation subtracted 2^6 ... 2^0 greedily, which decodes
  * anything at or above 2^7 as *every* flag set at once: get_flags(128,...)
@@ -19,9 +21,9 @@
 
 static void get_flags(mxDouble number, bool flags[7])
 {
-  if( number != floor(number) || number < 0 || number >= 32 )
+  if( number != floor(number) || number < 0 || number >= 64 )
     mexErrMsgIdAndTxt("MTEX:get_flags:invalidFlags",
-      "flags must be a non-negative integer below 32 (2^0 + ... + 2^4), got %g.",number);
+      "flags must be a non-negative integer below 64 (2^0 + ... + 2^5), got %g.",number);
 
   const int f = (int) number;
   for (int i = 0; i < 7; i++)

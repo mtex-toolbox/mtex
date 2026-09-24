@@ -19,8 +19,8 @@ function f = eval(SO3F,rot,varargin)
 %
 % Options
 %  bandwidth - cut bandwidth of the harmonic series in evaluation process
-%  cutoffParameter - NFFT window cutoff m (default: 4)
-%  oversampling - NFFT oversampling factor sigma (default: 2)
+%  cutoffParameter - NFFT window cutoff m (default: 6 for few nodes on a large lattice, 4 otherwise)
+%  oversampling - NFFT oversampling factor sigma (default: 1.25 for few nodes on a large lattice, 2 otherwise)
 %
 % Flags
 %  nfsoft - use Nonequispace Fast Fourier Transform of the NFFT3 Toolbox (expensive precomputations)
@@ -93,35 +93,46 @@ else
   plan = [];
 end
 
+% frequencies of the dimensions of the Fourier array ghat, dimension 3 is
+% halved for real valued functions - but a plan that is kept for later
+% functions has to take complex ones without symmetries
+kept = check_option(varargin,{'createPlan','keepPlan'});
+realF = SO3F.isReal;
+isReal = realF && ~kept;
+NN = 2*N+2;
+k1 = -(N+1):N;
+if isReal, N2 = N+1+mod(N+1,2); k3 = (1:N2) - N2 + N; else, k3 = k1; end
+
+% ghat is only occupied at the multiples of the rotational symmetries around
+% the Z-axis, so these rows are kept and the nodes are stretched instead
+rZ = [1,1];
+if SO3F.SRight.id~=0 && SO3F.SLeft.id~=0 && ~kept
+  rZ = [SO3F.SRight.multiplicityZ,SO3F.SLeft.multiplicityZ];
+end
+[ind1,s3,abg(3,:)] = foldZ(k1,rZ(1),abg(3,:));
+[ind3,s1,abg(1,:)] = foldZ(k3,rZ(2),abg(1,:));
+sz = [2*ceil(numel(ind1)/2),NN,2*ceil(numel(ind3)/2)];
+
 if isempty(plan)
 
-  % TODO: Heuristic for selection of oversampling Factor sigma and cut-off Parameter m
-
-  % nfft size
-    NN = 2*N+2;
-    if SO3F.isReal, N2 = N+1+mod(N+1,2); else, N2=2*N+2; end
-  % {FFTW_ESTIMATE} or 64 - Specifies that, instead of actual measurements of different algorithms, 
-  %                         a simple heuristic is used to pick a (probably sub-optimal) plan quickly. 
+  % {FFTW_ESTIMATE} or 64 - Specifies that, instead of actual measurements of different algorithms,
+  %                         a simple heuristic is used to pick a (probably sub-optimal) plan quickly.
   %                         It is the default value
-  % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
+  % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and
   %                         measuring their execution time. This can take some time (often a few seconds).
     fftw_flags = int8(64);
-    nfft_flags = 1+2^12+2^4+2^10; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT
-  % nfft_cutoff parameter
-    m = get_option(varargin,'cutoffParameter',4);
-  % oversampling factor - 2 is the standard pairing for the cutoff m=4 above
-  % and holds the NFFT error at ~1e-8. In 3d every increment costs the cube,
-  % so sigma=3 spent 3.4x the FFT on accuracy that is not used
-    sigma = get_option(varargin,'oversampling',2);
-    fftw_size = 2*ceil(sigma/2*NN);
-    fftw_size2 = 2*ceil(sigma/2*N2);
+    nfft_flags = 1+2^12+2^4+2^10+2^13; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT | NFFT_PRUNED_FFT
+  % window cutoff m and oversampling sigma: few nodes on a large lattice spend
+  % the time in the FFT, many nodes in the window sums
+    [m,sigma] = nfftParameters(M,sz,varargin{:});
+    fftw_size = fftLength(sigma*sz);
   % initialize nfft plan
   if check_option(varargin,'direct')
-    plan = nfftmex('init_3d',N2,NN,NN,M);
+    plan = nfftmex('init_3d',sz(3),sz(2),sz(1),M);
   else
-    plan = nfftmex('init_guru',{3,N2,NN,NN,M,fftw_size2,fftw_size,fftw_size,m,nfft_flags,fftw_flags});
+    plan = nfftmex('init_guru',{3,sz(3),sz(2),sz(1),M,fftw_size(3),fftw_size(2),fftw_size(1),m,nfft_flags,fftw_flags});
   end
-  
+
   % set rotations as nodes in plan
   nfftmex('set_x',plan,double(abg));
 
@@ -136,21 +147,31 @@ if check_option(varargin,'createPlan')
   return
 end
 
-% If SO3F is real valued we have the symmetry properties (*) and (**) for
-% the Fourier coefficients. We will use this to speed up computation.
-if SO3F.isReal
-  flags = 2^0+2^1+2^2+2^4;
-else
-  flags = 2^0+2^1+2^4;
-end
+% The Wigner transform writes the Fourier coefficients straight into the nfft
+% lattice (flag 2^5), using L2-normalized Wigner-D functions (2^0), the
+% symmetries (2^4) and, if SO3F is real valued, the properties (*) and (**)
+flags = 2^0+isReal*2^2+2^4+2^5;
+kk = k1(ind1(1)) + (0:sz(1)-1)'*rZ(1);
+ll = reshape(k3(ind3(1)) + (0:sz(3)-1)*rZ(2),1,1,[]);
+% exact i^(k-l) and the sign of the symmetry ghat(k,-j,l) = (-1)^(k+l) ghat(k,j,l)
+ipow = [1;1i;-1;-1i];
+phase = ipow(mod(kk-ll,4)+1);
+pm = 1-2*mod(kk+ll,2);
+
+% the kept frequencies start at index 0, which shifts them by s against the
+% centered frequencies of the nfft
+shift = exp(-2*pi*1i*(s1*abg(1,:)+s3*abg(3,:))).';
 
 f = zeros([length(rot) size(SO3F)]);
 for k = 1:length(SO3F)
 
-  ghat = wignerTrafo(SO3F.subSet(k),flags,'bandwidth',N);
+  g = wignerTrafomex(N,double(SO3F.fhat(1:deg2dim(N+1),k)),flags,[1,rZ(1),1,rZ(2)]);
+  if isReal, g(:,:,1-ll(1)/rZ(2)) = g(:,:,1-ll(1)/rZ(2))/2; end
+  g(:,N+2:end,:) = phase .* g(:,N+2:end,:);
+  g(:,2:N+1,:) = pm .* flip(g(:,N+3:end,:),2);
 
   % set Fourier coefficients
-  nfftmex('set_f_hat',plan,double(ghat(:)));
+  nfftmex('set_f_hat',plan,g(:));
 
   if check_option(varargin,'direct')
     % direct Fourier transform
@@ -160,14 +181,14 @@ for k = 1:length(SO3F)
     nfftmex('trafo',plan);
   end
 
-  % get function values from plan
-  if SO3F.isReal
-    % use (**) and shift summation in 2nd index
-    f(:,k) = 2*real((exp(-2*pi*1i*ceil(N/2)*abg(1,:).')).*(nfftmex('get_f',plan)));
+  % get function values from plan, using (**) if SO3F is real valued
+  if isReal
+    f(:,k) = 2*real(shift .* nfftmex('get_f',plan));
   else
-    f(:,k) = nfftmex('get_f',plan);
+    f(:,k) = shift .* nfftmex('get_f',plan);
   end
 end
+if realF, f = real(f); end
 
 
 % kill plan

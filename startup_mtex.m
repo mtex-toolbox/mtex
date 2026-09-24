@@ -49,6 +49,8 @@ if ~isdeployed && isempty(dir(fullfile(root,'doc','html','helpsearch*')))
 end
 
 check_mex('fast')
+% the nfft OpenMP threads start at maxNumCompThreads, which can be far below the core count
+try nfftmex('set_num_threads',feature('numcores')); end %#ok<TRYNC>
 dot
 
 if isempty(lasterr)

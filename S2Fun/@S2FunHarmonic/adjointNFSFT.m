@@ -38,12 +38,12 @@ end
 if numel(nodes)~=numel(values)
   s = size(values); s = s(2:end);
   values = reshape(values,numel(nodes),[]);
-  sF = S2FunHarmonic.adjoint(nodes,values(:,1),'createPlan',varargin{:});
+  sF = S2FunHarmonic.adjoint(nodes,values(:,1),'createPlan','nfsft',varargin{:});
   for ind = 1:prod(size(values, 2))
-    G = S2FunHarmonic.adjoint(nodes,values(:,ind),'keepPlan',varargin{:});
+    G = S2FunHarmonic.adjoint(nodes,values(:,ind),'keepPlan','nfsft',varargin{:});
     sF = [sF;G];
   end
-  S2FunHarmonic.adjoint(zvector,1,'killPlan');
+  S2FunHarmonic.adjoint(zvector,1,'killPlan','nfsft');
   sF = reshape(sF, s); 
   return
 end
