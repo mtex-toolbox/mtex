@@ -107,7 +107,9 @@ if isempty(plan)
   % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and 
   %                         measuring their execution time. This can take some time (often a few seconds).
     fftw_flags = int8(64);
-    nfft_flags = 1+2^12+2^4+2^10+2^13; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT | NFFT_PRUNED_FFT
+    nfft_flags = 1+2^12+2^10+2^13; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | FFTW_INIT | NFFT_PRUNED_FFT
+    % PRE_PSI pays only for a plan that is kept for later functions
+    if check_option(varargin,{'createPlan','keepPlan'}), nfft_flags = nfft_flags + 2^4; end
   % nfft_cutoff parameter 
     m = get_option(varargin,'cutoffParameter',6);
   % oversampling factor
@@ -164,7 +166,7 @@ for k = 1:length(sF)
   % get function values from plan
   if isReal
     % use (**) and shift summation in 2nd index
-    f(:,k) = 2*real( exp(-1i*v.rho*ceil((N)/2))  .* (nfftmex('get_f',plan)) );
+    f(:,k) = 2*real( exp(-1i*rho*ceil((N)/2))  .* (nfftmex('get_f',plan)) );
   else
     f(:,k) = nfftmex('get_f',plan);
   end

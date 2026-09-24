@@ -173,11 +173,8 @@ if isa(v,'quadratureS2Grid') && strcmp(v.scheme,'ClenshawCurtis')
 elseif check_option(varargin,'directComputation')
 
   % Do adjoint nsoft directly by evaluating the sum
-  ghat = zeros(2*N+1,2*N+1,len);
-
-  for m = 1:length(v)
-    ghat = ghat + W(m)*y(m)* exp(1i* ( (-N:N)'*v.rho(m) + (-N:N)*v.theta(m) ));
-  end
+  [theta,rho] = polar(v(:));
+  ghat = pagemtimes(exp(1i*(-N:N).'*rho.'), reshape(W(:).*y,[],1,len) .* exp(1i*theta*(-N:N)));
 
 else
 

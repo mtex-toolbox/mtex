@@ -121,7 +121,9 @@ if isempty(plan)
   % {FFTW_MEASURE} or 0   - tells FFTW to find an optimized plan by actually computing several FFTs and
   %                         measuring their execution time. This can take some time (often a few seconds).
     fftw_flags = int8(64);
-    nfft_flags = 1+2^12+2^4+2^10+2^13; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | PRE_PSI | FFTW_INIT | NFFT_PRUNED_FFT
+    nfft_flags = 1+2^12+2^10+2^13; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | FFTW_INIT | NFFT_PRUNED_FFT
+    % PRE_PSI pays only for a plan that is kept for later functions
+    if kept, nfft_flags = nfft_flags + 2^4; end
   % window cutoff m and oversampling sigma: few nodes on a large lattice spend
   % the time in the FFT, many nodes in the window sums
     [m,sigma] = nfftParameters(M,sz,varargin{:});
