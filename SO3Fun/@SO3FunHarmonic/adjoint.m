@@ -279,6 +279,25 @@ if check_option(varargin,'createPlan')
   return
 end
 
+% set flags and symmetry axis
+if SLeft.id==0 || SRight.id==0 % do not use symmetry properties, if symmetries are not standardized
+  flags = 2^0;  % use L2-normalized Wigner-D functions
+else
+  flags = 2^0+2^4;  % use L2-normalized Wigner-D functions and symmetry properties
+end
+if isReal % real valued
+  flags = flags+2^2;
+end
+sym = [min(SRight.multiplicityPerpZ,2),SRight.multiplicityZ,...
+       min(SLeft.multiplicityPerpZ,2),SLeft.multiplicityZ];
+% if random samples the symmetry properties do not fit
+if ~isa(rot,'quadratureSO3Grid') || strcmp(rot.scheme,'GaussLegendre')
+  sym([1,3]) = 1;
+end
+% the folded lattice has the Z-axis symmetries rZ
+symLattice = sym;
+if folded, symLattice([2,4]) = rZ; end
+
 % use trivariate inverse equispaced fft in case of Clenshaw Curtis
 % quadrature grid and nfft otherwise 
 % TODO: Do FFT × NFFT × FFT in case of GaussLegendre-Quadrature
@@ -310,53 +329,23 @@ elseif check_option(varargin,'directComputation')
       + permute(-N:N,[1,3,2])*nodes(1,m)) );
   end
 
-else
-
-  % adjoint nfft, the Wigner transform reads its lattice directly
-  ghat = zeros([szG,len]);
-  for i=1:len
-    nfftmex('set_f', plan, double(W(:) .* values(:,i)) .* shift);
-    nfftmex('adjoint', plan);
-    ghat(1:szN(1),:,:,i) = reshape(nfftmex('get_f_hat', plan),szN);
-  end
-
 end
 
 % --------------------- (3) adjoint Wigner transform ----------------------
 
-% shift rotational grid by the exact i^(l-k)
-ipow = [1;1i;-1;-1i];
-if folded
-  kk = -(N+1) + ind1(1)-1 + (0:szG(1)-1)'*rZ(1);
-  ll = reshape(-(N+1) + ind3(1)-1 + (0:szG(3)-1)*rZ(2),1,1,[]);
-else
-  kk = (-N:N)'; ll = reshape(-N:N,1,1,[]);
-end
-ghat = ipow(mod(ll-kk,4)+1) .* ghat;
-
-% set flags and symmetry axis
-if SLeft.id==0 || SRight.id==0 % do not use symmetry properties, if symmetries are not standardized
-  flags = 2^0;  % use L2-normalized Wigner-D functions
-else
-  flags = 2^0+2^4;  % use L2-normalized Wigner-D functions and symmetry properties
-end
-if isReal % real valued
-  flags = flags+2^2;
-end
-sym = [min(SRight.multiplicityPerpZ,2),SRight.multiplicityZ,...
-       min(SLeft.multiplicityPerpZ,2),SLeft.multiplicityZ];
-% if random samples the symmetry properties do not fit
-if ~isa(rot,'quadratureSO3Grid') || strcmp(rot.scheme,'GaussLegendre')
-  sym([1,3]) = 1;
-end
-% the folded lattice has the Z-axis symmetries rZ
-symLattice = sym;
-if folded, symLattice([2,4]) = rZ; end
-% use adjoint Wigner transform
+% the adjoint Wigner transform includes the exact i^(l-k), the adjoint nfft
+% goes straight into it
 fhat = zeros(deg2dim(N+1),len);
 pC = progressCounter(len,varargin{:});
 for i=1:len
-  fhat(:,i) = wignerTrafoAdjointmex(N,double(ghat(:,:,:,i)),flags+folded*2^5,symLattice);
+  if useNFFT
+    nfftmex('set_f', plan, double(W(:) .* values(:,i)) .* shift);
+    nfftmex('adjoint', plan);
+    g = reshape(nfftmex('get_f_hat', plan),szN);
+  else
+    g = ghat(:,:,:,i);
+  end
+  fhat(:,i) = wignerTrafoAdjointmex(N,double(g),flags+folded*2^5,symLattice);
   pC.show(i);
 end
 fhat = symmetriseWignerCoefficients(fhat,flags,SRight,SLeft,sym);

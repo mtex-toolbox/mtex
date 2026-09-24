@@ -47,11 +47,13 @@
  *             2^2 -> fhat are the fourier coefficients of a real valued function
  *             2^3 -> antipodal
  *             2^4 -> use right and left symmetry
+ *             2^5 -> ghat on the nfft lattice of SO3FunHarmonic/adjoint, whose
+ *                    first dimension may end early, the missing orders are zero
  *  sym_axis - vector [SRight-Y,SRight-Z,SLeft-Y,SLeft-Z] where SRight-Y,SLeft-Y are in {1,2} and 
  *             SRight-Z,SLeft-Z are in {1,2,3,4,6} and describes the countability of the symmetry axis
  *
  * Output
- *  fhat - SO(3) Fourier coefficient vector
+ *  fhat - SO(3) Fourier coefficient vector, including the factor i^(l-k)
  *
  *
  * This is a MEX-file for MATLAB.
@@ -69,7 +71,6 @@
 #endif
 #include "get_flags.c"  // transform number which includes the flags to boolean vector
 #include "wigner_d_quadrant_at_pi_half.c"   // three term recurrence relation for the Wigner-d matrices at pi/2
-#include "L2_normalized_WignerD_functions.c"  // use L_2-normalized Wigner-D functions by scaling the fourier coefficients
 
 
 
@@ -85,8 +86,9 @@ static void order_bounds(int n, int rZ, int halve, int *min, int *max, int *step
 }
 
 // Where ghat(k,j,l) is stored: at base[(k-k0)/rk + (j+j0)*sj + (l-l0)/rl*sl]
-// for the multiples k-k0 of rk and l-l0 of rl, all other entries are zero
-typedef struct { int k0, rk, j0, l0, rl; size_t sj, sl; } lattice;
+// for the multiples k-k0 of rk up to kmax and l-l0 of rl, all other entries
+// are zero
+typedef struct { int k0, rk, kmax, j0, l0, rl; size_t sj, sl; } lattice;
 
 // The computational routine
 //   fhat(n,k,l) = sum_{j=0}^n H(k,j,l) d^n(k,-j) d^n(l,-j),
@@ -142,6 +144,7 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, const mxComplexDou
             if (SY==1) { kmax = -l; if (isReal) kmin = l; }
             if (SY==4) kmin = l;
           }
+          if (kmax > G.kmax) kmax = G.kmax;
 
           const double *d = D + ((n-n0)*ld + j)*ldD + N;   // d[k] = d^n(k,-j)
           const double dl = d[l];
@@ -168,6 +171,25 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, const mxComplexDou
   }
   free(D);
   free(S);
+}
+
+// fhat(n,k,l) times i^(l-k), and times sqrt(2n+1) for L2-normalized Wigner-D functions
+static void phase_and_normalize(const int N, const int L2, mxComplexDouble *fhat)
+{
+  const double cr[4] = {1,0,-1,0}, ci[4] = {0,1,0,-1};
+  for (int n = 0; n <= N; n++)
+  {
+    const double s = L2 ? sqrt(2*n+1) : 1;
+    mxComplexDouble *f = fhat + (size_t)n*(2*n-1)*(2*n+1)/3;
+    for (int l = -n; l <= n; l++)
+      for (int k = -n; k <= n; k++, f++)
+      {
+        const int e = ((l-k) % 4 + 4) % 4;
+        const double re = s*f->real, im = s*f->imag;
+        f->real = cr[e]*re - ci[e]*im;
+        f->imag = cr[e]*im + ci[e]*re;
+      }
+  }
 }
 
 
@@ -251,8 +273,8 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
   // the lattice ghat is read from - with flag 2^5 the nfft lattice of
   // SO3FunHarmonic/adjoint, i.e. only the multiples of the Z-axis symmetries
-  // rk, rl, starting at -N-1 and zero padded to even length, otherwise the
-  // full (2N+1)^3 tensor
+  // rk, rl, starting at -N-1 and zero padded to even length, of which the
+  // first dimension may be cut short, otherwise the full (2N+1)^3 tensor
     lattice G;
     mwSize len[3];
     if (flags[5])
@@ -263,6 +285,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
       G.k0 = -rk*((N+1)/rk); G.l0 = -rl*((N+1)/rl);
       const int nk = N/rk - G.k0/rk + 1, nl = N/rl - G.l0/rl + 1;
       len[0] = nk + nk % 2; len[1] = 2*N+2; len[2] = nl + nl % 2;
+      if (mxGetM(prhs[1]) < len[0]) len[0] = mxGetM(prhs[1]);
       G.rk = rk; G.rl = rl; G.j0 = N+1;
     }
     else
@@ -270,6 +293,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
       len[0] = len[1] = len[2] = 2*N+1;
       G.k0 = G.l0 = -N; G.rk = G.rl = 1; G.j0 = N;
     }
+    G.kmax = G.k0 + ((int)len[0]-1)*G.rk;
     G.sj = len[0]; G.sl = len[0]*len[1];
     if( mxGetNumberOfElements(prhs[1]) != len[0]*len[1]*len[2] || mxGetM(prhs[1]) != len[0] )
       mexErrMsgIdAndTxt( "wignerTrafoAdjointmex:falseDim","Second input argument coefficient array must have size %dx%dx%d.",
@@ -287,9 +311,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
   // call the computational routine
     calculate_ghat_adjoint(bandwidth,inCoeff,isReal,isAntipodal,sym_axis,outFourierCoeff,G);
 
-  // use L2-normalize Wigner-D functions by scaling the fourier coefficients
-  if(flags[0])
-    L2_normalized_WignerD_functions(bandwidth,outFourierCoeff);
+    phase_and_normalize(N,flags[0],outFourierCoeff);
 
   // free the storage
   if (zeiger) mxDestroyArray(zeiger);
