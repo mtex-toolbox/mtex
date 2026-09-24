@@ -8,10 +8,10 @@ function [ghat,k,l] = foldedWignerTrafo(fhat,N,isReal,rZ)
 % symmetries rZ = [right,left]. Dimension 1 runs over k = k(1):rZ(1):k(end),
 % dimension 2 over j = -N-1:N and dimension 3 over l, which is l >= 0 (from
 % -1 if N is even and rZ(2) = 1) if the function is real valued, all zero
-% padded to even length.
+% padded to even length. The plane l = 0 of a real valued function is halved.
 %
 % Input
-%  fhat   - Wigner coefficients of one function
+%  fhat   - Wigner coefficients of one function, up to degree N or more
 %  N      - bandwidth
 %  isReal - use the half lattice l >= 0 of a real valued function
 %  rZ     - multiplicities of the Z-axis symmetries
@@ -21,7 +21,7 @@ function [ghat,k,l] = foldedWignerTrafo(fhat,N,isReal,rZ)
 %  k, l - orders along dimension 1 and 3
 %
 
-ghat = wignerTrafomex(N,double(fhat(1:deg2dim(N+1))),2^0+isReal*2^2+2^4+2^5,[1,rZ(1),1,rZ(2)]);
+ghat = wignerTrafomex(N,double(fhat),2^0+isReal*2^2+2^4+2^5,[1,rZ(1),1,rZ(2)]);
 
 k = -rZ(1)*floor((N+1)/rZ(1)) + (0:size(ghat,1)-1)'*rZ(1);
 if isReal
@@ -30,12 +30,5 @@ else
   l0 = -rZ(2)*floor((N+1)/rZ(2));
 end
 l = reshape(l0 + (0:size(ghat,3)-1)*rZ(2),1,1,[]);
-
-% halve the plane l = 0 of the real valued case, the exact i^(k-l), and the
-% symmetry ghat(k,-j,l) = (-1)^(k+l) ghat(k,j,l)
-if isReal, ghat(:,:,1-l0) = ghat(:,:,1-l0)/2; end
-ipow = [1;1i;-1;-1i];
-ghat(:,N+2:end,:) = ipow(mod(k-l,4)+1) .* ghat(:,N+2:end,:);
-ghat(:,2:N+1,:) = (1-2*mod(k+l,2)) .* flip(ghat(:,N+3:end,:),2);
 
 end

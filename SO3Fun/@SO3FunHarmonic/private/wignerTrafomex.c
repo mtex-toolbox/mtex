@@ -65,18 +65,21 @@
  * 
  * Input
  *  N        - bandwidth
- *  fhat     - SO(3) Fourier coefficient vector
+ *  fhat     - SO(3) Fourier coefficient vector, up to degree N or longer
  *  flags    - double where:
  *             2^0 -> use L_2-normalized Wigner-D functions
  *             2^1 -> make size of result even
  *             2^2 -> fhat are the fourier coefficients of a real valued function
  *             2^3 -> antipodal            (not implemented yet)
  *             2^4 -> use right and left symmetry
+ *             2^5 -> the exact Fourier coefficients on the nfft lattice of
+ *                    SO3FunHarmonic/eval, see foldedWignerTrafo
  *  sym_axis - vector [SRight-Y,SRight-Z,SLeft-Y,SLeft-Z] where SRight-Y,SLeft-Y are in {1,2} and 
  *             SRight-Z,SLeft-Z are in {1,2,3,4,6} and describes the countability of the symmetry axis
  *
  * Output
- *  ghat - up to a constant not (w.r.t. symmetries) reconstructed Wigner transformed SO(3) Fourier coefficients
+ *  ghat - up to a constant not (w.r.t. symmetries) reconstructed Wigner transformed SO(3) Fourier coefficients,
+ *         with 2^5 the exact ones
  *
  *
  * This is a MEX-file for MATLAB.
@@ -94,7 +97,6 @@
 #endif
 #include "get_flags.c"  // transform number which includes the flags to boolean vector
 #include "wigner_d_quadrant_at_pi_half.c"   // three term recurrence relation for the Wigner-d matrices at pi/2
-#include "L2_normalized_WignerD_functions.c"  // use L_2-normalized Wigner-D functions by scaling the fourier coefficients
 
 
 
@@ -120,11 +122,10 @@ typedef struct { int k0, rk, j0, l0, rl; size_t sj, sl; } lattice;
 //   d^n(k,-j) = S(-k,j) for k <= 0,  (-1)^(n+k+j) S(k,j) for k > 0.
 // The Wigner-d matrices of a block of degrees are computed first and then
 // every row ghat(:,j,l) takes the whole block, which keeps it in cache.
-static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
-                            const int isReal, const int isAntipodal, mxDouble *sym_axis,
+static void calculate_ghat( const int N, const mxComplexDouble *fhat, const int L2,
+                            const int isReal, mxDouble *sym_axis,
                             mxComplexDouble *ghat, const lattice G )
 {
-  const int N = bandwidth;
   const size_t ld = N+1;
   const int SRightY = sym_axis[0], SRightZ = sym_axis[1];
   const int SLeftY = sym_axis[2], SLeftZ = sym_axis[3];
@@ -163,7 +164,7 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
           order_bounds(n,SRightZ,halveK,0,&kmin,&kmax,&kstep);
 
           const double *d = D + ((n-n0)*ld + j)*ldD + N;   // d[k] = d^n(k,-j)
-          const double dl = d[l];
+          const double dl = L2 ? sqrt(2*n+1) * d[l] : d[l];
           const mxComplexDouble *f = fhat + (size_t)n*(2*n-1)*(2*n+1)/3 + (l+n)*(2*n+1) + n;
           for (int k = kmin; k <= kmax; k += kstep)
           {
@@ -180,6 +181,36 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
   free(S);
 }
 
+// On the nfft lattice ghat(k,j,l) of j >= 0 is multiplied by i^(k-l), halved
+// in the plane l = 0 of a real valued function, and mirrored by
+// ghat(k,-j,l) = (-1)^(k+l) ghat(k,j,l)
+static void phase_and_mirror(mxComplexDouble *ghat, const int N, const int isReal,
+                             const size_t nk, const size_t nl, const lattice G)
+{
+  const double cr[4] = {1,0,-1,0}, ci[4] = {0,1,0,-1};
+  #pragma omp parallel for schedule(static) if(N >= 16)
+  for (size_t p = 0; p < nl; p++)
+  {
+    const int l = G.l0 + (int)p*G.rl;
+    const double s = (isReal && l == 0) ? 0.5 : 1;
+    for (int j = 0; j <= N; j++)
+    {
+      mxComplexDouble *g = ghat + p*G.sl + (G.j0+j)*G.sj, *h = ghat + p*G.sl + (G.j0-j)*G.sj;
+      for (size_t ik = 0; ik < nk; ik++)
+      {
+        const int k = G.k0 + (int)ik*G.rk, e = ((k-l) % 4 + 4) % 4;
+        const double re = s*g[ik].real, im = s*g[ik].imag;
+        g[ik].real = cr[e]*re - ci[e]*im;
+        g[ik].imag = cr[e]*im + ci[e]*re;
+        if (j == 0) continue;
+        const double sg = ((k+l) & 1) ? -1 : 1;
+        h[ik].real = sg*g[ik].real;
+        h[ik].imag = sg*g[ik].imag;
+      }
+    }
+  }
+}
+
 
 
 
@@ -190,7 +221,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
   
   // variable declarations
     int bandwidth;               // input bandwidth
-    mxComplexDouble *inCoeff;         // nrows x 1 input coefficient vector
+    const mxComplexDouble *inCoeff;   // nrows x 1 input coefficient vector
     size_t nrows;                     // size of inCoeff
     mxDouble input_flags = 0;
     mxDouble *sym_axis;
@@ -210,7 +241,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
       mexErrMsgIdAndTxt("wignerTrafomex:notDouble","First input argument bandwidth must be a scalar double.");
     
     // make sure the second input argument (inCoeff) is type double
-    if(  !mxIsComplex(prhs[1]) && !mxIsDouble(prhs[1]) )
+    if( !mxIsDouble(prhs[1]) )
       mexErrMsgIdAndTxt("wignerTrafomex:notDouble","Second input argument coefficient vector must be type double.");
     // check that number of columns in second input argument (inCoeff) is 1
     if(mxGetN(prhs[1])!=1)
@@ -233,15 +264,21 @@ void mexFunction( int nlhs, mxArray *plhs[],
     if( ((round(bandwidth)-bandwidth)!=0) || (bandwidth<0) )
       mexErrMsgIdAndTxt("wignerTrafomex:notInt","First input argument must be a natural number.");
     
-    // make input matrix complex
-    mxArray *zeiger = mxDuplicateArray(prhs[1]);
-    if(mxMakeArrayComplex(zeiger)) {}
-    
-    // create a pointer to the data in the input vector (inCoeff)
-    inCoeff = mxGetComplexDoubles(zeiger);
-    
-    // get dimensions of the input vector
+    // read complex coefficients in place, copy only real ones
+    mxArray *zeiger = NULL;
+    if (mxIsComplex(prhs[1]))
+      inCoeff = mxGetComplexDoubles(prhs[1]);
+    else
+    {
+      zeiger = mxDuplicateArray(prhs[1]);
+      mxMakeArrayComplex(zeiger);
+      inCoeff = mxGetComplexDoubles(zeiger);
+    }
+
+    // get dimensions of the input vector, which holds at least the degrees 0..N
     nrows = mxGetM(prhs[1]);
+    if (nrows < (size_t)(bandwidth+1)*(2*bandwidth+1)*(2*bandwidth+3)/3)
+      mexErrMsgIdAndTxt("wignerTrafomex:tooShort","Second input argument holds less than the coefficients up to the bandwidth.");
     
     // if exists, get flags of input
     if(nrhs>=3)
@@ -263,7 +300,6 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
     const int makeEven = flags[1];
     const int isReal = flags[2];
-    const int isAntipodal = flags[3];
     const int N = bandwidth;
 
   // define the lattice ghat is written to
@@ -302,15 +338,13 @@ void mexFunction( int nlhs, mxArray *plhs[],
   // create output data
     plhs[0] = mxCreateNumericArray(3, dims, mxDOUBLE_CLASS, mxCOMPLEX);
     outFourierCoeff = mxGetComplexDoubles(plhs[0]);
-  
-  // use L2-normalize Wigner-D functions by scaling the fourier coefficients
-  if(flags[0])
-    L2_normalized_WignerD_functions(bandwidth,inCoeff);
-  
+
   // call the computational routine
-    calculate_ghat(bandwidth,inCoeff,isReal,isAntipodal,sym_axis,outFourierCoeff,G);
+    calculate_ghat(N,inCoeff,flags[0],isReal,sym_axis,outFourierCoeff,G);
+    if (flags[5])
+      phase_and_mirror(outFourierCoeff,N,isReal,dims[0],dims[2],G);
 
   // free the storage
-  mxDestroyArray(zeiger);
+  if (zeiger) mxDestroyArray(zeiger);
 
 }
