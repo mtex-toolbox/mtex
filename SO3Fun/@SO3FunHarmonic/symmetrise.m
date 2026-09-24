@@ -75,12 +75,12 @@ end
 cs = get_option(varargin,'CS',SO3F.CS);
 ss = get_option(varargin,'SS',SO3F.SS);
  
-if numSym(cs) ~= 1 % symmetrize crystal symmetry
-  SO3F.fhat = convSO3(SO3F.fhat,cs.WignerD('bandwidth',L));
-end
-  
-if numSym(ss) ~= 1 % symmetrize specimen symmetry
-  SO3F.fhat = convSO3(ss.WignerD('bandwidth',L),SO3F.fhat);
+% symmetrize crystal and specimen symmetry
+C = []; S = [];
+if numSym(cs) ~= 1, C = cs.WignerD('bandwidth',L); end
+if numSym(ss) ~= 1, S = ss.WignerD('bandwidth',L); end
+if ~isempty(C) || ~isempty(S)
+  SO3F.fhat = symmetriseWignermex(L,double(SO3F.fhat),C,S);
 end
 
 % grain exchange symmetry
