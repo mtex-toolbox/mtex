@@ -64,6 +64,11 @@ function [ebsd,interface,options] = load(fname,varargin)
 % See also
 % EBSDImport EBSD/EBSD
 
+% a leading symmetry list is the 'CS' option
+if nargin > 1 && (isa(varargin{1},'phaseItem') || iscell(varargin{1}))
+  varargin = [{'CS'},varargin];
+end
+
 % extract file names
 fname = getFileNames(fname);
 
