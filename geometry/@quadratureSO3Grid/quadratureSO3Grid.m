@@ -118,9 +118,13 @@ methods
       scheme = 'ClenshawCurtis';
     end
 
+    % a crystalSymmetry compares by identity, so equal symmetries are
+    % recognised by their class and rotations and the grid takes the given
+    % objects
+    same = @(A,B) strcmp(class(A),class(B)) && isequal(A.rot,B.rot);
     if isa(keepSO3G,'quadratureSO3Grid') && keepSO3G.bandwidth == N && ...
-        keepSO3G.CS == SRight && keepSO3G.SS == SLeft && strcmp(keepSO3G.scheme,scheme)
-      SO3G = keepSO3G;
+        same(keepSO3G.CS,SRight) && same(keepSO3G.SS,SLeft) && strcmp(keepSO3G.scheme,scheme)
+      SO3G = keepSO3G; SO3G.CS = SRight; SO3G.SS = SLeft;
       return
     end
 

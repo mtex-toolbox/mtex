@@ -37,7 +37,9 @@ if ~isempty(w)
 end
 v = subSet(v,~isnan(v));
 
-sF = 4*pi * S2FunHarmonic.quadrature(v,ones(size(v)),varargin{:});
+% the kernel cuts the density to its bandwidth, so the quadrature needs no more
+bw = get_option(varargin,'bandwidth',min(psi.bandwidth,getMTEXpref('maxS2Bandwidth')));
+sF = 4*pi * S2FunHarmonic.quadrature(v,ones(size(v)),varargin{:},'bandwidth',bw);
 
 % normalize
 if ~check_option(varargin,'noNormalization')

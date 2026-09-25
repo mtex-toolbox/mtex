@@ -41,14 +41,13 @@ N = SO3G.bandwidth;
 sz = size(SO3G.iuniqueGrid);   % [nGamma × nBeta × nAlpha]
 
 % the grid nodes are alpha,gamma = (0:n-1)*2*pi/(2N+2) and
-% beta = (0:2N)*pi/(2N) in the 'nfft' Euler angle convention
-abg = Euler(rotation(ori(:)),'nfft');
-da = 2*pi/(2*N+2);
-db = pi/(2*N);
+% beta = (0:2N)*pi/(2N) in the 'nfft' Euler angle convention, which
+% nfftNodesmex gives divided by 2 pi
+x = nfftNodesmex(double(ori.a(:)),double(ori.b(:)),double(ori.c(:)),double(ori.d(:)),[1 1]);
 
-ia = mod(round(abg(:,1)./da),sz(3));
-ib = min(round(abg(:,2)./db),sz(2)-1);
-ic = mod(round(abg(:,3)./da),sz(1));
+ia = mod(round(x(1,:).'*(2*N+2)),sz(3));
+ib = min(round(x(2,:).'*(4*N)),sz(2)-1);
+ic = mod(round(x(3,:).'*(2*N+2)),sz(1));
 
 id = SO3G.iuniqueGrid(sub2ind(sz,ic+1,ib+1,ia+1));
 varargout{1} = reshape(id,size(ori));
