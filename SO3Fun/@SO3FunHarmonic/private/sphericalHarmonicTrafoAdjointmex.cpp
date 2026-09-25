@@ -56,7 +56,6 @@
 #include <cstdio>
 #include <complex>
 #include <cstring>
-#include <limits>
 #ifdef _OPENMP // For parallelisation
 #include <omp.h>
 #endif
@@ -75,10 +74,9 @@
 //   d^n(k,-j) d^n(0,-j) = S(j,|k|) S(j,0) * (-1)^|k| if k < 0
 // with the quadrant S(a,b) = d^n(-a,-b), whose columns are contiguous. The
 // rows of H are formed once, and every row takes a whole block of degrees.
-template<typename T>
 static void calculate_ghat_adjoint( const mxDouble bandwidth, mxComplexDouble *ghat,
                           const int isReal, const int isAntipodal,
-                          std::complex<T> *fhat)
+                          std::complex<double> *fhat)
 {
   const int N = bandwidth;
   const size_t ld = N+1;
@@ -89,41 +87,42 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, mxComplexDouble *g
   const mxComplexDouble *center = ghat + N*(row_len+1);
 
   // H(k,j) at H[(k+N)*ld + j]
-  std::vector<std::complex<T>> H((size_t)row_len*ld);
+  std::vector<std::complex<double>> H((size_t)row_len*ld);
   #pragma omp parallel for if(N >= 64)
   for (int k = K_min; k <= N; k++)
   {
-    std::complex<T> *h = H.data() + (size_t)(k+N)*ld;
-    const T pm = (k % 2) ? -1 : 1;
-    h[0] = std::complex<T>(center[k].real,center[k].imag);
+    std::complex<double> *h = H.data() + (size_t)(k+N)*ld;
+    const double pm = (k % 2) ? -1 : 1;
+    h[0] = std::complex<double>(center[k].real,center[k].imag);
     for (int j = 1; j <= N; j++)
     {
       const mxComplexDouble &a = center[k + j*row_len], &b = center[k - j*row_len];
-      h[j] = std::complex<T>(a.real + pm*b.real,a.imag + pm*b.imag);
+      h[j] = std::complex<double>(a.real + pm*b.real,a.imag + pm*b.imag);
     }
   }
 
   // quadrants of one block of degrees and of the two before
   const int B = 4;
-  std::vector<T> S((B+2)*ld*ld, 0);
+  std::vector<double> S((B+2)*ld*ld, 0);
   auto quadrant = [&](int n) { return S.data() + (n % (B+2))*ld*ld; };
 
+  WignerQuadrants W(N);
   for (int n0 = 0; n0 <= N; n0 += B)
   {
     const int n1 = std::min(n0+B,N+1);
     for (int n = n0; n < n1; n++)
-      wigner_d_quadrant_at_pi_half<T>(N,n,n>=2 ? quadrant(n-2) : nullptr,n>=1 ? quadrant(n-1) : nullptr,quadrant(n));
+      W.next(n,n>=2 ? quadrant(n-2) : nullptr,n>=1 ? quadrant(n-1) : nullptr,quadrant(n));
 
     #pragma omp parallel for schedule(dynamic) if(N >= 64)
     for (int k = std::max(K_min,1-n1); k < n1; k++)
     {
       const int ka = std::abs(k);
-      const std::complex<T> *h = H.data() + (size_t)(k+N)*ld;
+      const std::complex<double> *h = H.data() + (size_t)(k+N)*ld;
       for (int n = std::max(n0,ka); n < n1; n++)
       {
         if (isAntipodal && n % 2) continue;
-        const T *dk = quadrant(n) + ka*ld, *d0 = quadrant(n);
-        std::complex<T> sum = 0;
+        const double *dk = quadrant(n) + ka*ld, *d0 = quadrant(n);
+        std::complex<double> sum = 0;
         for (int j = n % 2; j <= n; j += 2)
           sum += h[j] * (dk[j]*d0[j]);
         fhat[n*n + n - k] = (k < 0 && ka % 2) ? -sum : sum;
@@ -220,30 +219,11 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
 
   // call the computational routine
-    if (bandwidth > 1023){
-      // What limits the bandwidth is the exponent range of the type the
-      // Wigner-d matrices are stored in, see the same guard in
-      // sphericalHarmonicTrafomex.cpp and wigner_d_recursion_at_pi_half.cpp.
-      if (bandwidth > -std::numeric_limits<long double>::min_exponent-1)
-        mexWarnMsgIdAndTxt("sphericalHarmonicTrafoAdjointmex:bandwidthTooLarge",
-          "long double is too narrow on this platform to represent the Wigner-d "
-          "functions up to bandwidth %d - the result is inaccurate.",(int)bandwidth);
-      std::vector<std::complex<long double>> ghat_tmp(deg2dim);
-      // TODO: evt. muss outFourierCOeff erst im long double gerechnet werden und später auf double transformiert und dann zurückgegeben werden.
-      calculate_ghat_adjoint<long double>(bandwidth,inCoeff,isReal,isAntipodal,ghat_tmp.data());
-      for (size_t i = 0; i < (size_t)deg2dim; ++i) {
-        outFourierCoeff[i].real = static_cast<double>(ghat_tmp[i].real());
-        outFourierCoeff[i].imag = static_cast<double>(ghat_tmp[i].imag());
-      }
-      // mexWarnMsgIdAndTxt("sphericalHarmonicTrafoAdjointmex:precisionLoss","Precision loss: using long double format since N > 1023.");
-    }
-    else{
-      std::vector<std::complex<double>> ghat_tmp(deg2dim);
-      calculate_ghat_adjoint<double>(bandwidth,inCoeff,isReal,isAntipodal,ghat_tmp.data());
-      for (size_t i = 0; i < (size_t)deg2dim; ++i) {
-        outFourierCoeff[i].real = ghat_tmp[i].real();
-        outFourierCoeff[i].imag = ghat_tmp[i].imag();
-      }
+    std::vector<std::complex<double>> ghat_tmp(deg2dim);
+    calculate_ghat_adjoint(bandwidth,inCoeff,isReal,isAntipodal,ghat_tmp.data());
+    for (size_t i = 0; i < (size_t)deg2dim; ++i) {
+      outFourierCoeff[i].real = ghat_tmp[i].real();
+      outFourierCoeff[i].imag = ghat_tmp[i].imag();
     }
 
   // use L2-normalize Wigner-D functions by scaling the fourier coefficients

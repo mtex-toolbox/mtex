@@ -63,7 +63,6 @@
 #include <cstdio>    // For printf
 #include <complex>
 #include <cstring>
-#include <limits>
 #ifdef _OPENMP // For parallelisation
 #include <omp.h>
 #endif
@@ -81,10 +80,9 @@
 // since d^n(0,-j) = 0 otherwise. The Wigner-d matrices of a block of degrees
 // are computed first and then every column of ghat takes the whole block,
 // which keeps the column in cache.
-template<typename T>
 static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
                             const int makeEven, const int isReal, const int isAntipodal,
-                            std::complex<T> *ghat )
+                            std::complex<double> *ghat )
 {
   const int N = bandwidth;
   const size_t ld = N+1;
@@ -93,34 +91,35 @@ static void calculate_ghat( const mxDouble bandwidth, mxComplexDouble *fhat,
     : (N + 1 + makeEven * ((N + 1) % 2));
 
   // ghat(0,0), columns j = 0..N follow with stride col_len
-  std::complex<T> *ghat00 = ghat + col_len*N + (1-isReal)*N;
+  std::complex<double> *ghat00 = ghat + col_len*N + (1-isReal)*N;
 
   // quadrants S(a,b) = d^n(-a,-b) of one block of degrees and of the two before
   const int B = 4;
-  std::vector<T> S((B+2)*ld*ld, 0);
+  std::vector<double> S((B+2)*ld*ld, 0);
   auto quadrant = [&](int n) { return S.data() + (n % (B+2))*ld*ld; };
 
+  WignerQuadrants W(N);
   for (int n0 = 0; n0 <= N; n0 += B)
   {
     const int n1 = std::min(n0+B,N+1);
     for (int n = n0; n < n1; n++)
-      wigner_d_quadrant_at_pi_half<T>(N,n,n>=2 ? quadrant(n-2) : nullptr,n>=1 ? quadrant(n-1) : nullptr,quadrant(n));
+      W.next(n,n>=2 ? quadrant(n-2) : nullptr,n>=1 ? quadrant(n-1) : nullptr,quadrant(n));
 
     #pragma omp parallel for schedule(dynamic) if(N >= 64)
     for (int j = 0; j < n1; j++)
     {
-      std::complex<T> *g = ghat00 + (size_t)j*col_len;
+      std::complex<double> *g = ghat00 + (size_t)j*col_len;
       for (int n = std::max(n0,j); n < n1; n++)
       {
         if ((n+j) % 2 || (isAntipodal && n % 2)) continue;
-        const T *d = quadrant(n) + j*ld;          // d[k] = d^n(-k,-j)
+        const double *d = quadrant(n) + j*ld;          // d[k] = d^n(-k,-j)
         const mxComplexDouble *f = fhat + n*n + n; // f[m] = fhat(n,m)
         for (int k = 0; k <= n; k++)
-          g[k] += std::complex<T>(f[-k].real,f[-k].imag) * (d[k]*d[0]);
+          g[k] += std::complex<double>(f[-k].real,f[-k].imag) * (d[k]*d[0]);
         // rows -k: d^n(k,-j) = (-1)^k d^n(-k,-j) for even n+j
         if (!isReal)
           for (int k = 1; k <= n; k++)
-            g[-k] += std::complex<T>(f[k].real,f[k].imag) * ((k % 2 ? -d[k] : d[k])*d[0]);
+            g[-k] += std::complex<double>(f[k].real,f[k].imag) * ((k % 2 ? -d[k] : d[k])*d[0]);
       }
     }
   }
@@ -251,35 +250,11 @@ void mexFunction( int nlhs, mxArray *plhs[],
   }
   
   // call the computational routine
-    if (bandwidth > 1023){
-      // The Wigner-d recursion seeds every entry with a value as small as
-      // 2^(-n) and a seed that underflows stays zero for all higher degrees,
-      // so what limits the bandwidth is the exponent range of the type the
-      // matrices are stored in (see wigner_d_recursion_at_pi_half.cpp).
-      // long double buys that range only where the ABI makes it wider than
-      // double - it does on x86 (80 bit, n up to about 16000) and with
-      // MinGW-w64, but on Apple silicon long double *is* double. Say so
-      // instead of returning silently wrong coefficients.
-      if (bandwidth > -std::numeric_limits<long double>::min_exponent-1)
-        mexWarnMsgIdAndTxt("sphericalHarmonicTrafomex:bandwidthTooLarge",
-          "long double is too narrow on this platform to represent the Wigner-d "
-          "functions up to bandwidth %d - the result is inaccurate.",bandwidth);
-      std::vector<std::complex<long double>> ghat_tmp(dims[0]*dims[1]);
-      calculate_ghat<long double>(bandwidth,inCoeff,makeEven,isReal,isAntipodal,ghat_tmp.data() + start_shift);
-      for (size_t i = 0; i < dims[0]*dims[1]; i++) {
-        outFourierCoeff[i].real = static_cast<double>(ghat_tmp[i].real());
-        outFourierCoeff[i].imag = static_cast<double>(ghat_tmp[i].imag());
-      }
-      // mexWarnMsgIdAndTxt("sphericalHarmonicTrafomex:precisionLoss","Precision loss: using long double format since N > 1023.");
-    }
-    else{
-      std::vector<std::complex<double>> ghat_tmp(dims[0]*dims[1]);
-      // std::complex<double> *g = ghat_tmp.data() + start_shift;
-      calculate_ghat<double>(bandwidth,inCoeff,makeEven,isReal,isAntipodal,ghat_tmp.data() + start_shift);
-      for (size_t i = 0; i < dims[0]*dims[1]; i++) {
-        outFourierCoeff[i].real = ghat_tmp[i].real();
-        outFourierCoeff[i].imag = ghat_tmp[i].imag();
-      }
+    std::vector<std::complex<double>> ghat_tmp(dims[0]*dims[1]);
+    calculate_ghat(bandwidth,inCoeff,makeEven,isReal,isAntipodal,ghat_tmp.data() + start_shift);
+    for (size_t i = 0; i < dims[0]*dims[1]; i++) {
+      outFourierCoeff[i].real = ghat_tmp[i].real();
+      outFourierCoeff[i].imag = ghat_tmp[i].imag();
     }
 
   // free the storage

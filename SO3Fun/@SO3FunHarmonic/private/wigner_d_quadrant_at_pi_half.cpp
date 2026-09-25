@@ -15,59 +15,111 @@
  * computing the whole quadrant gives the same values as mirroring the lower
  * triangle, while every column is a contiguous loop.
  *
+ * Every entry is a sequence in the degree of its own, starting at the frame
+ * with a value down to 2^-n and growing from there. An entry starting below
+ * 2^-1000 would underflow in double, so it is carried as a mantissa and a
+ * binary exponent of its own until it has grown above 2^-1000, which is
+ * tested every 16 degrees. Meanwhile the quadrant holds 0, below the rounding
+ * error of every sum the entry enters, and when it returns to the plain
+ * recursion the quadrant of the degree before gets its value too. These
+ * entries lie in a band around the diagonal, so every column keeps the rows
+ * lo..hi that may carry one, and all other rows run the plain recursion.
+ *
  * Entries outside the quadrant of the current degree have to be zero, i.e.
  * the buffers start zeroed and a buffer only ever holds lower degrees.
  */
 
 #include <vector>
 #include <cmath>
+#include <algorithm>
 
-template<typename T>
-static void wigner_d_quadrant_at_pi_half(int N, int L, const T* s2, const T* s1, T* s)
+class WignerQuadrants
 {
-  const size_t ld = N+1;
+  static constexpr int small = -1000;  // exponent below which an entry is scaled
+  const int N;
+  const size_t ld;
+  std::vector<double> m1, m2;          // mantissas of the last two degrees
+  std::vector<int> e;                  // their common exponent, 0 for a plain entry
+  std::vector<int> lo, hi;             // rows of every column that may be scaled
 
-  if (L == 0) { s[0] = 1; return; }
-  if (L == 1)
+  // the frame entry (a,b) at i = mantissa * 2^ex, 1/2 <= |mantissa| < 1,
+  // scaled if it is too small
+  double seed(size_t i, int b, int a, double mantissa, int ex)
   {
-    const T h = std::sqrt((T)0.5);
-    s[0] = 0; s[1] = -h; s[ld] = h; s[ld+1] = (T)0.5;
-    return;
+    if (ex >= small) return std::ldexp(mantissa,ex);
+    if (e.empty()) { m1.assign(ld*ld,0); m2.assign(ld*ld,0); e.assign(ld*ld,0); }
+    m1[i] = mantissa; m2[i] = 0; e[i] = ex;
+    lo[b] = std::min(lo[b],a); hi[b] = std::max(hi[b],a);
+    return 0;
   }
 
-  // exterior frame: column L from sqrt(binom(2L,L+m)) * 2^(-L), row L by symmetry
-  T* col = s + L*ld;
-  col[L] = std::ldexp((T)1,-L);
-  T mantissa = 1;
-  int exponent = 0, e;
-  for (int iter = 1; iter <= L; iter++)
-  {
-    mantissa *= std::sqrt((2*(T)L+1-iter)/(T)iter);
-    mantissa = std::frexp(mantissa,&e);
-    exponent += e;
-    col[L-iter] = std::ldexp(mantissa,exponent-L);
-  }
-  for (int b = 0; b < L; b++)
-    s[b*ld+L] = ((L+b) % 2) ? -col[b] : col[b];
+public:
+  WignerQuadrants(int N) : N(N), ld(N+1), lo(N+1,N+1), hi(N+1,-1) {}
 
-  // inner part by d^L = v*d^(L-1) + w*d^(L-2) with v,w split into a row and a
-  // column factor p, q, see wigner_d_recursion_at_pi_half.cpp
-  const T c_v = -(2*(T)L-1)/((T)L-1);
-  const T c_w = -(T)L/((T)L-1);
-  std::vector<T> p(L), q(L);
-  for (int a = 0; a < L; a++)
+  // the quadrant s of degree L from those of degree L-1 and L-2
+  void next(int L, const double* s2, double* s1, double* s)
   {
-    const T inv = 1/((T)L*(T)L - (T)a*(T)a);
-    p[a] = -(T)a * std::sqrt(inv);
-    q[a] = std::sqrt((((T)L-1)*((T)L-1) - (T)a*(T)a) * inv);
-  }
+    if (L == 0) { s[0] = 1; return; }
+    if (L == 1)
+    {
+      const double h = std::sqrt(0.5);
+      s[0] = 0; s[1] = -h; s[ld] = h; s[ld+1] = 0.5;
+      return;
+    }
 
-  #pragma omp parallel for schedule(static) if(L >= 128)
-  for (int b = 0; b < L; b++)
-  {
-    const T v = c_v * p[b], w = c_w * q[b];
-    const size_t o = b*ld;
+    // exterior frame: column L from sqrt(binom(2L,L+m)) * 2^(-L), row L by symmetry
+    double* col = s + L*ld;
+    col[L] = seed(L*ld+L,L,L,0.5,1-L);
+    double mantissa = 1;
+    int exponent = 0, x;
+    for (int iter = 1; iter <= L; iter++)
+    {
+      mantissa *= std::sqrt((2*(double)L+1-iter)/(double)iter);
+      mantissa = std::frexp(mantissa,&x);
+      exponent += x;
+      const int a = L-iter;
+      const double sgn = ((L+a) % 2) ? -1 : 1;
+      col[a] = seed(L*ld+a,L,a,mantissa,exponent-L);
+      s[a*ld+L] = seed(a*ld+L,a,L,sgn*mantissa,exponent-L);
+    }
+
+    // inner part by d^L = v*d^(L-1) + w*d^(L-2) with v,w split into a row and a
+    // column factor p, q, see wigner_d_recursion_at_pi_half.cpp
+    const double c_v = -(2*(double)L-1)/((double)L-1);
+    const double c_w = -(double)L/((double)L-1);
+    std::vector<double> p(L), q(L);
     for (int a = 0; a < L; a++)
-      s[o+a] = (v * p[a]) * s1[o+a] + (w * q[a]) * s2[o+a];
+    {
+      const double inv = 1/((double)L*(double)L - (double)a*(double)a);
+      p[a] = -(double)a * std::sqrt(inv);
+      q[a] = std::sqrt((((double)L-1)*((double)L-1) - (double)a*(double)a) * inv);
+    }
+
+    const bool test = L % 16 == 0;
+    #pragma omp parallel for schedule(static) if(L >= 128)
+    for (int b = 0; b < L; b++)
+    {
+      const double v = c_v * p[b], w = c_w * q[b];
+      const size_t o = b*ld;
+      const int l0 = std::min(lo[b],L), h0 = std::min(hi[b],L-1);
+      for (int a = 0; a < l0; a++)
+        s[o+a] = (v * p[a]) * s1[o+a] + (w * q[a]) * s2[o+a];
+      for (int a = l0; a <= h0; a++)
+      {
+        const size_t i = o+a;
+        if (e[i] == 0) { s[i] = (v * p[a]) * s1[i] + (w * q[a]) * s2[i]; continue; }
+        const double m = (v * p[a]) * m1[i] + (w * q[a]) * m2[i];
+        m2[i] = m1[i]; m1[i] = m; s[i] = 0;
+        if (!test) continue;
+        int y;
+        std::frexp(m,&y);
+        if (e[i] + y >= small) { s[i] = std::ldexp(m,e[i]); s1[i] = std::ldexp(m2[i],e[i]); e[i] = 0; }
+        else if (y > 256) { m1[i] = std::ldexp(m,-256); m2[i] = std::ldexp(m2[i],-256); e[i] += 256; }
+      }
+      for (int a = std::max(l0,h0+1); a < L; a++)
+        s[o+a] = (v * p[a]) * s1[o+a] + (w * q[a]) * s2[o+a];
+      while (lo[b] <= hi[b] && e[o+lo[b]] == 0) lo[b]++;
+      while (hi[b] >= lo[b] && e[o+hi[b]] == 0) hi[b]--;
+    }
   }
-}
+};
