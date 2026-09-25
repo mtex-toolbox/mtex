@@ -67,45 +67,22 @@ H = [2,4,2]*rot.bandwidth + [2,0,2];
 
 % 2) Transform harmonic/Wigner coefficients to Fourier coefficients on the
 % lattice of the rotational symmetries around the Z-axis, ghat -> k x j x l
+% with j = -N-1:N
 SRightZ = SO3F.SRight.multiplicityZ;
 SLeftZ = SO3F.SLeft.multiplicityZ;
 H(1) = H(1) / SRightZ;
 H(3) = H(3) / SLeftZ;
 [ghat,k,l] = foldedWignerTrafo(SO3F.fhat,N,isReal,[SRightZ,SLeftZ]);
-ghat = ghat(abs(k)<=N,2:end,l>=-N*(1-isReal) & l<=N);
 
 
-% 3) For small H we go through a smaller FFT(H) several times
-% Hence we reduce the size of the fourier coefficient matrix ghat by adding 
-% the coefficients with same complex exponentials.
-sz = size(ghat,1,2,3);
-if any(H<sz)
-  dim = ceil(sz./H);
-  B = zeros(dim.*H);
-  B(1:size(ghat,1),1:2*N+1,1:size(ghat,3)) = ghat;
-  B = reshape(B,H(1),dim(1),H(2),dim(2),H(3),dim(3));
-  % Note that H(1) and H(2) should be biger than 1 to avoid errors by squeezing
-  ghat = squeeze(sum(B,[2,4,6]));
-  clear B;
-end
-
-
-% 4) Do FFT
-% the FFTs in k and l run only on the 2N+1 planes of j that hold data
-f = fft(fft(ghat,H(1),1),H(3),3);
-f = fft(f,H(2),2);
-% cut beta to [0,pi]
+% 3) Do FFT
+% every frequency goes to the index mod(frequency,H) of its FFT, summed where
+% the lattice is too small for all of them; beta first and cut to [0,pi],
+% then the FFTs in k and l on its H(2)/2+1 planes
+f = fft(circFold(ghat,[0,-N-1,0],[size(ghat,1),H(2),size(ghat,3)]),[],2);
 f = f(:,1:H(2)/2+1,:);
-% shift the summation of fft from [-|_N/r_|:|_N/r_|]x[-N:N]x[-|_N/s_|:|_N/s_|] to
-% [0:2*|_N/r_|]x[0:2N]x[0:2*|_N/s_|]. With r- & s-fold rotational symmetry
-% around Z-axis and |_ ... _| denotes the round off operator.
-z = (0:H(1)-1).' * (floor(N/SRightZ)/H(1)) + (0:H(2)/2) * (N/H(2));
-if isReal  
-  f = 2*real( exp(2i*pi*z) .* f );
-else
-  z = z + reshape(0:H(3)-1,1,1,[]) * (floor(N/SLeftZ)/H(3));
-  f = exp(2i*pi*z) .* f;
-end
+f = fft(fft(circFold(f,[k(1)/SRightZ,0,l(1)/SLeftZ],[H(1),H(2)/2+1,H(3)]),[],1),[],3);
+if isReal, f = 2*real(f); end
 
 % output is only the unique part of f
 if isa(rot,'quadratureSO3Grid')
@@ -113,3 +90,4 @@ if isa(rot,'quadratureSO3Grid')
 end
 
 end
+

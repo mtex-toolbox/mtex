@@ -166,11 +166,13 @@ static void calculate_ghat( const int N, const mxComplexDouble *fhat, const int 
           const double *d = D + ((n-n0)*ld + j)*ldD + N;   // d[k] = d^n(k,-j)
           const double dl = L2 ? sqrt(2*n+1) * d[l] : d[l];
           const mxComplexDouble *f = fhat + (size_t)n*(2*n-1)*(2*n+1)/3 + (l+n)*(2*n+1) + n;
-          for (int k = kmin; k <= kmax; k += kstep)
+          // of the degrees 0 and 1 only k = 0 lies on a lattice of rk > 1
+          if (n <= 1 && G.rk > 1) kmin = kmax = 0;
+          mxComplexDouble *gk = g + (kmin-G.k0)/G.rk;
+          const int step = kstep/G.rk;
+          for (int k = kmin; k <= kmax; k += kstep, gk += step)
           {
-            if ((k-G.k0) % G.rk) continue;
             const double v = d[k] * dl;
-            mxComplexDouble *gk = g + (k-G.k0)/G.rk;
             gk->real += f[k].real * v;
             gk->imag += f[k].imag * v;
           }

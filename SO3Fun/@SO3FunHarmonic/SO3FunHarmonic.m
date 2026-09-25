@@ -172,11 +172,9 @@ methods
       out = isalmostreal(F.fhat,'precision',4);
       return
     end
-    % test whether fhat is symmetric fhat_nkl = conj(fhat_n-k-l), by
-    % |f - conj(f(ind))|^2 = 2|f|^2 - 2 real(f.' f(ind))
-    F=reshape(F,numel(F));
-    nF = norm(F)';
-    dd = max(0,2*nF.^2 - 2*real(sum(F.fhat .* F.fhat(reversedDegrees(F.bandwidth),:),1)));
+    % test whether fhat is symmetric fhat_nkl = conj(fhat_n-k-l)
+    r = realDefectmex(reshape(double(F.fhat),size(F.fhat,1),[]));
+    dd = r(1,:); nF = sqrt(r(2,:));
     out = all(sqrt(dd(nF>0)) ./ nF((nF>0)) <1e-4);
   end
   

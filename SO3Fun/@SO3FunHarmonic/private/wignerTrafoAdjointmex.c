@@ -144,6 +144,8 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, const mxComplexDou
           order_bounds(n,SLeftZ,halveL,&lmin,&lmax,&lstep);
           if (l < lmin || l > lmax || (l-lmin) % lstep) continue;
           order_bounds(n,SRightZ,halveK,&kmin,&kmax,&kstep);
+          // of the degrees 0 and 1 only k = 0 lies on a lattice of rk > 1
+          if (n <= 1 && G.rk > 1) kmin = kmax = 0;
           if (n > 1 && isAntipodal)
           {
             if (SY==1) { kmax = -l; if (isReal) kmin = l; }
@@ -154,10 +156,10 @@ static void calculate_ghat_adjoint( const mxDouble bandwidth, const mxComplexDou
           const double *d = D + ((n-n0)*ld + j)*ldD + N;   // d[k] = d^n(k,-j)
           const double dl = d[l];
           mxComplexDouble *f = fhat + (size_t)n*(2*n-1)*(2*n+1)/3 + (l+n)*(2*n+1) + n;
-          for (int k = kmin; k <= kmax; k += kstep)
+          // gp[i], gm[i] hold order k
+          const int step = kstep/G.rk;
+          for (int k = kmin, i = G.k0 + (kmin-G.k0)/G.rk; k <= kmax; k += kstep, i += step)
           {
-            if ((k-G.k0) % G.rk) continue;
-            const int i = G.k0 + (k-G.k0)/G.rk;   // gp[i], gm[i] hold order k
             const double v = d[k] * dl;
             if (j == 0)
             {
