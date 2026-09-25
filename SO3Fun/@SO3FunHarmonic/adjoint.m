@@ -246,7 +246,8 @@ if useNFFT
   % Real values take the real nfft at -gamma, whose orders k' >= 0 are the
   % orders k = -k' <= 0 of the first dimension, and k = 1 is the conjugate of
   % k = -1 at -j, -l. The third dimension goes to its centered position.
-  if realN
+  useR = realN && nfftReal;
+  if useR
     kr = -floor((N+1)/rZ(1));
     lr = (-(N+1)+ind3(1)-1)/rZ(2) + (0:numel(ind3)-1);
     Nl = 2*max(-lr(1),lr(end)+1);
@@ -272,7 +273,7 @@ if isempty(plan) && useNFFT
     [m,sigma] = nfftParameters(length(rot),szN,varargin{:});
     fftw_size = fftLength(sigma*szN);
   % initialize nfft plan
-  if realN
+  if useR
     fftw_size = fftLength(sigma*nR);
     plan = nfftmex('init_guru',{3,nR(1),nR(2),nR(3),length(rot),fftw_size(1),fftw_size(2),fftw_size(3),m,nfft_flags+2^14,fftw_flags});
   else
@@ -363,7 +364,7 @@ end
 fhat = zeros(deg2dim(N+1),len);
 pC = progressCounter(len,varargin{:});
 for i=1:len
-  if useNFFT && realN
+  if useNFFT && useR
     nfftmex('set_f', plan, double(W(:) .* values(:,i)));
     nfftmex('adjoint', plan);
     h = reshape(nfftmex('get_f_hat', plan),nR(3)/2,NN,Nl);

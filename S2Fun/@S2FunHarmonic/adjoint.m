@@ -118,8 +118,9 @@ else
   plan = [];
 end
 
-% real values take the real nfft, which gives the orders k2 >= 0
-realN = isreal(y) && isreal(W) && ~check_option(varargin,{'createPlan','keepPlan'});
+% real values take the real nfft, which gives the orders k2 >= 0, if nfftmex
+% has real plans
+realN = isreal(y) && isreal(W) && ~check_option(varargin,{'createPlan','keepPlan'}) && nfftReal;
 
 % initialize nfft plan
 if isempty(plan) && ~(isa(v,'quadratureS2Grid') && strcmp(v.scheme,'ClenshawCurtis')) && ~check_option(varargin,'directComputation')

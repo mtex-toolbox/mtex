@@ -87,16 +87,17 @@ end
 % for later functions has to take complex ones
 realF = sF.isReal;
 isReal = realF && ~check_option(varargin,{'createPlan','keepPlan'});
-% a real valued function takes the real nfft of its orders k2 >= 0
+% a real valued function takes the real nfft of its orders k2 >= 0, if nfftmex
+% has real plans
 direct = check_option(varargin,'direct');
-realN = isReal && ~direct;
+realN = isReal && ~direct && nfftReal;
 
 if isempty(plan)
 
   % nfft size
     N1 = 2*N+2;
     N2 = 2*N+2;
-    if isReal && direct
+    if isReal && ~realN
       N2 = N+1+mod(N+1,2); 
     end
   % {FFTW_ESTIMATE} or 64 - Specifies that, instead of actual measurements of different algorithms, 

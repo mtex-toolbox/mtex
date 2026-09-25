@@ -13,7 +13,7 @@
  * Directions vx,vy,vz give the 2 x M nodes [theta;rho]/(2 pi) of the polar
  * angles and the optional phase exp(2 pi i s x(2,:)).
  *
- * Non finite input gives the node 0 and bad = true.
+ * Non finite input gives the node 0, its phase 1 and bad = true.
  *=========================================================================*/
 
 #include <math.h>
@@ -105,8 +105,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       for (t = 0; t < d; t++) xj[t] = 0;
     if (ph)
     {
-      ph[j].real = ok ? cos(TWO_PI * p) : NAN;
-      ph[j].imag = ok ? sin(TWO_PI * p) : NAN;
+      ph[j].real = ok ? cos(TWO_PI * p) : 1;
+      ph[j].imag = ok ? sin(TWO_PI * p) : 0;
     }
     if (bad) bad[j] = !ok;
   }

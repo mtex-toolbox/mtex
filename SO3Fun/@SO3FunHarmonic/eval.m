@@ -112,8 +112,10 @@ sz = [2*ceil(numel(ind1)/2),NN,2*ceil(numel(ind3)/2)];
 [abg,isBadNode] = nfftNodesmex(double(rot.a),double(rot.b),double(rot.c),double(rot.d),rZ([2 1]));
 
 % a real valued function takes the real nfft of its orders l >= 0, with the
-% dimensions reversed so that l comes last and k at its centered position
-if isReal && ~direct
+% dimensions reversed so that l comes last and k at its centered position -
+% unless nfftmex predates real plans
+useR = isReal && ~direct && nfftReal;
+if useR
   kr = k1(ind1(1))/rZ(1) + (0:numel(ind1)-1);
   Nk = 2*max(-kr(1),kr(end)+1);
   lr = find(k3(ind3) >= 0);
@@ -139,7 +141,7 @@ if isempty(plan)
   % initialize nfft plan
   if direct
     plan = nfftmex('init_3d',sz(3),sz(2),sz(1),M);
-  elseif isReal
+  elseif useR
     nR = [Nk,NN,2*szR(1)];
     fftw_size = fftLength(sigma*nR);
     plan = nfftmex('init_guru',{3,nR(1),nR(2),nR(3),M,fftw_size(1),fftw_size(2),fftw_size(3),m,nfft_flags+2^14,fftw_flags});
@@ -163,7 +165,7 @@ end
 
 % the kept frequencies start at index 0, which shifts them by s against the
 % centered frequencies of the complex nfft
-if ~isReal || direct
+if ~useR
   shift = exp(-2*pi*1i*(s1*abg(1,:)+s3*abg(3,:))).';
 end
 
@@ -172,7 +174,7 @@ for k = 1:length(SO3F)
 
   % the Fourier coefficients straight on the nfft lattice
   g = foldedWignerTrafo(SO3F.fhat(:,k),N,isReal,rZ);
-  if isReal && ~direct
+  if useR
     gR = zeros(szR);
     gR(:,:,kr(1)+Nk/2+(1:numel(ind1))) = permute(g(1:numel(ind1),:,lr),[3 2 1]);
     g = gR;
@@ -190,7 +192,7 @@ for k = 1:length(SO3F)
   end
 
   % get function values from plan, using (**) if SO3F is real valued
-  if isReal && ~direct
+  if useR
     f(:,k) = nfftmex('get_f',plan);
   elseif isReal
     f(:,k) = 2*real(shift .* nfftmex('get_f',plan));
