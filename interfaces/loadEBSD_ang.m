@@ -203,7 +203,7 @@ ebsd.opt.header = header;
 
 if isEMSphInx
 
-  ebsd = applyZeroBasedPhases(ebsd,cs);
+  ebsd = applyZeroBasedPhases(ebsd,ensureCSArray(get_option(varargin,'CS',cs)));
 
   % a pixel a ROI mask kept out of the run has orientation, IQ and fit all zero
   ebsd = markUnmeasured(ebsd);
