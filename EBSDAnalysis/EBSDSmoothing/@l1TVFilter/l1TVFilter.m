@@ -40,16 +40,19 @@ classdef l1TVFilter < EBSDFilter
       F.lambda = 2.8*(1:10000).^(-1.2);
     end
     
-    function ori = smooth(F,ori)
-      
-      % project into fundamental region
-      [~,qIn] = mean(ori);
-                  
+    function ori = smooth(F,ori,~)
+
+      % the equivalents nearest the mean, as n x m x 4 unit quaternions: past this
+      % the neighbours of a grain need no symmetry
+      [~,q] = mean(ori);
+      qIn = cat(3,q.a,q.b,q.c,q.d);
+
       % perform cyclic proximal point algorithm
+      isOut = isnan(qIn(:,:,1));
+      m = mean(reshape(qIn(~isOut(:,:,[1 1 1 1])),[],4),1);
       qOut = qIn;
-      qOut(isnan(qOut)) = mean(qOut);
-      
-      %F.lambda(1) * F.alpha ./ degree
+      qOut(isOut(:,:,[1 1 1 1])) = repmat(m ./ norm(m),nnz(isOut),1);
+
       for k = 1:F.maxit
        
         if F.isHex
@@ -65,7 +68,7 @@ classdef l1TVFilter < EBSDFilter
       end
                         
       % project back to orientation space
-      ori = orientation(qOut,ori.CS,ori.SS);
+      ori = orientation(quaternion(qOut(:,:,1),qOut(:,:,2),qOut(:,:,3),qOut(:,:,4)),ori.CS,ori.SS);
         
     end
     

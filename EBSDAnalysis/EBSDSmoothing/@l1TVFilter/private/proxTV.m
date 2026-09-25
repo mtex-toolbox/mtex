@@ -1,20 +1,13 @@
-function [xOut,yOut] = proxTV(xIn,yIn,lambda,varargin)
+function [xOut,yOut] = proxTV(xIn,yIn,lambda)
+% the proximal step of lambda * d(x,y) for pairs of unit quaternions, n x m x 4: both move
+% along their arc by the fraction t, x from its end and y from the other
 
+% the representative of y nearest x, and the arc between them, half the rotation angle
+d = sum(xIn .* yIn,3);
+yIn = yIn .* (1 - 2*(d < 0));
+th = 2 * asin(min(1, sqrt(sum((xIn-yIn).^2,3)) / 2));
 
-t = lambda ./ angle(xIn,yIn,varargin{:});
-%max(t,[],'all')
-t = min(t,0.5);
-
-% add some threshold
-if 0
-  t(mu>10*degree*sqrt(2)/(2*lambda))=0;
-end
-
-if 1
-  l = log(yIn,xIn);
-  xOut = exp(t .* l,xIn);
-  yOut = exp((1-t) .* l,xIn);
-else % this is not exact but faster  
-  xOut = normalize((1-t).*xIn + t.*yIn);
-  yOut = normalize(t.*xIn + (1-t).*yIn);
-end
+t = min(lambda ./ (2*th), 0.5);
+[a,b] = slerpWeights(th,t);
+xOut = a .* xIn + b .* yIn;
+yOut = b .* xIn + a .* yIn;
