@@ -163,17 +163,10 @@ end
 % TODO: Do FFT × NFFT × FFT in case of GaussLegendre-Quadrature
 if isa(v,'quadratureS2Grid') && strcmp(v.scheme,'ClenshawCurtis')
 
-  % Possibly use smaller input matrix by using the symmetries
-  if len==1
-    ghat = ifft2( W.* reshape(y,[size(W),1]) ,4*N,2*N+2);
-    ghat = ifftshift(ghat);
-  else % multivariate
-    ghat = ifft(ifft(W.*reshape(y,[size(W),len]),4*N,1),2*N+2,2);
-    ghat = ifftshift(ifftshift(ghat,1),2);
-  end
-
-  ghat = 4*N*(2*N+2) * ghat(N+1:3*N+1,2:end,:);
-  ghat = permute(ghat,[2,1,3]);
+  % every inverse FFT keeps only the frequencies -N:N, rho first
+  ghat = ifft((4*N*(2*N+2)) * W .* reshape(y,[size(W),len]),2*N+2,2);
+  ghat = ifft(ghat(:,mod(-N:N,2*N+2)+1,:),4*N,1);
+  ghat = permute(ghat(mod(-N:N,4*N)+1,:,:),[2,1,3]);
 
 elseif check_option(varargin,'directComputation')
 
@@ -213,7 +206,7 @@ ghat = z .* ghat;
 flags = [1,0,0,0,0]; % use L2-normalized Wigner-D functions
 
 % TODO: Probably use limit 1e-5 because this is precision m of nfft
-if isalmostreal(y,'precision',10,'norm',1)
+if isreal(y) || isalmostreal(y,'precision',10,'norm',1)
   flags(3) = 1; % f real valued
 end
 if v.antipodal || check_option(varargin,'antipodal')
@@ -227,12 +220,11 @@ for m = 1:len
   fhat(:,m) = sphericalHarmonicTrafoAdjointmex(N,double(ghat(:,:,m)),flagsMEX,[1,1]);
 end
 
+% the zeros of a real valued function from fhat(n,k) = conj(fhat(n,-k))
 if flags(3)
-  for n=1:N
-    ind = n^2+1 : (n+1)^2;
-    A = fhat(ind,:);
-    fhat(ind,:) = A + (A==0).*conj(flip(A,1)); 
-  end 
+  d = (0:N+1).^2;
+  rev = repelem(d(1:end-1)+d(2:end)+1,diff(d)).' - (1:d(end)).';
+  fhat = fhat + (fhat==0).*conj(fhat(rev,:));
 end
 
 

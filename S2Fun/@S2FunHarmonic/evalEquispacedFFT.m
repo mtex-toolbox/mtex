@@ -71,42 +71,14 @@ end
 if isAntipodal
   flags = flags+2^3;
 end
-ghat = sphericalHarmonicTrafo(sF,flags,'bandwidth',N);
-ghat = ghat.';
+ghat = sphericalHarmonicTrafo(sF,flags,'bandwidth',N).';
 
 
-% 3) For small H we go through a smaller FFT(H) several times
-% Hence we reduce the size of the fourier coefficient matrix ghat by adding 
-% the coefficients with same complex exponential's.
-sz = size(ghat,1,2);
-if any([Htheta,Hrho]<sz)
-  dim = ceil(sz./[Htheta,Hrho]);
-  B = zeros(dim.*[Htheta,Hrho]);
-  B(1:size(ghat,1),1:size(ghat,2)) = ghat;
-  B = reshape(B,Htheta,dim(1),Hrho,dim(2));
-  % Note that Htheta should be bigger than 1 to avoid errors by squeezing
-  ghat = squeeze(sum(B,[2,4]));
-  clear B;
-end
-
-
-% 4) Do FFT
-f = fft2(ghat,Htheta,Hrho);
-
-
-% 5) cut theta to [0,pi]
-f = f(1:Htheta/2+1,:);
-
-
-% 6) shift the summation of fft from [-N:N]x[-N:N] to [0:2N]x[0:2N].
-% Reduce the index products modulo the lattice size first, otherwise the argument
-% grows to 2*pi*N and its rounding error dominates the whole evaluation.
-if isReal  
-  z = mod((0:Htheta/2)'*N,Htheta)/Htheta ;%+ mod((0:Hrho-1)*N,Hrho)/Hrho;
-  f = 2*real( exp(2i*pi*z) .* f );
-else
-  z = mod((0:Htheta/2)'*N,Htheta)/Htheta + mod((0:Hrho-1)*N,Hrho)/Hrho;
-  f = exp(2i*pi*z) .* f;
-end
+% 3) Do FFT
+% every frequency goes to the index mod(frequency,H) of its FFT, summed where
+% the lattice is too small for all of them; theta first and cut to [0,pi]
+f = fft(circFold(ghat,[-N,0],[Htheta,size(ghat,2)]),[],1);
+f = fft(circFold(f(1:Htheta/2+1,:),[0,-N*~isReal],[Htheta/2+1,Hrho]),[],2);
+if isReal, f = 2*real(f); end
 
 end
