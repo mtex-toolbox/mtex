@@ -175,6 +175,25 @@ matlab -batch "runTests('slow')"
 **Read `tests/CLAUDE.md` before adding a test.** It has the tier budgets, which file owns
 which subsystem, and when a bug earns a new file at all.
 
+## The ports and the dependency graph
+
+MTEX has a Python port, `../pymtex`, developed in parallel, and a Julia port, `../mtexJulia`.
+`../pymtex/tools/graph/` holds the dependency graph of MTEX and pymtex: the call graphs, the
+counterparts between the two, the notes that mention a function, and the algorithms with their
+profiles. It is generated from the sources and rebuilds itself when they are newer.
+
+```
+cd ../pymtex
+.venv/bin/python tools/graph/query.py impact <function>   # callers in both ports, tests, benchmarks
+.venv/bin/python tools/graph/query.py node <function>     # counterparts, callers, notes
+.venv/bin/python tools/graph/query.py algo <name>         # where the time goes, port by port
+```
+
+Ask `impact` before changing an algorithm, and afterwards run the `../pymtex/bench/*_ops.py`
+that covers it: it checks this tree against the Python port on one input and times Julia. A new
+check follows that pattern - one input, an `ALGORITHM` literal, the MATLAB half in
+`bench/matlab/` - rather than a test aimed at one bug.
+
 ## Agent skills
 
 - **Issues** live in GitHub Issues on `mtex-toolbox/mtex`, via `gh`. See
