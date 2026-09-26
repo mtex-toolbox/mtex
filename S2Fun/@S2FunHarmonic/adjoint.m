@@ -134,8 +134,6 @@ if isempty(plan) && ~(isa(v,'quadratureS2Grid') && strcmp(v.scheme,'ClenshawCurt
   %                         measuring their execution time. This can take some time (often a few seconds).
     fftw_flags = int8(64);
     nfft_flags = 1+2^12+2^10+2^13; % PRE_PHI_HUT | NFFT_OMP_BLOCKWISE_ADJOINT | FFTW_INIT | NFFT_PRUNED_FFT
-    % PRE_PSI pays only for a plan that is kept for later functions
-    if check_option(varargin,{'createPlan','keepPlan'}), nfft_flags = nfft_flags + 2^4; end
   % nfft cutoff and oversampling, the pair S2FunHarmonic/eval uses
     m = get_option(varargin,'cutoffParameter',6);
     sigma = get_option(varargin,'oversampling',2);
