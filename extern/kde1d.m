@@ -75,10 +75,11 @@ elseif check_option(varargin,'magicNumber')
   t_star = get_option(varargin,'magicNumber',.28,'double')*N^(2);
 else
   % now compute the optimal bandwidth^2 using the referenced method
-  I = (1:n).^2; 
-      
+  % the degrees 1..n-1 with their coefficients a(2:n), the constant a(1) left out (Botev et al. 2010)
+  I = (1:n-1).^2;
+
   % use  fzero to solve the equation t=zeta*gamma^[5](t)
-  t_star=root(@(t)fixed_point(t,N,I,a.^2 ./ 4),N)
+  t_star = root(@(t)fixed_point(t,N,I,a(2:end).^2 ./ 4),N);
 end
 
 % smooth the discrete cosine transform of initial data using t_star

@@ -32,7 +32,8 @@ maxSample = 5000;
 if length(ori) > maxSample
   fak = (numOri/maxSample).^(1/7); % true is 2/7 but let us stay on the save side
   
-  ind = discretesample(length(ori),maxSample);
+  % without replacement: a duplicate survives leave-one-out and pulls KLCV to narrow kernels
+  ind = randperm(numOri,maxSample);
   ori = subSet(ori,ind);
     
 else

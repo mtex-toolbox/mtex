@@ -20,7 +20,7 @@ w = w ./ sum(w(:));
 
 % compute Fourier coefficients
 L = 16;
-odf_d = calcFourierODF(ori,'weights',weights,...
+odf_d = calcFourierODF(ori,'weights',w,...
   'kernel',SO3DirichletKernel(L),'silent');
 
 sob = SO3SobolevKernel(1,'bandwidth',L);
@@ -38,10 +38,8 @@ for i = 1:length(psi)
   
   % compute BCV
   rf =  1/N * sum(1./(1-w) .* eval(eodf,ori)) ...
-    - 1/N * eval(psi(i),0)* sum(w./(1-w));
+    - 1/N * psi{i}.eval(1) * sum(w./(1-w));
   
   c(i) = (kappa+2)^(-2) * rf + pi/8 * kappa^(3/2) / NCS;
-      
-  disp(c(i));
   
 end
