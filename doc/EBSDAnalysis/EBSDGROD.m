@@ -39,7 +39,7 @@ lowAngle = 1*degree;
 grains = smoothBoundary(grains,5);
 
 % denoise the orientations
-F = halfQuadraticFilter;
+F = l1TVFilter;
 ebsd = smooth(ebsd,F,grains,'fill');
 
 ipfKey = ipfColorKey(ebsd.CS);

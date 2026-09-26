@@ -293,12 +293,12 @@ pixelFitQuantiles = quantile(pixelFit(~isnan(pixelFit)),[0.5 0.9 0.99])
 %
 % To fill remaining notIndexed or not reconstructed pixels, the earlier page
 % segments |parentEBSD| at 3 degrees with |'minPixel',10|, smooths the parent
-% boundaries by 10 iterations, and applies a |halfQuadraticFilter|:
+% boundaries by 10 iterations, and applies a |l1TVFilter|:
 %
 %   [parentGrains,parentEBSD] = calcGrains(parentEBSD,...
 %     'angle',3*degree,'minPixel',10);
 %   parentGrains = smoothBoundary(parentGrains,10);
-%   F = halfQuadraticFilter;
+%   F = l1TVFilter;
 %   parentEBSD = smooth(parentEBSD('indexed'),F,'fill',parentGrains);
 %
 % The grain boundaries constrain the fill so it does not blur across the

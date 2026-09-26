@@ -240,7 +240,7 @@ fprintf('  %+6.2f%% on average, %+6.1f%% for the worst grain\n', ...
 % || recovered corner (degree) || 22 || 28 || 49 || 68 || 80 ||
 %
 % A threshold of 15 degree is appropriate for the
-% <EBSDDenoising.html |halfQuadraticFilter|> on orientations, but it would
+% <EBSDDenoising.html |l1TVFilter|> on orientations, but it would
 % never activate corner protection here. The default boundary threshold is
 % 5 degree.
 

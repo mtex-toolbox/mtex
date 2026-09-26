@@ -33,7 +33,7 @@ mtexdata single
 ebsdNoisy = ebsd;
 
 % denoise without smoothing across grain boundaries
-F = halfQuadraticFilter;
+F = l1TVFilter;
 ebsd = smooth(ebsd,F,'fill',grains);
 
 % the integral implementation uses ordfilt2 from Image Processing Toolbox

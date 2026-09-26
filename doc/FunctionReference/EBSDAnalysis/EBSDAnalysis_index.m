@@ -6,7 +6,6 @@
 % <pre>
 % EBSDFilter
 % ├── KuwaharaFilter
-% ├── halfQuadraticFilter
 % ├── infimalConvolutionFilter
 % ├── l1TVFilter
 % ├── meanFilter

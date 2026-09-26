@@ -349,7 +349,7 @@ setColorRange([0,5])
 %   [filledGrains,filledEBSD] = calcGrains(...
 %     boundaryParentEBSD('indexed'),'angle',3*degree,'minPixel',10);
 %   filledGrains = smoothBoundary(filledGrains,20);
-%   F = halfQuadraticFilter;
+%   F = l1TVFilter;
 %   filledEBSD = smooth(filledEBSD('indexed'),F,'fill',filledGrains);
 %   plot(filledEBSD('Iron fcc'),...
 %     filledEBSD('Iron fcc').orientations,'figSize','large')

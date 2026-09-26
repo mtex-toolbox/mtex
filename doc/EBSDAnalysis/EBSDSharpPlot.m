@@ -199,7 +199,7 @@ hold off
 % Maps>, and the colour construction follows
 % <https://doi.org/10.1016/j.ultramic.2017.06.021 Thomsen et al. (2017)>.
 
-F = halfQuadraticFilter;
+F = l1TVFilter;
 ebsdS = smooth(ebsd,F,'fill',grains);
 indexedS = ebsdS('indexed');
 

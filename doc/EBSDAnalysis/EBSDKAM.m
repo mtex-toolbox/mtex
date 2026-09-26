@@ -151,8 +151,8 @@ hold off
 % <EBSDDenoising.html Denoising> for the filter assumptions and alternatives.
 
 % choose a total variation filter
-F = halfQuadraticFilter;
-F.alpha = 0.5;
+F = l1TVFilter;
+F.alpha = 0.42;
 
 % denoise within the reconstructed grains and fill missing lattice sites
 ebsdS = smooth(ebsd,F,'fill',grains);

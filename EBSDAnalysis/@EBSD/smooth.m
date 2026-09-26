@@ -5,7 +5,7 @@ function [ebsd,filter] = smooth(ebsd,varargin)
 %
 %   ebsd = smooth(ebsd)
 %
-%   F = halfQuadraticFilter
+%   F = l1TVFilter
 %   F.alpha = 2;
 %   ebsd = smooth(ebsd, F, 'fill', grains)
 %
@@ -68,6 +68,7 @@ if check_option(varargin,'fill') || check_option(varargin,'extrapolate'), ebsd =
 % read input
 filter = getClass(varargin,'EBSDFilter',splineFilter);
 filter.isHex = isa(ebsd,'EBSDhex');
+if filter.isHex, filter.dx = ebsd.dx; else, filter.dx = norm(ebsd.d1); end
 
 % if possible smooth each grain separately 
 % otherwise each phase separately

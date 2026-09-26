@@ -34,7 +34,7 @@ classdef infimalConvolutionFilter < EBSDFilter
   % first and second order combined, and a stopping criterion.
   %
   % See also
-  % EBSDFilter EBSD/smooth halfQuadraticFilter l1TVFilter
+  % EBSDFilter EBSD/smooth l1TVFilter
   
   properties
     lambda = 0.005 % first-order regularization parameter [0,1]

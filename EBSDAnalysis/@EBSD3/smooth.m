@@ -5,7 +5,7 @@ function [ebsd,filter] = smooth(ebsd,varargin)
 %
 %   ebsd = smooth(ebsd)
 %
-%   F = halfQuadraticFilter
+%   F = l1TVFilter
 %   F.alpha = 2;
 %   ebsd = smooth(ebsd, F, 'fill', grains)
 %

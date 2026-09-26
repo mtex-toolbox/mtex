@@ -94,7 +94,7 @@ delete(exportFile);
 % vendor's layout.
 %
 %   ebsd = EBSD.load('myfile.h5oina');
-%   ebsd = ebsd.denoise(halfQuadraticFilter);
+%   ebsd = ebsd.denoise(l1TVFilter);
 %
 %   % copy myfile.h5oina and replace its orientations
 %   export(ebsd,'denoised.h5oina');

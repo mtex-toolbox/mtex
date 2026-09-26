@@ -46,7 +46,7 @@
 % untouched, and what MTEX computed is added beside them:
 %
 %   ebsd = EBSD.load('myfile.h5oina')
-%   ebsd = ebsd.denoise(halfQuadraticFilter)
+%   ebsd = ebsd.denoise(l1TVFilter)
 %   export(ebsd,'denoised.h5oina')
 %
 % *Update Documentation* 
@@ -110,6 +110,22 @@
 % and <Grains3DReconstruction.html Grain Reconstruction>,
 % <Grains3DSmoothing.html Smoothing>, <Grains3DBoundaries.html Boundary
 % Network> and <EBSD3Plotting.html Volume Data and Slices> for the pages.
+%
+% *Total Variation Denoising by a Smoothing Length*
+%
+% The half-quadratic filter is now the <l1TVFilter.l1TVFilter.html
+% |l1TVFilter|>; |halfQuadraticFilter| still works and says so. The filter
+% states its smoothing as a length, |l1TVFilter(L)|, the wavelength it damps
+% to half its amplitude, four pixel distances by default, and derives
+% |alpha| from it and from the grid. The same filter means the same on a
+% coarse and on a fine map, on a square and on a hexagonal grid, and in the
+% Python and the Julia port. |alpha| set by hand is now the weight of the
+% regularization itself: an old value corresponds to 1.25 times it on a
+% square grid and 0.83 times it on a hexagonal one. The default smooths less
+% than before - 2.5 times less regularization - and stops at a tolerance of
+% 0.001 degree. The former total variation filter, a cyclic proximal point
+% algorithm, stays as |F.method = 'proximal'| for the same functional.
+% Both iterate on quaternion arrays, and are several times faster.
 %
 % *Corrections Worth Knowing*
 %

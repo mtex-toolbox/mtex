@@ -326,12 +326,12 @@ plot(parentEBSD(betaName),parentColor,'figSize','large')
 parentGrains = smoothBoundary(parentGrains,5);
 
 %%
-% A <halfQuadraticFilter.html |halfQuadraticFilter|> with a small |alpha|
+% A <l1TVFilter.l1TVFilter.html |l1TVFilter|> with a small |alpha|
 % preserves more local detail. The |'fill'| option interpolates missing
 % orientations inside the supplied grain boundaries.
 
-F = halfQuadraticFilter;
-F.alpha = 0.1;
+F = l1TVFilter;
+F.alpha = 0.125;
 parentEBSD = smooth(parentEBSD,F,'fill',parentGrains);
 
 parentColor = ipfKey.orientation2color(...
