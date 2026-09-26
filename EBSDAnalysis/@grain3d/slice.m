@@ -84,33 +84,61 @@ FOld = FOld(2:2:end).';
 I_FNewG = (I_GF(isInter,FOld)~=0).';
 
 % step 5: compute polygons
-poly = calcPolygonsC(I_FNewG,FNew,VNew,plane.N);
+[poly,inclusionId] = calcPolygonsC(I_FNewG,FNew,VNew,plane.N);
 
 oldId = find(isInter);
 
-if 1 % this handles the case that a 3d grain is split into multiple 2d grains
+% calcPolygonsC returns every further loop of a grain as an inclusion, but a
+% 3d grain may be cut into several pieces: a loop inside an odd number of the
+% grain's other loops is a hole, any other loop a piece of its own
+e1 = normalize(orth(plane.N)); e2 = cross(plane.N,e1);
+xy = [dot(VNew,e1), dot(VNew,e2)];
 newPoly = {};
-for k = 1:length(poly)
+for k = find(inclusionId(:).' > 0)
 
-  % remove repeated values
-  poly{k} = poly{k}([true,diff(poly{k})~=0]);
-
-  ind = find(poly{k}(2:end)==poly{k}(1));
-  if length(ind)<=1, continue; end
-
-  % we need to check whether we have an inclusion or an separate grain
-  % right now we assume no inclusions
-  for i = 1:length(ind)-1
-    if ind(i)+1 == ind(i+1), continue; end
-    if poly{k}(ind(i)+2) ~= poly{k}(ind(i+1)), continue; end
-    newPoly = [newPoly;{poly{k}(ind(i+1):-1:ind(i)+2)}]; %#ok<AGROW>
-    oldId = [oldId;oldId(k)]; %#ok<AGROW>
+  % the loops: the first one closed, each further one closed and followed by
+  % the first vertex of the grain, which it may pass through itself
+  p = poly{k};
+  loops = {p(1:end-inclusionId(k))};
+  rest = p(end-inclusionId(k)+1:end);
+  s = 1;
+  while s < numel(rest)
+    e = s + find(rest(s+1:end) == rest(s),1);
+    loops{end+1} = rest(s:e); %#ok<AGROW>
+    s = e + 2;
   end
-  poly{k} = poly{k}(1:ind(1)+1);
+
+  % loops may touch, so containment is decided at a vertex off the other loop
+  n = numel(loops);
+  inside = false(n);
+  for i = 1:n
+    for j = [1:i-1,i+1:n]
+      v = setdiff(loops{i},loops{j});
+      if isempty(v), continue; end
+      inside(i,j) = inpolygon(xy(v(1),1),xy(v(1),2),xy(loops{j},1),xy(loops{j},2));
+    end
+  end
+  isHole = mod(sum(inside,2),2) == 1;
+  area = cellfun(@(l) polyarea(xy(l,1),xy(l,2)),loops);
+
+  % every hole belongs to the smallest piece around it; the further pieces,
+  % traced as inclusions, are turned round
+  pieces = find(~isHole).';
+  for i = pieces(2:end), loops{i} = fliplr(loops{i}); end
+  parts = cell(1,n);
+  for i = pieces, parts{i} = loops{i}; end
+  for i = find(isHole).'
+    around = pieces(inside(i,pieces));
+    [~,m] = min(area(around));
+    parts{around(m)} = [parts{around(m)}, loops{i}, parts{around(m)}(1)];
+  end
+
+  poly{k} = parts{1};
+  newPoly = [newPoly; parts(pieces(2:end)).']; %#ok<AGROW>
+  oldId = [oldId; repmat(oldId(k),numel(pieces)-1,1)]; %#ok<AGROW>
 
 end
 poly = [poly; newPoly];
-end
 
 % new 2d grains
 grains2 = grain2d(VNew, poly, grains3.prop.meanRotation(oldId),...

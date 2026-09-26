@@ -53,16 +53,17 @@ catch
   error('The file does not contain any grain information.')
 end
 
-abcd = h5read_multi(fname, QuatsPath)';
+xyzw = h5read_multi(fname, QuatsPath)';
 
 try
   activeGrains = logical(h5read_multi(fname, activePath))';
 catch ME
-  activeGrains = true(size(abcd,1));
+  activeGrains = true(size(xyzw,1),1);
 end
 
-q = quaternion(abcd(activeGrains,1),abcd(activeGrains,2),...
-  abcd(activeGrains,3),abcd(activeGrains,4));
+% DREAM.3D stores the passive rotation as (x,y,z,w); its inverse is the rotation of the voxels
+q = quaternion(xyzw(activeGrains,4),-xyzw(activeGrains,1),...
+  -xyzw(activeGrains,2),-xyzw(activeGrains,3));
 
 csList = dream3dCrystalSymmetry(h5read_multi(fname,crysmPath));
 
