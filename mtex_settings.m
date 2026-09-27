@@ -242,7 +242,15 @@ setMTEXpref('maxS1Bandwidth',1024);
 
 setMTEXpref('maxS2Bandwidth',512);
 
+% the bandwidth of an S2FunHarmonic computed from values at nodes, e.g. by
+% S2FunHarmonic.quadrature or S2FunHarmonic.adjoint, when none is given
+setMTEXpref('defaultS2Bandwidth',128);
+
 setMTEXpref('maxSO3Bandwidth',64);
+
+% the bandwidth of an SO3FunHarmonic computed from values at nodes, e.g. by
+% SO3FunHarmonic.quadrature or SO3FunHarmonic.adjoint, when none is given
+setMTEXpref('defaultSO3Bandwidth',64);
 
 %% degree character
 % MTEX sometimes experiences problems when printing the degree character

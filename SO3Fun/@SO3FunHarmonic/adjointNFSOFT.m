@@ -20,7 +20,7 @@ function SO3F = adjointNFSOFT(rot,values, varargin)
 %  SO3F - @SO3FunHarmonic
 %
 % Options
-%  bandwidth - maximal harmonic degree (default: 64)
+%  bandwidth - maximal harmonic degree (default: getMTEXpref('defaultSO3Bandwidth'))
 %  weights   - quadrature weights
 %
 % See also
@@ -59,7 +59,7 @@ if isa(rot,'quadratureSO3Grid')
   values = values(rot.iuniqueGrid);
   W = rot.weights;
 else
-  N = get_option(varargin,'bandwidth', getMTEXpref('maxSO3Bandwidth'));
+  N = get_option(varargin,'bandwidth', getMTEXpref('defaultSO3Bandwidth'));
   nodes = rot;
   W = get_option(varargin,'weights',1);
 end

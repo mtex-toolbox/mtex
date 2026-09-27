@@ -26,7 +26,7 @@ if nargin > 1 && isnumeric(varargin{1})
 
 else
 
-  bw = get_option(varargin,'bandwidth',getMTEXpref('maxS2Bandwidth'));
+  bw = get_option(varargin,'bandwidth',getMTEXpref('defaultS2Bandwidth'));
   S2G = quadratureS2Grid(bw,'GaussLegendre');
 
   value = 1/(4*pi)*sum(reshape(sF.eval(S2G),[],numel(sF)).*S2G.weights(:),1);

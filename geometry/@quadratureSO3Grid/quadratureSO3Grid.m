@@ -107,7 +107,7 @@ methods
     if nargin>0 && isnumeric(varargin{1}) && isscalar(varargin{1})
       N = varargin{1};
     else
-      N = get_option(varargin,'bandwidth', getMTEXpref('maxSO3Bandwidth'));
+      N = get_option(varargin,'bandwidth', getMTEXpref('defaultSO3Bandwidth'));
     end
     % get symmetries
     [SRight,SLeft] = extractSym(varargin);

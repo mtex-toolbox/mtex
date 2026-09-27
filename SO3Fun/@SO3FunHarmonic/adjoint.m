@@ -20,7 +20,7 @@ function SO3F = adjoint(rot,values, varargin)
 %  SO3F - @SO3FunHarmonic
 %
 % Options
-%  bandwidth - maximal harmonic degree (default: 64)
+%  bandwidth - maximal harmonic degree (default: getMTEXpref('defaultSO3Bandwidth'))
 %  weights   - quadrature weights
 %  cutOffParameter - NFFT window cutoff m (default: 6 for few nodes on a large lattice, 4 otherwise)
 %  oversampling - NFFT oversampling factor sigma (default: 1.25 for few nodes on a large lattice, 2 otherwise)
@@ -111,7 +111,7 @@ end
 % i.e. pi/(2N) in the second Euler angle.
 if check_option(varargin,'gridded') && ~isa(rot,'quadratureSO3Grid')
 
-  N = get_option(varargin,'bandwidth', getMTEXpref('maxSO3Bandwidth'));
+  N = get_option(varargin,'bandwidth', getMTEXpref('defaultSO3Bandwidth'));
 
   % quadrature weights are just factors of the values
   W = get_option(varargin,'weights',1);
@@ -179,7 +179,7 @@ if isa(rot,'quadratureSO3Grid')
     W = rot.weights(rot.ifullGrid).*GC;
   end
 else
-  N = get_option(varargin,'bandwidth', getMTEXpref('maxSO3Bandwidth'));
+  N = get_option(varargin,'bandwidth', getMTEXpref('defaultSO3Bandwidth'));
   W = get_option(varargin,'weights',1);
 end
 

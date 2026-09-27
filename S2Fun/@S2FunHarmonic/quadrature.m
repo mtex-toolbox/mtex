@@ -28,7 +28,7 @@ function sF = quadrature(f, varargin)
 %  sF - @S2FunHarmonic
 %
 % Options
-%  bandwidth - minimal degree of the spherical harmonic (default: 128)
+%  bandwidth - minimal degree of the spherical harmonic (default: getMTEXpref('defaultS2Bandwidth'))
 %
 % Flags
 %  ClenshawCurtis - quadrature grid (default)
@@ -58,7 +58,7 @@ end
   % varargin{end+1} = 'antipodal';
 % end
 
-bw = get_option(varargin,'bandwidth', 128);
+bw = get_option(varargin,'bandwidth', getMTEXpref('defaultS2Bandwidth'));
 
 if check_option(varargin,'S2Grid')
   S2G = get_option(varargin,'S2Grid');

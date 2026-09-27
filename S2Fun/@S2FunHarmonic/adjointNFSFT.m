@@ -16,7 +16,7 @@ function sF = adjointNFSFT(nodes,values, varargin)
 %  sF - @S2FunHarmonic
 %
 % Options
-%  bandwidth - maximal harmonic degree (default: 128)
+%  bandwidth - maximal harmonic degree (default: getMTEXpref('defaultS2Bandwidth'))
 %  weights   - quadrature weights
 %
 % See also
@@ -83,7 +83,7 @@ if isa(nodes,'quadratureS2Grid')
   bw = nodes.bandwidth;
   W = nodes.weights;
 else
-  bw = get_option(varargin,'bandwidth', 128);
+  bw = get_option(varargin,'bandwidth', getMTEXpref('defaultS2Bandwidth'));
 
   W = get_option(varargin,'weights',1);
   % if length(nodes)>100000 && length(values) == length(nodes) && isscalar(W)

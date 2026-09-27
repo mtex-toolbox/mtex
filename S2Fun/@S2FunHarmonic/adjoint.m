@@ -20,7 +20,7 @@ function sF = adjoint(v,y, varargin)
 %  sF - @S2FunHarmonic
 %
 % Options
-%  bandwidth - maximal harmonic degree (default: 512)
+%  bandwidth - maximal harmonic degree (default: getMTEXpref('defaultS2Bandwidth'))
 %  weights   - quadrature weights
 %
 % Flags
@@ -79,7 +79,7 @@ if isa(v,'quadratureS2Grid')
   N = v.bandwidth;
   W = v.weights;
 else
-  N = get_option(varargin,'bandwidth', getMTEXpref('maxS2Bandwidth'));
+  N = get_option(varargin,'bandwidth', getMTEXpref('defaultS2Bandwidth'));
   v = v(:);  
   W = get_option(varargin,'weights',1);
 end

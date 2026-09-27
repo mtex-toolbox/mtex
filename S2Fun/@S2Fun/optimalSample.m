@@ -149,7 +149,7 @@ function [v,c] = optimalSample(sF,n,varargin)
 % TODO: Symmetries, i.e. S2FunHarmonicSym
 
 % polynomials should be integrated exactly until this bandwidth
-bw = get_option(varargin,'bandwidth',128);
+bw = get_option(varargin,'bandwidth',getMTEXpref('defaultS2Bandwidth'));
 
 % optimalSample works only for S2FunHarmonic
 sF = S2FunHarmonic(sF,'bandwidth',bw);
