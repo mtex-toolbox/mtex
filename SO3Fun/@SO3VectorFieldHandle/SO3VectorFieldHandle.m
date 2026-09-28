@@ -34,7 +34,7 @@ classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
 
 properties
   fun
-  bandwidth = getMTEXpref('maxSO3Bandwidth');
+  bandwidth = getMTEXpref('defaultSO3Bandwidth');
   tangentSpace = SO3TangentSpace.leftVector
 end
 

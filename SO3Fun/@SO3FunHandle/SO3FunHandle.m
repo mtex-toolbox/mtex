@@ -20,7 +20,7 @@ properties
   fun
   SLeft  = specimenSymmetry.default
   SRight = specimenSymmetry.default
-  bandwidth = getMTEXpref('maxSO3Bandwidth');
+  bandwidth = getMTEXpref('defaultSO3Bandwidth');
   antipodal = false
 end
 

@@ -1,4 +1,4 @@
-function sF = le(sF1,sF2)
+function sF = le(sF1,sF2,varargin)
 % overloads sF1 <= sF2
 %
 % Syntax
@@ -26,6 +26,6 @@ else
   f2 = @(v) sF2.eval(v);
 end
 
-sF = S2FunHarmonic.quadrature(@(v) f1(v) <= f2(v));
+sF = S2FunHarmonic.quadrature(@(v) f1(v) <= f2(v),varargin{:});
 
 end

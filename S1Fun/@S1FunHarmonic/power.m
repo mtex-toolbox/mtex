@@ -1,4 +1,4 @@
-function sF = power(sF1,sF2)
+function sF = power(sF1,sF2,varargin)
 %
 % Syntax
 %   sF = sF1.^a
@@ -6,15 +6,18 @@ function sF = power(sF1,sF2)
 
 if isnumeric(sF1)
   f = @(v) sF1 .^ eval(sF2, v);
-  bw = sF1 * sF2.bandwidth;
 elseif isnumeric(sF2)
   f = @(v) eval(sF1, v) .^ sF2;
-  bw = sF1.bandwidth * sF2;
 else
   f = @(v) eval(sF1, v) .^ eval(sF2, v);
-  bw = max(sF1.bandwidth, sF2.bandwidth);
 end
 
-sF = S1FunHarmonic.quadrature(f,'bandwidth',min(bw,getMTEXpref('maxS1Bandwidth')));
+% an integer power of sF1 has sF2 times its bandwidth, the others none
+if isnumeric(sF2) && isscalar(sF2) && sF2 >= 0 && sF2 == round(sF2)
+  bw = min(sF1.bandwidth * sF2, getMTEXpref('maxS1Bandwidth'));
+else
+  bw = getMTEXpref('maxS1Bandwidth');
+end
+sF = S1FunHarmonic.quadrature(f,'bandwidth',get_option(varargin,'bandwidth',bw));
 
 end

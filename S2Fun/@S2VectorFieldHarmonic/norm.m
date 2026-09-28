@@ -1,4 +1,4 @@
-function sF = norm(sVF)
+function sF = norm(sVF,varargin)
 % pointwise norm of the vectorfield
 %
 % Syntax
@@ -8,6 +8,6 @@ function sF = norm(sVF)
 %  sF - S2FunHarmonic
 %
 
-sF = S2FunHarmonic.quadrature(@(v) norm(sVF.eval(v)));
+sF = S2FunHarmonic.quadrature(@(v) norm(sVF.eval(v)),varargin{:});
 
 end

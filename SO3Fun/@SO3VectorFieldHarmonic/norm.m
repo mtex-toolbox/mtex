@@ -1,4 +1,4 @@
-function SO3F = norm(SO3VF)
+function SO3F = norm(SO3VF,varargin)
 % point-wise norm of the vector field
 %
 % Syntax
@@ -18,6 +18,6 @@ end
 
 % do quadrature
 fun = @(rot) reshape( norm(vector3d(SO3VF.SO3F.eval(rot))) , size(rot));
-SO3F = SO3FunHarmonic.quadrature(fun,SO3VF.hiddenCS,SO3VF.hiddenSS,'bandwidth',SO3VF.bandwidth);
+SO3F = SO3FunHarmonic.quadrature(fun,SO3VF.hiddenCS,SO3VF.hiddenSS,'bandwidth',get_option(varargin,'bandwidth',SO3VF.bandwidth));
 
 end
