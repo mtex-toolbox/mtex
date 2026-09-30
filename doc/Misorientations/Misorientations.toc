@@ -1,6 +1,6 @@
-MisorientationTheory Theory
-MisorientationGrainExchangeSym  Grain Exchange Symmetry
-Twinning
-MisorientationDistributionFunction
-AxisDistributionFunction
-AngleDistributionFunction
+MisorientationTheory                    Theory
+MisorientationGrainExchangeSym          Grain Exchange Symmetry
+Twinning                                Twin relationships
+MisorientationDistributionFunction      Misorientation Distribution Function
+AxisDistributionFunction                Axis Distribution Function
+AngleDistributionFunction               Angle Distribution Function

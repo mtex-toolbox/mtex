@@ -1,16 +1,7 @@
-GrainReconstruction            Reconstruction
-GrainSpatialPlots              Plot
-SelectingGrains                Select
-ShapeParameters                Shape Parameters
-EllipseBasedParameters         Ellipse Fitting
-HullBasedParameters            Convex Hull Parameters
-ProjectionBasedParameters      Projection Parameters
-GrainOrientationParameters     Orientation Parameters
-Grain_dispersion_axes          Dispersion Axes
-GrainNeighbours                Neighbours
-GrainMerge                     Merge
-GrainReconstructionAdvanced    Advanced Reconstruction
-GrainReconstructionMCL         Markovian Clustering
-GrainExport                    Export
-Dream3dGrains                  DREAM.3D Grain Meshes
-NeperInterface                 Neper Interface
+GrainReconstruction                     Grain Reconstruction
+GrainReconstructionAdvanced             Advanced Reconstruction
+GrainReconstructionMCL                  Markovian Clustering
+GrainSpatialPlots                       Plot
+SelectingGrains                         Select
+GrainNeighbours                         Neighbours
+GrainMerge                              Merge

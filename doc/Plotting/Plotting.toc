@@ -1,11 +1,13 @@
-PlotTypes
-AxesAlignment
-CombinedPlots
-Multiplot
-Annotations
-PlottingExport
-SphericalProjections
-Legends
-ColorMaps
-ContourPlots
-TransparencyDemo
+PlotTypes                               Plot Types
+SphericalProjections                    Spherical Projections
+AxesAlignment                           Axes Alignment on Screen
+CombinedPlots                           Combined Plots
+Multiplot                               Align Plots in a Grid
+Annotations                             Annotations
+ColorMaps                               Color Mapping
+ContourPlots                            Contour Plots
+Legends                                 Legends
+TransparencyDemo                        Transparency
+CrystalShapes                           Crystal Shapes
+CrystalShapeSmorf                       Advanced Crystal Shapes
+PlottingExport                          Exporting figures
