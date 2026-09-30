@@ -1,0 +1,4 @@
+DensityEstimation                       Density Estimation
+OptimalKernel                           Optimal Kernel Selection
+RandomSampling                          Random Sampling
+S2FunSampling                           Sampling

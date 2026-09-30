@@ -1,8 +1,7 @@
-TensorDefinition    Definition
-TensorImport        Import
-TensorArithmetics   Arithmetics
-TensorVisualisation Plotting
-TensorAverage       Averages
-PiezoElectricity    Piezo Electricity
-BirefringenceDemo   Birefringence
-MagneticAnisotropy  Magnetic Anisotropy
+TensorArithmetics                       Arithmetics
+TensorVisualisation                     Plotting
+TensorAverage                           Averages
+WaveVelocities                          Wave Velocities
+PiezoElectricity                        Piezo Electricity
+BirefringenceDemo                       Birefringence
+MagneticAnisotropy                      Magnetic Anisotropy

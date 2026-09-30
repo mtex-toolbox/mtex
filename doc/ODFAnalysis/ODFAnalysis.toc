@@ -1,19 +1,8 @@
-ODFTheory                        Theory
-ODFModeling                      Calculations
-ODFPlot                          Plot
-ODFPoleFigure                    Pole Figures
-ODFInversePoleFigure             Inverse Pole Figures
-EulerAngleSections               Euler Angle Sections
-SigmaSections                    Sigma Sections
-ODFComponents                    Components
-ODFCharacteristics               Properties
-RadialODFs                       Radial ODF
-FibreODFs                        Fibre ODF
-BinghamODFs                      Bingham ODF
-SO3FunHarmonicRepresentation     Series Expansion 
-ODFImport                        Import
-ODFExport                        Export
-RandomSampling                   Random Sampling
-DensityEstimation                Density Estimation
-DetectionOfSampleSymmetry        Sample Symmetry
-ODFShapes                        Shapes
+ODFModeling                             Model textures
+ODFPlot                                 Plot
+ODFPoleFigure                           Pole Figures
+ODFInversePoleFigure                    Inverse Pole Figures
+EulerAngleSections                      Euler Angle Sections
+SigmaSections                           Sigma Sections
+ODFComponents                           Components
+ODFCharacteristics                      Texture strength and volume fractions

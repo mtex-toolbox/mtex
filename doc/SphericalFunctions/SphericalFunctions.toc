@@ -1,17 +1,15 @@
-S2FunConcept                    Concept 
-S2FunOperations                 Operations
-S2FunPlotting                   Plotting
-S2FunApproximationInterpolation Approximation and Interpolation
-S2FunSampling                   Sampling
-S2FunQuadrature                 Quadrature
-S2FunHarmonicRepresentation     Harmonic Representation
-S2Bingham                    	Bingham Distribution
-S2FunRadon                      Radon Transform
-S2FunVectorField                Vector Field
-S2FunAxisField                  Axis Field
-S2FunSym                        Symmetric Function
-SO3FunConvolution               Convolution
-S2FunVectorValued               Vector Valued Spherical Functions
-S2Kernels                       Spherical Kernel Functions
-SphericalHarmonics              Spherical Harmonics
-S1FunHarmonics                  Fourier Series
+S2FunConcept                            Concept
+S2FunOperations                         Operations
+S2FunPlotting                           Plotting
+S2FunApproximationInterpolation         Approximation and Interpolation
+S2FunQuadrature                         Quadrature
+S2FunHarmonicRepresentation             Harmonic Representation
+SphericalHarmonics                      Spherical Harmonics
+S2Kernels                               Spherical Kernel Functions
+S2Bingham                               Bingham Distribution
+S2FunRadon                              Radon Transform
+S2FunSym                                Symmetric Function
+S2FunVectorField                        Vector Field
+S2FunAxisField                          Axis Field
+S2FunVectorValued                       Vector Valued Spherical Functions
+S1FunHarmonics                          Fourier Series

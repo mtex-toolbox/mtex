@@ -1,8 +1,7 @@
-EBSD3Plotting         Volume Data and Slices
-Grains3D              Three-Dimensional Grains
-Grains3DReconstruction Grain Reconstruction
-Grains3DSmoothing     Boundary Smoothing
-Grains3DBoundaries    Boundary Network
-NeperInterface        Synthetic Microstructures
-Grains3DProperties    Grain Size and Shape
-Grains3DOperations    Sections and Rotations
+EBSD3Plotting                           Volume Data and Slices
+Grains3DReconstruction                  Grain Reconstruction
+Grains3D                                Three-Dimensional Grains
+Grains3DSmoothing                       Boundary Smoothing
+Grains3DBoundaries                      Boundary Network
+Grains3DProperties                      Grain Size and Shape
+Grains3DOperations                      Sections and Rotations
