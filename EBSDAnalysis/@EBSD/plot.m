@@ -14,6 +14,7 @@ function [h,mP] = plot(ebsd,varargin)
 %
 %   % colorize every phase by its ipf key for the direction x, y or z
 %   plot(ebsd,'ipfx')
+%   plot(ebsd,'ipfDirection',vector3d(1,1,0))
 %
 %   % colorize according to custom color
 %   oM = ipfColorKey(ebsd('phaseName'))
@@ -71,7 +72,8 @@ mtexFig = newMtexFigure('datacursormode',{@tooltip,ebsd},varargin{:});
   'parent',mtexFig.gca,varargin{:},ebsd.how2plot,ebsd.pos.frame);
 
 % transform orientations to color
-ipfDir = get_option(varargin,{'ipfDirection','inversePoleFigureDirection','ipfd'},zvector);
+ipfOpt = {'ipfDirection','inversePoleFigureDirection','ipfd'};
+ipfDir = get_option(varargin,ipfOpt,zvector);
 flag = get_flag(varargin,{'ipfx','ipfy','ipfz'},'');
 if ~isempty(flag)
   dirs = [xvector,yvector,zvector];
@@ -82,8 +84,7 @@ if nargin>1 && isa(varargin{1},'orientation')
 
   varargin{1} = ipfColor(varargin{1},ipfDir);
   
-  if ~getMTEXpref('generatingHelpMode') && isempty(flag) && ...
-      ~check_option(varargin,{'ipfDirection','inversePoleFigureDirection','ipfd'})
+  if ~getMTEXpref('generatingHelpMode') && isempty(flag) && ~check_option(varargin,ipfOpt)
     disp('  I''m going to colorize the orientation data with the ');
     disp('  standard MTEX ipf-Z colorkey. To view the colorkey do:');
     disp(' ');
@@ -91,7 +92,7 @@ if nargin>1 && isa(varargin{1},'orientation')
     disp('  plot(colorKey)')
   end
 
-elseif ~isempty(flag)
+elseif ~isempty(flag) || check_option(varargin,ipfOpt)
 
   % the orientations of the map itself, each phase by its own key
   color = NaN(length(ebsd),3);
