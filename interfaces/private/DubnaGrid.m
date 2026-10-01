@@ -4,7 +4,8 @@ function r = DubnaGrid(ntheta)
 theta = linspace(0,pi/2,19);
 theta = theta(1:ntheta);
 theta = repmat(theta,72,1);
-rho   = linspace(0,2*pi,72);
+% the goniometer steps 5 degree in the azimuth: 72 steps, the last at 355 degree
+rho   = (0:71)*5*degree;
 rho   = repmat(rho.',1,ntheta);
 % the strating angles of rho beginning with theta = 0;
 rhostart = fliplr([360.00,336.40,327.05,320.11,314.44,309.57,305.26,301.37,297.80,...
