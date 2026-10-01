@@ -106,10 +106,10 @@ fprintf('Global maximum: %.3f; local minima: %.3f and %.3f\n',...
   maxValue,minValue(1),minValue(2))
 
 %%
-% The maximum marker sits on the highest feature of the combined function.
-% The minimum markers identify separate basins instead of merely the lowest
-% sampled pixels in the plot. The maximum is 15.716, while the two basins
-% have nearly equal minima of -7.204.
+% The maximum marker sits on the top of the narrow peak. The minimum markers
+% identify the two eyes, separate basins instead of merely the lowest
+% sampled pixels in the plot. The maximum is 97.847, while the two basins
+% have equal minima of -7.465.
 
 %% Integration and norms
 %
@@ -159,8 +159,10 @@ gradientAtX = grad(sF1,xvector)
 gradientMagnitude = norm(gradientAtX)
 
 %%
-% At specimen X the gradient magnitude is 0.0012. Its vector lies in the
-% plane tangent to the sphere at X, so its X component is zero.
+% The vector lies in the plane tangent to the sphere at X, so its X
+% component is zero. Its magnitude of about $10^{-3}$ is no feature of the
+% smiley, which is flat around X, but the residue of expanding a function
+% with sharp edges into harmonics of finite degree.
 
 %%
 % Gradients at all directions form a spherical vector field. Calling
