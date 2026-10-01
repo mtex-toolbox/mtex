@@ -87,6 +87,8 @@ end
 
 % extract orientations
 if isa(ebsd,'EBSD')
+  % the segments that run between a pair of pixels, see smoothBoundary
+  gB = gB.subSet(all(gB.ebsdId > 0,2));
   ori1 = ebsd('id',gB.ebsdId(:,1)).orientations;
   ori2 = ebsd('id',gB.ebsdId(:,2)).orientations;
 elseif isa(ebsd,'grain2d')

@@ -111,10 +111,10 @@ fprintf('resampling at %.2f %s instead leaves %d segments\n', ...
 
 %% What preprocessing changes
 % Simplification and resampling change the number of boundary segments.
-% A resampled segment no longer lies between one specific pair of EBSD
-% measurements, so its row of |gB.ebsdId| no longer identifies the pixels on
-% its two sides. Use |'noSimplify'| and |'noRefine'| when an analysis needs
-% that per-segment association.
+% A segment that no longer lies between one specific pair of EBSD
+% measurements gets the row |[0 0]| in |gB.ebsdId|, as the outer boundary
+% has. Use |'noSimplify'| and |'noRefine'| when an analysis needs that
+% per-segment association for every segment.
 %
 % Smoothing also changes lengths, areas, directions, and curvatures. It is a
 % measurement choice, not merely a plotting choice. Record the filter and

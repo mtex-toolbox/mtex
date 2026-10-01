@@ -58,10 +58,10 @@ function [grains,F] = smoothBoundary(grains,iter,varargin)
 % throughout, unless |moveTriplePoints| is given. When grains were segmented
 % using alphaShapes, all grains next to holes have outer boundary.
 %
-% Note that the first two steps change the number of boundary segments, and a
-% resampled segment no longer runs between a specific pair of pixels. Where
-% |gB.ebsdId| is analysed per segment, switch them off with |'noSimplify'| and
-% |'noRefine'|.
+% Note that the first two steps change the number of boundary segments. A
+% segment that no longer runs between a specific pair of pixels gets the
+% |gB.ebsdId| 0, as the outer boundary has; where the pixel pairs are analysed,
+% switch the steps off with |'noSimplify'| and |'noRefine'| to keep them all.
 %
 % Input
 %  grains - @grain2d

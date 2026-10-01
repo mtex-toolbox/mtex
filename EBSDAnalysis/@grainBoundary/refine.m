@@ -26,11 +26,10 @@ function gB = refine(gB,varargin)
 % degrees of freedom that are not tied to the grid.
 %
 % grainId and phaseId are constant along a chain and carry over exactly.
-% ebsdId and misrotation belong to a specific pair of pixels, which a
-% resampled segment no longer corresponds to - those are inherited from
-% whichever original segment covers the new segment's midpoint. A midpoint
-% landing on the seam between two of them is covered by both, and which one it
-% takes is then decided by the last bits of the arc length.
+% ebsdId and misrotation belong to a specific pair of pixels: a new segment
+% lying within one original segment inherits them, one spanning several gets
+% the misrotation of the original covering its midpoint and the ebsdId 0, a
+% pair of no pixels, as the outer boundary has.
 %
 % Input
 %  gB    - @grainBoundary
@@ -104,6 +103,11 @@ gMid = gStart(cOf) + (tPrev + tEnd)/2;
 % inherit the per segment data from whatever covers the new segment's midpoint
 src = locate(gMid,Lc,iStart(cOf),iEnd(cOf));
 
+% whether a new segment lies within the original one it inherits from
+tol = total(cOf) * 1e-9;
+within = locate(gStart(cOf) + tPrev + tol,Lc,iStart(cOf),iEnd(cOf)) == src & ...
+  locate(gStart(cOf) + tEnd - tol,Lc,iStart(cOf),iEnd(cOf)) == src;
+
 % every new segment contributes its head vertex, except the last one of a piece
 isLast = kOf == mOf;
 isNew = ~isLast;
@@ -126,6 +130,9 @@ tail(~isFirst) = head(find(~isFirst)-1);
 gB = gB.subSet(src);
 gB.allV = [gB.allV; vector3d.byXYZ(Q)];
 gB.F = [tail, head];
+
+% a segment spanning several originals runs between no one pair of pixels
+gB.ebsdId(~within,:) = 0;
 
 gB = gB.order;
 gB.triplePoints = gB.calcTriplePoints;
