@@ -10,6 +10,63 @@
 % measured against, and which issue it closes--is in |CHANGELOG.md| in the
 % MTEX folder.
 %
+%% MTEX 7.2 10/2026
+%
+% *Changed Behaviour*
+%
+% * generic orientation, EBSD and ODF files are read in degrees unless
+% |'radians'| is given. The unit was guessed from the values before, so a file
+% of small angles in degrees was taken as radians. |'passive'| takes effect
+% now, and quaternion columns are read
+% * <grain2d.smoothBoundary.html |smoothBoundary|> sets |gB.ebsdId| to 0 for
+% a segment that no longer runs between one pair of pixels, as the outer
+% boundary has, instead of keeping the pair of a segment it replaced. Use
+% |'noSimplify'| and |'noRefine'| where every pair is needed
+% * the |'bandwidth'| of |kde1d| and of <calcDensity.html |calcDensity|> is a
+% bandwidth in the units of the data, the value they return
+% * <mtexdata.html |mtexdata|> rebuilds its cached data when the MTEX version
+% or the default plotting convention differs from the session that wrote it
+%
+% *New*
+%
+% * |loadPoleFigure_inel| reads INEL pole figure files
+% * |curvature| and |calcGND| of a voxel map, and |KAM|, |fill|, |reduce| and
+% |fillByGrainId| of a volume work in three dimensions
+%
+% *Corrections Worth Knowing*
+%
+% * |S2Fun.unimodal| has mean one and is centred on the direction it is
+% given; it had mean 0.16 and peaked at the mirror image of a direction off
+% the pole
+% * the halfwidth of an |S2DirichletKernel| is the angle of half its maximum,
+% not 180 degree
+% * |S2FunBingham| is normalised exactly, its fit uses the exact moments, and
+% the confidence ellipse of the fit is computed on the principal axes
+% * <SO3FunHarmonic.interpolate.html |SO3FunHarmonic.interpolate|> fits with
+% the same NFFT accuracy that evaluates the result, and its options reach the
+% solver
+% * the samples of a fibre ODF (|SO3FunCBF|) and of a function handle with a
+% |'range'| follow their distributions
+% * |calcKernel(...,'method','LSCV')| runs
+% * a map exported to .ang or .ctf states its Euler angles in the crystal
+% frame the reader builds, so a hexagonal map no longer comes back turned by
+% 30 degree
+% * |stiffnessTensor.load| reads the density the file states
+% * an .osc scan stopped early grids like a complete one
+% * every specimen grid of a pole figure is antipodal, so pole figures read
+% one grid each normalise alike
+% * <vector3d.refine.html |refine|> of a cap of directions stays in the cap
+% * <spatialTransformProjective.spatialTransformProjective.html
+% |spatialTransformProjective.fit|> normalises the points before the fit and
+% recovers a homography from data with outliers
+% * <EBSD.interp.html |interp|> of a gridded map no longer takes its padding
+% for a measurement
+% * a merge in a <parentGrainReconstructor.parentGrainReconstructor.html
+% |parentGrainReconstructor|> clears the votes of the grains it replaced
+% * |principalComponents| of triangulated 3D grains,
+% |neper.simulateChildGrains| with many lamellae per parent and |orientFaces|
+% of faces given with one side work
+%
 %% MTEX 7.1 09/2026
 %
 % *True EBSD - Aligning EBSD Maps with SEM Images*
