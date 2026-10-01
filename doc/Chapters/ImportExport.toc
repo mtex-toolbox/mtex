@@ -1,4 +1,5 @@
 EBSDImport                              Import
+EBSDVendors                             Vendors and Formats
 EBSDReferenceFrame                      Reference Frame
 EBSDInterfaceHDF5                       HDF5 Interface
 EBSDExport                              Export
