@@ -35,13 +35,13 @@ More detail can be found in the [documentation](http://mtex-toolbox.github.io/do
 Installation and requirements
 =============================
 
-MTEX requires Matlab (R2014b) or later and come with binaries from the
+MTEX requires MATLAB R2022b or later and comes with binaries from the
 [NFFT](https://www-user.tu-chemnitz.de/~potts/nfft/).
 
 To install proceed as follows:
 
 1. download and extract the zip file to an arbitrary folder
-2. start Matlab (version 2014b or newer required
+2. start MATLAB (R2022b or newer)
 3. change the current folder in Matlab to the folder where MTEX is installed
 4. type `startup_mtex` into the command window
 5. click one of the menu items to import data or to consult the documentation
