@@ -166,24 +166,31 @@ classdef referenceFrame < matlab.mixin.Copyable
 
     end
 
-    function c = headerChar(fr,pC)
+    function c = headerChar(fr,pC,cs)
       % the string data class displays show: the frame together with the
       % plotting convention the data is drawn in
       %
       % For a crystal frame only the frame identity is shown - the
       % convention of a crystal frame is derived from its axes and adds
-      % nothing. For a specimen frame the convention appears in the
-      % frame's axes names ('TD←RD↑'); frame-free data shows the plain
-      % convention.
+      % nothing. A crystal frame without a mineral is named by the point
+      % group of the data, as Miller and orientation displays name it. For
+      % a specimen frame the convention appears in the frame's axes names
+      % ('TD←RD↑'); frame-free data shows the plain convention.
       %
       % Input
       %  fr - @referenceFrame or []
       %  pC - @plottingConvention, the resolved convention of the data
+      %  cs - @crystalSymmetry of the data, optional
 
       if isa(fr,'crystalFrame')
         c = char(fr);
-        % an unnamed crystal frame has no identity, so name the coordinate system
-        if isempty(fr.name), c = 'crystal'; end
+        if isempty(fr.name)
+          if nargin > 2 && isa(cs,'crystalSymmetry')
+            c = cs.pointGroup;
+          else
+            c = 'crystal';
+          end
+        end
       else
         if ~isa(fr,'referenceFrame')
           % frame-free data resolves against the session default frame at

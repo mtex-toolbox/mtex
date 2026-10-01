@@ -2,9 +2,9 @@ function display(T,varargin)
 % standard output
 
 % the frame together with the convention the tensor is drawn in; a
-% crystal frame shows only its identity, a non trivial specimen symmetry
-% keeps its point group
-info = referenceFrame.headerChar(T.frame,T.how2plot);
+% crystal frame shows only its identity, its mineral or else its point
+% group, a non trivial specimen symmetry keeps its point group
+info = referenceFrame.headerChar(T.frame,T.how2plot,T.CS);
 if isa(T.CS,'specimenSymmetry') && T.CS.id > 1
   info = [info ' (' T.CS.pointGroup ')'];
 end
