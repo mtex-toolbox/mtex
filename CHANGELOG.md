@@ -10,8 +10,8 @@ including 6.1 have one combined list there and no entry here.
 
 ## MTEX 7.2 - 10/2026
 
-Defects the Python port found in MATLAB, checked against the port or an exact value
-through the MATLAB bridge (the audit is `docs/research/matlab-defects-audit.md` of the
+Most of these are defects the Python port found in MATLAB, checked against the port or
+an exact value through the MATLAB bridge (the audit is `docs/research/matlab-defects-audit.md` of the
 port).
 
 ### Spherical and Orientation Functions
@@ -65,6 +65,10 @@ port).
 - `spatialTransformProjective.fit` ran the DLT on raw coordinates; with every tenth
   point moved by (30,-40) the twins map sampled row by row was 7193 off. Hartley's
   normalisation recovers it to 1e-14
+- `vector3d/rotate` assigns `q.SS.frame` to `ori * v` since the frame membership of
+  ADR 0003, which an `SO3TangentVector` refuses, its frame following from its
+  reference; `ori .* tangentVector` errored. The result is converted to `vector3d`, as
+  a `Miller` is
 
 ### Interfaces
 
@@ -81,6 +85,16 @@ port).
 - `loadEBSD_ctf`'s space group fallback passed the string `',abc(:)'` as the lattice
 - `loadTensor_generic` reads the number on the line after `density` (kg/m^3 to g/cm^3)
   unless a density is given
+- `loadEBSD_ang` reads NanoMegas ASTAR files, recognised by the header line
+  `# File created from ACOM RES results`, in nm, and takes the first quoted name of
+  their `MaterialName 5000216 'Copper' 'Copper'` as the mineral; `'scanUnit'` sets the
+  unit of any .ang file. `gridify` dropped `scanUnit`, so a unit other than um did not
+  survive the import
+- `hdf5_config/ThermoFisher.json` applies a half turn about y (Bunge 90/180/270) as
+  `map_correction`: the xTalView manual (coordinate systems, p. 9) draws the pixel x
+  axis opposite to the sample x axis of the Euler angles. It applied none, so maps were
+  mirrored against their orientations. An HDF5 export writes the file's Euler angles
+  back unchanged
 - `loadEBSD_osc` drops the trailing placeholders of a scan stopped early (Euler 4pi at
   (0,0)), which collided on the first pixel and kept the map a list
 - `loadPoleFigure_inel` reads INEL Fdt files (`data/PoleFigure/a52214s.int`, 13680
@@ -102,6 +116,9 @@ port).
   runs between one pixel pair (a merged run; a resampled segment spanning several
   originals); it kept a stale pair. `calcGBND` with an EBSD map uses the segments with
   a pair. After a default `smoothBoundary` of twins, 110 of 2751 segments keep one
+- `squarify` scattered with `phaseId(ind) = ...`, so of two measurements in one cell the
+  later one was kept, a not indexed one over an indexed one; it writes the not indexed
+  ones first. A forced `gridify` of eclogite.ctf lost measurement 415 to 592
 
 ### 3D EBSD and Grains
 

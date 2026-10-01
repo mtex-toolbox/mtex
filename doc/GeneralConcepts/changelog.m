@@ -26,12 +26,37 @@
 % bandwidth in the units of the data, the value they return
 % * <mtexdata.html |mtexdata|> rebuilds its cached data when the MTEX version
 % or the default plotting convention differs from the session that wrote it
+% * MTEX needs MATLAB R2022b or newer
+% * <l1TVFilter.l1TVFilter.html |l1TVFilter|> is the half-quadratic filter of
+% Bergmann et al. and states its smoothing as a length, |l1TVFilter(L)|, the
+% wavelength damped to half its amplitude, four pixel distances by default.
+% The cyclic proximal point algorithm remains as |F.method = 'proximal'|,
+% and |halfQuadraticFilter| warns and passes on to it. An |alpha| set by hand
+% is now the weight of the regularisation itself
+% * a Thermo Fisher (xTalView) map is aligned with its Euler angles by a half
+% turn about y, as its pixel x axis points opposite to the specimen x axis
+% * NanoMegas ASTAR .ang files are read in nanometres
+% * an orientation applied to a tangent vector gives a plain vector in the
+% specimen frame
 %
 % *New*
 %
 % * |loadPoleFigure_inel| reads INEL pole figure files
 % * |curvature| and |calcGND| of a voxel map, and |KAM|, |fill|, |reduce| and
 % |fillByGrainId| of a volume work in three dimensions
+% * the documentation in three parts, Start, Concepts and Tasks, and a page
+% <EBSDVendors.html Data From Your Instrument> listing per vendor the files
+% MTEX reads and writes, how Euler angles and map are aligned, and the line
+% that imports them
+% * |plot(ebsd,'ipfDirection',d)| and the flags |'ipfx'|, |'ipfy'| and
+% |'ipfz'| color every phase of a map by its own ipf key, and
+% |plot(grains,...)| does the same with the mean orientations
+% * <S2Fun.discrepancy.html |discrepancy|> of spherical functions, point sets
+% and mixed pairs, and of orientation functions and orientation sets: cap
+% discrepancy |D_2| (the default), an approximate maximum cap discrepancy and
+% weighted bandlimited L2 norms
+% * |fibonacciSO3Grid|, a Fibonacci grid of orientations
+% * |'scanUnit'| when loading an .ang file
 %
 % *Corrections Worth Knowing*
 %
@@ -66,6 +91,26 @@
 % * |principalComponents| of triangulated 3D grains,
 % |neper.simulateChildGrains| with many lamellae per parent and |orientFaces|
 % of faces given with one side work
+% * <EBSD.load.html |EBSD.load(fname,csList)|> uses the symmetry list again,
+% and |'CS'| replaces the phases an HDF5 file declares
+% * .ctf files import without the Statistics and Machine Learning Toolbox
+% * an .osc phase whose symmetry is stated as an EDAX point group id is no
+% longer dropped
+% * ipf color keys have the right fundamental sector for a lattice whose c*
+% axis does not point along z
+% * a plot of both hemispheres no longer takes the second one as the axes
+% for the next plot
+% * a phase selected from a 3D volume, |ebsd('Quartz')|, gives grains
+% * mesh grains read from DREAM.3D have the orientation of their voxels,
+% Neper tessellations follow |neper.id|, and a slice through a grain with a
+% hole is one piece with a hole
+% * |calcKernel| subsamples without replacement, |BCV| runs, and |kde1d|
+% leaves the constant coefficient out of its roughness estimate
+% * |calcGrains| of a map without indexed pixels returns empty grains
+% * an ASTAR phase name is read without its database id
+% * |gridify| keeps an indexed measurement over a not indexed one in the same
+% cell
+% * sampling from an |SO3FunRBF| is twice as fast
 %
 %% MTEX 7.1 09/2026
 %
