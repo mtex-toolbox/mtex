@@ -4,8 +4,8 @@ function  peri = perimeter(grains,varargin)
 % Syntax
 %
 %   grains.perimeter
-%   perimter(grains)
-%   perimter(grains,'withInclusions')
+%   perimeter(grains)
+%   perimeter(grains,'withInclusion')
 %
 % Input
 %  grains - @grain2d
