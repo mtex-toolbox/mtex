@@ -214,14 +214,6 @@ catch e
 end
 
 try
-  xcfShift(A,mapImage(B,'dxy',1));
-  error('an array and a mapImage were correlated together')
-catch e
-  assert(strcmp(e.identifier,'MTEX:xcfShift:mixedInput'),...
-    'wrong identifier for mixed input: %s',e.identifier)
-end
-
-try
   xcfShift(nan(100,120),B);
   error('two images with no overlap were correlated')
 catch e

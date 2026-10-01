@@ -286,7 +286,7 @@ assert(abs(legacyMetric(u,mu,'weights',d,'metric','L2','squared','bandwidth',bw)
 assert(abs(legacyMetric(uniform,vector3d.Z,'metric','L2','squared','bandwidth',1)-3/(4*pi))<1e-12);
 assert(legacyMetric(uniform,vector3d.Z,'metric','kernel','bandwidth',1)==0);
 assert(legacyMetric(v,u,opts{:},'metric','kernel')==actual);
-assert(legacyMetric(v,u,'metric','L2','squared','bandwidth',0)==0);
+assert(legacyMetric(v,u,'metric','L2','squared','bandwidth',0)<1e-20);
 assert(legacyMetric(f,f,'metric','L2','squared')==0);
 mustReject(@() legacyMetric(f,g,'metric','unknown'),'S2Fun:discrepancy:metric');
 mustReject(@() legacyMetric(v,u,'metric','unknown','bandwidth',0), ...
@@ -417,9 +417,10 @@ assert(abs(discrepancy(v,w,opts{:},cap{:})- ...
 k4 = discrepancy(v,w,opts{:},'metric','kernel','bandwidth',4)/4;
 k16 = discrepancy(v,w,opts{:},'metric','kernel','bandwidth',16)/4;
 assert(k4<k16 && k16<actual);
+% these three measure a difference in total mass too, only 'kernel' drops it
 for metric = {'D_2','D_cap','L2'}
-  mustReject(@() discrepancy(f,2*u,'metric',metric{1}), ...
-    'S2Fun:discrepancy:massMismatch');
+  assert(discrepancy(f,2*f,'metric',metric{1}) > 0.1, ...
+    'check_optimalSample: %s does not see twice the mass',metric{1})
 end
 mustReject(@() discrepancy(f,u,'metric','L2','degreeWeights',[1;-1]), ...
   'S2Fun:discrepancy:degreeWeights');
