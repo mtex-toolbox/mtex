@@ -188,14 +188,16 @@ end
 % sets. This single value summarises an irregular sampling pattern; it does
 % not mean that neighbouring points are that far apart everywhere.
 %
-% The mean resolution falls from 14.5 to 3.7 degrees. The four interim ODF
-% errors are 0.95, 0.41, 0.24, and 0.31. A real experiment could not compute
-% these errors because its true ODF is unknown.
+% The mean resolution falls from 14.5 to 5.2 degrees. The four interim ODF
+% errors are 0.95, 1.01, 0.25, and 0.23. They do not fall monotonically:
+% the second round concentrates the new directions on the predicted maxima
+% before the reconstruction has located them accurately. A real experiment
+% could not compute these errors because its true ODF is unknown.
 %
-% That rise is the point of the demonstration. The measurement is now dense
-% where the texture is strong and coarse everywhere else. An ordinary
-% fine-grid reconstruction then puts ODF components at orientations that
-% the sparse regions do not constrain.
+% That non-monotonicity is the point of the demonstration. The measurement
+% is now dense where the texture is strong and coarse everywhere else. An
+% ordinary fine-grid reconstruction then puts ODF components at
+% orientations that the sparse regions do not constrain.
 
 %% What was measured
 %
@@ -233,8 +235,9 @@ fprintf('  error true -- iter. est. odf  : %f\n', ...
   calcError(odf_true,odf_recalc_iterative))
 
 %%
-% The errors are 0.11 and 0.41. The iterative error is less than one third
-% of the direct error from the same measurements. The L1 distance below
+% The errors are 0.20 for the direct reconstruction and 0.067 for the
+% iterative one. The iterative error is about one third of the direct error
+% from the same measurements. The L1 distance below
 % shows how much the two estimated ODFs distribute differently.
 
 calcError(odf_recalc,odf_recalc_iterative,'l1')
