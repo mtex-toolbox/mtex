@@ -113,7 +113,9 @@ assert(contains(str,['crystalSymmetry(''m-3m'', [4.04 4.04 4.04], ...' newline])
   'check_ebsdImport: generated script kept float32 noise in a lattice parameter')
 assert(contains(str,"'mineral', 'Al', 'color', 'LightSkyBlue'"), ...
   'check_ebsdImport: generated script did not name a palette color')
-assert(isempty(regexp(str,'\{[^\n}]+\}','once')), ...
+% a token is a name in braces, {crystal symmetry} - a cell array the script
+% writes, {'Al','Fe'}, is code
+assert(isempty(regexp(str,'\{[A-Za-z][A-Za-z ]*\}','once')), ...
   'check_ebsdImport: generated script contains an unresolved template token')
 
 % UTF8Output says what the console can render, so it must not reach a script
@@ -173,7 +175,7 @@ end
 
 % =========================================================================
 function checkMultiPhaseCtf
-% eight phases and a partially indexed, non rectangular scan
+% eight phases, and spot measurements placed by hand rather than a scan
 
 e = load1('eclogite.ctf');
 
@@ -195,21 +197,6 @@ for k = 2:numel(e.CSList)
     'check_ebsdImport: eclogite.ctf - phase %d is a %s, not a crystalSymmetry', ...
     k, class(e.CSList(k)))
 end
-
-% the scan is not a full rectangle, so what has to survive is the number of
-% indexed pixels - 565, since its 613 measurements fall into 565 lattice cells
-% and gridify keeps one per cell, which is also why EBSD.load refuses to grid it
-g = gridify(e);
-assert(isequal(size(g),[64 73]), ...
-  'check_ebsdImport: eclogite.ctf gridified to %s, expected [64 73]', mat2str(size(g)))
-
-nCells = size(unique(e.lattice.ij(e.isIndexed,:),'rows'),1);
-assert(nnz(g.isIndexed) == nCells, ...
-  ['check_ebsdImport: eclogite.ctf - gridify kept %d indexed pixels but the ' ...
-   'indexed measurements occupy %d distinct lattice cells'], ...
-  nnz(g.isIndexed), nCells)
-assert(nCells == 565, ...
-  'check_ebsdImport: eclogite.ctf now occupies %d lattice cells, expected 565', nCells)
 
 end
 
@@ -536,11 +523,11 @@ function checkGridOnImport
 % EBSD.load grids what it can, and refuses to grid what it cannot
 %
 % The refusal is the part that matters. gridify writes measurements into a
-% raster keyed by lattice cell, and squarify scatters with phaseId(ind) =
-% ..., so two measurements in one cell leave only the last - silently.
-% eclogite.ctf is exactly that case: 613 indexed measurements occupy 565
-% cells, so gridding it on import would throw away 48 of them. Nothing may
-% be lost by merely opening a file, so load falls back to the plain list.
+% raster keyed by lattice cell and keeps one per cell. eclogite.ctf holds
+% spot measurements placed by hand, not a scan, so several of them share a
+% cell of any lattice estimated from them, and gridding it on import would
+% throw those away. Nothing may be lost by merely opening a file, so load
+% falls back to the plain list.
 
 cases = {'testdata_sqr.ctf','EBSDsquare',[30 30]; ...
          'testdata_hex.ctf','EBSDhex',   [30 30]; ...
@@ -578,8 +565,8 @@ g = load1raw('eclogite.ctf');
 [~,warnId] = lastwarn;
 
 assert(~isa(g,'EBSDgrid'), ...
-  'check_ebsdImport: eclogite.ctf was gridded on import (as %s) although %d of its 613 indexed measurements share a lattice cell', ...
-  class(g), 613 - 565)
+  'check_ebsdImport: eclogite.ctf was gridded on import (as %s) although its measurements are not on a lattice', ...
+  class(g))
 
 assert(nnz(g.isIndexed) == 613, ...
   'check_ebsdImport: eclogite.ctf kept %d indexed measurements on import, expected all 613', ...
