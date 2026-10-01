@@ -80,7 +80,9 @@ classdef PoleFigure < dynProp & dynOption
       end
       pf.allR = ensurecell(r);
       if isscalar(pf.allR), pf.allR = repmat(pf.allR,size(pf.allH));end
-      if ~check_option(varargin,'complete'), pf.allR{1}.antipodal = true;end      
+      if ~check_option(varargin,'complete')
+        for i = 1:numel(pf.allR), pf.allR{i}.antipodal = true; end
+      end
       
       pf.c = ensurecell(get_option(varargin,'superposition',...
         cellfun(@(x) ones(1,length(x)),pf.allH,'uniformoutput',false)));
