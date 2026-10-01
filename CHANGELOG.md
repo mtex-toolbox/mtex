@@ -149,11 +149,13 @@ port).
 - OrientationImport, TensorImport and the two grain smoothing pages describe the fixed
   behaviour
 
+- `data/Neper/my100grains.tess`, which NeperInterface, Grains3DOperations and
+  Grains3DProperties load, was committed only on mtex-5.11 and ignored on develop as a
+  Neper output; it is tracked now, and the stray `data/Neeper` folder of 2023 is gone
+
 ### Known, Not Yet Fixed
 
 - `data/PoleFigure/Rigaku.DAT` is claimed by no reader
-- `data/Neper/my100grains.tess`, loaded by three 3D pages, is missing (there is
-  `data/Neeper/My100grains.stpoly`)
 - `@EBSD/fillByGrainId.m:37` indexes by an undefined `ci`
 - the .ctf export of the hexagonal copper map loses 67 pixels
 
