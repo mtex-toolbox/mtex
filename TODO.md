@@ -30,6 +30,12 @@ from the source comparison with `../mtexJulia`, complementing the embedding
 backport already recorded as [O29](#o29). G24, D10/R6, E13, O19, X8 and C9
 found to be already done.
 
+Updated 2026-09-24: O30-O34, F14, F15, I10-I13, G43, G44 and C22 from the
+checks of the Python port's documentation pages against MATLAB, each reproduced
+on develop through the bridge or read in its code; O34 collects what only
+`feature/frameSymmetry` shows. All but O34 were fixed on develop on 2026-10-01
+for MTEX 7.2.
+
 ## Legend
 
 **U — urgency**
@@ -131,6 +137,8 @@ The multi-release work. Everything here is bigger than one branch.
 | G40 | Speed up the segmentation criterion `gbcAngle.doEvaluate` — 0.71 s of `doSegmentation`'s 1.47 s | 1 | 1 | paused | — | [→](#g39) |
 | G41 | `assignGridIndex` was order dependent on a distorted map — **fixed 2026-08-13**: the walk trusted the outer component of a step outright, so a line change carried a whole line's worth of accumulated drift into it. The outer step is now measured against a drift model, the mirror of the inner one. Grid order goes from exact at 0.05% distortion to exact at 10%; file order and every undistorted map are bit identical | 3 | 0 | done | — | [→](#g41) |
 | G42 | **Seeded grain reconstruction (`gbcWatershed`)** — grows grains from seeds instead of cutting a pixel graph, so a wall that crosses only part of a grain still closes one; no criterion deciding pair by pair can. Opt in as `calcGrains(ebsd,'watershed')`. Implemented and measured, **not merged** | 1 | 2 | wip | — | br/seededReconstruction, [→](#g42) |
+| G43 | `parentGrainReconstructor`: `mergeSimilar` and `mergeInclusions` keep `job.votes` and `job.graph`, `mergeByGraph` erases the graph but keeps the votes; the votes table has one row per grain, so after a merge it no longer lines up with `job.grains` — **fixed 2026-10-01** on develop (`2ee5f6ff3`) | 2 | 0 | done | — | — |
+| G44 | `smoothBoundary` leaves the old pixel pairs in `gB.ebsdId` on segments it simplified or resampled; its help says to switch both off when `ebsdId` is analysed, but the stale pairs should be cleared rather than kept — **fixed 2026-10-01** on develop (`e633e0c04`) | 1 | 0 | done | — | — |
 
 ---
 
@@ -189,6 +197,10 @@ The multi-release work. Everything here is bigger than one branch.
 | I7 | `loadODF_VPSC`, plus the empty `Tutorials/ImportFromVPSC` page it would fill | 1 | 1 | idea | — | #297 |
 | I8 | Export an EBSD map as a vector object | 1 | 1 | idea | — | #984 |
 | I9 | Header-only import — every interface should be able to return metadata without reading the per-pixel blocks, so a browser can preview cheaply | 2 | 1 | planned | — | [→](#i9) |
+| I10 | Generic orientation import: the unit is guessed from the values and `'radians'` is ignored, so a file of angles below 15 degrees is silently read as radians (47° off); `'passive'` has no effect (the result equals the plain reading); quaternion columns `{'Quat real','Quat i','Quat j','Quat k'}` fail with "Index exceeds the number of array elements". The page `OrientationImport` documents all three as limitations — **fixed 2026-10-01** on develop (`3564bc50b`) | 2 | 1 | done | — | [→](#i10) |
+| I11 | A `.ctf` map exported to `.ang` and read back is rotated by 30°: the ANG import takes `X||a, Y||b*` where the CTF phase has `X||a*, Y||b`, and `EBSD.load` "transforms" between them. `mtexdata twins` round trip: 30.00°. The page `EBSDExport` states it — **fixed 2026-10-01** on develop (`15a0101ce`) | 2 | 1 | done | — | I2 |
+| I12 | `stiffnessTensor.load` of `data/tensor/Olivine1997PC.GPa` drops the density the file states (`density kg/m3 3355.0`); the page passes it again by hand — **fixed 2026-10-01** on develop (`ea4bd3d70`) | 1 | 0 | done | — | doc/Tensors/TensorImport.m |
+| I13 | `mtexdata` caches its result as `data/<name>.mat` and loads the cache from then on, so every frame in it keeps the plotting convention (and whatever else) of the session that wrote it: `SO3Fun.dubna` shows `y↓→x` on a page that set `y↑→x`, and a cache written by an older reader survives a fix of that reader — **fixed 2026-10-01** on develop (`b89c258aa`) | 2 | 0 | done | — | L4 |
 
 ---
 
@@ -245,6 +257,11 @@ copy; only what is still open is summarised here.
 | O27 | 17 class-qualified doc links dangle, eleven of which name API that exists nowhere | 2 | 1 | planned | — | docs/doc-audit-plan.md item 2e |
 | O28 | `SO3FunMLS` needs the Symbolic Math Toolbox — `SO3FunMLS.m:319` calls `syms`, so the whole class is unavailable, and untestable, without that licence | 2 | 1 | bug | — | [→](#o28) |
 | O29 | Backport the Julia embedding — **done 2026-09-07**: `embedding.id` computes an orthonormal basis of the invariant subspace from the spin generators (`@embedding/private/orbitBasis.m`), `double` and `setDouble` are the projection onto it and its exact inverse, no Laue-id table left; `mmm` drops from 15 to 10 coordinates, every other dimension unchanged | 1 | 1 | done | — | [→](#o29) |
+| O30 | `S2FunHarmonic.unimodal` is not normalised: `l = 1+l.^2+l` overwrites the degrees with coefficient indices, which `sqrt(2*l+1)` then reads as degrees. Halfwidth 10°: mean 0.1629, 9.72 at the centre, for mean 1 and 97.85 — **fixed 2026-10-01** on develop (`7eac7a837`) | 2 | 0 | done | — | [→](#o30) |
+| O31 | `SO3FunHarmonic.interpolate` runs LSQR with an NFSOFT of `cutoffParameter` 1 while `eval` uses 4, so the fit is optimal for another operator: Dubna values, bandwidth 32, λ = 5e-7, relative residual 0.0060 at cutoff 1 but 0.0239 evaluated accurately — **fixed 2026-10-01** on develop (`3098c17f3`) | 2 | 0 | done | — | [→](#o30) |
+| O32 | `S2DirichletKernel(10).halfwidth` is 180°; the half-maximum angle is 11.6° (21.4° for bandwidth 5) — **fixed 2026-10-01** on develop (`f99d91d63`) | 1 | 0 | done | — | — |
+| O33 | `S2FunBingham` normalises by a saddle-point approximation: `mean(S2FunBingham([-10 -4 0],a))` is 1.0377. The page `S2Bingham` states the 3.8 percent as normalisation error; the confluent hypergeometric function of matrix argument gives it exactly — **fixed 2026-10-01** on develop (`3e082fb74`, `9dd0427a5`) | 1 | 1 | done | — | doc/SphericalFunctions/S2Bingham.m |
+| O34 | Found on `feature/frameSymmetry` only, not reproduced on develop: triclinic sigma sections draw the upper hemisphere only; `symmetrise(sF, specimenFrame('222'))` plots the octant of `mmm`; `S2FunHarmonic.quadrature(f,'bandwidth',48)` displays 49; `fibre.beta(cs,ss,'full').symmetrise` fails; `data/quartzPattern.mat` does not load | 2 | 1 | bug | — | br/frameSymmetry, [→](#o34) |
 
 ---
 
@@ -265,6 +282,8 @@ copy; only what is still open is summarised here.
 | F11 | Explain the relationship between Fourier coefficients and spherical harmonic coefficients | 1 | 0 | idea | — | #193 |
 | F12 | The `S2FunRadon` chapter is empty | 1 | 0 | planned | — | [→](#c-empty) |
 | F13 | Improved ODF reconstruction | 1 | 2 | idea | Dan | — |
+| F14 | `vector3d/refine` appends the south pole before the hull, so `max(v.theta)` is π and the cap filter never removes a centroid: the refined grid keeps the south pole and the centroids of the skirt triangles below the measured cap. `PoleFigureRefinement` ends at 367 directions, 327 without them — **fixed 2026-10-01** on develop (`630909039`) | 2 | 0 | done | — | [→](#f14) |
+| F15 | After `correct(pf({1,3}),'background',pf({2,4}))` on `mtexdata geesthacht` the two scans carry identical directions but different `antipodal` flags (1 and 0), so their quadrature weights differ (max 0.0015 and 0.0024) and `normalize` gives 0.03 to 2.15 mrd instead of 2.27 — **fixed 2026-10-01** on develop (`bd97d9a4d`) | 2 | 0 | done | — | doc/PoleFigureAnalysis/PoleFigureCorrection.m |
 
 ---
 
@@ -358,6 +377,7 @@ copy; only what is still open is summarised here.
 | B12 | Version-to-version behaviour differences and compatibility reports | 1 | 1 | triage | — | #1710, #1493, #1309 |
 | B13 | The 5.6.0 download link on the website is broken | 1 | 0 | bug | — | #687 |
 | B14 | Better advertisement of the toolbox | 1 | 1 | idea | — | — |
+| B15 | Add a `CITATION.cff` so GitHub shows how to cite MTEX. A draft (authors Hielscher, Bachmann, Kilian, Niessen, Nyyssönen, ...) is stashed in the repository as "CITATION.cff for MTEX, to add later (TODO B15)": `git stash list`, then `git checkout stash@{N}^3 -- CITATION.cff` | 1 | 0 | planned | — | — |
 
 ---
 
@@ -403,6 +423,7 @@ copy; only what is still open is summarised here.
 | C19 | `stiffnessTensor.rand` returned a plain rank 2 `tensor` — **fixed 2026-08-12** with a `rand.m` on both rank 4 classes that draws a Gram matrix, since a random *array* is not a stiffness tensor; no `zeros`/`ones`/`nan` for the same reason | 2 | 1 | done | — | [→](#c19) |
 | C20 | `export(odf,fname,'VPSC')` silently wrote a *generic* file — **fixed 2026-08-11**, the interface is taken as a bare flag as well and an unknown one is named | 2 | 0 | done | — | — |
 | C21 | A new property needs `ebsd.prop.name = ...`; `ebsd.name = ...` errors, and no length check is done on the value | 1 | 0 | decide | — | — |
+| C22 | `S2FunOperations` says the gradient of the smiley at X has magnitude 0.0012; the run gives 1.8e-4, both being quadrature aliasing on a flat stretch — **fixed 2026-10-01** on develop (`73ea397a2`) | 1 | 0 | done | — | doc/SphericalFunctions/S2FunOperations.m |
 
 ---
 
@@ -1841,6 +1862,63 @@ thinking about the invariant first. The rank 2 subclasses were left alone:
 their inherited factories at least give the right rank, and a random
 `spinTensor` or `strainTensor` raises the same question about the symmetry
 each of them requires.
+
+### O30
+Found 2026-09-24 by the Python port's doc pages and reproduced on develop
+through the bridge. `S2Fun/@S2Fun/unimodal.m`:
+
+    l = 0:bw; l = 1+l.^2+l;
+    f_hat(l) = psi.A ./ reshape(sqrt(2*l+1),size(psi.A));
+
+The second line wants the degree and gets the index. `unimodal('halfwidth',
+10*degree)`: mean 0.1629, 9.7189 at the centre.
+
+O31: `@SO3FunHarmonic/interpolate.m:167` sets `cutOff = 1` for both the
+adjoint and the evaluation inside `afun`; `eval` and `adjoint` default to 4.
+With `ori, val` from `orientation/dubna.csv`, `interpolate(ori,val,'bandwidth',
+32,'regularization',5e-7)` reaches relative residual 0.0060 under the cutoff 1
+transform and 0.0239 under `f.eval(ori)`. The pages `SO3FunApproximationTheory`
+and `HarmonicApproximationTheory` print 0.0501 and 0.0239 where an exact
+transform gives 0.0463 and 0.0062. Either drop the option or default it to
+the `eval` value.
+
+### O34
+Differences met on `feature/frameSymmetry` that develop does not show; they
+belong to the branch:
+
+* `pfSections` takes `fundamentalSector('upper')` when `angle(h1,-h1) < 1e-2`.
+  On the branch the triclinic `cAxisRec` is a plane normal and counts as
+  equivalent to its antipode, so a `1`-symmetric ODF is drawn on the upper
+  hemisphere only and the Dubna peak at Φ > 90° is not drawn; on develop the
+  angle is π and both halves appear.
+* `symmetrise(sF, specimenFrame('222',...))` returns a plain `S2FunHarmonic`
+  whose plot shows the octant of `mmm`, half a fundamental domain of `222`.
+* `S2FunHarmonic.quadrature(f,'bandwidth',48)` displays bandwidth 49.
+* `plot(fibre.beta(cs,ss,'full').symmetrise)` with an orthorhombic specimen
+  frame fails in a bare call.
+* `data/quartzPattern.mat` holds an object of a class the branch no longer
+  has, so `CrystalOperations` cannot load it.
+
+### F14
+`geometry/@vector3d/refine.m`:
+
+    v = [v(:); -zvector];
+    tri = convhulln(v.xyz);
+    r = sum(vector3d(v.subSet(tri)),2); r = r./norm(r);
+    r(r.theta > max(v.theta(:))) = [];
+    v = [v; r(:)];
+
+`max(v.theta)` includes the appended pole, so the filter removes nothing, and
+the returned grid contains the pole itself. Take the maximum before appending
+and drop the pole afterwards.
+
+### I10
+Reproduced on develop 2026-09-24 with a three-row file `5 10 12; 3 7 9; 11 2 4`
+and `orientation.load(fn,cs,'ColumnNames',{'phi1','Phi','phi2'})`: the result
+is 47.16° from `byEuler(5,10,12 degrees)` and 0.00° from `byEuler(5,10,12)`
+radians. `'passive'` on `20 30 40`: 0.00° from the plain reading, 132.9° from
+its inverse. Four quaternion columns: "Index exceeds the number of array
+elements. Index must not exceed 1."
 
 ## Unmerged branches
 
