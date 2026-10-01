@@ -140,10 +140,32 @@ grains.I_GF = sparse(gId,fId,x,size(I_GF,1),size(I_GF,2));
 % the face normal should point from the first to the second grain
 oldId = grains.boundary.grainId;
 newId = zeros(size(oldId));
-[a,b] = find(grains.I_GF == 1);  newId(b,1) = a;
-[a,b] = find(grains.I_GF == -1); newId(b,2) = a;
+[a,b] = find(grains.I_GF == 1);  newId(b,1) = grains.id(a);
+[a,b] = find(grains.I_GF == -1); newId(b,2) = grains.id(a);
 
-grains.boundary = flip(grains.boundary, ~all(newId == oldId,2));
+% a face whose sides only changed places is flipped
+changed = any(newId ~= oldId,2);
+swapped = changed & all(newId == fliplr(oldId),2);
+grains.boundary = flip(grains.boundary, swapped);
+
+% a face that got other sides, as one given with the same sign for both
+% grains, takes them with their phases and misorientation
+other = find(changed & ~swapped);
+if ~isempty(other)
+  g = newId(other,:);
+  isG = g > 0;
+  phaseId = zeros(size(g));
+  phaseId(isG) = grains.phaseId(grains.id2ind(g(isG)));
+  both = all(isG,2);
+  mori = rotation.nan(numel(other),1);
+  mori(both) = inv(grains.prop.meanRotation(grains.id2ind(g(both,2)))) .* ...
+    grains.prop.meanRotation(grains.id2ind(g(both,1)));
+
+  grains.boundary.grainId(other,:) = g;
+  grains.boundary.phaseId(other,:) = phaseId;
+  grains.boundary.ebsdId(other,:) = 0;
+  grains.boundary.misrotation(other) = mori;
+end
 
 end
 
