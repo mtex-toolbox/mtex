@@ -10,6 +10,12 @@ function y = mhyper(kappa)
 % with many thanks to Raymond Kan
 %
 
+% the mean of exp(x' diag(kappa) x) over the sphere moves by exp(c) with
+% kappa + c, so the series runs on non-negative entries, where its terms
+% do not cancel
+c = min(kappa);
+kappa = kappa - c;
+
 s = length(kappa);
 p = poly(kappa);          % characteristic polynomial of matrix X  (with roots a_i)
 p = fliplr(p(2:end)); % eliminate leading coefficient and reflect
@@ -31,7 +37,7 @@ circshift = mod(1:s,s)+1;
 kp = (-s:-1)/2.*p;
 
 % the main iteration, note the cyclic shift of the entries of vector d
-while norm(d) > eps
+while norm(d) > eps * y
   i = i+1;
   
   d(1) = (-(kp/i+p))*d;
@@ -39,5 +45,4 @@ while norm(d) > eps
   d = d(circshift)/(beta1+i);
 end
 
-
-
+y = exp(c) * y;
