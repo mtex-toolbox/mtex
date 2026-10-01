@@ -220,14 +220,14 @@ function checkAng
 e = load1('ACOM.ang');
 
 expect(e, 'ACOM.ang', ...
-  'n', 225, 'nPhases', 2, 'unit', 'um', 'dPos', 2, 'nCorners', 4, ...
+  'n', 225, 'nPhases', 2, 'unit', 'nm', 'dPos', 2, 'nCorners', 4, ...
   'nIndexed', 219);
 
 % the first row is the one a stray carriage return used to eat
 expectRow(e, 'ACOM.ang', 'first', 1,   [0 0],     [346.01 144.59 252.14]);
 expectRow(e, 'ACOM.ang', 'last',  225, [28 28],   [264.02 39.57 56.00]);
 
-% 15 × 15 at a 2 um step - if the first row had been dropped the map would
+% 15 × 15 at a 2 nm step - if the first row had been dropped the map would
 % not be square any more
 assert(length(e) == 225, ...
   'check_ebsdImport: ACOM.ang has %d pixels, expected 225', length(e))

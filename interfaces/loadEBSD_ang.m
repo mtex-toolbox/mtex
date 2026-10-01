@@ -15,6 +15,8 @@ function ebsd = loadEBSD_ang(fname,varargin)
 %                    is 2, see
 %                    https://mtex-toolbox.github.io/EBSDReferenceFrame.html
 %  headerOnly      - return only phase/header metadata, skip reading the data
+%  scanUnit        - unit of the map coordinates, default is 'um', and 'nm'
+%                    for ASTAR files
 %
 % Flags
 %  EDAX     - read the phase column the EDAX way, 1 to N with 0 for not
@@ -30,6 +32,10 @@ function ebsd = loadEBSD_ang(fname,varargin)
 % EMSphInx leaves every MaterialName empty, states NumberFamilies 0 and
 % lists no reflectors, where OIM always names the material. Pass the EDAX
 % or the EMSphInx flag to overrule the guess.
+%
+% NanoMegas ASTAR writes the .ang layout too, from its ACOM-TEM results,
+% with the map coordinates in nanometres. Its files start with the line
+% "File created from ACOM RES results", which sets the scan unit to nm.
 %
 
 assertExtension(fname,'.ang');
@@ -68,6 +74,9 @@ for i = 1:length(phasePos)
 
   % load mineral data
   mineral = readByToken(str,'# MaterialName');
+  % ASTAR writes a database id and the name twice, quoted: 5000216 'Copper' 'Copper'
+  quoted = regexp(mineral,'''([^'']*)''','tokens','once');
+  if ~isempty(quoted), mineral = strtrim(quoted{1}); end
   laue = readByToken(str,'# Symmetry');
   pointGroup = readByToken(str,'# PointGroupID');
   lattice = readByToken(str,'# LatticeConstants',[1 1 1 90 90 90]);
@@ -200,6 +209,11 @@ ebsd = loadEBSD_generic(fname,'cs',cs,'bunge','radiant',...
   'ColumnNames',ColumnNames,varargin{:},'header',nh,ReplaceExpr{:},'keepNaN',unitCellHint{:});
 
 ebsd.opt.header = header;
+
+% ASTAR states its coordinates in nanometres
+isASTAR = any(strncmp(hl(1:nh),'# File created from ACOM',24));
+if isASTAR, ebsd.scanUnit = 'nm'; end
+ebsd.scanUnit = get_option(varargin,'scanUnit',ebsd.scanUnit);
 
 if isEMSphInx
 
