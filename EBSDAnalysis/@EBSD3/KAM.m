@@ -29,8 +29,10 @@ function kam = KAM(ebsd,varargin)
 % grain2d.grain2d
 
 % compute adjacent measurements
-[~,~,I_FD] = spatialDecomposition([ebsd.pos.x(:), ebsd.pos.y(:)],ebsd.unitCell,'unitCell');
-A_D = I_FD.' * I_FD;
+% the voxels on their lattice, and the neighbours along its three axes
+sz = size(ebsd);
+[ebsd,newId] = gridify(ebsd);
+A_D = voxelAdjacency(size(ebsd));
 
 n = get_option(varargin,'order',1);
 
@@ -79,7 +81,10 @@ kam = sparse(Dl(ind),Dr(ind),omega(ind)+0.00001,length(ebsd),length(ebsd));
 kam = kam+kam';
 
 if check_option(varargin,'max')
-  kam = reshape(full(max(kam,[],2)),size(ebsd));
+  kam = full(max(kam,[],2));
 else
-  kam = reshape(full(sum(kam,2)./sum(kam>0,2)),size(ebsd));
+  kam = full(sum(kam,2)./sum(kam>0,2));
 end
+
+% back to the voxels asked for
+kam = reshape(kam(newId),sz);
