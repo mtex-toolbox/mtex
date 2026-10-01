@@ -33,14 +33,14 @@ if isa(obj,'function_handle')
   range = get_option(varargin,'range',[0,1]);
   x = linspace(range(1),range(2),10000);
   density = obj(x);
-  obj = discretesample(density ./ mean(density), points).'/length(density);
+  obj = x(discretesample(density ./ sum(density), points)).';
   return
   
 end
 
 if check_option(varargin,'weights')
 
-  arg1 = get_option(varargin,'weights',ones(size(q)));
+  arg1 = get_option(varargin,'weights',ones(size(obj)));
 
 elseif check_option(varargin,'withoutReplacement')
   
