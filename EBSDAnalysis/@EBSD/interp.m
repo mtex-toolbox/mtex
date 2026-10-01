@@ -42,7 +42,10 @@ newPos = ebsd.rot2Plane .* newPos;
 % nearest measurement for every query point, and how far away it is - not
 % scatteredInterpolant, whose convex hull test drops border pixels; (:) so
 % that a gridded source works too
-[idNearest,dist] = knnsearch([pos.x(:),pos.y(:)],[newPos.x,newPos.y]);
+% the nearest measurement - the padding of a grid, phase NaN, is none
+measured = find(~isnan(ebsd.phaseId(:)));
+[idNearest,dist] = knnsearch([pos.x(measured),pos.y(measured)],[newPos.x,newPos.y]);
+idNearest = measured(idNearest);
 
 % the circumradius of the unit cell, i.e. how far a pixel reaches at most
 r = max(norm(ebsd.unitCell));
