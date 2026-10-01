@@ -187,7 +187,7 @@ for hw = logspace(-1,1.75,40)*degree
 
   psi = SO3DeLaValleePoussinKernel('halfwidth',hw);
   odf = unimodalODF(orientation.rand(cs),psi);
-  ori = discreteSample(odf,round(1000*(hw*6)^3));
+  ori = discreteSample(odf,max(1000,round(1000*(hw*6)^3)));
 
   n(end+1) = norm(mean(embedding(ori)),'normalized');
   sigma(end+1) = std(ori);
