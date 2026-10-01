@@ -31,6 +31,7 @@ function grains = orientFaces(grains)
 
 I_GF = grains.I_GF;
 [gId,fId] = find(I_GF);
+gId = gId(:); fId = fId(:); % find returns rows for a single grain
 nHF = numel(gId);          % number of half faces, i.e. (grain,face) pairs
 
 if nHF == 0, return; end
