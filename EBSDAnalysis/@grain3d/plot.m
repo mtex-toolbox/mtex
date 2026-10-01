@@ -31,6 +31,18 @@ gB = grains.boundary;
 V = gB.allV;
 F = gB.F;
 
+% Wind every outer face so that its normal points out of its grain, the
+% sign grains.I_GF records. Lighting (camlight, lighting gouraud) shades by
+% these normals; with half of them pointing inwards a lit grain shows dark
+% stars wherever the two kinds of triangle meet. Inner faces, shared by two
+% plotted grains, sum to zero and stay as they are.
+inward = full(sum(grains.I_GF,1)).' < 0;
+if iscell(F)
+  F(inward) = cellfun(@fliplr,F(inward),'UniformOutput',false);
+else
+  F(inward,:) = fliplr(F(inward,:));
+end
+
 if nargin>1 && isa(varargin{1},'orientation')
   % color by orientation
 
