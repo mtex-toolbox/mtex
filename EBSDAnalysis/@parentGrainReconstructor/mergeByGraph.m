@@ -109,7 +109,8 @@ job.ebsdPrior('indexed').grainId = mergeId(job.ebsdPrior('indexed').grainId);
 job.grains(end-nnz(isGood)+1:end).meanOrientation = recOri(isGood);
 job.grains = job.grains.update;
 
-% erase merge graph
+% erase merge graph and the votes of the grains before the merge
 job.graph = [];
+job.votes = [];
 
 end

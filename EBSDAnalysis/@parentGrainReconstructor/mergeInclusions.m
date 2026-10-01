@@ -19,4 +19,8 @@ function job = mergeInclusions(job, varargin)
   'host', job.isParent, varargin{:});
 job.mergeId = mergeId(job.mergeId); %#ok<*PROPLC>
 
+% votes and graph were of the grains before the merge
+job.votes = [];
+job.graph = [];
+
 end

@@ -19,6 +19,10 @@ function job = mergeSimilar(job, varargin)
 [job.grains, mergeId] = merge(job.grains, 'threshold',5*degree, varargin{:});
 job.mergeId = mergeId(job.mergeId); %#ok<*PROPLC>
 
+% votes and graph were of the grains before the merge
+job.votes = [];
+job.graph = [];
+
 % compute cluster size
 clusterSize = accumarray(job.grains.id2ind(job.mergeId),1,[length(job.grains) 1]);
 job.grains.prop.clusterSize = clusterSize;
