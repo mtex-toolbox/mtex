@@ -15,6 +15,7 @@ function c = LSCV(ori,psi,varargin)
 N = length(ori);
 
 w = get_option(varargin,'weights',ones(size(ori)));
+w = w ./ sum(w(:));
 
 % compute Fourier coefficients
 L = 25;
@@ -34,7 +35,7 @@ for i = 1:length(psi)
   %  - 2./(N-1) * sum(eval(eodf,o)) + 2./(N-1) * eval(psi{i},0); %#ok<EVLC>
   
   % compute LSCV
-  c(i) = (1-1/N)^2 * eodf.components{1}.norm^2 ...
+  c(i) = (1-1/N)^2 * norm(eodf)^2 ...
     - 2/N * sum(1./(1-w) .* eval(eodf,ori)) ...
     + 2/N * psi{i}.eval(1) * sum(w./(1-w)); 
     
