@@ -120,6 +120,7 @@ end
 if nargout >= 1 && isa(varargout{1},'EBSD')
   varargout{1}.Euler2Map = ebsd.Euler2Map;
   varargout{1}.N = ebsd.N;
+  varargout{1}.scanUnit = ebsd.scanUnit;
 end
 
 end
