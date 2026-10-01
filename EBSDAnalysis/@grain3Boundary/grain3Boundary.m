@@ -9,7 +9,7 @@ classdef grain3Boundary < phaseList & dynProp
 % Each grain boundary face stores many properties: its position within
 % the map, the ids of the adjacent grains, the ids of the adjacent EBSD
 % measurements, the grain boundary misorientation, etc. These properties
-% are explained in more detail in the section <Boundary3Properties.html
+% are explained in more detail in the section <Grains3DBoundaries.html
 % boundary properties>.
 %
 % Class Properties

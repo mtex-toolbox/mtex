@@ -803,11 +803,11 @@
 %
 % * <calcParent.html |calcParent|> computes the best fitting parent
 % orientations from child orientations
-% * <calcChildVariants.html |calcChildVariants|> separates child variants
+% * <parentGrainReconstructor.calcVariants.html |calcChildVariants|> separates child variants
 % into packets
 % * <calcParent2Child.html |calcParent2Child|> computes best fitting parent
 % to child orientation relationship from child to child misorientations
-% * <variants.html |variants|> computes all parent or child variants
+% * <orientation.variants.html |variants|> computes all parent or child variants
 %
 % *New Functionalities*
 %
@@ -965,7 +965,7 @@
 % *Tensors*
 %
 % * Improved methods for the visualization of elastic properties, see
-% <SeismicVelocitySingleCrystalDemo2d.html Seismic demo>
+% <ExSeismicVelocitySingleCrystalDemo2d.html Seismic demo>
 % * several new functions like <tensor.trace.html |trace|>,
 % <tensor.svd.html |svd|>, <tensor.det.html |det|>, <tensor.colon.html
 % double dot product |:|>
@@ -982,7 +982,7 @@
 % * export EBSD data to |.ctf|, thanks to Frank Niessen
 % * compute the volume of a crystal shape
 % * label crystal faces in crystal shapes
-% * new function <orientation_std.html |std|> for computing the standard
+% * new function <quaternion.std.html |std|> for computing the standard
 % deviation of orientations
 % * new function <calcKearnsFactor.html |calcKearnsFactor|>
 % * |grainBoundary.ebsdId| is now the id and not the index of the EBSD data
@@ -1106,7 +1106,7 @@
 % *Replace all executables by two mex files*
 %
 % In MTEX many functionalities are based on the non equispaced fast Fourier
-% transform (<http://www.nfft.org NFFT>). Until now this dependency was kept under
+% transform (<https://www-user.tu-chemnitz.de/~potts/nfft/ NFFT>). Until now this dependency was kept under
 % the hood, or more precisely, hidden in external executable files which often
 % caused troubles on MAC systems. Starting with MTEX 5.0. all the executables
 % have been replaced by two mex files provided by the NFFT package. This
@@ -1181,9 +1181,7 @@
 %
 %   S2Fmulti = [S2F1,S2F2,S2F3]
 %
-% which gives a spherical function with 3 values per direction. More
-% information how to work multivariate functions can be found
-% <S2FunMultivariate.html here>.
+% which gives a spherical function with 3 values per direction.
 %
 % If we interpret the 3 values of |S2Fmulti| as $x$, $y$, and, $z$ coordinate of
 % a 3 dimensional vector, the function |S2Fmulti| can essentially be seen as
@@ -2422,7 +2420,7 @@
 %
 % * The classes @grain, @polygon, @polyeder do not exist any longer. The
 % functionality of the classes is mainly replaced by the classes @GrainSet,
-% @Grain2d and @Grain3d
+% |Grain2d| and |Grain3d|
 % * The class @GrainSet explicitly stores @EBSD. To access @EBSD data
 % within a single grain or a set of grains use
 %
@@ -2763,7 +2761,7 @@
 % * ODF reconstruction and PDF calculation are about *10 times faster* now
 % (thanks to the new NFFT 4.0 library)
 % * ODF plotting and the calculation of <SO3Fun.volume.html volume
-% fractions>, the <textureindex.html texture index>, the
+% fractions>, the <ODFCharacteristics.html texture index>, the
 % <SO3Fun.entropy.html |entropy|> and <SO3Fun.calcFourier.html Fourier
 % coefficients> is about *100 times faster*
 %
@@ -2822,7 +2820,7 @@
 %
 %% MTEX 0.2 - 07/2007
 %
-% * new functions <textureindex.html texture index>, <SO3Fun.entropy.html
+% * new functions <ODFCharacteristics.html texture index>, <SO3Fun.entropy.html
 % entropy>, <SO3Fun.volume.html volume>
 % * greatly improved help
 % * improved installation

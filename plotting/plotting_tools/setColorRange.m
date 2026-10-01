@@ -21,7 +21,7 @@ function setColorRange(varargin)
 %  zero2white  - color zero values white
 %
 % See also
-% multiplot vector3d.plot
+% Multiplot vector3d.plot
 
 % which figures to touch
 if check_option(varargin,'all')  

@@ -19,7 +19,7 @@ function [gnd,rho] = calcGND(ebsd,dS,varargin)
 %  rho  - dislocation density per dislocation system
 %
 % See also
-% GND_demo
+% GND
 
 % compute curvature tensors
 kappa = ebsd.curvature;

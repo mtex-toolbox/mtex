@@ -13,7 +13,7 @@ function export_mtex(SO3F,filename,varargin)
 %  ZXZ,BUNGE - Bunge (phi1,Phi,phi2) convention
 %
 % See also
-% ODFImportExport
+% ODFExport
 
 % open the file
 if nargin == 1, filename = uigetfile;end

@@ -15,7 +15,7 @@ function F = shapeFactor( grains )
 %  F    - shape factor
 %
 % See also
-% polygon/aspectRatio polygon/equivalentPerimeter polygon/perimeter
+% grain2d/aspectRatio grain2d/equivalentPerimeter grain2d/perimeter
 
 
 F = perimeter(grains)./equivalentPerimeter(grains);

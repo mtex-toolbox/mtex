@@ -1,5 +1,5 @@
 function rot = eulerCorrectionRotation(setting)
-% the Euler <-> map alignment behind an EDAX style "setting"
+% the Euler to map alignment behind an EDAX style "setting"
 %
 % Description
 %

@@ -1,6 +1,6 @@
 function [c,a,b] = fitEllipse(grains,varargin)
 % fit ellipses to grains using the method described in Mulchrone&
-% Choudhury,2004 (https://doi.org/10.1016/S0191-8141(03)00093-2)
+% Choudhury,2004 (https://doi.org/10.1016/S0191-8141%2803%2900093-2)
 % 
 % Syntax
 %

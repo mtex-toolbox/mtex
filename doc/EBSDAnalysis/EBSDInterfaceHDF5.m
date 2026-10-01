@@ -56,7 +56,7 @@
 % * *|value|* says what path to match, while *|mode|* says where and how to
 % search. The result is a path inside the HDF5 file.
 % * *|type|* selects what to do with the value. It dispatches to a formatter
-% named |<category>_<type>|, such as |position_direct|, |rotation_euler| or
+% named after category and type, such as |position_direct|, |rotation_euler| or
 % |cs_default|. The formatter returns the MTEX object or array required by
 % the @EBSD constructor.
 %
@@ -162,7 +162,7 @@
 % keeps out values already read as coordinates or another core category.
 %
 % An *option* is scan-level data and is not resized when the map is subset.
-% Every further top-level category is stored under |ebsd.opt.<category>|;
+% Every further top-level category is stored in |ebsd.opt| under its name;
 % |eds| and |electron_image| use this path. Mark such a category optional
 % when the vendor does not write it in every file.
 %

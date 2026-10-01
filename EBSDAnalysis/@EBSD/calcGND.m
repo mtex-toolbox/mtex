@@ -19,7 +19,7 @@ function [gnd,rho] = calcGND(ebsd,dS,varargin)
 %  rho  - dislocation density per dislocation system
 %
 % See also
-% GND_demo
+% GND
 
 % compute curvature tensors - lattice native, so this works on a plain
 % @EBSD as well as on a gridded one, and on hex, which never had a calcGND

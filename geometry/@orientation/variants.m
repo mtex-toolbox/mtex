@@ -69,7 +69,7 @@ function [out, bestFriends] = variants(p2c,varargin)
 %   bcc2bcc = unique(variants(NW,'child') * inv(NW))
 %
 % See also
-% calcParents
+% calcParent
 
 % browse input
 if nargin>1 && isa(varargin{1},'SO3Fun')

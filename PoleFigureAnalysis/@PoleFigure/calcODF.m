@@ -47,7 +47,7 @@ function [odf,alpha] = calcODF(varargin)
 % 41, 2008.
 %
 % See also
-% PoleFigure2odf ODF_demo PoleFigureSimulation_demo
+% PoleFigure2ODF PoleFigureSimulation
 % PoleFigure/load PoleFigureImport Examples
 
 solver = getClass(varargin,'pf2odfSolver');

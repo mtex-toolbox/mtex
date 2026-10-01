@@ -61,7 +61,7 @@ function [h,mP] = plot(ebsd,varargin)
 %   plot(ebsd,ebsd.mad,'micronbar','off')
 %
 % See also
-% EBSDSpatialPlots
+% EBSDPlotting
 
 % ignore empty EBSD sets
 if isempty(ebsd), return; end

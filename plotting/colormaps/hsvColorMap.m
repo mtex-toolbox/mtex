@@ -14,7 +14,7 @@ function map = hsvColorMap(m)
 %             colormap(hsv)
 %
 %   See also GRAY, HOT, COOL, BONE, COPPER, PINK, FLAG, PRISM, JET,
-%   COLORMAP, RGBPLOT, HSV2RGB, RGB2HSV.
+%   COLORMAP, RGBPLOT, HSV2RGB, RGB2HSV
 
 %   See Alvy Ray Smith, Color Gamut Transform Pairs, SIGGRAPH '78.
 %   C. B. Moler, 8-17-86, 5-10-91, 8-19-92, 2-19-93.

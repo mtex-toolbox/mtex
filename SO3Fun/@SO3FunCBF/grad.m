@@ -19,7 +19,7 @@ function g = grad(SO3F,varargin)
 % Description
 % general formula:
 %
-% $$s(g1_i) = sum_j c_j DRK(<g h_j,r_j>) g h_j x r_j $$
+% $$s(g1_i) = sum_j c_j DRK(dot(g h_j,r_j)) g h_j x r_j $$
 %
 % See also
 % orientation/exp SO3FunHarmonic/grad SO3FunRBF/grad SO3VectorField

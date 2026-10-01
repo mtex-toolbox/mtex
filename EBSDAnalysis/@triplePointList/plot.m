@@ -17,8 +17,8 @@ function h = plot(tP,varargin)
 %  markerColor     - both colors
 %  linewidth - edge width of the marker
 %
-% See also
-% <https://www.mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html patch properties>
+% Any further option is passed on to MATLAB as one of the
+% <https://www.mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html patch properties>.
 
 % create a new plot
 % ensure we do not plot perpendicular to the slice
