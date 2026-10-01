@@ -4,7 +4,7 @@ function E = GreenStrain(F)
 %   E = GreenStrain(F)
 %
 % Input
-%  F - @deformationTensor
+%  F - @deformationGradientTensor
 %
 % Output
 %  epsilon - @strainTensor

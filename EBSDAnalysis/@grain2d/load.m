@@ -1,6 +1,6 @@
 function [grains] = load(filepath)
   % grain2d.load is a method to load the 2d data from the tesselation files that
-  % <neper.info/ neper> outputs
+  % <https://neper.info/ neper> outputs
   %
   % Syntax
   %   grains = grain2d.load('filepath/filename.tess')

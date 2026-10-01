@@ -5,7 +5,7 @@ function [ebsd,interface,options] = load(fname,varargin)
 %
 % EBSD.load is a high level method for importing EBSD data from files. If
 % possible it autodetects the format of the file. Supported formats are
-% listed <supportedInterfaces.html here>. Additionally, EBSD data can be
+% listed <EBSDImport.html here>. Additionally, EBSD data can be
 % read from column aligned text file or excel spread sheets. In those cases
 % it is necessary to tell MTEX the column positions of the spatial
 % coordinates, the phase information as well as Euler angles.

@@ -2,7 +2,7 @@ function sA = shortAxis(grains,varargin)
 % short axis of a grain 
 %
 % the long axis is the direction of the smallest
-% <grain2d.principalComponents.html,principal component> of a grain
+% <grain2d.principalComponents.html principal component> of a grain
 %
 % Syntax
 %   sA = grains.shortAxis

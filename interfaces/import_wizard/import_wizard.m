@@ -11,7 +11,7 @@ classdef import_wizard < matlab.apps.AppBase
   %   import_wizard
   %
   % See also
-  % loadEBSD loadPoleFigure ImportEBSDData
+  % EBSD/load PoleFigure/load EBSDImport
   %
 
   properties (Access = public)

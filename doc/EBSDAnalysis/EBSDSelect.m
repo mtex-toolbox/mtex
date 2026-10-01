@@ -202,7 +202,7 @@ goodForsterite = goodForsterite('Forsterite')
 % processing>, _Materials Characterization_ 60, 913-922, 2009, reviews
 % acquisition, cleanup, and microstructure analysis choices.
 % * S. I. Wright et al.,
-% <https://doi.org/10.1016/j.ultramic.2015.07.017 Introduction and
+% <https://doi.org/10.1016/j.ultramic.2015.08.001 Introduction and
 % comparison of new EBSD post-processing methodologies>, _Ultramicroscopy_
 % 159, 81-94, 2015, compares indexing success criteria and shows why their
 % threshold directions depend on the property.

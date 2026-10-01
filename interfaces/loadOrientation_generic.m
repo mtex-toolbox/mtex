@@ -48,7 +48,7 @@ function [ori,S] = loadOrientation_generic(fname,varargin)
 %     {'Euler1' 'Euler2' 'Euler3'},'Columns',[5,6,7],'Bunge')
 %
 % See also
-% loadOrientation
+% orientation/load
 
 isCheck = check_option(varargin,'check');
 

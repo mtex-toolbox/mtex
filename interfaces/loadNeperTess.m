@@ -5,7 +5,7 @@ function [dimension, V, F, ori, CS, varargout] = loadNeperTess(filepath)
 %
 % readTessFile is a helping function used from the grain2d.load and
 % grain3d.load method to read the data from the tessellation files that
-% <neper.info/ neper> outputs
+% <https://neper.info/ neper> outputs
 %
 % Syntax
 %   [dim, V, poly, rot, CS, I_GrainsFaces] = readTessFile('filepath/filename.tess')

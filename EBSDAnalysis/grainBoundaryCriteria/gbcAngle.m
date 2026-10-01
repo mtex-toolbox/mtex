@@ -17,9 +17,9 @@ classdef gbcAngle < grainBoundaryCriterion
 %
 % Output
 %
-%   out = 1    no boundary <--> angle < low
-%   out = 0.5  low-angle boundary <--> low <= angle < high
-%   out = 0    high-angle boundary <--> angle >= high
+%   out = 1    no boundary if angle < low
+%   out = 0.5  low-angle boundary if low <= angle < high
+%   out = 0    high-angle boundary if angle >= high
 %
 
 properties

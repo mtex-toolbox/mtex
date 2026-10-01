@@ -28,7 +28,7 @@ function [odf,alpha] = calcFEMODF(pf,varargin)
 %  alpha  - scaling factors, calculated during reconstruction
 %
 % See also
-% PoleFigure2odf ODF_demo PoleFigureSimulation_demo
+% PoleFigure2ODF PoleFigureSimulation
 % PoleFigure.load PoleFigureImport Examples
 
 tic

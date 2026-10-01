@@ -12,7 +12,7 @@ function q = mat2quat(mat,varargin)
 %
 % See also
 %
-% quaternion_matrix Euler axis2quat hr2quat
+% quaternion/matrix Euler axis2quat hr2quat
 %
 % Description
 % Wertz says to the algo similar to this with largest divisor

@@ -2,7 +2,7 @@ function ebsd = applyEulerCorrectionTable(ebsd,ext,varargin)
 % apply a 4-setting Euler / map reference frame correction
 %
 % Shared by EDAX-style formats (.ang, .osc, .edaxh5) that expose the Euler
-% <-> map alignment as a "setting" 1 to 4. Since the setting is not stored
+% to map alignment as a "setting" 1 to 4. Since the setting is not stored
 % in the file, setting 2 is assumed and a note is printed - unless the user
 % states the alignment or the import wizard did it already.
 %

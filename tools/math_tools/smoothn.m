@@ -77,12 +77,10 @@ function [z,s,exitflag] = smoothn(varargin)
 %   1) Garcia D, Robust smoothing of gridded data in one and higher
 %   dimensions with missing values. Computational Statistics & Data
 %   Analysis, 2010;54:1167-1178. 
-%   <a
-%   href="matlab:web('http://www.biomecardio.com/pageshtm/publi/csda10.pdf')">PDF download</a>
+%   <a href="https://doi.org/10.1016/j.csda.2009.09.020">doi:10.1016/j.csda.2009.09.020</a>
 %   2) Garcia D, A fast all-in-one method for automated post-processing of
 %   PIV data. Exp Fluids, 2011;50:1247-1259.
-%   <a
-%   href="matlab:web('http://www.biomecardio.com/pageshtm/publi/media11.pdf')">PDF download</a>
+%   <a href="https://doi.org/10.1007/s00348-010-0985-y">doi:10.1007/s00348-010-0985-y</a>
 %
 %
 %   EXAMPLES:
@@ -221,10 +219,8 @@ function [z,s,exitflag] = smoothn(varargin)
 %
 %   Authors
 %   Damien Garcia, 2009/03, revised 2014/10,
-%   <a href="matlab:web('http://www.biomecardio.com')">www.BiomeCardio.com</a>
+%   <a href="https://www.biomecardio.com">www.BiomeCardio.com</a>
 %
-%   See also
-%   SMOOTH1Q DCTN IDCTN
 
 %% Check input arguments
 %error(nargchk(1,5,nargin));

@@ -15,7 +15,7 @@ function pf = loadPoleFigure_dubna(fname,varargin)
 %  pf    - @PoleFigure
 %
 % See also
-% PoleFigure.load dubna_demo PoleFigureImport
+% PoleFigure.load PoleFigureDubna PoleFigureImport
 
 % ensure right extension
 [pathstr, name, ext] = fileparts(fname); %#ok<ASGLU>

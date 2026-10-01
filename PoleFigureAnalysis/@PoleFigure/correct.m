@@ -17,7 +17,7 @@ function pf = correct( pf, varargin )
 %  pf    - @PoleFigure
 %
 % See also
-%  ModifyPoleFigureData
+%  PoleFigureCorrection
 
 % background correction
 bg = get_option(varargin,{'background','bg'});

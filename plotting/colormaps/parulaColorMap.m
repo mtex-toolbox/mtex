@@ -16,7 +16,7 @@ function map = parula(n)
 %
 %   See also AUTUMN, BONE, COLORCUBE, COOL, COPPER, FLAG, GRAY, HOT, HSV,
 %   JET, LINES, PINK, PRISM, SPRING, SUMMER, WHITE, WINTER, COLORMAP,
-%   RGBPLOT.
+%   RGBPLOT
 
 %   Copyright 2013 The MathWorks, Inc.
 

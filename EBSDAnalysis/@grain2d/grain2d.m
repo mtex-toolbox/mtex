@@ -28,13 +28,13 @@ classdef grain2d < phaseList & dynProp
   %  V             - list of vertices (x,y coordinates)
   %  boundary      - @grainBoundary
   %  innerBoundary - @grainBoundary
-  %  triplePoints  - @triplePoints
+  %  triplePoints  - @triplePointList
   %  numPixel     - number if pixels belonging to the grain
   %  GOS           - grain orientation spread
   %  meanOrientation - average grain orientation (<GrainOrientationParameters.html only single phase>)
   %
   % See also
-  % GrainReconstruction GrainSpatialPlots SelectingGrains ShapeParameter
+  % GrainReconstruction GrainSpatialPlots SelectingGrains ShapeParameters
   
   % properties with as many rows as data
   properties

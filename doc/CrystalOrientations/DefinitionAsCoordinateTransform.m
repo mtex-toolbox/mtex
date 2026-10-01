@@ -94,7 +94,6 @@ Cspecimen = ori * C
 % * <Miller.Miller.html crystal directions>
 % * <tensor.tensor.html tensors>
 % * <slipSystem.slipSystem.html slip systems>
-% * <twinningSystem.twinningSystem.html twinning systems>
 % * <dislocationSystem.dislocationSystem.html dislocation systems>
 % * <crystalShape.crystalShape.html crystal shapes>
 

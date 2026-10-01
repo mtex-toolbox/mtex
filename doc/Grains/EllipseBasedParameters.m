@@ -331,7 +331,7 @@ characteristicAspectRatio = ...
 %% Further reading
 %
 % * K. F. Mulchrone and K. R. Choudhury,
-% <https://doi.org/10.1016/S0191-8141(03)00093-2 Fitting an ellipse to an
+% <https://doi.org/10.1016/S0191-8141%2803%2900093-2 Fitting an ellipse to an
 % arbitrary shape: implications for strain analysis>, _Journal of
 % Structural Geology_ 26 (2004), 143-153. This is the ellipse-fitting method
 % cited by <grain2d.fitEllipse.html |fitEllipse|>.

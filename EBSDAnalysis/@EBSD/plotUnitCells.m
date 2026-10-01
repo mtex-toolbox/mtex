@@ -9,7 +9,7 @@ function h = plotUnitCells(ebsd,d,varargin)
 %  * an explicit 'backend' overrides the routing.
 %
 % See also
-% EBSD/plot EBSD/private/plotImagesc EBSD/private/plotSurf EBSD/private/plotPatch
+% EBSD/plot
 
 unitCell = ebsd.unitCell;
 pos = ebsd.pos;

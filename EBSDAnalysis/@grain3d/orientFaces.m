@@ -17,7 +17,7 @@ function grains = orientFaces(grains)
 % vertex order point randomly into or out of the grain. This function
 % determines for every face and every adjacent grain whether the stored
 % normal points out of that grain (+1) or into it (-1) and stores the
-% result in <grain3d.I_GF |grains.I_GF|>. It also updates
+% result in |grains.I_GF|. It also updates
 % |grains.boundary.grainId| such that the face normal always points from
 % the first to the second grain.
 %

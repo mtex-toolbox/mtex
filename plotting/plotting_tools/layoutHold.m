@@ -26,7 +26,7 @@ function release = layoutHold(mtexFig)
 % figure is left as it was.
 %
 % See also
-% mtexLayout/hold mtexFigure/drawNow
+% mtexLayout mtexFigure/drawNow
 
 release = [];
 
