@@ -17,6 +17,10 @@
         "first": {"data": "x"}	  
       }
     },
+    "map_correction": {
+      "type": "rotation",
+      "data": [90, 180, 270]
+    },
     "phase": {"mode": "search_root", "value": "Phase", "type": "stack"},
     "rotation": {
       "type": "euler_stack",
