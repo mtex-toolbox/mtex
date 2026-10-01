@@ -19,6 +19,8 @@ function [bandwidth,density,xmesh,cdf] = kde1d(data,n,MIN,MAX,varargin)
 %   MIN, MAX  - defines the interval [MIN,MAX] on which the density estimate is constructed;
 %               the default values of MIN and MAX are:
 %               MIN=min(data)-Range/10 and MAX=max(data)+Range/10, where Range=max(data)-min(data);
+% OPTIONS:
+%   bandwidth - a fixed bandwidth in the units of the data, as returned, instead of the optimal one
 % OUTPUTS:
 %   bandwidth - the optimal bandwidth (Gaussian kernel assumed);
 %     density - column vector of length 'n' with the values of the density
@@ -69,7 +71,8 @@ initial_data = initial_data/sum(initial_data);
 a=dct1d(initial_data); % discrete cosine transform of initial data
 
 if check_option(varargin,'bandwidth')
-  t_star = get_option(varargin,'bandwidth');
+  % the diffusion time on the interval rescaled to [0,1]
+  t_star = (get_option(varargin,'bandwidth') / R)^2;
 elseif check_option(varargin,'magicNumber')
   % rule of thumb
   t_star = get_option(varargin,'magicNumber',.28,'double')*N^(2);
