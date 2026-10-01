@@ -177,7 +177,9 @@
 % The ThermoFisher configuration is the smallest of the six. It uses
 % literal paths for its rigid outer tree, builds positions from the grid
 % dimensions, reads stacked phases and Euler angles, and repeats the crystal
-% symmetry branch once per phase.
+% symmetry branch once per phase. Its map correction is fixed: xTalView
+% writes the map with its x axis opposite to the specimen x axis of the
+% Euler angles, a half turn about y, given as Bunge angles in degree.
 %
 %  {
 %    "settings": {
@@ -198,6 +200,7 @@
 %          "first": { "data": "x" }
 %        }
 %      },
+%      "map_correction": { "type": "rotation", "data": [90, 180, 270] },
 %      "phase": { "mode": "search_root", "value": "Phase", "type": "stack" },
 %      "rotation": {
 %        "type": "euler_stack",
