@@ -297,8 +297,8 @@ catch
 
       end
       
-  end    
-  disp([' saving data to ' matFile])
+  end
+  if ~getMTEXpref('generatingHelpMode'), disp([' saving data to ' matFile]); end
   save(matFile,'out','key');
 end
 
