@@ -44,7 +44,7 @@ function [SO3F,lsqrParameters] = interpolate(nodes, y, varargin)
 %  maxit           - maximum number of iterations as termination condition for lsqr
 %  regularization  - the energy functional of the lsqr solver is regularized by the Sobolev norm of SO3F with regularization parameter lambda (default: 1e-4)(0: no regularization)
 %  SobolevIndex    - for regularization (default = 2)
-%  cutOffParameter - cut off parameter m of the window functions in NFFT
+%  cutOffParameter - cut off parameter m of the window functions in NFFT (default: 4, as in eval)
 %
 % See also
 % rotation/interp SO3VectorFieldHarmonic/interpolate SO3FunRBF/interpolate
@@ -144,7 +144,7 @@ lsvec = cell(1,size(y,2));
 % least squares solution
 for index = 1:size(y,2)
   [fhat(:,index),flag(index),relres(index),iter(index),resvec{index},lsvec{index}] ...
-    = lsqr( @(x, transp_flag) afun(transp_flag, x, nodes, W,bw,regularize,lambda,What,varargin),...
+    = lsqr( @(x, transp_flag) afun(transp_flag, x, nodes, W,bw,regularize,lambda,What,varargin{:}),...
     b(:, index), tol, maxit);
 end
 if any(flag == 1)
@@ -164,7 +164,7 @@ end
 
 function y = afun(transp_flag, x, nodes, W,bw,regularize,lambda,What,varargin)
 
-cutOff = get_option(varargin,'cutOffParameter',1);
+cutOff = get_option(varargin,'cutOffParameter',4);
 
 if strcmp(transp_flag, 'transp')
   
