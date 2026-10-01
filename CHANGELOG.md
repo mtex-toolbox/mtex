@@ -135,6 +135,9 @@ port).
 - `grain3d/orientFaces` applied the new grain pair of a face by `flip`, which only
   swaps; a face given with one side kept ids, phases and misorientation that disagreed
   with `I_GF`. The pair is also read as grain ids, not positions in `I_GF`
+- `grain3Boundary/calcGBND` at a misorientation weighted a face by `psi.eval(cos(omega))`;
+  an `SO3Kernel` takes `cos(omega/2)`, as the planar `calcGBND` passes it. The Sigma 3
+  GBCD of SmallIN100 peaks at 16.3 instead of 19.1
 
 ### Documentation
 

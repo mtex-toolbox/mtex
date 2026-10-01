@@ -111,6 +111,9 @@
 % * |gridify| keeps an indexed measurement over a not indexed one in the same
 % cell
 % * sampling from an |SO3FunRBF| is twice as fast
+% * <grain3Boundary.calcGBND.html |calcGBND|> of a 3D boundary at a
+% misorientation weights a face by the kernel at its angle to the reference,
+% not at twice that angle
 %
 %% MTEX 7.1 09/2026
 %
