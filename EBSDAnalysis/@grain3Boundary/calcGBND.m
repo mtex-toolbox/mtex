@@ -55,7 +55,8 @@ if ~isempty(moriRef) && ~isempty(grains)
   doInclude = omega < 2*hw;
   mori = mori(doInclude);
 
-  weights = gB3.area(doInclude) .* psi.eval(cos(omega(doInclude)));
+  % the kernel takes the cosine of half the angle
+  weights = gB3.area(doInclude) .* psi.eval(cos(omega(doInclude)/2));
 
   [sym1,sym2,csRed] = project2FundamentalRegion(mori,moriRef);
   
