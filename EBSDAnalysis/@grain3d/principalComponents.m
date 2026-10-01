@@ -30,7 +30,6 @@ if isnumeric(grains.F)
   % volume and centroid of each grain via divergence theorem
   vol = grains.I_GF * sum(A .* N,2) / 6;
   c = grains.I_GF * (N.*((A+B).^2 + (B+C).^2 + (C+A).^2)) / 48 ./ vol;
-  c = c.xyz;
 
   % the quadrature points
   P1 = (1/3 * A + 1/3 * B + 1/3 * C);
