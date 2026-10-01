@@ -111,13 +111,11 @@ methods
     rotData(ind,:) = nan;
 
     if type <= 6
+      % degrees unless the option 'radians' is given
       flag = extract_option([convNames{type} loader.opts],convNames);
-      if any(any(rotData>15))
-        rotData = rotData * pi/180;
-      end
-      rot = rotation.byEuler(rotData, flag{:});
+      rot = rotation.byEuler(rotData * loader.unit, flag{:});
     else
-      rot = rotation(quaternion(rotData));
+      rot = rotation(quaternion(rotData(:,1),rotData(:,2),rotData(:,3),rotData(:,4)));
     end
 
     if check_option(loader.opts,{'passive','passive rotation'})
