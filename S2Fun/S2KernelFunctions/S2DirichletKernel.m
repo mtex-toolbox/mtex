@@ -20,23 +20,13 @@ classdef S2DirichletKernel < S2Kernel
 % S2Kernel
 
  
-  properties (Dependent = true)
-    halfwidth % halfwidth of the kernel
-  end
-    
   methods
     
     
     function psi = S2DirichletKernel(N)
           
       psi.A = 2.*(0:N).'+1;
-            
-    end
-    
-    function hw = get.halfwidth(psi)
-            
-      hw = pi;
-      
+
     end
         
   end
