@@ -24,7 +24,7 @@ mtexdata forsterite silent
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
 % reconstruct grains and store each grain id with its measurements
-[grains,ebsd] = calcGrains(ebsd('indexed'),'angle',10*degree);
+[grains,ebsd] = calcGrains(ebsd,'angle',10*degree);
 
 % inspect the resulting grain list
 grains

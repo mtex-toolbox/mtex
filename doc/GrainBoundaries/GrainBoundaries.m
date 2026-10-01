@@ -25,7 +25,7 @@ mtexdata forsterite silent
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
 % reconstruct and smooth the grains
-grains = calcGrains(ebsd('indexed'),'angle',10*degree);
+grains = calcGrains(ebsd,'angle',10*degree);
 grains = smoothBoundary(grains,5);
 
 % display the boundary list

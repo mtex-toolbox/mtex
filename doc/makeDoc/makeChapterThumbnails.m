@@ -202,7 +202,7 @@ switch name
     % a quarter of the map: at full extent the grains are smaller than a
     % tile pixel and the boundaries close up into a black mesh
     ebsd = ebsd(inpolygon(ebsd,[15000 1020 3000 2970]));
-    grains = calcGrains(ebsd('indexed'),'threshold',10*degree);
+    grains = calcGrains(ebsd,'threshold',10*degree);
     plot(ebsd('indexed'),'micronbar','off')
     hold on
     plot(grains.boundary,'lineWidth',1.5)
@@ -256,7 +256,7 @@ switch name
   case 'Misorientations'
     mtexdata twins silent
     ebsd = evalin('base','ebsd');
-    grains = calcGrains(ebsd('indexed'),'threshold',5*degree);
+    grains = calcGrains(ebsd,'threshold',5*degree);
     grains = smoothBoundary(grains,5);
     plot(grains,grains.meanOrientation,'micronbar','off','faceAlpha',0.45)
     hold on
@@ -286,7 +286,7 @@ switch name
     mtexdata forsterite silent
     ebsd = evalin('base','ebsd');
     ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
-    grains = calcGrains(ebsd('indexed'),'threshold',10*degree);
+    grains = calcGrains(ebsd,'threshold',10*degree);
     plot(ebsd('Forsterite'),ebsd('Forsterite').orientations,'micronbar','off')
     hold on
     plot(grains.boundary,'lineWidth',1.5)
@@ -297,7 +297,7 @@ switch name
     mtexdata forsterite silent
     ebsd = evalin('base','ebsd');
     ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
-    grains = calcGrains(ebsd('indexed'),'threshold',10*degree);
+    grains = calcGrains(ebsd,'threshold',10*degree);
     grains = smoothBoundary(grains,5);
     plot(grains.boundary,'lineWidth',4,'lineColor',[0.1 0.1 0.1])
     hold on

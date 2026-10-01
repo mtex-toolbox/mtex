@@ -15,7 +15,7 @@
 plottingConvention.default('y↑→x');
 mtexdata forsterite silent
 
-grainsRaw = calcGrains(ebsd('indexed'),'angle',10*degree);
+grainsRaw = calcGrains(ebsd,'angle',10*degree);
 
 % remove grains with ten or fewer measurements
 grainsRaw = grainsRaw(grainsRaw.numPixel > 10)

@@ -11,7 +11,7 @@ function [grains,grainId,mis2mean] = calcGrains(ebsd,varargin)
 %   grains = calcGrains(ebsd,'angle',[hagb lagb])
 %
 %   % allow grains to grow into not indexed regions
-%   grains = calcGrains(ebsd('indexed'),'angle',10*degree) 
+%   grains = calcGrains(ebsd,'angle',10*degree)
 %
 %   % do not allow grains to grow into not indexed regions
 %   grains = calcGrains(ebsd,'unitCell')

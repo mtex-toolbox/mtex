@@ -133,10 +133,10 @@ end
 %% Weighting Changes the Question
 %
 % A grain is a phase-homogeneous, spatially connected region of EBSD pixels
-% produced by segmentation. Reconstruct the indexed map with an example
+% produced by segmentation. Reconstruct the map with an example
 % 10 degree misorientation threshold, then keep the Forsterite grains.
 
-[grains,ebsd] = calcGrains(ebsd('indexed'),'angle',10*degree);
+[grains,ebsd] = calcGrains(ebsd,'angle',10*degree);
 grains = grains('Fo');
 
 % one c-axis per grain

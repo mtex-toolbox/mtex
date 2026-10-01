@@ -694,5 +694,5 @@ end
 
 function [ebsd,grains] = forsteriteGrains
 ebsd = forsteritePatch;
-grains = calcGrains(ebsd('indexed'),'threshold',10*degree);
+grains = calcGrains(ebsd,'threshold',10*degree);
 end
