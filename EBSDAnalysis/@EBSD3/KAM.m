@@ -76,15 +76,16 @@ else
 end
 
 
-% compute kernel average misorientation
-kam = sparse(Dl(ind),Dr(ind),omega(ind)+0.00001,length(ebsd),length(ebsd));
-kam = kam+kam';
-
+% compute kernel average misorientation, NaN without a neighbour
+id = [Dl(ind);Dr(ind)];
+omega = [omega(ind);omega(ind)];
+count = accumarray(id,1,[length(ebsd) 1]);
 if check_option(varargin,'max')
-  kam = full(max(kam,[],2));
+  kam = accumarray(id,omega,[length(ebsd) 1],@max);
 else
-  kam = full(sum(kam,2)./sum(kam>0,2));
+  kam = accumarray(id,omega,[length(ebsd) 1]) ./ count;
 end
+kam(count==0) = NaN;
 
 % back to the voxels asked for
 kam = reshape(kam(newId),sz);
