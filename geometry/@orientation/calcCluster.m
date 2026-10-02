@@ -9,7 +9,12 @@ function [c,center] = calcCluster(ori,varargin)
 % Input
 %  ori - @orientation
 %  n   - number of clusters
-%  omega - maximum angle 
+%  omega - maximum angle
+%
+% Options
+%  method    - odf (default) | classix | hierarchical
+%  radius    - CLASSIX group radius, estimated from the data if omitted, which needs the Statistics and Machine Learning Toolbox
+%  minPoints - CLASSIX clusters with fewer points are merged into a neighbour (default 1% of the data)
 %
 % Output
 %  c - list of clusters

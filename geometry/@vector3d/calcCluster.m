@@ -12,7 +12,9 @@ function [cId,center] = calcCluster(v,varargin)
 %  omega - maximum angle 
 %
 % Options
-%  method - classix (default) | hierarchical | matlab
+%  method    - classix (default) | hierarchical | matlab
+%  radius    - CLASSIX group radius, estimated from the data if omitted, which needs the Statistics and Machine Learning Toolbox
+%  minPoints - CLASSIX clusters with fewer points are merged into a neighbour (default 1% of the data)
 %
 % Output
 %  cId    - list of clusters ids
