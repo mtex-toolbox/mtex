@@ -67,7 +67,7 @@ annotate(center)
 
 %%
 % The two discs are the upper and the lower hemisphere. Read as ordinary
-% directions, the sample falls into eight clusters. Every feature of the
+% directions, the sample falls into ten clusters. Every feature of the
 % smiley and every one of their opposites carries a color of its own.
 
 vSym.antipodal = true;
@@ -77,7 +77,7 @@ plot(vSym,ind2color(cInd),'MarkerAlpha',0.2,'MarkerSize',2)
 annotate(center)
 
 %%
-% One disc is left, and four clusters, each exactly twice the size of before.
+% One disc is left, and five clusters, each exactly twice the size of before.
 % Every feature has been merged with the one opposite it.
 % The two eyes stay apart, because one eye is not the opposite of the other.
 %
