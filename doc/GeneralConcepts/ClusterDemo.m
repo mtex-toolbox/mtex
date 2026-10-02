@@ -16,7 +16,6 @@
 % retaining points between those features.
 
 plottingConvention.default('y↑→x');
-rng default
 S2F = S2Fun.smiley.^2;
 v = S2F.discreteSample(10000);
 
