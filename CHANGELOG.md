@@ -52,6 +52,22 @@ port).
 - `LSCV` read the squared norm through `eodf.components{1}`, which `conv`'s
   SO3FunHarmonic no longer has, so `calcKernel(...,'method','LSCV')` failed; with unit
   weights `1./(1-w)` was infinite. The weights are normalised as in `BCV`
+- `calcKernel` gains `'UCV'` and `'conservative'`, ported from the
+  Python port's `mtex/functions/halfwidth.py` (plan `docs/plans/halfwidth.md` there) as
+  `tools/statistic_tools/selectHalfwidth.m`. Both minimise the exact MISE of the de la
+  Vallee Poussin family over 60 geometric candidates, from the degree energies of the
+  sample (UCV: the U-statistic of one transform at bandwidth 64, doubled once at the
+  edge; conservative: energies cross-fitted over 8 folds at bandwidth 32, lowered by two
+  jackknife errors), bounded below by a Bennett noise floor. `'groups'` folds by grain,
+  `vector3d/calcKernel` and `EBSD/calcKernel` (folded by `grainId`) are new. For
+  orientations `'KLCV'` stays the default, two to four times faster than UCV (1.5 s
+  against 6.0 s at n = 10000), and `'groups'` selects UCV. The energies
+  match direct pair sums to 1e-9 for 432, -43m with 222, triclinic and antipodal 432/432,
+  and `calcDensity`'s symmetrisation on S2 to 1e-11; on the same samples the halfwidths
+  equal the port's, the conservative one within its spread over fold seeds at n = 100.
+  The SO(3) transform runs at oversampling 1.25 and cutoff 6 (1e-8, three times faster);
+  a grain-folded copper map still takes 28 s against 5 s in the port, whose transform
+  folds the lattice by the symmetry
 
 ### Geometry and Pole Figures
 

@@ -4,23 +4,39 @@ function psi = calcKernel(ori,varargin)
 % Syntax
 %
 %   psi = calcKernel(ori)
+%   psi = calcKernel(ori,'method','conservative')
+%   psi = calcKernel(ori,'groups',grainId)
 %   psi = calcKernel(ori,'method','ruleOfThumb')
 %
 % Input
 %  ori - @orientation
 %
 % Output
-%  psi - @SO3Kernel
+%  psi - @SO3DeLaValleePoussinKernel
 %
-% Flags
-%  magicrule   - 
-%  RuleOfThumb - 
-%  LSCV        - least squares cross validation
-%  KLCV        - Kullback Leibler cross validation (default)
-%  BCV         - biased cross validation
+% Options
+%  method  - |'KLCV'| (default), |'UCV'| (default with |'groups'|), |'conservative'|, |'LSCV'|, |'BCV'|, |'RuleOfThumb'|, |'magicRule'|
+%  weights - weights of the orientations
+%  groups  - ids of mutually dependent orientations, e.g. the grainId of EBSD pixels (UCV and conservative only)
+%
+% Description
+% |'UCV'| minimises an unbiased estimate of the integrated squared error,
+% |'conservative'| errs towards wider kernels, both bounded below by a noise
+% floor, see <selectHalfwidth.html selectHalfwidth>. |'KLCV'|, |'LSCV'| and
+% |'BCV'| are Kullback Leibler, least squares and biased cross validation
+% over ten candidates, |'RuleOfThumb'| reads the nearest neighbour distances
+% and |'magicRule'| only the number of orientations.
 %
 % See also
-% EBSD.EBSD orientation/BCV orientation/KLCV orientation/LSCV
+% selectHalfwidth EBSD/calcKernel vector3d/calcKernel orientation/BCV orientation/KLCV orientation/LSCV
+
+% only UCV honours grain ids
+if check_option(varargin,'groups'), method = 'UCV'; else, method = 'KLCV'; end
+method = get_option(varargin,'method',method);
+if any(strcmpi(method,{'UCV','conservative'}))
+  psi = SO3DeLaValleePoussinKernel('halfwidth',selectHalfwidth(ori,method,varargin{:}));
+  return
+end
 
 % consider only orientations that not nan
 ori = ori.subSet(~ori.isnan);
@@ -41,8 +57,6 @@ else
 end
 
 % first the simple methods
-method = get_option(varargin,'method','KLCV');
-
 switch lower(method)
   
   case 'magicrule'

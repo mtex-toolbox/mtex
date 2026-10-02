@@ -125,10 +125,13 @@ end
 %
 % The relevant sample size is the number of independent observations, not
 % merely the number of pixels. Neighbouring EBSD pixels are spatially
-% correlated because many sample the same grain. MTEX does not select a
-% halfwidth automatically for directional data. For orientation data,
-% <EBSD2ODF.html ODF Estimation from EBSD Data> explains this dependence and
-% <OptimalKernel.html Optimal Kernel Selection> describes automatic methods.
+% correlated because many sample the same grain.
+% <vector3d.calcKernel.html |calcKernel|> selects a halfwidth from the data
+% with the grains taken into account, and the section _Letting the Data
+% Choose the Halfwidth_ below applies it once the grains are reconstructed.
+% For orientation data, <EBSD2ODF.html ODF Estimation from EBSD Data>
+% explains this dependence and <OptimalKernel.html Optimal Kernel
+% Selection> describes the selection methods.
 
 %% Weighting Changes the Question
 %
@@ -174,6 +177,62 @@ mtexFig.drawNow
 % although replacing every grain by its mean orientation removes the
 % within-grain spread. The scientifically correct weights depend on whether
 % the population of interest is grains, mapped area, or something else.
+
+%% Letting the Data Choose the Halfwidth
+%
+% <vector3d.calcKernel.html |calcKernel|> selects the kernel from the axes
+% themselves. Its default method |'UCV'| estimates the integrated squared
+% error of the density for every candidate halfwidth and takes the
+% halfwidth where that estimate is least. It never returns a halfwidth so
+% narrow that noise could raise bumps above a fifth of the estimate's
+% maximum. |'conservative'| takes a halfwidth at least as wide as the
+% optimum with high probability. <OptimalKernel.html Optimal Kernel
+% Selection> explains both.
+%
+% Both rules take the observations as independent unless told otherwise.
+% Pixel axes are not, so pass the grain id of every pixel. |calcGrains|
+% stored the ids in |ebsd|. Recompute the pixel axes after reconstruction so
+% that they follow any pixels relabelled as not indexed.
+
+pixelAxes = ebsd('Fo').orientations * ebsd('Fo').CS.cAxis;
+pixelAxes.antipodal = true;
+pixelGrainId = ebsd('Fo').grainId;
+
+psiAsIndependent = calcKernel(pixelAxes);
+psiPixels = calcKernel(pixelAxes,'groups',pixelGrainId);
+psiGrainArea = calcKernel(cAxesGrains,'weights',grains.area);
+psiGrains = calcKernel(cAxesGrains);
+
+selection = ["pixels as independent";"pixels with grain ids";...
+  "grains weighted by area";"grains, one vote each"];
+halfwidthInDegree = [psiAsIndependent.halfwidth;psiPixels.halfwidth;...
+  psiGrainArea.halfwidth;psiGrains.halfwidth] ./ degree;
+halfwidthTable = table(selection,halfwidthInDegree)
+
+%%
+% Taken as independent, the pixel axes drive the selection to the narrowest
+% candidate, 1 degree. Neighbouring pixels repeat one axis, and the rule
+% reads the repetition as a sharp density. Even the noise floor cannot help,
+% since with that many observations it expects hardly any noise. With the
+% grain ids the rule asks for 21 degrees. That is close to the 20 degrees of
+% the grain axes weighted by their area, which describe the same mapped
+% area.
+%
+% One vote per grain asks for about 2 degrees. Of the 1151 grains, 530 are
+% single pixels, and the area weight gives those almost no say.
+%
+% The conservative rule on the pixels with their grain ids:
+
+psiConservative = calcKernel(pixelAxes,'method','conservative',...
+  'groups',pixelGrainId);
+psiConservative.halfwidth / degree
+
+%%
+% It asks for 23 degrees, a little wider than the 21 degrees of UCV. It
+% takes the energies of the axis distribution at their lower confidence
+% bounds. Weighted by area, the few large grains dominate the map, which
+% leaves these bounds loose. A reported halfwidth is worth checking against
+% the plots of the previous section rather than taken on trust.
 
 %% Working with the Density Function
 %

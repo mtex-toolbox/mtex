@@ -41,6 +41,14 @@
 %
 % *New*
 %
+% * |calcKernel| can select the halfwidth by |'UCV'|, the halfwidth of least
+% integrated squared error, or by |'conservative'|, one at least as wide,
+% both from the harmonic energies of the sample and bounded below by a noise
+% floor. They take weights, directions (<vector3d.calcKernel.html
+% |calcKernel(v)|>), the grain ids of pixels (|'groups'|) and a map with
+% computed grains (<EBSD.calcKernel.html |calcKernel(ebsd)|>). For
+% orientations |'KLCV'| stays the default, being faster, unless grain ids
+% are given. <OptimalKernel.html Optimal Kernel Selection> explains them
 % * |loadPoleFigure_inel| reads INEL pole figure files
 % * |curvature| and |calcGND| of a voxel map, and |KAM|, |fill|, |reduce| and
 % |fillByGrainId| of a volume work in three dimensions
