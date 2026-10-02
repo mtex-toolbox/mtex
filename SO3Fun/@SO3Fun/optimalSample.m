@@ -88,14 +88,16 @@ function [ori,c] = optimalSample(f,n,varargin)
 % peaks much harder, the equally weighted sample can remain the better choice
 % at halfwidths well below the optimized bandwidth.
 %
-% *Starting from a grid that ignores the density* - e.g.
-% <equispacedSO3Grid.html |equispacedSO3Grid|> instead of the default
-% <SO3Fun.discreteSample.html |discreteSample|> - the first weight step is
-% drastic and kills nodes before they ever had a chance to move. Since the
-% update of |mlsq| is multiplicative, a weight that reaches 0 stays 0, and
+% *Starting from nodes that ignore the density* - the default Kronecker
+% sequence or <equispacedSO3Grid.html |equispacedSO3Grid|> - the first weight
+% step is drastic and kills nodes before they ever had a chance to move. Since
+% the update of |mlsq| is multiplicative, a weight that reaches 0 stays 0, and
 % since the gradient with respect to $R_j$ carries the factor $c_j$, such a
 % node is frozen in place as well and is lost for good. Use |warmUp| to move
-% the orientations only for the first iterations in that case.
+% the orientations only for the first iterations in that case, or start from
+% <SO3Fun.discreteSample.html |discreteSample|>,
+%
+%   [ori,c] = optimalSample(f,discreteSample(f,n))
 %
 % For more details, see
 %
@@ -128,6 +130,7 @@ function [ori,c] = optimalSample(f,n,varargin)
 %  tol        - termination tolerance for the orientations (default = 0.1*degree)
 %  method     - 'lbfgs' (default), or 'steepestDescent' for an empty memory
 %  memory     - secant pairs kept by the L-BFGS iteration (default = 5)
+%  tolJ       - terminate below this relative decrease of J (default = 1e-4)
 %  weights    - starting weights, fixed if they are not optimized (default = ones(M,1)/M)
 %
 % The following options apply only if the weights are optimized
@@ -158,7 +161,9 @@ optWeights = nargout == 2;
 if isa(n,'rotation')
   ori = n;
 else
-  ori = equispacedSO3Grid(f.CS,f.SS,'points',n);
+  % n nodes of a Kronecker sequence, uniform in the ZYZ Euler angles
+  j = (1:n).';
+  ori = rotation.byEuler(2*pi*mod(j*sqrt(2),1),acos(2*mod(j*sqrt(3),1)-1),2*pi*mod(j*sqrt(5),1),'ZYZ');
 end
 M = numel(ori);
 % the nodes have to carry the symmetries of f, since the difference mu - f of
@@ -183,6 +188,7 @@ end
 innerIter = get_option(varargin,'innerIter',5);
 warmUp = get_option(varargin,'warmUp',0);
 tolWeights = get_option(varargin,'tolWeights',1e-3/M);
+tolJ = get_option(varargin,'tolJ',1e-4);
 minWeight = get_option(varargin,'minWeight',0);
 
 % the kernel, and the weights its discrepancy puts on the Wigner coefficients
@@ -302,7 +308,8 @@ for i = 1:maxIter
 
   % --- Global Termination ---
   if lineSearchFailed || ...
-      ( max(angle(ori,oriNew)) < tol && max(abs(c-cOld)) < tolWeights )
+      ( max(angle(ori,oriNew)) < tol && max(abs(c-cOld)) < tolWeights && ...
+      resOld - resNew < tolJ * resOld )
     ori = oriNew;
     % During the warm up the weights are held fixed, hence c == cOld and the
     % test above reduces to the one on the orientations alone. Returning
