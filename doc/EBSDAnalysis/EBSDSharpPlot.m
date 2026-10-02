@@ -200,6 +200,7 @@ hold off
 % <https://doi.org/10.1016/j.ultramic.2017.06.021 Thomsen et al. (2017)>.
 
 F = l1TVFilter;
+F.alpha = 1.25;
 ebsdS = smooth(ebsd,F,'fill',grains);
 indexedS = ebsdS('indexed');
 

@@ -128,7 +128,7 @@ hold off
 % remain the segmentation model for the filled map.
 
 F = l1TVFilter;
-F.alpha = 0.25;
+F.alpha = 0.21;
 
 % interpolate and smooth the missing orientations
 ebsdSub_smoothed = smooth(ebsdSub,F,'fill',grainsSub);
@@ -250,7 +250,7 @@ hold off
 % |notIndexed| positions along grain boundaries remain untouched.
 
 F = l1TVFilter;
-F.alpha = 10;
+F.alpha = 1.25;
 
 ebsdS = smooth(ebsd,F,'fill',grains);
 

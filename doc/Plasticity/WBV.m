@@ -34,6 +34,7 @@ ebsdNoisy = ebsd;
 
 % denoise without smoothing across grain boundaries
 F = l1TVFilter;
+F.alpha = 1.25;
 ebsd = smooth(ebsd,F,'fill',grains);
 
 % the integral implementation uses ordfilt2 from Image Processing Toolbox
@@ -285,8 +286,8 @@ end
 
 %%
 % |'oneSided'| is defined at 10,198 of the 10,201 pixels and the other two at
-% 10,200. The mean changes only from 0.0288 to 0.0271, while the maximum
-% falls from 0.4340 to 0.2169, almost exactly by half. The stencil therefore
+% 10,200. The mean changes only from 0.0276 to 0.0261, while the maximum
+% falls from 0.4278 to 0.2154, almost exactly by half. The stencil therefore
 % acts most strongly on the sharpest gradients and leaves the bulk of this
 % map comparatively stable.
 %
