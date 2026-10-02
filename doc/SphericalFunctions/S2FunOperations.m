@@ -44,10 +44,10 @@ plot(combined,'upper')
 
 %%
 % The combined plot retains the pattern of the first function and adds the
-% sharp peak of the second. The scalar factor makes the broad pattern
-% visible on the same colour scale as that peak. The printed difference of
-% 1.0 confirms that adding one shifts the value without changing the
-% pattern.
+% sharp peak of the second. Even scaled by 15, the broad pattern stays
+% faint, because the peak sets the top of the colour scale. The printed
+% difference of 1.0 confirms that adding one shifts the value without
+% changing the pattern.
 
 %% Pointwise operations
 %

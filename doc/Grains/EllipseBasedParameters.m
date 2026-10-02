@@ -186,7 +186,7 @@ setView(ebsd.how2plot)
 longAxisPeakDegree = round(mod([longAxisPeakF longAxisPeakE],pi) ./ degree,1)
 
 %%
-% The printed maxima are 74.2 degrees for forsterite and 78.8 degrees for
+% The printed maxima are 74.3 degrees for forsterite and 78.7 degrees for
 % enstatite. As far as the long axes show, the two phases share one fabric
 % rather than each having its own.
 
@@ -222,7 +222,7 @@ setView(ebsd.how2plot)
 caliperPeakDegree = round(mod([caliperPeakF caliperPeakE],pi) ./ degree,1)
 
 %%
-% The printed maximum is 74.3 degrees for forsterite and 82.0 degrees for
+% The printed maximum is 74.3 degrees for forsterite and 82.2 degrees for
 % enstatite. Two different definitions of which way a grain points agree on
 % the fabric, which is the reassuring outcome.
 %
@@ -284,13 +284,14 @@ gridPeakRelativeHeight = round(...
   eval(gbfun_fofo,90*degree) ./ fofoPeakDensity,2)
 
 %%
-% The forsterite-forsterite curve peaks at 75 degrees, agreeing with the two
-% measures before it. It then stays almost as high all the way to the grid
-% axis at 90 degrees, where its density is still 0.97 of the maximum. The
-% grid contributes to this broad shoulder: before smoothing, every segment
-% between measurement points is horizontal or vertical. Ten smoothing
-% iterations removed most of this artefact, but not all of it. Peaks at
-% exactly 0 and 90 degrees are the features to distrust here.
+% The forsterite-forsterite curve peaks at 82.5 degrees, eight degrees
+% beyond the forsterite maxima of the two measures before it. It stays
+% almost as high up to the grid axis at 90 degrees, where its density is
+% still 0.96 of the maximum. The grid contributes to this broad shoulder:
+% before smoothing, every segment between measurement points is horizontal
+% or vertical. Ten smoothing iterations removed most of this artefact, but
+% not all of it. Peaks at exactly 0 and 90 degrees are the features to
+% distrust here.
 
 %% Characteristic shape
 %

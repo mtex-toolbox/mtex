@@ -79,7 +79,7 @@ annotate(center)
 % Every feature has been merged with the one opposite it.
 % The two eyes stay apart, because one eye is not the opposite of the other.
 %
-% The blue cluster reaches the rim of the disc at the top and at the bottom.
+% One cluster reaches the rim of the disc at the top and at the bottom.
 % Those are opposite directions, and they now share a label. This is a
 % change in the meaning of a direction, not merely a change in how the same
 % labels are drawn.

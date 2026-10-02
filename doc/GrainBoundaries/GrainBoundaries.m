@@ -42,8 +42,9 @@ hold off
 % The displayed summary groups the segments by the phases on their two
 % sides. Each row reports a segment count and the total trace length.
 % |notIndexed| normally denotes pixels whose patterns could not be indexed.
-% In this indexed-only example, a |notIndexed| side in that table marks the
-% outer scan rim, where no neighbouring grain exists beyond the map.
+% Here a |notIndexed| side in that table marks either a notIndexed region
+% inside the map or the outer scan rim, where no neighbouring grain exists
+% beyond the map.
 %
 % The coloured regions in the figure are grains, and the black lines are
 % their boundary network. The red markers are *triple points*.
