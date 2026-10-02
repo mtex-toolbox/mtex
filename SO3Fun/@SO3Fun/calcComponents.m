@@ -77,7 +77,7 @@ for k = 1:maxIter
   modes = line_ori(sub2ind(size(line_ori),(1:length(g)).',id));
 
   % update step size
-  ind = id==1 & omega(:,1) > res;
+  ind = id==1 & omega(:,2) > res;
   omega(ind,:) = omega(ind,:) ./ 2;
   
   %nnz(id>1)
@@ -96,7 +96,7 @@ for k = 1:maxIter
     if maxAngle == inf, weights = accumarray(id2,weights); end
   end
 
-  if all(id == 1), break; end
+  if all(id == 1) && all(omega(:,2) <= res), break; end
 
   pC.show(k)
 
