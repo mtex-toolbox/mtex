@@ -57,6 +57,12 @@ else
   data = [];
 end
 
+% data coloured markers get a faint edge, as the colour map runs to white
+edgeOpt = {};
+if isnumeric(data) && ~isempty(data)
+  edgeOpt = {'MarkerEdgeColor','black','MarkerEdgeAlpha',0.2};
+end
+
 % find inverse pole figure direction
 r = [];
 try r = getappdata(mtexFig.currentAxes,'ipfDirection'); end
@@ -95,7 +101,7 @@ for ir = 1:length(r)
 
   %  plot
   [g,cax] = h.plot(repmat(data,1,length(rSym)),'symmetrised',...
-    'fundamentalRegion',varargin{:});
+    'fundamentalRegion',edgeOpt{:},varargin{:});
   if isNew, mtexTitle(cax(1),char(r(ir),'LaTeX')); end
 
   % plot annotations
