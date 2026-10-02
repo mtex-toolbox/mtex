@@ -15,8 +15,9 @@ classdef sigmaSections < pfSections
 %  cs1, cs2 - @crystalSymmetry, @specimenSymmetry
 %
 % Options
-%  sections - number of sections
-%  sigma    - explicit section values
+%  sections  - number of sections
+%  sigma     - explicit section values
+%  tolerance - largest deviation in sigma of an orientation drawn in a section (default 5°)
 %
 % Class Properties
 %  omega          - the sigma value of each section
@@ -40,7 +41,7 @@ classdef sigmaSections < pfSections
             
       if nargin == 1, CS2 = specimenSymmetry.default; end
 
-      oS = oS@pfSections(CS1,CS2);
+      oS = oS@pfSections(CS1,CS2,varargin{:});
                 
       oS.maxOmega = 2*pi / CS1.nfold(oS.h1);
       
