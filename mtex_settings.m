@@ -195,14 +195,6 @@ setMTEXpref('stopOnSymmetryMissmatch',true)
 setMTEXpref('mtexMethodsAdvise',true)
 
 
-%% MOSEK integration
-% <https://www.mosek.com/ MOSEK> provides an alternative to the
-% optimization toolbox
-
-%MOSEKpath = '~/repo/mosek/9.0/toolbox/r2015aom';
-%addpath(MOSEKpath);
-setMTEXpref('mosek',false)
-
 %% Use extern/insidepoly instead of matlab/inpolygon
 % this should be faster
 
