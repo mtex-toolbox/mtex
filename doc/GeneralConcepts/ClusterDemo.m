@@ -46,8 +46,6 @@ annotate(center)
 % |'minPoints'| option sets the size below which tiny groups are merged into
 % neighboring clusters. If the automatic result is too fragmented, increase
 % |'radius'|; if isolated specks survive, increase |'minPoints'|.
-% This example supplies both values so that estimating the radius does not
-% require the Statistics and Machine Learning Toolbox.
 
 %% Respect antipodal symmetry
 % Antipodal directions identify a direction |v| with its opposite |-v|.
