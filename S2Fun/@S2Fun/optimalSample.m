@@ -83,9 +83,8 @@ function [v,c] = optimalSample(sF,n,varargin)
 % is the value of the very convolution whose gradient moves the directions
 % and costs one additional transform per iteration.
 %
-% *The first |warmUp| iterations move the points only.* Started on a grid
-% that ignores the density, e.g. <equispacedS2Grid.html |equispacedS2Grid|>,
-% the weights would otherwise concentrate on the few points that happen to
+% *The first |warmUp| iterations move the points only.* Started on points
+% that ignore the density, such as the default Fibonacci points, the weights would otherwise concentrate on the few points that happen to
 % lie well before the points ever had a chance to move. Letting the points
 % settle first is measurably better: on |abs(S2Fun.smiley)| with 100 points
 % and bandwidth 32 the warm up buys a factor 2.5 in $J$.
@@ -162,10 +161,10 @@ optWeights = nargout == 2;
 % get starting points
 if isa(n,'vector3d')
   v = n;
-elseif sF.antipodal
-  v = equispacedS2Grid('points',n,'antipodal');
 else
-  v = equispacedS2Grid('points',n);
+  % n Fibonacci points, on the upper hemisphere if antipodal
+  j = (1:n).';
+  v = vector3d.byPolar(acos(1 - (2-sF.antipodal)*(j-0.5)/n), j*pi*(3-sqrt(5)));
 end
 M = numel(v);
 v = v(:);
