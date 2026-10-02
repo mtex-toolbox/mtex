@@ -35,7 +35,7 @@ if isa(ori,'orientation')
 else % check the i-th pole figure at position ori
   % measured where the nearest measurement direction is close enough
   r = zrm.pf.allR{i};
-  isMeasured = angle(r(find(r,ori)),ori(:)) <= zrm.maxAngle(min(i,end));
+  isMeasured = angle(reshape(r(find(r,ori)),[],1),ori(:)) <= zrm.maxAngle(min(i,end));
   q = zrm.pdf(i).eval(ori) ./ zrm.density(i).eval(ori);
   isZero = reshape(isMeasured,size(q)) & q < -0.1;
 end
