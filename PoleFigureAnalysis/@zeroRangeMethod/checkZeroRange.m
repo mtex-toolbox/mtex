@@ -33,8 +33,10 @@ if isa(ori,'orientation')
     
   end
 else % check the i-th pole figure at position ori
-  d = zrm.density(i).eval(ori);
-  pdf = zrm.pdf(i).eval(ori);
-  isZero = d > zrm.threshold & pdf./d < -0.1;
+  % measured where the nearest measurement direction is close enough
+  r = zrm.pf.allR{i};
+  isMeasured = angle(r(find(r,ori)),ori(:)) <= zrm.maxAngle(min(i,end));
+  q = zrm.pdf(i).eval(ori) ./ zrm.density(i).eval(ori);
+  isZero = reshape(isMeasured,size(q)) & q < -0.1;
 end
 end

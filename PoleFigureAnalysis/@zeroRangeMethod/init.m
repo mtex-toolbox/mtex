@@ -8,7 +8,7 @@ if isempty(zrm.pf), return; end
 zrm.psi = getClass(varargin,'S2Kernel', S2DeLaValleePoussinKernel('halfwidth',...
   get_option(varargin,'halfwidth',2*zrm.pf.allR{1}.resolution)));
 
-zrm.threshold = get_option(varargin,'threshold',0.1 * zrm.psi.eval(1));
+zrm.maxAngle = get_option(varargin,'maxAngle',cellfun(@(r) r.resolution,zrm.pf.allR));
 
 zrm.delta = get_option(varargin,'delta',zrm.delta,'double');
 zrm.bg = get_option(varargin,'bg',zrm.delta * max(zrm.pf));

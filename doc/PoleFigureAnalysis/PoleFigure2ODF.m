@@ -73,7 +73,7 @@ plotPDF(odf,pf.allH,'antipodal','silent','superposition',pf.c)
 rpError = calcError(pf,odf,'RP','silent')
 
 %%
-% The seven RP values range from 0.36 to 0.86. Because RP is relative, weak
+% The seven RP values range from 0.36 to 0.85. Because RP is relative, weak
 % regions can dominate even when their absolute differences are small.
 %
 % Called without a measure, |calcError| uses a regularised relative error.
@@ -83,7 +83,7 @@ rpError = calcError(pf,odf,'RP','silent')
 regularisedError = calcError(pf,odf,'silent')
 
 %%
-% The regularised values range from 0.24 to 0.40. They are not smaller RP
+% The regularised values range from 0.24 to 0.39. They are not smaller RP
 % values; they answer a different question. Compare reconstructions with
 % the same measure and threshold throughout. The other available measures
 % are |'l1'| and |'l2'|.
@@ -155,8 +155,8 @@ fprintf(['Default: %.2f s, peak %.1f mrd, mean RP %.2f; ',...
 
 %%
 % The 15 degree result keeps the main maxima but broadens them. The timing
-% printed above shows the speed-up. Its peak is 27.1 mrd instead of
-% 94.0 mrd, and the mean RP error rises from 0.59 to 0.75.
+% printed above shows the speed-up. Its peak is 27.5 mrd instead of
+% 92.9 mrd, and the mean RP error rises from 0.58 to 0.75.
 % A coarse grid cannot represent a sharp texture. A finer grid costs more
 % time and, once it exceeds the information in the measurements, can give a
 % false impression of resolved detail.
@@ -188,13 +188,14 @@ fprintf(['Zero range: %.2f s, peak %.1f mrd, mean RP %.2f; ',...
 
 %%
 % On this data set the method does change the reconstruction. The peak rises
-% from 94.0 to 110.4 mrd and the mean RP error falls from 0.59 to 0.51.
+% from 92.9 to 107.1 mrd and the mean RP error falls from 0.58 to 0.51.
 % The timings printed above show that it also runs faster here, because the
 % solver keeps far fewer grid nodes. The sharper recalculated
 % maxima are the visible difference to look for. Try the method rather than
 % assuming it will help. The
 % <zeroRangeMethod.zeroRangeMethod.html |zeroRangeMethod|> reference lists
-% the threshold and smoothing options that decide what counts as zero.
+% the options that decide which region counts as measured and what counts
+% as zero.
 
 %% Ghost correction
 %
