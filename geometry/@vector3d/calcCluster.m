@@ -58,7 +58,8 @@ switch method
       
       k = 10;
       [~, dist] = knnsearch(data, data, "K", k+1);
-      radius = 2*median(dist(:,end));
+      % in the units of CLASSIX, which scales by the median distance to the mean
+      radius = 1.5 * median(dist(:,end)) / median(vecnorm(data - mean(data),2,2));
 
     end
       
