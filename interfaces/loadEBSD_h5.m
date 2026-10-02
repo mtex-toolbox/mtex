@@ -299,7 +299,11 @@ function out = rotation_byMatrix(M)
     error('rotation_byMatrix: no input given.');
   end
 
-  out = reshape(rotation.byMatrix(ensure_3x3xN(double(M))),[],1);
+  M = ensure_3x3xN(double(M));
+  out = reshape(rotation.byMatrix(M),[],1);
+
+  % EDAX writes a matrix of zeros where a pattern failed
+  out(~any(reshape(M,9,[]),1)) = NaN;
 
   function M3 = ensure_3x3xN(M)
   %ENSURE_3X3XN  Coerce a 9xN, Nx9, 3x3 or 3x3xN array to 3x3xN.
@@ -628,6 +632,12 @@ function out = ebsd_default(raw_data)
 
   ebsd = EBSD(raw_data.position, raw_data.rotation, phases, raw_data.cs, prop, ...
     unitCellHint{:}, phaseMapOpt{:});
+
+  % a pixel without an orientation is not indexed
+  notIndexedId = find(~[ebsd.CSList.isIndexed],1);
+  if ~isempty(notIndexedId)
+    ebsd.phaseId(isnan(ebsd.rotations(:))) = notIndexedId;
+  end
 
   % if a correction is set add
   if isfield(raw_data, 'map_correction')
