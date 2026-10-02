@@ -16,7 +16,6 @@
 % retaining points between those features.
 
 plottingConvention.default('y↑→x');
-rng default
 S2F = S2Fun.smiley.^2;
 v = S2F.discreteSample(10000);
 
@@ -46,8 +45,6 @@ annotate(center)
 % |'minPoints'| option sets the size below which tiny groups are merged into
 % neighboring clusters. If the automatic result is too fragmented, increase
 % |'radius'|; if isolated specks survive, increase |'minPoints'|.
-% This example supplies both values so that estimating the radius does not
-% require the Statistics and Machine Learning Toolbox.
 
 %% Respect antipodal symmetry
 % Antipodal directions identify a direction |v| with its opposite |-v|.
@@ -67,7 +64,7 @@ annotate(center)
 
 %%
 % The two discs are the upper and the lower hemisphere. Read as ordinary
-% directions, the sample falls into eight clusters. Every feature of the
+% directions, the sample falls into ten clusters. Every feature of the
 % smiley and every one of their opposites carries a color of its own.
 
 vSym.antipodal = true;
@@ -77,11 +74,11 @@ plot(vSym,ind2color(cInd),'MarkerAlpha',0.2,'MarkerSize',2)
 annotate(center)
 
 %%
-% One disc is left, and four clusters, each exactly twice the size of before.
+% One disc is left, and five clusters, each exactly twice the size of before.
 % Every feature has been merged with the one opposite it.
 % The two eyes stay apart, because one eye is not the opposite of the other.
 %
-% The blue cluster reaches the rim of the disc at the top and at the bottom.
+% One cluster reaches the rim of the disc at the top and at the bottom.
 % Those are opposite directions, and they now share a label. This is a
 % change in the meaning of a direction, not merely a change in how the same
 % labels are drawn.

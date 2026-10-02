@@ -28,7 +28,7 @@ function [odf,opt] = loadODF_generic(fname,varargin)
 % Options
 %  ColumnNames  - names of the colums to be imported, mandatory are euler 1, euler 2, euler 3
 %  Columns      - postions of the columns to be imported
-%  radians      - treat input in radiand
+%  radians      - the angles are in radians (default: degrees)
 %  delimiter    - delimiter between numbers
 %  header       - number of header lines
 %  ZXZ, BUNGE   - [phi1 Phi phi2] Euler angle in Bunge convention (default)
@@ -46,7 +46,7 @@ function [odf,opt] = loadODF_generic(fname,varargin)
 %      'Columns',[1,2,3,4])
 %
 % See also
-% import_wizard_old loadODF ODF_demo
+% import_wizard SO3Fun/load ODFImport
 
 % get options
 ischeck = check_option(varargin,'check');

@@ -120,6 +120,10 @@ FNew = [gB.F(runStart,1), gB.F(surv,2)];
 
 gB = gB.subSet(surv);
 gB.F = FNew;
+
+% a segment that swallowed a run runs between no one pair of pixels any more
+gB.ebsdId(runStart ~= surv,:) = 0;
+
 gB = gB.order;
 
 % the surviving junctions are the same ones, but triplePointList.boundaryId

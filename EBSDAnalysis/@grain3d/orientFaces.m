@@ -17,7 +17,7 @@ function grains = orientFaces(grains)
 % vertex order point randomly into or out of the grain. This function
 % determines for every face and every adjacent grain whether the stored
 % normal points out of that grain (+1) or into it (-1) and stores the
-% result in <grain3d.I_GF |grains.I_GF|>. It also updates
+% result in |grains.I_GF|. It also updates
 % |grains.boundary.grainId| such that the face normal always points from
 % the first to the second grain.
 %
@@ -31,6 +31,7 @@ function grains = orientFaces(grains)
 
 I_GF = grains.I_GF;
 [gId,fId] = find(I_GF);
+gId = gId(:); fId = fId(:); % find returns rows for a single grain
 nHF = numel(gId);          % number of half faces, i.e. (grain,face) pairs
 
 if nHF == 0, return; end
@@ -140,10 +141,32 @@ grains.I_GF = sparse(gId,fId,x,size(I_GF,1),size(I_GF,2));
 % the face normal should point from the first to the second grain
 oldId = grains.boundary.grainId;
 newId = zeros(size(oldId));
-[a,b] = find(grains.I_GF == 1);  newId(b,1) = a;
-[a,b] = find(grains.I_GF == -1); newId(b,2) = a;
+[a,b] = find(grains.I_GF == 1);  newId(b,1) = grains.id(a);
+[a,b] = find(grains.I_GF == -1); newId(b,2) = grains.id(a);
 
-grains.boundary = flip(grains.boundary, ~all(newId == oldId,2));
+% a face whose sides only changed places is flipped
+changed = any(newId ~= oldId,2);
+swapped = changed & all(newId == fliplr(oldId),2);
+grains.boundary = flip(grains.boundary, swapped);
+
+% a face that got other sides, as one given with the same sign for both
+% grains, takes them with their phases and misorientation
+other = find(changed & ~swapped);
+if ~isempty(other)
+  g = newId(other,:);
+  isG = g > 0;
+  phaseId = zeros(size(g));
+  phaseId(isG) = grains.phaseId(grains.id2ind(g(isG)));
+  both = all(isG,2);
+  mori = rotation.nan(numel(other),1);
+  mori(both) = inv(grains.prop.meanRotation(grains.id2ind(g(both,2)))) .* ...
+    grains.prop.meanRotation(grains.id2ind(g(both,1)));
+
+  grains.boundary.grainId(other,:) = g;
+  grains.boundary.phaseId(other,:) = phaseId;
+  grains.boundary.ebsdId(other,:) = 0;
+  grains.boundary.misrotation(other) = mori;
+end
 
 end
 

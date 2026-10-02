@@ -90,7 +90,7 @@ twinAngles = [angle(twinning),angle(twinning,'max')] ./ degree
 % with fewer than five indexed pixels are excluded. Boundary geometry is
 % then smoothed for five iterations before trace lengths are compared.
 
-grains = calcGrains(ebsd('indexed'),'angle',5*degree,'minPixel',5);
+grains = calcGrains(ebsd,'angle',5*degree,'minPixel',5);
 grains = smoothBoundary(grains,5);
 
 % retain only boundaries between magnesium grains

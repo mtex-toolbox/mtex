@@ -38,7 +38,7 @@ function vol = plot(ebsd,varargin)
 %  exact    - plot exact unitcells, even for large maps
 %
 % See also
-% EBSDSpatialPlots
+% EBSDPlotting
 
 %
 if isempty(ebsd), return; end

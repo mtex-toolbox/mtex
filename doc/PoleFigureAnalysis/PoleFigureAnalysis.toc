@@ -1,12 +1,7 @@
-PoleFigureImport        Import
-PoleFigurePlot          Plot
-PoleFigureCorrection    Modify
-PoleFigure2ODF          ODF Reconstruction
-PoleFigureRefinement    Iterative ODF Reconstruction
-PoleFigureSimulation    Simulation
-PoleFigure2ODFAmbiguity The Ghost Effect
-PoleFigure2ODFGhostCorrection Ghost Correction
-PoleFigureSantaFe       Santa Fe Example
-PoleFigureDubna         Dubna Example
-PoleFigureExport        Export
-
+PoleFigurePlot                          Plot
+PoleFigureCorrection                    Modify
+PoleFigure2ODF                          ODF Reconstruction
+PoleFigure2ODFGhostCorrection           Ghost Correction
+PoleFigureRefinement                    Iterative ODF Reconstruction
+PoleFigureSimulation                    Simulation
+DetectionOfSampleSymmetry               Sample Symmetry

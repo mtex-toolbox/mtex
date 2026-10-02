@@ -8,6 +8,173 @@ The changelog for users is `doc/GeneralConcepts/changelog.m`, published as
 [Changelog](https://mtex-toolbox.github.io/changelog.html). Releases up to and
 including 6.1 have one combined list there and no entry here.
 
+## MTEX 7.2 - 10/2026
+
+Most of these are defects the Python port found in MATLAB, checked against the port or
+an exact value through the MATLAB bridge (the audit is `docs/research/matlab-defects-audit.md` of the
+port).
+
+### Spherical and Orientation Functions
+
+- `S2Fun.unimodal` indexed its coefficients by n^2+n+1 where the degree n was meant,
+  giving mean 0.1629 and 9.72 at the centre for 1 and 97.85; and it rotated by
+  `rotation.map(v,Z)` where `map(Z,v)` is meant, so a bump about (1,0,1) peaked at
+  (-1,0,1). It is now `S2FunHarmonic(psi)` rotated onto v
+- `S2DirichletKernel.halfwidth` returned pi for every N. The class uses the base
+  `S2Kernel.halfwidth`, which now takes the first crossing of half the maximum (it
+  minimised a squared difference over [0,3pi/4], which can stop on a side lobe):
+  11.57 degree for N = 10, 21.38 for N = 5
+- `mhyper` lost every digit for negative arguments, the alternating series cancelling:
+  -797.5 for `mhyper([-50 -3 0])`, 0.0463. The argument is shifted to non-negative
+  entries, which multiplies the mean by exp(c), and the series stops on a relative
+  criterion
+- `S2FunBingham` was normalised by libDirectional's saddle point approximation scaled
+  by 4pi (mean 1.0377 for Z = [-10 -4 0]); it uses `1/mhyper(Z)` now. `fit` set `N` to
+  the constant itself, solved the moment equations by the saddle point, and projected
+  the directions on the rows of `a.xyz` as if they were columns, which skewed the
+  confidence ellipse. The moments are `d log 1F1 / d Z_i` of `mhyper`, so the S2
+  Bingham needs no MEX; the directions are normalised first
+- `SO3FunHarmonic.interpolate` passed `varargin` to its LSQR operators as one nested
+  cell, so no option reached them, and their NFFT cutoff defaulted to 1 where `eval`
+  uses 4 (eval 1.8 % off, the adjoint 0.5 %). On a bandwidth 12 function the
+  coefficient error falls from 2.1e-3 to 2.6e-4, at 1.4 times the time. Left: nodes
+  within 0.02 rad are merged and their values averaged, which bounds the fit
+- `SO3FunCBF/discreteSample` read the histogram index as cos theta in [0,1]
+  (`acos(t./M)`) under an unnormalised CDF; samples lay about sqrt(2) too close to the
+  fibre. The mean angle of 20000 samples is 10.60 degree against 10.58 expected.
+  Indexing the row grid by a column of indices also gave a row, which broadcast against
+  the column of azimuths
+- `discreteSample(f,n,'range',[a b])` returned indices / 10000 in (0,1]; it returns the
+  grid points. The `'weights'` default referred to an undefined `q`
+- `kde1d(...,'bandwidth',b)` set the diffusion time t, while the bandwidth returned is
+  sqrt(t)*R; `t = (b/R)^2` now, so a returned bandwidth passed back gives the same
+  estimate
+- `LSCV` read the squared norm through `eodf.components{1}`, which `conv`'s
+  SO3FunHarmonic no longer has, so `calcKernel(...,'method','LSCV')` failed; with unit
+  weights `1./(1-w)` was infinite. The weights are normalised as in `BCV`
+- `calcKernel` gains `'UCV'` and `'conservative'`, ported from the
+  Python port's `mtex/functions/halfwidth.py` (plan `docs/plans/halfwidth.md` there) as
+  `tools/statistic_tools/selectHalfwidth.m`. Both minimise the exact MISE of the de la
+  Vallee Poussin family over 60 geometric candidates, from the degree energies of the
+  sample (UCV: the U-statistic of one transform at bandwidth 64, doubled once at the
+  edge; conservative: energies cross-fitted over 8 folds at bandwidth 32, lowered by two
+  jackknife errors), bounded below by a Bennett noise floor. `'groups'` folds by grain,
+  `vector3d/calcKernel` and `EBSD/calcKernel` (folded by `grainId`) are new. For
+  orientations `'KLCV'` stays the default, two to four times faster than UCV (1.5 s
+  against 6.0 s at n = 10000), and `'groups'` selects UCV. The energies
+  match direct pair sums to 1e-9 for 432, -43m with 222, triclinic and antipodal 432/432,
+  and `calcDensity`'s symmetrisation on S2 to 1e-11; on the same samples the halfwidths
+  equal the port's, the conservative one within its spread over fold seeds at n = 100.
+  The SO(3) transform runs at oversampling 1.25 and cutoff 6 (1e-8, three times faster);
+  a grain-folded copper map still takes 28 s against 5 s in the port, whose transform
+  folds the lattice by the symmetry
+
+### Geometry and Pole Figures
+
+- `vector3d/refine` appended the south pole before the cap filter, which then compared
+  against theta = pi and removed nothing; the pole and the skirt centroids were
+  returned. The triangles on the pole are dropped and the filter reads the input's
+  lowest point. The PoleFigureRefinement loop ends at 327 directions, not 367
+- `PoleFigure` set `antipodal` on `allR{1}` only, after `repmat` had copied the grid,
+  so a reader passing one grid per pole figure (Geesthacht) got different quadrature
+  weights per pole figure: 2.15 instead of 2.27 mrd after `correct` and `normalize`
+- `spatialTransformProjective.fit` ran the DLT on raw coordinates; with every tenth
+  point moved by (30,-40) the twins map sampled row by row was 7193 off. Hartley's
+  normalisation recovers it to 1e-14
+- `vector3d/rotate` assigns `q.SS.frame` to `ori * v` since the frame membership of
+  ADR 0003, which an `SO3TangentVector` refuses, its frame following from its
+  reference; `ori .* tangentVector` errored. The result is converted to `vector3d`, as
+  a `Miller` is
+
+### Interfaces
+
+- `loadHelper` guessed the unit of Euler columns (radians unless an angle exceeded 15)
+  and ignored `'radians'`; they are degrees unless `'radians'` is given, as the vector
+  columns were. `'passive'` was inverted by the loader and again by
+  `loadOrientation_generic`. Quaternion columns went to `quaternion` as one N x 4
+  matrix and failed
+- `exportEBSD_ang` and `exportEBSD_ctf` wrote the rotations relative to the map's
+  crystal frame, while `loadEBSD_ang` builds EDAX's alignment (X||a* for hexagonal) and
+  `loadEBSD_ctf` the default (X||a): mtexdata twins exported to .ang came back 30 degree
+  off. `interfaces/private/rotationsInFileFrame.m` re-expresses them in the reader's
+  frame; twins and forsterite round trip within 0.0006 degree
+- `loadEBSD_ctf`'s space group fallback passed the string `',abc(:)'` as the lattice
+- `loadTensor_generic` reads the number on the line after `density` (kg/m^3 to g/cm^3)
+  unless a density is given
+- `loadEBSD_ang` reads NanoMegas ASTAR files, recognised by the header line
+  `# File created from ACOM RES results`, in nm, and takes the first quoted name of
+  their `MaterialName 5000216 'Copper' 'Copper'` as the mineral; `'scanUnit'` sets the
+  unit of any .ang file. `gridify` dropped `scanUnit`, so a unit other than um did not
+  survive the import
+- `hdf5_config/ThermoFisher.json` applies a half turn about y (Bunge 90/180/270) as
+  `map_correction`: the xTalView manual (coordinate systems, p. 9) draws the pixel x
+  axis opposite to the sample x axis of the Euler angles. It applied none, so maps were
+  mirrored against their orientations. An HDF5 export writes the file's Euler angles
+  back unchanged
+- `loadEBSD_osc` drops the trailing placeholders of a scan stopped early (Euler 4pi at
+  (0,0)), which collided on the first pixel and kept the map a list
+- `loadPoleFigure_inel` reads INEL Fdt files (`data/PoleFigure/a52214s.int`, 13680
+  directions on a ring from 27 to 36 degree): polar angle |khi|, azimuth phi, the
+  reflection a Miller passed in or guessed from the file name with a warning
+- `mtexdata` stores the MTEX version and the default plotting convention with a cache
+  and rebuilds it when either differs; a cached Dubna ODF kept `y↓→x` in a `y↑→x`
+  session
+
+### EBSD Maps and Grains
+
+- `EBSD/interp` searched the nearest cell among all cells, so a gridded map's NaN-phase
+  padding was taken as a measurement; on copper at half the cell spacing 68 sites
+  differed from the list
+- `parentGrainReconstructor`: `mergeSimilar`, `mergeInclusions` and `mergeByGraph`
+  clear `votes` and `graph`; `calcParentFromVote` indexed the merged grains by the old
+  rows (an index error on the martensite map)
+- `grainBoundary/simplify` and `refine` set `ebsdId` to 0 where a segment no longer
+  runs between one pixel pair (a merged run; a resampled segment spanning several
+  originals); it kept a stale pair. `calcGBND` with an EBSD map uses the segments with
+  a pair. After a default `smoothBoundary` of twins, 110 of 2751 segments keep one
+- `squarify` scattered with `phaseId(ind) = ...`, so of two measurements in one cell the
+  later one was kept, a not indexed one over an indexed one; it writes the not indexed
+  ones first. A forced `gridify` of eclogite.ctf lost measurement 415 to 592
+
+### 3D EBSD and Grains
+
+- `grain3d/principalComponents` of triangulated grains converted a matrix by `.xyz`
+- `neper.simulateChildGrains` searched a parent's lamellae in a window of 50 grains and
+  stopped when a parent had more (about 66 at the default width), leaving the others
+  without children; it scans grain by grain
+- `EBSD3square/curvature`: the dyads of `gradientX/Y/Z` with the unit steps; `curvature`
+  and `calcGND` of a volume had failed in `latticeBasis` on the 8-corner cell
+- `EBSD3`: `KAM` (neighbours along the three axes, `private/voxelAdjacency.m`), `fill`
+  (nearest in x, y and z), `reduce` (every fak-th voxel per axis; it had returned the
+  volume unchanged) and `fillByGrainId` (the lattice of `gridify`; it indexed by an
+  undefined `ci`) work on the voxel lattice
+- `grain3d/orientFaces` applied the new grain pair of a face by `flip`, which only
+  swaps; a face given with one side kept ids, phases and misorientation that disagreed
+  with `I_GF`. The pair is also read as grain ids, not positions in `I_GF`
+- `grain3Boundary/calcGBND` at a misorientation weighted a face by `psi.eval(cos(omega))`;
+  an `SO3Kernel` takes `cos(omega/2)`, as the planar `calcGBND` passes it. The Sigma 3
+  GBCD of SmallIN100 peaks at 16.3 instead of 19.1
+
+### Documentation
+
+- S2FunOperations: the extrema of `15*sF1 + sF2` follow the normalised peak (97.847,
+  -7.465); the gradient at X, which depends on the expansion (0.0012 here, 1.8e-4 on
+  frameSymmetry), is described as a residue
+- OrientationEmbeddings draws at least 1000 samples per halfwidth; the 13 smallest of
+  40 asked for none
+- OrientationImport, TensorImport and the two grain smoothing pages describe the fixed
+  behaviour
+
+- `data/Neper/my100grains.tess`, which NeperInterface, Grains3DOperations and
+  Grains3DProperties load, was committed only on mtex-5.11 and ignored on develop as a
+  Neper output; it is tracked now, and the stray `data/Neeper` folder of 2023 is gone
+
+### Known, Not Yet Fixed
+
+- `data/PoleFigure/Rigaku.DAT` is claimed by no reader
+- `@EBSD/fillByGrainId.m:37` indexes by an undefined `ci`
+- the .ctf export of the hexagonal copper map loses 67 pixels
+
 ## MTEX 7.1 - 09/2026
 
 ### Reference Frames

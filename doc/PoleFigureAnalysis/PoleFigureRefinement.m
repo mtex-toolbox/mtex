@@ -79,7 +79,7 @@ fprintf('pole figure difference min / mean / max : %.2f / %.2f / %.2f\n', ...
   max(differenceIntensity(:)))
 
 %%
-% The range from -1.09 to 0.63 is centred at 0.00. Broad, smooth
+% The range from -1.06 to 0.59 is centred at 0.00. Broad, smooth
 % differences extend across the sphere instead of concentrating at the
 % texture maxima. Compare the centre of each pole figure with its rim.
 %
@@ -188,14 +188,17 @@ end
 % sets. This single value summarises an irregular sampling pattern; it does
 % not mean that neighbouring points are that far apart everywhere.
 %
-% The mean resolution falls from 14.5 to 3.7 degrees. The four interim ODF
-% errors are 0.95, 0.41, 0.24, and 0.31. A real experiment could not compute
-% these errors because its true ODF is unknown.
+% The mean resolution falls from 14.5 to 3.1 degrees. The four interim ODF
+% errors are 0.83, 0.28, 0.32, and 0.50. They do not fall monotonically:
+% the first refinement locates the components, and every later round
+% concentrates the new directions further on the predicted maxima while the
+% regions between them stay as coarse as before. A real experiment could
+% not compute these errors because its true ODF is unknown.
 %
-% That rise is the point of the demonstration. The measurement is now dense
-% where the texture is strong and coarse everywhere else. An ordinary
-% fine-grid reconstruction then puts ODF components at orientations that
-% the sparse regions do not constrain.
+% That non-monotonicity is the point of the demonstration. The measurement
+% is now dense where the texture is strong and coarse everywhere else. An
+% ordinary fine-grid reconstruction then puts ODF components at
+% orientations that the sparse regions do not constrain.
 
 %% What was measured
 %
@@ -233,16 +236,18 @@ fprintf('  error true -- iter. est. odf  : %f\n', ...
   calcError(odf_true,odf_recalc_iterative))
 
 %%
-% The errors are 0.11 and 0.41. The iterative error is less than one third
-% of the direct error from the same measurements. The L1 distance below
+% The errors are 0.75 for the direct reconstruction and 0.17 for the
+% iterative one. The iterative error is less than a quarter of the direct
+% error from the same measurements. The L1 distance below
 % shows how much the two estimated ODFs distribute differently.
 
 calcError(odf_recalc,odf_recalc_iterative,'l1')
 
 %%
-% About a third of the volume is placed differently. On an unevenly sampled
-% measurement, the choice between a direct fine-scale solve and successive
-% refinement is therefore part of the model, not an implementation detail.
+% About a third of the volume is placed differently. On an unevenly
+% sampled measurement, the choice between a direct fine-scale solve and
+% successive refinement is therefore part of the model, not an
+% implementation detail.
 
 %% Further reading
 %

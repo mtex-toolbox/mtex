@@ -26,7 +26,7 @@ function exportEBSD_h5(ebsd,fName,varargin)
 %
 %   % round trip - the reference is the file the data came from
 %   ebsd = EBSD.load('myfile.h5oina')
-%   ebsd = ebsd.denoise(halfQuadraticFilter)
+%   ebsd = ebsd.denoise(l1TVFilter)
 %   export(ebsd,'denoised.h5oina')
 %
 %   % name the reference explicitly

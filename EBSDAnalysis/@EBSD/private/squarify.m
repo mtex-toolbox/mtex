@@ -21,26 +21,32 @@ end
 
 sGrid = size(pos);
 
+% several measurements may fall into one cell, and the one written last is
+% kept - write the not indexed ones first, so that an indexed one wins
+[~,order] = sort(ebsd.isIndexed(:));
+src = subSet(ebsd,order);
+dst = ind(order);
+
 % set phaseId to notIndexed at all empty grid points
 phaseId = nan(sGrid);
-phaseId(ind) = ebsd.phaseId;
+phaseId(dst) = src.phaseId;
 
 % update rotations
 a = nan(sGrid); b = a; c = a; d = a;
-a(ind) = ebsd.rotations.a;
-b(ind) = ebsd.rotations.b;
-c(ind) = ebsd.rotations.c;
-d(ind) = ebsd.rotations.d;
+a(dst) = src.rotations.a;
+b(dst) = src.rotations.b;
+c(dst) = src.rotations.c;
+d(dst) = src.rotations.d;
 
 % update all other properties
-prop = ebsd.prop;
-for fn = fieldnames(ebsd.prop).'
-  prop.(char(fn)) = scatterProp(ebsd.prop.(char(fn)),ind,sGrid,length(ebsd));
+prop = src.prop;
+for fn = fieldnames(src.prop).'
+  prop.(char(fn)) = scatterProp(src.prop.(char(fn)),dst,sGrid,length(src));
 end
 
 % store old id
 prop.oldId = nan(sGrid);
-prop.oldId(ind) = ebsd.id;
+prop.oldId(dst) = src.id;
 
 ebsdGrid = EBSDsquare(pos,rotation(a,b,c,d),phaseId(:),...
   ebsd.phaseMap,ebsd.CSList,'prop',prop,'opt',ebsd.opt,'unitCell',uC);

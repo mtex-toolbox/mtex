@@ -58,6 +58,12 @@ secData = {};
 % extract data
 [data,varargin] = extract_data(numData,varargin);
 
+% data coloured markers get a faint edge, as the colour map runs to white
+edgeOpt = {};
+if isnumeric(data) && ~isempty(data)
+  edgeOpt = {'MarkerEdgeColor','black','MarkerEdgeAlpha',0.2};
+end
+
 %
 if exist('ori','var') || isempty(oS.plotGrid)
 
@@ -107,13 +113,13 @@ if exist('ori','var') || isempty(oS.plotGrid)
       if ~isempty(data), secData = {data(1+mod(ind-1,length(ori)),:)}; end
     end
       
-    g = plotSection(oS,mtexFig.gca,s,iv,secData,varargin{:});
+    g = plotSection(oS,mtexFig.gca,s,iv,secData,edgeOpt{:},varargin{:});
     gList = [gList,g]; %#ok<AGROW>
     
     % maybe there is also a lower hemisphere
     if oS.upperAndLower && add2all
       mtexFig.nextAxis;
-      g = plotSection(oS,mtexFig.gca,s,iv,secData,varargin{:});
+      g = plotSection(oS,mtexFig.gca,s,iv,secData,edgeOpt{:},varargin{:});
       gList = [gList,g]; %#ok<AGROW>
     end
     

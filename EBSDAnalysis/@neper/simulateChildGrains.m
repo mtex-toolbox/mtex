@@ -57,7 +57,7 @@ end
 com  = [this.cmdPrefix ' neper -T -n ' num2str(numParents) ...
   '::from_morpho -morpho "' morpho ...
   '::lamellar(w=' xnum2str(lamellaWidth) ',v=msfile(' lamFile '))"' ...
-  ' -morphooptistop "iter=' num2str(this.iterMax) '"' ...
+  ' -id ' num2str(this.id) ' -morphooptistop "iter=' num2str(this.iterMax) '"' ...
   ' -domain "' char(this.geometry) '"' ...
   ' -o ' this.filePathUnix this.fileName3d output2file];
 
@@ -69,35 +69,24 @@ grains = grain3d.load([this.filePathUnix this.fileName3d '.tess']);
 % d = abs(Nxyz(Fid,:) * nAxyz.')<cos(1e-3);
 % accumarray(Gid,d,[30,1],@all)
 
-% determine number of child grains for each parent
+% determine number of child grains for each parent: the lamellae of a parent
+% follow one another, and the grain ending a parent has no face parallel to
+% its lamellae; the last parent takes the rest
 numChilds = zeros(1,numParents);
-l = 1; k = 1; 
-dk = 50; % chunksize for efficient searching should be larger than actual number of childs
 Nxyz = grains.boundary.N.xyz;
 nAxyz = nA.xyz;
-I_GF = grains.I_GF;
-
-pC = progressCounter(numel(grains));
-while k <= numel(grains)  
-  
-  dk = min(dk,size(I_GF,1)-k+1);
-  [Gid,Fid] = find(I_GF(k:k+dk-1,:));
-  isPlane = abs(Nxyz(Fid,:) * nAxyz(l,:).') < cos(1e-3);
-  
-  pos = find(accumarray(Gid,isPlane,[dk,1],@all),1);
-  
-  if isempty(pos)
-    numChilds(l) = dk;
-    break
-  else
-    numChilds(l) = pos;
-    k = k + pos;
-    l = l+1;    
+I_FG = grains.I_GF.';
+host = 1; last = 0;
+for k = 1:numel(grains)
+  if host == numParents, break; end
+  faces = find(I_FG(:,k));
+  if all(abs(Nxyz(faces,:) * nAxyz(host,:).') < cos(1e-3))
+    numChilds(host) = k - last;
+    last = k;
+    host = host + 1;
   end
-
-  pC.show(k);
-
 end
+numChilds(host) = numel(grains) - last;
 
 % the parent ids
 pId = repelem(1:numParents,numChilds);

@@ -5,7 +5,7 @@ function epsilon = CauchyStrain(F)
 %   epsilon = CauchyStrain(F)
 %
 % Input
-%  F - @deformationTensor
+%  F - @deformationGradientTensor
 %
 % Output
 %  epsilon - @strainTensor

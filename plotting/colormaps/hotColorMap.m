@@ -9,7 +9,7 @@ function h = hotColorMap(m)
 %             colormap(hot)
 %
 %   See also HSV, GRAY, PINK, COOL, BONE, COPPER, FLAG, 
-%   COLORMAP, RGBPLOT.
+%   COLORMAP, RGBPLOT
 
 %   C. Moler, 8-17-88, 5-11-91, 8-19-92.
 %   Copyright 1984-2004 The MathWorks, Inc.

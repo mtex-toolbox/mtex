@@ -36,9 +36,9 @@ classdef SO3FunMLS < SO3Fun
   %    (NOTE: in this case the local a-coordinate of the neighbors is ignored)
   %
   %  weight  - @function_handle (weight function)
-  %          - predefined choices are 'auto' (default, a degree-dependent
-  %            Wendland C6 variant), 'C1hat', 'const', 'cos', 'hat',
-  %            'indicator', 'plateau', 'squared hat', 'wendland', 'wendlandC6',
+  %          - predefined choices are 'wendland' (default, Wendland C2), 'auto' (a
+  %            degree-dependent Wendland C6 variant), 'C1hat', 'const', 'cos',
+  %            'hat', 'indicator', 'plateau', 'squared hat', 'wendlandC6',
   %            'wendlandSquared', and 'wendlandC6Squared'
   %  use_smooth_delta - use a smooth local support radius with about SO3F.nn
   %                     neighbors at each center

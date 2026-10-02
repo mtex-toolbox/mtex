@@ -15,6 +15,11 @@ end
 
 [data,Xstep,Ystep] = oscData( fname );
 
+% a scan stopped early keeps the count it announced and fills the pixels
+% never measured with the Euler angles 4pi at the position (0,0)
+unmeasured = all(data(:,1:3) == double(single(4*pi)),2) & data(:,4) == 0 & data(:,5) == 0;
+data = data(1:find(~unmeasured,1,'last'),:);
+
 %Need to handle data like prius or EDS
 nCols=size(data,2);
   

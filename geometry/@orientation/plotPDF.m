@@ -78,6 +78,12 @@ else
   data = [];
 end
 
+% data coloured markers get a faint edge, as the colour map runs to white
+edgeOpt = {};
+if isnumeric(data) && ~isempty(data)
+  edgeOpt = {'MarkerEdgeColor','black','MarkerEdgeAlpha',0.2};
+end
+
 
 % find crystal directions
 h = [];
@@ -157,7 +163,7 @@ for i = 1:length(h)
       ori.SS.fundamentalSector(hOpt{:}),ori.SS,opt{:});
   else
     [g,cax] = r.plot(repmat(data,[1 numSym(ori.SS)*length(sh) 1]),...
-      ori.SS.fundamentalSector(hOpt{:}),ori.SS,opt{:});
+      ori.SS.fundamentalSector(hOpt{:}),ori.SS,edgeOpt{:},opt{:});
   end
 
   if ~check_option(varargin,'noTitle'), mtexTitle(cax(1),char(h{i},'LaTeX')); end

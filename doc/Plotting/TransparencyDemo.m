@@ -107,7 +107,7 @@ plot(ebsdF,ebsdF.orientations,'faceAlpha',alpha,'figSize','large')
 % transparent than dark-coloured grains. The |'translucent'| option is a
 % synonym for |'faceAlpha'|.
 
-grains = calcGrains(ebsd('indexed'),'angle',10*degree);
+grains = calcGrains(ebsd,'angle',10*degree);
 grains = smoothBoundary(grains,5);
 
 plot(ebsd,ebsd.bc)

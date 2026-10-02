@@ -154,9 +154,9 @@ mtexColorbar
 %
 % MTEX ships readers for common text and vendor formats. Interface names
 % include |dubna|, |popla|, |labotex|, |beartex| and |siemens|. Others include
-% |philips|, |rigaku|, |nja|, |juelich|, |uxd| and |xrdml|. Together they
-% cover Dubna, PopLA, LaboTEX, BearTex, Siemens and Philips data. Rigaku,
-% Seifert, Juelich, Bruker and PANalytical data are covered too.
+% |philips|, |rigaku|, |nja|, |juelich|, |uxd|, |xrdml| and |inel|. Together
+% they cover Dubna, PopLA, LaboTEX, BearTex, Siemens and Philips data. Rigaku,
+% Seifert, Juelich, Bruker, PANalytical and INEL data are covered too.
 %
 % <PoleFigure.load.html |PoleFigure.load|> tries the installed
 % |loadPoleFigure_*| readers and then the generic reader. Its reference page

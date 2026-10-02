@@ -69,8 +69,8 @@ P = tensor.load(quartzFile,csQuartz,...
 %
 % Those defaults are correct for this olivine file, but they are still
 % assumptions rather than unit conversion or validation. The file also gives
-% a density of 3355 kg/m$^3$. The numeric interface does not attach it, so it
-% is converted to 3.355 g/cm$^3$ and supplied explicitly.
+% a density of 3355 kg/m$^3$, which is 3.355 g/cm$^3$. The loader reads it from
+% the file; giving it explicitly records it with the import.
 
 % define the file name
 olivineFile = fullfile(mtexDataPath,'tensor','Olivine1997PC.GPa');

@@ -14,7 +14,7 @@ function ori = cat(dim,varargin)
 % See also
 % quaternion.horzcat, quaternion.vertcat
 
-if ~isempty(varargin{1}) && ~isempty(varargin{2})
+if numel(varargin) > 1 && ~isempty(varargin{1}) && ~isempty(varargin{2})
   if varargin{1}.CS ~= varargin{2}.CS
     warning("The symmetries " + char(varargin{1}.CS) + " and " + char(varargin{2}.CS) + ...
       " of the orientations to be concatenated do not match");

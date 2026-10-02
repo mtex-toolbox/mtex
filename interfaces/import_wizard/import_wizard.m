@@ -11,7 +11,7 @@ classdef import_wizard < matlab.apps.AppBase
   %   import_wizard
   %
   % See also
-  % loadEBSD loadPoleFigure ImportEBSDData
+  % EBSD/load PoleFigure/load EBSDImport
   %
 
   properties (Access = public)
@@ -2471,6 +2471,10 @@ classdef import_wizard < matlab.apps.AppBase
     function app = import_wizard
 
       if getMTEXpref("generatingHelpMode"), return; end
+      if verLessThan('matlab','9.13')
+        error('MTEX:import_wizard:release',['The import wizard needs MATLAB ',...
+          'R2022b or newer. Load the data with EBSD.load or PoleFigure.load instead.']);
+      end
 
       runningApp = getRunningApp(app);
 

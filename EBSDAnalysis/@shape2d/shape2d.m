@@ -26,7 +26,7 @@ classdef shape2d < grain2d
 % Example
 %
 %   mtexdata forsterite
-%   grains = calcGrains(ebsd('indexed'));
+%   grains = calcGrains(ebsd);
 %   shape = characteristicShape(grains.boundary('f','f'))
 %
 % See also

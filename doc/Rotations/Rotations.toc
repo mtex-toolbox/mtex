@@ -1,10 +1,7 @@
-RotationDefinition  Definition
-RotationRepresentations  Representations
-RotationImproper    Improper Rotations
-RotationOperations  Operations
-RotationPlotting    Plotting
-OrientationImport   Import
-OrientationExport   Export
-RotationFibre       Fibres
-RotationTangentSpace     Tangent Spaces and Tangent Vectors on the Rotation Group
-RotationSpinTensor  Spin Tensor
+RotationRepresentations                 Representations
+RotationTangentSpace                    Tangent Spaces and Tangent Vectors on the Rotation Group
+RotationSpinTensor                      Spin Tensor
+OrientationEmbeddings                   Embeddings
+VectorGrids                             Spherical Grids
+OrientationGrid                         Grids
+RotationPlotting                        Plotting

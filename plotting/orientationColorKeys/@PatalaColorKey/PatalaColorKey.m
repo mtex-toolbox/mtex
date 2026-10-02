@@ -28,7 +28,7 @@ classdef PatalaColorKey < orientationColorKey
 % Example
 %
 %   mtexdata twins
-%   grains = calcGrains(ebsd('indexed'));
+%   grains = calcGrains(ebsd);
 %   oM = PatalaColorKey(grains.boundary('Magnesium','Magnesium'))
 %
 % See also

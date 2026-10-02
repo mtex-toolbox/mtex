@@ -18,7 +18,7 @@ classdef ipfSpotKey < ipfColorKey
 %  ipfDirection - specimen direction @vector3d
 %
 % See also
-% EBSDAdvancedMapping
+% EBSDAdvancedMaps
   
   properties
     center % list of crystal directions @Miller

@@ -19,7 +19,7 @@ classdef KuwaharaFilter < EBSDFilter
   %  isHex         - is the map on a hexagonal grid
   %
   % See also
-  % EBSDFilter EBSD/smooth medianFilter halfQuadraticFilter
+  % EBSDFilter EBSD/smooth medianFilter l1TVFilter
   %
   
   properties

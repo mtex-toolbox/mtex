@@ -68,8 +68,9 @@ if isa(q,'orientation')
     v.dispStyle = make4Digit(v.dispStyle,q.SS);
   else % convert to vector3d
 
-    % convert to vector3d
-    if isa(v,"Miller"), v = vector3d(v); end
+    % convert to vector3d - a tangent vector too, which is no longer one
+    % at its reference once an orientation took it into the specimen frame
+    if isa(v,"Miller") || isa(v,"SO3TangentVector"), v = vector3d(v); end
 
     % an orientation takes the result into the specimen frame, a rotation keeps it
     v.frame = q.SS.frame;

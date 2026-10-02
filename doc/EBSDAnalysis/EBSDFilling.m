@@ -117,7 +117,7 @@ hold off
 %
 % A denoising filter can estimate the missing orientations while smoothing
 % the orientation field. Supply the option |'fill'| and the grains to
-% <EBSD.smooth.html |smooth|>. The @halfQuadraticFilter used here is a
+% <EBSD.smooth.html |smooth|>. The @l1TVFilter used here is a
 % total-variation method for rotation-valued data; its mathematical basis is
 % described by <https://doi.org/10.3934/ipi.2016001 Bergmann et al. (2016)>.
 %
@@ -127,8 +127,8 @@ hold off
 % Neither method reconstructs the grains again. The supplied boundaries
 % remain the segmentation model for the filled map.
 
-F = halfQuadraticFilter;
-F.alpha = 0.25;
+F = l1TVFilter;
+F.alpha = 0.21;
 
 % interpolate and smooth the missing orientations
 ebsdSub_smoothed = smooth(ebsdSub,F,'fill',grainsSub);
@@ -249,8 +249,8 @@ hold off
 % |grains| is what lets MTEX decide whether a position is inside a grain.
 % |notIndexed| positions along grain boundaries remain untouched.
 
-F = halfQuadraticFilter;
-F.alpha = 10;
+F = l1TVFilter;
+F.alpha = 1.25;
 
 ebsdS = smooth(ebsd,F,'fill',grains);
 

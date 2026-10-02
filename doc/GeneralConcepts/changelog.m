@@ -10,6 +10,119 @@
 % measured against, and which issue it closes--is in |CHANGELOG.md| in the
 % MTEX folder.
 %
+%% MTEX 7.2 10/2026
+%
+% *Changed Behaviour*
+%
+% * generic orientation, EBSD and ODF files are read in degrees unless
+% |'radians'| is given. The unit was guessed from the values before, so a file
+% of small angles in degrees was taken as radians. |'passive'| takes effect
+% now, and quaternion columns are read
+% * <grain2d.smoothBoundary.html |smoothBoundary|> sets |gB.ebsdId| to 0 for
+% a segment that no longer runs between one pair of pixels, as the outer
+% boundary has, instead of keeping the pair of a segment it replaced. Use
+% |'noSimplify'| and |'noRefine'| where every pair is needed
+% * the |'bandwidth'| of |kde1d| and of <calcDensity.html |calcDensity|> is a
+% bandwidth in the units of the data, the value they return
+% * <mtexdata.html |mtexdata|> rebuilds its cached data when the MTEX version
+% or the default plotting convention differs from the session that wrote it
+% * MTEX needs MATLAB R2022b or newer
+% * <l1TVFilter.l1TVFilter.html |l1TVFilter|> is the half-quadratic filter of
+% Bergmann et al. and states its smoothing as a length, |l1TVFilter(L)|, the
+% wavelength damped to half its amplitude, four pixel distances by default.
+% The cyclic proximal point algorithm remains as |F.method = 'proximal'|,
+% and |halfQuadraticFilter| warns and passes on to it. An |alpha| set by hand
+% is now the weight of the regularisation itself
+% * a Thermo Fisher (xTalView) map is aligned with its Euler angles by a half
+% turn about y, as its pixel x axis points opposite to the specimen x axis
+% * NanoMegas ASTAR .ang files are read in nanometres
+% * an orientation applied to a tangent vector gives a plain vector in the
+% specimen frame
+%
+% *New*
+%
+% * |calcKernel| can select the halfwidth by |'UCV'|, the halfwidth of least
+% integrated squared error, or by |'conservative'|, one at least as wide,
+% both from the harmonic energies of the sample and bounded below by a noise
+% floor. They take weights, directions (<vector3d.calcKernel.html
+% |calcKernel(v)|>), the grain ids of pixels (|'groups'|) and a map with
+% computed grains (<EBSD.calcKernel.html |calcKernel(ebsd)|>). For
+% orientations |'KLCV'| stays the default, being faster, unless grain ids
+% are given. <OptimalKernel.html Optimal Kernel Selection> explains them
+% * |loadPoleFigure_inel| reads INEL pole figure files
+% * |curvature| and |calcGND| of a voxel map, and |KAM|, |fill|, |reduce| and
+% |fillByGrainId| of a volume work in three dimensions
+% * the documentation in three parts, Start, Concepts and Tasks, and a page
+% <EBSDVendors.html Data From Your Instrument> listing per vendor the files
+% MTEX reads and writes, how Euler angles and map are aligned, and the line
+% that imports them
+% * |plot(ebsd,'ipfDirection',d)| and the flags |'ipfx'|, |'ipfy'| and
+% |'ipfz'| color every phase of a map by its own ipf key, and
+% |plot(grains,...)| does the same with the mean orientations
+% * <S2Fun.discrepancy.html |discrepancy|> of spherical functions, point sets
+% and mixed pairs, and of orientation functions and orientation sets: cap
+% discrepancy |D_2| (the default), an approximate maximum cap discrepancy and
+% weighted bandlimited L2 norms
+% * |fibonacciSO3Grid|, a Fibonacci grid of orientations
+% * |'scanUnit'| when loading an .ang file
+%
+% *Corrections Worth Knowing*
+%
+% * |S2Fun.unimodal| has mean one and is centred on the direction it is
+% given; it had mean 0.16 and peaked at the mirror image of a direction off
+% the pole
+% * the halfwidth of an |S2DirichletKernel| is the angle of half its maximum,
+% not 180 degree
+% * |S2FunBingham| is normalised exactly, its fit uses the exact moments, and
+% the confidence ellipse of the fit is computed on the principal axes
+% * <SO3FunHarmonic.interpolate.html |SO3FunHarmonic.interpolate|> fits with
+% the same NFFT accuracy that evaluates the result, and its options reach the
+% solver
+% * the samples of a fibre ODF (|SO3FunCBF|) and of a function handle with a
+% |'range'| follow their distributions
+% * |calcKernel(...,'method','LSCV')| runs
+% * a map exported to .ang or .ctf states its Euler angles in the crystal
+% frame the reader builds, so a hexagonal map no longer comes back turned by
+% 30 degree
+% * |stiffnessTensor.load| reads the density the file states
+% * an .osc scan stopped early grids like a complete one
+% * every specimen grid of a pole figure is antipodal, so pole figures read
+% one grid each normalise alike
+% * <vector3d.refine.html |refine|> of a cap of directions stays in the cap
+% * <spatialTransformProjective.spatialTransformProjective.html
+% |spatialTransformProjective.fit|> normalises the points before the fit and
+% recovers a homography from data with outliers
+% * <EBSD.interp.html |interp|> of a gridded map no longer takes its padding
+% for a measurement
+% * a merge in a <parentGrainReconstructor.parentGrainReconstructor.html
+% |parentGrainReconstructor|> clears the votes of the grains it replaced
+% * |principalComponents| of triangulated 3D grains,
+% |neper.simulateChildGrains| with many lamellae per parent and |orientFaces|
+% of faces given with one side work
+% * <EBSD.load.html |EBSD.load(fname,csList)|> uses the symmetry list again,
+% and |'CS'| replaces the phases an HDF5 file declares
+% * .ctf files import without the Statistics and Machine Learning Toolbox
+% * an .osc phase whose symmetry is stated as an EDAX point group id is no
+% longer dropped
+% * ipf color keys have the right fundamental sector for a lattice whose c*
+% axis does not point along z
+% * a plot of both hemispheres no longer takes the second one as the axes
+% for the next plot
+% * a phase selected from a 3D volume, |ebsd('Quartz')|, gives grains
+% * mesh grains read from DREAM.3D have the orientation of their voxels,
+% Neper tessellations follow |neper.id|, and a slice through a grain with a
+% hole is one piece with a hole
+% * |calcKernel| subsamples without replacement, |BCV| runs, and |kde1d|
+% leaves the constant coefficient out of its roughness estimate
+% * |calcGrains| of a map without indexed pixels returns empty grains
+% * an ASTAR phase name is read without its database id
+% * |gridify| keeps an indexed measurement over a not indexed one in the same
+% cell
+% * sampling from an |SO3FunRBF| is twice as fast
+% * <grain3Boundary.calcGBND.html |calcGBND|> of a 3D boundary at a
+% misorientation weights a face by the kernel at its angle to the reference,
+% not at twice that angle
+%
 %% MTEX 7.1 09/2026
 %
 % *True EBSD - Aligning EBSD Maps with SEM Images*
@@ -46,7 +159,7 @@
 % untouched, and what MTEX computed is added beside them:
 %
 %   ebsd = EBSD.load('myfile.h5oina')
-%   ebsd = ebsd.denoise(halfQuadraticFilter)
+%   ebsd = ebsd.denoise(l1TVFilter)
 %   export(ebsd,'denoised.h5oina')
 %
 % *Update Documentation* 
@@ -110,6 +223,22 @@
 % and <Grains3DReconstruction.html Grain Reconstruction>,
 % <Grains3DSmoothing.html Smoothing>, <Grains3DBoundaries.html Boundary
 % Network> and <EBSD3Plotting.html Volume Data and Slices> for the pages.
+%
+% *Total Variation Denoising by a Smoothing Length*
+%
+% The half-quadratic filter is now the <l1TVFilter.l1TVFilter.html
+% |l1TVFilter|>; |halfQuadraticFilter| still works and says so. The filter
+% states its smoothing as a length, |l1TVFilter(L)|, the wavelength it damps
+% to half its amplitude, four pixel distances by default, and derives
+% |alpha| from it and from the grid. The same filter means the same on a
+% coarse and on a fine map, on a square and on a hexagonal grid, and in the
+% Python and the Julia port. |alpha| set by hand is now the weight of the
+% regularization itself: an old value corresponds to 1.25 times it on a
+% square grid and 0.83 times it on a hexagonal one. The default smooths less
+% than before - 2.5 times less regularization - and stops at a tolerance of
+% 0.001 degree. The former total variation filter, a cyclic proximal point
+% algorithm, stays as |F.method = 'proximal'| for the same functional.
+% Both iterate on quaternion arrays, and are several times faster.
 %
 % *Corrections Worth Knowing*
 %
@@ -730,11 +859,11 @@
 %
 % * <calcParent.html |calcParent|> computes the best fitting parent
 % orientations from child orientations
-% * <calcChildVariants.html |calcChildVariants|> separates child variants
+% * <parentGrainReconstructor.calcVariants.html |calcChildVariants|> separates child variants
 % into packets
 % * <calcParent2Child.html |calcParent2Child|> computes best fitting parent
 % to child orientation relationship from child to child misorientations
-% * <variants.html |variants|> computes all parent or child variants
+% * <orientation.variants.html |variants|> computes all parent or child variants
 %
 % *New Functionalities*
 %
@@ -892,7 +1021,7 @@
 % *Tensors*
 %
 % * Improved methods for the visualization of elastic properties, see
-% <SeismicVelocitySingleCrystalDemo2d.html Seismic demo>
+% <ExSeismicVelocitySingleCrystalDemo2d.html Seismic demo>
 % * several new functions like <tensor.trace.html |trace|>,
 % <tensor.svd.html |svd|>, <tensor.det.html |det|>, <tensor.colon.html
 % double dot product |:|>
@@ -909,7 +1038,7 @@
 % * export EBSD data to |.ctf|, thanks to Frank Niessen
 % * compute the volume of a crystal shape
 % * label crystal faces in crystal shapes
-% * new function <orientation_std.html |std|> for computing the standard
+% * new function <quaternion.std.html |std|> for computing the standard
 % deviation of orientations
 % * new function <calcKearnsFactor.html |calcKearnsFactor|>
 % * |grainBoundary.ebsdId| is now the id and not the index of the EBSD data
@@ -1033,7 +1162,7 @@
 % *Replace all executables by two mex files*
 %
 % In MTEX many functionalities are based on the non equispaced fast Fourier
-% transform (<http://www.nfft.org NFFT>). Until now this dependency was kept under
+% transform (<https://www-user.tu-chemnitz.de/~potts/nfft/ NFFT>). Until now this dependency was kept under
 % the hood, or more precisely, hidden in external executable files which often
 % caused troubles on MAC systems. Starting with MTEX 5.0. all the executables
 % have been replaced by two mex files provided by the NFFT package. This
@@ -1108,9 +1237,7 @@
 %
 %   S2Fmulti = [S2F1,S2F2,S2F3]
 %
-% which gives a spherical function with 3 values per direction. More
-% information how to work multivariate functions can be found
-% <S2FunMultivariate.html here>.
+% which gives a spherical function with 3 values per direction.
 %
 % If we interpret the 3 values of |S2Fmulti| as $x$, $y$, and, $z$ coordinate of
 % a 3 dimensional vector, the function |S2Fmulti| can essentially be seen as
@@ -2349,7 +2476,7 @@
 %
 % * The classes @grain, @polygon, @polyeder do not exist any longer. The
 % functionality of the classes is mainly replaced by the classes @GrainSet,
-% @Grain2d and @Grain3d
+% |Grain2d| and |Grain3d|
 % * The class @GrainSet explicitly stores @EBSD. To access @EBSD data
 % within a single grain or a set of grains use
 %
@@ -2690,7 +2817,7 @@
 % * ODF reconstruction and PDF calculation are about *10 times faster* now
 % (thanks to the new NFFT 4.0 library)
 % * ODF plotting and the calculation of <SO3Fun.volume.html volume
-% fractions>, the <textureindex.html texture index>, the
+% fractions>, the <ODFCharacteristics.html texture index>, the
 % <SO3Fun.entropy.html |entropy|> and <SO3Fun.calcFourier.html Fourier
 % coefficients> is about *100 times faster*
 %
@@ -2749,7 +2876,7 @@
 %
 %% MTEX 0.2 - 07/2007
 %
-% * new functions <textureindex.html texture index>, <SO3Fun.entropy.html
+% * new functions <ODFCharacteristics.html texture index>, <SO3Fun.entropy.html
 % entropy>, <SO3Fun.volume.html volume>
 % * greatly improved help
 % * improved installation

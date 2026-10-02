@@ -22,7 +22,7 @@
 plottingConvention.default('y↑→x');
 mtexdata twins silent
 
-grains = calcGrains(ebsd('indexed'),'angle',5*degree);
+grains = calcGrains(ebsd,'angle',5*degree);
 grains = smoothBoundary(grains,5);
 gB = grains.boundary('Magnesium','Magnesium');
 

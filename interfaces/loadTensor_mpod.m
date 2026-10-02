@@ -21,7 +21,7 @@ function T = loadTensor_mpod(fname,varargin)
 %    T{2}
 %
 % See also
-% loadTensor
+% tensor/load
 
 % Remarks
 % TODO

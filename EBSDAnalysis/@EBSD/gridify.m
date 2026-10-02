@@ -19,7 +19,7 @@ function varargout = gridify(ebsd,varargin)
 % |numel(gridify(ebsd))| may exceed |length(ebsd)|. For a complete map the
 % two are equal.
 %
-% It is no longer required for <OrientationGradient.html gradient>,
+% It is no longer required for <EBSD.gradient.html gradient>,
 % <EBSD.curvature.html curvature>, <EBSD.calcGND.html GND> or the gradient
 % method of <EBSD.weightedBurgersVec.html weightedBurgersVec> - those are
 % computed on the virtual lattice (see <EBSD.lattice.html lattice>) and work
@@ -120,6 +120,7 @@ end
 if nargout >= 1 && isa(varargout{1},'EBSD')
   varargout{1}.Euler2Map = ebsd.Euler2Map;
   varargout{1}.N = ebsd.N;
+  varargout{1}.scanUnit = ebsd.scanUnit;
 end
 
 end

@@ -36,8 +36,6 @@ classdef ipfHSVKey < ipfColorKey
 %
 % See also
 % ipfColorKey HSVDirectionKey ipfTSLKey EBSDIPFMap
-%
-% defines an orientation mapping based on a certain inverse pole figure
   
 properties (Dependent = true)
   colorPostRotation

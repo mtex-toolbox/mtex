@@ -59,6 +59,8 @@ grainsL = calcGrains(ebsdL,'angle',5*degree);
 assert(max(abs(sort(grainsL.volume) - sort(grains.volume))) < 1e-8,'volumes on a left handed grid')
 checkSurface(grainsL,sz,dxyz)
 
+checkSlice(cs)
+
 disp('check_calcGrains3d: passed');
 
 end
@@ -126,5 +128,27 @@ assert(length(g1('indexed')) == 1 && g1('indexed').numPixel == length(one), ...
   'one grain reconstructs from its own voxels')
 
 assert(isequal(size(ebsd(2:5,3:6,1:4)),[4 4 4]),'a block of subscripts crops')
+
+end
+
+function checkSlice(cs)
+% a grain enclosing another is cut into one piece with a hole, a U into two pieces
+
+sz = [9 7 5];
+ang = zeros(sz);
+ang(4:6,3:5,2:4) = 20;
+ang(9,[1 3],:) = 40; ang(9,2,5) = 40;
+rot = reshape(rotation.byAxisAngle(zvector,ang(:)*degree),sz);
+ebsd = EBSD3square([],rot,2*ones(sz),[0;1],{'notIndexed',cs},[1 1 1]);
+[grains,ebsd] = calcGrains(ebsd,'angle',5*degree);
+
+grains2 = grains.slice(plane3d(zvector,vector3d(0,0,2)));
+id = grains2.prop.Id3d;
+a = grains2.area;
+area = accumarray(id(:),a(:),[numel(grains.id) 1]);
+assert(abs(sum(a) - 63) < 1e-8,'the section is covered once')
+assert(length(grains2) == 4,'one piece with a hole, one inside it and two legs')
+assert(abs(area(ebsd.grainId(1,1,1)) - 52) < 1e-8,'the hole is left out of the enclosing grain')
+assert(nnz(id == ebsd.grainId(9,1,1)) == 2,'the legs of the U are two pieces')
 
 end

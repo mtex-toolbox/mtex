@@ -62,6 +62,9 @@ end
 cor = get_option(varargin,'EulerCorrection',rotation.byEuler(pi,0,0));
 ebsd.rotations = inv(cor) .* ebsd.rotations;
 
+% the crystal frames loadEBSD_ctf builds, in the default alignment
+ebsd = rotationsInFileFrame(ebsd);
+
 % the map on its grid, and which of its cells the file lists
 [g,keep] = gridCells(ebsd);
 [xStep,yStep] = gridSteps(g);

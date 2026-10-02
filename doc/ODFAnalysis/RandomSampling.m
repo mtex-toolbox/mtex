@@ -249,9 +249,9 @@ grid on
 
 %%
 % Both curves fall as the sample grows, and the optimized points lie below
-% the random ones throughout. The random halfwidth falls the faster of the
-% two, so the gap narrows: an optimized sample supports a much sharper
-% kernel at the smallest size and a moderately sharper one at the largest.
+% the random ones throughout. The optimized halfwidth falls the faster of
+% the two, so the gap widens: an optimized sample supports a kernel about a
+% third sharper at the smallest size and two fifths sharper at the largest.
 
 fprintf('ratio of optimized to random halfwidth: %.2f at M = %d and %.2f at M = %d\n',...
   hwOpt(1)/mean(hwRand(1,:)),M(1),...
@@ -325,9 +325,10 @@ end
 % a sharper texture.
 %
 % The robust qualitative result is the structure of the comparison: the
-% best halfwidths have similar exponents, while the optimized sample works
-% with a kernel about one third sharper in this experiment. Its advantage
-% is also limited by the harmonic |bandwidth| used during optimization.
+% best halfwidths follow similar power laws, while the optimized sample
+% works with a kernel a third to two fifths sharper in this experiment. Its
+% advantage is also limited by the harmonic |bandwidth| used during
+% optimization.
 % Once a reconstruction depends on degrees beyond that bandwidth, the
 % optimization no longer controls its error and the curves approach each
 % other again.

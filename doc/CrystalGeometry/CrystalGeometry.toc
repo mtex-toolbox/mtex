@@ -1,10 +1,3 @@
-CrystalSymmetries       Crystal Symmetries
-CrystalDirections       Miller Indices
-LatticeMetric           Lattice Metric and Plane Geometry
-CrystalOperations       Operations
-CrystalReferenceSystem  Reference System
-SymmetryAlignment       Crystal Axes Alignment
-CrystalShapes           Crystal Shapes
-CrystalShapeSmorf       Advanced Crystal Shapes
-FundamentalSector       Fundamental Sector
-QuasiCrystals           Quasi Symmetries
+CrystalSymmetries                       Crystal Symmetries
+FundamentalSector                       Fundamental Sector
+QuasiCrystals                           Quasi Symmetries

@@ -78,7 +78,7 @@ classdef S2FunBingham < S2Fun
       end
       
       % compute normalization constant
-      BS2.N = 4*pi./BS2.normalizationConst;
+      BS2.N = 1./BS2.normalizationConst;
     end
     
     
@@ -88,10 +88,9 @@ classdef S2FunBingham < S2Fun
     end
     
     
-    function N = normalizationConst(BS2)   % needs external mex
-      %   calc normalization parameter
-      N = numericalSaddlepointWithDerivatives(double(sort(-BS2.Z(:))+1))*exp(1);
-      N = N(3);
+    function N = normalizationConst(BS2)
+      % the mean of exp(v' a diag(Z) a' v) over the sphere, 1F1(1/2;3/2;Z)
+      N = mhyper(BS2.Z(:));
     end
     
   end

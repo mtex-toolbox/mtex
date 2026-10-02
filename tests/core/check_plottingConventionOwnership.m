@@ -80,7 +80,11 @@ assert(csL ~= cs, ...
 assert(csL.frame == cs.frame, ...
   'check_plottingConventionOwnership: the Laue group does not share the frame')
 
-csL.frame = specimenSymmetry.frameFor(pC);
+fr = crystalFrame(csL.axes,'name',csL.mineral);
+fr.how2plot = pC;
+csL.frame = fr;
+assert(csL.how2plot == pC, ...
+  'check_plottingConventionOwnership: giving csL a frame did not take')
 assert(cs.how2plot == csBefore && cs.frame.how2plot == csBefore, ...
   'check_plottingConventionOwnership: cs.Laue.how2plot wrote through the shared frame')
 
@@ -258,8 +262,8 @@ end
 % -------------------------------------------------------------------------
 function checkPoleFigure
 % PoleFigure.SS defaults to one shared class-default specimenSymmetry
-% instance, and set.how2plot used to write the convention through it -
-% reaching every pole figure that never set an SS of its own
+% instance, so a frame given to one pole figure must not reach every pole
+% figure that never set an SS of its own
 
 pC = plottingConvention('z↑→x');
 cs = crystalSymmetry('m-3m');
@@ -267,7 +271,8 @@ h = Miller(1,0,0,cs);
 r = vector3d.rand(10);
 pf = PoleFigure(h,r,ones(10,1));
 
-% a convention assigned to data is a session change, and it says so (ADR 0003)
+% a frame assigned to one pole figure belongs to that pole figure - it
+% changes neither the session nor any other pole figure
 pC0 = plottingConvention.default;
 restore = onCleanup(@() plottingConvention.default(pC0));
 
@@ -275,26 +280,17 @@ assert(~(pC0 == pC), ...
   ['check_plottingConventionOwnership: the test convention equals the ' ...
   'default one, so it cannot detect anything - pick another one'])
 
-lastwarn('','');
-ws = warning('off','all');
 pf.frame = specimenSymmetry.frameFor(pC);
-warning(ws);
-[~,id] = lastwarn;
 
-assert(strcmp(id,'MTEX:plottingConvention:global'), ...
-  'check_plottingConventionOwnership: assigning a convention to data must warn')
-
-assert(plottingConvention.default == pC, ...
-  'check_plottingConventionOwnership: the assignment must change the session')
-
-% everything that follows the session follows along - including the pole
-% figure itself and its specimen symmetry, which is what used to fork
 assert(pf.how2plot == pC && pf.SS.how2plot == pC, ...
-  'check_plottingConventionOwnership: the pole figure does not follow the session')
+  'check_plottingConventionOwnership: the pole figure does not follow its frame')
+
+assert(plottingConvention.default == pC0, ...
+  'check_plottingConventionOwnership: assigning a frame to data changed the session')
 
 pf2 = PoleFigure(h,r,ones(10,1));
-assert(pf2.how2plot == pC, ...
-  'check_plottingConventionOwnership: a new pole figure does not follow the session')
+assert(pf2.how2plot == pC0, ...
+  'check_plottingConventionOwnership: a new pole figure took the frame of another one')
 
 clear restore
 

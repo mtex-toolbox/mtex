@@ -18,7 +18,7 @@ function r = expquat(tq,varargin)
 %  r - @quaternion
 %
 % See also
-% quaternion_matrix Euler axis2quat hr2quat
+% quaternion/matrix Euler axis2quat hr2quat
 
 % for tensors extract correct matrix entries
 if isa(tq,'tensor') && tq.rank == 2

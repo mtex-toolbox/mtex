@@ -192,7 +192,7 @@ for lvl = 1:3
   rPlain = scoreGrainBenchmark(ebsd,g);
   report(lvl,'calcGrains 2 deg',rPlain);
 
-  F = halfQuadraticFilter; F.alpha = 5;
+  F = l1TVFilter; F.alpha = 6.25;
   e2 = smooth(ebsd0,F,'fill');
   [g2,e2] = calcGrains(e2,'threshold',ref(lvl).smoothThr);
   rSmooth = scoreGrainBenchmark(e2,g2);

@@ -31,7 +31,7 @@ function [ori,S] = loadOrientation_generic(fname,varargin)
 % Options
 %  ColumnNames       - names of the columns to be imported, mandatory are euler 1, euler 2, euler 3
 %  Columns           - positions of the columns to be imported
-%  RADIANS           - treat input in radiant
+%  radians           - the angles are in radians (default: degrees)
 %  DELIMITER         - delimiter between numbers
 %  HEADER            - number of header lines
 %  BUNGE             - [phi1 Phi phi2] Euler angle in Bunge convention (default)
@@ -48,7 +48,7 @@ function [ori,S] = loadOrientation_generic(fname,varargin)
 %     {'Euler1' 'Euler2' 'Euler3'},'Columns',[5,6,7],'Bunge')
 %
 % See also
-% loadOrientation
+% orientation/load
 
 isCheck = check_option(varargin,'check');
 
@@ -77,11 +77,9 @@ try
 
   loader = loadHelper(d,varargin{:});
 
+  % inverted for 'passive' by the loader
   q = loader.getRotations();
 
-  % correct for passive rotation
-  if check_option(varargin,{'passive','passive rotation'}), q = inv(q); end
-  
   % extract additional properties
   S = loader.getOptions();
 

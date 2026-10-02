@@ -134,12 +134,16 @@ classdef spatialTransformProjective < spatialTransform
       %   T = spatialTransformProjective.fit(posA,posB)
       %   T = spatialTransformProjective.fit(posA,posB,'weights',w)
 
-      [dx,dy,w,x,y] = transformFitData(posA,posB,varargin{:});
+      [dx,dy,w,x0,y0] = transformFitData(posA,posB,varargin{:});
 
-      assert(numel(x) >= 4,'MTEX:spatialTransform:tooFewPoints',...
-        'A homography needs at least four points, got %d.',numel(x));
+      assert(numel(x0) >= 4,'MTEX:spatialTransform:tooFewPoints',...
+        'A homography needs at least four points, got %d.',numel(x0));
 
-      xB = x + dx; yB = y + dy;
+      % both point sets centred and scaled to a mean distance of sqrt(2),
+      % Hartley's normalisation: otherwise the algebraic residual weighs a
+      % point by its distance from the origin
+      [x,y,NA] = normalised(x0,y0);
+      [xB,yB,NB] = normalised(x0 + dx, y0 + dy);
 
       o = ones(size(x)); z = zeros(size(x));
 
@@ -150,7 +154,15 @@ classdef spatialTransformProjective < spatialTransform
 
       h = robustLsq(A,[xB; yB],[w; w],varargin{:});
 
-      T = spatialTransformProjective(reshape([h(:); 1],3,3).');
+      T = spatialTransformProjective(NB \ reshape([h(:); 1],3,3).' * NA);
+
+      function [u,v,N] = normalised(u,v)
+        cu = mean(u); cv = mean(v);
+        r = mean(hypot(u - cu, v - cv));
+        if r > 0, k = sqrt(2) / r; else, k = 1; end
+        u = (u - cu) * k; v = (v - cv) * k;
+        N = [k 0 -k*cu; 0 k -k*cv; 0 0 1];
+      end
 
     end
 

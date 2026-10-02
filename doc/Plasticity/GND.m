@@ -61,10 +61,11 @@ hold off
 
 %%
 % The pixel-scale color speckle is the symptom to notice. A
-% |halfQuadraticFilter| reduces that noise while the |'fill'| option uses the
+% |l1TVFilter| reduces that noise while the |'fill'| option uses the
 % grain partition to prevent smoothing across grain boundaries.
 
-F = halfQuadraticFilter;
+F = l1TVFilter;
+F.alpha = 1.25;
 ebsd = smooth(ebsd,F,'fill',grains);
 
 axisKey.oriRef = grains(ebsd('indexed').grainId).meanOrientation;

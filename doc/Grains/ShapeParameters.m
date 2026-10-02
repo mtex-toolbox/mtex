@@ -249,9 +249,9 @@ mtexColorbar('title','paris')
 % similar smooth grains has $D=1$; increasingly convoluted boundaries can
 % give a slope between 1 and 2.
 
-% reconstruct all indexed grains in the full data set once
+% reconstruct the grains of the full data set once
 mtexdata forsterite silent
-rawGrains = calcGrains(ebsd('indexed'));
+rawGrains = calcGrains(ebsd);
 rawGrains = rawGrains(~rawGrains.isBoundary);
 
 % use five smoothing iterations for the main estimate
@@ -274,7 +274,7 @@ hold off
 
 %%
 % The points scatter around the fitted line because individual grains are
-% not scaled copies of one shape. The fitted slope, 1.011, is the estimated
+% not scaled copies of one shape. The fitted slope, 1.010, is the estimated
 % perimeter-area fractal dimension.
 
 fractalDimension = ab(1)
@@ -299,9 +299,9 @@ for iter = [0 5 25]
 end
 
 %%
-% The pixel staircase gives 1.128 because grid corners add artificial
-% length. Five iterations give 1.011, while 25 iterations push the estimate
-% to 0.965, below the range of a self-similar plane curve. That is a
+% The pixel staircase gives 1.127 because grid corners add artificial
+% length. Five iterations give 1.010, while 25 iterations push the estimate
+% to 0.964, below the range of a self-similar plane curve. That is a
 % diagnostic that the estimator's assumptions have failed, not a physical
 % property of the rock. Compare specimens only after matching the pixel
 % resolution, grain-size cutoff, segmentation, and smoothing procedure.

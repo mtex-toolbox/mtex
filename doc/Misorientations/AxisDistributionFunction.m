@@ -58,14 +58,14 @@ uniformRatio = uniformRange(2) ./ uniformRange(1)
 % A grain is a phase-homogeneous, spatially connected region of EBSD pixels
 % produced by segmentation. A grain boundary is a segment between two
 % neighbouring pixels that belong to different grains. Load the magnesium
-% map, segment its indexed pixels at $5^\circ$, and smooth the boundary
+% map, segment it at $5^\circ$, and smooth the boundary
 % geometry for five iterations. The plotting convention states the specimen
 % frame used by this data set.
 
 plottingConvention.default('y↑→x');
 mtexdata twins silent
 
-grains = calcGrains(ebsd('indexed'),'angle',5*degree);
+grains = calcGrains(ebsd,'angle',5*degree);
 grains = smoothBoundary(grains,5);
 
 % retain boundaries between magnesium grains
@@ -127,13 +127,19 @@ mtexColorbar
 %
 % Passing two orientations separately to |plotAxisDistribution| asks where
 % that axis points in the specimen frame. The two EBSD ids stored for every
-% segment recover the orientations on its two sides.
+% segment recover the orientations on its two sides. A segment that
+% smoothing simplified or resampled no longer runs between one pair of
+% pixels and has the ids 0, so the pairs are read from the boundaries
+% smoothed without those two stages, as the help of
+% <grain2d.smoothBoundary.html |smoothBoundary|> advises.
 
-ori1 = ebsd(gB.ebsdId(:,1)).orientations;
-ori2 = ebsd(gB.ebsdId(:,2)).orientations;
+grainsP = smoothBoundary(calcGrains(ebsd,'angle',5*degree),5,'noSimplify','noRefine');
+gBp = grainsP.boundary('Magnesium','Magnesium');
+ori1 = ebsd('id',gBp.ebsdId(:,1)).orientations;
+ori2 = ebsd('id',gBp.ebsdId(:,2)).orientations;
 
 plotAxisDistribution(ori1,ori2,'contourf','halfwidth',5*degree,...
-  'weights',gB.segLength)
+  'weights',gBp.segLength)
 mtexColorbar
 
 %%

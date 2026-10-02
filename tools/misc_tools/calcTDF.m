@@ -13,7 +13,7 @@ function [totfreq, bc, azi]=calcTDF(g,varargin)
 %
 % Input
 %  gb          -  @grainBoundary
-%  grains      -  @grains
+%  grains      -  @grain2d
 %  azi         -  angle in radians
 %
 % Output

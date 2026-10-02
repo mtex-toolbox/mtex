@@ -1,7 +1,7 @@
 classdef SO3RieszKernel < SO3Kernel
 % The Riez potential is defined as
 % 
-% |q1-q2|^2 = <q1-q2,q1-q2> = |q1|^2 + |q2|^2 - 2<q1,q1> = 2 - 2 cos w/2
+% |q1-q2|^2 = dot(q1-q2,q1-q2) = |q1|^2 + |q2|^2 - 2 dot(q1,q2) = 2 - 2 cos w/2
 % 
 % We can define the Riesz kernel $\psi_{s}$ depending on a parameter 
 % $s$ by 

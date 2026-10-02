@@ -86,7 +86,7 @@ plotAngleDistribution(crystalSymmetry('222'),...
 plottingConvention.default('y↑→x');
 mtexdata twins silent
 
-grains = calcGrains(ebsd('indexed'),'threshold',5*degree);
+grains = calcGrains(ebsd,'threshold',5*degree);
 
 % misorientations of all magnesium--magnesium boundary segments
 mori = grains.boundary('Magnesium','Magnesium').misorientation

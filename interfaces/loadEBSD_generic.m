@@ -28,7 +28,7 @@ function [ebsd,options] = loadEBSD_generic(fname,varargin)
 % Options
 %  ColumnNames       - names of the columns to be imported, mandatory are euler 1, euler 2, euler 3
 %  Columns           - positions of the columns to be imported
-%  radians           - treat input in radiant
+%  radians           - the angles are in radians (default: degrees)
 %  delimiter         - delimiter between numbers
 %  header            - number of header lines
 %  Bunge             - [phi1 Phi phi2] Euler angle in Bunge convention (default)

@@ -212,9 +212,9 @@ legend('Location','best')
 
 %% When to switch the first two stages off
 % Simplification and resampling change the number of boundary segments. A
-% resampled segment no longer runs between one specific pair of pixels.
-% Wherever |gB.ebsdId| is read per segment, for example to look up the
-% orientations on either side, switch both stages off.
+% segment that no longer runs between one specific pair of pixels gets the
+% |gB.ebsdId| 0. Wherever |gB.ebsdId| is read per segment, for example to look
+% up the orientations on either side, switch both stages off.
 
 grainsPlain = smoothBoundary(grains,5,'noSimplify','noRefine');
 

@@ -102,7 +102,7 @@ fprintf('Raw mean deviation from the grain mean: %.2f degree\n', ...
 %
 %% The total variation filter
 %
-% The @halfQuadraticFilter balances fidelity to the measured orientations
+% The @l1TVFilter balances fidelity to the measured orientations
 % against first-order smoothness over the map. Its default total variation
 % model permits jumps, so it can preserve a subgrain boundary instead of
 % averaging across it. This method for rotation-valued images is described
@@ -110,12 +110,14 @@ fprintf('Raw mean deviation from the grain mean: %.2f degree\n', ...
 % on the total variation model of
 % <https://doi.org/10.1016/0167-2789(92)90242-F Rudin et al. (1992)>.
 %
-% The property |F.alpha| controls the trade-off; larger values smooth more.
-% The property |F.threshold| prevents smoothing across neighbour
-% differences above its value. The default settings are used here. Their
+% The smoothing is stated as a length, |l1TVFilter(L)|: the
+% wavelength damped to half its amplitude, four pixel distances by default.
+% The property |F.alpha| sets the trade-off directly instead; larger values
+% smooth more. The property |F.threshold| prevents smoothing across
+% neighbour differences above its value. The default settings are used here. Their
 % price is a tendency towards cartoon-like patches and staircases.
 
-F = halfQuadraticFilter;
+F = l1TVFilter;
 
 % smooth the data
 ebsdS = smooth(ebsd,F);
@@ -151,7 +153,7 @@ fprintf('Total variation mean deviation: %.2f degree\n', ...
 % uses robust smoothing by default, following
 % <https://doi.org/10.1016/j.csda.2009.09.020 Garcia (2010)>. This automatic
 % mode is not yet fully supported on hexagonal grids; MTEX emits a warning
-% there, and the @halfQuadraticFilter is the safer choice.
+% there, and the @l1TVFilter is the safer choice.
 
 F = splineFilter;
 
@@ -323,7 +325,7 @@ hold off
 %
 %% Choosing a filter
 %
-% Use the @halfQuadraticFilter when preserving subgrain boundaries matters.
+% Use the @l1TVFilter when preserving subgrain boundaries matters.
 % Use the @splineFilter on a square grid when smooth gradients and automatic
 % parameter selection matter more. In either case, vary the smoothing
 % strength and check that persistent spatial features remain; a lower mean

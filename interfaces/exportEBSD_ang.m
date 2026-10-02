@@ -64,6 +64,9 @@ cor = get_option(varargin,'EulerCorrection',...
   eulerCorrectionRotation(get_option(varargin,'setting',2)));
 ebsd.rotations = inv(cor) .* ebsd.rotations;
 
+% the crystal frames loadEBSD_ang builds, in EDAX's alignment
+ebsd = rotationsInFileFrame(ebsd,'EDAX');
+
 % the map on its grid, and which of its cells the file lists
 [g,keep] = gridCells(ebsd);
 [xStep,yStep] = gridSteps(g);

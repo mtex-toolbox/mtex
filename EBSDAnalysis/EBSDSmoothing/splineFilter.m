@@ -22,7 +22,7 @@ classdef splineFilter < EBSDFilter
   %  isHex        - is the map on a hexagonal grid
   %
   % See also
-  % EBSDFilter EBSD/smooth halfQuadraticFilter
+  % EBSDFilter EBSD/smooth l1TVFilter
   %
   
   properties

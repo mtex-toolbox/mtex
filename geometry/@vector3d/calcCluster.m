@@ -12,7 +12,9 @@ function [cId,center] = calcCluster(v,varargin)
 %  omega - maximum angle 
 %
 % Options
-%  method - classix (default) | hierarchical | matlab
+%  method    - classix (default) | hierarchical | matlab
+%  radius    - CLASSIX group radius, estimated from the data if omitted, which needs the Statistics and Machine Learning Toolbox
+%  minPoints - CLASSIX clusters with fewer points are merged into a neighbour (default 1% of the data)
 %
 % Output
 %  cId    - list of clusters ids
@@ -58,7 +60,8 @@ switch method
       
       k = 10;
       [~, dist] = knnsearch(data, data, "K", k+1);
-      radius = 2*median(dist(:,end));
+      % in the units of CLASSIX, which scales by the median distance to the mean
+      radius = 1.5 * median(dist(:,end)) / median(vecnorm(data - mean(data),2,2));
 
     end
       

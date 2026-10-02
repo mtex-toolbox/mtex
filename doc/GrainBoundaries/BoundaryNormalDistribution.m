@@ -255,16 +255,16 @@ mtexColorMap parula
 mtexColorbar
 
 %%
-% The crystal GBND is almost uniform. Taken over all internal interfaces,
-% this data set has no strong preferred habit plane. Its values range from
-% 0.96 to 1.03.
+% The crystal GBND has its maximum of 2.0 at the {111} planes and its
+% minimum of 0.74 at {100}. Taken over all internal interfaces, this data
+% set already prefers {111} as the boundary plane.
 
 crystalSummary = table(min(gbndCrystal),max(gbndCrystal),...
   'VariableNames',{'minimumDensity','maximumDensity'})
 
 %% The GBCD in three dimensions
 %
-% This changes when the distribution is conditioned on the cubic
+% The preference sharpens when the distribution is conditioned on the cubic
 % $\Sigma 3$ misorientation: a 60 degree rotation about a [111] axis. The
 % ten-degree halfwidth below gives the estimator a twenty-degree inclusion
 % window, matching the implementation of the GBCD kernel.
@@ -315,10 +315,11 @@ sigma3GBCDSummary = table(sigma3Peak,...
   'VariableNames',{'peakDensity','distanceToSigma3PlaneDegree'})
 
 %%
-% The printed peak distance is less than 0.002 degrees. The all-boundary
-% crystal GBND is nearly uniform, while the $\Sigma 3$ GBCD is sharply
-% peaked. There is no contradiction: averaging over every misorientation
-% hides a habit that is specific to one boundary character.
+% The peak density is 16.3, about 0.01 degrees from the plane, eight times
+% the maximum of the all-boundary crystal GBND. The {111} preference seen
+% there comes from these twins: they make up about a quarter of the
+% internal faces, and averaging over every misorientation dilutes a habit
+% that is specific to one boundary character.
 
 %% Interpreting a stereological estimate
 %

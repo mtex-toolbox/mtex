@@ -51,7 +51,7 @@ for K = 1:nphase
     cs(K+1) = crystalSymmetry(laue,abc(:)',abg(:)','mineral',mineral);
   catch
     spaceId = sscanf(mpara{5},'%u'); % try spaceid
-    cs(K+1) = crystalSymmetry('SpaceId',spaceId,',abc(:)',abg(:)','mineral',mineral);     
+    cs(K+1) = crystalSymmetry('SpaceId',spaceId,abc(:)',abg(:)','mineral',mineral);
   end
 
 end

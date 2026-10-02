@@ -4,7 +4,7 @@ classdef zeroRangeMethod < handle
 % Input
 %  pf  - @PoleFigure
 %  psi - @S2Kernel
-%  threshold  - double
+%  maxAngle - largest distance to a measurement direction inside the measured area, default the grid resolution
 %  delta - double
 %  bg  - double
 %  alpha - double
@@ -12,7 +12,7 @@ classdef zeroRangeMethod < handle
   properties
     pf
     psi 
-    threshold
+    maxAngle
     delta = 0.001;
     bg
     alpha = 10;

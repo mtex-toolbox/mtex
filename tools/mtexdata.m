@@ -63,10 +63,17 @@ type = char(list(name,:).type);
 
 % change warning to error to make it catchable
 w = warning('error','MATLAB:load:cannotInstantiateLoadedVariable');
+
+% the objects of a cache keep the frames of the session that wrote it, so
+% it is used only by a session of the same version and plotting convention -
+% grain2d data is shipped as its .mat and has no loader to rebuild it from
+key = [getMTEXpref('version') ' ' char(plottingConvention.default)];
 try
   matFile = fullfile(mtexDataPath,[ lower(name) '.mat']);
   assert(~check_option(varargin,'force'));
-  load(matFile,'out');
+  cached = load(matFile);
+  assert(strcmp(type,'grain2d') || isfield(cached,'key') && strcmp(cached.key,key));
+  out = cached.out;
 catch
  
   fName = fullfile(mtexDataPath,type,char(list(name,:).files));
@@ -290,9 +297,9 @@ catch
 
       end
       
-  end    
-  disp([' saving data to ' matFile])
-  save(matFile,'out');
+  end
+  if ~getMTEXpref('generatingHelpMode'), disp([' saving data to ' matFile]); end
+  save(matFile,'out','key');
 end
 
 if nargout == 0

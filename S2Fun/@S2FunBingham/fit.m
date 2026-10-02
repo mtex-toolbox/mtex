@@ -41,6 +41,7 @@ function [BS2,ab,rot] = fit(v,varargin)
 %   hold off
 %
 
+v = v.normalize;
 [a,kappa] = eig3(v*v);
 
 % normalize eigenvalues to obtain the eigenvalues of the scatter matrix
@@ -48,7 +49,6 @@ kappa = kappa./sum(kappa);
 
 Z =estimateZ(kappa);
 BS2 = S2FunBingham(Z, a);
-BS2.N = BS2.normalizationConst;
 
 if nargout <= 1, return; end
 
@@ -61,7 +61,7 @@ p = get_option(varargin,'p',0.95);
 N = length(v);
 
 % sample directions in the principal coordinate system
-Y = v.xyz * a.xyz;
+Y = v.xyz * a.xyz.';
 
 % 4-order moments estimated for the covariance of the max eigenvector
 m1133 = mean(Y(:,1).^2 .* Y(:,3).^2);
@@ -98,36 +98,21 @@ rot = rotation.byMatrix(B');
 
 
   function Z = estimateZ(kappa)
-    % adapted from https://github.com/libDirectional/libDirectional
-    % Igor Gilitschenski, Gerhard Kurz, Simon J. Julier, Uwe D. Hanebeck,
-    % Efficient Bingham Filtering based on Saddlepoint Approximations, 2014
-    % Proceedings of the 2014 IEEE International Conference on Multisensor Fusion and Information Integration (MFI 2014), Beijing, China, September 2014.
-    
-    f = @(z) findZ(z, kappa);
+    % the shape parameters whose second moments E[x_i^2] = d log 1F1 / d Z_i
+    % are the eigenvalues of the scatter matrix, the largest fixed at zero
+
+    f = @(z) moments([z;0]) - kappa(1:2);
     Z = fsolve(f, -ones(2,1), optimset('display', 'off', 'algorithm', 'levenberg-marquardt'));
     Z = [Z; 0];
     [Z, ~] = sort(Z,'ascend');
-    
-    function R = findZ(Z, rhs)  % needs esternal mex
-      Z=[Z;0];
-      d = size(Z,1);
-      
-      % normalization constant
-      A = numericalSaddlepointWithDerivatives(double(sort(-Z)+1))*exp(1);
-      A = A(3);
-      
-      % derivative of normalization constant
-      B = zeros(1,3);
-      dim = size(Z,1);
-      for i=1:dim
-        mZ = Z([1:i i i:dim]);
-        T = numericalSaddlepointWithDerivatives(double(sort(-mZ)+1))*exp(1)/(2*pi);
-        B(i) = T(3);
-      end
-      
-      R = zeros(d-1,1);
-      for i=1:(d-1)
-        R(i) = B(i)/A - rhs(i);
+
+    function m = moments(Z)
+      % d log 1F1 / d Z_i by central differences
+      h = 1e-5;
+      m = zeros(2,1);
+      for i = 1:2
+        e = zeros(3,1); e(i) = h;
+        m(i) = (log(mhyper(Z+e)) - log(mhyper(Z-e))) / (2*h);
       end
     end
   end

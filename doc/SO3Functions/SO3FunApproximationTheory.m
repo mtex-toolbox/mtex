@@ -73,8 +73,8 @@ plot(SO3FReg,'sigma')
 
 %%
 % Compare this plot with the discrete samples. The strongest regions remain
-% in the same sections, while regularization rounds their peaks and prevents
-% the fit from following every local variation.
+% in the same sections, and the fit fills the space between the samples with
+% a smooth function.
 %
 % The default regularization parameter is $\lambda=10^{-8}$. Setting it to
 % zero switches regularization off and asks the harmonic model to follow the
@@ -87,14 +87,13 @@ relativeErrorUnreg = ...
 plot(SO3FUnreg,'sigma')
 
 %%
-% A converged unregularized solution is free to make the residual much
-% smaller, but it can create narrow peaks and ripples between the samples.
-% In this run the solver instead reaches its iteration limit: the
-% unregularized relative error is 0.0574, compared with 0.0501 for the
-% regularized fit. Do not interpret an unconverged residual as the optimum.
-% Even after convergence, a smaller residual is not by itself evidence for
-% a better model. The <HarmonicApproximationTheory.html next page> explains
-% how to choose regularization and check solver convergence.
+% Both fits reach a relative error of 0.0463, and the two plots are hard to
+% tell apart: at $\lambda=10^{-8}$ the regularization barely constrains this
+% fit. A larger $\lambda$ trades residual for smoothness. An unregularized
+% fit is free to create narrow peaks and ripples between the samples, and a
+% smaller residual is not by itself evidence for a better model. The
+% <HarmonicApproximationTheory.html next page> explains how to choose
+% regularization and check solver convergence.
 %
 % Reducing the harmonic bandwidth is another form of regularization. The
 % bandwidth is the largest harmonic degree retained by the series.

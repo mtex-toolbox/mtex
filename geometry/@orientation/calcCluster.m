@@ -9,7 +9,12 @@ function [c,center] = calcCluster(ori,varargin)
 % Input
 %  ori - @orientation
 %  n   - number of clusters
-%  omega - maximum angle 
+%  omega - maximum angle
+%
+% Options
+%  method    - odf (default) | classix | hierarchical
+%  radius    - CLASSIX group radius, estimated from the data if omitted, which needs the Statistics and Machine Learning Toolbox
+%  minPoints - CLASSIX clusters with fewer points are merged into a neighbour (default 1% of the data)
 %
 % Output
 %  c - list of clusters
@@ -62,7 +67,8 @@ switch method
       
       k = 10;
       [~, dist] = knnsearch(data, data, "K", k+1);
-      radius = 0.5 * median(dist(:,end)) / max(std(data));
+      % in the units of CLASSIX, which scales by the median distance to the mean
+      radius = 0.65 * median(dist(:,end)) / median(vecnorm(data - mean(data),2,2));
 
     end
       

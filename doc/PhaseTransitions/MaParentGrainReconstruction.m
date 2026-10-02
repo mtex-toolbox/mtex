@@ -377,7 +377,7 @@ hold off
 % The outlines define the parent regions that constrain the fill operation.
 % <EBSD.smooth.html |smooth|> then fills holes without crossing those outlines.
 
-F = halfQuadraticFilter;
+F = l1TVFilter;
 parentEBSD = smooth(parentEBSD,F,'fill',parentGrains);
 
 plot(parentEBSD('Iron fcc'),parentEBSD('Iron fcc').orientations,...

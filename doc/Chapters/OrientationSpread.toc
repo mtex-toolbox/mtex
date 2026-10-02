@@ -1,0 +1,7 @@
+GrainOrientationParameters              Orientation Parameters
+Grain_dispersion_axes                   Dispersion Axes
+EBSDKAM                                 KAM
+EBSDGROD                                Mis2Mean / GROD
+EBSDProfile                             Profiles
+GND                                     Geometrically Necessary Dislocations
+WBV                                     Weighted Burgers Vector Analysis

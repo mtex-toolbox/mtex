@@ -206,7 +206,7 @@ mtexTitle('Quartz: IPF along specimen z')
 % planar toolchain applies to it directly. Here the section is segmented
 % into grains and the boundaries drawn over the phase map.
 
-grains = calcGrains(ebsdZ('indexed'));
+grains = calcGrains(ebsdZ);
 
 plot(ebsdZ,'micronbar','off')
 hold on

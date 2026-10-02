@@ -2,7 +2,7 @@ function lA = longAxis(grains,varargin)
 % long axis of a grain 
 %
 % the long axis is the direction of the largest
-% <grain2d.principalComponents.html,principal component> of a grain
+% <grain2d.principalComponents.html principal component> of a grain
 %
 % Syntax
 %   lA = grains.longAxis

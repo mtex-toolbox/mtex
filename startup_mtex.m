@@ -8,10 +8,9 @@ function startup_mtex(varargin)
 
 lasterr('') %#ok<LERR>
 
-if MATLABverLessThan('8.6')
-  warning(['MTEX may not be fully functional because your MATLAB version ',version,...
-    ' is outdated and not longer supported by MTEX. The oldest Matlab ',...
-    'version MTEX has been tested on is Matlab 2016b (vers. 8.6).']);
+if MATLABverLessThan('9.13')
+  warning(['MTEX needs MATLAB R2022b (version 9.13) or newer, this is version ',...
+    version,'. Parts of MTEX, such as the import wizard, will not work.']);
 end
 warning('off','MATLAB:contour:ConstantData')
 

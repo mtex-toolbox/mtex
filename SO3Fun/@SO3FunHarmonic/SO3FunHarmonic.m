@@ -9,7 +9,7 @@ classdef (InferiorClasses = {?SO3FunBingham,?SO3FunCBF,?SO3FunComposition, ...
 %
 % Input
 %  fhat  - double (harmonic coefficient vector)
-%  CS,SS - @Symmetry 
+%  CS,SS - @crystalSymmetry, @specimenSymmetry
 %  F     - @SO3Fun 
 %
 % Output

@@ -101,7 +101,7 @@ ebsdFo.prop
 % as |GOS| and |meanRotation|. You may add any other value that has one entry
 % per grain.
 
-grains = calcGrains(ebsd('indexed'),'angle',10*degree);
+grains = calcGrains(ebsd,'angle',10*degree);
 
 grains.prop
 

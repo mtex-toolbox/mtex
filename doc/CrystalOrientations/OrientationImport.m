@@ -54,23 +54,19 @@ plotPDF(ori,Miller({0,0,0,1},{1,0,-1,0},cs));
 %
 % || |'ColumnNames'| || what each imported column contains ||
 % || |'Columns'| || positions of those columns in the file ||
-% || |'radians'| || angles are in radians rather than degrees; see the limitation below ||
+% || |'radians'| || angles are in radians rather than degrees ||
 % || |'header'| || number of header lines to skip ||
 % || |'delimiter'| || character that separates the numbers ||
-% || |'passive'| || request the inverse map; see the limitation below ||
+% || |'passive'| || request the inverse map ||
 %
 % The names and positions solve different problems. For example,
 % |'Columns',[4 2 7]| selects physical columns 4, 2, and 7, while
 % |'ColumnNames',{'phi1','Phi','phi2'}| assigns their meanings in that order.
 %
-% The generic importer advertises quaternion columns named
-% |{'Quat real','Quat i','Quat j','Quat k'}|. In the current implementation,
-% however, that path passes all four columns as one matrix to a constructor
-% that expects four arrays and raises an error. Until it is fixed, read the
-% numeric columns separately and construct
-% |orientation(quaternion(a,b,c,d),cs)|. Quaternions avoid the Euler-angle
-% sequence and angular-unit questions, but they do not identify the mapping
-% direction or either reference frame.
+% Instead of Euler angles, the generic importer reads quaternion columns
+% named |{'Quat real','Quat i','Quat j','Quat k'}|. Quaternions avoid the
+% Euler-angle sequence and angular-unit questions, but they do not identify
+% the mapping direction or either reference frame.
 
 %% Four Questions to Answer Before Trusting the Result
 %
@@ -84,11 +80,10 @@ plotPDF(ori,Miller({0,0,0,1},{1,0,-1,0},cs));
 %   <orientation.byEuler.html |orientation.byEuler|> with the convention
 %   named explicitly; see <RotationDefinition.html Defining Rotations>.
 %
-% * *Degrees or radians?* The generic text importer ignores |'radians'| and
-%   decides the unit from the values instead: a file is read as degrees only
-%   when some angle exceeds 15, and as radians otherwise. A file of small
-%   angles in degrees is therefore read as radians, silently and with
-%   valid-looking results, so the values alone are not a reliable test.
+% * *Degrees or radians?* The generic text importer reads degrees unless
+%   |'radians'| is given. A file in radians read without it gives
+%   valid-looking orientations close to the identity, so the values alone
+%   are not a reliable test.
 %
 % * *Active or passive?* MTEX orientations map coordinates from the crystal
 %   frame into the specimen frame. Do not select |'passive'| merely because
@@ -96,10 +91,8 @@ plotPDF(ori,Miller({0,0,0,1},{1,0,-1,0},cs));
 %   copied directly when the frames agree. The distinction is developed in
 %   <MTEXvsBungeConvention.html MTEX vs. Bunge Convention>.
 %
-%   The generic text importer currently applies |'passive'| twice, so the
-%   two inversions cancel and the option has no effect. Until that defect is
-%   fixed, import first and use |ori = inv(ori)| only when an independent
-%   convention check establishes that the stored map is the inverse.
+%   Select |'passive'| only when an independent convention check
+%   establishes that the stored map is the inverse.
 %
 % * *Which crystal and specimen frames?* The alignment between Cartesian
 %   crystal axes and lattice axes belongs to the |crystalSymmetry| loaded

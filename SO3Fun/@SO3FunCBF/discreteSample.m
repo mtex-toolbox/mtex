@@ -2,13 +2,14 @@ function ori = discreteSample(SO3F,npoints,varargin)
 % evaluate an odf at orientation g
 %
 
-% take random polar angles
+% take random polar angles: cos theta has the density psi on [-1,1]
 M = 1000000;                   % discretisation parameter
 t = linspace(-1,1,M);
-c = cumsum(SO3F.psi.eval(t)) / M; % cumulative distribution function
+c = cumsum(SO3F.psi.eval(t)); % cumulative distribution function
+c = [0, c / c(end)];
 
-[~,t] = histc(rand(npoints,1),c);
-theta = acos(t ./ M);
+[~,i] = histc(rand(npoints,1),c);
+theta = acos(reshape(t(i),[],1));
   
 % take random azimuthal angles
 rho   = 2*pi*rand(npoints,1);

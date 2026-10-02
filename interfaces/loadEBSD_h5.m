@@ -209,6 +209,13 @@ end
 
 ebsd = data.ebsd;
 
+% a phase list the caller passed replaces the one the file declares
+if check_option(varargin,'CS')
+  cs = ensureCSArray(get_option(varargin,'CS'));
+  assert(numel(cs) == numel(ebsd.CSList),'The file has %d phases including notIndexed, but %d were passed.',numel(ebsd.CSList),numel(cs));
+  ebsd.CSList = cs;
+end
+
   % remember which data set was imported and which others the file offers
 if ~isempty(iSet)
   ebsd.opt.dataSet = dataSets(iSet).path;

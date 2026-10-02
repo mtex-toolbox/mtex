@@ -1,22 +1,18 @@
-SO3FunConcept                     Concept
-SO3FunDefinition                  Definition
-SO3FunOperations                  Operations
-ODFPlot                           Plotting
-EulerAngleSections                Euler Angle Sections
-SigmaSections                     Sigma Sections
-SO3FunApproximationTheory         Interpolation
-HarmonicApproximationTheory       Harmonic Interpolation
-RBFApproximationTheory            RBF-Kernel Interpolation
-SO3FunQuadrature                  Approximation and Quadrature 
-SO3FunHarmonicRepresentation      Harmonic Representation
-RadialODFs                        Radial Basis Functions
-FibreODFs                         Fibre Functions
-BinghamODFs                       Bingham ODF
-ODFImport                         Import
-ODFExport                         Export
-SO3FunSymmetricFunctions          Symmetry
-SO3FunConvolution                 Convolution
-SO3FunVectorValued                Vector Valued Functions
-SO3FunVectorField                 Rotational Vector Fields
-SO3Kernels                        Rotational Kernel Functions
-WignerFunctions                   Wigner-D Functions
+SO3FunConcept                           Concept
+SO3FunDefinition                        Definition
+SO3FunOperations                        Operations
+SO3FunSymmetricFunctions                Symmetry
+SO3FunHarmonicRepresentation            Series Expansion
+WignerFunctions                         Wigner-D Functions
+SO3Kernels                              Rotational Kernel Functions
+RadialODFs                              Radial ODF
+FibreODFs                               Fibre ODF
+BinghamODFs                             Bingham ODF
+SO3FunConvolution                       Convolution
+SO3FunApproximationTheory               Interpolation
+HarmonicApproximationTheory             Harmonic Interpolation
+RBFApproximationTheory                  RBF-Kernel Interpolation
+SO3FunQuadrature                        Approximation and Quadrature
+SO3FunVectorValued                      Vector Valued Functions
+SO3FunVectorField                       Rotational Vector Fields
+ODFShapes                               Shapes

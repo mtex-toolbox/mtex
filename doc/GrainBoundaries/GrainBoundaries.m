@@ -25,7 +25,7 @@ mtexdata forsterite silent
 ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
 % reconstruct and smooth the grains
-grains = calcGrains(ebsd('indexed'),'angle',10*degree);
+grains = calcGrains(ebsd,'angle',10*degree);
 grains = smoothBoundary(grains,5);
 
 % display the boundary list
@@ -42,8 +42,9 @@ hold off
 % The displayed summary groups the segments by the phases on their two
 % sides. Each row reports a segment count and the total trace length.
 % |notIndexed| normally denotes pixels whose patterns could not be indexed.
-% In this indexed-only example, a |notIndexed| side in that table marks the
-% outer scan rim, where no neighbouring grain exists beyond the map.
+% Here a |notIndexed| side in that table marks either a notIndexed region
+% inside the map or the outer scan rim, where no neighbouring grain exists
+% beyond the map.
 %
 % The coloured regions in the figure are grains, and the black lines are
 % their boundary network. The red markers are *triple points*.

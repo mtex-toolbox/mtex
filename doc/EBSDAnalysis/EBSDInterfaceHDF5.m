@@ -56,7 +56,7 @@
 % * *|value|* says what path to match, while *|mode|* says where and how to
 % search. The result is a path inside the HDF5 file.
 % * *|type|* selects what to do with the value. It dispatches to a formatter
-% named |<category>_<type>|, such as |position_direct|, |rotation_euler| or
+% named after category and type, such as |position_direct|, |rotation_euler| or
 % |cs_default|. The formatter returns the MTEX object or array required by
 % the @EBSD constructor.
 %
@@ -162,7 +162,7 @@
 % keeps out values already read as coordinates or another core category.
 %
 % An *option* is scan-level data and is not resized when the map is subset.
-% Every further top-level category is stored under |ebsd.opt.<category>|;
+% Every further top-level category is stored in |ebsd.opt| under its name;
 % |eds| and |electron_image| use this path. Mark such a category optional
 % when the vendor does not write it in every file.
 %
@@ -177,7 +177,9 @@
 % The ThermoFisher configuration is the smallest of the six. It uses
 % literal paths for its rigid outer tree, builds positions from the grid
 % dimensions, reads stacked phases and Euler angles, and repeats the crystal
-% symmetry branch once per phase.
+% symmetry branch once per phase. Its map correction is fixed: xTalView
+% writes the map with its x axis opposite to the specimen x axis of the
+% Euler angles, a half turn about y, given as Bunge angles in degree.
 %
 %  {
 %    "settings": {
@@ -198,6 +200,7 @@
 %          "first": { "data": "x" }
 %        }
 %      },
+%      "map_correction": { "type": "rotation", "data": [90, 180, 270] },
 %      "phase": { "mode": "search_root", "value": "Phase", "type": "stack" },
 %      "rotation": {
 %        "type": "euler_stack",

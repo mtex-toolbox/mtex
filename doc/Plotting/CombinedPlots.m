@@ -118,10 +118,9 @@ plot(ori,'MarkerSize',6,'MarkerColor','b','MarkerEdgeColor','w','add2all')
 plot(oriRotated,'MarkerSize',6,'MarkerColor','r','MarkerEdgeColor','k','add2all');
 
 %%
-% Both sets place markers in every section, so the section a marker lands in
-% does not by itself separate the two. What distinguishes them is where they
-% sit within a section: the original markers follow the contours of the ODF,
-% and the rotated ones do not.
+% The two sets fall into different sections. The original markers sit on
+% the contours of the ODF in the sections around 90°, while the rotated ones
+% gather in the sections around 30°, where the ODF has no mass.
 
 %% Marking Crystal Directions
 %

@@ -39,7 +39,7 @@ classdef S2Grid < vector3d
 %   plot(S2G,'how2plot','y↑→x','upper')
 %
 % See also
-% vector3d.vector3d plotS2Grid regularS2Grid equispaceS2Grid
+% vector3d.vector3d plotS2Grid regularS2Grid equispacedS2Grid
 
 properties
 

@@ -1,14 +1,6 @@
-SlipSystems
-SchmidFactor
-TaylorModel
-SachsModel
-SingleSlipModel
-SlipTransmission
-TwinningTutorial
-DislocationSystems
-GND
-WBV
-VPSCImport
-TextureEvolution
-TaylorHex
-Lankford
+TaylorModel                             Taylor Model
+SachsModel                              Sachs Model
+SingleSlipModel                         Single Slip Model
+TextureEvolution                        Texture Evolution
+SlipTransmission                        Slip Transmission
+TwinningTutorial                        Deformation twinning

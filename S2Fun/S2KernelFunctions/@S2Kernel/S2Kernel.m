@@ -151,7 +151,12 @@ classdef S2Kernel
     end
 
     function hw = halfwidth(psi)
-      hw = fminbnd(@(t) (psi.eval(1)-2*psi.eval(cos(t))).^2,0,3*pi/4);
+      % the first angle at which the kernel falls to half its maximum
+      f = @(t) psi.eval(cos(t)) - psi.eval(1)/2;
+      t = linspace(0,pi,3601);
+      i = find(f(t) <= 0,1);
+      if isempty(i), hw = pi; return; end
+      hw = fzero(f,t([i-1,i]));
     end
     
     

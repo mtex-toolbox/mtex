@@ -74,6 +74,16 @@ if ~isequal(grains2.I_GF,I_GF) || ...
   error('orientFaces is not idempotent')
 end
 
+% the mean orientation of a grain of the mesh is the mean of its voxels, up to
+% the averaging of DREAM.3D
+ebsd = EBSD3.load(fname);
+for id = [1 100 500]
+  ori = mean(ebsd(ebsd.prop.grainId == id).orientations);
+  if angle(ori,grains('id',id).meanOrientation) > 5*degree
+    error('the mean orientation of grain %d differs from its voxels',id)
+  end
+end
+
 disp('check_orientFaces: ok')
 
 end

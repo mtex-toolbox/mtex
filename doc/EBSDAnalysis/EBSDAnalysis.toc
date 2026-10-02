@@ -1,26 +1,8 @@
-EBSDImport            Import
-EBSDReferenceFrame    Reference Frame
-EBSDPlotting          Plot
-EBSDIPFMap            IPF Maps
-EBSDOrientationPlots  Orientation Plots
-EBSDSelect            Select
-EBSDIndex             Select by Index
-EBSDOrientationAnalysis Orientation Analysis
-GrainReconstruction   Grain Reconstruction
-EBSDGrid              Square and Hex Grids
-EBSDMapsAndImages     Maps and Images
-EBSDSpatialTransform  Spatial Transforms
-EBSDTrueEbsd          TrueEBSD Distortion Correction
-EBSDDenoising         Denoising
-EBSDFilling           Filling Missing Data
-EBSDPseudoSymmetry    Pseudo Symmetry
-EBSDInter             Regridding and Interpolation
-EBSD2ODF              ODF Estimation
-EBSDSharpPlot         Sharp Color Keys 
-EBSDAdvancedMaps      Advanced Plotting
-EBSDKAM               KAM
-EBSDGROD              Mis2Mean / GROD
-EBSDProfile           Profiles
-EBSDSimulation        Simulation
-EBSDInterfaceHDF5     HDF5 Interface
-EBSDExport            Export
+EBSDSelect                              Select
+EBSDIndex                               Select by Index
+EBSDGrid                                Square and Hex Grids
+EBSDDenoising                           Denoising
+EBSDFilling                             Filling Missing Data
+EBSDInter                               Regridding and Interpolation
+EBSDPseudoSymmetry                      Pseudo Symmetry
+EBSDSimulation                          Simulation

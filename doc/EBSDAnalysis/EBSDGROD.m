@@ -39,7 +39,8 @@ lowAngle = 1*degree;
 grains = smoothBoundary(grains,5);
 
 % denoise the orientations
-F = halfQuadraticFilter;
+F = l1TVFilter;
+F.alpha = 0.83;
 ebsd = smooth(ebsd,F,grains,'fill');
 
 ipfKey = ipfColorKey(ebsd.CS);
@@ -82,7 +83,7 @@ fprintf('GROD angle: median %.2f degree; maximum %.1f degree\n',...
   median(grodAngle,'omitnan'),max(grodAngle,[],'omitnan'));
 
 %%
-% Half the measurements are within 1.6° of their grain mean and the worst
+% Half the measurements are within 1.5° of their grain mean and the worst
 % reach 18.9°. The large values are not scattered. They fill extended
 % parts of grains and often end at the inner boundaries.
 %
@@ -108,7 +109,7 @@ fprintf('GOS for %d grains: median %.2f degree; maximum %.1f degree\n',...
   max(GOS./degree,[],'omitnan'));
 
 %%
-% Of the 377 grains the median spread is 0.69° and the largest 6.6°. The
+% Of the 377 grains the median spread is 0.64° and the largest 6.6°. The
 % map is not uniform. Some grains have much more internal orientation
 % variation than their neighbours, producing an order-of-magnitude spread.
 %
@@ -132,7 +133,7 @@ fprintf('Crystal-frame axis density: %.2f to %.2f mrd\n',...
   crystalDensityRange);
 
 %%
-% The range is 0.83 to 1.21 times uniform. In crystal coordinates the axes
+% The range is 0.81 to 1.23 times uniform. In crystal coordinates the axes
 % are therefore close to evenly distributed, with a slight preference for
 % $[101]$. A colour key shows where those directions occur in the map.
 
@@ -204,7 +205,7 @@ fprintf('Specimen-frame axis density: %.2f to %.2f mrd\n',...
   specimenDensityRange);
 
 %%
-% This distribution runs from 0.24 to 6.77 times uniform. The same axes that
+% This distribution runs from 0.21 to 6.92 times uniform. The same axes that
 % were spread evenly over the crystal are strongly clustered in the
 % specimen frame. Loading is defined in this frame, which makes the
 % clustering useful. Texture and a few highly deformed grains can also
