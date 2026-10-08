@@ -378,6 +378,7 @@ copy; only what is still open is summarised here.
 | B13 | The 5.6.0 download link on the website is broken | 1 | 0 | bug | — | #687 |
 | B14 | Better advertisement of the toolbox | 1 | 1 | idea | — | — |
 | B15 | Add a `CITATION.cff` so GitHub shows how to cite MTEX. A draft (authors Hielscher, Bachmann, Kilian, Niessen, Nyyssönen, ...) is stashed in the repository as "CITATION.cff for MTEX, to add later (TODO B15)": `git stash list`, then `git checkout stash@{N}^3 -- CITATION.cff` | 1 | 0 | planned | — | — |
+| B16 | Host large data files as assets of a GitHub release `data` on `mtex-toolbox/mtex` instead of Git LFS: upload `SmallIN100_MeshStats.dream3d` (176 MB), let `mtexdata` fetch it from `releases/download/data/<file>` and cache it in `data/`, point its six callers at `mtexdata`, `git rm` the file and drop the `*.dream3d` LFS rule. The twinTree `.mat` files of `br/latticeDeformation` (18/32/93 MB) go to the same release once they may be public | 1 | 0 | planned | — | tools/mtexdata.m, .gitattributes |
 
 ---
 
