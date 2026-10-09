@@ -52,7 +52,7 @@ for k = 1:maxIter
   rd = c - mul(At,lambda) - s;
   mu = sum(x.*s,1) / n;
   ok = vecnorm(rp) <= tol*(1+vecnorm(y)) & vecnorm(rd) <= tol*(1+vecnorm(c)) & ...
-    mu <= tol*(1+abs(sum(c.*x,1)));
+    n*mu <= tol*(1+abs(sum(c.*x,1)));
   if all(ok | isnan(mu)), break; end
 
   % Newton step towards the central path at 0.3 mu
