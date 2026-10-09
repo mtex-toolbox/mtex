@@ -47,7 +47,7 @@ switch s(1).type
         
     if isempty(b) % we are going to remove some points
       
-      if any(s(1).subs{1}) % maybe there is nothing to do?
+      if any(s(1).subs{1},'all') % maybe there is nothing to do?
         ebsd = subsasgn@dynProp(ebsd,s(1),[]);
         ebsd.pos = subsasgn(ebsd.pos,s(1),[]);
         ebsd.rotations = subsasgn(ebsd.rotations,s(1),[]);
