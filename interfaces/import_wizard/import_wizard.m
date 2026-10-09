@@ -16,7 +16,6 @@ classdef import_wizard < matlab.apps.AppBase
 
   properties (Access = public)
     UIFigure                       matlab.ui.Figure
-    EBSDDataAnalysisPanel          matlab.ui.container.Panel
     MainLayout                     matlab.ui.container.GridLayout
     LeftPanel                      matlab.ui.container.Panel
     LeftLayout                     matlab.ui.container.GridLayout
@@ -34,7 +33,6 @@ classdef import_wizard < matlab.apps.AppBase
     DataSetList                    matlab.ui.control.ListBox     % everything the selected file offers to import:
                                                                  % its data sets times the recorded / post
                                                                  % processed versions. Selecting one imports it.
-    CurrentData                    matlab.ui.control.Table       % basic file info, 2-column label/value
     PhaseTable                     matlab.ui.control.Table
     VariableNameField              matlab.ui.control.EditField   % variable name for "Import to variable"
     ExportButton                   matlab.ui.control.Button
@@ -53,9 +51,10 @@ classdef import_wizard < matlab.apps.AppBase
     PFGrid                         matlab.ui.container.GridLayout
     ImagesTab                      matlab.ui.container.Tab
     PFMillerField                  matlab.ui.control.EditField   % 1x3 array
+    KeyAxes                        matlab.ui.control.UIAxes      % IPF key of the phase clicked in PhaseTable, see plotKey
     PFAxes                         matlab.ui.control.UIAxes      % 1x3 array; built lazily, see ensureTabAxesBuilt
     ImagesAxes                     matlab.ui.control.UIAxes      % built lazily, see ensureTabAxesBuilt
-    OptTree                        matlab.ui.container.Tree      % browser for ebsd.opt, right of PhaseTable
+    OptTree                        matlab.ui.container.Tree      % file info and ebsd.opt, below the file browser
 
     CoordinatePanel                matlab.ui.container.Panel
     CoordinateLayout               matlab.ui.container.GridLayout
@@ -82,6 +81,7 @@ classdef import_wizard < matlab.apps.AppBase
                                 % one entry per row of DataSetList: which
                                 % data set of the file and which version
     SelectedImagePath cell = {} % field-name path of the OptTree's selected image node
+    KeyPhase double = []        % the phase KeyAxes shows
     IPFKeys cell = {}           % precomputed ipfColorKey per phase, shared
                                 % by the IPF X/Y/Z tabs (they only differ by
                                 % the ipfDirection)
@@ -135,14 +135,7 @@ classdef import_wizard < matlab.apps.AppBase
       catch
       end
 
-      app.EBSDDataAnalysisPanel = uipanel(app.UIFigure, ...
-        'Title', 'MTEX Import Wizard', ...
-        'FontWeight', 'bold', ...
-        'FontSize', 18, ...
-        'Units', 'normalized', ...
-        'Position', [0 0 1 1]);
-
-      app.MainLayout = uigridlayout(app.EBSDDataAnalysisPanel, ...
+      app.MainLayout = uigridlayout(app.UIFigure, ...
         'ColumnWidth', {leftWidth, '1x'}, ...
         'RowHeight', {'1x'}, ...
         'ColumnSpacing', 12, ...
@@ -154,22 +147,21 @@ classdef import_wizard < matlab.apps.AppBase
 
       app.LeftLayout = uigridlayout(app.LeftPanel, ...
         'ColumnWidth', {'1x'}, ...
-        'RowHeight', {'1x', 210, 80}, ...
+        'RowHeight', {'3x', '2x', 80}, ...
         'RowSpacing', 10, ...
         'Padding', [0 0 0 0]);
 
       createFileBrowser(app)
 
-      % basic file info as a 2-column label/value table (see
-      % updateCurrentDataInfo) instead of free-form text lines
-      app.CurrentData = uitable(app.LeftLayout, ...
-        'ColumnName', {'Property','Value'}, ...
-        'RowName', {}, ...
-        'ColumnWidth', {90, '1x'}, ...
-        'FontSize', app.FontSize - 1);
-      app.CurrentData.Layout.Row = 2;
-      app.CurrentData.Data = cell2table({'Status','No EBSD data loaded'}, ...
-        'VariableNames',{'Property','Value'});
+      % the file's own rows, then the full ebsd.opt structure (see
+      % updateCurrentDataInfo) - selecting an image-shaped field shows it
+      % in the Images tab (see OptTreeSelectionChanged)
+      app.OptTree = uitree(app.LeftLayout, ...
+        'FontSize', app.FontSize - 1, ...
+        'SelectionChangedFcn', createCallbackFcn(app, @OptTreeSelectionChanged, true));
+      app.OptTree.Layout.Row = 2;
+      uitreenode(app.OptTree, 'Text', 'Status: No EBSD data loaded', ...
+        'NodeData', struct('Type','Field'));
 
       app.RightPanel = uipanel(app.MainLayout, 'BorderType', 'none');
       app.RightPanel.Layout.Row = 1;
@@ -200,7 +192,7 @@ classdef import_wizard < matlab.apps.AppBase
       % its branch in place; double-clicking (or pressing Enter) descends
       % into a folder or imports a file, Backspace navigates up. Merely
       % selecting a file (click or arrow keys, see SelectionChangedFcn)
-      % triggers a fast headerOnly preview into the file info table below,
+      % triggers a fast headerOnly preview into the info tree below,
       % without touching the actually imported/plotted data set.
       app.FileBrowserPanel = uipanel(app.LeftLayout, 'BorderType', 'line');
       app.FileBrowserPanel.Layout.Row = 1;
@@ -311,7 +303,7 @@ classdef import_wizard < matlab.apps.AppBase
       labels = cellstr(app.CoordinateSystems.Label);
 
       % top-right corner of the right panel: fixed width/height, alongside
-      % the phase table (fixed, left) and the opt tree (flexible, middle)
+      % the phase table and its IPF key
       % no panel title - the two labels below say what these are, and the
       % title bar cost the whole top row its height
       app.CoordinatePanel = uipanel(app.RightLayout, ...
@@ -412,12 +404,11 @@ classdef import_wizard < matlab.apps.AppBase
     end
 
     function createRightPanel(app)
-      % row 1: PhaseTable (fixed, left - wide enough for its own column
-      % widths below, ~645px, plus a little slack), OptTree (flexible,
-      % middle), CoordinatePanel (fixed, right - added by
-      % createCoordinateControls); row 2: TabGroup spanning all 3 columns
+      % row 1: PhaseTable (flexible, left), KeyAxes (fixed, middle),
+      % CoordinatePanel (fixed, right - added by createCoordinateControls);
+      % row 2: TabGroup spanning all 3 columns
       app.RightLayout = uigridlayout(app.RightPanel, ...
-        'ColumnWidth', {817,'1x',300}, ...
+        'ColumnWidth', {'1x',210,300}, ...
         'RowHeight', {208, '1x'}, ...  % the coordinate panel's content height
         'RowSpacing', 8, ...
         'ColumnSpacing', 8, ...
@@ -438,13 +429,10 @@ classdef import_wizard < matlab.apps.AppBase
       app.PhaseTable.ColumnWidth = ...
         {42, 48, 125, 70, 52, 78, 48, 48, 48, 52, 52, 52, 92};
 
-      % browser for the full ebsd.opt structure - selecting an image-shaped
-      % field shows it in the Images tab (see OptTreeSelectionChanged)
-      app.OptTree = uitree(app.RightLayout, ...
-        'FontSize', app.FontSize - 1, ...
-        'SelectionChangedFcn', createCallbackFcn(app, @OptTreeSelectionChanged, true));
-      app.OptTree.Layout.Row = 1;
-      app.OptTree.Layout.Column = 2;
+      app.KeyAxes = uiaxes(app.RightLayout);
+      app.KeyAxes.Layout.Row = 1;
+      app.KeyAxes.Layout.Column = 2;
+      axis(app.KeyAxes, 'off')
 
       createTabs(app)
       app.TabGroup.Layout.Column = [1 3];
@@ -521,8 +509,8 @@ classdef import_wizard < matlab.apps.AppBase
       % appended (see the comment in createTabs), it is appended after the
       % property map tabs of an imported data set, see populateMapTabs -
       % which is also why it does not exist before the first import. Image
-      % selection happens via the OptTree (right of PhaseTable, see
-      % createRightPanel/OptTreeSelectionChanged), so this tab is just the
+      % selection happens via the OptTree (see
+      % OptTreeSelectionChanged), so this tab is just the
       % axes - built lazily, see ensureTabAxesBuilt.
       app.ImagesTab = uitab(app.TabGroup, 'Title', 'Images', ...
         'ForegroundColor', app.TabColors.Images);
@@ -937,7 +925,7 @@ classdef import_wizard < matlab.apps.AppBase
       setImportStatus(app, 'loading', fileName)
       opts = importOptions(app);
       try
-        % the app says what it found in its own info table, so a loader
+        % the app says what it found in its own info tree, so a loader
         % writing to the command window would only be talking past it
         ebsdData = EBSD.load(filePath, 'wizard', 'silent', opts{:});
       catch ME
@@ -958,6 +946,7 @@ classdef import_wizard < matlab.apps.AppBase
       app.PreviewFilePath = app.LoadedFilePath;
       app.PFODFKey = "";
       app.IPFKeys = {};
+      app.SelectedImagePath = {};
 
       markLoadedDataSet(app, ebsdData)
 
@@ -974,10 +963,10 @@ classdef import_wizard < matlab.apps.AppBase
 
       % --- deferred setup: only appends tabs / updates values, it never
       % deletes or reorders (that would blank the visible plot) ----------
-      updateCurrentDataInfo(app, app.ebsd, filePath, false)
       app.ExportButton.Text = 'Import to variable';
-      populateMapTabs(app)
-      populateImagesSelector(app)
+      plotKey(app, dominantEnabledPhase(app, find(app.PhaseTable.Data.Plot)))
+      populateMapTabs(app)         % creates the Images tab the info tree dims
+      updateCurrentDataInfo(app, app.ebsd, filePath, false)
     end
 
     function dropMapTabs(app)
@@ -1018,31 +1007,6 @@ classdef import_wizard < matlab.apps.AppBase
       % already drawn IPF Z plot
       app.LastSig.Maps = repmat("", 1, max(1, numel(app.MapNames)));
       app.LastSig.Images = "";
-    end
-
-    function populateImagesSelector(app)
-      % (re)build the OptTree from ebsd.opt: one node per field, image-
-      % shaped fields (numeric matrix >= 100x100, same criterion the old
-      % dropdown used) are selectable and show up in the Images tab,
-      % struct fields recurse as branches, everything else is an
-      % informational leaf. The Images tab is dimmed if no image exists
-      % anywhere in the tree.
-      delete(app.OptTree.Children)
-      app.SelectedImagePath = {};
-      try
-        s = app.ebsd.opt;
-      catch
-        s = struct();
-      end
-      hasImage = false;
-      if isstruct(s) && isscalar(s)
-        hasImage = populateOptNode(app, app.OptTree, s, {});
-      end
-      if hasImage
-        app.ImagesTab.ForegroundColor = app.TabColors.Images;
-      else
-        app.ImagesTab.ForegroundColor = app.TabColors.Disabled;
-      end
     end
 
     function hasImage = populateOptNode(app, parentNode, s, pathPrefix)
@@ -1443,6 +1407,23 @@ classdef import_wizard < matlab.apps.AppBase
       end
     end
 
+    function plotKey(app, phaseId)
+      % the IPF key of one phase beside the phase table: the phase clicked
+      % there, after an import the dominant one
+      app.KeyPhase = phaseId;
+      resetAxes(app, app.KeyAxes)
+      axis(app.KeyAxes, 'off')
+      app.KeyAxes.Toolbar.Visible = 'off';
+      disableDefaultInteractivity(app.KeyAxes)
+      if isempty(phaseId) || ~isa(app.ebsd.CSList(phaseId), 'crystalSymmetry')
+        return
+      end
+
+      % the direction map, since plot(key) asks for an mtexFigure and opens one
+      key = ipfKeyForPhase(app, phaseId);
+      plot(key.dirMap, 'parent', app.KeyAxes)
+    end
+
     function key = ipfKeyForPhase(app, phaseId)
       % one precomputed ipfColorKey per phase, shared by the IPF X/Y/Z tabs,
       % which only set its ipfDirection - ipfColorKey is a handle class
@@ -1713,7 +1694,9 @@ classdef import_wizard < matlab.apps.AppBase
       % basic information about the given data set: file name, spatial
       % extent in scan units, grid type/dimensions, grid resolution and,
       % when they can be determined, the vendor, file size and creation
-      % date - as a 2-column Property/Value table.
+      % date - as the leading rows of the info tree, followed by one node
+      % per field of ebsd.opt, see populateOptNode. The Images tab of an
+      % imported data set is dimmed if its opt holds no image.
       %
       % ebsd may be a headerOnly preview (no positions/orientations) as
       % well as a fully imported data set - isPreview only controls the
@@ -1753,7 +1736,24 @@ classdef import_wizard < matlab.apps.AppBase
       created = creationDateLabel(app, ebsd, filePath);
       if ~isempty(created), rows(end+1,:) = {'Created', created}; end
 
-      app.CurrentData.Data = cell2table(rows, 'VariableNames', {'Property','Value'});
+      delete(app.OptTree.Children)
+      for k = 1:size(rows,1)
+        uitreenode(app.OptTree, 'Text', [rows{k,1} ': ' rows{k,2}], ...
+          'NodeData', struct('Type','Field'));
+      end
+
+      try
+        s = ebsd.opt;
+      catch
+        s = struct();
+      end
+      hasImage = isstruct(s) && isscalar(s) && populateOptNode(app, app.OptTree, s, {});
+      if isPreview, return, end
+      if hasImage
+        app.ImagesTab.ForegroundColor = app.TabColors.Images;
+      else
+        app.ImagesTab.ForegroundColor = app.TabColors.Disabled;
+      end
     end
 
     function u = scanUnitLabel(~, ebsd)
@@ -1976,6 +1976,7 @@ classdef import_wizard < matlab.apps.AppBase
 
       % drop the caches that carry the previous symmetry
       if numel(app.IPFKeys) >= row, app.IPFKeys{row} = []; end
+      if row == app.KeyPhase, plotKey(app, row), end
       app.PFODF = [];
       app.PFODFKey = "";
       app.PFODFCorr = [];
@@ -2268,7 +2269,7 @@ classdef import_wizard < matlab.apps.AppBase
 
     function previewEBSDData(app, filePath)
       % lightweight, non-intrusive preview: a headerOnly load feeds the
-      % file info table (app.CurrentData) and the list of what the file
+      % info tree (app.OptTree) and the list of what the file
       % offers to import, without touching app.ebsd - so browsing around
       % never disturbs the currently plotted data set. Failures are
       % silent (no uialert) since this fires on every arrow-key move, not
@@ -2288,7 +2289,7 @@ classdef import_wizard < matlab.apps.AppBase
         % 'silent': do not print an import banner for every file browsed past
         ebsdPreview = EBSD.load(filePath, 'wizard', 'headerOnly', 'silent');
       catch
-        % not a recognized/loadable format - leave the table as is
+        % not a recognized/loadable format - leave the tree as is
         app.DataSetEntries(:) = [];
         app.DataSetList.Items = {};
         app.DataSetList.Enable = 'off';
@@ -2347,7 +2348,9 @@ classdef import_wizard < matlab.apps.AppBase
 
     function OptTreeSelectionChanged(app, event)
       node = event.SelectedNodes;
-      if ~isscalar(node) || isempty(node.NodeData) || ~strcmp(node.NodeData.Type,'Image')
+      % the images of a file that is only previewed are not loaded
+      if ~isscalar(node) || isempty(node.NodeData) || ~strcmp(node.NodeData.Type,'Image') ...
+          || app.PreviewFilePath ~= app.LoadedFilePath
         return
       end
       app.SelectedImagePath = node.NodeData.Path;
@@ -2381,6 +2384,11 @@ classdef import_wizard < matlab.apps.AppBase
     end
 
     function PhaseTableCellSelection(app, event)
+      % a click on a row shows the IPF key of its phase
+      if ~isempty(event.Indices) && ~isequal(event.Indices(1), app.KeyPhase)
+        plotKey(app, event.Indices(1))
+      end
+
       % the Phase cell doubles as the phase color swatch - clicking it
       % opens the color picker
       if isempty(event.Indices) || event.Indices(2) ~= 2
