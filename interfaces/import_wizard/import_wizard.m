@@ -26,6 +26,7 @@ classdef import_wizard < matlab.apps.AppBase
     FileBrowserPanel               matlab.ui.container.Panel
     FileBrowserLayout              matlab.ui.container.GridLayout
     UpFolderButton                 matlab.ui.control.Button
+    BrowseFolderButton             matlab.ui.control.Button
     CurrentPathLabel               matlab.ui.control.Label
     FileTree                       matlab.ui.container.Tree
     ImportStatusLabel              matlab.ui.control.Label       % hint / loading status below the file tree
@@ -205,7 +206,7 @@ classdef import_wizard < matlab.apps.AppBase
       app.FileBrowserPanel.Layout.Row = 1;
 
       app.FileBrowserLayout = uigridlayout(app.FileBrowserPanel, ...
-        'ColumnWidth', {30, '1x'}, ...
+        'ColumnWidth', {30, 30, '1x'}, ...
         'RowHeight', {24, '1x', 22, 18, 92}, ...
         'ColumnSpacing', 4, ...
         'RowSpacing', 2, ...
@@ -225,12 +226,26 @@ classdef import_wizard < matlab.apps.AppBase
         app.UpFolderButton.Text = '';
       end
 
+      app.BrowseFolderButton = uibutton(app.FileBrowserLayout, 'push', ...
+        'Text', char(8230), ...
+        'Tooltip', 'Choose a folder', ...
+        'FontWeight', 'bold', ...
+        'ButtonPushedFcn', createCallbackFcn(app, @BrowseFolderButtonPushed, true));
+      app.BrowseFolderButton.Layout.Row = 1;
+      app.BrowseFolderButton.Layout.Column = 2;
+
+      folderIcon = treeIconPath(app, 'folder');
+      if ~isempty(folderIcon)
+        app.BrowseFolderButton.Icon = folderIcon;
+        app.BrowseFolderButton.Text = '';
+      end
+
       app.CurrentPathLabel = uilabel(app.FileBrowserLayout, ...
         'Text', '', ...
         'FontSize', app.FontSize - 2, ...
         'Interpreter', 'none');
       app.CurrentPathLabel.Layout.Row = 1;
-      app.CurrentPathLabel.Layout.Column = 2;
+      app.CurrentPathLabel.Layout.Column = 3;
 
       app.FileTree = uitree(app.FileBrowserLayout, ...
         'FontSize', app.FontSize - 1, ...
@@ -239,13 +254,13 @@ classdef import_wizard < matlab.apps.AppBase
         'DoubleClickedFcn', createCallbackFcn(app, @FileTreeDoubleClicked, true), ...
         'SelectionChangedFcn', createCallbackFcn(app, @FileTreeSelectionChanged, true));
       app.FileTree.Layout.Row = 2;
-      app.FileTree.Layout.Column = [1 2];
+      app.FileTree.Layout.Column = [1 3];
 
       app.ImportStatusLabel = uilabel(app.FileBrowserLayout, ...
         'HorizontalAlignment', 'center', ...
         'FontSize', app.FontSize - 2);
       app.ImportStatusLabel.Layout.Row = 3;
-      app.ImportStatusLabel.Layout.Column = [1 2];
+      app.ImportStatusLabel.Layout.Column = [1 3];
       setImportStatus(app, 'idle')
 
       createDataSetControls(app)
@@ -266,7 +281,7 @@ classdef import_wizard < matlab.apps.AppBase
         'FontWeight', 'bold', ...
         'FontSize', app.FontSize - 2);
       app.DataSetListLabel.Layout.Row = 4;
-      app.DataSetListLabel.Layout.Column = [1 2];
+      app.DataSetListLabel.Layout.Column = [1 3];
 
       app.DataSetList = uilistbox(app.FileBrowserLayout, ...
         'Items', {}, ...
@@ -275,7 +290,7 @@ classdef import_wizard < matlab.apps.AppBase
         'Tooltip', 'Select what to import from the file above', ...
         'ValueChangedFcn', createCallbackFcn(app, @DataSetListValueChanged, true));
       app.DataSetList.Layout.Row = 5;
-      app.DataSetList.Layout.Column = [1 2];
+      app.DataSetList.Layout.Column = [1 3];
     end
 
     function ensureAnalysisUI(app)
@@ -2298,6 +2313,13 @@ classdef import_wizard < matlab.apps.AppBase
         return
       end
       navigateToFolder(app, parentFolder)
+    end
+
+    function BrowseFolderButtonPushed(app, ~)
+      % the system folder dialog reaches other drives and network shares
+      folder = uigetdir(char(app.CurrentFolder), 'Select the data folder');
+      figure(app.UIFigure) % the dialog leaves the wizard behind other windows
+      if ischar(folder), navigateToFolder(app, folder), end
     end
 
     function TabSelectionChanged(app, ~)
