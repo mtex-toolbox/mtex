@@ -52,7 +52,7 @@ elseif any(isnull(dot(sR.N,center))) % if center is at the boundary
   rho = mod(rho,pi) * 2;
 
 elseif ~isempty(sR.vertices) && get_option(varargin,'maxAngle',inf) == inf
-  [irho,omega] = correctAngle(sR,rx);
+  [irho,omega] = correctAngle(sR,center,rx);
 
   rho = interp1(irho,omega,rho);
 end
@@ -66,53 +66,31 @@ end
 
 end
 
-function [rho,omega] = correctAngle(sR,rx)
+function [rho,omega] = correctAngle(sR,center,rx)
+% the azimuth reparametrised by the distance to the boundary, the vertices of a triangle as knots
 
 rho = linspace(0,2*pi,1000);
-
 v = sR.vertices;
-%v = v([1 3 2]);
-
-%n1 = rx - sR.center;
-%n1 = normalize(n1 - dot(n1,sR.center) * sR.center);
-
-n1 = normalize(cross(rx,sR.center));
-
-r = rotation.byAxisAngle(sR.center,rho(1:end-1));
-
-n = r * n1;
-
-% compute the distance between the center and any boundary point
-omega = min(angle(cross_outer(sR.N,n),sR.center));
-
-% ensure vertices are at 0, 120 and 240 degree
-% midpoints
-%mp = v + v([2,3,1]);
-%mp = mp.normalize;
-
-
 if length(v) == 3
-  
-  rho_v = round(1000*sort(calcAngle(sR.center,rx,v))/2/pi);
-  if rho_v(1) < 10, rho_v(1) = [];end
-  
-  ind = 1:rho_v(1)-1;
-  omega(ind) = omega(ind) ./ sum(omega(ind)) / 3;
-  ind = rho_v(1):rho_v(2)-1;
-  omega(ind) = omega(ind) ./ sum(omega(ind)) / 3;
-  ind = rho_v(2):length(omega);
-  omega(ind) = omega(ind) ./ sum(omega(ind)) / 3;
-  
+  rho_v = calcAngle(center,rx,v);
+  rho = unique([rho,rho_v(:).']);
 end
 
+% the distance between the center and the boundary, integrated over the azimuth
+n = rotation.byAxisAngle(center,rho) * normalize(cross(rx,center));
+omega = min(angle(cross_outer(sR.N,n),center));
+d = (omega(1:end-1) + omega(2:end)) / 2 .* diff(rho);
 
-omega = 2*pi*cumsum([0,omega./ sum(omega)]);
+% every arc between two vertices a third, the one across rho = 0 counted once
+if length(v) == 3
+  arc = mod(cumsum(ismember(rho(1:end-1),rho_v)),3) + 1;
+  s = accumarray(arc(:),d(:));
+  d = d ./ s(arc).' / 3;
+end
 
-
-
+omega = 2*pi*cumsum([0,d./sum(d)]);
 
 end
-%plot(omega)
 
 function tf = tangentIsNull(rx,center)
 % rx is useless as a rho = 0 reference once it has no component perpendicular
