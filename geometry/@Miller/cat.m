@@ -13,7 +13,7 @@ for i = 1:numel(varargin)
     vx{i} = ms.x;
     vy{i} = ms.y;
     vz{i} = ms.z;
-    if ms.CS ~= m.CS
+    if ~eqTol(ms.CS,m.CS)
       error('I can not store Miller indices with respect to different crystal symmetries within one list');
     end
     
