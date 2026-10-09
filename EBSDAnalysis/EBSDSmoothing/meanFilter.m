@@ -6,15 +6,17 @@ classdef meanFilter < EBSDFilter
   %
   % Syntax
   %   F = meanFilter
-  %   F = meanFilter('weights',ones(5))
+  %   F = meanFilter('numNeighbours',2)
+  %   F = meanFilter('weights',ones(3))
   %   ebsd = smooth(ebsd,F)
   %
   % Options
-  %  weights - the convolution kernel, ones(3) by default
+  %  numNeighbours - the pixels within that many steps to a side, 1 by default
+  %  weights       - the convolution kernel, the pixel and its four neighbours by default
   %
   % Class Properties
   %  weights       - the convolution kernel
-  %  numNeighbours - half the width of the kernel
+  %  numNeighbours - half the width of the kernel, the rings on a hexagonal grid
   %  isHex         - is the map on a hexagonal grid
   %
   % See also
@@ -32,7 +34,8 @@ classdef meanFilter < EBSDFilter
   methods
 
     function F = meanFilter(varargin)      
-      F.weights = get_option(varargin,'weights',ones(3));
+      F.numNeighbours = get_option(varargin,'numNeighbours',1);
+      F.weights = get_option(varargin,'weights',F.weights);
     end
     
     function n = get.numNeighbours(F)
@@ -40,7 +43,8 @@ classdef meanFilter < EBSDFilter
     end
     
     function set.numNeighbours(F,n)
-      F.weights = ones(2*n+1);
+      [i,j] = meshgrid(-n:n);
+      F.weights = double(abs(i) + abs(j) <= n);
     end
     
     function plot(F)
@@ -49,83 +53,44 @@ classdef meanFilter < EBSDFilter
     
     function ori = smooth(F,ori,quality)
 
-      % precompute neigbour ids
-      if F.isHex
-        idNeighbours = hexNeighbors(size(ori));
-      else
-        idNeighbours = squareNeighbors2(size(ori));
-      end
-            
-      % map to mean
+      % the tangent vectors at the mean, zero and weightless where nothing is measured
       [oriMean,ori] = mean(ori);
-      
-      % map quaternions into tangential space
       tq = log(ori,oriMean,SO3TangentSpace.rightVector,'noSymmetry');
-      
-      for j = 1:F.numNeighbours
-        
-        ntq = tq(idNeighbours);
-        
-        nq = quality + quality(idNeighbours);
-        
-        denominator = sum(nq,3,'omitnan');
-        denominator(denominator==0) = inf;
-        tq = (quality .* tq + sum(nq .* ntq,3,'omitnan')) ./ denominator;
-     
-      end
-      
-      ori = exp(oriMean,tq,SO3TangentSpace.rightVector);
-            
-    end
-    
-    function ori = smooth_old(F,ori,quality)
+      w = quality .* ~isnan(tq.x);
+      T = cat(3,tq.x,tq.y,tq.z);
+      T(isnan(T)) = 0;
 
+      % the sum over the window, nothing outside the map or the grain
       if F.isHex
-        warning(['Hexagonal grids are not yet fully supportet for the meanFilter. ' ...
-          'It might give reasonable results anyway']);
+        S = @hexSum; nPass = F.numNeighbours;
+      else
+        S = @(A) filter2(F.weights,A); nPass = 1;
       end
-      
-      ori(quality==0) = nan;
-      
-      % map to mean
-      [qmean,q] = mean(ori);
-      q = reshape(inv(qmean)*q,size(ori)); %#ok<MINV>
-            
-      % prepare the result
-      tqMean = zeros([size(q),3]);
-      
-      nrow = size(F.weights,1)-1;
-      drowU = fix(nrow/2);
-      drowL = nrow - drowU;
-      ncol = size(F.weights,2)-1;
-      dcolL = fix(ncol/2);
-      dcolR = ncol - dcolL;
-            
-      % make q a bit larger
-      q = [quaternion.nan(drowU,size(q,2)+ncol);...
-        [quaternion.nan(size(q,1),dcolL),...
-        q,quaternion.nan(size(q,1),dcolR)];...
-        quaternion.nan(drowL,size(q,2)+ncol)];
 
-      % map quaternions into tangential space
-      tq = fullDouble(log(q));
-      count = zeros(size(tqMean));
-      
-      % take the mean
-      for i = 1:nrow+1
-        for j = 1:ncol+1      
-          [tqMean,count] = nanplus(tqMean, ...
-          tq((1:end-nrow)+i-1,(1:end-ncol)+j-1,:),count,F.weights(i,j));        
-        end
+      % the weighted mean of the window, the mean orientation where it holds no measurement
+      for j = 1:nPass
+        den = S(w);
+        den(den==0) = inf;
+        for k = 1:3, T(:,:,k) = S(w.*T(:,:,k)) ./ den; end
       end
-             
-      tqMean = reshape(tqMean ./ count,[],3);
-      
-      % map back to orientation space
-      q = quaternion(qmean) * reshape(expquat(tqMean),size(q) - [ncol,nrow]);
-      ori.a = q.a; ori.b = q.b; ori.c = q.c; ori.d = q.d;
-            
+
+      ori = exp(oriMean,vector3d(T(:,:,1),T(:,:,2),T(:,:,3)),SO3TangentSpace.rightVector);
+
     end
-    
+
   end
+end
+
+
+function A = hexSum(A)
+% the sum over every pixel and its six neighbours on a hexagonal grid
+
+% two rows of zero padding keep the parity of the rows
+sz = size(A);
+P = zeros(sz+[4 2]);
+P(3:end-2,2:end-1) = A;
+id = hexNeighbors(size(P));
+P = P + sum(P(id),3);
+A = P(3:end-2,2:end-1);
+
 end
