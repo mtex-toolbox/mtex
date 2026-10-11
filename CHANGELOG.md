@@ -88,6 +88,11 @@ port).
 
 ### Interfaces
 
+- an `h5oina` that keeps its diffraction patterns (`Data/Processed Patterns`, LZF
+  compressed, filter 32000) imported without a single property: the additions reader
+  called `h5read` on every data set of the group and one `try/catch` dropped them all.
+  `collectDataSets` now leaves a data set with more values than the map has pixels
+  unread
 - `loadHelper` guessed the unit of Euler columns (radians unless an angle exceeded 15)
   and ignored `'radians'`; they are degrees unless `'radians'` is given, as the vector
   columns were. `'passive'` was inverted by the loader and again by

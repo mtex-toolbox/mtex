@@ -1758,7 +1758,7 @@ for g = 1:numel(groups)
   item.group = gConf;
 
   opt = struct("root", "/", "optional", optional, "name", "prop", ...
-    "level", 1, "multiple", false, "recursive", true);
+    "level", 1, "multiple", false, "recursive", true, "maxNumel", nPixel);
 
   new_data = fetch_from_group(info_struct, item, opt);
 
@@ -2048,9 +2048,13 @@ function raw_data = fetch_from_group(info_struct, config_item, options)
 % group, prefixing the field names with the subgroup name. Only the
 % additions auto-discovery asks for this - a header group has subgroups of
 % its own (Phases, Stage Position) that are read by their own config entry.
+% options.maxNumel leaves larger data sets unread, it asks for that too -
+% the diffraction patterns stored next to the map are not a property of it.
   raw_data = struct();
 
   recursive = isfield(options,'recursive') && options.recursive;
+  maxNumel = inf;
+  if isfield(options,'maxNumel'), maxNumel = options.maxNumel; end
 
   group_path = get_hdf5_path(info_struct, config_item.group, ...
     "root", options.root, ...
@@ -2078,13 +2082,13 @@ function raw_data = fetch_from_group(info_struct, config_item, options)
     print_debug(label, pathLabel, options.level);
 
     raw_data{k} = collectDataSets(info_struct.Filename, group, ...
-      char(group_path{k}), '', struct(), recursive);
+      char(group_path{k}), '', struct(), recursive, maxNumel);
   end
 
   if ~options.multiple, raw_data = raw_data{1}; end
 end
 
-function s = collectDataSets(fname, group, group_path, prefix, s, recursive)
+function s = collectDataSets(fname, group, group_path, prefix, s, recursive, maxNumel)
 % Read every data set of a group into a struct, optionally descending into
 % its subgroups. An Oxford EDS map sorts its data sets by what was computed
 % from a spectrum - one "Co Ka1" under "Window Integral" and, once the map
@@ -2093,6 +2097,7 @@ function s = collectDataSets(fname, group, group_path, prefix, s, recursive)
 
   if isfield(group,'Datasets')
     for i = 1:numel(group.Datasets)
+      if prod(group.Datasets(i).Dataspace.Size) > maxNumel, continue; end
       raw_name  = string(group.Datasets(i).Name);
       cleanName = [prefix validFieldName(clean_string(raw_name))];
       s.(cleanName) = h5read(fname, string(group_path) + "/" + raw_name);
@@ -2104,7 +2109,7 @@ function s = collectDataSets(fname, group, group_path, prefix, s, recursive)
   for k = 1:numel(group.Groups)
     sub = char(group.Groups(k).Name);
     s = collectDataSets(fname, group.Groups(k), sub, ...
-      [prefix subGroupPrefix(sub)], s, recursive);
+      [prefix subGroupPrefix(sub)], s, recursive, maxNumel);
   end
 
 end
