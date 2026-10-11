@@ -36,7 +36,7 @@ function checkSquareRoundTrip
 % format
 %
 % The orientations are the point: a .ctf is read with a correction of 180
-% degree about z and a .ang with one of 180 degree about x-y, so an exporter
+% degree about y and a .ang with one of 180 degree about x-y, so an exporter
 % that writes the map frame angles rather than the ones the format states
 % produces a file whose import is turned - which is exactly what both did.
 

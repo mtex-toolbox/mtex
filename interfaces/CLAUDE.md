@@ -19,7 +19,7 @@ File format import/export for EBSD, pole figure, ODF, orientation and grain data
 Rules:
 
 - **An exporter undoes the Euler correction its loader applies** — `eulerCorrectionRotation`
-  for the EDAX settings, a 180° z rotation for `.ctf` — or the file re-imports turned. Same
+  for the EDAX settings, a 180° y rotation for `.ctf` — or the file re-imports turned. Same
   for the header: write back what the loader put in `ebsd.opt.header`, not zeros. See
   `docs/adr/0001-ebsd-opt-header.md`.
 - `exportEBSD_h5` copies the source file and writes into the copy, driven by the record

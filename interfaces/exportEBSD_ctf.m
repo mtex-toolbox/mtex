@@ -29,7 +29,7 @@ function exportEBSD_ctf(ebsd,fName,varargin)
 % Options
 %  EulerCorrection - alignment of the Euler angle and the map reference
 %                    frame the file is written for, default is the rotation
-%                    of 180 degree about z that loadEBSD_ctf reads with
+%                    of 180 degree about y that loadEBSD_ctf reads with
 %
 % Flags
 %  manual - prompt for the microscopy parameters
@@ -59,7 +59,7 @@ if check_option(varargin,'fliplr')
 end
 
 % undo the Euler correction loadEBSD_ctf applies, the file states its own frame
-cor = get_option(varargin,'EulerCorrection',rotation.byEuler(pi,0,0));
+cor = get_option(varargin,'EulerCorrection',rotation.byAxisAngle(yvector,pi));
 ebsd.rotations = inv(cor) .* ebsd.rotations;
 
 % the crystal frames loadEBSD_ctf builds, in the default alignment

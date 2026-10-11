@@ -93,6 +93,15 @@ port).
   called `h5read` on every data set of the group and one `try/catch` dropped them all.
   `collectDataSets` now leaves a data set with more values than the map has pixels
   unread
+- Oxford maps were aligned with their Euler angles by 180 degree about z, which puts
+  Z1 into the specimen. With the map drawn x east, y south, the AZtec guide has X1 west,
+  Y1 south and Z1 out of the surface for the usual scan, i.e. 180 degree about y. The
+  `scanRotation` formatter of `loadEBSD_h5` now returns `Rx(180) * Rz(angle)`, and
+  `loadEBSD_ctf`, `loadEBSD_crc` and `exportEBSD_ctf` assume the angle pi. Every Oxford
+  import turns by 180 degree about x: IPF maps are unchanged, pole figures mirror at x.
+  In the 13 local `h5oina` files that store them, the gradients of `Pattern Center X`
+  and `Detector Distance` point along -X1 and +Y1 of the new frame, for angle pi and 0
+  alike (discussion #2636). Z1 out of the surface is not verified on a known crystal
 - `loadHelper` guessed the unit of Euler columns (radians unless an angle exceeded 15)
   and ignored `'radians'`; they are degrees unless `'radians'` is given, as the vector
   columns were. `'passive'` was inverted by the loader and again by

@@ -128,35 +128,44 @@ file seen so far, and optional under `Data Processing`, where AEVJ1_anon
 carries (30, 45, 20) degree. That is why the two data sets of AEVJ1_anon used
 to disagree by 66 degree although their `Data/Euler` are byte identical.
 
-The correction that *is* applied comes from `Header/Scanning Rotation Angle`,
-spec'd as the *"angle between the specimen tilt axis and the scanning tilt
-axis"* - a turn about the surface normal, taken as a rotation about z by the
-`map_correction` formatter `scanRotation`. This is the long known AZtec "map
-in beam view, orientations in camera view" mismatch, which the `.ctf` and
-`.crc` interfaces have to *assume* to be 180 degree (see
-`applyEulerCorrectionFixed`) while `h5oina` states it per acquisition. Across
-the 18 Oxford files at hand it is pi for 12 and 0 for 6 (`Cu_Al_NSs Cu Ref
-AD`, the four `BenWorkshop` Mg / Ti6246 maps), so it is genuinely not
-constant. A `NaN` means "unknown" and is treated as no correction.
+The correction that *is* applied has two parts, `Rx(180) * Rz(angle)`, built
+by the `map_correction` formatter `scanRotation`.
+
+The flip about x holds for every file. CS1 is right handed with Z1 pointing
+out of the surface, while a map with x east and y south has its z pointing
+into it.
+
+The angle is `Header/Scanning Rotation Angle`, spec'd as the *"angle between
+the specimen tilt axis and the scanning tilt axis"* - the in plane turn of
+the scan against CS1. Across the 18 Oxford files at hand it is pi for 12 and
+0 for 6 (`Cu_Al_NSs Cu Ref AD`, the four `BenWorkshop` Mg / Ti6246 maps). A
+`NaN` means "unknown" and is taken as 0. With pi, the usual case, the
+correction is a rotation by 180 degree about y: X1 west, Y1 south, Z1 out of
+the screen - the frame the AZtec user guide draws for this scan direction.
+The `.ctf` and `.crc` interfaces state no angle and assume exactly this, see
+`applyEulerCorrectionFixed`.
 
 It is read with `search_free` anchored at `/EBSD/Header/...`, not with
 `search_set`: `Data Processing/Header` does not repeat the angle, and the two
 versions of a map must not end up in different frames.
 
-Verified against the one map that exists in both formats,
-`publications/23_JeanSebastian/Archive/oli_test.ctf` and `oli_test.h5oina`
-(`AcqE1/2/3 = 0` and `Specimen Orientation Euler = 0`, i.e. CS0 = CS1, so both
-files carry the same Euler numbers). Before this correction the two imports
-had identical positions but orientations 180.0000 degree apart at all 29709
-indexed pixels; now they agree to 1.1e-4 degree, which is the float32 against
-text precision difference that the 2023 script `h5oina_does_not_filter.m` next
-to those files already attributed to rounding.
+The per pixel `Data/Pattern Center X` and `Data/Detector Distance` say the
+same as the angle (discussion #2636): the pattern centre origin is the bottom
+left corner of the pattern, so PCX falls along X1 and the detector distance
+grows along Y1. In all 13 local files that store them PCX falls from left to
+right and the distance grows from top to bottom when the angle is pi, and
+both reverse for the one file with 0.
 
-Two things this does **not** settle. The twin test shows `h5oina` and `.ctf`
-now agree, not that the shared 180 degree is physically right - that needs a
-specimen of known orientation, see `quartz_orientation_calibration
-...h5oina`, or a rotation/tilt test. And the sign of the angle is unverified:
-every value seen so far is 0 or pi, which are their own inverses.
+`oli_test.ctf` and `oli_test.h5oina` in `publications/23_JeanSebastian/Archive`
+are the one map that exists in both formats (`AcqE1/2/3 = 0` and `Specimen
+Orientation Euler = 0`, i.e. CS0 = CS1). Their imports agree to 1.1e-4
+degree, the float32 against text precision.
+
+Two things this does **not** settle. Z1 pointing out of the surface is taken
+from the AZtec guide, not measured - that needs a specimen of known
+orientation, see `quartz_orientation_calibration ...h5oina`, or a
+rotation/tilt test. And the sign of the angle is unverified: every value seen
+so far is 0 or pi, which are their own inverses.
 `Header/Detector Orientation Euler` (CS3 -> microscope) plays no role in this.
 
 ## The traditional Oxford formats, ctf and crc/cpr
@@ -188,8 +197,7 @@ Two reasons not to simply mirror the h5oina fix here:
   again would double count.
 * neither format appears to state anything like `Scanning Rotation Angle`.
   The `.ctf` header carries `TiltAngle` and `TiltAxis` but nothing for the
-  beam view against camera view turn, which would mean the hardcoded 180
-  degree there is unavoidable rather than lazy.
+  turn of the scan, so the angle of 180 degree has to be assumed there.
 
 Deciding this needs a `.ctf` with a non zero `AcqE` together with the h5oina
 of the same map. `oli_test` has `AcqE = 0` and cannot distinguish the cases;

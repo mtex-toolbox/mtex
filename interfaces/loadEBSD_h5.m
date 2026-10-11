@@ -737,14 +737,14 @@ function out = map_correction_default(raw_data)
 end
 
 function out = map_correction_scanRotation(raw_data)
-% A single angle about the surface normal.
+% A single angle about the surface normal, on top of the flip about x.
 %
 % Oxford's "Scanning Rotation Angle" - the angle between the specimen tilt
-% axis and the scanning tilt axis - is the turn between the frame the map
-% is written in and the frame the Euler angles refer to, the long known
-% AZtec "map in beam view, orientations in camera view" mismatch. Unlike
-% the .ctf and .crc interfaces, which have to assume 180 degree, the value
-% is stated in the file.
+% axis and the scanning tilt axis - is the in plane turn between the map
+% and the frame CS1 the Euler angles refer to. The flip about x is there
+% for every angle: the map runs y down, so its z points into the surface
+% while Z1 points out of it. The .ctf and .crc interfaces have to assume
+% the angle to be 180 degree, here it is stated in the file.
 
   try
     format = determineformate(raw_data);
@@ -755,11 +755,10 @@ function out = map_correction_scanRotation(raw_data)
   data = double(raw_data);
   data = data(1);
 
-  % the format states NaN for "unknown" - correcting by a guess is exactly
-  % what the stated value is there to avoid, so leave the data alone
+  % the format states NaN for "unknown", which is taken as no turn
   if isnan(data), data = 0; end
 
-  out = rotation.byAxisAngle(zvector, data*format);
+  out = rotation.byAxisAngle(xvector,pi) * rotation.byAxisAngle(zvector, data*format);
 
 end
 

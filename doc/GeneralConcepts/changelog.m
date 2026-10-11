@@ -35,6 +35,13 @@
 % is now the weight of the regularisation itself
 % * a Thermo Fisher (xTalView) map is aligned with its Euler angles by a half
 % turn about y, as its pixel x axis points opposite to the specimen x axis
+% * Oxford |.ctf|, |.cpr| and |.h5oina| maps are aligned with their Euler
+% angles by a half turn about y instead of about z, as $Z_1$ points out of
+% the specimen surface. IPF maps keep their colours, pole figures are
+% mirrored at the map's x axis. An |.h5oina| scan that states a rotation of
+% zero is aligned by a half turn about x. Pass
+% |'EulerCorrection',rotation.byAxisAngle(zvector,180*degree)| for the
+% previous alignment
 % * NanoMegas ASTAR .ang files are read in nanometres
 % * an orientation applied to a tangent vector gives a plain vector in the
 % specimen frame

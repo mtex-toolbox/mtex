@@ -92,7 +92,7 @@ acq = [];
 if all(isfield(header,{'AcqE1','AcqE2','AcqE3'}))
   acq = [header.AcqE1, header.AcqE2, header.AcqE3];
 end
-ebsd = applyEulerCorrectionFixed(ebsd,'.ctf',rotation.byEuler(pi,0,0),...
+ebsd = applyEulerCorrectionFixed(ebsd,'.ctf',rotation.byAxisAngle(yvector,pi),...
   varargin{:},'acquisitionEuler',acq);
 
 % a file does not change how the session plots, but a convention the caller passed does
