@@ -26,8 +26,11 @@ function  grains = loadGrains_Dream3d(fname,varargin)
 % volumes and |boundary.grainId| are meaningful right away. Pass the option
 % |'noOrientFaces'| to get the raw winding as stored in the file.
 %
+% A file without a surface mesh gives the grains of its voxel data, those
+% that <EBSD3square.calcGrains.html |calcGrains|> forms from the feature ids.
+%
 % See also
-% grain3d.load grain3d/orientFaces loadNeperTess
+% grain3d.load grain3d/orientFaces loadNeperTess loadEBSD_dream3d
 
 % Hard coded data paths 
 % (for FileVersion '8.0')
@@ -47,11 +50,12 @@ QuatsPath = feature + "/AvgQuats";
 phasePath = feature + "/Phases";
 crysmPath = "/DataStructure/DataContainer/" + ["CellEnsembleData";"Cell Ensemble Data"] + "/CrystalStructures";
 
-% check for grain data
+% without a surface mesh the grains follow from the feature ids of the voxels
 try
   grainIds = h5read_multi(fname,GrainIdPath).';
 catch
-  error('The file does not contain any grain information.')
+  grains = calcGrains(loadEBSD_dream3d(fname,varargin{:}),'grainId');
+  return
 end
 
 xyzw = h5read_multi(fname, QuatsPath)';
