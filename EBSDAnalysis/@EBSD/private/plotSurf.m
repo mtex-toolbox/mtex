@@ -21,6 +21,9 @@ alpha = get_option(varargin,'faceAlpha');
 % build the (m × n) grid of pixel positions from a flat list
 isCell = get_option(varargin,'isCell',[]);
 
+% a single color is repeated for every cell
+if isequal(size(d),[1 3]), d = repmat(d,numel(pos),1); end
+
 if size(pos,2) == 1 || isvector(pos)
   [mesh,ind] = calcMesh(pos,uC,varargin{:});
 
@@ -28,13 +31,9 @@ if size(pos,2) == 1 || isvector(pos)
   % the cells that carry a measurement are exactly the ones it filled
   isCell = false(size(mesh)); isCell(ind) = true;
 
-  d = reshape(d,size(d,1),[]);
+  d = reshape(d,numel(pos),[]);
   dMesh = nan([numel(mesh),size(d,2)]);
-  if size(d,1) == 1
-    dMesh(ind,:) = repmat(d,nnz(ind),1);
-  else
-    dMesh(ind,:) = d;
-  end
+  dMesh(ind,:) = d;
   d   = reshape(dMesh,[size(mesh),size(d,2)]);
   if numel(alpha) > 1
     meshAlpha = ones(size(mesh)); meshAlpha(ind) = alpha;

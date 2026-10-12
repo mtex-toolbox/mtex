@@ -28,7 +28,9 @@ bgColor = get_option(varargin,'bgColor',[1 1 1]);
 if ischar(bgColor) || isstring(bgColor), bgColor = str2rgb(char(bgColor)); end
 if numel(bgColor) ~= 3, bgColor = [1 1 1]; end
 
-d = reshape(d,size(d,1),[]);
+% one row per cell, a single color is repeated for every cell
+if isequal(size(d),[1 3]), d = repmat(d,numel(pos),1); end
+d = reshape(d,numel(pos),[]);
 nCh = size(d,2);   % 1 = scalar/indexed, 3 = rgb
 
 if nCh == 3
@@ -36,11 +38,7 @@ if nCh == 3
   % with bgColor; otherwise imagesc would render the NaNs black.
   C = repmat(reshape(bgColor(:).',1,1,3),img.nRows,img.nCols);
   C = reshape(C,img.nRows*img.nCols,3);
-  if size(d,1) == 1
-    C(img.sub,:) = repmat(d,numel(img.sub),1);
-  else
-    C(img.sub,:) = d;
-  end
+  C(img.sub,:) = d;
   C = reshape(C,[img.nRows,img.nCols,3]);
 
   % measured cells opaque (honouring an explicit per-pixel faceAlpha),
@@ -88,9 +86,7 @@ h = optiondraw(h,varargin{:});
 % proxy patch carrying that name and colour; the image stays out of the legend.
 name = get_option(varargin,'DisplayName');
 if ~isempty(name)
-  if size(d,1) == 1 && size(d,2) == 3
-    swatch = d;
-  elseif size(d,2) == 3
+  if nCh == 3
     swatch = d(1,:);
   else
     swatch = [0 0 0];

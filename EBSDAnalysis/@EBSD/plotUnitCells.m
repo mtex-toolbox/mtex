@@ -19,21 +19,22 @@ alpha = get_option(varargin,'faceAlpha');
 % rectangular raster, and the padding must not count towards the axis limits
 isCell = ~isnan(ebsd.phaseId);
 
-% region crop (kept here so the backends receive already-cropped data)
-if check_option(varargin,'region')
-  reg = get_option(varargin,'region');
-  ind = pos.x > reg(1) & pos.x < reg(2) & pos.y > reg(3) & pos.y < reg(4);
-  pos = pos(ind,:);
-  if numel(d) == numel(ind) || numel(ind) == size(d,1), d = d(ind,:); end
-  if numel(alpha) == numel(ind), alpha = alpha(ind); end  
-  isCell = isCell(ind);
-end
-
 % convert a color name to rgb (backend-agnostic)
 d = get_option(varargin,'FaceColor',d);
 varargin = delete_option(varargin,'FaceColor',1);
 if ischar(d) || isstring(d)
   if d == "none", d = nan(1,3); else, d = str2rgb(d); end
+end
+
+% region crop (kept here so the backends receive already-cropped data)
+if check_option(varargin,'region')
+  reg = get_option(varargin,'region');
+  ind = pos.x > reg(1) & pos.x < reg(2) & pos.y > reg(3) & pos.y < reg(4);
+  pos = pos(ind);
+  % one row per cell, a single color stays as it is
+  if ~isequal(size(d),[1 3]), d = reshape(d,numel(ind),[]); d = d(ind,:); end
+  if numel(alpha) == numel(ind), alpha = alpha(ind); end
+  isCell = isCell(ind);
 end
 
 % determine the default backend
