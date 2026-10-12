@@ -73,9 +73,9 @@ csList = get_option(varargin,'CS',csList);
 % every other scalar cell array becomes a property, the feature ids the grainId
 prop = struct;
 for name = extractAfter(ds(startsWith(ds,cellData + "/")),cellData + "/").'
-  data = read(name);
-  if size(data,1) > 1 || any(name == ["Phases","Mask"]), continue; end
-  prop.(matlab.lang.makeValidName(replace(name,"FeatureIds","grainId"))) = double(data(:));
+  nComp = h5info(fname,cellData + "/" + name).Dataspace.Size(1);
+  if nComp > 1 || any(name == ["Phases","Mask"]), continue; end
+  prop.(matlab.lang.makeValidName(replace(name,"FeatureIds","grainId"))) = double(reshape(read(name),[],1));
 end
 
 [x,y,z] = ndgrid(origin(1) + (0:sz(1)-1)*dxyz(1), ...
