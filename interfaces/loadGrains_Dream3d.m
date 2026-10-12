@@ -40,11 +40,12 @@ function  grains = loadGrains_Dream3d(fname,varargin)
 %
 Vpath = "/DataStructure/TriangleDataContainer/SharedVertexList";
 polyPath = "/DataStructure/TriangleDataContainer/SharedTriList";
-GrainIdPath = "/DataStructure/TriangleDataContainer/FaceData/FaceLabels";
-activePath = "/DataStructure/DataContainer/CellFeatureData/Active";
-QuatsPath = "/DataStructure/DataContainer/CellFeatureData/AvgQuats";
-phasePath = "/DataStructure/DataContainer/CellFeatureData/Phases";
-crysmPath = "/DataStructure/DataContainer/CellEnsembleData/CrystalStructures";
+GrainIdPath = "/DataStructure/TriangleDataContainer/" + ["FaceData";"Face Data"] + "/FaceLabels";
+feature = "/DataStructure/DataContainer/" + ["CellFeatureData";"Cell Feature Data"];
+activePath = feature + "/Active";
+QuatsPath = feature + "/AvgQuats";
+phasePath = feature + "/Phases";
+crysmPath = "/DataStructure/DataContainer/" + ["CellEnsembleData";"Cell Ensemble Data"] + "/CrystalStructures";
 
 % check for grain data
 try

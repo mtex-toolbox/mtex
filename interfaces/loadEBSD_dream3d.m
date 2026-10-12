@@ -18,12 +18,16 @@ function ebsd = loadEBSD_dream3d(fname,varargin)
 % loadGrains_Dream3d EBSD3square EBSD3square/calcGrains
 
 root = '/DataStructure/DataContainer';
-cellData = [root '/CellData/'];
 
 try
   sz     = double(h5readatt(fname,root,'_DIMENSIONS')).';
   dxyz   = double(h5readatt(fname,root,'_SPACING')).';
   origin = double(h5readatt(fname,root,'_ORIGIN')).';
+
+  % the group names come with and without spaces
+  groups = {h5info(fname,root).Groups.Name};
+  group  = @(name) [groups{strcmp(erase(groups,' '),[root '/' name])} '/'];
+  cellData = group('CellData');
   info   = h5info(fname,cellData);
 catch
   interfaceError(fname);
@@ -41,7 +45,7 @@ if any(strcmp({info.Datasets.Name},'Mask'))
 end
 
 csList = get_option(varargin,'CS',...
-  dream3dCrystalSymmetry(h5read(fname,[root '/CellEnsembleData/CrystalStructures'])));
+  dream3dCrystalSymmetry(h5read(fname,[group('CellEnsembleData') 'CrystalStructures'])));
 
 % every other scalar cell array becomes a property, the feature ids the grainId
 prop = struct;
