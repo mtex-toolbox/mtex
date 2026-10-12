@@ -12,8 +12,9 @@ File format import/export for EBSD, pole figure, ODF, orientation and grain data
   `@EBSD/export_*.m` are wrappers. Shared helpers are in `interfaces/private/`.
 - `loadEBSD_dream3d.m` and `loadEBSD_xnovo.m` return an `EBSD3square`, the voxel grid the
   3D `calcGrains` works on, with the vendor's grain label as `grainId` so that
-  `calcGrains(ebsd,'grainId')` imports its grains. Both read one vendor layout each:
-  DREAM.3D's `DataStructure/DataContainer` and GrainMapper3D's `LabDCT`.
+  `calcGrains(ebsd,'grainId')` imports its grains. The DREAM.3D loaders find their data
+  by data set name through `tools/dream3dDatasets.m`, as container and attribute matrix
+  names vary from file to file; the xnovo loader reads GrainMapper3D's `LabDCT` layout.
 - `functionSignatures.json` drives tab-completion for public loaders. Keep it in sync.
 
 Rules:

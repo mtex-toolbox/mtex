@@ -26,59 +26,51 @@ function  grains = loadGrains_Dream3d(fname,varargin)
 % volumes and |boundary.grainId| are meaningful right away. Pass the option
 % |'noOrientFaces'| to get the raw winding as stored in the file.
 %
-% A file without a surface mesh gives the grains of its voxel data, those
-% that <EBSD3square.calcGrains.html |calcGrains|> forms from the feature ids.
+% Files of DREAM3D-NX and of DREAM.3D 6 are read, whatever the data
+% containers and their attribute matrices are called. A file without a
+% surface mesh gives the grains of its voxel data, those that
+% <EBSD3square.calcGrains.html |calcGrains|> forms from the feature ids.
 %
 % See also
 % grain3d.load grain3d/orientFaces loadNeperTess loadEBSD_dream3d
 
-% Hard coded data paths 
-% (for FileVersion '8.0')
-%
-% You can adapt the data paths by making them string arrays. The function
-% will check them in the order of appearance until it finds something.
-% example:
-% Vpath = ["/DataStructure/TriangleDataContainer/SharedVertexList"; ...
-%           "/DataStructure/AlternativeDataContainer/myVertices"];
-%
-Vpath = "/DataStructure/TriangleDataContainer/SharedVertexList";
-polyPath = "/DataStructure/TriangleDataContainer/SharedTriList";
-GrainIdPath = "/DataStructure/TriangleDataContainer/" + ["FaceData";"Face Data"] + "/FaceLabels";
-feature = "/DataStructure/DataContainer/" + ["CellFeatureData";"Cell Feature Data"];
-activePath = feature + "/Active";
-QuatsPath = feature + "/AvgQuats";
-phasePath = feature + "/Phases";
-crysmPath = "/DataStructure/DataContainer/" + ["CellEnsembleData";"Cell Ensemble Data"] + "/CrystalStructures";
+ds = dream3dDatasets(fname);
 
 % without a surface mesh the grains follow from the feature ids of the voxels
-try
-  grainIds = h5read_multi(fname,GrainIdPath).';
-catch
+labels = ds(endsWith(ds,"/" + ["FaceData","Face Data"] + "/FaceLabels"));
+if isempty(labels)
   grains = calcGrains(loadEBSD_dream3d(fname,varargin{:}),'grainId');
   return
 end
 
-xyzw = h5read_multi(fname, QuatsPath)';
+% the triangle geometry is the data container of the face labels
+in = @(list,name) list(endsWith(list,"/" + name));
+mesh = ds(startsWith(ds,fileparts(fileparts(labels(1))) + "/"));
+grainIds = h5read(fname,labels(1)).';
+V = double(h5read(fname,in(mesh,"SharedVertexList")).');
+poly = h5read(fname,in(mesh,"SharedTriList")).' + 1;
 
-try
-  activeGrains = logical(h5read_multi(fname, activePath))';
-catch ME
-  activeGrains = true(size(xyzw,1),1);
+% the grain data are the attribute matrix of the mean orientations
+ori = [in(ds,"AvgQuats"); in(ds,"AvgEulerAngles")];
+assert(~isempty(ori),'The file does not contain any grain orientations.')
+feature = ds(startsWith(ds,fileparts(ori(1)) + "/"));
+
+if endsWith(ori(1),"AvgQuats")
+  % the passive rotation as (x,y,z,w), its inverse is the rotation of the voxels
+  xyzw = h5read(fname,ori(1)).';
+  q = quaternion(xyzw(:,4),-xyzw(:,1),-xyzw(:,2),-xyzw(:,3));
+else
+  eul = double(h5read(fname,ori(1)));
+  q = rotation.byEuler(eul(1,:).',eul(2,:).',eul(3,:).','ZXZ');
 end
 
-% DREAM.3D stores the passive rotation as (x,y,z,w); its inverse is the rotation of the voxels
-q = quaternion(xyzw(activeGrains,4),-xyzw(activeGrains,1),...
-  -xyzw(activeGrains,2),-xyzw(activeGrains,3));
+% the first feature is the one no voxel belongs to
+q = q(2:end);
+phaseList = double(h5read(fname,in(feature,"Phases")).') + 1;
+phaseList = phaseList(2:end);
 
-csList = dream3dCrystalSymmetry(h5read_multi(fname,crysmPath));
-
-phaseList = h5read_multi(fname,phasePath)' + 1;
-phaseList = phaseList(activeGrains,:);
-
-V = double(h5read_multi(fname,Vpath)');
-
-poly = h5read_multi(fname,polyPath)';
-poly = poly + 1;    % because dream3d indexes with 0 (see '_VertexIndices')
+crysm = in(ds,"CrystalStructures");
+csList = dream3dCrystalSymmetry(h5read(fname,crysm(1)));
 
 % calculate I_CF
 % grainIds is sorted so that grainIds(:,2) >= grainIds(:,1)>=0. That means
@@ -102,26 +94,6 @@ grains = grain3d(V,poly,I_CF,q,csList,phaseList);
 % carry no geometric meaning yet - resolve them into genuine in/out normals
 if ~check_option(varargin,'noOrientFaces')
   grains = grains.orientFaces;
-end
-
-end
-
-function out = h5read_multi(fname, datapath)
-out = [];
-for i = 1:numel(datapath)
-  try
-    out = h5read(fname,datapath(i));
-    return
-  catch e
-    if ~any(regexp(e.identifier,'h5read'))
-      rethrow(e)
-    end
-  end
-end
-
-if isempty(out)
-  error(sprintf(['component or dataset not found.\n\n' ...
-    'try h5info(fname) to get the structure of your file']))
 end
 
 end

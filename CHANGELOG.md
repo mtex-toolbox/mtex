@@ -168,6 +168,21 @@ port).
 - `grain3Boundary/calcGBND` at a misorientation weighted a face by `psi.eval(cos(omega))`;
   an `SO3Kernel` takes `cos(omega/2)`, as the planar `calcGBND` passes it. The Sigma 3
   GBCD of SmallIN100 peaks at 16.3 instead of 19.1
+- `loadGrains_Dream3d` and `loadEBSD_dream3d` read fixed paths, `FaceData`,
+  `CellFeatureData` and `CellData` under `/DataStructure/DataContainer`, and so failed
+  on the output of the current DREAM3D-NX pipelines, which write `Face Data`, `Cell
+  Feature Data` and `Cell Data` (#2633), and on every DREAM.3D 6 file. Both locate their
+  data by data set name through `interfaces/tools/dream3dDatasets.m` and read the grid
+  from the `_SIMPL_GEOMETRY` data sets of DREAM.3D 6 as well as from the attributes of
+  DREAM3D-NX. Voxel orientations come from `Quats` where there are no `EulerAngles`.
+  Checked on eight files of the simplnx `Data_Archive` release; the two files that
+  loaded before give identical grains and voxels
+- `grain3d.load` on a DREAM.3D file without a surface mesh raised "The file does not
+  contain any grain information". It returns `calcGrains(ebsd,'grainId')` of the voxel
+  data
+- `EBSD3(pos,rot,phaseId,CSList,prop)` failed with "Too many input arguments": the
+  `EBSD` constructor passes the grid options to `updateUnitCell`, and the override in
+  `@EBSD3` took the unit cell only. The override is gone (#2638)
 
 ### Documentation
 

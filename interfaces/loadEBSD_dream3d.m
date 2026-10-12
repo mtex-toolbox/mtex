@@ -14,45 +14,68 @@ function ebsd = loadEBSD_dream3d(fname,varargin)
 % Options
 %  CS - list of @crystalSymmetry replacing the one read from the file
 %
+% Description
+%
+% Files of DREAM3D-NX and of DREAM.3D 6 are read, whatever the data
+% container and its attribute matrices are called. The voxel data are the
+% first attribute matrix with |EulerAngles|, |Quats| or |FeatureIds|, in
+% this order. A file without orientations gives rotations that are NaN, a
+% file without |Phases| a single phase.
+%
 % See also
 % loadGrains_Dream3d EBSD3square EBSD3square/calcGrains
 
-root = '/DataStructure/DataContainer';
-
 try
-  sz     = double(h5readatt(fname,root,'_DIMENSIONS')).';
-  dxyz   = double(h5readatt(fname,root,'_SPACING')).';
-  origin = double(h5readatt(fname,root,'_ORIGIN')).';
-
-  % the group names come with and without spaces
-  groups = {h5info(fname,root).Groups.Name};
-  group  = @(name) [groups{strcmp(erase(groups,' '),[root '/' name])} '/'];
-  cellData = group('CellData');
-  info   = h5info(fname,cellData);
+  ds = dream3dDatasets(fname);
+  hit = [ds(endsWith(ds,"/EulerAngles")); ds(endsWith(ds,"/Quats")); ds(endsWith(ds,"/FeatureIds"))];
+  cellData = fileparts(hit(1));
 catch
   interfaceError(fname);
 end
+root = fileparts(cellData);
+read = @(name) h5read(fname,cellData + "/" + name);
+has  = @(name) any(ds == cellData + "/" + name);
+
+% DREAM.3D 6 keeps the grid in data sets, DREAM3D-NX in attributes
+if any(ds == root + "/_SIMPL_GEOMETRY/DIMENSIONS")
+  geom = @(name) double(h5read(fname,root + "/_SIMPL_GEOMETRY/" + name)).';
+else
+  geom = @(name) double(h5readatt(fname,root,"_" + name)).';
+end
+sz = geom("DIMENSIONS"); dxyz = geom("SPACING"); origin = geom("ORIGIN");
 
 % h5read returns the arrays with x running fastest, the ndgrid order
-eul = double(h5read(fname,[cellData 'EulerAngles']));
-rot = reshape(rotation.byEuler(eul(1,:).',eul(2,:).',eul(3,:).','ZXZ'),sz);
+if has("EulerAngles")
+  eul = double(read("EulerAngles"));
+  rot = rotation.byEuler(eul(1,:).',eul(2,:).',eul(3,:).','ZXZ');
+elseif has("Quats")
+  % the passive rotation as (x,y,z,w)
+  q = double(read("Quats"));
+  rot = rotation(quaternion(q(4,:).',-q(1,:).',-q(2,:).',-q(3,:).'));
+else
+  rot = rotation.nan(prod(sz),1);
+end
+rot = reshape(rot,sz);
 
 % phases count from zero, with the unmeasured voxels not indexed
-phaseId = double(h5read(fname,[cellData 'Phases']));
-phaseId = phaseId(:) + 1;
-if any(strcmp({info.Datasets.Name},'Mask'))
-  phaseId(~h5read(fname,[cellData 'Mask'])) = 1;
-end
+phaseId = 2*ones(prod(sz),1);
+if has("Phases"), phaseId = double(reshape(read("Phases"),[],1)) + 1; end
+if has("Mask"), phaseId(~read("Mask")) = 1; end
 
-csList = get_option(varargin,'CS',...
-  dream3dCrystalSymmetry(h5read(fname,[group('CellEnsembleData') 'CrystalStructures'])));
+crysm = ds(startsWith(ds,root + "/") & endsWith(ds,"/CrystalStructures"));
+if isempty(crysm)
+  csList = [notIndexed, crystalSymmetry];
+else
+  csList = dream3dCrystalSymmetry(h5read(fname,crysm(1)));
+end
+csList = get_option(varargin,'CS',csList);
 
 % every other scalar cell array becomes a property, the feature ids the grainId
 prop = struct;
-for ds = info.Datasets.'
-  data = h5read(fname,[cellData ds.Name]);
-  if size(data,1) > 1 || any(strcmp(ds.Name,{'Phases','Mask'})), continue; end
-  prop.(regexprep(ds.Name,{'FeatureIds','\s'},{'grainId',''})) = double(data(:));
+for name = extractAfter(ds(startsWith(ds,cellData + "/")),cellData + "/").'
+  data = read(name);
+  if size(data,1) > 1 || any(name == ["Phases","Mask"]), continue; end
+  prop.(matlab.lang.makeValidName(replace(name,"FeatureIds","grainId"))) = double(data(:));
 end
 
 [x,y,z] = ndgrid(origin(1) + (0:sz(1)-1)*dxyz(1), ...
