@@ -84,16 +84,16 @@ hold off
 %% Estimate GND content in one command
 % Ferrite is body-centred cubic, so this example uses the standard BCC set of
 % 48 edge and 4 screw systems. Following the normalization on the preceding
-% page, the edge weight is one and the screw weight is $1-\nu$, with
-% Poisson's ratio $\nu=0.3$.
+% page, the line energies are taken relative to the shortest Burgers vector:
+% the edge weight is one and the screw weight is $1-\nu$, with Poisson's
+% ratio $\nu=0.3$.
 %
 % There is no universally accepted set of line-energy weights. Replace these
 % illustrative values with values appropriate to the material and model.
 
 dS = dislocationSystem.bcc(ebsd.CS);
 nu = 0.3;
-dS(dS.isEdge).u = 1;
-dS(dS.isScrew).u = 1 - nu;
+dS.u = (norm(dS.b) / min(norm(dS.b))).^2 .* (1 - nu * dS.isScrew);
 
 %%
 % <EBSD.calcGND.html |calcGND|> returns an energy-weighted GND density for

@@ -140,20 +140,25 @@ a = norm(cs.aAxis);
 % Poisson's ratio, $R$ is the outer cut-off radius, and $r_0$ is the
 % dislocation-core radius.
 %
-% If all systems share the other factors, one convenient normalization is
-% $U_{\mathrm{edge}}=1$ and $U_{\mathrm{screw}}=1-\nu$.
+% If all systems share the other factors, the line energies relative to the
+% shortest Burgers vector $b_{\min}$ are $(b/b_{\min})^2$ for an edge system
+% and $(1-\nu)\,(b/b_{\min})^2$ for a screw system.
 
 nu = 0.3;
-dSBcc(dSBcc.isEdge).u = 1;
-dSBcc(dSBcc.isScrew).u = 1 - nu;
+dSBcc.u = (norm(dSBcc.b) / min(norm(dSBcc.b))).^2 .* (1 - nu * dSBcc.isScrew);
+[dSBcc(1).u, dSBcc(end).u]
 
 %%
-% There is no single accepted way to set these weights. Another model may
-% use |u = c * G * norm(b)^2|, with a model-dependent constant |c|.
-% When $G$ is a shear modulus, this expression has units of energy per unit
-% length; earlier wording on this page called it energy per length squared.
-% Choose |u| for the material and model being compared rather than treating
-% an MTEX default as a measured energy.
+% All BCC Burgers vectors have the same length, which leaves 1 for the edge
+% and $1-\nu$ for the screw systems. Where families with different Burgers
+% vectors act together the length matters: the $\langle c+a\rangle$ systems
+% of titanium are about 3.5 times as costly as its $\langle a\rangle$
+% systems.
+%
+% There is no single accepted way to set these weights. The shear modulus
+% and the cut-off radii may differ between families, and a model may account
+% for them. Choose |u| for the material and model being compared rather than
+% treating an MTEX default as a measured energy.
 
 %#ok<*NASGU>
 
