@@ -1,227 +1,314 @@
 %% MTEX release notes
 %
-% Releases appear newest first. The |develop| section records work intended
-% for the next release; numbered sections record what changed in that release.
-% Historical examples preserve the syntax of their release and may not be the
-% current way to perform the operation. Follow the linked topic or function
-% page when writing new code.
+% Releases appear newest first. Each section describes new analysis tools,
+% changes that may affect existing scripts, and corrections to results.
+% Historical examples use the syntax of their release. Follow the linked
+% topic or function page when writing new code.
 %
-% The technical detail behind these changes--what was wrong, what it was
-% measured against, and which issue it closes--is in |CHANGELOG.md| in the
-% MTEX folder.
+% |CHANGELOG.md| in the MTEX folder contains the technical details, numerical
+% checks and related issues.
 %
 %% MTEX 7.2 10/2026
 %
-% *Changed Behaviour*
+% *Three-dimensional EBSD*
 %
-% * generic orientation, EBSD and ODF files are read in degrees unless
-% |'radians'| is given. The unit was guessed from the values before, so a file
-% of small angles in degrees was taken as radians. |'passive'| takes effect
-% now, and quaternion columns are read
-% * <grain2d.smoothBoundary.html |smoothBoundary|> sets |gB.ebsdId| to 0 for
-% a segment that no longer runs between one pair of pixels, as the outer
-% boundary has, instead of keeping the pair of a segment it replaced. Use
-% |'noSimplify'| and |'noRefine'| where every pair is needed
-% * the |'bandwidth'| of |kde1d| and of <calcDensity.html |calcDensity|> is a
-% bandwidth in the units of the data, the value they return
-% * <mtexdata.html |mtexdata|> rebuilds its cached data when the MTEX version
-% or the default plotting convention differs from the session that wrote it
-% * MTEX needs MATLAB R2022b or newer
-% * <l1TVFilter.l1TVFilter.html |l1TVFilter|> is the half-quadratic filter of
-% Bergmann et al. and states its smoothing as a length, |l1TVFilter(L)|, the
-% wavelength damped to half its amplitude, four pixel distances by default.
-% The cyclic proximal point algorithm remains as |F.method = 'proximal'|,
-% and |halfQuadraticFilter| warns and passes on to it. An |alpha| set by hand
-% is now the weight of the regularisation itself
-% * a Thermo Fisher (xTalView) map is aligned with its Euler angles by a half
-% turn about y, as its pixel x axis points opposite to the specimen x axis
-% * Oxford |.ctf|, |.cpr| and |.h5oina| maps are aligned with their Euler
-% angles by a half turn about y instead of about z, as $Z_1$ points out of
-% the specimen surface. IPF maps keep their colours, pole figures are
-% mirrored at the map's x axis. An |.h5oina| scan that states a rotation of
-% zero is aligned by a half turn about x. Pass
+% Eventually, MTEX supports the import, visualization and analysis of 3D
+% EBSD volumes. <EBSD3.load.html |EBSD3.load|> reads DREAM.3D files from
+% DREAM.3D 6 or DREAM3D-NX, and Xnovo GrainMapper3D files:
+%
+%   ebsd = EBSD3.load('SmallIN100_MeshStats.dream3d')
+%
+% Work with a volume much as you would with a 2D EBSD map. |ebsd(i,j,k)|
+% selects a voxel, |ebsd('Quartz')| selects a phase, and |ebsd.orientations|
+% gives the measured orientations. <EBSD3.plot.html |plot|> opens an
+% interactive viewer. Move the slice planes with the mouse and colour the
+% volume by phase, orientation or another measured property:
+%
+%   plot(ebsd,ebsd.orientations)
+%
+% <EBSD3.slice.html |slice|> extracts a section along any plane. The result
+% is a 2D EBSD map that can be analysed with the usual map tools:
+%
+%   ebsdCut = slice(ebsd,plane3d(vector3d(1,1,1),vector3d(0,0,0)))
+%   plot(ebsdCut,ebsdCut.orientations)
+%
+% Local misorientation calculations use neighbouring voxels along all three
+% axes. <EBSD3.KAM.html |KAM|> returns the kernel average misorientation.
+% <EBSD3square.curvature.html |curvature|> returns the lattice curvature
+% tensor used to estimate geometrically necessary dislocation (GND) density.
+% A 3D volume provides all nine tensor components; a 2D map provides six.
+%
+%   kam = KAM(ebsd,'threshold',5*degree);
+%
+% See <EBSD3Analysis.html Three-Dimensional EBSD Analysis> for the analysis
+% workflow and <EBSD3Plotting.html Volume Data and Slices> for importing,
+% displaying and sectioning volumes.
+%
+% *Grain reconstruction and boundaries in 3D*
+%
+% <EBSD3square.calcGrains.html |calcGrains|> reconstructs grains from a
+% volume using the same syntax as for a 2D map:
+%
+%   [grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',10)
+%
+% Neighbouring voxels of the same phase are assigned to one grain when their
+% misorientation is below the threshold. |'minPixel'| merges grains with fewer
+% than the specified number of voxels into their neighbours.
+%
+% Each grain has a mean orientation, grain orientation spread |grains.GOS|,
+% <grain3d.volume.html |volume|>, <grain3d.surface.html |surface|> area,
+% diameter, principal axes and neighbouring grains. These sizes and shapes
+% are measured in 3D and need no stereological correction. Each boundary face
+% stores the two adjacent grains and their misorientation.
+%
+% To use grain identifiers already stored in a DREAM.3D or Xnovo file:
+%
+%   grains = calcGrains(ebsd,'grainId')
+%
+% This lets you analyse an existing segmentation and compare it with a
+% reconstruction made in MTEX.
+%
+% Voxel boundaries have a staircase shape. This overestimates boundary area
+% and restricts boundary normals to six directions.
+% <grain3d.reduceBoundary.html |reduceBoundary|> coarsens the surface mesh
+% and <grain3d.smoothBoundary.html |smoothBoundary|> smooths it using the
+% filters available for 2D grains. Triple lines, quadruple points and the
+% outer specimen surface remain fixed. Grain volumes can change by a few
+% percent during smoothing:
+%
+%   grains = smoothBoundary(reduceBoundary(grains,2,'quadric'),taubinFilter(20))
+%
+% Use <grain3Boundary.calcGBND.html |calcGBND|> on the smoothed boundaries
+% to compute the grain boundary plane distribution from their normals.
+% <grain3Boundary.edges.html |edges|> and <grain3Boundary.nodeType.html
+% |nodeType|> identify triple lines and quadruple points in the network.
+%
+% See <Grains3DReconstruction.html Grain Reconstruction>,
+% <Grains3DSmoothing.html Boundary Smoothing>, <Grains3DBoundaries.html
+% Boundary Network>, <Grains3DProperties.html Grain Size and Shape> and
+% <Grains3DOperations.html Sections and Rotations>.
+%
+% *Inverse pole figure maps in one command*
+%
+% Create an inverse pole figure (IPF) map for all phases in one command.
+% Each phase uses its own colour key. Grain maps use the mean grain
+% orientations:
+%
+%   plot(ebsd,'ipfz')
+%   plot(grains,'ipfDirection',vector3d.X)
+%
+% *Importing instrument data*
+%
+% <EBSDVendors.html Data From Your Instrument> lists supported file formats,
+% import commands and reference-frame conventions for Bruker, EDAX, Oxford,
+% Thermo Fisher and other vendors. New in this release:
+%
+% * Oxford |.h5oina| files containing diffraction patterns now import with
+% all their map properties
+% * NanoMegas ASTAR |.ang| files are recognised and read in nanometres, and
+% |'scanUnit'| sets the spatial unit when importing any |.ang| file
+% * |loadPoleFigure_inel| reads INEL pole figure files
+% * <mtexdata.html |mtexdata|> refreshes its stored copy of a data set when the
+% MTEX version or the default plotting convention has changed
+%
+% *Choosing the smoothing width for texture estimation*
+%
+% The kernel halfwidth controls smoothing when estimating an orientation
+% distribution function (ODF) from EBSD data. A wide kernel blurs texture
+% components; a narrow kernel can produce peaks from individual grains.
+% <EBSD.calcKernel.html |calcKernel|> selects the halfwidth from the data
+% while accounting for the correlation between pixels within each grain.
+% Reconstruct the grains before selecting the kernel:
+%
+%   [grains,ebsd] = calcGrains(ebsd)
+%   psi = calcKernel(ebsd('Forsterite'))
+%   odf = calcDensity(ebsd('Forsterite').orientations,'kernel',psi)
+%
+% Two new methods are available. Unbiased cross-validation (|'UCV'|)
+% estimates the halfwidth that minimizes the error of the density estimate.
+% |'conservative'| favours a wider kernel to suppress uncertain features. Use
+% <vector3d.calcKernel.html |calcKernel|> to select a kernel for directional
+% data as well. See <OptimalKernel.html Optimal Kernel Selection>.
+%
+% *Comparing textures*
+%
+% <S2Fun.discrepancy.html |discrepancy|> measures differences between two
+% ODFs, two pole density functions, two orientation sets, or an orientation
+% set and an ODF. For example, use it to check how well the orientations
+% supplied to a simulation represent a measured texture.
+% |fibonacciSO3Grid| provides a new, evenly distributed orientation grid.
+%
+% *Documentation*
+%
+% The documentation has three parts. Start covers installation and your
+% first map. Concepts explains crystal geometry, orientations and textures.
+% Tasks provides workflows for analysing your data.
+%
+% *Changes that may affect existing scripts*
+%
+% Check these changes when updating an analysis:
+%
+% * Oxford |.ctf|, |.cpr| and |.h5oina| imports now align the map and Euler
+% angle reference frames using a 180-degree rotation about y, previously z.
+% This places $Z_1$ out of the specimen surface. IPF colours are unchanged,
+% but pole figures are mirrored across the map's x axis. Pass
 % |'EulerCorrection',rotation.byAxisAngle(zvector,180*degree)| for the
 % previous alignment
-% * NanoMegas ASTAR .ang files are read in nanometres
+% * Thermo Fisher (xTalView) imports align the map and Euler angle reference
+% frames using a 180-degree rotation about y. The map's pixel x axis points
+% opposite to the specimen x axis
+% * generic orientation, EBSD and ODF text files are read in degrees unless
+% |'radians'| is given. Previously, MTEX inferred the unit from the values
+% and could interpret small angles in degrees as radians
+% * <l1TVFilter.l1TVFilter.html |l1TVFilter|> uses a smoothing length:
+% |l1TVFilter(L)| reduces variations with wavelength L to half their
+% amplitude. The default L is four pixel spacings. A manually specified
+% |alpha| is now the regularization weight. |halfQuadraticFilter| calls
+% this filter
+% * after <grain2d.smoothBoundary.html |smoothBoundary|> a boundary segment
+% that replaces several pixel edges has |gB.ebsdId| set to 0. Use
+% |'noSimplify'| and |'noRefine'| if you need the original pixel pair for
+% every segment
+% * the |'bandwidth'| of |kde1d| and of <calcDensity.html |calcDensity|> is
+% specified in the units of the data, matching the returned bandwidth
 % * an orientation applied to a tangent vector gives a plain vector in the
 % specimen frame
+% * the default line energy of a
+% <dislocationSystem.dislocationSystem.html |dislocationSystem|> is $b^2$
+% for an edge and $0.7\,b^2$ for a screw dislocation, with $b$ the length of
+% the Burgers vector. Previously it was 2 and 1.
+% <EBSD.calcGND.html |calcGND|> with default energies therefore returns
+% different values. Set |dS.u| to keep your own weights; see
+% <DislocationSystems.html Dislocation Systems>
+% * MTEX needs MATLAB R2022b or newer
 %
-% *New*
+% *Corrections to analysis results and data handling*
 %
-% * |calcKernel| can select the halfwidth by |'UCV'|, the halfwidth of least
-% integrated squared error, or by |'conservative'|, one at least as wide,
-% both from the harmonic energies of the sample and bounded below by a noise
-% floor. They take weights, directions (<vector3d.calcKernel.html
-% |calcKernel(v)|>), the grain ids of pixels (|'groups'|) and a map with
-% computed grains (<EBSD.calcKernel.html |calcKernel(ebsd)|>). For
-% orientations |'KLCV'| stays the default, being faster, unless grain ids
-% are given. <OptimalKernel.html Optimal Kernel Selection> explains them
-% * |loadPoleFigure_inel| reads INEL pole figure files
-% * |curvature| and |calcGND| of a voxel map, and |KAM|, |fill|, |reduce| and
-% |fillByGrainId| of a volume work in three dimensions
-% * the documentation in three parts, Start, Concepts and Tasks, and a page
-% <EBSDVendors.html Data From Your Instrument> listing per vendor the files
-% MTEX reads and writes, how Euler angles and map are aligned, and the line
-% that imports them
-% * |plot(ebsd,'ipfDirection',d)| and the flags |'ipfx'|, |'ipfy'| and
-% |'ipfz'| color every phase of a map by its own ipf key, and
-% |plot(grains,...)| does the same with the mean orientations
-% * <S2Fun.discrepancy.html |discrepancy|> of spherical functions, point sets
-% and mixed pairs, and of orientation functions and orientation sets: cap
-% discrepancy |D_2| (the default), an approximate maximum cap discrepancy and
-% weighted bandlimited L2 norms
-% * |fibonacciSO3Grid|, a Fibonacci grid of orientations
-% * |'scanUnit'| when loading an .ang file
-%
-% *Corrections Worth Knowing*
-%
-% * |S2Fun.unimodal| has mean one and is centred on the direction it is
-% given; it had mean 0.16 and peaked at the mirror image of a direction off
-% the pole
-% * the halfwidth of an |S2DirichletKernel| is the angle of half its maximum,
-% not 180 degree
-% * |S2FunBingham| is normalised exactly, its fit uses the exact moments, and
-% the confidence ellipse of the fit is computed on the principal axes
-% * <SO3FunHarmonic.interpolate.html |SO3FunHarmonic.interpolate|> fits with
-% the same NFFT accuracy that evaluates the result, and its options reach the
-% solver
-% * the samples of a fibre ODF (|SO3FunCBF|) and of a function handle with a
-% |'range'| follow their distributions
-% * |calcKernel(...,'method','LSCV')| runs
-% * a map exported to .ang or .ctf states its Euler angles in the crystal
-% frame the reader builds, so a hexagonal map no longer comes back turned by
-% 30 degree
-% * |stiffnessTensor.load| reads the density the file states
-% * an .osc scan stopped early grids like a complete one
-% * every specimen grid of a pole figure is antipodal, so pole figures read
-% one grid each normalise alike
-% * <vector3d.refine.html |refine|> of a cap of directions stays in the cap
-% * <spatialTransformProjective.spatialTransformProjective.html
-% |spatialTransformProjective.fit|> normalises the points before the fit and
-% recovers a homography from data with outliers
-% * <EBSD.interp.html |interp|> of a gridded map no longer takes its padding
-% for a measurement
-% * a merge in a <parentGrainReconstructor.parentGrainReconstructor.html
-% |parentGrainReconstructor|> clears the votes of the grains it replaced
-% * |principalComponents| of triangulated 3D grains,
-% |neper.simulateChildGrains| with many lamellae per parent and |orientFaces|
-% of faces given with one side work
-% * <EBSD.load.html |EBSD.load(fname,csList)|> uses the symmetry list again,
-% and |'CS'| replaces the phases an HDF5 file declares
-% * .ctf files import without the Statistics and Machine Learning Toolbox
-% * an .osc phase whose symmetry is stated as an EDAX point group id is no
-% longer dropped
-% * ipf color keys have the right fundamental sector for a lattice whose c*
-% axis does not point along z
-% * a plot of both hemispheres no longer takes the second one as the axes
-% for the next plot
-% * a phase selected from a 3D volume, |ebsd('Quartz')|, gives grains
-% * mesh grains read from DREAM.3D have the orientation of their voxels,
-% Neper tessellations follow |neper.id|, and a slice through a grain with a
-% hole is one piece with a hole
-% * |calcKernel| subsamples without replacement, |BCV| runs, and |kde1d|
-% leaves the constant coefficient out of its roughness estimate
+% * exporting a map to |.ang| or |.ctf| and importing it again now preserves
+% its orientations. Previously, hexagonal maps could rotate by 30 degrees
+% * IPF colour keys use the correct fundamental sector when the lattice c*
+% axis is not parallel to z
+% * <EBSD.gridify.html |gridify|> retains the indexed measurement when an
+% indexed and a non-indexed measurement occupy the same position
+% * incomplete |.osc| scans are placed on the correct grid. Phases specified
+% by an EDAX point group identifier are retained during import
+% * |.ctf| files import without the Statistics and Machine Learning Toolbox
+% * <EBSD.load.html |EBSD.load(fname,csList)|> again uses the supplied
+% symmetry list. |'CS'| overrides the phases declared in an HDF5 file
+% * <EBSD.interp.html |interp|> on a gridded map uses measured pixels only
 % * |calcGrains| of a map without indexed pixels returns empty grains
-% * an ASTAR phase name is read without its database id
-% * |gridify| keeps an indexed measurement over a not indexed one in the same
-% cell
-% * sampling from an |SO3FunRBF| is twice as fast
-% * <grain3Boundary.calcGBND.html |calcGBND|> of a 3D boundary at a
-% misorientation weights a face by the kernel at its angle to the reference,
-% not at twice that angle
+% * pole figures imported with a separate specimen grid for each figure now
+% use consistent normalization
+% * |S2Fun.unimodal| has mean one and peaks at the specified direction.
+% |S2FunBingham| uses exact normalization
+% * the random orientations drawn from a fibre ODF (|SO3FunCBF|) follow the
+% ODF. Previously, samples lay too close to the fibre
+% * dislocation systems built from hexagonal slip systems have Burgers
+% vectors of the correct length, $a$ for $\langle a\rangle$ slip. Previously
+% they were a third of it, and the fitted dislocation densities three times
+% too large
+% * |stiffnessTensor.load| reads the density specified in the file
+% * grain meshes imported from DREAM.3D use the orientations of their voxels.
+% A section through a 3D grain with a hole retains the hole in a single grain
+% * <grain3Boundary.calcGBND.html |calcGBND|> of a 3D boundary at a fixed
+% misorientation now uses the correct angular weighting of boundary faces.
+% Previously, the weighting used twice the angular distance
 %
 %% MTEX 7.1 09/2026
 %
-% *True EBSD - Aligning EBSD Maps with SEM Images*
+% *Aligning EBSD maps with SEM images using TrueEBSD*
 %
-% Electron images and EBSD maps of the same area rarely overlay. The map is
-% taken at a tilt and drifts as it scans. MTEX now includes trueEBSD to
-% correct that. Hand the TrueEBSD workflow a sequence of pictures, the most
-% distorted first and the undistorted image last, and it puts them all on
-% one grid, so every image becomes a property of the map:
+% Specimen tilt and drift during scanning can distort an EBSD map relative
+% to a scanning electron microscope (SEM) image of the same area. The new
+% TrueEBSD workflow corrects these distortions and aligns the images on a
+% common grid. Supply images in order from the most distorted to the
+% undistorted reference image. Each aligned image becomes a map property:
 %
 %   job = trueEbsd([mapImage(ebsd.bc,ebsd), mapImage(bse,'dxy',0.05)]);
 %   job.pixelSizeMatch
 %   job.calcDistortion
 %   job.undistort
 %
-% The pieces it is built from are useful on their own. A
-% <mapImage.mapImage.html |mapImage|> is a raster that knows which part of
-% the specimen each pixel covers, a <spatialTransform.html
-% |spatialTransform|> is a distortion that composes and inverts like a
-% <rotation.rotation.html |rotation|>, <xcfShift.html |xcfShift|> cross
-% correlates two images tile by tile, and <EBSD.gridify.html |gridify|>
-% takes a <gridLayout.gridLayout.html |gridLayout|>, so a map can be stored
-% in the array order of the image it is compared with.
+% The workflow also provides tools that can be used separately:
+%
+% * <mapImage.mapImage.html |mapImage|> stores an image with the specimen
+% coordinates of its pixels
+% * <spatialTransform.html |spatialTransform|> describes a spatial
+% distortion. Transforms can be combined and inverted like a
+% <rotation.rotation.html |rotation|>
+% * <xcfShift.html |xcfShift|> measures local image shifts by
+% cross-correlating corresponding tiles
+% * <EBSD.gridify.html |gridify|> accepts a
+% <gridLayout.gridLayout.html |gridLayout|> to store an EBSD map in the
+% same array order as the image being compared
 %
 % See <EBSDMapsAndImages.html Maps and Images>, <EBSDSpatialTransform.html
 % Spatial Transforms> and <EBSDTrueEbsd.html TrueEBSD>. The method is by
 % Tong et al., <https://arxiv.org/abs/2605.00703 arXiv 2605.00703>.
 %
-% *EBSD Export That Keeps the File*
+% *HDF5 export preserves acquisition data*
 %
-% Exporting to HDF5 copies the file the data was imported from and writes
-% only the changed data into the copy. The result is still a file of the
-% vendor's own format - patterns and acquisition settings pass through
-% untouched, and what MTEX computed is added beside them:
+% HDF5 export copies the original input file and updates the modified data
+% in the copy. The output retains the vendor's format, diffraction patterns
+% and acquisition settings, with the MTEX results added alongside them:
 %
 %   ebsd = EBSD.load('myfile.h5oina')
 %   ebsd = ebsd.denoise(l1TVFilter)
 %   export(ebsd,'denoised.h5oina')
 %
-% *Update Documentation* 
+% *Updated documentation*
 %
-% We and AI put a lot of work in improving the documentation. It reads now
-% more like a textbook in crystallographic texture analysis that uses MTEX
-% to explain concepts and methods in a practical and illustrative way.
+% The revised documentation explains crystallographic texture analysis
+% through practical MTEX examples, with more background on the concepts
+% and methods.
 %
-% *Plastic Work in the Taylor Model*
+% *Plastic work in the Taylor model*
 %
-% <strainTensor.calcTaylor.html |calcTaylor|> returns the plastic work, the slip
-% amounts weighted by their critical resolved shear stresses:
+% <strainTensor.calcTaylor.html |calcTaylor|> returns plastic work as the
+% sum of slip amounts weighted by their critical resolved shear stresses:
 %
 %   work = calcTaylor(eps,sS,'plasticWork')
 %
-% The Taylor factor it returns beside it is the total slip activity, which
-% equals the work only when every critical resolved shear stress is one - so
-% with slip systems of differing strengths, compare the work.
-% <calcLankford.html |calcLankford|> chooses the contraction path by minimising
-% it for that reason, and reports Rbar and deltaR under their own names. See
+% The returned Taylor factor measures total slip activity. It equals the
+% plastic work only when every critical resolved shear stress is one. When
+% slip systems have different strengths, compare their plastic work.
+% <calcLankford.html |calcLankford|> now minimizes plastic work when choosing
+% the contraction path and reports Rbar and deltaR separately. See
 % <Plasticity.html Plasticity>.
 %
-% *Three-Dimensional EBSD*
+% *Three-dimensional EBSD*
 %
-% A measured volume loads into an |EBSD3| object and is analysed with the
-% commands of the two-dimensional case. DREAM.3D and Xnovo GrainMapper3D
-% files are read, the grains they carry included:
+% Import measured volumes into an |EBSD3| object and analyse them with
+% commands familiar from 2D EBSD. DREAM.3D and Xnovo GrainMapper3D files
+% are supported, including their stored grain identifiers:
 %
 %   ebsd = EBSD3.load('SmallIN100_MeshStats.dream3d')
 %   [grains,ebsd] = calcGrains(ebsd,'angle',5*degree)
 %   grainsStored = calcGrains(ebsd,'grainId')
 %
-% <EBSD3square.calcGrains.html |calcGrains|> reconstructs the grains from the
-% voxels with the misorientation criteria of the planar case, |'minPixel'|
-% included, and returns a <grain3d.grain3d.html |grain3d|> whose boundary is a
-% closed triangle surface with the voxel pair and the misorientation on every
-% face. |'grainId'| connects voxels that carry the same stored grain id, in
-% two and three dimensions alike, so the segmentation of a vendor file can be
-% compared with one made in MTEX.
+% <EBSD3square.calcGrains.html |calcGrains|> uses the same misorientation
+% criteria as in 2D, including |'minPixel'|. It returns a
+% <grain3d.grain3d.html |grain3d|> object with a closed triangulated boundary
+% surface. Each face stores the adjacent voxel pair and its misorientation.
+% The |'grainId'| option groups voxels with the same stored grain identifier
+% in both 2D and 3D. Use it to compare a vendor's segmentation with a
+% reconstruction made in MTEX.
 %
-% The voxel surface is a staircase. <grain3d.reduceBoundary.html
-% |reduceBoundary|> coarsens it and <grain3d.smoothBoundary.html
-% |smoothBoundary|> smooths it with the filters of the planar case, keeping
-% quadruple points, triple lines and the outer hull where they are:
+% Voxel boundaries have a staircase shape. <grain3d.reduceBoundary.html
+% |reduceBoundary|> coarsens the mesh and <grain3d.smoothBoundary.html
+% |smoothBoundary|> smooths it using the filters available for 2D grains.
+% Quadruple points, triple lines and the outer specimen surface remain fixed:
 %
 %   grains = smoothBoundary(reduceBoundary(grains,2,'quadric'),taubinFilter(20))
 %
 % <grain3Boundary.edges.html |edges|> and <grain3Boundary.nodeType.html
-% |nodeType|> give the triple lines and quadruple points of the boundary
-% network, and <grain3Boundary.calcGBND.html |calcGBND|> its plane
-% distribution.
+% |nodeType|> identify triple lines and quadruple points in the boundary
+% network. <grain3Boundary.calcGBND.html |calcGBND|> computes the grain
+% boundary plane distribution.
 %
-% A volume is plotted with <EBSD3.plot.html |plot|> and cut with
-% <EBSD3.slice.html |slice|>; the section is an ordinary EBSD map seen along
-% the normal of the plane it was cut with:
+% Display a volume with <EBSD3.plot.html |plot|> and extract a section with
+% <EBSD3.slice.html |slice|>. The section is a 2D EBSD map viewed along the
+% normal to the cutting plane:
 %
 %   ebsd = mtexdata('xnovo')
 %   plot(slice(ebsd,plane3d(vector3d(1,1,1),vector3d(0,0,0))))
@@ -231,96 +318,98 @@
 % <Grains3DSmoothing.html Smoothing>, <Grains3DBoundaries.html Boundary
 % Network> and <EBSD3Plotting.html Volume Data and Slices> for the pages.
 %
-% *Total Variation Denoising by a Smoothing Length*
+% *Total variation denoising with a smoothing length*
 %
-% The half-quadratic filter is now the <l1TVFilter.l1TVFilter.html
-% |l1TVFilter|>; |halfQuadraticFilter| still works and says so. The filter
-% states its smoothing as a length, |l1TVFilter(L)|, the wavelength it damps
-% to half its amplitude, four pixel distances by default, and derives
-% |alpha| from it and from the grid. The same filter means the same on a
-% coarse and on a fine map, on a square and on a hexagonal grid, and in the
-% Python and the Julia port. |alpha| set by hand is now the weight of the
-% regularization itself: an old value corresponds to 1.25 times it on a
-% square grid and 0.83 times it on a hexagonal one. The default smooths less
-% than before - 2.5 times less regularization - and stops at a tolerance of
-% 0.001 degree. The former total variation filter, a cyclic proximal point
-% algorithm, stays as |F.method = 'proximal'| for the same functional.
-% Both iterate on quaternion arrays, and are several times faster.
+% The half-quadratic filter is now called <l1TVFilter.l1TVFilter.html
+% |l1TVFilter|>. |halfQuadraticFilter| remains available and reports the
+% name change. Set the smoothing length with |l1TVFilter(L)|: variations
+% with wavelength L are reduced to half their amplitude. The default is
+% four pixel spacings. MTEX derives |alpha| from this length and the grid.
 %
-% *Corrections Worth Knowing*
+% The smoothing length has the same meaning for coarse and fine maps,
+% square and hexagonal grids, and the Python and Julia ports. If you set
+% |alpha| manually, it now specifies the regularization weight. To reproduce
+% an old value, multiply it by 1.25 for a square grid or 0.83 for a hexagonal
+% grid. The default regularization weight is 2.5 times smaller than before,
+% so the default smooths less. The stopping tolerance is 0.001 degree.
 %
-% * the Radon transform of a fibre ODF averages over the specimen orbit as well
-% as the crystal orbit. With a nontrivial specimen symmetry the pole densities
-% of a <SO3FunCBF.SO3FunCBF.html |SO3FunCBF|> came out too large - for 321 with
-% 222, seven times
-% * <equispacedSO3Grid.html |equispacedSO3Grid|> counts the range of the first
-% Euler angle, which a specimen symmetry narrows. Under 222 or mmm it delivered
-% a quarter of the points asked for, under a 432/432 misorientation grid an
-% eighth - and now costs the work those points take
-% * the weights of an <SO3FunRBF.SO3FunRBF.html |SO3FunRBF|> follow its
-% symmetrised centers, where every center but the first was given another
-% center's weight
+% The former total variation algorithm (cyclic proximal point) remains as
+% |F.method = 'proximal'| and minimizes the same objective. Both algorithms
+% operate on quaternion arrays and are several times faster.
+%
+% *Corrections to analysis results and data handling*
+%
+% * pole densities calculated from a fibre ODF now account for both crystal
+% and specimen symmetry. Previously, a
+% <SO3FunCBF.SO3FunCBF.html |SO3FunCBF|> with crystal symmetry 321 and
+% specimen symmetry 222 produced densities seven times too large
+% * <equispacedSO3Grid.html |equispacedSO3Grid|> now accounts for specimen
+% symmetry when setting the number of orientations. Previously, it returned
+% only a quarter of the requested points for 222 or mmm specimen symmetry,
+% and an eighth for a 432/432 misorientation grid. Generating the full set
+% requires correspondingly more computation
+% * <SO3FunRBF.SO3FunRBF.html |SO3FunRBF|> assigns the correct weight to each
+% symmetry-equivalent centre. Previously, all but the first centre received
+% another centre's weight
 % * the |delta| of a <Gaussian.html |Gaussian|> is the width of
 % $\exp(-(x-m)^2/\delta^2)$; the standard deviation is $\delta/\sqrt{2}$
-% * a not indexed phase can be given a colour -
-% |ebsd('notIndexed').color = 'blue'| was refused with "There are no indexed
-% data in this variable!"
-% * |slice| of a volume returned the plane through the origin whatever
-% plane it was given, and a section that does not lie in the xy plane was
-% plotted edge on
+% * non-indexed pixels can now be given a colour with
+% |ebsd('notIndexed').color = 'blue'|. Previously, this returned an error
+% * |slice| now uses the specified cutting plane. Previously, it always cut
+% through the origin. Sections outside the xy plane are displayed face on
 % * the <quaternion.angle.html |angle|> of a rotation and its
-% <quaternion.log.html |log|> keep every digit of a small rotation. They were
-% computed from the real quaternion component and floored at about 2e-6
-% degree, so a rotation by 1e-9 degree reported the angle zero
-% * the Siemens D5000 pole figure reader merged two neighbouring counts
-% whenever a five digit count filled its field, and the Seifert |.nja| reader
-% skipped the first measurement of every file
+% <quaternion.log.html |log|> now resolve very small rotations. Previously,
+% angles below about 2e-6 degree lost precision, and a 1e-9 degree rotation
+% was reported as zero
+% * Siemens D5000 pole figure files retain separate neighbouring counts
+% when a five-digit count fills its field. Seifert |.nja| imports now include
+% the first measurement of each file
 % * <embedding.double.html |double|> of an <embedding.embedding.html
-% |embedding|> takes its coordinates from an orthonormal basis of the space
-% the embedding moves in, computed from the symmetry group. The dimension is
-% unchanged for every Laue class but |mmm|, which has 10 coordinates instead
-% of 15. <embedding.embedding.html |embedding(ori)|> of a large list is about
-% twice as fast for cubic and four times for hexagonal symmetry
+% |embedding|> returns coordinates in an orthonormal basis determined by
+% the symmetry group. The number of coordinates is unchanged for all Laue
+% classes except |mmm|, which now uses 10 instead of 15.
+% <embedding.embedding.html |embedding(ori)|> for large orientation lists
+% is about twice as fast for cubic and four times as fast for hexagonal symmetry
 %
 %% MTEX 7.0 08/2026
 %
-% This is the first release developed with AI assistance. This allowed us to
-% implement many long-standing ideas.
+% This is the first release developed with AI assistance and implements
+% many long-standing ideas.
 %
-% *Grain Reconstruction*
+% *Grain reconstruction*
 %
-% Grain reconstruction has been entirely rewritten for better results, higher
-% speed and simpler control. The general syntax is now
+% Grain reconstruction has been rewritten to improve results, speed and
+% control over the segmentation. The general syntax is now
 %
 %   [grains, ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',5,'alpha',3.1)
 %
 % Three parameters tune the reconstruction:
 %
-% * the misorientation threshold - |'angle'|
-% * the minimum number of pixels a grain must contain - |'minPixel'|
-% * the closing width that controls whether small or thin |notIndexed|
-% patches are absorbed into surrounding grains - |'alpha'|
+% * |'angle'| sets the misorientation threshold between neighbouring pixels
+% * |'minPixel'| sets the minimum number of pixels in a grain
+% * |'alpha'| sets the closing width, which controls whether small or thin
+% |notIndexed| regions are absorbed into surrounding grains
 %
 % <GrainReconstruction.html Grain Reconstruction> explains the three controls,
 % and <GrainReconstructionAdvanced.html Advanced Grain Reconstruction> covers
 % the underlying choices. For highly deformed materials, the
 % <GrainReconstructionMCL.html fast multiscale clustering method> has also
-% been greatly improved.
+% been improved.
 %
 % A method to <EBSDPseudoSymmetry.html clean up pseudosymmetries in EBSD maps>
 % is now also available:
 %
 %   [ebsd,grains] = cleanUpPseudoSym(ebsd,grains,mori,'threshold',1.5)
 %
-% Grain boundary smoothing was also greatly improved. It is now performed by
+% Grain boundary smoothing has also been improved. Use
 %
 %   grains = smoothBoundary(grains,5)
 %
 % The <grain2d.smoothBoundary.html |smoothBoundary|> command offers several
-% backends. See <GrainSmoothing.html Grain Smoothing> and
+% smoothing methods. See <GrainSmoothing.html Grain Smoothing> and
 % <GrainSmoothingAdvanced.html Advanced Grain Smoothing>.
 %
-% *Much Better EBSD Import*
+% *EBSD import and reference frames*
 %
 % The EBSD import wizard can now browse data files and adjust reference-frame
 % alignment while displaying IPF maps and pole figures. The import conventions
@@ -333,50 +422,49 @@
 % Multiple data sets per file are now supported, including additional scans
 % stored in the same file.
 %
-% *Imported Data Comes on Its Grid*
+% *Imported EBSD maps retain their grid*
 %
 % <EBSD.load.html |EBSD.load|> now returns an @EBSDsquare or an @EBSDhex when
-% the measurements lie on one lattice. Previously it returned a plain list
-% that had to be passed to <EBSD.gridify.html |gridify|>. Almost every scan is
-% a complete raster, so most imported maps are now stored as matrices and
-% |ebsd(i,j)| addresses a scan position.
+% measurements lie on a regular square or hexagonal grid. Previously, it
+% returned a list that had to be converted with <EBSD.gridify.html |gridify|>.
+% Most imported maps are now stored as matrices, and |ebsd(i,j)| selects a
+% scan position.
 %
-% Putting data on a grid *reorders* it. The matrix layout fixes the first
-% dimension to y, while a |.ctf| or |.ang| file runs x fastest. Consequently,
-% |ebsd(k)| is generally no longer line k of the file. The original ids are
-% retained in |ebsd.oldId|. See <EBSDGrid.html Square and Hex Grids>.
+% Grid storage changes the order of the measurements. The first matrix
+% dimension follows y, whereas |.ctf| and |.ang| files list x positions
+% fastest. Therefore, |ebsd(k)| generally no longer corresponds to line k
+% in the file. Original identifiers remain in |ebsd.oldId|. See
+% <EBSDGrid.html Square and Hex Grids>.
 %
-% *Much Faster Plotting of EBSD Maps*
+% *Faster EBSD and grain map plotting*
 %
 % Plotting EBSD and grain maps is now orders of magnitude faster. Multiple
-% backends support hexagonal and strongly deformed pixel layouts. The micron
-% bar now also contains a small pictogram of the map's reference frame.
+% rendering methods support hexagonal and strongly deformed pixel layouts.
+% The scale bar now includes a small diagram of the map's reference frame.
 %
-% *Approximation, Sampling and Clustering*
+% *Approximating data, sampling textures and finding clusters*
 %
 % * the new classes @S2FunMLS and @SO3FunMLS approximate scattered data on the
 % sphere and in orientation space by moving least squares
 % * <SO3Fun.optimalSample.html |optimalSample|> (formerly |compactify|)
-% replaces random sampling by an almost perfectly equally distributed set of
-% orientations or directions representing a given function. Asking for a
-% second output optimizes the weights of the sampling points as well, which
-% needs considerably fewer points for the same accuracy. The sampling points
-% are moved by a limited memory BFGS iteration, which copes with the bad
-% conditioning of the underlying functional far better than plain gradient
-% descent - roughly an order of magnitude in time to a given accuracy in
-% orientation space, and a factor 3 to the same accuracy on the sphere. The
-% plain gradient descent remains available as
+% selects orientations or directions that represent a given distribution
+% more evenly than random samples. A second output gives optimized weights,
+% allowing the same accuracy with considerably fewer points. The new
+% optimization method is roughly ten times faster in orientation space and
+% three times faster on the sphere at a given accuracy. The earlier
+% gradient descent method remains available as
 % |optimalSample(f,n,'method','steepestDescent')|
-% * <orientation.calcCluster.html |calcCluster|> uses by default the
-% <https://github.com/nla-group/classix CLASSIX> algorithm, which is much
-% faster than hierarchical clustering and needs no number of clusters
-% This release note records the intended 7.0 behavior. In the current
-% implementation, orientation clustering still uses ODF component analysis by
-% default; select CLASSIX with |'method','classix'|. Directions use CLASSIX by
-% default. See <ClusterDemo.html Clustering directions and orientations>.
-% * <PoleFigure.calcODFIterative.html |calcODFIterative|> inverts pole figure
-% data by iteratively adjusting the kernel width, which is much more robust
-% for irregularly sampled data
+% * <orientation.calcCluster.html |calcCluster|> supports the
+% <https://github.com/nla-group/classix CLASSIX> algorithm. It is much faster
+% than hierarchical clustering and does not require a specified number of
+% clusters. The planned 7.0 default was CLASSIX for orientations as well as
+% directions. The current implementation uses ODF component analysis for
+% orientations; select CLASSIX with |'method','classix'|. Directions use
+% CLASSIX by default. See
+% <ClusterDemo.html Clustering directions and orientations>.
+% * <PoleFigure.calcODFIterative.html |calcODFIterative|> reconstructs an ODF
+% from pole figure data by adjusting the kernel width iteratively. This
+% improves robustness for irregularly sampled data
 %
 %   sF   = S2FunMLS(nodes,values,'degree',3)
 %   ori  = optimalSample(odf,10000)
@@ -384,36 +472,34 @@
 %   [c,center] = calcCluster(ori)
 %   odf  = calcODFIterative(pf,'halfwidth',5*degree)
 %
-% *Rotations, Tangent Spaces and Vector Valued Functions*
+% *Rotation representations and functions with several outputs*
 %
-% Two new pages describe the geometry MTEX is built upon.
 % <RotationRepresentations.html Rotation Representations> compares Rodrigues,
-% homochoric and cubochoric vectors and <RotationTangentSpace.html The Tangent
-% Space> the left and the right representation of a tangent vector. A
-% @SO3TangentVector now stores the rotation it is attached to, so switching
-% between both representations needs no orientation passed along
+% homochoric and cubochoric vectors. <RotationTangentSpace.html The Tangent
+% Space> explains the left and right representations of tangent vectors,
+% which describe local changes in rotation. A @SO3TangentVector now stores
+% its reference rotation, so you can switch representations without passing
+% the orientation separately:
 %
 %   t = odf.grad(ori); right(t)   % t knows ori, no second argument needed
 %
-% What used to be a multivariate function is now a <SO3FunVectorValued.html
-% vector valued> function and arrays of them are handled like any other MATLAB
-% array.
+% Functions previously called multivariate are now called
+% <SO3FunVectorValued.html vector valued>. They return several values for
+% each orientation, and arrays of these functions behave like MATLAB arrays.
 %
 %% MTEX 6.1 10/2025
 %
-% MTEX 6.1 has no major new features, but includes many speedups and bug fixes.
-% Much of the work improved the stability of the provided MEX files. At
-% startup, MTEX checks whether all MEX files are installed. Missing files are
-% downloaded from GitHub. If that also fails, for example because antivirus
-% software intervenes, MTEX tries to compile them from source. The relevant
-% commands are
+% MTEX 6.1 improves speed and fixes bugs, with a focus on the compiled MEX
+% functions. At startup, MTEX checks that these files are installed and
+% downloads missing files from GitHub. If the download fails, for example
+% because of antivirus software, MTEX tries to compile them from source.
+% The relevant commands are
 %
-% * |check_mex| checks all mex files
+% * |check_mex| checks all MEX files
 % * |mex_install| recompiles all MEX files. On Windows, install the free
 % MinGW add-on compiler within MATLAB first.
 %
-% We will not list all speedups and minor improvements but only highlight
-% which syntax has changed.
+% Changes to script syntax:
 %
 % * |grains.grainSize| has been renamed to |grains.numPixel|
 % * the @plottingConvention is now stored in |grains.how2plot| and
@@ -423,35 +509,31 @@
 % new data.
 %
 %% MTEX 6.0 10/2024
-% MTEX 6.0 is major release that includes numerous new features and
-% internal changes.
+% MTEX 6.0 adds 3D grain analysis and allows 2D EBSD and grain maps to be
+% positioned in three-dimensional space.
 %
-% *Full 3d-Grains*
+% *Three-dimensional grain networks*
 %
-% With MTEX 6.0 three dimensional grain networks can be imported from
-% <https://neper.info/index.html Neper> or <https://dream3d.bluequartz.net
-% Dream 3d> and analyzed in a similar powerful way as you are used to do it
-% with 2d grains. Have a look at <Grains3DOperations.html 3d-grain
-% operations> and <Grains3DProperties.html 3d-grain properties> for more
-% information.
+% Import 3D grain networks from <https://neper.info/index.html Neper> or
+% <https://dream3d.bluequartz.net DREAM.3D> and analyse their sizes, shapes
+% and spatial relationships using tools similar to those for 2D grains.
+% See <Grains3DOperations.html 3D grain operations> and
+% <Grains3DProperties.html 3D grain properties>.
 %
-% *Pseudo 3d EBSD and Grain maps*
+% *Planar EBSD and grain maps in 3D space*
 %
-% Additionally, all previous 2d-classes like @EBSD, @grain2d,
-% @grainBoundary are no longer restricted to the xy-plane. For example it
-% is now possible to consider EBSD maps that represent the three faces of a
-% cube. To make this possible, multiple changes at the core of MTEX had to
-% be introduced:
+% The 2D classes @EBSD, @grain2d and @grainBoundary are no longer restricted
+% to the xy plane. For example, maps can represent three faces of a cube.
+% The following properties have changed:
 %
-% * |ebsd.pos| gives the position of the EBSD measurements and is of type
+% * |ebsd.pos| stores the positions of EBSD measurements as
 % @vector3d
-% * many grain properties like vertices |grains.V|, centroid |grains.centroid|
-% or long axis |grains.longAxis| are now of type @vector3d.
-% * |ebsd.N|, |grains.N| gives the normal direction of a EBSD map
-% * it is not possible to merge EBSD maps with different normal direction
-% into one variable
+% * grain vertices |grains.V|, centroids |grains.centroid| and long axes
+% |grains.longAxis| are now of type @vector3d
+% * |ebsd.N| and |grains.N| give the normal to the map plane
+% * maps with different normal directions cannot be merged into one variable
 %
-% *Free three dimensional plotting of EBSD maps, pole figures, etc.*
+% *Plotting maps and pole figures in 3D*
 %
 % * Plotting of EBSD and grain maps is now possible in 3d
 % * The alignment of x, y and z on the screen is now controlled by an
@@ -462,8 +544,8 @@
 %   how2plot.east = yvector
 %   plot(ebsd, how2plot)
 %
-% would plot an EBSD map with its normal direction out of the screen and the
-% y-vector pointing to north.
+% plots an EBSD map with its normal pointing out of the screen and the
+% y-vector pointing east.
 % * A default plotting convention can be stored directly in the EBSD or
 % grain variable via
 %
@@ -473,17 +555,17 @@
 % allows e.g. to plot pole figures with an arbitrary direction pointing out
 % of the screen.
 %
-% * As consequence |'upper'| and |'lower'| refers to the outOFScreen
-% direction.
+% * |'upper'| and |'lower'| now refer to hemispheres relative to the
+% out-of-screen direction
 %
-% *Interface to Neper*
-% Neper is an open source software package for 3d polycrystal generation
-% and meshing. It is now possible to call Neper from within MTEX, simulate
-% micro-structures, generated slices through a 3d volume and import those
-% slices into MTEX. Have a look at <NeperInterface.html NeperInterface> for
-% more information.
+% *Neper interface*
 %
-% *Misc Changes*
+% Neper is an open source package for generating and meshing 3D
+% polycrystals. Call it from MTEX to simulate microstructures, generate
+% sections through a volume and import those sections into MTEX. See
+% <NeperInterface.html NeperInterface>.
+%
+% *Other changes*
 %
 % * new option |'minPixel'| for the command <EBSD.calcGrains.html
 % |calcGrains|>, which lets you set a minimum grain size
@@ -502,18 +584,18 @@
 % * when computing parent EBSD data using
 % <parentGrainReconstructor.calcParentEBSD.html |calcParentEBSD|> the
 % parent orientation will now be constant within the parent grains. In
-% order to enforce the old behavior of a fixed OR but varying parent
-% orientation use the new option |'exactOR'|.
+% order to retain a fixed orientation relationship (OR) with varying parent
+% orientations, use the new option |'exactOR'|.
 % * new interface to SHT files
 % * new function <stripStar.html |stripStar|>
 %
 
 %% MTEX 5.11.0 3/2024
 %
-% MTEX 5.11 will be the last release before MTEX 6.0. It significantly
-% improves grain reconstruction from 2d EBSD data.
+% MTEX 5.11 is the last release before MTEX 6.0. It improves grain
+% reconstruction from 2D EBSD data.
 %
-% *Much Faster Grain Reconstruction*
+% *Faster grain reconstruction*
 %
 % Using <https://github.com/JCash/voronoi jc_voronoi> for tessellation,
 % together with additional speedups, makes grain reconstruction more than
@@ -522,7 +604,7 @@
 % |'VoronoiMethod'|. You may want to set this option to |'qhull'| if you
 % experience problems with the |'jcvoronoi'| engine.
 %
-% *Much Better Grain Reconstruction*
+% *Grain reconstruction around non-indexed regions*
 %
 % With MTEX 5.11 MTEX uses <https://en.wikipedia.org/wiki/Alpha_shape alpha
 % shapes> to determine grain shapes in the presence of large |notIndexed|
@@ -531,33 +613,29 @@
 % <GrainReconstruction.html grain reconstruction> for an illustration of
 % the new method.
 %
-% *Vector Fields in Orientation Space*
+% *Vector fields for modelling texture evolution*
 %
-% Functionality of <SO3FunVectorField.html Vector Fields in Orientation
-% Space> has been greatly extended. It includes now functions to compute
+% <SO3FunVectorField.html Vector Fields in Orientation Space> now includes
+% functions to compute
 % <SO3VectorField.div.html the divergence |div(vF)|>,
 % <SO3VectorField.curl.html the curl |curl(vF)|> and the
 % <SO3VectorFieldHarmonic.antiderivative.html antiderivative> of a vector
-% field |vF| on orientation space. This new functionality can be used to
-% efficiently model texture evolution by numerically solving the continuity
-% equation as it is demonstrated for <SingleSlipModel.html the single slip
-% model>. Crucial for this approach is the new command <doEulerStep.html
-% |doEulerStep|> which updates an ODF or a list of orientation according to
-% a vector field an orientation space which may be given e.g. by the Taylor
-% model.
+% field |vF|. Use these tools to model texture evolution by solving the
+% continuity equation, as demonstrated for <SingleSlipModel.html the single
+% slip model>. The new command <doEulerStep.html |doEulerStep|> updates an
+% ODF or a list of orientations using a vector field that describes their
+% rotation, for example from the Taylor model.
 %
 % *Lankford Parameter*
 %
-% The command <orientation.orientation.html |calcLankford|> allows for the
-% computation of the Lankford or R-value. A full discussion of the
-% corresponding analysis can be found <Lankford.html here>.
+% <orientation.orientation.html |calcLankford|> computes the Lankford
+% parameter, or R-value. See <Lankford.html Lankford parameter analysis>.
 %
 % *Transformation ODF*
 %
-% The command <orientation.variants.html |variants(p2c,odfParent)|>
-% takes now as a second input a parent ODF and return the child ODF under
-% the assumption that all variants appear with the same frequency. This is
-% in more detail explained in the section <TransformationTexture.html
+% <orientation.variants.html |variants(p2c,odfParent)|> now accepts a parent
+% ODF as its second input and returns the child ODF, assuming equal
+% frequencies for all variants. See <TransformationTexture.html
 % Transformation Texture>.
 %
 % *Inner Planes in Crystal Shapes*
@@ -568,7 +646,7 @@
 % or slip systems into the crystal shape. This is explained in more detail
 % at <CrystalShapes.html Crystal Shapes>.
 %
-% *Numerous minor improvements and bug fixes*
+% *Other improvements and bug fixes*
 %
 % * new command <SO3Fun.transformReferenceFrame.html
 % |transformReferenceFrame(odf,csNew)|>, which switches between
@@ -596,8 +674,8 @@
 % *Weighted Burgers Vector*
 %
 % With the function <EBSD.weightedBurgersVec.html |weightedBurgersVec(ebsd)|>
-% it is now possible to compute the weighted burgers vector both, using the
-% integral approach as well as the differential approach.
+% you can compute the weighted Burgers vector using either the integral or
+% the differential approach.
 %
 % *Bain Group Determination*
 %
@@ -605,7 +683,7 @@
 % the variant, the packet and the Bain group. The usage of this function is
 % demonstrated <MartensiteVariants.html here>.
 %
-% *Numerous minor addon, speed improvements, bug fixes*
+% *Other improvements and bug fixes*
 %
 % * New option |'max'| to <orientation.angle.html |angle(mori)|> to compute
 % the largest misorientation angle. Helpful for identifying twinning.
@@ -643,18 +721,15 @@
 % |characteristicShape(gB)|> to compute the characteristic shape from lists
 % of grain boundaries
 %
-% *Orientation dependent functions*
+% *Orientation-dependent properties*
 %
-% The orientation distribution function (ODF) describes the relative volume
-% of crystal orientations within a material. As such it is a function that
-% associates to each orientation a number with unit mrd (multiples of
-% random distribution). However, in material science many other orientation
-% depended functions are of importance, e.g., the Taylor factor with
-% respect to some outer strain depends on the local orientation. While ODFs
-% have ever since been at the heart of MTEX, this release is the first one
-% that includes full support for orientation dependent functions. Those
-% functions are called @SO3Fun and behave similar to spherical functions
-% @S2Fun. In particular one can
+% The orientation distribution function (ODF) describes the distribution of
+% crystal orientations in a material, in multiples of a random distribution
+% (mrd). Other material properties also depend on orientation. For example,
+% the Taylor factor varies with crystal orientation for a given applied
+% strain. MTEX now supports these general orientation-dependent functions
+% through @SO3Fun, with operations similar to those for spherical functions
+% @S2Fun. You can
 %
 % * add, subtract, multiply and divide with them
 % * compare them
@@ -662,9 +737,8 @@
 % * visualize them in 3d and 2d sections
 % * compute gradients
 %
-% While implementing these new features we also significantly speed up
-% all operations related with ODF operations. A full documentation of these
-% new features can be found <SO3FunConcept.html here>.
+% ODF operations are also significantly faster. See
+% <SO3FunConcept.html Orientation-dependent functions> for details.
 %
 %
 %% MTEX 5.8.2 11/2022
@@ -714,8 +788,8 @@
 %
 % * The ordering of the variants is stored within the OR misorientation |p2c|
 % as |p2c.variantMap|. In particular the variants in |p2c.variants| are
-% ordered by default according to the Morito convention. This can be easily
-% check by the command |round2Miller(p2c.variants)|
+% ordered by default according to the Morito convention. Check the ordering
+% with |round2Miller(p2c.variants)|
 % * The command |job.calcGBVotes| and |job.calcTPVotes| compute votes
 % associated with probabilities that are stored in |job.votes| and can
 % easily be analyzed.
@@ -738,22 +812,30 @@
 %
 %% MTEX 5.6.0 01/2021
 %
-% MTEX 5.6 greatly simplifies parent grain reconstruction by introducing
+% MTEX 5.6 introduces
 % the class <parentGrainReconstructor.parentGrainReconstructor.html
-% |parentGrainReconstructor|>. During the reconstruction procedure this
-% class keeps track of the correspondence between measured child grains and
-% the reconstructed parent grains. It provides the following functions for
-% recovering parent orientations which can be applied multiple times and in
-% any order to achieve the best possible reconstruction.
+% |parentGrainReconstructor|> to simplify parent grain reconstruction.
+% It tracks the correspondence between measured child grains and
+% reconstructed parent grains. The following functions recover parent
+% orientations and refine the reconstruction. They can be applied repeatedly
+% and in any order:
 %
-% * <parentGrainReconstructor.calcParent2Child.html |calcParent2Child|> - optimize parent to child orientation relationship
-% * <parentGrainReconstructor.calcGBVotes.html |calcGBVotes|> - compute votes from child/child and parent/child grain boundaries
-% * <parentGrainReconstructor.calcTPVotes.html |calcTPVotes|> - compute votes from child/child/child triple points
-% * <parentGrainReconstructor.calcParentFromVote.html |job.calcParentFromVote|> - recover parent orientations from votes
-% * <parentGrainReconstructor.calcParentFromGraph.html |job.calcParentFromGraph|> - recover parent orientations from graph clustered
-% * <parentGrainReconstructor.mergeSimilar.html |job.mergeSimilar|> - merge similar parent grains
-% * <parentGrainReconstructor.mergeInclusions.html |job.mergeInclusions|> - merge inclusions
-% * <parentGrainReconstructor.revert.html |job.revert|> - undo parent grain reconstructions
+% * <parentGrainReconstructor.calcParent2Child.html |calcParent2Child|>
+% optimizes the parent-to-child orientation relationship
+% * <parentGrainReconstructor.calcGBVotes.html |calcGBVotes|> computes votes
+% from child/child and parent/child grain boundaries
+% * <parentGrainReconstructor.calcTPVotes.html |calcTPVotes|> computes votes
+% from child/child/child triple points
+% * <parentGrainReconstructor.calcParentFromVote.html |job.calcParentFromVote|>
+% recovers parent orientations from votes
+% * <parentGrainReconstructor.calcParentFromGraph.html |job.calcParentFromGraph|>
+% recovers parent orientations from graph clusters
+% * <parentGrainReconstructor.mergeSimilar.html |job.mergeSimilar|> merges
+% similar parent grains
+% * <parentGrainReconstructor.mergeInclusions.html |job.mergeInclusions|>
+% merges inclusions
+% * <parentGrainReconstructor.revert.html |job.revert|> undoes parent grain
+% reconstructions
 %
 % The usage of this new class is demonstrated in <TiBetaReconstruction.html
 % Beta Titanium Reconstruction> and <MaParentGrainReconstruction.html
@@ -762,21 +844,18 @@
 % *Compatibility fixes*
 %
 % MTEX 5.6 fixes several incompatibilities with MATLAB versions earlier
-% then 2019b.
+% than 2019b.
 %
 %% MTEX 5.5.0 11/2020
 %
 % *Orientation Embedding*
 %
-% Orientational embeddings are tensorial representations of orientations
-% with the specific property that each class of symmetrically equivalent
-% orientations has a unique tensor representation. In contrast to the well
-% known representation by Rodrigues vectors those embeddings do not suffer
-% from boundary effects, i.e., the Euclidean distance between the tensors
-% is always close to the misorientation angle. This makes it possible to lift
-% method that works for multivariate data to orientations. More details of
-% this representation can be found in the chapter
-% <OrientationEmbeddings.html orientation embeddings> and the paper
+% Orientation embeddings represent each set of symmetry-equivalent
+% orientations by a unique tensor. The distance between these tensors is
+% close to the misorientation angle, without the boundary effects of
+% Rodrigues vectors. This allows methods for multivariate data to be applied
+% to orientations. See <OrientationEmbeddings.html orientation embeddings>
+% and the paper
 %
 % * R. Hielscher, L. Lippert, _Isometric Embeddings of Quotients of the
 % Rotation Group Modulo Finite Symmetries_,
@@ -784,20 +863,17 @@
 %
 % *Low Angle Boundaries*
 %
-% With MTEX 5.5 we make low angle grain boundary analysis much more straight
-% forward by allowing to pass to the command <EBSD.calcGrains.html
-% |calcGrains|> two thresholds, i.e.,
+% <EBSD.calcGrains.html |calcGrains|> now accepts separate thresholds for
+% grain boundaries and internal low-angle boundaries:
 %
 %   grains = calcGrains(ebsd,'threshold',[10*degree 1*degree])
 %
-% generates grains bounded by high angle grain boundaries with a threshold
-% of 10 degree and inner low angle boundaries with an threshold of 1
-% degree. The latter ones are stored as |grains.innerBoundary|. In order to
-% estimate the density of inner boundaries per grain the commands
+% This reconstructs grains using a 10-degree threshold and records internal
+% boundaries above 1 degree in |grains.innerBoundary|. Use
 % <grain2d.subBoundaryLength.html |subBoundaryLength|> and
-% <grain2d.subBoundarySize.html |subBoundarySize|> have been introduced.
-% The documentation page <SubGrainBoundaries.html Subgrain Boundaries>
-% describes the analysis of low angle boundaries in more detail.
+% <grain2d.subBoundarySize.html |subBoundarySize|> to estimate the amount of
+% internal boundary per grain. See <SubGrainBoundaries.html Subgrain
+% Boundaries> for the analysis workflow.
 %
 % *New Functionalities*
 %
@@ -805,10 +881,9 @@
 % easily by |ebsd.orientations| instead of |ebsd('indexed').orientations|.
 % Orientations corresponding to |notIndexed| pixels will be returned as NaN
 % and thus automatically ignored during any further computation.
-% * <grain2d.isBoundary.html |grains.isBoundary|> checks grains to be
-% boundary grains
-% * <grain2d.isInclusion.html |grains.isInclusion|> checks grains to be
-% inclusions
+% * <grain2d.isBoundary.html |grains.isBoundary|> identifies grains touching
+% the map boundary
+% * <grain2d.isInclusion.html |grains.isInclusion|> identifies inclusions
 % * <grain2d.merge.html |merge(grains,'inclusions')|> merges inclusions
 % into their hosts
 % * <grain2d.merge.html |merge(grains,'threshold',delta)|> merges grains
@@ -821,7 +896,7 @@
 % * <EBSD.EBSD.html |calcMis2Mean|> computes the misorientation to
 % a grain reference orientation, i.e., the <EBSDGROD.html grain reference
 % orientation deviation (GROD)>.
-% * KAM computation has been speed up significantly for hexagonal and
+% * KAM computation has been sped up significantly for hexagonal and
 % square grids. Make sure to use the command |ebsd = ebsd.gridify| before
 % the KAM computation.
 % * new option |'edgeAlpha'| to control the transparency of grain
@@ -842,7 +917,7 @@
 % rotations that best rotates all the vectors |l| onto the vectors |r|
 %
 % * <orientation.load.html |orientation.load|> and <vector3d.load.html
-% |vector3d.load|> allows now to import additional properties.
+% |vector3d.load|> now import additional properties.
 %
 % *Important Bug Fixes*
 %
@@ -851,17 +926,17 @@
 % fundamental region.
 %
 % * <slipSystem.symmetrise.html |slipSystem.symmetrise|> gave
-% incorrect number of slipsystems due to a rounding error
+% an incorrect number of slip systems due to a rounding error
 %
 %% MTEX 5.4.0 7/2020
 %
 % *Parent Grain Reconstruction*
 %
-% MTEX now includes a number of functions for variant analysis and to
-% recover parent grain structure. Examples include
+% MTEX now includes functions for variant analysis and reconstruction of
+% parent grain structures. Examples include
 % <TiBetaReconstruction.html beta phase reconstruction in Titanium> and
 % <MaParentGrainReconstruction.html Martensite reconstruction from
-% Austenite grains>. The reconstruction is mainly build around the
+% Austenite grains>. The reconstruction uses the
 % following new commands
 %
 % * <calcParent.html |calcParent|> computes the best fitting parent
@@ -917,19 +992,17 @@
 %
 %% MTEX 5.3.0 4/2020
 %
-% MTEX 5.3 is a humble release without big shiny improvements. On the other
-% hand is has seen some internal changes which lead to significant speed
-% improvements in some functions. Technically speaking the class @symmetry
-% is not derived from @rotation anymore but is a handle class. From the
-% users perspective almost no change will be noticed. Developers should
-% replace |length(cs)| by |numSym(cs)|.
+% MTEX 5.3 speeds up several functions through internal changes. Most
+% analysis scripts are unaffected. The @symmetry class is now a handle
+% class and no longer derives from @rotation. Scripts that count symmetry
+% operations should replace |length(cs)| by |numSym(cs)|.
 %
 % *Much Better and Faster Halfquadratic Filter*
 %
 % Denoising of EBSD data using the
 % <https://mtex-toolbox.github.io/EBSDDenoising.html
 % |halfQuadraticFilter|> is now about 10 times faster, handles outliers
-% much better and runs native on hexagonal grids.
+% better and works directly on hexagonal grids.
 %
 % *New Functions*
 %
@@ -954,8 +1027,7 @@
 %
 % *New Documentation*
 %
-% MTEX got a new homepage which was needed to include a much more
-% exhaustive online documentation which has now
+% The new MTEX website provides expanded online documentation with
 %
 % * a sidebar for quick navigation
 % * a search field
@@ -963,11 +1035,9 @@
 % * UML diagrams illustrating the hierarchy of the classes
 % * much more content
 %
-% The new documentation is not yet perfect though we are working hard to
-% improve it. That's why we are extremely happy for everybody who contributes
-% additions to the documentation. This includes the correction of spelling
-% errors, theoretical parts, examples etc. Check out <Contribute2Doc.html
-% how to contribute to the documentation>.
+% Contributions can include spelling corrections, explanations of theory
+% and worked examples. See <Contribute2Doc.html how to contribute to the
+% documentation>.
 %
 % *More Colors*
 %
@@ -1007,8 +1077,7 @@
 %
 % *Plastic Deformations*
 %
-% MTEX 5.2. introduces a bunch of new tensor classes to make modelling of
-% plastic deformations more straight forward.
+% MTEX 5.2 introduces tensor classes for modelling plastic deformation:
 %
 % * <velocityGradientTensor.velocityGradientTensor.html Velocity Gradient Tensors>
 % * <strainRateTensor.strainRateTensor.html strain rate tensor>
@@ -1063,21 +1132,20 @@
 %
 % *Dislocation systems*
 %
-% Starting with version 5.1 MTEX introduces a class representing
-% dislocation systems. Dislocation systems may be lists of edge or screw
-% dislocations and are either defined by its burgers and line vectors
+% MTEX 5.1 introduces a class for lists of edge or screw dislocation
+% systems. Define them using Burgers vectors and line directions:
 %
 %   cs = crystalSymmetry('432')
 %   b = Miller(1,1,0,cs,'uvw')
 %   l = Miller(1,-1,-2,cs,'uvw')
 %   dS = dislocationSystem(b,l)
 %
-% by a family of slipsystems
+% Alternatively, define them from a family of slip systems:
 %
 %   sS = slipSystem.fcc(cs)
 %   dS = dislocationSystem(sS)
 %
-% or as the family of predefined dominant dislocation systems by
+% Or use a predefined family of dominant dislocation systems:
 %
 %   dS = dislocationSystem.fcc(cs)
 %
@@ -1086,10 +1154,9 @@
 %
 % *Geometrically necessary dislocations*
 %
-% The newly introduced dislocation systems play an important role when
-% computing geometrically necessary dislocations from EBSD data. The
-% workflow is illustrate the script <GND.html GND> and consists
-% of the following steps:
+% Use dislocation systems to estimate geometrically necessary dislocation
+% (GND) density from EBSD data. The <GND.html GND> example demonstrates
+% the workflow:
 %
 % # define the dominant <dislocationSystem.dislocationSystem.html
 % dislocation systems>
@@ -1109,9 +1176,9 @@
 %
 % *Birefringence*
 %
-% MTEX 5.1 includes some basic methods to analyze and simulate optically
-% isotropic materials. This includes the computation of the optical axis,
-% birefringence and spectral transmission. The new features are
+% MTEX 5.1 adds methods for analysing and simulating optically anisotropic
+% materials, including optical axes, birefringence and spectral transmission.
+% The new features are
 % demonstrated in <BirefringenceDemo.html BirefringenceDemo>.
 %
 % *Color Keys*
@@ -1158,24 +1225,22 @@
 % imports arbitrary additional properties together with the
 % orientations, e.g., weights
 % * new option |logarithmic|
-% * new function <SO3Fun.grad.html |grad|> to compute the gradient of and ODF
+% * new function <SO3Fun.grad.html |grad|> to compute the gradient of an ODF
 % at a certain orientation
 % * explicitly set the number of rows and columns in a MTEXFigure plot
-% with
 % * EBSD hdf5 interface works now for Bruker data as well
 %
 %% MTEX 5.0.0 03/2018
 %
-% *Replace all executables by two mex files*
+% *Compiled functions replace external executables*
 %
-% In MTEX many functionalities are based on the non equispaced fast Fourier
-% transform (<https://www-user.tu-chemnitz.de/~potts/nfft/ NFFT>). Until now this dependency was kept under
-% the hood, or more precisely, hidden in external executable files which often
-% caused troubles on MAC systems. Starting with MTEX 5.0. all the executables
-% have been replaced by two mex files provided by the NFFT package. This
-% change (hopefully) comes with the following advantages
+% Many MTEX calculations use the non-equispaced fast Fourier transform
+% (<https://www-user.tu-chemnitz.de/~potts/nfft/ NFFT>). MTEX 5.0 replaces
+% external executables, which often caused problems on Mac systems, with
+% two compiled MEX functions from the NFFT package. This improves
 %
-% * better compatibility with MAC systems, no SIP disabled required
+% * compatibility with Mac systems, without disabling System Integrity
+% Protection (SIP)
 % * increased performance, e.g., due to multi core support
 % * better maintainability, as all MTEX code is now MATLAB code
 % * the pole figure to ODF inversion algorithm is now entirely implemented
@@ -1184,30 +1249,26 @@
 %
 % *Spherical functions*
 %
-% Many functions in MTEX compute directional dependent properties, e.g.
-% pole figures, inverse pole figures, wave velocities, density distribution
-% of misorientation axis or boundary normals. Until now those functions
-% took as an input an of vector of directions and gave as an output a
-% corresponding vector of function values, e.g. the command
+% Many material properties depend on direction, including pole densities,
+% wave velocities and distributions of misorientation axes or boundary
+% normals. Previously, MTEX calculated these properties only at a supplied
+% list of directions. For example,
 %
 %   pfi = calcPDF(odf,Miller(1,0,0,odf.CS),r)
 %
-% returns for a list of specimen directions |r| the corresponding list of
-% pole figure intensities |pfi| for the ODF |odf|. Starting with MTEX 5.0 it
-% is possible to omit the list of specimen directions |r| or replace it by
-% an empty list |[]|. In this case the command
+% returns pole figure intensities |pfi| for the ODF |odf| at specimen
+% directions |r|. In MTEX 5.0, omit |r| or pass an empty list |[]| to
+% obtain a function instead:
 %
 %   pdf = calcPDF(odf,Miller(1,0,0,odf.CS))
 %
-% returns a <S2FunHarmonic.S2FunHarmonic.html spherical function> |pdf| also called
-% pole density function. One can evaluate this spherical function using the
-% command <S2FunHarmonic.eval.html eval> at the list of specimen directions
-% |r| to obtain the pole figure intensities
+% The result is a <S2FunHarmonic.S2FunHarmonic.html spherical function>
+% |pdf|, called a pole density function. Evaluate it at any list of specimen
+% directions |r| using <S2FunHarmonic.eval.html eval>:
 %
 %   pfi = pdf.eval(r)
 %
-% However, there are many more operations that can be performed on
-% spherical functions:
+% You can also calculate with, plot and analyse spherical functions:
 %
 %   % compute with spherical functions as with ordinary numbers
 %   pdf3 = 5 * pdf1 + 3 * pdf2
@@ -1230,27 +1291,23 @@
 %
 % *Symmetry aware spherical functions*
 %
-% Since most of the directional dependent properties obey additional
-% symmetry properties the class <S2FunHarmonic.S2FunHarmonic.html
-% S2FunHarmonic> has been extended to respect symmetry in the class
-% <S2FunHarmonicSym.S2FunHarmonicSym.html S2FunHarmonicSym>.
+% Many directional properties obey crystal or specimen symmetry.
+% <S2FunHarmonic.S2FunHarmonic.html S2FunHarmonic> now has a
+% <S2FunHarmonicSym.S2FunHarmonicSym.html S2FunHarmonicSym> variant that
+% respects these symmetries.
 %
 % *Multivariate spherical functions, vector fields and spherical axis fields*
 %
-% In some cases it is useful that a spherical function gives not only one
-% value for a certain direction but several values. This is equivalent to
-% have concatenate several univariate spherical function to one
-% multivariate function. This can be accomplished by
+% Combine scalar spherical functions to return several values for each
+% direction:
 %
 %   S2Fmulti = [S2F1,S2F2,S2F3]
 %
-% which gives a spherical function with 3 values per direction.
+% This function returns three values per direction.
 %
-% If we interpret the 3 values of |S2Fmulti| as $x$, $y$, and, $z$ coordinate of
-% a 3 dimensional vector, the function |S2Fmulti| can essentially be seen as
-% a spherical vector field associating to each direction a three
-% dimensional vector. The most important example of such a vector field is
-% the gradient of a spherical function:
+% Interpreting the values of |S2Fmulti| as $x$, $y$ and $z$ coordinates gives
+% a vector field: one 3D vector for each direction. A common example is the
+% gradient of a spherical function:
 %
 %   g = S2F1.grad
 %
@@ -1263,18 +1320,15 @@
 %
 %   [vp,vs1,vs2,pp,ps1,ps2] = velocity(C)
 %
-% The main difference is, that polarisation directions are antipodal, i.e.
-% one can not distinguish between the polarisation direction |d| and |-d|.
-% In MTEX we call vector fields with antipodal values are represented by
-% variables of type <S2AxisFieldHarmonic.S2AxisFieldHarmonic.html AxisField>.
+% Polarisation directions are antipodal: |d| and |-d| describe the same
+% axis. MTEX represents fields with this property as
+% <S2AxisFieldHarmonic.S2AxisFieldHarmonic.html AxisField> objects.
 %
 % *Scalar tensor properties are returned as spherical functions*
 %
-% Any scalar or vectorial property of a tensor is not returned as a
-% spherical function or spherical vector field. Examples are the velocity
-% properties mentioned above, Youngs modulus, shear modulus, Poisson ration
-% etc. In particular, plotting those directional dependent quantities is as
-% simple as
+% Direction-dependent tensor properties now return spherical functions or
+% vector fields. Examples include wave velocities, Young's modulus, shear
+% modulus and Poisson's ratio. Plot these properties directly:
 %
 %   plot(C.YoungsModulus)
 %
@@ -1336,10 +1390,9 @@
 %
 %   [center,~,centerId] = calcComponents(odf,'seed',ori)
 %
-% Then |center| are the clusters center and |centerId| gives for each
-% orientation to which cluster it belongs. Substantial in this method is
-% the choice of the kernel halfwidth used for ODF computation. This can be
-% adjusted by
+% |center| gives the cluster centres and |centerId| assigns each orientation
+% to a cluster. The kernel halfwidth used to estimate the ODF controls the
+% clustering. Set it with
 %
 %   [c,center] = calcCluster(ori,'halfwidth',2.5*degree)
 %
@@ -1354,28 +1407,22 @@
 % * <stressTensor.stressTensor.html stressTensor>
 % * <ChristoffelTensor.ChristoffelTensor.html ChristoffelTensor>
 %
-% more tensors are supposed to be included in the future. The central
-% advantage is that tensor specific behaviour and functions can now better
-% be implemented and documented, e.g., that the inverse of the compliance
-% tensor is the stiffness tensor and vice versa. For user the important
-% change is that e.g. the stiffness tensor is now defined by
+% These classes provide tensor-specific operations. For example, inverting
+% a compliance tensor returns a stiffness tensor, and vice versa. Further
+% tensor classes are planned. Define a stiffness tensor with
 %
 %   C = stiffnessTensor(M,cs)
 %
-% instead of the depreciated syntax
+% instead of the deprecated syntax
 %
 %   C = tensor(M,cs,'name','elastic stiffness','unit','GPA')
 %
 % *Improved spherical plotting*
 %
-% In MTEX 4.X it was not possible to display the upper and lower hemisphere
-% in pole figure plots, inverse pole figure plots or ODF section plots.
-% This was a server restriction as for certain symmetries both hemispheres
-% do not have to coincide. In MTEX 5.0 this restriction has been overcome.
-% MTEX automatically detects whether the upper and lower hemisphere are
-% symmetrically equivalent and decides whether both hemispheres needs to be
-% plotted. As in the previous version of MTEX this can be controlled by the
-% options |upper|, |lower| and |complete|.
+% MTEX 5.0 can display both hemispheres in pole figures, inverse pole
+% figures and ODF sections. It checks whether the hemispheres are
+% symmetry-equivalent and displays both when needed. Control the display
+% with |upper|, |lower| and |complete|.
 %
 % As a consequence the behaviour of MTEX figures have changed slightly. By
 % default MTEX now always plots into the last axis. In order to annotate
@@ -1413,11 +1460,11 @@
 % * the option 'MarkerSize' can also be a vector to allow for varying Markersize
 % * new option 'noSymmetry' for plotPDF and plotSection
 %
-% *orientation relation ships*
+% *Orientation relationships*
 %
-% * new functions for computing variants and parents for a orientation
-% relation ship *
-% * new predefined orientation relation ship
+% * new functions for computing variants and parent orientations for a
+% given orientation relationship
+% * new predefined orientation relationship
 %
 %   gT = GreningerTrojano(csAlpha,csGamma)
 %   ori_children = ori_parent * inv(gT.variants)
@@ -1450,8 +1497,8 @@
 % *Misorientations*
 %
 % * MTEX introduces <orientation.round2Miller.html round2Miller> which
-% determines to an arbitrary misorientation |mori| two pairs of lower order
-% Miller indices such that which are aligned by |mori|
+% finds pairs of low-index plane normals and crystal directions aligned
+% by a given misorientation |mori|
 %
 % * MTEX includes now some of the important misorientation
 % relationships like
@@ -1463,14 +1510,14 @@
 %
 % *Grain Reconstruction*
 %
-% New option to handle non convex other shapes of EBSD data sets
+% New option for EBSD maps with non-convex outlines:
 %
 %   calcGrains(ebsd,'boundary','tight')
 %
-% * Grain boundary indexing*
-% The commands
+% *Grain boundary indexing*
+% The command
 %   gB('phase1','phase2').misorientation
-% returns now always a misorientation from phase1 to phase2
+% now always returns a misorientation from phase1 to phase2
 %
 % *Tensors*
 %
@@ -1683,17 +1730,14 @@
 %
 % *large EBSD data sets*
 %
-% Analyzing large EBSD data sets may be quite annoying due to memory
-% consumption and slow plotting. As a work around MTEX includes a new
-% function <EBSD.reduce.html reduce> which allows reducing the data set to
-% each n-th pixel, i.e.,
+% Large EBSD maps can require substantial memory and take time to plot.
+% <EBSD.reduce.html reduce> keeps every n-th pixel along each grid direction:
 %
 %   ebsd_small = reduce(ebsd,2)
 %
-% contains only 25 percent of the data of the original data set. This
-% functionality is assumed to be used for experimenting around with the
-% data set and setting up a proper analysis script. The final analysis
-% should, if possible, be done with the entire data set.
+% This keeps 25 percent of the original measurements. Use the smaller map
+% to explore the data and develop an analysis script, then run the final
+% analysis on the full data set where possible.
 %
 % *New option to ignore symmetry*
 %
@@ -1768,24 +1812,18 @@
 %
 %% MTEX 4.1 - 09/2015
 %
-% MTEX 4.1 introduces new possibilities to the analysis of misorientations.
-% For the first time, it covers all geometric aspects of misorientations
-% between arbitrary crystal symmetries. Furthermore, MTEX 4.1 introduces
-% filters to smooth EBSD data.
+% MTEX 4.1 extends misorientation analysis to arbitrary combinations of
+% crystal symmetries and introduces filters for smoothing EBSD data.
 %
 % *Smoothing of EBSD Data*
 %
-% Smoothing of EBSD data might be necessary if the orientation data are
-% corrupted by noise which influences the estimation of orientation
-% dependent properties like KAM or GND. The general syntax for smoothing
-% EBSD data is
+% Noise in EBSD orientations affects local misorientation measures such as
+% KAM and estimates of GND density. Smooth the orientations with
 %
 %   ebsd = smooth(ebsd)
 %
-% This applies the spline filter to the orientation data. Beside the spline
-% filter, many other filters are available. A general discussion on this
-% topic can be found <EBSDDenoising.html here>. To make use of a different
-% than the default filter use the syntax
+% This applies the default spline filter. See <EBSDDenoising.html EBSD
+% denoising> for a discussion of the available filters. To use another filter:
 %
 %   F = medianFilter
 %   F.numNeighbours = 2 % this way options for the filter can be set
@@ -1798,17 +1836,17 @@
 %
 % *Support for antipodal symmetry for misorientations*
 %
-% When working with boundary misorientations between the same phase one can
-% not distinguish between a misorientation |mori| and its inverse
-% |inv(mori). Starting with MTEX 4.1 this symmetry is supported for
-% misorientations and misorientation distribution functions.
+% For a boundary between grains of the same phase, exchanging the two grains
+% changes |mori| to |inv(mori)| but describes the same boundary. MTEX 4.1
+% supports this antipodal symmetry for misorientations and misorientation
+% distribution functions.
 %
 %   mori = inv(ori1) * ori2;
 %   mori.antipodal = true;
 %
 %   mdf = calcMDF(odf1,odf2,'antipodal')
 %
-% Antipodal symmetry effects the asymmetric region in orientation space as
+% Antipodal symmetry affects the asymmetric region in orientation space as
 % described below, as well as the distance between misorientations. Boundary
 % misorientations between the same phase have set the flag |antipodal| by
 % default.
@@ -1841,9 +1879,8 @@
 %
 % *Axis and angle distributions*
 %
-% Thanks to the implementation of the asymmetric region
-% |plotAxisDistribution| and |plotAngleDistribution| works in MTEX 4.1 for
-% any combination of crystal symmetries.
+% |plotAxisDistribution| and |plotAngleDistribution| now use the fundamental
+% region and work for any combination of crystal symmetries.
 %
 % The following syntax is obsolete
 %
@@ -1887,7 +1924,7 @@
 %
 % *Replace plotODF by a plotSection*
 %
-% In most cases, you can replace |plotODF| by a|plot|. Only for
+% In most cases, you can replace |plotODF| by |plot|. For
 % misorientations, the default plot is |scattered|.
 %
 % *More default settings for EBSD maps and pole figure plots*
@@ -1987,12 +2024,10 @@
 %
 %% MTEX 4.0.0 - 10/2014
 %
-% MTEX 4 is a complete rewrite of the internal class system which was
-% required to keep MTEX compatible with upcoming MATLAB releases. Note
-% that MTEX 3.5 will not work on MATLAB versions later than 2014a. As a
-% positive side effect, the syntax has been made more consistent and
-% powerful. On the bad side MTEX 3.5. code will need some
-% adaption to run on MTEX 4. There are two general principles to consider
+% MTEX 4 rewrites the internal class system for compatibility with newer
+% MATLAB releases. MTEX 3.5 does not work with MATLAB versions later than
+% R2014a. The new syntax is more consistent, but scripts written for MTEX
+% 3.5 need changes. Two general rules apply:
 %
 % *Use dot indexing instead of getting and setting methods*
 %
@@ -2015,9 +2050,8 @@
 %
 %   cs.axes(1).x
 %
-% to get the x coordinate of the first crystallographic coordinate axis -
-% the a-axis. As a nice bonus, you can now use TAB completion to cycle
-% through all possible properties and methods of a class.
+% to get the x coordinate of the a-axis. TAB completion now lists the
+% available properties and methods of a class.
 %
 % *Use camelCaseCommands instead of under_score_commands*
 %
@@ -2107,10 +2141,10 @@
 %   calcODF(ebsd('Fo').orientations)
 %   volume((ebsd('Fo').orientations)
 %
-% This makes it easier to apply the same functions to misorientations
-% to grain mean orientations |grains.meanOrientation|, ebsd misorientation
-% to mean |mean |ebsd.mis2mean| or boundary misorientations
-% |grains.boundary.misorientation|
+% The same functions can be applied to grain mean orientations
+% |grains.meanOrientation|, misorientations relative to the grain mean
+% |ebsd.mis2mean|, or boundary misorientations
+% |grains.boundary.misorientation|.
 %
 % *Different syntax for reconstructing grains from EBSD data*
 %
@@ -2577,10 +2611,9 @@
 %
 % *New Syntax for EBSD and grain variables*
 %
-% EBSD and grain variables can now be indexed by phase, region or grain /
-% ebsd variables. Let us assume we have a two phase ebsd variable
-% containing 'Fe' and 'Mg' then can restrict our dataset to the Fe - phase
-% only by writing
+% Select subsets of EBSD or grain data by phase, region, or another grain
+% or EBSD variable. For example, select the Fe phase from a two-phase map
+% containing Fe and Mg with
 %
 %  ebsd('Fe')
 %
@@ -2588,7 +2621,7 @@
 % a look into the documentation for information how to index ebsd and grain
 % variables.
 %
-% Accordingly the following syntax is now depreciated.
+% The following syntax is now deprecated:
 %
 %  calcODF(ebsd,'phase',2)
 %
@@ -2604,21 +2637,22 @@
 % * download and import tensors from http://www.materialproperties.org/
 % * new interfaces for Rigaku, Siemens, Bruker and many other X-ray devices
 % and formats
-% * support for rank three tensors, i.e, for piezo electricity tensors
+% * support for rank-three tensors, including piezoelectric tensors
 % * improved documentation
 % * many bug fixes
 %
 %% MTEX 3.1 - 03/2011
 %
-% *Tensor Arithmetics* This release introduces tensor analysis into MTEX,
-% this includes
+% *Tensor analysis*
+%
+% MTEX now supports tensor analysis, including
 %
 % * import of tensors via the import wizard
 % * basic tensor operations: multiplication, rotation, inversion
 % * advanced visualization
 % * computation of averaged tensors from EBSD data and ODFs
-% * computation of standard elasticity tensors like: Youngs modulus, linear
-% compressibility, Christoffel tensor, elastic wave velocities
+% * computation of elastic properties: Young's modulus, linear
+% compressibility, the Christoffel tensor and elastic wave velocities
 %
 % *Other Enhancements*
 %
@@ -2664,10 +2698,9 @@
 %
 % *Grain Analysis for EBSD Data*
 %
-% MTEX is now able to partition spatial EBSD data into grains. This allows
-% for the computation of various grain characteristics, as well as the
-% computation and visualization of the grain boundaries and neighborhood
-% relationships. Main features are:
+% MTEX now reconstructs grains from spatial EBSD data. You can calculate
+% grain properties and analyse grain boundaries and neighbouring grains.
+% Features include:
 %
 % * Grains statistics (area, diameter, mean orientation, ...)
 % * Misorientation analysis
@@ -2768,12 +2801,11 @@
 %
 %% MTEX 1.0 - 06/2008
 %
-% *New Installer Including Binaries for Windows, Linux, and Max OSX*
+% *New installer with binaries for Windows, Linux and Mac OS X*
 %
-% * MTEX ships now with an automated installer and binaries for Windows,
-% Linux, and Mac OSX. This makes it in unnecessary to install any
-% additional library and to compile the toolbox. (Thanks to F. Bachmann, C.
-% Randau, and F. Wobbe)
+% * MTEX now includes an automated installer and binaries for Windows,
+% Linux and Mac OS X. You no longer need to install additional libraries
+% or compile the toolbox. Thanks to F. Bachmann, C. Randau and F. Wobbe
 %
 % *New ODF Class*
 %
