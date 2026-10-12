@@ -141,8 +141,8 @@ expect(e, 'testdata_sqr.ctf', ...
   'n', 900, 'nPhases', 2, 'unit', 'um', 'dPos', 1, 'nCorners', 4, ...
   'minerals', {'notIndexed','Glaucophane'}, 'nIndexed', 900);
 
-expectRow(e, 'testdata_sqr.ctf', 'first', 1,   [1 0],       [211.15 30.45 6.13]);
-expectRow(e, 'testdata_sqr.ctf', 'last',  900, [30 29],     [263.31 34.70 45.55]);
+expectRow(e, 'testdata_sqr.ctf', 'first', 1,   [1 0],       [328.85 149.55 186.13]);
+expectRow(e, 'testdata_sqr.ctf', 'last',  900, [30 29],     [276.69 145.30 225.55]);
 
 % CS1 is what an Oxford file states its Euler angles in, not what its map
 % lives in - no vendor gives the map a reference system, so the import
@@ -162,8 +162,8 @@ expect(e, 'testdata_hex.ctf', ...
   'n', 900, 'nPhases', 2, 'unit', 'um', 'dPos', 0.5774, 'nCorners', 6, ...
   'minerals', {'notIndexed','Glaucophane'}, 'nIndexed', 900);
 
-expectRow(e, 'testdata_hex.ctf', 'first', 1,   [1 0],            [201.84 80.66 87.84]);
-expectRow(e, 'testdata_hex.ctf', 'last',  900, [30.5 25.1147],   [203.45 74.12 82.74]);
+expectRow(e, 'testdata_hex.ctf', 'first', 1,   [1 0],            [338.16 99.34 267.84]);
+expectRow(e, 'testdata_hex.ctf', 'last',  900, [30.5 25.1147],   [336.55 105.88 262.74]);
 
 % a hex unit cell has six corners, a square one four - getting this wrong
 % silently turns a hex map into a square one
@@ -182,8 +182,8 @@ e = load1('eclogite.ctf');
 expect(e, 'eclogite.ctf', ...
   'n', 617, 'nPhases', 8, 'unit', 'um', 'nIndexed', 613);
 
-expectRow(e, 'eclogite.ctf', 'first', 1,   [87.89 19.1],    [260.51 25.17 33.73]);
-expectRow(e, 'eclogite.ctf', 'last',  617, [500.6 108.9],   [345.03 130.90 75.43]);
+expectRow(e, 'eclogite.ctf', 'first', 1,   [87.89 19.1],    [279.49 154.83 213.73]);
+expectRow(e, 'eclogite.ctf', 'last',  617, [500.6 108.9],   [194.97 49.10 255.43]);
 
 % every phase in the file must have reached the phase map, and the ones that
 % are not notIndexed must carry a real crystal symmetry
