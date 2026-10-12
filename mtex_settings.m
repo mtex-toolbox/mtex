@@ -25,8 +25,11 @@ set(0,'DefaultLegendFontSize',fontSize);
 try set(0,'defaultPolarAxesFontSize',fontSize); end %#ok<TRYNC> 
 
 % whether to use 2̅ instead of -2
-% requires a compatible font, e.g. julia monospace
+% requires a font that centres the bar, check yours with showOverbars('cycle')
 setMTEXpref('UTF8Output',true)
+
+% command window fonts known to centre the bar in 2̅, matched by prefix
+setMTEXpref('overbarFonts',{'Adwaita Mono','JuliaMono'});
 
 % default plotting of specimen coordinates
 % x to east, y to south, z into the screen

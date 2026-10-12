@@ -57,6 +57,7 @@ else
 end
 
 if usejava('desktop') && ~check_option(varargin,'noMenu'), MTEXmenu; end
+showOverbars('check');
 
 try set(groot,'DefaultFigureWindowStyle','normal'); end %#ok<TRYNC>
 
