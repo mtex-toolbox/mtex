@@ -26,7 +26,11 @@
         "phi": { "mode": "search_set", "value": "^/Data/Euler$"}
       }
     },
-    "map_correction": {"type": "scanRotation", "mode": "search_free", "value": "/EBSD/Header/Scanning Rotation Angle$", "fallback": 0},
+    "map_correction": {
+      "type": "scanRotation",
+      "angle": {"mode": "search_free", "value": "/EBSD/Header/Scanning Rotation Angle$", "fallback": 0},
+      "tiltAxis": {"mode": "search_free", "value": "/EBSD/Header/Tilt Axis$", "fallback": 0}
+    },
     "cs": {
       "type": "default",
       "key": { "mode": "search_set", "value": "^/Header/Phases$" },
