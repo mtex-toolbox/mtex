@@ -3,13 +3,14 @@ classdef dislocationSystem
 %
 % Syntax
 %   dS = dislocationSystem(b,l)
+%   dS = dislocationSystem(b,l,u)
 %   dS = dislocationSystem(sS)
 %
 % Input
 %  b  - @Miller Burgers vector
 %  l  - @Miller line vector
+%  u  - line energy, default |b|^2 for an edge and 0.7 |b|^2 for a screw dislocation
 %  sS - @slipSystem
-%  pr - poisson ratio
 %
 % Class Properties
 %  b  - @Miller Burgers vector
@@ -55,9 +56,6 @@ classdef dislocationSystem
         dS.b = [b(:);bScrew(:)];
         dS.l = [dS.l(:);bScrew(:)];
         
-        % line energy
-        dS.u = 1 + dS.isEdge;
-        
       else
         
         b = sS;
@@ -68,11 +66,13 @@ classdef dislocationSystem
         dS.b = sS;
         l.antipodal = true;
         dS.l = l;
-        if nargin < 3, u = 1; end
-        if numel(u) ~= length(dS.b), u = repmat(u,size(dS.b)); end
-        dS.u = u;
         
       end
+
+      % line energy of isotropic elasticity with Poisson ratio 0.3
+      if nargin < 3, u = norm(dS.b).^2 .* (1 - 0.3 * dS.isScrew); end
+      if numel(u) ~= length(dS.b), u = repmat(u,size(dS.b)); end
+      dS.u = u;
       
     end
     

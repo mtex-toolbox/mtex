@@ -124,9 +124,8 @@ a = norm(cs.aAxis);
 
 %% Set relative line energies
 % The property |u| stores the relative line energy used when MTEX chooses a
-% non-negative combination of systems. A directly constructed system has
-% |u = 1| by default. Conversion from slip systems currently initializes
-% |u = 2| for edge systems and |u = 1| for screw systems.
+% non-negative combination of systems. By default it is $b^2$ for an edge and
+% $0.7\,b^2$ for a screw system, in the squared length unit of the unit cell.
 %
 % Hull and Bacon give the elastic line energies
 %
@@ -140,9 +139,11 @@ a = norm(cs.aAxis);
 % Poisson's ratio, $R$ is the outer cut-off radius, and $r_0$ is the
 % dislocation-core radius.
 %
-% If all systems share the other factors, the line energies relative to the
-% shortest Burgers vector $b_{\min}$ are $(b/b_{\min})^2$ for an edge system
-% and $(1-\nu)\,(b/b_{\min})^2$ for a screw system.
+% The default sets the factors all systems share to one and takes
+% $\nu=0.3$. Relative to the shortest Burgers vector $b_{\min}$ the line
+% energies are $(b/b_{\min})^2$ for an edge system and
+% $(1-\nu)\,(b/b_{\min})^2$ for a screw system, which keeps the weights
+% independent of the length unit and lets you choose $\nu$.
 
 nu = 0.3;
 dSBcc.u = (norm(dSBcc.b) / min(norm(dSBcc.b))).^2 .* (1 - nu * dSBcc.isScrew);

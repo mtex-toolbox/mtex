@@ -92,6 +92,14 @@ port).
   slip direction is taken as it is, so the dislocation tensor is three times as
   large and a density fitted with it a third
 
+- the default line energy of a `dislocationSystem` is |b|^2 for an edge and 0.7 |b|^2
+  for a screw dislocation, the isotropic line energy with Poisson ratio 0.3 and the
+  common factors set to one. It was 2 and 1 for systems built from slip systems and 1
+  for `dislocationSystem(b,l)`, which ignored the Burgers vector, so <c+a> cost the
+  same as <a> in a hexagonal metal (discussion #2602, PR #2623). `calcGND` with
+  default energies returns other values: the edge to screw ratio went from 2 to 1.43,
+  and the scalar carries |b|^2. An explicit `u` is used as before
+
 ### Interfaces
 
 - an `h5oina` that keeps its diffraction patterns (`Data/Processed Patterns`, LZF
