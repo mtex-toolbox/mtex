@@ -24,10 +24,7 @@ function [BS2,ab,rot] = fit(v,varargin)
 % Example
 %
 %   % simulate some directions
-%   odf = unimodalODF(quaternion.id,'halfwidth',10*degree);
-%   N = 100;
-%   v = odf.discreteSample(N) .* ...
-%     rotation.byAxisAngle(vector3d.X,rand(N,1)*2*pi) * vector3d.Y;
+%   v = discreteSample(S2FunBingham([-10 -4 0]),50);
 %
 %   % fit a Bingham distribution
 %   [S2F, ab, rot] = S2FunBingham.fit(v)
@@ -37,7 +34,7 @@ function [BS2,ab,rot] = fit(v,varargin)
 %   mtexColorMap LaboTeX
 %   hold on
 %   plot(v,'Markercolor','k','MarkerSize',3)
-%   ellipse(rot,ab(1),ab(2))
+%   ellipse(rot,ab(1),ab(2),'linewidth',2)
 %   hold off
 %
 
