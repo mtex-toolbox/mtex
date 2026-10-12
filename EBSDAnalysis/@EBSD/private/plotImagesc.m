@@ -28,7 +28,7 @@ bgColor = get_option(varargin,'bgColor',[1 1 1]);
 if ischar(bgColor) || isstring(bgColor), bgColor = str2rgb(char(bgColor)); end
 if numel(bgColor) ~= 3, bgColor = [1 1 1]; end
 
-d = reshape(d,size(d,1),[]);
+d = reshape(d,numel(pos),[]);
 nCh = size(d,2);   % 1 = scalar/indexed, 3 = rgb
 
 if nCh == 3
