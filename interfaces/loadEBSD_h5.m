@@ -26,9 +26,9 @@ function [ebsd] = loadEBSD_h5(fname, varargin)
 % Every per pixel data set the config does not read itself becomes a
 % property of the map. For an Oxford file that includes the EDS element
 % maps stored next to the EBSD data set, e.g. plot(ebsd,
-% ebsd.WindowIntegral_FeKa1) - the subgroup they are sorted into is part
-% of the property name, since a quantified map holds a "Fe Ka1" both as a
-% window integral and as a peak area. The EDS header - beam voltage,
+% ebsd.Fe_WindowIntegral_Ka1) - the element comes first and the subgroup
+% they are sorted into is part of the property name, since a quantified
+% map holds a "Fe Ka1" both as a window integral and as a peak area. The EDS header - beam voltage,
 % detector geometry, channel width - comes along as ebsd.opt.eds.header.
 
 % Selecting right config and load------------------------------------------
@@ -1844,7 +1844,7 @@ function paths = walkDataSetPaths(group, group_path, prefix, prop_data, paths)
 if isfield(group,'Datasets')
   for i = 1:numel(group.Datasets)
     raw = char(string(group.Datasets(i).Name));
-    fn = [prefix validFieldName(clean_string(string(raw)))];
+    fn = dataSetFieldName(prefix, raw);
     if isfield(prop_data,fn)
       paths.(fn) = join_path(group_path, raw);
     end
@@ -2092,7 +2092,7 @@ function s = collectDataSets(fname, group, group_path, prefix, s, recursive, max
     for i = 1:numel(group.Datasets)
       if prod(group.Datasets(i).Dataspace.Size) > maxNumel, continue; end
       raw_name  = string(group.Datasets(i).Name);
-      cleanName = [prefix validFieldName(clean_string(raw_name))];
+      cleanName = dataSetFieldName(prefix, raw_name);
       s.(cleanName) = h5read(fname, string(group_path) + "/" + raw_name);
     end
   end
@@ -2105,6 +2105,21 @@ function s = collectDataSets(fname, group, group_path, prefix, s, recursive, max
       [prefix subGroupPrefix(sub)], s, recursive, maxNumel);
   end
 
+end
+
+function name = dataSetFieldName(prefix, raw_name)
+% The field a data set becomes: its cleaned name behind the names of the
+% subgroups it is sorted into. A data set of a subgroup that starts with a
+% chemical element - the "Co Ka1" of an EDS map - puts the element first,
+% Co_WindowIntegral_Ka1, C_PeakArea_Kseries, Ca_Composition_Wt, since the
+% element is what one looks for and what tab completion starts with.
+  raw = strtrim(char(raw_name));
+  tok = regexp(raw, '^([A-Z][a-z]?)\s+(\S.*)$', 'tokens', 'once');
+  if isempty(prefix) || isempty(tok)
+    name = [prefix validFieldName(clean_string(string(raw)))];
+  else
+    name = [tok{1} '_' prefix validFieldName(clean_string(string(tok{2})))];
+  end
 end
 
 function name = validFieldName(name)
