@@ -1,39 +1,42 @@
 function value = mean(sF, varargin)
-% Calculates the mean value of a SO3Fun or calculates the mean
-% along a specified dimension of a vector-valued SO3Fun
+% mean value of a S1Fun or along a dimension of a vector-valued S1Fun
+%
+% $$ v = \frac{1}{2\pi} \int_{0}^{2\pi} f( o ) do $$
 %
 % Syntax
-%   value = mean(SO3F)
-%   SO3F = mean(SO3F, d)
+%   value = mean(sF)
+%   value = mean(sF,'resolution',0.1*degree)
+%   sF = mean(sF, d)
 %
 % Input
-%  SO3F - @SO3Fun
-%  d - dimension to take the mean value over
+%  sF - @S1Fun
+%  d  - dimension to take the mean value over
 %
 % Output
-%  SO3F  - @SO3Fun
 %  value - double
+%  sF    - @S1Fun
+%
+% Options
+%  resolution - spacing of the quadrature nodes, default 0.3 degree
 %
 % Description
 %
-% If SO3F is a 3x3 SO3Fun then 
-% |mean(SO3F)| returns a 3x3 matrix with the mean values of each function 
-% |mean(SO3F, 1)| returns a 1x3 SO3Fun which contains the pointwise mean values along the first dimension
+% If sF is a 3x3 S1Fun then
+% |mean(sF)| returns a 3x3 matrix with the mean values of each function
+% |mean(sF, 1)| returns a 1x3 S1Fun which contains the pointwise mean values along the first dimension
 %
-% Example 
-%   %generate SO3Funs
-%   SO3F1 = SO3Fun.dubna
-%   SO3F2 = SO3FunHandle(@(rot) SO3F1.eval(rot))
-%   A = ones(2,3);
-%   SO3F3 = SO3F2.*A
-% 
-%   %calculate mean values of SO3Funs
-%   mean(SO3F2)
-%   mean(SO3F3)
-%   mean(SO3F3,2)
-%   mean(SO3F3,1)
+% Example
+%   % a scalar valued function
+%   sF = S1FunHandle(@(o) sin(o).^2)
+%   mean(sF)
 %
-
+%   % a vector valued function
+%   sF = S1FunHandle(@(o) [sin(o).^2, cos(2*o).^2, 1+0*o])
+%   mean(sF)
+%   mean(sF,1)
+%
+% See also
+% S1Fun/sum S1FunHarmonic/mean
 
 % mean along specific dimension
 if nargin>1 && isnumeric(varargin{1})
