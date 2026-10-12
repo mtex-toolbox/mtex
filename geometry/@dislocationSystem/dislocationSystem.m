@@ -38,35 +38,22 @@ classdef dislocationSystem
     function dS = dislocationSystem(sS,l,u)
             
       if nargin == 0, return; end
-    
-      % adjust length burger vector edge dislocation a/2
-      % for screw dislocations ??
-      
+
       if isa(sS,'slipSystem')
         
-        % define edge dislocations
-        if sS.CS.lattice == 'hexagonal' %#ok<BDSCA>
-          dS.b = 1/3 * sS.b; 
-        elseif sS.CS.lattice == 'cubic' %#ok<BDSCA>
-          dS.b = 1/2 * sS.b;
-        else
-          dS.b = sS.b;
-          warning('I could not determine the correct length of the Burgers vector. Please adjust it manually.')
-        end
-        dS.l = -cross(sS.n,sS.b);
-        
-        % define screw dislocations
-        if sS.CS.lattice == 'hexagonal' %#ok<BDSCA>
-          b = 1/3*unique(sS.b,'antipodal','noSymmetry');
-        elseif sS.CS.lattice == 'cubic' %#ok<BDSCA>
-          b = 1/2*unique(sS.b,'antipodal','noSymmetry');
-        else
-          b = unique(sS.b,'antipodal','noSymmetry');
+        % a cubic slip direction is twice the Burgers vector
+        b = sS.b;
+        if sS.CS.lattice == 'cubic' %#ok<BDSCA>
+          b = 1/2 * b;
+        elseif sS.CS.lattice ~= 'hexagonal' %#ok<BDSCA>
           warning('I could not determine the correct length of the Burgers vector. Please adjust it manually.')
         end
 
-        dS.b = [dS.b(:);b(:)];
-        dS.l = [dS.l(:);b(:)];
+        % edge dislocations, and one screw dislocation for every Burgers vector
+        bScrew = unique(b,'antipodal','noSymmetry');
+        dS.l = -cross(sS.n,sS.b);
+        dS.b = [b(:);bScrew(:)];
+        dS.l = [dS.l(:);bScrew(:)];
         
         % line energy
         dS.u = 1 + dS.isEdge;

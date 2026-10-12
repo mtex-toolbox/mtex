@@ -86,6 +86,12 @@ port).
   reference; `ori .* tangentVector` errored. The result is converted to `vector3d`, as
   a `Miller` is
 
+- `dislocationSystem(sS)` took one third of a hexagonal slip direction as the Burgers
+  vector, but `Miller(1,1,-2,0,cs,'uvtw')` has length a already: titanium came out
+  with 0.983 A for <a> and 1.844 A for <c+a>, where 2.95 A and 5.532 A are meant. The
+  slip direction is taken as it is, so the dislocation tensor is three times as
+  large and a density fitted with it a third
+
 ### Interfaces
 
 - an `h5oina` that keeps its diffraction patterns (`Data/Processed Patterns`, LZF

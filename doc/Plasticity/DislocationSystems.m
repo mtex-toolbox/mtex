@@ -89,8 +89,9 @@ dSBcc = dislocationSystem.bcc(cs);
 
 %%
 % MTEX uses one half of the cubic slip direction as the Burgers vector during
-% this conversion. It also uses one third of a hexagonal slip direction.
-% Other lattices trigger a warning because the physical scale is ambiguous.
+% this conversion. A hexagonal slip direction is the Burgers vector itself:
+% the direction $[11\bar{2}0]$ of MTEX has length $a$. Other lattices trigger
+% a warning because the physical scale is ambiguous.
 
 %% The dislocation tensor
 % A dislocation system contributes the dyadic tensor
