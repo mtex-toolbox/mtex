@@ -66,7 +66,7 @@ crysm = ds(startsWith(ds,root + "/") & endsWith(ds,"/CrystalStructures"));
 if isempty(crysm)
   csList = [notIndexed, crystalSymmetry];
 else
-  csList = dream3dCrystalSymmetry(h5read(fname,crysm(1)));
+  csList = dream3dCrystalSymmetry(fname,crysm(1),ds);
 end
 csList = get_option(varargin,'CS',csList);
 

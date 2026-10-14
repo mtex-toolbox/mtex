@@ -70,7 +70,7 @@ phaseList = double(h5read(fname,in(feature,"Phases")).') + 1;
 phaseList = phaseList(2:end);
 
 crysm = in(ds,"CrystalStructures");
-csList = dream3dCrystalSymmetry(h5read(fname,crysm(1)));
+csList = dream3dCrystalSymmetry(fname,crysm(1),ds);
 
 % calculate I_CF
 % grainIds is sorted so that grainIds(:,2) >= grainIds(:,1)>=0. That means

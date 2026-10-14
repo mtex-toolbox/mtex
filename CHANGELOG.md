@@ -191,6 +191,14 @@ port).
   DREAM3D-NX. Voxel orientations come from `Quats` where there are no `EulerAngles`.
   Checked on eight files of the simplnx `Data_Archive` release; the two files that
   loaded before give identical grains and voxels
+- The DREAM.3D loaders named every phase `unknown` on the default cell, and a hexagonal or
+  trigonal phase took the default `X||a*`. `interfaces/tools/dream3dCrystalSymmetry.m` now
+  reads `MaterialName` and `LatticeConstants` beside `CrystalStructures` (SmallIN100:
+  `Nickel`, a = 3.52; the Zircaloy slab of zenodo 3785085: `Zirc-alloy4` and `Zr`), puts
+  the a axis of a hexagonal or trigonal cell along x, as DREAM.3D does, and gives phases
+  of one name a letter each through `ensureCSArray`. The alignment is read off DREAM.3D's
+  own IPF colours: on the Zircaloy slab the voxels it colours green, the corner its key
+  labels <2-1-10>, lie 6.6 degrees from <2-1-10> with `X||a` and 28.4 with `X||a*`
 - `grain3d.load` on a DREAM.3D file without a surface mesh raised "The file does not
   contain any grain information". It returns `calcGrains(ebsd,'grainId')` of the voxel
   data
