@@ -145,11 +145,15 @@ classdef fibre
     
     
     function f = alpha(varargin)
-      % the alpha fibre
+      % the alpha fibre, <110> || RD from (001)[1-10] to (111)[1-10]
       % from: Comprehensive Materials Processing
+      %
+      % both ends share the direction [1-10] along RD, so that the fibre
+      % turns about it; with [110] the second end would lie on another
+      % symmetric copy of the fibre
 
-      ori1 = orientation.byMiller([0 0 1],[1 1 0],varargin{:});
-      ori2 = orientation.byMiller([1 1 1],[1 1 0],varargin{:});
+      ori1 = orientation.byMiller([0 0 1],[1 -1 0],varargin{:});
+      ori2 = orientation.byMiller([1 1 1],[1 -1 0],varargin{:});
 
       f = fibre(ori1,ori2,varargin{:});
     end
@@ -164,7 +168,7 @@ classdef fibre
     end
 
     function f = gamma(varargin)
-      % the beta fibre
+      % the gamma fibre
 
       ori1 = orientation.byMiller([1 1 1],[1 1 0],varargin{:});
       ori2 = orientation.byMiller([1 1 1],[1 1 2],varargin{:});
@@ -182,7 +186,7 @@ classdef fibre
     end
 
     function f = eta(varargin)
-    % the epsilon fibre
+    % the eta fibre
 
       ori1 = orientation.byMiller([0 0 1],[1 0 0],varargin{:});
       ori2 = orientation.byMiller([0 1 1],[1 0 0],varargin{:});
@@ -191,10 +195,13 @@ classdef fibre
     end
 
     function f = tau(varargin)
-      % the beta fibre
+      % the tau fibre, <110> || TD from (001)[110] to (110)[00-1]
+      %
+      % both ends share the direction [-110] along TD, so that the fibre
+      % turns about it
 
       ori1 = orientation.byMiller([0 0 1],[1 1 0],varargin{:});
-      ori2 = orientation.byMiller([0 1 1],[1 0 0],varargin{:});
+      ori2 = orientation.byMiller([1 1 0],[0 0 -1],varargin{:});
 
       f = fibre(ori1,ori2,varargin{:});
     end
