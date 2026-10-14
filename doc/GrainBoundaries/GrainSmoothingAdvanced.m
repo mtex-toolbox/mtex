@@ -70,8 +70,9 @@ fprintf(['simplifying at a tolerance of %.2f %s takes the boundary' ...
 % loses 14% of its area over 25 iterations that way, compared with 0.4% when
 % this resampling step is included.
 %
-% <grain2d.refineBoundary.html |refineBoundary|> resamples each chain at
-% equal arc length. It changes only the sampling, not the polygonal shape.
+% <grain2d.refineBoundary.html |refineBoundary|> splits each segment into
+% pieces of about equal length. It changes only the sampling, not the
+% polygonal shape.
 % The smoothing stage then receives evenly spaced degrees of freedom that are
 % no longer tied to the measurement grid.
 

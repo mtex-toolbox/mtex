@@ -22,9 +22,9 @@ function [grains,F] = smoothBoundary(grains,iter,varargin)
 % never further than |d/sqrt(2)| from the straight line it approximates, |d|
 % being the pixel spacing, so that is the tolerance which removes the grid and
 % nothing else
-% # <grain2d.refineBoundary.html |refineBoundary|> resamples what is left at
-% equal arc length |delta|, which gives the smoothing evenly spaced degrees of
-% freedom that are no longer tied to the grid
+% # <grain2d.refineBoundary.html |refineBoundary|> splits what is left into
+% pieces of about length |delta|, which gives the smoothing evenly spaced
+% degrees of freedom that are no longer tied to the grid
 % # the smoothing itself, by default a constrained Laplacian applied |iter|
 % times
 %
@@ -74,9 +74,9 @@ function [grains,F] = smoothBoundary(grains,iter,varargin)
 %
 % Options
 %  simplify          - Douglas-Peucker tolerance (default: d/sqrt(2))
-%  refine            - resampling length (default: d)
+%  refine            - subdivision length (default: d)
 %  noSimplify        - do not simplify the boundary first
-%  noRefine          - do not resample the boundary
+%  noRefine          - do not subdivide the boundary
 %  moveTriplePoints  - do not exclude triple/quadruple points from smoothing
 %  moveOuterBoundary - do not exclude outer boundary from smoothing
 %

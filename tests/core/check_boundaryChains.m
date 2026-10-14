@@ -315,7 +315,7 @@ if length(sim) >= length(red) || ...
   error('simplify is not a better coarsening than reduce');
 end
 
-% refine resamples onto the same curve, so it keeps the shape
+% refine subdivides the segments, so it keeps the shape
 ref = refine(gB,sl/2);
 assertOrdered(ref,'refine');
 if ~isequal(ref.junctionId,gB.junctionId)
@@ -328,16 +328,17 @@ if length(ref) <= length(gB)
   error('refine did not add any segment');
 end
 
-% equal spacing is the whole point - away from the chains that are shorter
-% than delta, the segments have to come out at the target length
+% away from the segments that are shorter than delta, the pieces have to come
+% out at the target length
 if abs(median(ref.segLength) - sl/2) > 0.05*sl
   error('refine did not resample at the requested spacing');
 end
 
-% cutting corners between samples can only shorten the boundary, slightly
-lenRatio = sum(ref.segLength)/sum(gB.segLength);
-if lenRatio > 1 + 1e-9 || lenRatio < 0.95
-  error('refine changed the boundary length by %.2f%%',100*(lenRatio-1));
+% and its length, also on a simplified boundary
+for g = {gB, simplify(gB,sl)}
+  if abs(sum(refine(g{1},sl/2).segLength) - sum(g{1}.segLength)) > 1e-9*sum(g{1}.segLength)
+    error('refine changed the boundary length');
+  end
 end
 
 % and the grain shapes survive the round trip through grain2d
@@ -475,10 +476,7 @@ end
 % -------------------------------------------------------------------------
 function assertNotHanging(grains,grains0,name)
 % a vertex shared by the two boundaries has to stay on both of them, or one is
-% left hanging off a vertex the other no longer visits. All three wrappers pass
-% those vertices down as 'protect' - refine has to cut its chains there, since
-% it otherwise keeps only the two junctions of a chain and mints fresh ids for
-% everything between them.
+% left hanging off a vertex the other no longer visits.
 
 shared0 = intersect(grains0.boundary.F(:),grains0.innerBoundary.F(:));
 if isempty(shared0), return; end
