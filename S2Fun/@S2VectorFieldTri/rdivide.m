@@ -1,16 +1,18 @@
 function sVF = rdivide(sVF, sF2)
+% divide a spherical vector field pointwise by a function or a number
 %
 % Syntax
-%   sVF = sVF ./ sF
-%   sVF = sVF ./ a
+%
+%   sVF = sVF ./ sF   % the field divided by the values of sF at the vertices
+%   sVF = sVF ./ a    % the field divided by the number a
 %
 % Input
 %  sVF - @S2VectorFieldTri
-%  sF  - @S2Fun
+%  sF  - @S2FunTri on the same triangulation
 %  a   - double
 %
 % Output
-%  sF - @S2VectorFieldTri
+%  sVF - @S2VectorFieldTri
 %
 
 if isnumeric(sF2)

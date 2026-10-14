@@ -1,4 +1,24 @@
 function map = parula(n)
+% blue-green-orange-yellow colour map
+%
+% Description
+% The colours begin with dark purplish-blue and blue, range through green
+% and orange, and end with bright yellow.
+%
+% Syntax
+%
+%   map = parulaColorMap(n) % colour map with n colours
+%   map = parulaColorMap    % as many colours as the current figure's colour map
+%
+% Input
+%  n - number of colours
+%
+% Output
+%  map - n x 3 RGB colour map
+%
+% See also
+% coolColorMap
+
 %PARULA Blue-green-orange-yellow color map
 %   PARULA(M) returns an M-by-3 matrix containing a colormap. 
 %   The colors begin with dark purplish-blue and blue, range

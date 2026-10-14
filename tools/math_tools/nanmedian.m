@@ -1,4 +1,21 @@
 function y = nanmedian(x,dim)
+% median ignoring NaNs
+%
+% Syntax
+%
+%   y = nanmedian(x)       % the median along the first non-singleton dimension
+%   y = nanmedian(x,dim)   % the median along the dimension dim
+%
+% Input
+%  x   - array
+%  dim - dimension
+%
+% Output
+%  y - the median of the entries that are not NaN, NaN where all are
+%
+% See also
+% median
+
 % FORMAT: Y = NANMEDIAN(X,DIM)
 % 
 %    Median ignoring NaNs

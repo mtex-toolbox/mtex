@@ -1,6 +1,15 @@
 classdef unimodalComponent
-% This class is obsolet since MTEX 5.9. Use the class @SO3FunRBF instead.
-% Anyway the class is preserved, so that saved @ODFs can be loaded.
+% obsolete ODF component, kept to load ODFs saved before MTEX 5.9
+%
+% This class is obsolete since MTEX 5.9. Use the class @SO3FunRBF instead.
+% The class is preserved, so that saved @ODFs can be loaded.
+%
+% Syntax
+%
+%   load('odf.mat')   % an ODF saved before MTEX 5.9 loads as @SO3FunRBF
+%
+% See also
+% SO3FunRBF
 
 methods (Static = true, Hidden=true)
   function odf = loadobj(s)

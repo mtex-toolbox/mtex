@@ -17,11 +17,14 @@ classdef EBSDgrid < EBSD
 % spacing - so no method here may assume pos(i,j) is an axis aligned affine
 % function of (i,j).
 %
-% Derived classes
+% Syntax
 %
+%   ebsd = gridify(ebsd)   % an @EBSDsquare or @EBSDhex from a list of measurements
+%   ebsd(i,j)              % the measurement in row i and column j
+%
+% Derived Classes
 %  @EBSDsquare - pos(i,j) is affine in (i,j)
-%  @EBSDhex    - rows (or columns) are staggered by half a step, so it is
-%                not; the (row,col) <-> lattice conversion needs the parity
+%  @EBSDhex    - rows (or columns) are staggered by half a step, so it is not; the (row,col) <-> lattice conversion needs the parity
 %
 % See also
 % EBSD EBSDsquare EBSDhex EBSD/gridify EBSD/lattice

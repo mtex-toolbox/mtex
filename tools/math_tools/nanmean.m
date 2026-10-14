@@ -1,4 +1,21 @@
 function y = nanmean(x,dim)
+% mean value ignoring NaNs
+%
+% Syntax
+%
+%   y = nanmean(x)       % along the first non-singleton dimension
+%   y = nanmean(x,dim)   % along dimension dim
+%
+% Input
+%  x   - numeric array
+%  dim - dimension to average along
+%
+% Output
+%  y - mean of the entries of x that are not NaN, NaN where all of them are
+%
+% See also
+% mean nanmeanWeights
+
 % FORMAT: Y = NANMEAN(X,DIM)
 % 
 %    Average or mean value ignoring NaNs

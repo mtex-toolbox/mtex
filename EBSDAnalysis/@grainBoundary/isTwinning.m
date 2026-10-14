@@ -1,14 +1,22 @@
 function ind = isTwinning(gB, mori, threshold )
+% find the boundary segments with a given twinning misorientation
 %
 % Syntax
 %
-%   ind = gB.isTwinning(mori,2*degree)
-%   ind = gB.isTwinning(CSL(3),2*degree)
+%   ind = isTwinning(gB,mori)                 % within 5 degree of mori
+%   ind = isTwinning(gB,CSL(3,cs),2*degree)   % within 2 degree of the Sigma 3 misorientation
 %
 % Input
-%  mori - twinning misorientation
-%  threshold - 
+%  gB        - @grainBoundary
+%  mori      - twinning mis@orientation
+%  threshold - maximum deviation angle, default 5*degree
 %
+% Output
+%  ind - logical, true for the segments whose misorientation lies within
+%  threshold of mori
+%
+% See also
+% CSL grainBoundary/misorientation
 
 if nargin == 2, threshold = 5*degree; end
 

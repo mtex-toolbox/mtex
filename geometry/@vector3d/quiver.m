@@ -1,10 +1,9 @@
 function [h,ax] = quiver(v, d, varargin )
-%
-% Description
-% plots the tangential part of a vector field
+% plot the tangential part of directions d as arrows at the positions v
 %
 % Syntax
-%   quiver(v,d)
+%
+%   quiver(v,d) % arrows d at the points v of a spherical plot
 %
 % Input
 %  v - @vector3d
@@ -12,12 +11,16 @@ function [h,ax] = quiver(v, d, varargin )
 %
 % Options
 %  arrowSize     - length of the arrows
-%  autoArrowSize - automatically determine the length of the arrows
 %  MaxHeadSize   - size of the head
 %
-% Output
+% Flags
+%  autoArrowSize - let MATLAB's quiver scale the arrows
+%  centered      - centre the arrows at v
 %
-% See also
+% Output
+%  h - handle to the graphics objects
+%  ax - the axes plotted into
+%
 
 % initialize spherical plot
 opt = delete_option(varargin,{'lineStyle','lineColor','lineWidth','color'},1);

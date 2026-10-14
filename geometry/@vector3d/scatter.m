@@ -1,4 +1,5 @@
 function [h,ax] = scatter(v,varargin)
+% plot directions as markers in a spherical projection
 %
 % Syntax
 %   scatter(v)              % plot the directions v
@@ -26,6 +27,8 @@ function [h,ax] = scatter(v,varargin)
 %  grid_res          - resolution of the grid to be displayed 
 %
 % Output
+%  h  - handle to the graphics objects
+%  ax - handle to the axes
 %
 % See also
 % vector3d/text

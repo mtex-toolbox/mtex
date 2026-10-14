@@ -1,8 +1,11 @@
 function h = plotInnerFace(cS, N, varargin)
+% plot the section of a crystal shape with a lattice plane
 %
 % Syntax
+%
+%   % the plane (101) through the centre of the shape, in blue
 %   N = Miller(1,0,1,'hkl',cs)
-%   plotInnerFace(cS,N,'faceColor','blue','faceAlpha',0.5,'edgeColor','k') 
+%   plotInnerFace(cS,N,'faceColor','blue','faceAlpha',0.5,'edgeColor','k')
 %
 % Input
 %  cS - @crystalShape

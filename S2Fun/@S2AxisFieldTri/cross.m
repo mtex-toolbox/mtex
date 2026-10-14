@@ -1,17 +1,18 @@
 function sVF = cross(sVF, a)
+% pointwise cross product of an axis field with a vector field or a vector
 %
 % Syntax
-%   sVF = cross(sVF1,sVF2)
-%   sVF = cross(sVF1,v)
+%
+%   sVF = cross(sVF1,sVF2)   % cross product with a field
+%   sVF = cross(sVF1,v)      % cross product with a fixed vector
 %
 % Input
-%  sVF1 - @S2VectorFieldTri
+%  sVF1 - @S2AxisFieldTri
 %  sVF2 - @S2VectorField
 %  v    - @vector3d
 %
 % Output
-%  sF - @S2VectorFieldTri
-%
+%  sVF - @S2AxisFieldTri
 
 % first should be S2VectorFieldTri
 if ~isa(sVF,'S2AxisFieldTri')

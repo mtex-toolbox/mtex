@@ -1,10 +1,15 @@
 function v = mean(SO3VF)
+% mean value of a vector field on SO(3)
 %
 % Syntax
-%   f = mean(SO3VF)
+%
+%   v = mean(SO3VF)   % the mean of the field over the rotation group
+%
+% Input
+%  SO3VF - @SO3VectorField
 %
 % Output
-%   v - @vector3d
+%  v - @vector3d
 %
 
 v = vector3d(SO3VF.SO3F.fhat(1, :));

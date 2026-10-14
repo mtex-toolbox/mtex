@@ -4,12 +4,13 @@ function [A,stencil,dxy] = latticeBasis(unitCell)
 % The unit cell is the list of corner vertices of one pixel (4 for a square
 % grid, 6 for a hexagonal grid), as returned by ebsd.unitCell. The
 % cell-to-cell translation vectors are twice the edge-midpoint vectors; from
-% these we pick a 2D basis A = [a1 a2] such that
-%
-%     pos = [i j] * A' + origin
-%
+% these we pick a 2D basis A = [a1 a2] such that pos = [i j] * A' + origin,
 % and a neighbour stencil in (i,j) coordinates. The construction makes no
 % assumption on the grid orientation, so it also works for rotated maps.
+%
+% Syntax
+%
+%   [A,stencil,dxy] = latticeBasis(ebsd.unitCell)
 %
 % Input
 %  unitCell - @vector3d, 4 (square) or 6 (hex) corner vertices

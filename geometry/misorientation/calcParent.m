@@ -1,33 +1,53 @@
 function [parentOri, fit] = calcParent(childOri,p2c,varargin)
-%
-% Syntax
-%
-%   % return parent orientation
-%   [parentOri, fit] = calcParent(childOri,p2c)
-%   [parentOri, fit] = calcParent(childOri,parentOri,p2c)
-%   [parentOri, fit] = calcParent(childOri,parentOri,'numFit',2)
-% 
-%   % return parent id
-%   [parentId, fit] = calcParent(childOri,p2c,'id')
-%   [parentId, fit] = calcParent(childOri,parentRef,p2c,'id')
-%
-% Input
-%  childOri    - child @orientation
-%  parentOri   - parent @orientation
-%  p2c         - parent to child mis@orientation
-%  p2cVariants - variants of parent to child mis@orientation      
-%
-% Options
-%  numFit    - do return up to n-th fit
-%  id        - return parent variant id instead of parent ori
-%
-% Output
-%  parentOri - parent @orientation
-%  parentid  - parent variant Id 
-%  fit       - fit to the given parent2child misorientation
+% parent orientations from child orientations and an orientation relationship
 %
 % Description
 %
+% The use case is chosen by the number of columns of childOri:
+%
+%  * a column of child orientations together with a parent orientation
+%  parentRef: for every child the parent variant closest to parentRef
+%  * a column of child orientations alone: one common parent of all children,
+%  fitted to the children weighted by 'weights'
+%  * two columns, the child orientations on both sides of a grain boundary: the
+%  pair of parent variants that agree best
+%  * three columns, the child orientations at a triple point: the triple of
+%  parent variants that agree best
+%
+% Syntax
+%
+%   % the parent orientation closest to parentRef for every child
+%   [parentOri, fit] = calcParent(childOri,parentRef,p2c)
+%   [parentOri, fit] = calcParent(childOri,parentRef,p2c,'numFit',2)
+%
+%   % one common parent of all child orientations
+%   [parentOri, fit] = calcParent(childOri,p2c)
+%   [parentOri, fit] = calcParent(childOri,p2c,'weights',w)
+%
+%   % the best fitting parents of pairs and triples of child orientations
+%   [parentOri, fit] = calcParent([childOri1,childOri2],p2c)
+%   [parentOri, fit] = calcParent([childOri1,childOri2,childOri3],p2c)
+%
+%   % the variant ids instead of the parent orientations
+%   [parentId, fit] = calcParent(childOri,parentRef,p2c,'id')
+%
+% Input
+%  childOri  - child @orientation
+%  parentRef - parent @orientation
+%  p2c       - parent to child mis@orientation, or all its variants
+%
+% Output
+%  parentOri - parent @orientation
+%  parentId  - parent variant id
+%  fit       - misfit angle to the given parent to child misorientation
+%
+% Options
+%  numFit    - return the fits up to the n-th best
+%  weights   - weights of the child orientations, for one common parent
+%  threshold - largest misfit of two variants at a triple point (default 10 degree)
+%
+% Flags
+%  id        - return the parent variant id instead of the parent orientation
 %
 
 % extract use case and reassign arguments

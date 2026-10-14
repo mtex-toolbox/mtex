@@ -1,10 +1,12 @@
 function v =  eval(sVF,nodes)
+% evaluate an axis field given on a triangulation at arbitrary nodes
 %
 % Syntax
-%   v = eval(sFV,nodes)
+%
+%   v = eval(sVF,nodes) % interpolate the axes at the nodes
 %
 % Input
-%  sFV - @S2VectorField
+%  sVF - @S2AxisFieldTri
 %  nodes - interpolation nodes @vector3d
 %
 % Output

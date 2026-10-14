@@ -1,8 +1,10 @@
 function sVF = cross(sVF, a)
+% pointwise cross product of a vector field with a vector field or a direction
 %
 % Syntax
-%   sVF = cross(sVF1,sVF2)
-%   sVF = cross(sVF1,v)
+%
+%   sVF = cross(sVF1,sVF2) % cross product of two vector fields
+%   sVF = cross(sVF1,v)    % cross product with a fixed direction
 %
 % Input
 %  sVF1 - @S2VectorFieldTri
@@ -10,7 +12,7 @@ function sVF = cross(sVF, a)
 %  v    - @vector3d
 %
 % Output
-%  sF - @S2VectorFieldTri
+%  sVF - @S2VectorFieldTri
 %
 
 % first should be S2VectorFieldTri

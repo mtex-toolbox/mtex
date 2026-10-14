@@ -1,11 +1,22 @@
 function str = alignment(cF)
-% the alignment of the Cartesian axes as strings, e.g. {'X||a','Z||c*'}
+% the alignment of the Cartesian axes to the crystal axes as strings
 %
-% Where a direct and a reciprocal axis coincide - c and c* in a hexagonal
-% lattice, every pair in an orthogonal one - the direct axis is reported,
+% Description
+% Where a direct and a reciprocal axis coincide (c and c* in a hexagonal
+% lattice, every pair in an orthogonal one), the direct axis is reported,
 % so the result does not depend on rounding noise in the basis. For a
 % frame with mutually orthogonal axes nothing is worth reporting and the
-% result is empty - the same rule crystalSymmetry/alignment always used.
+% result is empty, the same rule as crystalSymmetry/alignment.
+%
+% Syntax
+%
+%   str = alignment(cF) % e.g. {'X||a','Z||c*'}
+%
+% Input
+%  cF - @crystalFrame
+%
+% Output
+%  str - cell array of strings like 'X||a', one per aligned Cartesian axis
 
 abc = normalize(cF.basis);
 

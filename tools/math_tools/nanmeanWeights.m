@@ -1,20 +1,22 @@
 function y = nanmeanWeights(x,weights,dim)
-% FORMAT: Y = NANMEAN(X,DIM)
-% 
-%    Average or mean value ignoring NaNs
+% weighted mean value ignoring NaNs
 %
-%    This function enhances the functionality of NANMEAN as distributed in
-%    the MATLAB Statistics Toolbox and is meant as a replacement (hence the
-%    identical name).  
+% Syntax
 %
-%    NANMEAN(X,DIM) calculates the mean along any dimension of the N-D
-%    array X ignoring NaNs.  If DIM is omitted NANMEAN averages along the
-%    first non-singleton dimension of X.
+%   y = nanmeanWeights(x,weights)       % along the first non-singleton dimension
+%   y = nanmeanWeights(x,weights,dim)   % along dimension dim
 %
-%    Similar replacements exist for NANSTD, NANMEDIAN, NANMIN, NANMAX, and
-%    NANSUM which are all part of the NaN-suite.
+% Input
+%  x       - numeric array
+%  weights - numeric array of the size of x
+%  dim     - dimension to average along
 %
-%    See also MEAN
+% Output
+%  y - weighted mean of the entries of x that are not NaN, NaN where all
+%  of them are
+%
+% See also
+% nanmean mean
 
 % only one or two elements 
 if isempty(x), y = NaN;	return; end

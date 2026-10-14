@@ -9,6 +9,15 @@ classdef S2AxisField
 %  @S2AxisFieldHarmonic - harmonic series of the outer product v*v'
 %  @S2AxisFieldTri      - values at the nodes of a triangulation
 %
+% Syntax
+%
+%   % an axis field is constructed by one of the derived classes
+%   aF = S2AxisFieldHarmonic(fun)
+%   aF = S2AxisFieldTri(nodes,values)
+%
+%   % evaluate it at directions
+%   a = aF.eval(v)
+%
 % See also
 % S2VectorField S2Fun
 

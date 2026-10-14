@@ -1,9 +1,10 @@
 function sVF1 = rdivide(sVF1, sVF2)
+% divide a spherical vector field pointwise by a function or a number
 %
 % Syntax
 %
-%   sVF = sVF ./ a
-%   sVF = sVF ./ sF
+%   sVF = sVF ./ a    % the field divided by the number a
+%   sVF = sVF ./ sF   % the field divided pointwise by the spherical function sF
 %
 % Input
 %  sVF - @S2VectorFieldHarmonic

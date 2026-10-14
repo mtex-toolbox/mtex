@@ -1,11 +1,12 @@
 function display(tP,varargin)
-% standard output
+% display a list of triple points
 %
-%  id  | mineralLeft | mineralRight
-% ---------------------------------
+% Syntax
 %
-% #ids | mineralLeft | mineralRight
-% ---------------------------------
+%   display(tP)   % the number of triple points for each combination of three phases
+%
+% Input
+%  tP - @triplePointList
 
 displayClass(tP,inputname(1),'moreInfo',...
   referenceFrame.headerChar(tP.frame,tP.how2plot));

@@ -20,19 +20,18 @@ classdef trueEbsd < handle
 % place: a second variable holding it is an alias rather than a snapshot, and
 % a method that errors part way leaves the job partly filled.
 %
-% THE MODEL IS THE CLASS. A hop's distortion is an unfitted
-% @spatialTransform - the class names which distortion separates the pair and
-% calcDistortion fills in the coefficients. A multi stage hop is written with
-% + and never *, because mtimes absorbs an operand reporting isid and an
-% unfitted prototype has zero coefficients, so * would silently drop a stage.
-% There is no sentinel on the reference: where nothing separates a pair, the
-% entry is spatialTransformId.
+% The distortion of a hop is an unfitted @spatialTransform: its class names
+% the distortion that separates the pair and calcDistortion fills in the
+% coefficients. A hop of several stages is written with + and never with *,
+% since * absorbs an unfitted prototype as the identity and so drops a stage.
+% Where nothing separates a pair, the entry is spatialTransformId.
 %
 % Syntax
 %
-%   job = trueEbsd(imgList)
-%   job = trueEbsd(imgList,T)
+%   job = trueEbsd(imgList)     % a job with the distortions set later
+%   job = trueEbsd(imgList,T)   % a job with one distortion per hop
 %
+%   % align an EBSD map to an image: match the pixel sizes, fit, resample
 %   imgList = [mapImage(ebsd.bc,ebsd), mapImage(img,'dxy',0.05)]
 %   job = trueEbsd(imgList, spatialTransformShift + spatialTransformDrift)
 %   job.pixelSizeMatch
@@ -65,17 +64,18 @@ classdef trueEbsd < handle
 %  opt             - struct array, one per map, the registration settings.
 %                    Set with setOptions rather than by hand
 %
-% Indexing, with numel(job.T) == numel(job.imgList) - 1
+% Indexing
 %
-%   job.imgList(n)          % @mapImage
-%   job.T(n)                % @spatialTransform, hop n
+% With numel(job.T) == numel(job.imgList) - 1, hop n separates map n from
+% map n+1. job.T is a sequence while every @spatialTransform method takes one
+% transform, so inv(job.T) and isid(job.T) do not work: index a hop, or fold
+% the chain with *.
 %
-% job.T is a sequence and every @spatialTransform method takes one transform,
-% so inv(job.T) and isid(job.T) do not work - index a hop, or fold the chain
-% with *. See @spatialTransform and docs/adr/0007.
+%   job.imgList(n)          % map n, a @mapImage
+%   job.T(n)                % the @spatialTransform of hop n
 %   job.opt(n)              % the settings for map n
-%   job.shifts{n}(m)        % hop n, fit stage m
-%   job.fitError(n)         % @pairShifts
+%   job.shifts{n}(m)        % the shifts of hop n, fit stage m
+%   job.fitError(n)         % the residual @pairShifts of hop n
 %
 % References
 %

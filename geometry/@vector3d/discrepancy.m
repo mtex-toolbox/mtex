@@ -1,24 +1,48 @@
 function [res,info] = discrepancy(v,w,varargin)
 % discrepancy between weighted spherical point sets or a spherical density
 %
-% Syntax
-%   d = discrepancy(v,w,'metric','D_2')
-%   [d,info] = discrepancy(v,w,'metric','D_cap','numCenters',4097)
-%   d = discrepancy(v,w,'metric','L2','bandwidth',32)
-%   d = discrepancy(v,w,'weights',c,'weights2',d,'metric','D_2')
-%   d = discrepancy(v,f,'weights',c,'metric','D_2')
+% Description
 %
 % Point weights are nonnegative and normalized independently to mass one.
 % A point set paired with a function is scaled to the function's integral,
-% and keeps mass one if that integral vanishes.
-% Antipodal points split mass equally between both signs. D_2 is the
-% standard root cap L2 discrepancy, evaluated without truncating point
-% measures and counting a difference in total mass. L2 is the root
-% bandlimited norm. Use 'squared' for their squares.
-% D_cap is a finite cap-search approximation; info.isExact is false.
-% 'kernel' is the historical squared truncated optimization objective and
-% takes two functions of equal integral only.
-% See S2Fun/discrepancy for all options and normalization conventions.
+% and keeps mass one if that integral vanishes. Antipodal points split mass
+% equally between both signs. See S2Fun/discrepancy for all options and
+% normalization conventions. The metrics are
+%
+%  * D_2 - the standard root cap L2 discrepancy, evaluated without truncating
+%  point measures and counting a difference in total mass
+%  * L2 - the root bandlimited norm
+%  * D_cap - a finite cap-search approximation; info.isExact is false
+%  * kernel - the historical squared truncated optimization objective, which
+%  takes two functions of equal integral only
+%
+% Syntax
+%
+%   d = discrepancy(v,w,'metric','D_2')                                % between the point sets v and w
+%   [d,info] = discrepancy(v,w,'metric','D_cap','numCenters',4097)     % cap discrepancy over 4097 centres
+%   d = discrepancy(v,w,'metric','L2','bandwidth',32)                  % bandlimited norm up to degree 32
+%   d = discrepancy(v,w,'weights',c,'weights2',d,'metric','D_2')       % weighted point sets
+%   d = discrepancy(v,f,'weights',c,'metric','D_2')                    % between a point set and a density f
+%   d = discrepancy(v,w,'squared')                                     % the squared discrepancy
+%
+% Input
+%  v - @vector3d
+%  w - @vector3d
+%  f - @S2Fun
+%
+% Output
+%  d    - double
+%  info - struct, info.isExact says whether d is exact
+%
+% Options
+%  metric     - 'D_2' (default), 'L2', 'D_cap' or 'kernel'
+%  weights    - weights of v
+%  weights2   - weights of w
+%  bandwidth  - harmonic degree of L2 and kernel
+%  numCenters - number of cap centres of D_cap
+%
+% Flags
+%  squared - return the squared discrepancy
 %
 % See also
 % S2Fun/discrepancy S2Fun/optimalSample

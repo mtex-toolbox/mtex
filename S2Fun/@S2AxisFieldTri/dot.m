@@ -1,8 +1,10 @@
 function sF = dot(sVF, a, varargin)
+% pointwise inner product of an axis field with a field or a direction
 %
 % Syntax
-%   sVF = dot(sVF,sVF2)
-%   sVF = dot(sVF,v)
+%
+%   sF = dot(sVF,sVF2)   % the inner product of two fields at every vertex
+%   sF = dot(sVF,v)      % the inner product with the direction v at every vertex
 %
 % Input
 %  sVF  - @S2AxisFieldTri

@@ -1,13 +1,24 @@
 classdef SchulzDefocusingKernel < S2Kernel
+% kernel of the defocusing of pole figures in Schulz reflection geometry
 %
 % Syntax
 %
-%   psi = SchulzDefocusingKernel(mu*t,theta)
+%   psi = SchulzDefocusingKernel(mu*t)   % absorption coefficient times penetration depth
+%
+%   % change the Bragg angle
+%   psi.theta = 30*degree;
 %
 % Input
 %  mu - absorption coefficient (1/cm)
 %  t  - penetration depth (cm)
-%  theta - Bragg angle
+%
+% Class Properties
+%  mu_t   - absorption coefficient times penetration depth, default 1
+%  theta  - Bragg angle, default 45*degree
+%  r      - beam width in mm, default 1
+%  w      - width of the receiving slit in mm, default 2
+%  d      - distance of the slit from the sample in mm, default 200
+%  dtheta - integral angular width of the Bragg peak, default 0.5*degree
 %
 % See also
 % S2Kernel PoleFigure/correct

@@ -1,16 +1,24 @@
 classdef grain3Boundary < phaseList & dynProp
+% class representing the boundary faces of three dimensional grains
 %
 % Variables of type grain3Boundary represent 2-dimensional faces of
-% 3-dimensional grains. Those are typically
-% generated during grain reconstruction and are accessible via
-%
-%   grains.boundary
+% 3-dimensional grains. Those are typically generated during grain
+% reconstruction.
 %
 % Each grain boundary face stores many properties: its position within
 % the map, the ids of the adjacent grains, the ids of the adjacent EBSD
 % measurements, the grain boundary misorientation, etc. These properties
 % are explained in more detail in the section <Grains3DBoundaries.html
 % boundary properties>.
+%
+% Syntax
+%
+%   gB = grains.boundary % the boundary faces of 3d grains
+%
+%   gB = grains.boundary(1:10) % the first ten boundary faces
+%
+%   % a boundary from its vertices, faces and the adjacent measurements
+%   gB = grain3Boundary(V,F,ebsdInd,grainId,phaseId,mori,CSList,phaseMap,ebsdId)
 %
 % Class Properties
 %  allV         - @vector3d list of all stored vertices 

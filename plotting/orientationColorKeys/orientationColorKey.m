@@ -1,6 +1,19 @@
 classdef orientationColorKey < handle
   % abstract class for defining (mis)orientation color keys
   %
+  % An orientation colour key assigns a colour to every orientation. The
+  % derived classes construct it from a crystal symmetry, a map, grains,
+  % orientations or grain boundaries, whose symmetries the key takes.
+  %
+  % Syntax
+  %
+  %   % a colour key is constructed by one of the derived classes
+  %   oCK = ipfColorKey(ebsd)
+  %   oCK = BungeColorKey(cs)
+  %
+  %   rgb = oCK.orientation2color(ori)   % the colours of the orientations ori
+  %   plot(oCK)                          % plot the colour key
+  %
   % Class Properties
   %  CS1 - @crystalSymmetry
   %  CS2 - @crystalSymmetry of a second phase for misorientations

@@ -1,8 +1,11 @@
 function h = plotInnerDirection(cS, d, varargin)
+% plot a crystal direction as an arrow inside a crystal shape
 %
 % Syntax
+%
+%   % the direction [101] as a blue arrow
 %   d = Miller(1,0,1,'uvw',cs)
-%   plotInnerDirection(cS,d,'faceColor','blue','DisplayName','(101)') 
+%   plotInnerDirection(cS,d,'faceColor','blue','DisplayName','(101)')
 %
 % Input
 %  cS - @crystalShape

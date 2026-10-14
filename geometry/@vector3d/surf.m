@@ -1,17 +1,16 @@
 function [h,ax] = surf(v,cdata,varargin)
+% plot RGB colour data on a grid of directions as a surface in a spherical projection
 %
 % Syntax
-%   h = surf(v,cdata)
+%
+%   h = surf(v,cdata) % colour the grid v by cdata
 %
 % Input
-%  c     - @vector3d
-%  cdata - RGB data
+%  v     - @vector3d, a grid of directions
+%  cdata - RGB data, of the size of v by 3
 %
 % Output
-%
-% Options
-%
-% See also
+%  h - handle to the graphics objects
 %
 
 % initialize spherical plot

@@ -1,9 +1,7 @@
 function SO3F = init_reg_params(SO3F, varargin)
 % initialize the conservative goal-oriented parameters on a random grid
 %
-% Syntax
-%   SO3F = init_reg_params(SO3F)
-%   SO3F = init_reg_params(SO3F,'force')
+% Description
 %
 % The thresholds are placed relative to the healthy baseline amplification
 % chi0 of the ansatz space. chi0 depends only on the degree, the weight
@@ -12,8 +10,19 @@ function SO3F = init_reg_params(SO3F, varargin)
 % fixed multiple of chi0 makes one constant valid on S2 and on SO(3) and at
 % every degree, which a fixed absolute threshold is not.
 %
+% Syntax
+%
+%   SO3F = init_reg_params(SO3F)           % set mincond, maxcond and targetcond not set by the user
+%   SO3F = init_reg_params(SO3F,'force')   % overwrite the values set by the user, too
+%
+% Input
+%  SO3F - @SO3FunMLS
+%
+% Output
+%  SO3F - @SO3FunMLS with mincond, maxcond and targetcond set
+%
 % Flags
-%  force - overwrite parameters the user has set explicitly
+%  force - overwrite parameters the user has set explicitly (also 'overwrite')
 %
 
 if SO3F.degree == 0

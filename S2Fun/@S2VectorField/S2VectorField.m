@@ -10,9 +10,17 @@ classdef S2VectorField
 %  @S2VectorFieldTri      - values at the nodes of a triangulation
 %  @S2VectorFieldHandle   - field given by a function handle
 %
-% Example
+% Syntax
 %
-%   vF = S2VectorField.polar(vector3d.Z)
+%   % a vector field is constructed by one of the derived classes
+%   vF = S2VectorFieldHarmonic(fun)
+%   vF = S2VectorFieldTri(nodes,values)
+%   vF = S2VectorFieldHandle(@(v) fun(v))
+%
+%   vF = S2VectorField.polar(vector3d.Z)   % the reference field towards the z-axis
+%
+%   % evaluate it at directions
+%   w = vF.eval(v)
 %
 % See also
 % S2Fun S2AxisField

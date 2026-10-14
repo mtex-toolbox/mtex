@@ -8,6 +8,12 @@ classdef SO3VectorField
 %
 % Deriving classes only have to implement the method eval.
 %
+% Syntax
+%
+%   % SO3VectorField is abstract, a field is one of the derived classes
+%   SO3VF = grad(SO3F)                             % the gradient of an SO3Fun
+%   SO3VF = SO3VectorFieldHandle(@(rot) f(rot),cs) % by a function handle
+%
 % Class Properties
 %  SRight, CS   - @symmetry acting from the right, the crystal side
 %  SLeft, SS    - @symmetry acting from the left, the specimen side

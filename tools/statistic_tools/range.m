@@ -1,4 +1,22 @@
 function y = range(x,dim)
+% difference between the largest and the smallest value
+%
+% Description
+% For a vector, y is the difference between the maximum and the minimum
+% value, for a matrix the range of each column. NaNs are ignored.
+%
+% Syntax
+%
+%   y = range(x)     % along the first non-singleton dimension
+%   y = range(x,dim) % along the dimension dim
+%
+% Input
+%  x   - double
+%  dim - dimension
+%
+% Output
+%  y - double, max(x) - min(x)
+
 %RANGE  Sample range.
 %  Y = RANGE(X) returns the range of the values in X.  For a vector input,
 %  Y is the difference between the maximum and minimum values.  For a

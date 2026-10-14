@@ -1,9 +1,10 @@
 function k = calcKearnsFactor(pdf,varargin)
+% Kearns texture factor of a pole figure or an ODF
 %
 % Syntax
 %
-%   k = calcKearnsFactor(odf,N,h)
-%   k = calcKearnsFactor(pdf,N)
+%   k = calcKearnsFactor(odf,N,h) % from the pole figure of h computed from the ODF
+%   k = calcKearnsFactor(pdf,N)   % from a pole density function
 %
 % Input
 %  odf - orientation distribution function, @SO3Fun

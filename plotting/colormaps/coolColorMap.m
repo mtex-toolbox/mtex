@@ -1,4 +1,20 @@
 function c = cool(m)
+% shades of cyan and magenta colour map
+%
+% Syntax
+%
+%   c = coolColorMap(m) % colour map with m colours
+%   c = coolColorMap    % as many colours as the current figure's colour map
+%
+% Input
+%  m - number of colours
+%
+% Output
+%  c - m x 3 RGB colour map
+%
+% See also
+% parulaColorMap
+
 %COOL   Shades of cyan and magenta color map
 %   COOL(M) returns an M-by-3 matrix containing a "cool" colormap.
 %   COOL, by itself, is the same length as the current figure's

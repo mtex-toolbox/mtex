@@ -1,12 +1,13 @@
 function h = plotSlipSystem(cS, sS, varargin)
+% plot a slip system into a crystal shape, its plane as an inner face and its Burgers vector as an arrow
 %
 % Syntax
-%   N = Miller(1,0,1,'hkl',cs)
-%   plotInnerFace(cS,N,'faceColor','blue','faceAlpha',0.5,'edgeColor','k') 
+%
+%   h = plotSlipSystem(cS,sS,'faceColor','blue') % slip plane and slip direction of sS
 %
 % Input
 %  cS - @crystalShape
-%  N  - @Miller lattice plane
+%  sS - @slipSystem
 %
 % Output
 %  h - handle to the graphics object

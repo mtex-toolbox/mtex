@@ -1,7 +1,18 @@
 function sF = power(sF1,sF2)
+% pointwise power of a spherical function
 %
 % Syntax
-%   sF = sF1.^a
+%
+%   sF = sF1.^a     % the function to the power a
+%   sF = a.^sF1     % a to the power of the function
+%   sF = sF1.^sF2   % pointwise power of two functions
+%
+% Input
+%  sF1, sF2 - @S2FunHarmonic
+%  a        - double
+%
+% Output
+%  sF - @S2FunHarmonic
 %
 
 if isnumeric(sF1)

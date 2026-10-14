@@ -1,9 +1,17 @@
 function sVF = mtimes(sVF1, sVF2)
+% scalar multiplication of a vector field
 %
 % Syntax
-%   sF = sF1 * sF2
-%   sF = a * sF1
-%   sF = sF1 * a
+%
+%   sVF = a * sVF1 % vector field scaled by a number
+%   sVF = sVF1 * a % the same
+%
+% Input
+%  sVF1 - @S2VectorFieldHarmonic
+%  a - double
+%
+% Output
+%  sVF - @S2VectorFieldHarmonic
 %
 
 if isnumeric(sVF1)

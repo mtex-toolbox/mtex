@@ -6,6 +6,14 @@ classdef (Abstract) phaseItem < handle & matlab.mixin.Heterogeneous %& matlab.mi
 % which is what lets a mixed cell list of symmetries and notIndexed entries
 % be concatenated into one array.
 %
+% Syntax
+%
+%   % a phase is constructed by a derived class
+%   cs = crystalSymmetry('m-3m','mineral','Iron');
+%   nI = notIndexed;
+%
+%   cs.isIndexed   % true for a real phase
+%
 % Class Properties
 %  mineral   - mineral name
 %  color     - color used in an EBSD phase plot

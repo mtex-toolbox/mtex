@@ -1,9 +1,11 @@
 function S1F = quadrature(f,varargin)
+% compute the Fourier coefficients of a function on the circle by quadrature
 %
 % Syntax
-%   S1F = S1FunHarmonic.quadrature(nodes,values,'weights',w)
-%   S1F = S1FunHarmonic.quadrature(f)
-%   S1F = S1FunHarmonic.quadrature(f, 'bandwidth', bandwidth)
+%
+%   S1F = S1FunHarmonic.quadrature(nodes,values,'weights',w) % from function values at nodes
+%   S1F = S1FunHarmonic.quadrature(f)                        % from a function handle or an @S1Fun
+%   S1F = S1FunHarmonic.quadrature(f, 'bandwidth', bandwidth) % up to a given bandwidth
 %
 % Input
 %  values - double (first dimension has to be the evaluations)

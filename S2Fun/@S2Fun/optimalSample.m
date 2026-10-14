@@ -102,21 +102,16 @@ function [v,c] = optimalSample(sF,n,varargin)
 % expense of the higher degrees, since concentrating the mass on fewer points
 % makes the sample less uniform.
 %
-% For more details, see
-%
-% Gräf, Manuel; Potts, Daniel; Steidl, Gabriele (2012). Quadrature Errors, Discrepancies, and Their Relations to Halftoning on the Torus and the Sphere. SIAM Journal on Scientific Computing, 34(5), A2760–A2791. doi:10.1137/100814731
-%
-% Knezevic, Marko; Landry, Nicholas W. (2015). Procedures for reducing large datasets of crystal orientations using generalized spherical harmonics. Mechanics of Materials, 88, 73–86. doi:10.1016/j.mechmat.2015.04.014
-%
 % Syntax
-%   v = optimalSample(sF,n)
-%   v = optimalSample(sF,v)
-%   v = optimalSample(sF,n,'bandwidth',128)
-%   v = optimalSample(sF,n,'method','steepestDescent')
-%   v = optimalSample(sF,n,'maxIter',1000,'tol',0.005*degree)
 %
-%   [v,c] = optimalSample(sF,n)                   % optimize the weights, too
-%   [v,c] = optimalSample(sF,n,'minWeight',1e-4)
+%   v = optimalSample(sF,n)                                      % n points with equal weights
+%   v = optimalSample(sF,v)                                      % start from the points v
+%   v = optimalSample(sF,n,'bandwidth',128)                      % match the degrees up to 128
+%   v = optimalSample(sF,n,'method','steepestDescent')           % plain gradient descent
+%   v = optimalSample(sF,n,'maxIter',1000,'tol',0.005*degree)    % iterate longer and finer
+%
+%   [v,c] = optimalSample(sF,n)                    % optimize the weights, too
+%   [v,c] = optimalSample(sF,n,'minWeight',1e-4)   % drop the points of a smaller weight
 %
 % Input
 %  sF - @S2Fun
@@ -134,13 +129,15 @@ function [v,c] = optimalSample(sF,n,varargin)
 %  method     - 'lbfgs' (default), or 'steepestDescent' for an empty memory
 %  memory     - secant pairs kept by the L-BFGS iteration (default = 5)
 %  weights    - starting weights, fixed if they are not optimized (default = ones(M,1)/M)
+%  warmUp     - iterations that move the points only, when the weights are optimized (default = maxIter/5)
+%  tolWeights - termination tolerance for the weights, when they are optimized (default = 1e-3/M)
+%  tolJ       - terminate below this relative decrease of J, when the weights are optimized (default = 1e-4)
+%  minWeight  - discard directions with a smaller weight, when the weights are optimized (default = 0, i.e. keep all)
 %
-% The following options apply only if the weights are optimized
+% References
 %
-%  warmUp     - iterations that move the points only (default = maxIter/5)
-%  tolWeights - termination tolerance for the weights (default = 1e-3/M)
-%  tolJ       - terminate below this relative decrease of J (default = 1e-4)
-%  minWeight  - discard directions with a smaller weight (default = 0, i.e. keep all)
+% * Gräf, Manuel; Potts, Daniel; Steidl, Gabriele (2012). Quadrature Errors, Discrepancies, and Their Relations to Halftoning on the Torus and the Sphere. SIAM Journal on Scientific Computing, 34(5), A2760–A2791. doi:10.1137/100814731
+% * Knezevic, Marko; Landry, Nicholas W. (2015). Procedures for reducing large datasets of crystal orientations using generalized spherical harmonics. Mechanics of Materials, 88, 73–86. doi:10.1016/j.mechmat.2015.04.014
 %
 % See also
 % S2Fun/discrepancy S2Fun/discreteSample S2RestrictedDistanceKernel

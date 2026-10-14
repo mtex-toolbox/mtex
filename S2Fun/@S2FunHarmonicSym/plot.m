@@ -1,8 +1,9 @@
 function varargout = plot(sF,varargin)
+% plot a symmetric spherical function in its fundamental sector
 %
 % Syntax
 %
-%   plot(sF)
+%   plot(sF)   % draw sF over the fundamental sector of its symmetry
 %
 % Input
 %  sF - @S2FunHarmonicSym

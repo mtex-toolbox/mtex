@@ -1,5 +1,9 @@
 function grains = subSet(grains,ind, varargin)
-% 
+% restrict grains to a subset, with their boundaries
+%
+% Syntax
+%
+%   grains = subSet(grains,ind)   % the grains ind with the boundary segments that touch them
 %
 % Input
 %  grains - @grain2d

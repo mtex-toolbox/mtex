@@ -1,4 +1,59 @@
 function [z,s,exitflag] = smoothn(varargin)
+% robust spline smoothing of 1-D to N-D data
+%
+% Description
+% A fast, automatic and robust discretized spline smoothing of uniformly
+% sampled data of arbitrary dimension. Non finite values (NaN or Inf) are
+% treated as missing. Without a smoothing parameter, it is determined by
+% minimizing the generalized cross-validation score. Vector fields or
+% multicomponent data are given as a cell array of their components. The
+% author's original help, kept in the source, lists the details and eight
+% examples.
+%
+% Syntax
+%
+%   z = smoothn(y)         % automatic smoothing
+%   z = smoothn(y,s)       % smoothing parameter s, the larger the smoother
+%   z = smoothn(y,W,s)     % with nonnegative weights W of the size of y
+%   z = smoothn({Vx,Vy})   % smooth a vector field
+%   z = smoothn(y,'robust') % minimize the influence of outliers
+%
+%   % termination of the iteration and spacing of the grid
+%   opt = struct('TolZ',1e-3,'MaxIter',100,'Spacing',[1 2]);
+%   [z,s,exitflag] = smoothn(y,opt)
+%
+% Input
+%  y - N-D double, or cell array of the components of a vector field
+%  s - smoothing parameter, a positive scalar, [] for automatic
+%  W - weights, 0 for a missing value
+%  opt - struct of options, the last argument
+%
+% Output
+%  z        - smoothed data
+%  s        - the smoothing parameter used
+%  exitflag - true if the iteration converged
+%
+% Options
+%  TolZ    - termination tolerance on z, in ]0,1[ (default 1e-2)
+%  MaxIter - maximum number of iterations (default 100)
+%  Initial - initial value of the iteration (default y)
+%  Weight  - weight function of the robust smoothing, 'bisquare' (default), 'talworth' or 'cauchy'
+%  Spacing - spacing [d1 d2 ...] of the grid in each dimension
+%  Order   - order 0, 1 or 2 of the smoothing (default 2)
+%
+% Flags
+%  robust - robust smoothing
+%
+% References
+%
+% * D. Garcia, Robust smoothing of gridded data in one and higher
+% dimensions with missing values, Computational Statistics & Data Analysis,
+% 2010;54:1167-1178, <https://doi.org/10.1016/j.csda.2009.09.020
+% doi:10.1016/j.csda.2009.09.020>
+%
+% * D. Garcia, A fast all-in-one method for automated post-processing of
+% PIV data, Exp Fluids, 2011;50:1247-1259,
+% <https://doi.org/10.1007/s00348-010-0985-y doi:10.1007/s00348-010-0985-y>
 
 %SMOOTHN Robust spline smoothing for 1-D to N-D data.
 %   SMOOTHN provides a fast, automatized and robust discretized spline

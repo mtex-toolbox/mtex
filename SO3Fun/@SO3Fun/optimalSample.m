@@ -99,21 +99,16 @@ function [ori,c] = optimalSample(f,n,varargin)
 %
 %   [ori,c] = optimalSample(f,discreteSample(f,n))
 %
-% For more details, see
-%
-% Gräf, Manuel; Potts, Daniel; Steidl, Gabriele (2012). Quadrature Errors, Discrepancies, and Their Relations to Halftoning on the Torus and the Sphere. SIAM Journal on Scientific Computing, 34(5), A2760–A2791. doi:10.1137/100814731
-%
-% Knezevic, Marko; Landry, Nicholas W. (2015). Procedures for reducing large datasets of crystal orientations using generalized spherical harmonics. Mechanics of Materials, 88, 73–86. doi:10.1016/j.mechmat.2015.04.014
-%
 % Syntax
-%   ori = optimalSample(f,n)
-%   ori = optimalSample(f,ori)
-%   ori = optimalSample(f,n,'bandwidth',32)
-%   ori = optimalSample(f,n,'method','steepestDescent')
-%   ori = optimalSample(f,n,'maxIter',1000,'tol',0.05*degree)
 %
-%   [ori,c] = optimalSample(f,n)                    % optimize the weights, too
-%   [ori,c] = optimalSample(f,n,'minWeight',1e-4)
+%   ori = optimalSample(f,n)   % n optimized orientations
+%   ori = optimalSample(f,ori) % optimize the given starting nodes
+%   ori = optimalSample(f,n,'bandwidth',32) % fit the degrees up to 32
+%   ori = optimalSample(f,n,'method','steepestDescent') % plain gradient descent
+%   ori = optimalSample(f,n,'maxIter',1000,'tol',0.05*degree) % iterate longer
+%
+%   [ori,c] = optimalSample(f,n)                  % optimize the weights, too
+%   [ori,c] = optimalSample(f,n,'minWeight',1e-4) % drop orientations of small weight
 %
 % Input
 %  f - @SO3Fun
@@ -132,13 +127,16 @@ function [ori,c] = optimalSample(f,n,varargin)
 %  memory     - secant pairs kept by the L-BFGS iteration (default = 5)
 %  tolJ       - terminate below this relative decrease of J (default = 1e-4)
 %  weights    - starting weights, fixed if they are not optimized (default = ones(M,1)/M)
+%  warmUp     - weights optimized only: outer iterations that move the orientations only (default = 0)
+%  innerIter  - weights optimized only: mlsq iterations per weight step (default = 5)
+%  tolWeights - weights optimized only: termination tolerance for the weights (default = 1e-3/M)
+%  minWeight  - weights optimized only: discard orientations with a smaller weight (default = 0, i.e. keep all)
 %
-% The following options apply only if the weights are optimized
+% References
 %
-%  warmUp     - outer iterations that move the orientations only (default = 0)
-%  innerIter  - mlsq iterations per weight step (default = 5)
-%  tolWeights - termination tolerance for the weights (default = 1e-3/M)
-%  minWeight  - discard orientations with a smaller weight (default = 0, i.e. keep all)
+% * Gräf, Manuel; Potts, Daniel; Steidl, Gabriele (2012). Quadrature Errors, Discrepancies, and Their Relations to Halftoning on the Torus and the Sphere. SIAM Journal on Scientific Computing, 34(5), A2760–A2791. doi:10.1137/100814731
+%
+% * Knezevic, Marko; Landry, Nicholas W. (2015). Procedures for reducing large datasets of crystal orientations using generalized spherical harmonics. Mechanics of Materials, 88, 73–86. doi:10.1016/j.mechmat.2015.04.014
 %
 % See also
 % SO3Fun/discrepancy SO3Fun/discreteSample mlsq SO3RestrictedDistanceKernel

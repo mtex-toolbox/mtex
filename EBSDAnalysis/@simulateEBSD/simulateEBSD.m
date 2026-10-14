@@ -1,18 +1,19 @@
 classdef simulateEBSD < handle
-% Class guiding through the simple simulation of an EBSD object
+% class guiding through the simple simulation of an EBSD map
 %
 % Description
-% It allows to simulate a single/multigradient EBSD map with a free
+% It allows to simulate a single or multigradient EBSD map with a free
 % choice of the starting orientation, size, misorientation axis,
-% direction of misorientaiton increase, type and range of noise
+% direction of misorientation increase, type and range of noise.
 % Multiple gradients can be superposed and you can use an existing map
 % and add noise or deform it.
 %
-% TODO:
-% - add the singleJump, multiKnob, polyGrain
-% - make noise distribution more flexible
-% - allow to start from a different pos
-% - fix first column of pixels
+% Not implemented yet:
+%
+%  * the features singleJump, multiKnob, polyGrain
+%  * a more flexible noise distribution
+%  * starting from a different position
+%  * fixing the first column of pixels
 %
 % Syntax
 %

@@ -1,20 +1,24 @@
 function h = quiver3(v, d, varargin )
+% plot vectors as three dimensional arrows
 %
 % Syntax
-%   quiver(v,d)
+%
+%   quiver3(v,d)                     % the arrows d starting at the points v
+%   h = quiver3(v,d,'arrowSize',0.1) % longer arrows, returning the handles
 %
 % Input
-%  v - @vector3d
-%  d - @vector3d  
-%
-% Options
-%  arrowSize     - length of the arrow
-%  autoArrowSize - automatically determine the length of the arrow
-%  MaxHeadSize   - size of the head
+%  v - @vector3d, starting points
+%  d - @vector3d, directions, drawn in both directions when antipodal
 %
 % Output
+%  h - handles of the quiver plots
 %
-% See also
+% Options
+%  arrowSize   - length of the arrows, default 0.05
+%  MaxHeadSize - size of the head
+%
+% Flags
+%  autoArrowSize - let quiver3 scale the arrows automatically
 
 % initialize spherical plot
 

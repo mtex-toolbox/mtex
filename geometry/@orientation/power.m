@@ -1,19 +1,24 @@
 function ori = power(ori,n)
-% ori.^n
+% power of a misorientation
+%
+% Description
+% Except for n = -1, the inverse, the power is only defined for
+% misorientations between the same phase; it is taken of the representative
+% in the fundamental region.
 %
 % Syntax
-%   ori = ori.^n
 %
-% ori = ori^(-1)
-% ori = ori.^2
-% ori = ori.^[0,1,2,3]
-%
+%   mori = mori.^n          % the n-th power
+%   mori = mori.^(-1)       % the inverse
+%   mori = mori.^2          % the square
+%   mori = mori.^[0,1,2,3]  % several powers at once
 %
 % Input
-%  ori - @rotation
+%  mori - mis@orientation
+%  n    - double
 %
 % Output
-%  ori - @rotation
+%  mori - mis@orientation
 %
 % See also
 % quaternion.log 

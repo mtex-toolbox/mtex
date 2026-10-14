@@ -1,9 +1,11 @@
 function sF = rdivide(sF1, sF2)
+% pointwise division of spherical functions
 %
 % Syntax
-%   sF = sF1/sF2
-%   sF = sF1/a
-%   sF = a/sF1
+%
+%   sF = sF1./sF2 % quotient of two functions
+%   sF = sF1./a   % function divided by a number
+%   sF = a./sF1   % number divided by a function
 %
 % Input
 %  sF1, sF2 - @S2FunHarmonic

@@ -1,10 +1,15 @@
 classdef symmetry < matlab.mixin.Copyable
+% abstract class for crystal and specimen symmetries
 %
-% symmetry is an abstract class for crystal and specimen symmetries
+% Syntax
+%
+%   % a symmetry is constructed by a derived class
+%   cs = crystalSymmetry('m-3m');
+%   ss = specimenSymmetry('mmm');
 %
 % Derived Classes
-%  @crystalSymmetry - 
-%  @specimenSymmetry - 
+%  @crystalSymmetry  - the symmetry of a crystal
+%  @specimenSymmetry - the symmetry of a specimen
 %
 
   properties %(SetAccess = immutable)

@@ -1,9 +1,10 @@
 function varargout = line(v,varargin)
+% draw a line through spherical directions in a spherical projection
 %
 % Syntax
 %
-%   line(v)
-%   line(v1,v2)
+%   line(v)     % connect the directions v in their order
+%   line(v1,v2) % great circle arcs from v1 to v2
 %
 % Input
 %  v, v1, v2 - @vector3d

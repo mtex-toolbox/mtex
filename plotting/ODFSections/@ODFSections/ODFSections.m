@@ -19,6 +19,22 @@ classdef ODFSections < handle
   %  @pfSections        - pole figure like sections
   %  @ipfSections       - inverse pole figure like sections
   %
+  % Syntax
+  %
+  %   % sections are constructed by one of the derived classes
+  %   cs = crystalSymmetry('222')
+  %   oS = axisAngleSections(cs,cs);
+  %
+  %   % colour the sections by a misorientation colour key
+  %   ori = oS.makeGrid('resolution',2.5*degree);
+  %   oM = PatalaColorKey(cs,cs)
+  %   rgb = oM.orientation2color(ori);
+  %   plot(oS,rgb,'surf')
+  %
+  %   % plot orientations into the sections
+  %   ori = orientation.rand(100,cs,cs)
+  %   plot(oS,ori)
+  %
   % Class Properties
   %  CS1, CS2 - the two @symmetry
   %  CS, SS   - crystal and specimen @symmetry
@@ -28,18 +44,6 @@ classdef ODFSections < handle
   %
   % See also
   % sigmaSections phi2Sections SO3Fun/plotSection
-  %
-  % Example
-  %
-  %   cs = crystalSymmetry('222')
-  %   oS = axisAngleSections(cs,cs);
-  %   ori = oS.makeGrid('resolution',2.5*degree);
-  %   oM = PatalaColorKey(cs,cs)
-  %   rgb = oM.orientation2color(ori);
-  %   plot(oS,rgb,'surf')
-  %
-  %   ori = orientation.rand(100,cs,cs)
-  %   plot(oS,ori)
   
   properties
     CS1 % crystal symmetry of phase 1

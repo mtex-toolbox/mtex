@@ -1,10 +1,12 @@
 function SO3F = laplace(SO3F)
+% Laplace-Beltrami operator of a function on SO(3)
 %
 % Syntax
-%   SO3F = SO3F1.laplace
+%
+%   SO3F = laplace(SO3F1)
 %
 % Input
-%  SO3F - @SO3FunHarmonic
+%  SO3F1 - @SO3FunHarmonic
 %
 % Output
 %  SO3F - @SO3FunHarmonic

@@ -1,29 +1,39 @@
 function ori = map(varargin)
 % define orientations by pairs of vectors
 %
+% Description
+%
+% orientation.map(h1,r1,h2,r2) defines the orientation that maps the crystal
+% direction h1 onto the specimen direction r1 and h2 onto r2; h1 and h2 have
+% to enclose the same angle as r1 and r2. The orientation of the first
+% example below appears
+%
+%  * in the |(100)| pole figure at position |x| and in the |(001)| pole
+%  figure at position |y|,
+%  * in the |x| inverse pole figure at position |(100)| and in the |y|
+%  inverse pole figure at position |(001)|.
+%
+% The second example defines a misorientation that aligns the lattice plane
+% |(100)| of the alpha phase with the lattice plane |(011)| of the beta phase
+% and the lattice direction |[111]| of the alpha phase with the lattice
+% direction |[01-1]| of the beta phase.
+%
 % Syntax
 %
+%   % an orientation from two crystal and two specimen directions
 %   h = Miller({1,0,0},{0,0,1},cs) % two crystal directions
 %   r = [xvector, yvector]         % two specimen directions
 %   ori = orientation.map(h(1),r(1),h(2),r(2))
 %
-% defines an orientation |ori| that appears
-% 
-%  * in the |(100)| pole figure at position |z| and in the |(001)| pole
-%  figure at position |y|.
-%  * in the |z| inverse pole figure at position |(100)| and in the |y|
-%  inverse pole figure at position |(001)|.
-%
+%   % a misorientation from two pairs of crystal directions
 %   nAlpha = Miller({1,0,0},csAlpha,'hkl')
 %   nBeta  = Miller({0,1,1},csBeta, 'hkl')
 %   dAlpha = Miller({1,1,1},csAlpha,'uvw')
 %   dBeta  = Miller({0,1,-1},csBeta, 'uvw')
 %   mori = orientation.map(nAlpha,nBeta,dAlpha,dBeta)
 %
-% defines an misorientation that aligns the lattice plane |(1,0,0)| of the
-% alpha phase with the lattice plane |(011)| of the beta phase and the
-% lattice direction |[111]| of the alpha phase with the lattice direction
-% |[01-1]| of the beta phase.
+%   % an arbitrary orientation that maps h1 onto r1
+%   ori = orientation.map(h1,r1)
 %
 % Input
 %  h - @Miller 

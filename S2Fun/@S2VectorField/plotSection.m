@@ -1,13 +1,14 @@
 function plotSection(sVF,sec,varargin)
+% plot a vector field along a great or small circle section
 %
 % Syntax
-%   plotSection(sVF,vector3d.Z)
-%   plotSection(sVF,vector3d.Z,pi/3)
+%
+%   plotSection(sVF,vector3d.Z)      % along the great circle normal to z
+%   plotSection(sVF,vector3d.Z,pi/3) % along the small circle at angle pi/3 to z
 %
 % Input
-%  sVF - @S2Fun
-%
-% Output
+%  sVF - @S2VectorField
+%  sec - @vector3d, normal of the section
 
 [mtexFig,isNew] = newMtexFigure(varargin{:});
 

@@ -1,16 +1,20 @@
 function sF = rdivide(sF1, sF2)
+% pointwise division of symmetric spherical functions
+%
+% The result keeps the symmetry the operands share.
 %
 % Syntax
-%   sF = sF1/sF2
-%   sF = sF1/a
-%   sF = a/sF1
+%
+%   sF = sF1./sF2   % pointwise quotient of two functions
+%   sF = sF1./a     % the function divided by a number
+%   sF = a./sF1     % a number divided by the function
 %
 % Input
-%   sF1, sF2 - @S2FunHarmonic
-%   a - double
+%  sF1, sF2 - @S2FunHarmonicSym
+%  a        - double
 %
 % Output
-%   sF - @S2FunHarmonic
+%  sF - @S2FunHarmonicSym
 %
 
 sF = rdivide@S2FunHarmonic(sF1,sF2);

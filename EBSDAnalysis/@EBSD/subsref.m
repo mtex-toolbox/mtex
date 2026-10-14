@@ -1,16 +1,18 @@
 function varargout = subsref(ebsd,s)
 % indexing of EBSD data
 %
-% Syntax
-%   ebsd('Fe')        - returns data of phase Fe
-%   ebsd({'Fe','Mg'}) - returns data of phase Fe and Mg
-%   ebsd(1:end)       - returns the measurements with these indices
-%   ebsd('id',id)     - returns the measurements with these ids
-%   ebsd('xy',x,y)    - returns the measurements closest to the coordinates
+% Description
+% |ebsd(x,y)| is not the coordinate lookup - it is an error, since on a
+% gridded map the same expression is the pixel in row x and column y. Use
+% |ebsd('xy',x,y)|, which means the same on a grid and on a list.
 %
-% Note that |ebsd(x,y)| is NOT the coordinate lookup - it is an error, since
-% on a gridded map the same expression is the pixel in row x and column y.
-% Use |ebsd('xy',x,y)|, which means the same on a grid and on a list.
+% Syntax
+%
+%   ebsd('Fe')        % the data of phase Fe
+%   ebsd({'Fe','Mg'}) % the data of the phases Fe and Mg
+%   ebsd(1:end)       % the measurements with these indices
+%   ebsd('id',id)     % the measurements with these ids
+%   ebsd('xy',x,y)    % the measurements closest to the coordinates
 %
 % See also
 % EBSD/subsind EBSDgrid/subsind EBSD/findByLocation

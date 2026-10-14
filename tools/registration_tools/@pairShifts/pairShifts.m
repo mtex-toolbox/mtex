@@ -2,8 +2,9 @@ classdef pairShifts
 % the shifts one cross correlation pass measured between two images
 %
 % Syntax
-%   ps = pairShifts(pos,u,peak,roiSize)
-%   v = meanShift(ps,px)
+%
+%   ps = pairShifts(pos,u,peak,roiSize)   % the shifts measured at the tiles pos
+%   v = meanShift(ps,px)                  % their mean length and direction in pixels
 %
 % Input
 %  pos     - @vector3d, the tile centres

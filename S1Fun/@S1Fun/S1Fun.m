@@ -6,6 +6,12 @@ classdef S1Fun
 % classes only have to implement the method eval, everything else -
 % arithmetics, plotting, integration - is inherited from here.
 %
+% Syntax
+%
+%   % S1Fun is abstract, a function is one of the derived classes
+%   sF = S1FunHarmonic(fhat)          % by its Fourier coefficients
+%   sF = S1FunHandle(@(o) cos(o).^2)  % by a function handle
+%
 % Class Properties
 %  antipodal - f(x) = f(x + pi)
 %  bandwidth - maximum harmonic degree

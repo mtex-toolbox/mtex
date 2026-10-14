@@ -1,8 +1,10 @@
 function sVF1 = plus(sVF1, sVF2)
+% sum of spherical vector fields
 %
 % Syntax
-%   sVF = sVF1 + sVF2
-%   sVF = sVF + v
+%
+%   sVF = sVF1 + sVF2   % the sum of two fields
+%   sVF = sVF1 + v      % add the fixed vector v
 %
 % Input
 %  sVF1 - @S2VectorFieldTri
@@ -10,8 +12,7 @@ function sVF1 = plus(sVF1, sVF2)
 %  v    - @vector3d
 %
 % Output
-%  sF - @S2FunTri
-%
+%  sVF - @S2VectorFieldTri
 
 % first should be S2VectorFieldTri
 if ~isa(sVF1,'S2VectorFieldTri'), [sVF1,sVF2] = deal(sVF2,sVF1); end

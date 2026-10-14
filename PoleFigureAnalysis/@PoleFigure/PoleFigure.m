@@ -1,4 +1,5 @@
 classdef PoleFigure < dynProp & dynOption
+% pole figure intensities measured by diffraction
 %
 % The class *PoleFigure* is used to store experimental pole figure
 % intensities, i.e., XRD, synchrotron or neuron data. It provides several
@@ -6,6 +7,17 @@ classdef PoleFigure < dynProp & dynOption
 % <PoleFigure2ODF.html reconstruction of an orientation density function
 % (ODF)>. Importing pole figure data is explained in <PoleFigureImport.html
 % this section>.
+%
+% Syntax
+%
+%   % pole figures of the crystal directions h measured at the specimen directions r
+%   pf = PoleFigure(h,r,intensities)
+%
+%   % a pole figure of superposed crystal directions with the weights c
+%   pf = PoleFigure({h},r,intensities,'superposition',{c})
+%
+%   % import pole figures from files
+%   pf = PoleFigure.load(fname)
 %
 % Input
 %  h - @Miller, crystal directions
@@ -16,7 +28,9 @@ classdef PoleFigure < dynProp & dynOption
 %
 % Options
 %  superposition - weights for superposed crystal directions
-%  background    - background intensities
+%
+% Flags
+%  complete - the specimen directions are not antipodal
 %
 % Class Properties
 %  allH - cell of @Miller

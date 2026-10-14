@@ -1,17 +1,16 @@
 function plotCustom(v,pcmd,varargin)
+% draw custom graphics at directions in a spherical projection
 %
 % Syntax
-%   plotcustom(v,@(x,y) drawCommand(x,y))  %
+%
+%   plotCustom(v,{@(ax,x,y) drawCommand(ax,x,y)})   % call the command at the projection of every direction
 %
 % Input
-%  v  - @vector3d
-%  s  - string
-%
-% Options
-%
-% Output
+%  v    - @vector3d
+%  pcmd - cell holding a function handle @(ax,x,y), called with the axes and the projected coordinates
 %
 % See also
+% vector3d/scatter vector3d/text
 
 % initialize spherical plot
 sP = newSphericalPlot(v,varargin{:});

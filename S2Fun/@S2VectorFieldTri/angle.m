@@ -1,8 +1,10 @@
 function sF = angle(varargin)
+% pointwise angle between a vector field and a field or a direction
 %
 % Syntax
-%   sVF = angle(sVF,sVF2)
-%   sVF = angle(sVF,v)
+%
+%   sF = angle(sVF,sVF2)   % the angle between two fields at every vertex
+%   sF = angle(sVF,v)      % the angle to the direction v at every vertex
 %
 % Input
 %  sVF  - @S2VectorFieldTri

@@ -1,10 +1,7 @@
 function S2F = init_reg_params(S2F, varargin)
 % initialize the conservative goal-oriented parameters on a random grid
 %
-% Syntax
-%   S2F = init_reg_params(S2F)
-%   S2F = init_reg_params(S2F,'force')
-%
+% Description
 % The thresholds are placed relative to the healthy baseline amplification
 % chi0 of the ansatz space. chi0 depends only on the degree, the weight
 % function and the dimension of the manifold, not on the nodes, so it is
@@ -12,8 +9,19 @@ function S2F = init_reg_params(S2F, varargin)
 % fixed multiple of chi0 makes one constant valid on S2 and on SO(3) and at
 % every degree, which a fixed absolute threshold is not.
 %
+% Syntax
+%
+%   S2F = init_reg_params(S2F)         % set the parameters not set yet
+%   S2F = init_reg_params(S2F,'force') % overwrite those set explicitly too
+%
+% Input
+%  S2F - @S2FunMLS
+%
+% Output
+%  S2F - @S2FunMLS with mincond, maxcond and targetcond set
+%
 % Flags
-%  force - overwrite parameters the user has set explicitly
+%  force - overwrite parameters the user has set explicitly (also 'overwrite')
 %
 
 if S2F.degree == 0

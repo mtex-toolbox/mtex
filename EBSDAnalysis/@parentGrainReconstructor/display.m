@@ -1,5 +1,14 @@
 function display(job,varargin)
-      
+% standard output
+%
+% Syntax
+%
+%   display(job)   % the phases, the orientation relationship, the graph and the votes of the job
+%
+% Input
+%  job - @parentGrainReconstructor
+%
+
 displayClass(job,inputname(1),varargin{:});
 
 disp(' ');

@@ -1,4 +1,27 @@
 function [l,c,m] = nextstyle(ax,autoColor,autoStyle,firsttime)
+% next line style, colour and marker of an axes
+%
+% The line style, colour and marker are taken from the ColorOrder and the
+% LineStyleOrder of the axes, whose indices are stored with the axes and
+% advanced by every call.
+%
+% Syntax
+%
+%   [l,c,m] = nextstyle(ax)   % the next style, advancing colour and line style
+%   [l,c,m] = nextstyle(ax,autoColor,autoStyle,firstTime)
+%
+% Input
+%  ax        - axes handle
+%  autoColor - advance the colour index
+%  autoStyle - advance the line style index, once all colours were used
+%  firstTime - start the cycling from the beginning of the orders, unless
+%              the axes holds its style
+%
+% Output
+%  l - line style
+%  c - rgb colour
+%  m - marker
+
 %NEXTSTYLE Get next plot linespec
 %   [L,C,M] = NEXTSTYLE(AX) gets the next line style, color
 %   and marker for plotting from the ColorOrder and LineStyleOrder

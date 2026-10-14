@@ -1,11 +1,12 @@
 classdef spinTensor < velocityGradientTensor
+% skew symmetric rank two tensor describing an infinitesimal rotation
 %
 % Syntax
 %
-%   Omega = spinTensor(v)
-%   Omega = spinTensor(S)
-%   Omega = spinTensor(rot)
-%   Omega = spinTensor(mori)
+%   Omega = spinTensor(v)    % the skew symmetric matrix of the vector v
+%   Omega = spinTensor(S)    % the skew symmetric part of a rank two tensor
+%   Omega = spinTensor(rot)  % the matrix logarithm of a rotation
+%   Omega = spinTensor(mori) % the matrix logarithm of a misorientation
 %
 % Input
 %  S - skew symmetric matrix

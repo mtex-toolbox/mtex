@@ -1,15 +1,16 @@
 function registerHemispheres(ax)
 % mark several axes as the halves of one and the same spherical plot
 %
-% Syntax
-%   registerHemispheres([axUpper,axLower])
-%
 % Description
 % A spherical region that covers the upper as well as the lower hemisphere
-% is drawn into two axes - but it remains a single plot. Registering the
-% halves with each other is what lets everything that is added later - a
-% circle, a marker, a label - reach both of them, each showing the part of
-% it that falls into its hemisphere.
+% is drawn into two axes, but it remains a single plot. Registering the
+% halves with each other lets everything that is added later (a circle, a
+% marker, a label) reach both of them, each showing the part of it that
+% falls into its hemisphere.
+%
+% Syntax
+%
+%   registerHemispheres([axUpper,axLower]) % register the two halves
 %
 % Input
 %  ax - the axes the halves are drawn into

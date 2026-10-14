@@ -1,13 +1,7 @@
 function [res,info] = discrepancy(rot,w,varargin)
 % discrepancy between weighted orientation sets or a rotational density
 %
-% Syntax
-%   d = discrepancy(ori1,ori2,'metric','D_2')
-%   [d,info] = discrepancy(ori1,ori2,'metric','D_ball','numCenters',4097)
-%   d = discrepancy(ori1,ori2,'metric','L2','bandwidth',16)
-%   d = discrepancy(ori1,ori2,'weights',c,'weights2',d,'metric','D_2')
-%   d = discrepancy(ori,f,'weights',c,'metric','D_2')
-%
+% Description
 % Point weights are nonnegative and normalized independently to mass one.
 % An orientation set paired with a density is scaled to the density's
 % integral, and keeps mass one if that integral vanishes. A symmetric orientation splits its mass uniformly over the orbit
@@ -19,6 +13,14 @@ function [res,info] = discrepancy(rot,w,varargin)
 % refinement to settle. 'kernel' is the historical squared truncated
 % optimization objective and takes two densities of equal integral only.
 % See SO3Fun/discrepancy for all options and normalization conventions.
+%
+% Syntax
+%
+%   d = discrepancy(ori1,ori2,'metric','D_2') % ball L2 discrepancy of two sets
+%   [d,info] = discrepancy(ori1,ori2,'metric','D_ball','numCenters',4097) % ball-search estimate
+%   d = discrepancy(ori1,ori2,'metric','L2','bandwidth',16) % bandlimited L2 norm
+%   d = discrepancy(ori1,ori2,'weights',c,'weights2',d,'metric','D_2') % weighted sets
+%   d = discrepancy(ori,f,'weights',c,'metric','D_2') % weighted set against a density
 %
 % See also
 % SO3Fun/discrepancy SO3Fun/optimalSample

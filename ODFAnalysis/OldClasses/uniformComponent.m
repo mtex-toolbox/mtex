@@ -1,6 +1,13 @@
 classdef uniformComponent
-% This class is obsolet since MTEX 5.9. Use the class @SO3FunRBF instead.
-% Anyway the class is preserved, so that saved @ODFs can be loaded.
+% obsolete ODF component, converted into an @SO3FunRBF when it is loaded
+%
+% This class is obsolete since MTEX 5.9. It is kept only so that @ODFs saved
+% by older versions can be loaded; use @SO3FunRBF instead.
+%
+% Syntax
+%
+%   % an ODF saved before MTEX 5.9 is converted while it is loaded
+%   load('odf.mat','odf')
 
 methods (Static = true, Hidden=true)
   function odf = loadobj(s)

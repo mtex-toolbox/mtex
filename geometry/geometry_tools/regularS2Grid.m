@@ -1,14 +1,19 @@
 function S2G = regularS2Grid(varargin)
+% regular grid on the sphere in polar coordinates
 %
 % Syntax
-%   regularS2Grid('points',[72 19])
-%   regularS2Grid('resolution',[5*degree 2.5*degree])
-%   regularS2Grid('theta',theta,'rho',rho)
+%
+%   S2G = regularS2Grid('points',[72 19])                  % 72 azimuth and 19 polar angles
+%   S2G = regularS2Grid('resolution',[5*degree 2.5*degree]) % by the spacing of the angles
+%   S2G = regularS2Grid('theta',theta,'rho',rho)            % with given polar and azimuth angles
+%
+% Output
+%  S2G - @S2Grid
 %
 % Options
 %  points     - [nrho,ntheta] number of points to be generated
 %  resolution - resolution in polar and azimthal direction
-%  hemisphere - 'lower', 'uper', 'complete', 'sphere', 'identified'
+%  hemisphere - 'lower', 'upper', 'complete', 'sphere', 'identified'
 %  theta      - theta angle
 %  rho        - rho angle
 %  minRho     - starting rho angle (default 0)

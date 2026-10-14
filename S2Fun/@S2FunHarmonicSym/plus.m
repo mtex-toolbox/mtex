@@ -1,7 +1,17 @@
 function sF = plus(sF1,sF2)
+% add symmetric spherical functions, keeping their common symmetry
 %
 % Syntax
-%   sF = sF1.^a
+%
+%   sF = sF1 + sF2 % sum of two functions
+%   sF = sF1 + a   % function plus a number
+%
+% Input
+%  sF1, sF2 - @S2FunHarmonicSym
+%  a - double
+%
+% Output
+%  sF - @S2FunHarmonicSym
 %
 
 % call parent method

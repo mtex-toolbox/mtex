@@ -1,26 +1,45 @@
 function mtexFig = plotSeismicVelocities(C,varargin)
+% plot the seismic velocities of a stiffness tensor
 %
+% Description
+% The velocities are computed as spherical functions with
+% <stiffnessTensor.velocity.html velocity>, with the density the tensor
+% carries, or 1 if it carries none. The figure shows six plots in two rows:
+%
+%  * Vp, the P wave velocity
+%  * AVs, the S wave anisotropy in percent
+%  * Vs1, with the polarisation of the fast S wave
+%  * Vs2
+%  * Vp/Vs1
+%  * Vp/Vs2
+%
+% Each plot marks its maximum by a black square and its minimum by a white
+% circle.
 %
 % Syntax
-%   % stiffness tensor with density!
-%   C = stiffnessTensor(M,cs_tensor,'density',rho)
-%   multiSeismicPlot(C)
+%
+%   % stiffness tensor with density
+%   C = stiffnessTensor(M,cs,'density',rho);
+%   plotSeismicVelocities(C)
+%
+%   plotSeismicVelocities(C,'lower')              % the lower hemisphere
+%   plotSeismicVelocities(C,'symmetriseMinMax')   % mark all symmetric equivalents of the extrema
 %
 % Input
 %  C - @stiffnessTensor
 %
+% Output
+%  mtexFig - @mtexFigure
+%
 % Options
-%  upper / lower - plot upper or lower hemisphere
-%  symmetriseMinMax - plot min/max symmetrised
+%  MarkerSize - size of the markers of the extrema, default 10
 %
-% Description
+% Flags
+%  upper, lower     - plot the upper (default) or the lower hemisphere
+%  symmetriseMinMax - mark all symmetric equivalents of the minima and maxima
 %
-% The layout of the plot is
-%
-% Plot matrix of anisotropic seismic properties
-%        1 Vp        2 AVs      3 S1 polarization  4 Vs1
-%        5 Vs2       6 dVs      7 Vp/Vs1            8 Vp/Vs2
-%
+% See also
+% stiffnessTensor/velocity
 
 
 % Compute seismic velocities as functions

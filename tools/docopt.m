@@ -1,4 +1,22 @@
 function [doccmd,options,docpath] = docopt
+% the web browser of MATLAB's web function
+%
+% Description
+% MTEX's copy of MATLAB's docopt: on Unix it returns firefox as the browser,
+% on a Mac and on Windows an empty command, which leaves the choice to MATLAB.
+%
+% Syntax
+%
+%   [doccmd,options,docpath] = docopt
+%
+% Output
+%  doccmd  - command that starts the web browser
+%  options - options of the browser command, empty
+%  docpath - path of the documentation, empty
+%
+% See also
+% web
+
 %DOCOPT Web browser for UNIX platforms.
 %  DOCOPT is an M-file that you or your system manager can edit
 %  to specify the Web browser to use with MATLAB. It is used

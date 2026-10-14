@@ -1,9 +1,11 @@
 function h = quiverSection(sF,sVF,sec,varargin)
+% plot vectors along a great or small circle section of a spherical function
 %
 % Syntax
-%   quiverSection(sF,v,vector3d.Z)
-%   quiverSection(sF,sVF,vector3d.Z)
-%   quiverSection(sF,v,vector3d.Z,pi/3)
+%
+%   quiverSection(sF,v,vector3d.Z)       % vectors v along the circle normal to z
+%   quiverSection(sF,sVF,vector3d.Z)     % vectors of a vector field along the circle
+%   quiverSection(sF,v,vector3d.Z,pi/3)  % along the small circle at angle pi/3 to z
 %
 % Input
 %  sF  - @S2Fun

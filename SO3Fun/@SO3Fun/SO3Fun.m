@@ -19,6 +19,16 @@ classdef SO3Fun < dynOption
 %  frameLeft  - @referenceFrame of SLeft, read only
 %  frameRight - @referenceFrame of SRight, read only
 %
+% Syntax
+%
+%   % an SO3Fun is constructed by one of the derived classes
+%   SO3F = SO3FunHarmonic(fhat,CS,SS)
+%   SO3F = SO3FunRBF(ori,psi,weights)
+%   SO3F = SO3FunHandle(@(rot) fun(rot),CS,SS)
+%
+%   % evaluate it at orientations
+%   f = SO3F.eval(ori)
+%
 % Derived Classes
 %  @SO3FunHarmonic    - harmonic series on SO(3)
 %  @SO3FunRBF         - superposition of radial basis functions

@@ -1,12 +1,18 @@
 classdef crystalSymmetry < symmetry & phaseItem
+% the symmetry of a crystal together with its lattice
 %
 % Syntax
-%   crystalSymmetry('cubic')
+%
+%   crystalSymmetry('cubic')    % by the name of the lattice
+%   crystalSymmetry('O')        % by the Schoenflies symbol
+%   crystalSymmetry(cF)         % the trivial group carrying the crystalFrame cF
+%   crystalSymmetry('LaueId',9) % by the id of the Laue group
+%   crystalSymmetry('SpaceId',153)  % by the number of the space group
+%
+%   % with axes lengths, axes angles and the mineral name
 %   crystalSymmetry('2/m',[8.6 13 7.2],[90 116, 90]*degree,'mineral','orthoclase')
-%   crystalSymmetry('O')
-%   crystalSymmetry(cF) % the trivial group carrying the crystalFrame cF
-%   crystalSymmetry('LaueId',9)
-%   crystalSymmetry('SpaceId',153)
+%
+%   % with symmetry axes that differ from the default
 %   rot = rotation.map(vector3d(1,1,1),vector3d.Z,vector3d(0,-1,1),vector3d.X)
 %   crystalSymmetry('432','rotAxes',rot)
 %

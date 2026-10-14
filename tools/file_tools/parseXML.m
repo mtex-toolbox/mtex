@@ -1,5 +1,22 @@
 function theStruct = parseXML(filename)
+% convert an XML file to a MATLAB structure
+%
+% Every node becomes a struct with the fields Name, Attributes, Data and
+% Children; the attributes are a struct array with the fields Name and Value.
+%
+% Syntax
+%
+%   s = parseXML(filename)   % the tree of the XML file as nested structs
+%
+% Input
+%  filename - name of the XML file
+%
+% Output
+%  s - struct array with the fields Name, Attributes, Data and Children
+
 % PARSEXML Convert XML file to a MATLAB structure.
+% The example function of the MATLAB documentation of xmlread.
+
 try
    tree = xmlread(filename);
 catch

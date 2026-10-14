@@ -1,8 +1,16 @@
 function [poly,inclusionId] = calcPolygonsC(I_FG,F,V,N)
+% trace the boundary loops of every grain into polygons
+%
+% Syntax
+%
+%   [poly,inclusionId] = calcPolygonsC(I_FG,F,V)   % grains in the plane
+%   [poly,inclusionId] = calcPolygonsC(I_FG,F,V,N) % grains in a plane of normal N
 %
 % Input
-%  I_FG -
-%  F -
+%  I_FG - sparse incidence matrix of boundary segments and grains
+%  F    - boundary segments as pairs of indices to V
+%  V    - vertices, n x 2 double or @vector3d
+%  N    - @vector3d, normal of the plane of the vertices
 %
 % Output
 %  poly        - cell list of indices to V

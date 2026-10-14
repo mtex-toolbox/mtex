@@ -1,10 +1,16 @@
 function v =  eval(sVF,nodes)
+% evaluate a spherical vector field given on a triangulation
+%
+% The values at the vertices are interpolated linearly by barycentric
+% coordinates; for an antipodal field the axis is the leading eigenvector of
+% the interpolated outer products.
 %
 % Syntax
-%   v = eval(sFV,nodes)
+%
+%   v = eval(sVF,nodes)   % the field at the directions nodes
 %
 % Input
-%  sFV - @S2VectorField
+%  sVF   - @S2VectorFieldTri
 %  nodes - interpolation nodes @vector3d
 %
 % Output

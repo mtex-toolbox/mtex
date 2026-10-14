@@ -2,14 +2,15 @@ function m = nanmean(v,varargin)
 % computes the mean vector, sets nan vectors to 0
 %
 % Syntax
+%
 %   % average direction with respect to the first nonsingleton dimension
-%   m = mean(v)
+%   m = nanmean(v)
 %
 %   % average direction along dimension d
-%   m = mean(v,d)
+%   m = nanmean(v,d)
 %
 %   % average axis
-%   m = mean(v,'antipodal')
+%   m = nanmean(v,'antipodal')
 %
 % Input
 %  v - @vector3d
@@ -20,6 +21,7 @@ function m = nanmean(v,varargin)
 % Options
 %  antipodal - include <VectorsAxes.html antipodal symmetry>
 %  robust    - robust mean (with respect to outliers)
+%  weights   - weights of the vectors, the weights of NaN vectors are set to 0
 %
 
 % take care of nans

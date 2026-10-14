@@ -1,19 +1,21 @@
 function [p2c, omega] = calcParent2Child(mori,p2c,varargin)
+% fit the parent to child orientation relationship to child to child misorientations
 %
 % Syntax
 %
+%   % from pairs of neighbouring child orientations, one pair per row
 %   p2c = calcParent2Child(childOri,p2c0)
 %
-%   p2c = calcParent2Child(c2c,p2c0)
-%   p2c = calcParent2Child(c2c,p2c0,'quantile',0.8)
+%   p2c = calcParent2Child(c2c,p2c0)                  % from child to child misorientations
+%   p2c = calcParent2Child(c2c,p2c0,'quantile',0.8)   % fit to the best 80 percent
 %
 %   % start the iteration at p2c0 instead of searching the fundamental zone
 %   p2c = calcParent2Child(c2c,p2c0,'local')
 %
-%   [p2c, fit] = calcParent2Child(c2c,p2c0)
+%   [p2c, fit] = calcParent2Child(c2c,p2c0) % also the misfit of every misorientation
 %
 % Input
-%  childOri - child @orientation
+%  childOri - n x 2 child @orientation, pairs of neighbours
 %  c2c      - child to child mis@orientation
 %  p2c0     - initial guess of the parent to child orientation relationship
 %

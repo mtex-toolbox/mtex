@@ -1,12 +1,14 @@
 function SO3VF = quadrature(f, varargin)
+% compute the harmonic expansion of a vector field on SO(3) by quadrature
 %
 % Syntax
-%   SO3VF = SO3VectorFieldHarmonic.quadrature(tVec)
-%   SO3VF = SO3VectorFieldHarmonic.quadrature(tVec, tS)
-%   SO3VF = SO3VectorFieldHarmonic.quadrature(rot, value)
-%   SO3VF = SO3VectorFieldHarmonic.quadrature(rot, value, cs, ss, tS)
-%   SO3VF = SO3VectorFieldHarmonic.quadrature(f)
-%   SO3VF = SO3VectorFieldHarmonic.quadrature(f, 'bandwidth', bw)
+%
+%   SO3VF = SO3VectorFieldHarmonic.quadrature(tVec)      % from tangent vectors
+%   SO3VF = SO3VectorFieldHarmonic.quadrature(tVec, tS)  % in the tangent space tS
+%   SO3VF = SO3VectorFieldHarmonic.quadrature(rot, value) % from values at rotations
+%   SO3VF = SO3VectorFieldHarmonic.quadrature(rot, value, cs, ss, tS) % with symmetries and tangent space
+%   SO3VF = SO3VectorFieldHarmonic.quadrature(f)          % from a function handle or a vector field
+%   SO3VF = SO3VectorFieldHarmonic.quadrature(f, 'bandwidth', bw) % up to bandwidth bw
 %
 % Input
 %  rot - @rotation, @orientation

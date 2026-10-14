@@ -1,8 +1,10 @@
 function sF = angle(varargin)
+% pointwise angle between an axis field and another axis field or a direction
 %
 % Syntax
-%   sVF = angle(sVF,sVF2)
-%   sVF = angle(sVF,v)
+%
+%   sF = angle(sVF,sVF2) % angle between two axis fields
+%   sF = angle(sVF,v)    % angle to a fixed direction
 %
 % Input
 %  sVF  - @S2AxisFieldTri

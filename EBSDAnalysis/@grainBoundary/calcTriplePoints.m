@@ -1,4 +1,12 @@
 function tP = calcTriplePoints(gB,varargin)
+% triple points of a grain boundary
+%
+% A triple point is a vertex where exactly three boundary segments and three
+% grains meet.
+%
+% Syntax
+%
+%   tP = calcTriplePoints(gB)   % the triple points of the boundary gB
 %
 % Input
 %  gB - @grainBoundary

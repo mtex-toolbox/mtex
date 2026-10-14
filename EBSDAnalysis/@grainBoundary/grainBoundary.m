@@ -1,16 +1,24 @@
 classdef grainBoundary < phaseList & dynProp
+% class representing the boundary segments of two dimensional grains
 %
 % Variables of type grainBoundary represent lists of grain boundary
-% segments. Those are typically generated during grain reconstruction and
-% are accessible via
-%
-%   grains.boundary
+% segments. Those are typically generated during grain reconstruction.
 %
 % Each grain boundary segment stores many properties: its position within
 % the map, the ids of the adjacent grains, the ids of the adjacent EBSD
 % measurements, the grain boundary misorientation, etc. These properties
 % are explained in more detail in the section <BoundaryProperties.html
 % boundary properties>.
+%
+% Syntax
+%
+%   gB = grains.boundary % the boundary segments of the grains
+%
+%   % the boundaries between forsterite and enstatite
+%   gB = grains.boundary('Forsterite','Enstatite')
+%
+%   % a boundary from its vertices, segments and the adjacent measurements
+%   gB = grainBoundary(V,F,ebsdInd,grainId,phaseId,mori,CSList,phaseMap,ebsdId)
 %
 % Class Properties
 %  V            - [x,y] list of vertices 

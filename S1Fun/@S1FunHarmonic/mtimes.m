@@ -1,10 +1,20 @@
 function sF = mtimes(sF1, sF2)
+% multiply a function on the circle by a scalar or a matrix
 %
 % Syntax
-%   sF = sF1 * sF2
-%   sF = a * sF1
-%   sF = sF1 * [1;1]
 %
+%   sF = a * sF1       % multiply by the number a
+%   sF = sF1 * [1;1]   % the matrix product of a vector valued function with a matrix
+%
+% Input
+%  sF1 - @S1FunHarmonic
+%  a   - double
+%
+% Output
+%  sF - @S1FunHarmonic
+%
+% See also
+% S1FunHarmonic/times S1FunHarmonic/conv
 
 if isnumeric(sF1)
   sF = sF2;

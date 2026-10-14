@@ -1,8 +1,10 @@
 function sVF = times(sVF, a)
+% pointwise product of a vector field with a spherical function or a number
 %
 % Syntax
-%   sVF = sVF .* sF
-%   sVF = sVF .* a
+%
+%   sVF = sVF .* sF % vector field times a spherical function
+%   sVF = sVF .* a  % vector field times a number
 %
 % Input
 %  sVF - @S2VectorFieldTri
@@ -10,7 +12,7 @@ function sVF = times(sVF, a)
 %  a   - double
 %
 % Output
-%  sF - @S2VectorFieldTri
+%  sVF - @S2VectorFieldTri
 %
 
 % first should be S2VectorFieldTri

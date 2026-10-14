@@ -1,12 +1,15 @@
 function [tauMax,m,n,tau,ind] = calcShearStress(sigma,m,n,varargin)
 % shear stress
 %
+% The resolved shear stress of a stress tensor on the plane with normal m in
+% direction n is the contraction of the stress tensor with the Schmid tensor
+% of m and n. With several planes and directions the largest one is returned
+% together with its plane and direction.
+%
 % Syntax
-%   [tauMax,m,n,tau] = calcShearStress(sigma,m,n)
 %
-% Formula
-%
-%  q = T_i1i2i3...id v_i1 v_i2 v_i3 ... v_id
+%   [tauMax,m,n,tau] = calcShearStress(sigma,m,n)                 % the largest shear stress over the pairs (m,n)
+%   [tauMax,m,n,tau] = calcShearStress(sigma,m,n,'symmetrise')    % over all symmetrically equivalent pairs
 %
 % Input
 %  sigma -  @stressTensor
@@ -23,7 +26,7 @@ function [tauMax,m,n,tau,ind] = calcShearStress(sigma,m,n,varargin)
 %  symmetrise - consider also all symmetrically equivalent  planes and directions
 %
 % See also
-%
+% SchmidTensor
 
 
 % TODO: replace m,n by SlipSystem

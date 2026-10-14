@@ -1,6 +1,18 @@
 function ebsd = loadEBSD_osc(fname,varargin)
+% read EDAX binary *.osc file
+%
+% Syntax
+%
+%   ebsd = loadEBSD_osc(fname) % read the map
+%
+% Input
+%  fname - file name
+%
+% Output
+%  ebsd - @EBSD
 %
 % Options
+%  CS         - crystal symmetries replacing those of the header
 %  headerOnly - return only phase/header metadata, skip reading the data
 
 assertExtension(fname,'.osc');

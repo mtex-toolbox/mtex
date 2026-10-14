@@ -5,14 +5,19 @@ classdef mtexLayout < handle
 % Three steps, so that the arithmetic can be computed - and tested - without
 % a figure:
 %
-%  <mtexLayout.measure.html measure>          read the geometry off the graphics objects
-%  <mtexLayout.solveLayout.html solveLayout>  pure arithmetic, no handles in and none out
-%  <mtexLayout.apply.html apply>              write back only what actually moved
+%  * <mtexLayout.measure.html measure> reads the geometry off the graphics objects
+%  * <mtexLayout.solveLayout.html solveLayout> is pure arithmetic, no handles in and none out
+%  * <mtexLayout.apply.html apply> writes back only what actually moved
 %
 % <mtexLayout.resolve.html resolve> drives the three until nothing moves.
 % solveLayout is static: give it a spec struct and it returns every position
 % with no figure existing anywhere, which is what tests/core/check_mtexLayout
 % exercises.
+%
+% Syntax
+%
+%   lay = mtexFig.layout                  % the layout engine of an @mtexFigure
+%   plan = mtexLayout.solveLayout(spec)   % the arithmetic alone, without a figure
 %
 % See also
 % mtexFigure mtexFigure/drawNow

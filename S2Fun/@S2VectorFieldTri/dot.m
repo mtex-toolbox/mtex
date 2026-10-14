@@ -1,8 +1,10 @@
 function sF = dot(sVF, a, varargin)
+% pointwise inner product of a vector field with a vector field or a vector
 %
 % Syntax
-%   sVF = dot(sVF,sVF2)
-%   sVF = dot(sVF,v)
+%
+%   sF = dot(sVF,sVF2)   % inner product with a field
+%   sF = dot(sVF,v)      % inner product with a fixed vector
 %
 % Input
 %  sVF  - @S2VectorFieldTri
@@ -11,7 +13,6 @@ function sF = dot(sVF, a, varargin)
 %
 % Output
 %  sF - @S2FunTri
-%
 
 % first should be S2VectorFieldTri
 if ~isa(sVF,'S2VectorFieldTri'), [sVF,a] = deal(a,sVF); end

@@ -1,11 +1,38 @@
 function [ebsd] = loadEBSD_h5(fname, varargin)
-
-% How it is working:
-%   - You load your file of hdf5 format
-%   - The program will try to find groups with certain codes like EBSD --> if there is no such data an error is thrown
-%   - One can modify the search codes
-%   - The data will be extracted using an algorithm fitted to the data
-%   - There are helper functions to convert data and build the EBSD object
+% read EBSD data from the HDF5 files of the vendors
+%
+% Description
+%
+% The reader works as follows:
+%
+%  * the file is matched against the configurations in interfaces/hdf5_config,
+%  by the manufacturer stated in the file or by the option 'type'
+%  * the configuration names the groups holding the EBSD data; an error is
+%  thrown if there is no such data
+%  * the data are extracted as the configuration says and converted into an
+%  @EBSD map
+%
+% Every per pixel data set the config does not read itself becomes a
+% property of the map. For an Oxford file that includes the EDS element
+% maps stored next to the EBSD data set, e.g. plot(ebsd,
+% ebsd.Fe_WindowIntegral_Ka1) - the element comes first and the subgroup
+% they are sorted into is part of the property name, since a quantified
+% map holds a "Fe Ka1" both as a window integral and as a peak area. The
+% EDS header - beam voltage, detector geometry, channel width - comes along
+% as ebsd.opt.eds.header.
+%
+% Syntax
+%
+%   ebsd = EBSD.load(fname)                          % the map of an HDF5 file
+%   ebsd = EBSD.load(fname,'dataSet',2)              % the second data set of the file
+%   ebsd = EBSD.load(fname,'dataSet','OIM Map 2')    % the data set of this name
+%   ebsd = EBSD.load(fname,'headerOnly')             % the phases and the data sets only
+%
+% Input
+%  fname - file name
+%
+% Output
+%  ebsd - @EBSD
 %
 % Options
 %  dataSet    - which data set to import from a file that holds several
@@ -18,18 +45,15 @@ function [ebsd] = loadEBSD_h5(fname, varargin)
 %               "Data Processing" - both are offered as data sets and the
 %               cleaned up one is imported unless the other one is asked
 %               for, EBSD.load(fname,'dataSet','EBSD')
+%  type       - the configuration to use, by one of its manufacturer keys,
+%               e.g. 'Oxford_EBSD', instead of detecting it
+%  debug      - report the steps of the import
+%
+% Flags
 %  headerOnly - return only phase/header metadata, skip reading the
 %               (potentially large) per-pixel position/rotation/phase
 %               data and any other top-level category (e.g. electron
 %               images). Also lists the data sets the file contains.
-%
-% Every per pixel data set the config does not read itself becomes a
-% property of the map. For an Oxford file that includes the EDS element
-% maps stored next to the EBSD data set, e.g. plot(ebsd,
-% ebsd.Fe_WindowIntegral_Ka1) - the element comes first and the subgroup
-% they are sorted into is part of the property name, since a quantified
-% map holds a "Fe Ka1" both as a window integral and as a peak area. The EDS header - beam voltage,
-% detector geometry, channel width - comes along as ebsd.opt.eds.header.
 
 % Selecting right config and load------------------------------------------
 

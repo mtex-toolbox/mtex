@@ -1,30 +1,53 @@
 classdef planarColorKey
-% planarColorKey  encode two scalar properties as hue × saturation colors
+% encode two scalar properties as hue × saturation colors
 %
-%   * Property 1  →  Hue        (sampled from a user-supplied or default LUT)
-%   * Property 2  →  Saturation (linearly from 0 or 1 to full color)
+% Description
+% The first property selects the hue, sampled from a colour map, the second
+% the saturation, from no colour (white or black) to the full colour:
 %
+%  * property 1 - hue, sampled from a user-supplied or the default colour map
+%  * property 2 - saturation, linearly from white or black to the full colour
 %
 % Syntax
-%   cK = planarColorKey
-%   cK = planarColorKey(winter, 'colorModel', 'white', ...)
 %
-%   rgb = cK.property2color(v1, v2)
+%   cK = planarColorKey                          % key over the default colour map
+%   cK = planarColorKey(winter,'shading','black') % key over winter, fading to black
 %
-%   plot(cK)                % standalone legend (key image only, no labels)
-%   plot(cK, 'labeled')     % legend with labels according to data range
+%   rgb = cK.property2color(v1, v2) % colours of the values v1, v2
 %
-% Properties
-%   colorMap    - n-by-3 hue look-up table.
-%   colorModel  - 'white' (default) | 'black'  what zero-saturation maps to
-%   periode     - frequency of periodic data (pi/2*pi), wrapping v1. Default: NaN
-%   quantileCap - quantile for maximum of v2.  Default: 0.975
-%   range1      - data range of v1.  Default: [min(v1), max(v1)]
-%   range2      - data range of v2.  Default: [min(v2), quantile(v2,0.975)]
-%   label1      - x-axis label in plot().  Default: 'Property 1'
-%   label2      - y-axis label in plot().  Default: 'Property 2'
+%   plot(cK)         % standalone legend (key image only, no labels)
+%   plot(cK, v1, v2) % legend with axes and labels according to the data range
 %
-% Examples:
+% Input
+%  winter - n x 3 colour map of the hue, or the name of one
+%  v1     - double, the property mapped to hue
+%  v2     - double, the property mapped to saturation, same size as v1
+%
+% Output
+%  cK  - @planarColorKey
+%  rgb - colours of size [size(v1), 3]
+%
+% Options
+%  shading     - 'white' (default) or 'black', what zero saturation maps to
+%  satRange    - saturation range for v2, default [0 1]
+%  quantileCap - quantile for the maximum of v2, default 0.975
+%  range1      - data range of v1, default [min(v1), max(v1)]
+%  range2      - data range of v2, default [min(v2), quantile(v2,0.975)]
+%  label1      - x-axis label in plot(), default 'Property 1'
+%  label2      - y-axis label in plot(), default 'Property 2'
+%
+% Class Properties
+%  colorMap    - n x 3 hue look-up table
+%  shading     - 'white' (default) or 'black', what zero saturation maps to
+%  satRange    - saturation range for v2
+%  periode     - period of periodic data (pi or 2*pi), wrapping v1, default NaN
+%  quantileCap - quantile for the maximum of v2
+%  range1      - data range of v1
+%  range2      - data range of v2
+%  label1      - x-axis label in plot()
+%  label2      - y-axis label in plot()
+%
+% Example
 %
 % % Example 1: long axis mapping, with saturation given by aspect ratio
 % % get the data
@@ -69,7 +92,8 @@ classdef planarColorKey
 %
 % plot(grains('indexed'),pK.property2color(v1,v2))
 %
-% See also: directionColorKey, ipfColorKey, HSVDirectionKey
+% See also
+% directionColorKey ipfColorKey HSVDirectionKey
 
 % TODO:
 % - add log scaling of saturation

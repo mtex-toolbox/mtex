@@ -1,25 +1,24 @@
 function out = wraptext(txt,width)
-% WRAPTEXT Wrap text to a maximum line length (Unicode-aware).
-%   out = wraptext(txt,width) returns text where each original line is
-%   wrapped so that no wrapped line exceeds 'width' visible characters.
-%   Words are not split.
+% wrap text to a maximum line length
 %
-%   Extra rules:
-%   1) Existing newline characters in TXT are respected. I.e. each
-%      paragraph (line) is wrapped independently and separated by '\n'
-%      exactly as in the input.
-%   2) HTML fragments of the form <a ...>...</a> are treated as a single
-%      unbreakable word, even if they contain spaces in attributes. They
-%      count towards the line length by the text they show, not by the
-%      length of their markup - a hyperlink that is only a few characters
-%      wide on screen must not push the words around it onto the next line,
-%      and a line must never be broken inside the tag, which would leave
-%      the command window with markup it can no longer turn into a link.
+% Description
+% Each line of txt is wrapped on its own, so that no wrapped line exceeds
+% width visible characters; the line breaks of txt are kept. Words are not
+% split. A hyperlink <a ...>...</a> is treated as one word, as long as the
+% text it shows, and is never broken.
 %
-%   txt   ... string or char
-%   width ... positive integer
+% Syntax
 %
-%   Returns a char vector with '\n' as newline separators.
+%   out = wraptext(txt,width)   % wrap to width characters
+%   out = wraptext(txt)         % wrap to the width of the command window
+%   wraptext(txt,width)         % display the wrapped text
+%
+% Input
+%  txt   - char or string
+%  width - positive integer
+%
+% Output
+%  out - char vector with newline characters as line separators
 
 if nargin==1
   cms = get(0,'CommandWindowSize');

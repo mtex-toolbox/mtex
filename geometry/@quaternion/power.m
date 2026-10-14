@@ -1,16 +1,19 @@
 function q = power(q,n)
 % q.^n
 %
+% For a unit quaternion q the power q.^n is the rotation about the same axis
+% by n times the rotation angle; n may be any real number and an array.
+%
 % Syntax
-%   q = q.^n
 %
-% q = q.^(-1)
-% q = q.^2
-% q = q.^[0,1,2,3]
-%
+%   q = q.^n            % the power n
+%   q = q.^(-1)         % the inverse
+%   q = q.^2            % twice the rotation
+%   q = q.^[0,1,2,3]    % several powers at once
 %
 % Input
 %  q - @quaternion
+%  n - double
 %
 % Output
 %  q - @quaternion 

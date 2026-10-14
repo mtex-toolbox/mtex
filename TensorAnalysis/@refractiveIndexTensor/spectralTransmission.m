@@ -1,26 +1,30 @@
 function rgb = spectralTransmission(rI,vprop,varargin)
+% colour of the light transmitted through a birefringent crystal between polarizers
 %
 % Syntax
-%   rgb = spectralTransmission(rI,vprop,p,thickness)
 %
-%   rgb = spectralTransmission(rI,vprop,p,thickness,'polarizationDirection',p)
+%   rgb = spectralTransmission(rI,vprop,thickness)                                % rgb for the propagation directions vprop
+%   rgb = spectralTransmission(rI,vprop,thickness,'polarizationDirection',p)      % with the polarizer along p
+%   rgb = spectralTransmission(rI,vprop,thickness,'phi',phi)                      % with the analyzer at angle phi to the polarizer
 %
-%   rgb = spectralTransmission(rI,vprop,p,thickness,'phi',phi)
-%
-%   plot(rI.spectralTransmission(thickness))
-%
-%
-% Input
-%  rI - @refractiveIndexTensor
-%  vprop - propagation direction
-%  thickness - 
-%  p - direction of the polarizer
-%  tau - angle between polarizer and analyzer
-%
-% Example
+%   % the colour as a spherical function of the propagation direction
 %   thickness = 20000;
 %   rI = refractiveIndexTensor.calcite
 %   plot(rI.spectralTransmission(thickness),'rgb','3d')
+%
+% Input
+%  rI        - @refractiveIndexTensor
+%  vprop     - propagation direction @vector3d
+%  thickness - thickness of the specimen
+%
+% Output
+%  rgb - n x 3 rgb values, or a 3 x 1 @S2FunHarmonic if vprop is left out
+%
+% Options
+%  polarizationDirection - direction p of the polarizer @vector3d
+%  tau       - angle between polarizer and the slow direction, if no polarizationDirection is given (default 45 degree)
+%  phi       - angle between polarizer and analyzer (default 90 degree)
+%  bandwidth - bandwidth of the spherical function, if vprop is left out (default 32)
 %
 
 

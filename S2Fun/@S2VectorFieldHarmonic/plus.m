@@ -1,10 +1,18 @@
 function sVF = plus(sVF1, sVF2)
+% sum of spherical vector fields
 %
 % Syntax
-%   sVF = sVF1+sVF2
-%   sVF = a+sVF1
-%   sVF = sVF1+a
 %
+%   sVF = sVF1 + sVF2   % the sum of two fields
+%   sVF = v + sVF1      % add the fixed vector v
+%   sVF = sVF1 + v
+%
+% Input
+%  sVF1, sVF2 - @S2VectorFieldHarmonic
+%  v          - @vector3d
+%
+% Output
+%  sVF - @S2VectorFieldHarmonic
 
 if isa(sVF1, 'vector3d')
   sVF = sVF2;

@@ -1,23 +1,24 @@
 function gbnd = calcGBND(gB,ebsd,varargin)
 % estimate GBND and GBCD from 2d boundary segments
 %
-% Syntax
-%
-%   gbnd = calcGBND(gB,ebsd)
-%   gbnd = calcGBND(gB,grains)
-%
-%   % the gbcd for a specific misorientation
-%   gbcd = calcGBND(gB,grains,mori)
-%
-%   % use a specific halfwidth
-%   gbnd = calcGBND(gB,ebsd,'halfwidth',10*degree)
-%
+% Description
 % Given an @EBSD the orientations on either side of a segment are looked up
 % through |gB.ebsdId|, which is only meaningful while every segment still runs
 % between one specific pair of pixels. <grain2d.smoothBoundary.html
 % |smoothBoundary|> breaks that by default - it merges and resamples segments -
 % so smooth with |'noSimplify','noRefine'| before calling this, or pass the
 % @grain2d instead and work from the grain mean orientations.
+%
+% Syntax
+%
+%   gbnd = calcGBND(gB,ebsd)     % from the orientations of the pixels
+%   gbnd = calcGBND(gB,grains)   % from the grain mean orientations
+%
+%   % the gbcd for a specific misorientation
+%   gbcd = calcGBND(gB,grains,mori)
+%
+%   % use a specific halfwidth
+%   gbnd = calcGBND(gB,ebsd,'halfwidth',10*degree)
 %
 % Input
 %  gB   - @grainBoundary

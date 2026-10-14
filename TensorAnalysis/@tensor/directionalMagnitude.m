@@ -1,18 +1,23 @@
 function T = directionalMagnitude(T,v)
 % magnitude of a tensor in direction v
 %
-% Formula
+% Description
+% The tensor is contracted with the direction in every index,
 %
-%  q = T_i1i2i3...id v_i1 v_i2 v_i3 ... v_id
+% $$ q = T_{i_1 i_2 \ldots i_d} v_{i_1} v_{i_2} \cdots v_{i_d}. $$
+%
+% Syntax
+%
+%   q = directionalMagnitude(T,v) % magnitude in the directions v
+%   S2F = directionalMagnitude(T) % magnitude as a function on the sphere
 %
 % Input
 %  T - @tensor
 %  v - direction (@vector3d / @Miller)
 %
 % Output
-%  q - magnitude of a tensor in direction v
-%
-% See also
+%  q   - magnitude of a tensor in direction v
+%  S2F - @S2FunHarmonicSym
 %
 
 % return a function if required

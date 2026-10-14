@@ -1,14 +1,16 @@
 function factor = getUnitScale(unit)
+% length of a unit in meter
 %
 % Syntax
-%   factor = getUnitScale(unit)
+%
+%   factor = getUnitScale('um')   % 1e-6
 %
 % Input
-%  unit - unit of the value (e.g. nm, m, ...)
+%  unit - unit of length, one of ym, zm, am, fm, pm, au (Angstrom, 1e-10),
+%  nm, um, mm, cm, m, km, Mm, Gm, Tm, Pm, Em, Zm, Ym
 %
 % Output
-%  factor - with repsect to meter
-%
+%  factor - length of the unit in meter
 
 % References lookup table
 ref_units = {'ym' 'zm' 'am' 'fm' 'pm' 'au' 'nm' 'um' 'mm' 'cm' 'm' ...

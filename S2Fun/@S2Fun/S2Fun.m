@@ -10,6 +10,13 @@ classdef S2Fun
 % Deriving classes only have to implement the method eval, everything else
 % - arithmetics, plotting, integration, extrema - is inherited from here.
 %
+% Syntax
+%
+%   % a spherical function is constructed by a derived class, e.g.
+%   sF = S2FunHarmonic.quadrature(@(v) v.z.^2);
+%
+%   f = sF.eval(v)   % the values at the @vector3d v
+%
 % Class Properties
 %  isReal   - the function takes only real values
 %  frame    - @referenceFrame the function is expressed in

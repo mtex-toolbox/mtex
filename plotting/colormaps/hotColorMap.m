@@ -1,4 +1,20 @@
 function h = hotColorMap(m)
+% black-red-yellow-white colormap
+%
+% Syntax
+%
+%   map = hotColorMap(m)   % m colours
+%   map = hotColorMap      % as many colours as the colormap of the current figure
+%
+% Input
+%  m - number of colours
+%
+% Output
+%  map - m x 3 matrix of RGB values
+%
+% See also
+% mtexColorMap
+
 %HOT    Black-red-yellow-white color map
 %   HOT(M) returns an M-by-3 matrix containing a "hot" colormap.
 %   HOT, by itself, is the same length as the current figure's

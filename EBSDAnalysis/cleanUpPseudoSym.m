@@ -1,6 +1,7 @@
 function [ebsd,grainsM,numChanged] = cleanUpPseudoSym(ebsd,grains,mori,varargin)
-% cleanUpPseudoSym Corrects pseudo-symmetry artifacts in a single phase using tortuosity.
+% correct pseudo-symmetry artifacts in a single phase using the tortuosity of the boundaries
 %
+% Description
 % A pseudo symmetry is a rotation which is not a symmetry of the crystal but
 % maps the diffraction pattern almost onto itself, such that the indexing
 % picks between the two solutions at random. The resulting boundaries follow
@@ -15,10 +16,6 @@ function [ebsd,grainsM,numChanged] = cleanUpPseudoSym(ebsd,grains,mori,varargin)
 % boundaries should not have been smoothed before, as this destroys exactly
 % the tortuosity the detection is based on.
 %
-% Syntax
-%   [ebsd, grainsM, numChanged] = cleanUpPseudoSym(ebsd, grains, mori)
-%   [ebsd, grainsM, numChanged] = cleanUpPseudoSym(ebsd, grains, mori, 'threshold', 1.5)
-%
 % It is enough to pass one representative of each pseudo symmetry. A
 % measurement is a fixed representative of an orientation, so the alternative
 % indexing solution is |ori * s * mori| for some symmetry element |s| and not
@@ -26,19 +23,24 @@ function [ebsd,grainsM,numChanged] = cleanUpPseudoSym(ebsd,grains,mori,varargin)
 % why passing a pseudo symmetry or its inverse or any symmetrically
 % equivalent misorientation gives the same result.
 %
-% Input
-%   ebsd   - @EBSD object, with grainId set by @EBSD.calcGrains
-%   grains - @grain2d object
-%   mori   - @orientation (array of pseudo-symmetries, same CS and SS)
+% Syntax
 %
-% Options
-%   'delta'     - Tolerance for boundary misorientation angle to match pseudo-symmetry (default: 2*degree)
-%   'threshold' - Minimum tortuosity (boundary length / straight distance) to trigger merge (default: 1.5)
+%   [ebsd, grainsM, numChanged] = cleanUpPseudoSym(ebsd, grains, mori) % merge across pseudo-symmetric boundaries
+%   [ebsd, grainsM, numChanged] = cleanUpPseudoSym(ebsd, grains, mori, 'threshold', 1.5) % with a tortuosity threshold
+%
+% Input
+%  ebsd   - @EBSD, with grainId set by @EBSD.calcGrains
+%  grains - @grain2d
+%  mori   - @orientation, array of pseudo-symmetries, same CS and SS
 %
 % Output
-%   ebsd       - updated @EBSD object
-%   grainsM    - merged @grain2d object
-%   numChanged - number of pixels that changed orientation
+%  ebsd       - updated @EBSD
+%  grainsM    - merged @grain2d
+%  numChanged - number of pixels that changed orientation
+%
+% Options
+%  delta     - tolerance of the boundary misorientation angle to match a pseudo-symmetry (default: 2*degree)
+%  threshold - minimum tortuosity (boundary length / straight distance) to trigger a merge (default: 1.5)
 %
 % Example
 %
