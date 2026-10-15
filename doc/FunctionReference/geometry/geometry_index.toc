@@ -20,3 +20,30 @@ SO3Grid_index                SO3Grid
 embedding_index              embedding
 geometry_tools_index         misc functions
 misorientation_index         Phase Transition Analysis
+MillerConvention_index MillerConvention
+latticeType_index latticeType
+phaseItem_index phaseItem
+notIndexed_index notIndexed
+DelaunaySO3_index DelaunaySO3
+fibonacciSO3Grid_index fibonacciSO3Grid
+homochoricSO3Grid_index homochoricSO3Grid
+quadratureSO3Grid_index quadratureSO3Grid
+referenceFrame_index referenceFrame
+crystalFrame_index crystalFrame
+gridLayout_index gridLayout
+specimenFrame_index specimenFrame
+spatialTransform_index spatialTransform
+spatialTransformComposite_index spatialTransformComposite
+spatialTransformDrift_index spatialTransformDrift
+spatialTransformField_index spatialTransformField
+spatialTransformHandle_index spatialTransformHandle
+spatialTransformId_index spatialTransformId
+spatialTransformInverse_index spatialTransformInverse
+spatialTransformPoly_index spatialTransformPoly
+spatialTransformProjective_index spatialTransformProjective
+spatialTransformRigid_index spatialTransformRigid
+spatialTransformShift_index spatialTransformShift
+spatialTransformTilt_index spatialTransformTilt
+SO3TangentVector_index SO3TangentVector
+fibonacciS2Grid_index fibonacciS2Grid
+quadratureS2Grid_index quadratureS2Grid

@@ -2,3 +2,4 @@ PoleFigure_index      poleFigure
 MLSSolver_index       MLSSolver
 zeroRangeMethod_index zeroRangeMethod
 dubna_tools_index     Dubna Tools
+pf2odfSolver_index pf2odfSolver
