@@ -65,6 +65,12 @@ end
 indexes=dir(fullfile(ref,'**','*_index.m'));
 count=0;
 for k=1:numel(indexes)
+  [~,name]=fileparts(indexes(k).name);
+  % Without explicit contents, DocHelp includes every source in a folder ending
+  % in the index's stem. An index inside that same folder would include itself.
+  assert(~endsWith(indexes(k).folder,name(1:end-6)) || ...
+    isfile(fullfile(indexes(k).folder,[name '.toc'])), ...
+    'Index %s needs explicit contents to avoid including itself',name);
   text=fileread(fullfile(indexes(k).folder,indexes(k).name));
   body=regexp(text,'(?s)<pre>(.*?)</pre>','tokens','once');
   if isempty(body), continue; end

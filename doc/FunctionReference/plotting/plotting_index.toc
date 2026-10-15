@@ -1,59 +1,14 @@
 mapPlot                    mapPlot
-scaleBar                   scaleBar
+plotLayoutHelpers_index Plot conventions and layout helpers
 sphericalPlot              sphericalPlot
 mtexFigure_index           mtexFigure
-sphericalProjections_index spherical Projections
-orientationPlot_index      orientationPlot
-ODFSections_index          ODFSections
+sphericalProjections_index Spherical projections
+orientationPlots_index Orientation plots
+orientationSections_index Orientation sections
 colormaps_index            colormaps
-directionColorKeys_index   directional color keys
-orientationColorKeys_index orientation color keys
+directionColorKeys_index Directional colour keys
+orientationColorKeys_index Orientation colour keys
 plotting_tools_index       tools
-PhiSections_index PhiSections
-alphaSections_index alphaSections
-axisAngleSections_index axisAngleSections
-gammaSections_index gammaSections
-ipfSections_index ipfSections
-pfSections_index pfSections
-omegaSections_index omegaSections
-sigmaSections_index sigmaSections
-phi1Sections_index phi1Sections
-phi2Sections_index phi2Sections
-directionColorKey_index directionColorKey
-HKLDirectionKey_index HKLDirectionKey
-HSVDirectionKey_index HSVDirectionKey
-TSLDirectionKey_index TSLDirectionKey
 mapPlot_index mapPlot
-orientationColorKey_index orientationColorKey
-BungeColorKey_index BungeColorKey
-PatalaColorKey_index PatalaColorKey
-axisAngleColorKey_index axisAngleColorKey
-ipfColorKey_index ipfColorKey
-ipfHKLKey_index ipfHKLKey
-ipfHSVKey_index ipfHSVKey
-ipfSpotKey_index ipfSpotKey
-ipfTSLKey_index ipfTSLKey
-spectralTransmissionColorKey_index spectralTransmissionColorKey
-spotColorKey_index spotColorKey
-BungePlot_index BungePlot
-axisAnglePlot_index axisAnglePlot
-RodriguesPlot_index RodriguesPlot
-conformalPlot_index conformalPlot
-cubochoricPlot_index cubochoricPlot
-homochoricPlot_index homochoricPlot
-quaternionPlot_index quaternionPlot
 planarColorKey_index planarColorKey
-plottingConvention_index plottingConvention
-scaleBar_index scaleBar
-screenProjection_index screenProjection
 sphericalPlot_index sphericalPlot
-sphericalProjection_index sphericalProjection
-eangleProjection_index eangleProjection
-eareaProjection_index eareaProjection
-edistProjection_index edistProjection
-full3dProjection_index full3dProjection
-gnonomicProjection_index gnonomicProjection
-orthographicProjection_index orthographicProjection
-plainProjection_index plainProjection
-squareProjection_index squareProjection
-mtexLayout_index mtexLayout

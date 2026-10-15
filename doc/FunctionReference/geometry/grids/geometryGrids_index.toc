@@ -1,0 +1,10 @@
+S1Grid_index S1Grid
+S2Grid_index S2Grid
+S2Triangulation_index S2Triangulation
+SO3Grid_index SO3Grid
+DelaunaySO3_index DelaunaySO3
+fibonacciS2Grid_index fibonacciS2Grid
+quadratureS2Grid_index quadratureS2Grid
+fibonacciSO3Grid_index fibonacciSO3Grid
+homochoricSO3Grid_index homochoricSO3Grid
+quadratureSO3Grid_index quadratureSO3Grid
