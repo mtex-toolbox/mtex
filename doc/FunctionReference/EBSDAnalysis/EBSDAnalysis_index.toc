@@ -8,3 +8,4 @@ grain3d_index           grain3d
 grain3Boundary_index    grain3Boundary
 triplePointList_index   triplePointList
 parentGrainReconstructor_index parentGrainReconstructor
+trueEbsd_index          trueEbsd
