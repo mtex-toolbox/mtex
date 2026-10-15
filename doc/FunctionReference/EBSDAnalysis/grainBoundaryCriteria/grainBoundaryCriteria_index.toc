@@ -1,0 +1,6 @@
+grainBoundaryCriterion_index grainBoundaryCriterion
+gbcAngle_index gbcAngle
+gbcSoft_index gbcSoft
+gbcCustom_index gbcCustom
+gbcFMC_index gbcFMC
+gbcVariants_index gbcVariants

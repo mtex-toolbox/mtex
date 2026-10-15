@@ -1,0 +1,7 @@
+EBSDFilter_index EBSDFilter
+meanFilter_index meanFilter
+medianFilter_index medianFilter
+KuwaharaFilter_index KuwaharaFilter
+splineFilter_index splineFilter
+l1TVFilter_index l1TVFilter
+infimalConvolutionFilter_index infimalConvolutionFilter
