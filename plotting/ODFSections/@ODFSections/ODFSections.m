@@ -21,7 +21,11 @@ classdef ODFSections < handle
   %
   % Syntax
   %
-  %   % sections are constructed by one of the derived classes
+  %   oS = axisAngleSections(cs,cs) % construct sections using a derived class
+  %
+  % Example
+  %   % colour axis-angle sections by misorientation and plot individual orientations
+  %
   %   cs = crystalSymmetry('222')
   %   oS = axisAngleSections(cs,cs);
   %
