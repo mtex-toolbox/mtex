@@ -14,6 +14,9 @@ function [ind,d] = find(v,w,epsilon_or_k,varargin)
 %  epsilon      - double
 %  k            - int32
 %
+% Options
+%  searcher     - KDTreeSearcher of [-v;v].abcd, to search v in batches
+%
 % Output
 %  ind          - int32 array for k nearest neighbors,
 %               - sparse logical incidence matrix for region search
@@ -54,9 +57,10 @@ if nargin==2, epsilon_or_k=1; end
 orig_size = numel(v);
 v = [-v;v];
 
-% k given ==> find k nearest neighbors
+% k given ==> find k nearest neighbors, with a KD tree of [-v;v] if one is given
 if (floor(epsilon_or_k) == epsilon_or_k)
-  ind = knnsearch(v.abcd, w.abcd, 'K', epsilon_or_k);
+  searcher = get_option(varargin,'searcher',v.abcd);
+  ind = knnsearch(searcher, w.abcd, 'K', epsilon_or_k);
   if (nargout == 2)
     d = angle(v.subSet(ind), w);
   end

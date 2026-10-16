@@ -47,6 +47,7 @@ for i = 1:size(cases,1)
   checkK(v,w,dRef,1,lbl,tol);
   checkK(v,w,dRef,3,lbl,tol);
   checkK(v,w,dRef,7,lbl,tol);
+  checkK(v,w.subSet(1),dRef(1,:),3,[lbl ', one query'],tol);
   checkClosest(v,w,dRef,lbl,tol);
 
   % take the epsilon radius from the observed distances, a fixed one goes vacuous

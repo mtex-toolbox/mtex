@@ -104,10 +104,20 @@ if isK
   if isempty(id), mult = 1; else, mult = max(accumarray(id,1)); end
   kSub = min(epsilon_or_k * mult, numel(id));
 
-  % find points on fundamental region
-  [ind,d] = find@quaternion(vq,wq,kSub,varargin{:});
-  ind = id(ind);
-  [ind,d] = collapseK(ind,d,epsilon_or_k);
+  % find points on fundamental region, in batches of bounded memory that
+  % share one KD tree of the points quaternion/find searches
+  ind = zeros(numel(wq),epsilon_or_k);
+  d = inf(numel(wq),epsilon_or_k);
+  searched = [-vq;vq];
+  searcher = createns(searched.abcd);
+  nb = batchSize(kSub);
+  for first = 1:nb:numel(wq)
+    I = first:min(first + nb - 1,numel(wq));
+    [indB,dB] = find@quaternion(vq,wq.subSet(I),kSub,'searcher',searcher,varargin{:});
+    % for a single query the indices come as a row and the distances as a column
+    [ind(I,:),d(I,:)] = collapseK(reshape(id(indB),size(indB)), ...
+      reshape(dB,size(indB)),epsilon_or_k);
+  end
 
   % determine not correctly classified points and search again for them
   nCC = max(d,[],2) > min(pi-angle(wq,fR.N) + epsilon,[],2);
@@ -180,9 +190,14 @@ if floor(epsilon_or_k) == epsilon_or_k
 % the k nearest distinct points of v are among the k*nRep nearest copies
   kSub = min(epsilon_or_k * nRep, numel(vs));
 
-  [ind,d] = find(vs,ws,kSub,varargin{:});
-  ind = origIdx(ind);
-  [ind,d] = collapseK(ind,d,epsilon_or_k);
+  ind = zeros(numel(ws),epsilon_or_k);
+  d = inf(numel(ws),epsilon_or_k);
+  nb = batchSize(kSub);
+  for first = 1:nb:numel(ws)
+    I = first:min(first + nb - 1,numel(ws));
+    [indB,dB] = find(vs,ws.subSet(I),kSub,varargin{:});
+    [ind(I,:),d(I,:)] = collapseK(reshape(origIdx(indB),size(indB)),dB,epsilon_or_k);
+  end
 
   % rows that did not yield k distinct points - fall back to brute force.
   % angle() takes the antipodal flag of v into account by itself.
@@ -197,6 +212,15 @@ else
   [ind,d] = collapseEps(ind,d,origIdx,N);
 
 end
+
+end
+
+% -------------------------------------------------------------------------
+function n = batchSize(kSub)
+% queries per batch for about 2 GB, at roughly 200 bytes per candidate: the
+% indices, the distances, the candidates themselves and the sort in collapseK
+
+n = max(1,floor(2 * 2^30 / (200 * kSub)));
 
 end
 
