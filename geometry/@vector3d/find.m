@@ -51,9 +51,9 @@ end
 
 % k given ==> find k nearest neighbors
 if (floor(epsilon_or_k) == epsilon_or_k)
-  % check if there is already a KDTreeSearcher underlying v
-  % this is especially for MLS, where the object might be created multiple times
-  if isfield(v.opt, 'searcher')
+  % a KDTreeSearcher stored with v, e.g. by S2FunMLS, serves when it was
+  % built for the points searched, [v;-v] in the antipodal case
+  if hasSearcher(v)
     ind = knnsearch(v.opt.searcher, w.xyz, 'K', epsilon_or_k, 'distance', distance);
   else
     ind = knnsearch(v.xyz, w.xyz, 'K', epsilon_or_k, 'distance', distance);
@@ -70,8 +70,8 @@ end
 % epsilon given ==> perform range-search with radius epsilon
 
 % scale spherical region to euclidean region before starting rangesearch
-% as for knn-search, check if there is already a kdtreesearcher object for v
-if isfield(v.opt, 'searcher')
+% as for knn-search, use a stored searcher built for the points searched
+if hasSearcher(v)
   ind = rangesearch(v.opt.searcher, w.xyz, sqrt(2) * sqrt(1 - cos(epsilon_or_k)));
 else
   ind = rangesearch(v.xyz, w.xyz, sqrt(2) * sqrt(1 - cos(epsilon_or_k)));
@@ -97,3 +97,8 @@ if (nargout == 2)
   d = angle(v.subSet(col_idx), w.subSet(row_idx));
   d = sparse(row_idx, col_idx, d, numel(w), numel(v));
 end
+
+
+function tf = hasSearcher(v)
+% whether v carries a KD tree of exactly its points
+tf = isfield(v.opt,'searcher') && size(v.opt.searcher.X,1) == numel(v);
