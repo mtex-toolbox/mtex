@@ -1,16 +1,15 @@
-function sF = uminus(sF)
+function S2F = uminus(S2F)
 % the negative of a spherical function
 %
 % Syntax
-%
-%   sF = -sF
+%   S2F = -S2F
 %
 % Input
-%  sF - @S2FunMLS
+%  S2F - @S2FunMLS
 %
 % Output
-%  sF - @S2FunMLS
+%  S2F - @S2FunMLS
 
-sF.values = -sF.values;
+S2F.values = -S2F.values;
 
 end

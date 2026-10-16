@@ -255,13 +255,18 @@ copy; only what is still open is summarised here.
 | O25 | `Miller/line` | 1 | 0 | planned | — | br/mixedMiller |
 | O26 | `circle(ori,radius)` should work in pole figures and ODF sections | 1 | 0 | idea | — | — |
 | O27 | 17 class-qualified doc links dangle, eleven of which name API that exists nowhere | 2 | 1 | planned | — | docs/doc-audit-plan.md item 2e |
-| O28 | `SO3FunMLS` needs the Symbolic Math Toolbox — `SO3FunMLS.m:319` calls `syms`, so the whole class is unavailable, and untestable, without that licence | 2 | 1 | bug | — | [→](#o28) |
+| O28 | `SO3FunMLS` needs the Symbolic Math Toolbox — **obsolete 2026-10-15**: `compute_delta` bisects numerically, no MLS file calls `syms` | 2 | 1 | wontfix | — | [→](#o28) |
 | O29 | Backport the Julia embedding — **done 2026-09-07**: `embedding.id` computes an orthonormal basis of the invariant subspace from the spin generators (`@embedding/private/orbitBasis.m`), `double` and `setDouble` are the projection onto it and its exact inverse, no Laue-id table left; `mmm` drops from 15 to 10 coordinates, every other dimension unchanged | 1 | 1 | done | — | [→](#o29) |
 | O30 | `S2FunHarmonic.unimodal` is not normalised: `l = 1+l.^2+l` overwrites the degrees with coefficient indices, which `sqrt(2*l+1)` then reads as degrees. Halfwidth 10°: mean 0.1629, 9.72 at the centre, for mean 1 and 97.85 — **fixed 2026-10-01** on develop (`7eac7a837`) | 2 | 0 | done | — | [→](#o30) |
 | O31 | `SO3FunHarmonic.interpolate` runs LSQR with an NFSOFT of `cutoffParameter` 1 while `eval` uses 4, so the fit is optimal for another operator: Dubna values, bandwidth 32, λ = 5e-7, relative residual 0.0060 at cutoff 1 but 0.0239 evaluated accurately — **fixed 2026-10-01** on develop (`3098c17f3`) | 2 | 0 | done | — | [→](#o30) |
 | O32 | `S2DirichletKernel(10).halfwidth` is 180°; the half-maximum angle is 11.6° (21.4° for bandwidth 5) — **fixed 2026-10-01** on develop (`f99d91d63`) | 1 | 0 | done | — | — |
 | O33 | `S2FunBingham` normalises by a saddle-point approximation: `mean(S2FunBingham([-10 -4 0],a))` is 1.0377. The page `S2Bingham` states the 3.8 percent as normalisation error; the confluent hypergeometric function of matrix argument gives it exactly — **fixed 2026-10-01** on develop (`3e082fb74`, `9dd0427a5`) | 1 | 1 | done | — | doc/SphericalFunctions/S2Bingham.m |
 | O34 | Found on `feature/frameSymmetry` only, not reproduced on develop: triclinic sigma sections draw the upper hemisphere only; `symmetrise(sF, specimenFrame('222'))` plots the octant of `mmm`; `S2FunHarmonic.quadrature(f,'bandwidth',48)` displays 49; `fibre.beta(cs,ss,'full').symmetrise` fails; `data/quartzPattern.mat` does not load | 2 | 1 | bug | — | br/frameSymmetry, [→](#o34) |
+| O35 | Antipodal `SO3FunMLS` gave wrong values for every symmetry, relative error 0.17 for 222/222 where the same data without the flag gives 1.5e-3 — **fixed 2026-10-16**: `eval` adds the inverted nodes as nodes of their own, as `orientation/find` does since aa49c21d1; doing without stored copies is O38, the memory use at degree 4 is O39 | 3 | 1 | done | — | [→](#o35) |
+| O36 | Degree-0 `S2FunMLS` and `SO3FunMLS` with range search returned 0 at a center with no node within `delta` — **fixed 2026-10-16**: such a center takes a minimal KNN neighborhood, as at degree 1 and higher, checked in `core/check_MLSFun` | 1 | 0 | done | — | [→](#o36) |
+| O37 | The `distance` property of the MLS functions was set and never read — **done 2026-10-16**: property, option and help lines deleted | 0 | 0 | done | — | [→](#o37) |
+| O38 | MLS follow-ups of the `MLSFun` refactor: no symmetrisation in `SO3FunMLS/eval` (O35 for good, no auxiliary grid rebuilt per call), QR for unregularized local systems, a faster search for SO3 nodes - with 432 on both sides `orientation/find` dominates construction, 24 s at degree 2 and 274 s at degree 4 for 1500 nodes | 1 | 1 | planned | — | docs/agents/mlsfun-refactor.md |
+| O39 | `orientation/find` with two nontrivial symmetries held k × \|G\| candidates per query for all queries at once: constructing an antipodal 432/432 `SO3FunMLS` from 1500 nodes at degree 4 exceeded 12 GB — **fixed 2026-10-16**: both k-nearest loops take the queries in batches of about 2 GB and share one KD tree; peak 2.4 GB for the whole MATLAB, construction 300 s. A single query point with symmetry failed before and works now | 2 | 0 | done | — | [→](#o39) |
 
 ---
 
@@ -392,7 +397,7 @@ copy; only what is still open is summarised here.
 | T4 | Two `check_S2FunMLS.m` cells fail with "Index exceeds array bounds", not yet diagnosed — **obsolete 2026-08-12**, the file is deleted: it asserted nothing, swept 64 option combinations and zeroed four known-bad ones by magic column index. The S2FunMLS coverage it nominally gave is gone with it, see T1 | 1 | 0 | wontfix | — | [→](#t1) |
 | T5 | `tests/checkMeanTensor.m` stops at a rank-3 quadrature assert that cannot pass at any halfwidth; left failing deliberately — **stale 2026-08-12**: it passes end to end in 3.05 s, now at `tests/slow/check_meanTensor.m` (renamed to the `check_*` convention so the runner collects it) with its unclosed figures removed | 1 | 1 | done | — | docs/doc-audit-plan.md item 9 |
 | T6 | `tests/check_ebsd.m` fails on develop; `checkIpfColorCoding` blocks on a `pause`, so it cannot run headless — **done 2026-08-12**: both deleted. The old `check_ebsd.m` asserted nothing and depended on `obsolete/calcODF.m`; `checkIpfColorCoding` had no assertions and used the deprecated `ipdfHSVOrientationMapping`. The name `check_ebsd` is now the merged EBSD object test in `core/` | 2 | 0 | done | — | — |
-| T7 | `find_optimal_subset.m` exists twice, in `S2Fun/@S2FunMLS/private` and `SO3Fun/@SO3FunMLS/private`, differing only in argument names — every fix has to be applied twice | 1 | 0 | planned | — | [→](#t3) |
+| T7 | `find_optimal_subset.m` existed twice, in `S2Fun/@S2FunMLS/private` and `SO3Fun/@SO3FunMLS/private` — **done 2026-10-15**: both classes derive from `tools/math_tools/@MLSFun`, which holds one `findOptimalSubset` | 1 | 0 | done | — | [→](#t3) |
 
 ---
 
@@ -1451,6 +1456,8 @@ duplication itself is T7: `find_optimal_subset.m` exists twice, differing only
 in argument names, so this fix had to be applied twice.
 
 ### O28
+**Obsolete 2026-10-15.** `compute_delta` solves for the support radius by bisection,
+and no MLS file calls `syms` any more. The original report:
 `SO3Fun/@SO3FunMLS/SO3FunMLS.m:319` calls `syms phi`, i.e. the class needs the
 Symbolic Math Toolbox. On a machine without that licence every
 `SO3FunMLS(...)` call dies with "Undefined function 'syms' for input arguments
@@ -1899,6 +1906,114 @@ belong to the branch:
   frame fails in a bare call.
 * `data/quartzPattern.mat` holds an object of a class the branch no longer
   has, so `CrystalOperations` cannot load it.
+
+### O35
+**Fixed 2026-10-16** by fix A below, restricted to the inversion: `SO3FunMLS/prepareEval`
+adds `inv(nodes)` with the values, Voronoi weights and outlier indicators and clears the
+flag, before it folds the specimen symmetry. That is the fix Ralf made in
+`orientation/find` (aa49c21d1, "folding the specimen symmetry away breaks the CS == SS
+precondition of antipodal"), applied to the copy of the same fold that Erik's "allow 2
+symmetries" (4b5dd2e9b) put into `SO3FunMLS/eval`. The defect was not only the fold: with
+trivial symmetry nothing is folded and the projection still ignored the inversion.
+
+Relative errors, 1500 nodes, degree 2, no regularization, smooth delta or Voronoi weights,
+a 45° kernel centred at the identity:
+
+| symmetry | before | after | same data without the flag |
+| --- | --- | --- | --- |
+| 1 / 1 | 0.106 | 0.012 | 0.032 |
+| 222 / 222 | 0.166 | 1.2e-3 | 1.5e-3 |
+| 432 / 432 | 0.049 | 1.8e-5 | 2.4e-5 |
+
+With default options, 432/432, degree 2: error 2.20 -> 8.0e-4, construction 58 -> 41 s,
+evaluation 9.7 -> 3.5 s, no warnings. At degree 4 the construction alone still exceeds
+12 GB, see O39; without the smooth support radius it takes 5 s and evaluates with error
+3.3e-3.
+
+Found 2026-10-15. With `cs = crystalSymmetry('432')`, 1500 random misorientations
+`orientation.rand(1500,cs,cs)` with `antipodal = true`, the values of
+`SO3FunRBF(orientation.id(cs,cs),psi)` (halfwidth 25°, symmetric under inversion), degree
+2, no regularization, no smooth delta, no Voronoi weights: max error 2.39 at 80 random
+points, against 9.4e-4 for the same data without the flag.
+
+`SO3FunMLS` supplies the neighbor search and the local coordinates with one nontrivial
+symmetry only. When both are nontrivial, `prepareEval` multiplies the nodes by the
+specimen symmetry (24 × 1500 nodes) and sets it to `1`. The antipodal flag stays on, so
+the folded nodes are orientations with `CS = 432`, `SS = 1` and inversion symmetry,
+which MTEX defines only for `CS = SS` (the constructor warns "antipodal symmetry is
+only meaningfull for misorientations between the same phase", on every call). Measured
+against brute-force distances `angle(test,nodes.')` of the unfolded data:
+
+- `orientation/find` on the unfolded antipodal nodes is exact, the nearest set at all 80
+  centers.
+- on the folded nodes it returns the nearest set at 16 of 80 centers, and its distances
+  are off by up to 17°.
+- `project2FundamentalRegion(node,center)` falls back to the crystal symmetry and the
+  quaternion sign when `SS` is trivial and ignores the inversion. It places 63 % of the
+  returned neighbors farther from their center than they are, median 3.6° reported
+  against 42.8° placed.
+
+The local fit then sees the wrong positions. With default options the auxiliary grid is
+rebuilt inside every `eval` on the folded nodes: degree 2 takes 58 s to construct, and
+degree 4 exhausted 15 GB of memory twice, so that the OOM killer ended MATLAB.
+
+Without the flag the same data is expensive too, but correct: 27 s to construct at degree
+2 and 274 s at degree 4, nearly all of it `orientation/find` building the auxiliary grid.
+With two nontrivial symmetries `findFold` asks the KD tree of a 24-fold copy of the nodes
+for 24 times as many neighbors and sorts them down; 10328 grid points at k = 40 take
+19 s. See O38.
+
+Fix A, small: before folding, replace antipodal nodes by `[nodes; inv(nodes)]` with
+values, Voronoi weights and outlier indicators duplicated, and switch the flag off on
+nodes and evaluation points. That is the misorientation space without the quotient, so
+search and projection agree again. Measured with the doubled data built by hand:
+error 5.2e-4. Cost: the folded set doubles.
+
+Fix B, with O38: no folding. `orientation/find` already returns the right neighbors for
+two symmetries and inversion; what is missing is the representative of each neighbor
+next to its center, under both symmetries, the inversion and the quaternion sign. Either
+`find` returns the symmetry elements that matched, or the projection searches
+`g1 * m^±1 * g2`. This also removes the 24-fold copy of the nodes and the auxiliary
+grid rebuilt per call.
+
+### O36
+**Fixed 2026-10-16.** `@MLSFun/private/evalConst.m`, range branch: a center without a node within `delta` has
+zero total weight and gets `0 / realmin = 0`. `evalRange` replaces such centers, and
+those with at most `dim` nodes, by a minimal KNN neighborhood and warns `rangeTooFew`.
+Proposed: the same rule at degree 0, so that no center is ever left without a node. A
+single node gives the same average either way, so only empty centers change.
+
+### O37
+**Done 2026-10-16.** The help documented `distance` as the metric of the neighbor search, run `help
+rangesearch`. The value is stored and never passed on: `vector3d/find` takes a
+per-call `'distance'` for its KNN branch only, `orientation/find` ignores it. Ranking
+by the Euclidean chord equals ranking by angle on the sphere and on S^3, while any
+other metric would depend on the coordinate frame. Proposed: delete the property, its
+parsing in `MLSFun/init` and the two help lines.
+
+### O39
+**Fixed 2026-10-16.** `batchSize` in `@orientation/find.m` estimates 200 bytes per
+candidate and targets 2 GB per batch, in the single-symmetry search and in `findFold`;
+`quaternion/find` takes the KD tree of `[-v;v]` as option `'searcher'`, so all batches of
+one search share it. Results are unchanged, 2e-13 against brute force for 432/432 with
+and without the flag, 432/222, 432/1 and 1/1 antipodal at k = 140 and 300; the plain
+432/432 construction takes 15.3 to 16.6 s, the original 15.3 to 16.5 s. The former crash
+case peaks at 2.4 GB for the whole MATLAB and constructs in 300 s; a 4 GB target gives
+4.2 GB and 263 s. With one query point and a symmetry the original failed, "The logical
+indices contain a true value outside of the array bounds": `id(ind)` turns a row into a
+column and `quaternion/find` returns the distances of one query as a column.
+`core/check_find` has a single-query case now.
+
+Found 2026-10-16. `findFold` folds the smaller symmetry and, for antipodal data, the
+inversion into the nodes (48 copies for 432/432 antipodal) and asks the KD tree for
+`kSub = k * nRep` candidates per query, 6720 for k = 140. `quaternion/find` then forms
+`v.subSet(ind)` and its angle for all of them, and `collapseK` sorts them, each for every
+query at once. For the 10000 points of the auxiliary grid that is 67 million candidates,
+several arrays of 0.5 to 2 GB at the same time. Constructing
+`SO3FunMLS(nodes,values,'degree',4)` for 1500 antipodal 432/432 nodes peaked above 12 GB
+and was ended twice by the out-of-memory killer, once by a watchdog at 12.7 GB.
+Proposed: process the queries in `findFold` in batches whose `batch * kSub` is bounded,
+which changes no result. The cost in time is O38.
 
 ### F14
 `geometry/@vector3d/refine.m`:

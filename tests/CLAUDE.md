@@ -114,7 +114,8 @@ budget, trim from outside these first.
 | S2 kernel normalization | `core/check_S2KernelNormalization` |
 | `S1Fun` arithmetic | `core/check_S1Fun` |
 | `S1Fun/plot` options | `plotting/check_S1FunPlot` |
-| MLS subsampling | `slow/check_MLSSubsample` |
+| MLS functions (`S2FunMLS`, `SO3FunMLS`, their base `MLSFun`): every evaluation mode, construction routes, the variable-size local solver | `core/check_MLSFun` |
+| MLS subsampling, on S2 and on SO(3) with crystal symmetry | `slow/check_MLSSubsample` |
 | `radon` options | `core/check_radonOptions` |
 | RBF approximation, every route into it | `slow/check_SO3FunRBFApproximation` |
 | **pole figure import**, the text formats under `data/PoleFigure` | `core/check_poleFigureImport` |

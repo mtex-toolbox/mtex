@@ -1,4 +1,4 @@
-classdef SO3FunMLS < SO3Fun
+classdef SO3FunMLS < SO3Fun & MLSFun
   % A class representing a function on the rotation group SO(3).
   %
   % The function is not stored by coefficients, but by nodes and values. It is
@@ -9,9 +9,10 @@ classdef SO3FunMLS < SO3Fun
   %
   % Syntax
   %   SO3F = SO3FunMLS(nodes, values);
+  %   SO3F = SO3FunMLS(nodes, values, CS, SS);
   %   SO3F = SO3FunMLS(nodes, values, 'degree', 3, 'oF', 4);
   %   SO3F = SO3FunMLS(nodes, values, 'delta', 5*degree, 'weight', @(t)(...));
-  %   SO3F = SO3FunMLS(nodes, values, 'centered', true, 'monomials', true, ...
+  %   SO3F = SO3FunMLS(nodes, values, 'centered', true, ...
   %     'subsample', 'tangent', true);
   %   SO3F = SO3FunMLS(nodes, values, 'detectOutliers', ...
   %     'use_vor_weights', 'use_smooth_delta');
@@ -19,21 +20,23 @@ classdef SO3FunMLS < SO3Fun
   % Input
   %  nodes  - @orientation, @rotation (data points)
   %  values - array of function values assigned to the nodes
+  %  CS, SS - @crystalSymmetry, @specimenSymmetry, replace those of the nodes
   %
   % Output
   %  SO3F - @SO3FunMLS
   %
   % Options
+  %  SRight, SLeft - symmetries that replace those of the nodes
+  %
   %  degree  - polynomial degree used for approximation
   %  oF      - oversampling factor; nn is SO3F.dim times this factor
   %  oF_max  - maximal oversampling factor for range search
   %  delta   - support radius of the weight function; delta = 0 uses KNN
   %
-  %  monomials - ignored; the monomial basis is the only one implemented on
-  %              SO(3) (the option exists for interface parity with S2FunMLS)
   %  centered  - evaluate the basis in local coordinates around the identity
   %  tangent   - use monomials on the tangent space (requires centered = true)
-  %    (NOTE: in this case the local a-coordinate of the neighbors is ignored)
+  %    (NOTE: an odd degree, regularize and tangent enable centered; tangent
+  %     ignores the local a-coordinate of the neighbors)
   %
   %  weight  - @function_handle (weight function)
   %          - predefined choices are 'wendland' (default, Wendland C2), 'auto' (a
@@ -47,18 +50,14 @@ classdef SO3FunMLS < SO3Fun
   %  use_vor_weights  - multiply the local weights by Voronoi volumes,
   %                     as in 'Stable Moving Least Squares Approximation'
   %
-  %  distance - metric for neighbor search (default: 'euclidean')
-  %           - run 'help rangesearch' for the available options
-  %  s        - symmetry of the nodes
-  %
   %  regularize - use goal-oriented regularization of the local systems
   %               automatically enables tangent monomials for every degree
   %  mincond    - center-amplification threshold where regularization starts
   %  maxcond    - center-amplification threshold where full correction is used
   %  targetcond - inverse-amplification bound at full correction;
   %               one is the minimum-norm constant-preserving limit
-  %    (The property names are retained for compatibility. They no longer refer
-  %     to the ordinary condition number of the Gram matrix.)
+  %    (mincond, maxcond and targetcond bound the center amplification, not
+  %     the condition number of the Gram matrix)
   %
   %  outlierDetectionRange - number of neighbors used for outlier detection
   %
@@ -66,67 +65,29 @@ classdef SO3FunMLS < SO3Fun
   %  detectOutliers - detect local outliers and reduce their MLS weights
   %  subsample      - select a subset that minimizes the Lebesgue constant
   %
+  % Description
+  % The ansatz of degree L consists of the monomials of the degrees L, L-2,
+  % ... on the unit quaternions, i.e. of one parity. The monomial basis is
+  % the only one on SO(3).
+  %
   % See also
   % S2FunMLS SO3FunHarmonic SO3FunRBF SO3FunMLS/eval SO3FunMLS/approximate
 
-
   properties
-    nodes       = [];     % points where the function values are known
-    values      = [];     % corresponding function values
-
-    vor_weights = [];     % Voronoi weights as in stable MLS
-    use_vor_weights = true;
-
-    degree      = [];     % polynomial degree
-    oF          = [];     % oversampling factor (nn / dim)
-    oF_max      = [];     % upper bound for oF in range search
-    delta       = [];     % support radius; zero activates KNN search
-
-    use_smooth_delta = true; % use a smooth local support radius
-    candidateFactor = 2;  % KNN candidates per center as a multiple of nn
-
-    w           = [];     % compactly supported weight function
-    distance    = 'euclidean'; % metric for neighbor search
-
-    s = specimenSymmetry.default;  % symmetry
-
-    monomials   = true;   % ignored, only the monomial basis is implemented
-    centered    = true;   % use local coordinates centered at evaluation point?
-    tangent     = false;  % ignore the local a-coordinate for monomials?
-
-    regularize = true;    % use goal-oriented regularization?
-    mincond = [];         % start threshold for normalized center amplification
-    maxcond = [];         % full threshold for normalized center amplification
-    targetcond = [];      % full-strength target; one is the limiting minimum
-
-    detectOutliers = false; % reduce the weight of detected outliers?
-    outlierDetectionRange = 10; % neighbors used for outlier detection
-    outlierIndicators = []; % bigger numbers (one per node) indicate outliers
-
-    subsample   = false;  % perform optimal subsampling?
-
-    auxgrid = [];         % equispaced grid used only for smooth delta
-    reg_auxgrid = [];     % small random grid used only for reg calibration
-
-    bandwidth   = getMTEXpref('maxSO3Bandwidth');
+    bandwidth = getMTEXpref('maxSO3Bandwidth')
   end
 
-  properties (Dependent)
-    dim                   % dimension of the ansatz space
-    nn                    % number of neighbors
-    antipodal             % inherited from the nodes
-    isReal                % = isReal(SO3F.values)
+  properties (Dependent = true)
     SLeft                 % left symmetry of the nodes
     SRight                % right symmetry of the nodes
+  end
 
-    % properties of the underlying nodes
-    fill_distance         % fill distance
-    separation_distance   % separation distance
+  properties (Constant = true, Hidden = true)
+    domainDim = 3
   end
 
   methods
 
-    % initialize a SO(3)-function
     function SO3F = SO3FunMLS(nodes, values, varargin)
 
       if nargin == 0, return; end
@@ -134,247 +95,14 @@ classdef SO3FunMLS < SO3Fun
       % convert arbitrary SO3Fun to SO3FunMLS
       if isa(nodes,'function_handle') || isa(nodes,'SO3Fun')
         if nargin == 1, values = []; end
-        SO3F = SO3FunMLS.approximate(nodes, values, varargin{:});
+        SO3F = SO3FunMLS.approximate(nodes,values,varargin{:});
         return
       end
 
-      % MLS needs unique nodes (nothing to do for an SO3Grid)
-      isGrid = isa(nodes, 'SO3Grid');
-      if isa(nodes, 'rotation')
-        nodes = orientation(nodes);
-      end
-
-      if (~isGrid) && ...
-          (numel(unique(nodes, 'stable', 'tolerance', .001 * degree)) < numel(nodes))
-        nodes = nodes(:);
-        values = reshape(values, numel(nodes), []);
-        [nodes, values] = uniqueData(nodes, values, 'mean', ...
-          'tolerance', .001 * degree);
-        if ~getMTEXpref('generatingHelpMode')
-          warning(['Some duplicate Nodes have been removed. ' ...
-            'The remaining nodes have been reshaped into a vector.']);
-        end
-      end
-
-      % nodes is stored as a column; the remaining dimensions belong to values
-      if isrow(nodes)
-        nodes = reshape(nodes, numel(nodes), 1);
-      end
-      SO3F.nodes = nodes;
-
-      % set Voronoi weights
-      SO3F.use_vor_weights = get_option(varargin, 'use_vor_weights', true);
-      if SO3F.use_vor_weights
-        SO3F.vor_weights = calcSO3VoronoiWeights(nodes);
-      else
-        SO3F.vor_weights = ones(size(nodes));
-      end
-
-      % reshape values according to nodes
-      values_size = size(values);
-      id = find(cumprod(values_size) == numel(nodes), 1, 'first');
-      if (id < numel(values_size))
-        remaining_sizes = values_size(id+1 : end);
-        values = reshape(values, [numel(nodes), remaining_sizes]);
-      else
-        values = reshape(values, [numel(nodes), 1]);
-      end
-      SO3F.values = values;
-
-      % regularization flag and center-amplification parameters
-      SO3F.regularize = get_option(varargin, ...
-        {'regularize','regularization'}, true, 'logical');
-      SO3F.mincond = get_option(varargin, ...
-        {'mincond', 'min cond', 'min_cond', 'min amplification'}, []);
-      SO3F.maxcond = get_option(varargin, ...
-        {'maxcond', 'max cond', 'max_cond', 'max amplification'}, []);
-
-      targetcond = get_option(varargin, ...
-        {'targetcond', 'target cond', 'target_cond', ...
-         'target amplification', 'targetamp'}, []);
-      if ~isempty(targetcond)
-        SO3F.targetcond = targetcond;
-      elseif isempty(SO3F.mincond)
-        SO3F.targetcond = [];
-      end
-
-      % degree, oversampling factor, and support radius
-      SO3F.degree = get_option(varargin, {'degree', 'deg'}, 4, 'double');
-      SO3F.oF = get_option(varargin, {'oF','of', 'OF','oversamplingfactor',...
-        'oversampling_factor','oversampling factor'}, 4, 'double');
-      % half of SO(3) should already contain sufficiently many nodes
-      if (SO3F.nn > numel(SO3F.nodes) / 2)
-        error('Too few data points for the specified degree and oversampling factor.');
-      end
-      SO3F.oF_max = get_option(varargin, {'ofmax','of max', 'max of', 'maxof', ...
-        'maximal oversampling factor', 'max oversampling factor'}, ...
-        2 * SO3F.oF, 'double');
-      SO3F.delta = get_option(varargin, ...
-        {'delta', 'range', 'support radius'}, 0, 'double');
-
-      % weight function, distance, and symmetry
-      SO3F.w = get_option(varargin, 'weight', 'wendland', ...
-        {'string','function_handle','char'});
-      SO3F.distance = get_option(varargin, 'distance', 'euclidean', 'char');
-      SO3F.s = get_option(varargin, {'symmetry', 'cs', 's', 'ss'}, ...
-        specimenSymmetry.default, 'crystalSymmetry');
-
-      % optional explicit left/right symmetries
-      SLeft = get_option(varargin, ...
-        {'SLeft', 'sLeft', 'leftSymmetry', 'left symmetry'}, []);
-      SRight = get_option(varargin, ...
-        {'SRight', 'sRight', 'rightSymmetry', 'right symmetry'}, []);
-      if ~isempty(SLeft), SO3F.SLeft = SLeft; end
-      if ~isempty(SRight), SO3F.SRight = SRight; end
-
-      % basis options
-      SO3F.monomials = get_option(varargin, 'monomials', true, 'logical');
-      SO3F.tangent = get_option(varargin, 'tangent', false, 'logical');
-      SO3F.centered = get_option(varargin, 'centered', true, 'logical');
-      if SO3F.regularize, SO3F.tangent = true; end
-      if SO3F.tangent, SO3F.centered = true; end
-      if SO3F.centered, SO3F.monomials = true; end
-
-      % outlier detection
-      SO3F.detectOutliers = check_option(varargin, ...
-        {'detect outliers', 'detectoutliers', 'detect_outliers'});
-      SO3F.outlierDetectionRange = round(get_option(varargin, ...
-        {'outlierdetectionrange', 'outlier detection range', 'odr'}, ...
-        SO3F.outlierDetectionRange, 'double'));
-      if SO3F.detectOutliers
-        SO3F.outlierIndicators = SO3F.compute_outlier_indicators;
-      end
-
-      % optimal subsampling (minimizes the Lebesgue constant)
-      SO3F.subsample = check_option(varargin, {'subsampling', 'subsample'});
-      if SO3F.subsample, SO3F.centered = true; end
-
-      SO3F.use_smooth_delta = get_option(varargin, {'use_smooth_delta', ...
-        'use smooth delta', 'smooth_delta', 'smooth delta'}, true);
-
-      % A smooth support radius is not tied to the neighbor ranking, so more
-      % than nn candidates have to be fetched per center.
-      SO3F.candidateFactor = get_option(varargin, {'candidateFactor', ...
-        'candidatefactor', 'candidate factor', 'candidate_factor'}, ...
-        2, 'double');
-
-      % The two auxiliary grids have different jobs. Smooth delta uses a dense
-      % equispaced grid; regularization calibration uses a much smaller random grid.
-      needs_auto_regularization = SO3F.regularize && ...
-        (isempty(SO3F.mincond) || isempty(SO3F.maxcond) || ...
-         isempty(SO3F.targetcond));
-
-      if SO3F.use_smooth_delta && (SO3F.delta == 0)
-        SO3F = SO3F.init_auxgrid;
-      end
-      if needs_auto_regularization
-        SO3F = SO3F.init_reg_auxgrid;
-        SO3F = SO3F.init_reg_params;
-      end
+      SO3F = SO3F.init(nodes,values,varargin{:});
     end
 
-    function SO3F = set.w(SO3F, weightfun)
-      if isa(weightfun, 'function_handle')
-        SO3F.w = weightfun;
-        return;
-      end
-
-      % Wendland C6 in Horner form. The weight is evaluated once per center and
-      % neighbor, so avoiding the repeated powers of t is worth the detour.
-      wendlandC6 = @(t)(max(1-t, 0).^8 .* (((32*t + 25).*t + 8).*t + 1));
-
-      switch lower(char(weightfun))
-        case 'hat'
-          SO3F.w = @(t)(max(1-t, 0));
-        case 'squared hat'
-          SO3F.w = @(t)(max(1-t, 0).^2);
-        case {'indicator','const'}
-          SO3F.w = @(t)(t <= 1);
-        case 'cos'
-          SO3F.w = @(t)(((1+cos(pi*t))/2) .* (t <= 1));
-        case 'auto'
-          % degree dependent localization: Wendland C6 at t^alpha, raised to beta
-          alpha = max(1, 2 - (SO3F.degree - 1) / 3);
-          beta = 1 + max(SO3F.degree - 2, 0) / 3;
-
-          if alpha == 1
-            SO3F.w = @(t)(wendlandC6(t).^beta);
-          elseif beta == 1
-            SO3F.w = @(t)(wendlandC6(t.^alpha));
-          else
-            SO3F.w = @(t)(wendlandC6(t.^alpha).^beta);
-          end
-
-        case 'plateau'
-          % constant on the inner 60 percent of the support, then a C1 taper to zero
-          plateauTaper = @(x)(x.^2 .* (3 - 2*x));
-          SO3F.w = @(t)(1 - plateauTaper(min(max((t - 0.6)/0.4, 0), 1)));
-        case 'c1hat'
-          % Fixed broad weight for explicit comparisons.
-          SO3F.w = @(t)(max(1-t.^2, 0).^2);
-        case 'wendland'
-          SO3F.w = @(t)(max(1-t, 0).^4 .* (4*t+1));
-        case 'wendlandc6'
-          SO3F.w = wendlandC6;
-        case 'wendlandsquared'
-          SO3F.w = @(t)((max(1-t, 0).^4 .* (4*t+1)).^2);
-        case 'wendlandc6squared'
-          SO3F.w = @(t)(wendlandC6(t).^2);
-        otherwise
-          error('Unknown MLS weight function.');
-      end
-    end
-
-    % choose delta such that factor-oF oversampling is expected for iid nodes
-    function d = compute_delta(SO3F)
-      % the surface area of a spherical cap with angular radius phi in 4D is
-      %   1 / pi * (phi - sin(phi) * cos(phi))
-      % the surface area of one hemisphere is pi^2
-      % for N nodes on one hemisphere, the expected number of nodes in this
-      %   spherical cap is N / pi * (phi - sin(phi) * cos(phi))
-      % assuming uiid nodes, we compute delta such that the expected number of
-      %   nodes in a spherical cap with radius phi is nn
-      % NOTE:
-      %   1 - the sphere covers SO(3) twice
-      %         (N nodes on SO(3) are like 2N nodes on S^3)
-      %   2 - take into account symmetries
-      %         (each node in the fundamentalRegion corresponds to
-      %           <symmetry_factor> many nodes on SO(3))
-      symmetry_factor = numProper(SO3F.SLeft) * numProper(SO3F.SRight);
-      target = pi / 2 * SO3F.nn / numel(SO3F.nodes) / symmetry_factor;
-
-      % phi - sin(phi)*cos(phi) increases monotonically from 0 to pi/2 on
-      % [0, pi/2], so bisection is both safe and accurate to machine precision
-      target = min(max(target, 0), pi/2);
-      lower = 0;
-      upper = pi/2;
-      for iter = 1 : 60
-        middle = (lower + upper) / 2;
-        if (middle - sin(middle) * cos(middle)) < target
-          lower = middle;
-        else
-          upper = middle;
-        end
-      end
-      phi = (lower + upper) / 2;
-
-      % the quaterion distance is twice the spherical distance
-      d = 2 * phi;
-    end
-
-    function dimension = get.dim(SO3F)
-      dimension = nchoosek(SO3F.degree + 3, 3);
-    end
-
-    function antipodal = get.antipodal(SO3F)
-      antipodal = SO3F.nodes.antipodal;
-    end
-
-    function SO3F = set.antipodal(SO3F, value)
-      SO3F.nodes.antipodal = value;
-    end
-
-    function SO3F = set.SRight(SO3F, S)
+    function SO3F = set.SRight(SO3F,S)
       SO3F.nodes.CS = S;
     end
 
@@ -382,7 +110,7 @@ classdef SO3FunMLS < SO3Fun
       S = SO3F.nodes.CS;
     end
 
-    function SO3F = set.SLeft(SO3F, S)
+    function SO3F = set.SLeft(SO3F,S)
       SO3F.nodes.SS = S;
     end
 
@@ -390,304 +118,136 @@ classdef SO3FunMLS < SO3Fun
       S = SO3F.nodes.SS;
     end
 
-    function SO3F = set.detectOutliers(SO3F, value)
-      SO3F.detectOutliers = value;
-      if value
-        % at least 4, the dimension of the basis the outlier indicators use
-        SO3F.outlierDetectionRange = max(round(SO3F.dim * .7), 4);
-      end
+  end
+
+  methods (Hidden = true)
+
+    function ori = prepareNodes(~,ori,varargin)
+      % orientations with the symmetries given to the constructor
+      if isa(ori,'rotation'), ori = orientation(ori); end
+
+      names = {{'SRight','rightSymmetry','right symmetry','cs'}, ...
+        {'SLeft','leftSymmetry','left symmetry','ss'}};
+      right = get_option(varargin,names{1},[]);
+      left = get_option(varargin,names{2},[]);
+      [CS,SS] = extractSym(delete_option(varargin,[names{:}],1),'empty');
+      if isempty(right), right = CS; end
+      if isempty(left), left = SS; end
+
+      if ~isempty(right), ori.CS = right; end
+      if ~isempty(left), ori.SS = left; end
     end
 
-    % subsampling needs a real monomial sampling matrix, since linprog does
-    % not accept a complex one
-    function SO3F = set.subsample(SO3F, value)
-      SO3F.subsample = value;
-      if value
-        SO3F.monomials = true;
-      end
-    end
+    function [SO3F,ori] = prepareEval(SO3F,ori)
+      % orientations with proper symmetry groups, at most one of them
+      % nontrivial, and no antipodal flag; what is dropped becomes copies of
+      % the nodes
+      if ~isa(ori,'orientation'), ori = orientation(ori,SO3F.CS,SO3F.SS); end
 
-    % tangent monomials require centered coordinates
-    function SO3F = set.tangent(SO3F, value)
-      SO3F.tangent = value;
-      if value
-        SO3F.centered = true;
-      end
-    end
+      SO3F.CS = SO3F.CS.properGroup;
+      SO3F.SS = SO3F.SS.properGroup;
+      ori.CS = ori.CS.properGroup;
+      ori.SS = ori.SS.properGroup;
 
-    function out = get.isReal(f)
-      out = isreal(f.values);
-    end
-
-    function F = set.isReal(F,value)
-      if ~value, return; end
-      F.values = real(F.values);
-    end
-
-    function SO3F = set.oF(SO3F, value)
-      first_call = isempty(SO3F.oF);
-      if (value < 1)
-        warning('Oversampling factor was too small and has been set to 2.');
-        value = 2;
-      end
-      SO3F.oF = value;
-      if ~isempty(SO3F.delta) && (SO3F.delta > 0)
-        warning('The support radius delta has been adopted to the new oversampling Factor');
-        SO3F.delta = SO3F.compute_delta;
-      end
-      SO3F.oF_max = 2 * SO3F.oF;
-      if ~first_call && ~isempty(SO3F.auxgrid)
-        SO3F = SO3F.update_auxgrid_dn;
-      end
-    end
-
-    function SO3F = set.candidateFactor(SO3F, value)
-      if (value < 1)
-        warning(['The candidate buffer cannot be smaller than the ' ...
-          'neighborhood and has been set to 1.']);
-        value = 1;
-      end
-      SO3F.candidateFactor = value;
-    end
-
-    % make sure nn is an integer value
-    function nn = get.nn(SO3F)
-      nn = ceil(SO3F.dim * SO3F.oF);
-    end
-
-    % Assigning mincond also updates the target for backward compatibility.
-    % Set targetcond afterwards when onset and target should be different.
-    function SO3F = set.mincond(SO3F, value)
-      SO3F.mincond = value;
-      SO3F.targetcond = value;
-    end
-
-    function SO3F = set.degree(SO3F, deg)
-      first_call = isempty(SO3F.degree);
-      SO3F.degree = deg;
-      if (SO3F.degree == 0)
-        SO3F.regularize = false;
-      end
-      if ~first_call && ~isempty(SO3F.auxgrid)
-        SO3F = SO3F.update_auxgrid_dn;
-      end
-    end
-
-    % print the calibrated goal-oriented regularization parameters
-    function reg_params = show_reg_params(SO3F)
-      reg_params = struct;
-      reg_params.mincond = SO3F.mincond;
-      reg_params.maxcond = SO3F.maxcond;
-      reg_params.targetcond = SO3F.targetcond;
-      reg_params.numericalCondMax = 1e10;
-      reg_params.degreeExponent = 1;
-      reg_params.degreeLaplaceShift = 2;
-    end
-
-
-    % create the auxiliary grid and precompute the distance to the n-th
-    % neighbor; it is used for smoothing the support radius only
-    function SO3F = init_auxgrid(SO3F)
-      [nAux, auxInfo] = SO3F.estimate_auxgrid_points;
-
-      SO3F.auxgrid = equispacedSO3Grid( ...
-        SO3F.nodes.CS, SO3F.nodes.SS, 'points', nAux);
-
-      % store diagnostics on the grid itself, without adding class properties
-      SO3F.auxgrid.opt.requestedPoints = nAux;
-      SO3F.auxgrid.opt.denseSupportRadius = auxInfo.denseSupportRadius;
-      SO3F.auxgrid.opt.densityContrast = auxInfo.densityContrast;
-
-      SO3F = SO3F.update_auxgrid_dn;
-    end
-
-    % choose the auxiliary grid size from the smallest robust local support volume
-    function [nAux, info] = estimate_auxgrid_points(SO3F)
-      N = numel(SO3F.nodes);
-
-      % resolve the actual SO3F.nn-th-neighbor distance field
-      nfind = min(SO3F.nn, N - 1);
-
-      % probe at data nodes, the densely sampled regions need the finest resolution
-      nProbe = min(N, 2000);
-      probeId = unique(round(linspace(1, N, nProbe))).';
-
-      % the first neighbor is the query node itself
-      [~, dProbe] = SO3F.nodes.find(SO3F.nodes.subSet(probeId), nfind + 1);
-      supportRadius = dProbe(:,end);
-
-      % use a robust dense-region radius instead of the absolute minimum
-      denseSupportRadius = getQuantile(supportRadius, .01);
-
-      % relative volume of an SO(3) ball with rotation-angle radius d
-      phi = denseSupportRadius / 2;
-      ballFraction = 2 / pi * (phi - sin(phi) * cos(phi));
-
-      % relative to the fundamental region, the same ball occupies a larger fraction
-      symmetryFactor = numProper(SO3F.SLeft) * numProper(SO3F.SRight);
-      domainFraction = symmetryFactor * ballFraction;
-      domainFraction = min(max(domainFraction, realmin), 1);
-
-      % The degree-zero helper MLS uses oF = 20. Resolve roughly that many
-      % auxiliary nodes inside the smallest robust data-support volume.
-      targetAuxNeighbors = 20;
-      nAux = ceil(targetAuxNeighbors / domainFraction);
-
-      % round up for reproducible grid sizes and apply practical bounds
-      nAux = 1000 * ceil(nAux / 1000);
-      nAux = min(max(nAux, 10000), 200000);
-
-      % density contrast relative to a uniform node set with the same nfind
-      uniformFraction = nfind / N;
-      densityContrast = uniformFraction / domainFraction;
-
-      info = struct;
-      info.denseSupportRadius = denseSupportRadius;
-      info.densityContrast = densityContrast;
-    end
-
-    function SO3F = update_auxgrid_dn(SO3F)
-      if isempty(SO3F.auxgrid), return; end
-
-      nfind = min(SO3F.nn, numel(SO3F.nodes));
-      [~, dn] = SO3F.nodes.find(SO3F.auxgrid, nfind);
-      SO3F.auxgrid.opt.dn = dn(:,end);
-    end
-
-    % small reproducible random grid used only for regularization calibration
-    function SO3F = init_reg_auxgrid(SO3F)
-      % A slightly larger minimum improves the sampling of localized bad tails,
-      % while remaining much smaller than the smooth-delta auxiliary grid.
-      n = min(3000, max(1500, 30 * SO3F.dim));
-      stream = RandStream('mt19937ar', 'Seed', 1741 + 97 * SO3F.degree);
-
-      % normalized Gaussians are uniformly distributed on the sphere S^3
-      q = randn(stream, n, 4);
-      q = q ./ sqrt(sum(q.^2, 2));
-      SO3F.reg_auxgrid = orientation(q(:,1), q(:,2), q(:,3), q(:,4), ...
-        SO3F.SRight, SO3F.SLeft);
-    end
-
-    % the center amplification a perfectly distributed node cloud produces with
-    % this ansatz space - measured once on an equispaced grid, and cached
-    function chi0 = baseline_amplification(SO3F)
-
-      persistent cache
-      if isempty(cache), cache = containers.Map; end
-
-      key = sprintf('%d|%g|%s|%d%d%d|%d|%d', SO3F.degree, SO3F.oF, ...
-        func2str(SO3F.w), SO3F.centered, SO3F.tangent, SO3F.monomials, ...
-        SO3F.SLeft.id, SO3F.SRight.id);
-      if isKey(cache, key)
-        chi0 = cache(key);
-        return;
+      % the projection to the center knows no inversion, so add the inverted nodes
+      if SO3F.antipodal
+        nodes = SO3F.nodes(:);
+        inverted = inv(nodes);
+        inverted.CS = nodes.CS;
+        inverted.SS = nodes.SS;
+        SO3F.nodes = [nodes; inverted];
+        SO3F.antipodal = false;
+        SO3F.values = [SO3F.values; SO3F.values];
+        SO3F.vor_weights = [SO3F.vor_weights(:); SO3F.vor_weights(:)];
+        SO3F.outlierIndicators = [SO3F.outlierIndicators; SO3F.outlierIndicators];
+        ori.antipodal = false;
       end
 
-      ref = SO3F;
-      if ~isscalar(ref), ref = ref.subSet(1); end
-      ref.regularize = false;
-      ref.subsample = false;
-      ref.detectOutliers = false;
-      ref.outlierIndicators = [];
+      % fold the smaller of two nontrivial symmetries into the nodes
+      cs = ori.CS;
+      ss = ori.SS;
+      if cs.id == 1 || ss.id == 1, return; end
 
-      % the floor does not depend on the nodes, so keep the reference grid small
-      ref.use_vor_weights = false;
-      ref.use_smooth_delta = false;
-      ref.delta = 0;
-      ref.auxgrid = [];
-
-      refnodes = equispacedSO3Grid(SO3F.SRight, SO3F.SLeft, ...
-        'points', max(4000, 8 * SO3F.nn));
-      refnodes = reshape(refnodes, [], 1);
-      ref.nodes = refnodes;
-      ref.values = zeros(numel(refnodes), 1);
-      ref.vor_weights = ones(numel(refnodes), 1);
-
-      % On well-distributed nodes the amplification is almost constant, so a
-      % few hundred centers resolve its median to well within one percent.
-      stream = RandStream('mt19937ar', 'Seed', 1741 + 97 * SO3F.degree);
-      q = randn(stream, 250, 4);
-      q = q ./ sqrt(sum(q.^2, 2));
-      centers = orientation(q(:,1), q(:,2), q(:,3), q(:,4), ...
-        SO3F.SRight, SO3F.SLeft);
-
-      [~, ~, info, ~] = ref.eval(centers);
-
-      amp = real(info.centerAmplification(:));
-      amp = amp(isfinite(amp) & amp >= 1);
-      if isempty(amp)
-        chi0 = 1;
+      if length(cs.rot) >= length(ss.rot)
+        SO3F.nodes = ss * SO3F.nodes;
+        expand = @(x) kron(x,ones(numSym(ss),1));
+        SO3F.SS = specimenSymmetry.default;
+        ori.SS = specimenSymmetry.default;
       else
-        chi0 = max(getQuantile(amp, .5), 1);
+        SO3F.nodes = SO3F.nodes * cs;
+        expand = @(x) repmat(x,numSym(cs),1);
+        SO3F.CS = specimenSymmetry.default;
+        ori.CS = specimenSymmetry.default;
+      end
+      SO3F.values = expand(SO3F.values);
+      SO3F.vor_weights = expand(SO3F.vor_weights);
+      if ~isempty(SO3F.outlierIndicators)
+        SO3F.outlierIndicators = expand(SO3F.outlierIndicators);
       end
 
-      cache(key) = chi0;
-
-    end
-
-    % compute expected number of neighbors with given SO3F.nodes and SO3F.delta
-    function nn = guess_nn(SO3F, varargin)
-      if (SO3F.delta == 0)
-        nn = SO3F.nn;
-        warning(['Calling this function only makes sense if range-search is activated. ' ...
-          'You can achieve this for example via SO3F.delta = SO3F.compute_delta. ' ...
-          'I just returned SO3F.nn for now.']);
-        return;
+      if SO3F.use_smooth_delta && SO3F.delta == 0
+        SO3F = SO3F.init_auxgrid;
       end
+    end
 
-      ori = equispacedSO3Grid(SO3F.nodes.CS, SO3F.nodes.SS, 'points', 10000);
-      nns = SO3F.count_neighbors(ori);
+    function vals = evalBasis(SO3F,ori)
+      vals = evalMonomialsSO3(ori,SO3F.degree,SO3F.tangent);
+    end
 
-      if isempty(varargin)
-        nn = ceil(mean(nns));
-        return;
+    function [ori,a] = basisPoints(SO3F,centers,centerId,gridId)
+      % the neighbors next to their center, multiplied by its inverse if centered
+      ori = project2FundamentalRegion(SO3F.nodes.subSet(gridId),centers.subSet(centerId));
+      a = [];
+      if SO3F.centered
+        invCenters = inv(centers);
+        ori = reshape(invCenters.subSet(centerId),size(ori)) .* ori;
+        a = ori.a;
       end
-
-      switch lower(string(varargin{1}))
-        case "min"
-          % expected minimal number of neighbors
-          nn = min(nns);
-        case "max"
-          % expected maximal number of neighbors
-          nn = max(nns);
-        otherwise
-          nn = ceil(mean(nns));
-      end
-
-      nn = full(nn);
     end
 
-    % return number of neighbors for given ori (use for identifying 'bad regions')
-    function nns = count_neighbors(SO3F, ori)
-      if (SO3F.delta == 0)
-        nns = repmat(SO3F.nn, size(ori));
-        warning(['Calling this function only makes sense if range-search is activated. ' ...
-          'You can achieve this for example via SO3F.delta = SO3F.compute_delta. ' ...
-          'I just returned SO3F.nn for now.']);
-        return;
-      end
-
-      ind = SO3F.nodes.find(ori, SO3F.delta);
-      nns = full(sum(ind, 2));
+    function ori = localOrigin(~)
+      ori = orientation.id;
     end
 
-    % important for subsref to function properly
-    function n = numArgumentsFromSubscript(varargin)
-      n = 0;
+    function f = ballFraction(SO3F,r)
+      % volume share of a ball of rotation angle r in the fundamental region
+      phi = r / 2;
+      f = numProper(SO3F.SLeft) * numProper(SO3F.SRight) * ...
+        (2 / pi * (phi - sin(phi) * cos(phi)));
     end
 
-    function fd = get.fill_distance(SO3F)
-      f = SO3FunHandle(@(r) funDist(r,SO3F),SO3F.CS,SO3F.SS);
-      acc = 0.25*degree;
-      d = max(f,'accuracy',acc,'numLocal',20,'resolution',3*degree);
-      fd = max(d);
+    function ori = uniformGrid(SO3F,n)
+      ori = equispacedSO3Grid(SO3F.CS,SO3F.SS,'points',n);
     end
 
-    function sd = get.separation_distance(SO3F)
-      [~, d] = SO3F.nodes.find(SO3F.nodes, 2);
-      d = d(:,2);
-      sd = min(d);
+    function ori = randomPoints(SO3F,n,stream)
+      % normalized Gaussians are uniformly distributed on S^3
+      q = randn(stream,n,4);
+      q = q ./ sqrt(sum(q.^2,2));
+      ori = orientation(q(:,1),q(:,2),q(:,3),q(:,4),SO3F.SRight,SO3F.SLeft);
     end
+
+    function vw = voronoiWeights(~,nodes)
+      vw = nodes.calcVoronoiVolume;
+    end
+
+    function key = symmetryKey(SO3F)
+      key = sprintf('%d|%d|%d',SO3F.SLeft.id,SO3F.SRight.id,SO3F.antipodal);
+    end
+
+    function name = basisName(~)
+      name = 'monomials';
+    end
+
+    function SO3F = toHandle(SO3F)
+      SO3F = SO3FunHandle(SO3F);
+    end
+
+    function fd = fillDistance(SO3F)
+      f = SO3FunHandle(@(r) SO3F.distToNodes(r),SO3F.CS,SO3F.SS);
+      fd = max(max(f,'accuracy',0.25*degree,'numLocal',20,'resolution',3*degree));
+    end
+
   end
 
   methods (Static = true)
@@ -696,21 +256,4 @@ classdef SO3FunMLS < SO3Fun
     SO3F = example(varargin)
   end
 
-end
-
-
-% Additional Functions
-function d = funDist(modes, mls)
-  [~, d] = mls.nodes.find(modes(:), 1);
-  d = reshape(d,size(modes));
-end
-
-function w = calcSO3VoronoiWeights(nodes)
-  if ismethod(nodes, 'calcVoronoiVolume')
-    w = nodes.calcVoronoiVolume;
-  elseif ismethod(nodes, 'calcVoronoiArea')
-    w = nodes.calcVoronoiArea;
-  else
-    w = ones(size(nodes));
-  end
 end

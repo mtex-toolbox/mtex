@@ -1,5 +1,5 @@
 function S2F = approximate(f, varargin)
-% Approximate an S2FunMLS from some given orientation dependent function.
+% Approximate an S2FunMLS from some given spherical function.
 %
 % Syntax
 %   S2F = S2FunMLS.approximate(f)
@@ -14,27 +14,22 @@ function S2F = approximate(f, varargin)
 %  S2F   - @S2FunMLS
 %
 % Options
+%  resolution - resolution of the equispaced grid used when S2G is missing
 %
 % See also
 % S2FunMLS
 
-
 if isa(f,'function_handle')
-  sym = get_option(varargin, 'symmetry', crystalSymmetry, 'crystalSymmetry');
-  f = S2FunHandle(f, sym);
+  f = S2FunHandle(f,S2Fun.extractFrame(varargin{:}));
 end
 
 % get grid
-S2G = getClass(varargin, 'vector3d');
+S2G = getClass(varargin,'vector3d');
 if isempty(S2G)
-  res = get_option(varargin, 'resolution', 5*degree);
-  S2G = vector3d(equispacedS2Grid(f.s, f.s, 'resolution', res));
+  S2G = vector3d(equispacedS2Grid('resolution',get_option(varargin,'resolution',5*degree)));
+  S2G.frame = f.frame;
 end
 
-% compute values
-v = f.eval(S2G);
-
-% construct MLS
-S2F = S2FunMLS(S2G, v, varargin{:});
+S2F = S2FunMLS(S2G,f.eval(S2G),varargin{:});
 
 end

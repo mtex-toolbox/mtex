@@ -10,6 +10,9 @@ representations `@S2FunHarmonic` (`S2KernelFunctions/`), `@S2FunTri`, `@S2FunHan
 - `@S2VectorField` (+ `Handle`/`Harmonic`/`Tri`) is the vector-valued analogue;
   `@S2AxisField` (+ `Harmonic`/`Tri`) the antipodal one, for director fields such as
   principal stress or strain axes.
+- `@S2FunMLS` and `SO3Fun/@SO3FunMLS` share their machinery through
+  `tools/math_tools/@MLSFun`; a class folder holds only its domain hooks. A change to
+  the MLS algorithm goes into `@MLSFun`, and `tests/core/check_MLSFun` covers both.
 - `supportFun.m` computes support-function quantities, e.g. for crystal shapes.
 
 Traps:

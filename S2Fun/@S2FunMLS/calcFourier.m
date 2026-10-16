@@ -7,14 +7,26 @@ function f_hat = calcFourier(S2F,varargin)
 %
 % Input
 %  S2F - @S2FunMLS
-%  L    - maximum harmonic degree
+%  L   - maximum harmonic degree
 %
 % Output
-%  f_hat - harmonic/Fourier/Wigner-D coefficients
+%  f_hat - harmonic coefficients
 %
+% Options
+%  bandwidth - maximum harmonic degree, by default as many coefficients as
+%              nodes, a real function counting twice
+%
+% Flags
+%  ClenshawCurtis - quadrature on a Clenshaw Curtis instead of a Gauss Legendre grid
+%
+% See also
+% S2FunHarmonic/quadrature S2FunHarmonic/interpolate
 
-% decide bandwidth
-bw = chooseBandwidth(S2F.nodes, S2F.values, S2F.s, varargin{:});
+bw = get_option(varargin,'bandwidth');
+if isempty(bw)
+  bw = round(sqrt(length(S2F.nodes) * (isalmostreal(S2F.values)+1)) - 1);
+  bw = min(bw,getMTEXpref('maxS2Bandwidth'));
+end
 
 if check_option(varargin,'ClenshawCurtis')
   S2F = S2FunHarmonic.quadrature(S2F,varargin{:},'bandwidth',bw);
@@ -22,21 +34,5 @@ else
   S2F = S2FunHarmonic.quadrature(S2F,varargin{:},'bandwidth',bw,'GaussLegendre');
 end
 f_hat = S2F.fhat;
-
-end
-
-
-% decide for bandwith depending on the oversampling factor
-%   (same as in S2FunHarmonic/interpolate)
-function bw = chooseBandwidth(nodes, y, s, varargin)
-
-bw = get_option(varargin,'bandwidth');
-nSym = numSym(s.properGroup) * (isalmostreal(y)+1);
-
-% Choose a fixed oversampling factor of 2
-if isempty(bw)
-  bw = round(sqrt( length(nodes)*nSym )-1);
-  bw = min(bw,getMTEXpref('maxS2Bandwidth'));
-end
 
 end

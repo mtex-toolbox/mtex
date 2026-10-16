@@ -1,0 +1,29 @@
+function issueWarnings(warnings,F)
+% emit the collected neighborhood warnings once
+
+if warnings.rangeTooFew
+  warning('MTEX:MLS:rangeTooFew', ...
+    ['Some fixed-radius neighborhoods had at most the ansatz ' ...
+    'dimension many nodes and were replaced by minimal KNN neighborhoods.']);
+end
+
+if warnings.rangeTooMany
+  warning('MTEX:MLS:rangeTooMany', ...
+    ['Some fixed-radius neighborhoods exceeded the maximal ' ...
+    'oversampling factor and were replaced by capped KNN neighborhoods.']);
+end
+
+if warnings.smoothTooFew
+  warning('MTEX:MLS:smoothTooFew', ...
+    ['At some centers the smooth support contained fewer than %d ' ...
+    'positive-weight neighbors and was enlarged locally.'],F.dim);
+end
+
+if warnings.smoothAllCandidates
+  warning('MTEX:MLS:smoothAllCandidates', ...
+    ['At some centers all fetched KNN candidates carried a relevant ' ...
+    'weight. The smooth compact support may be truncated; raise ' ...
+    'candidateFactor above %g to fetch more candidates.'],F.candidateFactor);
+end
+
+end

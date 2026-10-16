@@ -14,7 +14,7 @@ max_size = max(sizes);
 
 % Similar neighborhood sizes can be padded and solved in one pagewise call.
 if (max_size / min_size <= 2)
-  system_id = repelem((1:N)', sizes);
+  system_id = repelem((1:N)', sizes, 1);
   idx = (1 : sum(sizes))';
   starts = cumsum([1; sizes(1:end-1)]);
   col_id = idx - starts(system_id) + 1 + (system_id - 1) * max_size;
@@ -46,7 +46,7 @@ end
 % Otherwise group systems by comparable size and recurse.
 start_id = cumsum([1; sizes(1:end-1)]);
 row_id = (1 : sum(sizes))';
-system_id = repelem((1:N)', sizes);
+system_id = repelem((1:N)', sizes, 1);
 col_id = row_id - start_id(system_id) + 1;
 auxmat = sparse(col_id, system_id, row_id, max_size, N, sum(sizes));
 

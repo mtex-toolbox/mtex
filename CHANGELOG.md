@@ -16,6 +16,64 @@ port).
 
 ### Spherical and Orientation Functions
 
+- `S2FunMLS` and `SO3FunMLS` were the same algorithm written twice, and a fix reached
+  one of them at a time. Both derive from `tools/math_tools/@MLSFun` now and supply
+  their domain through hidden hooks: dimension, basis, local coordinates, grids.
+  Differences without a domain reason are aligned: `S2FunMLS` gains the value
+  shortcuts of `SO3FunMLS` (`.*`, `./`, `max` of two functions on the same nodes act
+  on the node values, `max(F)` is the largest node value, `sum(F,d)` sums a vector
+  valued function), the baseline amplification of `SO3FunMLS` honours `antipodal`,
+  `compute_delta` targets `nn` neighbours on both, and `guess_nn` probes an
+  equispaced grid on both. `info.geometryScore`, a diagnostic no solver read, and
+  the unused `reg_auxgrid` are gone
+- `SO3FunMLS` with `'centered',false` and an odd degree returned wrong values: max
+  error 2.56 for a smooth function on 1500 random nodes, 8.0e-3 centered. The sign of
+  a unit quaternion entered the odd basis, and it is fixed only relative to a center.
+  An odd degree switches to centered coordinates on both classes now
+- a range search whose neighbourhood sizes differ by more than a factor two crashed
+  in `solve_lsq_book_varsize` ("left and right sides have a different number of
+  elements") whenever a size group held one neighbourhood, since `repelem` of a
+  scalar returns a row
+- an antipodal `S2FunMLS` searched its nodes, not their antipodes: `vector3d/find`
+  doubled the points to [v;-v] but kept the KD tree of v. For nodes on the upper
+  hemisphere a center on the lower one got neighbours 0.77 to 0.90 rad away instead of
+  0.075. The tree is built on [v;-v] for antipodal nodes, and `find` uses a stored
+  tree only when it holds exactly the points searched
+- `'subsample'` on SO(3) chose its subsets among neighbours that were not projected
+  next to their center, so a crystal symmetry scrambled them: error 0.71 against
+  0.016 without subsampling for 432, and 0.036 now
+- `S2FunMLS.approximate(@(v) ...)` failed reading a symmetry of the handle, and
+  `[S2FunMLS; S2FunHandle]` failed because `S2FunHandle` had no `cat`. `S2FunMLS`
+  carries no symmetry any more, its frame is the one of the nodes; the options
+  `'symmetry'`, `'cs'`, `'s'`, `'ss'` are gone there. `SO3FunMLS` takes symmetries
+  positionally like the other `SO3Fun` constructors, `'cs'` and `'ss'` alias
+  `'SRight'` and `'SLeft'`, and they are applied to the nodes before the Voronoi
+  volumes and the duplicate check
+- `max` of two `SO3FunMLS` on the same nodes failed with an unassigned output
+- an antipodal `SO3FunMLS`, i.e. a misorientation function with grain exchange
+  symmetry, gave wrong values for every symmetry, relative errors 0.11, 0.17 and 0.049
+  for 1/1, 222/222 and 432/432 where the same data without the flag gives 0.032,
+  1.5e-3 and 2.4e-5. The projection of a neighbour next to its center knows no
+  inversion, and the fold of the specimen symmetry left the flag on unequal symmetries.
+  `eval` adds the inverted nodes as nodes of their own now, as `orientation/find`
+  already does for its search: 0.012, 1.2e-3 and 1.8e-5
+- `orientation/find` with two symmetries asks for k times the number of symmetric copies
+  as candidates, and held them for all queries at once: an antipodal 432/432
+  `SO3FunMLS` of 1500 nodes at degree 4 exceeded 12 GB and was ended by the
+  out-of-memory killer. The k nearest are found in batches of about 2 GB now, which
+  share one KD tree; that case peaks at 2.4 GB, and the plain 432/432 construction
+  keeps its time. A single query point with a symmetry failed ("logical indices contain
+  a true value outside of the array bounds") and works now
+- MLS evaluation builds its local systems only from the KNN candidates that carry a
+  positive weight at some center of a batch. With the smooth support radius about a
+  third of the fetched candidates lie outside every support. Default options, 50000
+  points on S2: 2.99 to 2.55 s, 10000 on SO(3): 2.43 to 2.03 s, values equal to 2e-14.
+  The batches hold about 2 GB
+- an MLS function of degree 0 with range search returned 0 at a center without a node
+  within `delta`. Such a center takes a minimal KNN neighborhood now and the
+  `rangeTooFew` warning is issued, as at higher degrees
+- the MLS option `'distance'` is gone. It was stored and never passed to the
+  neighbor search, which ranks by angle
 - `S2Fun.unimodal` indexed its coefficients by n^2+n+1 where the degree n was meant,
   giving mean 0.1629 and 9.72 at the centre for 1 and 97.85; and it rotated by
   `rotation.map(v,Z)` where `map(Z,v)` is meant, so a bump about (1,0,1) peaked at

@@ -1,36 +1,27 @@
-function value = sum(SO3F, varargin)
-% Calculates the integral of a SO3FunMLS based on
-% 
-% $$ v = \int f( R ) dR $$
-% 
-% with $vol(SO(3)) = \int_{SO(3)} 1 dR = 8\pi^2$.
-% 
-% If there is a second argument it sums up along a specified dimension of a 
-% vector-valued SO3FunMLS.
+function value = sum(SO3F,d)
+% integral of an SO3FunMLS, or the sum along a dimension of a vector valued one
 %
 % Syntax
 %   value = sum(SO3F)
-%   SO3F = sum(SO3F, d)
+%   SO3F = sum(SO3F,d)
 %
 % Input
 %  SO3F - @SO3FunMLS
-%  d    - dimension to take the sum value over
+%  d    - dimension to sum along
 %
 % Output
+%  value - double, the integral with vol(SO(3)) = 8*pi^2
 %  SO3F  - @SO3FunMLS
-%  value - double
 %
 % Description
-%
-% SO3F is a 3x3 SO3Fun
-% sum(SO3F) returns a 3x3 matrix with the integrals of each function
-% sum(SO3F, 1) returns a 1x3 SO3Fun which contains the pointwise sums along the first dimension
+% For a 3x3 SO3FunMLS, sum(SO3F) returns the 3x3 matrix of the integrals and
+% sum(SO3F,1) the 1x3 SO3FunMLS of the pointwise sums along the first dimension.
 %
 
 if nargin == 1
-  value = 8*pi^2*mean(SO3F,varargin{:});
+  value = 8*pi^2*mean(SO3F);
 else
-  SO3F.values = sum(SO3F.values, varargin{1}+1);
+  SO3F.values = sum(SO3F.values,d+1);
   value = SO3F;
 end
 

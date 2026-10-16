@@ -1,55 +1,6 @@
 function display(SO3F,varargin)
 % standard output
 
-if check_option(varargin,'skipHeader')
-  disp(strong("  MLS component"));
-else
-  displayClass(SO3F,inputname(1),[],'moreInfo',symChar(SO3F),varargin{:});
-end
-
-if length(SO3F) > 1, disp(['  size: ' size2str(SO3F)]); end
-
-if ~SO3F.isReal, disp('  isReal: false'); end
-if SO3F.antipodal, disp('  antipodal: true'); end
-
-if isa(SO3F.nodes,'SO3Grid')
-  disp(['  nodes: ',char(SO3F.nodes)]);
-else
-  disp(['  nodes: ',num2str(length(SO3F.nodes))]);
-end
-
-% the neighborhoods are either fixed in size or in radius
-if (SO3F.delta == 0)
-  knn_or_delta_string = 'knn-search';
-else
-  knn_or_delta_string = 'range-search';
-end
-
-% the monomial basis is the only one implemented on SO(3)
-basis_string = 'monomials';
-
-% MLS properties
-prop = ['    polynomial degree: ', num2str(SO3F.degree), ...
-        '\n    basis: ', basis_string, ...
-        '\n    oversampling factor: ', num2str(SO3F.oF), ...
-        '\n    determine neighbors via: ', knn_or_delta_string, ...
-        '\n    weight function: ', char(SO3F.w)];
-
-if SO3F.use_vor_weights, prop = [prop,'\n    Voronoi-weights: true']; end
-if SO3F.use_smooth_delta, prop = [prop,'\n    smoothed delta(x): true']; end
-if SO3F.centered, prop = [prop,'\n    centered: true']; end
-if SO3F.tangent, prop = [prop,'\n    tangent: true']; end
-if SO3F.regularize, prop = [prop,'\n    regularize: true']; end
-if SO3F.subsample, prop = [prop,'\n    perform optimal subsampling: true']; end
-if SO3F.detectOutliers
-  prop = [prop, '\n    detect outlier: true'];
-  prop = [prop, '\n    OutlierDetectionRange: ', ...
-    num2str(SO3F.outlierDetectionRange)];
-end
-
-disp(' ')
-s = setAllAppdata(0,'data2beDisplayed',[prop,'\n']);
-disp(['  <a href="matlab:fprintf(getappdata(0,''',s,'''))">show MLS-properties</a>'])
-disp(' ')
+displayBody(SO3F,inputname(1),symChar(SO3F),varargin{:});
 
 end

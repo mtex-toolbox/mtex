@@ -2,40 +2,27 @@ function SO3F = times(SO3F1,SO3F2)
 % overloads |SO3F1 .* SO3F2|
 %
 % Syntax
-%   sF = SO3F1 .* SO3F2
-%   sF = a .* SO3F2
-%   sF = SO3F1 .* a
+%   SO3F = SO3F1 .* SO3F2
+%   SO3F = a .* SO3F2
+%   SO3F = SO3F1 .* a
 %
 % Input
 %  SO3F1, SO3F2 - @SO3FunMLS
 %  a - double
 %
 % Output
-%  SO3F - @SO3Fun
+%  SO3F - @SO3FunMLS, @SO3FunHarmonic
 %
+% Description
+% With a number, or with an SO3FunMLS on the same nodes, the node values
+% are multiplied. The product of two functions is then the MLS fit of the
+% products of the values, not the product of the two fits.
 
-if isnumeric(SO3F1)
-  SO3F = SO3F2;
-  SO3F.values = reshape(SO3F1,[1,size(SO3F1)]).*SO3F.values;
-  return
-end
-if isnumeric(SO3F2)
-  SO3F = SO3F2 .* SO3F1;
-  return
-end
-
-ensureCompatibleSymmetries(SO3F1,SO3F2);
-if isa(SO3F1,'SO3FunMLS') && isa(SO3F2,'SO3FunMLS') && ...
-    length(SO3F1.nodes) == length(SO3F2.nodes) && ...
-    all(SO3F1.nodes(:) == SO3F2.nodes(:))
-  
-  SO3F = SO3F1;
-  SO3F.values = SO3F.values .* SO3F2.values;
-  return
-
-end
+[SO3F,done] = valueOp(SO3F1,SO3F2,@times);
+if done, return; end
 
 SO3F = times@SO3Fun(SO3F1,SO3F2);
-SO3F = SO3FunHarmonic(SO3F,'bandwidth', min(getMTEXpref('maxSO3Bandwidth'),SO3F1.bandwidth + SO3F2.bandwidth));
+SO3F = SO3FunHarmonic(SO3F,'bandwidth', ...
+  min(getMTEXpref('maxSO3Bandwidth'),SO3F1.bandwidth + SO3F2.bandwidth));
 
 end

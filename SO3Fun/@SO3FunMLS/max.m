@@ -1,13 +1,14 @@
-function [values,modes] = max(SO3F,varargin)
+function varargout = max(SO3F,varargin)
 % global, local and pointwise maxima of functions on SO(3)
 %
 % Syntax
-%   [v,pos] = max(SO3F) % the position where the maximum is atained
+%   [v,pos] = max(SO3F) % the largest node value and its node
 %
 %   [v,pos] = max(SO3F,'numLocal',5) % the 5 largest local maxima
 %
 %   SO3F = max(SO3F, c) % maximum of a rotational functions and a constant
-%   SO3F = max(SO3F1, SO3F2) % maximum of two rotational functions
+%   SO3F = max(SO3F1, SO3F2) % maximum of two rotational functions,
+%                            % of the node values for the same nodes
 %
 %   % compute the maximum of a multivariate function along dim
 %   SO3F = max(SO3Fmulti,[],dim)
@@ -39,20 +40,18 @@ function [values,modes] = max(SO3F,varargin)
 % See also
 % SO3Fun/min SO3Fun/max SO3Fun/calcComponents
 
-if nargin==1
-  [values,ind] = max(SO3F.values);
-  modes = SO3F.nodes(ind);
+if nargin == 1
+  [varargout{1},ind] = max(SO3F.values);
+  varargout{2} = SO3F.nodes(ind);
   return
 end
 
-if isa(SO3F,'SO3FunMLS') && isa(varargin{1},'SO3FunMLS') && ...
-    length(SO3F.nodes) == length(varargin{1}.nodes) && ...
-    all(SO3F.nodes(:) == varargin{1}.nodes(:))
-  SO3F.values = max(SO3F.values,varargin{1}.values);
-  return
+% the node values of the same nodes
+if isa(varargin{1},'SO3FunMLS')
+  [varargout{1},done] = valueOp(SO3F,varargin{1},@max);
+  if done, return; end
 end
 
-[values,modes] = max@SO3Fun(SO3F,varargin{:});
+[varargout{1:max(nargout,1)}] = max@SO3Fun(SO3F,varargin{:});
 
 end
-

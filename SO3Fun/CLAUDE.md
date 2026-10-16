@@ -15,6 +15,8 @@ ODFs — functions on the rotation group SO(3).
 - `@SO3VectorField` (+ `Handle`/`Harmonic`/`RBF`) mirrors the pattern for vector-valued
   fields, e.g. an ODF gradient. `SO3TangentSpace.m` defines the representation — left vs
   right tangent is a standing source of sign errors.
+- `@SO3FunMLS` holds only the SO(3) hooks of `tools/math_tools/@MLSFun`, which it
+  shares with `S2Fun/@S2FunMLS`; see `S2Fun/CLAUDE.md`.
 - `doEulerStep.m` is Euler-space stepping for some solvers. Check for an existing `@SO3Fun`
   operation before adding a numerical routine here.
 
