@@ -52,7 +52,7 @@ dx2 = 2^l ;
 dy2 = 2^m ;
 dz2 = 2^n ;
 
-if ((l >= m) %& (l >= n)) 
+if (l >= m) %& (l >= n)
   err_1 = dy2 - l;
   err_2 = dz2 - l;
   for (i = 1:1:l)
