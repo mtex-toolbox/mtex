@@ -46,7 +46,8 @@ done < <(find "${MTEX_DIR}" -type d \
 # Payload files read at run time through mtex_path, which the dependency
 # checker cannot see: mtex_settings loads colors.mat on every startup, and
 # refractiveIndexTensor/spectralTransmission reads ciexyz31_1.csv.
-PAYLOAD=(-a "${MTEX_DIR}/data"
+PAYLOAD=(-a "${MTEX_DIR}/data"        
+         -a "${MTEX_DIR}/interfaces/hdf5_config"
          -a "${MTEX_DIR}/plotting/plotting_tools/colors.mat"
          -a "${MTEX_DIR}/plotting/plotting_tools/ciexyz31_1.csv")
 
