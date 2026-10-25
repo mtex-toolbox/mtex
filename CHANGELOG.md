@@ -260,6 +260,11 @@ port).
 - `grain3d.load` on a DREAM.3D file without a surface mesh raised "The file does not
   contain any grain information". It returns `calcGrains(ebsd,'grainId')` of the voxel
   data
+- `grain3d.load` failed on the surface meshes of DREAM3D-NX 7.4 (simplnx 1.7) with
+  "Expected DATASETNAME to be a non-missing string scalar": the triangle geometry names
+  its arrays `Shared Vertex List` and `Shared Faces List` there, not `SharedVertexList`
+  and `SharedTriList`. Both spellings are read; checked on the Small IN100 pipelines
+  01-07 of that release, 788 grains (#2633)
 - `EBSD3(pos,rot,phaseId,CSList,prop)` failed with "Too many input arguments": the
   `EBSD` constructor passes the grid options to `updateUnitCell`, and the override in
   `@EBSD3` took the unit cell only. The override is gone (#2638)

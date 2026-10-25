@@ -47,8 +47,8 @@ end
 in = @(list,name) list(endsWith(list,"/" + name));
 mesh = ds(startsWith(ds,fileparts(fileparts(labels(1))) + "/"));
 grainIds = h5read(fname,labels(1)).';
-V = double(h5read(fname,in(mesh,"SharedVertexList")).');
-poly = h5read(fname,in(mesh,"SharedTriList")).' + 1;
+V = double(h5read(fname,in(mesh,["SharedVertexList","Shared Vertex List"])).');
+poly = h5read(fname,in(mesh,["SharedTriList","Shared Faces List"])).' + 1;
 
 % the grain data are the attribute matrix of the mean orientations
 ori = [in(ds,"AvgQuats"); in(ds,"AvgEulerAngles")];
