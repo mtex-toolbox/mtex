@@ -107,6 +107,7 @@ budget, trim from outside these first.
 | kernel halfwidth | `core/check_kernelHalfwidth` |
 | ODF gradients | `core/check_odfGrad` |
 | axis distribution, and the `minAngle`/`maxAngle` window | `core/check_axisDistribution` |
+| `volume`, `fibreVolume` — the region as the union of the symmetric copies of the ball or the tube; `fibre/angle` with both symmetries; the reuse of an `equispacedSO3Grid` about another center | `core/check_volume`, every case in `slow/check_volumeFull` (both through `lib/checkVolumeCases`) |
 | `optimalSample` on SO(3) and on S2 — that the L-BFGS memory is used, weights on the simplex | `core/check_optimalSample` |
 | Clebsch–Gordan coefficients | `core/check_clebschGordan` |
 | Wigner D, and the `'kernel'` option against the harmonic transform | `core/check_WignerD` |

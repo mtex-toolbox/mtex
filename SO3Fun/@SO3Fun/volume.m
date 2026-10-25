@@ -47,7 +47,7 @@ if SO3F.antipodal
   points = length(S3G);
   % cut to ball
   center = orientation(center,center.CS,center.SS,'antipodal');
-  ind = min(angle(S3G,center.symmetrise.'),[],2) < radius;
+  ind = angle(S3G(:),center) < radius;
   S3G = S3G(ind);
   S3G.antipodal = 1;
 

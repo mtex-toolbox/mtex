@@ -39,9 +39,13 @@ maxAngle = get_option(varargin,'maxAngle',2*pi);
 
 persistent tmp
 
+% the last grid is reused for the same frames, resolution, ball and center
+center = get_option(varargin,'center',[]);
 if ~isempty(tmp) && tmp.S3G.CS == CS && tmp.S3G.SS == SS && ...
     isappr(get_option(varargin,'resolution',5*degree),tmp.S3G.resolution) && ...
     isappr(maxAngle,tmp.maxAngle) && ...
+    isempty(center) == isempty(tmp.center) && ...
+    (isempty(center) || abs(dot(quaternion(center),quaternion(tmp.center))) > 1-1e-12) && ...
     ~check_option(varargin,'points') && ...
     tmp.S3G.antipodal == check_option(varargin,'antipodal')
   S3G = tmp.S3G;
@@ -141,6 +145,7 @@ end
 % store for later use
 tmp.S3G = S3G;
 tmp.maxAngle = maxAngle;
+tmp.center = center;
 
 end
 

@@ -16,6 +16,29 @@ port).
 
 ### Spherical and Orientation Functions
 
+- `volume(odf,c,r)` at a radius where `equispacedSO3Grid` builds the full region
+  (above pi/2/multiplicityZ) returned the ball about the previous center: the grid cache
+  compared frames, resolution and radius but not the center, so for the centers of
+  `calcComponents` all but the first got the first one's value (cube with specimen
+  symmetry mmm at 45 degree, after the vertex of the region: 0.8841 for 0.5998). The
+  cache is keyed by the center too
+- `volume` of a function with grain exchange failed with "Requested 24x39229x4608x24
+  (775.8GB) array": it compared every grid point with every symmetric copy of the
+  antipodal center through the symmetry reduced `angle`, which reduces once more. It
+  takes the reduced angle to the center
+- `fibreVolume(odf,h,r,radius)` left out the specimen copies of r and capped the result
+  at 1: the beta fibre of the OrientationFibre page with specimen symmetry mmm held 7.26
+  percent within 5 degree for 25.4 in the union of its tubes, which a uniform texture
+  alone fills to 16.5 percent. The tube about h||r is integrated over the cap about r
+  and the turns about h, every point divided among the tubes of the symmetric pairs
+  (h',r') that hold it; where -h is no rotated copy of h, the tubes of (h,r) and (-h,r)
+  are integrated apart (pymtex #7)
+- `fibre/angle` of a list of orientations with crystal and specimen symmetry returned
+  one angle for all, the least over every symmetric copy of every orientation: the
+  minimum ran over the flattened list. It runs over the copies of each orientation
+- `radon` of an `SO3FunCBF` took the specimen direction as given: `vector3d(0.3,0.5,0.8)`,
+  of length 0.99, gave pole densities up to 27 for a fibre density of mean 1. It is
+  normalised, as the crystal direction already was
 - `S2FunMLS` and `SO3FunMLS` were the same algorithm written twice, and a fix reached
   one of them at a time. Both derive from `tools/math_tools/@MLSFun` now and supply
   their domain through hidden hooks: dimension, basis, local coordinates, grids.

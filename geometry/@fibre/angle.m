@@ -47,13 +47,17 @@ if isa(ori,'orientation')
 
   else % left + right symmetry, aka misorientations
 
+    % the symmetric images of every orientation, one column each
     oriSym = ori.symmetrise;
 
-    [omega,symId] = min(angle(oriSym(:).' .* f.h(:), f.r(:), 'noSymmetry', varargin{:}),[],2);
+    d = angle(oriSym .* f.h, f.r, 'noSymmetry', varargin{:});
+    [omega,symId] = min(reshape(d,size(oriSym)),[],1);
+    omega = reshape(omega,size(ori));
 
     if nargout == 2 % compute also nearest orientation on fibre
-      rotR = orientation.map(oriSym(symId) .* f.h,f.r);
-      oriF = rotR .* oriSym(symId);
+      oriSym = oriSym(sub2ind(size(oriSym),symId,1:size(oriSym,2)));
+      rotR = orientation.map(oriSym .* f.h,f.r);
+      oriF = reshape(rotR .* oriSym,size(ori));
     end
 
   end

@@ -54,7 +54,7 @@ for k = 1:length(SO3F.h)
   for i = 1:length(sh)
     dh = dot_outer(sh(i),normalize(h),'noSymmetry');
     for j = 1:length(sr)
-      dr = dot_outer(sr(j),r,'noSymmetry');
+      dr = dot_outer(sr(j),normalize(r),'noSymmetry');
 
       % one of the two is a single direction: it enters the Legendre
       % expansion, and the kernel is evaluated in the free one
