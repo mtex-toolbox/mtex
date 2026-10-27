@@ -3,10 +3,11 @@ function [V, F, L, labPos, labStr, bbox] = refFrameGeometry(rfScreen, labels, t)
 % around its own origin - u to the right, v upwards, both unsigned
 %
 % The one drawing of a reference frame in MTEX: an arrow per axis that has
-% a direction on screen, a circled dot or cross for the one that points out
-% of or into it, and a label per axis. @scaleBar puts it in the corner of a
-% map, the import wizard shows the same picture for the map and the Euler
-% coordinate systems it offers.
+% a direction on screen with its name beyond the head, and the name of the
+% axis along the view at the crossing the arrows leave from - a right handed
+% frame needs no symbol to tell out of the screen from into it. @scaleBar
+% puts it in the corner of a map, the import wizard draws its pictograms
+% with it.
 %
 % Input
 %  rfScreen - n × 3 matrix of the (right, up, outOfScreen) components
@@ -14,105 +15,75 @@ function [V, F, L, labPos, labStr, bbox] = refFrameGeometry(rfScreen, labels, t)
 %  t        - the measured text height, used as the length unit
 %
 % Output
-%  V, F     - vertices and faces of everything filled: the arrows and, if
-%             present, the dot of the out of screen symbol. The faces
-%             differ in length, hence F is NaN padded
-%  L        - polyline of the circle and, for a direction pointing into the
-%             screen, of the cross inside it
+%  V, F     - vertices and faces of the arrows, one polygon each
+%  L        - empty, there is no line work
 %  labPos   - n × 2 label positions, NaN for directions that are not drawn
 %  labStr   - the labels belonging to them
 %  bbox     - [minU maxU minV maxV] of everything drawn
 
-arm       = 1.2*t;          % length of a full length arrow
-shaftHalf = t/8;            % half width of the arrow shaft
-headHalf  = 3*shaftHalf;    % half width of the arrow head
-headLen   = 0.3*arm;
-symR      = 0.32*arm;       % radius of the out of screen circle
-pad       = 0.55*t;         % distance between an arrow tip and its label
-% estimated half extent of a label, growing with the longest label - the
-% frame axes names may be two letters, RD or X1
-maxLen    = max([1,cellfun(@numel,labels)]);
-labHalf   = [(0.15 + 0.25*maxLen)*t, 0.5*t];
+e         = 0.8*t;          % the font size, a text is about 1.25 of it high
+arm       = 2.55*e;         % length of a full length arrow
+headLen   = 0.78*e;
+shaftHalf = 0.125*e;        % half width of the arrow shaft
+headHalf  = 0.27*e;         % half width of the arrow head
+gap       = 0.45*e;         % between a name and the arrow it belongs to
+
+% half the ink box of a name, and how far it reaches along a direction d
+box = @(s) [0.31*max(1,numel(s)), 0.36] * e;
+reach = @(b,d) b(1)*abs(d(1)) + b(2)*abs(d(2));
 
 n = size(rfScreen,1);
+labStr = repmat({''},1,n);
+labStr(1:min(n,numel(labels))) = labels(1:min(n,numel(labels)));
+labPos = nan(n,2);
 
 % draw an arrow only when the direction is more than about 9 degree off the view
 inPlane = hypot(rfScreen(:,1),rfScreen(:,2)) >= 0.15;
 
-V = zeros(0,2); L = zeros(0,2); faceIdx = {};
-labPos = nan(n,2); labStr = repmat({''},1,n);
-
-% draw the out of screen symbol first, the arrows have to start outside of it
-kSym = find(~inPlane,1);
-if isempty(kSym)
-  r0 = 0;
-else
-  r0 = 1.3*symR;
-
-  phi = linspace(0,2*pi,49).';
-  L = symR * [cos(phi), sin(phi)];
-
-  if rfScreen(kSym,3) > 0
-    psi = linspace(0,2*pi,13).'; psi(end) = [];
-    V = [V; 0.35*symR * [cos(psi), sin(psi)]];
-    faceIdx{end+1} = size(V,1)-11 : size(V,1);
-  else
-    r = symR/sqrt(2);
-    L = [L; NaN NaN; -r -r; r r; NaN NaN; -r r; r -r];
-  end
+% the axis along the view is named at the crossing, the arrows start clear of it
+kOut = find(~inPlane,1);
+hub = [0 0];
+if ~isempty(kOut)
+  labPos(kOut,:) = [0 0];
+  hub = box(labStr{kOut});
 end
 
+V = zeros(0,2);
 for k = reshape(find(inPlane),1,[])
 
   % the arrow is shortened by the projection, so that a direction tilted
   % away from the screen plane reads as such
   d = rfScreen(k,1:2);
-  len = norm(d)*arm;
+  s0 = gap + reach(hub, d ./ norm(d));
+  tip = s0 + max(norm(d)*(arm - gap), headLen);
   d = d ./ norm(d);
   p = [-d(2), d(1)]; % normal to the arrow
-
-  % keep the head from swallowing a strongly foreshortened arrow
-  hl = min(headLen, 0.6*len);
+  b = tip - headLen;
 
   V = [V; ...
-    r0*d + shaftHalf*p; ...
-    (r0+len-hl)*d + shaftHalf*p; ...
-    (r0+len-hl)*d + headHalf*p; ...
-    (r0+len)*d; ...
-    (r0+len-hl)*d - headHalf*p; ...
-    (r0+len-hl)*d - shaftHalf*p; ...
-    r0*d - shaftHalf*p]; %#ok<AGROW>
-  faceIdx{end+1} = size(V,1)-6 : size(V,1); %#ok<AGROW>
+    s0*d + shaftHalf*p; ...
+    b*d + shaftHalf*p; ...
+    b*d + headHalf*p; ...
+    tip*d; ...
+    b*d - headHalf*p; ...
+    b*d - shaftHalf*p; ...
+    s0*d - shaftHalf*p]; %#ok<AGROW>
 
-  labPos(k,:) = (r0 + len + pad)*d;
-  if k <= numel(labels), labStr{k} = labels{k}; end
-
+  labPos(k,:) = (tip + gap + reach(box(labStr{k}), d)) * d;
 end
 
-if ~isempty(kSym)
-
-  % place the label of the circled symbol away from the arrows, so that it
-  % can never sit on one
-  inP = rfScreen(inPlane,1:2);
-  d = -sum(inP ./ hypot(inP(:,1),inP(:,2)), 1);
-  if norm(d) < 1e-6, d = [-1 -1]/sqrt(2); else, d = d ./ norm(d); end
-
-  labPos(kSym,:) = (symR + 0.75*pad)*d;
-  if kSym <= numel(labels), labStr{kSym} = labels{kSym}; end
-
-end
-
-if isempty(faceIdx)
+if isempty(V)
   V = [NaN NaN]; F = 1;
 else
-  F = nan(numel(faceIdx),max(cellfun(@numel,faceIdx)));
-  for k = 1:numel(faceIdx), F(k,1:numel(faceIdx{k})) = faceIdx{k}; end
+  F = reshape(1:size(V,1), 7, []).';
 end
+L = zeros(0,2);
 
-% the tight bounding box of arrows, symbol, labels and the origin - an
-% unlabelled direction reserves no room
+% the tight bounding box of arrows, labels and the origin - an unlabelled
+% direction reserves no room
 labPos(cellfun(@isempty,labStr),:) = NaN;
-P = [V; L; labPos - labHalf; labPos + labHalf; 0 0];
+half = cell2mat(cellfun(box, labStr(:), 'UniformOutput', false));
+P = [V; labPos - half; labPos + half; 0 0];
 P(any(isnan(P),2),:) = [];
 bbox = [min(P(:,1)), max(P(:,1)), min(P(:,2)), max(P(:,2))];
 

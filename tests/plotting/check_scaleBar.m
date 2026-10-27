@@ -5,8 +5,9 @@ function check_scaleBar
 %
 % * the indicator points where the plotting convention says it does
 % * everything drawn stays inside the background box and clear of the bar
-% * a direction along the viewing axis gets the circled symbol, all others
-%   an arrow
+% * a direction along the viewing axis is named at the crossing of the
+%   arrows, all others get an arrow, nothing is circled
+% * with the indicator the bar is no wider than the indicator
 % * 'refFrame','off' reproduces the geometry of a bar without indicator
 % * the bar stays in front of content with a z extent, e.g. crystal shapes
 %   plotted on top of the map
@@ -22,18 +23,17 @@ ebsd = mtexdata('small');
 ebsd = ebsd('indexed');
 
 % the axis aligned conventions, the screen direction (right, up) of x, y and z,
-% where [0 0] is the axis along the view, and the symbol expected for it
+% where [0 0] is the axis along the view
 cases = { ...
-  'y↑→x', [1 0; 0 1; 0 0], 'dot'; ...
-  'y↓→x', [1 0; 0 -1; 0 0], 'cross'; ...  % plottingConvention.ij
-  'x←↑y', [-1 0; 0 1; 0 0], 'cross'; ...
-  'x↑→y', [0 1; 1 0; 0 0], 'cross'};
+  'y↑→x', [1 0; 0 1; 0 0]; ...
+  'y↓→x', [1 0; 0 -1; 0 0]; ...  % plottingConvention.ij
+  'x←↑y', [-1 0; 0 1; 0 0]; ...
+  'x↑→y', [0 1; 1 0; 0 0]};
 
 for k = 1:size(cases,1)
 
   conv = cases{k,1};
   expected = cases{k,2};
-  symbol = cases{k,3};
 
   plottingConvention.default(conv);
   plot(ebsd);
@@ -54,11 +54,10 @@ for k = 1:size(cases,1)
 
     if all(expected(j,:) == 0)
 
-      % this direction is along the viewing axis, hence it is the one drawn
-      % as a circled dot / circled cross
-      if all(isnan(sB.rfSymbol.XData))
-        error(['check_scaleBar: %s - no circled symbol although %s is ' ...
-          'along the viewing axis'], conv, sB.rfLabels(j).String);
+      % this direction is along the viewing axis, hence named at the crossing
+      if norm(onScreen) > 0.05 * norm(sB.rfLabels(1).Extent(3:4))
+        error(['check_scaleBar: %s - %s is along the viewing axis but sits ' ...
+          '[%.2g %.2g] off the crossing'], conv, sB.rfLabels(j).String, onScreen);
       end
 
     else
@@ -73,22 +72,25 @@ for k = 1:size(cases,1)
     end
   end
 
-  % out of the screen adds the filled dot to the arrows, into the screen
-  % adds the two diagonals of the cross to the polyline of the circle
-  nFaces = nArrows + strcmp(symbol,'dot');
-  if size(sB.rfArrows.Faces,1) ~= nFaces
-    error('check_scaleBar: %s - %d filled faces, expected %d',...
-      conv, size(sB.rfArrows.Faces,1), nFaces);
-  end
-  if sum(isnan(sB.rfSymbol.XData)) ~= 2*strcmp(symbol,'cross')
-    error('check_scaleBar: %s - the circled symbol is not a %s', conv, symbol);
+  % one filled face per arrow, and nothing circled
+  if size(sB.rfArrows.Faces,1) ~= nArrows || ~all(isnan(sB.rfSymbol.XData))
+    error('check_scaleBar: %s - %d filled faces and a symbol, expected %d arrows only',...
+      conv, size(sB.rfArrows.Faces,1), nArrows);
   end
 
   % the whole indicator has to stay within the background box ...
   box = sB.shadow.Vertices;
   inside(sB.rfArrows.Vertices, box, ['the arrows, ' conv]);
-  inside([sB.rfSymbol.XData(:), sB.rfSymbol.YData(:)], box, ['the symbol, ' conv]);
   inside(vertcat(sB.rfLabels.Position), box, ['the labels, ' conv]);
+
+  % ... the bar is no wider than the indicator ...
+  ink = [sB.rfArrows.Vertices(:,1:2); labelCorners(sB.rfLabels)];
+  bar = max(max(sB.ruler.Vertices(:,1:2)) - min(sB.ruler.Vertices(:,1:2)));
+  wide = max(max(ink) - min(ink));
+  if bar > wide * (1 + 1e-6)
+    error('check_scaleBar: %s - the bar is %g long, the indicator only %g wide', ...
+      conv, bar, wide);
+  end
 
   % ... and clear of the bar itself
   if overlaps(sB.rfArrows.Vertices, sB.ruler.Vertices)
@@ -156,16 +158,15 @@ for conv = {'y↑→x','y↓→x','x←↑y','x↑→y'}
   end
 end
 
-% a view no axis is aligned with: all three directions become arrows and
-% there is no circled symbol at all
+% a view no axis is aligned with: all three directions become arrows
 pC = plottingConvention; pC.outOfScreen = vector3d(0.4,0.3,1);
 plottingConvention.default(pC);
 plot(ebsd);
 drawnow
 sB = getappdata(gca,'mapPlot').micronBar;
 if ~all(isnan(sB.rfSymbol.XData)) || size(sB.rfArrows.Faces,1) ~= 3
-  error(['check_scaleBar: a tilted view should draw three arrows and no ' ...
-    'circled symbol, got %d faces'], size(sB.rfArrows.Faces,1));
+  error(['check_scaleBar: a tilted view should draw three arrows, ' ...
+    'got %d faces'], size(sB.rfArrows.Faces,1));
 end
 inside(sB.rfArrows.Vertices, sB.shadow.Vertices, 'the arrows, tilted view');
 close all
@@ -180,7 +181,6 @@ if ~isequaln(sB.rfArrows.Vertices,[NaN NaN]) || ~isequaln(sB.rfSymbol.XData,NaN)
   error('check_scaleBar: ''refFrame'',''off'' still draws the indicator');
 end
 hOff = abs(sB.shadow.Vertices(2,2) - sB.shadow.Vertices(1,2));
-wOff = abs(sB.shadow.Vertices(3,1) - sB.shadow.Vertices(1,1));
 
 % ... i.e. twice the height of its own label, as before the indicator was introduced
 if abs(2*abs(sB.txt.Extent(4)) - hOff) > 0.03*hOff
@@ -189,15 +189,13 @@ if abs(2*abs(sB.txt.Extent(4)) - hOff) > 0.03*hOff
 end
 close all
 
-% with the indicator the box has to be taller, and never narrower
+% with the indicator the box has to be taller
 plot(ebsd);
 drawnow
 sB = getappdata(gca,'mapPlot').micronBar;
 hOn = abs(sB.shadow.Vertices(2,2) - sB.shadow.Vertices(1,2));
-wOn = abs(sB.shadow.Vertices(3,1) - sB.shadow.Vertices(1,1));
-if hOn <= hOff || wOn < wOff - 1e-6*wOff
-  error('check_scaleBar: the indicator did not make the box grow (%gx%g vs %gx%g)',...
-    wOn, hOn, wOff, hOff);
+if hOn <= hOff
+  error('check_scaleBar: the indicator did not make the box taller (%g vs %g)', hOn, hOff);
 end
 % a flat map stays a two dimensional, child order drawn axes
 if ~strcmp(get(gca,'SortMethod'),'childorder') || ...
@@ -262,16 +260,22 @@ end
 end
 
 function o = commonRoot(sB)
-% the origin the indicator is drawn around - the center of the circled
-% symbol if there is one, otherwise the point all arrows emanate from
+% the crossing the arrows leave from - where the lines through the first
+% two arrows meet, each running from the middle of its base to its tip
 
-if ~all(isnan(sB.rfSymbol.XData))
-  o = [(min(sB.rfSymbol.XData) + max(sB.rfSymbol.XData))/2, ...
-    (min(sB.rfSymbol.YData) + max(sB.rfSymbol.YData))/2];
-else
-  V = sB.rfArrows.Vertices;
-  o = [(min(V(:,1)) + max(V(:,1)))/2, (min(V(:,2)) + max(V(:,2)))/2];
+V = sB.rfArrows.Vertices(:,1:2); F = sB.rfArrows.Faces;
+p = (V(F(1:2,1),:) + V(F(1:2,7),:)) / 2;
+d = V(F(1:2,4),:) - p;
+ab = [d(1,:).', -d(2,:).'] \ (p(2,:) - p(1,:)).';
+o = p(1,:) + ab(1) * d(1,:);
+
 end
+
+function P = labelCorners(labels)
+% the corners of the labels' extents
+
+e = vertcat(labels(~cellfun(@isempty,{labels.String})).Extent);
+P = [e(:,1:2); e(:,1:2) + e(:,3:4)];
 
 end
 

@@ -291,18 +291,15 @@ methods
 
     % pick the unit from 10% of the map width, so that the bar never says
     % 10000 nm - in fixed length mode take it from sB.length instead
+    goodValues = [1 2 5 10 15 20 25 50 75 100 125 150 200 500 750]; % Possible values for scale bar length
     if isnan(sB.length)
       [sBLength, sBUnit, factor] = switchUnit(0.1*abs(diff(dx)), sB.scanUnit);
-      goodValues = [1 2 5 10 15 20 25 50 75 100 125 150 200 500 750]; % Possible values for scale bar length
       [~,ind] = min(abs(sBLength-goodValues));
-      barLength = goodValues(ind);
+      [rulerLength, labelStr] = barOf(goodValues(ind), sBUnit, factor*sign(diff(dx)));
     else
       [barLength, sBUnit, factor] = switchUnit(sB.length, sB.scanUnit);
+      [rulerLength, labelStr] = barOf(barLength, sBUnit, factor*sign(diff(dx)));
     end
-    if strcmpi(sBUnit,'um'), sBUnit = '$\mu$m';end
-    rulerLength = barLength * factor * sign(diff(dx));
-
-    labelStr = ['\rm{\textbf{' num2str(barLength) ' ' sBUnit '}}'];
 
     % skip the expensive re-layout when none of its inputs changed
     key = {xDir, yDir, dx, dy, zBar, zBack, rulerLength, labelStr, sB.lineColor, ...
@@ -348,15 +345,26 @@ methods
         refFrameGeometry(rfScreen, sB.refFrameLabels, abs(textHeight));
       triadWidth  = rfBox(2) - rfBox(1);
       triadHeight = rfBox(4) - rfBox(3);
+
+      % next to the indicator the bar is a round length no wider than it
+      if isnan(sB.length) && abs(rulerLength) > triadWidth
+        [sBLength, sBUnit, factor] = switchUnit(triadWidth, sB.scanUnit);
+        [rulerLength, labelStr] = barOf(goodValues(max([1, find(goodValues <= sBLength, 1, 'last')])), ...
+          sBUnit, factor*sign(diff(dx)));
+        set(sB.txt,'string',labelStr)
+        extent = get(sB.txt, 'Extent');
+        if ~bogus, textWidth = extent(3 + mod(xDir,2)); end
+      end
     else
       triadWidth = 0; triadHeight = 0;
     end
 
     % box position - the location picks which corner of the map the box is
     % anchored to, and it is sized to fit whichever of bar or label is wider
-    boxWidth  = (max([abs(rulerLength),textWidth,triadWidth]) + 2*abs(gapX)) * sign(diff(dx));
+    % the indicator gets a gap above it and twice the gap at its sides
+    boxWidth  = (max([abs(rulerLength),textWidth,triadWidth + 2*abs(gapX)*showRF]) + 2*abs(gapX)) * sign(diff(dx));
     if showRF
-      boxHeight = 4*gapY + textHeight + triadHeight * sY;
+      boxHeight = 5*gapY + textHeight + triadHeight * sY;
     else
       boxHeight = 3*gapY + textHeight;
     end
@@ -450,6 +458,13 @@ methods
 
 end
 
+end
+
+function [rulerLength, labelStr] = barOf(len, unit, factor)
+% the ruler in signed data units and its label
+if strcmpi(unit,'um'), unit = '$\mu$m'; end
+rulerLength = len * factor;
+labelStr = ['\rm{\textbf{' num2str(len) ' ' unit '}}'];
 end
 
 function [z, zBack] = barPlanes(ax)

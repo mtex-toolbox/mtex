@@ -1488,59 +1488,37 @@ classdef import_wizard < matlab.apps.AppBase
     end
 
     function drawPictogram(app, ax, idx, names, color, c, H, caption)
-      % The frame as pymtex's wizard draws it, in a framed square of side
-      % 100 centred at c, in an axes H high: the axis leaving the screen
-      % named at the crossing, the two in it as arrows with their names
-      % off the heads, the caption dimmed in the quadrant they leave free.
-      % The drawing is centred on its ink, not on the crossing.
-      LEN = 46; HEAD = 14; LABEL = 18; GAP = 8; WEIGHT = 4.5; PAD = 6;
-
-      % the reference axes on screen - right, up, out of it
+      % The frame as the map draws it, see refFrameGeometry, in a framed
+      % square of side 100 centred at c, in an axes H high, the caption
+      % dimmed in the quadrant the arrows leave free. The drawing is
+      % centred on its ink, not on the crossing.
       pC = app.CoordinateSystems.how2plot(idx);
       dirs = [vector3d.X, vector3d.Y, vector3d.Z];
-      a = [dot(dirs,pC.east,'noAntipodal').', dot(dirs,pC.north,'noAntipodal').', ...
+      rfScreen = [dot(dirs,pC.east,'noAntipodal').', dot(dirs,pC.north,'noAntipodal').', ...
         dot(dirs,pC.outOfScreen,'noAntipodal').'];
-      out = find(abs(a(:,3)) > 0.9, 1);
+      [V, F, ~, labPos, labStr, bbox] = refFrameGeometry(rfScreen, names, 1);
 
-      % half the ink box of a label, and how far it reaches along d
-      box = @(str) [0.31*numel(str), 0.36] * LABEL;
-      reach = @(b,d) b(1)*abs(d(1)) + b(2)*abs(d(2));
-
-      P = {};                                      % shafts and heads
-      T = {[0 0], names{out}, box(names{out})};    % labels: position, text, half box
-      for j = setdiff(1:3, out)
-        d = a(j,1:2) / norm(a(j,1:2)); n = [-d(2) d(1)] * WEIGHT/2; t = d * LEN;
-        s0 = GAP + reach(T{1,3}, d); s1 = LEN - 0.9*HEAD;
-        P{end+1} = [d*s0 + n; d*s1 + n; d*s1 - n; d*s0 - n]; %#ok<AGROW>
-        phi = atan2(d(2), d(1)) + [-0.36 0.36];
-        P{end+1} = [t; t - HEAD*[cos(phi(1)) sin(phi(1))]; t - HEAD*[cos(phi(2)) sin(phi(2))]]; %#ok<AGROW>
-        b = box(names{j});
-        T(end+1,:) = {t + d*(GAP + reach(b,d)), names{j}, b}; %#ok<AGROW>
-      end
-      sxy = sum(a(setdiff(1:3,out),1:2), 1);
-      T(end+1,:) = {0.78 * LEN * (2*(sxy >= 0) - 1), caption, box(caption)};
-
-      % scale the ink into the square
-      xy = [vertcat(P{:}); vertcat(T{:,1}) + vertcat(T{:,3}); vertcat(T{:,1}) - vertcat(T{:,3})];
-      lo = min(xy); hi = max(xy);
-      k = (100 - 2*PAD) / max(hi - lo);
+      % the caption a full arrow's length out, between the two arrows, in
+      % units of the label size 0.8 refFrameGeometry draws for a text height 1
+      lean = sum(rfScreen(abs(rfScreen(:,3)) < 0.9, 1:2), 1);
+      capPos = 1.6 * (2*(lean >= 0) - 1);
+      capHalf = [0.25*numel(caption), 0.29];
+      lo = min([bbox([1 3]); capPos - capHalf]);
+      hi = max([bbox([2 4]); capPos + capHalf]);
+      k = (100 - 12) / max(hi - lo);
       at = @(p) c + k * (p - (lo + hi)/2);
 
       patch(ax, c(1) + 50*[-1 1 1 -1], c(2) + 50*[-1 -1 1 1], 'w', 'FaceColor', 'none', ...
         'EdgeColor', [0.55 0.55 0.55], 'HitTest', 'off')
-      for i = 1:numel(P)
-        q = at(P{i});
-        patch(ax, q(:,1), q(:,2), color, 'EdgeColor', 'none', 'HitTest', 'off')
+      q = at(V);
+      patch(ax, 'Faces', F, 'Vertices', q, 'FaceColor', color, 'EdgeColor', 'none', 'HitTest', 'off')
+      txt = @(p, str, ink, weight) text(ax, p(1), p(2), str, 'Color', ink, 'FontWeight', weight, ...
+        'FontUnits', 'normalized', 'FontSize', 0.8 * k / H, ...
+        'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', 'HitTest', 'off');
+      for i = find(~cellfun(@isempty, labStr))
+        txt(at(labPos(i,:)), labStr{i}, color, 'bold');
       end
-      % the axes names bold, the caption light and dimmed
-      ink = [repmat(color, size(T,1)-1, 1); 0.6*color + 0.4*ax.Color];
-      weight = [repmat({'bold'}, size(T,1)-1, 1); {'normal'}];
-      for i = 1:size(T,1)
-        q = at(T{i,1});
-        text(ax, q(1), q(2), T{i,2}, 'Color', ink(i,:), 'FontWeight', weight{i}, ...
-          'FontUnits', 'normalized', 'FontSize', k * LABEL / H, ...
-          'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', 'HitTest', 'off')
-      end
+      txt(at(capPos), caption, 0.6*color + 0.4*ax.Color, 'normal');
     end
 
     function openChooser(app, which)
