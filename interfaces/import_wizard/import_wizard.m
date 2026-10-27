@@ -127,6 +127,7 @@ classdef import_wizard < matlab.apps.AppBase
       app.UIFigure = uifigure('Visible', 'off', 'Position', screenArea(app));
       app.UIFigure.WindowState = 'maximized';
       app.UIFigure.Name = 'MTEX Import Wizard';
+      app.UIFigure.Icon = fullfile(fileparts(mfilename('fullpath')), 'icon.png');
       app.UIFigure.WindowKeyPressFcn = createCallbackFcn(app, @WizardKeyPress, true);
 
       app.MainLayout = uigridlayout(app.UIFigure, ...
