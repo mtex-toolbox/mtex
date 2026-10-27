@@ -207,7 +207,7 @@ try
 
   if ~headerOnly && isfield(Conf, 'additions')
     if Conf.additions.type == "auto"
-      [prop_data, propPaths] = readAdditions(info_struct, Conf, length(data.ebsd));
+      [prop_data, propPaths] = readAdditions(info_struct, Conf, data.ebsd.opt.nRows);
     else
       warning("Still to do when additions is not auto...")
     end
@@ -219,7 +219,13 @@ end
 
 % Building output data-----------------------------------------------------
 
-data.ebsd.prop = prop_data;
+data.ebsd.prop = structfun(@(p) p(data.ebsd.id), prop_data, 'UniformOutput', false);
+% the rows left out for having no position, if any
+if ~headerOnly
+  unplaced = data.ebsd.opt.nRows - numel(data.ebsd.id);
+  data.ebsd.opt = rmfield(data.ebsd.opt, 'nRows');
+  if unplaced > 0, data.ebsd.opt.unplaced = unplaced; end
+end
 
 fields = fieldnames(data);
 for i = 1:length(fields)
@@ -269,9 +275,15 @@ if check_option(varargin,{'setting','EulerCorrection'}) || ...
   ebsd = applyEulerCorrectionTable(ebsd,ext,varargin{:});
 end
 
-% a file does not change how the session plots, but a convention the caller passed does
+% a file does not change how the session plots, but a convention the caller
+% passed does - and it is the map's own, whose frame states one
 pC = getClass(varargin,'plottingConvention');
 if ~isempty(pC), plottingConvention.default(pC); end
+if ~isempty(pC) && ~isempty(ebsd.frame)
+  fr = copy(ebsd.frame);
+  fr.how2plot = pC;
+  ebsd.frame = fr;
+end
 
 end
 
@@ -654,8 +666,12 @@ function out = ebsd_default(raw_data)
     unitCellHint = {'unitCellHint', raw_data.unitCell};
   end
 
-  ebsd = EBSD(raw_data.position, raw_data.rotation, phases, raw_data.cs, prop, ...
+  % EDAX writes the position -1111111 for a pixel it did not measure
+  id = find(raw_data.position.x ~= -1111111 & raw_data.position.y ~= -1111111);
+  ebsd = EBSD(raw_data.position(id), raw_data.rotation(id), phases(id), raw_data.cs, prop, ...
     unitCellHint{:}, phaseMapOpt{:});
+  ebsd.id = id;
+  ebsd.opt.nRows = numel(phases);
 
   % a pixel without an orientation is not indexed
   notIndexedId = find(~[ebsd.CSList.isIndexed],1);
