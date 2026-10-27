@@ -202,7 +202,7 @@ function str = plottingConventionLiteral(pC)
 % depend on a console font setting
 [pictogram,isPictogram] = char(pC,'UTF8');
 if isPictogram
-  % MTEX 7.0 represents the eight axis-aligned conventions by pictograms.
+  % the eight axis-aligned conventions are written as their pictograms
   str = sprintf('plottingConvention(%s)',charLiteral(pictogram));
 else
   % Keep custom, non-axis-aligned conventions reproducible as well.

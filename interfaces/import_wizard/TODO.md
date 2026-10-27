@@ -131,7 +131,7 @@
  -> DONE: fopen/fprintf/fclose path removed entirely, always
     matlab.desktop.editor.newDocument(str)
 
-13. [bigger item] interfaces should be able to return just metadata/header
+13. [bigger item, DONE - 'headerOnly'] interfaces should be able to return just metadata/header
     info without loading the full per-pixel data blocks, so the wizard can
     show a quick preview while browsing/scrolling files, without paying
     full-load cost for every file hovered over
@@ -286,7 +286,7 @@
     further. -- DONE (CurrentData is now matlab.ui.control.Table, property
     type changed; updateCurrentDataInfo builds Property/Value row pairs)
 
-23. [bigger item] clicking a phase's Symmetry cell should open a separate
+23. [bigger item, SUPERSEDED by inline editing] clicking a phase's Symmetry cell should open a separate
     dialog to edit it: point group (dropdown), axis lengths a/b/c, angles
     alpha/beta/gamma, and the coordinate system alignment
  -> hook point: PhaseTableCellSelection (~line 1439) already does exactly
@@ -865,3 +865,54 @@
     ("No Manufacturer config found") in 0.01s, which matches their
     WIP status; h5_edax.h5's positions are degenerate and it stays a
     list; Oxford's 4.8 GB h5oina was left out of the full-load sweep
+ -> since then: the xnovo and dream3d loaders return an EBSD3square, and
+    h5_edax.h5 loads as an EBSDhex - EDAX marks unmeasured pixels by the
+    position -1111111, loadEBSD_h5 leaves those rows out (item 44)
+
+**** round 7 - the comparison with the pymtex wizard ****
+
+44. [DONE] the plan from comparing both wizards on h5_edax.h5
+ -> defects: the warm-up waits for the layout 3 s at most; every indexed
+    phase with pixels is ticked, none on a notIndexed-only file; Enter in
+    the data set list stays the list's; one data set rule for import and
+    script; the phase color read through str2rgb; the chooser ignores a
+    click off its cells
+ -> the map convention goes into the map's own frame as well as the
+    session: an HDF5 map carries a fixed convention and ignored the
+    session default, so the map chooser did nothing there. loadEBSD_h5
+    puts a convention passed to it into that frame too, so the script
+    reproduces the map
+ -> taken from pymtex: the live script panel (copy, save, edit), import
+    once the selection rests 0.5 s (files over 100 MB wait for Enter),
+    the status band with points and load time, the tree listing only
+    non-empty folders and files with their size, the path as its last
+    three folders, the pole figures' Euler axes named as the Euler
+    pictogram names them and a title naming the phase, the Euler
+    correction and the unplaced rows in the info list
+ -> measured and kept: the pole figure density from at most 100k
+    orientations (1.85 s -> 0.38 s on 2.3M, PF maximum within 3%); a
+    gridded IPF map recolored in place instead of replotted (0.12 s
+    against 2.48 s on 2.66M pixels)
+ -> decided against, matching pymtex: one color range over the three
+    pole figures, restoring the session convention on close
+ -> measured, no gain: pcolor instead of contourf pole figures; item 14
+    stays open, plotPDF is ~2 s per figure on a cold session
+
+45. [profiled, DONE] startup redraws and the cost of startup and first import, R2026b
+ -> filmed at 4 frames/s: the right side was drawn at default sizes and
+    then laid out, the pictograms came up with huge text, the warm-up
+    switched tabs and showed an empty axes with ticks. Now everything is
+    built before the window is shown, an empty plot axes is invisible,
+    IPF Z is selected from the start, the pictograms are drawn once the
+    layout has arrived, the top row ignores the default panel width
+ -> startup, cold / warm: first drawnow 6.2 / 2.5 s, the first uiaxes
+    starts the canvas (HTMLCanvasPlugin.createCanvas) 2.2 s, the rest
+    ~1.5 s. The key and pictogram axes are now built by the warm-up after
+    the window is up: constructor 13.3 s -> 9.9 s cold
+ -> first import of Forsterite.ctf, cold / warm: EBSD.load 2.7 / 1.7 s,
+    IPF Z 2.5 / 1.2 s, first paint 2.3 / 1.1 s, IPF key 2.0 / 0.9 s,
+    phase table 0.8 / 0.2 s. The warm-up's dummy map and key save ~3 s of
+    the cold import (12.5 s -> 9.4 s, two runs each); the key is drawn at
+    1.5 degree (0.70 -> 0.27 s warm)
+ -> default Miller indices per crystal system, as in pymtex; typed ones
+    are kept per system
