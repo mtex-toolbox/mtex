@@ -90,7 +90,7 @@ classdef referenceFrame < matlab.mixin.Copyable
       b = normalize(rf.basis);
       b = b(1:numel(names));
       f = @(varargin) text(b,names,...
-        'BackgroundColor','w','tag','axesLabels',varargin{:});
+        'BackgroundColor','w','textColor','k','tag','axesLabels',varargin{:});
     end
 
     function c = char(rf)
