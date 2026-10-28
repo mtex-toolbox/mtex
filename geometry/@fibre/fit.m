@@ -20,7 +20,7 @@ function [f,lambda,delta] = fit(ori,varargin)
 % Options
 %  local   - fast approach for locally concentrated orientations 
 
-if any(isnan(ori)), ori = ori(~isnan(ori)); end
+if ~isa(ori,'SO3Fun') && any(isnan(ori)), ori = ori(~isnan(ori)); end
 
 if isa(ori,'SO3Fun')
 
