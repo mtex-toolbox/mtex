@@ -10,8 +10,8 @@ function ebsd = fillByGrainId(ebsd)
 
 % generate a regular grid
 ext = ebsd.extent;
-dx = max(ebsd.unitCell(:,1))-min(ebsd.unitCell(:,1));
-dy = max(ebsd.unitCell(:,2))-min(ebsd.unitCell(:,2));
+dx = max(ebsd.unitCell.x)-min(ebsd.unitCell.x);
+dy = max(ebsd.unitCell.y)-min(ebsd.unitCell.y);
 [xgrid,ygrid] = meshgrid(ext(1):dx:ext(2),ext(3):dy:ext(4)); % ygrid runs first
 sGrid = size(xgrid);
 
@@ -34,7 +34,7 @@ ebsd.rotations = rotation(a(:),b(:),c(:),d(:));
 clear a b c d
 
 for fn = fieldnames(ebsd.prop).'
-  ebsd.prop.(char(fn)) = ebsd.prop.(char(fn))(ci);
+  ebsd.prop.(char(fn)) = ebsd.prop.(char(fn));
 end
 
 
