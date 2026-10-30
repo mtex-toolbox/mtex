@@ -48,25 +48,22 @@ res = get_option(varargin,'resolution',min(2*degree,radius/15),'double');
 % is below the radius
 hs = uniqueRows(symmetrise(h));
 rs = uniqueRows(odf.SS.rot * r);
-h = normalize(vector3d(h)); r = normalize(vector3d(r));
-hv = [h.x,h.y,h.z]; rv = [r.x,r.y,r.z];
 
-% the pairs form one orbit of the rotations, or two where the improper
-% elements add -h or -r: the tube of (-h,r) is no rotated copy of that of
-% (h,r) and holds another share of the function
-reps = hv;
-if size(hs,1) > size(uniqueRows(rotation(odf.CS.properGroup) * h),1)
-  reps = [hv; -hv];
-elseif size(rs,1) > size(uniqueRows(rotation(odf.SS.properGroup) * r),1)
-  reps = [hv; hv]; rv = [rv; -rv];
-end
+% the pairs fall into classes under the rotations the function is invariant
+% under, one for every class of h' and of r', as the improper elements add
+% images (-h in a centrosymmetric crystal) no rotation reaches; the tubes of
+% a class hold the same share of the function
+[hc,nh] = rotationClasses(hs,rotation(odf.CS.properGroup));
+[rc,nr] = rotationClasses(rs,rotation(odf.SS.properGroup));
 
-% the mean over the tubes times the measure of all tubes
+% the mean over the tubes of every class times their measure
 v = 0;
-for k = 1:size(reps,1)
-  v = v + tubeMean(odf,reps(k,:),rv(min(k,end),:),hs,rs,radius,res);
+for a = 1:numel(hc)
+  for b = 1:numel(rc)
+    v = v + nh(a) * nr(b) * tubeMean(odf,hs(hc(a),:),rs(rc(b),:),hs,rs,radius,res);
+  end
 end
-v = v / size(reps,1) * size(hs,1) * size(rs,1) * (1 - cos(radius)) / 2;
+v = v * (1 - cos(radius)) / 2;
 
 end
 
@@ -113,4 +110,20 @@ end
 function X = uniqueRows(v)
 v = normalize(vector3d(v));
 X = uniquetol([v.x(:),v.y(:),v.z(:)],1e-9,'ByRows',true,'DataScale',1);
+end
+
+
+% the first row of every class of the unit vectors X under the rotations Q,
+% and the size of each
+function [first,n] = rotationClasses(X,Q)
+cls = zeros(size(X,1),1);
+for k = 1:size(X,1)
+  if cls(k) == 0
+    y = Q * vector3d(X(k,1),X(k,2),X(k,3));
+    hit = max([y.x(:),y.y(:),y.z(:)] * X.',[],1) > 1 - 1e-9;
+    cls(hit(:) & cls == 0) = k;
+  end
+end
+first = unique(cls);
+n = arrayfun(@(k) nnz(cls == k),first);
 end

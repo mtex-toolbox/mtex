@@ -83,10 +83,13 @@ end
 
 % symmetrise with respect to symmetry
 v = S.rot * v;
+symList = S.rot(:);
 
-% consider antipodal symmetry
-%if antiSym && ~S.isLaue, v = [v;-v]; end
-if antiSym && ~S.isLaue, v = reshape([1;-1] * reshape(v,1,[]),2*S.numSym,[]); end
+% consider antipodal symmetry, the negatives as the improper elements -s
+if antiSym && ~S.isLaue
+  v = reshape([1;-1] * reshape(v,1,[]),2*S.numSym,[]);
+  symList = reshape([symList.';-symList.'],[],1);
+end
 
 % finally ensure unqiue vectors if required
 if check_option(varargin,'unique')
@@ -100,7 +103,7 @@ if check_option(varargin,'unique')
 
   l  = cellfun(@length, vSym);
   v = vertcat(vSym{:});
-  if nargout == 3, sym = S.rot(vertcat(idSym{:})); end
+  if nargout == 3, sym = symList(vertcat(idSym{:})); end
   
 end
 

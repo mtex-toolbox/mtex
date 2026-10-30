@@ -28,11 +28,26 @@ port).
   takes the reduced angle to the center
 - `fibreVolume(odf,h,r,radius)` left out the specimen copies of r and capped the result
   at 1: the beta fibre of the OrientationFibre page with specimen symmetry mmm held 7.26
-  percent within 5 degree for 25.4 in the union of its tubes, which a uniform texture
-  alone fills to 16.5 percent. The tube about h||r is integrated over the cap about r
+  percent within 5 degree for 34.3 in the union of its tubes, which a uniform texture
+  alone fills to 22.8 percent. The tube about h||r is integrated over the cap about r
   and the turns about h, every point divided among the tubes of the symmetric pairs
-  (h',r') that hold it; where -h is no rotated copy of h, the tubes of (h,r) and (-h,r)
-  are integrated apart (pymtex #7)
+  (h',r') that hold it; the pairs fall into classes under the rotations of the
+  function, one tube integrated per class: (h,r) and (-h,r) where -h is no rotated copy
+  of h, and the mirror images of h in a group like mm2 (pymtex #7)
+- the fibre h||r is that of every pair of an image of h under the crystal point group
+  and of r under the specimen point group, the improper elements included, as
+  `symmetrise(h)` and `fibreVolume` take them; `fibre/angle` with crystal symmetry
+  alone or with both left out the improper elements of the specimen group (432 with
+  mmm: the orientation turning h onto -r 17.75 degree off the fibre, inside its tube).
+  It takes the closest pair of both orbits, from the chord, in one loop for every case
+- `symmetrise(f,'unique')` of a fibre failed with "Index exceeds the number of array
+  elements" for a general h in a Laue group, and `multiplicity(f)` with it:
+  `vector3d/symmetrise` added -v to the images of the rotations but its third output
+  indexed the rotations only. The third output holds -s for those. `fibre/symmetrise`
+  applied an improper element to the orientations; it turns an improper image into a
+  rotation (-s followed by a half turn about an axis normal to s*h), so that an arc
+  keeps its length, and counts (h,r) and (-h,-r) as one fibre: 48 for (124)||z in
+  m-3m, 192 with specimen symmetry mmm
 - `fibre/angle` of a list of orientations with crystal and specimen symmetry returned
   one angle for all, the least over every symmetric copy of every orientation: the
   minimum ran over the flattened list. It runs over the copies of each orientation

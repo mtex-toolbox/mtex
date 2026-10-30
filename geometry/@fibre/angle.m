@@ -2,11 +2,18 @@ function [omega, oriF] = angle(f,ori,varargin)
 % angle fiber to orientation or fiber to fibre
 %
 % Syntax
-% 
+%
 %   omega = angle(f,ori) % angle orientation to fibre
 %   [omega, oriF] = angle(f,ori)
 %
 %   omega = angle(f1,f2) % angle fibre to fibre
+%
+% Description
+% The angle of an orientation to the fibre h||r is the angle between ori*h
+% and r, the least over the images of h under the crystal point group and
+% of r under the specimen point group, the improper elements included: in a
+% centrosymmetric crystal -h is an equivalent of h. It is computed from the
+% chord of the closest pair, accurate near the fibre.
 %
 % Input
 %  f, f1, f2 - @fibre
@@ -14,61 +21,50 @@ function [omega, oriF] = angle(f,ori,varargin)
 %
 % Output
 %  omega - double
-%  oriF  - @orientation on the fibre that minimizes the angle
+%  oriF  - @orientation on an equivalent fibre that minimizes the angle
 %
-% See also 
-% orientation/angle
+% See also
+% orientation/angle fibre/symmetrise
 
-if isa(ori,'orientation')
-
-  if ori.SS.id <= 2 % only right / crystal symmetry
-    
-    hOri = ori .\ f.r;
-    hSym = f.h.symmetrise;
-
-    [omega,hId] = min(angle_outer(hOri, hSym, 'noSymmetry', varargin{:}),[],2);
-
-    if nargout == 2 % compute also nearest orientation on fibre
-      rotH = orientation.map(hSym(hId),hOri);
-      oriF = ori .* rotH;
-    end
-
-  elseif ori.CS.id <= 2 % only left / specimen symmetry
-    
-    rOri = ori .* f.h;
-    rSym = f.r.symmetrise;
-
-    [omega,rId] = min(angle_outer(rOri, rSym, 'noSymmetry', varargin{:}),[],2);
-
-    if nargout == 2 % compute also nearest orientation on fibre
-      rotR = orientation.map(rOri,rSym(rId));
-      oriF = rotR .* ori;
-    end
-
-  else % left + right symmetry, aka misorientations
-
-    % the symmetric images of every orientation, one column each
-    oriSym = ori.symmetrise;
-
-    d = angle(oriSym .* f.h, f.r, 'noSymmetry', varargin{:});
-    [omega,symId] = min(reshape(d,size(oriSym)),[],1);
-    omega = reshape(omega,size(ori));
-
-    if nargout == 2 % compute also nearest orientation on fibre
-      oriSym = oriSym(sub2ind(size(oriSym),symId,1:size(oriSym,2)));
-      rotR = orientation.map(oriSym .* f.h,f.r);
-      oriF = reshape(rotR .* oriSym,size(ori));
-    end
-
-  end
-
-else
-
+if ~isa(ori,'orientation')
   omega = max(angle(f,orientation(ori),varargin{:}));
+  return
+end
 
-  % in the non symmetric case we have also
-  %omega = min(angle(f.h,ori.h) + angle(f.r,ori.r), angle(f.h,-ori.h) + angle(f.r,-ori.r));
+% the images of h and r under the point groups, as rows
+H = uniqueRows(symmetrise(f.h));
+R = uniqueRows(f.SS.rot * f.r);
+ap = check_option(varargin,'antipodal');
+
+% the closest pair: r' read in the crystal frame of every orientation
+g = rotation(ori(:));
+best = -inf(numel(g),1); bh = ones(numel(g),1); br = ones(numel(g),1);
+for j = 1:size(R,1)
+  v = inv(g) .* vector3d(R(j,1),R(j,2),R(j,3));
+  d = [v.x(:),v.y(:),v.z(:)] * H.';
+  if ap, d = abs(d); end
+  [dm,i] = max(d,[],2);
+  upd = dm > best;
+  best(upd) = dm(upd); bh(upd) = i(upd); br(upd) = j;
+end
+
+% the angle from the chord of that pair
+v = inv(g) .* vector3d(R(br,1),R(br,2),R(br,3));
+V = [v.x(:),v.y(:),v.z(:)];
+Hb = H(bh,:);
+if ap, Hb = Hb .* sign(sum(V .* Hb,2) + (sum(V .* Hb,2)==0)); end
+omega = reshape(2*asin(min(1,vecnorm(V - Hb,2,2)/2)),size(ori));
+
+if nargout == 2 % the nearest orientation, on the fibre of that pair
+  rotH = rotation.map(vector3d(Hb(:,1),Hb(:,2),Hb(:,3)),v);
+  oriF = reshape(ori(:) .* rotH,size(ori));
+end
 
 end
 
+
+% the distinct unit vectors, as rows
+function X = uniqueRows(v)
+v = normalize(vector3d(v));
+X = uniquetol([v.x(:),v.y(:),v.z(:)],1e-9,'ByRows',true,'DataScale',1);
 end
