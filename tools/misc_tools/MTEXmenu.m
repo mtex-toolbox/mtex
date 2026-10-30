@@ -1,9 +1,12 @@
 function MTEXmenu
 % show up MTEX menu
 
+% branch name, where .git is a file pointing to the git dir in a worktree
 try
-  g = getGitInfo;
-  v = ['MTEX (' g.branch ')'];
+  g = fullfile(mtex_path,'.git');
+  if ~isfolder(g), g = strtrim(extractAfter(fileread(g),'gitdir:')); end
+  b = regexp(fileread(fullfile(g,'HEAD')),'refs/heads/(\S+)','tokens','once');
+  v = ['MTEX (' b{1} ')'];
 catch
   v = getMTEXpref('version');
 end
