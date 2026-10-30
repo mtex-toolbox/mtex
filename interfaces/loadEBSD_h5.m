@@ -638,6 +638,12 @@ function out = ebsd_default(raw_data)
       'Make sure you have a position, rotation, phase and field!'])
   end
 
+  % a phase without a name takes it from its master pattern file - EMSphInx
+  % leaves MaterialName empty, the master pattern says what was indexed
+  if isfield(raw_data, 'master_files')
+    nameByMasterFile(raw_data.cs, raw_data.master_files)
+  end
+
   % with phase_zeroBased every value is known, so hand phaseId / phaseMap over
   phases = raw_data.phase;
   phaseMapOpt = {};
@@ -697,6 +703,19 @@ function out = ebsd_default(raw_data)
 
 end
 
+function nameByMasterFile(cs, files)
+% name the unnamed phases after their master pattern files, e.g.
+% 'Fe(alpha-iron)[A2]{20kV}.sht' -> 'Fe(alpha-iron)' - phaseItem is a
+% handle class, so the phases are named in place
+files = cellstr(string(files));
+if ~iscell(cs), cs = num2cell(cs); end
+for k = 1:min(numel(cs), numel(files))
+  if isa(cs{k}, 'crystalSymmetry') && isempty(cs{k}.mineral) && ~isempty(files{k})
+    cs{k}.mineral = regexprep(files{k}, {'^.*[\\/]', '\.[^.]*$', '[\[{].*$'}, '');
+  end
+end
+end
+
 function out = image_data_default(raw_data)
 
   % a vendor stores whichever detectors were recorded, so one group is enough
@@ -713,7 +732,7 @@ function out = image_data_default(raw_data)
 
   function dst = copy_reshaped(src, dst, x, y)
     for n = fieldnames(src)'
-      dst.(n{1}) = double(permute(reshape(src.(n{1})(:),[x,y]),[2 1]));
+      dst.(n{1}) = permute(reshape(src.(n{1})(:),[x,y]),[2 1]);
     end
   end
 
@@ -730,11 +749,12 @@ function out = image_data_images(raw_data)
 % images EDAX keeps next to the EBSD data. Unlike image_data_default
 % these are already two dimensional and need no reshaping - only the
 % transpose from HDF5's column major layout to MTEX's row major images.
+% An image keeps the integer type it is stored in.
 
   out = struct;
 
   for n = fieldnames(raw_data)'
-    img = double(raw_data.(n{1}));
+    img = raw_data.(n{1});
     if ~isvector(img), img = img.'; end
     out.(n{1}) = img;
   end

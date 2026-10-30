@@ -22,6 +22,7 @@
       "data": [135, 180, 225]
     },
     "phase": {"mode": "search_root", "value": "Phase", "type": "zeroBased"},
+    "master_files": {"mode": "absolute", "value": "/NMLparameters/IndexEBSD/masterfile", "fallback": ""},
     "rotation": {
       "type": "euler",
       "euler": {
