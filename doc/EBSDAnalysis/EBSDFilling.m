@@ -61,7 +61,7 @@ hold off
 ebsdSub = ebsd(rand(length(ebsd),1) > 0.75)
 
 % plot the retained data
-plot(ebsdSub,ebsdSub.orientations,'ipfDirection',zvector)
+plot(ebsdSub,'ipfz')
 
 %%
 % The object summary gives the exact retained counts. The plot now consists
@@ -75,7 +75,7 @@ plot(ebsdSub,ebsdSub.orientations,'ipfDirection',zvector)
 
 % reconstruct the grain structure
 [grainsSub,ebsdSub] = calcGrains(ebsdSub,'angle',10*degree, ...
-  'minPixel',5,'alpha',15);
+  'minPixel',2,'alpha',15);
 
 grainsSub = smoothBoundary(grainsSub,5);
 
@@ -91,35 +91,38 @@ hold off
 %% Filling by nearest-neighbour interpolation
 %
 % <EBSD.fill.html |fill|> starts with nearest-neighbour interpolation. Pass
-% the reconstructed grains whenever boundaries are known. MTEX then rejects
-% positions outside every grain and prevents an orientation from being
-% carried across a grain boundary. If the nearest measurement belongs to a
-% different grain, MTEX uses the host grain's mean orientation instead.
-% The flag |'gridify'| returns the completed scan lattice as a matrix-shaped
-% map; it does not change which values are assigned.
+% the reconstructed grains whenever boundaries are known. MTEX then adds
+% only the missing lattice sites that lie inside a grain. Every position
+% takes the orientation of the nearest measurement of its own grain, so no
+% orientation is carried across a grain boundary. The flag |'gridify'|
+% returns the completed scan lattice as a matrix-shaped map; it does not
+% change which values are assigned.
 
-ebsdSub_filled = fill(ebsdSub,grainsSub,'gridify');
+ebsdSub_filled = fill(ebsdSub,grainsSub);
 
-plot(ebsdSub_filled('indexed'), ...
-  ebsdSub_filled('indexed').orientations,'ipfDirection',zvector);
+plot(ebsdSub_filled('indexed'), 'ipfz');
 
 hold on
+plot(ebsdSub_filled('notIndexed'),'faceColor','k');
 plot(grainsSub.boundary,'linewidth',1.5)
 hold off
 
 %%
 % The grain interiors are now coloured. Sharp patches remain because a
 % nearest-neighbour estimate repeats a measured orientation instead of
-% creating a gradual orientation field. Positions not covered by a grain
-% remain notIndexed, which preserves holes along the grain boundaries.
+% creating a gradual orientation field. The notIndexed measurements drawn
+% in black lie on grain boundaries or outside every grain, so they remain
+% notIndexed. The white gaps are lattice sites a boundary passes through,
+% which |fill| does not add.
 
 %% Filling with a denoising filter
 %
 % A denoising filter can estimate the missing orientations while smoothing
-% the orientation field. Supply the option |'fill'| and the grains to
-% <EBSD.smooth.html |smooth|>. The @l1TVFilter used here is a
-% total-variation method for rotation-valued data; its mathematical basis is
-% described by <https://doi.org/10.3934/ipi.2016001 Bergmann et al. (2016)>.
+% the orientation field. <EBSD.smooth.html |smooth|> fills the same
+% positions as |fill| before it filters, so pass it the grains as well.
+% The @l1TVFilter used here is a total-variation method for rotation-valued
+% data; its mathematical basis is described by
+% <https://doi.org/10.3934/ipi.2016001 Bergmann et al. (2016)>.
 %
 % In contrast to nearest-neighbour interpolation, the filter can create a
 % smooth transition between the estimated orientations. It is still an
@@ -131,13 +134,12 @@ F = l1TVFilter;
 F.alpha = 0.21;
 
 % interpolate and smooth the missing orientations
-ebsdSub_smoothed = smooth(ebsdSub,F,'fill',grainsSub);
+ebsdSub_smoothed = smooth(ebsdSub,F,grainsSub);
 
-plot(ebsdSub_smoothed('indexed'), ...
-  ebsdSub_smoothed('indexed').orientations,'ipfDirection',zvector);
-
+plot(ebsdSub_smoothed('notIndexed'),'facecolor','black')
 hold on
-plot(grainsSub.boundary,'linewidth',1.5)
+plot(ebsdSub_smoothed('indexed'), 'ipfz')
+plot(grainsSub.boundary,'linewidth',1.5,'LineColor','White')
 hold off
 
 %%
@@ -245,14 +247,14 @@ hold off
 %
 %% Fill only grain interiors
 %
-% The option |'fill'| asks |smooth| to fill holes inside the grains. Passing
-% |grains| is what lets MTEX decide whether a position is inside a grain.
-% |notIndexed| positions along grain boundaries remain untouched.
+% The command |smooth| fills every position that |calcGrains| assigned to a
+% grain. |notIndexed| measurements on grain boundaries belong to no grain
+% and remain untouched.
 
 F = l1TVFilter;
 F.alpha = 1.25;
 
-ebsdS = smooth(ebsd,F,'fill',grains);
+ebsdS = smooth(ebsd,F,grains);
 
 plot(ebsdS('Fo'),ebsdS('Fo').orientations,'ipfDirection',zvector)
 hold on

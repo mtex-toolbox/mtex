@@ -378,7 +378,7 @@ hold off
 % <EBSD.smooth.html |smooth|> then fills holes without crossing those outlines.
 
 F = l1TVFilter;
-parentEBSD = smooth(parentEBSD,F,'fill',parentGrains);
+parentEBSD = smooth(parentEBSD,F,parentGrains);
 
 plot(parentEBSD('Iron fcc'),parentEBSD('Iron fcc').orientations,...
   'figSize','large')

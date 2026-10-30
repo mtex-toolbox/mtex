@@ -155,7 +155,7 @@ F = l1TVFilter;
 F.alpha = 0.42;
 
 % denoise within the reconstructed grains and fill missing lattice sites
-ebsdS = smooth(ebsd,F,'fill',grains);
+ebsdS = smooth(ebsd,F,grains);
 
 % compute the first-order KAM from the denoised orientations
 kamDenoised = ebsdS.KAM('threshold',2.5*degree) ./ degree;

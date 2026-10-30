@@ -201,7 +201,7 @@ hold off
 
 F = l1TVFilter;
 F.alpha = 1.25;
-ebsdS = smooth(ebsd,F,'fill',grains);
+ebsdS = smooth(ebsd,F,grains);
 indexedS = ebsdS('indexed');
 
 % compare with the same references and saturation scale

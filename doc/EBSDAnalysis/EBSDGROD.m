@@ -41,7 +41,7 @@ grains = smoothBoundary(grains,5);
 % denoise the orientations
 F = l1TVFilter;
 F.alpha = 0.83;
-ebsd = smooth(ebsd,F,grains,'fill');
+ebsd = smooth(ebsd,F,grains);
 
 ipfKey = ipfColorKey(ebsd.CS);
 plot(ebsd,ipfKey.orientation2color(ebsd.orientations))

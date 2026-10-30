@@ -8,7 +8,7 @@ classdef EBSDFilter < handle
 %
 % Syntax
 %   ebsd = smooth(ebsd,F)
-%   ebsd = smooth(ebsd,F,'fill',grains)
+%   ebsd = smooth(ebsd,F,grains)
 %
 % Input
 %  F - @EBSDFilter

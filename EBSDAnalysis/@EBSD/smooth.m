@@ -7,16 +7,16 @@ function [ebsd,filter] = smooth(ebsd,varargin)
 %
 %   F = l1TVFilter
 %   F.alpha = 2;
-%   ebsd = smooth(ebsd, F, 'fill', grains)
+%   ebsd = smooth(ebsd, F, grains)
 %
 % Input
 %  ebsd   - @EBSD
 %  F      - @EBSDFilter
-%  grains - @grain2d if provided pixels at the boundary between grains are not filled
+%  grains - @grain2d, empty lattice sites inside these grains are filled
 %
-% Options
-%  fill        - fill missing values (this is different then not indexed values!)
-%  extrapolate - extrapolate up the the outer boundaries
+% Description
+% Orientations are smoothed within each grain. NaN orientations are filled
+% as described in <EBSD.fill.html fill>, grainIds and phaseIds are kept.
 %
 % Example
 %   mtexdata forsterite;
@@ -62,8 +62,7 @@ else
   ebsd.prop.quality = ~isnan(ebsd.rotations);
 end
 
-% fill holes if needed
-if check_option(varargin,'fill') || check_option(varargin,'extrapolate'), ebsd = fill(ebsd,varargin{:}); end
+ebsd = fill(ebsd,varargin{:});
 
 % read input
 filter = getClass(varargin,'EBSDFilter',splineFilter);
@@ -142,9 +141,6 @@ vdisp('',varargin{:});
 
 % store to EBSD variable
 ebsd.rotations = rot;
-
-% set nan rotations to not indexed
-ebsd.phaseId(isnan(rot(:))) = 1;
 
 % the notIndexed padding, and the decision of what class to hand back,
 % are onGrid's job now

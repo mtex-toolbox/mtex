@@ -35,7 +35,7 @@ ebsdNoisy = ebsd;
 % denoise without smoothing across grain boundaries
 F = l1TVFilter;
 F.alpha = 1.25;
-ebsd = smooth(ebsd,F,'fill',grains);
+ebsd = smooth(ebsd,F,grains);
 
 % the integral implementation uses ordfilt2 from Image Processing Toolbox
 hasIntegralMethod = ~isempty(which('ordfilt2'));

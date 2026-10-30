@@ -327,12 +327,12 @@ parentGrains = smoothBoundary(parentGrains,5);
 
 %%
 % A <l1TVFilter.l1TVFilter.html |l1TVFilter|> with a small |alpha|
-% preserves more local detail. The |'fill'| option interpolates missing
-% orientations inside the supplied grain boundaries.
+% preserves more local detail. It also interpolates missing orientations
+% inside the supplied grain boundaries.
 
 F = l1TVFilter;
 F.alpha = 0.125;
-parentEBSD = smooth(parentEBSD,F,'fill',parentGrains);
+parentEBSD = smooth(parentEBSD,F,parentGrains);
 
 parentColor = ipfKey.orientation2color(...
   parentEBSD(betaName).orientations);

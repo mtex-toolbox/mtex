@@ -61,12 +61,12 @@ hold off
 
 %%
 % The pixel-scale color speckle is the symptom to notice. A
-% |l1TVFilter| reduces that noise while the |'fill'| option uses the
-% grain partition to prevent smoothing across grain boundaries.
+% |l1TVFilter| reduces that noise. It smooths each grain separately, so
+% no orientation is carried across a grain boundary.
 
 F = l1TVFilter;
 F.alpha = 1.25;
-ebsd = smooth(ebsd,F,'fill',grains);
+ebsd = smooth(ebsd,F,grains);
 
 axisKey.oriRef = grains(ebsd('indexed').grainId).meanOrientation;
 plot(ebsd('indexed'), ...

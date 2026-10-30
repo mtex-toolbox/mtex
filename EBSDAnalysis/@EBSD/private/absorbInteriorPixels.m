@@ -3,17 +3,16 @@ function grainId = absorbInteriorPixels(grains,ebsd,grainId)
 %
 % grainId 0 stays reserved for pixels a grain boundary passes through. Done in
 % two steps:
-%   1) floodCandidates - propose a candidate grain for each zero pixel cheaply,
-%      by flooding grain labels outward over the grid (a fjord's deep pixels get
-%      the flanking grain; medial-axis pixels get no candidate).
+%   1) nearestCandidates - propose for each zero pixel the grain of the nearest
+%      pixel that has one, also across gaps in a sparse map.
 %   2) footprintInside - verify each candidate geometrically: the pixel's whole
 %      unit-cell footprint (corners nudged slightly inward for stability) must
 %      lie inside the candidate grain. A pixel a boundary crosses fails and
-%      stays 0. This gates out the flood's boundary-subdivided assignments.
+%      stays 0. This gates out candidates from across a boundary.
 %
 % Input
 %  grains  - @grain2d
-%  ebsd    - @EBSD (gridified)
+%  ebsd    - @EBSD
 %  grainId - nEbsd × 1 grain id per pixel (0 = unassigned)
 %
 % Output
@@ -22,7 +21,7 @@ function grainId = absorbInteriorPixels(grains,ebsd,grainId)
 ind0 = find(grainId == 0);
 if isempty(ind0), return; end
 
-cand   = floodCandidates(ebsd,grainId);      % candidate grain per pixel (0 = none)
+cand   = nearestCandidates(ebsd,grainId);    % candidate grain per pixel (0 = none)
 c0     = cand(ind0);
 sel    = c0 > 0;
 rows   = ind0(sel);  gCand = c0(sel);
@@ -32,48 +31,15 @@ grainId(rows(inside)) = gCand(inside);
 end
 
 % =========================================================================
-function cand = floodCandidates(ebsd,grainId)
-% Propose a candidate grain for every grainId==0 pixel by flooding the grain
-% labels outward over the grid from all grain-bearing pixels (multi-source
-% layered BFS). Each unassigned pixel is proposed the grain that reaches it
-% first (shortest grid distance through the unassigned region); a pixel reached
-% by two different grains at the same distance is on the medial axis and gets
-% NO proposal (stays 0). This is only a candidate - footprintInside verifies it
-% geometrically. Already grain-bearing pixels keep their id. Phase-agnostic:
-% indexed and notIndexed grains flood alike.
+function cand = nearestCandidates(ebsd,grainId)
+% propose for every grainId==0 pixel the grain of the nearest pixel that has one
 
-g = ebsd.lattice;
-stencil = g.stencil;
-ijE = g.ij;
-nEb = size(ijE,1);
-[cell2e,slot,ijmin,ijsz] = latticeLookup(ijE);
-
-% grid neighbour edges; the stencil is symmetric so both directions appear
-P = []; Q = [];
-for s = 1:size(stencil,1)
-  nbIJ = ijE + stencil(s,:);
-  inRange = all(nbIJ >= ijmin & nbIJ <= ijmin+ijsz-1, 2);
-  src = find(inRange);  dst = cell2e(slot(nbIJ(src,:)));
-  ok = dst > 0;
-  P = [P; src(ok)]; Q = [Q; dst(ok)]; %#ok<AGROW>
-end
-
-cand    = grainId;                              % 0 = unassigned
-visited = grainId > 0;
-frontier = find(visited);
-while ~isempty(frontier)
-  isF = false(nEb,1); isF(frontier) = true;
-  msk = isF(P) & ~visited(Q);                   % frontier -> unvisited neighbour
-  qc = Q(msk);  prop = cand(P(msk));
-  if isempty(qc), break; end
-  gmin = accumarray(qc, prop, [nEb 1], @min, 0);
-  gmax = accumarray(qc, prop, [nEb 1], @max, 0);
-  newv = find(gmin > 0);
-  single = gmin(newv) == gmax(newv);            % reached by exactly one grain
-  cand(newv(single)) = gmin(newv(single));
-  visited(newv) = true;                         % tie pixels visited, stay 0
-  frontier = newv(single);                      % only proposed pixels propagate
-end
+cand = grainId;
+has = find(grainId > 0);
+ind0 = find(grainId == 0);
+if numel(has) < 3, return; end
+xy = [ebsd.pos.x(:), ebsd.pos.y(:)];
+cand(ind0) = grainId(has(nearestId(xy(has,:),xy(ind0,:))));
 
 end
 
