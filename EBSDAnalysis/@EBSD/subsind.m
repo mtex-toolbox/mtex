@@ -21,8 +21,8 @@ elseif numel(subs)==2 && (ischar(subs{1}) || isstring(subs{1})) && strcmpi(subs{
     error('No data with the specified ids in the data set');
   end
   return
-elseif numel(subs)==3 && (ischar(subs{1}) || isstring(subs{1})) && strcmpi(subs{1},'xy')
-  ind = ebsd.findByLocation(subs{2},subs{3});
+elseif any(numel(subs)==[2 3]) && (ischar(subs{1}) || isstring(subs{1})) && strcmpi(subs{1},'xy')
+  ind = ebsd.findByLocation(subs{2:end});
   if any(ind(:)==0)
     error('No data with the specified coordinates in the data set');
   end

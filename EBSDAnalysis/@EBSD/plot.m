@@ -267,7 +267,7 @@ catch
   id = [];
 end
 
-if ~isempty(id)
+if id > 0
 
   txt{1} = ['index = '  num2str(id)];
   txt{2} = ['Id = '  num2str(ebsd.id(id))];

@@ -13,6 +13,7 @@ function varargout = subsref(ebsd,s)
 %   ebsd(1:end)       % the measurements with these indices
 %   ebsd('id',id)     % the measurements with these ids
 %   ebsd('xy',x,y)    % the measurements closest to the coordinates
+%   ebsd('xy',[x y])  % the same with an n x 2 matrix
 %
 % See also
 % EBSD/subsind EBSDgrid/subsind EBSD/findByLocation

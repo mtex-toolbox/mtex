@@ -184,15 +184,15 @@ classdef EBSDhex < EBSDgrid
       if nargin == 3, x = vector3d(x,y,0); end
 
       % invert the grid basis, which describes the lattice whatever its
-      % orientation - the coefficient along the column direction is the cube x,
-      % the one along the row direction the cube z
+      % orientation, and map the column and row steps to cube x and z
       p0 = ebsd.pos(1,1);
       cd = ebsd.pos(1,2) - p0;
       rd = ebsd.pos(2,1) - p0;
+      [cx,~,cz] = ebsd.hex2cube([1 2],[2 1]);
 
       A = [cd.x, rd.x; cd.y, rd.y];
       d = x - p0;
-      xz = A \ [d.x(:).'; d.y(:).'];
+      xz = [cx; cz] * (A \ [d.x(:).'; d.y(:).']);
 
       % round in cube coordinates, which picks the nearest hexagon rather
       % than the nearest cell of the parallelogram the basis spans
