@@ -12,7 +12,7 @@ catch
 end
 
 disp(' ');
-if isempty(javachk('desktop'))
+if desktop('-inuse')
   if verLessThan('matlab','7.13')
     s = v;
   else
