@@ -48,7 +48,7 @@ isNew = k < m(src);
 xyz = gB.allV.xyz;
 P1 = xyz(gB.F(src(isNew),1),:);
 P2 = xyz(gB.F(src(isNew),2),:);
-lambda = k(isNew) ./ m(src(isNew));
+lambda = reshape(k(isNew) ./ m(src(isNew)),[],1);
 
 head = gB.F(src,2);
 head(isNew) = size(xyz,1) + (1:nnz(isNew)).';
