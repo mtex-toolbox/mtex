@@ -26,10 +26,15 @@ function [f,l] = symmetrise(f,varargin)
 % See also
 % fibre/angle fibre/multiplicity vector3d/symmetrise
 
+% the images are computed without the symmetries, which they share with f
+CS = f.CS; SS = f.SS;
+f.CS = crystalSymmetry; f.o2.CS = f.CS; f.o1.SS = specimenSymmetry; f.o2.SS = f.SS;
+
 if check_option(varargin,'unique')
 
   % the distinct images of h and the elements reaching them
-  [h,lh,sym] = symmetrise(f.h,f.CS,'unique','noAntipodal');
+  [h,lh,sym] = symmetrise(vector3d(f.h),CS,'unique','noAntipodal');
+  h = Miller(h,f.CS);
   t = asRotation(sym(:),col(repelem(f.h(:),lh)));
   o1 = col(repelem(f.o1(:),lh)) .* inv(t);
   o2 = col(repelem(f.o2(:),lh)) .* inv(t);
@@ -37,7 +42,7 @@ if check_option(varargin,'unique')
   src = col(repelem((1:length(f)).',lh));
 
   % the distinct images of r and the elements reaching them
-  [~,lr,sym] = symmetrise(r,f.SS,'unique','noAntipodal');
+  [~,lr,sym] = symmetrise(r,SS,'unique','noAntipodal');
   t = asRotation(sym(:),col(repelem(r,lr)));
   f.h = col(repelem(h(:),lr));
   f.o1 = t .* col(repelem(o1,lr));
@@ -59,7 +64,7 @@ if check_option(varargin,'unique')
 else
 
   % every element of the crystal point group, one row each
-  S = f.CS.rot(:);
+  S = CS.rot(:);
   m = numel(S); n = length(f);
   sym = repmat(S,n,1);
   h0 = reshape(repmat(reshape(f.h,1,[]),m,1),[],1);
@@ -70,7 +75,7 @@ else
   r = o1 .* h;
 
   % every element of the specimen point group
-  S = f.SS.rot(:);
+  S = SS.rot(:);
   k = numel(S);
   sym = repmat(S,m*n,1);
   t = asRotation(sym,reshape(repmat(reshape(r,1,[]),k,1),[],1));
@@ -80,6 +85,9 @@ else
   l = repmat(m*k,n,1);
 
 end
+
+f.CS = CS; f.o2.CS = CS;
+f.o1.SS = SS; f.o2.SS = SS;
 
 end
 
