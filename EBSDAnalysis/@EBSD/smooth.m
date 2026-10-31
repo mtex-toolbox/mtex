@@ -77,6 +77,12 @@ catch
   grainId = reshape(ebsd.phaseId,size(ebsd));
 end
 
+% the half-quadratic filter solves all grains at once
+if isa(filter,'l1TVFilter') && ~strcmpi(filter.method,'proximal')
+  ebsd.rotations = filter.smoothMap(ebsd,grainId);
+  return
+end
+
 % extract some locale variables
 CSList = ebsd.CSList;
 rot = ebsd.rotations;

@@ -12,6 +12,13 @@ classdef l1TVFilter < EBSDFilter
   % cyclic proximal point algorithm for the same functional; it ignores the
   % threshold and the quality of the pixels.
   %
+  % The half-quadratic method works on the tangent vectors of every pixel at
+  % the mean orientation of its grain and solves each reweighted least
+  % squares problem by conjugate gradients, for all grains of a map at once
+  % in batches of whole grains of at most batchSize pixels. The iteration is
+  % accelerated by Anderson extrapolation over its last five steps, and a
+  % grain stops once none of its measured pixels moves by more than tol.
+  %
   % Syntax
   %   F = l1TVFilter
   %   F = l1TVFilter(smoothingLength)
@@ -34,6 +41,7 @@ classdef l1TVFilter < EBSDFilter
   %  eps       - l1 relaxation parameter
   %  threshold - threshold for subgrain boundaries
   %  lambda    - step sizes of the proximal point iteration
+  %  batchSize - number of pixels whose grains are solved together
   %  isHex     - is the map on a hexagonal grid
   %
   % See also
@@ -51,6 +59,7 @@ classdef l1TVFilter < EBSDFilter
     eps   = 1e-3;         % l^1 relaxation parameter
     threshold = 15*degree % threshold for subgrain boundaries
     lambda = 2.8*(1:10000).^(-1.2) % step sizes of the proximal point iteration
+    batchSize = 1e6       % pixels whose grains are solved together
   end
 
   methods
@@ -64,87 +73,73 @@ classdef l1TVFilter < EBSDFilter
       if nargin == 2, quality = ones(size(ori)); end
       quality = quality ./ max(quality(:));
 
-      % the regularization parameter: the gain 1/(1+alpha*lambda) is one half at the
-      % smoothing length, lambda the eigenvalue of the grid's Laplacian at that wavelength
-      alpha = F.alpha;
-      if isempty(alpha)
-        L = F.smoothingLength;
-        if isempty(L), L = 4*F.dx; end
-        alpha = 1 / graphEigenvalue(F.isHex, max(L/F.dx,2));
-      end
-
-      % project around center, as n x m x 1 x 4 unit quaternions: past this the
-      % neighbours of a grain need no symmetry
-      [~,ori] = mean(ori);
+      % project around center, past this the neighbours need no symmetry
+      [m,ori] = mean(ori);
       q = cat(4,ori.a,ori.b,ori.c,ori.d);
 
       if strcmpi(F.method,'proximal')
-        u = proximal(F,q,alpha);
+        u = proximal(F,q,regularization(F));
+        u = reshape(u,[],4);
       else
-        u = halfQuadratic(F,q,quality,alpha);
+        % one grain, the tangent vectors of its pixels at the mean
+        ref = repmat([m.a m.b m.c m.d],numel(ori),1);
+        f = logRight(reshape(q,[],4),ref);
+        in = ~isnan(f(:,1));
+        [a,b] = gridEdges(F.isHex,size(ori),double(in));
+        loc = cumsum(in);
+        u = nan(numel(in),4);
+        u(in,:) = expRight(irls(F,f(in,:),quality(in),loc(a),loc(b),ones(nnz(in),1),regularization(F)),ref(in,:));
       end
 
-      ori.a = u(:,:,1,1);
-      ori.b = u(:,:,1,2);
-      ori.c = u(:,:,1,3);
-      ori.d = u(:,:,1,4);
+      ori.a = reshape(u(:,1),size(ori));
+      ori.b = reshape(u(:,2),size(ori));
+      ori.c = reshape(u(:,3),size(ori));
+      ori.d = reshape(u(:,4),size(ori));
+    end
+
+    function rot = smoothMap(F,ebsd,grainId)
+      % all grains of a gridded map, in batches of whole grains
+
+      rot = ebsd.rotations;
+      comp = reshape(grainId,[],1);
+      comp(isnan(comp)) = 0;
+      [ref,f] = tangentField(ebsd,comp);
+      comp(isnan(ref(:,1))) = 0;
+
+      w = reshape(ebsd.prop.quality,[],1);
+      w = w ./ max(w); w(isnan(f(:,1))) = 0;
+      [a,b] = gridEdges(F.isHex,size(ebsd),comp);
+
+      % whole grains up to batchSize pixels per batch
+      [~,~,g] = unique(comp(comp>0));
+      nPx = accumarray(g,1);
+      batchOfGrain = 1 + floor((cumsum(nPx) - nPx) / F.batchSize);
+      batch = zeros(size(comp)); batch(comp>0) = batchOfGrain(g);
+
+      alpha = regularization(F);
+      loc = zeros(size(comp));
+      for k = 1:max(batch)
+        pix = find(batch == k);
+        loc(pix) = 1:numel(pix);
+        e = batch(a) == k;
+        [~,~,c] = unique(comp(pix));
+        u = expRight(irls(F,f(pix,:),w(pix),loc(a(e)),loc(b(e)),c,alpha),ref(pix,:));
+        rot.a(pix) = u(:,1); rot.b(pix) = u(:,2); rot.c(pix) = u(:,3); rot.d(pix) = u(:,4);
+      end
     end
 
   end
 
   methods (Access = private)
 
-    function u = halfQuadratic(F,q,quality,alpha)
-
-      % precompute neighbor ids
-      if F.isHex
-        idNeighbours = hexNeighbors(size(q,[1 2]));
-      else
-        idNeighbours = squareNeighbors(size(q,[1 2]));
-      end
-      sz = size(q,[1 2]);
-      k = size(idNeighbours,3);
-
-      % initial guess
-      u = q;
-
-      iter = 1;
-      step = inf;
-      while iter==1 || (iter < F.iterMax && step > F.tol)
-
-        % the neighbours in the right tangent space of u, whose norm is their angle
-        n = reshape(u,[],4);
-        n = logRight(reshape(n(idNeighbours(:),:),[sz k 4]),u);
-
-        % multiplier for regularization gradient
-        if F.l1TV
-          t = sqrt(sum(n.^2,4));
-          w = alpha * (t <= F.threshold) ./ sqrt(t.^2+F.eps^2);
-          w(isnan(w)) = 0;
-        else
-          w = alpha * ~isnan(n(:,:,:,1));
-        end
-        n(isnan(n)) = 0;
-
-        % multiplier for data fit gradient
-        d = logRight(q,u);
-        if F.l1DataFit
-          w0 = quality ./ sqrt(sum(d.^2,4)+F.eps^2);
-        else
-          w0 = quality;
-        end
-        w0(isnan(w0)) = 0;
-
-        % the gradient, and its step length
-        lambda = w0 + sum(w,3);
-        lambda(lambda==0) = inf;
-        g = (w0 .* d + sum(w .* n,3)) ./ lambda;
-        step = max(sqrt(sum(g.^2,4)),[],'all');
-
-        % update u
-        u = expRight(g,u);
-
-        iter = iter + 1;
+    function alpha = regularization(F)
+      % the gain 1/(1+alpha*lambda) is one half at the smoothing length, lambda the
+      % eigenvalue of the grid's Laplacian at that wavelength
+      alpha = F.alpha;
+      if isempty(alpha)
+        L = F.smoothingLength;
+        if isempty(L), L = 4*F.dx; end
+        alpha = 1 / graphEigenvalue(F.isHex, max(L/F.dx,2));
       end
     end
 
@@ -173,7 +168,177 @@ classdef l1TVFilter < EBSDFilter
       u = reshape(u,[size(u,[1 2]) 1 4]);
     end
 
+
   end
+
+end
+
+
+% the reweighted least squares of the half-quadratic model: tangent vectors f, data
+% weights w, zero without a measurement, and the edges a-b inside the components comp,
+% each of which stops once none of its pixels moves by tol
+function x = irls(F,f,w,a,b,comp,alpha)
+
+f(w == 0,:) = 0;
+x = f;
+active = true(max([comp;0]),1);
+loc = zeros(numel(comp),1);
+m = 0;
+for iter = 1:F.iterMax
+
+  % the pixels and the edge differences D of the components still moving
+  p = find(active(comp));
+  if numel(p) ~= m
+    m = numel(p);
+    loc(p) = 1:m;
+    e = active(comp(a));
+    ea = loc(a(e)); eb = loc(b(e));
+    ne = numel(ea);
+    D = sparse([1:ne,1:ne],[ea;eb],[ones(ne,1);-ones(ne,1)],ne,m);
+    Dt = D';
+    Y = []; G = [];
+  end
+  xp = x(p,:); fp = f(p,:); wp = w(p);
+
+  t = sqrt(sum((D*xp).^2,2));
+  if F.l1TV, wr = alpha * (t <= F.threshold) ./ sqrt(t.^2+F.eps^2); else, wr = alpha * ones(size(t)); end
+  if F.l1DataFit, wd = wp ./ sqrt(sum((xp-fp).^2,2)+F.eps^2); else, wd = wp; end
+
+  % a pixel without any weight keeps its value
+  A = Dt * spdiags(wr,0,ne,ne) * D + spdiags(wd,0,m,m);
+  s = full(diag(A)) > 0;
+  y = xp;
+  L = ichol(A(s,s));
+  y(s,:) = cg(A(s,s),wd(s).*fp(s,:),xp(s,:),L);
+  if ~F.l1DataFit && ~F.l1TV, x(p,:) = y; break; end
+
+  % Anderson extrapolation from the last five steps, taken in the components whose
+  % energy it lowers
+  g = y(:) - xp(:);
+  Y = [Y, y(:)]; G = [G, g]; %#ok<AGROW>
+  if size(Y,2) > 5, Y(:,1) = []; G(:,1) = []; end
+  xn = y;
+  if size(Y,2) > 1
+    dG = diff(G,1,2);
+    xa = reshape(y(:) - diff(Y,1,2) * ((dG'*dG + 1e-12*eye(size(dG,2))) \ (dG'*g)),size(y));
+    better = energy(F,xa,fp,wp,D,ea,comp(p),alpha) < energy(F,y,fp,wp,D,ea,comp(p),alpha);
+    xn(better(comp(p)),:) = xa(better(comp(p)),:);
+    if ~any(better), Y = Y(:,end); G = G(:,end); end
+  end
+  x(p,:) = xn;
+
+  % a component stops once the reweighting moves none of its pixels by tol
+  step = accumarray(comp(p),max(abs(y - xp),[],2),size(active),@max);
+  active = active & step >= F.tol;
+  if ~any(active), break; end
+end
+
+end
+
+
+% the functional the reweighting minimises per component, the differences above the
+% threshold capped; ea the first pixel of every edge
+function J = energy(F,x,f,w,D,ea,comp,alpha)
+
+t2 = sum((D*x).^2,2);
+r2 = sum((x-f).^2,2);
+if F.l1TV, jt = alpha * sqrt(min(t2,F.threshold^2) + F.eps^2); else, jt = alpha/2 * t2; end
+if F.l1DataFit, jd = w .* sqrt(r2 + F.eps^2); else, jd = w .* r2/2; end
+n = max(comp);
+J = accumarray(comp(ea),jt,[n 1]) + accumarray(comp,jd,[n 1]);
+
+end
+
+
+% conjugate gradients with the preconditioner L*L' for all columns of B at once
+function X = cg(A,B,X,L)
+
+Lt = L';
+nb = max(sqrt(sum(B.^2,1)),realmin);
+R = B - A*X;
+Z = Lt \ (L \ R);
+P = Z;
+rz = sum(R.*Z,1);
+for k = 1:2000
+  if all(sqrt(sum(R.^2,1)) <= 1e-7 * nb), break; end
+  Q = A*P;
+  al = rz ./ sum(P.*Q,1); al(rz == 0) = 0;
+  X = X + al .* P;
+  R = R - al .* Q;
+  Z = Lt \ (L \ R);
+  rzn = sum(R.*Z,1);
+  be = rzn ./ rz; be(rz == 0) = 0;
+  P = Z + be .* P;
+  rz = rzn;
+end
+
+end
+
+
+% every pixel with a measurement as tangent vector at the mean orientation of its
+% component, ref the mean as n x 4 quaternion, NaN outside every component
+function [ref,f] = tangentField(ebsd,comp)
+
+n = numel(comp);
+ref = nan(n,4); f = nan(n,3);
+isData = comp > 0 & ~isnan(ebsd.rotations.a(:)) & ebsd.isIndexed(:);
+refG = nan(max([comp;0]),4);
+for p = unique(ebsd.phaseId(isData)).'
+  sel = find(isData & ebsd.phaseId(:) == p);
+  o = ebsd.subSet(sel).orientations;
+
+  % the mean around the first pixel of every component
+  [gu,first,g] = unique(comp(sel));
+  o = project2FundamentalRegion(o,o(first(g)));
+  Q = [o.a o.b o.c o.d];
+  Q = Q .* sign(sum(Q .* Q(first(g),:),2));
+  m = [accumarray(g,Q(:,1)),accumarray(g,Q(:,2)),accumarray(g,Q(:,3)),accumarray(g,Q(:,4))];
+  m = m ./ sqrt(sum(m.^2,2));
+  refG(gu,:) = m;
+
+  o = project2FundamentalRegion(o,quaternion(m(g,1),m(g,2),m(g,3),m(g,4)));
+  f(sel,:) = logRight([o.a o.b o.c o.d],m(g,:));
+end
+in = comp > 0;
+ref(in,:) = refG(comp(in),:);
+
+end
+
+
+% the neighbouring pixel pairs of a grid inside the same component
+function [a,b] = gridEdges(isHex,sz,comp)
+
+if isHex, id = hexNeighbors(sz); else, id = squareNeighbors(sz); end
+a = repmat((1:prod(sz)).',size(id,3),1);
+b = id(:);
+keep = a < b & comp(a) > 0 & comp(a) == comp(b);
+a = a(keep); b = b(keep);
+
+end
+
+
+% inv(r) .* p as rotation vectors, unit quaternions as rows
+function v = logRight(p,r)
+
+a = sum(r.*p,2);
+v = r(:,1).*p(:,2:4) - p(:,1).*r(:,2:4) - cross(r(:,2:4),p(:,2:4),2);
+s = sqrt(sum(v.^2,2));
+omega = 2 * (1 - 2*(a < 0)) .* atan2(s,abs(a)) ./ s;
+omega(s == 0) = 0;
+v = omega .* v;
+
+end
+
+
+% r .* exp(v) for rotation vectors v as rows
+function r = expRight(v,r)
+
+omega = sqrt(sum(v.^2,2));
+s = sin(omega/2) ./ omega;
+s(omega == 0) = 0.5;
+e = [cos(omega/2), s .* v];
+r = [r(:,1).*e(:,1) - sum(r(:,2:4).*e(:,2:4),2), ...
+  r(:,1).*e(:,2:4) + e(:,1).*r(:,2:4) + cross(r(:,2:4),e(:,2:4),2)];
 
 end
 
@@ -184,41 +349,5 @@ function lambda = graphEigenvalue(isHex,L)
 
 if isHex, p = [1 -1 0.5 -0.5 0.5 -0.5]; else, p = [1 -1 0 0]; end
 lambda = sum(1 - cos(2*pi*p/L));
-
-end
-
-
-% inv(r) .* p as a rotation vector, unit quaternions along the fourth dimension
-function v = logRight(p,r)
-
-a = r(:,:,:,1).*p(:,:,:,1) + sum(r(:,:,:,2:4).*p(:,:,:,2:4),4);
-v = r(:,:,:,1).*p(:,:,:,2:4) - p(:,:,:,1).*r(:,:,:,2:4) - cross4(r(:,:,:,2:4),p(:,:,:,2:4));
-s = sqrt(sum(v.^2,4));
-omega = 2 * (1 - 2*(a < 0)) .* atan2(s,abs(a)) ./ s;
-omega(s == 0) = 0;
-v = omega .* v;
-
-end
-
-
-% r .* exp(v) for rotation vectors v
-function r = expRight(v,r)
-
-omega = sqrt(sum(v.^2,4));
-s = sin(omega/2) ./ omega;
-s(omega == 0) = 0;
-e = cat(4,cos(omega/2),s .* v);
-r = cat(4,r(:,:,:,1).*e(:,:,:,1) - sum(r(:,:,:,2:4).*e(:,:,:,2:4),4), ...
-  r(:,:,:,1).*e(:,:,:,2:4) + e(:,:,:,1).*r(:,:,:,2:4) + cross4(r(:,:,:,2:4),e(:,:,:,2:4)));
-
-end
-
-
-% the cross product of vectors along the fourth dimension
-function c = cross4(x,y)
-
-c = cat(4,x(:,:,:,2).*y(:,:,:,3) - x(:,:,:,3).*y(:,:,:,2), ...
-  x(:,:,:,3).*y(:,:,:,1) - x(:,:,:,1).*y(:,:,:,3), ...
-  x(:,:,:,1).*y(:,:,:,2) - x(:,:,:,2).*y(:,:,:,1));
 
 end
