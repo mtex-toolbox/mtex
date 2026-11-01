@@ -26,7 +26,7 @@ function [h,mP] = plot(ebsd,varargin)
 %   plot(ebsd(badMAD),'faceColor','black,'DisplayName','bad values')
 %
 %   % plot a subregion
-%   plot(ebsd,ebsd.orientation,'region',[xmin, xmax, ymin, ymax])
+%   plot(ebsd,'ipfz','region',[xmin, xmax, ymin, ymax])
 %
 % Input
 %  ebsd  - @EBSD
@@ -55,7 +55,7 @@ function [h,mP] = plot(ebsd,varargin)
 %   plot(ebsd)
 %
 %   % colorize according to orientations
-%   plot(ebsd('Forsterite'),ebsd('Forsterite').orientations)
+%   plot(ebsd('Forsterite'),'ipfz')
 %
 %   % colorize according to MAD
 %   plot(ebsd,ebsd.mad,'micronbar','off')

@@ -34,9 +34,9 @@ classdef (Sealed) neper < handle
 %   A = vector3d(0,0,0.5);  % point from the plane
 %   grains2 = neper.getSlice(N,A)
 %
-%   plot(grains,grains.meanOrientation)
+%   plot(grains,'ipfz')
 %   hold
-%   plot(grains2,grains2.meanOrientation)
+%   plot(grains2,'ipfz')
 %
 % Class Properties
 %  id         - integer, "used [...] to compute the (initial) seed positions"

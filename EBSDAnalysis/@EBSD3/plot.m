@@ -26,7 +26,7 @@ function vol = plot(ebsd,varargin)
 %   plot(ebsd(badMAD),'faceColor','black,'DisplayName','bad values')
 %
 %   % plot a subregion
-%   plot(ebsd,ebsd.orientation,'region',[xmin, xmax, ymin, ymax])
+%   plot(ebsd,'ipfz','region',[xmin, xmax, ymin, ymax])
 %
 % Input
 %  ebsd - @EBSD

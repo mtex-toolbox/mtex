@@ -97,7 +97,7 @@ function varargout = gridify(ebsd,varargin)
 %
 %   mtexdata twins
 %   ebsdMg = ebsd('Magnesium').gridify 
-%   plot(ebsdMg, ebsdMg.orientations)
+%   plot(ebsdMg,'ipfz')
 %
 
 % extract new unitCell

@@ -26,7 +26,7 @@ function [ebsd,distList] = spatialProfile(ebsd,lineXY,varargin)
 %   mtexdata twins
 %
 %   % plot data
-%   plot(ebsd('indexed'),ebsd('indexed').orientations)
+%   plot(ebsd('indexed'),'ipfz')
 %
 %   % select line coordinates
 %   x = [15.5 27]; y = [20.5 11];
