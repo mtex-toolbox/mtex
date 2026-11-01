@@ -29,9 +29,9 @@ function varargout = onGrid(ebsd,fun,varargin)
 %  * an @EBSD keeps the caller's class - a gridded map stays gridded. A
 %    plain one goes through the copy constructor, which keeps every real
 %    measurement and drops the notIndexed sites gridify added as padding.
-%    That INCLUDES pixels the callback filled in, so a denoising run with
-%    'fill' still returns more pixels than it was given - the row count is
-%    not preserved, and must not be.
+%    The pixels the callback filled in are kept, so a denoising run that
+%    fills empty lattice sites returns more pixels than it was given - the
+%    row count is not preserved, and must not be.
 %  * anything else with one entry per pixel - a @vector3d, a double, a
 %    @tensor - IS row aligned, so it is indexed by the newId gridify
 %    returns and reshaped to the caller's shape.

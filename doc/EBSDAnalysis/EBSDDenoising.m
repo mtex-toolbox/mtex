@@ -9,9 +9,10 @@
 %
 % Random errors appear instead as scatter between nearby measurements. This
 % page reduces that scatter while trying to preserve real orientation
-% gradients and abrupt changes inside grains. Filling measurements whose
-% phase is |notIndexed| is a different operation; see
-% <EBSDFilling.html Filling Missing Data>.
+% gradients and abrupt changes inside grains. |smooth| also fills the
+% |notIndexed| pixels inside the grains, which
+% <EBSDFilling.html Filling Missing Data> explains; the option
+% |'fill',false| leaves them as they are.
 %
 % The examples assume that you can reconstruct grains and read an
 % orientation map. Those steps are introduced in
@@ -36,12 +37,9 @@ mtexdata twins silent
 % smooth grain boundaries
 grains = smoothBoundary(grains,5);
 
-% consider only indexed data
-ebsd = ebsd('indexed');
-
-% plot the orientation map
-ipfKey = ipfColorKey(ebsd.CS.properGroup);
-plot(ebsd,ipfKey.orientation2color(ebsd.orientations))
+% plot the orientation map of the indexed pixels
+ipfKey = ipfColorKey(ebsd('indexed').CS.properGroup);
+plot(ebsd('indexed'),ipfKey.orientation2color(ebsd('indexed').orientations))
 
 % and on top the grain boundaries
 hold on
@@ -59,15 +57,15 @@ hold off
 % <https://doi.org/10.1016/j.ultramic.2017.06.021 Thomsen et al. (2017)>.
 
 % use the original grain means as reference orientations
-grainMean = grains(ebsd.grainId).meanOrientation;
+grainMean = grains(ebsd('indexed').grainId).meanOrientation;
 colorKey = axisAngleColorKey;
 colorKey.oriRef = grainMean;
 
 % keep one colour scale for every comparison on this page
-rawDeviation = angle(ebsd.orientations,grainMean);
+rawDeviation = angle(ebsd('indexed').orientations,grainMean);
 colorKey.maxAngle = quantile(rawDeviation,0.8);
 
-plot(ebsd,colorKey.orientation2color(ebsd.orientations))
+plot(ebsd('indexed'),colorKey.orientation2color(ebsd('indexed').orientations))
 hold on
 plot(grains.boundary,'linewidth',2)
 hold off

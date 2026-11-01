@@ -23,16 +23,18 @@ plot(ebsd(inpolygon(ebsd,[2000 0 1400 375])));
 %
 % The mean angular deviation (MAD) measures the fit between an indexed
 % diffraction pattern and its solution. Here measurements above 1.3 degrees
-% are removed before their orientations can enter the average.
+% are marked |notIndexed|, so that their orientations do not enter the
+% average.
 
 MAD_MAXIMUM = 1.3;
-ebsd(ebsd.mad > MAD_MAXIMUM) = [];
+ebsd(ebsd.mad > MAD_MAXIMUM) = 'notIndexed';
 
 plot(ebsd(inpolygon(ebsd,[2000 0 1400 375])));
 
 %
-% Compare this map with the first one. Small blank patches mark removed
-% measurements, while the phase colours of retained measurements are unchanged.
+% Compare this map with the first one. Small white patches mark the
+% measurements set to |notIndexed|, while the phase colours of the others
+% are unchanged.
 
 %% Define the single-crystal stiffness tensors
 %

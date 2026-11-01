@@ -299,7 +299,7 @@ pixelFitQuantiles = quantile(pixelFit(~isnan(pixelFit)),[0.5 0.9 0.99])
 %     'angle',3*degree,'minPixel',10);
 %   parentGrains = smoothBoundary(parentGrains,10);
 %   F = l1TVFilter;
-%   parentEBSD = smooth(parentEBSD('indexed'),F,'fill',parentGrains);
+%   parentEBSD = smooth(parentEBSD,F,parentGrains);
 %
 % The grain boundaries constrain the fill so it does not blur across the
 % reconstructed parent partition.

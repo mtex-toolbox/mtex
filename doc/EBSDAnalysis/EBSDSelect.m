@@ -160,6 +160,9 @@ setColorRange([0 1.2]);
 
 %%
 % The yellow speckles have gone, because every measurement above 0.8° was
+% Marking them instead, |ebsdRegion(ebsdRegion.mad > 0.8) = 'notIndexed'|,
+% keeps their positions and other properties. For
+% <EBSDFilling.html filling> the two are the same.
 % removed. Those 881 positions are now empty and render as background.
 %
 % The deep blue patches are still there, and that is the point to take from

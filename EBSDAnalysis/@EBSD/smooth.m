@@ -8,15 +8,21 @@ function [ebsd,filter] = smooth(ebsd,varargin)
 %   F = l1TVFilter
 %   F.alpha = 2;
 %   ebsd = smooth(ebsd, F, grains)
+%   ebsd = smooth(ebsd, F, 'fill', mask)
 %
 % Input
 %  ebsd   - @EBSD
 %  F      - @EBSDFilter
-%  grains - @grain2d, empty lattice sites inside these grains are filled
+%  grains - @grain2d, the outlines that decide the grain of an empty site
+%
+% Options
+%  fill - true (default) to estimate the pixels without orientation as
+%         <EBSD.fill.html fill> fills them, false to leave them NaN, or a
+%         logical mask of the pixels of ebsd this is restricted to
 %
 % Description
-% Orientations are smoothed within each grain. NaN orientations are filled
-% as described in <EBSD.fill.html fill>, grainIds and phaseIds are kept.
+% Orientations are smoothed within each grain, grainIds and phaseIds are
+% kept. The filled pixels enter the filter without a data term.
 %
 % Example
 %   mtexdata forsterite;
@@ -47,6 +53,10 @@ function [ebsd,filter] = smooth(ebsd,varargin)
 % so the data has to be gridded for the duration. onGrid does that and hands
 % the result back in the caller's own class, instead of everyone who calls
 % smooth silently receiving an @EBSDsquare.
+% a mask is carried through the gridding as a property
+mask = get_option(varargin,'fill',true);
+if ~isscalar(mask), ebsd.prop.fillMask = double(reshape(mask,size(ebsd))); end
+
 [ebsd,filter] = onGrid(ebsd,@(eG) doSmooth(eG,varargin{:}), ...
   'grid',varargin,varargin{:});
 
@@ -55,14 +65,25 @@ end
 % =========================================================================
 function [ebsd,filter] = doSmooth(ebsd,varargin)
 
-% set ebsd.quality to zero for all not indexed data
-if isfield(ebsd.prop,'quality')
-  ebsd.prop.quality(isnan(ebsd.rotations)) = 0;
-else
-  ebsd.prop.quality = ~isnan(ebsd.rotations);
+% the pixels without orientation, and which of them to estimate, all by default
+rot0 = ebsd.rotations;
+missing = isnan(rot0) | reshape(~ebsd.isIndexed,size(rot0));
+estimate = get_option(varargin,'fill',true);
+if isfield(ebsd.prop,'fillMask')
+  estimate = ebsd.prop.fillMask == 1;
+  ebsd.prop = rmfield(ebsd.prop,'fillMask');
 end
 
-ebsd = fill(ebsd,varargin{:});
+% set ebsd.quality to zero for the pixels without orientation
+if ~isfield(ebsd.prop,'quality'), ebsd.prop.quality = ones(size(ebsd)); end
+ebsd.prop.quality(missing) = 0;
+
+grains = getClass(varargin,'grain2d',[]);
+if ~isscalar(estimate)
+  ebsd = fill(ebsd,grains,estimate(:));
+elseif estimate
+  ebsd = fill(ebsd,grains);
+end
 
 % read input
 filter = getClass(varargin,'EBSDFilter',splineFilter);
@@ -79,7 +100,9 @@ end
 
 % the half-quadratic filter solves all grains at once
 if isa(filter,'l1TVFilter') && ~strcmpi(filter.method,'proximal')
-  ebsd.rotations = filter.smoothMap(ebsd,grainId);
+  rot = filter.smoothMap(ebsd,grainId);
+  rot(missing & ~estimate) = rot0(missing & ~estimate);
+  ebsd.rotations = rot;
   return
 end
 
@@ -145,7 +168,8 @@ end
 
 vdisp('',varargin{:});
 
-% store to EBSD variable
+% store to EBSD variable, the pixels not to estimate as they were
+rot(missing & ~estimate) = rot0(missing & ~estimate);
 ebsd.rotations = rot;
 
 % the notIndexed padding, and the decision of what class to hand back,
