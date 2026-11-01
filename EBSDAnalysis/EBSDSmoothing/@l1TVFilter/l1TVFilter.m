@@ -118,13 +118,17 @@ classdef l1TVFilter < EBSDFilter
 
       alpha = regularization(F);
       loc = zeros(size(comp));
+      % the progress is the share of grains that have converged
+      pC = progressCounter(numel(nPx),'caption',' denoising EBSD data: ');
+      done = 0;
       for k = 1:max(batch)
         pix = find(batch == k);
         loc(pix) = 1:numel(pix);
         e = batch(a) == k;
         [~,~,c] = unique(comp(pix));
-        u = expRight(irls(F,f(pix,:),w(pix),loc(a(e)),loc(b(e)),c,alpha),ref(pix,:));
+        u = expRight(irls(F,f(pix,:),w(pix),loc(a(e)),loc(b(e)),c,alpha,@(n) pC.show(done + n)),ref(pix,:));
         rot.a(pix) = u(:,1); rot.b(pix) = u(:,2); rot.c(pix) = u(:,3); rot.d(pix) = u(:,4);
+        done = done + max(c);
       end
     end
 
@@ -176,8 +180,9 @@ end
 
 % the reweighted least squares of the half-quadratic model: tangent vectors f, data
 % weights w, zero without a measurement, and the edges a-b inside the components comp,
-% each of which stops once none of its pixels moves by tol
-function x = irls(F,f,w,a,b,comp,alpha)
+% each of which stops once none of its pixels moves by tol; report gets the number of
+% components stopped
+function x = irls(F,f,w,a,b,comp,alpha,report)
 
 f(w == 0,:) = 0;
 x = f;
@@ -206,9 +211,11 @@ for iter = 1:F.iterMax
 
   % a pixel without any weight keeps its value
   A = Dt * spdiags(wr,0,ne,ne) * D + spdiags(wd,0,m,m);
-  s = full(diag(A)) > 0;
+  dA = full(diag(A));
+  s = dA > 0;
   y = xp;
-  L = ichol(A(s,s));
+  % the preconditioner shifted slightly, since a block without data is singular
+  L = ichol(A(s,s) + 1e-9 * max(dA) * speye(nnz(s)));
   y(s,:) = cg(A(s,s),wd(s).*fp(s,:),xp(s,:),L);
   if ~F.l1DataFit && ~F.l1TV, x(p,:) = y; break; end
 
@@ -230,6 +237,7 @@ for iter = 1:F.iterMax
   % a component stops once the reweighting moves none of its pixels by tol
   step = accumarray(comp(p),max(abs(y - xp),[],2),size(active),@max);
   active = active & step >= F.tol;
+  if nargin > 7, report(nnz(~active)); end
   if ~any(active), break; end
 end
 
