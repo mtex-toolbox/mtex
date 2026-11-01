@@ -116,13 +116,21 @@ for s = 1:size(stencil,1)
 end
 diskOffs = unique([diskOffs; comp],'rows');
 
+% the scan footprint, the convex hull of the indexed pixels: beyond it the
+% material counts as present during the erosion, so that the map edge is no
+% boundary the closing erodes from
+inScanP = true(prod(szP),1);
+try %#ok<TRYNC>
+  inScanP = inConvexHull(ij(isIndexed,:), ijmin - padding - 1, szP);
+end
+
 % morphological CLOSING of the indexed set by the disk:
 %   closedP = erode(dilate(isIndexedP)) , erosion done as the complement of the
 %   dilation of the complement (De Morgan). Fills holes/slits narrower than
 %   2*alpha*dxy, preserves wider holes, and is extensive (never drops an
 %   indexed cell). The final "| isIndexedP" is a safety belt against discretisation.
-dilatedP = binaryDilate(isIndexedP, diskOffs, szP);      % 2D binary dilation
-closedP  = ~binaryDilate(~dilatedP, diskOffs, szP);      % 2D binary erosion
+dilatedP = binaryDilate(isIndexedP, diskOffs, szP) | ~inScanP;  % 2D binary dilation
+closedP  = ~binaryDilate(~dilatedP, diskOffs, szP) & inScanP;   % 2D binary erosion
 closedP  = closedP | isIndexedP;
 % imagesc(reshape(dilatedP,szP)), axis equal tight
 % imagesc(reshape(closedP,szP)), axis equal tight
@@ -341,3 +349,30 @@ hasReal = ~isnan(ID);
 POS = reconstructPos(IJ);
 POS(hasReal,:) = pos(ID(hasReal),:);
 end
+
+
+% -------------------------------------------------------------------------
+function inside = inConvexHull(ij, offset, sz)
+% which cells (i,j) = (row,col) + offset of a raster of size sz lie in the
+% convex hull of the integer points ij: every row meets it in one interval
+
+h = convhull(ij(:,1),ij(:,2));
+a = ij(h(1:end-1),:); b = ij(h(2:end),:);
+rows = cell(size(a,1),1); cols = rows;
+for k = 1:size(a,1)
+  if a(k,1) == b(k,1)
+    rows{k} = [a(k,1); a(k,1)]; cols{k} = [a(k,2); b(k,2)];
+  else
+    rows{k} = (min(a(k,1),b(k,1)):max(a(k,1),b(k,1))).';
+    cols{k} = a(k,2) + (rows{k} - a(k,1)) * (b(k,2)-a(k,2)) / (b(k,1)-a(k,1));
+  end
+end
+r = vertcat(rows{:}) - offset(1); c = vertcat(cols{:});
+lo = accumarray(r, c, [sz(1) 1], @min, inf);
+hi = accumarray(r, c, [sz(1) 1], @max, -inf);
+[iR,jR] = ind2sub(sz,(1:prod(sz)).');
+j = jR + offset(2);
+inside = j >= lo(iR) - 1e-9 & j <= hi(iR) + 1e-9;
+
+end
+
