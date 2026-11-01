@@ -73,7 +73,7 @@ plot(ebsd,ebsd.bc)
 mtexColorMap black2white
 
 hold on
-plot(ebsd('Forsterite'),ebsd('Forsterite').orientations,'faceAlpha',0.5)
+plot(ebsd('Forsterite'),'ipfz','faceAlpha',0.5)
 hold off
 
 %%
@@ -92,7 +92,7 @@ ebsdF = ebsd('Forsterite');
 
 alpha = min(ebsdF.bc ./ mean(ebsdF.bc), 1);
 
-plot(ebsdF,ebsdF.orientations,'faceAlpha',alpha,'figSize','large')
+plot(ebsdF,'ipfz','faceAlpha',alpha,'figSize','large')
 
 %%
 % Low-band-contrast pixels fade while pixels at or above the mean remain
@@ -114,8 +114,7 @@ plot(ebsd,ebsd.bc)
 mtexColorMap black2white
 
 hold on
-plot(grains('Forsterite'),grains('Forsterite').meanOrientation,...
-  'faceAlpha',0.5)
+plot(grains('Forsterite'),'ipfz','faceAlpha',0.5)
 hold off
 
 %%

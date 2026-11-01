@@ -63,9 +63,11 @@ plot(grains('Fo'),grains('Fo').meanOrientation)
 
 %%
 % MTEX chooses the specimen z direction for this implicit form and reports
-% the standard colour key in an interactive session. To choose the direction
-% yourself, construct an <ipfColorKey.html |ipfColorKey|> and ask it for the
-% colours explicitly.
+% the standard colour key in an interactive session. The flag |'ipfz'| does
+% the same for every phase at once, each with its own key:
+% |plot(grains,'ipfz')|. The flags |'ipfx'| and |'ipfy'| select the other
+% specimen axes. For any other direction, construct an
+% <ipfColorKey.html |ipfColorKey|> and ask it for the colours explicitly.
 
 % a colour key for the forsterite phase
 ipfKey = ipfColorKey(grains('Fo'));
@@ -269,8 +271,8 @@ mtexdata csl silent
 
 [grains,ebsd] = calcGrains(ebsd,'minPixel',5);
 grains = smoothBoundary(grains,5);
-plot(grains,grains.meanOrientation,'micronbar','off','figSize','large',...
-  'region',[50 300 100 250],'ipfDirection',zvector)
+plot(grains,'ipfz','micronbar','off','figSize','large',...
+  'region',[50 300 100 250])
 
 % where one representative of the [100] family points in each grain
 dir = grains.meanOrientation * Miller(1,0,0,grains.CS);
@@ -299,8 +301,8 @@ hold off
 % Labelling every grain is unreadable, so this is normally done for a
 % selection. Here the grains larger than 100 pixels are labelled by id.
 
-plot(grains,grains.meanOrientation,'micronbar','off',...
-  'region',[50 300 100 250],'ipfDirection',zvector)
+plot(grains,'ipfz','micronbar','off',...
+  'region',[50 300 100 250])
 
 bigGrains = grains(grains.numPixel > 100);
 

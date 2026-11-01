@@ -24,7 +24,7 @@ mtexdata twins silent
 
 x = 30.5; y = 5.5;
 
-plot(ebsd,ebsd.orientations)
+plot(ebsd,'ipfz')
 hold on
 plot(x,y,'ko','MarkerFaceColor','w','MarkerSize',7)
 hold off
@@ -79,7 +79,7 @@ uC = rotate(2*ebsd.unitCell,45*degree);
 ebsdNewGrid = gridify(ebsd,'unitCell',uC)
 
 % plot only cells that received source data
-plot(ebsdNewGrid('indexed'),ebsdNewGrid('indexed').orientations)
+plot(ebsdNewGrid('indexed'),'ipfz')
 xlim(ebsd.extent(1:2)), ylim(ebsd.extent(3:4))
 
 %%
@@ -104,7 +104,7 @@ mtexdata ferrite silent
 
 hexGridSize = size(ebsd)
 
-plot(ebsd(1:50,1:100),ebsd(1:50,1:100).orientations)
+plot(ebsd(1:50,1:100),'ipfz')
 
 %%
 % The staggered pixel rows reveal the hexagonal sampling lattice. Their
@@ -124,7 +124,7 @@ ebsdS = ebsd.gridify('unitCell',squnitCell);
 
 squareGridSize = size(ebsdS)
 
-plot(ebsdS(1:150,1:350),ebsdS(1:150,1:350).orientations)
+plot(ebsdS(1:150,1:350),'ipfz')
 
 %%
 % The result is an @EBSDsquare with 808 by 809 cells in place of the 270 by

@@ -68,7 +68,7 @@ mtexColorbar
 % map, crystal directions over an inverse pole figure, and a fitted fibre over
 % its data all follow the same pattern.
 %
-%   plot(ebsd,ebsd.orientations)
+%   plot(ebsd,'ipfz')
 %   hold on
 %   plot(grains.boundary)
 %   hold off

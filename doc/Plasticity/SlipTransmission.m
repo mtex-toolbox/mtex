@@ -27,7 +27,7 @@ grains = smoothBoundary(grains);
 
 gB = grains.boundary('indexed');
 
-plot(ebsd,ebsd.orientations)
+plot(ebsd,'ipfz')
 hold on
 plot(grains.boundary)
 hold off

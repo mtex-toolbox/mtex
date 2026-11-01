@@ -39,7 +39,7 @@ grains = smoothBoundary(grains,4);
 % Retained austenite grains are blue, and the grey lines are grain
 % boundaries.
 
-plot(ebsd('Fe'),ebsd('Fe').orientations)
+plot(ebsd('Fe'),'ipfz')
 hold on
 plot(grains.boundary,'lineWidth',2,'lineColor','gray')
 plot(grains('Aus'),'FaceColor','blue','DisplayName','Austenite')

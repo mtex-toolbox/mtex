@@ -12,6 +12,10 @@ function vol = plot(ebsd,varargin)
 %   % colorize according to orientation
 %   plot(ebsd('phaseName'),ebsd('phaseName').orientation)
 %
+%   % colorize every phase by its ipf key for the direction x, y or z
+%   plot(ebsd,'ipfz')
+%   plot(ebsd,'ipfDirection',vector3d(1,1,0))
+%
 %   % colorize according to custom color
 %   oM = ipfColorKey(ebsd('phaseName'))
 %   color = oM.orientation2color(ebsd('phaseName').orientations);
@@ -34,6 +38,7 @@ function vol = plot(ebsd,varargin)
 %  region - [xmin, xmax, ymin, ymax] plotting region
 %  
 % Flags
+%  ipfx, ipfy, ipfz - colorize the orientations by the ipf key for this direction
 %  points   - plot dots instead of unitcells
 %  exact    - plot exact unitcells, even for large maps
 %
@@ -44,18 +49,41 @@ function vol = plot(ebsd,varargin)
 if isempty(ebsd), return; end
 
 % transform orientations to color
+ipfOpt = {'ipfDirection','inversePoleFigureDirection','ipfd'};
+ipfDir = get_option(varargin,ipfOpt,zvector);
+flag = get_flag(varargin,{'ipfx','ipfy','ipfz'},'');
+if ~isempty(flag)
+  dirs = [xvector,yvector,zvector];
+  ipfDir = dirs(lower(flag(end)) == 'xyz');
+end
+
 if nargin>1 && isa(varargin{1},'orientation')
-    
+
   oM = ipfColorKey(varargin{1});
+  oM.ipfDirection = ipfDir;
   varargin{1} = oM.orientation2color(varargin{1});
-  
-  if ~getMTEXpref('generatingHelpMode')
+
+  if ~getMTEXpref('generatingHelpMode') && isempty(flag) && ~check_option(varargin,ipfOpt)
     disp('  I''m going to colorize the orientation data with the ');
     disp('  standard MTEX ipf colorkey. To view the colorkey do:');
     disp(' ');
     disp('  ipfKey = ipfColorKey(ori_variable_name)')
     disp('  plot(ipfKey)')
   end
+
+elseif ~isempty(flag) || check_option(varargin,ipfOpt)
+
+  % the orientations of the volume itself, each phase by its own key
+  color = NaN(length(ebsd),3);
+  for k = reshape(unique(ebsd.phaseId(ebsd.isIndexed)),1,[])
+    ind = ebsd.phaseId == k;
+    ori = orientation(ebsd.rotations(ind),ebsd.CSList(k),specimenSymmetryFor(ebsd.pos.frame));
+    oM = ipfColorKey(ori);
+    oM.ipfDirection = ipfDir;
+    color(ind,:) = oM.orientation2color(ori);
+  end
+  varargin = [{color}, varargin];
+
 end
 
 % translate logical into numerical data

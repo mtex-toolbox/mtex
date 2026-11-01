@@ -42,8 +42,7 @@ grains
 % measured Forsterite orientations. The black lines are the boundaries of
 % every indexed grain, including grains of the other indexed phases.
 
-plot(ebsd('Forsterite'),ebsd('Forsterite').orientations,...
-  'ipfDirection',zvector,'micronbar','off')
+plot(ebsd('Forsterite'),'ipfz','micronbar','off')
 hold on
 plot(grains.boundary,'lineWidth',1.5)
 hold off

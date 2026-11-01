@@ -30,7 +30,7 @@ ebsd = ebsd(inpolygon(ebsd,poly))
 % entry in that list. Writing the list position into every square reveals
 % the order in which the entries are stored.
 
-plot(ebsd,ebsd.orientations,'ipfDirection',zvector,'micronbar','off',...
+plot(ebsd,'ipfz','micronbar','off',...
   'edgecolor','k','backend','patch')
 text(ebsd,1:length(ebsd))
 
@@ -56,7 +56,7 @@ hold off
 % the crop was not entry 16 of the full map. Its identifier in that parent
 % map is stored in |ebsd.id|.
 
-plot(ebsd,ebsd.orientations,'ipfDirection',zvector,'micronbar','off',...
+plot(ebsd,'ipfz','micronbar','off',...
   'edgecolor','k','backend','patch')
 text(ebsd,ebsd.id)
 
@@ -103,7 +103,7 @@ size(ebsd)
 %%
 % The labels now show |(row,column)| rather than a single linear index.
 
-plot(ebsd,ebsd.orientations,'ipfDirection',zvector,'micronbar','off',...
+plot(ebsd,'ipfz','micronbar','off',...
   'edgeColor','black','backend','patch')
 
 [i,j] = ndgrid(1:size(ebsd,1),1:size(ebsd,2));
@@ -145,7 +145,7 @@ mtexdata titanium
 
 ebsd = ebsd(10:16,68:79);
 
-plot(ebsd,ebsd.orientations,'ipfDirection',zvector,'edgeColor','k',...
+plot(ebsd,'ipfz','edgeColor','k',...
   'micronbar','off','unitcell')
 axis off
 
@@ -171,7 +171,7 @@ text(ebsd,str)
 % <https://www.redblobgames.com/grids/hexagons/ Hexagonal Grids> explains
 % the geometric construction and further algorithms.
 
-plot(ebsd,ebsd.orientations,'ipfDirection',zvector,'edgeColor','k',...
+plot(ebsd,'ipfz','edgeColor','k',...
   'micronbar','off','unitcell')
 axis off
 

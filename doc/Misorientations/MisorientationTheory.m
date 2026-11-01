@@ -35,7 +35,7 @@ CS = grains.CS;
 % The two labelled grains share the white boundary. Their adjacency makes
 % the relative orientation a grain-boundary misorientation.
 
-plot(grains,grains.meanOrientation,'ipfDirection',zvector,'micronbar','off')
+plot(grains,'ipfz','micronbar','off')
 
 hold on
 plot(grains([57,58]).boundary,'edgecolor','w','linewidth',2)
@@ -233,7 +233,7 @@ gB = grains.boundary('Magnesium','Magnesium');
 isTwinning = angle(gB.misorientation,twinning) < 5*degree;
 
 % plot the grains and highlight candidate twin boundaries
-plot(grains,grains.meanOrientation,'ipfDirection',zvector,'micronbar','off')
+plot(grains,'ipfz','micronbar','off')
 hold on
 plot(gB(isTwinning),'edgecolor','w','linewidth',2)
 hold off

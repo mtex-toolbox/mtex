@@ -26,8 +26,7 @@ csFCC = ebsd.CSList(3);
 [grains,ebsd] = calcGrains(ebsd,'angle',3*degree,...
   'minPixel',5,'removeQuadruplePoints');
 
-plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,...
-  'figSize','large')
+plot(ebsd('Iron bcc'),'ipfz','figSize','large')
 hold on
 plot(grains.boundary,'lineWidth',2)
 hold off
@@ -88,8 +87,7 @@ ylabel('grain-pair count')
 
 [gB,pairId] = grains.boundary.selectByGrainId(grainPairs);
 
-plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,...
-  'figSize','large')
+plot(ebsd('Iron bcc'),'ipfz','figSize','large')
 hold on
 plot(gB,'lineWidth',3,'lineColor','white')
 plot(gB,boundaryFit(pairId)./degree,'lineWidth',2,'smooth')
@@ -172,8 +170,7 @@ boundaryParentEBSD = ebsd;
 old2new = [0;boundaryParentId];
 boundaryParentEBSD.grainId = old2new(1 + ebsd.grainId);
 
-plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,...
-  'figSize','large')
+plot(ebsd('Iron bcc'),'ipfz','figSize','large')
 hold on
 plot(boundaryParentGrains.boundary,'lineWidth',4,...
   'lineColor','white')
@@ -392,8 +389,7 @@ tPori = grains(tP.grainId).meanOrientation;
 tripleFitQuantiles = quantile(tripleFit./degree,...
   [0.2 0.4 0.6 0.8])
 
-plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,...
-  'figSize','large')
+plot(ebsd('Iron bcc'),'ipfz','figSize','large')
 hold on
 plot(grains.boundary,'lineWidth',2)
 plot(tP,tripleFit./degree,'MarkerEdgeColor','k','MarkerSize',8)
@@ -440,8 +436,7 @@ tripleParentEBSD = ebsd;
 old2new = [0;tripleParentId];
 tripleParentEBSD.grainId = old2new(1 + ebsd.grainId);
 
-plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,...
-  'figSize','large')
+plot(ebsd('Iron bcc'),'ipfz','figSize','large')
 hold on
 plot(tripleParentGrains.boundary,'lineWidth',2)
 hold off

@@ -238,8 +238,7 @@ ebsdOut = job.undistortedList(1).ebsd
 
 newMtexFigure('layout',[2,3],'figSize','huge');
 nextAxis
-plot(ebsdOut('W C'), ebsdOut('W C').orientations, ...
-  'ipfDirection',zvector,'coordinates','on')
+plot(ebsdOut('W C'),'ipfz','coordinates','on')
 title('Undistorted EBSD map (WC IPF into screen)','Color','k')
 
 for n = 1:numel(job.undistortedList)

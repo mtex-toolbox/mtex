@@ -15,7 +15,7 @@ mtexdata alphaBetaTitanium
 alphaName = 'Ti (alpha)';
 betaName = 'Ti (Beta)';
 
-plot(ebsd(alphaName),ebsd(alphaName).orientations,'figSize','large')
+plot(ebsd(alphaName),'ipfz','figSize','large')
 
 %%
 % The preceding page measures the same 99.8% alpha and 0.2% beta phase
@@ -39,8 +39,7 @@ beta2alpha = orientation.Burgers(...
 grains = smoothBoundary(grains,1,'moveTriplePoints');
 
 region = [299 401 440 500];
-plot(ebsd(alphaName),ebsd(alphaName).orientations,...
-  'region',region,'micronbar','off','figSize','large')
+plot(ebsd(alphaName),'ipfz','region',region,'micronbar','off','figSize','large')
 
 hold on
 plot(grains.boundary,'lineWidth',2,'region',region)
@@ -352,7 +351,7 @@ hold off
 % Return to the measured alpha orientations and overlay the reconstructed
 % grain boundaries.
 
-plot(ebsd(alphaName),ebsd(alphaName).orientations,'figSize','large')
+plot(ebsd(alphaName),'ipfz','figSize','large')
 
 hold on
 plot(parentGrains.boundary,'lineWidth',3,'lineColor','white')

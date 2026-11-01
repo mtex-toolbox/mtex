@@ -133,8 +133,7 @@ candidateTracePercent = 100 * sum(gB(isCandidate).segLength) ...
 % about 49 percent of the magnesium-to-magnesium boundary trace length.
 
 close all;
-plot(grains,grains.meanOrientation,'ipfDirection',zvector,...
-  'micronbar','off');
+plot(grains,'ipfz','micronbar','off');
 hold on;
 plot(gB(isCandidate),'linecolor','w','linewidth',3);
 hold off;

@@ -6,6 +6,7 @@ function h = plot(grains,varargin)
 % Syntax
 %   plot(grains)                              % colorize by phase
 %   plot(grains,property)                     % colorize by property
+%   plot(grains,'ipfz')                       % colorize by mean orientation
 %   plot(grains,property,'LineStyle','none')  % adapt LineStyle
 %
 % Input
@@ -43,16 +44,24 @@ else
   F(inward,:) = fliplr(F(inward,:));
 end
 
+% transform orientations to color
+ipfOpt = {'ipfDirection','inversePoleFigureDirection','ipfd'};
+ipfDir = get_option(varargin,ipfOpt,zvector);
+flag = get_flag(varargin,{'ipfx','ipfy','ipfz'},'');
+if ~isempty(flag)
+  dirs = [xvector,yvector,zvector];
+  ipfDir = dirs(lower(flag(end)) == 'xyz');
+end
+
+grainColor = [];
 if nargin>1 && isa(varargin{1},'orientation')
-  % color by orientation
 
   oM = ipfColorKey(varargin{1});
-  oM.ipfDirection = ...
-    get_option(varargin,{'ipfDirection','inversePoleFigureDirection','ipfd'},zvector);
-  
+  oM.ipfDirection = ipfDir;
   grainColor = oM.orientation2color(varargin{1});
-  
-  if ~getMTEXpref('generatingHelpMode') && ~check_option(varargin,{'ipfDirection','inversePoleFigureDirection','ipfd'})
+  varargin(1) = [];
+
+  if ~getMTEXpref('generatingHelpMode') && isempty(flag) && ~check_option(varargin,ipfOpt)
     disp('  I''m going to colorize the orientation data with the ');
     disp('  standard MTEX colorkey. To view the colorkey do:');
     disp(' ');
@@ -60,7 +69,23 @@ if nargin>1 && isa(varargin{1},'orientation')
     disp('  plot(colorKey)')
   end
 
-  varargin(1) = [];
+elseif ~isempty(flag) || check_option(varargin,ipfOpt)
+
+  % the mean orientations of the grains, each phase by its own key
+  grainColor = NaN(length(grains),3);
+  for k = reshape(unique(grains.phaseId(grains.isIndexed)),1,[])
+    ind = grains.phaseId == k;
+    ori = orientation(grains.prop.meanRotation(ind),grains.CSList(k),...
+      specimenSymmetryFor(grains.frame));
+    oM = ipfColorKey(ori);
+    oM.ipfDirection = ipfDir;
+    grainColor(ind,:) = oM.orientation2color(ori);
+  end
+
+end
+
+if ~isempty(grainColor)
+  % color by orientation
 
   faceColor = 0.5 .* ones(size(F,1),3);
 

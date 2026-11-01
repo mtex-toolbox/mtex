@@ -20,8 +20,7 @@ mtexdata martensite
 [grains,ebsd] = calcGrains(ebsd,'angle',3*degree,...
   'minPixel',2,'alpha',12);
 
-plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,...
-  'figSize','large')
+plot(ebsd('Iron bcc'),'ipfz','figSize','large')
 hold on
 plot(grains.boundary,'lineWidth',2)
 hold off
@@ -98,8 +97,7 @@ hold off
 [fit,c2cPairs] = job.calcGBFit;
 [gB,pairId] = job.grains.boundary.selectByGrainId(c2cPairs);
 
-plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,...
-  'figSize','large','faceAlpha',0.5)
+plot(ebsd('Iron bcc'),'ipfz','figSize','large','faceAlpha',0.5)
 hold on
 plot(gB,'edgeAlpha',(fit(pairId)./degree-2.5)./2,...
   'lineWidth',2)
@@ -176,7 +174,7 @@ mtexColorbar
 
 job.calcParentFromVote('minProb',0.5)
 
-plot(job.parentGrains,job.parentGrains.meanOrientation)
+plot(job.parentGrains,'ipfz')
 
 %%
 % The map contains transformed parent fragments rather than final parent
@@ -202,7 +200,7 @@ job.calcGBVotes('p2c','reconsiderAll','threshold',4*degree,...
 
 job.calcParentFromVote
 
-plot(job.parentGrains,job.parentGrains.meanOrientation)
+plot(job.parentGrains,'ipfz')
 
 %%
 % Earlier versions passed |'tortuosity'| to |calcGBVotes| as well.
@@ -221,7 +219,7 @@ plot(job.parentGrains,job.parentGrains.meanOrientation)
 job.mergeSimilar('threshold',7.5*degree);
 job.grains = smoothBoundary(job.grains,20);
 
-plot(job.parentGrains,job.parentGrains.meanOrientation)
+plot(job.parentGrains,'ipfz')
 
 %%
 % The similarly coloured fragments have coalesced into larger parent grains.
@@ -237,7 +235,7 @@ plot(job.parentGrains,job.parentGrains.meanOrientation)
 
 job.mergeInclusions('maxSize',50);
 
-plot(job.parentGrains,job.parentGrains.meanOrientation)
+plot(job.parentGrains,'ipfz')
 
 %%
 % The large parent-grain shapes remain, while small enclosed fragments no
@@ -284,7 +282,7 @@ childGrains = job.grainsPrior(...
 
 selectedParentId = grainSelected.id
 
-plot(childGrains,childGrains.meanOrientation)
+plot(childGrains,'ipfz')
 hold on
 plot(grainSelected.boundary,'lineWidth',2)
 hold off
@@ -333,8 +331,7 @@ hold off
 
 parentEBSD = job.calcParentEBSD;
 
-plot(parentEBSD('Iron fcc'),parentEBSD('Iron fcc').orientations,...
-  'figSize','large')
+plot(parentEBSD('Iron fcc'),'ipfz','figSize','large')
 
 %%
 % The reconstructed pixel colours follow the parent-grain partition.
@@ -368,7 +365,7 @@ hold off
   'angle',3*degree,'minPixel',10);
 parentGrains = smoothBoundary(parentGrains,20);
 
-plot(ebsd,ebsd.orientations,'figSize','large')
+plot(ebsd,'ipfz','figSize','large')
 hold on
 plot(parentGrains.boundary,'lineWidth',2)
 hold off
@@ -380,8 +377,7 @@ hold off
 F = l1TVFilter;
 parentEBSD = smooth(parentEBSD,F,parentGrains);
 
-plot(parentEBSD('Iron fcc'),parentEBSD('Iron fcc').orientations,...
-  'figSize','large')
+plot(parentEBSD('Iron fcc'),'ipfz','figSize','large')
 hold on
 plot(parentGrains.boundary,'lineWidth',2)
 hold off

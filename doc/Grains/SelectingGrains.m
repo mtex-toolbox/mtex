@@ -26,7 +26,7 @@ ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 grains = smoothBoundary(grains,5);
 
 % plot forsterite by orientation
-plot(ebsd('Fo'),ebsd('Fo').orientations,'ipfDirection',zvector)
+plot(ebsd('Fo'),'ipfz')
 
 % plot the other two phases in grey
 hold on
@@ -181,7 +181,7 @@ plot(selectedGrains)
 referenceGrain = mouseGrains(1);
 similarGrains = grains.findByOrientation(referenceGrain.meanOrientation,20*degree)
 
-plot(ebsd('Fo'),ebsd('Fo').orientations,'ipfDirection',zvector)
+plot(ebsd('Fo'),'ipfz')
 hold on
 plot(grains.boundary,'lineWidth',2)
 plot(similarGrains.boundary,'lineWidth',4,'lineColor','gold')
@@ -243,8 +243,7 @@ sameMeasurements = isequal(measurementsByGrain.id,measurementsById.id)
 largestGrain = grains(maxIndex);
 largestGrainEbsd = ebsd(largestGrain);
 
-plot(largestGrainEbsd,largestGrainEbsd.orientations,...
-  'ipfDirection',zvector)
+plot(largestGrainEbsd,'ipfz')
 hold on
 plot(largestGrain.boundary,'lineWidth',2)
 hold off

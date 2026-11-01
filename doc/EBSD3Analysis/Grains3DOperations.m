@@ -20,7 +20,7 @@ cs = crystalSymmetry.load('quartz.cif');
 tessFile = fullfile(mtexDataPath,'Neper','my100grains.tess');
 grains = grain3d.load(tessFile,'CS',cs)
 
-plot(grains,grains.meanOrientation,'micronbar','off','edgeAlpha',0.1)
+plot(grains,'ipfz','micronbar','off','edgeAlpha',0.1)
 setCamera(plottingConvention.default3D)
 
 %%
@@ -43,7 +43,7 @@ N = vector3d(1,-1,1);
 
 grainSlice = grains.slice(N,P0)
 
-plot(grainSlice,grainSlice.meanOrientation,'micronbar','off')
+plot(grainSlice,'ipfz','micronbar','off')
 setCamera(plottingConvention.default3D)
 
 %%
@@ -69,12 +69,12 @@ parentIds = unique(grainSlice.Id3d);
 parentGrains = grains(parentIds);
 
 newMtexFigure('layout',[1,2]);
-plot(grainSlice,grainSlice.meanOrientation,'micronbar','off')
+plot(grainSlice,'ipfz','micronbar','off')
 setCamera(sectionView)
 mtexTitle('Planar sections')
 
 nextAxis
-plot(parentGrains,parentGrains.meanOrientation,'micronbar','off','edgeAlpha',0.1)
+plot(parentGrains,'ipfz','micronbar','off','edgeAlpha',0.1)
 setCamera(plottingConvention.default3D)
 mtexTitle('Parent grains')
 
@@ -118,7 +118,7 @@ zLevels = linspace(min(grains.V.z),max(grains.V.z),7);
 for k = zLevels(2:end-1)
 
   grainSlice = grains.slice(N,vector3d(0,0,k));
-  plot(grainSlice,grainSlice.meanOrientation)
+  plot(grainSlice,'ipfz')
   % Interactive selection cannot combine grain2d objects from different planes.
   rmappdata(gca,'grains')
   hold on
@@ -143,7 +143,7 @@ grainsTri = selectedGrains.triangulate
 
 full([sum(selectedGrains.numFaces), sum(grainsTri.numFaces)])
 
-plot(grainsTri,grainsTri.meanOrientation,'micronbar','off','edgeAlpha',0.1)
+plot(grainsTri,'ipfz','micronbar','off','edgeAlpha',0.1)
 setCamera(plottingConvention.default3D)
 
 %%
@@ -162,7 +162,7 @@ setCamera(plottingConvention.default3D)
 rot = rotation.byAxisAngle(vector3d(1,1,1),30*degree);
 grainsRotated = rot * grains;
 
-plot(grainsRotated,grainsRotated.meanOrientation,'micronbar','off','edgeAlpha',0.1)
+plot(grainsRotated,'ipfz','micronbar','off','edgeAlpha',0.1)
 setCamera(plottingConvention.default3D)
 
 %%

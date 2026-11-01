@@ -139,8 +139,7 @@ plottingConvention.default('y↓→x');
 % this plot checks that orientations and positions have arrived together as
 % a spatially coherent map.
 
-plot(ebsd('Fe(gamma-iron)'),ebsd('Fe(gamma-iron)').orientations, ...
-  'ipfDirection',zvector)
+plot(ebsd('Fe(gamma-iron)'),'ipfz')
 
 %%
 % Coherent elongated domains and smooth colour changes inside them show that

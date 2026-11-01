@@ -25,7 +25,7 @@ cs = crystalSymmetry.load('quartz.cif');
 tessFile = fullfile(mtexDataPath,'Neper','my100grains.tess');
 grains = grain3d.load(tessFile,'CS',cs)
 
-plot(grains,grains.meanOrientation,'micronbar','off','edgeAlpha',0.1)
+plot(grains,'ipfz','micronbar','off','edgeAlpha',0.1)
 setCamera(plottingConvention.default3D)
 
 %%

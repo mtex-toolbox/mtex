@@ -188,7 +188,7 @@ ebsd = ebsd(ebsd.inpolygon([0,0,200,50]));
 grains = calcGrains(ebsd);
 grains = smoothBoundary(grains,5);
 
-plot(ebsd,ebsd.orientations,'micronbar','off')
+plot(ebsd,'ipfz','micronbar','off')
 hold on
 plot(grains.boundary,'linewidth',2)
 hold off

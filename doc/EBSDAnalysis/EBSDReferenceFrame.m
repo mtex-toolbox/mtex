@@ -79,8 +79,7 @@ EulerCorrection = ebsd.EulerCorrection
 % states the current screen layout: $x$ points east, $y$ south and $z$ into
 % the screen.
 
-plot(ebsd('olivine'),ebsd('olivine').orientations, ...
-  'ipfDirection',zvector,'refFrame','on')
+plot(ebsd('olivine'),'ipfz','refFrame','on')
 
 %% Screen layout is a different question
 %
@@ -94,8 +93,7 @@ plot(ebsd('olivine'),ebsd('olivine').orientations, ...
 % changes that plot alone.
 
 % draw x down and y east for this plot only
-plot(ebsd('olivine'),ebsd('olivine').orientations, ...
-  'ipfDirection',zvector,'how2plot','x↓→y','refFrame','on')
+plot(ebsd('olivine'),'ipfz','how2plot','x↓→y','refFrame','on')
 
 %%
 % The two screen directions are unchanged, but the axes drawn along them
@@ -134,8 +132,7 @@ largeGrains = grains(grains.numPixel>500);
 numLargeGrains = length(largeGrains)
 
 % draw the measured orientations and overlay the crystal shapes
-plot(ebsd('olivine'),ebsd('olivine').orientations,'refFrame','on', ...
-  'ipfDirection',zvector,'Location','se')
+plot(ebsd('olivine'),'ipfz','refFrame','on','Location','se')
 hold on
 plot(largeGrains,cS,'colored')
 hold off
@@ -186,8 +183,7 @@ grains = calcGrains(ebsd_rot);
 largeGrains = grains(grains.numPixel>500);
 
 % put the reference-frame indicator where no crystal covers it
-plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations, ...
-  'ipfDirection',zvector,'refFrame','on','Location','ne')
+plot(ebsd_rot('olivine'),'ipfz','refFrame','on','Location','ne')
 
 % overlay the crystal shapes
 hold on
@@ -216,8 +212,7 @@ grains = calcGrains(ebsd_rot);
 % select only large grains
 largeGrains = grains(grains.numPixel>500);
 
-plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations, ...
-  'ipfDirection',zvector,'refFrame','on','Location','se')
+plot(ebsd_rot('olivine'),'ipfz','refFrame','on','Location','se')
 
 % overlay the crystal shapes
 hold on
@@ -257,8 +252,7 @@ grains = calcGrains(ebsd_rot);
 % select only large grains
 largeGrains = grains(grains.numPixel>500);
 
-plot(ebsd_rot('olivine'),ebsd_rot('olivine').orientations, ...
-  'ipfDirection',zvector,'refFrame','on','Location','se')
+plot(ebsd_rot('olivine'),'ipfz','refFrame','on','Location','se')
 
 % overlay the crystal shapes
 hold on

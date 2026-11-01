@@ -37,8 +37,7 @@ grainSelected = grains(id)
 close all;
 plot(grainSelected.boundary,'lineWidth',2);
 hold on;
-plot(ebsd(grainSelected),ebsd(grainSelected).orientations,...
-  'ipfDirection',zvector);
+plot(ebsd(grainSelected),'ipfz');
 hold off;
 
 %%

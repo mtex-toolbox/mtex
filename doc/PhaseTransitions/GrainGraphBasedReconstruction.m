@@ -22,8 +22,7 @@ mtexdata martensite
   'minPixel',5,'alpha',6.1);
 grains = smoothBoundary(grains,5);
 
-plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,...
-  'figSize','large')
+plot(ebsd('Iron bcc'),'ipfz','figSize','large')
 hold on
 plot(grains.boundary,'lineWidth',2)
 hold off
@@ -106,8 +105,7 @@ graphWeightQuantiles = quantile(graphWeights,[0.1 0.5 0.9])
 % <parentGrainReconstructor.plotGraph.html |plotGraph|> maps the edge weights
 % back to their grain boundaries.
 
-plot(ebsd('Iron bcc'),ebsd('Iron bcc').orientations,...
-  'figSize','large','faceAlpha',0.5)
+plot(ebsd('Iron bcc'),'ipfz','figSize','large','faceAlpha',0.5)
 hold on
 job.plotGraph('lineWidth',2)
 hold off
@@ -145,7 +143,7 @@ job.clusterGraph('inflationPower',1.6)
 job.calcParentFromGraph
 
 numGraphTransformed = nnz(job.isTransformed)
-plot(job.parentGrains,job.parentGrains.meanOrientation)
+plot(job.parentGrains,'ipfz')
 
 %%
 % Most child grains now appear in the parent phase.
@@ -177,7 +175,7 @@ numGrainsFailingGraphCriteria = nnz(rejectGraphAssignment)
 
 job.revert(rejectGraphAssignment)
 
-plot(job.parentGrains,job.parentGrains.meanOrientation)
+plot(job.parentGrains,'ipfz')
 
 %%
 % <parentGrainReconstructor.revert.html |revert|> restores the measured child
@@ -202,7 +200,7 @@ for k = 1:3
 end
 
 childGrainsAfterVote
-plot(job.parentGrains,job.parentGrains.meanOrientation)
+plot(job.parentGrains,'ipfz')
 
 %%
 % The printed sequence should decrease as the reconstructed neighbourhood
@@ -224,7 +222,7 @@ numParentsAfterSimilarMerge = length(job.parentGrains)
 job.mergeInclusions('maxSize',50);
 numParentsAfterInclusionMerge = length(job.parentGrains)
 
-plot(job.parentGrains,job.parentGrains.meanOrientation)
+plot(job.parentGrains,'ipfz')
 
 %%
 % The first count change measures orientation-based merging.

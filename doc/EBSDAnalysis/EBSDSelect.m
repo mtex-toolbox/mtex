@@ -61,8 +61,7 @@ ebsd('indexed')
 % Plotting a phase selection uses the ordinary plot command.
 
 close all;
-plot(ebsd('Forsterite'),ebsd('Forsterite').orientations, ...
-  'ipfDirection',zvector);
+plot(ebsd('Forsterite'),'ipfz');
 
 %%
 % Only the forsterite footprint remains. Its colour still varies with

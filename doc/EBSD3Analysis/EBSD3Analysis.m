@@ -90,7 +90,7 @@ ebsdCut = slice(ebsd,plane3d(vector3d(1,1,1),vector3d(0,0,0)));
 plot(ebsdCut,ebsdCut.prop.Completeness,'facealpha',0.1)
 mtexColorMap white2black
 hold on
-plot(ebsdCut('Quartz'),ebsdCut('Quartz').orientations,'micronbar','off')
+plot(ebsdCut('Quartz'),'ipfz','micronbar','off')
 hold off
 
 %%

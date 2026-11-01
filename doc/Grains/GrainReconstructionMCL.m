@@ -50,7 +50,7 @@ grainsHard = calcGrains(ebsd,'angle',10*degree,'minPixel',10);
 fprintf('hard threshold: %d grains\n',length(grainsHard));
 grainsHard = smoothBoundary(grainsHard,5);
 
-plot(ebsd,ebsd.orientations,'ipfDirection',zvector)
+plot(ebsd,'ipfz')
 hold on
 plot(grainsHard.boundary,'lineWidth',4)
 hold off
@@ -101,7 +101,7 @@ grainsSoftMCL = calcGrains(ebsd,'mcl',[1.2 4],...
 fprintf('soft threshold + MCL: %d grains\n',length(grainsSoftMCL));
 grainsSoftMCL = smoothBoundary(grainsSoftMCL,5);
 
-plot(ebsd,ebsd.orientations,'ipfDirection',zvector)
+plot(ebsd,'ipfz')
 hold on
 plot(grainsSoftMCL.boundary,'lineWidth',3)
 hold off

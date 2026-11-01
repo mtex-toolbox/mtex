@@ -91,6 +91,8 @@ plot(ebsd('Forsterite'),ebsd('Forsterite').orientations,'micronbar','off')
 % grain.
 % The default IPF-Z key is a projection, so it can hide orientation
 % differences, and a real grain may contain a smooth orientation gradient.
+% The flag |'ipfz'| draws this map for every phase at once, each with its
+% own key: |plot(ebsd,'ipfz')|.
 % See <EBSDIPFMap.html IPF Maps> to draw and choose the colour key explicitly.
 
 %% Grain reconstruction

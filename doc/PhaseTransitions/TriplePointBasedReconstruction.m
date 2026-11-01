@@ -9,8 +9,7 @@
 mtexdata alphaBetaTitanium
 
 % Plot the measured alpha phase with inverse pole figure colours.
-plot(ebsd('Ti (alpha)'),ebsd('Ti (alpha)').orientations,...
-  'figSize','large')
+plot(ebsd('Ti (alpha)'),'ipfz','figSize','large')
 
 %%
 % The indexed measurements contain 99.8% alpha titanium and 0.2% beta
@@ -276,8 +275,7 @@ hold off
 % The final plot returns to the measured alpha orientations. White lines show
 % the smoothed reconstructed beta-grain boundaries.
 
-plot(ebsd('Ti (Alpha)'),ebsd('Ti (Alpha)').orientations,...
-  'figSize','large')
+plot(ebsd('Ti (Alpha)'),'ipfz','figSize','large')
 
 hold on
 parentGrains = smoothBoundary(job.parentGrains,5);

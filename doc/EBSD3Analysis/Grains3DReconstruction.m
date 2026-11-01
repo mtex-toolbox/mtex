@@ -37,7 +37,7 @@ ebsd = ebsdImported
 % second output is the same voxel data with a |grainId| per voxel. Plotting
 % the mean orientation colours every face on the outside of the volume.
 
-plot(grains,grains.meanOrientation,'edgeAlpha',0.1,'micronbar','off')
+plot(grains,'ipfz','edgeAlpha',0.1,'micronbar','off')
 setCamera(how2plot)
 
 %%

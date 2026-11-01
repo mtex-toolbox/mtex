@@ -41,7 +41,7 @@ mtexTitle('phases');
 
 nextAxis;
 fo = ebsd('Forsterite');
-plot(fo,fo.orientations,'ipfDirection',zvector,'micronbar','off');
+plot(fo,'ipfz','micronbar','off');
 mtexTitle('Forsterite orientations');
 
 %%

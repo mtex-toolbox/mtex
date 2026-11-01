@@ -245,7 +245,7 @@ ebsd = ebsd(largeGrains);
 close all
 plot(largeGrains.boundary,'linewidth',2)
 hold on
-plot(ebsd,ebsd.orientations)
+plot(ebsd,'ipfz')
 hold off
 
 %%

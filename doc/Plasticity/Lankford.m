@@ -115,7 +115,7 @@ mtexdata titanium
 CS = ebsd.CS;
 [grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',6);
 
-plot(ebsd,ebsd.orientations)
+plot(ebsd,'ipfz')
 hold on
 plot(grains.boundary,'lineWidth',2)
 hold off

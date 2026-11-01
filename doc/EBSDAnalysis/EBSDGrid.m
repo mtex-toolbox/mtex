@@ -23,7 +23,7 @@ mtexdata twins
 % form a 137 by 167 matrix, with one entry per scan position. Apart from its
 % matrix shape, it behaves like any other @EBSD variable.
 
-plot(ebsd('Magnesium'),ebsd('Magnesium').orientations)
+plot(ebsd('Magnesium'),'ipfz')
 
 %%
 % The rectangular outline follows the square measurement grid. The four
@@ -178,7 +178,7 @@ ebsdMg = ebsd('Magnesium').gridify
 % The empty sites complete the rectangle. Row and column ranges can
 % therefore select and plot a rectangular subregion.
 
-plot(ebsdMg(50:100,5:100),ebsdMg(50:100,5:100).orientations)
+plot(ebsdMg(50:100,5:100),'ipfz')
 
 %% Gridding Reorders the Measurements
 %
@@ -240,8 +240,7 @@ ebsd
 
 %%
 
-plot(ebsd(1:20,1:40),ebsd(1:20,1:40).orientations,...
-  'micronbar','off','edgeColor','black')
+plot(ebsd(1:20,1:40),'ipfz','micronbar','off','edgeColor','black')
 
 %%
 % The black cell edges reveal the alternating half-step offset between scan
@@ -261,9 +260,9 @@ unitCell = 2.5 * vector3d([-1 -1 1 1].',[-1 1 1 -1].',0);
 ebsdS = ebsd.gridify('unitCell',unitCell)
 
 % visualize the result
-plot(ebsd,ebsd.orientations,'layout',[1,2])
+plot(ebsd,'ipfz','layout',[1,2])
 nextAxis
-plot(ebsdS,ebsdS.orientations)
+plot(ebsdS,'ipfz')
 
 %%
 % This operation differs fundamentally from restoring a map's own lattice.
@@ -283,7 +282,7 @@ unitCell = 0.5*vector3d([-1 -1 1 1].',[-1 1 1 -1].',0);
 % use the small square unit cell for gridify
 ebsdS = ebsd.gridify('unitCell',unitCell)
 
-plot(ebsdS,ebsdS.orientations)
+plot(ebsdS,'ipfz')
 hold on
 plot(grains.boundary,'lineWidth',2)
 hold off
@@ -309,7 +308,7 @@ ebsdR = rotate(ebsd,20*degree)
 
 %%
 
-plot(ebsdR,ebsdR.orientations)
+plot(ebsdR,'ipfz')
 
 %%
 % The map is turned on screen, while the object summary still identifies a
@@ -376,11 +375,7 @@ distort = spatialTransformProjective.byTilt(theta,wd,centre)
 
 ebsdDistorted = transform(ebsd,distort);
 
-plot(ebsdDistorted('Fo'),ebsdDistorted('Fo').orientations)
-hold on
-plot(ebsdDistorted('En'),ebsdDistorted('En').orientations)
-plot(ebsdDistorted('Di'),ebsdDistorted('Di').orientations)
-hold off
+plot(ebsdDistorted,'ipfz')
 
 %%
 % The following pair measures the imposed distortion in cell units. Its
@@ -411,14 +406,7 @@ isequal(ebsdDistorted('Fo').lattice.ij, ebsd('Fo').lattice.ij)
 % neighbours. A rigid reconstruction would make the mesh wavy and would
 % give <EBSD.calcGrains.html |calcGrains|> the wrong neighbours.
 
-plot(ebsdDistorted('Fo'),ebsdDistorted('Fo').orientations,...
-  'unitCell','EdgeColor','black')
-hold on
-plot(ebsdDistorted('En'),ebsdDistorted('En').orientations,...
-  'unitCell','EdgeColor','black')
-plot(ebsdDistorted('Di'),ebsdDistorted('Di').orientations,...
-  'unitCell','EdgeColor','black')
-hold off
+plot(ebsdDistorted('indexed'),'ipfz','unitCell','EdgeColor','black')
 
 %%
 % Grain reconstruction consequently sees the distorted map as the same

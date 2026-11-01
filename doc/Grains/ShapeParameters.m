@@ -51,7 +51,7 @@ grains = smoothBoundary(grains,5);
 mapGrains = grains;
 
 % plot forsterite orientations and the reconstructed boundary network
-plot(ebsd('Fo'),ebsd('Fo').orientations,'ipfDirection',zvector)
+plot(ebsd('Fo'),'ipfz')
 hold on
 plot(grains.boundary,'lineWidth',2)
 hold off

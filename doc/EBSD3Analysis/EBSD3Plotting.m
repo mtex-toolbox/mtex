@@ -166,7 +166,7 @@ setCamera(plottingConvention.default3D)
 
 for p = ebsdZ.indexedPhasesId
   ebsdP = ebsdZ(ebsdZ.CSList(p).mineral);
-  plot(ebsdP,ebsdP.orientations,'micronbar','off')
+  plot(ebsdP,'ipfz','micronbar','off')
   hold on
 end
 hold off

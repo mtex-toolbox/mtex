@@ -135,6 +135,17 @@ plot(ebsd('Forsterite'),colors)
 % <EBSDAdvancedMaps.html Advanced Plotting> covers keys that answer questions
 % other than "which direction points where".
 %
+% The flag |'ipfz'| is the short form of this map. It colours every phase
+% with its own key for specimen z, and |'ipfx'| and |'ipfy'| select the
+% other specimen axes.
+
+plot(ebsd,'ipfz')
+
+%%
+% Forsterite appears exactly as above. Enstatite and diopside now carry
+% the colours of their own keys, and the |notIndexed| measurements stay
+% white.
+%
 %% Two maps in one figure
 %
 % Different maps combine by drawing subsets of the data on top of each other.

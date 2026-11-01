@@ -44,7 +44,7 @@ mtexdata csl silent
 grains = smoothBoundary(grains,5);
 
 % plot the reconstructed grains by their mean orientations
-plot(grains,grains.meanOrientation,'ipfDirection',zvector)
+plot(grains,'ipfz')
 
 %% What the orientation map shows
 % Thin bands of similar colours cross many of the larger grains. They are
@@ -63,8 +63,7 @@ setColorRange([.5,5])
 
 % make the orientation layer translucent
 hold on
-plot(grains,grains.meanOrientation,'ipfDirection',zvector,...
-  'FaceAlpha',0.4,'linewidth',3)
+plot(grains,'ipfz','FaceAlpha',0.4,'linewidth',3)
 hold off
 
 %% What the image-quality overlay shows

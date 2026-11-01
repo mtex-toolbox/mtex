@@ -118,7 +118,7 @@ grains
 % constitutive law.
 
 clf
-plot(grains,grains.meanOrientation,'micronbar','off','edgeAlpha',0.1)
+plot(grains,'ipfz','micronbar','off','edgeAlpha',0.1)
 how2plot = plottingConvention.default3D;
 setCamera(how2plot)
 
@@ -161,13 +161,13 @@ grains1_10 = grains.slice(N(2),A);
 grains224 = grains.slice(N(3),A)
 
 newMtexFigure('layout',[1,3],'figSize','large');
-plot(grains001,grains001.meanOrientation,'micronbar','off');
+plot(grains001,'ipfz','micronbar','off');
 mtexTitle('normal || specimen z')
 nextAxis
-plot(grains1_10,grains1_10.meanOrientation,'micronbar','off');
+plot(grains1_10,'ipfz','micronbar','off');
 mtexTitle('normal || (1,-1,0)')
 nextAxis
-plot(grains224,grains224.meanOrientation,'micronbar','off');
+plot(grains224,'ipfz','micronbar','off');
 mtexTitle('normal || (2,2,4)')
 
 %%
@@ -188,10 +188,9 @@ mtexTitle('normal || (2,2,4)')
 
 inPlane = grains.intersected(N(1),A);
 
-plot(grains001,grains001.meanOrientation,'micronbar','off');
+plot(grains001,'ipfz','micronbar','off');
 hold on
-plot(grains(inPlane),grains(inPlane).meanOrientation, ...
-  'faceAlpha',0.55,'edgeAlpha',0.1)
+plot(grains(inPlane),'ipfz','faceAlpha',0.55,'edgeAlpha',0.1)
 hold off
 setCamera(how2plot)
 
