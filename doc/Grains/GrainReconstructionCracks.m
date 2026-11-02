@@ -24,6 +24,7 @@
 % The map is a thin section of a peridotite, a mantle rock made mainly of
 % olivine (forsterite), orthopyroxene (enstatite) and clinopyroxene
 % (diopside). The step size is 60 micron, so the map is about 33 mm wide.
+% The data are courtesy of David Mainprice, Géosciences Montpellier.
 
 mtexdata peridotite silent
 
