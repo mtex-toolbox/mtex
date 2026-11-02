@@ -188,10 +188,17 @@ f(w == 0,:) = 0;
 x = f;
 active = true(max([comp;0]),1);
 loc = zeros(numel(comp),1);
-m = 0;
+m = 0; p = [];
+
+% the Anderson history, updated step by step: the differences of the iterates
+% and of their steps in a ring of M columns over the moving pixels, the Gram
+% matrix of the step differences, and the last iterate and step
+M = 4; dY = []; dG = []; gram = zeros(M); yL = []; gL = []; cnt = 0; head = 1;
+
 for iter = 1:F.iterMax
 
   % the pixels and the edge differences D of the components still moving
+  pOld = p;
   p = find(active(comp));
   if numel(p) ~= m
     m = numel(p);
@@ -201,7 +208,13 @@ for iter = 1:F.iterMax
     ne = numel(ea);
     D = sparse([1:ne,1:ne],[ea;eb],[ones(ne,1);-ones(ne,1)],ne,m);
     Dt = D';
-    Y = []; G = [];
+    % the stopped pixels leave the history, the others keep theirs
+    if ~isempty(yL)
+      keep = repmat(ismember(pOld,p),3,1);
+      yL = yL(keep); gL = gL(keep);
+      if ~isempty(dY), dY = dY(keep,:); dG = dG(keep,:); end
+      gram(1:cnt,1:cnt) = dG(:,1:cnt)' * dG(:,1:cnt);
+    end
   end
   xp = x(p,:); fp = f(p,:); wp = w(p);
 
@@ -220,18 +233,23 @@ for iter = 1:F.iterMax
   if ~F.l1DataFit && ~F.l1TV, x(p,:) = y; break; end
 
   % Anderson extrapolation from the last five steps, taken in the components whose
-  % energy it lowers
+  % energy it lowers; the new differences overwrite the oldest column, and the
+  % Gram matrix gets their column
   g = y(:) - xp(:);
-  Y = [Y, y(:)]; G = [G, g]; %#ok<AGROW>
-  if size(Y,2) > 5, Y(:,1) = []; G(:,1) = []; end
   xn = y;
-  if size(Y,2) > 1
-    dG = diff(G,1,2);
-    xa = reshape(y(:) - diff(Y,1,2) * ((dG'*dG + 1e-12*eye(size(dG,2))) \ (dG'*g)),size(y));
+  if ~isempty(yL)
+    if isempty(dY), dY = zeros(numel(g),M); dG = zeros(numel(g),M); end
+    dY(:,head) = y(:) - yL; dG(:,head) = g - gL;
+    cnt = min(cnt + 1,M);
+    if cnt == M, dGk = dG; dYk = dY; else, dGk = dG(:,1:cnt); dYk = dY(:,1:cnt); end
+    gram(1:cnt,head) = dGk' * dG(:,head); gram(head,1:cnt) = gram(1:cnt,head)';
+    head = mod(head,M) + 1;
+    xa = reshape(y(:) - dYk * ((gram(1:cnt,1:cnt) + 1e-12*eye(cnt)) \ (dGk'*g)),size(y));
     better = energy(F,xa,fp,wp,D,ea,comp(p),alpha) < energy(F,y,fp,wp,D,ea,comp(p),alpha);
     xn(better(comp(p)),:) = xa(better(comp(p)),:);
-    if ~any(better), Y = Y(:,end); G = G(:,end); end
+    if ~any(better), cnt = 0; head = 1; end
   end
+  yL = y(:); gL = g;
   x(p,:) = xn;
 
   % a component stops once the reweighting moves none of its pixels by tol
