@@ -78,21 +78,24 @@ fprintf('%d pores, %d pockets, %.1f%% of the map outside all grains\n', ...
 %
 % A larger |alpha| closes wider |notIndexed| regions. We repeat the
 % reconstruction for increasing values, and look at the lower part of the
-% crack. The background is the second output of |calcGrains|. In it, every
-% |notIndexed| pixel absorbed by a grain has the phase of that grain, so the
-% white pixels are those outside all grains or in a |notIndexed| grain.
+% crack. The background is the second output of |calcGrains|, coloured by
+% orientation. A |notIndexed| pixel has no orientation and stays white, also
+% where a grain has absorbed it. The boundaries show which region belongs to
+% which grain.
 
-alpha = [1 3.1 6 10];
+alpha = [1.1 2.1 6.1 16.1];
 
 newMtexFigure('layout',[2 2]);
 for k = 1:numel(alpha)
   [grainsA,ebsdA] = calcGrains(ebsd,'angle',10*degree,'minPixel',5, ...
     'alpha',alpha(k));
+  grainsA = smoothBoundary(grainsA,5);
   nextAxis
-  plot(ebsdA,'micronbar','off')
+  plot(ebsdA,'ipfz','micronbar','off')
+  %plot(grainsA,'ipfz','micronbar','off')
   legend off
   hold on
-  plot(grainsA.boundary,'linewidth',1)
+  plot(grainsA.boundary,'linewidth',1.5)
   hold off
   axis([2500 12500 7000 17940])
   mtexTitle(['alpha = ' num2str(alpha(k))])
@@ -102,12 +105,14 @@ for k = 1:numel(alpha)
 end
 
 %%
-% With |alpha = 1| many notIndexed specks between the grains remain grains
-% of their own. The default |alpha = 3.1| absorbs those specks, and keeps
-% the pores, the pockets and the crack. With |alpha = 6| the pores and almost
-% all pockets of the map are gone, and the narrow upper part of the crack is
-% closed. With |alpha = 10| only the widest part of the crack near the bottom
-% edge remains open.
+% With |alpha = 1.1| many |notIndexed| specks between the grains remain
+% grains of their own. With |alpha = 2.1| most of those specks are absorbed,
+% while the pores, the pockets and the crack are kept. With |alpha = 6.1| the
+% pores and almost all pockets of the map are gone. The narrow upper part of
+% the crack is closed, and the grains on its two sides meet inside it. The
+% wide lower part is still open. With |alpha = 16.1| the grains bridge the
+% lower part as well. Only its mouth at the bottom edge of the map remains
+% outside all grains, and no |notIndexed| grain is left.
 %
 % No single value treats all regions as we would like. The value that closes
 % the crack also absorbs every pore and pocket of the map into the
@@ -161,9 +166,10 @@ axis([2500 12500 7000 17940])
 
 %%
 % The darkened grains extend across the crack, which shows through them as a
-% lighter band. All other grains next to the crack now meet their neighbour
-% from the other side at a boundary inside the crack. Those boundaries are
-% not measured. They lie where the closing happened to put them.
+% lighter band. The other grains along the closed part of the crack meet
+% their neighbour from the other side at a boundary inside the crack. Those
+% boundaries are not measured. They lie where the closing happened to put
+% them. The wide lower part of the crack remains open.
 
 %% Pores as part of their grain
 %
