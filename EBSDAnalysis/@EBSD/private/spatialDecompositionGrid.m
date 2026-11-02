@@ -156,6 +156,17 @@ end
 % (morphological reconstruction of the border marker under the mask ~closedP),
 % here computed as connected components of ~closedP with border-touching label.
 exteriorP = floodFillBorder(~closedP, stencil, szP);   % 2D flood fill
+
+% a hole joined to the outside by a filled notIndexed path of at most 2*alpha
+% steps is part of the outside, and so is that path
+filledP  = closedP & ~isIndexedP;
+nSteps   = 2*ceil(alpha);
+corridor = filledP & geoDist(exteriorP, filledP, stencil, szP, nSteps) + ...
+  geoDist(~closedP & ~exteriorP, filledP, stencil, szP, nSteps) <= nSteps;
+if any(corridor)
+  closedP(corridor) = false;
+  exteriorP = floodFillBorder(~closedP, stencil, szP);
+end
 % imagesc(reshape(exteriorP,szP)), axis equal tight
 
 % guard: material must be strictly inside the padded raster, else the dummy
@@ -276,6 +287,19 @@ for o = 1:size(offs,1)
   M2(r,c) = M2(r,c) | M(r-di, c-dj);
 end
 m2 = M2(:);
+end
+
+% ===========================================================================
+function d = geoDist(seed, mask, stencil, szP, nSteps)
+% number of stencil steps from seed to every cell of mask, inf beyond nSteps
+d = inf(prod(szP),1);
+reached = seed; front = seed;
+for k = 1:nSteps
+  front = binaryDilate(front, stencil, szP) & mask & ~reached;
+  if ~any(front), break; end
+  d(front) = k;
+  reached = reached | front;
+end
 end
 
 % ===========================================================================
