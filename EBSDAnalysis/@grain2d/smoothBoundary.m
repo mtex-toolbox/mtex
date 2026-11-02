@@ -55,8 +55,9 @@ function [grains,F] = smoothBoundary(grains,iter,varargin)
 %
 % Junctions - triple points, quadruple points, and the vertices where the
 % inner boundary ends on the outer one - stay exactly where they are
-% throughout, unless |moveTriplePoints| is given. When grains were segmented
-% using alphaShapes, all grains next to holes have outer boundary.
+% throughout, unless |moveTriplePoints| is given. The outer boundary is
+% smoothed as well, but its junctions and the corners of its convex hull stay
+% fixed unless |moveOuterBoundary| is given, so the map keeps its extent.
 %
 % Note that the first two steps change the number of boundary segments. A
 % segment that no longer runs between a specific pair of pixels gets the
@@ -78,7 +79,7 @@ function [grains,F] = smoothBoundary(grains,iter,varargin)
 %  noSimplify        - do not simplify the boundary first
 %  noRefine          - do not subdivide the boundary
 %  moveTriplePoints  - do not exclude triple/quadruple points from smoothing
-%  moveOuterBoundary - do not exclude outer boundary from smoothing
+%  moveOuterBoundary - let the junctions and hull corners of the outer boundary move
 %
 % The remaining options configure the default laplaceFilter and have no
 % meaning for the other filters
@@ -133,21 +134,20 @@ I_VF = [grains.boundary.I_VF,grains.innerBoundary.I_VF];
 % compute vertices adjacency matrix
 A_V = I_VF * I_VF';
 
-% do not move a vertex where other than two segments meet, a loose end included
-if check_option(varargin,'moveTriplePoints')
-  ignore = false(size(A_V,1),1);
-else
-  vDegree = full(diag(A_V));
-  ignore = vDegree ~= 2 & vDegree > 0;
-end
+% do not move a vertex where other than two segments meet, a loose end included,
+% nor a vertex no segment uses
+vDegree = full(diag(A_V));
+ignore = vDegree == 0 | (vDegree ~= 2 & ~check_option(varargin,'moveTriplePoints'));
 
-% ignore outer boundary
+V = grains.allV.xyz;
+
+% the outer boundary keeps its junctions and the corners of its convex hull
 if ~check_option(varargin,'moveOuterBoundary')
-  ignore(grains.boundary.F(any(grains.boundary.grainId==0,2),:)) = true;
+  outerV = grains.boundary.F(any(grains.boundary.grainId==0,2),:);
+  ignore(outerV(vDegree(outerV) ~= 2)) = true;
+  used = find(vDegree > 0);
+  ignore(used(convhull(V(used,1:2)))) = true;
 end
-
-% a vertex no segment uses has nothing to be smoothed against
-ignore = ignore | full(diag(A_V)) == 0;
 
 % which algorithm does the smoothing - the iteration count and the kernel
 % options are how a laplaceFilter used to be spelled out
@@ -157,8 +157,6 @@ if isempty(F), F = laplaceFilter(iter,varargin{:}); end
 % the spacing the vertices are sampled at, which is what turns a smoothing
 % length into a regularization weight
 h = median(grains.boundary.segLength);
-
-V = grains.allV.xyz;
 
 V = F.smooth(V,A_V,ignore,h);
 

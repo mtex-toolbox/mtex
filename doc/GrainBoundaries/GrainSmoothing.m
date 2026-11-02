@@ -234,8 +234,9 @@ fprintf(['boundary segments: %d measured, %d after smoothing, ' ...
 %
 % The option |'moveTriplePoints'| releases the interior junctions despite its
 % narrower name. Be careful with a Laplacian: moving those vertices allows a
-% small grain to shrink until its polygon collapses. Outer-boundary vertices
-% remain fixed unless |'moveOuterBoundary'| is also passed.
+% small grain to shrink until its polygon collapses. The junctions on the
+% outer boundary and the corners of its convex hull remain fixed unless
+% |'moveOuterBoundary'| is also passed.
 
 %% References
 %

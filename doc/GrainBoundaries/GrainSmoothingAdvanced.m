@@ -266,8 +266,8 @@ fprintf('  %+6.2f%% on average, %+6.1f%% for the worst grain\n', ...
 % By default, all junctions remain fixed. The grains that touch and the
 % junction positions therefore stay unchanged. Despite its name,
 % |'moveTriplePoints'| releases every non-outer junction, not only triple
-% points. The outer map boundary remains fixed unless |'moveOuterBoundary'|
-% is also passed.
+% points. The junctions on the outer map boundary and the corners of its
+% convex hull remain fixed unless |'moveOuterBoundary'| is also passed.
 
 iter = [1 5 10 25];
 color = copper(length(iter)+1);
