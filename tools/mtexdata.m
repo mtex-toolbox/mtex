@@ -270,6 +270,10 @@ catch
 
           out = EBSD.load(fName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree));
 
+        case 'peridotite'
+
+          out = EBSD.load(fName,'EulerCorrection',rotation.byAxisAngle(xvector,180*degree));
+
         case 'emsphinx'
 
           % an in situ deformed austenitic steel indexed with EMSphInx: 0.4 micron

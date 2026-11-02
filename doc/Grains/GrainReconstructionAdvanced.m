@@ -324,6 +324,8 @@ mtexColorbar('title','log(pixels / boundary segments)')
 % support. In either case, repeat the reconstruction over defensible nearby
 % settings before treating a grain count or size distribution as measured.
 %
+% Maps whose |notIndexed| regions are cracks and pores are treated in
+% <GrainReconstructionCracks.html Cracks and Pores>.
 % Continue with <GrainReconstructionMCL.html Markovian Clustering> when
 % fractional criterion weights should influence the grouping itself. The
 % resulting boundaries and their internal boundaries are developed in
