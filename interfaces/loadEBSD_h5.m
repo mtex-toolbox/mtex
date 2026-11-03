@@ -499,26 +499,21 @@ function out = space_group_default(raw_data)
 end
 
 function out = space_group_Oxford(raw_data)
-% resolve each phase's space group before its Channel-numbered Laue class
+% Oxford writes space group 0 when unknown, then the Laue class it numbers
+% as Channel does is all the file states about the symmetry
 
-  fields = fieldnames(raw_data);
-  spaceField = find(strcmpi(fields,'SpaceGroup'),1);
-  laueField = find(strcmpi(fields,'LaueGroup'),1);
-  if ~isempty(spaceField) && validGroupCode(raw_data.(fields{spaceField}),230)
-    out = space_group_default(raw_data.(fields{spaceField}));
-  elseif ~isempty(laueField) && validGroupCode(raw_data.(fields{laueField}),11)
-    groups = laueGroups;
-    out = groups{double(raw_data.(fields{laueField})),1};
+  raw_data = cell2struct(struct2cell(raw_data),lower(fieldnames(raw_data)));
+  isCode = @(f,n) isfield(raw_data,f) && isnumeric(raw_data.(f)) && ...
+    isscalar(raw_data.(f)) && any(raw_data.(f) == 1:n);
+
+  if isCode('spacegroup',230)
+    out = space_group_default(raw_data.spacegroup);
+  elseif isCode('lauegroup',11)
+    out = laueGroups;
+    out = out{raw_data.lauegroup,1};
   else
     out = '1';
   end
-
-end
-
-function tf = validGroupCode(value,limit)
-
-  tf = isnumeric(value) && isreal(value) && isscalar(value) && ...
-    isfinite(value) && value == fix(value) && value >= 1 && value <= limit;
 
 end
 

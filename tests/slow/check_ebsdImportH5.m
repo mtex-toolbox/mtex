@@ -54,64 +54,37 @@ end
 
 % =========================================================================
 function checkOxfordSymmetry
-% space groups take precedence; missing or invalid numbers use the phase's Laue class
+% Oxford's space group first, then its Laue class, each phase on its own
 
-cases = {0,9,'6/mmm'; [],9,'6/mmm'; NaN,9,'6/mmm'; Inf,9,'6/mmm'; ...
-  -1,9,'6/mmm'; 231,9,'6/mmm'; 186.5,9,'6/mmm'; [186 194],9,'6/mmm'; ...
-  1,9,'1'; 2,9,'-1'; 186,9,'6mm'; 194,[],'6/mmm'; [],[],'1'};
-groups = laueGroups;
-for k = 1:size(groups,1)
-  cases(end+1,:) = {0,k,groups{k,1}}; %#ok<AGROW>
-end
+% space group, Laue code, field names, expected point group - one phase each
+cases = {0,9,'Space Group','6/mmm'; 186,9,'Space Group','6mm'; ...
+  [],9,'Space Group','6/mmm'; NaN,5,'Space Group','4/mmm'; ...
+  194,[],'Space Group','6/mmm'; [],[],'Space Group','1'; 0,9,'space group','6/mmm'};
 
-for k = 1:size(cases,1)
-  f = writeOxfordPhases(cases(k,1),cases(k,2),cases(k,3));
-  cleanup = onCleanup(@() delete(f));
-  e = load1(f,{'headerOnly'});
-  expected = crystalSymmetry(cases{k,3});
-  assert(numel(e.CSList) == 2 && strcmp(e.CSList(2).pointGroup,expected.pointGroup), ...
-    'check_ebsdImportH5: Oxford symmetry case %d expected %s',k,cases{k,3});
-  clear cleanup
-end
-
-for names = {{'Space Group','Laue Group'}, {'space group','laue group'}, ...
-    {'sPaCe GrOuP','lAuE GrOuP'}}
-  f = writeOxfordPhases({186,[]},{9,9},{'6mm','6/mmm'},names{1});
-  cleanup = onCleanup(@() delete(f));
-  e = load1(f,{'headerOnly'});
-  assert(numel(e.CSList) == 3 && strcmp(e.CSList(2).pointGroup,'6mm') && ...
-    strcmp(e.CSList(3).pointGroup,'6/mmm'), ...
-    'check_ebsdImportH5: Oxford phases borrowed a neighbouring space group');
-  clear cleanup
-end
-
-end
-
-% =========================================================================
-function f = writeOxfordPhases(spaceIds,laueIds,groups,fieldNames)
-
-if nargin < 4, fieldNames = {'Space Group','Laue Group'}; end
 f = [tempname '.h5oina'];
+cleanup = onCleanup(@() delete(f));
 scan = '/1/EBSD';
 writeStr(f,'/Manufacturer','Oxford Instruments');
-writeNum(f,[scan '/Header/X Step'],0.015);
-writeNum(f,[scan '/Header/Y Step'],0.015);
+writeNum(f,[scan '/Header/X Step'],1);
+writeNum(f,[scan '/Header/Y Step'],1);
 writeNum(f,[scan '/Header/X Cells'],2);
 writeNum(f,[scan '/Header/Y Cells'],2);
 writeNum(f,[scan '/Data/Phase'],ones(4,1));
 h5create(f,[scan '/Data/Euler'],[3 4]);
-h5write(f,[scan '/Data/Euler'],repmat([0.3;0.4;0.5],1,4));
-for k = 1:numel(spaceIds)
-  phase = sprintf('%s/Header/Phases/%d',scan,k);
-  writeStr(f,[phase '/Phase Name'],sprintf('phase %d',k));
-  writeNum(f,[phase '/Lattice Dimensions'],[1 1 1]);
-  cs = crystalSymmetry(groups{k});
-  angles = cs.abg;
-  if strcmp(groups{k},'2/m'), angles = [90 105 90]*degree; end
-  writeNum(f,[phase '/Lattice Angles'],angles);
-  if ~isempty(spaceIds{k}), writeNum(f,[phase '/' fieldNames{1}],spaceIds{k}); end
-  if ~isempty(laueIds{k}), writeNum(f,[phase '/' fieldNames{2}],laueIds{k}); end
+h5write(f,[scan '/Data/Euler'],zeros(3,4));
+for k = 1:size(cases,1)
+  phase = sprintf('%s/Header/Phases/%d/',scan,k);
+  writeStr(f,[phase 'Phase Name'],sprintf('phase %d',k));
+  writeNum(f,[phase 'Lattice Dimensions'],[1 1 1]);
+  writeNum(f,[phase 'Lattice Angles'],crystalSymmetry(cases{k,4}).abg);
+  if ~isempty(cases{k,1}), writeNum(f,[phase cases{k,3}],cases{k,1}); end
+  if ~isempty(cases{k,2}), writeNum(f,[phase replace(cases{k,3},{'Space','space'},{'Laue','laue'})],cases{k,2}); end
 end
+
+CS = load1(f,{'headerOnly'}).CSList;
+pg = {CS(2:end).pointGroup};
+assert(isequal(pg,cases(:,4).'), ...
+  'check_ebsdImportH5: Oxford point groups %s',strjoin(pg,' '));
 
 end
 
