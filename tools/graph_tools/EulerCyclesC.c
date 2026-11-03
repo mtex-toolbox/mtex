@@ -118,14 +118,13 @@ void calcEulerCycles(const mxArray *I_FG, const mxArray *F, const mxArray *V_M, 
 
     buildNeighborList(&w);
 
-    // assumption: number of point occurrences < number of points * 4
-    initIntStack(&(w.cyclePoints), w.V_M*4 + 1000);
-
-    // asumption: number of cycles < number of grains * 2
-    initIntStack(&(w.cycles), I_FG_N*2 + 1000);
+    // every face of a grain closes at most one cycle and adds one point to it
+    int nnz = I_FG_Jc[I_FG_N];
+    initIntStack(&(w.cyclePoints), 2*nnz + 1);
+    initIntStack(&(w.cycles), nnz + 1);
 
     // [grain1CyclesStartIndex, grain2CyclesStartIndex, ..., numberOfCycles]
-    w.grainCycles = mxMalloc(sizeof(int)*I_FG_N + 1);
+    w.grainCycles = mxMalloc(sizeof(int)*(I_FG_N + 1));
     
     w.F_usable_global = mxMalloc(sizeof(int)*w.F_M);
     memset(w.F_usable_global, 0, sizeof(int)*w.F_M);
@@ -133,8 +132,7 @@ void calcEulerCycles(const mxArray *I_FG, const mxArray *F, const mxArray *V_M, 
     w.V_currentCycleIndex = mxMalloc(sizeof(int)*w.V_M);
     memset(w.V_currentCycleIndex, -1, sizeof(int)*w.V_M);
 
-    // asumption: max cycle size < 10000
-    initIntStack(&(w.currentCyclePoints),10000);
+    initIntStack(&(w.currentCyclePoints), w.F_M + 1);
 
 
     // ------ calculate cycles for each grain ------
@@ -243,15 +241,15 @@ void buildNeighborList(WorkingData* w) {
 void calcEulerCyclesGrain(WorkingData* w, int grainIndex, mwIndex *FindexGrain, int nFGrain) {
     // global: index in F_doubles; local: index in FindexGrain
     
-    int startFLocal, startV, currentV;
+    int startFLocal = 0, startV, currentV;
     int currentFGlobal = -1;
     int nFUsed = 0;// number of used faces
 
     // while not all faces used
     while (nFUsed < nFGrain) {
         if (currentFGlobal == -1) {
-            // find unused face:
-            for (startFLocal = 0; startFLocal < nFGrain; startFLocal++) {
+            // find unused face, the ones before startFLocal are used
+            for (; startFLocal < nFGrain; startFLocal++) {
                 currentFGlobal = FindexGrain[startFLocal];
                 if (currentFGlobal < 0 || currentFGlobal >= w->F_M) {
                     error("internal:currentFGlobalOutOfBounds", "internal Error: currentFGlobal=%d out of bounds 0,%d",currentFGlobal,w->F_M - 1);
