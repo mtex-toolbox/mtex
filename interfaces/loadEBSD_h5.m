@@ -498,6 +498,30 @@ function out = space_group_default(raw_data)
 
 end
 
+function out = space_group_Oxford(raw_data)
+% resolve each phase's space group before its Channel-numbered Laue class
+
+  fields = fieldnames(raw_data);
+  spaceField = find(strcmpi(fields,'SpaceGroup'),1);
+  laueField = find(strcmpi(fields,'LaueGroup'),1);
+  if ~isempty(spaceField) && validGroupCode(raw_data.(fields{spaceField}),230)
+    out = space_group_default(raw_data.(fields{spaceField}));
+  elseif ~isempty(laueField) && validGroupCode(raw_data.(fields{laueField}),11)
+    groups = laueGroups;
+    out = groups{double(raw_data.(fields{laueField})),1};
+  else
+    out = '1';
+  end
+
+end
+
+function tf = validGroupCode(value,limit)
+
+  tf = isnumeric(value) && isreal(value) && isscalar(value) && ...
+    isfinite(value) && value == fix(value) && value >= 1 && value <= limit;
+
+end
+
 function out = space_group_EDAX(raw_data)
 % EDAX states the symmetry as the numeric TSL code, which gives the Laue
 % group only, and - in newer files - as the actual point group, either as
