@@ -164,7 +164,7 @@ classdef grain2d < phaseList & dynProp
           inv(grains.prop.meanRotation(grainId(isNotBoundary,2))) ...
           .* grains.prop.meanRotation(grainId(isNotBoundary,1));
 
-        % calcPolygons winds the loops positively, so the grain is already on the left
+        % calcPolygonsC winds the loops positively, so the grain is already on the left
         grains.boundary = grainBoundary(V,F,grainId,grains.id,...
           grains.phaseId,mori,grains.CSList,grains.phaseMap,[],'leftOriented');
         
