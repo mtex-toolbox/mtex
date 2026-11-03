@@ -47,18 +47,22 @@ end
 % entries of poly should be indices of vertices
 poly = F(polyB).';
 
-numTours = numel(tourStart)-1;
-polys = cell(1,numTours);
-for k=1:numTours
-  polys{k} = [poly(tourStart(k):tourStart(k+1)-1),poly(tourStart(k))];
+% split every closed tour into simple cycles at its repeated vertices
+polys = {};
+pos = zeros(max(F(:)),1); % position of a vertex in the current stack s
+for k=1:numel(tourStart)-1
+  t = poly(tourStart(k):tourStart(k+1)-1);
+  s = zeros(1,numel(t)); n = 0;
+  for v = [t t(1)]
+    if pos(v)
+      polys{end+1} = [s(pos(v):n) v]; %#ok<AGROW>
+      pos(s(pos(v)+1:n)) = 0; n = pos(v);
+    else
+      n = n + 1; s(n) = v; pos(v) = n;
+    end
+  end
+  pos(s(1:n)) = 0;
 end
-
-if numTours == 1
-  poly = polys;
-else
-  % order such that largest Tour is the first one
-  [~,order] = sort(diff(tourStart),'descend');
-  poly = polys(order);
-end
+poly = polys;
 
 end
