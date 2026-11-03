@@ -1,6 +1,6 @@
 function ebsd = fixPos(ebsd,varargin)
 % correct x,y coordinates suffering from rounding issues
-% Either provide the desired regilar step size, otherwise 
+% Either provide the desired regular step size, otherwise 
 % it is intended to find a likely step size by rounding 
 % 
 % Syntax
