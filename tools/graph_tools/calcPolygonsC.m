@@ -23,7 +23,15 @@ function [poly,inclusionId] = calcPolygonsC(I_FG,F,V,N)
 % compute cycles - EulerCyclesC reads I_FG with mxGetPr and F with
 % mxGetDoubles, so both have to be double (a sparse logical I_FG or single
 % precision F would crash the mex)
-[g, c, cP] = EulerCyclesC(double(I_FG),double(F),size(V,1));
+try
+  [g, c, cP] = EulerCyclesC(double(I_FG),double(F),size(V,1));
+catch % trace every grain in MATLAB
+  EC = arrayfun(@(k) EulerCycles(F(I_FG(:,k)>0,:)),1:size(I_FG,2),'UniformOutput',false);
+  g = cumsum([1 cellfun(@numel,EC)]).';
+  EC = [EC{:}];
+  c = cumsum([1 cellfun(@numel,EC)]).';
+  cP = [EC{:}].';
+end
 % g - each entry represents one grain, except for the last one. 
 %     For each grain, the first index of the cycles belonging to this grain is stored.
 %     The last element is the total number of cycles.
