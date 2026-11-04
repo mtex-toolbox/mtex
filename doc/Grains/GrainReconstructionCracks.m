@@ -168,8 +168,11 @@ axis([2500 12500 7000 17940])
 % The darkened grains extend across the crack, which shows through them as a
 % lighter band. The other grains along the closed part of the crack meet
 % their neighbour from the other side at a boundary inside the crack. Those
-% boundaries are not measured. They lie where the closing happened to put
-% them. The wide lower part of the crack remains open.
+% boundaries are not measured. |calcGrains| draws each of them as a straight
+% line between the points where it meets the two walls of the crack, the
+% shortest boundary the closed crack allows. With the option
+% |'straighten',false| they follow the bisectors between the measured pixels
+% on either side instead. The wide lower part of the crack remains open.
 
 %% Pores as part of their grain
 %
