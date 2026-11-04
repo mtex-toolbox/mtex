@@ -302,13 +302,11 @@ for nameC = {'twins','titanium'}
   e = ebsd('indexed');
 
   fp = fill(e);              % lattice route
-  fg = fill(e,'gridify');    % the old behaviour, kept as an opt-out
+  fg = gridify(e);           % the full lattice
 
   assert(strcmp(class(fp),'EBSD'), ...
     'check_gridify: %s - fill returned a %s, expected the input class EBSD', ...
     name, class(fp));
-  assert(isa(fg,'EBSDgrid'), ...
-    'check_gridify: %s - fill(...,''gridify'') no longer returns a grid class', name);
 
   % the measurements themselves are untouched, and stay in their rows
   assert(length(fp) >= length(e), 'check_gridify: %s - fill lost pixels', name);

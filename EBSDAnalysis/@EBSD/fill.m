@@ -11,9 +11,6 @@ function ebsd = fill(ebsd,varargin)
 %  grains - @grain2d, the outlines that decide the grain of an empty site
 %  mask   - logical, the pixels filling is restricted to
 %
-% Options
-%  gridify - return a gridded map
-%
 % Description
 % A pixel that was not measured and a notIndexed pixel are the same to
 % fill: every pixel without orientation inside the convex hull of the
@@ -34,10 +31,9 @@ mask = getClass(varargin,'logical',[]);
 if ~isempty(mask) && numel(mask) ~= length(ebsd)
   error('The mask needs one entry per pixel of the map.');
 end
-if isempty(mask) && ~isa(ebsd,'EBSDgrid') && ~check_option(varargin,'gridify')
+if isempty(mask) && ~isa(ebsd,'EBSDgrid')
   [ebsd,isNew] = addLatticeSites(ebsd);
 else
-  if isempty(mask) && ~isa(ebsd,'EBSDgrid'), ebsd = ebsd.gridify; end
   isNew = isnan(ebsd.phaseId(:));
 end
 

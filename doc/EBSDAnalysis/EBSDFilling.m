@@ -37,7 +37,7 @@ plottingConvention.default('y↓→x');
 mtexdata ferrite
 
 % reconstruct the grain structure
-[grains,ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',5);
+grains = calcGrains(ebsd,'angle',12*degree,'minPixel',10);
 
 % smooth the pixel staircase of the grain boundaries
 grains = smoothBoundary(grains,5);
@@ -49,9 +49,8 @@ plot(grains.boundary,'linewidth',1.5)
 hold off
 
 %%
-% The boundary overlay supplies the geometric constraint used below. It
-% separates missing positions in grain interiors from unresolved corridors
-% along grain boundaries.
+% These boundaries come from the complete map. They are the reference for
+% the boundaries reconstructed from sparse data below.
 
 %% A very sparse measured data set
 %
@@ -83,13 +82,22 @@ plot(ebsdSub,'ipfz')
 grainsSub = smoothBoundary(grainsSub,5);
 
 hold on
-plot(grainsSub.boundary,'linewidth',1.5)
+% full data grain boundaries 
+plot(grains.boundary,'linewidth',1.5,'LineColor','gray')
+
+% sparse data grain boundaries 
+plot(grainsSub.boundary,'linewidth',2.5)
 hold off
 
 %%
-% The boundaries recover the main grain outlines despite the sparse input.
-% They also divide the map into interiors that may be filled and boundary
-% corridors that should remain unresolved.
+% The black boundaries come from the sparse data, the grey ones from the
+% complete map. Almost everywhere the black line covers the grey one, so
+% the sparse data recover the grain outlines. The sparse reconstruction
+% also produces small extra grains, most visibly in the fine-grained region
+% at the lower left.
+%
+% The boundaries also divide the map into interiors that may be filled and
+% boundary corridors that should remain unresolved.
 
 %% Filling by nearest-neighbour interpolation
 %
@@ -107,8 +115,7 @@ hold off
 %
 % Without the grains, a missing lattice site takes the grain of its nearest
 % pixel instead, which fills most of the corridors along the boundaries as
-% well. The flag |'gridify'| returns the completed scan lattice as a
-% matrix-shaped map; it does not change which values are assigned.
+% well.
 
 ebsdSub_filled = fill(ebsdSub,grainsSub);
 
@@ -160,7 +167,7 @@ hold off
 % per-pixel properties keep what the pixel had. The ferrite map carries
 % these properties:
 
-fieldnames(ebsdSub_filled.prop)
+string(fieldnames(ebsdSub_filled.prop)).'
 
 %%
 % The properties |ci|, |fit|, and |iq| describe the recorded pattern or its
