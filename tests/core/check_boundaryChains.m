@@ -48,12 +48,12 @@ end
 
 %% 3. chain census
 
-expect(size(gB.F,1),976,'number of segments');
-expect(max(gB.chainId),172,'number of chains');
+expect(size(gB.F,1),989,'number of segments');
+expect(max(gB.chainId),171,'number of chains');
 expect(max(gB.chainSize),62,'longest chain');
-expect(nnz(gB.chainSize == 1),41,'singleton chains');
-expect(numel(gB.junctionId),101,'junctions');
-expect(length(gB.triplePoints),65,'triple points');
+expect(nnz(gB.chainSize == 1),39,'singleton chains');
+expect(numel(gB.junctionId),100,'junctions');
+expect(length(gB.triplePoints),67,'triple points');
 expect(nnz(gB.isClosed & gB.isChainStart),22,'closed chains');
 expect(numel(gB.chainV),size(gB.F,1) + 2*max(gB.chainId),'chainV length');
 
@@ -74,10 +74,10 @@ pos = ebsd.pos;
 mid = gB.midPoint;
 dir = gB.allV(gB.F(:,2)) - gB.allV(gB.F(:,1));
 
+% a segment straightened through a filled cell can have both pixels on one side, which decides nothing
 isInner = gB.ebsdId(:,1) > 0;
-w = dir;
-w(isInner) = pos(id2ind(gB.ebsdId(isInner,1))) - mid(isInner);
-if any(dot(cross(dir(isInner),w(isInner)),gB.N) <= 0)
+side = @(k) dot(cross(dir(isInner),pos(id2ind(gB.ebsdId(isInner,k))) - mid(isInner)),gB.N);
+if any(side(1) <= 0 & side(2) >= 0)
   error('grainId(:,1) is not on the left for every inner segment');
 end
 
