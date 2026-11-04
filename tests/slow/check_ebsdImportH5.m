@@ -31,6 +31,7 @@ function check_ebsdImportH5
 % loadEBSD_h5 EBSD.load check_ebsdImport
 
 % synthetic and does not need the 50 MB asset below
+checkOxfordSymmetry;
 checkExportIntoReference;
 
 fname = fullfile(mtexDataPath,'EBSD','EMSphinx.h5');
@@ -48,6 +49,42 @@ checkDefaultAndNameSelection(fname,scans);
 checkEMSphInxROI;
 
 disp('check_ebsdImportH5: passed');
+
+end
+
+% =========================================================================
+function checkOxfordSymmetry
+% Oxford's space group first, then its Laue class, each phase on its own
+
+% space group, Laue code, field names, expected point group - one phase each
+cases = {0,9,'Space Group','6/mmm'; 186,9,'Space Group','6mm'; ...
+  [],9,'Space Group','6/mmm'; NaN,5,'Space Group','4/mmm'; ...
+  194,[],'Space Group','6/mmm'; [],[],'Space Group','1'; 0,9,'space group','6/mmm'};
+
+f = [tempname '.h5oina'];
+cleanup = onCleanup(@() delete(f));
+scan = '/1/EBSD';
+writeStr(f,'/Manufacturer','Oxford Instruments');
+writeNum(f,[scan '/Header/X Step'],1);
+writeNum(f,[scan '/Header/Y Step'],1);
+writeNum(f,[scan '/Header/X Cells'],2);
+writeNum(f,[scan '/Header/Y Cells'],2);
+writeNum(f,[scan '/Data/Phase'],ones(4,1));
+h5create(f,[scan '/Data/Euler'],[3 4]);
+h5write(f,[scan '/Data/Euler'],zeros(3,4));
+for k = 1:size(cases,1)
+  phase = sprintf('%s/Header/Phases/%d/',scan,k);
+  writeStr(f,[phase 'Phase Name'],sprintf('phase %d',k));
+  writeNum(f,[phase 'Lattice Dimensions'],[1 1 1]);
+  writeNum(f,[phase 'Lattice Angles'],crystalSymmetry(cases{k,4}).abg);
+  if ~isempty(cases{k,1}), writeNum(f,[phase cases{k,3}],cases{k,1}); end
+  if ~isempty(cases{k,2}), writeNum(f,[phase replace(cases{k,3},{'Space','space'},{'Laue','laue'})],cases{k,2}); end
+end
+
+CS = load1(f,{'headerOnly'}).CSList;
+pg = {CS(2:end).pointGroup};
+assert(isequal(pg,cases(:,4).'), ...
+  'check_ebsdImportH5: Oxford point groups %s',strjoin(pg,' '));
 
 end
 

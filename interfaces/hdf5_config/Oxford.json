@@ -38,7 +38,10 @@
       "optional": true,
       "default": {
         "reference_frame": { "data": "X||a*, Z||c"},
-        "space_group": { "mode": "search_root", "value": "Space Group", "type": "default" },
+        "space_group": {
+          "type": "Oxford",
+          "group": { "mode": "search_root", "value": "/Header/Phases/[^/]+$" }
+        },
         "name": { "mode": "search_root", "value": "Phase Name"},
         "lattice": {
           "angle": { "mode": "search_root", "value": "Lattice Angles"},
