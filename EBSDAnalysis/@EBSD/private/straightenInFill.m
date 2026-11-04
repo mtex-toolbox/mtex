@@ -75,8 +75,8 @@ while true
   em = e(isM,:);
   dV = vecnorm(V - V0,2,2);
   K = max(1,ceil(2 * max(reshape(dV(em),size(em)),[],2) / out.dxy));
-  seg = repelem((1:size(em,1)).',K+1);
-  l = ((1:numel(seg)).' - repelem(cumsum(K+1) - K,K+1)) ./ K(seg);
+  seg = repelem((1:size(em,1)).',K+1,1);
+  l = ((1:numel(seg)).' - repelem(cumsum(K+1) - K,K+1,1)) ./ K(seg);
   t = (0:8)/8;
   sweep = @(k) (1-l) .* ((1-t) .* V0(em(seg,1),k) + t .* V0(em(seg,2),k)) + ...
     l .* ((1-t) .* V(em(seg,1),k) + t .* V(em(seg,2),k));
@@ -113,8 +113,8 @@ i = cell(9,1); j = cell(9,1);
 for k = 1:9
   [tf,loc] = ismember(key(q) + o1(k) + o2(k)*nx, u);
   cnt = n(loc(tf));
-  i{k} = repelem(q(tf), cnt);
-  j{k} = ord(repelem(first(loc(tf)) - 1 - cumsum(cnt) + cnt, cnt) + (1:sum(cnt)).');
+  i{k} = repelem(q(tf), cnt, 1);
+  j{k} = ord(repelem(first(loc(tf)) - 1 - cumsum(cnt) + cnt, cnt, 1) + (1:sum(cnt)).');
 end
 i = vertcat(i{:});
 j = vertcat(j{:});
