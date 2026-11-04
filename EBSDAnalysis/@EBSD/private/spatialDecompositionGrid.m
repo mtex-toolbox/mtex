@@ -262,8 +262,12 @@ else
   [V,F,I_FD] = jcvoronoi2(double(XY),double(numReal), double(epsilon));
 end
 
+% the filled cells and all others, for straightening the boundaries through the former
+fillP = closedP & ~isIndexedP;
 out = struct('V',V,'F',F,'I_FD',I_FD, ...
-             'isNotIdx',isNotIdx,'site2id',site2id,'ij',ij);
+             'isNotIdx',isNotIdx,'site2id',site2id,'ij',ij,'dxy',dxy,'epsilon',epsilon, ...
+             'fillXY',cells2posId(fillP, szP, padding, ijmin, ijsz, reconstructPos, ij2ebsd, pos), ...
+             'otherXY',cells2posId(~fillP, szP, padding, ijmin, ijsz, reconstructPos, ij2ebsd, pos));
 end
 
 % ===========================================================================

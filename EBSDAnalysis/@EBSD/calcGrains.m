@@ -36,6 +36,9 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %             smaller than this is returned; the pixels of one that would be
 %             are marked notIndexed
 %  alpha    - fill distances into not indexed regions
+%  straighten - true (default) draws the grain boundaries through filled
+%             regions as straight lines, false along the bisectors between
+%             the measured pixels around them
 %  soft     - [angle delta] soft threshold instead of a hard one
 %  fmc       - fast multiscale clustering method
 %  mcl       - Markovian clustering algorithm
@@ -117,6 +120,11 @@ I_DG = I_DG(:,notEmpty);
 
 % compute grain ids
 grainId = full(I_DG * (1:size(I_DG,2)).');
+
+% boundaries straight through the filled cells
+if get_option(varargin,'straighten',true) && isfield(out,'fillXY') && ~isempty(out.fillXY)
+  [V,F,I_FD] = straightenInFill(V,F,I_FD,grainId,out);
+end
 
 % phaseId of each grain
 phaseId = full(max(I_DG' * ...
