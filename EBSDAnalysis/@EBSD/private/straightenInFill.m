@@ -23,10 +23,7 @@ function [V,F,I_FD] = straightenInFill(V,F,I_FD,grainId,out)
 % Output
 %  V,F,I_FD - with the boundary segments split where they enter the filled cells
 
-% positive inside the filled cells, negative outside
-nearF = nearestId(out.fillXY);
-nearO = nearestId(out.otherXY);
-inFill = @(p) vecnorm(p - out.otherXY(nearO(p),:),2,2) - vecnorm(p - out.fillXY(nearF(p),:),2,2);
+inFill = out.inFill;
 
 % segments between two grains or at the outer boundary
 [f,d] = find(I_FD);
@@ -42,7 +39,7 @@ cut = cut(max(dE,[],2) > tol & min(dE,[],2) < -tol);
 a = V(F(cut,1),:); b = V(F(cut,2),:);
 lo = zeros(numel(cut),1); hi = ones(numel(cut),1);
 aIn = inFill(a) > 0;
-for it = 1:30
+for it = 1:16
   mid = (lo + hi) / 2;
   isA = (inFill(a + mid .* (b - a)) > 0) == aIn;
   lo(isA) = mid(isA); hi(~isA) = mid(~isA);
@@ -69,19 +66,22 @@ while true
   V(m,:) = (spdiags(sum(A(m,:),2) + 1e-3,0,nnz(m),nnz(m)) - A(m,m)) \ ...
     (A(m,~m) * V0(~m,:) + 1e-3 * V0(m,:));
 
-  % samples, half a pixel apart, of the area every segment sweeps that moved since the last round
+  % samples, a third of a pixel apart, of the area every segment sweeps that moved since the last round
   chg = any(V ~= Vlast,2);
   isM = any(reshape(chg(e),size(e)),2);
   em = e(isM,:);
   dV = vecnorm(V - V0,2,2);
-  K = max(1,ceil(2 * max(reshape(dV(em),size(em)),[],2) / out.dxy));
-  seg = repelem((1:size(em,1)).',K+1,1);
-  l = ((1:numel(seg)).' - repelem(cumsum(K+1) - K,K+1,1)) ./ K(seg);
-  t = (0:8)/8;
-  sweep = @(k) (1-l) .* ((1-t) .* V0(em(seg,1),k) + t .* V0(em(seg,2),k)) + ...
-    l .* ((1-t) .* V(em(seg,1),k) + t .* V(em(seg,2),k));
-  Px = sweep(1); Py = sweep(2);
-  isOut = any(reshape(inFill([Px(:),Py(:)]) < -tol,size(Px)),2);
+  T = max(1,ceil(3 * max(vecnorm(V0(em(:,2),:) - V0(em(:,1),:),2,2), ...
+    vecnorm(V(em(:,2),:) - V(em(:,1),:),2,2)) / out.dxy));
+  K = max(1,ceil(3 * max(reshape(dV(em),size(em)),[],2) / out.dxy));
+  n = (T+1) .* (K+1);
+  seg = repelem((1:size(em,1)).',n,1);
+  r = (1:numel(seg)).' - repelem(cumsum(n) - n,n,1) - 1;
+  t = mod(r,T(seg)+1) ./ T(seg);
+  l = floor(r ./ (T(seg)+1)) ./ K(seg);
+  P = (1-l) .* ((1-t) .* V0(em(seg,1),:) + t .* V0(em(seg,2),:)) + ...
+    l .* ((1-t) .* V(em(seg,1),:) + t .* V(em(seg,2),:));
+  isOut = inFill(P) < -tol;
   bad = crossing(V,e,isM);
   bad(isM) = bad(isM) | accumarray(seg,double(isOut),[size(em,1) 1],@max) > 0;
   if ~any(bad), break; end

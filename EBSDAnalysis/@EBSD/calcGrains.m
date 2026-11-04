@@ -122,7 +122,7 @@ I_DG = I_DG(:,notEmpty);
 grainId = full(I_DG * (1:size(I_DG,2)).');
 
 % boundaries straight through the filled cells
-if get_option(varargin,'straighten',true) && isfield(out,'fillXY') && ~isempty(out.fillXY)
+if get_option(varargin,'straighten',true) && isfield(out,'inFill') && ~isempty(out.inFill)
   [V,F,I_FD] = straightenInFill(V,F,I_FD,grainId,out);
 end
 
