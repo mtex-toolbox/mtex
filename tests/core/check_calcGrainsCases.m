@@ -308,6 +308,7 @@ end
 
 checkInsideEmptyQuery(cs, thr);
 checkGrainIdRoundTrip(ebsdSq, thr);
+checkResegmentOutput(ebsdSq, thr);
 
 disp('calcGrains cases: all checks passed');
 
@@ -332,6 +333,25 @@ n1 = accumarray(ebsd.grainId(isIn),1);
 n2 = accumarray(ebsd2.grainId(ebsd2.grainId(:) > 0),1);
 if ~isequal(sort(n1), sort(n2))
   error('grains from grainId own different pixels than the stored grainId');
+end
+
+end
+
+% ===========================================================================
+function checkResegmentOutput(ebsd, thr)
+% calcGrains on its own returned map gives the same grains, absorbed notIndexed pixels included
+
+isHole = false(size(ebsd));
+isHole(3,3) = true;
+ebsd.phaseId(isHole) = 1;
+[grains,ebsd] = calcGrains(ebsd,'threshold',thr);
+if ~any(isnan(ebsd.rotations(:)) & ebsd.isIndexed(:))
+  error('re-segmenting the returned map: the hole was not absorbed, the check is vacuous');
+end
+grains2 = calcGrains(ebsd,'threshold',thr);
+if length(grains2) ~= length(grains)
+  error('calcGrains on its own returned map gives %d grains instead of %d', ...
+    length(grains2), length(grains));
 end
 
 end
