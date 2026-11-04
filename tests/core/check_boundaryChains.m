@@ -155,8 +155,9 @@ assertOrdered(g2.boundary,'grain2d(V,poly,...)');
 
 % misorientation angles are single phase only
 gBfo = grains.boundary('Forsterite','Forsterite');
-gm = merge(grains,gBfo(angle(gBfo.misorientation) < 15*degree));
+gm = merge(grains,gBfo(angle(gBfo.misorientation) < 30*degree));
 assertOrdered(gm.boundary,'merge');
+assertLeftGrain(gm,'merge');
 
 assertOrdered(smoothBoundary(grains,3).boundary,'smoothBoundary');
 assertOrdered(smoothBoundary(grains,3,'noSimplify','noRefine').boundary,...
