@@ -73,6 +73,9 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 
 gbc = grainBoundaryCriterion.byOptions(varargin{:});
 
+% an indexed pixel without rotation is notIndexed, e.g. one a previous calcGrains absorbed
+ebsd.phaseId(isnan(ebsd.rotations) & ebsd.isIndexed) = 1;
+
 % a stored grainId of 0 means no grain, as it does for the output
 if check_option(varargin,'grainId'), ebsd.phaseId(ebsd.grainId == 0) = 1; end
 

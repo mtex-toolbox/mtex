@@ -319,8 +319,10 @@ phaseId(notZero) =  grainsMerged.phaseId(grainsMerged.boundary.grainId(notZero))
 grainsMerged.boundary.phaseId = phaseId;
 
 % 10. merging dissolves junctions, so chains that used to be separate join
-% up - re-establish the walk order before the triple points reference it
-grainsMerged.boundary = grainsMerged.boundary.order;
+% up - sort the columns as the constructor does, flip then re-establishes the walk order
+gB = grainsMerged.boundary;
+grainsMerged.boundary = gB.flip(gB.phaseId(:,1) > gB.phaseId(:,2) | ...
+  (gB.phaseId(:,1) == gB.phaseId(:,2) & gB.grainId(:,1) > gB.grainId(:,2)));
 
 % 11. update triple points
 grainsMerged.boundary.triplePoints = grainsMerged.boundary.calcTriplePoints;

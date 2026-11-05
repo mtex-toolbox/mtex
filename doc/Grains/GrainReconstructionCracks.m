@@ -3,14 +3,15 @@
 %%
 % A map of a natural rock or a sintered material rarely consists of grains
 % alone. Wherever a pattern could not be indexed, the map is |notIndexed|.
-% On a polished section that happens at cracks, at pores and where material
-% was plucked out during polishing. These regions are of different kinds,
-% and grain reconstruction should treat them differently.
+% On a specimen surface that happens at cracks, at pores and where material
+% was plucked out during sample preparation. These regions are of different
+% kinds, and grain reconstruction should treat them differently.
 %
 % * A *pore* inside a grain is a hole in that grain. The grain continues
 % around it, and its area belongs to the grain.
-% * A *crack* that opened after the rock formed cuts grains into pieces.
-% The pieces on its two sides are parts of the same grains.
+% * A transgranular *crack* that opened after the material formed, cuts
+% grains into pieces. The pieces on both sides of the crack can be parts of 
+% the same former grain.
 % * A wide region with no indexed material, such as the border of a sample
 % or a large void, is not part of any grain.
 %
@@ -52,8 +53,9 @@ plot(ebsd,'micronbar','off')
 % between the grains and the area not covered by any grain. Its pixels get
 % the |grainId| 0.
 %
-% A |notIndexed| grain enclosed by a single grain is a pore of that grain.
-% The command <grain2d.isInclusion.html |isInclusion|> finds them.
+% A |notIndexed| grain enclosed by a single grain is an intragranular pore 
+% of that grain. The command <grain2d.isInclusion.html |isInclusion|> finds 
+% them.
 
 isPore = grains.isInclusion & ~grains.isIndexed;
 isPocket = ~grains.isIndexed & ~isPore;
@@ -81,7 +83,7 @@ fprintf('%d pores, %d pockets, %.1f%% of the map outside all grains\n', ...
 % crack. The background is the second output of |calcGrains|, coloured by
 % orientation. A |notIndexed| pixel has no orientation and stays white, also
 % where a grain has absorbed it. The boundaries show which region belongs to
-% which grain.
+% which grain. 
 
 alpha = [1.1 2.1 6.1 16.1];
 
@@ -107,16 +109,21 @@ end
 %%
 % With |alpha = 1.1| many |notIndexed| specks between the grains remain
 % grains of their own. With |alpha = 2.1| most of those specks are absorbed,
-% while the pores, the pockets and the crack are kept. With |alpha = 6.1| the
-% pores and almost all pockets of the map are gone. The narrow upper part of
-% the crack is closed, and the grains on its two sides meet inside it. The
-% wide lower part is still open. With |alpha = 16.1| the grains bridge the
-% lower part as well. Only its mouth at the bottom edge of the map remains
-% outside all grains, and no |notIndexed| grain is left.
+% while the larger pores, the pockets and the crack are kept. With |alpha = 6.1|
+% the pores and almost all pockets of the map are gone. The narrow upper part 
+% of the crack is closed, with a common boundary connecting the sufficiently 
+% similar indexed areas across the crack. The wider lower part is still open.
+% With |alpha = 16.1| the grains bridge the lower part as well. Only its
+% mouth at the bottom edge of the map remains outside all grains, and no 
+% |notIndexed| grain is left.
 %
-% No single value treats all regions as we would like. The value that closes
-% the crack also absorbs every pore and pocket of the map into the
-% neighbouring grains, whether or not they belong there.
+% No single |alpha| value treats all regions as we would like. The value 
+% that closes the crack also absorbs every pore and pocket of the map into
+% the neighbouring grains, whether or not they belong there.
+%
+% Note that the direction of the boundary inside a |notIndexed| region
+% depends on the distance to the indexed region and is not necessarily the
+% shortest connection between the two opposing parts on each crack side. 
 
 %% Grains across the crack
 %
@@ -154,11 +161,12 @@ end
 %%
 % The joined pieces differ by less than two degrees. They are therefore parts
 % of single forsterite grains which the crack cut in two. We highlight them
-% on the map.
+% on the map. We also plot the default grain boundaries in red.
 
 plot(ebsd,'micronbar','off')
 legend off
 hold on
+plot(grains.boundary,'linewidth',1,'LineColor','r')
 plot(grains10(isJoined),'FaceColor','black','FaceAlpha',0.4)
 plot(grains10.boundary,'linewidth',1)
 hold off
@@ -173,6 +181,9 @@ axis([2500 12500 7000 17940])
 % shortest boundary the closed crack allows. With the option
 % |'straighten',false| they follow the bisectors between the measured pixels
 % on either side instead. The wide lower part of the crack remains open.
+% The red boundaries are those of the default grains. You can see at the
+% top-right corner, that the crack was already closed there, since the crack
+% was locally narrower than the 6 pixel wide default.
 
 %% Pores as part of their grain
 %
