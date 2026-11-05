@@ -80,7 +80,7 @@ isIndexedP(ij2slotP(ij(isIndexed,:))) = true;
 
 % the smallest circumradius of an included triangle covering each cell, inf where none
 rMin = alphaComplexMask(pos, isIndexed, ij, epsilon, rAlpha, ...
-  szP, padding, ijmin, ijsz, ij2slotP, idealFun, reconstructPos);
+  szP, padding, ijmin, ijsz, ij2slotP, idealFun, reconstructPos, isIndexedP);
 closedP = isfinite(rMin) | isIndexedP;   % safety belt, as in spatialDecompositionGrid.m
 
 % exteriorP = background connected to the padded border
@@ -167,7 +167,7 @@ end
 
 % ===========================================================================
 function rMin = alphaComplexMask(pos, isIndexed, ij, epsilon, rAlpha, ...
-  szP, padding, ijmin, ijsz, ij2slotP, idealFun, reconstructPos)
+  szP, padding, ijmin, ijsz, ij2slotP, idealFun, reconstructPos, isIndexedP)
 % true circumradius alpha-complex, rasterized onto the padded (i,j) grid as the
 % smallest circumradius of a filled triangle covering each cell, inf where none
 %
@@ -236,40 +236,41 @@ keep2 = isIncVtxMask(vtxAll);
 vsPairs = unique([vtxAll(keep2), siteAll(keep2)],'rows');
 
 [uV2,~,ig] = unique(vsPairs(:,1));
-siteLists = accumarray(ig, vsPairs(:,2), [], @(x){x});
+P = idxPos(vsPairs(:,2),:);
+nS = accumarray(ig,1);
 
-for k = 1:numel(uV2)
-  siteList = siteLists{k};
-  if numel(siteList) < 3, continue; end
-  P = idxPos(siteList,:);
+% only a group whose box holds a cell without a measurement can change rMin where it is read
+rc = ij(idxIdx(vsPairs(:,2)),:) - ijmin + padding + 1;
+lo = [accumarray(ig,rc(:,1),[],@min) accumarray(ig,rc(:,2),[],@min)] - 1;
+hi = [accumarray(ig,rc(:,1),[],@max) accumarray(ig,rc(:,2),[],@max)] + 1;
+S = zeros(szP+1); S(2:end,2:end) = cumsum(cumsum(reshape(~isIndexedP,szP),1),2);
+cnt = @(r,c) S(r + (c-1)*(szP(1)+1));
+g = find(nS >= 3 & cnt(hi(:,1)+1,hi(:,2)+1) - cnt(lo(:,1),hi(:,2)+1) ...
+  - cnt(hi(:,1)+1,lo(:,2)) + cnt(lo(:,1),lo(:,2)) > 0);
 
-  % candidate grid cells: bounding box of this group's own sites (they are
-  % indexed pixels with known (i,j)), expanded by one cell of slack
-  candIJ = ij(idxIdx(siteList),:);
-  ijLo = min(candIJ,[],1) - 1;
-  ijHi = max(candIJ,[],1) + 1;
-  [ci,cj] = ndgrid(ijLo(1):ijHi(1), ijLo(2):ijHi(2));
-  candList = [ci(:) cj(:)];
-  candXY = reconstructPos(candList);
+% every group as a convex polygon, counterclockwise around its centroid
+c = [accumarray(ig,P(:,1)) accumarray(ig,P(:,2))] ./ nS;
+[~,o] = sortrows([ig, atan2(P(:,2)-c(ig,2), P(:,1)-c(ig,1))]);
+P = P(o,:);
+g1 = cumsum(nS) - nS + 1;
+nxt = (2:numel(o)+1).'; nxt(g1 + nS - 1) = g1;
 
-  % point-in-convex-polygon: order P around its centroid, then test every edge
-  c = mean(P,1);
-  ang = atan2(P(:,2)-c(2), P(:,1)-c(1));
-  [~,ord] = sort(ang);
-  Pc = P(ord,:);
-  nP = size(Pc,1);
-  inside = true(size(candList,1),1);
-  for e = 1:nP
-    p1 = Pc(e,:); p2 = Pc(mod(e,nP)+1,:);
-    edgeVec = p2 - p1;
-    toCand = candXY - p1;
-    crossVal = edgeVec(1)*toCand(:,2) - edgeVec(2)*toCand(:,1);
-    inside = inside & crossVal >= -epsilon*max(norm(edgeVec),epsilon);
-  end
-
-  cells = ij2slotP(candList(inside,:));
-  rMin(cells) = min(rMin(cells), radOf(uV2(k)));
-end
+% the cells of the box of every group, and which lie inside its polygon
+n = prod(hi(g,:) - lo(g,:) + 1, 2);
+gc = repelem(g,n);
+q = (1:sum(n)).' - repelem(cumsum(n) - n,n) - 1;
+nr = hi(gc,1) - lo(gc,1) + 1;
+rc = lo(gc,:) + [mod(q,nr) floor(q./nr)];
+xy = reconstructPos(rc - padding - 1 + ijmin);
+m = nS(gc);
+k = repelem((1:numel(gc)).',m);
+e = repelem(g1(gc),m) + (1:sum(m)).' - repelem(cumsum(m) - m,m) - 1;
+ev = P(nxt(e),:) - P(e,:);
+tc = xy(k,:) - P(e,:);
+bad = ev(:,1).*tc(:,2) - ev(:,2).*tc(:,1) < -epsilon*max(vecnorm(ev,2,2),epsilon);
+in = accumarray(k,double(bad),[numel(gc) 1]) == 0;
+rMin = min(rMin, accumarray(rc(in,1) + (rc(in,2)-1)*szP(1), radOf(uV2(gc(in))), ...
+  [prod(szP) 1], @min, inf));
 
 end
 
