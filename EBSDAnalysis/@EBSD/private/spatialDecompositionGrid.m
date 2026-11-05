@@ -437,6 +437,12 @@ function inside = inConvexHull(ij, offset, sz)
 % which cells (i,j) = (row,col) + offset of a raster of size sz lie in the
 % convex hull of the integer points ij: every row meets it in one interval
 
+% the hull of the first and the last point of every row
+i0 = min(ij(:,1)) - 1;
+lo = accumarray(ij(:,1) - i0, ij(:,2), [], @min, nan);
+hi = accumarray(ij(:,1) - i0, ij(:,2), [], @max, nan);
+r = find(~isnan(lo));
+ij = [r + i0 lo(r); r + i0 hi(r)];
 h = convhull(ij(:,1),ij(:,2));
 a = ij(h(1:end-1),:); b = ij(h(2:end),:);
 rows = cell(size(a,1),1); cols = rows;
