@@ -67,9 +67,9 @@ boundaryFitQuantiles = quantile(boundaryFit./degree,...
 %%
 % <calcParent2Child.html |calcParent2Child|> assumes that most retained pairs
 % are child-to-child boundaries. It adjusts the OR to reduce their mismatch
-% from theoretical child-to-child misorientations. The fitted OR is 3.132
-% degrees from KS. Its 20th, 40th, 60th, and 80th fit percentiles are 1.483,
-% 2.018, 2.613, and 4.207 degrees.
+% from theoretical child-to-child misorientations. The fitted OR is 3.258
+% degrees from KS. Its 20th, 40th, 60th, and 80th fit percentiles are 1.522,
+% 2.021, 2.539, and 4.079 degrees.
 
 close all
 histogram(boundaryFit./degree)
@@ -140,8 +140,8 @@ boundaryA = sparse(grainPairs(:,1),grainPairs(:,2),...
   boundaryProbability,length(grains),length(grains));
 
 %%
-% The 10th, 50th, and 90th similarity percentiles are 0, 0.3040, and
-% 0.9475. The zero-valued low tail corresponds to badly fitting pairs that
+% The 10th, 50th, and 90th similarity percentiles are 0, 0.3204, and
+% 0.9387. The zero-valued low tail corresponds to badly fitting pairs that
 % should not bind a component.
 
 %% Cluster the boundary graph
@@ -158,7 +158,7 @@ boundaryA = mclComponents(boundaryA,boundaryInflationPower);
 % <grain2d.merge.html |merge|> removes boundaries within a component.
 
 [boundaryParentGrains,boundaryParentId] = merge(grains,boundaryA);
-boundaryParentGrains = smoothBoundary(boundaryParentGrains,20);
+boundaryParentGrains = smoothBoundary(boundaryParentGrains);
 numBoundaryComponents = length(boundaryParentGrains)
 
 %%
@@ -179,7 +179,7 @@ plot(boundaryParentGrains.boundary,'lineWidth',2,...
 hold off
 
 %%
-% The graph produces 707 candidate components, shown by the double outlines.
+% The graph produces 712 candidate components, shown by the double outlines.
 % The components need not have their final size because similarly oriented
 % neighbours can be merged after parent orientations are fitted.
 
@@ -222,7 +222,7 @@ boundaryParentGrains = boundaryParentGrains.update;
 % Accepted components have changed from bcc child phase to fcc parent phase.
 % A 4-degree merge combines neighbouring fcc components with similar
 % orientations and returns a second ID mapping.
-% Of the 707 components, 360 pass the child-count and 5-degree fit tests.
+% Of the 712 components, 377 pass the child-count and 5-degree fit tests.
 
 numParentsBeforeOrientationMerge = ...
   length(boundaryParentGrains('Iron fcc'))
@@ -242,7 +242,7 @@ plot(boundaryParentGrains('Iron fcc'),...
   'figSize','large')
 
 %%
-% The orientation merge reduces 360 accepted components to 222 fcc parent
+% The orientation merge reduces 377 accepted components to 207 fcc parent
 % grains. Their colours identify the reconstructed parent orientations.
 % Neighbours with similar colours have coalesced into larger footprints.
 
@@ -271,9 +271,8 @@ hold off
 %%
 % Equal colours identify child grains in the same packet.
 % Black lines show reconstructed parent boundaries, and the white line selects
-% one parent at [100,80]. Earlier prose called it parent 279; this run returns
-% ID 557. The executable lookup avoids assuming that a release-sensitive ID
-% remains fixed.
+% the parent at [100,80]. It is looked up by location, because a grain ID
+% depends on the reconstruction details.
 
 %% Check the selected parent's variants
 %
@@ -333,8 +332,8 @@ mtexColorbar('title','fit (degrees)')
 setColorRange([0,5])
 
 %%
-% The median pixel fit is 1.830 degrees, 90% are below 3.768 degrees, and 99%
-% are below 10.572 degrees. Low values indicate agreement between a
+% The median pixel fit is 1.751 degrees, 90% are below 3.539 degrees, and 99%
+% are below 10.332 degrees. Low values indicate agreement between a
 % martensite pixel and the variant predicted from its austenite grain.
 
 %% Denoise and fill missing sites
@@ -400,8 +399,8 @@ mtexColorMap('LaboTeX')
 mtexColorbar('title','triple-point fit (degrees)')
 
 %%
-% The 20th, 40th, 60th, and 80th triple-point fit percentiles are 2.648,
-% 3.232, 4.015, and 6.295 degrees. Large-fit points often join into parent
+% The 20th, 40th, 60th, and 80th triple-point fit percentiles are 2.500,
+% 3.013, 3.684, and 6.394 degrees. Large-fit points often join into parent
 % outlines. Low-fit points support removing all three child boundaries.
 
 %% Build and cluster the triple-point similarity matrix
@@ -429,7 +428,7 @@ tripleInflationPower = 1.4;
 tripleA = mclComponents(tripleA,tripleInflationPower);
 
 [tripleParentGrains,tripleParentId] = merge(grains,tripleA);
-tripleParentGrains = smoothBoundary(tripleParentGrains,20);
+tripleParentGrains = smoothBoundary(tripleParentGrains);
 numTripleComponents = length(tripleParentGrains)
 
 tripleParentEBSD = ebsd;
@@ -443,7 +442,7 @@ hold off
 
 %%
 % The triple-point probability has 10th, 50th, and 90th percentiles of 0,
-% 0.2032, and 0.8536. Clustering produces 779 candidate parent footprints.
+% 0.3373, and 0.8772. Clustering produces 690 candidate parent footprints.
 % Their outlines are shown above.
 % At this stage they still carry child orientations and phases.
 % Fit their common parent orientations, reject weak components, remap the

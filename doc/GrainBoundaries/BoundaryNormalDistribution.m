@@ -66,11 +66,11 @@ mtexdata twins silent
 % segment through |gB.ebsdId|. That property is meaningful only while every
 % segment still lies between one specific pair of pixels.
 %
-% <grain2d.smoothBoundary.html |smoothBoundary|> normally simplifies and
-% resamples the segment list. The options |'noSimplify'| and |'noRefine'|
-% smooth the vertex positions without changing that list.
+% <grain2d.smoothBoundary.html |smoothBoundary|> normally merges segments
+% after smoothing. The option |'noSimplify'| smooths the vertex positions
+% without changing the segment list.
 
-grains = smoothBoundary(grains,10,'noSimplify','noRefine');
+grains = smoothBoundary(grains,'noSimplify');
 CS = grains.CS;
 
 % compute IPF colours explicitly to keep the published output quiet
@@ -158,7 +158,7 @@ remainingSummary = table(min(gbnd2),max(gbnd2),...
 
 %%
 % The peak lies 5.6 degrees from the nearest tension-twin plane. The
-% remaining distribution ranges from 0.86 to 1.09. These values quantify
+% remaining distribution ranges from 0.84 to 1.09. These values quantify
 % the visual contrast between the panels.
 
 %% The grain boundary character distribution
@@ -184,7 +184,7 @@ mtexColorbar
 %%
 % Two of the six $\{10\bar{1}2\}$ variants carry the maxima. The specimen
 % was deformed, so not every twin variant is equally active. The strongest
-% maximum sits directly on a tension-twin plane.
+% maximum sits close to a tension-twin plane.
 
 [twinPeak,twinPeakPosition] = max(gbcd);
 twinGBCDSummary = table(twinPeak,...
@@ -192,9 +192,9 @@ twinGBCDSummary = table(twinPeak,...
   'VariableNames',{'peakDensity','distanceToTwinPlaneDegree'})
 
 %%
-% The printed angular distance is 1.3 degrees. Conditioning on the
-% complete misorientation sharpens the habit-plane result compared with the
-% angle-only split.
+% The printed angular distance is 2.8 degrees, against 5.6 degrees for the
+% angle-only split. Conditioning on the complete misorientation sharpens the
+% habit-plane result.
 
 %% Three-dimensional data
 %

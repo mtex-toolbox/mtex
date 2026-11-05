@@ -88,10 +88,10 @@ twinAngles = [angle(twinning),angle(twinning,'max')] ./ degree
 % A grain is a phase-homogeneous, spatially connected region of EBSD pixels
 % produced by segmentation. The map is segmented at $5^\circ$, and grains
 % with fewer than five indexed pixels are excluded. Boundary geometry is
-% then smoothed for five iterations before trace lengths are compared.
+% then smoothed before trace lengths are compared.
 
 grains = calcGrains(ebsd,'angle',5*degree,'minPixel',5);
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 % retain only boundaries between magnesium grains
 gB = grains.boundary('Magnesium','Magnesium');

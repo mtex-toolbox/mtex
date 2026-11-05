@@ -35,7 +35,7 @@ mtexdata twins silent
 [grains,ebsd] = calcGrains(ebsd,'angle',10*degree,'minPixel',5);
 
 % smooth grain boundaries
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 % plot the orientation map of the indexed pixels
 ipfKey = ipfColorKey(ebsd('indexed').CS.properGroup);

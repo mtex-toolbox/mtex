@@ -178,8 +178,8 @@ plot(job.parentGrains,'ipfz')
 
 %%
 % The map contains transformed parent fragments rather than final parent
-% grain footprints. The strict vote transforms 10,581 child grains,
-% leaving 64 child grains that occupy 0.59% of the indexed area.
+% grain footprints. The strict vote transforms 10,589 child grains,
+% leaving 56 child grains that occupy 0.51% of the indexed area.
 % A manual alternative is
 % <parentGrainReconstructor.selectInteractive.html |selectInteractive|>:
 %
@@ -206,7 +206,7 @@ plot(job.parentGrains,'ipfz')
 % Earlier versions passed |'tortuosity'| to |calcGBVotes| as well.
 % That function also has no such option, so it had no effect.
 % The new parent fragments fill much of the space left by the strict vote.
-% It leaves 48 child grains, occupying 0.088% of the indexed area.
+% It leaves 43 child grains, occupying 0.061% of the indexed area.
 
 %% Merge compatible parent fragments
 %
@@ -217,7 +217,7 @@ plot(job.parentGrains,'ipfz')
 % 7.5-degree threshold here.
 
 job.mergeSimilar('threshold',7.5*degree);
-job.grains = smoothBoundary(job.grains,20);
+job.grains = smoothBoundary(job.grains);
 
 plot(job.parentGrains,'ipfz')
 
@@ -257,7 +257,7 @@ color = ind2color(job.transformedGrains.packetId);
 plot(job.transformedGrains,color,'faceAlpha',0.5)
 
 hold on
-parentGrains = smoothBoundary(job.parentGrains,10);
+parentGrains = smoothBoundary(job.parentGrains);
 plot(parentGrains.boundary,'lineWidth',3)
 
 grainSelected = parentGrains(parentGrains.findByLocation([100,80]));
@@ -290,7 +290,7 @@ hold off
 %%
 % The original page described this grain as parent 279.
 % The printed |selectedParentId| checks that concrete ID against the current
-% segmentation. It is 288 in the current run, showing why IDs should not be
+% segmentation. It is 286 in the current run, showing why IDs should not be
 % assumed to remain fixed across releases.
 % The child-grain mosaic exactly fills the selected parent outline.
 
@@ -363,7 +363,7 @@ hold off
 
 [parentGrains,parentEBSD] = calcGrains(parentEBSD,...
   'angle',3*degree,'minPixel',10);
-parentGrains = smoothBoundary(parentGrains,20);
+parentGrains = smoothBoundary(parentGrains);
 
 plot(ebsd,'ipfz','figSize','large')
 hold on

@@ -257,7 +257,7 @@ switch name
     mtexdata twins silent
     ebsd = evalin('base','ebsd');
     grains = calcGrains(ebsd,'threshold',5*degree);
-    grains = smoothBoundary(grains,5);
+    grains = smoothBoundary(grains);
     plot(grains,grains.meanOrientation,'micronbar','off','faceAlpha',0.45)
     hold on
     plot(grains.boundary,grains.boundary.misorientation.angle./degree,'linewidth',6)
@@ -298,7 +298,7 @@ switch name
     ebsd = evalin('base','ebsd');
     ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
     grains = calcGrains(ebsd,'threshold',10*degree);
-    grains = smoothBoundary(grains,5);
+    grains = smoothBoundary(grains);
     plot(grains.boundary,'lineWidth',4,'lineColor',[0.1 0.1 0.1])
     hold on
     plot(grains.triplePoints,'color','r','MarkerSize',9)

@@ -162,7 +162,7 @@ hold off
 % explains that step.
 
 [grains,ebsd] = calcGrains(ebsd,'angle',1.5*degree,'minPixel',5);
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 %%
 % The segmentation threshold is 1.5 degrees, far below the commonly used

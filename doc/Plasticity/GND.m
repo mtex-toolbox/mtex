@@ -23,7 +23,7 @@ ebsd = EBSD.load([mtexDataPath filesep 'EBSD' filesep ...
   'DC06_2uniax.ang'],'setting',2);
 
 [grains,ebsd] = calcGrains(ebsd,'angle',2.5*degree,'minPixel',6);
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 %%
 % An inverse pole figure (IPF) key colors each indexed orientation by the

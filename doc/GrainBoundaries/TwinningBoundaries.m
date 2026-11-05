@@ -27,7 +27,7 @@ mtexdata twins silent
 
 % reconstruct and smooth the grains
 [grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',3);
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 % compute the colours explicitly to keep the published output quiet
 colorKey = ipfColorKey(grains);

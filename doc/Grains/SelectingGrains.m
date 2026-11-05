@@ -23,7 +23,7 @@ ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 [grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',5,'alpha',6);
 
 % smooth the boundaries
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 % plot forsterite by orientation
 plot(ebsd('Fo'),'ipfz')

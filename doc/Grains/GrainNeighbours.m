@@ -27,7 +27,7 @@ CS = ebsd.CS;
 
 % reconstruct and smooth the grain outlines
 [grains,ebsd] = calcGrains(ebsd,'angle',5*degree);
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 % compute the mean-orientation colours without printing a colour-key notice
 colorKey = ipfColorKey(grains);

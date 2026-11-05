@@ -26,7 +26,7 @@ ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
 % reconstruct and smooth the grains
 grains = calcGrains(ebsd,'angle',10*degree);
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 % display the boundary list
 gB = grains.boundary

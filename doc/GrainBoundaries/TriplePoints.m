@@ -33,8 +33,8 @@ mtexdata small silent
 % reconstruct the grains and resolve quadruple points
 grains = calcGrains(ebsd,'removeQuadruplePoints','alpha',5);
 
-% smooth the pixel staircase while keeping junctions fixed
-grains = smoothBoundary(grains,2);
+% smooth the pixel staircase, each junction staying within its pixel cell
+grains = smoothBoundary(grains);
 
 % draw the grains and overlay all triple points
 plot(grains);

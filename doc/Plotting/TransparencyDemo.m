@@ -108,7 +108,7 @@ plot(ebsdF,'ipfz','faceAlpha',alpha,'figSize','large')
 % synonym for |'faceAlpha'|.
 
 grains = calcGrains(ebsd,'angle',10*degree);
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 plot(ebsd,ebsd.bc)
 mtexColorMap black2white

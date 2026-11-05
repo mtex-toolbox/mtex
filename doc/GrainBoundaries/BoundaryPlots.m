@@ -29,7 +29,7 @@ ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
   'minPixel',5,'alpha',10);
 
 % ebsdId is used below, so keep each segment tied to its measured pixel pair
-grains = smoothBoundary(grains,4,'noSimplify','noRefine');
+grains = smoothBoundary(grains,'noSimplify');
 
 %% One colour for every boundary
 %
@@ -206,7 +206,7 @@ mtexdata csl silent
 
 % reconstruct and smooth the grains
 [grains,ebsd] = calcGrains(ebsd);
-grains = smoothBoundary(grains,2);
+grains = smoothBoundary(grains);
 gB = grains.boundary('iron','iron');
 
 % plot image quality beneath a translucent orientation map

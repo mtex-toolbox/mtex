@@ -48,7 +48,7 @@ lowAngle = 1*degree;
   'minPixel',5);
 
 % remove the pixel staircase before measuring boundary lengths
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 %% What |innerBoundary| means
 %
@@ -71,11 +71,11 @@ boundaryCounts = table(length(grains.boundary),...
 
 %% Draw the subgrain-boundary network
 %
-% The table reports 15,738 boundary segments between grains and 31,037
-% inner boundary segments. Of the latter, 30,577 satisfy the strict
-% low-angle selection and 460 exceed 10 degrees for the topological reason
-% above. Default boundary smoothing simplifies and resamples the network,
-% so these are post-smoothing segment counts rather than physical lengths.
+% The table reports 8,176 boundary segments between grains and 19,770
+% inner boundary segments. Of the latter, 19,531 satisfy the strict
+% low-angle selection and 239 exceed 10 degrees for the topological reason
+% above. Default boundary smoothing merges the segments of the network, so
+% these are post-smoothing segment counts rather than physical lengths.
 %
 % Drawing the inner boundaries with a transparency that follows their
 % misorientation angle keeps the strongest walls visible and lets the
@@ -152,7 +152,7 @@ plot(axisDensity,'fundamentalRegion','contourf','figSize','small')
 mtexColorbar('title','mrd')
 
 %%
-% The colour scale spans about 0.83 to 1.20 multiples of random distribution
+% The colour scale spans about 0.83 to 1.17 multiples of random distribution
 % (mrd), where 1 is uniform. This ferrite analysis therefore resolves no
 % strong preferred crystal-frame rotation axis. Compare the two clear
 % maxima in the forsterite example of
@@ -192,12 +192,12 @@ hold off
 % likely orientation noise crossing the 1 degree threshold, although a
 % short component is not proof of noise.
 %
-% The strict selection puts 29.1 percent of its segments in components
-% above 50. Counting every inner boundary gives 30.8 percent, or about the
-% 31 percent obtained without the explicit angle filter. Both populations
+% The strict selection puts 22.2 percent of its segments in components
+% above 50. Counting every inner boundary, without the explicit angle
+% filter, gives 23.7 percent. Both populations
 % are counted by the density maps above, and that is worth remembering
 % before reading much into a small difference between two grains.
-% The 50-segment cutoff itself changes with resampling and step size, so
+% The 50-segment cutoff itself changes with smoothing and step size, so
 % choose it again for a new map.
 
 %% References

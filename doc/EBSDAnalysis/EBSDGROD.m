@@ -36,7 +36,7 @@ lowAngle = 1*degree;
 [grains,ebsd] = calcGrains(ebsd,'angle',[highAngle lowAngle],'minPixel',3);
 
 % smooth grain boundaries
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 % denoise the orientations
 F = l1TVFilter;
@@ -109,7 +109,7 @@ fprintf('GOS for %d grains: median %.2f degree; maximum %.1f degree\n',...
   max(GOS./degree,[],'omitnan'));
 
 %%
-% Of the 377 grains the median spread is 0.64° and the largest 6.6°. The
+% Of the 377 grains the median spread is 0.53° and the largest 6.4°. The
 % map is not uniform. Some grains have much more internal orientation
 % variation than their neighbours, producing an order-of-magnitude spread.
 %
@@ -205,7 +205,7 @@ fprintf('Specimen-frame axis density: %.2f to %.2f mrd\n',...
   specimenDensityRange);
 
 %%
-% This distribution runs from 0.21 to 6.92 times uniform. The same axes that
+% This distribution runs from 0.22 to 6.89 times uniform. The same axes that
 % were spread evenly over the crystal are strongly clustered in the
 % specimen frame. Loading is defined in this frame, which makes the
 % clustering useful. Texture and a few highly deformed grains can also

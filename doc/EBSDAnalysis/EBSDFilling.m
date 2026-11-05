@@ -40,7 +40,7 @@ mtexdata ferrite
 grains = calcGrains(ebsd,'angle',12*degree,'minPixel',10);
 
 % smooth the pixel staircase of the grain boundaries
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 % plot the orientation map and its reconstructed grain boundaries
 plot(ebsd,'ipfz')
@@ -79,7 +79,7 @@ plot(ebsdSub,'ipfz')
 [grainsSub,ebsdSub] = calcGrains(ebsdSub,'angle',9*degree, ...
   'minPixel',2,'alpha',15);
 
-grainsSub = smoothBoundary(grainsSub,5);
+grainsSub = smoothBoundary(grainsSub);
 
 hold on
 % full data grain boundaries 
@@ -232,7 +232,7 @@ hold on
 % compute and smooth grains
 [grains,ebsd] = calcGrains(ebsd,'angle',10*degree, ...
   'minPixel',3,'alpha',3);
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 % plot the boundary of all grains
 plot(grains.boundary,'linewidth',2)

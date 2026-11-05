@@ -25,8 +25,9 @@ close all;
 % import artificial grain shapes
 mtexdata testgrains silent
 
-% select and smooth a range of convex, concave, and enclosing grains
-grains = smoothBoundary(grains('id',[2 3 9 11 15 16 18 23 31 33 38 40]),10);
+% select and smooth a range of convex, concave, and enclosing grains; the
+% curvature estimate needs a vertex at every pixel corner, so no simplification
+grains = smoothBoundary(grains('id',[2 3 9 11 15 16 18 23 31 33 38 40]),'noSimplify');
 
 %% Colour a Boundary by Curvature
 %
@@ -85,7 +86,7 @@ turnsBeforeAfterFlip = [sum(gB2.curvature .* gB2.segLength), ...
   sum(gB2Flipped.curvature .* gB2Flipped.segLength)] ./ (2*pi)
 
 %%
-% The normalized sums are about -1.02 and 1.02. Reversing the walk changes
+% The normalized sums are about -1.01 and 1.01. Reversing the walk changes
 % only the sign. A smooth simple closed curve has a total turning of
 % $\pm 2\pi$; the small offset here comes from the discrete approximation.
 
@@ -176,7 +177,7 @@ ylabel(['curvature in 1/' gB.scanUnit])
 
 mtexdata titanium silent
 [grains,ebsd] = calcGrains(ebsd);
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains,'noSimplify');
 
 % compute the IPF colours explicitly to keep the published output quiet
 indexed = ebsd('indexed');
@@ -212,9 +213,9 @@ mtexColorbar('title',['grain-relative curvature in 1/' gB.scanUnit])
 % A single section does not reveal the surface away from that plane.
 %
 % The result also inherits the spatial resolution and segmentation of the EBSD
-% map. Boundary smoothing suppresses the grid staircase but moves and resamples
-% the trace, so the smoothing choice is part of the measurement rather than a
-% cosmetic plotting choice.
+% map. Boundary smoothing suppresses the grid staircase but moves the trace
+% and merges its segments, so the smoothing choice is part of the measurement
+% rather than a cosmetic plotting choice.
 
 %% The Maths Behind the Three-Point Curvature
 %
@@ -259,4 +260,4 @@ mtexColorbar('title',['grain-relative curvature in 1/' gB.scanUnit])
 %% Next
 %
 % Continue with <GrainSmoothing.html Grain Boundary Smoothing> to choose how
-% the reconstructed pixel staircase is simplified, resampled, and smoothed.
+% the reconstructed pixel staircase is smoothed and simplified.

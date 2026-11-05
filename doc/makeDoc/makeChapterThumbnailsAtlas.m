@@ -216,7 +216,7 @@ switch name
 
   case 'Grains'
     [~,grains] = forsteriteGrains;
-    grains = smoothBoundary(grains,4);
+    grains = smoothBoundary(grains);
     mtexCanvas;
     plot(grains,grains.area,'micronbar','off');
     hold on
@@ -231,7 +231,7 @@ switch name
     ebsd = mtexdata('csl');
     ebsd = ebsd(inpolygon(ebsd,[170 55 160 160]));
     [grains,ebsd] = calcGrains(ebsd,'minPixel',3);
-    grains = smoothBoundary(grains,5);
+    grains = smoothBoundary(grains);
     gB = grains.boundary('iron','iron');
     twinBoundary = gB(gB.isTwinning(CSL(3,ebsd('iron').CS),3*degree));
     mtexCanvas;

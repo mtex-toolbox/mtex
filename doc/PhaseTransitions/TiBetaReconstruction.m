@@ -264,7 +264,7 @@ hold off
 plot(ebsd('Ti (Alpha)'),'ipfz','figSize','large')
 
 hold on
-parentGrains = smoothBoundary(job.parentGrains,5);
+parentGrains = smoothBoundary(job.parentGrains);
 plot(parentGrains.boundary,'lineWidth',3,'lineColor','White')
 hold off
 

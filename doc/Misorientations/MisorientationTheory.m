@@ -28,7 +28,7 @@ ebsd('M').CS = ebsd('M').CS.properGroup;
 
 % compute and smooth the grains
 grains = calcGrains(ebsd,'threshold',5*degree,'minPixel',5);
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 CS = grains.CS;
 
 %%

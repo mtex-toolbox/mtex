@@ -48,7 +48,7 @@ ebsd = ebsd(inpolygon(ebsd,[40 30 80 60]));
 
 grainsHard = calcGrains(ebsd,'angle',10*degree,'minPixel',10);
 fprintf('hard threshold: %d grains\n',length(grainsHard));
-grainsHard = smoothBoundary(grainsHard,5);
+grainsHard = smoothBoundary(grainsHard);
 
 plot(ebsd,'ipfz')
 hold on
@@ -64,7 +64,7 @@ title('Hard threshold')
 grainsHardMCL = calcGrains(ebsd,'mcl',[1.2 4],...
   'angle',10*degree,'minPixel',10);
 fprintf('hard threshold + MCL: %d grains\n',length(grainsHardMCL));
-grainsHardMCL = smoothBoundary(grainsHardMCL,5);
+grainsHardMCL = smoothBoundary(grainsHardMCL);
 
 hold on
 plot(grainsHardMCL.boundary,'lineWidth',3,'lineColor','white')
@@ -82,7 +82,7 @@ title('Hard threshold + MCL')
 
 grainsSoft = calcGrains(ebsd,'soft',[1 0.5]*degree,'minPixel',10);
 fprintf('soft threshold: %d grains\n',length(grainsSoft));
-grainsSoft = smoothBoundary(grainsSoft,5);
+grainsSoft = smoothBoundary(grainsSoft);
 
 hold on
 plot(grainsSoft.boundary,'lineWidth',1,'lineColor','gray')
@@ -99,7 +99,7 @@ title('Soft threshold without MCL')
 grainsSoftMCL = calcGrains(ebsd,'mcl',[1.2 4],...
   'soft',[1 0.5]*degree,'minPixel',10);
 fprintf('soft threshold + MCL: %d grains\n',length(grainsSoftMCL));
-grainsSoftMCL = smoothBoundary(grainsSoftMCL,5);
+grainsSoftMCL = smoothBoundary(grainsSoftMCL);
 
 plot(ebsd,'ipfz')
 hold on

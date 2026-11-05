@@ -89,7 +89,7 @@ newMtexFigure('layout',[2 2]);
 for k = 1:numel(alpha)
   [grainsA,ebsdA] = calcGrains(ebsd,'angle',10*degree,'minPixel',5, ...
     'alpha',alpha(k));
-  grainsA = smoothBoundary(grainsA,5);
+  grainsA = smoothBoundary(grainsA);
   nextAxis
   plot(ebsdA,'ipfz','micronbar','off')
   %plot(grainsA,'ipfz','micronbar','off')
@@ -211,7 +211,7 @@ fprintf('the pores make up %.1f%% of the area of their host grains\n', ...
 % meets it, and the corners of its convex hull stay where they are. The map
 % therefore keeps its extent.
 
-grainsSmooth = smoothBoundary(grainsMerged,5);
+grainsSmooth = smoothBoundary(grainsMerged);
 
 plot(grainsSmooth,'micronbar','off')
 

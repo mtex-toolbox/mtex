@@ -113,14 +113,13 @@ hold off
 %% Separate the coincident junctions for display
 %
 % The two replacement junctions initially have identical coordinates.
-% <grain2d.smoothBoundary.html |smoothBoundary|> normally fixes every
-% junction. Its |'moveTriplePoints'| option releases every interior junction,
-% despite the narrower name, and lets the two points move apart.
-%
-% A <taubinFilter.html |taubinFilter|> suppresses the pixel staircase while
-% limiting the systematic area loss of Laplacian smoothing.
+% <grain2d.smoothBoundary.html |smoothBoundary|> moves every interior
+% junction within the square of the pixel centres around it, so the two
+% points can move apart. Its default <taubinFilter.html |taubinFilter|>
+% suppresses the pixel staircase while limiting the systematic area loss of
+% Laplacian smoothing.
 
-grains = smoothBoundary(grains,taubinFilter,'moveTriplePoints');
+grains = smoothBoundary(grains);
 
 grainColors = colorKey.orientation2color(grains.meanOrientation);
 plot(grains,grainColors,'lineWidth',2,'micronbar','off');

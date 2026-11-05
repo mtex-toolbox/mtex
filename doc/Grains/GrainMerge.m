@@ -26,7 +26,7 @@ mtexdata twins silent
 
 % reconstruct and smooth the grains
 [grains,ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',3);
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 grains = grains('indexed');
 
 % compute the mean-orientation colours without printing a colour-key notice
@@ -71,9 +71,9 @@ hold off
 
 %%
 % The white traces follow the narrow lamellae. With this boundary sampling,
-% 1406 of 2696 magnesium-to-magnesium segments pass the five-degree test.
-% A segment count is not a count of physical twins, and smoothing or
-% resampling the same traces can change it. The tolerance is also an analyst
+% 730 of 1260 magnesium-to-magnesium segments pass the five-degree test.
+% A segment count is not a count of physical twins, and smoothing the same
+% traces can change it. The tolerance is also an analyst
 % choice: these are candidate twin boundaries, not proof of the mechanism or
 % of which side is the parent. <TwinningBoundaries.html Inferring Twin
 % Boundaries> develops those limitations.

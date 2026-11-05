@@ -59,14 +59,14 @@ uniformRatio = uniformRange(2) ./ uniformRange(1)
 % produced by segmentation. A grain boundary is a segment between two
 % neighbouring pixels that belong to different grains. Load the magnesium
 % map, segment it at $5^\circ$, and smooth the boundary
-% geometry for five iterations. The plotting convention states the specimen
+% geometry. The plotting convention states the specimen
 % frame used by this data set.
 
 plottingConvention.default('y↑→x');
 mtexdata twins silent
 
 grains = calcGrains(ebsd,'angle',5*degree);
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 % retain boundaries between magnesium grains
 gB = grains.boundary('Magnesium','Magnesium');
@@ -75,7 +75,7 @@ mori = gB.misorientation;
 %%
 % <orientation.axis.html |axis|> selects the smallest-angle
 % symmetry-equivalent representative and returns its axis in the crystal
-% frame. The summary reports one axis for each of the 2803 boundary
+% frame. The summary reports one axis for each of the 1394 boundary
 % segments.
 
 axesCrystal = axis(mori)
@@ -91,7 +91,7 @@ mtexColorbar
 
 %%
 % The isolated maximum is the extension-twin prism axis. Computing the
-% underlying spherical density returns a peak of 30.8 multiples of the mean
+% underlying spherical density returns a peak of 31.4 multiples of the mean
 % and prints the indexed direction at that peak.
 
 [peakDensity,twinAxis] = max(calcDensity(axesCrystal,...
@@ -127,13 +127,12 @@ mtexColorbar
 %
 % Passing two orientations separately to |plotAxisDistribution| asks where
 % that axis points in the specimen frame. The two EBSD ids stored for every
-% segment recover the orientations on its two sides. A segment that
-% smoothing simplified or resampled no longer runs between one pair of
-% pixels and has the ids 0, so the pairs are read from the boundaries
-% smoothed without those two stages, as the help of
-% <grain2d.smoothBoundary.html |smoothBoundary|> advises.
+% segment recover the orientations on its two sides. A segment merged by
+% simplification no longer runs between one pair of pixels and has the ids
+% 0, so the pairs are read from boundaries smoothed without simplification,
+% as the help of <grain2d.smoothBoundary.html |smoothBoundary|> advises.
 
-grainsP = smoothBoundary(calcGrains(ebsd,'angle',5*degree),5,'noSimplify','noRefine');
+grainsP = smoothBoundary(calcGrains(ebsd,'angle',5*degree),'noSimplify');
 gBp = grainsP.boundary('Magnesium','Magnesium');
 ori1 = ebsd('id',gBp.ebsdId(:,1)).orientations;
 ori2 = ebsd('id',gBp.ebsdId(:,2)).orientations;

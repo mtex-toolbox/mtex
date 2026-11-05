@@ -22,7 +22,7 @@ ebsd = ebsd(inpolygon(ebsd,[5 2 10 5]*10^3));
 
 % reconstruct and smooth the grains
 [grains,ebsd] = calcGrains(ebsd,'minPixel',5,'alpha',10);
-grains = smoothBoundary(grains,4);
+grains = smoothBoundary(grains);
 
 % extract and plot the complete boundary list
 gB = grains.boundary;
@@ -140,7 +140,7 @@ plot(grains.innerBoundary,'lineColor','red','lineWidth',4)
 hold off
 
 %%
-% The display reports 11 inner-boundary segments in this barely deformed
+% The display reports 6 inner-boundary segments in this barely deformed
 % rock. The red segments sit inside connected grains rather than tracing
 % complete grain outlines. Deformed material may contain many more, and
 % <SubGrainBoundaries.html Subgrain Boundaries> explains how a two-threshold

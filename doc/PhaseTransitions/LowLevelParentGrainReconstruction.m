@@ -31,12 +31,12 @@ beta2alpha = orientation.Burgers(...
 % The preceding page defines a triple point and explains why this workflow
 % uses a 1.5-degree segmentation threshold with
 % <QuadruplePoints.html |removeQuadruplePoints|>.
-% We add one boundary-smoothing iteration while keeping the triple points
-% attached to the boundary network.
+% We smooth the boundaries. The triple points move with the boundary
+% network, each within its pixel cell.
 
 [grains,ebsd] = calcGrains(ebsd,'threshold',1.5*degree,...
   'removeQuadruplePoints');
-grains = smoothBoundary(grains,1,'moveTriplePoints');
+grains = smoothBoundary(grains);
 
 region = [299 401 440 500];
 plot(ebsd(alphaName),'ipfz','region',region,'micronbar','off','figSize','large')
@@ -301,8 +301,8 @@ plot(parentGrains.boundary,'lineWidth',2)
 hold off
 
 %%
-% The median pixel fit is 1.183 degrees, 90% are below 2.087 degrees, and 99%
-% are below 3.209 degrees. Low values indicate agreement with the Burgers
+% The median pixel fit is 1.179 degrees, 90% are below 2.085 degrees, and 99%
+% are below 3.208 degrees. Low values indicate agreement with the Burgers
 % variant predicted by the beta grain. The boundary overlay shows whether
 % high fits concentrate near reconstructed grain edges.
 
@@ -317,12 +317,12 @@ plot(parentEBSD(betaName),parentColor,'figSize','large')
 %% Denoise the reconstructed beta phase
 %
 % Segment the current parent map at 5 degrees and mark indexed grains smaller
-% than 15 pixels as notIndexed. Five smoothing iterations regularize the
-% retained boundaries.
+% than 15 pixels as notIndexed. Smoothing regularizes the retained
+% boundaries.
 
 [parentGrains,parentEBSD] = calcGrains(parentEBSD,...
   'angle',5*degree,'minPixel',15);
-parentGrains = smoothBoundary(parentGrains,5);
+parentGrains = smoothBoundary(parentGrains);
 
 %%
 % A <l1TVFilter.l1TVFilter.html |l1TVFilter|> with a small |alpha|

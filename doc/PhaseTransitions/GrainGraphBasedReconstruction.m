@@ -20,7 +20,7 @@ mtexdata martensite
 
 [grains,ebsd] = calcGrains(ebsd,'angle',3*degree,...
   'minPixel',5,'alpha',6.1);
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 plot(ebsd('Iron bcc'),'ipfz','figSize','large')
 hold on
@@ -63,8 +63,8 @@ changeFromKS = angle(initialP2C,job.p2c) ./ degree
 % <parentGrainReconstructor.calcParent2Child.html |calcParent2Child|> uses
 % the iterative method of Nyyssönen and co-workers.
 % It assumes that most measured boundaries are child-to-child boundaries.
-% The first fit quintile is 1.453 degrees, consistent with the former rounded
-% value of 1.5 degrees. The change from KS is 3.110 degrees, not 2.3 degrees.
+% The first fit quintile is 1.452 degrees, consistent with the former rounded
+% value of 1.5 degrees. The change from KS is 3.095 degrees, not 2.3 degrees.
 % The 2.3-degree value in the displayed summary is the distance to the closest
 % rounded ideal OR, so the earlier text compared two different quantities.
 %
@@ -97,8 +97,8 @@ graphWeightQuantiles = quantile(graphWeights,[0.1 0.5 0.9])
 
 %%
 % The printed count is the number of weighted neighbour relations retained
-% by the graph: 11,154 in this run. Its 10th, 50th, and 90th weight
-% percentiles are 0.0080, 0.6677, and 0.9464.
+% by the graph: 11,160 in this run. Its 10th, 50th, and 90th weight
+% percentiles are 0.0081, 0.6645, and 0.9464.
 
 %% Read the graph on the map
 %
@@ -128,7 +128,7 @@ job.clusterGraph('inflationPower',1.6)
 
 %%
 % The displayed graph summary gives clustered grains, component count, and
-% single-grain components. Here 4,414 grains form 237 components and 54
+% single-grain components. Here 4,412 grains form 236 components and 53
 % components contain only one grain. These are hypotheses, not yet accepted
 % parent grains.
 
@@ -147,7 +147,7 @@ plot(job.parentGrains,'ipfz')
 
 %%
 % Most child grains now appear in the parent phase.
-% The graph transforms 4,414 grains and leaves 52 child grains unchanged.
+% The graph transforms 4,412 grains and leaves 52 child grains unchanged.
 % Neighbouring fragments with similar colours belong to graph components that
 % still await quality control and merging.
 
@@ -180,8 +180,8 @@ plot(job.parentGrains,'ipfz')
 %%
 % <parentGrainReconstructor.revert.html |revert|> restores the measured child
 % phase and orientation for the rejected grains.
-% The criteria flag 848 grains. Of those, 54 carry no graph assignment to
-% undo, so this call reverts 794 of them and leaves 846 child grains.
+% The criteria flag 874 grains. Of those, 53 carry no graph assignment to
+% undo, so this call reverts 821 of them and leaves 873 child grains.
 % Called without an argument, |job.revert| undoes the entire reconstruction.
 % That full reset is useful when comparing graph parameters.
 
@@ -204,7 +204,7 @@ plot(job.parentGrains,'ipfz')
 
 %%
 % The printed sequence should decrease as the reconstructed neighbourhood
-% expands. It is 614, 387, and 174 child grains in this run.
+% expands. It is 616, 380, and 174 child grains in this run.
 % The final map fills most rejected regions without accepting their original
 % weak graph assignments.
 
@@ -243,7 +243,7 @@ packetColor = ind2color(job.transformedGrains.packetId);
 plot(job.transformedGrains,packetColor,'faceAlpha',0.5)
 
 hold on
-parentGrains = smoothBoundary(job.parentGrains,10);
+parentGrains = smoothBoundary(job.parentGrains);
 plot(parentGrains.boundary,'lineWidth',3)
 grainSelected = parentGrains(...
   parentGrains.findByLocation([100,80]));
@@ -285,17 +285,17 @@ pixelFitQuantiles = quantile(pixelFit(~isnan(pixelFit)),[0.5 0.9 0.99])
 
 %%
 % The printed fit quantiles are the compact numerical check for this graph
-% reconstruction. The median, 90th, and 99th percentiles are 2.234, 4.155,
-% and 7.149 degrees. Low values mean the measured child pixels agree with
+% reconstruction. The median, 90th, and 99th percentiles are 2.255, 4.178,
+% and 7.174 degrees. Low values mean the measured child pixels agree with
 % their assigned parent orientation.
 %
 % To fill remaining notIndexed or not reconstructed pixels, the earlier page
 % segments |parentEBSD| at 3 degrees with |'minPixel',10|, smooths the parent
-% boundaries by 10 iterations, and applies a |l1TVFilter|:
+% boundaries, and applies a |l1TVFilter|:
 %
 %   [parentGrains,parentEBSD] = calcGrains(parentEBSD,...
 %     'angle',3*degree,'minPixel',10);
-%   parentGrains = smoothBoundary(parentGrains,10);
+%   parentGrains = smoothBoundary(parentGrains);
 %   F = l1TVFilter;
 %   parentEBSD = smooth(parentEBSD,F,parentGrains);
 %

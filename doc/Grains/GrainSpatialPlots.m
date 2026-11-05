@@ -270,7 +270,7 @@ plottingConvention.default('y↓→x');
 mtexdata csl silent
 
 [grains,ebsd] = calcGrains(ebsd,'minPixel',5);
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 plot(grains,'ipfz','micronbar','off','figSize','large',...
   'region',[50 300 100 250])
 

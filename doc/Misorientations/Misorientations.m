@@ -23,7 +23,7 @@ plottingConvention.default('y↑→x');
 mtexdata twins silent
 
 grains = calcGrains(ebsd,'angle',5*degree);
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 gB = grains.boundary('Magnesium','Magnesium');
 
 plot(grains,'FaceColor',[0.92 0.92 0.92],'micronbar','off')

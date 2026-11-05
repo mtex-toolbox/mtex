@@ -28,7 +28,7 @@ mtexdata forsterite silent
 % reconstruct grains, discard boundary grains, and smooth their outlines
 [grains, ebsd] = calcGrains(ebsd,'angle',5*degree,'minPixel',5);
 grains(grains.isBoundary) = [];
-grains = smoothBoundary(grains('indexed'),10,'moveTriplePoints');
+grains = smoothBoundary(grains('indexed'));
 
 % plot all grains and highlight one complete grain
 plot(grains)
@@ -66,7 +66,7 @@ xlabel('projection direction in degrees')
 xlim([0,180])
 
 %%
-% The curve of this grain runs between 1632 and 6925 µm. Its one broad
+% The curve of this grain runs between 890 and 1630 µm. Its one broad
 % maximum and one minimum over 180 degrees are characteristic of an elongated,
 % roughly convex outline. The extrema are also available as vectors whose
 % <vector3d.norm.html |norm|> is the caliper length. The longest one is the
@@ -116,7 +116,7 @@ mtexColorbar('title','(c_{max} - c_{min}) / c_{max}')
 
 % load two artificial grains
 testgrains = mtexdata('testgrains');
-testgrains = smoothBoundary(testgrains([6 8]),10);
+testgrains = smoothBoundary(testgrains([6 8]));
 
 % compute the longest caliper and the direction normal to the shortest one
 cMax = testgrains.caliper('longest');
@@ -226,7 +226,7 @@ polarplot(omega,cumplE,plOpt{:})
 parorMinimum = [min(cumplF),min(cumplE)]
 
 %%
-% The forsterite and enstatite minima are 0.7118 and 0.7214, a difference of
+% The forsterite and enstatite minima are 0.7141 and 0.7224, a difference of
 % about 0.01. Both phases therefore have a moderate projection anisotropy of
 % similar strength.
 %
@@ -252,10 +252,10 @@ harmonicDirectionsEn = ...
   [mod(maxposen,pi),mod(minposen-pi/2,pi)] ./ degree
 
 %%
-% For forsterite the two fitted directions are 71.5 and 74.5 degrees; for
-% enstatite they are 87.5 and 88.8 degrees. The two directions of each phase
+% For forsterite the two fitted directions are 70.3 and 74.5 degrees; for
+% enstatite they are 87.6 and 88.9 degrees. The two directions of each phase
 % lie within a few degrees, so both fabrics are close to orthorhombic in this
-% section. The 16-degree difference between the preferred longest projections
+% section. The 17-degree difference between the preferred longest projections
 % of the two phases is the more interesting comparison.
 %
 % The same directions can be read directly from the sampled values. The
@@ -315,12 +315,12 @@ surforSummary = table(pairName,surforMinimum,surforLongDirection,...
 %%
 % The four curves differ in both shape and direction. The contact between the
 % two pyroxenes, enstatite and diopside, is the roundest, with a minimum at
-% 0.87 of its maximum. It is the least anisotropic boundary population in
-% this rock. The most anisotropic is the forsterite-diopside contact at 0.68,
-% not the forsterite-forsterite boundary at 0.76. What sets the
+% 0.88 of its maximum. It is the least anisotropic boundary population in
+% this rock. The most anisotropic is the forsterite-diopside contact at 0.70,
+% not the forsterite-forsterite boundary at 0.77. What sets the
 % forsterite-forsterite boundary apart is its direction rather than its
-% strength: its long direction is 63 degrees, whereas the other three lie
-% between 75 and 85 degrees.
+% strength: its long direction is 61 degrees, whereas the other three lie
+% between 74 and 89 degrees.
 
 %% Characteristic shape
 %
@@ -364,10 +364,9 @@ characteristicCaliperAngle = [...
   angle(shapeEF.caliper('longest'),shapeEF.caliper('shortest'))] ./ degree
 
 %%
-% The two single-phase shapes both give 79.3 degrees. Each is skewed by about
-% 10.7 degrees, and the two skews run in opposite senses: the outlines are
-% close to mirror images of one another. The mixed forsterite-enstatite shape
-% is nearly symmetric at 88.5 degrees.
+% The two single-phase shapes give 77.7 and 82.3 degrees, skewed from a
+% right angle by about 12.3 and 7.7 degrees. The mixed forsterite-enstatite
+% shape is nearly symmetric at 86.4 degrees.
 %
 % These values describe this map. Whether a difference between specimens is
 % larger than sampling variation requires replicate maps, subdivision, or a

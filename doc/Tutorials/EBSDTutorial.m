@@ -120,7 +120,7 @@ plot(ebsd('Forsterite'),ebsd('Forsterite').orientations,'micronbar','off')
 grains = calcGrains(ebsd,'angle',10*degree,'minPixel',5)
 
 % smooth only the boundary geometry
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 %%
 % The returned <grain2d.grain2d.html |grain2d|> object is a vectorized list

@@ -32,7 +32,7 @@ mtexdata ferrite silent
 ebsd = ebsd.project2FundamentalRegion;
 
 % smooth only the outlines used in the figures
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 % use one colour key for the measurement and grain-mean maps
 ipfKey = ipfColorKey(ebsd.CS);

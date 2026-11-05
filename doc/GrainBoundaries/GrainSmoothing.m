@@ -19,7 +19,7 @@ close all;
 mtexdata csl silent
 [grains,ebsd] = ebsd.calcGrains('minPixel',3);
 
-grainsSmooth = smoothBoundary(grains,5);
+grainsSmooth = smoothBoundary(grains);
 
 ipfKey = ipfColorKey(grainsSmooth);
 grainColor = ipfKey.orientation2color(grainsSmooth.meanOrientation);
@@ -35,27 +35,41 @@ plot(grainsSmooth,grainColor,'micronbar','off')
 % <GrainSmoothingAdvanced.html Smoothing Algorithms>.
 
 %% What it does
-% Boundary smoothing has three stages, in this order. It removes the grid
-% staircase, resamples the boundary at even spacing, and only then smooths the
-% curve. The first two stages are not cosmetic. Smoothing a staircase
-% directly only makes a finer staircase.
+% Boundary smoothing has two stages. It first moves the boundary vertices
+% towards a smooth curve. It then removes the vertices the smooth curve no
+% longer needs.
 %
-% The measured boundary is grey below, and the result is magenta.
+% The first stage never moves the boundary across the centre of a pixel it
+% was measured next to. A vertex of the staircase is a corner of four pixels.
+% It may only move within the square spanned by those four pixel centres,
+% shrunk by a twentieth of the pixel spacing. So every pixel stays on the side
+% of the boundary it was measured on.
+%
+% The measured boundary is grey below, the result is magenta, and the black
+% dots are the pixel centres.
 
 plot(grains.boundary,'lineWidth',4,'lineColor','LightGray',...
   'displayName','measured','micronbar','off')
 hold on
 plot(grainsSmooth.boundary,'lineWidth',2,'lineColor','Fuchsia',...
   'displayName','smoothed')
+plot(ebsd.x,ebsd.y,'.k','markerSize',6,'displayName','pixel centers')
 hold off
 axis([313 353 140 156])
-legend('Location','best')
+legend('Location','northeast')
 
 %%
-% The magenta curves cut across the pixel steps while the junction locations
-% remain fixed. A staircase along a boundary at 45 degrees is |sqrt(2)| times
-% as long as the diagonal it represents. The whole map contains many boundary
-% directions, so its measured change is data-dependent.
+% The magenta curves cut across the pixel steps, but each passes between
+% the same pixel centres as the grey staircase. The junctions move a little,
+% each within the square around it.
+%
+% The second stage straightens what is straight. It drops every vertex whose
+% removal moves the boundary by less than a tenth of the pixel spacing, unless
+% that brings a pixel centre closer than a twentieth of the spacing.
+%
+% A staircase along a boundary at 45 degrees is |sqrt(2)| times as long as the
+% diagonal it represents. The whole map contains many boundary directions, so
+% its measured change is data-dependent.
 
 lenRaw = sum(grains.boundary('indexed').segLength);
 lenSmooth = sum(grainsSmooth.boundary('indexed').segLength);
@@ -67,9 +81,10 @@ fprintf(['total boundary length: %.0f %s measured, %.0f %s smoothed' ...
 %%
 % The direction distribution shows the same grid artifact. The raw boundary
 % follows two antipodal grid axes, drawn as four spikes at multiples of 90
-% degrees. Smoothing spreads boundary length into the intervening directions,
-% although some grid-aligned segments remain. Each panel has its own radial
-% scale, so compare the angular spread rather than the bar heights.
+% degrees. Smoothing spreads boundary length over all directions. A few
+% directions still collect more length than their neighbours: the grid axes,
+% and those of long straight boundaries in this map. Each panel has its own
+% radial scale, so compare the angular spread rather than the bar heights.
 
 figure
 subplot(1,2,1)
@@ -91,13 +106,13 @@ title('smoothed')
 % repeat important measurements at nearby settings to check their sensitivity.
 
 %% How much to smooth
-% The second argument is the number of smoothing iterations. More iterations
-% give a smoother boundary and reduce the scatter around the grid directions.
-% An iteration count is not a physical length, so the same count can have a
-% different effect when the boundary sampling changes. See the warning about
-% shrinkage below before increasing it.
+% The second argument is the number of smoothing steps, 20 by default. Each
+% step is a smoothing pass followed by a slightly larger unshrinking pass.
+% More steps give a straighter boundary, but no step moves a vertex out of
+% its square. A step count is not a physical length, so the same count can
+% have a different effect when the boundary sampling changes.
 
-iter = [1 5 10 25];
+iter = [2 5 20 40];
 color = copper(length(iter)+1);
 
 plot(grains.boundary,'lineWidth',1,'lineColor','LightGray',...
@@ -106,57 +121,53 @@ for i = 1:length(iter)
   hold on
   plot(smoothBoundary(grains,iter(i)).boundary('i','i'),...
     'lineWidth',2,'lineColor',color(i,:),...
-    'displayName',[num2str(iter(i)) ' iterations'])
+    'displayName',[num2str(iter(i)) ' steps'])
 end
 hold off
 axis([313 353 140 156])
 legend('Location','best')
 
 %%
-% One iteration still tracks small pixel-scale bends. More iterations remove
-% those bends, but the 25-iteration curve also pulls visibly inward around the
-% small central grain. This is the shrinkage discussed next.
+% Two and five steps still follow the pixel corners. At 20 steps the curve
+% runs straight between the bends of the boundary. Forty steps change it
+% little more, because every vertex is held in its square.
 
 %% Which algorithm - the short version
-% A <boundaryFilter.html |boundaryFilter|> selects the algorithm used for the
-% final smoothing stage. Two choices cover most practical work.
+% A <boundaryFilter.html |boundaryFilter|> selects the algorithm of the first
+% stage. The default is <taubinFilter.html |taubinFilter|>, the pair of passes
+% described above. It suits plots, directions and lengths as well as grain
+% areas and shape parameters.
 %
-% *Use the default* when the smoothed boundary is for plotting or for
-% measuring directions and lengths. It is a fast Laplacian, and it is what
-% |smoothBoundary(grains,5)| selects without being asked.
-%
-% *Use <taubinFilter.html |taubinFilter|> when grain areas or shape parameters
-% matter.* A Laplacian shrinks. Every iteration pulls a convex region inward,
-% and nothing bounds how far. Taubin follows every smoothing pass with a
-% slightly larger unshrinking pass, which stops the systematic drift.
+% <laplaceFilter.html |laplaceFilter|> applies the smoothing passes alone. It
+% shrinks: every pass pulls a convex grain inward, until the squares stop it.
+% Taubin's unshrinking pass gives the area back.
 
-ref = smoothBoundary(grains,0); % simplified and resampled, not smoothed
-A0 = ref.area;
+A0 = grains.area;
 d = median(grains.boundary.segLength);
 big = A0 > 10*d^2;
 A0 = A0(big);
 
-grainsLaplace = smoothBoundary(grains,25);
+grainsLaplace = smoothBoundary(grains,laplaceFilter(25));
 aL = grainsLaplace.area;
 aL = aL(big);
-grainsTaubin = smoothBoundary(grains,taubinFilter(25));
+grainsTaubin = smoothBoundary(grains,25);
 aT = grainsTaubin.area;
 aT = aT(big);
 
-fprintf('grain area after 25 iterations\n')
-fprintf(['  laplaceFilter (default) %+6.2f%% on average,' ...
+fprintf('grain area after 25 steps\n')
+fprintf(['  laplaceFilter %+6.2f%% on average,' ...
   ' %+6.1f%% for the worst grain\n'],...
   100*mean((aL-A0)./A0),100*min((aL-A0)./A0))
-fprintf(['  taubinFilter            %+6.2f%% on average,' ...
+fprintf(['  taubinFilter  %+6.2f%% on average,' ...
   ' %+6.1f%% for the worst grain\n'],...
   100*mean((aT-A0)./A0),100*min((aT-A0)./A0))
 
 %%
-% The reference has passed through simplification and resampling but has zero
-% smoothing iterations. The comparison excludes grains with an area no larger
-% than |10*d^2|, where |d| is the median raw segment length. The printed mean
-% and worst cases show that Taubin removes the systematic area loss without
-% promising exact area preservation.
+% The areas are compared with those of the measured staircase. The comparison
+% excludes grains with an area no larger than |10*d^2|, where |d| is the pixel
+% spacing. The Laplacian loses area on average and much more on its worst
+% grain. Taubin keeps the mean area within a fraction of a percent, without
+% promising that every grain keeps its area exactly.
 %
 % The difference is visible on the grain whose area is closest to 30 square
 % map units. The measured staircase is grey, the Laplacian is magenta, and
@@ -170,33 +181,34 @@ plot(grains(id).boundary,'lineWidth',4,'lineColor','LightGray',...
   'displayName','measured','micronbar','off')
 hold on
 plot(grainsLaplace(id).boundary,'lineWidth',2.5,...
-  'lineColor','Fuchsia','displayName','Laplace, 25 iterations')
+  'lineColor','Fuchsia','displayName','Laplace, 25 steps')
 plot(grainsTaubin(id).boundary,...
   'lineWidth',2.5,'lineColor','DodgerBlue',...
-  'displayName','Taubin, 25 iterations')
+  'displayName','Taubin, 25 steps')
 hold off
 axis([c.x-6 c.x+6 c.y-6 c.y+6])
 legend('Location','best')
 
 %%
-% The magenta boundary cuts noticeably inside this small grain. The blue
-% boundary stays much closer to the measured outline.
+% The magenta Laplacian cuts inside the blue Taubin curve along the upper edge
+% of this grain. Both stay close to the staircase, because the squares hold
+% their vertices.
 
 %% A physical smoothing length
-% <curvatureFilter.html |curvatureFilter|> replaces the iteration count with a
+% <curvatureFilter.html |curvatureFilter|> replaces the step count with a
 % length: the wavelength whose amplitude is reduced by half. Finer detail is
 % attenuated more strongly, while coarser detail is preserved more strongly.
 % Because the parameter is a length, it has the same meaning for scans made at
 % different step sizes.
 
 F = curvatureFilter;
-F.smoothingLength = 4; % in the units of the map, here um
+F.smoothingLength = 8; % in the units of the map, here um
 
 plot(grains.boundary,'lineWidth',4,'lineColor','LightGray',...
   'displayName','measured','micronbar','off')
 hold on
 plot(smoothBoundary(grains,F).boundary,'lineWidth',2.5,...
-  'lineColor','Orange','displayName','curvatureFilter, 4 um')
+  'lineColor','Orange','displayName','curvatureFilter, 8 um')
 hold off
 axis([313 353 140 156])
 legend('Location','best')
@@ -210,16 +222,16 @@ legend('Location','best')
 % keeps genuine corners sharp instead of rounding them off. It is not a good
 % default; see <GrainSmoothingAdvanced.html Smoothing Algorithms>.
 
-%% When to switch the first two stages off
-% Simplification and resampling change the number of boundary segments. A
-% segment that no longer runs between one specific pair of pixels gets the
-% |gB.ebsdId| 0. Wherever |gB.ebsdId| is read per segment, for example to look
-% up the orientations on either side, switch both stages off.
+%% When to switch the second stage off
+% The second stage changes the number of boundary segments. A segment that no
+% longer runs between one specific pair of pixels gets the |gB.ebsdId| 0.
+% Wherever |gB.ebsdId| is read per segment, for example to look up the
+% orientations on either side, switch the second stage off.
 
-grainsPlain = smoothBoundary(grains,5,'noSimplify','noRefine');
+grainsPlain = smoothBoundary(grains,'noSimplify');
 
 fprintf(['boundary segments: %d measured, %d after smoothing, ' ...
-  '%d with both steps off\n'],length(grains.boundary),...
+  '%d without the second stage\n'],length(grains.boundary),...
   length(grainsSmooth.boundary),length(grainsPlain.boundary))
 
 %%
@@ -229,21 +241,31 @@ fprintf(['boundary segments: %d measured, %d after smoothing, ' ...
 %% Junctions and triple points
 % A *junction* is a boundary vertex at which the number of meeting segments
 % is not two. It includes triple and quadruple points as well as a loose end.
-% By default, |smoothBoundary| holds every junction fixed. Segment connectivity
-% is unchanged, and the places where the grains meet remain fixed.
+% A triple or quadruple point moves with the smoothing, but only within the
+% square of the pixel centres around it, or within half a pixel spacing where
+% no pixel edge meets it. A loose end, where an inner boundary fades out,
+% stays where it is. Segment connectivity is unchanged, so the same grains
+% meet.
 %
-% The option |'moveTriplePoints'| releases the interior junctions despite its
-% narrower name. Be careful with a Laplacian: moving those vertices allows a
-% small grain to shrink until its polygon collapses. The junctions on the
-% outer boundary and the corners of its convex hull remain fixed unless
-% |'moveOuterBoundary'| is also passed.
+% The junctions on the outer boundary and the corners of its convex hull
+% remain fixed unless |'moveOuterBoundary'| is passed, so the map keeps its
+% extent.
 
 %% References
 %
+% * S. F. F. Gibson, <https://doi.org/10.1007/BFb0056277 Constrained Elastic
+% Surface Nets: Generating Smooth Surfaces from Binary Segmented Data>,
+% _MICCAI 1998_, LNCS 1496, 888-898, smooths a voxel surface while holding
+% every vertex in its cell, the idea of the first stage.
 % * D. H. Douglas and T. K. Peucker, "Algorithms for the Reduction of the
 % Number of Points Required to Represent a Digitized Line or Its Caricature",
 % _The Canadian Cartographer_ 10 (1973), 112-122,
 % <https://doi.org/10.3138/FM57-6770-U75U-7727 doi:10.3138/FM57-6770-U75U-7727>.
+% * M. de Berg, M. van Kreveld and S. Schirra,
+% <https://doi.org/10.1559/152304098782383007 Topologically Correct
+% Subdivision Simplification Using the Bandwidth Criterion>, _Cartography and
+% Geographic Information Systems_ 25 (1998), 243-257, simplify a line without
+% moving it across given points, the constraint of the second stage.
 % * G. Taubin, "A Signal Processing Approach to Fair Surface Design",
 % _Proceedings of SIGGRAPH 1995_, 351-358,
 % <https://doi.org/10.1145/218380.218473 doi:10.1145/218380.218473>.
@@ -259,7 +281,7 @@ fprintf(['boundary segments: %d measured, %d after smoothing, ' ...
 
 %% Next
 % Continue with <GrainSmoothingAdvanced.html Smoothing Algorithms> for the
-% three-stage implementation, filter parameters, and quantitative comparisons.
+% two stages in detail, filter parameters, and quantitative comparisons.
 % Then see <BoundaryCurvature.html Boundary Curvature> for a measurement that
 % depends directly on the smoothed geometry. The grain-level consequences for
 % area, perimeter, and outline descriptors continue in

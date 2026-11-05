@@ -3,8 +3,8 @@
 %%
 % <GrainSmoothing.html Grain Boundary Smoothing> introduces
 % <grain2d.smoothBoundary.html |smoothBoundary|>. This page explains its
-% three stages, the tolerances they use, and the four filters available for
-% the last stage.
+% two stages, the tolerances they use, and the four filters available for
+% the first stage.
 %
 % The page assumes that grains have already been reconstructed as in
 % <GrainReconstruction.html Grain Reconstruction>. A grain boundary is one
@@ -17,7 +17,7 @@ close all;
 mtexdata csl silent
 [grains,ebsd] = ebsd.calcGrains('minPixel',3);
 
-% characteristic length of the measured boundary segments
+% the pixel spacing
 d = median(grains.boundary.segLength);
 
 % compute the colours explicitly to keep the published output quiet
@@ -35,94 +35,92 @@ axis([313 353 140 156])
 % throughout the page. Its steps follow the square measurement grid rather
 % than the physical boundary direction.
 
-%% Step 1: remove the grid staircase
-% For an ideal straight boundary, the staircase is never farther than
-% |d/sqrt(2)| from the line it approximates. The worst case is a boundary at
-% 45 degree, whose corners lie exactly that far from the diagonal.
-% <grain2d.simplifyBoundary.html |simplifyBoundary|> therefore uses this as
-% its default tolerance. It drops a vertex when removing it moves the
-% boundary by less than the tolerance.
+%% Step 1: smooth inside the pixel cells
+% A vertex of the staircase is a corner of four pixels. Its *cell* is the
+% square spanned by their centres, shrunk by |d/20| on every side, where |d|
+% is the pixel spacing. On a hexagonal grid a corner belongs to three pixels
+% and its cell is a triangle.
 %
-% This argument separates the ideal grid staircase from features at larger
-% scales. It cannot distinguish a real feature at the grid scale from a
-% sampling artefact.
+% The filter moves the vertices in steps. After every step, a vertex that has
+% left its cell is moved back to the nearest point of it. While both ends of
+% a segment lie in their cells, the segment passes between the two pixel
+% centres it was measured between. So no pixel changes sides.
+%
+% A junction without a cell, in a filled notIndexed region, stays within half
+% a pixel spacing. The other vertices of such a region move freely. The pixel
+% edges are the segments with a nonzero |gB.pixelDist|, the distance of the
+% two pixel centres on either side, which
+% <EBSD.calcGrains.html |calcGrains|> records.
 
-grainsSimple = simplifyBoundary(grains,d/sqrt(2));
+grainsCells = smoothBoundary(grains,'noSimplify');
 
 plot(grains.boundary,'linewidth',5,'linecolor','YellowGreen','micronbar','off')
 hold on
-plot(grainsSimple.boundary,'linewidth',2,'linecolor','Fuchsia')
+plot(grainsCells.boundary,'linewidth',2,'linecolor','Fuchsia')
+plot(ebsd.x,ebsd.y,'.k','markerSize',6)
 hold off
 axis([313 353 140 156])
 
 %%
-% The magenta boundary has lost the staircase and is much shorter. It also
-% has far fewer vertices because essentially only the corners have survived.
+% The magenta boundary cuts across the pixel steps and keeps every black
+% pixel centre on its side. It still has one vertex for every pixel corner of
+% the staircase.
 
-fprintf(['simplifying at a tolerance of %.2f %s takes the boundary' ...
-  ' from %d segments to %d\n'],d/sqrt(2),grains.scanUnit, ...
-  length(grains.boundary),length(grainsSimple.boundary))
+fprintf('%d of the %d boundary segments are pixel edges\n', ...
+  nnz(grains.boundary.pixelDist > 0),length(grains.boundary))
 
-%% Step 2: restore evenly spaced samples
-% Smoothing the simplified result directly would be a mistake. A curved
-% chain is now represented by a few long chords, and a Laplacian cuts the
-% corners from the polygon they form. A circle with a radius of 15 pixels
-% loses 14% of its area over 25 iterations that way, compared with 0.4% when
-% this resampling step is included.
+%% Step 2: simplify without crossing a pixel
+% <grain2d.simplifyBoundary.html |simplifyBoundary|> runs the Douglas-Peucker
+% algorithm on every chain. It replaces a run of vertices by the chord between
+% its ends when no vertex lies further than a tolerance from it. Otherwise it
+% splits the run at the farthest vertex and tries both halves.
 %
-% <grain2d.refineBoundary.html |refineBoundary|> splits each segment into
-% pieces of about equal length. It changes only the sampling, not the
-% polygonal shape.
-% The smoothing stage then receives evenly spaced degrees of freedom that are
-% no longer tied to the measurement grid.
+% |smoothBoundary| uses a tolerance of |d/10|. That removes what the first
+% stage has straightened and keeps every bend. A chord is also refused when
+% it would bring the centre of a pixel next to a pixel edge closer than
+% |d/20|, or put it on the other side.
 
-grainsRefined = refineBoundary(grainsSimple,d);
-
-fprintf('resampling at %.2f %s puts them back: %d segments to %d\n', ...
-  d,grains.scanUnit,length(grainsSimple.boundary), ...
-  length(grainsRefined.boundary))
-
-%% Step 3: smooth the resampled boundary
-% Only now does the filter move the boundary. A *junction* is a vertex where
-% the number of meeting segments is not two. Junctions remain fixed by
-% default.
-
-grainsSmooth = smoothBoundary(grainsRefined,5,'noSimplify','noRefine');
+grainsSmooth = smoothBoundary(grains);
 
 plot(grains.boundary,'linewidth',5,'linecolor','YellowGreen','micronbar','off')
 hold on
 plot(grainsSmooth.boundary,'linewidth',2,'linecolor','Fuchsia')
+plot(ebsd.x,ebsd.y,'.k','markerSize',6)
 hold off
 axis([313 353 140 156])
 
 %%
-% The magenta trace now follows the larger turns of the measured boundary
-% without reproducing its pixel-scale steps.
+% The magenta boundary keeps a vertex only where it bends. It passes every
+% black pixel centre on the same side as the staircase.
+
+fprintf('simplifying takes the boundary from %d segments to %d\n', ...
+  length(grainsCells.boundary),length(grainsSmooth.boundary))
+
+%%
+% Of several vertices equally far from a chord, the one nearest the middle of
+% the run is kept, then the one smallest in x, then in y. So the result
+% depends neither on the direction a chain is walked nor on the numbering of
+% the grains.
 %
-% These three stages are exactly what |smoothBoundary(grains,5)| performs.
-% Both tolerances come from the median segment length measured *before* the
-% first stage. After simplification, that median describes the straightened
-% runs rather than the pixel spacing. The tolerances may also be set
-% explicitly.
+% The tolerance may also be set explicitly.
 
-grainsCoarse = smoothBoundary(grains,5,'simplify',d/sqrt(2),'refine',2*d);
+grainsCoarse = smoothBoundary(grains,'simplify',d/2);
 
-fprintf('resampling at %.2f %s instead leaves %d segments\n', ...
-  2*d,grains.scanUnit,length(grainsCoarse.boundary))
+fprintf('simplifying at %.2f %s instead leaves %d segments\n', ...
+  d/2,grains.scanUnit,length(grainsCoarse.boundary))
 
-%% What preprocessing changes
-% Simplification and resampling change the number of boundary segments.
-% A segment that no longer lies between one specific pair of EBSD
-% measurements gets the row |[0 0]| in |gB.ebsdId|, as the outer boundary
-% has. Use |'noSimplify'| and |'noRefine'| when an analysis needs that
-% per-segment association for every segment.
+%% What simplification changes
+% Simplification changes the number of boundary segments. A segment that no
+% longer lies between one specific pair of EBSD measurements gets the row
+% |[0 0]| in |gB.ebsdId|, as the outer boundary has. Use |'noSimplify'| when an
+% analysis needs that per-segment association for every segment.
 %
 % Smoothing also changes lengths, areas, directions, and curvatures. It is a
 % measurement choice, not merely a plotting choice. Record the filter and
 % its settings when comparing maps or reporting shape statistics.
 
 %% Choose the filter
-% A <boundaryFilter.html |boundaryFilter|> controls the third stage.
+% A <boundaryFilter.html |boundaryFilter|> controls the first stage.
 % <laplaceFilter.html |laplaceFilter|> and
 % <taubinFilter.html |taubinFilter|> apply a local averaging step a fixed
 % number of times. Their effect therefore depends on how densely the boundary
@@ -132,65 +130,65 @@ fprintf('resampling at %.2f %s instead leaves %d segments\n', ...
 % grid. That length makes the setting comparable between scans only when
 % their spatial units and preprocessing are also comparable.
 %
+% Every filter works inside the cells. The averaging filters return each
+% vertex to its cell after every step, the other two once after their solve.
+%
 % Do not expect to distinguish sensible settings by eye on this map. All four
 % results lie within a line width of one another, but their sub-pixel
 % differences appear in boundary statistics. The following examples therefore
-% compare grain areas.
-%
-% The reference has passed through simplification and resampling but not
-% smoothing. In other words, zero below means zero filter iterations, not the
-% original pixel boundary. Grains with reference areas no greater than
-% |10*d^2| are excluded so that a few-pixel grain does not dominate the
-% percentages.
+% compare grain areas with those of the measured staircase. Grains with
+% areas no greater than |10*d^2| are excluded so that a few-pixel grain does
+% not dominate the percentages.
 
-ref = smoothBoundary(grains,0);
-A0 = ref.area;
+A0 = grains.area;
 big = A0 > 10*d^2;
 A0 = A0(big);
 
-fprintf('area comparison uses %d of %d grains\n',nnz(big),length(ref))
+fprintf('area comparison uses %d of %d grains\n',nnz(big),length(grains))
 
 %% The Laplace filter
-% <laplaceFilter.html |laplaceFilter|> is the default. It replaces each
-% movable vertex by a weighted local mean, |iter| times. It is fast and useful
-% for plots, directions, and lengths, but repeated averaging pulls a convex
-% grain inward. Nothing bounds that shrinkage.
+% <laplaceFilter.html |laplaceFilter|> replaces each movable vertex by a
+% weighted local mean, |iter| times. Repeated averaging pulls a convex grain
+% inward. The cells limit how far a vertex of a pixel edge can go, but not
+% how often a grain loses area that way.
 
-aL5 = smoothBoundary(grains,5).area;
+aL5 = smoothBoundary(grains,laplaceFilter(5)).area;
 aL5 = aL5(big);
-aL25 = smoothBoundary(grains,25).area;
+aL25 = smoothBoundary(grains,laplaceFilter(25)).area;
 aL25 = aL25(big);
 
 fprintf('grain area, laplaceFilter\n')
-fprintf(['   5 iterations %+6.2f%% on average,' ...
+fprintf(['   5 steps %+6.2f%% on average,' ...
   ' %+6.1f%% for the worst grain\n'], ...
   100*mean((aL5-A0)./A0),100*min((aL5-A0)./A0))
-fprintf(['  25 iterations %+6.2f%% on average,' ...
+fprintf(['  25 steps %+6.2f%% on average,' ...
   ' %+6.1f%% for the worst grain\n'], ...
   100*mean((aL25-A0)./A0),100*min((aL25-A0)./A0))
 
 %% The Taubin filter
-% <taubinFilter.html |taubinFilter|> follows every smoothing pass with a
-% slightly larger unshrinking pass. This approximately gives the area back
-% instead of letting the mean area drift downwards. Areas still change, so
-% the method is shrinkage resistant rather than exactly area preserving.
+% <taubinFilter.html |taubinFilter|> is the default. It follows every
+% smoothing pass with a slightly larger unshrinking pass. This approximately
+% gives the area back instead of letting the mean area drift downwards. Areas
+% still change, so the method is shrinkage resistant rather than exactly area
+% preserving.
 
-aT5 = smoothBoundary(grains,taubinFilter(5)).area;
+aT5 = smoothBoundary(grains,5).area;
 aT5 = aT5(big);
-aT25 = smoothBoundary(grains,taubinFilter(25)).area;
+aT25 = smoothBoundary(grains,25).area;
 aT25 = aT25(big);
 
 fprintf('grain area, taubinFilter\n')
-fprintf(['   5 iterations %+6.2f%% on average,' ...
+fprintf(['   5 steps %+6.2f%% on average,' ...
   ' %+6.1f%% for the worst grain\n'], ...
   100*mean((aT5-A0)./A0),100*min((aT5-A0)./A0))
-fprintf(['  25 iterations %+6.2f%% on average,' ...
+fprintf(['  25 steps %+6.2f%% on average,' ...
   ' %+6.1f%% for the worst grain\n'], ...
   100*mean((aT25-A0)./A0),100*min((aT25-A0)./A0))
 
 %%
-% On this small grain, the Laplace result in magenta cuts inside the measured
-% staircase. The Taubin result in blue follows it more closely.
+% The grain whose area is closest to 30 square map units sits on the bottom
+% edge of the map. Along its upper edge the Laplace result in magenta runs
+% just inside the Taubin result in blue.
 
 A = grains.area;
 [~,id] = min(abs(A-30));
@@ -198,19 +196,19 @@ c = grains(id).centroid;
 
 plot(grains.boundary,'linewidth',4,'linecolor','LightGray','micronbar','off')
 hold on
-plot(smoothBoundary(grains,25).boundary, ...
+plot(smoothBoundary(grains,laplaceFilter(25)).boundary, ...
   'linewidth',2.5,'linecolor','Fuchsia')
-plot(smoothBoundary(grains,taubinFilter(25)).boundary, ...
+plot(smoothBoundary(grains,25).boundary, ...
   'linewidth',2.5,'linecolor','DodgerBlue')
 hold off
 axis([c.x-12 c.x+12 c.y-12 c.y+12])
 
 %% The curvature filter
-% <curvatureFilter.html |curvatureFilter|> has no iteration count.
+% <curvatureFilter.html |curvatureFilter|> has no step count.
 % |smoothingLength| is the wavelength damped to half amplitude, in the units
 % of the map. Detail finer than that length is suppressed more strongly, and
 % coarser detail survives. This gives the parameter a physical meaning that
-% an iteration count does not have.
+% a step count does not have.
 
 F = curvatureFilter;
 F.smoothingLength = 8*d;
@@ -234,13 +232,7 @@ fprintf('  %+6.2f%% on average, %+6.1f%% for the worst grain\n', ...
 % |threshold| is the turning angle at one vertex of the result, not the total
 % angle of a corner. Smoothing first spreads a corner over roughly
 % |smoothingLength/h| vertices, where |h| is their spacing. The Huber step
-% then sharpens it again. For a rasterized hexagon with
-% |smoothingLength = 8*h|, measured 60 degree corners return as follows.
-%
-% || threshold (degree) || 30 || 15 || 8 || 4 || 2 ||
-% || recovered corner (degree) || 22 || 28 || 49 || 68 || 80 ||
-%
-% A threshold of 15 degree is appropriate for the
+% then sharpens it again. A threshold of 15 degree is appropriate for the
 % <EBSDDenoising.html |l1TVFilter|> on orientations, but it would
 % never activate corner protection here. The default boundary threshold is
 % 5 degree.
@@ -256,52 +248,64 @@ fprintf('  %+6.2f%% on average, %+6.1f%% for the worst grain\n', ...
   100*mean((aH-A0)./A0),100*min((aH-A0)./A0))
 
 %%
-% A synthetic Voronoi map provides a case whose boundaries are exactly
-% straight. On that map, |huberFilter| doubles the scatter of the boundary
-% directions compared with |curvatureFilter| because it protects raster
-% corners as if they were facets. This is the cost of preserving real
-% corners.
+% On a synthetic Voronoi map, whose boundaries are exactly straight,
+% |huberFilter| scatters the boundary directions more than |curvatureFilter|.
+% It protects raster corners as if they were facets. This is the cost of
+% preserving real corners.
 
-%% Moving junctions
-% By default, all junctions remain fixed. The grains that touch and the
-% junction positions therefore stay unchanged. Despite its name,
-% |'moveTriplePoints'| releases every non-outer junction, not only triple
-% points. The junctions on the outer map boundary and the corners of its
-% convex hull remain fixed unless |'moveOuterBoundary'| is also passed.
+%% Junctions and the step count
+% A *junction* is a vertex where the number of meeting segments is not two.
+% Triple and quadruple points move with the smoothing, each within its cell,
+% so the grains that meet there stay the same. A loose end, where an inner
+% boundary fades out, stays where it is. The junctions on the outer map boundary and
+% the corners of its convex hull remain fixed unless |'moveOuterBoundary'| is
+% passed.
 
-iter = [1 5 10 25];
+iter = [2 5 20 40];
 color = copper(length(iter)+1);
 dir = cell(size(iter));
 
 plot(grains.boundary,'linewidth',1,'linecolor','LightGray','micronbar','off')
 for i = 1:length(iter)
-  gs = smoothBoundary(grains,iter(i),'moveTriplePoints');
+  gs = smoothBoundary(grains,iter(i));
   hold on
   plot(gs.boundary('i','i'),'linewidth',2,'linecolor',color(i,:))
   dir{i} = gs.boundary('i','i').direction;
 end
 hold off
 axis([313 353 140 156])
-mtexTitle('1, 5, 10, and 25 iterations: dark to light')
+mtexTitle('2, 5, 20, and 40 steps: dark to light')
 
 %%
-% As the colour lightens, the released junctions move and the grid staircase
-% is suppressed a little further. A Laplacian provides no barrier against
-% collapse, however, so this freedom can let a small grain shrink away.
+% Two and five steps, the dark curves, still follow the pixel corners. The
+% light curves of 20 and 40 steps nearly coincide. Once a boundary runs
+% straight between its bends, further steps change little.
 %
 % The direction histograms show the same progression. Each bar is weighted
-% by segment length, and each panel is labelled with its iteration count.
-% The radial scales differ, so compare the angular shapes rather than the
+% by segment length, and each panel is labelled with its step count. The
+% radial scales differ, so compare the angular shapes rather than the
 % absolute bar heights.
 
 figure
 for i = 1:length(dir)
   subplot(2,2,i)
   histogram(dir{i},'weights',norm(dir{i}),180)
-  mtexTitle(sprintf('%d iterations',iter(i)))
+  mtexTitle(sprintf('%d steps',iter(i)))
 end
 
-%% The maths behind the filters
+%%
+% With two and five steps the length still collects in a few directions,
+% among them the grid axes. With 20 and 40 steps it spreads over all
+% directions.
+
+%% The maths behind the stages
+% The cell of a vertex of a pixel edge of length $L$ is a regular polygon
+% about the vertex's measured position. It has four faces on a square grid
+% and three on a hexagonal one, all at the distance $L/2 - d/20$, one of them
+% facing along the edge. A vertex outside is moved onto the face it lies
+% furthest beyond, and along that face no further than its corners. That is
+% the nearest point of the polygon.
+%
 % The normalized boundary Laplacian |L| measures how far a vertex lies from
 % the mean of its neighbours. The Laplace filter applies a low-pass step with
 % gain $1-\lambda k$. Its adjacency includes the vertex itself with the
@@ -320,9 +324,10 @@ end
 %
 % $$\|\mathbf{V}-\mathbf{V}_0\|^2 + \alpha\|L\mathbf{V}\|^2.$$
 %
-% The minimizer comes from one sparse linear system. Fixed junctions are
-% eliminated from that system rather than penalized, so they stay exactly in
-% place. On vertices sampled at spacing $h$, the filter gain is
+% The minimizer comes from one sparse linear system. The fixed vertices, the
+% outer junctions and the corners of the convex hull, are eliminated from
+% that system rather than penalized, so they stay exactly in place. On
+% vertices sampled at spacing $h$, the filter gain is
 % $1/(1+4\alpha\sin^4(\omega/2))$. The value of |smoothingLength| is the
 % wavelength damped to half amplitude. Using the exact inverse rather than a
 % small-angle approximation matters at short wavelengths: the approximation
@@ -336,33 +341,43 @@ end
 % vertices and preserves the corner. MTEX solves this problem by iteratively
 % reweighted least squares until it converges. The |iterMax| property is a
 % safety limit, not a smoothing control.
+%
+% In the second stage, a chord from vertex $a$ to vertex $b$ is refused when a
+% pixel centre lies inside the polygon that the run from $a$ to $b$ and the
+% chord enclose, or closer than $d/20$ to the chord.
 
-%% Further reading
-% Douglas and Peucker introduced the line-reduction algorithm used in the
-% first stage: <https://doi.org/10.3138/FM57-6770-U75U-7727 Algorithms for
-% the Reduction of the Number of Points Required to Represent a Digitized
-% Line or Its Caricature> (1973).
+%% References
 %
-% Taubin developed the shrinkage-resistant signal-processing filter:
-% <https://doi.org/10.1145/218380.218473 A Signal Processing Approach to Fair
-% Surface Design> (1995).
-%
-% The corner-preserving penalty comes from Huber's robust loss:
-% <https://doi.org/10.1214/aoms/1177703732 Robust Estimation of a Location
-% Parameter> (1964).
-%
-% For area-derived EBSD grain-size reporting, see
-% <https://www.iso.org/standard/74309.html ISO 13067:2020, Microbeam
+% * S. F. F. Gibson, <https://doi.org/10.1007/BFb0056277 Constrained Elastic
+% Surface Nets: Generating Smooth Surfaces from Binary Segmented Data>,
+% _MICCAI 1998_, LNCS 1496, 888-898, smooths a voxel surface while holding
+% every vertex in its cell, the idea of the first stage.
+% * D. H. Douglas and T. K. Peucker,
+% <https://doi.org/10.3138/FM57-6770-U75U-7727 Algorithms for the Reduction
+% of the Number of Points Required to Represent a Digitized Line or Its
+% Caricature>, _The Canadian Cartographer_ 10 (1973), 112-122, introduce the
+% line simplification of the second stage.
+% * M. de Berg, M. van Kreveld and S. Schirra,
+% <https://doi.org/10.1559/152304098782383007 Topologically Correct
+% Subdivision Simplification Using the Bandwidth Criterion>, _Cartography and
+% Geographic Information Systems_ 25 (1998), 243-257, simplify a line without
+% moving it across given points, the constraint of the second stage.
+% * G. Taubin, <https://doi.org/10.1145/218380.218473 A Signal Processing
+% Approach to Fair Surface Design>, _Proceedings of SIGGRAPH 1995_, 351-358,
+% develops the shrinkage-resistant filter used by default.
+% * P. J. Huber, <https://doi.org/10.1214/aoms/1177703732 Robust Estimation of
+% a Location Parameter>, _The Annals of Mathematical Statistics_ 35 (1964),
+% 73-101, gives the corner-preserving penalty of |huberFilter|.
+% * <https://www.iso.org/standard/74309.html ISO 13067:2020, Microbeam
 % analysis - Electron backscatter diffraction - Measurement of average grain
-% size>. The standard concerns two-dimensional sectional measurements; it
-% does not turn a smoothing choice into a three-dimensional measurement.
-
-%% Related measurements
-% <BoundaryCurvature.html Boundary Curvature> shows how geometric smoothing
-% affects curvature. <ShapeParameters.html Shape Parameters> develops the
-% grain areas, perimeters, and shape descriptors that make filter choice a
-% quantitative part of an analysis.
+% size> sets out area-derived EBSD grain-size reporting. It concerns
+% two-dimensional sectional measurements and does not turn a smoothing choice
+% into a three-dimensional measurement.
 
 %% Next
 % Continue with <TwinningBoundaries.html Inferring Twin Boundaries>, where a
 % smoothed boundary network is classified by the misorientations across it.
+% <BoundaryCurvature.html Boundary Curvature> shows how geometric smoothing
+% affects curvature. <ShapeParameters.html Shape Parameters> develops the
+% grain areas, perimeters, and shape descriptors that make filter choice a
+% quantitative part of an analysis.

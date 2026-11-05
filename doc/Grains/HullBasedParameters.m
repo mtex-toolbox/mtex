@@ -16,7 +16,7 @@ plottingConvention.default('y↑→x');
 mtexdata testgrains silent
 
 % select and smooth a few interesting grains
-grains = smoothBoundary(grains('id',[2 3 9 11 15 16 18 23 31 33 38 40]),3);
+grains = smoothBoundary(grains('id',[2 3 9 11 15 16 18 23 31 33 38 40]));
 
 %%
 % <GrainSmoothing.html Boundary smoothing> is not optional here. On an
@@ -115,10 +115,10 @@ mtexColorbar
 %%
 % The first two maps rank the grains identically, as they must, being the
 % same ratio written two ways - only the scale differs, |paris| running to
-% 167 where |deltaP| stops at 46. The third map ranks them differently: the
+% 164 where |deltaP| stops at 45. The third map ranks them differently: the
 % lobed grain scores 45 on |deltaP| against 9 on |deltaA|, all perimeter and
-% almost no missing area, while the two discs with a hole score 1.6 on
-% |deltaP| - as convex as the plain disc - and 16 and 32 on |deltaA|.
+% almost no missing area, while the two discs with a hole score 0.6 on
+% |deltaP|, convex in outline, and 16 and 31 on |deltaA|.
 % |radiusD| puts both kinds high, which is what combining them is for.
 %
 % The discs with holes are worth a second look, because they show what these

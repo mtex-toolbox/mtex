@@ -35,8 +35,8 @@ grains
 % definition. <GrainReconstruction.html Grain Reconstruction> explains how
 % to choose and report it.
 %
-% <grain2d.smoothBoundary.html |smoothBoundary|> simplifies, refines, and
-% smooths the pixel staircase by default. This improves trace geometry but
+% <grain2d.smoothBoundary.html |smoothBoundary|> smooths the pixel staircase
+% and then merges the straightened segments. This improves trace geometry but
 % changes the number and length of segments.
 % <GrainSmoothing.html Grain Smoothing> develops that choice.
 

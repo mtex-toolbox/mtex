@@ -33,7 +33,7 @@ mtexdata ferrite silent
 [grains,ebsd] = calcGrains(ebsd,'minPixel',8);
 
 % smooth the outlines used as overlays
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 % plot the indexed orientations and reconstructed grain boundaries
 ebsdIndexed = ebsd('indexed');
@@ -173,7 +173,7 @@ hold off
 
 %%
 % For this example, this is the map to use when examining weak continuous
-% structure. Its median is 0.27°, less than half the 0.59° obtained with
+% structure. Its median is 0.26°, less than half the 0.59° obtained with
 % thresholding alone. The surviving features run continuously through the
 % grains rather than appearing as isolated pixels, which is consistent with
 % local deformation structures.

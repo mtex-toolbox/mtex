@@ -40,7 +40,7 @@ minPixel = 10;
 [grains,ebsd] = calcGrains(ebsd,'angle',segAngle,'minPixel',minPixel);
 
 % preserve the segment-to-pixel relation needed below
-grains = smoothBoundary(grains,4,'noSimplify','noRefine');
+grains = smoothBoundary(grains,'noSimplify');
 
 % draw the forsterite grains and the complete boundary network
 plot(grains('Fo'),'FaceColor',[0.75 0.82 0.90],...
@@ -54,10 +54,10 @@ hold off
 % phases, and the black lines are all boundary segments in the cropped map.
 % The analysis below uses only boundaries between two forsterite grains.
 %
-% The <grain2d.smoothBoundary.html |smoothBoundary|> flags
-% |'noSimplify'| and |'noRefine'| are important here. Simplification and
-% refinement change which segments lie between specific pixel pairs. Their
-% |ebsdId| values can then no longer supply the two orientations used below.
+% The <grain2d.smoothBoundary.html |smoothBoundary|> flag |'noSimplify'| is
+% important here. Simplification merges segments, and a merged segment no
+% longer lies between a specific pixel pair. Its |ebsdId| values can then no
+% longer supply the two orientations used below.
 
 %% The misorientation angle along a boundary
 %
@@ -152,9 +152,9 @@ fprintf('Changes above 30 degrees when angle <= 105: %d of %d\n',...
   nnz(isLargeStep & isLowerAngleStep),nnz(isLowerAngleStep));
 
 %%
-% The median step is about half a degree. Above 105 degrees, 8 of 127
+% The median step is about half a degree. Above 105 degrees, 8 of 130
 % adjacent steps turn the axis by more than 30 degrees, or about one in 16.
-% At or below 105 degrees, only 1 of 955 steps does so.
+% At or below 105 degrees, only 1 of 982 steps does so.
 % Most abrupt changes in the map therefore lie on the darkest red boundary
 % runs. The printed counts quantify that visual association.
 %

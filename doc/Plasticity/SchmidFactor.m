@@ -186,7 +186,7 @@ mtexdata csl
 
 ebsd = ebsd(ebsd.inpolygon([0,0,200,50]));
 grains = calcGrains(ebsd);
-grains = smoothBoundary(grains,5);
+grains = smoothBoundary(grains);
 
 plot(ebsd,'ipfz','micronbar','off')
 hold on
