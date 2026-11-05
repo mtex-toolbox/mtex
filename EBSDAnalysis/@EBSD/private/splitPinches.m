@@ -22,7 +22,7 @@ isJoin = isfield(out,'inFill') && ~isempty(out.inFill);
 
 for v = find(isP).'
   % the four segments at v counterclockwise, the first two around one cell
-  e = find(any(F == v,2) & nC > 0);
+  e = find(any(F(1:nF,:) == v,2) & nC > 0);
   u = V(sum(F(e,:),2) - v,:) - V(v,:);
   [~,o] = sort(atan2(u(:,2),u(:,1)));
   if c(e(o(1))) ~= c(e(o(2))), o = circshift(o,-1); end
