@@ -8,6 +8,99 @@ The changelog for users is `doc/GeneralConcepts/changelog.m`, published as
 [Changelog](https://mtex-toolbox.github.io/changelog.html). Releases up to and
 including 6.1 have one combined list there and no entry here.
 
+## Next release
+
+### Grain Reconstruction
+
+- `calcGrains` drew the boundaries through cells the alpha closing had filled along the
+  bisectors of the measured pixels around them, which gave a vertex on the medial axis
+  of a closed crack and notches in clusters of notIndexed pixels. Boundary vertices
+  strictly inside filled cells relax to straight lines (`private/straightenInFill.m`);
+  a moved segment that would sweep over a measured or unfilled cell, or cross another
+  boundary, keeps its vertices, so every measured pixel stays in its grain.
+  `'straighten',false` gives the bisectors
+- The closing counted the raster outside the map as empty, so the erosion opened every
+  edge cell between two indexed edge pixels whatever alpha was. Outside the convex hull
+  of the indexed pixels the material counts as present: sparse ferrite of EBSDFilling,
+  outer boundary 295.6 -> 286.2 um for a perimeter of 280 um
+- A notIndexed region whose wide part is closed off from the map border only by a neck
+  narrower than 2*alpha became a notIndexed grain on the outer boundary. Such a mouth
+  opens only as far as the largest smaller closing (alpha-1, alpha-2, ...) leaves it
+  open, and the rule repeats while the exterior grows. Opening the whole mouth instead
+  parted at alpha 6.1 two peridotite grains that alpha 2.1 joins across a 3-cell gap;
+  a hole one filled cell from a hole that only joined the outside in the first pass
+  stayed a grain (peridotite alpha 2.1: 726 -> 723 grains). The `'delaunay'` path
+  (`spatialDecompositionAlpha`) has the same rule now; its indexed grain counts change
+  by 0 to 6 on peridotite, forsterite and small
+- Four outer boundary segments meeting in one vertex, an exact tie of the Voronoi
+  decomposition on the lattice, let two cells touch in a single point: a vacated band
+  cell between two grains in a one-pixel row, or a filled strip one cell thick. The
+  vertex is split before the segmentation (`private/splitPinches.m`): inside the fill
+  the two cells share half a pixel of boundary, elsewhere they end half a pixel apart.
+  peridotite alpha 1.1 had 4 such contacts, forsterite up to 3; none are left
+- A grain culled by minPixel at the rim shrank the hull the closing works on, and a
+  pixel kept by the first pass could come out as a grain of its own, marked notIndexed
+  and left on the outer boundary (small, 12 degree, minPixel 3). `calcGrains`
+  decomposes again while minPixel culls; on forsterite minPixel 5 that is three
+  decompositions
+- A hole of absent and measured notIndexed pixels became several grains, some on the
+  outer boundary: `remapIFD` gives the absent cells of a hole the column of a measured
+  pixel of that hole, and two cells count as neighbours when they share any face, not
+  exactly one (`small('indexed')`, alpha 2.1: 4 -> 0)
+- The returned map gives an absorbed notIndexed pixel its grain's phase and a NaN
+  rotation, so `calcGrains` on it made every such pixel a grain (small, 5 degree:
+  935 grains instead of 85). An indexed pixel without rotation is notIndexed, as in the
+  EBSD constructor (#2652)
+- `calcGrains` calls `calcPolygonsC`, which traces in MATLAB when the mex fails; the
+  EBSD and grain2d copies of `calcPolygons` are gone. The fallback took the first loop
+  as the outer one instead of the one of largest area, and `EulerCycles` returned a tour
+  through a repeated vertex as one cycle. `EulerCyclesC.c` sizes its buffers from
+  `I_FG`; the committed binaries predate that fix
+- Speed, steel 1C_1 (2.5 million pixels) on R2024b: `calcGrains` at 10 degree 52.7 ->
+  23.0 s, with minPixel 5 57.2 -> 33.4 s. The crossing test of `straightenInFill` uses
+  buckets of twice the median segment length and re-solves only the components that
+  lost a vertex; `geoDist` visits only the cells next to its front; the lattice is
+  computed once per call; `alphaComplexMask` rasterises only the cells without a
+  measurement ('delaunay' 2.7x faster)
+
+### Grain Boundaries
+
+- `smoothBoundary` simplified, refined and then averaged, so a straight boundary moved
+  half a pixel into a grain (mtexdata small) and its directions kept the grid. It now
+  runs `iter` Taubin pairs (default 20) with every vertex of a pixel edge held in the
+  cell of the pixel centres around it, shrunk by d/20, then a Douglas-Peucker at d/10
+  that keeps a vertex whose removal would bring a pixel centre closer than d/20 or onto
+  the other side (de Berg, van Kreveld, Schirra 1995). Chosen on the 86 instances of the
+  grain benchmark T1: position error 0.145 d, direction error 9.2 degree, 1.36 percent of
+  pixels on the wrong side, against 0.190 d, 10.7 degree and 1.77 percent before. The
+  refine step and `'moveTriplePoints'` are gone; loose ends stay fixed. `grainBoundary`
+  records the `pixelDist` the constraint needs; grains without it hold their junctions
+  only. The simplification runs on all chains at once: 4-6x faster, on 1C_1
+  `smoothBoundary(grains,5)` 18.2 -> 4.8 s
+- The outer boundary is smoothed too; its junctions and the corners of its convex hull
+  stay fixed unless `'moveOuterBoundary'` is given
+- `grainBoundary/refine` resampled each chain at equal arc length and cut the corners
+  `simplify` had kept (twins, Mg-Mg boundary 848.25 -> 822.99). Each segment is split
+  into round(L/delta) equal pieces, which keeps vertices, length and areas (#2641); a
+  single segment too short to split no longer fails
+- `merge` left `grainId(:,1)` on the right of chains it joined: `order` reversed F of
+  the minority without swapping the grains. `merge` sorts the boundary columns as the
+  constructor does before ordering (#2651)
+
+### EBSD Maps
+
+- `fill` and `smooth` treat a pixel missing from the variable as a notIndexed one: every
+  pixel without orientation and every empty lattice site inside the convex hull of the
+  indexed pixels is filled, from the nearest measured pixel of its grain when grains or a
+  `grainId` are given. A pixel a boundary passes through, and the pixels of notIndexed
+  grains, stay notIndexed. `fill(ebsd,mask)` and `smooth(...,'fill',mask)` restrict the
+  filling; `'extrapolate'` and `fill(...,'gridify')` are gone (`fill(ebsd).gridify`)
+- `l1TVFilter` smooths all grains of a map at once by block conjugate gradients with
+  safeguarded Anderson extrapolation, the history kept in a ring of four columns:
+  ferrite 16.8 -> 4.1 s, forsterite 34.4 -> 19.5 s
+- `findByLocation` returns one index per coordinate, 0 outside the map, through
+  `pos2ind` on gridded maps; `EBSDhex/pos2ind` returned wrong cells on offset -1 grids
+
 ## MTEX 7.2 - 10/2026
 
 Most of these are defects the Python port found in MATLAB, checked against the port or

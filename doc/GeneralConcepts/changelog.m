@@ -8,6 +8,76 @@
 % |CHANGELOG.md| in the MTEX folder contains the technical details, numerical
 % checks and related issues.
 %
+%% MTEX next release
+%
+% *Grain boundaries through cracks and pores*
+%
+% <EBSD.calcGrains.html |calcGrains|> closes |notIndexed| regions narrower
+% than about |2*alpha| pixels. A boundary that runs through such a closed
+% region is not measured. It is now drawn as a straight line between the
+% points where it leaves the measured pixels, the shortest boundary the
+% closed region allows. The option |'straighten',false| draws it along the
+% bisectors between the measured pixels instead:
+%
+%   grains = calcGrains(ebsd,'alpha',10,'straighten',false)
+%
+% A larger |alpha| now joins at least the grains a smaller one joins, and no
+% two grains touch in a single point. See
+% <GrainReconstructionCracks.html Cracks and Pores> for choosing |alpha| on
+% a map with cracks, pores and pockets.
+%
+% *Smoother grain boundaries*
+%
+% <grain2d.smoothBoundary.html |smoothBoundary|> removes the pixel staircase
+% while keeping every measured pixel on its side of the boundary. Straight
+% boundaries stay where they were measured, and their directions no longer
+% cluster at the grid axes. The outer boundary of the map is smoothed too.
+% A single call with the default settings is enough for most maps:
+%
+%   grains = smoothBoundary(grains)
+%
+% See <GrainSmoothing.html Grain Boundary Smoothing> for the filters and
+% their settings.
+%
+% *Filling and denoising maps*
+%
+% <EBSD.fill.html |fill|> and <EBSD.smooth.html |smooth|> treat a pixel
+% missing from the map like a |notIndexed| one. Each filled pixel takes the
+% orientation of the nearest measured pixel of its own grain. A mask
+% restricts the filling:
+%
+%   ebsd = fill(ebsd,mask)
+%
+% <l1TVFilter.l1TVFilter.html |l1TVFilter|> denoises all grains of a map at
+% once and is several times faster.
+%
+% *Changes that may affect existing scripts*
+%
+% * the second argument of |smoothBoundary| is the number of smoothing
+% steps, by default 20. The options |'noRefine'| and |'moveTriplePoints'|
+% no longer exist. Boundaries, grain shapes and every quantity measured on
+% them differ slightly from earlier versions
+% * |calcGrains| draws boundaries through closed |notIndexed| regions
+% straight. With |'minPixel'| or the option |'delaunay'| the number of
+% grains can change by a few
+% * the options |'extrapolate'| and |'gridify'| of |fill| are gone. Use
+% |fill(ebsd).gridify| for a gridded result
+% * <EBSD.findByLocation.html |findByLocation|> returns one index per
+% coordinate, in input order, and 0 outside the map
+%
+% *Corrections to analysis results and data handling*
+%
+% * |calcGrains| no longer returns |notIndexed| grains on the outer boundary
+% of the map
+% * |calcGrains| applied to the map it returned gives the same grains again.
+% Previously every absorbed |notIndexed| pixel became a grain of its own
+% * <grain2d.merge.html |merge|> keeps the first grain of every boundary
+% segment on its left
+% * <grain2d.refineBoundary.html |refineBoundary|> keeps the shape and
+% length of the boundary
+% * |findByLocation| on hexagonal maps with offset -1 returns the right
+% pixels
+%
 %% MTEX 7.2 10/2026
 %
 % *Three-dimensional EBSD*
