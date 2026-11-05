@@ -106,6 +106,7 @@ while true
   V = out.V;
   F = out.F;
   I_FD = remapIFD(out,ebsd);
+  [V,F,I_FD] = splitPinches(V,F,I_FD,out);
 
   % determine which cells to connect
   [Dl,Dr] = find(triu(I_FD'*I_FD==1,1));

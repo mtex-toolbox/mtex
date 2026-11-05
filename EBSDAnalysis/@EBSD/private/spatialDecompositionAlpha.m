@@ -140,7 +140,7 @@ site2id  = [idxSiteEbsd; niId];
 [V,F,I_FD] = jcvoronoi2(double(XY),double(numReal), double(epsilon));
 
 out = struct('V',V,'F',F,'I_FD',I_FD, ...
-             'isNotIdx',isNotIdx,'site2id',site2id,'ij',ij);
+             'isNotIdx',isNotIdx,'site2id',site2id,'ij',ij,'dxy',dxy,'epsilon',epsilon);
 end
 
 % ===========================================================================

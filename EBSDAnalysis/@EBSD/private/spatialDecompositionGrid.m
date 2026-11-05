@@ -89,33 +89,6 @@ isIndexedP = false(prod(szP),1);
 isIndexedP(ij2slotP(ij(isIndexed,:))) = true;
 % imagesc(reshape(isIndexedP,szP)), axis equal tight
 
-% structuring element: disk of radius rClose, as (i,j) offsets
-wi = ceil(rClose / vecnorm(A(:,1))) + 1;
-wj = ceil(rClose / vecnorm(A(:,2))) + 1;
-[di,dj] = meshgrid(-wi:wi, -wj:wj);
-dxyDisk = [di(:) dj(:)] * A';                   % physical displacement of each offset
-inDisk  = sum(dxyDisk.^2,2) <= rClose^2;
-diskOffs = [di(inDisk) dj(inDisk)];             % <-- disk structuring element
-% imagesc(reshape(inDisk,size(di))), axis equal tight
-
-% add lateral companions next to the axis extremes of the disk. A recess cell
-% at a straight boundary survives the erosion only if the dilation covers the
-% disk extreme M*s above it (s = stencil direction, M = axis reach); that
-% coverage can only come from the recess' lateral neighbours t, which requires
-% M*s-t to be in the disk. Whenever alpha^2 - floor(alpha)^2 < 1 (worst case:
-% integer alpha) the sampled disk lacks exactly those points - the extreme is
-% a lone single-cell tip - and boundary recesses that the alpha shape would
-% close stay open, visible as bumps in the outer grain boundary. Adding the
-% companions never extends the axis reach, so wider holes are still preserved.
-comp = zeros(0,2);
-for s = 1:size(stencil,1)
-  Ms = floor(rClose / norm(stencil(s,:)*A'));
-  if Ms < 1, continue; end
-  t = stencil(~all(stencil == stencil(s,:) | stencil == -stencil(s,:), 2),:);
-  comp = [comp; Ms*stencil(s,:) - t]; %#ok<AGROW>
-end
-diskOffs = unique([diskOffs; comp],'rows');
-
 % the scan footprint, the convex hull of the indexed pixels: beyond it the
 % material counts as present during the erosion, so that the map edge is no
 % boundary the closing erodes from
@@ -124,33 +97,7 @@ try %#ok<TRYNC>
   inScanP = inConvexHull(ij(isIndexed,:), ijmin - padding - 1, szP);
 end
 
-% morphological CLOSING of the indexed set by the disk:
-%   closedP = erode(dilate(isIndexedP)) , erosion done as the complement of the
-%   dilation of the complement (De Morgan). Fills holes/slits narrower than
-%   2*alpha*dxy, preserves wider holes, and is extensive (never drops an
-%   indexed cell). The final "| isIndexedP" is a safety belt against discretisation.
-dilatedP = binaryDilate(isIndexedP, diskOffs, szP) | ~inScanP;  % 2D binary dilation
-closedP  = ~binaryDilate(~dilatedP, diskOffs, szP) & inScanP;   % 2D binary erosion
-closedP  = closedP | isIndexedP;
-% imagesc(reshape(dilatedP,szP)), axis equal tight
-% imagesc(reshape(closedP,szP)), axis equal tight
-
-% fill single-pixel concavities: a background cell with material on more than
-% half of its stencil directions is a 1-wide dead-end recess (boundary notch,
-% slit mouth). The alpha shape fills those for any alpha >= 1, but the sampled
-% disk closing misses them whenever alpha^2 - floor(alpha)^2 < 1: the SE then
-% has a lone single-cell tip at its axis extreme (0,+-floor(alpha)) that the
-% dilation from the recess' lateral neighbours cannot cover - worst for
-% integer alpha. Iterate because filling a slit mouth exposes the next cell;
-% wider holes and open channels (<= half the stencil material) stay untouched.
-if alpha >= 1
-  nMin = floor(size(stencil,1)/2) + 1;
-  while true
-    add = ~closedP & stencilCount(closedP, stencil, szP) >= nMin;
-    if ~any(add), break; end
-    closedP(add) = true;
-  end
-end
+closedP = closeAt(isIndexedP, inScanP, alpha, dxy, A, stencil, szP);
 
 % exteriorP = background connected to the padded border. This is a flood fill
 % (morphological reconstruction of the border marker under the mask ~closedP),
@@ -158,14 +105,19 @@ end
 exteriorP = floodFillBorder(~closedP, stencil, szP);   % 2D flood fill
 
 % a hole joined to the outside by a filled notIndexed path of at most 2*alpha
-% steps is part of the outside, and so is that path
-filledP  = closedP & ~isIndexedP;
-nSteps   = 2*ceil(alpha);
-corridor = filledP & geoDist(exteriorP, filledP, stencil, szP, nSteps) + ...
-  geoDist(~closedP & ~exteriorP, filledP, stencil, szP, nSteps) <= nSteps;
-if any(corridor)
-  closedP(corridor) = false;
-  exteriorP = floodFillBorder(~closedP, stencil, szP);
+% steps stays joined, through what the largest closing that keeps it joined leaves open
+nSteps = 2*ceil(alpha);
+f = closedP & ~isIndexedP;
+[dHole,hole] = geoDist(~closedP & ~exteriorP, f, stencil, szP, nSteps);
+corridor = find(f & geoDist(exteriorP, f, stencil, szP, nSteps) + dHole <= nSteps);
+for r = [alpha-1:-1:1, 0]
+  corridor = corridor(closedP(corridor) & ~exteriorP(hole(corridor)));
+  if isempty(corridor), break; end
+  x = corridor(~closedAt(corridor, isIndexedP, inScanP, diskOffsets(r*dxy, A, stencil), szP));
+  closedP(x) = false;
+  if any(exteriorP(x + (stencil(:,1) + stencil(:,2)*szP(1)).'),'all')
+    exteriorP = floodFillBorder(~closedP, stencil, szP);
+  end
 end
 % imagesc(reshape(exteriorP,szP)), axis equal tight
 
@@ -288,6 +240,80 @@ out = struct('V',V,'F',F,'I_FD',I_FD, ...
 end
 
 % ===========================================================================
+function closedP = closeAt(isIndexedP, inScanP, alpha, dxy, A, stencil, szP)
+% closing of the indexed cells by the disk of radius alpha*dxy
+diskOffs = diskOffsets(alpha*dxy, A, stencil);
+
+% morphological CLOSING of the indexed set by the disk:
+%   closedP = erode(dilate(isIndexedP)) , erosion done as the complement of the
+%   dilation of the complement (De Morgan). Fills holes/slits narrower than
+%   2*alpha*dxy, preserves wider holes, and is extensive (never drops an
+%   indexed cell). The final "| isIndexedP" is a safety belt against discretisation.
+dilatedP = binaryDilate(isIndexedP, diskOffs, szP) | ~inScanP;  % 2D binary dilation
+closedP  = ~binaryDilate(~dilatedP, diskOffs, szP) & inScanP;   % 2D binary erosion
+closedP  = closedP | isIndexedP;
+% imagesc(reshape(dilatedP,szP)), axis equal tight
+% imagesc(reshape(closedP,szP)), axis equal tight
+
+% fill single-pixel concavities: a background cell with material on more than
+% half of its stencil directions is a 1-wide dead-end recess (boundary notch,
+% slit mouth). The alpha shape fills those for any alpha >= 1, but the sampled
+% disk closing misses them whenever alpha^2 - floor(alpha)^2 < 1: the SE then
+% has a lone single-cell tip at its axis extreme (0,+-floor(alpha)) that the
+% dilation from the recess' lateral neighbours cannot cover - worst for
+% integer alpha. Iterate because filling a slit mouth exposes the next cell;
+% wider holes and open channels (<= half the stencil material) stay untouched.
+if alpha >= 1
+  nMin = floor(size(stencil,1)/2) + 1;
+  while true
+    add = ~closedP & stencilCount(closedP, stencil, szP) >= nMin;
+    if ~any(add), break; end
+    closedP(add) = true;
+  end
+end
+end
+
+% ===========================================================================
+function offs = diskOffsets(rClose, A, stencil)
+% the disk of radius rClose as (i,j) offsets
+wi = ceil(rClose / vecnorm(A(:,1))) + 1;
+wj = ceil(rClose / vecnorm(A(:,2))) + 1;
+[di,dj] = meshgrid(-wi:wi, -wj:wj);
+dxyDisk = [di(:) dj(:)] * A';                   % physical displacement of each offset
+inDisk  = sum(dxyDisk.^2,2) <= rClose^2;
+offs = [di(inDisk) dj(inDisk)];
+% imagesc(reshape(inDisk,size(di))), axis equal tight
+
+% add lateral companions next to the axis extremes of the disk. A recess cell
+% at a straight boundary survives the erosion only if the dilation covers the
+% disk extreme M*s above it (s = stencil direction, M = axis reach); that
+% coverage can only come from the recess' lateral neighbours t, which requires
+% M*s-t to be in the disk. Whenever alpha^2 - floor(alpha)^2 < 1 (worst case:
+% integer alpha) the sampled disk lacks exactly those points - the extreme is
+% a lone single-cell tip - and boundary recesses that the alpha shape would
+% close stay open, visible as bumps in the outer grain boundary. Adding the
+% companions never extends the axis reach, so wider holes are still preserved.
+comp = zeros(0,2);
+for s = 1:size(stencil,1)
+  Ms = floor(rClose / norm(stencil(s,:)*A'));
+  if Ms < 1, continue; end
+  t = stencil(~all(stencil == stencil(s,:) | stencil == -stencil(s,:), 2),:);
+  comp = [comp; Ms*stencil(s,:) - t]; %#ok<AGROW>
+end
+offs = unique([offs; comp],'rows');
+end
+
+% ===========================================================================
+function c = closedAt(x, isIndexedP, inScanP, offs, szP)
+% the closing of the indexed cells by offs, at the raster cells x alone
+o = (offs(:,1) + offs(:,2)*szP(1)).';
+y = unique(x + o); y = y(inScanP(y));
+dil = ~inScanP;
+dil(y) = any(isIndexedP(y + o),2);
+c = isIndexedP(x) | all(dil(x + o),2) & inScanP(x);
+end
+
+% ===========================================================================
 function d = rigidInFill(p,p0,M,fillP,szP,ij0)
 % inFill on the rigid grid p0 + [i j]*M from the four lattice points around p,
 % +-Inf where they are all of one kind
@@ -331,15 +357,19 @@ m2 = M2(:);
 end
 
 % ===========================================================================
-function d = geoDist(seed, mask, stencil, szP, nSteps)
-% number of stencil steps from seed to every cell of mask, inf beyond nSteps
-d = inf(prod(szP),1);
-reached = seed; front = seed;
+function [d,src] = geoDist(seed, mask, stencil, szP, nSteps)
+% number of stencil steps from seed to every cell of mask, inf beyond nSteps,
+% and the seed cell they are counted from
+d = inf(prod(szP),1); d(seed) = 0;
+src = zeros(prod(szP),1); src(seed) = find(seed);
+m = find(mask);
+nb = m + (stencil(:,1) + stencil(:,2)*szP(1)).';
 for k = 1:nSteps
-  front = binaryDilate(front, stencil, szP) & mask & ~reached;
-  if ~any(front), break; end
-  d(front) = k;
-  reached = reached | front;
+  [hit,j] = max(d(nb) == k-1,[],2);
+  hit = hit & isinf(d(m));
+  if ~any(hit), break; end
+  d(m(hit)) = k;
+  src(m(hit)) = src(nb(find(hit) + (j(hit)-1)*numel(m)));
 end
 end
 
