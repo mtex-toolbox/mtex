@@ -48,7 +48,8 @@ nV = size(V,1);
 V = [V; a + (lo + hi) / 2 .* (b - a)];
 F = [F; nV + (1:numel(cut)).', F(cut,2)];
 F(cut,2) = nV + (1:numel(cut)).';
-I_FD = [I_FD; I_FD(cut,:)];
+r = zeros(nF,1); r(cut) = nF + (1:numel(cut)); s = r(f) > 0;
+I_FD = sparse([f; r(f(s))], [d; d(s)], 1, nF + numel(cut), size(I_FD,2));
 isB = [isB; true(numel(cut),1)];
 
 e = F(isB,:);
@@ -58,13 +59,14 @@ isFixed = true(size(V,1),1);
 vB = unique(e);
 isFixed(vB) = inFill(V(vB,:)) <= tol;
 
+% the free vertices relax component by component, a component again only after it lost a vertex
 V0 = V;
-Vlast = V;
+m = ~isFixed & any(A,2);
+s = m;
 while true
-  V = V0;
-  m = ~isFixed & any(A,2);
-  V(m,:) = (spdiags(sum(A(m,:),2) + 1e-3,0,nnz(m),nnz(m)) - A(m,m)) \ ...
-    (A(m,~m) * V0(~m,:) + 1e-3 * V0(m,:));
+  Vlast = V;
+  V(s,:) = (spdiags(sum(A(s,:),2) + 1e-3,0,nnz(s),nnz(s)) - A(s,s)) \ ...
+    (A(s,~s) * V(~s,:) + 1e-3 * V0(s,:));
 
   % samples, a third of a pixel apart, of the area every segment sweeps that moved since the last round
   chg = any(V ~= Vlast,2);
@@ -85,8 +87,14 @@ while true
   bad = crossing(V,e,isM);
   bad(isM) = bad(isM) | accumarray(seg,double(isOut),[size(em,1) 1],@max) > 0;
   if ~any(bad), break; end
-  isFixed(e(bad,:)) = true;
-  Vlast = V;
+
+  lab = zeros(size(V,1),1);
+  lab(m) = conncomp(graph(A(m,m)));
+  x = e(bad,:);
+  isFixed(x) = true;
+  V(x,:) = V0(x,:);
+  m = ~isFixed & any(A,2);
+  s = m & ismember(lab,lab(x));
 end
 
 end
@@ -104,28 +112,26 @@ c = floor((a + d/2) / max(vecnorm(d,2,2)));
 c = c - min(c,[],1) + 2;
 nx = max(c(:,1)) + 2;
 key = c(:,1) + c(:,2)*nx;
-[ks,ord] = sort(key);
-[u,first] = unique(ks);
-n = diff([first; numel(ks)+1]);
+[~,ord] = sort(key);
+cnt = accumarray(key,1,[nx*(max(c(:,2))+2) 1]);
+first = cumsum(cnt) - cnt;
 q = find(isM);
-[o1,o2] = meshgrid(-1:1);
-i = cell(9,1); j = cell(9,1);
-for k = 1:9
-  [tf,loc] = ismember(key(q) + o1(k) + o2(k)*nx, u);
-  cnt = n(loc(tf));
-  i{k} = repelem(q(tf), cnt, 1);
-  j{k} = ord(repelem(first(loc(tf)) - 1 - cumsum(cnt) + cnt, cnt, 1) + (1:sum(cnt)).');
-end
-i = vertcat(i{:});
-j = vertcat(j{:});
+o = (-1:1) + (-1:1).'*nx;
+k = key(q) + o(:).';
+n = cnt(k);
+i = repelem(repmat(q,9,1),n(:));
+j = ord(repelem(first(k(:)),n(:)) + (1:sum(n(:))).' - repelem(cumsum(n(:)) - n(:),n(:)));
 
-% proper crossings of segments without a common vertex
+% each pair once, proper crossings of segments without a common vertex
+u = ~isM(j) | j > i;
+i = i(u); j = j(u);
 w = a(j,:) - a(i,:);
 den = d(i,1).*d(j,2) - d(i,2).*d(j,1);
 s = (w(:,1).*d(j,2) - w(:,2).*d(j,1)) ./ den;
 t = (w(:,1).*d(i,2) - w(:,2).*d(i,1)) ./ den;
 x = s > 0 & s < 1 & t > 0 & t < 1 & ~any(e(i,:) == e(j,1) | e(i,:) == e(j,2),2);
 isX = false(size(e,1),1);
-isX(i(x)) = true;
+isX([i(x); j(x)]) = true;
+isX = isX & isM;
 
 end

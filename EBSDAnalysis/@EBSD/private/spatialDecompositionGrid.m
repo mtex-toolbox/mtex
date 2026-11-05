@@ -322,17 +322,17 @@ function d = rigidInFill(p,p0,M,fillP,szP,ij0)
 % inFill on the rigid grid p0 + [i j]*M from the four lattice points around p,
 % +-Inf where they are all of one kind
 
-c = floor((p - p0) / M);
+q = p - p0;
+c = floor(q / M);
+rc = c - ij0;
+l = rc(:,1) + (rc(:,2)-1)*szP(1);
+l(~all(rc >= 1 & rc < szP,2)) = 1;   % off the raster, among the padding
 dF = inf(size(p,1),1); dO = dF;
 for k = [0 0; 1 0; 0 1; 1 1].'
-  IJ = c + k.';
-  dist = vecnorm(p - p0 - IJ*M,2,2);
-  rc = IJ - ij0;
-  inR = all(rc >= 1 & rc <= szP,2);
-  isF = false(size(dist));
-  isF(inR) = fillP(rc(inR,1) + (rc(inR,2)-1)*szP(1));
-  dF(isF) = min(dF(isF),dist(isF));
-  dO(~isF) = min(dO(~isF),dist(~isF));
+  dist = vecnorm(q - (c + k.')*M,2,2);
+  isF = fillP(l + k(1) + k(2)*szP(1));
+  dF = min(dF,dist./isF);
+  dO = min(dO,dist./~isF);
 end
 d = dO - dF;
 end
