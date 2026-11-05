@@ -43,7 +43,7 @@ function out = spatialDecompositionGrid(ebsd,varargin)
 %  V        - nV × 2 Voronoi vertices
 %  F        - nF × 2 vertex indices per boundary segment (1-based)
 %  I_FD     - nF × nSites sparse incidence (segment × site), sites = grains
-%  isNotIdx - nSites × 1 logical, which sites are notIndexed grains
+%  isNotIdx - nSites × 1 logical, which sites are enclosed notIndexed holes
 %  site2id  - nSites × 1, ebsd linear index for indexed sites, NaN for
 %             notIndexed sites that came from empty cells
 %  ij       - nEbsd × 2 axial indices (debug)
@@ -200,7 +200,7 @@ niId  = [holeId ; nan(size(bandPos,1),1)];
 XY      = [sitesIdx; niPos; dumPos];
 numReal = size(sitesIdx,1) + size(niPos,1);
 
-isNotIdx = [false(size(sitesIdx,1),1); true(size(niPos,1),1)];
+isNotIdx = [false(size(sitesIdx,1),1); true(size(holePos,1),1); false(size(bandPos,1),1)];
 site2id  = [idxSiteEbsd; niId];
 
 % ---- Voronoi -----------------------------------------------------------

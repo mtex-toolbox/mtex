@@ -109,7 +109,7 @@ while true
   [V,F,I_FD] = splitPinches(V,F,I_FD,out);
 
   % determine which cells to connect
-  [Dl,Dr] = find(triu(I_FD'*I_FD==1,1));
+  [Dl,Dr] = find(triu(I_FD'*I_FD,1));
   [A_Db,I_DG] = gbc.segment(ebsd,Dl,Dr,varargin{:});
   % A_db - neighboring cells with (inner) grain boundary
   % I_DG - incidence matrix cells to grains
