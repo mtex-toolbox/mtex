@@ -96,23 +96,25 @@ end
 % F - list of faces
 % D - cell array of cells
 % I_FD - incidence matrix faces to vertices
-if check_option(varargin,'delaunay')
-  out = spatialDecompositionAlpha(ebsd,varargin{:});
-else
-  out = spatialDecompositionGrid(ebsd,varargin{:});
+% culling changes the map the closing runs on, so repeat until nothing re-fragments (#2574)
+while true
+  if check_option(varargin,'delaunay')
+    out = spatialDecompositionAlpha(ebsd,varargin{:});
+  else
+    out = spatialDecompositionGrid(ebsd,varargin{:});
+  end
+  V = out.V;
+  F = out.F;
+  I_FD = remapIFD(out,ebsd);
+
+  % determine which cells to connect
+  [Dl,Dr] = find(triu(I_FD'*I_FD==1,1));
+  [A_Db,I_DG] = gbc.segment(ebsd,Dl,Dr,varargin{:});
+  % A_db - neighboring cells with (inner) grain boundary
+  % I_DG - incidence matrix cells to grains
+
+  if ~enforceMinPixel, break; end
 end
-V = out.V;
-F = out.F;
-I_FD = remapIFD(out,ebsd);
-
-% determine which cells to connect
-[Dl,Dr] = find(triu(I_FD'*I_FD==1,1));
-[A_Db,I_DG] = gbc.segment(ebsd,Dl,Dr,varargin{:});
-% A_db - neighboring cells with (inner) grain boundary
-% I_DG - incidence matrix cells to grains
-
-% culling changes the map the closing runs on, so mop up what re-fragmented (#2574)
-enforceMinPixel
 
 % now we remove all empty grains
 notEmpty = full(any(I_FD * I_DG,1)).';
@@ -495,15 +497,10 @@ end
     grainId = full(I_DG * (1:size(I_DG,2)).');
   end
 
-  function enforceMinPixel
+  function culled = enforceMinPixel
     % indexed grains that came out below minPixel despite the cull before
     % the decomposition - mark their pixels notIndexed, which is what that
-    % pass does to everything it removes
-    %
-    % Reads I_DG only, so it needs no second decomposition. Note this leaves
-    % the cells exactly as the decomposition drew them: a pixel the closing
-    % stranded keeps its oversized cell and simply becomes notIndexed, the
-    % same way the pixels culled before the decomposition do.
+    % pass does to everything it removes, and report whether there were any
     %
     % Merging the offenders into a neighbour instead was measured and
     % dropped: they are stranded in notIndexed regions by construction, so
@@ -511,6 +508,7 @@ end
     % phase to merge into and fell back to this anyway.
 
     mp = get_option(varargin,'minPixel',1);
+    culled = false;
     if mp <= 1, return; end
 
     szG = full(sum(I_DG,1)).';
@@ -519,7 +517,7 @@ end
 
     % notIndexed grains are not subject to minPixel
     under = szG < mp & szG > 0 & phG > 1;
-    if ~any(under), return; end
+    culled = any(under);
 
     ebsd.phaseId(full(any(I_DG(:,under),2))) = 1;
 
