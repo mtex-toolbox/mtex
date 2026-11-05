@@ -79,8 +79,8 @@ fprintf('%d pores, %d pockets, %.1f%% of the map outside all grains\n', ...
 %% The effect of alpha
 %
 % A larger |alpha| closes wider |notIndexed| regions. We repeat the
-% reconstruction for increasing values, and look at the lower part of the
-% crack. The background is the second output of |calcGrains|, coloured by
+% reconstruction for increasing values on the whole map. The background is
+% the second output of |calcGrains|, coloured by
 % orientation. A |notIndexed| pixel has no orientation and stays white, also
 % where a grain has absorbed it. The boundaries show which region belongs to
 % which grain. 
@@ -106,15 +106,16 @@ for k = 1:numel(alpha)
 end
 
 %%
-% With |alpha = 1.1| many |notIndexed| specks between the grains remain
-% grains of their own. With |alpha = 2.1| most of those specks are absorbed,
-% while the larger pores, the pockets and the crack are kept. With |alpha = 6.1|
-% the pores and almost all pockets of the map are gone. The narrow upper part 
-% of the crack is closed, with a common boundary connecting the sufficiently 
-% similar indexed areas across the crack. The wider lower part is still open.
-% With |alpha = 16.1| the grains bridge the lower part as well. Only its
-% mouth at the bottom edge of the map remains outside all grains, and no 
-% |notIndexed| grain is left.
+% With |alpha = 1.1| many |notIndexed| specks between and inside the grains
+% remain grains of their own. With |alpha = 2.8| most of those specks are
+% absorbed and show as white dots inside the grains, while the larger pores,
+% the pockets and the whole crack are kept. With |alpha = 6.8| the pores and
+% almost all pockets are gone. The narrow upper part of the crack is closed,
+% and grains of similar orientation on its two sides have become one grain.
+% The wider lower part is still open. With |alpha = 16.1| the grains bridge
+% the lower part as well, along straight boundaries. Only its mouth at the
+% bottom edge of the map remains outside all grains, and no |notIndexed|
+% grain is left.
 %
 % No single |alpha| value treats all regions as we would like. The value 
 % that closes the crack also absorbs every pore and pocket of the map into
