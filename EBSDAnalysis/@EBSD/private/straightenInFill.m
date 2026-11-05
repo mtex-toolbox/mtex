@@ -61,7 +61,8 @@ isFixed(vB) = inFill(V(vB,:)) <= tol;
 
 % the free vertices relax component by component, a component again only after it lost a vertex
 V0 = V;
-m = ~isFixed & any(A,2);
+hasE = any(A,2);
+m = ~isFixed & hasE;
 s = m;
 while true
   Vlast = V;
@@ -76,16 +77,28 @@ while true
   T = max(1,ceil(3 * max(vecnorm(V0(em(:,2),:) - V0(em(:,1),:),2,2), ...
     vecnorm(V(em(:,2),:) - V(em(:,1),:),2,2)) / out.dxy));
   K = max(1,ceil(3 * max(reshape(dV(em),size(em)),[],2) / out.dxy));
-  n = (T+1) .* (K+1);
-  seg = repelem((1:size(em,1)).',n,1);
-  r = (1:numel(seg)).' - repelem(cumsum(n) - n,n,1) - 1;
-  t = mod(r,T(seg)+1) ./ T(seg);
-  l = floor(r ./ (T(seg)+1)) ./ K(seg);
-  P = (1-l) .* ((1-t) .* V0(em(seg,1),:) + t .* V0(em(seg,2),:)) + ...
-    l .* ((1-t) .* V(em(seg,1),:) + t .* V(em(seg,2),:));
-  isOut = inFill(P) < -tol;
+  isOut = false(size(em,1),1);
+  [TK,~,g] = unique([T K],'rows');
+  [g,o] = sort(g);
+  first = find([true; diff(g) > 0]);
+  last = [first(2:end) - 1; numel(g)];
+  for k = 1:size(TK,1)
+
+    % the new segment first, the rest of the swept area only where it stays in the fill
+    j = o(first(k):last(k));
+    [t,l] = ndgrid((0:TK(k,1)) / TK(k,1),(0:TK(k,2)) / TK(k,2));
+    t = t(:).'; l = l(:).';
+    for c = {l == 1, l < 1}
+      tc = t(c{1}); lc = l(c{1});
+      P = [(1-lc) .* ((1-tc) .* V0(em(j,1),1) + tc .* V0(em(j,2),1)) + lc .* ((1-tc) .* V(em(j,1),1) + tc .* V(em(j,2),1)), ...
+        (1-lc) .* ((1-tc) .* V0(em(j,1),2) + tc .* V0(em(j,2),2)) + lc .* ((1-tc) .* V(em(j,1),2) + tc .* V(em(j,2),2))];
+      leave = any(reshape(inFill(reshape(P,[],2)) < -tol,numel(j),[]),2);
+      isOut(j(leave)) = true;
+      j = j(~leave);
+    end
+  end
   bad = crossing(V,e,isM);
-  bad(isM) = bad(isM) | accumarray(seg,double(isOut),[size(em,1) 1],@max) > 0;
+  bad(isM) = bad(isM) | isOut;
   if ~any(bad), break; end
 
   lab = zeros(size(V,1),1);
@@ -93,8 +106,9 @@ while true
   x = e(bad,:);
   isFixed(x) = true;
   V(x,:) = V0(x,:);
-  m = ~isFixed & any(A,2);
-  s = m & ismember(lab,lab(x));
+  m = ~isFixed & hasE;
+  hit = false(max(lab) + 1,1); hit(lab(x) + 1) = true;
+  s = m & hit(lab + 1);
 end
 
 end
@@ -110,12 +124,17 @@ a = V(e(:,1),:);
 d = V(e(:,2),:) - a;
 h = 2*median(vecnorm(d,2,2));
 lo = floor(min(a,a+d) / h);
-hi = floor(max(a,a+d) / h) - lo + 1;
-lo = lo - min(lo,[],1);
-n = prod(hi,2);
-s = repelem((1:size(e,1)).',n,1);
-r = (1:numel(s)).' - repelem(cumsum(n) - n,n,1) - 1;
-key = lo(s,1) + mod(r,hi(s,1)) + (lo(s,2) + floor(r ./ hi(s,1))) * (max(lo(:,1) + hi(:,1)) + 1);
+hi = floor(max(a,a+d) / h);
+o = min(lo,[],1) - 2;
+lo = lo - o; hi = hi - o;
+sz = max(hi,[],1);
+
+% only the segments whose box shares a bucket with a moved one
+[~,key] = buckets(find(isM),lo,hi,sz);
+C = zeros(sz); C(key) = 1; C = cumsum(cumsum(C,1),2);
+q = @(i,j) C(i + (j-1)*sz(1));
+near = q(hi(:,1),hi(:,2)) - q(lo(:,1)-1,hi(:,2)) - q(hi(:,1),lo(:,2)-1) + q(lo(:,1)-1,lo(:,2)-1) > 0;
+[s,key] = buckets(find(near),lo,hi,sz);
 [key,o] = sort(key);
 s = s(o);
 first = find([true; diff(key) > 0]);
@@ -138,4 +157,14 @@ isX = false(size(e,1),1);
 isX([i(x); j(x)]) = true;
 isX = isX & isM;
 
+end
+
+function [s,key] = buckets(j,lo,hi,sz)
+% the segments j once for every bucket of their box, and its linear index
+w = hi(j,1) - lo(j,1) + 1;
+n = w .* (hi(j,2) - lo(j,2) + 1);
+s = repelem(j,n,1);
+r = (1:numel(s)).' - repelem(cumsum(n) - n,n,1) - 1;
+w = repelem(w,n,1);
+key = lo(s,1) + mod(r,w) + (lo(s,2) + floor(r ./ w) - 1) * sz(1);
 end
