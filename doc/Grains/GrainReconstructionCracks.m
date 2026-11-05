@@ -85,7 +85,7 @@ fprintf('%d pores, %d pockets, %.1f%% of the map outside all grains\n', ...
 % where a grain has absorbed it. The boundaries show which region belongs to
 % which grain. 
 
-alpha = [1.1 2.1 6.1 16.1];
+alpha = [1.1 2.8 6.8 16.1];
 
 newMtexFigure('layout',[2 2]);
 for k = 1:numel(alpha)
@@ -94,12 +94,11 @@ for k = 1:numel(alpha)
   grainsA = smoothBoundary(grainsA);
   nextAxis
   plot(ebsdA,'ipfz','micronbar','off')
-  %plot(grainsA,'ipfz','micronbar','off')
   legend off
   hold on
   plot(grainsA.boundary,'linewidth',1.5)
   hold off
-  axis([2500 12500 7000 17940])
+  % axis([2500 12500 7000 17940])
   mtexTitle(['alpha = ' num2str(alpha(k))])
   fprintf('alpha = %4.1f: %3d grains, %3d notIndexed, %4.1f%% outside\n', ...
     alpha(k), length(grainsA), length(grainsA('notIndexed')), ...
