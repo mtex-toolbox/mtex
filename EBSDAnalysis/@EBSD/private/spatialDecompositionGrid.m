@@ -1,4 +1,4 @@
-function out = spatialDecompositionGrid(ebsd,varargin)
+function out = spatialDecompositionGrid(ebsd,g,varargin)
 % grid-based spatial decomposition for grain reconstruction (square + hex)
 %
 % Implements the unified pipeline discussed in DESIGN.md. Every gridified
@@ -27,10 +27,11 @@ function out = spatialDecompositionGrid(ebsd,varargin)
 % any reconstruction - see cells2posId.
 %
 % Syntax
-%   out = spatialDecompositionGrid(ebsd,'alpha',1.5)
+%   out = spatialDecompositionGrid(ebsd,ebsd.lattice,'alpha',1.5)
 %
 % Input
 %  ebsd - gridified @EBSDsquare / @EBSDhex
+%  g    - ebsd.lattice
 %
 % Options
 %  alpha    - hole closing radius in multiples of dxy (default 3.1). Holes
@@ -50,8 +51,6 @@ function out = spatialDecompositionGrid(ebsd,varargin)
 
 alpha = get_option(varargin,'alpha',3.1);
 
-% transform positions to ij grid
-g = ebsd.lattice;
 A = g.A; stencil = g.stencil; dxy = g.dxy; ij = g.ij;
 epsilon = dxy/100;
 
@@ -452,9 +451,8 @@ end
 r = vertcat(rows{:}) - offset(1); c = vertcat(cols{:});
 lo = accumarray(r, c, [sz(1) 1], @min, inf);
 hi = accumarray(r, c, [sz(1) 1], @max, -inf);
-[iR,jR] = ind2sub(sz,(1:prod(sz)).');
-j = jR + offset(2);
-inside = j >= lo(iR) - 1e-9 & j <= hi(iR) + 1e-9;
+j = offset(2) + (1:sz(2));
+inside = reshape(j >= lo - 1e-9 & j <= hi + 1e-9,[],1);
 
 end
 

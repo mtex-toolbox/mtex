@@ -1,4 +1,4 @@
-function out = spatialDecompositionAlpha(ebsd,varargin)
+function out = spatialDecompositionAlpha(ebsd,g,varargin)
 % grid-based spatial decomposition for grain reconstruction via a true
 % (circumradius) alpha-complex, for square + hex grids
 %
@@ -25,10 +25,11 @@ function out = spatialDecompositionAlpha(ebsd,varargin)
 % local one.
 %
 % Syntax
-%   out = spatialDecompositionAlpha(ebsd,'alpha',2.2)
+%   out = spatialDecompositionAlpha(ebsd,ebsd.lattice,'alpha',2.2)
 %
 % Input
 %  ebsd - gridified @EBSDsquare / @EBSDhex
+%  g    - ebsd.lattice
 %
 % Options
 %  alpha - alpha-complex radius in multiples of dxy (default 2.2). A
@@ -51,8 +52,6 @@ function out = spatialDecompositionAlpha(ebsd,varargin)
 
 alpha = get_option(varargin,'alpha',2.2);
 
-% lattice / grid setup
-g = ebsd.lattice;
 A = g.A; stencil = g.stencil; dxy = g.dxy; ij = g.ij;
 epsilon = dxy/100;
 

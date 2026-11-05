@@ -1,4 +1,4 @@
-function removed = minPixelMask(ebsd,gbc,varargin)
+function removed = minPixelMask(ebsd,gbc,g,varargin)
 % pixels belonging to undersized indexed grains, for the minPixel filter
 %
 % Returns only a logical mask (no copy of the ebsd object). The caller applies
@@ -27,6 +27,7 @@ function removed = minPixelMask(ebsd,gbc,varargin)
 % Input
 %  ebsd - @EBSD (gridified)
 %  gbc  - grain boundary criterion
+%  g    - ebsd.lattice
 %
 % Output
 %  removed - nEbsd × 1 logical, true for undersized indexed pixels
@@ -48,7 +49,7 @@ else
   % cell, which spatialDecompositionGrid is about to use anyway.
   if length(ebsd.unitCell) == 6, varargin = [varargin,{'delaunayOnly'}]; end
 
-  out0  = spatialDecompositionGrid(ebsd,varargin{:});
+  out0  = spatialDecompositionGrid(ebsd,g,varargin{:});
   I_FD0 = remapIFD(out0,ebsd);
   [Dl,Dr] = find(triu(I_FD0'*I_FD0,1));
   [~,I_DG0] = gbc.segment(ebsd,Dl,Dr,varargin{:});

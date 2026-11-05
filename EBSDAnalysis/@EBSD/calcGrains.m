@@ -76,6 +76,9 @@ gbc = grainBoundaryCriterion.byOptions(varargin{:});
 % a stored grainId of 0 means no grain, as it does for the output
 if check_option(varargin,'grainId'), ebsd.phaseId(ebsd.grainId == 0) = 1; end
 
+% the lattice depends on the positions alone, every decomposition below shares it
+g = ebsd.lattice;
+
 % first pass:
 % mark pixels that would become grains smaller than minPixel as notIndexed
 % a criterion enforcing minPixel itself is handed the value and this pass is skipped
@@ -86,7 +89,7 @@ if gbc.handlesMinPixel
 
 else
 
-  removed = minPixelMask(ebsd,gbc,varargin{:});
+  removed = minPixelMask(ebsd,gbc,g,varargin{:});
   ebsd.phaseId(removed) = 1;
 
 end
@@ -99,9 +102,9 @@ end
 % culling changes the map the closing runs on, so repeat until nothing re-fragments (#2574)
 while true
   if check_option(varargin,'delaunay')
-    out = spatialDecompositionAlpha(ebsd,varargin{:});
+    out = spatialDecompositionAlpha(ebsd,g,varargin{:});
   else
-    out = spatialDecompositionGrid(ebsd,varargin{:});
+    out = spatialDecompositionGrid(ebsd,g,varargin{:});
   end
   V = out.V;
   F = out.F;
