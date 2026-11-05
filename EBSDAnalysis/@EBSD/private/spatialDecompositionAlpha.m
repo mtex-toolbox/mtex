@@ -18,10 +18,11 @@ function out = spatialDecompositionAlpha(ebsd,varargin)
 % This file is intentionally self-contained (does not call into
 % spatialDecompositionGrid.m or share its local subfunctions - MATLAB
 % local functions aren't callable across files) and duplicates the
-% generic lattice/padding/site-assembly scaffolding it needs. The one
-% exception is the deformation aware position reconstruction, which both
-% files now take from private/latticeModel.m - a private function IS
-% callable from both, unlike a local one.
+% generic lattice/padding/site-assembly scaffolding it needs. The
+% exceptions are the deformation aware position reconstruction and the
+% geodesic distance, which both files take from private/latticeModel.m and
+% private/geoDist.m - a private function IS callable from both, unlike a
+% local one.
 %
 % Syntax
 %   out = spatialDecompositionAlpha(ebsd,'alpha',2.2)
@@ -77,12 +78,33 @@ ij2slotP = @(IJ) (IJ(:,1)-ijmin(1)+padding) + (IJ(:,2)-ijmin(2)+padding)*szP(1) 
 isIndexedP = false(prod(szP),1);
 isIndexedP(ij2slotP(ij(isIndexed,:))) = true;
 
-closedP = alphaComplexMask(pos, isIndexed, ij, epsilon, rAlpha, ...
+% the smallest circumradius of an included triangle covering each cell, inf where none
+rMin = alphaComplexMask(pos, isIndexed, ij, epsilon, rAlpha, ...
   szP, padding, ijmin, ijsz, ij2slotP, idealFun, reconstructPos);
-closedP = closedP | isIndexedP;   % safety belt, as in spatialDecompositionGrid.m
+closedP = isfinite(rMin) | isIndexedP;   % safety belt, as in spatialDecompositionGrid.m
 
 % exteriorP = background connected to the padded border
 exteriorP = floodFillBorder(~closedP, stencil, szP);
+
+% a hole joined to the outside by a filled notIndexed path of at most 2*alpha
+% steps stays joined, through what the largest alpha that keeps it joined leaves open
+nSteps = 2*ceil(alpha);
+ext0 = [];
+while ~isequal(exteriorP,ext0)   % a hole that joined the outside can join the next
+  ext0 = exteriorP;
+  f = closedP & ~isIndexedP;
+  [dHole,hole] = geoDist(~closedP & ~exteriorP, f, stencil, szP, nSteps);
+  corridor = find(f & geoDist(exteriorP, f, stencil, szP, nSteps) + dHole <= nSteps);
+  for r = [alpha-1:-1:1, 0]
+    corridor = corridor(closedP(corridor) & ~exteriorP(hole(corridor)));
+    if isempty(corridor), break; end
+    x = corridor(rMin(corridor) > r*dxy + epsilon);
+    closedP(x) = false;
+    if any(exteriorP(x + (stencil(:,1) + stencil(:,2)*szP(1)).'),'all')
+      exteriorP = floodFillBorder(~closedP, stencil, szP);
+    end
+  end
+end
 
 % guard: material must be strictly inside the padded raster, else the dummy
 % ring is truncated at the border and the outer grains come out open
@@ -144,9 +166,10 @@ out = struct('V',V,'F',F,'I_FD',I_FD, ...
 end
 
 % ===========================================================================
-function closedP = alphaComplexMask(pos, isIndexed, ij, epsilon, rAlpha, ...
+function rMin = alphaComplexMask(pos, isIndexed, ij, epsilon, rAlpha, ...
   szP, padding, ijmin, ijsz, ij2slotP, idealFun, reconstructPos)
-% true circumradius alpha-complex, rasterized onto the padded (i,j) grid
+% true circumradius alpha-complex, rasterized onto the padded (i,j) grid as the
+% smallest circumradius of a filled triangle covering each cell, inf where none
 %
 % The indexed sites are triangulated together with a dummy ring beyond any
 % alpha-included triangle, so no Voronoi edge is left unbounded. A triangle with
@@ -190,10 +213,8 @@ siteAll = [ec; ec];
 keep = pureVertex(vtxAll);
 vtxAll = vtxAll(keep); siteAll = siteAll(keep);
 
-if isempty(vtxAll)
-  closedP = false(prod(szP),1);
-  return
-end
+rMin = inf(prod(szP),1);
+if isempty(vtxAll), return, end
 
 % circumradius per pure vertex, via any one associated site (all incident
 % real sites are equidistant from the vertex by construction)
@@ -204,11 +225,8 @@ rad = vecnorm(Va(uVtx,:) - idxPos(repSite,:), 2, 2);
 
 included = rad <= rAlpha + epsilon;
 incVtx = uVtx(included);
-
-closedP = false(prod(szP),1);
-if isempty(incVtx)
-  return
-end
+if isempty(incVtx), return, end
+radOf = zeros(size(Va,1),1); radOf(uVtx) = rad;
 
 % full site group per included vertex (its triangle, or its cocircular
 % group's convex hull), deduplicated
@@ -249,7 +267,8 @@ for k = 1:numel(uV2)
     inside = inside & crossVal >= -epsilon*max(norm(edgeVec),epsilon);
   end
 
-  closedP(ij2slotP(candList(inside,:))) = true;
+  cells = ij2slotP(candList(inside,:));
+  rMin(cells) = min(rMin(cells), radOf(uV2(k)));
 end
 
 end
