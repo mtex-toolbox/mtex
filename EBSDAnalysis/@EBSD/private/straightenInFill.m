@@ -105,22 +105,26 @@ function isX = crossing(V,e,isM)
 isX = isM;
 if ~any(isM), return; end
 
-% candidates from the 3 x 3 buckets, as large as the longest segment, around the midpoint
+% candidates: the segments in a common bucket, twice the median segment long, of their boxes
 a = V(e(:,1),:);
 d = V(e(:,2),:) - a;
-c = floor((a + d/2) / max(vecnorm(d,2,2)));
-c = c - min(c,[],1) + 2;
-nx = max(c(:,1)) + 2;
-key = c(:,1) + c(:,2)*nx;
-[~,ord] = sort(key);
-cnt = accumarray(key,1,[nx*(max(c(:,2))+2) 1]);
-first = cumsum(cnt) - cnt;
-q = find(isM);
-o = (-1:1) + (-1:1).'*nx;
-k = key(q) + o(:).';
-n = cnt(k);
-i = repelem(repmat(q,9,1),n(:));
-j = ord(repelem(first(k(:)),n(:)) + (1:sum(n(:))).' - repelem(cumsum(n(:)) - n(:),n(:)));
+h = 2*median(vecnorm(d,2,2));
+lo = floor(min(a,a+d) / h);
+hi = floor(max(a,a+d) / h) - lo + 1;
+lo = lo - min(lo,[],1);
+n = prod(hi,2);
+s = repelem((1:size(e,1)).',n,1);
+r = (1:numel(s)).' - repelem(cumsum(n) - n,n,1) - 1;
+key = lo(s,1) + mod(r,hi(s,1)) + (lo(s,2) + floor(r ./ hi(s,1))) * (max(lo(:,1) + hi(:,1)) + 1);
+[key,o] = sort(key);
+s = s(o);
+first = find([true; diff(key) > 0]);
+g = cumsum([true; diff(key) > 0]);
+n = diff([first; numel(s) + 1]);
+q = find(isM(s));
+m = n(g(q));
+i = repelem(s(q),m,1);
+j = s(repelem(first(g(q)) - 1,m,1) + (1:sum(m)).' - repelem(cumsum(m) - m,m,1));
 
 % each pair once, proper crossings of segments without a common vertex
 u = ~isM(j) | j > i;
