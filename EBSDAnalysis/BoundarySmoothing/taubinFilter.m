@@ -54,7 +54,7 @@ methods
 
   end
 
-  function V = smooth(F,V,A_V,isFixed,~)
+  function V = smooth(F,V,A_V,isFixed,~,project)
 
     if F.mu >= 0
       error('taubinFilter: mu has to be negative, it is the unshrinking step');
@@ -63,10 +63,11 @@ methods
     L = boundaryFilter.laplacian(A_V);
 
     move = ~all(~isfinite(V) | V == 0,2) & ~isFixed;
+    if nargin < 6, project = @(V) V; end
 
     for k = 1:F.iter
-      V = step(V,L,move,F.lambda);
-      V = step(V,L,move,F.mu);
+      V = project(step(V,L,move,F.lambda));
+      V = project(step(V,L,move,F.mu));
     end
 
   end

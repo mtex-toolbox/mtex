@@ -63,7 +63,7 @@ methods
 
   end
 
-  function V = smooth(F,V,A_V,isFixed,h)
+  function V = smooth(F,V,A_V,isFixed,h,project)
 
     alpha = F.weight(h); %#ok<PROPLC>
     if alpha <= 0, return; end %#ok<PROPLC>
@@ -73,6 +73,7 @@ methods
     M = speye(size(L,1)) + alpha * (L.' * L); %#ok<PROPLC>
 
     V = boundaryFilter.solveDirichlet(M,V,isFixed | ~isfinite(sum(V,2)));
+    if nargin > 5, V = project(V); end
 
   end
 

@@ -159,28 +159,46 @@ gm = merge(grains,gBfo(angle(gBfo.misorientation) < 15*degree));
 assertOrdered(gm.boundary,'merge');
 
 assertOrdered(smoothBoundary(grains,3).boundary,'smoothBoundary');
-assertOrdered(smoothBoundary(grains,3,'noSimplify','noRefine').boundary,...
-  'smoothBoundary(noSimplify,noRefine)');
+assertOrdered(smoothBoundary(grains,3,'noSimplify').boundary,'smoothBoundary(noSimplify)');
 
-% every backend has to leave the boundary walkable, and none of them may move
-% a junction or change the segment list - they only move vertices
+% the pixels on either side of a pixel edge, and their spacing
+isPx = gB.pixelDist > 0;
+ePx = ebsd(ismember(ebsd.id,gB.ebsdId(isPx,:)));
+d = median(gB.pixelDist(isPx));
+assertPixelsInside(smoothBoundary(grains),ePx,'smoothBoundary');
+
+% a smoothed boundary has no pixel edges left to build cells from
+if any(smoothBoundary(grains,'noSimplify').boundary.pixelDist)
+  error('smoothBoundary left a pixel edge on a moved segment');
+end
+
+% every backend leaves the boundary walkable and keeps the pixels next to a
+% pixel edge in their grains. Without the simplification it only moves
+% vertices, a junction no further than into the corner of its cell
+isJunction = full(diag(gB.I_VF*gB.I_VF.')) > 2;
 for F = {laplaceFilter(3),taubinFilter(3),curvatureFilter,huberFilter}
 
   name = class(F{1});
-  gS = smoothBoundary(grains,F{1});
+  gS = smoothBoundary(grains,F{1},'noSimplify');
 
   assertOrdered(gS.boundary,name);
 
-  if ~isequal(gS.boundary.F,smoothBoundary(grains,0).boundary.F)
+  if ~isequal(gS.boundary.F,gB.F)
     error('%s changed the segment list, it should only move vertices',name);
   end
 
-  isJunction = full(diag(gS.boundary.I_VF*gS.boundary.I_VF.')) > 2;
-  moved = norm(gS.allV - smoothBoundary(grains,0).allV) > 1e-10;
-  if any(moved & isJunction)
-    error('%s moved a junction',name);
+  if any(norm(gS.allV(isJunction) - grains.allV(isJunction)) >= d/sqrt(2))
+    error('%s moved a junction out of its cell',name);
   end
 
+  assertPixelsInside(smoothBoundary(grains,F{1}),ePx,name);
+
+end
+
+% the loose ends of the inner boundaries stay put, so no segment collapses
+gT = calcGrains(ebsd,'threshold',[1 10]*degree);
+if any(smoothBoundary(gT,'noSimplify').innerBoundary.segLength == 0)
+  error('smoothBoundary collapsed an inner boundary segment');
 end
 assertOrdered(refineBoundary(grains).boundary,'refineBoundary');
 assertOrdered(hull(grains).boundary,'hull');
@@ -283,7 +301,7 @@ plot(gB);
 sl = median(gB.segLength);
 
 prevCount = length(gB);
-for eps = [sl/4 sl/2 sl 2*sl]
+for eps = [sl/4 sl/2 sl/sqrt(2) sl 2*sl]
 
   sim = simplify(gB,eps);
   assertOrdered(sim,sprintf('simplify(gB,%g)',eps));
@@ -303,6 +321,11 @@ for eps = [sl/4 sl/2 sl 2*sl]
   % the boundary can only get shorter, and not by much
   if sum(sim.segLength) > sum(gB.segLength) + 1e-9
     error('simplify made the boundary longer');
+  end
+
+  % ties go to the same vertex whichever way the chains are walked
+  if ~isequal(unique(sim.F),unique(simplify(flip(gB),eps).F))
+    error('simplify(gB,%g) depends on the direction the chains are walked',eps);
   end
 
 end
@@ -516,6 +539,19 @@ for k = 1:length(grains)
     error('%s: grain %d encloses %g instead of its area %g - its boundary is walked the wrong way round',...
       name,grains.id(k),A,area(k));
   end
+end
+
+end
+
+% -------------------------------------------------------------------------
+function assertPixelsInside(grains,ebsd,name)
+% every pixel of ebsd lies inside the grain it belongs to
+
+M = grains.checkInside(ebsd.pos.xyz);
+[~,col] = ismember(ebsd.grainId,grains.id);
+out = ~full(M(sub2ind(size(M),(1:length(ebsd)).',col(:))));
+if any(out)
+  error('%s moved the boundary across %d pixel centres next to it',name,nnz(out));
 end
 
 end

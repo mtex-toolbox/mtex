@@ -5,68 +5,64 @@ function [grains,F] = smoothBoundary(grains,iter,varargin)
 %
 %   grains = smoothBoundary(grains)
 %   grains = smoothBoundary(grains,iter)
-%   grains = smoothBoundary(grains,iter,'noSimplify','noRefine')
-%   grains = smoothBoundary(grains,iter,'simplify',epsilon,'refine',delta)
+%   grains = smoothBoundary(grains,iter,'noSimplify')
+%   grains = smoothBoundary(grains,iter,'simplify',epsilon)
 %
-%   grains = smoothBoundary(grains,taubinFilter)
+%   grains = smoothBoundary(grains,taubinFilter(40))
 %   grains = smoothBoundary(grains,curvatureFilter('smoothingLength',3))
 %
 % Description
 % EBSD data is measured on a regular grid, so a grain boundary comes out of
 % calcGrains as a staircase of pixel edges - every segment runs along one of
 % the grid axes, whatever direction the boundary actually has. This is
-% repaired in three steps
+% repaired in two steps
 %
+% # the vertices are smoothed, by default by |iter| pairs of
+% <taubinFilter.html |taubinFilter|> steps. After every step each vertex of a
+% pixel edge is moved back into its cell - the square of the four pixel
+% centres around it, the triangle of three on a hexagonal grid - shrunk by
+% |d/20|, |d| being the pixel spacing. So the boundary passes every pixel it
+% was measured next to on the side it was measured on, and a triple point
+% stays within half a step of where it was. A loose end stays put
 % # <grain2d.simplifyBoundary.html |simplifyBoundary|> drops every vertex
-% whose removal moves the boundary by less than |epsilon|. A staircase is
-% never further than |d/sqrt(2)| from the straight line it approximates, |d|
-% being the pixel spacing, so that is the tolerance which removes the grid and
-% nothing else
-% # <grain2d.refineBoundary.html |refineBoundary|> splits what is left into
-% pieces of about length |delta|, which gives the smoothing evenly spaced
-% degrees of freedom that are no longer tied to the grid
-% # the smoothing itself, by default a constrained Laplacian applied |iter|
-% times
+% whose removal moves the boundary by less than |epsilon|, |d/10| by default,
+% unless that would bring one of those pixel centres closer than |d/20| to
+% the boundary or put it on the other side
 %
-% Which algorithm performs the last step is decided by a
+% Which algorithm performs the first step is decided by a
 % <boundaryFilter.html |boundaryFilter|>
 %
-% * <laplaceFilter.html |laplaceFilter|> - the default, repeated
-% local averaging. Shrinks, and its knob is an iteration count rather than a
-% length
-% * <taubinFilter.html |taubinFilter|> - follows every smoothing
-% pass by a slightly larger unshrinking pass, so the area is given back
+% * <taubinFilter.html |taubinFilter|> - the default, follows every
+% smoothing pass by a slightly larger unshrinking pass, so small grains keep
+% their area
+% * <laplaceFilter.html |laplaceFilter|> - repeated local averaging, which
+% shrinks every convex grain
 % * <curvatureFilter.html |curvatureFilter|> - one sparse
 % solve instead of an iteration, stated as a smoothing *length* and therefore
 % independent both of the iteration count and of the step size of the map
 % * <huberFilter.html |huberFilter|> - the same, but with an
 % l^1/l^2 penalty that keeps a genuinely faceted boundary faceted
 %
-% Both tolerances are derived from the median segment length *before* the
-% first step - afterwards the median is the length of the straightened runs,
-% not the pixel spacing.
+% The pixel edges are those with a nonzero |gB.pixelDist|, which
+% <EBSD.calcGrains.html |calcGrains|> records. Grains built otherwise have
+% none; then only the junctions are held within half a step.
 %
-% Neither of the first two steps is cosmetic. Simplifying alone leaves a curve
-% as a handful of long chords, and smoothing those cuts the corners off the
-% polygon they form - a circle of 15 pixel radius loses 14% of its area over
-% 25 iterations, against 0.4% for the full three steps. Smoothing alone leaves
-% the boundary directions of a straight boundary scattered around the grid
-% axes.
+% The outer boundary is smoothed as well, but its junctions and the corners
+% of its convex hull stay fixed unless |moveOuterBoundary| is given, so the
+% map keeps its extent.
 %
-% Junctions - triple points, quadruple points, and the vertices where the
-% inner boundary ends on the outer one - stay exactly where they are
-% throughout, unless |moveTriplePoints| is given. The outer boundary is
-% smoothed as well, but its junctions and the corners of its convex hull stay
-% fixed unless |moveOuterBoundary| is given, so the map keeps its extent.
+% The second step changes the number of boundary segments. A segment that no
+% longer runs between a specific pair of pixels gets the |gB.ebsdId| 0, as the
+% outer boundary has; where the pixel pairs are analysed, switch it off with
+% |'noSimplify'| to keep them all.
 %
-% Note that the first two steps change the number of boundary segments. A
-% segment that no longer runs between a specific pair of pixels gets the
-% |gB.ebsdId| 0, as the outer boundary has; where the pixel pairs are analysed,
-% switch the steps off with |'noSimplify'| and |'noRefine'| to keep them all.
+% Smoothing moves the vertices off the pixel corners, so afterwards no
+% segment is a pixel edge any more. Smoothing a second time then holds only
+% the junctions; for a smoother boundary raise |iter| instead.
 %
 % Input
 %  grains - @grain2d
-%  iter   - number of smoothing iterations (default: 1)
+%  iter   - number of Taubin pairs (default: 20)
 %  F      - @boundaryFilter, the smoothing algorithm to use
 %
 % Output
@@ -74,33 +70,21 @@ function [grains,F] = smoothBoundary(grains,iter,varargin)
 %  F      - @boundaryFilter that was used
 %
 % Options
-%  simplify          - Douglas-Peucker tolerance (default: d/sqrt(2))
-%  refine            - subdivision length (default: d)
-%  noSimplify        - do not simplify the boundary first
-%  noRefine          - do not subdivide the boundary
-%  moveTriplePoints  - do not exclude triple/quadruple points from smoothing
+%  simplify          - Douglas-Peucker tolerance (default: d/10)
+%  noSimplify        - do not simplify the boundary
 %  moveOuterBoundary - let the junctions and hull corners of the outer boundary move
-%
-% The remaining options configure the default laplaceFilter and have no
-% meaning for the other filters
-%
-%  second_order, S2  - second order smoothing
-%  rate              - default smoothing kernel
-%  gauss             - Gaussian smoothing kernel
-%  exp               - exponential smoothing kernel
-%  umbrella          - umbrella smoothing kernel
 %
 % See also
 % grain2d/simplifyBoundary grain2d/refineBoundary grain2d/reduceBoundary
 % boundaryFilter laplaceFilter taubinFilter curvatureFilter huberFilter
 
-% an option may take the place of iter, as in smoothBoundary(grains,'noRefine').
+% an option may take the place of iter, as in smoothBoundary(grains,'noSimplify').
 % This has to happen before the tilt branch below, which passes iter on
 if nargin > 1 && ~isnumeric(iter)
   varargin = [{iter},varargin];
   iter = [];
 end
-if nargin < 2 || isempty(iter), iter = 1; end
+if nargin < 2 || isempty(iter), iter = 20; end
 
 % smoothing happens in the xy plane - test the angle, an exact comparison never holds
 if angle(grains.N,zvector,'antipodal') > 1e-10
@@ -112,32 +96,15 @@ if angle(grains.N,zvector,'antipodal') > 1e-10
 
 end
 
-% the pixel spacing - has to be read before simplifyBoundary changes what the
-% median segment length means
-d0 = median(grains.boundary.segLength);
-
-if isfinite(d0) && d0 > 0
-
-  if ~check_option(varargin,'noSimplify')
-    grains = simplifyBoundary(grains,get_option(varargin,'simplify',d0/sqrt(2)));
-  end
-
-  if ~check_option(varargin,'noRefine')
-    grains = refineBoundary(grains,get_option(varargin,'refine',d0));
-  end
-
-end
-
 % compute incidence matrix vertices - faces
 I_VF = [grains.boundary.I_VF,grains.innerBoundary.I_VF];
 
 % compute vertices adjacency matrix
 A_V = I_VF * I_VF';
 
-% do not move a vertex where other than two segments meet, a loose end included,
-% nor a vertex no segment uses
+% do not move a vertex no segment uses, nor the loose end of a boundary
 vDegree = full(diag(A_V));
-ignore = vDegree == 0 | (vDegree ~= 2 & ~check_option(varargin,'moveTriplePoints'));
+ignore = vDegree < 2;
 
 V = grains.allV.xyz;
 
@@ -149,15 +116,74 @@ if ~check_option(varargin,'moveOuterBoundary')
   ignore(used(convhull(V(used,1:2)))) = true;
 end
 
-% which algorithm does the smoothing - the iteration count and the kernel
-% options are how a laplaceFilter used to be spelled out
+% the pixel edges and the pixel spacing d
+E = [grains.boundary.F; grains.innerBoundary.F];
+pd = [pixelDist(grains.boundary); pixelDist(grains.innerBoundary)];
+E = E(pd > 0,:);
+pd = pd(pd > 0);
+d = median(pd);
+if isnan(d), d = median(grains.boundary.segLength); end
+margin = d/20;
+
+% the cell of a vertex of a pixel edge is the polygon of the pixel centres
+% around it - a square, or a triangle on a hexagonal grid. Its faces lie at
+% half the edge length, one facing along the edge, and move in by margin
+t = V(E(:,2),1:2) - V(E(:,1),1:2);
+K = 4 - (median(pd ./ vecnorm(t,2,2)) > 1.5);
+[id,i] = unique(E(:));
+phi = atan2(t(:,2),t(:,1)) + [0 pi];
+h = repmat(vecnorm(t,2,2)/2 - margin,1,2);
+
+% a junction without one stays within half a step
+j = setdiff(find(vDegree > 2 & ~ignore),id);
+cells = struct('id',[id;j],'V0',V([id;j],1:2),'phi',[phi(i);zeros(size(j))],...
+  'h',[h(i);repmat(d/2 - margin,size(j))],'K',K);
+
+% which algorithm does the smoothing
 F = getClass(varargin,'boundaryFilter',[]);
-if isempty(F), F = laplaceFilter(iter,varargin{:}); end
+if isempty(F), F = taubinFilter(iter,varargin{:}); end
 
-% the spacing the vertices are sampled at, which is what turns a smoothing
-% length into a regularization weight
-h = median(grains.boundary.segLength);
-
-V = F.smooth(V,A_V,ignore,h);
-
+V0 = V;
+V = F.smooth(V,A_V,ignore,median(grains.boundary.segLength),@(V) toCell(V,cells));
 grains.allV = vector3d.byXYZ(V,grains.how2plot);
+
+if ~check_option(varargin,'noSimplify')
+  grains = simplifyBoundary(grains,get_option(varargin,'simplify',d/10),...
+    'margin',margin,'measuredV',V0);
+end
+
+% the vertices have left the pixel corners, so no segment is a pixel edge any more
+grains.boundary.prop.pixelDist = zeros(length(grains.boundary),1);
+grains.innerBoundary.prop.pixelDist = zeros(length(grains.innerBoundary),1);
+
+end
+
+% -------------------------------------------------------------------------
+function pd = pixelDist(gB)
+% gB.pixelDist, 0 where it was not recorded
+
+pd = zeros(length(gB),1);
+if isProperty(gB,'pixelDist'), pd = gB.pixelDist; end
+
+end
+
+% -------------------------------------------------------------------------
+function V = toCell(V,c)
+% the vertices c.id moved back into their cells - regular polygons of c.K faces
+% about c.V0 at the distance c.h, the first facing in the direction c.phi
+
+x = V(c.id,1:2) - c.V0;
+a = c.phi + 2*pi*(0:c.K-1)/c.K;
+
+% the face furthest outside - its line is where an outside vertex goes, up to
+% the corners of the face
+[o,k] = max(x(:,1).*cos(a) + x(:,2).*sin(a) - c.h,[],2);
+a = a(sub2ind(size(a),(1:numel(k)).',k));
+w = c.h * tan(pi/c.K);
+w = max(-w,min(w,x(:,2).*cos(a) - x(:,1).*sin(a)));
+out = o > 0;
+x(out,:) = c.h(out).*[cos(a(out)) sin(a(out))] + w(out).*[-sin(a(out)) cos(a(out))];
+
+V(c.id,1:2) = x + c.V0;
+
+end

@@ -5,8 +5,8 @@ function gbnd = calcGBND(gB,ebsd,varargin)
 % Given an @EBSD the orientations on either side of a segment are looked up
 % through |gB.ebsdId|, which is only meaningful while every segment still runs
 % between one specific pair of pixels. <grain2d.smoothBoundary.html
-% |smoothBoundary|> breaks that by default - it merges and resamples segments -
-% so smooth with |'noSimplify','noRefine'| before calling this, or pass the
+% |smoothBoundary|> breaks that by default - it merges segments - so smooth
+% with |'noSimplify'| before calling this, or pass the
 % @grain2d instead and work from the grain mean orientations.
 %
 % Syntax

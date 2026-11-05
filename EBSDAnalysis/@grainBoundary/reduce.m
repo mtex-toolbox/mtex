@@ -89,6 +89,7 @@ FNew = [gB.F(runStart,1), gB.F(surv,2)];
 
 gB = gB.subSet(surv);
 gB.F = FNew;
+if isProperty(gB,'pixelDist'), gB.prop.pixelDist(runStart ~= surv) = 0; end
 
 % dissolving vertices does not touch the junctions, so the chains are the
 % same ones - but F was written directly, so normalise it

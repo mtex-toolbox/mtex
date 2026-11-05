@@ -5,9 +5,9 @@ classdef boundaryFilter < handle
 % A boundary filter decides *how* <grain2d.smoothBoundary.html
 % |smoothBoundary|> turns a polygonal grain boundary into a smooth one. It is
 % handed the vertex coordinates together with the adjacency of the boundary
-% network and returns the moved coordinates. Everything else - removing the
-% pixel staircase, resampling, deciding which vertices are allowed to move -
-% happens in smoothBoundary and is the same for every filter.
+% network and returns the moved coordinates. Everything else - which vertices
+% may move and how far, and the simplification afterwards - happens in
+% smoothBoundary and is the same for every filter.
 %
 % The filters fall into two groups. <laplaceFilter.html
 % |laplaceFilter|> and <taubinFilter.html |taubinFilter|> apply a
@@ -36,7 +36,9 @@ methods (Abstract = true)
   %           builds it from the vertex - segment incidence matrix
   % isFixed - vertices that may not move, e.g. the junctions
   % h       - the spacing the vertices are sampled at
-  V = smooth(F,V,A_V,isFixed,h)
+  % project - V = project(V) moves the vertices back where they may be, applied
+  %           after every step of an iterative filter, else after the solve
+  V = smooth(F,V,A_V,isFixed,h,project)
 
 end
 

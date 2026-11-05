@@ -28,6 +28,7 @@ classdef grainBoundary < phaseList & dynProp
 %  grainId      - id's of the neighboring grains to a boundary segment
 %  ebsdId       - id's of the neighboring ebsd data to a boundary segment
 %  misrotation  - misrotation between neighboring ebsd data to a boundary segment
+%  pixelDist    - distance of the two pixel centres where a segment is their common edge, 0 elsewhere
 %
 % Dependent Class Properties
 %  misorientation - disorientation between neighboring ebsd data to a boundary segment
@@ -124,6 +125,7 @@ classdef grainBoundary < phaseList & dynProp
       N0.frame = V.frame;
       gB.triplePoints = struct('allV',V,'N',N0);
       gB.F = F;
+      gB.prop.pixelDist = zeros(size(F,1),1);
       gB.misrotation = mori;
       gB.CSList = CSList;
       gB.phaseMap = phaseMap;
@@ -175,6 +177,18 @@ classdef grainBoundary < phaseList & dynProp
           % mirror the pixel of the other side through the segment midpoint
           isOuter = ~isInner & ebsdInd(:,2) > 0;
           pos(isOuter) = 2*mid(isOuter) - ebsdPos(ebsdInd(isOuter,2));
+
+          % a segment that is the common edge of its two pixels: their centres
+          % lie symmetric to its midpoint, on its normal, and are neighbours -
+          % a diagonal neighbour is at least sqrt(2) times as far
+          P = pos(isInner).xyz;
+          Q = ebsdPos(ebsdInd(isInner,2)).xyz;
+          t = V(F(isInner,2)).xyz - V(F(isInner,1)).xyz;
+          dPQ = vecnorm(Q - P,2,2);
+          isEdge = vecnorm(P + Q - 2*mid(isInner).xyz,2,2) < 1e-6*dPQ ...
+            & abs(sum((Q - P).*t,2)) < 1e-6*dPQ.*vecnorm(t,2,2);
+          isEdge = isEdge & dPQ < 1.2 * min([dPQ(isEdge);inf]);
+          gB.prop.pixelDist(isInner) = dPQ .* isEdge;
 
           varargin = [varargin,{'leftPos',pos}];
         end

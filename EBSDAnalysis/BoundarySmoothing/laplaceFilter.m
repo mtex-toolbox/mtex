@@ -3,8 +3,7 @@ classdef laplaceFilter < boundaryFilter
 %
 % Description
 % Replaces every vertex by a weighted mean of itself and its neighbours, a
-% fixed number of times. This is what grain2d/smoothBoundary has always done
-% and it stays the default.
+% fixed number of times.
 %
 % Note that a Laplacian is a low pass filter with gain |1-lambda*k|, so it
 % shrinks: every iteration pulls a convex region inwards, without bound. Use
@@ -24,7 +23,7 @@ classdef laplaceFilter < boundaryFilter
 %
 % Syntax
 %
-%   grains = smoothBoundary(grains,5)          % the default, iter = 5
+%   grains = smoothBoundary(grains,laplaceFilter(5))
 %
 %   F = laplaceFilter;
 %   F.iter = 10;
@@ -63,7 +62,7 @@ methods
 
   end
 
-  function V = smooth(F,V,A_V,isFixed,~)
+  function V = smooth(F,V,A_V,isFixed,~,project)
 
     t = size(A_V,1);
 
@@ -104,6 +103,7 @@ methods
       dV(isZero,:) = 0;
 
       V(isNotZero,:) = V(isNotZero,:) - lambda*dV; %#ok<PROPLC>
+      if nargin > 5, V = project(V); end
 
     end
 

@@ -10,8 +10,8 @@ function gB = refine(gB,varargin)
 % All existing vertices stay where they are and the new ones lie on the old
 % segments, so the boundary keeps its shape and its length - only the
 % sampling gets finer. Run after grain2d/simplifyBoundary, this turns the long
-% chords of a coarsened boundary into the evenly spaced degrees of freedom
-% grain2d/smoothBoundary needs.
+% chords of a coarsened boundary into the evenly spaced degrees of freedom a
+% smoothing filter needs.
 %
 % Walk order, grainId, phaseId, ebsdId and misrotation carry over from the
 % segment a piece lies on.
@@ -56,6 +56,7 @@ tail = gB.F(src,1);
 tail(k > 1) = head(find(k > 1) - 1);
 
 gB = gB.subSet(src);
+if isProperty(gB,'pixelDist'), gB.prop.pixelDist(m(src) > 1) = 0; end
 gB.allV = [gB.allV; vector3d.byXYZ(P1 + lambda.*(P2 - P1))];
 gB.F = [tail, head];
 gB.triplePoints = gB.calcTriplePoints;

@@ -10,13 +10,9 @@ function check_gbnd
 % calcGBND's own help warns about: it looks the orientations on either side
 % of a segment up through gB.ebsdId, and that is only meaningful while every
 % segment still runs between one specific pair of pixels. smoothBoundary
-% breaks that by default, because it simplifies and refines before smoothing.
-%
-% The failure mode is silent. On the map used here the default smoothing
-% leaves the geometry alone - every segment keeps its direction to 0.000
-% degree and its length - but rewrites ebsdId, and the GBND then moves by
-% about 10 percent purely because segments are paired with the wrong
-% orientations. Nothing errors and nothing warns.
+% breaks that by default, because it simplifies the boundary after smoothing
+% it: on the map used here the 60 segments of the straight boundaries merge
+% into 4, none of which runs between one pair of pixels.
 %
 % NB the result carries a crystalSymmetry but is NOT symmetric under it:
 % calcGBND builds the density with 'noSymmetry' and then attaches cs to the
@@ -128,15 +124,15 @@ function checkSmoothingSeam(ref,ebsd,grains,gB)
 %
 % This is the join calcGBND's help warns about. ebsdId is the precondition,
 % so that is what is asserted - not the GBND values, which on this map would
-% be a vacuous comparison because constrained smoothing has nothing to move
-% here (vertices shift by 5.6e-16 and the count stays at 177).
+% be a vacuous comparison because its straight boundaries hardly move when
+% smoothed (vertices shift by 1.3e-4).
 
 % -- the documented safe form ---------------------------------------------
-gSafe = smoothBoundary(grains,3,'noSimplify','noRefine');
+gSafe = smoothBoundary(grains,3,'noSimplify');
 bSafe = gSafe.boundary('Glaucophane','Glaucophane');
 
 assert(isequal(bSafe.ebsdId,gB.ebsdId), ...
-  ['check_gbnd: smoothBoundary(...,''noSimplify'',''noRefine'') changed ' ...
+  ['check_gbnd: smoothBoundary(...,''noSimplify'') changed ' ...
    'ebsdId, so the form calcGBND documents as safe is not'])
 
 safe = calcGBND(bSafe,ebsd);
@@ -144,21 +140,13 @@ assert(norm(safe-ref)/norm(ref) < 1e-6, ...
   'check_gbnd: the safe smoothing changed the GBND by %.4f relative', ...
   norm(safe-ref)/norm(ref))
 
-% -- the default form, which merges and cuts segments ---------------------
+% -- the default form, which merges segments ------------------------------
 gDflt = smoothBoundary(grains,3);
 bDflt = gDflt.boundary('Glaucophane','Glaucophane');
 
-% the geometry is untouched, so the segments still line up with gB
-assert(max(angle(bDflt.direction,gB.direction)) < 1e-9, ...
-  'check_gbnd: default smoothBoundary moved the segment directions too')
-
-% a segment that no longer runs between one pair of pixels says so with
-% ebsdId 0, which calcGBND skips - one that keeps a pair keeps its own
-kept = all(bDflt.ebsdId > 0,2);
-assert(any(~kept), ...
-  'check_gbnd: default smoothBoundary kept the pixel pair of every segment')
-assert(isequal(bDflt.ebsdId(kept,:),gB.ebsdId(kept,:)), ...
-  'check_gbnd: default smoothBoundary paired a segment with other pixels')
+% every segment here is merged and says so with ebsdId 0, which calcGBND skips
+assert(~any(all(bDflt.ebsdId > 0,2)), ...
+  'check_gbnd: default smoothBoundary kept a pixel pair on a merged segment')
 
 % and the documented way out: pass the grains instead of the EBSD, which
 % reads grain mean orientations and does not depend on ebsdId at all

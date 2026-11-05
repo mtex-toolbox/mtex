@@ -9,6 +9,11 @@ function kappa = curvature(gB,n)
 % The Menger curvature through the midpoints of a segment and its two
 % neighbours within the same chain, smoothed along the chain afterwards.
 %
+% Both steps count segments, not length, so the segments should be about
+% equally long. A simplified boundary is not: there a corner's curvature is
+% copied onto the long chords next to it. Compute the curvature of a
+% boundary smoothed with |smoothBoundary(grains,'noSimplify')|.
+%
 % The sign is meaningful: segments are stored in walk order with the grain
 % gB.grainId(:,1) on the left, so a positive curvature means the boundary
 % bulges into gB.grainId(:,2) and a negative one that it bulges into

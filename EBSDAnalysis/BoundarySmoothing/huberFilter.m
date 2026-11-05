@@ -84,7 +84,7 @@ methods
 
   end
 
-  function V = smooth(F,V,A_V,isFixed,h)
+  function V = smooth(F,V,A_V,isFixed,h,project)
 
     alpha = F.weight(h); %#ok<PROPLC>
     if alpha <= 0, return; end %#ok<PROPLC>
@@ -115,6 +115,7 @@ methods
       w = min(1, delta ./ max(r,eps));
 
     end
+    if nargin > 5, V = project(V); end
 
   end
 
