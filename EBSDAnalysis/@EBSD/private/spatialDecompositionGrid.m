@@ -214,7 +214,8 @@ if check_option(varargin,'delaunayOnly')
   V = zeros(0,2); F = zeros(0,2);
   I_FD = jcvoronoiDelaunayOnly(double(XY),double(numReal), double(epsilon));
 else
-  [V,F,I_FD] = jcvoronoi2(double(XY),double(numReal), double(epsilon));
+  slot = [ij2slotP(ij(idxSiteEbsd,:)); find(bigHoleP); find(extBandP); find(dummyP)];
+  [V,F,I_FD] = latticeVoronoi(XY,slot,szP,A,numReal,epsilon,alpha);
 end
 
 % inFill(p) > 0 inside the filled cells, < 0 outside: the distance to the
