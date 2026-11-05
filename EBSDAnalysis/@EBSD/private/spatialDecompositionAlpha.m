@@ -204,9 +204,8 @@ pureVertex = ~touchesDummy;
 
 % (vertex,site) incidences from pure edges only: both endpoints of a
 % real-real edge are equidistant from both its sites
-pureRows = find(pureEdge);
-[er,ec] = find(I_FDa(pureRows,:));
-er = pureRows(er);
+[er,ec] = find(I_FDa);
+k = pureEdge(er); er = er(k); ec = ec(k);
 vtxAll  = [Fa(er,1); Fa(er,2)];
 siteAll = [ec; ec];
 
@@ -233,7 +232,8 @@ radOf = zeros(size(Va,1),1); radOf(uVtx) = rad;
 isIncVtxMask = false(size(Va,1),1);
 isIncVtxMask(incVtx) = true;
 keep2 = isIncVtxMask(vtxAll);
-vsPairs = unique([vtxAll(keep2), siteAll(keep2)],'rows');
+vsPairs = unique(vtxAll(keep2)*nIdx + siteAll(keep2) - 1);
+vsPairs = [floor(vsPairs/nIdx) mod(vsPairs,nIdx) + 1];
 
 [uV2,~,ig] = unique(vsPairs(:,1));
 P = idxPos(vsPairs(:,2),:);
@@ -255,12 +255,14 @@ P = P(o,:);
 g1 = cumsum(nS) - nS + 1;
 nxt = (2:numel(o)+1).'; nxt(g1 + nS - 1) = g1;
 
-% the cells of the box of every group, and which lie inside its polygon
+% the cells without a measurement in the box of every group, and which lie inside its polygon
 n = prod(hi(g,:) - lo(g,:) + 1, 2);
 gc = repelem(g,n);
 q = (1:sum(n)).' - repelem(cumsum(n) - n,n) - 1;
 nr = hi(gc,1) - lo(gc,1) + 1;
 rc = lo(gc,:) + [mod(q,nr) floor(q./nr)];
+u = ~isIndexedP(rc(:,1) + (rc(:,2)-1)*szP(1));
+gc = gc(u); rc = rc(u,:);
 xy = reconstructPos(rc - padding - 1 + ijmin);
 m = nS(gc);
 k = repelem((1:numel(gc)).',m);
