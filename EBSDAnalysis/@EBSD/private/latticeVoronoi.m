@@ -24,6 +24,16 @@ function [V,F,I_FD] = latticeVoronoi(XY,slot,szP,A,numReal,epsilon,alpha)
 %  V       - nV x 2 vertices
 %  F       - nF x 2 vertex indices of the segments that bound a cell of the first numReal sites
 %  I_FD    - nF x numReal sparse incidence segment x site
+%
+% latticeVoronoi_mex does the same where it is compiled, this code is its fallback
+
+persistent hasMex
+if isempty(hasMex), hasMex = exist('latticeVoronoi_mex','file') == 3; end
+if hasMex
+  [V,F,I_FD] = latticeVoronoi_mex(double(XY),double(slot),double(szP),double(A),...
+    double(numReal),double(epsilon),double(alpha));
+  return
+end
 
 lookup = zeros(prod(szP),1);
 lookup(slot) = 1:size(XY,1);
