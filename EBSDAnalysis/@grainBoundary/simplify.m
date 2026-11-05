@@ -214,8 +214,9 @@ function i = pick(d,xy,tau)
 % the point of the polyline xy at the largest distance d - of equal ones the
 % one nearest its middle by arc length, then the one smallest in x, then in y
 
-s = [0; cumsum(vecnorm(diff(xy),2,2))];
 i = find(d >= max(d) - tau);
+if isscalar(i), return, end
+s = [0; cumsum(vecnorm(diff(xy),2,2))];
 m = abs(s(i) - s(end)/2);
 i = i(m <= min(m) + tau);
 [~,j] = sortrows(xy(i,:));
@@ -229,6 +230,8 @@ function out = crosses(P,C,margin)
 % on its other side, or closer to it than margin
 
 C = C(all(C >= min(P,[],1) - margin & C <= max(P,[],1) + margin,2),:);
+out = false;
+if isempty(C), return, end
 u = P(end,:) - P(1,:);
 t = min(max((C - P(1,:)) * u.' / max(u * u.',realmin),0),1);
 out = any(vecnorm(C - P(1,:) - t .* u,2,2) < margin) || ...
