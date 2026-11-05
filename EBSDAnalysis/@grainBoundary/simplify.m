@@ -74,56 +74,68 @@ off = [-t(:,2) t(:,1)] ./ vecnorm(t,2,2) .* pd / 2;
 mid = (xy0(gB.F(:,1),1:2) + xy0(gB.F(:,2),1:2)) / 2;
 isPx = pd > 0;
 
+% the chains are stored one after the other, each a polyline through the tails
+% of its segments and its very last head, so a chain of L segments has L+1 vertices
+F = gB.F;
 iStart = find(gB.isChainStart);
 iEnd = find(gB.isChainEnd);
-deg = accumarray(gB.F(:),1,[size(xy,1) 1]);
+L = iEnd - iStart + 1;
+ch = repelem((1:numel(L)).',L,1);
+deg = accumarray(F(:),1,[size(xy,1) 1]);
 
-% the vertices of a chain are the tails of its segments plus its very last
-% head, so a chain of L segments has L+1 vertices
-keepEnd = false(nF,1);
-perm = (1:nF).';
+% a loop through no junction starts at its smallest vertex, in x and then in y
+isLoop = F(iEnd,2) == F(iStart,1) & L > 2;
+[~,o] = sortrows([ch xy(F(:,1),:)]);
+sh = o([true; diff(ch(o)) > 0]) - iStart;
+sh(~isLoop | deg(F(iStart,1)) ~= 2) = 0;
+perm = iStart(ch) + mod((1:nF).' - iStart(ch) + sh(ch), L(ch));
+vS = iStart + (0:numel(L)-1).';
+vE = iEnd + (1:numel(L)).';
+v(vE) = F(perm(iEnd),2);
+v((1:nF).' + ch - 1) = F(perm,1);
+vch = repelem((1:numel(L)).',L+1,1);
+P = xy(v,:);
+S = [0; cumsum(vecnorm(diff(P),2,2))];
 
-for c = 1:numel(iStart)
+% the pixel centres next to every chain, in the order of the chains
+sp = find(isPx);
+C = reshape([mid(sp,:) + off(sp,:), mid(sp,:) - off(sp,:)].',2,[]).';
+nCc = accumarray(ch(sp),2,[numel(L) 1]);
 
-  s = iStart(c):iEnd(c);
+% a closed chain has no ends, so cut it at the vertex furthest from the start
+lp = find(isLoop);
+[p,g] = expand([vS(lp) vE(lp)]);
+far = pick(vecnorm(P(p,:) - P(vS(lp(g)),:),2,2),p,g,P,S,[vS(lp) vE(lp)],tau);
+keep = false(numel(v),1);
+keep([vS; vE; far]) = true;
 
-  % a loop through no junction starts at its smallest vertex, in x and then in y
-  isLoop = gB.F(s(end),2) == gB.F(s(1),1) && numel(s) > 2;
-  if isLoop && deg(gB.F(s(1),1)) == 2
-    [~,k] = sortrows(xy(gB.F(s,1),:));
-    perm(s) = s([k(1):end 1:k(1)-1]);
-  end
-  v = [gB.F(perm(s),1); gB.F(perm(s(end)),2)];
-  sp = s(isPx(s));
-  C = [mid(sp,:) + off(sp,:); mid(sp,:) - off(sp,:)];
-
-  % a closed chain has no ends, so cut it at the vertex furthest from the start
-  if isLoop
-    iFar = pick(vecnorm(xy(v,:) - xy(v(1),:),2,2),xy(v,:),tau);
-    keep = false(numel(v),1);
-    keep([1 numel(v)]) = true;
-    keep(iFar) = true;
-    keep(1:iFar) = keep(1:iFar) | douglasPeucker(xy(v(1:iFar),:),epsilon,C,margin);
-    keep(iFar:end) = keep(iFar:end) | douglasPeucker(xy(v(iFar:end),:),epsilon,C,margin);
-
-    % keep(1) and keep(end) are the same vertex, so give the loop a third one
-    if nnz(keep) < 4
-      chord = xy(v(iFar),:) - xy(v(1),:);
-      rel = xy(v,:) - xy(v(1),:);
-      dOff = abs(rel(:,1)*chord(2) - rel(:,2)*chord(1)) / norm(chord);
-      dOff([1 iFar numel(v)]) = -inf;
-      iOff = pick(dOff,xy(v,:),tau);
-      if dOff(iOff) > 0, keep(iOff) = true; end
-    end
-
-  else
-    keep = douglasPeucker(xy(v,:),epsilon,C,margin);
-  end
-
-  % keeping vertex j of the chain means keeping the end of segment j-1
-  keepEnd(s) = keep(2:end);
-
+% Douglas-Peucker on all pieces at once: a piece splits at its furthest point when
+% that is further than epsilon from its chord or the chord crosses a pixel centre
+I = [vS(~isLoop) vE(~isLoop); vS(lp) far; far vE(lp)];
+while true
+  I = I(I(:,2) - I(:,1) >= 2,:);
+  if isempty(I), break, end
+  [p,g] = expand(I);
+  d = chordDist(P,I(g,:),p);
+  d(p == I(g,1) | p == I(g,2)) = -inf;
+  isS = accumarray(g,d,[],@max) > epsilon + tau;
+  isS(~isS) = crosses(P,I(~isS,:),C,nCc,vch,margin);
+  i = pick(d(isS(g)),p(isS(g)),g(isS(g)),P,S,I,tau);
+  keep(i) = true;
+  I = [I(isS,1) i; i I(isS,2)];
 end
+
+% keep(1) and keep(end) of a loop are the same vertex, so give the loop a third one
+q = accumarray(vch,keep) < 4;
+lq = lp(q(lp)); fq = far(q(lp));
+[p,g] = expand([vS(lq) vE(lq)]);
+d = chordDist(P,[vS(lq(g)) fq(g)],p);
+d(p == vS(lq(g)) | p == fq(g) | p == vE(lq(g))) = -inf;
+[i,d] = pick(d,p,g,P,S,[vS(lq) vE(lq)],tau);
+keep(i(d > 0)) = true;
+
+% keeping vertex j of a chain means keeping the end of its segment j-1
+keepEnd = keep((1:nF).' + ch);
 
 % every loop stored from where it starts
 gB = gB.subSet(perm);
@@ -169,72 +181,83 @@ gB.triplePoints = gB.calcTriplePoints;
 end
 
 % -------------------------------------------------------------------------
-function keep = douglasPeucker(xy,epsilon,C,margin)
-% iterative Douglas-Peucker on an open polyline, endpoints always kept. A
-% chord is refused when a point lies further than epsilon from it, or when it
-% puts a point of C on its other side or closer to it than margin
+function [p,g] = expand(I)
+% the points I(k,1):I(k,2) of every piece k, and k for each of them
 
-n = size(xy,1);
-keep = false(n,1);
-keep([1 n]) = true;
-tau = 1e-9 * epsilon;
-
-% segments of the polyline still to be examined, as [first last] index pairs
-stack = [1 n];
-
-while ~isempty(stack)
-
-  a = stack(end,1); b = stack(end,2);
-  stack(end,:) = [];
-  if b - a < 2, continue; end
-
-  % distance of every point from the chord a-b, the ends left out
-  chord = xy(b,:) - xy(a,:);
-  rel = xy(a:b,:) - xy(a,:);
-  len = norm(chord);
-  if len == 0
-    d = vecnorm(rel,2,2);
-  else
-    d = abs(rel(:,1)*chord(2) - rel(:,2)*chord(1)) / len;
-  end
-  d([1 end]) = -inf;
-
-  if max(d) > epsilon + tau || crosses(xy(a:b,:),C,margin)
-    i = a - 1 + pick(d,xy(a:b,:),tau);
-    keep(i) = true;
-    stack(end+1:end+2,:) = [a i; i b];
-  end
-
-end
+I = reshape(I,[],2);
+n = I(:,2) - I(:,1) + 1;
+g = repelem((1:size(I,1)).',n,1);
+p = (1:sum(n)).' - repelem(cumsum(n) - n - I(:,1) + 1,n,1);
 
 end
 
 % -------------------------------------------------------------------------
-function i = pick(d,xy,tau)
-% the point of the polyline xy at the largest distance d - of equal ones the
-% one nearest its middle by arc length, then the one smallest in x, then in y
+function d = chordDist(P,I,p)
+% distance of the points P(p,:) from the chords P(I(:,1),:) - P(I(:,2),:)
 
-i = find(d >= max(d) - tau);
-if isscalar(i), return, end
-s = [0; cumsum(vecnorm(diff(xy),2,2))];
-m = abs(s(i) - s(end)/2);
-i = i(m <= min(m) + tau);
-[~,j] = sortrows(xy(i,:));
-i = i(j(1));
+a = P(I(:,1),:);
+u = P(I(:,2),:) - a;
+r = P(p,:) - a;
+len = vecnorm(u,2,2);
+d = abs(r(:,1).*u(:,2) - r(:,2).*u(:,1)) ./ len;
+d(len == 0) = vecnorm(r(len == 0,:),2,2);
 
 end
 
 % -------------------------------------------------------------------------
-function out = crosses(P,C,margin)
-% whether the chord from the first to the last point of P puts a point of C
-% on its other side, or closer to it than margin
+function [i,d] = pick(d,p,g,P,S,I,tau)
+% for every piece g the point p at the largest distance d - of equal ones the one
+% nearest the middle of the piece I(g,:) by arc length S, then the one smallest in
+% x, then in y
 
-C = C(all(C >= min(P,[],1) - margin & C <= max(P,[],1) + margin,2),:);
-out = false;
-if isempty(C), return, end
-u = P(end,:) - P(1,:);
-t = min(max((C - P(1,:)) * u.' / max(u * u.',realmin),0),1);
-out = any(vecnorm(C - P(1,:) - t .* u,2,2) < margin) || ...
-  any(inpolygon(C(:,1),C(:,2),P(:,1),P(:,2)));
+i = p;
+if isempty(p), return, end
+mx = accumarray(g,d,[],@max);
+c = d >= mx(g) - tau;
+p = p(c); g = g(c); d = d(c);
+m = abs(S(p) - S(I(g,1)) - (S(I(g,2)) - S(I(g,1)))/2);
+mn = accumarray(g,m,[],@min);
+c = m <= mn(g) + tau;
+p = p(c); g = g(c); d = d(c);
+[~,o] = sortrows([g P(p,:)]);
+o = o([true; diff(g(o)) > 0]);
+i = p(o); d = d(o);
+
+end
+
+% -------------------------------------------------------------------------
+function x = crosses(P,I,C,nCc,vch,margin)
+% whether the chord of every piece I puts one of the pixel centres C of its
+% chain on its other side, or closer to it than margin
+
+x = false(size(I,1),1);
+if isempty(C) || isempty(I), return, end
+
+% the pixel centres of the chain within the box of the piece
+[p,g] = expand(I);
+lo = [accumarray(g,P(p,1),[],@min) accumarray(g,P(p,2),[],@min)] - margin;
+hi = [accumarray(g,P(p,1),[],@max) accumarray(g,P(p,2),[],@max)] + margin;
+c0 = cumsum(nCc) - nCc;
+c = vch(I(:,1));
+[q,k] = expand([c0(c) + 1, c0(c) + nCc(c)]);
+in = all(C(q,:) >= lo(k,:) & C(q,:) <= hi(k,:),2);
+q = q(in); k = k(in);
+
+% closer to the chord than margin
+a = P(I(k,1),:);
+u = P(I(k,2),:) - a;
+r = C(q,:) - a;
+t = min(max(sum(r.*u,2) ./ max(sum(u.^2,2),realmin),0),1);
+x(k(vecnorm(r - t.*u,2,2) < margin)) = true;
+
+% inside the polygon of the piece and its chord: an odd number of its edges
+% crosses the ray from the pixel centre in +x
+[e,j] = expand(I(k,:));
+n = e + 1;
+n(e == I(k(j),2)) = I(k(j(e == I(k(j),2))),1);
+y = C(q(j),2);
+cr = (P(e,2) > y) ~= (P(n,2) > y) & ...
+  C(q(j),1) < P(e,1) + (y - P(e,2)) .* (P(n,1) - P(e,1)) ./ (P(n,2) - P(e,2));
+x(k(mod(accumarray(j,cr,[numel(q) 1]),2) == 1)) = true;
 
 end
