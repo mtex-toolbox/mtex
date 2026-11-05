@@ -107,16 +107,20 @@ exteriorP = floodFillBorder(~closedP, stencil, szP);   % 2D flood fill
 % a hole joined to the outside by a filled notIndexed path of at most 2*alpha
 % steps stays joined, through what the largest closing that keeps it joined leaves open
 nSteps = 2*ceil(alpha);
-f = closedP & ~isIndexedP;
-[dHole,hole] = geoDist(~closedP & ~exteriorP, f, stencil, szP, nSteps);
-corridor = find(f & geoDist(exteriorP, f, stencil, szP, nSteps) + dHole <= nSteps);
-for r = [alpha-1:-1:1, 0]
-  corridor = corridor(closedP(corridor) & ~exteriorP(hole(corridor)));
-  if isempty(corridor), break; end
-  x = corridor(~closedAt(corridor, isIndexedP, inScanP, diskOffsets(r*dxy, A, stencil), szP));
-  closedP(x) = false;
-  if any(exteriorP(x + (stencil(:,1) + stencil(:,2)*szP(1)).'),'all')
-    exteriorP = floodFillBorder(~closedP, stencil, szP);
+ext0 = [];
+while ~isequal(exteriorP,ext0)   % a hole that joined the outside can join the next
+  ext0 = exteriorP;
+  f = closedP & ~isIndexedP;
+  [dHole,hole] = geoDist(~closedP & ~exteriorP, f, stencil, szP, nSteps);
+  corridor = find(f & geoDist(exteriorP, f, stencil, szP, nSteps) + dHole <= nSteps);
+  for r = [alpha-1:-1:1, 0]
+    corridor = corridor(closedP(corridor) & ~exteriorP(hole(corridor)));
+    if isempty(corridor), break; end
+    x = corridor(~closedAt(corridor, isIndexedP, inScanP, diskOffsets(r*dxy, A, stencil), szP));
+    closedP(x) = false;
+    if any(exteriorP(x + (stencil(:,1) + stencil(:,2)*szP(1)).'),'all')
+      exteriorP = floodFillBorder(~closedP, stencil, szP);
+    end
   end
 end
 % imagesc(reshape(exteriorP,szP)), axis equal tight
