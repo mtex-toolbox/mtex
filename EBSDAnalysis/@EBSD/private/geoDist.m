@@ -3,13 +3,17 @@ function [d,src] = geoDist(seed, mask, stencil, szP, nSteps)
 % and the seed cell they are counted from
 d = inf(prod(szP),1); d(seed) = 0;
 src = zeros(prod(szP),1); src(seed) = find(seed);
-m = find(mask);
-nb = m + (stencil(:,1) + stencil(:,2)*szP(1)).';
+o = stencil(:,1) + stencil(:,2)*szP(1);
+x = find(mask);
 for k = 1:nSteps
-  [hit,j] = max(d(nb) == k-1,[],2);
-  hit = hit & isinf(d(m));
-  if ~any(hit), break; end
-  d(m(hit)) = k;
-  src(m(hit)) = src(nb(find(hit) + (j(hit)-1)*numel(m)));
+  [hit,j] = max(d(x + o.') == k-1,[],2);
+  hit = hit & isinf(d(x));
+  x = x(hit);
+  if isempty(x), break; end
+  d(x) = k;
+  src(x) = src(x + o(j(hit)));
+  % only the mask cells next to the new front can be reached next
+  x = unique(x - o.');
+  x = x(mask(x) & isinf(d(x)));
 end
 end
