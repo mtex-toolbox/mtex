@@ -103,7 +103,7 @@ methods
       dV(isZero,:) = 0;
 
       V(isNotZero,:) = V(isNotZero,:) - lambda*dV; %#ok<PROPLC>
-      if nargin > 5, V = project(V); end
+      V = project(V);
 
     end
 

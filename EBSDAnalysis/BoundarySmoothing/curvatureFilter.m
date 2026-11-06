@@ -73,7 +73,7 @@ methods
     M = speye(size(L,1)) + alpha * (L.' * L); %#ok<PROPLC>
 
     V = boundaryFilter.solveDirichlet(M,V,isFixed | ~isfinite(sum(V,2)));
-    if nargin > 5, V = project(V); end
+    V = project(V);
 
   end
 

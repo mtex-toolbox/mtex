@@ -63,7 +63,6 @@ methods
     L = boundaryFilter.laplacian(A_V);
 
     move = ~all(~isfinite(V) | V == 0,2) & ~isFixed;
-    if nargin < 6, project = @(V) V; end
 
     for k = 1:F.iter
       V = project(step(V,L,move,F.lambda));

@@ -81,13 +81,13 @@ if strcmpi(get_option(varargin,'scheme','hierarchical'),'hierarchical')
     tl = find(isTL);
     Etl = E(all(isTL(E),2),:);
     A = adjacency(Etl,size(V,1));
-    V(tl,:) = F.smooth(V(tl,:),A(tl,tl),isFixed(tl),h);
+    V(tl,:) = F.smooth(V(tl,:),A(tl,tl),isFixed(tl),h,@(V) V);
   end
   isFixed = isFixed | isTL;
 end
 
 % the faces as surfaces between the triple lines
-V = F.smooth(V,adjacency(E,size(V,1)),isFixed,h);
+V = F.smooth(V,adjacency(E,size(V,1)),isFixed,h,@(V) V);
 
 d = get_option(varargin,'maxDisplacement',inf);
 V = V0 + max(-d,min(d,V - V0));

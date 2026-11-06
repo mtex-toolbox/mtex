@@ -115,7 +115,7 @@ methods
       w = min(1, delta ./ max(r,eps));
 
     end
-    if nargin > 5, V = project(V); end
+    V = project(V);
 
   end
 
