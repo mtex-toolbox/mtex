@@ -8,7 +8,7 @@ if iscell(CSList)
 end
 
 % phases that share a mineral name, in any case, and phases without one
-% take a letter each in their order - Iron A, Iron B - so that every phase
+% take a number each in their order - Iron 1, Iron 2 - so that every phase
 % can be addressed by its name; a name given once stays
 isInd = find(arrayfun(@(cs) cs.isIndexed, CSList));
 names = arrayfun(@(cs) strtrim(char(cs.mineral)), CSList(isInd), 'UniformOutput', false);
@@ -17,12 +17,12 @@ taken = lower(names);
 for j = 1:numel(u)
   ind = find(g == j);
   if isscalar(ind), continue; end
-  k = 0;
+  k = 1;
   for i = ind(:).'
-    % a letter another phase already has as its name is passed over
-    newName = strtrim([names{i} ' ' letterOf(k)]); k = k + 1;
+    % a number another phase already has as its name is passed over
+    newName = strtrim([names{i} ' ' num2str(k)]); k = k + 1;
     while ismember(lower(newName),taken)
-      newName = strtrim([names{i} ' ' letterOf(k)]); k = k + 1;
+      newName = strtrim([names{i} ' ' num2str(k)]); k = k + 1;
     end
     taken{end+1} = lower(newName); %#ok<AGROW>
     % a symmetry is a handle and its frame carries the name too: the phase
@@ -50,10 +50,4 @@ for k = 1:length(CSList)
   end
 end
 
-end
-
-function c = letterOf(k)
-% the letter of the k-th phase of one name: A to Z, then AA, AB, ...
-c = char('A' + mod(k,26));
-if k >= 26, c = [letterOf(floor(k/26)-1) c]; end
 end
