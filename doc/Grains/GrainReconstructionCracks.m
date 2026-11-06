@@ -121,7 +121,6 @@ end
 % that closes the crack also absorbs every pore and pocket of the map into
 % the neighbouring grains, whether or not they belong there.
 
-
 %% Grains across the crack
 %
 % Closing the crack connects the grains on its two sides. Where both sides
@@ -175,17 +174,19 @@ axis([2500 12500 7000 17940])
 % their neighbour from the other side at a boundary inside the crack. Those
 % boundaries are not measured. |calcGrains| draws each of them as a straight
 % line between the points where it meets the two walls of the crack, the
-% shortest boundary the closed crack allows. 
-% The wide lower part of the crack remains open. The red boundaries are 
-% those of the default grains. You can see at the top-right corner, that 
-% the crack was already closed there, since the crack was locally narrower 
-% than the 6 pixel wide default.
+% shortest boundary the closed crack allows. The wide lower part of the
+% crack remains open. The red boundaries are those of the default grains.
+% At the top-right corner the crack was already closed by default, since it
+% is narrower there than the default |alpha| of about six pixels.
 
 %%
-[grainsNoSt,ebsdNoSt] = calcGrains(ebsd,'angle',10*degree,'minPixel',5, ...
-    'alpha',10,'straighten',false);
+% How a boundary crosses a closed |notIndexed| region is set by the option
+% |'straighten'|, which is |true| by default. With |'straighten',false| the
+% boundaries follow the bisectors between the measured pixels on either side.
 
-nextAxis
+grainsNoSt = calcGrains(ebsd,'angle',10*degree,'minPixel',5, ...
+  'alpha',10,'straighten',false);
+
 plot(ebsd,'micronbar','off')
 legend off
 hold on
@@ -195,12 +196,11 @@ plot(grainsNoSt.boundary,'linewidth',1)
 hold off
 axis([2500 12500 7000 17940])
 
-% The behaviour how boundaries dissect a | notIndexed | area is determined by 
-% the option |'straighten'|, which  is |true| by default. With the option 
-% |'straighten',false| they follow the bisectors between the measured pixels
-% on either side instead. However, in many instances, this might not be the
-% physically most reasonable boundary direction, as it is the case for the
-% curved boundaries crossing the crack in the latter map. 
+%%
+% The boundaries crossing the crack now have kinks, where in the previous map
+% they run straight from one wall of the crack to the other. A kinked
+% boundary through an unmeasured region is rarely the physically most
+% reasonable one.
 
 %% Pores as part of their grain
 %
