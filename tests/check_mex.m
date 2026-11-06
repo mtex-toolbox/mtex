@@ -360,25 +360,6 @@ out = size(V,2) == 2 && size(F,2) == 2 && size(I_FD,2) == 16 && ...
 
 end
 
-function out = check_jcvoronoiDelaunayOnly_mex
-
-[X,Y] = meshgrid(1:4,1:4);
-[Xd,Yd] = meshgrid(0:5,0:5);
-isReal = Xd(:)>=1 & Xd(:)<=4 & Yd(:)>=1 & Yd(:)<=4;
-XY = [[X(:) Y(:)]; [Xd(~isReal) Yd(~isReal)]];
-
-I_fast = jcvoronoiDelaunayOnly_mex(XY,16,0.01);
-[~,~,I_full] = jcvoronoi2_mex(XY,16,0.01);
-
-% the fast path may add adjacencies but must never miss one - see
-% check_jcvoronoiDelaunayOnly
-A_fast = triu((I_fast.'*I_fast)==1,1);
-A_full = triu((I_full.'*I_full)==1,1);
-
-out = ~any(A_full(:) & ~A_fast(:));
-
-end
-
 function out = check_nfsftmex
 
 S2F = S2Fun.smiley('exact');

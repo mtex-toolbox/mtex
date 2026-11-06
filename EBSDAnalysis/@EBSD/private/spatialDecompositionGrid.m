@@ -223,16 +223,8 @@ isNotIdx = [false(size(sitesIdx,1),1); true(size(holePos,1),1); false(size(bandP
 site2id  = [idxSiteEbsd; niId];
 
 % ---- Voronoi -----------------------------------------------------------
-% 'delaunayOnly' is internal-only: minPixelMask needs the site-to-site adjacency
-% alone, and the cheaper mex delivers it - its adjacency is a superset wherever
-% an interior Voronoi vertex is cocircular, so it is set for hex grids only (#2513)
-if check_option(varargin,'delaunayOnly')
-  V = zeros(0,2); F = zeros(0,2);
-  I_FD = jcvoronoiDelaunayOnly(double(XY),double(numReal), double(epsilon));
-else
-  slot = [ij2slotP(ij(idxSiteEbsd,:)); find(bigHoleP); find(extBandP); find(dummyP)];
-  [V,F,I_FD] = latticeVoronoi(XY,slot,szP,A,numReal,epsilon,alpha);
-end
+slot = [ij2slotP(ij(idxSiteEbsd,:)); find(bigHoleP); find(extBandP); find(dummyP)];
+[V,F,I_FD] = latticeVoronoi(XY,slot,szP,A,numReal,epsilon,alpha);
 
 % inFill(p) > 0 inside the filled cells, < 0 outside: the distance to the
 % nearest other cell centre minus the one to the nearest filled. On a rigid

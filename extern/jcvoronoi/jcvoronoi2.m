@@ -47,7 +47,7 @@ function [V,F,I_FD,siteRep] = jcvoronoi2(XY,numReal,epsTol,varargin)
 %  noMex - use the MATLAB implementation even if jcvoronoi2_mex is available
 %
 % See also
-% jcvoronoiDelaunayOnly mex_install chainOrder
+% mex_install chainOrder
 
 persistent hasMex warned
 

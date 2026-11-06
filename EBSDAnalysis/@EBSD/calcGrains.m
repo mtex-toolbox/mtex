@@ -82,22 +82,16 @@ if check_option(varargin,'grainId'), ebsd.phaseId(ebsd.grainId == 0) = 1; end
 % the lattice depends on the positions alone, every decomposition below shares it
 g = ebsd.lattice;
 
-% first pass:
-% mark pixels that would become grains smaller than minPixel as notIndexed
-% a criterion enforcing minPixel itself is handed the value and this pass is skipped
+% a criterion enforcing minPixel itself is handed the value, otherwise the
+% loop below culls, after a cheap first cull with 'minPixelMethod','grid'
 if gbc.handlesMinPixel
-
   minPixel = get_option(varargin,'minPixel',[]);
   if ~isempty(minPixel), gbc = gbc.setMinPixel(minPixel); end
-
 else
-
-  removed = minPixelMask(ebsd,gbc,g,varargin{:});
-  ebsd.phaseId(removed) = 1;
-
+  ebsd.phaseId(minPixelMask(ebsd,gbc,varargin{:})) = 1;
 end
 
-% second pass: Voronoi decomposition
+% Voronoi decomposition
 % V - list of vertices
 % F - list of faces
 % D - cell array of cells
@@ -501,14 +495,8 @@ end
   end
 
   function culled = enforceMinPixel
-    % indexed grains that came out below minPixel despite the cull before
-    % the decomposition - mark their pixels notIndexed, which is what that
-    % pass does to everything it removes, and report whether there were any
-    %
-    % Merging the offenders into a neighbour instead was measured and
-    % dropped: they are stranded in notIndexed regions by construction, so
-    % 14 of 15 across forsterite and small had no neighbour of their own
-    % phase to merge into and fell back to this anyway.
+    % mark the pixels of the indexed grains below minPixel notIndexed, and
+    % report whether there were any
 
     mp = get_option(varargin,'minPixel',1);
     culled = false;

@@ -795,9 +795,8 @@ Profiled on `$HOME/mtex/data/1C_1.ctf` (2.5 M pixels) 2026-07-22.
 single biggest cost. `br/analytic-voronoi-grid` holds a rolled-back
 `analyticGridDecomposition` helper for `spatialDecompositionGrid.m` that
 skips the sweep entirely on gap-free regular grids, where every real cell
-keeps exactly its own pixel. Not re-verified against current code. The
-adjacency-only first pass was closed separately by the `'delaunayOnly'` flag
-(commit `13db5772a`). Second lead: `gbc.eval` inside `doSegmentation` costs
+keeps exactly its own pixel. The grid path no longer runs the sweep:
+`latticeVoronoi` clips every cell against its lattice neighbours. Second lead: `gbc.eval` inside `doSegmentation` costs
 0.71 s of 1.47 s — unclear whether there is real redundancy there or just
 inherent per-pair cost.
 
