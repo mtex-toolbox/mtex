@@ -45,7 +45,7 @@ pos = [ebsd.pos.x(:), ebsd.pos.y(:)];
 isIndexed = ebsd.isIndexed(:);
 if ~any(isIndexed), isIndexed = true(n,1); end   % nothing to fit against
 
-reconstructPos = latticeModel(pos,ij,isIndexed,g.dxy);
+reconstructPos = latticeModel(pos,ij,isIndexed,g.A);
 xy = reconstructPos(IJnew);
 
 % keep only the sites inside the scanned area - the index bounding box is a

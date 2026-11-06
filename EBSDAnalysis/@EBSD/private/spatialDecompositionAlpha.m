@@ -62,7 +62,7 @@ isIndexed = ebsd.isIndexed(:);
 
 % local model to reconstruct the position of grid cells with no real
 % measurement - no longer duplicated from spatialDecompositionGrid.m
-[reconstructPos,idealFun] = latticeModel(pos,ij,isIndexed,dxy);
+[reconstructPos,idealFun] = latticeModel(pos,ij,isIndexed,A);
 
 % ---- alpha partition via a true circumradius alpha-complex -----------------
 rAlpha = alpha*dxy;

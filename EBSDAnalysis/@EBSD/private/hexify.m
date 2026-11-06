@@ -54,7 +54,7 @@ assert(numel(unique(newId)) == numel(newId), ...
 % deformation aware, and the measured nodes are put back exactly afterwards
 isIndexed = ebsd.isIndexed(:);
 if ~any(isIndexed), isIndexed = true(size(pos2d,1),1); end
-reconstructPos = latticeModel(pos2d,ij,isIndexed,mean(vecnorm(A,2,1)));
+reconstructPos = latticeModel(pos2d,ij,isIndexed,A);
 
 [allRow,allCol] = ndgrid(1:sGrid(1),1:sGrid(2));
 allJ = allRow(:) - 1;

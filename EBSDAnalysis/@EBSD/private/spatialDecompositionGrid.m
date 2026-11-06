@@ -64,7 +64,7 @@ isIndexed = ebsd.isIndexed(:);
 
 % local model to reconstruct the position of grid cells with no real
 % measurement (notIndexed holes, the dummy/band ring, filled small gaps)
-[reconstructPos,~,isRigid] = latticeModel(pos,ij,isIndexed,dxy);
+[reconstructPos,~,isRigid] = latticeModel(pos,ij,isIndexed,A);
 
 % ---- alpha partition via morphological closing -----------------------------
 % Work on a padded raster of the (i,j) grid. All operations below are binary

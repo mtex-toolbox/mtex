@@ -1,4 +1,4 @@
-function [reconstructPos,idealFun,isRigid] = latticeModel(pos,ij,isIndexed,dxy)
+function [reconstructPos,idealFun,isRigid] = latticeModel(pos,ij,isIndexed,A)
 % deformation aware map from lattice index (i,j) to physical position
 %
 % Reconstructs where a grid cell with no real measurement sits - notIndexed
@@ -16,14 +16,14 @@ function [reconstructPos,idealFun,isRigid] = latticeModel(pos,ij,isIndexed,dxy)
 % over every indexed pixel.
 %
 % Syntax
-%   reconstructPos = latticeModel(pos,ij,isIndexed,dxy)
-%   [reconstructPos,idealFun] = latticeModel(pos,ij,isIndexed,dxy)
+%   reconstructPos = latticeModel(pos,ij,isIndexed,A)
+%   [reconstructPos,idealFun] = latticeModel(pos,ij,isIndexed,A)
 %
 % Input
 %  pos       - nEbsd × 2 measured positions (map plane only)
 %  ij        - nEbsd × 2 integer lattice index, from ebsd.lattice
 %  isIndexed - nEbsd × 1 logical, which rows carry a real measurement
-%  dxy       - representative grid spacing, from ebsd.lattice
+%  A         - lattice basis, the columns the steps along i and j, from ebsd.lattice
 %
 % Output
 %  reconstructPos - @(IJ) m × 2 positions for any integer index IJ
@@ -46,13 +46,14 @@ function [reconstructPos,idealFun,isRigid] = latticeModel(pos,ij,isIndexed,dxy)
 % (e.g. real imported EBSD data)
 Iidx = double(ij(isIndexed,1)); Jidx = double(ij(isIndexed,2));
 posIdx = double(pos(isIndexed,:));
-idealFit  = [ones(numel(Iidx),1), Iidx, Jidx] \ posIdx;
+% least squares, the basis A deciding a direction a single row or column leaves open
+idealFit  = [ones(numel(Iidx),1), Iidx, Jidx; 0 1e-6 0; 0 0 1e-6] \ [posIdx; 1e-6*A.'];
 idealFun  = @(IJ) [ones(size(IJ,1),1), double(IJ)] * idealFit;
 defXY     = posIdx - idealFun([Iidx, Jidx]);
 
 % same check calcMesh uses to decide whether its ideal grid is "sufficiently
 % good"; only genuinely distorted grids fall through to the slower route
-isRigid = mean(vecnorm(defXY,2,2)) / dxy < 1e-2;
+isRigid = mean(vecnorm(defXY,2,2)) / mean(vecnorm(A,2,1)) < 1e-2;
 
 if isRigid
   reconstructPos = @(IJ) idealFun(IJ);
