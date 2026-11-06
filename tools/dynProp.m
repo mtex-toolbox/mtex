@@ -38,13 +38,14 @@ classdef dynProp
     function dp = cat(dim,varargin)
       
       dp = varargin{1};
-      
+      s = dp.prop([]);
+
       for k=1:numel(varargin)
         if isempty(varargin{k}), continue; end
-        s(k) = varargin{k}.prop; %#ok<AGROW>
+        s(end+1) = varargin{k}.prop; %#ok<AGROW>
       end
-      
-      fn = fieldnames(varargin{1}.prop);
+
+      fn = fieldnames(s);
               
       for i = 1:numel(fn)                       
         dp.prop.(fn{i}) = cat(dim,s.(fn{i}));
