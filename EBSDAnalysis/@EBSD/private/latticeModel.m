@@ -36,8 +36,8 @@ function [reconstructPos,idealFun,isRigid] = latticeModel(pos,ij,isIndexed,A)
 % Note calcMesh solves the same problem but is deliberately NOT routed
 % through here: it works in 3d (it carries a z interpolant), it materialises
 % the whole mesh instead of returning a closure, and it scales its rigidity
-% test by mean(norm(unitCell)) where this one uses dxy. Sharing the code
-% would mean changing one of the two criteria.
+% test by mean(norm(unitCell)) where this one uses the columns of A. Sharing
+% the code would mean changing one of the two criteria.
 %
 % See also
 % EBSD/lattice EBSD/private/calcMesh

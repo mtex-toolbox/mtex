@@ -80,7 +80,7 @@ ebsd.phaseId(isnan(ebsd.rotations) & ebsd.isIndexed) = 1;
 if check_option(varargin,'grainId'), ebsd.phaseId(ebsd.grainId == 0) = 1; end
 
 % the lattice depends on the positions alone, every decomposition below shares it
-g = ebsd.lattice;
+lat = ebsd.lattice;
 
 % a criterion enforcing minPixel itself is handed the value, otherwise the
 % loop below culls, after a cheap first cull with 'minPixelMethod','grid'
@@ -98,7 +98,7 @@ end
 % I_FD - incidence matrix faces to vertices
 % culling changes the map the closing runs on, so repeat until nothing re-fragments (#2574)
 while true
-  out = spatialDecompositionGrid(ebsd,g,varargin{:});
+  out = spatialDecompositionGrid(ebsd,lat,varargin{:});
   V = out.V;
   F = out.F;
   I_FD = remapIFD(out,ebsd);
