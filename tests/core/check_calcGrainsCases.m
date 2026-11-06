@@ -50,7 +50,7 @@ end
 checkTransformCommutation(ebsdHex, grains0Hex, thr, 'hex, transformed');
 checkRotateCommutation(ebsdHex, grains0Hex, thr, 'hex, rotated');
 
-%% 'delaunay' flag: true alpha-complex backend (spatialDecompositionAlpha)
+%% 'delaunay' flag: true alpha-complex backend (alphaComplexMask)
 % a regular grid is cocircular everywhere, which is what the alpha complex has to handle
 
 grains0SqD = calcGrains(ebsdSq,'threshold',thr,'delaunay');

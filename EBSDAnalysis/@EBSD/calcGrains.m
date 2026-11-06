@@ -52,8 +52,8 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %  delaunay - use a true circumradius-based alpha-complex (exact, not a
 %             raster approximation) instead of the default morphological
 %             closing to partition the spatial domain - see
-%             spatialDecompositionAlpha.m. Useful for large alpha, where
-%             the default's disk structuring element gets slow.
+%             alphaComplexMask. Useful for large alpha, where the
+%             default's disk structuring element gets slow.
 %
 % References
 %
@@ -104,11 +104,7 @@ end
 % I_FD - incidence matrix faces to vertices
 % culling changes the map the closing runs on, so repeat until nothing re-fragments (#2574)
 while true
-  if check_option(varargin,'delaunay')
-    out = spatialDecompositionAlpha(ebsd,g,varargin{:});
-  else
-    out = spatialDecompositionGrid(ebsd,g,varargin{:});
-  end
+  out = spatialDecompositionGrid(ebsd,g,varargin{:});
   V = out.V;
   F = out.F;
   I_FD = remapIFD(out,ebsd);
@@ -131,7 +127,7 @@ I_DG = I_DG(:,notEmpty);
 grainId = full(I_DG * (1:size(I_DG,2)).');
 
 % boundaries straight through the filled cells
-if get_option(varargin,'straighten',true) && isfield(out,'inFill') && ~isempty(out.inFill)
+if get_option(varargin,'straighten',true) && ~isempty(out.inFill)
   [V,F,I_FD] = straightenInFill(V,F,I_FD,grainId,out);
 end
 

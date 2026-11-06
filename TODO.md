@@ -857,7 +857,7 @@ Kept verbatim from the old file as the list to review together:
 
 `EBSDsquare/gridBoundary` and `EBSDhex/gridBoundary` were also on this list;
 both were deleted 2026-08-10 as dead code. Nothing called them —
-`spatialDecompositionAlpha` builds its own dummy ring in index space.
+`alphaComplexMask` builds its own dummy ring in index space.
 
 `gradientX`/`gradientY` are **done**: they now live on `@EBSD`, are computed
 on `ebsd.lattice`, and the three `error('Todo')` for grids not aligned with

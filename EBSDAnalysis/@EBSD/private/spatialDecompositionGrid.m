@@ -1,22 +1,22 @@
 function out = spatialDecompositionGrid(ebsd,g,varargin)
 % grid-based spatial decomposition for grain reconstruction (square + hex)
 %
-% Implements the unified pipeline discussed in DESIGN.md. Every gridified
-% cell ends up classified as an indexed site, a kept dummy, or a notIndexed
-% site; indexed and notIndexed sites become grains, dummies only bound the
-% outer cells. Empty cells and input-notIndexed pixels are treated
+% Every gridified cell ends up classified as an indexed site, a kept dummy, or a
+% notIndexed site; indexed and notIndexed sites become grains, dummies only bound
+% the outer cells. Empty cells and input-notIndexed pixels are treated
 % identically.
 %
-% minPixel culling is NOT done here. Because the alpha closing connects grain
-% pixels across bridged gaps and diagonals (via the Voronoi face adjacency),
-% grain sizes can only be measured correctly on the real decomposition. The
-% minPixel filter is therefore applied by the caller (calcGrains2) as a
-% two-pass scheme: decompose once, segment, cull undersized indexed grains by
-% marking their pixels notIndexed, then decompose again.
+% Which cells without a measurement are filled is decided by a morphological
+% closing of the indexed cells with a disk, or with 'delaunay' by the true
+% circumradius alpha-complex of the indexed sites, see alphaComplexMask. All
+% that follows the filled cells is the same for both.
+%
+% minPixel culling is not done here: the caller marks the pixels of undersized
+% grains notIndexed and decomposes again.
 %
 % cells2posId (see there) places every site that has no real measurement -
 % notIndexed holes, the exterior dummy ring bounding the map edge, filled
-% small gaps - via a local deformation model (see reconstructPos above),
+% small gaps - via a local deformation model (see latticeModel),
 % not a single rigid affine ij*A' + origin: under a smooth but non-rigid
 % distortion (e.g. a trapezoidal stage drift, see EBSD/transform) a rigid
 % reconstruction disagrees with where a genuinely measured pixel at that
@@ -28,6 +28,7 @@ function out = spatialDecompositionGrid(ebsd,g,varargin)
 %
 % Syntax
 %   out = spatialDecompositionGrid(ebsd,ebsd.lattice,'alpha',1.5)
+%   out = spatialDecompositionGrid(ebsd,ebsd.lattice,'alpha',2.2,'delaunay')
 %
 % Input
 %  ebsd - gridified @EBSDsquare / @EBSDhex
@@ -38,7 +39,14 @@ function out = spatialDecompositionGrid(ebsd,g,varargin)
 %             narrower than 2*alpha*dxy are filled and vanish; wider holes are
 %             preserved as measured (no growing into them). Single-pixel-wide
 %             recesses (boundary notches, slit mouths) are always filled for
-%             alpha >= 1, matching the alpha shape.
+%             alpha >= 1, matching the alpha shape. With 'delaunay' the
+%             alpha-complex radius (default 2.2): a Delaunay triangle of the
+%             indexed sites is filled when its circumradius is at most
+%             alpha*dxy - a different quantity, the two do not agree at a
+%             shared value.
+%
+% Flags
+%  delaunay - the alpha-complex instead of the closing
 %
 % Output struct out with fields
 %  V        - nV × 2 Voronoi vertices
@@ -48,37 +56,37 @@ function out = spatialDecompositionGrid(ebsd,g,varargin)
 %  site2id  - nSites × 1, ebsd linear index for indexed sites, NaN for
 %             notIndexed sites that came from empty cells
 %  ij       - nEbsd × 2 axial indices (debug)
+%  inFill   - @(p) > 0 inside the filled cells, < 0 outside, [] without any
 
-alpha = get_option(varargin,'alpha',3.1);
+isDelaunay = check_option(varargin,'delaunay');
+alpha = get_option(varargin,'alpha',2.2*isDelaunay + 3.1*~isDelaunay);
 
 A = g.A; stencil = g.stencil; dxy = g.dxy; ij = g.ij;
 epsilon = dxy/100;
 
 pos = [ebsd.pos.x(:), ebsd.pos.y(:)];
-nE       = size(pos,1);
 isIndexed = ebsd.isIndexed(:);
 
-% fast neighbour lookup
-% ij2ebsd(ij2slot([i j])) is the ebsd index / 0 if not contained in the map
-[ij2ebsd,ij2slot,ijmin,ijsz] = latticeLookup(ij);
+% ij2ebsd(slot) is the ebsd index of a lattice slot, 0 if not contained in the map
+[ij2ebsd,~,ijmin,ijsz] = latticeLookup(ij);
 
 % local model to reconstruct the position of grid cells with no real
 % measurement (notIndexed holes, the dummy/band ring, filled small gaps)
-[reconstructPos,~,isRigid] = latticeModel(pos,ij,isIndexed,A);
+[reconstructPos,idealFun,isRigid] = latticeModel(pos,ij,isIndexed,A);
 
-% ---- alpha partition via morphological closing -----------------------------
+% ---- alpha partition -------------------------------------------------------
 % Work on a padded raster of the (i,j) grid. All operations below are binary
 % 2D morphology, linearised over the padded raster for speed.
 
 rClose  = alpha*dxy;                            % closing radius: fills holes of
                                                 % diameter < 2*rClose = 2*alpha*dxy
 % Padding must leave room for (i) the closing, which can push the material
-% outward by up to rClose before the erosion, and (ii) at least one exterior
-% cell beyond that for the dummy ring to sit in. If the material ever reaches
-% the padded border, the flood fill cannot wrap around it, no dummies are
-% placed there, and the outer grains come out open. So size the margin from
-% the closing reach in cells PLUS a fixed safety of 2 cells, independent of A.
-closeCells = ceil(rClose / min(vecnorm(A,2,1)));
+% outward by up to rClose before the erosion, or an alpha-complex triangle,
+% up to 2*rClose across, and (ii) at least one exterior cell beyond that for
+% the dummy ring to sit in. If the material ever reaches the padded border,
+% the flood fill cannot wrap around it, no dummies are placed there, and the
+% outer grains come out open.
+closeCells = ceil((1 + isDelaunay)*rClose / min(vecnorm(A,2,1)));
 padding = closeCells + 4;   % closing reach + band (1) + pushed band (1) + dummy ring (1) + safety (1)
 szP     = ijsz + 2*padding;
 ij2slotP = @(IJ) (IJ(:,1)-ijmin(1)+padding) + (IJ(:,2)-ijmin(2)+padding)*szP(1) + 1;
@@ -88,15 +96,23 @@ isIndexedP = false(prod(szP),1);
 isIndexedP(ij2slotP(ij(isIndexed,:))) = true;
 % imagesc(reshape(isIndexedP,szP)), axis equal tight
 
-% the scan footprint, the convex hull of the indexed pixels: beyond it the
-% material counts as present during the erosion, so that the map edge is no
-% boundary the closing erodes from
-inScanP = true(prod(szP),1);
-try %#ok<TRYNC>
-  inScanP = inConvexHull(ij(isIndexed,:), ijmin - padding - 1, szP);
+if isDelaunay
+  % the smallest circumradius of a filled triangle covering each cell, inf where none
+  rMin = alphaComplexMask(pos, isIndexed, ij, epsilon, rClose, ...
+    szP, padding, ijmin, ijsz, idealFun, reconstructPos, isIndexedP);
+  closedP = isfinite(rMin) | isIndexedP;
+  isOpen = @(x,r) rMin(x) > r*dxy + epsilon;
+else
+  % the scan footprint, the convex hull of the indexed pixels: beyond it the
+  % material counts as present during the erosion, so that the map edge is no
+  % boundary the closing erodes from
+  inScanP = true(prod(szP),1);
+  try %#ok<TRYNC>
+    inScanP = inConvexHull(ij(isIndexed,:), ijmin - padding - 1, szP);
+  end
+  closedP = closeAt(isIndexedP, inScanP, alpha, dxy, A, stencil, szP);
+  isOpen = @(x,r) ~closedAt(x, isIndexedP, inScanP, diskOffsets(r*dxy, A, stencil), szP);
 end
-
-closedP = closeAt(isIndexedP, inScanP, alpha, dxy, A, stencil, szP);
 
 % exteriorP = background connected to the padded border. This is a flood fill
 % (morphological reconstruction of the border marker under the mask ~closedP),
@@ -115,7 +131,7 @@ while ~isequal(exteriorP,ext0)   % a hole that joined the outside can join the n
   for r = [alpha-1:-1:1, 0]
     corridor = corridor(closedP(corridor) & ~exteriorP(hole(corridor)));
     if isempty(corridor), break; end
-    x = corridor(~closedAt(corridor, isIndexedP, inScanP, diskOffsets(r*dxy, A, stencil), szP));
+    x = corridor(isOpen(corridor,r));
     closedP(x) = false;
     if any(exteriorP(x + (stencil(:,1) + stencil(:,2)*szP(1)).'),'all')
       exteriorP = floodFillBorder(~closedP, stencil, szP);

@@ -15,9 +15,8 @@ function check_jcvoronoi
 %
 % ---------------------------------------------------------------- claim (1)
 %
-% MTEX ships no jcvoronoi2_mex for every platform, and calcGrains calls it on
-% its main gridded path (spatialDecompositionGrid.m) as well as for the alpha
-% complex (spatialDecompositionAlpha.m), so jcvoronoi2.m falls back to a pure
+% MTEX ships no jcvoronoi2_mex for every platform, and calcGrains calls it for
+% the alpha complex of 'delaunay' (alphaComplexMask.m), so jcvoronoi2.m falls back to a pure
 % MATLAB Voronoi build where the binary is missing. This verifies the two
 % paths are interchangeable.
 %

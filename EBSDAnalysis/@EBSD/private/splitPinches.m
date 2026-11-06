@@ -18,7 +18,7 @@ c = accumarray(f,d,[nF 1],@max);
 nC = accumarray(f,1,[nF 1]);
 isP = accumarray(reshape(F(nC > 0,:),[],1),1,[nV 1]) == 4 & ...
   accumarray(reshape(F(nC == 1,:),[],1),1,[nV 1]) == 4;
-isJoin = isfield(out,'inFill') && ~isempty(out.inFill);
+isJoin = ~isempty(out.inFill);
 
 for v = find(isP).'
   % the four segments at v counterclockwise, the first two around one cell

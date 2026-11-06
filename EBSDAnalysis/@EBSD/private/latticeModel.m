@@ -28,7 +28,7 @@ function [reconstructPos,idealFun,isRigid] = latticeModel(pos,ij,isIndexed,A)
 % Output
 %  reconstructPos - @(IJ) m × 2 positions for any integer index IJ
 %  idealFun       - @(IJ) the affine part alone, without the deformation
-%                   correction. spatialDecompositionAlpha wants it for the
+%                   correction. alphaComplexMask wants it for the
 %                   dummy ring, where a regular polygon is the point and
 %                   following the local distortion would only roughen it.
 %  isRigid        - whether the affine fit alone was used

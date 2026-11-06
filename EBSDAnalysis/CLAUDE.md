@@ -28,8 +28,9 @@ The EBSD → grains pipeline, plus parent-phase reconstruction.
   deliberately *copies* rather than moves, so the add-on stays self-sufficient.
 - `calcGrains` segments an `@EBSD` into a `grain2d` (`grain3d` for volume data). The
   criterion is pluggable — `grainBoundaryCriteria/`, extension point `gbcCustom.m`. The
-  `'delaunay'` flag selects the alpha-complex decomposition (`spatialDecompositionAlpha.m`)
-  over the default Voronoi one. `gbcFMC` defaults: `docs/adr/0004-fmc-parameter-defaults.md`.
+  `'delaunay'` flag fills the gaps by the alpha complex (`alphaComplexMask.m`) instead of
+  a morphological closing; both run through `spatialDecompositionGrid.m`. `gbcFMC`
+  defaults: `docs/adr/0004-fmc-parameter-defaults.md`.
 - Boundary segments live in `@grainBoundary` (`grains.boundary`), not on `grain2d`. Each
   segment stores adjacent grain/EBSD ids, position and misorientation. Segments are stored
   in **walk order** — `docs/adr/0002-ordered-boundary-segments.md`.

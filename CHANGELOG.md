@@ -30,7 +30,7 @@ including 6.1 have one combined list there and no entry here.
   parted at alpha 6.1 two peridotite grains that alpha 2.1 joins across a 3-cell gap;
   a hole one filled cell from a hole that only joined the outside in the first pass
   stayed a grain (peridotite alpha 2.1: 726 -> 723 grains). The `'delaunay'` path
-  (`spatialDecompositionAlpha`) has the same rule now; its indexed grain counts change
+  has the same rule; its indexed grain counts change
   by 0 to 6 on peridotite, forsterite and small
 - Four outer boundary segments meeting in one vertex, an exact tie of the Voronoi
   decomposition on the lattice, let two cells touch in a single point: a vacated band
