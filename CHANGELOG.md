@@ -42,7 +42,10 @@ including 6.1 have one combined list there and no entry here.
   pixel kept by the first pass could come out as a grain of its own, marked notIndexed
   and left on the outer boundary (small, 12 degree, minPixel 3). `calcGrains`
   decomposes again while minPixel culls; on forsterite minPixel 5 that is three
-  decompositions
+  decompositions. The sizing pass before the loop ran a grid decomposition of its own,
+  without `splitPinches` or the alpha complex, and could cull a grain the final map
+  keeps; it is gone, and with it `jcvoronoiDelaunayOnly`. `'minPixelMethod','grid'`
+  remains a cheap first cull
 - A hole of absent and measured notIndexed pixels became several grains, some on the
   outer boundary: `remapIFD` gives the absent cells of a hole the column of a measured
   pixel of that hole, and two cells count as neighbours when they share any face, not
@@ -55,7 +58,25 @@ including 6.1 have one combined list there and no entry here.
   EBSD and grain2d copies of `calcPolygons` are gone. The fallback took the first loop
   as the outer one instead of the one of largest area, and `EulerCycles` returned a tour
   through a repeated vertex as one cycle. `EulerCyclesC.c` sizes its buffers from
-  `I_FG`; the committed binaries predate that fix
+  `I_FG`; the a64 binary is rebuilt, the w64 and mac binaries predate that fix
+- The Voronoi cells of the grid decomposition come from `latticeVoronoi`, a box around
+  every site clipped by the sites on the lattice slots around it, instead of the
+  Fortune sweep of `jcvoronoi2`: the same faces, the outer boundary exactly on the
+  lattice, 2x faster with the mex (a64 only, the MATLAB fallback elsewhere). Distances
+  are counted in lattice steps shrunk by how much closer neighbouring sites actually
+  are, so a distorted lattice does not lose a face: against the exact Voronoi, random
+  jitter of 10-30% and trapezoids of +-20-40% lost 1-105 faces before
+- `'delaunay'` only decides which cells the alpha complex fills (`alphaComplexMask`);
+  all that follows is the grid decomposition, so `'straighten'` and the pinch join now
+  work there and its outer boundary sits on the lattice. Same grains with
+  `'straighten',false`; straightening moves 0.4-1.1% of the pixels of peridotite, all
+  of them notIndexed, to another grain
+- `calcGrains(mtexdata('titanium'),'minPixel',5)` failed in `geoDist`: a front of a
+  single cell indexed a column vector with a row (23 of 144 runs over small, twins and
+  titanium, alpha 0.5-8.1)
+- A map of one row or one column failed: the least-squares lattice of `latticeModel`
+  was singular across the row, so the band and dummy sites fell onto it. The basis of
+  `ebsd.lattice` decides that direction
 - Speed, steel 1C_1 (2.5 million pixels) on R2024b: `calcGrains` at 10 degree 52.7 ->
   23.0 s, with minPixel 5 57.2 -> 33.4 s. The crossing test of `straightenInFill` uses
   buckets of twice the median segment length and re-solves only the components that
