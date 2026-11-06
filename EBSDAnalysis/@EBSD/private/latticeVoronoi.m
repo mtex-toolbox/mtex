@@ -11,7 +11,9 @@ function [V,F,I_FD] = latticeVoronoi(XY,slot,szP,A,numReal,epsilon,alpha)
 % region without sites wider than 2*alpha cells, so the reach is bounded; a
 % cell still open at the rim of a wider bay is computed again with a reach 4
 % and 16 times as large. The vertex that the cells meeting there computed
-% each for themselves is welded within epsilon.
+% each for themselves is welded within epsilon. Distances are counted in
+% steps of A shrunk by the smallest ratio of actual to ideal distance between
+% neighbouring sites, so a distorted lattice does not end the search early.
 %
 % Input
 %  XY      - sites, the ones whose cells are wanted in the first numReal rows
@@ -26,6 +28,8 @@ function [V,F,I_FD] = latticeVoronoi(XY,slot,szP,A,numReal,epsilon,alpha)
 %  I_FD    - nF x numReal sparse incidence segment x site
 %
 % latticeVoronoi_mex does the same where it is compiled, this code is its fallback
+
+A = A * neighbourRatio(XY,slot,szP,A);
 
 persistent hasMex
 if isempty(hasMex), hasMex = exist('latticeVoronoi_mex','file') == 3; end
@@ -64,6 +68,23 @@ F = sort(F(keep,:),2); S = S(keep); Q = Q(keep);
 F = [floor(key / size(V,1)) mod(key,size(V,1)) + 1];
 isR = Q <= numReal;
 I_FD = spones(sparse([row; row(isR)],[S; Q(isR)],1,size(F,1),numReal));
+
+end
+
+% -------------------------------------------------------------------------
+function rho = neighbourRatio(XY,slot,szP,A)
+% the smallest ratio of actual to ideal distance between sites one lattice step apart, at most 1
+
+lookup = zeros(prod(szP),1); lookup(slot) = 1:numel(slot);
+[r,c] = ind2sub(szP,slot(:));
+rho = 1;
+for o = [1 0; 0 1; 1 1; 1 -1].'
+  q = zeros(size(r));
+  in = r + o(1) <= szP(1) & c + o(2) >= 1 & c + o(2) <= szP(2);
+  q(in) = lookup(slot(in) + o(1) + o(2)*szP(1));
+  s = find(q > 0);
+  rho = min([rho; vecnorm(XY(q(s),:) - XY(s,:),2,2) / norm(A*o)]);
+end
 
 end
 
