@@ -285,6 +285,7 @@ grainsEdited = smoothBoundary(grainsEdited);
 
 newMtexFigure('layout',[1 2]);
 for v = {{grainsK,ebsdK},{grainsEdited,ebsdEdited}}
+  nextAxis
   plot(v{1}{2},'ipfz','micronbar','off')
   legend off
   hold on
@@ -292,7 +293,6 @@ for v = {{grainsK,ebsdK},{grainsEdited,ebsdEdited}}
   plot(v{1}{1}(~v{1}{1}.isIndexed),'FaceColor','black','FaceAlpha',0.35)
   hold off
   axis([4000 10000 9000 15000])
-  nextAxis
 end
 
 fprintf('%d grains, %d notIndexed\n', ...
