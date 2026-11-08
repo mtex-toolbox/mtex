@@ -1,8 +1,8 @@
-function [V,F,I_FD] = straightenInFill(V,F,I_FD,grainId,out)
+function [V,F,I_FD,V0] = straightenInFill(V,F,I_FD,grainId,out)
 % grain boundaries straight through the cells the alpha closing filled
 %
 % Syntax
-%   [V,F,I_FD] = straightenInFill(V,F,I_FD,grainId,out)
+%   [V,F,I_FD,V0] = straightenInFill(V,F,I_FD,grainId,out)
 %
 % Description
 % Through filled cells a grain boundary follows the bisectors between the
@@ -22,6 +22,7 @@ function [V,F,I_FD] = straightenInFill(V,F,I_FD,grainId,out)
 %
 % Output
 %  V,F,I_FD - with the boundary segments split where they enter the filled cells
+%  V0       - the vertices before they moved, every segment on the bisector of its pixels
 
 inFill = out.inFill;
 

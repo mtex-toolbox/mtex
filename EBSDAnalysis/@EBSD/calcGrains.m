@@ -120,9 +120,10 @@ I_DG = I_DG(:,notEmpty);
 % compute grain ids
 grainId = full(I_DG * (1:size(I_DG,2)).');
 
-% boundaries straight through the filled cells
+% boundaries straight through the filled cells, V0 the vertices before
+V0 = V;
 if get_option(varargin,'straighten',true) && ~isempty(out.inFill)
-  [V,F,I_FD] = straightenInFill(V,F,I_FD,grainId,out);
+  [V,F,I_FD,V0] = straightenInFill(V,F,I_FD,grainId,out);
 end
 
 % phaseId of each grain
@@ -255,6 +256,7 @@ end
     % remove vertices that are not needed anymore
     [inUse,~,F] = unique(F(isExt | isInt,:));
     V = V(inUse,:);
+    V0 = V0(inUse,:);
     F = reshape(F,[],2);
     Fext = F(isExt(isExt | isInt),:); % external boundary segments
     Fint = F(isInt(isExt | isInt),:); % internal boundary segments
@@ -286,7 +288,7 @@ end
     % ebsdPos lets the constructor orient every chain so that the grain in
     % grainId(:,1) lies to the left of the walk direction
     gB = grainBoundary(V,F,ebsdInd,grainId,ebsd.phaseId,mori,ebsd.CSList,...
-      ebsd.phaseMap,ebsd.id,'ebsdPos',ebsd.pos);
+      ebsd.phaseMap,ebsd.id,'ebsdPos',ebsd.pos,'V0',V0);
     gB.frame = ebsd.pos.frame;
 
   end
@@ -370,6 +372,7 @@ end
     % add an additional vertex (with the same coordinates) for each quad point
     newVid = (size(V,1) + (1:length(quadPoints))).';
     V = [V;V(quadPoints,:)];
+    V0 = [V0;V0(quadPoints,:)];
   
     % include new vertex into face list, i.e. replace quadpoint -> newVid
     % element-wise, since two adjacent quadruple points share an edge and a

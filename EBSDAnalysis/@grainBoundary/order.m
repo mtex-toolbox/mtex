@@ -4,6 +4,7 @@ function [gB,p] = order(gB,varargin)
 % Syntax
 %   gB = order(gB)
 %   gB = order(gB,'leftPos',pos)
+%   gB = order(gB,'leftPos',pos,'leftV',V)
 %   [gB,p] = order(gB)
 %
 % Description
@@ -19,12 +20,14 @@ function [gB,p] = order(gB,varargin)
 % one point per segment lying strictly on the grainId(:,1) side of it. For
 % segments along the outer border, where grainId(:,1) is 0 and no such pixel
 % exists, mirror the pixel of the other side through the segment midpoint.
-% Without leftPos the walk order is still established, but the sense of each
+% The side is read on the vertices leftV, one per vertex of gB.allV, which
+% default to gB.allV. Without leftPos the walk order is still established, but the sense of each
 % chain is arbitrary (deterministic, but not tied to grainId).
 %
 % Input
 %  gB  - @grainBoundary
 %  pos - @vector3d, one per segment, on the gB.grainId(:,1) side of it
+%  V   - @vector3d, the vertices the side is read on
 %
 % Output
 %  gB - @grainBoundary, in walk order
@@ -51,11 +54,12 @@ posLeft = get_option(varargin,'leftPos',[]);
 
 if ~isempty(posLeft)
 
-  % which side of every segment posLeft lies on, weighted by its length and summed over the chain
+  % which side of every segment posLeft lies on, summed over the chain
+  W = get_option(varargin,'leftV',gB.allV);
   Fw = F;
   Fw(firstEnd == 2,:) = fliplr(F(firstEnd == 2,:));
-  V1 = gB.allV(Fw(:,1));
-  flipCh = accumarray(cid,dot(cross(gB.allV(Fw(:,2)) - V1,posLeft - V1),gB.N),[nCh 1]) < 0;
+  V1 = W(Fw(:,1));
+  flipCh = accumarray(cid,dot(cross(W(Fw(:,2)) - V1,posLeft - V1),gB.N),[nCh 1]) < 0;
 
 else
 

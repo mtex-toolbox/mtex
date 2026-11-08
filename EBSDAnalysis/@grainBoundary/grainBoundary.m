@@ -168,26 +168,25 @@ classdef grainBoundary < phaseList & dynProp
 
           ebsdInd(doSort,:) = fliplr(ebsdInd(doSort,:));
 
-          mid = mean(V(F),2);
-          pos = mid;
+          % the side is read on the vertices V0 before straightening, where
+          % every segment lies on the bisector of its two pixels
+          V0 = get_option(varargin,'V0',V);
+          if ~isa(V0,'vector3d'), V0 = vector3d.byXYZ(V0); end
+          pos = mean(V0(F),2);
           isInner = ebsdInd(:,1) > 0;
-          P = ebsdPos(ebsdInd(isInner,1));
-          Q = ebsdPos(ebsdInd(isInner,2));
-
-          % half the step between the pixels from the midpoint, on the side of
-          % the first even where a straightened segment has both on one side
-          pos(isInner) = mid(isInner) + (P - Q)/2;
+          pos(isInner) = ebsdPos(ebsdInd(isInner,1));
 
           % along the outer border grainId(:,1) is 0 and has no pixel, so
           % mirror the pixel of the other side through the segment midpoint
           isOuter = ~isInner & ebsdInd(:,2) > 0;
-          pos(isOuter) = 2*mid(isOuter) - ebsdPos(ebsdInd(isOuter,2));
+          pos(isOuter) = 2*pos(isOuter) - ebsdPos(ebsdInd(isOuter,2));
 
           % a segment that is the common edge of its two pixels: their centres
           % lie symmetric to its midpoint, on its normal, and are neighbours -
           % a diagonal neighbour is at least sqrt(2) times as far
-          P = P.xyz;
-          Q = Q.xyz;
+          mid = mean(V(F),2);
+          P = pos(isInner).xyz;
+          Q = ebsdPos(ebsdInd(isInner,2)).xyz;
           t = V(F(isInner,2)).xyz - V(F(isInner,1)).xyz;
           dPQ = vecnorm(Q - P,2,2);
           isEdge = vecnorm(P + Q - 2*mid(isInner).xyz,2,2) < 1e-6*dPQ ...
@@ -195,7 +194,7 @@ classdef grainBoundary < phaseList & dynProp
           isEdge = isEdge & dPQ < 1.2 * min([dPQ(isEdge);inf]);
           gB.prop.pixelDist(isInner) = dPQ .* isEdge;
 
-          varargin = [varargin,{'leftPos',pos}];
+          varargin = [varargin,{'leftPos',pos,'leftV',V0}];
         end
 
         gB = gB.order(varargin{:});
