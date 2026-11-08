@@ -1,0 +1,15 @@
+diff --git a/EBSDAnalysis/@EBSD/private/spatialDecompositionGrid.m b/EBSDAnalysis/@EBSD/private/spatialDecompositionGrid.m
+index c4fbf8a5b..45d62b9d4 100644
+--- a/EBSDAnalysis/@EBSD/private/spatialDecompositionGrid.m
++++ b/EBSDAnalysis/@EBSD/private/spatialDecompositionGrid.m
+@@ -114,6 +114,10 @@ else
+   isOpen = @(x,r) ~closedAt(x, isIndexedP, inScanP, diskOffsets(r*dxy, A, stencil), szP);
+ end
+ 
++% notIndexed pixels the caller asks to fill, whatever the closing says
++fillMask = get_option(varargin,'fillMask',[]);
++if ~isempty(fillMask), closedP(ij2slotP(ij(fillMask,:))) = true; end
++
+ % exteriorP = background connected to the padded border. This is a flood fill
+ % (morphological reconstruction of the border marker under the mask ~closedP),
+ % here computed as connected components of ~closedP with border-touching label.
