@@ -51,17 +51,11 @@ posLeft = get_option(varargin,'leftPos',[]);
 
 if ~isempty(posLeft)
 
-  rep = find(pos == 0);                   % first segment of every chain
-  Fr  = F(rep,:);
-  sw  = firstEnd(rep) == 2;
-  Fr(sw,:) = fliplr(Fr(sw,:));
-
-  % which side of the segment posLeft lies on - only its line matters
-  V1 = gB.allV(Fr(:,1));
-  d  = gB.allV(Fr(:,2)) - V1;
-
-  flipCh = false(nCh,1);
-  flipCh(cid(rep)) = dot(cross(d,posLeft(rep) - V1),gB.N) < 0;
+  % which side of every segment posLeft lies on, weighted by its length and summed over the chain
+  Fw = F;
+  Fw(firstEnd == 2,:) = fliplr(F(firstEnd == 2,:));
+  V1 = gB.allV(Fw(:,1));
+  flipCh = accumarray(cid,dot(cross(gB.allV(Fw(:,2)) - V1,posLeft - V1),gB.N),[nCh 1]) < 0;
 
 else
 

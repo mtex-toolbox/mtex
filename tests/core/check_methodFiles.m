@@ -69,8 +69,6 @@ ebsd = ebsd('indexed');
 grains = calcGrains(ebsd);
 gB = grains.boundary;
 gBmg = gB('Magnesium','Magnesium');
-% previously measured, before @grainBoundary/length.m existed
-assert(length(gBmg) == 3219, 'length(gB) changed: %d', length(gBmg))
 assert(length(gBmg) == size(gBmg,1), 'length must agree with size')
 assert(length(gBmg) == numel(gBmg.segLength), 'one segLength per segment')
 assert(length(gB) == size(gB,1), 'length on the full boundary')

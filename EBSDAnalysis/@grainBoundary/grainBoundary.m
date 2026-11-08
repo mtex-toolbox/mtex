@@ -171,7 +171,12 @@ classdef grainBoundary < phaseList & dynProp
           mid = mean(V(F),2);
           pos = mid;
           isInner = ebsdInd(:,1) > 0;
-          pos(isInner) = ebsdPos(ebsdInd(isInner,1));
+          P = ebsdPos(ebsdInd(isInner,1));
+          Q = ebsdPos(ebsdInd(isInner,2));
+
+          % half the step between the pixels from the midpoint, on the side of
+          % the first even where a straightened segment has both on one side
+          pos(isInner) = mid(isInner) + (P - Q)/2;
 
           % along the outer border grainId(:,1) is 0 and has no pixel, so
           % mirror the pixel of the other side through the segment midpoint
@@ -181,8 +186,8 @@ classdef grainBoundary < phaseList & dynProp
           % a segment that is the common edge of its two pixels: their centres
           % lie symmetric to its midpoint, on its normal, and are neighbours -
           % a diagonal neighbour is at least sqrt(2) times as far
-          P = pos(isInner).xyz;
-          Q = ebsdPos(ebsdInd(isInner,2)).xyz;
+          P = P.xyz;
+          Q = Q.xyz;
           t = V(F(isInner,2)).xyz - V(F(isInner,1)).xyz;
           dPQ = vecnorm(Q - P,2,2);
           isEdge = vecnorm(P + Q - 2*mid(isInner).xyz,2,2) < 1e-6*dPQ ...
