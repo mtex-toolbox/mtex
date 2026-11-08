@@ -1,53 +1,54 @@
 # Kinds of notIndexed regions in calcGrains
 
 An investigation of how `calcGrains` could tell noise, pores, pockets, cracks and voids apart
-and treat each with its own parameter. Measured on `mtexdata peridotite`, `mtexdata forsterite`
-and 1C_1 (`~/mtex/data/1C_1.ctf`, 1377 × 1837 pixels), MATLAB R2024b. Nothing in the library is
-changed; the prototype code and the figures are in [`notindexed-classification/`](notindexed-classification/).
+and close each with a parameter of its own. Measured on `mtexdata peridotite`,
+`mtexdata forsterite` and 1C_1 (`~/mtex/data/1C_1.ctf`, 1377 × 1837 pixels), MATLAB R2024b.
+Nothing in the library is changed; the prototype is a diff, and the measurement code and the
+figures are in [`notindexed-classification/`](notindexed-classification/).
 
 ## Summary
 
-- The closing in `spatialDecompositionGrid` keeps exactly the opening of the notIndexed pixels
-  by the disk of radius `alpha`. Splitting every notIndexed region into its **thick** parts
-  (the opening) and its **thin** parts (the rest) therefore reproduces the current mechanism, and
-  the thick parts are the only ones where a kind needs to be decided.
+- The closing in `spatialDecompositionGrid` leaves open exactly the opening of the notIndexed
+  pixels by the disk of radius `alpha`. The connected components of what stays open are the
+  **thick parts**; everything else is thin and is filled as noise. Only the thick parts need a
+  kind.
 - Thin parts carry 52 % of the notIndexed pixels on peridotite, 96.5 % on forsterite and
-  99.97 % on 1C_1. On 1C_1 only 4 of 68 273 parts are thick. Any classification touches few
-  parts.
-- Among the thick parts, three features separate the kinds on these maps:
-  - **crack**: elongation, max Feret diameter / width ≥ 4. The three crack parts lie at 5.2–8.7,
-    every other thick part at ≤ 3.8. Feret² / area separates them equally (5.7–14.9 against ≤ 4.6)
-    and needs no distance transform.
-  - **void**: touching the edge of the scan. Width does not separate voids from pockets: border
-    parts are 5–29 pixels wide, interior pockets up to 20.
-  - **pore**: the share of the rim held by one orientation (10°). It is continuous, not
-    bimodal: 12 parts lie at ≥ 0.85, the gap is only 0.81 → 0.85. The threshold decides the
-    count.
-- Only one crack exists in the three maps, so the crack threshold rests on three parts of one
-  crack.
-- A prototype that fills the pores and the crack up to 30 pixels and keeps everything else
-  bridges the peridotite crack and keeps 47 notIndexed grains. Alpha 16.1 bridges the crack but
-  keeps 0 notIndexed grains.
-- The pore test needs no first segmentation. Reading the rim pixels directly agrees with the
-  two-pass test on 69 of 70 peridotite parts and 12 of 13 forsterite parts (correlation 0.98 on peridotite) and takes 0.27 s.
-- **Recommendation**: design B below. `calcGrains` gets a fill mask in place of the single
-  radius. The mask is built from the closing's own thick parts and their rim pixels, in one pass,
-  at under a second on 1C_1. A public function returns the classification so it can be checked
-  and overridden.
+  99.97 % on 1C_1. The closing at the default `alpha` 3.1 leaves 62, 9 and 81 thick parts open.
+- Three features separate the kinds on these maps:
+  - **crack**: Feret² / area ≥ 5. The three parts of the peridotite crack lie at 7.4–14.1, every
+    other thick part at ≤ 4.3.
+  - **void**: touching the edge of the scan. Width does not separate voids from pockets.
+  - **pore**: the share of the rim held by one orientation, ≥ 0.85. It is continuous, so the
+    threshold decides the count.
+- Only one crack exists in the three maps.
+- **The design**: the closing radius becomes a property of the kind of the cell. `calcGrains`
+  takes `'alphaPore'`, `'alphaPocket'` and `'alphaCrack'`, each defaulting to `alpha`; after the
+  closing at `alpha`, the thick parts are classified and every part is closed once more with the
+  radius of its kind, through the existing `closedAt`. A prototype of 100 lines does this on the
+  grid and the `'delaunay'` path.
+  - With the defaults the result is bitwise identical on all three maps and on both paths.
+  - Each parameter acts only on its kind: pocket radii leave the crack and the outside area
+    untouched, crack radii leave pores and pockets.
+  - `alphaCrack` 15 bridges the whole peridotite crack, with 42 notIndexed grains kept; the area
+    outside all grains drops from 10.7 % to 5.9 %, lower than the 7.3 % that `alpha` 16.1 reaches
+    while keeping no notIndexed grain at all.
+  - The classification costs 0.04 s on peridotite and 0.06 s on 1C_1.
+- A public function returning the kinds, and a `'kinds'` option to pass them back, let the user
+  inspect and override the classification.
 
 ## How alpha acts now
 
 `closeAt` closes the indexed cells with a disk of radius `alpha`. A notIndexed pixel stays open
 exactly when some disk of that radius lies inside the notIndexed set and covers it, so the open
 pixels are the opening of the notIndexed mask by that disk. A region whose maximum inscribed
-radius is below `alpha` vanishes completely. A wider region keeps its opening, and its thin arms
-and necks are filled. `alpha` is a width threshold, applied per pixel neighbourhood rather than per
-region.
+radius is below `alpha` vanishes. A wider region keeps its opening, and its thin arms and necks
+are filled. `alpha` is a width threshold, applied per pixel neighbourhood rather than per region.
 
-## Method
+## Measuring the parts
 
 The code is [`niParts.m`](notindexed-classification/niParts.m), with
-[`runFeatures.m`](notindexed-classification/runFeatures.m) as the driver.
+[`runFeatures.m`](notindexed-classification/runFeatures.m) as the driver. It uses the Image
+Processing Toolbox and is for the figures only.
 
 1. Grid the map. The scan is the convex hull of the indexed pixels, as in the fill model, and
    its notIndexed pixels form the mask.
@@ -82,6 +83,11 @@ The class maps also shade thin parts darker when they are elongated (Feret ≥ 4
 | peridotite | 163 800 | 30 637 | 1 396 | 52.2 % | 70 | 3 | 11 | 11 | 45 |
 | forsterite | 245 952 | 58 442 | 7 902 | 96.5 % | 13 | 0 | 3 | 1 | 9 |
 | 1C_1 | 2 529 549 | 612 661 | 68 273 | 99.97 % | 4 | 0 | 2 | 0 | 2 |
+
+The prototype inside `calcGrains` below takes its parts from the closing itself, at radius 3.1
+and with the closing's lateral companions, and counts the bays at the map edge as parts too.
+It finds 62 parts on peridotite (6 pores, 43 pockets, 3 crack parts, 10 voids), 9 on
+forsterite and 81 on 1C_1 (1 pore of 37 cells, 69 pockets, 11 voids).
 
 ## The class maps
 
@@ -120,8 +126,10 @@ Forsterite's notIndexed pixels are almost all thin:
   continuously from 0.15 to 1. A pore next to a second grain of a different orientation moves
   below any threshold.
 - (d) The rim share from small-alpha grains against the share from the rim pixels alone. The
-  two agree closely. Where they differ, the one-pass value is higher on voids, whose rims are
-  short and broken by the map edge.
+  two agree closely: on 69 of 70 peridotite parts and 12 of 13 forsterite parts at the 0.85
+  threshold, correlation 0.98 on peridotite. Where they differ, the one-pass value is higher on
+  voids, whose rims are short and broken by the map edge. The rim-pixel test needs no
+  segmentation, which is what makes the one-pass design below possible.
 
 ### Where the kinds overlap
 
@@ -139,10 +147,14 @@ Forsterite's notIndexed pixels are almost all thin:
   apart from a crack that runs along boundaries and widens at triple junctions.
 - **Pore vs pocket.** There is no wide gap in the rim share, see (c). Most pores lie at
   ≥ 0.94, but the class boundary is a choice. `isInclusion` on the default reconstruction counts
-  5 notIndexed grains enclosed by one grain, while the 10° rim share counts 12. The rim share
-  merges pieces of one orientation that a small-alpha segmentation splits.
+  5 notIndexed grains enclosed by one grain, while the 10° rim share counts 12 in the
+  measurement and 6 in the prototype. The rim share merges pieces of one orientation that a
+  small-alpha segmentation splits.
 - **Void vs crack mouth.** The crack touches both map edges. Testing the crack before the
-  border keeps it a crack.
+  border keeps it a crack, so a crack mouth is bridged like the rest of the crack.
+- **Pockets on a crack.** Once the crack is bridged, the pockets lying in it are enclosed by
+  one grain: `isInclusion` counts 5 such notIndexed grains before and 7–8 after bridging. Whether
+  they are pores is decided before the bridging.
 - **Mixed regions.** On peridotite, 5 of the 43 regions with a thick part hold more than one
   thick class: one region holds crack, pocket and pore. 42 of the 43 also have thin parts.
   Classifying whole regions would fail on these.
@@ -160,183 +172,179 @@ The crack stays one class for r0 2–4. At r0 = 6 its narrow necks cut it, and o
 remains. Pores and pockets shrink quickly with r0, because the opening radius is also the size
 below which they count as noise.
 
-## A prototype of the selective fill
+## The design: a closing radius per kind
 
-[`fillMask.diff`](notindexed-classification/fillMask.diff) adds four lines to
-`spatialDecompositionGrid`: a `'fillMask'` option, one logical per pixel, ORed into `closedP`
-after the closing. Everything downstream follows `closedP` unchanged: the exterior flood fill,
-the corridor rule, the site-less fill cells and `straightenInFill`. The diff was applied only for
-these measurements and is not part of the branch.
+The closing radius becomes a property of the kind of the cell. `alpha` stays the radius for
+noise, and three options give pores, pockets and cracks a radius of their own:
 
-[`selectiveGrains.m`](notindexed-classification/selectiveGrains.m) runs in three steps:
-1. pass 1: `alpha` 1.1;
-2. parts and classes;
-3. pass 2: `calcGrains(...,'alpha',3.1,'fillMask',M)`, where M holds all pore pixels and the
-   crack pixels that a disk of diameter `wCrack` does not fit.
+```matlab
+grains = calcGrains(ebsd,'alpha',3.1,'alphaPore',inf,'alphaPocket',6,'alphaCrack',15)
+```
 
-All runs use `'angle',10*degree,'minPixel',5`.
+A pore or pocket is filled when it is narrower than twice its radius, otherwise its core stays
+open; a crack is bridged wherever it is narrower than twice `alphaCrack`; `inf` fills the kind
+whole. A radius equal to `alpha` changes nothing, and that is the default of all three.
 
-| peridotite | grains | notIndexed grains | of them enclosed by one grain | outside all grains |
-| --- | ---: | ---: | ---: | ---: |
-| alpha 1.1 | 748 | 181 | 39 | 11.0 % |
-| alpha 2.8 | 630 | 84 | 12 | 11.2 % |
-| alpha 3.1 (default) | 575 | 41 | 5 | 10.7 % |
-| alpha 6.8 | 519 | 3 | 0 | 9.3 % |
-| alpha 16.1 | 510 | 0 | 0 | 7.3 % |
-| selective, pores only | 575 | 43 | 2 | 10.4 % |
-| selective, wCrack 12 | 568 | 45 | 7 | 9.4 % |
-| selective, wCrack 30 | 566 | 47 | 7 | 8.1 % |
-| selective, wCrack 30, no pores | 569 | 49 | 10 | 8.2 % |
+[`perKindRadius.diff`](notindexed-classification/perKindRadius.diff) is the prototype, applied
+only for the measurements below. In `spatialDecompositionGrid`, after `closeAt`:
 
-![peridotite: three alphas and the selective fill](notindexed-classification/peridotite_compare.png)
+1. The thick parts are the connected components of `~closedP & inScanP`, labelled with the
+   stencil graph as `floodFillBorder` already does.
+2. Per part: cell count; border contact from `binaryDilate(~inScanP)`; the Feret diameter from
+   the convex hull of the cell positions, and Feret² / area.
+3. The rim: every indexed cell next to the part, one contact per part and cell. Adjacent rim
+   cells are joined when `gbc.eval` connects their pixels, and the resulting pieces are joined
+   once more where their first cells connect. The share of the rim in the largest piece is the
+   pore test. The criterion is the one the segmentation uses, so `'angle'` and the other
+   criterion options govern the pore test as well.
+4. Kind priority: Feret² / area ≥ 5 → crack; border → void; rim share ≥ 0.85 → pore; else
+   pocket.
+5. For each kind whose radius differs from `alpha`, the cells of that kind are closed again
+   with the kind's radius: `closedAt(x, ..., diskOffsets(alphaK*dxy))`, `true` for `inf`, and
+   on the `'delaunay'` path `rMin(x) <= alphaK*dxy`. The result is ORed into `closedP`.
+6. The corridor rule, which reopens filled cells that join a hole to the outside, skips the
+   cells closed by their kind.
 
-- With `wCrack` 30, the grains on the two sides of the crack join wherever their misorientation
-  is below 10°, along straight boundaries.
-- The pockets stay as notIndexed grains (grey) and the voids at the right edge stay outside.
-- The outer area is 8.1 % against 7.3 % at alpha 16.1. The difference is the border bays that the
-  wide closing bridges.
+Everything after `closedP` is unchanged: the exterior flood fill, the site-less filled cells,
+the Voronoi decomposition and `straightenInFill`.
 
-The prototype leaves a few slivers. It splits the parts with `imopen` by a disk of radius 3,
-while the closing uses radius 3.1 with lateral companions, so the edges of a filled pore that
-only one of the two counts as thick survive as tiny notIndexed grains. That is why "pores only"
-ends with 43 notIndexed grains, not fewer than 41. An implementation must take the parts from the
-closing's own `closedP`. The 7 notIndexed grains enclosed by one grain at `wCrack` 30 were not
-examined one by one.
+Three things in the file have to move for this:
+- the padding of the raster is sized from the largest finite radius, not from `alpha`;
+- the `'delaunay'` path calls `alphaComplexMask` with that largest radius, so that `rMin` is
+  known up to it, and tests `rMin <= alpha*dxy` for the base closing;
+- the convex hull of the scan is computed before the branch on `'delaunay'`, since both paths
+  need it.
 
-With an empty mask the prototype reproduces the default exactly on 1C_1: 33 591 grains,
-68 notIndexed.
+`calcGrains` passes its criterion along: `spatialDecompositionGrid(ebsd,lat,varargin{:},'gbc',gbc)`.
 
-### Runtime on 1C_1
+### The result on peridotite
 
-| step | time |
-| --- | ---: |
-| default `calcGrains` | 26.6 s |
-| pass 1, full `calcGrains` at alpha 1.1 | 17–18 s |
-| parts and features of all 68 273 parts, with rim grains (`niParts`) | 7.8–9.2 s |
-| opening, labels and distance transform alone | 0.15 s |
-| pass 2 with the mask | 27.7 s |
-| two-pass total | 55 s, 2.1 × the default |
+All runs use `'angle',10*degree,'minPixel',5` and `alpha` 3.1. "Filled" counts the cells the
+kind's radius closed beyond the base closing.
 
-A profile of pass 1 (19.4 s) shows where the time goes:
-- `spatialDecompositionGrid`: 3.3 s;
-- `gbc.segment`: 1.7 s;
-- `straightenInFill`: 7.5 s;
-- boundaries and the `grainBoundary` constructor: ~3.6 s;
-- `absorbInteriorPixels`: 1.5 s.
+| radius | grains | notIndexed grains | enclosed by one grain | outside all grains | filled cells |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| none (default) | 575 | 41 | 5 | 10.7 % | 0 |
+| alphaPore inf | 569 | 35 | 0 | 10.7 % | 477 |
+| alphaPocket 4 | 550 | 21 | 5 | 10.7 % | 2 266 |
+| alphaPocket 6 | 538 | 11 | 6 | 10.6 % | 4 204 |
+| alphaPocket 10 | 535 | 8 | 5 | 10.1 % | 5 492 |
+| alphaPocket 20 | 530 | 6 | 5 | 10.1 % | 6 403 |
+| alphaCrack 5 | 570 | 44 | 7 | 9.7 % | 1 053 |
+| alphaCrack 7 | 566 | 42 | 6 | 8.3 % | 2 077 |
+| alphaCrack 10 | 566 | 43 | 8 | 6.0 % | 2 683 |
+| alphaCrack 15 | 563 | 42 | 7 | 5.9 % | 4 161 |
+| alphaCrack 25 | 563 | 42 | 7 | 5.9 % | 4 161 |
+| alphaPore inf, alphaPocket 6, alphaCrack 15 | 519 | 5 | 1 | 5.9 % | 8 842 |
+| alpha 16.1 alone | 510 | 0 | 0 | 7.3 % | — |
 
-A pass 1 that only labels the grains needs about 5 s. The rim-pixel test on the thick parts
-alone (`rimShare.m`) takes 0.27 s on peridotite and 0.05 s on forsterite, and has 4 parts to
-look at on 1C_1.
+- The pocket radii change the pockets alone: the crack, the pores and the outside area stay.
+- The crack radii change the crack alone: 4 161 cells is the whole crack, reached at 15. The
+  outside area falls to 5.9 % because the crack and its mouth at the bottom edge no longer count
+  as outside. `alpha` 16.1 leaves 7.3 % outside, the border bays it cannot bridge, and no
+  notIndexed grain.
+- With all three set, 519 grains remain, against 510 at `alpha` 16.1, and the five notIndexed
+  grains are the pockets wider than 12 pixels.
 
-## Designs
+On the `'delaunay'` path (`alpha` 2.2): default 695 grains and 138 notIndexed; `alphaCrack` 7
+bridges 3 272 cells, 15 bridges 5 160 and leaves 8.1 % outside; all three radii give 523 grains
+and 7 notIndexed.
 
-### A. Fill mask, two passes against grains
+![peridotite: the default, pores filled, the crack bridged, all three](notindexed-classification/peridotite_kinds.png)
 
-- `calcGrains` first segments with a small `alpha` (decomposition and criterion only, no
-  polygons, no straightening).
-- It then classifies the thick parts against those grains, builds the fill mask, and runs the
-  existing loop with it.
-- Cheap:
-  - the mask hook;
-  - reusing `gbc.segment`;
-  - pore and crack decisions read straight off grains.
-- Hard:
-  - a second decomposition, about +5 s on 1C_1, +18 s with the full `calcGrains` as in the
-    prototype;
-  - the result depends on the small `alpha` chosen for pass 1;
-  - the `minPixel` loop now encloses or follows a second loop.
+The grains on the two sides of the crack join wherever their misorientation is below 10°, along
+straight boundaries. The pockets stay (grey), and the voids at the right edge stay outside.
 
-### B. Fill mask, one pass from the closing's own parts (recommended)
+### Identity and cost
 
-- In `spatialDecompositionGrid`, after `closeAt`:
-  - the thick parts are the connected components of `~closedP & inScanP`, which the flood fill
-    already labels;
-  - for each part: its area and cell count; Feret² / area from the convex hull of its cells;
-    border contact against `~inScanP`; and the rim cells, `binaryDilate(part) & isIndexedP`.
-- The rim test pairs adjacent rim pixels and asks the grain boundary criterion `gbc.eval`
-  whether they connect, then merges the components with the same orientation.
-- The mask is:
-  - the pores;
-  - plus the crack cells that the opening of the crack mask by `wCrack/2` does not cover, from
-    the existing `binaryDilate` with `diskOffsets`.
-- Cheap:
-  - no second decomposition, and no Image Processing Toolbox;
-  - only the thick parts are examined (70 / 13 / 4 on the three maps), so it costs well under a
-    second on 1C_1;
-  - with every kind switched off, the mask is empty and the result is identical to today's.
-- Hard:
-  - the gbc and the orientations must reach `spatialDecompositionGrid`, which today sees
-    geometry only (pass a handle such as `@(i,j) gbc.eval(ebsd,i,j)`);
-  - the corridor rule reopens closed cells via `isOpen`, which recomputes the closing without
-    the mask, so mask cells must be exempt from it;
-  - the `'delaunay'` path needs the same ORing into `closedP`, and its `isOpen` reads `rMin`,
-    which knows nothing of the mask;
-  - pixels culled by `minPixel` become notIndexed after the classification. They are small and
-    the closing fills them, so classifying once before the loop is enough.
+- With every radius equal to `alpha`, the kind loop is skipped. Forcing the classification
+  (`'classify'`) gives a `grainId` identical to the default on peridotite, forsterite and 1C_1,
+  and on the `'delaunay'` path.
+- The classification takes 0.04 s on peridotite, 0.03 s on forsterite and 0.06 s on 1C_1,
+  where `calcGrains` takes 28–30 s. It touches the 62 / 9 / 81 thick parts and their rims only.
+- The second closing costs by the cells of the kind times the disk area: `alphaCrack` 25 on the
+  4 161 crack cells adds 1.3 s on peridotite, `alphaCrack` 15 adds 0.5 s. A bounding box per part
+  would cut that; it was not needed here.
+- The `minPixel` loop culls grains between decompositions. Their pixels become notIndexed and
+  are classified in the next decomposition like any other, so the loop needs no change.
 
-### C. Post-processing only
+### A latent bug found on the way
 
-`calcGrains` stays as it is. Pores are merged afterwards, as `GrainReconstructionCracks.m`
-already does with `merge(grains,'inclusions',~grains.isIndexed)`. Cracks cannot be bridged
-afterwards: joining the pieces across a crack needs the decomposition to have boundaries
-through it. C solves pores only.
+`closedAt` with a single cell builds `x + o` as a row, so `unique` returns a row and the result
+has one value per disk offset instead of one per cell. The corridor rule hits it whenever its
+corridor has exactly one cell; `'alphaPocket',6` on peridotite does. The fix is
+`unique(reshape(x + o,[],1))`, included in the diff. On develop the same corridor can occur
+with a plain `alpha`.
 
-### D. Per-kind radii without a classification
+## Alternatives
 
-`calcGrains` takes `'alpha'` for noise and a second radius applied only to elongated thick
-parts, with no public view of the classes. It is the internal half of B without the
-inspect-and-override function, so the user cannot see why a region was or was not bridged.
+### Two passes, with a fill mask
+
+`calcGrains` segments at a small `alpha`, classifies the parts against those grains, builds a
+mask of the pixels to fill, and runs again with the mask ORed into `closedP`. Measured on 1C_1
+as a prototype: 17–18 s for the first full pass, 8–9 s for the parts and their rim grains, 28 s
+for the second pass, 55 s in all against 26.6 s. A first pass that only labels the grains would
+cost about 5 s. The pore test by grains and the pore test by rim pixels agree on 81 of 83 thick
+parts, and the two-pass version depends on the `alpha` of its first pass. Nothing in the result
+needed the first segmentation.
+
+### Post-processing only
+
+`calcGrains` stays as it is and pores are merged afterwards, as `GrainReconstructionCracks.m`
+does with `merge(grains,'inclusions',~grains.isIndexed)`. That handles pores and nothing else:
+bridging a crack needs the decomposition to put boundaries through it.
+
+### Per-kind radii without a public classification
+
+The internal half of the design alone. The user cannot see why a region was or was not
+bridged, and cannot correct a pocket taken for a crack.
 
 ## Recommendation
 
-B, with three public pieces:
-- `calcGrains` gets the options:
-  - `'alpha'` for noise, unchanged;
-  - `'crackWidth'`, default 0, meaning off;
-  - `'fillPores'`, default false;
-  - `'fillMask'`, a logical per pixel that overrides the classification and enters `closedP`
-    directly.
-- A public function, for example `kinds = notIndexedKinds(ebsd,'alpha',3.1)`, returns the class
-  of every notIndexed pixel, using exactly the parts and tests `calcGrains` uses, so that a user
-  can plot it, edit it and pass `kinds == "pore" | ...` back as `'fillMask'`.
-- A `GrainReconstructionCracks.m` section that shows the classes, then bridges the crack with
-  `'crackWidth'`.
+The per-kind radius, with:
+- `calcGrains` options `'alphaPore'`, `'alphaPocket'` and `'alphaCrack'`, radii in pixels like
+  `alpha`, each defaulting to `alpha`, so the output does not change until one is set;
+- a public function, for example `[kinds,parts] = notIndexedKinds(ebsd,'alpha',3.1)`, returning
+  the kind of every pixel and a table of the thick parts with their features, computed by the
+  very code `calcGrains` uses;
+- a `'kinds'` option on `calcGrains` taking that per-pixel kind back, edited or not. A part takes
+  the kind of its pixels; a part with no pixel in the map, or one that appears only after
+  `minPixel` culling, keeps the computed kind;
+- in `GrainReconstructionCracks.m`, a section that plots the kinds, then bridges the crack with
+  `'alphaCrack'` and fills the pores with `'alphaPore',inf`.
 
-With the defaults the output does not change. With `'crackWidth'` and `'fillPores'` on, the
-peridotite result above is what to expect.
+Sharing the code between `calcGrains` and the public function means moving the closing
+(`closeAt`, `diskOffsets`, `binaryDilate`, `floodFillBorder`) and the classification out of
+`spatialDecompositionGrid` into private files of their own.
 
 ## Open decisions
 
-1. **Pores: fill inside `calcGrains`, or keep them notIndexed grains and leave the merging to
-   `merge(...,'inclusions')`?** Filling gives the grain straight boundaries and a grainId on the
-   pore pixels. Merging is already available. If pores stay with `merge`, the crack is the only
-   new kind `calcGrains` needs.
-2. **Names and units.** Should the crack width be in pixels like `alpha`, or in `scanUnit`?
-   `'crackWidth'` or `'bridge'`? `'fillPores'` or `'pores'`?
-3. **Thresholds.** Elongation 4 (Feret² / area ≈ 5) and rim share 0.85: fixed in the code,
-   or exposed as options? The crack threshold rests on one crack. More maps with cracks would
-   be needed before fixing a default.
-4. **Shape of the classification.** A per-pixel categorical, a property on `ebsd`, or a table
-   of parts with their features, plus a per-pixel id?
-5. **The pass-1 segmentation (design A) vs the rim pixels (design B).** B follows the chosen
-   criterion pairwise along the rim. A follows the full grains. They differ on 2 of 83 thick
-   parts here.
+1. **Defaults.** Keep every radius at `alpha`, so nothing changes, or make `'alphaPore',inf` the
+   default, since a pore enclosed by one grain is part of that grain?
+2. **Names.** `'alphaPore'`, `'alphaPocket'`, `'alphaCrack'`, or one vector
+   `'alpha',[noise pore pocket crack]`? Radii in pixels as `alpha`, or widths in the scan unit?
+3. **Thresholds.** Feret² / area ≥ 5 and rim share ≥ 0.85: fixed in the code or options? The
+   crack threshold rests on one crack. More maps with cracks are needed before fixing it.
+4. **Voids.** Border contact is the only void test, and a crack mouth at the border is a crack.
+   Should a void get a radius too, or should a very wide interior region count as a void?
+5. **Pockets on a bridged crack.** They become enclosed by one grain after the bridging. Leave
+   them as pockets, or classify pores after the crack is bridged?
 6. **Chains of pockets.** Leave them as pockets bridged at their necks, or add a test for
    aligned chains?
-7. **Voids.** Border contact is the only void test. Should a very wide interior region
-   (none above 20 pixels here) also be a void?
+7. **Shape of the classification.** A per-pixel integer or categorical, a table of parts, or
+   both.
 
 ## Files
 
-- [`niParts.m`](notindexed-classification/niParts.m): the parts and their features (needs the
-  Image Processing Toolbox).
+- [`perKindRadius.diff`](notindexed-classification/perKindRadius.diff): the prototype in
+  `spatialDecompositionGrid` and `calcGrains`.
+- [`figKinds.m`](notindexed-classification/figKinds.m): the four-panel figure, needs the diff.
+- [`niParts.m`](notindexed-classification/niParts.m): the parts and their features for the
+  measurement, with the Image Processing Toolbox.
 - [`classifyParts.m`](notindexed-classification/classifyParts.m): the candidate classes.
-- [`rimShare.m`](notindexed-classification/rimShare.m): the one-pass rim test.
-- [`selectiveGrains.m`](notindexed-classification/selectiveGrains.m): the two-pass prototype;
-  needs `fillMask.diff` applied.
+- [`rimShare.m`](notindexed-classification/rimShare.m): the rim test from the rim pixels alone.
 - [`runFeatures.m`](notindexed-classification/runFeatures.m),
   [`figClasses.m`](notindexed-classification/figClasses.m),
-  [`classMap.m`](notindexed-classification/classMap.m),
-  [`figCompare.m`](notindexed-classification/figCompare.m) and
+  [`classMap.m`](notindexed-classification/classMap.m) and
   [`figFeatures.py`](notindexed-classification/figFeatures.py): the measurements and the
   figures.
