@@ -35,6 +35,14 @@ function out = spatialDecompositionGrid(ebsd,g,varargin)
 %  g    - ebsd.lattice
 %
 % Options
+%  alphaPore, alphaPocket, alphaCrack - the closing radius of the notIndexed
+%             parts of that kind that the closing with alpha leaves open
+%             (default alpha, inf fills the kind whole). A part is a pore
+%             when one orientation holds 85 percent of its rim, a crack when
+%             its Feret diameter squared is at least five times its area, a
+%             void when it touches the edge of the scan, a pocket otherwise
+%  kinds    - a kind per pixel, categorical or code, replacing the computed
+%             kind of every part it covers
 %  alpha    - hole closing radius in multiples of dxy (default 3.1). Holes
 %             narrower than 2*alpha*dxy are filled and vanish; wider holes are
 %             preserved as measured (no growing into them). Single-pixel-wide
@@ -47,6 +55,7 @@ function out = spatialDecompositionGrid(ebsd,g,varargin)
 %
 % Flags
 %  delaunay - the alpha-complex instead of the closing
+%  kindsOnly - return only the kinds and the parts, before the decomposition
 %
 % Output struct out with fields
 %  V        - nV × 2 Voronoi vertices
@@ -57,6 +66,8 @@ function out = spatialDecompositionGrid(ebsd,g,varargin)
 %             notIndexed sites that came from empty cells
 %  ij       - nEbsd × 2 axial indices (debug)
 %  inFill   - @(p) > 0 inside the filled cells, < 0 outside, [] without any
+%  with kindsOnly: kinds, a categorical per pixel (pore, pocket, crack, void,
+%  noise, indexed), and parts, a table of the thick parts with their features
 
 isDelaunay = check_option(varargin,'delaunay');
 alpha = get_option(varargin,'alpha',2.2*isDelaunay + 3.1*~isDelaunay);
@@ -86,7 +97,11 @@ rClose  = alpha*dxy;                            % closing radius: fills holes of
 % the dummy ring to sit in. If the material ever reaches the padded border,
 % the flood fill cannot wrap around it, no dummies are placed there, and the
 % outer grains come out open.
-closeCells = ceil((1 + isDelaunay)*rClose / min(vecnorm(A,2,1)));
+% pores, pockets and cracks may close with a radius of their own
+alphaK = [get_option(varargin,'alphaPore',alpha), ...
+          get_option(varargin,'alphaPocket',alpha), get_option(varargin,'alphaCrack',alpha)];
+rMax = max([alpha, alphaK(isfinite(alphaK))])*dxy;
+closeCells = ceil((1 + isDelaunay)*rMax / min(vecnorm(A,2,1)));
 padding = closeCells + 4;   % closing reach + band (1) + pushed band (1) + dummy ring (1) + safety (1)
 szP     = ijsz + 2*padding;
 ij2slotP = @(IJ) (IJ(:,1)-ijmin(1)+padding) + (IJ(:,2)-ijmin(2)+padding)*szP(1) + 1;
@@ -96,22 +111,51 @@ isIndexedP = false(prod(szP),1);
 isIndexedP(ij2slotP(ij(isIndexed,:))) = true;
 % imagesc(reshape(isIndexedP,szP)), axis equal tight
 
+% the scan footprint, the convex hull of the indexed pixels: beyond it the
+% material counts as present during the erosion, so that the map edge is no
+% boundary the closing erodes from
+inScanP = true(prod(szP),1);
+try %#ok<TRYNC>
+  inScanP = inConvexHull(ij(isIndexed,:), ijmin - padding - 1, szP);
+end
+
 if isDelaunay
   % the smallest circumradius of a filled triangle covering each cell, inf where none
-  rMin = alphaComplexMask(pos, isIndexed, ij, epsilon, rClose, ...
+  rMin = alphaComplexMask(pos, isIndexed, ij, epsilon, rMax, ...
     szP, padding, ijmin, ijsz, idealFun, reconstructPos, isIndexedP);
-  closedP = isfinite(rMin) | isIndexedP;
+  closedP = rMin <= rClose + epsilon | isIndexedP;
   isOpen = @(x,r) rMin(x) > r*dxy + epsilon;
 else
-  % the scan footprint, the convex hull of the indexed pixels: beyond it the
-  % material counts as present during the erosion, so that the map edge is no
-  % boundary the closing erodes from
-  inScanP = true(prod(szP),1);
-  try %#ok<TRYNC>
-    inScanP = inConvexHull(ij(isIndexed,:), ijmin - padding - 1, szP);
-  end
   closedP = closeAt(isIndexedP, inScanP, alpha, dxy, A, stencil, szP);
   isOpen = @(x,r) ~closedAt(x, isIndexedP, inScanP, diskOffsets(r*dxy, A, stencil), szP);
+end
+
+% the closing radius of a cell is that of the kind of its notIndexed part:
+% pores, pockets and cracks each close with their own radius
+byKindP = false(prod(szP),1);
+kindsOnly = check_option(varargin,'kindsOnly');
+if any(alphaK ~= alpha) || kindsOnly
+  ebsdP = zeros(prod(szP),1); ebsdP(ij2slotP(ij)) = 1:size(ij,1);
+  [kindP,parts] = kindOfParts(closedP, isIndexedP, inScanP, ebsdP, ebsd, ...
+    grainBoundaryCriterion.byOptions(varargin{:}), ...
+    kindCode(get_option(varargin,'kinds',[])), stencil, szP, A);
+  if kindsOnly
+    k = kindP; k(~inScanP & ~isIndexedP) = 4; k(k == 0) = 5; k(isIndexedP) = 6;
+    out = struct('kinds',reshape(kindName(k(ij2slotP(ij))),size(ebsd.phaseId)),'parts',parts);
+    return
+  end
+  for k = find(alphaK ~= alpha)
+    x = find(kindP == k);
+    if isDelaunay
+      c = rMin(x) <= alphaK(k)*dxy + epsilon;
+    elseif isinf(alphaK(k))
+      c = true(size(x));
+    else
+      c = closedAt(x, isIndexedP, inScanP, diskOffsets(alphaK(k)*dxy, A, stencil), szP);
+    end
+    byKindP(x(c)) = true;
+  end
+  closedP = closedP | byKindP;
 end
 
 % exteriorP = background connected to the padded border. This is a flood fill
@@ -125,7 +169,7 @@ nSteps = 2*ceil(alpha);
 ext0 = [];
 while ~isequal(exteriorP,ext0)   % a hole that joined the outside can join the next
   ext0 = exteriorP;
-  f = closedP & ~isIndexedP;
+  f = closedP & ~isIndexedP & ~byKindP;
   [dHole,hole] = geoDist(~closedP & ~exteriorP, f, stencil, szP, nSteps);
   corridor = find(f & geoDist(exteriorP, f, stencil, szP, nSteps) + dHole <= nSteps);
   for r = [alpha-1:-1:1, 0]
@@ -319,7 +363,7 @@ end
 function c = closedAt(x, isIndexedP, inScanP, offs, szP)
 % the closing of the indexed cells by offs, at the raster cells x alone
 o = (offs(:,1) + offs(:,2)*szP(1)).';
-y = unique(x + o); y = y(inScanP(y));
+y = unique(reshape(x + o,[],1)); y = y(inScanP(y));
 dil = ~inScanP;
 dil(y) = any(isIndexedP(y + o),2);
 c = isIndexedP(x) | all(dil(x + o),2) & inScanP(x);
@@ -471,3 +515,102 @@ inside = reshape(j >= lo - 1e-9 & j <= hi + 1e-9,[],1);
 
 end
 
+
+% ===========================================================================
+function [kindP,parts] = kindOfParts(closedP, isIndexedP, inScanP, ebsdP, ebsd, gbc, override, stencil, szP, A)
+% kind of every cell of the notIndexed parts the closing leaves open:
+% 1 pore, 2 pocket, 3 crack, 4 void, 0 elsewhere; override is a code per
+% ebsd pixel that replaces the computed kind of its part
+open = ~closedP & inScanP;
+x = find(open);
+n = numel(x);
+L = zeros(prod(szP),1); L(x) = 1:n;
+o = stencil(:,1) + stencil(:,2)*szP(1);
+[a,b] = deal([]);
+for s = o.'
+  y = x + s;
+  ok = open(y);
+  a = [a; L(x(ok))]; b = [b; L(y(ok))]; %#ok<AGROW>
+end
+lab = conncomp(graph(a,b,[],n)).';
+nP = max([lab;0]);
+
+% size, border contact and Feret diameter of every part
+area = accumarray(lab,1,[nP 1]);
+touch = binaryDilate(~inScanP, stencil, szP);
+border = accumarray(lab,touch(x),[nP 1],@any,false);
+[r,c] = ind2sub(szP,x);
+xy = [r c]*A';
+feret = zeros(nP,1);
+for p = find(area >= 3).'
+  q = xy(lab == p,:);
+  try q = q(convhull(q(:,1),q(:,2)),:); end %#ok<TRYNC>
+  feret(p) = max(pdist(q));
+end
+elong = feret.^2 ./ (area*abs(det(A)));
+
+% the indexed cells around every part, one contact per part and cell
+[pp,yy] = deal([]);
+for s = o.'
+  y = x + s;
+  ok = isIndexedP(y);
+  pp = [pp; lab(ok)]; yy = [yy; y(ok)]; %#ok<AGROW>
+end
+ct = unique([pp yy],'rows');
+nC = size(ct,1);
+key = ct(:,1) + nP*ct(:,2);
+
+% adjacent rim cells of one part, joined where the criterion connects them
+[a,b] = deal([]);
+for s = o.'
+  [tf,j] = ismember(ct(:,1) + nP*(ct(:,2)+s), key);
+  a = [a; find(tf)]; b = [b; j(tf)]; %#ok<AGROW>
+end
+m = a < b; a = a(m); b = b(m);
+same = connects(ct(a,2),ct(b,2));
+cl = conncomp(graph(a(same),b(same),[],nC)).';
+
+% rim pieces of one part joined once more when their first cells connect
+[~,first,piece] = unique(cl);
+I = sparse(1:numel(first),ct(first,1),1,numel(first),nP);
+[a,b] = find(triu(I*I',1));
+same = connects(ct(first(a),2),ct(first(b),2));
+cl = conncomp(graph(a(same),b(same),[],numel(first))).';
+cl = cl(piece);
+rim = accumarray(ct(:,1),1,[nP 1]);
+piece = accumarray(cl,1);
+share = accumarray(ct(:,1),piece(cl),[nP 1],@max,0) ./ max(rim,1);
+
+kind = 2*ones(nP,1);
+kind(share >= 0.85) = 1;
+kind(border) = 4;
+kind(elong >= 5) = 3;
+if ~isempty(override)
+  k = zeros(n,1); m = ebsdP(x) > 0; k(m) = override(ebsdP(x(m)));
+  k = accumarray(lab(k > 0),k(k > 0),[nP 1],@mode,0);
+  kind(k > 0) = k(k > 0);
+end
+kindP = zeros(prod(szP),1);
+kindP(x) = kind(lab);
+parts = table((1:nP).',kindName(kind),area,feret,elong,border,rim,share, ...
+  'VariableNames',{'id','kind','area','feret','elong','border','rim','share'});
+
+  function tf = connects(i,j)
+    % the criterion on the pixels of two raster cells
+    tf = gbc.eval(ebsd,ebsdP(i),ebsdP(j)) > 0;
+  end
+end
+
+% ===========================================================================
+function c = kindName(k)
+% the kinds as a categorical, from their codes
+names = ["pore" "pocket" "crack" "void" "noise" "indexed"];
+c = reshape(categorical(names(k),names),size(k));
+end
+
+% ===========================================================================
+function k = kindCode(c)
+% the codes of the kinds 1 pore, 2 pocket, 3 crack, 4 void, 0 for the rest
+if isempty(c) || isnumeric(c), k = c; return; end
+[~,k] = ismember(string(c(:)),["pore" "pocket" "crack" "void"]);
+end

@@ -3,8 +3,10 @@
 An investigation of how `calcGrains` could tell noise, pores, pockets, cracks and voids apart
 and close each with a parameter of its own. Measured on `mtexdata peridotite`,
 `mtexdata forsterite` and 1C_1 (`~/mtex/data/1C_1.ctf`, 1377 × 1837 pixels), MATLAB R2024b.
-Nothing in the library is changed; the prototype is a diff, and the measurement code and the
-figures are in [`notindexed-classification/`](notindexed-classification/).
+The measurement code and the figures are in
+[`notindexed-classification/`](notindexed-classification/). The design recommended below is
+implemented: `calcGrains` takes `'alphaPore'`, `'alphaPocket'` and `'alphaCrack'`,
+`EBSD/notIndexedKinds` returns the kinds, and `GrainReconstructionCracks.m` shows them.
 
 ## Summary
 
