@@ -54,6 +54,16 @@ including 6.1 have one combined list there and no entry here.
   rotation, so `calcGrains` on it made every such pixel a grain (small, 5 degree:
   935 grains instead of 85). An indexed pixel without rotation is notIndexed, as in the
   EBSD constructor (#2652)
+- The returned map gave a notIndexed pixel the grain of its nearest measured pixel if the
+  corners of its unit cell, pulled 5% towards its centre, lay in that grain or on its
+  boundary. A wedge of a second grain whose tip reaches the pixel centre runs through
+  those corners, so the pixel passed with a quarter of it outside (a sixth on hex); a
+  pixel inside a grain whose nearest measured pixel lies across the boundary failed. A
+  notIndexed pixel now takes a grain when no boundary segment meets its pulled-in unit
+  cell, from a neighbour sharing an edge or a corner that no segment separates from it.
+  Every segment is tested only against the pixels of the lattice cells it passes
+  (`private/absorbInteriorPixels.m`). 1C_1: 8384 pixels gained, 11926 lost, none
+  changes grain; absorption 24.5 -> 4.2 s, 5-6x on the other maps
 - `calcGrains` calls `calcPolygonsC`, which traces in MATLAB when the mex fails; the
   EBSD and grain2d copies of `calcPolygons` are gone. The fallback took the first loop
   as the outer one instead of the one of largest area, and `EulerCycles` returned a tour

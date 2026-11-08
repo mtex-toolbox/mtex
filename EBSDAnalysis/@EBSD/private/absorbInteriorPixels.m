@@ -1,113 +1,109 @@
-function grainId = absorbInteriorPixels(grains,ebsd,grainId)
-% assign a grainId to pixels currently at 0 that lie entirely within one grain
+function grainId = absorbInteriorPixels(grains,ebsd,grainId,lat)
+% assign a grainId to pixels at 0 that lie entirely within one grain
 %
-% grainId 0 stays reserved for pixels a grain boundary passes through. Done in
-% two steps:
-%   1) nearestCandidates - propose for each zero pixel the grain of the nearest
-%      pixel that has one, also across gaps in a sparse map.
-%   2) footprintInside - verify each candidate geometrically: the pixel's whole
-%      unit-cell footprint (corners nudged slightly inward for stability) must
-%      lie inside the candidate grain. A pixel a boundary crosses fails and
-%      stays 0. This gates out candidates from across a boundary.
+% A pixel at 0 whose unit cell, pulled slightly towards its centre, no
+% boundary segment meets takes the grain of a neighbour, sharing an edge or
+% a corner, whose centre no segment separates from its own, and passes it
+% on the same way. Every segment is tested only against the pixels of the
+% lattice cells it passes, so nothing is searched.
 %
 % Input
 %  grains  - @grain2d
 %  ebsd    - @EBSD
 %  grainId - nEbsd × 1 grain id per pixel (0 = unassigned)
+%  lat     - ebsd.lattice
 %
 % Output
 %  grainId - updated grain id per pixel
 
-ind0 = find(grainId == 0);
-if isempty(ind0), return; end
+z = find(grainId == 0);
+if isempty(z), return; end
 
-cand   = nearestCandidates(ebsd,grainId);    % candidate grain per pixel (0 = none)
-c0     = cand(ind0);
-sel    = c0 > 0;
-rows   = ind0(sel);  gCand = c0(sel);
-inside = footprintInside(grains,ebsd,rows,gCand);
-grainId(rows(inside)) = gCand(inside);
+% raster of the lattice slots, 0 where the map has no pixel
+ij = lat.ij - min(lat.ij,[],1) + 2; sz = max(ij,[],1) + 1;
+slot = ij(:,1) + (ij(:,2) - 1) * sz(1);
+P = zeros(sz); P(slot) = 1:numel(slot);
+xy = [ebsd.pos.x(:) ebsd.pos.y(:)];
+
+% the neighbours sharing an edge before those sharing a corner, 0 for an empty slot
+[di,dj] = ndgrid(-1:1); o = [di(:) dj(:)];
+[d,k] = sort(vecnorm(o * lat.A.',2,2)); o = o(k(d > 0 & d < 1.5 * lat.dxy),:);
+nb = P(slot(z) + o(:,1).' + o(:,2).' * sz(1));
+
+% every boundary segment in the cells whose unit cell its box meets, of the zero pixels and their neighbours
+isI = false(sz); isI(slot(z)) = true; isI(slot(nb(nb > 0))) = true;
+gB = grains.boundary;
+a = [gB.allV.x(gB.F(:,1)) gB.allV.y(gB.F(:,1))];
+b = [gB.allV.x(gB.F(:,2)) gB.allV.y(gB.F(:,2))];
+u1 = (a - lat.origin) / lat.A.' - min(lat.ij,[],1) + 2;
+u2 = (b - lat.origin) / lat.A.' - min(lat.ij,[],1) + 2;
+mg = max(abs([ebsd.unitCell.x(:) ebsd.unitCell.y(:)] / lat.A.'),[],1) - 0.5 + 1e-6;
+lo = max(round(min(u1,u2) - mg),1); hi = min(round(max(u1,u2) + mg),sz);
+w = hi(:,1) - lo(:,1) + 1; n = w .* (hi(:,2) - lo(:,2) + 1);
+s = repelem((1:size(a,1)).',n);
+r = (1:numel(s)).' - repelem(cumsum(n) - n,n) - 1;
+c = lo(s,1) + mod(r,w(s)) + (lo(s,2) + floor(r ./ w(s)) - 1) * sz(1);
+k = isI(c); [c,o2] = sort(c(k)); s = s(k); s = s(o2);
+cnt = accumarray(c,1,[numel(P) 1]); first = cumsum(cnt) - cnt;
+
+% a zero pixel is crossed if a segment meets its nudged unit cell
+[i,e] = segsOf(slot(z));
+uc = 0.95 * [ebsd.unitCell.x(:) ebsd.unitCell.y(:)];
+crossed = false(size(z));
+crossed(i(~separated(xy(z(i),:),uc,a(e,:),b(e,:)))) = true;
+
+% the grain passes along every link no segment of its two cells cuts
+u = find(~crossed);
+tested = false(numel(u),size(o,1));
+while true
+  nNew = 0;
+  for k = 1:size(o,1)
+    j = find(grainId(z(u)) == 0 & ~tested(:,k) & nb(u,k) > 0);
+    j = j(grainId(nb(u(j),k)) > 0);
+    tested(j,k) = true;
+    p = z(u(j)); q = nb(u(j),k);
+    [i,e] = segsOf([slot(p); slot(q)]);
+    i = mod(i - 1,numel(p)) + 1;
+    cut = false(size(p));
+    cut(i(cuts(xy(p(i),:),xy(q(i),:),a(e,:),b(e,:)))) = true;
+    grainId(p(~cut)) = grainId(q(~cut));
+    nNew = nNew + nnz(~cut);
+  end
+  if nNew == 0, break; end
+end
+
+  function [i,e] = segsOf(cl)
+    % the segments of the cells cl, with the index into cl
+    m = cnt(cl);
+    i = repelem((1:numel(cl)).',m);
+    e = s(repelem(first(cl),m) + (1:sum(m)).' - repelem(cumsum(m) - m,m));
+  end
 
 end
 
-% =========================================================================
-function cand = nearestCandidates(ebsd,grainId)
-% propose for every grainId==0 pixel the grain of the nearest pixel that has one
+function sep = separated(cen,uc,a,b)
+% whether the segments a-b and the convex polygons cen + uc have a separating axis
 
-cand = grainId;
-has = find(grainId > 0);
-ind0 = find(grainId == 0);
-if numel(has) < 3, return; end
-xy = [ebsd.pos.x(:), ebsd.pos.y(:)];
-cand(ind0) = grainId(has(nearestId(xy(has,:),xy(ind0,:))));
+d = b - a;
+pr = (cen(:,1) - a(:,1) + uc(:,1).') .* d(:,2) - (cen(:,2) - a(:,2) + uc(:,2).') .* d(:,1);
+sep = all(pr > 0,2) | all(pr < 0,2);
+e = circshift(uc,-1) - uc;
+nrm = [e(:,2) -e(:,1)] * sign(sum(e(:,1).*circshift(e(:,2),-1) - e(:,2).*circshift(e(:,1),-1)));
+h = sum(nrm .* uc,2).';
+pa = (a(:,1) - cen(:,1)) .* nrm(:,1).' + (a(:,2) - cen(:,2)) .* nrm(:,2).';
+pb = (b(:,1) - cen(:,1)) .* nrm(:,1).' + (b(:,2) - cen(:,2)) .* nrm(:,2).';
+sep = sep | any(pa > h & pb > h,2);
 
 end
 
-% =========================================================================
-function inside = footprintInside(grains,ebsd,rows,gCand)
-% whether the unit-cell corners of every pixel rows, pulled slightly towards its centre, lie
-% inside its candidate grain gCand (holes excluded), a point on the boundary counting as inside
-%
-% The rule of insidepoly: a vertical ray crossing segments counted on [x1,x2), on the boundary
-% within 1e-9 of the grain's extent. A corner meets only the segments of its grain in its
-% column of the unit-cell width.
+function x = cuts(p1,p2,a,b)
+% whether the segments p1-p2 and a-b meet
 
-% the segments of all grains, every loop closed onto its first vertex
-poly = grains.poly; n = cellfun('length',poly(:));
-ia = [poly{:}].';
-ib = (2:numel(ia)+1).'; ib(cumsum(n)) = cumsum(n) - n + 1; ib = ia(ib);
-gs = repelem((1:numel(n)).',n);
-x1 = grains.allV.x(ia); y1 = grains.allV.y(ia);
-x2 = grains.allV.x(ib); y2 = grains.allV.y(ib);
-
-% on-boundary tolerance of every grain from its extent
-bx = [accumarray(gs,x1,[],@min) accumarray(gs,x1,[],@max)];
-by = [accumarray(gs,y1,[],@min) accumarray(gs,y1,[],@max)];
-tol = max(1e-9*max(diff(bx,1,2),diff(by,1,2)),8*eps*max(abs([bx by]),[],2));
-tol = tol(gs);
-
-% per segment: its x bracket, a, the band c in (bLo,bHi) of points on it, a vertical one by box
-dx = x2 - x1; dy = y2 - y1; v = dx == 0;
-xLo = min(x1,x2); xHi = max(x1,x2);
-a = x1.*y2 - x2.*y1;
-b = x1.*dy - y1.*dx; t = sqrt(dx.^2 + dy.^2).*tol;
-bLo = b - t; bHi = b + t; bLo(v) = -inf; bHi(v) = inf;
-oxLo = xLo; oxHi = xHi; oxLo(v) = x1(v) - tol(v); oxHi(v) = x1(v) + tol(v);
-oyLo = -inf(size(v)); oyHi = -oyLo; oyLo(v) = min(y1(v),y2(v)); oyHi(v) = max(y1(v),y2(v));
-
-% every segment into each column its on-boundary x bracket meets, keyed by grain and column
-w = max(ebsd.unitCell.x) - min(ebsd.unitCell.x);
-col = @(x) floor((x - min(ebsd.pos.x(:)))/w);
-c1 = col(oxLo); r = col(oxHi) - c1 + 1; c0 = min(c1); nc = max(c1 + r) - c0;
-m = repelem((1:numel(ia)).',r);
-[key,o] = sort(gs(m)*nc + (1:numel(m)).' - repelem(cumsum(r) - r + 1 - c1 + c0,r));
-m = m(o);
-[uk,first] = unique(key,'first');
-cnt = diff([first;numel(key)+1]);
-
-% the nudged corners and their buckets
-id2pos = zeros(max(grains.id),1); id2pos(grains.id) = 1:numel(n);
-qx = ebsd.pos.x(rows(:)) + 0.95*ebsd.unitCell.x(:).'; qx = qx(:);
-qy = ebsd.pos.y(rows(:)) + 0.95*ebsd.unitCell.y(:).'; qy = qy(:);
-[hit,loc] = ismember(repmat(id2pos(gCand(:)),numel(ebsd.unitCell.x),1)*nc + col(qx) - c0,uk);
-
-% the parity of the crossings, then the boundary band for the corners left outside, in chunks
-odd = false(size(qx)); on = odd;
-qi = find(hit); nP = cnt(loc(qi)); cs = [0;cumsum(nP)];
-k0 = 1;
-while k0 <= numel(qi)
-  k = (k0:max(k0,find(cs <= cs(k0) + 4e6,1,'last') - 1)).';
-  p = repelem(qi(k),nP(k));
-  e = m((1:numel(p)).' + repelem(first(loc(qi(k))) - 1 - cs(k) + cs(k0),nP(k)));
-  c = qx(p).*dy(e) - qy(p).*dx(e);
-  odd = xor(odd,logical(mod(accumarray(p,qx(p) >= xLo(e) & qx(p) < xHi(e) & ...
-    sign(dx(e)).*(c - a(e)) >= 0,size(qx)),2)));
-  s = ~odd(p); p = p(s); e = e(s); c = c(s);
-  on = on | accumarray(p,qx(p) >= oxLo(e) & qx(p) <= oxHi(e) & qy(p) >= oyLo(e) & ...
-    qy(p) <= oyHi(e) & c > bLo(e) & c < bHi(e),size(qx)) > 0;
-  k0 = k(end) + 1;
-end
-
-inside = all(reshape(odd | on,numel(rows),[]),2);
+cr = @(u,v) u(:,1).*v(:,2) - u(:,2).*v(:,1);
+o1 = cr(b - a,p1 - a); o2 = cr(b - a,p2 - a);
+o3 = cr(p2 - p1,a - p1); o4 = cr(p2 - p1,b - p1);
+t = [sum((a - p1).*(p2 - p1),2) sum((b - p1).*(p2 - p1),2)];
+x = o1.*o2 <= 0 & o3.*o4 <= 0 & ...
+  ~(o1 == 0 & o2 == 0 & (max(t,[],2) < 0 | min(t,[],2) > sum((p2 - p1).^2,2)));
 
 end

@@ -196,7 +196,7 @@ end
 % assign a grainId to pixels entirely within a grain, 0 stays for those on a boundary
 if nargout > 1
   wasNotIndexed = ~ebsd.isIndexed(:);
-  ebsd.grainId = absorbInteriorPixels(grains,ebsd,grainId);
+  ebsd.grainId = absorbInteriorPixels(grains,ebsd,grainId,lat);
 
   absorbed = wasNotIndexed & ebsd.grainId(:) > 0;
   if any(absorbed)
