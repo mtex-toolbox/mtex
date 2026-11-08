@@ -15,7 +15,9 @@ including 6.1 have one combined list there and no entry here.
 - `calcGrains` drew the boundaries through cells the alpha closing had filled along the
   bisectors of the measured pixels around them, which gave a vertex on the medial axis
   of a closed crack and notches in clusters of notIndexed pixels. Boundary vertices
-  strictly inside filled cells relax to straight lines (`private/straightenInFill.m`);
+  strictly inside filled cells relax to straight lines (`private/straightenInFill.m`).
+  A boundary segment is cut where it enters the fill, also one whose ends both lie
+  inside or on its edge while its middle leaves it, so its inside end can move;
   a moved segment that would sweep over a measured or unfilled cell, or cross another
   boundary, keeps its vertices, so every measured pixel stays in its grain.
   `'straighten',false` gives the bisectors
