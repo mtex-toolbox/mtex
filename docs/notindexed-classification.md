@@ -7,6 +7,8 @@ The measurement code and the figures are in
 [`notindexed-classification/`](notindexed-classification/). The design recommended below is
 implemented: `calcGrains` takes `'alphaPore'`, `'alphaPocket'` and `'alphaCrack'`,
 `EBSD/notIndexedKinds` returns the kinds, and `GrainReconstructionCracks.m` shows them.
+The decision, with `'alphaPore'` defaulting to `inf`, is recorded in
+[ADR 0010](adr/0010-closing-radius-per-kind.md).
 
 ## Summary
 

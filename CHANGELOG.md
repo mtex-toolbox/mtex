@@ -95,6 +95,24 @@ including 6.1 have one combined list there and no entry here.
   lost a vertex; `geoDist` visits only the cells next to its front; the lattice is
   computed once per call; `alphaComplexMask` rasterises only the cells without a
   measurement ('delaunay' 2.7x faster)
+- The closing with alpha filled every notIndexed region narrower than 2*alpha whatever
+  it was. The parts it leaves open are now classified (`kindOfParts` in
+  `spatialDecompositionGrid`): Feret^2 / area >= 5 is a crack, contact with the raster
+  outside the scan hull a void, a rim held to 85% by pixels the criterion connects a
+  pore, the rest pockets, in that priority. Each kind closes with a radius of its own,
+  `'alphaPore'` (default inf), `'alphaPocket'` and `'alphaCrack'` (default alpha), by
+  `closedAt` with the kind's disk on the kind's cells, or by the circumradius on the
+  `'delaunay'` path. A radius below alpha acts as alpha, since the base closing is not
+  undone. `notIndexedKinds` returns the kind per pixel and the parts table through
+  `'kindsOnly'`; `'kinds'` replaces the kind of a part by the mode over its pixels.
+  peridotite at 10 degree, minPixel 5: 575 -> 569 grains, 41 -> 35 notIndexed; the
+  classification costs 0.02-0.06 s on peridotite, forsterite and 1C_1. ADR 0010
+- `closedAt` on a corridor of a single cell indexed a row and failed (latent; hit by
+  `'alphaPocket',6` on peridotite)
+- `inConvexHull` threw on a single-precision lattice (`accumarray` with a single column
+  and a double fill) and its try made the whole raster count as scan, so the material
+  rule outside the hull was off on such maps and `kindOfParts` indexed off the raster.
+  The lattice indices and the stencil are cast to double once
 
 ### Grain Boundaries
 

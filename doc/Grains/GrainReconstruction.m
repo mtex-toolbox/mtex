@@ -59,10 +59,9 @@ hold off
 % boundaries therefore follow the grid in steps rather than passing through
 % the points.
 %
-% Although a fifth of the map is notIndexed, only one grain is notIndexed:
-% the long white bar right of centre. The other notIndexed pixels have been
-% absorbed by adjacent grains. The section on |'alpha'| below explains this
-% default behaviour.
+% Although a fifth of the map is notIndexed, no grain is notIndexed: every
+% notIndexed pixel has been absorbed by an adjacent grain. The section on
+% |'alpha'| below explains this default behaviour.
 
 %% The threshold angle
 %
@@ -112,13 +111,16 @@ for alpha = [0 1 3.1 6]
 end
 
 %%
-% With |alpha = 0| nothing is absorbed. The notIndexed pixels then contribute
-% more than one thousand grains of their own, five times the number of
-% indexed grains found with the default. Their seams also divide regions that
-% should be single indexed grains, so the indexed count rises from 210 to
-% 525. A closing radius of one pixel removes almost all of them. The default
-% keeps only the wide notIndexed region, while |alpha = 6| absorbs that one
-% too.
+% With |alpha = 0| nothing between the grains is absorbed. The notIndexed
+% pixels there contribute more than four hundred grains of their own, twice
+% the number of indexed grains found with the default. Their seams also
+% divide regions that should be single indexed grains, so the indexed count
+% rises from 209 to 431. A closing radius of one pixel removes almost all of
+% them, and the default removes the rest. A notIndexed region inside a
+% single grain is a pore and belongs to that grain whatever |alpha| is, such
+% as the long white bar right of centre. How |calcGrains| tells pores,
+% pockets and cracks apart, and how each kind is closed with a radius of its
+% own, is the subject of <GrainReconstructionCracks.html Cracks and Pores>.
 %
 % The effect is easiest to see when the two extremes are drawn on the same
 % part of the map.
@@ -144,10 +146,10 @@ hold off
 xlim(region(1)+[0 region(3)]), ylim(region(2)+[0 region(4)])
 
 %%
-% On the left, at |alpha = 0|, isolated white pixels are fenced off and white
-% seams cut the blue forsterite into pieces. On the right, at the default,
-% the same white measurements remain visible and remain notIndexed, but they
-% no longer separate the surrounding grains. The isolated orange pixels keep
+% On the left, at |alpha = 0|, the white pixels between the grains are fenced
+% off and white seams cut the blue forsterite into pieces. On the right, at
+% the default, the same white measurements remain visible and remain
+% notIndexed, but they no longer separate the surrounding grains. The isolated orange pixels keep
 % boundaries on both sides because they are indexed diopside. The
 % |'minPixel'| option below deals with such small indexed grains.
 

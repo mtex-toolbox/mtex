@@ -98,7 +98,7 @@ P = xy(v,:);
 S = [0; cumsum(vecnorm(diff(P),2,2))];
 
 % the pixel centres next to every chain, in the order of the chains
-sp = find(isPx);
+sp = reshape(find(isPx),[],1);
 C = reshape([mid(sp,:) + off(sp,:), mid(sp,:) - off(sp,:)].',2,[]).';
 nCc = accumarray(ch(sp),2,[numel(L) 1]);
 

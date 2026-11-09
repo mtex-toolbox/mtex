@@ -4,7 +4,8 @@ function [kinds,parts] = notIndexedKinds(ebsd,varargin)
 % The closing with alpha fills every notIndexed region narrower than about
 % 2*alpha pixels. What it leaves open are the thick parts, and each of
 % them is a pore, a pocket, a crack or a void. calcGrains closes a part
-% with the radius of its kind, alphaPore, alphaPocket or alphaCrack.
+% with the radius of its kind, alphaPore, alphaPocket or alphaCrack, and
+% fills the pores whole by default.
 %
 % Syntax
 %

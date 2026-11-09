@@ -22,9 +22,26 @@
 %   grains = calcGrains(ebsd,'alpha',10,'straighten',false)
 %
 % A larger |alpha| now joins at least the grains a smaller one joins, and no
-% two grains touch in a single point. See
-% <GrainReconstructionCracks.html Cracks and Pores> for choosing |alpha| on
-% a map with cracks, pores and pockets.
+% two grains touch in a single point.
+%
+% *Pores, pockets and cracks*
+%
+% <EBSD.calcGrains.html |calcGrains|> tells the |notIndexed| regions that
+% |alpha| leaves open apart by their shape and their surroundings: a pore
+% lies inside one grain, a pocket between several grains, a crack is long
+% and narrow, and a void touches the edge of the map. Each kind is closed
+% with a radius of its own, |'alphaPore'|, |'alphaPocket'| and
+% |'alphaCrack'|. A pore is filled by default, so that a hole inside a grain
+% belongs to that grain; the other two radii default to |alpha|. To bridge
+% the cracks of a map where they are narrower than 30 pixels:
+%
+%   grains = calcGrains(ebsd,'alphaCrack',15)
+%
+% <EBSD.notIndexedKinds.html |notIndexedKinds|> returns the kind of every
+% pixel and a table of the regions, and the option |'kinds'| hands an edited
+% classification back to |calcGrains|. Grain counts change on maps with
+% pores wider than |2*alpha| pixels; |'alphaPore',0| keeps such pores as
+% |notIndexed| grains. See <GrainReconstructionCracks.html Cracks and Pores>.
 %
 % *Smoother grain boundaries*
 %

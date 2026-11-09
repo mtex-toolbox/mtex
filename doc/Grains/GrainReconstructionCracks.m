@@ -41,14 +41,14 @@ plot(ebsd,'micronbar','off')
 % forsterite grains, irregular pockets lie between the grains, and specks
 % are scattered everywhere.
 
-%% One radius for everything
+%% The closing radius
 %
 % |calcGrains| fills every |notIndexed| region narrower than |2*alpha|
-% pixels, whatever its kind. A wider region keeps its core, and its narrow
-% arms are filled. Such a core is either a |notIndexed| grain, or it touches
-% the edge of the map and lies outside all grains, bounded by the *outer
-% boundary* between the grains and the area no grain covers. Its pixels get
-% the |grainId| 0.
+% pixels. A wider region keeps its core, and its narrow arms are filled.
+% Such a core is a |notIndexed| grain of its own, a part of the one grain
+% around it, or it touches the edge of the map and lies outside all grains,
+% bounded by the *outer boundary* between the grains and the area no grain
+% covers. Its pixels then get the |grainId| 0.
 %
 % We reconstruct the grains with the default |alpha| of 3.1. The second
 % output is the map with the |grainId| of every pixel. We keep it apart from
@@ -87,20 +87,23 @@ for k = 1:numel(alpha)
 end
 
 %%
-% With |alpha = 1.1| many specks between and inside the grains remain grains
-% of their own. With |alpha = 2.8| most of them are absorbed and show as
-% white dots inside the grains, while the pores, the pockets and the whole
-% crack are kept. With |alpha = 6.8| the pores and almost all pockets are
-% gone. The narrow upper part of the crack is closed, and grains of similar
-% orientation on its two sides have become one grain. The wider lower part
-% is still open. With |alpha = 16.1| the grains bridge the lower part as
-% well, along straight boundaries. Only its mouth at the bottom edge of the
-% map remains outside all grains, and no |notIndexed| grain is left.
+% With |alpha = 1.1| many specks between the grains remain grains of their
+% own. With |alpha = 2.8| most of them are absorbed and show as white dots
+% inside the grains, while the pockets and the whole crack are kept. With
+% |alpha = 6.8| almost all pockets are gone. The narrow upper part of the
+% crack is closed, and grains of similar orientation on its two sides have
+% become one grain. The wider lower part is still open. With |alpha = 16.1|
+% the grains bridge the lower part as well, along straight boundaries. Only
+% its mouth at the bottom edge of the map remains outside all grains, and no
+% |notIndexed| grain is left.
 %
-% The value that closes the crack also absorbs every pore and pocket of the
-% map into the neighbouring grains, whether or not they belong there. A
-% single radius cannot treat the kinds differently, since it only knows
-% their width.
+% The round pores inside the forsterite grains have no boundary of their
+% own in any of the four maps. A hole inside one grain is part of that
+% grain, and |calcGrains| fills it whatever its width, as the next section
+% explains. The pockets have no such rule. The value that closes the crack also absorbs every pocket
+% narrower than |2*alpha| into the neighbouring grains, whether or not it
+% belongs there. A single radius cannot treat the kinds differently, since
+% it only knows their width.
 
 %% The kinds of notIndexed regions
 %
@@ -153,18 +156,18 @@ disp(head(sortrows(parts,'area','descend'),8))
 %
 % |calcGrains| closes every region with a radius that depends on its kind.
 % The options |'alphaPore'|, |'alphaPocket'| and |'alphaCrack'| give the
-% radius of the three kinds, in pixels like |alpha|. Each of them defaults
-% to |alpha|, so that the reconstruction does not change until one is set.
-% A pore or a pocket narrower than twice its radius is filled, a wider one
-% keeps its core. A crack is bridged wherever it is narrower than twice
-% |'alphaCrack'|. The value |inf| fills a kind whole. Voids keep the radius
-% |alpha|.
+% radius of the three kinds, in pixels like |alpha|. A pore or a pocket
+% narrower than twice its radius is filled, a wider one keeps its core. A
+% crack is bridged wherever it is narrower than twice |'alphaCrack'|. The
+% value |inf| fills a kind whole, and a radius below |alpha| acts as
+% |alpha|. Voids keep the radius |alpha|.
 %
-% We bridge the crack where it is narrower than 30 pixels and fill every
-% pore. The pockets keep the default radius.
+% By default |'alphaPore'| is |inf|, so that a pore is part of its grain,
+% and the other two radii are |alpha|. We bridge the crack where it is
+% narrower than 30 pixels and leave the pockets at the default radius.
 
 [grainsK,ebsdK] = calcGrains(ebsd,'angle',10*degree,'minPixel',5, ...
-  'alphaCrack',15,'alphaPore',inf);
+  'alphaCrack',15);
 grainsK = smoothBoundary(grainsK);
 
 plot(ebsdK,'ipfz','micronbar','off')
@@ -179,9 +182,9 @@ fprintf('%d grains, %d notIndexed, %.1f%% of the map outside all grains\n', ...
   100*nnz(ebsdK.grainId==0)/length(ebsdK))
 
 %%
-% The grains reach across the whole crack, the pores have disappeared into
-% their grains, and the pockets are kept as the darkened |notIndexed|
-% grains. Only the voids at the edge of the map remain outside all grains.
+% The grains reach across the whole crack, and the pockets are kept as the
+% darkened |notIndexed| grains. Only the voids at the edge of the map remain
+% outside all grains.
 
 %% Grains across the crack
 %
@@ -194,25 +197,22 @@ fprintf('%d grains, %d notIndexed, %.1f%% of the map outside all grains\n', ...
 % pixels of the crack are outside all grains by default, and inside one with
 % |'alphaCrack',15|.
 
-[grainsCrack,ebsdCrack] = calcGrains(ebsd,'angle',10*degree,'minPixel',5, ...
-  'alphaCrack',15);
-
-inCrack = ebsdGrains.grainId == 0 & ebsdCrack.grainId > 0;
+inCrack = ebsdGrains.grainId == 0 & ebsdK.grainId > 0;
 
 %%
 % For each grain that covers a part of the crack, we count how many of its
 % pixels belong to each of the default grains. Two default grains with more
 % than 200 pixels each are the two pieces of a grain that the crack cut.
 
-isJoined = false(size(grainsCrack));
-for id = unique(ebsdCrack.grainId(inCrack)).'
-  [pieces,~,j] = unique(ebsdGrains.grainId(ebsdCrack.grainId == id & ...
+isJoined = false(size(grainsK));
+for id = unique(ebsdK.grainId(inCrack)).'
+  [pieces,~,j] = unique(ebsdGrains.grainId(ebsdK.grainId == id & ...
     ebsdGrains.isIndexed));
   pieces = pieces(accumarray(j,1) > 200);
   if numel(pieces) < 2, continue, end
-  isJoined(grainsCrack.id2ind(id)) = true;
+  isJoined(grainsK.id2ind(id)) = true;
   fprintf('%s: two pieces with misorientation %.1f°\n', ...
-    grainsCrack('id',id).mineral, ...
+    grainsK('id',id).mineral, ...
     angle(grains('id',pieces(1)).meanOrientation, ...
     grains('id',pieces(2)).meanOrientation) / degree)
 end
@@ -226,8 +226,8 @@ plot(ebsd,'micronbar','off')
 legend off
 hold on
 plot(grains.boundary,'linewidth',1,'LineColor','r')
-plot(grainsCrack(isJoined),'FaceColor','black','FaceAlpha',0.4)
-plot(grainsCrack.boundary,'linewidth',1)
+plot(grainsK(isJoined),'FaceColor','black','FaceAlpha',0.4)
+plot(grainsK.boundary,'linewidth',1)
 hold off
 axis([2500 12500 7000 17940])
 
@@ -280,7 +280,7 @@ kindsEdited = kinds;
 kindsEdited(ismember(ebsdK.grainId,grainsK(isEnclosed).id)) = "pore";
 
 [grainsEdited,ebsdEdited] = calcGrains(ebsd,'angle',10*degree,'minPixel',5, ...
-  'alphaCrack',15,'alphaPore',inf,'kinds',kindsEdited);
+  'alphaCrack',15,'kinds',kindsEdited);
 grainsEdited = smoothBoundary(grainsEdited);
 
 newMtexFigure('layout',[1 2]);
@@ -303,16 +303,28 @@ fprintf('%d grains, %d notIndexed\n', ...
 % at the crack, are filled on the right, and their grains continue around
 % them. The pockets between several grains are unchanged.
 
-%% Pores merged after the reconstruction
+%% Pores as grains
 %
-% Pores can also be merged into their grains after the reconstruction, with
-% <grain2d.merge.html |merge|> and the option |'inclusions'|. It merges every
-% inclusion into the grain that encloses it. A second argument restricts it
-% to |notIndexed| inclusions, so that indexed inclusions such as the small
-% chromite grains remain grains of their own. Merging reads what encloses a
-% region and not its width, and so it takes pores of any size.
+% To measure the pores, reconstruct with |'alphaPore',0|. A pore is then a
+% |notIndexed| grain enclosed by a single grain, which
+% <grain2d.isInclusion.html |isInclusion|> finds, with the area and the
+% shape of any grain.
 
-[grainsMerged,parentId] = merge(grains,'inclusions',~grains.isIndexed);
+grainsP = calcGrains(ebsd,'angle',10*degree,'minPixel',5,'alphaPore',0);
+
+isPore = grainsP.isInclusion & ~grainsP.isIndexed;
+fprintf('%d pores with a mean area of %.0f pixels\n', ...
+  nnz(isPore), mean(grainsP(isPore).numPixel))
+
+%%
+% Afterwards <grain2d.merge.html |merge|> with the option |'inclusions'|
+% merges every inclusion into the grain that encloses it. A second argument
+% restricts it to |notIndexed| inclusions, so that indexed inclusions such
+% as the small chromite grains remain grains of their own. Merging reads
+% what encloses a region and not its shape, so it takes the pockets inside
+% deformed grains along with the pores.
+
+[grainsMerged,parentId] = merge(grainsP,'inclusions',~grainsP.isIndexed);
 
 plot(grainsMerged,'micronbar','off')
 
@@ -322,10 +334,9 @@ plot(grainsMerged,'micronbar','off')
 % original grain the id of the grain it is now part of. The area of a merged
 % grain includes its pores. Here they are a small part of it.
 
-isPore = grains.isInclusion & ~grains.isIndexed;
-poreIds = grains.id(isPore);
-hostArea = grainsMerged('id',parentId(grains.id2ind(poreIds))).area;
-poreArea = grains('id',poreIds).area;
+poreIds = grainsP.id(isPore);
+hostArea = grainsMerged('id',parentId(grainsP.id2ind(poreIds))).area;
+poreArea = grainsP('id',poreIds).area;
 fprintf('the pores make up %.1f%% of the area of their host grains\n', ...
   100*sum(poreArea)/sum(hostArea))
 
@@ -354,14 +365,14 @@ plot(grainsSmooth,'micronbar','off')
 % right.
 % # Look at the kinds with |notIndexedKinds|, and correct the regions that
 % are of another kind than the rules say.
-% # Set |'alphaPore',inf| to make the pores part of their grains, and
-% |'alphaCrack'| to half the width up to which a crack should be bridged,
-% if the grains on its two sides should be counted as one. Pockets stay
-% |notIndexed| grains with the default radius.
+% # Set |'alphaCrack'| to half the width up to which a crack should be
+% bridged, if the grains on its two sides should be counted as one. Pores
+% are part of their grains by default, and pockets stay |notIndexed| grains
+% with the default radius.
 % # Smooth all boundaries with |smoothBoundary|.
 %
-% A large |alpha| closes a crack as well, but also every pore and pocket
-% narrower than |2*alpha|, whether or not they belong to a grain.
+% A large |alpha| closes a crack as well, but also every pocket narrower
+% than |2*alpha|, whether or not it belongs to a grain.
 
 %% References
 %
