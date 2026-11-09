@@ -36,8 +36,9 @@ function out = spatialDecompositionGrid(ebsd,g,varargin)
 %
 % Options
 %  alphaPore, alphaPocket, alphaCrack - the closing radius of the notIndexed
-%             parts of that kind that the closing with alpha leaves open
-%             (default alpha, inf fills the kind whole). A part is a pore
+%             parts of that kind that the closing with alpha leaves open.
+%             alphaPore defaults to inf, which fills the kind whole, the
+%             others to alpha; a radius below alpha acts as alpha. A part is a pore
 %             when one orientation holds 85 percent of its rim, a crack when
 %             its Feret diameter squared is at least five times its area, a
 %             void when it touches the edge of the scan, a pocket otherwise
@@ -72,7 +73,7 @@ function out = spatialDecompositionGrid(ebsd,g,varargin)
 isDelaunay = check_option(varargin,'delaunay');
 alpha = get_option(varargin,'alpha',2.2*isDelaunay + 3.1*~isDelaunay);
 
-A = g.A; stencil = g.stencil; dxy = g.dxy; ij = g.ij;
+A = g.A; stencil = double(g.stencil); dxy = g.dxy; ij = double(g.ij);
 epsilon = dxy/100;
 
 pos = [ebsd.pos.x(:), ebsd.pos.y(:)];
@@ -98,7 +99,7 @@ rClose  = alpha*dxy;                            % closing radius: fills holes of
 % the flood fill cannot wrap around it, no dummies are placed there, and the
 % outer grains come out open.
 % pores, pockets and cracks may close with a radius of their own
-alphaK = [get_option(varargin,'alphaPore',alpha), ...
+alphaK = [get_option(varargin,'alphaPore',inf), ...
           get_option(varargin,'alphaPocket',alpha), get_option(varargin,'alphaCrack',alpha)];
 rMax = max([alpha, alphaK(isfinite(alphaK))])*dxy;
 closeCells = ceil((1 + isDelaunay)*rMax / min(vecnorm(A,2,1)));

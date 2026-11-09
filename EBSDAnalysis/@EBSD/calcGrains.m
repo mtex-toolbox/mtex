@@ -17,8 +17,11 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %   % thresholds follow the same order as ebsd.CSList and should have the same length
 %   grains = calcGrains(ebsd,'angle',{angl_1 angle_2 angle_3})
 %
-%   % bridge cracks up to 30 pixels wide and fill the pores, keep the pockets
-%   grains = calcGrains(ebsd,'alphaCrack',15,'alphaPore',inf)
+%   % bridge cracks up to 30 pixels wide
+%   grains = calcGrains(ebsd,'alphaCrack',15)
+%
+%   % keep the pores as notIndexed grains instead of filling them
+%   grains = calcGrains(ebsd,'alphaPore',0)
 %
 %   % Markovian clustering algorithm
 %   p = 1.5;    % inflation power (default = 1.4)
@@ -40,8 +43,10 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %             are marked notIndexed
 %  alpha    - fill distances into not indexed regions
 %  alphaPore, alphaPocket, alphaCrack - the fill distance for the notIndexed
-%             regions of that kind which alpha leaves open (default alpha,
-%             inf fills them whole), see notIndexedKinds
+%             regions of that kind which alpha leaves open, see
+%             notIndexedKinds. alphaPore defaults to inf, so a pore is part
+%             of its grain; the others default to alpha, and a value below
+%             alpha acts as alpha
 %  kinds    - the kind of every pixel, from notIndexedKinds, edited or not
 %  straighten - true (default) draws the grain boundaries through filled
 %             regions as straight lines, false along the bisectors between

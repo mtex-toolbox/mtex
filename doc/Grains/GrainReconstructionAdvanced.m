@@ -269,10 +269,12 @@ toc
 % |calcGrains| returns connected |notIndexed| areas as grains, so their size
 % and shape can be inspected with the tools from
 % <ShapeParameters.html Shape Parameters>. Setting |alpha = 0| closes
-% nothing, so narrow |notIndexed| areas stay where they are instead of being
-% absorbed into their neighbours.
+% nothing between the grains, and |'alphaPore',0| keeps the holes inside
+% single grains as well, so every |notIndexed| area stays where it is
+% instead of being absorbed into its neighbours.
 
-[grainsOpen,ebsdOpen] = calcGrains(ebsd,'angle',10*degree,'alpha',0);
+[grainsOpen,ebsdOpen] = calcGrains(ebsd,'angle',10*degree,'alpha',0, ...
+  'alphaPore',0);
 notIndexedGrains = grainsOpen('notIndexed')
 
 %%
