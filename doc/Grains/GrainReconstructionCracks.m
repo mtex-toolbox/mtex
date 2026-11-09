@@ -287,44 +287,40 @@ axis([2500 12500 7000 17940])
 %% Correcting the kinds
 %
 % The rules above read the shape and the surroundings of a region, and they
-% can be wrong for a map. |kinds| is a categorical array with one entry per
-% pixel, so it can be edited and handed back to |calcGrains| with the option
-% |'kinds'|. Every region then takes the kind that its pixels say.
-%
-% A pore inside a deformed grain fails the rim test, since the rim holds
-% several orientations, and counts as a pocket. After the reconstruction it
-% is a |notIndexed| grain enclosed by a single grain, which
-% <grain2d.isInclusion.html |isInclusion|> finds. We mark the pixels of
-% these regions as pores and reconstruct again. The map shows a part of the
-% crack before and after the correction.
+% can be wrong for a map. The strip along the bottom right edge is long and
+% narrow enough to pass the crack test, yet it is the rim of a region
+% plucked out of the specimen, a void. |kinds| is a categorical array with
+% one entry per pixel, so it can be edited and handed back to |calcGrains|
+% with the option |'kinds'|. Every region then takes the kind that its
+% pixels say. We mark the strip as a void and plot the bottom right corner
+% of the kinds map before and after.
 
-isEnclosed = grainsK.isInclusion & ~grainsK.isIndexed;
 kindsEdited = kinds;
-kindsEdited(ismember(ebsdK.grainId,grainsK(isEnclosed).id)) = "pore";
+isStrip = kinds(:) == "crack" & ebsd.x(:) > 20000;
+kindsEdited(isStrip) = "void";
+
+newMtexFigure('layout',[1 2]);
+for v = {kinds, kindsEdited}
+  nextAxis
+  plot(ebsd,'micronbar','off')
+  legend off
+  hold on
+  plot(ebsd(isNotIndexed),color(double(v{1}(isNotIndexed)),:))
+  hold off
+  axis([24500 29500 14000 17940])
+end
+
+%%
+% The strip is red on the left and black on the right, like the plucked
+% region beside it. The reconstruction with the edited kinds no longer
+% bridges it.
 
 [grainsEdited,ebsdEdited] = calcGrains(ebsd,'angle',10*degree,'minPixel',5, ...
   'alphaCrack',15,'kinds',kindsEdited);
-grainsEdited = smoothBoundary(grainsEdited);
 
-newMtexFigure('layout',[1 2]);
-for v = {{grainsK,ebsdK},{grainsEdited,ebsdEdited}}
-  nextAxis
-  plot(v{1}{2},'ipfz','micronbar','off')
-  legend off
-  hold on
-  plot(v{1}{1}.boundary,'linewidth',1.5)
-  plot(v{1}{1}(~v{1}{1}.isIndexed),'FaceColor','black','FaceAlpha',0.35)
-  hold off
-  axis([4000 10000 9000 15000])
-end
-
-fprintf('%d grains, %d notIndexed\n', ...
-  length(grainsEdited), length(grainsEdited('notIndexed')))
-
-%%
-% The two darkened regions on the left, one inside the blue grain and one
-% at the crack, are filled on the right, and their grains continue around
-% them. The pockets between several grains are unchanged.
+fprintf('%d of the %d pixels of the strip are outside all grains, %d as a crack\n', ...
+  nnz(isStrip & ebsdEdited.grainId(:) == 0), nnz(isStrip), ...
+  nnz(isStrip & ebsdK.grainId(:) == 0))
 
 %% Pores as grains
 %
