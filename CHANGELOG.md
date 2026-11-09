@@ -117,6 +117,16 @@ including 6.1 have one combined list there and no entry here.
   measured as the widest filled region after the closing, in lattice steps, and the larger
   of it and alpha is passed on. The retry of `latticeVoronoi` for open cells did not
   catch those cells, which is still open
+- `calcGrains` checks that every grain's boundary closes, one `unique` over the segment
+  list keyed by vertex and grain (0.17 s on the 829k segments of 1C_1), and errors with
+  the first grain whose vertex is met by an odd number of segments. `check_calcGrainsCases`
+  bridges a 25 pixel crack on a 150 x 60 map with `'alphaCrack',inf` and checks that every
+  pixel lies in the polygon of its grain and that the polygons tile the crack away from
+  the map edge; both fail without the reach fix
+- Where a fill meets the map edge, the dummy sites outside the map reach into it and the
+  exterior takes a V-shaped notch (synthetic 25 pixel crack: 103 pixels per end). Small
+  for the fills alpha makes, visible at the mouth of a crack bridged with a large radius;
+  open
 - `closedAt` on a corridor of a single cell indexed a row and failed (latent; hit by
   `'alphaPocket',6` on peridotite)
 - `inConvexHull` threw on a single-precision lattice (`accumarray` with a single column
