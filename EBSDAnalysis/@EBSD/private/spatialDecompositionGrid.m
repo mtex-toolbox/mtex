@@ -68,7 +68,7 @@ function out = spatialDecompositionGrid(ebsd,g,varargin)
 %  ij       - nEbsd × 2 axial indices (debug)
 %  inFill   - @(p) > 0 inside the filled cells, < 0 outside, [] without any
 %  with kindsOnly: kinds, a categorical per pixel (pore, pocket, crack, void,
-%  noise, indexed), and parts, a table of the thick parts with their features
+%  speck, indexed), and parts, a table of the thick parts with their features
 
 isDelaunay = check_option(varargin,'delaunay');
 alpha = get_option(varargin,'alpha',2.2*isDelaunay + 3.1*~isDelaunay);
@@ -605,7 +605,7 @@ end
 % ===========================================================================
 function c = kindName(k)
 % the kinds as a categorical, from their codes
-names = ["pore" "pocket" "crack" "void" "noise" "indexed"];
+names = ["pore" "pocket" "crack" "void" "speck" "indexed"];
 c = reshape(categorical(names(k),names),size(k));
 end
 

@@ -62,5 +62,5 @@ also absorbs every pore and pocket narrower than it.
 - **Post-processing only**, `merge(grains,'inclusions')` after the reconstruction: it
   reads what encloses a region and not its kind, so it takes pockets inside deformed
   grains and cannot bridge a crack.
-- **One vector `'alpha',[noise pore pocket crack]`**: shorter to type and impossible to
+- **One vector `'alpha',[speck pore pocket crack]`**: shorter to type and impossible to
   read back; a name per kind documents itself.
