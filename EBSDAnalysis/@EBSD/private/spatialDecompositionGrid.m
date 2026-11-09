@@ -270,14 +270,18 @@ isNotIdx = [false(size(sitesIdx,1),1); true(size(holePos,1),1); false(size(bandP
 site2id  = [idxSiteEbsd; niId];
 
 % ---- Voronoi -----------------------------------------------------------
+% a cell reaches as far as the widest filled region: the closing bounds that
+% by alpha, a kind's radius does not, so it is measured
+fillP = closedP & ~isIndexedP;
+m = ~fillP; reach = 0;
+while ~all(m(fillP)), m = binaryDilate(m, stencil, szP); reach = reach + 1; end
 slot = [ij2slotP(ij(idxSiteEbsd,:)); find(bigHoleP); find(extBandP); find(dummyP)];
-[V,F,I_FD] = latticeVoronoi(XY,slot,szP,A,numReal,epsilon,alpha);
+[V,F,I_FD] = latticeVoronoi(XY,slot,szP,A,numReal,epsilon,max(alpha,reach));
 
 % inFill(p) > 0 inside the filled cells, < 0 outside: the distance to the
 % nearest other cell centre minus the one to the nearest filled. On a rigid
 % grid both are among the four lattice points around p, otherwise searched
 % among the filled cells and the others within two cells of them
-fillP = closedP & ~isIndexedP;
 if ~any(fillP)
   inFill = [];
 elseif isRigid

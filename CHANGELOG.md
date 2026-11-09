@@ -110,6 +110,13 @@ including 6.1 have one combined list there and no entry here.
   `'kindsOnly'`; `'kinds'` replaces the kind of a part by the mode over its pixels.
   peridotite at 10 degree, minPixel 5: 575 -> 569 grains, 41 -> 35 notIndexed; the
   classification costs 0.02-0.06 s on peridotite, forsterite and 1C_1. ADR 0010
+- `latticeVoronoi` takes alpha as the bound on how far a cell reaches, which the closing
+  guarantees and a kind's radius does not: with `'alphaCrack',15` on peridotite the cells
+  of the wall sites stopped short of the crack's midline, 14 grains had boundary loops that
+  did not close and 8 polygons covered less than 90% of their pixels. The reach is now
+  measured as the widest filled region after the closing, in lattice steps, and the larger
+  of it and alpha is passed on. The retry of `latticeVoronoi` for open cells did not
+  catch those cells, which is still open
 - `closedAt` on a corridor of a single cell indexed a row and failed (latent; hit by
   `'alphaPocket',6` on peridotite)
 - `inConvexHull` threw on a single-precision lattice (`accumarray` with a single column
