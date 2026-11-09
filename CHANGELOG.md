@@ -99,7 +99,10 @@ including 6.1 have one combined list there and no entry here.
   it was. The parts it leaves open are now classified (`kindOfParts` in
   `spatialDecompositionGrid`): Feret^2 / area >= 5 is a crack, contact with the raster
   outside the scan hull a void, a rim held to 85% by pixels the criterion connects a
-  pore, the rest pockets, in that priority. Each kind closes with a radius of its own,
+  pore, the rest pockets, in that priority; a pocket or pore joined to a crack by
+  notIndexed cells and lying in the convex hull of the crack's parts is a crack, since
+  the closing cuts a crack where it narrows (peridotite: the two widenings in the
+  middle of the crack, 536 px). Each kind closes with a radius of its own,
   `'alphaPore'` (default inf), `'alphaPocket'` and `'alphaCrack'` (default alpha), by
   `closedAt` with the kind's disk on the kind's cells, or by the circumradius on the
   `'delaunay'` path. A radius below alpha acts as alpha, since the base closing is not

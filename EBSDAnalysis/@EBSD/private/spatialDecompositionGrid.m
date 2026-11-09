@@ -41,7 +41,9 @@ function out = spatialDecompositionGrid(ebsd,g,varargin)
 %             others to alpha; a radius below alpha acts as alpha. A part is a pore
 %             when one orientation holds 85 percent of its rim, a crack when
 %             its Feret diameter squared is at least five times its area, a
-%             void when it touches the edge of the scan, a pocket otherwise
+%             void when it touches the edge of the scan, a pocket otherwise;
+%             a pocket or pore joined to a crack by notIndexed cells and
+%             inside the hull of its pieces is part of the crack
 %  kinds    - a kind per pixel, categorical or code, replacing the computed
 %             kind of every part it covers
 %  alpha    - hole closing radius in multiples of dxy (default 3.1). Holes
@@ -586,6 +588,29 @@ kind = 2*ones(nP,1);
 kind(share >= 0.85) = 1;
 kind(border) = 4;
 kind(elong >= 5) = 3;
+
+% a pocket or a pore between the pieces of a crack is part of the crack: it
+% is joined to them by notIndexed cells and lies in the hull of the pieces
+raw = ~isIndexedP & inScanP;
+y = find(raw); nR = numel(y); LR = zeros(prod(szP),1); LR(y) = 1:nR;
+[a,b] = deal([]);
+for s = o.'
+  z = y + s; ok = raw(z);
+  a = [a; LR(y(ok))]; b = [b; LR(z(ok))]; %#ok<AGROW>
+end
+comp = conncomp(graph(a,b,[],nR)).';
+compP = accumarray(lab, comp(LR(x)), [nP 1], @max);
+[r,c] = ind2sub(szP,y); xyR = [r c]*A';
+inHull = false(nR,1);
+for cc = unique(compP(kind == 3)).'
+  q = xy(ismember(lab, find(kind == 3 & compP == cc)),:);
+  try q = q(convhull(q(:,1),q(:,2)),:); catch, continue, end
+  m = comp == cc;
+  inHull(m) = inpolygon(xyR(m,1), xyR(m,2), q(:,1), q(:,2));
+end
+inCrack = accumarray(lab, inHull(LR(x)), [nP 1], @mean) > 0.5;
+kind(inCrack & kind ~= 4) = 3;
+
 if ~isempty(override)
   k = zeros(n,1); m = ebsdP(x) > 0; k(m) = override(ebsdP(x(m)));
   k = accumarray(lab(k > 0),k(k > 0),[nP 1],@mode,0);
@@ -593,6 +618,7 @@ if ~isempty(override)
 end
 kindP = zeros(prod(szP),1);
 kindP(x) = kind(lab);
+kindP(y(inHull & kindP(y) == 0)) = 3;
 parts = table((1:nP).',kindName(kind),area,feret,elong,border,rim,share, ...
   'VariableNames',{'id','kind','area','feret','elong','border','rim','share'});
 

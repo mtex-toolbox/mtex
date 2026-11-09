@@ -33,7 +33,8 @@ function [kinds,parts] = notIndexedKinds(ebsd,varargin)
 % The kinds are decided in this order: a part with Feret^2 / area >= 5 is
 % a crack; one touching the edge of the scan is a void; one whose rim is
 % held to 85 percent by pixels the criterion connects is a pore; the rest
-% are pockets.
+% are pockets. A pocket or a pore joined to a crack by notIndexed pixels
+% and lying between its pieces is part of the crack.
 %
 % See also
 % EBSD/calcGrains GrainReconstructionCracks

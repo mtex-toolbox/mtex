@@ -55,12 +55,27 @@ plot(ebsd,'micronbar','off')
 % |ebsd|, so that the reconstructions below start from the measured map.
 
 [grains,ebsdGrains] = calcGrains(ebsd,'angle',10*degree,'minPixel',5);
+grains = smoothBoundary(grains);
 
 fprintf('%d grains, %d notIndexed, %.1f%% of the map outside all grains\n', ...
   length(grains), length(grains('notIndexed')), ...
   100*nnz(ebsdGrains.grainId==0)/length(ebsd))
 
+plot(ebsd,'micronbar','off')
+legend off
+hold on
+plot(grains.boundary,'linewidth',1.5)
+plot(grains('notIndexed'),'FaceColor','black','FaceAlpha',0.35)
+hold off
+
 %%
+% The crack is a white band with a boundary along each of its two walls.
+% Its pixels are outside all grains, like the regions cut by the edge of
+% the map. The darkened regions are the |notIndexed| grains, pockets between
+% several grains. The specks have been absorbed: they show white, without a
+% boundary around them, and so do the round pores inside the forsterite
+% grains.
+%
 % To see what |alpha| does, we repeat the reconstruction for increasing
 % values and look at the half of the map with the crack. The background is
 % the second output of |calcGrains|, coloured by orientation. A |notIndexed|
@@ -119,9 +134,13 @@ end
 % percent of the indexed pixels around it are connected by the same
 % criterion that |calcGrains| uses to join pixels into grains.
 % * Every other region is a *pocket*.
+% * A pocket or a pore joined to a crack by |notIndexed| pixels and lying
+% between its pieces is part of the crack. The closing with |alpha| cuts a
+% crack where it narrows, and its widenings would otherwise count as
+% pockets.
 %
-% The first rule that applies decides, so a crack that reaches the edge of
-% the map is a crack. The command
+% Of the first four rules the first that applies decides, so a crack that
+% reaches the edge of the map is a crack. The command
 % <EBSD.notIndexedKinds.html |notIndexedKinds|> applies these rules with the
 % same |alpha| and the same threshold angle as |calcGrains|. It returns a
 % kind for every pixel, with |"speck"| for the regions that |alpha| closes
@@ -141,10 +160,10 @@ hold off
 
 %%
 % The whole crack is red, from its mouth at the bottom edge to the top edge,
-% through its narrow upper part. The regions cut by the map edge are black.
-% The pores inside the large forsterite grains are blue. The pockets along
-% the crack are orange: the crack widens into them, and the opening by
-% |alpha| cuts them off at the necks where the crack narrows again.
+% with its narrow middle and the widenings there. The narrow strip along the
+% bottom right edge passes the crack test as well. The regions cut by the
+% map edge are black, the pores inside the large forsterite grains are blue
+% and the pockets between the grains are orange.
 %
 % The second output is a table with one row per region: its kind, its area
 % in pixels, its longest diameter, the ratio of the two that decides on a
@@ -185,9 +204,10 @@ fprintf('%d grains, %d notIndexed, %.1f%% of the map outside all grains\n', ...
   100*nnz(ebsdK.grainId==0)/length(ebsdK))
 
 %%
-% The grains reach across the whole crack, and the pockets are kept as the
-% darkened |notIndexed| grains. Only the voids at the edge of the map remain
-% outside all grains.
+% The grains reach across the whole crack, and no |notIndexed| grain is left
+% in it. The pockets elsewhere are kept as the darkened grains. Only the
+% voids at the edge of the map and the mouth of the crack, wider than 30
+% pixels, remain outside all grains.
 
 %% Grains across the crack
 %
