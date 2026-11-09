@@ -1,0 +1,191 @@
+diff --git a/EBSDAnalysis/@EBSD/calcGrains.m b/EBSDAnalysis/@EBSD/calcGrains.m
+index 5c0e29cc0..175e6b31c 100644
+--- a/EBSDAnalysis/@EBSD/calcGrains.m
++++ b/EBSDAnalysis/@EBSD/calcGrains.m
+@@ -98,7 +98,7 @@ end
+ % I_FD - incidence matrix faces to vertices
+ % culling changes the map the closing runs on, so repeat until nothing re-fragments (#2574)
+ while true
+-  out = spatialDecompositionGrid(ebsd,lat,varargin{:});
++  out = spatialDecompositionGrid(ebsd,lat,varargin{:},'gbc',gbc);
+   V = out.V;
+   F = out.F;
+   I_FD = remapIFD(out,ebsd);
+diff --git a/EBSDAnalysis/@EBSD/private/spatialDecompositionGrid.m b/EBSDAnalysis/@EBSD/private/spatialDecompositionGrid.m
+index c4fbf8a5b..54803e2ed 100644
+--- a/EBSDAnalysis/@EBSD/private/spatialDecompositionGrid.m
++++ b/EBSDAnalysis/@EBSD/private/spatialDecompositionGrid.m
+@@ -86,7 +86,11 @@ rClose  = alpha*dxy;                            % closing radius: fills holes of
+ % the dummy ring to sit in. If the material ever reaches the padded border,
+ % the flood fill cannot wrap around it, no dummies are placed there, and the
+ % outer grains come out open.
+-closeCells = ceil((1 + isDelaunay)*rClose / min(vecnorm(A,2,1)));
++% pores, pockets and cracks may close with a radius of their own
++alphaK = [get_option(varargin,'alphaPore',alpha), ...
++          get_option(varargin,'alphaPocket',alpha), get_option(varargin,'alphaCrack',alpha)];
++rMax = max([alpha, alphaK(isfinite(alphaK))])*dxy;
++closeCells = ceil((1 + isDelaunay)*rMax / min(vecnorm(A,2,1)));
+ padding = closeCells + 4;   % closing reach + band (1) + pushed band (1) + dummy ring (1) + safety (1)
+ szP     = ijsz + 2*padding;
+ ij2slotP = @(IJ) (IJ(:,1)-ijmin(1)+padding) + (IJ(:,2)-ijmin(2)+padding)*szP(1) + 1;
+@@ -96,24 +100,49 @@ isIndexedP = false(prod(szP),1);
+ isIndexedP(ij2slotP(ij(isIndexed,:))) = true;
+ % imagesc(reshape(isIndexedP,szP)), axis equal tight
+ 
++% the scan footprint, the convex hull of the indexed pixels: beyond it the
++% material counts as present during the erosion, so that the map edge is no
++% boundary the closing erodes from
++inScanP = true(prod(szP),1);
++try %#ok<TRYNC>
++  inScanP = inConvexHull(ij(isIndexed,:), ijmin - padding - 1, szP);
++end
++
+ if isDelaunay
+   % the smallest circumradius of a filled triangle covering each cell, inf where none
+-  rMin = alphaComplexMask(pos, isIndexed, ij, epsilon, rClose, ...
++  rMin = alphaComplexMask(pos, isIndexed, ij, epsilon, rMax, ...
+     szP, padding, ijmin, ijsz, idealFun, reconstructPos, isIndexedP);
+-  closedP = isfinite(rMin) | isIndexedP;
++  closedP = rMin <= rClose + epsilon | isIndexedP;
+   isOpen = @(x,r) rMin(x) > r*dxy + epsilon;
+ else
+-  % the scan footprint, the convex hull of the indexed pixels: beyond it the
+-  % material counts as present during the erosion, so that the map edge is no
+-  % boundary the closing erodes from
+-  inScanP = true(prod(szP),1);
+-  try %#ok<TRYNC>
+-    inScanP = inConvexHull(ij(isIndexed,:), ijmin - padding - 1, szP);
+-  end
+   closedP = closeAt(isIndexedP, inScanP, alpha, dxy, A, stencil, szP);
+   isOpen = @(x,r) ~closedAt(x, isIndexedP, inScanP, diskOffsets(r*dxy, A, stencil), szP);
+ end
+ 
++% the closing radius of a cell is that of the kind of its notIndexed part:
++% pores, pockets and cracks each close with their own radius
++byKindP = false(prod(szP),1);
++if any(alphaK ~= alpha) || check_option(varargin,'classify')
++  tK = tic;
++  ebsdP = zeros(prod(szP),1); ebsdP(ij2slotP(ij)) = 1:size(ij,1);
++  gbc = get_option(varargin,'gbc',[]);
++  [kindP,parts] = notIndexedKinds(closedP, isIndexedP, inScanP, ebsdP, ebsd, gbc, stencil, szP, A);
++  for k = find(alphaK ~= alpha)
++    x = find(kindP == k);
++    if isDelaunay
++      c = rMin(x) <= alphaK(k)*dxy + epsilon;
++    elseif isinf(alphaK(k))
++      c = true(size(x));
++    else
++      c = closedAt(x, isIndexedP, inScanP, diskOffsets(alphaK(k)*dxy, A, stencil), szP);
++    end
++    byKindP(x(c)) = true;
++  end
++  closedP = closedP | byKindP;
++  kinds = zeros(size(ij,1),1); m = kindP > 0 & ebsdP > 0; kinds(ebsdP(m)) = kindP(m);
++  setappdata(0,'niKinds',struct('kinds',kinds,'parts',parts,'time',toc(tK),'filled',accumarray(double(kindP(byKindP)),1,[4 1])));
++end
++
+ % exteriorP = background connected to the padded border. This is a flood fill
+ % (morphological reconstruction of the border marker under the mask ~closedP),
+ % here computed as connected components of ~closedP with border-touching label.
+@@ -125,7 +154,7 @@ nSteps = 2*ceil(alpha);
+ ext0 = [];
+ while ~isequal(exteriorP,ext0)   % a hole that joined the outside can join the next
+   ext0 = exteriorP;
+-  f = closedP & ~isIndexedP;
++  f = closedP & ~isIndexedP & ~byKindP;
+   [dHole,hole] = geoDist(~closedP & ~exteriorP, f, stencil, szP, nSteps);
+   corridor = find(f & geoDist(exteriorP, f, stencil, szP, nSteps) + dHole <= nSteps);
+   for r = [alpha-1:-1:1, 0]
+@@ -319,7 +348,7 @@ end
+ function c = closedAt(x, isIndexedP, inScanP, offs, szP)
+ % the closing of the indexed cells by offs, at the raster cells x alone
+ o = (offs(:,1) + offs(:,2)*szP(1)).';
+-y = unique(x + o); y = y(inScanP(y));
++y = unique(reshape(x + o,[],1)); y = y(inScanP(y));
+ dil = ~inScanP;
+ dil(y) = any(isIndexedP(y + o),2);
+ c = isIndexedP(x) | all(dil(x + o),2) & inScanP(x);
+@@ -471,3 +500,83 @@ inside = reshape(j >= lo - 1e-9 & j <= hi + 1e-9,[],1);
+ 
+ end
+ 
++
++% ===========================================================================
++function [kindP,parts] = notIndexedKinds(closedP, isIndexedP, inScanP, ebsdP, ebsd, gbc, stencil, szP, A)
++% kind of every cell of the notIndexed parts the closing leaves open:
++% 1 pore, 2 pocket, 3 crack, 4 void, 0 elsewhere
++open = ~closedP & inScanP;
++x = find(open);
++n = numel(x);
++L = zeros(prod(szP),1); L(x) = 1:n;
++o = stencil(:,1) + stencil(:,2)*szP(1);
++[a,b] = deal([]);
++for s = o.'
++  y = x + s;
++  ok = open(y);
++  a = [a; L(x(ok))]; b = [b; L(y(ok))]; %#ok<AGROW>
++end
++lab = conncomp(graph(a,b,[],n)).';
++nP = max([lab;0]);
++P = zeros(prod(szP),1); P(x) = lab;
++
++% size, border contact and Feret diameter of every part
++area = accumarray(lab,1,[nP 1]);
++touch = binaryDilate(~inScanP, stencil, szP);
++border = accumarray(lab,touch(x),[nP 1],@any,false);
++[r,c] = ind2sub(szP,x);
++xy = [r c]*A';
++feret = zeros(nP,1);
++for p = find(area >= 3).'
++  q = xy(lab == p,:);
++  try h = q(convhull(q(:,1),q(:,2)),:); catch, h = q; end %#ok<CTCH>
++  feret(p) = sqrt(max(reshape(sum((permute(h,[1 3 2]) - permute(h,[3 1 2])).^2,3),[],1)));
++end
++elong = feret.^2 ./ (area*abs(det(A)));
++
++% the indexed cells around every part, one contact per part and cell
++[pp,yy] = deal([]);
++for s = o.'
++  y = x + s;
++  ok = isIndexedP(y);
++  pp = [pp; lab(ok)]; yy = [yy; y(ok)]; %#ok<AGROW>
++end
++ct = unique([pp yy],'rows');
++nC = size(ct,1);
++key = ct(:,1) + nP*ct(:,2);
++
++% adjacent rim cells of one part, joined where the criterion connects them
++[a,b] = deal([]);
++for s = o.'
++  [tf,j] = ismember(ct(:,1) + nP*(ct(:,2)+s), key);
++  a = [a; find(tf)]; b = [b; j(tf)]; %#ok<AGROW>
++end
++m = a < b; a = a(m); b = b(m);
++same = connects(ct(a,2),ct(b,2));
++cl = conncomp(graph(a(same),b(same),[],nC)).';
++
++% rim pieces of one part joined once more when their first cells connect
++[~,first,piece] = unique(cl);
++I = sparse(1:numel(first),ct(first,1),1,numel(first),nP);
++[a,b] = find(triu(I*I',1));
++same = connects(ct(first(a),2),ct(first(b),2));
++cl = conncomp(graph(a(same),b(same),[],numel(first))).';
++cl = cl(piece);
++rim = accumarray(ct(:,1),1,[nP 1]);
++piece = accumarray(cl,1);
++share = accumarray(ct(:,1),piece(cl),[nP 1],@max,0) ./ max(rim,1);
++
++kind = 2*ones(nP,1);
++kind(share >= 0.85) = 1;
++kind(border) = 4;
++kind(elong >= 5) = 3;
++kindP = zeros(prod(szP),1,'uint8');
++kindP(x) = kind(lab);
++parts = table((1:nP).',kind,area,feret,elong,border,rim,share, ...
++  'VariableNames',{'id','kind','area','feret','elong','border','rim','share'});
++
++  function tf = connects(i,j)
++    % the criterion on the pixels of two raster cells
++    tf = gbc.eval(ebsd,ebsdP(i),ebsdP(j)) > 0;
++  end
++end

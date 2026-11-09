@@ -17,6 +17,9 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %   % thresholds follow the same order as ebsd.CSList and should have the same length
 %   grains = calcGrains(ebsd,'angle',{angl_1 angle_2 angle_3})
 %
+%   % bridge cracks up to 30 pixels wide and fill the pores, keep the pockets
+%   grains = calcGrains(ebsd,'alphaCrack',15,'alphaPore',inf)
+%
 %   % Markovian clustering algorithm
 %   p = 1.5;    % inflation power (default = 1.4)
 %   maxIt = 10; % number of iterations (default = 4)
@@ -36,6 +39,10 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %             smaller than this is returned; the pixels of one that would be
 %             are marked notIndexed
 %  alpha    - fill distances into not indexed regions
+%  alphaPore, alphaPocket, alphaCrack - the fill distance for the notIndexed
+%             regions of that kind which alpha leaves open (default alpha,
+%             inf fills them whole), see notIndexedKinds
+%  kinds    - the kind of every pixel, from notIndexedKinds, edited or not
 %  straighten - true (default) draws the grain boundaries through filled
 %             regions as straight lines, false along the bisectors between
 %             the measured pixels around them
@@ -67,7 +74,7 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %   Ultramicroscopy, 2013, 133:16-25>.
 %
 % See also
-% GrainReconstruction GrainReconstructionAdvanced GrainReconstructionMCL
+% GrainReconstruction GrainReconstructionCracks EBSD/notIndexedKinds
 
 % TODO: we have to rotate everything to xy plane to do the reconstruction
 

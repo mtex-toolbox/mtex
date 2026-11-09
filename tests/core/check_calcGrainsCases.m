@@ -309,8 +309,52 @@ end
 checkInsideEmptyQuery(cs, thr);
 checkGrainIdRoundTrip(ebsdSq, thr);
 checkResegmentOutput(ebsdSq, thr);
+checkNotIndexedKinds(cs, thr);
 
 disp('calcGrains cases: all checks passed');
+
+end
+
+% ===========================================================================
+function checkNotIndexedKinds(cs, thr)
+% a pore, a pocket and a crack, each closed by its own radius alone
+%
+% 4 x 4 blocks of 12 pixels; the crack cuts the second block column, the
+% pore sits inside block (2,3), the pocket where four blocks meet
+
+n = 48;
+blockId = kron(reshape(1:16,4,4),ones(12));
+rot = rotation.id(n,n);
+oris = orientation.byAxisAngle(zvector,(1:16)*7*degree,cs);
+for k = 1:16, rot(blockId == k) = oris(k); end
+[c,r] = meshgrid(1:n,1:n);
+inCrack = c >= 15 & c <= 21;
+inPore = hypot(r-18.5,c-30.5) <= 4.3;
+inPocket = hypot(r-36.5,c-36.5) <= 4.3;
+phaseId = 2 - (inCrack | inPore | inPocket);
+ebsd = EBSDsquare([],rot,phaseId,[0 1],{'notIndexed',cs},'dxy',[1 1]);
+
+kinds = reshape(notIndexedKinds(ebsd,'threshold',thr),n,n);
+if ~isequal(kinds == "pore",inPore) || ~isequal(kinds == "pocket",inPocket) || ...
+    ~isequal(kinds == "crack",inCrack)
+  error('notIndexedKinds: %d pore, %d pocket, %d crack pixels, expected %d, %d, %d', ...
+    nnz(kinds == "pore"),nnz(kinds == "pocket"),nnz(kinds == "crack"), ...
+    nnz(inPore),nnz(inPocket),nnz(inCrack));
+end
+
+% 16 grains, 4 of them cut in two by the crack, plus the pore and the pocket
+expected = {{},22; {'alphaPore',inf},21; {'alphaPocket',inf},21; {'alphaCrack',inf},18; ...
+  {'alphaPore',inf,'alphaPocket',inf,'alphaCrack',inf},16; ...
+  {'alphaCrack',inf,'delaunay'},18; ...
+  {'alphaCrack',inf,'kinds',mergecats(kinds,["crack" "pocket"],"pocket")},22};
+for k = 1:size(expected,1)
+  grains = calcGrains(ebsd,'threshold',thr,expected{k,1}{:});
+  if length(grains) ~= expected{k,2}
+    opt = expected{k,1}(cellfun(@ischar,expected{k,1}));
+    error('calcGrains with %s: expected %d grains, got %d', ...
+      strjoin(opt,','),expected{k,2},length(grains));
+  end
+end
 
 end
 
