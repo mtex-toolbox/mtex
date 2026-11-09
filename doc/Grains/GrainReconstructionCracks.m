@@ -62,10 +62,10 @@ fprintf('%d grains, %d notIndexed, %.1f%% of the map outside all grains\n', ...
 
 %%
 % To see what |alpha| does, we repeat the reconstruction for increasing
-% values. The background is the second output of |calcGrains|, coloured by
-% orientation. A |notIndexed| pixel has no orientation and stays white,
-% also where a grain has absorbed it. The boundaries show which region
-% belongs to which grain.
+% values and look at the half of the map with the crack. The background is
+% the second output of |calcGrains|, coloured by orientation. A |notIndexed|
+% pixel has no orientation and stays white, also where a grain has absorbed
+% it. The boundaries show which region belongs to which grain.
 
 alpha = [1.1 2.8 6.8 16.1];
 
@@ -80,6 +80,7 @@ for k = 1:numel(alpha)
   hold on
   plot(grainsA.boundary,'linewidth',1.5)
   hold off
+  axis([0 16500 0 17940])
   mtexTitle(['alpha = ' num2str(alpha(k))])
   fprintf('alpha = %4.1f: %3d grains, %3d notIndexed, %4.1f%% outside\n', ...
     alpha(k), length(grainsA), length(grainsA('notIndexed')), ...
@@ -100,10 +101,10 @@ end
 % The round pores inside the forsterite grains have no boundary of their
 % own in any of the four maps. A hole inside one grain is part of that
 % grain, and |calcGrains| fills it whatever its width, as the next section
-% explains. The pockets have no such rule. The value that closes the crack also absorbs every pocket
-% narrower than |2*alpha| into the neighbouring grains, whether or not it
-% belongs there. A single radius cannot treat the kinds differently, since
-% it only knows their width.
+% explains. The pockets have no such rule. The value that closes the crack
+% also absorbs every pocket narrower than |2*alpha| into the neighbouring
+% grains, whether or not it belongs there. A single radius cannot treat the
+% kinds differently, since it only knows their width.
 
 %% The kinds of notIndexed regions
 %
@@ -119,12 +120,13 @@ end
 % criterion that |calcGrains| uses to join pixels into grains.
 % * Every other region is a *pocket*.
 %
-% The command <EBSD.notIndexedKinds.html |notIndexedKinds|> applies these
-% rules with the same |alpha| and the same threshold angle as |calcGrains|.
-% It returns a kind for every pixel, with |"noise"| for the specks that
-% |alpha| closes and |"indexed"| for the measured pixels. We plot the kinds
-% over the map: pores blue, pockets orange, cracks red, voids black and
-% specks grey.
+% The first rule that applies decides, so a crack that reaches the edge of
+% the map is a crack. The command
+% <EBSD.notIndexedKinds.html |notIndexedKinds|> applies these rules with the
+% same |alpha| and the same threshold angle as |calcGrains|. It returns a
+% kind for every pixel, with |"speck"| for the regions that |alpha| closes
+% and |"indexed"| for the measured pixels. We plot the kinds over the map:
+% pores blue, pockets orange, cracks red, voids black and specks grey.
 
 kinds = notIndexedKinds(ebsd,'angle',10*degree);
 
@@ -150,7 +152,8 @@ hold off
 % eight largest regions.
 
 [~,parts] = notIndexedKinds(ebsd,'angle',10*degree);
-disp(head(sortrows(parts,'area','descend'),8))
+parts = sortrows(parts,'area','descend');
+disp(head(parts(:,{'kind','area','feret','elong','share'}),8))
 
 %% A radius for each kind
 %

@@ -20,7 +20,7 @@ function [kinds,parts] = notIndexedKinds(ebsd,varargin)
 %  ebsd  - @EBSD
 %
 % Output
-%  kinds - categorical per pixel: pore, pocket, crack, void, noise (a thin
+%  kinds - categorical per pixel: pore, pocket, crack, void, speck (a thin
 %          region, filled by alpha) or indexed
 %  parts - table of the thick parts: kind, area in pixels, Feret diameter,
 %          Feret^2 / area, border contact, rim length, rim share of the
