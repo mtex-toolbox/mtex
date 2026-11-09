@@ -25,7 +25,10 @@ also absorbs every pore and pocket narrower than it.
    its Feret diameter squared is at least five times its area, a void when it touches the
    raster outside the convex hull of the indexed pixels, a pore when at least 85 percent
    of its rim is held by pixels the boundary criterion connects, and a pocket otherwise;
-   crack before void before pore before pocket.
+   crack before void before pore before pocket. The closing cuts a crack where it narrows,
+   so a pocket or a pore joined to crack parts by notIndexed cells and lying in the convex
+   hull of those parts is part of the crack; the thin cells in that hull are reported as
+   crack too.
 2. **Each kind closes with a radius of its own**, `'alphaPore'`, `'alphaPocket'` and
    `'alphaCrack'`, in pixels like `alpha`. The kind's closing only adds to the base
    closing, so a radius below `alpha` acts as `alpha`, and `inf` fills the kind whole.
