@@ -29,10 +29,12 @@
 % <EBSD.calcGrains.html |calcGrains|> tells the |notIndexed| regions that
 % |alpha| leaves open apart by their shape and their surroundings: a pore
 % lies inside one grain, a pocket between several grains, a crack is long
-% and narrow, and a void touches the edge of the map. Each kind is closed
+% and narrow with grains on both sides, and a void touches the edge of the
+% map. Each kind is closed
 % with a radius of its own, |'alphaPore'|, |'alphaPocket'| and
 % |'alphaCrack'|. A pore is filled by default, so that a hole inside a grain
-% belongs to that grain; the other two radii default to |alpha|. To bridge
+% belongs to that grain, and a crack is left entirely open, also where it
+% is narrower than |2*alpha|; pockets keep the radius |alpha|. To bridge
 % the cracks of a map where they are narrower than 30 pixels:
 %
 %   grains = calcGrains(ebsd,'alphaCrack',15)

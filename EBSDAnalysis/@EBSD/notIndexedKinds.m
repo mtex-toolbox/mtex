@@ -4,8 +4,8 @@ function [kinds,parts] = notIndexedKinds(ebsd,varargin)
 % The closing with alpha fills every notIndexed region narrower than about
 % 2*alpha pixels. What it leaves open are the thick parts, and each of
 % them is a pore, a pocket, a crack or a void. calcGrains closes a part
-% with the radius of its kind, alphaPore, alphaPocket or alphaCrack, and
-% fills the pores whole by default.
+% with the radius of its kind, alphaPore, alphaPocket or alphaCrack. By
+% default it fills the pores whole and leaves the cracks entirely open.
 %
 % Syntax
 %
@@ -23,18 +23,20 @@ function [kinds,parts] = notIndexedKinds(ebsd,varargin)
 %  kinds - categorical per pixel: pore, pocket, crack, void, speck (a thin
 %          region, filled by alpha) or indexed
 %  parts - table of the thick parts: kind, area in pixels, Feret diameter,
-%          Feret^2 / area, border contact, rim length, rim share of the
-%          largest orientation
+%          Feret^2 / area, border contact, boundary cells against notIndexed
+%          cells (gap) and against grains (rim), rim share of the largest
+%          orientation
 %
 % Options
 %  alpha - the closing radius in pixels (default 3.1), with every option
 %          calcGrains takes, since the rim test uses its criterion
 %
-% The kinds are decided in this order: a part with Feret^2 / area >= 5 is
-% a crack; one touching the edge of the scan is a void; one whose rim is
+% The kinds are decided in this order: a part with Feret^2 / area >= 5
+% whose boundary runs along grains for at least half of its length is a
+% crack; one touching the edge of the scan is a void; one whose rim is
 % held to 85 percent by pixels the criterion connects is a pore; the rest
-% are pockets. A pocket or a pore joined to a crack by notIndexed pixels
-% and lying between its pieces is part of the crack.
+% are pockets. What lies between two parts of a crack, joined to both by
+% notIndexed pixels, is part of the crack.
 %
 % See also
 % EBSD/calcGrains GrainReconstructionCracks

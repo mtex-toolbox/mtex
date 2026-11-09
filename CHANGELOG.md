@@ -97,16 +97,25 @@ including 6.1 have one combined list there and no entry here.
   measurement ('delaunay' 2.7x faster)
 - The closing with alpha filled every notIndexed region narrower than 2*alpha whatever
   it was. The parts it leaves open are now classified (`kindOfParts` in
-  `spatialDecompositionGrid`): Feret^2 / area >= 5 is a crack, contact with the raster
-  outside the scan hull a void, a rim held to 85% by pixels the criterion connects a
-  pore, the rest pockets, in that priority; a pocket or pore joined to a crack by
-  notIndexed cells and lying in the convex hull of the crack's parts is a crack, since
-  the closing cuts a crack where it narrows (peridotite: the two widenings in the
-  middle of the crack, 536 px). Each kind closes with a radius of its own,
-  `'alphaPore'` (default inf), `'alphaPocket'` and `'alphaCrack'` (default alpha), by
-  `closedAt` with the kind's disk on the kind's cells, or by the circumradius on the
-  `'delaunay'` path. A radius below alpha acts as alpha, since the base closing is not
-  undone. `notIndexedKinds` returns the kind per pixel and the parts table through
+  `spatialDecompositionGrid`): Feret^2 / area >= 5 with at least half of the boundary
+  cells against grains is a crack (peridotite: the crack pieces have 30-34% of their
+  boundary against notIndexed cells, the strip of plucked rim at the bottom right edge
+  63%, so it is a void), contact with the raster outside the scan hull a void, a rim
+  held to 85% by pixels the criterion connects a pore, the rest pockets, in that
+  priority; what lies between two crack parts is a crack, since the closing cuts a crack
+  where it narrows - the parts and the connected pieces of filled cells form a graph with
+  contacts as edges, and pruning the leaves that are no crack part leaves the nodes
+  between crack parts, so a pocket hanging off the crack by a thread of notIndexed cells
+  stays a pocket (peridotite: the widening on the crack's path, 329 px, is crack; the
+  pocket beside the crack joined to it around a 32 px enstatite grain is not). Each kind
+  closes with a radius of its own,
+  `'alphaPore'` (default inf), `'alphaPocket'` (default alpha) and `'alphaCrack'`
+  (default 0), by `closedAt` with the kind's disk on the kind's cells, or by the
+  circumradius on the `'delaunay'` path. The kind's closing replaces the base closing on
+  the kind's cells, so a radius below alpha reopens what alpha filled: with the default
+  the necks of a crack narrower than 2*alpha stay open and the crack is whole, where the
+  base closing joined the grains across them (peridotite: the narrow upper stretch of
+  the crack). `notIndexedKinds` returns the kind per pixel and the parts table through
   `'kindsOnly'`; `'kinds'` replaces the kind of a part by the mode over its pixels.
   peridotite at 10 degree, minPixel 5: 575 -> 569 grains, 41 -> 35 notIndexed; the
   classification costs 0.02-0.06 s on peridotite, forsterite and 1C_1. ADR 0010

@@ -43,10 +43,10 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %             are marked notIndexed
 %  alpha    - fill distances into not indexed regions
 %  alphaPore, alphaPocket, alphaCrack - the fill distance for the notIndexed
-%             regions of that kind which alpha leaves open, see
-%             notIndexedKinds. alphaPore defaults to inf, so a pore is part
-%             of its grain; the others default to alpha, and a value below
-%             alpha acts as alpha
+%             regions of that kind, in place of alpha, see notIndexedKinds.
+%             alphaPore defaults to inf, so a pore is part of its grain;
+%             alphaCrack to 0, so a crack stays open where alpha would
+%             close it; alphaPocket to alpha
 %  kinds    - the kind of every pixel, from notIndexedKinds, edited or not
 %  straighten - true (default) draws the grain boundaries through filled
 %             regions as straight lines, false along the bisectors between

@@ -26,15 +26,15 @@ plot(ebsd,'micronbar','off')
 % *crack* crosses the left half of the map from the bottom edge to the top
 % edge, wide in its lower part and narrow in its upper part. Round holes
 % inside some of the large forsterite grains are *pores*. Irregular gaps
-% between several grains are *pockets*. Single white pixels scattered over
-% the map are *specks*. The white regions cut by the edge of the map, at the
-% bottom and on the right, are *voids*.
+% between several grains are *pockets*. White patches of a few pixels,
+% scattered over the whole map, are *specks*. The white regions cut by the
+% edge of the map, at the bottom and on the right, are *voids*.
 
 %% The default reconstruction
 %
 % We reconstruct the grains with the default settings. The second output is
-% the map with the |grainId| of every pixel. We keep it apart from |ebsd|,
-% so that every reconstruction on this page starts from the measured map.
+% the map with the |grainId| of every pixel; a pixel outside all grains has
+% the |grainId| 0.
 
 [grains,ebsdGrains] = calcGrains(ebsd,'angle',10*degree,'minPixel',5);
 grains = smoothBoundary(grains);
@@ -55,9 +55,9 @@ hold off
 % are inside the grains: they show white, without a boundary around them,
 % and the grain continues around them. The pockets are the darkened regions.
 % Each is a |notIndexed| grain of its own, with a boundary to every grain
-% around it. The crack and the voids are outside all grains. They are white
-% bands with a boundary along each wall, and their pixels have the |grainId|
-% 0.
+% around it. The crack and the voids are outside all grains: white regions
+% with a boundary along each wall. The crack is whole from its mouth at the
+% bottom edge to the top edge, also where it is only a few pixels wide.
 %
 % This is usually what one wants. A pore is a hole in a grain and its area
 % belongs to that grain. A crack is a fracture, so the grains stop at its
@@ -69,38 +69,40 @@ hold off
 % |calcGrains| sorts the |notIndexed| regions into these kinds and treats
 % every kind by a rule of its own. The command
 % <EBSD.notIndexedKinds.html |notIndexedKinds|> returns the kind of every
-% pixel, so we can look at what |calcGrains| saw. We plot the kinds over the
-% map: pores blue, pockets orange, cracks red, voids black and specks grey.
+% pixel, so we can look at what |calcGrains| saw. We plot the kinds in
+% colour over the indexed pixels in light grey.
 
 kinds = notIndexedKinds(ebsd,'angle',10*degree);
 
-color = [0.2 0.4 1; 1 0.6 0; 1 0 0; 0 0 0; 0.7 0.7 0.7];
-isNotIndexed = ~ebsd.isIndexed;
+names = ["pore" "pocket" "crack" "void" "speck"];
+color = [0.2 0.4 1; 1 0.6 0; 1 0 0; 0 0 0; 0.55 0.55 0.55];
 
-plot(ebsd,'micronbar','off')
+plot(ebsd('indexed'),'FaceColor',[0.9 0.9 0.9],'micronbar','off')
 legend off
 hold on
-plot(ebsd(isNotIndexed),color(double(kinds(isNotIndexed)),:))
+for k = 1:5
+  plot(ebsd(kinds == names(k)),'FaceColor',color(k,:),'DisplayName',names(k))
+end
 hold off
 
 %%
 % The whole crack is one red band, from its mouth at the bottom edge to the
-% top edge. The round pores inside the forsterite grains are blue, the
-% pockets between the grains are orange and the regions cut by the map edge
-% are black. The grey specks are everywhere; they make up more than half of
-% all |notIndexed| pixels. The narrow strip along the bottom right edge is
-% red as well, which we come back to at the end of the page.
+% top edge. The round pores inside the large grains are blue, the pockets
+% between the grains are orange and the regions cut by the map edge are
+% black. The grey specks are everywhere; they make up more than half of all
+% |notIndexed| pixels.
 %
 % Each kind is closed with a radius of its own, in pixels. A region
 % narrower than twice its radius is filled, a wider one keeps its core.
 %
-% * Specks are closed with the radius |alpha|, 3.1 by default, as in
+% * Specks are what the radius |alpha| fills, 3.1 pixels by default, as in
 % <GrainReconstruction.html Grain Reconstruction>.
 % * Pores are closed with |'alphaPore'|, which is |inf| by default: a pore
 % is filled whatever its size.
-% * Pockets are closed with |'alphaPocket'| and cracks with |'alphaCrack'|.
-% Both are |alpha| by default, so a pocket or a crack that |alpha| leaves
-% open stays open.
+% * Pockets are closed with |'alphaPocket'|, which is |alpha| by default: a
+% pocket that |alpha| leaves open stays open.
+% * Cracks are closed with |'alphaCrack'|, which is 0 by default: a crack is
+% never closed, not even where it is narrower than |2*alpha|.
 % * Voids are never closed.
 
 %% Closing the pockets
@@ -128,12 +130,8 @@ hold off
 % The pockets have been shared out between the grains around them. Where
 % several grains meet in a former pocket, their boundaries run through it
 % as straight lines, the shortest boundaries the filled region allows. Only
-% the four widest pockets keep a core as a |notIndexed| grain, and
+% the two widest pockets keep a core as a |notIndexed| grain, and
 % |'alphaPocket',inf| fills those as well. The crack is as open as before.
-%
-% A large |alpha| would close the pockets too. But |alpha| only knows the
-% width of a region, so it would also close the narrow upper part of the
-% crack and join the grains on its two sides.
 
 %% Bridging the crack
 %
@@ -176,54 +174,30 @@ axis([2500 12500 7000 17940])
 %% Correcting a kind
 %
 % The kinds are read from the shape and the surroundings of a region, and
-% they can be wrong for a map. The strip along the bottom right edge is
-% long and narrow enough to count as a crack, yet it is the rim of a region
-% plucked out of the specimen, a void. With |'alphaCrack',15| it has been
-% bridged like the crack.
+% they can be wrong for a map. |kinds| is a categorical array with one entry
+% per pixel, so it can be edited and handed back to |calcGrains| with the
+% option |'kinds'|. Every region then takes the kind that its pixels say. To
+% treat the crack as a void, for example, so that |'alphaCrack'| leaves it
+% alone:
 %
-% |kinds| is a categorical array with one entry per pixel, so it can be
-% edited and handed back to |calcGrains| with the option |'kinds'|. Every
-% region then takes the kind that its pixels say. We mark the strip as a
-% void and reconstruct again. The maps show the bottom right corner before
-% and after the correction.
-
-kindsEdited = kinds;
-kindsEdited(kinds(:) == "crack" & ebsd.x(:) > 20000) = "void";
-
-[grainsE,ebsdE] = calcGrains(ebsd,'angle',10*degree,'minPixel',5, ...
-  'alphaPocket',10,'alphaCrack',15,'kinds',kindsEdited);
-grainsE = smoothBoundary(grainsE);
-
-newMtexFigure('layout',[1 2]);
-for g = {grainsC,grainsE}
-  nextAxis
-  plot(ebsd,'micronbar','off')
-  legend off
-  hold on
-  plot(g{1}.boundary,'linewidth',1.5)
-  hold off
-  axis([24500 29500 15500 17940])
-end
-
-%%
-% On the left the grains reach across the strip to the edge of the map. On
-% the right the strip is outside all grains, like the plucked region beside
-% it.
+%   kinds(kinds == "crack") = "void";
+%   grains = calcGrains(ebsd,'angle',10*degree,'minPixel',5,'kinds',kinds);
 
 %% How the kinds are told apart
 %
 % The closing with |alpha| fills every |notIndexed| region narrower than
 % |2*alpha| pixels; what it fills are the specks. What it leaves open are
-% the thick parts of the map, and each of them gets its kind from its shape
-% and its surroundings, in this order. A region that is long compared with
-% its area is a crack: the square of its longest diameter is at least five
-% times its area. A region touching the edge of the map is a void. A region
-% whose rim is held by one grain is a pore: at least 85 percent of the
-% indexed pixels around it are connected by the same criterion that
-% |calcGrains| uses to join pixels into grains. Every other region is a
-% pocket. Finally, a pore or a pocket joined to a crack by |notIndexed|
-% pixels and lying between its pieces counts as part of the crack, so that a
-% crack stays whole where it widens.
+% the thick parts of the white regions, and each of them gets its kind from
+% its shape and its surroundings, in this order. A region that is long
+% compared with its area and walled by grains is a crack: the square of its
+% longest diameter is at least five times its area, and at least half of its
+% boundary runs along grains. A region touching the edge of the map is a
+% void. A region whose rim is held by one grain is a pore: at least 85
+% percent of the indexed pixels around it are connected by the same
+% criterion that |calcGrains| uses to join pixels into grains. Every other
+% region is a pocket. Finally, whatever lies between two pieces of a crack,
+% joined to both by |notIndexed| pixels, counts as part of the crack, so
+% that a crack stays whole where it widens and where it narrows.
 
 %% References
 %
