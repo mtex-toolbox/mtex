@@ -165,6 +165,16 @@ grains.scanUnit = ebsd.scanUnit;
 % vertices were computed as bare coordinates and know nothing about it
 grains.frame = ebsd.pos.frame;
 
+% every grain's boundary closes: within a grain, every vertex is met by an
+% even number of segments
+g = repmat(grains.boundary.grainId(:),2,1);
+v = reshape(repmat(grains.boundary.F,2,1),[],1);
+[u,~,k] = unique(v(g > 0) + (g(g > 0) - 1) * size(V,1));
+notClosed = unique(floor((u(mod(accumarray(k,1),2) == 1) - 1) / size(V,1)) + 1);
+if ~isempty(notClosed)
+  error('calcGrains:openBoundary','the boundary of grain %d does not close',notClosed(1));
+end
+
 % merge quadruple grains
 if check_option(varargin,'removeQuadruplePoints') && qAdded > 0
   mergeQuadrupleGrains;

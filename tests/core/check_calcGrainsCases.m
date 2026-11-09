@@ -310,6 +310,7 @@ checkInsideEmptyQuery(cs, thr);
 checkGrainIdRoundTrip(ebsdSq, thr);
 checkResegmentOutput(ebsdSq, thr);
 checkNotIndexedKinds(cs, thr);
+checkWideCrack(cs, thr);
 
 disp('calcGrains cases: all checks passed');
 
@@ -355,6 +356,34 @@ for k = 1:size(expected,1)
     error('calcGrains with %s: expected %d grains, got %d', ...
       strjoin(opt,','),expected{k,2},length(grains));
   end
+end
+
+end
+
+% ===========================================================================
+function checkWideCrack(cs, thr)
+% a crack far wider than 2*alpha, bridged whole: every grain's polygon holds
+% exactly the pixels it owns, so the Voronoi cells reached across the fill
+
+n = 60;
+blockId = kron(reshape(1:16,4,4),ones(15));
+rot = rotation.id(n,n);
+oris = orientation.byAxisAngle(zvector,(1:16)*7*degree,cs);
+for k = 1:16, rot(blockId == k) = oris(k); end
+[c,~] = meshgrid(1:n,1:n);
+phaseId = 2 - (c >= 23 & c <= 47);
+ebsd = EBSDsquare([],rot,phaseId,[0 1],{'notIndexed',cs},'dxy',[1 1]);
+
+[grains,ebsd] = calcGrains(ebsd,'threshold',thr,'alphaCrack',inf);
+if any(ebsd.grainId(:) == 0) || any(~grains.isIndexed)
+  error('wide crack: %d pixels outside all grains, %d notIndexed grains', ...
+    nnz(ebsd.grainId(:) == 0), nnz(~grains.isIndexed));
+end
+nPx = accumarray(ebsd.grainId(:),1,[max(grains.id) 1]);
+off = abs(grains.area - nPx(grains.id)) > 0.01 * nPx(grains.id);
+if any(off)
+  error('wide crack: the polygon of grain %d has area %.0f for %d pixels', ...
+    grains.id(find(off,1)), grains.area(find(off,1)), nPx(grains.id(find(off,1))));
 end
 
 end
