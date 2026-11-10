@@ -15,8 +15,9 @@ function grains = simplifyBoundary(grains,varargin)
 % Junctions stay exactly where they are, so which grains touch, and where, is
 % unchanged. The grain polygons are retraced along with the boundary, so the
 % grain areas do move - by at most about epsilon times the perimeter. A grain
-% too small to survive the tolerance is left uncoarsened rather than collapsed,
-% so no grain is ever simplified away.
+% of fewer than 14 vertices keeps every one of them, and a grain too small to
+% survive the tolerance is left uncoarsened rather than collapsed, so no grain
+% is ever simplified away.
 %
 % Input
 %  grains  - @grain2d
@@ -33,6 +34,12 @@ function grains = simplifyBoundary(grains,varargin)
 % both boundaries have to be coarsened before either of them may drop a
 % vertex the other one still uses, so collect the shared vertices first
 protect = sharedBoundaryV(grains);
+
+% a grain of fewer than 14 vertices keeps every one, each carries shape
+gId = grains.boundary.grainId;
+nV = accumarray(gId(gId > 0),1);
+small = gId > 0; small(small) = nV(gId(small)) < 14;
+protect = [protect; reshape(grains.boundary.F(any(small,2),:),[],1)];
 
 grains.boundary = simplify(grains.boundary,varargin{:},'protect',protect);
 grains.innerBoundary = simplify(grains.innerBoundary,varargin{:},'protect',protect);

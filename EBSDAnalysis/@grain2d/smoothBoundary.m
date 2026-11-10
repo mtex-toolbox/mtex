@@ -23,13 +23,16 @@ function [grains,F] = smoothBoundary(grains,iter,varargin)
 % centres around it, the triangle of three on a hexagonal grid - shrunk by
 % |d/20|, |d| being the pixel spacing. So the boundary passes every pixel it
 % was measured next to on the side it was measured on, and a triple point
-% stays within half a step of where it was. A loose end stays put, and so
-% does the whole boundary of a grain of fewer than 14 vertices - it has no
-% shape below the pixel scale to smooth, only area to lose
+% stays within half a step of where it was. A loose end stays put
+% # every grain is given its measured area back: its vertices move along the
+% gradient of the area by what the linearised area asks for, a few times,
+% each time held in the cells again. A grain of a few pixels, which the
+% filter shrinks to a fraction, ends with the area it was measured with
 % # <grain2d.simplifyBoundary.html |simplifyBoundary|> drops every vertex
 % whose removal moves the boundary by less than |epsilon|, |d/10| by default,
 % unless that would bring one of those pixel centres closer than |d/20| to
-% the boundary or put it on the other side
+% the boundary or put it on the other side; a grain of fewer than 14
+% vertices keeps every one of them
 %
 % Which algorithm performs the first step is decided by a
 % <boundaryFilter.html |boundaryFilter|>
@@ -108,11 +111,6 @@ A_V = I_VF * I_VF';
 vDegree = full(diag(A_V));
 ignore = vDegree < 2;
 
-% a grain of fewer than 14 boundary vertices keeps its measured boundary
-gId = grains.boundary.grainId;
-small = [false; accumarray(gId(gId > 0),1,[length(grains) 1]) < 14];
-ignore(grains.boundary.F(any(small(gId + 1),2),:)) = true;
-
 V = grains.allV.xyz;
 
 % the outer boundary keeps its junctions and the corners of its convex hull
@@ -151,8 +149,27 @@ F = getClass(varargin,'boundaryFilter',[]);
 if isempty(F), F = taubinFilter(iter,varargin{:}); end
 
 V0 = V;
+A0 = grains.area;
 V = F.smooth(V,A_V,ignore,median(grains.boundary.segLength),@(V) toCell(V,cells));
 grains.allV = vector3d.byXYZ(V,grains.how2plot);
+
+% every grain encloses its measured area again: each grain moves its vertices
+% along the gradient of its shoelace area by what the linearised area asks
+% for, at most a quarter pixel a step
+p = [grains.poly{:}].';
+g = repelem((1:length(grains)).',cellfun(@numel,grains.poly));
+in = g(1:end-1) == g(2:end);
+i = p([in; false]); j = p([false; in]); gi = g([in; false]);
+sg = -sign(grains.N.z) / 2;
+nV = size(V,1);
+for it = 1:5
+  G = sparse([gi; gi; gi; gi],[i; nV+i; j; nV+j], ...
+    sg * [-V(j,2); V(j,1); V(i,2); -V(i,1)] .* ~ignore([i; i; j; j]),length(grains),2*nV);
+  dV = G.' * ((A0 - grains.area) ./ max(full(sum(G.^2,2)),eps));
+  V(:,1:2) = V(:,1:2) + max(-d/4,min(d/4,reshape(dV,[],2)));
+  V = toCell(V,cells);
+  grains.allV = vector3d.byXYZ(V,grains.how2plot);
+end
 
 if ~check_option(varargin,'noSimplify')
   grains = simplifyBoundary(grains,get_option(varargin,'simplify',d/10),...

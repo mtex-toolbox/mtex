@@ -34,10 +34,11 @@
 % diagonally is one grain. A vertex where neither diagonal passes the
 % criterion stays a quadruple point. Maps with many single-pixel grains lose
 % some of them; |'removeQuadruplePoints',false| keeps every quadruple point.
-% A grain
-% of fewer than 14 boundary vertices is no longer moved by
-% <grain2d.smoothBoundary.html |smoothBoundary|>, which used to shrink a
-% single-pixel grain to a fraction of its area.
+%
+% <grain2d.smoothBoundary.html |smoothBoundary|> gives every grain its
+% measured area back after smoothing, so a grain of a few pixels, which the
+% filter alone shrinks to a fraction, keeps its size, and a grain of fewer
+% than 14 vertices is not simplified.
 %
 % *Pores, pockets and cracks*
 %

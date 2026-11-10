@@ -52,9 +52,11 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %             regions as straight lines, false along the bisectors between
 %             the measured pixels around them
 %  removeQuadruplePoints - true (default) splits every vertex where four
-%             boundary segments meet into two triple points, joining the
-%             diagonal pair of pixels that merges two grains, else the pair
-%             the criterion connects best; false keeps the quadruple points
+%             boundary segments meet into two triple points an eighth of a
+%             pixel apart, joining the diagonal pair of pixels that merges
+%             two grains along the neck between them, else the pair the
+%             criterion connects best; a vertex where neither diagonal passes
+%             the criterion stays a quadruple point; false keeps them all
 %  soft     - [angle delta] soft threshold instead of a hard one
 %  fmc       - fast multiscale clustering method
 %  mcl       - Markovian clustering algorithm
@@ -388,7 +390,7 @@ end
     iqD(ignore,:) = [];
     quadPoints(ignore) = [];
     iqF(ignore,:) = [];
-    %qV(ignore,:) = [];
+    qV(ignore,:) = [];
     qOrder(ignore,:) = [];
     if isempty(quadPoints), return; end
     s = size(iqF);
@@ -398,6 +400,15 @@ end
     newVid = (size(V,1) + (1:length(quadPoints))).';
     V = [V;V(quadPoints,:)];
     V0 = [V0;V0(quadPoints,:)];
+
+    % the two vertices an eighth of a pixel apart, each toward the cell between its
+    % two edges, so the joined cells meet along a neck of a quarter pixel
+    u = V(qV(sub2ind(s,repmat((1:s(1)).',1,4),qOrder)),:) - repmat(V(quadPoints,:),4,1);
+    u = reshape(u ./ vecnorm(u,2,2),[],4,2);
+    b = @(i) reshape(u(:,i(1),:) + u(:,i(2),:),[],2);
+    w = @(i) fillmissing(b(i) ./ vecnorm(b(i),2,2),"constant",0);
+    V(newVid,:) = V(quadPoints,:) + out.dxy/8 * w([1 2]);
+    V(quadPoints,:) = V(quadPoints,:) + out.dxy/8 * w([3 4]);
   
     % include new vertex into face list, i.e. replace quadpoint -> newVid
     % element-wise, since two adjacent quadruple points share an edge and a
