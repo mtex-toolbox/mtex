@@ -52,7 +52,7 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %             regions as straight lines, false along the bisectors between
 %             the measured pixels around them
 %  removeQuadruplePoints - true (default) splits every vertex where four
-%             boundary segments meet into two triple points an eighth of a
+%             boundary segments meet into two triple points a quarter of a
 %             pixel apart, joining the diagonal pair of pixels that merges
 %             two grains along the neck between them, else the pair the
 %             criterion connects best; a vertex where neither diagonal passes
@@ -401,7 +401,7 @@ end
     V = [V;V(quadPoints,:)];
     V0 = [V0;V0(quadPoints,:)];
 
-    % the two vertices an eighth of a pixel apart, each toward the cell between its
+    % the two vertices a quarter of a pixel apart, each an eighth toward the cell between its
     % two edges, so the joined cells meet along a neck of a quarter pixel
     u = V(qV(sub2ind(s,repmat((1:s(1)).',1,4),qOrder)),:) - repmat(V(quadPoints,:),4,1);
     u = reshape(u ./ vecnorm(u,2,2),[],4,2);

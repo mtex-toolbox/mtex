@@ -44,7 +44,7 @@ including 6.1 have one combined list there and no entry here.
   twins and 52 of 195 on forsterite. A point is split only where the chosen diagonal
   passes the criterion, so every added segment is merged away and none of zero length
   remains (those gave NaN directions, curvatures and mean directions). The two vertices
-  of a split point sit an eighth of a pixel apart, each toward the cell between its two
+  of a split point sit a quarter of a pixel apart, each an eighth toward the cell between its two
   edges, so the joined pixels meet along a neck of a quarter pixel and the merged grain
   is a polygon the smoothing can open rather than a pinch. `'removeQuadruplePoints',false`
   keeps every quadruple point. twins at 15 degree 121 -> 95 grains, forsterite
