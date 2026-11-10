@@ -96,7 +96,7 @@ ebsdQP1 = buildQuadPointGrid(cs, 3, [orientation.id(cs), ...
   orientation.byAxisAngle(yvector,3*degree,cs), ...
   orientation.byAxisAngle(zvector,3*degree,cs)]);
 
-gPlain = calcGrains(ebsdQP1,'threshold',qpThr);
+gPlain = calcGrains(ebsdQP1,'threshold',qpThr,'removeQuadruplePoints',false);
 gQP    = calcGrains(ebsdQP1,'threshold',qpThr,'removeQuadruplePoints');
 
 if length(gPlain) ~= 4 || length(gQP) ~= 4
@@ -113,7 +113,7 @@ ebsdQP2 = buildQuadPointGrid(cs, 3, [orientation.id(cs), ...
   orientation.byAxisAngle(yvector,90*degree,cs), ...
   orientation.byAxisAngle(zvector,1*degree,cs)]);
 
-gPlain2 = calcGrains(ebsdQP2,'threshold',qpThr);
+gPlain2 = calcGrains(ebsdQP2,'threshold',qpThr,'removeQuadruplePoints',false);
 [gQP2,ebsdQP2] = calcGrains(ebsdQP2,'threshold',qpThr,'removeQuadruplePoints');
 
 if length(gPlain2) ~= 4 || length(gQP2) ~= 3
@@ -174,7 +174,7 @@ checkMinPixel(calcGrains(ebsdMPhex,'threshold',thr,'minPixel',2), 2, 1, ...
   'hex, single stray pixel');
 
 % #2574: culling elsewhere moves the closing raster and strands a pixel across a gap
-checkMinPixel(calcGrains(mtexdata('small','silent'),'minPixel',3), 3, 24, ...
+checkMinPixel(calcGrains(mtexdata('small','silent'),'minPixel',3), 3, 23, ...
   'stranded pixel, mtexdata small');
 
 %% every grain polygon must be a closed ring enclosing a positive area
@@ -237,7 +237,7 @@ gQPa = calcGrains(qpIn,  'threshold',thr,'removeQuadruplePoints');
 gQPb = calcGrains(qpShuf,'threshold',thr,'removeQuadruplePoints');
 
 % the test is vacuous unless the option actually does something here
-gQPplain = calcGrains(qpIn,'threshold',thr);
+gQPplain = calcGrains(qpIn,'threshold',thr,'removeQuadruplePoints',false);
 if length(gQPa) == length(gQPplain)
   error(['removeQuadruplePoints changed nothing on this map (%d grains ' ...
     'either way), so the order invariance below is not being tested'], ...

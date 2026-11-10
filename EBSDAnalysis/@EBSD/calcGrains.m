@@ -154,7 +154,7 @@ phaseId(phaseId==0) = 1; % why this is needed?
 
 qAdded = 0;
 if get_option(varargin,'removeQuadruplePoints',true)
-  [qAdded,qPairs,qF] = removeQuadruplePoints;
+  [qAdded,qF] = removeQuadruplePoints;
 end
 
 % setup grains
@@ -319,11 +319,10 @@ end
   end
 
 
-  function [qAdded,qPairs,qF] = removeQuadruplePoints
+  function [qAdded,qF] = removeQuadruplePoints
 
     quadPoints = accumarray(reshape(Fext(full(any(I_FDext,2)),:),[],1),1) == 4;
     qAdded = 0;
-    qPairs = zeros(0,2);
     qF = zeros(0,2);
 
     if ~any(quadPoints), return; end
@@ -381,13 +380,17 @@ end
     iqD(useB,:) = iqDB(useB,:);
 
 
-    % some we will not be able to remove
+    % a pair the criterion separates stays a quadruple point, so every added
+    % segment is merged away and none of zero length remains
     ignore = full(sum(iqD,2)) ~= 2;
+    [p,~] = find(iqD(~ignore,:).'); p = reshape(p,2,[]).';
+    ignore(~ignore) = gbc.eval(ebsd,p(:,1),p(:,2)) <= 0;
     iqD(ignore,:) = [];
     quadPoints(ignore) = [];
     iqF(ignore,:) = [];
     %qV(ignore,:) = [];
     qOrder(ignore,:) = [];
+    if isempty(quadPoints), return; end
     s = size(iqF);
     orderSub = @(i) sub2ind(s,(1:s(1)).',qOrder(:,i));
   
@@ -420,10 +423,6 @@ end
     qF = [quadPoints(newBd),newVid(newBd)];
     Fext = [Fext; qF];
     qAdded = sum(newBd);
-
-    % pixel pairs adjacent to each newly added boundary edge, in the same
-    % order as the rows appended to Fext / I_FDext above
-    qPairs = iqD(newBd,:);
 
     % new rows to I_FDext
     I_FDext = [I_FDext; ...
@@ -492,10 +491,6 @@ end
 
   function mergeQuadrupleGrains
 
-    % merge a new boundary away when the segmentation criterion sees none
-    connect = gbc.eval(ebsd,qPairs(:,1),qPairs(:,2));
-    toMerge = connect > 0;
-
     % find the added segments by their vertex pair, the constructor reorders them
     gB = grains.boundary;
     [found,loc] = ismember(sort(qF,2),sort(gB.F,2),'rows');
@@ -505,7 +500,7 @@ end
       'in the grain boundary - the merge step cannot identify them'], ...
       nnz(~found),numel(found));
 
-    [grains, parentId] = merge(grains,gB(loc(toMerge)));
+    [grains, parentId] = merge(grains,gB(loc));
 
     % update I_DG
     I_PC = sparse(1:length(parentId),parentId,1);

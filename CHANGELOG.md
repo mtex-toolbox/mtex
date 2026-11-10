@@ -40,7 +40,9 @@ including 6.1 have one combined list there and no entry here.
   are now removed by default, and the pairing puts the diagonal the criterion connects
   and that lies in two grains first; the old order, by misorientation, joined a pair
   already in one grain at 4 of 21 such points on twins and 52 of 195 on forsterite.
-  `'removeQuadruplePoints',false` keeps them. twins at 15 degree 121 -> 95 grains,
+  A point whose diagonals the criterion both separates stays a quadruple point, so no
+  segment of zero length remains. `'removeQuadruplePoints',false` keeps them all. twins at
+  15 degree 121 -> 95 grains,
   forsterite 3102 -> 2855, alphaBetaTitanium 48609 -> 31466; 3-6 percent of the time
   of `calcGrains`, +0.5 s on alphaBetaTitanium with 25673 quadruple points
 - Four outer boundary segments meeting in one vertex, an exact tie of the Voronoi

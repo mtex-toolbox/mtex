@@ -31,8 +31,10 @@
 % only at a corner. <EBSD.calcGrains.html |calcGrains|> now resolves every
 % such vertex into two triple points, joining the diagonal pair that merges
 % two grains, so a twin lamella one pixel wide that crosses the grid
-% diagonally is one grain. Maps with many single-pixel grains lose some of
-% them; |'removeQuadruplePoints',false| keeps the quadruple points. A grain
+% diagonally is one grain. A vertex where neither diagonal passes the
+% criterion stays a quadruple point. Maps with many single-pixel grains lose
+% some of them; |'removeQuadruplePoints',false| keeps every quadruple point.
+% A grain
 % of fewer than 14 boundary vertices is no longer moved by
 % <grain2d.smoothBoundary.html |smoothBoundary|>, which used to shrink a
 % single-pixel grain to a fraction of its area.
