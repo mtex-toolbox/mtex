@@ -29,16 +29,22 @@
 % Four pixels meet at every vertex of a square grid, and where they form a
 % checkerboard of two orientations the two pixels of one orientation touch
 % only at a corner. <EBSD.calcGrains.html |calcGrains|> now resolves every
-% such vertex into two triple points, joining the diagonal pair that merges
-% two grains, so a twin lamella one pixel wide that crosses the grid
-% diagonally is one grain. A vertex where neither diagonal passes the
-% criterion stays a quadruple point. Maps with many single-pixel grains lose
-% some of them; |'removeQuadruplePoints',false| keeps every quadruple point.
+% such vertex into two triple points a fraction of a pixel apart, joining the
+% diagonal pair that merges two grains, so a twin lamella one pixel wide that
+% crosses the grid diagonally is one grain with a neck at every step. A
+% vertex where neither diagonal passes the criterion stays a quadruple point.
+% Maps with many single-pixel grains lose some of them; the option
+% |'removeQuadruplePoints',false| keeps every quadruple point:
+%
+%   grains = calcGrains(ebsd,'removeQuadruplePoints',false)
+%
+% *Smoothing keeps the grain areas*
 %
 % <grain2d.smoothBoundary.html |smoothBoundary|> gives every grain its
-% measured area back after smoothing, so a grain of a few pixels, which the
-% filter alone shrinks to a fraction, keeps its size, and a grain of fewer
-% than 14 vertices is not simplified.
+% measured area back after smoothing. A grain of a few pixels, which the
+% filter alone shrinks to a fraction of its size, keeps it, and a grain of
+% fewer than 14 boundary vertices is smoothed but not simplified, so two
+% pixels joined at a corner become a lens rather than a bow tie.
 %
 % *Pores, pockets and cracks*
 %

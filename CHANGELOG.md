@@ -35,19 +35,21 @@ including 6.1 have one combined list there and no entry here.
   has the same rule; its indexed grain counts change
   by 0 to 6 on peridotite, forsterite and small
 - Two pixels of one orientation that touch only at a corner share no Voronoi segment,
-  so the criterion never compared them and each was a grain of its own (mtexdata twins,
-  the twin pixels at (37.5,24.6) and (37.8,24.3), 0.37 degree apart). Quadruple points
-  are now removed by default, and the pairing puts the diagonal the criterion connects
-  and that lies in two grains first; the old order, by misorientation, joined a pair
-  already in one grain at 4 of 21 such points on twins and 52 of 195 on forsterite.
-  A point whose diagonals the criterion both separates stays a quadruple point, so no
-  segment of zero length remains; the two vertices of a split point sit an eighth of a
-  pixel apart, each toward the cell between its two edges, so the joined pixels meet along
-  a neck of a quarter pixel instead of in a point and the merged grain is a polygon the
-  smoothing can work on. `'removeQuadruplePoints',false` keeps them all. twins at
-  15 degree 121 -> 95 grains,
-  forsterite 3102 -> 2855, alphaBetaTitanium 48609 -> 31466; 3-6 percent of the time
-  of `calcGrains`, +0.5 s on alphaBetaTitanium with 25673 quadruple points
+  so the criterion never compared them and each was a grain of its own: on mtexdata
+  twins the twin pixels at (37.5,24.6) and (37.8,24.3), 0.37 degree apart. Quadruple
+  points are removed by default. The two diagonals of a point are ranked by whether the
+  criterion connects the pair and it lies in two grains, so that joining it merges them,
+  then by the criterion value, the misorientation and the position; ranking by the
+  misorientation first joined a pair already in one grain at 4 of 21 such points on
+  twins and 52 of 195 on forsterite. A point is split only where the chosen diagonal
+  passes the criterion, so every added segment is merged away and none of zero length
+  remains (those gave NaN directions, curvatures and mean directions). The two vertices
+  of a split point sit an eighth of a pixel apart, each toward the cell between its two
+  edges, so the joined pixels meet along a neck of a quarter pixel and the merged grain
+  is a polygon the smoothing can open rather than a pinch. `'removeQuadruplePoints',false`
+  keeps every quadruple point. twins at 15 degree 121 -> 95 grains, forsterite
+  3102 -> 2855, alphaBetaTitanium 48609 -> 31466, areas per phase unchanged; 3-6 percent
+  of the time of `calcGrains`, +0.5 s on alphaBetaTitanium with 25673 quadruple points
 - Four outer boundary segments meeting in one vertex, an exact tie of the Voronoi
   decomposition on the lattice, let two cells touch in a single point: a vacated band
   cell between two grains in a one-pixel row, or a filled strip one cell thick. The
@@ -175,13 +177,16 @@ including 6.1 have one combined list there and no entry here.
   stay fixed unless `'moveOuterBoundary'` is given
 - A Taubin pair scales the shape of a loop of n vertices, the Laplacian mode
   k = 1-cos(2*pi/n), by (1-lambda*k)(1-mu*k), below one until n = 14, so 20 pairs took
-  a single-pixel grain to a tenth of its area and forsterite's median grain lost 39
-  percent. `smoothBoundary` gives every grain its measured area back after the filter:
-  five steps along the gradient of the shoelace area, each at most a quarter pixel and
-  each followed by the cell projection, and `simplifyBoundary` keeps every vertex of a
-  grain of fewer than 14. On twins and forsterite every grain ends within 7 percent of
-  its measured area and the median within 0.5; the two twin pixels of mtexdata twins
-  that touch at a corner become one lens-shaped grain of two pixels
+  a single-pixel grain to a tenth of its area, forsterite's median grain lost 39 percent
+  and one grain collapsed. `smoothBoundary` gives every grain its measured area back
+  after the filter: five steps along the gradient of its shoelace area by what the
+  linearised area asks for, each at most a quarter pixel and followed by the cell
+  projection - a coupled least-squares step blows up in clusters of single-pixel grains,
+  the per-grain step does not. `simplifyBoundary` keeps every vertex of a grain of fewer
+  than 14, since at d/10 it cut three pixels joined at corners from 12 vertices to 4.
+  On twins and forsterite every grain ends within 7 percent of its measured area and
+  the median within 0.5; the two twin pixels of mtexdata twins joined at a corner smooth
+  to a lens of two pixels, three such pixels to a thick C
 - `grainBoundary/refine` resampled each chain at equal arc length and cut the corners
   `simplify` had kept (twins, Mg-Mg boundary 848.25 -> 822.99). Each segment is split
   into round(L/delta) equal pieces, which keeps vertices, length and areas (#2641); a
