@@ -158,18 +158,13 @@ fprintf('%d grains, %d notIndexed, %.1f%% of the map outside all grains\n', ...
 % The boundaries of the reconstruction with the pockets closed are red, the
 % new boundaries black.
 
-plot(ebsd,'micronbar','off')
+plot(ebsd,'ipfz','micronbar','off')
 legend off
 hold on
-for phase = ["Forsterite" "Enstatite" "Diopside"]
-  ipfKey = ipfColorKey(ebsd(phase));
-  ipfKey.inversePoleFigureDirection = vector3d.Z;
-  plot(ebsd(phase),ipfKey.orientation2color(ebsd(phase).orientations))
-end
-plot(grainsP.boundary,'linewidth',2,'LineColor','r')
+plot(grainsP.boundary,'linewidth',4,'LineColor','white')
+plot(grainsP.boundary,'linewidth',2,'LineColor','red')
 plot(grainsC.boundary,'linewidth',2)
 hold off
-axis([2500 12500 7000 17940])
 
 %%
 % The red walls of the crack have no black boundary on them any more: the
