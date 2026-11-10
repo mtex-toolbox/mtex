@@ -32,11 +32,12 @@ plot(ebsd,'micronbar','off')
 
 %% The default reconstruction
 %
-% We reconstruct the grains with the default settings. The second output is
-% the map with the |grainId| of every pixel; a pixel outside all grains has
-% the |grainId| 0.
+% We reconstruct the grains with a threshold angle of 15 degree and leave
+% the treatment of the |notIndexed| regions at its defaults. The second
+% output is the map with the |grainId| of every pixel; a pixel outside all
+% grains has the |grainId| 0.
 
-[grains,ebsdGrains] = calcGrains(ebsd,'angle',10*degree,'minPixel',5);
+[grains,ebsdGrains] = calcGrains(ebsd,'angle',15*degree,'minPixel',5);
 grains = smoothBoundary(grains);
 
 fprintf('%d grains, %d notIndexed, %.1f%% of the map outside all grains\n', ...
@@ -72,7 +73,7 @@ hold off
 % pixel, so we can look at what |calcGrains| saw. We plot the kinds in
 % colour over the indexed pixels in light grey.
 
-kinds = notIndexedKinds(ebsd,'angle',10*degree);
+kinds = notIndexedKinds(ebsd,'angle',15*degree);
 
 names = ["pore" "pocket" "crack" "void" "speck"];
 color = [0.2 0.4 1; 1 0.6 0; 1 0 0; 0 0 0; 0.55 0.55 0.55];
@@ -111,7 +112,7 @@ hold off
 % |notIndexed| grains in between, while the crack stays open. We set
 % |'alphaPocket'| to 10, which fills every pocket narrower than 20 pixels.
 
-[grainsP,ebsdP] = calcGrains(ebsd,'angle',10*degree,'minPixel',5, ...
+[grainsP,ebsdP] = calcGrains(ebsd,'angle',15*degree,'minPixel',5, ...
   'alphaPocket',10);
 grainsP = smoothBoundary(grainsP);
 
@@ -142,7 +143,7 @@ hold off
 % become one grain. Where they differ by more than the threshold angle, a
 % new boundary runs through the crack.
 
-[grainsC,ebsdC] = calcGrains(ebsd,'angle',10*degree,'minPixel',5, ...
+[grainsC,ebsdC] = calcGrains(ebsd,'angle',15*degree,'minPixel',5, ...
   'alphaPocket',10,'alphaCrack',15);
 grainsC = smoothBoundary(grainsC);
 
@@ -189,7 +190,7 @@ axis([2500 12500 7000 17940])
 % alone:
 %
 %   kinds(kinds == "crack") = "void";
-%   grains = calcGrains(ebsd,'angle',10*degree,'minPixel',5,'kinds',kinds);
+%   grains = calcGrains(ebsd,'angle',15*degree,'minPixel',5,'kinds',kinds);
 
 %% How the kinds are told apart
 %
