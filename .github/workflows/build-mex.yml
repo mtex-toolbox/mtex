@@ -102,7 +102,7 @@ jobs:
             ext: mexw64
             products: MATLAB_Support_for_MinGW-w64_C/C++/Fortran_Compiler
           # Apple silicon
-          - os: macos-14
+          - os: macos-15
             ext: mexmaca64
             products: ''
           # Intel macOS. Not macos-13: that label has left GitHub's runner
