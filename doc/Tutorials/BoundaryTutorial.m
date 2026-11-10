@@ -61,8 +61,8 @@ plot(grains,grainColor)
 gB = grains.boundary
 
 %% Reading the boundary summary
-% The summary reports 3359 segments after smoothing. Of these, 2751 lie
-% between two magnesium grains and 608 form the outer rim, which appears in
+% The summary reports 1420 segments after smoothing. Of these, 1378 lie
+% between two magnesium grains and 42 form the outer rim, which appears in
 % the |notIndexed| row because there is no grain on its other side.
 %
 % In a general map the same row can also contain boundaries next to
@@ -103,7 +103,7 @@ mtexColorbar('title','minimum misorientation angle (degree)')
 %% Measure the dominant angle population
 %
 % The next two displayed values summarize segments, not whole physical
-% interfaces. The median angle is 84.7 degrees, and 58 percent of the
+% interfaces. The median angle is 85.6 degrees, and 64 percent of the
 % segments have angles above 80 degrees.
 
 medianAngle = median(misorientationAngle)

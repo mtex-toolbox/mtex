@@ -285,9 +285,9 @@ for k = 1:numel(stencils)
 end
 
 %%
-% |'oneSided'| is defined at 10,198 of the 10,201 pixels and the other two at
-% 10,200. The mean changes only from 0.0276 to 0.0261, while the maximum
-% falls from 0.4278 to 0.2154, almost exactly by half. The stencil therefore
+% All three stencils are defined at every one of the 10,201 pixels. The
+% mean changes only from 0.0276 to 0.0260, while the maximum falls from
+% 0.4277 to 0.2154, almost exactly by half. The stencil therefore
 % acts most strongly on the sharpest gradients and leaves the bulk of this
 % map comparatively stable.
 %

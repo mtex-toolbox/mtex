@@ -92,7 +92,7 @@ grains = calcGrains(ebsd,'threshold',5*degree);
 mori = grains.boundary('Magnesium','Magnesium').misorientation
 
 %%
-% The summary reports 3,286 boundary segments. This is one sample per
+% The summary reports 3,289 boundary segments. This is one sample per
 % segment, not one vote per neighbouring grain pair, so a longer boundary
 % contributes more samples. The displayed |antipodal: true| records grain
 % exchange symmetry. See <MisorientationGrainExchangeSym.html Grain Exchange
