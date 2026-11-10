@@ -157,8 +157,8 @@ fprintf('%d grains, %d notIndexed, %.1f%% of the map outside all grains\n', ...
 plot(ebsd,'micronbar','off')
 legend off
 hold on
-plot(grainsP.boundary,'linewidth',1,'LineColor','r')
-plot(grainsC.boundary,'linewidth',1)
+plot(grainsP.boundary,'linewidth',2,'LineColor','r')
+plot(grainsC.boundary,'linewidth',2)
 hold off
 axis([2500 12500 7000 17940])
 
