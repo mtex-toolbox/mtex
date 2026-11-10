@@ -186,7 +186,7 @@ setView(ebsd.how2plot)
 longAxisPeakDegree = round(mod([longAxisPeakF longAxisPeakE],pi) ./ degree,1)
 
 %%
-% The printed maxima are 76.2 degrees for forsterite and 91.5 degrees for
+% The printed maxima are 76.3 degrees for forsterite and 90.5 degrees for
 % enstatite. Both lie in the same steep sector, so as far as the long axes
 % show, the two phases share one fabric. The enstatite curve rests on fewer
 % grains; it is broader, and its maximum is less certain.
@@ -223,7 +223,7 @@ setView(ebsd.how2plot)
 caliperPeakDegree = round(mod([caliperPeakF caliperPeakE],pi) ./ degree,1)
 
 %%
-% The printed maximum is 75.7 degrees for forsterite and 80.4 degrees for
+% The printed maximum is 74.7 degrees for forsterite and 82.4 degrees for
 % enstatite. Two different definitions of which way a grain points agree on
 % the fabric, which is the reassuring outcome.
 %
@@ -318,7 +318,7 @@ legend('Forsterite','Enstatite','Location','eastoutside')
 %%
 % The two outlines are elongated the same way, which is the same conclusion
 % the rose diagrams reached, now expressed as a shape. Their aspect ratios
-% are both 1.2664, so the strengths are
+% are 1.2607 and 1.2605, so the strengths are
 % similar as well.
 
 characteristicAspectRatio = ...

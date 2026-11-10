@@ -121,7 +121,7 @@ largestForsteriteArea = max(forsteriteArea)
 largestForsteriteFraction = largestForsteriteArea ./ sum(grains.area)
 
 %%
-% The largest forsterite section covers 2.778 mm² and accounts for 15.12
+% The largest forsterite section covers 2.960 mm² and accounts for 11.91
 % percent of the analysed interior-grain area. The many small grains have
 % not gone away; area weighting has changed how much each one counts.
 
@@ -227,8 +227,8 @@ plot(grains,grains.paris)
 mtexColorbar('title','paris')
 
 %%
-% The median |paris| is 2.43 percent, its maximum is 45.67, and its
-% correlation with |shapeFactor| is 0.599. Among the complete grains, both
+% The median |paris| is 3.14 percent, its maximum is 45.60, and its
+% correlation with |shapeFactor| is 0.547. Among the complete grains, both
 % measures select the same extreme grain. In the full plotted map, including
 % truncated edge grains, they select different extremes. Their partial
 % agreement is the point: |shapeFactor| counts elongation as a departure
@@ -274,7 +274,7 @@ hold off
 
 %%
 % The points scatter around the fitted line because individual grains are
-% not scaled copies of one shape. The fitted slope, 1.007, is the estimated
+% not scaled copies of one shape. The fitted slope, 1.015, is the estimated
 % perimeter-area fractal dimension.
 
 fractalDimension = ab(1)
@@ -295,8 +295,8 @@ for iter = [0 5 25]
 end
 
 %%
-% The pixel staircase gives 1.114 because grid corners add artificial
-% length. Five steps give 1.044 and 25 steps 1.001, the value of a smooth
+% The pixel staircase gives 1.111 because grid corners add artificial
+% length. Five steps give 1.045 and 25 steps 1.010, close to the value of a smooth
 % curve. The estimate thus measures the smoothing as much as the rock.
 % Compare specimens only after matching the pixel resolution, grain-size
 % cutoff, segmentation, and smoothing procedure.

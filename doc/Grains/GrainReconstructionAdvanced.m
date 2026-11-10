@@ -182,7 +182,7 @@ hold off
 
 %%
 % Only a few black segments remain on this specimen. The printed counts show
-% that 69 full-orientation grains become 66 c-axis grains. Such mergers would
+% that 60 full-orientation grains become 59 c-axis grains. Such mergers would
 % be more common in a material with a strong fibre texture.
 
 %% Writing your own criterion
