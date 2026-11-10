@@ -60,6 +60,7 @@ properties (Hidden = true)
   lastZ = NaN              % the plane the bar was last laid out in (see update)
   lastExtent = []          % label footprint the last layout was measured against
   updating logical = false % re-entrance guard for update
+  normal = vector3d.Z      % the map's normal - the bar shows only when the map is seen along it
 end
 
 properties
@@ -84,10 +85,7 @@ end
 properties (SetObservable)
   location = 'sw'          % corner of the map: 'sw', 'se', 'nw', 'ne'
   refFrame = 'on'          % show the reference frame indicator: 'on', 'off'
-end
-
-properties (Dependent = true)
-  visible
+  visible  = 'on'          % show the scale bar: 'on', 'off'
 end
 
 
@@ -96,6 +94,7 @@ methods
   function sB = scaleBar(mP,scanUnit,varargin)
 
     sB.scanUnit = scanUnit;
+    sB.normal = mP.how2plot.outOfScreen;
     sB.hgt = hgtransform('parent',mP.ax);
     sB.shadow = patch('parent',sB.hgt,'Faces',1,'Vertices',[NaN NaN NaN],'EdgeColor','none');
     sB.txt = text('parent',sB.hgt,'string','1mm','position',[NaN,NaN],...
@@ -156,6 +155,7 @@ methods
     addlistener(sB,'refFrame',        'PostSet', @(~,~) sB.update);
     addlistener(sB,'refFrameDirs',    'PostSet', @(~,~) sB.update);
     addlistener(sB,'refFrameLabels',  'PostSet', @(~,~) sB.update);
+    addlistener(sB,'visible',         'PostSet', @(~,~) sB.update);
 
   end
 
@@ -193,11 +193,9 @@ methods
 
 
   function set.visible(sB,value)
-    sB.hgt.Visible = value;
-  end
-
-  function value = get.visible(sB)
-    value = sB.hgt.Visible;
+    onOff = {'off','on'};
+    if islogical(value), value = onOff{1+value}; end
+    sB.visible = lower(char(value));
   end
 
   function set.location(sB,loc)
@@ -264,6 +262,13 @@ methods
 
     % read the plotting convention back from the axes camera, not from a cache
     pC = plottingConvention.getView(ax);
+
+    % a map seen from anywhere but along its normal is a 3d view - there
+    % the axes labels give the scale and the bar stays out of the picture
+    faceOn = abs(dot(pC.outOfScreen,sB.normal)) > cos(degree);
+    onOff = {'off','on'};
+    sB.hgt.Visible = onOff{1 + (faceOn && strcmp(sB.visible,'on'))};
+    if ~faceOn, return; end
 
     % the bar is laid out on screen - east, north and towards the viewer -
     % and a point [u v w] there sits at [u v w] * R in data coordinates
@@ -494,12 +499,14 @@ function [w, wBack] = barPlanes(ax)
 %          for the depth buffer to tell the two planes apart, and little
 %          enough that nothing else fits in between.
 
-if strcmp(ax.SortMethod,'childorder')
+% the switch to depth sorting follows a view change only at the next
+% render, so a view off the z axis counts as depth sorted already
+camDir = ax.CameraPosition - ax.CameraTarget;
+if strcmp(ax.SortMethod,'childorder') && norm(camDir(1:2)) < 1e-6*norm(camDir)
   w = []; wBack = [];
   return
 end
 
-camDir = ax.CameraPosition - ax.CameraTarget;
 d = boxCorners(ax) * camDir.' / norm(camDir);
 w = max(d); wBack = w - 1e-3*(max(d) - min(d));
 
