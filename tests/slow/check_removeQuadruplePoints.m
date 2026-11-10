@@ -61,8 +61,8 @@ function checkLengthInvariant(name)
 ebsd = mtexdata(name,'silent');
 e = ebsd('indexed');
 
-g = calcGrains(e);
-q = calcGrains(e,'removeQuadruplePoints');
+g = calcGrains(e,'removeQuadruplePoints',false);
+q = calcGrains(e);
 
 % the exact, order free form: the multiset of real segment lengths is
 % untouched, since only zero length segments can be merged away

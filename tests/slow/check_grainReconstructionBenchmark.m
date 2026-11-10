@@ -71,10 +71,10 @@ for k = 1:numel(cases)
   t = zeros(c.reps,1);
   for r = 1:c.reps
     t0 = tic;
-    grains = calcGrains(ebsdI);
+    grains = calcGrains(ebsdI,'removeQuadruplePoints',false);
     t(r) = toc(t0);
   end
-  grainsQP = calcGrains(ebsdI,'removeQuadruplePoints');
+  grainsQP = calcGrains(ebsdI);
 
   % a ring traced inside out encloses a negative area, which no count notices -
   % asserted for a plain reconstruction, only compared for removeQuadruplePoints,

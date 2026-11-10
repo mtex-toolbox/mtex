@@ -24,6 +24,19 @@
 % A larger |alpha| now joins at least the grains a smaller one joins, and no
 % two grains touch in a single point.
 %
+% *Quadruple points*
+%
+% Four pixels meet at every vertex of a square grid, and where they form a
+% checkerboard of two orientations the two pixels of one orientation touch
+% only at a corner. <EBSD.calcGrains.html |calcGrains|> now resolves every
+% such vertex into two triple points, joining the diagonal pair that merges
+% two grains, so a twin lamella one pixel wide that crosses the grid
+% diagonally is one grain. Maps with many single-pixel grains lose some of
+% them; |'removeQuadruplePoints',false| keeps the quadruple points. A grain
+% of fewer than 14 boundary vertices is no longer moved by
+% <grain2d.smoothBoundary.html |smoothBoundary|>, which used to shrink a
+% single-pixel grain to a fraction of its area.
+%
 % *Pores, pockets and cracks*
 %
 % <EBSD.calcGrains.html |calcGrains|> tells the |notIndexed| regions that

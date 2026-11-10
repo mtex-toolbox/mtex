@@ -34,6 +34,15 @@ including 6.1 have one combined list there and no entry here.
   stayed a grain (peridotite alpha 2.1: 726 -> 723 grains). The `'delaunay'` path
   has the same rule; its indexed grain counts change
   by 0 to 6 on peridotite, forsterite and small
+- Two pixels of one orientation that touch only at a corner share no Voronoi segment,
+  so the criterion never compared them and each was a grain of its own (mtexdata twins,
+  the twin pixels at (37.5,24.6) and (37.8,24.3), 0.37 degree apart). Quadruple points
+  are now removed by default, and the pairing puts the diagonal the criterion connects
+  and that lies in two grains first; the old order, by misorientation, joined a pair
+  already in one grain at 4 of 21 such points on twins and 52 of 195 on forsterite.
+  `'removeQuadruplePoints',false` keeps them. twins at 15 degree 121 -> 95 grains,
+  forsterite 3102 -> 2855, alphaBetaTitanium 48609 -> 31466; 3-6 percent of the time
+  of `calcGrains`, +0.5 s on alphaBetaTitanium with 25673 quadruple points
 - Four outer boundary segments meeting in one vertex, an exact tie of the Voronoi
   decomposition on the lattice, let two cells touch in a single point: a vacated band
   cell between two grains in a one-pixel row, or a filled strip one cell thick. The
@@ -159,6 +168,11 @@ including 6.1 have one combined list there and no entry here.
   `smoothBoundary(grains,5)` 18.2 -> 4.8 s
 - The outer boundary is smoothed too; its junctions and the corners of its convex hull
   stay fixed unless `'moveOuterBoundary'` is given
+- A Taubin pair scales the shape of a loop of n vertices, the Laplacian mode
+  k = 1-cos(2*pi/n), by (1-lambda*k)(1-mu*k), below one until n = 14, so 20 pairs took
+  a single-pixel grain to a tenth of its area and forsterite's median grain lost 39
+  percent. `smoothBoundary` holds every vertex of a grain of fewer than 14 boundary
+  vertices; grains of up to 5 pixels keep their area on twins and forsterite
 - `grainBoundary/refine` resampled each chain at equal arc length and cut the corners
   `simplify` had kept (twins, Mg-Mg boundary 848.25 -> 822.99). Each segment is split
   into round(L/delta) equal pieces, which keeps vertices, length and areas (#2641); a

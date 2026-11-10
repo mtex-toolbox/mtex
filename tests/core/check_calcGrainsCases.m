@@ -185,10 +185,10 @@ rng(3);
 ebsdRing = EBSDsquare([],rotation.rand(30,30),2*ones(30,30),[0 1], ...
   {'notIndexed',csRing},'dxy',[0.3 0.3]);
 
-for optRing = {{}, {'removeQuadruplePoints'}}
+for optRing = {{'removeQuadruplePoints',false}, {}}
 
   what = 'calcGrains';
-  if ~isempty(optRing{1}), what = 'calcGrains + removeQuadruplePoints'; end
+  if ~isempty(optRing{1}), what = 'calcGrains without removeQuadruplePoints'; end
 
   gRing = calcGrains(ebsdRing,'threshold',thr,optRing{1}{:});
 
