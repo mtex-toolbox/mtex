@@ -264,9 +264,12 @@ methods
     % read the plotting convention back from the axes camera, not from a cache
     pC = plottingConvention.getView(ax);
 
-    % which compass direction (E-S-W-N is 0-1-2-3) the data axes point to on screen
-    xDir = compassDirection(vector3d.X,pC);
-    yDir = compassDirection(vector3d.Y,pC);
+    % the data axes closest to the viewing direction, screen east and screen north
+    [~,iD] = max(abs(pC.outOfScreen.xyz));
+    east = pC.east.xyz; east(iD) = 0;
+    [~,iE] = max(abs(east));
+    iN = 6 - iD - iE;
+    north = pC.north.xyz;
 
     % the full screen projection of the reference frame directions, for a tilted view
     showRF = strcmp(sB.refFrame,'on') && ~isempty(sB.refFrameDirs);
@@ -279,11 +282,10 @@ methods
       rfScreen = [];
     end
 
-    % get extent
-    dx = xlim(ax); dy = ylim(ax);
-    if any(xDir == [1,2]), dx= fliplr(dx); end
-    if any(yDir == [1,2]), dy= fliplr(dy); end
-    if mod(xDir,2), [dx,dy] = deal(dy,dx); end
+    % the limits along screen east and north, running in screen direction
+    lims = [xlim(ax); ylim(ax); zlim(ax)];
+    dx = lims(iE,:); if east(iE) < 0, dx = fliplr(dx); end
+    dy = lims(iN,:); if north(iN) < 0, dy = fliplr(dy); end
 
     % lay the bar out in the plane closest to the camera, depth sorting beats uistack
     [zBar, zBack] = barPlanes(ax);
@@ -302,7 +304,7 @@ methods
     end
 
     % skip the expensive re-layout when none of its inputs changed
-    key = {xDir, yDir, dx, dy, zBar, zBack, rulerLength, labelStr, sB.lineColor, ...
+    key = {iE, iN, dx, dy, zBar, zBack, rulerLength, labelStr, sB.lineColor, ...
       sB.backgroundColor, sB.backgroundAlpha, sB.location, ...
       rfScreen, sB.refFrameLabels};
     if ~forceLayout && isequal(key, sB.lastLayout)
@@ -319,12 +321,12 @@ methods
     % about to be built on, not the fallback that may replace it below
     sB.lastExtent = extent(3:4);
 
-    % Extent(3:4) is the footprint along data x and y, which may be swapped on screen
-    if mod(xDir,2)
-      textWidth = extent(4); textHeight = extent(3) * sign(diff(dy));
-    else
-      textWidth = extent(3); textHeight = extent(4) * sign(diff(dy));
-    end
+    % data units per pixel, the same along both screen directions of an equal axes
+    axPos = getpixelposition(ax);
+    s = max(abs(diff(dx))/axPos(3), abs(diff(dy))/axPos(4));
+
+    [textWidth, textHeight] = labelSize;
+    textHeight = textHeight * sign(diff(dy));
 
     % fall back to a size proportional to the map when the extent is not measurable
     bogus = isnan(textHeight) || isnan(textWidth) || ...
@@ -352,8 +354,7 @@ methods
         [rulerLength, labelStr] = barOf(goodValues(max([1, find(goodValues <= sBLength, 1, 'last')])), ...
           sBUnit, factor*sign(diff(dx)));
         set(sB.txt,'string',labelStr)
-        extent = get(sB.txt, 'Extent');
-        if ~bogus, textWidth = extent(3 + mod(xDir,2)); end
+        if ~bogus, textWidth = labelSize; end
       end
     else
       triadWidth = 0; triadHeight = 0;
@@ -441,12 +442,19 @@ methods
     sB.setOnTop;
 
     function pos = cP(pos,z)
-      % interchange x and y if needed and, in a depth sorted axes, lift into
-      % the plane of the bar - or into the one just behind it, for the
-      % translucent background
-      if mod(xDir,2), pos(:,[1,2]) = pos(:,[2,1]); end
+      % from screen east, north and, in a depth sorted axes, the plane of
+      % the bar - or the one just behind it, for the translucent background
+      % - to data coordinates
       if nargin < 2, z = zBar; end
       if ~isempty(z), pos(:,3) = z; end
+      p = [iE, iN, iD];
+      pos(:,p(1:size(pos,2))) = pos;
+    end
+
+    function [w,h] = labelSize
+      % the label's footprint on screen, in data units
+      set(sB.txt,'Units','pixels'); px = get(sB.txt,'Extent'); set(sB.txt,'Units','data');
+      w = s*px(3); h = s*px(4);
     end
 
     function pos = mapRF(pos)
@@ -484,13 +492,13 @@ function [z, zBack] = barPlanes(ax)
 % was plotted on top of the map, crystal shapes say - child order no longer
 % decides anything and the bar has to place itself in depth:
 %
-%  z     - the end of the z axis closest to the camera, so that nothing can
-%          be drawn in front of the bar. Read from the camera rather than
-%          from the plotting convention, since it is the camera that
-%          decides the depth order.
+%  z     - the end of the data axis closest to the viewing direction that
+%          is nearest to the camera, so that nothing can be drawn in front
+%          of the bar. Read from the camera rather than from the plotting
+%          convention, since it is the camera that decides the depth order.
 %  zBack - just behind it, for the translucent background box, which has to
 %          be separated from the opaque graphics it sits behind for the
-%          reason above. One thousandth of the z range is enough for the
+%          reason above. One thousandth of the range is enough for the
 %          depth buffer to tell the two planes apart, and little enough
 %          that nothing else fits in between.
 
@@ -499,27 +507,14 @@ if strcmp(ax.SortMethod,'childorder')
   return
 end
 
-dz = zlim(ax);
-if ax.CameraPosition(3) > ax.CameraTarget(3)
+camDir = ax.CameraPosition - ax.CameraTarget;
+[~,iD] = max(abs(camDir));
+lims = [xlim(ax); ylim(ax); zlim(ax)];
+dz = lims(iD,:);
+if camDir(iD) > 0
   z = dz(2); zBack = z - 1e-3*diff(dz);
 else
   z = dz(1); zBack = z + 1e-3*diff(dz);
-end
-
-end
-
-function d = compassDirection(v,pC)
-% which compass direction a data direction v currently points to on
-% screen, given the plotting convention pC - E-S-W-N is 0-1-2-3
-
-if dot(v,pC.east) > 0.5
-  d = 0; % East
-elseif dot(v,pC.east) < -0.5
-  d = 2; % West
-elseif dot(v,pC.north) > 0.5
-  d = 3; % North
-else
-  d = 1; % South
 end
 
 end
