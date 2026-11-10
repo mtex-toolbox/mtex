@@ -217,8 +217,7 @@ pairFitQuantiles = quantile(pairFit(:,1)./degree,[0.25 0.5 0.75])
 %% Transform alpha grains supported by boundary pairs
 %
 % The executable criterion keeps pairs whose best fit is below 5 degrees and
-% whose second-best fit is above 5 degrees. Earlier prose and its threshold
-% summary called this a 2.5-degree step, but that did not match the code.
+% whose second-best fit is above 5 degrees.
 
 consistentPairs = pairFit(:,1) < 5*degree & ...
   pairFit(:,2) > 5*degree;

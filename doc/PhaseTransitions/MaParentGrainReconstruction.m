@@ -288,10 +288,9 @@ plot(grainSelected.boundary,'lineWidth',2)
 hold off
 
 %%
-% The original page described this grain as parent 279.
-% The printed |selectedParentId| checks that concrete ID against the current
-% segmentation. It is 286 in the current run, showing why IDs should not be
-% assumed to remain fixed across releases.
+% The printed |selectedParentId| is the ID of this grain in the current
+% segmentation, 286 in this run. IDs are not fixed across releases, which is
+% why the grain is looked up by location.
 % The child-grain mosaic exactly fills the selected parent outline.
 
 %% Check the selected parent's crystallography

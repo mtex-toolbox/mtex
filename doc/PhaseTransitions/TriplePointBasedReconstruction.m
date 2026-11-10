@@ -135,9 +135,7 @@ fractionTransformedByTP = nnz(job.isTransformed) ./ ...
   nnz(job.grainsPrior.phaseId == job.childPhaseId)
 
 %%
-% Earlier text reported that more than 66% of the input child grains were
-% transformed by these seeds. The current run gives 62.95%, so that claim no
-% longer holds for the present implementation and data import.
+% The seeds transform 62.95% of the input child grains.
 % The remaining child grains need evidence from reconstructed neighbours.
 
 % Define a beta-phase inverse pole figure colour key.

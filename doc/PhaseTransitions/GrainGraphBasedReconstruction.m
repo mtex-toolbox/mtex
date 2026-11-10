@@ -48,8 +48,7 @@ initialFit = job.calcGBFit ./ degree;
 fitQuantilesInitial = quantile(initialFit,[0.2 0.4 0.6 0.8])
 
 %%
-% The former page reported initial fit quintiles of 2.5, 3.5, 4.5,
-% and 5.5 degrees. This run gives 2.363, 3.371, 4.431, and 5.501 degrees.
+% The initial fit quintiles are 2.363, 3.371, 4.431, and 5.501 degrees.
 % <MaParentGrainReconstruction.html Parent Austenite Reconstruction> shows
 % how to overlay the full histograms and map the fit onto boundary segments.
 
