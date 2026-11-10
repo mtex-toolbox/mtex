@@ -151,13 +151,13 @@ fprintf('%d grains, %d notIndexed, %.1f%% of the map outside all grains\n', ...
   100*nnz(ebsdC.grainId==0)/length(ebsd))
 
 %%
-% We look at the crack, with the boundaries of the default reconstruction in
-% red and the new boundaries in black.
+% We look at the crack, with the boundaries of the reconstruction with the
+% pockets closed in red and the new boundaries in black.
 
 plot(ebsd,'micronbar','off')
 legend off
 hold on
-plot(grains.boundary,'linewidth',1,'LineColor','r')
+plot(grainsP.boundary,'linewidth',1,'LineColor','r')
 plot(grainsC.boundary,'linewidth',1)
 hold off
 axis([2500 12500 7000 17940])
