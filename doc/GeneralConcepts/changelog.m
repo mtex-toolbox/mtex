@@ -8,7 +8,7 @@
 % |CHANGELOG.md| in the MTEX folder contains the technical details, numerical
 % checks and related issues.
 %
-%% MTEX next release
+%% MTEX 7.3 11/2026
 %
 % *Grain boundaries through cracks and pores*
 %
@@ -92,6 +92,53 @@
 % <l1TVFilter.l1TVFilter.html |l1TVFilter|> denoises all grains of a map at
 % once and is several times faster.
 %
+% *Faster grain reconstruction*
+%
+% <EBSD.calcGrains.html |calcGrains|> computes the cells of the pixels
+% directly on the measurement grid. On a map of 2.5 million pixels it takes
+% less than half the time, 23 instead of 53 seconds at a threshold of 10
+% degrees. The outer boundary of the map lies exactly on the grid, and
+% pixels on a distorted grid keep all their neighbours.
+%
+% *Importing instrument data*
+%
+% * Oxford |.h5oina| phases stored without a valid space group take their
+% stored Laue class, so titanium maps import as 6/mmm
+% * EDAX HDF5 maps with unmeasured pixels load as hexagonal maps.
+% |ebsd.opt.unplaced| counts the left out pixels
+% * EMSphInx phases without a material name are named after their master
+% pattern file, e.g. |Fe(alpha-iron)|
+% * DREAM.3D phases take their names and lattice constants from the file,
+% hexagonal and trigonal phases have their a axis along x as in DREAM.3D,
+% and the surface meshes of DREAM3D-NX 7.4 load
+% * images stored in HDF5 files keep their data type, so an 8 bit SEM image
+% takes an eighth of the memory
+% * a |plottingConvention| passed to <EBSD.load.html |EBSD.load|> applies
+% to HDF5 maps as well
+%
+% *The import wizard*
+%
+% |import_wizard| shows the map and Euler angle reference frames as
+% pictograms and offers the eight conventions in a list. The import script
+% appears next to the phase table and can be copied, saved or opened in the
+% editor. Selecting a file imports it after a short pause, and the wizard
+% follows the dark mode of MATLAB.
+%
+% *Plotting*
+%
+% * the scale bar lies in the plane of a map whenever the map is seen face
+% on, also for a section of a 3D volume along any plane, and is hidden in a
+% tilted 3D view
+% * <EBSD3.plot.html |plot|> of a 3D volume or of 3D grains colours every
+% phase by its own IPF key: |plot(ebsd,'ipfz')|
+% * labels in spherical plots stay readable in a dark theme
+% * MATLAB R2026b, whose desktop runs without Java, shows the MTEX menu
+%
+% *Documentation*
+%
+% The help texts of 127 functions and classes have a summary and a Syntax
+% section, and the function reference lists every class.
+%
 % *Changes that may affect existing scripts*
 %
 % * the second argument of |smoothBoundary| is the number of smoothing
@@ -105,6 +152,20 @@
 % |fill(ebsd).gridify| for a gridded result
 % * <EBSD.findByLocation.html |findByLocation|> returns one index per
 % coordinate, in input order, and 0 outside the map
+% * |calcGrains| removes quadruple points and fills pores inside a grain by
+% default, which changes grain numbers and sizes on most maps.
+% |'removeQuadruplePoints',false| keeps the quadruple points, |'alphaPore',0|
+% keeps the pores as |notIndexed| grains
+% * selecting pixels of a gridded map by a matrix of indices or ids, e.g.
+% |ebsd('id',gB.ebsdId)|, returns a list of pixels, as a logical or vector
+% index does. |ebsd(rows,cols)| stays gridded
+% * |S2FunMLS| takes its reference frame from the nodes and has no options
+% |'symmetry'|, |'cs'|, |'s'| or |'ss'|. |SO3FunMLS| takes the symmetries as
+% positional arguments like the other |SO3Fun| constructors, with |'cs'| and
+% |'ss'| as aliases of |'SRight'| and |'SLeft'|. The MLS option
+% |'distance'| no longer exists
+% * EMSphInx phases without a material name and DREAM.3D phases carry the
+% names stored in the file instead of |A|, |B|, ... or |unknown|
 %
 % *Corrections to analysis results and data handling*
 %
@@ -118,6 +179,37 @@
 % length of the boundary
 % * |findByLocation| on hexagonal maps with offset -1 returns the right
 % pixels
+% * |calcGrains| with |'minPixel'| no longer fails on some maps, e.g.
+% |mtexdata titanium|, and maps of a single row or column reconstruct
+% * a hole holding both missing and |notIndexed| pixels becomes one
+% |notIndexed| grain
+% * in the map returned by |calcGrains| a |notIndexed| pixel belongs to a
+% grain only when no boundary passes through it
+% * <SO3Fun.volume.html |volume|> about several centres returns the value
+% of each centre also at large radii, and |volume| of a misorientation
+% function with grain exchange symmetry no longer runs out of memory
+% * <SO3Fun.fibreVolume.html |fibreVolume|> includes the copies of the
+% fibre under the specimen symmetry and counts every orientation once.
+% Previously, it left out the specimen copies and was capped at 1
+% * |fibre.alpha| and |fibre.tau| turn about the $\langle 110\rangle$
+% direction their end points share. Previously, the end points lay on
+% different symmetric copies of the fibre
+% * <fibre.angle.html |angle|> between orientations and a fibre returns one
+% angle per orientation and includes the improper symmetry elements.
+% |symmetrise| of a fibre keeps the crystal and specimen symmetry, and
+% |symmetrise(f,'unique')| no longer fails
+% * <fibre.fit.html |fibre.fit|> accepts an ODF again
+% * |radon| of a fibre ODF normalises the specimen direction
+% * MLS functions: |SO3FunMLS| of odd degree with |'centered',false|, a
+% misorientation function with grain exchange symmetry, an antipodal
+% |S2FunMLS| and |'subsample'| with a crystal symmetry return correct
+% values. A function of degree 0 is no longer 0 far from the nodes, and a
+% large antipodal |SO3FunMLS| fits in memory
+% * evaluating an array of |S1FunHarmonic| functions returns the right
+% values
+% * grain boundaries of grains without inner boundaries can be
+% concatenated, and |fillByGrainId| runs again
+% * the compiled MTEX imports HDF5 maps
 %
 %% MTEX 7.2 10/2026
 %

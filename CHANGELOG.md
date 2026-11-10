@@ -8,7 +8,7 @@ The changelog for users is `doc/GeneralConcepts/changelog.m`, published as
 [Changelog](https://mtex-toolbox.github.io/changelog.html). Releases up to and
 including 6.1 have one combined list there and no entry here.
 
-## Next release
+## MTEX 7.3 - 11/2026
 
 ### Grain Reconstruction
 
@@ -194,6 +194,19 @@ including 6.1 have one combined list there and no entry here.
 - `merge` left `grainId(:,1)` on the right of chains it joined: `order` reversed F of
   the minority without swapping the grains. `merge` sorts the boundary columns as the
   constructor does before ordering (#2651)
+- `grainBoundary/order` took the sense of a chain from the side test of its first
+  segment. A straightened segment of a third of a pixel can have both its pixels on one
+  side, and as the first segment it reversed the whole chain (forsterite: 96 segments in
+  18 chains). The sense is the side test summed over all segments of the chain, weighted
+  by length, on the vertices before straightening, where every segment lies on the
+  bisector of its two pixels: `straightenInFill` returns them, `calcGrains` keeps them in
+  step through `calcBoundary` and `removeQuadruplePoints`, as pymtex does. small, twins,
+  forsterite and peridotite at alpha 10 have no reversed inner segment
+- Every boundary filter gets the `project` argument of the interface;
+  `grain3d/smoothBoundary` passes the identity, and the `nargin` guards in the laplace,
+  curvature and huber filters are gone
+- `dynProp/cat` failed on a list of empty objects only, such as the inner boundaries of
+  grains without any
 
 ### EBSD Maps
 
@@ -203,17 +216,37 @@ including 6.1 have one combined list there and no entry here.
   `grainId` are given. A pixel a boundary passes through, and the pixels of notIndexed
   grains, stay notIndexed. `fill(ebsd,mask)` and `smooth(...,'fill',mask)` restrict the
   filling; `'extrapolate'` and `fill(...,'gridify')` are gone (`fill(ebsd).gridify`)
+- The nearest measured pixel of `fill` and `findByLocation` comes from `knnsearch`, or
+  from `scatteredInterpolant` without the Statistics and Machine Learning Toolbox
+  (`private/nearestId`)
 - `l1TVFilter` smooths all grains of a map at once by block conjugate gradients with
   safeguarded Anderson extrapolation, the history kept in a ring of four columns:
   ferrite 16.8 -> 4.1 s, forsterite 34.4 -> 19.5 s
+- `l1TVFilter` reports the share of converged grains as progress. A pixel without
+  orientation that is not filled can be cut off by the threshold into a block without
+  data, where the incomplete Cholesky of the reweighted system failed; the
+  preconditioner is shifted by 1e-9 of its largest diagonal entry, the conjugate
+  gradient still solves the unshifted system
 - `findByLocation` returns one index per coordinate, 0 outside the map, through
   `pos2ind` on gridded maps; `EBSDhex/pos2ind` returned wrong cells on offset -1 grids
-
-## MTEX 7.2 - 10/2026
-
-Most of these are defects the Python port found in MATLAB, checked against the port or
-an exact value through the MATLAB bridge (the audit is `docs/research/matlab-defects-audit.md` of the
-port).
+- `ebsd('id',gB.ebsdId)` and `ebsd(I)` with a matrix I return a plain `EBSD` on a
+  gridded map, as a logical or a vector index already did. `EBSD/subSet` keeps the
+  `EBSDsquare`/`EBSD3square` class only when every subscript varies along its own
+  dimension, `ebsd(rows,cols)` or `ebsd(rows,cols,slices)` with any stride;
+  `.orientations` of an id selection keeps the shape of the id matrix
+- `fillByGrainId` failed reading `unitCell` as a matrix; it is a `vector3d`
+- `EBSD3/plot` and `grain3d/plot` accept `'ipfx'`, `'ipfy'` and `'ipfz'`, each phase in
+  its own key, and `EBSD3/plot` honours `'ipfDirection'`
+- `EBSD3square/spatialProfile` failed to parse (unmatched brackets)
+- `scaleBar` measured the map along data x and y and placed itself in a z plane, so a map
+  seen along x - the slice of a 3d EBSD map with normal X - had zero width and every axes
+  listener threw "Specified value (0 m) is too small", with `'micronbar','off'` too. The
+  bar is laid out in screen coordinates - east, north and towards the viewer, read from
+  the camera - and rotated back to data coordinates; the label and the frame pictogram are
+  sized in pixels. A section seen face on, whatever its normal, draws the bar in its own
+  plane. The bar remembers the map normal of the plotting convention it was created with
+  and hides itself while the camera is off it. Next to the frame indicator the bar is the
+  largest round length no wider than it, at most 10% of the map
 
 ### Spherical and Orientation Functions
 
@@ -313,6 +346,80 @@ port).
   `rangeTooFew` warning is issued, as at higher degrees
 - the MLS option `'distance'` is gone. It was stored and never passed to the
   neighbor search, which ranks by angle
+- `fibre.alpha` and `fibre.tau` ran between ends that share no direction:
+  `byMiller([111],[110])` picked a copy of [110] in (111) that (001)[110] does not share,
+  so the geodesic turned about [0 -8 -11] over 102 degrees (alpha), and about [12 5 12]
+  (tau). alpha runs from (001)[1-10] to (111)[1-10] about [1-10] || RD, tau from
+  (001)[110] to (110)[00-1] about [-110] || TD (found by the Python port)
+- `fibre/symmetrise` built its images with plain rotations and dropped both symmetries,
+  so `plotPDF(f.symmetrise,h)` failed with mismatching symmetries and groups with improper
+  elements warned on every call. The images get the symmetries back
+- `fibre.fit(odf)` failed in a NaN filter meant for orientations (#2648)
+- `eval` of an array of `S1FunHarmonic` sized the NFFT plan by `length(fhat)`, the larger
+  of bandwidth and number of functions; it is `size(fhat,1)`
+
+### Interfaces
+
+- An Oxford `.h5oina` phase without a valid space group took the space group of another
+  phase or none. Each phase is read on its own, a valid space group first and the stored
+  Laue class otherwise, with one case-insensitive lookup of the field names; both Ti
+  acquisitions import as 6/mmm. `check_ebsdImportH5` covers the cases with one synthetic
+  file of seven phases
+- EDAX writes the position -1111111 for a pixel it did not measure, and those rows ruined
+  the unit cell estimate: `h5_edax.h5` loaded as a list of 4666 um spacing. `loadEBSD_h5`
+  leaves them out (their number is `ebsd.opt.unplaced`), keeping the file ids so that
+  `exportEBSD_h5` writes into the right rows; the map loads as an `EBSDhex`
+- An HDF5 map carries a frame with a fixed convention; a `plottingConvention` passed to
+  `EBSD.load` goes into that frame
+- Images in an HDF5 file keep their stored type; an 8 bit SEM image takes an eighth of the
+  memory of a double
+- EMSphInx may leave `MaterialName` empty, and the phases became A, B, C. An unnamed phase
+  takes the name of the master pattern it was indexed with:
+  `Fe(alpha-iron)[A2]{20kV}.sht` gives `Fe(alpha-iron)`
+- `compile-mtex` ships `interfaces/hdf5_config`, without which the compiled MTEX imported
+  no HDF5 map
+- The DREAM.3D loaders named every phase `unknown` on the default cell, and a hexagonal or
+  trigonal phase took the default `X||a*`. `interfaces/tools/dream3dCrystalSymmetry.m` now
+  reads `MaterialName` and `LatticeConstants` beside `CrystalStructures` (SmallIN100:
+  `Nickel`, a = 3.52; the Zircaloy slab of zenodo 3785085: `Zirc-alloy4` and `Zr`), puts
+  the a axis of a hexagonal or trigonal cell along x, as DREAM.3D does, and gives phases
+  of one name a letter each through `ensureCSArray`. The alignment is read off DREAM.3D's
+  own IPF colours: on the Zircaloy slab the voxels it colours green, the corner its key
+  labels <2-1-10>, lie 6.6 degrees from <2-1-10> with `X||a` and 28.4 with `X||a*`
+- `grain3d.load` failed on the surface meshes of DREAM3D-NX 7.4 (simplnx 1.7) with
+  "Expected DATASETNAME to be a non-missing string scalar": the triangle geometry names
+  its arrays `Shared Vertex List` and `Shared Faces List` there, not `SharedVertexList`
+  and `SharedTriList`. Both spellings are read; checked on the Small IN100 pipelines
+  01-07 of that release, 788 grains (#2633)
+
+### Plotting and Desktop
+
+- `import_wizard` shows the map and Euler conventions as pictograms, chosen from the
+  eight in a drop-down, and writes the chosen convention into the map's frame and the
+  session; the import script is shown live next to the phase table, with copy, save and
+  edit; a selection resting 0.5 s imports the file and a status band reports it; dark mode
+  follows the MATLAB theme; pole figures name the Euler axes as the pictogram does, with
+  a title, colorbars and Miller defaults per crystal system. Startup redraws less, pole
+  figure densities take at most 100k orientations, and gridded IPF maps recolour in place
+- `refFrameGeometry` draws the frame pictogram of every map and of the import wizard: the
+  axis along the view is named at the crossing the arrows leave from, the other two are
+  arrows with their names beyond the heads
+- The labels of a key sector in `sphericalPlot` and of a `referenceFrame` take the
+  theme's text colour; labels on a white box are black, so a dark theme keeps them
+  readable
+- R2026b's desktop no longer runs on Java, so `usejava('desktop')` reported none and
+  `startup_mtex` skipped the MTEX menu. `desktop('-inuse')` detects both desktops and is
+  false under `-batch`. `MTEXmenu` reads the branch name from `HEAD`, also in a worktree;
+  `extern/getGitInfo.m` is gone
+
+## MTEX 7.2 - 10/2026
+
+Most of these are defects the Python port found in MATLAB, checked against the port or
+an exact value through the MATLAB bridge (the audit is `docs/research/matlab-defects-audit.md` of the
+port).
+
+### Spherical and Orientation Functions
+
 - `S2Fun.unimodal` indexed its coefficients by n^2+n+1 where the degree n was meant,
   giving mean 0.1629 and 9.72 at the centre for 1 and 97.85; and it rotated by
   `rotation.map(v,Z)` where `map(Z,v)` is meant, so a bump about (1,0,1) peaked at
@@ -488,22 +595,9 @@ port).
   DREAM3D-NX. Voxel orientations come from `Quats` where there are no `EulerAngles`.
   Checked on eight files of the simplnx `Data_Archive` release; the two files that
   loaded before give identical grains and voxels
-- The DREAM.3D loaders named every phase `unknown` on the default cell, and a hexagonal or
-  trigonal phase took the default `X||a*`. `interfaces/tools/dream3dCrystalSymmetry.m` now
-  reads `MaterialName` and `LatticeConstants` beside `CrystalStructures` (SmallIN100:
-  `Nickel`, a = 3.52; the Zircaloy slab of zenodo 3785085: `Zirc-alloy4` and `Zr`), puts
-  the a axis of a hexagonal or trigonal cell along x, as DREAM.3D does, and gives phases
-  of one name a letter each through `ensureCSArray`. The alignment is read off DREAM.3D's
-  own IPF colours: on the Zircaloy slab the voxels it colours green, the corner its key
-  labels <2-1-10>, lie 6.6 degrees from <2-1-10> with `X||a` and 28.4 with `X||a*`
 - `grain3d.load` on a DREAM.3D file without a surface mesh raised "The file does not
   contain any grain information". It returns `calcGrains(ebsd,'grainId')` of the voxel
   data
-- `grain3d.load` failed on the surface meshes of DREAM3D-NX 7.4 (simplnx 1.7) with
-  "Expected DATASETNAME to be a non-missing string scalar": the triangle geometry names
-  its arrays `Shared Vertex List` and `Shared Faces List` there, not `SharedVertexList`
-  and `SharedTriList`. Both spellings are read; checked on the Small IN100 pipelines
-  01-07 of that release, 788 grains (#2633)
 - `EBSD3(pos,rot,phaseId,CSList,prop)` failed with "Too many input arguments": the
   `EBSD` constructor passes the grid options to `updateUnitCell`, and the override in
   `@EBSD3` took the unit cell only. The override is gone (#2638)
