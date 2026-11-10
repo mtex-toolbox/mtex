@@ -23,7 +23,9 @@ function [grains,F] = smoothBoundary(grains,iter,varargin)
 % centres around it, the triangle of three on a hexagonal grid - shrunk by
 % |d/20|, |d| being the pixel spacing. So the boundary passes every pixel it
 % was measured next to on the side it was measured on, and a triple point
-% stays within half a step of where it was. A loose end stays put
+% stays within half a step of where it was. A loose end stays put, and so
+% does the whole boundary of a grain of fewer than 14 vertices - it has no
+% shape below the pixel scale to smooth, only area to lose
 % # <grain2d.simplifyBoundary.html |simplifyBoundary|> drops every vertex
 % whose removal moves the boundary by less than |epsilon|, |d/10| by default,
 % unless that would bring one of those pixel centres closer than |d/20| to
@@ -105,6 +107,11 @@ A_V = I_VF * I_VF';
 % do not move a vertex no segment uses, nor the loose end of a boundary
 vDegree = full(diag(A_V));
 ignore = vDegree < 2;
+
+% a grain of fewer than 14 boundary vertices keeps its measured boundary
+gId = grains.boundary.grainId;
+small = [false; accumarray(gId(gId > 0),1,[length(grains) 1]) < 14];
+ignore(grains.boundary.F(any(small(gId + 1),2),:)) = true;
 
 V = grains.allV.xyz;
 
