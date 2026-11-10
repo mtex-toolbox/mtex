@@ -182,7 +182,7 @@ hold off
 
 %%
 % Only a few black segments remain on this specimen. The printed counts show
-% that 60 full-orientation grains become 59 c-axis grains. Such mergers would
+% that 59 full-orientation grains become 58 c-axis grains. Such mergers would
 % be more common in a material with a strong fibre texture.
 
 %% Writing your own criterion
@@ -289,8 +289,8 @@ sizeSummary = table(median(numPixel),quantile(numPixel,0.99),...
 
 %%
 % The table shows that most areas are isolated failed measurements, while a
-% few are regions in their own right. The largest contains 355 pixels and
-% has an equivalent-circle radius of about 10.6 pixels. This radius suggests
+% few are regions in their own right. The largest contains 377 pixels and
+% has an equivalent-circle radius of about 11.0 pixels. This radius suggests
 % the scale to inspect; it does not predict the closing value by itself.
 % Closing responds to the narrowest width and therefore also to shape.
 %

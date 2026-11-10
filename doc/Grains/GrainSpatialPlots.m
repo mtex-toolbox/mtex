@@ -115,7 +115,7 @@ maxAspectRatio = max(grains.aspectRatio)
 numClipped = nnz(grains.aspectRatio > 5)
 
 %%
-% The printed maximum rounds to 13, and the count confirms that eight grains
+% The printed maximum rounds to 13, and the count confirms that nine grains
 % lie above the chosen range. They are no longer distinguishable from one
 % another, so every fixed colour range trades detail in the extremes for
 % contrast through the rest.

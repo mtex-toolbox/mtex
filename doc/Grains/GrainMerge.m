@@ -71,7 +71,7 @@ hold off
 
 %%
 % The white traces follow the narrow lamellae. With this boundary sampling,
-% 730 of 1260 magnesium-to-magnesium segments pass the five-degree test.
+% 752 of 1299 magnesium-to-magnesium segments pass the five-degree test.
 % A segment count is not a count of physical twins, and smoothing the same
 % traces can change it. The tolerance is also an analyst
 % choice: these are candidate twin boundaries, not proof of the mechanism or
@@ -99,7 +99,7 @@ plot(mergedGrains.boundary,'linecolor','k','linewidth',2.5,...
 hold off
 
 %%
-% The 91 segmented grains have become 28 merged grains. Black lines are the
+% The 89 segmented grains have become 28 merged grains. Black lines are the
 % reconstructed parent-grain outlines. Each white trace that no longer has a
 % black line on it is now internal to one merged grain.
 

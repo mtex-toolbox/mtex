@@ -112,10 +112,10 @@ end
 
 %%
 % With |alpha = 0| nothing between the grains is absorbed. The notIndexed
-% pixels there contribute more than four hundred grains of their own, twice
-% the number of indexed grains found with the default. Their seams also
+% pixels there contribute three hundred grains of their own, half as many
+% again as the indexed grains found with the default. Their seams also
 % divide regions that should be single indexed grains, so the indexed count
-% rises from 209 to 431. A closing radius of one pixel removes almost all of
+% rises from 192 to 336. A closing radius of one pixel removes almost all of
 % them, and the default removes the rest. A notIndexed region inside a
 % single grain is a pore and belongs to that grain whatever |alpha| is, such
 % as the long white bar right of centre. How |calcGrains| tells pores,

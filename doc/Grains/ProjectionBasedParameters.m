@@ -66,7 +66,7 @@ xlabel('projection direction in degrees')
 xlim([0,180])
 
 %%
-% The curve of this grain runs between 890 and 1640 µm. Its one broad
+% The curve of this grain runs between 700 and 1530 µm. Its one broad
 % maximum and one minimum over 180 degrees are characteristic of an elongated,
 % roughly convex outline. The extrema are also available as vectors whose
 % <vector3d.norm.html |norm|> is the caliper length. The longest one is the
@@ -226,7 +226,7 @@ polarplot(omega,cumplE,plOpt{:})
 parorMinimum = [min(cumplF),min(cumplE)]
 
 %%
-% The forsterite and enstatite minima are 0.7137 and 0.7225, a difference of
+% The forsterite and enstatite minima are 0.7137 and 0.7226, a difference of
 % about 0.01. Both phases therefore have a moderate projection anisotropy of
 % similar strength.
 %
@@ -252,7 +252,7 @@ harmonicDirectionsEn = ...
   [mod(maxposen,pi),mod(minposen-pi/2,pi)] ./ degree
 
 %%
-% For forsterite the two fitted directions are 70.1 and 74.5 degrees; for
+% For forsterite the two fitted directions are 70.2 and 74.5 degrees; for
 % enstatite they are 87.5 and 88.8 degrees. The two directions of each phase
 % lie within a few degrees, so both fabrics are close to orthorhombic in this
 % section. The 17-degree difference between the preferred longest projections
@@ -364,9 +364,9 @@ characteristicCaliperAngle = [...
   angle(shapeEF.caliper('longest'),shapeEF.caliper('shortest'))] ./ degree
 
 %%
-% The two single-phase shapes give 77.5 and 81.8 degrees, skewed from a
-% right angle by about 12.5 and 8.2 degrees. The mixed forsterite-enstatite
-% shape is nearly symmetric at 85.4 degrees.
+% The two single-phase shapes give 77.5 and 82.8 degrees, skewed from a
+% right angle by about 12.5 and 7.2 degrees. The mixed forsterite-enstatite
+% shape is nearly symmetric at 85.5 degrees.
 %
 % These values describe this map. Whether a difference between specimens is
 % larger than sampling variation requires replicate maps, subdivision, or a

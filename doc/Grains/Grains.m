@@ -32,8 +32,8 @@ grains
 %%
 % The displayed @grain2d summary is the first result of reconstruction. One
 % object holds the complete grain list, and its methods act across that list.
-% Its three phase rows contain 209 grain sections: 106 Forsterite, 32
-% Enstatite, and 71 Diopside.
+% Its three phase rows contain 192 grain sections: 97 Forsterite, 32
+% Enstatite, and 63 Diopside.
 % The second output above stores a persistent |grainId| with every EBSD
 % measurement. A grain and its measurements can therefore be selected from
 % either side of the relationship.

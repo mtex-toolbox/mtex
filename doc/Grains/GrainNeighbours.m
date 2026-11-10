@@ -167,9 +167,9 @@ twinSummary = table(numPairs,numTwinPairs,...
   'pairsIn85to90Bin','twinsIn85to90Bin','otherPairsIn85to90Bin'})
 
 %%
-% Of the 251 neighbouring pairs in this map, 93 are within 3 degrees of the
-% twin relationship, or 37 percent. The 85 to 90 degree bin also contains 93
-% pairs, but the two groups are not identical: 83 are twin matches and 10 are
+% Of the 215 neighbouring pairs in this map, 65 are within 3 degrees of the
+% twin relationship, or 30 percent. The 85 to 90 degree bin also contains 65
+% pairs, but the two groups are not identical: 56 are twin matches and 9 are
 % other relationships. The peak is dominated by twins, but angle alone does
 % not select them. <TwinningBoundaries.html Twinning> pursues the complete
 % relationship along the boundary segments themselves.
