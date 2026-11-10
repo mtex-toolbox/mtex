@@ -12,11 +12,10 @@
 % are available through <GrainBoundaries.html |grains.boundary|>. The result
 % is a <triplePointList.triplePointList.html |triplePointList|>.
 %
-% A square measurement grid can also produce vertices where four boundary
-% segments meet. When analysing triple points, it is a good idea to pass
-% |'removeQuadruplePoints'| to <EBSD.calcGrains.html |calcGrains|>. This
-% converts each ambiguous quadruple point into two triple points.
-% <QuadruplePoints.html Quadruple Points> explains the resulting topology.
+% A square measurement grid also produces vertices where four boundary
+% segments meet. <EBSD.calcGrains.html |calcGrains|> resolves each of them
+% into two three-segment junctions; <QuadruplePoints.html Quadruple Points>
+% explains the resulting topology.
 %
 % This page assumes that the map has already been divided into grains as in
 % <GrainReconstruction.html Grain Reconstruction>.
@@ -30,8 +29,8 @@ close all;
 plottingConvention.default('y↑→x');
 mtexdata small silent
 
-% reconstruct the grains and resolve quadruple points
-grains = calcGrains(ebsd,'removeQuadruplePoints','alpha',5);
+% reconstruct the grains
+grains = calcGrains(ebsd,'alpha',5);
 
 % smooth the pixel staircase, each junction staying within its pixel cell
 grains = smoothBoundary(grains);
