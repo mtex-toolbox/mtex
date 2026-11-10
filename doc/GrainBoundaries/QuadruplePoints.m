@@ -17,10 +17,10 @@
 % page is instead a digital-topology ambiguity introduced by sampling.
 % In three dimensions, a physical quadruple point has a different meaning.
 %
-% The |'removeQuadruplePoints'| option to
 % <EBSD.calcGrains.html |calcGrains|> resolves this ambiguity during
-% reconstruction. This page assumes the reconstruction concepts introduced
-% in <GrainReconstruction.html Grain Reconstruction>.
+% reconstruction, and the option |'removeQuadruplePoints',false| keeps the
+% four-way contacts. This page assumes the reconstruction concepts
+% introduced in <GrainReconstruction.html Grain Reconstruction>.
 
 close all;
 
@@ -60,15 +60,17 @@ plot(ebsd,ebsdColors,'micronbar','off');
 % The two colours meet in a checkerboard pattern at the lower contact. The
 % picture alone cannot say which diagonal should be connected.
 
-%% Reconstruct without resolving the junction
+%% Keep the junction
 %
-% Ordinary reconstruction closes the oriented ring at the diagonal
-% contact. It then treats the identity-oriented interior and exterior as
-% separate grains, so the map contains three grains rather than two.
+% With |'removeQuadruplePoints',false| the reconstruction closes the
+% oriented ring at the diagonal contact. It then treats the
+% identity-oriented interior and exterior as separate grains, so the map
+% contains three grains rather than two.
 
-grainsWithQuadruple = calcGrains(ebsd,'angle',10*degree);
+grainsWithQuadruple = calcGrains(ebsd,'angle',10*degree,...
+  'removeQuadruplePoints',false);
 
-fprintf('ordinary reconstruction: %d grains\n',length(grainsWithQuadruple))
+fprintf('quadruple point kept: %d grains\n',length(grainsWithQuadruple))
 
 grainColors = colorKey.orientation2color(grainsWithQuadruple.meanOrientation);
 plot(grainsWithQuadruple,grainColors,'micronbar','off');
@@ -82,14 +84,15 @@ hold off
 
 %% Resolve the junction during reconstruction
 %
-% The |'removeQuadruplePoints'| option selects the other diagonal. It keeps
-% the like-oriented interior and exterior connected; the ring pixels were
+% Both diagonal pairs here pass the threshold. By default |calcGrains| joins
+% the pair whose pixels lie in two different grains, so that joining them
+% merges the grains: the interior and the exterior. The ring pixels were
 % already connected to each other elsewhere. The expected two grains remain.
 
-grains = calcGrains(ebsd,'angle',10*degree,'removeQuadruplePoints');
+grains = calcGrains(ebsd,'angle',10*degree);
 
-fprintf('resolved reconstruction: %d grains\n',length(grains))
-fprintf('total boundary length: %g before, %g after\n',...
+fprintf('default reconstruction: %d grains\n',length(grains))
+fprintf('total boundary length: %g with the junction, %g without\n',...
   sum(grainsWithQuadruple.boundary.segLength),...
   sum(grains.boundary.segLength))
 fprintf('strict triple points: %d\n',length(grains.triplePoints))
@@ -101,23 +104,24 @@ plot(grains.boundary,'lineWidth',2);
 hold off
 
 %%
-% The interior outline has joined the exterior network, while the boundary
-% segments and their total length are unchanged. Only their connectivity at
-% the critical vertex differs.
-%
-% The option replaces the four-segment vertex with two coincident
-% three-segment junctions. In this two-grain example they are not strict
-% *triple points*, because a triple point must separate three distinct real
-% grains. See <TriplePoints.html Triple Points> for that distinction.
+% The interior outline has joined the exterior network. The four-segment
+% vertex has become two vertices a quarter of a pixel apart, and the two
+% joined pixels meet along the neck between them, so the total boundary
+% length changes by a fraction of a pixel. In a map of many grains each of
+% the two vertices is a junction of three segments. Whether such a junction
+% is a strict *triple point* depends on whether it separates three distinct
+% real grains, see <TriplePoints.html Triple Points>; this map of two grains
+% has none. A contact where neither diagonal pair passes the threshold stays
+% a quadruple point.
 
-%% Separate the coincident junctions for display
+%% Smooth the neck
 %
-% The two replacement junctions initially have identical coordinates.
-% <grain2d.smoothBoundary.html |smoothBoundary|> moves every interior
-% junction within the square of the pixel centres around it, so the two
-% points can move apart. Its default <taubinFilter.html |taubinFilter|>
-% suppresses the pixel staircase while limiting the systematic area loss of
-% Laplacian smoothing.
+% <grain2d.smoothBoundary.html |smoothBoundary|> moves every boundary vertex
+% within the square of the pixel centres around it, so the neck widens. Its
+% default <taubinFilter.html |taubinFilter|> suppresses the pixel staircase
+% while limiting the systematic area loss of Laplacian smoothing, and
+% afterwards every grain is given its measured area back as far as the
+% pixel cells allow.
 
 grains = smoothBoundary(grains);
 
@@ -125,8 +129,8 @@ grainColors = colorKey.orientation2color(grains.meanOrientation);
 plot(grains,grainColors,'lineWidth',2,'micronbar','off');
 
 %%
-% The coincident contact has opened into a narrow neck. Smoothing has moved
-% the geometry for display; it did not perform the topological correction.
+% The neck has opened into a waist about two pixels wide. Smoothing moves
+% the geometry; the topological correction was made in the reconstruction.
 
 %% Curvature at the opened contact
 %
