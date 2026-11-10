@@ -158,7 +158,7 @@ hold off
 %%
 % Every spike sits on a dense cluster of orange markers, the pixels of one
 % grain, and the sections are white between the clusters. With a 4 degree
-% kernel the estimate is a picture of the 368 grains rather than of a
+% kernel the estimate is a picture of the 367 grains rather than of a
 % texture, and its 37 mrd maximum lies 0.6 degrees from
 % the mean orientation of the largest grain, which covers 669 pixels. One
 % well-measured grain has become a texture component.
@@ -170,7 +170,7 @@ hold off
 sharpAtGrainMeans = mean(odfSharp.eval(copperGrains.meanOrientation))
 
 %%
-% The 368 grains carry 5.8 times the average density, which is where the
+% The 367 grains carry 5.8 times the average density, which is where the
 % spikes came from. The opposite extreme fails the other way round.
 
 plotSection(odfSmooth,'contourf','sigma','sections',6,'silent')
@@ -203,7 +203,7 @@ psi = calcKernel(ebsd('copper'));
 selectedHalfwidth = psi.halfwidth ./ degree
 
 %%
-% The map asks for 7.5 degrees, between the spiky 4 degrees and the smeared
+% The map asks for 7.1 degrees, between the spiky 4 degrees and the smeared
 % 20 degrees. Estimate the density from all pixels with this kernel.
 
 odfSelected = calcDensity(ori,'kernel',psi,'silent');
@@ -211,9 +211,9 @@ plotSection(odfSelected,'contourf','sigma','sections',6,'silent')
 mtexColorbar('title','mrd')
 
 %%
-% A few dozen separate maxima of 3 to 6.6 mrd stand on a background below
+% A few dozen separate maxima of 3 to 7.4 mrd stand on a background below
 % 1 mrd. The maxima no longer sit on single grains: averaged over the grain
-% mean orientations this density is 1.8 mrd, against 5.8 mrd for the 4
+% mean orientations this density is 2.0 mrd, against 5.8 mrd for the 4
 % degree estimate.
 
 selectedAtGrainMeans = mean(odfSelected.eval(copperGrains.meanOrientation))
@@ -222,7 +222,7 @@ selectedAtGrainMeans = mean(odfSelected.eval(copperGrains.meanOrientation))
 % The halfwidth is set by how much the map can tell, not by its pixel
 % count. Its grains are few and of very different sizes, so weighted by
 % area the 16116 pixels carry as much information as about a hundred
-% equally sized grains. Any kernel narrower than 7.5 degrees would let the
+% equally sized grains. Any kernel narrower than 7.1 degrees would let the
 % sampling noise of so few grains raise bumps above a fifth of the
 % estimate's maximum, and |calcKernel| never selects such a kernel. This
 % lower bound is called the noise floor.
@@ -268,7 +268,7 @@ conservativeHalfwidth = psiConservative.halfwidth ./ degree
 % omitted one, and two rules that read only the number of orientations and
 % the symmetry. All three count every orientation as an independent
 % observation, so they do not accept a map. Compare them with the default on
-% the 368 grain mean orientations.
+% the 367 grain mean orientations.
 
 method = ["UCV";"KLCV";"RuleOfThumb";"magicRule"];
 grainMeanHalfwidth = zeros(size(method));
@@ -280,10 +280,10 @@ methodSummary = table(method,grainMeanHalfwidth)
 
 %%
 % UCV and KLCV ask for 4.1 and 4.7 degrees, the two rules for about 15.
-% Both cross-validation results are narrower than the 7.5 degrees of the
+% Both cross-validation results are narrower than the 7.1 degrees of the
 % map. Equal grain means count a five-pixel grain as much as a 669-pixel
-% one, so they describe the population of 368 grains rather than the
-% mapped area, and 368 equal votes carry more information than a hundred
+% one, so they describe the population of 367 grains rather than the
+% mapped area, and 367 equal votes carry more information than a hundred
 % effective ones. The two rules ignore the data beyond its size.
 % <OptimalKernel.html Optimal Kernel Selection> compares all methods
 % against a known model ODF, where UCV comes closest to the halfwidth of

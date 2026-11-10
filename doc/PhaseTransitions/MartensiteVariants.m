@@ -138,7 +138,7 @@ mori = inv(childOri) * parentOri;
 fitKS = mean(angle(mori,KS)) ./ degree
 
 %%
-% The ideal KS relationship has a mean deviation of 3.93 degrees from the
+% The ideal KS relationship has a mean deviation of 3.94 degrees from the
 % measured rotations.
 
 %% Fit the orientation relationship from a known parent
@@ -189,7 +189,7 @@ fitIter = mean(angle(mori,p2cIter)) ./ degree
 
 %%
 % The OR computed only from child-to-child misorientations fits the measured
-% parent-to-child rotations with a mean deviation of 2.49 degrees. It fits
+% parent-to-child rotations with a mean deviation of 2.50 degrees. It fits
 % about as well as the robust mean.
 %
 % This agreement is the important check before the OR is used for

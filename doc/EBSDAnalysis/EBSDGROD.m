@@ -109,7 +109,7 @@ fprintf('GOS for %d grains: median %.2f degree; maximum %.1f degree\n',...
   max(GOS./degree,[],'omitnan'));
 
 %%
-% Of the 377 grains the median spread is 0.53° and the largest 6.4°. The
+% Of the 375 grains the median spread is 0.54° and the largest 6.4°. The
 % map is not uniform. Some grains have much more internal orientation
 % variation than their neighbours, producing an order-of-magnitude spread.
 %
@@ -133,7 +133,7 @@ fprintf('Crystal-frame axis density: %.2f to %.2f mrd\n',...
   crystalDensityRange);
 
 %%
-% The range is 0.81 to 1.23 times uniform. In crystal coordinates the axes
+% The range is 0.82 to 1.23 times uniform. In crystal coordinates the axes
 % are therefore close to evenly distributed, with a slight preference for
 % $[101]$. A colour key shows where those directions occur in the map.
 
@@ -241,7 +241,7 @@ hold off
 % above therefore come from individual grains, not from a pattern running
 % across the map.
 %
-% Only some of the 377 grains are strongly deformed. A larger map would be
+% Only some of the 375 grains are strongly deformed. A larger map would be
 % needed to read the loading geometry from this figure.
 %
 %% Choosing another reference orientation

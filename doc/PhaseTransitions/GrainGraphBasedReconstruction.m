@@ -48,7 +48,7 @@ initialFit = job.calcGBFit ./ degree;
 fitQuantilesInitial = quantile(initialFit,[0.2 0.4 0.6 0.8])
 
 %%
-% The initial fit quintiles are 2.363, 3.371, 4.431, and 5.501 degrees.
+% The initial fit quintiles are 2.363, 3.375, 4.436, and 5.506 degrees.
 % <MaParentGrainReconstruction.html Parent Austenite Reconstruction> shows
 % how to overlay the full histograms and map the fit onto boundary segments.
 
@@ -62,10 +62,9 @@ changeFromKS = angle(initialP2C,job.p2c) ./ degree
 % <parentGrainReconstructor.calcParent2Child.html |calcParent2Child|> uses
 % the iterative method of Nyyssönen and co-workers.
 % It assumes that most measured boundaries are child-to-child boundaries.
-% The first fit quintile is 1.452 degrees, consistent with the former rounded
-% value of 1.5 degrees. The change from KS is 3.095 degrees, not 2.3 degrees.
-% The 2.3-degree value in the displayed summary is the distance to the closest
-% rounded ideal OR, so the earlier text compared two different quantities.
+% The first fit quintile is 1.453 degrees and the change from KS is 3.112
+% degrees. The 2.3-degree value in the displayed summary is the distance to
+% the closest rounded ideal OR, a different quantity.
 %
 % Older text said the command stored the misfits in |job.fit|.
 % The current class has no such property.
@@ -96,8 +95,8 @@ graphWeightQuantiles = quantile(graphWeights,[0.1 0.5 0.9])
 
 %%
 % The printed count is the number of weighted neighbour relations retained
-% by the graph: 11,160 in this run. Its 10th, 50th, and 90th weight
-% percentiles are 0.0081, 0.6645, and 0.9464.
+% by the graph: 11,072 in this run. Its 10th, 50th, and 90th weight
+% percentiles are 0.0078, 0.6683, and 0.9459.
 
 %% Read the graph on the map
 %
@@ -127,7 +126,7 @@ job.clusterGraph('inflationPower',1.6)
 
 %%
 % The displayed graph summary gives clustered grains, component count, and
-% single-grain components. Here 4,412 grains form 236 components and 53
+% single-grain components. Here 4,374 grains form 235 components and 53
 % components contain only one grain. These are hypotheses, not yet accepted
 % parent grains.
 
@@ -146,7 +145,7 @@ plot(job.parentGrains,'ipfz')
 
 %%
 % Most child grains now appear in the parent phase.
-% The graph transforms 4,412 grains and leaves 52 child grains unchanged.
+% The graph transforms 4,374 grains and leaves 52 child grains unchanged.
 % Neighbouring fragments with similar colours belong to graph components that
 % still await quality control and merging.
 
@@ -179,8 +178,8 @@ plot(job.parentGrains,'ipfz')
 %%
 % <parentGrainReconstructor.revert.html |revert|> restores the measured child
 % phase and orientation for the rejected grains.
-% The criteria flag 874 grains. Of those, 53 carry no graph assignment to
-% undo, so this call reverts 821 of them and leaves 873 child grains.
+% The criteria flag 859 grains. Of those, 53 carry no graph assignment to
+% undo, so this call reverts 806 of them and leaves 858 child grains.
 % Called without an argument, |job.revert| undoes the entire reconstruction.
 % That full reset is useful when comparing graph parameters.
 
@@ -203,7 +202,7 @@ plot(job.parentGrains,'ipfz')
 
 %%
 % The printed sequence should decrease as the reconstructed neighbourhood
-% expands. It is 616, 380, and 174 child grains in this run.
+% expands. It is 615, 383, and 173 child grains in this run.
 % The final map fills most rejected regions without accepting their original
 % weak graph assignments.
 
@@ -263,7 +262,7 @@ numChildrenInSelectedParent = length(childGrains)
 %
 % |job.grainsPrior| preserves the input grains, while |job.mergeId| maps each
 % one to its current parent ID. The printed child count confirms the selected
-% footprint can be traced back to its 93 measured grains.
+% footprint can be traced back to its 91 measured grains.
 
 %% Reuse the common crystallographic and pixel checks
 %
@@ -284,8 +283,8 @@ pixelFitQuantiles = quantile(pixelFit(~isnan(pixelFit)),[0.5 0.9 0.99])
 
 %%
 % The printed fit quantiles are the compact numerical check for this graph
-% reconstruction. The median, 90th, and 99th percentiles are 2.255, 4.178,
-% and 7.174 degrees. Low values mean the measured child pixels agree with
+% reconstruction. The median, 90th, and 99th percentiles are 2.242, 4.162,
+% and 7.120 degrees. Low values mean the measured child pixels agree with
 % their assigned parent orientation.
 %
 % To fill remaining notIndexed or not reconstructed pixels, the earlier page

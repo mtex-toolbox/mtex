@@ -50,7 +50,7 @@ job.p2c = orientation.KurdjumovSachs(job.csParent,job.csChild)
 % The displayed summary reports parent and child grain counts, their areas,
 % and the fraction of input child grains already transformed.
 % It also reports four quintiles of the boundary OR misfit. For the initial
-% Kurdjumov-Sachs (KS) guess these are 2.51, 3.49, 4.41, and 5.35 degrees,
+% Kurdjumov-Sachs (KS) guess these are 2.52, 3.50, 4.42, and 5.35 degrees,
 % as printed below.
 
 %% Fit the parent-to-child orientation relationship
@@ -178,8 +178,8 @@ plot(job.parentGrains,'ipfz')
 
 %%
 % The map contains transformed parent fragments rather than final parent
-% grain footprints. The strict vote transforms 10,589 child grains,
-% leaving 56 child grains that occupy 0.51% of the indexed area.
+% grain footprints. The strict vote transforms 10,359 child grains,
+% leaving 64 child grains that occupy 0.54% of the indexed area.
 % A manual alternative is
 % <parentGrainReconstructor.selectInteractive.html |selectInteractive|>:
 %
@@ -206,7 +206,7 @@ plot(job.parentGrains,'ipfz')
 % Earlier versions passed |'tortuosity'| to |calcGBVotes| as well.
 % That function also has no such option, so it had no effect.
 % The new parent fragments fill much of the space left by the strict vote.
-% It leaves 43 child grains, occupying 0.061% of the indexed area.
+% It leaves 47 child grains, occupying 0.067% of the indexed area.
 
 %% Merge compatible parent fragments
 %
@@ -289,7 +289,7 @@ hold off
 
 %%
 % The printed |selectedParentId| is the ID of this grain in the current
-% segmentation, 286 in this run. IDs are not fixed across releases, which is
+% segmentation, 295 in this run. IDs are not fixed across releases, which is
 % why the grain is looked up by location.
 % The child-grain mosaic exactly fills the selected parent outline.
 
