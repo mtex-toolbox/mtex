@@ -33,7 +33,8 @@ e = ebsd('indexed');
 g = calcGrains(e,'removeQuadruplePoints',false);
 q = calcGrains(e);
 
-P = g.boundary.allV.xyz(accumarray(g.boundary.F(:),1) == 4,1:2);
+V = g.boundary.allV.xyz;
+P = V(accumarray(g.boundary.F(:),1) == 4,1:2);
 d = median(g.boundary.segLength);
 
 Lg = farLengths(g.boundary,P,d);
@@ -64,7 +65,8 @@ function L = farLengths(gB,P,d)
 % the sorted lengths of the segments with no end within d/4 of a point of P
 
 near = false(size(gB.allV,1),1);
-if ~isempty(P), near = min(pdist2(gB.allV.xyz(:,1:2),P),[],2) < d/4; end
+X = gB.allV.xyz;
+if ~isempty(P), near = min(pdist2(X(:,1:2),P),[],2) < d/4; end
 L = sort(gB.segLength(~any(near(gB.F),2)));
 
 end
