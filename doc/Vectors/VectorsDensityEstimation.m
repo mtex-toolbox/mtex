@@ -148,7 +148,7 @@ cAxesGrains.antipodal = true;
 numGrainAxes = numel(cAxesGrains)
 
 %%
-% The reconstruction gives 1151 Forsterite grain axes instead of 152345
+% The reconstruction gives 1148 Forsterite grain axes instead of 152345
 % pixel axes. Giving each grain one vote describes the distribution of
 % grains. Weighting by sectional grain area describes the mapped material
 % area, which is the question answered by equal pixel weights on this
@@ -218,7 +218,7 @@ halfwidthTable = table(selection,halfwidthInDegree)
 % the grain axes weighted by their area, which describe the same mapped
 % area.
 %
-% One vote per grain asks for about 2 degrees. Of the 1151 grains, 530 are
+% One vote per grain asks for about 2 degrees. Of the 1148 grains, 529 are
 % single pixels, and the area weight gives those almost no say.
 %
 % The conservative rule on the pixels with their grain ids:
