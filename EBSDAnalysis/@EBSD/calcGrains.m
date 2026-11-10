@@ -51,6 +51,10 @@ function [grains,ebsd] = calcGrains(ebsd,varargin)
 %  straighten - true (default) draws the grain boundaries through filled
 %             regions as straight lines, false along the bisectors between
 %             the measured pixels around them
+%  removeQuadruplePoints - true (default) splits every vertex where four
+%             boundary segments meet into two triple points, joining the
+%             diagonal pair of pixels that merges two grains, else the pair
+%             the criterion connects best; false keeps the quadruple points
 %  soft     - [angle delta] soft threshold instead of a hard one
 %  fmc       - fast multiscale clustering method
 %  mcl       - Markovian clustering algorithm
@@ -148,7 +152,8 @@ phaseId(phaseId==0) = 1; % why this is needed?
 % I_FDint - faces × cells internal grain boundaries
 [I_FDext, I_FDint, Fext, Fint] = calcBoundary;
 
-if check_option(varargin,'removeQuadruplePoints')
+qAdded = 0;
+if get_option(varargin,'removeQuadruplePoints',true)
   [qAdded,qPairs,qF] = removeQuadruplePoints;
 end
 
@@ -176,9 +181,7 @@ if ~isempty(notClosed)
 end
 
 % merge quadruple grains
-if check_option(varargin,'removeQuadruplePoints') && qAdded > 0
-  mergeQuadrupleGrains;
-end
+if qAdded > 0, mergeQuadrupleGrains; end
 
 % rotate grains back
 grains = inv(ebsd.rot2Plane) * grains; %#ok<MINV>
@@ -347,9 +350,7 @@ end
     [~,qOrder] = sort(qOmega,2);
       
     % pair the four edges - the two pairings pick out the two diagonals of the
-    % four pixels meeting here. Take the pair the criterion connects most, then
-    % the smaller misorientation, then the pixel positions - all read the
-    % measurements, so the outcome does not depend on the measurement order
+    % four pixels meeting here, ranked by qpRank
     s = size(iqF);
     pairOf = @(o) I_FDext(iqF(sub2ind(s,(1:s(1)).',o(:,1))),:) .* ...
                   I_FDext(iqF(sub2ind(s,(1:s(1)).',o(:,4))),:) + ...
@@ -366,14 +367,13 @@ end
 
     useB = ~okA & okB;
 
+    % B wins on the first key the two pairings differ in
     both = okA & okB;
     if any(both)
-      [cA,omA,keyA] = qpRank(iqDA,both);
-      [cB,omB,keyB] = qpRank(iqDB,both);
-      % criterion first, then the smaller misorientation angle, then the
-      % canonical position key
-      useB(both) = cB(both) > cA(both) | (cB(both) == cA(both) & ...
-        (omB(both) < omA(both) | (omB(both) == omA(both) & keyB(both) < keyA(both))));
+      KA = qpRank(iqDA,both); KB = qpRank(iqDB,both);
+      d = (KB(both,:) > KA(both,:)) - (KB(both,:) < KA(both,:));
+      [~,j] = max(d ~= 0,[],2);
+      useB(both) = d(sub2ind(size(d),(1:size(d,1)).',j)) > 0;
     end
 
     qOrder(useB,:) = orderB(useB,:);
@@ -435,36 +435,28 @@ end
       
   end
 
-  function [c,omega,key] = qpRank(M,mask)
+  function K = qpRank(M,mask)
     % rank one candidate pairing of a quadruple point
     %
-    % Every row of M selects the two pixels that pairing would separate.
-    % Returns, for the rows in mask, three keys compared in this order:
+    % Every row of M selects the two pixels that pairing joins. Returns,
+    % for the rows in mask, the keys compared in this order, larger first:
     %
-    %  c     - the grain boundary criterion on that pixel pair. The pairing
-    %          with the LARGER value offers the pair the criterion connects
-    %          most, i.e. the one mergeQuadrupleGrains can actually join.
-    %  omega - the misorientation angle of the pair, SMALLER first. The
-    %          criterion answers on three levels only, so it is indifferent
-    %          at most quadruple points; the angle it is derived from
-    %          separates them further and in the same direction - join the
-    %          pair that matches better, which yields fewer and larger
-    %          grains. Inf where no angle is defined (a notIndexed pixel,
-    %          or two different phases), so those never win.
-    %  key   - a last tie break that depends only on where the pixels are:
-    %          the y coordinate of the lexicographically first of the two.
-    %          The two candidate pairings are the two diagonals of the same
-    %          four pixels, so they share a centroid and cannot be told
-    %          apart by a sum - but they do differ in the sign of their
-    %          slope, which is exactly what this reads off.
+    %  - whether the criterion connects the pair and it lies in two grains,
+    %    so that joining it merges them
+    %  - the grain boundary criterion on the pair
+    %  - the misorientation angle of the pair, smaller first; Inf where none
+    %    is defined (a notIndexed pixel, or two different phases)
+    %  - the y coordinate of the lexicographically first of the two pixels,
+    %    smaller first - the two diagonals of four pixels share a centroid
+    %    and differ in the sign of their slope, which this reads off
     %
-    % All three are properties of the measurements. None of them moves when
-    % the same measurements are handed over in a different order, which is
-    % the whole point - see the header of the pairing code above.
+    % All of them read the measurements, so the outcome does not depend on
+    % the order the measurements are handed over in
 
     c     = -inf(size(M,1),1);
     omega =  inf(size(M,1),1);
     key   =  inf(size(M,1),1);
+    K = [c c -omega -key];
     if ~any(mask), return; end
 
     [qpD,~] = find(M(mask,:).');
@@ -491,6 +483,10 @@ end
     qpKey = qpP1(:,2);
     qpKey(qpSecond) = qpP2(qpSecond,2);
     key(mask) = qpKey;
+
+    m = c;
+    m(mask) = c(mask) > 0 & grainId(qpD(:,1)) ~= grainId(qpD(:,2));
+    K = [m c -omega -key];
 
   end
 
