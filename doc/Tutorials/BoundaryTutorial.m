@@ -30,7 +30,7 @@ grains
 
 %% See the grains before measuring their boundaries
 %
-% The displayed summary reports 121 magnesium grains. The 15 degree
+% The displayed summary reports 95 magnesium grains. The 15 degree
 % reconstruction threshold is an example parameter, not a universal grain
 % definition. <GrainReconstruction.html Grain Reconstruction> explains how
 % to choose and report it.
@@ -61,8 +61,8 @@ plot(grains,grainColor)
 gB = grains.boundary
 
 %% Reading the boundary summary
-% The summary reports 1420 segments after smoothing. Of these, 1378 lie
-% between two magnesium grains and 42 form the outer rim, which appears in
+% The summary reports 1413 segments after smoothing. Of these, 1366 lie
+% between two magnesium grains and 47 form the outer rim, which appears in
 % the |notIndexed| row because there is no grain on its other side.
 %
 % In a general map the same row can also contain boundaries next to
@@ -103,7 +103,7 @@ mtexColorbar('title','minimum misorientation angle (degree)')
 %% Measure the dominant angle population
 %
 % The next two displayed values summarize segments, not whole physical
-% interfaces. The median angle is 85.6 degrees, and 64 percent of the
+% interfaces. The median angle is 85.5 degrees, and 64 percent of the
 % segments have angles above 80 degrees.
 
 medianAngle = median(misorientationAngle)

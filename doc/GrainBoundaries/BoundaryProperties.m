@@ -82,17 +82,17 @@ ebsd('id',gB4.ebsdId)
 gB4.grainId
 
 %%
-% Grain 4 has grain 42 on the far side of all eight segments. Grain 4 is
+% Grain 4 has grain 40 on the far side of all eight segments. Grain 4 is
 % therefore an inclusion: it is entirely surrounded by one other grain.
 
 plot(grains(4),'FaceColor','DarkBlue','micronbar','off');
 hold on;
-plot(grains(42),'FaceColor','LightCoral');
+plot(grains(40),'FaceColor','LightCoral');
 hold off;
 
 %%
 % The dark-blue inclusion sits wholly inside the coral grain. The plot is
-% the spatial counterpart of the repeated pair |[4 42]| above.
+% the spatial counterpart of the repeated pair |[4 40]| above.
 
 %% From segments to chains
 %
@@ -195,7 +195,7 @@ mtexColorbar('title','axis-to-mean-trace angle (°)');
 %%
 % The flicker is suppressed, so nearby segments on one boundary now carry
 % similar colours. The values differ from boundary to boundary, which is
-% the information the flicker was hiding. The median angle is 43.3 degrees,
+% the information the flicker was hiding. The median angle is 43.2 degrees,
 % and 10.9 percent of the segments lie below 20 degrees. The misorientation
 % axes are therefore mostly not aligned with the traces in this section.
 
@@ -287,7 +287,7 @@ componentSummary = table(length(gBTwin),numTwinComponents,...
   'VariableNames',{'twinSegments','components'})
 
 %%
-% The 1653 selected segments form 54 components. A twin lamella crossing a
+% The 1653 selected segments form 55 components. A twin lamella crossing a
 % grain is one long component. A few isolated segments that happen to meet
 % the twin criterion form a short component, which is why component labels
 % are useful.
@@ -325,10 +325,10 @@ mtexColorbar('title','component straightness');
 
 %%
 % Straight components are red, while meandering or branched components are
-% blue. The values reach 0.97 and have a median of 0.65.
+% blue. The values reach 0.97 and have a median of 0.67.
 %
 % Define a large component here as one containing more than 50 segments.
-% The 13 large components have a median of 0.47, compared with 0.68 for the
+% The 13 large components have a median of 0.47, compared with 0.70 for the
 % rest. A large component in this map is often several lamellae meeting
 % inside one grain, rather than one long straight lamella.
 

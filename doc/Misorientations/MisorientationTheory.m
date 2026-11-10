@@ -38,16 +38,16 @@ CS = grains.CS;
 plot(grains,'ipfz','micronbar','off')
 
 hold on
-plot(grains([57,58]).boundary,'edgecolor','w','linewidth',2)
+plot(grains([55,56]).boundary,'edgecolor','w','linewidth',2)
 hold off
 
-text(grains([57,58]),{'1','2'})
+text(grains([55,56]),{'1','2'})
 
 %%
 % Their mean orientations are the two inputs used below.
 
-ori1 = grains(57).meanOrientation;
-ori2 = grains(58).meanOrientation;
+ori1 = grains(55).meanOrientation;
+ori2 = grains(56).meanOrientation;
 
 %% Misorientation Angle and Disorientation
 %

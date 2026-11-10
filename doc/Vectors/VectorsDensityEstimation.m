@@ -148,7 +148,7 @@ cAxesGrains.antipodal = true;
 numGrainAxes = numel(cAxesGrains)
 
 %%
-% The reconstruction gives 1148 Forsterite grain axes instead of 152345
+% The reconstruction gives 1100 Forsterite grain axes instead of 152345
 % pixel axes. Giving each grain one vote describes the distribution of
 % grains. Weighting by sectional grain area describes the mapped material
 % area, which is the question answered by equal pixel weights on this
@@ -218,7 +218,7 @@ halfwidthTable = table(selection,halfwidthInDegree)
 % the grain axes weighted by their area, which describe the same mapped
 % area.
 %
-% One vote per grain asks for about 2 degrees. Of the 1148 grains, 529 are
+% One vote per grain asks for about 2 degrees. Of the 1100 grains, 471 are
 % single pixels, and the area weight gives those almost no say.
 %
 % The conservative rule on the pixels with their grain ids:
@@ -228,7 +228,7 @@ psiConservative = calcKernel(pixelAxes,'method','conservative',...
 psiConservative.halfwidth / degree
 
 %%
-% It asks for 23 degrees, a little wider than the 21 degrees of UCV. It
+% It asks for 21 degrees, the same as UCV. It
 % takes the energies of the axis distribution at their lower confidence
 % bounds. Weighted by area, the few large grains dominate the map, which
 % leaves these bounds loose. A reported halfwidth is worth checking against

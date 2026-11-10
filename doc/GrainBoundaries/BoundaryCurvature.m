@@ -86,7 +86,7 @@ turnsBeforeAfterFlip = [sum(gB2.curvature .* gB2.segLength), ...
   sum(gB2Flipped.curvature .* gB2Flipped.segLength)] ./ (2*pi)
 
 %%
-% The normalized sums are about -1.01 and 1.01. Reversing the walk changes
+% The normalized sums are about -1.06 and 1.06. Reversing the walk changes
 % only the sign. A smooth simple closed curve has a total turning of
 % $\pm 2\pi$; the small offset here comes from the discrete approximation.
 

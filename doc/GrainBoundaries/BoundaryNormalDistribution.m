@@ -157,7 +157,7 @@ remainingSummary = table(min(gbnd2),max(gbnd2),...
   'VariableNames',{'minimumDensity','maximumDensity'})
 
 %%
-% The peak lies 5.6 degrees from the nearest tension-twin plane. The
+% The peak lies 5.5 degrees from the nearest tension-twin plane. The
 % remaining distribution ranges from 0.84 to 1.09. These values quantify
 % the visual contrast between the panels.
 
@@ -192,7 +192,7 @@ twinGBCDSummary = table(twinPeak,...
   'VariableNames',{'peakDensity','distanceToTwinPlaneDegree'})
 
 %%
-% The printed angular distance is 2.8 degrees, against 5.6 degrees for the
+% The printed angular distance is 2.6 degrees, against 5.5 degrees for the
 % angle-only split. Conditioning on the complete misorientation sharpens the
 % habit-plane result.
 
