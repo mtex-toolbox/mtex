@@ -321,9 +321,12 @@ methods
     % about to be built on, not the fallback that may replace it below
     sB.lastExtent = extent(3:4);
 
-    % Extent(3:4) is the footprint along data x and y, there is none along z
-    footprint = [extent(3:4), NaN];
-    textWidth = footprint(iE); textHeight = footprint(iN) * sign(diff(dy));
+    % data units per pixel, the same along both screen directions of an equal axes
+    axPos = getpixelposition(ax);
+    s = max(abs(diff(dx))/axPos(3), abs(diff(dy))/axPos(4));
+
+    [textWidth, textHeight] = labelSize;
+    textHeight = textHeight * sign(diff(dy));
 
     % fall back to a size proportional to the map when the extent is not measurable
     bogus = isnan(textHeight) || isnan(textWidth) || ...
@@ -351,8 +354,7 @@ methods
         [rulerLength, labelStr] = barOf(goodValues(max([1, find(goodValues <= sBLength, 1, 'last')])), ...
           sBUnit, factor*sign(diff(dx)));
         set(sB.txt,'string',labelStr)
-        extent = get(sB.txt, 'Extent');
-        if ~bogus, footprint = [extent(3:4), NaN]; textWidth = footprint(iE); end
+        if ~bogus, textWidth = labelSize; end
       end
     else
       triadWidth = 0; triadHeight = 0;
@@ -447,6 +449,12 @@ methods
       if ~isempty(z), pos(:,3) = z; end
       p = [iE, iN, iD];
       pos(:,p(1:size(pos,2))) = pos;
+    end
+
+    function [w,h] = labelSize
+      % the label's footprint on screen, in data units
+      set(sB.txt,'Units','pixels'); px = get(sB.txt,'Extent'); set(sB.txt,'Units','data');
+      w = s*px(3); h = s*px(4);
     end
 
     function pos = mapRF(pos)
