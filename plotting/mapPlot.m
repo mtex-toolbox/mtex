@@ -165,7 +165,7 @@ if ay_r < ey_r % resize ylim
   end
 
   % set the new limit
-  if ~any(isinf(x)), ylim(mP.ax,y); end
+  if ~any(isinf(y)), ylim(mP.ax,y); end
   
 else % resize xlim
   
