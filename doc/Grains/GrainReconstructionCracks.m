@@ -69,11 +69,11 @@ hold off
 %
 % |calcGrains| sorts the |notIndexed| regions into these kinds and treats
 % every kind by a rule of its own. The command
-% <EBSD.notIndexedKinds.html |notIndexedKinds|> returns the kind of every
-% pixel, so we can look at what |calcGrains| saw. We plot the kinds in
+% <EBSD.classifyNotIndexed.html |classifyNotIndexed|> returns the kind of
+% every pixel, so we can look at what |calcGrains| saw. We plot the kinds in
 % colour over the indexed pixels in light grey.
 
-kinds = notIndexedKinds(ebsd,'angle',15*degree);
+kinds = classifyNotIndexed(ebsd,'angle',15*degree);
 
 names = ["pore" "pocket" "crack" "void" "speck"];
 color = [0.2 0.4 1; 1 0.6 0; 1 0 0; 0 0 0; 0.55 0.55 0.55];

@@ -1,7 +1,7 @@
 # The closing radius of a notIndexed region is a property of its kind
 
 **Status: decided and implemented 2026-11-09.** `EBSD/calcGrains` options `'alphaPore'`,
-`'alphaPocket'`, `'alphaCrack'` and `'kinds'`, `EBSD/notIndexedKinds`, `kindOfParts` in
+`'alphaPocket'`, `'alphaCrack'` and `'kinds'`, `EBSD/classifyNotIndexed`, `kindOfParts` in
 `EBSD/private/spatialDecompositionGrid.m`. The measurements behind it are in
 `docs/notindexed-classification.md`.
 
@@ -45,7 +45,7 @@ also absorbs every pore and pocket narrower than it.
    would join them, so the crack cells it filled are reopened. Filling a pocket places the
    boundaries between its grains by distance, and bridging a crack merges grains across it;
    both are decisions the user takes.
-4. **The classification is public.** `notIndexedKinds` returns the kind of every pixel
+4. **The classification is public.** `classifyNotIndexed` returns the kind of every pixel
    and a table of the parts, computed by the code `calcGrains` runs, and `'kinds'` hands a
    classification back, edited or not. A part takes the mode of the kinds of its pixels.
 5. **The two thresholds stay in the code.** The crack threshold rests on one crack. Until

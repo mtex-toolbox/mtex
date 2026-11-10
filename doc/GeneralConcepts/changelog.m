@@ -61,9 +61,9 @@
 %
 %   grains = calcGrains(ebsd,'alphaCrack',15)
 %
-% <EBSD.notIndexedKinds.html |notIndexedKinds|> returns the kind of every
-% pixel and a table of the regions, and the option |'kinds'| hands an edited
-% classification back to |calcGrains|. Grain counts change on maps with
+% <EBSD.classifyNotIndexed.html |classifyNotIndexed|> returns the kind of
+% every pixel and a table of the regions, and the option |'kinds'| hands an
+% edited classification back to |calcGrains|. Grain counts change on maps with
 % pores wider than |2*alpha| pixels; |'alphaPore',0| keeps such pores as
 % |notIndexed| grains. See <GrainReconstructionCracks.html Cracks and Pores>.
 %

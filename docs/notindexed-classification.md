@@ -6,7 +6,7 @@ and close each with a parameter of its own. Measured on `mtexdata peridotite`,
 The measurement code and the figures are in
 [`notindexed-classification/`](notindexed-classification/). The design recommended below is
 implemented: `calcGrains` takes `'alphaPore'`, `'alphaPocket'` and `'alphaCrack'`,
-`EBSD/notIndexedKinds` returns the kinds, and `GrainReconstructionCracks.m` shows them.
+`EBSD/classifyNotIndexed` returns the kinds, and `GrainReconstructionCracks.m` shows them.
 The decision, with `'alphaPore'` defaulting to `inf`, is recorded in
 [ADR 0010](adr/0010-closing-radius-per-kind.md).
 
@@ -308,7 +308,7 @@ bridged, and cannot correct a pocket taken for a crack.
 The per-kind radius, with:
 - `calcGrains` options `'alphaPore'`, `'alphaPocket'` and `'alphaCrack'`, radii in pixels like
   `alpha`, each defaulting to `alpha`, so the output does not change until one is set;
-- a public function, for example `[kinds,parts] = notIndexedKinds(ebsd,'alpha',3.1)`, returning
+- a public function, for example `[kinds,parts] = classifyNotIndexed(ebsd,'alpha',3.1)`, returning
   the kind of every pixel and a table of the thick parts with their features, computed by the
   very code `calcGrains` uses;
 - a `'kinds'` option on `calcGrains` taking that per-pixel kind back, edited or not. A part takes

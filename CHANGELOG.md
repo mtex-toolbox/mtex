@@ -131,7 +131,7 @@ including 6.1 have one combined list there and no entry here.
   the kind's cells, so a radius below alpha reopens what alpha filled: with the default
   the necks of a crack narrower than 2*alpha stay open and the crack is whole, where the
   base closing joined the grains across them (peridotite: the narrow upper stretch of
-  the crack). `notIndexedKinds` returns the kind per pixel and the parts table through
+  the crack). `classifyNotIndexed` returns the kind per pixel and the parts table through
   `'kindsOnly'`; `'kinds'` replaces the kind of a part by the mode over its pixels.
   peridotite at 10 degree, minPixel 5: 575 -> 569 grains, 41 -> 35 notIndexed; the
   classification costs 0.02-0.06 s on peridotite, forsterite and 1C_1. ADR 0010

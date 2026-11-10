@@ -1,4 +1,4 @@
-function [kinds,parts] = notIndexedKinds(ebsd,varargin)
+function [kinds,parts] = classifyNotIndexed(ebsd,varargin)
 % the kinds of the notIndexed regions of a map, as calcGrains sees them
 %
 % The closing with alpha fills every notIndexed region narrower than about
@@ -9,7 +9,7 @@ function [kinds,parts] = notIndexedKinds(ebsd,varargin)
 %
 % Syntax
 %
-%   [kinds,parts] = notIndexedKinds(ebsd,'alpha',3.1)
+%   [kinds,parts] = classifyNotIndexed(ebsd,'alpha',3.1)
 %
 %   % plot the cracks and reconstruct with a kind corrected by hand
 %   plot(ebsd(kinds == "crack"))
