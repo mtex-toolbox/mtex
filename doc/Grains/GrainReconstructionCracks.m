@@ -151,12 +151,20 @@ fprintf('%d grains, %d notIndexed, %.1f%% of the map outside all grains\n', ...
   100*nnz(ebsdC.grainId==0)/length(ebsd))
 
 %%
-% We look at the crack, with the boundaries of the reconstruction with the
-% pockets closed in red and the new boundaries in black.
+% We look at the crack in an IPF map, where the colour of a pixel is the
+% crystal direction pointing out of the map, as in
+% <EBSDIPFMap.html IPF Maps>. Two pieces of one grain have the same colour.
+% The boundaries of the reconstruction with the pockets closed are red, the
+% new boundaries black.
 
 plot(ebsd,'micronbar','off')
 legend off
 hold on
+for phase = ["Forsterite" "Enstatite" "Diopside"]
+  ipfKey = ipfColorKey(ebsd(phase));
+  ipfKey.inversePoleFigureDirection = vector3d.Z;
+  plot(ebsd(phase),ipfKey.orientation2color(ebsd(phase).orientations))
+end
 plot(grainsP.boundary,'linewidth',2,'LineColor','r')
 plot(grainsC.boundary,'linewidth',2)
 hold off
@@ -164,9 +172,9 @@ axis([2500 12500 7000 17940])
 
 %%
 % The red walls of the crack have no black boundary on them any more: the
-% grains reach across. Where a grain on the left has the same orientation
-% as its neighbour on the right, no boundary separates them, and the two
-% pieces are one grain. Where the orientations differ, a black boundary
+% grains reach across. Where a grain on the left has the same colour as its
+% neighbour on the right, no boundary separates them, and the two pieces
+% are one grain. Where the colours differ, a black boundary
 % crosses the crack as a straight line between the points where it meets
 % the two walls. Only the mouth of the crack at the bottom edge, wider than
 % 30 pixels, remains outside all grains.
