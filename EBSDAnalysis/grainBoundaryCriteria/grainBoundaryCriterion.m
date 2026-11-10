@@ -92,6 +92,15 @@ methods
     tf = false;
   end
 
+  function tf = evaluatesPairs(obj) %#ok<MANU>
+    % Does eval on a list of pixel pairs answer for each pair on its own?
+    %
+    % calcGrains asks the criterion about the diagonal pairs of pixels at the
+    % quadruple points. A criterion that clusters the whole map answers false,
+    % and the quadruple points are left as they are.
+    tf = true;
+  end
+
   function obj = setMinPixel(obj,minPixel) %#ok<INUSD>
     % Hand minPixel to a criterion that answers true above.
     %

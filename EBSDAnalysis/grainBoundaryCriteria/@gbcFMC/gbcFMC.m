@@ -172,6 +172,12 @@ methods
     obj.verbose = check_option(varargin,'verbose');
   end
 
+  function tf = evaluatesPairs(obj) %#ok<MANU>
+    % FMC clusters the graph it is handed, so a list of a few diagonal pairs
+    % is a run that assigns nothing
+    tf = false;
+  end
+
   function tf = handlesMinPixel(obj) %#ok<MANU>
     % FMC absorbs undersized regions itself, in FMC_interpret, so
     % calcGrains must not also run its own minPixel pass - that pass is a

@@ -155,7 +155,7 @@ phaseId(phaseId==0) = 1; % why this is needed?
 [I_FDext, I_FDint, Fext, Fint] = calcBoundary;
 
 qAdded = 0;
-if get_option(varargin,'removeQuadruplePoints',true)
+if gbc.evaluatesPairs && get_option(varargin,'removeQuadruplePoints',true)
   [qAdded,qF] = removeQuadruplePoints;
 end
 
