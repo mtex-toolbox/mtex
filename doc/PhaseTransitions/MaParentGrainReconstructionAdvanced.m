@@ -23,8 +23,7 @@ mtexdata martensite
 csBCC = ebsd.CSList(2);
 csFCC = ebsd.CSList(3);
 
-[grains,ebsd] = calcGrains(ebsd,'angle',3*degree,...
-  'minPixel',5,'removeQuadruplePoints');
+[grains,ebsd] = calcGrains(ebsd,'angle',3*degree,'minPixel',5);
 
 plot(ebsd('Iron bcc'),'ipfz','figSize','large')
 hold on

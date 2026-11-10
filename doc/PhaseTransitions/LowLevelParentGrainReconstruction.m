@@ -29,13 +29,10 @@ beta2alpha = orientation.Burgers(...
 %% Segment grains for triple-point analysis
 %
 % The preceding page defines a triple point and explains why this workflow
-% uses a 1.5-degree segmentation threshold with
-% <QuadruplePoints.html |removeQuadruplePoints|>.
-% We smooth the boundaries. The triple points move with the boundary
-% network, each within its pixel cell.
+% uses a 1.5-degree segmentation threshold. We smooth the boundaries. The
+% triple points move with the boundary network, each within its pixel cell.
 
-[grains,ebsd] = calcGrains(ebsd,'threshold',1.5*degree,...
-  'removeQuadruplePoints');
+[grains,ebsd] = calcGrains(ebsd,'threshold',1.5*degree);
 grains = smoothBoundary(grains);
 
 region = [299 401 440 500];

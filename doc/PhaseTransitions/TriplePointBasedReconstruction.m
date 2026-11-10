@@ -45,15 +45,14 @@ beta2alpha = orientation.Burgers(...
 % grains, so the initial segmentation must not join alpha regions that may
 % have different beta parents.
 
-[grains,ebsd] = calcGrains(ebsd,'threshold',1.5*degree,...
-  'removeQuadruplePoints');
+[grains,ebsd] = calcGrains(ebsd,'threshold',1.5*degree);
 
 %%
 % The deliberately small 1.5-degree threshold keeps such alpha regions
-% separate. The <QuadruplePoints.html |removeQuadruplePoints|> option
-% replaces every four-way junction with two three-segment junctions. In this
-% child-phase map, those junctions supply the triple points required by the
-% voting algorithm.
+% separate. |calcGrains| replaces every four-way junction of the grid with
+% two three-segment junctions, as <QuadruplePoints.html Quadruple Points>
+% explains, so the junctions of this child-phase map supply the triple
+% points the voting algorithm needs.
 %
 % A triple point is a junction where exactly three boundary segments meet and
 % separate three distinct real grains. It therefore provides three child

@@ -45,8 +45,7 @@ beta2alpha = orientation.Burgers(...
 % produced by segmentation. A small angular threshold keeps alpha regions
 % from different beta grains separate at this stage.
 
-[grains,ebsd] = calcGrains(ebsd,'threshold',1.5*degree,...
-  'removeQuadruplePoints');
+[grains,ebsd] = calcGrains(ebsd,'threshold',1.5*degree);
 
 %%
 % The 1.5-degree threshold is deliberately small. If two alpha orientations
