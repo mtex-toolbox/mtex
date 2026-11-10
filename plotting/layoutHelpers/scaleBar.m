@@ -60,6 +60,7 @@ properties (Hidden = true)
   lastZ = NaN              % the plane the bar was last laid out in (see update)
   lastExtent = []          % label footprint the last layout was measured against
   updating logical = false % re-entrance guard for update
+  normal = vector3d.Z      % the map's normal - the bar shows only when the map is seen along it
 end
 
 properties
@@ -84,10 +85,7 @@ end
 properties (SetObservable)
   location = 'sw'          % corner of the map: 'sw', 'se', 'nw', 'ne'
   refFrame = 'on'          % show the reference frame indicator: 'on', 'off'
-end
-
-properties (Dependent = true)
-  visible
+  visible  = 'on'          % show the scale bar: 'on', 'off'
 end
 
 
@@ -96,6 +94,7 @@ methods
   function sB = scaleBar(mP,scanUnit,varargin)
 
     sB.scanUnit = scanUnit;
+    sB.normal = mP.how2plot.outOfScreen;
     sB.hgt = hgtransform('parent',mP.ax);
     sB.shadow = patch('parent',sB.hgt,'Faces',1,'Vertices',[NaN NaN NaN],'EdgeColor','none');
     sB.txt = text('parent',sB.hgt,'string','1mm','position',[NaN,NaN],...
@@ -112,9 +111,10 @@ methods
         'Interpreter',getMTEXpref('textInterpreter'),'FontSize',getMTEXpref('FontSize'));
     end
 
-    % the bar is positioned from the axes limits and must not contribute to them
+    % the bar is positioned from the axes limits, must not contribute to
+    % them and, as an overlay, is not clipped by them
     set([sB.shadow, sB.txt, sB.ruler, sB.rfArrows, sB.rfSymbol, sB.rfLabels],...
-      'XLimInclude','off','YLimInclude','off','ZLimInclude','off');
+      'XLimInclude','off','YLimInclude','off','ZLimInclude','off','Clipping','off');
 
     % label the indicator with the axes names of the frame the data lives in
     fr = getClass(varargin,'referenceFrame',specimenFrame.default);
@@ -155,6 +155,7 @@ methods
     addlistener(sB,'refFrame',        'PostSet', @(~,~) sB.update);
     addlistener(sB,'refFrameDirs',    'PostSet', @(~,~) sB.update);
     addlistener(sB,'refFrameLabels',  'PostSet', @(~,~) sB.update);
+    addlistener(sB,'visible',         'PostSet', @(~,~) sB.update);
 
   end
 
@@ -192,11 +193,9 @@ methods
 
 
   function set.visible(sB,value)
-    sB.hgt.Visible = value;
-  end
-
-  function value = get.visible(sB)
-    value = sB.hgt.Visible;
+    onOff = {'off','on'};
+    if islogical(value), value = onOff{1+value}; end
+    sB.visible = lower(char(value));
   end
 
   function set.location(sB,loc)
@@ -264,47 +263,48 @@ methods
     % read the plotting convention back from the axes camera, not from a cache
     pC = plottingConvention.getView(ax);
 
-    % the data axes closest to the viewing direction, screen east and screen north
-    [~,iD] = max(abs(pC.outOfScreen.xyz));
-    east = pC.east.xyz; east(iD) = 0;
-    [~,iE] = max(abs(east));
-    iN = 6 - iD - iE;
-    north = pC.north.xyz;
+    % a map seen from anywhere but along its normal is a 3d view - there
+    % the axes labels give the scale and the bar stays out of the picture
+    faceOn = abs(dot(pC.outOfScreen,sB.normal)) > cos(degree);
+    onOff = {'off','on'};
+    sB.hgt.Visible = onOff{1 + (faceOn && strcmp(sB.visible,'on'))};
+    if ~faceOn, return; end
 
-    % the full screen projection of the reference frame directions, for a tilted view
+    % the bar is laid out on screen - east, north and towards the viewer -
+    % and a point [u v w] there sits at [u v w] * R in data coordinates
+    R = [pC.east.xyz; pC.north.xyz; pC.outOfScreen.xyz];
+
+    % the screen projection of the reference frame directions
     showRF = strcmp(sB.refFrame,'on') && ~isempty(sB.refFrameDirs);
     if showRF
-      rfDir = normalize(sB.refFrameDirs(:).');
-      rfScreen = [dot(rfDir,pC.east,'noAntipodal').', ...
-        dot(rfDir,pC.north,'noAntipodal').', ...
-        dot(rfDir,pC.outOfScreen,'noAntipodal').'];
+      rfScreen = normalize(sB.refFrameDirs(:)).xyz * R.';
     else
       rfScreen = [];
     end
 
-    % the limits along screen east and north, running in screen direction
-    lims = [xlim(ax); ylim(ax); zlim(ax)];
-    dx = lims(iE,:); if east(iE) < 0, dx = fliplr(dx); end
-    dy = lims(iN,:); if north(iN) < 0, dy = fliplr(dy); end
+    % the screen extent of the axes box
+    corners = boxCorners(ax) * R.';
+    dx = [min(corners(:,1)), max(corners(:,1))];
+    dy = [min(corners(:,2)), max(corners(:,2))];
 
-    % lay the bar out in the plane closest to the camera, depth sorting beats uistack
-    [zBar, zBack] = barPlanes(ax);
-    sB.lastZ = [zBar, zBack];
+    % lay the bar out in front of the box, depth sorting beats uistack
+    [wBar, wBack] = barPlanes(ax);
+    sB.lastZ = [wBar, wBack];
 
     % pick the unit from 10% of the map width, so that the bar never says
     % 10000 nm - in fixed length mode take it from sB.length instead
     goodValues = [1 2 5 10 15 20 25 50 75 100 125 150 200 500 750]; % Possible values for scale bar length
     if isnan(sB.length)
-      [sBLength, sBUnit, factor] = switchUnit(0.1*abs(diff(dx)), sB.scanUnit);
+      [sBLength, sBUnit, factor] = switchUnit(0.1*diff(dx), sB.scanUnit);
       [~,ind] = min(abs(sBLength-goodValues));
-      [rulerLength, labelStr] = barOf(goodValues(ind), sBUnit, factor*sign(diff(dx)));
+      [rulerLength, labelStr] = barOf(goodValues(ind), sBUnit, factor);
     else
       [barLength, sBUnit, factor] = switchUnit(sB.length, sB.scanUnit);
-      [rulerLength, labelStr] = barOf(barLength, sBUnit, factor*sign(diff(dx)));
+      [rulerLength, labelStr] = barOf(barLength, sBUnit, factor);
     end
 
     % skip the expensive re-layout when none of its inputs changed
-    key = {iE, iN, dx, dy, zBar, zBack, rulerLength, labelStr, sB.lineColor, ...
+    key = {R, dx, dy, wBar, wBack, rulerLength, labelStr, sB.lineColor, ...
       sB.backgroundColor, sB.backgroundAlpha, sB.location, ...
       rfScreen, sB.refFrameLabels};
     if ~forceLayout && isequal(key, sB.lastLayout)
@@ -323,36 +323,31 @@ methods
 
     % data units per pixel, the same along both screen directions of an equal axes
     axPos = getpixelposition(ax);
-    s = max(abs(diff(dx))/axPos(3), abs(diff(dy))/axPos(4));
+    s = max(diff(dx)/axPos(3), diff(dy)/axPos(4));
 
     [textWidth, textHeight] = labelSize;
-    textHeight = textHeight * sign(diff(dy));
 
     % fall back to a size proportional to the map when the extent is not measurable
     bogus = isnan(textHeight) || isnan(textWidth) || ...
-      abs(textHeight) > 0.4*abs(diff(dy)) || abs(textWidth) > 0.9*abs(diff(dx));
+      textHeight > 0.4*diff(dy) || textWidth > 0.9*diff(dx);
     if bogus
       textWidth = 0;
-      textHeight = 0.05 * abs(diff(dy)) * sign(diff(dy));
+      textHeight = 0.05 * diff(dy);
     end
-    gapY = textHeight/3;
-    gapX = abs(gapY) * sign(diff(dx));
-
-    % screen orientation of the data axes, as signs
-    sX = sign(diff(dx)); sY = sign(diff(dy));
+    gap = textHeight/3;
 
     % the indicator is laid out in screen relative lengths around its own origin
     if showRF
       [rfV, rfF, rfLine, rfLabPos, rfLabStr, rfBox] = ...
-        refFrameGeometry(rfScreen, sB.refFrameLabels, abs(textHeight));
+        refFrameGeometry(rfScreen, sB.refFrameLabels, textHeight);
       triadWidth  = rfBox(2) - rfBox(1);
       triadHeight = rfBox(4) - rfBox(3);
 
       % next to the indicator the bar is a round length no wider than it
-      if isnan(sB.length) && abs(rulerLength) > triadWidth
+      if isnan(sB.length) && rulerLength > triadWidth
         [sBLength, sBUnit, factor] = switchUnit(triadWidth, sB.scanUnit);
         [rulerLength, labelStr] = barOf(goodValues(max([1, find(goodValues <= sBLength, 1, 'last')])), ...
-          sBUnit, factor*sign(diff(dx)));
+          sBUnit, factor);
         set(sB.txt,'string',labelStr)
         if ~bogus, textWidth = labelSize; end
       end
@@ -363,32 +358,32 @@ methods
     % box position - the location picks which corner of the map the box is
     % anchored to, and it is sized to fit whichever of bar or label is wider
     % the indicator gets a gap above it and twice the gap at its sides
-    boxWidth  = (max([abs(rulerLength),textWidth,triadWidth + 2*abs(gapX)*showRF]) + 2*abs(gapX)) * sign(diff(dx));
+    boxWidth  = max([rulerLength,textWidth,triadWidth + 2*gap*showRF]) + 2*gap;
     if showRF
-      boxHeight = 5*gapY + textHeight + triadHeight * sY;
+      boxHeight = 5*gap + textHeight + triadHeight;
     else
-      boxHeight = 3*gapY + textHeight;
+      boxHeight = 3*gap + textHeight;
     end
 
     if any(strcmp(sB.location,{'sw','nw'}))
-      boxx = dx(1) + gapX;
+      boxx = dx(1) + gap;
     else
-      boxx = dx(2) - gapX - boxWidth;
+      boxx = dx(2) - gap - boxWidth;
     end
 
     if any(strcmp(sB.location,{'sw','se'}))
-      boxy = dy(1) + gapY;
+      boxy = dy(1) + gap;
     else
-      boxy = dy(2) - gapY - boxHeight;
+      boxy = dy(2) - gap - boxHeight;
     end
 
     % Make bounding box. It goes into the plane behind the bar, which is
-    % what puts it underneath everything else drawn here - see nearPlane.
+    % what puts it underneath everything else drawn here - see barPlanes.
     verts = [boxx, boxy;
       boxx, boxy + boxHeight;
       boxx + boxWidth, boxy + boxHeight;
       boxx + boxWidth, boxy];
-    set(sB.shadow,'Vertices', cP(verts,zBack), ...
+    set(sB.shadow,'Vertices', cP(verts,wBack), ...
       'Faces', [1 2 3 4], ...
       'FaceColor', sB.backgroundColor , 'EdgeColor', 'none', ...
       'LineWidth', 1, 'FaceAlpha', sB.backgroundAlpha);
@@ -398,21 +393,21 @@ methods
     set(sB.txt,...
       'HorizontalAlignment', 'Center',...
       'VerticalAlignment', 'baseline','color',sB.lineColor,...
-      'Position', cP([boxx+boxWidth/2,boxy+3*gapY]));
+      'Position', cP([boxx+boxWidth/2,boxy+3*gap]));
 
     % create line as a patch, centered in the box, in front of the bounding box
     rulerStart = boxx + (boxWidth - rulerLength)/2;
-    set(sB.ruler,'Vertices',cP([rulerStart, boxy+gapY; ...
-      rulerStart, boxy+2*gapY; ...
-      rulerStart + rulerLength, boxy + 2*gapY; ...
-      rulerStart + rulerLength, boxy + gapY]), ...
+    set(sB.ruler,'Vertices',cP([rulerStart, boxy+gap; ...
+      rulerStart, boxy+2*gap; ...
+      rulerStart + rulerLength, boxy + 2*gap; ...
+      rulerStart + rulerLength, boxy + gap]), ...
       'Faces',[1 2 3 4], 'FaceColor',sB.lineColor, 'FaceAlpha',1);
 
     % place the indicator centered in its own bounding box, one gap above the label
     if showRF
 
-      originU = boxx + boxWidth/2 - (rfBox(1) + rfBox(2))/2 * sX;
-      originV = boxy + 4*gapY + textHeight - rfBox(3) * sY;
+      originU = boxx + boxWidth/2 - (rfBox(1) + rfBox(2))/2;
+      originV = boxy + 4*gap + textHeight - rfBox(3);
 
       set(sB.rfArrows,'Vertices',mapRF(rfV),'Faces',rfF,...
         'FaceColor',sB.lineColor,'EdgeColor','none','FaceAlpha',1);
@@ -435,20 +430,21 @@ methods
 
     else
       set(sB.rfArrows,'Faces',1,'Vertices',cP([NaN NaN]));
-      set(sB.rfSymbol,'XData',NaN,'YData',NaN,'ZData',zBar);
+      symXY = cP([NaN NaN]);
+      set(sB.rfSymbol,'XData',symXY(1),'YData',symXY(2),'ZData',symXY(3:end));
       set(sB.rfLabels,'String','','Position',[NaN,NaN]);
     end
 
     sB.setOnTop;
 
-    function pos = cP(pos,z)
-      % from screen east, north and, in a depth sorted axes, the plane of
-      % the bar - or the one just behind it, for the translucent background
-      % - to data coordinates
-      if nargin < 2, z = zBar; end
-      if ~isempty(z), pos(:,3) = z; end
-      p = [iE, iN, iD];
-      pos(:,p(1:size(pos,2))) = pos;
+    function pos = cP(pos,w)
+      % from screen to data coordinates - in a depth sorted axes in the
+      % plane of the bar, or the one just behind it for the translucent
+      % background
+      if nargin < 2, w = wBar; end
+      if ~isempty(w), pos(:,3) = w; end
+      n = size(pos,2);
+      pos = pos * R(1:n,1:n);
     end
 
     function [w,h] = labelSize
@@ -459,7 +455,7 @@ methods
 
     function pos = mapRF(pos)
       % from screen relative indicator coordinates to data coordinates
-      pos = cP([originU + pos(:,1)*sX, originV + pos(:,2)*sY]);
+      pos = cP(pos + [originU, originV]);
     end
 
   end
@@ -469,52 +465,56 @@ end
 end
 
 function [rulerLength, labelStr] = barOf(len, unit, factor)
-% the ruler in signed data units and its label
+% the ruler in data units and its label
 if strcmpi(unit,'um'), unit = '$\mu$m'; end
 rulerLength = len * factor;
 labelStr = ['\rm{\textbf{' num2str(len) ' ' unit '}}'];
 end
 
-function [z, zBack] = barPlanes(ax)
-% The planes the scale bar is laid out in - both empty as long as the axes
+function [w, wBack] = barPlanes(ax)
+% The depth the scale bar is laid out at - both empty as long as the axes
 % draws in child order, which is the case for a plain flat map.
 %
-% Then the bar needs no z coordinate at all: MATLAB draws the children in
-% order, so the background box, created first, ends up behind the bar and
-% the arrows all by itself. Giving the bar a z coordinate in that situation
-% would do active harm - it makes the axes three dimensional, MATLAB
-% switches SortMethod from 'childorder' to 'depth', and from then on the
-% whole map is rendered by depth. Among other things the box, being
+% Then the bar needs no depth at all: MATLAB draws the children in order,
+% so the background box, created first, ends up behind the bar and the
+% arrows all by itself. Giving the bar a third coordinate in that
+% situation would do active harm - it makes the axes three dimensional,
+% MATLAB switches SortMethod from 'childorder' to 'depth', and from then
+% on the whole map is rendered by depth. Among other things the box, being
 % transparent, is then composited over the opaque bar and arrows lying at
 % the same depth and dims them.
 %
 % Once the axes really is depth sorted - because something with a z extent
-% was plotted on top of the map, crystal shapes say - child order no longer
-% decides anything and the bar has to place itself in depth:
+% was plotted on top of the map, crystal shapes say, or the map is seen
+% from anywhere but along z - child order no longer decides anything and
+% the bar has to place itself in depth:
 %
-%  z     - the end of the data axis closest to the viewing direction that
-%          is nearest to the camera, so that nothing can be drawn in front
-%          of the bar. Read from the camera rather than from the plotting
-%          convention, since it is the camera that decides the depth order.
-%  zBack - just behind it, for the translucent background box, which has to
+%  w     - the corner of the axes box closest to the camera, so that
+%          nothing can be drawn in front of the bar. Read from the camera
+%          rather than from the plotting convention, since it is the
+%          camera that decides the depth order.
+%  wBack - just behind it, for the translucent background box, which has to
 %          be separated from the opaque graphics it sits behind for the
-%          reason above. One thousandth of the range is enough for the
-%          depth buffer to tell the two planes apart, and little enough
-%          that nothing else fits in between.
+%          reason above. One thousandth of the depth of the box is enough
+%          for the depth buffer to tell the two planes apart, and little
+%          enough that nothing else fits in between.
 
-if strcmp(ax.SortMethod,'childorder')
-  z = []; zBack = [];
+% the switch to depth sorting follows a view change only at the next
+% render, so a view off the z axis counts as depth sorted already
+camDir = ax.CameraPosition - ax.CameraTarget;
+if strcmp(ax.SortMethod,'childorder') && norm(camDir(1:2)) < 1e-6*norm(camDir)
+  w = []; wBack = [];
   return
 end
 
-camDir = ax.CameraPosition - ax.CameraTarget;
-[~,iD] = max(abs(camDir));
-lims = [xlim(ax); ylim(ax); zlim(ax)];
-dz = lims(iD,:);
-if camDir(iD) > 0
-  z = dz(2); zBack = z - 1e-3*diff(dz);
-else
-  z = dz(1); zBack = z + 1e-3*diff(dz);
+d = boxCorners(ax) * camDir.' / norm(camDir);
+w = max(d); wBack = w - 1e-3*(max(d) - min(d));
+
 end
 
+function c = boxCorners(ax)
+% the eight corners of the axes box
+[i,j,k] = ndgrid(1:2);
+lims = [xlim(ax); ylim(ax); zlim(ax)];
+c = [lims(1,i(:)); lims(2,j(:)); lims(3,k(:))].';
 end
