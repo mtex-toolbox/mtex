@@ -48,10 +48,10 @@ end
 
 %% 3. chain census
 
-expect(size(gB.F,1),1018,'number of segments');
+expect(size(gB.F,1),1017,'number of segments');
 expect(max(gB.chainId),168,'number of chains');
-expect(max(gB.chainSize),63,'longest chain');
-expect(nnz(gB.chainSize == 1),32,'singleton chains');
+expect(max(gB.chainSize),65,'longest chain');
+expect(nnz(gB.chainSize == 1),34,'singleton chains');
 expect(numel(gB.junctionId),97,'junctions');
 expect(length(gB.triplePoints),67,'triple points');
 expect(nnz(gB.isClosed & gB.isChainStart),22,'closed chains');
@@ -74,9 +74,9 @@ pos = ebsd.pos;
 mid = gB.midPoint;
 dir = gB.allV(gB.F(:,2)) - gB.allV(gB.F(:,1));
 
-% a segment straightened through a filled cell can have both pixels on one
-% side, and the zero-length segment of a split quadruple point has no side
-isInner = gB.ebsdId(:,1) > 0 & gB.segLength > 0;
+% only the common edges of two neighbouring pixels: a segment straightened
+% through a filled cell can pass either pixel on either side
+isInner = gB.ebsdId(:,1) > 0 & gB.prop.pixelDist > 0;
 side = @(k) dot(cross(dir(isInner),pos(id2ind(gB.ebsdId(isInner,k))) - mid(isInner)),gB.N);
 if any(side(1) <= 0 & side(2) >= 0)
   error('grainId(:,1) is not on the left for every inner segment');

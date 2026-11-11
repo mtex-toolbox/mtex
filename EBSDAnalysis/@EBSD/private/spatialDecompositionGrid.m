@@ -71,6 +71,10 @@ function out = spatialDecompositionGrid(ebsd,g,varargin)
 %             notIndexed sites that came from empty cells
 %  ij       - nEbsd × 2 axial indices (debug)
 %  inFill   - @(p) > 0 inside the filled cells, < 0 outside, [] without any
+%  fill     - the filled cells as a mask over the padded raster
+%  fillTest - @(mask) the inFill of the cells of a mask over the raster
+%  site2cell - the raster cell of every site
+%  cell2pos - @(c) position of the raster cell c = [i j], also between the cells
 %  with kindsOnly: kinds, a categorical per pixel (pore, pocket, crack, void,
 %  speck, indexed), and parts, a table of the thick parts with their features
 
@@ -285,24 +289,20 @@ slot = [ij2slotP(ij(idxSiteEbsd,:)); find(bigHoleP); find(extBandP); find(dummyP
 % nearest other cell centre minus the one to the nearest filled. On a rigid
 % grid both are among the four lattice points around p, otherwise searched
 % among the filled cells and the others within two cells of them
-if ~any(fillP)
-  inFill = [];
-elseif isRigid
+if isRigid
   p0 = reconstructPos([0 0]);
   M = reconstructPos([1 0; 0 1]) - p0;
-  inFill = @(p) rigidInFill(p,p0,M,fillP,szP,ijmin-padding-1);
+  fillTest = @(f) @(p) rigidInFill(p,p0,M,f(:),szP,ijmin-padding-1);
 else
-  ringP = binaryDilate(binaryDilate(fillP, stencil, szP), stencil, szP) & ~fillP;
-  fXY = cells2posId(fillP, szP, padding, ijmin, ijsz, reconstructPos, ij2ebsd, pos);
-  oXY = cells2posId(ringP, szP, padding, ijmin, ijsz, reconstructPos, ij2ebsd, pos);
-  nearF = nearestId(fXY);
-  nearO = nearestId(oXY);
-  inFill = @(p) vecnorm(p - oXY(nearO(p),:),2,2) - vecnorm(p - fXY(nearF(p),:),2,2);
+  fillTest = @(f) scatteredInFill(f(:),stencil,szP,padding,ijmin,ijsz,reconstructPos,ij2ebsd,pos);
 end
+inFill = [];
+if any(fillP), inFill = fillTest(fillP); end
 
 out = struct('V',V,'F',F,'I_FD',I_FD, ...
              'isNotIdx',isNotIdx,'site2id',site2id,'ij',ij,'dxy',dxy,'epsilon',epsilon, ...
-             'inFill',inFill);
+             'inFill',inFill,'fill',reshape(fillP,szP),'fillTest',fillTest,'site2cell',slot, ...
+             'cell2pos',@(c) reconstructPos(c + (ijmin - padding - 1)));
 end
 
 % ===========================================================================
@@ -380,6 +380,16 @@ c = isIndexedP(x) | all(dil(x + o),2) & inScanP(x);
 end
 
 % ===========================================================================
+function inFill = scatteredInFill(fillP,stencil,szP,padding,ijmin,ijsz,reconstructPos,ij2ebsd,pos)
+% inFill on a distorted grid, searched among the filled cells and the others within two cells of them
+ringP = binaryDilate(binaryDilate(fillP, stencil, szP), stencil, szP) & ~fillP;
+fXY = cells2posId(fillP, szP, padding, ijmin, ijsz, reconstructPos, ij2ebsd, pos);
+oXY = cells2posId(ringP, szP, padding, ijmin, ijsz, reconstructPos, ij2ebsd, pos);
+nearF = nearestId(fXY);
+nearO = nearestId(oXY);
+inFill = @(p) vecnorm(p - oXY(nearO(p),:),2,2) - vecnorm(p - fXY(nearF(p),:),2,2);
+end
+
 function d = rigidInFill(p,p0,M,fillP,szP,ij0)
 % inFill on the rigid grid p0 + [i j]*M from the four lattice points around p,
 % +-Inf where they are all of one kind
