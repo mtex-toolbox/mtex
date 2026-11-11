@@ -15,8 +15,11 @@ function [V,F,I_FD,V0] = straightenInFill(V,F,I_FD,grainId,out)
 % pulled taut, so it is straight between the cell corners it bends around,
 % and every junction sits where the sum of the distances to the first bends
 % of its chains is least, which makes its chains meet at 120 degrees unless
-% a cell is in the way. Every measured pixel stays in its grain, no boundary
-% crosses another one, and the outer boundary never leaves the closing.
+% a cell is in the way. A region of filled cells at least half of which lie
+% in a gap one cell wide between measured pixels of two grains is a boundary
+% the measurement missed, as where the beam spans two grains; it keeps its
+% bisectors. Every measured pixel stays in its grain, no boundary crosses
+% another one, and the outer boundary never leaves the closing.
 %
 % Input
 %  V,F,I_FD - vertices, segments and segment × pixel incidence
@@ -27,7 +30,10 @@ function [V,F,I_FD,V0] = straightenInFill(V,F,I_FD,grainId,out)
 %  V,F,I_FD - with the boundary segments split where they enter the filled cells
 %  V0       - the vertices before they moved, every segment on the bisector of its pixels
 
+out = missedBoundaries(out,grainId);
 inFill = out.inFill;
+V0 = V;
+if isempty(inFill), return; end
 
 % segments between two grains or at the outer boundary
 [f,d] = find(I_FD);
@@ -458,6 +464,41 @@ has = any(lo < 1 | hi > G.sz,2);
 lo = min(max(lo,1),G.sz); hi = min(max(hi,1),G.sz);
 q = @(i,j) G.sum(i + 1 + j*(G.sz(1)+1));
 has = has | q(hi(:,1),hi(:,2)) - q(lo(:,1)-1,hi(:,2)) - q(hi(:,1),lo(:,2)-1) + q(lo(:,1)-1,lo(:,2)-1) > 0;
+end
+
+function out = missedBoundaries(out,grainId)
+% the fill without the regions mostly in gaps one cell wide between two grains
+
+fill = out.fill; sz = size(fill);
+k = find(~out.isNotIdx & isfinite(out.site2id(1:numel(out.isNotIdx))));
+G = zeros(sz); G(out.site2cell(k)) = grainId(k);
+
+% the neighbours across an edge and, on a square grid, across a corner
+O = [1 0; 0 1; 1 1; 1 -1];
+m = round(sz / 2);
+d = vecnorm(out.cell2pos(m + O) - out.cell2pos(m),2,2);
+n = O(:,1) + O(:,2) * sz(1);
+c = find(fill);
+thin = false(size(c));
+for a = find(d < 1.5 * min(d)).'
+  g1 = G(c - n(a)); g2 = G(c + n(a));
+  thin = thin | (g1 > 0 & g2 > 0 & g1 ~= g2);
+end
+
+% the regions: filled cells joined across an edge
+id = zeros(sz); id(c) = 1:numel(c);
+e = zeros(0,2);
+for a = find(d < 1.1 * min(d)).'
+  t = id(c + n(a));
+  e = [e; find(t > 0) t(t > 0)]; %#ok<AGROW>
+end
+r = conncomp(graph(e(:,1),e(:,2),[],numel(c))).';
+share = accumarray(r,thin) ./ accumarray(r,1);
+fill(c(share(r) >= 0.5)) = false;
+out.fill = fill;
+out.inFill = [];
+if any(fill(:)), out.inFill = out.fillTest(fill); end
+
 end
 
 function G = fillGeometry(out)
