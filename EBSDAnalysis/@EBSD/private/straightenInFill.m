@@ -296,14 +296,17 @@ V(J,:) = G.toP(Xj);
 end
 
 function [X,nb,dirty,nP] = tighten(X,nb,dirty,nP,G)
-% every dirty point is dropped or replaced by the cell corners between its neighbours, until none is left
+% every dirty point is dropped or replaced by the cell corners between its neighbours, until none is
+% left or, where points take turns on a row of collinear corners, none fewer for 50 passes
 
 rank = @(i) mod(i * 0.6180339887498949,1);
+best = inf; stall = 0;
 while true
 
   % the dirty points before their dirty neighbours in a fixed shuffle, so no two are neighbours
   v = find(dirty);
-  if isempty(v), break; end
+  if numel(v) < best, best = numel(v); stall = 0; else, stall = stall + 1; end
+  if isempty(v) || stall > 50, break; end
   p = nb(v,1); n = nb(v,2);
   s = (~dirty(p) | rank(v) > rank(p)) & (~dirty(n) | rank(v) > rank(n));
   v = v(s); p = p(s); n = n(s);
