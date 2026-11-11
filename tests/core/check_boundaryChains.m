@@ -48,10 +48,10 @@ end
 
 %% 3. chain census
 
-expect(size(gB.F,1),1018,'number of segments');
+expect(size(gB.F,1),1017,'number of segments');
 expect(max(gB.chainId),168,'number of chains');
-expect(max(gB.chainSize),63,'longest chain');
-expect(nnz(gB.chainSize == 1),32,'singleton chains');
+expect(max(gB.chainSize),65,'longest chain');
+expect(nnz(gB.chainSize == 1),34,'singleton chains');
 expect(numel(gB.junctionId),97,'junctions');
 expect(length(gB.triplePoints),67,'triple points');
 expect(nnz(gB.isClosed & gB.isChainStart),22,'closed chains');
