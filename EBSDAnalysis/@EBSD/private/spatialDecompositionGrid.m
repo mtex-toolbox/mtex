@@ -71,6 +71,8 @@ function out = spatialDecompositionGrid(ebsd,g,varargin)
 %             notIndexed sites that came from empty cells
 %  ij       - nEbsd × 2 axial indices (debug)
 %  inFill   - @(p) > 0 inside the filled cells, < 0 outside, [] without any
+%  fill     - the filled cells as a mask over the padded raster
+%  cell2pos - @(c) position of the raster cell c = [i j], also between the cells
 %  with kindsOnly: kinds, a categorical per pixel (pore, pocket, crack, void,
 %  speck, indexed), and parts, a table of the thick parts with their features
 
@@ -302,7 +304,8 @@ end
 
 out = struct('V',V,'F',F,'I_FD',I_FD, ...
              'isNotIdx',isNotIdx,'site2id',site2id,'ij',ij,'dxy',dxy,'epsilon',epsilon, ...
-             'inFill',inFill);
+             'inFill',inFill,'fill',reshape(fillP,szP), ...
+             'cell2pos',@(c) reconstructPos(c + (ijmin - padding - 1)));
 end
 
 % ===========================================================================
