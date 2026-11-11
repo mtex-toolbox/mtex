@@ -474,7 +474,7 @@ function out = missedBoundaries(out,grainId)
 
 fill = out.fill; sz = size(fill);
 k = find(~out.isNotIdx & isfinite(out.site2id(1:numel(out.isNotIdx))));
-G = zeros(sz); G(out.site2cell(k)) = grainId(k);
+G = zeros(sz); G(out.site2cell(k)) = grainId(out.site2id(k));
 
 % the neighbours across an edge and, on a square grid, across a corner
 O = [1 0; 0 1; 1 1; 1 -1];
