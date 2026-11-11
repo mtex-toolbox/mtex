@@ -343,9 +343,9 @@ end
     qV = qV(qV ~= reshape(repmat(quadPoints.',8,1),2,[]));
     qV = reshape(qV,4,[]).';
         
-    % compute angle with respect to quadruple point
-    qOmega = reshape(atan2(V(qV,1) - V(repmat(quadPoints,1,4),1),...
-      V(qV,2) - V(repmat(quadPoints,1,4),2)),[],4);
+    % the angles about the quadruple point on the lattice, before the straightening moved it
+    qOmega = reshape(atan2(V0(qV,1) - V0(repmat(quadPoints,1,4),1),...
+      V0(qV,2) - V0(repmat(quadPoints,1,4),2)),[],4);
       
     % sort the angles
     [~,qOrder] = sort(qOmega,2);
