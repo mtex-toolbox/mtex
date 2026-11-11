@@ -71,9 +71,9 @@ boundaryCounts = table(length(grains.boundary),...
 
 %% Draw the subgrain-boundary network
 %
-% The table reports 7,905 boundary segments between grains and 19,844
-% inner boundary segments. Of the latter, 19,605 satisfy the strict
-% low-angle selection and 239 exceed 10 degrees for the topological reason
+% The table reports 7,838 boundary segments between grains and 19,850
+% inner boundary segments. Of the latter, 19,612 satisfy the strict
+% low-angle selection and 238 exceed 10 degrees for the topological reason
 % above. Default boundary smoothing merges the segments of the network, so
 % these are post-smoothing segment counts rather than physical lengths.
 %

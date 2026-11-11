@@ -226,7 +226,7 @@ polarplot(omega,cumplE,plOpt{:})
 parorMinimum = [min(cumplF),min(cumplE)]
 
 %%
-% The forsterite and enstatite minima are 0.7113 and 0.7208, a difference of
+% The forsterite and enstatite minima are 0.7118 and 0.7210, a difference of
 % about 0.01. Both phases therefore have a moderate projection anisotropy of
 % similar strength.
 %
@@ -252,8 +252,8 @@ harmonicDirectionsEn = ...
   [mod(maxposen,pi),mod(minposen-pi/2,pi)] ./ degree
 
 %%
-% For forsterite the two fitted directions are 70.4 and 74.9 degrees; for
-% enstatite they are 87.1 and 88.8 degrees. The two directions of each phase
+% For forsterite the two fitted directions are 70.6 and 74.8 degrees; for
+% enstatite they are 87.5 and 88.9 degrees. The two directions of each phase
 % lie within a few degrees, so both fabrics are close to orthorhombic in this
 % section. The 17-degree difference between the preferred longest projections
 % of the two phases is the more interesting comparison.
@@ -320,7 +320,7 @@ surforSummary = table(pairName,surforMinimum,surforLongDirection,...
 % not the forsterite-forsterite boundary at 0.76. What sets the
 % forsterite-forsterite boundary apart is its direction rather than its
 % strength: its long direction is 61 degrees, whereas the other three lie
-% between 73 and 83 degrees.
+% between 73 and 85 degrees.
 
 %% Characteristic shape
 %
@@ -364,9 +364,9 @@ characteristicCaliperAngle = [...
   angle(shapeEF.caliper('longest'),shapeEF.caliper('shortest'))] ./ degree
 
 %%
-% The two single-phase shapes give 76.3 and 85.1 degrees, skewed from a
-% right angle by about 13.7 and 4.9 degrees. The mixed forsterite-enstatite
-% shape is nearly symmetric at 86.0 degrees.
+% The two single-phase shapes give 75.9 and 79.7 degrees, skewed from a
+% right angle by about 14.1 and 10.3 degrees. The mixed forsterite-enstatite
+% shape is nearly symmetric at 86.8 degrees.
 %
 % These values describe this map. Whether a difference between specimens is
 % larger than sampling variation requires replicate maps, subdivision, or a

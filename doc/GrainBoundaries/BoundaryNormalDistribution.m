@@ -192,7 +192,7 @@ twinGBCDSummary = table(twinPeak,...
   'VariableNames',{'peakDensity','distanceToTwinPlaneDegree'})
 
 %%
-% The printed angular distance is 2.6 degrees, against 5.5 degrees for the
+% The printed angular distance is 2.7 degrees, against 5.5 degrees for the
 % angle-only split. Conditioning on the complete misorientation sharpens the
 % habit-plane result.
 

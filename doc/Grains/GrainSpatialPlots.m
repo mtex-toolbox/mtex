@@ -115,7 +115,7 @@ maxAspectRatio = max(grains.aspectRatio)
 numClipped = nnz(grains.aspectRatio > 5)
 
 %%
-% The printed maximum rounds to 13, and the count confirms that nine grains
+% The printed maximum rounds to 13, and the count confirms that ten grains
 % lie above the chosen range. They are no longer distinguishable from one
 % another, so every fixed colour range trades detail in the extremes for
 % contrast through the rest.
@@ -246,7 +246,7 @@ maxDeparture = max(angle(grains(id).meanOrientation,...
   ebsdMaxGrain('indexed').orientations)) ./ degree
 
 %%
-% Most of the 3201 measurements in the displayed summary have the same shade
+% Most of the 3199 measurements in the displayed summary have the same shade
 % of blue. The narrow neck on the left is visibly lighter: its lattice is
 % bent, and the printed maximum departure from the grain mean is 6 degrees.
 % <GrainOrientationParameters.html Orientation Parameters> measures this

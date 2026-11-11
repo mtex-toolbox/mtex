@@ -75,7 +75,7 @@ mori = gB.misorientation;
 %%
 % <orientation.axis.html |axis|> selects the smallest-angle
 % symmetry-equivalent representative and returns its axis in the crystal
-% frame. The summary reports one axis for each of the 1391 boundary
+% frame. The summary reports one axis for each of the 1389 boundary
 % segments.
 
 axesCrystal = axis(mori)

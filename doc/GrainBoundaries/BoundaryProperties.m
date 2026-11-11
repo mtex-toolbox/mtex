@@ -287,7 +287,7 @@ componentSummary = table(length(gBTwin),numTwinComponents,...
   'VariableNames',{'twinSegments','components'})
 
 %%
-% The 1650 selected segments form 55 components. A twin lamella crossing a
+% The 1649 selected segments form 55 components. A twin lamella crossing a
 % grain is one long component. A few isolated segments that happen to meet
 % the twin criterion form a short component, which is why component labels
 % are useful.

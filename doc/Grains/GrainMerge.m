@@ -71,7 +71,7 @@ hold off
 
 %%
 % The white traces follow the narrow lamellae. With this boundary sampling,
-% 750 of 1298 magnesium-to-magnesium segments pass the five-degree test.
+% 749 of 1294 magnesium-to-magnesium segments pass the five-degree test.
 % A segment count is not a count of physical twins, and smoothing the same
 % traces can change it. The tolerance is also an analyst
 % choice: these are candidate twin boundaries, not proof of the mechanism or
