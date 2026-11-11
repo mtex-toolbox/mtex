@@ -51,7 +51,7 @@ hold off
 % reconstructed grain.
 %
 % At this scale the pseudo symmetry is invisible. The correction at the end
-% of this page moves 275 of the 152345 forsterite measurements, under two
+% of this page moves 225 of the 152345 forsterite measurements, under two
 % tenths of a percent, and it does so in patches of a few dozen pixels
 % sitting inside much larger host grains. The rest of this page therefore
 % finds those patches by their misorientation, and zooms into one of them

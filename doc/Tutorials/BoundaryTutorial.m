@@ -61,7 +61,7 @@ plot(grains,grainColor)
 gB = grains.boundary
 
 %% Reading the boundary summary
-% The summary reports 1413 segments after smoothing. Of these, 1366 lie
+% The summary reports 1414 segments after smoothing. Of these, 1367 lie
 % between two magnesium grains and 47 form the outer rim, which appears in
 % the |notIndexed| row because there is no grain on its other side.
 %

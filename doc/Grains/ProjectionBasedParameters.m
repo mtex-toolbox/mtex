@@ -226,7 +226,7 @@ polarplot(omega,cumplE,plOpt{:})
 parorMinimum = [min(cumplF),min(cumplE)]
 
 %%
-% The forsterite and enstatite minima are 0.7137 and 0.7226, a difference of
+% The forsterite and enstatite minima are 0.7113 and 0.7208, a difference of
 % about 0.01. Both phases therefore have a moderate projection anisotropy of
 % similar strength.
 %
@@ -252,8 +252,8 @@ harmonicDirectionsEn = ...
   [mod(maxposen,pi),mod(minposen-pi/2,pi)] ./ degree
 
 %%
-% For forsterite the two fitted directions are 70.2 and 74.5 degrees; for
-% enstatite they are 87.5 and 88.8 degrees. The two directions of each phase
+% For forsterite the two fitted directions are 70.4 and 74.9 degrees; for
+% enstatite they are 87.1 and 88.8 degrees. The two directions of each phase
 % lie within a few degrees, so both fabrics are close to orthorhombic in this
 % section. The 17-degree difference between the preferred longest projections
 % of the two phases is the more interesting comparison.
@@ -316,11 +316,11 @@ surforSummary = table(pairName,surforMinimum,surforLongDirection,...
 % The four curves differ in both shape and direction. The contact between the
 % two pyroxenes, enstatite and diopside, is the roundest, with a minimum at
 % 0.88 of its maximum. It is the least anisotropic boundary population in
-% this rock. The most anisotropic is the forsterite-diopside contact at 0.70,
-% not the forsterite-forsterite boundary at 0.77. What sets the
+% this rock. The most anisotropic is the forsterite-diopside contact at 0.69,
+% not the forsterite-forsterite boundary at 0.76. What sets the
 % forsterite-forsterite boundary apart is its direction rather than its
 % strength: its long direction is 61 degrees, whereas the other three lie
-% between 74 and 89 degrees.
+% between 73 and 83 degrees.
 
 %% Characteristic shape
 %
@@ -364,9 +364,9 @@ characteristicCaliperAngle = [...
   angle(shapeEF.caliper('longest'),shapeEF.caliper('shortest'))] ./ degree
 
 %%
-% The two single-phase shapes give 77.5 and 82.8 degrees, skewed from a
-% right angle by about 12.5 and 7.2 degrees. The mixed forsterite-enstatite
-% shape is nearly symmetric at 85.5 degrees.
+% The two single-phase shapes give 76.3 and 85.1 degrees, skewed from a
+% right angle by about 13.7 and 4.9 degrees. The mixed forsterite-enstatite
+% shape is nearly symmetric at 86.0 degrees.
 %
 % These values describe this map. Whether a difference between specimens is
 % larger than sampling variation requires replicate maps, subdivision, or a

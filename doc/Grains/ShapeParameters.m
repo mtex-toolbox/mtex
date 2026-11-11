@@ -121,7 +121,7 @@ largestForsteriteArea = max(forsteriteArea)
 largestForsteriteFraction = largestForsteriteArea ./ sum(grains.area)
 
 %%
-% The largest forsterite section covers 2.964 mm² and accounts for 11.93
+% The largest forsterite section covers 2.938 mm² and accounts for 11.83
 % percent of the analysed interior-grain area. The many small grains have
 % not gone away; area weighting has changed how much each one counts.
 
@@ -184,7 +184,7 @@ plot(grains,grains.shapeFactor)
 mtexColorbar('title','shape factor')
 
 %%
-% The minimum, median, and maximum are 1.048, 1.197, and 1.815. In the map,
+% The minimum, median, and maximum are 1.050, 1.183, and 1.961. In the map,
 % the high-value yellow grains are visibly lobed or elongated, while compact
 % grains are dark blue. The measure cannot tell those causes apart: a smooth
 % ellipse and a round grain with a frayed boundary can have the same value.
@@ -227,8 +227,8 @@ plot(grains,grains.paris)
 mtexColorbar('title','paris')
 
 %%
-% The median |paris| is 3.62 percent, its maximum is 45.45, and its
-% correlation with |shapeFactor| is 0.482. The two measures select
+% The median |paris| is 3.34 percent, its maximum is 43.77, and its
+% correlation with |shapeFactor| is 0.449. The two measures select
 % different extreme grains, among the complete grains and in the full
 % plotted map with its truncated edge grains alike. Their partial agreement
 % is the point: |shapeFactor| counts elongation as a departure from a
@@ -273,7 +273,7 @@ hold off
 
 %%
 % The points scatter around the fitted line because individual grains are
-% not scaled copies of one shape. The fitted slope, 1.082, is the estimated
+% not scaled copies of one shape. The fitted slope, 1.077, is the estimated
 % perimeter-area fractal dimension.
 
 fractalDimension = ab(1)
@@ -294,8 +294,8 @@ for iter = [0 5 25]
 end
 
 %%
-% The pixel staircase gives 1.114 because grid corners add artificial
-% length. Five steps give 1.090 and 25 steps 1.081. The estimate thus
+% The pixel staircase gives 1.113 because grid corners add artificial
+% length. Five steps give 1.084 and 25 steps 1.076. The estimate thus
 % measures the smoothing as much as the rock.
 % Compare specimens only after matching the pixel resolution, grain-size
 % cutoff, segmentation, and smoothing procedure.

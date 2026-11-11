@@ -196,7 +196,7 @@ mtexColorbar('title','axis-to-mean-trace angle (°)');
 % The flicker is suppressed, so nearby segments on one boundary now carry
 % similar colours. The values differ from boundary to boundary, which is
 % the information the flicker was hiding. The median angle is 43.2 degrees,
-% and 10.9 percent of the segments lie below 20 degrees. The misorientation
+% and 11.0 percent of the segments lie below 20 degrees. The misorientation
 % axes are therefore mostly not aligned with the traces in this section.
 
 medianAxisTraceAngle = median(meanAxisTraceAngle)
@@ -287,7 +287,7 @@ componentSummary = table(length(gBTwin),numTwinComponents,...
   'VariableNames',{'twinSegments','components'})
 
 %%
-% The 1653 selected segments form 55 components. A twin lamella crossing a
+% The 1650 selected segments form 55 components. A twin lamella crossing a
 % grain is one long component. A few isolated segments that happen to meet
 % the twin criterion form a short component, which is why component labels
 % are useful.

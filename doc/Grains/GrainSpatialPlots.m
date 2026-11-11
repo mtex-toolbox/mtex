@@ -246,7 +246,7 @@ maxDeparture = max(angle(grains(id).meanOrientation,...
   ebsdMaxGrain('indexed').orientations)) ./ degree
 
 %%
-% Most of the 3198 measurements in the displayed summary have the same shade
+% Most of the 3201 measurements in the displayed summary have the same shade
 % of blue. The narrow neck on the left is visibly lighter: its lattice is
 % bent, and the printed maximum departure from the grain mean is 6 degrees.
 % <GrainOrientationParameters.html Orientation Parameters> measures this

@@ -32,7 +32,7 @@ grains = calcGrains(ebsd);
 %
 % First take the misorientation of every forsterite--enstatite boundary
 % segment. The displayed summary identifies the mapping from the forsterite
-% crystal frame to the enstatite crystal frame and reports 12,334 samples.
+% crystal frame to the enstatite crystal frame and reports 12,418 samples.
 
 mori_boundary = grains.boundary('Fo','En').misorientation
 
@@ -66,7 +66,7 @@ preferredAxis = round(axis(preferredMori))
 preferredAngle = angle(preferredMori) ./ degree
 
 %%
-% The peak is 121.19 mrd at $89.98^\circ$ about $(001)$ in the forsterite
+% The peak is 116.49 mrd at $89.98^\circ$ about $(001)$ in the forsterite
 % crystal frame. Forsterite and enstatite share lattice planes in this
 % relationship, and it dominates the phase boundaries of this map.
 %
@@ -101,7 +101,7 @@ mdf_uncorrelated = calcDensity(mori_uncorrelated)
 uncorrelatedPeakMRD = max(mdf_uncorrelated)
 
 %%
-% Its maximum is 2.06 mrd, not 121.19 mrd. The preferred boundary
+% Its maximum is 2.06 mrd, not 116.49 mrd. The preferred boundary
 % relationship is absent from independently paired pixels. The boundary
 % peak is therefore a property of the boundary network, not something the
 % two textures produce by themselves.
