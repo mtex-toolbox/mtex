@@ -14,12 +14,16 @@ including 6.1 have one combined list there and no entry here.
 
 - `calcGrains` drew the boundaries through cells the alpha closing had filled along the
   bisectors of the measured pixels around them, which gave a vertex on the medial axis
-  of a closed crack and notches in clusters of notIndexed pixels. Boundary vertices
-  strictly inside filled cells relax to straight lines (`private/straightenInFill.m`).
-  A boundary segment is cut where it enters the fill, also one whose ends both lie
-  inside or on its edge while its middle leaves it, so its inside end can move;
-  a moved segment that would sweep over a measured or unfilled cell, or cross another
-  boundary, keeps its vertices, so every measured pixel stays in its grain.
+  of a closed crack and notches in clusters of notIndexed pixels. Inside the filled
+  cells the boundaries are the shortest network of the same chains
+  (`private/straightenInFill.m`): every chain runs straight between the cell corners it
+  bends around, and every junction sits where its chains meet at 120 degrees unless a
+  cell is in the way. Every measured pixel stays in its grain and no boundary crosses
+  another. A region of filled cells at least half of which lie in a gap one cell wide
+  between measured pixels of two grains, as where the beam spans two grains, keeps the
+  bisectors. On the grain benchmark the smoothed boundaries lie 7.7 % closer to the
+  true ones on maps with notIndexed patches fitted to forsterite and peridotite, and as
+  close as the bisectors on maps with notIndexed lines along the boundaries.
   `'straighten',false` gives the bisectors
 - The closing counted the raster outside the map as empty, so the erosion opened every
   edge cell between two indexed edge pixels whatever alpha was. Outside the convex hull
@@ -46,7 +50,9 @@ including 6.1 have one combined list there and no entry here.
   remains (those gave NaN directions, curvatures and mean directions). The two vertices
   of a split point sit a quarter of a pixel apart, each an eighth toward the cell between its two
   edges, so the joined pixels meet along a neck of a quarter pixel and the merged grain
-  is a polygon the smoothing can open rather than a pinch. `'removeQuadruplePoints',false`
+  is a polygon the smoothing can open rather than a pinch. The four segments of a point
+  are paired by their directions on the lattice, before the straightening moved them,
+  so a moved point no longer leaves a grain boundary open. `'removeQuadruplePoints',false`
   keeps every quadruple point. twins at 15 degree 121 -> 95 grains, forsterite
   3102 -> 2855, alphaBetaTitanium 48609 -> 31466, areas per phase unchanged; 3-6 percent
   of the time of `calcGrains`, +0.5 s on alphaBetaTitanium with 25673 quadruple points
@@ -106,9 +112,8 @@ including 6.1 have one combined list there and no entry here.
   was singular across the row, so the band and dummy sites fell onto it. The basis of
   `ebsd.lattice` decides that direction
 - Speed, steel 1C_1 (2.5 million pixels) on R2024b: `calcGrains` at 10 degree 52.7 ->
-  23.0 s, with minPixel 5 57.2 -> 33.4 s. The crossing test of `straightenInFill` uses
-  buckets of twice the median segment length and re-solves only the components that
-  lost a vertex; `geoDist` visits only the cells next to its front; the lattice is
+  30.2 s, with minPixel 5 57.2 -> 41.6 s. `geoDist` visits only the cells next to its
+  front; the lattice is
   computed once per call; `alphaComplexMask` rasterises only the cells without a
   measurement ('delaunay' 2.7x faster)
 - The closing with alpha filled every notIndexed region narrower than 2*alpha whatever
