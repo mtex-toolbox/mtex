@@ -375,8 +375,8 @@ function c = closedAt(x, isIndexedP, inScanP, offs, szP)
 o = (offs(:,1) + offs(:,2)*szP(1)).';
 y = unique(reshape(x + o,[],1)); y = y(inScanP(y));
 dil = ~inScanP;
-dil(y) = any(isIndexedP(y + o),2);
-c = isIndexedP(x) | all(dil(x + o),2) & inScanP(x);
+dil(y) = any(reshape(isIndexedP(y + o),numel(y),[]),2);
+c = isIndexedP(x) | all(reshape(dil(x + o),numel(x),[]),2) & inScanP(x);
 end
 
 % ===========================================================================
@@ -577,7 +577,7 @@ feret = zeros(nP,1);
 for p = find(area >= 3).'
   q = xy(lab == p,:);
   try q = q(convhull(q(:,1),q(:,2)),:); end %#ok<TRYNC>
-  feret(p) = max(pdist(q));
+  feret(p) = max(vecnorm(permute(q,[1 3 2]) - permute(q,[3 1 2]),2,3),[],'all');
 end
 elong = feret.^2 ./ (area*abs(det(A)));
 
