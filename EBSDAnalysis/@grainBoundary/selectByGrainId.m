@@ -11,7 +11,8 @@ function [gB, pairId, ind] = selectByGrainId(gB,grainId)
 % Output
 %  gBSub  - @grainBoundary
 %  pairId - gBSub.grainId = grainId(pairId,:)
-%  ind    - gBSub = gB(ind)
+%  ind    - numeric indices of the original segments, in returned order
+%           segment sides are flipped to match grainId(pairId,:)
 %
 
 % we sort both ids row-wise 
@@ -21,11 +22,14 @@ gBgrainId = sort(gB.grainId,2);
 grainId = sort(grainId,2);
 
 % find grainId in the boundary Ids 
-[ind, pairId] = ismember(gBgrainId,grainId,'rows');
+[matched, pairId] = ismember(gBgrainId,grainId,'rows');
   
 % remove boundary segments not in grainId
+ind = find(matched);
 gB = gB.subSet(ind);
 pairId = pairId(pairId>0);
 
 % flip to the order given by grainId
-gB = flip(gB,xor(gBFlip(ind),idFlip(pairId)));
+[gB,p] = flip(gB,xor(gBFlip(ind),idFlip(pairId)));
+pairId = pairId(p);
+ind = ind(p);
