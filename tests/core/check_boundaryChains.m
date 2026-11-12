@@ -452,6 +452,23 @@ for f = {@(g) simplifyBoundary(g,sl), @(g) reduceBoundary(g,2), @refineBoundary}
 
 end
 
+%% 15. selectByGrainId keeps pairId and ind with the segments it returns
+% three chains of two segments, meeting in one junction
+V = vector3d([0;1;2;3;4;2;2],[0;0;0;0;0;1;2],zeros(7,1));
+pairs = [1 2;1 2;1 3;1 3;1 4;1 4];
+gS = grainBoundary(V,[1 2;2 3;3 4;4 5;3 6;6 7],reshape(1:12,6,2),pairs(:), ...
+  repelem([1;2],6),rotation.byAxisAngle(zvector,(1:6).'*degree), ...
+  [crystalSymmetry('1') crystalSymmetry('1')],[1 2],[],'noTriplePoints');
+
+for req = {[3 1;2 1],[2 1;1 3],[2 1;9 10],[3 1;2 1;3 1],zeros(0,2)}
+  [sel,pairId,ind] = gS.selectByGrainId(req{1});
+  name = ['selectByGrainId(' mat2str(req{1}) ')'];
+  if ~isequal(sel.grainId,req{1}(pairId,:)) || ~isequal(sort(sel.F,2),sort(gS.F(ind,:),2))
+    error('%s: pairId or ind do not follow the returned segments',name);
+  end
+  assertOrdered(sel,name);
+end
+
 disp('check_boundaryChains passed');
 
 end

@@ -1,16 +1,18 @@
-function gB = flip(gB,ind)
+function [gB,p] = flip(gB,ind)
 % flip a boundary from phase1/phase2 to phase2/phase1
 %
 % Syntax
 %   gB = flip(gB) % flip all boundaries
 %   gB = flip(gB,ind) % flip the boundaries specified in ind
+%   [gB,p] = flip(gB,ind) % and the permutation of the segments
 %
 % Input
 %  gB  - @grainBoundary
 %  ind - indices of the boundaries to flip
 %
 % Output
-%  grains - @grainBoundary
+%  gB - @grainBoundary
+%  p  - the permutation applied by order, as in gB = gB_old.subSet(p)
 %
 
 % F has to follow, as its column order encodes the walk direction and the
@@ -30,4 +32,4 @@ else
 end
 
 % flipping reverses the walk, so the segments of each chain now run backwards
-gB = gB.order;
+[gB,p] = gB.order;
