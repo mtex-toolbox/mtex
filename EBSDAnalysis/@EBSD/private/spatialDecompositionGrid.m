@@ -606,9 +606,10 @@ m = a < b; a = a(m); b = b(m);
 same = connects(ct(a,2),ct(b,2));
 cl = conncomp(graph(a(same),b(same),[],nC)).';
 
-% rim pieces of one part joined once more when their first cells connect
+% rim pieces of one part joined once more when their first cells connect,
+% except on the border, where a part is a void whatever its rim
 [~,first,piece] = unique(cl);
-I = sparse(1:numel(first),ct(first,1),1,numel(first),nP);
+I = sparse(1:numel(first),ct(first,1),~border(ct(first,1)),numel(first),nP);
 [a,b] = find(triu(I*I',1));
 same = connects(ct(first(a),2),ct(first(b),2));
 cl = conncomp(graph(a(same),b(same),[],numel(first))).';
