@@ -4,7 +4,7 @@ function [gB,p] = flip(gB,ind)
 % Syntax
 %   gB = flip(gB) % flip all boundaries
 %   gB = flip(gB,ind) % flip the boundaries specified in ind
-%   [gB,p] = flip(gB,ind)
+%   [gB,p] = flip(gB,ind) % and the permutation of the segments
 %
 % Input
 %  gB  - @grainBoundary
@@ -12,7 +12,7 @@ function [gB,p] = flip(gB,ind)
 %
 % Output
 %  gB - @grainBoundary
-%  p  - permutation of the original boundary segments
+%  p  - the permutation applied by order, as in gB = gB_old.subSet(p)
 %
 
 % F has to follow, as its column order encodes the walk direction and the

@@ -9,10 +9,9 @@ function [gB, pairId, ind] = selectByGrainId(gB,grainId)
 %  grainId - matrix of pairs of grainIds
 %
 % Output
-%  gBSub  - @grainBoundary
+%  gBSub  - @grainBoundary, its sides in the order of grainId(pairId,:)
 %  pairId - gBSub.grainId = grainId(pairId,:)
-%  ind    - numeric indices of the original segments, in returned order
-%           segment sides are flipped to match grainId(pairId,:)
+%  ind    - the segments of gB in gBSub, in the order of gBSub
 %
 
 % we sort both ids row-wise 
@@ -22,12 +21,12 @@ gBgrainId = sort(gB.grainId,2);
 grainId = sort(grainId,2);
 
 % find grainId in the boundary Ids 
-[matched, pairId] = ismember(gBgrainId,grainId,'rows');
+[~, pairId] = ismember(gBgrainId,grainId,'rows');
   
 % remove boundary segments not in grainId
-ind = find(matched);
+ind = find(pairId);
 gB = gB.subSet(ind);
-pairId = pairId(pairId>0);
+pairId = pairId(ind);
 
 % flip to the order given by grainId
 [gB,p] = flip(gB,xor(gBFlip(ind),idFlip(pairId)));

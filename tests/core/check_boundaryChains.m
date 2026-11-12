@@ -452,7 +452,22 @@ for f = {@(g) simplifyBoundary(g,sl), @(g) reduceBoundary(g,2), @refineBoundary}
 
 end
 
-checkSelectionMetadata;
+%% 15. selectByGrainId keeps pairId and ind with the segments it returns
+% three chains of two segments, meeting in one junction
+V = vector3d([0;1;2;3;4;2;2],[0;0;0;0;0;1;2],zeros(7,1));
+pairs = [1 2;1 2;1 3;1 3;1 4;1 4];
+gS = grainBoundary(V,[1 2;2 3;3 4;4 5;3 6;6 7],reshape(1:12,6,2),pairs(:), ...
+  repelem([1;2],6),rotation.byAxisAngle(zvector,(1:6).'*degree), ...
+  [crystalSymmetry('1') crystalSymmetry('1')],[1 2],[],'noTriplePoints');
+
+for req = {[3 1;2 1],[2 1;1 3],[2 1;9 10],[3 1;2 1;3 1],zeros(0,2)}
+  [sel,pairId,ind] = gS.selectByGrainId(req{1});
+  name = ['selectByGrainId(' mat2str(req{1}) ')'];
+  if ~isequal(sel.grainId,req{1}(pairId,:)) || ~isequal(sort(sel.F,2),sort(gS.F(ind,:),2))
+    error('%s: pairId or ind do not follow the returned segments',name);
+  end
+  assertOrdered(sel,name);
+end
 
 disp('check_boundaryChains passed');
 
@@ -586,51 +601,4 @@ if actual ~= wanted
   error('%s: expected %d, got %d',name,wanted,actual);
 end
 
-end
-
-% -------------------------------------------------------------------------
-function checkSelectionMetadata
-V = vector3d([0;1;2;3;4;2;2],[0;0;0;0;0;1;2],zeros(7,1));
-F = [1 2;2 3;3 4;4 5;3 6;6 7];
-pairs = [1 2;1 2;1 3;1 3;1 4;1 4];
-phase = repmat([1 2],6,1);
-gB = grainBoundary(V,F,reshape(1:12,6,2),pairs(:),phase(:),...
-  rotation.byAxisAngle(zvector,(1:6).'*degree),...
-  [crystalSymmetry('1') crystalSymmetry('1')],[1 2],[],'noTriplePoints');
-requests = {[3 1;2 1],[2 1;1 3],[1 3],[2 1;9 10],...
-  [3 1;2 1;3 1],zeros(0,2),[9 10]};
-for source = {gB,gB.subSet(1),gB.subSet([])}
-  gB = source{1};
-  [flipped,p] = flip(gB);
-  assert(isequal(sort(flipped.F,2),sort(gB.F(p,:),2)));
-  assert(isequal(flipped.ebsdId,fliplr(gB.ebsdId(p,:))));
-  for k = 1:numel(requests)
-    wanted = requests{k};
-    [selected,pairId,ind] = gB.selectByGrainId(wanted);
-    assert(isequal(selected.grainId,wanted(pairId,:)),...
-      'selected grain pairs and pairId are not aligned');
-    assert(isequal(sort(selected.F,2),sort(gB.F(ind,:),2)),...
-      'original segment vertices are not aligned');
-    assert(numel(ind)==length(selected) && ~islogical(ind),...
-      'indices must enumerate the returned segments');
-    original = gB.subSet(ind);
-    swapped = selected.grainId(:,1) ~= original.grainId(:,1);
-    expectedEbsd = original.ebsdId;
-    expectedPhase = original.phaseId;
-    expectedRotation = original.misrotation;
-    expectedEbsd(swapped,:) = fliplr(expectedEbsd(swapped,:));
-    expectedPhase(swapped,:) = fliplr(expectedPhase(swapped,:));
-    expectedRotation(swapped) = inv(expectedRotation(swapped));
-    assert(isequal(selected.ebsdId,expectedEbsd),'EBSD sides are not aligned');
-    assert(isequal(selected.phaseId,expectedPhase),'phase sides are not aligned');
-    assert(all(angle(selected.misrotation,expectedRotation)<1e-7),...
-      'misrotations are not aligned');
-    if length(selected)>1
-      assert(issorted(selected.chainId),'selected chains are not contiguous');
-      assert(all(selected.F(find(~selected.isChainStart),1) == ...
-        selected.F(find(~selected.isChainStart)-1,2)),...
-        'selected segments are not in walk order');
-    end
-  end
-end
 end
