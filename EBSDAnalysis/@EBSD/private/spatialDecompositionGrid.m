@@ -187,8 +187,10 @@ while ~isequal(exteriorP,ext0)   % a hole that joined the outside can join the n
     if isempty(corridor), break; end
     x = corridor(isOpen(corridor,r));
     closedP(x) = false;
-    if any(exteriorP(x + (stencil(:,1) + stencil(:,2)*szP(1)).'),'all')
-      exteriorP = floodFillBorder(~closedP, stencil, szP);
+    % the opened cells next to the outside take their holes with them
+    x = x(any(reshape(exteriorP(x + (stencil(:,1) + stencil(:,2)*szP(1)).'),numel(x),[]),2));
+    if ~isempty(x)
+      exteriorP = exteriorP | geoDist(x, ~closedP & ~exteriorP, stencil, szP, prod(szP)) < inf;
     end
   end
 end
@@ -420,18 +422,22 @@ function m2 = binaryDilate(m, offs, szP)
 % with the flatten ij2slotP, i is the row (dim 1) and j is the column (dim 2),
 % so an offset's 1st component moves the row and its 2nd component the column.
 %
-% Implemented as an OR of shifted submatrix slices of the 2D mask: cheaper
-% than scattering foreground index vectors, in particular for the (mostly
-% dense) masks this file works on, and free of find/ind2sub/sub2ind.
-M  = reshape(m, szP);
+% A run of offsets with one di and consecutive dj is a single window sum over
+% the column cumulative sum, so a disk costs one pass per row of it
+M = reshape(m, szP); n1 = szP(1); n2 = szP(2);
+C = [zeros(n1,1), cumsum(M,2)];
 M2 = false(szP);
-n1 = szP(1); n2 = szP(2);
-for o = 1:size(offs,1)
-  di = offs(o,1); dj = offs(o,2);               % i-step -> row, j-step -> col
+offs = sortrows(offs);
+s = find([true; diff(offs(:,1)) ~= 0 | diff(offs(:,2)) ~= 1]);
+e = [s(2:end)-1; size(offs,1)];
+c = 1:n2;
+for k = 1:numel(s)
+  di = offs(s(k),1);
   r = max(1,1+di):min(n1,n1+di);                % target rows with valid source
-  c = max(1,1+dj):min(n2,n2+dj);
-  if isempty(r) || isempty(c), continue; end
-  M2(r,c) = M2(r,c) | M(r-di, c-dj);
+  hi = min(n2, c - offs(s(k),2)); lo = max(1, c - offs(e(k),2));
+  ok = hi >= lo;
+  if isempty(r) || ~any(ok), continue; end
+  M2(r,ok) = M2(r,ok) | C(r-di,hi(ok)+1) > C(r-di,lo(ok));
 end
 m2 = M2(:);
 end
