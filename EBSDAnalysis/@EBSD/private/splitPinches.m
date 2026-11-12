@@ -18,25 +18,35 @@ c = accumarray(f,d,[nF 1],@max);
 nC = accumarray(f,1,[nF 1]);
 isP = accumarray(reshape(F(nC > 0,:),[],1),1,[nV 1]) == 4 & ...
   accumarray(reshape(F(nC == 1,:),[],1),1,[nV 1]) == 4;
-isJoin = ~isempty(out.inFill);
+% the four segments at every pinch, a column per pinch in vertex order
+s = find(nC > 0); m = isP(F(s,:)); P = F(s,:); E = [s s];
+[~,o] = sortrows([P(m) E(m)]); E = E(m); E = reshape(E(o),4,[]);
+v = find(isP); nP = numel(v);
+inside = false(nP,1);
+if ~isempty(out.inFill), inside = out.inFill(V(v,:)) > out.epsilon; end
+V = [V; zeros(nP,2)]; J = zeros(nP,2);
 
-for v = find(isP).'
+for k = 1:nP
   % the four segments at v counterclockwise, the first two around one cell
-  e = find(any(F(1:nF,:) == v,2) & nC > 0);
-  u = V(sum(F(e,:),2) - v,:) - V(v,:);
+  e = E(:,k);
+  u = V(sum(F(e,:),2) - v(k),:) - V(v(k),:);
   [~,o] = sort(atan2(u(:,2),u(:,1)));
   if c(e(o(1))) ~= c(e(o(2))), o = circshift(o,-1); end
   e = e(o); u = u(o,:) ./ vecnorm(u(o,:),2,2);
 
-  n = size(V,1) + 1;
-  if isJoin && out.inFill(V(v,:)) > out.epsilon
+  n = nV + k;
+  if inside(k)
     keep = [2 3]; move = [4 1];
-    F(end+1,:) = [v n]; %#ok<AGROW>
-    I_FD(end+1,[c(e(1)) c(e(3))]) = 1; %#ok<AGROW>
+    J(k,:) = [c(e(1)) c(e(3))];
   else
     keep = [1 2]; move = [3 4];
   end
-  w = sum(u(move,:)); V(n,:) = V(v,:) + out.dxy/4 * w ./ norm(w);
-  w = sum(u(keep,:)); V(v,:) = V(v,:) + out.dxy/4 * w ./ norm(w);
-  F(e(move),:) = F(e(move),:) + (F(e(move),:) == v) * (n - v);
+  w = sum(u(move,:)); V(n,:) = V(v(k),:) + out.dxy/4 * w ./ norm(w);
+  w = sum(u(keep,:)); V(v(k),:) = V(v(k),:) + out.dxy/4 * w ./ norm(w);
+  F(e(move),:) = F(e(move),:) + (F(e(move),:) == v(k)) * (n - v(k));
 end
+
+% a join inside the filled cells is a segment of the two cells across it
+F = [F; v(inside), nV + find(inside)];
+J = J(inside,:); nJ = size(J,1);
+I_FD = [I_FD; sparse([1:nJ 1:nJ],J(:),1,nJ,size(I_FD,2)) > 0];
