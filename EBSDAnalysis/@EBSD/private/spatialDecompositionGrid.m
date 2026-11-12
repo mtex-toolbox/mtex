@@ -371,12 +371,16 @@ end
 
 % ===========================================================================
 function c = closedAt(x, isIndexedP, inScanP, offs, szP)
-% the closing of the indexed cells by offs, at the raster cells x alone
-o = (offs(:,1) + offs(:,2)*szP(1)).';
-y = unique(reshape(x + o,[],1)); y = y(inScanP(y));
-dil = ~inScanP;
-dil(y) = any(reshape(isIndexedP(y + o),numel(y),[]),2);
-c = isIndexedP(x) | all(reshape(dil(x + o),numel(x),[]),2) & inScanP(x);
+% the closing of the indexed cells by offs, at the raster cells x alone, one offset at a time
+o = offs(:,1) + offs(:,2)*szP(1);
+x = x(:); y = false(size(inScanP));
+for k = 1:numel(o), y(x + o(k)) = true; end
+y = find(y & inScanP); d = false(size(y));
+for k = 1:numel(o), d = d | isIndexedP(y + o(k)); end
+dil = ~inScanP; dil(y) = d;
+c = inScanP(x);
+for k = 1:numel(o), c = c & dil(x + o(k)); end
+c = c | isIndexedP(x);
 end
 
 % ===========================================================================
