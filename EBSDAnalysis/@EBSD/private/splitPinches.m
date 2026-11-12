@@ -18,9 +18,11 @@ c = accumarray(f,d,[nF 1],@max);
 nC = accumarray(f,1,[nF 1]);
 isP = accumarray(reshape(F(nC > 0,:),[],1),1,[nV 1]) == 4 & ...
   accumarray(reshape(F(nC == 1,:),[],1),1,[nV 1]) == 4;
+if ~any(isP), return, end
+
 % the four segments at every pinch, a column per pinch in vertex order
-s = find(nC > 0); m = isP(F(s,:)); P = F(s,:); E = [s s];
-[~,o] = sortrows([P(m) E(m)]); E = E(m); E = reshape(E(o),4,[]);
+[e,j] = find(isP(F) & nC > 0);
+[~,o] = sortrows([F(e + nF*(j-1)) e]); E = reshape(e(o),4,[]);
 v = find(isP); nP = numel(v);
 inside = false(nP,1);
 if ~isempty(out.inFill), inside = out.inFill(V(v,:)) > out.epsilon; end
