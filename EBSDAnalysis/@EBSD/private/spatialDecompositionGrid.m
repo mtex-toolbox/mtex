@@ -155,6 +155,7 @@ if any(alphaK ~= alpha) || kindsOnly
     closed0 = closedP;
     [kindP,pp,labP] = kindOfParts(closedP, isIndexedP, inScanP, ebsdP, ebsd, gbc, ...
       kindCode(get_option(varargin,'kinds',[])), stencil, szP, A);
+    kindP(byKindP) = 0;   % what the closing of a kind has filled stays filled
     parts = [parts; pp(unique(labP(kindP > 0 & kindP ~= K & labP > 0)),:)]; %#ok<AGROW>
     K(kindP > 0) = kindP(kindP > 0);
     for k = find(alphaK ~= alpha)
