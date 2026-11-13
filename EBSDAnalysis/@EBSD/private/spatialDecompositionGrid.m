@@ -186,16 +186,19 @@ exteriorP = floodFillBorder(~closedP, stencil, szP);   % 2D flood fill
 % a hole joined to the outside by a filled notIndexed path of at most 2*alpha
 % steps stays joined, through what the largest closing that keeps it joined leaves open
 nSteps = 2*ceil(alpha);
+rs = [alpha-1:-1:1, 0]; openAt = cell(size(rs));   % what every closing below alpha leaves open
 ext0 = [];
 while ~isequal(exteriorP,ext0)   % a hole that joined the outside can join the next
   ext0 = exteriorP;
   f = closedP & ~isIndexedP & ~byKindP;
-  [dHole,hole] = geoDist(~closedP & ~exteriorP, f, stencil, szP, nSteps);
-  corridor = find(f & geoDist(exteriorP, f, stencil, szP, nSteps) + dHole <= nSteps);
-  for r = [alpha-1:-1:1, 0]
+  dExt = geoDist(exteriorP, f, stencil, szP, nSteps);
+  [dHole,hole] = geoDist(~closedP & ~exteriorP, f & dExt <= nSteps, stencil, szP, nSteps);
+  corridor = find(f & dExt + dHole <= nSteps);
+  for q = 1:numel(rs)
     corridor = corridor(closedP(corridor) & ~exteriorP(hole(corridor)));
     if isempty(corridor), break; end
-    x = corridor(isOpen(corridor,r));
+    if isempty(openAt{q}), openAt{q} = isOpen((1:prod(szP)).',rs(q)); end
+    x = corridor(openAt{q}(corridor));
     closedP(x) = false;
     % the opened cells next to the outside take their holes with them
     x = x(any(reshape(exteriorP(x + (stencil(:,1) + stencil(:,2)*szP(1)).'),numel(x),[]),2));
@@ -582,46 +585,35 @@ function [kindP,parts,labP] = kindOfParts(closedP, isIndexedP, inScanP, ebsdP, e
 % its boundary), 4 void, 0 elsewhere; override is a code per ebsd pixel that
 % replaces the computed kind of its part; labP is the part of every cell
 open = ~closedP & inScanP;
-x = find(open);
-n = numel(x);
-L = zeros(prod(szP),1); L(x) = 1:n;
 o = stencil(:,1) + stencil(:,2)*szP(1);
-lab = components(open, stencil, szP); lab = lab(x);
-nP = max([lab;0]);
+labP = components(open, stencil, szP);
+nP = max(labP);
+area = accumarray(labP(open),1,[nP 1]);
 
-% size, border contact and Feret diameter of every part
-area = accumarray(lab,1,[nP 1]);
+% the cells of a part next to one that is not open carry its border contact, Feret diameter and contacts
+x = find(open & binaryDilate(~open, stencil, szP));
+lab = labP(x);
+nX = accumarray(lab,1,[nP 1]);
 touch = binaryDilate(~inScanP, stencil, szP);
-border = accumarray(lab,touch(x),[nP 1],@any,false);
-
-% the notIndexed cells around every part that are not its own: the outside,
-% the filled cells and other parts, one contact per part and cell
-[pg,yg] = deal([]);
-for s = o.'
-  y = x + s;
-  ly = L(y);
-  ok = ~isIndexedP(y) & (ly == 0 | lab(max(ly,1)) ~= lab);
-  pg = [pg; lab(ok)]; yg = [yg; y(ok)]; %#ok<AGROW>
-end
-gap = accumarray(unique([pg yg],'rows')*[1;0],1,[nP 1]);
+border = accumarray(lab,touch(x),[nP 1]) > 0;
 [r,c] = ind2sub(szP,x);
 xy = [r c]*A';
 feret = zeros(nP,1);
+[~,ord] = sort(lab); last = cumsum(nX);
 for p = find(area >= 3).'
-  q = xy(lab == p,:);
+  q = xy(ord(last(p)-nX(p)+1:last(p)),:);
   try q = q(convhull(q(:,1),q(:,2)),:); end %#ok<TRYNC>
   feret(p) = max(vecnorm(permute(q,[1 3 2]) - permute(q,[3 1 2]),2,3),[],'all');
 end
 elong = feret.^2 ./ (area*abs(det(A)));
 
-% the indexed cells around every part, one contact per part and cell
-[pp,yy] = deal([]);
-for s = o.'
-  y = x + s;
-  ok = isIndexedP(y);
-  pp = [pp; lab(ok)]; yy = [yy; y(ok)]; %#ok<AGROW>
-end
-ct = unique([pp yy],'rows');
+% the cells around every part that are not open, one contact per part and cell:
+% the notIndexed ones, the outside and the filled cells, are its gap, the indexed its rim
+y = reshape(x + o.',[],1); p = repmat(lab,numel(o),1); m = ~open(y);
+ct = unique([p(m) y(m)],'rows');
+isRim = isIndexedP(ct(:,2));
+gap = accumarray(ct(~isRim,1),1,[nP 1]);
+ct = ct(isRim,:);
 nC = size(ct,1);
 key = ct(:,1) + nP*ct(:,2);
 
@@ -653,8 +645,8 @@ kind(border) = 4;
 kind(elong >= 5 & gap <= rim) = 3;
 
 if ~isempty(override)
-  k = zeros(n,1); m = ebsdP(x) > 0; k(m) = override(ebsdP(x(m)));
-  k = accumarray(lab(k > 0),k(k > 0),[nP 1],@mode,0);
+  x = find(open & ebsdP > 0); k = reshape(override(ebsdP(x)),[],1);
+  k = accumarray(labP(x(k > 0)),k(k > 0),[nP 1],@mode,0);
   kind(k > 0) = k(k > 0);
 end
 
@@ -662,31 +654,31 @@ end
 % cuts a crack where it narrows. The parts and the connected pieces of
 % filled cells are the nodes of a graph, a contact is an edge; pruning the
 % leaves that are no crack part leaves the nodes between crack parts
-thin = find(~isIndexedP & inScanP & closedP);
-LT = zeros(prod(szP),1); LT(thin) = 1:numel(thin);
-ct = components(LT > 0, stencil, szP); ct = ct(thin);
-nT = max([ct;0]);
-[a,b] = deal([]);
-for s = o.'
-  z = thin + s; ok = L(z) > 0;
-  a = [a; nP + ct(LT(thin(ok)))]; b = [b; lab(L(z(ok)))]; %#ok<AGROW>
-end
-E = sparse(a,b,1,nP+nT,nP+nT) > 0; E = E | E';
-isCrack = [kind == 3; false(nT,1)];
-keep = true(nP+nT,1);
-while true
-  leaf = keep & ~isCrack & E*keep <= 1;
-  if ~any(leaf), break; end
-  keep(leaf) = false;
-end
-comp = conncomp(graph(E(keep,keep))).';
-between = false(nP+nT,1);
-between(keep) = ismember(comp, comp(isCrack(keep))) & ~isCrack(keep);
-kind(between(1:nP)) = 3;
 kindP = zeros(prod(szP),1);
-kindP(x) = kind(lab);
-labP = zeros(prod(szP),1); labP(x) = lab;
-kindP(thin(between(nP + ct))) = 3;
+if any(kind == 3)
+  thin = ~isIndexedP & inScanP & closedP;
+  ct = components(thin, stencil, szP); thin = find(thin); ct = ct(thin);
+  nT = max([ct;0]);
+  [a,b] = deal([]);
+  for s = o.'
+    z = thin + s; ok = labP(z) > 0;
+    a = [a; nP + ct(ok)]; b = [b; labP(z(ok))]; %#ok<AGROW>
+  end
+  E = sparse(a,b,1,nP+nT,nP+nT) > 0; E = E | E';
+  isCrack = [kind == 3; false(nT,1)];
+  keep = true(nP+nT,1);
+  while true
+    leaf = keep & ~isCrack & E*keep <= 1;
+    if ~any(leaf), break; end
+    keep(leaf) = false;
+  end
+  comp = conncomp(graph(E(keep,keep))).';
+  between = false(nP+nT,1);
+  between(keep) = ismember(comp, comp(isCrack(keep))) & ~isCrack(keep);
+  kind(between(1:nP)) = 3;
+  kindP(thin(between(nP + ct))) = 3;
+end
+kindP(open) = kind(labP(open));
 parts = table((1:nP).',kindName(kind),area,feret,elong,border,gap,rim,share, ...
   'VariableNames',{'id','kind','area','feret','elong','border','gap','rim','share'});
 
