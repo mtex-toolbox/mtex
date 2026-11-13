@@ -60,7 +60,8 @@ function out = spatialDecompositionGrid(ebsd,g,varargin)
 %
 % Flags
 %  delaunay - the alpha-complex instead of the closing
-%  kindsOnly - return only the kinds and the parts, before the decomposition
+%  kindsOnly - return only the kinds and the parts, before the decomposition;
+%             a pixel has the kind of the last part it was open in
 %
 % Output struct out with fields
 %  V        - nV × 2 Voronoi vertices
@@ -141,30 +142,39 @@ end
 
 % the closing radius of a cell is that of the kind of its notIndexed part:
 % pores, pockets and cracks each close with their own radius, which replaces
-% alpha on their cells - below alpha it reopens what the closing filled
+% alpha on their cells - below alpha it reopens what the closing filled. A
+% closing that cuts a part apart leaves pieces of another kind, so the parts
+% left open are classified again until nothing changes
 byKindP = false(prod(szP),1);
 kindsOnly = check_option(varargin,'kindsOnly');
 if any(alphaK ~= alpha) || kindsOnly
   ebsdP = zeros(prod(szP),1); ebsdP(ij2slotP(ij)) = 1:size(ij,1);
-  [kindP,parts] = kindOfParts(closedP, isIndexedP, inScanP, ebsdP, ebsd, ...
-    grainBoundaryCriterion.byOptions(varargin{:}), ...
-    kindCode(get_option(varargin,'kinds',[])), stencil, szP, A);
-  if kindsOnly
-    k = kindP; k(~inScanP & ~isIndexedP) = 4; k(k == 0) = 5; k(isIndexedP) = 6;
-    out = struct('kinds',reshape(kindName(k(ij2slotP(ij))),size(ebsd.phaseId)),'parts',parts);
-    return
-  end
-  for k = find(alphaK ~= alpha)
-    x = find(kindP == k);
-    if isDelaunay
-      c = rMin(x) <= alphaK(k)*dxy + epsilon;
-    elseif isinf(alphaK(k))
-      c = true(size(x));
-    else
-      c = closedAt(x, isIndexedP, inScanP, diskOffsets(alphaK(k)*dxy, A, stencil), szP);
+  gbc = grainBoundaryCriterion.byOptions(varargin{:});
+  K = zeros(prod(szP),1); parts = []; closed0 = [];
+  while ~isequal(closedP,closed0)
+    closed0 = closedP;
+    [kindP,pp,labP] = kindOfParts(closedP, isIndexedP, inScanP, ebsdP, ebsd, gbc, ...
+      kindCode(get_option(varargin,'kinds',[])), stencil, szP, A);
+    parts = [parts; pp(unique(labP(kindP > 0 & kindP ~= K & labP > 0)),:)]; %#ok<AGROW>
+    K(kindP > 0) = kindP(kindP > 0);
+    for k = find(alphaK ~= alpha)
+      x = find(kindP == k);
+      if isDelaunay
+        c = rMin(x) <= alphaK(k)*dxy + epsilon;
+      elseif isinf(alphaK(k))
+        c = true(size(x));
+      else
+        c = closedAt(x, isIndexedP, inScanP, diskOffsets(alphaK(k)*dxy, A, stencil), szP);
+      end
+      byKindP(x(c)) = true;
+      closedP(x) = c;
     end
-    byKindP(x(c)) = true;
-    closedP(x) = c;
+  end
+  if kindsOnly
+    K(~inScanP & ~isIndexedP) = 4; K(K == 0) = 5; K(isIndexedP) = 6;
+    parts.id = (1:height(parts)).';
+    out = struct('kinds',reshape(kindName(K(ij2slotP(ij))),size(ebsd.phaseId)),'parts',parts);
+    return
   end
 end
 
@@ -566,11 +576,11 @@ end
 
 
 % ===========================================================================
-function [kindP,parts] = kindOfParts(closedP, isIndexedP, inScanP, ebsdP, ebsd, gbc, override, stencil, szP, A)
+function [kindP,parts,labP] = kindOfParts(closedP, isIndexedP, inScanP, ebsdP, ebsd, gbc, override, stencil, szP, A)
 % kind of every cell of the notIndexed parts the closing leaves open:
 % 1 pore, 2 pocket, 3 crack (long, and walled by grains on at least half of
 % its boundary), 4 void, 0 elsewhere; override is a code per ebsd pixel that
-% replaces the computed kind of its part
+% replaces the computed kind of its part; labP is the part of every cell
 open = ~closedP & inScanP;
 x = find(open);
 n = numel(x);
@@ -675,6 +685,7 @@ between(keep) = ismember(comp, comp(isCrack(keep))) & ~isCrack(keep);
 kind(between(1:nP)) = 3;
 kindP = zeros(prod(szP),1);
 kindP(x) = kind(lab);
+labP = zeros(prod(szP),1); labP(x) = lab;
 kindP(thin(between(nP + ct))) = 3;
 parts = table((1:nP).',kindName(kind),area,feret,elong,border,gap,rim,share, ...
   'VariableNames',{'id','kind','area','feret','elong','border','gap','rim','share'});
