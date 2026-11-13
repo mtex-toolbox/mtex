@@ -163,6 +163,34 @@ including 6.1 have one combined list there and no entry here.
   and a double fill) and its try made the whole raster count as scan, so the material
   rule outside the hull was off on such maps and `kindOfParts` indexed off the raster.
   The lattice indices and the stencil are cast to double once
+- A kind's closing that cuts a notIndexed part apart leaves pieces of another kind:
+  on a 1417x1674 h5oina map `'minPixel',60,'alphaCrack',15,'alphaPore',inf` left two
+  holes inside one forsterite grain as notIndexed grains, cut off from a border region by
+  the crack closing. The parts the closings of their kinds leave open are classified
+  again until no cell changes, and what a kind's closing has filled stays filled and
+  keeps its kind, so a pore filled whole whose cells then lie between two crack parts is
+  not taken for crack and opened again. With `'kindsOnly'` a pixel has the kind of the
+  last part it was open in, and the parts table adds each part whose kind is new. The
+  two holes are pores and filled (49 grains, none notIndexed); the decomposition is the
+  same on forsterite, peridotite, titanium and ferrite (hex)
+- Speed and memory at large radii, on the forsterite of that h5oina map with 220k noise
+  grains (R2024b). `binaryDilate` dilates a disk in eight passes over the row distance to
+  the nearest cell and other offsets by runs of consecutive columns over a doubling table;
+  an opening next to the outside floods only the holes it joins; `closedAt` closes the
+  box around a kind's cells, widened by twice the disk, where its offsets times cells
+  asked for 119.8 GB at a mouth radius of 120 px; the reach of the cells is the step
+  distance of `geoDist`, which moves Voronoi vertices by at most 2e-10; `hasDir` is
+  tested on the band cells alone; connected components join the runs of a column;
+  `kindOfParts` takes border, Feret diameter, gap and rim of a part from its cells next
+  to a cell that is not open, and pairs rim pieces only off the border, where the 48927
+  pieces around a border void asked for 2.4e9 pairs and over 20 GB (now 2.7 GB at
+  alpha 3.1). `calcGrains` at alpha 30 121 -> 33 s; with minPixel 5 at alpha 30 69 ->
+  29 s and at alpha 120 164 -> 32 s; `'minPixel',20,'alphaCrack',20,'alphaPore',50`
+  105 -> 28 s; `'minPixel',60,'alphaCrack',15,'alphaPore',inf` 25-28 -> 16-18 s.
+  `splitPinches` finds the four segments of every pinch once and appends the
+  joins after the loop: 2778 pinches at alpha 3.1 68 -> 0.28 s, 1C_1 without a pinch
+  0.4 s. Same grains and kinds on forsterite, peridotite, twins, copper, titanium and
+  ferrite (hex)
 
 ### Grain Boundaries
 
@@ -212,6 +240,12 @@ including 6.1 have one combined list there and no entry here.
   curvature and huber filters are gone
 - `dynProp/cat` failed on a list of empty objects only, such as the inner boundaries of
   grains without any
+- `selectByGrainId` returned `pairId` and `ind` in the segment order before `flip`
+  restored the walk order, so a grain-pair label or a per-segment weight landed on
+  another segment (a Ti twin map: 538 of 5241 segments with an unsupported twin label).
+  `flip` returns the permutation of `order` as a second output, and both are permuted
+  with it; `ind` is now the indices of the selected segments in the returned order, not
+  a logical mask. `check_boundaryChains` section 15 (#2654)
 
 ### EBSD Maps
 
