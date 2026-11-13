@@ -373,16 +373,14 @@ end
 
 % ===========================================================================
 function c = closedAt(x, isIndexedP, inScanP, offs, szP)
-% the closing of the indexed cells by offs, at the raster cells x alone, one offset at a time
-o = offs(:,1) + offs(:,2)*szP(1);
-x = x(:); y = false(size(inScanP));
-for k = 1:numel(o), y(x + o(k)) = true; end
-y = find(y & inScanP); d = false(size(y));
-for k = 1:numel(o), d = d | isIndexedP(y + o(k)); end
-dil = ~inScanP; dil(y) = d;
-c = inScanP(x);
-for k = 1:numel(o), c = c & dil(x + o(k)); end
-c = c | isIndexedP(x);
+% the closing of the indexed cells by offs, at the raster cells x alone, over the box the two dilations read
+c = false(numel(x),1); if isempty(x), return, end
+[i,j] = ind2sub(szP,x(:)); w = 2*max(abs(offs(:)));
+r = max(min(i)-w,1):min(max(i)+w,szP(1)); s = max(min(j)-w,1):min(max(j)+w,szP(2));
+P = reshape(isIndexedP,szP); P = P(r,s); Q = reshape(inScanP,szP); Q = Q(r,s); sz = size(P);
+d = binaryDilate(P(:),offs,sz) | ~Q(:);
+c = ~binaryDilate(~d,offs,sz) & Q(:) | P(:);
+c = c(i-r(1)+1 + (j-s(1))*sz(1));
 end
 
 % ===========================================================================
