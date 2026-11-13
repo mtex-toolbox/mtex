@@ -234,15 +234,16 @@ siteCellsP = isIndexedP | bigHoleP;
 % shallow recess = material within the closing reach on BOTH sides along some
 % lattice direction (exterior channels of that width are already filled by the
 % closing, so this cannot glue separate map regions)
-recessP = false(prod(szP),1);
-hasDir  = false(prod(szP),size(stencil,1));
+b = find(extBandP);
+hasDir = false(numel(b),size(stencil,1));
 for s = 1:size(stencil,1)
   Ms = floor(rClose / norm(stencil(s,:)*A'));
-  hasDir(:,s) = binaryDilate(materialP, -(1:Ms)'*stencil(s,:), szP);
+  hasDir(:,s) = any(materialP(b + (1:Ms)*(stencil(s,:)*[1; szP(1)])),2);
 end
+recessP = false(prod(szP),1);
 for s = 1:size(stencil,1)
   [~,o] = ismember(-stencil(s,:),stencil,'rows');
-  if o > s, recessP = recessP | (hasDir(:,s) & hasDir(:,o)); end
+  if o > s, recessP(b) = recessP(b) | (hasDir(:,s) & hasDir(:,o)); end
 end
 
 vacatedP = extBandP & (~binaryDilate(siteCellsP, stencil, szP) | recessP);
@@ -282,8 +283,7 @@ site2id  = [idxSiteEbsd; niId];
 % a cell reaches as far as the widest filled region: the closing bounds that
 % by alpha, a kind's radius does not, so it is measured
 fillP = closedP & ~isIndexedP;
-m = ~fillP; reach = 0;
-while ~all(m(fillP)), m = binaryDilate(m, stencil, szP); reach = reach + 1; end
+d = geoDist(~fillP, fillP, stencil, szP, prod(szP)); reach = max([0; d(fillP)]);
 slot = [ij2slotP(ij(idxSiteEbsd,:)); find(bigHoleP); find(extBandP); find(dummyP)];
 [V,F,I_FD] = latticeVoronoi(XY,slot,szP,A,numReal,epsilon,max(alpha,reach));
 
@@ -422,22 +422,43 @@ function m2 = binaryDilate(m, offs, szP)
 % with the flatten ij2slotP, i is the row (dim 1) and j is the column (dim 2),
 % so an offset's 1st component moves the row and its 2nd component the column.
 %
-% A run of offsets with one di and consecutive dj is a single window sum over
-% the column cumulative sum, so a disk costs one pass per row of it
+% A run of offsets with one di and consecutive dj is covered by two windows of
+% 2^k cells of a row, taken from a table built by doubling
 M = reshape(m, szP); n1 = szP(1); n2 = szP(2);
-C = [zeros(n1,1), cumsum(M,2)];
-M2 = false(szP);
-offs = sortrows(offs);
+
+% a disk, whose row di is the interval |dj| <= h(di) with h falling in |di|,
+% dilates by the distance g to the nearest cell along every row: a cell of
+% row k with g <= h(t) covers the rows k-t..k+t
+[d,~,k] = unique(offs(:,1));
+h = accumarray(k,offs(:,2),[],@max);
+if numel(d) > 8 && isequal(d,(-d(end):d(end))') && isequal(h,flip(h)) && ...
+    isequal(accumarray(k,offs(:,2),[],@min),-h) && sum(2*h+1) == size(unique(offs,'rows'),1) && ...
+    issorted(h(d >= 0),'descend')
+  w = sum(h(d >= 0) >= 0:h(d == 0)) - 1;  % w(g+1) = the most rows a cell at distance g covers
+  J = repmat(1:n2,n1,1);
+  L = J; L(~M) = -inf; R = J; R(~M) = inf;
+  g = min(J - cummax(L,2), cummin(R,2,'reverse') - J);
+  t = -inf(szP); ok = g <= h(d == 0); t(ok) = w(g(ok)+1);
+  I = (1:n1)';
+  m2 = reshape(cummax(I + t) >= I | cummin(I - t,'reverse') <= I,[],1);
+  return
+end
+
+offs = sortrows(offs); W = max(abs(offs(:,2)));
 s = find([true; diff(offs(:,1)) ~= 0 | diff(offs(:,2)) ~= 1]);
 e = [s(2:end)-1; size(offs,1)];
-c = 1:n2;
-for k = 1:numel(s)
-  di = offs(s(k),1);
+H = {[false(n1,W), M, false(n1,W)]};   % H{k+1}(:,j) = any of the 2^k cells from j on of a padded row
+M2 = false(szP);
+for q = 1:numel(s)
+  di = offs(s(q),1); a = offs(s(q),2); b = offs(e(q),2);
+  k = floor(log2(b-a+1));
+  while numel(H) <= k
+    p = 2^(numel(H)-1); h = H{end};
+    h(:,1:end-p) = h(:,1:end-p) | h(:,1+p:end); H{end+1} = h; %#ok<AGROW>
+  end
   r = max(1,1+di):min(n1,n1+di);                % target rows with valid source
-  hi = min(n2, c - offs(s(k),2)); lo = max(1, c - offs(e(k),2));
-  ok = hi >= lo;
-  if isempty(r) || ~any(ok), continue; end
-  M2(r,ok) = M2(r,ok) | C(r-di,hi(ok)+1) > C(r-di,lo(ok));
+  if isempty(r), continue; end
+  M2(r,:) = M2(r,:) | H{k+1}(r-di,W-b+(1:n2)) | H{k+1}(r-di,W-a-2^k+1+(1:n2));
 end
 m2 = M2(:);
 end
@@ -462,31 +483,31 @@ end
 
 % ===========================================================================
 function ext = floodFillBorder(bg, stencil, szP)
-% flood fill: mark all background (bg) cells connected to the padded border.
-% Implemented as connected components of bg over the stencil adjacency, then
-% keeping components that contain a border cell. Equivalent to a morphological
-% reconstruction of the border marker under the mask bg.
-bgLin = find(bg);
-nb = numel(bgLin);
-compact = zeros(prod(szP),1); compact(bgLin) = 1:nb;
-[rr,cc] = ind2sub(szP, bgLin);
-
-srcE = []; dstE = [];
-for s = 1:size(stencil,1)
-  r2 = rr + stencil(s,1);  c2 = cc + stencil(s,2);   % i-step -> row, j-step -> col
-  ok = find(r2>=1 & r2<=szP(1) & c2>=1 & c2<=szP(2));
-  l2 = r2(ok) + (c2(ok)-1)*szP(1);   % sub2ind without its overhead
-  isbg = bg(l2);
-  srcE = [srcE; ok(isbg)];            %#ok<AGROW>  compact source indices
-  dstE = [dstE; compact(l2(isbg))];   %#ok<AGROW>
+% the cells of bg connected to the border of the raster
+lab = reshape(components(bg, stencil, szP), szP);
+ext = ismember(lab, [lab([1 end],:) lab(:,[1 end]).']) & lab > 0;
+ext = ext(:);
 end
 
-lab = conncomp(graph(srcE, dstE, [], nb))';
-isBorder = rr==1 | rr==szP(1) | cc==1 | cc==szP(2);
-extLabels = unique(lab(isBorder));
-
-ext = false(prod(szP),1);
-ext(bgLin(ismember(lab, extLabels))) = true;
+% ===========================================================================
+function lab = components(m, stencil, szP)
+% connected components of the cells of m over the stencil, numbered in the
+% order of their first cell, 0 off m; the runs along the rows are the nodes,
+% joined where a run or its neighbour starts
+n1 = szP(1);
+s = m & ~[false; m(1:end-1)]; s(1:n1:end) = m(1:n1:end);
+run = cumsum(s);
+x = find(m); i = mod(x-1,n1);
+[a,b] = deal([]);
+for o = stencil(stencil(:,2) > 0,:).'
+  y = x + o(1) + o(2)*n1;
+  ok = i + o(1) >= 0 & i + o(1) < n1 & y <= numel(m);
+  ok(ok) = m(y(ok)) & (s(x(ok)) | s(y(ok)));
+  a = [a; run(x(ok))]; b = [b; run(y(ok))]; %#ok<AGROW>
+end
+c = conncomp(graph(a,b,[],run(end))).';
+[~,~,c] = unique(c,'stable');
+lab = zeros(size(m)); lab(x) = c(run(x));
 end
 
 % ===========================================================================
@@ -557,13 +578,7 @@ x = find(open);
 n = numel(x);
 L = zeros(prod(szP),1); L(x) = 1:n;
 o = stencil(:,1) + stencil(:,2)*szP(1);
-[a,b] = deal([]);
-for s = o.'
-  y = x + s;
-  ok = open(y);
-  a = [a; L(x(ok))]; b = [b; L(y(ok))]; %#ok<AGROW>
-end
-lab = conncomp(graph(a,b,[],n)).';
+lab = components(open, stencil, szP); lab = lab(x);
 nP = max([lab;0]);
 
 % size, border contact and Feret diameter of every part
@@ -641,12 +656,7 @@ end
 % leaves that are no crack part leaves the nodes between crack parts
 thin = find(~isIndexedP & inScanP & closedP);
 LT = zeros(prod(szP),1); LT(thin) = 1:numel(thin);
-[a,b] = deal([]);
-for s = o.'
-  z = thin + s; ok = LT(z) > 0;
-  a = [a; LT(thin(ok))]; b = [b; LT(z(ok))]; %#ok<AGROW>
-end
-ct = conncomp(graph(a,b,[],numel(thin))).';
+ct = components(LT > 0, stencil, szP); ct = ct(thin);
 nT = max([ct;0]);
 [a,b] = deal([]);
 for s = o.'
